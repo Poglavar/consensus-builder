@@ -116,10 +116,18 @@ describe('structure ground formation', () => {
             { id: 'west', feature: box(west, 43.754, split, 43.755, 'west') },
             { id: 'east', feature: box(split, 43.754, east, 43.755, 'east') }
         ];
-        const fragileTurf = {
-            ...turf,
-            intersect: vi.fn(() => { throw new Error('Unable to complete output ring'); })
+        // Raw turf rejects the last-bit coordinates; on the shared clip's grid it clips them. The
+        // take plan's reach and coverage tests (geometry-tolerances.js) run the shared clip with
+        // the context's turf, so they only ever hand it coordinates on the grid.
+        const onGrid = feature => {
+            const x = feature.geometry.coordinates[0][0][0];
+            return x === Number(x.toFixed(9));
         };
+        const fragile = name => vi.fn((left, right) => {
+            if (!onGrid(left) || !onGrid(right)) throw new Error('Unable to complete output ring');
+            return turf[name](left, right);
+        });
+        const fragileTurf = { ...turf, intersect: fragile('intersect'), difference: fragile('difference') };
         const clip = vi.fn((operation, left, right) => parcelArrangement.clip(operation, left, right));
         const priorTurf = globalThis.turf;
         globalThis.turf = turf;
@@ -137,7 +145,8 @@ describe('structure ground formation', () => {
 
         expect(plan.mode).toBe('merge');
         expect(plan.uncoveredShare).toBeLessThan(0.000001);
-        expect(clip).toHaveBeenCalled();
-        expect(fragileTurf.intersect).not.toHaveBeenCalled();
+        expect(fragileTurf.intersect).toHaveBeenCalled();
+        expect(fragileTurf.intersect.mock.results.every(result => result.type === 'return')).toBe(true);
+        expect(fragileTurf.difference.mock.results.every(result => result.type === 'return')).toBe(true);
     });
 });

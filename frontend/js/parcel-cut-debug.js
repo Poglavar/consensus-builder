@@ -3,7 +3,7 @@
 //
 // A parcel's pieces are a function of that parcel and the takes over it, and every step of that
 // function can fail quietly: the parcel may not be loaded, no applied corridor may claim to reach
-// it, the overlap may fall under the minimum piece area, the arrangement may throw and be recorded
+// it, the overlap may be cutting debris rather than ground, the arrangement may throw and be recorded
 // as "left untouched", or the pieces may exist and simply not be on the map. Each of those looks
 // identical on screen — a whole parcel under a road — so this walks the chain and says which one it
 // is.
@@ -67,7 +67,7 @@
         out.takesReachingIt = overlapping.map(take => take.title);
 
         // How much each corridor actually covers — a near miss and a real crossing look the same on
-        // screen, and anything under MIN_PIECE_M2 is deliberately not a cut.
+        // screen, and an overlap that is not ground (geometry-tolerances.js isGround) is deliberately not a cut.
         out.overlapM2 = usable.map(take => {
             let m2 = 0;
             try {
@@ -80,11 +80,10 @@
             }
             return { road: take.title, m2: typeof m2 === 'number' ? Math.round(m2 * 100) / 100 : m2 };
         }).filter(row => row.m2 !== 0).sort((a, b) => (b.m2 || 0) - (a.m2 || 0)).slice(0, 8);
-        out.minimumPieceM2 = A.MIN_PIECE_M2;
 
         if (!overlapping.length) {
             out.verdict = out.overlapM2.length
-                ? `No corridor reaches it by more than ${A.MIN_PIECE_M2} m² — the biggest overlap is ${out.overlapM2[0].m2} m² ("${out.overlapM2[0].road}").`
+                ? `No corridor reaches it by real ground (wider than ${global.GeometryTolerances.NOISE_M * 1000} mm) — the biggest overlap is ${out.overlapM2[0].m2} m² ("${out.overlapM2[0].road}").`
                 : 'No applied corridor overlaps this parcel at all. Its footprint is elsewhere, or the road has no stored footprint (see corridorsWithoutFootprint).';
             return out;
         }
@@ -225,8 +224,15 @@
                 if (!ground || typeof ground.ensureFootprint !== 'function') {
                     throw new Error('Cadastral ground service is unavailable');
                 }
-                const loaded = await ground.ensureFootprint(probe, { parcelsOnly: false });
-                out.backendParcels = Array.isArray(loaded?.result?.ids) ? loaded.result.ids : [];
+                // The transport answers candidates, edge-touching neighbours included; a neighbour
+                // the probe only touches is not "a parcel here", so keep the ones it reaches into
+                // (the shared rule, geometry-tolerances.js).
+                const loaded = await ground.ensureFootprint(probe);
+                const probeFeature = turf.feature(probe);
+                const candidates = Array.isArray(loaded?.result?.features) ? loaded.result.features : [];
+                out.backendParcels = candidates
+                    .filter(feature => global.GeometryTolerances.reachesInto(turf, probeFeature, feature, 0, { site: 'parcel-cut-debug.whatIsHere' }))
+                    .map(feature => String(feature.properties.parcelId));
                 out.verdict = out.backendParcels.length
                     ? `The cadastre HAS ${out.backendParcels.length} parcel(s) here (${out.backendParcels.join(', ')}) `
                         + 'but none reached the map — a loading gap. Pan away and back over this spot to fetch the cell.'

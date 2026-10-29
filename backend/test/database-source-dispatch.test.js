@@ -2,7 +2,8 @@
 import { describe, expect, it, vi } from 'vitest';
 import { databaseParcelSourceRegistry, openDatabaseParcelSource } from '../parcels/database-sources.js';
 import { buildingMapSourceRegistry, buildingMapLookup, osmReferenceSourceRegistry } from '../buildings/map-source.js';
-import { BINDING_COUNT_SQL, BINDING_SQL, PARCEL_ACT_SITE_SQL } from '../parcels/oss-binding-source.js';
+import { HR_PARCEL_IDS_SQL, HR_SITE_CANDIDATES_SQL } from '../parcels/oss-binding-source.js';
+import { MAX_SOURCE_BINDING_PARCELS } from '../parcels/source-binding.js';
 import catalog from '../../frontend/data/source-catalog.json' with { type: 'json' };
 const polygon = { type: 'Polygon', coordinates: [[[10,40],[10.001,40],[10.001,40.001],[10,40]]] };
 
@@ -42,22 +43,23 @@ describe('database source dispatch', () => {
         else expect(await read).toMatchObject({ type: 'FeatureCollection', features: [] });
         expect(pool.query.mock.calls[0][0]).toContain(table);
     });
-    it('dispatches optimized binding reads through the configured OSS adapter', async () => {
-        const measurement = { site_m2: 4, in_region: true, parcels: [] };
-        const declared = { site_m2: 4, parcels: [{ parcelId: 'HR-1-a' }] };
-        const pool = { query: vi.fn(async sql => ({ rows: [sql === BINDING_COUNT_SQL
-            ? { parcels: 2 } : sql === BINDING_SQL ? measurement : declared] })) };
+    it('dispatches the binding candidate reads through the configured OSS adapter', async () => {
+        const region = { id: '1', geometry: polygon };
+        const pool = { query: vi.fn(async sql => ({ rows: sql === HR_SITE_CANDIDATES_SQL
+            ? [{ parcels: [{ id: 'HR-1-a', geometry: polygon }], regions: [region] }]
+            : [{ id: 'HR-1-a', geometry: polygon }] })) };
         const reader = openDatabaseParcelSource('oss-wfs', pool);
-        const scope = { polygons: '[]', lines: '[]', projection: 'fixture-projection' };
-        expect(await reader.countBindingCandidates(scope)).toBe(2);
-        expect(await reader.bindingMeasurements({ ...scope, floorM: .1, uncertaintyM: .00001 })).toBe(measurement);
-        const parcels = [{ id: 'HR-1-a', ko: 1, number: 'a' }];
-        expect(await reader.declaredParcelSite({ parcels })).toBe(declared);
+        const feature = { type: 'Feature', properties: { parcelId: 'HR-1-a', sourceId: 'hr-cadastre' }, geometry: polygon };
+        expect(await reader.queryGeometry(polygon)).toEqual({ complete: true, features: [feature], regions: [region] });
+        // An id that is not an HR cadastral id is absent without a statement for it.
+        expect(await reader.queryIds(['HR-1-a', 'HR-2-b', 'BG-1'])).toEqual({ complete: true, features: [feature], absentIds: ['HR-2-b', 'BG-1'] });
         expect(pool.query.mock.calls).toEqual([
-            [BINDING_COUNT_SQL, ['[]', '[]', scope.projection]],
-            [BINDING_SQL, ['[]', '[]', .1, scope.projection, .00001]],
-            [PARCEL_ACT_SITE_SQL, [JSON.stringify(parcels)]]
+            [HR_SITE_CANDIDATES_SQL, [JSON.stringify(polygon), MAX_SOURCE_BINDING_PARCELS + 1]],
+            [HR_PARCEL_IDS_SQL, [JSON.stringify([{ id: 'HR-1-a', ko: 1, number: 'a' }, { id: 'HR-2-b', ko: 2, number: 'b' }])]]
         ]);
+        // One more parcel than the cap: truncated, nothing served.
+        pool.query.mockResolvedValueOnce({ rows: [{ parcels: Array.from({ length: MAX_SOURCE_BINDING_PARCELS + 1 }, (_, i) => ({ id: `HR-1-${i}` })), regions: [] }] });
+        expect(await reader.queryGeometry(polygon)).toEqual({ complete: false, truncated: true, features: [], regions: [] });
     });
     it('routes native NYC binding reads through the same registered dataset', async () => {
         const pool = { query: vi.fn(async () => ({ rows: [{ geom_id: 1, geom: polygon, swis_sbl_ids: ['100001'] }] })) };

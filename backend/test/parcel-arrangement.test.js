@@ -294,7 +294,8 @@ describe('takeHitsOn: the overlap test that keeps its answer', () => {
         expect(hits.map(entry => entry.take.id)).toEqual(['road-a', 'road-b']);
         hits.forEach(entry => {
             expect(entry.hit && entry.hit.geometry && entry.hit.geometry.type).toMatch(/Polygon/);
-            expect(turf.area(entry.hit)).toBeGreaterThan(arrangement.MIN_PIECE_M2);
+            // Was: area above MIN_PIECE_M2 (0.25 m²); now the hit is ground by the shared rule.
+            expect(require('../../frontend/js/geometry-tolerances.js').isGround(turf, entry.hit)).toBe(true);
         });
     });
 

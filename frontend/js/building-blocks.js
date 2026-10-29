@@ -1143,10 +1143,13 @@ let proposedBuildingsRefreshMissed = false;
 
 async function withProposedBuildingsRefreshHeld(run) {
     proposedBuildingsRefreshHeld += 1;
+    // A held batch (the boot replay, a block batch) is the Proposed arc around Buildings and massing.
+    if (typeof window !== 'undefined') window.PlanningLoading?.set('proposed', 'replay', true);
     try {
         return await run();
     } finally {
         proposedBuildingsRefreshHeld -= 1;
+        if (!proposedBuildingsRefreshHeld && typeof window !== 'undefined') window.PlanningLoading?.set('proposed', 'replay', false);
         if (!proposedBuildingsRefreshHeld && proposedBuildingsRefreshMissed) {
             proposedBuildingsRefreshMissed = false;
             updateProposedBuildingsLayer();

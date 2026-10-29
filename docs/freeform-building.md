@@ -16,7 +16,13 @@ remain authored feature metadata.
 
 Each current live parcel a Freeform building touches gets its own Land take choice: Footprint only
 (the default) or Whole parcel, which adds that parcel's entire current outline; All footprint and
-All whole set every row. The building itself stays narrow. The exact `geometry.landTake`
+All whole set every row. The live parcels are those as they stood before the design under edit: a building on a parcel
+layout's plot is offered that plot, not the cadastral parcel under the layout. For a design that is
+applied, the review replays the other applied designs on its cadastral parcels, and on every parcel
+those designs declare, on a private copy (`frontend/js/freeform-ground-before.js`, the
+`AgreementHeadless.materialize` replay Plan stats uses), once when the editor opens and again only
+when the building reaches a parcel outside that copy. A building across two plots therefore offers
+each plot with its own outline. A replay that refuses leaves the review unavailable. The building itself stays narrow. The exact `geometry.landTake`
 (`frontend/js/freeform-land-take.js`) is shared by binding, parcel formation, owner remainders,
 demolition prefetch and replay, and agreement derivation.
 

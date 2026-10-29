@@ -1,5 +1,5 @@
 // Per-person positions derived from an agreement and an ownership rights snapshot. The agreement
-// itself names no people: each input parcel i is one abstract party P_i, "Owner(s) of parcel i"
+// allocation terms name no people: each input parcel i is one allocation party P_i, "Owner(s) of parcel i"
 // (agreement-record.js). With rights giving person k the share s[k][i] of parcel i (shares of a
 // complete parcel sum to 1), person k co-owns every output allocated to P_i at s[k][i] and receives
 // s[k][i] of P_i's cash, rounded to whole cents per parcel by the largest remainder so each parcel's

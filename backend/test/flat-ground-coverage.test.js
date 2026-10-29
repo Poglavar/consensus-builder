@@ -4,7 +4,9 @@
 // (2626) by about 0.09 m². Coverage was the sum of the ANCESTORS' overlaps, and an ancestor needs at
 // least 0.25 m², so that sliver dropped out of the covered area and the park read as sticking out by
 // more than the 0.01 m² the flat-ground check allows ("The proposal geometry extends beyond its
-// selected cadastral parcels"). plan-order.js measureCoverage now counts every overlap.
+// selected cadastral parcels"). plan-order.js measureCoverage now counts every overlap, and the
+// completeness check asks whether the uncovered part is ground (geometry-tolerances.js). That
+// 0.09 m² touch reaches 27 cm into 2626, so by the shared rule it is real ground and 2626 an ancestor.
 import { describe, expect, it } from 'vitest';
 import * as turf from '@turf/turf';
 import { readFileSync } from 'node:fs';
@@ -59,20 +61,22 @@ function groundFailure(record, repository) {
 }
 
 describe('flat ground coverage of a footprint over its declared parcels', () => {
-    it('the fixture really is inside its parcels, and touches one of them only by a sliver', () => {
+    it('the fixture really is inside its parcels, and touches one of them by a small area', () => {
         let union = null;
         fixture.parcels.forEach(parcel => { union = union ? turf.union(union, parcel) : parcel; });
         const outside = turf.difference(fixture.footprint, union);
         expect(outside ? turf.area(outside) : 0).toBeLessThan(0.001);
         const sliver = turf.area(turf.intersect(fixture.footprint, fixture.parcels.find(p => p.properties.parcelId === 'HR-339164-2626')));
         expect(sliver).toBeGreaterThan(0);
-        expect(sliver).toBeLessThan(planOrder.MIN_INTERSECTION_M2);
+        expect(sliver).toBeLessThan(0.25);
     });
 
-    it('counts the sliver in the covered area but not among the ancestors', () => {
+    // Was: the 0.09 m² touch was left out of the ancestors by a 0.25 m² floor. It is 27 cm wide,
+    // real ground by the shared rule, so 2626 is an ancestor; the covered area counts it either way.
+    it('counts the small touch in the covered area and, being real ground, among the ancestors', () => {
         const { hits, coveredArea } = planOrder.measureCoverage(fixture.footprint,
             fixture.parcels.map(feature => ({ id: feature.properties.parcelId, feature })));
-        expect(hits.map(hit => hit.id)).not.toContain('HR-339164-2626');
+        expect(hits.map(hit => hit.id)).toContain('HR-339164-2626');
         expect(turf.area(fixture.footprint) - coveredArea).toBeLessThan(0.01);
     });
 

@@ -3,7 +3,7 @@ import { bbox as geometryBbox, bboxPolygon, booleanIntersects, feature as geoFea
 import proj4 from 'proj4';
 import { HttpError } from '../utils/helpers.js';
 import { concatBytes } from './byte-utils.js';
-import { upstreamError, providerHttpError, validateBounds, validateGeometry, canonicalParcelFeature, createParcelAttributeFilter } from './source-contract.js';
+import { upstreamError, areaLimitError, providerHttpError, validateBounds, validateGeometry, canonicalParcelFeature, createParcelAttributeFilter } from './source-contract.js';
 import { geoJsonResponseCrsMatches } from './response-crs.js';
 import { createOgunWfsSchemaGuard } from './ogun-wfs-schema.js';
 import { createO2mapPnuSource } from './o2map-pnu-source.js';
@@ -337,7 +337,7 @@ export function createWfsParcelSource(descriptor, { fetchImpl = globalThis.fetch
                 throw upstreamError('WFS parcel provider returned missing, inconsistent or changing match counts.');
             }
             matched = pageMatched;
-            if (matched > maxFeatures) throw upstreamError('Parcel provider query exceeds the parcel limit; use a smaller area.');
+            if (matched > maxFeatures) throw areaLimitError('Parcel provider query exceeds the parcel limit; use a smaller area.');
             if (offset + page.length > matched || (!page.length && offset < matched)) throw upstreamError('WFS parcel provider returned incomplete pagination.');
             // A repeated whole page cannot establish a complete enumeration.
             if (compositeIdentity && offset > 0 && page.every(row => seenObjects.has(`${row.properties?.[idField]}|geom-sha256=${sha256Hex(JSON.stringify(row.geometry))}`))) {

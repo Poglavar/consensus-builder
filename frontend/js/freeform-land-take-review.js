@@ -16,6 +16,21 @@
         let whole = new Set(), parcels = [], current = null, savedTake = initialTake;
         let sequence = 0, timer = null, closed = false;
         let geometryKey = null, stock = [], outcomes = null, pending = false, baseline = null;
+        // The applied design under edit, if any: the review reads the ground as it stood before it.
+        const ownId = env.getActiveProposalDesignDraft?.()?.sourceLocalProposalId || null;
+        // That ground, replayed once (freeform-ground-before.js) and kept while the building stays on
+        // the parcels it was read for.
+        let before = null;
+        async function groundUnder(region) {
+            const fabric = env.LiveParcelFabric;
+            // A design that is not applied left nothing on the live pieces: they are that ground.
+            if (!ownId || !fabric.producedBy(ownId).length) return fabric.queryBounds(env.turf.bbox(region), { includeCorridors: false });
+            const declared = env.proposalStorage.getProposal(ownId)?.cadastreParcelIds || [];
+            const ids = [...new Set([...env.__cadastreAncestry.loadedCadastreParcels(env.turf.bbox(region)).map(item => item.id),
+                ...declared.map(String)])];
+            if (!before || ids.some(id => !before.ids.includes(id))) before = await env.FreeformGroundBefore.read({ ownId, cadastreIds: ids });
+            return before.pieces;
+        }
         const text = (key, params = {}) => env.i18n.t(`landTake.${key}`, params);
         function style(kind) {
             const css = getComputedStyle(panel);
@@ -107,8 +122,11 @@
                 const region = footprint;
                 await env.CadastralParcelRepository.ensureFootprint(region);
                 if (closed || ticket !== sequence) return false;
-                // Review source parcels, not the fragments this applied design itself produced.
-                parcels = env.__cadastreAncestry.loadedCadastreParcels(env.turf.bbox(region)).map(item => item.feature);
+                // The pieces as they stood before this design: a layout's plots under the building,
+                // each with its own outline, not the cadastral parcel the layout stands on, and never
+                // this design's own fragments.
+                parcels = await groundUnder(region);
+                if (closed || ticket !== sequence) return false;
                 current = api.plan({ buildings, parcels, whole, savedTake, turf: env.turf });
                 savedTake = null;
                 whole = new Set(current.rows.filter(row => row.mode === 'whole').map(row => row.key));
@@ -125,7 +143,6 @@
                 stock = await env.__demolitionPrefetch.loadBuildingStock(current.take.geometry,
                     (...args) => env.BuildingSourceClient.request(...args));
                 if (closed || ticket !== sequence) return false;
-                const ownId = env.getActiveProposalDesignDraft?.()?.sourceLocalProposalId;
                 // Replacing this source must review its original stock, before its own removals.
                 const pool = env.collectLoadedCorridorBuildings({ extraPool: stock, includeLoadedSurveyPool: false,
                     excludeProposalId: ownId });

@@ -181,6 +181,29 @@ to open.
 
 Validation of imported massing is a prerequisite — see BACKLOG.
 
+## Detached limits
+
+A detached rule can also state the limits plans usually set for free-standing houses: front and
+rear yards measured from the street edge, sides and rear growing with the building's height, a
+height limit, a minimum street frontage, and caps on site coverage, natural ground, floor area ratio
+and ground floor area (`PARCEL_LIMITS` in `frontend/js/urban-rule-variation.js`; the fields are
+defined in [vocabulary.md](vocabulary.md#detached-rule)). They keep the model above intact:
+
+- **Yards shape the ground.** The street edge comes from the street centrelines around the plots
+  (`StreetFrontage.streetsNear`, the same scorer as the site tool's frontage), else the longest
+  edge; the yards are cut by `planning/parcel-assessment.js` `derive`, the Permitted layer's
+  derivation. Equal yards keep the rounded inward buffer the rule has always drawn.
+- **Caps shrink the envelope itself.** The ground beyond the yards is shrunk evenly to the
+  smallest ground-floor cap, so stats, € gain and plan yield, which measure area × height, read
+  the permitted floor area without knowing the rule.
+- **The envelope is the floor count holding the most floor area.** A yard that grows with height
+  narrows the ground of a taller house and a floor area ratio shares its area among the floors, so
+  each permitted floor count is tried. A build-out draws at most the envelope's floors and a
+  footprint inside it; every lower house fits the wider ground its own height allows, so the
+  sample is legal by construction.
+- Dwelling counts, parking, uses and neighbours' building lines are not limits of this rule: none
+  of them bounds one envelope a sample can be drawn inside.
+
 ## Balconies and slanted roof
 
 All three typologies can permit **balconies** that stand out of the envelope by `balconyDepthM`

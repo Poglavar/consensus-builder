@@ -1,36 +1,33 @@
 import { consumerParcelSourceId } from './helpers/frontend-source-selection.js';
 // The strict land rule on the server, generalised (PARCEL-OPTIONAL.md): cadastreParcelIds must EQUAL
-// the PostGIS binding of the proposal's site — missing and extra parcels are refused separately; an
+// the server binding of the proposal's site — missing and extra parcels are refused separately; an
 // empty declaration is allowed for a material proposal with a site; parcel acts still need parcels.
-// Covers the shared footprint builder and checkProposalBinding against a scripted cadastre.
-// The SQL itself is run against a real database in proposal-binding-db.test.js (RUN_DB_TESTS=1).
+// Covers the shared footprint builder and checkProposalBinding against a scripted HR cadastre that
+// serves real candidate geometry, so site-binding.js decides as it does live. The candidate SQL
+// itself runs against a real database in proposal-binding-db.test.js (RUN_DB_TESTS=1).
 import { describe, expect, it } from 'vitest';
+import { createRequire } from 'node:module';
 import {
     MAX_FOOTPRINT_VERTICES,
     footprintParts,
-    footprintQueryParams,
     proposalGeometryView
 } from '../proposals/footprint.js';
 import {
-    BINDING_COUNT_SQL,
-    BINDING_SQL,
-    FOOTPRINT_OUTSIDE_SITE_SQL,
-    INTRUSION_NOISE_M,
-    MAX_BINDING_PARCELS,
     MAX_SITE_VERTICES,
-    PARCEL_ACT_SITE_SQL,
     checkProposalBinding,
     computeBinding,
     parseHrParcelId,
     parseTolerance,
     validateSiteGeometry
 } from '../proposals/binding.js';
+import { HR_PARCEL_IDS_SQL, HR_SITE_CANDIDATES_SQL } from '../parcels/oss-binding-source.js';
 import { validProposalBody } from './helpers/fixtures.js';
+import { PARK, REGION, SITE, SPILL, SPILL_WITH_GAP, box, scriptedCadastre } from './helpers/content-fixtures.js';
 
-const box = (w, s, e, n) => ({ type: 'Polygon', coordinates: [[[w, s], [e, s], [e, n], [w, n], [w, s]]] });
-const PARK = box(15.97, 45.80, 15.971, 45.801);
-const SITE = box(15.969, 45.799, 15.972, 45.802);
-const SITE_JSON = JSON.stringify({ type: 'MultiPolygon', coordinates: [SITE.coordinates] });
+const require = createRequire(import.meta.url);
+const turf = require('@turf/turf');
+const { bindingFromParcels } = require('../../frontend/js/proposals/site-binding.js');
+const SITE_MULTI = { type: 'MultiPolygon', coordinates: [SITE.coordinates] };
 
 describe('footprintParts (shared by browser, API and migration)', () => {
     it('takes each typology\'s authored geometry', () => {
@@ -73,11 +70,9 @@ describe('footprintParts (shared by browser, API and migration)', () => {
         expect(parts.polygons).toEqual([]);
         expect(parts.centerline.halfWidthM).toBe(6);
         expect(parts.centerline.segments).toEqual([[[15.97, 45.8], [15.971, 45.801]]]);
-        const [, lines] = footprintQueryParams(parts);
-        expect(JSON.parse(lines)).toEqual([{ line: { type: 'LineString', coordinates: [[15.97, 45.8], [15.971, 45.801]] }, halfWidthM: 6 }]);
     });
 
-    it('reports malformed coordinates and over-large footprints instead of passing them to PostGIS', () => {
+    it('reports malformed coordinates and over-large footprints instead of binding them', () => {
         expect(footprintParts({ structureProposal: { geometry: { type: 'Polygon', coordinates: [[[1, 2], [3, 'x']]] } } }).invalid)
             .toMatch(/structureProposal.geometry is not a valid/);
         const ring = Array.from({ length: MAX_FOOTPRINT_VERTICES + 1 }, (_, i) => [15 + i * 1e-7, 45]);
@@ -97,28 +92,26 @@ describe('footprintParts (shared by browser, API and migration)', () => {
 });
 
 
-// A scripted cadastre: answers the binding statements by identity and records them.
-function cadastre({ count = 2, parcels = [], inRegion = true, unsurveyedM2 = 0, unknownM2 = 0, outsideM2 = 0, outsideGeometry = null, found = null } = {}) {
+// A scripted HR cadastre (content-fixtures.js): answers the candidate statements with real geometry
+// and records them. `found` limits which declared ids exist.
+function cadastre({ found = null, ...options } = {}) {
     const calls = [];
+    const answer = scriptedCadastre(options);
     return {
         calls,
         async query(sql, params) {
             calls.push({ sql, params });
-            if (sql === BINDING_COUNT_SQL) return { rows: [{ parcels: count }] };
-            if (sql === FOOTPRINT_OUTSIDE_SITE_SQL) return { rows: [{ outside_m2: outsideM2, outside_geojson: outsideGeometry && JSON.stringify(outsideGeometry) }] };
-            if (sql === BINDING_SQL) {
-                return { rows: [{ parcels, site_m2: 9000, in_region: inRegion, unsurveyed_m2: unsurveyedM2, unknown_m2: unknownM2, site_geojson: SITE_JSON }] };
+            if (sql === HR_PARCEL_IDS_SQL && found) {
+                const rows = (await answer(sql, params)).rows.filter(row => found.includes(row.id));
+                return { rows };
             }
-            if (sql === PARCEL_ACT_SITE_SQL) {
-                const ids = JSON.parse(params[0]).map(entry => entry.id).filter(id => !found || found.includes(id));
-                return { rows: [{ parcels: ids.map(id => ({ parcelId: id, overlapM2: 400 })), site_geojson: ids.length ? SITE_JSON : null, site_m2: 400 * ids.length }] };
-            }
-            throw new Error(`unexpected SQL: ${sql.slice(0, 60)}`);
+            const reply = answer(sql, params);
+            if (!reply) throw new Error(`unexpected SQL: ${sql.slice(0, 60)}`);
+            return reply;
         }
     };
 }
-const hit = (parcelId, intrusionM, bound = true, overlapM2 = 50) => ({ parcelId, overlapM2, intrusionM, bound });
-const SPILL = [hit('HR-335649-100', 40.2), hit('HR-335649-101', 0.42), hit('HR-335649-102', 0.0004, false, 0.01)];
+const BOUND = ['HR-335649-100', 'HR-335649-101'];
 
 describe('site and tolerance validation', () => {
     it('accepts a WGS84 Polygon/MultiPolygon and refuses everything else with a reason', () => {
@@ -149,46 +142,60 @@ describe('site and tolerance validation', () => {
 });
 
 describe('computeBinding', () => {
-    it('splits bound from touched, passes the linear floor to SQL and measures coverage', async () => {
-        const db = cadastre({ parcels: SPILL });
+    it('reads the candidates once and decides with site-binding.js: bound, touched, coverage', async () => {
+        const db = cadastre();
         const { binding, site } = await computeBinding(db, { parcelSourceId: 'oss-wfs', site: SITE, toleranceM: 0 });
-        expect(db.calls.map(call => call.sql)).toEqual([BINDING_COUNT_SQL, BINDING_SQL]);
-        expect(db.calls[1].params[2]).toBe(INTRUSION_NOISE_M); // max(0, noise)
-        expect(binding.parcels.map(p => p.parcelId)).toEqual(['HR-335649-100', 'HR-335649-101']);
+        expect(db.calls.map(call => call.sql)).toEqual([HR_SITE_CANDIDATES_SQL]);
+        expect(JSON.parse(db.calls[0].params[0])).toEqual(SITE_MULTI);
+        expect(binding.parcels.map(p => p.parcelId)).toEqual(BOUND);
         expect(binding.touched.map(p => p.parcelId)).toEqual(['HR-335649-102']);
-        expect(binding).toMatchObject({ coverage: 'complete', toleranceM: 0, source: 'server:hr-cadastre',
-            parcelSource: { sourceId: 'hr-cadastre', snapshotId: null } });
-        expect(site.type).toBe('MultiPolygon');
-
-        const atTol = cadastre({ parcels: SPILL });
-        await computeBinding(atTol, { parcelSourceId: 'oss-wfs', site: SITE, toleranceM: 0.05 });
-        expect(atTol.calls[1].params[2]).toBe(0.05);
+        expect(binding.touched[0].intrusionM).toBeLessThan(0.001);
+        expect(binding).toMatchObject({ coverage: 'complete', toleranceM: 0, unsurveyedM2: 0, unknownM2: 0,
+            source: 'server:hr-cadastre', parcelSource: { sourceId: 'hr-cadastre', snapshotId: null } });
+        expect(binding.unresolved).toBeUndefined();
+        expect(site).toEqual(SITE_MULTI);
     });
 
-    it('is partial when open ground (or ground outside the cadastre) survives the floor', async () => {
-        expect((await computeBinding(cadastre({ parcels: SPILL, unsurveyedM2: 12.5 }), { parcelSourceId: 'oss-wfs', site: SITE })).binding)
-            .toMatchObject({ coverage: 'partial', unsurveyedM2: 12.5, unknownM2: 0 });
-        expect((await computeBinding(cadastre({ parcels: SPILL, unknownM2: 3 }), { parcelSourceId: 'oss-wfs', site: SITE })).binding)
-            .toMatchObject({ coverage: 'partial', unknownM2: 3 });
+    it('returns exactly what the browser function returns for the same site and candidates', async () => {
+        for (const [parcels, toleranceM] of [[SPILL, 0], [SPILL, 0.5], [SPILL_WITH_GAP, 0]]) {
+            const { binding } = await computeBinding(cadastre({ parcels }), { parcelSourceId: 'oss-wfs', site: SITE, toleranceM });
+            const browser = bindingFromParcels(SITE, parcels.map(p => ({ id: p.parcelId, geometry: p.geometry })),
+                { turf, toleranceM, regions: [{ id: '1', geometry: REGION }] });
+            const { source: _s, parcelSource: _p, computedAt: _c, ...server } = binding;
+            const { source: _bs, parcelSource: _bp, ...client } = browser;
+            expect(server).toEqual(client);
+        }
+    });
+
+    it('is partial when open ground lies inside the cadastral municipality (unsurveyed) or outside it (unknown)', async () => {
+        const gap = (await computeBinding(cadastre({ parcels: SPILL_WITH_GAP }), { parcelSourceId: 'oss-wfs', site: SITE })).binding;
+        expect(gap).toMatchObject({ coverage: 'partial', unknownM2: 0 });
+        expect(gap.unsurveyedM2).toBeGreaterThan(5000);
+        // The municipality ends on the strip's west edge: the strip is outside it, unknown.
+        const edge = (await computeBinding(cadastre({ parcels: SPILL_WITH_GAP, regions: [box(15.96, 45.79, 15.9718, 45.81)] }),
+            { parcelSourceId: 'oss-wfs', site: SITE })).binding;
+        expect(edge).toMatchObject({ coverage: 'partial', unsurveyedM2: 0 });
+        expect(edge.unknownM2).toBeCloseTo(gap.unsurveyedM2, 0);
         // Surveyed region, nothing under the site: partial and all of it unsurveyed.
-        expect((await computeBinding(cadastre({ parcels: [], unsurveyedM2: 9000 }), { parcelSourceId: 'oss-wfs', site: SITE })).binding)
-            .toMatchObject({ coverage: 'partial', parcels: [], unsurveyedM2: 9000 });
+        const empty = (await computeBinding(cadastre({ parcels: [] }), { parcelSourceId: 'oss-wfs', site: SITE })).binding;
+        expect(empty).toMatchObject({ coverage: 'partial', parcels: [], unsurveyedM2: empty.siteM2 });
     });
 
-    it('says unknown outside the cadastre it holds, and none only for an explicit no-cadastre selection', async () => {
-        const unknown = (await computeBinding(cadastre({ inRegion: false }), { parcelSourceId: 'oss-wfs', site: SITE, city: 'unconfigured_city' })).binding;
-        expect(unknown).toMatchObject({ coverage: 'unknown', parcels: [], unknownM2: 9000, unsurveyedM2: 0,
+    it('says unknown outside every cadastral municipality, and none only for an explicit no-cadastre selection', async () => {
+        const unknown = (await computeBinding(cadastre({ regions: [] }), { parcelSourceId: 'oss-wfs', site: SITE, city: 'unconfigured_city' })).binding;
+        expect(unknown).toMatchObject({ coverage: 'unknown', parcels: [], unknownM2: unknown.siteM2, unsurveyedM2: 0,
             source: 'server:unbound', parcelSource: null });
+        expect(unknown.siteM2).toBeGreaterThan(70000);
         expect(unknown.reason).toMatch(/cannot be bound/);
-        const none = (await computeBinding(cadastre({ inRegion: false }), { parcelSourceId: consumerParcelSourceId('explore'), site: SITE, city: 'explore' })).binding;
+        const none = (await computeBinding(cadastre({ regions: [] }), { parcelSourceId: consumerParcelSourceId('explore'), site: SITE, city: 'explore' })).binding;
         expect(none).toMatchObject({ coverage: 'none', parcels: [], unsurveyedM2: none.siteM2,
             source: 'server:unbound', parcelSource: null });
     });
 
-    it('refuses a site over the parcel cap before the expensive statement', async () => {
-        const db = cadastre({ count: MAX_BINDING_PARCELS + 1 });
+    it('refuses a site over the parcel cap', async () => {
+        const db = cadastre({ truncated: true });
         await expect(computeBinding(db, { parcelSourceId: 'oss-wfs', site: SITE })).rejects.toMatchObject({ code: 'too-many-parcels', status: 413 });
-        expect(db.calls.map(call => call.sql)).toEqual([BINDING_COUNT_SQL]);
+        expect(db.calls.map(call => call.sql)).toEqual([HR_SITE_CANDIDATES_SQL]);
     });
 });
 
@@ -196,54 +203,82 @@ describe('checkProposalBinding (declared == binding)', () => {
     const park = { goal: 'park', structureProposal: { kind: 'park', geometry: PARK } };
 
     it('accepts exactly the bound parcels, in any order', async () => {
-        const result = await checkProposalBinding(cadastre({ parcels: SPILL }), park, ['HR-335649-101', 'HR-335649-100'], { parcelSourceId: 'oss-wfs' });
+        const result = await checkProposalBinding(cadastre(), park, ['HR-335649-101', 'HR-335649-100'], { parcelSourceId: 'oss-wfs' });
         expect(result.ok).toBe(true);
         expect(result.binding.parcels).toHaveLength(2);
     });
 
+    it('binds a footprint without a site as the browser does: its own union is the site', async () => {
+        const db = cadastre();
+        const result = await checkProposalBinding(db, park, BOUND, { parcelSourceId: 'oss-wfs' });
+        expect(result.ok).toBe(true);
+        expect(JSON.parse(db.calls[0].params[0])).toEqual({ type: 'MultiPolygon', coordinates: [PARK.coordinates] });
+        expect(result.site).toEqual({ type: 'MultiPolygon', coordinates: [PARK.coordinates] });
+    });
+
     it('refuses bound parcels missing from the declaration (undeclared-parcels) with their intrusion', async () => {
-        const result = await checkProposalBinding(cadastre({ parcels: SPILL }), park, ['HR-335649-100'], { parcelSourceId: 'oss-wfs' });
+        const result = await checkProposalBinding(cadastre(), park, ['HR-335649-100'], { parcelSourceId: 'oss-wfs' });
         expect(result).toMatchObject({ ok: false, status: 400, code: 'undeclared-parcels', extra: [] });
-        expect(result.missing).toEqual([{ id: 'HR-335649-101', overlapM2: 50, intrusionM: 0.42 }]);
-        expect(result.parcels).toEqual([{ id: 'HR-335649-101', overlapM2: 50 }]);
+        expect(result.missing).toHaveLength(1);
+        expect(result.missing[0]).toMatchObject({ id: 'HR-335649-101' });
+        expect(result.missing[0].intrusionM).toBeGreaterThan(30);
+        expect(result.parcels).toEqual([{ id: 'HR-335649-101', overlapM2: result.missing[0].overlapM2 }]);
         expect(result.error).toMatch(/reaches into 1 parcel/);
     });
 
     it('refuses declared parcels the site does not bind (unbound-parcels), naming how far it reaches', async () => {
-        const result = await checkProposalBinding(cadastre({ parcels: SPILL }), park,
-            ['HR-335649-100', 'HR-335649-101', 'HR-335649-102', 'HR-335649-999'], { parcelSourceId: 'oss-wfs' });
+        const result = await checkProposalBinding(cadastre(), { goal: 'park', site: SITE }, [...BOUND, 'HR-335649-102', 'HR-335649-999'],
+            { parcelSourceId: 'oss-wfs', site: SITE });
         expect(result).toMatchObject({ ok: false, code: 'unbound-parcels', missing: [] });
-        expect(result.extra).toEqual([{ id: 'HR-335649-102', intrusionM: 0.0004 }, { id: 'HR-335649-999', intrusionM: 0 }]);
+        expect(result.extra.map(hit => hit.id)).toEqual(['HR-335649-102', 'HR-335649-999']);
+        expect(result.extra[0].intrusionM).toBeLessThan(0.001);
+        expect(result.extra[1]).toEqual({ id: 'HR-335649-999', intrusionM: 0 });
     });
 
     it('reports both directions at once, missing first', async () => {
-        const result = await checkProposalBinding(cadastre({ parcels: SPILL }), park, ['HR-335649-100', 'HR-335649-999'], { parcelSourceId: 'oss-wfs' });
+        const result = await checkProposalBinding(cadastre(), park, ['HR-335649-100', 'HR-335649-999'], { parcelSourceId: 'oss-wfs' });
         expect(result.code).toBe('undeclared-parcels');
         expect(result.missing.map(m => m.id)).toEqual(['HR-335649-101']);
         expect(result.extra.map(m => m.id)).toEqual(['HR-335649-999']);
     });
 
     it('binds an authored site (not the footprint) and requires the footprint inside it', async () => {
-        const db = cadastre({ parcels: SPILL });
-        const ok = await checkProposalBinding(db, park, ['HR-335649-100', 'HR-335649-101'], { parcelSourceId: 'oss-wfs', site: SITE });
+        const db = cadastre();
+        const ok = await checkProposalBinding(db, park, BOUND, { parcelSourceId: 'oss-wfs', site: SITE });
         expect(ok.ok).toBe(true);
-        expect(ok.site).toEqual({ type: 'MultiPolygon', coordinates: [SITE.coordinates] });
-        expect(db.calls.map(call => call.sql)).toEqual([FOOTPRINT_OUTSIDE_SITE_SQL, BINDING_COUNT_SQL, BINDING_SQL]);
-        expect(JSON.parse(db.calls[1].params[0])).toEqual([{ type: 'MultiPolygon', coordinates: [SITE.coordinates] }]);
+        expect(ok.site).toEqual(SITE_MULTI);
+        expect(db.calls.map(call => call.sql)).toEqual([HR_SITE_CANDIDATES_SQL]);
+        expect(JSON.parse(db.calls[0].params[0])).toEqual(SITE_MULTI);
 
-        const outside = await checkProposalBinding(cadastre({ parcels: SPILL, outsideM2: 37.2, outsideGeometry: PARK }), park, ['HR-335649-100'], { parcelSourceId: 'oss-wfs', site: SITE });
-        expect(outside).toMatchObject({ ok: false, code: 'footprint-outside-site', outsideM2: 37.2, outsideGeometry: PARK, site: { type: 'MultiPolygon', coordinates: [SITE.coordinates] } });
+        // A park reaching 0.001° (≈ 78 m) east of the site, 0.001° tall.
+        const spilling = { goal: 'park', structureProposal: { kind: 'park', geometry: box(15.971, 45.80, 15.973, 45.801) } };
+        const outside = await checkProposalBinding(cadastre(), spilling, ['HR-335649-100'], { parcelSourceId: 'oss-wfs', site: SITE });
+        expect(outside).toMatchObject({ ok: false, code: 'footprint-outside-site', site: SITE_MULTI });
+        expect(outside.outsideM2).toBeGreaterThan(8500);
+        expect(outside.outsideM2).toBeLessThan(8800);
+        expect(turf.area(outside.outsideGeometry)).toBeCloseTo(outside.outsideM2, -1);
         expect(outside.error).not.toMatch(/proposal/i);
+        // What the site leaves of the footprint is judged by isGround: a 0.3 mm spill is debris.
+        const sliver = { goal: 'park', structureProposal: { kind: 'park', geometry: box(15.971, 45.80, 15.972000004, 45.801) } };
+        expect((await checkProposalBinding(cadastre(), sliver, BOUND, { parcelSourceId: 'oss-wfs', site: SITE })).ok).toBe(true);
+    });
+
+    it('refuses a flagged legacy centre line: the server has no second way to build its land', async () => {
+        const legacy = { goal: 'road', roadProposal: { definition: { width: 12, constructionFrame: { kind: 'legacy-centreline' },
+            points: [{ lat: 45.8, lng: 15.97 }, { lat: 45.801, lng: 15.971 }] } } };
+        const db = cadastre();
+        expect(await checkProposalBinding(db, legacy, [], { parcelSourceId: 'oss-wfs', derive: true })).toMatchObject({ ok: false, code: 'invalid-footprint' });
+        expect(db.calls).toHaveLength(0);
     });
 
     it('lets a material proposal on unsurveyed ground have an empty declaration', async () => {
-        const result = await checkProposalBinding(cadastre({ parcels: [], unsurveyedM2: 9000 }), { goal: 'buildings' }, [], { parcelSourceId: 'oss-wfs', site: SITE });
+        const result = await checkProposalBinding(cadastre({ parcels: [] }), { goal: 'buildings' }, [], { parcelSourceId: 'oss-wfs', site: SITE });
         expect(result.ok).toBe(true);
         expect(result.binding).toMatchObject({ coverage: 'partial', parcels: [] });
     });
 
     it('keeps the declaration unverified where the server holds no cadastre', async () => {
-        const result = await checkProposalBinding(cadastre({ inRegion: false }), park, ['BG-77-1'], { parcelSourceId: 'oss-wfs' });
+        const result = await checkProposalBinding(cadastre({ regions: [] }), park, ['BG-77-1'], { parcelSourceId: 'oss-wfs' });
         expect(result.ok).toBe(true);
         expect(result.binding).toMatchObject({ coverage: 'unknown', subject: 'declared-unverified',
             source: 'server:unbound', parcelSource: null, parcels: [{ parcelId: 'BG-77-1' }] });
@@ -254,31 +289,38 @@ describe('checkProposalBinding (declared == binding)', () => {
         expect(await checkProposalBinding(db, { goal: 'ownership-transfer' }, [], { parcelSourceId: 'oss-wfs' })).toMatchObject({ ok: false, code: 'parcels-required' });
         expect(db.calls).toHaveLength(0);
         // With a site, a former parcel-act goal is bound like any design (plan-design-agreement.md M2).
-        const onSite = await checkProposalBinding(cadastre({ parcels: [], unsurveyedM2: 9000 }), { goal: 'ownership-transfer' }, [], { parcelSourceId: 'oss-wfs', site: SITE, derive: true });
+        const onSite = await checkProposalBinding(cadastre({ parcels: [] }), { goal: 'ownership-transfer' }, [], { parcelSourceId: 'oss-wfs', site: SITE, derive: true });
         expect(onSite).toMatchObject({ ok: true, cadastreParcelIds: [], binding: { coverage: 'partial', parcels: [] } });
         // A road designation (land, no centre line) binds by its polygon; it names no parcels of its own.
         const designation = { goal: 'road-track', roadProposal: { definition: { polygon: PARK, centerline: [] } } };
-        const bound = await checkProposalBinding(cadastre({ parcels: SPILL }), designation, [], { parcelSourceId: 'oss-wfs', derive: true });
-        expect(bound).toMatchObject({ ok: true, cadastreParcelIds: ['HR-335649-100', 'HR-335649-101'] });
+        const bound = await checkProposalBinding(cadastre(), designation, [], { parcelSourceId: 'oss-wfs', derive: true });
+        expect(bound).toMatchObject({ ok: true, cadastreParcelIds: BOUND });
         // A declaration on it is compared with that binding like any other.
-        expect(await checkProposalBinding(cadastre({ parcels: [], unsurveyedM2: 10 }), designation, ['HR-335649-100'], { parcelSourceId: 'oss-wfs' }))
+        expect(await checkProposalBinding(cadastre({ parcels: [] }), designation, ['HR-335649-100'], { parcelSourceId: 'oss-wfs' }))
             .toMatchObject({ ok: false, code: 'unbound-parcels', extra: [{ id: 'HR-335649-100', intrusionM: 0 }] });
     });
 
     it('binds a parcel act without geometry to its declared parcels and refuses ids that are not current parcels', async () => {
-        const ok = await checkProposalBinding(cadastre(), { goal: 'ownership-transfer' }, ['HR-335649-100'], { parcelSourceId: 'oss-wfs' });
-        expect(ok).toMatchObject({ ok: true, binding: { coverage: 'complete', subject: 'declared-parcels', parcels: [{ parcelId: 'HR-335649-100' }] } });
+        const db = cadastre();
+        const ok = await checkProposalBinding(db, { goal: 'ownership-transfer' }, ['HR-335649-100'], { parcelSourceId: 'oss-wfs' });
+        expect(ok).toMatchObject({ ok: true, site: { type: 'MultiPolygon' }, binding: { coverage: 'complete', subject: 'declared-parcels',
+            source: 'server:hr-cadastre', parcelSource: { sourceId: 'hr-cadastre', snapshotId: null }, parcels: [{ parcelId: 'HR-335649-100' }] } });
+        expect(db.calls.map(call => call.sql)).toEqual([HR_PARCEL_IDS_SQL]);
+        expect(JSON.parse(db.calls[0].params[0])).toEqual([{ id: 'HR-335649-100', ko: 335649, number: '100' }]);
         const unknown = await checkProposalBinding(cadastre({ found: ['HR-335649-100'] }), { goal: 'offer' }, ['HR-335649-100', 'HR-335649-404'], { parcelSourceId: 'oss-wfs' });
         expect(unknown).toMatchObject({ ok: false, code: 'unbound-parcels', extra: [{ id: 'HR-335649-404' }] });
+        // An id that is not an HR cadastral id is not a current parcel of this source.
+        const foreign = await checkProposalBinding(cadastre(), { goal: 'offer' }, ['BG-77-1'], { parcelSourceId: 'oss-wfs' });
+        expect(foreign).toMatchObject({ ok: false, code: 'unbound-parcels', extra: [{ id: 'BG-77-1' }] });
     });
 
     // Derive mode (the design index, the agents' preflight): a material record's parcels are DERIVED
     // from its binding; a record with no ground keeps (and is verified on) the parcels it names.
     it('derives the declaration in derive mode, and keeps a parcel act\'s named parcels', async () => {
-        const material = await checkProposalBinding(cadastre({ parcels: SPILL }), parkBody({ cadastreParcelIds: [] }), [], { parcelSourceId: 'oss-wfs', derive: true });
+        const material = await checkProposalBinding(cadastre(), parkBody({ cadastreParcelIds: [] }), [], { parcelSourceId: 'oss-wfs', derive: true });
         expect(material).toMatchObject({ ok: true });
         expect(material.cadastreParcelIds).toEqual(material.binding.parcels.map(hit => hit.parcelId).sort());
-        expect(material.cadastreParcelIds.length).toBeGreaterThan(0);
+        expect(material.cadastreParcelIds).toEqual(BOUND);
         const act = await checkProposalBinding(cadastre(), { goal: 'ownership-transfer' }, ['HR-335649-100'], { parcelSourceId: 'oss-wfs', derive: true });
         expect(act).toMatchObject({ ok: true, cadastreParcelIds: ['HR-335649-100'] });
         const plain = await checkProposalBinding(cadastre(), { goal: 'ownership-transfer' }, ['HR-335649-100'], { parcelSourceId: 'oss-wfs' });

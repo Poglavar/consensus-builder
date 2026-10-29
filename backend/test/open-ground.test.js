@@ -196,6 +196,8 @@ describe('whole-parcel building take beside open ground', () => {
                 },
                 _addFeaturesToMap(features) { added.push(...features); },
                 _consumeFeaturesFromLiveFabric(features) { hidden.push(...features); },
+                // The fabric's partition check is its own test (formed-partition-check.test.js).
+                async _checkFormedPartition() { return true; },
                 _markParcelProducedByProposal() {},
                 _setLastApplyFailure(_id, failure) { failures.push(failure); },
                 _appliedRoadOverlappedByTaking: () => null,

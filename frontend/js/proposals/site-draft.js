@@ -106,10 +106,8 @@
             if (!isPolygonal(g)) return;
             const f = t.feature(g);
             if (!acc) { acc = f; return; }
-            try { acc = t.union(acc, f) || acc; } catch (error) {
-                // Keeping what we have would save a site that silently lacks this feature.
-                throw clipFailureApi().clipFailure('union', error, { site: 'site-draft.siteFromFeatures' }, [acc, f]);
-            }
+            // A failed union throws: keeping what we have would save a site that silently lacks this feature.
+            acc = clipFailureApi().clipWith(t, 'union', acc, f, { site: 'site-draft.siteFromFeatures' }) || acc;
         });
         // Hairline gaps between parcels that do not quite meet are nobody's ground; kept as holes,
         // a rule's setback widens them into gaps through the building.
@@ -342,12 +340,13 @@
         for (const parcel of parcels || []) {
             const g = geometryOf(parcel && (parcel.geometry || parcel));
             if (!open || !isPolygonal(g)) continue;
-            try { open = t.difference(open, t.feature(g)); } catch (error) {
+            const context = {
+                site: 'site-draft.openGroundOf',
+                parcelId: parcel && (parcel.id || (parcel.properties && parcel.properties.parcelId))
+            };
+            try { open = clipFailureApi().clipWith(t, 'difference', open, t.feature(g), context); } catch (error) {
                 // The preview hatch keeps the larger estimate; the failure is reported.
-                clipFailureApi().reportClipFailure('difference', error, {
-                    site: 'site-draft.openGroundOf',
-                    parcelId: parcel && (parcel.id || (parcel.properties && parcel.properties.parcelId))
-                }, [open, g]);
+                clipFailureApi().reportClipFailure('difference', error, context, [open, g]);
             }
         }
         if (!open || !open.geometry) return null;

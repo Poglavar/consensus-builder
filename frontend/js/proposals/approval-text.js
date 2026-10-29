@@ -80,15 +80,19 @@
     // The whole rule as one sentence.
     function rulesText(policy, t, regime = null) {
         const rules = approval().policyRules(policy);
-        if (policy?.type === 'unanimous' || !policy) return t('proposalApproval.ruleUnanimous', 'Configured approval rules require every owner to accept.');
+        if ((policy?.type === 'unanimous' || !policy) && !regimeOf(regime)?.minParties) return t('proposalApproval.ruleUnanimous', 'Configured approval rules require every owner to accept.');
         const tests = orderTests(rules.tests).map(test => testText(test, t));
+        const minimum = regimeOf(regime)?.minParties;
+        if (minimum) tests.push(t('proposalApproval.rules.minimumOwners', 'approval by at least {{count}} distinct owners', { count: minimum }));
         const authority = rules.authorities.length ? authorityText(regime, t) : null;
         if (!tests.length) return t('proposalApproval.rules.authorityOnly', 'Configured approval rules require only {{authority}}. Owner responses do not decide this tally.', { authority });
         const joined = tests.length === 1 ? tests[0]
             : tests.slice(0, -1).join(', ') + t('proposalApproval.rules.and', ' and ') + tests[tests.length - 1];
-        return authority
+        const sentence = authority
             ? t('proposalApproval.rules.passesWithAuthority', 'Configured approval rules require {{tests}} and {{authority}}.', { tests: joined, authority })
             : t('proposalApproval.rules.passesWith', 'Configured approval rules require {{tests}}.', { tests: joined });
+        return sentence + (rules.tests.some(test => test.measure === 'area')
+            ? ' ' + t('proposalApproval.rules.areaConsent', 'For area tests, a parcel or lease counts only after all its counted co-holders approve.') : '');
     }
 
     function regimeName(regime, t) {
@@ -132,7 +136,7 @@
                 ? t('proposalApproval.regime.valueGainAll', 'Distributed by value, each owner is made whole to the value they put in; the whole value gain is settled in money.')
                 : t('proposalApproval.regime.valueGainShare', 'Distributed by value, {{percent}}% of each owner’s value gain is settled in money.', { percent }));
         }
-        if (template?.minParties > 1) lines.push(t('proposalApproval.regime.minParties', 'At least {{count}} parties bring land in.', { count: template.minParties }));
+        if (template?.minParties > 1) lines.push(t('proposalApproval.regime.minParties', 'At least {{count}} distinct input owners must approve.', { count: template.minParties }));
         if (template?.family === 'authority-led') lines.push(t('proposalApproval.regime.noProposer', 'Land returns to its owners or goes to public use; a proposer cannot acquire it.'));
         return lines;
     }
@@ -141,7 +145,7 @@
     const DIMENSION_LABELS = {
         initiator: 'Who starts it', decider: 'Who has the final say', support: 'Owner support needed', electorate: 'Who is counted',
         dissenters: 'Owners who say no', stage: 'What passing unlocks', basis: 'Land is shared by', publicLand: 'Public land without compensation',
-        levelling: 'Differences', valueGain: 'Value gain', minParties: 'Parties'
+        levelling: 'Differences', valueGain: 'Value gain', minParties: 'Distinct owners'
     };
     const GROUP_LABELS = { decision: 'How it is decided', distribution: 'How the land is shared' };
     const STAGE_SHORT = { agreement: 'Agreement', initiative: 'Initiative', association: 'Association', plan: 'Plan', execution: 'Execution' };
@@ -173,8 +177,8 @@
         'valueGain.kept': ['Kept in land', 'Owners keep their value gain in their new land.'],
         'valueGain.all': ['All in money', 'Each owner’s whole value gain is settled in money.'],
         'valueGain.share': ['{{percent}}% in money', '{{percent}}% of each owner’s value gain is settled in money; the rest stays in land.'],
-        'minParties.any': ['Any number', 'No minimum number of parties.'],
-        'minParties.some': ['At least {{count}}', 'At least {{count}} parties bring land in.']
+        'minParties.any': ['Any number', 'No minimum number of distinct owners.'],
+        'minParties.some': ['At least {{count}}', 'At least {{count}} distinct input owners must approve.']
     };
     const percentText = value => Math.round(value * 1000) / 10;
 
@@ -226,8 +230,9 @@
             }
             if (rule.kind === 'parties') {
                 const params = { actual: rule.actual, required: rule.required };
-                return rule.ok ? t('proposalApproval.regime.check.partiesOk', '{{actual}} parties bring land in; the scheme needs at least {{required}}.', params)
-                    : t('proposalApproval.regime.check.partiesFew', 'Only {{actual}} bring land in; the scheme needs at least {{required}} parties.', params);
+                if (rule.ok === null) return t('proposalApproval.regime.check.partiesUnknown', 'Upload complete ownership to check the minimum of {{required}} distinct owners.', params);
+                return rule.ok ? t('proposalApproval.regime.check.partiesOk', 'The land has {{actual}} distinct owners; at least {{required}} must approve.', params)
+                    : t('proposalApproval.regime.check.partiesFew', 'The land has only {{actual}} distinct owners; the scheme needs at least {{required}}.', params);
             }
             if (rule.kind === 'proposer') {
                 return rule.ok ? t('proposalApproval.regime.check.proposerNone', 'No land goes to a proposer.')

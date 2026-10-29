@@ -25,7 +25,7 @@ describe('POST /parcels/under refuses cheaply', () => {
         expect(handler.indexOf('databaseSourceError(413')).toBeLessThan(handler.indexOf('await pool.query(sql,'));
     });
 
-    it('counts the same parcels the full query would return', () => {
+    it('counts the same parcels the candidate query returns', () => {
         // Same subdivision, same index predicate, same current filter — a count that disagreed with
         // the query would refuse requests it could serve, or serve ones it should refuse.
         const countSql = handler.slice(handler.indexOf('const countSql = `'), handler.indexOf('const counted ='));

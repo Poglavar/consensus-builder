@@ -4,7 +4,7 @@ import proj4 from 'proj4';
 import { bbox, bboxPolygon, booleanIntersects, feature as geoFeature } from '@turf/turf';
 import { HttpError } from '../utils/helpers.js';
 import { concatBytes } from './byte-utils.js';
-import { canonicalParcelFeature, validateBounds, validateGeometry, upstreamError, providerHttpError } from './source-contract.js';
+import { canonicalParcelFeature, validateBounds, validateGeometry, upstreamError, areaLimitError, providerHttpError } from './source-contract.js';
 import { geoJsonResponseCrsMatches } from './response-crs.js';
 
 // EPSG:2056 and EPSG operation CH1903+ to WGS 84 (1), not a fitted offset.
@@ -89,7 +89,7 @@ export function createZurichAvwfsSource(descriptor, { fetchImpl = globalThis.fet
 
     async function query(params) {
         const count = await hits(params);
-        if (count > maxFeatures) throw upstreamError('AVWFS query exceeds the parcel limit; use a smaller area.');
+        if (count > maxFeatures) throw areaLimitError('AVWFS query exceeds the parcel limit; use a smaller area.');
         const features = new Map();
         for (let offset = 0; offset < count;) {
             let data;

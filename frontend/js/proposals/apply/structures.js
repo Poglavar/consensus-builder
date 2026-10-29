@@ -34,6 +34,12 @@
         return typeof require === 'function' ? require('../open-ground.js') : null;
     }
 
+    // What counts as ground and whether a shape reaches into a parcel (geometry-tolerances.js).
+    function groundApi() {
+        return (typeof window !== 'undefined' && window.GeometryTolerances)
+            || (typeof require === 'function' ? require('../../geometry-tolerances.js') : null);
+    }
+
     // Polygon-clip failures are typed and counted in one place (parcel-arrangement.js clipHealth).
     function clipFailureApi() {
         const api = (typeof window !== 'undefined' && window.__parcelArrangement)
@@ -47,6 +53,7 @@
             ? (left, right) => arrangement.clip('intersect', left, right)
             : (left, right) => turfRef.intersect(left, right);
         return {
+            turf: turfRef,
             area: feature => {
                 try { return turfRef.area(feature) || 0; } catch (_) { return 0; }
             },
@@ -468,7 +475,8 @@
     },
 
     // §15a structure formation, with the site rule of PARCEL-OPTIONAL.md phase 3. A park/square/lake
-    // takes EXACTLY its footprint (= its site): parcels wholly under it are adopted/merged into ONE
+    // takes EXACTLY its footprint (= its site), cut to the ground it consumes so the body lies on its
+    // own parcels: parcels wholly under it are adopted/merged into ONE
     // minted parcel anchored flat to every base underneath; a parcel it covers only partly is cut at
     // the body edge, and the part outside stays a piece of that parcel (with its owners — minted as
     // this structure's remainder for a cadastral parent, keeping its identity for a formed one).
@@ -507,6 +515,11 @@
                 _parcelMutation: options._parcelMutation
             }) || []);
         const ground = openGroundApi();
+        // Every "is this ground / does it reach this parcel" below is the shared rule, widened only
+        // by the design's own toleranceM, as binding widened it.
+        const groundRule = groundApi();
+        const toleranceM = groundRule.designToleranceM(proposalData);
+        const asPlain = feature => ({ type: 'Feature', properties: {}, geometry: feature.geometry });
         const allCandidates = candidateFeatures
             .map(feature => ({ id: _getParcelIdFromFeature(feature), feature }))
             .filter(entry => entry.id !== undefined && entry.id !== null);
@@ -514,26 +527,23 @@
         // supplies the footprint's ground where no parcel lies.
         const hostEntries = allCandidates.filter(entry => ground && ground.isOpenGroundHost(entry.feature));
         const candidates = allCandidates.filter(entry => !hostEntries.includes(entry));
-        const hostOverlapM2 = hostEntries.reduce((sum, entry) => sum
-            + takeCtx.intersectionArea(footprint, { type: 'Feature', properties: {}, geometry: entry.feature.geometry }), 0);
-        const takenHosts = hostEntries.filter(entry => takeCtx.intersectionArea(
-            footprint, { type: 'Feature', properties: {}, geometry: entry.feature.geometry }) >= (Number(formationEdit.DEFAULT_TOLERANCE_M2) || 1));
+        const takenHosts = hostEntries.filter(entry => groundRule.reachesInto(turfRef, footprint, asPlain(entry.feature), toleranceM,
+            { site: 'apply-structures.host', proposalId: idLabel, parcelId: entry.id }));
 
         let plan = candidates.length
-            ? formationEdit.wholeParcelTakePlan(footprint, candidates, takeCtx)
+            ? formationEdit.wholeParcelTakePlan(footprint, candidates, takeCtx, { toleranceM })
             : { mode: 'refuse', reason: 'no-parcels', parcelIds: [], partials: [], uncoveredShare: 1 };
         const footprintArea = takeCtx.area(footprint);
-        const uncoveredTolerance = Math.max(
-            Number(formationEdit.DEFAULT_TOLERANCE_M2) || 1,
-            footprintArea * (Number(formationEdit.DEFAULT_TOLERANCE_PCT) || 1) / 100
-        );
         // Ground the footprint covers that is on neither a candidate parcel nor the open-ground host.
-        const uncoveredM2 = Math.max(0, Math.max(0, Number(plan.uncoveredShare) || 0) * footprintArea - hostOverlapM2);
+        const uncovered = groundRule.uncoveredBy(turfRef, footprint, [...candidates, ...takenHosts].map(entry => asPlain(entry.feature)),
+            { site: 'apply-structures.uncovered', proposalId: idLabel });
+        const uncoveredIsGround = groundRule.isGround(turfRef, uncovered, toleranceM);
+        const uncoveredShare = uncovered ? Math.min(1, takeCtx.area(uncovered) / footprintArea) : 0;
         if (takenHosts.length && (plan.reason === 'uncovered-ground' || plan.reason === 'no-parcels')) {
             // The rest of the footprint is open ground: take the whole parcels (if any) plus it.
-            plan = uncoveredM2 <= uncoveredTolerance
-                ? { mode: plan.parcelIds.length ? 'merge' : 'ground', reason: null, parcelIds: plan.parcelIds.slice(), partials: [], uncoveredShare: uncoveredM2 / footprintArea }
-                : { ...plan, reason: 'uncovered-ground', uncoveredShare: uncoveredM2 / footprintArea };
+            plan = !uncoveredIsGround
+                ? { mode: plan.parcelIds.length ? 'merge' : 'ground', reason: null, parcelIds: plan.parcelIds.slice(), partials: [], uncoveredShare }
+                : { ...plan, reason: 'uncovered-ground', uncoveredShare };
         }
         // Partial parcels are cut at the body edge: the inside is consumed with the take, and each
         // outside piece is re-minted so identity flows with the ground — a formed parent's pieces
@@ -545,30 +555,24 @@
         if (cutsAtBodyEdge && typeof turfRef.difference === 'function') {
             const takenIdSet = new Set(plan.parcelIds.map(String));
             partialCuts = [];
-            let cutsOk = uncoveredM2 <= uncoveredTolerance;
+            let cutsOk = !uncoveredIsGround;
             plan.partials.forEach(partial => {
                 const entry = candidates.find(c => String(c.id) === String(partial.id));
                 if (!entry || !entry.feature || !entry.feature.geometry) { cutsOk = false; return; }
                 // A PARTIAL parcel by definition has ground outside the body, so a null
                 // difference here is a failed computation, never "fully consumed" — swallowing
                 // it used to take the parcel whole with no outside piece minted (dead ground).
-                // A retry on coordinates truncated to 7 decimals (~1.1 cm) used to sit here; it is
-                // gone, because quantizing coordinates is what manufactures the degenerate rings
-                // it was meant to survive, and a cut computed at centimetre precision is a silently
-                // wrong answer. A failure here fails loudly via the authoring refusal below.
-                let outside = null;
-                try {
-                    outside = turfRef.difference(
-                        { type: 'Feature', properties: {}, geometry: entry.feature.geometry }, footprint);
-                } catch (error) {
-                    // Refuses the apply naming the parcel and the clip; falling back to the
-                    // partial-coverage refusal misreported it as a footprint problem.
-                    throw clipFailureApi().clipFailure('difference', error, {
+                // The cut runs through the shared clip (parcel-arrangement.js clipWith): the same
+                // 9-decimal grid as every other stage, retried deterministically on coarser grids.
+                // A clip that still fails throws a ClipFailure that refuses the apply naming the
+                // parcel and the clip; falling back to the partial-coverage refusal misreported it
+                // as a footprint problem.
+                const outside = clipFailureApi().clipWith(turfRef, 'difference',
+                    { type: 'Feature', properties: {}, geometry: entry.feature.geometry }, footprint, {
                         site: 'apply-structures.partialCut',
                         proposalId: idLabel,
                         parcelId: partial.id
-                    }, [entry.feature, footprint]);
-                }
+                    });
                 if (!outside || !outside.geometry) { cutsOk = false; return; }
                 const parts = [];
                 if (outside && outside.geometry) {
@@ -576,9 +580,10 @@
                         ? outside.geometry.coordinates.map(coords => ({ type: 'Polygon', coordinates: coords }))
                         : [outside.geometry];
                     polys.forEach(geometry => {
+                        if (!groundRule.isGround(turfRef, { type: 'Feature', properties: {}, geometry })) return;
                         let area = 0;
                         try { area = turfRef.area({ type: 'Feature', properties: {}, geometry }) || 0; } catch (_) { }
-                        if (area >= 0.5) parts.push({ geometry, area });
+                        parts.push({ geometry, area });
                     });
                 }
                 parts.sort((x, y) => y.area - x.area);
@@ -586,7 +591,7 @@
                 takenIdSet.add(String(partial.id));
             });
             if (cutsOk) {
-                plan = { mode: 'merge', reason: null, parcelIds: Array.from(takenIdSet), partials: [], uncoveredShare: uncoveredM2 / footprintArea };
+                plan = { mode: 'merge', reason: null, parcelIds: Array.from(takenIdSet), partials: [], uncoveredShare };
                 if (typeof window !== 'undefined' && window.DEBUG_APPLY) {
                     console.debug('[structureFormation] cut', partialCuts.length, 'partial parcel(s) at the', sp.kind, 'edge');
                 }
@@ -640,7 +645,7 @@
                         coordinates: severTestPolys.flatMap(g => g.type === 'MultiPolygon' ? g.coordinates : [g.coordinates])
                     }));
             const roadHit = (typeof this._appliedRoadOverlappedByTaking === 'function')
-                ? this._appliedRoadOverlappedByTaking(severTestGround, idLabel, options) : null;
+                ? this._appliedRoadOverlappedByTaking(severTestGround, idLabel, { ...options, toleranceM }) : null;
             if (roadHit) {
                 const road = roadHit.proposal;
                 const roadName = road.title || road.name || road.proposalId;
@@ -677,9 +682,24 @@
             if (!structureCadastreIds.length && !groundIds.length) {
                 throw new Error('Structure formation has no explicit cadastral anchors.');
             }
+            // The body is the footprint cut to the ground it consumes (geometry-tolerances.js
+            // cutTo): the pieces it takes and the open ground under it. What is cut off is debris
+            // (the uncovered gate above), so no vertex of the body lies outside its own parcels.
+            // A piece taken whole is taken whole: where the design's own toleranceM let the
+            // footprint stop short of its edge, that strip joins the body rather than being lost.
+            const cutParcelIds = new Set((partialCuts || []).map(cut => String(cut.entry.id)));
+            let body = groundRule.cutTo(turfRef, footprint, [...takenFeatures, ...takenHosts.map(entry => entry.feature)].map(asPlain),
+                { site: 'apply-structures.body', proposalId: idLabel });
+            candidates.filter(entry => takenIds.includes(String(entry.id)) && !cutParcelIds.has(String(entry.id))).forEach(entry => {
+                const strip = groundRule.uncoveredBy(turfRef, asPlain(entry.feature), [body],
+                    { site: 'apply-structures.wholeStrip', proposalId: idLabel, parcelId: entry.id });
+                if (!groundRule.isGround(turfRef, strip)) return;
+                body = clipFailureApi().clipWith(turfRef, 'union', body, strip,
+                    { site: 'apply-structures.wholeStrip', proposalId: idLabel, parcelId: entry.id });
+            });
             const childFeature = {
                 type: 'Feature',
-                geometry: JSON.parse(JSON.stringify(geometry)),
+                geometry: JSON.parse(JSON.stringify(body.geometry)),
                 properties: {
                     producedByProposalId: proposalId,
                     structureType: sp.kind,
@@ -687,7 +707,7 @@
                     rootParcelNumber: _resolveRootParcelNumberFromProperties(primary ? primary.properties : null) || null,
                     cadastreParcelIds: structureCadastreIds,
                     ...(groundIds.length ? { groundIds } : {}),
-                    calculatedArea: Math.round(_calculateGeoJsonArea(geometry)),
+                    calculatedArea: Math.round(_calculateGeoJsonArea(body.geometry)),
                     isProposed: true,
                     ownershipDetails: JSON.parse(JSON.stringify(cityOwnership)),
                     ownershipType: 'city'
@@ -702,22 +722,16 @@
                 .map(feature => _getParcelIdFromFeature(feature))
                 .filter(id => id !== undefined && id !== null)
                 .map(String);
-            await this._addFeaturesToMap(bodyFeatures, true, proposalData, options);
-            bodyFeatures.forEach(feature => {
-                const bodyId = _getParcelIdFromFeature(feature);
-                try { if (bodyId) this._markParcelProducedByProposal(bodyId, proposalId, options); } catch (_) { }
-            });
-            this._consumeFeaturesFromLiveFabric(takenFeatures, options);
             // §15c rebuild partial cuts: mint each outside piece. Derived parents keep their
             // identity (largest piece carries the parcel's own id; splits continue the OWNER's
             // numbering); base parents' leftovers mint as this structure's remainder children.
-            const structureRemainderIds = [];
+            // Computed before anything is written, so the partition check sees every piece.
+            const structureRemainders = [];
+            const foreignPieces = [];
             if (partialCuts && partialCuts.length) {
                 const allocForeign = (typeof this._createForeignIndexAllocator === 'function')
                     ? this._createForeignIndexAllocator(options)
                     : null;
-                const structureRemainders = [];
-                const foreignPieces = [];
                 partialCuts.forEach(({ entry, parts }) => {
                     const parentId = String(entry.id);
                     const parentProps = entry.feature.properties || {};
@@ -774,24 +788,33 @@
                     });
                     this._assignSyntheticChildIdentities(proposalId, structureRemainders, { startIndexByRootId });
                 }
-                const minted = [...foreignPieces.map(fp => fp.feature), ...structureRemainders];
-                if (minted.length) {
-                    await this._addFeaturesToMap(minted, true, proposalData, options);
-                }
-                foreignPieces.forEach(({ feature, proposalId: ownerProposalId }) => {
-                    const pid = _getParcelIdFromFeature(feature);
-                    try { if (pid && ownerProposalId) this._markParcelProducedByProposal(pid, ownerProposalId, options); } catch (_) { }
-                });
-                structureRemainders.forEach(feature => {
-                    const pid = _getParcelIdFromFeature(feature);
-                    try {
-                        if (pid) {
-                            structureRemainderIds.push(String(pid));
-                            this._markParcelProducedByProposal(pid, proposalId, options);
-                        }
-                    } catch (_) { }
-                });
             }
+            const minted = [...foreignPieces.map(fp => fp.feature), ...structureRemainders];
+            // The pieces must tile the ground they replace, as a private read checks them.
+            if (!await this._checkFormedPartition(idLabel, proposalData, takenFeatures, [...bodyFeatures, ...minted], options)) return { ok: false };
+            await this._addFeaturesToMap(bodyFeatures, true, proposalData, options);
+            bodyFeatures.forEach(feature => {
+                const bodyId = _getParcelIdFromFeature(feature);
+                try { if (bodyId) this._markParcelProducedByProposal(bodyId, proposalId, options); } catch (_) { }
+            });
+            this._consumeFeaturesFromLiveFabric(takenFeatures, options);
+            const structureRemainderIds = [];
+            if (minted.length) {
+                await this._addFeaturesToMap(minted, true, proposalData, options);
+            }
+            foreignPieces.forEach(({ feature, proposalId: ownerProposalId }) => {
+                const pid = _getParcelIdFromFeature(feature);
+                try { if (pid && ownerProposalId) this._markParcelProducedByProposal(pid, ownerProposalId, options); } catch (_) { }
+            });
+            structureRemainders.forEach(feature => {
+                const pid = _getParcelIdFromFeature(feature);
+                try {
+                    if (pid) {
+                        structureRemainderIds.push(String(pid));
+                        this._markParcelProducedByProposal(pid, proposalId, options);
+                    }
+                } catch (_) { }
+            });
             const structureCadastreCount = formationEdit.baseIdsOfFeatures(takenFeatures).length;
             try {
                 const structureLabel = proposalData.title || proposalData.name || String(proposalId);

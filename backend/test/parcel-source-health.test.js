@@ -25,6 +25,16 @@ describe('parcel source health requester', () => {
         expect(fetchImpl).toHaveBeenCalledTimes(2);
     });
 
+    it('neither retries nor cools down a query over the area limit, so a smaller area asks at once', async () => {
+        const fetchImpl = vi.fn()
+            .mockResolvedValueOnce(response(422, { code: 'parcel-source-area-limit', error: 'Parcel query exceeds the parcel limit; use a smaller area.' }))
+            .mockResolvedValueOnce(response(200, { features: [] }));
+        const request = health.createRequester({ fetchImpl, now: () => 1, sleep: vi.fn() });
+        await expect(request('https://api.example/parcel-sources/city?bbox=0,0,1,1')).rejects.toMatchObject({ code: 'parcel-source-area-limit', status: 422 });
+        await expect(request('https://api.example/parcel-sources/city?bbox=0,0,0.1,0.1')).resolves.toMatchObject({ status: 200 });
+        expect(fetchImpl).toHaveBeenCalledTimes(2);
+    });
+
     it('does not retry 429, sanitizes its error and shares cooldown across query strings', async () => {
         let now = 1000;
         const fetchImpl = vi.fn().mockResolvedValue(response(502, {
@@ -180,6 +190,9 @@ describe('parcel source health requester', () => {
         expect(refused).not.toContain('temporarily unavailable');
         expect(health.describeFailure({ status: 504 })).toContain('timed out');
         expect(health.describeFailure({ code: 'parcel-source-unavailable' })).toContain('temporarily unavailable');
+        const tooLarge = health.describeFailure({ code: 'parcel-source-area-limit', status: 422 });
+        expect(tooLarge).toContain('Zoom in to load it.');
+        expect(tooLarge).not.toContain('temporarily unavailable');
         for (const failure of [
             { code: 'parcel-source-rate-limited', retryAfterSeconds: 8 },
             { code: 'parcel-source-blocked', upstreamStatus: 403 },

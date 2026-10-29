@@ -158,7 +158,7 @@
         const selection = selected();
         if (selection?.site && (selection.role !== 'permitted' || !selection.volumes.length)) {
             root.L.geoJSON(selection.site, { pane: 'planningSources', interactive: false,
-                style: root.MapHighlight.style({ fill: false }) }).addTo(selectionLayer);
+                style: root.MapHighlight.style({ fill: false, className: 'planning-site-selection' }) }).addTo(selectionLayer);
         }
         // Each item is drawn into its own group, remembered with what it was drawn from. A redraw
         // replaces only the items whose record or appearance changed and removes the ones gone, so
@@ -201,11 +201,13 @@
             const active = item.id === store.get().selectedId;
             // The outer bound behind a shown configuration is a hull: outline plus a faint fill.
             const hull = feature.properties.geometryRole === 'bound' && hasBody;
+            // A tier only an incentive's condition reaches is a fainter, sparser outline.
+            const conditional = Boolean(feature.properties.condition);
             // The hull is not a second click target: the configuration inside carries the interaction.
             const shape = root.L.geoJSON(feature, { pane: 'planningSources', className: hull ? 'planning-bound-outline' : undefined, interactive: !hull,
-                style: { color: active ? root.MapHighlight.color : color(item.role), weight: active ? 4 : hull ? 1 : 1.5, dashArray: hull ? '4 4' : null,
-                    fillColor: color(item.role), fillOpacity: hull ? 0.06 : display === 'solid' ? 1 : 0.18,
-                    opacity: hull ? 0.8 : 1 } });
+                style: { color: active ? root.MapHighlight.color : color(item.role), weight: active ? 4 : hull || conditional ? 1 : 1.5, dashArray: conditional ? '2 6' : hull ? '4 4' : null,
+                    fillColor: color(item.role), fillOpacity: conditional ? 0.03 : hull ? 0.06 : display === 'solid' ? 1 : 0.18,
+                    opacity: conditional ? 0.6 : hull ? 0.8 : 1 } });
             const label = item.source.parcel || item.title;
             shape.addTo(group);
             // The assumed street side of the shown configuration, so a roll reads as a choice, not a glitch.
@@ -297,6 +299,9 @@
         const displayedMetrics = [];
         if (item.metrics.floorAreaM2 != null) displayedMetrics.push([t('floorArea'), area(item.metrics.floorAreaM2)]);
         if (item.metrics.heightM != null) displayedMetrics.push([t('height'), root.CbFormat.formatLength(item.metrics.heightM, { maxFractionDigits: 1 })]);
+        // An incentive's extra height is listed with its condition, apart from what the rules grant.
+        if (item.metrics.conditional?.heightM != null) displayedMetrics.push([t('conditionalHeight'),
+            `${root.CbFormat.formatLength(item.metrics.conditional.heightM, { maxFractionDigits: 1 })} · ${item.metrics.conditional.condition}`]);
         if (unitLimit != null) displayedMetrics.push([t('dwellingLimit'), number(unitLimit)]);
         if (item.metrics.footprintM2 != null) displayedMetrics.push([t('footprintArea'), area(item.metrics.footprintM2)]);
         for (const [label, value] of displayedMetrics) {
@@ -394,7 +399,40 @@
             list: excluded.map(([scenario, treatment]) => `${scenarioLabel(scenario)} (${resultLabel(treatment)})`).join(', ') })));
         return section;
     }
+    // The Buildings and massing button's rim: a third of a circle in a role's colour for each role
+    // still loading (planning/loading.js) while it is shown. Permitted also counts this module's
+    // own viewport read.
+    function paintLoading() {
+        const button = document.getElementById('planning-views-button');
+        if (!store || !button) return;
+        let ring = button.querySelector('.planning-loading-ring');
+        if (!ring) {
+            const ns = 'http://www.w3.org/2000/svg';
+            ring = document.createElementNS(ns, 'svg');
+            ring.setAttribute('class', 'planning-loading-ring'); ring.setAttribute('viewBox', '0 0 40 40');
+            ring.setAttribute('aria-hidden', 'true'); ring.setAttribute('focusable', 'false');
+            for (const role of core.roles) {
+                const arc = document.createElementNS(ns, 'circle');
+                arc.setAttribute('class', `planning-loading-arc planning-loading-arc--${role}`);
+                arc.setAttribute('cx', '20'); arc.setAttribute('cy', '20'); arc.setAttribute('r', '19'); arc.setAttribute('pathLength', '3');
+                arc.dataset.role = role; ring.append(arc);
+            }
+            button.append(ring);
+        }
+        const view = policy();
+        const shown = { existing: view.existing !== 'off', permitted: view.permitted !== 'off' || store.get().zoningAreas !== 'off', proposed: view.proposed !== 'off' };
+        const loading = { ...root.PlanningLoading.state() };
+        loading.permitted ||= status === 'loading';
+        const arcs = core.loadingArcs(loading, shown);
+        for (const arc of ring.querySelectorAll('.planning-loading-arc')) {
+            const slot = arcs.find(entry => entry.role === arc.dataset.role)?.slot;
+            if (slot === undefined) arc.removeAttribute('data-slot'); else arc.dataset.slot = String(slot);
+        }
+        ring.classList.toggle('is-loading', arcs.length > 0);
+        button.setAttribute('aria-busy', String(arcs.length > 0));
+    }
     function render() {
+        paintLoading();
         if (!ready) return;
         panel.querySelector('.map-sheet-title').textContent = t('title');
         panel.querySelector('.planning-source-label').textContent = t('sourceEdition');
@@ -841,6 +879,7 @@
         root.addEventListener('buildingsLayerUpdated', restoreSelection);
         root.addEventListener('i18n:translationsLoaded', render);
         root.addEventListener('mapmodechange', render);
+        root.addEventListener('planningloadingchange', paintLoading);
         root.addEventListener('keydown', event => {
             if (event.key === 'Escape' && selected() && !event.defaultPrevented) { select(null); event.preventDefault(); }
         });

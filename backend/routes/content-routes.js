@@ -1,4 +1,5 @@
-// Registers the publish routes of plan-design-agreement.md M2: the pin courier (POST /pins), the design
+// Registers the publish routes of plan-design-agreement.md M2: the pin courier (POST /pins, which no
+// server-only publication calls; it is kept for objects a chain record will reference), the design
 // index (/designs) and the agreement index with its owner-decision relay (/agreements). index.js calls
 // it once with the database pool, as it does setupProposalsRoute; everything else has a default that
 // a test may replace.

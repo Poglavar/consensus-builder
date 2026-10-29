@@ -43,7 +43,7 @@ function renderProposalBuildingPreview(proposal) {
     if (groups.buildingPreview.bringToFront) groups.buildingPreview.bringToFront();
 }
 
-function renderPreviewOverlay(proposal, { blink = false, append = false } = {}) {
+function renderPreviewOverlay(proposal, { blink = false, append = false, emphasis = false } = {}) {
     const groups = ensureProposalOverlayGroups();
     if (!groups.preview) {
         return { parcelFeatures: [], primaryFeatures: [] };
@@ -84,7 +84,9 @@ function renderPreviewOverlay(proposal, { blink = false, append = false } = {}) 
 
     // For road proposals, style road geometry with dashed lines and no fill
     // For other proposals, use the standard primary style
-    const primaryStyle = isTrack ? {
+    // `emphasis` (a row clicked in Lists) outlines the design in the selection colour instead, so it
+    // outranks the selection the list was opened over (dimmed meanwhile, see previewRecordsOnMap).
+    const primaryStyle = emphasis ? window.MapHighlight.style({ weight: 5, className: 'list-preview-focus' }) : isTrack ? {
         color: '#FF8A00',
         weight: 4,
         opacity: 0.95,
@@ -152,6 +154,7 @@ function clearProposalPreview() {
     if (groups.preview) {
         groups.preview.clearLayers();
     }
+    if (typeof map !== 'undefined' && map) map.getContainer().classList.remove('is-list-previewing');
     currentProposalPreviewId = null;
 }
 
@@ -219,8 +222,9 @@ function previewProposalOnMap(proposalIdOrHash, { center = true, blink = true } 
 
 // Shows design records on the map without selecting or opening them: a listed design, or the
 // designs of a listed plan or agreement (lists-panel.js). The records need not be stored. The map, or
-// the model view's camera, frames them in the area the lists sheet leaves visible. False when none of
-// them has a place on the map.
+// the model view's camera, frames them in the area the lists sheet leaves visible. They are drawn in
+// the selection colour and the selection behind the list dims until the preview clears (map.css).
+// False when none of them has a place on the map.
 function previewRecordsOnMap(records, previewKey) {
     clearProposalPreview();
     if (typeof map === 'undefined' || !map || typeof L === 'undefined') return false;
@@ -245,7 +249,8 @@ function previewRecordsOnMap(records, previewKey) {
             window.suppressCameraMoves = false;
         }
     }
-    records.forEach(record => renderPreviewOverlay(record, { append: true }));
+    records.forEach(record => renderPreviewOverlay(record, { append: true, emphasis: true }));
+    map.getContainer().classList.add('is-list-previewing');
     currentProposalPreviewId = previewKey;
     return true;
 }

@@ -132,4 +132,23 @@ describe('design card actions', () => {
         await vi.waitFor(() => expect(addDesign).toHaveBeenCalledWith('imported-9'));
         expect(win.DesignSync.fetchDesign).toHaveBeenCalledWith('bafy-x');
     });
+    it('downloads a design held on this device as a file', async () => {
+        const design = vi.fn();
+        const win = { i18n: testI18n(), BusyControl: { track }, PlanFileUI: { design },
+            proposalStorage: { getProposal: id => (id === 'local-1' ? { proposalId: id } : null) } };
+        const button = relations.renderDesignActions({ id: 'local-1' }, makeDocument(), win).querySelector('[data-design-action="download"]');
+        expect(button.textContent).toBe(dictionary('en').common.download);
+        button.click();
+        await vi.waitFor(() => expect(design).toHaveBeenCalledWith({ proposalId: 'local-1' }));
+    });
+    it('downloads a published design this browser lacks without storing it', async () => {
+        const design = vi.fn();
+        const win = { i18n: testI18n(), BusyControl: { track }, PlanFileUI: { design },
+            proposalStorage: { getProposal: () => null },
+            DesignSync: { apiBase: () => 'https://api.example', fetchDesign: vi.fn(async id => ({ id })), importDesign: vi.fn(),
+                localDesignFromRow: row => ({ title: `row ${row.id}` }) } };
+        relations.renderDesignActions({ id: 'srv', serverId: 'bafy-x' }, makeDocument(), win).querySelector('[data-design-action="download"]').click();
+        await vi.waitFor(() => expect(design).toHaveBeenCalledWith({ title: 'row bafy-x', proposalId: 'bafy-x' }));
+        expect(win.DesignSync.importDesign).not.toHaveBeenCalled();
+    });
 });

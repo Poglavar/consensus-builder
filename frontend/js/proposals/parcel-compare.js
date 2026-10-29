@@ -18,12 +18,10 @@
 })(typeof window !== 'undefined' ? window : globalThis, function (global) {
     'use strict';
 
-    // Below this an overlap is boundary noise (the same floor as plan-order's ancestry).
-    const MIN_OVERLAP_M2 = 0.25;
-    // A take of at least this share of the parcel (or leaving less than MIN_REMAINDER_M2) is the
-    // whole parcel.
-    const WHOLE_SHARE = 0.995;
-    const MIN_REMAINDER_M2 = 1;
+    // Whether an overlap is ground or boundary debris, and whether a take leaves any of the parcel,
+    // is the shared rule (geometry-tolerances.js isGround), the one ancestry and the apply use.
+    const groundRule = () => (global && global.GeometryTolerances)
+        || (typeof require === 'function' ? require('../geometry-tolerances.js') : null);
     // A take that reaches in from the parcel's outline and covers less than this share is "edge only".
     const EDGE_MAX_SHARE = 0.5;
     // A vertex of the take this close to the parcel outline counts as touching it.
@@ -263,13 +261,25 @@
     }
 
     // 'whole' | 'edge' | 'part' | 'none', or null when the proposal's ground is unknown.
+    // With the take's geometry at hand the shared rule decides: a take that is not ground is none,
+    // one that leaves no ground of the parcel is the whole parcel. A stored measurement without
+    // geometry only says whether anything is taken.
     function extentOf(t, clip, parcelFeature, takenM2, parcelM2) {
         if (takenM2 === null) return null;
-        if (!(takenM2 >= MIN_OVERLAP_M2)) return 'none';
-        if (finite(parcelM2) && parcelM2 > 0) {
-            if (takenM2 / parcelM2 >= WHOLE_SHARE || parcelM2 - takenM2 < MIN_REMAINDER_M2) return 'whole';
-            if (takenM2 / parcelM2 < EDGE_MAX_SHARE && clip && touchesOutline(t, clip, parcelFeature)) return 'edge';
+        if (!clip) return takenM2 > 0 ? 'part' : 'none';
+        const rule = groundRule();
+        if (!rule.isGround(t, clip)) return 'none';
+        if (parcelFeature) {
+            let rest = UNMEASURED;
+            try { rest = t.difference(parcelFeature, clip); } catch (error) {
+                const clips = (global && global.__parcelArrangement)
+                    || (typeof require === 'function' ? require('./parcel-arrangement.js') : null);
+                if (!clips || typeof clips.reportClipFailure !== 'function') throw error;
+                clips.reportClipFailure('difference', error, { site: 'parcel-compare.extentOf' }, [parcelFeature, clip]);
+            }
+            if (rest !== UNMEASURED && !rule.isGround(t, rest)) return 'whole';
         }
+        if (finite(parcelM2) && parcelM2 > 0 && takenM2 / parcelM2 < EDGE_MAX_SHARE && touchesOutline(t, clip, parcelFeature)) return 'edge';
         return 'part';
     }
 
@@ -298,8 +308,8 @@
         for (const feature of features) {
             const clip = parcelFeature ? safeIntersect(t, feature, parcelFeature, 'buildingsOn') : null;
             if (clip === UNMEASURED) return { count: null, footprintM2: null, floorAreaM2: null, heightM: null, floors: null };
+            if (!clip || !groundRule().isGround(t, clip)) continue;
             const clipM2 = areaOf(t, clip);
-            if (clipM2 < MIN_OVERLAP_M2) continue;
             count += 1;
             footprintM2 += clipM2;
             const measured = yieldApi.measureBuilding(feature, bp);
@@ -363,7 +373,7 @@
             if (!feature) return;
             const clip = safeIntersect(t, feature, parcelFeature, 'plotsOn');
             const overlapM2 = clip === UNMEASURED ? null : areaOf(t, clip);
-            if (overlapM2 !== null && overlapM2 < MIN_OVERLAP_M2) return;
+            if (clip !== UNMEASURED && !(clip && groundRule().isGround(t, clip))) return;
             plots.push({
                 number: index + 1,
                 areaM2: round(num(plot.area) !== null ? num(plot.area) : areaOf(t, feature), 1),
@@ -506,7 +516,6 @@
     }
 
     return {
-        MIN_OVERLAP_M2,
         relationOf,
         proposalsTouchingParcel,
         parcelEffect,

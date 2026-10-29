@@ -20,7 +20,8 @@ distinguishes the four cases that look the same on screen:
 | *the cadastre itself has NO parcel here* | unsurveyed ground — this document |
 
 The last verdict is not inferred: it asks `POST /parcels/under` with a ~4 m box around the point and
-reports what the backend says. A failed request is reported as **unresolved**, never as "nothing
+reports the candidates the box reaches into (`GeometryTolerances.reachesInto`; a neighbour it only
+touches is not a parcel here). A failed request is reported as **unresolved**, never as "nothing
 here" — the difference between "no parcel" and "could not ask" is the whole point.
 
 `whatIsHere(lat, lng)` takes an explicit point.
@@ -96,7 +97,7 @@ within each KO — an exact, reviewable, one-off answer — rather than as a bro
 
 ## Debugging affordances
 
-- **Already exists:** `POST /parcels/under` returns the parcels under any geometry. A ~4 m box around
+- **Already exists:** `POST /parcels/under` returns the candidate parcels under any geometry. A ~4 m box around
   a point is the "what parcel is at this lat/lng" query. It is exempt from the write rate limiter
   (it is a read that uses POST only because a polygon does not fit in a query string).
 - **Not built:** a cursor readout printing lat/lng under the mouse. That is the missing half — the

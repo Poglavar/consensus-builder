@@ -97,8 +97,7 @@ implemented (§17). See §13 for the earlier integration scope and verification.
   [input shares](../frontend/js/reparcellization-shares.js),
   [UI state](../frontend/js/reparcellization-ui-state.js),
   [shared validation](../frontend/js/reparcellization-validation.js),
-  [allocation arithmetic](../frontend/js/reparcellization-allocation.js),
-  [contribution arithmetic](../frontend/js/proposals/readjustment-contributions.js).
+  [allocation arithmetic](../frontend/js/reparcellization-allocation.js).
 - Server normalization: [reparcellization route](../backend/routes/reparcellization.js),
   called by [proposal creation](../backend/routes/proposals.js), around lines 798–807.
 - Ground: [apply/parcels.js](../frontend/js/proposals/apply/parcels.js),
@@ -994,8 +993,7 @@ binding context. The precise contract/message schema remains implementation work
 ### Gaps recorded before implementation
 
 - [Owner slots](../frontend/js/parcels/ownership-ui.js) still derive keys from a parcel plus name/postal
-  address; the human slot's `agentId` may be a postal address. [LR contribution grouping](../frontend/js/proposals/readjustment-contributions.js)
-  still normalizes names. Neither establishes stable abstract identity or signer authority.
+  address; the human slot's `agentId` may be a postal address. It does not establish stable abstract identity or signer authority.
 - [Share normalization](../frontend/js/reparcellization-shares.js) can estimate/normalize shares for a
   sketch. The acceptance interface must require complete exact rights instead of treating those
   estimated design weights as evidence.

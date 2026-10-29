@@ -598,14 +598,13 @@
     async function fetchUnderGeometry(geometry, options = {}) {
         const geom = geometry && geometry.type === 'Feature' ? geometry.geometry : geometry;
         if (!geom || !geom.type) throw new Error('Cadastral footprint geometry is missing.');
-        const parcelsOnly = options.parcelsOnly === true;
         const override = groundOverride(options.city || currentCity());
         if (override?.fetchUnderGeometry) {
             if (options.srid !== undefined && options.srid !== 4326) throw new Error('Local parcel geometry must use WGS84.');
             const answer = await override.fetchUnderGeometry(geom);
             noteSourceInView(options.city || currentCity(), override);
             return { status: 'ready', features: answer.features, absentIds: [], returnsWGS84: true,
-                sourceSrid: 'EPSG:4326', coverage: null, count: answer.features.length, queryMs: null };
+                sourceSrid: 'EPSG:4326', count: answer.features.length, queryMs: null };
         }
         const provider = cityConfig(options.city || currentCity())?.parcels;
         if (provider?.source === 'parcel-source') {
@@ -614,7 +613,7 @@
             const payload = await global.BrowserParcelSources.queryGeometry(provider.sourceId, geom, { city: options.city || currentCity() });
             if (payload.complete !== true || !Array.isArray(payload.features)) throw new Error('Parcel source returned an incomplete footprint response.');
             return { status: 'ready', features: withParcelSource(payload.features, provider.sourceId, payload.sourceId, payload.snapshotId), absentIds: [], returnsWGS84: true, sourceSrid: payload.sourceSrid || 'EPSG:4326',
-                coverage: null, count: payload.features.length, queryMs: null };
+                count: payload.features.length, queryMs: null };
         }
         const path = '/parcels/under';
         const city = String(options.city || currentCity());
@@ -622,10 +621,10 @@
         const payload = await serverOrDgu(wgs84 ? city : null, 'for a footprint', () => responseJson(`${backendBase()}${path}`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-            body: JSON.stringify({ geometry: geom, srid: options.srid || 4326, ...(parcelsOnly ? { parcelsOnly: true } : {}) })
+            body: JSON.stringify({ geometry: geom, srid: options.srid || 4326 })
         }), async () => {
-            const answer = await dguLive().fetchUnder(geom, { parcelsOnly });
-            return { features: answer.features, coverage: answer.coverage, count: answer.features.length, sourceSrid: 'EPSG:4326' };
+            const answer = await dguLive().fetchUnder(geom);
+            return { features: answer.features, count: answer.features.length, sourceSrid: 'EPSG:4326' };
         }, options.signal);
         if (!Array.isArray(payload.features)) throw new Error('/parcels/under response has no features array.');
         return {
@@ -634,7 +633,6 @@
             absentIds: [],
             returnsWGS84: true,
             sourceSrid: payload.sourceSrid || 'EPSG:4326',
-            coverage: payload.coverage === undefined || payload.coverage === null ? null : Number(payload.coverage),
             count: Number(payload.count) || payload.features.length,
             queryMs: Number(payload.queryMs) || null
         };

@@ -1,6 +1,6 @@
 // Unit tests for frontend/js/agreement-sync.js: /agreements/<cid> paths and links, the local record
 // rebuilt from a published agreement/v1 object, and Propose on a fake window with the real
-// DesignSync and AgreementRecord over a fake courier and index: what is pinned and indexed, the
+// DesignSync and AgreementRecord over a fake index: what is indexed (nothing is pinned), the
 // record marked published with its sponsor, and the refusals that stop it before anything leaves the
 // device. On chain (M3): the mint mirrored into the index and kept on the record even when the index
 // refuses it, the index's minted list, an agreement proposed again with a sponsor, and an opened
@@ -211,8 +211,7 @@ describe('recordFromPublished', () => {
 
 const json = (status, body) => ({ ok: status >= 200 && status < 300, status, json: async () => body });
 
-// The courier and the index: /pins recomputes the CID of the bytes it receives (node twin),
-// /designs and /agreements file content under its CID, GET /agreements/:cid serves a row.
+// The index: /designs and /agreements file content under its CID, GET /agreements/:cid serves a row.
 // POST /agreements/:cid/onchain answers onchain(body, cid) ({ status, body }); GET /agreements (the
 // minted listing) answers minted(searchParams).
 function fakeServer({ rows = new Map(), designs = new Map(), onchain = null, minted = null } = {}) {
@@ -233,10 +232,6 @@ function fakeServer({ rows = new Map(), designs = new Map(), onchain = null, min
         }
         if (method === 'POST' && pathname === '/designs/batch') {
             return json(200, { items: body.cids.flatMap(cid => designs.has(cid) ? [{ cid, design: designs.get(cid) }] : []) });
-        }
-        if (method === 'POST' && pathname === '/pins') {
-            const cid = NodeCid.cidOf(Buffer.from(body.bytes, 'base64'));
-            return cid === body.cid ? json(200, { cid, pinnedAt: '2026-10-21T12:00:00.000Z' }) : json(409, { code: 'cid-mismatch' });
         }
         if (method === 'POST' && (pathname === '/designs' || pathname === '/agreements')) {
             return json(201, { cid: body.cid, content: body.content, createdAt: '2026-10-21T12:00:05.000Z' });
@@ -310,20 +305,19 @@ describe('agreementLink', () => {
 });
 
 describe('publishAgreement', () => {
-    it('publishes every design, the layout included, then pins and indexes the agreement and marks it proposed', async () => {
+    it('publishes every design, the layout included, then indexes the agreement with its plan and marks it proposed', async () => {
         const { sync, server, proposals, agreements } = fakeWindow();
         const result = await sync.publishAgreement('ag-1');
         expect(server.calls.map(call => `${call.method} ${call.pathname}`)).toEqual([
-            'POST /pins', 'POST /designs', // the layout, published on its own like any design
-            'POST /pins', 'POST /designs', // the road
-            'POST /pins', // the plan snapshot
-            'POST /pins', 'POST /agreements'
+            'POST /designs', // the layout, published on its own like any design
+            'POST /designs', // the road
+            'POST /agreements' // with the plan snapshot
         ]);
         // Authors are stamped before the CIDs are taken, so the agreement links the stamped designs.
         const layoutCid = DesignRecord.cidOf(proposals.get('layout-1'));
         const roadCid = DesignRecord.cidOf(proposals.get('road-1'));
         expect(proposals.get('layout-1').author).toBe('Ana');
-        const body = server.calls[6].body;
+        const body = server.calls[2].body;
         expect(body).not.toHaveProperty('designs');
         expect(body.cid).toBe(NodeCid.cidOfObject(body.content));
         expect(result.cid).toBe(body.cid);
@@ -344,7 +338,7 @@ describe('publishAgreement', () => {
 
         // Proposed once: proposing again sends nothing and answers the same CID.
         expect(await sync.publishAgreement('ag-1')).toEqual({ cid: result.cid, row: null, link: result.link });
-        expect(server.calls).toHaveLength(7);
+        expect(server.calls).toHaveLength(3);
     });
 
     it('proposes without a sponsor when no wallet is connected', async () => {
@@ -401,7 +395,6 @@ describe('fetchAgreement and refusals', () => {
         expect(sync.refusalMessage(409, { code: 'inputs-differ-from-binding', missing: ['k9'], extra: ['k11'] })).toMatch(/\(k9, k11\)/);
         expect(sync.refusalMessage(422, { code: 'deadline-past' })).toMatch(/deadline has passed/);
         expect(sync.refusalMessage(409, { code: 'cid-mismatch' })).toMatch(/different identity for this agreement/);
-        expect(sync.refusalMessage(503, { code: 'pinning-unconfigured' })).toMatch(/cannot pin published agreements/);
         expect(sync.refusalMessage(500, null)).toBe('The server refused this agreement: HTTP 500');
     });
 });

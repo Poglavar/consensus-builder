@@ -1,6 +1,6 @@
-// Client of the design and agreement index (plan-design-agreement.md, M2 "Courier and index", M3): pins a
-// canonical design/v1 or agreement/v1 object through the courier (POST /pins), indexes it (POST /designs,
-// POST /agreements), asks what a site binds (POST /designs/binding), relays owner decisions (GET and POST
+// Client of the design and agreement index (plan-design-agreement.md, M2 "Courier and index", M3): indexes
+// a canonical design/v1 or agreement/v1 object (POST /designs, POST /agreements; publication pins nothing,
+// docs/ipfs-storage.md), asks what a site binds (POST /designs/binding), relays owner decisions (GET and POST
 // /agreements/:cid/decisions), records an agreement's chain account (POST /agreements/:cid/onchain) and
 // reads the index back. The proposer runner, the MCP tools and the
 // restatement scripts share it. Every CID is computed here (backend/cid.js) and an answer naming another
@@ -10,8 +10,8 @@ import { setTimeout as delay } from 'node:timers/promises';
 import { canonicalBytes, cidOf, isCid } from '../cid.js';
 import { createRetryingFetch } from '../utils/retrying-fetch.js';
 
-// The courier shares the upload routes' per-client budget (30 pins per 15 minutes): a caller that pins a
-// whole restatement waits for the window instead of failing half-way.
+// A rate-limited write (the upload routes' per-client budget) waits for its window instead of failing a
+// whole restatement half-way.
 export const MAX_RATE_LIMIT_WAIT_MS = 16 * 60 * 1000;
 const RATE_LIMIT_ROUNDS = 4;
 const BATCH_LIMIT = 1000;
@@ -43,7 +43,7 @@ function requireCid(cid, label = 'cid') {
 }
 
 /**
- * The CID and canonical bytes of an object, as the courier and the index compute them.
+ * The CID and canonical bytes of an object, as the index computes them.
  * @returns {{ cid: string, bytes: Buffer }}
  */
 export function addressOf(object) {
@@ -58,16 +58,15 @@ export function onchainNames(row, account) {
 
 /**
  * @param {{ apiBase: string, origin?: string|null, fetchImpl?: Function, timeoutMs?: number,
- *           waitOnRateLimit?: boolean, pinIntervalMs?: number, now?: Function, wait?: Function, log?: Function }} options
+ *           waitOnRateLimit?: boolean, now?: Function, wait?: Function, log?: Function }} options
  *   origin: sent on writes (the API's write guard admits the app's origins; a headless caller names one).
  *   waitOnRateLimit: wait out a 429 (Retry-After, at most MAX_RATE_LIMIT_WAIT_MS) instead of failing.
  */
 export function createIndexClient({
     apiBase, origin = null, fetchImpl = globalThis.fetch, timeoutMs = 60_000,
-    waitOnRateLimit = false, pinIntervalMs = 0, now = Date.now, wait = delay, log = () => {}
+    waitOnRateLimit = false, now = Date.now, wait = delay, log = () => {}
 } = {}) {
     const base = cleanApiBase(apiBase);
-    if (!Number.isFinite(pinIntervalMs) || pinIntervalMs < 0) throw new Error('pinIntervalMs must be non-negative');
     // POST is replayed only on transport failures and 5xx: every write here is keyed by a CID.
     const retrying = createRetryingFetch({
         fetchImpl, timeoutMs, retryMethods: new Set(['GET', 'POST']),
@@ -75,10 +74,6 @@ export function createIndexClient({
         shouldRetryResponse: response => response.status !== 429, wait,
         requestLabel: ({ method }) => `index-${method.toLowerCase()}`
     });
-
-    const pinned = new Map();
-    let pinQueue = Promise.resolve();
-    let nextPinAt = 0;
 
     async function call(method, path, body) {
         for (let round = 1; ; round += 1) {
@@ -108,28 +103,6 @@ export function createIndexClient({
         }
     }
 
-    /** POST /pins: { cid, pinnedAt } of exactly these canonical bytes. */
-    async function pin(kind, object) {
-        if (!['design', 'plan', 'agreement'].includes(kind)) throw new Error('kind must be design, plan or agreement');
-        const { cid, bytes } = addressOf(object);
-        if (pinned.has(cid)) return pinned.get(cid);
-        const queued = pinQueue.then(async () => {
-            if (pinned.has(cid)) return pinned.get(cid);
-            const pause = nextPinAt - now();
-            if (pause > 0) await wait(pause);
-            nextPinAt = now() + pinIntervalMs;
-            const result = await call('POST', '/pins', { kind, cid, bytes: bytes.toString('base64') });
-            nextPinAt = now() + pinIntervalMs;
-            if (!result.ok) throw refusal(`pin ${kind} ${cid}`, result);
-            if (result.body?.cid !== cid) throw mismatch(`pin ${kind}`, cid, result.body?.cid);
-            const receipt = { cid, pinnedAt: result.body.pinnedAt ?? null };
-            pinned.set(cid, receipt);
-            return receipt;
-        });
-        pinQueue = queued.catch(() => {});
-        return queued;
-    }
-
     /** POST /designs: { row, created } (created false: the CID was indexed already). */
     async function indexDesign(cid, content, { parcelSourceId = null } = {}) {
         requireCid(cid);
@@ -139,15 +112,13 @@ export function createIndexClient({
         return { row: result.body, created: result.status === 201 };
     }
 
-    /** Pin and index one design/v1 object: { cid, row, created }. */
+    /** Index one design/v1 object: { cid, row, created }. */
     async function publishDesign(content, { parcelSourceId = null } = {}) {
         const { cid } = addressOf(content);
-        let stage = 'pin-design'; const pinnedCids = [];
         try {
-            await pin('design', content); pinnedCids.push(cid); stage = 'index-design';
             const { row, created } = await indexDesign(cid, content, { parcelSourceId });
             return { cid, row, created };
-        } catch (error) { throw Object.assign(error, { cid, stage, pinnedCids, indexed: false }); }
+        } catch (error) { throw Object.assign(error, { cid, stage: 'index-design', indexed: false }); }
     }
 
     /** POST /designs/binding: what a design on this site would bind ({ city, parcelSourceId, binding }); nothing is stored. */
@@ -196,22 +167,16 @@ export function createIndexClient({
         return { row: result.body, created: result.status === 201 };
     }
 
-    /** Pin and index one agreement/v1 object: { cid, row, created }. */
+    /** Index one agreement/v1 object with its plan and carried designs: { cid, row, created }. */
     async function publishAgreement(content, { plan, designs = [] } = {}) {
         const { cid } = addressOf(content);
-        let stage = plan ? 'pin-plan' : 'pin-agreement'; const pinnedCids = [];
         try {
-            if (plan) {
-                if (!plan.content || plan.cid !== content.planCid || addressOf(plan.content).cid !== plan.cid) {
-                    throw mismatch('agreement plan', content.planCid, plan.cid);
-                }
-                await pin('plan', plan.content); pinnedCids.push(plan.cid);
+            if (plan && (!plan.content || plan.cid !== content.planCid || addressOf(plan.content).cid !== plan.cid)) {
+                throw mismatch('agreement plan', content.planCid, plan.cid);
             }
-            stage = 'pin-agreement';
-            await pin('agreement', content); pinnedCids.push(cid); stage = 'index-agreement';
             const { row, created } = await indexAgreement(cid, content, { plan, designs });
             return { cid, row, created };
-        } catch (error) { throw Object.assign(error, { cid, stage, pinnedCids, indexed: false }); }
+        } catch (error) { throw Object.assign(error, { cid, stage: 'index-agreement', indexed: false }); }
     }
 
     /**
@@ -276,7 +241,7 @@ export function createIndexClient({
     }
 
     return {
-        apiBase: base, pin, indexDesign, publishDesign, designBinding, getDesign, getDesigns,
+        apiBase: base, indexDesign, publishDesign, designBinding, getDesign, getDesigns,
         indexAgreement, publishAgreement, listDecisions, relayDecision, recordOnchain, getAgreement, listAgreements
     };
 }

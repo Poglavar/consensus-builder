@@ -1,8 +1,8 @@
 // Side-by-side comparison in the model view and on the map: the view is split at a draggable divider
 // and each half draws one chosen state of the same scene from the same camera. A state ("side") is Built
-// today, Permitted massing, Proposed (every applied design), one applied design or one saved plan,
-// applied or not: a plan's members that no applied design stands for are read without applying them
-// (compare-unapplied.js) and drawn on that plan's side alone.
+// today, Permitted massing, Proposed (every applied design), one saved design or one saved plan,
+// applied or not: a design that is not applied, and a plan's members that no applied design stands
+// for, are read without applying them (compare-unapplied.js) and drawn on that side alone.
 // Objects that both sides show are drawn once per half untouched; only what differs is switched.
 // The pure rules (which object a side shows, how a scene splits, the option lists, the scissor
 // rectangles) come first and are unit tested; the Compare tab of the Buildings and massing sheet
@@ -17,20 +17,29 @@
 
     const BASE = Object.freeze(['built', 'permitted', 'proposed']);
 
-    // The sides a person can choose: the three base states, then every applied design and every
-    // saved plan. designs: [{ id, title }], plans: [{ id, title, members: [designId], unapplied:
-    // [designCid] }] where members lists every member (an applied copy by its id, the rest by CID)
-    // and unapplied the members the plan draws itself.
-    function sideOptions({ designs = [], plans = [] } = {}) {
+    // The sides a person can choose: the three base states, then every saved design and every saved
+    // plan. designs: [{ id, title, cid?, readId? }] where a design that is not applied carries its CID
+    // and readId (the one-member plan it is read as, compare-unapplied.js); plans: [{ id, title,
+    // members: [designId], unapplied: [designCid] }] where members lists every member (an applied copy
+    // by its id, the rest by CID) and unapplied the members the plan draws itself. A side that draws
+    // members itself carries readId, the plan read for them (a plan's own CID when not given).
+    // agreements: [{ id, title, members, unapplied, readId }] where readId is the agreement's plan.
+    function sideOptions({ designs = [], plans = [], agreements = [] } = {}) {
         const options = BASE.map(kind => ({ value: kind, kind }));
         for (const design of designs) {
             if (design?.id == null) continue;
-            options.push({ value: `design:${design.id}`, kind: 'design', id: String(design.id), title: design.title || String(design.id) });
+            const read = design.cid != null ? { members: [String(design.cid)], unapplied: [String(design.cid)], readId: String(design.readId) } : {};
+            options.push({ value: `design:${design.id}`, kind: 'design', id: String(design.id), title: design.title || String(design.id), ...read });
         }
         for (const plan of plans) {
             if (plan?.id == null) continue;
             options.push({ value: `plan:${plan.id}`, kind: 'plan', id: String(plan.id), title: plan.title || String(plan.id),
-                members: (plan.members || []).map(String), unapplied: (plan.unapplied || []).map(String) });
+                members: (plan.members || []).map(String), unapplied: (plan.unapplied || []).map(String), readId: String(plan.id) });
+        }
+        for (const agreement of agreements) {
+            if (agreement?.id == null || agreement.readId == null) continue;
+            options.push({ value: `agreement:${agreement.id}`, kind: 'agreement', id: String(agreement.id), title: agreement.title || String(agreement.id),
+                members: (agreement.members || []).map(String), unapplied: (agreement.unapplied || []).map(String), readId: String(agreement.readId) });
         }
         return options;
     }
@@ -41,15 +50,17 @@
     }
 
     // Whether a side applies one design: by: { id, unapplied } where unapplied marks a plan member no
-    // applied design stands for. Proposed applies every applied design; a design side itself alone;
-    // a plan side its members, applied or not; Built and Permitted apply nothing.
+    // applied design stands for. Proposed applies every applied design; an applied design's side
+    // itself alone; a side that reads its members (a plan, an agreement's plan, a design that is not
+    // applied) its members, applied or not; Built and Permitted apply nothing.
     function appliesDesign(side, by) {
         if (!side || by?.id == null) return false;
         const id = String(by.id);
         switch (side.kind) {
             case 'proposed': return !by.unapplied;
-            case 'design': return !by.unapplied && side.id === id;
-            case 'plan': return (side.members || []).includes(id);
+            case 'design': return side.members ? side.members.includes(id) : !by.unapplied && side.id === id;
+            case 'plan':
+            case 'agreement': return (side.members || []).includes(id);
             default: return false;
         }
     }
@@ -94,7 +105,25 @@
         return { left: [0, 0, x, height], right: [x, 0, Math.max(0, width - x), height] };
     }
 
-    const pure = { BASE, sideOptions, parseSide, appliesDesign, showsOn, splitDescriptors, scissorRects };
+    // Whether two sides can be compared yet: a side that draws members itself (a plan with members no
+    // applied design stands for, a design that is not applied) draws only once they are read.
+    // statusOf(readId): { status: 'loading'|'ready'|'failed', error }
+    // or null before a read starts. Returns { ready, reading: [side], failed: [{ side, error }] }; the
+    // comparison draws (and its divider shows) only when ready, so a side that cannot be read is
+    // told in the Compare tab and never reaches the divider.
+    function readiness(sides, statusOf) {
+        const reading = [];
+        const failed = [];
+        for (const side of sides || []) {
+            if (!side?.unapplied?.length) continue;
+            const read = statusOf(side.readId);
+            if (read?.status === 'failed') failed.push({ side, error: read.error });
+            else if (read?.status !== 'ready') reading.push(side);
+        }
+        return { ready: !reading.length && !failed.length, reading, failed };
+    }
+
+    const pure = { BASE, sideOptions, parseSide, appliesDesign, showsOn, splitDescriptors, scissorRects, readiness };
     if (!global || !global.document) return Object.freeze(pure);
 
     // ── the Compare tab and the divider ──────────────────────────────────────────────────────
@@ -118,48 +147,112 @@
             case 'proposed': return t('planningViews.compare.options.proposed', 'Proposed (all applied designs)');
             case 'design': return t('planningViews.compare.options.design', 'Design: {{title}}', { title: option.title });
             case 'plan': return t('planningViews.compare.options.plan', 'Plan: {{title}}', { title: option.title });
+            case 'agreement': return t('planningViews.compare.options.agreement', 'Agreement: {{title}}', { title: option.title });
             default: return option.value;
         }
     }
 
     const el = id => doc.getElementById(id);
-    // The saved plan rows behind the plan options, by CID, for reading a plan that is not applied.
+    // The plan rows a side reads its members from, by readId: the saved plans by their CID, and each
+    // design that is not applied as a one-member plan (its own composition, never saved).
     let planRows = new Map();
+    // One-member plans by design CID: the same design is read once a page.
+    const designReads = new Map();
 
-    // The applied designs and this city's saved plans, as sides. A plan member with an applied copy
-    // is that copy; the rest the plan draws itself once read (compare-unapplied.js).
+    // A design that is not applied, as the one-member plan Plan stats would read it: the design's
+    // CID is computed here from its content, published or not (DesignRecord.cidOf), so a local design
+    // reads exactly as a published one. Its view only places the plan and is taken from its site.
+    function designRead(proposal, cid) {
+        if (designReads.has(cid)) return designReads.get(cid);
+        let row = null;
+        try {
+            const site = global.__siteBinding.siteOf(proposal);
+            const [lng, lat] = global.turf.centroid(site.type === 'Feature' ? site : global.turf.feature(site)).geometry.coordinates;
+            row = global.PlanComposition.ofDesign(proposal, [lat, lng]);
+        } catch (error) {
+            global.console.warn(`[${new Date().toISOString()}] [ThreeCompare] design ${proposal.proposalId} cannot be a Compare side`, error?.message || error);
+        }
+        designReads.set(cid, row);
+        return row;
+    }
+
+    // This city's saved designs, plans and agreements, as sides. An applied design is its applied copy; one that
+    // is not applied is read as a one-member plan. A plan member with an applied copy is that copy;
+    // the rest the plan draws itself once read (compare-unapplied.js).
     function collectOptions() {
         const store = global.proposalStorage;
-        const applied = (store?.getAllProposals?.() || []).filter(proposal => global.isProposalApplied?.(proposal) ?? proposal.applied === true);
-        const designs = applied.map(proposal => ({ id: String(proposal.proposalId), title: proposal.title || proposal.name || String(proposal.proposalId) }));
+        const city = global.normalizeCityCodeForApi?.(global.resolveCurrentCityCode?.()) || null;
+        const inCity = value => !city || !value || global.normalizeCityCodeForApi(value) === city;
         const cidOf = proposal => {
             try { return global.DesignSync?.publishedCid?.(proposal) || global.DesignRecord?.cidOf?.(proposal) || null; } catch (_) { return null; }
         };
+        const isApplied = proposal => global.isProposalApplied?.(proposal) ?? proposal.applied === true;
+        const saved = (store?.getAllProposals?.() || []).filter(proposal => proposal?.proposalId != null);
+        const applied = saved.filter(isApplied);
         const copies = applied.map(proposal => ({ id: String(proposal.proposalId), cid: cidOf(proposal) }));
-        const city = global.normalizeCityCodeForApi?.(global.resolveCurrentCityCode?.()) || null;
-        const sameCity = row => !city || !row.content?.view?.city || global.normalizeCityCodeForApi(row.content.view.city) === city;
         planRows = new Map();
-        const plans = (global.PlanWorkspace?.list?.() || []).filter(sameCity).map(row => {
+        const designs = [];
+        for (const proposal of saved) {
+            const title = proposal.title || proposal.name || String(proposal.proposalId);
+            if (isApplied(proposal)) { designs.push({ id: String(proposal.proposalId), title }); continue; }
+            if (!inCity(proposal.city)) continue;
+            const cid = cidOf(proposal);
+            const row = cid ? designRead(proposal, cid) : null;
+            if (!row) continue;
+            planRows.set(String(row.cid), row);
+            designs.push({ id: String(proposal.proposalId), title, cid, readId: String(row.cid) });
+        }
+        const plans = (global.PlanWorkspace?.list?.() || []).filter(row => inCity(row.content?.view?.city)).map(row => {
             planRows.set(String(row.cid), row);
             return { id: String(row.cid), title: row.content?.title || String(row.cid), ...global.CompareUnapplied.membersOf(row, copies) };
         });
-        return pure.sideOptions({ designs, plans });
+        // An agreement draws its plan; one without a plan yet is no side.
+        const agreements = (global.AgreementStore?.list?.() || []).filter(row => row?.plan?.cid && inCity(row.city)).map(row => {
+            if (!planRows.has(String(row.plan.cid))) planRows.set(String(row.plan.cid), row.plan);
+            return { id: String(row.id), title: row.title || String(row.id), readId: String(row.plan.cid), ...global.CompareUnapplied.membersOf(row.plan, copies) };
+        });
+        return pure.sideOptions({ designs, plans, agreements });
     }
 
-    // A plan side with members no applied design stands for is read once it is chosen.
+    // A side that draws members itself is read once it is chosen.
     function readUnapplied(side) {
-        if (side?.kind === 'plan' && side.unapplied.length && planRows.has(side.id)) global.CompareUnapplied.load(planRows.get(side.id));
+        if (side?.unapplied?.length && planRows.has(side.readId)) global.CompareUnapplied.load(planRows.get(side.readId));
     }
 
-    // The divider's label for a side: the option's name, with the read's state while a plan's
-    // unapplied members are being read or could not be.
-    function sideLabel(option) {
-        const label = optionLabel(option);
-        const reading = option.kind === 'plan' && option.unapplied.length ? global.CompareUnapplied.status(option.id) : null;
-        if (!reading || reading.status === 'ready') return label;
-        return reading.status === 'failed'
-            ? t('planningViews.compare.unreadable', '{{label}} (could not be read: {{reason}})', { label, reason: reading.error })
-            : t('planningViews.compare.reading', '{{label}} (reading…)', { label });
+    function readinessOf(current = sides()) {
+        return pure.readiness([current.left, current.right], id => global.CompareUnapplied?.status?.(id) || null);
+    }
+
+    // Under the sides: a plan being read, or one that could not be read with its reason and Retry.
+    // Hidden when both sides are ready or the comparison is off.
+    function renderStatus(readiness) {
+        const box = el('planning-compare-status');
+        if (!box) return;
+        box.replaceChildren();
+        const shown = state.enabled && !!readiness && !readiness.ready;
+        box.hidden = !shown;
+        box.classList.toggle('is-error', shown && readiness.failed.length > 0);
+        if (!shown) return;
+        for (const { side, error } of readiness.failed) {
+            const line = doc.createElement('p');
+            line.className = 'planning-compare-status__line';
+            line.textContent = t('planningViews.compare.unreadable', '{{label}} (could not be read: {{reason}})', { label: optionLabel(side), reason: error });
+            const retry = doc.createElement('button');
+            retry.type = 'button';
+            retry.className = 'cb-link planning-compare-status__retry';
+            retry.textContent = t('designMemberships.retry', 'Retry');
+            retry.addEventListener('click', () => { if (planRows.has(side.readId)) global.CompareUnapplied.retry(planRows.get(side.readId)); syncDivider(); });
+            box.append(line, retry);
+        }
+        for (const side of readiness.reading) {
+            const line = doc.createElement('p');
+            line.className = 'planning-compare-status__line';
+            const spinner = doc.createElement('i');
+            spinner.className = 'fas fa-spinner fa-spin';
+            spinner.setAttribute('aria-hidden', 'true');
+            line.append(spinner, ' ', t('planningViews.compare.reading', '{{label}} (reading…)', { label: optionLabel(side) }));
+            box.appendChild(line);
+        }
     }
 
     function fillSelect(select, value) {
@@ -173,10 +266,12 @@
         return { left: pure.parseSide(state.left, state.options), right: pure.parseSide(state.right, state.options), percent: state.percent };
     }
 
-    // Whether the comparison draws; given a scene, whether it draws in that one.
+    // Whether the comparison draws; given a scene, whether it draws in that one. Not before both
+    // sides are read (readiness).
     function isActive(of = null) {
         const current = sides();
-        return state.enabled && !!scene() && (!of || of === scene()) && !!current.left && !!current.right;
+        return state.enabled && !!scene() && (!of || of === scene()) && !!current.left && !!current.right
+            && readinessOf(current).ready;
     }
 
     function refresh() {
@@ -185,8 +280,7 @@
         fillSelect(el('planning-compare-right'), state.right);
         state.left = el('planning-compare-left')?.value || state.left;
         state.right = el('planning-compare-right')?.value || state.right;
-        const enable = el('planning-compare-enable');
-        if (enable) { enable.checked = state.enabled; enable.disabled = !scene(); }
+        renderToggle();
         for (const id of ['planning-compare-left', 'planning-compare-right', 'planning-compare-swap']) {
             const control = el(id);
             if (control) control.disabled = !scene();
@@ -197,9 +291,37 @@
         syncDivider();
     }
 
+    // The Compare / Stop comparing action under the sides: pressed while the comparison is on.
+    function renderToggle() {
+        const toggle = el('planning-compare-enable');
+        if (!toggle) return;
+        toggle.disabled = !scene();
+        toggle.setAttribute('aria-pressed', String(state.enabled));
+        // Compare is the panel's primary action; Stop comparing is a plain button.
+        toggle.classList.toggle('btn-primary', !state.enabled);
+        const label = toggle.querySelector('.planning-compare-toggle__label');
+        if (label) label.textContent = state.enabled
+            ? t('planningViews.compare.stop', 'Stop comparing')
+            : t('planningViews.tabs.compare', 'Compare');
+    }
+
+    // Turns the comparison on or off: the action under the sides, and the X on the divider (the way
+    // out when the sheet is closed).
+    function setEnabled(enabled) {
+        state.enabled = !!enabled;
+        renderToggle();
+        syncDivider();
+    }
+
     // The divider over the canvas or map: present while the comparison draws, labelled with the two
     // sides. It moves to the other view when the model view opens or closes.
     function syncDivider() {
+        if (state.enabled && scene()) {
+            const chosen = sides();
+            readUnapplied(chosen.left);
+            readUnapplied(chosen.right);
+        }
+        renderStatus(state.enabled && scene() ? readinessOf() : null);
         const active = isActive();
         if (state.divider && (!active || state.dividerScene !== scene())) {
             state.divider.dispose();
@@ -215,11 +337,9 @@
             return;
         }
         const current = sides();
-        readUnapplied(current.left);
-        readUnapplied(current.right);
         // The scene draws what the sides' unapplied plan members add (the model view builds meshes).
         scene().compareChanged?.();
-        const labels = { before: sideLabel(current.left), after: sideLabel(current.right) };
+        const labels = { before: optionLabel(current.left), after: optionLabel(current.right) };
         if (state.divider) {
             state.divider.labelEls[0].textContent = labels.before;
             state.divider.labelEls[1].textContent = labels.after;
@@ -234,6 +354,8 @@
         state.divider = global.__MapBeforeAfter.attachDivider(container, before, {
             labels, percent: state.percent, labelPlacement: 'divider',
             sliderLabel: t('planningViews.compare.sliderLabel', 'Comparison divider'),
+            closeLabel: t('planningViews.compare.stop', 'Stop comparing'),
+            onClose: () => setEnabled(false),
             onChange: percent => { state.percent = percent; scene()?.invalidate(); }
         });
         state.dividerScene = scene();
@@ -280,7 +402,7 @@
             for (const panel of sheet.querySelectorAll('[data-planning-tab-panel]')) panel.hidden = panel.dataset.planningTabPanel !== tab.dataset.planningTab;
             if (tab.dataset.planningTab === 'compare') refresh();
         });
-        el('planning-compare-enable')?.addEventListener('change', event => { state.enabled = event.target.checked; syncDivider(); });
+        el('planning-compare-enable')?.addEventListener('click', () => setEnabled(!state.enabled));
         el('planning-compare-left')?.addEventListener('change', event => { state.left = event.target.value; syncDivider(); });
         el('planning-compare-right')?.addEventListener('change', event => { state.right = event.target.value; syncDivider(); });
         el('planning-compare-swap')?.addEventListener('click', () => {

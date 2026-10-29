@@ -28,6 +28,7 @@ const MODULES = {
     __plotEdit: 'proposals/plot-edit.js',
     __subdivision: 'proposals/subdivision.js',
     __planOrder: 'proposals/plan-order.js',
+    GeometryTolerances: 'geometry-tolerances.js',
     GeometryEditHistory: 'geometry-edit/history.js',
     CbFormat: 'format.js'
 };

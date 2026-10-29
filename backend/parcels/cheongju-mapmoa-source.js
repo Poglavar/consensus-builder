@@ -3,7 +3,7 @@ import proj4 from 'proj4';
 import { bbox, bboxPolygon, booleanIntersects, feature as turfFeature } from '@turf/turf';
 import { CHEONGJU_GML_SCHEMA, parseGmlParcels } from './gml-parcel-reader.js';
 import { concatBytes } from './byte-utils.js';
-import { canonicalParcelFeature, providerHttpError, upstreamError, validateBounds, validateGeometry } from './source-contract.js';
+import { canonicalParcelFeature, providerHttpError, upstreamError, areaLimitError, validateBounds, validateGeometry } from './source-contract.js';
 
 export const CHEONGJU_ENDPOINT = 'https://map.cheongju.go.kr/getWfs.do';
 const PREFIX = 'KR-CHEONGJU-PNU-';
@@ -61,7 +61,7 @@ export function createCheongjuMapmoaParcelSource(descriptor, { fetchImpl = globa
         const parsed = await parseGmlParcels(concatBytes(chunks, bytes), { schema: CHEONGJU_GML_SCHEMA,
             maxBytes, maxFeatures: limit, signal });
         // WFS1.1 numberOfFeatures counts returned rows, not all matches. A capped read is never complete.
-        if (parsed.featureCount >= limit || parsed.duplicateNativeCount) throw upstreamError('MapMoa reached a transfer cap or returned duplicate PNU rows; request a smaller area.');
+        if (parsed.featureCount >= limit || parsed.duplicateNativeCount) throw areaLimitError('MapMoa reached a transfer cap or returned duplicate PNU rows; request a smaller area.');
         return parsed.features.map(feature => {
             if (!PNU.test(feature.id)) throw upstreamError('MapMoa returned an invalid PNU.');
             return canonicalParcelFeature(descriptor, feature, feature.id);

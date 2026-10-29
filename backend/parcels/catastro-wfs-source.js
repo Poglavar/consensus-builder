@@ -4,7 +4,7 @@ import proj4 from 'proj4';
 import { SaxesParser } from 'saxes';
 import { bbox as geometryBbox, booleanIntersects, feature as geoFeature } from '@turf/turf';
 import { HttpError } from '../utils/helpers.js';
-import { canonicalParcelFeature, parcelCountError, providerHttpError, upstreamError, validateBounds, validateGeometry } from './source-contract.js';
+import { canonicalParcelFeature, parcelCountError, providerHttpError, upstreamError, areaLimitError, AREA_LIMIT_CODE, validateBounds, validateGeometry } from './source-contract.js';
 import { parseGmlParcels } from './gml-parcel-reader.js';
 import { concatBytes } from './byte-utils.js';
 
@@ -77,7 +77,7 @@ export function createCatastroWfsParcelSource(descriptor, { fetchImpl = globalTh
             } });
             if (!response.ok) throw providerHttpError(response);
             const declared = response.headers.get('content-length');
-            if (declared && Number(declared) > maxBytes) throw upstreamError('Cadastral WFS response exceeds byte limit; use a smaller area.');
+            if (declared && Number(declared) > maxBytes) throw areaLimitError('Cadastral WFS response exceeds byte limit; use a smaller area.');
             reader = response.body?.getReader();
             if (!reader) throw upstreamError('Cadastral WFS returned no readable response.');
             const chunks = [];
@@ -86,7 +86,7 @@ export function createCatastroWfsParcelSource(descriptor, { fetchImpl = globalTh
                 const chunk = await reader.read();
                 if (chunk.done) break;
                 size += chunk.value.byteLength;
-                if (size > maxBytes) throw upstreamError('Cadastral WFS response exceeds byte limit; use a smaller area.');
+                if (size > maxBytes) throw areaLimitError('Cadastral WFS response exceeds byte limit; use a smaller area.');
                 chunks.push(chunk.value);
             }
             if (declared && !response.headers.get('content-encoding') && Number(declared) !== size) {
@@ -96,6 +96,11 @@ export function createCatastroWfsParcelSource(descriptor, { fetchImpl = globalTh
             if (explicitMissingReference(bytes, params)) return [];
             const parsed = await parseGmlParcels(bytes, { idField: ID_FIELD,
                 maxBytes, maxFeatures, signal });
+            // More matched than returned is the service's cap; anything else is a malformed answer.
+            if (Number.isSafeInteger(parsed.numberMatched) && parsed.numberMatched > parsed.featureCount
+                && !parsed.duplicateNativeCount) {
+                throw Object.assign(parcelCountError(parsed, 'Cadastral WFS did not return a complete unique parcel set; use a smaller area.'), { status: 422, code: AREA_LIMIT_CODE });
+            }
             if (!Number.isSafeInteger(parsed.numberMatched) || parsed.numberMatched !== parsed.featureCount
                 || parsed.duplicateNativeCount || parsed.features.some(f => !KEY.test(f.properties[ID_FIELD]))) {
                 throw parcelCountError(parsed, 'Cadastral WFS did not return a complete unique parcel set; use a smaller area.');

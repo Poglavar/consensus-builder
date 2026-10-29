@@ -71,6 +71,8 @@ function makeManager(parcels) {
         _assignSyntheticChildIdentities(...args) { return ProposalManager._assignSyntheticChildIdentities(...args); },
         _addFeaturesToMap(features) { this.added.push(...features); },
         _consumeFeaturesFromLiveFabric(features) { this.hidden.push(...features); },
+        // The fabric's partition check is its own test (formed-partition-check.test.js).
+        _checkFormedPartition: vi.fn(async () => true),
         _markParcelProducedByProposal: vi.fn(),
         _addChildParcels: vi.fn(),
         _setLastApplyFailure: vi.fn(),
@@ -195,6 +197,11 @@ describe('_formBuildingParcel — footprint mode (default)', () => {
             clip(operation, left, right) {
                 if (operation === 'intersect') throw new Error('intersection failed explicitly');
                 return turf[operation](left, right);
+            },
+            // The host test runs the shared clip through geometry-tolerances.js reachesInto.
+            clipWith(t, operation, left, right, context) {
+                if (operation === 'intersect') throw new Error('intersection failed explicitly');
+                return parcelArrangement.clipWith(t, operation, left, right, context);
             }
         };
         await expect(manager._formBuildingParcel('p-bld', { author: 'Ana' }, {},
@@ -218,9 +225,13 @@ describe('_formBuildingParcel — footprint mode (default)', () => {
         // hid the host with no remainder minted — a whole parcel of unclickable dead ground.
         const parcels = [parcelOf('HR-A', 0, 2), parcelOf('HR-B', 2, 4)];
         const manager = makeManager(parcels);
+        // Only the remainder cut fails; the uncovered-footprint check (geometry-tolerances.js) runs first.
         const broken = new Proxy(turf, {
             get: (target, key) => key === 'difference'
-                ? () => { throw new Error('Unable to find segment in SweepLine tree.'); }
+                ? (...args) => {
+                    if (/geometry-tolerances\.js/.test(String(new Error().stack))) return target.difference(...args);
+                    throw new Error('Unable to find segment in SweepLine tree.');
+                }
                 : target[key]
         });
         globalThis.turf = broken;

@@ -97,6 +97,8 @@ function makeManager() {
         _addFeaturesToMap(features) { this.added.push(...features); },
         _markParcelProducedByProposal: spy(),
         _consumeFeaturesFromLiveFabric(features) { this.hidden.push(...(features || [])); },
+        // The fabric's partition check is its own test (formed-partition-check.test.js).
+        _checkFormedPartition: spy(async () => true),
         _applyParcelLayoutProposal
     };
 }

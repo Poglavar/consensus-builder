@@ -33,6 +33,7 @@ Each document describes a current contract, an open plan or research. Verificati
 - [Vocabulary](vocabulary.md): the glossary of current definitions; read it before changing a record or behavior.
 - [Plan, design and agreement](plan-design-agreement.md): the record contract, with [proposal history](rethink-proposals.md) and [open ground](PARCEL-OPTIONAL.md) behind it.
 - [Projections](projections.md) and [protocol](protocol.md): metric geometry anywhere on the globe; identifiers, schemas and trust model.
+- [Geometry tolerances](geometry-tolerances.md): one function per geometric question for every stage, one coordinate grid, and the plan to reach them.
 - [Lens model](lens-model.md), [community consultations](community-consultations.md), [ownership adapters](ownership-adapters.md).
 - [Land readjustment](land-readjustmend.md), [unsurveyed ground](unsurveyed-ground.md), [impact resolver](impact-resolver.md).
 - [Location first](location-first.md), [saved workspace](saved-workspace.md), [portable plan files](portable-plan-files.md), [IPFS storage](ipfs-storage.md).
@@ -41,13 +42,15 @@ Each document describes a current contract, an open plan or research. Verificati
 
 - [Design language](design-language.md): components, tokens, messages and element names. [Click stack](click-stack.md), [dividers](dividers.md), [language expansion](language-expansion.md).
 - Roads and rail: [road editor](road-editor.md), [corridor elevation](corridor-elevation.md) and its [levels plan](corridor-levels-plan.md), [road in a parcel](road-in-parcel.md), [schelling plans](schelling-parcels.md).
-- Buildings: [urban rules and massing](urban-rule-massing.md), [freeform buildings](freeform-building.md), [floor plans](floor-plans.md), [building floor models](building-floor-models.md), [planning rule audit](planning-rule-audit.md).
-- [Agreement editor](agreement-editor.md), [accessible map editing](accessible-map-editing.md), [build-out timeline](buildout-timeline.md).
+- Buildings: [urban rules and massing](urban-rule-massing.md), [freeform buildings](freeform-building.md), [floor plans](floor-plans.md), [building floor models](building-floor-models.md), [IFC import plan](ifc-import.md), [planning rule audit](planning-rule-audit.md).
+- [Agreement editor](agreement-editor.md), [accessible map editing](accessible-map-editing.md), [Bogotá agreement demo data](demo/bogota-agreements/README.md), [build-out timeline](buildout-timeline.md).
 
 **Sources and cities**
 
 - [Source adapters](source-adapters.md), [frontend source configuration](frontend-source-configuration.md), [Atlas public sources](atlas-public-sources.md), [economic sources](economic-sources.md), [world parcels](world-parcels.md).
 - [GUP scenario integration](gup-scenario-integration.md), [Bogotá POT source](bogota-pot-source.md), [zoning standards research](zoning-standards-research.md), [planning usage and diagnostics](planning-usage-and-diagnostics.md).
+- [Permitted massing for plan-made parcels](permitted-plan-parcels.md): open plan for readjustment plots, road and track remainders, the fabric-driven refresh and the Bogotá block index.
+- [Source loading plan](source-loading-plan.md): open plan for buildings on the parcel cell grid with a view budget, area-limit errors apart from outages, sources that load and fail independently, and 3D panning in steps.
 
 **3D views**
 

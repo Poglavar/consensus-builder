@@ -5,7 +5,7 @@ import { bbox as geometryBbox, bboxPolygon, booleanIntersects, feature as geoFea
 import proj4 from 'proj4';
 import { concatBytes } from './byte-utils.js';
 import { HttpError } from '../utils/helpers.js';
-import { canonicalParcelFeature, providerHttpError, upstreamError, validateBounds, validateGeometry } from './source-contract.js';
+import { canonicalParcelFeature, providerHttpError, upstreamError, areaLimitError, validateBounds, validateGeometry } from './source-contract.js';
 import { parseKeralaWktPolygon } from './kerala-wkt.js';
 export { parseKeralaWktPolygon } from './kerala-wkt.js';
 
@@ -96,7 +96,7 @@ export function createKeralaParcelSource(descriptor, { fetchImpl = globalThis.fe
 
     async function readBytes(response, limit) {
         const declared = Number(response.headers?.get?.('content-length'));
-        if (Number.isFinite(declared) && declared > limit) throw upstreamError('Kerala parcel response exceeds the byte limit; use a smaller area.');
+        if (Number.isFinite(declared) && declared > limit) throw areaLimitError('Kerala parcel response exceeds the byte limit; use a smaller area.');
         if (!response.body?.getReader) throw upstreamError('Kerala returned no readable response.');
         let reader;
         try { reader = response.body.getReader(); }
@@ -108,7 +108,7 @@ export function createKeralaParcelSource(descriptor, { fetchImpl = globalThis.fe
                 const { done, value } = await reader.read();
                 if (done) break;
                 size += value.byteLength;
-                if (size > limit) throw upstreamError('Kerala parcel response exceeds the byte limit; use a smaller area.');
+                if (size > limit) throw areaLimitError('Kerala parcel response exceeds the byte limit; use a smaller area.');
                 chunks.push(value);
             }
         } catch (error) {
@@ -257,7 +257,7 @@ export function createKeralaParcelSource(descriptor, { fetchImpl = globalThis.fe
         if (payload.features.length >= maxFeatures || payload.exceededTransferLimit === true || payload.transferLimitExceeded === true
             || hasNextPage || payload.next !== undefined && payload.next !== null
             || reportedCounts.some(count => !Number.isSafeInteger(count) || count !== payload.features.length)) {
-            throw upstreamError('Kerala parcel viewport response may be incomplete; use a smaller area.');
+            throw areaLimitError('Kerala parcel viewport response may be incomplete; use a smaller area.');
         }
         const footprint = bboxPolygon(bounds);
         const byId = new Map();

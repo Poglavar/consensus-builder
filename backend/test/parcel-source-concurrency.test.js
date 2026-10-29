@@ -2,6 +2,7 @@
 // cooldown, so viewport and exact-ID requests cannot race a failed upstream service.
 import { describe, expect, it, vi } from 'vitest';
 import { withSourceConcurrency, withSourceCooldown } from '../parcels/sources.js';
+import { areaLimitError } from '../parcels/source-contract.js';
 
 const deferred = () => {
     let resolve, reject;
@@ -93,6 +94,15 @@ describe('withSourceConcurrency', () => {
         await expect(first).rejects.toMatchObject({ code: 'parcel-source-unavailable' });
         await expect(queued).rejects.toMatchObject({ code: 'parcel-source-unavailable' });
         expect(upstream.queryIds).not.toHaveBeenCalled();
+    });
+
+    it('never cools a source down for a query over its area limit', async () => {
+        const tooLarge = areaLimitError('Parcel provider query exceeds the parcel limit; use a smaller area.');
+        const upstream = adapterWith({ queryBounds: vi.fn().mockRejectedValueOnce(tooLarge).mockResolvedValueOnce('small area') });
+        const wrapped = withSourceCooldown(upstream, { now: () => 0 });
+        await expect(wrapped.queryBounds([0, 0, 1, 1])).rejects.toMatchObject({ code: 'parcel-source-area-limit', status: 422 });
+        await expect(wrapped.queryBounds([0, 0, 0.1, 0.1])).resolves.toBe('small area');
+        expect(upstream.queryBounds).toHaveBeenCalledTimes(2);
     });
 
     it.each([0, -1, 1.5, 17, '2', null])('rejects invalid limit %j', limit => {

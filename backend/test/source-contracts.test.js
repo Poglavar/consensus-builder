@@ -50,7 +50,7 @@ describe('published source contracts', () => {
     it('describes native adapter operations rather than claiming normalized reader methods', () => {
         expect(Contracts.adapter('planning', 'gup')).toMatchObject({ custom: false });
         expect(Contracts.adapter('planning', 'gup-cache')).toMatchObject({ providerSpecific: true });
-        expect(Contracts.adapter('parcels', 'oss-wfs').methods).toContain('bindingMeasurements');
+        expect(Contracts.adapter('parcels', 'oss-wfs').methods).toEqual(['lookup', 'under', 'parcelIds', 'neighbours', 'queryGeometry', 'queryIds']);
         expect(Contracts.adapter('parcels', 'parcel-ba').methods).toEqual(['lookup']);
         expect(Contracts.adapter('buildings', 'gdi-map').operations.lookup.argumentList).toEqual(['query']);
         expect(Contracts.adapter('buildings', 'overture-pmtiles').methods).toEqual(['featuresIn']);

@@ -55,6 +55,13 @@
         validate(row);
         return freeze(row);
     }
+    // One design as a one-member plan: how Plan stats, Compare designs and the map's Compare read a
+    // design on its own. centre ([lat, lng], its site's) only places the plan's view.
+    function ofDesign(record, centre) {
+        const [lat, lng] = centre;
+        return create(record.title || record.name || String(record.proposalId), [record],
+            { at: `${lat.toFixed(6)},${lng.toFixed(6)},17`, mode: '2d', city: record.city || null });
+    }
     // The same members and view with another construction schedule: a new immutable revision.
     function withSchedule(row, schedule) {
         validate(row);
@@ -72,5 +79,5 @@
         return row.designs.map(member => ({ ...DesignSync.localDesignFromRow(member, { apiBase, proposalId: `plan-member-${member.cid}` }),
             ...(row.designSources?.[member.cid] ? { planFileSource: deepCopy(row.designSources[member.cid]) } : {}) }));
     }
-    return Object.freeze({ create, validate, withSchedule, localRecords });
+    return Object.freeze({ create, ofDesign, validate, withSchedule, localRecords });
 });

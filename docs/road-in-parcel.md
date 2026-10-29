@@ -13,8 +13,9 @@ or MultiPolygon) and `metadata.mode: 'bounded'`.
   definition (provenance algorithm `corridor-site/1`); `laneFootprintIn` is what the lanes cut.
 - The bound is a definition field beside the OSM document (`corridor-osm-form.js` keeps every
   non-view field), so it survives store, publish and load.
-- Only the parcels its land covers by at least 0.25 m² are declared (`road-drawing.js
-  roadLandOverlapFloor`, the arrangement's `MIN_PIECE_M2`), so the neighbours it touches are not.
+- Only the parcels its land reaches into are declared (`road-drawing.js
+  collectParcelsIntersectingFootprint`, `geometry-tolerances.js reachesInto`), so the neighbours it
+  touches are not.
   The arrangement then takes each declared parcel whole.
 - Every edit keeps the land (`road-drawing.js runLocalCorridorGeometryUpdate`, and for MCP
   `intent-editing.js reconcile`): the edges are re-filled for the room the edit leaves

@@ -26,8 +26,9 @@
 
     // One feature per connected piece, properties carried across (the caller re-stamps identity,
     // so ids are NOT copied — leaving two parcels sharing one id is exactly the bug this prevents).
-    // `opts.areaOf` (optional) drops pieces below `opts.minAreaM2`: cutting throws off slivers of a
-    // few cm² that are not parcels by any sane reading, and they would each take an id.
+    // `opts.isGround` (optional; the caller passes geometry-tolerances.js isGround) drops pieces
+    // that are not ground: cutting throws off debris that is not a parcel by any reading, and each
+    // piece would take an id. `opts.areaOf` picks the piece kept when every piece is debris.
     function explodeToContiguousParts(feature, opts) {
         const options = opts || {};
         const geometry = geometryOf(feature);
@@ -36,7 +37,7 @@
         if (count === 1) return [feature];
 
         const source = feature.type === 'Feature' ? feature : { type: 'Feature', properties: {}, geometry };
-        const minArea = Number.isFinite(options.minAreaM2) ? options.minAreaM2 : 0;
+        const isGround = typeof options.isGround === 'function' ? options.isGround : null;
         const areaOf = typeof options.areaOf === 'function' ? options.areaOf : null;
 
         const parts = [];
@@ -53,14 +54,10 @@
             delete part.properties.id;
             delete part.properties.BROJ_CESTICE;
             delete part.properties.syntheticIndex;
-            if (minArea > 0 && areaOf) {
-                let area = 0;
-                try { area = areaOf(part) || 0; } catch (_) { area = 0; }
-                if (area < minArea) return;
-            }
+            if (isGround && !isGround(part)) return;
             parts.push(part);
         });
-        // Everything was sub-threshold: keep the largest piece rather than mint nothing at all.
+        // Everything was debris: keep the largest piece rather than mint nothing at all.
         if (!parts.length && areaOf) {
             let best = null;
             let bestArea = -1;

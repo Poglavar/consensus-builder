@@ -215,6 +215,19 @@
 
 .agreement-editor .panel-footer > .btn { width: 100%; min-width: 0; }
 
+/* What a disabled save is waiting on, in small print across both buttons. */
+.agreement-editor__waiting {
+    grid-column: 1 / -1;
+    margin: 0;
+    color: var(--cb-text-muted);
+    font-size: var(--cb-text-sm);
+    line-height: var(--cb-leading);
+}
+
+.agreement-editor__waiting:empty {
+    display: none;
+}
+
 /* Errors and warnings at the top of the body; an empty list takes no room. */
 .agreement-issues {
     margin: 0;

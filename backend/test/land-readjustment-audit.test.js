@@ -98,6 +98,8 @@ function manager(parents) {
         _addFeaturesToMap(features) { this.added.push(...features); },
         _markParcelProducedByProposal: vi.fn(),
         _consumeFeaturesFromLiveFabric: vi.fn(),
+        // The fabric's partition check is its own test (formed-partition-check.test.js).
+        _checkFormedPartition: vi.fn(async () => true),
         _setLastApplyFailure: vi.fn(),
         _applyParcelLayoutProposal
     };

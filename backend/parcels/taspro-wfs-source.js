@@ -1,7 +1,7 @@
 // TASPRO spatial filters have a high fixed cost. Share complete bounded reads between
 // adjacent viewport cells; exact UUID reads always go back to the provider.
 import { bbox as geometryBbox, booleanIntersects, feature as geoFeature } from '@turf/turf';
-import { validateBounds, validateGeometry, upstreamError } from './source-contract.js';
+import { validateBounds, validateGeometry, upstreamError, areaLimitError } from './source-contract.js';
 import { HttpError } from '../utils/helpers.js';
 
 export function createTasproWfsSource(descriptor, options, createWfsSource) {
@@ -62,7 +62,7 @@ export function createTasproWfsSource(descriptor, options, createWfsSource) {
                 }
                 features.set(feature.id, feature);
             }
-            if (features.size > (descriptor.maxFeatures ?? 10000)) throw upstreamError('TASPRO parcel limit exceeded; request a smaller area.');
+            if (features.size > (descriptor.maxFeatures ?? 10000)) throw areaLimitError('TASPRO parcel limit exceeded; request a smaller area.');
         }
         return { type: 'FeatureCollection', features: [...features.values()], complete: true,
             sourceId: descriptor.id, returnsWGS84: true };

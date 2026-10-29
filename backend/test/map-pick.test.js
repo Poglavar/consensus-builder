@@ -360,9 +360,11 @@ describe('the shapes of a design', () => {
         expect(warn).toHaveBeenCalledTimes(3);
     });
 
-    it('measures the ground under a body as the area of their intersection', () => {
+    // Was: the area of their intersection, compared with a 1 m² contact floor. Now whether the body
+    // stands on the parcel is the shared rule (geometry-tolerances.js reachesInto).
+    it('says whether a body stands on a parcel by the shared reach rule', () => {
         install('turf', turf);
-        expect(MapPick.groundIntersectionArea(LEFT, ON_LEFT)).toBeCloseTo(turf.area(ON_LEFT), 3);
-        expect(MapPick.groundIntersectionArea(LEFT, box(16.005, 46.005, 16.006, 46.006))).toBe(0);
+        expect(MapPick.groundReaches(ON_LEFT, LEFT)).toBe(true);
+        expect(MapPick.groundReaches(box(16.005, 46.005, 16.006, 46.006), LEFT)).toBe(false);
     });
 });

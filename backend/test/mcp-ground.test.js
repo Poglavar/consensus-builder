@@ -66,7 +66,7 @@ describe('headless app formation host', () => {
         expect(paths).toContain('/parcel-sources/selected-source');
         expect(result.agreement.inputs.parcels[0].parcelSourceId).toBe('selected-source');
         expect(result.cid).toBe(cidOfObject(result.agreement));
-        expect(result.agreement.money.currency).toBe('EUR');
+        expect(result.agreement.money.currency).toBe('GBP');
         expect(result.agreement.rule.binding).toBe(false);
         expect(result.agreement.consultation).toEqual(consultation);
         expect(result.previewUrl).toBeNull();
@@ -82,6 +82,20 @@ describe('headless app formation host', () => {
         expect(paths).not.toContain('/agreements');
     });
 
+    it('defaults omitted agreement currency to the plan city money', async () => {
+        const design = make('space', { spaceKind: 'park', city: 'bogota' });
+        const tools = createUrbanGameTheoryTools({ mode: 'hosted', env: {}, fetchImpl: async url => {
+            const path = new URL(url).pathname;
+            return Response.json(path === '/designs/binding'
+                ? { parcelSourceId: 'selected-source', binding: { coverage: 'complete', parcels: [{ parcelId: 'A' }], unsurveyedM2: 0, unknownM2: 0 } }
+                : { complete: true, features: parcels });
+        } });
+        const plan = await tools.draftPlan({ designs: [design.content], title: 'Bogotá plan' });
+        const agreement = await tools.draftAgreement({ plan: plan.draftArtifact, rulePreset: 'community-vote' });
+        expect(agreement.agreement.city).toBe('bogota');
+        expect(agreement.agreement.money.currency).toBe('COP');
+    });
+
     it('keeps strict optional consultation metadata in drafting and revision tool schemas', () => {
         const tools = new Map();
         registerMcpCompanion({ registerTool: (name, options) => tools.set(name, options.inputSchema), registerResource() {}, registerPrompt() {} }, { actions: {}, handler: fn => fn, readOnly: {} });
@@ -89,7 +103,7 @@ describe('headless app formation host', () => {
         const design = make('space', { spaceKind: 'park' }).content;
         const draft = tools.get('ugt_draft_agreement');
         expect(draft.parse({ plan: cidOfObject({ schema: 'plan/v1', title: 'p', designCids: [cidOfObject(design)], view: { at: '51.5,-0.1,17', mode: '2d', city: 'london' } }), consultation }).consultation).toEqual(consultation);
-        expect(draft.parse({ plan: cidOfObject({ schema: 'plan/v1', title: 'p', designCids: [cidOfObject(design)], view: { at: '51.5,-0.1,17', mode: '2d', city: 'london' } }) }).consultation).toBeUndefined();
+        expect(draft.parse({ plan: cidOfObject({ schema: 'plan/v1', title: 'p', designCids: [cidOfObject(design)], view: { at: '51.5,-0.1,17', mode: '2d', city: 'london' } }) }).currency).toBeUndefined();
         expect(draft.safeParse({ plan: {}, consultation: { ...consultation, extra: true } }).success).toBe(false);
         expect(draft.safeParse({ designs: [design], consultation: { organiser: 'x'.repeat(2049), participationUrl: null } }).success).toBe(false);
         const edit = tools.get('ugt_edit_agreement');

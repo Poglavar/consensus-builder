@@ -2,7 +2,7 @@
 import { readGmlZipMember } from './gml-zip-reader.js';
 import { bbox as geometryBbox, booleanIntersects, bboxPolygon, feature as geoFeature } from '@turf/turf';
 import { parseGmlParcels } from './gml-parcel-reader.js';
-import { canonicalParcelFeature, upstreamError, providerHttpError, validateBounds, validateGeometry } from './source-contract.js';
+import { canonicalParcelFeature, upstreamError, areaLimitError, providerHttpError, validateBounds, validateGeometry } from './source-contract.js';
 import { HttpError } from '../utils/helpers.js';
 import { catastroAtomProfile, CATASTRO_ATOM_GML_SCHEMA, fetchCatastroAtomArchive } from './catastro-atom-profile.js';
 
@@ -133,7 +133,7 @@ export function createGmlSnapshotParcelSource(descriptor, { fetchImpl, now = Dat
         ...(index?.counts ? {snapshotCounts:{...index.counts}} : {})});
     async function queryBounds(bounds){validateBounds(bounds,descriptor.maxBboxKm2??25,descriptor);const index=await load(),shape=bboxPolygon(bounds);
         const features=index.features.filter(row=>row.bbox[0]<=bounds[2]&&row.bbox[2]>=bounds[0]&&row.bbox[1]<=bounds[3]&&row.bbox[3]>=bounds[1]&&booleanIntersects(row.feature,shape)).map(row=>row.feature);
-        if(features.length>maxFeatures)throw upstreamError('Parcel snapshot query exceeds the parcel limit; use a smaller area.');return collection(features,index);}
+        if(features.length>maxFeatures)throw areaLimitError('Parcel snapshot query exceeds the parcel limit; use a smaller area.');return collection(features,index);}
     async function queryIds(ids){
         if(!Array.isArray(ids)||!ids.length||ids.length>80)throw new HttpError(400,'Provide between 1 and 80 parcel IDs.');
         const unique=[...new Set(ids)];if(unique.some(value=>typeof value!=='string'||!value.startsWith(idPrefix)||value.slice(idPrefix.length).length>256||!(profile ? /^[A-Z0-9]{14}$/ : idField==='INSPIREID'?/^[0-9]+$/:/^[A-Za-z0-9._/-]+$/).test(value.slice(idPrefix.length))))throw new HttpError(400,'Invalid parcel ID or different source.');

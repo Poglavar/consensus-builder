@@ -307,7 +307,7 @@ export function createMcpNamedPlanTools({ read, drafts, appOrigin, resolveDraftR
     }
     async function publishPlan({ plan: value, expectedCid, confirm }) {
         if (confirm !== true) fail('confirmation-required', 'confirm must be true to publish a named plan.');
-        const state = { cid: expectedCid || null, stage: 'resolve', pinnedCids: [], indexed: false };
+        const state = { cid: expectedCid || null, stage: 'resolve', publishedCids: [], indexed: false };
         try {
             const resolved = await resolvePlan(value);
             checkRevision(value, expectedCid, resolved.cid);
@@ -330,7 +330,7 @@ export function createMcpNamedPlanTools({ read, drafts, appOrigin, resolveDraftR
         for (const row of unpublished) {
             state.stage = 'publish-design';
             const published = await publishDesign({ design: row.content, parcelSourceId: row.parcelSourceId || null, expectedCid: row.cid, confirm: true });
-            state.pinnedCids.push(row.cid);
+            state.publishedCids.push(row.cid);
             if (published.cid !== row.cid) fail('cid-mismatch', 'Dependency publication returned another design CID.');
             const existing = await read.getDesign({ designCid: row.cid });
             if (existing.cid !== row.cid || cidOfObject(existing.content || existing.untrusted?.content) !== row.cid) fail('cid-mismatch', 'Published dependency could not be read back with matching content.');
@@ -338,14 +338,14 @@ export function createMcpNamedPlanTools({ read, drafts, appOrigin, resolveDraftR
         state.stage = 'index-plan';
         const published = await read.request('/plans', {}, { content: resolved.plan });
         if (published.cid !== resolved.cid || checkedPlan(published.content, resolved.cid) !== resolved.cid) fail('cid-mismatch', 'The published named plan differs from the confirmed revision.');
-        state.indexed = true; state.pinnedCids.push(resolved.cid); state.stage = 'readback';
+        state.indexed = true; state.publishedCids.push(resolved.cid); state.stage = 'readback';
         const row = await read.request(`/plans/${resolved.cid}`);
         if (row.cid !== resolved.cid || checkedPlan(row.content, resolved.cid) !== resolved.cid) fail('cid-mismatch', 'Published named plan could not be read back with matching content.');
         return { cid: resolved.cid, plan: row.content, row, publication: 'published', publishedDesignCids: unpublished.map(row => row.cid), url: planUrl(resolved.cid), previewUrl: planUrl(resolved.cid) };
         } catch (error) {
             const dependency = error.cid && error.cid !== state.cid ? { dependencyCid: error.cid, dependencyStage: error.stage } : {};
             throw Object.assign(error, { ...dependency, code: error.code || 'publication-failed', cid: state.cid, stage: state.stage,
-                pinnedCids: [...new Set([...state.pinnedCids, ...(error.pinnedCids || [])])], indexed: state.indexed,
+                publishedCids: [...new Set([...state.publishedCids, ...(error.publishedCids || [])])], indexed: state.indexed,
                 url: state.cid ? planUrl(state.cid) : null,
                 next: state.stage === 'resolve' && error.next ? error.next : { tool: 'ugt_publish_plan', arguments: { plan: value, expectedCid, confirm }, action: 'Retry this same confirmed immutable named plan revision; published members retain their CIDs.' } });
         }

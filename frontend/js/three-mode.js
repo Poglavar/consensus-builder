@@ -65,6 +65,9 @@
     let xrayEnabled = new URLSearchParams(window.location.search).get('xray') === '1';
     let xrayButton = null;
     let xrayNote = null;
+    let xraySolidNotice = null;
+    // The radius the footprint pool was last asked to cover for typical layouts (one request each).
+    let suggestedExistingPoolKey = null;
     let floorCutawayControl = null;
     let floorCutawaySelect = null;
     let floorCutawayLevel = null;
@@ -294,7 +297,7 @@
             const btn2d = document.getElementById('mode-2d-toggle');
             const btn3d = document.getElementById('mode-3d-toggle');
             const btnRw = document.getElementById('mode-realistic-toggle');
-            for (const [button, active, loading] of [[btn2d, !modelSelected && !photoSelected, false], [btn3d, modelSelected, modelLoading], [btnRw, photoSelected, photoLoading]]) {
+            for (const [button, active, loading] of [[btn2d, !modelSelected && !photoSelected, !!window.mapParcelsLoading?.()], [btn3d, modelSelected, modelLoading], [btnRw, photoSelected, photoLoading]]) {
                 if (!button) continue;
                 button.classList.toggle('mode-btn-loading', loading);
                 button.setAttribute('aria-pressed', String(active));
@@ -470,10 +473,12 @@
     let buildingModeControlsEl = null;
     let decorTogglesEl = null; // container for per-layer scenery toggles, populated from /decor/layers
 
-    // Parcel selection emphasizes the clicked ground while keeping the city and camera in place.
-    // Proposal isolation remains a separate view with its own framing and visibility rules.
+    // The parcel view, which the 3D click stack's parcel section opens: the parcel with what stands
+    // on it and its permitted massing, every other parcel and road as bare flat ground, camera in
+    // place. Proposal isolation (the design view) is separate, with its own framing.
     let isolatedParcelId = null;
-    let parcelEmphasisOriginals = new WeakMap();
+    // What the parcel or design view hid (three-scene-isolation.js), shown again when it ends.
+    let isolationHidden = [];
     // Proposal isolation: showing a whole proposal (all its parcels + their buildings) at once,
     // reached via the [show] button in the parcel panel. null = not isolating a proposal.
     let isolatedProposalId = null;
@@ -509,7 +514,7 @@
     }
     let parcelClickHandler = null;
     // The parcel under the last click (three-click-plan.js): its panel, its massing and its outline,
-    // without dimming the city. Isolation (isolatedParcelId) is the deliberate second click.
+    // without dimming the city. The parcel view (isolatedParcelId) follows when its section opens.
     let viewedParcelId = null;
     let parcelPointerDownHandler = null;
     let inputHandler = null;      // pointermove/wheel on the canvas: noteInput
@@ -607,9 +612,11 @@
             for (const feature of [...bound, ...body]) {
                 const selected = item.id === selectedId;
                 const hull = feature.properties.geometryRole === 'bound' && body.length > 0;
+                // A tier only an incentive's condition reaches is fainter than the granted bound.
+                const conditional = Boolean(feature.properties.condition);
                 const material = new THREE.MeshPhongMaterial({ color, emissive: selected ? color : 0, emissiveIntensity: selected ? 0.15 : 0,
-                    transparent: hull || appearance === 'ghost', opacity: hull ? 0.1 : appearance === 'solid' ? 1 : 0.25,
-                    depthWrite: !hull && appearance === 'solid', side: THREE.FrontSide, polygonOffset: true,
+                    transparent: hull || conditional || appearance === 'ghost', opacity: conditional ? 0.05 : hull ? 0.1 : appearance === 'solid' ? 1 : 0.25,
+                    depthWrite: !hull && !conditional && appearance === 'solid', side: THREE.FrontSide, polygonOffset: true,
                     polygonOffsetFactor: -1, polygonOffsetUnits: -1 });
                 const meshes = polygonFeatureToMeshes(feature, material, feature.properties.baseM, feature.properties.height);
                 if (!meshes.length) { material.dispose(); continue; }
@@ -619,7 +626,7 @@
                     mesh.renderOrder = 3;
                     planningSourcesGroup.add(mesh);
                     const geometry = new THREE.EdgesGeometry(mesh.geometry);
-                    const edgeMaterial = new THREE.LineBasicMaterial({ color, transparent: true, opacity: hull ? 0.35 : selected ? 1 : 0.6, depthWrite: false });
+                    const edgeMaterial = new THREE.LineBasicMaterial({ color, transparent: true, opacity: conditional ? 0.2 : hull ? 0.35 : selected ? 1 : 0.6, depthWrite: false });
                     const edges = new THREE.LineSegments(geometry, edgeMaterial);
                     markOwnedGeometry(edges, geometry); markOwnedMaterial(edges, edgeMaterial);
                     edges.renderOrder = 4;
@@ -655,6 +662,7 @@
         plannedDisplay = policy.proposed;
         plannedRepresentation = state.proposedForm;
         buildOutDisplaySalt = state.proposedVariation;
+        updateXrayControls();
         if (isActive) {
             const retained = applyRetainedBuildingDisplay();
             if (!retained) rebuild3DBuildingsOnly();
@@ -723,19 +731,6 @@
     function getParcelFeatureById(parcelId) {
         return window.LiveParcelFabric?.get?.(String(parcelId))
             || window.CadastralParcelRepository?.get?.(String(parcelId)) || null;
-    }
-
-    function applyParcelEmphasis() {
-        const emphasis = window.ThreeParcelEmphasis;
-        if (!emphasis || !scene) return;
-        parcelEmphasisOriginals = emphasis.apply(scene, isolatedParcelId, parcelEmphasisOriginals,
-            { dimOthers: isolatedParcelId !== null });
-    }
-
-    function restoreParcelEmphasis() {
-        const emphasis = window.ThreeParcelEmphasis;
-        if (!emphasis || !scene) return;
-        parcelEmphasisOriginals = emphasis.apply(scene, null, parcelEmphasisOriginals);
     }
 
     // Ground-plane footprint polygon (lng/lat) of a nearby 3D building, from the convex hull of all
@@ -810,21 +805,21 @@
         const items = window.PlanningViews?.getItems?.() || [];
         const scene = window.PlanningScene;
         if (!scene || !items.length) return null;
-        let volume = 0;
-        let counted = 0;
+        let volume = 0, conditionalVolume = 0, counted = 0;
+        const conditions = [];
         for (const id of parcelIds) {
             const item = scene.parcelItemOf(items, id);
             if (!item || !Array.isArray(item.volumes) || !item.volumes.length) return null;
-            for (const part of item.volumes) {
-                const height = Number(part.topM) - Number(part.baseM || 0);
-                if (!(height > 0) || !part.geometry) continue;
-                let area = 0;
-                try { area = turf.area({ type: 'Feature', properties: {}, geometry: part.geometry }); } catch (_) { area = 0; }
-                volume += area * height;
-            }
+            // What the rules grant is the plan; an incentive's conditional storeys are reported beside it.
+            const permitted = window.PlanningEnvelopes.permittedVolume(item, turf);
+            volume += permitted.grantedM3;
+            conditionalVolume += permitted.conditionalM3;
+            for (const condition of permitted.conditions) if (!conditions.includes(condition)) conditions.push(condition);
             counted += 1;
         }
-        return counted ? { volume, floorArea: volume / FLOOR_HEIGHT_M } : null;
+        if (!counted) return null;
+        const conditional = conditionalVolume > 0 ? { volume: conditionalVolume, floorArea: conditionalVolume / FLOOR_HEIGHT_M, condition: conditions.join('; ') } : null;
+        return { volume, floorArea: volume / FLOOR_HEIGHT_M, conditional };
     }
 
     // --- Proposal lookup helpers (for the click stack's Design section) ---
@@ -960,6 +955,9 @@
                     ${moneyRow(L.profit, 'profit', L.profitNote)}
                 </tbody>
             </table>
+            ${m.planned?.conditional ? `<p class="parcel-panel-note">${escapeHtml(threeI18n('threeMode.parcelPanel.plannedConditional',
+                'Planned is what the rules grant; {{floorArea}} more needs: {{condition}}',
+                { floorArea: CbFormat.formatArea(m.planned.conditional.floorArea), condition: m.planned.conditional.condition }))}</p>` : ''}
             <p class="parcel-panel-note">${L.floorNote} · ${escapeHtml(threeI18n('threeMode.parcelPanel.amountsIn', 'amounts in {{currency}}', { currency: prices.currency }))}</p>
             ${slider('sale-slider', 'sale-label', prices.sale)}
             ${slider('construction-slider', 'construction-label', prices.construction)}`;
@@ -1074,40 +1072,37 @@
         return true;
     }
 
-    // Show only the given set of parcels (and the buildings on them). Used for whole-proposal
-    // isolation. parcelFeatures are the polygons for testing existing
-    // (untagged) context buildings by footprint centre.
-    function applyIsolationVisibility(parcelIdSet, parcelFeatures) {
-        // flatGroup holds parcels (tagged) and roads (untagged) — show only members of the set.
-        if (flatGroup) flatGroup.children.forEach(c => {
-            const pid = c.userData && c.userData.parcelId;
-            c.visible = (pid != null) && parcelIdSet.has(String(pid));
-        });
-        // buildingGroup holds proposed slices (tagged with their parcelId) and existing context
-        // buildings (untagged). Show proposed slices on member parcels, plus existing buildings
-        // whose footprint centre falls inside any member parcel polygon.
-        [existingBuildingsGroup, proposedBuildingsGroup, ineligibleBuildingsGroup, floorPlanGroup].filter(Boolean).forEach(group => group.children.forEach(c => {
-            const ud = c.userData || {};
-            if (ud.parcelId != null) { c.visible = parcelIdSet.has(String(ud.parcelId)); return; }
-            if (ud.isNearbyBuilding3D && ud.footprintLatLng && parcelFeatures.length) {
-                let inside = false;
-                try {
-                    const pt = turf.point(ud.footprintLatLng);
-                    for (let i = 0; i < parcelFeatures.length; i++) {
-                        if (turf.booleanPointInPolygon(pt, parcelFeatures[i])) { inside = true; break; }
-                    }
-                } catch (_) { }
-                c.visible = inside;
-                return;
-            }
-            c.visible = false;
-        }));
+    // Show only the given parcels and what stands on them, after showing again what the view hid
+    // before; nothing is rebuilt. parcelFeatures place existing (untagged) context buildings by
+    // footprint centre. The design view shows only its own parcels. The parcel view (`keepGround`)
+    // keeps every other parcel and road as bare flat ground, and also hides trees, people and
+    // vehicles, and every permitted massing except `permittedId`.
+    function applyIsolationVisibility(parcelIdSet, parcelFeatures, options = {}) {
+        const isolation = window.__threeSceneIsolation;
+        isolationHidden = isolation.showAgain(isolationHidden);
+        const contains = latLng => {
+            try {
+                const point = turf.point(latLng);
+                return parcelFeatures.some(feature => turf.booleanPointInPolygon(point, feature));
+            } catch (_) { return false; }
+        };
+        const onGround = child => isolation.standsOn(child.userData, parcelIdSet, contains);
+        // flatGroup holds parcels (tagged) and roads (untagged).
+        if (!options.keepGround) isolation.hideChildren([flatGroup], onGround, isolationHidden);
+        // Proposed slices are tagged with their parcel; existing context buildings stand by footprint centre.
+        isolation.hideChildren([existingBuildingsGroup, proposedBuildingsGroup, ineligibleBuildingsGroup, floorPlanGroup], onGround, isolationHidden);
+        // Planned decorations aren't parcel-specific; hide them while isolated. Planned grounds are
+        // flat, so the parcel view keeps them.
+        isolation.hideChildren([options.keepGround ? null : plannedFlatGroup, parkGroup, squareGroup, lakeGroup, stationGroup, existingTransitAlignmentGroup], undefined, isolationHidden);
+        if (options.keepGround) {
+            isolation.hideChildren([treesGroup, lifeGroup], undefined, isolationHidden);
+            isolation.hideChildren([planningSourcesGroup], child => options.permittedId != null
+                && child.userData?.planningRepresentationId === options.permittedId, isolationHidden);
+        }
         updateXrayControls();
-        // Planned decorations aren't parcel-specific; hide them while isolated.
-        [plannedFlatGroup, parkGroup, squareGroup, lakeGroup, stationGroup, existingTransitAlignmentGroup].forEach(g => { if (g) g.visible = false; });
+        invalidateThreeView();
     }
 
-    // Hide everything except the given parcel and the building footprint(s) on it.
     // The photoreal layer carves the mesh for every applied proposal; when isolation hides
     // some proposals' surfaces, their carve holes would gape open — so it listens for this.
     function notifyIsolationChanged() {
@@ -1120,18 +1115,32 @@
         } catch (_) { }
     }
 
+    // The parcel view. The photo mesh cannot be flattened, and its carve holes follow the designs on
+    // show, so the photo view keeps the city and only outlines the parcel.
     function isolateParcel(parcelId) {
         if (!parcelId) return;
         // If the current view is a whole-proposal isolation, restore it before changing view type.
         if (isolatedProposalId !== null) clearIsolation();
-        isolatedParcelId = parcelId;
-        viewedParcelId = parcelId;
-        isolatedProposalId = null;
+        viewedParcelId = String(parcelId);
+        if (realisticLayerActive) return;
+        isolatedParcelId = viewedParcelId;
         updateIsolationButton();
-        applyParcelEmphasis();
-        // A parcel selection does not isolate photoreal proposal cuts either: all city surfaces
-        // remain present while the selected parcel receives the bright outline/fill.
-        notifyIsolationChanged();
+        applyParcelIsolation();
+    }
+
+    function applyParcelIsolation() {
+        const feature = getParcelFeatureById(isolatedParcelId);
+        applyIsolationVisibility(new Set([isolatedParcelId]), feature ? [feature] : [],
+            { keepGround: true, permittedId: parcelMassingItem(isolatedParcelId)?.id ?? null });
+    }
+
+    // The parcel section closed or gave way to another: the city returns, the parcel stays in view.
+    function endParcelView() {
+        if (isolatedParcelId === null) return;
+        isolatedParcelId = null;
+        isolationHidden = window.__threeSceneIsolation.showAgain(isolationHidden);
+        updateIsolationButton();
+        invalidateThreeView();
     }
 
     // Isolation hides the whole city around the chosen ground, so leaving the camera where it was
@@ -1286,27 +1295,17 @@
     // Null ends the parcel view.
     function viewParcel(parcelId) {
         viewedParcelId = parcelId ? String(parcelId) : null;
-        applyParcelEmphasis();
     }
 
     function clearIsolation() {
         if (isolatedParcelId === null && isolatedProposalId === null) { if (viewedParcelId !== null) viewParcel(null); return; }
         viewedParcelId = null;
-        const wasProposalIsolated = isolatedProposalId !== null;
         isolatedParcelId = null;
         isolatedProposalId = null;
         updateIsolationButton();
-        restoreParcelEmphasis();
-        if (!wasProposalIsolated) {
-            notifyIsolationChanged();
-            return;
-        }
-        // Restore every flatGroup child (roads + all parcels) before re-applying the mode,
-        // which may then re-hide applied-descendant parcels in Built mode.
-        if (flatGroup) flatGroup.children.forEach(c => { c.visible = true; });
-        // Rebuild buildings so their per-object visibility resets cleanly to the mode default.
-        rebuild3DBuildingsOnly();
-        applyModeVisibility();
+        // Show again exactly what the view hid; the layers kept their own visibility meanwhile.
+        isolationHidden = window.__threeSceneIsolation.showAgain(isolationHidden);
+        invalidateThreeView();
         notifyIsolationChanged();
     }
 
@@ -1516,7 +1515,6 @@
                 window.ProposalSelection?.clear?.();
             });
             if (kind === 'designs') {
-                body.replaceChildren();
                 clearIsolation();
                 withStackDriving(() => window.selectAndHighlightProposal?.(instance.id, null, false, false, true));
                 const proposal = window.proposalStorage?.getProposal?.(instance.id);
@@ -1533,7 +1531,7 @@
                 });
                 body.appendChild(actions);
             } else if (kind === 'parcels' || kind === 'formed') {
-                if (viewedParcelId !== instance.id) viewParcel(instance.id);
+                isolateParcel(instance.id);
                 if (updateParcelInfoPanel(instance.id)) body.appendChild(parcelInfoPanelEl);
             } else if (kind === 'built') {
                 hostInspector(body);
@@ -1556,6 +1554,7 @@
             return true;
         },
         release({ keepSelection = false } = {}) {
+            endParcelView();
             clearStackFocus();
             parcelInfoPanelEl?.remove();
             const hosted = stackInspector;
@@ -1945,6 +1944,27 @@
         });
         floorCutawayControl.append(cutawayLabel, floorCutawaySelect);
         xrayRow.appendChild(floorCutawayControl);
+        // Typical layouts draw inside the existing volumes, which X-ray does not cut: solid ones hide
+        // them. Said here, with the one click that turns existing buildings transparent.
+        xraySolidNotice = document.createElement('div');
+        xraySolidNotice.className = 'three-mode-xray-solid-notice';
+        const solidNoticeText = document.createElement('span');
+        solidNoticeText.textContent = threeI18n('threeMode.controls.xraySolidExisting',
+            'Existing buildings are solid, so their interiors are hidden.');
+        const makeTransparentButton = document.createElement('button');
+        makeTransparentButton.type = 'button';
+        makeTransparentButton.id = 'three-mode-xray-make-transparent';
+        makeTransparentButton.className = 'btn three-mode-xray-button';
+        makeTransparentButton.textContent = threeI18n('threeMode.controls.xrayMakeTransparent', 'Make transparent');
+        makeTransparentButton.addEventListener('click', () => {
+            if (window.BusyControl.isBusy(makeTransparentButton)) return;
+            window.BusyControl.track(makeTransparentButton, async () => {
+                window.PlanningViews.configure('existing', 'ghost');
+                await window.ThreeSceneReady.wait({ requireExisting: true });
+            }).catch(error => console.error(`[${new Date().toISOString()}] [3D] Could not make existing buildings transparent`, error));
+        });
+        xraySolidNotice.append(solidNoticeText, makeTransparentButton);
+        xrayRow.appendChild(xraySolidNotice);
         xrayNote = document.createElement('div');
         xrayNote.id = 'three-mode-xray-note';
         xrayNote.className = 'three-mode-xray-note';
@@ -2613,7 +2633,6 @@
                 console.warn('[3D] proposal pick surface failed; skipping one proposal', proposalError);
             }
         });
-        applyParcelEmphasis();
     }
 
     // Park lawns and green proposal ground: the procedural grass pattern (three-grass.js), in true
@@ -3951,9 +3970,7 @@
             if (!root.children.length) return;
             existingTransitAlignmentGroup = root;
             const builtPolicy = buildingDisplayPolicy.resolveBuiltDisplayPolicy(builtDisplay, window.PlanningViews?.getState()?.existingScope);
-            existingTransitAlignmentGroup.visible = builtPolicy.showExistingRail
-                && isolatedParcelId === null
-                && isolatedProposalId === null;
+            existingTransitAlignmentGroup.visible = builtPolicy.showExistingRail;
             targetScene.add(existingTransitAlignmentGroup);
         };
 
@@ -4041,7 +4058,6 @@
             }
         }
         buildPlannedParcelLayout3D(parcelLayoutGroup);
-        applyParcelEmphasis();
     }
 
     // Recessed lakes and underground station entrances need openings in the otherwise opaque
@@ -4144,7 +4160,6 @@
         const signal = sceneAbort?.signal;
         const generation = ++parcelGroundGeneration;
         const stillCurrent = () => isActive && !signal?.aborted && generation === parcelGroundGeneration && targetGroup === flatGroup;
-        restoreParcelEmphasis();
         for (let index = targetGroup.children.length - 1; index >= 0; index--) {
             const child = targetGroup.children[index];
             if (child?.userData?.isParcel) { threeResources.disposeOwnedSubtree(child); targetGroup.remove(child); }
@@ -4153,7 +4168,6 @@
         if (!stillCurrent()) return;
         rebuildGroundOnly(null);
         applyParcelVisibilityForMode(derivedParcelVisibilityMode());
-        applyParcelEmphasis();
     }
 
     // Set of parcel IDs that exist *only* because of an applied/executed proposal.
@@ -6528,10 +6542,8 @@
 
     function rebuildTreesOnly() {
         if (!isActive || !treesGroup) return;
-        restoreParcelEmphasis();
         disposeTreesGroup();
         if (treesEnabled) buildTreesGroup();
-        applyParcelEmphasis();
         invalidateThreeView();
     }
 
@@ -8347,7 +8359,6 @@
         corridorTerrainCommittedKeys = completedKeys;
         corridorGroup.visible = false;
         scene.add(group);
-        applyParcelEmphasis();
         const stationHeights = profiles.flatMap(profile => profile.stations.map(station => station.z))
             .filter(Number.isFinite);
         const minZ = stationHeights.length ? Math.min(...stationHeights) : null;
@@ -8584,6 +8595,10 @@
     function appendSuggestedFloorPlans(feature, buildingMaterial, targetGroup, variationDeps) {
         if (!xrayEnabled || !suggestedPlansEnabled || !floorPlanGroup || !suggestedFloorPlans || !suggestedPlanContext) return false;
         if (!feature?.geometry || feature.properties?.modelUrl || feature.properties?.floorPlans) return false;
+        // The suggested layout is a housing layout: a building stated for another use gets none, and
+        // a stated housing use sets its ground floor (building-use.js).
+        const use = window.BuildingUse.normalize(feature.properties?.use);
+        if (use && !window.BuildingUse.housesPeople(use)) return false;
         let plan;
         try { plan = window.UrbanRuleVariation.plannedDrawPlan(feature, plannedRepresentation, variationDeps, buildOutDisplaySalt); } catch (_) { return false; }
         const subject = plan.buildOut || plan.massing;
@@ -8604,7 +8619,7 @@
                 owner: feature, parcels, turf, generator: suggestedFloorPlans, region: suggestedRegion(),
                 roads: suggestedRoadsFor(subject), heightM: height, storeyFallbackM: window.STOREY_HEIGHT_M || 3.3,
                 neighbours: suggestedPlanContext.neighbourPool(feature, window.proposedBuildings, window.buildingFeaturePool, turf),
-                cache: suggestedPlanCache, rules: facadeBayWidthM ? { facadeBayWidthM } : undefined
+                cache: suggestedPlanCache, rules: facadeBayWidthM || use ? { ...(facadeBayWidthM ? { facadeBayWidthM } : {}), ...(use ? window.BuildingUse.layoutRules(use) : {}) } : undefined
             });
         } catch (error) {
             floorPlanErrors++;
@@ -8658,20 +8673,34 @@
     // gets nothing, and buildings being replaced by a proposal are skipped.
     function appendSuggestedExistingFloorPlans(buildingMaterial) {
         if (!xrayEnabled || !suggestedPlansEnabled || !suggestedExistingEnabled || !floorPlanGroup || !suggestedFloorPlans || !suggestedPlanContext) return;
-        const pool = Array.isArray(window.buildingFeaturePool) ? window.buildingFeaturePool : [];
-        if (!pool.length) return;
         const view = getGeoCameraView();
         if (!view) return;
         const centre = turf.point([view.targetLng, view.targetLat]);
+        // The pool holds what the 2D map loaded, often a single close viewport. Ask once for the
+        // footprints of the whole loaded radius; their arrival (buildingsLayerUpdated) rebuilds this.
+        const radiusKey = `${nearbyProposalBuildingsKey}|${view.targetLng.toFixed(4)},${view.targetLat.toFixed(4)}|r${buildingLoadRadiusM}`;
+        if (suggestedExistingPoolKey !== radiusKey) {
+            suggestedExistingPoolKey = radiusKey;
+            const [west, south, east, north] = turf.bbox(turf.circle(centre, buildingLoadRadiusM / 1000, { units: 'kilometers' }));
+            window.ensureBuildingFootprintsForBounds?.([[south, west], [north, east]], { pad: 0 })?.catch(error =>
+                console.error(`[${new Date().toISOString()}] [3D] Footprints for typical layouts could not be loaded`, error));
+        }
+        const pool = Array.isArray(window.buildingFeaturePool) ? window.buildingFeaturePool : [];
+        if (!pool.length) return;
         const proposed = Array.isArray(window.proposedBuildings) ? window.proposedBuildings : [];
         const storeyM = window.STOREY_HEIGHT_M || 3.3;
         let count = 0;
+        // Nearest first, so the cap keeps the buildings around the view rather than the oldest loaded.
+        const nearby = [];
         for (const feature of pool) {
             if (!feature?.geometry) continue;
+            let distanceM = Infinity;
+            try { distanceM = turf.distance(centre, turf.centroid(feature), { units: 'meters' }); } catch (_) { distanceM = Infinity; }
+            if (distanceM <= buildingLoadRadiusM) nearby.push({ feature, distanceM });
+        }
+        nearby.sort((a, b) => a.distanceM - b.distanceM);
+        for (const { feature } of nearby) {
             if (count >= SUGGESTED_EXISTING_CAP) { suggestedPlanTotals.existingCapped = true; break; }
-            let within = false;
-            try { within = turf.distance(centre, turf.centroid(feature), { units: 'meters' }) <= buildingLoadRadiusM; } catch (_) { within = false; }
-            if (!within) continue;
             const props = feature.properties || {};
             // The pool carries height_m and floors; a footprint with neither stays a plain volume.
             const height = Number.isFinite(props.height_m) && props.height_m > 0 ? props.height_m
@@ -8948,6 +8977,7 @@
             if (suggestedExistingCheckbox) suggestedExistingCheckbox.checked = suggestedExistingEnabled;
         }
         if (floorCutawayControl) floorCutawayControl.hidden = !xrayEnabled;
+        if (xraySolidNotice) xraySolidNotice.hidden = !(xrayEnabled && suggestedPlansEnabled && suggestedExistingEnabled && builtDisplay === 'solid');
         if (xrayEnabled && floorCutawaySelect) {
             const levels = [...new Set((floorPlanGroup?.children || []).filter(group => group.visible !== false)
                 .flatMap(group => group.userData.availableLevels || []))].sort((a,b) => a-b);
@@ -9019,7 +9049,6 @@
             || previous.builtPolicy.showSurviving !== builtPolicy.showSurviving
             || previous.builtPolicy.showDemolished !== builtPolicy.showDemolished)) return false;
         if (proposedVisible && !previous.proposedReady) return false;
-        restoreParcelEmphasis();
         existingBuildingsGroup.visible = existingVisible;
         proposedBuildingsGroup.visible = proposedVisible;
         const update = (group, opacity, existing) => buildingDisplayPolicy.updateRetainedBuildingMaterials(group, {
@@ -9030,7 +9059,8 @@
         if (existingVisible) update(existingBuildingsGroup, builtPolicy.material === 'solid' ? 1 : 0.5, true);
         if (proposedVisible) update(proposedBuildingsGroup, plannedDisplay === 'solid' ? 1 : 0.5, false);
         if (existingTransitAlignmentGroup) existingTransitAlignmentGroup.visible = builtPolicy.showExistingRail && !realisticLayerActive;
-        if (isolatedProposalId !== null) isolateProposal(isolatedProposalId);
+        if (isolatedParcelId !== null) applyParcelIsolation();
+        else if (isolatedProposalId !== null) isolateProposal(isolatedProposalId);
         refreshClickStackFigures();
         invalidateThreeView();
         return true;
@@ -9049,7 +9079,6 @@
         const previous = buildingDisplaySnapshot;
         buildingBuildPending = true;
         buildingDisplaySnapshot = null;
-        restoreParcelEmphasis();
         // Build replacements off-scene. Cooperative work yields between buildings; clearing
         // the displayed groups first would expose an empty or partially rebuilt city each time.
         const nextExisting = rebuildExisting ? new THREE.Group() : existingBuildingsGroup;
@@ -9113,7 +9142,7 @@
             ensureNearbyTrees();
             ensureNearbyWater();
             ensureNearbyGreen();
-            if (isolatedParcelId !== null) applyParcelEmphasis();
+            if (isolatedParcelId !== null) applyParcelIsolation();
             else if (isolatedProposalId !== null) isolateProposal(isolatedProposalId);
             refreshClickStackFigures();
             updateXrayControls();
@@ -9539,6 +9568,9 @@
     // thousands of city meshes) and any uploaded glTF models still downloading (ephemerals.md).
     function updateBuildingsLoader() {
         try {
+            // The same two waits as the Built and Proposed arcs around Buildings and massing.
+            window.PlanningLoading?.set('existing', 'model', isActive && nearbyProposalBuildingsFetching);
+            window.PlanningLoading?.set('proposed', 'model', isActive && pendingModelLoads > 0);
             const loading = isActive && (nearbyProposalBuildingsFetching || pendingModelLoads > 0);
             if (!loading) {
                 if (buildingsLoaderRelease) {
@@ -9920,6 +9952,7 @@
         try { window.ThreeClickStack?.close({ silent: true }); } catch (_) { }
         isolatedParcelId = null;
         isolatedProposalId = null;
+        isolationHidden = [];
         isolationResetEl = null;
         isolationBannerEl = null;
         parcelInfoPanelEl = null;
@@ -9928,6 +9961,7 @@
         facadeNote = null;
         xrayButton = null;
         xrayNote = null;
+        xraySolidNotice = null;
         floorCutawayControl = null;
         floorCutawaySelect = null;
         sunLayer?.detach();
@@ -10879,6 +10913,7 @@
             stopBuildingRadiusPreview?.();
             isolatedParcelId = null;
             isolatedProposalId = null;
+            isolationHidden = window.__threeSceneIsolation.showAgain(isolationHidden);
             try { updateIsolationButton(); } catch (_) { }
         }
         if (options.exiting) buildingViewDirty = true;

@@ -53,7 +53,7 @@ test.describe('proposal button controls follow-up @features', () => {
     // Each row went to the courier, then the index, under its own CID; each local design now hashes
     // to the CID it is published as.
     const posts = index.requests.filter(request => request.method === 'POST');
-    expect(posts.map(request => request.path)).toEqual(['/pins', '/designs', '/pins', '/designs', '/pins', '/designs']);
+    expect(posts.map(request => request.path)).toEqual(['/designs', '/designs', '/designs']);
     const published = await page.evaluate(ids => ids.map(id => {
       const w = window as any;
       const proposal = w.proposalStorage.getProposal(id);

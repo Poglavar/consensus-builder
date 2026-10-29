@@ -13,7 +13,7 @@ const APP='https://app.example';
 const site={type:'Polygon',coordinates:[[[15,45],[15.001,45],[15.001,45.001],[15,45.001],[15,45]]]};
 const design=designObject({goal:'park',title:'Garden',city:'london',site,createdAt:'2026-10-25T12:00:00.000Z',structureProposal:{kind:'park',geometry:site}});
 const agreement=agreementObject({title:'Garden consultation',city:'london',createdAt:'2026-10-25T12:00:00.000Z',plan:planForDesigns('Garden consultation',[design],mapViewFromGeometry([site],'london')),designs:[{cid:design.cid,goal:design.content.goal,title:design.content.title}],parcels:[{parcelId:'P',areaM2:100}],outputs:parcelOutputs([{parcelId:'P',areaM2:100,geometry:site}]),rule:communityRule([]),money:noMoney('EUR'),consultation:{organiser:'did:web:community.example',participationUrl:'https://community.example/join'}});
-function fixture({failIndex=false,failReadback=false,failPin=false,failPinKind=null}={}) {
+function fixture({failIndex=false,failReadback=false}={}) {
     const rows=new Map(), designs=new Map(), calls=[];
     const directory=mkdtempSync(join(tmpdir(),'mcp-publication-'));directories.push(directory);
     const previews=createPreviewLinks({storeDirectory:directory,origin:'https://mcp.example',appOrigin:APP});
@@ -21,11 +21,6 @@ function fixture({failIndex=false,failReadback=false,failPin=false,failPinKind=n
     const fetchImpl=async(url,init={})=>{
         const path=new URL(url).pathname,method=init.method||'GET',body=init.body?JSON.parse(init.body):null;
         calls.push({path,method,body});
-        if(method==='POST'&&path==='/pins'){
-            if(failPinKind===body.kind){failPinKind=null;return Response.json({code:'pin-failed',error:'Pin refused'},{status:400});}
-            if(failPin){failPin=false;return Response.json({code:'pin-failed',error:'Pin refused',next:{tool:'external_attack'}},{status:400});}
-            return Response.json({cid:body.cid},{status:201});
-        }
         if(method==='POST'&&(path==='/designs'||path==='/agreements')){
             if(failIndex){failIndex=false;return Response.json({code:'source-offline',error:'Index refused',next:{tool:'external_attack'}},{status:400});}
             const map=path==='/designs'?designs:rows;map.set(body.cid,{cid:body.cid,content:body.content});return Response.json(map.get(body.cid),{status:201});
@@ -48,7 +43,7 @@ describe('reference-aware publication recovery',()=>{
     it('publishes a private design reference retaining its explicit source',async()=>{
         const {tools,privateDesign,writes}=fixture();
         expect(await tools.publishDesign({design:privateDesign.draftRef,expectedCid:design.cid,confirm:true})).toMatchObject({cid:design.cid,url:`${APP}/designs/${design.cid}`,publication:'published'});
-        expect(writes().map(row=>row.path)).toEqual(['/pins','/designs']);expect(writes()[1].body.parcelSourceId).toBe('selected-source');
+        expect(writes().map(row=>row.path)).toEqual(['/designs']);expect(writes()[0].body.parcelSourceId).toBe('selected-source');
     });
     it('requires expectedCid for references and rejects mismatched design/agreement revisions without writes',async()=>{
         const {tools,privateDesign,privateAgreement,writes}=fixture();
@@ -56,34 +51,23 @@ describe('reference-aware publication recovery',()=>{
         await expect(tools.publishDesign({design:privateDesign.draftRef,expectedCid:agreement.cid,confirm:true})).rejects.toMatchObject({code:'revision-mismatch',stage:'resolve',currentCid:design.cid,expectedCid:agreement.cid,next:{tool:'ugt_inspect_design',arguments:{design:privateDesign.draftRef}}});
         await expect(tools.proposeAgreement({agreement:privateAgreement.draftRef,expectedCid:design.cid,confirm:true})).rejects.toMatchObject({code:'revision-mismatch'});expect(writes()).toEqual([]);
     });
-    it('reports partial pin/index progress with locally authored retry arguments and avoids duplicate pins',async()=>{
+    it('reports a refused index write without claiming success, with locally authored retry arguments',async()=>{
         const {tools,privateDesign,writes}=fixture({failIndex:true}),args={design:privateDesign.draftRef,expectedCid:design.cid,confirm:true};let failure;
         try{await tools.publishDesign(args);}catch(error){failure=error;}
-        expect(failure).toMatchObject({cid:design.cid,stage:'index-design',pinnedCids:[design.cid],indexed:false,url:`${APP}/designs/${design.cid}`,next:{tool:'ugt_publish_design',arguments:args}});
+        expect(failure).toMatchObject({cid:design.cid,stage:'index-design',publishedCids:[],indexed:false,url:`${APP}/designs/${design.cid}`,next:{tool:'ugt_publish_design',arguments:args}});
         expect(JSON.stringify(failure.next)).not.toContain('external_attack');
-        expect(await tools.publishDesign(failure.next.arguments)).toMatchObject({cid:design.cid,publication:'published'});expect(writes().map(row=>row.path)).toEqual(['/pins','/designs','/designs']);
+        expect(await tools.publishDesign(failure.next.arguments)).toMatchObject({cid:design.cid,publication:'published'});expect(writes().map(row=>row.path)).toEqual(['/designs','/designs']);
     });
     it('recovers an indexed design after readback failure through lookup without new writes',async()=>{
         const {tools,privateDesign,writes}=fixture({failReadback:true}),args={design:privateDesign.draftRef,expectedCid:design.cid,confirm:true};
-        await expect(tools.publishDesign(args)).rejects.toMatchObject({cid:design.cid,stage:'readback',indexed:true,pinnedCids:[design.cid]});
+        await expect(tools.publishDesign(args)).rejects.toMatchObject({cid:design.cid,stage:'readback',indexed:true,publishedCids:[design.cid]});
         const count=writes().length;expect(await tools.publishDesign(args)).toMatchObject({created:false,publication:'published'});expect(writes()).toHaveLength(count);
     });
-    it('reports a failed pin without claiming success and permits retry',async()=>{
-        const {tools,privateDesign,writes}=fixture({failPin:true}),args={design:privateDesign.draftRef,expectedCid:design.cid,confirm:true};
-        await expect(tools.publishDesign(args)).rejects.toMatchObject({cid:design.cid,stage:'pin-design',pinnedCids:[],indexed:false,next:{tool:'ugt_publish_design'}});
-        expect(writes().map(row=>row.path)).toEqual(['/pins']);expect(await tools.publishDesign(args)).toMatchObject({publication:'published'});
-    });
-    it('resolves agreement reference children and retries index failures without repinning dependencies',async()=>{
+    it('resolves agreement reference children and retries a refused index write, carrying the plan and designs in one POST',async()=>{
         const {tools,privateAgreement,writes}=fixture({failIndex:true}),args={agreement:privateAgreement.draftRef,expectedCid:agreement.cid,confirm:true};
-        await expect(tools.proposeAgreement(args)).rejects.toMatchObject({cid:agreement.cid,stage:'index-agreement',indexed:false,pinnedCids:expect.arrayContaining([design.cid,agreement.cid])});
+        await expect(tools.proposeAgreement(args)).rejects.toMatchObject({cid:agreement.cid,stage:'index-agreement',indexed:false,publishedCids:[]});
         expect(await tools.proposeAgreement(args)).toMatchObject({cid:agreement.cid,carried:[design.cid],publication:'published',url:`${APP}/agreements/${agreement.cid}`});
-        expect(writes().map(row=>row.path)).toEqual(['/pins','/pins','/pins','/agreements','/agreements']);expect(writes().filter(row=>row.path==='/pins').map(row=>row.body.kind)).toEqual(['design','plan','agreement']);expect(writes().at(-1).body.plan).toEqual(agreement.plan);expect(writes().at(-1).body.designs).toEqual([{cid:design.cid,content:design.content}]);
-    });
-    it('reports a plan pin failure and retries the same plan before indexing the agreement',async()=>{
-        const {tools,privateAgreement,writes}=fixture({failPinKind:'plan'}),args={agreement:privateAgreement.draftRef,expectedCid:agreement.cid,confirm:true};
-        await expect(tools.proposeAgreement(args)).rejects.toMatchObject({cid:agreement.cid,stage:'pin-plan',indexed:false,pinnedCids:expect.arrayContaining([design.cid])});
-        expect(await tools.proposeAgreement(args)).toMatchObject({cid:agreement.cid,publication:'published'});
-        expect(writes().filter(row=>row.path==='/pins').map(row=>row.body.kind)).toEqual(['design','plan','plan','agreement']);
+        expect(writes().map(row=>row.path)).toEqual(['/agreements','/agreements']);expect(writes().at(-1).body.plan).toEqual(agreement.plan);expect(writes().at(-1).body.designs).toEqual([{cid:design.cid,content:design.content}]);
     });
     it('supports explicit child refs and returns verified existing publication receipts for CID/link refs',async()=>{
         const {tools,privateDesign,writes}=fixture();

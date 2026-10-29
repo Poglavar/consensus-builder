@@ -88,6 +88,8 @@ describe('cadastral parcel fetch transport', () => {
         const footprint = { type: 'Polygon', coordinates: [[[15.8, 45.7], [16.1, 45.7], [16.1, 45.9], [15.8, 45.9], [15.8, 45.7]]] };
         await expect(transport.fetchUnderGeometry(footprint, { city: 'zagreb' })).rejects.toMatchObject({ status: 413 });
         expect(fetch.mock.calls.map(([url]) => new URL(url).host)).toEqual(['api.urbangametheory.xyz']);
+        // The request asks for candidates only; there is no mode flag any more.
+        expect(JSON.parse(fetch.mock.calls[0][1].body)).toEqual({ geometry: footprint, srid: 4326 });
     });
 
     it('never asks DGU while our server answers, nor for a city outside Croatia', async () => {

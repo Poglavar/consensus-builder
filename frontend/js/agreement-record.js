@@ -474,7 +474,7 @@
     /**
      * The agreement's land distribution against a scheme's rules (approval-regimes.js checkAllocation):
      * the scheme its rule names, or `template` to try another one. null without a scheme.
-     * @returns {{ template: object, check: { ok: boolean, rules: object[] } } | null}
+     * @returns {{ template: object, check: { ok: boolean|null, rules: object[] } } | null}
      */
     function schemeCheck(raw, template) {
         const agreement = normalize(raw);
@@ -486,7 +486,7 @@
         const facts = {
             basis: agreement.rule.settlement?.method === 'value' ? 'value' : 'area',
             poolAreaM2: landBalance(agreement).inputM2, owners,
-            partyCount: landParties(agreement).size, proposerAreaM2: rows.proposerM2
+            partyCount: approval().participantTally(approvalSubject(agreement), [], scheme)?.total ?? null, proposerAreaM2: rows.proposerM2
         };
         return { template: scheme, check: regimes().checkAllocation(scheme, facts) };
     }
@@ -529,7 +529,7 @@
         const basis = value => (value === 'value' ? 'land value' : 'surface area');
         const extra = { rule, scheme: template.id, version: template.version };
         if (rule.kind === 'basis') return { code: 'scheme-basis', section: 'rule', message: `${name} distributes by ${basis(rule.required)}; this agreement settles by ${basis(rule.actual)}.`, ...extra };
-        if (rule.kind === 'parties') return { code: 'scheme-parties', section: 'land', message: `Only ${rule.actual} ${rule.actual === 1 ? 'party brings' : 'parties bring'} land in; ${name} needs at least ${rule.required}.`, ...extra };
+        if (rule.kind === 'parties') return { code: 'scheme-parties', section: 'land', message: `The land has ${rule.actual} distinct owners; ${name} needs at least ${rule.required}.`, ...extra };
         if (rule.kind === 'proposer') return { code: 'scheme-proposer', section: 'allocation', message: `${name} is authority-led: land returns to its owners or goes to public use, so a proposer cannot acquire ${Math.round(rule.areaM2)} m².`, ...extra };
         const limit = percentText(rule.limit.numerator / rule.limit.denominator);
         if (rule.per === 'owner') {
@@ -578,7 +578,7 @@
         const scheme = schemeCheck(agreement);
         if (scheme) {
             const ownerNames = new Map(agreement.inputs.parcels.map(parcel => [partyKey(parcel.parcelId), partyName(parcel.parcelId)]));
-            scheme.check.rules.filter(rule => !rule.ok).forEach(rule => issues.push(schemeIssue(scheme.template, rule, ownerNames)));
+            scheme.check.rules.filter(rule => rule.ok === false).forEach(rule => issues.push(schemeIssue(scheme.template, rule, ownerNames)));
         }
         if (valuesReady) {
             const expected = settle(agreement).money.lines;

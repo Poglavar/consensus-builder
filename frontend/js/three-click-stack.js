@@ -258,13 +258,14 @@
         const body = state.el.querySelector(`.click-stack__section[data-kind="${kind}"] .click-stack__body`);
         try {
             const instance = selectedInstance(state.stack, kind);
+            // A refresh re-runs this on the open section: start from an empty body, or every scene
+            // rebuild (a Layers toggle) would add another copy of the selector and the related lists.
+            body.replaceChildren();
             state.adapter.activate(kind, instance, body, options);
             if (kind === 'agreements') {
-                body.replaceChildren();
                 state.agreementReady = global.DesignMemberships.mountAgreement(body, instance, global, { group: state.agreementGroup,
                     onFocus: item => { if (isOpen() && state.stack.selectedKind === 'agreements' && selectedInstance(state.stack, 'agreements')?.id === item.id) state.adapter.focus?.('agreements', item); } });
             } else if (kind === 'plans') {
-                body.replaceChildren();
                 const version = state.membershipVersion;
                 const mount = () => {
                     if (body.isConnected) global.DesignMemberships.mountSection(body, kind, instance, state.memberships, global, {

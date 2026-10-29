@@ -1,6 +1,6 @@
 // agents/publication-client.js over a fake fetch that answers as the index does: every CID is computed
-// locally and an answer naming another is refused; pinning and indexing are repeatable (409 answers the
-// row the index holds); the chain account is recorded once (201) and refreshed (200), and a mint the
+// locally and an answer naming another is refused; indexing is repeatable (409 answers the row the index
+// holds) and publication pins nothing (no POST /pins); the chain account is recorded once (201) and refreshed (200), and a mint the
 // index cannot see yet is asked again after a pause; owner decisions are listed and relayed.
 import { describe, expect, it } from 'vitest';
 import { addressOf, cleanApiBase, createIndexClient, onchainNames } from '../agents/publication-client.js';
@@ -17,7 +17,6 @@ const ACCOUNT = '9xQeWvG816bUx9EPjHmaT23yvVM2ZWbrrpZb9PusVFin';
 
 // The index as an in-memory emulator of the routes the client calls.
 function fakeIndex({ onchainUnseen = 0, answerCid = null, refuseDesigns = null } = {}) {
-    const pins = new Map();
     const designs = new Map();
     const agreements = new Map();
     const decisions = new Map();
@@ -30,15 +29,10 @@ function fakeIndex({ onchainUnseen = 0, answerCid = null, refuseDesigns = null }
         const body = init.body === undefined ? undefined : JSON.parse(init.body);
         calls.push({ method, path: pathname, query: Object.fromEntries(searchParams), headers: init.headers, body });
         let match;
-        if (method === 'POST' && pathname === '/pins') {
-            const cid = cidOf(Buffer.from(body.bytes, 'base64'));
-            if (cid !== body.cid) return json(409, { code: 'cid-mismatch', error: 'the bytes hash to another CID' });
-            pins.set(cid, body.kind);
-            return json(201, { cid: answerCid ?? cid, pinnedAt: '2026-10-22T09:00:00.000Z' });
-        }
         if (method === 'POST' && pathname === '/designs') {
             if (designs.has(body.cid)) return json(409, designs.get(body.cid));
             if (refuseDesigns) return json(refuseDesigns.status, refuseDesigns.body);
+            if (answerCid) return json(201, { cid: answerCid });
             const row = { cid: body.cid, city: 'zagreb', binding: { parcels: [{ parcelId: 'HR-1' }], coverage: 'complete' }, content: body.content, parcelSourceId: body.parcelSourceId };
             designs.set(body.cid, row);
             return json(201, row);
@@ -85,7 +79,7 @@ function fakeIndex({ onchainUnseen = 0, answerCid = null, refuseDesigns = null }
         }
         return json(500, { error: `unexpected ${method} ${pathname}` });
     };
-    return { fetchImpl, calls, pins, designs, agreements, decisions };
+    return { fetchImpl, calls, designs, agreements, decisions };
 }
 
 const clientOver = (index, options = {}) => createIndexClient({ apiBase: `${API}/`, origin: ORIGIN, fetchImpl: index.fetchImpl, ...options });
@@ -105,16 +99,16 @@ describe('addresses', () => {
 });
 
 describe('publishing designs and agreements', () => {
-    it('pins the exact canonical bytes, then indexes the design, sending the app origin on writes only', async () => {
+    it('indexes the design under its canonical CID in one write, pinning nothing, sending the app origin on writes only', async () => {
         const index = fakeIndex();
         const client = clientOver(index);
         expect(client.apiBase).toBe(API);
+        expect(client.pin).toBeUndefined();
         const published = await client.publishDesign(design, { parcelSourceId: 'hr-cadastre' });
-        const { cid, bytes } = addressOf(design);
+        const { cid } = addressOf(design);
         expect(published).toMatchObject({ cid, created: true, row: { cid, city: 'zagreb' } });
-        expect(index.calls.map(call => `${call.method} ${call.path}`)).toEqual(['POST /pins', 'POST /designs']);
-        expect(index.calls[0].body).toEqual({ kind: 'design', cid, bytes: bytes.toString('base64') });
-        expect(index.calls[1].body).toEqual({ cid, content: design, parcelSourceId: 'hr-cadastre' });
+        expect(index.calls.map(call => `${call.method} ${call.path}`)).toEqual(['POST /designs']);
+        expect(index.calls[0].body).toEqual({ cid, content: design, parcelSourceId: 'hr-cadastre' });
         expect(index.calls.every(call => call.headers.origin === ORIGIN)).toBe(true);
         await client.getDesign(cid);
         expect(index.calls.at(-1).headers.origin).toBeUndefined();
@@ -131,11 +125,11 @@ describe('publishing designs and agreements', () => {
 
     it('refuses an answer that names another CID, and passes the index\'s refusals on with their code', async () => {
         const otherCid = addressOf({ other: true }).cid;
-        await expect(clientOver(fakeIndex({ answerCid: otherCid })).pin('design', design))
-            .rejects.toMatchObject({ code: 'cid-mismatch', expected: addressOf(design).cid, received: otherCid });
+        await expect(clientOver(fakeIndex({ answerCid: otherCid })).publishDesign(design))
+            .rejects.toMatchObject({ code: 'cid-mismatch', expected: addressOf(design).cid, received: otherCid, stage: 'index-design', indexed: false });
         const index = fakeIndex({ refuseDesigns: { status: 422, body: { code: 'invalid-design', error: 'not a design' } } });
-        await expect(clientOver(index).publishDesign(design)).rejects.toMatchObject({ status: 422, code: 'invalid-design' });
-        await expect(clientOver(index).pin('invalid', design)).rejects.toThrow(/kind must be design, plan or agreement/);
+        await expect(clientOver(index).publishDesign(design))
+            .rejects.toMatchObject({ status: 422, code: 'invalid-design', cid: addressOf(design).cid, stage: 'index-design', indexed: false });
         await expect(clientOver(index).indexDesign('not-a-cid', design)).rejects.toThrow(/must be a CIDv1/);
     });
 
@@ -153,14 +147,19 @@ describe('publishing designs and agreements', () => {
         expect(index.calls.at(-1).body).toEqual({ cid: addressOf(plain).cid, content: plain });
     });
 
-    it('pins the exact linked plan before pinning and indexing its agreement', async () => {
+    it('sends the exact linked plan with its agreement in one POST /agreements, and refuses a plan that is not the agreement\'s', async () => {
         const index = fakeIndex();
         const client = clientOver(index);
         const linkedAgreement = { ...agreement, planCid: plan.cid };
         const published = await client.publishAgreement(linkedAgreement, { plan });
         expect(published.cid).toBe(addressOf(linkedAgreement).cid);
-        expect(index.calls.filter(call => call.path === '/pins').map(call => call.body.kind)).toEqual(['plan', 'agreement']);
+        expect(index.calls.map(call => `${call.method} ${call.path}`)).toEqual(['POST /agreements']);
         expect(index.calls.at(-1).body.plan).toEqual(plan);
+
+        const otherPlan = { ...linkedAgreement, title: 'Other plan', planCid: addressOf({ other: 'plan' }).cid };
+        await expect(client.publishAgreement(otherPlan, { plan }))
+            .rejects.toMatchObject({ code: 'cid-mismatch', cid: addressOf(otherPlan).cid, stage: 'index-agreement', indexed: false });
+        expect(index.calls).toHaveLength(1);
     });
 
     it('asks what a site binds without storing anything, and reads designs back', async () => {
@@ -253,29 +252,20 @@ describe('owner decisions and reads', () => {
     });
 });
 
-describe('upload pacing and rate-limit recovery', () => {
+describe('rate-limit recovery', () => {
     const answer = (status, body, headers = {}) => new Response(JSON.stringify(body), { status, headers });
     it('waits the full server cooldown once without short 429 retries', async () => {
         const calls = [], waits = [];
         let clock = 0;
         const client = createIndexClient({ apiBase: API, waitOnRateLimit: true, now: () => clock,
             wait: async ms => { waits.push(ms); clock += ms; },
-            fetchImpl: async (_url, init) => {
-                calls.push(clock);
+            fetchImpl: async (url, init) => {
+                calls.push(`${clock} ${new URL(url).pathname}`);
                 if (calls.length === 1) return answer(429, { code: 'upload-rate-limited', retryAfterSeconds: 900 }, { 'retry-after': '30' });
-                return answer(200, { cid: JSON.parse(init.body).cid });
+                return answer(201, { cid: JSON.parse(init.body).cid });
             } });
-        expect(await client.pin('design', design)).toMatchObject({ cid: addressOf(design).cid });
-        expect(waits).toEqual([900_000]); expect(calls).toEqual([0, 900_000]);
-    });
-    it('serializes concurrent pins and reuses already pinned CIDs', async () => {
-        let clock = 0;
-        const calls = [], waits = [];
-        const client = createIndexClient({ apiBase: API, pinIntervalMs: 31_000, now: () => clock,
-            wait: async ms => { waits.push(ms); clock += ms; },
-            fetchImpl: async (_url, init) => { calls.push(clock); return answer(200, { cid: JSON.parse(init.body).cid }); } });
-        await Promise.all([client.pin('design', design), client.pin('design', design), client.pin('plan', planContent)]);
-        expect(calls).toEqual([0, 31_000]); expect(waits).toEqual([31_000]);
+        expect(await client.publishDesign(design)).toMatchObject({ cid: addressOf(design).cid, created: true });
+        expect(waits).toEqual([900_000]); expect(calls).toEqual(['0 /designs', '900000 /designs']);
     });
     it('honors date headers, backs off missing cooldowns and stops after four refusals', async () => {
         let clock = Date.parse('2026-10-27T00:00:00Z');
@@ -284,7 +274,7 @@ describe('upload pacing and rate-limit recovery', () => {
             wait: async ms => { waits.push(ms); clock += ms; },
             fetchImpl: async () => { calls.push(clock); return answer(429, { code: 'upload-rate-limited' },
                 calls.length === 1 ? { 'retry-after': 'Tue, 27 Oct 2026 00:02:00 GMT' } : {}); } });
-        await expect(client.pin('design', design)).rejects.toMatchObject({ status: 429, code: 'upload-rate-limited' });
+        await expect(client.publishDesign(design)).rejects.toMatchObject({ status: 429, code: 'upload-rate-limited', stage: 'index-design' });
         expect(waits).toEqual([120_000, 120_000, 240_000]); expect(calls).toHaveLength(4);
     });
     it('does not retry before an excessive cooldown or retry a deterministic rejection', async () => {
@@ -293,7 +283,7 @@ describe('upload pacing and rate-limit recovery', () => {
             const client = createIndexClient({ apiBase: API, waitOnRateLimit: true,
                 wait: async () => { throw new Error('must not wait or retry'); },
                 fetchImpl: async () => { calls++; return answer(status, { retryAfterSeconds: 3600 }); } });
-            await expect(client.pin('design', design)).rejects.toMatchObject({ status }); expect(calls).toBe(1);
+            await expect(client.publishAgreement(agreement)).rejects.toMatchObject({ status, stage: 'index-agreement' }); expect(calls).toBe(1);
         }
     });
 });

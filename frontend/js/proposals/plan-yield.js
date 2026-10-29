@@ -37,6 +37,9 @@
     });
 
     const OPEN_SPACE_KINDS = Object.freeze(['park', 'square', 'lake']);
+    // A building's stated use (building-use.js) gives its own housing share, by storey.
+    const useApi = () => (typeof window !== 'undefined' && window.BuildingUse)
+        || (typeof require === 'function' ? require('../building-use.js') : null);
 
     /** A number or null — never NaN, and never a 0 conjured out of null by Number(). */
     function num(value) {
@@ -193,7 +196,17 @@
             workNetM2: 0,
             jobs: 0,
             openSpaces: 0,
-            openSpaceM2: 0
+            openSpaceM2: 0,
+            // Buildings whose apartments were counted from a generated floor layout (unitsOf):
+            // their floor area, apartments and shop net area, kept apart from the per-m² rule.
+            laidOutBuildings: 0,
+            laidOutGrossM2: 0,
+            laidOutApartments: 0,
+            laidOutShopNetM2: 0,
+            laidOutWorkNetM2: 0,
+            // Buildings left to the rule whose use is stated: their floor area and its housing part.
+            statedGrossM2: 0,
+            statedHousingM2: 0
         };
     }
 
@@ -213,11 +226,15 @@
         const personsPerApartment = positive(opts.personsPerApartment) ?? DEFAULTS.personsPerApartment;
         const m2PerJob = positive(opts.m2PerJob) ?? DEFAULTS.m2PerJob;
 
-        bucket.housingFloorAreaM2 = bucket.grossFloorAreaM2 * housingShare;
-        bucket.workFloorAreaM2 = bucket.grossFloorAreaM2 * (1 - housingShare);
+        // The rule (housing share × net of gross ÷ apartment size) covers only the floor area no
+        // layout counted; laid-out buildings bring their own apartments, and their shops are work.
+        // A building of stated use splits by its storeys; only the rest takes the housing share.
+        const unstatedM2 = Math.max(0, bucket.grossFloorAreaM2 - bucket.laidOutGrossM2 - bucket.statedGrossM2);
+        bucket.housingFloorAreaM2 = unstatedM2 * housingShare + bucket.statedHousingM2;
+        bucket.workFloorAreaM2 = unstatedM2 * (1 - housingShare) + (bucket.statedGrossM2 - bucket.statedHousingM2);
         bucket.housingNetM2 = bucket.housingFloorAreaM2 * efficiency;
-        bucket.workNetM2 = bucket.workFloorAreaM2 * efficiency;
-        bucket.apartments = Math.floor(bucket.housingNetM2 / avgApartmentM2);
+        bucket.workNetM2 = bucket.workFloorAreaM2 * efficiency + bucket.laidOutShopNetM2 + bucket.laidOutWorkNetM2;
+        bucket.apartments = bucket.laidOutApartments + Math.floor(bucket.housingNetM2 / avgApartmentM2);
         bucket.people = Math.round(bucket.apartments * personsPerApartment);
         bucket.jobs = Math.floor(bucket.workNetM2 / m2PerJob);
         return bucket;
@@ -251,7 +268,26 @@
             bucket.buildings += 1;
             bucket.footprintM2 += measured.footprintM2;
             if (measured.gfaM2 === null) bucket.unmeasuredBuildings += 1;
-            else bucket.grossFloorAreaM2 += measured.gfaM2;
+            else {
+                bucket.grossFloorAreaM2 += measured.gfaM2;
+                // A generated layout's count, when the caller has one for this building.
+                const laid = typeof opts.unitsOf === 'function' ? opts.unitsOf(feature, proposal) : null;
+                const apartments = laid ? num(laid.apartments) : null;
+                if (apartments !== null && apartments >= 0) {
+                    bucket.laidOutBuildings += 1;
+                    bucket.laidOutGrossM2 += measured.gfaM2;
+                    bucket.laidOutApartments += apartments;
+                    bucket.laidOutShopNetM2 += num(laid.shopNetM2) ?? 0;
+                    bucket.laidOutWorkNetM2 += num(laid.workNetM2) ?? 0;
+                } else {
+                    // A use the building states; a rule building without one keeps the housing share.
+                    const share = useApi().housingShare((feature.properties || {}).use, measured.floors);
+                    if (share !== null) {
+                        bucket.statedGrossM2 += measured.gfaM2;
+                        bucket.statedHousingM2 += measured.gfaM2 * share;
+                    }
+                }
+            }
             if (measured.rule) ruleDriven = true;
         });
 
@@ -283,7 +319,10 @@
      *
      * @param {Array} proposals raw proposals, either client- or server-shaped
      * @param {Object} [assumptions] overrides of DEFAULTS, plus { appliedOnly:boolean,
-     *        periodOf:(proposal) → integer year | null }
+     *        periodOf:(proposal) → integer year | null,
+     *        unitsOf:(feature, proposal) → { apartments, shopNetM2, workNetM2 } | null, a generated
+     *        layout's count for a building (plan-units.js); buildings without one follow the per-m²
+     *        rule, with their own housing share when their use is stated (building-use.js) }
      */
     function planYield(proposals, assumptions) {
         const opts = { ...DEFAULTS, ...(assumptions || {}) };

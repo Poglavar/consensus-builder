@@ -13,7 +13,7 @@ function harness(overrides={}) {
  const store=new Map(),calls=[],events=[];
  const win={PlanComposition,PlanRecord,Cid,location:{},PersistentStorage:{setItem:(k,v)=>store.set(k,v),getItem:k=>store.get(k)},
   dispatchEvent:e=>events.push(e.type),NamedPlans:{list:()=>[],link:cid=>`https://app.test/plans/${cid}`,save:vi.fn(async content=>({cid:Cid.cidOfObject(content),content}))},
-  DesignSync:{apiBase:()=> 'https://api.test',fetchDesigns:vi.fn(async cids=>({rows:new Map(),missing:cids})),pinObject:vi.fn(async(type,content)=>calls.push(['pin',type,content])),parcelSourceIdOf:()=>null},
+  DesignSync:{apiBase:()=> 'https://api.test',fetchDesigns:vi.fn(async cids=>({rows:new Map(),missing:cids})),addressObject:vi.fn(content=>({cid:Cid.cidOfObject(content)})),parcelSourceIdOf:()=>null},
   ProposalPublishTerms:{publishRefusal:()=>null},guestPolicyBlocks:vi.fn(()=>null),
   proposalStorage:{getAllProposals:()=>[],getProposal:()=>null},DesignRecord:{cidOf:()=>''},i18n:{t:key=>key},
   fetch:vi.fn(async(url,options={})=>{calls.push(['fetch',url,options]);return {status:404,ok:false,json:async()=>({})}}),...overrides};
@@ -47,10 +47,10 @@ describe('plan workspace',()=>{
   const base=snapshot(),row={...base,designSources:{[base.designs[0].cid]:{sourceId:'gb-hmlr-city-of-london',snapshotId:'release-1'}}},seen=[];
   const h=harness({PlanComposition:{...PlanComposition,localRecords:r=>r.designs.map(d=>({proposalId:`plan-member-${d.cid}`,published:{cid:d.cid},title:d.content.title}))}});
   h.win.DesignSync.fetchDesigns=vi.fn(async cids=>({rows:new Map(),missing:cids}));
-  h.win.DesignSync.pinObject=vi.fn(async(type,content)=>seen.push(['pin',content]));
+  h.win.DesignSync.addressObject=vi.fn(content=>{seen.push(['address',content]);return {cid:Cid.cidOfObject(content)};});
   let postAttempts=0;h.win.fetch=vi.fn(async(url,options={})=>{if(url.endsWith('/plans/'+row.cid))return {status:404};seen.push(['post',JSON.parse(options.body)]);postAttempts++;return postAttempts===1?{status:500,ok:false,json:async()=>({error:'temporary failure'})}:{status:201,ok:true,json:async()=>({cid:row.designs[0].cid})};});
   h.api.save(row);await expect(h.api.publish(row)).rejects.toThrow('temporary failure');expect(JSON.parse(h.store.get(`plan:${row.cid}`)).designs).toEqual(row.designs);await h.api.publish(row);
-  expect(seen[0]).toEqual(['pin',row.designs[0].content]);expect(seen[1][0]).toBe('post');expect(seen[1][1]).toMatchObject({cid:row.designs[0].cid,content:row.designs[0].content,parcelSourceId:'gb-hmlr-city-of-london'});
+  expect(seen[0]).toEqual(['address',row.designs[0].content]);expect(h.win.fetch.mock.calls.map(([url])=>url).filter(url=>url.endsWith('/pins'))).toEqual([]);expect(seen[1][0]).toBe('post');expect(seen[1][1]).toMatchObject({cid:row.designs[0].cid,content:row.designs[0].content,parcelSourceId:'gb-hmlr-city-of-london'});
   expect(h.win.NamedPlans.save).toHaveBeenCalledWith(row.content);expect(JSON.parse(h.store.get(`plan:${row.cid}`)).designs).toEqual(row.designs);
   expect(h.win.guestPolicyBlocks).toHaveBeenCalledWith('publish');
  });

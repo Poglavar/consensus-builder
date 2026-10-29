@@ -19,7 +19,7 @@ personas.json ──▶ parcel-source.js ──▶ planner.js ──▶ candidat
                                                         its parcel                └─▶ llm-picker.js (explicit optional controller)
 
 record-builder ──▶ agreement-objects ──▶ publication-client ──▶ lens-owner-registry ──▶ agreement-objects ──▶ publication-client ──▶ agreement-minter ──▶ index ──▶ bettor
-                   design/v1 + CID       POST /pins, /designs    the parcel's owners       binding owners'         POST /pins, /agreements   create + fund        onchain    YES stake
+                   design/v1 + CID       POST /designs           the parcel's owners       binding owners'         POST /agreements          create + fund        onchain    YES stake
                                                                  (--seed-owners)           agreement + CID
 
 next run: lens-approval-client ──▶ publication-client ──▶ lens-approval-client ──▶ agreement-minter ──▶ lifecycle-actions
@@ -38,7 +38,7 @@ next run: lens-approval-client ──▶ publication-client ──▶ lens-appro
 | `agreement-objects.js` | design/v1 and agreement/v1 objects and their CIDs, built on the browser's own `design-record.js`, `agreement-record.js` and `cid.js`; `ownersRule` (binding, unanimous, one lens), `registryRights` (parcel-rights/v1 from the devnet owner registry), `partyKey` (an input parcel's abstract owners' party), `personPositions` (per-person land and cash derived from the parties and a rights snapshot), `communityRule` (a poll: the restatement scripts), `parcelOutputs`, `deadlineAfterDays` | yes |
 | `lens-owner-registry.js` | the lens member's devnet owner registry (`consensus.lens_devnet_owner`): read a parcel's owners, plan and register a persona as sole owner (never replacing another owner) | no |
 | `lens-approval-client.js` | the owner's approval receipt as the browser makes it (lens challenge → rights and authority facts → signed `agreement-decision/v1`, admitted by the relay's own rules) and the lens operator's `POST /lens/agreements/:cid/decision` | no |
-| `publication-client.js` | the index client: pin (`POST /pins`), index designs and agreements, `POST /designs/binding`, relay owner decisions (`GET`/`POST /agreements/:cid/decisions`), `POST /agreements/:cid/onchain`, reads; every CID computed locally, every write repeatable | no |
+| `publication-client.js` | the index client: index designs and agreements (publication pins nothing), `POST /designs/binding`, relay owner decisions (`GET`/`POST /agreements/:cid/decisions`), `POST /agreements/:cid/onchain`, reads; every CID computed locally, every write repeatable | no |
 | `agreement-minter.js` | `mintAgreement` (create + fund up to the escrow in one transaction), `fundAgreement`, `recordAgreementDecision` (attest), `executeAgreement`, `expireAgreement`, `readAgreementAccount`; every step reads the chain first | no |
 | `bettor.js`, `pledger.js`, `donor.js`, `lifecycle-actions.js` | market stake, soft pledge, donation, and their resolve/claim/refund/release/fulfil/void steps, all on the agreement account as subject; the proposer's settlement (`inspectSettlement`, `executeSettlement`) | no |
 
@@ -98,9 +98,9 @@ reads an existing canonical market and never seeds it twice. Sponsor self-tradin
 forbidden. The existing configured funding wallet and shared reserve lock fund only the exact
 seed shortfall under the explicit allowance. The configured source retains at least one devnet USDC.
 
-The proposer serializes pins with 31-second spacing. HTTP 429 is handled once by the index client,
-honoring the longer body/header cooldown (including HTTP-date Retry-After), up to four attempts
-and at most 16 minutes per wait. Transport/5xx retries remain separate. A retired experimental
+HTTP 429 is handled once by the index client, honoring the longer body/header cooldown
+(including HTTP-date Retry-After), up to four attempts and at most 16 minutes per wait.
+Transport/5xx retries remain separate. A retired experimental
 agreement gets a durable `retired` automation skip, without claiming chain settlement or retrying
 it on every subsequent run.
 
@@ -114,8 +114,8 @@ For each proposer persona: plan → choose → for each pick, in order, each sta
 |---|---|---|
 | `planned` | candidates in this run's area window, preflighted against the index's binding rule | `candidates`, `candidatePreflight`, `city`, `area` |
 | `chosen` | the controller's picks (`pickId` = `agent-<persona>-<runKey>-<n>`, a stable pick id, not a record) | `picks`, `decisionInput`, `decisionResult` |
-| `designed` | the design/v1 object is built and checkpointed with its CID **before** it leaves the machine, then pinned and indexed (`POST /pins`, `POST /designs` with the candidate's `parcelSourceId`); the index's binding must be exactly the candidate parcel with complete coverage, or the pick fails | `designs[candidateId] = { cid, content, terms, city, binding: { parcelIds, coverage }, indexedAt }` |
-| `proposed` | the parcel's owners are read from the devnet owner registry (with `--seed-owners` a parcel nobody owns is registered to the persona first; a parcel without owners fails the pick); then the binding owners' agreement/v1 object (`rule = { electorate: 'owners', binding: true, approvalConfig: { schema: 'proposal-approval/v1', rights: <parcel-rights/v1 from the registry, provider lens-devnet-owners>, policy: { type: 'unanimous' } }, lens: [<the operated lens member>] }`; inputs = the design's binding with the registered owners as holders; outputs = that parcel as it stands, role `parcel`, hashed over the parcel geometry its source serves; `deadline` = build time + `agreement.deadlineDays`; `sponsor` = the persona's wallet; `author` = the persona) is built and checkpointed, then pinned and indexed (`POST /agreements`) | `owners[candidateId] = { parcelId, owners, soleOwner, readAt }`, `agreements[candidateId] = { cid, content, title, deadline, lamports, soleOwner, indexedAt }` |
+| `designed` | the design/v1 object is built and checkpointed with its CID **before** it leaves the machine, then indexed (`POST /designs` with the candidate's `parcelSourceId`); the index's binding must be exactly the candidate parcel with complete coverage, or the pick fails | `designs[candidateId] = { cid, content, terms, city, binding: { parcelIds, coverage }, indexedAt }` |
+| `proposed` | the parcel's owners are read from the devnet owner registry (with `--seed-owners` a parcel nobody owns is registered to the persona first; a parcel without owners fails the pick); then the binding owners' agreement/v1 object (`rule = { electorate: 'owners', binding: true, approvalConfig: { schema: 'proposal-approval/v1', rights: <parcel-rights/v1 from the registry, provider lens-devnet-owners>, policy: { type: 'unanimous' } }, lens: [<the operated lens member>] }`; inputs = the design's binding with the registered owners as holders; outputs = that parcel as it stands, role `parcel`, hashed over the parcel geometry its source serves; `deadline` = build time + `agreement.deadlineDays`; `sponsor` = the persona's wallet; `author` = the persona) is built and checkpointed, then indexed (`POST /agreements`) | `owners[candidateId] = { parcelId, owners, soleOwner, readAt }`, `agreements[candidateId] = { cid, content, title, deadline, lamports, soleOwner, indexedAt }` |
 | `minted` | `create(cid, lens, deadline, open_ground = false, required_lamports = lamports, payout = sponsor)` and `fund(lamports)` in one transaction; an existing account is read and only funded up to what it lacks | `mints[candidateId] = { account, signature, createSignature, created, fundedLamports, escrowLamports, status, cluster, mintedAt }` |
 | `recorded` | `POST /agreements/:cid/onchain { chain: 'solana', cluster: 'devnet', account, signature }`: the index reads the account itself (201 first record, 200 refresh) | `onchain[candidateId]` |
 | `staked` | YES stake of `stakeUsdc` on the agreement's market (created when missing); skipped when `stakeUsdc` is 0 | `stakes[candidateId]` |
@@ -129,7 +129,7 @@ monitor's success sentinel; Telegram carries failures only.
 
 `run-policy.js` refuses a live plan before it touches a wallet when it would exceed
 `AGENT_DAILY_ACTION_CAP` signed actions (default 4; a pick needs at most 3: create+fund, market
-creation, stake) or `AGENT_DAILY_USDC_CAP` (default 0.35). Pinning and indexing sign nothing.
+creation, stake) or `AGENT_DAILY_USDC_CAP` (default 0.35). Indexing signs nothing.
 
 **Lens.** An agreement program account holds one lens key, so every agreement names exactly one: the
 lens member this runner operates, a `lens-member` persona whose `service` names an `operatorTokenEnv`
@@ -274,7 +274,7 @@ resubmitted. The model is the layer's default; the run header logs which one ran
 
 ```bash
 cd backend
-node agents/run.mjs --dry-run                                   # plan + pick, settlement preview; writes, pins and signs nothing
+node agents/run.mjs --dry-run                                   # plan + pick, settlement preview; writes and signs nothing
 node scripts/seed-lens-owners.mjs --day 2026-10-22              # who the day's picks would register as owners (dry run)
 node scripts/seed-lens-owners.mjs --day 2026-10-22 --apply
 node agents/run.mjs --live --persona densifier-01 --seed-owners --api http://localhost:3999
@@ -341,7 +341,7 @@ The temporary bearer cache retains up to 4096 entries/128 MiB for at most 24 hou
 eviction or restart requires a fresh preview; these are service capacity limits, not publication
 authorization. If cache capacity prevents a preview, canonical `draftArtifact` data is retained.
 No preview failure requests or performs publication. The app imports fetched content as local
-drafts without pinning or indexing. Pass `draftRef` to modify, compare or draft an agreement;
+drafts without indexing. Pass `draftRef` to modify, compare or draft an agreement;
 a bare CID resolves only indexed designs. Local stdio clients can pass canonical content directly.
 Agreement drafts run the app's formation handlers in an isolated fabric over
 complete cadastral source ground. Single-building ground follows the app’s footprint-parcel rule; stations remain content on their

@@ -129,11 +129,15 @@
     // The Geometry statistics disclosure the urban-rule editors (Block, Row, Detached) share. Its
     // summary is the only heading; `prefix` namespaces the element ids. English fallbacks only:
     // each editor translates its panel through the data-i18n keys.
-    function cardMarkup(prefix) {
+    // `collapsible: false` gives a panel without sublevels the statistics as a plain titled section.
+    function cardMarkup(prefix, { collapsible = true } = {}) {
         const row = (key, suffix, fallback) =>
             `<div><dt data-i18n-key="densityStats.${key}" data-i18n-attr="text">${fallback}</dt><dd id="${prefix}-density-${suffix}">\u2014</dd></div>`;
-        return `<details>
-            <summary data-i18n-key="densityStats.title" data-i18n-attr="text">Geometry statistics</summary>
+        const title = `data-i18n-key="densityStats.title" data-i18n-attr="text">Geometry statistics`;
+        const open = collapsible ? `<details>
+            <summary ${title}</summary>` : `<div class="building-density-section">
+            <h3 class="building-density-title" ${title}</h3>`;
+        return `${open}
             <section id="${prefix}-density-stats" class="building-density-card" aria-live="polite">
                 <dl class="building-density-grid">
                     ${row('parcelArea', 'parcel', 'Parcel area')}
@@ -144,7 +148,7 @@
                 </dl>
                 <p id="${prefix}-density-hint" class="building-density-hint"></p>
             </section>
-        </details>`;
+        ${collapsible ? '</details>' : '</div>'}`;
     }
 
     // Display strings for one summary, formatted with js/format.js (CbFormat). The ratios need

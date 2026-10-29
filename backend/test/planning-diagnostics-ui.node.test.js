@@ -10,6 +10,7 @@ const NamedPlans = require('../../frontend/js/named-plans.js');
 const PlanRecord = require('../../frontend/js/plan-record.js');
 const DesignSync = require('../../frontend/js/proposals/design-sync.js');
 const BusyControl = require('../../frontend/js/ui/busy-control.js');
+const FileDownload = require('../../frontend/js/ui/file-download.js');
 const { ProposalManager } = require('../../frontend/js/proposal-manager.js');
 const { cancelledError } = require('../../frontend/js/work-slicer.js');
 const { createProposalDraftStore } = require('../../frontend/js/proposal-drafts.js');
@@ -33,7 +34,7 @@ function browser() {
         removeEventListener(name) { delete callbacks[name]; },
         URL: { createObjectURL(blob) { blobs.push(blob); return 'blob:download'; }, revokeObjectURL() {} }, Blob,
         setTimeout: callback => callback(), requestAnimationFrame: callback => queueMicrotask(callback),
-        getProposalI18nHelper: () => (_key, fallback) => fallback, showStyledAlert: message => alerts.push(message), BusyControl,
+        getProposalI18nHelper: () => (_key, fallback) => fallback, showStyledAlert: message => alerts.push(message), BusyControl, FileDownload,
         AppDiagnostics: D.create({ uuid: randomUUID }), location: { href: 'https://ugt.example/', pathname: '/', search: '' },
         resolveBackendBaseUrl: () => 'https://api.example', resolveFrontendBaseUrl: () => 'https://ugt.example',
         Cid: { cidOfObject: () => 'private raw cid', isCid: () => true },

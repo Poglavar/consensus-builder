@@ -32,7 +32,7 @@
     // allocation: basis ('area', 'value' or 'either'); cap (land given up: per owner or per pool, and
     // for which basis); valueGain (by value, the share of each owner's value gain that is settled in
     // money: Germany settles all of it, Gujarat charges half the increment, the rest keep it in land).
-    // minParties: the fewest input parties the scheme takes (kavelruil needs three, Colombia two).
+    // minParties: minimum distinct approving input owners (kavelruil needs three, Colombia two).
     // English text is the fallback for the `proposalApproval.schemes.<id>.*` i18n keys; `authority` is a noun phrase
     // ("the prefectural governor’s approval") that completes "…, and needs …".
     const REGIMES = [
@@ -292,11 +292,12 @@
      * @param {object} regime a REGIMES entry
      * @param {{ basis: 'area'|'value', poolAreaM2: number|null,
      *   owners: { ownerKey: string, contributedAreaM2: number|null, assignedAreaM2: number }[],
-     *   partyCount?: number, proposerAreaM2?: number }} facts
+     *   partyCount?: number|null, proposerAreaM2?: number }} facts
      *   owners are the input owners (not public land, open ground or outside recipients); partyCount is
-     *   how many parties bring land in; proposerAreaM2 is the land a proposer acquires. A fact that is
-     *   left out skips its rule.
-     * @returns {{ ok: boolean, rules: object[] }} one entry per rule: { kind, ok, ... } with kind
+     *   the resolved distinct input-owner count, never the number of parcels. An unresolved count
+     *   gives ok: null, so drafting can continue without claiming the minimum was checked.
+     *   proposerAreaM2 is the land a proposer acquires.
+     * @returns {{ ok: boolean|null, rules: object[] }} one entry per rule: { kind, ok, ... } with kind
      *   'basis', 'cap', 'parties' or 'proposer'.
      */
     function checkAllocation(regime, facts) {
@@ -323,15 +324,16 @@
                 rules.push({ kind: 'cap', per: 'pool', limit, given, ok: given !== null && given <= ratio(cap) + SLACK });
             }
         }
-        if (regime?.minParties && typeof facts.partyCount === 'number') {
-            rules.push({ kind: 'parties', required: regime.minParties, actual: facts.partyCount, ok: facts.partyCount >= regime.minParties });
+        if (regime?.minParties) {
+            const actual = Number.isSafeInteger(facts.partyCount) && facts.partyCount >= 0 ? facts.partyCount : null;
+            rules.push({ kind: 'parties', required: regime.minParties, actual, ok: actual === null ? null : actual >= regime.minParties });
         }
         // An authority-led readjustment returns the land to its owners or takes it for public use;
         // nobody else acquires land through it.
         if (regime?.family === 'authority-led' && typeof facts.proposerAreaM2 === 'number') {
             rules.push({ kind: 'proposer', areaM2: facts.proposerAreaM2, ok: !(facts.proposerAreaM2 > 0) });
         }
-        return { ok: rules.every(rule => rule.ok), rules };
+        return { ok: rules.some(rule => rule.ok === false) ? false : rules.some(rule => rule.ok === null) ? null : true, rules };
     }
 
     // The share of an owner's value gain the scheme settles in money (0 to 1): none without a scheme.

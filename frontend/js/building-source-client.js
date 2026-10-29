@@ -45,9 +45,13 @@
     }
 
     function serverAnswerIsEmpty(path, payload) {
-        if (!payload || payload.unavailable || payload.supported === false || payload.truncated === true) return true;
-        if (path === '/buildings/near') return !(payload.buildings && payload.buildings.length);
+        if (!payload || payload.unavailable || payload.supported === false) return true;
+        // Footprints cut to the source's query limit are still the city's own buildings: the answer
+        // stays truncated (the pool claims no coverage) instead of being swapped for another survey
+        // with other identities.
         if (path === '/buildings/footprints') return !(payload.footprints && payload.footprints.length);
+        if (payload.truncated === true) return true;
+        if (path === '/buildings/near') return !(payload.buildings && payload.buildings.length);
         return false;
     }
 

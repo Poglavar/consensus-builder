@@ -1,6 +1,6 @@
 // proposals/design-sync.js — designs leave the device as content-addressed objects and come back
-// (plan-design-agreement.md, M2 "Browser"). Publishing pins a local design's design/v1 object through
-// the courier (POST /pins), indexes it (POST /designs) and marks the local record
+// (plan-design-agreement.md, M2 "Browser"). Publishing addresses a local design's design/v1 object
+// (its CID, taken here), indexes it (POST /designs) and marks the local record
 // `published: { cid, publishedAt, apiBase }`; a published design is read back by CID (GET /designs/:cid,
 // POST /designs/batch) and imported as a local record; the proposal list's Server tab lists the index
 // (GET /designs). window.DesignSync is the browser API; the list's cache functions stay globals for the
@@ -172,14 +172,6 @@
         };
     }
 
-    function base64OfBytes(bytes) {
-        let binary = '';
-        for (let index = 0; index < bytes.length; index += 0x8000) {
-            binary += String.fromCharCode.apply(null, bytes.subarray(index, Math.min(index + 0x8000, bytes.length)));
-        }
-        return root.btoa(binary);
-    }
-
     // ---- browser ---------------------------------------------------------------------------------
 
     function browser(win) {
@@ -258,7 +250,6 @@
         function refusalMessage(status, body) {
             const code = body && body.code;
             if (code === 'cid-mismatch') return t('proposals.share.errors.cidMismatch', 'The server computed a different identity for this design, so nothing was published.');
-            if (code === 'pinning-unconfigured') return t('proposals.share.errors.pinningUnconfigured', 'This server cannot pin published designs yet (pinning is not configured).');
             if (code === 'too-large') return t('proposals.share.errors.tooLarge', 'This design exceeds the 10 MiB publication limit. Reduce its extent or detail before sharing; it is saved locally.');
             if (code === 'footprint-outside-site') return t('proposals.share.errors.outsideSite', 'The design extends {{area}} m² beyond its saved land boundary. The land boundary must include the geometry before it can be published.', { area: body.outsideM2 });
             if (status === 429) {
@@ -304,26 +295,17 @@
             }
         }
 
-        // Pins one published object through the courier and checks the answer names the same CID.
-        // Returns { cid, pinnedAt, bytes }.
-        async function pinObject(kind, object) {
+        // Addresses one published object: its canonical bytes and CID, within the publication limit.
+        // Publishing is server-only and pins nothing (docs/ipfs-storage.md); the index checks the CID.
+        // Returns { cid, bytes }.
+        function addressObject(object) {
             const bytes = cidApi().canonicalBytes(object);
             if (bytes.byteLength > designRecord().MAX_PUBLISHED_OBJECT_BYTES) {
                 throw failure('too-large', refusalMessage(413, { code: 'too-large' }), {
                     bytes: bytes.byteLength, maxBytes: designRecord().MAX_PUBLISHED_OBJECT_BYTES
                 });
             }
-            const cid = cidApi().cidOf(bytes);
-            const response = await request('POST', '/pins', { kind, cid, bytes: base64OfBytes(bytes) });
-            if (!response.ok) {
-                const code = (response.body && response.body.code) || `http-${response.status}`;
-                throw failure(code, refusalMessage(response.status, response.body), { status: response.status, body: response.body });
-            }
-            if (!response.body || response.body.cid !== cid) {
-                throw failure('cid-mismatch', t('proposals.share.errors.cidMismatch', 'The server computed a different identity for this design, so nothing was published.'),
-                    { expected: cid, received: response.body && response.body.cid });
-            }
-            return { cid, pinnedAt: response.body.pinnedAt || null, bytes };
+            return { cid: cidApi().cidOf(bytes), bytes };
         }
 
         // The consumer selects the exact parcel dataset; the backend has no city default.
@@ -358,11 +340,11 @@
         }
 
         /**
-         * Publishes one local design: pins its design/v1 object, indexes it and marks the record.
+         * Publishes one local design: addresses its design/v1 object, indexes it and marks the record.
          * A design already published here (it still hashes to its published CID) is not sent again.
          * Throws an Error with `code` and a translated `message`: a local refusal
          * (ProposalPublishTerms.publishRefusal's code), a guest without a name ('name-needed', `cancelled: true`), and the
-         * courier's and index's refusals ('cid-mismatch', 'pinning-unconfigured', 'network-failed', …).
+         * index's refusals ('cid-mismatch', 'too-large', 'network-failed', …).
          * @returns {Promise<{ cid: string, row: object | null, alreadyPublished: boolean }>}
          */
         async function publishDesign(localDesign) {
@@ -380,13 +362,16 @@
             win.stampCurrentAuthor(localDesign);
             const content = designRecord().published(localDesign);
             clearPublicationProblem();
-            const { cid } = await pinObject('design', content);
+            const { cid } = addressObject(content);
             const response = await request('POST', '/designs', { cid, content, parcelSourceId: parcelSourceIdOf(content.city, groundOf(content)) });
             if (!response.ok && response.status !== 409) {
                 throw publicationFailure(localDesign, response.status, response.body);
             }
             const row = response.body;
-            if (!row || row.cid !== cid) throw failure('cid-mismatch', t('proposals.share.errors.cidMismatch', 'The server computed a different identity for this design, so nothing was published.'));
+            if (!row || row.cid !== cid) {
+                throw failure('cid-mismatch', t('proposals.share.errors.cidMismatch', 'The server computed a different identity for this design, so nothing was published.'),
+                    { expected: cid, received: row && row.cid });
+            }
             markPublished(localDesign, { cid, publishedAt: row.createdAt || new Date().toISOString(), apiBase });
             log(`published ${localDesign.proposalId} as ${cid}${response.status === 409 ? ' (already indexed)' : ''}`);
             return { cid, row, alreadyPublished: false };
@@ -703,7 +688,7 @@
         return {
             api: {
                 publishDesign: record => observe('publish', 'design-publish-failed', () => publishDesign(record)),
-                pinObject, markPublished, fetchDesign, fetchDesigns, importDesign, importDraft, localCopyOf,
+                addressObject, markPublished, fetchDesign, fetchDesigns, importDesign, importDraft, localCopyOf,
                 designLink, copyLink, prepareMapPreview, parcelSourceIdOf, refusalMessage, clearPublicationProblem,
                 // A local record's exact CID at the current index, or an index summary's own.
                 publishedCid: record => (isObject(record) && record.indexed === true && cidApi().isCid(record.cid)

@@ -471,6 +471,59 @@ body.site-intro-open { overflow: hidden; }
     color: var(--cb-danger);
 }
 
+/* Compare agreements' terms: worded values wrap, and a term the agreements differ in is marked. */
+.plan-compare__terms {
+    display: grid;
+    gap: var(--cb-space-2);
+}
+
+.plan-compare__differing {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--cb-space-2);
+    justify-self: start;
+}
+
+.plan-compare__terms-table td {
+    white-space: normal;
+    min-width: 8rem;
+    vertical-align: top;
+}
+
+.plan-compare__terms-table tr.plan-compare__term--differs td {
+    color: var(--cb-text-strong);
+    font-weight: 600;
+}
+
+.plan-compare__differs {
+    margin-inline-start: var(--cb-space-2);
+    font-weight: normal;
+}
+
+/* An Apartments or People figure while plan-units.js lays the buildings out: the shared busy ring
+   (primitives.css cb-spin) before "Counting…". */
+.plan-stats-counting {
+    color: var(--cb-text-muted);
+}
+
+.plan-stats-counting::before {
+    content: '';
+    display: inline-block;
+    box-sizing: border-box;
+    width: 1em;
+    height: 1em;
+    margin-right: var(--cb-space-2);
+    vertical-align: -0.125em;
+    border: 2px solid currentColor;
+    border-right-color: transparent;
+    border-radius: 50%;
+    animation: cb-spin 0.8s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .plan-stats-counting::before { animation: none; }
+}
+
 .plan-stats-notes {
     font-size: var(--cb-text-sm);
     color: var(--cb-warning);
@@ -1394,6 +1447,14 @@ body.site-intro-open { overflow: hidden; }
     font-variant-numeric: tabular-nums;
     font-weight: var(--cb-weight-bold);
     white-space: nowrap;
+}
+
+/* The card as a titled section of a flat panel (cardMarkup collapsible: false). */
+.building-density-title {
+    margin: var(--cb-space-3) 0 var(--cb-space-2);
+    color: var(--cb-text-strong);
+    font-size: var(--cb-text-md);
+    font-weight: var(--cb-weight-semibold);
 }
 
 .building-density-hint {

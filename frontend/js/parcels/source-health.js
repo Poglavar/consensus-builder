@@ -297,6 +297,9 @@
         } else if (code === 'parcel-source-blocked' || status === 401 || status === 403) {
             const deniedStatus = status === 401 ? 401 : 403;
             message = t('blocked', `The provider denied access (HTTP ${deniedStatus}). It may restrict IP addresses or require authentication. Choose another source or try again later.`, { status: deniedStatus });
+        } else if (code === 'parcel-source-area-limit') {
+            // The source answered and is fine: this area holds more than it returns in one request.
+            message = t('areaLimit', 'This area holds more parcels than the source returns at once. Zoom in to load it.');
         } else if (status === 504 || error?.name === 'TimeoutError' || error?.name === 'AbortError') {
             message = t('timeout', 'This parcel source timed out. Try again shortly.');
         } else if (/^(live-fabric-|cadastral-)/.test(code)) {

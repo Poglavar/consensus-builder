@@ -90,12 +90,25 @@ export function buildTypedDesign(intent, { parcels = [] } = {}) {
     if (intent.roof != null && !['flat', 'pitched'].includes(intent.roof)) fail('invalid-roof', 'Choose a flat or pitched roof.', 'roof', { enum: ['flat', 'pitched'] });
     const extras = { balconyDepthM: number(intent.balconyDepthM, 0, 'balconyDepthM', 0, 5), roof: intent.roof };
     if (typology === 'detached') {
+        // The optional limits, each within the range the app's rule keeps (PARCEL_LIMITS); coverage is
+        // the same (0, 1] fraction as a freeform design's.
+        const limits = {};
+        const limitFields = { frontSetbackM: 'frontSetbackM', rearSetbackM: 'rearSetbackM', setbackHeightRatio: 'setbackHeightRatio', maxHeightM: 'maxHeightM',
+            minFrontageM: 'minFrontageM', coverage: 'maxCoverage', minNaturalGround: 'minNaturalGround', maxFloorAreaRatio: 'maxFloorAreaRatio', maxFootprintAreaM2: 'maxFootprintAreaM2' };
+        for (const [field, key] of Object.entries(limitFields)) {
+            if (intent[field] == null) continue;
+            const [min, max] = runtime.rules.PARCEL_LIMITS[key];
+            limits[key] = number(intent[field], null, field, min, max);
+        }
         const rule = runtime.rules.normalizeParcelRule({ typology: 'parcelBased', kind: ruleKind(intent, 'max'), maxFloors: floors,
             floorHeightM, minDistance: number(intent.setbackM, 3, 'setbackM', 0, 50), minFloors: number(intent.minFloors, 0, 'minFloors', 0, floors, true),
-            minFootprintAreaM2: number(intent.minFootprintAreaM2, 0, 'minFootprintAreaM2', 0, 1_000_000), minPlotAreaM2, ...extras });
+            minFootprintAreaM2: number(intent.minFootprintAreaM2, 0, 'minFootprintAreaM2', 0, 1_000_000), minPlotAreaM2, ...limits, ...extras });
+        // Front and rear yards are measured from the edge facing a street (the caller reads the
+        // streets around the site); without them each plot's longest edge is its front, as in the app.
+        const streets = Array.isArray(intent.streets) ? intent.streets : [];
         const buildings = [], excluded = [];
         for (const [index, entry] of entries.entries()) {
-            const outcome = runtime.rules.evaluateParcel(entry.feature, rule, { turf, largestPolygon: runtime.footprints.toSingleLargestPolygon });
+            const outcome = runtime.rules.evaluateParcel(entry.feature, rule, { turf, largestPolygon: runtime.footprints.toSingleLargestPolygon, streets });
             if (!outcome.envelope) { excluded.push({ parcelId: entry.parcelId, status: outcome.status }); continue; }
             outcome.envelope.properties = { ...outcome.envelope.properties, type: 'proposedParcelBasedBuilding', parcelId: entry.parcelId,
                 urbanRule: rule, variationSeed: runtime.rules.hashSeed(seed, entry.parcelId), buildingIndex: index, use: intent.use || 'residential' };

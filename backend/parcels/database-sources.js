@@ -9,7 +9,7 @@ import * as nyc from './nyc-map-database-source.js';
 import { nycDatabaseSource } from './nyc-database-source.js';
 const SourceRuntime = createRequire(import.meta.url)('../../frontend/js/source-runtime.js');
 const datasets = { 'oss-wfs': oss, 'parcel-ba': ba, 'parcel-bg': bg, 'parcel-lj': lj, 'parcel-nyc': nyc };
-const operations = { 'oss-wfs': ['lookup', 'under', 'parcelIds', 'neighbours', 'countBindingCandidates', 'bindingMeasurements', 'declaredParcelSite'],
+const operations = { 'oss-wfs': ['lookup', 'under', 'parcelIds', 'neighbours', 'queryGeometry', 'queryIds'],
     'parcel-ba': ['lookup'], 'parcel-bg': ['lookup'], 'parcel-lj': ['lookup'], 'parcel-nyc': ['lookup', 'envelope'] };
 export const databaseParcelSourceRegistry = SourceRuntime.createRegistry({
     abstraction: 'parcels',

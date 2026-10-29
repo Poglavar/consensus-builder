@@ -265,20 +265,16 @@
 
     // null only when the strip misses the site; a THROW is not a miss (the plot would vanish).
     function intersectOrNull(t, a, b) {
-        try { return t.intersect(a, b); } catch (error) {
-            throw clipFailureApi().clipFailure('intersect', error, { site: 'site-plots.strip' }, [a, b]);
-        }
+        return clipFailureApi().clipWith(t, 'intersect', a, b, { site: 'site-plots.strip' });
     }
 
     // Join `piece` to whichever neighbouring plot it shares an edge with; false when none does.
     function mergeIntoNeighbour(t, piece, plots, preferIndex) {
         const order = plots.map((_, i) => i).sort((i, j) => Math.abs(i - preferIndex) - Math.abs(j - preferIndex));
         for (const i of order) {
-            let merged = null;
-            try { merged = t.union(plots[i].feature, piece); } catch (error) {
-                // A union that throws is not "not a neighbour": the sliver would become a plot.
-                throw clipFailureApi().clipFailure('union', error, { site: 'site-plots.mergeIntoNeighbour' }, [plots[i].feature, piece]);
-            }
+            // A union that throws is not "not a neighbour": the sliver would become a plot, so the
+            // shared clip's ClipFailure propagates.
+            const merged = clipFailureApi().clipWith(t, 'union', plots[i].feature, piece, { site: 'site-plots.mergeIntoNeighbour' });
             if (merged && merged.geometry && merged.geometry.type === 'Polygon') {
                 plots[i].feature = merged;
                 return true;

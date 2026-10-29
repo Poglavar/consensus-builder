@@ -2622,8 +2622,10 @@
     }
 
     // Merge several plots into one. Union rather than re-derive: the surviving outline is made of
-    // the plots' own coordinates, so no vertex moves and none is invented. Shared by node removal
-    // (dissolve the boundary a node anchored) and by the eraser (dissolve the boundary itself).
+    // the plots' own coordinates, so no vertex moves and none is invented. The union is the shared
+    // clip (parcel-arrangement.js clipWith), on the grid the plots are saved on; a union it cannot do
+    // merges nothing rather than dropping a plot. Shared by node removal (dissolve the boundary a
+    // node anchored) and by the eraser (dissolve the boundary itself).
     function mergePlots(plotIndices) {
         if (typeof turf === 'undefined') return false;
         const indices = Array.from(new Set(plotIndices || []))
@@ -2633,11 +2635,16 @@
 
         const wrap = geometry => ({ type: 'Feature', properties: {}, geometry });
         let merged = null;
-        indices.forEach(index => {
-            const geometry = state.slices[index].geometry;
-            merged = merged ? (turf.union(wrap(merged), wrap(geometry)) || {}).geometry || merged : geometry;
-        });
-        if (!merged) return false;
+        try {
+            indices.forEach(index => {
+                const geometry = state.slices[index].geometry;
+                merged = merged ? layoutClip(turf, 'union', wrap(merged), wrap(geometry), 'parcel-layout.mergePlots')?.geometry || null : geometry;
+                if (!merged) throw new Error('the union of the plots is empty');
+            });
+        } catch (error) {
+            log('warn', 'plots could not be merged', { plots: indices, error: error && error.message });
+            return false;
+        }
 
         // The merged plot keeps the identity of the biggest contributor — the small side joins the
         // large one, not the other way round.
@@ -3198,10 +3205,20 @@
     }
 
     // A polygon clip that cannot be done, typed and counted (parcel-arrangement.js ClipFailure).
-    function layoutClipFailure(operation, error, site, operands) {
-        const api = (typeof window !== 'undefined' && window.__parcelArrangement)
+    function layoutArrangement() {
+        return (typeof window !== 'undefined' && window.__parcelArrangement)
             || (typeof require === 'function' ? require('./proposals/parcel-arrangement.js') : null);
+    }
+
+    function layoutClipFailure(operation, error, site, operands) {
+        const api = layoutArrangement();
         return api ? api.clipFailure(operation, error, { site }, operands) : error;
+    }
+
+    // The shared parcel clip (parcel-arrangement.js clipWith): the same grid as every other stage;
+    // a clip it cannot do throws a ClipFailure naming `site`.
+    function layoutClip(t, operation, a, b, site) {
+        return layoutArrangement().clipWith(t, operation, a, b, { site });
     }
 
     async function refreshPreview() {
@@ -3327,10 +3344,7 @@
         // A pool with a plot silently left out of it is not the layout's ground: refuse instead.
         let union = features[0];
         for (let i = 1; i < features.length; i++) {
-            let merged = null;
-            try { merged = t.union(union, features[i]); } catch (error) {
-                throw layoutClipFailure('union', error, 'parcel-layout.buildPoolFromPlots', [union, features[i]]);
-            }
+            const merged = layoutClip(t, 'union', union, features[i], 'parcel-layout.buildPoolFromPlots');
             if (!merged) throw layoutClipFailure('union', new Error('union came back empty'), 'parcel-layout.buildPoolFromPlots', [union, features[i]]);
             union = merged;
         }
@@ -3440,15 +3454,15 @@
         // is spoken for, so a subdivision over it would never apply.
         const fabric = window.LiveParcelFabric;
         const ground = window.__openGround;
-        const order = window.__planOrder;
         const sourceId = window.getActiveProposalDesignDraft?.()?.sourceLocalProposalId;
-        if (fabric && typeof fabric.queryBounds === 'function' && ground && order && typeof order.intersectionArea === 'function') {
+        if (fabric && typeof fabric.queryBounds === 'function' && ground) {
             const siteFeature = { type: 'Feature', properties: {}, geometry: site };
             const holders = new Set();
+            // The site reaches into the piece: the shared rule the apply uses (geometry-tolerances.js).
             fabric.queryBounds(ground.bboxOf(site))
                 .filter(feature => ground.groundIdsOf(feature).length && feature.properties && feature.properties.producedByProposalId
                     && String(feature.properties.producedByProposalId) !== String(sourceId || ''))
-                .filter(feature => Number(order.intersectionArea(siteFeature, feature)) >= (Number(order.MIN_INTERSECTION_M2) || 0.25))
+                .filter(feature => window.GeometryTolerances.reachesInto(turf, siteFeature, feature, 0, { site: 'parcel-layout.openGroundHolders' }))
                 .forEach(feature => holders.add(String(feature.properties.producedByProposalId)));
             if (holders.size) {
                 const names = Array.from(holders).map(id => {

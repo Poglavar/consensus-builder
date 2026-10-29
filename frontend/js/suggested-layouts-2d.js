@@ -56,9 +56,12 @@
 
     // A building that already shows an interior of its own keeps it: an evidence model (floorPlans) or
     // an uploaded glTF (modelUrl). The same rule as the 3D view.
+    // A building stated for another use than housing has no housing layout to suggest either.
+    const buildingUse = () => global.BuildingUse || (typeof require === 'function' ? require('./building-use.js') : null);
     function needsSuggestion(feature) {
         const p = (feature && feature.properties) || {};
-        return !!(feature && feature.geometry) && !p.floorPlans && !p.modelUrl;
+        const use = buildingUse().normalize(p.use);
+        return !!(feature && feature.geometry) && !p.floorPlans && !p.modelUrl && (!use || buildingUse().housesPeople(use));
     }
 
     /**
@@ -75,8 +78,9 @@
         for (const building of Array.isArray(proposedBuildings) ? proposedBuildings : []) {
             if (!needsSuggestion(building)) continue;
             try {
+                const use = buildingUse().normalize(building.properties && building.properties.use);
                 const planned = context.planBuilding(building, {
-                    turf, generator, rules, cache, owner: building, roads: null, storeyFallbackM, ...(region ? { region } : {}),
+                    turf, generator, rules: use ? { ...(rules || {}), ...buildingUse().layoutRules(use) } : rules, cache, owner: building, roads: null, storeyFallbackM, ...(region ? { region } : {}),
                     parcels: (typeof parcelsFor === 'function' && parcelsFor(building)) || [],
                     neighbours: (typeof neighbourPool === 'function' && neighbourPool(building)) || [],
                     heightM: typeof heightOf === 'function' ? heightOf(building) : heightOfBuilding(building)

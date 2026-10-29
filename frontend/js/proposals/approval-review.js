@@ -1,4 +1,4 @@
-// What one abstract party is asked to accept: the land (or lease) they contribute, the conditions,
+// What one rights holder or required authority is asked to accept: the land (or lease) they contribute, the conditions,
 // and how far the proposal is from passing before and after their decision. An authority sees the
 // same terms and progress. Pure (no DOM); proposals/approval-panel.js renders it.
 (function (root, factory) {
@@ -34,7 +34,7 @@
         }));
         return {
             ready: true, reason: null, policy, regime,
-            tests: tally.tests, authorities: tally.authorities,
+            tests: tally.tests, participants: tally.participants, authorities: tally.authorities,
             supportMet: tally.supportMet, authorityMet: tally.authorityMet, passed: tally.passed,
             totalOwners: tally.totalOwners, acceptedOwners: tally.acceptedOwners,
             totalAreaM2: tally.totalAreaM2, acceptedAreaM2: tally.acceptedAreaM2,

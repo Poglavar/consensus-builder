@@ -6,9 +6,9 @@
 
 Create a named plan independently before creating an agreement. Agreement creation belongs to the plan’s actions. The Input parcels tab selects an existing exact plan revision; its designs are read-only. Neither the editor nor MCP agreement editing creates or edits a plan.
 
-The editor has Rules, Input parcels, Output parcels and Persons tabs. Agreement parties are abstract: every input parcel is represented by exactly one party, “Owner(s) of parcel X” (`parcel-owner:<parcelId>`), whether or not its owners are known. An agreement names no people. Each output of an owners’ agreement has exactly one explicit recipient: one input parcel’s party, Proposer or Public. Output parcels can be assigned individually or all to Proposer/Public land; bulk assignment writes the same explicit allocation lines and disables per-parcel controls. Proposer can receive land without owning inputs, while the sponsor funds the derived compensation. Ownership rights and lens settings are separate dialogs; the rights snapshot lives only in the rule (`rule.approvalConfig.rights`), and owner decisions are verified against it.
+The editor has Rules, Input parcels, Output parcels and Persons tabs. Agreement parties are abstract: every input parcel is represented by exactly one party, “Owner(s) of parcel X” (`parcel-owner:<parcelId>`), whether or not its owners are known. Allocations and money lines name no people; the rule’s rights snapshot can name their holders. Each output of an owners’ agreement has exactly one explicit recipient: one input parcel’s party, Proposer or Public. Output parcels can be assigned individually or all to Proposer/Public land; bulk assignment writes the same explicit allocation lines and disables per-parcel controls. Proposer can receive land without owning inputs, while the sponsor funds the derived compensation. Ownership rights and lens settings are separate dialogs; the rights snapshot lives only in the rule (`rule.approvalConfig.rights`), and owner decisions are verified against it.
 
-People are derived, never stored. With a rights snapshot giving person k the exact share s[k][i] of parcel i (a complete parcel’s shares sum to 1), person k co-owns every output allocated to parcel i’s party at s[k][i] and receives s[k][i] of that party’s cash. Cash is split per parcel into whole cents by largest remainder (ties by owner id), so each parcel’s total stays exact and the totals by person equal the totals by party; a balanced agreement stays balanced. Parcels without complete rights stay one party. `AgreementPersons.personPositions(agreement, rights)` (`frontend/js/agreement-persons.js`) computes this for the editor, the agreement panel and MCP.
+Per-person allocation positions are derived from the rule’s ownership snapshot, never stored as allocation terms. With a rights snapshot giving person k the exact share s[k][i] of parcel i (a complete parcel’s shares sum to 1), person k co-owns every output allocated to parcel i’s party at s[k][i] and receives s[k][i] of that party’s cash. Cash is split per parcel into whole cents by largest remainder (ties by owner id), so each parcel’s total stays exact and the totals by person equal the totals by party; a balanced agreement stays balanced. Parcels without complete rights stay one party. `AgreementPersons.personPositions(agreement, rights)` (`frontend/js/agreement-persons.js`) computes this for the editor, the agreement panel and MCP.
 
 Rules state an area compensation rate in the city’s fiat currency and, where allowed by the selected scheme, a proportional land contribution. Cash is computed in whole cents per party from entitlement minus allocated area. Persons shows each party’s contributed/received land and cash, including the balancing sponsor, and, when ownership rights name people, each person’s derived land and cash; it has no cash editing. Input and output land areas and the derived cash schedule must balance before saving or publication. A no-cash rule records no transfers. Community agreements retain no allocations or financial settlement.
 
@@ -35,6 +35,11 @@ only the selected level and the nearest available level above and below it, with
 Plans and Agreements retain separate share URLs. Execution markets and bets remain attached to
 eligible binding Agreements, so agreements concerning the same plan retain independent markets.
 
+Publishing a design, plan or agreement is server-only and pins nothing on IPFS: the client computes
+the CID from the canonical bytes, and `POST /designs`, `POST /plans` or `POST /agreements` checks it
+and indexes the object ([ipfs-storage.md](ipfs-storage.md) lists what is pinned). An agreement
+minted on Solana therefore points at agreement, plan and design CIDs that only our index holds,
+until the chain work pins what chain records reference ([blockchain-flows.md](blockchain-flows.md)).
 Publication verifies the Plan CID and its exact member set. A local agreement's `designs` field is
 an editing/replay projection; it is not published. `POST /agreements` accepts a carried
 `plan: {cid, content}` and missing designs, indexing all three atomically. The index's `design_cids`
@@ -81,8 +86,7 @@ feature inventory 109 commands. Needs the user: deploy the `agreement` program (
 placeholder, so nothing can mint), seed devnet owners (`scripts/seed-lens-owners.mjs`),
 `AGENT_LIFECYCLE_LENS_OPERATOR_TOKEN` for live runs, `scripts/drop-proposal-era.mjs --apply`
 after a backup (dry run only so far), and the demo content recreated through the restatement scripts.
-Leftovers to flatten when touched: `readjustment-contributions.js` is loaded but unused;
-`subdivision.js planCreateVerdict` and `formation-edit.js clipPiecesByTaking` are used only by
+Leftovers to flatten when touched: `subdivision.js planCreateVerdict` is used only by
 tests; the how-to guides still describe the old editor; an output piece anchored to a parcel outside
 the inputs counts with its whole area in the ledger; unowned output land is in no ledger row; the
 rights preview names local parties by agent id; hand-placed structure `decorations` are not part of
@@ -474,14 +478,15 @@ had to be made are marked **(call)**.
   proposed without one; M3 derives the on-chain address from it), `city`, `createdAt`. Its CID
   commits to the design CIDs and so to everything transitively; a counter-agreement reuses the
   design objects.
-- Drafts stay local records with local ids; publishing computes the CIDs, pins the designs that have
-  none, then the agreement.
+- Drafts stay local records with local ids; publishing computes the CIDs, indexes the designs the
+  index lacks, then the agreement.
 
 ### Courier and index (server)
 
 - `POST /pins` `{ kind: 'design' | 'agreement', cid, bytes (base64) }`: recompute the CID, pin the
   exact bytes through the configured provider adapter, compare, answer `{ cid, pinnedAt }` or 409
-  `cid-mismatch`. 10 MiB per object. Upload provider and HTTP read gateway are configured independently.
+  `cid-mismatch`. 10 MiB per object. No publication path calls it; it is kept for the objects chain
+  records reference. Upload provider and HTTP read gateway are configured independently.
   Walrus is removed entirely (storage module, route, scripts,
   frontend provider switch, CSP entry, tests).
 - Tables, one definition each under `backend/db/`: `design` (`cid` PK, `city`, `goal`, `title`,
@@ -515,12 +520,12 @@ had to be made are marked **(call)**.
 
 ### Browser
 
-- Publishing a design: "Share" on an applied design pins and indexes it and copies
+- Publishing a design: "Share" on an applied design indexes it and copies
   `/designs/<cid>`; several applied designs share as `/designs/<cid>,<cid>`. The upload modal, the
   terms dialog, the "Who decides" row, "Create named plan", `?shared=` payload links and the
   `/proposals/<ids>` route go; the reader of `/designs/<cids>` imports from the index (from IPFS in M3).
 - Publishing an agreement: "Propose" on the agreement panel (the verb for putting an agreement to
-  its parties): pin designs, pin the agreement, index, copy `/agreements/<cid>`. The panel then
+  its parties): index the designs the index lacks, then the agreement, copy `/agreements/<cid>`. The panel then
   shows the decision tally and the owner Accept / Withdraw actions (today's owner-acceptance card,
   moved from the design details to the agreement and signing the agreement CID). Design details
   lose their consent card, lifecycle badges, expiry and funding rows.

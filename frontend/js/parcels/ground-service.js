@@ -72,7 +72,6 @@
 })(typeof window !== 'undefined' ? window : globalThis, function cadastralRepositoryFactory(defaultRoot) {
     'use strict';
 
-    const COMPLETE_COVERAGE = 0.999;
     const FOOTPRINT_BATCH_SIZE = 20;
     const FOOTPRINT_CONCURRENCY = 6;
     const BOUNDS_CONCURRENCY = 6;
@@ -147,6 +146,7 @@
         const root = dependencies.root || defaultRoot || {};
         const source = dependencies.transport || null;
         const health = root.ParcelSourceHealth || (typeof require === 'function' ? require('./source-health.js') : null);
+        const gridApi = () => root.GeometryTolerances || (typeof require === 'function' ? require('../geometry-tolerances.js') : null);
         const timedTransport = operation => {
             const configured = root.PARCEL_LOAD_TIMEOUT_MS;
             const timeoutMs = typeof configured === 'number' && Number.isFinite(configured) && configured > 0
@@ -250,7 +250,9 @@
             const store = featureStore(city);
             const absent = absentStore(city);
             const staged = new Map();
-            for (const feature of features) {
+            // Every transport (the server, the DGU fallback) delivers the same parcel on the one grid,
+            // so the same parcel compares equal whoever served it (geometry-tolerances.js).
+            for (const feature of features.map(raw => gridApi().snapFeature(raw))) {
                 const id = featureId(feature);
                 const current = staged.get(id) || store.get(id);
                 if (current) {
@@ -465,12 +467,18 @@
             return assertCadastralIds(raw || []);
         }
 
+        // What the retained parcels say about a footprint: the parcels it reaches into (ids), the
+        // share of it they cover (coverage, a measurement for display and logs), and, when
+        // `options.complete` asks, whether it stands wholly on them (complete). The transport answers
+        // candidates only (/parcels/under), so this is the one place a footprint's ground is judged.
         function retainedCoverageOf(geometry, city, options = {}) {
+            const askComplete = options.complete === true;
+            const none = askComplete ? { ids: [], coverage: 0, complete: false } : { ids: [], coverage: 0 };
             const geom = geometry && geometry.type === 'Feature' ? geometry.geometry : geometry;
             const footprint = geom && geom.type
                 ? { type: 'Feature', properties: {}, geometry: clone(geom) }
                 : null;
-            if (!footprint) return { ids: [], coverage: 0 };
+            if (!footprint) return none;
             const requestedIds = assertCadastralIds(options.ids || []);
             const stored = requestedIds.length
                 ? requestedIds.map(id => featureStore(city).get(id)).filter(Boolean).map(clone)
@@ -480,50 +488,54 @@
                 const answer = supplied(footprint, stored, { city }) || {};
                 return {
                     ids: assertCadastralIds(answer.ids || []),
-                    coverage: Math.max(0, Math.min(1, Number(answer.coverage) || 0))
+                    coverage: Math.max(0, Math.min(1, Number(answer.coverage) || 0)),
+                    ...(askComplete ? { complete: answer.complete === true } : {})
                 };
             }
             const order = root.__planOrder;
             const turf = root.turf;
             if (!order || typeof order.measureCoverage !== 'function'
                 || !turf || typeof turf.area !== 'function') {
-                return { ids: [], coverage: 0 };
+                return none;
             }
             try {
                 const footprintArea = Number(turf.area(footprint)) || 0;
-                if (!(footprintArea > 0)) return { ids: [], coverage: 0 };
+                if (!(footprintArea > 0)) return none;
                 // Ancestors and covered area are measured apart (plan-order.js measureCoverage): an
-                // edge sliver below the ancestry floor is still ground the footprint stands inside.
+                // edge sliver that is no ancestor still counts toward the area the footprint stands inside.
                 const { hits, coveredArea } = order.measureCoverage(footprint, stored.map(feature => ({
                     id: featureId(feature),
                     feature
                 })));
-                return {
+                const answer = {
                     ids: assertCadastralIds(hits.map(hit => hit.id)),
                     coverage: Math.max(0, Math.min(1, coveredArea / footprintArea))
                 };
+                if (!askComplete) return answer;
+                // Standing wholly on the retained parcels is the shared rule, not a share of area:
+                // no part of the footprint off them is ground (geometry-tolerances.js uncoveredBy +
+                // isGround), as the flat-ground apply gate asks it.
+                const grid = gridApi();
+                const uncovered = grid.uncoveredBy(turf, footprint, stored, { site: 'ground-service.retainedCoverage' });
+                return { ...answer, complete: !grid.isGround(turf, uncovered) };
             } catch (_) {
-                return { ids: [], coverage: 0 };
+                return none;
             }
         }
 
+        // A footprint's answer. Without a transport result it is the local check (`complete`
+        // decides whether the transport is asked at all); with one, the ids fall back to the
+        // transport's candidates when no retained parcel is reached.
         function footprintSummary(geometry, city, transportResult = null) {
-            const retained = retainedCoverageOf(geometry, city);
+            const retained = retainedCoverageOf(geometry, city, { complete: !transportResult });
             const resultIds = assertCadastralIds(transportResult && transportResult.ids || []);
             const ids = retained.ids.length ? retained.ids : resultIds;
-            const hasTransportCoverage = transportResult
-                && transportResult.coverage !== undefined
-                && transportResult.coverage !== null
-                && Number.isFinite(Number(transportResult.coverage));
-            const transportCoverage = hasTransportCoverage ? Number(transportResult.coverage) : null;
-            const coverage = hasTransportCoverage
-                ? Math.max(0, Math.min(1, transportCoverage))
-                : retained.coverage;
             return {
                 status: 'ready',
                 ids,
                 features: ids.map(id => clone(featureStore(city).get(id))).filter(Boolean),
-                coverage,
+                coverage: retained.coverage,
+                ...(transportResult ? {} : { complete: retained.complete }),
                 count: ids.length,
                 queryMs: Number(transportResult && transportResult.queryMs) || null
             };
@@ -553,8 +565,9 @@
                 .then(async () => {
                     const idWaits = pendingForCity(idInFlight, city);
                     if (idWaits.length) await Promise.all(idWaits);
+                    // A footprint already standing wholly on retained parcels needs no request.
                     const cached = footprintSummary(geom, city);
-                    if (cached.coverage >= COMPLETE_COVERAGE) {
+                    if (cached.complete) {
                         footprintResults.set(key, clone(cached));
                         return { cached };
                     }
@@ -564,7 +577,6 @@
                     return timedTransport((signal, activity) => fetchUnderGeometry(geom, {
                         city,
                         signal,
-                        parcelsOnly: options.parcelsOnly !== false,
                         onProgress: detail => { activity?.touch?.(); emit(options.onProgress, detail); }
                     }));
                 })
@@ -695,7 +707,6 @@
                     const requestStarted = now();
                     const result = await ensureFootprint(geometry, {
                         city,
-                        parcelsOnly: true,
                         mutation: options.mutation || null, slicer: options.slicer || null
                     });
                     const elapsed = now() - requestStarted;
@@ -934,7 +945,7 @@
         // scan a second cache or a renderer: the same service that owns retrieval owns the answer.
         function coverageOf(geometry, options = {}) {
             const city = normalizeId(options.city) || cityKey();
-            return clone(retainedCoverageOf(geometry, city, { ids: options.ids }));
+            return clone(retainedCoverageOf(geometry, city, { ids: options.ids, complete: true }));
         }
 
         function boundsArray(bounds) {
@@ -1085,7 +1096,6 @@
 
     const service = defaultRoot && defaultRoot.CadastralParcelRepository || null;
     return {
-        COMPLETE_COVERAGE,
         createCadastralParcelRepository,
         CadastralParcelRepository: service
     };

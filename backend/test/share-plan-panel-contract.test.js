@@ -14,7 +14,7 @@ describe('plan dialog and workspace contract',()=>{
  });
  it('resolves exact carried members before publishing and checks missing members first',()=>{
   const fetch=workspace.indexOf('const known = await win.DesignSync.fetchDesigns');
-  const publish=workspace.indexOf('await win.DesignSync.pinObject');
+  const publish=workspace.indexOf("win.fetch(backend() + '/designs'");
   const planSave=workspace.indexOf('await win.NamedPlans.save(row.content)');
   expect(fetch).toBeGreaterThan(-1);expect(publish).toBeGreaterThan(fetch);expect(planSave).toBeGreaterThan(publish);
   expect(workspace).toContain('PlanComposition.localRecords(row');

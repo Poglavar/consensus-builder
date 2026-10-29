@@ -7,13 +7,12 @@
 // fallbacks that keep it from ever going silent.
 import { describe, it, expect } from 'vitest';
 import * as turf from '@turf/turf';
-import { groundUnderBody, MIN_TOUCH_M2 } from '../../frontend/js/proposals/hover-ground.js';
+import { createRequire } from 'node:module';
+import { groundUnderBody } from '../../frontend/js/proposals/hover-ground.js';
 
-const ctx = {
-    intersectionArea: (a, b) => {
-        try { const hit = turf.intersect(a, b); return hit ? (turf.area(hit) || 0) : 0; } catch (_) { return 0; }
-    }
-};
+// The reach test the map injects: the shared rule (geometry-tolerances.js reachesInto).
+const grid = createRequire(import.meta.url)('../../frontend/js/geometry-tolerances.js');
+const ctx = { reaches: (body, parcel) => grid.reachesInto(turf, body, parcel) };
 
 // A box in metres-ish degrees around Borovje, big enough that turf areas are realistic.
 const box = (west, south, width, height, id) => ({
@@ -76,19 +75,20 @@ describe('groundUnderBody', () => {
         expect(kept.map(f => f.properties.id)).toEqual(['plot']);
     });
 
-    it('ignores an overlap below the contact floor', () => {
-        const overlapping = box(16.010, 45.785, 0.004, 0.003, 'host-copy');
-        const tiny = { intersectionArea: () => MIN_TOUCH_M2 / 2 };
-
-        // Every candidate falls under the floor, so the fallback returns them all rather than none.
-        expect(groundUnderBody([PLOT, overlapping], [BODY], tiny).length).toBe(2);
-        // With one candidate above the floor, the sub-floor one is dropped.
-        const mixed = { intersectionArea: (parcel) => (parcel.properties.id === 'plot' ? 500 : MIN_TOUCH_M2 / 2) };
-        expect(groundUnderBody([PLOT, overlapping], [BODY], mixed).map(f => f.properties.id)).toEqual(['plot']);
+    // Was: an injected overlap area below a 1 m² contact floor was dropped. Now the reach test is
+    // the shared rule: debris along an edge is no reach, a strip wider than the noise is.
+    it('ignores a reach that is cutting debris, and keeps one that is ground', () => {
+        const debrisNeighbour = box(16.0150 - 5e-9, 45.7873, 0.0010, 0.0003, 'debris');   // ~0.4 mm under the body
+        const realNeighbour = box(16.0150 - 2e-7, 45.7873, 0.0010, 0.0003, 'real');       // ~1.6 cm under it
+        const plotEdgeBody = box(16.0132, 45.7873, 0.0018, 0.0003, 'body-fills-plot');
+        expect(groundUnderBody([PLOT, debrisNeighbour], [plotEdgeBody], ctx).map(f => f.properties.id)).toEqual(['plot']);
+        expect(groundUnderBody([PLOT, realNeighbour], [plotEdgeBody], ctx).map(f => f.properties.id)).toEqual(['plot', 'real']);
+        // Every candidate unreached: the fallback returns them all rather than none.
+        expect(groundUnderBody([PLOT, debrisNeighbour], [BODY], { reaches: () => false }).length).toBe(2);
     });
 
     it('survives a geometry the maths cannot handle', () => {
-        const throwing = { intersectionArea: () => { throw new Error('degenerate ring'); } };
+        const throwing = { reaches: () => { throw new Error('degenerate ring'); } };
 
         // Unmeasurable is not "not there" — the fallback keeps the parcels visible.
         expect(groundUnderBody([PLOT, REMAINDER], [BODY], throwing).length).toBe(2);

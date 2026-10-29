@@ -1,7 +1,7 @@
 import { consumerParcelSourceId } from './helpers/frontend-source-selection.js';
 // Checks that proposal binding selects live sources and their metric CRS without another cadastre.
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { computeBinding, parcelActBinding, bindingFrame, FOOTPRINT_SITE_SQL } from '../proposals/binding.js';
+import { checkProposalBinding, computeBinding, parcelActBinding } from '../proposals/binding.js';
 import { clearParcelSourceRuntimeCache } from '../parcels/sources.js';
 
 const SOURCE_ID = 'ca-on-toronto-property-boundary';
@@ -80,28 +80,17 @@ describe('live source proposal binding wiring', () => {
         expect(query).toContain('PARCELID IN (41002,49999)');
     });
 
-    it('derives a footprint site in the footprint\'s own operation frame before source binding', async () => {
+    it('derives a footprint site as the browser does (site-binding.js siteOf), with no database statement', async () => {
         const fetch = fetchGeojson();
         vi.stubGlobal('fetch', fetch);
-        const calls = [];
-        const db = {
-            query: vi.fn(async (sql, params) => {
-                calls.push({ sql, params });
-                return { rows: [{ geometry: JSON.stringify(SITE_MULTI) }] };
-            })
-        };
-        const parts = { polygons: [SITE_MULTI], centerline: null };
+        const db = { query: vi.fn(() => { throw new Error('Unexpected database read'); }) };
+        const park = { goal: 'park', structureProposal: { kind: 'park', geometry: SITE } };
 
-        const { site, binding } = await computeBinding(db, { parcelSourceId: consumerParcelSourceId('toronto'), parts, toleranceM: 0.1, city: 'toronto' });
+        const result = await checkProposalBinding(db, park, [], { parcelSourceId: consumerParcelSourceId('toronto'), toleranceM: 0.1, city: 'toronto', derive: true });
 
-        // projections.md §2: never the source's (or Croatia's) CRS, always the local frame of the footprint
-        expect(calls).toHaveLength(1);
-        expect(calls[0].sql).toBe(FOOTPRINT_SITE_SQL);
-        expect(calls[0].sql).not.toMatch(/32617|3765/);
-        expect(calls[0].params).toEqual([JSON.stringify([SITE_MULTI]), '[]', bindingFrame({ parts }).proj]);
-        expect(calls[0].params[2]).toMatch(/^\+proj=tmerc .*\+k=1 .*\+datum=WGS84/);
+        expect(db.query).not.toHaveBeenCalled();
         expect(fetch).toHaveBeenCalledTimes(1);
-        expect(site.type).toBe('MultiPolygon');
-        expect(binding).toMatchObject({ source: `server:${SOURCE_ID}`, toleranceM: 0.1, coverage: 'complete' });
+        expect(result.site).toEqual(SITE_MULTI);
+        expect(result.binding).toMatchObject({ source: `server:${SOURCE_ID}`, toleranceM: 0.1, coverage: 'complete' });
     });
 });

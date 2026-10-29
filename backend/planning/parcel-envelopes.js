@@ -7,6 +7,7 @@ import { assembleParcelStudy, parcelRecords, parcelZones, readStudyZoning, study
 import { runtimeParcelSource } from '../parcels/sources.js';
 import { validateBounds } from '../parcels/source-contract.js';
 import { configurationTreatments } from './providers/atlas.js';
+import { streetWidthAcross } from './street-width.js';
 const require = createRequire(import.meta.url);
 const core = require('../../frontend/js/planning/parcel-assessment.js');
 const plots = require('../../frontend/js/proposals/site-plots.js');
@@ -43,6 +44,44 @@ export function lotAreaTest(parcelM2, constraints = []) {
     return { status: minimumM2 === null ? 'unknown' : parcelM2 + 0.01 >= minimumM2 ? 'pass' : 'fail', minimumM2, parcelM2 };
 }
 
+const LENGTH_M = { m: 1, ft: 0.3048 }, SETBACKS = ['frontSetback', 'sideSetback', 'rearSetback'];
+const metres = c => ['direct', 'literal'].includes(c.evidence) && Number.isFinite(c.value) && c.value >= 0 && LENGTH_M[c.unit] ? c.value * LENGTH_M[c.unit] : null;
+const trimmed = bound => ({ geometry: bound.geometry, areaM2: bound.areaM2, heightM: bound.heightM, interpretations: bound.interpretations, edges: bound.edges });
+// A yard that starts above the ground (`fromHeightM` on a setback constraint: a side yard from
+// the second floor, a street-wall setback above the facade height) makes the bound a stack of
+// tiers: from each level up, the deepest yard of each role that has started applies. Without
+// such a yard the bound is the evaluator's single prism.
+export function tieredBound(context, frontEdge, geometryOps = turf) {
+    const constraints = context.source.constraints || [];
+    const heightM = constraints.filter(c => c.quantity === 'height').map(metres).find(Number.isFinite) ?? null;
+    const starts = constraints.filter(c => SETBACKS.includes(c.quantity) && Number.isFinite(c.fromHeightM) && c.fromHeightM > 0
+        && (heightM === null || c.fromHeightM < heightM)).map(c => c.fromHeightM);
+    const levels = [0, ...new Set(starts)].sort((a, b) => a - b);
+    const derive = source => Number.isInteger(frontEdge)
+        ? { ...core.derive({ ...context, source }, frontEdge, geometryOps), interpretations: 1, edges: [frontEdge] }
+        : core.unorientedEnvelope({ ...context, source }, geometryOps);
+    if (levels.length === 1) { const bound = derive(context.source); return [{ baseM: 0, topM: bound.heightM, ...trimmed(bound) }]; }
+    return levels.map((baseM, i) => {
+        const active = SETBACKS.flatMap(quantity => {
+            const started = constraints.filter(c => c.quantity === quantity && (c.fromHeightM ?? 0) <= baseM && metres(c) !== null);
+            return started.length ? [started.reduce((deepest, c) => metres(c) > metres(deepest) ? c : deepest)] : [];
+        });
+        const bound = derive({ ...context.source, constraints: [...constraints.filter(c => !SETBACKS.includes(c.quantity)), ...active] });
+        return { baseM, topM: levels[i + 1] ?? bound.heightM, ...trimmed(bound) };
+    });
+}
+// The floor area a stack of tiers holds for a storey count: each storey takes the tier its top reaches.
+export function floorAreaM2(tiers, storeys, heightM) {
+    if (!Number.isInteger(storeys) || storeys <= 0 || !(heightM > 0) || !tiers.length) return null;
+    const storeyM = heightM / storeys;
+    let total = 0;
+    for (let k = 1; k <= storeys; k++) {
+        const top = k * storeyM, tier = [...tiers].reverse().find(entry => entry.baseM < top - 1e-6) || tiers[0];
+        total += tier.geometry ? tier.areaM2 : 0;
+    }
+    return total;
+}
+
 // One configuration per usable housing type. A configuration without a direct height or
 // without space inside its supported setbacks is listed with its reason, never drawn.
 export function parcelConfigurations(baseContext, scenarios, zonesByScenario, geometryOps = turf, frontEdge = null) {
@@ -53,18 +92,20 @@ export function parcelConfigurations(baseContext, scenarios, zonesByScenario, ge
         const context = withScenarioSource(baseContext, zonesByScenario[scenario]);
         const treatment = context?.source.assessment.status || null;
         if (!context || !configurationTreatments.includes(treatment)) { excluded[scenario] = treatment || 'unrecorded'; continue; }
-        let bound, unavailableReason = null;
-        try {
-            bound = Number.isInteger(frontEdge)
-                ? { ...core.derive(context, frontEdge, geometryOps), interpretations: 1, edges: [frontEdge] }
-                : core.unorientedEnvelope(context, geometryOps);
-        }
+        let tiers, unavailableReason = null;
+        try { tiers = tieredBound(context, frontEdge, geometryOps); }
         catch (error) { unavailableReason = error.message === 'unsupported-parcel-shape' ? error.message : 'envelope-geometry-error'; }
+        const bound = tiers?.[0];
         if (!unavailableReason && (bound.heightM === null || bound.heightM <= 0)) unavailableReason = 'missing-direct-height';
         else if (!unavailableReason && !bound.geometry) unavailableReason = 'empty-supported-bound';
+        const storeys = context.source.constraints?.find(c => c.quantity === 'storeys' && Number.isInteger(c.value))?.value ?? null;
         configurations.push({ id: scenario, treatment, unavailableReason,
-            volumes: unavailableReason ? [] : [{ id: `${scenario}:bound`, geometry: bound.geometry, baseM: 0, topM: bound.heightM }],
-            metrics: unavailableReason ? { footprintM2: null, heightM: null } : { footprintM2: bound.areaM2, heightM: bound.heightM },
+            volumes: unavailableReason ? [] : tiers.filter(tier => tier.geometry && tier.topM > tier.baseM)
+                .map((tier, i) => ({ id: i === 0 ? `${scenario}:bound` : `${scenario}:tier-${i}`, geometry: tier.geometry, baseM: tier.baseM, topM: tier.topM })),
+            metrics: unavailableReason ? { footprintM2: null, heightM: null, floorAreaM2: null }
+                : { footprintM2: bound.areaM2, heightM: bound.heightM, floorAreaM2: storeys ? floorAreaM2(tiers, storeys, bound.heightM) : null },
+            // A configuration the project must opt into (an incentive) says so; the map shows it only when asked.
+            ...(context.source.assessment.condition ? { condition: context.source.assessment.condition } : {}),
             edgeInterpretations: bound?.interpretations ?? 0, frontEdges: bound?.edges, constraints: context.source.constraints,
             lotArea: lotAreaTest(parcelArea(), context.source.constraints), sourceReference: context.sourceReference });
     }
@@ -73,14 +114,35 @@ export function parcelConfigurations(baseContext, scenarios, zonesByScenario, ge
     return { configurations, excluded, frontEdges };
 }
 
-// The outer bound is everything any configuration permits: joined footprints, tallest height.
+// The outer bound is everything any configuration permits: joined footprints, tallest height,
+// and between any two levels the ground some configuration's volume covers there. A level only
+// configurations with a condition (an incentive's extra storeys) reach carries that condition;
+// `grantedHeightM` is the top of what the unconditional ones permit.
 export function outerBound(configurations, geometryOps = turf) {
-    const drawable = configurations.filter(configuration => configuration.volumes.length);
-    if (!drawable.length) return null;
-    const geometry = drawable.map(configuration => configuration.volumes[0].geometry)
+    const volumes = configurations.flatMap(configuration => configuration.volumes.map(volume => ({ ...volume, condition: configuration.condition || null })));
+    if (!volumes.length) return null;
+    const union = list => list.map(volume => volume.geometry)
         .reduce((joined, next) => joined ? geometryOps.union(geometryOps.feature(joined), geometryOps.feature(next)).geometry : next, null);
-    return { geometry, heightM: Math.max(...drawable.map(configuration => configuration.volumes[0].topM)),
-        areaM2: geometryOps.area(geometryOps.feature(geometry)) };
+    const geometry = union(volumes);
+    const levels = [...new Set(volumes.flatMap(volume => [volume.baseM, volume.topM]))].sort((a, b) => a - b);
+    // Grounds here are nested yard offsets of one lot: equal area and box means the same ground,
+    // without a clipping pass per level.
+    const sameGround = (a, b) => Math.abs(geometryOps.area(geometryOps.feature(a)) - geometryOps.area(geometryOps.feature(b))) < 0.01
+        && geometryOps.bbox(a).every((value, i) => Math.abs(value - geometryOps.bbox(b)[i]) < 1e-9);
+    const tiers = [];
+    for (let i = 0; i < levels.length - 1; i++) {
+        const baseM = levels[i], topM = levels[i + 1];
+        const covering = volumes.filter(volume => volume.baseM <= baseM + 1e-6 && volume.topM >= topM - 1e-6);
+        if (!covering.length) continue;
+        const ground = union(covering), last = tiers.at(-1);
+        const condition = covering.every(volume => volume.condition) ? [...new Set(covering.map(volume => volume.condition))].join('; ') : null;
+        // Consecutive levels with the same ground and the same standing are one prism.
+        if (last && last.topM === baseM && (last.condition ?? null) === condition && sameGround(last.geometry, ground)) last.topM = topM;
+        else tiers.push({ baseM, topM, geometry: ground, ...(condition ? { condition } : {}) });
+    }
+    const granted = volumes.filter(volume => !volume.condition);
+    return { geometry, heightM: Math.max(...volumes.map(volume => volume.topM)), grantedHeightM: granted.length ? Math.max(...granted.map(volume => volume.topM)) : null,
+        areaM2: geometryOps.area(geometryOps.feature(geometry)), tiers };
 }
 
 // Statuses that say nothing usable about the use; any other recorded status is a source
@@ -125,17 +187,27 @@ function parcelFrontage(parcel, streets, index) {
         distanceM: best.distanceM, score: best.score, candidateEdges: scores.map(edge => edge.index) } };
 }
 
+// Lots a street's width beyond the view are read too, so a lot at the view's edge still finds the
+// lot line across its street; only lots in the view get envelopes.
+const OBSTACLE_MARGIN_M = 45;
+function expand([w, s, e, n], marginM) {
+    const dLat = marginM / 111320, dLng = dLat / Math.cos((s + n) / 2 * Math.PI / 180);
+    return [w - dLng, s - dLat, e + dLng, n + dLat];
+}
+
 export async function loadParcelEnvelopes(query, { sources, parcelProvider = descriptor => runtimeParcelSource(descriptor), streetProvider } = {}) {
     validateBounds(query.bbox, 0.5);
     const provider = sourcesFor(query, sources)[0];
     if (!query.source || !provider) fail('study-unavailable');
     const descriptor = studyParcelSource(provider, query.city);
-    const parcels = await parcelProvider(descriptor).queryBounds(query.bbox);
+    const parcels = await parcelProvider(descriptor).queryBounds(expand(query.bbox, OBSTACLE_MARGIN_M));
     if (parcels.complete !== true) fail('study-parcel-incomplete', 503);
+    const obstacles = parcels.features.map(parcel => ({ id: parcel.id, geometry: parcel.geometry, bbox: turf.bbox(parcel) }));
+    const inView = parcels.features.filter((parcel, index) => intersects(obstacles[index].bbox, query.bbox));
     // A work bound, not a secret: a dense zoom-18 view holds about 1,000 lots, which cost a few
     // seconds, most of it the upstream parcel read.
-    if (parcels.features.length > 1000) fail('envelope-area-too-large', 400);
-    const records = parcels.features.map(parcel => ({ parcel, bbox: turf.bbox(parcel) }));
+    if (inView.length > 1000) fail('envelope-area-too-large', 400);
+    const records = inView.map(parcel => ({ parcel, bbox: turf.bbox(parcel) }));
     // Query zoning across full parcel outlines, not just the viewport (a corner can cross a zone).
     const fullBounds = records.length ? [Math.min(...records.map(r => r.bbox[0])), Math.min(...records.map(r => r.bbox[1])),
         Math.max(...records.map(r => r.bbox[2])), Math.max(...records.map(r => r.bbox[3]))] : query.bbox;
@@ -151,12 +223,19 @@ export async function loadParcelEnvelopes(query, { sources, parcelProvider = des
     for (const { parcel } of records) {
         try {
             if (overlapProblems.has(parcel.id)) fail(overlapProblems.get(parcel.id));
+            const frontage = parcelFrontage(parcel, streets, streetsNearby);
+            const street = frontage.frontEdge === null ? { widthM: null, hits: [], reason: 'no-front-edge' } : streetWidthAcross(parcel, frontage.frontEdge, obstacles);
+            // What the provider may ask of the lot: the floor area a candidate set of constraints leaves on it.
+            const measure = constraints => {
+                const tiers = tieredBound({ parcel, source: { constraints } }, frontage.frontEdge, turf);
+                const storeys = constraints.find(c => c.quantity === 'storeys' && Number.isInteger(c.value))?.value ?? null;
+                return { floorAreaM2: floorAreaM2(tiers, storeys, tiers[0].heightM), tiers };
+            };
             const zones = provider.parcelRecords ? Object.fromEntries(await Promise.all(scenarios.map(async scenario =>
-                [scenario, await parcelRecords(provider, parcel, zonesByScenario[scenario])]))) : zonesByScenario;
+                [scenario, await parcelRecords(provider, parcel, zonesByScenario[scenario], { frontEdge: frontage.frontEdge, streetWidthM: street.widthM, measure })]))) : zonesByScenario;
             const scenarioZones = zones[scenarios[0]], found = parcelZones(parcel, scenarioZones);
             if (found.stacked) fail('study-multiple-zoning-areas');
             if (!found.major.length) fail('study-zoning-missing');
-            const frontage = parcelFrontage(parcel, streets, streetsNearby);
             const failures = [];
             // One envelope per zoning area that partitions the lot: the whole lot's bound, clipped to that part.
             for (const part of found.major) {
@@ -170,7 +249,8 @@ export async function loadParcelEnvelopes(query, { sources, parcelProvider = des
                     items.push({ id, role: 'permitted', proposalId: null, parcelEnvelope: true,
                         title: `${context.source.title} · ${parcel.properties.parcelNumber}`,
                         source: { ...context.source.source, scenario: null, parcel: parcel.id }, site: bound.geometry, areas: [],
-                        volumes: [{ id: `${id}:bound`, geometry: bound.geometry, baseM: 0, topM: bound.heightM }],
+                        volumes: bound.tiers.map((tier, index) => ({ id: `${id}:bound${index ? `-${index}` : ''}`, geometry: tier.geometry, baseM: tier.baseM, topM: tier.topM,
+                            ...(tier.condition ? { condition: tier.condition } : {}) })),
                         configurations: configurations.map(configuration => ({ ...configuration,
                             volumes: configuration.volumes.map(volume => ({ ...volume, id: `${id}:${volume.id}` })) })),
                         // Retain original lot lines and the edge interpretations used by the evaluator.
@@ -178,9 +258,12 @@ export async function loadParcelEnvelopes(query, { sources, parcelProvider = des
                         spatialReference: { horizontal: 'OGC:CRS84', vertical: 'relative-ground', unit: 'm' },
                         authority: { effect: 'unknown', applicability: 'unresolved' },
                         assessment: { meaning: 'outer-bound', status: 'unresolved', geometry: 'derived-parcel', constraints: 'partial', current: true },
-                        metrics: { footprintM2: bound.areaM2, heightM: bound.heightM }, constraints: [],
+                        // The height is what the rules grant; an incentive's extra height stands beside it with its condition.
+                        metrics: { footprintM2: bound.areaM2, heightM: bound.grantedHeightM, ...(bound.heightM > (bound.grantedHeightM ?? 0)
+                            ? { conditional: { heightM: bound.heightM, condition: [...new Set(bound.tiers.map(tier => tier.condition).filter(Boolean))].join('; ') } } : {}) },
+                        constraints: [],
                         sourceEvidence: { zoningRecordId: recordId, parcelReference: context.parcelReference,
-                            sourceCoverage: context.sourceCoverage, parts: found.major.length, frontEdge: frontage.frontEdge, frontage: frontage.evidence,
+                            sourceCoverage: context.sourceCoverage, parts: found.major.length, frontEdge: frontage.frontEdge, frontage: frontage.evidence, streetWidth: street,
                             excludedConfigurations: excluded, envelopeMeaning: frontage.frontEdge === null
                                 ? 'outer-bound-across-configurations-and-front-edge-interpretations' : 'outer-bound-across-configurations' } });
                 } catch (error) {
@@ -194,6 +277,7 @@ export async function loadParcelEnvelopes(query, { sources, parcelProvider = des
             // A failed upstream read is the whole request's failure, never one parcel's geometry problem.
             if (error.status === 503) throw error;
             const reason = knownReasons.includes(error.code || error.message) ? error.code || error.message : 'envelope-geometry-error';
+            if (reason === 'envelope-geometry-error' && process.env.PLANNING_ENVELOPE_DEBUG) console.warn(`[${new Date().toISOString()}] [planning-envelopes] ${parcel.id}: ${error.stack || error.message}`);
             unavailable.push({ parcelId: parcel.id, reason });
         }
     }

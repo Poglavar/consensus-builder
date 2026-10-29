@@ -490,16 +490,16 @@ if (typeof window !== 'undefined') {
     window.corridorSurfaceFootprintForDefinition = corridorSurfaceFootprintForDefinition;
 }
 
-// Every geometry change re-derives the parcels the corridor now touches from the committed
+// Every geometry change re-derives the parcels the corridor's land takes from the committed
 // fabric. Leaflet is only a projection and never participates in the intersection decision.
-// `options.minOverlapM2`: a parcel counts only when the land covers at least this much of it (a
-// road placed into a parcel shares whole borders with its neighbours, which touch it but give it
-// nothing; roadLandOverlapFloor).
+// A parcel counts when the land reaches into it (geometry-tolerances.js reachesInto, the rule
+// binding declares by): a neighbour that only shares a border gives the road nothing.
+// `options.toleranceM` is the record's own allowance.
 function collectParcelsIntersectingFootprint(footprintGeometry, options = {}) {
     if (!footprintGeometry || typeof turf === 'undefined') return [];
     const geometry = footprintGeometry.type ? footprintGeometry : { type: 'Polygon', coordinates: footprintGeometry };
     const roadFeature = { type: 'Feature', properties: {}, geometry };
-    return liveRoadDrawingParcelsIntersecting(roadFeature, { minOverlapM2: options.minOverlapM2 })
+    return liveRoadDrawingParcelsIntersecting(roadFeature, { reaches: true, toleranceM: options.toleranceM })
         .map(getRoadDrawingParcelIdFromFeature)
         .filter(Boolean)
         .map(String);
@@ -625,7 +625,7 @@ function makeFreshRoadSnapshot(sourceProposal, definition, options = {}) {
     delete cleanDefinition.demolishedBuildings;
     delete cleanDefinition.demolitionScanned;
     const geometricHints = cleanDefinition.polygon
-        ? collectParcelsIntersectingFootprint(cleanDefinition.polygon, { minOverlapM2: roadLandOverlapFloor(cleanDefinition) })
+        ? collectParcelsIntersectingFootprint(cleanDefinition.polygon, { toleranceM: window.GeometryTolerances.designToleranceM(sourceProposal) })
         : [];
     const fallbackHints = sourceProposal?.cadastreParcelIds || [];
     const cadastreParcelIds = baseRoadParentHints(geometricHints.length ? geometricHints : fallbackHints);
@@ -654,21 +654,14 @@ function makeFreshRoadSnapshot(sourceProposal, definition, options = {}) {
     return clone;
 }
 
-// The least area a road's land must cover of a parcel to declare it. A road placed into a parcel
-// (definition.bound) has the parcel's own boundary as its land, so every neighbour touches it: only
-// parcels it covers at least as much of as the arrangement keeps a piece for (parcel-arrangement.js
-// MIN_PIECE_M2) are declared. Other roads keep declaring every parcel their land reaches.
-const BOUNDED_ROAD_MIN_OVERLAP_M2 = 0.25;
-function roadLandOverlapFloor(definition) {
-    return definition && definition.bound && definition.bound.site ? BOUNDED_ROAD_MIN_OVERLAP_M2 : 0;
-}
-
-// Add every loaded parcel under `polygon` to the record's declared cadastre parcels (as base
-// parcel ids, like a fresh snapshot). Returns the ids that were newly declared.
+// Add every loaded parcel the road's land reaches into (`polygon`) to the record's declared
+// cadastre parcels (as base parcel ids, like a fresh snapshot). A road placed into a parcel
+// (definition.bound) has the parcel's own boundary as its land, so every neighbour touches it, but
+// only the parcels it reaches into are declared. Returns the ids that were newly declared.
 function declareParcelsUnderRoadLand(record, polygon) {
     if (!record || !polygon) return [];
-    const floor = roadLandOverlapFloor(record.roadProposal && record.roadProposal.definition);
-    const reached = baseRoadParentHints(collectParcelsIntersectingFootprint(polygon, { minOverlapM2: floor }));
+    const reached = baseRoadParentHints(collectParcelsIntersectingFootprint(polygon,
+        { toleranceM: window.GeometryTolerances.designToleranceM(record) }));
     const declared = new Set((Array.isArray(record.cadastreParcelIds) ? record.cadastreParcelIds : []).map(String).filter(Boolean));
     const added = reached.map(String).filter(id => id && !declared.has(id));
     if (!added.length) return [];
@@ -2067,15 +2060,15 @@ function liveRoadDrawingParcelsIntersecting(queryFeature, options = {}) {
     } catch (_) {
         return [];
     }
-    const minOverlap = Number(options.minOverlapM2) > 0 ? Number(options.minOverlapM2) : 0;
-    const hits = candidates.filter(feature => {
-        try {
-            if (!turf.booleanIntersects(queryFeature, feature)) return false;
-            if (!minOverlap) return true;
-            const shared = turf.intersect(queryFeature, feature);
-            return !!shared && turf.area(shared) >= minOverlap;
-        } catch (_) { return false; }
-    });
+    // `options.reaches`: count only parcels the shape reaches into (geometry-tolerances.js), for
+    // declarations; a clip that fails throws a typed ClipFailure. Without it, any touch counts (the
+    // drawing previews, which run while the pointer moves).
+    const hits = options.reaches
+        ? candidates.filter(feature => window.GeometryTolerances.reachesInto(turf, queryFeature, feature, options.toleranceM,
+            { site: 'road-drawing.parcelsReached' }))
+        : candidates.filter(feature => {
+            try { return turf.booleanIntersects(queryFeature, feature); } catch (_) { return false; }
+        });
     // Only cadastral parcels are returned: a piece formed on open ground joins no count, owner
     // tally or declaration. `options.groundInto` (a Map) collects those pieces for the open-ground stat.
     const ground = (typeof window !== 'undefined') ? window.__openGround : null;

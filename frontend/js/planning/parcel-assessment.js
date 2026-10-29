@@ -57,15 +57,26 @@
             const p = local.points[edge.index], q = local.points[(edge.index + 1) % local.points.length];
             const t = [(q[0] - p[0]) / edge.length, (q[1] - p[1]) / edge.length], n = edge.normal;
             const a = [p[0] - t[0] * distance, p[1] - t[1] * distance], b = [q[0] + t[0] * distance, q[1] + t[1] * distance];
-            return [local.geometryOf([a, b, [b[0] + n[0] * distance, b[1] + n[1] * distance], [a[0] + n[0] * distance, a[1] + n[1] * distance]])];
+            return [{ key: `${edge.index}:${distance}`, distance, index: edge.index,
+                geometry: local.geometryOf([a, b, [b[0] + n[0] * distance, b[1] + n[1] * distance], [a[0] + n[0] * distance, a[1] + n[1] * distance]]) }];
         });
     }
+    // Strips leave one at a time (a clipping pass each), in a fixed order, and each partial
+    // result is kept per lot: a height search re-derives the same lot with mostly the same yards,
+    // and the shared prefix of the order costs nothing the second time.
+    const yardWork = new WeakMap(), YARD_WORK_CAP = 4000;
     function groundBeyondYards(parcel, local, edges, distanceOf, geometryOps) {
         if (!geometryOps) invalid('missing-geometry-operations');
-        let remaining = geometryOps.feature(parcel);
-        for (const strip of yardStrips(local, edges, distanceOf)) {
-            if (!remaining) break;
-            remaining = geometryOps.difference(remaining, geometryOps.feature(strip));
+        const strips = yardStrips(local, edges, distanceOf).sort((a, b) => b.distance - a.distance || a.index - b.index);
+        let work = yardWork.get(parcel);
+        if (!work) yardWork.set(parcel, work = new Map());
+        let remaining = geometryOps.feature(parcel), prefix = '';
+        for (const strip of strips) {
+            prefix += `${strip.key}|`;
+            if (work.has(prefix)) { remaining = work.get(prefix); continue; }
+            remaining = remaining ? geometryOps.difference(remaining, geometryOps.feature(strip.geometry)) : null;
+            if (work.size >= YARD_WORK_CAP) work.clear();
+            work.set(prefix, remaining);
         }
         return remaining && geometryOps.area(remaining) > 0.01 ? remaining.geometry : null;
     }

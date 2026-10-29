@@ -199,7 +199,10 @@ describe('structures (proposals/geometry.js buildGeometryFromParcels)', () => {
     it('a park on the two parcels binds exactly them', () => {
         const src = read('../../frontend/js/proposals/geometry.js');
         const body = src.slice(src.indexOf('function buildGeometryFromParcels('), src.indexOf('function computeLakeZonesForGeometry('));
-        const build = (0, eval)(`(${body})`); // eslint-disable-line no-eval
+        // Its unions run through the shared clip, resolved by proposalGeometryClipApi from window.
+        const clipApi = src.slice(src.indexOf('function proposalGeometryClipApi('), src.indexOf('function getFeatureCentroid('));
+        const build = (0, eval)(`(function (window) { ${clipApi}\nreturn (${body}); })`)( // eslint-disable-line no-eval
+            { ...globalThis.window, __parcelArrangement: require('../../frontend/js/proposals/parcel-arrangement.js') });
         expect(boundIds(build(SOURCES))).toEqual(['S1', 'S2']);
     });
 });
@@ -245,12 +248,15 @@ describe('readjustment sweep (reparcellization-slice.js sliceAlongBearing)', () 
 });
 
 describe('freeform building (single-building-geometry clipFootprintToBoundary)', () => {
-    it('a footprint the editor accepts as inside (≤0.01 m² out) is published clipped to the block', () => {
+    // Was: the editor accepted this 1.5 cm poke as inside (≤ 0.01 m² out). Under the shared ground rule
+    // (geometry-tolerances.js isGround) 1.5 cm is ground, so the editor refuses it, as apply would; a
+    // footprint clipped to the block binds only its own parcel either way.
+    it('a footprint poking 1.5 cm out is refused by the editor, and clipped to the block binds its own parcel only', () => {
         const block = footprint.toSingleLargestPolygon(footprint.robustUnion(SOURCES));
         // A building against S2's top edge q1→q2, poking 1.5 cm over 0.5 m of it into the notch.
         const top = x => P.q1[1] + (x - P.q1[0]) * (P.q2[1] - P.q1[1]) / (P.q2[0] - P.q1[0]);
         const footprintFeature = poly('F', [[30, 8], [40, 8], [40, top(40) + 0.015], [39.5, top(39.5) + 0.015], [39.45, top(39.45)], [30, top(30)]]);
-        expect(singleGeometry.footprintWithinBoundary(footprintFeature, block, turf)).toBe(true);
+        expect(singleGeometry.footprintWithinBoundary(footprintFeature, block, turf)).toBe(false);
         expect(boundIds(footprintFeature)).toContain('N-notch');
         const clipped = singleGeometry.clipFootprintToBoundary(footprintFeature, block, turf);
         expect(boundIds(clipped)).toEqual(['S2']);

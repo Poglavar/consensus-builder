@@ -1,7 +1,8 @@
 // The Compare tab of Buildings and massing (js/three-compare.js): in the model view the canvas splits
 // at a divider, each half drawing one chosen state of the scene (Built today, a design, ...); on the
 // 2D map the halves draw their buildings as footprints (js/compare-on-map.js). Swap trades the sides;
-// unticking ends the split.
+// Stop comparing, or the X on the divider, ends the split. Any saved design or plan is a side, applied
+// or not: what is not applied is read without applying it.
 import { test, expect } from '../helpers/fixtures';
 import { openCity, createBuilding } from '../helpers/runtime';
 import { mockBuildingScene } from '../helpers/mocks/building-data';
@@ -68,8 +69,11 @@ test('Compare draws Built today and a design side by side on the map and in the 
   await expect(enable).toBeEnabled();
   await expect(page.locator('.planning-compare-note .sheet-note')).toHaveText(/^On the map, each side draws its own buildings/);
   await expect(page.locator('#planning-compare-open-model')).toBeVisible();
+  await expect(enable).toHaveText('Compare');
   await right.selectOption(`design:${designId}`);
-  await enable.check();
+  await enable.click();
+  await expect(enable).toHaveAttribute('aria-pressed', 'true');
+  await expect(enable).toHaveText('Stop comparing');
   await expect(page.locator('#map .map-compare__handle')).toBeVisible();
   await expect(page.locator('#map')).toHaveClass(/\bmap-comparing\b/);
   await expect(page.locator('#map .map-compare__label--after')).toHaveText(`Design: ${title}`);
@@ -89,8 +93,13 @@ test('Compare draws Built today and a design side by side on the map and in the 
   await expect.poll(() => page.locator('.leaflet-compareLeft-pane path.map-compare-shape--proposed').count()).toBeGreaterThan(0);
   await expect(page.locator('.leaflet-compareRight-pane path.map-compare-shape--proposed')).toHaveCount(0);
   await page.locator('#planning-compare-swap').click();
-  await enable.uncheck();
+  // The X at the top of the divider ends the comparison, with the sheet closed too.
+  await page.locator('#planning-views [data-sheet-close]').click();
+  await page.locator('#map .map-compare__close').click();
   await expect(page.locator('#map .map-compare__handle')).toHaveCount(0);
+  await openCompareTab(page);
+  await expect(enable).toHaveAttribute('aria-pressed', 'false');
+  await expect(enable).toHaveText('Compare');
   await expect(page.locator('#map')).not.toHaveClass(/\bmap-comparing\b/);
   await expect(page.locator('.leaflet-compareRight-pane path')).toHaveCount(0);
   expect(await paneDisplay(page, 'proposedBuildingsPane')).toBe('block');
@@ -113,7 +122,7 @@ test('Compare draws Built today and a design side by side on the map and in the 
 
   const handle = page.locator('#three-container .map-compare__handle');
   await expect(handle).toHaveCount(0);
-  await enable.check();
+  await enable.click();
   await expect(handle).toBeVisible();
   await expect(page.locator('#three-container .map-compare__label--before')).toHaveText('Built today');
   await expect(page.locator('#three-container .map-compare__label--after')).toHaveText(`Design: ${title}`);
@@ -135,8 +144,8 @@ test('Compare draws Built today and a design side by side on the map and in the 
   const swapped = await recordPasses(page, designId);
   expect(swapped.passes.map((pass: any) => pass.designDrawn)).toEqual([true, false]);
 
-  // Unticking ends the comparison: no divider, and the whole view is drawn in one unscissored pass.
-  await enable.uncheck();
+  // Stop comparing ends the comparison: no divider, and the whole view is drawn in one unscissored pass.
+  await enable.click();
   await expect(handle).toHaveCount(0);
   await page.evaluate(() => {
     const w = window as any;
@@ -181,7 +190,7 @@ test('a saved plan that is not applied is a side: it is read without applying an
   const right = page.locator('#planning-compare-right');
   await expect(right.locator(`option[value="plan:${cid}"]`)).toHaveText('Plan: Unapplied plan');
   await right.selectOption(`plan:${cid}`);
-  await enable.check();
+  await enable.click();
   // The plan is read as Plan stats reads it, then its unapplied building draws in the right half alone.
   await expect(page.locator('#map .map-compare__label--after')).toHaveText('Plan: Unapplied plan', { timeout: 45_000 });
   await expect.poll(() => page.locator('.leaflet-compareRight-pane path.map-compare-shape--unapplied').count()).toBeGreaterThan(0);
@@ -202,6 +211,29 @@ test('a saved plan that is not applied is a side: it is read without applying an
   }, memberCid), { timeout: 20_000 }).toBe(true);
   const split = await recordPasses(page, memberCid);
   expect(split.passes.map((pass: any) => pass.designDrawn)).toEqual([false, true]);
-  await enable.uncheck();
+  await enable.click();
   await expect(page.locator('#three-container .map-compare__handle')).toHaveCount(0);
+});
+
+test('a saved design that is not applied is a side of its own, read without applying it', async ({ mockApi: page }) => {
+  test.setTimeout(120_000);
+  await mockBuildingScene(page);
+  await openCity(page);
+  const designId = await createBuilding(page);
+  const title = await page.evaluate(id => (window as any).proposalStorage.getProposal(id).title, designId);
+  await page.evaluate(id => (window as any).ProposalManager.unapplyProposal(id), designId);
+  await page.keyboard.press('Escape');
+  await openCompareTab(page);
+  const enable = page.locator('#planning-compare-enable');
+  const right = page.locator('#planning-compare-right');
+  // No plan holds it: the design itself is offered, and read as Plan stats reads a one-design plan.
+  await expect(right.locator(`option[value="design:${designId}"]`)).toHaveText(`Design: ${title}`);
+  await right.selectOption(`design:${designId}`);
+  await enable.click();
+  await expect(page.locator('#map .map-compare__label--after')).toHaveText(`Design: ${title}`, { timeout: 45_000 });
+  await expect.poll(() => page.locator('.leaflet-compareRight-pane path.map-compare-shape--unapplied').count()).toBeGreaterThan(0);
+  await expect(page.locator('.leaflet-compareLeft-pane path.map-compare-shape--unapplied')).toHaveCount(0);
+  expect(await page.evaluate(id => (window as any).proposalStorage.getProposal(id).applied === true, designId)).toBe(false);
+  await enable.click();
+  await expect(page.locator('#map .map-compare__handle')).toHaveCount(0);
 });

@@ -27,13 +27,15 @@ Inputs: the dependency map in this file's history (agent report, 2026-10-01), `u
 ## Rules
 
 1. **Binding is computed, never typed in, and authoritative on the server.** The browser cannot tell a
-   cadastral hole from the edge of what it loaded (`unsurveyed-ground.md`). The server computes it with
-   PostGIS over the full cadastre: `POST /proposals/binding { site, toleranceM }`, a read (like
-   `/parcels/under`). The browser may preview with the same pure rule over loaded parcels, labelled as a
-   preview; publishing always uses the server's answer.
-2. **Same rule in both places.** Bound ⇔ `site ∩ parcel` is non-empty after an inward buffer of
+   cadastral hole from the edge of what it loaded (`unsurveyed-ground.md`). The server finds every
+   candidate parcel (an indexed search over the full cadastre) and decides with the browser's function:
+   `POST /designs/binding { site, toleranceM }`, a read (like `/parcels/under`). The browser may
+   preview with the same function over loaded parcels, labelled as a preview; publishing always uses the
+   server's answer.
+2. **One function in both places** (`site-binding.js bindingFromParcels`, geometry-tolerances.md).
+   Bound ⇔ `site ∩ parcel` is ground: non-empty after an inward buffer of
    `max(toleranceM, INTRUSION_NOISE_M) / 2` (equivalent to "largest inscribed circle wider than the
-   tolerance"). PostGIS `ST_Buffer(…, -d)` and turf `buffer(…, -d)` in a local metric frame.
+   tolerance"), turf `buffer(…, -d)` in a local metric frame.
 3. **The declaration is the binding.** `cadastreParcelIds` stays the durable list of bound parcels, but
    it must equal the binding computed from the site (the strict undeclared-parcels check generalised from
    "≥1 m² covered must be declared" to "declared == binding", both directions, linear tolerance).
@@ -127,7 +129,8 @@ Inputs: the dependency map in this file's history (agent report, 2026-10-01), `u
   `DEFAULT_INTRUSION_TOLERANCE_M = 0`, `INTRUSION_NOISE_M = 0.001`, `MAX_INTRUSION_TOLERANCE_M = 1`,
   `PARCEL_ACT_GOALS`, `isParcelAct`, `requiresParcels`, `siteOf`, `intrusionWidth`,
   `bindingFromParcels`, `compareDeclaration`. turf from the global, `globalThis.turf` or `options.turf`.
-- `backend/proposals/binding.js`: PostGIS mirror (`BINDING_SQL`), `computeBinding`, `parcelActBinding`,
+- `backend/proposals/binding.js`: `computeBinding` (the source's candidates through `site-binding.js`; the HR
+  candidates from `parcels/oss-binding-source.js`), `parcelActBinding`,
   `checkProposalBinding` (declared == binding), site validation (Polygon/MultiPolygon, ≤100k vertices,
   ≤500 km² bbox, WGS84 range), parcel cap 5000 → 413.
 - `POST /proposals/binding { site, toleranceM?, city? }` and alias `POST /agent/binding` → `{ binding,
@@ -155,13 +158,10 @@ Inputs: the dependency map in this file's history (agent report, 2026-10-01), `u
 - Removed: `checkDeclaredParcels` / `UNDECLARED_PARCELS` in footprint.js (replaced, not kept beside).
 
 **Decisions where the design left room**
-- *Intrusion width* is measured by bisection on the inward-buffer radius in both places (turf
-  `buffer` in its azimuthal-equidistant metric frame; PostGIS `ST_Buffer` in EPSG:3765, recursive CTE),
-  bracket `[0, sqrt(area/π)]`, stop at max(0.5 mm, 0.05 % of r): width ±1 mm below 2 m, ±0.1 % above.
-  Not `ST_MaximumInscribedCircle`: its fixed tolerance (1/1000 of the extent) mis-measures long thin
-  slivers, and it needs GEOS ≥ 3.9 (local: PostGIS 3.5.2 / GEOS 3.9.0; prod PG16 version unchecked —
-  the bisection needs nothing beyond `ST_Buffer`). Bound-ness is the direct test
-  `NOT ST_IsEmpty(ST_Buffer(site∩parcel, -max(tol, noise)/2))`, not derived from the width.
+- *Intrusion width* is measured by bisection on the inward-buffer radius (turf `buffer` in its
+  azimuthal-equidistant metric frame), bracket `[0, sqrt(area/π)]`, stop at max(0.5 mm, 0.05 % of r):
+  width ±1 mm below 2 m, ±0.1 % above. Bound-ness is the direct test (`isGround` of site ∩ parcel),
+  not derived from the width.
 - *Coverage*: open ground = site minus ALL parcels it meets (bound or not — a sub-tolerance touch is
   measurement error, not ownerless ground); a component counts only if it is wider than
   max(tol, noise), so cadastral micro-gaps are not open ground. `complete` = no counted open ground;
@@ -188,8 +188,8 @@ Inputs: the dependency map in this file's history (agent report, 2026-10-01), `u
   site nor a footprint.
 - *Authored site vs footprint*: when `site` is sent, the footprint must lie inside it (components of
   footprint − site wider than the floor → `footprint-outside-site`); the binding is computed from the
-  site. The authored site is stored as sent (normalised to MultiPolygon); a derived site comes back from
-  PostGIS (EPSG:4326, 9 decimals ≈ 0.1 mm, below the 1 mm floor).
+  site. The authored site is stored as sent (normalised to MultiPolygon); a derived site is the browser's
+  `siteOf` (the footprint's union) on the 9-decimal grid (≈ 0.1 mm, below the 1 mm floor).
 - *Land rule reads the whole body*: the body validator keeps only schema fields, so the old check never
   saw `geometry` / `buildingGeometry` (building footprints were unchecked). The rule now reads the full
   authored record with validated values on top.
@@ -478,7 +478,7 @@ proposal-bridge.js/create.js and backend/agents/minter.js; decoders render the z
   parcels, the site preview does not send their ids to the repository.
 - **Geometric interaction** (`_openGroundInteractions` + `open-ground.geometricInteractions`): the
   formation closure adds, beside shared anchors, standing records whose ground (site, else footprint)
-  intersects a member's by ≥ 0.25 m² where at least one of the two is on open ground; transitive; bbox
+  reaches into a member's (`geometry-tolerances.js reachesInto`) where at least one of the two is on open ground; transitive; bbox
   grid index (`createBboxIndex`, overflow list for huge entries); each record's ground cached on the
   record object (corridors never cached). A purely cadastral plan skips the pass entirely. Stacking on
   open ground follows the cadastral rule "the taker amends the taken": a newer proposal takes the older
@@ -688,7 +688,7 @@ Phone 375×740: editor fits, no horizontal scroll. No page errors.
   "Apply to map" of the road instead parked the whole park as a rival (`proposal-supersession.js`).
   Now: `apply/road.js _structureGroundAfterLaterCorridors(record, geometry)` carves the footprints of
   applied corridors LATER in the formation order out of a park/square/lake (same geometry the corridor
-  cut consumes, the arrangement's snapped clipper, crumbs < 0.25 m² dropped); `apply/structures.js`
+  cut consumes, the arrangement's snapped clipper, crumbs that are not ground dropped); `apply/structures.js`
   forms, measures (resolver gets a carved view of the record) and draws that body, a split body becomes
   one piece per part through the contiguity funnel; the record keeps its authored geometry; stored
   decorations are filtered to the carved ground for display only (`decorationsOnGround`), lake graphics
@@ -770,7 +770,7 @@ mixed site over HR-330264-488/2 and the hole ("Katastar: djelomična", hatched o
 - **One carve for every formed piece a later road crosses.** `apply/road.js`
   `_structureGroundAfterLaterCorridors` became `_groundAfterLaterCorridors(record, geometries)`: the
   applied corridors LATER in the formation order are clipped (arrangement's snapped clipper, crumbs
-  < 0.25 m² dropped, bbox prefilter) out of a list of geometries. Structures pass `[body]` (unchanged
+  that are not ground dropped, bbox prefilter) out of a list of geometries. Structures pass `[body]` (unchanged
   behaviour); `apply/parcels.js` passes every plot of a readjustment/subdivision, so a later road takes
   its ribbon out of the plots it crosses (split plots become one piece per part through the contiguity
   funnel; a plot taken whole is not formed; all taken → `readjustment-taken-by-corridors`). The resolver

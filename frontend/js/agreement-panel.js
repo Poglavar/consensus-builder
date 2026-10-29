@@ -642,6 +642,77 @@
             + kinds.map(kind => `<div class="agreement-properties-tabpanel" role="tabpanel" id="agreement-properties-panel-${kind}" aria-labelledby="agreement-properties-tab-${kind}" data-agreement-properties-panel="${kind}"${kind === selected ? '' : ' hidden'}>${panels[kind]}</div>`).join('');
     }
 
+    // ---- comparing agreements --------------------------------------------------------------------
+
+    // Several agreements' terms side by side (Lists → Agreements → Compare agreements): one row per
+    // term with each agreement's value in words, and whether the agreements differ in it. The plan
+    // row differs by CID, so two plans under one title still differ. A term that does not apply (the
+    // settlement of a community vote) or a ledger that cannot be computed shows —, never zero.
+    // summaryText(approvalConfig, lens): the owners' approval rule in words (ProposalApprovalSetup).
+    function compareTerms(agreements, tr = t, { summaryText = null } = {}) {
+        const area = value => format().formatArea(value, { missing: NO_VALUE });
+        const columns = (Array.isArray(agreements) ? agreements : []).map(raw => {
+            // Its canonical form (an owners' rule carries its settlement); as given when it has none.
+            let agreement = raw, ledger = null;
+            try { agreement = recordApi().normalize(raw); } catch (_) { /* compared as given */ }
+            try { ledger = recordApi().ledger(agreement); } catch (_) { /* its money and land rows stay — */ }
+            const rule = agreement && agreement.rule ? agreement.rule : null;
+            const owners = !!rule && rule.electorate === 'owners';
+            const summary = ruleSummary(rule, tr, summaryText);
+            const land = landSummary(agreement);
+            // Money moves only under an owners' rule.
+            const money = owners && ledger && ledger.currency ? ledger.money : null;
+            const cash = cents => (money ? moneyText(cents, ledger.currency) : NO_VALUE);
+            const sponsor = money ? dialogApi().sponsorLine(money, ledger.currency) : null;
+            const status = agreement && agreement.onchain && agreement.onchain.status ? chainStatusText(agreement.onchain.status, tr)
+                : tr(agreement && agreement.published ? 'common.lifecycle.published' : 'common.lifecycle.draft', agreement && agreement.published ? 'Published' : 'Draft');
+            return {
+                plan: [agreement && agreement.plan ? agreement.plan.content.title : NO_VALUE, agreement && agreement.plan ? agreement.plan.cid : null],
+                status: [status],
+                rule: [`${summary.electorate} · ${rule && rule.binding === true ? tr('agreement.rule.bindingShort', 'Binding') : tr('agreement.rule.nonBinding', 'Non-binding')}`],
+                approval: [summary.detail || NO_VALUE],
+                settlement: [owners && rule.settlement ? (rule.settlement.method === 'value'
+                    ? tr('agreement.workflow.byValue', 'Balance land value differences in money')
+                    : tr('agreement.workflow.byArea', 'Balance land differences in money')) : NO_VALUE],
+                contribution: [owners && rule.settlement ? format().formatPercent((rule.settlement.contributionBasisPoints || 0) / 100, { ofHundred: true, maxFractionDigits: 2 }) : NO_VALUE],
+                deadline: [agreement && agreement.deadline ? format().formatDate(agreement.deadline) : tr('agreement.chain.noDeadline', 'None')],
+                inputs: [`${format().formatInteger(land.parcels)} · ${area(land.areaM2)}`],
+                pieces: [format().formatInteger(land.pieces)],
+                toOwners: [ledger ? area(ledger.parties.reduce((sum, party) => sum + party.assignedM2, 0)) : NO_VALUE],
+                toPublic: [ledger ? area(ledger.publicM2) : NO_VALUE],
+                toProposer: [ledger ? area(ledger.proposerM2) : NO_VALUE],
+                ownersWithout: [owners ? format().formatInteger(ownerOutcomes(agreement, tr).none.length) : NO_VALUE],
+                paid: [cash(money && money.payInCents)],
+                received: [cash(money && money.payOutCents)],
+                sponsor: [sponsor ? sponsor.text : NO_VALUE]
+            };
+        });
+        const labels = {
+            plan: tr('agreement.panel.plan', 'Agreement plan'),
+            status: tr('agreement.chain.facts.status', 'Status'),
+            rule: tr('agreement.sections.rule', 'Decision rule'),
+            approval: tr('agreement.compare.approval', 'Approval'),
+            settlement: tr('agreement.compare.settlement', 'Settlement'),
+            contribution: tr('agreement.workflow.contribution', 'Land contribution (%)'),
+            deadline: tr('agreement.chain.facts.deadline', 'Deadline'),
+            inputs: tr('agreement.land.inputsHeading', 'Input parcels'),
+            pieces: tr('agreement.land.outputsHeading', 'Resulting pieces'),
+            toOwners: tr('agreement.compare.toOwners', 'Land to the owners'),
+            toPublic: tr('agreement.compare.toPublic', 'Land to the public'),
+            toProposer: tr('agreement.compare.toProposer', 'Land to the proposer'),
+            ownersWithout: tr('agreement.outcomes.none', 'Owners with no piece'),
+            paid: tr('agreement.compare.paid', 'Cash the owners pay'),
+            received: tr('agreement.compare.received', 'Cash the owners receive'),
+            sponsor: tr('agreement.workflow.sponsor', 'Sponsor')
+        };
+        return Object.keys(labels).map(key => {
+            const cells = columns.map(column => column[key]);
+            // What decides a difference: the plan's CID when there is one, else the words.
+            const identities = cells.map(([text, identity]) => (identity === undefined ? text : identity));
+            return { key, label: labels[key], values: cells.map(([text]) => text), differs: new Set(identities).size > 1 };
+        });
+    }
+
     // ---- the browser panel -----------------------------------------------------------------------
 
     function browserPanel(win) {
@@ -1576,7 +1647,7 @@
     return {
         titleOf, statusOf, landSummary, ownerOutcomes, allocationLines, ledgerRows, personRows, personsHtml, ruleSummary, ruleShort, designRows, groundIds, partyLabel,
         statusHtml, actionsHtml, remoteStatusOf, observedRemote, publishedHtml, designsHtml, landHtml, piecesHtml, allocationHtml, ledgerHtml, ruleHtml,
-        inputsHtml, inspectionFeatures, tabbedHtml,
+        inputsHtml, inspectionFeatures, tabbedHtml, compareTerms,
         shortKey, chainStatusText, mintReadiness, isBinding, chainHtml, nonBindingChainHtml, browserPanel
     };
 });

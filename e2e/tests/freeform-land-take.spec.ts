@@ -1,5 +1,5 @@
 import { test, expect } from '../helpers/fixtures';
-import { placeFreeformBuilding, openCity, openParcel, stubBasemapTiles, showProposal } from '../helpers/runtime';
+import { placeFreeformBuilding, openCity, openParcel, openParcelAt, stubBasemapTiles, showProposal } from '../helpers/runtime';
 import { selectNativeOption } from '../helpers/controls';
 const editor = '#single-building-editor';
 const first = 'HR-335754-1234';
@@ -98,6 +98,54 @@ for (const published of [false, true]) test(`height-only editing retains demolit
       return { applied: p.applied, height: p.geometry.buildings[0].properties.height };
     }, before.id)).toEqual({ applied: false, height: 250 });
   } else expect((await current()).id).toBe(before.id);
+});
+// Parcel 1234 laid out as two equal plots, west and east of 15.9822, and a tower across that line.
+const box = (w: number, s: number, e: number, n: number) => ({ type: 'Polygon', coordinates: [[[w, s], [e, s], [e, n], [w, n], [w, s]]] });
+const halves = { type: 'FeatureCollection', features: [box(15.9819, 45.8, 15.9822, 45.8005), box(15.9822, 45.8, 15.9825, 45.8005)]
+  .map(geometry => ({ type: 'Feature', properties: {}, geometry })) };
+const straddling = { type: 'Feature', properties: { height: 30 }, geometry: box(15.98215, 45.8002, 15.98225, 45.8003) };
+test('reopening a building across two layout plots offers each plot whole, with its own outline', async ({ mockApi: page }) => {
+  test.setTimeout(120_000);
+  await stubBasemapTiles(page);
+  await openCity(page);
+  await openParcel(page, 'proposals');
+  await page.locator('.parcel-build-btn--parcel-layout').click();
+  const layout = page.locator('.on-map-reparcellization');
+  await expect(layout.locator('[data-reparcel-commit]')).toBeEnabled({ timeout: 15_000 });
+  await layout.locator('[data-reparcel-upload]').setInputFiles({ name: 'halves.geojson', mimeType: 'application/geo+json', buffer: Buffer.from(JSON.stringify(halves)) });
+  await expect(layout.locator('[data-reparcel-status]')).toHaveText('Loaded 2 polygons from file.');
+  await layout.locator('[data-reparcel-commit]').click();
+  await expect(layout).toHaveCount(0);
+  await expect.poll(() => page.evaluate(() => (window as any).proposalStorage.getAllProposals().filter((p: any) => p.goal === 'parcel-layout' && p.applied).length)).toBe(1);
+
+  await openParcelAt(page, 15.98205, 45.80025);
+  await page.locator('#parcel-info-panel .parcel-build-btn--single').click();
+  // One plot is selected; the block prompt offers both, and the tower starts on this one.
+  await page.getByRole('alertdialog').getByRole('button', { name: 'No, just this parcel' }).click();
+  await placeFreeformBuilding(page);
+  await page.locator('#single-building-geojson-input').setInputFiles({ name: 'tower.geojson', mimeType: 'application/geo+json', buffer: Buffer.from(JSON.stringify(straddling)) });
+  const choices = page.locator('[data-land-rows] select');
+  await expect(choices).toHaveCount(2);
+  await finish(page);
+  await expect.poll(() => page.evaluate(() => (window as any).proposalStorage.getAllProposals().filter((p: any) => p.goal === 'single' && p.applied).length), { timeout: 20_000 }).toBe(1);
+  const saved = await page.evaluate(() => (window as any).proposalStorage.getAllProposals().find((p: any) => p.goal === 'single' && p.applied).proposalId);
+
+  // The applied tower covers the line between the plots; the review replays the layout without it
+  // and finds both plots, each whole.
+  const replays: string[] = [];
+  page.on('console', message => { if (message.text().includes('[land-take] ground before')) replays.push(message.text()); });
+  await showProposal(page, saved);
+  await page.locator('#proposal-details-footer .btn-edit-geometry').click();
+  await expect(choices).toHaveCount(2, { timeout: 30_000 });
+  await expect(page.locator('[data-land-rows] .land-take-percent')).toHaveText(['3%', '3%']);
+  expect(replays).toEqual([expect.stringContaining('1 designs on 1 parcels')]);
+  await selectNativeOption(choices.nth(0), 'whole');
+  await expect(choices.nth(0)).toHaveValue('whole');
+  const areas = await page.evaluate(([plot, tower]) => {
+    const w = window as any;
+    return { take: w.turf.area(w.getActiveProposalDesignDraft().editorPayload.context.landTake), expected: w.turf.area(plot) + w.turf.area(tower) / 2 };
+  }, [halves.features[0], straddling]);
+  expect(areas.take).toBeCloseTo(areas.expected, -1);
 });
 test('missing stock keeps the unsaved editor open',async({mockApi:page})=>{
   await open(page);

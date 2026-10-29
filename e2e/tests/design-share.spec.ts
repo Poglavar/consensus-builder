@@ -1,6 +1,6 @@
 // Purpose: publishing one design from the screen (plan-design-agreement.md, M2 "Browser"): Share on an
-// applied design's details pins its design/v1 object through POST /pins and indexes it with POST
-// /designs under the CID the browser computed, the details then say Published with that CID, the
+// applied design's details indexes its design/v1 object with POST /designs (nothing is pinned)
+// under the CID the browser computed, the details then say Published with that CID, the
 // copied /designs/<cid> link imports and applies the design on another device, and a second Share
 // sends nothing again.
 import { test, expect } from '../helpers/fixtures';
@@ -38,18 +38,14 @@ test('Share on an applied park publishes its design object under the CID the bro
   await expect(page.getByRole('alertdialog', { name: 'Share design or plan?', exact: true })).toHaveCount(0);
   await expect(details.locator('.cb-badge--published')).toBeVisible({ timeout: 30_000 });
 
-  // The courier got the canonical bytes, the index the object they encode, both under one CID that
-  // is the CID of those bytes (recomputed here with node's crypto) and the one the browser computes.
+  // The index got the object under the CID of its canonical bytes (recomputed here with node's
+  // crypto), the one the browser computes.
   const posts = postsOf(index);
-  expect(posts.map(request => request.path)).toEqual(['/pins', '/designs']);
-  const [pin, indexed] = posts;
-  expect(pin.body.kind).toBe('design');
-  const bytes = Buffer.from(pin.body.bytes, 'base64');
-  const cid = pin.body.cid;
+  expect(posts.map(request => request.path)).toEqual(['/designs']);
+  const [indexed] = posts;
+  const cid = indexed.body.cid;
   expect(cid).toMatch(/^bafkrei[a-z2-7]{52}$/);
-  expect(cidOfBytes(bytes)).toBe(cid);
-  expect(indexed.body.cid).toBe(cid);
-  expect(bytes.toString('utf8')).toBe(canonicalJson(indexed.body.content));
+  expect(cidOfBytes(Buffer.from(canonicalJson(indexed.body.content), 'utf8'))).toBe(cid);
   expect(cidOfObject(indexed.body.content)).toBe(cid);
   expect(await page.evaluate(id => {
     const w = window as any;
@@ -76,7 +72,7 @@ test('Share on an applied park publishes its design object under the CID the bro
   await details.locator('.btn-share-proposal').click();
   await expect(page.getByRole('alertdialog', { name: 'Share design or plan?', exact: true })).toHaveCount(0);
   await expect.poll(() => page.evaluate(() => navigator.clipboard.readText())).toBe(link);
-  expect(postsOf(index)).toHaveLength(2);
+  expect(postsOf(index)).toHaveLength(1);
 
   // Another device opens the link (in 2D here): the design is read from the index by CID, stored as
   // design-<cid>, applied and opened.
@@ -101,7 +97,7 @@ test('Share on an applied park publishes its design object under the CID the bro
     await expect(receiverDetails.locator(`[data-proposal-published-cid="${cid}"]`)).toBeAttached({ timeout: 30_000 });
     await expect(receiverDetails.locator('.cb-badge--published')).toBeVisible();
     // The receiving device sent nothing to the courier or the index.
-    expect(postsOf(index).filter(request => request.path !== '/designs/batch')).toHaveLength(2);
+    expect(postsOf(index).filter(request => request.path !== '/designs/batch')).toHaveLength(1);
   } finally {
     await receiver.context.close();
   }

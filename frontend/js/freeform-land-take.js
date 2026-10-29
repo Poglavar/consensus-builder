@@ -9,8 +9,21 @@
     const feature = value => value?.type === 'Feature' ? value
         : value && /^(Multi)?Polygon$/.test(value.type) ? { type: 'Feature', properties: {}, geometry: value } : null;
     const clone = value => JSON.parse(JSON.stringify(value));
+    // Every clip runs through the shared parcel clip (proposals/parcel-arrangement.js clipWith) with
+    // the caller's turf, so authoring, validation and replay cut on the same grid.
+    const arrangement = () => (typeof window !== 'undefined' && window.__parcelArrangement)
+        || (typeof require === 'function' ? require('./proposals/parcel-arrangement.js') : null);
+    const clip = (turf, operation, a, b, site) => arrangement().clipWith(turf, operation, a, b, { site });
+    // Whether a part outside, a reach into a parcel or a remainder is ground or cutting debris is the
+    // shared rule (geometry-tolerances.js isGround), the one binding and the apply use.
+    const isGround = (turf, value) => {
+        if (!value) return false;
+        const grid = (typeof window !== 'undefined' && window.GeometryTolerances)
+            || (typeof require === 'function' ? require('./geometry-tolerances.js') : null);
+        return grid.isGround(turf, value);
+    };
     function union(features, turf) {
-        return features.filter(Boolean).reduce((result, item) => result ? turf.union(result, item) : clone(item), null);
+        return features.filter(Boolean).reduce((result, item) => result ? clip(turf, 'union', result, item, 'freeform-land-take.union') : clone(item), null);
     }
     function contains(take, buildings, turf) {
         const land = feature(take);
@@ -18,8 +31,8 @@
         return buildings.every(building => {
             const body = feature(building);
             if (!body) return false;
-            const outside = turf.difference(body, land);
-            return !outside || turf.area(outside) <= Math.min(0.01, turf.area(body) * 1e-6);
+            const outside = clip(turf, 'difference', body, land, 'freeform-land-take.contains');
+            return !isGround(turf, outside);
         });
     }
     function plan({ buildings, parcels, whole = new Set(), savedTake = null, turf }) {
@@ -29,19 +42,19 @@
         const extra = [];
         for (const parcel of parcels) {
             const host = feature(parcel);
-            const intersection = turf.intersect(footprint, host);
-            const overlapM2 = intersection ? turf.area(intersection) : 0;
+            const intersection = clip(turf, 'intersect', footprint, host, 'freeform-land-take.plan');
             // Whole-parcel surroundings belong to a building on that parcel, not a separate paving tool.
-            if (overlapM2 <= Math.min(0.001, turf.area(footprint) * 1e-6)) continue;
+            if (!isGround(turf, intersection)) continue;
+            const overlapM2 = turf.area(intersection);
             const id = String(host.properties?.parcelId ?? host.id ?? '');
             const key = JSON.stringify([id, host.geometry]);
             const parcelM2 = turf.area(host);
-            const savedRemainder = savedTake ? turf.difference(host, feature(savedTake)) : null;
-            const mode = whole.has(key) || (savedTake && (!savedRemainder || turf.area(savedRemainder) < Math.min(0.01, parcelM2 * 1e-6))) ? 'whole' : 'footprint';
+            const savedRemainder = savedTake ? clip(turf, 'difference', host, feature(savedTake), 'freeform-land-take.plan') : null;
+            const mode = whole.has(key) || (savedTake && !isGround(turf, savedRemainder)) ? 'whole' : 'footprint';
             if (mode === 'whole') extra.push(host);
             rows.push({ key, id, feature: host, mode, overlapM2, parcelM2,
                 take: mode === 'whole' ? host : intersection,
-                remainder: mode === 'whole' ? null : turf.difference(host, footprint) });
+                remainder: mode === 'whole' ? null : clip(turf, 'difference', host, footprint, 'freeform-land-take.plan') });
         }
         const take = union([footprint, ...extra], turf);
         return { footprint, take, rows, areaM2: turf.area(take) };

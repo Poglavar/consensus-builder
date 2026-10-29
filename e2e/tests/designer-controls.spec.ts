@@ -80,7 +80,7 @@ test.describe('Designer controls persist their edits @features', () => {
 
     const rule = page.locator('#parcelbased-ruletype-select');
     await selectNativeOption(rule, 'range');
-    await expect(page.locator('#parcelbased-minimums')).toBeVisible();
+    await expect(page.locator('#parcelbased-minfootprint-slider')).toBeVisible();
     const minimumFloors = page.locator('#parcelbased-minfloors-slider');
     await expect(minimumFloors).toBeVisible();
     const initialMinimumFloors = Number(await minimumFloors.inputValue());
@@ -95,8 +95,15 @@ test.describe('Designer controls persist their edits @features', () => {
       expect(Number(await slider.inputValue())).toBeGreaterThan(before);
     }
     await selectNativeOption(rule, 'exact');
-    await expect(page.locator('#parcelbased-minimums')).toBeHidden();
+    await expect(page.locator('#parcelbased-minfloors-slider')).toBeHidden();
+    await expect(page.locator('#parcelbased-minfootprint-slider')).toBeHidden();
     await selectNativeOption(rule, 'max');
+    // The optional limits are flat fields beside the sliders; a blank one states no limit.
+    await expect(page.locator('#parcelbased-sidebar details')).toHaveCount(0);
+    await page.locator('#parcelbased-frontsetback').fill('6');
+    await page.locator('#parcelbased-maxcoverage').fill('30');
+    await page.locator('#parcelbased-maxfar').fill('0.8');
+    await page.locator('#parcelbased-maxfar').fill('');
     await page.locator('#btn-parcelbased-done').click();
 
     const context = await page.evaluate(() => (window as any).pendingBuildingProposalContext);
@@ -106,6 +113,8 @@ test.describe('Designer controls persist their edits @features', () => {
     expect(context.parameters.minDistance).toBeGreaterThan(2);
     expect(context.parameters.rule.minFloors).toBeGreaterThan(initialMinimumFloors);
     expect(context.parameters.rule.minPlotAreaM2).toBeGreaterThan(0);
+    expect(context.parameters.rule).toMatchObject({ frontSetbackM: 6, maxCoverage: 0.3 });
+    expect(context.parameters.rule).not.toHaveProperty('maxFloorAreaRatio');
     expect(context.buildings.length).toBeGreaterThan(0);
     expect(context.buildings.every((feature: any) => feature.geometry?.type === 'Polygon')).toBe(true);
   });

@@ -13,10 +13,15 @@
     const finite = value => typeof value === 'number' && Number.isFinite(value);
     const squareMetres = value => `${Math.round(value * 10) / 10} m²`;
     const feature = geometry => ({ type: 'Feature', properties: {}, geometry });
-    // Match the fabric's absolute plus one-part-per-million conservation budget. Overlap is
-    // checked separately, so a gap and an overlapping plot cannot cancel each other numerically.
-    const coverageTolerance = area => 1 + area * 1e-6;
-    const overlapTolerance = area => Math.min(coverageTolerance(area), Math.max(0.01, area * 1e-6));
+    // An overlap, a gap in the pool or a part outside it fails when it is ground (the shared rule,
+    // geometry-tolerances.js isGround); cutting debris passes. Overlap, gap and excess are each
+    // judged on their own geometry, so a gap and an overlapping plot cannot cancel each other.
+    function isGround(turf, value) {
+        if (!value) return false;
+        const grid = (root && root.GeometryTolerances)
+            || (typeof require === 'function' ? require('./geometry-tolerances.js') : null);
+        return grid.isGround(turf, value);
+    }
 
     // A Polygon/MultiPolygon (or a Feature of one) as a Feature, or an Error saying what is wrong.
     function polygon(value, turf) {
@@ -42,19 +47,19 @@
             const shell = feature({ type: 'Polygon', coordinates: [rings[0]] });
             const holes = rings.slice(1).map(ring => feature({ type: 'Polygon', coordinates: [ring] }));
             for (let i = 0; i < holes.length; i++) {
-                const outside = turf.difference(holes[i], shell);
-                if (outside && turf.area(outside) > 0.01) throw new Error('A hole lies outside its polygon.');
+                const outside = clipped(turf, 'difference', holes[i], shell, 'parcel-layout-validation.polygon');
+                if (isGround(turf, outside)) throw new Error('A hole lies outside its polygon.');
                 for (let j = 0; j < i; j++) {
-                    const hit = turf.intersect(holes[i], holes[j]);
-                    if (hit && turf.area(hit) > 0.01) throw new Error('Polygon holes overlap.');
+                    const hit = clipped(turf, 'intersect', holes[i], holes[j], 'parcel-layout-validation.polygon');
+                    if (isGround(turf, hit)) throw new Error('Polygon holes overlap.');
                 }
             }
             if (!(turf.area(part) > 0)) throw new Error('A polygon must have positive area.');
             return part;
         });
         for (let i = 0; i < polygons.length; i++) for (let j = 0; j < i; j++) {
-            const hit = turf.intersect(polygons[i], polygons[j]);
-            if (hit && turf.area(hit) > 0.01) throw new Error('Parts of a polygon overlap.');
+            const hit = clipped(turf, 'intersect', polygons[i], polygons[j], 'parcel-layout-validation.polygon');
+            if (isGround(turf, hit)) throw new Error('Parts of a polygon overlap.');
         }
         return feature(geometry);
     }
@@ -64,11 +69,11 @@
     // Plot unions and coverage differences use the shared clip (proposals/parcel-arrangement.js): the
     // same coordinate grid as every other parcel clip, with its coarser retries. A raw turf union of
     // a block's plots with its carved courtyard left a three-point sliver ring and refused the layout.
-    function clipped(turf, operation, a, b) {
+    function clipped(turf, operation, a, b, site = 'parcel-layout-validation.pool') {
         const api = (typeof window !== 'undefined' && window.__parcelArrangement)
             || (typeof require === 'function' ? require('./proposals/parcel-arrangement.js') : null);
         if (!api) throw new Error('The parcel clipper is not loaded.');
-        return api.clipWith(turf, operation, a, b, { site: 'parcel-layout-validation.pool' });
+        return api.clipWith(turf, operation, a, b, { site });
     }
 
     /**
@@ -114,7 +119,7 @@
                     const hit = clipped(turf, 'intersect', union, shapes[i]);
                     const area = hit ? turf.area(hit) : 0;
                     overlapAreaM2 += area;
-                    if (area > overlapTolerance(areas[i])) issue('overlapping-plots', `Plot ${i + 1} overlaps another plot.`, { plotIndex: i, areaM2: area });
+                    if (isGround(turf, hit)) issue('overlapping-plots', `Plot ${i + 1} overlaps another plot.`, { plotIndex: i, areaM2: area });
                 }
                 union = union ? clipped(turf, 'union', union, shapes[i]) : shapes[i];
                 if (!union) throw new Error('The union of the plots could not be computed.');
@@ -124,15 +129,15 @@
             const gap = clipped(turf, 'difference', pool, union), outside = clipped(turf, 'difference', union, pool);
             Object.assign(metrics, { poolAreaM2: area, plotAreaM2: areas.reduce((a, b) => a + b, 0),
                 uncoveredAreaM2: gap ? turf.area(gap) : 0, outsideAreaM2: outside ? turf.area(outside) : 0, overlapAreaM2 });
-            if (metrics.uncoveredAreaM2 > coverageTolerance(area)) {
+            if (isGround(turf, gap)) {
                 issue('coverage-gap', `The plots leave ${squareMetres(metrics.uncoveredAreaM2)} of the pool uncovered.`, { areaM2: metrics.uncoveredAreaM2 });
             }
-            if (metrics.outsideAreaM2 > coverageTolerance(area)) {
+            if (isGround(turf, outside)) {
                 issue('coverage-excess', `The plots reach ${squareMetres(metrics.outsideAreaM2)} beyond the pool.`, { areaM2: metrics.outsideAreaM2 });
             }
         } catch (error) { issue('invalid-pool', `The pool could not be validated: ${error.message}`); }
         return { valid: errors.length === 0, errors, warnings, metrics, areas };
     }
 
-    return { validate, polygon, coverageTolerance, overlapTolerance, MIN_PLOT_AREA_M2, MAX_PLOTS };
+    return { validate, polygon, MIN_PLOT_AREA_M2, MAX_PLOTS };
 });

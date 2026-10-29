@@ -2,7 +2,7 @@
 import { bbox as geometryBbox, bboxPolygon, booleanIntersects, feature as geoFeature } from '@turf/turf';
 import { HttpError } from '../utils/helpers.js';
 import { concatBytes } from './byte-utils.js';
-import { canonicalParcelFeature, providerHttpError, upstreamError, validateBounds, validateGeometry } from './source-contract.js';
+import { canonicalParcelFeature, providerHttpError, upstreamError, areaLimitError, validateBounds, validateGeometry } from './source-contract.js';
 import { geoJsonResponseCrsMatches } from './response-crs.js';
 
 const ENDPOINT = 'https://gis.daejeon.go.kr/proxy/proxy.jsp?url=o2map/services/wfs';
@@ -141,7 +141,7 @@ export function createO2mapPnuSource(descriptor, { fetchImpl = globalThis.fetch 
                 if (seen.has(feature.id)) throw upstreamError('O2Map WFS repeated a parcel across pages.');
                 seen.add(feature.id);
                 features.push(feature);
-                if (features.length > maxFeatures) throw upstreamError('O2Map parcel limit exceeded; use a smaller area.');
+                if (features.length > maxFeatures) throw areaLimitError('O2Map parcel limit exceeded; use a smaller area.');
             }
             // No total/count contract is supplied. A terminal short page ends this bounded enumeration;
             // it does not establish municipal completeness or an unobserved provider transfer ceiling.
@@ -150,7 +150,7 @@ export function createO2mapPnuSource(descriptor, { fetchImpl = globalThis.fetch 
             // Resolve intersection after complete paging, retaining full intersecting source polygons.
             if (rows.length < pageSize) return result(features.filter(feature => booleanIntersects(feature, footprint)));
         }
-        throw upstreamError('O2Map WFS exceeded the page limit; use a smaller area.');
+        throw areaLimitError('O2Map WFS exceeded the page limit; use a smaller area.');
     }
 
     async function queryGeometry(geometry, options = {}) {

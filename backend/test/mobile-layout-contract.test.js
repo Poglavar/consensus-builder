@@ -235,10 +235,10 @@ describe('3D and photo view', () => {
         expect(calls).toEqual([['close', { silent: true }], ['isolation'], ['selection']]);
     });
 
-    it('keeps parcel selection in place while explicit proposal isolation frames its ground', () => {
+    it('keeps the camera in place for the parcel view while explicit proposal isolation frames its ground', () => {
         const parcel = threeMode.slice(threeMode.indexOf('function isolateParcel('), threeMode.indexOf('function frameIsolatedFeatures('));
         expect(parcel).not.toContain('frameIsolatedFeatures(');
-        expect(parcel).not.toContain('applyIsolationVisibility(');
+        expect(parcel).toContain('keepGround: true');
         const proposal = threeMode.slice(threeMode.indexOf('function isolateProposal('), threeMode.indexOf('function clearIsolation('));
         expect(proposal).toContain('frameIsolatedFeatures(feats)');
     });

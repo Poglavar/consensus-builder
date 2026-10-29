@@ -193,14 +193,7 @@
     byId('source-language').addEventListener('change', event => root.i18n?.setLanguage(event.target.value));
     byId('source-download').addEventListener('click', () => {
         if (!data) return;
-        const url = URL.createObjectURL(new Blob([json(data.contracts)], { type: 'application/json' }));
-        const link = node('a');
-        link.href = url;
-        link.download = 'source-contracts.v1.json';
-        document.body.append(link);
-        link.click();
-        link.remove();
-        setTimeout(() => URL.revokeObjectURL(url), 0);
+        root.FileDownload.save(root, json(data.contracts), 'source-contracts.v1.json', 'application/json');
     });
     root.addEventListener('i18n:translationsLoaded', translate);
     const backParams = new URLSearchParams(root.location.search);

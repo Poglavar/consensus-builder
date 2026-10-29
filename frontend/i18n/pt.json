@@ -11,6 +11,7 @@
         "importedPlans": "Planos importados",
         "help": "Formatos de ficheiro e limites",
         "design": "Descarregar projeto",
+        "plan": "Descarregar plano",
         "review": "Rever ficheiro de plano",
         "cancel": "Cancelar",
         "importDrafts": "Importar como rascunhos",
@@ -264,6 +265,9 @@
                 "buildingsNew": "dos quais novos (área construída m²)",
                 "openSpace": "Espaço aberto — parques, praças, água (m²)",
                 "apartments": "Apartamentos",
+                "apartmentsLaidOut": "{{apartments}} ({{laidOut}} de {{buildings}} edifícios com planta)",
+                "countingUnits": "A contar…",
+                "unitsFailed": "As habitações seguem a regra por m²: não foi possível dispor os edifícios ({{reason}}).",
                 "people": "Pessoas",
                 "jobs": "Postos de trabalho",
                 "salesValue": "Valor de venda da área de construção",
@@ -995,6 +999,15 @@
             "mapHint": "Arraste o edifício ou os seus cantos. Toque numa aresta para adicionar um canto.",
             "previewLabel": "Pré-visualização 3D",
             "heightLabel": "Altura (m):",
+            "useLabel": "Uso do edifício",
+            "useInfo": "As estatísticas do plano contam habitações só nos pisos de habitação; um uso residencial recebe uma planta sugerida no raio X.",
+            "useNotStated": "Não indicado",
+            "useResidential": "Residencial",
+            "useResidentialShops": "Residencial, lojas no rés-do-chão",
+            "useMixed": "Misto: lojas, escritórios no primeiro piso, habitações acima",
+            "useOffice": "Escritórios",
+            "usePublic": "Público (escola, centro de saúde, cívico)",
+            "useIndustrial": "Industrial",
             "rotationLabel": "Rodar a implantação",
             "rotateCounterclockwiseLabel": "Rodar 5 graus no sentido contrário ao dos ponteiros do relógio",
             "rotateClockwiseLabel": "Rodar 5 graus no sentido dos ponteiros do relógio",
@@ -1671,6 +1684,15 @@
         }
     },
     "agreement": {
+        "compare": {
+            "approval": "Aprovação",
+            "settlement": "Liquidação",
+            "toOwners": "Terreno para os proprietários",
+            "toPublic": "Terreno para o público",
+            "toProposer": "Terreno para o proponente",
+            "paid": "Dinheiro que os proprietários pagam",
+            "received": "Dinheiro que os proprietários recebem"
+        },
         "outcomes": {
             "owners": "Proprietários das parcelas de entrada",
             "none": "Proprietários sem porção",
@@ -1851,7 +1873,6 @@
                     "other": "O servidor não tem {{count}} dos projetos do acordo, pelo que este não foi proposto."
                 },
                 "inputsDifferFromBinding": "Os terrenos do acordo não correspondem aos terrenos ocupados pelos seus projetos no servidor ({{parcels}}). Edite o acordo no mapa atual e volte a propô-lo.",
-                "pinningUnconfigured": "Este servidor ainda não consegue fixar acordos publicados (a fixação não está configurada).",
                 "deadlinePast": "O prazo do acordo terminou. Edite o prazo e volte a propô-lo.",
                 "refused": "O servidor recusou este acordo: {{reason}}",
                 "notACid": "Esta ligação não corresponde a um acordo.",
@@ -1915,7 +1936,11 @@
             "titleCounter": "Contraproposta de acordo",
             "counterTitle": "Contraproposta a {{title}}",
             "intro": "Um acordo refere-se a um plano e define quem decide, quem recebe cada terreno e que dinheiro é transferido. Por enquanto, nada sai deste dispositivo.",
-            "save": "Guardar acordo"
+            "save": "Guardar acordo",
+            "waitingLand": "A ler o terreno do plano…",
+            "waitingPlan": "Escolha primeiro um plano.",
+            "waitingMore": "(e mais {{count}})",
+            "waitingRoster": "Guarde primeiro a lista de votantes."
         },
         "list": {
             "create": "Criar acordo",
@@ -2237,7 +2262,7 @@
                 "fixes": "O que permitiria cumpri-lo",
                 "fixBasisValue": "Em Regras, defina Compensação como «Equilibrar diferenças de valor do terreno em dinheiro» e, depois, atribua um valor por m² a cada parcela de entrada e a cada porção resultante.",
                 "fixBasisArea": "Em Regras, defina Compensação como «Equilibrar diferenças de terreno em dinheiro».",
-                "fixParties": "Partes que contribuem com terreno: {{actual}}; este regime exige {{required}}. Escolha um plano que abranja mais parcelas ou outro regime.",
+                "fixParties": "{{actual}} proprietários distintos detêm o terreno; este regime exige {{required}}. Verifique o ficheiro de propriedade ou escolha terrenos com proprietários distintos suficientes.",
                 "fixProposer": "Em Parcelas resultantes, atribua as porções do proponente a um proprietário ou a Terreno público.",
                 "fixCapOwner": "Em Parcelas resultantes, devolva a {{owner}} pelo menos mais {{area}} de terreno, ou reduza a Contribuição de terreno; um regime com um limite mais alto é outra opção.",
                 "fixCapOwnerPlain": "Em Parcelas resultantes, devolva mais terreno a {{owner}}.",
@@ -3627,6 +3652,7 @@
     },
     "proposalApproval": {
         "ownerLabel": "Proprietário {{label}}",
+        "meterDistinctOwners": "Proprietários distintos que aprovaram",
         "leaseholderLabel": "Arrendatário {{label}}",
         "authorityLabel": "Autoridade",
         "authorityLabelLettered": "Autoridade {{label}}",
@@ -3640,6 +3666,8 @@
             "vacuous": "Não há ninguém a contabilizar aqui, pelo que este critério não bloqueia a aprovação.",
             "heard": "Ouvidos, sem contar para a decisão",
             "ownersHeard": "Os proprietários são ouvidos; a autoridade decide.",
+            "minimumOwners": "aprovação de pelo menos {{count}} proprietários distintos",
+            "areaConsent": "Nos testes de área, uma parcela ou um arrendamento só conta depois de todos os comproprietários contabilizados aprovarem.",
             "of": {
                 "headcount-owners-all": "dos proprietários",
                 "headcount-owners-private": "dos proprietários privados",
@@ -3680,7 +3708,7 @@
                 "publicLand": "Terreno público sem compensação",
                 "levelling": "Diferenças",
                 "valueGain": "Mais-valia",
-                "minParties": "Partes"
+                "minParties": "Proprietários distintos"
             },
             "groups": {
                 "decision": "Como se decide",
@@ -3823,11 +3851,11 @@
                 "minParties": {
                     "any": {
                         "short": "Qualquer número",
-                        "long": "Sem número mínimo de partes."
+                        "long": "Não existe um número mínimo de proprietários distintos."
                     },
                     "some": {
                         "short": "Pelo menos {{count}}",
-                        "long": "Pelo menos {{count}} partes trazem terreno."
+                        "long": "Pelo menos {{count}} proprietários distintos das parcelas de entrada têm de aprovar."
                     }
                 }
             },
@@ -3876,14 +3904,15 @@
                 "capPoolUnknown": "A área do conjunto é desconhecida, pelo que não é possível verificar o limite de {{limit}}.",
                 "capPoolOk": "{{given}} do conjunto não é devolvido aos proprietários; o limite é {{limit}}.",
                 "capPoolOver": "{{given}} do conjunto não é devolvido aos proprietários, ultrapassando o limite de {{limit}}.",
-                "partiesOk": "{{actual}} partes contribuem com terreno; o regime exige pelo menos {{required}}.",
-                "partiesFew": "Partes que contribuem com terreno: apenas {{actual}}; o regime exige pelo menos {{required}}.",
+                "partiesOk": "O terreno tem {{actual}} proprietários distintos; pelo menos {{required}} têm de aprovar.",
+                "partiesFew": "O terreno tem apenas {{actual}} proprietários distintos; este regime exige pelo menos {{required}}.",
+                "partiesUnknown": "Carregue os dados completos de propriedade para verificar o mínimo de {{required}} proprietários distintos.",
                 "proposerNone": "Nenhum terreno é atribuído a um proponente.",
                 "proposerOver": "{{area}} m² seriam atribuídos a um proponente; neste regime, o terreno é devolvido aos seus proprietários ou destinado a uso público."
             },
             "valueGainAll": "Na distribuição por valor, cada proprietário recupera integralmente o valor com que contribuiu; toda a mais-valia é liquidada em dinheiro.",
             "valueGainShare": "Na distribuição por valor, liquida-se em dinheiro {{percent}}% da mais-valia de cada proprietário.",
-            "minParties": "Pelo menos {{count}} partes contribuem com terreno.",
+            "minParties": "Pelo menos {{count}} proprietários distintos das parcelas de entrada têm de aprovar.",
             "noProposer": "O terreno é devolvido aos seus proprietários ou destinado a uso público; um proponente não o pode adquirir."
         },
         "authority": {
@@ -4020,6 +4049,7 @@
             "contributes": "A sua contribuição proposta",
             "conditions": "Condições",
             "progress": "Progresso",
+            "minimumOwners": "São necessárias {{count}} aprovações de proprietários distintos",
             "yourShare": "A sua quota-parte {{share}}",
             "coOwnedWith": "em compropriedade com {{owners}}",
             "openUntil": "Aberto até {{date}}",
@@ -4116,7 +4146,6 @@
             "linkLabel": "Ligação para o projeto publicado",
             "errors": {
                 "cidMismatch": "O servidor calculou uma identidade diferente para este projeto, pelo que nada foi publicado.",
-                "pinningUnconfigured": "Este servidor ainda não consegue fixar projetos publicados (a fixação não está configurada).",
                 "tooLarge": "Este projeto excede o limite de publicação de 10 MiB. Reduza a sua extensão ou o nível de detalhe antes de partilhar; está guardado localmente.",
                 "invalidDesign": "Este projeto contém dados inválidos. Corrija-os antes de partilhar.",
                 "rateLimitedFor": "Demasiadas publicações de momento. Tente novamente dentro de cerca de {{minutes}} min.",
@@ -4363,7 +4392,9 @@
                 "generatedSummaryExcluded": "{{count}} edifício(s) gerado(s) · {{excluded}} parcela(s) excluída(s) pela regra",
                 "excludedBelowMinPlot": "Inferior à área mínima de lote desta regra proposta; una-o a outro ou altere a regra.",
                 "excludedNoRoom": "Este recuo proposto não deixa espaço para um edifício.",
-                "excludedCannotMeet": "O lote não consegue cumprir o mínimo desta regra proposta."
+                "excludedCannotMeet": "O lote não consegue cumprir o mínimo desta regra proposta.",
+                "excludedBelowMinFrontage": "O seu lado voltado para a rua é mais curto do que a frente mínima desta regra proposta.",
+                "excludedNoRoomUnderLimits": "Os limites de ocupação ou de utilização desta regra proposta não deixam espaço para um edifício."
             },
             "labels": {
                 "ruleType": "O que a regra impõe:",
@@ -4376,14 +4407,29 @@
                 "avgFloors": "Pisos de exemplo (média):",
                 "ruleTypeMax": "No máximo este valor",
                 "ruleTypeExact": "Exatamente este valor",
-                "minFootprint": "Área mínima do piso térreo (m²):"
+                "minFootprint": "Área mínima do piso térreo (m²):",
+                "maxHeight": "Altura máxima (m):",
+                "frontSetback": "Afastamento frontal (m):",
+                "rearSetback": "Afastamento de fundo (m):",
+                "setbackHeightRatio": "Laterais e fundo pelo menos (× altura):",
+                "minFrontage": "Frente mínima para a rua (m):",
+                "maxCoverage": "Ocupação máxima (%):",
+                "minNaturalGround": "Terreno natural mínimo (%):",
+                "maxFloorAreaRatio": "Índice de utilização máximo:",
+                "maxFootprint": "Piso térreo máximo (m²):"
             },
             "regenerate": "Ilustrar",
             "title": "Moradias isoladas",
             "closeAria": "Fechar diálogo de edificação por parcela",
             "generating": "A gerar edifícios…",
             "helper": {
-                "minPlotArea": "Os lotes inferiores ao mínimo proposto estão assinalados com trama. Una-os ou altere a regra."
+                "minPlotArea": "Os lotes inferiores ao mínimo proposto estão assinalados com trama. Una-os ou altere a regra.",
+                "frontage": "Os afastamentos frontal e de fundo medem-se a partir do lado do lote voltado para a rua mais próxima; sem rua, a partir do seu lado mais longo.",
+                "setbackHeightRatio": "0,5 mantém as laterais e o fundo a pelo menos metade da altura do edifício do limite."
+            },
+            "placeholders": {
+                "noLimit": "Sem limite",
+                "sameAsBorders": "Igual aos limites"
             }
         }
     },
@@ -4577,7 +4623,8 @@
         "busy": "Ainda está em curso outra atualização do mapa. Aguarde que termine e tente novamente.",
         "storeUnavailable": "Os projetos ainda não foram carregados. Aguarde que o carregamento da cidade termine e tente novamente.",
         "notFound": "Este projeto já não está disponível. Atualize a lista de projetos e tente novamente.",
-        "cancelled": "Este projeto foi retirado, pelo que não pode ser aplicado ao mapa."
+        "cancelled": "Este projeto foi retirado, pelo que não pode ser aplicado ao mapa.",
+        "partitionInvalid": "Não é possível aplicar \"{{title}}\": as parcelas que forma não cobririam exatamente o terreno que substituem ({{detail}}). O projeto fica guardado, não aplicado."
     },
     "threeMode": {
         "parcelPanel": {
@@ -4589,6 +4636,7 @@
             "floorArea": "Área de pavimento",
             "floorNote": "@ {{h}} m/piso",
             "planned": "Planeado",
+            "plannedConditional": "Planeado é o que as regras concedem; mais {{floorArea}} exige: {{condition}}",
             "value": "Valor",
             "constructionCost": "Custo de construção",
             "profit": "Lucro",
@@ -4716,6 +4764,8 @@
             "suggestedPendingStreets": "Os dados das ruas estão a carregar; até estarem disponíveis, as entradas ficam viradas para a fachada mais comprida.",
             "suggestedExisting": "Também nos edifícios existentes",
             "suggestedExistingTooltip": "Mostrar também distribuições típicas de cada época nos edifícios existentes em redor: uma estimativa baseada na implantação e na altura, sem levantamento no local.",
+            "xraySolidExisting": "Os edifícios existentes estão opacos, por isso o interior fica oculto.",
+            "xrayMakeTransparent": "Tornar transparentes",
             "suggestedExistingCount": "Existentes: {{count}} edifícios com uma distribuição típica da época.",
             "representationMassing": "Envolvente máxima",
             "representationMassingTooltip": "Envolvente máxima — o volume exterior permitido definido pelo projeto",
@@ -8262,20 +8312,21 @@
             "compare": "Comparar"
         },
         "compare": {
-            "enable": "Comparar lado a lado",
+            "stop": "Parar de comparar",
             "left": "Esquerda",
             "right": "Direita",
             "swap": "Trocar lados",
             "sliderLabel": "Divisor de comparação",
             "reading": "{{label}} (a ler…)",
             "unreadable": "{{label}} (não foi possível ler: {{reason}})",
-            "mapNote": "No mapa, cada lado desenha os seus próprios edifícios e a volumetria permitida como implantações; um plano não aplicado desenha também as suas ruas e espaços como implantações. As parcelas e as ruas e parques aplicados aparecem nos dois lados.",
+            "mapNote": "No mapa, cada lado desenha os seus próprios edifícios e a volumetria permitida como implantações; um projeto ou plano não aplicado desenha também as suas ruas e espaços como implantações. As parcelas e as ruas e parques aplicados aparecem nos dois lados.",
             "options": {
                 "built": "Edificado hoje",
                 "permitted": "Volumetria permitida",
                 "proposed": "Proposto (todos os projetos aplicados)",
                 "design": "Projeto: {{title}}",
-                "plan": "Plano: {{title}}"
+                "plan": "Plano: {{title}}",
+                "agreement": "Acordo: {{title}}"
             }
         },
         "bound": "Envolvente máxima",
@@ -8423,6 +8474,7 @@
         "builtRecord": "Edifício observado",
         "observedNote": "Dados de edifícios da fonte. As medições em falta permanecem desconhecidas.",
         "footprintArea": "Área de implantação",
+        "conditionalHeight": "Altura sob condição",
         "referenceChanged": "Esta fonte foi alterada desde que o projeto a referenciou. É apresentado o registo atualmente guardado; a revisão referenciada não é reconstruída.",
         "referencedSource": "Fonte: {{source}} · {{revision}}",
         "referenceUnavailable": "O registo da fonte referenciado não está disponível.",
@@ -8442,7 +8494,8 @@
             "plannedresidential": "Residencial planeado",
             "cached-calculation": "Cálculo guardado",
             "new-attached-multifamily": "Novo edifício multifamiliar em banda",
-            "general": "Geral (mapa de tratamentos)"
+            "general": "Geral (mapa de tratamentos)",
+            "sustainable": "Pisos de construção sustentável (Decreto 676/2025)"
         },
         "evidence": {
             "direct": "Valor direto da fonte",
@@ -8654,6 +8707,7 @@
         "blocked": "O fornecedor recusou o acesso (HTTP {{status}}). Pode restringir endereços IP ou exigir autenticação. Escolha outra fonte ou tente novamente mais tarde.",
         "timeout": "Esta fonte de parcelas excedeu o tempo limite. Tente novamente dentro de pouco tempo.",
         "unavailable": "Esta fonte de parcelas está temporariamente indisponível.",
+        "areaLimit": "Esta área tem mais parcelas do que a fonte devolve de uma vez. Aproxime o mapa para a carregar.",
         "loadedRemain": "As parcelas já carregadas continuam visíveis. Tente novamente ou escolha outra fonte.",
         "loadedNone": "Ainda não foram carregadas parcelas. Tente novamente ou escolha outra fonte.",
         "loadedCounts": "Estão carregadas {{inMemory}} parcelas em memória, das quais {{inView}} nesta vista; permanecem no mapa. Tente novamente ou escolha outra fonte.",
@@ -8858,6 +8912,7 @@
         "openNamed": "Abrir {{title}}",
         "noPlace": "Isto não tem lugar no mapa.",
         "agreementHint": "Crie um acordo a partir de um plano no separador Planos.",
+        "agreementNoPlan": "{{title}} não tem um plano para comparar.",
         "proposeFirst": "Abra o acordo para o rever e propor antes de o partilhar.",
         "loading": "A carregar…",
         "count": "{{shown}} de {{total}} itens carregados",
@@ -8896,10 +8951,21 @@
     "compare": "Comparar",
     "swap": "Trocar linhas e colunas",
     "failed": "Não medido: {{reason}}",
-    "assumptions": "Com os pressupostos predefinidos e {{price}} por m². As estatísticas de um plano permitem alterá-los.",
+    "apartmentRule": "Um edifício com planta sugerida conta as suas habitações; qualquer outro: área bruta × {{efficiency}} % útil × {{housing}} % habitação ÷ {{size}} m² por habitação. Pessoas = habitações × {{persons}}.",
     "presentState": "Estado atual",
     "basis": "Estado atual sobre o terreno de",
     "basisCompared": "Todos os planos comparados",
+    "titleDesigns": "Comparar projetos",
+    "basisComparedDesigns": "Todos os projetos comparados",
+    "design": "Projeto",
+    "titleAgreements": "Comparar acordos",
+    "basisComparedAgreements": "Todos os acordos comparados",
+    "agreement": "Acordo",
+    "terms": "Condições dos acordos",
+    "figures": "O que os planos constroem",
+    "differs": "Difere",
+    "onlyDiffering": "Só o que difere",
+    "termsSame": "As condições dos acordos são as mesmas.",
     "measuring": "A medir…",
     "landDefinition": "O terreno público são as ruas e os parques e praças do OpenStreetMap; o privado é o resto das parcelas. O estado atual conta cada edifício existente nesse terreno; um plano conta, ao lado dos novos, os existentes que os seus projetos não removem.",
     "noBasis": "Não há nenhum plano guardado de onde tirar o terreno.",

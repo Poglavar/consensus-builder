@@ -2324,9 +2324,6 @@ function corridorEditorRenderStretchesOption() {
 // the change adds and frees — then asks.
 // ---------------------------------------------------------------------------
 
-// Below this an overlap is the shared edge of two faces, not land taken: the same floor under which
-// parcel-arrangement.js treats a cut piece as boundary noise (MIN_PIECE_M2).
-const CORRIDOR_EDITOR_TAKE_SLIVER_M2 = 0.25;
 // How many parcels each list names before "plus N more".
 const CORRIDOR_EDITOR_TAKE_LISTED = 5;
 
@@ -2448,8 +2445,9 @@ function corridorEditorParcelTake(footprintGeometry) {
             clips.reportClipFailure('intersect', error, { site: 'corridor-editor.parcelTake', parcelId: props.parcelId || props.PARCEL_ID || null }, [footprint, face]);
             return;
         }
-        const areaM2 = overlap ? turfApi.area(overlap) : 0;
-        if (!(areaM2 > CORRIDOR_EDITOR_TAKE_SLIVER_M2)) return;
+        // A shared edge leaves no ground in the overlap (geometry-tolerances.js isGround): not land taken.
+        if (!overlap || !window.GeometryTolerances.isGround(turfApi, overlap)) return;
+        const areaM2 = turfApi.area(overlap);
         fabric.explicitCadastreIds(face).forEach(id => parcels.push({ id, areaM2 }));
     });
     return { available: true, faces: faces.length, parcels, unmeasured };

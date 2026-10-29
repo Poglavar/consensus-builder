@@ -1,0 +1,18 @@
+{
+  "schema": "ugt-local-voter-list/v1",
+  "votingId": "43af9e8c-4fa6-4db5-93a2-9df6947a99c1",
+  "entries": [
+    {
+      "label": "Example voter 1",
+      "code": "ABCDEFGHJKMNPQR"
+    },
+    {
+      "label": "Example voter 2",
+      "code": "STUVWXYZABCDEFG"
+    },
+    {
+      "label": "Example voter 3",
+      "code": "HJKMNPQRSTUVWXY"
+    }
+  ]
+}

@@ -126,11 +126,11 @@ Removal of a browser-local agreement copy. Its designs retain their map applicat
 
 ### Publication
 
-The retention of canonical record bytes and their inclusion in the publication index. A locally computed CID, preview, saved draft or local map application does not by itself constitute publication.
+The retention of canonical record bytes and their inclusion in the publication index. Publishing a design, named plan or agreement is server-only: the server checks the client's CID and indexes the object, and nothing is pinned on IPFS. A locally computed CID, preview, saved draft or local map application does not by itself constitute publication.
 
 ### Pinning provider
 
-The configured service retaining published IPFS content. Filebase is the current upload provider; Pinata remains selectable in reserve through `IPFS_PINNING_PROVIDER`. Provider adapters retain the application's CID scheme and verify the service's returned CID. An upload failure does not automatically publish through another provider.
+The configured service retaining the content the application pins on IPFS: owner-decision bundles, community reports and parcel NFT images and metadata ([ipfs-storage.md](ipfs-storage.md)). Filebase is the current upload provider; Pinata remains selectable in reserve through `IPFS_PINNING_PROVIDER`. Provider adapters retain the application's CID scheme and verify the service's returned CID. An upload failure does not automatically publish through another provider.
 
 ### Read gateway
 
@@ -301,7 +301,7 @@ After a successful confirmed replacement, the view frames all incoming applied d
 
 Selecting an object in model or Google 3D, including a design from a list or a click-stack section, retains the camera and surrounding composition. A yellow pulsing outline follows the selected building or massing's drawn volume, or the authored ground boundary for parcels and ground-only designs; reduced-motion views use a steady outline. Ground-only designs also show a transparent yellow hatch across their authored surface; formed and cadastral parcels use an unfilled boundary, including when a formed parcel shares the design's geometry. Selection does not recolor underlying parcel surfaces or isolate the design. Both 3D views use the same selection sections, inspectors, repeat-click retention and deselection rules, and both views build the stack from the selected object outward. Google imagery supplies a visible surface position; cadastral and building identities come from source records. Where the Google mesh has no addressable object volume, selection outlines the known source footprint on the loaded surface. Cadastral boundary visibility controls drawing independently of selection.
 
-**Side-by-side comparison** (model view and map): the Buildings and massing sheet's Compare tab splits the view at a draggable divider; each side draws one state of the same scene from the same camera. A side is Built today, Permitted massing, Proposed (every applied design), one applied design or one plan. The standing city is shared; a side adds only the work it applies and removes the buildings that work demolishes, and shows no other design's work. Permitted massing draws on the Permitted side alone. Display settings still decide what each side may draw. On the map the sides differ in building footprints and permitted massing; parcels, roads and parks show on both. The comparison is a view, not a record.
+**Side-by-side comparison** (model view and map): the Buildings and massing sheet's Compare tab splits the view at a draggable divider; each side draws one state of the same scene from the same camera. A side is Built today, Permitted massing, Proposed (every applied design), one saved design or one saved plan, applied or not; what is not applied is read without applying it. The standing city is shared; a side adds only the work it applies and removes the buildings that work demolishes, and shows no other design's work. Permitted massing draws on the Permitted side alone. Display settings still decide what each side may draw. On the map the sides differ in building footprints and permitted massing; parcels, roads and parks show on both. The comparison is a view, not a record.
 
 Restoring a saved camera retains the map's display settings and surrounding context. Its selected design is highlighted without isolating it from the shared composition.
 
@@ -321,7 +321,7 @@ When shared designs conflict with the current map, the person chooses whether to
 
 An immutable `plan/v1` snapshot containing a title, a selected set of design CIDs and a map view. Its canonical content has its own CID; publication gives it a permanent `/plans/<cid>` link. Changing the title, membership or saved view creates a new snapshot and link; existing links keep their original content. It references existing designs without changing their authorship, geometry or publication. It carries no land allocations, money or decision rules; those belong to an agreement. The backend address used to access a plan is transport configuration, not part of its content.
 
-Plan stats and Compare plans evaluate one exact saved plan revision, including unapplied members. Parcel figures derive from its members and source cadastral ground in isolation; unrelated map designs and the current map extent do not affect them. Evaluation does not apply the plan. The Compare tab's divider takes a saved plan as a side the same way: a member an applied design stands for is that design; the rest are read as Plan stats reads them and drawn on that side alone, with the standing buildings they clear taken off it. Built today is the present state of that comparison. The urban rooster scores a plan only when every member is applied, from the live map.
+Plan stats and Compare plans evaluate one exact saved plan revision, including unapplied members. Compare designs (Lists → Designs) evaluates each chosen design the same way, as its one-member plan; a published design not held on this device is fetched for it and not stored. Compare agreements (Lists → Agreements) sets the chosen agreements' terms side by side and marks those they differ in: plan (by CID), status, decision rule, approval, settlement and land contribution, deadline, input land, resulting pieces, land to the owners, the public and the proposer, owners left without a piece, cash paid and received, and the sponsor's part. Below the terms it evaluates each agreement's plan as Compare plans does, under the agreement's title. An agreement with no plan yet cannot be chosen; a published one not held on this device is fetched for it and not stored. Parcel figures derive from its members and source cadastral ground in isolation; unrelated map designs and the current map extent do not affect them. Evaluation does not apply the plan. The Compare tab's divider takes a saved plan, or a stored agreement's plan, as a side the same way: a member an applied design stands for is that design; the rest are read as Plan stats reads them and drawn on that side alone, with the standing buildings they clear taken off it. Built today is the present state of that comparison. The urban rooster scores a plan only when every member is applied, from the live map.
 
 A private named-plan draft can reference unpublished design revisions carried with it. Publishing that draft first publishes its missing designs, then the named snapshot, and verifies the same content identifiers. Drafting or editing a named plan derives no agreement ground. Editing places added and revised designs as an agent's working plan does; drafting assembles the given designs as they are.
 
@@ -353,15 +353,15 @@ A plan's parcel land that is not public land, in m²; open ground is in neither.
 
 ### Present state
 
-What stands today on the land of a chosen saved plan (or of all compared plans), read as a plan of its own: every existing building from the city's building source, clipped to the parcels and measured as a freeform building by plan-yield's rules, today's public land, and no designs. It is the baseline column of Compare plans.
+What stands today on the land of a chosen saved plan (or of all compared plans, designs or agreements), read as a plan of its own: every existing building from the city's building source, clipped to the parcels and measured as a freeform building by plan-yield's rules, today's public land, and no designs. It is the baseline column of Compare plans, Compare designs and Compare agreements.
 
 ### Remaining building
 
-An existing building a plan's designs do not clear. A plan's standing buildings are its new buildings plus its remaining ones; apartments, people and jobs derive from their summed floor area. A design clears its demolition ground (its parcels or footprints, a structure, a road corridor) with the demolition scan's thresholds: under 2 m² of overlap the building is untouched, and when under 10 m² or 15 % of its footprint is left it is gone.
+An existing building a plan's designs do not clear. A plan's standing buildings are its new buildings plus its remaining ones. A standing building the suggested default layout can lay out (or one with its own floor plans) counts that layout's apartments, and its shops as work; every other building's apartments, people and jobs derive from its floor area by the Plan stats assumptions. A design clears its demolition ground (its parcels or footprints, a structure, a road corridor) with the demolition scan's thresholds: under 2 m² of overlap the building is untouched, and when under 10 m² or 15 % of its footprint is left it is gone.
 
 ### Private draft reference
 
-An expiring bearer URL resolving to an immutable unpublished design, agreement or named plan and its exact member revisions. It persists independently of an MCP client session; its stated expiry limits retention. Exported canonical content can restore it after expiry. A private preview is not publication, application, consent or a permanent share link.
+A bearer URL resolving to an immutable unpublished design, agreement or named plan and its exact member revisions. It persists independently of an MCP client session. Hosted references have a stated expiry; local demos can retain references without expiry in persistent local storage. Exported canonical content can restore an expired reference's content. A private preview is not publication, application, consent or a public share link.
 
 The MCP preview flow carries this reference in the `draft` URL parameter for review before publication. The Designs sharing panel requires publication for every included design and does not carry a private draft reference into a permanent link.
 
@@ -392,6 +392,10 @@ A seeded, repeatable scenario giving the plan's undated members construction win
 ### Footprint
 
 A horizontal outline whose subject must be qualified. A building footprint describes the building's plan outline; a corridor footprint describes occupied transport land; a design footprint combines the authored parts relevant to an operation.
+
+### Building use
+
+What a building is for, by storey, stored on the building as `properties.use`: residential, residential-shops (shops on the ground floor, flats above), mixed (shops on the ground floor, offices on the first, flats above), office, public (school, clinic, civic) or industrial (`frontend/js/building-use.js`). A word naming one ('housing', 'offices', 'school') reads as that use; any other value is no stated use. A drawn Freeform building starts as residential; an imported one, and a design saved before uses existed, states none. Only a housing use, or a Block, Row or Detached rule building, gets the suggested default layout and its counted apartments; a building of another use counts its storeys as work. A building with no stated use follows the Plan stats housing share. Building use is distinct from a design's Land use (park, square or as is).
 
 ### Land take
 
@@ -502,7 +506,9 @@ An urban-rule design generating a row arrangement of buildings from its land and
 
 ### Detached rule
 
-An urban-rule design generating separate buildings on selected parcels from its stated dimensional constraints.
+An urban-rule design generating separate buildings on selected parcels from its stated dimensional constraints. Each buildable parcel gets one permitted envelope; parcels the rule excludes are shown with the reason (plot too small, street frontage too short, no room after the yards or under the caps, or a compelled minimum the plot cannot meet).
+
+Its constraints are the distance from the borders (`minDistance`), maximum floors with an optional height limit (`maxHeightM`, which caps the floors at the floor height), the minimum plot size, and optional limits written only when set: front and rear yards (`frontSetbackM`, `rearSetbackM`, measured from the plot edge facing the nearest street, else its longest edge; unset, the border distance applies), sides and rear kept at least a share of the building's height from the border (`setbackHeightRatio`, 0.5 for h/2), a minimum street frontage (`minFrontageM`), maximum site coverage and minimum natural ground (`maxCoverage`, `minNaturalGround`, shares of the plot), a maximum floor area ratio (`maxFloorAreaRatio`) and a maximum ground floor (`maxFootprintAreaM2`). The envelope is the ground beyond the yards, shrunk evenly to the smallest ground-floor cap, at the floor count holding the most floor area (a yard growing with height or a floor area ratio can make that fewer than the maximum); every view measures it as the permitted floor area. An example build-out stays inside the envelope, at most its floors high.
 
 ### Source planning rule
 
@@ -538,13 +544,13 @@ The maximum building form derived under an identified rule and its supported ass
 
 ### Outer bound
 
-The combined extent of the drawable building configurations and their supported interpretations. It bounds possible forms rather than defining one constructible building. A lot that several zoning areas partition has one outer bound per part, each the whole lot's bound clipped to that part; a zoning area under 2 % of the lot is evidence, not a part.
+The combined extent of the drawable building configurations and their supported interpretations. It bounds possible forms rather than defining one constructible building. A lot that several zoning areas partition has one outer bound per part, each the whole lot's bound clipped to that part; a zoning area under 2 % of the lot is evidence, not a part. A bound is a stack of prisms: between any two levels, the ground some configuration's volume covers there. A yard that starts above the ground (a side yard from the second floor, a street-wall setback above the facade height) carries `fromHeightM` on its constraint and makes a configuration a stack of tiers. A level only configurations with a `condition` reach carries that condition on its tier; the bound's height and the Planned figures state what the rules grant without a condition, and the conditional extent is reported beside them with its condition.
 
 The comparison controls label this **Max envelope**, as they do an authored rule's maximum envelope. This display label does not make alternative configurations simultaneously buildable or remove the source's qualifications.
 
 ### Configuration
 
-One source-recorded building option, such as an allowed housing type, with its own constraints, treatment, derived geometry and availability. Configurations are alternatives, not additive permissions.
+One source-recorded building option, such as an allowed housing type, with its own constraints, treatment, derived geometry and availability. Configurations are alternatives, not additive permissions. A configuration the project must opt into (an incentive's extra storeys) carries a `condition`; the map shows it only when pinned or when nothing unconditional draws, and draws the bound tiers only it reaches fainter.
 
 ### Lot test
 
@@ -575,11 +581,19 @@ The geographic area to which supplied zoning evidence refers. It is distinct fro
 
 ### Treatment area (Bogotá)
 
-A zoning area of Bogotá's POT treatment map (Decreto 555/2021): one polygon with a treatment (consolidación, renovación, desarrollo, mejoramiento integral, conservación), an optional typology (`TA`, detached) and a height code. A storey count on the map is the base height; a range's upper number, development ranges, instrument codes and blanks are evidence, not geometry. Storeys become metres through the decree's clear height plus an assumed slab ([Bogotá POT source](bogota-pot-source.md)).
+A zoning area of Bogotá's POT treatment map (Decreto 555/2021): one polygon with a treatment (consolidación, renovación, desarrollo, mejoramiento integral, conservación), an optional typology (`TA`, detached) and a height code. A storey count on the map is the base height; a range's upper number, development ranges and instrument codes are evidence, not geometry. A blank Consolidación polygon is an equipamiento whose storeys Decreto 253/2026 assigns by polygon; a blank Renovación polygon has a resulting height. Storeys become metres through the decree's clear height plus an assumed slab ([Bogotá POT source](bogota-pot-source.md)).
+
+### Resulting height (Bogotá)
+
+The height of a Renovación lot, which the POT does not state as storeys: the storey count whose floors, each bounded by the rear yard for that height, the side yards above the third storey and the street wall, hold the most floor area within the lot's construction index. It is solved per lot from its front edge and the lot line across its street, so it exists in the envelope view and is evidence elsewhere.
+
+### Street wall (Bogotá)
+
+The rule that a facade may rise to a multiple of the distance across the public space (2.5 × the street width plus the lot's own front yard, up to a 30 m distance) and must step back above that height. The street width is measured from the lot's front edge to the first other lot across it; a lot with no lot across within reach has no street wall.
 
 ### Antejardín
 
-Bogotá's front yard: the private strip between the lot line and the building line whose minimum depth the POT front-yard map assigns to Consolidación lots. It is read under the parcel, not from the treatment area, and becomes the parcel's front setback.
+Bogotá's front yard: the private strip between the lot line and the building line whose minimum depth the POT front-yard map assigns to Consolidación lots. It is read under the parcel, not from the treatment area, and becomes the parcel's front setback. An equipamiento lot takes at least the Decreto 253/2026 minimum.
 
 ### Applicability
 
@@ -615,23 +629,21 @@ The source-qualified building footprints considered by an operation, with any kn
 
 ## Parties, rights and decisions
 
-### Party
+### Allocation party
 
-Each input parcel of an agreement is exactly one party, `parcel-owner:<parcelId>`, displayed as “Owner(s) of parcel X”. Agreements name no persons: input parcels carry no holders, and allocations and money lines name a parcel party, the proposer or the public. The parcel party is the owner group of that parcel whoever its members are; it is not verified ownership.
+Each input parcel of an agreement is exactly one allocation party, `parcel-owner:<parcelId>`, displayed as “Owner(s) of parcel X”. Allocations name no persons: input parcels carry no holders, and allocations and money lines name a parcel party, the proposer or the public. The parcel party is the owner group of that parcel whoever its members are; it is not verified ownership.
 
 ### Persons
 
-The people behind parcel parties, derived from a rights snapshot and never stored in an agreement. A person holding share s of parcel i co-owns every output allocated to that parcel's party at fraction s and receives s of its cash; each parcel's cash is split in minor currency units by largest remainder, so per-person totals equal per-party totals exactly. Parcels whose rights do not name complete holders stay one unresolved party. Owner approvals and lens decisions read the rights snapshot, not the agreement.
-
-A person, organization or authority identified for rights, allocations or decisions. A party can hold different rights in different parcels; the rights engine's `ownerId` is a party identifier, not an assertion of universal ownership.
+The per-person positions behind parcel parties, derived from the rights snapshot held in the agreement’s rule rather than stored as allocation terms. A person holding share s of parcel i co-owns every output allocated to that parcel's party at fraction s and receives s of its cash; each parcel's cash is split in minor currency units by largest remainder, so per-person totals equal per-party totals exactly. Parcels whose rights do not name complete holders stay one unresolved party. Owner approvals and lens decisions read the committed rights snapshot in the rule.
 
 ### Rights holder
 
-A party holding a stated right, such as ownership or a lease, in identified land. The right and its share are part of the rights snapshot.
+A person or organization holding a stated right, such as ownership or a lease, in identified land, identified by `ownerId`. The same holder can own shares in several parcels; headcounts count that identity once. An allocation party is not a resolved rights holder. Required authorities also have identifiers in decision records but do not count as input owners.
 
 ### Decision actor
 
-The signing identity acting for a party, represented by `actorId`. A party identifier, profile name and signing wallet have distinct roles even when a provider uses the same string for two of them.
+The signing identity acting for a rights holder or required authority, represented by `actorId`. One actor can represent several holders; counting actors is not counting owners. Holder identifiers, profile names and signing wallets have distinct roles.
 
 ### Author
 
@@ -639,7 +651,7 @@ The attribution supplied for a design or agreement. Authorship alone establishes
 
 ### Rights snapshot
 
-A declared source-qualified account of parcel rights, holders, shares, completeness and any supplied areas. A complete holder list sums to one for its stated right; separate rights are not combined into one ownership total.
+A declared source-qualified account of parcel rights, holders, shares, completeness and any supplied areas. A complete holder list sums to one for its stated right; separate rights are not combined into one ownership total. Unresolved parcel-owner placeholders do not establish identities for voting. Updating the committed snapshot changes the agreement CID and approval context, requiring new decisions.
 
 ### Ownership share
 
@@ -675,11 +687,11 @@ A parcel-level aggregate of the agreement decisions that currently count. `accep
 
 ### Approval headcount
 
-The number of supporting eligible parties relative to the number of parties in the specified electorate. It measures policy support, independently of their ownership fractions.
+The number of distinct supporting eligible rights holders relative to the number of distinct holders in the specified electorate, independently of their ownership fractions. A scheme’s `minParties` is an additional absolute minimum of distinct approving input owners, never a parcel or wallet count. Unknown ownership leaves this test unresolved.
 
 ### Approval area
 
-The area-weighted support defined by an approval rule and rights shares. Overlapping rights can contribute separate policy weights, so the result need not equal a union of physical land area.
+The area-weighted support defined by an approval rule and rights shares. A parcel or lease credits its counted share of area only when all counted co-holders approve. Overlapping rights can contribute separate policy weights, so the result need not equal a union of physical land area. This model convention is distinct from verification of a jurisdiction’s co-owner decision law.
 
 ### Lens
 
@@ -733,7 +745,7 @@ The agreement program account identified by network, program, sponsor and agreem
 
 ### Minting
 
-The creation of a binding agreement's chain account. Publishing a design, creating a local fabric piece and computing a CID are separate operations.
+The creation of a binding agreement's chain account. Publishing a design, creating a local fabric piece and computing a CID are separate operations. The account commits to an agreement CID whose content, with its plan and designs, only the publication index holds; none of it is pinned on IPFS.
 
 ### Settlement
 
@@ -1011,7 +1023,7 @@ Wallet maintenance on Solana devnet that tops up a configured bot wallet with te
 
 ### Draft artifact
 
-Canonical design, named-plan or agreement content returned with its recomputed CID without a pin or index write. Its content address remains meaningful even when its private preview is unavailable.
+Canonical design, named-plan or agreement content returned with its recomputed CID without an index write. Its content address remains meaningful even when its private preview is unavailable.
 
 ### Portable plan file
 

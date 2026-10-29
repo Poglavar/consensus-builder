@@ -4,7 +4,7 @@ import { hmlrRoutingProjection, hmlrRoutingBounds } from './hmlr-routing-project
 import { ensureOstn15 } from './osgb36-grid-loader.js';
 import { toWgs84 } from './osgb36-projection.js';
 import { HttpError } from '../utils/helpers.js';
-import { providerHttpError, upstreamError, validateBounds, validateGeometry } from './source-contract.js';
+import { providerHttpError, upstreamError, areaLimitError, validateBounds, validateGeometry } from './source-contract.js';
 import { sha256Hex } from './portable-hash.js';
 import { readGmlZipMember } from './gml-zip-reader.js';
 import { parseGmlParcels } from './gml-parcel-reader.js';
@@ -754,9 +754,9 @@ export function createHmlrBrowserParcelSource(descriptor, { fetchImpl = globalTh
     }
     async function resolveCandidates(manifest, candidates, signal) {
         if (!candidates.length) return { features: [], suppressedIds: [] };
-        if (candidates.length > MAX_QUERY_FEATURES) throw upstreamError('HMLR browser query exceeds the parcel limit; use a smaller viewport.', 413);
+        if (candidates.length > MAX_QUERY_FEATURES) throw areaLimitError('HMLR browser query exceeds the parcel limit; use a smaller viewport.', 413);
         const boxes = candidates.map(item => item.bboxWgs), needed = smallestFirst(manifest, await authoritiesForParcels(manifest, candidates));
-        if (needed.length > MAX_QUERY_AUTHORITIES) throw upstreamError('HMLR overlap context spans too many authority archives; use a smaller query.', 413);
+        if (needed.length > MAX_QUERY_AUTHORITIES) throw areaLimitError('HMLR overlap context spans too many authority archives; use a smaller query.', 413);
         await Promise.all(needed.map(index => loadAuthority(index, signal, boxes)));
         reportProgress({ phase: 'source-prepare' });
         const fullIndexes = needed.map(index => [index, authorityState.get(index)]);
@@ -781,7 +781,7 @@ export function createHmlrBrowserParcelSource(descriptor, { fetchImpl = globalTh
     // Tile store path: the same native inputs and the same engine, read from 1 km tiles.
     async function resolveTileCandidates(candidates, signal) {
         if (!candidates.length) return { features: [], suppressedIds: [] };
-        if (candidates.length > MAX_QUERY_FEATURES) throw upstreamError('HMLR browser query exceeds the parcel limit; use a smaller viewport.', 413);
+        if (candidates.length > MAX_QUERY_FEATURES) throw areaLimitError('HMLR browser query exceeds the parcel limit; use a smaller viewport.', 413);
         const context = await tileReader.contextFor(candidates, signal);
         if (context.length > maxContextFeatures) throw upstreamError('HMLR overlap context exceeds its safe feature limit.', 413);
         signal?.throwIfAborted();
@@ -791,7 +791,7 @@ export function createHmlrBrowserParcelSource(descriptor, { fetchImpl = globalTh
     async function tileQueryBounds(bounds, signal) {
         await ensureOstn15();
         const { manifest, features } = await tileReader.candidatesInBounds(bounds, signal);
-        if (features.length > MAX_QUERY_FEATURES) throw upstreamError('HMLR browser query exceeds the parcel limit; use a smaller viewport.', 413);
+        if (features.length > MAX_QUERY_FEATURES) throw areaLimitError('HMLR browser query exceeds the parcel limit; use a smaller viewport.', 413);
         const meets = features.length ? await (await getEngine()).intersectsBounds(features, bounds) : [];
         signal?.throwIfAborted();
         const result = await resolveTileCandidates(features.filter((_, index) => meets[index]), signal);
@@ -834,12 +834,12 @@ export function createHmlrBrowserParcelSource(descriptor, { fetchImpl = globalTh
         await grid;
         const routingBounds = hmlrRoutingBounds(bounds), viewport = bboxPolygon(bounds);
         const initial = smallestFirst(manifest, await authoritiesForBounds(manifest, [routingBounds]));
-        if (initial.length > MAX_QUERY_AUTHORITIES) throw upstreamError('HMLR viewport spans too many authority archives; use a smaller query.', 413);
+        if (initial.length > MAX_QUERY_AUTHORITIES) throw areaLimitError('HMLR viewport spans too many authority archives; use a smaller query.', 413);
         await Promise.all(initial.map(index => loadAuthority(index, signal, [bounds])));
         reportProgress({ phase: 'source-prepare' });
         const loaded = initial.map(index => [index, authorityState.get(index)]);
         const candidateRows = rowsMatching(loaded, [routingBounds]);
-        if (candidateRows.length > MAX_QUERY_FEATURES) throw upstreamError('HMLR browser query exceeds the parcel limit; use a smaller viewport.', 413);
+        if (candidateRows.length > MAX_QUERY_FEATURES) throw areaLimitError('HMLR browser query exceeds the parcel limit; use a smaller viewport.', 413);
         const features = [];
         for (let offset = 0; offset < candidateRows.length; offset += 250) {
             signal?.throwIfAborted();

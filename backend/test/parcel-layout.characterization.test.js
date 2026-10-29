@@ -642,3 +642,37 @@ describe('Old plots read-only controls', () => {
         expect(w.state.historyCtl.depth()).toBe(depth - 1);
     });
 });
+
+// Merging plots (node removal and the eraser) is the shared clip's union (parcel-arrangement.js
+// clipWith): the merged plot holds both plots' ground on the grid, and a union that cannot be done
+// merges nothing rather than dropping a plot.
+describe('merging plots', () => {
+    const onGrid = geometry => turf.coordAll({ type: 'Feature', properties: {}, geometry })
+        .every(([x, y]) => Math.round(x * 1e9) / 1e9 === x && Math.round(y * 1e9) / 1e9 === y);
+
+    it('joins two plots into one holding the ground of both, on the grid', async () => {
+        const w = world();
+        await w.editor.openParcelLayoutEditor();
+        change(w.$('[data-parcel-layout-count]'), 4);
+        const before = w.state.slices.map(slice => area(slice.geometry));
+        expect(w.editor.mergePlots([0, 1])).toBe(true);
+        expect(w.state.slices).toHaveLength(3);
+        const merged = w.state.slices.find(slice => slice.source === 'manual');
+        expect(area(merged.geometry)).toBeCloseTo(before[0] + before[1], 1);
+        expect(onGrid(merged.geometry)).toBe(true);
+    });
+
+    it('merges nothing when the union cannot be done', async () => {
+        const w = world();
+        await w.editor.openParcelLayoutEditor();
+        change(w.$('[data-parcel-layout-count]'), 4);
+        const before = JSON.stringify(w.state.slices);
+        globalThis.__parcelArrangement = { clipWith() { throw new Error('union failed'); }, clipFailure: error => error };
+        try {
+            expect(w.editor.mergePlots([0, 1])).toBe(false);
+        } finally {
+            delete globalThis.__parcelArrangement;
+        }
+        expect(JSON.stringify(w.state.slices)).toBe(before);
+    });
+});

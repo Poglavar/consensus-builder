@@ -186,13 +186,15 @@ that is settled.
 
 The same generator can guess a typical interior for the existing buildings around a proposal
 ("Existing buildings too", inside the Suggested layouts toggle). Footprints and heights come from the
-2D building pool; a footprint without a height stays a plain volume, and one a proposal builds over
-is skipped. Era presets choose the rules from whatever the footprint says: a construction year where
+2D building pool, which X-ray asks once to cover the whole 3D radius (the pool otherwise holds only the
+viewports the map has shown); the nearest 400 are planned. A footprint without a height stays a plain
+volume, and one a proposal builds over is skipped. Era presets choose the rules from whatever the footprint says: a construction year where
 one exists, else the storey height as a proxy. Pre-war (or storeys of 3.4 m and more): no lift,
 flats up to 160 m², shops on the ground floor from three storeys. Post-war slabs (or storeys up to
 3.05 m from four floors): the default scheme without a lift up to five storeys. Anything else uses
 the contemporary defaults. The interiors draw inside the transparent built volumes and are never
-painted red; they are labelled as a guess in the note. This is the first step of the pending "old
+painted red; while existing buildings are solid, X-ray shows a notice that their interiors are hidden,
+with a **Make transparent** button that switches existing buildings to transparent; they are labelled as a guess in the note. This is the first step of the pending "old
 buildings" work, not evidence.
 
 ### How it is wired
@@ -232,6 +234,16 @@ sequenceDiagram
   arrive the entrance takes the longest facade and the note says so; their arrival drops the cache
   and rebuilds once. Clicking a building opens the parcel panel with its suggested layout (cores,
   apartments per floor, rooms) or the reason nothing fits; the proposal panel totals its buildings.
+- `frontend/js/proposals/plan-units.js` — Plan stats and Compare plans count apartments from the
+  same generator: every new and remaining building of a plan is laid out (no roads; the entrance
+  takes the longest facade) and its apartments on every floor are counted, a building's own floor
+  plans as they are; its shops count as work. Only a building of a housing use is laid out
+  (building-use.js; a Block, Row or Detached rule building counts as housing): its use sets the
+  ground floor (shops for residential-shops and mixed) and mixed use's first floor counts as
+  offices. The X-ray and 2D suggestions skip a building stated for another use. A building with no
+  layout (too small for a stair core, another or no stated use, an existing building, an uploaded
+  model without floor plans, no height) keeps the per-m² rule of plan-yield.js.
+  The cells spin until the count arrives.
 - `frontend/js/suggested-layouts-2d.js` — the 2D counterpart: the "Suggested layouts (ground
   floor)" toggle in the Layers sheet under the building layers (`?suggested2d=1`) draws the ground
   floor of every suggested layout on the map from the same generator and `floorPlanToGeoJSON`, on
@@ -298,8 +310,6 @@ model can say what it knows. The generator's `suggested` flag and generated sour
 - Settle the lift obligation threshold; add regional presets beyond HR and generic.
 - Thumbnails: the server-side renderer would need the generator and the parcels; the 2D layer
   shows the same drawing live instead.
-- Feed the generated apartment counts into plan yield so the stats dialog and X-ray agree; today
-  the proposal panel in 3D shows them beside the area figures.
 - Drive the facade shader from the layout's openings one to one; today only the bay rhythm is shared.
 
 ### Evidence pipeline

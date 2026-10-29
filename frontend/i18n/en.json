@@ -11,6 +11,7 @@
         "importedPlans": "Imported plans",
         "help": "File formats and limits",
         "design": "Download design",
+        "plan": "Download plan",
         "review": "Review plan file",
         "cancel": "Cancel",
         "importDrafts": "Import as drafts",
@@ -230,6 +231,7 @@
     },
     "proposalApproval": {
         "ownerLabel": "Owner {{label}}",
+        "meterDistinctOwners": "Distinct approving owners",
         "leaseholderLabel": "Leaseholder {{label}}",
         "authorityLabel": "Authority",
         "authorityLabelLettered": "Authority {{label}}",
@@ -243,6 +245,8 @@
             "vacuous": "Nobody to count here, so this test does not block.",
             "heard": "Heard, not counted",
             "ownersHeard": "Owners are heard; the authority decides.",
+            "minimumOwners": "approval by at least {{count}} distinct owners",
+            "areaConsent": "For area tests, a parcel or lease counts only after all its counted co-holders approve.",
             "of": {
                 "headcount-owners-all": "of the owners",
                 "headcount-owners-private": "of the private owners",
@@ -283,7 +287,7 @@
                 "publicLand": "Public land without compensation",
                 "levelling": "Differences",
                 "valueGain": "Value gain",
-                "minParties": "Parties"
+                "minParties": "Distinct owners"
             },
             "groups": {
                 "decision": "How it is decided",
@@ -426,11 +430,11 @@
                 "minParties": {
                     "any": {
                         "short": "Any number",
-                        "long": "No minimum number of parties."
+                        "long": "No minimum number of distinct owners."
                     },
                     "some": {
                         "short": "At least {{count}}",
-                        "long": "At least {{count}} parties bring land in."
+                        "long": "At least {{count}} distinct input owners must approve."
                     }
                 }
             },
@@ -479,14 +483,15 @@
                 "capPoolUnknown": "The pool area is unknown, so the {{limit}} cap cannot be checked.",
                 "capPoolOk": "{{given}} of the pool is not returned to owners; the cap is {{limit}}.",
                 "capPoolOver": "{{given}} of the pool is not returned to owners, over the {{limit}} cap.",
-                "partiesOk": "{{actual}} parties bring land in; the scheme needs at least {{required}}.",
-                "partiesFew": "Only {{actual}} bring land in; the scheme needs at least {{required}} parties.",
+                "partiesOk": "The land has {{actual}} distinct owners; at least {{required}} must approve.",
+                "partiesFew": "The land has only {{actual}} distinct owners; the scheme needs at least {{required}}.",
+                "partiesUnknown": "Upload complete ownership to check the minimum of {{required}} distinct owners.",
                 "proposerNone": "No land goes to a proposer.",
                 "proposerOver": "{{area}} m² would go to a proposer; under this scheme land returns to its owners or goes to public use."
             },
             "valueGainAll": "Distributed by value, each owner is made whole to the value they put in; the whole value gain is settled in money.",
             "valueGainShare": "Distributed by value, {{percent}}% of each owner’s value gain is settled in money.",
-            "minParties": "At least {{count}} parties bring land in.",
+            "minParties": "At least {{count}} distinct input owners must approve.",
             "noProposer": "Land returns to its owners or goes to public use; a proposer cannot acquire it."
         },
         "authority": {
@@ -623,6 +628,7 @@
             "contributes": "Your proposed contribution",
             "conditions": "Conditions",
             "progress": "Progress",
+            "minimumOwners": "{{count}} distinct owner approvals needed",
             "yourShare": "Your share {{share}}",
             "coOwnedWith": "co-owned with {{owners}}",
             "openUntil": "Open until {{date}}",
@@ -674,7 +680,8 @@
         "busy": "Another map update is still running. Wait for it to finish and try again.",
         "storeUnavailable": "Designs are not loaded yet. Wait for the city to finish loading and try again.",
         "notFound": "This design is no longer available. Refresh the designs list and try again.",
-        "cancelled": "This design was withdrawn, so it cannot be applied to the map."
+        "cancelled": "This design was withdrawn, so it cannot be applied to the map.",
+        "partitionInvalid": "Cannot apply \"{{title}}\": the parcels it forms would not tile the land they replace ({{detail}}). The design stays saved, unapplied."
     },
     "proposalDrafts": {
         "title": "Drafts",
@@ -808,7 +815,7 @@
                 "fixes": "What would meet it",
                 "fixBasisValue": "In Rules, set Compensation to “Balance land value differences in money”, then give every input parcel and resulting piece a value per m².",
                 "fixBasisArea": "In Rules, set Compensation to “Balance land differences in money”.",
-                "fixParties": "{{actual}} parties bring land in and this scheme needs {{required}}: choose a plan over more parcels, or another scheme.",
+                "fixParties": "{{actual}} distinct owners hold the land; this scheme needs {{required}}. Check the ownership file or choose land with enough distinct owners.",
                 "fixProposer": "In Output parcels, assign the proposer’s pieces to an owner or to Public land.",
                 "fixCapOwner": "In Output parcels, give {{owner}} at least {{area}} more land back, or lower the Land contribution; a scheme with a higher cap is another way.",
                 "fixCapOwnerPlain": "In Output parcels, give {{owner}} more land back.",
@@ -1117,7 +1124,6 @@
             "linkLabel": "Link to the published design",
             "errors": {
                 "cidMismatch": "The server computed a different identity for this design, so nothing was published.",
-                "pinningUnconfigured": "This server cannot pin published designs yet (pinning is not configured).",
                 "tooLarge": "This design exceeds the 10 MiB publication limit. Reduce its extent or detail before sharing; it is saved locally.",
                 "invalidDesign": "This design contains invalid data. Correct it before sharing.",
                 "rateLimitedFor": "Too many publications for now. Try again in about {{minutes}} min.",
@@ -1298,6 +1304,9 @@
                 "buildingsNew": "of which new (floor area m²)",
                 "openSpace": "Open space — parks, squares, water (m²)",
                 "apartments": "Apartments",
+                "apartmentsLaidOut": "{{apartments}} ({{laidOut}} of {{buildings}} buildings laid out)",
+                "countingUnits": "Counting…",
+                "unitsFailed": "Apartments follow the per-m² rule: the buildings could not be laid out ({{reason}}).",
                 "people": "People",
                 "jobs": "Jobs",
                 "salesValue": "Sales value of the floor area",
@@ -2370,6 +2379,15 @@
             "previewLabel": "3D preview",
             "confirm": "Done",
             "heightLabel": "Height (m):",
+            "useLabel": "Building use",
+            "useInfo": "Plan stats counts apartments only on housing storeys; a housing use gets a suggested layout in X-ray.",
+            "useNotStated": "Not stated",
+            "useResidential": "Residential",
+            "useResidentialShops": "Residential, shops on the ground floor",
+            "useMixed": "Mixed: shops, offices on the first floor, flats above",
+            "useOffice": "Office",
+            "usePublic": "Public (school, clinic, civic)",
+            "useIndustrial": "Industrial",
             "rotationLabel": "Rotate footprint",
             "rotateCounterclockwiseLabel": "Rotate counterclockwise 5 degrees",
             "rotateClockwiseLabel": "Rotate clockwise 5 degrees",
@@ -3407,10 +3425,21 @@
                 "ruleTypeRange": "Between a minimum and this",
                 "ruleTypeExact": "Exactly this",
                 "minFootprint": "Min ground floor (m²):",
-                "minPlotArea": "Min plot size (m²):"
+                "minPlotArea": "Min plot size (m²):",
+                "maxHeight": "Max height (m):",
+                "frontSetback": "Front yard (m):",
+                "rearSetback": "Rear yard (m):",
+                "setbackHeightRatio": "Sides and rear at least (× height):",
+                "minFrontage": "Min street frontage (m):",
+                "maxCoverage": "Max site coverage (%):",
+                "minNaturalGround": "Min natural ground (%):",
+                "maxFloorAreaRatio": "Max floor area ratio:",
+                "maxFootprint": "Max ground floor (m²):"
             },
             "helper": {
-                "minPlotArea": "Plots smaller than the proposed minimum are hatched. Merge them or change the rule."
+                "minPlotArea": "Plots smaller than the proposed minimum are hatched. Merge them or change the rule.",
+                "frontage": "Front and rear are measured from the plot edge facing the nearest street, else its longest edge.",
+                "setbackHeightRatio": "0.5 keeps the sides and rear at least half the building’s height from the border."
             },
             "messages": {
                 "creationFailed": "Building generation failed. Try adjusting parameters.",
@@ -3424,7 +3453,13 @@
                 "generatedSummaryExcluded": "Generated {{count}} building(s) · {{excluded}} parcel(s) excluded by the rule",
                 "excludedBelowMinPlot": "Smaller than this proposed rule’s minimum plot size; merge it or change the rule.",
                 "excludedNoRoom": "This proposed setback leaves no room for a building.",
-                "excludedCannotMeet": "The plot cannot meet this proposed rule’s minimum."
+                "excludedCannotMeet": "The plot cannot meet this proposed rule’s minimum.",
+                "excludedBelowMinFrontage": "Its street edge is shorter than this proposed rule’s minimum frontage.",
+                "excludedNoRoomUnderLimits": "This proposed rule’s coverage or floor area limits leave no room for a building."
+            },
+            "placeholders": {
+                "noLimit": "No limit",
+                "sameAsBorders": "Same as borders"
             }
         }
     },
@@ -6313,6 +6348,8 @@
             "suggestedPendingStreets": "Street data is loading; entrances face the longest facade until it arrives.",
             "suggestedExisting": "Existing buildings too",
             "suggestedExistingTooltip": "Also show typical layouts by era for the existing buildings around: a guess from footprint and height, not a survey.",
+            "xraySolidExisting": "Existing buildings are solid, so their interiors are hidden.",
+            "xrayMakeTransparent": "Make transparent",
             "suggestedExistingCount": "Existing: {{count}} buildings with a typical layout by era.",
             "facadeStyles": {
                 "mixed": "Mixed",
@@ -6369,6 +6406,7 @@
             "floorArea": "Floor area",
             "floorNote": "@ {{h}} m/floor",
             "planned": "Planned",
+            "plannedConditional": "Planned is what the rules grant; {{floorArea}} more needs: {{condition}}",
             "value": "Value",
             "constructionCost": "Construction cost",
             "profit": "Profit",
@@ -7303,6 +7341,7 @@
         "blocked": "The provider denied access (HTTP {{status}}). It may restrict IP addresses or require authentication. Choose another source or try again later.",
         "timeout": "This parcel source timed out. Try again shortly.",
         "unavailable": "This parcel source is temporarily unavailable.",
+        "areaLimit": "This area holds more parcels than the source returns at once. Zoom in to load it.",
         "loadedRemain": "Already loaded parcels remain visible. Retry or choose another source.",
         "loadedNone": "No parcels are loaded yet. Retry or choose another source.",
         "loadedCounts": "{{inMemory}} parcels are loaded in memory, {{inView}} of them in this view; they stay on the map. Retry or choose another source.",
@@ -7711,6 +7750,15 @@
         }
     },
     "agreement": {
+        "compare": {
+            "approval": "Approval",
+            "settlement": "Settlement",
+            "toOwners": "Land to the owners",
+            "toPublic": "Land to the public",
+            "toProposer": "Land to the proposer",
+            "paid": "Cash the owners pay",
+            "received": "Cash the owners receive"
+        },
         "outcomes": {
             "owners": "Owners of input parcels",
             "none": "Owners with no piece",
@@ -7724,7 +7772,11 @@
             "titleCounter": "Counter-agreement",
             "counterTitle": "Counter to {{title}}",
             "intro": "An agreement refers to one plan and sets who decides, who gets which land and what money moves. Nothing leaves this device yet.",
-            "save": "Save agreement"
+            "save": "Save agreement",
+            "waitingLand": "Reading the plan’s land…",
+            "waitingPlan": "Choose a plan first.",
+            "waitingMore": "(and {{count}} more)",
+            "waitingRoster": "Save the voter list first."
         },
         "sections": {
             "pieces": "Resulting land",
@@ -7909,7 +7961,6 @@
                     "other": "The server does not hold {{count}} of the agreement’s designs, so it was not proposed."
                 },
                 "inputsDifferFromBinding": "The agreement’s land is not the land its designs take on the server ({{parcels}}). Edit the agreement on the current map and propose it again.",
-                "pinningUnconfigured": "This server cannot pin published agreements yet (pinning is not configured).",
                 "deadlinePast": "The agreement’s deadline has passed. Edit the deadline and propose it again.",
                 "refused": "The server refused this agreement: {{reason}}",
                 "notACid": "This is not an agreement link.",
@@ -8097,20 +8148,21 @@
             "compare": "Compare"
         },
         "compare": {
-            "enable": "Compare side by side",
+            "stop": "Stop comparing",
             "left": "Left",
             "right": "Right",
             "swap": "Swap sides",
             "sliderLabel": "Comparison divider",
             "reading": "{{label}} (reading…)",
             "unreadable": "{{label}} (could not be read: {{reason}})",
-            "mapNote": "On the map, each side draws its own buildings and permitted massing as footprints; a plan that is not applied also draws its roads and spaces as footprints. Parcels and applied roads and parks show on both sides.",
+            "mapNote": "On the map, each side draws its own buildings and permitted massing as footprints; a design or plan that is not applied also draws its roads and spaces as footprints. Parcels and applied roads and parks show on both sides.",
             "options": {
                 "built": "Built today",
                 "permitted": "Permitted massing",
                 "proposed": "Proposed (all applied designs)",
                 "design": "Design: {{title}}",
-                "plan": "Plan: {{title}}"
+                "plan": "Plan: {{title}}",
+                "agreement": "Agreement: {{title}}"
             }
         },
         "reroll": {
@@ -8258,6 +8310,7 @@
         "observedNote": "Source building data. Missing measurements remain unknown.",
         "proposalActions": "Design actions",
         "footprintArea": "Footprint area",
+        "conditionalHeight": "Height under a condition",
         "referenceChanged": "This source has changed since the design referenced it. Showing the currently saved record; the referenced revision is not reconstructed.",
         "referencedSource": "Source: {{source}} · {{revision}}",
         "referenceUnavailable": "The referenced source record is unavailable.",
@@ -8277,7 +8330,8 @@
             "plannedresidential": "Planned residential",
             "cached-calculation": "Saved calculation",
             "new-attached-multifamily": "New attached multifamily",
-            "general": "General (treatment map)"
+            "general": "General (treatment map)",
+            "sustainable": "Sustainable-construction storeys (Decreto 676/2025)"
         },
         "evidence": {
             "direct": "Direct source value",
@@ -8851,6 +8905,7 @@
         "openNamed": "Open {{title}}",
         "noPlace": "This has no place on the map.",
         "agreementHint": "Create an agreement from a plan in the Plans tab.",
+        "agreementNoPlan": "{{title}} has no plan to compare.",
         "proposeFirst": "Open the agreement to review and propose it before sharing.",
         "loading": "Loading…",
         "count": "{{shown}} of {{total}} loaded items",
@@ -8889,10 +8944,21 @@
     "compare": "Compare",
     "swap": "Swap rows and columns",
     "failed": "Not measured: {{reason}}",
-    "assumptions": "At the default assumptions and {{price}} per m². Plan stats on one plan lets you change them.",
+    "apartmentRule": "A building with a suggested layout counts its apartments; any other: gross floor area × {{efficiency}} % net × {{housing}} % housing ÷ {{size}} m² per apartment. People = apartments × {{persons}}.",
     "presentState": "Present state",
     "basis": "Present state over the land of",
     "basisCompared": "All compared plans",
+    "titleDesigns": "Compare designs",
+    "basisComparedDesigns": "All compared designs",
+    "design": "Design",
+    "titleAgreements": "Compare agreements",
+    "basisComparedAgreements": "All compared agreements",
+    "agreement": "Agreement",
+    "terms": "Terms of the agreements",
+    "figures": "What the plans build",
+    "differs": "Differs",
+    "onlyDiffering": "Only what differs",
+    "termsSame": "The agreements’ terms are the same.",
     "measuring": "Measuring…",
     "landDefinition": "Public land is roads and OpenStreetMap parks and squares; private land is the rest of the parcels. The present state counts every existing building on that land; a plan counts the existing buildings its designs do not clear beside its new ones.",
     "noBasis": "No saved plan to take the land from.",

@@ -65,8 +65,18 @@ describe('picking a locale', () => {
         expect(win.i18n.getLocale()).toBe('es-ES');
     });
 
+    it('uses Spanish translations with Colombian locale formatting', async () => {
+        const win = await loadI18n({ search: '?lang=es-CO' });
+        win.i18n.registerTranslations('es', { 'sample.label': 'Ejemplo' });
+        expect(win.i18n.getLanguage()).toBe('es');
+        expect(win.i18n.getLocale()).toBe('es-CO');
+        expect(win.i18n.t('sample.label')).toBe('Ejemplo');
+        win.i18n.setLanguage('es-CO', { userChoice: true });
+        expect(win.PersistentStorage.data.cb_language).toBe('es-CO');
+    });
+
     it('lists the locales the picker offers', async () => {
-        expect((await loadI18n()).i18n.getSupportedLocales()).toEqual(['en-GB', 'en-US', 'es-ES', 'sr-Latn-RS', 'hr-HR', 'ar-EG', 'fr-FR', 'pt-PT']);
+        expect((await loadI18n()).i18n.getSupportedLocales()).toEqual(['en-GB', 'en-US', 'es-ES', 'es-CO', 'sr-Latn-RS', 'hr-HR', 'ar-EG', 'fr-FR', 'pt-PT']);
     });
 });
 

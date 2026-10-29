@@ -1,11 +1,11 @@
 #!/usr/bin/env node
 // Agent runner (design §WS3; plan-design-agreement.md M3): for each proposer persona and run slot, plan
 // candidate parcels, choose with the default deterministic controller or an explicitly requested LLM
-// batch, and for each pick: build the design (a building on its parcel) → pin and index it (POST /pins,
-// POST /designs) → read who owns the parcel in the lens member's devnet owner registry
+// batch, and for each pick: build the design (a building on its parcel) → index it (POST /designs)
+// → read who owns the parcel in the lens member's devnet owner registry
 // (consensus.lens_devnet_owner, lens-owner-registry.js; with --seed-owners a parcel nobody owns is first
 // registered to the persona) → build the binding owners' agreement over the design (its owners decide,
-// unanimously, through receipts the lens member this runner operates verifies) → pin and index it
+// unanimously, through receipts the lens member this runner operates verifies) → index it
 // (POST /agreements) → mint it on Solana devnet (create + fund with the persona's escrow lamports) →
 // record its chain account in the index (POST /agreements/:cid/onchain) → stake YES on its market. Every
 // stage is checkpointed in consensus.agent_run, and a design or agreement is checkpointed before it leaves
@@ -442,7 +442,7 @@ export async function advancePick({
     const wallet = keypair.publicKey.toBase58();
     const staking = usdcToAtomic(stakeUsdc) > 0n;
     const key = pick.candidateId;
-    // design: built once and checkpointed before it leaves the machine, then pinned and
+    // design: built once and checkpointed before it leaves the machine, then
     // indexed; the server's binding must be exactly the candidate parcel.
     if (!designs[key]) {
         const recipe = buildRecipe({ candidate, pick, persona, city, authoredAt: now().toISOString() });
@@ -600,7 +600,7 @@ async function main() {
     const model = llm ? llm.model : null;
     const apiBase = (args.api || process.env.AGENT_API_BASE || `http://localhost:${process.env.API_PORT || 3000}`).replace(/\/$/, '');
     const rpcUrl = process.env.SOLANA_RPC_URL || 'https://api.devnet.solana.com';
-    const index = createIndexClient({ apiBase, origin: process.env.AGENT_APP_ORIGIN || DEFAULT_APP_ORIGIN, waitOnRateLimit: true, pinIntervalMs: 31_000, log });
+    const index = createIndexClient({ apiBase, origin: process.env.AGENT_APP_ORIGIN || DEFAULT_APP_ORIGIN, waitOnRateLimit: true, log });
     const allPersonas = readPersonas();
     const personas = proposersOf(allPersonas, args.persona);
     const lens = operatedLens(allPersonas, args.lens ?? process.env.AGENT_LENS);

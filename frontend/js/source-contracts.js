@@ -185,14 +185,13 @@
         'lookup({query,body,params}) preserves the named dataset route query, provider properties and native FeatureCollection metadata. No conversion to queryBounds reader results.', ['input?']);
     const ossMethods = {
         lookup: nativeLookup,
-        under: operation(obj({ input: request }), fc, 'input.body is {geometry,srid?,parcelsOnly?}; Polygon/MultiPolygon, default SRID 4326. Returns FeatureCollection with count/queryMs and, unless lean mode, coverage and footprintM2.', ['input?']),
+        under: operation(obj({ input: request }), fc, 'input.body is {geometry,srid?}; Polygon/MultiPolygon, default SRID 4326. Returns the candidate parcels that meet it (edge-touching included) as a FeatureCollection with count/queryMs; the shared rule decides what is taken. Over 5,000 parcels: 413.', ['input?']),
         parcelIds: operation(obj({ input: request }), fc, 'input.query.ids is a comma-separated HR cadastral id list; preserves native feature properties.', ['input?']),
         neighbours: operation(obj({ input: request }), fc, 'input.params[0] is the numeric cestica_id or HR-<municipality>-<parcel-number> selection; output retains ownership and cadastral properties.', ['input?']),
-        countBindingCandidates: operation(obj({ polygons: {}, lines: {}, projection: string('Metric projection definition.') }), number('Candidate parcel count.', 0), 'SQL candidate count; polygons and lines are serialized JSON for the binding query.', ['input']),
-        bindingMeasurements: operation(obj({ polygons: {}, lines: {}, floorM: number('Intrusion threshold metres.'), projection: string('Metric projection definition.'), uncertaintyM: number('Uncertainty metres.') }),
-            obj({ parcels: array(obj({}, [], true)), site_m2: {}, in_region: {}, unsurveyed_m2: {}, unknown_m2: {}, site_geojson: {} }, [], true), 'Raw database measurement row; site_geojson is serialized GeoJSON, areas square metres.', ['input']),
-        declaredParcelSite: operation(obj({ parcels: array(obj({ id: string('Parcel identity.'), ko: number('Cadastral municipality.'), number: string('Parcel number.') })) }),
-            obj({ parcels: array(obj({}, [], true)), site_geojson: {}, site_m2: {} }, [], true), 'Raw database row for declared parcels; nullable site_geojson is serialized WGS84 geometry, site_m2 square metres.', ['input'])
+        queryGeometry: operation(obj({ geometry }), featureResult,
+            'Binding candidates for a WGS84 site: current parcels within 5 cm (properties parcelId HR-<municipality>-<number>, sourceId hr-cadastre; twin current ids unioned), and `regions` [{id, geometry}], the cadastral municipalities the site meets cut to its box. 9-decimal WGS84. Over 5,000 parcels: truncated, no features. site-binding.js decides.', ['geometry']),
+        queryIds: operation(obj({ ids: array(string('HR cadastral parcel identity.')) }), featureResult,
+            'Current parcels by HR-<municipality>-<number> id; ids that are not HR ids or not current are listed in absentIds.', ['ids'])
     };
     for (const id of ['oss-wfs', 'parcel-ba', 'parcel-bg', 'parcel-lj', 'parcel-nyc']) nativeOperations['parcels/' + id] = id === 'oss-wfs' ? ossMethods : {
         lookup: nativeLookup,
@@ -202,9 +201,9 @@
     nativeOperations['parcels/dgu-live'] = {
         fetchBbox: operation(obj({ bbox: projectedBbox }), array(feature), 'EPSG:3765 bbox; returns WGS84 feature array.', ['bbox']),
         fetchIds: operation(obj({ ids: array(string('HR cadastral parcel identity.')) }), array(feature), 'Returns shaped WGS84 features from batched WFS reads.', ['ids']),
-        fetchUnder: operation(obj({ geometry, options: obj({ parcelsOnly: { type: 'boolean' } }, []) }, ['geometry']),
-            obj({ features: array(feature), coverage: { type: ['number', 'null'] }, footprintM2: number('Footprint area square metres.') }, ['features', 'coverage']),
-            'WGS84 geometry; parcelsOnly returns coverage:null; otherwise adds taken_m2 to feature properties and footprintM2.', ['geometry', 'options?'])
+        fetchUnder: operation(obj({ geometry }, ['geometry']),
+            obj({ features: array(feature) }, ['features']),
+            'WGS84 geometry; returns the candidate parcels that meet it (edge-touching included), as /parcels/under.', ['geometry'])
     };
     for (const id of ['gdi-map', 'dgu-map']) nativeOperations['buildings/' + id] = { lookup: operation(obj({ query: obj({ bbox: string('minX,minY,maxX,maxY in EPSG:3765.'), cestica_id: string('Numeric parcel id.') }, []) }), fc,
         'lookup(query) returns native FeatureCollection geometry in EPSG:3765, not WGS84. Bbox mode has source/truncated; cestica_id mode reads GDI parcel buildings with count and containment/area properties.', ['query']) };

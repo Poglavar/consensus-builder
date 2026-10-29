@@ -5,6 +5,7 @@ import { previewArtifact } from './mcp-preview.js';
 import { deriveWithApp } from './mcp-ground-runtime.js';
 import { parcelSourceIdOf } from './mcp-read-tools.js';
 import { describeRoadCuts, roadCutWarning } from './mcp-ground-effects.js';
+import { cityMoney } from '../scripts/lib/frontend-city-money.mjs';
 const fail = (code, message) => Object.assign(new Error(message), { code, next: { action: 'Review these designs and their ground in the app before proposing an agreement.' } });
 export const deriveAgreementGround = deriveWithApp;
 
@@ -48,7 +49,7 @@ export function createMcpAgreementTools({ read, drafts, appOrigin }) {
             const result = await groundFor(await resolveDesigns(designs, parcelSourceId));
             return result.land;
         },
-        async draftAgreement({ plan: value, rulePreset = 'owner-vote', rule: ruleOverride, rights, lens, allocations, settlement, valuation = null, currency = 'EUR', deadline = null, sponsor = null, title = null, author = null, createdAt = null, consultation = null, includeGround = false }) {
+        async draftAgreement({ plan: value, rulePreset = 'owner-vote', rule: ruleOverride, rights, lens, allocations, settlement, valuation = null, currency = null, deadline = null, sponsor = null, title = null, author = null, createdAt = null, consultation = null, includeGround = false }) {
             if (!resolvePlan) throw fail('plan-resolver-unavailable', 'Named plan resolution is unavailable.');
             const selected = await resolvePlan(value);
             const resolved = await resolveDesigns(selected.designs, selected.designs[0]?.parcelSourceId);
@@ -56,6 +57,7 @@ export function createMcpAgreementTools({ read, drafts, appOrigin }) {
             const { designs } = resolved;
             const groundEffects = describeRoadCuts(designs);
             const { city } = resolved;
+            currency ??= cityMoney(city).currentCurrency();
             const effectiveRights = rights ?? ruleOverride?.approvalConfig?.rights;
             const presetRule = ruleOverride ? null : rulePreset === 'community-vote' ? communityRule()
                 : rulePreset === 'owner-vote' ? { ...communityRule(), electorate: 'owners', approvalConfig: effectiveRights ? { schema: 'proposal-approval/v1', rights: effectiveRights, policy: { type: 'unanimous' } } : null, lens: [] }

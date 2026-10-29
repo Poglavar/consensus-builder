@@ -151,6 +151,23 @@ describe('3D click stack contextual selection', () => {
         expect(activated).toEqual(Array(3).fill({ id: 'garden', preserveView: true }));
     });
 
+    it('a scene refresh rebuilds the open section instead of adding a second copy of its contents', () => {
+        const document = makeDocument();
+        const tagged = cls => () => { const el = document.createElement('div'); el.className = cls; return el; };
+        const context = { document, console, i18n: testI18n(),
+            __clickStackModel: { ...model, visibleContextFor: () => [{ kind: 'designs' }] },
+            ClickStackRelations: { ...relations, renderGroup: tagged('click-stack__choices'), renderSelector: tagged('click-stack__selector-wrap') } };
+        context.window = context; vm.createContext(context);
+        vm.runInContext(readFileSync(new URL('../../frontend/js/three-click-stack.js', import.meta.url), 'utf8'), context);
+        const api = context.ThreeClickStack, panel = document.createElement('div');
+        panel.className = 'parcel-panel';
+        api.show({ parcels: [{ id: 'p1', feature }, { id: 'p2', feature }] }, { focus: 'parcels' }, { activate: (_kind, _item, body) => body.appendChild(panel) });
+        const contents = () => [...document.querySelector('.click-stack__section[data-kind="parcels"] .click-stack__body').children].map(el => el.className);
+        const opened = contents();
+        expect(opened).toEqual(['click-stack__selector-wrap', 'parcel-panel', 'click-stack__choices']);
+        api.refresh(); api.refresh();
+        expect(contents()).toEqual(opened);
+    });
     it('navigates between design and parcel, keeping collapsed selection focused', () => {
         const document = makeDocument();
         const context = { document, console, __clickStackModel: model, ClickStackRelations: relations };

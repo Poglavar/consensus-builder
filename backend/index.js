@@ -79,8 +79,9 @@ import { createPool as createDatabasePool } from './db/connection.cjs';
 // what one API process can hold, a connection wait over 5 s fails the request instead of queueing
 // it, and a 20 s statement_timeout ends a runaway request query long before the role's default
 // 30 min statement_timeout — which stays the backstop for every other client. The slowest measured
-// route statement, /parcels/under, is counted first and capped at MAX_PARCELS_UNDER parcels, so it
-// answers in about 2 s (28.9 s for a 15-request replay); nothing a route runs needs 20 s.
+// route statement, /parcels/under, is counted first, capped at MAX_PARCELS_UNDER parcels and answers
+// candidates only (no per-parcel intersection), so it answers in about 2 s; nothing a route runs
+// needs 20 s.
 export const API_POOL_OPTIONS = Object.freeze({ max: 20, connectionTimeoutMillis: 5000, statement_timeout: 20000 });
 
 export function createApiPool(env = process.env) {

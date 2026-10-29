@@ -1,7 +1,7 @@
-// Parity of the two implementations of the binding rule on real cadastral data: the PostGIS SQL
-// (backend/proposals/binding.js, authoritative) and the pure turf rule the browser previews with
-// (frontend/js/proposals/site-binding.js). The same sites go to both; the bound parcels, coverage
-// and intrusion widths must agree. Opt-in, it talks to the real geodata database (local docker):
+// The server binding on real cadastral data: the HR candidate search (parcels/oss-binding-source.js)
+// finds what the browser would have loaded, so the server (computeBinding) and the browser's own
+// function over the parcels it loads (site-binding.js bindingFromParcels) give the same answer.
+// Opt-in, it talks to the real geodata database (local docker):
 //
 //   cd backend && set -a && . ./.env && set +a && RUN_DB_TESTS=1 npx vitest run test/proposal-binding-db.test.js
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
@@ -39,7 +39,7 @@ live('binding SQL and the pure rule agree on real parcels', () => {
     // Every current parcel near the site, as the browser would have them loaded.
     async function parcelsNear(site) {
         const { rows } = await pool.query(`
-            SELECT 'HR-' || maticni_broj_ko || '-' || broj_cestice AS id, ST_AsGeoJSON(ST_Transform(geom, 4326), 10) AS g
+            SELECT 'HR-' || maticni_broj_ko || '-' || broj_cestice AS id, ST_AsGeoJSON(ST_Transform(geom, 4326)) AS g
             FROM parcel
             WHERE current AND geom && ST_Expand(ST_Transform(ST_SetSRID(ST_GeomFromGeoJSON($1), 4326), 3765), 20)`,
         [JSON.stringify(site)]);
@@ -52,16 +52,12 @@ live('binding SQL and the pure rule agree on real parcels', () => {
         return { server, client };
     }
 
+    // One function over the same parcels: the same parcels, widths and areas, exactly.
     function expectParity({ server, client }) {
-        expect(client.parcels.map(p => p.parcelId)).toEqual(server.parcels.map(p => p.parcelId));
+        expect(client.parcels).toEqual(server.parcels);
+        expect(client.touched).toEqual(server.touched);
         expect(client.coverage).toBe(server.coverage);
-        const byId = new Map(client.parcels.map(p => [p.parcelId, p]));
-        for (const hit of server.parcels) {
-            const mine = byId.get(hit.parcelId);
-            // Both bisect to ±0.5 mm in radius; projections differ by ~1e-4 relative.
-            expect(Math.abs(mine.intrusionM - hit.intrusionM), hit.parcelId).toBeLessThanOrEqual(Math.max(0.003, hit.intrusionM * 0.01));
-            expect(Math.abs(mine.overlapM2 - hit.overlapM2) / Math.max(hit.overlapM2, 1), hit.parcelId).toBeLessThan(0.01);
-        }
+        expect(client.unsurveyedM2).toBe(server.unsurveyedM2);
     }
 
     it('the parcel itself binds only itself (shared edges do not bind)', async () => {
@@ -82,36 +78,6 @@ live('binding SQL and the pure rule agree on real parcels', () => {
         expectParity(atHalf);
         expect(atHalf.server.parcels.length).toBeLessThan(atZero.server.parcels.length);
     }, 60000);
-
-    it('at the tolerance where a neighbour flips from bound to touched, it is unresolved, never silently decided', async () => {
-        const own = `HR-${KO}-${NUMBER}`;
-        const site = await siteAround(0.3);
-        const ids = list => (list || []).map(p => p.parcelId);
-        const neighbour = (await computeBinding(pool, { parcelSourceId: 'oss-wfs', site, toleranceM: 0 })).binding.parcels
-            .find(p => p.parcelId !== own && p.intrusionM > 0.25)?.parcelId;
-        expect(neighbour).toBeTruthy();
-        const classify = async toleranceM => {
-            const binding = (await computeBinding(pool, { parcelSourceId: 'oss-wfs', site, toleranceM })).binding;
-            if (ids(binding.parcels).includes(neighbour)) return 'bound';
-            if (ids(binding.unresolved).includes(neighbour)) return 'unresolved';
-            if (ids(binding.touched).includes(neighbour)) return 'touched';
-            return 'absent';
-        };
-        // Bisect the tolerance: bound below the flip, touched above it, unresolved in the band.
-        let lo = 0, hi = 1, found = null;
-        for (let n = 0; n < 30 && !found; n += 1) {
-            const mid = (lo + hi) / 2;
-            const state = await classify(mid);
-            if (state === 'unresolved') found = mid;
-            else if (state === 'bound') lo = mid;
-            else if (state === 'touched') hi = mid;
-            else throw new Error(`${neighbour} vanished at tolerance ${mid}`);
-        }
-        expect(found, 'an unresolved band exists at the flip').not.toBeNull();
-        // a millimetre either side is far outside the band, and decides
-        expect(await classify(found - 0.001)).toBe('bound');
-        expect(await classify(found + 0.001)).toBe('touched');
-    }, 240000);
 
     it('a 5 cm inset binds only the parcel', async () => {
         const pair = await both(await siteAround(-0.05), 0);

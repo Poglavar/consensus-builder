@@ -314,6 +314,11 @@
             });
             collaborate.className = 'btn click-stack__collaborate-plan';
             actions.appendChild(collaborate);
+            const download = action(win.i18n.t('common.download'), () => win.BusyControl.track(download,
+                () => win.PlanFileUI.plan({ cid: instance.cid, content: instance.content }, instance.localDesigns || []))
+                .catch(error => win.showStyledAlert(error.message)));
+            download.className = 'btn click-stack__download-plan';
+            actions.appendChild(download);
             host.appendChild(actions);
             if (instance.content?.schedule && win.PlanDialog?.scheduleStrip) {
                 const strip = node('div', 'click-stack__schedule');

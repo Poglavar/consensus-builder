@@ -48,8 +48,9 @@ function ruleSourceOf(rule) {
 /**
  * Candidate proposals for one persona, best first.
  *
+ * Stated coverage and GFA limits shape the envelope (the rule's maxCoverage / maxFloorAreaRatio).
  * Skips a parcel when the rule excludes it (evaluateParcel status ≠ 'ok'), when no build-out can be
- * sampled inside the envelope, when it exceeds a stated coverage/GFA limit, when the build-out cannot be measured, or when it would not add
+ * sampled inside the envelope, when the measured build-out still exceeds a stated coverage/GFA limit, when it cannot be measured, or when it would not add
  * floor area over a known existing-stock baseline — an agent that proposes less than exists is noise.
  * An unknown baseline permits geometry previews, but dependent quantities and weighted scores stay
  * null. Only a named source with complete inventory coverage can establish existing-stock totals.
@@ -104,14 +105,26 @@ export function planCandidates(parcels, persona, {
         const maxFloors = floorCap !== null && floorCap >= 1 ? Math.min(allowedFloors, Math.floor(floorCap)) : allowedFloors;
         const minSetbackM = num(sourceRule && sourceRule.minSetbackM) ?? DEFAULT_MIN_DISTANCE_M;
         const minPlotM2 = num(sourceRule && sourceRule.minPlotM2);
+        const maxCoveragePct = num(sourceRule && sourceRule.maxCoveragePct);
+        const maxGfaM2 = num(sourceRule && sourceRule.maxGfaM2);
+        // A coverage limit is a share of the parcel's stated area; without one it cannot be met.
+        if (maxCoveragePct !== null && (areaM2 === null || areaM2 <= 0)) return;
+
+        // The coverage and floor-area ceilings go into the rule, so the envelope itself is the
+        // largest build-out they allow. The rule measures its plot from the geometry, so both are
+        // restated against that area to bind exactly as the source states them.
+        const parcelFeature = { type: 'Feature', properties: {}, geometry: parcel.geometry };
+        const plotAreaM2 = turf.area(parcelFeature);
         const rule = normalizeParcelRule({
             maxFloors,
             minDistance: minSetbackM,
             floorHeightM,
-            minPlotAreaM2: minPlotM2 === null ? undefined : minPlotM2
+            minPlotAreaM2: minPlotM2 === null ? undefined : minPlotM2,
+            maxCoverage: maxCoveragePct === null || !(plotAreaM2 > 0) ? undefined
+                : Math.min(1, areaM2 * (maxCoveragePct / 100) / plotAreaM2),
+            maxFloorAreaRatio: maxGfaM2 === null || !(plotAreaM2 > 0) ? undefined : maxGfaM2 / plotAreaM2
         });
 
-        const parcelFeature = { type: 'Feature', properties: {}, geometry: parcel.geometry };
         const evaluated = evaluateParcel(parcelFeature, rule, deps);
         if (evaluated.status !== 'ok' || !evaluated.envelope) return;
 
@@ -124,17 +137,13 @@ export function planCandidates(parcels, persona, {
         const proposedGfaM2 = num(measured && measured.gfaM2);
         if (proposedGfaM2 === null || proposedGfaM2 <= 0) return;
 
-        // A quantity describes the building we publish. Reject a sample that exceeds a ceiling;
-        // lowering its reported area would leave an oversized building in the published record.
-        // This sampler does not search for the maximum feasible capacity or retry smaller designs.
-        const maxCoveragePct = num(sourceRule && sourceRule.maxCoveragePct);
+        // A quantity describes the building we publish. The envelope already holds the ceilings;
+        // a measured sample that still exceeds one is rejected, never reported smaller than it is.
         if (maxCoveragePct !== null) {
-            if (areaM2 === null || areaM2 <= 0) return;
             const footprintM2 = num(measured.footprintM2);
             const allowedFootprintM2 = areaM2 * (maxCoveragePct / 100);
             if (footprintM2 === null || footprintM2 > allowedFootprintM2) return;
         }
-        const maxGfaM2 = num(sourceRule && sourceRule.maxGfaM2);
         if (maxGfaM2 !== null && proposedGfaM2 > maxGfaM2) return;
 
         // A known non-positive uplift is rejected. Unknown stock still permits a geometry preview,

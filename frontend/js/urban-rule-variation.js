@@ -33,6 +33,32 @@
     const DEFAULT_BALCONY_DEPTH_M = 2;
     const MAX_BALCONY_DEPTH_M = 5;
     const ROOF_KINDS = ['flat', 'pitched'];
+    // The detached rule's optional limits, each [min, max]. A limit is written only when set, so a
+    // rule without it keeps exactly the shape (and the build-out) it always had.
+    //   frontSetbackM / rearSetbackM — the yard along the street edge and opposite it; unset, the
+    //       side distance (minDistance) applies there too
+    //   setbackHeightRatio — sides and rear keep at least this share of the building's height
+    //       (Zagreb's h/2 is 0.5)
+    //   maxHeightM — to the top of the last floor; it caps maxFloors
+    //   minFrontageM — the street edge a plot needs to be built on
+    //   maxCoverage / minNaturalGround — shares of the plot (0–1) the ground floor may cover and
+    //       must leave unbuilt; without paving in the model both cap the ground floor
+    //   maxFloorAreaRatio — floor area over plot area
+    //   maxFootprintAreaM2 — the largest ground floor, whatever the plot
+    const PARCEL_LIMITS = {
+        frontSetbackM: [0, 100],
+        rearSetbackM: [0, 100],
+        setbackHeightRatio: [0, 3],
+        maxHeightM: [0.5, 800],
+        minFrontageM: [0, 1000],
+        maxCoverage: [0, 1],
+        minNaturalGround: [0, 1],
+        maxFloorAreaRatio: [0, 50],
+        maxFootprintAreaM2: [0, 1000000]
+    };
+    // The yard limits are distances, so 0 is a real value (build to the street line); the rest
+    // limit nothing at 0.
+    const ZERO_IS_A_LIMIT = ['frontSetbackM', 'rearSetbackM'];
 
     // --- deterministic randomness ---------------------------------------------------------
 
@@ -102,6 +128,19 @@
         return extras;
     }
 
+    // The optional limits a parcel rule states (PARCEL_LIMITS), clamped to their ranges.
+    function normalizeParcelLimits(source) {
+        const limits = {};
+        for (const [key, [min, max]] of Object.entries(PARCEL_LIMITS)) {
+            const value = num(source[key], null);
+            if (value === null) continue;
+            if (value > 0 || (value === 0 && ZERO_IS_A_LIMIT.includes(key))) limits[key] = Math.min(max, Math.max(min, value));
+        }
+        // A plot that must keep all of itself unbuilt permits nothing: that is no limit, it is a ban.
+        if (limits.minNaturalGround >= 1) delete limits.minNaturalGround;
+        return limits;
+    }
+
     // What the proposal asserts. `kind` is the A/B/C axis: 'max' permits up to the envelope,
     // 'range' also compels a minimum, 'exact' compels the envelope itself (so there is nothing to
     // vary and the build-out equals the massing).
@@ -114,7 +153,10 @@
         const source = (params && typeof params === 'object') ? params : {};
         const kind = RULE_KINDS.includes(source.kind) ? source.kind : 'max';
         const floorHeightM = Math.max(0.5, num(source.floorHeightM, DEFAULT_FLOOR_HEIGHT_M));
-        const maxFloors = Math.max(1, Math.round(num(source.maxFloors, DEFAULT_MAX_FLOORS)));
+        const limits = normalizeParcelLimits(source);
+        // A height limit is the floors that fit under it, never fewer than one.
+        const floorsUnderHeight = limits.maxHeightM ? Math.max(1, Math.floor(limits.maxHeightM / floorHeightM + 1e-9)) : Infinity;
+        const maxFloors = Math.min(floorsUnderHeight, Math.max(1, Math.round(num(source.maxFloors, DEFAULT_MAX_FLOORS))));
         const minFloors = Math.round(nonNegative(source.minFloors, 0));
         const minFootprint = nonNegative(source.minFootprintAreaM2, 0);
         return {
@@ -129,6 +171,7 @@
             minFootprintAreaM2: kind === 'range' ? minFootprint : 0,
             floorHeightM,
             minPlotAreaM2: nonNegative(source.minPlotAreaM2, 0),
+            ...limits,
             ...normalizeRuleExtras(source)
         };
     }
@@ -228,27 +271,53 @@
         feature = toLargestPolygon(feature, deps) || feature;
         if (!feature || !feature.geometry) return { envelope: null, status: 'invalid' };
 
-        if (normalized.minPlotAreaM2 > 0 && areaOf(feature, turf) < normalized.minPlotAreaM2) {
+        const plotAreaM2 = areaOf(feature, turf);
+        if (normalized.minPlotAreaM2 > 0 && plotAreaM2 < normalized.minPlotAreaM2) {
             return { envelope: null, status: 'below-min-plot' };
         }
 
-        let envelope = feature;
-        if (normalized.minDistance > 0) {
-            let buffered = null;
-            try {
-                buffered = turf.buffer(feature, -normalized.minDistance / 1000, { units: 'kilometers', steps: 16 });
-            } catch (_) {
-                return { envelope: null, status: 'no-room-after-setback' };
-            }
-            if (!buffered || !buffered.geometry) return { envelope: null, status: 'no-room-after-setback' };
-            envelope = toLargestPolygon(buffered, deps);
+        const front = isOriented(normalized) ? frontOf(feature, deps) : null;
+        if (normalized.minFrontageM > 0 && front && front.lengthM < normalized.minFrontageM) {
+            return { envelope: null, status: 'below-min-frontage' };
         }
-        if (!envelope || !envelope.geometry) return { envelope: null, status: 'no-room-after-setback' };
-        const envelopeArea = areaOf(envelope, turf);
-        if (!(envelopeArea >= MIN_ENVELOPE_AREA_M2)) return { envelope: null, status: 'no-room-after-setback' };
 
-        if (normalized.minFootprintAreaM2 > 0 && envelopeArea < normalized.minFootprintAreaM2) {
-            return { envelope: null, status: 'cannot-meet-minimum' };
+        // The tallest building the limits allow is not always the largest: a yard that grows with
+        // height narrows the ground floor of a taller house, and a floor area ratio shares its
+        // area among the floors. So every permitted floor count is tried and the one holding the
+        // most floor area is the envelope (the taller one on a tie). Without a height-dependent
+        // yard the ground does not change with height, and the tallest is always the largest.
+        const lowest = Math.max(1, normalized.minFloors);
+        const zones = new Map();
+        const zoneFor = floors => {
+            const distances = yardDistances(normalized, floors * normalized.floorHeightM);
+            const key = distances.join('|');
+            if (!zones.has(key)) zones.set(key, setbackZone(feature, distances, front, deps));
+            return zones.get(key);
+        };
+        let best = null;
+        let anyGround = false;
+        for (let floors = normalized.maxFloors; floors >= lowest; floors--) {
+            const zone = zoneFor(floors);
+            const zoneAreaM2 = zone ? areaOf(zone, turf) : 0;
+            if (zoneAreaM2 >= MIN_ENVELOPE_AREA_M2) {
+                anyGround = true;
+                const capM2 = footprintCapM2(normalized, plotAreaM2, zoneAreaM2, floors);
+                const fits = capM2 >= MIN_ENVELOPE_AREA_M2 && capM2 >= normalized.minFootprintAreaM2;
+                if (fits && (!best || capM2 * floors > best.capM2 * best.floors + 1e-6)) best = { floors, zone, zoneAreaM2, capM2 };
+            }
+            if (!(normalized.setbackHeightRatio > 0) && best) break;
+        }
+        if (!best) {
+            if (!anyGround) return { envelope: null, status: 'no-room-after-setback' };
+            return { envelope: null, status: normalized.minFootprintAreaM2 > 0 ? 'cannot-meet-minimum' : 'no-room-under-limits' };
+        }
+
+        // A ground floor capped below what the yards leave is drawn as that ground shrunk evenly to
+        // the cap, so every view that measures the envelope reads the permitted floor area.
+        let ground = best.zone;
+        if (best.capM2 < best.zoneAreaM2 - 0.5) {
+            ground = shrinkToArea(best.zone, best.capM2, deps);
+            if (!ground) return { envelope: null, status: 'no-room-under-limits' };
         }
 
         return {
@@ -256,16 +325,150 @@
             envelope: {
                 type: 'Feature',
                 properties: {
-                    floors: normalized.maxFloors,
-                    height: normalized.maxFloors * normalized.floorHeightM,
+                    floors: best.floors,
+                    height: best.floors * normalized.floorHeightM,
                     massing: true,
                     geometryRole: 'authored-rule-envelope',
                     ruleProvenance: { source: 'authored-proposal', generator: 'parcel-envelope', version: 1, definition: normalized },
-                    planningCompliance: 'not-evaluated'
+                    planningCompliance: 'not-evaluated',
+                    ...(front ? { frontage: { edgeIndex: front.index, basis: front.basis } } : {})
                 },
-                geometry: envelope.geometry
+                geometry: ground.geometry
             }
         };
+    }
+
+    // Whether the rule's yards or frontage depend on which edge faces the street.
+    function isOriented(rule) {
+        return rule.frontSetbackM !== undefined || rule.rearSetbackM !== undefined
+            || rule.setbackHeightRatio > 0 || rule.minFrontageM > 0;
+    }
+
+    // [front, side, rear] yard depths for a building `heightM` tall.
+    function yardDistances(rule, heightM) {
+        const grown = (rule.setbackHeightRatio || 0) * heightM;
+        const side = Math.max(rule.minDistance, grown);
+        const rear = Math.max(rule.rearSetbackM ?? rule.minDistance, grown);
+        const front = rule.frontSetbackM ?? rule.minDistance;
+        return [front, side, rear].map(value => Math.round(value * 1000) / 1000);
+    }
+
+    // The largest ground floor the rule's caps allow at `floors` floors.
+    function footprintCapM2(rule, plotAreaM2, zoneAreaM2, floors) {
+        const caps = [zoneAreaM2];
+        if (rule.maxCoverage > 0) caps.push(rule.maxCoverage * plotAreaM2);
+        if (rule.minNaturalGround > 0) caps.push((1 - rule.minNaturalGround) * plotAreaM2);
+        if (rule.maxFootprintAreaM2 > 0) caps.push(rule.maxFootprintAreaM2);
+        if (rule.maxFloorAreaRatio > 0) caps.push(rule.maxFloorAreaRatio * plotAreaM2 / floors);
+        return Math.min(...caps);
+    }
+
+    function sitePlotsModule() {
+        return (global && global.__sitePlots)
+            || (typeof require === 'function' ? require('./proposals/site-plots.js') : null);
+    }
+
+    function assessmentModule() {
+        return (global && global.PlanningParcelAssessment)
+            || (typeof require === 'function' ? require('./planning/parcel-assessment.js') : null);
+    }
+
+    // The plot's street edge: the edge that faces one of `deps.streets` (street centrelines, as the
+    // site tool's frontage reads them), else its longest edge. `{ index, lengthM, basis }`.
+    function frontOf(feature, deps) {
+        const turf = deps.turf;
+        const plots = sitePlotsModule();
+        const edges = plots.frontageEdges(feature, { turf });
+        if (!edges.length) return null;
+        const streets = Array.isArray(deps.streets) ? deps.streets : [];
+        let best = null;
+        if (streets.length) {
+            const [w, s, e, n] = turf.bbox(feature);
+            const marginM = plots.FRONTAGE_STREET_MAX_DISTANCE_M + 5;
+            const dLat = marginM / 110540;
+            const dLng = marginM / (111320 * Math.cos(((s + n) / 2) * Math.PI / 180));
+            const nearby = streets.filter(street => {
+                try {
+                    const [sw, ss, se, sn] = turf.bbox(street);
+                    return sw <= e + dLng && se >= w - dLng && ss <= n + dLat && sn >= s - dLat;
+                } catch (_) { return false; }
+            });
+            best = nearby.length ? plots.frontageScores(feature, nearby, { turf })[0] : null;
+        }
+        const index = best ? best.index : plots.defaultFrontageEdge(feature, { turf });
+        const edge = edges.find(entry => entry.index === index);
+        return edge ? { index, lengthM: edge.lengthM, basis: best ? 'street' : 'longest' } : null;
+    }
+
+    // The ground beyond the yards: [front, side, rear] metres measured from the edges in those
+    // roles (planning/parcel-assessment.js classifies them from the street edge, the same
+    // derivation the Permitted layer uses). Equal yards need no street edge, and keep the rounded
+    // inward buffer this rule has always drawn.
+    function setbackZone(feature, distances, front, deps) {
+        const turf = deps.turf;
+        const [frontM, sideM, rearM] = distances;
+        const uniform = frontM === sideM && sideM === rearM;
+        if (!uniform && front) {
+            try {
+                const quantity = (key, value) => ({ quantity: key, value, unit: 'm', evidence: 'direct' });
+                const bound = assessmentModule().derive({
+                    parcel: feature,
+                    source: { constraints: [quantity('frontSetback', frontM), quantity('sideSetback', sideM), quantity('rearSetback', rearM)] }
+                }, front.index, turf);
+                if (!bound.geometry) return null;
+                return toLargestPolygon({ type: 'Feature', properties: {}, geometry: bound.geometry }, deps);
+            } catch (_) {
+                // A plot the derivation cannot classify (a hole, a self-touching ring) keeps the
+                // deepest yard on every side: the rule never permits more than it says.
+            }
+        }
+        const depthM = uniform ? sideM : Math.max(frontM, sideM, rearM);
+        if (!(depthM > 0)) return feature;
+        let buffered = null;
+        try {
+            buffered = turf.buffer(feature, -depthM / 1000, { units: 'kilometers', steps: 16 });
+        } catch (_) {
+            return null;
+        }
+        return buffered && buffered.geometry ? toLargestPolygon(buffered, deps) : null;
+    }
+
+    // `feature` shrunk evenly until its area is at most `targetM2` (within 2 % below it): Newton's
+    // step on the inset, since an inset of d removes about perimeter × d. null when no inset
+    // leaves a polygon that small and still standing.
+    function shrinkToArea(feature, targetM2, deps) {
+        const turf = deps.turf;
+        if (!(targetM2 > 0)) return null;
+        let area = areaOf(feature, turf);
+        if (area <= targetM2) return feature;
+        let insetM = 0;
+        let current = feature;
+        let best = null;
+        let tooFarM = Infinity;
+        for (let step = 0; step < 16; step++) {
+            let perimeterM = 0;
+            try { perimeterM = turf.length(turf.polygonToLine(current), { units: 'kilometers' }) * 1000; } catch (_) { perimeterM = 0; }
+            let next = insetM + (area - targetM2) / Math.max(perimeterM, 1);
+            if (next >= tooFarM) next = (insetM + tooFarM) / 2;
+            let candidate = null;
+            try {
+                const buffered = turf.buffer(feature, -next / 1000, { units: 'kilometers', steps: 8 });
+                candidate = buffered && buffered.geometry ? toLargestPolygon(buffered, deps) : null;
+            } catch (_) { candidate = null; }
+            const candidateArea = candidate ? areaOf(candidate, turf) : 0;
+            if (!candidate || candidateArea < MIN_ENVELOPE_AREA_M2) {
+                tooFarM = next;
+                continue;
+            }
+            insetM = next;
+            current = candidate;
+            area = candidateArea;
+            if (area <= targetM2) {
+                best = current;
+                if (area >= targetM2 * 0.98) break;
+            }
+        }
+        return best;
     }
 
     // The permitted volume for one parcel: the parcel set back by the rule's minimum distance,
@@ -349,7 +552,11 @@
 
         const rng = mulberry32(num(seed, 0) >>> 0);
         const lowest = Math.max(1, normalized.minFloors);
-        const floors = lowest + Math.floor(rng() * (Math.max(0, normalized.maxFloors - lowest) + 1));
+        // The envelope's own floors are the ceiling: a yard that grows with height or a floor area
+        // ratio can hold a plot's envelope below the rule's maximum floors.
+        const envelopeFloors = num(envelopeFeature.properties && envelopeFeature.properties.floors, normalized.maxFloors);
+        const ceiling = Math.max(lowest, Math.min(normalized.maxFloors, envelopeFloors));
+        const floors = lowest + Math.floor(rng() * (Math.max(0, ceiling - lowest) + 1));
         const footprint = varyFootprint(envelopeFeature, rng, deps, normalized.minFootprintAreaM2) || envelopeFeature;
 
         return {
@@ -389,10 +596,26 @@
     // When the massing is nowhere thicker than minDepthM the erosion vanishes and the minimum IS
     // the maximum — "build all of it", which is the correct reading, not a failure.
     // A polygon clip that cannot be done, typed and counted (parcel-arrangement.js ClipFailure).
-    function variationClipFailure(operation, error, site, operands, parcelId) {
-        const api = (global && global.__parcelArrangement)
+    function variationArrangement() {
+        return (global && global.__parcelArrangement)
             || (typeof require === 'function' ? require('./proposals/parcel-arrangement.js') : null);
+    }
+
+    function variationClipFailure(operation, error, site, operands, parcelId) {
+        const api = variationArrangement();
         return api ? api.clipFailure(operation, error, { site, parcelId }, operands) : error;
+    }
+
+    // The shared parcel clip (parcel-arrangement.js clipWith) with the caller's turf: the same grid
+    // as every other stage; a clip it cannot do throws a ClipFailure naming `site` and the parcel.
+    function variationClip(turf, operation, a, b, site, parcelId) {
+        return variationArrangement().clipWith(turf, operation, a, b, { site, parcelId });
+    }
+
+    // What counts as ground (geometry-tolerances.js), the rule every stage uses.
+    function variationGround() {
+        return (global && global.GeometryTolerances)
+            || (typeof require === 'function' ? require('./geometry-tolerances.js') : null);
     }
 
     function buildToMinimum(massingFeature, minDepthM, deps) {
@@ -408,20 +631,14 @@
         if (core && core.geometry) {
             // The whole massing as the "minimum" (or no minimum at all) would be a rule the
             // proposal never stated: a clip that fails here refuses the envelope.
-            let cut = null;
-            try { cut = turf.difference(filled, core); } catch (error) {
-                throw variationClipFailure('difference', error, 'urban-rule-variation.buildToMinimum', [filled, core]);
-            }
+            const cut = variationClip(turf, 'difference', filled, core, 'urban-rule-variation.buildToMinimum');
             // The core is an inward buffer of `filled`, so the band cannot be empty: a null here
             // is the clipper losing it, not a band of nothing.
             if (!cut) throw variationClipFailure('difference', new Error('difference came back empty'), 'urban-rule-variation.buildToMinimum', [filled, core]);
             band = cut;
         }
 
-        let clipped = null;
-        try { clipped = turf.intersect(band, massingFeature); } catch (error) {
-            throw variationClipFailure('intersect', error, 'urban-rule-variation.buildToMinimum', [band, massingFeature]);
-        }
+        const clipped = variationClip(turf, 'intersect', band, massingFeature, 'urban-rule-variation.buildToMinimum');
         return (clipped && clipped.geometry) ? clipped : null;
     }
 
@@ -458,10 +675,7 @@
             // Without it, a left-out plot reads as a hole in the block instead of a plot that cannot
             // take a building as it stands.
             // A failed intersect is not "the massing does not reach this parcel": refuse.
-            let piece = null;
-            try { piece = turf.intersect(massingFeature, parcelFeature); } catch (error) {
-                throw variationClipFailure('intersect', error, 'urban-rule-variation.splitMassingByParcels', [massingFeature, parcelFeature], parcelId);
-            }
+            const piece = variationClip(turf, 'intersect', massingFeature, parcelFeature, 'urban-rule-variation.splitMassingByParcels', parcelId);
             const wouldBe = (piece && piece.geometry) ? piece.geometry : null;
 
             if (normalized.minPlotAreaM2 > 0 && areaOf(parcelFeature, turf) < normalized.minPlotAreaM2) {
@@ -486,13 +700,9 @@
             // contradicting itself.
             let compelledHere = null;
             if (compelled) {
-                try {
-                    const clip = turf.intersect(compelled, piece);
-                    if (clip && clip.geometry && areaOf(clip, turf) >= 1) compelledHere = clip.geometry;
-                } catch (error) {
-                    // Not "the rule compels nothing here": refuse.
-                    throw variationClipFailure('intersect', error, 'urban-rule-variation.compelledPerParcel', [compelled, piece], parcelId);
-                }
+                // A failed clip is not "the rule compels nothing here": it throws and refuses.
+                const clip = variationClip(turf, 'intersect', compelled, piece, 'urban-rule-variation.compelledPerParcel', parcelId);
+                if (clip && clip.geometry && areaOf(clip, turf) >= 1) compelledHere = clip.geometry;
             }
 
             pieces.push({
@@ -537,11 +747,10 @@
                 && turf.booleanPointInPolygon(point, entry.feature));
             if (!host || hosts.has(String(host.parcelId))) return false;
             hosts.add(String(host.parcelId));
-            let inside = null;
-            try { inside = turf.intersect(piece, host.feature); } catch (error) {
-                throw variationClipFailure('intersect', error, 'urban-rule-variation.piecesOnGround', [piece, host.feature], host.parcelId);
-            }
-            return !!(inside && inside.geometry) && areaOf(inside, turf) >= areaOf(piece, turf) * 0.99;
+            // A piece lies on its host when none of it outside the host is ground (the shared rule,
+            // geometry-tolerances.js isGround, of the difference on the shared clip).
+            const outside = variationClip(turf, 'difference', piece, host.feature, 'urban-rule-variation.piecesOnGround', host.parcelId);
+            return !variationGround().isGround(turf, outside);
         });
         if (standsAsSaved) return buildings;
         const { pieces } = splitMassingByParcels(massing, ground, rule, massing.properties.variationSeed, deps);
@@ -770,6 +979,7 @@
         extrasControlsMarkup,
         syncExtrasControls,
         bindExtrasControls,
+        PARCEL_LIMITS,
         evaluateParcel,
         parcelEnvelope,
         buildToMinimum,

@@ -14,6 +14,8 @@ async function scheduledPlan(page: Page): Promise<{ plan: string; park: string; 
   await page.locator('.parcel-build-btn--park').click();
   await expect.poll(() => page.evaluate(() => (window as any).proposalStorage.getAllProposals().some((p: any) => p.structureProposal?.kind === 'park' && p.applied))).toBe(true);
   const park = await page.evaluate(() => (window as any).proposalStorage.getAllProposals().find((p: any) => p.structureProposal?.kind === 'park').proposalId);
+  // Designs without a dated plan in view give the time control nothing to show: no hourglass.
+  await expect(page.locator('#buildout-clock-button')).toBeHidden();
   return page.evaluate(async ({ park, road }) => {
     const w = window as any;
     const records = [w.proposalStorage.getProposal(park), w.proposalStorage.getProposal(road)];

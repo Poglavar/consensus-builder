@@ -175,7 +175,7 @@
                         <label class="proposal-editor-field"><span>${esc(t('proposalDrafts.approval.source', 'Rights source'))}</span><select data-approval-source>${sourceOptions || option('upload', t('proposalDrafts.approval.upload', 'Upload JSON'), 'upload')}</select></label>
                         <label class="proposal-editor-field"><span>${esc(t('proposalDrafts.approval.reference', 'Source reference or query'))}</span><input type="text" data-approval-reference value="${esc(normalized?.rights?.source?.reference || '')}" autocomplete="off"${selectedSource === 'upload' ? ' disabled' : ''}></label>
                     </div>
-                    <label class="proposal-editor-field"><span>${esc(t('proposalDrafts.approval.file', 'Rights JSON file (up to 1 MB)'))}</span><input type="file" accept="application/json,.json" data-approval-file${selectedSource !== 'upload' ? ' disabled' : ''}></label>
+                    <div class="cb-actions" data-approval-file-row${selectedSource !== 'upload' ? ' hidden' : ''}><label class="btn btn-sm"><i class="fa-solid fa-folder-open" aria-hidden="true"></i> ${esc(t('proposalDrafts.approval.file', 'Rights JSON file (up to 1 MB)'))}<input type="file" accept="application/json,.json" data-approval-file hidden${selectedSource !== 'upload' ? ' disabled' : ''}></label><span class="proposal-editor-file-name" data-approval-file-name></span></div>
                     <div class="cb-actions">
                         <button type="button" class="btn btn-sm" data-editor-action="approval-import">${esc(t('proposalDrafts.approval.import', 'Import and preview'))}</button>
                         <button type="button" class="btn btn-sm" data-editor-action="approval-template">${esc(t('proposalDrafts.approval.template', 'Download template'))}</button>
@@ -212,8 +212,8 @@
         const sources = template.sources.map(source => `<a class="cb-link cb-link--external" href="${esc(source.url)}" target="_blank" rel="noopener noreferrer">${esc(source.label)}</a>`).join(', ');
         const checked = check && check.lines && check.lines.length
             ? `<p class="approval-setup__check-title">${esc(t('proposalDrafts.approval.schemeCheckTitle', 'This plan against the scheme'))}</p>
-            <ul class="approval-setup__check" data-approval-scheme-check data-approval-scheme-ok="${check.ok ? 'true' : 'false'}">${check.lines.map(line =>
-                `<li data-check-ok="${line.ok ? 'true' : 'false'}">${esc(line.text)}</li>`).join('')}</ul>` : '';
+            <ul class="approval-setup__check" data-approval-scheme-check data-approval-scheme-ok="${check.ok === null ? 'unknown' : String(check.ok)}">${check.lines.map(line =>
+                `<li data-check-ok="${line.ok === null ? 'unknown' : String(line.ok)}">${esc(line.text)}</li>`).join('')}</ul>` : '';
         return `<div class="approval-setup__regime" data-approval-regime-details="${esc(template.id)}">
             <p>${esc(words().familyText(template, t))} · ${esc(words().stageText(template, t))}</p>
             <p>${esc(t(`proposalApproval.schemes.${template.id}.note`, template.text.note))}</p>
@@ -395,7 +395,7 @@
                 ? t('proposalDrafts.approval.guide.fixBasisValue', 'In Rules, set Compensation to “Balance land value differences in money”, then give every input parcel and resulting piece a value per m².')
                 : t('proposalDrafts.approval.guide.fixBasisArea', 'In Rules, set Compensation to “Balance land differences in money”.');
         }
-        if (rule.kind === 'parties') return t('proposalDrafts.approval.guide.fixParties', '{{actual}} parties bring land in and this scheme needs {{required}}: choose a plan over more parcels, or another scheme.', { actual: rule.actual, required: rule.required });
+        if (rule.kind === 'parties') return t('proposalDrafts.approval.guide.fixParties', '{{actual}} distinct owners hold the land; this scheme needs {{required}}. Check the ownership file or choose land with enough distinct owners.', { actual: rule.actual, required: rule.required });
         if (rule.kind === 'proposer') return t('proposalDrafts.approval.guide.fixProposer', 'In Output parcels, assign the proposer’s pieces to an owner or to Public land.');
         const limit = capRatio(rule.limit);
         if (rule.per === 'owner') {
@@ -444,9 +444,9 @@
     function schemeGuideHtml({ template, check = null, rules = [], ledger = null, persons = null, names = new Map(), currency = '' } = {}) {
         if (!template) return '';
         const dimensions = dimensionsOf(template);
-        const fixes = rules.filter(rule => !rule.ok).map(rule => `<li>${esc(fixText(rule, template, ledger))}</li>`).join('');
+        const fixes = rules.filter(rule => rule.ok === false).map(rule => `<li>${esc(fixText(rule, template, ledger))}</li>`).join('');
         const lines = check && check.lines && check.lines.length
-            ? `<ul class="approval-setup__check" data-scheme-guide-check>${check.lines.map(line => `<li data-check-ok="${line.ok ? 'true' : 'false'}">${esc(line.text)}</li>`).join('')}</ul>` : '';
+            ? `<ul class="approval-setup__check" data-scheme-guide-check>${check.lines.map(line => `<li data-check-ok="${line.ok === null ? 'unknown' : String(line.ok)}">${esc(line.text)}</li>`).join('')}</ul>` : '';
         const applied = ledger && ledger.parties && ledger.parties.length ? `<section class="scheme-guide__part scheme-guide__part--applied" data-scheme-guide-part="applied">
             <h3>${esc(t('proposalDrafts.approval.guide.against', 'This agreement against the scheme'))}</h3>
             ${lines}
@@ -541,7 +541,7 @@
         return regimes().FAMILIES.map(family => {
             const entries = latestRegimes().filter(regime => regime.family === family);
             return entries.length ? `<optgroup label="${esc(words().familyText({ family }, t))}">${entries.map(regime => {
-                const met = schemeStatus && Object.hasOwn(schemeStatus, regime.id) ? schemeStatus[regime.id] !== false : null;
+                const met = schemeStatus && Object.hasOwn(schemeStatus, regime.id) ? schemeStatus[regime.id] : null;
                 const name = t(`proposalApproval.schemes.${regime.id}.name`, regime.text.name);
                 return `<option value="${esc(regime.id)}"${regime.id === choice ? ' selected' : ''}${met === null ? '' : ` data-scheme-met="${met}"`}>${esc(met === false ? `${name} — ${notMet}` : name)}</option>`;
             }).join('')}</optgroup>` : '';
@@ -656,7 +656,8 @@
 
     // ---- reading the form back ------------------------------------------------------------------
 
-    // The rights source select enables the reference field or the file field, never both.
+    // The rights source select enables the reference field or the file picker, never both; the
+    // picker names the file it holds.
     function syncSourceControls(container) {
         const source = container?.querySelector('[data-approval-source]');
         if (!source) return;
@@ -664,6 +665,10 @@
         const file = container.querySelector('[data-approval-file]');
         if (reference) reference.disabled = source.value === 'upload';
         if (file) file.disabled = source.value !== 'upload';
+        const row = container.querySelector('[data-approval-file-row]');
+        if (row) row.hidden = source.value !== 'upload';
+        const name = container.querySelector('[data-approval-file-name]');
+        if (name) name.textContent = file?.files?.[0]?.name || '';
     }
 
     // The config with the rules the form now shows. Throws on a malformed fraction or rule, leaving
@@ -710,19 +715,11 @@
     // A rights file to fill in; it has room for leases and public bodies when the rules count them.
     function downloadTemplate(parcelIds, config = null) {
         const api = approval();
-        if (!api?.createTemplate || !root.Blob || !root.URL?.createObjectURL || !root.document) return;
+        if (!api?.createTemplate || !root.FileDownload) return;
         let need = { leases: false, publicBodies: false };
         try { need = regimes().needs(api.policyRules(normalizedConfig(config)?.policy).tests); } catch (_) { /* a plain template */ }
         const template = api.createTemplate(parcelIds || [], need);
-        const url = root.URL.createObjectURL(new root.Blob([JSON.stringify(template, null, 2)], { type: 'application/json' }));
-        const link = root.document.createElement('a');
-        link.href = url;
-        link.download = 'parcel-rights-template.json';
-        root.document.body.appendChild(link);
-        link.click();
-        link.remove();
-        // The browser reads the URL after this tick; revoke it once the download has started.
-        root.setTimeout(() => root.URL.revokeObjectURL(url), 0);
+        root.FileDownload.save(root, JSON.stringify(template, null, 2), 'parcel-rights-template.json', 'application/json');
     }
 
     // The form in its own dialog, for a proposal being created (the create dialog's row and the land
@@ -770,7 +767,7 @@
         });
         render();
         dialog.body.addEventListener('change', event => {
-            if (event.target.closest('[data-approval-source]')) { syncSourceControls(dialog.body); return; }
+            if (event.target.closest('[data-approval-source], [data-approval-file]')) { syncSourceControls(dialog.body); return; }
             // Only switching the rules or the custom authority changes which fields exist. Re-rendering
             // on every other edit would replace the field the author has just moved into; those are
             // read on apply, and the rule sentence follows them.

@@ -35,6 +35,20 @@ const building = (proposalId, west, applied = false) => ({
     }
 });
 
+// Two buildings are rivals when their overlap is ground (geometry-tolerances.js reachesInto): a 1 cm
+// strip (about 1.1 m², under the 2 m² floor that stood here) is, 0.4 mm of cutting debris is not.
+describe('rivals overlap by ground, not by an area floor', () => {
+    const metresOfLng = m => m / (111320 * Math.cos(45.8005 * Math.PI / 180));
+    it('a 1 cm strip is a rival, 0.4 mm of debris is not', () => {
+        const standing = building('standing', 15.9, true);
+        const strip = building('strip', 15.901 - metresOfLng(0.01));
+        const debris = building('debris', 15.901 - metresOfLng(0.0004));
+        expect(turf.area(turf.intersect(standing.geometry.buildings[0], strip.geometry.buildings[0]))).toBeLessThan(2);
+        expect(collectAppliedProposalAlternatives(strip, [standing, strip], { planOrder }).map(r => r.proposalId)).toEqual(['standing']);
+        expect(collectAppliedProposalAlternatives(debris, [standing, debris], { planOrder })).toEqual([]);
+    });
+});
+
 describe('lineage is not a ground conflict', () => {
     it('a published source and its moved, non-overlapping fork both stay applied; real overlap still counts', () => {
         const source = {
@@ -323,9 +337,18 @@ describe('editDependents: who stands on ground an in-place edit changes', () => 
         buildingProposal: {},
         geometry: { buildings: [turf.polygon(box(west, east).coordinates)] }
     });
-    const options = { planOrder, area: turf.area, isApplied };
+    const options = { planOrder, turf, isApplied };
     const plotA = box(15.9000, 15.9010);
     const plotB = box(15.9010, 15.9020);
+
+    it('treats a border moved by cutting debris as unchanged, and one moved by a centimetre as changed', () => {
+        const shift = m => m / (111320 * Math.cos(45.8002 * Math.PI / 180));
+        const before = layout([plotA, plotB]);
+        const onB = blockOnPlot('block-on-b', 15.9012, 15.9014);
+        const moved = m => layout([box(15.9000, 15.9010 + shift(m)), box(15.9010 + shift(m), 15.9020)]);
+        expect(editDependents(before, moved(0.0004), [before, onB], options)).toEqual([]);
+        expect(editDependents(before, moved(0.01), [before, onB], options).map(record => record.proposalId)).toEqual(['block-on-b']);
+    });
 
     it('finds a block on a child plot the edit reshaped', () => {
         const before = layout([plotA, plotB]);
@@ -368,7 +391,7 @@ describe('unapplyDependents: who stands on a record that comes off the map', () 
         parcelLayout: { pool: box(15.9000, 15.9020), plots: [box(15.9000, 15.9010), box(15.9010, 15.9020)].map(geometry => ({ geometry, source: 'manual' })) } };
     const road = (proposalId, west, east, extra = {}) => ({ proposalId, goal: 'road-track', applied: true, createdAt: '2026-10-02T10:00:00.000Z',
         roadProposal: { definition: { polygon: box(west, east) } }, ...extra });
-    const options = { planOrder, area: turf.area, isApplied };
+    const options = { planOrder, turf, isApplied };
 
     it('names a later applied road in one of its plots, oldest first, and nothing parked, older or elsewhere', () => {
         const inStrip = road('road-in-strip', 15.9012, 15.9014);

@@ -123,9 +123,9 @@
                 'css/community-voting.css',
                 'css/base.css',
                 'css/layout.css',
-                'css/map.css?v=20261028-stack-focus',
+                'css/map.css?v=20261030-xray-solid',
                 'css/panels.css?v=20261027-panel-buttons',
-                'css/modals.css?v=20261029-no-epoch',
+                'css/modals.css?v=20261030-compare-agreements',
                 'css/parcel-sources.css',
                 'css/proposals.css?v=20261027-panel-buttons',
                 'css/grain-score.css?v=20261027-panel-buttons',
@@ -168,7 +168,7 @@
                 'css/agreement.css?v=20261027-agreement-tabs',
                 'css/agreement-dialog.css?v=20261027-panel-buttons',
                 'css/mobile-sheets.css?v=20261027-style',
-                'css/planning-views.css?v=20261029-compare-map',
+                'css/planning-views.css?v=20261029-loading-ring',
                 'css/three-sun.css',
                 'css/three-click-stack.css?v=20261027-stack-semantics',
                 'css/right-screen-panel.css',
@@ -443,7 +443,8 @@
             <button type="button" id="planning-views-button" class="map-shell-button" data-sheet-target="planning-views"
                 aria-controls="planning-views" aria-expanded="false" title="Buildings and massing" aria-label="Buildings and massing"
                 data-i18n-key="planningViews.title" data-i18n-attr="title,aria-label" hidden>
-                <!-- One cube per layer; a cube takes its layer's colour while that layer is on (css/planning-views.css). -->
+                <!-- One cube per layer; a cube takes its layer's colour while that layer is on (css/planning-views.css).
+                     While a shown layer loads, a third of the rim turns in its colour (js/planning/views.js paintLoading). -->
                 <svg class="planning-cubes" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
                     <g class="planning-cube planning-cube--existing"><polygon points="12,2.57 16.5,5.17 12,7.77 7.5,5.17"/><polygon class="planning-cube-left" points="7.5,5.17 12,7.77 12,12.81 7.5,10.21"/><polygon class="planning-cube-right" points="12,7.77 16.5,5.17 16.5,10.21 12,12.81"/></g>
                     <g class="planning-cube planning-cube--proposed"><polygon points="7,11.06 11.5,13.65 7,16.25 2.5,13.65"/><polygon class="planning-cube-left" points="2.5,13.65 7,16.25 7,21.29 2.5,18.69"/><polygon class="planning-cube-right" points="7,16.25 11.5,13.65 11.5,18.69 7,21.29"/></g>
@@ -555,10 +556,6 @@
                 </div>
                 <!-- Side by side comparison in the model view and on the map (js/three-compare.js, js/compare-on-map.js). -->
                 <div id="planning-views-compare" class="planning-compare" role="tabpanel" data-planning-tab-panel="compare" hidden>
-                    <label class="planning-compare-toggle">
-                        <input type="checkbox" id="planning-compare-enable">
-                        <span data-i18n-key="planningViews.compare.enable">Compare side by side</span>
-                    </label>
                     <div class="planning-compare-sides">
                         <label class="planning-source-field">
                             <span data-i18n-key="planningViews.compare.left">Left</span>
@@ -571,6 +568,11 @@
                             <select id="planning-compare-right" class="planning-layer-select"></select>
                         </label>
                     </div>
+                    <button type="button" id="planning-compare-enable" class="btn btn-primary planning-compare-toggle" aria-pressed="false">
+                        <i class="fa-solid fa-table-columns" aria-hidden="true"></i>
+                        <span class="planning-compare-toggle__label" data-i18n-key="planningViews.tabs.compare">Compare</span>
+                    </button>
+                    <div id="planning-compare-status" class="planning-compare-status" role="status" aria-live="polite" hidden></div>
                     <div class="planning-compare-note" hidden>
                         <p class="sheet-note" data-i18n-key="planningViews.compare.mapNote">On the map, each side draws its own buildings and permitted massing as footprints. Parcels, roads and parks show on both sides.</p>
                         <button type="button" id="planning-compare-open-model" class="cb-link" data-i18n-key="planningViews.openModel">Open 3D model view</button>
@@ -1878,11 +1880,11 @@
             'js/buildout-schedule.js',
             'js/buildout-simulation.js',
             'js/named-plans.js?v=20261029-buildout',
-            'js/plan-composition.js?v=20261029-schedule',
+            'js/plan-composition.js?v=20261029-compare-designs',
             'js/plan-workspace.js',
             'js/shared-plan-session.js',
             'js/plan-dialog.js?v=20261029-undated',
-            'js/lists-panel.js?v=20261029-row-preview',
+            'js/lists-panel.js?v=20261030-compare-agreements',
             'js/wipe-local-data.js',
             'js/world/world-entry-model.js?v=20261020-point-destinations',
             'data/boot-coverage.js',
@@ -1992,9 +1994,11 @@
             // and the client routing every building read through the backend.
             'js/building-extrusion.js',
             'js/footprint-provider.js',
-            'js/building-source-client.js',
+            'js/building-source-client.js?v=20261030-keep-truncated',
             // bundle:end parcel-data-clients
-            'js/map-core.js?v=20261009-map-credits',
+            // What each Buildings and massing role is still loading; the map's first fetches report to it.
+            'js/planning/loading.js',
+            'js/map-core.js?v=20261030-xray-radius',
             'js/user-management.js?v=20261020-modeled-totals',
             'js/site-intro.js',
             'js/map-controls.js?v=20261027-panel-buttons',
@@ -2011,19 +2015,20 @@
             'js/schelling/schelling-layer.js',
             'js/schelling/schelling-propose.js',
             'js/ui/busy-control.js',
+            'js/ui/file-download.js',
             'js/release-updates.js',
             'js/ui/app-updates.js',
             'js/ui/settings-panel.js',
             'js/ui/commands.js?v=20261027-station-inspection',
             'js/ui/map-shell.js',
             'js/ui/dock-clearance.js',
-            'js/planning/scene.js?v=20261021-envelopes',
+            'js/planning/scene.js?v=20261029-loading-ring',
             'js/planning/envelopes.js?v=20261021-envelopes',
             'js/planning/representations.js?v=20261020-qualified-inspection',
             'js/planning/source-proposal.js',
             'js/planning/feed.js',
             'js/planning/parcel-assessment.js?v=20261021-permitted-envelopes',
-            'js/planning/views.js?v=20261027-station-inspection',
+            'js/planning/views.js?v=20261029-loading-ring',
             'js/approval-link.js',
             'js/draft-link.js',
             'js/draft-preview.js?v=20261029-buildout',
@@ -2076,6 +2081,8 @@
             'js/parcels/ownership.js',
             'js/parcels/ownership-type.js',
             'js/parcels/ownership-highlight.js',
+            // The shared coordinate grid: parcels, clips and saved geometry (docs/geometry-tolerances.md).
+            'js/geometry-tolerances.js',
             'js/parcels/utils/geometry.js',
             'js/parcels/parcel-adjacency.js',
             'js/parcels/block-topology.js',
@@ -2084,7 +2091,7 @@
             'js/parcels/ingest.js',
             'js/parcels/presenter.js',
             'js/parcels/storage.js',
-            'js/parcels/source-health.js',
+            'js/parcels/source-health.js?v=20261030-area-limit',
             'js/parcels/schelling-grid.js',
             'js/parcels/custom-url-identity.js?v=20261019-source-identity',
             'js/parcels/estimated-source.js?v=20261020-local',
@@ -2126,7 +2133,6 @@
             'js/proposals/site-draft.js',
             'js/proposals/origin.js?v=20261020-qualified-origin',
             'js/proposals/parcel-arrangement.js',
-            'js/proposals/readjustment-contributions.js',
             'js/proposals/design-goals.js?v=20261020-canonical-goals',
             'js/proposals/authored-record.js?v=20261019-plot-provenance',
             'js/proposals/formation-depth.js?v=20261027-agreement-tabs',
@@ -2135,6 +2141,8 @@
             'js/proposals/corridor-levels.js',
             'js/map-edit-lock.js',
             'js/map-pick.js',
+            // What a building is for, by storey: the editor, layouts and Plan stats read it.
+            'js/building-use.js',
             'js/single-building-geometry.js',
             'js/freeform-placement.js',
             'js/on-map-placement.js',
@@ -2178,8 +2186,9 @@
             'js/footprint-geometry.js',
             'js/building-rule-geometry.js',
             'js/building-ground.js?v=20261028-ground-fences',
-            'js/freeform-land-take.js?v=20261027-occupied-parcels',
-            'js/freeform-land-take-review.js?v=20261027-source-occupancy',
+            'js/freeform-land-take.js?v=20261029-ground-before',
+            'js/freeform-ground-before.js',
+            'js/freeform-land-take-review.js?v=20261029-ground-replay',
             'js/building-surroundings-editor.js',
             'js/proposal-own-parcel.js',
             'js/proposals/area.js?v=20261020-complete-area',
@@ -2216,8 +2225,8 @@
             'js/click-stack/click-stack-hits.js?v=20261028-neighbours',
             'js/click-stack/click-stack-panel.js?v=20261029-selection',
             'js/buildout-clock.js?v=20261029-undated',
-            'js/compare-unapplied.js?v=20261029-compare-unapplied',
-            'js/three-compare.js?v=20261029-compare-unapplied',
+            'js/compare-unapplied.js?v=20261029-compare-status',
+            'js/three-compare.js?v=20261030-compare-agreements',
             'js/compare-on-map.js?v=20261029-compare-unapplied',
             'js/proposals/market-view.js?v=20261019-market-evidence',
             'js/proposals/parcel-set-relations.js?v=20261020-reference-relations',
@@ -2261,10 +2270,10 @@
             'js/agreement-ground.js?v=20261028-abstract-parties',
             'js/agreement-store.js',
             'js/agreement-dialog.js?v=20261028-abstract-parties',
-            'js/agreement-panel.js?v=20261028-abstract-parties',
+            'js/agreement-panel.js?v=20261030-compare-agreements',
             'js/agreement-list.js?v=20261027-agreement-tabs',
             'js/agreement-sync.js?v=20261028-abstract-parties',
-            'js/suggested-layouts-2d.js?v=20261028-lazy-floor-plans',
+            'js/suggested-layouts-2d.js?v=20261029-building-use',
             'js/proposals/replay-status.js',
             // bundle:end plans-agreements
             'js/proposals/sharing-routes.js?v=20261020-publication-copies',
@@ -2273,15 +2282,16 @@
             'js/proposals/data.js?v=20261029-no-epoch',
             'js/proposals/bootstrap.js?v=20261019-local-purchase',
             // bundle:start plan-analysis
-            'js/proposals/plan-yield.js?v=20261029-no-epoch',
+            'js/proposals/plan-yield.js?v=20261029-building-use',
+            'js/proposals/plan-units.js',
             'js/proposals/site-stats.js',
             'js/proposals/maintenance.js',
             'js/proposals/demolition-prefetch.js',
             'js/agreement-headless.js?v=20261028-abstract-parties',
             'js/plan-analysis.js',
-            'js/proposals/present-state.js',
+            'js/proposals/present-state.js?v=20261029-laid-out-units',
             'js/proposals/grain-score.js',
-            'js/proposals/plan-stats.js?v=20261029-no-epoch',
+            'js/proposals/plan-stats.js?v=20261030-compare-agreements',
             'js/parcel-coverage-debug.js',
             'js/ui/notice-queue.js',
             // bundle:end plan-analysis
@@ -2309,7 +2319,7 @@
             'js/proposals/apply/road.js',
             'js/proposals/apply/buildings.js',
             'js/proposals/apply/structures.js',
-            'js/proposals/apply/parcels.js?v=20261019-plot-provenance',
+            'js/proposals/apply/parcels.js?v=20261029-vertex-provenance',
             // bundle:end proposal-apply
             'js/proposal-manager.js',
             // bundle:start reparcellization

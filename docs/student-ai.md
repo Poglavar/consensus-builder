@@ -10,7 +10,8 @@ The session points to an ordinary immutable `plan/v1` revision and carries its e
 members. A published plan can be the starting point. Editing creates private revisions or forks
 through the existing authoring operations; it never mutates the published source. There is no
 second design format or special AI draft editor. A CID identifies content and does not require
-an IPFS upload. Saving to the session is private server storage; Share remains explicit publication.
+an IPFS upload. Saving to the session is private server storage; Share remains explicit server-only
+publication. Neither path uploads design or plan content to IPFS.
 
 The mutable session holds only the current revision, a version counter and editing control.
 Every save checks the expected version and the current controller atomically. Taking control
@@ -42,7 +43,15 @@ invitation confirms completion. Disconnect is separated from editing controls an
 
 The copied invitation is a private capability. Keep it out of public plan descriptions and links.
 The owner capability remains in the browser's private workspace storage. Revoking the invitation
-or disconnecting ends its access. Polling sends completed changes, not every mouse gesture.
+or disconnecting ends its access.
+
+While connected, the browser checks for a new accepted revision every four seconds. A changed
+revision replaces the connected members through the ordinary map transaction; it does not reload
+the page or move the camera. Moved objects appear at their new positions without an interpolated
+movement animation. The delay includes the next poll, network requests, ground binding and map
+application. Intermediate revisions may be skipped when several edits finish between polls.
+Background browser scheduling can delay checks; a synchronization failure pauses polling until
+recovery. No intermediate mouse gestures or partially completed MCP operations are streamed.
 
 ## Boundaries
 
@@ -57,10 +66,9 @@ or disconnecting ends its access. Polling sends completed changes, not every mou
 
 ## Optional browser-control trial
 
-The earlier route—an AI operating the student's exact existing tab—remains an option when the AI
-product's browser permissions allow it. That connection, its permission prompts and stopping the
-agent belong to the AI product. It is separate from the server session above. On the initial
-computer this route could not be established under the available privacy settings.
+An AI can also operate the student's existing tab when its browser permissions allow it. That
+connection, its permission prompts and stopping the agent belong to the AI product. It is separate
+from the server session above.
 
 Use the available computer and AI product, an ordinary existing map tab, and a disposable garden
 draft containing a bench, tree and path. Keep any unpublished real work out of the trial. The
@@ -97,5 +105,3 @@ operations, including granular design patches. Session version and control check
 browser and MCP saves. Existing standalone MCP authoring and preview/import remain available.
 The [accessible editing guide](accessible-map-editing.md) maps geometry controls to the underlying
 MCP primitives. Browser takeover remains a client capability, separate from this protocol.
-
-See [verification results](student-ai-verification.md) for targeted tests, live checks and remaining verification gaps.

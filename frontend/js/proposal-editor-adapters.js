@@ -374,20 +374,19 @@
         return { type: 'Feature', properties: {}, geometry: clone(geometry) };
     }
 
+    // Whether `candidate` stands wholly inside `site`: none of it left outside is ground. The same
+    // rule the apply refuses with (geometry-tolerances.js uncoveredBy + isGround), so a shape the
+    // editor saves is one the map applies, and cutting debris along a shared edge never refuses it.
     function geometryWithinSite(candidate, site) {
         const t = turfRef || global.turf;
+        const rule = global.GeometryTolerances
+            || (typeof require === 'function' ? require('./geometry-tolerances.js') : null);
         const candidateFeature = featureFromSite(candidate);
         const siteFeature = featureFromSite(site);
-        if (!t || typeof t.difference !== 'function' || !candidateFeature || !siteFeature) return false;
+        if (!t || !rule || !candidateFeature || !siteFeature) return false;
         try {
-            // Gaps can split one building into several pieces. Difference-null is exact
-            // containment, including shared boundaries and holes, without a distance tolerance.
-            const parts = candidateFeature.geometry.type === 'MultiPolygon'
-                ? candidateFeature.geometry.coordinates
-                : [candidateFeature.geometry.coordinates];
-            return parts.every(coordinates => t.difference({
-                type: 'Feature', properties: {}, geometry: { type: 'Polygon', coordinates }
-            }, siteFeature) === null);
+            const outside = rule.uncoveredBy(t, candidateFeature, [siteFeature], { site: 'proposal-editor-adapters.geometryWithinSite' });
+            return !rule.isGround(t, outside);
         } catch (_) { return false; }
     }
 

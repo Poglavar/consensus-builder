@@ -8,11 +8,21 @@
 })(typeof window !== 'undefined' ? window : globalThis, function (root) {
     'use strict';
     // A holder of less than half a percent of the owned ground is a sliver along a border, not a
-    // co-owner: dropped, and the other shares renormalised.
+    // co-owner: dropped, and the other shares renormalised. This is ownership policy, not noise.
     const MIN_SHARE = 0.005;
-    // Below this a source parcel is not under the piece at all: the floor formation-edit.js
-    // overlappingBaseIds uses for a piece's cadastral anchors, so holders and anchors agree.
-    const DEFAULT_MIN_OVERLAP_M2 = 1;
+
+    // Whether a source parcel is under the piece at all is the shared rule (geometry-tolerances.js
+    // isGround of their overlap on the shared clip), the rule formation-edit.js overlappingBaseIds
+    // uses for a piece's cadastral anchors, so holders and anchors agree.
+    function groundApi() {
+        return (root && root.GeometryTolerances)
+            || (typeof require === 'function' ? require('./geometry-tolerances.js') : null);
+    }
+
+    function arrangementApi() {
+        return (root && root.__parcelArrangement)
+            || (typeof require === 'function' ? require('./proposals/parcel-arrangement.js') : null);
+    }
 
     const isArea = value => typeof value === 'number' && Number.isFinite(value) && value >= 0;
 
@@ -31,7 +41,7 @@
      * @param sources the parcels it was formed from (Features)
      * @param ownerOf (source) => { ownerKey, displayName } | null — null for open ground or a parcel
      *   with no recorded owner; injected, so the apply path passes the app's own owner lookup
-     * @param options { turf, intersectionArea?(a, b) → m², area?(feature) → m², minOverlapM2? }
+     * @param options { turf }
      * @returns {{ owners: { ownerKey: string, displayName: string, share: number }[],
      *   openGroundShare: number }} owners sorted by share (largest first), shares summing to 1
      *   over the owned ground; an owner holding several sources is one entry. openGroundShare is
@@ -39,20 +49,15 @@
      */
     function ownersOf(plot, sources, ownerOf, options = {}) {
         if (typeof ownerOf !== 'function') throw new TypeError('ownersOf needs an ownerOf(source) lookup.');
-        const t = options.turf || root.turf || null;
-        const area = typeof options.area === 'function' ? options.area
-            : (t && typeof t.area === 'function' ? feature => t.area(feature) : null);
-        const intersectionArea = typeof options.intersectionArea === 'function' ? options.intersectionArea
-            : (t && typeof t.intersect === 'function' && area
-                ? (a, b) => { const hit = t.intersect(a, b); return hit ? area(hit) : 0; }
-                : null);
-        if (!area || !intersectionArea) throw new Error('ownersOf needs turf, or area and intersectionArea functions.');
-        const minOverlapM2 = isArea(options.minOverlapM2) ? options.minOverlapM2 : DEFAULT_MIN_OVERLAP_M2;
+        const t = options.turf || (root && root.turf) || null;
+        if (!t || typeof t.area !== 'function' || typeof t.intersect !== 'function') throw new Error('ownersOf needs turf.');
+        const area = feature => t.area(feature);
+        const ground = groundApi();
         const piece = asFeature(plot);
         if (!piece) throw new Error('ownersOf needs a polygon piece.');
         const pieceArea = area(piece);
         if (!isArea(pieceArea)) throw new Error('The area of the piece could not be measured.');
-        const box = t && typeof t.bbox === 'function' ? t.bbox(piece) : null;
+        const box = typeof t.bbox === 'function' ? t.bbox(piece) : null;
 
         const byOwner = new Map();
         let ownedM2 = 0;
@@ -64,9 +69,11 @@
             const ownerKey = holder.ownerKey === undefined || holder.ownerKey === null ? '' : String(holder.ownerKey).trim();
             if (!ownerKey) throw new Error('ownerOf returned a holder without an ownerKey.');
             if (box && disjoint(box, t.bbox(feature))) return;
-            const overlapM2 = intersectionArea(piece, feature);
+            // A clip that fails throws a typed ClipFailure rather than guessing a holder.
+            const overlap = arrangementApi().clipWith(t, 'intersect', piece, feature, { site: 'parcel-layout-ownership.ownersOf' });
+            if (!ground.isGround(t, overlap)) return;
+            const overlapM2 = area(overlap);
             if (!isArea(overlapM2)) throw new Error(`The overlap with a parcel of ${ownerKey} could not be measured.`);
-            if (overlapM2 <= 0 || overlapM2 < minOverlapM2) return;
             const entry = byOwner.get(ownerKey) || { ownerKey, displayName: '', areaM2: 0 };
             entry.areaM2 += overlapM2;
             if (!entry.displayName && holder.displayName) entry.displayName = String(holder.displayName);
@@ -85,5 +92,5 @@
         return { owners, openGroundShare };
     }
 
-    return { ownersOf, MIN_SHARE, DEFAULT_MIN_OVERLAP_M2 };
+    return { ownersOf, MIN_SHARE };
 });

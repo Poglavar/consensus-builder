@@ -1679,8 +1679,8 @@ needed logic to reconcile the two. The user's call: stop preserving the competin
       Cibona/Borovje battery incl. edits and reload cycles as the verdict.
 
    **Implementation status (2026-08-06): steps 1–2 BUILT and verified.**
-   - Pure engine: `clipPiecesByTaking` + `amendReparcellizationPlanByTaking` in
-     formation-edit.js (5 headless tests: split keeps carry fields and area accounting,
+   - Pure engine in formation-edit.js, since removed (pieces are now cut by the shared rule in
+     geometry-tolerances.js, docs/geometry-tolerances.md) (5 headless tests: split keeps carry fields and area accounting,
      full-take removes, untouched pieces return by reference, sub-floor grazes are rounding,
      plan-level wrapper is pure).
    - Amend pass: `_amendAppliedPlansByTaking` wired into all three takers — road apply/recut
@@ -1787,7 +1787,7 @@ needed logic to reconcile the two. The user's call: stop preserving the competin
      nothing; `editSeq > 0` + empty plan = materialized, not "needs apply".
    - *Government-plan roads* (the user: "government plan comes as polygons"): they have no
      centerline, so the road trim couldn't touch them — they now amend like a readjustment:
-     `clipPiecesByTaking` on the authored polygon claim AND the authored childFeatures.
+     the polygon claim AND the authored childFeatures are cut by the taking.
    - *Tunnel ruling recorded*: a tunnelled stretch DOES take the surface parcel (current
      behavior confirmed — the app does level tunnels only, no underground); taking = full
      `definition.polygon` stays correct.
@@ -2042,8 +2042,9 @@ projected-versus-geodesic ruler difference of §area-measurement-authority.
 ### The tradeoff
 
 **Leave the replay in the client** (today): applying works offline and without the server knowing;
-the most intricate logic in the app stays where it is. Cost: the client keeps a geometry engine,
-coverage is computed twice by two rulers, and the O(n²) live-fabric overlap check exists only
+the most intricate logic in the app stays where it is. Cost: the client keeps a geometry engine
+(the server's `/parcels/under` now answers candidates only, so coverage is the client's alone), and
+the O(n²) live-fabric overlap check exists only
 because a client-derived partition cannot be trusted to be one.
 
 **Move the replay to the server**: the fabric becomes a served layer — base cadastre plus the

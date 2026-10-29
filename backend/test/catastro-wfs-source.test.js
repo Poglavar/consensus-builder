@@ -78,7 +78,10 @@ describe('Spanish cadastral GML WFS', () => {
         expect(fetchImpl).toHaveBeenCalledOnce();
         expect(new URL(fetchImpl.mock.calls[0][0]).searchParams.get('SRSNAME')).toBe('EPSG::25831');
     });
-    it.each([gml({ matched: 2 }), gml({ returned: 2 }), gml({ key: 'transport-row' }), '<ows:ExceptionReport xmlns:ows="http://www.opengis.net/ows/1.1"><ows:Exception exceptionCode="OperationProcessingFailed">No se ha encontrado</ows:Exception></ows:ExceptionReport>'])('rejects truncated, inconsistent, invalid-ID and HTTP200 exception collections', async body => {
+    it.each([gml({ matched: 2 })])('rejects a truncated collection as over the area limit', async body => {
+        await expect(createCatastroWfsParcelSource(descriptor, { fetchImpl: async () => new Response(body) }).queryBounds(bounds)).rejects.toMatchObject({ status: 422, code: 'parcel-source-area-limit' });
+    });
+    it.each([gml({ returned: 2 }), gml({ key: 'transport-row' }), '<ows:ExceptionReport xmlns:ows="http://www.opengis.net/ows/1.1"><ows:Exception exceptionCode="OperationProcessingFailed">No se ha encontrado</ows:Exception></ows:ExceptionReport>'])('rejects inconsistent, invalid-ID and HTTP200 exception collections', async body => {
         await expect(createCatastroWfsParcelSource(descriptor, { fetchImpl: async () => new Response(body) }).queryBounds(bounds)).rejects.toMatchObject({ code: 'parcel-source-unavailable' });
     });
     it('reports absence only from an explicit complete empty collection', async () => {

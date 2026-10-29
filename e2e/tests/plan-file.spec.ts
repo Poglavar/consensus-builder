@@ -18,7 +18,7 @@ test.beforeEach(async ({ page }) => {
   await page.evaluate(() => { (window as any).MapHighlight = { color: '#469973' }; });
   for (const file of ['js/app-diagnostics.js', 'vendor/noble-hashes-1.8.0/sha256.js', 'vendor/ipfs-file-cid/ipfs-file-cid.js', 'js/cid.js',
     'js/proposals/authored-record.js', 'js/proposals/formation-depth.js', 'js/design-record.js', 'js/plan-record.js',
-    'js/plan-file.js', 'js/data-source.js', 'js/ui/busy-control.js', 'js/ui/modal-escape.js', 'js/ui/dialogs.js', 'js/proposals/dialog-share.js']) {
+    'js/plan-file.js', 'js/data-source.js', 'js/ui/busy-control.js', 'js/ui/file-download.js', 'js/ui/modal-escape.js', 'js/ui/dialogs.js', 'js/proposals/dialog-share.js']) {
     await page.addScriptTag({ path: path.join(root, file) });
   }
   await page.evaluate(() => {
@@ -183,7 +183,8 @@ for (const [label, reference, expectedUrl] of [
     for await (const chunk of stream!) chunks.push(Buffer.from(chunk));
     const file = JSON.parse(Buffer.concat(chunks).toString());
     expect(requests).toEqual([expectedUrl]);
-    expect(download.suggestedFilename()).toBe('plan.ugt.json');
+    // Named after the plan's title; this one has the default, "My plan".
+    expect(download.suggestedFilename()).toBe('my-plan.ugt.json');
     expect(file.designs[0].content.geometry.buildings[0].properties.modelUrl).toBe('data:model/gltf-binary;base64,' + glb.toString('base64'));
     expect(await page.evaluate(file => { const w = window as any; return w.PlanFile.parse(JSON.stringify(file)).schema; }, file)).toBe('ugt-plan-file/v1');
     expect(await page.evaluate(() => (window as any).sample.geometry.buildings[0].properties.modelUrl)).toBe(reference);
@@ -232,7 +233,7 @@ test('optional diagnostic sending localizes confirmation and outcomes and keeps 
       w.finishDiagnosticSend = () => resolve({ ok: true, json: async () => ({ accepted: JSON.parse(options.body).entries.length }) });
     }) : fetch(url, options);
   });
-  for (const file of ['js/app-diagnostics.js', 'js/ui/busy-control.js']) await page.addScriptTag({ path: path.join(root, file) });
+  for (const file of ['js/app-diagnostics.js', 'js/ui/busy-control.js', 'js/ui/file-download.js']) await page.addScriptTag({ path: path.join(root, file) });
   await loadDiagnosticLanguages(page);
   await page.evaluate(() => {
     const w = window as any; w.i18n.setLanguage('hr', { persist: false });

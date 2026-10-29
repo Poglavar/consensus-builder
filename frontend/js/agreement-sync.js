@@ -138,7 +138,6 @@
                 const parcels = [...(body.missing || []), ...(body.extra || [])].join(', ');
                 return t('agreement.publish.errors.inputsDifferFromBinding', 'The agreement’s land is not the land its designs take on the server ({{parcels}}). Edit the agreement on the current map and propose it again.', { parcels });
             }
-            if (code === 'pinning-unconfigured') return t('agreement.publish.errors.pinningUnconfigured', 'This server cannot pin published agreements yet (pinning is not configured).');
             if (code === 'deadline-past') return t('agreement.publish.errors.deadlinePast', 'The agreement’s deadline has passed. Edit the deadline and propose it again.');
             const reason = (body && body.error) || `HTTP ${status}`;
             return t('agreement.publish.errors.refused', 'The server refused this agreement: {{reason}}', { reason });
@@ -210,9 +209,8 @@
         }
 
         /**
-         * Proposes a local agreement: publishes each design (a parcel layout is pinned and sent with the
-         * agreement, which indexes it), pins the agreement/v1 object, indexes it and marks the record
-         * published. The caller checks the agreement still matches the map (AgreementGround.check).
+         * Proposes a local agreement: publishes each design, addresses its plan and the agreement/v1
+         * object, indexes the agreement with its plan and marks the record published. The caller checks the agreement still matches the map (AgreementGround.check).
          * Throws an Error with `code` and a translated `message`; a guest without a name gets
          * `cancelled: true`.
          * @returns {Promise<{ cid, row, link }>}
@@ -249,7 +247,6 @@
                     plan?.content.view || win.MapShare.capture(win));
                 plan = { cid: cidApi().cidOfObject(planContent), content: planContent };
             }
-            await win.DesignSync.pinObject('plan', plan.content);
             agreement = store().save({ ...agreement, plan });
 
             const parcelSourceId = win.DesignSync.parcelSourceIdOf(agreement.city);
@@ -262,16 +259,7 @@
                     parcels: agreement.inputs.parcels.map(parcel => (parcelSourceId ? { ...parcel, parcelSourceId } : parcel))
                 }
             }, proposalId => (cids.has(proposalId) ? cids.get(proposalId) : null));
-            let cid;
-            try {
-                cid = (await win.DesignSync.pinObject('agreement', content)).cid;
-            } catch (error) {
-                // The courier's refusal, worded for an agreement.
-                if (error && (error.body || error.code === 'cid-mismatch')) {
-                    throw failure(error.code, refusalMessage(error.status || 0, error.body || { code: error.code }), { status: error.status, body: error.body });
-                }
-                throw error;
-            }
+            const { cid } = win.DesignSync.addressObject(content);
             const response = await request('POST', '/agreements', { cid, content, plan });
             if (!response.ok && response.status !== 409) {
                 const code = (response.body && response.body.code) || `http-${response.status}`;

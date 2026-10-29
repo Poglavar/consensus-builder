@@ -5,7 +5,7 @@ import { VectorTile, classifyRings } from '@mapbox/vector-tile';
 import { PbfReader } from 'pbf';
 import { bbox as geometryBbox, bboxPolygon, booleanIntersects, feature as geoFeature, intersect, multiPolygon, union } from '@turf/turf';
 import { HttpError } from '../utils/helpers.js';
-import { providerHttpError, upstreamError, validateBounds, validateGeometry } from './source-contract.js';
+import { providerHttpError, upstreamError, areaLimitError, validateBounds, validateGeometry } from './source-contract.js';
 import { geometryParcelFeature, parseGeometryParcelId, geometryLookupBounds, GEOMETRY_IDENTITY_KIND } from './geometry-identity.js';
 import { OVERLAP_GROUND_POLICY, withOverlapGround } from './overlap-ground.js';
 import { createNativeInteriorTileSource } from './vector-tile-native-source.js';
@@ -204,7 +204,7 @@ export function createVectorTileParcelSource(descriptor, { fetchImpl = globalThi
         const byKey = new Map();
         const add = async list => {
             const fresh = list.filter(([x, y]) => !loaded.has(`${x},${y}`));
-            if (loaded.size + fresh.length > maxTiles) throw upstreamError('Parcel query needs more tiles than allowed; use a smaller area.');
+            if (loaded.size + fresh.length > maxTiles) throw areaLimitError('Parcel query needs more tiles than allowed; use a smaller area.');
             const results = await load(fresh);
             fresh.forEach(([x, y], index) => {
                 loaded.set(`${x},${y}`, true);
@@ -221,7 +221,7 @@ export function createVectorTileParcelSource(descriptor, { fetchImpl = globalThi
         // Follow every cut of a selected parcel into the neighbouring tile until all of them close.
         for (;;) {
             const selected = parcelsInView();
-            if (selected.length > maxFeatures) throw upstreamError('Parcel query exceeds the parcel limit; use a smaller area.');
+            if (selected.length > maxFeatures) throw areaLimitError('Parcel query exceeds the parcel limit; use a smaller area.');
             const needed = new Map();
             for (const parts of selected) for (const fragment of parts) for (const [, , dx, dy] of cutSides(fragment, extent)) {
                 const x = fragment.x + dx, y = fragment.y + dy;

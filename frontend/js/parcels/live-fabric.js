@@ -10,16 +10,6 @@
 })(typeof window !== 'undefined' ? window : globalThis, function liveParcelFabricFactory(root) {
     'use strict';
 
-    const GEOMETRY_EPSILON_M2 = 0.01;
-    // Area accounting compares the sum of a parcel's pieces with the parcel itself. The arrangement
-    // drops pieces under parcel-arrangement.js MIN_PIECE_M2 (0.25 m²) as clipper artifacts, so a
-    // parcel may legitimately come back a few slivers short; one square metre is that budget, two
-    // orders of magnitude under any hole a user could see and four under the incident that
-    // motivated the invariant. One part per million covers planar-versus-geodesic rounding.
-    const COVERAGE_TOLERANCE_M2 = 1;
-    const RELATIVE_AREA_TOLERANCE = 1e-6;
-    // A replacement vertex this close to its parcel's boundary is on the boundary.
-    const VERTEX_TOLERANCE_M = 0.02;
     const CADASTRE_RELEASE_KINDS = new Set([
         'cadastral-ground-release',
         'repository-reset',
@@ -32,6 +22,12 @@
     // mutation methods, and in clock-checked slices by the boot replay (mutation.*Steps).
     const workSlicer = (root && root.__workSlicer)
         || (typeof require === 'function' ? require('../work-slicer.js') : null);
+    // Immutable cadastral facts are kept on the shared coordinate grid, whoever seeds them.
+    const geometryGrid = (root && root.GeometryTolerances)
+        || (typeof require === 'function' ? require('../geometry-tolerances.js') : null);
+    // A replacement vertex within the one noise value (geometry-tolerances.js NOISE_M) of its
+    // parcel's boundary is on the boundary.
+    const VERTEX_TOLERANCE_M = geometryGrid.NOISE_M;
     // One collator for every delta sort: localeCompare with options builds a collator per call,
     // which made sorting a whole-cadastre delta (~6,000 ids) a 185 ms task.
     const ID_COLLATOR = new Intl.Collator(undefined, { numeric: true });
@@ -382,6 +378,22 @@
             return [];
         }
 
+        // The length of every ring of a feature in ground metres (equirectangular at each edge's
+        // latitude; it sizes a noise budget, so the approximation is ample).
+        function boundaryLengthM(feature) {
+            let total = 0;
+            ringsOf(feature).forEach(ring => {
+                for (let i = 1; i < (Array.isArray(ring) ? ring.length : 0); i += 1) {
+                    const [x0, y0] = ring[i - 1];
+                    const [x1, y1] = ring[i];
+                    const dx = (x1 - x0) * 111320 * Math.cos(((y0 + y1) / 2) * Math.PI / 180);
+                    const dy = (y1 - y0) * 110540;
+                    total += Math.sqrt(dx * dx + dy * dy);
+                }
+            });
+            return total;
+        }
+
         function verticesOf(feature) {
             const out = [];
             ringsOf(feature).forEach(ring => {
@@ -482,8 +494,10 @@
         }
 
         // Yields after each piece and each vertex tested, so a sliced replacement checks its pieces
-        // in short slices; `replaceCadastreScope` runs it to completion in one go.
-        function* validateReplacementSteps(draft, scope, replacements) {
+        // in short slices; `replaceCadastreScope` runs it to completion in one go. `standing` holds
+        // pieces already in the fabric: every write that put them there ran this check, so their
+        // vertices are not tested again; they still count in their group's area balance.
+        function* validateReplacementSteps(draft, scope, replacements, standing = null) {
             if (!geometry?.area || !geometry?.booleanPointInPolygon) {
                 const error = new Error('Geometry operations are required to validate a cadastral replacement.');
                 error.code = 'live-fabric-geometry-unavailable';
@@ -542,19 +556,31 @@
 
             const boundaryCache = new Map();
             const factAreaByGroup = new Map();
+            const factBoundaryByGroup = new Map();
             const pieceAreaByGroup = new Map();
             scopeIds.forEach(id => {
                 const group = find(id);
                 factAreaByGroup.set(group, (factAreaByGroup.get(group) || 0) + measuredArea(facts.get(id)));
+                factBoundaryByGroup.set(group, (factBoundaryByGroup.get(group) || 0) + boundaryLengthM(facts.get(id)));
             });
             for (const feature of replacements) {
                 const provenance = explicitCadastreIds(feature);
                 const group = find(provenance[0]);
-                const areaM2 = measuredArea(feature);
+                const hosts = provenance.map(id => facts.get(id));
+                // A piece standing partly on open ground (it carries ground ids too) counts only its
+                // part on its parcels: the rest lies on the open-ground host, which has no immutable
+                // fact to check a vertex against, so its vertices are not tested.
+                const onOpenGround = explicitGroundIds(feature).length > 0;
+                const areaM2 = onOpenGround
+                    ? measuredArea(feature) - measuredArea(geometryGrid.uncoveredBy(geometry, feature, hosts, { site: 'live-fabric.openGroundPiece' }))
+                    : measuredArea(feature);
                 pieceAreaByGroup.set(group, (pieceAreaByGroup.get(group) || 0) + areaM2);
+                if (onOpenGround || (standing && standing.has(feature))) {
+                    yield;
+                    continue;
+                }
                 // A vertex beyond every declared parcel's boundary is ground the replacement does
                 // not own. Shared edges and clipper drift sit within VERTEX_TOLERANCE_M.
-                const hosts = provenance.map(id => facts.get(id));
                 if (hosts.length === 1 && isIdentityOfFact(feature, hosts[0])) {
                     metrics.identityReplacements += 1;
                     yield;
@@ -582,7 +608,10 @@
             });
             factAreaByGroup.forEach((factM2, group) => {
                 const pieceM2 = pieceAreaByGroup.get(group) || 0;
-                const toleranceM2 = COVERAGE_TOLERANCE_M2 + factM2 * RELATIVE_AREA_TOLERANCE;
+                // The area budget is derived from the one noise value (geometry-tolerances.js
+                // NOISE_M): a debris strip that wide along every edge of the group's parcels. More
+                // than that missing or doubled is a hole or an overlap, not cutting debris.
+                const toleranceM2 = geometryGrid.NOISE_M * (factBoundaryByGroup.get(group) || 0);
                 const deltaM2 = pieceM2 - factM2;
                 metrics.coverageChecks += 1;
                 if (Math.abs(deltaM2) > metrics.worstCoverageDeltaM2) metrics.worstCoverageDeltaM2 = Math.abs(deltaM2);
@@ -796,7 +825,8 @@
             // a replay's reset re-seeds every fact its ground load already seeded.
             function* seedCadastreSteps(features) {
                 assertActive(draft);
-                for (const raw of Array.isArray(features) ? features : []) {
+                for (const unsnapped of Array.isArray(features) ? features : []) {
+                    const raw = unsnapped && unsnapped.type === 'Feature' && unsnapped.geometry ? geometryGrid.snapFeature(unsnapped) : unsnapped;
                     const cadastralId = raw && raw.type === 'Feature' && raw.geometry ? featureId(raw) : '';
                     const existingFact = cadastralId ? draft.data.cadastreFacts.get(cadastralId) : null;
                     let fact = existingFact;
@@ -870,6 +900,60 @@
                 return Array.from(draft.changedIds);
             }
 
+            // The partition check a replacement runs (validateReplacementSteps), without replacing
+            // anything: the pieces over `cadastreIds` must tile those parcels' immutable ground.
+            // `change` is a write the caller is about to make (`remove` ids, then `add` features),
+            // checked as if made, so a formation is refused before it writes. The scope is widened
+            // to every parcel a piece in it also occupies (a merged plot joins its parcels), so the
+            // check always covers whole pieces; it reaches only as far as pieces span parcels.
+            function* checkCadastreScopeSteps(cadastreIds, change = {}) {
+                assertActive(draft);
+                const removed = new Set(Array.from(change.remove || []).map(normalizeId).filter(Boolean));
+                const added = new Map();
+                for (const raw of Array.isArray(change.add) ? change.add : []) {
+                    connectedFeatures(raw).forEach(feature => {
+                        // Two pieces under one id: writing them, the later would silently replace the earlier.
+                        if (added.has(featureId(feature))) {
+                            const error = new Error(`Formed pieces share the id ${featureId(feature)}.`);
+                            error.code = 'duplicate-live-parcel-id';
+                            error.parcelId = featureId(feature);
+                            throw error;
+                        }
+                        added.set(featureId(feature), feature);
+                    });
+                    yield;
+                }
+                const addedByCadastre = new Map();
+                added.forEach(feature => explicitCadastreIds(feature).forEach(id => {
+                    if (!addedByCadastre.has(id)) addedByCadastre.set(id, []);
+                    addedByCadastre.get(id).push(feature);
+                }));
+                const scope = new Set();
+                const queue = [];
+                const enter = id => { if (id && !scope.has(id)) { scope.add(id); queue.push(id); } };
+                Array.from(cadastreIds || []).map(normalizeId).forEach(enter);
+                const pieces = new Map();
+                const take = feature => {
+                    const id = featureId(feature);
+                    if (pieces.has(id)) return;
+                    pieces.set(id, feature);
+                    explicitCadastreIds(feature).forEach(enter);
+                };
+                while (queue.length) {
+                    const cadastreId = queue.pop();
+                    (draft.data.byCadastreId.get(cadastreId) || new Set()).forEach(id => {
+                        if (!removed.has(id) && !added.has(id)) take(draft.data.byId.get(id));
+                    });
+                    (addedByCadastre.get(cadastreId) || []).forEach(take);
+                }
+                yield;
+                assertActive(draft);
+                // Only the added pieces have vertices to test; the standing ones count by area.
+                const standing = new Set(Array.from(pieces.values()).filter(feature => !added.has(featureId(feature))));
+                yield* validateReplacementSteps(draft, scope, Array.from(pieces.values()), standing);
+                return { cadastreIds: Array.from(scope), pieces: pieces.size };
+            }
+
             const mutation = {
                 // `*Steps` hand out the step function itself, for a caller that runs it in slices
                 // (work-slicer.js runSliced) or folds it into its own steps (`yield*`).
@@ -892,6 +976,10 @@
                     return workSlicer.runToCompletion(replaceCadastreScopeSteps(cadastreIds, features));
                 },
                 replaceCadastreScopeSteps,
+                checkCadastreScope(cadastreIds, change) {
+                    return workSlicer.runToCompletion(checkCadastreScopeSteps(cadastreIds, change));
+                },
+                checkCadastreScopeSteps,
                 releaseCadastreScope(cadastreIds, reason, config = {}) {
                     assertActive(draft);
                     const scope = new Set(Array.from(cadastreIds || []).map(normalizeId).filter(Boolean));
@@ -1081,5 +1169,5 @@
         });
     }
 
-    return Object.freeze({ createLiveParcelFabric, featureId, explicitCadastreIds, explicitGroundIds, GEOMETRY_EPSILON_M2 });
+    return Object.freeze({ createLiveParcelFabric, featureId, explicitCadastreIds, explicitGroundIds });
 });

@@ -59,12 +59,6 @@ describe('base-parcel ancestry', () => {
         expect(anc[0].id).toBe('HR-339270-823/1');
     });
 
-    it('ignores shared-border slivers', () => {
-        const base = baseParcels();
-        const anc = planOrder.computeBaseAncestry(byId(97).footprint, base, { minAreaM2: 1e9 });
-        expect(anc).toEqual([]);
-    });
-
     it('repairs an exact-boundary topology failure instead of counting the parcel as absent', () => {
         // Regression for UPU Borovje: polygon-clipping could not close the intersection ring for
         // cadastral parcel 1791/69. The old catch returned 0, dropping 55,702 m2 and turning full
@@ -100,7 +94,9 @@ describe('base-parcel ancestry', () => {
         };
         try {
             expect(planOrder.intersectionArea(footprint, parcel)).toBe(55702.2);
-            expect(exactAttempts).toBe(1);
+            // The shared clip (parcel-arrangement.js clipWith) tries the standard grid and its two
+            // coarser retries before the buffer repair answers.
+            expect(exactAttempts).toBe(3);
         } finally {
             globalThis.turf = realTurf;
         }
@@ -133,13 +129,11 @@ describe('base-parcel ancestry', () => {
     });
 });
 
-// The ancestry floor separates a REAL take from coordinate-rounding noise, and it belongs at the
-// measured noise, not at a judgement about what size of take is worth registering. Measured on
-// Zagreb fabric (2026-08-08): rounding noise between abutting cadastral parcels tops out near
-// 0.1 m², while a corridor genuinely covering 0.755 m² of parcel 6804/5 was DISCARDED by the old
-// 2 m² floor — so the road never cut that parcel and its corridor lay on ground someone else still
-// owned, which then made the parcel unusable (taking it whole took road surface with it).
-describe('ancestry floor sits at the measured noise, not above real takes', () => {
+// Ancestry separates a REAL take from cutting debris by the one shared rule (geometry-tolerances.js
+// isGround: wider than the measured 1 mm noise). A corridor genuinely covering 0.755 m² of parcel
+// 6804/5 was DISCARDED by an old 2 m² floor — so the road never cut that parcel and its corridor lay
+// on ground someone else still owned.
+describe('ancestry tells a real take from debris by the shared ground rule', () => {
     const LAT = 45.80, LON = 15.96;
     const mLat = m => m / 111320;
     const mLon = m => m / (111320 * Math.cos(LAT * Math.PI / 180));
@@ -163,13 +157,26 @@ describe('ancestry floor sits at the measured noise, not above real takes', () =
         expect(anc.map(a => a.id)).toEqual(['HR-339270-6804/5']);
     });
 
-    it('still ignores float-scale noise along a shared border', () => {
-        // 2.5 mm of overlap along the same 40 m border: ~0.1 m², the measured noise ceiling.
+    it('ignores cutting debris along a shared border, and registers anything wider than the noise', () => {
+        // 0.4 mm of overlap along the same 40 m border: cutting debris, narrower than the 1 mm noise.
+        const debris = rect(-40, 0, 0.0004, 40);
+        expect(planOrder.computeBaseAncestry(debris, [{ id: 'HR-339270-6804/5', feature: parcel() }])).toEqual([]);
+        // 2.5 mm (~0.1 m²) used to fall under the 0.25 m² floor; it is wider than the noise, so it is a take.
         const neighbour = rect(-40, 0, 0.0025, 40);
-        const overlap = overlapOf(parcel(), neighbour);
-        expect(overlap).toBeLessThan(0.25);
-        const anc = planOrder.computeBaseAncestry(neighbour, [{ id: 'HR-339270-6804/5', feature: parcel() }]);
-        expect(anc).toEqual([]);
+        expect(overlapOf(parcel(), neighbour)).toBeLessThan(0.25);
+        expect(planOrder.computeBaseAncestry(neighbour, [{ id: 'HR-339270-6804/5', feature: parcel() }]).map(a => a.id))
+            .toEqual(['HR-339270-6804/5']);
+    });
+
+    it('widens to the design\'s own toleranceM, as binding does', () => {
+        const corridor = rect(-20, 0, 0.02, 40); // reaches 2 cm into the parcel
+        const parcels = [{ id: 'HR-339270-6804/5', feature: parcel() }];
+        expect(planOrder.computeBaseAncestry(corridor, parcels, { toleranceM: 0.01 })).toHaveLength(1);
+        expect(planOrder.computeBaseAncestry(corridor, parcels, { toleranceM: 0.05 })).toEqual([]);
+        // The covered area still counts the overlap the ancestry leaves out.
+        const coverage = planOrder.measureCoverage(corridor, parcels, { toleranceM: 0.05 });
+        expect(coverage.hits).toEqual([]);
+        expect(coverage.coveredArea).toBeCloseTo(overlapOf(parcel(), corridor), 2); // the shared clip's grid moves it < 0.01 m²
     });
 });
 

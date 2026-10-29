@@ -232,7 +232,9 @@ describe('an honest partition still passes', () => {
         globalThis.turf = fragileTurf;
         window.turf = fragileTurf;
         window.__parcelArrangement = {
-            clip: vi.fn((operation, left, right) => arrangement.clip(operation, left, right))
+            clip: vi.fn((operation, left, right) => arrangement.clip(operation, left, right)),
+            // The uncovered-footprint test (geometry-tolerances.js uncoveredBy) runs the shared clip too.
+            clipWith: (...args) => arrangement.clipWith(...args)
         };
 
         const result = resolve();

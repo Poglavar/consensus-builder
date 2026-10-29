@@ -1,0 +1,6415 @@
+{
+ "decree": "Decreto Distrital 253 de 2026, Anexo 36.1 \"Identificación de polígonos y predios\"",
+ "source": "https://www.bogotajuridica.gov.co/sisjur/normas/Norma1.jsp?i=193583",
+ "layer": 15,
+ "builtAt": "2026-10-29",
+ "polygons": {
+  "35771": {
+   "id": 1,
+   "legend": "C/N/A",
+   "storeys": null,
+   "decision": "N/A",
+   "lots": [
+    "108102001088"
+   ],
+   "condition": "AE: Lagos de Torca Actuación Estratégica Lagos de Torca"
+  },
+  "35773": {
+   "id": 2,
+   "legend": "C/4",
+   "storeys": 4,
+   "decision": "4",
+   "lots": [
+    "005617052003"
+   ],
+   "condition": null
+  },
+  "35776": {
+   "id": 3,
+   "legend": "C/4",
+   "storeys": 4,
+   "decision": "4",
+   "lots": [
+    "005683081001"
+   ],
+   "condition": "BIEN FISCAL"
+  },
+  "35778": {
+   "id": 4,
+   "legend": "C/4",
+   "storeys": 4,
+   "decision": "4",
+   "lots": [
+    "005613068001"
+   ],
+   "condition": null
+  },
+  "35779": {
+   "id": 5,
+   "legend": "C/5",
+   "storeys": 5,
+   "decision": "5",
+   "lots": [
+    "009257002015"
+   ],
+   "condition": "BIEN FISCAL"
+  },
+  "35780": {
+   "id": 6,
+   "legend": "C/3",
+   "storeys": 3,
+   "decision": "3",
+   "lots": [
+    "006402057001"
+   ],
+   "condition": "ZONA EQUIPAMIENTO COMUNAL PÚBLICO Actuación Estratégica Distrito Aeroportuario Fontibón"
+  },
+  "35781": {
+   "id": 7,
+   "legend": "C/N/A",
+   "storeys": null,
+   "decision": "N/A",
+   "lots": [
+    "005305032002"
+   ],
+   "condition": "No aplica - Infraestructura de Servicios Públicos"
+  },
+  "35782": {
+   "id": 8,
+   "legend": "C/4",
+   "storeys": 4,
+   "decision": "4",
+   "lots": [
+    "005102033002"
+   ],
+   "condition": "BIC"
+  },
+  "35783": {
+   "id": 9,
+   "legend": "C/5",
+   "storeys": 5,
+   "decision": "5",
+   "lots": [
+    "009207092004"
+   ],
+   "condition": "PI/PRM"
+  },
+  "35784": {
+   "id": 10,
+   "legend": "C/7",
+   "storeys": 7,
+   "decision": "7",
+   "lots": [
+    "009248007009"
+   ],
+   "condition": null
+  },
+  "35786": {
+   "id": 11,
+   "legend": "C/3",
+   "storeys": 3,
+   "decision": "3",
+   "lots": [
+    "009263079008"
+   ],
+   "condition": null
+  },
+  "35788": {
+   "id": 12,
+   "legend": "C/5",
+   "storeys": 5,
+   "decision": "5",
+   "lots": [
+    "009111043002"
+   ],
+   "condition": null
+  },
+  "35792": {
+   "id": 13,
+   "legend": "C/5",
+   "storeys": 5,
+   "decision": "5",
+   "lots": [
+    "005608049001"
+   ],
+   "condition": "ZONA EQUIPAMIENTO COMUNAL PÚBLICO"
+  },
+  "35793": {
+   "id": 14,
+   "legend": "C/6",
+   "storeys": 6,
+   "decision": "6",
+   "lots": [
+    "009257002002"
+   ],
+   "condition": "ZONA EQUIPAMIENTO COMUNAL PÚBLICO Actuación Estratégica, adoptada Ciudadela educativa y del cuidado"
+  },
+  "35794": {
+   "id": 15,
+   "legend": "C/5",
+   "storeys": 5,
+   "decision": "5",
+   "lots": [
+    "009102014052"
+   ],
+   "condition": "PI/PRM"
+  },
+  "35795": {
+   "id": 16,
+   "legend": "C/4",
+   "storeys": 4,
+   "decision": "4",
+   "lots": [
+    "009265003002"
+   ],
+   "condition": null
+  },
+  "35796": {
+   "id": 17,
+   "legend": "C/4",
+   "storeys": 4,
+   "decision": "4",
+   "lots": [
+    "009235087024"
+   ],
+   "condition": null
+  },
+  "35797": {
+   "id": 18,
+   "legend": "C/4",
+   "storeys": 4,
+   "decision": "4",
+   "lots": [
+    "008523029002"
+   ],
+   "condition": null
+  },
+  "35798": {
+   "id": 19,
+   "legend": "C/4",
+   "storeys": 4,
+   "decision": "4",
+   "lots": [
+    "005617049001"
+   ],
+   "condition": "BIEN FISCAL"
+  },
+  "35799": {
+   "id": 20,
+   "legend": "C/N/A",
+   "storeys": null,
+   "decision": "N/A",
+   "lots": [
+    "005649061003"
+   ],
+   "condition": "No aplica - Infraestructura de Servicios Públicos"
+  },
+  "35800": {
+   "id": 21,
+   "legend": "C/6",
+   "storeys": 6,
+   "decision": "6",
+   "lots": [
+    "005605025076"
+   ],
+   "condition": null
+  },
+  "35801": {
+   "id": 22,
+   "legend": "C/4",
+   "storeys": 4,
+   "decision": "4",
+   "lots": [
+    "005684029001"
+   ],
+   "condition": "ZONA EQUIPAMIENTO COMUNAL PÚBLICO"
+  },
+  "35803": {
+   "id": 23,
+   "legend": "C/5",
+   "storeys": 5,
+   "decision": "5",
+   "lots": [
+    "009260020002"
+   ],
+   "condition": null
+  },
+  "35804": {
+   "id": 24,
+   "legend": "C/5",
+   "storeys": 5,
+   "decision": "5",
+   "lots": [
+    "009210002003"
+   ],
+   "condition": null
+  },
+  "35805": {
+   "id": 25,
+   "legend": "C/5",
+   "storeys": 5,
+   "decision": "5",
+   "lots": [
+    "008521032020"
+   ],
+   "condition": null
+  },
+  "35807": {
+   "id": 26,
+   "legend": "C/5",
+   "storeys": 5,
+   "decision": "5",
+   "lots": [
+    "005615025003"
+   ],
+   "condition": null
+  },
+  "35808": {
+   "id": 27,
+   "legend": "C/6",
+   "storeys": 6,
+   "decision": "6",
+   "lots": [
+    "005106021001"
+   ],
+   "condition": null
+  },
+  "35809": {
+   "id": 28,
+   "legend": "C/5",
+   "storeys": 5,
+   "decision": "5",
+   "lots": [
+    "005615026001"
+   ],
+   "condition": "ZONA EQUIPAMIENTO COMUNAL PÚBLICO"
+  },
+  "35810": {
+   "id": 29,
+   "legend": "C/5",
+   "storeys": 5,
+   "decision": "5",
+   "lots": [
+    "005608050096"
+   ],
+   "condition": "ZONA EQUIPAMIENTO COMUNAL PÚBLICO"
+  },
+  "35811": {
+   "id": 30,
+   "legend": "C/10",
+   "storeys": 10,
+   "decision": "10",
+   "lots": [
+    "009132004019"
+   ],
+   "condition": null
+  },
+  "35812": {
+   "id": 31,
+   "legend": "C/4",
+   "storeys": 4,
+   "decision": "4",
+   "lots": [
+    "006401045001"
+   ],
+   "condition": "Actuación Estratégica Distrito Aeroportuario Fontibón"
+  },
+  "35813": {
+   "id": 32,
+   "legend": "C/6",
+   "storeys": 6,
+   "decision": "6",
+   "lots": [
+    "008208022001"
+   ],
+   "condition": "BIC"
+  },
+  "35814": {
+   "id": 33,
+   "legend": "C/4",
+   "storeys": 4,
+   "decision": "4",
+   "lots": [
+    "009220061002"
+   ],
+   "condition": "ZONA EQUIPAMIENTO COMUNAL PÚBLICO"
+  },
+  "35815": {
+   "id": 34,
+   "legend": "C/6",
+   "storeys": 6,
+   "decision": "6",
+   "lots": [
+    "009135004021",
+    "009135004020",
+    "009135004019",
+    "009135004097",
+    "009135004023",
+    "009135004022"
+   ],
+   "condition": null
+  },
+  "35816": {
+   "id": 35,
+   "legend": "C/6",
+   "storeys": 6,
+   "decision": "6",
+   "lots": [
+    "009115006001"
+   ],
+   "condition": null
+  },
+  "35818": {
+   "id": 36,
+   "legend": "C/9",
+   "storeys": 9,
+   "decision": "9",
+   "lots": [
+    "008208024002"
+   ],
+   "condition": null
+  },
+  "35819": {
+   "id": 37,
+   "legend": "C/9",
+   "storeys": 9,
+   "decision": "9",
+   "lots": [
+    "008401024016"
+   ],
+   "condition": null
+  },
+  "35820": {
+   "id": 38,
+   "legend": "C/4",
+   "storeys": 4,
+   "decision": "4",
+   "lots": [
+    "005109004015",
+    "005109004098"
+   ],
+   "condition": "PI/PRM"
+  },
+  "35821": {
+   "id": 39,
+   "legend": "C/7",
+   "storeys": 7,
+   "decision": "7",
+   "lots": [
+    "009213063008"
+   ],
+   "condition": null
+  },
+  "35822": {
+   "id": 40,
+   "legend": "C/4",
+   "storeys": 4,
+   "decision": "4",
+   "lots": [
+    "005616064004",
+    "005616064003",
+    "005616064001",
+    "005616064002"
+   ],
+   "condition": null
+  },
+  "35823": {
+   "id": 41,
+   "legend": "C/5",
+   "storeys": 5,
+   "decision": "5",
+   "lots": [
+    "009102014050"
+   ],
+   "condition": null
+  },
+  "35825": {
+   "id": 42,
+   "legend": "C/N/A",
+   "storeys": null,
+   "decision": "N/A",
+   "lots": [
+    "009215021006"
+   ],
+   "condition": "No aplica - Infraestructura de Servicios Públicos"
+  },
+  "35826": {
+   "id": 43,
+   "legend": "C/6",
+   "storeys": 6,
+   "decision": "6",
+   "lots": [
+    "009135001019"
+   ],
+   "condition": null
+  },
+  "35827": {
+   "id": 44,
+   "legend": "C/N/A",
+   "storeys": null,
+   "decision": "N/A",
+   "lots": [
+    "108110000051"
+   ],
+   "condition": "AE: Lagos de Torca Actuación Estratégica Lagos de Torca"
+  },
+  "35828": {
+   "id": 45,
+   "legend": "C/9",
+   "storeys": 9,
+   "decision": "9",
+   "lots": [
+    "008406003003"
+   ],
+   "condition": null
+  },
+  "35829": {
+   "id": 46,
+   "legend": "C/4",
+   "storeys": 4,
+   "decision": "4",
+   "lots": [
+    "006402013003"
+   ],
+   "condition": "Actuación Estratégica Distrito Aeroportuario Fontibón"
+  },
+  "35830": {
+   "id": 47,
+   "legend": "C/6",
+   "storeys": 6,
+   "decision": "6",
+   "lots": [
+    "009135038003"
+   ],
+   "condition": null
+  },
+  "35832": {
+   "id": 48,
+   "legend": "C/4",
+   "storeys": 4,
+   "decision": "4",
+   "lots": [
+    "009135004008"
+   ],
+   "condition": null
+  },
+  "35833": {
+   "id": 49,
+   "legend": "C/5",
+   "storeys": 5,
+   "decision": "5",
+   "lots": [
+    "005609001004"
+   ],
+   "condition": "ZONA EQUIPAMIENTO COMUNAL PÚBLICO"
+  },
+  "35834": {
+   "id": 50,
+   "legend": "C/4",
+   "storeys": 4,
+   "decision": "4",
+   "lots": [
+    "005616035004"
+   ],
+   "condition": "PI/PRM"
+  },
+  "35835": {
+   "id": 51,
+   "legend": "C/16",
+   "storeys": 16,
+   "decision": "16",
+   "lots": [
+    "008205028011"
+   ],
+   "condition": null
+  },
+  "35837": {
+   "id": 52,
+   "legend": "C/5",
+   "storeys": 5,
+   "decision": "5",
+   "lots": [
+    "009226001005",
+    "009226001004"
+   ],
+   "condition": null
+  },
+  "35838": {
+   "id": 53,
+   "legend": "C/6",
+   "storeys": 6,
+   "decision": "6",
+   "lots": [
+    "009127009013"
+   ],
+   "condition": "PI/PRM"
+  },
+  "35839": {
+   "id": 54,
+   "legend": "C/3",
+   "storeys": 3,
+   "decision": "3",
+   "lots": [
+    "009223036025"
+   ],
+   "condition": "BIEN FISCAL"
+  },
+  "35840": {
+   "id": 55,
+   "legend": "C/6",
+   "storeys": 6,
+   "decision": "6",
+   "lots": [
+    "008530021005"
+   ],
+   "condition": null
+  },
+  "35841": {
+   "id": 56,
+   "legend": "C/3",
+   "storeys": 3,
+   "decision": "3",
+   "lots": [
+    "008504004017"
+   ],
+   "condition": "BIC"
+  },
+  "35842": {
+   "id": 57,
+   "legend": "C/12",
+   "storeys": 12,
+   "decision": "12",
+   "lots": [
+    "009265008022"
+   ],
+   "condition": null
+  },
+  "35843": {
+   "id": 58,
+   "legend": "C/13",
+   "storeys": 13,
+   "decision": "13",
+   "lots": [
+    "008310017004"
+   ],
+   "condition": "BIC"
+  },
+  "35844": {
+   "id": 59,
+   "legend": "C/5",
+   "storeys": 5,
+   "decision": "5",
+   "lots": [
+    "009117026001"
+   ],
+   "condition": "ZONA EQUIPAMIENTO COMUNAL PÚBLICO"
+  },
+  "35845": {
+   "id": 60,
+   "legend": "C/5",
+   "storeys": 5,
+   "decision": "5",
+   "lots": [
+    "005205019001"
+   ],
+   "condition": "BIC BIEN FISCAL"
+  },
+  "35846": {
+   "id": 61,
+   "legend": "C/4",
+   "storeys": 4,
+   "decision": "4",
+   "lots": [
+    "009212087001"
+   ],
+   "condition": null
+  },
+  "35848": {
+   "id": 62,
+   "legend": "C/6",
+   "storeys": 6,
+   "decision": "6",
+   "lots": [
+    "009244042001"
+   ],
+   "condition": "BIEN FISCAL"
+  },
+  "35849": {
+   "id": 63,
+   "legend": "C/5",
+   "storeys": 5,
+   "decision": "5",
+   "lots": [
+    "009226032019"
+   ],
+   "condition": null
+  },
+  "35850": {
+   "id": 64,
+   "legend": "C/5",
+   "storeys": 5,
+   "decision": "5",
+   "lots": [
+    "005602049001"
+   ],
+   "condition": "BIEN FISCAL"
+  },
+  "35851": {
+   "id": 65,
+   "legend": "C/3",
+   "storeys": 3,
+   "decision": "3",
+   "lots": [
+    "009121012013"
+   ],
+   "condition": "PI/PRM"
+  },
+  "35852": {
+   "id": 66,
+   "legend": "C/6",
+   "storeys": 6,
+   "decision": "6",
+   "lots": [
+    "005101005075"
+   ],
+   "condition": null
+  },
+  "35853": {
+   "id": 67,
+   "legend": "C/4",
+   "storeys": 4,
+   "decision": "4",
+   "lots": [
+    "009235002018"
+   ],
+   "condition": "PI/PRM"
+  },
+  "35855": {
+   "id": 68,
+   "legend": "C/3",
+   "storeys": 3,
+   "decision": "3",
+   "lots": [
+    "009223005001"
+   ],
+   "condition": "BIEN FISCAL"
+  },
+  "35856": {
+   "id": 69,
+   "legend": "C/5",
+   "storeys": 5,
+   "decision": "5",
+   "lots": [
+    "008529003002"
+   ],
+   "condition": "BIC"
+  },
+  "35857": {
+   "id": 70,
+   "legend": "C/10",
+   "storeys": 10,
+   "decision": "10",
+   "lots": [
+    "008305026004"
+   ],
+   "condition": null
+  },
+  "35858": {
+   "id": 71,
+   "legend": "C/6",
+   "storeys": 6,
+   "decision": "6",
+   "lots": [
+    "009108001001",
+    "009108001002"
+   ],
+   "condition": null
+  },
+  "35859": {
+   "id": 72,
+   "legend": "C/N/A",
+   "storeys": null,
+   "decision": "N/A",
+   "lots": [
+    "107110000074"
+   ],
+   "condition": "AE: Lagos de Torca Actuación Estratégica Lagos de Torca"
+  },
+  "35860": {
+   "id": 73,
+   "legend": "C/5",
+   "storeys": 5,
+   "decision": "5",
+   "lots": [
+    "009207039038"
+   ],
+   "condition": null
+  },
+  "35861": {
+   "id": 74,
+   "legend": "C/4",
+   "storeys": 4,
+   "decision": "4",
+   "lots": [
+    "009252016006"
+   ],
+   "condition": null
+  },
+  "35862": {
+   "id": 75,
+   "legend": "C/8",
+   "storeys": 8,
+   "decision": "8",
+   "lots": [
+    "008215010001"
+   ],
+   "condition": null
+  },
+  "35863": {
+   "id": 76,
+   "legend": "C/5",
+   "storeys": 5,
+   "decision": "5",
+   "lots": [
+    "005644009004"
+   ],
+   "condition": null
+  },
+  "35864": {
+   "id": 77,
+   "legend": "C/4",
+   "storeys": 4,
+   "decision": "4",
+   "lots": [
+    "005307017001"
+   ],
+   "condition": "BIC"
+  },
+  "35865": {
+   "id": 78,
+   "legend": "C/7",
+   "storeys": 7,
+   "decision": "7",
+   "lots": [
+    "008206006028",
+    "008206006006"
+   ],
+   "condition": "BIC"
+  },
+  "35866": {
+   "id": 79,
+   "legend": "C/3",
+   "storeys": 3,
+   "decision": "3",
+   "lots": [
+    "005679098002"
+   ],
+   "condition": null
+  },
+  "35867": {
+   "id": 80,
+   "legend": "C/10",
+   "storeys": 10,
+   "decision": "10",
+   "lots": [
+    "008309019006",
+    "008309019007",
+    "008309019008",
+    "008309019002",
+    "008309019001"
+   ],
+   "condition": null
+  },
+  "35868": {
+   "id": 81,
+   "legend": "C/7",
+   "storeys": 7,
+   "decision": "7",
+   "lots": [
+    "008401002042",
+    "008401002041"
+   ],
+   "condition": null
+  },
+  "35869": {
+   "id": 82,
+   "legend": "C/5",
+   "storeys": 5,
+   "decision": "5",
+   "lots": [
+    "009101018076",
+    "009101018098"
+   ],
+   "condition": null
+  },
+  "35870": {
+   "id": 83,
+   "legend": "C/3",
+   "storeys": 3,
+   "decision": "3",
+   "lots": [
+    "009202036007"
+   ],
+   "condition": null
+  },
+  "35871": {
+   "id": 84,
+   "legend": "C/11",
+   "storeys": 11,
+   "decision": "11",
+   "lots": [
+    "008538075012",
+    "008538075013"
+   ],
+   "condition": "BIC 0085387596                    BIEN FISCAL"
+  },
+  "35872": {
+   "id": 85,
+   "legend": "C/6",
+   "storeys": 6,
+   "decision": "6",
+   "lots": [
+    "008401022002"
+   ],
+   "condition": null
+  },
+  "35873": {
+   "id": 86,
+   "legend": "C/4",
+   "storeys": 4,
+   "decision": "4",
+   "lots": [
+    "008533032022",
+    "008533032023",
+    "008533032045"
+   ],
+   "condition": null
+  },
+  "35874": {
+   "id": 87,
+   "legend": "C/8",
+   "storeys": 8,
+   "decision": "8",
+   "lots": [
+    "008401049001"
+   ],
+   "condition": "PI/PRM"
+  },
+  "35875": {
+   "id": 88,
+   "legend": "C/6",
+   "storeys": 6,
+   "decision": "6",
+   "lots": [
+    "009125013001"
+   ],
+   "condition": "PLAN DIRECTOR"
+  },
+  "35876": {
+   "id": 89,
+   "legend": "C/5",
+   "storeys": 5,
+   "decision": "5",
+   "lots": [
+    "009110020001",
+    "009110020097",
+    "009110020096",
+    "009110002099"
+   ],
+   "condition": null
+  },
+  "35877": {
+   "id": 90,
+   "legend": "C/6",
+   "storeys": 6,
+   "decision": "6",
+   "lots": [
+    "005106003003",
+    "005108003001"
+   ],
+   "condition": "PI/PRM"
+  },
+  "35878": {
+   "id": 91,
+   "legend": "C/8",
+   "storeys": 8,
+   "decision": "8",
+   "lots": [
+    "008208017011",
+    "008208017027",
+    "008208017044"
+   ],
+   "condition": null
+  },
+  "35879": {
+   "id": 92,
+   "legend": "C/5",
+   "storeys": 5,
+   "decision": "5",
+   "lots": [
+    "005101060008",
+    "005101060007"
+   ],
+   "condition": "PI/PRM"
+  },
+  "35880": {
+   "id": 93,
+   "legend": "C/4",
+   "storeys": 4,
+   "decision": "4",
+   "lots": [
+    "009229053005"
+   ],
+   "condition": "BIEN FISCAL"
+  },
+  "35881": {
+   "id": 94,
+   "legend": "C/5",
+   "storeys": 5,
+   "decision": "5",
+   "lots": [
+    "007308007001"
+   ],
+   "condition": "BIC PI/PRM Actuación Estratégica Campin 7 de Agosto"
+  },
+  "35882": {
+   "id": 95,
+   "legend": "C/4",
+   "storeys": 4,
+   "decision": "4",
+   "lots": [
+    "008527033001"
+   ],
+   "condition": "ZONA EQUIPAMIENTO COMUNAL PÚBLICO"
+  },
+  "35883": {
+   "id": 96,
+   "legend": "C/5",
+   "storeys": 5,
+   "decision": "5",
+   "lots": [
+    "005611029001",
+    "005611029003"
+   ],
+   "condition": "0056112902                     BIEN FISCAL"
+  },
+  "35884": {
+   "id": 97,
+   "legend": "C/4",
+   "storeys": 4,
+   "decision": "4",
+   "lots": [
+    "006404077011"
+   ],
+   "condition": null
+  },
+  "35885": {
+   "id": 98,
+   "legend": "C/6",
+   "storeys": 6,
+   "decision": "6",
+   "lots": [
+    "009102005002"
+   ],
+   "condition": null
+  },
+  "35886": {
+   "id": 99,
+   "legend": "C/N/A",
+   "storeys": null,
+   "decision": "N/A",
+   "lots": [
+    "009136016024"
+   ],
+   "condition": "AE: Lagos de Torca 0091364206          Actuación Estratégica Lagos de Torca"
+  },
+  "35887": {
+   "id": 100,
+   "legend": "C/5",
+   "storeys": 5,
+   "decision": "5",
+   "lots": [
+    "009123037006",
+    "009123037096"
+   ],
+   "condition": null
+  },
+  "35888": {
+   "id": 101,
+   "legend": "C/2",
+   "storeys": 2,
+   "decision": "2",
+   "lots": [
+    "009141001001"
+   ],
+   "condition": "Incorporación al suelo urbano sin infraestructura de servicios públicos completa, mantiene edificabilidad existente"
+  },
+  "35889": {
+   "id": 102,
+   "legend": "C/5",
+   "storeys": 5,
+   "decision": "5",
+   "lots": [
+    "009124003001"
+   ],
+   "condition": null
+  },
+  "35890": {
+   "id": 103,
+   "legend": "C/4",
+   "storeys": 4,
+   "decision": "4",
+   "lots": [
+    "006416003001"
+   ],
+   "condition": "ZONA EQUIPAMIENTO COMUNAL PÚBLICO Actuación Estratégica Distrito Aeroportuario Fontibón"
+  },
+  "35891": {
+   "id": 104,
+   "legend": "C/N/A",
+   "storeys": null,
+   "decision": "N/A",
+   "lots": [],
+   "condition": "AE: Lagos de Torca Actuación Estratégica Lagos de Torca"
+  },
+  "35892": {
+   "id": 105,
+   "legend": "C/8",
+   "storeys": 8,
+   "decision": "8",
+   "lots": [
+    "009215026001"
+   ],
+   "condition": null
+  },
+  "35893": {
+   "id": 106,
+   "legend": "C/5",
+   "storeys": 5,
+   "decision": "5",
+   "lots": [
+    "005401061001"
+   ],
+   "condition": "PI/PRM"
+  },
+  "35894": {
+   "id": 107,
+   "legend": "C/2",
+   "storeys": 2,
+   "decision": "2",
+   "lots": [
+    "009142001001"
+   ],
+   "condition": "Incorporación al suelo urbano sin infraestructura de servicios públicos completa, mantiene edificabilidad existente - BIC"
+  },
+  "35896": {
+   "id": 108,
+   "legend": "C/4",
+   "storeys": 4,
+   "decision": "4",
+   "lots": [
+    "009251099004"
+   ],
+   "condition": "BIEN FISCAL"
+  },
+  "35897": {
+   "id": 109,
+   "legend": "C/7",
+   "storeys": 7,
+   "decision": "7",
+   "lots": [
+    "009105057001"
+   ],
+   "condition": null
+  },
+  "35898": {
+   "id": 110,
+   "legend": "C/6",
+   "storeys": 6,
+   "decision": "6",
+   "lots": [
+    "009265005015",
+    "009214049017"
+   ],
+   "condition": null
+  },
+  "35899": {
+   "id": 111,
+   "legend": "C/7",
+   "storeys": 7,
+   "decision": "7",
+   "lots": [
+    "009110001011",
+    "009110001069",
+    "009110001021"
+   ],
+   "condition": "PI/PRM"
+  },
+  "35900": {
+   "id": 112,
+   "legend": "C/6",
+   "storeys": 6,
+   "decision": "6",
+   "lots": [
+    "009108004082"
+   ],
+   "condition": "PLAN DIRECTOR"
+  },
+  "35901": {
+   "id": 113,
+   "legend": "C/6",
+   "storeys": 6,
+   "decision": "6",
+   "lots": [
+    "009134032003",
+    "009134001091"
+   ],
+   "condition": "PLAN DIRECTOR"
+  },
+  "35902": {
+   "id": 114,
+   "legend": "C/11",
+   "storeys": 11,
+   "decision": "11",
+   "lots": [
+    "008205012016"
+   ],
+   "condition": null
+  },
+  "35903": {
+   "id": 115,
+   "legend": "C/9",
+   "storeys": 9,
+   "decision": "9",
+   "lots": [
+    "008307048011",
+    "008307048015"
+   ],
+   "condition": "BIC"
+  },
+  "35905": {
+   "id": 116,
+   "legend": "C/9",
+   "storeys": 9,
+   "decision": "9",
+   "lots": [
+    "008203013001"
+   ],
+   "condition": "BIC"
+  },
+  "35906": {
+   "id": 117,
+   "legend": "C/2",
+   "storeys": 2,
+   "decision": "2",
+   "lots": [
+    "009139001001"
+   ],
+   "condition": "Incorporación al suelo urbano sin infraestructura de servicios públicos completa, mantiene edificabilidad existente."
+  },
+  "35908": {
+   "id": 118,
+   "legend": "C/N/A",
+   "storeys": null,
+   "decision": "N/A",
+   "lots": [
+    "107102000060"
+   ],
+   "condition": "AE: Lagos de Torca Actuación Estratégica Lagos de Torca"
+  },
+  "35909": {
+   "id": 119,
+   "legend": "C/4",
+   "storeys": 4,
+   "decision": "4",
+   "lots": [
+    "005650016001"
+   ],
+   "condition": null
+  },
+  "35910": {
+   "id": 120,
+   "legend": "C/4",
+   "storeys": 4,
+   "decision": "4",
+   "lots": [
+    "005601014002",
+    "005601014001"
+   ],
+   "condition": null
+  },
+  "35911": {
+   "id": 121,
+   "legend": "C/8",
+   "storeys": 8,
+   "decision": "8",
+   "lots": [
+    "006216018003",
+    "006216018002"
+   ],
+   "condition": "PI/PRM"
+  },
+  "35912": {
+   "id": 122,
+   "legend": "C/12",
+   "storeys": 12,
+   "decision": "12",
+   "lots": [
+    "005102064004",
+    "005102022099"
+   ],
+   "condition": null
+  },
+  "35913": {
+   "id": 123,
+   "legend": "C/5",
+   "storeys": 5,
+   "decision": "5",
+   "lots": [
+    "008523020003",
+    "008523020008"
+   ],
+   "condition": null
+  },
+  "35914": {
+   "id": 124,
+   "legend": "C/5",
+   "storeys": 5,
+   "decision": "5",
+   "lots": [
+    "009112022001",
+    "009112022012"
+   ],
+   "condition": null
+  },
+  "35915": {
+   "id": 125,
+   "legend": "C/N/A",
+   "storeys": null,
+   "decision": "N/A",
+   "lots": [
+    "008544013018"
+   ],
+   "condition": "AE: Lagos de Torca Actuación Estratégica Lagos de Torca"
+  },
+  "35916": {
+   "id": 126,
+   "legend": "C/5",
+   "storeys": 5,
+   "decision": "5",
+   "lots": [
+    "005644009011"
+   ],
+   "condition": null
+  },
+  "35917": {
+   "id": 127,
+   "legend": "C/6",
+   "storeys": 6,
+   "decision": "6",
+   "lots": [
+    "009116058021",
+    "009116058088",
+    "009116058096",
+    "009116058078",
+    "009116058084",
+    "009116058079",
+    "009116058081",
+    "009116058087",
+    "009116058068",
+    "009116058085"
+   ],
+   "condition": "PI/PRM"
+  },
+  "35918": {
+   "id": 128,
+   "legend": "C/6",
+   "storeys": 6,
+   "decision": "6",
+   "lots": [
+    "008208022001"
+   ],
+   "condition": "BIC"
+  },
+  "35919": {
+   "id": 129,
+   "legend": "C/7",
+   "storeys": 7,
+   "decision": "7",
+   "lots": [
+    "009247001003",
+    "009247001002",
+    "009247001004",
+    "009134001099",
+    "009247001001",
+    "009247001002"
+   ],
+   "condition": "PI/PRM"
+  },
+  "35921": {
+   "id": 130,
+   "legend": "C/3",
+   "storeys": 3,
+   "decision": "3",
+   "lots": [
+    "009265007005",
+    "009265007006"
+   ],
+   "condition": "BIC"
+  },
+  "35922": {
+   "id": 131,
+   "legend": "C/N/A",
+   "storeys": null,
+   "decision": "N/A",
+   "lots": [
+    "108102000062"
+   ],
+   "condition": "AE: Lagos de Torca Actuación Estratégica Lagos de Torca"
+  },
+  "35923": {
+   "id": 132,
+   "legend": "C/3",
+   "storeys": 3,
+   "decision": "3",
+   "lots": [
+    "005669045002",
+    "005669045001"
+   ],
+   "condition": "BIEN FISCAL"
+  },
+  "35924": {
+   "id": 133,
+   "legend": "C/5",
+   "storeys": 5,
+   "decision": "5",
+   "lots": [
+    "009257002002"
+   ],
+   "condition": "PLAN DIRECTOR Actuación Estratégica, adoptada, Ciudadela educativa y del cuidado"
+  },
+  "35925": {
+   "id": 134,
+   "legend": "C/4",
+   "storeys": 4,
+   "decision": "4",
+   "lots": [
+    "009212030003",
+    "009241014001",
+    "009212030050"
+   ],
+   "condition": null
+  },
+  "35926": {
+   "id": 135,
+   "legend": "C/6",
+   "storeys": 6,
+   "decision": "6",
+   "lots": [
+    "008536001008"
+   ],
+   "condition": null
+  },
+  "35928": {
+   "id": 136,
+   "legend": "C/5",
+   "storeys": 5,
+   "decision": "5",
+   "lots": [
+    "009129036002",
+    "009129036003",
+    "009129036096",
+    "009129036095"
+   ],
+   "condition": null
+  },
+  "35929": {
+   "id": 137,
+   "legend": "C/5",
+   "storeys": 5,
+   "decision": "5",
+   "lots": [
+    "006301067003"
+   ],
+   "condition": "PI/PRM"
+  },
+  "35930": {
+   "id": 138,
+   "legend": "C/5",
+   "storeys": 5,
+   "decision": "5",
+   "lots": [
+    "009134032002",
+    "009134032001"
+   ],
+   "condition": null
+  },
+  "35932": {
+   "id": 139,
+   "legend": "C/9",
+   "storeys": 9,
+   "decision": "9",
+   "lots": [
+    "008403016002"
+   ],
+   "condition": "BIEN FISCAL 0084031604                            BIC 0084031601                          PI/PRM"
+  },
+  "35935": {
+   "id": 140,
+   "legend": "C/3",
+   "storeys": 3,
+   "decision": "3",
+   "lots": [
+    "009140001001"
+   ],
+   "condition": "Incorporación al suelo urbano sin infraestructura de servicios públicos completa, mantiene edificabilidad existente."
+  },
+  "35936": {
+   "id": 141,
+   "legend": "C/N/A",
+   "storeys": null,
+   "decision": "N/A",
+   "lots": [
+    "108102001088"
+   ],
+   "condition": "AE: Lagos de Torca Actuación Estratégica Lagos de Torca"
+  },
+  "35937": {
+   "id": 142,
+   "legend": "C/N/A",
+   "storeys": null,
+   "decision": "N/A",
+   "lots": [
+    "008539004001"
+   ],
+   "condition": "AE: Lagos de Torca Actuación Estratégica Lagos de Torca"
+  },
+  "35938": {
+   "id": 143,
+   "legend": "C/9",
+   "storeys": 9,
+   "decision": "9",
+   "lots": [
+    "009128028012",
+    "009128028013",
+    "009128028011",
+    "009128026005",
+    "009128026001",
+    "009128027002",
+    "009128028009",
+    "009128028001"
+   ],
+   "condition": "BIC"
+  },
+  "35939": {
+   "id": 144,
+   "legend": "C/6",
+   "storeys": 6,
+   "decision": "6",
+   "lots": [
+    "009245037004",
+    "009245037019",
+    "009245037099"
+   ],
+   "condition": null
+  },
+  "35940": {
+   "id": 145,
+   "legend": "C/N/A",
+   "storeys": null,
+   "decision": "N/A",
+   "lots": [
+    "009136042007"
+   ],
+   "condition": "AE: Lagos de Torca Actuación Estratégica Lagos de Torca"
+  },
+  "35942": {
+   "id": 146,
+   "legend": "C/5",
+   "storeys": 5,
+   "decision": "5",
+   "lots": [
+    "009214048007",
+    "009214052002",
+    "009214021001",
+    "009214048001"
+   ],
+   "condition": "BIEN FISCAL"
+  },
+  "35943": {
+   "id": 147,
+   "legend": "C/7",
+   "storeys": 7,
+   "decision": "7",
+   "lots": [
+    "108104004015"
+   ],
+   "condition": "BIC"
+  },
+  "35944": {
+   "id": 148,
+   "legend": "C/N/A",
+   "storeys": null,
+   "decision": "N/A",
+   "lots": [
+    "009136032017"
+   ],
+   "condition": "AE: Lagos de Torca Actuación Estratégica Lagos de Torca"
+  },
+  "35945": {
+   "id": 149,
+   "legend": "C/N/A",
+   "storeys": null,
+   "decision": "N/A",
+   "lots": [
+    "009136033009"
+   ],
+   "condition": "AE: Lagos de Torca Actuación Estratégica Lagos de Torca"
+  },
+  "35946": {
+   "id": 150,
+   "legend": "C/4",
+   "storeys": 4,
+   "decision": "4",
+   "lots": [
+    "009109037001"
+   ],
+   "condition": null
+  },
+  "35947": {
+   "id": 151,
+   "legend": "C/N/A",
+   "storeys": null,
+   "decision": "N/A",
+   "lots": [
+    "009136033009"
+   ],
+   "condition": "AE: Lagos de Torca 1081020142         Actuación Estratégica Lagos de Torca"
+  },
+  "35948": {
+   "id": 152,
+   "legend": "C/8",
+   "storeys": 8,
+   "decision": "8",
+   "lots": [
+    "008503022007",
+    "008503022008",
+    "008503023001",
+    "008503003001"
+   ],
+   "condition": "BIC"
+  },
+  "35949": {
+   "id": 153,
+   "legend": "C/5",
+   "storeys": 5,
+   "decision": "5",
+   "lots": [
+    "008532011007",
+    "008532009005",
+    "008532009004",
+    "008532009001",
+    "008532009002",
+    "008532009003"
+   ],
+   "condition": "PI/PRM"
+  },
+  "35950": {
+   "id": 154,
+   "legend": "C/5",
+   "storeys": 5,
+   "decision": "5",
+   "lots": [
+    "005505052001",
+    "005505052004"
+   ],
+   "condition": "BIC"
+  },
+  "35951": {
+   "id": 155,
+   "legend": "C/7",
+   "storeys": 7,
+   "decision": "7",
+   "lots": [
+    "009132004001",
+    "009132004027"
+   ],
+   "condition": "PI/PRM"
+  },
+  "35952": {
+   "id": 156,
+   "legend": "C/7",
+   "storeys": 7,
+   "decision": "7",
+   "lots": [
+    "009103009003",
+    "009103009002",
+    "009103009001",
+    "009103009098",
+    "009103009099"
+   ],
+   "condition": null
+  },
+  "35953": {
+   "id": 157,
+   "legend": "C/N/A",
+   "storeys": null,
+   "decision": "N/A",
+   "lots": [
+    "201110021023"
+   ],
+   "condition": "POT: Art. 70 Franja de Adecuación"
+  },
+  "35954": {
+   "id": 158,
+   "legend": "C/6",
+   "storeys": 6,
+   "decision": "6",
+   "lots": [
+    "009215036004",
+    "009215036001",
+    "009114002002",
+    "009231032010"
+   ],
+   "condition": "PI/PRM"
+  },
+  "35955": {
+   "id": 159,
+   "legend": "C/9",
+   "storeys": 9,
+   "decision": "9",
+   "lots": [
+    "008528002007",
+    "008528046003",
+    "008528046004",
+    "008525016006",
+    "008525016003",
+    "008528046099",
+    "008528046002"
+   ],
+   "condition": null
+  },
+  "35956": {
+   "id": 160,
+   "legend": "C/6",
+   "storeys": 6,
+   "decision": "6",
+   "lots": [
+    "008530032001",
+    "008530032099"
+   ],
+   "condition": null
+  },
+  "35957": {
+   "id": 161,
+   "legend": "C/N/A",
+   "storeys": null,
+   "decision": "N/A",
+   "lots": [
+    "009136032017"
+   ],
+   "condition": "AE: Lagos de Torca Actuación Estratégica Lagos de Torca"
+  },
+  "35959": {
+   "id": 162,
+   "legend": "C/7",
+   "storeys": 7,
+   "decision": "7",
+   "lots": [
+    "008410010001",
+    "008410010002",
+    "008409001001",
+    "008419001001"
+   ],
+   "condition": "PI/PRM"
+  },
+  "35960": {
+   "id": 163,
+   "legend": "C/N/A",
+   "storeys": null,
+   "decision": "N/A",
+   "lots": [
+    "009136032017"
+   ],
+   "condition": "AE: Lagos de Torca Actuación Estratégica Lagos de Torca"
+  },
+  "35961": {
+   "id": 164,
+   "legend": "C/7",
+   "storeys": 7,
+   "decision": "7",
+   "lots": [
+    "005506001036",
+    "005506001042",
+    "005506003059",
+    "005506001005"
+   ],
+   "condition": "PI/PRM"
+  },
+  "35962": {
+   "id": 165,
+   "legend": "C/N/A",
+   "storeys": null,
+   "decision": "N/A",
+   "lots": [],
+   "condition": "AE: Lagos de Torca Actuación Estratégica Lagos de Torca"
+  },
+  "35963": {
+   "id": 166,
+   "legend": "C/5",
+   "storeys": 5,
+   "decision": "5",
+   "lots": [
+    "009121012002"
+   ],
+   "condition": "BIC"
+  },
+  "35964": {
+   "id": 167,
+   "legend": "C/N/A",
+   "storeys": null,
+   "decision": "N/A",
+   "lots": [],
+   "condition": "AE: Lagos de Torca Actuación Estratégica Lagos de Torca"
+  },
+  "36113": {
+   "id": 168,
+   "legend": "C/4",
+   "storeys": 4,
+   "decision": "4",
+   "lots": [
+    "009212039004"
+   ],
+   "condition": null
+  },
+  "36836": {
+   "id": 169,
+   "legend": "C/5",
+   "storeys": 5,
+   "decision": "5",
+   "lots": [
+    "005116017004"
+   ],
+   "condition": null
+  },
+  "36974": {
+   "id": 170,
+   "legend": "C/6",
+   "storeys": 6,
+   "decision": "6",
+   "lots": [
+    "009119031001"
+   ],
+   "condition": null
+  },
+  "37301": {
+   "id": 171,
+   "legend": "C/9",
+   "storeys": 9,
+   "decision": "9",
+   "lots": [
+    "008410011001",
+    "008410010099"
+   ],
+   "condition": "PI/PRM"
+  },
+  "37302": {
+   "id": 172,
+   "legend": "C/4",
+   "storeys": 4,
+   "decision": "4",
+   "lots": [],
+   "condition": null
+  },
+  "37303": {
+   "id": 173,
+   "legend": "C/3",
+   "storeys": 3,
+   "decision": "3",
+   "lots": [],
+   "condition": null
+  },
+  "37304": {
+   "id": 174,
+   "legend": "C/4",
+   "storeys": 4,
+   "decision": "4",
+   "lots": [],
+   "condition": null
+  },
+  "37305": {
+   "id": 175,
+   "legend": "C/3",
+   "storeys": 3,
+   "decision": "3",
+   "lots": [],
+   "condition": null
+  },
+  "37435": {
+   "id": 176,
+   "legend": "C/5",
+   "storeys": 5,
+   "decision": "5",
+   "lots": [
+    "009217018001"
+   ],
+   "condition": "ZONA EQUIPAMIENTO COMUNAL PÚBLICO"
+  },
+  "37745": {
+   "id": 177,
+   "legend": "C/5",
+   "storeys": 5,
+   "decision": "5",
+   "lots": [
+    "009232019013"
+   ],
+   "condition": null
+  },
+  "37804": {
+   "id": 178,
+   "legend": "C/5",
+   "storeys": 5,
+   "decision": "5",
+   "lots": [
+    "005606067002",
+    "005606067096"
+   ],
+   "condition": null
+  },
+  "37890": {
+   "id": 179,
+   "legend": "C/N/A",
+   "storeys": null,
+   "decision": "N/A",
+   "lots": [
+    "006313015001",
+    "006313015003",
+    "006313015098"
+   ],
+   "condition": "No aplica - Zona verde"
+  },
+  "37974": {
+   "id": 180,
+   "legend": "C/5",
+   "storeys": 5,
+   "decision": "5",
+   "lots": [
+    "009127012006"
+   ],
+   "condition": null
+  },
+  "38066": {
+   "id": 181,
+   "legend": "C/5",
+   "storeys": 5,
+   "decision": "5",
+   "lots": [
+    "009130094001"
+   ],
+   "condition": null
+  },
+  "38092": {
+   "id": 182,
+   "legend": "C/N/A",
+   "storeys": null,
+   "decision": "N/A",
+   "lots": [
+    "009116097001"
+   ],
+   "condition": "No aplica - Zona verde"
+  },
+  "38160": {
+   "id": 183,
+   "legend": "C/N/A",
+   "storeys": null,
+   "decision": "N/A",
+   "lots": [
+    "009112002002"
+   ],
+   "condition": "No aplica - Zona verde"
+  },
+  "38201": {
+   "id": 184,
+   "legend": "C/9",
+   "storeys": 9,
+   "decision": "9",
+   "lots": [
+    "006217003006"
+   ],
+   "condition": "PI/PRM"
+  },
+  "38309": {
+   "id": 185,
+   "legend": "C/5",
+   "storeys": 5,
+   "decision": "5",
+   "lots": [
+    "005640005001"
+   ],
+   "condition": "ZONA EQUIPAMIENTO COMUNAL PÚBLICO"
+  },
+  "38312": {
+   "id": 186,
+   "legend": "C/5",
+   "storeys": 5,
+   "decision": "5",
+   "lots": [
+    "005644021002"
+   ],
+   "condition": "ZONA EQUIPAMIENTO COMUNAL PÚBLICO"
+  },
+  "38360": {
+   "id": 187,
+   "legend": "C/N/A",
+   "storeys": null,
+   "decision": "N/A",
+   "lots": [
+    "008205009075",
+    "008205009077",
+    "008205010097",
+    "008205009076"
+   ],
+   "condition": "No aplica - Zona verde"
+  },
+  "38630": {
+   "id": 188,
+   "legend": "C/4",
+   "storeys": 4,
+   "decision": "4",
+   "lots": [
+    "108104002020"
+   ],
+   "condition": null
+  },
+  "38685": {
+   "id": 189,
+   "legend": "C/7",
+   "storeys": 7,
+   "decision": "7",
+   "lots": [
+    "008402004007"
+   ],
+   "condition": null
+  },
+  "38899": {
+   "id": 190,
+   "legend": "C/7",
+   "storeys": 7,
+   "decision": "7",
+   "lots": [
+    "008502044001"
+   ],
+   "condition": "PI/PRM"
+  },
+  "38901": {
+   "id": 191,
+   "legend": "C/N/A",
+   "storeys": null,
+   "decision": "N/A",
+   "lots": [
+    "008502040005",
+    "008502040006"
+   ],
+   "condition": "No aplica - Zona verde"
+  },
+  "38918": {
+   "id": 192,
+   "legend": "C/N/A",
+   "storeys": null,
+   "decision": "N/A",
+   "lots": [
+    "008533001011"
+   ],
+   "condition": "No aplica - Infraestructura de Servicios Públicos"
+  },
+  "38965": {
+   "id": 193,
+   "legend": "C/4",
+   "storeys": 4,
+   "decision": "4",
+   "lots": [
+    "008529003004"
+   ],
+   "condition": "PI/PRM"
+  },
+  "38966": {
+   "id": 194,
+   "legend": "C/5",
+   "storeys": 5,
+   "decision": "5",
+   "lots": [
+    "008529003004"
+   ],
+   "condition": "PI/PRM"
+  },
+  "38967": {
+   "id": 195,
+   "legend": "C/4",
+   "storeys": 4,
+   "decision": "4",
+   "lots": [
+    "008524018011",
+    "008524018010",
+    "008524017009"
+   ],
+   "condition": null
+  },
+  "38988": {
+   "id": 196,
+   "legend": "C/6",
+   "storeys": 6,
+   "decision": "6",
+   "lots": [
+    "008407022004",
+    "008407020009",
+    "008407020003"
+   ],
+   "condition": "BIC 0084072210                        PI/PRM"
+  },
+  "39001": {
+   "id": 197,
+   "legend": "C/3",
+   "storeys": 3,
+   "decision": "3",
+   "lots": [
+    "102312000012"
+   ],
+   "condition": "BIEN FISCAL"
+  },
+  "39002": {
+   "id": 198,
+   "legend": "C/4",
+   "storeys": 4,
+   "decision": "4",
+   "lots": [
+    "002507003001"
+   ],
+   "condition": null
+  },
+  "39003": {
+   "id": 199,
+   "legend": "C/5",
+   "storeys": 5,
+   "decision": "5",
+   "lots": [
+    "004204056001"
+   ],
+   "condition": "ZONA EQUIPAMIENTO COMUNAL PÚBLICO"
+  },
+  "39004": {
+   "id": 200,
+   "legend": "C/5",
+   "storeys": 5,
+   "decision": "5",
+   "lots": [
+    "001108005003"
+   ],
+   "condition": "BIEN FISCAL 0011080501                PLAN DIRECTOR"
+  },
+  "39005": {
+   "id": 201,
+   "legend": "C/4",
+   "storeys": 4,
+   "decision": "4",
+   "lots": [
+    "002507047001"
+   ],
+   "condition": "BIEN FISCAL (ver artículo 5°)"
+  },
+  "39006": {
+   "id": 202,
+   "legend": "C/4",
+   "storeys": 4,
+   "decision": "4",
+   "lots": [
+    "004550032001"
+   ],
+   "condition": "ZONA EQUIPAMIENTO COMUNAL PÚBLICO"
+  },
+  "39007": {
+   "id": 203,
+   "legend": "C/3",
+   "storeys": 3,
+   "decision": "3",
+   "lots": [
+    "002501062001"
+   ],
+   "condition": "ZONA EQUIPAMIENTO COMUNAL PÚBLICO"
+  },
+  "39008": {
+   "id": 204,
+   "legend": "C/3",
+   "storeys": 3,
+   "decision": "3",
+   "lots": [
+    "006506026001"
+   ],
+   "condition": "ZONA EQUIPAMIENTO COMUNAL PÚBLICO"
+  },
+  "39009": {
+   "id": 205,
+   "legend": "C/3",
+   "storeys": 3,
+   "decision": "3",
+   "lots": [
+    "004539095001"
+   ],
+   "condition": "ZONA EQUIPAMIENTO COMUNAL PÚBLICO"
+  },
+  "39010": {
+   "id": 206,
+   "legend": "C/5",
+   "storeys": 5,
+   "decision": "5",
+   "lots": [
+    "002102029001"
+   ],
+   "condition": null
+  },
+  "39011": {
+   "id": 207,
+   "legend": "C/3",
+   "storeys": 3,
+   "decision": "3",
+   "lots": [
+    "002516031002"
+   ],
+   "condition": "ZONA EQUIPAMIENTO COMUNAL PÚBLICO"
+  },
+  "39012": {
+   "id": 208,
+   "legend": "C/6",
+   "storeys": 6,
+   "decision": "6",
+   "lots": [
+    "002302026001"
+   ],
+   "condition": null
+  },
+  "39014": {
+   "id": 209,
+   "legend": "C/5",
+   "storeys": 5,
+   "decision": "5",
+   "lots": [
+    "004203040001"
+   ],
+   "condition": "ZONA EQUIPAMIENTO COMUNAL PÚBLICO"
+  },
+  "39015": {
+   "id": 210,
+   "legend": "C/7",
+   "storeys": 7,
+   "decision": "7",
+   "lots": [
+    "004561070019"
+   ],
+   "condition": "BIEN FISCAL"
+  },
+  "39016": {
+   "id": 211,
+   "legend": "C/6",
+   "storeys": 6,
+   "decision": "6",
+   "lots": [
+    "002104072001"
+   ],
+   "condition": "ZONA EQUIPAMIENTO COMUNAL PÚBLICO"
+  },
+  "39017": {
+   "id": 212,
+   "legend": "C/3",
+   "storeys": 3,
+   "decision": "3",
+   "lots": [
+    "004539050014"
+   ],
+   "condition": "ZONA EQUIPAMIENTO COMUNAL 0045395013                   PÚBLICO"
+  },
+  "39019": {
+   "id": 213,
+   "legend": "C/3",
+   "storeys": 3,
+   "decision": "3",
+   "lots": [
+    "002569087001"
+   ],
+   "condition": null
+  },
+  "39020": {
+   "id": 214,
+   "legend": "C/6",
+   "storeys": 6,
+   "decision": "6",
+   "lots": [
+    "004551042001"
+   ],
+   "condition": "ZONA EQUIPAMIENTO COMUNAL PÚBLICO"
+  },
+  "39021": {
+   "id": 215,
+   "legend": "C/6",
+   "storeys": 6,
+   "decision": "6",
+   "lots": [
+    "002302008001",
+    "002302008002"
+   ],
+   "condition": "PI/PRM"
+  },
+  "39022": {
+   "id": 216,
+   "legend": "C/4",
+   "storeys": 4,
+   "decision": "4",
+   "lots": [
+    "001109007001"
+   ],
+   "condition": "BIC BIEN FISCAL"
+  },
+  "39023": {
+   "id": 217,
+   "legend": "C/5",
+   "storeys": 5,
+   "decision": "5",
+   "lots": [
+    "004308054001"
+   ],
+   "condition": "ZONA EQUIPAMIENTO COMUNAL PÚBLICO"
+  },
+  "39024": {
+   "id": 218,
+   "legend": "C/4",
+   "storeys": 4,
+   "decision": "4",
+   "lots": [
+    "002507025001",
+    "002507025002",
+    "002507025003",
+    "002507025004"
+   ],
+   "condition": "BIEN FISCAL"
+  },
+  "39025": {
+   "id": 219,
+   "legend": "C/6",
+   "storeys": 6,
+   "decision": "6",
+   "lots": [
+    "004513034018",
+    "004513034017",
+    "004513034098"
+   ],
+   "condition": null
+  },
+  "39026": {
+   "id": 220,
+   "legend": "C/3",
+   "storeys": 3,
+   "decision": "3",
+   "lots": [
+    "002434051001"
+   ],
+   "condition": "ZONA EQUIPAMIENTO COMUNAL 0024345102                   PÚBLICO"
+  },
+  "39027": {
+   "id": 221,
+   "legend": "C/3",
+   "storeys": 3,
+   "decision": "3",
+   "lots": [
+    "004539094001"
+   ],
+   "condition": "ZONA EQUIPAMIENTO COMUNAL PÚBLICO"
+  },
+  "39028": {
+   "id": 222,
+   "legend": "C/3",
+   "storeys": 3,
+   "decision": "3",
+   "lots": [
+    "002528088002",
+    "002528088003",
+    "002528088004",
+    "002528088005",
+    "002528088006",
+    "002528088007",
+    "002528088008",
+    "002528088009"
+   ],
+   "condition": "BIEN FISCAL"
+  },
+  "39029": {
+   "id": 223,
+   "legend": "C/5",
+   "storeys": 5,
+   "decision": "5",
+   "lots": [
+    "002401015004"
+   ],
+   "condition": "ZONA EQUIPAMIENTO COMUNAL PÚBLICO"
+  },
+  "39030": {
+   "id": 224,
+   "legend": "C/4",
+   "storeys": 4,
+   "decision": "4",
+   "lots": [
+    "004514026001"
+   ],
+   "condition": "ZONA EQUIPAMIENTO COMUNAL PÚBLICO"
+  },
+  "39031": {
+   "id": 225,
+   "legend": "C/3",
+   "storeys": 3,
+   "decision": "3",
+   "lots": [
+    "002573021001"
+   ],
+   "condition": null
+  },
+  "39032": {
+   "id": 226,
+   "legend": "C/4",
+   "storeys": 4,
+   "decision": "4",
+   "lots": [
+    "004539098001"
+   ],
+   "condition": "ZONA EQUIPAMIENTO COMUNAL PÚBLICO"
+  },
+  "39033": {
+   "id": 227,
+   "legend": "C/3",
+   "storeys": 3,
+   "decision": "3",
+   "lots": [
+    "004603018001"
+   ],
+   "condition": "ZONA EQUIPAMIENTO COMUNAL PÚBLICO"
+  },
+  "39034": {
+   "id": 228,
+   "legend": "C/N/A",
+   "storeys": null,
+   "decision": "N/A",
+   "lots": [
+    "004533078001"
+   ],
+   "condition": "No aplica - Zona verde"
+  },
+  "39035": {
+   "id": 229,
+   "legend": "C/6",
+   "storeys": 6,
+   "decision": "6",
+   "lots": [
+    "002307040001"
+   ],
+   "condition": null
+  },
+  "39036": {
+   "id": 230,
+   "legend": "C/4",
+   "storeys": 4,
+   "decision": "4",
+   "lots": [
+    "006514023001"
+   ],
+   "condition": "ZONA EQUIPAMIENTO COMUNAL PÚBLICO"
+  },
+  "39037": {
+   "id": 231,
+   "legend": "C/7",
+   "storeys": 7,
+   "decision": "7",
+   "lots": [
+    "001101007036"
+   ],
+   "condition": null
+  },
+  "39038": {
+   "id": 232,
+   "legend": "C/4",
+   "storeys": 4,
+   "decision": "4",
+   "lots": [
+    "001111009001"
+   ],
+   "condition": "BIC"
+  },
+  "39039": {
+   "id": 233,
+   "legend": "C/3",
+   "storeys": 3,
+   "decision": "3",
+   "lots": [
+    "004528024001"
+   ],
+   "condition": "ZONA EQUIPAMIENTO COMUNAL PÚBLICO"
+  },
+  "39040": {
+   "id": 234,
+   "legend": "C/6",
+   "storeys": 6,
+   "decision": "6",
+   "lots": [],
+   "condition": "0023075602, ZONA EQUIPAMIENTO COMUNAL 0023075603                   PÚBLICO"
+  },
+  "39041": {
+   "id": 235,
+   "legend": "C/5",
+   "storeys": 5,
+   "decision": "5",
+   "lots": [
+    "004407020004"
+   ],
+   "condition": "0044072002, ZONA EQUIPAMIENTO COMUNAL 0044072003,                  PÚBLICO"
+  },
+  "39042": {
+   "id": 236,
+   "legend": "C/5",
+   "storeys": 5,
+   "decision": "5",
+   "lots": [
+    "002104010001"
+   ],
+   "condition": "ZONA EQUIPAMIENTO COMUNAL PÚBLICO"
+  },
+  "39043": {
+   "id": 237,
+   "legend": "C/4",
+   "storeys": 4,
+   "decision": "4",
+   "lots": [
+    "251801070001"
+   ],
+   "condition": "ZONA EQUIPAMIENTO COMUNAL PÚBLICO BIEN FISCAL"
+  },
+  "39044": {
+   "id": 238,
+   "legend": "C/4",
+   "storeys": 4,
+   "decision": "4",
+   "lots": [
+    "004554014004"
+   ],
+   "condition": "ZONA EQUIPAMIENTO COMUNAL PÚBLICO"
+  },
+  "39045": {
+   "id": 239,
+   "legend": "C/3",
+   "storeys": 3,
+   "decision": "3",
+   "lots": [
+    "006506017001"
+   ],
+   "condition": "ZONA EQUIPAMIENTO COMUNAL PÚBLICO"
+  },
+  "39047": {
+   "id": 240,
+   "legend": "C/4",
+   "storeys": 4,
+   "decision": "4",
+   "lots": [
+    "004540040004"
+   ],
+   "condition": "ZONA EQUIPAMIENTO COMUNAL PÚBLICO"
+  },
+  "39049": {
+   "id": 241,
+   "legend": "C/N/A",
+   "storeys": null,
+   "decision": "N/A",
+   "lots": [
+    "002444042001"
+   ],
+   "condition": "No aplica - Infraestructura de Servicios Públicos"
+  },
+  "39050": {
+   "id": 242,
+   "legend": "C/4",
+   "storeys": 4,
+   "decision": "4",
+   "lots": [
+    "006503033002"
+   ],
+   "condition": "ZONA EQUIPAMIENTO COMUNAL PÚBLICO"
+  },
+  "39051": {
+   "id": 243,
+   "legend": "C/4",
+   "storeys": 4,
+   "decision": "4",
+   "lots": [
+    "004545095001"
+   ],
+   "condition": "ZONA EQUIPAMIENTO COMUNAL PÚBLICO"
+  },
+  "39052": {
+   "id": 244,
+   "legend": "C/5",
+   "storeys": 5,
+   "decision": "5",
+   "lots": [
+    "004504050001"
+   ],
+   "condition": "ZONA EQUIPAMIENTO COMUNAL PÚBLICO"
+  },
+  "39053": {
+   "id": 245,
+   "legend": "C/5",
+   "storeys": 5,
+   "decision": "5",
+   "lots": [
+    "004508046001"
+   ],
+   "condition": "ZONA EQUIPAMIENTO COMUNAL PÚBLICO"
+  },
+  "39054": {
+   "id": 246,
+   "legend": "C/3",
+   "storeys": 3,
+   "decision": "3",
+   "lots": [
+    "004612097004"
+   ],
+   "condition": "ZONA EQUIPAMIENTO COMUNAL PÚBLICO"
+  },
+  "39055": {
+   "id": 247,
+   "legend": "C/5",
+   "storeys": 5,
+   "decision": "5",
+   "lots": [
+    "004409050020"
+   ],
+   "condition": null
+  },
+  "39056": {
+   "id": 248,
+   "legend": "C/3",
+   "storeys": 3,
+   "decision": "3",
+   "lots": [],
+   "condition": "0025547701, ZONA EQUIPAMIENTO COMUNAL 0025547702                   PÚBLICO"
+  },
+  "39057": {
+   "id": 249,
+   "legend": "C/6",
+   "storeys": 6,
+   "decision": "6",
+   "lots": [
+    "002205016041"
+   ],
+   "condition": "0022051601, BIEN FISCAL"
+  },
+  "39058": {
+   "id": 250,
+   "legend": "C/4",
+   "storeys": 4,
+   "decision": "4",
+   "lots": [],
+   "condition": "0045048605, ZONA EQUIPAMIENTO COMUNAL 0045048604                   PÚBLICO"
+  },
+  "39059": {
+   "id": 251,
+   "legend": "C/5",
+   "storeys": 5,
+   "decision": "5",
+   "lots": [
+    "004510062001"
+   ],
+   "condition": "ZONA EQUIPAMIENTO COMUNAL PÚBLICO"
+  },
+  "39060": {
+   "id": 252,
+   "legend": "C/5",
+   "storeys": 5,
+   "decision": "5",
+   "lots": [
+    "006516025001"
+   ],
+   "condition": null
+  },
+  "39061": {
+   "id": 253,
+   "legend": "C/3",
+   "storeys": 3,
+   "decision": "3",
+   "lots": [
+    "004528006001"
+   ],
+   "condition": "ZONA EQUIPAMIENTO COMUNAL PÚBLICO"
+  },
+  "39062": {
+   "id": 254,
+   "legend": "C/4",
+   "storeys": 4,
+   "decision": "4",
+   "lots": [
+    "004638026001"
+   ],
+   "condition": "ZONA EQUIPAMIENTO COMUNAL PÚBLICO BIEN FISCAL"
+  },
+  "39063": {
+   "id": 255,
+   "legend": "C/N/A",
+   "storeys": null,
+   "decision": "N/A",
+   "lots": [
+    "004316018006"
+   ],
+   "condition": "No aplica - Infraestructura de Servicios Públicos"
+  },
+  "39064": {
+   "id": 256,
+   "legend": "C/3",
+   "storeys": 3,
+   "decision": "3",
+   "lots": [
+    "004536033001"
+   ],
+   "condition": "ZONA EQUIPAMIENTO COMUNAL PÚBLICO"
+  },
+  "39065": {
+   "id": 257,
+   "legend": "C/4",
+   "storeys": 4,
+   "decision": "4",
+   "lots": [
+    "004101051001"
+   ],
+   "condition": null
+  },
+  "39066": {
+   "id": 258,
+   "legend": "C/3",
+   "storeys": 3,
+   "decision": "3",
+   "lots": [
+    "001109018001"
+   ],
+   "condition": "BIC ZONA EQUIPAMIENTO COMUNAL PÚBLICO"
+  },
+  "39067": {
+   "id": 259,
+   "legend": "C/6",
+   "storeys": 6,
+   "decision": "6",
+   "lots": [
+    "004582004001"
+   ],
+   "condition": "ZONA EQUIPAMIENTO COMUNAL PÚBLICO"
+  },
+  "39068": {
+   "id": 260,
+   "legend": "C/5",
+   "storeys": 5,
+   "decision": "5",
+   "lots": [
+    "004204031002"
+   ],
+   "condition": "ZONA EQUIPAMIENTO COMUNAL PÚBLICO"
+  },
+  "39069": {
+   "id": 261,
+   "legend": "C/4",
+   "storeys": 4,
+   "decision": "4",
+   "lots": [
+    "004584075001"
+   ],
+   "condition": "ZONA EQUIPAMIENTO COMUNAL PÚBLICO"
+  },
+  "39070": {
+   "id": 262,
+   "legend": "C/5",
+   "storeys": 5,
+   "decision": "5",
+   "lots": [
+    "002202074001"
+   ],
+   "condition": "BIEN FISCAL"
+  },
+  "39071": {
+   "id": 263,
+   "legend": "C/4",
+   "storeys": 4,
+   "decision": "4",
+   "lots": [
+    "001111012001"
+   ],
+   "condition": null
+  },
+  "39072": {
+   "id": 264,
+   "legend": "C/4",
+   "storeys": 4,
+   "decision": "4",
+   "lots": [
+    "004601076001"
+   ],
+   "condition": null
+  },
+  "39073": {
+   "id": 265,
+   "legend": "C/3",
+   "storeys": 3,
+   "decision": "3",
+   "lots": [
+    "001302020005"
+   ],
+   "condition": "ZONA EQUIPAMIENTO COMUNAL PÚBLICO"
+  },
+  "39074": {
+   "id": 266,
+   "legend": "C/4",
+   "storeys": 4,
+   "decision": "4",
+   "lots": [
+    "004622051001"
+   ],
+   "condition": null
+  },
+  "39075": {
+   "id": 267,
+   "legend": "C/6",
+   "storeys": 6,
+   "decision": "6",
+   "lots": [
+    "004211026002"
+   ],
+   "condition": "BIEN FISCAL"
+  },
+  "39076": {
+   "id": 268,
+   "legend": "C/5",
+   "storeys": 5,
+   "decision": "5",
+   "lots": [
+    "004511068001"
+   ],
+   "condition": "ZONA EQUIPAMIENTO COMUNAL PÚBLICO"
+  },
+  "39077": {
+   "id": 269,
+   "legend": "C/5",
+   "storeys": 5,
+   "decision": "5",
+   "lots": [
+    "004518063001"
+   ],
+   "condition": null
+  },
+  "39078": {
+   "id": 270,
+   "legend": "C/4",
+   "storeys": 4,
+   "decision": "4",
+   "lots": [
+    "001102011001"
+   ],
+   "condition": "ZONA EQUIPAMIENTO COMUNAL PÚBLICO"
+  },
+  "39079": {
+   "id": 271,
+   "legend": "C/6",
+   "storeys": 6,
+   "decision": "6",
+   "lots": [],
+   "condition": "0042022801, ZONA EQUIPAMIENTO COMUNAL 0042022805,                  PÚBLICO 0042022803,                BIEN FISCAL 0042022804                     PRM"
+  },
+  "39080": {
+   "id": 272,
+   "legend": "C/5",
+   "storeys": 5,
+   "decision": "5",
+   "lots": [],
+   "condition": "0044093602, ZONA EQUIPAMIENTO COMUNAL 0044093601                   PÚBLICO"
+  },
+  "39081": {
+   "id": 273,
+   "legend": "C/4",
+   "storeys": 4,
+   "decision": "4",
+   "lots": [
+    "001205015009"
+   ],
+   "condition": "BIC"
+  },
+  "39082": {
+   "id": 274,
+   "legend": "C/3",
+   "storeys": 3,
+   "decision": "3",
+   "lots": [
+    "001302023001",
+    "001302023073",
+    "001302023072"
+   ],
+   "condition": null
+  },
+  "39083": {
+   "id": 275,
+   "legend": "C/3",
+   "storeys": 3,
+   "decision": "3",
+   "lots": [
+    "002568081001"
+   ],
+   "condition": "ZONA EQUIPAMIENTO COMUNAL PÚBLICO"
+  },
+  "39085": {
+   "id": 276,
+   "legend": "C/6",
+   "storeys": 6,
+   "decision": "6",
+   "lots": [
+    "006518004010"
+   ],
+   "condition": "BIEN FISCAL"
+  },
+  "39086": {
+   "id": 277,
+   "legend": "C/5",
+   "storeys": 5,
+   "decision": "5",
+   "lots": [
+    "006516024051"
+   ],
+   "condition": null
+  },
+  "39087": {
+   "id": 278,
+   "legend": "C/5",
+   "storeys": 5,
+   "decision": "5",
+   "lots": [
+    "004508024001"
+   ],
+   "condition": "ZONA EQUIPAMIENTO COMUNAL PÚBLICO"
+  },
+  "39088": {
+   "id": 279,
+   "legend": "C/6",
+   "storeys": 6,
+   "decision": "6",
+   "lots": [
+    "002607095002"
+   ],
+   "condition": "BIEN FISCAL"
+  },
+  "39089": {
+   "id": 280,
+   "legend": "C/6",
+   "storeys": 6,
+   "decision": "6",
+   "lots": [
+    "002308023001"
+   ],
+   "condition": "BIC"
+  },
+  "39090": {
+   "id": 281,
+   "legend": "C/5",
+   "storeys": 5,
+   "decision": "5",
+   "lots": [
+    "002103055001"
+   ],
+   "condition": "PI/PRM"
+  },
+  "39091": {
+   "id": 282,
+   "legend": "C/5",
+   "storeys": 5,
+   "decision": "5",
+   "lots": [
+    "004506099001"
+   ],
+   "condition": "ZONA EQUIPAMIENTO COMUNAL PÚBLICO"
+  },
+  "39092": {
+   "id": 283,
+   "legend": "C/4",
+   "storeys": 4,
+   "decision": "4",
+   "lots": [
+    "004586019001"
+   ],
+   "condition": null
+  },
+  "39093": {
+   "id": 284,
+   "legend": "C/4",
+   "storeys": 4,
+   "decision": "4",
+   "lots": [
+    "002508008001"
+   ],
+   "condition": "ZONA EQUIPAMIENTO COMUNAL PÚBLICO"
+  },
+  "39094": {
+   "id": 285,
+   "legend": "C/3",
+   "storeys": 3,
+   "decision": "3",
+   "lots": [
+    "003209034001"
+   ],
+   "condition": null
+  },
+  "39095": {
+   "id": 286,
+   "legend": "C/4",
+   "storeys": 4,
+   "decision": "4",
+   "lots": [],
+   "condition": "0014149101, ZONA EQUIPAMIENTO COMUNAL 0014149102                   PÚBLICO"
+  },
+  "39096": {
+   "id": 287,
+   "legend": "C/3",
+   "storeys": 3,
+   "decision": "3",
+   "lots": [
+    "002530041026"
+   ],
+   "condition": "BIEN FISCAL"
+  },
+  "39097": {
+   "id": 288,
+   "legend": "C/5",
+   "storeys": 5,
+   "decision": "5",
+   "lots": [
+    "004507032001"
+   ],
+   "condition": "ZONA EQUIPAMIENTO COMUNAL PÚBLICO"
+  },
+  "39098": {
+   "id": 289,
+   "legend": "C/4",
+   "storeys": 4,
+   "decision": "4",
+   "lots": [
+    "004616003001"
+   ],
+   "condition": null
+  },
+  "39099": {
+   "id": 290,
+   "legend": "C/6",
+   "storeys": 6,
+   "decision": "6",
+   "lots": [
+    "002305020001"
+   ],
+   "condition": "BIEN FISCAL"
+  },
+  "39100": {
+   "id": 291,
+   "legend": "C/3",
+   "storeys": 3,
+   "decision": "3",
+   "lots": [
+    "002514017031",
+    "002514017002",
+    "002514017001",
+    "002514017053",
+    "002514017039",
+    "002514017012",
+    "002514017038",
+    "002514017037",
+    "002514017010",
+    "002514017009",
+    "002514017034",
+    "002514017097",
+    "002514017055",
+    "002514017006",
+    "002514017004",
+    "002514017047",
+    "002514017003",
+    "002514017050",
+    "002514017051",
+    "002514017049",
+    "002514017048",
+    "002514017026",
+    "002514017025",
+    "002514017027",
+    "002514017042",
+    "002514017005",
+    "002514017052",
+    "002514017043",
+    "002514017045",
+    "002514017007",
+    "002514017020",
+    "002514017018",
+    "002514017019",
+    "002514017017",
+    "002514017059",
+    "002514017011",
+    "002514017029",
+    "002514017041",
+    "002514017040",
+    "002514017013",
+    "002514017024",
+    "002514017008",
+    "002514017016",
+    "002514017021",
+    "002514017032",
+    "002514017015",
+    "002514017033",
+    "002514017022",
+    "002514017030",
+    "002514017035",
+    "002514017014",
+    "002514017057",
+    "002514017036",
+    "002514017023",
+    "002514017028"
+   ],
+   "condition": "BIEN FISCAL"
+  },
+  "39102": {
+   "id": 292,
+   "legend": "C/5",
+   "storeys": 5,
+   "decision": "5",
+   "lots": [
+    "004510041001"
+   ],
+   "condition": "ZONA EQUIPAMIENTO COMUNAL PÚBLICO"
+  },
+  "39103": {
+   "id": 293,
+   "legend": "C/5",
+   "storeys": 5,
+   "decision": "5",
+   "lots": [
+    "004504092001"
+   ],
+   "condition": "ZONA EQUIPAMIENTO COMUNAL PÚBLICO"
+  },
+  "39104": {
+   "id": 294,
+   "legend": "C/4",
+   "storeys": 4,
+   "decision": "4",
+   "lots": [
+    "205319012041"
+   ],
+   "condition": "BIEN FISCAL"
+  },
+  "39105": {
+   "id": 295,
+   "legend": "C/3",
+   "storeys": 3,
+   "decision": "3",
+   "lots": [
+    "002573099013",
+    "002573099011"
+   ],
+   "condition": "ZONA EQUIPAMIENTO COMUNAL 0025739905                   PÚBLICO"
+  },
+  "39107": {
+   "id": 296,
+   "legend": "C/4",
+   "storeys": 4,
+   "decision": "4",
+   "lots": [
+    "002309014001"
+   ],
+   "condition": "ZONA EQUIPAMIENTO COMUNAL PÚBLICO"
+  },
+  "39108": {
+   "id": 297,
+   "legend": "C/5",
+   "storeys": 5,
+   "decision": "5",
+   "lots": [
+    "004309026001"
+   ],
+   "condition": "ZONA EQUIPAMIENTO COMUNAL PÚBLICO"
+  },
+  "39110": {
+   "id": 298,
+   "legend": "C/9",
+   "storeys": 9,
+   "decision": "9",
+   "lots": [
+    "002416038010"
+   ],
+   "condition": "ZONA EQUIPAMIENTO COMUNAL PÚBLICO"
+  },
+  "39111": {
+   "id": 299,
+   "legend": "C/3",
+   "storeys": 3,
+   "decision": "3",
+   "lots": [
+    "004533074001"
+   ],
+   "condition": "ZONA EQUIPAMIENTO COMUNAL PÚBLICO"
+  },
+  "39112": {
+   "id": 300,
+   "legend": "C/4",
+   "storeys": 4,
+   "decision": "4",
+   "lots": [
+    "004521028015"
+   ],
+   "condition": "ZONA EQUIPAMIENTO COMUNAL PÚBLICO"
+  },
+  "39113": {
+   "id": 301,
+   "legend": "C/5",
+   "storeys": 5,
+   "decision": "5",
+   "lots": [
+    "004512019001"
+   ],
+   "condition": "ZONA EQUIPAMIENTO COMUNAL PÚBLICO"
+  },
+  "39115": {
+   "id": 302,
+   "legend": "C/4",
+   "storeys": 4,
+   "decision": "4",
+   "lots": [
+    "002556007032",
+    "002556007033",
+    "002556007034",
+    "002556007043",
+    "002556007035",
+    "002556007036",
+    "002556007037",
+    "002556007038",
+    "002556007039"
+   ],
+   "condition": "BIEN FISCAL"
+  },
+  "39117": {
+   "id": 303,
+   "legend": "C/3",
+   "storeys": 3,
+   "decision": "3",
+   "lots": [
+    "001332031001",
+    "001332031005"
+   ],
+   "condition": null
+  },
+  "39118": {
+   "id": 304,
+   "legend": "C/4",
+   "storeys": 4,
+   "decision": "4",
+   "lots": [
+    "001416025002"
+   ],
+   "condition": "ZONA EQUIPAMIENTO COMUNAL 0014162501                   PÚBLICO PLAN DIRECTOR"
+  },
+  "39119": {
+   "id": 305,
+   "legend": "C/5",
+   "storeys": 5,
+   "decision": "5",
+   "lots": [
+    "002401026005"
+   ],
+   "condition": "ZONA EQUIPAMIENTO COMUNAL PÚBLICO"
+  },
+  "39120": {
+   "id": 306,
+   "legend": "C/4",
+   "storeys": 4,
+   "decision": "4",
+   "lots": [
+    "004532031001"
+   ],
+   "condition": "ZONA EQUIPAMIENTO COMUNAL PÚBLICO"
+  },
+  "39121": {
+   "id": 307,
+   "legend": "C/4",
+   "storeys": 4,
+   "decision": "4",
+   "lots": [
+    "004638028001"
+   ],
+   "condition": null
+  },
+  "39122": {
+   "id": 308,
+   "legend": "C/4",
+   "storeys": 4,
+   "decision": "4",
+   "lots": [
+    "002544067002"
+   ],
+   "condition": "ZONA EQUIPAMIENTO COMUNAL PÚBLICO"
+  },
+  "39123": {
+   "id": 309,
+   "legend": "C/3",
+   "storeys": 3,
+   "decision": "3",
+   "lots": [
+    "002586001004"
+   ],
+   "condition": "BIEN FISCAL"
+  },
+  "39124": {
+   "id": 310,
+   "legend": "C/5",
+   "storeys": 5,
+   "decision": "5",
+   "lots": [
+    "205101026001"
+   ],
+   "condition": "Plan Parcial"
+  },
+  "39125": {
+   "id": 311,
+   "legend": "C/5",
+   "storeys": 5,
+   "decision": "5",
+   "lots": [
+    "002107036001"
+   ],
+   "condition": "ZONA EQUIPAMIENTO COMUNAL PÚBLICO"
+  },
+  "39126": {
+   "id": 312,
+   "legend": "C/5",
+   "storeys": 5,
+   "decision": "5",
+   "lots": [
+    "004513094004"
+   ],
+   "condition": "BIEN FISCAL"
+  },
+  "39128": {
+   "id": 313,
+   "legend": "C/5",
+   "storeys": 5,
+   "decision": "5",
+   "lots": [
+    "004512053001"
+   ],
+   "condition": "PI/PRM"
+  },
+  "39129": {
+   "id": 314,
+   "legend": "C/N/A",
+   "storeys": null,
+   "decision": "N/A",
+   "lots": [
+    "004210080031"
+   ],
+   "condition": "No aplica - Infraestructura de Servicios Públicos"
+  },
+  "39130": {
+   "id": 315,
+   "legend": "C/N/A",
+   "storeys": null,
+   "decision": "N/A",
+   "lots": [
+    "004538080019"
+   ],
+   "condition": "No aplica - Infraestructura de Servicios 0045388007                         Públicos"
+  },
+  "39131": {
+   "id": 316,
+   "legend": "C/4",
+   "storeys": 4,
+   "decision": "4",
+   "lots": [
+    "004627071004"
+   ],
+   "condition": "ZONA EQUIPAMIENTO COMUNAL PÚBLICO BIEN FISCAL"
+  },
+  "39132": {
+   "id": 317,
+   "legend": "C/5",
+   "storeys": 5,
+   "decision": "5",
+   "lots": [
+    "001112002008"
+   ],
+   "condition": null
+  },
+  "39133": {
+   "id": 318,
+   "legend": "C/5",
+   "storeys": 5,
+   "decision": "5",
+   "lots": [
+    "205109028004"
+   ],
+   "condition": "ZONA EQUIPAMIENTO COMUNAL PÚBLICO PLAN PARCIAL, PI/PRM"
+  },
+  "39134": {
+   "id": 319,
+   "legend": "C/5",
+   "storeys": 5,
+   "decision": "5",
+   "lots": [
+    "002209088002"
+   ],
+   "condition": null
+  },
+  "39135": {
+   "id": 320,
+   "legend": "C/5",
+   "storeys": 5,
+   "decision": "5",
+   "lots": [
+    "002401021002"
+   ],
+   "condition": "ZONA EQUIPAMIENTO COMUNAL PÚBLICO"
+  },
+  "39136": {
+   "id": 321,
+   "legend": "C/5",
+   "storeys": 5,
+   "decision": "5",
+   "lots": [
+    "002456060030"
+   ],
+   "condition": "BIEN FISCAL"
+  },
+  "39137": {
+   "id": 322,
+   "legend": "C/5",
+   "storeys": 5,
+   "decision": "5",
+   "lots": [
+    "002401019006"
+   ],
+   "condition": "ZONA EQUIPAMIENTO COMUNAL PÚBLICO"
+  },
+  "39138": {
+   "id": 323,
+   "legend": "C/6",
+   "storeys": 6,
+   "decision": "6",
+   "lots": [
+    "004575041019"
+   ],
+   "condition": "BIEN FISCAL"
+  },
+  "39139": {
+   "id": 324,
+   "legend": "C/5",
+   "storeys": 5,
+   "decision": "5",
+   "lots": [
+    "001412073003",
+    "001412073001",
+    "001412073011"
+   ],
+   "condition": "BIEN FISCAL"
+  },
+  "39140": {
+   "id": 325,
+   "legend": "C/6",
+   "storeys": 6,
+   "decision": "6",
+   "lots": [
+    "001414062015",
+    "001414062011"
+   ],
+   "condition": "BIEN FISCAL"
+  },
+  "39141": {
+   "id": 326,
+   "legend": "C/11",
+   "storeys": 11,
+   "decision": "11",
+   "lots": [
+    "002433066001"
+   ],
+   "condition": "BIEN FISCAL"
+  },
+  "39142": {
+   "id": 327,
+   "legend": "C/5",
+   "storeys": 5,
+   "decision": "5",
+   "lots": [
+    "205109010003"
+   ],
+   "condition": "ZONA EQUIPAMIENTO COMUNAL PÚBLICO PLAN PARCIAL"
+  },
+  "39143": {
+   "id": 328,
+   "legend": "C/3",
+   "storeys": 3,
+   "decision": "3",
+   "lots": [
+    "004522056001"
+   ],
+   "condition": "BIEN FISCAL"
+  },
+  "39144": {
+   "id": 329,
+   "legend": "C/5",
+   "storeys": 5,
+   "decision": "5",
+   "lots": [
+    "004510016001"
+   ],
+   "condition": "ZONA EQUIPAMIENTO COMUNAL PÚBLICO"
+  },
+  "39145": {
+   "id": 330,
+   "legend": "C/4",
+   "storeys": 4,
+   "decision": "4",
+   "lots": [
+    "002209041001"
+   ],
+   "condition": "ZONA EQUIPAMIENTO COMUNAL PÚBLICO"
+  },
+  "39146": {
+   "id": 331,
+   "legend": "C/6",
+   "storeys": 6,
+   "decision": "6",
+   "lots": [
+    "004591012001"
+   ],
+   "condition": null
+  },
+  "39147": {
+   "id": 332,
+   "legend": "C/5",
+   "storeys": 5,
+   "decision": "5",
+   "lots": [
+    "004605009001"
+   ],
+   "condition": null
+  },
+  "39148": {
+   "id": 333,
+   "legend": "C/6",
+   "storeys": 6,
+   "decision": "6",
+   "lots": [
+    "004591008027",
+    "004591008028",
+    "004591008029"
+   ],
+   "condition": "BIEN FISCAL"
+  },
+  "39149": {
+   "id": 334,
+   "legend": "C/5",
+   "storeys": 5,
+   "decision": "5",
+   "lots": [
+    "002589099028"
+   ],
+   "condition": "BIEN FISCAL"
+  },
+  "39150": {
+   "id": 335,
+   "legend": "C/4",
+   "storeys": 4,
+   "decision": "4",
+   "lots": [
+    "001425095001"
+   ],
+   "condition": "ZONA EQUIPAMIENTO COMUNAL PÚBLICO BIEN FISCAL"
+  },
+  "39151": {
+   "id": 336,
+   "legend": "C/3",
+   "storeys": 3,
+   "decision": "3",
+   "lots": [
+    "002440025006",
+    "002440025001"
+   ],
+   "condition": "ZONA EQUIPAMIENTO COMUNAL 0024402503                   PÚBLICO"
+  },
+  "39152": {
+   "id": 337,
+   "legend": "C/3",
+   "storeys": 3,
+   "decision": "3",
+   "lots": [
+    "001304073021"
+   ],
+   "condition": "BIEN FISCAL"
+  },
+  "39153": {
+   "id": 338,
+   "legend": "C/5",
+   "storeys": 5,
+   "decision": "5",
+   "lots": [
+    "002401011002"
+   ],
+   "condition": "ZONA EQUIPAMIENTO COMUNAL PÚBLICO PI/PRM"
+  },
+  "39154": {
+   "id": 339,
+   "legend": "C/9",
+   "storeys": 9,
+   "decision": "9",
+   "lots": [
+    "004637080004"
+   ],
+   "condition": "BIEN FISCAL"
+  },
+  "39155": {
+   "id": 340,
+   "legend": "C/4",
+   "storeys": 4,
+   "decision": "4",
+   "lots": [
+    "205319023006"
+   ],
+   "condition": "ZONA EQUIPAMIENTO COMUNAL PÚBLICO PLAN PARCIAL, PI/PRM"
+  },
+  "39156": {
+   "id": 341,
+   "legend": "C/4",
+   "storeys": 4,
+   "decision": "4",
+   "lots": [
+    "001402015009",
+    "001402015010"
+   ],
+   "condition": "ZONA EQUIPAMIENTO COMUNAL 0014021501                   PÚBLICO"
+  },
+  "39157": {
+   "id": 342,
+   "legend": "C/4",
+   "storeys": 4,
+   "decision": "4",
+   "lots": [
+    "004524056001"
+   ],
+   "condition": "ZONA EQUIPAMIENTO COMUNAL PÚBLICO"
+  },
+  "39158": {
+   "id": 343,
+   "legend": "C/4",
+   "storeys": 4,
+   "decision": "4",
+   "lots": [
+    "001426063001"
+   ],
+   "condition": null
+  },
+  "39159": {
+   "id": 344,
+   "legend": "C/5",
+   "storeys": 5,
+   "decision": "5",
+   "lots": [
+    "002413001001"
+   ],
+   "condition": null
+  },
+  "39160": {
+   "id": 345,
+   "legend": "C/10",
+   "storeys": 10,
+   "decision": "10",
+   "lots": [
+    "002422022011"
+   ],
+   "condition": "ZONA EQUIPAMIENTO COMUNAL 0024222212                   PÚBLICO"
+  },
+  "39161": {
+   "id": 346,
+   "legend": "C/3",
+   "storeys": 3,
+   "decision": "3",
+   "lots": [
+    "002539086001"
+   ],
+   "condition": "ZONA EQUIPAMIENTO COMUNAL PÚBLICO BIEN FISCAL"
+  },
+  "39162": {
+   "id": 347,
+   "legend": "C/3",
+   "storeys": 3,
+   "decision": "3",
+   "lots": [
+    "002546090002"
+   ],
+   "condition": null
+  },
+  "39163": {
+   "id": 348,
+   "legend": "C/12",
+   "storeys": 12,
+   "decision": "12",
+   "lots": [
+    "004594057002"
+   ],
+   "condition": "BIEN FISCAL"
+  },
+  "39164": {
+   "id": 349,
+   "legend": "C/6",
+   "storeys": 6,
+   "decision": "6",
+   "lots": [
+    "002305023001",
+    "002305023027",
+    "002305023048",
+    "002305023045",
+    "002305023044"
+   ],
+   "condition": "PI/PRM"
+  },
+  "39165": {
+   "id": 350,
+   "legend": "C/5",
+   "storeys": 5,
+   "decision": "5",
+   "lots": [
+    "001102051003"
+   ],
+   "condition": "BIC"
+  },
+  "39166": {
+   "id": 351,
+   "legend": "C/3",
+   "storeys": 3,
+   "decision": "3",
+   "lots": [
+    "002611054001"
+   ],
+   "condition": "PLAN DIRECTOR BIEN FISCAL"
+  },
+  "39167": {
+   "id": 352,
+   "legend": "C/9",
+   "storeys": 9,
+   "decision": "9",
+   "lots": [
+    "002594093001"
+   ],
+   "condition": "BIEN FISCAL"
+  },
+  "39168": {
+   "id": 353,
+   "legend": "C/5",
+   "storeys": 5,
+   "decision": "5",
+   "lots": [
+    "006505028002"
+   ],
+   "condition": null
+  },
+  "39169": {
+   "id": 354,
+   "legend": "C/3",
+   "storeys": 3,
+   "decision": "3",
+   "lots": [
+    "002533038003",
+    "002533038002"
+   ],
+   "condition": "BIEN FISCAL"
+  },
+  "39170": {
+   "id": 355,
+   "legend": "C/4",
+   "storeys": 4,
+   "decision": "4",
+   "lots": [
+    "001205011001",
+    "001205015009"
+   ],
+   "condition": "BIC"
+  },
+  "39171": {
+   "id": 356,
+   "legend": "C/3",
+   "storeys": 3,
+   "decision": "3",
+   "lots": [
+    "002510020008"
+   ],
+   "condition": null
+  },
+  "39172": {
+   "id": 357,
+   "legend": "C/4",
+   "storeys": 4,
+   "decision": "4",
+   "lots": [
+    "001205015001"
+   ],
+   "condition": null
+  },
+  "39173": {
+   "id": 358,
+   "legend": "C/3",
+   "storeys": 3,
+   "decision": "3",
+   "lots": [
+    "102407000003"
+   ],
+   "condition": "BIEN FISCAL"
+  },
+  "39174": {
+   "id": 359,
+   "legend": "C/4",
+   "storeys": 4,
+   "decision": "4",
+   "lots": [
+    "001401010001"
+   ],
+   "condition": "BIC BIEN FISCAL"
+  },
+  "39175": {
+   "id": 360,
+   "legend": "C/5",
+   "storeys": 5,
+   "decision": "5",
+   "lots": [
+    "002401012004"
+   ],
+   "condition": "ZONA EQUIPAMIENTO COMUNAL PÚBLICO"
+  },
+  "39177": {
+   "id": 361,
+   "legend": "C/5",
+   "storeys": 5,
+   "decision": "5",
+   "lots": [
+    "004504094001",
+    "004504099001"
+   ],
+   "condition": "ZONA EQUIPAMIENTO COMUNAL 0045049301                   PÚBLICO"
+  },
+  "39178": {
+   "id": 362,
+   "legend": "C/4",
+   "storeys": 4,
+   "decision": "4",
+   "lots": [
+    "006514003006"
+   ],
+   "condition": "BIEN FISCAL"
+  },
+  "39179": {
+   "id": 363,
+   "legend": "C/6",
+   "storeys": 6,
+   "decision": "6",
+   "lots": [
+    "002590047001"
+   ],
+   "condition": "BIEN FISCAL"
+  },
+  "39180": {
+   "id": 364,
+   "legend": "C/5",
+   "storeys": 5,
+   "decision": "5",
+   "lots": [
+    "002412069001",
+    "002412069004",
+    "002412069003"
+   ],
+   "condition": "ZONA EQUIPAMIENTO COMUNAL 0024126902                   PÚBLICO"
+  },
+  "39181": {
+   "id": 365,
+   "legend": "C/4",
+   "storeys": 4,
+   "decision": "4",
+   "lots": [
+    "004548001002"
+   ],
+   "condition": null
+  },
+  "39182": {
+   "id": 366,
+   "legend": "C/4",
+   "storeys": 4,
+   "decision": "4",
+   "lots": [
+    "004316045001"
+   ],
+   "condition": "BIEN FISCAL"
+  },
+  "39183": {
+   "id": 367,
+   "legend": "C/4",
+   "storeys": 4,
+   "decision": "4",
+   "lots": [
+    "001109024004",
+    "001109024013",
+    "001109024012",
+    "001109024014"
+   ],
+   "condition": null
+  },
+  "39184": {
+   "id": 368,
+   "legend": "C/N/A",
+   "storeys": null,
+   "decision": "N/A",
+   "lots": [
+    "002615032001"
+   ],
+   "condition": "No aplica - Zona verde"
+  },
+  "39185": {
+   "id": 369,
+   "legend": "C/4",
+   "storeys": 4,
+   "decision": "4",
+   "lots": [
+    "004406042002"
+   ],
+   "condition": "ZONA EQUIPAMIENTO COMUNAL 0044064201                    PÚBLICO BIEN FISCAL"
+  },
+  "39187": {
+   "id": 370,
+   "legend": "C/5",
+   "storeys": 5,
+   "decision": "5",
+   "lots": [
+    "004518068001"
+   ],
+   "condition": "PI/PRM 0045186802         ZONA EQUIPAMIENTO COMUNAL 0045186803                    PÚBLICO"
+  },
+  "39188": {
+   "id": 371,
+   "legend": "C/4",
+   "storeys": 4,
+   "decision": "4",
+   "lots": [
+    "205101034001"
+   ],
+   "condition": "BIC PLAN PARCIAL"
+  },
+  "39189": {
+   "id": 372,
+   "legend": "C/4",
+   "storeys": 4,
+   "decision": "4",
+   "lots": [
+    "004534090001"
+   ],
+   "condition": "ZONA EQUIPAMIENTO COMUNAL PÚBLICO"
+  },
+  "39190": {
+   "id": 373,
+   "legend": "C/5",
+   "storeys": 5,
+   "decision": "5",
+   "lots": [
+    "002410001002",
+    "002410001001"
+   ],
+   "condition": "BIEN FISCAL"
+  },
+  "39191": {
+   "id": 374,
+   "legend": "C/10",
+   "storeys": 10,
+   "decision": "10",
+   "lots": [
+    "004520049001",
+    "004520049016"
+   ],
+   "condition": "BIEN FISCAL"
+  },
+  "39192": {
+   "id": 375,
+   "legend": "C/5",
+   "storeys": 5,
+   "decision": "5",
+   "lots": [
+    "004522055001",
+    "004522055099",
+    "004522055002"
+   ],
+   "condition": "BIC 0045225598                      PI/PRM"
+  },
+  "39193": {
+   "id": 376,
+   "legend": "C/4",
+   "storeys": 4,
+   "decision": "4",
+   "lots": [
+    "004586022001",
+    "004586022007",
+    "004586022012",
+    "004586022010"
+   ],
+   "condition": "BIC"
+  },
+  "39194": {
+   "id": 377,
+   "legend": "C/5",
+   "storeys": 5,
+   "decision": "5",
+   "lots": [
+    "006106020001"
+   ],
+   "condition": "BIC PI/PRM"
+  },
+  "39195": {
+   "id": 378,
+   "legend": "C/3",
+   "storeys": 3,
+   "decision": "3",
+   "lots": [
+    "002438053001"
+   ],
+   "condition": null
+  },
+  "39196": {
+   "id": 379,
+   "legend": "C/6",
+   "storeys": 6,
+   "decision": "6",
+   "lots": [
+    "006502066003"
+   ],
+   "condition": "ZONA EQUIPAMIENTO COMUNAL PÚBLICO"
+  },
+  "39197": {
+   "id": 380,
+   "legend": "C/5",
+   "storeys": 5,
+   "decision": "5",
+   "lots": [
+    "008111004012",
+    "008110039016"
+   ],
+   "condition": "PI/PRM"
+  },
+  "39198": {
+   "id": 381,
+   "legend": "C/5",
+   "storeys": 5,
+   "decision": "5",
+   "lots": [
+    "002201035001"
+   ],
+   "condition": "ZONA EQUIPAMIENTO COMUNAL PÚBLICO PLAN DIRECTOR"
+  },
+  "39199": {
+   "id": 382,
+   "legend": "C/5",
+   "storeys": 5,
+   "decision": "5",
+   "lots": [
+    "002301023002"
+   ],
+   "condition": "BIC 0023012301                     PI/PRM"
+  },
+  "39200": {
+   "id": 383,
+   "legend": "C/4",
+   "storeys": 4,
+   "decision": "4",
+   "lots": [
+    "001108001035",
+    "001108001042",
+    "001108001036",
+    "001108001038",
+    "001108001039",
+    "001108001040",
+    "001108001041"
+   ],
+   "condition": "BIEN FISCAL"
+  },
+  "39201": {
+   "id": 384,
+   "legend": "C/5",
+   "storeys": 5,
+   "decision": "5",
+   "lots": [
+    "008102003001"
+   ],
+   "condition": "BIC"
+  },
+  "39202": {
+   "id": 385,
+   "legend": "C/8",
+   "storeys": 8,
+   "decision": "8",
+   "lots": [
+    "006516089001"
+   ],
+   "condition": "BIEN FISCAL PLAN DIRECTOR"
+  },
+  "39203": {
+   "id": 386,
+   "legend": "C/N/A",
+   "storeys": null,
+   "decision": "N/A",
+   "lots": [
+    "002410002007"
+   ],
+   "condition": "No aplica - Infraestructura de Servicios 0024012996                         Públicos"
+  },
+  "39204": {
+   "id": 387,
+   "legend": "C/5",
+   "storeys": 5,
+   "decision": "5",
+   "lots": [
+    "002204036001",
+    "002204036002"
+   ],
+   "condition": "BIEN FISCAL"
+  },
+  "39205": {
+   "id": 388,
+   "legend": "C/6",
+   "storeys": 6,
+   "decision": "6",
+   "lots": [
+    "008106040018",
+    "008106040014",
+    "008106040013",
+    "008106040012",
+    "008106040011",
+    "008106040010",
+    "008106040009",
+    "008106040008",
+    "008106040007",
+    "008106040006",
+    "008106040005"
+   ],
+   "condition": "BIEN FISCAL"
+  },
+  "39206": {
+   "id": 389,
+   "legend": "C/7",
+   "storeys": 7,
+   "decision": "7",
+   "lots": [
+    "006502084018",
+    "006502084099",
+    "006502084020",
+    "006502084021",
+    "006502084004",
+    "006502084002",
+    "006502084009",
+    "006502084005",
+    "006502084008",
+    "006502084007",
+    "006502084098",
+    "006502084006",
+    "006502084010",
+    "006502084011",
+    "006502084016",
+    "006502084017",
+    "006502084001",
+    "006502084014",
+    "006502084013",
+    "006502084012",
+    "006502084015"
+   ],
+   "condition": "BIC 0065028419                        PI/PRM"
+  },
+  "39207": {
+   "id": 390,
+   "legend": "C/4",
+   "storeys": 4,
+   "decision": "4",
+   "lots": [
+    "004514097001"
+   ],
+   "condition": "ZONA EQUIPAMIENTO COMUNAL PÚBLICO PI/PRM"
+  },
+  "39208": {
+   "id": 391,
+   "legend": "C/4",
+   "storeys": 4,
+   "decision": "4",
+   "lots": [
+    "002413017003"
+   ],
+   "condition": "0024131701                     PI/PRM 0024132599                 PLAN DIRECTOR"
+  },
+  "39210": {
+   "id": 392,
+   "legend": "C/5",
+   "storeys": 5,
+   "decision": "5",
+   "lots": [
+    "008111003001",
+    "008111003002",
+    "008111009001",
+    "008111002013",
+    "008111001012",
+    "008111007005",
+    "008111009007",
+    "008111009009",
+    "008111009011",
+    "008111009004",
+    "008111009003",
+    "008111009012",
+    "008111009006",
+    "008111009002",
+    "008111009008",
+    "008111009013",
+    "008111001007",
+    "008111002014",
+    "008111004005",
+    "008111005003",
+    "008111004008",
+    "008111004007",
+    "008111004006",
+    "008111004025",
+    "008111001005",
+    "008111004002",
+    "008111002004",
+    "008111004001",
+    "008111001015",
+    "008111002005",
+    "008111001018",
+    "008111002012",
+    "008111004013",
+    "008111004003",
+    "008111001009",
+    "008111001003",
+    "008111002007",
+    "008111005004",
+    "008111005002",
+    "008111005001",
+    "008111005005",
+    "008111009010",
+    "008111004014",
+    "008111002003",
+    "008111004022",
+    "008111004004",
+    "008111004021",
+    "008111004099",
+    "008111002002",
+    "008111001006",
+    "008111004017",
+    "008111009005",
+    "008111004094",
+    "008111004095",
+    "008111004096",
+    "008111002006",
+    "008111001010",
+    "008111004098",
+    "008111002015",
+    "008111001011",
+    "008111001016",
+    "008111001019",
+    "008111001013",
+    "008111002018",
+    "008111001004",
+    "008111001017",
+    "008111001014"
+   ],
+   "condition": "BIC 0081110424                     PI/PRM"
+  },
+  "39211": {
+   "id": 393,
+   "legend": "C/5",
+   "storeys": 5,
+   "decision": "5",
+   "lots": [
+    "004630022004",
+    "004630041006"
+   ],
+   "condition": "ZONA EQUIPAMIENTO COMUNAL 0046302201                   PÚBLICO 0046302901         PLAN DIRECTOR, PLAN PARCIAL"
+  },
+  "39212": {
+   "id": 394,
+   "legend": "C/4",
+   "storeys": 4,
+   "decision": "4",
+   "lots": [
+    "002511080011"
+   ],
+   "condition": "PI/PRM"
+  },
+  "39213": {
+   "id": 395,
+   "legend": "C/5",
+   "storeys": 5,
+   "decision": "5",
+   "lots": [
+    "002405001003",
+    "002405001001"
+   ],
+   "condition": "BIC 0024050102                       PI/PRM"
+  },
+  "39214": {
+   "id": 396,
+   "legend": "C/5",
+   "storeys": 5,
+   "decision": "5",
+   "lots": [
+    "004529077001"
+   ],
+   "condition": null
+  },
+  "39237": {
+   "id": 397,
+   "legend": "C/4",
+   "storeys": 4,
+   "decision": "4",
+   "lots": [
+    "001108065001"
+   ],
+   "condition": "BIEN FISCAL"
+  },
+  "39288": {
+   "id": 398,
+   "legend": "C/4",
+   "storeys": 4,
+   "decision": "4",
+   "lots": [
+    "002438006001"
+   ],
+   "condition": "BIC"
+  },
+  "39291": {
+   "id": 399,
+   "legend": "C/3",
+   "storeys": 3,
+   "decision": "3",
+   "lots": [
+    "002517096001"
+   ],
+   "condition": "ZONA EQUIPAMIENTO COMUNAL PÚBLICO"
+  },
+  "39313": {
+   "id": 400,
+   "legend": "C/3",
+   "storeys": 3,
+   "decision": "3",
+   "lots": [
+    "002438088001",
+    "002438088004",
+    "002438088005",
+    "002438052097"
+   ],
+   "condition": "ZONA EQUIPAMIENTO COMUNAL 0024388803                   PÚBLICO"
+  },
+  "39468": {
+   "id": 401,
+   "legend": "C/5",
+   "storeys": 5,
+   "decision": "5",
+   "lots": [
+    "002205061012"
+   ],
+   "condition": null
+  },
+  "40400": {
+   "id": 402,
+   "legend": "C/12",
+   "storeys": 12,
+   "decision": "12",
+   "lots": [
+    "006208052014",
+    "006208052011",
+    "006208052010",
+    "006208052002",
+    "006208052001"
+   ],
+   "condition": "PI/PRM 0062085298         Actuación Estratégica, adoptada, Zona 0062085299                       Industrial"
+  },
+  "40489": {
+   "id": 403,
+   "legend": "C/12",
+   "storeys": 12,
+   "decision": "12",
+   "lots": [
+    "006207001003"
+   ],
+   "condition": "PI/PRM 0062070104         Actuación Estratégica, adoptada, Zona 0062070105                       Industrial"
+  },
+  "40666": {
+   "id": 404,
+   "legend": "C/6",
+   "storeys": 6,
+   "decision": "6",
+   "lots": [
+    "205322002013",
+    "205322002014",
+    "205322002015",
+    "205322020003"
+   ],
+   "condition": "Plan Parcial"
+  },
+  "40745": {
+   "id": 405,
+   "legend": "C/10",
+   "storeys": 10,
+   "decision": "10",
+   "lots": [
+    "001116045007",
+    "001116045067",
+    "001116045004",
+    "001116045039",
+    "001116041085",
+    "001116041084"
+   ],
+   "condition": "Bien fiscal"
+  },
+  "40860": {
+   "id": 406,
+   "legend": "C/5",
+   "storeys": 5,
+   "decision": "5",
+   "lots": [
+    "002412067012",
+    "002412067013",
+    "002412067097",
+    "002412067096"
+   ],
+   "condition": "Plan Parcial"
+  },
+  "40870": {
+   "id": 407,
+   "legend": "C/16",
+   "storeys": 16,
+   "decision": "16",
+   "lots": [
+    "008108007004"
+   ],
+   "condition": "BIC"
+  },
+  "40886": {
+   "id": 408,
+   "legend": "C/22",
+   "storeys": 22,
+   "decision": "22",
+   "lots": [
+    "008107002008",
+    "008107002016",
+    "008107002011"
+   ],
+   "condition": null
+  },
+  "40918": {
+   "id": 409,
+   "legend": "C/N/A",
+   "storeys": null,
+   "decision": "N/A",
+   "lots": [
+    "002589099050",
+    "002589099051",
+    "002589099098",
+    "002589099060"
+   ],
+   "condition": "No aplica - Zona verde"
+  },
+  "40930": {
+   "id": 410,
+   "legend": "C/7",
+   "storeys": 7,
+   "decision": "7",
+   "lots": [
+    "001429086055",
+    "001429086057",
+    "001429086076",
+    "001429086075",
+    "001429086058"
+   ],
+   "condition": "ZONA EQUIPAMIENTO COMUNAL 0014298656                   PÚBLICO"
+  },
+  "41046": {
+   "id": 411,
+   "legend": "C/5",
+   "storeys": 5,
+   "decision": "5",
+   "lots": [
+    "004510076001"
+   ],
+   "condition": "ZONA EQUIPAMIENTO COMUNAL PÚBLICO"
+  },
+  "41047": {
+   "id": 412,
+   "legend": "C/5",
+   "storeys": 5,
+   "decision": "5",
+   "lots": [
+    "004510086001"
+   ],
+   "condition": "ZONA EQUIPAMIENTO COMUNAL PÚBLICO"
+  },
+  "41153": {
+   "id": 413,
+   "legend": "C/N/A",
+   "storeys": null,
+   "decision": "N/A",
+   "lots": [
+    "006516024002",
+    "006516024003",
+    "006516024017",
+    "006516024020",
+    "006516024013",
+    "006516024014",
+    "006516024015",
+    "006516024016",
+    "006516024001",
+    "006516024047"
+   ],
+   "condition": "No aplica - Zona verde"
+  },
+  "41212": {
+   "id": 414,
+   "legend": "C/4",
+   "storeys": 4,
+   "decision": "4",
+   "lots": [
+    "002599057001"
+   ],
+   "condition": "Bien fiscal"
+  },
+  "41267": {
+   "id": 415,
+   "legend": "C/5",
+   "storeys": 5,
+   "decision": "5",
+   "lots": [
+    "004542078001"
+   ],
+   "condition": null
+  },
+  "41268": {
+   "id": 416,
+   "legend": "C/6",
+   "storeys": 6,
+   "decision": "6",
+   "lots": [
+    "004551078004"
+   ],
+   "condition": "ZONA EQUIPAMIENTO COMUNAL PÚBLICO"
+  },
+  "41269": {
+   "id": 417,
+   "legend": "C/5",
+   "storeys": 5,
+   "decision": "5",
+   "lots": [
+    "004530010001",
+    "004530010002"
+   ],
+   "condition": null
+  },
+  "41271": {
+   "id": 418,
+   "legend": "C/5",
+   "storeys": 5,
+   "decision": "5",
+   "lots": [
+    "004530034005",
+    "004530034026",
+    "004530034002",
+    "004530034003"
+   ],
+   "condition": null
+  },
+  "41272": {
+   "id": 419,
+   "legend": "C/5",
+   "storeys": 5,
+   "decision": "5",
+   "lots": [
+    "004518092002"
+   ],
+   "condition": "ZONA EQUIPAMIENTO COMUNAL 0045189294                   PÚBLICO"
+  },
+  "41274": {
+   "id": 420,
+   "legend": "C/3",
+   "storeys": 3,
+   "decision": "3",
+   "lots": [
+    "004555075001"
+   ],
+   "condition": null
+  },
+  "41275": {
+   "id": 421,
+   "legend": "C/4",
+   "storeys": 4,
+   "decision": "4",
+   "lots": [
+    "004517057001"
+   ],
+   "condition": "ZONA EQUIPAMIENTO COMUNAL PÚBLICO"
+  },
+  "41276": {
+   "id": 422,
+   "legend": "C/4",
+   "storeys": 4,
+   "decision": "4",
+   "lots": [
+    "004517006007",
+    "004517006001",
+    "004517006002"
+   ],
+   "condition": null
+  },
+  "41277": {
+   "id": 423,
+   "legend": "C/4",
+   "storeys": 4,
+   "decision": "4",
+   "lots": [
+    "004534090001"
+   ],
+   "condition": "ZONA EQUIPAMIENTO COMUNAL PÚBLICO"
+  },
+  "41279": {
+   "id": 424,
+   "legend": "C/5",
+   "storeys": 5,
+   "decision": "5",
+   "lots": [
+    "002406021001",
+    "002406021002",
+    "002406022001",
+    "002406027001"
+   ],
+   "condition": null
+  },
+  "41280": {
+   "id": 425,
+   "legend": "C/5",
+   "storeys": 5,
+   "decision": "5",
+   "lots": [
+    "002408028001"
+   ],
+   "condition": "ZONA EQUIPAMIENTO COMUNAL PÚBLICO"
+  },
+  "41281": {
+   "id": 426,
+   "legend": "C/5",
+   "storeys": 5,
+   "decision": "5",
+   "lots": [
+    "002404007001"
+   ],
+   "condition": "ZONA EQUIPAMIENTO COMUNAL PÚBLICO"
+  },
+  "41282": {
+   "id": 427,
+   "legend": "C/5",
+   "storeys": 5,
+   "decision": "5",
+   "lots": [
+    "002402091001"
+   ],
+   "condition": null
+  },
+  "41283": {
+   "id": 428,
+   "legend": "C/5",
+   "storeys": 5,
+   "decision": "5",
+   "lots": [
+    "002407024001"
+   ],
+   "condition": "ZONA EQUIPAMIENTO COMUNAL 0024072402                   PÚBLICO"
+  },
+  "41287": {
+   "id": 429,
+   "legend": "C/3",
+   "storeys": 3,
+   "decision": "3",
+   "lots": [
+    "001353033004",
+    "001353033003",
+    "001353033001"
+   ],
+   "condition": "ZONA EQUIPAMIENTO COMUNAL 0013533302                   PÚBLICO"
+  },
+  "41288": {
+   "id": 430,
+   "legend": "C/3",
+   "storeys": 3,
+   "decision": "3",
+   "lots": [
+    "001363055007",
+    "001363060099"
+   ],
+   "condition": "ZONA EQUIPAMIENTO COMUNAL 0013635508                   PÚBLICO"
+  },
+  "41289": {
+   "id": 431,
+   "legend": "C/5",
+   "storeys": 5,
+   "decision": "5",
+   "lots": [
+    "001323072001"
+   ],
+   "condition": "ZONA EQUIPAMIENTO COMUNAL PÚBLICO"
+  },
+  "41291": {
+   "id": 432,
+   "legend": "C/6",
+   "storeys": 6,
+   "decision": "6",
+   "lots": [
+    "008105019014",
+    "008105019010",
+    "008105019009"
+   ],
+   "condition": "PI/PRM"
+  },
+  "41292": {
+   "id": 433,
+   "legend": "C/5",
+   "storeys": 5,
+   "decision": "5",
+   "lots": [
+    "008104016003"
+   ],
+   "condition": null
+  },
+  "41293": {
+   "id": 434,
+   "legend": "C/5",
+   "storeys": 5,
+   "decision": "5",
+   "lots": [
+    "008104021001"
+   ],
+   "condition": "BIC"
+  },
+  "41294": {
+   "id": 435,
+   "legend": "C/5",
+   "storeys": 5,
+   "decision": "5",
+   "lots": [
+    "004111012001"
+   ],
+   "condition": null
+  },
+  "41295": {
+   "id": 436,
+   "legend": "C/5",
+   "storeys": 5,
+   "decision": "5",
+   "lots": [
+    "004106026003",
+    "004106026004",
+    "004106026005",
+    "004106026006",
+    "004106026001",
+    "004106026002"
+   ],
+   "condition": null
+  },
+  "41299": {
+   "id": 437,
+   "legend": "C/5",
+   "storeys": 5,
+   "decision": "5",
+   "lots": [
+    "002203045001"
+   ],
+   "condition": "ZONA EQUIPAMIENTO COMUNAL PÚBLICO"
+  },
+  "41300": {
+   "id": 438,
+   "legend": "C/5",
+   "storeys": 5,
+   "decision": "5",
+   "lots": [
+    "002104011001"
+   ],
+   "condition": "BIC"
+  },
+  "41301": {
+   "id": 439,
+   "legend": "C/5",
+   "storeys": 5,
+   "decision": "5",
+   "lots": [
+    "001202007017",
+    "001202007016"
+   ],
+   "condition": null
+  },
+  "41302": {
+   "id": 440,
+   "legend": "C/3",
+   "storeys": 3,
+   "decision": "3",
+   "lots": [
+    "001204045001"
+   ],
+   "condition": null
+  },
+  "41303": {
+   "id": 441,
+   "legend": "C/4",
+   "storeys": 4,
+   "decision": "4",
+   "lots": [
+    "001401024001"
+   ],
+   "condition": "ZONA EQUIPAMIENTO COMUNAL PÚBLICO"
+  },
+  "41304": {
+   "id": 442,
+   "legend": "C/4",
+   "storeys": 4,
+   "decision": "4",
+   "lots": [
+    "001402042001"
+   ],
+   "condition": "ZONA EQUIPAMIENTO COMUNAL PÚBLICO"
+  },
+  "41305": {
+   "id": 443,
+   "legend": "C/4",
+   "storeys": 4,
+   "decision": "4",
+   "lots": [
+    "001402055001",
+    "001402055099",
+    "001402059004",
+    "001402059001",
+    "001402053098"
+   ],
+   "condition": "ZONA EQUIPAMIENTO COMUNAL 0014025598                   PÚBLICO"
+  },
+  "41308": {
+   "id": 444,
+   "legend": "C/7",
+   "storeys": 7,
+   "decision": "7",
+   "lots": [
+    "002204010001"
+   ],
+   "condition": null
+  },
+  "41309": {
+   "id": 445,
+   "legend": "C/4",
+   "storeys": 4,
+   "decision": "4",
+   "lots": [
+    "002529004030"
+   ],
+   "condition": "ZONA EQUIPAMIENTO COMUNAL PÚBLICO"
+  },
+  "41310": {
+   "id": 446,
+   "legend": "C/3",
+   "storeys": 3,
+   "decision": "3",
+   "lots": [
+    "002537060001"
+   ],
+   "condition": "ZONA EQUIPAMIENTO COMUNAL PÚBLICO"
+  },
+  "41311": {
+   "id": 447,
+   "legend": "C/3",
+   "storeys": 3,
+   "decision": "3",
+   "lots": [
+    "002548027097"
+   ],
+   "condition": "PLAN DIRECTOR"
+  },
+  "41312": {
+   "id": 448,
+   "legend": "C/3",
+   "storeys": 3,
+   "decision": "3",
+   "lots": [
+    "002536078001"
+   ],
+   "condition": null
+  },
+  "41313": {
+   "id": 449,
+   "legend": "C/3",
+   "storeys": 3,
+   "decision": "3",
+   "lots": [
+    "002542018001"
+   ],
+   "condition": "ZONA EQUIPAMIENTO COMUNAL 0025421802                   PÚBLICO"
+  },
+  "41381": {
+   "id": 450,
+   "legend": "C/3",
+   "storeys": 3,
+   "decision": "3",
+   "lots": [
+    "002548024099"
+   ],
+   "condition": "ZONA EQUIPAMIENTO COMUNAL PÚBLICO"
+  },
+  "41382": {
+   "id": 451,
+   "legend": "C/4",
+   "storeys": 4,
+   "decision": "4",
+   "lots": [
+    "002531002024"
+   ],
+   "condition": "ZONA EQUIPAMIENTO COMUNAL PÚBLICO"
+  },
+  "41383": {
+   "id": 452,
+   "legend": "C/4",
+   "storeys": 4,
+   "decision": "4",
+   "lots": [
+    "002531023039"
+   ],
+   "condition": "ZONA EQUIPAMIENTO COMUNAL PÚBLICO"
+  },
+  "41384": {
+   "id": 453,
+   "legend": "C/4",
+   "storeys": 4,
+   "decision": "4",
+   "lots": [
+    "002545036001"
+   ],
+   "condition": "ZONA EQUIPAMIENTO COMUNAL PÚBLICO"
+  },
+  "41385": {
+   "id": 454,
+   "legend": "C/4",
+   "storeys": 4,
+   "decision": "4",
+   "lots": [
+    "002545033005"
+   ],
+   "condition": "ZONA EQUIPAMIENTO COMUNAL PÚBLICO"
+  },
+  "41386": {
+   "id": 455,
+   "legend": "C/3",
+   "storeys": 3,
+   "decision": "3",
+   "lots": [
+    "002504070003"
+   ],
+   "condition": "ZONA EQUIPAMIENTO COMUNAL 0025047002                   PÚBLICO"
+  },
+  "41387": {
+   "id": 456,
+   "legend": "C/3",
+   "storeys": 3,
+   "decision": "3",
+   "lots": [
+    "002504084001"
+   ],
+   "condition": "ZONA EQUIPAMIENTO COMUNAL PÚBLICO"
+  },
+  "41388": {
+   "id": 457,
+   "legend": "C/3",
+   "storeys": 3,
+   "decision": "3",
+   "lots": [
+    "002504060001"
+   ],
+   "condition": "ZONA EQUIPAMIENTO COMUNAL PÚBLICO"
+  },
+  "41389": {
+   "id": 458,
+   "legend": "C/4",
+   "storeys": 4,
+   "decision": "4",
+   "lots": [
+    "002532007001"
+   ],
+   "condition": null
+  },
+  "41390": {
+   "id": 459,
+   "legend": "C/3",
+   "storeys": 3,
+   "decision": "3",
+   "lots": [
+    "002546090002"
+   ],
+   "condition": null
+  },
+  "41391": {
+   "id": 460,
+   "legend": "C/3",
+   "storeys": 3,
+   "decision": "3",
+   "lots": [
+    "002438052001",
+    "002438052098",
+    "002438052099",
+    "002438052097"
+   ],
+   "condition": "PI/PRM"
+  },
+  "41392": {
+   "id": 461,
+   "legend": "C/3",
+   "storeys": 3,
+   "decision": "3",
+   "lots": [
+    "002430019002",
+    "002430019001"
+   ],
+   "condition": null
+  },
+  "41393": {
+   "id": 462,
+   "legend": "C/4",
+   "storeys": 4,
+   "decision": "4",
+   "lots": [
+    "002505008001"
+   ],
+   "condition": "ZONA EQUIPAMIENTO COMUNAL PÚBLICO"
+  },
+  "41394": {
+   "id": 463,
+   "legend": "C/3",
+   "storeys": 3,
+   "decision": "3",
+   "lots": [
+    "002528079001"
+   ],
+   "condition": "ZONA EQUIPAMIENTO COMUNAL PÚBLICO"
+  },
+  "41395": {
+   "id": 464,
+   "legend": "C/3",
+   "storeys": 3,
+   "decision": "3",
+   "lots": [
+    "002529094001"
+   ],
+   "condition": "ZONA EQUIPAMIENTO COMUNAL 0025293399                   PÚBLICO"
+  },
+  "41396": {
+   "id": 465,
+   "legend": "C/4",
+   "storeys": 4,
+   "decision": "4",
+   "lots": [
+    "002529093001"
+   ],
+   "condition": "ZONA EQUIPAMIENTO COMUNAL PÚBLICO"
+  },
+  "41397": {
+   "id": 466,
+   "legend": "C/3",
+   "storeys": 3,
+   "decision": "3",
+   "lots": [
+    "002555006001"
+   ],
+   "condition": null
+  },
+  "41398": {
+   "id": 467,
+   "legend": "C/3",
+   "storeys": 3,
+   "decision": "3",
+   "lots": [
+    "002506091001"
+   ],
+   "condition": "ZONA EQUIPAMIENTO COMUNAL PÚBLICO"
+  },
+  "41399": {
+   "id": 468,
+   "legend": "C/4",
+   "storeys": 4,
+   "decision": "4",
+   "lots": [
+    "001313041001"
+   ],
+   "condition": null
+  },
+  "41401": {
+   "id": 469,
+   "legend": "C/5",
+   "storeys": 5,
+   "decision": "5",
+   "lots": [
+    "001114008008",
+    "001114008007",
+    "001114008006",
+    "001114008002",
+    "001114008005",
+    "001114008003",
+    "001114008004"
+   ],
+   "condition": "BIC"
+  },
+  "41402": {
+   "id": 470,
+   "legend": "C/4",
+   "storeys": 4,
+   "decision": "4",
+   "lots": [
+    "001106067001"
+   ],
+   "condition": null
+  },
+  "41403": {
+   "id": 471,
+   "legend": "C/3",
+   "storeys": 3,
+   "decision": "3",
+   "lots": [
+    "001304084001"
+   ],
+   "condition": null
+  },
+  "41412": {
+   "id": 472,
+   "legend": "C/4",
+   "storeys": 4,
+   "decision": "4",
+   "lots": [
+    "001308076005"
+   ],
+   "condition": null
+  },
+  "41413": {
+   "id": 473,
+   "legend": "C/4",
+   "storeys": 4,
+   "decision": "4",
+   "lots": [
+    "001308076001",
+    "001308076002",
+    "001308076003"
+   ],
+   "condition": null
+  },
+  "41414": {
+   "id": 474,
+   "legend": "C/5",
+   "storeys": 5,
+   "decision": "5",
+   "lots": [
+    "006107017001"
+   ],
+   "condition": "PI/PRM"
+  },
+  "41415": {
+   "id": 475,
+   "legend": "C/4",
+   "storeys": 4,
+   "decision": "4",
+   "lots": [
+    "006107013001"
+   ],
+   "condition": null
+  },
+  "41416": {
+   "id": 476,
+   "legend": "C/4",
+   "storeys": 4,
+   "decision": "4",
+   "lots": [
+    "006107011004"
+   ],
+   "condition": "PI/PRM"
+  },
+  "41417": {
+   "id": 477,
+   "legend": "C/5",
+   "storeys": 5,
+   "decision": "5",
+   "lots": [
+    "006107001011"
+   ],
+   "condition": "BIC"
+  },
+  "41418": {
+   "id": 478,
+   "legend": "C/5",
+   "storeys": 5,
+   "decision": "5",
+   "lots": [
+    "004108055001"
+   ],
+   "condition": null
+  },
+  "41419": {
+   "id": 479,
+   "legend": "C/4",
+   "storeys": 4,
+   "decision": "4",
+   "lots": [
+    "004105031001"
+   ],
+   "condition": "ZONA EQUIPAMIENTO COMUNAL PÚBLICO"
+  },
+  "41420": {
+   "id": 480,
+   "legend": "C/5",
+   "storeys": 5,
+   "decision": "5",
+   "lots": [
+    "004105058001"
+   ],
+   "condition": "ZONA EQUIPAMIENTO COMUNAL PÚBLICO"
+  },
+  "41421": {
+   "id": 481,
+   "legend": "C/5",
+   "storeys": 5,
+   "decision": "5",
+   "lots": [
+    "004105054001"
+   ],
+   "condition": "ZONA EQUIPAMIENTO COMUNAL 0041055402                   PÚBLICO"
+  },
+  "41422": {
+   "id": 482,
+   "legend": "C/5",
+   "storeys": 5,
+   "decision": "5",
+   "lots": [
+    "004105047001"
+   ],
+   "condition": "BIC"
+  },
+  "41423": {
+   "id": 483,
+   "legend": "C/3",
+   "storeys": 3,
+   "decision": "3",
+   "lots": [
+    "003209032001"
+   ],
+   "condition": "ZONA EQUIPAMIENTO COMUNAL PÚBLICO"
+  },
+  "41424": {
+   "id": 484,
+   "legend": "C/11",
+   "storeys": 11,
+   "decision": "11",
+   "lots": [
+    "008312017002"
+   ],
+   "condition": "PI/PRM"
+  },
+  "41425": {
+   "id": 485,
+   "legend": "C/8",
+   "storeys": 8,
+   "decision": "8",
+   "lots": [
+    "008306012001"
+   ],
+   "condition": "BIC"
+  },
+  "41426": {
+   "id": 486,
+   "legend": "C/11",
+   "storeys": 11,
+   "decision": "11",
+   "lots": [
+    "008304006001"
+   ],
+   "condition": "BIC"
+  },
+  "41427": {
+   "id": 487,
+   "legend": "C/5",
+   "storeys": 5,
+   "decision": "5",
+   "lots": [
+    "008530093001",
+    "008530006023",
+    "008530006099",
+    "008530006024"
+   ],
+   "condition": null
+  },
+  "41428": {
+   "id": 488,
+   "legend": "C/6",
+   "storeys": 6,
+   "decision": "6",
+   "lots": [
+    "008518036002",
+    "008518036048",
+    "008518036094",
+    "008530032001",
+    "008530021005"
+   ],
+   "condition": null
+  },
+  "41429": {
+   "id": 489,
+   "legend": "C/5",
+   "storeys": 5,
+   "decision": "5",
+   "lots": [
+    "008530093002",
+    "008519077097"
+   ],
+   "condition": null
+  },
+  "41430": {
+   "id": 490,
+   "legend": "C/5",
+   "storeys": 5,
+   "decision": "5",
+   "lots": [
+    "008530091003",
+    "008530091001"
+   ],
+   "condition": null
+  },
+  "41431": {
+   "id": 491,
+   "legend": "C/7",
+   "storeys": 7,
+   "decision": "7",
+   "lots": [
+    "008510020001"
+   ],
+   "condition": null
+  },
+  "41432": {
+   "id": 492,
+   "legend": "C/6",
+   "storeys": 6,
+   "decision": "6",
+   "lots": [
+    "008412039001"
+   ],
+   "condition": null
+  },
+  "41433": {
+   "id": 493,
+   "legend": "C/6",
+   "storeys": 6,
+   "decision": "6",
+   "lots": [
+    "008418058001"
+   ],
+   "condition": null
+  },
+  "41434": {
+   "id": 494,
+   "legend": "C/4",
+   "storeys": 4,
+   "decision": "4",
+   "lots": [
+    "008523021002",
+    "008523021001"
+   ],
+   "condition": null
+  },
+  "41435": {
+   "id": 495,
+   "legend": "C/5",
+   "storeys": 5,
+   "decision": "5",
+   "lots": [
+    "008532011007"
+   ],
+   "condition": null
+  },
+  "41436": {
+   "id": 496,
+   "legend": "C/5",
+   "storeys": 5,
+   "decision": "5",
+   "lots": [
+    "009234038001"
+   ],
+   "condition": "ZONA EQUIPAMIENTO COMUNAL PÚBLICO"
+  },
+  "41437": {
+   "id": 497,
+   "legend": "C/5",
+   "storeys": 5,
+   "decision": "5",
+   "lots": [
+    "009232074001"
+   ],
+   "condition": null
+  },
+  "41438": {
+   "id": 498,
+   "legend": "C/5",
+   "storeys": 5,
+   "decision": "5",
+   "lots": [
+    "009248001001",
+    "009248001004"
+   ],
+   "condition": null
+  },
+  "41439": {
+   "id": 499,
+   "legend": "C/3",
+   "storeys": 3,
+   "decision": "3",
+   "lots": [
+    "009229068031"
+   ],
+   "condition": null
+  },
+  "41440": {
+   "id": 500,
+   "legend": "C/3",
+   "storeys": 3,
+   "decision": "3",
+   "lots": [
+    "009229069033"
+   ],
+   "condition": null
+  },
+  "41441": {
+   "id": 501,
+   "legend": "C/3",
+   "storeys": 3,
+   "decision": "3",
+   "lots": [
+    "009229072033"
+   ],
+   "condition": null
+  },
+  "41442": {
+   "id": 502,
+   "legend": "C/5",
+   "storeys": 5,
+   "decision": "5",
+   "lots": [
+    "005650015001"
+   ],
+   "condition": null
+  },
+  "41443": {
+   "id": 503,
+   "legend": "C/3",
+   "storeys": 3,
+   "decision": "3",
+   "lots": [
+    "006420093001"
+   ],
+   "condition": "Actuación Estratégica Distrito Aeroportuario Fontibón"
+  },
+  "41444": {
+   "id": 504,
+   "legend": "C/5",
+   "storeys": 5,
+   "decision": "5",
+   "lots": [
+    "006405014018"
+   ],
+   "condition": null
+  },
+  "41445": {
+   "id": 505,
+   "legend": "C/3",
+   "storeys": 3,
+   "decision": "3",
+   "lots": [
+    "006410034001"
+   ],
+   "condition": "PI/PRM"
+  },
+  "41446": {
+   "id": 506,
+   "legend": "C/6",
+   "storeys": 6,
+   "decision": "6",
+   "lots": [
+    "006505013001"
+   ],
+   "condition": "ZONA EQUIPAMIENTO COMUNAL PÚBLICO"
+  },
+  "41447": {
+   "id": 507,
+   "legend": "C/4",
+   "storeys": 4,
+   "decision": "4",
+   "lots": [
+    "205101033001"
+   ],
+   "condition": "Plan Parcial"
+  },
+  "41448": {
+   "id": 508,
+   "legend": "C/5",
+   "storeys": 5,
+   "decision": "5",
+   "lots": [
+    "205101032001"
+   ],
+   "condition": "Plan Parcial"
+  },
+  "41449": {
+   "id": 509,
+   "legend": "C/5",
+   "storeys": 5,
+   "decision": "5",
+   "lots": [
+    "004627079033"
+   ],
+   "condition": "ZONA EQUIPAMIENTO COMUNAL PÚBLICO"
+  },
+  "41450": {
+   "id": 510,
+   "legend": "C/4",
+   "storeys": 4,
+   "decision": "4",
+   "lots": [
+    "004573066002"
+   ],
+   "condition": null
+  },
+  "41451": {
+   "id": 511,
+   "legend": "C/4",
+   "storeys": 4,
+   "decision": "4",
+   "lots": [
+    "004573001002"
+   ],
+   "condition": null
+  },
+  "41452": {
+   "id": 512,
+   "legend": "C/4",
+   "storeys": 4,
+   "decision": "4",
+   "lots": [
+    "004573011002"
+   ],
+   "condition": null
+  },
+  "41453": {
+   "id": 513,
+   "legend": "C/3",
+   "storeys": 3,
+   "decision": "3",
+   "lots": [
+    "004622062001"
+   ],
+   "condition": "ZONA EQUIPAMIENTO COMUNAL PÚBLICO"
+  },
+  "41454": {
+   "id": 514,
+   "legend": "C/4",
+   "storeys": 4,
+   "decision": "4",
+   "lots": [
+    "004605033001"
+   ],
+   "condition": null
+  },
+  "41456": {
+   "id": 515,
+   "legend": "C/4",
+   "storeys": 4,
+   "decision": "4",
+   "lots": [
+    "004534085001"
+   ],
+   "condition": "ZONA EQUIPAMIENTO COMUNAL PÚBLICO"
+  },
+  "41457": {
+   "id": 516,
+   "legend": "C/3",
+   "storeys": 3,
+   "decision": "3",
+   "lots": [
+    "004517084002"
+   ],
+   "condition": "ZONA EQUIPAMIENTO COMUNAL PÚBLICO"
+  },
+  "41458": {
+   "id": 517,
+   "legend": "C/4",
+   "storeys": 4,
+   "decision": "4",
+   "lots": [
+    "004538078001"
+   ],
+   "condition": "ZONA EQUIPAMIENTO COMUNAL PÚBLICO"
+  },
+  "41459": {
+   "id": 518,
+   "legend": "C/5",
+   "storeys": 5,
+   "decision": "5",
+   "lots": [
+    "004538086001"
+   ],
+   "condition": "ZONA EQUIPAMIENTO COMUNAL PÚBLICO"
+  },
+  "41460": {
+   "id": 519,
+   "legend": "C/4",
+   "storeys": 4,
+   "decision": "4",
+   "lots": [
+    "004538087001"
+   ],
+   "condition": "ZONA EQUIPAMIENTO COMUNAL PÚBLICO"
+  },
+  "41461": {
+   "id": 520,
+   "legend": "C/5",
+   "storeys": 5,
+   "decision": "5",
+   "lots": [
+    "004538084001"
+   ],
+   "condition": "ZONA EQUIPAMIENTO COMUNAL PÚBLICO"
+  },
+  "41462": {
+   "id": 521,
+   "legend": "C/3",
+   "storeys": 3,
+   "decision": "3",
+   "lots": [
+    "004586021008"
+   ],
+   "condition": null
+  },
+  "41463": {
+   "id": 522,
+   "legend": "C/3",
+   "storeys": 3,
+   "decision": "3",
+   "lots": [
+    "004550002001"
+   ],
+   "condition": null
+  },
+  "41464": {
+   "id": 523,
+   "legend": "C/4",
+   "storeys": 4,
+   "decision": "4",
+   "lots": [
+    "004514036004"
+   ],
+   "condition": null
+  },
+  "41465": {
+   "id": 524,
+   "legend": "C/5",
+   "storeys": 5,
+   "decision": "5",
+   "lots": [
+    "004514046003"
+   ],
+   "condition": null
+  },
+  "41466": {
+   "id": 525,
+   "legend": "C/4",
+   "storeys": 4,
+   "decision": "4",
+   "lots": [
+    "004581048001",
+    "004581048002"
+   ],
+   "condition": null
+  },
+  "41467": {
+   "id": 526,
+   "legend": "C/5",
+   "storeys": 5,
+   "decision": "5",
+   "lots": [
+    "002408054001"
+   ],
+   "condition": null
+  },
+  "41468": {
+   "id": 527,
+   "legend": "C/5",
+   "storeys": 5,
+   "decision": "5",
+   "lots": [
+    "002408044001"
+   ],
+   "condition": null
+  },
+  "41469": {
+   "id": 528,
+   "legend": "C/5",
+   "storeys": 5,
+   "decision": "5",
+   "lots": [
+    "002404069004",
+    "002404069008",
+    "002404069009",
+    "002404069010",
+    "002404069011",
+    "002404069012"
+   ],
+   "condition": null
+  },
+  "41470": {
+   "id": 529,
+   "legend": "C/5",
+   "storeys": 5,
+   "decision": "5",
+   "lots": [
+    "002404070005"
+   ],
+   "condition": "ZONA EQUIPAMIENTO COMUNAL PÚBLICO"
+  },
+  "41471": {
+   "id": 530,
+   "legend": "C/5",
+   "storeys": 5,
+   "decision": "5",
+   "lots": [
+    "002103001020",
+    "002103001018"
+   ],
+   "condition": null
+  },
+  "41472": {
+   "id": 531,
+   "legend": "C/5",
+   "storeys": 5,
+   "decision": "5",
+   "lots": [
+    "002103002015"
+   ],
+   "condition": null
+  },
+  "41473": {
+   "id": 532,
+   "legend": "C/4",
+   "storeys": 4,
+   "decision": "4",
+   "lots": [
+    "001204042026"
+   ],
+   "condition": "ZONA EQUIPAMIENTO COMUNAL PÚBLICO"
+  },
+  "41474": {
+   "id": 533,
+   "legend": "C/4",
+   "storeys": 4,
+   "decision": "4",
+   "lots": [
+    "001204041001"
+   ],
+   "condition": null
+  },
+  "41475": {
+   "id": 534,
+   "legend": "C/6",
+   "storeys": 6,
+   "decision": "6",
+   "lots": [
+    "002303008001",
+    "002303008002"
+   ],
+   "condition": "BIC"
+  },
+  "41476": {
+   "id": 535,
+   "legend": "C/5",
+   "storeys": 5,
+   "decision": "5",
+   "lots": [
+    "002209019001"
+   ],
+   "condition": null
+  },
+  "41477": {
+   "id": 536,
+   "legend": "C/5",
+   "storeys": 5,
+   "decision": "5",
+   "lots": [
+    "002201025001"
+   ],
+   "condition": "BIC"
+  },
+  "41478": {
+   "id": 537,
+   "legend": "C/4",
+   "storeys": 4,
+   "decision": "4",
+   "lots": [
+    "002202060001"
+   ],
+   "condition": null
+  },
+  "41479": {
+   "id": 538,
+   "legend": "C/4",
+   "storeys": 4,
+   "decision": "4",
+   "lots": [
+    "001410031001"
+   ],
+   "condition": null
+  },
+  "41480": {
+   "id": 539,
+   "legend": "C/5",
+   "storeys": 5,
+   "decision": "5",
+   "lots": [
+    "001411044002",
+    "001411044003",
+    "001411044001"
+   ],
+   "condition": "PI/PRM"
+  },
+  "41481": {
+   "id": 540,
+   "legend": "C/5",
+   "storeys": 5,
+   "decision": "5",
+   "lots": [
+    "002204038002",
+    "002204038003",
+    "002204038005",
+    "002204038006"
+   ],
+   "condition": null
+  },
+  "41482": {
+   "id": 541,
+   "legend": "C/5",
+   "storeys": 5,
+   "decision": "5",
+   "lots": [
+    "002202064002"
+   ],
+   "condition": null
+  },
+  "41483": {
+   "id": 542,
+   "legend": "C/5",
+   "storeys": 5,
+   "decision": "5",
+   "lots": [
+    "002202046001"
+   ],
+   "condition": "ZONA EQUIPAMIENTO COMUNAL PÚBLICO"
+  },
+  "41484": {
+   "id": 543,
+   "legend": "C/5",
+   "storeys": 5,
+   "decision": "5",
+   "lots": [
+    "002202089001"
+   ],
+   "condition": null
+  },
+  "41485": {
+   "id": 544,
+   "legend": "C/5",
+   "storeys": 5,
+   "decision": "5",
+   "lots": [
+    "004303025001"
+   ],
+   "condition": null
+  },
+  "41486": {
+   "id": 545,
+   "legend": "C/5",
+   "storeys": 5,
+   "decision": "5",
+   "lots": [
+    "004304057001"
+   ],
+   "condition": "ZONA EQUIPAMIENTO COMUNAL PÚBLICO"
+  },
+  "41487": {
+   "id": 546,
+   "legend": "C/5",
+   "storeys": 5,
+   "decision": "5",
+   "lots": [
+    "004203045001"
+   ],
+   "condition": "ZONA EQUIPAMIENTO COMUNAL PÚBLICO"
+  },
+  "41488": {
+   "id": 547,
+   "legend": "C/5",
+   "storeys": 5,
+   "decision": "5",
+   "lots": [
+    "004210015002",
+    "004210015003",
+    "004210015004",
+    "004210015005"
+   ],
+   "condition": null
+  },
+  "41489": {
+   "id": 548,
+   "legend": "C/4",
+   "storeys": 4,
+   "decision": "4",
+   "lots": [
+    "004406022005"
+   ],
+   "condition": "BIC"
+  },
+  "41490": {
+   "id": 549,
+   "legend": "C/4",
+   "storeys": 4,
+   "decision": "4",
+   "lots": [
+    "004406008005"
+   ],
+   "condition": null
+  },
+  "41491": {
+   "id": 550,
+   "legend": "C/3",
+   "storeys": 3,
+   "decision": "3",
+   "lots": [
+    "005109003002",
+    "005109003003"
+   ],
+   "condition": null
+  },
+  "41492": {
+   "id": 551,
+   "legend": "C/4",
+   "storeys": 4,
+   "decision": "4",
+   "lots": [
+    "005111047003",
+    "005111047004"
+   ],
+   "condition": null
+  },
+  "41493": {
+   "id": 552,
+   "legend": "C/6",
+   "storeys": 6,
+   "decision": "6",
+   "lots": [
+    "006209021002"
+   ],
+   "condition": null
+  },
+  "41495": {
+   "id": 553,
+   "legend": "C/6",
+   "storeys": 6,
+   "decision": "6",
+   "lots": [
+    "006216012001"
+   ],
+   "condition": null
+  },
+  "41499": {
+   "id": 554,
+   "legend": "C/4",
+   "storeys": 4,
+   "decision": "4",
+   "lots": [
+    "007406023001"
+   ],
+   "condition": "ZONA EQUIPAMIENTO COMUNAL PÚBLICO"
+  },
+  "41500": {
+   "id": 555,
+   "legend": "C/5",
+   "storeys": 5,
+   "decision": "5",
+   "lots": [
+    "007302025004"
+   ],
+   "condition": "ZONA EQUIPAMIENTO COMUNAL 0073022503                     PÚBLICO 0073022502            Actuación Estratégica Calle 72"
+  },
+  "41501": {
+   "id": 556,
+   "legend": "C/4",
+   "storeys": 4,
+   "decision": "4",
+   "lots": [
+    "007311038001"
+   ],
+   "condition": null
+  },
+  "41502": {
+   "id": 557,
+   "legend": "C/9",
+   "storeys": 9,
+   "decision": "9",
+   "lots": [
+    "005102062032",
+    "005102062033",
+    "005102062035",
+    "005102062036"
+   ],
+   "condition": null
+  },
+  "41503": {
+   "id": 558,
+   "legend": "C/11",
+   "storeys": 11,
+   "decision": "11",
+   "lots": [
+    "005102022001",
+    "005102022002",
+    "005102022003",
+    "005102022035"
+   ],
+   "condition": null
+  },
+  "41504": {
+   "id": 559,
+   "legend": "C/5",
+   "storeys": 5,
+   "decision": "5",
+   "lots": [
+    "009124005014"
+   ],
+   "condition": null
+  },
+  "41505": {
+   "id": 560,
+   "legend": "C/7",
+   "storeys": 7,
+   "decision": "7",
+   "lots": [
+    "009213003009"
+   ],
+   "condition": null
+  },
+  "41506": {
+   "id": 561,
+   "legend": "C/5",
+   "storeys": 5,
+   "decision": "5",
+   "lots": [
+    "009242038047",
+    "009242038044",
+    "009242038045",
+    "009242038097"
+   ],
+   "condition": null
+  },
+  "41509": {
+   "id": 562,
+   "legend": "C/3",
+   "storeys": 3,
+   "decision": "3",
+   "lots": [
+    "009230016001"
+   ],
+   "condition": null
+  },
+  "41510": {
+   "id": 563,
+   "legend": "C/3",
+   "storeys": 3,
+   "decision": "3",
+   "lots": [
+    "009202059004",
+    "009202059005",
+    "009202059006"
+   ],
+   "condition": null
+  },
+  "41511": {
+   "id": 564,
+   "legend": "C/5",
+   "storeys": 5,
+   "decision": "5",
+   "lots": [
+    "009228091002"
+   ],
+   "condition": "Actuación Estratégica, adoptada, Ciudadela educativa y del cuidado"
+  },
+  "41512": {
+   "id": 565,
+   "legend": "C/4",
+   "storeys": 4,
+   "decision": "4",
+   "lots": [
+    "005630030001",
+    "005630030003"
+   ],
+   "condition": "ZONA EQUIPAMIENTO COMUNAL 0056303002                       PÚBLICO"
+  },
+  "41513": {
+   "id": 566,
+   "legend": "C/4",
+   "storeys": 4,
+   "decision": "4",
+   "lots": [
+    "005630008001"
+   ],
+   "condition": null
+  },
+  "41514": {
+   "id": 567,
+   "legend": "C/4",
+   "storeys": 4,
+   "decision": "4",
+   "lots": [
+    "005630007001"
+   ],
+   "condition": null
+  },
+  "41515": {
+   "id": 568,
+   "legend": "C/4",
+   "storeys": 4,
+   "decision": "4",
+   "lots": [
+    "005616045001",
+    "005616045002"
+   ],
+   "condition": null
+  },
+  "41516": {
+   "id": 569,
+   "legend": "C/5",
+   "storeys": 5,
+   "decision": "5",
+   "lots": [
+    "005632031001",
+    "005632031002"
+   ],
+   "condition": null
+  },
+  "41517": {
+   "id": 570,
+   "legend": "C/5",
+   "storeys": 5,
+   "decision": "5",
+   "lots": [
+    "005601065007",
+    "005601065013",
+    "005601065016",
+    "005601065006",
+    "005601065008"
+   ],
+   "condition": null
+  },
+  "41518": {
+   "id": 571,
+   "legend": "C/5",
+   "storeys": 5,
+   "decision": "5",
+   "lots": [
+    "005602013001"
+   ],
+   "condition": "ZONA EQUIPAMIENTO COMUNAL PÚBLICO"
+  },
+  "41519": {
+   "id": 572,
+   "legend": "C/5",
+   "storeys": 5,
+   "decision": "5",
+   "lots": [
+    "005602053001"
+   ],
+   "condition": "ZONA EQUIPAMIENTO COMUNAL PÚBLICO"
+  },
+  "41520": {
+   "id": 573,
+   "legend": "C/4",
+   "storeys": 4,
+   "decision": "4",
+   "lots": [
+    "005604030010"
+   ],
+   "condition": "ZONA EQUIPAMIENTO COMUNAL PÚBLICO"
+  },
+  "41521": {
+   "id": 574,
+   "legend": "C/5",
+   "storeys": 5,
+   "decision": "5",
+   "lots": [
+    "005504028003",
+    "005504028004"
+   ],
+   "condition": null
+  },
+  "41522": {
+   "id": 575,
+   "legend": "C/5",
+   "storeys": 5,
+   "decision": "5",
+   "lots": [
+    "005505051002",
+    "005505051003",
+    "005505051099",
+    "005505051004"
+   ],
+   "condition": null
+  },
+  "41523": {
+   "id": 576,
+   "legend": "C/4",
+   "storeys": 4,
+   "decision": "4",
+   "lots": [
+    "005503036002"
+   ],
+   "condition": null
+  },
+  "41524": {
+   "id": 577,
+   "legend": "C/4",
+   "storeys": 4,
+   "decision": "4",
+   "lots": [
+    "005503025001"
+   ],
+   "condition": "ZONA EQUIPAMIENTO COMUNAL PÚBLICO"
+  },
+  "41525": {
+   "id": 578,
+   "legend": "C/5",
+   "storeys": 5,
+   "decision": "5",
+   "lots": [
+    "005405047001"
+   ],
+   "condition": null
+  },
+  "41526": {
+   "id": 579,
+   "legend": "C/5",
+   "storeys": 5,
+   "decision": "5",
+   "lots": [
+    "005404078001"
+   ],
+   "condition": "ZONA EQUIPAMIENTO COMUNAL PÚBLICO"
+  },
+  "41527": {
+   "id": 580,
+   "legend": "C/5",
+   "storeys": 5,
+   "decision": "5",
+   "lots": [
+    "005404018001"
+   ],
+   "condition": "ZONA EQUIPAMIENTO COMUNAL PÚBLICO"
+  },
+  "41528": {
+   "id": 581,
+   "legend": "C/5",
+   "storeys": 5,
+   "decision": "5",
+   "lots": [
+    "005404033001",
+    "005404033002"
+   ],
+   "condition": null
+  },
+  "41529": {
+   "id": 582,
+   "legend": "C/5",
+   "storeys": 5,
+   "decision": "5",
+   "lots": [
+    "005404077001"
+   ],
+   "condition": null
+  },
+  "41530": {
+   "id": 583,
+   "legend": "C/4",
+   "storeys": 4,
+   "decision": "4",
+   "lots": [
+    "005405054001"
+   ],
+   "condition": "ZONA EQUIPAMIENTO COMUNAL PÚBLICO"
+  },
+  "41531": {
+   "id": 584,
+   "legend": "C/4",
+   "storeys": 4,
+   "decision": "4",
+   "lots": [
+    "005405051001"
+   ],
+   "condition": "ZONA EQUIPAMIENTO COMUNAL PÚBLICO"
+  },
+  "41532": {
+   "id": 585,
+   "legend": "C/4",
+   "storeys": 4,
+   "decision": "4",
+   "lots": [
+    "005405052001"
+   ],
+   "condition": "ZONA EQUIPAMIENTO COMUNAL PÚBLICO"
+  },
+  "41533": {
+   "id": 586,
+   "legend": "C/4",
+   "storeys": 4,
+   "decision": "4",
+   "lots": [
+    "005405037001"
+   ],
+   "condition": "PI/PRM"
+  },
+  "41534": {
+   "id": 587,
+   "legend": "C/4",
+   "storeys": 4,
+   "decision": "4",
+   "lots": [
+    "005625062045"
+   ],
+   "condition": null
+  },
+  "41535": {
+   "id": 588,
+   "legend": "C/5",
+   "storeys": 5,
+   "decision": "5",
+   "lots": [
+    "005607005001"
+   ],
+   "condition": null
+  },
+  "41536": {
+   "id": 589,
+   "legend": "C/5",
+   "storeys": 5,
+   "decision": "5",
+   "lots": [
+    "006301027001"
+   ],
+   "condition": null
+  },
+  "41537": {
+   "id": 590,
+   "legend": "C/4",
+   "storeys": 4,
+   "decision": "4",
+   "lots": [
+    "006301029001",
+    "006301029002",
+    "006301029003",
+    "006301029004"
+   ],
+   "condition": null
+  },
+  "41538": {
+   "id": 591,
+   "legend": "C/11",
+   "storeys": 11,
+   "decision": "11",
+   "lots": [
+    "006313001004"
+   ],
+   "condition": null
+  },
+  "41539": {
+   "id": 592,
+   "legend": "C/8",
+   "storeys": 8,
+   "decision": "8",
+   "lots": [
+    "006313015002"
+   ],
+   "condition": null
+  },
+  "41540": {
+   "id": 593,
+   "legend": "C/13",
+   "storeys": 13,
+   "decision": "13",
+   "lots": [
+    "006320043003"
+   ],
+   "condition": "Plan Parcial"
+  },
+  "41542": {
+   "id": 594,
+   "legend": "C/3",
+   "storeys": 3,
+   "decision": "3",
+   "lots": [
+    "009229067031",
+    "009229067032",
+    "009229067033",
+    "009229067034",
+    "009229067035",
+    "009229067036",
+    "009229067037",
+    "009229067038",
+    "009229067039",
+    "009229067040",
+    "009229067041",
+    "009229067042",
+    "009229067043",
+    "009229067044",
+    "009229067045",
+    "009229081099",
+    "009229067046",
+    "009229067099"
+   ],
+   "condition": null
+  },
+  "41617": {
+   "id": 595,
+   "legend": "C/7",
+   "storeys": 7,
+   "decision": "7",
+   "lots": [
+    "008402007001"
+   ],
+   "condition": null
+  },
+  "41731": {
+   "id": 596,
+   "legend": "C/4",
+   "storeys": 4,
+   "decision": "4",
+   "lots": [
+    "008529003004",
+    "008532003099",
+    "008529003005"
+   ],
+   "condition": "PI/PRM"
+  }
+ }
+}

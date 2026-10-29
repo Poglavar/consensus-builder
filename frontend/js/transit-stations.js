@@ -706,24 +706,23 @@
             throw new Error('Cadastral ground service is unavailable.');
         }
         const response = await repository.ensureFootprint(geometry, {
-            city: options.city || undefined,
-            parcelsOnly: true
+            city: options.city || undefined
         });
         const result = response?.result || {};
         const ids = Array.from(new Set((result.ids || []).map(String).filter(Boolean)));
         const coverage = Number(result.coverage);
-        // The same completeness rule the proposal manager applies when it derives the station
-        // (an absolute uncovered-area epsilon, not a coverage ratio). A ratio threshold accepted a
-        // 90 m² tram platform with 0.02 m² off the cadastre, which the manager then refused: the
-        // station was parked off the map while the status line said it had been placed.
+        // The same completeness rule the proposal manager applies when it derives the station: no
+        // part of the footprint off its parcels is ground (geometry-tolerances.js). A ratio threshold
+        // accepted a 90 m² tram platform with a strip off the cadastre, which the manager then
+        // refused: the station was parked off the map while the status line said it had been placed.
         const turfApi = options.turfApi || global.turf;
-        const footprintArea = turfApi && typeof turfApi.area === 'function'
-            ? Number(turfApi.area({ type: 'Feature', properties: {}, geometry })) || 0
-            : 0;
+        const parcels = ids.length && typeof repository.peekMany === 'function'
+            ? repository.peekMany(ids, { city: options.city || undefined })
+            : [];
         return {
             ids,
             coverage: Number.isFinite(coverage) ? coverage : 0,
-            complete: flatGroundCoverageIsComplete()(ids.length, ids.length, coverage, footprintArea)
+            complete: flatGroundCoverageIsComplete()({ type: 'Feature', properties: {}, geometry }, parcels, turfApi)
         };
     }
 

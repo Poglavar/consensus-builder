@@ -11,10 +11,7 @@
         if(!slot)return {busy:()=>false,destroy(){}};
         const local={id:value?.id || root.crypto.randomUUID(),entries:[],value,busy:false,labels:'',count:10,saved:true,error:null};
         let alive=true;
-        const download=(name,content,type)=>{
-            const url=URL.createObjectURL(new Blob([content],{type}));
-            const link=root.document.createElement('a');link.download=name;link.href=url;link.click();URL.revokeObjectURL(url);
-        };
+        const download=(name,content,type)=>root.FileDownload.save(root,content,name,type);
         const notify=()=>changed(local.value,local.busy || !local.saved);
         function render() {
             if(!alive)return;
@@ -24,8 +21,7 @@
                 + (local.error?`<p role="alert">${esc(local.error)}</p>`:'')
                 + `<label class="proposal-editor-field"><span>${esc(t('labels','People or contact details — one person per line (optional)'))}</span><textarea data-roster-labels rows="3" autocomplete="off" spellcheck="false">${esc(local.labels)}</textarea></label>`
                 + `<label class="proposal-editor-field"><span>${esc(t('count','Or number of unassigned codes'))}</span><input type="number" data-roster-count min="1" max="100" value="${local.count}"></label>`
-                + `<div class="cb-actions"><button type="button" class="btn btn-secondary" data-roster-action="generate">${esc(t('generate','Generate codes locally'))}</button><button type="button" class="btn btn-secondary" data-roster-action="save"${local.entries.length?'':' disabled'}>${esc(t('export','Save voter list'))}</button><button type="button" class="btn btn-secondary" data-roster-action="csv"${local.entries.length?'':' disabled'}>${esc(t('csv','Export for distribution'))}</button></div>`
-                + `<label class="proposal-editor-field"><span>${esc(t('import','Open a saved voter list'))}</span><input type="file" accept="application/json,.json" data-roster-import></label>`
+                + `<div class="cb-actions"><button type="button" class="btn btn-secondary" data-roster-action="generate">${esc(t('generate','Generate codes locally'))}</button><button type="button" class="btn btn-secondary" data-roster-action="save"${local.entries.length?'':' disabled'}>${esc(t('export','Save voter list'))}</button><button type="button" class="btn btn-secondary" data-roster-action="csv"${local.entries.length?'':' disabled'}>${esc(t('csv','Export for distribution'))}</button><label class="btn btn-secondary" data-roster-open><i class="fa-solid fa-folder-open" aria-hidden="true"></i> ${esc(t('import','Open a saved voter list'))}<input type="file" accept="application/json,.json" data-roster-import hidden></label></div>`
                 + `<p role="status" data-roster-progress>${!local.saved?esc(t('saveFirst','Save your voter-list file before saving this agreement. Keep the file to distribute codes and resume later.')):''}</p>`
                 + (local.value?`<button type="button" class="btn btn-quiet" data-roster-action="remove">${esc(t('remove','Remove code voting from this draft'))}</button>`:'')
                 + (local.entries.length?`<details><summary>${esc(t('showCodes','Show local code assignments'))}</summary><div class="voting-table-wrap"><table class="voting-table"><thead><tr><th>${esc(t('person','Person (local only)'))}</th><th>${esc(t('code','Voting code'))}</th></tr></thead><tbody>${local.entries.map(row=>`<tr><td>${esc(row.label)}</td><td class="voting-code">${esc(row.code)}</td></tr>`).join('')}</tbody></table></div></details>`:'');
@@ -44,7 +40,7 @@
         slot.onchange=event=>{
             if(!event.target.matches('[data-roster-import]') || !event.target.files[0])return;
             const file=event.target.files[0];
-            run(event.target,async()=>{
+            run(event.target.closest('label') || event.target,async()=>{
                 if(file.size>8*1024*1024)throw new Error(t('fileLarge','The voter-list file is too large.'));
                 const imported=await V().importLocalFile(JSON.parse(await file.text()),progress);
                 if(local.value && !root.confirm(t('replaceLocal','Replace this draft’s voter list with the selected file?')))return;

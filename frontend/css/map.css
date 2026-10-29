@@ -172,21 +172,25 @@ body.cadastre-view.on-map-editing:has(.on-map-reparcellization) .leaflet-map-pan
 
 /* Loading spinner over a mode-strip label while that view composes. three-mode.js sets
    .mode-btn-loading on #mode-3d-toggle (model view rendering) or #mode-realistic-toggle (photo view
-   streaming Google tiles). The label steps aside while the ring is shown. */
-.map-mode-tile.mode-btn-loading { pointer-events: none; }
+   streaming Google tiles), and on #mode-2d-toggle while cadastral parcels load (in any view, so
+   that tile stays clickable). The label steps aside while the ring is shown. */
+#mode-3d-toggle.map-mode-tile.mode-btn-loading,
+#mode-realistic-toggle.map-mode-tile.mode-btn-loading { pointer-events: none; }
 .map-mode-tile.mode-btn-loading::after {
     content: '';
     position: absolute;
     left: 50%;
     top: 50%;
-    /* border-box so the 2px border is INSIDE the 18px box; with content-box the box would be 22px
-       and the -9px margin (half of 18) would leave the ring 2px off-centre down-right. */
+    /* border-box so the 3px border is INSIDE the 22px box; with content-box the box would be 28px
+       and the -11px margin (half of 22) would leave the ring 3px off-centre down-right. */
     box-sizing: border-box;
-    width: 18px;
-    height: 18px;
-    margin: -9px 0 0 -9px;
-    border: 2px solid var(--cb-line-strong);
-    border-top-color: currentColor;
+    width: 22px;
+    height: 22px;
+    margin: -11px 0 0 -11px;
+    /* A light track and a primary arc, straight on the tile's artwork: the turning quarter is the
+       only coloured part, so it reads as motion on the light map art and the dark aerial alike. */
+    border: 3px solid color-mix(in srgb, var(--cb-surface) 85%, transparent);
+    border-top-color: var(--cb-primary);
     border-radius: 50%;
     animation: map-mode-spin 0.7s linear infinite;
     z-index: var(--cb-z-local-2);
@@ -275,6 +279,17 @@ body.cadastre-view.on-map-editing:has(.on-map-reparcellization) .leaflet-map-pan
     font-size: var(--cb-text-xs);
     line-height: var(--cb-leading);
     color: var(--cb-text-muted);
+}
+
+/* Solid existing buildings hide their typical layouts: a notice with the switch to transparent. */
+#model-layer-controls .three-mode-xray-solid-notice:not([hidden]) {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--cb-space-2);
+    max-width: 240px;
+    font-size: var(--cb-text-xs);
+    line-height: var(--cb-leading);
 }
 
 #model-layer-controls .three-mode-floor-cutaway:not([hidden]) {
@@ -921,8 +936,25 @@ body.three-mode-active #agent-bubbles-container {
     pointer-events: none;
 }
 
+/* A design shown from Lists is marked like a selection; the selection the list was opened over
+   steps back (is-list-previewing on the map container, dialog-create.js) until the preview clears. */
+.list-preview-focus {
+    animation: click-stack-focus-pulse 1.4s ease-in-out infinite;
+    pointer-events: none;
+}
+
+.leaflet-container.is-list-previewing :is(.click-stack-map-focus, .proposal-primary-outline, .proposal-parcel-outline,
+    .proposal-road-outline, .proposal-road-selected-outline, .planning-site-selection) {
+    animation: none;
+    stroke-opacity: .35;
+    stroke-width: 2;
+    fill-opacity: .05;
+    filter: none;
+}
+
 @media (prefers-reduced-motion: reduce) {
-    .click-stack-map-focus { animation: none; }
+    .click-stack-map-focus,
+    .list-preview-focus { animation: none; }
 }
 
 /* A section pairs a selector with the separate card for its selected item. */
@@ -991,6 +1023,7 @@ body.three-mode-active #agent-bubbles-container {
 
 /* The same dark halo keeps selected map geometry readable over pale imagery and paving. */
 .click-stack-map-focus,
+.list-preview-focus,
 .proposal-primary-outline,
 .proposal-parcel-outline,
 .proposal-road-outline,
@@ -1397,9 +1430,10 @@ body.three-mode-active #agent-bubbles-container {
     padding: var(--cb-space-3) 0 0;
 }
 
-/* In the stack, Add to plan heads the design card (.click-stack__actions--design), so the hosted
-   panel's footer does not repeat it. */
-#click-stack #proposal-details-panel.is-hosted .proposal-primary-actions > .btn.btn-add-to-plan {
+/* In the stack, Add to plan and Download head the design card (.click-stack__actions--design), so
+   the hosted panel's footer does not repeat them. */
+#click-stack #proposal-details-panel.is-hosted .proposal-primary-actions > .btn.btn-add-to-plan,
+#click-stack #proposal-details-panel.is-hosted .proposal-primary-actions > .btn.btn-download-design {
     display: none;
 }
 
@@ -1524,8 +1558,7 @@ body.three-mode-active #agent-bubbles-container {
 .map-mode-tile.mode-btn-loading > span { visibility: hidden; }
 
 .map-mode-tile.mode-btn-loading::after {
-    background: var(--cb-inverse);
-    box-shadow: 0 0 0 var(--cb-space-1) var(--cb-inverse);
+    filter: drop-shadow(0 0 2px color-mix(in srgb, var(--cb-inverse) 60%, transparent));
 }
 
 /* 3D container overlay on top of the map */
@@ -1662,6 +1695,31 @@ body.three-mode-active #agent-bubbles-container {
     color: var(--cb-text);
     cursor: ew-resize;
 }
+
+/* The X at the top of the divider that ends a comparison (MapBeforeAfter onClose). */
+.map-compare__close {
+    position: absolute;
+    top: var(--cb-space-3);
+    left: 0;
+    z-index: calc(var(--cb-z-map-compare) + 3);
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    background: var(--cb-surface);
+    box-shadow: var(--cb-shadow-sm);
+    color: var(--cb-text);
+    font-size: var(--cb-text-sm);
+    cursor: pointer;
+}
+
+.map-compare__close:hover { background: var(--cb-surface-2); }
+.map-compare__close:focus-visible { outline: 3px solid var(--cb-primary); outline-offset: 2px; }
 
 .map-compare__label {
     position: absolute;

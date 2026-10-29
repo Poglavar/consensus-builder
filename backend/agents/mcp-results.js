@@ -55,7 +55,7 @@ export function toolError(error) {
     if (typeof error?.retryable === 'boolean') result.retryable = error.retryable;
     if (Number.isSafeInteger(error?.retryAfter) && error.retryAfter >= 0) result.retryAfter = error.retryAfter;
     for (const key of ['cid', 'stage', 'url']) if (typeof error?.[key] === 'string') result[key] = error[key];
-    if (Array.isArray(error?.pinnedCids) && error.pinnedCids.every(cid => typeof cid === 'string')) result.pinnedCids = error.pinnedCids;
+    if (Array.isArray(error?.publishedCids) && error.publishedCids.every(cid => typeof cid === 'string')) result.publishedCids = error.publishedCids;
     if (typeof error?.indexed === 'boolean') result.indexed = error.indexed;
     if (code === 'structure-over-road') {
         result.roadId = error.roadProposalId || error.roadId || null;

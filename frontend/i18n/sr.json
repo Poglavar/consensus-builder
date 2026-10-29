@@ -11,6 +11,7 @@
         "importedPlans": "Uvezeni planovi",
         "help": "Formati datoteka i ograničenja",
         "design": "Preuzmi dizajn",
+        "plan": "Preuzmi plan",
         "review": "Pregled datoteke plana",
         "cancel": "Odustani",
         "importDrafts": "Uvezi kao nacrte",
@@ -230,6 +231,7 @@
     },
     "proposalApproval": {
         "ownerLabel": "Vlasnik {{label}}",
+        "meterDistinctOwners": "Različiti vlasnici koji su odobrili",
         "leaseholderLabel": "Zakupac {{label}}",
         "authorityLabel": "Nadležni organ",
         "authorityLabelLettered": "Nadležni organ {{label}}",
@@ -243,6 +245,8 @@
             "vacuous": "Ovde nema koga brojati, pa ovaj uslov ne blokira.",
             "heard": "Saslušani, ne broje se",
             "ownersHeard": "Vlasnici se saslušavaju; odlučuje nadležni organ.",
+            "minimumOwners": "odobrenje najmanje {{count}} različitih vlasnika",
+            "areaConsent": "Kod testova površine, parcela ili zakup računaju se tek kada ih odobre svi suvlasnici koji se računaju.",
             "of": {
                 "headcount-owners-all": "vlasnika",
                 "headcount-owners-private": "privatnih vlasnika",
@@ -283,7 +287,7 @@
                 "publicLand": "Javno zemljište bez naknade",
                 "levelling": "Razlike",
                 "valueGain": "Rast vrednosti",
-                "minParties": "Strane"
+                "minParties": "Različiti vlasnici"
             },
             "groups": {
                 "decision": "Kako se odlučuje",
@@ -426,11 +430,11 @@
                 "minParties": {
                     "any": {
                         "short": "Bilo koji broj",
-                        "long": "Nema najmanjeg broja strana."
+                        "long": "Nema minimalnog broja različitih vlasnika."
                     },
                     "some": {
                         "short": "Najmanje {{count}}",
-                        "long": "Zemljište unosi najmanje {{count}} strana."
+                        "long": "Mora da odobri najmanje {{count}} različitih vlasnika ulaznih parcela."
                     }
                 }
             },
@@ -479,14 +483,15 @@
                 "capPoolUnknown": "Površina fonda nije poznata, pa se granica od {{limit}} ne može proveriti.",
                 "capPoolOk": "{{given}} fonda se ne vraća vlasnicima; granica je {{limit}}.",
                 "capPoolOver": "{{given}} fonda se ne vraća vlasnicima, iznad granice od {{limit}}.",
-                "partiesOk": "Broj strana koje unose zemljište: {{actual}}; šema traži najmanje {{required}}.",
-                "partiesFew": "Broj strana koje unose zemljište je samo {{actual}}; šema traži najmanje {{required}}.",
+                "partiesOk": "Zemljište ima {{actual}} različitih vlasnika; najmanje {{required}} mora da odobri.",
+                "partiesFew": "Zemljište ima samo {{actual}} različitih vlasnika; ova šema zahteva najmanje {{required}}.",
+                "partiesUnknown": "Učitajte potpune podatke o vlasništvu da biste proverili minimum od {{required}} različitih vlasnika.",
                 "proposerNone": "Predlagač ne dobija zemljište.",
                 "proposerOver": "Predlagač bi dobio {{area}} m²; prema ovoj šemi zemljište se vraća vlasnicima ili ide za javne namene."
             },
             "valueGainAll": "Pri raspodeli prema vrednosti svaki vlasnik dobija nazad punu vrednost koju je uneo; celo povećanje vrednosti namiruje se novcem.",
             "valueGainShare": "Pri raspodeli prema vrednosti novcem se namiruje {{percent}}% povećanja vrednosti koje ostvari svaki vlasnik.",
-            "minParties": "Broj strana koje unose zemljište: najmanje {{count}}.",
+            "minParties": "Mora da odobri najmanje {{count}} različitih vlasnika ulaznih parcela.",
             "noProposer": "Zemljište se vraća vlasnicima ili ide za javne namene; predlagač ne može da ga stekne."
         },
         "authority": {
@@ -623,6 +628,7 @@
             "contributes": "Vaš predloženi doprinos",
             "conditions": "Uslovi",
             "progress": "Napredak",
+            "minimumOwners": "Potrebno je {{count}} odobrenja različitih vlasnika",
             "yourShare": "Vaš udeo {{share}}",
             "coOwnedWith": "u suvlasništvu sa: {{owners}}",
             "openUntil": "Otvoreno do {{date}}",
@@ -674,7 +680,8 @@
         "busy": "U toku je druga izmena mape. Sačekajte da se završi pa pokušajte ponovo.",
         "storeUnavailable": "Predlozi još nisu učitani. Sačekajte da se učitavanje grada završi pa pokušajte ponovo.",
         "notFound": "Ovaj dizajn više nije dostupan. Osvežite listu dizajna i pokušajte ponovo.",
-        "cancelled": "Ovaj dizajn je povučen pa ne može da se primeni na mapu."
+        "cancelled": "Ovaj dizajn je povučen pa ne može da se primeni na mapu.",
+        "partitionInvalid": "Dizajn „{{title}}” ne može da se primeni: parcele koje oblikuje ne bi tačno pokrile zemljište koje zamenjuju ({{detail}}). Dizajn ostaje sačuvan, neprimenjen."
     },
     "proposalDrafts": {
         "title": "Nacrti",
@@ -808,7 +815,7 @@
                 "fixes": "Šta bi ispunilo uslove",
                 "fixBasisValue": "Na kartici Pravila u polju Naknada izaberite „Novčano izravnanje razlika u vrednosti zemljišta”, a zatim unesite vrednost po m² za svaku ulaznu parcelu i svaki nastali deo.",
                 "fixBasisArea": "Na kartici Pravila u polju Naknada izaberite „Novčano izravnanje razlika u zemljištu”.",
-                "fixParties": "Broj strana koje unose zemljište je {{actual}}, a ova šema traži {{required}}; izaberite plan koji obuhvata više parcela ili drugu šemu.",
+                "fixParties": "Zemljište ima {{actual}} različitih vlasnika, a ova šema zahteva {{required}}. Proverite datoteku o vlasništvu ili izaberite zemljište sa dovoljno različitih vlasnika.",
                 "fixProposer": "Na kartici Izlazne parcele dodelite delove predlagača nekom vlasniku ili ih označite kao Javno zemljište.",
                 "fixCapOwner": "Na kartici Izlazne parcele vratite vlasniku {{owner}} još najmanje {{area}} zemljišta ili smanjite Doprinos zemljišta; druga mogućnost je šema sa višom granicom.",
                 "fixCapOwnerPlain": "Na kartici Izlazne parcele vratite vlasniku {{owner}} više zemljišta.",
@@ -1119,7 +1126,6 @@
             "linkLabel": "Link ka objavljenom dizajnu",
             "errors": {
                 "cidMismatch": "Server je izračunao drugačiji identitet ovog dizajna, pa ništa nije objavljeno.",
-                "pinningUnconfigured": "Ovaj server još ne može da čuva objavljene dizajne (čuvanje nije konfigurisano).",
                 "tooLarge": "Dizajn prelazi ograničenje objavljivanja od 10 MiB. Smanjite njegov obuhvat ili detalje pre deljenja; sačuvan je lokalno.",
                 "invalidDesign": "Dizajn sadrži neispravne podatke. Ispravite ih pre deljenja.",
                 "rateLimitedFor": "Zasad je previše objava. Pokušajte ponovo za otprilike {{minutes}} min.",
@@ -1282,6 +1288,9 @@
                 "buildingsNew": "od toga nove (bruto površina m²)",
                 "openSpace": "Otvoreni prostor — parkovi, trgovi, voda (m²)",
                 "apartments": "Stanovi",
+                "apartmentsLaidOut": "{{apartments}} ({{laidOut}} od {{buildings}} zgrada sa rasporedom)",
+                "countingUnits": "Brojim…",
+                "unitsFailed": "Stanovi se računaju po m²: zgrade nije bilo moguće rasporediti ({{reason}}).",
                 "people": "Stanovnici",
                 "jobs": "Radna mesta",
                 "salesValue": "Prodajna vrednost površine",
@@ -2392,6 +2401,15 @@
             "previewLabel": "3D pregled",
             "confirm": "Gotovo",
             "heightLabel": "Visina (m):",
+            "useLabel": "Namena zgrade",
+            "useInfo": "Statistika plana broji stanove samo na stambenim spratovima; stambena namena dobija predloženi raspored u rendgenskom prikazu.",
+            "useNotStated": "Nije navedena",
+            "useResidential": "Stambena",
+            "useResidentialShops": "Stambena, prodavnice u prizemlju",
+            "useMixed": "Mešovita: prodavnice, kancelarije na prvom spratu, stanovi iznad",
+            "useOffice": "Poslovna (kancelarije)",
+            "usePublic": "Javna (škola, ambulanta, društvena)",
+            "useIndustrial": "Industrijska",
             "rotationLabel": "Rotiraj osnovu",
             "rotateCounterclockwiseLabel": "Zakreni 5 stepeni suprotno od kazaljke na satu",
             "rotateClockwiseLabel": "Zakreni 5 stepeni u smeru kazaljke na satu",
@@ -3439,10 +3457,21 @@
                 "ruleTypeRange": "Između minimuma i ovoga",
                 "ruleTypeExact": "Tačno ovoliko",
                 "minFootprint": "Min. površina osnove (m²):",
-                "minPlotArea": "Najmanja površina parcele (m²):"
+                "minPlotArea": "Najmanja površina parcele (m²):",
+                "maxHeight": "Najveća visina (m):",
+                "frontSetback": "Udaljenost od ulice (m):",
+                "rearSetback": "Udaljenost od zadnje međe (m):",
+                "setbackHeightRatio": "Bočno i pozadi najmanje (× visina):",
+                "minFrontage": "Najmanja širina prema ulici (m):",
+                "maxCoverage": "Najveća izgrađenost (%):",
+                "minNaturalGround": "Najmanje prirodnog terena (%):",
+                "maxFloorAreaRatio": "Najveća iskorišćenost:",
+                "maxFootprint": "Najveća površina osnove (m²):"
             },
             "helper": {
-                "minPlotArea": "Parcele manje od predloženog minimuma prikazane su šrafirano. Spojite ih ili promenite pravilo."
+                "minPlotArea": "Parcele manje od predloženog minimuma prikazane su šrafirano. Spojite ih ili promenite pravilo.",
+                "frontage": "Udaljenost od ulice i od zadnje međe meri se od ivice parcele prema najbližoj ulici, inače od njene najduže ivice.",
+                "setbackHeightRatio": "0,5 drži bočne i zadnju stranu najmanje pola visine zgrade od međe."
             },
             "messages": {
                 "creationFailed": "Generisanje zgrada nije uspelo. Pokušaj da podesite parametre.",
@@ -3456,7 +3485,13 @@
                 "generatedSummaryExcluded": "Generisano {{count}} zgrada · {{excluded}} parcela izuzeto pravilom",
                 "excludedBelowMinPlot": "Manja od najmanje površine parcele prema ovom predloženom pravilu; spojite je sa susednom ili promenite pravilo.",
                 "excludedNoRoom": "Ovaj odmak iz predloženog pravila ne ostavlja prostor za zgradu.",
-                "excludedCannotMeet": "Parcela ne može da zadovolji minimum iz ovog predloženog pravila."
+                "excludedCannotMeet": "Parcela ne može da zadovolji minimum iz ovog predloženog pravila.",
+                "excludedBelowMinFrontage": "Njena ivica prema ulici kraća je od najmanje širine iz ovog predloženog pravila.",
+                "excludedNoRoomUnderLimits": "Ograničenja izgrađenosti ili iskorišćenosti iz ovog predloženog pravila ne ostavljaju mesta za zgradu."
+            },
+            "placeholders": {
+                "noLimit": "Bez ograničenja",
+                "sameAsBorders": "Kao od granica"
             }
         }
     },
@@ -6347,6 +6382,8 @@
             "suggestedPendingStreets": "Podaci o ulicama se učitavaju; ulazi gledaju na najdužu fasadu dok ne stignu.",
             "suggestedExisting": "I postojeće zgrade",
             "suggestedExistingTooltip": "Prikaži i tipične tlocrte po periodu gradnje za postojeće zgrade u okolini: procena iz osnove i visine, a ne snimak.",
+            "xraySolidExisting": "Postojeće zgrade su pune pa se njihova unutrašnjost ne vidi.",
+            "xrayMakeTransparent": "Učini providnim",
             "suggestedExistingCount": "Postojeće: {{count}} zgrada sa tipičnim tlocrtom po periodu.",
             "facadeStyles": {
                 "mixed": "Mešovito",
@@ -6403,6 +6440,7 @@
             "floorArea": "Podna površina",
             "floorNote": "@ {{h}} m/etaži",
             "planned": "Planirano",
+            "plannedConditional": "Planirano je ono što pravila dopuštaju; još {{floorArea}} zahteva: {{condition}}",
             "value": "Vrednost",
             "constructionCost": "Trošak gradnje",
             "profit": "Dobit",
@@ -7340,6 +7378,7 @@
         "blocked": "Pružalac je odbio pristup (HTTP {{status}}). Možda ograničava IP adrese ili zahteva prijavu. Izaberi drugi izvor ili pokušaj kasnije.",
         "timeout": "Ovaj izvor nije odgovorio na vreme. Pokušaj uskoro ponovo.",
         "unavailable": "Ovaj izvor parcela trenutno nije dostupan.",
+        "areaLimit": "Ova oblast ima više parcela nego što izvor vraća odjednom. Približi mapu da se učita.",
         "loadedRemain": "Već učitane parcele ostaju vidljive. Pokušaj ponovo ili izaberi drugi izvor.",
         "loadedNone": "Još nema učitanih parcela. Pokušaj ponovo ili izaberi drugi izvor.",
         "loadedCounts": "U memoriji je učitano {{inMemory}} parcela, od toga {{inView}} u ovom prikazu; ostaju na karti. Pokušaj ponovo ili izaberi drugi izvor.",
@@ -7752,6 +7791,15 @@
         }
     },
     "agreement": {
+        "compare": {
+            "approval": "Odobrenje",
+            "settlement": "Namirenje",
+            "toOwners": "Zemljište vlasnicima",
+            "toPublic": "Zemljište javnosti",
+            "toProposer": "Zemljište predlagaču",
+            "paid": "Novac koji vlasnici plaćaju",
+            "received": "Novac koji vlasnici primaju"
+        },
         "outcomes": {
             "owners": "Vlasnici ulaznih parcela",
             "none": "Vlasnici bez dela",
@@ -7765,7 +7813,11 @@
             "titleCounter": "Protivpredlog sporazuma",
             "counterTitle": "Protivpredlog za {{title}}",
             "intro": "Sporazum se odnosi na jedan plan i određuje ko odlučuje, ko dobija koje zemljište i koji se novac prenosi. Još ništa ne napušta ovaj uređaj.",
-            "save": "Sačuvaj sporazum"
+            "save": "Sačuvaj sporazum",
+            "waitingLand": "Čitam zemljište plana…",
+            "waitingPlan": "Prvo izaberi plan.",
+            "waitingMore": "(i još {{count}})",
+            "waitingRoster": "Prvo sačuvaj spisak glasača."
         },
         "sections": {
             "pieces": "Nastalo zemljište",
@@ -7953,7 +8005,6 @@
                     "other": "Na serveru nedostaje {{count}} dizajna sporazuma, pa sporazum nije predložen."
                 },
                 "inputsDifferFromBinding": "Zemljište sporazuma nije zemljište koje njegovi dizajni zauzimaju na serveru ({{parcels}}). Uredite sporazum na trenutnoj mapi i ponovo ga predložite.",
-                "pinningUnconfigured": "Ovaj server još ne može da čuva objavljene sporazume (čuvanje nije konfigurisano).",
                 "deadlinePast": "Rok sporazuma je istekao. Uredite rok i ponovo predložite sporazum.",
                 "refused": "Server je odbio ovaj sporazum: {{reason}}",
                 "notACid": "Ovo nije link sporazuma.",
@@ -8143,20 +8194,21 @@
             "compare": "Poređenje"
         },
         "compare": {
-            "enable": "Uporedi jedno uz drugo",
+            "stop": "Prekini poređenje",
             "left": "Levo",
             "right": "Desno",
             "swap": "Zameni strane",
             "sliderLabel": "Razdelnik poređenja",
             "reading": "{{label}} (čita se…)",
             "unreadable": "{{label}} (nije mogao da se pročita: {{reason}})",
-            "mapNote": "Na karti svaka strana crta svoje zgrade i dozvoljenu građevinsku masu kao osnove; plan koji nije primenjen crta kao osnove i svoje puteve i prostore. Parcele i primenjeni putevi i parkovi vide se na obe strane.",
+            "mapNote": "Na karti svaka strana crta svoje zgrade i dozvoljenu građevinsku masu kao osnove; dizajn ili plan koji nije primenjen crta kao osnove i svoje puteve i prostore. Parcele i primenjeni putevi i parkovi vide se na obe strane.",
             "options": {
                 "built": "Izgrađeno danas",
                 "permitted": "Dozvoljena građevinska masa",
                 "proposed": "Predloženo (svi primenjeni dizajni)",
                 "design": "Dizajn: {{title}}",
-                "plan": "Plan: {{title}}"
+                "plan": "Plan: {{title}}",
+                "agreement": "Sporazum: {{title}}"
             }
         },
         "reroll": {
@@ -8309,6 +8361,7 @@
         "observedNote": "Izvorni podaci o zgradi. Nedostajuće mere ostaju nepoznate.",
         "proposalActions": "Radnje dizajna",
         "footprintArea": "Površina osnove",
+        "conditionalHeight": "Visina uz uslov",
         "referenceChanged": "Izvor se promenio od verzije navedene u projektu. Prikazuje se trenutno sačuvani zapis; navedena verzija nije rekonstruisana.",
         "referencedSource": "Izvor: {{source}} · {{revision}}",
         "referenceUnavailable": "Navedeni izvorni zapis nije dostupan.",
@@ -8329,7 +8382,8 @@
             "plannedresidential": "Planirano stanovanje",
             "cached-calculation": "Sačuvani proračun",
             "new-attached-multifamily": "Nova višestambena izgradnja u nizu",
-            "general": "Opšte (karta tretmana)"
+            "general": "Opšte (karta tretmana)",
+            "sustainable": "Spratovi za održivu gradnju (Dekret 676/2025)"
         },
         "evidence": {
             "direct": "Direktna izvorna vrednost",
@@ -8903,6 +8957,7 @@
         "openNamed": "Otvori {{title}}",
         "noPlace": "Ovo nema mesto na mapi.",
         "agreementHint": "Napravite sporazum iz plana na kartici Planovi.",
+        "agreementNoPlan": "{{title}} nema plan za poređenje.",
         "proposeFirst": "Otvorite sporazum, pregledajte ga i predložite pre deljenja.",
         "loading": "Učitavanje…",
         "count": "{{shown}} od {{total}} učitanih stavki",
@@ -8941,10 +8996,21 @@
     "compare": "Uporedi",
     "swap": "Zameni redove i kolone",
     "failed": "Nije izmereno: {{reason}}",
-    "assumptions": "Uz podrazumevane pretpostavke i {{price}} po m². U statistici jednog plana možete ih promeniti.",
+    "apartmentRule": "Zgrada sa predloženim rasporedom broji svoje stanove; svaka druga: bruto površina × {{efficiency}} % neto × {{housing}} % stanovanja ÷ {{size}} m² po stanu. Stanovnici = stanovi × {{persons}}.",
     "presentState": "Postojeće stanje",
     "basis": "Postojeće stanje na zemljištu plana",
     "basisCompared": "Svi upoređeni planovi",
+    "titleDesigns": "Uporedi projekte",
+    "basisComparedDesigns": "Svi upoređeni projekti",
+    "design": "Projekat",
+    "titleAgreements": "Uporedi sporazume",
+    "basisComparedAgreements": "Svi upoređeni sporazumi",
+    "agreement": "Sporazum",
+    "terms": "Uslovi sporazuma",
+    "figures": "Šta planovi grade",
+    "differs": "Razlikuje se",
+    "onlyDiffering": "Samo ono što se razlikuje",
+    "termsSame": "Uslovi sporazuma su isti.",
     "measuring": "Merenje…",
     "landDefinition": "Javna površina su putevi te parkovi i trgovi iz OpenStreetMap-a; privatna je ostatak parcela. Postojeće stanje broji svaku postojeću zgradu na tom zemljištu; plan uz svoje nove zgrade broji postojeće koje njegovi dizajni ne uklanjaju.",
     "noBasis": "Nema sačuvanog plana sa čijeg bi se zemljišta uzelo stanje.",

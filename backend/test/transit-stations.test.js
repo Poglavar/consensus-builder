@@ -27,6 +27,13 @@ function rectangle(west, south, east, north, id) {
     });
 }
 
+// A station's cadastral scope reads its parcels back from the repository; completeness is the
+// shared ground rule over them.
+const repositoryOf = (parcels, result) => ({
+    ensureFootprint: vi.fn().mockResolvedValue({ result }),
+    peekMany: ids => ids.map(id => parcels[id]).filter(Boolean)
+});
+
 describe('transit station footprints', () => {
     it.each([
         ['bus', 5, 18],
@@ -1103,15 +1110,14 @@ describe('station parcel ancestry', () => {
 
     it('loads the complete immutable cadastral scope before authoring a station', async () => {
         const geometry = rectangle(15.9798, 45.8098, 15.9802, 45.8102, 'footprint').geometry;
-        const ensureFootprint = vi.fn().mockResolvedValue({
-            result: {
-                ids: ['cadastre-west', 'cadastre-east', 'cadastre-east'],
-                coverage: 0.999999
-            }
-        });
+        const repository = repositoryOf({
+            'cadastre-west': rectangle(15.9795, 45.8095, 15.98, 45.8105, 'cadastre-west'),
+            'cadastre-east': rectangle(15.98, 45.8095, 15.9805, 45.8105, 'cadastre-east')
+        }, { ids: ['cadastre-west', 'cadastre-east', 'cadastre-east'], coverage: 0.999999 });
+        const ensureFootprint = repository.ensureFootprint;
 
         await expect(stations.resolveStationCadastreScope(geometry, {
-            repository: { ensureFootprint },
+            repository,
             city: 'sibenik',
             turfApi: turf
         })).resolves.toEqual({
@@ -1120,19 +1126,16 @@ describe('station parcel ancestry', () => {
             complete: true
         });
         expect(ensureFootprint).toHaveBeenCalledWith(geometry, {
-            city: 'sibenik',
-            parcelsOnly: true
+            city: 'sibenik'
         });
     });
 
     it('refuses an incomplete cadastral footprint instead of using the currently loaded live piece', async () => {
         const geometry = rectangle(15.9798, 45.8098, 15.9802, 45.8102, 'footprint').geometry;
         const scope = await stations.resolveStationCadastreScope(geometry, {
-            repository: {
-                ensureFootprint: vi.fn().mockResolvedValue({
-                    result: { ids: ['only-visible-piece'], coverage: 0.45 }
-                })
-            }
+            repository: repositoryOf({ 'only-visible-piece': rectangle(15.9795, 45.8095, 15.98, 45.8105, 'only-visible-piece') },
+                { ids: ['only-visible-piece'], coverage: 0.45 }),
+            turfApi: turf
         });
 
         expect(scope).toEqual({
@@ -1143,28 +1146,24 @@ describe('station parcel ancestry', () => {
     });
 });
 
+// Was: the uncovered AREA against a 0.01 m² epsilon (0.02 m² refused, 0.005 m² accepted). Now the
+// uncovered part must not be ground: wider than the 1 mm noise refuses, debris passes.
 describe('station cadastral completeness matches the derive rule', () => {
-    it('refuses a footprint the proposal manager would refuse (tiny uncovered sliver)', async () => {
-        // ~90 m² platform with 0.02 m² off the cadastre: the old 0.999 ratio accepted it, the
-        // manager's absolute epsilon (0.01 m²) refused it at derive and parked the station.
-        const geometry = rectangle(15.97990, 45.80995, 15.98005, 45.81002, 'platform').geometry;
-        const area = turf.area({ type: 'Feature', properties: {}, geometry });
-        const coverage = 1 - (0.02 / area);
-        const scope = await stations.resolveStationCadastreScope(geometry, {
-            repository: { ensureFootprint: vi.fn().mockResolvedValue({ result: { ids: ['street'], coverage } }) },
-            turfApi: turf
-        });
-        expect(coverage).toBeGreaterThan(0.999);
+    // ~90 m² platform; the street parcel stops `gapDegrees` of latitude short of its north edge.
+    const platform = rectangle(15.97990, 45.80995, 15.98005, 45.81002, 'platform').geometry;
+    const scopeWithGap = gapDegrees => stations.resolveStationCadastreScope(platform, {
+        repository: repositoryOf({ street: rectangle(15.9798, 45.8099, 15.9801, 45.81002 - gapDegrees, 'street') },
+            { ids: ['street'], coverage: 0.9999 }),
+        turfApi: turf
+    });
+
+    it('refuses a footprint the proposal manager would refuse (a thin uncovered strip)', async () => {
+        const scope = await scopeWithGap(2e-8); // ~2 mm × 11.6 m ≈ 0.03 m² off the cadastre
         expect(scope.complete).toBe(false);
     });
 
-    it('accepts a footprint whose uncovered area is within the shared epsilon', async () => {
-        const geometry = rectangle(15.97990, 45.80995, 15.98005, 45.81002, 'platform').geometry;
-        const area = turf.area({ type: 'Feature', properties: {}, geometry });
-        const scope = await stations.resolveStationCadastreScope(geometry, {
-            repository: { ensureFootprint: vi.fn().mockResolvedValue({ result: { ids: ['street'], coverage: 1 - (0.005 / area) } }) },
-            turfApi: turf
-        });
+    it('accepts a footprint whose uncovered part is cutting debris', async () => {
+        const scope = await scopeWithGap(3e-9); // ~0.3 mm
         expect(scope.complete).toBe(true);
     });
 });

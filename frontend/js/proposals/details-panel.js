@@ -451,6 +451,14 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
     // Agreement creation belongs to a saved plan's actions, whose membership is fixed.
     // Duplicate places fresh movable geometry. Site-bound acts and rules have no free-copy action.
     // Edit geometry below still opens the source's design tool under the ordinary edit contract.
+    // The design as a file (a one-design plan file or GeoJSON), PlanFileUI.design.
+    const downloadButtonHtml = proposalKey
+        ? `
+        <button type="button" class="btn btn-download-design" onclick="window.PlanFileUI.design(window.proposalStorage.getProposal(${inlineJsArg(proposalKey)}))">
+            <i class="fas fa-download" aria-hidden="true"></i> ${tProposal('common.download', 'Download')}
+        </button>
+    ` : '';
+
     const duplicateButtonHtml = proposalKey && window.ProposalDesignGoals.canDuplicate(fullProposal)
         ? `
         <button type="button" class="btn btn-duplicate-design"
@@ -562,6 +570,7 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
             ${mapActionButtonHtml}
             ${shareButtonHtml}
             ${addToPlanButtonHtml}
+            ${downloadButtonHtml}
             ${duplicateButtonHtml}
             <button type="button" class="btn btn-proposal-details" onclick="toggleProposalDetailsPanelMinimized(false)">
                 <i class="fas fa-circle-info" aria-hidden="true"></i> ${tProposal('panel.proposal.actions.details', 'Details')}

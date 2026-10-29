@@ -196,7 +196,7 @@
         return wrap;
     }
 
-    // The design card's first action, above its panel: Add to plan (PlanDialog.addDesign). A published
+    // The design card's actions, above its panel: Add to plan (PlanDialog.addDesign) and Download. A published
     // design this browser holds no copy of is imported first, as opening it does.
     function renderDesignActions(instance, doc, win) {
         if (!instance || !doc) return null;
@@ -221,6 +221,24 @@
             return win.PlanDialog.addDesign(key);
         }));
         actions.appendChild(add);
+        // Download: the design as a file; one this browser holds no copy of is fetched, not stored.
+        const download = doc.createElement('button');
+        download.type = 'button';
+        download.className = 'btn';
+        download.dataset.designAction = 'download';
+        const downloadIcon = doc.createElement('i');
+        downloadIcon.className = 'fas fa-download';
+        downloadIcon.setAttribute('aria-hidden', 'true');
+        const downloadLabel = doc.createElement('span');
+        downloadLabel.textContent = win?.i18n?.t?.('common.download') || 'Download';
+        download.append(downloadIcon, downloadLabel);
+        download.addEventListener('click', () => win.BusyControl.track(download, async () => {
+            const record = win.proposalStorage.getProposal(instance.id) || (instance.serverId
+                ? { ...win.DesignSync.localDesignFromRow(await win.DesignSync.fetchDesign(instance.serverId), { apiBase: win.DesignSync.apiBase() }), proposalId: instance.serverId }
+                : null);
+            if (record) win.PlanFileUI.design(record);
+        }).catch(error => win.showStyledAlert(error.message)));
+        actions.appendChild(download);
         return actions;
     }
 

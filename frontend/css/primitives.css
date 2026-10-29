@@ -429,7 +429,8 @@ body.debug-mode .btn.debug-only-control {
 .cb-tile[hidden],
 .cb-option[hidden],
 .cb-segmented__option[hidden],
-.cb-link[hidden] {
+.cb-link[hidden],
+.cb-actions[hidden] {
     display: none;
 }
 

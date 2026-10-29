@@ -14,30 +14,49 @@ function button() {
         hidden: false,
         disabled: false,
         attributes: new Map(),
-        classList: { toggle() {} },
+        classes: new Set(),
+        get classList() {
+            const classes = this.classes;
+            return { toggle(name, on) { if (on) classes.add(name); else classes.delete(name); } };
+        },
         setAttribute(name, value) { this.attributes.set(name, String(value)); }
     };
 }
 
-function update(mode) {
+function paintStrip(mode, extra = {}) {
     const buttons = new Map(['mode-2d-toggle', 'mode-3d-toggle', 'mode-realistic-toggle', 'mode-ai-toggle']
         .map(id => [id, button()]));
     const window = {
         __mapModeState: { desired: mode },
-        PhotorealMode: { isActive: () => mode === 'photo', isLoading: () => false }
+        PhotorealMode: { isActive: () => mode === 'photo', isLoading: () => false },
+        ...extra
     };
     const document = { getElementById: id => buttons.get(id) || null };
     const paint = new Function('window', 'document', 'threeI18n', 'isActive', 'isTransitioning3D', 'renderingStatusRelease',
         `${functionSource}; return updateModeButtonStates;`)(window, document, (_key, fallback) => fallback,
         mode !== '2d', false, null);
     paint();
-    return buttons.get('mode-ai-toggle');
+    return buttons;
 }
+
+const update = mode => paintStrip(mode).get('mode-ai-toggle');
 
 describe('AI mode-strip visibility', () => {
     it('hides the AI action in 2D and authored 3D, and shows it in photo mode', () => {
         expect(update('2d')).toMatchObject({ hidden: true, disabled: true });
         expect(update('model')).toMatchObject({ hidden: true, disabled: true });
         expect(update('photo')).toMatchObject({ hidden: false, disabled: false });
+    });
+});
+
+describe('2D tile while cadastral parcels load', () => {
+    it('spins the 2D tile in every view while parcels load, and only then', () => {
+        for (const mode of ['2d', 'model', 'photo']) {
+            const loading = paintStrip(mode, { mapParcelsLoading: () => true });
+            expect(loading.get('mode-2d-toggle').classes.has('mode-btn-loading')).toBe(true);
+            expect(loading.get('mode-3d-toggle').classes.has('mode-btn-loading')).toBe(false);
+            const idle = paintStrip(mode, { mapParcelsLoading: () => false });
+            expect(idle.get('mode-2d-toggle').classes.has('mode-btn-loading')).toBe(false);
+        }
     });
 });

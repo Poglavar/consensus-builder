@@ -21,10 +21,19 @@
         return api;
     }
 
-    const DEFAULT_TOLERANCE_PCT = 1;
-    const DEFAULT_TOLERANCE_M2 = 1;
-    // Slivers below this are rounding, not land.
-    const MIN_DELTA_PIECE_M2 = 0.5;
+    // What counts as ground, and whether a shape reaches into a parcel: one rule for every stage
+    // (geometry-tolerances.js). Slivers it calls debris are cutting noise, not land.
+    function groundApi() {
+        return (typeof window !== 'undefined' && window.GeometryTolerances)
+            || (typeof require === 'function' ? require('../geometry-tolerances.js') : null);
+    }
+
+    // The turf those rules run on: the caller's own when its context carries one, else the app's.
+    function turfOf(ctx) {
+        if (ctx && ctx.turf) return ctx.turf;
+        if (typeof turf !== 'undefined' && turf) return turf;
+        throw new Error('formation-edit.js needs turf (the geometry context\'s `turf`, or the app global).');
+    }
 
     function asFeature(geometry) {
         if (!geometry) return null;
@@ -104,62 +113,6 @@
     }
 
     // §15b (decision 2026-08-06): the taker AMENDS the taken — one partition, latest wins.
-    // Clip a formation's authored pieces by the ground a newer action took. Carry fields survive
-    // on every output piece; a piece the taking SPLITS becomes several pieces (a parcel is ONE
-    // connected piece of ground); a residual sliver below the floor is dropped as rounding, and
-    // a fully-taken piece leaves the list. Pieces the taking does not touch are returned by
-    // REFERENCE, so callers can cheaply tell churn from change.
-    //
-    //   pieces:  [{ geometry, ...carry }]   (each entry's non-geometry fields ride along)
-    //   returns { changed, pieces, takenAreaM2, removedCount, splitCount }
-    function clipPiecesByTaking(pieces, takenFootprint, ctx, options) {
-        const opts = options || {};
-        const minPieceM2 = Number.isFinite(opts.minPieceM2) ? opts.minPieceM2 : MIN_DELTA_PIECE_M2;
-        const taken = asFeature(takenFootprint);
-        const list = Array.isArray(pieces) ? pieces : [];
-        if (!taken || !ctx || typeof ctx.difference !== 'function') {
-            return { changed: false, pieces: list.slice(), takenAreaM2: 0, removedCount: 0, splitCount: 0 };
-        }
-        const out = [];
-        let changed = false;
-        let takenAreaM2 = 0;
-        let removedCount = 0;
-        let splitCount = 0;
-        list.forEach(piece => {
-            const feature = piece ? asFeature(piece.geometry || piece) : null;
-            if (!feature) { out.push(piece); return; }
-            const overlap = safeIntersectionArea(ctx, feature, taken);
-            if (overlap <= minPieceM2) { out.push(piece); return; } // untouched (or rounding)
-            let residual = null;
-            // A difference that throws is not "fully taken": the piece would leave the plan.
-            try { residual = asFeature(ctx.difference(feature, taken)); } catch (error) {
-                throw clipFailureApi().clipFailure('difference', error, { site: 'formation-edit.clipPiecesByTaking' }, [feature, taken]);
-            }
-            const before = safeArea(ctx, feature);
-            const left = safeArea(ctx, residual);
-            if (!residual || left < minPieceM2) {
-                // Fully taken: the piece leaves the plan.
-                changed = true;
-                removedCount += 1;
-                takenAreaM2 += before;
-                return;
-            }
-            changed = true;
-            takenAreaM2 += Math.max(0, before - left);
-            const geom = residual.geometry;
-            const parts = geom.type === 'MultiPolygon'
-                ? (geom.coordinates || []).map(coordinates => ({ type: 'Polygon', coordinates }))
-                : [geom];
-            const kept = parts
-                .map(poly => ({ ...piece, geometry: poly }))
-                .filter(candidate => safeArea(ctx, asFeature(candidate.geometry)) >= minPieceM2);
-            if (kept.length === 0) { removedCount += 1; return; }
-            if (kept.length > 1) splitCount += kept.length - 1;
-            out.push(...kept);
-        });
-        return { changed, pieces: out, takenAreaM2, removedCount, splitCount };
-    }
-
     // The ROAD form of the §15b amendment: trim a corridor centerline by the ground a newer
     // action took. Each segment is split where it crosses the taken polygon; pieces whose
     // midpoint lies INSIDE are the taken stretch and leave the definition; pieces shorter than
@@ -211,7 +164,7 @@
             // lineSplit firing at a junction where the centerline touches the taken ground's
             // edge — is not a taking, and dropping its sub-metre kerf would churn the victim's
             // record (editSeq, persist, redraw) on every such taker. Untouched segments return
-            // by REFERENCE (same contract as clipPiecesByTaking).
+            // by REFERENCE, so callers can cheaply tell churn from change.
             const anyInside = pieces.some(piece => {
                 const pc = piece && piece.geometry && piece.geometry.coordinates;
                 return Array.isArray(pc) && pc.length >= 2 && midpointInside(pc);
@@ -348,14 +301,14 @@
     // Which parents' base ids lie under ONE piece — the per-piece flat anchor for plots that span
     // several base parcels (a comasation plot with thirty parents is one formation at one level
     // with thirty base anchors, §15.1). parentEntries: [{ baseId, feature }].
+    // A parent is an anchor when the piece reaches into it (geometry-tolerances.js reachesInto), the
+    // rule binding and source ancestry use: Borovje's Z1-5 includes 0.8756 m² of one source parcel,
+    // and dropping its anchor would leave real ground outside the declared immutable scope.
+    // `options.toleranceM` is the design record's own allowance, when the caller has the record.
     function overlappingBaseIds(pieceFeature, parentEntries, ctx, options) {
         const opts = options || {};
-        // Provenance uses the same measured intersection floor as source ancestry, not the
-        // whole-parcel area tolerance. Borovje's Z1-5 includes 0.8756 m² of one source parcel:
-        // dropping its anchor leaves legitimate geometry outside the declared immutable scope.
-        const order = (typeof window !== 'undefined' && window.__planOrder)
-            || (typeof require === 'function' ? require('./plan-order.js') : null);
-        const minM2 = Number.isFinite(opts.minM2) ? opts.minM2 : order.MIN_INTERSECTION_M2;
+        const ground = groundApi();
+        const t = turfOf(ctx);
         const piece = asFeature(pieceFeature);
         if (!piece) return [];
         const seen = new Set();
@@ -364,7 +317,7 @@
             if (!entry || !entry.baseId || seen.has(String(entry.baseId))) return;
             const parent = asFeature(entry.feature);
             if (!parent) return;
-            if (safeIntersectionArea(ctx, piece, parent) >= minM2) {
+            if (ground.reachesInto(t, piece, parent, opts.toleranceM, { site: 'formation-edit.overlappingBaseIds' })) {
                 seen.add(String(entry.baseId));
                 out.push(String(entry.baseId));
             }
@@ -377,11 +330,17 @@
     // part of anything. If only part of a parcel is wanted, a road or a land readjustment cuts
     // first; a footprint that partly covers some parcel is refused with the offenders named.
     // candidates: [{ id, feature }] — the live parcels under the footprint.
+    // A parcel is under the footprint when the footprint reaches into it, taken whole when none of it
+    // left outside the footprint is ground, and the footprint stands on parcels when none of it left
+    // off them is ground: the shared rule (geometry-tolerances.js), widened only by the design
+    // record's own `options.toleranceM`.
     // Returns { mode: 'adopt'|'merge'|'refuse', reason, parcelIds, partials, uncoveredShare }.
     function wholeParcelTakePlan(footprint, candidates, ctx, options) {
         const opts = options || {};
-        const tolPct = Number.isFinite(opts.tolerancePct) ? opts.tolerancePct : DEFAULT_TOLERANCE_PCT;
-        const tolM2 = Number.isFinite(opts.toleranceM2) ? opts.toleranceM2 : DEFAULT_TOLERANCE_M2;
+        const ground = groundApi();
+        const t = turfOf(ctx);
+        const toleranceM = opts.toleranceM;
+        const site = { site: 'formation-edit.wholeParcelTakePlan' };
         const foot = asFeature(footprint);
         const footArea = safeArea(ctx, foot);
         if (!foot || footArea <= 0) {
@@ -389,28 +348,28 @@
         }
         const taken = [];
         const partials = [];
-        let coveredM2 = 0;
+        const under = [];
         (Array.isArray(candidates) ? candidates : []).forEach(entry => {
             if (!entry || entry.id === undefined || entry.id === null) return;
             const parcel = asFeature(entry.feature);
             const parcelArea = safeArea(ctx, parcel);
             if (!parcel || parcelArea <= 0) return;
-            const overlap = safeIntersectionArea(ctx, foot, parcel);
-            if (overlap < tolM2) return; // shares at most a boundary — not under the footprint
-            coveredM2 += overlap;
-            const outside = parcelArea - overlap;
-            if (outside <= Math.max(tolM2, parcelArea * tolPct / 100)) {
+            const context = { ...site, parcelId: String(entry.id) };
+            // Shares at most a boundary (or debris): not under the footprint.
+            if (!ground.reachesInto(t, foot, parcel, toleranceM, context)) return;
+            under.push(parcel);
+            if (!ground.isGround(t, ground.uncoveredBy(t, parcel, [foot], context), toleranceM)) {
                 taken.push(String(entry.id));
             } else {
-                partials.push({ id: String(entry.id), coveredShare: overlap / parcelArea });
+                partials.push({ id: String(entry.id), coveredShare: safeIntersectionArea(ctx, foot, parcel) / parcelArea });
             }
         });
-        const uncoveredM2 = Math.max(0, footArea - coveredM2);
-        const uncoveredShare = uncoveredM2 / footArea;
+        const uncovered = ground.uncoveredBy(t, foot, under, site);
+        const uncoveredShare = uncovered ? Math.min(1, safeArea(ctx, uncovered) / footArea) : 0;
         if (partials.length) {
             return { mode: 'refuse', reason: 'partial-parcels', parcelIds: taken, partials, uncoveredShare };
         }
-        if (uncoveredM2 > Math.max(tolM2, footArea * tolPct / 100)) {
+        if (ground.isGround(t, uncovered, toleranceM)) {
             return { mode: 'refuse', reason: 'uncovered-ground', parcelIds: taken, partials, uncoveredShare };
         }
         if (!taken.length) {
@@ -420,15 +379,11 @@
     }
 
     return {
-        DEFAULT_TOLERANCE_PCT,
-        DEFAULT_TOLERANCE_M2,
-        MIN_DELTA_PIECE_M2,
         cadastreIdsOfFeature,
         formationIdentityOf,
         baseIdsOfFeatures,
         overlappingBaseIds,
         applyCarriedIdentity,
-        clipPiecesByTaking,
         trimCenterlineByTaking,
         corridorComponents,
         corridorWidthMeters,

@@ -201,35 +201,24 @@ Every change to human editing includes this check, even when no MCP code change 
 
 See [MCP editing](mcp-editing.md) for supported primitives and authored-field boundaries.
 
-### Private shared plans: MCP parity (2026-10-29)
+### Private shared plans: MCP parity
 
 A browser owner starts a private session from an ordinary plan revision and grants an invited
 agent editing control. `ugt_inspect_shared_plan` reads that exact accepted artifact;
 `ugt_edit_shared_plan` delegates its granular operations to the existing plan editor. Browser
 saves use the same plan and design validators. Both paths compare the session version and current
-controller at commit, including after expensive edit work. No session save uploads to IPFS.
-Hosted discovery advertises these tools only when the shared-session service is available.
+controller at commit, including after expensive edit work. Session saves and publication retain
+canonical design and plan bytes on the server without an IPFS upload. Hosted discovery advertises
+shared-session tools only when that service is available.
 
-Targeted headless unit coverage includes real hosted REST/MCP edits, persisted session recovery,
-revocation, stale writes, and an owner taking control during an unfinished agent edit
-(`mcp-http`, `mcp-shared-plan-sessions`, `mcp-shared-plan-tools`, `mcp-server`, `mcp-discovery`).
 The browser uses ordinary plan import and parcel mutation for accepted changes, retains the
 camera and unrelated local designs, and guards connected members before a local mutation commits.
-See [Student AI assistance](student-ai.md) for the handover and save workflow.
+Owner edits advance a pending local ordinary plan revision, retaining construction windows and
+exact membership in both click stacks. The accepted server pointer stays fixed until explicit
+save or handover. Saved/pending feedback and downloads use that same current revision; the existing
+MCP inspection and editing operations provide parity without additional tools.
 
-The collaboration dialog's saved/pending state uses the same accepted plan CID as MCP inspection;
-its save still uses the existing version-checked shared-session endpoint. The dedicated dialog,
-action groups and feedback require no MCP schema or operation change. Focused mounted-dialog
-regressions exercise successful and failed saves, busy controls and error retention during polling.
-
-
-Owner edits of a connected member advance a pending local ordinary plan revision, retaining
-construction windows and exact membership in both click stacks. The accepted server pointer
-stays fixed until explicit save or handover. No MCP schema or operation change is needed:
-`ugt_edit_shared_plan` already revises the same canonical plan/design content. Focused browser
-unit tests cover in-place edits, forks, private revision identity and stale membership responses;
-a live local check preserved the user's four-bench design and restored Collaborate while MCP
-inspection confirmed the server's one-bench revision remained unchanged.
+See [Student AI assistance](student-ai.md) for the handover, update and save workflow.
 
 ### Space models and GeoJSON corridor import: MCP parity (2026-10-28)
 

@@ -31,9 +31,8 @@
         ? turf
         : (typeof require === 'function' ? require('@turf/turf') : null);
 
-    // Below this a piece is boundary noise from the cut, not a parcel. Same measured floor the rest
-    // of the ancestry work uses (plan-order.MIN_INTERSECTION_M2).
-    const MIN_PIECE_M2 = 0.25;
+    // Whether a piece or a take's hit is ground or cutting debris is the shared rule
+    // (geometry-tolerances.js isGround, through `geometryGrid` below), the rule ancestry uses too.
     const LIVE_DERIVATION = 'corridor-arrangement';
 
     // ~1 cm at this latitude: fine enough that two genuinely different pieces cannot collide, coarse
@@ -74,20 +73,16 @@
     // deterministic live-fabric materialization, never by looking an old piece id up. Ids stay
     // stable across rebuilds, which is what they are for; they are not stable across a change in
     // how the fabric is computed, and nothing is entitled to assume they are.
-    const CLIP_SNAP_DECIMALS = 9;
+    // The shared grid (geometry-tolerances.js): parcels arrive on it, so a clip on it adds nothing new.
+    const geometryGrid = (typeof window !== 'undefined' && window.GeometryTolerances)
+        || (typeof require === 'function' ? require('../geometry-tolerances.js') : null);
+    const CLIP_SNAP_DECIMALS = geometryGrid.GRID_DECIMALS;
 
     // Whatever still fails gets a coarser grid: 1.1 mm, then 1.1 cm. If every attempt fails the
     // error is rethrown, because a clip that cannot be done must stay loud.
     const CLIP_RETRY_DECIMALS = [8, 7];
 
-    function snapCoordinates(value, factor) {
-        if (Array.isArray(value)) {
-            return typeof value[0] === 'number'
-                ? value.map(n => Math.round(n * factor) / factor)
-                : value.map(entry => snapCoordinates(entry, factor));
-        }
-        return value;
-    }
+    const snapCoordinates = (value, factor) => geometryGrid.snapCoordinates(value, factor);
 
     function snapFeature(feature, decimals) {
         if (!feature || !feature.geometry || !Array.isArray(feature.geometry.coordinates)) return feature;
@@ -574,11 +569,11 @@
 
         const pieces = [];
         const push = (feature, kind) => {
+            if (!geometryGrid.isGround(t, feature)) return;
             const areaM2 = t.area(feature);
-            if (!(areaM2 > MIN_PIECE_M2)) return;
             const pid = pieceId(id, kind, feature.geometry);
-            // A piece larger than MIN_PIECE_M2 always has a canonical outline; skipping one would
-            // delete that ground from the map without a word.
+            // A piece that is ground always has a canonical outline; skipping one would delete
+            // that ground from the map without a word.
             if (!pid) throw new Error(`parcel ${id}: a ${kind} piece of ${areaM2.toFixed(2)} m² has no canonical outline`);
             const takers = kind === 'road'
                 ? hits
@@ -587,14 +582,14 @@
                             // A road piece is inside the parcel, so intersecting it with the
                             // take's HIT (take ∩ parcel) answers the same membership question as
                             // the take's whole footprint — against a handful of vertices instead
-                            // of a kilometres-long ribbon. A take whose hit was below MIN can
-                            // never claim a piece: the piece's overlap is a subset of the hit.
+                            // of a kilometres-long ribbon. A take whose hit was debris can never
+                            // claim a piece: the piece's overlap is a subset of the hit.
                             const overlap = clip('intersect', feature, entry.hit, {
                                 site: 'parcel-arrangement.roadPieceTakers',
                                 parcelId: id,
                                 takeId: entry.take.id
                             });
-                            return !!overlap && t.area(overlap) > MIN_PIECE_M2;
+                            return !!overlap && geometryGrid.isGround(t, overlap);
                         } catch (error) {
                             // "Not a taker" would hand the road piece to the wrong corridor.
                             throw clipFailure('intersect', error, { site: 'parcel-arrangement.roadPieceTakers' }, [feature, entry.hit]);
@@ -648,7 +643,7 @@
      * to a recomputed one — reuse cannot change a piece id.
      *
      * @returns {Array<{take: object, hit: object}>} the caller's take objects, with the clipped
-     *          intersection feature of each; only takes whose overlap clears MIN_PIECE_M2 appear —
+     *          intersection feature of each; only takes whose overlap is ground appear —
      *          except a take whose intersection THREW, which appears as `{ take, hit: null, failure }`
      *          (a ClipFailure) so that arranging the parcel refuses instead of ignoring the take.
      */
@@ -675,7 +670,7 @@
                     parcelId: parcelIdOf(parcelFeature),
                     takeId: take.id
                 });
-                if (hit && t.area(hit) > MIN_PIECE_M2) hits.push({ take, hit });
+                if (hit && geometryGrid.isGround(t, hit)) hits.push({ take, hit });
             } catch (error) {
                 // Not "this take misses the parcel": nobody knows what it takes. Dropping it left
                 // the parcel cut by every OTHER corridor and silently whole under this one. The
@@ -816,7 +811,6 @@
     }
 
     const api = {
-        MIN_PIECE_M2,
         arrangementOf,
         fabricOver,
         diffPieces,

@@ -1,5 +1,5 @@
 // The published form of a design (plan-design-agreement.md, M2 "Identity: one CID scheme"): the
-// canonical design/v1 object a local design record (today's proposal record) is pinned as, its
+// canonical design/v1 object a local design record (today's proposal record) is published as, its
 // CID, and a check of that shape for whoever receives one.
 (function (root, factory) {
     const api = factory(root);

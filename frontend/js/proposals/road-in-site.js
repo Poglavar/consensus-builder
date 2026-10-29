@@ -20,6 +20,8 @@
     const fit = () => fromGlobalOrRequire('__corridorSiteFit', './corridor-site-fit.js');
     const osmForm = () => fromGlobalOrRequire('__corridorOsmForm', '../corridor-osm-form.js');
     const frames = () => fromGlobalOrRequire('__metricFrame', '../metric-frame.js');
+    // The shared parcel clip (parcel-arrangement.js clipWith): the same grid as every other stage.
+    const arrangement = () => fromGlobalOrRequire('__parcelArrangement', './parcel-arrangement.js');
 
     // Arms are grouped by the room they have, to the nearest half metre: the author picks lanes per
     // group. A group's width is the narrowest of its arms, which the lanes must fit.
@@ -67,7 +69,8 @@
     function splitByNetworks(networks, coordinates, frame, turf) {
         if (!turf || networks.length < 2) return null;
         const feature = geometry => ({ type: 'Feature', properties: {}, geometry });
-        const unionAll = list => list.reduce((merged, next) => (merged ? turf.union(merged, next) || merged : next), null);
+        const clip = (operation, a, b) => arrangement().clipWith(turf, operation, a, b, { site: 'road-in-site.splitByNetworks' });
+        const unionAll = list => list.reduce((merged, next) => (merged ? clip('union', merged, next) || merged : next), null);
         const flatten = geometry => (!geometry ? [] : geometry.type === 'Polygon' ? [geometry.coordinates]
             : geometry.type === 'MultiPolygon' ? geometry.coordinates : []).map(rings => feature({ type: 'Polygon', coordinates: rings }));
         const area = f => (f ? turf.area(f) : 0);
@@ -87,21 +90,21 @@
                     rects.push(feature({ type: 'Polygon', coordinates: [[...ring, ring[0]]] }));
                 }));
                 const band = unionAll(rects);
-                return band ? turf.intersect(site, band) : null;
+                return band ? clip('intersect', site, band) : null;
             });
             if (cores.some(core => !core)) return null;
-            const leftover = turf.difference(site, unionAll(cores.map(core => feature(core.geometry))));
+            const leftover = clip('difference', site, unionAll(cores.map(core => feature(core.geometry))));
             const lands = cores.map(core => [feature(core.geometry)]);
             flatten(leftover && leftover.geometry).filter(piece => area(piece) > 0.01).forEach(piece => {
                 const reach = turf.buffer(piece, 0.0005, { units: 'kilometers' });
-                const shared = cores.map(core => area(turf.intersect(reach, core)));
+                const shared = cores.map(core => area(clip('intersect', reach, core)));
                 const best = shared.indexOf(Math.max(...shared));
                 lands[best].push(piece);
             });
             const own = lands.map(list => unionAll(list));
             const largest = own.reduce((top, land, k) => (area(land) > area(own[top]) ? k : top), 0);
             const others = unionAll(own.filter((_, k) => k !== largest).map(land => feature(land.geometry)));
-            own[largest] = turf.difference(site, others);
+            own[largest] = clip('difference', site, others);
             if (!own[largest]) return null;
             return own.map(land => land.geometry);
         } catch (error) {
