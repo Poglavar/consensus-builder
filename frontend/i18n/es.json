@@ -8130,7 +8130,8 @@
             "empty-supported-bound": "Sin espacio dentro de los retranqueos disponibles",
             "unsupported-parcel-shape": "Forma de parcela no compatible",
             "study-multiple-zoning-areas": "Varias áreas urbanísticas en una parcela",
-            "study-zoning-missing": "Sin fuente urbanística para la parcela"
+            "study-zoning-missing": "Sin fuente urbanística para la parcela",
+            "status-not-configurable": "El estado registrado no da una altura edificable"
         },
         "refreshPending": "Pendiente de actualización",
         "refreshCount": {
@@ -8185,6 +8186,7 @@
             "sideSetback": "Retiro lateral mínimo",
             "rearSetback": "Retiro posterior mínimo",
             "height": "Altura máxima",
+                "storeys": "Pisos máximos",
             "lotArea": "Superficie mínima de parcela"
         },
         "photoNote": "Explora los volúmenes permitidos en el mapa o en el modelo 3D.",
@@ -8256,7 +8258,8 @@
             "accessory": "Vivienda accesoria",
             "plannedresidential": "Residencial planificado",
             "cached-calculation": "Cálculo guardado",
-            "new-attached-multifamily": "Nueva vivienda multifamiliar adosada"
+            "new-attached-multifamily": "Nueva vivienda multifamiliar adosada",
+            "general": "General (mapa de tratamientos)"
         },
         "evidence": {
             "direct": "Valor directo de la fuente",

@@ -8520,7 +8520,8 @@
             "empty-supported-bound": "لا توجد مساحة ضمن الارتدادات المدعومة",
             "unsupported-parcel-shape": "شكل القطعة العقارية غير مدعوم",
             "study-multiple-zoning-areas": "مناطق تنظيم عمراني متعددة على قطعة عقارية واحدة",
-            "study-zoning-missing": "لا يوجد مصدر تنظيم عمراني للقطعة العقارية"
+            "study-zoning-missing": "لا يوجد مصدر تنظيم عمراني للقطعة العقارية",
+            "status-not-configurable": "الحالة المسجلة لا تعطي ارتفاعًا قابلًا للبناء"
         },
         "refreshPending": "بانتظار التحديث",
         "refreshCount": {
@@ -8587,6 +8588,7 @@
             "sideSetback": "الحد الأدنى للارتداد الجانبي",
             "rearSetback": "الحد الأدنى للارتداد الخلفي",
             "height": "الحد الأقصى للارتفاع",
+                "storeys": "الحد الأقصى لعدد الطوابق",
             "lotArea": "الحد الأدنى لمساحة الأرض"
         },
         "photoNote": "استكشف الكتل البنائية المسموحة على الخريطة أو في عرض النموذج ثلاثي الأبعاد.",
@@ -8661,7 +8663,8 @@
             "accessory": "سكن ملحق",
             "plannedresidential": "سكني مخطط",
             "cached-calculation": "حساب محفوظ",
-            "new-attached-multifamily": "سكن جديد متلاصق متعدد الأسر"
+            "new-attached-multifamily": "سكن جديد متلاصق متعدد الأسر",
+            "general": "عام (خريطة المعالجات)"
         },
         "evidence": {
             "direct": "قيمة مباشرة من المصدر",

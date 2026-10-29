@@ -8150,7 +8150,8 @@
             "empty-supported-bound": "Nema prostora unutar podržanih odstojanja",
             "unsupported-parcel-shape": "Nepodržan oblik parcele",
             "study-multiple-zoning-areas": "Više planskih područja na jednoj parceli",
-            "study-zoning-missing": "Nema planskog izvora za parcelu"
+            "study-zoning-missing": "Nema planskog izvora za parcelu",
+            "status-not-configurable": "Zabeleženi status ne daje gradivu visinu"
         },
         "refreshPending": "Čeka osvežavanje",
         "refreshCount": {
@@ -8208,6 +8209,7 @@
             "sideSetback": "Najmanji bočni odmak",
             "rearSetback": "Najmanji zadnji odmak",
             "height": "Najveća visina",
+                "storeys": "Najveći broj spratova",
             "lotArea": "Najmanja površina parcele"
         },
         "photoNote": "Dozvoljene volumene pregledajte na karti ili u 3D modelu.",
@@ -8280,7 +8282,8 @@
             "accessory": "Pomoćno stanovanje",
             "plannedresidential": "Planirano stanovanje",
             "cached-calculation": "Sačuvani proračun",
-            "new-attached-multifamily": "Nova višestambena izgradnja u nizu"
+            "new-attached-multifamily": "Nova višestambena izgradnja u nizu",
+            "general": "Opšte (karta tretmana)"
         },
         "evidence": {
             "direct": "Direktna izvorna vrednost",

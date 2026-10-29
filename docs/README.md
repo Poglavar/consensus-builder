@@ -47,7 +47,7 @@ Each document describes a current contract, an open plan or research. Verificati
 **Sources and cities**
 
 - [Source adapters](source-adapters.md), [frontend source configuration](frontend-source-configuration.md), [Atlas public sources](atlas-public-sources.md), [economic sources](economic-sources.md), [world parcels](world-parcels.md).
-- [GUP scenario integration](gup-scenario-integration.md), [zoning standards research](zoning-standards-research.md), [planning usage and diagnostics](planning-usage-and-diagnostics.md).
+- [GUP scenario integration](gup-scenario-integration.md), [Bogotá POT source](bogota-pot-source.md), [zoning standards research](zoning-standards-research.md), [planning usage and diagnostics](planning-usage-and-diagnostics.md).
 
 **3D views**
 

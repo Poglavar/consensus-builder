@@ -57,7 +57,14 @@ export async function loadParcelStudy(query, { sources, parcelProvider = descrip
     if (!parcels.length) fail('study-parcel-missing');
     if (parcels.length !== 1) fail('study-parcel-ambiguous');
     const parcel = parcels[0];
-    return assembleParcelStudy(parcel, descriptor, await readStudyZoning(provider, query, turf.bbox(parcel)));
+    const records = await readStudyZoning(provider, query, turf.bbox(parcel));
+    return assembleParcelStudy(parcel, descriptor, await parcelRecords(provider, parcel, records));
+}
+
+// A provider whose rules attach to the parcel rather than the zoning area (a front-yard map read
+// under the lot) refines the area records for that parcel; the zoning identities stay the same.
+export async function parcelRecords(provider, parcel, records) {
+    return provider.parcelRecords ? provider.parcelRecords(parcel, records) : records;
 }
 
 export function assembleParcelStudy(parcel, descriptor, records) {

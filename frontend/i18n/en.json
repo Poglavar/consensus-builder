@@ -8102,7 +8102,8 @@
             "empty-supported-bound": "No space within supported setbacks",
             "unsupported-parcel-shape": "Unsupported parcel shape",
             "study-multiple-zoning-areas": "Multiple zoning areas on one parcel",
-            "study-zoning-missing": "No zoning source for parcel"
+            "study-zoning-missing": "No zoning source for parcel",
+            "status-not-configurable": "Recorded status gives no buildable height"
         },
         "refreshPending": "Awaiting refresh",
         "refreshCount": {
@@ -8157,6 +8158,7 @@
             "sideSetback": "Minimum side setback",
             "rearSetback": "Minimum rear setback",
             "height": "Maximum height",
+                "storeys": "Maximum storeys",
             "lotArea": "Minimum lot area"
         },
         "photoNote": "Explore permitted massing in the map or 3D model view.",
@@ -8228,7 +8230,8 @@
             "accessory": "Accessory housing",
             "plannedresidential": "Planned residential",
             "cached-calculation": "Saved calculation",
-            "new-attached-multifamily": "New attached multifamily"
+            "new-attached-multifamily": "New attached multifamily",
+            "general": "General (treatment map)"
         },
         "evidence": {
             "direct": "Direct source value",

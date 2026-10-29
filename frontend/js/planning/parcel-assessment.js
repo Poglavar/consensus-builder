@@ -1,4 +1,5 @@
-// Bounded parcel studies: direct Atlas values constrain geometry; estimates and applicability stay unresolved.
+// Bounded parcel studies: direct source values (feet or metres) constrain geometry; estimates and
+// applicability stay unresolved. All derived limits are metres.
 // This pure module is shared by the browser and API and never applies or publishes a proposal.
 (function (root, factory) {
     const api = factory();
@@ -7,6 +8,8 @@
 })(typeof window !== 'undefined' ? window : globalThis, function () {
     'use strict';
     const FT = 0.3048, ACRE = 4046.8564224, R = 6371008.8, RAD = Math.PI / 180;
+    // Source units a constraint may carry; a value is read only through its unit's metric factor.
+    const LENGTH_M = { m: 1, ft: FT }, AREA_M2 = { m2: 1, acres: ACRE, sqft: 0.09290304 };
     const finite = value => typeof value === 'number' && Number.isFinite(value);
     const invalid = message => { throw new Error(message); };
     const dot = (a, b) => a[0] * b[0] + a[1] * b[1];
@@ -53,9 +56,9 @@
         }
         return output;
     }
-    function direct(source, quantity, unit) {
-        const value = source.constraints?.find(c => c.quantity === quantity && c.unit === unit);
-        return ['direct', 'literal'].includes(value?.evidence) && finite(value.value) && value.value >= 0 ? value.value : null;
+    function direct(source, quantity, units) {
+        const value = source.constraints?.find(c => c.quantity === quantity && Object.hasOwn(units, c.unit));
+        return ['direct', 'literal'].includes(value?.evidence) && finite(value.value) && value.value >= 0 ? value.value * units[value.unit] : null;
     }
     function derive(context, frontEdge = 0, geometryOps) {
         const local = frame(context.parcel.geometry);
@@ -64,11 +67,11 @@
         const edges = local.edges.map(edge => ({ ...edge, role: dot(edge.normal, front.normal) > 0.9 ? 'frontSetback'
             : dot(edge.normal, front.normal) < -0.9 ? 'rearSetback' : 'sideSetback' }));
         if (!edges.some(edge => edge.role === 'rearSetback') || !edges.some(edge => edge.role === 'sideSetback')) invalid('unsupported-parcel-shape');
-        const limits = Object.fromEntries(['frontSetback', 'sideSetback', 'rearSetback'].map(key => [key, direct(context.source, key, 'ft')]));
+        const limits = Object.fromEntries(['frontSetback', 'sideSetback', 'rearSetback'].map(key => [key, direct(context.source, key, LENGTH_M)]));
         let points = local.points;
         for (const edge of edges) {
             // An unknown setback contributes no additional clipping; it remains an explicit unknown check.
-            const distance = limits[edge.role] === null ? 0 : limits[edge.role] * FT;
+            const distance = limits[edge.role] === null ? 0 : limits[edge.role];
             points = clip(points, edge.normal, edge.offset + distance);
             if (points.length < 3) break;
         }
@@ -79,7 +82,7 @@
             geometry = geometryOps.intersect(geometryOps.feature(geometry), geometryOps.feature(context.coveredGeometry))?.geometry || null;
         }
         return { local, edges, limits, points: usable ? points : [], geometry,
-            heightM: direct(context.source, 'height', 'ft') === null ? null : direct(context.source, 'height', 'ft') * FT,
+            heightM: direct(context.source, 'height', LENGTH_M),
             areaM2: geometry ? geometryOps ? geometryOps.area(geometryOps.feature(geometry)) : area(points) : 0, frontEdge };
     }
     function designFromForm(context, form, geometryOps, basis) {
@@ -133,11 +136,10 @@
             const measured = Math.min(...bound.edges.filter(edge => edge.role === key).flatMap(edge => points.map(p => dot(edge.normal, p) - edge.offset)));
             const evidence = source.constraints?.find(c => c.quantity === key)?.evidence
                 || source.sourceEvidence?.numericEvidence?.[`${source.source.scenario}_${key === 'frontSetback' ? 'front' : key === 'sideSetback' ? 'side' : 'rear'}setbackft`]?.status || 'absent';
-            add(key, measured, bound.limits[key] === null ? null : bound.limits[key] * FT, 'm', 'minimum', evidence, 'edge-assumption');
+            add(key, measured, bound.limits[key], 'm', 'minimum', evidence, 'edge-assumption');
         }
         add('height', design.topM, bound.heightM, 'm', 'maximum', source.constraints?.find(c => c.quantity === 'height')?.evidence || 'absent', 'vertical-reference');
-        const lot = direct(source, 'lotArea', 'acres');
-        add('lotArea', local.areaM2, lot === null ? null : lot * ACRE, 'm2');
+        add('lotArea', local.areaM2, direct(source, 'lotArea', AREA_M2), 'm2');
         const coverage = source.sourceEvidence?.numericEvidence?.[`${source.source.scenario}_maxlotcoverage_building`];
         add('buildingCoverage', 100 * area(points) / local.areaM2,
             coverage?.status === 'direct' && finite(coverage.value) && coverage.value >= 0 && coverage.value <= 100 ? coverage.value : null,

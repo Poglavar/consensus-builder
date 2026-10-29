@@ -3,7 +3,7 @@
 import * as turf from '@turf/turf';
 import { createRequire } from 'node:module';
 import { sourcesFor } from './sources.js';
-import { assembleParcelStudy, readStudyZoning, studyParcelSource, withScenarioSource } from './parcel-study.js';
+import { assembleParcelStudy, parcelRecords, readStudyZoning, studyParcelSource, withScenarioSource } from './parcel-study.js';
 import { runtimeParcelSource } from '../parcels/sources.js';
 import { validateBounds } from '../parcels/source-contract.js';
 import { configurationTreatments } from './providers/atlas.js';
@@ -12,7 +12,7 @@ const core = require('../../frontend/js/planning/parcel-assessment.js');
 const plots = require('../../frontend/js/proposals/site-plots.js');
 const fail = (code, status = 422) => { throw Object.assign(new Error(code), { code, status }); };
 const intersects = (a, b) => a[0] <= b[2] && a[2] >= b[0] && a[1] <= b[3] && a[3] >= b[1];
-const knownReasons = ['overlapping-parcel-identities', 'use-prohibited', 'use-not-recorded', 'missing-direct-height', 'empty-supported-bound',
+const knownReasons = ['overlapping-parcel-identities', 'use-prohibited', 'use-not-recorded', 'status-not-configurable', 'missing-direct-height', 'empty-supported-bound',
     'unsupported-parcel-shape', 'study-multiple-zoning-areas', 'study-zoning-missing', 'envelope-geometry-error'];
 
 export function parcelOverlapProblems(records, geometryOps = turf) {
@@ -83,8 +83,15 @@ export function outerBound(configurations, geometryOps = turf) {
         areaM2: geometryOps.area(geometryOps.feature(geometry)) };
 }
 
+// Statuses that say nothing usable about the use; any other recorded status is a source
+// decision (a handed-off instrument, a conservation regime) that yields no buildable height here.
+const silentStatuses = new Set(['unrecorded', 'nomention', 'overlay', 'unknown']);
 function omissionReason(configurations, excluded) {
-    if (!configurations.length) return Object.values(excluded).includes('prohibited') ? 'use-prohibited' : 'use-not-recorded';
+    if (!configurations.length) {
+        const statuses = Object.values(excluded);
+        if (statuses.includes('prohibited')) return 'use-prohibited';
+        return statuses.every(status => !status || silentStatuses.has(status)) ? 'use-not-recorded' : 'status-not-configurable';
+    }
     const reasons = configurations.map(configuration => configuration.unavailableReason);
     for (const reason of ['missing-direct-height', 'empty-supported-bound', 'unsupported-parcel-shape']) if (reasons.includes(reason)) return reason;
     return 'envelope-geometry-error';
@@ -133,9 +140,11 @@ export async function loadParcelEnvelopes(query, { sources, parcelProvider = des
     for (const { parcel } of records) {
         try {
             if (overlapProblems.has(parcel.id)) fail(overlapProblems.get(parcel.id));
-            const context = assembleParcelStudy(parcel, descriptor, zonesByScenario[scenarios[0]]);
+            const zones = provider.parcelRecords ? Object.fromEntries(await Promise.all(scenarios.map(async scenario =>
+                [scenario, await parcelRecords(provider, parcel, zonesByScenario[scenario])]))) : zonesByScenario;
+            const context = assembleParcelStudy(parcel, descriptor, zones[scenarios[0]]);
             const frontage = parcelFrontage(parcel, streets);
-            const { configurations, excluded, frontEdges } = parcelConfigurations(context, scenarios, zonesByScenario, turf, frontage.frontEdge);
+            const { configurations, excluded, frontEdges } = parcelConfigurations(context, scenarios, zones, turf, frontage.frontEdge);
             const bound = outerBound(configurations);
             if (!bound) fail(omissionReason(configurations, excluded));
             const id = `envelope:${provider.descriptor.id}:${parcel.id}`;
@@ -156,6 +165,8 @@ export async function loadParcelEnvelopes(query, { sources, parcelProvider = des
                     excludedConfigurations: excluded, envelopeMeaning: frontage.frontEdge === null
                         ? 'outer-bound-across-configurations-and-front-edge-interpretations' : 'outer-bound-across-configurations' } });
         } catch (error) {
+            // A failed upstream read is the whole request's failure, never one parcel's geometry problem.
+            if (error.status === 503) throw error;
             const reason = knownReasons.includes(error.code || error.message) ? error.code || error.message : 'envelope-geometry-error';
             unavailable.push({ parcelId: parcel.id, reason });
         }

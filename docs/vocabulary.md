@@ -565,6 +565,14 @@ The comparison controls label this **Illustration**. A source's one calculated o
 
 The geographic area to which supplied zoning evidence refers. It is distinct from a cadastral parcel, a permitted building volume and a completed compliance assessment.
 
+### Treatment area (Bogotá)
+
+A zoning area of Bogotá's POT treatment map (Decreto 555/2021): one polygon with a treatment (consolidación, renovación, desarrollo, mejoramiento integral, conservación), an optional typology (`TA`, detached) and a height code. A storey count on the map is the base height; a range's upper number, development ranges, instrument codes and blanks are evidence, not geometry. Storeys become metres through the decree's clear height plus an assumed slab ([Bogotá POT source](bogota-pot-source.md)).
+
+### Antejardín
+
+Bogotá's front yard: the private strip between the lot line and the building line whose minimum depth the POT front-yard map assigns to Consolidación lots. It is read under the parcel, not from the treatment area, and becomes the parcel's front setback.
+
 ### Applicability
 
 Whether and under what conditions a source rule applies to the subject and context being assessed. Normative authority and available numeric dimensions alone do not establish applicability.

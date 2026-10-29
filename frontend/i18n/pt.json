@@ -8261,7 +8261,8 @@
             "empty-supported-bound": "Sem espaço dentro dos afastamentos suportados",
             "unsupported-parcel-shape": "Forma de parcela não suportada",
             "study-multiple-zoning-areas": "Várias áreas de zonamento na mesma parcela",
-            "study-zoning-missing": "Sem fonte de zonamento para a parcela"
+            "study-zoning-missing": "Sem fonte de zonamento para a parcela",
+            "status-not-configurable": "O estado registado não dá uma altura edificável"
         },
         "refreshPending": "A aguardar atualização",
         "refreshCount": {
@@ -8316,6 +8317,7 @@
             "sideSetback": "Afastamento lateral mínimo",
             "rearSetback": "Afastamento posterior mínimo",
             "height": "Altura máxima",
+                "storeys": "Pisos máximos",
             "lotArea": "Área mínima do lote"
         },
         "photoNote": "Explore a volumetria permitida no mapa ou na vista do modelo 3D.",
@@ -8386,7 +8388,8 @@
             "accessory": "Habitação acessória",
             "plannedresidential": "Residencial planeado",
             "cached-calculation": "Cálculo guardado",
-            "new-attached-multifamily": "Novo edifício multifamiliar em banda"
+            "new-attached-multifamily": "Novo edifício multifamiliar em banda",
+            "general": "Geral (mapa de tratamentos)"
         },
         "evidence": {
             "direct": "Valor direto da fonte",
