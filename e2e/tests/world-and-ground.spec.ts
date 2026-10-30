@@ -241,6 +241,29 @@ test.describe('World navigation and open ground @features', () => {
     await expect.poll(() => activity.locator('.world-activity__viewport').evaluate(node => node.scrollTop)).toBe(0);
   });
 
+  test('between phone and desktop widths the activity floats beside the planet, clear of the search and the legend', async ({ mockApi: page }) => {
+    const cid = cidOfObject({ schema: 'agreement/v1', title: 'Community park agreement' });
+    const events = ['propose', 'execute'].map((type, index) => agreementEvent(`event-${index}`, type, cid, { occurredAt: `2026-10-02T12:0${index}:00Z` }));
+    await page.route('**/activity/recent?*', route => route.fulfill({ json: { events } }));
+    // Below 1100 px the panel once went in-flow while its container was display: contents above
+    // 600 px, so it landed at the top of the globe view under the search box.
+    for (const width of [865, 620]) {
+      await page.setViewportSize({ width, height: 900 });
+      await page.goto('/?city=zg&lang=en'); await waitForMapReady(page);
+      await openWorldFromCity(page);
+      const activity = page.locator('.world-activity');
+      await expect(activity.getByRole('link')).toHaveCount(2, { timeout: 15000 });
+      const box = async (selector: string) => (await page.locator(selector).first().boundingBox())!;
+      const panel = await box('.world-activity');
+      for (const other of ['.world-search', '.world-view__close', '.world-legend']) {
+        const rect = await box(other);
+        const overlaps = panel.x < rect.x + rect.width && rect.x < panel.x + panel.width && panel.y < rect.y + rect.height && rect.y < panel.y + panel.height;
+        expect(overlaps, `activity overlaps ${other} at ${width} px`).toBe(false);
+      }
+      expect(panel.x + panel.width).toBeLessThanOrEqual(width);
+    }
+  });
+
   // An agreement in the feed opens its link in place: its designs are applied (a design unapplied here
   // is applied again) and its panel opens over the map.
   for (const applied of [true, false]) {
