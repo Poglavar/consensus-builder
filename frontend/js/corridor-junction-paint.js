@@ -22,11 +22,20 @@
         throw new Error('corridor-junction-paint: turf is not available');
     }
 
-    // A clip that fails here only changes how a junction is painted: it is reported and counted in
-    // clipHealth() (parcel-arrangement.js), and the caller paints the old look.
+    const clipApi = () => (global && global.__parcelArrangement)
+        || (typeof require === 'function' ? require('./proposals/parcel-arrangement.js') : null);
+
+    // Every clip here is the app's one shared clip (parcel-arrangement.js clipWith): its operands are
+    // snapped to the shared grid first, so the same rings give the same paint on every load. Raw
+    // turf failed on the Klara grid 3 junction, whose arm boxes meet at vertices 4e-8° apart.
+    function sharedClip(turf, operation, a, b, site) {
+        return clipApi().clipWith(turf, operation, a, b, { site });
+    }
+
+    // A clip that fails even on the coarser grids only changes how a junction is painted: it is
+    // reported and counted in clipHealth() (parcel-arrangement.js), and the caller paints the old look.
     function reportClip(operation, error, context, operands) {
-        const clips = (global && global.__parcelArrangement)
-            || (typeof require === 'function' ? require('./proposals/parcel-arrangement.js') : null);
+        const clips = clipApi();
         if (!clips || typeof clips.reportClipFailure !== 'function') throw error;
         return clips.reportClipFailure(operation, error, context, operands);
     }
@@ -79,7 +88,7 @@
             const feature = ringFeature(ring);
             if (!feature) return;
             try {
-                united = united ? turf.union(united, feature) : feature;
+                united = united ? sharedClip(turf, 'union', united, feature, 'corridor-junction-paint.unionOfRings') : feature;
             } catch (error) {
                 // Measured on the real Šibenik plan: "Maximum call stack size exceeded" here. The
                 // piece is painted on its own (the old double-painted look), reported and counted.
@@ -141,7 +150,7 @@
         for (const cover of covers) {
             if (!bboxesMeet(box, cover.bbox)) continue;
             try {
-                const left = turf.difference(feature, { type: 'Feature', properties: {}, geometry: cover.coverage });
+                const left = sharedClip(turf, 'difference', feature, { type: 'Feature', properties: {}, geometry: cover.coverage }, 'corridor-junction-paint.clipGeometry');
                 if (!left || !left.geometry) return null;
                 feature = left;
             } catch (error) {
