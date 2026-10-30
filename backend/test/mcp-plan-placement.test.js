@@ -110,6 +110,18 @@ describe('ugt_edit_plan places its operations in the working plan', () => {
     const start = async (...designs) => tools.draftPlan({ title: 'Working plan', designs: designs.map(row => row.content) });
     const members = result => result.designs.map(member => member.cid);
 
+    it('ugt_draft_plan places its designs in turn and refuses two that cannot stand together', async () => {
+        const first = building(clear, 'Block A'), second = building(clear, 'Block B', later);
+        await expect(start(first, second)).rejects.toMatchObject({ code: 'ground-occupied',
+            message: '"Block B" stands on ground that "Block A" also takes: they cannot be in one plan.',
+            conflicts: [expect.objectContaining({ cid: first.cid })] });
+        // A street-level road and a building cannot share ground, whichever comes first.
+        const spine = road(spinePoints, 'Spine Street'), house = building(onSpine, 'Corner house');
+        await expect(start(spine, house)).rejects.toMatchObject({ code: 'ground-occupied' });
+        await expect(start(house, spine)).rejects.toMatchObject({ code: 'ground-occupied' });
+        expect(members(await start(spine, building(clear, 'Clear lot')))).toHaveLength(2);
+    });
+
     it('refuses an added building on a plan road until the operation displaces it', async () => {
         const spine = road(spinePoints, 'Spine Street');
         const plan = await start(spine);

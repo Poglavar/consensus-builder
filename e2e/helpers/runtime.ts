@@ -293,8 +293,8 @@ export async function chooseProfileName(page: Page, name: string): Promise<void>
   await expect(page.locator('#username-text')).toHaveText(name);
 }
 
-export async function createSpace(page: Page, kind: 'park'|'square'|'lake'): Promise<string> {
-  await openParcel(page, 'proposals');
+export async function createSpace(page: Page, kind: 'park'|'square'|'lake', parcelId = PARCEL_ID): Promise<string> {
+  await openParcel(page, 'proposals', parcelId);
   await page.locator(`.parcel-build-btn--${kind}`).click();
   await expect.poll(() => page.evaluate(kind => (window as any).proposalStorage.getAllProposals().some((p: any) => p.structureProposal?.kind === kind && p.applied), kind)).toBe(true);
   return page.evaluate(kind => (window as any).proposalStorage.getAllProposals().find((p: any) => p.structureProposal?.kind === kind).proposalId, kind);

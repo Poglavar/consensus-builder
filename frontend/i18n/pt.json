@@ -8562,6 +8562,7 @@
         "applyQuestion": "Os projetos deste plano não estão no seu mapa. Para continuar, são aplicados a ele. Os projetos já aplicados mantêm-se; se algum entrar em conflito com este plano, será perguntado o que fazer.",
         "applyAndContinue": "Aplicar e continuar",
         "applyFailed": "Não foi possível aplicar o plano ao mapa.",
+        "cannotStand": "Estes projetos não podem coexistir com o resto deste plano: {{titles}}. Use «Alterar desenhos» para manter os que quiser.",
         "editPlan": "Editar plano",
         "saveRevision": "Guardar nova versão",
         "name": "Nome do plano",
@@ -8884,6 +8885,8 @@
         "count": "Mostrados: {{count}}",
         "empty": "Ainda não há nada aqui.",
         "noMatch": "Nenhum item corresponde aos filtros.",
+        "takesGround": "{{title}} não pode estar neste plano: ocupa o terreno de {{others}}, já marcado. Desmarque-o primeiro para usar este.",
+        "cannotStand": "{{title}} não pode coexistir com os projetos já marcados, por isso não é adicionado.",
         "loadMore": "Carregar mais",
         "limited": "São apresentados até 1.000 desenhos publicados."
     },

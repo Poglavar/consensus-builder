@@ -79,6 +79,24 @@ describe('plan workspace',()=>{
   const declined=applyHarness({route:{blocked:true}});expect(await declined.api.ensureApplied(declined.row)).toBe(false);
   const failed=applyHarness({route:{failed:[{reason:'ground changed'}]}});await expect(failed.api.ensureApplied(failed.row)).rejects.toThrow('ground changed');
  });
+ it('applies designs in turn as Apply does, inside a mutation it rolls back, naming those that would not stand',async()=>{
+  const committed={a:{proposalId:'a',applied:false,cadastreParcelIds:['P1']},b:{proposalId:'b',applied:false,cadastreParcelIds:['P1']}};
+  const draft=structuredClone(committed),seen=[];
+  const h=harness({isApplied:record=>record.applied===true,__claims:{cadastreParcelIdsOf:record=>record.cadastreParcelIds},
+   proposalStorage:{getProposal:id=>committed[id],getAllProposals:()=>Object.values(committed)},
+   CadastralParcelRepository:{ensureIds:vi.fn(async ids=>seen.push(['ground',ids]))},
+   getStoredApplyFailureInfo:()=>null,
+   // Formation order (plan-order.js): the order the designs were made in, here a before b.
+   __planOrder:{orderFormations:records=>[...records].sort((x,y)=>x.proposalId.localeCompare(y.proposalId))},
+   ProposalManager:{
+    // The later design stands down the earlier one on its ground, as two designs of one site do.
+    applyProposal:vi.fn(async(id,options)=>{seen.push(['apply',id,!!options._parcelMutation]);draft[id].applied=true;if(id==='b')draft.a.applied=false;return true;}),
+    runParcelMutation:vi.fn(async(kind,id,operation)=>{const result=await operation({_parcelMutation:{proposals:{getProposal:key=>draft[key]}}});seen.push(['committed',result!==false]);return result;})}});
+  expect(await h.api.trial(['b','a'])).toEqual({standing:['b'],fallen:['a'],failures:[]});
+  expect(seen).toEqual([['ground',['P1','P1']],['apply','a',true],['apply','b',true],['committed',false]]);
+  expect(draft.a.applied).toBe(false);
+  expect(committed.a.applied).toBe(false);expect(committed.b.applied).toBe(false);
+ });
  it('returns null for an unpublished public link and verifies a canonical published row',async()=>{
   const row=snapshot(),h=harness();h.win.fetch=vi.fn().mockResolvedValueOnce({status:404}).mockResolvedValueOnce({status:200,ok:true,json:async()=>({cid:row.cid,content:row.content})});
   expect(await h.api.publication(row)).toBeNull();

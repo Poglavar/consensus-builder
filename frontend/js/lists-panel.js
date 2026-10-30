@@ -186,6 +186,21 @@
             renderActions(); renderRows(); showPlanSelection();
         }
         // All the ticked designs on the map at once, as the plan they will make.
+        // A plan's designs stand together: a design ticked for a plan is applied, virtually, with the
+        // ones already ticked (PlanWorkspace.trial); one that cannot stand with them is not ticked.
+        async function admitsPlanDesign(record) {
+            const ticked = [...state.selected.values()];
+            const ids = [...ticked, record].map(design => String(design.proposalId));
+            const { fallen, failures } = await win.PlanWorkspace.trial(ids);
+            if (!fallen.length) return true;
+            const titleOf = design => `“${design?.title || t('planDialog.untitledDesign')}”`;
+            const others = ticked.filter(design => fallen.includes(String(design.proposalId)));
+            const reason = failures.find(failure => String(failure.proposalId) === String(record.proposalId))?.reason;
+            win.showEphemeralMessage(others.length
+                ? t('lists.takesGround', { title: titleOf(record), others: others.map(titleOf).join(', ') })
+                : [t('lists.cannotStand', { title: titleOf(record) }), reason].filter(Boolean).join(' '), 8000, 'warning');
+            return false;
+        }
         function showPlanSelection() {
             if (state.purpose !== 'plan') return;
             const records = [...state.selected.values()];
@@ -292,9 +307,12 @@
                     check.addEventListener('change', async () => {
                         check.disabled = true; item.setAttribute('aria-busy', 'true');
                         try {
-                            if (check.checked) state.selected.set(row.key, kind === 'plans' ? await planOf(row)
-                                : kind === 'agreements' ? await agreementCompared(row)
-                                : state.purpose === 'plan' ? await designOf(row) : await designRecord(row));
+                            if (check.checked && state.purpose === 'plan') {
+                                const record = await designOf(row);
+                                if (await admitsPlanDesign(record)) state.selected.set(row.key, record);
+                                else check.checked = false;
+                            } else if (check.checked) state.selected.set(row.key, kind === 'plans' ? await planOf(row)
+                                : kind === 'agreements' ? await agreementCompared(row) : await designRecord(row));
                             else state.selected.delete(row.key);
                             showPlanSelection();
                         } catch (error) { check.checked = false; win.showStyledAlert(error.message); }

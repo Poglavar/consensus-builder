@@ -105,6 +105,29 @@
         }
         return { blocked: false };
     }
+    // Applies stored designs in turn exactly as an Apply click on the map does (ProposalManager.
+    // applyProposal: a design stands down the rivals on its ground), in formation order (the order
+    // the designs were made in, plan-order.js), inside one parcel mutation that is rolled back:
+    // nothing on the map or in storage changes. { standing, fallen } are their ids; a fallen design
+    // is one a later one took the ground of, or one the apply refused.
+    async function trial(ids) {
+        const records = ids.map(id => win.proposalStorage.getProposal(id)).filter(Boolean);
+        await win.CadastralParcelRepository.ensureIds(records.flatMap(record => win.__claims.cadastreParcelIdsOf(record)));
+        let outcome = null;
+        await win.ProposalManager.runParcelMutation('plan-trial', null, async transaction => {
+            const store = transaction._parcelMutation.proposals;
+            const failures = [];
+            for (const record of win.__planOrder.orderFormations(records)) {
+                const id = String(record.proposalId);
+                if (await win.ProposalManager.applyProposal(id, { ...transaction, silent: true })) continue;
+                failures.push({ proposalId: id, reason: win.getStoredApplyFailureInfo?.(id)?.message || null });
+            }
+            const stands = id => win.isApplied(store.getProposal(id));
+            outcome = { standing: ids.filter(stands), fallen: ids.filter(id => !stands(id)), failures };
+            return false;
+        });
+        return outcome;
+    }
     // A copied address opens a plan as a preview, unapplied. An action that reads the plan's land
     // (an agreement, the rooster) asks once, applies it and goes on; false when the visitor declines.
     async function ensureApplied(plan) {
@@ -114,5 +137,5 @@
             title: win.i18n.t('planDialog.applyTitle', { title }), okText: win.i18n.t('planDialog.applyAndContinue') });
         return confirmed && !(await apply(plan)).blocked;
     }
-    win.PlanWorkspace = Object.freeze({ save, list, resolve, publish, publication, appliedMembers, apply, ensureApplied });
+    win.PlanWorkspace = Object.freeze({ save, list, resolve, publish, publication, appliedMembers, apply, ensureApplied, trial });
 })(window);

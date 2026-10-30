@@ -8775,6 +8775,7 @@
         "applyQuestion": "Los diseños de este plan no están en tu mapa. Para continuar, se aplican a él. Los diseños que ya aplicaste se mantienen; si alguno entra en conflicto con este plan, se te preguntará qué hacer.",
         "applyAndContinue": "Aplicar y continuar",
         "applyFailed": "No se pudo aplicar el plan al mapa.",
+        "cannotStand": "Estos diseños no pueden estar junto al resto de este plan: {{titles}}. Usa «Cambiar diseños» para quedarte con los que quieras.",
         "editPlan": "Editar plan",
         "saveRevision": "Guardar nueva versión",
         "name": "Nombre del plan",
@@ -8912,6 +8913,8 @@
         "count": "Mostrados: {{count}}",
         "empty": "Aún no hay nada aquí.",
         "noMatch": "Ningún elemento coincide con estos filtros.",
+        "takesGround": "{{title}} no puede estar en este plan: ocupa el terreno de {{others}}, ya marcado. Desmárcalo primero para usar este.",
+        "cannotStand": "{{title}} no puede estar junto a los diseños ya marcados, así que no se añade.",
         "loadMore": "Cargar más",
         "limited": "Se muestran hasta 1.000 diseños publicados."
     },

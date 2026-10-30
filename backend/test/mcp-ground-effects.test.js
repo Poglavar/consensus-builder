@@ -62,12 +62,13 @@ describe('MCP road cut effects', () => {
                 throw new Error(`Unexpected request: ${path}`);
             } });
         const common = { city: 'london', parcelSourceId: 'test-source' };
-        const building = await tools.draftBuilding({ ...common, title: 'Earlier building', outline: box(-0.0995, 51.5007, -0.0985, 51.5013), floors: 2, authoredAt: '2020-01-01T00:00:00.000Z' });
+        // A road cuts through a park (a building and a street-level road cannot share a plan).
+        const park = await tools.draftSpace({ ...common, title: 'Earlier park', outline: box(-0.0995, 51.5007, -0.0985, 51.5013), spaceKind: 'park', authoredAt: '2020-01-01T00:00:00.000Z' });
         const road = await tools.draftRoad({ ...common, title: 'Later road', points: [[-0.0999, 51.501], [-0.0981, 51.501]], preset: '1+1', authoredAt: '2021-01-01T00:00:00.000Z' });
-        const named = await tools.draftPlan({ designs: [building.design, road.design], title: 'Road cut plan' });
+        const named = await tools.draftPlan({ designs: [park.design, road.design], title: 'Road cut plan' });
         const drafted = await tools.draftAgreement({ currency: 'GBP', plan: named.draftArtifact, rulePreset: 'community-vote', title: 'Road cut' });
         expect(drafted.groundEffects).toEqual([expect.objectContaining({
-            designCid: building.cid, roadTitle: 'Later road', surfaceKind: 'building',
+            designCid: park.cid, roadTitle: 'Later road', surfaceKind: 'structure',
             behavior: 'effective-ground-carved; authored-geometry-unchanged'
         })]);
         expect(drafted.groundEffects[0].remainingAreaM2AfterAllRoadCuts).toBeLessThan(drafted.groundEffects[0].authoredAreaM2);

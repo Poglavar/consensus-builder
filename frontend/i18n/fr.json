@@ -8562,6 +8562,7 @@
         "applyQuestion": "Les projets de ce plan ne sont pas sur votre carte. Pour continuer, ils y sont appliqués. Les projets déjà appliqués restent ; si certains entrent en conflit avec ce plan, on vous demandera quoi faire.",
         "applyAndContinue": "Appliquer et continuer",
         "applyFailed": "Le plan n’a pas pu être appliqué à la carte.",
+        "cannotStand": "Ces projets ne peuvent pas coexister avec le reste de ce plan : {{titles}}. Utilisez « Modifier les conceptions » pour garder ceux que vous voulez.",
         "editPlan": "Modifier le plan",
         "saveRevision": "Enregistrer une nouvelle version",
         "name": "Nom du plan",
@@ -8884,6 +8885,8 @@
         "count": "Affichés : {{count}}",
         "empty": "Rien ici pour l’instant.",
         "noMatch": "Aucun élément ne correspond à ces filtres.",
+        "takesGround": "{{title}} ne peut pas faire partie de ce plan : il occupe le terrain de {{others}}, déjà coché. Décochez-le d’abord pour utiliser celui-ci.",
+        "cannotStand": "{{title}} ne peut pas coexister avec les projets déjà cochés ; il n’est pas ajouté.",
         "loadMore": "Charger plus",
         "limited": "Affichage de 1 000 conceptions publiées au maximum."
     },

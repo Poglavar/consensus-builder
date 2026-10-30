@@ -8799,6 +8799,7 @@
         "applyQuestion": "Dizajni ovog plana nisu na vašoj karti. Za nastavak se primjenjuju na nju. Već primijenjeni dizajni ostaju; ako se neki od njih sukobljava s ovim planom, pitat ćemo vas što učiniti.",
         "applyAndContinue": "Primijeni i nastavi",
         "applyFailed": "Plan nije moguće primijeniti na kartu.",
+        "cannotStand": "Ovi dizajni ne mogu stajati zajedno s ostatkom plana: {{titles}}. Pomoću „Promijeni dizajne” zadržite one koje želite.",
         "editPlan": "Uredi plan",
         "saveRevision": "Spremi novu verziju",
         "name": "Naziv plana",
@@ -8936,6 +8937,8 @@
         "count": "Prikazano: {{count}}",
         "empty": "Ovdje još nema ničega.",
         "noMatch": "Nijedna stavka ne odgovara filtrima.",
+        "takesGround": "{{title}} ne može biti u ovom planu: zauzima zemljište već označenog {{others}}. Najprije odznačite taj dizajn da biste koristili ovaj.",
+        "cannotStand": "{{title}} ne može stajati uz već označene dizajne pa nije dodan.",
         "loadMore": "Učitaj još",
         "limited": "Prikazuje se do 1.000 objavljenih dizajna."
     },

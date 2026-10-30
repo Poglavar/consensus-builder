@@ -8,7 +8,7 @@ import { validateTrackDesign } from './mcp-constructors.js';
 import { previewArtifact } from './mcp-preview.js';
 import { trustedMetadata } from './mcp-results.js';
 import { parcelSourceIdOf } from './mcp-read-tools.js';
-import { placeInPlan } from './mcp-plan-placement.js';
+import { placeInPlan, inFormationOrder } from './mcp-plan-placement.js';
 const require = createRequire(import.meta.url);
 const PlanRecord = require('../../frontend/js/plan-record.js');
 const PlanFile = require('../../frontend/js/plan-file.js');
@@ -136,6 +136,20 @@ export function createMcpNamedPlanTools({ read, drafts, appOrigin, resolveDraftR
             const resolved = await drafts.resolveDesignSource(input), cid = cidOfObject(resolved.content);
             if (designs.some(row => row.cid === cid)) fail('duplicate-design', 'The named plan contains the same design twice.');
             designs.push({ cid, ...resolved });
+        }
+        // A plan's designs stand together: each is placed with the map's apply rules against the ones
+        // made before it (formation order), as ugt_edit_plan places an added design, and one that
+        // cannot stand refuses the draft.
+        let placed = [];
+        for (const row of inFormationOrder(designs)) {
+            const result = placeInPlan({ members: placed, incoming: row });
+            if (result.placement.status === 'refused') {
+                const names = result.placement.conflicts.map(rival => `"${rival.title || rival.cid}"`).join(', ');
+                throw Object.assign(new Error(`"${row.content.title || row.cid}" stands on ground that ${names} also take${result.placement.conflicts.length === 1 ? 's' : ''}: they cannot be in one plan.`), {
+                    code: 'ground-occupied', conflicts: result.placement.conflicts,
+                    designCid: row.cid, next: { action: 'Ask the person which design to keep, then draft the plan without the other.' } });
+            }
+            placed = result.members;
         }
         let plan;
         const cids = designs.map(row => row.cid), windows = scheduleWith({}, schedule, new Map(), cids);

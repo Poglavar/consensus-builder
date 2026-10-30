@@ -8747,6 +8747,7 @@
         "applyQuestion": "The designs of this plan are not on your map. To continue, they are applied to it. Designs you already applied stay; if any of them conflict with this plan, you are asked what to do.",
         "applyAndContinue": "Apply and continue",
         "applyFailed": "The plan could not be applied to the map.",
+        "cannotStand": "These designs cannot stand together with the rest of this plan: {{titles}}. Use Change designs to keep the ones you want.",
         "editPlan": "Edit plan",
         "saveRevision": "Save new revision",
         "name": "Plan name",
@@ -8884,6 +8885,8 @@
         "count": "Shown: {{count}}",
         "empty": "Nothing here yet.",
         "noMatch": "No items match these filters.",
+        "takesGround": "{{title}} cannot be in this plan: it takes the ground of {{others}}, already ticked. Untick that first to use this one.",
+        "cannotStand": "{{title}} cannot stand with the designs already ticked, so it is not added.",
         "loadMore": "Load more",
         "limited": "Showing up to 1,000 published designs."
     },

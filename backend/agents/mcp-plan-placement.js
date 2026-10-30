@@ -28,6 +28,12 @@ const record = row => ({ ...row.content, proposalId: row.cid, createdAt: row.con
 const round = value => Math.round(value * 100) / 100;
 const fail = (code, message) => { throw Object.assign(new Error(message), { code }); };
 
+// Plan rows in formation order (plan-order.js): the order the designs were made, and are applied, in.
+export function inFormationOrder(rows) {
+    const byCid = new Map(rows.map(row => [row.cid, row]));
+    return planOrder.orderFormations(rows.map(record)).map(applied => byCid.get(applied.proposalId));
+}
+
 /**
  * members:  [{ cid, content, parcelSourceId }] the plan's designs
  * incoming: { cid, content, parcelSourceId } the design to place

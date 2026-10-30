@@ -67,6 +67,20 @@
         const footer=node('div','cb-actions plan-dialog__footer');
         let dialog;
         const save=button(t(baseRow ? 'saveRevision' : 'createPlan'), async () => {
+            // A plan's designs stand together: the ones held here are applied together, virtually
+            // (PlanWorkspace.trial), and a plan in which any would not stand is not saved.
+            const stored=new Map();
+            for(const record of win.proposalStorage.getAllProposals()){
+                try{const cid=win.DesignRecord.cidOf(record);if(!stored.has(cid)||win.isApplied(record))stored.set(cid,record);}catch(_){/* an incomplete draft is no member */}
+            }
+            const held=[...selected].map(cid=>stored.get(cid)||win.DesignSync.localCopyOf(cid)).filter(Boolean);
+            if(held.length>1){
+                const {fallen}=await win.PlanWorkspace.trial(held.map(record=>String(record.proposalId)));
+                if(fallen.length){
+                    status.textContent=t('cannotStand',{titles:held.filter(record=>fallen.includes(String(record.proposalId))).map(record=>`“${record.title||t('untitledDesign')}”`).join(', ')});
+                    return;
+                }
+            }
             // Members kept from the base revision keep their construction windows.
             const row=win.PlanComposition.create(name.value,[...selected].map(cid=>sources.get(cid)),view,baseRow?.content.schedule);
             win.PlanWorkspace.save(row); dialog.close();
