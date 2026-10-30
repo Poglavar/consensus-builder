@@ -107,7 +107,7 @@
         const param = kindOf(kind).param;
         if (sourceId) url.searchParams.set(param, sourceId); else url.searchParams.delete(param);
         const center = global.map?.getCenter?.();
-        if (center && global.map?.getZoom) url.searchParams.set('at', [center.lat, center.lng, global.map.getZoom()].join(','));
+        if (center && global.map?.getZoom) url.searchParams.set('at', [center.lat, center.lng, Math.round(global.map.getZoom() * 10) / 10].join(','));
         global.location.assign(url.href);
     }
     // What the city uses when the person has chosen nothing (parcels and imagery).
