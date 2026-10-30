@@ -133,6 +133,8 @@
                 const make = () => win.PlanFile.create(structuredClone(getRecords()), { title: getTitle(), view: structuredClone(getView()), schedule: getSchedule(), designSources: getSources(), fetchModel });
                 button(t('json', 'Download editable plan'), async () => download(win.PlanFile.stringify(await make()), `${fileStem(getTitle())}.ugt.json`, 'application/json'), 'json');
                 button(t('geojson', 'Download GeoJSON'), () => download(JSON.stringify(win.PlanFile.geojsonRecords(structuredClone(getRecords()), { title: getTitle(), view: structuredClone(getView()) }), null, 2) + '\n', `${fileStem(getTitle())}.geojson`, 'application/geo+json'), 'geojson');
+                // CityJSON beside our own files: buildings, roads and spaces as city objects, the plan file inside (city-json-export.js).
+                button(t('cityjson', 'Download CityJSON'), async () => download(JSON.stringify(win.CityJsonExport.fromPlanFile(await make(), { proj4: win.proj4 })) + '\n', `${fileStem(getTitle())}.city.json`, 'application/city+json'), 'cityjson');
             }
             extras.forEach(extra => button(extra.label, () => { const file = extra.make(); download(file.text, file.name, file.type); }, extra.hook));
             if (!importAllowed) return group;

@@ -7,6 +7,7 @@
         "tooLarge": "Datoteke plana ograničene su na 32 MiB.",
         "json": "Preuzmi plan za uređivanje",
         "geojson": "Preuzmi GeoJSON",
+        "cityjson": "Preuzmi CityJSON",
         "import": "Uvezi datoteku plana",
         "importedPlans": "Uvezeni planovi",
         "help": "Formati datoteka i ograničenja",

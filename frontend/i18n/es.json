@@ -7,6 +7,7 @@
         "tooLarge": "Los archivos de plan están limitados a 32 MiB.",
         "json": "Descargar plan editable",
         "geojson": "Descargar GeoJSON",
+        "cityjson": "Descargar CityJSON",
         "import": "Importar archivo de plan",
         "importedPlans": "Planes importados",
         "help": "Formatos y límites",

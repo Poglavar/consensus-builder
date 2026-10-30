@@ -1,5 +1,5 @@
 // Download a plan or a design as a file from any surface: PlanFileUI.plan and PlanFileUI.design offer
-// the two downloads only (no import), named after the record's title.
+// the editable plan, GeoJSON and CityJSON downloads only (no import), named after the record's title.
 import { describe, it, expect, vi } from 'vitest';
 import { createRequire } from 'node:module';
 const require = createRequire(import.meta.url);
@@ -35,7 +35,8 @@ function browser() {
         PlanWorkspace: { resolve: vi.fn(async plan => ({ ...plan, designs: [{ cid: 'bafy-d' }], designSources: {} })) },
         PlanComposition: { localRecords: vi.fn(row => row.designs.map(member => ({ proposalId: `plan-member-${member.cid}` }))) },
         DesignSync: { apiBase: () => 'https://api.example' },
-        MapShare: { capture: () => ({ at: '45.8,15.9,18' }) }, FileDownload, DesignFileExports
+        MapShare: { capture: () => ({ at: '45.8,15.9,18' }) }, FileDownload, DesignFileExports,
+        CityJsonExport: { fromPlanFile: vi.fn(file => ({ type: 'CityJSON', version: '2.0', title: file.options.title })) }, proj4: () => null
     };
     return { win, modals, downloads };
 }
@@ -48,12 +49,17 @@ describe('PlanFileUI downloads from any surface', () => {
         const ui = FileUI.browser(win);
         ui.design({ proposalId: 'p1', title: 'Riverside Blocks č' });
         expect(modals[0].title).toBe('Download design');
-        expect(actionsOf(modals[0])).toEqual(['json', 'geojson']);
+        expect(actionsOf(modals[0])).toEqual(['json', 'geojson', 'cityjson']);
         await buttonOf(modals[0], 'json').click();
         expect(win.PlanFile.create).toHaveBeenCalledWith([{ proposalId: 'p1', title: 'Riverside Blocks č' }], expect.objectContaining({ title: 'Riverside Blocks č' }));
         expect(downloads[0].name).toBe('riverside-blocks-c.ugt.json');
         await buttonOf(modals[0], 'geojson').click();
         expect(downloads[1].name).toBe('riverside-blocks-c.geojson');
+        // CityJSON is made from the same plan file the editable download is.
+        await buttonOf(modals[0], 'cityjson').click();
+        expect(downloads[2].name).toBe('riverside-blocks-c.city.json');
+        expect(win.CityJsonExport.fromPlanFile).toHaveBeenCalledWith(expect.objectContaining({ records: [{ proposalId: 'p1', title: 'Riverside Blocks č' }] }), { proj4: win.proj4 });
+        expect(JSON.parse(await downloads.blob.text())).toEqual({ type: 'CityJSON', version: '2.0', title: 'Riverside Blocks č' });
     });
 
     it('downloads a plan revision with its members, view and schedule', async () => {
@@ -64,7 +70,7 @@ describe('PlanFileUI downloads from any surface', () => {
         await ui.plan(plan, members);
         expect(win.PlanWorkspace.resolve).toHaveBeenCalledWith(plan, members);
         expect(modals[0].title).toBe('Download plan');
-        expect(actionsOf(modals[0])).toEqual(['json', 'geojson']);
+        expect(actionsOf(modals[0])).toEqual(['json', 'geojson', 'cityjson']);
         await buttonOf(modals[0], 'json').click();
         expect(win.PlanFile.create).toHaveBeenCalledWith([{ proposalId: 'plan-member-bafy-d' }],
             expect.objectContaining({ title: 'East quarter', view: { at: '45.8,15.9,17' }, schedule: { 'bafy-d': { start: 1 } } }));
