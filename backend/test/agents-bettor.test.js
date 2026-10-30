@@ -24,7 +24,7 @@ function encodeMarket({ account, sponsor, deadline, qYes = 0n, qNo = 0n, b = DEF
     data.writeBigUInt64LE(b, 137);
     data.writeBigUInt64LE(qYes, 145);
     data.writeBigUInt64LE(qNo, 153);
-    data.writeBigUInt64LE(lmsr.maxLoss(DEFAULT_B), 161);
+    data.writeBigUInt64LE(lmsr.maxLoss(b), 161);
     data.writeBigInt64LE(BigInt(deadline), 169);
     data.writeUInt32LE(0, 177);
     data.writeBigUInt64LE(0n, 181);
@@ -32,14 +32,14 @@ function encodeMarket({ account, sponsor, deadline, qYes = 0n, qNo = 0n, b = DEF
     return { address, data: new Uint8Array(data), owner: market.constants.PROGRAM_ID };
 }
 
-function setup({ signer = Keypair.generate(), sponsor = Keypair.generate(), lens = Keypair.generate(), withMarket = true, wrongNetwork = false, qYes = 0n } = {}) {
+function setup({ signer = Keypair.generate(), sponsor = Keypair.generate(), lens = Keypair.generate(), withMarket = true, wrongNetwork = false, qYes = 0n, b = DEFAULT_B } = {}) {
     const deadline = NOW + 3600;
     const cid = `bafybeigdyrzt5sfp7udm7hu76uhy26nf3nqg4o3x2kpcew7saf4r5x4sfu`;
     const subject = agreementAccountOf(cid, sponsor.publicKey.toBase58());
     const records = new Map();
     records.set(subject, { data: encodeAgreementAccount({ cid, authority: sponsor.publicKey.toBase58(), lens: lens.publicKey.toBase58(), payout: sponsor.publicKey.toBase58(), deadline, status: 0 }), owner: AGREEMENT_PROGRAM_ID });
     if (withMarket) {
-        const entry = encodeMarket({ account: subject, sponsor: sponsor.publicKey.toBase58(), deadline, qYes });
+        const entry = encodeMarket({ account: subject, sponsor: sponsor.publicKey.toBase58(), deadline, qYes, b });
         records.set(entry.address.toBase58(), entry);
     }
     records.set(subject, { ...records.get(subject), owner: new PublicKey(AGREEMENT_PROGRAM_ID) });
@@ -74,6 +74,17 @@ describe('agent LMSR buy path', () => {
         expect(ix.data[8]).toBe(market.constants.SIDE_YES);
         expect(Buffer.from(ix.data).readBigUInt64LE(9)).toBe(quote.shares);
         expect(Buffer.from(ix.data).readBigUInt64LE(17)).toBe(quote.maxCost);
+    });
+
+    it('trades a market opened before 2026-10-30 at its own b = 100 and rejects any other b', async () => {
+        const legacyB = 100_000_000n, budget = usdcToAtomic('0.25');
+        const h = setup({ b: legacyB });
+        const quote = contract.quote({ model: 'lmsr', b: legacyB, qYes: 0n, qNo: 0n, closesAt: h.deadline, graceSeconds: 0 }, 'yes', budget);
+        const result = await buyAgreementShares({ connection: h.connection, ownerKeypair: h.signer, subject: h.subject, side: market.constants.SIDE_YES, amountAtomic: budget, sendAndConfirm: h.sendAndConfirm });
+        expect(result).toMatchObject({ shares: quote.shares, maxCost: quote.maxCost });
+        expect(quote.shares).not.toBe(contract.quote({ model: 'lmsr', b: DEFAULT_B, qYes: 0n, qNo: 0n, closesAt: h.deadline, graceSeconds: 0 }, 'yes', budget).shares);
+        const odd = setup({ b: 7_000_000n });
+        await expect(readAgreementMarket(odd.connection, odd.subject)).rejects.toMatchObject({ code: 'MARKET_TERMS_MISMATCH' });
     });
 
     it('never creates a missing market and reports MARKET_NOT_OPEN', async () => {
@@ -126,11 +137,13 @@ describe('sponsor canonical market opening', () => {
         const h = setup({ sponsor, signer: sponsor, withMarket: false });
         let funded = 0;
         const options = { connection: h.connection, sponsorKeypair: sponsor, subject: h.subject,
-            maxSeedAtomic: 70_000_000n, ensureSeed: async amount => { funded++; expect(amount).toBe(69_314_720n); },
+            maxSeedAtomic: 3_500_000n, ensureSeed: async amount => { funded++; expect(amount).toBe(3_465_737n); },
             readSeedBalance: async () => MARKET_SEED_ATOMIC, sendAndConfirm: h.sendAndConfirm };
         const result = await openAgreementMarket(options);
-        expect(result).toMatchObject({ replayed: false, signature: 'signature-1', seedAtomic: '69314720' });
+        expect(result).toMatchObject({ replayed: false, signature: 'signature-1', seedAtomic: '3465737' });
         expect(h.sends).toHaveLength(1); expect(funded).toBe(1);
+        // A new market opens with b = 5 devnet USDC, the liquidity that follows the instruction discriminator.
+        expect(Buffer.from(h.sends[0].transaction.instructions[0].data).readBigUInt64LE(8)).toBe(5_000_000n);
         expect(h.sends[0].transaction.instructions[0].keys.some(k => k.pubkey.toBase58() === h.subject)).toBe(true);
         const encoded = encodeMarket({ account: h.subject, sponsor: sponsor.publicKey.toBase58(), deadline: h.deadline });
         h.records.set(encoded.address.toBase58(), encoded);

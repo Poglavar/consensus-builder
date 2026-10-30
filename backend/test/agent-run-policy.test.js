@@ -29,14 +29,14 @@ describe('live agent execution policy', () => {
     it('budgets sponsor creation and optional market seed separately from forbidden self-trading', () => {
         expect(assertExecutionPlan(summarizeExecutionPlan([entry()]))).toMatchObject({
             pickCount: 1, actionCount: 1, maxUsdc: 0, maxMarketSeedUsdc: 0 });
-        const policy = executionPolicy({ AGENT_MARKET_SEED_USDC_CAP: '70' });
+        const policy = executionPolicy({ AGENT_MARKET_SEED_USDC_CAP: '3.5' });
         expect(assertExecutionPlan(summarizeExecutionPlan([entry()], policy), policy)).toMatchObject({
-            pickCount: 1, actionCount: 3, maxUsdc: 0, maxMarketSeedUsdc: 69.31472 });
+            pickCount: 1, actionCount: 3, maxUsdc: 0, maxMarketSeedUsdc: 3.465737 });
         expect(summarizeExecutionPlan([entry(0)], policy)).toMatchObject({ pickCount: 0, actionCount: 0, maxMarketSeedUsdc: 0 });
     });
     it('refuses action, token-spending and market-seed cap overruns before signing', () => {
         expect(() => assertExecutionPlan(summarizeExecutionPlan([entry(5)]))).toThrow('agent action cap reached: 5 planned > 4');
-        const policy = executionPolicy({ AGENT_DAILY_ACTION_CAP: '15', AGENT_MARKET_SEED_USDC_CAP: '70' });
+        const policy = executionPolicy({ AGENT_DAILY_ACTION_CAP: '15', AGENT_MARKET_SEED_USDC_CAP: '3.5' });
         expect(() => assertExecutionPlan(summarizeExecutionPlan([entry(2)], policy), policy)).toThrow('agent market-seed cap reached');
         expect(() => assertExecutionPlan({ actionCount: 1, maxUsdc: 0.4, maxMarketSeedUsdc: 0 })).toThrow('agent USDC cap reached');
         expect(() => summarizeExecutionPlan([entry(1, 'lots')])).toThrow(/persona.stakeUsdc/);
@@ -146,7 +146,7 @@ describe('settlement selection', () => {
         expect(capped.limited).toBe(1);
 
         // AGENT_DAILY_ACTION_CAP 4 with one pick planned (3 actions) leaves one signature: nothing fits.
-        const starved = planSettlements(backlog, { actionBudget: 4 - summarizeExecutionPlan([entry()], executionPolicy({ AGENT_MARKET_SEED_USDC_CAP: '70' })).actionCount });
+        const starved = planSettlements(backlog, { actionBudget: 4 - summarizeExecutionPlan([entry()], executionPolicy({ AGENT_MARKET_SEED_USDC_CAP: '3.5' })).actionCount });
         expect(starved.selected).toEqual([]);
         expect(starved.skipped.every(item => item.reason === 'action-cap')).toBe(true);
         expect(starved.limited).toBe(4);

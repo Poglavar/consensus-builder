@@ -6,6 +6,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 
 const require = createRequire(import.meta.url);
 const web3 = require('@solana/web3.js');
+const lmsr = require('../../frontend/js/bets/lmsr.js');
 const bridgeSource = fs.readFileSync(new URL('../../frontend/js/solana/market-bridge.js', import.meta.url), 'utf8');
 const USDC = '4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU';
 const programId = new web3.PublicKey('GDYnzduynKhKgxDhvvKVarn2s23DtzA26s6hycuUYDRB');
@@ -79,7 +80,7 @@ function setup(options = {}) {
         SolanaLmsrClient: client,
         SolanaChainDataLoader: { getVerifiedConnection: vi.fn(async cluster => { if (cluster !== 'devnet') throw new Error('bad cluster'); return connection; }) },
         AgreementClient: { fetchAgreement: vi.fn(async (_connection, { address }) => new web3.PublicKey(address).equals(proposal) ? agreement : null) },
-        Lmsr: { maxLoss: vi.fn(() => 69_314_720n) },
+        Lmsr: { maxLoss: vi.fn(lmsr.maxLoss) },
         solanaWalletManager: { getCluster: vi.fn(() => options.cluster || 'devnet'), getProvider: vi.fn(() => provider) }
     };
     vm.runInNewContext(bridgeSource, { window, Buffer, Uint8Array, BigInt, Date });
@@ -115,6 +116,14 @@ describe('Solana LMSR market bridge', () => {
         const wrong = setup({ market: null });
         wrong.client.readMarket.mockResolvedValue({ ...wrong.rawMarket, creator: wrong.wallet.toBase58() });
         await expect(wrong.bridge.readSummary(wrong.proposal)).rejects.toThrow(/canonical agreement market terms/);
+
+        // New markets carry b = 5 devnet USDC; the fixture above is a b = 100 market opened before 2026-10-30.
+        const current = setup();
+        current.client.readMarket.mockResolvedValue({ ...current.rawMarket, b: 5_000_000n, seed: 3_465_737n });
+        await expect(current.bridge.readSummary(current.proposal)).resolves.toMatchObject({ market: { b: '5000000', seed: '3465737' } });
+        const odd = setup();
+        odd.client.readMarket.mockResolvedValue({ ...odd.rawMarket, b: 7_000_000n, seed: 4_852_032n });
+        await expect(odd.bridge.readSummary(odd.proposal)).rejects.toThrow(/canonical agreement market terms/);
     });
 
     it('batches strict positions from {account,sponsor,marketAddress} rows and rejects noncanonical addresses', async () => {
@@ -137,7 +146,7 @@ describe('Solana LMSR market bridge', () => {
         const statuses = [];
         const result = await ctx.bridge.createMarket({ proposal: ctx.proposal, onStatus: item => statuses.push(item.state) });
         expect(ctx.client.buildCreateLmsrMarketIx).toHaveBeenCalledWith({
-            proposal: ctx.proposal, creator: ctx.sponsor.toBase58(), stakeMint: USDC, b: 100_000_000n,
+            proposal: ctx.proposal, creator: ctx.sponsor.toBase58(), stakeMint: USDC, b: 5_000_000n,
             closesAt: 1_900_000_000, graceSeconds: 0, maxPosition: 0n, programId: undefined
         });
         expect(result.transactionHash).toBe('tx-signature');

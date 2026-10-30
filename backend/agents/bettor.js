@@ -20,7 +20,10 @@ function agreementChain(connection) {
     return chain;
 }
 
-export const DEFAULT_B = 100_000_000n;
+// New agreement markets open with b = 5 devnet USDC, a seed of b·ln 2 ≈ 3.47 USDC (2026-10-30: at b = 100
+// one 69 USDC seed outran the devnet faucet). Markets opened earlier keep b = 100 and stay readable/tradable.
+export const DEFAULT_B = 5_000_000n;
+const ACCEPTED_B = new Set([DEFAULT_B, 100_000_000n]);
 export const GRACE_SECONDS = 0;
 export const MAX_POSITION = 0n;
 export const MARKET_SEED_ATOMIC = lmsr.maxLoss(DEFAULT_B);
@@ -37,16 +40,15 @@ function sideName(side) {
 
 function marketTerms(raw, address, agreement) {
     if (!raw) return null;
-    const expectedSeed = lmsr.maxLoss(DEFAULT_B);
     if (raw.kind !== market.constants.KIND_PROPOSAL
         || raw.proposal !== agreement.address
         || raw.creator !== agreement.authority
         || raw.stakeMint !== DEVNET_USDC_MINT
-        || raw.b !== DEFAULT_B
+        || !ACCEPTED_B.has(raw.b)
         || raw.closesAt !== BigInt(agreement.deadline)
         || raw.graceSeconds !== GRACE_SECONDS
         || raw.maxPosition !== MAX_POSITION
-        || raw.seed !== expectedSeed) {
+        || raw.seed !== lmsr.maxLoss(raw.b)) {
         throw failure('Agreement market terms do not match the canonical LMSR contract.', 'MARKET_TERMS_MISMATCH');
     }
     const [expected] = market.getMarketPda(agreement.address, agreement.authority);

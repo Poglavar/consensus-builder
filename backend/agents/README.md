@@ -89,8 +89,9 @@ a source fails or yields no eligible candidate; attempts are recorded, and an ex
 with source failures fails visibly. Gentle answers current rivals and waits when none exist.
 
 Sponsor market opening is optional under `AGENT_MARKET_SEED_USDC_CAP` (default `0`, disabled).
-The scheduled proposers explicitly enable a `70` allowance. The canonical market uses
-`69.31472` devnet USDC of seed liquidity. This allowance
+The scheduled proposers explicitly enable a `3.5` allowance. A new canonical market uses
+liquidity b = 5 devnet USDC, so `3.465737` devnet USDC of seed (b = 100 and a 69.31472 seed
+before 2026-10-30, when one seed outran the devnet faucet; those markets keep their terms). This allowance
 admits one seed per run; two new seeds fail preflight. The ordinary `AGENT_DAILY_USDC_CAP`
 remains separate. Opening uses the sponsor PDA, existing canonical terms and verified devnet,
 checks balance and deadline, and checkpoints seed-funding receipts before opening. A restart
