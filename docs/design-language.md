@@ -169,6 +169,14 @@ surfaces. Solid versus dashed boundaries and filled versus hollow shapes disting
 design from its source parcels. Ownership, planning roles and invalid geometry retain their own
 meaningful colours when they are not selected.
 
+**Object lists** (a list of designs, plans, agreements, parcels or other map objects, in a panel,
+sheet or stack card): hovering or focusing an item outlines its object; clicking the item outlines
+it and keeps it outlined (the item shows pressed), moving the map only when the object is out of the
+visible area; clicking it again lets go. A click never navigates. Each item has its own **open**
+button (an arrow, “Open …”) that goes to the object, its section or dialog. Done in the click stack's
+related items (2D and model view, `ClickStackRelations.bindPreview`) and the Lists sheet (the card
+is the item, Open its button).
+
 A **view pill** names a setting that changes how the map reads while it is on, at the top centre
 with × to turn it off (`js/ui/view-pills.js`, `.map-view-pill` in css/map-shell.css): Highlight by
 use and Highlight by ownership type. Ordinary layer switches get none; what they show is on the map.

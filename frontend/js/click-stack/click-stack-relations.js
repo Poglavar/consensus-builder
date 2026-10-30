@@ -100,19 +100,97 @@
         choices.setAttribute('aria-label', label.textContent);
         const strip = doc.createElement('div');
         strip.className = 'click-stack__strip';
+        // An item highlights its object (hover, focus, click) and never navigates; its own open
+        // button takes the stack to the object (docs/click-stack.md, "Object lists").
         for (const instance of group.instances || []) {
+            const name = instance.label || instance.id || '';
+            const item = doc.createElement('span');
+            item.className = 'click-stack__link';
             const chip = doc.createElement('button');
             chip.type = 'button';
             chip.className = 'btn click-stack__chip';
-            chip.textContent = instance.label || instance.id || '';
-            chip.title = instance.label || instance.id || '';
-            chip.dataset.action = 'related';
+            chip.textContent = name;
+            chip.title = name;
+            chip.dataset.action = 'preview';
             chip.dataset.kind = group.kind || '';
             chip.dataset.id = instance.id ?? '';
-            strip.appendChild(chip);
+            chip.setAttribute('aria-pressed', 'false');
+            const open = doc.createElement('button');
+            open.type = 'button';
+            open.className = 'btn btn-icon click-stack__open';
+            open.dataset.action = 'related';
+            open.dataset.kind = group.kind || '';
+            open.dataset.id = instance.id ?? '';
+            const openLabel = win?.i18n?.t?.('lists.openNamed', { title: name }) || `Open ${name}`;
+            open.title = openLabel;
+            open.setAttribute('aria-label', openLabel);
+            const icon = doc.createElement('i');
+            icon.className = 'fas fa-arrow-right';
+            icon.setAttribute('aria-hidden', 'true');
+            open.appendChild(icon);
+            item.append(chip, open);
+            strip.appendChild(item);
         }
         choices.append(label, strip);
         return choices;
+    }
+
+    // The object a related item names: a peer in its own section, else a member of the selected
+    // object (a plan's designs, which are read without being imported).
+    function relatedInstance(stack, kind, id, selectedOf) {
+        const section = stack?.sections?.find(entry => entry.kind === kind);
+        return section?.instances.find(instance => String(instance.id) === String(id))
+            || selectedOf(stack, stack?.selectedKind)?.members?.find(member => String(member.id) === String(id))
+            || null;
+    }
+
+    // Hover and keyboard focus show an item's object; a click keeps it shown (pressed) until it is
+    // clicked again or the stack highlights a section anew. `show(kind, id, { pinned })` draws one
+    // object; `restore()` draws the section's own highlight again.
+    function bindPreview(container, { show, restore }) {
+        let pinned = null;
+        // The whole item (its name and its open button) shows the object.
+        const itemOf = target => {
+            const item = target?.closest?.('.click-stack__link');
+            return item && container.contains(item) ? item : null;
+        };
+        const chipOf = item => item.querySelector('[data-action="preview"]');
+        const back = () => {
+            if (pinned && !pinned.isConnected) pinned = null; // its list was rendered anew
+            if (pinned) show(pinned.dataset.kind, pinned.dataset.id, { pinned: false }); else restore();
+        };
+        const enter = event => {
+            const item = itemOf(event.target);
+            if (!item || item.contains(event.relatedTarget)) return;
+            const chip = chipOf(item);
+            show(chip.dataset.kind, chip.dataset.id, { pinned: false });
+        };
+        const leave = event => {
+            const item = itemOf(event.target);
+            if (item && !item.contains(event.relatedTarget)) back();
+        };
+        container.addEventListener('mouseover', enter);
+        container.addEventListener('mouseout', leave);
+        container.addEventListener('focusin', enter);
+        container.addEventListener('focusout', leave);
+        container.addEventListener('click', event => {
+            const chip = event.target?.closest?.('[data-action="preview"]');
+            if (!chip || !container.contains(chip)) return;
+            const same = pinned === chip;
+            if (pinned) pinned.setAttribute('aria-pressed', 'false');
+            pinned = same ? null : chip;
+            if (pinned) {
+                pinned.setAttribute('aria-pressed', 'true');
+                show(chip.dataset.kind, chip.dataset.id, { pinned: true });
+            } else restore();
+        });
+        return {
+            // The section's own highlight came back (a selection, a refresh): no item stays pressed.
+            reset() {
+                if (pinned?.isConnected) pinned.setAttribute('aria-pressed', 'false');
+                pinned = null;
+            }
+        };
     }
 
     function designOptionLabel(instance, win, plans = []) {
@@ -242,5 +320,6 @@
         return actions;
     }
 
-    return Object.freeze({ designType, designOptionLabel, renderDesignType, renderGroup, renderSelector, updateSelector, renderDesignActions });
+    return Object.freeze({ designType, designOptionLabel, renderDesignType, renderGroup, relatedInstance, bindPreview,
+        renderSelector, updateSelector, renderDesignActions });
 });

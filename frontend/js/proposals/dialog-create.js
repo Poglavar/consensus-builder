@@ -226,8 +226,8 @@ function previewProposalOnMap(proposalIdOrHash, { center = true, blink = true } 
 // (map.css). When they are not already in the area the lists sheet leaves visible, the map, or the
 // model view's camera, glides over to them (revealMove): at the same zoom, or zoomed out just enough
 // when they are too big for that area, never in, so the old view stays traceable. False when none of
-// them has a place on the map.
-function previewRecordsOnMap(records, previewKey) {
+// them has a place on the map. `reveal: false` (a hovered row) outlines them where they are.
+function previewRecordsOnMap(records, previewKey, { reveal = true } = {}) {
     clearProposalPreview();
     if (typeof map === 'undefined' || !map || typeof L === 'undefined') return false;
     const features = [];
@@ -241,9 +241,9 @@ function previewRecordsOnMap(records, previewKey) {
         bounds = bounds ? bounds.extend(box) : box;
     });
     if (!bounds || !bounds.isValid()) return false;
-    if (window.isThreeModeActive?.()) {
+    if (reveal && window.isThreeModeActive?.()) {
         window.revealThreeModeFeatures([turf.bboxPolygon([bounds.getWest(), bounds.getSouth(), bounds.getEast(), bounds.getNorth()])]);
-    } else {
+    } else if (reveal) {
         const size = map.getSize();
         const nw = map.latLngToContainerPoint(bounds.getNorthWest()), se = map.latLngToContainerPoint(bounds.getSouthEast());
         const move = revealMove({ left: nw.x, top: nw.y, right: se.x, bottom: se.y }, getProposalPanelFreeArea(size.x, size.y));

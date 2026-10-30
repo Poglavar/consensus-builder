@@ -27,7 +27,9 @@
             // selecting: the tab whose rows show checkboxes; purpose: what they are for ('compare', or
             // 'plan': the designs of a plan, ticked here with all of them shown on the map); planBase:
             // the plan whose revision they make, if any.
-            filtersOpen: false, selecting: null, purpose: null, planBase: null, selected: new Map(), active: null, previewing: null, remote: new Map() };
+            filtersOpen: false, selecting: null, purpose: null, planBase: null, selected: new Map(), active: null, previewing: null, remote: new Map(),
+            // hovering: the card whose object is outlined under the pointer; records: each card's designs, read once
+            hovering: null, records: new Map() };
         let ready = false;
         const t = (key, params) => win.i18n.t(key, params || {});
         const node = (tag, cls, text) => {
@@ -127,9 +129,29 @@
         }
         // A row shows its object on the map and keeps the list open: browsing commits to nothing.
         // Closing the list by hand, like Open, then selects it (previewing).
+        // A card's designs, read once until the lists change (hovering over a card must not refetch).
+        function cachedRecords(row, kind) {
+            const key = `${kind}:${row.key}`;
+            if (!state.records.has(key)) state.records.set(key, designRecords(row, kind).catch(error => { state.records.delete(key); throw error; }));
+            return state.records.get(key);
+        }
+        // Hovering a card outlines its object where it is; leaving it puts back the card last clicked.
+        async function hover(row, kind) {
+            const key = `${kind}:${row.key}`; state.hovering = key;
+            const records = await cachedRecords(row, kind).catch(() => []);
+            if (state.hovering === key) win.previewRecordsOnMap(records, `list:${key}`, { reveal: false });
+        }
+        async function unhover(row, kind) {
+            if (state.hovering !== `${kind}:${row.key}`) return;
+            state.hovering = null;
+            const shown = state.previewing;
+            if (!shown) { win.clearProposalPreview(); return; }
+            const records = await cachedRecords(shown.row, shown.kind).catch(() => []);
+            if (!state.hovering && state.previewing === shown) win.previewRecordsOnMap(records, `list:${state.active}`, { reveal: false });
+        }
         async function focus(row, kind) {
             state.active = `${kind}:${row.key}`; state.previewing = { row, kind }; renderRows();
-            if (!win.previewRecordsOnMap(await designRecords(row, kind), `list:${state.active}`)) {
+            if (!win.previewRecordsOnMap(await cachedRecords(row, kind), `list:${state.active}`)) {
                 win.showEphemeralMessage(t('lists.noPlace'), 4000, 'info');
             }
         }
@@ -329,6 +351,8 @@
                 item.addEventListener('keydown', event => {
                     if (event.target === item && (event.key === 'Enter' || event.key === ' ')) { event.preventDefault(); show(); }
                 });
+                item.addEventListener('mouseenter', () => hover(row, kind));
+                item.addEventListener('mouseleave', () => unhover(row, kind));
                 const mark = node('span', 'lists-item__icon'); mark.append(icon(appearance[0]));
                 heading.append(mark, title); item.append(heading);
                 const badges = node('div', 'lists-item__badges');
@@ -450,6 +474,8 @@
             doc.addEventListener('mapshell:sheetclosed', event => {
                 if (event.detail?.id !== 'proposals-sheet') return;
                 const pending = state.previewing; state.previewing = null;
+                if (state.hovering && !pending) win.clearProposalPreview();
+                state.hovering = null;
                 if (pending && event.detail.byHand) inspect(pending.row, pending.kind).catch(error => win.showStyledAlert(error.message));
             });
             win.AgreementStore.subscribe(refresh);
@@ -470,7 +496,7 @@
             renderActions(); renderRows();
             if (state.source === 'published' && !state.remote.has(cacheKey())) await load();
         }
-        function refresh() { if (ready && opened()) { renderActions(); renderRows(); } }
+        function refresh() { state.records.clear(); if (ready && opened()) { renderActions(); renderRows(); } }
         return { open: async () => { await win.i18n.translationsReady; init(); controls(); return select(state.tab); }, select, refresh, choosePlanDesigns };
     }
     return { filterRows, indexQuery, browser };

@@ -48,7 +48,12 @@ for (const width of [1280, 390]) {
     expect(await root.locator('.click-stack__section').evaluateAll(rows => rows.map(row => (row as HTMLElement).dataset.kind))).toEqual(['built', 'parcels']);
     await expect(root.getByRole('group', { name: 'Affected by design:' })).toBeVisible();
     await page.screenshot({ path: testInfo.outputPath('building-explicit-impact.png') });
-    await root.getByRole('button', { name: 'Redevelop', exact: true }).click();
+    // The design's name only outlines it; its arrow opens it.
+    const redevelop = root.getByRole('button', { name: 'Redevelop', exact: true });
+    await redevelop.click();
+    await expect(redevelop).toHaveAttribute('aria-pressed', 'true');
+    await expect(root.locator('[data-kind="designs"] .click-stack__row')).toHaveCount(0);
+    await root.locator('.click-stack__open[data-kind="designs"][data-id="design"]').click();
     await expect(root.locator('[data-kind="designs"] .click-stack__row')).toHaveAttribute('aria-expanded', 'true');
     await expect(root.locator('.click-stack__section[data-kind="plans"]')).toBeVisible();
   });

@@ -183,8 +183,9 @@
     // A design's source parcels are provenance; its authored/result geometry is the selection.
     function featuresFor(kind, instance) {
         if (!instance) return [];
+        // A plan's member that was read but never imported carries its record in memory.
         const designFeatures = key => {
-            const proposal = global.proposalStorage?.getProposal?.(String(key));
+            const proposal = global.proposalStorage?.getProposal?.(String(key)) || instance.proposal;
             if (!proposal) return [];
             if (global.collectProposalFeatureSets) return global.collectProposalFeatureSets(proposal, { includeBuildingGeometry: true }).primaryFeatures;
             const footprint = global.__planOrder?.footprintOf?.(proposal);

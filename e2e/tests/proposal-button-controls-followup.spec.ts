@@ -98,7 +98,13 @@ test.describe('proposal button controls follow-up @features', () => {
     await expect(designs.locator('.click-stack__row-title')).toHaveText('Design (2)');
     const sourceParcels = designs.locator('.click-stack__choices[data-kind="parcels"]');
     await expect(sourceParcels.locator('.click-stack__chip')).toHaveCount(2);
-    await sourceParcels.locator(`.click-stack__chip[data-id="${SECOND_PARCEL_ID}"]`).click();
+    // A related item only outlines its object: the design stays selected and the item shows pressed.
+    const secondParcel = sourceParcels.locator(`.click-stack__chip[data-id="${SECOND_PARCEL_ID}"]`);
+    await secondParcel.click();
+    await expect(secondParcel).toHaveAttribute('aria-pressed', 'true');
+    await expect(designs).toHaveClass(/is-selected/);
+    // Its open button goes to the parcel.
+    await sourceParcels.locator(`.click-stack__open[data-id="${SECOND_PARCEL_ID}"]`).click();
 
     const parcels = stack.locator('.click-stack__section[data-kind="parcels"]');
     await expect(parcels).toHaveClass(/is-selected/);
@@ -109,8 +115,7 @@ test.describe('proposal button controls follow-up @features', () => {
     // The selected source parcel offers its related designs inside its section.
     const relatedDesigns = parcels.locator('.click-stack__choices[data-kind="designs"]');
     await expect(relatedDesigns.locator('.click-stack__chip')).toHaveCount(2);
-    const chosenDesign = relatedDesigns.locator(`.click-stack__chip[data-id="${proposalIds[0]}"]`);
-    await chosenDesign.click();
+    await relatedDesigns.locator(`.click-stack__open[data-id="${proposalIds[0]}"]`).click();
 
     await expect(designs).toHaveClass(/is-selected/);
     await expect(designs.locator('.click-stack__row-title')).toHaveText('Design (2)');

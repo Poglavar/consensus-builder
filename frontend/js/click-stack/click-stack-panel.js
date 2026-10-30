@@ -159,6 +159,18 @@
             if (state.stack?.topRef === 'selection:current') dismissSelection();
             else close();
         });
+        // A related item outlines its own object; a pressed one is framed when out of view.
+        state.preview = global.ClickStackRelations?.bindPreview(el, {
+            show: (kind, id, { pinned }) => {
+                const instance = global.ClickStackRelations.relatedInstance(state.stack, kind, id, model.selectedInstance);
+                const features = global.ClickStackHits.featuresFor?.(kind, instance) || [];
+                global.highlightFeaturesForInspection?.(features, focusStyle());
+                if (pinned) frameFeatures(features);
+            },
+            restore: () => {
+                if (state.stack) highlightSection(state.stack.selectedKind, model.selectedInstance(state.stack, state.stack.selectedKind));
+            }
+        });
         (doc.getElementById('map-container') || doc.body).appendChild(el);
         state.el = el;
         return el;
@@ -373,6 +385,7 @@
     // A section opened from a list or link asks for its object to be framed; the request waits
     // here until the object's shape is known (a plan's member geometry arrives after it opens).
     function highlightSection(kind, instance) {
+        state.preview?.reset();
         const features = global.ClickStackHits.featuresFor?.(kind, instance) || [];
         global.highlightFeaturesForInspection?.(features, focusStyle());
         if (state.frameRequest === kind && features.length) {

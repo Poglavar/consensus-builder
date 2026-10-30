@@ -138,6 +138,11 @@
             if (event.key !== 'Escape' || event.defaultPrevented || global.isEditableTarget?.(event.target) || global.isAnyModalOpen?.()) return;
             event.preventDefault(); close();
         });
+        // A related item outlines its own object; the camera stays (the Focus button frames).
+        state.preview = global.ClickStackRelations?.bindPreview(el, {
+            show: (kind, id) => state.adapter?.focus?.(kind, global.ClickStackRelations.relatedInstance(state.stack, kind, id, selectedInstance)),
+            restore: () => { if (state.stack) state.adapter?.focus?.(state.stack.selectedKind, selectedInstance(state.stack, state.stack.selectedKind)); }
+        });
         container.appendChild(el);
         state.el = el;
         return el;

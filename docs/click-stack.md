@@ -96,8 +96,13 @@ replace one with its own (the model view reads buildings from its scene).
   - A formed parcel offers its producing design and source cadastral parcels.
   - A source parcel can offer its formed pieces or designs on that parcel.
   A group is omitted when its sole target is the same sole visible instance already shown in the
-  target section. Missing or off-screen targets remain useful links. Selecting a related item
-  selects and expands its section.
+  target section. Missing or off-screen targets remain useful links. A related item is an object
+  list item (design-language.md, "Object lists"): hovering it outlines its object, clicking it keeps
+  that outline (framed when out of view in 2D; the model view's camera stays), and its arrow button
+  selects and expands the object's section, or opens a plan's design that is not in the stack.
+- A plan's designs are the Plan section's content: on desktop the expanded section grows to the
+  dock's height before the list scrolls, its name and actions staying in view; a plan with few
+  designs keeps the height of its list. Other relationship lists scroll within three rows.
 - **Agreements sit above Plans, followed by Designs.** Plans are discovered for the exact design
   revision; agreements are loaded only for the selected exact Plan CID. Switching Plans replaces
   the agreement choices, and stale responses from the previous plan are discarded. Agreement
