@@ -281,7 +281,7 @@
                     bucket.laidOutWorkNetM2 += num(laid.workNetM2) ?? 0;
                 } else {
                     // A use the building states; a rule building without one keeps the housing share.
-                    const share = useApi().housingShare((feature.properties || {}).use, measured.floors);
+                    const share = useApi().housingShare(useApi().statedUse(feature.properties), measured.floors);
                     if (share !== null) {
                         bucket.statedGrossM2 += measured.gfaM2;
                         bucket.statedHousingM2 += measured.gfaM2 * share;

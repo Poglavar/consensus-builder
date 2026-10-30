@@ -51,6 +51,27 @@ describe("a city model's function code", () => {
     });
 });
 
+describe("a rule design's use", () => {
+    const variation = require('../../frontend/js/urban-rule-variation.js');
+    it('is the rule\'s alone, whatever the building carries, and sets every storey', () => {
+        expect(use.statedUse({ urbanRule: { typology: 'row', use: 'office' } })).toBe('office');
+        // An older agent draft carries a per-building use; the rule's Use still decides.
+        expect(use.statedUse({ use: 'public', urbanRule: { use: 'office' } })).toBe('office');
+        expect(use.statedUse({ use: 'public', urbanRule: { typology: 'block' } })).toBe(null);
+        expect(use.statedUse({ use: 'public' })).toBe('public');
+        expect(use.storeyUsesOf({ urbanRule: { typology: 'block', use: 'mixed' } }, 3)).toEqual(['shop', 'office', 'residential']);
+        expect(use.storeyUsesOf({ urbanRule: { typology: 'block', use: 'office' } }, 6)).toEqual(new Array(6).fill('office'));
+    });
+    it('rides the rule\'s extras: a new Row or Detached rule is housing, a Block automatic', () => {
+        expect(variation.normalizeRuleExtras({ use: 'Offices', roof: 'pitched' })).toEqual({ roof: 'pitched', use: 'office' });
+        expect(variation.normalizeRuleExtras({ use: '' })).toEqual({});
+        expect(variation.normalizeBlockRule({ use: 'industrial' }).use).toBe('industrial');
+        expect(variation.normalizeParcelRule({ use: 'residential-shops' }).use).toBe('residential-shops');
+        expect([variation.defaultRuleExtras('block'), variation.defaultRuleExtras('row'), variation.defaultRuleExtras('parcelBased')])
+            .toEqual([{}, { use: 'residential' }, { use: 'residential' }]);
+    });
+});
+
 describe("OpenStreetMap's building tag", () => {
     it('maps building=* values (and Overture class and subtype words) onto the six uses', () => {
         const tags = { apartments: 'residential', house: 'residential', terrace: 'residential', detached: 'residential',

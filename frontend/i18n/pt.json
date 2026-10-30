@@ -61,7 +61,8 @@
     "urbanRule": {
         "balconies": "Varandas",
         "balconyDepth": "Podem sair da envolvente até (m):",
-        "slantedRoof": "Telhado inclinado com sótão"
+        "slantedRoof": "Telhado inclinado com sótão",
+        "useAutomatic": "Automático: lojas no rés-do-chão a partir de 5 pisos"
     },
     "common": {
         "modelFileFormats": "glTF, CityGML ou CityJSON",

@@ -1046,7 +1046,8 @@
     "urbanRule": {
         "balconies": "Balconies",
         "balconyDepth": "May stand out of the envelope by (m):",
-        "slantedRoof": "Slanted roof with attic"
+        "slantedRoof": "Slanted roof with attic",
+        "useAutomatic": "Automatic: shops on the ground floor from 5 storeys"
     },
     "common": {
         "modelFileFormats": "glTF, CityGML or CityJSON",

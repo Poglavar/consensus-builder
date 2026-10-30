@@ -1046,7 +1046,8 @@
     "urbanRule": {
         "balconies": "Balcones",
         "balconyDepth": "Pueden sobresalir de la envolvente (m):",
-        "slantedRoof": "Tejado inclinado con ático"
+        "slantedRoof": "Tejado inclinado con ático",
+        "useAutomatic": "Automático: comercios en la planta baja desde 5 plantas"
     },
     "common": {
         "modelFileFormats": "glTF, CityGML o CityJSON",

@@ -1497,7 +1497,7 @@ function showBlockifyModal() {
                     </label>
                     <input type="range" id="blockify-minplot-slider" min="0" max="10000" value="${DEFAULT_BLOCK_MIN_PLOT_AREA_M2}" step="10">
                 </div>
-                <div class="blockify-freeform-only">${window.UrbanRuleVariation.extrasControlsMarkup('blockify')}</div>
+                <div class="blockify-freeform-only">${window.UrbanRuleVariation.extrasControlsMarkup('blockify', { automaticUse: true })}</div>
                 <div class="parameter-group blockify-freeform-only">
                     <label for="gaps-slider">
                         <span data-i18n-key="blockify.modal.labels.gaps" data-i18n-attr="text">Number of gaps:</span>

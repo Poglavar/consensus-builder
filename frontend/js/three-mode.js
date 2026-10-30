@@ -8693,7 +8693,7 @@
         if (!feature?.geometry || feature.properties?.modelUrl || feature.properties?.floorPlans) return false;
         // The suggested layout is a housing layout: a building stated for another use gets none, and
         // a stated housing use sets its ground floor (building-use.js).
-        const use = window.BuildingUse.normalize(feature.properties?.use);
+        const use = window.BuildingUse.statedUse(feature.properties);
         if (use && !window.BuildingUse.housesPeople(use)) return false;
         let plan;
         try { plan = window.UrbanRuleVariation.plannedDrawPlan(feature, plannedRepresentation, variationDeps, buildOutDisplaySalt); } catch (_) { return false; }

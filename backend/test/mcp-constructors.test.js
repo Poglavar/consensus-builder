@@ -29,6 +29,26 @@ describe('MCP shared construction generators', () => {
         expect(() => buildTypedDesign({ ...common, typology, roof: 'gabled' }, selected)).toThrow(/flat or pitched/);
         expect(() => buildTypedDesign({ ...common, typology, balconyDepthM: 6 }, selected)).toThrow(/balconyDepthM/);
     });
+    it('keeps a rule design\'s use on its rule: a Block automatic unless stated, Row and Detached housing', () => {
+        const uses = (typology, selected, extra = {}) => buildTypedDesign({ ...common, typology, ...extra }, selected).geometry.buildings
+            .map(building => [building.properties.urbanRule.use ?? null, building.properties.use ?? null]);
+        expect(new Set(uses('block', options).map(String))).toEqual(new Set([String([null, null])]));
+        expect(new Set(uses('row', rowOptions).map(String))).toEqual(new Set([String(['residential', null])]));
+        expect(new Set(uses('detached', options, { use: 'Offices' }).map(String))).toEqual(new Set([String(['office', null])]));
+        expect(() => buildTypedDesign({ ...common, typology: 'block', use: 'spaceport' }, options)).toThrow(/Choose a building use/);
+        // set_use moves it on the rule, for all buildings; a Block may go back to automatic.
+        const block = buildTypedDesign({ ...common, typology: 'block', use: 'mixed' }, options);
+        const edited = structuredClone(block);
+        intentEditing.buildings(edited, { type: 'set_use', value: 'public' }, turf);
+        expect(edited.geometry.buildings.every(b => b.properties.urbanRule.use === 'public' && !('use' in b.properties))).toBe(true);
+        expect(edited.buildingProposal.parameters.rule.use).toBe('public');
+        expect(edited.geometry.ruleMassing.properties.urbanRule.use).toBe('public');
+        intentEditing.buildings(edited, { type: 'set_use', value: 'automatic' }, turf);
+        expect(edited.buildingProposal.parameters.rule.use).toBeUndefined();
+        expect(() => intentEditing.buildings(structuredClone(block), { type: 'set_use', value: 'office', buildingIndex: 0 }, turf)).toThrow(/rule|massing/);
+        const row = buildTypedDesign({ ...common, typology: 'row' }, rowOptions);
+        expect(() => intentEditing.buildings(structuredClone(row), { type: 'set_use', value: 'automatic' }, turf)).toThrow(/Supply a building use/);
+    });
     it('derives freeform floors from an explicit height when floors are omitted', () => {
         const design = buildTypedDesign({ kind: 'building', typology: 'freeform', site, height: 21 }, options);
         expect(design.geometry.buildings[0].properties).toMatchObject({ floors: 7, height: 21 });
@@ -120,6 +140,8 @@ describe('MCP shared construction generators', () => {
         expect(edit({ ...rule, maxCoverage: 0.3 })).toThrow(/rule.maxCoverage requires edited envelope geometry/);
         expect(edit({ ...rule, frontSetbackM: 6 })).toThrow(/rule.frontSetbackM requires edited envelope geometry/);
         expect(edit({ ...rule, roof: 'pitched' })).not.toThrow();
+        expect(edit({ ...rule, use: 'office' })).not.toThrow();
+        expect(edit({ ...rule, use: 'spaceport' })).toThrow(/Rule field use/);
     });
     it('uses exact source identities and keeps detached exclusions visible in errors', () => {
         expect(() => buildTypedDesign({ ...common, typology: 'detached' })).toThrow(/source parcels/);

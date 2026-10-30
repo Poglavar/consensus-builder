@@ -15,10 +15,10 @@
     const yieldApi = () => (root && root.__planYield) || (typeof require === 'function' ? require('./plan-yield.js') : null);
     const useApi = () => (root && root.BuildingUse) || (typeof require === 'function' ? require('../building-use.js') : null);
 
-    // The building's stated use, or 'residential' for a housing rule's building that states none.
+    // The building's or its rule's stated use, or 'residential' for a housing rule's building that states none.
     function useOf(feature) {
         const props = (feature && feature.properties) || {};
-        const stated = useApi().normalize(props.use);
+        const stated = useApi().statedUse(props);
         if (stated) return stated;
         const typology = props.urbanRule && props.urbanRule.typology;
         return useApi().HOUSING_TYPOLOGIES.includes(typology) ? 'residential' : null;
@@ -55,7 +55,7 @@
         if (!useApi().housesPeople(use)) return { reason: 'not-housing' };
         if (!(deps.heightM > 0)) return { reason: 'no-height' };
         // A stated use sets the ground floor; a rule building without one keeps the generator's own choice.
-        const rules = useApi().normalize(props.use) ? useApi().layoutRules(use) : null;
+        const rules = useApi().statedUse(props) ? useApi().layoutRules(use) : null;
         const planned = deps.context.planBuilding(feature, { turf: deps.turf, generator: deps.generator, parcels: deps.parcels || [],
             neighbours: deps.neighbours || [], roads: null, heightM: deps.heightM, storeyFallbackM: deps.floorHeightM,
             cache: deps.cache, owner: feature, existing: deps.existing === true, ...(rules ? { rules } : {}), ...(deps.region ? { region: deps.region } : {}) });

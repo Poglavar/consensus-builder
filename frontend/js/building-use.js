@@ -61,15 +61,30 @@
     const HOUSING_TYPOLOGIES = Object.freeze(['block', 'row', 'parcelBased']);
     const autoGroundFloorUse = (typology, floors) => (typology === 'block' && floors >= 5 ? 'commercial' : 'residential');
 
-    // The use of each storey of a building (its properties), ground floor first: its stated use, else
-    // a housing rule's, else none ([]).
-    function storeyUsesOf(properties, floors) {
+    // The use a building states: a Block, Row or Detached design's building takes its rule's Use
+    // (`urbanRule.use`) and nothing else; any other building its own (a Freeform building's Use,
+    // an existing building's source use); null when none is stated.
+    function statedUse(properties) {
         const props = properties || {};
-        const stated = normalize(props.use);
-        if (stated) return storeyUses(stated, floors);
+        if (props.urbanRule) return normalize(props.urbanRule.use);
+        return normalize(props.use);
+    }
+
+    // The use a building of `floors` storeys has: its stated use, else a housing rule's (residential,
+    // with shops below where the suggested layout puts them), else null.
+    function effectiveUse(properties, floors) {
+        const props = properties || {};
+        const stated = statedUse(props);
+        if (stated) return stated;
         const typology = props.urbanRule && props.urbanRule.typology;
-        if (!HOUSING_TYPOLOGIES.includes(typology)) return [];
-        return storeyUses(autoGroundFloorUse(typology, floors) === 'commercial' ? 'residential-shops' : 'residential', floors);
+        if (!HOUSING_TYPOLOGIES.includes(typology)) return null;
+        return autoGroundFloorUse(typology, floors) === 'commercial' ? 'residential-shops' : 'residential';
+    }
+
+    // The use of each storey of a building (its properties), ground floor first; [] for no use.
+    function storeyUsesOf(properties, floors) {
+        const use = effectiveUse(properties, floors);
+        return use ? storeyUses(use, floors) : [];
     }
 
     // A city model's building function code → one of the six uses. The German states' LoD2 models
@@ -122,6 +137,6 @@
         return osmLookup.get(value.trim().toLowerCase()) || null;
     }
 
-    return { USES, HOUSING_TYPOLOGIES, normalize, storeyUses, storeyUsesOf, autoGroundFloorUse, housingShare, housesPeople,
+    return { USES, HOUSING_TYPOLOGIES, normalize, statedUse, effectiveUse, storeyUses, storeyUsesOf, autoGroundFloorUse, housingShare, housesPeople,
         layoutRules, fromCityModel, fromOsmBuilding };
 });

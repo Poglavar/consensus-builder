@@ -1066,7 +1066,7 @@
         currentMinFloors = DEFAULT_MIN_FLOORS;
         currentMinFootprintM2 = DEFAULT_MIN_FOOTPRINT_M2;
         currentMinPlotAreaM2 = DEFAULT_MIN_PLOT_AREA_M2;
-        currentRuleExtras = {};
+        currentRuleExtras = Variation ? Variation.defaultRuleExtras('parcelBased') : {};
         currentFloorHeightM = DEFAULT_FLOOR_HEIGHT;
         currentLimits = {};
 
@@ -1232,7 +1232,7 @@
         currentMinFloors = DEFAULT_MIN_FLOORS;
         currentMinFootprintM2 = DEFAULT_MIN_FOOTPRINT_M2;
         currentMinPlotAreaM2 = DEFAULT_MIN_PLOT_AREA_M2;
-        currentRuleExtras = {};
+        currentRuleExtras = Variation ? Variation.defaultRuleExtras('parcelBased') : {};
 
         if (!preservePending) {
             setPendingParcelBasedProposalContext(null);

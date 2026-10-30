@@ -897,11 +897,17 @@ button.status-log-message {
     margin-right: 8px;
 }
 
-/* Balconies and slanted roof, shared by the Block, Row and Detached editors
+/* Use, balconies and slanted roof, shared by the Block, Row and Detached editors
    (UrbanRuleVariation.extrasControlsMarkup). */
 .urban-rule-extras {
     display: grid;
     gap: 8px;
+}
+
+.parameter-group .urban-rule-extras__use {
+    display: grid;
+    gap: 4px;
+    margin-bottom: 0;
 }
 
 .parameter-group .urban-rule-extras__toggle,

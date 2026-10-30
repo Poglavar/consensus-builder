@@ -61,7 +61,8 @@
     "urbanRule": {
         "balconies": "شرفات",
         "balconyDepth": "يمكن أن تبرز خارج الغلاف بمقدار (م):",
-        "slantedRoof": "سقف مائل مع علّية"
+        "slantedRoof": "سقف مائل مع علّية",
+        "useAutomatic": "تلقائي: متاجر في الطابق الأرضي من 5 طوابق"
     },
     "common": {
         "modelFileFormats": "glTF أو CityGML أو CityJSON",

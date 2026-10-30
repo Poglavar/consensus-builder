@@ -13,6 +13,7 @@
 
     const reader = () => (root && root.CityModelReader) || require('./city-model-reader.js');
     const planFile = () => (root && root.PlanFile) || require('./plan-file.js');
+    const buildingUse = () => (root && root.BuildingUse) || require('./building-use.js');
     const PLAN_GROUP = 'ugt-plan';
     // A structure design's CityJSON type and the semantic type of its surface.
     const STRUCTURE_TYPES = { park: ['PlantCover', null], square: ['TransportSquare', 'TrafficArea'], lake: ['WaterBody', 'WaterSurface'] };
@@ -82,9 +83,11 @@
                 }
                 if (!boundaries.length) continue;
                 const p = piece.properties;
+                // The building's use, or its rule's (a Block, Row or Detached design's), as CityGML's function.
+                const use = buildingUse().statedUse(p);
                 object = { type: 'Building', attributes: { ...attributes, name: p.name || attributes.name, measuredHeight: height,
                     ...(Number.isInteger(p.floors) && p.floors > 0 ? { storeysAboveGround: p.floors } : {}),
-                    ...(p.use ? { function: p.use } : {}), ...(p.modelUrl ? { ugtModelUrl: p.modelUrl } : {}) },
+                    ...(use ? { function: use } : {}), ...(p.modelUrl ? { ugtModelUrl: p.modelUrl } : {}) },
                     geometry: [{ type: 'MultiSurface', lod: '1', boundaries,
                         semantics: { surfaces: [{ type: 'GroundSurface' }, { type: 'WallSurface' }, { type: 'RoofSurface' }], values } }] };
             } else {

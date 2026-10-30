@@ -88,7 +88,12 @@ export function buildTypedDesign(intent, { parcels = [] } = {}) {
     const minPlotAreaM2 = number(intent.minPlotAreaM2, 50, 'minPlotAreaM2', 0, 1_000_000);
     // Balconies may stand out of the envelope by balconyDepthM; a pitched roof adds an attic on top.
     if (intent.roof != null && !['flat', 'pitched'].includes(intent.roof)) fail('invalid-roof', 'Choose a flat or pitched roof.', 'roof', { enum: ['flat', 'pitched'] });
-    const extras = { balconyDepthM: number(intent.balconyDepthM, 0, 'balconyDepthM', 0, 5), roof: intent.roof };
+    // The design's use is its rule's (building-use.js): a Block may leave it automatic (shops on the
+    // ground floor from five storeys), a Row or Detached rule starts as housing.
+    const ruleUse = intent.use == null ? null : runtime.use.normalize(String(intent.use));
+    if (intent.use != null && !ruleUse) fail('invalid-use', `Choose a building use: ${runtime.use.USES.join(', ')}.`, 'use', { enum: runtime.use.USES });
+    const extras = { balconyDepthM: number(intent.balconyDepthM, 0, 'balconyDepthM', 0, 5), roof: intent.roof,
+        use: ruleUse || (typology === 'block' ? null : 'residential') };
     if (typology === 'detached') {
         // The optional limits, each within the range the app's rule keeps (PARCEL_LIMITS); coverage is
         // the same (0, 1] fraction as a freeform design's.
@@ -111,7 +116,7 @@ export function buildTypedDesign(intent, { parcels = [] } = {}) {
             const outcome = runtime.rules.evaluateParcel(entry.feature, rule, { turf, largestPolygon: runtime.footprints.toSingleLargestPolygon, streets });
             if (!outcome.envelope) { excluded.push({ parcelId: entry.parcelId, status: outcome.status }); continue; }
             outcome.envelope.properties = { ...outcome.envelope.properties, type: 'proposedParcelBasedBuilding', parcelId: entry.parcelId,
-                urbanRule: rule, variationSeed: runtime.rules.hashSeed(seed, entry.parcelId), buildingIndex: index, use: intent.use || 'residential' };
+                urbanRule: rule, variationSeed: runtime.rules.hashSeed(seed, entry.parcelId), buildingIndex: index };
             buildings.push(outcome.envelope);
         }
         if (!buildings.length) fail('building-rule-no-room', 'No source parcel can satisfy this detached rule.', 'setbackM', { excluded });
@@ -164,7 +169,6 @@ export function buildTypedDesign(intent, { parcels = [] } = {}) {
         parameters = { typology: 'block', height, width: ring.widthAchieved, setback, simplifyM, chamfer: chamferM,
             gaps: gapPositions, gapWidth: massing.properties.gapWidth ?? gapWidthM, wings: wingPositions, wingLength: wingLengthM, rule, seed };
     }
-    massing.properties = { ...massing.properties, use: intent.use || 'residential' };
     massing = runtime.rules.massingWithRule(massing, rule, seed, { turf });
     // The site-first Row editor saves the continuous massing, using synthetic plots for sizing;
     // splitting it into tiny synthetic pieces would wrongly exclude valid small buildings.

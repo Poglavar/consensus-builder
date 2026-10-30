@@ -1047,7 +1047,8 @@
     "urbanRule": {
         "balconies": "Balkoni",
         "balconyDepth": "Smiju izaći iz gabarita za (m):",
-        "slantedRoof": "Kosi krov s potkrovljem"
+        "slantedRoof": "Kosi krov s potkrovljem",
+        "useAutomatic": "Automatski: trgovine u prizemlju od 5 etaža"
     },
     "common": {
         "modelFileFormats": "glTF, CityGML ili CityJSON",

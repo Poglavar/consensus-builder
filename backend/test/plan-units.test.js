@@ -46,6 +46,8 @@ describe('the use decides what is laid out', () => {
         expect(units.countBuilding(block({ use: 'industrial' }), at()).reason).toBe('not-housing');
         expect(units.countBuilding(block({}), at()).reason).toBe('no-use');
         expect(units.countBuilding(block({ urbanRule: { typology: 'row' } }), at()).apartments).toBeGreaterThan(0);
+        // A rule's own use decides too: an office Block is not laid out as housing.
+        expect(units.countBuilding(block({ urbanRule: { typology: 'block', use: 'office' } }), at()).reason).toBe('not-housing');
         // The Detached rule's typology is 'parcelBased'.
         expect(units.useOf(block({ urbanRule: { typology: 'parcelBased' } }))).toBe('residential');
         expect(units.countBuilding(block({ use: 'residential' }), { ...at(), existing: true }).reason).toBe('no-use');

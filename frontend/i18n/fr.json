@@ -61,7 +61,8 @@
     "urbanRule": {
         "balconies": "Balcons",
         "balconyDepth": "Peuvent dépasser de l'enveloppe de (m) :",
-        "slantedRoof": "Toit en pente avec combles"
+        "slantedRoof": "Toit en pente avec combles",
+        "useAutomatic": "Automatique : commerces au rez-de-chaussée dès 5 niveaux"
     },
     "common": {
         "modelFileFormats": "glTF, CityGML ou CityJSON",

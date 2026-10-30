@@ -13,6 +13,7 @@
 
 (function (global) {
     'use strict';
+    const buildingUse = () => (global && global.BuildingUse) || require('./building-use.js');
 
     const DEFAULT_FLOOR_HEIGHT_M = 3;
     const DEFAULT_MAX_FLOORS = 5;
@@ -125,8 +126,15 @@
         const balconyDepthM = Math.min(MAX_BALCONY_DEPTH_M, nonNegative(source.balconyDepthM, 0));
         if (balconyDepthM > 0) extras.balconyDepthM = balconyDepthM;
         if (source.roof === 'pitched') extras.roof = 'pitched';
+        // What the buildings are for (building-use.js). A Block rule without one keeps the suggested
+        // layout's own ground floor: shops from five storeys.
+        const use = buildingUse().normalize(source.use);
+        if (use) extras.use = use;
         return extras;
     }
+
+    // A new rule's extras: Row and Detached buildings start as housing, a Block as automatic.
+    const defaultRuleExtras = typology => (typology === 'block' ? {} : { use: 'residential' });
 
     // The optional limits a parcel rule states (PARCEL_LIMITS), clamped to their ranges.
     function normalizeParcelLimits(source) {
@@ -906,13 +914,28 @@
         };
     }
 
-    // --- the balconies and roof controls -----------------------------------------------------
+    // --- the use, balconies and roof controls ------------------------------------------------
     // The Block, Row and Detached editors share these. They touch only the container an editor
     // passes in; everything above stays DOM-free.
 
-    function extrasControlsMarkup(prefix) {
+    // The Use select: the six uses with the Freeform editor's labels; a Block also offers automatic.
+    const USE_LABELS = { residential: ['useResidential', 'Residential'], 'residential-shops': ['useResidentialShops', 'Residential, shops on the ground floor'],
+        mixed: ['useMixed', 'Mixed: shops, offices on the first floor, flats above'], office: ['useOffice', 'Office'],
+        public: ['usePublic', 'Public (school, clinic, civic)'], industrial: ['useIndustrial', 'Industrial'] };
+    function useOptionsMarkup(automatic) {
+        const options = buildingUse().USES.map(use => `<option value="${use}" data-i18n-key="modal.singleBuilding.${USE_LABELS[use][0]}">${USE_LABELS[use][1]}</option>`);
+        if (automatic) options.unshift('<option value="" data-i18n-key="urbanRule.useAutomatic">Automatic: shops on the ground floor from 5 storeys</option>');
+        return options.join('');
+    }
+
+    // `automaticUse`: the Block editor, whose rule may leave the use to the suggested layout.
+    function extrasControlsMarkup(prefix, { automaticUse = false } = {}) {
         return `
             <div class="parameter-group urban-rule-extras">
+                <label class="urban-rule-extras__use" for="${prefix}-use">
+                    <span data-i18n-key="modal.singleBuilding.useLabel" data-i18n-attr="text">Building use</span>
+                    <select id="${prefix}-use">${useOptionsMarkup(automaticUse)}</select>
+                </label>
                 <label class="checkbox-label urban-rule-extras__toggle" for="${prefix}-balconies">
                     <input type="checkbox" id="${prefix}-balconies">
                     <span data-i18n-key="urbanRule.balconies" data-i18n-attr="text">Balconies</span>
@@ -930,7 +953,7 @@
 
     function extrasControls(container, prefix) {
         const find = suffix => container && container.querySelector(`#${prefix}-${suffix}`);
-        return { balconies: find('balconies'), depth: find('balcony-depth'), roof: find('slanted-roof') };
+        return { use: find('use'), balconies: find('balconies'), depth: find('balcony-depth'), roof: find('slanted-roof') };
     }
 
     function syncExtrasControls(container, prefix, extras) {
@@ -941,6 +964,7 @@
         if (depth > 0) c.depth.value = String(depth);
         c.depth.closest('label').hidden = !(depth > 0);
         c.roof.checked = !!(extras && extras.roof === 'pitched');
+        if (c.use) c.use.value = (extras && extras.use) || (c.use.querySelector('option[value=""]') ? '' : 'residential');
     }
 
     // `onChange(extras)` receives the normalized fields after every edit of the three controls.
@@ -949,7 +973,8 @@
         if (!c.balconies || !c.depth || !c.roof) return;
         const read = () => normalizeRuleExtras({
             balconyDepthM: c.balconies.checked ? num(c.depth.value, DEFAULT_BALCONY_DEPTH_M) : 0,
-            roof: c.roof.checked ? 'pitched' : 'flat'
+            roof: c.roof.checked ? 'pitched' : 'flat',
+            use: c.use ? c.use.value : null
         });
         const changed = () => {
             c.depth.closest('label').hidden = !c.balconies.checked;
@@ -958,6 +983,7 @@
         c.balconies.addEventListener('change', changed);
         c.roof.addEventListener('change', changed);
         c.depth.addEventListener('change', changed);
+        if (c.use) c.use.addEventListener('change', changed);
     }
 
     const api = {
@@ -976,6 +1002,7 @@
         normalizeParcelRule,
         normalizeBlockRule,
         normalizeRuleExtras,
+        defaultRuleExtras,
         extrasControlsMarkup,
         syncExtrasControls,
         bindExtrasControls,
