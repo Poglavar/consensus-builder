@@ -1,7 +1,7 @@
 <!-- Plan for CityGML and CityJSON beside our own formats: imports wherever they are used to exchange what we import, exports as an extra option, and how our records map onto CityGML and LADM. -->
 # CityGML and CityJSON (plan)
 
-Status: built: city-model building sources for Vienna (`wien-lod2`, CityGML), the Netherlands (`nl-3dbag`, CityJSON), North Rhine-Westphalia (`nrw-lod2`, CityGML) and New York (`nyc-3d`, CityJSON tiles cut from the city's CityGML), the building upload and the building editors' footprint import, both MCP imports, CityJSON plan and design export and import, and a person's CityJSON or CityGML file as a building source. Not started: other German states.
+Status: built: city-model building sources for Vienna (`wien-lod2`, CityGML), the Netherlands (`nl-3dbag`, CityJSON), North Rhine-Westphalia (`nrw-lod2`), Berlin (`berlin-lod2`), Hamburg (`hamburg-lod2`), Baden-Württemberg (`bw-lod2`) and Saxony (`sachsen-lod2`), all CityGML, and New York (`nyc-3d`, CityJSON tiles cut from the city's CityGML), the building upload and the building editors' footprint import, both MCP imports, CityJSON plan and design export and import, and a person's CityJSON or CityGML file as a building source. Not started: Hesse and Bremen.
 
 CityGML (OGC) is the open standard for 3D city models: buildings and their storeys, rooms and
 units, roads and rail, vegetation, water, land use, terrain and city furniture, each with
@@ -26,7 +26,7 @@ loosely in INSPIRE planned land use) and agreements (no standard).
 
 | Our import or export | CityGML / CityJSON | Why |
 |---|---|---|
-| City building sources (`backend/buildings/`) | Import: CityGML sheets (built: Vienna, North Rhine-Westphalia), CityJSON API pages (built: 3D BAG), a city's single CityGML file cut into our CityJSON tiles (built: New York); other German states' LoD2 (CityGML) | How cities publish their 3D buildings. |
+| City building sources (`backend/buildings/`) | Import: CityGML sheets (built: Vienna, North Rhine-Westphalia, Berlin, Hamburg, Baden-Württemberg, Saxony), CityJSON API pages (built: 3D BAG), a city's single CityGML file cut into our CityJSON tiles (built: New York); Hesse (a WFS) and Bremen (one zip of 2 km tiles) not yet | How cities publish their 3D buildings. |
 | A person's building source URL (Data sources) | Import: a CityJSON or CityGML file URL (built), beside ArcGIS, WFS, OGC API and GeoJSON; CityJSONSeq not yet | The same files, chosen by the person. |
 | Building model upload (`building-upload.js`, MCP `ugt_import_model`) | Import: a CityGML or CityJSON building beside GLB/glTF, with its storeys and units when present | GIS tools and city portals hand out single buildings this way. |
 | Footprint import in the building editors (Freeform, Row, Block) | Import: CityGML / CityJSON buildings as footprints with heights | Same files, when only the outline is wanted. |
@@ -122,8 +122,28 @@ A building source for cities that publish their city model as CityGML sheets:
   `nrw-lod2` (`backend/buildings/nrw-lod2.js`) reads North Rhine-Westphalia's 3D-Gebäudemodell LoD2:
   plain 1 km GML tiles from opengeodata.nrw.de in EPSG:25832, heights above sea level (DHHN2016, no
   offset), dl-de/zero-2-0. Tiles are large (central Cologne: 56 MB, 1,594 buildings, about 9 s to
-  download and 0.8 s to parse), so it keeps 6 parsed tiles (`sheetCache`; the default is 64). Bonn,
-  Cologne, Dortmund, Düsseldorf and Essen list it before OpenStreetMap.
+  download and 0.8 s to parse), so it keeps 6 parsed tiles (`sheetCache`; the default is 64). The
+  23 cities in the state list it before OpenStreetMap.
+  The other German states publish the same model (CityGML, heights above sea level in DHHN2016, no
+  offset) packaged differently; each source lists before OpenStreetMap in its state's cities:
+  - `berlin-lod2` (`backend/buildings/berlin-lod2.js`): one zip per 1 km tile
+    (`gdi.berlin.de/data/a_lod2/atom/LoD2_{E}_{N}.zip`, EPSG:25833), dl-de/zero-2-0. Alexanderplatz
+    is a 3.5 MB zip of 28 MB, 732 buildings.
+  - `hamburg-lod2` (`backend/buildings/hamburg-lod2.js`): one zip a year of 783 1 km tiles (2026:
+    660 MB, EPSG:25832), dl-de/by-2-0. `backend/buildings/remote-zip.js` reads its directory once
+    and then each tile by HTTP range (about 2 MB a tile, 1.5 s); `HAMBURG_LOD2_ZIP_URL` points it
+    at a later release.
+  - `bw-lod2` (`backend/buildings/bw-lod2.js`): 2 km zips of four 1 km tiles
+    (`opengeodata.lgl-bw.de/data/lod2/LoD2_32_{E}_{N}_2_bw.zip`, E odd, N even, EPSG:25832),
+    dl-de/by-2-0. A sheet is one 1 km tile, so only that tile is parsed; the last four zips (about
+    18 MB each in Stuttgart) are kept for their other tiles.
+  - `sachsen-lod2` (`backend/buildings/sachsen-lod2.js`): one zip per 2 km tile on GeoSN's public
+    cloud share (EPSG:25833), dl-de/by-2-0. The share id is read from the download portal's app
+    config (`geoviewer.sachsen.de/.../produktdownload/app.json`), since the ids in GeoSN's own tile
+    index no longer answer. Central Dresden is a 9 MB zip of 70 MB, 1,523 buildings.
+  - Not yet: Hesse publishes LoD2 as an INSPIRE WFS (`bu-core3d:Building`, about 20 kB a building,
+    no paging), which needs its own reader; Bremen publishes one 403 MB zip of 2 km tiles of up to
+    160 MB each, too large to parse per request, so it would need tiles cut once as for New York.
   `nyc-3d` (`backend/buildings/nyc-3d.js`) reads New York's 3D Building Model (NYC OTI, LoD2, 2014
   survey). The city publishes it only as one 916 MB zip of 20 delivery-area CityGML files (13.8 GB,
   EPSG:2263 feet, NAVD88 heights), so `backend/buildings/build-nyc-3d-tiles.mjs` streams each file
@@ -159,7 +179,7 @@ A building source for cities that publish their city model as CityGML sheets:
 - Still open: a person's file drawn as its LoD2 surfaces (heights need the file's vertical datum),
   CityJSONSeq and zipped files; the `function` / `usage` codes mapped to our [building uses](vocabulary.md#building-use);
   storeys and units, where a source has them, as the building's floor model
-  (`backend/buildings/floor-models.js`); other German states' LoD2 buildings; storing parsed sheets instead of reading them live when a source is slow or large.
+  (`backend/buildings/floor-models.js`); Hesse's and Bremen's LoD2 buildings; storing parsed sheets instead of reading them live when a source is slow or large.
 
 ## How our records map
 

@@ -15041,7 +15041,7 @@
                 liveRadiusKm: 8,
                 attribution: '<a href="https://daten.berlin.de/datensaetze/alkis-berlin-flurstucke-wfs-1bc014d7">Land Berlin · ALKIS</a> · <a href="https://www.govdata.de/dl-de/zero-2-0">DL-DE Zero 2.0</a> · adapted'
             },
-            buildings: { sources: [{ id: 'osm' }] },
+            buildings: { sources: [{ id: 'berlin-lod2', name: 'Geoportal Berlin (LoD2)', attribution: '<a href="https://gdi.berlin.de/data/a_lod2/atom/0.atom">Geoportal Berlin</a> · 3D-Gebäudemodelle LoD2 · <a href="https://www.govdata.de/dl-de/zero-2-0">DL-DE Zero 2.0</a>' }, { id: 'osm' }] },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
@@ -17706,7 +17706,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://api.hamburg.de/datasets/v1/alkis_vereinfacht">Hamburg simplified ALKIS cadastral parcels</a> · adapted'
             },
-            buildings: { sources: [{ id: 'osm' }] },
+            buildings: { sources: [{ id: 'hamburg-lod2', name: 'LGV Hamburg (LoD2)', attribution: '<a href="https://transparenz.hamburg.de/">Freie und Hansestadt Hamburg, LGV</a> · 3D-Stadtmodell LoD2 · <a href="https://www.govdata.de/dl-de/by-2-0">DL-DE BY 2.0</a>' }, { id: 'osm' }] },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
@@ -18166,7 +18166,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://www.lgl-bw.de/Produkte/Geodatendienste/ALKIS-Daten/index.html">Baden-Württemberg LGL ALKIS cadastral parcels</a> · adapted'
             },
-            buildings: { sources: [{ id: 'osm' }] },
+            buildings: { sources: [{ id: 'bw-lod2', name: 'LGL Baden-Württemberg (LoD2)', attribution: 'Datenquelle: <a href="https://www.lgl-bw.de">LGL, www.lgl-bw.de</a> · 3D-Gebäudemodell LoD2 · <a href="https://www.govdata.de/dl-de/by-2-0">DL-DE BY 2.0</a>' }, { id: 'osm' }] },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
@@ -18534,7 +18534,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://ogc-api.nrw.de/lika/v1/collections/flurstueck?f=json">Geobasis NRW ALKIS parcels</a> · adapted'
             },
-            buildings: { sources: [{ id: 'osm' }] },
+            buildings: { sources: [{ id: 'nrw-lod2', name: 'Geobasis NRW (LoD2)', attribution: '<a href="https://www.opengeodata.nrw.de/produkte/geobasis/3dg/lod2_gml/">Geobasis NRW</a> · 3D-Gebäudemodell LoD2 · <a href="https://www.govdata.de/dl-de/zero-2-0">DL-DE Zero 2.0</a>' }, { id: 'osm' }] },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
@@ -18718,7 +18718,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://www.geodaten.sachsen.de/alkis-wfs-4968.html">GeoSN Saxony simplified ALKIS cadastral parcel polygons</a> · adapted'
             },
-            buildings: { sources: [{ id: 'osm' }] },
+            buildings: { sources: [{ id: 'sachsen-lod2', name: 'GeoSN Sachsen (LoD2)', attribution: '<a href="https://www.geodaten.sachsen.de/">Landesamt für Geobasisinformation Sachsen (GeoSN)</a> · 3D-Stadtmodell LoD2 · <a href="https://www.govdata.de/dl-de/by-2-0">DL-DE BY 2.0</a>' }, { id: 'osm' }] },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
@@ -18741,7 +18741,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://www.geodaten.sachsen.de/alkis-wfs-4968.html">GeoSN Saxony simplified ALKIS cadastral parcel polygons</a> · adapted'
             },
-            buildings: { sources: [{ id: 'osm' }] },
+            buildings: { sources: [{ id: 'sachsen-lod2', name: 'GeoSN Sachsen (LoD2)', attribution: '<a href="https://www.geodaten.sachsen.de/">Landesamt für Geobasisinformation Sachsen (GeoSN)</a> · 3D-Stadtmodell LoD2 · <a href="https://www.govdata.de/dl-de/by-2-0">DL-DE BY 2.0</a>' }, { id: 'osm' }] },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
@@ -19335,7 +19335,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [50.7798266066411, 6.10963543428455], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [50.7798266066411, 6.10963543428455], fallbackDataset: [6.10963543428455, 50.7798266066411] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'de-nrw-lika-flurstueck', idPrefix: 'DE-NRW-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Bezirksregierung Köln / Geobasis NRW, ALKIS simplified schema. Datenlizenz Deutschland – Zero 2.0. Adapted to WGS84.' },
-            buildings: { sources: [{ id: 'osm' }] }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { sources: [{ id: 'nrw-lod2', name: 'Geobasis NRW (LoD2)', attribution: '<a href="https://www.opengeodata.nrw.de/produkte/geobasis/3dg/lod2_gml/">Geobasis NRW</a> · 3D-Gebäudemodell LoD2 · <a href="https://www.govdata.de/dl-de/zero-2-0">DL-DE Zero 2.0</a>' }, { id: 'osm' }] }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         szczecin: {
             id: 'szczecin', wupCityCode: '71',
@@ -19443,7 +19443,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [51.3332048663585, 6.57862288660859], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [51.3332048663585, 6.57862288660859], fallbackDataset: [6.57862288660859, 51.3332048663585] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'de-nrw-lika-flurstueck', idPrefix: 'DE-NRW-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Bezirksregierung Köln / Geobasis NRW, ALKIS simplified schema. Datenlizenz Deutschland – Zero 2.0. Adapted to WGS84.' },
-            buildings: { sources: [{ id: 'osm' }] }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { sources: [{ id: 'nrw-lod2', name: 'Geobasis NRW (LoD2)', attribution: '<a href="https://www.opengeodata.nrw.de/produkte/geobasis/3dg/lod2_gml/">Geobasis NRW</a> · 3D-Gebäudemodell LoD2 · <a href="https://www.govdata.de/dl-de/zero-2-0">DL-DE Zero 2.0</a>' }, { id: 'osm' }] }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         gorzow_wielkopolski: {
             id: 'gorzow_wielkopolski', wupCityCode: '399',
@@ -19488,7 +19488,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [51.837162361442, 6.61679793943415], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [51.837162361442, 6.61679793943415], fallbackDataset: [6.61679793943415, 51.837162361442] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'de-nrw-lika-flurstueck', idPrefix: 'DE-NRW-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Bezirksregierung Köln / Geobasis NRW, ALKIS simplified schema. Datenlizenz Deutschland – Zero 2.0. Adapted to WGS84.' },
-            buildings: { sources: [{ id: 'osm' }] }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { sources: [{ id: 'nrw-lod2', name: 'Geobasis NRW (LoD2)', attribution: '<a href="https://www.opengeodata.nrw.de/produkte/geobasis/3dg/lod2_gml/">Geobasis NRW</a> · 3D-Gebäudemodell LoD2 · <a href="https://www.govdata.de/dl-de/zero-2-0">DL-DE Zero 2.0</a>' }, { id: 'osm' }] }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         zielona_gora: {
             id: 'zielona_gora', wupCityCode: '544',
@@ -19749,7 +19749,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [50.8574852314233, 6.89340663734576], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [50.8574852314233, 6.89340663734576], fallbackDataset: [6.89340663734576, 50.8574852314233] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'de-nrw-lika-flurstueck', idPrefix: 'DE-NRW-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Bezirksregierung Köln / Geobasis NRW, ALKIS simplified schema. Datenlizenz Deutschland – Zero 2.0. Adapted to WGS84.' },
-            buildings: { sources: [{ id: 'osm' }] }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { sources: [{ id: 'nrw-lod2', name: 'Geobasis NRW (LoD2)', attribution: '<a href="https://www.opengeodata.nrw.de/produkte/geobasis/3dg/lod2_gml/">Geobasis NRW</a> · 3D-Gebäudemodell LoD2 · <a href="https://www.govdata.de/dl-de/zero-2-0">DL-DE Zero 2.0</a>' }, { id: 'osm' }] }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         daliyat_al_karmel: {
             id: 'daliyat_al_karmel', wupCityCode: '1400',
@@ -19812,7 +19812,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [51.6681556413441, 7.10509206272269], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [51.6681556413441, 7.10509206272269], fallbackDataset: [7.10509206272269, 51.6681556413441] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'de-nrw-lika-flurstueck', idPrefix: 'DE-NRW-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Bezirksregierung Köln / Geobasis NRW, ALKIS simplified schema. Datenlizenz Deutschland – Zero 2.0. Adapted to WGS84.' },
-            buildings: { sources: [{ id: 'osm' }] }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { sources: [{ id: 'nrw-lod2', name: 'Geobasis NRW (LoD2)', attribution: '<a href="https://www.opengeodata.nrw.de/produkte/geobasis/3dg/lod2_gml/">Geobasis NRW</a> · 3D-Gebäudemodell LoD2 · <a href="https://www.govdata.de/dl-de/zero-2-0">DL-DE Zero 2.0</a>' }, { id: 'osm' }] }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         wroclaw: {
             id: 'wroclaw', wupCityCode: '1580',
@@ -19866,7 +19866,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [51.1817871834151, 7.2043470437967], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [51.1817871834151, 7.2043470437967], fallbackDataset: [7.2043470437967, 51.1817871834151] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'de-nrw-lika-flurstueck', idPrefix: 'DE-NRW-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Bezirksregierung Köln / Geobasis NRW, ALKIS simplified schema. Datenlizenz Deutschland – Zero 2.0. Adapted to WGS84.' },
-            buildings: { sources: [{ id: 'osm' }] }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { sources: [{ id: 'nrw-lod2', name: 'Geobasis NRW (LoD2)', attribution: '<a href="https://www.opengeodata.nrw.de/produkte/geobasis/3dg/lod2_gml/">Geobasis NRW</a> · 3D-Gebäudemodell LoD2 · <a href="https://www.govdata.de/dl-de/zero-2-0">DL-DE Zero 2.0</a>' }, { id: 'osm' }] }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         wejherowo: {
             id: 'wejherowo', wupCityCode: '1763',
@@ -19911,7 +19911,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [51.3659087620314, 7.46735353305389], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [51.3659087620314, 7.46735353305389], fallbackDataset: [7.46735353305389, 51.3659087620314] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'de-nrw-lika-flurstueck', idPrefix: 'DE-NRW-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Bezirksregierung Köln / Geobasis NRW, ALKIS simplified schema. Datenlizenz Deutschland – Zero 2.0. Adapted to WGS84.' },
-            buildings: { sources: [{ id: 'osm' }] }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { sources: [{ id: 'nrw-lod2', name: 'Geobasis NRW (LoD2)', attribution: '<a href="https://www.opengeodata.nrw.de/produkte/geobasis/3dg/lod2_gml/">Geobasis NRW</a> · 3D-Gebäudemodell LoD2 · <a href="https://www.govdata.de/dl-de/zero-2-0">DL-DE Zero 2.0</a>' }, { id: 'osm' }] }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         gdynia: {
             id: 'gdynia', wupCityCode: '1935',
@@ -19956,7 +19956,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [51.9527203351823, 7.6263298998742], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [51.9527203351823, 7.6263298998742], fallbackDataset: [7.6263298998742, 51.9527203351823] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'de-nrw-lika-flurstueck', idPrefix: 'DE-NRW-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Bezirksregierung Köln / Geobasis NRW, ALKIS simplified schema. Datenlizenz Deutschland – Zero 2.0. Adapted to WGS84.' },
-            buildings: { sources: [{ id: 'osm' }] }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { sources: [{ id: 'nrw-lod2', name: 'Geobasis NRW (LoD2)', attribution: '<a href="https://www.opengeodata.nrw.de/produkte/geobasis/3dg/lod2_gml/">Geobasis NRW</a> · 3D-Gebäudemodell LoD2 · <a href="https://www.govdata.de/dl-de/zero-2-0">DL-DE Zero 2.0</a>' }, { id: 'osm' }] }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         umm_al_fahm: {
             id: 'umm_al_fahm', wupCityCode: '2105',
@@ -19974,7 +19974,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [51.5396885168331, 7.65878768202864], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [51.5396885168331, 7.65878768202864], fallbackDataset: [7.65878768202864, 51.5396885168331] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'de-nrw-lika-flurstueck', idPrefix: 'DE-NRW-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Bezirksregierung Köln / Geobasis NRW, ALKIS simplified schema. Datenlizenz Deutschland – Zero 2.0. Adapted to WGS84.' },
-            buildings: { sources: [{ id: 'osm' }] }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { sources: [{ id: 'nrw-lod2', name: 'Geobasis NRW (LoD2)', attribution: '<a href="https://www.opengeodata.nrw.de/produkte/geobasis/3dg/lod2_gml/">Geobasis NRW</a> · 3D-Gebäudemodell LoD2 · <a href="https://www.govdata.de/dl-de/zero-2-0">DL-DE Zero 2.0</a>' }, { id: 'osm' }] }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         inowroclaw: {
             id: 'inowroclaw', wupCityCode: '2172',
@@ -20019,7 +20019,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [51.2199872933547, 7.63018199810285], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [51.2199872933547, 7.63018199810285], fallbackDataset: [7.63018199810285, 51.2199872933547] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'de-nrw-lika-flurstueck', idPrefix: 'DE-NRW-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Bezirksregierung Köln / Geobasis NRW, ALKIS simplified schema. Datenlizenz Deutschland – Zero 2.0. Adapted to WGS84.' },
-            buildings: { sources: [{ id: 'osm' }] }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { sources: [{ id: 'nrw-lod2', name: 'Geobasis NRW (LoD2)', attribution: '<a href="https://www.opengeodata.nrw.de/produkte/geobasis/3dg/lod2_gml/">Geobasis NRW</a> · 3D-Gebäudemodell LoD2 · <a href="https://www.govdata.de/dl-de/zero-2-0">DL-DE Zero 2.0</a>' }, { id: 'osm' }] }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         kalisz: {
             id: 'kalisz', wupCityCode: '2249',
@@ -20046,7 +20046,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [51.3791903656589, 7.68570083680636], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [51.3791903656589, 7.68570083680636], fallbackDataset: [7.68570083680636, 51.3791903656589] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'de-nrw-lika-flurstueck', idPrefix: 'DE-NRW-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Bezirksregierung Köln / Geobasis NRW, ALKIS simplified schema. Datenlizenz Deutschland – Zero 2.0. Adapted to WGS84.' },
-            buildings: { sources: [{ id: 'osm' }] }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { sources: [{ id: 'nrw-lod2', name: 'Geobasis NRW (LoD2)', attribution: '<a href="https://www.opengeodata.nrw.de/produkte/geobasis/3dg/lod2_gml/">Geobasis NRW</a> · 3D-Gebäudemodell LoD2 · <a href="https://www.govdata.de/dl-de/zero-2-0">DL-DE Zero 2.0</a>' }, { id: 'osm' }] }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         tczew: {
             id: 'tczew', wupCityCode: '2325',
@@ -20091,7 +20091,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [51.6789688105277, 7.78773684717369], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [51.6789688105277, 7.78773684717369], fallbackDataset: [7.78773684717369, 51.6789688105277] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'de-nrw-lika-flurstueck', idPrefix: 'DE-NRW-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Bezirksregierung Köln / Geobasis NRW, ALKIS simplified schema. Datenlizenz Deutschland – Zero 2.0. Adapted to WGS84.' },
-            buildings: { sources: [{ id: 'osm' }] }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { sources: [{ id: 'nrw-lod2', name: 'Geobasis NRW (LoD2)', attribution: '<a href="https://www.opengeodata.nrw.de/produkte/geobasis/3dg/lod2_gml/">Geobasis NRW</a> · 3D-Gebäudemodell LoD2 · <a href="https://www.govdata.de/dl-de/zero-2-0">DL-DE Zero 2.0</a>' }, { id: 'osm' }] }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         torun: {
             id: 'torun', wupCityCode: '2476',
@@ -20172,7 +20172,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [50.8899005634816, 8.02247385221933], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [50.8899005634816, 8.02247385221933], fallbackDataset: [8.02247385221933, 50.8899005634816] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'de-nrw-lika-flurstueck', idPrefix: 'DE-NRW-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Bezirksregierung Köln / Geobasis NRW, ALKIS simplified schema. Datenlizenz Deutschland – Zero 2.0. Adapted to WGS84.' },
-            buildings: { sources: [{ id: 'osm' }] }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { sources: [{ id: 'nrw-lod2', name: 'Geobasis NRW (LoD2)', attribution: '<a href="https://www.opengeodata.nrw.de/produkte/geobasis/3dg/lod2_gml/">Geobasis NRW</a> · 3D-Gebäudemodell LoD2 · <a href="https://www.govdata.de/dl-de/zero-2-0">DL-DE Zero 2.0</a>' }, { id: 'osm' }] }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         rybnik: {
             id: 'rybnik', wupCityCode: '2754',
@@ -20199,7 +20199,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [48.0006635061131, 7.83778338402154], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [48.0006635061131, 7.83778338402154], fallbackDataset: [7.83778338402154, 48.0006635061131] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'de-bw-lgl-alkis-flurstueck', idPrefix: 'DE-BW-ALKIS-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'LGL Baden-Württemberg · ALKIS Flurstücke · adapted' },
-            buildings: { sources: [{ id: 'osm' }] }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { sources: [{ id: 'bw-lod2', name: 'LGL Baden-Württemberg (LoD2)', attribution: 'Datenquelle: <a href="https://www.lgl-bw.de">LGL, www.lgl-bw.de</a> · 3D-Gebäudemodell LoD2 · <a href="https://www.govdata.de/dl-de/by-2-0">DL-DE BY 2.0</a>' }, { id: 'osm' }] }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         jastrzebie_zdroj: {
             id: 'jastrzebie_zdroj', wupCityCode: '2818',
@@ -20244,7 +20244,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [51.9044262053087, 8.38418745049793], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [51.9044262053087, 8.38418745049793], fallbackDataset: [8.38418745049793, 51.9044262053087] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'de-nrw-lika-flurstueck', idPrefix: 'DE-NRW-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Bezirksregierung Köln / Geobasis NRW, ALKIS simplified schema. Datenlizenz Deutschland – Zero 2.0. Adapted to WGS84.' },
-            buildings: { sources: [{ id: 'osm' }] }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { sources: [{ id: 'nrw-lod2', name: 'Geobasis NRW (LoD2)', attribution: '<a href="https://www.opengeodata.nrw.de/produkte/geobasis/3dg/lod2_gml/">Geobasis NRW</a> · 3D-Gebäudemodell LoD2 · <a href="https://www.govdata.de/dl-de/zero-2-0">DL-DE Zero 2.0</a>' }, { id: 'osm' }] }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         ede: {
             id: 'ede', wupCityCode: '2997',
@@ -20298,7 +20298,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [52.0195333690261, 8.54753242156078], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [52.0195333690261, 8.54753242156078], fallbackDataset: [8.54753242156078, 52.0195333690261] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'de-nrw-lika-flurstueck', idPrefix: 'DE-NRW-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Bezirksregierung Köln / Geobasis NRW, ALKIS simplified schema. Datenlizenz Deutschland – Zero 2.0. Adapted to WGS84.' },
-            buildings: { sources: [{ id: 'osm' }] }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { sources: [{ id: 'nrw-lod2', name: 'Geobasis NRW (LoD2)', attribution: '<a href="https://www.opengeodata.nrw.de/produkte/geobasis/3dg/lod2_gml/">Geobasis NRW</a> · 3D-Gebäudemodell LoD2 · <a href="https://www.govdata.de/dl-de/zero-2-0">DL-DE Zero 2.0</a>' }, { id: 'osm' }] }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         tychy: {
             id: 'tychy', wupCityCode: '3178',
@@ -20334,7 +20334,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [52.1186742740275, 8.67431041713781], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [52.1186742740275, 8.67431041713781], fallbackDataset: [8.67431041713781, 52.1186742740275] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'de-nrw-lika-flurstueck', idPrefix: 'DE-NRW-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Bezirksregierung Köln / Geobasis NRW, ALKIS simplified schema. Datenlizenz Deutschland – Zero 2.0. Adapted to WGS84.' },
-            buildings: { sources: [{ id: 'osm' }] }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { sources: [{ id: 'nrw-lod2', name: 'Geobasis NRW (LoD2)', attribution: '<a href="https://www.opengeodata.nrw.de/produkte/geobasis/3dg/lod2_gml/">Geobasis NRW</a> · 3D-Gebäudemodell LoD2 · <a href="https://www.govdata.de/dl-de/zero-2-0">DL-DE Zero 2.0</a>' }, { id: 'osm' }] }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         plock: {
             id: 'plock', wupCityCode: '3289',
@@ -20379,7 +20379,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [49.0084967221897, 8.4011625005132], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [49.0084967221897, 8.4011625005132], fallbackDataset: [8.4011625005132, 49.0084967221897] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'de-bw-lgl-alkis-flurstueck', idPrefix: 'DE-BW-ALKIS-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'LGL Baden-Württemberg · ALKIS Flurstücke · adapted' },
-            buildings: { sources: [{ id: 'osm' }] }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { sources: [{ id: 'bw-lod2', name: 'LGL Baden-Württemberg (LoD2)', attribution: 'Datenquelle: <a href="https://www.lgl-bw.de">LGL, www.lgl-bw.de</a> · 3D-Gebäudemodell LoD2 · <a href="https://www.govdata.de/dl-de/by-2-0">DL-DE BY 2.0</a>' }, { id: 'osm' }] }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         bielsko_biala: {
             id: 'bielsko_biala', wupCityCode: '3397',
@@ -20406,7 +20406,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [49.485482134892, 8.47482558079509], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [49.485482134892, 8.47482558079509], fallbackDataset: [8.47482558079509, 49.485482134892] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'de-bw-lgl-alkis-flurstueck', idPrefix: 'DE-BW-ALKIS-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'LGL Baden-Württemberg · ALKIS Flurstücke · adapted' },
-            buildings: { sources: [{ id: 'osm' }] }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { sources: [{ id: 'bw-lod2', name: 'LGL Baden-Württemberg (LoD2)', attribution: 'Datenquelle: <a href="https://www.lgl-bw.de">LGL, www.lgl-bw.de</a> · 3D-Gebäudemodell LoD2 · <a href="https://www.govdata.de/dl-de/by-2-0">DL-DE BY 2.0</a>' }, { id: 'osm' }] }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         piotrkow_trybunalski: {
             id: 'piotrkow_trybunalski', wupCityCode: '3449',
@@ -20451,7 +20451,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [51.7199802103556, 8.75710708517565], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [51.7199802103556, 8.75710708517565], fallbackDataset: [8.75710708517565, 51.7199802103556] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'de-nrw-lika-flurstueck', idPrefix: 'DE-NRW-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Bezirksregierung Köln / Geobasis NRW, ALKIS simplified schema. Datenlizenz Deutschland – Zero 2.0. Adapted to WGS84.' },
-            buildings: { sources: [{ id: 'osm' }] }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { sources: [{ id: 'nrw-lod2', name: 'Geobasis NRW (LoD2)', attribution: '<a href="https://www.opengeodata.nrw.de/produkte/geobasis/3dg/lod2_gml/">Geobasis NRW</a> · 3D-Gebäudemodell LoD2 · <a href="https://www.govdata.de/dl-de/zero-2-0">DL-DE Zero 2.0</a>' }, { id: 'osm' }] }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         tomaszow_mazowiecki: {
             id: 'tomaszow_mazowiecki', wupCityCode: '3555',
@@ -20532,7 +20532,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [49.3910185824291, 8.6720920591206], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [49.3910185824291, 8.6720920591206], fallbackDataset: [8.6720920591206, 49.3910185824291] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'de-bw-lgl-alkis-flurstueck', idPrefix: 'DE-BW-ALKIS-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'LGL Baden-Württemberg · ALKIS Flurstücke · adapted' },
-            buildings: { sources: [{ id: 'osm' }] }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { sources: [{ id: 'bw-lod2', name: 'LGL Baden-Württemberg (LoD2)', attribution: 'Datenquelle: <a href="https://www.lgl-bw.de">LGL, www.lgl-bw.de</a> · 3D-Gebäudemodell LoD2 · <a href="https://www.govdata.de/dl-de/by-2-0">DL-DE BY 2.0</a>' }, { id: 'osm' }] }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         kielce: {
             id: 'kielce', wupCityCode: '3758',
@@ -20559,7 +20559,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [48.8884978124238, 8.69418460384127], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [48.8884978124238, 8.69418460384127], fallbackDataset: [8.69418460384127, 48.8884978124238] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'de-bw-lgl-alkis-flurstueck', idPrefix: 'DE-BW-ALKIS-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'LGL Baden-Württemberg · ALKIS Flurstücke · adapted' },
-            buildings: { sources: [{ id: 'osm' }] }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { sources: [{ id: 'bw-lod2', name: 'LGL Baden-Württemberg (LoD2)', attribution: 'Datenquelle: <a href="https://www.lgl-bw.de">LGL, www.lgl-bw.de</a> · 3D-Gebäudemodell LoD2 · <a href="https://www.govdata.de/dl-de/by-2-0">DL-DE BY 2.0</a>' }, { id: 'osm' }] }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         radom: {
             id: 'radom', wupCityCode: '3851',
@@ -20613,7 +20613,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [48.6952777912253, 9.00720562643213], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [48.6952777912253, 9.00720562643213], fallbackDataset: [9.00720562643213, 48.6952777912253] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'de-bw-lgl-alkis-flurstueck', idPrefix: 'DE-BW-ALKIS-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'LGL Baden-Württemberg · ALKIS Flurstücke · adapted' },
-            buildings: { sources: [{ id: 'osm' }] }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { sources: [{ id: 'bw-lod2', name: 'LGL Baden-Württemberg (LoD2)', attribution: 'Datenquelle: <a href="https://www.lgl-bw.de">LGL, www.lgl-bw.de</a> · 3D-Gebäudemodell LoD2 · <a href="https://www.govdata.de/dl-de/by-2-0">DL-DE BY 2.0</a>' }, { id: 'osm' }] }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         lomza: {
             id: 'lomza', wupCityCode: '3986',
@@ -20631,7 +20631,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [48.8110813845571, 9.09691074394977], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [48.8110813845571, 9.09691074394977], fallbackDataset: [9.09691074394977, 48.8110813845571] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'de-bw-lgl-alkis-flurstueck', idPrefix: 'DE-BW-ALKIS-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'LGL Baden-Württemberg · ALKIS Flurstücke · adapted' },
-            buildings: { sources: [{ id: 'osm' }] }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { sources: [{ id: 'bw-lod2', name: 'LGL Baden-Württemberg (LoD2)', attribution: 'Datenquelle: <a href="https://www.lgl-bw.de">LGL, www.lgl-bw.de</a> · 3D-Gebäudemodell LoD2 · <a href="https://www.govdata.de/dl-de/by-2-0">DL-DE BY 2.0</a>' }, { id: 'osm' }] }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         elk: {
             id: 'elk', wupCityCode: '4029',
@@ -20703,7 +20703,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [49.1519115615472, 9.21652129447529], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [49.1519115615472, 9.21652129447529], fallbackDataset: [9.21652129447529, 49.1519115615472] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'de-bw-lgl-alkis-flurstueck', idPrefix: 'DE-BW-ALKIS-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'LGL Baden-Württemberg · ALKIS Flurstücke · adapted' },
-            buildings: { sources: [{ id: 'osm' }] }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { sources: [{ id: 'bw-lod2', name: 'LGL Baden-Württemberg (LoD2)', attribution: 'Datenquelle: <a href="https://www.lgl-bw.de">LGL, www.lgl-bw.de</a> · 3D-Gebäudemodell LoD2 · <a href="https://www.govdata.de/dl-de/by-2-0">DL-DE BY 2.0</a>' }, { id: 'osm' }] }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         lublin: {
             id: 'lublin', wupCityCode: '4280',
@@ -20730,7 +20730,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [48.494515205626, 9.2093446638816], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [48.494515205626, 9.2093446638816], fallbackDataset: [9.2093446638816, 48.494515205626] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'de-bw-lgl-alkis-flurstueck', idPrefix: 'DE-BW-ALKIS-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'LGL Baden-Württemberg · ALKIS Flurstücke · adapted' },
-            buildings: { sources: [{ id: 'osm' }] }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { sources: [{ id: 'bw-lod2', name: 'LGL Baden-Württemberg (LoD2)', attribution: 'Datenquelle: <a href="https://www.lgl-bw.de">LGL, www.lgl-bw.de</a> · 3D-Gebäudemodell LoD2 · <a href="https://www.govdata.de/dl-de/by-2-0">DL-DE BY 2.0</a>' }, { id: 'osm' }] }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         zamosc: {
             id: 'zamosc', wupCityCode: '4356',
@@ -20757,7 +20757,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [47.6744214989573, 9.17309580098738], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [47.6744214989573, 9.17309580098738], fallbackDataset: [9.17309580098738, 47.6744214989573] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'de-bw-lgl-alkis-flurstueck', idPrefix: 'DE-BW-ALKIS-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'LGL Baden-Württemberg · ALKIS Flurstücke · adapted' },
-            buildings: { sources: [{ id: 'osm' }] }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { sources: [{ id: 'bw-lod2', name: 'LGL Baden-Württemberg (LoD2)', attribution: 'Datenquelle: <a href="https://www.lgl-bw.de">LGL, www.lgl-bw.de</a> · 3D-Gebäudemodell LoD2 · <a href="https://www.govdata.de/dl-de/by-2-0">DL-DE BY 2.0</a>' }, { id: 'osm' }] }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         fulda: {
             id: 'fulda', wupCityCode: '4504',
@@ -20784,7 +20784,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [47.7945532106953, 9.62553797821608], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [47.7945532106953, 9.62553797821608], fallbackDataset: [9.62553797821608, 47.7945532106953] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'de-bw-lgl-alkis-flurstueck', idPrefix: 'DE-BW-ALKIS-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'LGL Baden-Württemberg · ALKIS Flurstücke · adapted' },
-            buildings: { sources: [{ id: 'osm' }] }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { sources: [{ id: 'bw-lod2', name: 'LGL Baden-Württemberg (LoD2)', attribution: 'Datenquelle: <a href="https://www.lgl-bw.de">LGL, www.lgl-bw.de</a> · 3D-Gebäudemodell LoD2 · <a href="https://www.govdata.de/dl-de/by-2-0">DL-DE BY 2.0</a>' }, { id: 'osm' }] }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         strasbourg: {
             id: 'strasbourg', wupCityCode: '4832',
@@ -20802,7 +20802,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [48.3989825933644, 9.98693462795703], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [48.3989825933644, 9.98693462795703], fallbackDataset: [9.98693462795703, 48.3989825933644] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'de-bw-lgl-alkis-flurstueck', idPrefix: 'DE-BW-ALKIS-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'LGL Baden-Württemberg · ALKIS Flurstücke · adapted' },
-            buildings: { sources: [{ id: 'osm' }] }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { sources: [{ id: 'bw-lod2', name: 'LGL Baden-Württemberg (LoD2)', attribution: 'Datenquelle: <a href="https://www.lgl-bw.de">LGL, www.lgl-bw.de</a> · 3D-Gebäudemodell LoD2 · <a href="https://www.govdata.de/dl-de/by-2-0">DL-DE BY 2.0</a>' }, { id: 'osm' }] }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         hazel_dell: {
             id: 'hazel_dell', wupCityCode: '5217',
@@ -20838,7 +20838,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [50.7132491597848, 12.4833751663692], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [50.7132491597848, 12.4833751663692], fallbackDataset: [12.4833751663692, 50.7132491597848] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'dresden-saxony-gml-wfs', idPrefix: 'DE-SN-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'GeoSN Saxony ALKIS parcel geometry · adapted' },
-            buildings: { sources: [{ id: 'osm' }] }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { sources: [{ id: 'sachsen-lod2', name: 'GeoSN Sachsen (LoD2)', attribution: '<a href="https://www.geodaten.sachsen.de/">Landesamt für Geobasisinformation Sachsen (GeoSN)</a> · 3D-Stadtmodell LoD2 · <a href="https://www.govdata.de/dl-de/by-2-0">DL-DE BY 2.0</a>' }, { id: 'osm' }] }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         chemnitz: {
             id: 'chemnitz', wupCityCode: '5551',
@@ -20847,7 +20847,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [50.8270132341809, 12.9110519091696], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [50.8270132341809, 12.9110519091696], fallbackDataset: [12.9110519091696, 50.8270132341809] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'dresden-saxony-gml-wfs', idPrefix: 'DE-SN-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'GeoSN Saxony ALKIS parcel geometry · adapted' },
-            buildings: { sources: [{ id: 'osm' }] }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { sources: [{ id: 'sachsen-lod2', name: 'GeoSN Sachsen (LoD2)', attribution: '<a href="https://www.geodaten.sachsen.de/">Landesamt für Geobasisinformation Sachsen (GeoSN)</a> · 3D-Stadtmodell LoD2 · <a href="https://www.govdata.de/dl-de/by-2-0">DL-DE BY 2.0</a>' }, { id: 'osm' }] }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         anchorage: {
             id: 'anchorage', wupCityCode: '5571',

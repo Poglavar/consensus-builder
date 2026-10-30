@@ -15,6 +15,15 @@ const { createFootprintProvider } = require('../../frontend/js/footprint-provide
 const MAX_SHEETS = 16;
 const SHEET_CACHE = 64;
 
+// The sheets "x_y" (lower-left corner in km) of a grid of `km`-kilometre sheets under a box in metres.
+export function kmSheets([minX, minY, maxX, maxY], km = 1) {
+    const ids = [];
+    for (let x = Math.floor(minX / 1000 / km) * km; x <= maxX / 1000; x += km) {
+        for (let y = Math.floor(minY / 1000 / km) * km; y <= maxY / 1000; y += km) ids.push(`${x}_${y}`);
+    }
+    return ids;
+}
+
 // The buildings of one zipped CityGML sheet at url, or [] when it is not published (404).
 export async function readZippedCityGml(url, fetchImpl, label) {
     const response = await fetchImpl(url);
