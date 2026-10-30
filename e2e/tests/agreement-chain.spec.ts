@@ -297,15 +297,15 @@ test.describe('Agreements on chain @core', () => {
     await bet.locator('.close-circle-btn').click();
     await expect(bet).toHaveCount(0);
 
-    // The Lists panel's published agreements: the city's agreements from the index, the minted one
-    // with its chain status, opening its panel.
+    // The Lists panel's agreements: the city's agreements from the index, the minted one (this
+    // browser's, so under its local id) with its chain status, opening its panel.
     await closeAgreementPanel(page);
-    const list = await openAgreementsList(page, { published: true });
-    const row = agreementListItem(list, cid);
+    const list = await openAgreementsList(page);
+    const row = agreementListItem(list, id);
     await expect(row).toContainText(TITLE);
     await expect(row.locator('.cb-badge', { hasText: 'Active' })).toBeVisible();
     expect(index.requests.some(request => request.method === 'GET' && /^\/agreements\?.*city=/.test(request.path))).toBe(true);
-    await openListedAgreement(list, cid);
+    await openListedAgreement(list, id);
     await expect(list).toBeHidden();
     await panelStatus(page, 'current');
     await expect(page.locator('#agreement-panel-title')).toHaveText(TITLE);

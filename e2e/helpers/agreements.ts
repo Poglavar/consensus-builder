@@ -221,14 +221,13 @@ export async function createFromPlan(page: Page, layoutId: string, planTitle = '
   return editor;
 }
 
-// The Lists panel on its Agreements tab, listing the agreements on this device (or, with
-// `published`, the city's agreements in the index, with their chain status).
-export async function openAgreementsList(page: Page, { published = false } = {}): Promise<Locator> {
+// The Lists panel on its Agreements tab: this device's drafts and the city's agreements in the index,
+// with their chain status, one row per agreement (a published one stored here under its local id).
+export async function openAgreementsList(page: Page): Promise<Locator> {
   const sheet = page.locator('#proposals-sheet');
   if (!(await sheet.isVisible())) await page.locator('#proposals-button').click();
   await expect(sheet).toBeVisible();
   await sheet.getByRole('tab', { name: 'Agreements', exact: true }).click();
-  await sheet.locator(`[data-list-source="${published ? 'published' : 'local'}"]`).click();
   const list = sheet.locator('#designs-agreements');
   await expect(list).toBeVisible();
   return list;

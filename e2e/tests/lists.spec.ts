@@ -3,7 +3,7 @@ import { openCity, stubBasemapTiles } from '../helpers/runtime';
 import { proposeOverPark } from '../helpers/agreements';
 
 for (const width of [1280, 390]) {
-  test(`Lists shares filters, composes and inspects plans, and removes only browser copies at ${width}px`, async ({ mockApi: page }) => {
+  test(`Lists shares filters, composes and inspects plans, and deletes only drafts at ${width}px`, async ({ mockApi: page }) => {
     test.setTimeout(180_000);
     await page.setViewportSize({ width, height: 844 }); await stubBasemapTiles(page); await openCity(page);
     const agreement = await proposeOverPark(page, { title: 'Residents agreement' });
@@ -15,7 +15,7 @@ for (const width of [1280, 390]) {
     await expect(sheet.getByRole('button', { name: 'Import plan file', exact: true })).toBeHidden();
     await expect(sheet.locator('#proposal-list-host .fa-tree')).toBeVisible();
     await expect(sheet.locator('#proposal-list-host .fa-share-nodes')).toBeVisible();
-    await expect(sheet.locator('#proposal-list-host .fa-trash-can')).toBeVisible();
+    await expect(sheet.locator('#proposal-list-host .fa-trash-can')).toHaveCount(0); // a published design has no delete
     const expectInsets = async () => {
       const insets = await sheet.evaluate(el => {
         const body = el.querySelector('.lists-body')!.getBoundingClientRect();
@@ -76,7 +76,7 @@ for (const width of [1280, 390]) {
     expect((await planDownload).suggestedFilename()).toBe('residents-plan.ugt.json');
     await page.keyboard.press('Escape'); await expect(downloadDialog).toBeHidden();
     await expectInsets();
-    await expect(planRow).toContainText('Draft'); await expect(planRow).toContainText('This browser');
+    await expect(planRow).toContainText('Draft');
     // The title shows the plan on the map and keeps the list open; Open selects it.
     const parkInView = () => page.evaluate(id => {
       const w = window as any;
@@ -136,24 +136,22 @@ for (const width of [1280, 390]) {
     const agreementChunks: Buffer[] = [];
     for await (const chunk of (await agreementFile.createReadStream())!) agreementChunks.push(Buffer.from(chunk));
     await agreementRow.getByRole('button', { name: 'Share', exact: true }).click();
-    await agreementRow.getByRole('button', { name: 'Delete draft', exact: true }).click();
-    await page.locator('.cb-dialog').getByRole('button', { name: 'Delete draft', exact: true }).click();
-    await expect(agreementRow).toBeVisible(); // publication remains; local-copy action disappears
+    // A published agreement has no delete: this browser's copy is its cache.
+    await expect(agreementRow).toContainText('Published');
     await expect(agreementRow.getByRole('button', { name: 'Delete draft', exact: true })).toHaveCount(0);
-    await expect.poll(() => page.evaluate(id => (window as any).AgreementStore.get(id), agreement.id)).toBeNull();
-    // Import agreement file brings it back as a local draft under a new id, not as the published one.
+    // Import agreement file adds a local draft under a new id beside the published one.
     await expect(sheet.locator('#lists-actions .lists-actions__grid > button')).toHaveText(['Create agreement', 'Compare agreements', 'Import agreement file', 'Imported agreements']);
     await sheet.locator('#lists-actions input[data-lists-import-input="agreements"]').setInputFiles({ name: 'residents-agreement.ugt-agreement.json', mimeType: 'application/json', buffer: Buffer.concat(agreementChunks) });
     await page.locator('.cb-dialog').filter({ hasText: 'Review agreement file' }).getByRole('button', { name: 'Import as drafts', exact: true }).click();
     const importedDialog = page.locator('.cb-dialog').filter({ hasText: 'Agreement imported' });
     await expect(importedDialog).toBeVisible(); await page.keyboard.press('Escape'); await expect(importedDialog).toBeHidden();
-    const importedRow = sheet.locator('#designs-agreements .lists-item').filter({ hasText: 'Residents agreement' });
+    const importedRow = sheet.locator(`#designs-agreements .lists-item:not([data-list-id="${agreement.id}"])`).filter({ hasText: 'Residents agreement' });
     await expect(importedRow).toHaveCount(1); await expect(importedRow).toContainText('Draft');
     await sheet.locator('#lists-actions').getByRole('button', { name: 'Imported agreements', exact: true }).click();
     const importedList = page.locator('.cb-dialog').filter({ hasText: 'Imported agreements' });
     await expect(importedList.getByRole('button', { name: 'Residents agreement', exact: true })).toBeVisible();
     await page.keyboard.press('Escape'); await expect(importedList).toBeHidden();
-    expect(await page.evaluate(id => { const list = (window as any).AgreementStore.list(); return list.length === 1 && list[0].id !== id && !list[0].published; }, agreement.id)).toBe(true);
+    expect(await page.evaluate(id => (window as any).AgreementStore.list().map((row: any) => row.id === id || !row.published), agreement.id)).toEqual([true, true]);
     await sheet.getByRole('tab', { name: 'Plans', exact: true }).click();
     await planRow.getByRole('button', { name: 'Delete draft', exact: true }).click();
     await page.locator('.cb-dialog').getByRole('button', { name: 'Delete draft', exact: true }).click();
@@ -169,8 +167,8 @@ for (const width of [1280, 390]) {
     await designDialog.getByRole('button', { name: 'Download GeoJSON', exact: true }).click();
     expect((await designDownload).suggestedFilename()).toMatch(/^park.*\.geojson$/);
     await page.keyboard.press('Escape'); await expect(designDialog).toBeHidden();
-    await sheet.locator('#proposal-list-host .lists-item').getByRole('button', { name: 'Delete draft', exact: true }).click();
-    await page.locator('.cb-dialog').getByRole('button', { name: 'Delete draft', exact: true }).click();
-    await expect(sheet.locator('#proposal-list-host .lists-item')).toHaveCount(0);
+    // The design is published, so it has no delete either.
+    await expect(sheet.locator('#proposal-list-host .lists-item')).toContainText('Published');
+    await expect(sheet.locator('#proposal-list-host .lists-item').getByRole('button', { name: 'Delete draft', exact: true })).toHaveCount(0);
   });
 }
