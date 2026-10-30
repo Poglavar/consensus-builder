@@ -126,7 +126,7 @@ The project's own six building uses already map from CityGML/ALKIS codes and OSM
 
 - The rulebook on spatial plans (NN 152/2023, in force 2024-01-01) requires plans to set, inside construction areas, maximum coverage `kig`, maximum floor-area ratio `kis` (optionally above and below ground), maximum gross floor area, maximum facade height `H`, total height and storeys.
 - Plans are made in ISPU's ePlanovi module, and the plan's original is its vector, alphanumeric and metadata set. Article 7(2), however, has the rules drawn as areas in layer `KN-3-1` and entered **as text in the attribute table**. Whether the annexes define numeric attributes is *unverified*.
-- Publication is mostly raster map services per county on data.gov.hr; a WFS of planned land use and an INSPIRE PLU dataset for Croatia are *unverified*. [NN 152/2023](https://narodne-novine.nn.hr/clanci/sluzbeni/2023_12_152_2228.html).
+- Publication is raster map services; there is no open vector service of plan rules. See [Croatia in depth](#croatia-in-depth). [NN 152/2023](https://narodne-novine.nn.hr/clanci/sluzbeni/2023_12_152_2228.html).
 
 #### New Zealand: National Planning Standards (2019)
 
@@ -315,6 +315,52 @@ INSPIRE planned land use derived from XPlanung loses heights with two reference 
 
 **An XPlanung adapter is feasible today for Hamburg** (all plans, open licence, already in the 3D coverage) **and Freiburg**, read from the XPlanSyn WFS or with xmas-core. It should draw an envelope only where a zone has storeys or a height, a GRZ and a buildable area, and say why elsewhere. Its open problems: storeys to metres by assumption where heights are absent, absolute heights needing terrain, rules left in text, polygonising building-limit lines, merging amendments, reading under the right BauNVO and state definitions, and Hamburg's Baustufenpläne. Elsewhere in Germany the rules are in scanned plans and PDFs, which would need text and map extraction or a commercial source.
 
+## Croatia in depth
+
+Checked **2026-10-30**, from [NN 152/2023](https://narodne-novine.nn.hr/clanci/sluzbeni/2023_12_152_2228.html) (rulebook on spatial plans), [NN 155/2025](https://narodne-novine.nn.hr/clanci/sluzbeni/2025_12_155_2315.html) (spatial planning act), [NN 115/2015](https://narodne-novine.nn.hr/clanci/sluzbeni/2015_10_115_2191.html) (ISPU regulation), ministry presentations and live service queries.
+
+### ISPU and ePlanovi
+
+- ISPU (Informacijski sustav prostornog uređenja) is run by the ministry (MPGI); its Zavod za prostorni razvoj, the county planning institutes and Zagreb's institute keep the plan registers. Modules include the geoportal, eKatalog (plan register, since 2014), **ePlanovi** (the plan procedure: phases, publication, decisions, archive), the **ePlanovi Editor** (a free web-GIS tool for licensed plan-makers with topology checks and the standard codes and symbols), eDozvola (permits, since 2014), eKonferencija, eNekretnine and others.
+- The Editor was piloted on Primorje-Gorski Kotar county, Crikvenica and two local plans (2022) and has been in use since 2024-01-01. ISPU was built with EU funds (2015–2022, HRK 132 million); the recovery plan (NPOO) funds municipalities to make or transform plans (EUR 17 million by April 2025, at most EUR 30,000 each, target 570 plans). The developer is not public (*unverified*).
+
+### The law: every plan is remade in ePlanovi
+
+- **Since 2026-01-01** (NN 155/2025): plans are made and adopted in ePlanovi and the Editor (Art. 83), and the whole procedure runs there. A plan made before 2026 can no longer be amended except as a new-generation plan (Art. 238).
+- **All pre-2026 plans lose validity seven years on, around 2033-01-01** (Art. 236, 238), unless their procedure already ran in ePlanovi.
+- The rulebook (NN 152/2023, in force 2024-01-01) requires the Editor or a tool whose output passes the Editor's topology rules (Art. 48), and also governs transforming old plans into the new form (Art. 2).
+- An electronic location information (*lokacijska informacija*) is generated from ISPU where a new-generation plan exists; elsewhere the municipality issues it by hand (Art. 37).
+- The Croatian Chamber of Architects (2023) criticised the rulebook as untested, said "new generation" amounts to digitising old plans, and doubted the 570-plan target; in 2025 architects and urbanists asked for the act to be postponed (*unverified*). The NPOO call's deadlines have been extended into 2026–2027, and about 100 contracts were extended by 2026-05: delays are widespread. No count of finished new-generation plans was found.
+
+### Data model
+
+- The rulebook's annexes are built into the software (Art. 3): a theme catalogue (codes such as `KN-1-1-2001` residential S1, with the plan types and scales each applies to and its styling), the land-use content, relation tables (which uses may combine) and the map sheets. Layer families: `KN-1-1` primary use (up to three per area), `KN-1-2` secondary use, `KN-3-1` areas of implementation rules, `IS-*` infrastructure, `ZP-*` protection. The annexes are published as images only.
+- The act leaves the layer structure, validation rules and "electronic standard" to the software (Art. 79(4)). No public schema or code list was found. INSPIRE is not mentioned in the rulebook or the act, and there is no link to XPlanung or another standard; the ISPU regulation names GML or SHP in HTRS96/TM as exchange formats.
+- **Rules are text under fixed headings.** Each `KN-3-1` area gets its rules "by entering text in the attribute table" (Art. 7–8), under 15 fixed headings (plot shape and size, siting, coverage `kig`, floor-area ratio `kis`/`kisn`, height and storeys, design, connections …). Coverage, floor-area ratio, facade height `H` and storeys are mandatory (Art. 12–13).
+- In a real new-generation Zagreb plan (UPU Trg bana Jelačića, public-hearing draft 2025-11-20) the provisions are generated by the system: the use text from the theme code (M3 = `KN-1-1-5053`), and one article per rule area ("Pravila provedbe za površinu označenu PP-M3") with the 15 headings, each holding free-text points such as coverage 60 % and above-ground floor-area ratio 3.0. Whether the backend also keeps these as numbers is *unverified*.
+
+### Publication
+
+- The geoportal `https://ispu.mgipu.hr` (an Angular app on `/api/v1/`) lists its services as JSON (`gis/catalog-izbornik`, `gis/data?type=izbornik_wms_popis`).
+- Plans are published as **raster WMS**: 21 services `https://gis1.mgipu.hr/srv1/PPRasterZ01_Public/wms` … `Z21` (one per county; Z21 is Zagreb with 898 layers: 711 local plans, 58 detailed plans, 17 GUP, 112 city plan) and one for areas of special features. GeoServer, WMS 1.3.0, EPSG:3765/4326, no stated fees or constraints; layer names `HR_ISPU_<type><n>_<code>_R<rev>_<theme>`, e.g. `HR_ISPU_GUP1_01333_R09_KN_1_1`. Some counties serve their own (Brod-Posavina WMTS, Primorje-Gorski Kotar).
+- **No vector WFS of plans** was found. National construction areas (2025-09) are available as vectors only by email request and are marked as not for permits. The viewer's per-parcel plan provisions (Info lokacija, with a PDF) need a reCAPTCHA. No explicit open licence; the regulation says downloads are free. A Croatian INSPIRE planned land use dataset was not found.
+
+### Automation
+
+- Announced: plans linked with eDozvola; special and connection conditions issued electronically in eDozvola; BIM models of the preliminary design (IFC, LOD 200) through an hrBIM system from 2027-01-01 for interventions a future rulebook will set ([ministry presentation, 2025-10](https://mpgi.gov.hr/UserDocsImages/slike/press/2025_10_22_Prezentacija_novi%20_zakoni_TG.pdf)).
+- Not announced: automatic checking of a design or permit against plan rules, generated building conditions beyond the location information, or 3D plan data. The stated aim since 2021 is an answer to "what may be built here, how, and who issues the conditions".
+
+### Zagreb
+
+- The GUP amendments adopted 2025-09-11 (in force 2025-09-20) were started in 2023, before ePlanovi was required, so they are an old-generation plan and expire around 2033.
+- The city's planning institute will make a **new Prostorni plan Grada Zagreba in ePlanovi** (mayor's decision 2026-06-23, SGGZ 24/2026; concept in 2026, "Vizija Zagreb 2050"); new local plans (UPU) are already made there ([2026 work programme](https://www.zzpugz.hr/api/media/file/program-rada-zzpugz-2026.pdf)). No decision on a new-generation GUP was found.
+
+### What this means for the project
+
+- Within about seven years every Croatian plan will exist in one national system with one layer catalogue and the same 15 rule headings per area, which is the shape a single adapter needs. The rule values are text, but text the system generates under fixed headings, so a reader for those headings is far easier than reading free-form plans.
+- Today the only open output is raster WMS and per-parcel PDFs behind a reCAPTCHA. The vector rule areas and their attribute text would have to come from the ministry (an open data request), or from the published provisions documents of new-generation plans.
+- Zagreb's current GUP source stays as it is until a new-generation GUP exists.
+
 ## National Zoning Atlas and Land Use Labs
 
 NZA's current public description says that analysts identify jurisdictions and districts, separately analyse zoning text and maps, repair/digitise map geometry, then review, merge and publish the result. It explicitly says machine learning cannot yet read the nuanced codes to its required accuracy; potential automation is limited to work such as update scraping and GIS drawing/cleaning. [How NZA is made](https://www.zoningatlas.org/how).
@@ -389,7 +435,7 @@ Research recommendations, not decisions or implemented contracts.
 | Netherlands DSO | National APIs; IMRO plans for older plans | Norm types *unverified*. |
 | Finland Ryhti | Rolling out 2025–2028 | Open API *unverified*. |
 | Germany XPlanung | Hamburg (all about 3,049 plans as vectors) and Freiburg today; elsewhere mostly outline and scan; duty planned from 2027 | One adapter serves every city that publishes vectors; [Germany in depth](#germany-in-depth). |
-| Croatia ePlanovi | Rules required by the rulebook, stored as text | One text parser could serve every Croatian plan; a WFS is *unverified*. Zagreb's GUP source is separate today. |
+| Croatia ePlanovi | Rules required by the rulebook, stored as fixed-heading text per rule area; published as raster WMS only | Every plan must be remade in ePlanovi by about 2033, so one reader of the generated provisions could serve all of Croatia; access to the vectors needs the ministry ([Croatia in depth](#croatia-in-depth)). Zagreb's GUP source is separate today. |
 | INSPIRE PLU, France | Use codes reliable; values optional or provider-defined | Useful for uses and rule types, weak for numbers. |
 | US, Bogotá, cities without a standard | NZA, Regrid-style schemas, city datasets | Per-city or per-dataset adapters. |
 
@@ -401,7 +447,7 @@ Research recommendations, not decisions or implemented contracts.
 - The final class and attribute names of ISO 19152-5 (paywalled).
 - Whether the Dutch IMOW norm-type list fixes names such as maximum building height.
 - Current Plandata.dk service field names; Ryhti's open API and coverage; Norway's open plan endpoints and whether maximum height is structured.
-- Whether Croatian ePlanovi exposes plan rules as a WFS, and whether the rulebook annexes define numeric attributes.
+- Whether ePlanovi stores coverage, floor-area ratio and height as numeric fields behind the generated text, and whether the ministry will publish its data model or a vector service.
 - Where Japan encodes the uses each district permits; Victoria's numeric planning fields; New Zealand's zone list; Esri LGIM's zoning fields.
 
 ## Access and an incremental INSPIRE profile
