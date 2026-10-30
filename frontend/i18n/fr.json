@@ -8,6 +8,8 @@
         "json": "Télécharger le plan modifiable",
         "geojson": "Télécharger le GeoJSON",
         "cityjson": "Télécharger en CityJSON",
+        "cityjsonEdited": "Les bâtiments et espaces de ce fichier CityJSON diffèrent du plan qu’il contient. L’import lit ce plan : les modifications faites dans d’autres outils ne sont pas importées.",
+        "cityModelNoPlan": "Ce modèle de ville ne contient aucun plan de ce site. Pour utiliser ses bâtiments, ouvrez une conception dans l’éditeur Bâtiment de forme libre et choisissez Importer des emprises.",
         "import": "Importer un fichier de plan",
         "importedPlans": "Plans importés",
         "help": "Formats de fichier et limites",

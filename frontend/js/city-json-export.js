@@ -2,7 +2,8 @@
 // buildings with their height, storeys and use; roads, squares, parks, lakes and surroundings as flat
 // surfaces of their CityJSON types; each design a CityObjectGroup with its CID. The plan file itself
 // rides in the root group's attributes, so the file reads back without loss. Coordinates are the WGS84
-// UTM zone of the plan in metres; heights are above the ground the design stands on. Pure.
+// UTM zone of the plan in metres; heights are above the ground the design stands on. readBack takes
+// such a file back to its plan file. Pure.
 (function (root, factory) {
     const api = factory(root);
     if (typeof module === 'object' && module.exports) module.exports = api;
@@ -11,6 +12,7 @@
     'use strict';
 
     const reader = () => (root && root.CityModelReader) || require('./city-model-reader.js');
+    const planFile = () => (root && root.PlanFile) || require('./plan-file.js');
     const PLAN_GROUP = 'ugt-plan';
     // A structure design's CityJSON type and the semantic type of its surface.
     const STRUCTURE_TYPES = { park: ['PlantCover', null], square: ['TransportSquare', 'TrafficArea'], lake: ['WaterBody', 'WaterSurface'] };
@@ -121,5 +123,21 @@
         };
     }
 
-    return Object.freeze({ fromPlanFile, utmCode, PLAN_GROUP });
+    // The text of a chosen file → { file, edited } when it is a CityJSON document carrying a plan file
+    // (fromPlanFile's root group), otherwise null. The carried file is validated as any plan file;
+    // `edited`: its city objects are no longer what that plan exports to, so changes made to them in
+    // other tools are not in the plan.
+    function readBack(text, { proj4 }) {
+        const trimmed = String(text || '').replace(/^\uFEFF/, '').trimStart();
+        if (!trimmed.startsWith('{')) return null;
+        let doc;
+        try { doc = JSON.parse(trimmed); } catch (_) { return null; }
+        const group = doc && doc.type === 'CityJSON' && doc.CityObjects && doc.CityObjects[PLAN_GROUP];
+        const carried = group && group.attributes && group.attributes.ugtPlanFile;
+        if (!carried) return null;
+        const file = planFile().validate(carried);
+        return { file, edited: JSON.stringify(fromPlanFile(file, { proj4 })) !== JSON.stringify(doc) };
+    }
+
+    return Object.freeze({ fromPlanFile, readBack, utmCode, PLAN_GROUP });
 });

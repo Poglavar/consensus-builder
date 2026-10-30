@@ -49,8 +49,8 @@
             return 'data:model/gltf-binary;base64,' + win.btoa(binary);
         }
         // `designsOnly`: a design file (or a plan file read on the Designs tab) adds its designs and
-        // keeps no imported plan.
-        function review(file, { designsOnly = false } = {}) {
+        // keeps no imported plan. `edited`: a CityJSON file whose city objects were changed elsewhere.
+        function review(file, { designsOnly = false, edited = false } = {}) {
             return new Promise(resolve => {
                 const body = doc.createElement('div');
                 const summary = doc.createElement('p');
@@ -64,6 +64,11 @@
                 const location = doc.createElement('p');
                 location.textContent = t('location', 'Saved location (latitude, longitude, zoom): {{at}}', { at: file.plan.view.at });
                 body.append(summary, location, list);
+                if (edited) {
+                    const note = doc.createElement('p');
+                    note.textContent = t('cityjsonEdited', 'The buildings and spaces in this CityJSON file differ from the plan it carries. Import reads the carried plan, so changes made in other tools are not imported.');
+                    body.prepend(note);
+                }
                 const modal = win.showSimpleShareModal({ title: designsOnly ? t('reviewDesigns', 'Review design file') : t('review', 'Review plan file'), body,
                     autoCloseActions: false, onClose: () => resolve(false), actions: [
                         { id: 'cancel', label: t('cancel', 'Cancel'), onClick: m => { resolve(false); m.close(); } },
@@ -164,18 +169,36 @@
         }
         // Read one chosen file into this device: on the Plans tab a plan file (kept as an imported
         // plan), on the Designs tab a design or plan file (its designs only), on the Agreements tab an
-        // agreement file. Resolves once the import is done, cancelled or refused; a refusal is shown.
+        // agreement file. A CityJSON file we wrote reads back as the plan file it carries; another
+        // CityJSON or CityGML city model is refused here, since its buildings import into a design
+        // through the building editors' Upload footprints.
+        // Resolves once the import is done, cancelled or refused; a refusal is shown.
         async function importFile(kind, file) {
-            const format = kind === 'agreements' ? 'agreement' : 'json';
+            let format = kind === 'agreements' ? 'agreement' : 'json';
             const note = outcome => win.AppDiagnostics?.event('import', outcome, { entity: 'file', context: { surface: 'plan-file', format } });
             try {
-                let parsed;
+                let parsed, edited = false;
                 try {
                     if (file.size > win.PlanFile.MAX_BYTES) throw new Error(t('tooLarge', 'Plan files are limited to 32 MiB.'));
-                    parsed = (kind === 'agreements' ? win.AgreementFile : win.PlanFile).parse(await file.text());
-                } catch (e) { note('failure'); throw e; }
+                    const text = await file.text();
+                    if (kind === 'agreements') parsed = win.AgreementFile.parse(text);
+                    else {
+                        const carried = win.CityJsonExport.readBack(text, { proj4: win.proj4 });
+                        if (carried) { format = 'cityjson'; parsed = carried.file; edited = carried.edited; }
+                        else if (win.CityModelReader.readCityModel(text)) {
+                            format = 'city-model'; note('failure');
+                            win.CbDialog.alert(t('cityModelNoPlan', 'This city model carries no plan from this site. To use its buildings, open a design in the Freeform editor and choose Upload footprints.'));
+                            return;
+                        } else parsed = win.PlanFile.parse(text);
+                    }
+                } catch (e) {
+                    note('failure');
+                    const crs = win.CityModelReader.crsErrorMessage(e, win.i18n);
+                    if (crs) { win.CbDialog.alert(crs); return; }
+                    throw e;
+                }
                 const designsOnly = kind === 'designs';
-                if (!await (kind === 'agreements' ? reviewAgreement(parsed) : review(parsed, { designsOnly }))) { note('cancelled'); return; }
+                if (!await (kind === 'agreements' ? reviewAgreement(parsed) : review(parsed, { designsOnly, edited }))) { note('cancelled'); return; }
                 if (kind === 'agreements') {
                     const agreement = await importAgreement(parsed);
                     win.updateShowProposalsButton?.(); win.refreshProposalsLayer?.();

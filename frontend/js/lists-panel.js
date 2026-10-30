@@ -243,7 +243,9 @@
             }, '', 'table-columns'));
             // The picker's file is read on its change; a closed picker starts nothing, and clearing the
             // input lets the same file be chosen again.
-            const input = node('input'); input.type = 'file'; input.accept = '.json,application/json'; input.hidden = true;
+            // Plans and designs also come as city models: CityJSON or CityGML (plan-file-ui.js importFile).
+            const input = node('input'); input.type = 'file'; input.hidden = true;
+            input.accept = kind === 'agreements' ? '.json,application/json' : '.json,.gml,.xml,application/json,application/city+json,application/gml+xml';
             input.dataset.listsImportInput = kind;
             const importLabel = t({ designs: 'planFile.importDesign', plans: 'planFile.import', agreements: 'planFile.importAgreement' }[kind]);
             input.setAttribute('aria-label', importLabel);

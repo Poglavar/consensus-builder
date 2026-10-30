@@ -8,6 +8,8 @@
         "json": "Preuzmi plan za uređivanje",
         "geojson": "Preuzmi GeoJSON",
         "cityjson": "Preuzmi CityJSON",
+        "cityjsonEdited": "Zgrade i prostori u ovoj CityJSON datoteci razlikuju se od plana koji nosi. Uvoz čita taj plan, pa se promjene napravljene u drugim alatima ne uvoze.",
+        "cityModelNoPlan": "Ovaj model grada ne nosi plan s ove stranice. Da biste upotrijebili njegove zgrade, otvorite dizajn u uređivaču Slobodna forma i odaberite Učitaj tlocrte.",
         "import": "Uvezi datoteku plana",
         "importedPlans": "Uvezeni planovi",
         "help": "Formati datoteka i ograničenja",

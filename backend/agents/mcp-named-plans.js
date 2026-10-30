@@ -1,5 +1,6 @@
 // Named plans are immutable design selections and map views, independent of agreement ground and terms.
 import { createRequire } from 'node:module';
+import proj4 from 'proj4';
 import { appTurf as turf, intentDesign } from './mcp-geometry.js';
 import { cidOfObject, designObject, isCid } from './agreement-objects.js';
 import { editedDesign } from './mcp-edit.js';
@@ -11,6 +12,7 @@ import { placeInPlan } from './mcp-plan-placement.js';
 const require = createRequire(import.meta.url);
 const PlanRecord = require('../../frontend/js/plan-record.js');
 const PlanFile = require('../../frontend/js/plan-file.js');
+const CityJsonExport = require('../../frontend/js/city-json-export.js');
 const fail = (code, message, next = { action: 'Inspect the intended named plan revision and use its explicit references.' }) => {
     throw Object.assign(new Error(message), { code, next });
 };
@@ -64,6 +66,14 @@ export function createMcpNamedPlanTools({ read, drafts, appOrigin, resolveDraftR
     }
     async function resolvePlan(value) {
         let artifact = value?.draftArtifact || value, requestedCid, published = false;
+        const warnings = [];
+        // A CityJSON file the site wrote carries its plan file, read back as the Lists import does.
+        if (artifact?.type === 'CityJSON') {
+            const carried = CityJsonExport.readBack(JSON.stringify(artifact), { proj4 });
+            if (!carried) fail('plan-file-required', 'This CityJSON file carries no plan.', { tool: 'ugt_import_design', action: 'Import its buildings with format cityjson.' });
+            if (carried.edited) warnings.push('The buildings and spaces in this CityJSON file differ from the plan it carries; the carried plan was read, so changes made in other tools are not in it.');
+            artifact = carried.file;
+        }
         if (artifact?.schema === PlanFile.SCHEMA) {
             const file = PlanFile.parse(JSON.stringify(artifact));
             artifact = { plan: file.plan, designs: file.designs.map(row => ({ ...row,
@@ -104,7 +114,7 @@ export function createMcpNamedPlanTools({ read, drafts, appOrigin, resolveDraftR
             }
             designs.push(row);
         }
-        return { plan: structuredClone(content), cid, designs, published };
+        return { plan: structuredClone(content), cid, designs, published, warnings };
     }
     function defaultView(designs) {
         const bounds = designs.map(row => turf.bbox(turf.feature(read.siteOfDesign(row.content))));
@@ -164,7 +174,7 @@ export function createMcpNamedPlanTools({ read, drafts, appOrigin, resolveDraftR
     }
     async function getPlan({ plan: value, when = null, buildout = null }) {
         const resolved = await resolvePlan(value);
-        if (!resolved.published) return privateResult(resolved.plan, resolved.designs, {}, { when, buildout });
+        if (!resolved.published) return privateResult(resolved.plan, resolved.designs, resolved.warnings.length ? { warnings: resolved.warnings } : {}, { when, buildout });
         return { plan: resolved.plan, cid: resolved.cid, designs: resolved.designs, publication: 'published', url: planUrl(resolved.cid), previewUrl: planUrl(resolved.cid, when, buildout) };
     }
     function inventory(plan) {

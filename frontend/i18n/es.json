@@ -8,6 +8,8 @@
         "json": "Descargar plan editable",
         "geojson": "Descargar GeoJSON",
         "cityjson": "Descargar CityJSON",
+        "cityjsonEdited": "Los edificios y espacios de este archivo CityJSON difieren del plan que contiene. La importación lee ese plan, así que no se importan los cambios hechos en otras herramientas.",
+        "cityModelNoPlan": "Este modelo de ciudad no contiene ningún plan de este sitio. Para usar sus edificios, abre un diseño en el editor Edificio de forma libre y elige Subir huellas.",
         "import": "Importar archivo de plan",
         "importedPlans": "Planes importados",
         "help": "Formatos y límites",

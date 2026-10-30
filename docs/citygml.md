@@ -1,7 +1,7 @@
 <!-- Plan for CityGML and CityJSON beside our own formats: imports wherever they are used to exchange what we import, exports as an extra option, and how our records map onto CityGML and LADM. -->
 # CityGML and CityJSON (plan)
 
-Status: built: city-model building sources for Vienna (`wien-lod2`, CityGML) and the Netherlands (`nl-3dbag`, CityJSON), the building upload and the building editors' footprint import, both MCP imports, and CityJSON plan and design export. Not started: CityJSON plan import, the person's URL sources and the remaining city sources.
+Status: built: city-model building sources for Vienna (`wien-lod2`, CityGML) and the Netherlands (`nl-3dbag`, CityJSON), the building upload and the building editors' footprint import, both MCP imports, and CityJSON plan and design export and import. Not started: the person's URL sources and the remaining city sources.
 
 CityGML (OGC) is the open standard for 3D city models: buildings and their storeys, rooms and
 units, roads and rail, vegetation, water, land use, terrain and city furniture, each with
@@ -36,8 +36,8 @@ loosely in INSPIRE planned land use) and agreements (no standard).
 | Parcels, parcel layouts, ownership, agreements | None | Parcels travel as cadastral GML/GeoJSON (LADM concepts), not CityGML; agreements have no standard. |
 | Parks, land use, terrain, trees as imports | None for now | Little exchanged as CityGML; revisit when a source needs it. |
 
-Order: CityJSON plan import next, then the person's URL sources and the remaining city sources (the
-3D BAG source, building upload, footprint import and the CityJSON export are done). CityGML XML and
+Order: the person's URL sources next, then the remaining city sources (the 3D BAG source, building
+upload, footprint import and the CityJSON export and import are done). CityGML XML and
 CityJSON share one reader (`frontend/js/city-model-reader.js`), so each import point reads both.
 
 ## Building upload and footprint import
@@ -83,8 +83,14 @@ editable download makes:
   are above the ground each design stands on (no vertical datum).
 - CityJSON's core has no versioning: the file holds the proposed state, and the before/after
   relationship stays in our records. Agreements stay in our own JSON.
-- Still open: importing a CityJSON plan file (our own reads back from `ugtPlanFile`; a foreign one's
-  buildings become a design), and CityGML 3.0 XML export.
+- Import: Lists → Import (Plans and Designs) reads a CityJSON file we wrote back as the plan file it
+  carries (`CityJsonExport.readBack`), validated as any plan file. When its city objects are no
+  longer what that plan exports to (edited in another tool), the review says that the carried plan
+  is what is imported. A city model without our plan is refused there with a pointer to the
+  building editors' Upload footprints, which reads its buildings into a design. MCP
+  `ugt_get_plan`, `ugt_inspect_plan` and `ugt_edit_plan` take the same CityJSON as `plan` (with the
+  edited warning); `ugt_import_design` reads a foreign one's buildings.
+- Still open: CityGML 3.0 XML export.
 
 ## 2. CityGML and CityJSON as a building source
 

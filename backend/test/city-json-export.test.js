@@ -1,7 +1,7 @@
 // The CityJSON export of a plan file (frontend/js/city-json-export.js): buildings come back through
 // the site's own CityJSON reader with their footprint and height, faces point outward, every design is
 // a group with its CID, a park is plant cover, surroundings keep their treatment, and the plan file
-// rides along unchanged.
+// rides along unchanged and reads back.
 import { describe, expect, it } from 'vitest';
 import { createRequire } from 'node:module';
 import * as turf from '@turf/turf';
@@ -77,5 +77,17 @@ describe('CityJSON export of a plan file', async () => {
         expect(around.attributes.function).toBe('green');
         expect(doc.CityObjects[Export.PLAN_GROUP].attributes.ugtPlanFile).toEqual(file);
         expect(PlanFile.parse(JSON.stringify(doc.CityObjects[Export.PLAN_GROUP].attributes.ugtPlanFile))).toEqual(file);
+    });
+
+    it('reads back as its plan file, says when its city objects were edited, and is null for other files', () => {
+        expect(Export.readBack(JSON.stringify(doc) + '\n', { proj4 })).toEqual({ file, edited: false });
+        const moved = structuredClone(doc); moved.vertices[0][0] += 500;
+        expect(Export.readBack(JSON.stringify(moved), { proj4 })).toEqual({ file, edited: true });
+        const tampered = structuredClone(doc); tampered.CityObjects[Export.PLAN_GROUP].attributes.ugtPlanFile.designs[0].content.title = 'Tampered';
+        expect(() => Export.readBack(JSON.stringify(tampered), { proj4 })).toThrow(/CID/);
+        const foreign = structuredClone(doc); delete foreign.CityObjects[Export.PLAN_GROUP];
+        expect(Export.readBack(JSON.stringify(foreign), { proj4 })).toBeNull();
+        expect(Export.readBack(PlanFile.stringify(file), { proj4 })).toBeNull();
+        expect(Export.readBack('<CityModel/>', { proj4 })).toBeNull();
     });
 });

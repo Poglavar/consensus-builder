@@ -5,7 +5,9 @@ import { createMcpNamedPlanTools } from '../agents/mcp-named-plans.js';
 import { createMcpDraftTools } from '../agents/mcp-drafts.js';
 import { appTurf as turf, intentDesign } from '../agents/mcp-geometry.js';
 import { designObject, cidOfObject } from '../agents/agreement-objects.js';
+import proj4 from 'proj4';
 const File = createRequire(import.meta.url)('../../frontend/js/plan-file.js');
+const CityJson = createRequire(import.meta.url)('../../frontend/js/city-json-export.js');
 const box = w => ({type:'Polygon',coordinates:[[[w,51.5],[w+.0005,51.5],[w+.0005,51.5005],[w,51.5005],[w,51.5]]]});
 const view = {at:'51.501,-0.099,17',mode:'model',city:'london',language:'en',settings:{existing:'on'}};
 function fixture() {
@@ -49,6 +51,18 @@ describe('first-class named plans',()=>{
         expect(revised.plan.title).toBe('Edited portable plan'); expect(file.plan.title).toBe('Portable'); expect(calls).toEqual([]);
         const bad = structuredClone(file); bad.designs[0].content.title = 'Tampered';
         await expect(tools.getPlan({ plan: bad })).rejects.toThrow(/CID/);
+    });
+    it('opens a CityJSON file the site downloaded as the plan it carries, and says when its city objects were edited', async () => {
+        const { tools, tower, park } = fixture();
+        const file = await File.create([tower, park].map(row => ({ ...row.content, createdAt: row.content.authoredAt })), { title: 'City model', view });
+        const doc = CityJson.fromPlanFile(file, { proj4 });
+        const opened = await tools.getPlan({ plan: doc });
+        expect(opened).toMatchObject({ cid: (await tools.getPlan({ plan: file })).cid, publication: 'private' });
+        expect(opened.warnings).toBeUndefined();
+        const edited = structuredClone(doc); edited.vertices[0][2] += 1000;
+        expect((await tools.getPlan({ plan: edited })).warnings).toEqual([expect.stringContaining('differ from the plan it carries')]);
+        delete doc.CityObjects[CityJson.PLAN_GROUP];
+        await expect(tools.getPlan({ plan: doc })).rejects.toMatchObject({ code: 'plan-file-required' });
     });
     it.each([
         ['hr-cadastre', 'oss-wfs'],

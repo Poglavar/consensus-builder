@@ -8,6 +8,8 @@
         "json": "Download editable plan",
         "geojson": "Download GeoJSON",
         "cityjson": "Download CityJSON",
+        "cityjsonEdited": "The buildings and spaces in this CityJSON file differ from the plan it carries. Import reads the carried plan, so changes made in other tools are not imported.",
+        "cityModelNoPlan": "This city model carries no plan from this site. To use its buildings, open a design in the Freeform editor and choose Upload footprints.",
         "import": "Import plan file",
         "importedPlans": "Imported plans",
         "help": "File formats and limits",

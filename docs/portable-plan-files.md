@@ -25,7 +25,7 @@ records are never rewritten. New keys use UUIDs. The store's real normalizer is 
 CID equivalence before commit. A failure rolls back the batch. There is no automatic apply,
 source fetch, city switch, signing, agreement import or publication.
 
-Download CityJSON makes a CityJSON 2.0 file from the same plan file, with the plan file inside ([CityGML and CityJSON](citygml.md)). The share panel supplies the same explicit selected set to both downloads, preserving exclusions
+Download CityJSON makes a CityJSON 2.0 file from the same plan file, with the plan file inside ([CityGML and CityJSON](citygml.md)); Import reads such a file back as that plan file. The share panel supplies the same explicit selected set to both downloads, preserving exclusions
 and agreement-scoped membership. Individual design download uses a one-member plan. Opening an
 imported plan supplies its saved view; subsequent view edits intentionally produce a new snapshot.
 
