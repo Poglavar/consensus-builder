@@ -114,9 +114,6 @@ describe('three-ground', () => {
         // Ground cover claims before the parcels, the background after them.
         expect(ORDER.cover).toBeLessThan(0);
         expect(ORDER.cover).toBeGreaterThan(ORDER.lid);
-        // Real-world water claims before the ground cover, so a canal is never grassed or paved over.
-        expect(ORDER.water).toBeGreaterThan(ORDER.lid);
-        expect(ORDER.water).toBeLessThan(-7); // three-mode's most specific cover, lawn, is -7
         expect(passes(background.material, 0)).toBe(true);
         for (const occupied of [PARCEL_BIT, STENCIL_BIT, PARCEL_BIT | STENCIL_BIT]) {
             expect(passes(background.material, occupied)).toBe(false);

@@ -52,11 +52,10 @@
     // lift of a few centimetres cannot reliably separate coplanar surfaces, especially large
     // triangles viewed at changing distances, and not at all on a phone's coarser depth buffer
     // (green areas striped through the parcels on Android, 2026-10-28). Each claiming surface
-    // (parcelSurface) draws only on pixels nothing claimed before it and claims them: real-world
-    // water (`water`) first, then the ground cover (`cover`, the real-world lawns, meadows and woods,
-    // most specific first), then the parcel slabs at the default order (0), and the background fills
-    // what is left afterwards.
-    const ORDER = Object.freeze({ lid: -20, roadbed: -10, kerb: -10, markings: -10, water: -8, cover: -5, pavement: 1 });
+    // (parcelSurface) draws only on pixels nothing claimed before it and claims them: the ground
+    // cover (`cover`, the real-world lawns, meadows and woods, most specific first) before the
+    // parcel slabs at the default order (0), and the background fills what is left afterwards.
+    const ORDER = Object.freeze({ lid: -20, roadbed: -10, kerb: -10, markings: -10, cover: -5, pavement: 1 });
 
     function create(options) {
         const THREE = options.THREE;
