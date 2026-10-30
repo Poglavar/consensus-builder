@@ -309,7 +309,7 @@
             if (entry.storeys) properties.storeys = entry.storeys;
             if (building.name) properties.name = String(building.name).slice(0, 120);
             if (building.function) properties.function = building.function;
-            features.push({ type: 'Feature', properties, geometry: { type: 'Polygon', coordinates: largest.coordinates } });
+            features.push({ type: 'Feature', ...(building.id ? { id: String(building.id) } : {}), properties, geometry: { type: 'Polygon', coordinates: largest.coordinates } });
         }
         return { type: 'FeatureCollection', features };
     }

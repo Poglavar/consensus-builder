@@ -35,8 +35,9 @@ export function createBrowserBuildingCells({ fetchImpl = (...args) => globalThis
     async function adapter(descriptor) {
         if (adapters.has(descriptor.id)) return adapters.get(descriptor.id);
         const options = { fetchImpl: directFetch(fetchImpl) };
-        const created = descriptor.adapter === 'overpass'
-            ? createOverpassAdapter(descriptor, options)
+        const created = descriptor.adapter === 'overpass' ? createOverpassAdapter(descriptor, options)
+            // The city-model reader (CityJSON, CityGML) loads only for a source that needs it.
+            : descriptor.adapter === 'city-model' ? (await import('./city-model-url-source.js')).createCityModelAdapter(descriptor, options)
             : await browserParcelFactories[descriptor.adapter](descriptor, options);
         const controlled = withSourceControls(created, { maxConcurrentQueries: 2 });
         // A few sources at most; the oldest goes first.

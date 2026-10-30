@@ -8,10 +8,14 @@ import { validatePublicSourceUrl } from './public-source-fetch.js';
 
 const fields = ['adapter', 'endpoint', 'cityIds', 'metricSrid', 'idField', 'objectIdField', 'idType',
     'typeName', 'featureType', 'version', 'collection', 'geometryField', 'versionField', 'idFields', 'outFields', 'parcelNumberField', 'bbox',
-    'boundsQueryMode', 'expectedSnapshotFeatures', 'expectedEtag', 'kind', 'heightField', 'levelsField', 'heightUnit'];
-// 'overpass' is an OpenStreetMap mirror (an Overpass API endpoint), for building sources only.
-const adapters = ['arcgis', 'wfs', 'ogc-api', 'socrata', 'geojson-snapshot', 'overpass'];
+    'boundsQueryMode', 'expectedSnapshotFeatures', 'expectedEtag', 'kind', 'heightField', 'levelsField', 'heightUnit', 'format', 'expectedSha256'];
+// 'overpass' is an OpenStreetMap mirror (an Overpass API endpoint) and 'city-model' a CityJSON or
+// CityGML file (buildings/city-model-url-source.js), for building sources only.
+const adapters = ['arcgis', 'wfs', 'ogc-api', 'socrata', 'geojson-snapshot', 'overpass', 'city-model'];
 const invalid = () => Object.assign(new HttpError(400, 'Invalid custom parcel source configuration.'), { code: 'invalid-source-url' });
+
+const validBbox = bbox => Array.isArray(bbox) && bbox.length === 4 && bbox.every(Number.isFinite)
+    && bbox[0] >= -180 && bbox[2] <= 180 && bbox[1] >= -90 && bbox[3] <= 90 && bbox[0] < bbox[2] && bbox[1] < bbox[3];
 
 function canonicalConfig(input) {
     if (!input || !adapters.includes(input.adapter)) throw invalid();
@@ -24,6 +28,13 @@ function canonicalConfig(input) {
         // An OpenStreetMap mirror: the endpoint and the city are its whole configuration.
         if (config.kind !== 'building' || Object.keys(config).some(key => !['adapter', 'endpoint', 'cityIds', 'kind'].includes(key))
             ) throw invalid();
+        return config;
+    }
+    if (config.adapter === 'city-model') {
+        // A city model file: its format, its buildings' WGS84 extent and the SHA-256 of the bytes read.
+        if (config.kind !== 'building' || Object.keys(config).some(key => !['adapter', 'endpoint', 'cityIds', 'kind', 'format', 'bbox', 'expectedSha256'].includes(key))
+            || !['cityjson', 'citygml'].includes(config.format) || !validBbox(config.bbox)
+            || typeof config.expectedSha256 !== 'string' || !/^[0-9a-f]{64}$/.test(config.expectedSha256)) throw invalid();
         return config;
     }
     if (!Number.isInteger(config.metricSrid) || config.metricSrid < 2000 || config.metricSrid > 99999
@@ -44,9 +55,7 @@ function canonicalConfig(input) {
     if (config.idType !== undefined && !['integer', 'string'].includes(config.idType)) throw invalid();
     if (config.version !== undefined && !['1.1.0', '2.0.0'].includes(config.version)) throw invalid();
     if (config.boundsQueryMode !== undefined && !['offset', 'object-ids'].includes(config.boundsQueryMode)) throw invalid();
-    if (config.bbox !== undefined && (!Array.isArray(config.bbox) || config.bbox.length !== 4
-        || !config.bbox.every(Number.isFinite) || config.bbox[0] < -180 || config.bbox[2] > 180
-        || config.bbox[1] < -90 || config.bbox[3] > 90 || config.bbox[0] >= config.bbox[2] || config.bbox[1] >= config.bbox[3])) throw invalid();
+    if (config.bbox !== undefined && !validBbox(config.bbox)) throw invalid();
     if (config.expectedSnapshotFeatures !== undefined && (!Number.isSafeInteger(config.expectedSnapshotFeatures)
         || config.expectedSnapshotFeatures < 0 || config.expectedSnapshotFeatures > 5000)) throw invalid();
     if (config.expectedEtag !== undefined && (typeof config.expectedEtag !== 'string' || !/^"[^"\r\n]{1,200}"$/.test(config.expectedEtag))) throw invalid();

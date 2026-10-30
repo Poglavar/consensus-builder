@@ -172,7 +172,7 @@ A selected dataset described by stable `id`, `abstraction`, `adapter`, `kind`, r
 
 ### Source list
 
-The ordered sources of one abstraction for a city (buildings so far): the city's declared sources (`buildings.sources`) and any a person adds, each in use or not, and a source not in use optionally drawn as reference outlines. The sources in use stand in for each other in list order, one cell at a time: a cell is answered wholly by the first source that does not fail it or find it empty. The person's list is kept per backend and city, or given in the URL (`buildingSources`); a change applies at once. A URL source (`building.<base64url>`, a public ArcGIS, WFS, OGC API, Socrata, GeoJSON or Overpass service) is read in the browser; a database source (`gdi-3d`, `dgu`, `osm`, New York's) through our server.
+The ordered sources of one abstraction for a city (buildings so far): the city's declared sources (`buildings.sources`) and any a person adds, each in use or not, and a source not in use optionally drawn as reference outlines. The sources in use stand in for each other in list order, one cell at a time: a cell is answered wholly by the first source that does not fail it or find it empty. The person's list is kept per backend and city, or given in the URL (`buildingSources`); a change applies at once. A URL source (`building.<base64url>`, a public ArcGIS, WFS, OGC API, Socrata, GeoJSON or Overpass service, or a CityJSON or CityGML file pinned by the hash of its bytes) is read in the browser; a database source (`gdi-3d`, `dgu`, `osm`, New York's) through our server.
 
 ## Land and parcel geometry
 

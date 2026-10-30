@@ -1,5 +1,6 @@
 // A user-chosen building source (a `building.<base64url>` id from GET /building-sources/discover):
-// the same ArcGIS / WFS / OGC API / Socrata / GeoJSON transports as custom parcel sources, behind
+// the same ArcGIS / WFS / OGC API / Socrata / GeoJSON transports as custom parcel sources, or a CityJSON /
+// CityGML file (city-model-url-source.js), behind
 // the same public-URL guard and cooldown, read as building footprints. The browser reads these
 // sources itself (its adapter worker, browser-building-cells.js); this server reader stays for
 // server-side consumers. The read and the height rules are shared with the browser
@@ -10,11 +11,14 @@ import { createParcelSource, withSourceCooldown } from '../parcels/sources.js';
 import { createPublicSourceFetch } from '../parcels/public-source-fetch.js';
 import { footprintFeatureToBuilding, expandBbox, unavailableFrom } from './osm-3d.js';
 import { readAdapterBox } from './building-cell-read.js';
+import { createCityModelAdapter } from './city-model-url-source.js';
 
 const log = (...args) => console.log(`[${new Date().toISOString()}] [custom-buildings]`, ...args);
 
 export function createCustomBuildingProvider(descriptor, { fetchImpl = createPublicSourceFetch() } = {}) {
-    const adapter = withSourceCooldown(createParcelSource(descriptor, { fetchImpl }));
+    // A city model file is one whole document, not a parcel-style service (city-model-url-source.js).
+    const adapter = withSourceCooldown(descriptor.adapter === 'city-model'
+        ? createCityModelAdapter(descriptor, { fetchImpl }) : createParcelSource(descriptor, { fetchImpl }));
 
     // The box read whole, or in quarters while the adapter says it is over its area or feature
     // limit. A failed quarter throws: the caller reports the box unavailable.

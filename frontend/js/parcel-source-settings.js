@@ -28,7 +28,7 @@
     };
     const kindOf = kind => KINDS[kind] || KINDS.parcel;
     // Strings whose parcel wording would be wrong for buildings: never borrowed from parcelSources.
-    const BUILDING_ONLY = new Set(['title', 'intro', 'url', 'matched', 'levelsOnly', 'noHeights', 'heightField', 'heightUnit', 'metres', 'feet', 'overpass', 'retry', 'add']);
+    const BUILDING_ONLY = new Set(['title', 'intro', 'url', 'matched', 'levelsOnly', 'noHeights', 'heightField', 'heightUnit', 'metres', 'feet', 'overpass', 'cityModel', 'retry', 'add']);
     function backend(global) {
         const param = new URLSearchParams(global.location?.search || '').get('backend');
         return String(global.getBackendBase?.() || param || 'https://api.urbangametheory.xyz').replace(/\/+$/, '');
@@ -47,8 +47,9 @@
             const encoded = sourceId.slice(spec.idPrefix.length).replace(/-/g, '+').replace(/_/g, '/');
             const json = typeof atob === 'function' ? atob(encoded) : Buffer.from(encoded, 'base64').toString('utf8');
             const value = JSON.parse(json);
-            // 'overpass' (an OpenStreetMap mirror) is a building source only; the kind check below holds it there.
-            if (!['arcgis', 'wfs', 'ogc-api', 'socrata', 'geojson-snapshot', 'overpass'].includes(value.adapter)) return null;
+            // 'overpass' (an OpenStreetMap mirror) and 'city-model' (a CityJSON or CityGML file) are building
+            // sources only; the kind check below holds them there.
+            if (!['arcgis', 'wfs', 'ogc-api', 'socrata', 'geojson-snapshot', 'overpass', 'city-model'].includes(value.adapter)) return null;
             if (value.cityIds?.length !== 1 || value.cityIds[0] !== city || !spec.idPattern.test(value.idPrefix)) return null;
             if ((value.kind === 'building') !== (kind === 'building')) return null;
             const url = new URL(value.endpoint);
@@ -384,6 +385,10 @@
         function describeHeights(source) {
             if (source.adapter === 'overpass') {
                 element('p', t('overpass', 'An OpenStreetMap mirror: heights come from OpenStreetMap where mapped and are estimated elsewhere.'), result);
+                return;
+            }
+            if (source.adapter === 'city-model') {
+                element('p', t('cityModel', 'A city model file: each building keeps its own height and storeys, and the file is read again only while it is unchanged.'), result);
                 return;
             }
             if (!source.heightField) {

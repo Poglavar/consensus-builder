@@ -32,6 +32,7 @@ export const buildingSourceRegistry = SourceRuntime.createRegistry({
         'ogc-api': { create: createCustomBuildingProvider },
         socrata: { create: createCustomBuildingProvider },
         'geojson-snapshot': { create: createCustomBuildingProvider },
+        'city-model': { create: createCustomBuildingProvider },
         overpass: { create: createOverpassBuildingProvider }
     },
     sources: builtins.map(([id, adapter]) => SourceRuntime.source('buildings', adapter, { id })),

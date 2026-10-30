@@ -1,11 +1,9 @@
 // CityGML building reader for the backend: streams CityGML text through saxes into the shared
 // collector of frontend/js/city-model-reader.js, so the browser (DOMParser) and the server read
 // buildings by one rule. buildingRecord turns a building into the 3D view's mesh record.
+// No Node imports, so the browser's adapter worker bundles it too (city-model-url-source.js).
 import { SaxesParser } from 'saxes';
-import { createRequire } from 'node:module';
-
-const require = createRequire(import.meta.url);
-const CityModelReader = require('../../frontend/js/city-model-reader.js');
+import CityModelReader from '../../frontend/js/city-model-reader.js';
 
 const local = name => name.slice(name.indexOf(':') + 1);
 

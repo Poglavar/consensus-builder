@@ -10,7 +10,7 @@ import { AREA_LIMIT_CODE, upstreamError } from '../parcels/source-contract.js';
 const FEET = 0.3048;
 // Adapters refuse a query over 1 km² (the descriptor's maxBboxKm2): a larger box is read in quarters.
 const MAX_SIDE_M = 950;
-const ADAPTERS = ['arcgis', 'wfs', 'ogc-api', 'socrata', 'geojson-snapshot', 'overpass'];
+const ADAPTERS = ['arcgis', 'wfs', 'ogc-api', 'socrata', 'geojson-snapshot', 'overpass', 'city-model'];
 // The limits every decoded building descriptor carries, as decodeCustomBuildingSource gives them
 // (parcels/custom-source-config.js; a test holds the two equal).
 export const BUILDING_SOURCE_LIMITS = Object.freeze({ pageSize: 250, maxFeatures: 5000, maxBboxKm2: 1,
@@ -38,8 +38,9 @@ export function customBuildingFeature(descriptor, feature) {
     };
 }
 
-// An OpenStreetMap mirror's features already carry OSM's height facts (osm-reference.js).
-const footprintFeature = (descriptor, feature) => descriptor.adapter === 'overpass' ? feature : customBuildingFeature(descriptor, feature);
+// An OpenStreetMap mirror's features already carry OSM's height facts (osm-reference.js), and a city
+// model's its buildings' own (city-model-url-source.js).
+const footprintFeature = (descriptor, feature) => ['overpass', 'city-model'].includes(descriptor.adapter) ? feature : customBuildingFeature(descriptor, feature);
 
 // The decoded descriptor of a `building.<base64url>` id, without Node: the payload is the canonical
 // configuration the server encoded (custom-source-config.js), its id prefix included.
