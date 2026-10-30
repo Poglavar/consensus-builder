@@ -48,7 +48,6 @@ test.describe('World navigation and open ground @features', () => {
     await expect(page.locator('#proposals-button')).toHaveAccessibleName('Lists');
     await page.locator('#proposals-button').click();
     const sheet = page.locator('#proposals-sheet');
-    await sheet.locator('[data-list-source="published"]').click();
     await expect(sheet.locator('#proposal-list-host .lists-item')).toHaveCount(7);
     await expect(sheet.locator('#lists-status')).toHaveText('Shown: 7');
   });
@@ -67,7 +66,6 @@ test.describe('World navigation and open ground @features', () => {
     await page.locator('#proposals-button').click();
     const sheet = page.locator('#proposals-sheet');
     listQueries.length = 0;
-    await sheet.locator('[data-list-source="published"]').click();
     await expect(sheet.locator('#proposal-list-host .lists-item')).toHaveCount(7);
     expect(listQueries.length).toBeGreaterThan(0);
     const bbox = await page.evaluate(() => (window as any).getProposalCountAreaContext().bbox.join(','));

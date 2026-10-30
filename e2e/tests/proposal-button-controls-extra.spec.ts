@@ -188,7 +188,6 @@ test.describe('proposal button controls: modal and alternate states @features', 
     await openCity(page);
     // Lists (01268caee): the Published scope reports a failed page in #lists-status; Refresh reloads it.
     const list = await openProposalList(page);
-    await list.locator('[data-list-source="published"]').click();
     await expect.poll(() => requests).toBeGreaterThan(0);
     const status = list.locator('#lists-status');
     await expect(status).toHaveText('temporary test outage');

@@ -38,7 +38,7 @@ async function assertCardsStayAligned(page: Page, viewportWidth: number): Promis
     await expect(row.locator('.lists-item__title')).toBeInViewport();
     await expect(row.locator('.fa-tree')).toBeVisible();
     await expect(row.getByRole('button', { name: 'Share', exact: true })).toBeInViewport();
-    await expect(row.getByRole('button', { name: 'Remove from browser', exact: true })).toBeInViewport();
+    await expect(row.getByRole('button', { name: 'Delete draft', exact: true })).toBeInViewport();
     const box = await row.boundingBox();
     expect(box!.x).toBeGreaterThan(0);
     expect(box!.x + box!.width).toBeLessThan(viewportWidth);

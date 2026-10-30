@@ -5,10 +5,29 @@
     if (root) root.ListsPanel = api.browser(root);
 })(typeof window === 'undefined' ? null : window, function () {
     'use strict';
+    // A row's stage of saving one object: a draft is autosaved in this browser only, a published one
+    // is saved on the server too, and an agreement put on chain is saved there as well.
+    function stageOf(row) {
+        return row.onChain ? 'onchain' : row.published ? 'published' : 'draft';
+    }
+    // One list per kind: the server's published rows and this browser's, one row per object. A
+    // browser's copy of a published object (its cache) joins that object's row under the copy's own
+    // key; drafts, and published copies the server page did not return, stay as they are.
+    function mergeRows(local, remote) {
+        const byCid = new Map(local.filter(row => row.cid).map(row => [row.cid, row]));
+        const joined = new Set();
+        const rows = remote.map(row => {
+            const mine = byCid.get(row.key);
+            if (!mine) return row;
+            joined.add(mine);
+            return { ...row, key: mine.key, local: row.local || mine.local, onChain: row.onChain || mine.onChain };
+        });
+        return [...rows, ...local.filter(row => !joined.has(row))];
+    }
     function filterRows(rows, { search = '', publication = 'all', sort = 'title' } = {}) {
         const query = search.trim().toLocaleLowerCase();
         return rows.filter(row => (!query || `${row.title} ${row.author || ''}`.toLocaleLowerCase().includes(query))
-            && (publication === 'all' || row.published === (publication === 'published')))
+            && (publication === 'all' || stageOf(row) === publication))
             .sort((a, b) => sort === 'title' ? a.title.localeCompare(b.title)
                 : String(b.createdAt || '').localeCompare(String(a.createdAt || '')) || a.title.localeCompare(b.title));
     }
@@ -23,7 +42,7 @@
     }
     function browser(win) {
         const doc = win.document;
-        const state = { tab: 'designs', source: 'local', search: '', publication: 'all', sort: 'title',
+        const state = { tab: 'designs', search: '', publication: 'all', sort: 'title',
             // selecting: the tab whose rows show checkboxes; purpose: what they are for ('compare', or
             // 'plan': the designs of a plan, ticked here with all of them shown on the map); planBase:
             // the plan whose revision they make, if any.
@@ -57,18 +76,19 @@
         function localRows(kind) {
             if (kind === 'designs') return win.proposalStorage.getAllProposals().map(record => ({
                 key: record.proposalId, title: record.title || t('planDialog.untitledDesign'), author: record.author,
-                createdAt: record.createdAt, published: !!win.DesignSync.publishedCid(record), record, local: record
+                createdAt: record.createdAt, published: !!win.DesignSync.publishedCid(record), cid: win.DesignSync.publishedCid(record) || null, record, local: record
             }));
             if (kind === 'plans') return win.NamedPlans.list({ storedOnly: true })
                 .filter(record => !record.content.view.city || win.normalizeCityCodeForApi(record.content.view.city) === city())
-                .map(record => ({ key: record.cid, title: record.content.title, published: record.published === true || !Array.isArray(record.designs), record, local: record }));
+                .map(record => ({ key: record.cid, title: record.content.title, published: record.published === true || !Array.isArray(record.designs), cid: record.cid, record, local: record }));
             return win.AgreementStore.list().map(record => ({ key: record.id, title: record.title || t('agreement.panel.untitled'),
-                author: record.author, createdAt: record.createdAt, published: !!record.published, record, local: record }));
+                author: record.author, createdAt: record.createdAt, published: !!record.published, cid: record.published?.cid || null,
+                onChain: !!record.onchain, record, local: record }));
         }
         function remoteRows(rows, kind) {
             const plans = kind === 'plans' ? new Map(localRows('plans').map(row => [row.key, row.local])) : null;
             return rows.map(record => ({ key: record.cid, title: record.title || record.content?.title || t(kind === 'designs' ? 'planDialog.untitledDesign' : 'agreement.panel.untitled'),
-                author: record.author, createdAt: record.createdAt, published: true, record,
+                author: record.author, createdAt: record.createdAt, published: true, onChain: !!record.onchain, record,
                 local: kind === 'designs' ? win.DesignSync.localCopyOf(record.cid)
                     : kind === 'plans' ? plans.get(record.cid) : win.AgreementSync.localCopyOf(record.cid) }));
         }
@@ -210,7 +230,6 @@
         async function choosePlanDesigns({ members = [], base = null } = {}) {
             if (!opened()) win.MapShell.openSheet('proposals-sheet');
             await select('designs');
-            state.source = 'local'; controls();
             state.selecting = 'designs'; state.purpose = 'plan'; state.planBase = base; state.selected.clear();
             for (const record of members) state.selected.set(String(record.proposalId), record);
             renderActions(); renderRows(); showPlanSelection();
@@ -317,14 +336,13 @@
         function renderRows() {
             if (!ready || !opened()) return;
             const kind = state.tab, page = state.remote.get(cacheKey());
-            const rows = state.source === 'local' ? localRows(kind) : remoteRows(page?.rows || [], kind);
+            const rows = mergeRows(localRows(kind), remoteRows(page?.rows || [], kind));
             const visible = filterRows(rows, state), list = host(); list.replaceChildren();
             const status = doc.getElementById('lists-status');
-            status.textContent = page?.loading && state.source === 'published' ? t('lists.loading')
-                : page?.error && state.source === 'published' ? page.error
+            status.textContent = page?.loading ? t('lists.loading') : page?.error ? page.error
                 : visible.length ? t('lists.count', { count: visible.length }) : '';
             status.hidden = !status.textContent;
-            list.setAttribute('aria-busy', String(state.source === 'published' && !!page?.loading));
+            list.setAttribute('aria-busy', String(!!page?.loading));
             for (const row of visible) {
                 const item = node('article', `lists-item${state.active === `${kind}:${row.key}` ? ' is-selected' : ''}`);
                 item.dataset.listId = row.key;
@@ -373,7 +391,6 @@
                 const badges = node('div', 'lists-item__badges');
                 if (kind === 'designs' && row.local) badges.innerHTML = win.proposalLadderBadgesHtml(row.local);
                 else badges.append(node('span', `cb-badge cb-badge--${row.published ? 'published' : 'draft'}`, t(row.published ? 'common.lifecycle.published' : 'common.lifecycle.draft')));
-                if (row.local) badges.append(node('span', 'cb-badge', t('modal.roadWidth.proposalList.sources.local')));
                 if (kind === 'agreements' && (row.record.onchain || row.record.status)) {
                     const status = row.record.onchain?.status || row.record.status;
                     badges.append(node('span', 'cb-badge', win.AgreementPanel.chainStatusText(status)));
@@ -415,31 +432,23 @@
                         win.MapShell.closeSheets(); return win.PlanDialog.schedule(plan);
                     }, '', 'hourglass-half'));
                 }
-                if (row.local) {
+                // Only a draft can be deleted: a published object is the server's, this browser only caches it.
+                if (row.local && !row.published) {
                     const trash = button('', () => remove(row, kind), 'btn-danger btn-icon lists-item__remove', 'trash-can');
                     trash.setAttribute('aria-label', t('lists.remove')); trash.title = t('lists.remove'); actions.append(trash);
                 }
                 item.append(actions); list.append(item);
             }
-            if (!visible.length && !page?.loading && !(state.source === 'published' && page?.error)) list.append(node('p', 'sheet-note', t(rows.length ? 'lists.noMatch' : 'lists.empty')));
-            if (state.source === 'published' && page?.next != null && !page.loading) list.append(button(t('lists.loadMore'), () => load(true)));
-            if (state.source === 'published' && page?.limited) list.append(node('p', 'sheet-note', t('lists.limited')));
+            if (!visible.length && !page?.loading && !page?.error) list.append(node('p', 'sheet-note', t(rows.length ? 'lists.noMatch' : 'lists.empty')));
+            if (page?.next != null && !page.loading) list.append(button(t('lists.loadMore'), () => load(true)));
+            if (page?.limited) list.append(node('p', 'sheet-note', t('lists.limited')));
         }
         function controls() {
             const box = doc.getElementById('lists-controls'); box.replaceChildren();
-            const scopes = node('div', 'cb-segmented cb-segmented--fill'); scopes.setAttribute('role', 'group');
-            scopes.setAttribute('aria-label', t('lists.source'));
-            for (const [value, key] of [['local', 'modal.roadWidth.proposalList.sources.local'], ['published', 'common.lifecycle.published']]) {
-                const el = button(t(key), async () => {
-                    state.source = value;
-                    for (const toggle of box.querySelectorAll('[data-list-source]')) toggle.setAttribute('aria-pressed', String(toggle.dataset.listSource === value));
-                    renderActions(); renderRows();
-                    if (value === 'published' && !state.remote.has(cacheKey())) await load();
-                    controls();
-                }, 'cb-segmented__option', value === 'local' ? 'laptop' : 'globe');
-                el.dataset.listSource = value; el.setAttribute('aria-pressed', String(state.source === value)); scopes.append(el);
-            }
-            box.append(scopes);
+            // Stages of saving: Draft, Published and, for agreements, On chain.
+            const stages = [['all', 'modal.roadWidth.proposalList.filters.publicationAll'], ['draft', 'common.lifecycle.draft'], ['published', 'common.lifecycle.published'],
+                ...(state.tab === 'agreements' ? [['onchain', 'agreement.chain.heading']] : [])];
+            if (!stages.some(([value]) => value === state.publication)) state.publication = 'all';
             const fields = node('div', 'lists-filters');
             const searchRow = node('div', 'lists-search-row');
             const search = node('input'); search.type = 'search'; search.value = state.search;
@@ -453,7 +462,7 @@
             });
             searchRow.append(search, toggle); box.append(searchRow);
             for (const [key, label, options] of [
-                ['publication', 'modal.roadWidth.proposalList.filters.publication', [['all', 'modal.roadWidth.proposalList.filters.publicationAll'], ['draft', 'common.lifecycle.draft'], ['published', 'common.lifecycle.published']]],
+                ['publication', 'modal.roadWidth.proposalList.filters.publication', stages],
                 ['sort', 'modal.roadWidth.proposalList.filters.sort', [['title', 'lists.byTitle'], ['newest', 'lists.newest']]]
             ]) {
                 const wrap = node('label', '', t(label)), select = node('select');
@@ -468,7 +477,7 @@
                 state.search = ''; state.publication = 'all'; state.sort = 'title'; controls(); renderRows();
             }, 'btn-quiet'));
             filters.append(actions); box.append(filters);
-            if (state.source === 'published') box.append(button(t('agreement.minted.refresh'), () => load(), 'lists-refresh', 'arrows-rotate'));
+            box.append(button(t('agreement.minted.refresh'), () => load(), 'lists-refresh', 'arrows-rotate'));
         }
         function init() {
             if (ready) return;
@@ -508,11 +517,11 @@
                 el.setAttribute('aria-selected', String(active)); el.tabIndex = active ? 0 : -1;
                 doc.getElementById(el.getAttribute('aria-controls')).hidden = !active;
             }
-            renderActions(); renderRows();
-            if (state.source === 'published' && !state.remote.has(cacheKey())) await load();
+            controls(); renderActions(); renderRows();
+            if (!state.remote.has(cacheKey())) load();
         }
         function refresh() { state.records.clear(); state.known.clear(); if (ready && opened()) { renderActions(); renderRows(); } }
         return { open: async () => { await win.i18n.translationsReady; init(); controls(); return select(state.tab); }, select, refresh, choosePlanDesigns };
     }
-    return { filterRows, indexQuery, browser };
+    return { stageOf, mergeRows, filterRows, indexQuery, browser };
 });

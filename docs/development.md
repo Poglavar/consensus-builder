@@ -246,8 +246,10 @@ it removed), `backend/test/park-planting.test.js` and `backend/test/frontend-str
 
 ## Lists and authoring boundaries
 
-The **Lists panel** contains **Designs**, **Plans**, and **Agreements** tabs. One **Source and filters**
-section preserves the browser/published scope, search, publication filter, and ordering across tabs.
+The **Lists panel** contains **Designs**, **Plans**, and **Agreements** tabs. Each tab is one list: the
+server's published objects and this browser's drafts, one row per object (a browser's copy of a
+published object is its cache and joins that object's row). One **filters** section keeps the search,
+the stage filter (Draft, Published and, for agreements, On chain) and the ordering across tabs.
 The shared body supplies the inset for every tab. Plan-file import and imported-plan controls live
 in Plans. The file format remains a plan, even with a single member; this presentation change
 adds no authored fields or MCP editing operations. Record icons and subtle tints follow their type,
@@ -295,8 +297,8 @@ No authored contract changes or new MCP editing operations are needed; MCP groun
 `AgreementHeadless.derive` over the same formation handlers. Targeted tests check the shared host,
 exact-member/source resolution and unchanged map state while inspecting an unapplied plan member.
 
-Record removal belongs only to Lists. **Remove from browser** confirms and removes the local copy;
-published links remain available. Removing a plan deletes its library entry, not its members or any
+Record removal belongs only to Lists. **Delete draft** confirms and deletes an unpublished record,
+which lives only in this browser; a published one has no delete (it is the server's, cached here). Removing a plan deletes its library entry, not its members or any
 agreement's embedded plan reference. Membership inspection can still follow that reference.
 The stored-plan list deliberately excludes plans inferred only from an agreement. The Share plan
 dialog publishes or copies one saved revision and never edits membership.

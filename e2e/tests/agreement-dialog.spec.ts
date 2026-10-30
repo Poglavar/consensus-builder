@@ -170,12 +170,12 @@ test('an agreement over an applied parcel layout is created from its plan, compa
   await panelStatus(page, 'current');
   await expect(page.locator('#agreement-panel-title')).toHaveText(TITLE);
 
-  // Remove from browser asks first; the agreement goes, its design stays on the map.
+  // Delete draft asks first; the agreement goes, its design stays on the map.
   await closeAgreementPanel(page);
   await openAgreementsList(page);
-  await item.getByRole('button', { name: 'Remove from browser', exact: true }).click();
+  await item.getByRole('button', { name: 'Delete draft', exact: true }).click();
   const confirm = page.locator('.cb-dialog').filter({ hasText: TITLE });
-  await confirm.getByRole('button', { name: 'Remove from browser', exact: true }).click();
+  await confirm.getByRole('button', { name: 'Delete draft', exact: true }).click();
   await expect(item).toHaveCount(0);
   expect(await storedAgreements(page)).toEqual([]);
   expect(await isLayoutApplied(page, layoutId)).toBe(true);

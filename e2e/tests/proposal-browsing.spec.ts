@@ -49,16 +49,12 @@ test.describe('Proposal browsing @features', () => {
     await selectNativeOption(order, 'newest');
     await expect(titles).toHaveText(['South park plan', 'North park plan', 'Road safety plan']);
 
-    // Designs come from this device or from the server's index; none are read from a chain (M3).
-    await expect(list.locator('[data-list-source]')).toHaveCount(2);
-    await list.locator('[data-list-source="published"]').click();
-    await expect(list.locator('[data-list-source="published"]')).toHaveAttribute('aria-pressed', 'true');
-    // Restore local source before removing; removal is offered only for locally held records.
-    await list.locator('[data-list-source="local"]').click();
+    // One list: this browser's drafts with the server's published designs; there is no source switch.
+    await expect(list.locator('[data-list-source]')).toHaveCount(0);
     await expect(rows).toHaveCount(3);
     const target = list.locator(`#proposal-list-host .lists-item[data-list-id="${ids[2]}"]`);
-    await target.getByRole('button', { name: 'Remove from browser', exact: true }).click();
-    await page.locator('.cb-dialog').getByRole('button', { name: 'Remove from browser', exact: true }).click();
+    await target.getByRole('button', { name: 'Delete draft', exact: true }).click();
+    await page.locator('.cb-dialog').getByRole('button', { name: 'Delete draft', exact: true }).click();
     await expect.poll(() => page.evaluate(id => (window as any).getProposalByIdOrHash(id) == null, ids[2])).toBe(true);
     await expect(rows).toHaveCount(2);
   });
