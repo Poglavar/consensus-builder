@@ -3333,13 +3333,14 @@ function loadGeojsonFootprint(file) {
     const reader = new FileReader();
     reader.onload = async () => {
         try {
+            await window.ensureOptionalTool('cityModel');
             await window.openFreeformGeoJSONBuildings(window.CityModelReader.geoJsonFromFileText(reader.result, { proj4: window.proj4, turf }), {
                 blockName: getBlockifyDisplayName(),
                 closeSource: () => closeBlockifyModal({ preservePending: true, continueDesignSession: true })
             });
         } catch (error) {
             console.error('GeoJSON building import failed', error);
-            const crsMessage = window.CityModelReader.crsErrorMessage(error, window.i18n);
+            const crsMessage = window.CityModelReader?.crsErrorMessage(error, window.i18n);
             if (crsMessage) window.CbDialog.alert(crsMessage);
             else showBuildingAlert('blockify.modal.manual.uploadNoPolygon', 'Could not import the file. Use valid Polygon or MultiPolygon building footprints.');
         }

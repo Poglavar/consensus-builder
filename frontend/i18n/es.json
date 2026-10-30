@@ -16,6 +16,7 @@
         "design": "Descargar diseño",
         "plan": "Descargar plan",
         "roadOsm": "Descargar vía para importar (OSM)",
+        "roadOsmXml": "Descargar vía para JOSM o SUMO (OSM XML)",
         "layoutPlots": "Descargar lotes (GeoJSON)",
         "agreementNoPlan": "Este acuerdo aún no tiene plan, así que no se puede descargar.",
         "importAgreement": "Importar archivo de acuerdo",

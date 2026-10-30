@@ -36,7 +36,11 @@ function browser() {
         PlanComposition: { localRecords: vi.fn(row => row.designs.map(member => ({ proposalId: `plan-member-${member.cid}` }))) },
         DesignSync: { apiBase: () => 'https://api.example' },
         MapShare: { capture: () => ({ at: '45.8,15.9,18' }) }, FileDownload, DesignFileExports,
-        CityJsonExport: { fromPlanFile: vi.fn(file => ({ type: 'CityJSON', version: '2.0', title: file.options.title })) }, proj4: () => null
+        proj4: () => null,
+        // The CityJSON exporter loads on first use, as in the page.
+        ensureOptionalTool: vi.fn(async group => {
+            if (group === 'cityJson') win.CityJsonExport = { fromPlanFile: vi.fn(file => ({ type: 'CityJSON', version: '2.0', title: file.options.title })) };
+        })
     };
     return { win, modals, downloads };
 }
@@ -56,7 +60,9 @@ describe('PlanFileUI downloads from any surface', () => {
         await buttonOf(modals[0], 'geojson').click();
         expect(downloads[1].name).toBe('riverside-blocks-c.geojson');
         // CityJSON is made from the same plan file the editable download is.
+        expect(win.CityJsonExport).toBeUndefined();
         await buttonOf(modals[0], 'cityjson').click();
+        expect(win.ensureOptionalTool).toHaveBeenCalledWith('cityJson');
         expect(downloads[2].name).toBe('riverside-blocks-c.city.json');
         expect(win.CityJsonExport.fromPlanFile).toHaveBeenCalledWith(expect.objectContaining({ records: [{ proposalId: 'p1', title: 'Riverside Blocks č' }] }), { proj4: win.proj4 });
         expect(JSON.parse(await downloads.blob.text())).toEqual({ type: 'CityJSON', version: '2.0', title: 'Riverside Blocks č' });

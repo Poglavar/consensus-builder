@@ -16,6 +16,7 @@
         "design": "Preuzmi dizajn",
         "plan": "Preuzmi plan",
         "roadOsm": "Preuzmi cestu za uvoz (OSM)",
+        "roadOsmXml": "Preuzmi cestu za JOSM ili SUMO (OSM XML)",
         "layoutPlots": "Preuzmi čestice (GeoJSON)",
         "agreementNoPlan": "Ovaj sporazum još nema plan, pa se ne može preuzeti.",
         "importAgreement": "Uvezi datoteku sporazuma",

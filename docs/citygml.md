@@ -32,7 +32,7 @@ loosely in INSPIRE planned land use) and agreements (no standard).
 | Footprint import in the building editors (Freeform, Row, Block) | Import: CityGML / CityJSON buildings as footprints with heights | Same files, when only the outline is wanted. |
 | Plan file import and download | Import and export: CityJSON beside `ugt-plan-file/v1` | Opens in QGIS, FME, ninja and cjio. |
 | Design download | Export: CityJSON for building, park, square, lake and road designs | Same, one design at a time. |
-| Roads (OSM document, OpenDRIVE) | Export only: road surfaces in the plan or design CityJSON | Roads are exchanged as OSM and OpenDRIVE, rarely as CityGML. |
+| Roads (OSM document, OpenDRIVE) | Export only: road surfaces in the plan or design CityJSON | Roads are exchanged as OSM and OpenDRIVE, rarely as CityGML: Road → Import reads OSM (XML and JSON) and OpenDRIVE, a road design downloads as OSM JSON and OSM XML. |
 | Parcels, parcel layouts, ownership, agreements | None | Parcels travel as cadastral GML/GeoJSON (LADM concepts), not CityGML; agreements have no standard. |
 | Parks, land use, terrain, trees as imports | None for now | Little exchanged as CityGML; revisit when a source needs it. |
 
@@ -211,7 +211,8 @@ do not adopt an encoding until a source or a consumer needs one.
 
 GeoJSON features and Three.js stay the working model. CityJSON is converted at the file and
 source boundary, by one pure module (no DOM, no Three.js) that node tests drive in both
-directions.
+directions. In the page the reader and the exporter load on first use (`optional-tools-loader.js`
+groups `cityModel` and `cityJson`), not with the page.
 
 ## Open questions
 

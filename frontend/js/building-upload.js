@@ -293,6 +293,7 @@
 
     // A CityGML or CityJSON building → a GLB File and where it stands, or throws with a user message.
     async function cityModelGlb(file) {
+        await window.ensureOptionalTool('cityModel');
         const model = window.CityModelReader.readCityModel(await file.text());
         if (!model) throw Object.assign(new Error('Not a city model'), { code: 'not-city-model' });
         if (!model.buildings.length) throw Object.assign(new Error('No building'), { userMessage: t('modal.buildingUpload.errorEmpty', 'The model contains no visible geometry.') });
@@ -345,7 +346,7 @@
             } catch (error) {
                 if (!isCurrent()) return;
                 console.warn('City model upload failed', error);
-                setStatus(error.userMessage || window.CityModelReader.crsErrorMessage(error, window.i18n)
+                setStatus(error.userMessage || window.CityModelReader?.crsErrorMessage(error, window.i18n)
                     || t('modal.buildingUpload.errorCityModel', 'Could not read this file as a CityGML or CityJSON building.'), true);
                 return;
             }

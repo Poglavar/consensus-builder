@@ -43,6 +43,11 @@ ways cannot say: tunnels, grade separations, the road-in-parcel `bound`, edge fi
 construction frame and metadata (`CARRIED_FIELDS` in `corridor-import.js`). The import keeps a
 stretch id a way already carries (`cb:segment`), so a tunnel's `segmentId` still points at its
 stretch. Footprint, demolitions and connections to other roads are derived again on placement.
+The same ways also download as OSM XML (`<title>.osm`, `osmXml`) for tools that read only XML: JOSM,
+and SUMO's `netconvert`, which turns it into OpenDRIVE (`netconvert --osm-files road.osm
+--opendrive-output road.xodr`). Its ids are negative and its root says `upload="never"`, so an
+editor does not send a design to OpenStreetMap; it has no `cb:definition`, so Road → Import reads
+it back as the same ways without the carried fields.
 An agreement downloads as an agreement file (`<title>.ugt-agreement.json`, `agreement-file.js`)
 from its row in Lists → Agreements and from the agreement panel (standalone or in the click stack);
 a published agreement this device does not hold is fetched for it. The file holds the agreement

@@ -769,14 +769,15 @@
     function loadSingleBuildingGeoJSON(file) {
         if (!file || !window.PolygonGeometryEditor) return;
         const reader = new FileReader();
-        reader.onload = () => {
+        reader.onload = async () => {
             let features;
             try {
+                await window.ensureOptionalTool('cityModel');
                 features = importedBuildingFeatures(window.CityModelReader.geoJsonFromFileText(reader.result, { proj4: window.proj4, turf }));
                 if (features.some(feature => !editableFootprintValid(feature))) throw new Error('Footprint outside locked site.');
             } catch (error) {
                 console.error('Freeform-building GeoJSON import failed', error);
-                const crsMessage = window.CityModelReader.crsErrorMessage(error, window.i18n);
+                const crsMessage = window.CityModelReader?.crsErrorMessage(error, window.i18n);
                 if (crsMessage) window.CbDialog.alert(crsMessage);
                 else showSingleBuildingEditorAlert('uploadInvalid', 'The uploaded geometry is invalid or outside the locked site.');
                 return;

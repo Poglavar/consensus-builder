@@ -848,13 +848,14 @@
         const reader = new FileReader();
         reader.onload = async () => {
             try {
+                await window.ensureOptionalTool('cityModel');
                 await window.openFreeformGeoJSONBuildings(window.CityModelReader.geoJsonFromFileText(reader.result, { proj4: window.proj4, turf }), {
                     blockName: rowHouseBlockNameOverride || null,
                     closeSource: () => closeRowHouseModal({ preservePending: true, continueDesignSession: true })
                 });
             } catch (error) {
                 console.error('Row-house GeoJSON import failed', error);
-                const crsMessage = window.CityModelReader.crsErrorMessage(error, window.i18n);
+                const crsMessage = window.CityModelReader?.crsErrorMessage(error, window.i18n);
                 if (crsMessage) window.CbDialog.alert(crsMessage);
                 else showRowHouseEditorAlert('uploadNoPolygon', 'Could not import the file. Use valid Polygon or MultiPolygon building footprints.');
             }

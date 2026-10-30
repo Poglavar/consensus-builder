@@ -162,7 +162,10 @@
                 button(t('json', 'Download editable plan'), async () => download(win.PlanFile.stringify(await make()), `${fileStem(getTitle())}.ugt.json`, 'application/json'), 'json');
                 button(t('geojson', 'Download GeoJSON'), () => download(JSON.stringify(win.PlanFile.geojsonRecords(structuredClone(getRecords()), { title: getTitle(), view: structuredClone(getView()) }), null, 2) + '\n', `${fileStem(getTitle())}.geojson`, 'application/geo+json'), 'geojson');
                 // CityJSON beside our own files: buildings, roads and spaces as city objects, the plan file inside (city-json-export.js).
-                button(t('cityjson', 'Download CityJSON'), async () => download(JSON.stringify(win.CityJsonExport.fromPlanFile(await make(), { proj4: win.proj4 })) + '\n', `${fileStem(getTitle())}.city.json`, 'application/city+json'), 'cityjson');
+                button(t('cityjson', 'Download CityJSON'), async () => {
+                    await win.ensureOptionalTool('cityJson');
+                    download(JSON.stringify(win.CityJsonExport.fromPlanFile(await make(), { proj4: win.proj4 })) + '\n', `${fileStem(getTitle())}.city.json`, 'application/city+json');
+                }, 'cityjson');
             }
             extras.forEach(extra => button(extra.label, () => { const file = extra.make(); download(file.text, file.name, file.type); }, extra.hook));
             return group;
@@ -183,6 +186,7 @@
                     const text = await file.text();
                     if (kind === 'agreements') parsed = win.AgreementFile.parse(text);
                     else {
+                        await win.ensureOptionalTool('cityJson');
                         const carried = win.CityJsonExport.readBack(text, { proj4: win.proj4 });
                         if (carried) { format = 'cityjson'; parsed = carried.file; edited = carried.edited; }
                         else if (win.CityModelReader.readCityModel(text)) {
@@ -193,7 +197,7 @@
                     }
                 } catch (e) {
                     note('failure');
-                    const crs = win.CityModelReader.crsErrorMessage(e, win.i18n);
+                    const crs = win.CityModelReader?.crsErrorMessage(e, win.i18n);
                     if (crs) { win.CbDialog.alert(crs); return; }
                     throw e;
                 }
@@ -230,7 +234,7 @@
         }
         // A road also downloads as its OSM document (Road → Import reads it back) and a parcel layout
         // as its plots (the layout editor's Upload GeoJSON reads them back).
-        const EXTRA_LABELS = { 'road-osm': ['roadOsm', 'Download road for import (OSM)'], 'layout-plots': ['layoutPlots', 'Download plots (GeoJSON)'] };
+        const EXTRA_LABELS = { 'road-osm': ['roadOsm', 'Download road for import (OSM)'], 'road-osm-xml': ['roadOsmXml', 'Download road for JOSM or SUMO (OSM XML)'], 'layout-plots': ['layoutPlots', 'Download plots (GeoJSON)'] };
         function design(record) {
             const title = () => record.title || 'My design';
             const extras = win.DesignFileExports.downloadsFor(record).map(file => ({ label: t(...EXTRA_LABELS[file.id]), hook: file.id,

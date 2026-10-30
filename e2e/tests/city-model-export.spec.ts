@@ -21,6 +21,8 @@ test('Download design offers CityJSON beside the editable plan and GeoJSON, and 
   await page.locator('#click-stack').getByRole('button', { name: 'Download', exact: true }).click();
   const dialog = page.locator('.cb-dialog').filter({ hasText: 'Download design' });
   await expect(dialog.locator('[data-plan-file-action]')).toHaveCount(3);
+  // The CityGML/CityJSON code loads on first use, not with the page.
+  expect(await page.evaluate(() => [typeof (window as any).CityModelReader, typeof (window as any).CityJsonExport])).toEqual(['undefined', 'undefined']);
   const download = page.waitForEvent('download');
   await dialog.getByRole('button', { name: 'Download CityJSON', exact: true }).click();
   const file = await download;

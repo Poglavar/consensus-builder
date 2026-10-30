@@ -69,6 +69,28 @@ describe('a road downloads as the OSM document Road → Import reads back', () =
     });
 });
 
+describe('a road downloads as OSM XML for JOSM and netconvert', () => {
+    it('writes the same ways, which Road → Import reads back as the same road', () => {
+        const record = roadRecord();
+        record.title = 'Main & "Market" <Street>';
+        const files = Exports.downloadsFor(record);
+        expect(files.map(file => file.id)).toEqual(['road-osm', 'road-osm-xml']);
+        const xml = files[1];
+        expect(xml).toMatchObject({ suffix: '.osm', type: 'application/vnd.openstreetmap.data+xml' });
+        expect(xml.text).toMatch(/^<\?xml version="1.0" encoding="UTF-8"\?>\n<osm version="0.6" generator="consensus-builder" upload="never">/);
+        expect(xml.text).toContain('<tag k="name" v="Main &amp; &quot;Market&quot; &lt;Street&gt;"/>');
+        const json = JSON.parse(files[0].text);
+        // Every node and way, with its id, position, references and tags, as in the OSM JSON.
+        expect(require('../../frontend/js/corridor-import-osm.js').elementsFromXml(xml.text)).toEqual(json.elements);
+        const format = imports.formatFor('main-street.osm', null, xml.text);
+        expect(format.id).toBe('osm');
+        const [imported] = imports.recordsFromImport(format.parse(xml.text));
+        expect(imported.title).toBe('Main & "Market" <Street>');
+        expect(imported.roadProposal.definition.segments).toEqual(record.roadProposal.definition.segments);
+        expect(imported.roadProposal.definition.profile.strips.map(lane => [lane.type, lane.width])).toEqual(strips(10).strips.map(lane => [lane.type, lane.width]));
+    });
+});
+
 describe('a parcel layout downloads its plots as GeoJSON polygons', () => {
     it('numbers each plot and keeps its geometry', () => {
         const square = x => ({ type: 'Polygon', coordinates: [[[x, 0], [x + 1, 0], [x + 1, 1], [x, 1], [x, 0]]] });

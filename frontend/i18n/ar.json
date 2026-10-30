@@ -16,6 +16,7 @@
         "design": "تنزيل التصميم",
         "plan": "تنزيل الخطة",
         "roadOsm": "تنزيل الطريق للاستيراد (OSM)",
+        "roadOsmXml": "تنزيل الطريق لـ JOSM أو SUMO (OSM XML)",
         "layoutPlots": "تنزيل القطع (GeoJSON)",
         "agreementNoPlan": "لا توجد خطة لهذا الاتفاق بعد، لذا لا يمكن تنزيله.",
         "importAgreement": "استيراد ملف اتفاق",
