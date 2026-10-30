@@ -4123,6 +4123,7 @@
             "linkLabel": "Lien vers le projet publié",
             "errors": {
                 "cidMismatch": "Le serveur a calculé une identité différente pour ce projet ; rien n’a donc été publié.",
+                "displaced": "Un autre projet de ce plan occupe le même terrain : les deux ne peuvent pas coexister.",
                 "tooLarge": "Ce projet dépasse la limite de publication de 10 MiB. Réduisez son étendue ou son niveau de détail avant de le partager ; il est enregistré localement.",
                 "invalidDesign": "Ce projet contient des données invalides. Corrigez-les avant de le partager.",
                 "rateLimitedFor": "Trop de publications pour le moment. Réessayez dans environ {{minutes}} min.",
@@ -8556,6 +8557,10 @@
         "savedPlans": "Plans enregistrés",
         "createPlan": "Créer un plan",
         "changeDesigns": "Modifier les conceptions",
+        "applyTitle": "Appliquer « {{title}} » à votre carte ?",
+        "applyQuestion": "Les projets de ce plan ne sont pas sur votre carte. Pour continuer, ils y sont appliqués. Les projets déjà appliqués restent ; si certains entrent en conflit avec ce plan, on vous demandera quoi faire.",
+        "applyAndContinue": "Appliquer et continuer",
+        "applyFailed": "Le plan n’a pas pu être appliqué à la carte.",
         "editPlan": "Modifier le plan",
         "saveRevision": "Enregistrer une nouvelle version",
         "name": "Nom du plan",

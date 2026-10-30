@@ -1144,6 +1144,7 @@
             "linkLabel": "Enlace al diseño publicado",
             "errors": {
                 "cidMismatch": "El servidor calculó una identidad distinta para este diseño, así que no se publicó nada.",
+                "displaced": "Otro diseño de este plan ocupa el mismo terreno, así que los dos no pueden estar a la vez.",
                 "tooLarge": "Este diseño supera el límite de publicación de 10 MiB. Reduce su extensión o detalle antes de compartirlo; está guardado localmente.",
                 "invalidDesign": "Este diseño contiene datos no válidos. Corrígelos antes de compartirlo.",
                 "rateLimitedFor": "Demasiadas publicaciones por ahora. Inténtalo de nuevo en unos {{minutes}} min.",
@@ -8769,6 +8770,10 @@
         "savedPlans": "Planes guardados",
         "createPlan": "Crear plan",
         "changeDesigns": "Cambiar diseños",
+        "applyTitle": "¿Aplicar «{{title}}» a tu mapa?",
+        "applyQuestion": "Los diseños de este plan no están en tu mapa. Para continuar, se aplican a él. Los diseños que ya aplicaste se mantienen; si alguno entra en conflicto con este plan, se te preguntará qué hacer.",
+        "applyAndContinue": "Aplicar y continuar",
+        "applyFailed": "No se pudo aplicar el plan al mapa.",
         "editPlan": "Editar plan",
         "saveRevision": "Guardar nueva versión",
         "name": "Nombre del plan",

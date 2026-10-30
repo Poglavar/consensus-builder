@@ -47,6 +47,38 @@ describe('plan workspace',()=>{
   expect(h.win.NamedPlans.save).toHaveBeenCalledWith(row.content);expect(JSON.parse(h.store.get(`plan:${row.cid}`)).designs).toEqual(row.designs);
   expect(h.win.guestPolicyBlocks).toHaveBeenCalledWith('publish');
  });
+ it('names a plan applied only when every member is a local applied design',()=>{
+  const cidOf=record=>{if(!record.cid)throw new Error('no cid');return record.cid;},isApplied=record=>record.applied;
+  const records=[{cid:'a',applied:true},{cid:'b',applied:true},{title:'draft without a cid'}];
+  expect(PlanComposition.appliedMembers(['b','a'],records,{cidOf,isApplied}).map(r=>r.cid)).toEqual(['b','a']);
+  expect(PlanComposition.appliedMembers(['a','c'],records,{cidOf,isApplied})).toBeNull();
+  expect(PlanComposition.appliedMembers(['a'],[{cid:'a',applied:false}],{cidOf,isApplied})).toBeNull();
+ });
+ function applyHarness({applied=false,confirm=true,route={}}={}) {
+  const row=snapshot(),cid=row.designs[0].cid,state={applied};
+  const h=harness({DesignRecord:{cidOf:record=>record.cid},isApplied:()=>state.applied,
+   proposalStorage:{getAllProposals:()=>[{cid}],getProposal:()=>null},
+   CbDialog:{confirm:vi.fn(async()=>confirm)},__siteBinding:{siteOf:content=>content.site},turf:{},
+   handleSharedDesignRoute:vi.fn(async()=>{state.applied=!route.blocked&&!route.failed;return {blocked:!!route.blocked,failed:route.failed||[],omitted:[],localIds:new Map()};}),
+   fetch:vi.fn(async()=>({ok:true,json:async()=>({binding:{parcels:[]}})}))});
+  return {...h,row,cid};
+ }
+ it('applies a previewed private plan from its carried revisions, a published one from the index',async()=>{
+  const h=applyHarness();
+  expect(await h.api.apply(h.row)).toEqual({blocked:false});
+  const [cids,options]=h.win.handleSharedDesignRoute.mock.calls[0];
+  expect(cids).toEqual([h.cid]);expect([...options.draftRows.keys()]).toEqual([h.cid]);
+  const published=applyHarness();await published.api.apply({...published.row,published:true});
+  expect(published.win.handleSharedDesignRoute.mock.calls[0][1].draftRows).toBeUndefined();expect(published.win.fetch).not.toHaveBeenCalled();
+ });
+ it('asks before applying a previewed plan and goes on only on a yes',async()=>{
+  const yes=applyHarness();expect(await yes.api.ensureApplied(yes.row)).toBe(true);
+  expect(yes.win.CbDialog.confirm).toHaveBeenCalledTimes(1);expect(yes.win.handleSharedDesignRoute).toHaveBeenCalledTimes(1);
+  const no=applyHarness({confirm:false});expect(await no.api.ensureApplied(no.row)).toBe(false);expect(no.win.handleSharedDesignRoute).not.toHaveBeenCalled();
+  const done=applyHarness({applied:true});expect(await done.api.ensureApplied(done.row)).toBe(true);expect(done.win.CbDialog.confirm).not.toHaveBeenCalled();
+  const declined=applyHarness({route:{blocked:true}});expect(await declined.api.ensureApplied(declined.row)).toBe(false);
+  const failed=applyHarness({route:{failed:[{reason:'ground changed'}]}});await expect(failed.api.ensureApplied(failed.row)).rejects.toThrow('ground changed');
+ });
  it('returns null for an unpublished public link and verifies a canonical published row',async()=>{
   const row=snapshot(),h=harness();h.win.fetch=vi.fn().mockResolvedValueOnce({status:404}).mockResolvedValueOnce({status:200,ok:true,json:async()=>({cid:row.cid,content:row.content})});
   expect(await h.api.publication(row)).toBeNull();

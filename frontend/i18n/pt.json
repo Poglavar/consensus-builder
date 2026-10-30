@@ -4123,6 +4123,7 @@
             "linkLabel": "Ligação para o projeto publicado",
             "errors": {
                 "cidMismatch": "O servidor calculou uma identidade diferente para este projeto, pelo que nada foi publicado.",
+                "displaced": "Outro projeto deste plano ocupa o mesmo terreno, por isso os dois não podem coexistir.",
                 "tooLarge": "Este projeto excede o limite de publicação de 10 MiB. Reduza a sua extensão ou o nível de detalhe antes de partilhar; está guardado localmente.",
                 "invalidDesign": "Este projeto contém dados inválidos. Corrija-os antes de partilhar.",
                 "rateLimitedFor": "Demasiadas publicações de momento. Tente novamente dentro de cerca de {{minutes}} min.",
@@ -8556,6 +8557,10 @@
         "savedPlans": "Planos guardados",
         "createPlan": "Criar plano",
         "changeDesigns": "Alterar desenhos",
+        "applyTitle": "Aplicar «{{title}}» ao seu mapa?",
+        "applyQuestion": "Os projetos deste plano não estão no seu mapa. Para continuar, são aplicados a ele. Os projetos já aplicados mantêm-se; se algum entrar em conflito com este plano, será perguntado o que fazer.",
+        "applyAndContinue": "Aplicar e continuar",
+        "applyFailed": "Não foi possível aplicar o plano ao mapa.",
         "editPlan": "Editar plano",
         "saveRevision": "Guardar nova versão",
         "name": "Nome do plano",

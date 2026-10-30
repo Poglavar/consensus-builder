@@ -75,5 +75,44 @@
         save({ ...copy(row), published:true });
         return published;
     }
-    win.PlanWorkspace = Object.freeze({ save, list, resolve, publish, publication });
+    // The plan's members as applied local designs, or null while it is only previewed here.
+    function appliedMembers(plan) {
+        return win.PlanComposition.appliedMembers(plan.content.designCids, win.proposalStorage.getAllProposals(),
+            { cidOf: record => win.DesignRecord.cidOf(record), isApplied: record => win.isApplied(record) });
+    }
+    // Applies the plan's exact revisions. A published plan's come from the design index; a private
+    // one's from the revisions it carries, which the index does not hold. Returns { blocked: true }
+    // when the visitor declined a conflict with designs already applied; throws when a member fails.
+    async function apply(plan) {
+        const draftRows = new Map();
+        for (const member of plan.published ? [] : plan.designs || []) {
+            const content = member.content;
+            const parcelSourceId = win.DesignSync.parcelSourceIdOf(content.city, content.site);
+            const response = await win.fetch(backend() + '/designs/binding', {
+                method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({
+                    city: content.city, site: win.__siteBinding.siteOf(content, { turf: win.turf }),
+                    toleranceM: content.toleranceM, parcelSourceId })
+            });
+            const answer = await response.json();
+            if (!response.ok) throw new Error(answer.error || win.i18n.t('planDialog.applyFailed'));
+            draftRows.set(member.cid, { cid: member.cid, content, city: content.city, parcelSourceId, binding: answer.binding });
+        }
+        const result = await win.handleSharedDesignRoute(plan.content.designCids, {
+            ...(draftRows.size ? { draftRows } : {}), openDetails: false, enter3D: false, summary: false });
+        if (result.blocked) return { blocked: true };
+        if (result.failed.length || result.omitted?.length || !appliedMembers(plan)) {
+            throw new Error(result.failed.map(item => [item.label, item.reason].filter(Boolean).join(': ')).join('; ') || win.i18n.t('planDialog.applyFailed'));
+        }
+        return { blocked: false };
+    }
+    // A copied address opens a plan as a preview, unapplied. An action that reads the plan's land
+    // (an agreement, the rooster) asks once, applies it and goes on; false when the visitor declines.
+    async function ensureApplied(plan) {
+        if (appliedMembers(plan)) return true;
+        const title = plan.content.title;
+        const confirmed = await win.CbDialog.confirm(win.i18n.t('planDialog.applyQuestion', { title }), {
+            title: win.i18n.t('planDialog.applyTitle', { title }), okText: win.i18n.t('planDialog.applyAndContinue') });
+        return confirmed && !(await apply(plan)).blocked;
+    }
+    win.PlanWorkspace = Object.freeze({ save, list, resolve, publish, publication, appliedMembers, apply, ensureApplied });
 })(window);

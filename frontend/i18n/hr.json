@@ -1146,6 +1146,7 @@
             "linkLabel": "Link na objavljeni dizajn",
             "errors": {
                 "cidMismatch": "Poslužitelj je izračunao drugačiji identitet ovog dizajna pa ništa nije objavljeno.",
+                "displaced": "Drugi dizajn ovog plana zauzima isto zemljište pa ne mogu stajati zajedno.",
                 "tooLarge": "Dizajn prelazi ograničenje objave od 10 MiB. Smanjite njegov obuhvat ili detalje prije dijeljenja; spremljen je lokalno.",
                 "invalidDesign": "Dizajn sadrži neispravne podatke. Ispravite ih prije dijeljenja.",
                 "rateLimitedFor": "Zasad je previše objava. Pokušajte ponovno za otprilike {{minutes}} min.",
@@ -8793,6 +8794,10 @@
         "savedPlans": "Spremljeni planovi",
         "createPlan": "Izradi plan",
         "changeDesigns": "Promijeni dizajne",
+        "applyTitle": "Primijeniti „{{title}}” na kartu?",
+        "applyQuestion": "Dizajni ovog plana nisu na vašoj karti. Za nastavak se primjenjuju na nju. Već primijenjeni dizajni ostaju; ako se neki od njih sukobljava s ovim planom, pitat ćemo vas što učiniti.",
+        "applyAndContinue": "Primijeni i nastavi",
+        "applyFailed": "Plan nije moguće primijeniti na kartu.",
         "editPlan": "Uredi plan",
         "saveRevision": "Spremi novu verziju",
         "name": "Naziv plana",

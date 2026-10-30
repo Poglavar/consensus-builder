@@ -1144,6 +1144,7 @@
             "linkLabel": "Link to the published design",
             "errors": {
                 "cidMismatch": "The server computed a different identity for this design, so nothing was published.",
+                "displaced": "Another design of this plan takes the same ground, so the two cannot stand together.",
                 "tooLarge": "This design exceeds the 10 MiB publication limit. Reduce its extent or detail before sharing; it is saved locally.",
                 "invalidDesign": "This design contains invalid data. Correct it before sharing.",
                 "rateLimitedFor": "Too many publications for now. Try again in about {{minutes}} min.",
@@ -8741,6 +8742,10 @@
         "savedPlans": "Saved plans",
         "createPlan": "Create plan",
         "changeDesigns": "Change designs",
+        "applyTitle": "Apply “{{title}}” to your map?",
+        "applyQuestion": "The designs of this plan are not on your map. To continue, they are applied to it. Designs you already applied stay; if any of them conflict with this plan, you are asked what to do.",
+        "applyAndContinue": "Apply and continue",
+        "applyFailed": "The plan could not be applied to the map.",
         "editPlan": "Edit plan",
         "saveRevision": "Save new revision",
         "name": "Plan name",

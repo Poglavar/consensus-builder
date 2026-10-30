@@ -211,14 +211,15 @@ test('an agreement whose design is taken off the map warns that it does not matc
   await expect(agreementPanel(page).locator('[data-agreement-action="compare"]')).toBeDisabled();
   expect(await storedAgreements(page)).toHaveLength(1);
 
-  // Edit cannot read the plan's land while its design is off the map: it offers Apply plan designs,
-  // and Save waits for it.
+  // Edit cannot read the plan's land while its design is off the map: it asks to apply the plan
+  // first, and Cancel leaves everything as it was.
   await agreementPanel(page).locator('[data-agreement-action="edit"]').click();
-  await editorOpen(page, 'Edit agreement');
-  await expect(editor.locator('[data-agreement-action="apply-plan"]')).toBeVisible({ timeout: 30_000 });
-  await expect(editorSave(editor)).toBeDisabled();
-  await editorCancel(editor).click();
-  await editorClosed(page);
+  const ask = page.locator('.cb-dialog--confirm');
+  await expect(ask).toContainText('The designs of this plan are not on your map.', { timeout: 30_000 });
+  await ask.getByRole('button', { name: 'Cancel', exact: true }).click();
+  await expect(ask).toHaveCount(0);
+  await expect(page.locator('.agreement-editor-modal')).toHaveCount(0);
+  expect(await isLayoutApplied(page, layoutId)).toBe(false);
   await panelStatus(page, 'stale');
 
   // The warning's Apply plan designs puts the design back; the warning goes and Before / after returns.
