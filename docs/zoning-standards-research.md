@@ -128,6 +128,10 @@ The project's own six building uses already map from CityGML/ALKIS codes and OSM
 - Plans are made in ISPU's ePlanovi module, and the plan's original is its vector, alphanumeric and metadata set. Article 7(2), however, has the rules drawn as areas in layer `KN-3-1` and entered **as text in the attribute table**. Whether the annexes define numeric attributes is *unverified*.
 - Publication is raster map services; there is no open vector service of plan rules. See [Croatia in depth](#croatia-in-depth). [NN 152/2023](https://narodne-novine.nn.hr/clanci/sluzbeni/2023_12_152_2228.html).
 
+#### Slovenia: OPN shapefile standard and the national planning WFS
+
+- A mandated digital format (OPIA technical rules) with open national services; the rule columns exist but are optional, typed as text and filled with prose. See [Slovenia in depth](#slovenia-in-depth).
+
 #### New Zealand: National Planning Standards (2019)
 
 - Councils may use only the zones in the zone framework (standard 8), in a fixed order, with fixed spatial layer types (standard 12). The standards fix zone names and purposes, not numbers: each council writes its own rules. The zone list is *unverified* (the ministry's site blocked fetching).
@@ -361,6 +365,53 @@ Checked **2026-10-30**, from [NN 152/2023](https://narodne-novine.nn.hr/clanci/s
 - Today the only open output is raster WMS and per-parcel PDFs behind a reCAPTCHA. The vector rule areas and their attribute text would have to come from the ministry (an open data request), or from the published provisions documents of new-generation plans.
 - Zagreb's current GUP source stays as it is until a new-generation GUP exists.
 
+## Slovenia in depth
+
+Checked **2026-10-30**, from the spatial planning act ZUreP-3 ([Uradni list 199/2021](https://www.uradni-list.si/_pdf/2021/Ur/u2021199.pdf)) and its amendments, the [OPIA technical rules v1.3](https://www.gov.si/assets/ministrstva/MNVP/Dokumenti/PIS/Tehnicna_pravila_OPIA_v1-3.pdf), Ljubljana's plan texts and live service queries.
+
+### Who sets what
+
+- ZUreP-3 (applied from 2022-06-01; amendments 3A–3E, the large 3C in force 2025-10-15) with the building act GZ-1. The state adopts national plans (DPN) by decree; regions adopt regional plans; the **municipal council adopts the municipal plan (OPN) and detailed plans (OPPN) by ordinance (odlok)**. Building rules are municipal.
+- Under ZUreP-3 the OPN is only an implementing act: land use (namenska raba) and the implementing conditions (PIP: "conditions and solutions for the urban and landscape arrangement … and the architectural design of buildings", Art. 42). Older OPNs such as Ljubljana's still have separate strategic and implementing parts.
+- The state's spatial order (Državni prostorski red) gives basic rules, guidance and detailed rules by decree (the only detailed decree found covers photovoltaics). There is no national default envelope where a municipality has none; old pre-OPN plans stay valid until the end of 2027 (ZUreP-3E, final text *unverified*).
+- A location information (lokacijska informacija, Art. 279) is issued by the municipality on request, for a fee; it gives the land use, and the implementing conditions only if asked (Art. 326).
+
+### The data standard
+
+- Municipal plans are submitted to the national planning information system (PIS) under the OPIA technical rules: text as PDF, maps as TIFF, and **vector data as Shapefile in D96/TM, 2D**.
+- Mandatory OPN layers: plan boundary (`obm_opn`), planning units with land use (`eup_nrp_pos`), and two further layers (`tgd`, `gji_linije`); regulation lines, points and areas (`reg_crte`, `reg_tocke`, `reg_povrsine`) and others only where the plan sets them. Land use is an integer `NRP_ID` from a code list (1011 SS residential, 1021 CU central, 1031 IP industrial, 1052 ZP park …); the planning unit is `EUP_OZN`.
+- **Rule columns exist but are optional and typed as text**: floor-area ratio `FI_MIN/MAX`, coverage `FZ_MIN/MAX`, green share `FZP_MIN/MAX`, volume `P`, dwellings `S`, heights `V`, `VN`, `VS`, `VK`, `VP`, `VF`, storeys `E`, roof `STR`, building pattern `VZZ`. There is no open-space factor (FBP) and no setback field.
+- Regulation lines are coded: gradbena linija (building line), gradbena meja (building limit), street and courtyard limits, upper-floor limit, basement limit.
+- Detailed plans (OPPN) are vector only as their boundary; their rules stay in PDF. No INSPIRE planned land use mapping was found.
+
+### National publication
+
+- **Open WFS 2.0** `https://ipi.eprostor.gov.si/wfs-si-mnvp-pa/wfs` (EPSG:3794; GeoJSON, GML, CSV): planning units `EUP_OPN`, sub-units `PEUP_OPN`, land use with rule columns `NRP_OPN`, regulation lines `REG_CRTE_OPN` and areas `REG_POVRSINE_OPN`, plan boundaries adopted and in preparation. WMS at `…/wms-si-mnvp-pa/wms`. A weekly GeoPackage download exists at [PIS](https://pis.eprostor.gov.si/pis/prenos-podatkov).
+- Terms: free use with source, date and authorship cited; the data are informative, the binding text is the Uradni list. Surveying-authority data (parcels, building cadastre, terrain) are [CC BY 4.0](https://e-prostor.gov.si/en/access-to-geodetic-data/).
+- Building cadastre WFS `https://ipi.eprostor.gov.si/wfs-si-gurs-kn/wfs`: `STAVBE` (storeys, gross floor area, heights `VISINA_H1/H2/H3` that look like absolute elevations, year built, above- and below-ground outlines), `PARCELE`, `GRADBENE_PARCELE` (building plots; none returned in central Ljubljana). Nationwide lidar 2023–2025 is viewable and downloadable (licence *unverified*).
+
+### Ljubljana: OPN MOL ID
+
+- Adopted 2010, amended 2015, 2018, 2022, 2023 and the 5th amendment in force 2026-08-04; consolidated text on ljubljana.si.
+- The rules: coverage, open-space factor, green share and floor-area ratio by land-use subtype (SSce, SScv, SSse, SSsv …) and building type (NA, NB, ND, NV, V, VS, C, F) in a table (Art. 20); heights by type (Art. 21, e.g. NA up to 11.00 m, P+1+attic); setbacks (e.g. 4.00 m from the building-plot boundary). Overrides per planning unit are rows of a PDF table (Annex 1). **The rules apply to the building plot (gradbena parcela), not the cadastral parcel.**
+- Ljubljana publishes text and PDFs, and its maps in the UrbInfo viewer, marked informative and unofficial; no open download of its own was found.
+- In the national WFS: 7,236 land-use polygons and 7,236 planning units for Ljubljana; 2,488 regulation areas; 631 regulation lines in a central 8 × 8 km box (mostly building limits, some building lines, upper-floor and basement limits). In 300 sampled land-use polygons:
+  - 136 had no rule values (roads, farmland).
+  - Values are copied from the subtype table, as text: coverage "40", or "stanovanjske stavbe 40, nestanovanjske stavbe 40, kmetijska gospodarstva 70" (per building kind); floor-area ratio "1,2", "/" or "100. člen odloka OPN MOL ID" (a pointer to an article); height "do 11,00 m", "do P+2", "od 9,00 do 14,00 m" or a sentence.
+  - The open-space factor and the building type have no column; volume, dwellings, storeys and most height fields were empty. The regulation-line description codes (p, b, a, c) are undocumented.
+- 3D: a city 3D viewer (3dportal.ljubljana.si, no download or licence found) and a national pilot 3D view of Ljubljana with extruded building volumes.
+
+### Automation
+
+- **eGraditev**, the digital building-permit service inside PIS, has covered the whole country since 2026-01-05 (Ljubljana among the last). It handles applications, register imports, fees and tracking; no check of a design against plan rules was found. BIM is not mandatory.
+- No public or commercial envelope or building-potential tool was found.
+
+### What this means for the project
+
+- **Reading Ljubljana is feasible as a first cut.** One open national WFS gives planning units, land use with rule columns, building lines and limits; the cadastre gives parcels and building heights. The rule values need a parser for Slovenian prose (per building kind, ranges, storeys as "P+2", "/" and article pointers), plus a hand-made table for the open-space factor, setbacks, building types and the Annex 1 overrides. Because the rules apply to building plots that the cadastre does not hold, an envelope on a cadastral parcel is an approximation; detailed-plan areas need their PDFs.
+- **The same reader serves every Slovenian municipality** that fills the columns, since the format is national.
+- **Writing is well defined**: an OPIA Shapefile pack with numeric rule values, regulation lines from the code list, and the PDF and TIFF parts. Slovenia is the clearest filing target found after XPlanung, because its format is published.
+
 ## National Zoning Atlas and Land Use Labs
 
 NZA's current public description says that analysts identify jurisdictions and districts, separately analyse zoning text and maps, repair/digitise map geometry, then review, merge and publish the result. It explicitly says machine learning cannot yet read the nuanced codes to its required accuracy; potential automation is limited to work such as update scraping and GIS drawing/cleaning. [How NZA is made](https://www.zoningatlas.org/how).
@@ -435,6 +486,7 @@ Research recommendations, not decisions or implemented contracts.
 | Netherlands DSO | National APIs; IMRO plans for older plans | Norm types *unverified*. |
 | Finland Ryhti | Rolling out 2025–2028 | Open API *unverified*. |
 | Germany XPlanung | Hamburg (all about 3,049 plans as vectors) and Freiburg today; elsewhere mostly outline and scan; duty planned from 2027 | One adapter serves every city that publishes vectors; [Germany in depth](#germany-in-depth). |
+| Slovenia PIS | Open national WFS of planning units, land use with rule columns (text) and building lines; published Shapefile submission format | Rule text needs parsing and a table for what has no column; rules apply to building plots, not cadastral parcels ([Slovenia in depth](#slovenia-in-depth)). |
 | Croatia ePlanovi | Rules required by the rulebook, stored as fixed-heading text per rule area; published as raster WMS only | Every plan must be remade in ePlanovi by about 2033, so one reader of the generated provisions could serve all of Croatia; access to the vectors needs the ministry ([Croatia in depth](#croatia-in-depth)). Zagreb's GUP source is separate today. |
 | INSPIRE PLU, France | Use codes reliable; values optional or provider-defined | Useful for uses and rule types, weak for numbers. |
 | US, Bogotá, cities without a standard | NZA, Regrid-style schemas, city datasets | Per-city or per-dataset adapters. |
