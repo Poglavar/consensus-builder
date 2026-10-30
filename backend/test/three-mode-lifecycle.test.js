@@ -509,3 +509,49 @@ it('requests a frame when the facade toggle or style changes, because the view r
     expect(frames).toBe(3);
     expect(context.facadeFloorLineMaterial.visible).toBe(true);
 });
+
+it('reads the water and green areas the buildings widened while an earlier read was out', async () => {
+    for (const [ensure, prefix] of [['ensureNearbyWater', 'nearbyWater'], ['ensureNearbyGreen', 'nearbyGreen']]) {
+        const reads = [];
+        const box = { coordinates: [[[0, 0], [1, 0], [1, 1], [0, 0]]] };
+        const context = loadInContext(threeModeDeclarations([ensure]), {
+            isActive: true,
+            waterEnabled: true,
+            greenEnabled: true,
+            [`${prefix}Fetching`]: false,
+            [`${prefix}Key`]: null,
+            [prefix]: [],
+            nearbyDataScope: 'city',
+            sceneTreeLoadGeometrySource: 'camera',
+            sceneAbort: { signal: { aborted: false } },
+            sceneryQuery: () => ({ queryGeometry: { type: 'Polygon', coordinates: box.coordinates }, buffer: 0 }),
+            sceneryUrl: (path, geometry) => `${path}?${JSON.stringify(geometry.coordinates)}`,
+            fetch(url) {
+                return new Promise(resolve => reads.push({ url, land: () => resolve({ ok: true, json: () => ({ areas: [{ kind: 'river' }] }) }) }));
+            },
+            rebuildWaterOnly() {},
+            rebuildGreenOnly() {},
+            refreshLifeSurface() {},
+            console: { log() {}, warn() {} }
+        });
+        const settle = () => new Promise(resolve => setImmediate(resolve));
+
+        context[ensure]();
+        expect(reads).toHaveLength(1);
+        // The buildings arrive and widen the area while the first read is out: that call is skipped.
+        box.coordinates = [[[0, 0], [2, 0], [2, 2], [0, 0]]];
+        context[ensure]();
+        expect(reads).toHaveLength(1);
+
+        reads[0].land();
+        await settle();
+        expect(reads, `${ensure} must read the widened area once the first read lands`).toHaveLength(2);
+        expect(reads[1].url).toContain('[2,2]');
+
+        reads[1].land();
+        await settle();
+        expect(reads).toHaveLength(2);
+        expect(context[`${prefix}Fetching`]).toBe(false);
+        expect(context[`${prefix}Key`]).toContain('[2,2]');
+    }
+});

@@ -185,7 +185,7 @@
         buildingRefreshQueue.cancel();
         buildingsWorkGeneration++;
         buildingsRenderGeneration++;
-        nearbyProposalBuildingsFetching = nearbyTreesFetching = nearbyWaterFetching = false;
+        nearbyProposalBuildingsFetching = nearbyTreesFetching = nearbyWaterFetching = nearbyGreenFetching = false;
     }
     let origin3857 = null; // Leaflet EPSG:3857 origin for local XY
     let sceneLoadGeometry = null; // frozen at 3D entry; panning never moves the backend query
@@ -7120,6 +7120,7 @@
 
     function ensureNearbyWater() {
         // Its own query area (sceneryQuery), so it loads alongside the buildings, not after them.
+        // A call while a read is out is not lost: the read asks again when it lands (below).
         if (!waterEnabled || nearbyWaterFetching) return;
         const { queryGeometry, buffer } = sceneryQuery();
         if (!queryGeometry) return;
@@ -7138,6 +7139,10 @@
                 console.log(`[3D] Loaded ${nearbyWater.length} nearby water pieces (${sceneTreeLoadGeometrySource}+${buffer}m)`);
                 rebuildWaterOnly();
                 refreshLifeSurface();
+                // The buildings may have arrived meanwhile and widened the query area; the call they
+                // made was skipped while this read was out, so ask for what is wanted now (a no-op
+                // when nothing moved). Without it Delft's far canals stayed cut to the first area.
+                ensureNearbyWater();
             })
             .catch(err => {
                 if (!current() || err.name === 'AbortError') return;
@@ -7268,6 +7273,8 @@
                 nearbyGreenFetching = false;
                 console.log(`[3D] Loaded ${nearbyGreen.length} nearby green areas (${sceneTreeLoadGeometrySource}+${buffer}m)`);
                 rebuildGreenOnly();
+                // As for the water: a query area the buildings widened meanwhile is read now.
+                ensureNearbyGreen();
             })
             .catch(err => {
                 if (!current() || err.name === 'AbortError') return;
