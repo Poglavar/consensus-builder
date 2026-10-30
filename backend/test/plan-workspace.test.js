@@ -15,7 +15,7 @@ function harness(overrides={}) {
   dispatchEvent:e=>events.push(e.type),NamedPlans:{list:()=>[],link:cid=>`https://app.test/plans/${cid}`,save:vi.fn(async content=>({cid:Cid.cidOfObject(content),content}))},
   DesignSync:{apiBase:()=> 'https://api.test',fetchDesigns:vi.fn(async cids=>({rows:new Map(),missing:cids})),addressObject:vi.fn(content=>({cid:Cid.cidOfObject(content)})),parcelSourceIdOf:()=>null},
   ProposalPublishTerms:{publishRefusal:()=>null},guestPolicyBlocks:vi.fn(()=>null),
-  proposalStorage:{getAllProposals:()=>[],getProposal:()=>null},DesignRecord:{cidOf:()=>''},i18n:{t:key=>key},
+  proposalStorage:{getAllProposals:()=>[],getProposal:()=>null},DesignRecord:{cidOf:()=>''},i18n:{t:(key,params)=>params?`${key} ${JSON.stringify(params)}`:key},
   fetch:vi.fn(async(url,options={})=>{calls.push(['fetch',url,options]);return {status:404,ok:false,json:async()=>({})}}),...overrides};
  const context={window:win,CustomEvent:class{constructor(type){this.type=type}},AbortSignal,structuredClone,Map,Set,JSON,Error,String};
  vm.runInNewContext(readFileSync(new URL('../../frontend/js/plan-workspace.js',import.meta.url),'utf8'),context);
@@ -53,11 +53,15 @@ describe('plan workspace',()=>{
   expect(PlanComposition.appliedMembers(['b','a'],records,{cidOf,isApplied}).map(r=>r.cid)).toEqual(['b','a']);
   expect(PlanComposition.appliedMembers(['a','c'],records,{cidOf,isApplied})).toBeNull();
   expect(PlanComposition.appliedMembers(['a'],[{cid:'a',applied:false}],{cidOf,isApplied})).toBeNull();
+  // A parked older copy of a design beside the applied one does not hide it, in either order.
+  const applied={cid:'a',applied:true,title:'applied'},parked={cid:'a',applied:false,title:'parked'};
+  expect(PlanComposition.appliedMembers(['a'],[applied,parked],{cidOf,isApplied})).toEqual([applied]);
+  expect(PlanComposition.appliedMembers(['a'],[parked,applied],{cidOf,isApplied})).toEqual([applied]);
  });
- function applyHarness({applied=false,confirm=true,route={}}={}) {
+ function applyHarness({applied=false,confirm=true,route={},stays=true}={}) {
   const row=snapshot(),cid=row.designs[0].cid,state={applied};
-  const h=harness({DesignRecord:{cidOf:record=>record.cid},isApplied:()=>state.applied,
-   proposalStorage:{getAllProposals:()=>[{cid}],getProposal:()=>null},
+  const h=harness({DesignRecord:{cidOf:record=>record.cid},isApplied:()=>state.applied&&stays,
+   proposalStorage:{getAllProposals:()=>[{cid,title:'Pocket park'}],getProposal:()=>null},
    CbDialog:{confirm:vi.fn(async()=>confirm)},__siteBinding:{siteOf:content=>content.site},turf:{},
    handleSharedDesignRoute:vi.fn(async()=>{state.applied=!route.blocked&&!route.failed;return {blocked:!!route.blocked,failed:route.failed||[],omitted:[],localIds:new Map()};}),
    fetch:vi.fn(async()=>({ok:true,json:async()=>({binding:{parcels:[]}})}))});
@@ -78,6 +82,8 @@ describe('plan workspace',()=>{
   const done=applyHarness({applied:true});expect(await done.api.ensureApplied(done.row)).toBe(true);expect(done.win.CbDialog.confirm).not.toHaveBeenCalled();
   const declined=applyHarness({route:{blocked:true}});expect(await declined.api.ensureApplied(declined.row)).toBe(false);
   const failed=applyHarness({route:{failed:[{reason:'ground changed'}]}});await expect(failed.api.ensureApplied(failed.row)).rejects.toThrow('ground changed');
+  // The route reported no failure, yet a member is not applied after it: the refusal names it.
+  const left=applyHarness({stays:false});await expect(left.api.apply(left.row)).rejects.toThrow(/planDialog\.notOnMap .*Pocket park/);
  });
  it('applies designs in turn as Apply does, inside a mutation it rolls back, naming those that would not stand',async()=>{
   const committed={a:{proposalId:'a',applied:false,cadastreParcelIds:['P1']},b:{proposalId:'b',applied:false,cadastreParcelIds:['P1']}};
@@ -96,6 +102,11 @@ describe('plan workspace',()=>{
   expect(seen).toEqual([['ground',['P1','P1']],['apply','a',true],['apply','b',true],['committed',false]]);
   expect(draft.a.applied).toBe(false);
   expect(committed.a.applied).toBe(false);expect(committed.b.applied).toBe(false);
+  // The design just chosen goes last, as the latest Apply does, and takes the ground.
+  seen.length=0;Object.values(draft).forEach(record=>{record.applied=false;});
+  h.win.ProposalManager.applyProposal=vi.fn(async id=>{seen.push(['apply',id]);Object.values(draft).forEach(record=>{record.applied=record.proposalId===id;});return true;});
+  expect(await h.api.trial(['a','b'],{last:'a'})).toEqual({standing:['a'],fallen:['b'],failures:[]});
+  expect(seen.filter(step=>step[0]==='apply')).toEqual([['apply','b'],['apply','a']]);
  });
  it('resolves a published plan saved before rotate was written, keeping its CID, from fetched members',async()=>{
   const DesignRecord=require('../../frontend/js/design-record.js');

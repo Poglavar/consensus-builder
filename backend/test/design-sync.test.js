@@ -421,14 +421,20 @@ describe('importDesign and the local copy of a listed design', () => {
         expect(fresh.imports).toEqual([]);
     });
 
-    it('finds the copy published at this API, preferring one applied on the map', () => {
+    // A CID names the design's content, so any local record of that content is its copy: one
+    // published here, one published at another API, or this browser's own design never published
+    // (a plan made of it names it so, and opening that plan must find it, not import a duplicate).
+    it('finds the local record of the design a CID names, preferring one applied on the map', () => {
         const parked = publishedRoad(API, { proposalId: 'parked' });
         const applied = { ...publishedRoad(API, { proposalId: 'applied' }), applied: true };
         const elsewhere = publishedRoad('https://other.example.test', { proposalId: 'elsewhere', title: 'Elsewhere' });
         const { win } = fakeWindow({ records: [parked, applied, elsewhere] });
         expect(win.findLocalCopyOfServerProposal({ cid: parked.published.cid })).toBe(applied);
         expect(win.isServerProposalDownloaded({ cid: parked.published.cid })).toBe(true);
-        expect(win.findLocalCopyOfServerProposal({ cid: elsewhere.published.cid })).toBeNull();
+        expect(win.findLocalCopyOfServerProposal({ cid: elsewhere.published.cid })).toBe(elsewhere);
+        const own = { ...road({ proposalId: 'own', title: 'Never published' }), applied: true };
+        const ownCid = DesignRecord.cidOf(own);
+        expect(fakeWindow({ records: [own] }).sync.localCopyOf(ownCid)).toBe(own);
         expect(win.findLocalCopyOfServerProposal({ cid: Cid.cidOfObject({ unknown: 1 }) })).toBeNull();
         expect(win.findLocalCopyOfServerProposal(null)).toBeNull();
         expect(fakeWindow({ records: [parked] }).win.findLocalCopyOfServerProposal({ cid: parked.published.cid })).toBe(parked);

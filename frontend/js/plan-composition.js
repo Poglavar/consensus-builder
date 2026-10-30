@@ -99,9 +99,13 @@
     // The plan's members as the applied local designs, in plan order; null while any member is
     // absent here or not applied (a plan opened as a preview). Records without a CID are no members.
     function appliedMembers(designCids, records, { cidOf, isApplied }) {
+        // Two local records of one design (an older import beside the original) are one member: the
+        // one applied stands for it, whichever comes first.
         const byCid = new Map();
         for (const record of Array.isArray(records) ? records : []) {
-            try { byCid.set(String(cidOf(record)), record); } catch (_) { /* an incomplete draft */ }
+            let cid;
+            try { cid = String(cidOf(record)); } catch (_) { continue; /* an incomplete draft */ }
+            if (!byCid.has(cid) || (!isApplied(byCid.get(cid)) && isApplied(record))) byCid.set(cid, record);
         }
         const members = (designCids || []).map(cid => byCid.get(String(cid)));
         return members.length && members.every(record => record && isApplied(record)) ? members : null;

@@ -15,8 +15,10 @@
         const response = await win.fetch(backend() + '/plans/' + plan.cid, { cache:'no-store', signal:AbortSignal.timeout(30000) });
         if(response.status===404)return null;
         const row=await response.json();
-        if(!response.ok)throw new Error(row.error||win.i18n.t('planDialog.publicationFailed'));
-        if(win.PlanRecord.validate(row.content)||row.cid!==plan.cid||win.Cid.cidOfObject(row.content)!==plan.cid)throw new Error(win.i18n.t('planDialog.revisionChanged'));
+        if(!response.ok)throw new Error(win.i18n.t('planDialog.lookupFailed',{reason:row.error||`HTTP ${response.status}`}));
+        const invalid=win.PlanRecord.validate(row.content);
+        if(invalid)throw new Error(win.i18n.t('planDialog.planInvalid',{reason:invalid}));
+        if(row.cid!==plan.cid||win.Cid.cidOfObject(row.content)!==plan.cid)throw new Error(win.i18n.t('planDialog.revisionChanged'));
         if (Array.isArray(plan.designs) && !plan.published) save({ ...plan, published: true });
         return {...row,link:win.NamedPlans.link(row.cid)};
     }
@@ -35,7 +37,7 @@
         const missing = plan.content.designCids.filter(cid => !available.has(cid));
         if (missing.length) {
             const fetched = await win.DesignSync.fetchDesigns(missing);
-            if (fetched.missing.length) throw new Error(win.i18n.t('planDialog.membersMissing'));
+            if (fetched.missing.length) throw new Error(win.i18n.t('planDialog.membersMissing', { count: fetched.missing.length, total: plan.content.designCids.length }));
             for (const [cid, source] of fetched.rows) available.set(cid,
                 win.DesignSync.localDesignFromRow(source, { apiBase: backend() }));
         }
@@ -67,13 +69,23 @@
                 body:JSON.stringify({ cid:member.cid, content:member.content,
                     parcelSourceId:source === 'hr-cadastre' ? 'oss-wfs' : source || win.DesignSync.parcelSourceIdOf(member.content.city, member.content.site) }) });
             const answer = await response.json();
-            if ((!response.ok && response.status !== 409) || answer.cid !== member.cid) throw new Error(answer.error || win.i18n.t('planDialog.publicationFailed'));
+            if ((!response.ok && response.status !== 409) || answer.cid !== member.cid) throw new Error(win.i18n.t('planDialog.publicationFailed', {
+                title: member.content.title || win.i18n.t('planDialog.untitledDesign'),
+                reason: answer.error || (response.ok ? win.i18n.t('planDialog.otherCid') : `HTTP ${response.status}`) }));
         }
         const published = await win.NamedPlans.save(row.content);
         // NamedPlans records public metadata; retain the exact carried revisions for local reuse.
         save({ ...copy(row), published:true });
         return published;
     }
+    // Designs of the plan the map does not hold applied, by title, for a refusal that names them.
+    function missingTitles(plan) {
+        const records = win.proposalStorage.getAllProposals();
+        return plan.content.designCids.filter(cid => !records.some(record => win.isApplied(record) && cidOrNull(record) === cid))
+            .map(cid => records.find(record => cidOrNull(record) === cid)?.title
+                || (plan.designs || []).find(member => member.cid === cid)?.content?.title || win.i18n.t('planDialog.untitledDesign'));
+    }
+    function cidOrNull(record) { try { return win.DesignRecord.cidOf(record); } catch (_) { return null; } }
     // The plan's members as applied local designs, or null while it is only previewed here.
     function appliedMembers(plan) {
         return win.PlanComposition.appliedMembers(plan.content.designCids, win.proposalStorage.getAllProposals(),
@@ -93,30 +105,34 @@
                     toleranceM: content.toleranceM, parcelSourceId })
             });
             const answer = await response.json();
-            if (!response.ok) throw new Error(answer.error || win.i18n.t('planDialog.applyFailed'));
+            if (!response.ok) throw new Error(win.i18n.t('planDialog.groundFailed', { title: content.title || win.i18n.t('planDialog.untitledDesign'),
+                reason: answer.error || `HTTP ${response.status}` }));
             draftRows.set(member.cid, { cid: member.cid, content, city: content.city, parcelSourceId, binding: answer.binding });
         }
         const result = await win.handleSharedDesignRoute(plan.content.designCids, {
             ...(draftRows.size ? { draftRows } : {}), openDetails: false, enter3D: false, summary: false });
         if (result.blocked) return { blocked: true };
         if (result.failed.length || result.omitted?.length || !appliedMembers(plan)) {
-            throw new Error(result.failed.map(item => [item.label, item.reason].filter(Boolean).join(': ')).join('; ') || win.i18n.t('planDialog.applyFailed'));
+            throw new Error(result.failed.map(item => [item.label, item.reason].filter(Boolean).join(': ')).join('; ')
+                || win.i18n.t('planDialog.notOnMap', { titles: missingTitles(plan).map(title => `“${title}”`).join(', ') }));
         }
         return { blocked: false };
     }
     // Applies stored designs in turn exactly as an Apply click on the map does (ProposalManager.
     // applyProposal: a design stands down the rivals on its ground), in formation order (the order
-    // the designs were made in, plan-order.js), inside one parcel mutation that is rolled back:
-    // nothing on the map or in storage changes. { standing, fallen } are their ids; a fallen design
-    // is one a later one took the ground of, or one the apply refused.
-    async function trial(ids) {
+    // the designs were made in, plan-order.js), `last` after all the others (the design just chosen,
+    // which takes its ground as the latest Apply does), inside one parcel mutation that is rolled
+    // back: nothing on the map or in storage changes. { standing, fallen } are their ids; a fallen
+    // design is one a later one took the ground of, or one the apply refused.
+    async function trial(ids, { last = null } = {}) {
         const records = ids.map(id => win.proposalStorage.getProposal(id)).filter(Boolean);
         await win.CadastralParcelRepository.ensureIds(records.flatMap(record => win.__claims.cadastreParcelIdsOf(record)));
         let outcome = null;
         await win.ProposalManager.runParcelMutation('plan-trial', null, async transaction => {
             const store = transaction._parcelMutation.proposals;
             const failures = [];
-            for (const record of win.__planOrder.orderFormations(records)) {
+            const lastRecord = records.find(record => String(record.proposalId) === String(last));
+            for (const record of [...win.__planOrder.orderFormations(records.filter(record => record !== lastRecord)), ...(lastRecord ? [lastRecord] : [])]) {
                 const id = String(record.proposalId);
                 if (await win.ProposalManager.applyProposal(id, { ...transaction, silent: true })) continue;
                 failures.push({ proposalId: id, reason: win.getStoredApplyFailureInfo?.(id)?.message || null });

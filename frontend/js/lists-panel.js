@@ -216,20 +216,28 @@
             renderActions(); renderRows(); showPlanSelection();
         }
         // All the ticked designs on the map at once, as the plan they will make.
-        // A plan's designs stand together: a design ticked for a plan is applied, virtually, with the
-        // ones already ticked (PlanWorkspace.trial); one that cannot stand with them is not ticked.
-        async function admitsPlanDesign(record) {
-            const ticked = [...state.selected.values()];
-            const ids = [...ticked, record].map(design => String(design.proposalId));
-            const { fallen, failures } = await win.PlanWorkspace.trial(ids);
-            if (!fallen.length) return true;
+        // A plan's designs stand together. The design just ticked is applied, virtually, after the
+        // ones already ticked (PlanWorkspace.trial), as an Apply click on the map would be: it takes
+        // its ground, and the ticked designs it stands down are unticked, with a warning naming them.
+        // One the apply refuses outright is not ticked, with the reason.
+        async function admitsPlanDesign(record, key) {
+            const id = String(record.proposalId);
+            const ticked = [...state.selected.entries()];
+            const { fallen, failures } = await win.PlanWorkspace.trial([...ticked.map(([, design]) => String(design.proposalId)), id], { last: id });
             const titleOf = design => `“${design?.title || t('planDialog.untitledDesign')}”`;
-            const others = ticked.filter(design => fallen.includes(String(design.proposalId)));
-            const reason = failures.find(failure => String(failure.proposalId) === String(record.proposalId))?.reason;
-            win.showEphemeralMessage(others.length
-                ? t('lists.takesGround', { title: titleOf(record), others: others.map(titleOf).join(', ') })
-                : [t('lists.cannotStand', { title: titleOf(record) }), reason].filter(Boolean).join(' '), 8000, 'warning');
-            return false;
+            if (fallen.includes(id)) {
+                const reason = failures.find(failure => String(failure.proposalId) === id)?.reason;
+                win.showEphemeralMessage([t('lists.cannotStand', { title: titleOf(record) }), reason].filter(Boolean).join(' '), 8000, 'warning');
+                return false;
+            }
+            const displaced = ticked.filter(([, design]) => fallen.includes(String(design.proposalId)));
+            state.selected.set(key, record);
+            if (displaced.length) {
+                displaced.forEach(([other]) => state.selected.delete(other));
+                win.showEphemeralMessage(t('lists.takesGround', { title: titleOf(record), others: displaced.map(([, design]) => titleOf(design)).join(', ') }), 8000, 'warning');
+                renderRows();
+            }
+            return true;
         }
         function showPlanSelection() {
             if (state.purpose !== 'plan') return;
@@ -339,8 +347,7 @@
                         try {
                             if (check.checked && state.purpose === 'plan') {
                                 const record = await designOf(row);
-                                if (await admitsPlanDesign(record)) state.selected.set(row.key, record);
-                                else check.checked = false;
+                                if (!(await admitsPlanDesign(record, row.key))) check.checked = false;
                             } else if (check.checked) state.selected.set(row.key, kind === 'plans' ? await planOf(row)
                                 : kind === 'agreements' ? await agreementCompared(row) : await designRecord(row));
                             else state.selected.delete(row.key);

@@ -78,7 +78,7 @@ async function rivalSpaces(page:any) {
   const square=await createSpace(page,'square');
   return { park, square };
 }
-test('ticking a design for a plan applies it virtually with the ticked ones and refuses one that cannot stand',async({mockApi:page})=>{
+test('the design ticked last for a plan takes its ground, and the ticked one it stands down is unticked with a warning',async({mockApi:page})=>{
   test.setTimeout(120000);
   await rivalSpaces(page);
   await openPlans(page);
@@ -87,11 +87,28 @@ test('ticking a design for a plan applies it virtually with the ticked ones and 
   await expect(choices).toHaveCount(2);
   await choices.nth(0).check();
   await choices.nth(1).click();
-  await expect(page.locator('.cb-toast').filter({hasText:'cannot be in this plan'})).toBeVisible();
-  await expect(choices.nth(1)).not.toBeChecked();
+  await expect(page.locator('.cb-toast').filter({hasText:'is no longer ticked'})).toBeVisible();
+  await expect(choices.nth(1)).toBeChecked();
+  await expect(choices.nth(0)).not.toBeChecked();
   await expect(page.locator('#lists-actions .lists-selection-count')).toHaveText('1 selected');
   // The trial is rolled back: the square still stands and the park is still parked.
   expect(await page.evaluate(()=>(window as any).proposalStorage.getAllProposals().filter((p:any)=>(window as any).isApplied(p)).map((p:any)=>p.structureProposal?.kind))).toEqual(['square']);
+});
+// A plan of this browser's own designs, never published, opened unapplied: Create agreement applies
+// the designs it already holds instead of importing copies of them beside the originals.
+test('creating an agreement on a plan of unpublished designs applies those designs, without copies',async({mockApi:page})=>{
+  test.setTimeout(120000);
+  await openCity(page);
+  const park=await createSpace(page,'park');
+  await showProposal(page,park);
+  await stackSection(page,'designs').locator('[data-design-action="add-to-plan"]').click();
+  await savePlan(page,'Own park plan');
+  await page.evaluate(id=>(window as any).ProposalManager.unapplyProposal(id),park);
+  await stackSection(page,'plans').getByRole('button',{name:'Create agreement',exact:true}).click();
+  await page.getByRole('button',{name:'Apply and continue',exact:true}).click();
+  await expect(page.locator('#agreement-editor')).toBeVisible();
+  const records=await page.evaluate(()=>(window as any).proposalStorage.getAllProposals().map((p:any)=>({id:p.proposalId,applied:(window as any).isApplied(p)})));
+  expect(records).toEqual([{id:park,applied:true}]);
 });
 test('saving a plan refuses designs that cannot stand together, as Add to plan offers them',async({mockApi:page})=>{
   test.setTimeout(120000);
