@@ -59,7 +59,7 @@ function proposerJob(name, persona, cron) {
       AGENT_DAILY_ACTION_CAP: '15',
       AGENT_SETTLE_MAX_PER_RUN: '3',
       AGENT_DAILY_USDC_CAP: '0.35',
-      AGENT_MARKET_SEED_USDC_CAP: '70',
+      AGENT_MARKET_SEED_USDC_CAP: '3.5',
       AGENT_API_BASE: 'https://api.urbangametheory.xyz'
     },
     ...LOGS
@@ -110,7 +110,7 @@ module.exports = {
       AGENT_DAILY_ACTION_CAP: '15',
       AGENT_SETTLE_MAX_PER_RUN: '3',
       AGENT_DAILY_USDC_CAP: '0.35',
-      AGENT_MARKET_SEED_USDC_CAP: '70',
+      AGENT_MARKET_SEED_USDC_CAP: '3.5',
       // The settlement's decision steps go through the operated lifecycle-01 member (consensus-builder-
       // lifecycle-member): AGENT_LIFECYCLE_LENS_OPERATOR_TOKEN must be in backend/.env on the host, or
       // the live run refuses to start.
