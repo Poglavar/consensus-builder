@@ -7223,15 +7223,30 @@
         return Number.isFinite(w) && e > w && n > s ? [w, s, e, n] : null;
     }
 
-    // The area tile-based scenery (water, green areas) covers: the loaded buildings' box, or with no
-    // buildings (none here, or they failed) the radius around the scene anchor.
+    // The farthest scenery reaches from the scene's centre. Water and green areas are a few flat
+    // polygons read from ~2.4 km tiles, so they cover what the camera shows, well past the buildings.
+    const MAX_SCENERY_HALF_SIDE_M = 2500;
+    // What this scene's scenery covers so far, [w, s, e, n]. It only grows, so zooming in and out
+    // again neither cuts a lake back nor reads it again; a new scene starts it afresh.
+    let sceneryReach = null;
+    // The area tile-based scenery (water, green areas) covers: the loaded buildings' box and what the
+    // camera shows (load-view.js: its zoom, around where the scene was entered), or with neither the
+    // radius around the scene anchor. Before, only the buildings' box: on a phone the camera shows
+    // over a kilometre, and a lake stopped in a straight line a few hundred metres out.
     function sceneryQuery() {
-        const extent = loadedBuildingsExtent();
-        if (extent) {
-            const [w, s, e, n] = extent;
-            return { queryGeometry: { type: 'Polygon', coordinates: [[[w, s], [e, s], [e, n], [w, n], [w, s]]] }, buffer: 0 };
+        const boxes = [loadedBuildingsExtent(), sceneryReach];
+        const view = window.LoadView?.current();
+        if (view?.mode === '3d') {
+            const [lat, lng] = view.centre;
+            const dLat = MAX_SCENERY_HALF_SIDE_M / 110570, dLng = MAX_SCENERY_HALF_SIDE_M / (111320 * Math.cos(lat * Math.PI / 180));
+            const [w, s, e, n] = view.bbox;
+            boxes.push([Math.max(w, lng - dLng), Math.max(s, lat - dLat), Math.min(e, lng + dLng), Math.min(n, lat + dLat)]);
         }
-        return { queryGeometry: sceneTreeLoadGeometry, buffer: buildingLoadRadiusM };
+        const known = boxes.filter(Boolean);
+        if (!known.length) return { queryGeometry: sceneTreeLoadGeometry, buffer: buildingLoadRadiusM };
+        const [w, s, e, n] = sceneryReach = [Math.min(...known.map(box => box[0])), Math.min(...known.map(box => box[1])),
+            Math.max(...known.map(box => box[2])), Math.max(...known.map(box => box[3]))];
+        return { queryGeometry: { type: 'Polygon', coordinates: [[[w, s], [e, s], [e, n], [w, n], [w, s]]] }, buffer: 0 };
     }
 
     // A scenery read (GET /decor/near, /decor/water, /decor/green): the query area as its WGS84 box
@@ -9445,6 +9460,7 @@
             nearbyDataScope = dataScope;
         }
         captureSceneLoadGeometry();
+        sceneryReach = null;
         // Ground covers the same frozen band as the nearby buildings, including room to orbit/pan.
         // A focused proposal can be away from Leaflet's view, so it owns its own snapshot bounds.
         const view = map.getBounds().pad(0.2);
@@ -10424,6 +10440,8 @@
     });
 
     window.addEventListener('planninggeometrychange', rebuildPlanningSources3D);
+    // The camera settled at another zoom: water and green areas widen to what it shows.
+    window.addEventListener('loadviewchange', () => { if (isActive) { ensureNearbyWater(); ensureNearbyGreen(); } });
     window.addEventListener('planningselectionchange', () => {
         // An outside inspector selection ends the click's view; the stack's own section switches
         // select there too and are not an outside choice.

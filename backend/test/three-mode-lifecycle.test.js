@@ -556,6 +556,34 @@ it('reads the water and green areas the buildings widened while an earlier read 
     }
 });
 
+it('reads water and green areas for what the camera shows, never shrinking, at most 2.5 km out', () => {
+    // A small buildings box (Austin's downtown cells) beside Lady Bird Lake, viewed from a phone.
+    const buildings = [-97.748, 30.262, -97.744, 30.266];
+    const view = { mode: '3d', centre: [30.264, -97.746], bbox: [-97.759, 30.2525, -97.733, 30.2755] };
+    const context = loadInContext(threeModeDeclarations(['sceneryQuery']), {
+        Math, MAX_SCENERY_HALF_SIDE_M: 2500, sceneryReach: null, sceneTreeLoadGeometry: null, buildingLoadRadiusM: 300,
+        loadedBuildingsExtent: () => buildings, window: { LoadView: { current: () => view } }
+    });
+    const boxOf = query => { const ring = query.queryGeometry.coordinates[0]; return [ring[0][0], ring[0][1], ring[2][0], ring[2][1]]; };
+    // Before, the lake stopped at the buildings' box; now the read covers the camera's view.
+    expect(boxOf(context.sceneryQuery())).toEqual(view.bbox);
+    // Zooming in keeps what was read, so zooming out again neither cuts the lake nor reads it again.
+    view.bbox = [-97.747, 30.263, -97.745, 30.265];
+    expect(boxOf(context.sceneryQuery())).toEqual([-97.759, 30.2525, -97.733, 30.2755]);
+    // A camera far out reads at most 2.5 km from the scene's centre.
+    context.sceneryReach = null;
+    view.bbox = [-97.9, 30.1, -97.6, 30.4];
+    const far = boxOf(context.sceneryQuery());
+    expect((far[3] - far[1]) * 110570).toBeCloseTo(5000, 0);
+    // Without a 3D view (or buildings) it is the buildings' box, and with neither the radius around the anchor.
+    context.sceneryReach = null; view.mode = '2d';
+    expect(boxOf(context.sceneryQuery())).toEqual(buildings);
+});
+
+it('widens water and green areas when the camera settles at another zoom', () => {
+    expect(threeModeListenerRegistration('loadviewchange')).toMatch(/ensureNearbyWater\(\);\s*ensureNearbyGreen\(\)/);
+});
+
 it('reads the trees at a radius changed while an earlier read was out', async () => {
     const reads = [];
     const context = loadInContext(threeModeDeclarations(['ensureNearbyTrees']), {
