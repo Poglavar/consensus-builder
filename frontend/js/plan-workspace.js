@@ -39,10 +39,9 @@
             for (const [cid, source] of fetched.rows) available.set(cid,
                 win.DesignSync.localDesignFromRow(source, { apiBase: backend() }));
         }
-        const snapshot = win.PlanComposition.create(plan.content.title,
-            plan.content.designCids.map(cid => ({ ...available.get(cid),
-                ...(plan.designSources?.[cid] ? { planFileSource: plan.designSources[cid] } : {}) })), plan.content.view);
-        if (snapshot.cid !== plan.cid) throw new Error(win.i18n.t('planDialog.revisionChanged'));
+        // The stored plan as it is, with these exact members (validate checks its content against its CID).
+        const snapshot = win.PlanComposition.bind(plan, plan.content.designCids.map(cid => ({ ...available.get(cid),
+            ...(plan.designSources?.[cid] ? { planFileSource: plan.designSources[cid] } : {}) })));
         return save({ ...snapshot, ...(plan.published ? { published: true } : {}) });
     }
     async function publish(plan) {

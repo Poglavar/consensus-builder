@@ -31,12 +31,10 @@
         });
         return true;
     }
-    // schedule: { [designCid]: { start, end } } (plan-record.js); windows of non-members are dropped.
-    function create(title, records, view, schedule = null) {
-        const PlanRecord = dependency('PlanRecord', './plan-record.js');
+    // Local design records as plan members, by their published CID (the first of duplicates).
+    function membersOf(records) {
         const DesignRecord = dependency('DesignRecord', './design-record.js');
         const Cid = dependency('Cid', './cid.js');
-        if (!Array.isArray(records) || !records.length) throw new Error('Choose at least one design.');
         const byCid = new Map();
         records.forEach(record => {
             const content = DesignRecord.published(record);
@@ -48,12 +46,31 @@
                 ...(source?.sourceId ? { source: { sourceId: source.sourceId, snapshotId: source.snapshotId ?? null } } : {}) });
         });
         if ([...byCid.values()].some(member => !member.memberId)) throw new Error('Every selected design needs a local proposal identity.');
-        const designs = [...byCid.values()].sort((a,b)=>a.cid < b.cid ? -1 : a.cid > b.cid ? 1 : 0);
-        const content = PlanRecord.create(title, designs.map(d=>d.cid), view, schedule);
-        const row = { cid: Cid.cidOfObject(content), content: deepCopy(content), designs: designs.map(({cid,content})=>({cid,content})),
+        return byCid;
+    }
+    function snapshotRow(cid, content, designs) {
+        const row = { cid, content: deepCopy(content), designs: designs.map(({cid,content})=>({cid,content})),
             memberIds: designs.map(d=>d.memberId), designSources: Object.fromEntries(designs.filter(d=>d.source).map(d=>[d.cid,d.source])) };
         validate(row);
         return freeze(row);
+    }
+    // schedule: { [designCid]: { start, end } } (plan-record.js); windows of non-members are dropped.
+    function create(title, records, view, schedule = null) {
+        const PlanRecord = dependency('PlanRecord', './plan-record.js');
+        const Cid = dependency('Cid', './cid.js');
+        if (!Array.isArray(records) || !records.length) throw new Error('Choose at least one design.');
+        const designs = [...membersOf(records).values()].sort((a,b)=>a.cid < b.cid ? -1 : a.cid > b.cid ? 1 : 0);
+        const content = PlanRecord.create(title, designs.map(d=>d.cid), view, schedule);
+        return snapshotRow(Cid.cidOfObject(content), content, designs);
+    }
+    // A stored plan ({ cid, content }) with its members' records. Its content is kept exactly as
+    // stored: a plan is immutable and named by the hash of that content, so rebuilding it in today's
+    // form would give an older plan another CID. Each member is matched by its CID.
+    function bind(plan, records) {
+        const byCid = membersOf(Array.isArray(records) ? records : []);
+        const designs = plan.content.designCids.map(cid => byCid.get(cid));
+        if (designs.some(member => !member)) throw Object.assign(new Error('Plan members do not match the plan content.'), { code: 'invalid-plan' });
+        return snapshotRow(plan.cid, plan.content, designs);
     }
     // One design as a one-member plan: how Plan stats, Compare designs and the map's Compare read a
     // design on its own. centre ([lat, lng], its site's) only places the plan's view.
@@ -89,5 +106,5 @@
         const members = (designCids || []).map(cid => byCid.get(String(cid)));
         return members.length && members.every(record => record && isApplied(record)) ? members : null;
     }
-    return Object.freeze({ create, ofDesign, validate, withSchedule, localRecords, appliedMembers });
+    return Object.freeze({ create, bind, ofDesign, validate, withSchedule, localRecords, appliedMembers });
 });

@@ -97,6 +97,16 @@ describe('plan workspace',()=>{
   expect(draft.a.applied).toBe(false);
   expect(committed.a.applied).toBe(false);expect(committed.b.applied).toBe(false);
  });
+ it('resolves a published plan saved before rotate was written, keeping its CID, from fetched members',async()=>{
+  const DesignRecord=require('../../frontend/js/design-record.js');
+  const row=snapshot(),content={...row.content,view:Object.fromEntries(Object.entries(row.content.view).filter(([key])=>key!=='rotate'))};
+  const plan={cid:Cid.cidOfObject(content),content,published:true};
+  const h=harness({DesignRecord,DesignSync:{apiBase:()=>'https://api.test',fetchDesigns:vi.fn(async cids=>({rows:new Map(cids.map(cid=>[cid,{cid}])),missing:[]})),
+   localDesignFromRow:()=>design}});
+  const resolved=await h.api.resolve(plan);
+  expect(resolved).toMatchObject({cid:plan.cid,content,published:true});expect(resolved.designs.map(d=>d.cid)).toEqual(content.designCids);
+  expect(h.store.has(`plan:${plan.cid}`)).toBe(true);
+ });
  it('returns null for an unpublished public link and verifies a canonical published row',async()=>{
   const row=snapshot(),h=harness();h.win.fetch=vi.fn().mockResolvedValueOnce({status:404}).mockResolvedValueOnce({status:200,ok:true,json:async()=>({cid:row.cid,content:row.content})});
   expect(await h.api.publication(row)).toBeNull();
