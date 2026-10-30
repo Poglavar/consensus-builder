@@ -185,6 +185,9 @@
                     if (file.size > win.PlanFile.MAX_BYTES) throw new Error(t('tooLarge', 'Plan files are limited to 32 MiB.'));
                     const text = await file.text();
                     if (kind === 'agreements') parsed = win.AgreementFile.parse(text);
+                    // Only a city model loads the optional CityJSON tool (city-model-reader.js reads
+                    // CityJSON as {"type":"CityJSON"} and CityGML as XML); an ordinary plan file does not.
+                    else if (!/^\s*</.test(text) && !/"type"\s*:\s*"CityJSON"/.test(text)) parsed = win.PlanFile.parse(text);
                     else {
                         await win.ensureOptionalTool('cityJson');
                         const carried = win.CityJsonExport.readBack(text, { proj4: win.proj4 });

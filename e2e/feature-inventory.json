@@ -116,18 +116,6 @@
       ]
     },
     {
-      "id": "layers.buildingsDgu",
-      "specs": [
-        "tests/layer-behavior.spec.ts"
-      ]
-    },
-    {
-      "id": "layers.buildingsOsm",
-      "specs": [
-        "tests/layer-behavior.spec.ts"
-      ]
-    },
-    {
       "id": "layers.proposedBuildings",
       "specs": [
         "tests/layer-behavior.spec.ts"

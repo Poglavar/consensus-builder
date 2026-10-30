@@ -188,6 +188,9 @@ test.describe('Data sources @features', () => {
 
   test('source warnings identify each layer and clear independently', async ({ mockApi: page }) => {
     await openCity(page);
+    // A parcel load that succeeds clears the parcel warning (as it should), so the startup read
+    // settles before the warnings are injected.
+    await page.evaluate(() => (window as any).fetchParcelData());
     await page.evaluate(() => {
       const settings = (window as any).ParcelSourceSettings;
       for (const kind of ['parcel', 'building', 'imagery']) settings.clearFailure(window, kind);
