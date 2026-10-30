@@ -54,7 +54,7 @@ export function setupBuildingsRoute(app, pool) {
     // Body: { geometry: <GeoJSON Geometry in EPSG:4326>, buffer_meters?: number,
     //         proposals?: string[] | string }
     //
-    // `source` explicitly names gdi-3d, dgu, nyc-arcgis, nyc-socrata, osm, wien-lod2, nl-3dbag, nrw-lod2 or a portable building descriptor.
+    // `source` explicitly names gdi-3d, dgu, nyc-arcgis, nyc-socrata, osm, wien-lod2, nl-3dbag, nrw-lod2, nyc-3d or a portable building descriptor.
     // `floorModelNamespace` optionally selects stored floor evidence. No city or location selects
     // a provider or evidence namespace on the server.
     //

@@ -19,4 +19,16 @@ export function parseCityGml(text) {
     return collector.buildings();
 }
 
+// A CityGML stream (chunks of text, e.g. a file too large for one string) → each building to onBuilding
+// as it closes. write(chunk) as text arrives, end() at the end.
+export function createCityGmlStream(onBuilding) {
+    const parser = new SaxesParser({ xmlns: false });
+    const collector = CityModelReader.createCityGmlCollector({ onBuilding });
+    parser.on('opentag', tag => collector.open(local(tag.name), name => tag.attributes[name] ?? null));
+    parser.on('text', value => collector.text(value));
+    parser.on('cdata', value => collector.text(value));
+    parser.on('closetag', tag => collector.close(local(tag.name)));
+    return { write: chunk => { parser.write(chunk); }, end: () => { parser.close(); } };
+}
+
 export const { buildingRecord } = CityModelReader;

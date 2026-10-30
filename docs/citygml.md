@@ -1,7 +1,7 @@
 <!-- Plan for CityGML and CityJSON beside our own formats: imports wherever they are used to exchange what we import, exports as an extra option, and how our records map onto CityGML and LADM. -->
 # CityGML and CityJSON (plan)
 
-Status: built: city-model building sources for Vienna (`wien-lod2`, CityGML), the Netherlands (`nl-3dbag`, CityJSON) and North Rhine-Westphalia (`nrw-lod2`, CityGML), the building upload and the building editors' footprint import, both MCP imports, CityJSON plan and design export and import, and a person's CityJSON or CityGML file as a building source. Not started: NYC's 3D model and other German states.
+Status: built: city-model building sources for Vienna (`wien-lod2`, CityGML), the Netherlands (`nl-3dbag`, CityJSON), North Rhine-Westphalia (`nrw-lod2`, CityGML) and New York (`nyc-3d`, CityJSON tiles cut from the city's CityGML), the building upload and the building editors' footprint import, both MCP imports, CityJSON plan and design export and import, and a person's CityJSON or CityGML file as a building source. Not started: other German states.
 
 CityGML (OGC) is the open standard for 3D city models: buildings and their storeys, rooms and
 units, roads and rail, vegetation, water, land use, terrain and city furniture, each with
@@ -26,7 +26,7 @@ loosely in INSPIRE planned land use) and agreements (no standard).
 
 | Our import or export | CityGML / CityJSON | Why |
 |---|---|---|
-| City building sources (`backend/buildings/`) | Import: CityGML sheets (built: Vienna, North Rhine-Westphalia), CityJSON API pages (built: 3D BAG); other German states' LoD2 (CityGML), NYC's 3D model (CityGML) | How cities publish their 3D buildings. |
+| City building sources (`backend/buildings/`) | Import: CityGML sheets (built: Vienna, North Rhine-Westphalia), CityJSON API pages (built: 3D BAG), a city's single CityGML file cut into our CityJSON tiles (built: New York); other German states' LoD2 (CityGML) | How cities publish their 3D buildings. |
 | A person's building source URL (Data sources) | Import: a CityJSON or CityGML file URL (built), beside ArcGIS, WFS, OGC API and GeoJSON; CityJSONSeq not yet | The same files, chosen by the person. |
 | Building model upload (`building-upload.js`, MCP `ugt_import_model`) | Import: a CityGML or CityJSON building beside GLB/glTF, with its storeys and units when present | GIS tools and city portals hand out single buildings this way. |
 | Footprint import in the building editors (Freeform, Row, Block) | Import: CityGML / CityJSON buildings as footprints with heights | Same files, when only the outline is wanted. |
@@ -36,8 +36,7 @@ loosely in INSPIRE planned land use) and agreements (no standard).
 | Parcels, parcel layouts, ownership, agreements | None | Parcels travel as cadastral GML/GeoJSON (LADM concepts), not CityGML; agreements have no standard. |
 | Parks, land use, terrain, trees as imports | None for now | Little exchanged as CityGML; revisit when a source needs it. |
 
-Order: NYC's 3D model next, then other German states; the 3D BAG and North Rhine-Westphalia
-sources, building upload, footprint import, CityJSON export and import and the person's file
+Order: other German states next; the 3D BAG, North Rhine-Westphalia and New York sources, building upload, footprint import, CityJSON export and import and the person's file
 sources are done. CityGML XML and
 CityJSON share one reader (`frontend/js/city-model-reader.js`), so each import point reads both.
 
@@ -125,6 +124,25 @@ A building source for cities that publish their city model as CityGML sheets:
   offset), dl-de/zero-2-0. Tiles are large (central Cologne: 56 MB, 1,594 buildings, about 9 s to
   download and 0.8 s to parse), so it keeps 6 parsed tiles (`sheetCache`; the default is 64). Bonn,
   Cologne, Dortmund, Düsseldorf and Essen list it before OpenStreetMap.
+  `nyc-3d` (`backend/buildings/nyc-3d.js`) reads New York's 3D Building Model (NYC OTI, LoD2, 2014
+  survey). The city publishes it only as one 916 MB zip of 20 delivery-area CityGML files (13.8 GB,
+  EPSG:2263 feet, NAVD88 heights), so `backend/buildings/build-nyc-3d-tiles.mjs` streams each file
+  through saxes once (`createCityGmlStream`) and cuts it into 1,000 ft tiles of CityJSON 2.0
+  (`city-model-tiles.js`; a building on a tile edge is in each tile it touches, readers join by id).
+  The 2014 release is 8,108 tiles, 334 MB gzipped (about 240 bytes per building), built in about
+  6 minutes on the laptop and stored on R2 under `uk-cadastre/nyc-3d/2014-v1/` (served at
+  `uk-cadastre.urbangametheory.xyz`, `Content-Encoding: gzip`, with a `manifest.json`).
+  `NYC_3D_TILES_URL` points the source at another release. New York lists it before
+  `nyc-arcgis`, which answers any cell it fails or leaves empty; buildings newer than 2014 are not
+  in it.
+
+  ```
+  node backend/buildings/build-nyc-3d-tiles.mjs --zip DA_WISE_GML.zip --out tmp/nyc-3d --run
+  rclone copy tmp/nyc-3d/tiles r2-uk-cadastre:uk-cadastre/nyc-3d/<release>/tiles --transfers 64 \
+      --header-upload "Content-Encoding: gzip" --header-upload "Content-Type: application/json" \
+      --header-upload "Cache-Control: public, max-age=31536000, immutable"
+  rclone copy tmp/nyc-3d/manifest.json r2-uk-cadastre:uk-cadastre/nyc-3d/<release>
+  ```
 - A first request costs 2–5 s per sheet (download and parse); a LOD2 building is about 25 kB of
   faces, so a 120 m radius in the old town is about 100 buildings and 2.5 MB.
 - A person's file: Data sources → Building sources → Add a source takes the HTTPS URL of a CityJSON

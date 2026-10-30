@@ -14523,9 +14523,10 @@
             floorModels: { namespace: 'new_york' },
             planning: { sourceIds: ['nyc-r6a-pilot-2026-10-19'] },
             buildings: {
-                // The explicitly selected NYCMaps/ArcGIS feed supplies 3D meshes,
-                // map footprints and demolition stock from the same building identities.
-                sources: [{ id: 'nyc-arcgis' }, { id: 'osm', use: false }]
+                // The city's LoD2 model (2014 survey, tiles on R2) draws the roofs; the NYCMaps/ArcGIS
+                // feed answers any cell it fails or leaves empty, with footprints of the same identities.
+                sources: [{ id: 'nyc-3d', name: 'NYC 3D Building Model (LoD2, 2014)', attribution: 'NYC 3D Building Model © City of New York, Office of Technology and Innovation' },
+                    { id: 'nyc-arcgis' }, { id: 'osm', use: false }]
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']

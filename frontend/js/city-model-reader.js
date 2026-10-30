@@ -16,10 +16,11 @@
     }
 
     // ---- CityGML ----
-    // Fed open(name, attribute)/text(text)/close(name) with local element names; buildings() at the end.
+    // Fed open(name, attribute)/text(text)/close(name) with local element names; buildings() at the end,
+    // or each building handed to onBuilding as it closes (a file too large to hold, read as a stream).
     // A building's parts belong to it. Semantic surfaces are taken when a building has any; otherwise
     // its geometry's polygons, as kind "surface", so a LOD1 solid still draws.
-    function createCityGmlCollector() {
+    function createCityGmlCollector({ onBuilding = null } = {}) {
         const buildings = [], stack = [];
         let building = null, depth = 0, polygon = null, ring = null, chars = '', attribute = null, semantic = [], dimension = 3;
         function open(name, attr) {
@@ -58,7 +59,7 @@
                 if (name === 'Building' && stack.length === depth) {
                     const { semanticSurfaces, otherSurfaces, ...rest } = building;
                     const surfaces = semanticSurfaces.length ? semanticSurfaces : otherSurfaces.map(surface => ({ ...surface, kind: 'surface' }));
-                    if (surfaces.length) buildings.push({ ...rest, surfaces });
+                    if (surfaces.length) (onBuilding || (done => buildings.push(done)))({ ...rest, surfaces });
                     building = null; semantic = [];
                 }
             }
