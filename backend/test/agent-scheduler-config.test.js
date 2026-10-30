@@ -237,3 +237,12 @@ describe('algorithmic agent schedule', () => {
         });
     });
 });
+
+describe('scheduled agent RPC pacing', () => {
+    it('paces every scheduled agent job to one RPC request per second and leaves the lens services unpaced', () => {
+        const scheduled = apps.filter(app => app.cron_restart);
+        expect(scheduled.length).toBeGreaterThanOrEqual(12);
+        for (const app of scheduled) expect(app.env.SOLANA_RPC_MIN_INTERVAL_MS, app.name).toBe('1000');
+        for (const app of apps.filter(item => !item.cron_restart)) expect(app.env.SOLANA_RPC_MIN_INTERVAL_MS, app.name).toBeUndefined();
+    });
+});
