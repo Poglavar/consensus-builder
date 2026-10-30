@@ -66,7 +66,7 @@ The project's own six building uses already map from CityGML/ALKIS codes and OSM
 - Height is not a zone field: any object carries `hoehenangabe` (`XP_Hoehenangabe`: `h`, `hMin`, `hMax`, `hZwingend`, a reference point `bezugspunkt` such as eaves, ridge or top edge, and `hoehenbezug`, absolute datum or relative to terrain or street). `BP_HoehenMass` is a separate feature type.
 - Building lines are drawn: `BP_BauGrenze` (building limit, may not be crossed) and `BP_BauLinie` (building line, must be built on), with `bautiefe` and storey ranges; `BP_UeberbaubareGrundstuecksFlaeche` is the buildable area.
 - Obligation: IT-Planungsrat decision 2017/37 made XPlanung binding for vector exchange of plans, but nobody is obliged to produce vector plans and old plans need not be converted. The building-code amendment of 2026 (cabinet 2026-05-27) adds an explicit duty, planned from 2027-01-01. [Overview](https://www.goerg.de/de/aktuelles/veroeffentlichungen/29-09-2026/die-baugb-novelle-2026-schneller-digitaler-und-kommunaler).
-- Open data is thin in practice. Hamburg's XPlanung WFS (`https://geodienste.hamburg.de/HH_WFS_xplan_dls`) held 3 `BP_Plan` and 6 `BP_BaugebietsTeilFlaeche` on 2026-10-30: all 6 with `GRZ` and a use code, 5 with `Z`, 1 with `GFZ`; 41 buildable areas and 45 building limits. Hamburg's other plan WFS is outlines only, Berlin's open plan WFS uses its own feature types, and NRW has municipal services (Kreis Viersen) but no open statewide one.
+- Open vector data exists mainly in Hamburg and Freiburg; most other plans are published as an outline and a scan. See [Germany in depth](#germany-in-depth) for the legal layers, the data by state and what can be computed.
 - XBau is the related standard for building-permit applications, not a zoning-rule model.
 
 #### Netherlands: IMRO2012 and the Omgevingswet models
@@ -207,6 +207,114 @@ Patterns across the table:
 - **Limits can differ by use** (Denmark's per-use limits, Finland's use share of floor area, NYC's residential/commercial/facility FAR).
 - Permitted uses, where structured, take three states: allowed, conditional and forbidden (France, LADM Part 5, Regrid).
 
+## Germany in depth
+
+Checked **2026-10-30**. Law from [gesetze-im-internet.de](https://www.gesetze-im-internet.de/bbaug/) (BauGB) and [BauNVO](https://www.gesetze-im-internet.de/baunvo/); state building codes partly from unofficial mirrors where the official portals could not be read (marked). Data counts are live service queries on that date.
+
+### Who sets what
+
+The system is federal law, state law and a city plan together. No single layer gives the whole answer.
+
+| Layer | Sets |
+| --- | --- |
+| Federal **BauGB** (building code) | Cities plan "in their own responsibility" (§ 2). Two plan types: the preparatory land-use plan for the whole municipality (Flächennutzungsplan, § 5) and the binding local plan (Bebauungsplan, B-Plan), developed from it (§ 8). § 9 lists what a B-Plan *may* fix. Where a project is allowed: inside a qualified B-Plan (§ 30), in an unplanned built-up area (§ 34), or outside (§ 35). Exceptions and exemptions (§ 31). |
+| Federal **BauNVO** (land-use ordinance) | The menu every B-Plan picks from: area types (WR, WA, MI, MU, GE, GI … with their allowed and exceptionally allowed uses, §§ 2–11), the measures (§§ 16–21a: GRZ, GFZ, BMZ, storeys, height), building form (§ 22) and building lines (§ 23). |
+| **State building codes** (Landesbauordnungen) | Setbacks (Abstandsflächen), the definition of a full storey (Vollgeschoss) that GFZ and storey counts rely on, fire safety, parking, local design statutes. |
+| **City** | Adopts the B-Plan as a by-law (Satzung, § 10) and chooses its content: area type, GRZ/GFZ/BMZ values, storeys and/or heights with their reference points (§ 18 requires them), building form, building lines and limits, its own setbacks (§ 9(1) 2a), excluded or restricted uses (§ 1(4)–(10) BauNVO). |
+
+Only the GRZ (or an absolute footprint) is mandatory in a B-Plan (§ 16(3) BauNVO); storeys or height become mandatory when the townscape would otherwise suffer. Plans older than the BauGB still apply in places: Berlin's 1960 Baunutzungsplan and Hamburg's Baustufenpläne (§ 233(3)).
+
+### How much land a B-Plan covers
+
+There is no national statistic: BBSR states that neither planning procedures nor permit applications are recorded across municipalities ([Analysen KOMPAKT 01/2026](https://www.bbsr.bund.de/BBSR/DE/veroeffentlichungen/analysen-kompakt/2026/ak-01-2026-dl.pdf)). Indications: West Berlin is covered almost entirely by the Baunutzungsplan and B-Plans (Reinickendorf "well under 10 %" unplanned), East Berlin much less ([Drucksache 19/25746](https://pardok.parlament-berlin.de/starweb/adis/citat/VT/19/SchrAnfr/S19-25746.pdf)); Munich claims up to 60 % of housing projects fall under § 34 (an advocacy figure). BBSR's survey finds about 40 % of a city's B-Plans in need of change.
+
+**§ 34** (unplanned built-up area) allows a project that "fits into the character of the immediate surroundings" by use, size, building form and the ground to be built on. Hamburg's guidance ([BPD 2/2001](https://www.hamburg.de/resource/blob/190420/cb1111c73179a6dbdd53171b58fc3e54/bpd-34-baugb-zulaessigkeit-von-vorhaben-innerhalb-der-im-zusammenhang-bebauten-ortsteile-data.pdf)): the surroundings are usually the block; a from–to range is read off the existing buildings for each criterion, excluding outliers; size is judged by visible absolute size (footprint, storeys, height), with GRZ/GFZ secondary; the buildable ground follows existing building fronts and depths. Inside the range a project fits as a rule. Since 2025-10-30, § 34(3b) and § 246e allow deviations for housing with the city's consent until 2030. The inputs are measurable; the choice of surroundings and reference buildings is judgement, and the result is a range, not a shape.
+
+### What changes the arithmetic
+
+- **GRZ (§ 19)**: garages, parking with access, ancillary buildings and underground structures count, and may exceed the GRZ by up to 50 %, capped at 0.8 (§ 19(4), "GRZ II"); the plan may deviate.
+- **GFZ (§ 20)** counts the floor area of full storeys only, by outer dimensions; a plan may include rooms in other storeys. A full storey is a **state** definition, e.g. NRW (BauO NRW 2018 § 2(6)): clear height ≥ 2.30 m over more than ¾ of the storey below (NRW has had four definitions); Baden-Württemberg: top more than 1.4 m above mean ground, ≥ 2.30 m clear, top storeys under ¾ excluded; Hamburg: ceiling top more than 1.40 m above mean ground, ≥ 2.30 m, roof storeys need ⅔. Bavaria dropped the term in 2008 and keeps the old one for BauNVO purposes (Art. 83(6) BayBO; wording *unverified*). State rows are from mirrors (*unverified* against the official text).
+- **§ 17 values** per area type (e.g. WA 0.4/1.2, MU 0.8/3.0, MK 1.0/3.0, GE/GI 0.8/2.4) have been guidance (Orientierungswerte) rather than caps since 2021-06-23.
+- **Heights (§ 16, § 18)**: eaves, ridge or total height, always with the plan's reference point; binding values allow only minor deviation.
+- **Building form (§ 22)**: open (side spacing, each building or group at most 50 m), closed (no side spacing), or as the plan defines.
+- **Building lines (§ 23)**: a Baulinie must be built on, a Baugrenze may not be crossed, a Bebauungstiefe is measured from the street line; minor projections allowed; ancillary buildings may stand outside unless the plan excludes them.
+- **The BauNVO version is per plan.** A plan is read under the version in force when it was publicly displayed (transitional §§ 25a–25e), and the version changes the counting ([Munich's comparison sheets](https://lhm.muenchen.swm.de/dam/jcr:ad9f5a79-5892-4b3b-9681-28aabac8e382/BauNVO_1990_2017_2021.pdf)):
+
+| Version | Applies to plans displayed | Counting |
+| --- | --- | --- |
+| 1962 | 1962-08-01 to 1968-12-31 | Ancillary buildings not in the footprint; floor area includes habitable rooms in non-full storeys. |
+| 1968 / 1977 | 1969-01-01 to 1990-01-26 | As 1962, plus a garage allowance (§ 21a). |
+| 1990 / 2017 | from 1990-01-27 | Ancillary buildings, underground garages and access count in the footprint (GRZ II); floor area counts full storeys only. |
+| 2021 | from 2021-06-23 | § 17 values become guidance. |
+
+The state's full-storey definition is likewise the one in force at the plan's display or adoption (courts differ; *unverified* which). XPlanung carries `versionBauNVO` on the plan.
+
+### Setbacks by state
+
+Setbacks are state law and apply whatever the B-Plan says, unless the plan fixes building lines and limits that require or allow building closer, or sets its own depths. Model building code (MBO § 6): 0.4 H, at least 3 m; 0.2 H in commercial and industrial areas; a roof up to 70° adds ⅓ of its height to H, a steeper one all of it.
+
+| State | Depth / minimum | GE / GI | Roof added to H | Notes |
+| --- | --- | --- | --- | --- |
+| Bavaria (official text) | 0.4 H / 3 m | 0.2 H | ≤ 70° ⅓, > 70° full | Since 2021-02-01; cities over 250,000 inhabitants may keep 1 H where the surroundings are small buildings (Art. 6(5a)); which cities is *unverified*. |
+| Berlin | 0.4 H / 3 m | 0.2 H | H to the roof surface point by point (*unverified*) | Small residential buildings: 3 m. |
+| Hamburg | 0.4 H / 2.5 m | 0.2 H | < 70° ⅓ | |
+| NRW | 0.4 H / 3 m | 0.2 H; MK 0.25 H | > 45° ⅓, > 70° full | |
+| Baden-Württemberg | 0.4 H / 2.5 m (2 m for walls ≤ 5 m) | 0.125 H | > 45° ¼, > 70° full | Mixed and urban areas 0.2 H. |
+| Lower Saxony | 0.4 H / 3 m (since 2024-07-01; was 0.5 H) | 0.2 H | H at each point | |
+| Hesse | 0.4 H / 2.5 m | 0.2 H | 45–70° ⅓, > 70° full | |
+| Saxony | 0.4 H / 3 m | 0.2 H | < 70° ⅓ | Small buildings: 3 m. |
+
+All but Bavaria from mirrors ([MBO](https://bauministerkonferenz.de/Dokumente/42323530.pdf), [BayBO Art. 6](https://www.gesetze-bayern.de/Content/Document/BayBO-6)); the other eight states were not checked.
+
+### Discretion
+
+- **Exceptions** (§ 31(1)): only those the plan names, e.g. the uses each area type lists as exceptionally allowed (WA: hotels, administration, filling stations …).
+- **Exemptions** (§ 31(2)): where the plan's basic intent is untouched and the public interest, urban acceptability or unintended hardship justifies it, weighing neighbours.
+- **§ 33**: projects under a plan still in preparation.
+- **§ 15 BauNVO**: an allowed use can still be refused for its number, location, size or nuisance (consideration of neighbours).
+- No figures exist on how many permits rely on exceptions or exemptions.
+
+### XPlanung: organisation, tools and data
+
+- Maintained by the **XLeitstelle Planen und Bauen** at Hamburg's surveying agency (LGV), a federal–state body that also maintains XBau. [XPlanung](https://xleitstelle.de/xplanung). Versions 3.0 to 6.1; major versions break compatibility. No version 7 found.
+- A file holds `BP_Plan` → `BP_Bereich` → plan features; text rules in `XP_TextAbschnitt` (free text, linked by `refTextInhalt`); the scanned plan as `XP_ExterneReferenz`; amendments link to the plan they amend (`aendertPlan`).
+- **Outline-and-scan ("Teilvektor") versus full vector ("Vollvektor")**: a conformant file may hold only the plan outline, a georeferenced scan and documents. The XLeitstelle recommends full vector only for new plans, and few attributes are mandatory ([Bavarian guide](https://digitale.planung.bayern.de/medien/dokumente/leitfaden_xplanung_2_auflage.pdf)). Conformance therefore says nothing about whether rule values are present.
+- **Tools**: xPlanBox (manager, validator, WMS/WFS and the version-merging XPlanSyn WFS; AGPL-3.0, OpenCoDE `diplanung/ozgxplanung`); the XLeitstelle's [validator API](https://xleitstelle.xplan.diplanung.de/xplan-validator-api/swagger-ui/index.html) (rules LGPL-2.1, with state profiles); **xmas-core** (XLeitstelle, EUPL-1.2, Python: reads GML and JSON-FG, writes PostGIS, migrates 4.1/5.4/6.0/6.1, the most useful ingest library); QGIS plugins (xmas-plugin, Kreis Viersen's XPlan-Reader). The standard's own licence is *unverified*.
+
+Data by state (2026-10-30):
+
+| State or city | Service | What it holds |
+| --- | --- | --- |
+| **Hamburg** | `https://hh.xplan.diplanung.de/xplansyn-wfs/services/xplansynwfs` (all versions; per version `…/xplan-wfs/services/wfs41`…`wfs60`), dl-de/by-2.0 | 3,049 plans (all adopted plans), 23,156 area-type zones, 45,259 buildable areas; in 6.0 also 14,729 building limits, 2,775 building lines, 2,741 height points. Zone samples: storeys 53–58 %, GRZ 39–43 %, GFZ 7–24 %. Heights are separate points with an absolute reference and no eaves/ridge reference. The older `geodienste.hamburg.de/HH_WFS_xplan_dls` is stale (3 plans). |
+| **Freiburg** (BW) | `https://xplanung.freiburg.de/xplan-services-wfs/services/wfs60` (also 5.4, 5.1, XPlanSyn), dl-de/by-2.0 | 544 plans in 6.0; zone sample GRZ 67 %, GFZ 51 %, storeys 27 %; 26 height points. Other BW cities not checked. |
+| **Bavaria** | `https://by.xplan.diplanung.de/xplansyn-wfs/services/xplansynwfs`, licence not stated | 24,928 plans but only 348 zones, in 53 plans: about 99.8 % outline and scan. The state portal moves to DiPlanPortal on 2026-10-31. |
+| **Berlin** | `https://gdi.berlin.de/services/wfs/bplan`, dl-de/zero-2.0 | 2,852 plan outlines with a PDF link; not XPlanung. Its DiPlan system is planned for early 2027. |
+| **NRW** | bauleitplanung.nrw (about 166 municipal services) | Outlines; displaying XPlanGML is a planned later stage. Cologne plans to publish XPlanung. |
+| **Saxony, Hesse** | — | No structured rule service found. |
+| Other DiPlanung tenants | XPlanSyn | Brandenburg 25 plans, Lower Saxony 1, others none. |
+
+INSPIRE planned land use derived from XPlanung loses heights with two reference points and other content ([mapping paper](https://www.geodaten.niedersachsen.de/download/85278/Von_XPlanGML_zu_INSPIRE_Bodennutzung_Quelle_avn_.pdf)); it is not a substitute feed.
+
+### Automatic checking and envelopes
+
+- **No production system checks a design against a B-Plan.** XBau and the "Digitaler Bauantrag" exchange permit applications; they do not check rules. A 2026 Bundestag question records the government's 2023 statement that no system can produce a BIM-based application ([Drucksache 21/6854](https://dserver.bundestag.de/btd/21/068/2106854.pdf)).
+- **Research**: the BIM-based building permit project (Ruhr-Uni Bochum with Hamburg and NRW, 2018–2020) checked planning-law parameters on a HafenCity plot from Hamburg's XPlanung data, using IFC, mvdXML and BCF ([summary](https://www.inf.bi.ruhr-uni-bochum.de/iib/forschung/projekte/bauantrag.html.en)); which rules is *unverified*. ACCORD's German demonstrator (Tegel, with the XLeitstelle and Fraunhofer IBP) ended 2025. [3D-Lageplan](https://asg.ed.tum.de/en/gis/projects/3d-lageplan) (TUM, RWTH, the XLeitstelle and Cologne, 2024–2026) aims at automatic checks including setbacks; no results yet. A KIT paper (2010) proposed a CityGML extension for permit checking.
+- **Envelopes**: the XLeitstelle's "XPlanung 3D" concept (2020) derives CityGML volumes from buildable areas, storeys or heights and mean terrain; no product found. TUM (2024) maps XPlanung to CityGML without generating envelopes. Commercial: syte claims machine-readable B-Plans for 25 % of Germany's area and sells development potential (reads GRZ, GFZ, eaves and ridge heights, building lines); popularc claims maximum-development models; neither documents its method.
+
+### What can be computed
+
+**Plot inside a qualified B-Plan**:
+
+| Kind | Rules |
+| --- | --- |
+| Generative | Buildable area from building limits, lines and depth, with the building-form side rules; height from eaves, ridge or total height and the plan's reference, or storeys × a storey height from the state definition; state setbacks (0.4 H and its roof rule) or building on the boundary where the plan allows it; footprint from GRZ (and GRZ II), floor area from GFZ, volume from BMZ, all counted under the plan's BauNVO version; uses from the area type and the plan's § 1 restrictions. |
+| Check-only | Parking, roof form and pitch, placement of ancillary buildings, fire class, access, noise conditions; text rules in `XP_TextAbschnitt` until read. |
+| Discretionary | Exceptions, exemptions, "minor" overshoots (§ 19(4), § 23), consideration of neighbours (§ 15), plans in preparation (§ 33), the housing deviations of § 246e. |
+
+**§ 34 plot**: an honest app can show an *indicative context envelope*: the from–to range of the surrounding block's footprints, storeys, heights, building depth and fronts (outliers marked), the area type when the surroundings match one, and the state setbacks as a hard line, labelled as case-by-case. The project already has the buildings for this in the German cities it draws in 3D.
+
+**An XPlanung adapter is feasible today for Hamburg** (all plans, open licence, already in the 3D coverage) **and Freiburg**, read from the XPlanSyn WFS or with xmas-core. It should draw an envelope only where a zone has storeys or a height, a GRZ and a buildable area, and say why elsewhere. Its open problems: storeys to metres by assumption where heights are absent, absolute heights needing terrain, rules left in text, polygonising building-limit lines, merging amendments, reading under the right BauNVO and state definitions, and Hamburg's Baustufenpläne. Elsewhere in Germany the rules are in scanned plans and PDFs, which would need text and map extraction or a commercial source.
+
 ## National Zoning Atlas and Land Use Labs
 
 NZA's current public description says that analysts identify jurisdictions and districts, separately analyse zoning text and maps, repair/digitise map geometry, then review, merge and publish the result. It explicitly says machine learning cannot yet read the nuanced codes to its required accuracy; potential automation is limited to work such as update scraping and GIS drawing/cleaning. [How NZA is made](https://www.zoningatlas.org/how).
@@ -280,7 +388,7 @@ Research recommendations, not decisions or implemented contracts.
 | Denmark Plandata.dk | Required by law for a plan to take effect | Service fields *unverified*. |
 | Netherlands DSO | National APIs; IMRO plans for older plans | Norm types *unverified*. |
 | Finland Ryhti | Rolling out 2025–2028 | Open API *unverified*. |
-| Germany XPlanung | Few open services today; duty planned from 2027 | One adapter would serve every German city once published. |
+| Germany XPlanung | Hamburg (all about 3,049 plans as vectors) and Freiburg today; elsewhere mostly outline and scan; duty planned from 2027 | One adapter serves every city that publishes vectors; [Germany in depth](#germany-in-depth). |
 | Croatia ePlanovi | Rules required by the rulebook, stored as text | One text parser could serve every Croatian plan; a WFS is *unverified*. Zagreb's GUP source is separate today. |
 | INSPIRE PLU, France | Use codes reliable; values optional or provider-defined | Useful for uses and rule types, weak for numbers. |
 | US, Bogotá, cities without a standard | NZA, Regrid-style schemas, city datasets | Per-city or per-dataset adapters. |
