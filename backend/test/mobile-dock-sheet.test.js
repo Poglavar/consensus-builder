@@ -7,7 +7,7 @@ import { fileURLToPath } from 'node:url';
 import vm from 'node:vm';
 
 const require = createRequire(import.meta.url);
-const { limits, sheetHeight, draggedHeight, occupiedBottom, reportOccupancy, wirePanel, install } = require('../../frontend/js/mobile-dock-sheet.js');
+const { limits, sheetHeight, draggedHeight, restingHeight, occupiedBottom, reportOccupancy, wirePanel, install } = require('../../frontend/js/mobile-dock-sheet.js');
 const sheetSource = readFileSync(fileURLToPath(new URL('../../frontend/js/mobile-dock-sheet.js', import.meta.url)), 'utf8');
 const panelsCss = readFileSync(fileURLToPath(new URL('../../frontend/css/panels.css', import.meta.url)), 'utf8');
 
@@ -162,18 +162,52 @@ describe('mobile dock sheet geometry', () => {
         expect(fixture.panel.style.getPropertyValue('--mobile-sheet-height')).toBe('290px');
     });
 
-    it('resizes up and down from pointer movement', () => {
+    it('follows the finger while dragged, then rests at the nearer of half and full height', () => {
         const fixture = controllerFixture({ height: 350 });
-        fixture.fire('pointerdown', { clientY: 200 });
-        fixture.fire('pointermove', { clientY: 100 });
-        fixture.fire('pointerup', { clientY: 100, type: 'pointerup' });
+        fixture.fire('pointerdown', { clientY: 200, timeStamp: 0 });
+        fixture.fire('pointermove', { clientY: 100, timeStamp: 400 });
         expect(fixture.panel.style.getPropertyValue('--mobile-sheet-height')).toBe('450px');
-        expect(fixture.panel.style.getPropertyValue('--mobile-dock-sheet-height')).toBe('450px');
-        fixture.fire('pointerdown', { clientY: 100 });
-        fixture.fire('pointermove', { clientY: 200 });
-        fixture.fire('pointerup', { clientY: 200, type: 'pointerup' });
+        fixture.fire('pointerup', { clientY: 100, type: 'pointerup', timeStamp: 800 });
+        expect(fixture.panel.style.getPropertyValue('--mobile-sheet-height')).toBe('400px');
+        expect(fixture.panel.style.getPropertyValue('--mobile-dock-sheet-height')).toBe('400px');
+        // Slowly up past the middle: full height.
+        fixture.fire('pointerdown', { clientY: 400, timeStamp: 1000 });
+        fixture.fire('pointermove', { clientY: 150, timeStamp: 2000 });
+        fixture.fire('pointerup', { clientY: 150, type: 'pointerup', timeStamp: 2400 });
+        expect(fixture.panel.style.getPropertyValue('--mobile-sheet-height')).toBe('792px');
         expect(fixture.closeCount()).toBe(0);
-        expect(fixture.panel.style.getPropertyValue('--mobile-sheet-height')).toBe('350px');
+    });
+
+    it('a flick picks the next resting height in its direction, and a flick down from half closes', () => {
+        const fixture = controllerFixture({ height: 400 });
+        // 30 px up in 20 ms: barely moved, but a flick, so full height.
+        fixture.fire('pointerdown', { clientY: 400, timeStamp: 0 });
+        fixture.fire('pointermove', { clientY: 370, timeStamp: 20 });
+        fixture.fire('pointerup', { clientY: 370, type: 'pointerup', timeStamp: 30 });
+        expect(fixture.panel.style.getPropertyValue('--mobile-sheet-height')).toBe('792px');
+        fixture.fire('pointerdown', { clientY: 100, timeStamp: 100 });
+        fixture.fire('pointermove', { clientY: 140, timeStamp: 120 });
+        fixture.fire('pointerup', { clientY: 140, type: 'pointerup', timeStamp: 130 });
+        expect(fixture.panel.style.getPropertyValue('--mobile-sheet-height')).toBe('400px');
+        expect(fixture.closeCount()).toBe(0);
+        fixture.fire('pointerdown', { clientY: 400, timeStamp: 200 });
+        fixture.fire('pointermove', { clientY: 440, timeStamp: 220 });
+        fixture.fire('pointerup', { clientY: 440, type: 'pointerup', timeStamp: 230 });
+        expect(fixture.closeCount()).toBe(1);
+    });
+
+    it('rests a released height at half, full or closed', () => {
+        const stops = { half: 400, full: 792, min: 200 };
+        expect(restingHeight({ height: 500, ...stops })).toBe(400);
+        expect(restingHeight({ height: 650, ...stops })).toBe(792);
+        expect(restingHeight({ height: 250, ...stops })).toBe(400);
+        expect(restingHeight({ height: 140, ...stops })).toBe(null);
+        expect(restingHeight({ height: 500, velocity: -0.8, ...stops })).toBe(792);
+        expect(restingHeight({ height: 700, velocity: 0.8, ...stops })).toBe(400);
+        expect(restingHeight({ height: 380, velocity: 0.8, ...stops })).toBe(null);
+        expect(restingHeight({ height: 300, velocity: -0.8, ...stops })).toBe(400);
+        // A short screen whose half and full coincide has one resting height.
+        expect(restingHeight({ height: 300, velocity: -0.8, half: 320, full: 320, min: 200 })).toBe(320);
     });
 
     it('dismisses below the minimum drag threshold through the close callback once', () => {
@@ -186,11 +220,11 @@ describe('mobile dock sheet geometry', () => {
 
     it('suppresses the synthetic tap after a drag, then tap toggles between half and full height', () => {
         const fixture = controllerFixture({ height: 350 });
-        fixture.fire('pointerdown', { clientY: 100 });
-        fixture.fire('pointermove', { clientY: 120 });
-        fixture.fire('pointerup', { clientY: 120, type: 'pointerup' });
+        fixture.fire('pointerdown', { clientY: 100, timeStamp: 0 });
+        fixture.fire('pointermove', { clientY: 120, timeStamp: 500 });
+        fixture.fire('pointerup', { clientY: 120, type: 'pointerup', timeStamp: 900 });
         fixture.fire('click');
-        expect(fixture.panel.style.getPropertyValue('--mobile-sheet-height')).toBe('330px');
+        expect(fixture.panel.style.getPropertyValue('--mobile-sheet-height')).toBe('400px');
         fixture.fire('click');
         expect(fixture.panel.style.getPropertyValue('--mobile-sheet-height')).toBe('792px');
         fixture.fire('click');
@@ -269,25 +303,33 @@ describe('mobile dock sheet geometry', () => {
         expect(occupiedBottom({ viewportHeight: 844, top: 500 })).toBe(344);
         expect(occupiedBottom({ viewportHeight: 844, top: null })).toBe(0);
         const vars = new Map();
-        const container = { style: { setProperty: (k, v) => vars.set(k, v), removeProperty: k => vars.delete(k) } };
         const panel = { box: { top: 500, height: 344 }, getBoundingClientRect() { return this.box; } };
+        const asked = [];
+        const container = { style: { setProperty: (k, v) => vars.set(k, v), removeProperty: k => vars.delete(k) },
+            querySelectorAll(selector) { asked.push(selector); return [panel]; } };
+        const bodyClasses = new Set();
         let phone = true;
         const win = {
             innerHeight: 844,
             matchMedia: () => ({ matches: phone }),
             document: {
+                body: { classList: { toggle: (name, on) => (on ? bodyClasses.add(name) : bodyClasses.delete(name)) } },
                 getElementById(id) { return id === 'map-container' ? container : null; },
                 querySelectorAll() { return [panel]; }
             }
         };
         reportOccupancy(win);
         expect(vars.get('--map-sheet-occupied')).toBe('344px');
+        // An open sheet about the map covers the bottom bar; the bar's own sheets are not counted.
+        expect(bodyClasses.has('mobile-context-sheet-open')).toBe(true);
+        expect(asked.at(-1)).toContain(':not(.map-sheet--dock)');
         panel.box = { top: 437, height: 407 };
         reportOccupancy(win);
         expect(vars.get('--map-sheet-occupied')).toBe('407px');
         panel.box = { top: 0, height: 0 }; // closed
         reportOccupancy(win);
         expect(vars.has('--map-sheet-occupied')).toBe(false);
+        expect(bodyClasses.has('mobile-context-sheet-open')).toBe(false);
         phone = false;
         panel.box = { top: 500, height: 344 };
         reportOccupancy(win);

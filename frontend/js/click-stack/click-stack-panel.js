@@ -185,8 +185,10 @@
         return node;
     }
 
+    // As people read it (proposal-parcel-identity.js _parcelIdLabel): a formed piece as its root
+    // parcel and number, not its runtime id with the producing design's CID in it.
     function parcelReference(instance) {
-        return global.ParcelMenuModel?.displayParcelId?.(instance?.feature?.properties || {}, instance?.id) || instance?.id || '';
+        return global._parcelIdLabel(global.ParcelMenuModel?.displayParcelId?.(instance?.feature?.properties || {}, instance?.id) || instance?.id || '');
     }
 
     function focusButton(kind) {

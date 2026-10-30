@@ -52,6 +52,9 @@ test.describe('Dock sheets', () => {
     const title = await page.evaluate(id => (window as any).proposalStorage.getProposal(id)?.title, parkId);
     await page.evaluate(() => (window as any).hideProposalDetailsPanel?.(true));
     await page.setViewportSize({ width: 390, height: 844 });
+    // On a phone the park's sheet covers the bottom bar (mobile-dock-sheet.js); close it to reach Lists.
+    await page.keyboard.press('Escape');
+    await expect(page.locator('#click-stack')).toBeHidden();
     await page.locator('#proposals-button').click();
     // Lists rows (lists-panel.js, 01268caee) are keyed by data-list-id; Open selects (the title only shows it on the map).
     const row = page.locator(`#proposals-sheet .lists-item[data-list-id="${parkId}"]`);

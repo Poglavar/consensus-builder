@@ -278,7 +278,7 @@ test.describe('Click stack @core', () => {
     await expect(panel).toBeVisible();
     await expect(panel).toHaveClass(/is-hosted/);
     await expect(parcels.locator('.click-stack__row-title')).toHaveText('Cadastral parcel');
-    await expect(parcels.locator('.click-stack__row-detail')).toHaveText(PARCEL_ID);
+    await expect(parcels.locator('.click-stack__row-detail')).toHaveText(PARCEL_ID.replace(/^HR-\d+-/, ''));
     await expect(parcels.locator('.click-stack__copy-reference')).toHaveCount(0);
     await expect(stack.locator('.click-stack__head')).toHaveCount(0);
     await expect(panel.locator('.panel-header')).toBeHidden();

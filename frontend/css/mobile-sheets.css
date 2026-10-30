@@ -65,15 +65,34 @@
         cursor: ns-resize;
     }
 
+    /* The grabber: 32 × 4 px, as Material 3 draws a sheet's drag handle (iOS: 36 × 5 pt); the whole
+       44 px strip above the content is its touch target. */
     .mobile-sheet-ready > .mobile-dock-sheet-handle::after {
         content: '';
         display: block;
-        width: 48px;
-        height: 5px;
+        width: 32px;
+        height: 4px;
         margin: auto;
         border-radius: var(--cb-radius-pill);
         background: var(--cb-text-muted);
     }
+
+    /* A released sheet glides to its resting height (mobile-dock-sheet.js restingHeight) instead
+       of jumping; it follows the finger while dragged, and keyboard steps are immediate. */
+    @media (prefers-reduced-motion: no-preference) {
+        .mobile-sheet-ready.is-sheet-settling {
+            transition: max-height 200ms ease-out, height 200ms ease-out;
+        }
+    }
+
+    /* A sheet about something on the map covers the bottom navigation bar (mobile-dock-sheet.js
+       sets the class); the bar's own sheets keep it. */
+    body.mobile-context-sheet-open:not(.three-mode-active) {
+        --map-shell-dock-height: env(safe-area-inset-bottom, 0px);
+        --map-visible-bottom: env(safe-area-inset-bottom, 0px);
+        --map-shell-bottom-clearance: calc(env(safe-area-inset-bottom, 0px) + var(--cb-control-height) + var(--map-shell-gap));
+    }
+    body.mobile-context-sheet-open #map-shell-bottom-right { visibility: hidden; }
 
     /* Keep dismissal available to keyboard/assistive navigation without a second visible X. */
     .mobile-sheet-ready > :is(.panel-header, .map-sheet-header, .cb-dialog__header, .on-map-editor__header, .grain-score-panel__header, .road-panel-header, .site-panel__head, .urban-block-panel-header) .close-circle-btn {

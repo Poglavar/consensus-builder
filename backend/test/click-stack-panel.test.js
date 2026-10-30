@@ -85,6 +85,7 @@ function loadPanel({ memory = null, withEditLock = false } = {}) {
             }
         } },
         ClickStackNeighbours: neighbours,
+        _parcelIdLabel: require('../../frontend/js/proposal-parcel-identity.js')._parcelIdLabel,
         ClickStackHits: { hitsAt: vi.fn(latlng => hitsBySpot.get(latlng.lat) || {}), withNeighbours: vi.fn(hits => ({ hits, added: {} })), featuresFor: vi.fn((_kind, item) => item.feature ? [item.feature] : []), buildingLabel: vi.fn(() => 'House') },
         __drillUi: { stackAt: vi.fn(() => [{ kind: 'parcel', id: 'p1', depth: 0 }, { kind: 'proposal', key: 'd1' }]) },
         MapPick: { active: () => false, pick: vi.fn() },
@@ -168,6 +169,16 @@ describe('click stack selected objects and contextual navigation', () => {
         expect(h.context.__claimsUi.openBaseParcel).toHaveBeenCalledWith('source');
         expect(h.context.switchParcelTab).toHaveBeenCalledWith(null, 'info-tab');
         expect(h.parcelPanel.parentNode).toBe(h.section('parcels').querySelector('.click-stack__body'));
+    });
+
+    it('names parcels in section headers as people read them, not by runtime id', () => {
+        const h = loadPanel();
+        const cid = 'bafkreibwmhm6gtdpvaac4qtx7hnd7bnqj47d4ewbbw375bhaoof42csddi';
+        h.context.ClickStackHits.hitsAt.mockReturnValue({ formed: [{ id: `3014#design-${cid}-2`, feature: parcelFeature, live: true }],
+            parcels: [{ id: 'HR-335533-521/1', feature: parcelFeature, live: true }] });
+        h.click(SPOT_A);
+        expect(h.section('formed').querySelector('.click-stack__row-detail').textContent).toBe('3014 #2');
+        expect(h.section('parcels').querySelector('.click-stack__row-detail').textContent).toBe('521/1');
     });
 
     it.each([['built', 'Building'], ['permitted', 'Permitted'], ['formed', 'Formed parcel'], ['parcels', 'Cadastral parcel'], ['designs', 'Design']])('keeps the selected %s header and focus when collapsed', (kind, noun) => {

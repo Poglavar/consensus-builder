@@ -230,13 +230,19 @@ palette is the legend beside each tick.
   in both shapes; `--map-shell-bottom-clearance` keeps the tray and toast above it. The credits and
   the scale bar are set straight on the map with a text halo (`--cb-text-halo`) and no boxes: on a
   phone in the row right above the bar, on a wide map in the pills' own row, from the corners.
-- Mobile map panels, navigation sheets, lists and task forms use one top-handle interaction.
-  Drag up to enlarge, drag down to shrink, or drag below the compact limit to close through the
-  surface's existing cancel/close handler. A tap alternates half and expanded height; keyboard
-  arrows resize, Home/End choose compact/expanded, and Escape closes. Hosted cards share their
+- Mobile map panels, navigation sheets, lists and task forms use one top-handle interaction, as
+  Material 3 and iOS sheets do: a 32 × 4 px grabber in a 44 px touch strip. The sheet follows the
+  finger; released, it rests at half or full height, whichever is nearer, or the next one in a
+  flick's direction, gliding there in 200 ms (no glide with reduced motion). A drag below the
+  compact limit, or a flick down from half, closes through the surface's existing cancel/close
+  handler (`mobile-dock-sheet.js` `restingHeight`). A tap alternates half and expanded height;
+  keyboard arrows resize, Home/End choose compact/expanded, and Escape closes. Hosted cards share their
   outer sheet's handle. A second visible X is omitted; its accessible close action remains available.
 - Map-context panels start at half-height. Navigation lists, Settings and long forms start expanded.
-  Map sheets stop above the reachable navigation dock; blocking forms may fill the phone. Headers
+  A sheet about something on the map (the click stack, a parcel or design panel, an editor)
+  covers the navigation dock, as a place sheet does in a maps app, and the dock returns when it
+  closes; the dock's own sheets (Lists, Activity, Bets) stop above it, since it moves between them.
+  Blocking forms may fill the phone. Headers
   and actions stay reachable while content scrolls. Visual-viewport changes re-clamp the sheet.
 - Short confirmations keep direct action buttons and have no resize handle. Primary and compact
   phone buttons and form fields have at least 44 px touch areas; form text is at least 16 px.

@@ -63,16 +63,17 @@ for (const viewport of VIEWPORTS) {
     // In the stack the section row folds and the stack's × closes: the panel's own − and × are hidden.
     await expect(panel.locator('#parcel-info-minimize')).toBeHidden();
     await expect(panel.locator('.panel-header .close-button')).toBeHidden();
-    // The parcel row remains the readable selection caption; it has no section copy action.
+    // The parcel row remains the readable selection caption (the number people read, without the
+    // HR-<municipality>- prefix); it has no section copy action.
     const row = page.locator('#click-stack .click-stack__section[data-kind=parcels] .click-stack__row');
-    await expect(row.locator('.click-stack__row-detail')).toHaveText(PARCEL_ID);
+    await expect(row.locator('.click-stack__row-detail')).toHaveText(PARCEL_ID.replace(/^HR-\d+-/, ''));
     await expect(row.locator('.click-stack__copy-reference')).toHaveCount(0);
     await expectCompactBounds(page, viewport.width, viewport.height);
     await row.click();
     await expect(row).toHaveAttribute('aria-expanded', 'false');
     await expect(page.locator('#click-stack')).toBeVisible();
     await expect(page.locator('#click-stack .click-stack__section[data-kind=parcels]')).toHaveClass(/is-selected/);
-    await expect(row.locator('.click-stack__row-detail')).toHaveText(PARCEL_ID);
+    await expect(row.locator('.click-stack__row-detail')).toHaveText(PARCEL_ID.replace(/^HR-\d+-/, ''));
     await page.locator('#map').focus();
     await expect(page.locator('#map')).toBeFocused();
     await page.keyboard.press('Escape');
