@@ -54,17 +54,21 @@
         return { unavailable: true, retryAfter: Number.isFinite(seconds) && seconds > 0 ? Math.ceil(seconds) : null };
     }
 
+    const buildingUse = () => (typeof window !== 'undefined' && window.BuildingUse) || require('./building-use.js');
+
     // Measured height and storeys only, null when the source has none: the same contract the other
     // providers keep for the footprint pool and the urban rule. Estimates are a 3D concern. A source
-    // that states the building's use (a city model's function code, building-use.js) adds `use`.
+    // that states the building's use adds `use`: a city model's function code (building-use.js), or
+    // OpenStreetMap's building=* value (Overture's class) when it names one.
     function footprintEntry(feature) {
         const props = feature.properties || {};
+        const use = props.use || buildingUse().fromOsmBuilding(props.building);
         return {
             id: String(feature.id || props.osm_id),
             geometry: feature.geometry,
             height_m: props.measured_height_m ?? null,
             floors: props.levels ?? null,
-            ...(props.use ? { use: props.use } : {})
+            ...(use ? { use } : {})
         };
     }
 

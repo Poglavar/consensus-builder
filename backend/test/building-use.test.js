@@ -51,6 +51,19 @@ describe("a city model's function code", () => {
     });
 });
 
+describe("OpenStreetMap's building tag", () => {
+    it('maps building=* values (and Overture class and subtype words) onto the six uses', () => {
+        const tags = { apartments: 'residential', house: 'residential', terrace: 'residential', detached: 'residential',
+            retail: 'office', commercial: 'office', office: 'office', warehouse: 'industrial', industrial: 'industrial',
+            school: 'public', hospital: 'public', church: 'public', civic: 'public', education: 'public', ' Apartments ': 'residential' };
+        for (const [tag, expected] of Object.entries(tags)) expect(use.fromOsmBuilding(tag), tag).toBe(expected);
+    });
+    it('states no use for building=yes, outbuildings, or no tag', () => {
+        expect(['yes', 'garage', 'shed', 'roof', 'barn', 'outbuilding', '', null, undefined].map(tag => use.fromOsmBuilding(tag)))
+            .toEqual([null, null, null, null, null, null, null, null, null]);
+    });
+});
+
 describe('the set_use intent', () => {
     const record = () => ({ goal: 'single', buildingProposal: {}, geometry: { buildings: [{ type: 'Feature', properties: { height: 9 }, geometry: turf.polygon([[[16, 45.8], [16.0002, 45.8], [16.0002, 45.8002], [16, 45.8002], [16, 45.8]]]).geometry }] } });
     it('stores the preset a word names, and refuses a use the app does not know', () => {

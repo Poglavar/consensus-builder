@@ -86,5 +86,24 @@
         return null;
     }
 
-    return { USES, normalize, storeyUses, housingShare, housesPeople, layoutRules, fromCityModel };
+    // OpenStreetMap's building=* value (also Overture's class and subtype, which use the same words)
+    // → one of the six uses. building=yes, sheds, garages, roofs and farm buildings state none.
+    const OSM_USES = Object.freeze({
+        residential: ['apartments', 'house', 'residential', 'detached', 'semidetached_house', 'semi', 'terrace',
+            'dwelling_house', 'bungalow', 'dormitory', 'farm', 'cabin', 'houseboat', 'static_caravan', 'stilt_house'],
+        office: ['office', 'commercial', 'retail', 'supermarket', 'kiosk', 'hotel'],
+        industrial: ['industrial', 'warehouse', 'factory', 'manufacture', 'hangar'],
+        public: ['public', 'civic', 'government', 'school', 'kindergarten', 'college', 'university', 'education',
+            'hospital', 'medical', 'library', 'fire_station', 'post_office', 'train_station', 'transportation',
+            'church', 'cathedral', 'chapel', 'mosque', 'synagogue', 'temple', 'religious', 'monastery',
+            'sports_hall', 'sports_centre', 'stadium']
+    });
+    const osmLookup = new Map();
+    Object.entries(OSM_USES).forEach(([use, words]) => words.forEach(word => osmLookup.set(word, use)));
+    function fromOsmBuilding(value) {
+        if (typeof value !== 'string') return null;
+        return osmLookup.get(value.trim().toLowerCase()) || null;
+    }
+
+    return { USES, normalize, storeyUses, housingShare, housesPeople, layoutRules, fromCityModel, fromOsmBuilding };
 });

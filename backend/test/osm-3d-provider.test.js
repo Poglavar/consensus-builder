@@ -82,6 +82,16 @@ describe('OSM 3D provider', () => {
         expect(under.regions.get('b').map(f => f.id)).toEqual(['w2']);
     });
 
+    it("gives a footprint the use its building=* tag names, and none for building=yes", async () => {
+        const provider = createOsmProvider(null, { fetchStaged: noStaged, fetchLive: live([
+            building('w1', 10.001, 10.001, { building: 'apartments' }),
+            building('w2', 10.002, 10.002, { building: 'retail' }),
+            building('w3', 10.003, 10.003, { building: 'yes' })
+        ]) });
+        const { footprints } = await provider.footprints(box(10, 10, 0.005));
+        expect(Object.fromEntries(footprints.map(f => [f.id, f.use ?? null]))).toEqual({ w1: 'residential', w2: 'office', w3: null });
+    });
+
     it('clamps a query box to the Overpass span limit around its centre', () => {
         const [w, s, e, n] = expandBbox([0, 0, 0.2, 0.2], 1000);
         expect(e - w).toBeLessThanOrEqual(0.06);
