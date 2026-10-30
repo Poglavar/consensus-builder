@@ -477,7 +477,7 @@ const row = (name, { goal = 'park', authoredAt = '2026-10-10T10:00:00.000Z', cit
 // holds; `local` the local copies DesignSync.localCopyOf finds, by CID; `refused` the local ids the
 // apply precheck refuses, with its message; `failing` the local ids whose apply fails, with the stored
 // failure. A row's groundContext fixture represents a geometry-derived source switch.
-function designLink({ designs = [], local = {}, refused = {}, failing = {}, held = {}, conflictChoice = 'cancel', planFailure = null, leaveForCity = true,
+function designLink({ designs = [], local = {}, refused = {}, failing = {}, held = {}, displaces = {}, conflictChoice = 'cancel', planFailure = null, leaveForCity = true,
     wants3D = false, replayDone = true, tookOver = false, fetchError = null, arrivalView = null } = {}) {
     const records = new Map(Object.values(local).map(record => [record.proposalId, record]));
     const rows = new Map(designs.map(design => [design.cid, design]));
@@ -532,6 +532,7 @@ function designLink({ designs = [], local = {}, refused = {}, failing = {}, held
             order.push(`apply:${records.get(id).title}`);
             if (failing[id]) return false;
             records.get(id).applied = true;
+            (displaces[id] || []).forEach(other => { records.get(other).applied = false; });
             return true;
         }),
         validateSharedProposalGround: vi.fn((id, members, candidates) => {
@@ -828,6 +829,25 @@ describe('opening a /designs link', () => {
         expect(dialog.body).toContain('4 of the shared designs could not be opened:');
         expect(dialog.body).toContain('<li>Held lot · Another applied design holds this ground.</li>');
         expect(dialog.body).toContain('<li>Broken &lt;road&gt; · The ground changed under it.</li>');
+        expect(link.showEphemeralMessage).not.toHaveBeenCalled();
+    });
+
+    it('reports a member a later member displaced instead of counting it applied', async () => {
+        const first = row('Block A', { goal: 'single', authoredAt: '2026-10-09T10:00:00.000Z', parcels: ['HR-5'] });
+        const second = row('Block B', { goal: 'single', authoredAt: '2026-10-08T10:00:00.000Z', parcels: ['HR-5'] });
+        const firstId = `design-${first.cid}`, secondId = `design-${second.cid}`;
+        // Two designs of one site: whichever applies later takes the ground of the other.
+        const link = designLink({ designs: [first, second], displaces: { [firstId]: [secondId], [secondId]: [firstId] } });
+
+        const result = await link.open([first.cid, second.cid]);
+
+        const standing = [firstId, secondId].filter(id => link.records.get(id).applied);
+        expect(standing).toHaveLength(1);
+        expect(result.applied).toEqual(standing);
+        const fallen = [firstId, secondId].find(id => !standing.includes(id));
+        expect(result.failed).toEqual([{ id: fallen, label: link.records.get(fallen).title,
+            reason: 'Another design of this plan takes the same ground, so the two cannot stand together.' }]);
+        expect(link.showSimpleShareModal).toHaveBeenCalledOnce();
         expect(link.showEphemeralMessage).not.toHaveBeenCalled();
     });
 

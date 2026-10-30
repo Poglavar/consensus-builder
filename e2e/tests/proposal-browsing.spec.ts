@@ -36,7 +36,7 @@ test.describe('Proposal browsing @features', () => {
     await expect(rows.first()).toBeInViewport();
     const order = list.locator('select[data-list-filter="sort"]');
     await expect(order).toBeHidden();
-    await list.locator('.lists-filter-details > summary').click();
+    await list.locator('.lists-filter-toggle').click();
     await expect(order).toBeVisible();
     await list.getByRole('searchbox').fill('North');
     await expect(titles).toHaveText(['North park plan']);

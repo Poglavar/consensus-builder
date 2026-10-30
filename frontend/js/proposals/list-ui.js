@@ -208,7 +208,7 @@ async function launchSingleBuildingToolForSelection() {
         blockName: formatParcelSelectionLabel(selection.ids),
         parcelIds: selection.ids,
         initialBuildings: seed ? pendingBuildingSeedFeatures(seed) : null,
-        initialGroundTreatment: seed?.groundSurface?.treatment || null, initialDecorationDesign: seed?.groundSurface?.decorationDesign || null
+        initialGroundTreatment: seed?.surroundings?.treatment || null, initialDecorationDesign: seed?.surroundings?.decorationDesign || null
     });
     return opened !== false;
 }
@@ -234,7 +234,7 @@ async function launchRowHouseToolForSelection() {
         blockName: formatParcelSelectionLabel(selection.ids),
         parcelIds: selection.ids,
         initialParameters: seed ? seed.parameters : null,
-        initialGroundTreatment: seed?.groundSurface?.treatment || null, initialDecorationDesign: seed?.groundSurface?.decorationDesign || null
+        initialGroundTreatment: seed?.surroundings?.treatment || null, initialDecorationDesign: seed?.surroundings?.decorationDesign || null
     });
     return opened !== false;
 }
@@ -257,7 +257,7 @@ async function launchParcelBasedToolForSelection() {
         blockName: formatParcelSelectionLabel(selection.ids),
         parcelIds: selection.ids,
         initialParameters: seed ? seed.parameters : null,
-        initialGroundTreatment: seed?.groundSurface?.treatment || null, initialDecorationDesign: seed?.groundSurface?.decorationDesign || null
+        initialGroundTreatment: seed?.surroundings?.treatment || null, initialDecorationDesign: seed?.surroundings?.decorationDesign || null
     });
     return opened !== false;
 }

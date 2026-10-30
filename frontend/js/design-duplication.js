@@ -115,7 +115,7 @@
             layer?.remove();
             layer = env.L.geoJSON(Array.isArray(features) ? { type: 'FeatureCollection', features } : features,
                 { pane: session.pane, interactive: false, className: 'design-duplicate-preview' }).addTo(env.map);
-            session.setPreview({ draftPreview: descriptor, groundSurface: current.editorPayload.context?.groundSurface });
+            session.setPreview({ draftPreview: descriptor, surroundings: current.editorPayload.context?.surroundings });
         }
         function onMove(event) {
             if (!onMap(event)) return;

@@ -733,6 +733,8 @@
         const plans = root.NamedPlans.list();
         const requestedPlan = base?.plan || plan || null;
         const initialPlan = plans.find(row => row.cid === requestedPlan?.cid) || requestedPlan;
+        // A plan opened from a copied address is a preview: its land exists once it is applied.
+        if (initialPlan && !await root.PlanWorkspace.ensureApplied(initialPlan)) return null;
         if (initialPlan && !plans.some(row => row.cid === initialPlan.cid)) plans.push(initialPlan);
         const baseConfig = base?.rule.approvalConfig || null;
         const state = {
@@ -937,10 +939,8 @@
             try {
                 state.designs = []; state.land = emptyLand(); state.fingerprints = new Map();
                 if (state.plan) {
-                    const records = root.proposalStorage.getAllProposals();
-                    const byCid = new Map(records.map(record => [root.DesignRecord.cidOf(record), record]));
-                    const selected = state.plan.content.designCids.map(cid => byCid.get(cid));
-                    if (selected.some(record => !record || !root.isApplied(record))) throw new Error(t('agreement.workflow.planNotApplied', 'Apply every design of this saved plan before reading its land.'));
+                    const selected = root.PlanWorkspace.appliedMembers(state.plan);
+                    if (!selected) throw new Error(t('agreement.workflow.planNotApplied', 'Apply every design of this saved plan before reading its land.'));
                     state.designs = selected;
                     state.fingerprints = new Map(selected.map(record => [idOf(record.proposalId), root.DesignRecord.cidOf(record)]));
                     const repository = root.CadastralParcelRepository;
@@ -1038,24 +1038,7 @@
             if (['rights', 'lens'].includes(button.dataset.agreementAction)) openAuxiliary(button.dataset.agreementAction);
             if (button.dataset.agreementAction === 'apply-plan' && !root.BusyControl.isBusy(button)) {
                 root.BusyControl.track(button, async () => {
-                    // A private saved plan carries its exact revisions. Applying it must not try
-                    // to download unpublished members from the public design index.
-                    const draftRows = new Map();
-                    for (const member of state.plan.designs || []) {
-                        const content = member.content;
-                        const parcelSourceId = root.DesignSync.parcelSourceIdOf(content.city, content.site);
-                        const response = await root.fetch(root.resolveBackendBaseUrl().replace(/\/$/, '') + '/designs/binding', {
-                            method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({
-                                city: content.city, site: root.__siteBinding.siteOf(content, { turf: root.turf }),
-                                toleranceM: content.toleranceM, parcelSourceId })
-                        });
-                        const answer = await response.json();
-                        if (!response.ok) throw new Error(answer.error || 'The plan ground could not be read.');
-                        draftRows.set(member.cid, { cid: member.cid, content, city: content.city, parcelSourceId, binding: answer.binding });
-                    }
-                    const result = await root.handleSharedDesignRoute(state.plan.content.designCids, {
-                        ...(draftRows.size ? { draftRows } : {}), openDetails: false, enter3D: false, summary: false });
-                    if (result.blocked || result.failed.length || result.omitted?.length) throw new Error(t('agreement.workflow.planNotApplied', 'Apply every design of this saved plan before reading its land.'));
+                    if ((await root.PlanWorkspace.apply(state.plan)).blocked) return;
                     if (!state.closed) await deriveLand();
                 }).catch(report);
             }

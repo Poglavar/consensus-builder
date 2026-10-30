@@ -333,15 +333,15 @@ describe('publishDesign', () => {
             proposalId: `furniture-${kind}`, title: 'Authored layout', goal: structure ? kind : (kind === 'single' ? 'single' : 'buildings'),
             site: geometry, createdAt: '2026-10-23T10:00:00.000Z', author: 'Test guest', city: 'example',
             ...(structure ? { structureProposal: { kind, geometry, decorationDesign: design, decorations: { trees: [] } } }
-                : { buildingProposal: { typologyType: kind }, geometry: { buildings: [], groundSurface: { treatment: 'green', polygon: geometry, decorationDesign: design } } })
+                : { buildingProposal: { typologyType: kind }, geometry: { buildings: [], surroundings: { treatment: 'green', polygon: geometry, decorationDesign: design } } })
         };
         const { sync, server } = fakeWindow({ records: [record] });
         const result = await sync.publishDesign(record);
         const sent = server.calls.find(call => call.pathname === '/designs').body.content;
-        expect(structure ? sent.structureProposal.decorationDesign : sent.geometry.groundSurface.decorationDesign).toEqual(design);
+        expect(structure ? sent.structureProposal.decorationDesign : sent.geometry.surroundings.decorationDesign).toEqual(design);
         const indexRow = server.designs.get(result.cid);
         const receiver = await fakeWindow().sync.importDesign(indexRow);
-        expect(structure ? receiver.structureProposal.decorationDesign : receiver.geometry.groundSurface.decorationDesign).toEqual(design);
+        expect(structure ? receiver.structureProposal.decorationDesign : receiver.geometry.surroundings.decorationDesign).toEqual(design);
         expect(DesignRecord.cidOf(receiver)).toBe(result.cid);
     });
 

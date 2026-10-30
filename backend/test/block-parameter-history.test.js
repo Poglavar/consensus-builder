@@ -14,7 +14,7 @@ function harness() {
         let blockifyMode='parametric', generatedBuildingFeature={geometry:{type:'Polygon',coordinates:[]},properties:{height:10}}, generatedBuildingFeatures=null;
         let manualOuterRing=[], lastOuterRing=[[0,0],[1,0],[0,0]], currentSetback=2, currentBuildingWidth=8, currentBuildingHeight=10;
         let currentChamferM=0, currentSimplifyM=0, gapPositions=[], wingPositions=[], currentGapWidth=5, currentWingLength=10;
-        let blockRuleKind='maximum', blockMinHeightM=0, blockMinDepthM=0, blockMinPlotAreaM2=50, blockVariationSeed=123;
+        let blockRuleKind='maximum', blockMinHeightM=0, blockMinDepthM=0, blockMinPlotAreaM2=50, blockRuleExtras={}, blockVariationSeed=123;
         const DEFAULT_BLOCK_RULE_KIND='maximum', DEFAULT_BLOCK_MIN_PLOT_AREA_M2=50;
         const blockifyOuterRing=()=>[], syncBlockifyControlsFromState=sync, setFootprintSlidersEnabled=()=>{}, updateManualToggleLabel=()=>{};
         const displayBuildingInModal=display, renderGapWingHandles=handles, renderManualPolygonEditor=()=>{}, displayBuildingsInModal=()=>{};
@@ -22,12 +22,12 @@ function harness() {
         this.capture=blockifyGeometrySnapshot; this.restore=restoreBlockifyGeometrySnapshot;
         this.edit=(key,value)=>{ if(key==='height') { currentBuildingHeight=value; generatedBuildingFeature.properties.height=value; }
           if(key==='setback') currentSetback=value; if(key==='gaps') gapPositions=value; if(key==='wings') wingPositions=value;
-          if(key==='gapWidth') currentGapWidth=value; if(key==='wingLength') currentWingLength=value; };
+          if(key==='gapWidth') currentGapWidth=value; if(key==='wingLength') currentWingLength=value; if(key==='extras') blockRuleExtras=value; };
     `, context);
     return { context, display, sync, handles };
 }
 describe('Block parameter history', () => {
-    it.each([['height', 20], ['setback', 4], ['gaps', [0.3]], ['wings', [0.5]], ['gapWidth', 9], ['wingLength', 35]])('restores %s and redraws the saved design', (key, value) => {
+    it.each([['height', 20], ['setback', 4], ['gaps', [0.3]], ['wings', [0.5]], ['gapWidth', 9], ['wingLength', 35], ['extras', { balconyDepthM: 2, roof: 'pitched' }]])('restores %s and redraws the saved design', (key, value) => {
         const h = harness(), stack = history.create({ capture: h.context.capture, restore: h.context.restore });
         const before = JSON.stringify(h.context.capture());
         stack.record(); h.context.edit(key, value);

@@ -15,13 +15,19 @@ async function openPlans(page:any) {
   await expect(page.locator('#designs-plans')).toBeVisible();
 }
 // Lists (01268caee) puts Create plan in the shared #lists-actions row; a created plan opens in the
-// click stack's Plan section (0d7bf0e8d), which holds Share plan.
+// click stack's Plan section (0d7bf0e8d), which holds Share plan. Create plan ticks the designs in
+// Lists → Designs; Continue opens the composer listing them.
 const planSection=(page:any)=>page.locator('#click-stack .click-stack__section[data-kind="plans"]');
 async function createLocalPlan(page:any,title:string) {
   await page.locator('#lists-actions').getByRole('button',{name:'Create plan',exact:true}).click();
+  const choices=page.locator('#proposal-list-host input[type="checkbox"]');
+  await expect(choices.first()).toBeVisible();
+  for(const choice of await choices.all()) await choice.check();
+  const count=await choices.count();
+  await page.locator('#lists-actions [data-lists-continue]').click();
   const composer=page.locator('.plan-composer');
+  await expect(composer.locator('.plan-dialog__members li')).toHaveCount(count);
   await composer.getByLabel('Plan name',{exact:true}).fill(title);
-  for(const choice of await composer.locator('input[type="checkbox"]').all()) await choice.check();
   await composer.getByRole('button',{name:'Create plan',exact:true}).click();
   await expect(composer).toBeHidden();
   await expect(planSection(page).locator('.click-stack__row')).toHaveAttribute('aria-expanded','true');
@@ -49,7 +55,8 @@ test('desktop Designs library and saved plans start local with no public plan li
   await expect(panel.getByRole('tab',{name:'Designs',exact:true})).toHaveAttribute('aria-selected','true');
   await panel.getByRole('tab',{name:'Plans',exact:true}).click();
   await expect(panel.locator('#designs-plans')).toBeVisible();
-  await expect(panel.locator('#lists-status')).toHaveText('0 of 0 loaded items');
+  await expect(panel.locator('#lists-status')).toBeHidden();
+  await expect(panel.locator('#designs-plans')).toContainText('Nothing here yet.');
   await expect(panel.locator('#designs-plans .lists-item')).toHaveCount(0);
   await expect(panel.locator('#designs-plans input[readonly]')).toHaveCount(0);
   await expect(panel.locator('#designs-plans a[href*="/plans/"]')).toHaveCount(0);

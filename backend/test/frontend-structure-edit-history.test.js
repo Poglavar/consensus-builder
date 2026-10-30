@@ -1255,8 +1255,8 @@ describe('structure geometry editor history wiring', () => {
     });
 
     it.each([
-        ['too many triangles', { triangles: 9000, textures: [] }, 'This model has 9000 triangles. A furniture model may have at most 5000.'],
-        ['an oversized texture', { triangles: 100, textures: [{ width: 2048, height: 512 }] }, 'A texture is 2048 × 512 px. Furniture textures may be at most 1024 px on each side.']
+        ['too many triangles', { triangles: 9000, textures: [] }, 'This model has 9000 triangles. A city furniture model may have at most 5000.'],
+        ['an oversized texture', { triangles: 100, textures: [{ width: 2048, height: 512 }] }, 'A texture is 2048 × 512 px. City furniture textures may be at most 1024 px on each side.']
     ])('refuses a furniture model with %s and uploads nothing', async (_label, summary, message) => {
         const modelUpload = {
             parseModelFile: vi.fn(async () => ({})),
@@ -1277,7 +1277,7 @@ describe('structure geometry editor history wiring', () => {
         const harness = makeEditorHarness({ trees: [], version: 3 }, { kind: 'park', modelUpload });
         expect(harness.open()).toBe(true);
         harness.panel.chooseFurnitureFile('bench', { name: 'big.glb', size: 5 * 1024 * 1024 });
-        await vi.waitFor(() => expect(harness.statusMessages).toContain('This file is 5.0 MB. A furniture model may be at most 4.0 MB.'));
+        await vi.waitFor(() => expect(harness.statusMessages).toContain('This file is 5.0 MB. A city furniture model may be at most 4.0 MB.'));
         expect(modelUpload.parseModelFile).not.toHaveBeenCalled();
     });
 });

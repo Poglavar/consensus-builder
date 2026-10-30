@@ -92,11 +92,11 @@
             for (const key of ['rotation', 'offsetX', 'offsetY']) delete parameters[key];
             // Restore the old footprint holes, then cut the revised footprints from exactly the
             // same authored surroundings. Decoration positions stay authored and are clipped on apply.
-            const surface = record.geometry.groundSurface;
+            const surface = record.geometry.surroundings;
             if (surface?.polygon) {
                 let ground = before.reduce((out, building) => turf.union(out, building), feature(surface.polygon));
                 for (const building of items) if (ground) ground = turf.difference(ground, building);
-                record.geometry.groundSurface = ground ? { ...surface, polygon: ground.geometry } : null;
+                record.geometry.surroundings = ground ? { ...surface, polygon: ground.geometry } : null;
             }
         }
     }
@@ -298,8 +298,9 @@
                     const shaping = ['minDistance','minPlotAreaM2','minPieceAreaM2'];
                     if (normalized.setbackHeightRatio > 0 || normalized.maxFloorAreaRatio > 0) shaping.push('maxFloors', 'floorHeightM');
                     for (const key of shaping) if (!same(normalized[key], old.urbanRule?.[key] ?? normalized[key]) && !changedShape) fail('geometry-regeneration-required', `Changing rule.${key} requires edited envelope geometry as well.`);
-                    // A limit is absent when unset, so adding or removing one is a change too.
-                    if (old.urbanRule) for (const key of Object.keys(rules.PARCEL_LIMITS)) if (!same(normalized[key], old.urbanRule[key]) && !changedShape) fail('geometry-regeneration-required', `Changing rule.${key} requires edited envelope geometry as well.`);
+                    // A limit is absent when unset, so adding or removing one is a change too. Only a
+                    // detached rule states limits; a block or row rule's maxHeightM is its own height.
+                    if (old.urbanRule && normalized.typology === 'parcelBased') for (const key of Object.keys(rules.PARCEL_LIMITS)) if (!same(normalized[key], old.urbanRule[key]) && !changedShape) fail('geometry-regeneration-required', `Changing rule.${key} requires edited envelope geometry as well.`);
                     p.urbanRule = normalized;
                     // A detached envelope keeps the floors its plot was given (at most the rule's).
                     const parcelFloors = Math.min(normalized.maxFloors, finite(p.floors) && p.floors >= 1 && (normalized.setbackHeightRatio > 0 || normalized.maxFloorAreaRatio > 0) ? p.floors : normalized.maxFloors);
@@ -346,17 +347,17 @@
                 record.geometry.ruleMassing = rules.massingWithRule(massing, parameters.rule, massing.properties.variationSeed, { turf });
                 record.geometry.ruleMassing.properties.floors = parameters.floors;
             }
-            if (changedShape && record.geometry.groundSurface && !touched('/geometry/groundSurface')) {
-                const surface = record.geometry.groundSurface;
+            if (changedShape && record.geometry.surroundings && !touched('/geometry/surroundings')) {
+                const surface = record.geometry.surroundings;
                 let ground = oldItems.reduce((out,b) => turf.union(out,b), feature(surface.polygon));
                 for (const building of items) if (ground) ground = turf.difference(ground, building);
-                record.geometry.groundSurface = ground ? { ...surface, polygon: ground.geometry } : null;
+                record.geometry.surroundings = ground ? { ...surface, polygon: ground.geometry } : null;
             }
-            if (record.geometry.landTake && record.geometry.groundSurface) {
+            if (record.geometry.landTake && record.geometry.surroundings) {
                 const ground = load('BuildingGround', './building-ground.js');
-                record.geometry.groundSurface = ground.clipSurfaceToLandTake(record.geometry.groundSurface, record.geometry.landTake, turf);
+                record.geometry.surroundings = ground.clipSurfaceToLandTake(record.geometry.surroundings, record.geometry.landTake, turf);
             }
-            validateDecorations(record.geometry?.groundSurface?.decorationDesign, { paved: record.geometry?.groundSurface?.treatment !== 'green', ground: record.geometry?.groundSurface?.polygon || null });
+            validateDecorations(record.geometry?.surroundings?.decorationDesign, { paved: record.geometry?.surroundings?.treatment !== 'green', ground: record.geometry?.surroundings?.polygon || null });
         }
     }
     return { buildings, planting, rowEnvelope, transform, reconcile };

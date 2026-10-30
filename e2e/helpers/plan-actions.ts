@@ -11,7 +11,7 @@ export async function openPlanActions(page: Page, title = 'Inspection plan', ids
   }, { title, ids });
   await page.locator('#proposals-button').click();
   await page.locator('[data-list-tab="plans"]').click();
-  const row = page.locator('#plan-list-host .lists-item').filter({ has: page.getByRole('button', { name: title, exact: true }) });
+  const row = page.locator('#plan-list-host .lists-item').filter({ has: page.getByRole('heading', { name: title, exact: true }) });
   await expect(row).toBeVisible();
   return row;
 }

@@ -165,7 +165,7 @@ test('missing IDs, malformed geometry, excess and changing counts, repeated page
     const cases = [
         [page([raw(undefined)])], [page([raw('Parcel.a', null)])], [page([raw('Parcel.a,Parcel.b')])],
         [page([raw('Parcel.a')], 1, { numberReturned: 0 })], [page([raw('Parcel.a')], 'unknown')],
-        [page([raw('Parcel.a')], 11)], [page([raw('Parcel.a'),raw('Parcel.b'),raw('Parcel.c')])],
+        [page([raw('Parcel.a'),raw('Parcel.b'),raw('Parcel.c')])],
         [page([raw('Parcel.a')], 2), page([], 2)],
         [page([raw('Parcel.a')], 2), page([raw('Parcel.b')], 3)],
         [page([raw('Parcel.a')], 2), page([raw('Parcel.a')], 2)],
@@ -176,6 +176,9 @@ test('missing IDs, malformed geometry, excess and changing counts, repeated page
         const { adapter } = fixture(responses);
         await assert.rejects(adapter.queryBounds(bounds), { status: 502 });
     }
+    // More matches than maxFeatures is the area limit, its own error: the source is not unavailable.
+    const { adapter } = fixture([page([raw('Parcel.a')], 11)]);
+    await assert.rejects(adapter.queryBounds(bounds), { status: 422, code: 'parcel-source-area-limit' });
 });
 
 test('upstream denial, throttling, malformed JSON, timeout and byte limits retain gateway error semantics', async () => {

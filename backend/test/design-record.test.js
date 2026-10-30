@@ -83,16 +83,16 @@ describe('published', () => {
     it.each(['block', 'row', 'parcelBased', 'single'])('publishes the authored surroundings of a %s building with its CID', typologyType => {
         const record = {
             goal: 'buildings', site: SITE,
-            geometry: { buildings: [], groundSurface: { treatment: 'green', polygon: SITE, decorationDesign: { version: 3, trees: [{ coordinate: [15.9602, 45.8002], kind: 'broadleaf', heightM: 10 }] } } },
+            geometry: { buildings: [], surroundings: { treatment: 'green', polygon: SITE, decorationDesign: { version: 3, trees: [{ coordinate: [15.9602, 45.8002], kind: 'broadleaf', heightM: 10 }] } } },
             buildingProposal: { typologyType }
         };
         const published = DesignRecord.published(record);
-        expect(published.geometry.groundSurface).toEqual(record.geometry.groundSurface);
+        expect(published.geometry.surroundings).toEqual(record.geometry.surroundings);
         expect(DesignRecord.validate(published).valid).toBe(true);
         const before = DesignRecord.cidOf(record);
-        record.geometry.groundSurface.treatment = 'paved';
+        record.geometry.surroundings.treatment = 'paved';
         expect(DesignRecord.cidOf(record)).not.toBe(before);
-        expect(published.geometry.groundSurface.treatment).toBe('green');
+        expect(published.geometry.surroundings.treatment).toBe('green');
     });
 
     it.each(['park', 'square'])('publishes authored %s furniture while keeping generated furniture out of its CID', kind => {

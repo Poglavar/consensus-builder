@@ -8,12 +8,20 @@
         roadDetection: ['js/osm-roads-source.js', 'js/road-detection.js'],
         singleBuilding: ['js/single-building.js'],
         designDuplication: ['js/design-duplication.js'],
-        designMemberships: ['js/design-memberships.js?v=20261029-agreement-created'],
+        designMemberships: ['js/design-memberships.js?v=20261030-plan-preview-apply'],
         rowHouse: ['js/row-house.js'],
         parcelBased: ['js/parcel-based.js'],
         buildingUpload: ['js/single-building.js', 'js/building-model-geometry.js', 'js/building-upload.js'],
         // Parsing, summarizing and uploading a glTF: the upload dialog and the structure editor's furniture models.
-        modelUpload: ['js/model-upload.js']
+        modelUpload: ['js/model-upload.js'],
+        // CityGML and CityJSON: footprint import, Upload model, and plan and design import in Lists.
+        cityModel: ['js/city-model-reader.js'],
+        // CityJSON plan and design download, and reading such a file back.
+        cityJson: ['js/city-model-reader.js', 'js/city-json-export.js'],
+        // Road → Import's file readers (corridor-import.js), loaded when a file is imported.
+        // The OSM reader reads XML with the OpenDRIVE module's parser.
+        roadImportOsm: ['js/corridor-import-opendrive.js', 'js/corridor-import-osm.js'],
+        roadImportOpenDrive: ['js/corridor-import-opendrive.js']
     };
     const loaded = new Set();
     const inFlight = new Map();

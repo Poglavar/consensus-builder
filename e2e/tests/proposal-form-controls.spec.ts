@@ -85,11 +85,11 @@ test('publication and search filters narrow the design list by title and author'
     w.DesignSync.markPublished(published, { cid: w.DesignRecord.cidOf(published), apiBase: w.resolveBackendBaseUrl(), publishedAt: '2026-10-01T00:00:00.000Z' });
   }, PARCEL_ID);
   await page.locator('#proposals-button').click();
-  // Lists (01268caee): search, then publication and order behind the shared Filters disclosure.
+  // Lists (01268caee): search, then publication and order behind the shared Filters button.
   const list = page.locator('#proposals-sheet');
   const titles = list.locator('#proposal-list-host .lists-item__title');
   await expect(titles).toHaveCount(3);
-  await list.locator('.lists-filter-details > summary').click();
+  await list.locator('.lists-filter-toggle').click();
   await expect(list.locator('#lists-controls select')).toHaveCount(2);
   await expect(list.locator('#agreementsButton, #mintedAgreementsButton')).toHaveCount(0);
   await selectNativeOption(list.locator('select[data-list-filter="publication"]'), 'draft');

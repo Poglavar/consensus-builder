@@ -59,7 +59,8 @@ test.describe('Dynamic editor control effects @features', () => {
     const buildings = editor.locator('.corridor-limit-option[data-limit="buildings"]');
     await buildings.click();
     await expect(buildings).toHaveAttribute('aria-pressed', 'true');
-    for (const survey of ['gdi', 'dgu', 'osm']) {
+    // The sources in use (the Buildings layer), then each other source in Zagreb's list (its outline).
+    for (const survey of ['used', 'dgu', 'osm']) {
       const button = editor.locator('.corridor-limit-option[data-survey="' + survey + '"]');
       await expect(button).toBeVisible();
       const wasPressed = await button.getAttribute('aria-pressed');
@@ -69,7 +70,7 @@ test.describe('Dynamic editor control effects @features', () => {
     const parcels = editor.locator('.corridor-limit-option[data-limit="parcels"]');
     await parcels.click();
     await expect(parcels).toHaveAttribute('aria-pressed', 'true');
-    await expect(editor.locator('.corridor-limit-option[data-survey="gdi"]')).toHaveCount(0);
+    await expect(editor.locator('.corridor-limit-option[data-survey]')).toHaveCount(0);
     await editor.locator('.on-map-editor__header .close-circle-btn').click();
     await expect(editor).toHaveCount(0);
   });

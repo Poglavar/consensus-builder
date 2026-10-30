@@ -314,9 +314,11 @@
     // one on the agreement (window.AgreementBets.available).
     function actionsHtml({ canCompare = false, comparing = false, canPropose = false, published = false, canBet = false, readOnly = false } = {}, tr = t) {
         canPropose = canPropose && !readOnly;
+        // A read-only view (a copied address) applies its designs here to take part: vote, compare, bet.
         return '<div class="agreement-panel-actions">'
+            + (readOnly ? `<button type="button" class="btn btn-primary" data-agreement-action="apply-agreement">${esc(tr('panel.proposal.actions.apply', 'Apply to map'))}</button>` : '')
             + (canPropose ? `<button type="button" class="btn btn-primary" data-agreement-action="propose"><i class="fas fa-paper-plane" aria-hidden="true"></i> ${esc(tr('agreement.publish.propose', 'Propose'))}</button>` : '')
-            + `<button type="button" class="btn${canPropose ? '' : ' btn-primary'}" data-agreement-action="compare" aria-pressed="${comparing ? 'true' : 'false'}"${canCompare && !readOnly ? '' : ' disabled'}>`
+            + `<button type="button" class="btn${canPropose || readOnly ? '' : ' btn-primary'}" data-agreement-action="compare" aria-pressed="${comparing ? 'true' : 'false'}"${canCompare && !readOnly ? '' : ' disabled'}>`
             + `<i class="fas fa-left-right" aria-hidden="true"></i> ${esc(tr('mapCompare.toggle', 'Before / after'))}</button>`
             + (canBet && !readOnly ? `<button type="button" class="btn" data-agreement-action="bet"><i class="fas fa-chart-line" aria-hidden="true"></i> ${esc(tr('agreement.panel.actions.bet', 'Bet'))}</button>` : '')
             + (published || readOnly ? '' : `<button type="button" class="btn" data-agreement-action="edit"><i class="fas fa-pen" aria-hidden="true"></i> ${esc(tr('agreement.panel.actions.edit', 'Edit'))}</button>`)
@@ -1485,12 +1487,14 @@
             const action = event.target.closest('[data-agreement-action]');
             if (!action || action.disabled) return;
             const actionName = action.getAttribute('data-agreement-action');
-            if (state.readOnlyAgreement && !['close', 'link', 'plan', 'scheme-guide', 'counter', 'download'].includes(actionName)) return;
+            if (state.readOnlyAgreement && !['close', 'link', 'plan', 'scheme-guide', 'counter', 'download', 'apply-agreement'].includes(actionName)) return;
             switch (actionName) {
                 case 'close': close(); break;
                 case 'plan': win.BusyControl.track(action, () => win.ClickStack.showPlan(state.agreement.plan, { designs: state.agreement.designs, draft: !state.agreement.published })).catch(error => win.showStyledAlert(error.message)); break;
                 case 'compare': win.BusyControl.track(action, () => win.toggleAgreementBeforeAfter(state.id)); break;
                 case 'apply-designs': win.BusyControl.track(action, () => applyDesigns()).catch(error => win.showStyledAlert(error.message)); break;
+                // The agreement's own link route: applies its designs, keeps it here and opens it in full.
+                case 'apply-agreement': win.BusyControl.track(action, () => win.AgreementSync.handleAgreementRoute(state.readOnlyAgreement.published.cid)).catch(error => win.showStyledAlert(error.message)); break;
                 case 'propose': win.BusyControl.track(action, () => propose()); break;
                 case 'link': copyLink(); break;
                 // The agreement with the plan file of its plan (agreement-file.js); Import agreement file reads it back.

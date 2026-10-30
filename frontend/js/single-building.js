@@ -57,7 +57,7 @@
     }
 
     // The polygon the proposal will pave or green: the block minus every building footprint on it.
-    function currentGroundSurface() {
+    function currentSurroundings() {
         const api = buildingGroundApi();
         if (!api) return null;
         const buildings = buildingEntries.filter(entry => entry?.feature).map(entry => entry.feature);
@@ -68,7 +68,7 @@
     function currentPlacementSite(buildings = null) {
         const features = buildings ? buildings.slice() : buildingEntries.filter(entry => entry?.feature).map(entry => entry.feature);
         if (singleLandTakeReview?.take) features.unshift(singleLandTakeReview.take);
-        const ground = currentGroundSurface();
+        const ground = currentSurroundings();
         if (ground?.polygon) features.unshift(turf.feature(ground.polygon));
         let combined = null;
         for (const feature of features) combined = combined ? turf.union(combined, feature) : cloneSingleFeature(feature);
@@ -471,7 +471,7 @@
         return {
             draftPreview: { kind: 'buildings', features: buildingEntries.map(entry => cloneSingleFeature(entry.feature)).filter(Boolean) },
             boundary: cloneSingleFeature(singleBlockFeature),
-            groundSurface: currentGroundSurface(),
+            surroundings: currentSurroundings(),
             ...(singleLandTakeReview?.preview || {})
         };
     }
@@ -589,7 +589,7 @@
             },
             buildingFeature: buildings[0] || null,
             buildings,
-            groundSurface: currentGroundSurface(),
+            surroundings: currentSurroundings(),
             groundBoundary: cloneSingleFeature(singleGroundBoundary),
             landTake: cloneSingleFeature(singleLandTakeReview?.take),
             placement: { site: currentPlacementSite(), free: true }
@@ -672,7 +672,7 @@
         // The preview only degrades (no paint) when the surround cannot be cut; saving the proposal
         // computes the same surface and refuses on the same failure.
         let surface = null;
-        try { surface = currentGroundSurface(); } catch (error) {
+        try { surface = currentSurroundings(); } catch (error) {
             if (!error || error.code !== 'clip-failed') throw error;
             (window.__parcelArrangement || null)?.reportClipFailure('difference', error, { site: 'single-building.groundPreview' }, []);
             return;
@@ -685,7 +685,7 @@
         if (!surface || !style) return;
         try {
             singleGroundPreviewLayer = L.featureGroup().addTo(singleMap);
-            window.drawBuildingGroundSurface(singleGroundPreviewLayer, surface, EDIT_PANE);
+            window.drawBuildingSurroundings(singleGroundPreviewLayer, surface, EDIT_PANE);
             singleGroundPreviewLayer.bringToBack();
         } catch (error) {
             console.warn('[single-building] ground preview failed', error);
@@ -733,12 +733,14 @@
     }
 
     // Import into the selected footprint without ending the current design or dropping its siblings.
-    function useUploadedBuildingModel({ width, length, height, footprint, modelName, modelUrl }) {
+    // A city-model building brings its placement ({ center, rotationDeg }): it stands where its file puts it.
+    function useUploadedBuildingModel({ width, length, height, footprint, modelName, modelUrl, placement = null }) {
         const active = getActiveBuilding();
         if (!singleEditor || !active || ![width, length, height].every(value => typeof value === 'number' && Number.isFinite(value) && value > 0)) return false;
-        const center = featureCenterLatLng(active.feature);
-        const feature = window.SingleBuildingGeometry.placeModelFootprint(footprint, center, active.rotation);
-        if (feature) markAsEditablePolygon(feature, height, active.rotation);
+        const center = placement ? L.latLng(placement.center.lat, placement.center.lng) : featureCenterLatLng(active.feature);
+        const rotation = placement ? placement.rotationDeg : active.rotation;
+        const feature = window.SingleBuildingGeometry.placeModelFootprint(footprint, center, rotation);
+        if (feature) markAsEditablePolygon(feature, height, rotation);
         if (!editableFootprintValid(feature)) {
             showSingleBuildingEditorAlert('uploadInvalid', 'The uploaded geometry is invalid or outside the locked site.');
             return false;
@@ -749,6 +751,7 @@
         ensureSingleBuildingHistory().record();
         active.feature = feature;
         active.height = feature.properties.height;
+        active.rotation = rotation;
         active.lastValidCenter = center;
         setActiveBuilding(active.id);
         autosaveSingleBuildingDraft();
@@ -766,14 +769,17 @@
     function loadSingleBuildingGeoJSON(file) {
         if (!file || !window.PolygonGeometryEditor) return;
         const reader = new FileReader();
-        reader.onload = () => {
+        reader.onload = async () => {
             let features;
             try {
-                features = importedBuildingFeatures(JSON.parse(reader.result));
+                await window.ensureOptionalTool('cityModel');
+                features = importedBuildingFeatures(window.CityModelReader.geoJsonFromFileText(reader.result, { proj4: window.proj4, turf }));
                 if (features.some(feature => !editableFootprintValid(feature))) throw new Error('Footprint outside locked site.');
             } catch (error) {
                 console.error('Freeform-building GeoJSON import failed', error);
-                showSingleBuildingEditorAlert('uploadInvalid', 'The uploaded geometry is invalid or outside the locked site.');
+                const crsMessage = window.CityModelReader?.crsErrorMessage(error, window.i18n);
+                if (crsMessage) window.CbDialog.alert(crsMessage);
+                else showSingleBuildingEditorAlert('uploadInvalid', 'The uploaded geometry is invalid or outside the locked site.');
                 return;
             }
             ensureSingleBuildingHistory().record();
@@ -1238,7 +1244,7 @@
             },
             buildingFeature: buildingFeatures[0] || null,
             buildings: buildingFeatures,
-            groundSurface: currentGroundSurface(),
+            surroundings: currentSurroundings(),
             groundBoundary: cloneSingleFeature(singleGroundBoundary),
             landTake: cloneSingleFeature(singleLandTakeReview?.take),
             placement: { site: currentPlacementSite(buildingFeatures), free: true }
@@ -1309,8 +1315,10 @@
             rotationLabel: translateSingleBuildingText('modal.singleBuilding.rotationLabel', 'Rotate footprint'),
             rotateCounterclockwiseLabel: translateSingleBuildingText('modal.singleBuilding.rotateCounterclockwiseLabel', 'Rotate counterclockwise 5 degrees'),
             rotateClockwiseLabel: translateSingleBuildingText('modal.singleBuilding.rotateClockwiseLabel', 'Rotate clockwise 5 degrees'),
-            uploadGeojsonLabel: translateSingleBuildingText('modal.singleBuilding.uploadGeojsonLabel', 'Upload GeoJSON'),
-            uploadGlbLabel: translateSingleBuildingText('modal.singleBuilding.uploadGlbLabel', 'Upload .glb'),
+            uploadGeojsonLabel: translateSingleBuildingText('modal.singleBuilding.uploadGeojsonLabel', 'Upload footprints'),
+            footprintFormats: translateSingleBuildingText('common.footprintFileFormats', 'GeoJSON, CityGML or CityJSON'),
+            uploadGlbLabel: translateSingleBuildingText('modal.singleBuilding.uploadGlbLabel', 'Upload model'),
+            modelFormats: translateSingleBuildingText('common.modelFileFormats', 'glTF, CityGML or CityJSON'),
             surroundingsLabel: translateSingleBuildingText('modal.singleBuilding.surroundingsLabel', 'Surroundings'),
             surroundingsPaved: translateSingleBuildingText('modal.singleBuilding.surroundingsPaved', 'Paving'),
             surroundingsGreen: translateSingleBuildingText('modal.singleBuilding.surroundingsGreen', 'Green'),
@@ -1386,10 +1394,10 @@
                                 <p id="single-building-density-hint" class="building-density-hint"></p>
                             </section>
                             <div class="cb-actions on-map-building__imports">
-                                <button id="single-building-geojson-upload" class="btn" type="button">${modalText.uploadGeojsonLabel}</button>
-                                <button id="single-building-glb-upload" class="btn" type="button">${modalText.uploadGlbLabel}</button>
+                                <button id="single-building-geojson-upload" class="btn" type="button" title="${modalText.footprintFormats}">${modalText.uploadGeojsonLabel}</button>
+                                <button id="single-building-glb-upload" class="btn" type="button" title="${modalText.modelFormats}">${modalText.uploadGlbLabel}</button>
                             </div>
-                            <input id="single-building-geojson-input" type="file" accept=".geojson,.json,application/geo+json,application/json" hidden>
+                            <input id="single-building-geojson-input" type="file" accept=".geojson,.json,.gml,.xml,application/geo+json,application/json,application/gml+xml" hidden>
                         </div>
 `,
                 footer: `
@@ -1451,7 +1459,7 @@
                 });
             }
             document.getElementById('single-ground-treatment-edit').addEventListener('click', () => {
-                window.BuildingSurroundingsEditor.edit({ session: singleSession, surface: currentGroundSurface(),
+                window.BuildingSurroundingsEditor.edit({ session: singleSession, surface: currentSurroundings(),
                     onOpen: () => {
                         singleGroundPreviewSuspended = true;
                         updateGroundPreview();
@@ -1607,7 +1615,7 @@
 
     // Uploads enter the same placement editor; only Done saves the design and completes the
     // upload caller's form status. The mesh reference stays attached to the editable footprint.
-    function createSingleBuildingFromUpload({ blockName, parcelIds, site = null, width, length, height, footprint, modelName, modelUrl, onConfirm } = {}) {
+    function createSingleBuildingFromUpload({ blockName, parcelIds, site = null, width, length, height, footprint, modelName, modelUrl, onConfirm, placement: modelPlacement = null } = {}) {
         if (singleEditor || window.OnMapEditor?.isActive?.()) return false;
         const context = singleBuildingPlacementContext({ blockName, parcelIds, site });
         if (!context) return false;
@@ -1623,14 +1631,17 @@
         activeBuildingId = null;
         nextBuildingId = 1;
 
-        const placement = computeInitialPlacement(singleBlockFeature);
+        // A city-model building stands where its file puts it; a glTF model starts in the block.
+        const placement = modelPlacement
+            ? { center: L.latLng(modelPlacement.center.lat, modelPlacement.center.lng), rotation: modelPlacement.rotationDeg }
+            : { center: computeInitialPlacement(singleBlockFeature).center, rotation: 0 };
         const safeHeight = Math.max(3, Math.round(Number(height) || DEFAULT_HEIGHT_M));
-        const feature = window.SingleBuildingGeometry.placeModelFootprint(footprint, placement.center, 0);
+        const feature = window.SingleBuildingGeometry.placeModelFootprint(footprint, placement.center, placement.rotation);
         if (!feature) {
             setSingleBuildingStatus('unable_to_prepare_building_geometry_for_proposal', 'Unable to fit the uploaded building inside the selected block.');
             return false;
         }
-        markAsEditablePolygon(feature, safeHeight, 0);
+        markAsEditablePolygon(feature, safeHeight, placement.rotation);
         if (!editableFootprintValid(feature)) {
             setSingleBuildingStatus('unable_to_prepare_building_geometry_for_proposal', 'Unable to fit the uploaded building inside the selected block.');
             return false;
@@ -1638,7 +1649,7 @@
         const entry = addNewBuildingEntry(placement.center, {
             feature,
             height: safeHeight,
-            rotation: 0
+            rotation: placement.rotation
         });
         if (!entry || !entry.feature) {
             setSingleBuildingStatus('unable_to_prepare_building_geometry_for_proposal', 'Unable to fit the uploaded building inside the selected block.');

@@ -733,6 +733,8 @@
 
     async function summonUrbanistRooster(plan) {
         if (state.running || state.preparing) return;
+        // The rooster walks the plan's applied ground: a previewed plan is applied first, on a yes.
+        if (!await global.PlanWorkspace.ensureApplied(plan)) return;
         state.plan = plan;
         state.preparing = true;
         const token = state.runToken;

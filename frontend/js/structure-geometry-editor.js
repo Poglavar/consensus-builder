@@ -1345,7 +1345,7 @@
         const summary = card.querySelector('[data-role="enclosure-summary"]');
         if (summary) {
             summary.textContent = t('enclosure.summary', '{{area}}, gates: {{gates}}', {
-                area: enclosure.ring ? t('enclosure.drawn', 'Fenced area') : t('enclosure.wholePark', 'Fence around the whole park'),
+                area: enclosure.ring ? t('tools.enclosure', 'Fenced area') : t('enclosure.wholePark', 'Fence around the whole park'),
                 gates: enclosure.gates.length
             });
         }
@@ -1399,8 +1399,8 @@
                     <button type="button" class="btn btn-sm" data-action="remove-furniture-model">${t('tools.erase', 'Remove')}</button>
                 </div>`).join('');
         return rows ? `
-            <section class="structure-geometry-models" aria-label="${t('furniture.title', 'Furniture models')}">
-                <h3 class="structure-geometry-models-title">${t('furniture.title', 'Furniture models')}</h3>${rows}
+            <section class="structure-geometry-models" aria-label="${t('furniture.title', 'City furniture models')}">
+                <h3 class="structure-geometry-models-title">${t('furniture.title', 'City furniture models')}</h3>${rows}
             </section>` : '';
     }
 
@@ -1622,9 +1622,9 @@
     // The messages for FurnitureModels.validateModelSummary's codes, with the limit that was missed.
     function furnitureModelError(code, detail = {}) {
         const mb = value => (Number(value) / (1024 * 1024)).toFixed(1);
-        if (code === 'triangles') return t('furniture.errorTriangles', `This model has ${detail.triangles} triangles. A furniture model may have at most ${detail.max}.`, { triangles: detail.triangles, max: detail.max });
-        if (code === 'texture') return t('furniture.errorTexture', `A texture is ${detail.width} × ${detail.height} px. Furniture textures may be at most ${detail.max} px on each side.`, { width: detail.width, height: detail.height, max: detail.max });
-        if (code === 'bytes') return t('furniture.errorBytes', `This file is ${mb(detail.bytes)} MB. A furniture model may be at most ${mb(detail.max)} MB.`, { size: mb(detail.bytes), max: mb(detail.max) });
+        if (code === 'triangles') return t('furniture.errorTriangles', `This model has ${detail.triangles} triangles. A city furniture model may have at most ${detail.max}.`, { triangles: detail.triangles, max: detail.max });
+        if (code === 'texture') return t('furniture.errorTexture', `A texture is ${detail.width} × ${detail.height} px. City furniture textures may be at most ${detail.max} px on each side.`, { width: detail.width, height: detail.height, max: detail.max });
+        if (code === 'bytes') return t('furniture.errorBytes', `This file is ${mb(detail.bytes)} MB. A city furniture model may be at most ${mb(detail.max)} MB.`, { size: mb(detail.bytes), max: mb(detail.max) });
         if (code === 'empty') return t('furniture.errorEmpty', 'The model contains no visible geometry.');
         if (code === 'parse') return t('furniture.errorParse', 'Could not read this file as glTF/GLB. Use a self-contained .glb or .gltf export.');
         if (code === 'upload') return t('furniture.errorUpload', 'The model could not be uploaded. Check the connection and try again.');

@@ -9,8 +9,6 @@
 // happens to that failure.
 import { describe, it, expect, beforeAll, afterEach, vi } from 'vitest';
 import { createRequire } from 'node:module';
-import { readFileSync } from 'node:fs';
-import { fileURLToPath } from 'node:url';
 
 const require = createRequire(import.meta.url);
 const turf = require('@turf/turf');
@@ -156,10 +154,24 @@ describe('the road-piece takers check', () => {
 });
 
 describe('the artifact-neck split', () => {
-    const fixture = JSON.parse(readFileSync(
-        fileURLToPath(new URL('./fixtures/parcel-575-artifact-neck.json', import.meta.url)), 'utf8'));
-    const parcel = () => ({ type: 'Feature', properties: {}, geometry: fixture.parcel });
-    const takes = () => fixture.takes.map(t => ({ id: t.id, geometry: t.polygon }));
+    // Two lobes joined by a slit 1e-8° (~1 mm) wide, with a take over one corner so the parcel is
+    // arranged: its remainder still carries the slit, which only the neck split opens. (Parcel 575's
+    // fixture no longer reaches the split: since the remainder is cut with the take rather than its
+    // hit, the clipper returns that parcel's two lobes itself.)
+    const SLIT_S = 46.00025;
+    const SLIT_N = SLIT_S + 1e-8;
+    const NECK_PARCEL_ID = 'HR-1-200';
+    const parcel = () => ({ type: 'Feature', properties: {}, geometry: { type: 'Polygon', coordinates: [[
+        [16.0000, 46.0000], [16.0005, 46.0000], [16.0005, SLIT_S], [16.0006, SLIT_S], [16.0006, 46.0000],
+        [16.0011, 46.0000], [16.0011, 46.0005], [16.0006, 46.0005], [16.0006, SLIT_N], [16.0005, SLIT_N],
+        [16.0005, 46.0005], [16.0000, 46.0005], [16.0000, 46.0000]
+    ]] } });
+    const takes = () => [{ id: 'road-c', geometry: box(15.9999, 46.0004, 16.0001, 46.0006).geometry }];
+    const remaindersOf = () => A.arrangementOf(parcel(), NECK_PARCEL_ID, takes()).pieces.filter(p => p.kind === 'remainder');
+
+    it('opens the slit into two remainders when its clip succeeds', () => {
+        expect(remaindersOf()).toHaveLength(2);
+    });
 
     it('keeps the polygon whole when its clip throws, and reports it as degraded', () => {
         // The neck split clips the parcel against a buffered lobe; tag the buffers to find that call.
@@ -184,7 +196,7 @@ describe('the artifact-neck split', () => {
         const log = vi.spyOn(console, 'error').mockImplementation(() => { });
         const before = A.clipHealth();
 
-        const remainders = A.arrangementOf(parcel(), fixture.parcelId, takes()).pieces.filter(p => p.kind === 'remainder');
+        const remainders = remaindersOf();
 
         expect(remainders).toHaveLength(1);
         const after = A.clipHealth();

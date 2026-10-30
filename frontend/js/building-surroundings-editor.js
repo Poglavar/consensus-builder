@@ -70,7 +70,7 @@
             }
             if (value) {
                 layer = global.L.featureGroup().addTo(session.map);
-                global.drawBuildingGroundSurface(layer, value, session.pane);
+                global.drawBuildingSurroundings(layer, value, session.pane);
                 layer.bringToBack();
             }
             editButton.disabled = !value;
@@ -79,13 +79,13 @@
         editButton.disabled = true;
         editButton.addEventListener('click', () => edit({ session, surface: surface(), onOpen: clear, onClose: refresh, onSave: design => {
             decorationDesign = design;
-            session.setPreview({ ...(session.preview || {}), groundSurface: refresh() });
+            session.setPreview({ ...(session.preview || {}), surroundings: refresh() });
             onChange();
         } }));
         select.addEventListener('change', () => {
             treatment = ground.normalizeTreatment(select.value);
             decorationDesign = null;
-            session.setPreview({ ...(session.preview || {}), groundSurface: refresh() });
+            session.setPreview({ ...(session.preview || {}), surroundings: refresh() });
             onChange();
         });
         return { surface, refresh, destroy: clear, get treatment() { return treatment; }, get signature() { return JSON.stringify([treatment, decorationDesign]); } };

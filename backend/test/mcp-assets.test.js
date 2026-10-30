@@ -266,9 +266,10 @@ describe('MCP imports and ephemeral visual previews', () => {
         expect(schemas.get('ugt_import_model').parse(model).kind).toBe('building');
         expect(schemas.get('ugt_import_model').parse({ ...model, kind: 'lake' }).kind).toBe('lake');
         expect(schemas.get('ugt_import_model').safeParse({ ...model, kind: 'tower' }).success).toBe(false);
-        // Furniture is placed later per decoration: no city or center; every other kind still needs both.
+        // Furniture is placed later per decoration: no city or center. Every other kind needs a city; its center
+        // is checked by the import, since a CityGML or CityJSON building brings its own.
         expect(schemas.get('ugt_import_model').safeParse({ modelData: model.modelData, kind: 'furniture', confirmAssetUpload: true }).success).toBe(true);
-        expect(schemas.get('ugt_import_model').safeParse({ modelData: model.modelData, confirmAssetUpload: true }).error.issues.map(issue => issue.path.join('.'))).toEqual(['city', 'center']);
+        expect(schemas.get('ugt_import_model').safeParse({ modelData: model.modelData, confirmAssetUpload: true }).error.issues.map(issue => issue.path.join('.'))).toEqual(['city']);
         const design = { city: 'place', format: 'geojson', data: {} };
         expect(schemas.get('ugt_import_design').safeParse({ ...design, kind: 'space', spaceKind: 'park', description: 'Imported', author: 'agent',
             authoredAt: '2026-01-01T00:00:00.000Z', toleranceM: 0.5 }).success).toBe(true);

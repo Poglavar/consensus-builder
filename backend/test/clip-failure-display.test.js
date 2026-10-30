@@ -410,6 +410,8 @@ describe('three-mode (3D display)', () => {
             suggestedPlanContext: { planBuilding: () => null, neighbourPool: () => [] },
             getGeoCameraView: () => ({ targetLng: 16.0005, targetLat: 46.0005 }),
             buildingLoadRadiusM: 1000, SUGGESTED_EXISTING_CAP: 10,
+            // The once-per-radius footprint request is keyed on these.
+            nearbyProposalBuildingsKey: '', suggestedExistingPoolKey: null,
             suggestedRegion: () => null, suggestedRoadsFor: () => [], suggestedPlanCache: new Map()
         });
         expectReported('three-mode.appendSuggestedExistingFloorPlans', () => {

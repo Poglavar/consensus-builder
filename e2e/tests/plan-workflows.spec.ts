@@ -1,6 +1,7 @@
 import { test, expect } from '../helpers/fixtures';
 import { openCity, createSpace, showProposal, chooseProfileName, stackSection } from '../helpers/runtime';
 import { pageIndex, cidOfObject } from '../helpers/mocks/shared-server';
+import { sampleParcels } from '../helpers/mocks/parcel-data';
 
 // Lists (01268caee) puts Create plan in #lists-actions; a saved plan opens in the click stack's Plan
 // section, which holds Share plan and Create agreement. Add to plan heads the design card (7cc412330).
@@ -10,11 +11,18 @@ async function openPlans(page:any) {
   await page.locator('#shareAppliedProposalsButton').click();
   await expect(page.locator('#designs-plans')).toBeVisible();
 }
+// Create plan ticks the designs in Lists → Designs; Continue opens the composer listing them.
+async function chooseDesigns(page:any) {
+  const choices=page.locator('#proposal-list-host input[type="checkbox"]');
+  await expect(choices.first()).toBeVisible();
+  for(const choice of await choices.all())await choice.check();
+  const count=await choices.count();
+  await page.locator('#lists-actions [data-lists-continue]').click();
+  await expect(page.locator('.plan-composer .plan-dialog__members li')).toHaveCount(count);
+}
 async function savePlan(page:any, title:string) {
   const composer=page.locator('.plan-composer');
   await composer.getByLabel('Plan name',{exact:true}).fill(title);
-  const choices=composer.locator('input[type="checkbox"]');
-  for(const choice of await choices.all())await choice.check();
   await composer.getByRole('button',{name:'Create plan',exact:true}).click();
   await expect(composer).toBeHidden();
   await expect(stackSection(page,'plans').locator('.click-stack__row')).toHaveAttribute('aria-expanded','true');
@@ -33,6 +41,7 @@ test('Plan creation is local; sharing publishes only the saved immutable snapsho
   await expect(heading).toHaveText('Lists');
   await expect(page.locator('#designs-agreements-button')).toHaveCount(0);
   await page.locator('#lists-actions').getByRole('button',{name:'Create plan',exact:true}).click();
+  await chooseDesigns(page);
   await expect(page.locator('.plan-composer').getByRole('button',{name:/Share|Publish|agreement/i})).toHaveCount(0);
   const plan=await savePlan(page,'Original park plan');
   expect(writes(page)).toHaveLength(0);
@@ -61,22 +70,61 @@ test('Plan creation is local; sharing publishes only the saved immutable snapsho
   expect(writes(page)).toHaveLength(before);
 });
 
+// A plan's designs stand together: a park and a square on one parcel cannot share a plan.
+async function rivalSpaces(page:any) {
+  await openCity(page);
+  const park=await createSpace(page,'park');
+  await page.evaluate(id => (window as any).ProposalManager.unapplyProposal(id), park);
+  const square=await createSpace(page,'square');
+  return { park, square };
+}
+test('ticking a design for a plan applies it virtually with the ticked ones and refuses one that cannot stand',async({mockApi:page})=>{
+  test.setTimeout(120000);
+  await rivalSpaces(page);
+  await openPlans(page);
+  await page.locator('#lists-actions').getByRole('button',{name:'Create plan',exact:true}).click();
+  const choices=page.locator('#proposal-list-host input[type="checkbox"]');
+  await expect(choices).toHaveCount(2);
+  await choices.nth(0).check();
+  await choices.nth(1).click();
+  await expect(page.locator('.cb-toast').filter({hasText:'cannot be in this plan'})).toBeVisible();
+  await expect(choices.nth(1)).not.toBeChecked();
+  await expect(page.locator('#lists-actions .lists-selection-count')).toHaveText('1 selected');
+  // The trial is rolled back: the square still stands and the park is still parked.
+  expect(await page.evaluate(()=>(window as any).proposalStorage.getAllProposals().filter((p:any)=>(window as any).isApplied(p)).map((p:any)=>p.structureProposal?.kind))).toEqual(['square']);
+});
+test('saving a plan refuses designs that cannot stand together, as Add to plan offers them',async({mockApi:page})=>{
+  test.setTimeout(120000);
+  const { park, square }=await rivalSpaces(page);
+  await showProposal(page,square);
+  await stackSection(page,'designs').locator('[data-design-action="add-to-plan"]').click();
+  await savePlan(page,'Square plan');
+  await page.keyboard.press('Escape');
+  await showProposal(page,park);
+  await stackSection(page,'designs').locator('[data-design-action="add-to-plan"]').click();
+  await page.getByRole('button',{name:'Square plan',exact:true}).click();
+  const composer=page.locator('.plan-composer');
+  await composer.getByRole('button',{name:'Save new revision',exact:true}).click();
+  await expect(composer.locator('.plan-dialog__status')).toContainText('cannot stand together with the rest of this plan');
+  expect(await page.evaluate(()=>(window as any).PlanWorkspace.list().filter((row:any)=>row.content.title==='Square plan').length)).toBe(1);
+});
 test('Add to plan creates a reviewed revision and retains the old membership',async({mockApi:page})=>{
   test.setTimeout(120000);await page.setViewportSize({width:390,height:844});
   await openCity(page);const first=await createSpace(page,'park');
   await showProposal(page,first);
   await stackSection(page,'designs').locator('[data-design-action="add-to-plan"]').click();
+  await expect(page.locator('.plan-composer .plan-dialog__members li')).toHaveCount(1);
   const original=await savePlan(page,'Pocket spaces');
   await page.keyboard.press('Escape');
   await expect(stackSection(page,'plans')).toHaveCount(0);
-  await page.evaluate(id => (window as any).ProposalManager.unapplyProposal(id), first);
-  const second=await createSpace(page,'square');
+  // On its own parcel: a plan's designs stand together, so the square cannot take the park's ground.
+  const second=await createSpace(page,'square',sampleParcels.features[1].properties.parcelId);
   await showProposal(page,second);
   await stackSection(page,'designs').locator('[data-design-action="add-to-plan"]').click();
   await page.getByRole('button',{name:'Pocket spaces',exact:true}).click();
   const composer=page.locator('.plan-composer');
   await expect(composer.getByText('Saving changes creates a new plan revision. Existing links stay unchanged.')).toBeVisible();
-  await expect(composer.locator('input[type="checkbox"]:checked')).toHaveCount(2);
+  await expect(composer.locator('.plan-dialog__members li')).toHaveCount(2);
   await composer.getByRole('button',{name:'Save new revision',exact:true}).click();
   await expect(stackSection(page,'plans').locator('.click-stack__row')).toHaveAttribute('aria-expanded','true');
   const saved=await page.evaluate(()=>(window as any).PlanWorkspace.list().filter((row:any)=>row.content.title==='Pocket spaces'));

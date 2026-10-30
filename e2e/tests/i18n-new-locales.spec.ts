@@ -7,6 +7,8 @@ const locales = [
   { lang: 'fr', locale: 'fr-FR', direction: 'ltr', label: 'Listes' },
   { lang: 'pt', locale: 'pt-PT', direction: 'ltr', label: 'Listas' },
 ];
+// Every locale the picker offers (js/i18n.js LOCALE_CHOICES), in picker order.
+const pickerLocales = ['en-GB', 'en-US', 'es-ES', 'es-CO', 'sr-Latn-RS', 'hr-HR', 'ar-EG', 'fr-FR', 'pt-PT'];
 for (const item of locales) {
   test(`${item.lang}: map renders translated controls and downloads only its selected dictionary`, async ({ mockApi: page }) => {
     const dictionaries: string[] = [];
@@ -59,7 +61,7 @@ test('Arabic feedback is readable on a phone, preserves URL direction and switch
   await input.fill('https://example.test/?city=new_york');
   expect(await input.evaluate(element => getComputedStyle(element).direction)).toBe('ltr');
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
-  await expect(page.locator('#feedback-language option')).toHaveCount(8);
+  expect(await page.locator('#feedback-language option').evaluateAll(options => options.map(option => (option as HTMLOptionElement).value))).toEqual(pickerLocales);
   await selectNativeOption(page.locator('#feedback-language'), 'fr-FR');
   await expect(page.locator('html')).toHaveAttribute('dir', 'ltr');
   await expect(page.locator('html')).toHaveAttribute('lang', 'fr');
@@ -81,7 +83,7 @@ test('all locale buttons fit in a phone dialog and Arabic selection completes', 
     win.bindLanguageSegmented(body);
   });
   const picker = page.locator('.test-locale-picker');
-  await expect(picker.locator('[data-language]')).toHaveCount(8);
+  expect(await picker.locator('[data-language]').evaluateAll(buttons => buttons.map(button => button.getAttribute('data-language')))).toEqual(pickerLocales);
   expect(await picker.evaluate(element => element.scrollWidth <= element.clientWidth)).toBe(true);
   await picker.locator('[data-language="ar-EG"]').click();
   await expect(page.locator('html')).toHaveAttribute('dir', 'rtl');

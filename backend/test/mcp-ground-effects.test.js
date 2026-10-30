@@ -12,9 +12,9 @@ const design = (cid, authoredAt, content) => ({ cid, content: { authoredAt, ...c
 describe('MCP road cut effects', () => {
     it('reports all road cuts to a ground surface and gives every notice the final area without mutation', () => {
         const building = design('building-cid', '2026-01-01T00:00:00Z', {
-            title: 'Building', geometry: { groundSurface: { polygon: box(0, 0, 0.002, 0.001) } }
+            title: 'Building', geometry: { surroundings: { polygon: box(0, 0, 0.002, 0.001) } }
         });
-        const sourceGeometry = structuredClone(building.content.geometry.groundSurface.polygon);
+        const sourceGeometry = structuredClone(building.content.geometry.surroundings.polygon);
         const earlierRoad = design('road-early', '2025-12-31T00:00:00Z', {
             title: 'Earlier road', roadProposal: { definition: { polygon: box(0.0004, -0.001, 0.0006, 0.002) } }
         });
@@ -24,14 +24,14 @@ describe('MCP road cut effects', () => {
         const effects = describeRoadCuts([building, road, earlierRoad]);
         expect(effects).toHaveLength(2);
         expect(effects[0]).toMatchObject({
-            designRef: 'design:building-cid', surfaceKind: 'ground-surface',
+            designRef: 'design:building-cid', surfaceKind: 'surroundings',
             behavior: 'effective-ground-carved; authored-geometry-unchanged'
         });
         expect(effects.map(effect => effect.roadCid)).toEqual(['road-early', 'road-late']);
         expect(effects.every(effect => effect.overlapM2 > 0.25)).toBe(true);
         expect(effects[0].remainingAreaM2AfterAllRoadCuts).toBeLessThan(effects[0].authoredAreaM2);
         expect(effects[1].remainingAreaM2AfterAllRoadCuts).toBe(effects[0].remainingAreaM2AfterAllRoadCuts);
-        expect(building.content.geometry.groundSurface.polygon).toEqual(sourceGeometry);
+        expect(building.content.geometry.surroundings.polygon).toEqual(sourceGeometry);
     });
 
     it('keeps formation cuts limited to later roads and ignores non-overlap', () => {
@@ -62,12 +62,13 @@ describe('MCP road cut effects', () => {
                 throw new Error(`Unexpected request: ${path}`);
             } });
         const common = { city: 'london', parcelSourceId: 'test-source' };
-        const building = await tools.draftBuilding({ ...common, title: 'Earlier building', outline: box(-0.0995, 51.5007, -0.0985, 51.5013), floors: 2, authoredAt: '2020-01-01T00:00:00.000Z' });
+        // A road cuts through a park (a building and a street-level road cannot share a plan).
+        const park = await tools.draftSpace({ ...common, title: 'Earlier park', outline: box(-0.0995, 51.5007, -0.0985, 51.5013), spaceKind: 'park', authoredAt: '2020-01-01T00:00:00.000Z' });
         const road = await tools.draftRoad({ ...common, title: 'Later road', points: [[-0.0999, 51.501], [-0.0981, 51.501]], preset: '1+1', authoredAt: '2021-01-01T00:00:00.000Z' });
-        const named = await tools.draftPlan({ designs: [building.design, road.design], title: 'Road cut plan' });
+        const named = await tools.draftPlan({ designs: [park.design, road.design], title: 'Road cut plan' });
         const drafted = await tools.draftAgreement({ currency: 'GBP', plan: named.draftArtifact, rulePreset: 'community-vote', title: 'Road cut' });
         expect(drafted.groundEffects).toEqual([expect.objectContaining({
-            designCid: building.cid, roadTitle: 'Later road', surfaceKind: 'building',
+            designCid: park.cid, roadTitle: 'Later road', surfaceKind: 'structure',
             behavior: 'effective-ground-carved; authored-geometry-unchanged'
         })]);
         expect(drafted.groundEffects[0].remainingAreaM2AfterAllRoadCuts).toBeLessThan(drafted.groundEffects[0].authoredAreaM2);

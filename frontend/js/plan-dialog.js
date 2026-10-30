@@ -19,9 +19,6 @@
         });
         return el;
     };
-    const records = () => win.proposalStorage.getAllProposals().filter(record => {
-        try { return win.DesignRecord.validate(win.DesignRecord.published(record)).valid; } catch (_) { return false; }
-    });
     function closeContexts() { win.ClickStack?.close(); win.ThreeClickStack?.close(); }
     function openDialog(title, body, actions = [], size = 'sm') {
         return win.CbDialog.open({ title, size, className:'plan-dialog', body, actions, autoCloseActions:false });
@@ -31,26 +28,30 @@
         row.designs.forEach(member => list.append(node('li', '', member.content.title || t('untitledDesign'))));
         return list;
     }
-    async function create({ members = [], base = null, add = null } = {}) {
+    // A plan's designs are ticked in Lists → Designs, where they show on the map (ListsPanel.
+    // choosePlanDesigns); this dialog names the plan and saves it. `members` are the designs chosen
+    // there, or with `base` (a revision) its designs plus `add`, until they are changed there.
+    async function create({ members = null, base = null, add = null } = {}) {
         closeContexts();
         const baseRow = base ? await win.PlanWorkspace.resolve(base) : null;
-        const sources = new Map(records().map(record => [win.DesignRecord.cidOf(record), record]));
-        const selected = new Set();
-        if (baseRow) for (const record of win.PlanComposition.localRecords(baseRow, { apiBase:win.DesignSync.apiBase() })) {
-            const cid = win.DesignRecord.cidOf(record); sources.set(cid, record); selected.add(cid);
-        }
-        for (const record of members) { const cid=win.DesignRecord.cidOf(record); sources.set(cid,record); selected.add(cid); }
-        if (add) { const cid=win.DesignRecord.cidOf(add); sources.set(cid,add); selected.add(cid); }
+        const sources = new Map();
+        const chosen = members || [...(baseRow ? win.PlanComposition.localRecords(baseRow, { apiBase:win.DesignSync.apiBase() }) : []), ...(add ? [add] : [])];
+        for (const record of chosen) sources.set(win.DesignRecord.cidOf(record), record);
+        if (!sources.size) return win.ListsPanel.choosePlanDesigns({ base });
+        const selected = new Set(sources.keys());
         const body = node('form', 'plan-composer');
         const view = structuredClone(baseRow?.content.view || win.MapShare.capture(win));
         const nameLabel = node('label', 'plan-dialog__field', t('name'));
         const name = node('input'); name.type='text'; name.required=true; name.maxLength=win.PlanRecord.MAX_TITLE;
         name.value=baseRow?.content.title || ''; nameLabel.append(name); body.append(nameLabel);
         if (baseRow) body.append(node('p','sheet-note',t('revisionHint')));
-        const searchLabel=node('label','plan-dialog__field',t('addDesigns'));
-        const search=node('input'); search.type='search'; search.placeholder=t('search'); searchLabel.append(search); body.append(searchLabel);
         const count=node('p','plan-dialog__count'); body.append(count);
-        const list=node('div','plan-dialog__choices'); body.append(list);
+        const list=node('ul','plan-dialog__members'); body.append(list);
+        // Back to the Lists, with these designs ticked and on the map.
+        const change=button(t('changeDesigns'),async()=>{
+            dialog.close(); await win.ListsPanel.choosePlanDesigns({ members:[...sources.values()], base:baseRow });
+        });
+        change.dataset.planChangeDesigns=''; body.append(change);
         if(view.mode !== '2d') {
             const options=node('div','plan-dialog__view');
             const option=(key, title, checked)=>{
@@ -66,6 +67,20 @@
         const footer=node('div','cb-actions plan-dialog__footer');
         let dialog;
         const save=button(t(baseRow ? 'saveRevision' : 'createPlan'), async () => {
+            // A plan's designs stand together: the ones held here are applied together, virtually
+            // (PlanWorkspace.trial), and a plan in which any would not stand is not saved.
+            const stored=new Map();
+            for(const record of win.proposalStorage.getAllProposals()){
+                try{const cid=win.DesignRecord.cidOf(record);if(!stored.has(cid)||win.isApplied(record))stored.set(cid,record);}catch(_){/* an incomplete draft is no member */}
+            }
+            const held=[...selected].map(cid=>stored.get(cid)||win.DesignSync.localCopyOf(cid)).filter(Boolean);
+            if(held.length>1){
+                const {fallen}=await win.PlanWorkspace.trial(held.map(record=>String(record.proposalId)));
+                if(fallen.length){
+                    status.textContent=t('cannotStand',{titles:held.filter(record=>fallen.includes(String(record.proposalId))).map(record=>`“${record.title||t('untitledDesign')}”`).join(', ')});
+                    return;
+                }
+            }
             // Members kept from the base revision keep their construction windows.
             const row=win.PlanComposition.create(name.value,[...selected].map(cid=>sources.get(cid)),view,baseRow?.content.schedule);
             if (!win.SharedPlanSession?.saveLocalRevision(baseRow,row)) win.PlanWorkspace.save(row);
@@ -75,17 +90,14 @@
         const cancel=button(t('cancel'),()=>dialog.close()); footer.append(cancel,save); body.append(footer);
         const update=()=>{count.textContent=t('selected',{count:selected.size});save.disabled=!name.value.trim()||!selected.size;};
         const render=()=>{
-            const query=search.value.trim().toLocaleLowerCase(); list.replaceChildren();
-            for (const [cid,record] of sources) {
-                if (query && ![record.title,record.author,record.goal].join(' ').toLocaleLowerCase().includes(query)) continue;
-                const label=node('label','plan-dialog__choice'); const check=node('input'); check.type='checkbox';check.checked=selected.has(cid);
-                check.addEventListener('change',()=>{if(check.checked)selected.add(cid);else selected.delete(cid);update();});
-                const text=node('span','',record.title||t('untitledDesign'));
-                const kind=node('small','',win.getProposalGoalLabel?.(record.goal)||record.goal);text.append(kind);label.append(check,text);list.append(label);
+            list.replaceChildren();
+            for (const record of sources.values()) {
+                const item=node('li','',record.title||t('untitledDesign'));
+                item.append(node('small','',win.getProposalGoalLabel?.(record.goal)||record.goal));list.append(item);
             }
-            if(!sources.size)list.append(node('p','sheet-note',t('noDesigns')));update();
+            update();
         };
-        name.addEventListener('input',update);search.addEventListener('input',render);
+        name.addEventListener('input',update);
         body.addEventListener('submit',event=>{event.preventDefault();if(!save.disabled)save.click();});
         dialog=openDialog(t(baseRow?'editPlan':'createPlan'),body,[],'md');render();name.focus();return dialog;
     }

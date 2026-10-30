@@ -1,12 +1,5 @@
 Bundled license information:
 
-object-assign/index.js:
-  /*
-  object-assign
-  (c) Sindre Sorhus
-  @license MIT
-  */
-
 polygon-clipping/dist/polygon-clipping.umd.js:
   /**
    * splaytree v3.1.2
@@ -30,6 +23,13 @@ polygon-clipping/dist/polygon-clipping.umd.js:
       See the Apache Version 2.0 License for specific language governing permissions
       and limitations under the License.
       ***************************************************************************** */
+
+object-assign/index.js:
+  /*
+  object-assign
+  (c) Sindre Sorhus
+  @license MIT
+  */
 
 xmlchars/xml/1.0/ed5.js:
   /**
@@ -135,6 +135,3 @@ xmlchars/xmlns/1.0/ed3.js:
    * You should have received a copy of the GNU Affero General Public License
    * along with MarchingSquaresJS.  If not, see <http://www.gnu.org/licenses/>.
    */
-
-@noble/hashes/esm/utils.js:
-  /*! noble-hashes - MIT License (c) 2022 Paul Miller (paulmillr.com) */

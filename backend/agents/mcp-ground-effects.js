@@ -15,8 +15,8 @@ function surfacesOf(design) {
     const surfaces = (content.geometry?.buildings || []).map((building, index) => ({
         ref: `building:${design.cid}:${index}`, surfaceKind: 'building', geometry: building.geometry
     }));
-    const groundSurface = content.geometry?.groundSurface?.polygon;
-    if (groundSurface) surfaces.push({ ref: `design:${design.cid}`, surfaceKind: 'ground-surface', geometry: groundSurface });
+    const surroundings = content.geometry?.surroundings?.polygon;
+    if (surroundings) surfaces.push({ ref: `design:${design.cid}`, surfaceKind: 'surroundings', geometry: surroundings });
     const structure = content.structureProposal?.geometry;
     if (structure) surfaces.push({ ref: `design:${design.cid}`, surfaceKind: 'structure', geometry: structure });
     return surfaces.filter(surface => surface.geometry && /Polygon/.test(surface.geometry.type || ''));
@@ -36,8 +36,8 @@ export function describeRoadCuts(designs) {
             let effective = authored;
             const hits = [];
             for (const road of roads) {
-                const groundSurface = surface.surfaceKind === 'ground-surface';
-                if (!groundSurface && planOrder.compareFormationOrder(formations.get(design.cid), formations.get(road.cid)) >= 0) continue;
+                const surroundings = surface.surfaceKind === 'surroundings';
+                if (!surroundings && planOrder.compareFormationOrder(formations.get(design.cid), formations.get(road.cid)) >= 0) continue;
                 const roadFeature = feature(road.content.roadProposal.definition.polygon);
                 const overlap = arrangement.clipWith(turf, 'intersect', authored, roadFeature, { site: 'mcp-ground-effects.roadCut', takeId: road.cid });
                 if (!grid.isGround(turf, overlap)) continue;

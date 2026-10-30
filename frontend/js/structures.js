@@ -1423,7 +1423,7 @@
     // surround belongs to the building proposal and uses sidewalk slabs or park grass in its own
     // layer. See building-ground.js.
     let editingGroundProposalId = null;
-    function appliedBuildingGroundSurfaces() {
+    function appliedBuildingSurroundings() {
         const api = window.BuildingGround;
         const storage = window.proposalStorage;
         if (!api || !storage || typeof storage.getAllProposals !== 'function') return [];
@@ -1478,7 +1478,7 @@
     }
 
     // Authored furniture reuses park/square tools; paved ground keeps its sidewalk surface.
-    function drawBuildingGroundSurface(group, surface, pane) {
+    function drawBuildingSurroundings(group, surface, pane) {
         const feature = {
             type: 'Feature', geometry: surface.polygon,
             properties: surface.decorationDesign ? { decorationDesign: surface.decorationDesign } : {}
@@ -1495,7 +1495,7 @@
             else drawSquareDecorations(group, feature, pane, false);
         }
     }
-    window.drawBuildingGroundSurface = drawBuildingGroundSurface;
+    window.drawBuildingSurroundings = drawBuildingSurroundings;
 
     // The plots an applied layout left empty. By default the Leaflet view decides which plots are
     // asked for and the viewport-fetched building pool says what stands on them: right for the 2D
@@ -1548,7 +1548,7 @@
     function updateBuildingGroundLayer() {
         if (typeof map === 'undefined') return;
         const group = ensureBuildingGroundLayer();
-        const surfaces = appliedBuildingGroundSurfaces();
+        const surfaces = appliedBuildingSurroundings();
         const vacant = vacantLayoutPlots();
         let signature = '';
         // The fabric revision is in it because fences follow the parcel layout under the ground.
@@ -1565,7 +1565,7 @@
                 const paved = surface.treatment === 'paved';
                 const pane = paved ? SQUARES_PANE : PARKS_PANE;
                 // Ground is an overlay on top of parcels; keep parcel clicks working.
-                drawBuildingGroundSurface(group, { ...surface, polygon: surface.geometry }, pane);
+                drawBuildingSurroundings(group, { ...surface, polygon: surface.geometry }, pane);
                 const fences = buildingGroundFences(surface);
                 if (fences.length) L.geoJSON({ type: 'MultiLineString', coordinates: fences }, {
                     pane, interactive: false,

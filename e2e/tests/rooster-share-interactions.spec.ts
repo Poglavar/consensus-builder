@@ -15,22 +15,34 @@ test('the rooster touches each inspected parcel with its beak and highlights onl
   await page.locator('#proposals-button').click(); await (await openPlanActions(page)).getByRole('button', { name: 'Urban rooster', exact: true }).click();
   for(let index=1;index<=2;index++){await expect.poll(()=>page.evaluate(()=>(window as any).__pecks)).toBe(index);const sample=await page.evaluate(()=>{const w:any=window,active=document.querySelector('.grain-score-parcel.is-active')as SVGPathElement,beak=document.querySelector('[data-grain-role="beak"]')as SVGPathElement;const contact=new DOMPoint(28,79).matrixTransform(beak.getScreenCTM()!);return{active:document.querySelectorAll('.grain-score-parcel.is-active').length,inside:active.isPointInFill(contact.matrixTransform(active.getScreenCTM()!.inverse())),selectedProposal:w.currentlyHighlightedProposalId};});expect(sample).toEqual({active:1,inside:true,selectedProposal:null});await page.evaluate(()=>(window as any).__releasePeck());}
   await expect(page.locator('#grain-score-panel [data-grain-role="result"]')).toBeVisible({timeout:15000});
-  // The rooster scores the plan as applied on the map: an unapplied member is refused, not replayed.
+  // The rooster scores the plan as applied on the map: with a member unapplied it asks to apply the
+  // plan first, and Cancel leaves the map and the rooster as they were.
   await page.locator('#grain-score-panel').getByRole('button', { name: 'Close grain score', exact: true }).click();
   await page.evaluate(id => (window as any).ProposalManager.unapplyProposal(id), layoutId);
   await page.locator('#proposals-button').click(); await (await openPlanActions(page)).getByRole('button', { name: 'Urban rooster', exact: true }).click();
-  await expect(page.locator('#grain-score-panel')).toContainText('Apply every design of this saved plan before reading its land.');
+  const ask = page.locator('.cb-dialog--confirm');
+  await expect(ask).toContainText('The designs of this plan are not on your map.');
+  await ask.getByRole('button', { name: 'Cancel', exact: true }).click();
+  await expect(ask).toHaveCount(0);
+  await expect(page.locator('#grain-score-panel')).toBeHidden();
+  expect(await page.evaluate(id => (window as any).isApplied((window as any).proposalStorage.getProposal(id)), layoutId)).toBe(false);
 });
 
 test('composing a plan selects membership independently of map focus', async ({ mockApi: page }) => {
   await openCity(page); const first=await createSpace(page,'park');
   await page.evaluate(id=>(window as any).ProposalManager.unapplyProposal(id),first);
   await createSpace(page,'square');
-  const center=await page.evaluate(()=>{const c=(window as any).map.getCenter();return[c.lat,c.lng];});
+  const focused=await page.evaluate(()=>(window as any).currentlyHighlightedProposalId);
   await page.locator('#proposals-button').click(); await page.locator('#shareAppliedProposalsButton').click();
+  // Create plan ticks the designs in Lists → Designs. Ticked designs are previewed on the map, so the
+  // map may frame them (the old map-centre check is obsolete); the map's selected design stays put.
   await page.locator('#lists-actions').getByRole('button',{name:'Create plan',exact:true}).click();
-  const form=page.locator('.plan-composer');const choices=form.locator('input[type=checkbox]');
+  const choices=page.locator('#proposal-list-host input[type=checkbox]');
   await expect(choices).toHaveCount(2);await choices.first().check();await choices.nth(1).uncheck();
-  expect(await page.evaluate(()=>{const c=(window as any).map.getCenter();return[c.lat,c.lng];})).toEqual(center);
+  expect(await page.evaluate(()=>(window as any).currentlyHighlightedProposalId)).toBe(focused);
+  await expect(page.locator('#lists-actions .lists-selection-count')).toHaveText('1 selected');
+  await page.locator('#lists-actions [data-lists-continue]').click();
+  const form=page.locator('.plan-composer');
+  await expect(form.locator('.plan-dialog__members li')).toHaveCount(1);
   await expect(form.locator('.plan-dialog__count')).toHaveText('1 selected');
 });

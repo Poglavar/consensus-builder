@@ -27,7 +27,7 @@ export async function buildBrowserParcels({ outdir = resolve(root, 'frontend/ass
         let files;
         try { files = await readdir(directory); } catch (error) { if (error.code === 'ENOENT') continue; throw error; }
         for (const name of files) {
-            if (!/^(?:worker|chunk-[A-Z0-9]+|hmlr-browser-source-[A-Z0-9]+)\.js(?:\.LEGAL\.txt)?$/.test(name)) continue;
+            if (!/^(?:worker|chunk-[A-Z0-9]+|hmlr-browser-source-[A-Z0-9]+|city-model-url-source-[A-Z0-9]+)\.js(?:\.LEGAL\.txt)?$/.test(name)) continue;
             const path = resolve(directory, name);
             if (!outputs.has(path)) await unlink(path);
         }

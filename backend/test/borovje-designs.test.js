@@ -177,7 +177,7 @@ describe('officialPlan', () => {
 
         const objects = planObjects(plan);
         expect(objects).toHaveLength(22);
-        expect(objects.filter(object => object.layout).map(object => object.key)).toEqual(LAYOUT_KEYS);
+        expect(objects.filter(object => object.content.goal === 'parcel-layout').map(object => object.key)).toEqual(LAYOUT_KEYS);
         objects.forEach(object => expect(object.content.authoredAt).toBe(PLAN_DATE));
     });
 });
@@ -217,7 +217,7 @@ describe('the scripts\' command lines (dry runs and usage only)', () => {
         const result = run('build-and-upload.mjs', ['--dry-run']);
         expect(result.stderr).toBe('');
         expect(result.status).toBe(0);
-        expect(result.stdout).toContain('plan 1/1 upu-borovje "UPU Borovje – zona jug": 22 designs (3 parcel layout(s))');
+        expect(result.stdout).toContain('plan 1/1 upu-borovje "UPU Borovje – zona jug": 22 designs\n');
         for (const object of planObjects(await officialPlan())) expect(result.stdout).toContain(` ${object.content.goal} ${object.cid} `);
         expect(result.stdout).toContain(`upu-borovje: no ground file yet (${path.join('restatements', 'upu-borovje', 'ground', 'upu-borovje.json')})`);
         expect(fs.existsSync(path.join(HOME, '.config'))).toBe(false);
@@ -227,7 +227,7 @@ describe('the scripts\' command lines (dry runs and usage only)', () => {
         const result = run('build-urban-blocks.mjs', ['--dry-run']);
         expect(result.status).toBe(0);
         expect(result.stdout).toMatch(/urban blocks: 11 buildings, footprint \d+ m², floor area \d+ m²/);
-        expect(result.stdout).toContain('plan 1/1 borovje-urbani-blokovi "Borovje – urbani blokovi": 22 designs (3 parcel layout(s))');
+        expect(result.stdout).toContain('plan 1/1 borovje-urbani-blokovi "Borovje – urbani blokovi": 22 designs\n');
     }, 120_000);
 
     it('snap-to-cadastre.mjs and fit-streets.mjs print their usage and touch nothing without a step', () => {

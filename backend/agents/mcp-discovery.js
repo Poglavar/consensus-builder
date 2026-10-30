@@ -36,7 +36,7 @@ const steps = [
     'Work in a plan: it is your applied map. Every draft and design edit takes plan (omit it once to start one, or start one from existing designs with ugt_draft_plan) and returns the new plan revision; pass that draftRef to the next call. A named plan does not need agreement terms.',
     'Read each result’s placement and consequences and tell the person: designs it would take off the plan (refused until they agree, then retry with displace), roads it joins, ground roads cut.',
     'Inspect objects with ugt_inspect_plan, then edit explicit refs with expectedCid. Retain the prior draftRef for undo.',
-    'Portable ugt-plan-file/v1 JSON can be passed as plan to ugt_get_plan, ugt_inspect_plan and ugt_edit_plan. It embeds canonical plan/v1 and design/v1 content; importing conveys no publication or consent.',
+    'Portable ugt-plan-file/v1 JSON, or a CityJSON file the site downloaded (it carries that plan file), can be passed as plan to ugt_get_plan, ugt_inspect_plan and ugt_edit_plan. It embeds canonical plan/v1 and design/v1 content; importing conveys no publication or consent.',
     'Validate and compare the result, render a preview, and show its URL. An unavailable source is not evidence of empty land.',
     'When publication is authorized, publish the exact reviewed reference and expectedCid. Return the verified permanent URL.',
     'Use agreement tools only for allocations and decision rules. An agreement uses its named plan exactly and revises no design.'
@@ -65,7 +65,7 @@ export const MCP_FEATURES = Object.freeze([
         categories: { road: ['bus'], track: ['tram', 'elevated', 'underground'] },
         trackPlacement: { ground: 'tram', elevated: 'elevated', underground: 'underground' } },
     { feature: 'urban-rules', create: 'ugt_draft_urban_rule' },
-    { feature: 'imports', create: ['ugt_import_design', 'ugt_import_model'], formats: ['geojson', 'osm', 'opendrive', 'glb', 'gltf'],
+    { feature: 'imports', create: ['ugt_import_design', 'ugt_import_model'], formats: ['geojson', 'citygml', 'cityjson', 'osm', 'opendrive', 'glb', 'gltf'],
         modelKinds: ['building', 'park', 'square', 'lake', 'furniture'], geojsonCorridorProperties: ['name', 'width', 'highway', 'lanes', 'railway'],
         furnitureKinds: FurnitureModels.KINDS, furnitureLimits: FurnitureModels.LIMITS },
     { feature: 'review', validate: 'ugt_validate_plan', compare: 'ugt_compare', render: 'ugt_render_preview', imageViews: ['2d'] }

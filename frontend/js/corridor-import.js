@@ -131,10 +131,11 @@
 
     // Every format the chooser offers, in its order. The three with a `parse` are supported; the rest
     // are named so the choice is visible and asked for, and get an adapter when someone needs one.
+    // A format's `tool` is the optional-tools group holding its reader, loaded in the page before it parses.
     const FORMATS = [
-        { id: 'osm', label: 'OpenStreetMap', extensions: ['osm', 'json'], icon: 'fa-map', key: 'importOsm',
+        { id: 'osm', label: 'OpenStreetMap', extensions: ['osm', 'json'], icon: 'fa-map', key: 'importOsm', tool: 'roadImportOsm',
             parse: text => adapter('__corridorImportOsm', './corridor-import-osm.js').parseOsm(text) },
-        { id: 'opendrive', label: 'OpenDRIVE', extensions: ['xodr'], icon: 'fa-road', key: 'importOpenDrive',
+        { id: 'opendrive', label: 'OpenDRIVE', extensions: ['xodr'], icon: 'fa-road', key: 'importOpenDrive', tool: 'roadImportOpenDrive',
             parse: (text, options) => adapter('__corridorImportOpenDrive', './corridor-import-opendrive.js').parseOpenDrive(text, options) },
         { id: 'landxml', label: 'LandXML', extensions: ['xml'], icon: 'fa-file-import', key: 'importLandXml' },
         { id: 'streetmix', label: 'Streetmix', extensions: ['json'], icon: 'fa-street-view', key: 'importStreetmix' },
@@ -337,6 +338,7 @@
         const centre = map && typeof map.getCenter === 'function' ? map.getCenter() : null;
         let parsed;
         try {
+            if (chosen.tool) await global.ensureOptionalTool(chosen.tool);
             parsed = chosen.parse(text, { anchor: centre ? { lat: centre.lat, lng: centre.lng, headingDeg: 0 } : undefined });
         } catch (error) {
             status(t('panel.road.importFailed', 'Could not import {{file}}: {{reason}}', { file: file.name, reason: String(error && error.message || error) }));

@@ -123,11 +123,11 @@
                 'css/community-voting.css',
                 'css/base.css',
                 'css/layout.css',
-                'css/map.css?v=20261030-xray-solid',
+                'css/map.css?v=20261030-compare-close',
                 'css/panels.css?v=20261027-panel-buttons',
                 'css/modals.css?v=20261030-compare-agreements',
                 'css/parcel-sources.css',
-                'css/proposals.css?v=20261027-panel-buttons',
+                'css/proposals.css?v=20261030-list-actions',
                 'css/grain-score.css?v=20261027-panel-buttons',
                 'css/proposal-editor.css?v=20261027-experimental',
                 'css/structure-geometry-editor.css?v=20261029-enclosure-hidden',
@@ -160,10 +160,10 @@
                 'css/schelling-plan.css',
                 'css/road-in-parcel.css',
                 'css/proposal-details.css?v=20261028-parcel-tabs',
-                'css/plan-dialog.css?v=20261029-undated',
+                'css/plan-dialog.css?v=20261030-list-actions',
                 'css/shared-plan-session.css',
                 'css/buildout-clock.css?v=20261029-panes',
-                'css/lists.css',
+                'css/lists.css?v=20261030-list-tokens',
                 'css/proposal-approval.css?v=20261020-approval-rules',
                 'css/agreement.css?v=20261027-agreement-tabs',
                 'css/agreement-dialog.css?v=20261027-panel-buttons',
@@ -198,7 +198,8 @@
         window.writeVersionedLocalScripts([
             // bundle:start theme-motion
             'js/ui/theme.js',
-            'js/reduced-motion.js'
+            'js/reduced-motion.js',
+            'js/map-wheel-zoom.js?v=20261030-continuous'
             // bundle:end theme-motion
         ]);
     </script>
@@ -614,8 +615,6 @@
                 title="Bets" data-i18n-key="mapShell.bets" data-i18n-attr="title">
                 <i class="fas fa-coins" aria-hidden="true"></i>
                 <span class="map-shell-button-label" data-i18n-key="mapShell.bets">Bets</span>
-                <!-- "New" until the sheet has been opened once on this device (js/bets/bets-sheet.js) -->
-                <span id="bets-button-new" class="map-shell-badge map-shell-badge--text cb-shimmer" data-i18n-key="mapShell.betsNew">New</span>
             </button>
         </div>
 
@@ -1129,11 +1128,9 @@
                     data-i18n-key="sidebar.proposals.listButton" data-i18n-params='{"count":0}'>Designs List (0)</button>
                 </div>
                 <div id="designs-plans" role="tabpanel" aria-labelledby="shareAppliedProposalsButton" hidden>
-                    <div id="plan-file-actions"></div>
                     <div id="plan-list-host" class="lists-rows"></div>
                 </div>
                 <div id="designs-agreements" class="lists-rows" role="tabpanel" aria-labelledby="designs-agreements-tab" hidden>
-                    <div id="agreement-file-actions"></div>
                     <div id="agreement-list-host" class="lists-rows"></div>
                 </div>
             </div>
@@ -1143,6 +1140,7 @@
         <section id="bets-sheet" class="map-sheet map-sheet--dock" role="dialog" aria-labelledby="bets-sheet-title" hidden>
             <div class="map-sheet-header">
                 <h2 id="bets-sheet-title" class="map-sheet-title" data-i18n-key="mapShell.bets">Bets</h2>
+                <span class="cb-badge bets-experimental" data-i18n-key="proposalDrafts.approval.experimental">Experimental</span>
                 <button type="button" class="map-sheet-close close-circle-btn close-circle-btn--lg" data-sheet-close
                     aria-label="Close" title="Close" data-i18n-key="common.close" data-i18n-attr="aria-label,title">×</button>
             </div>
@@ -1878,13 +1876,13 @@
             'js/buildout-schedule.js',
             'js/buildout-simulation.js',
             'js/named-plans.js?v=20261029-buildout',
-            'js/plan-composition.js?v=20261029-compare-designs',
-            'js/plan-workspace.js',
+            'js/plan-composition.js?v=20261030-plan-preview-apply',
+            'js/plan-workspace.js?v=20261030-plan-rivals',
             'js/shared-plan-events.js',
             'js/shared-plan-motion.js',
             'js/shared-plan-session.js',
-            'js/plan-dialog.js?v=20261029-undated',
-            'js/lists-panel.js?v=20261030-compare-agreements',
+            'js/plan-dialog.js?v=20261030-plan-rivals',
+            'js/lists-panel.js?v=20261030-plan-rivals',
             'js/wipe-local-data.js',
             'js/world/world-entry-model.js?v=20261020-point-destinations',
             'data/boot-coverage.js',
@@ -2262,7 +2260,7 @@
             'js/plan-file.js?v=20261029-schedule',
             'js/design-file-exports.js',
             'js/agreement-file.js',
-            'js/plan-file-ui.js?v=20261029-schedule',
+            'js/plan-file-ui.js?v=20261030-list-actions',
             'js/community/voting.js',
             'js/community/voting-roster.js',
             'js/community/voting-ui.js',
@@ -2273,14 +2271,14 @@
             'js/agreement-persons.js?v=20261028-abstract-parties',
             'js/agreement-ground.js?v=20261028-abstract-parties',
             'js/agreement-store.js',
-            'js/agreement-dialog.js?v=20261028-abstract-parties',
-            'js/agreement-panel.js?v=20261030-compare-agreements',
+            'js/agreement-dialog.js?v=20261030-plan-preview-apply',
+            'js/agreement-panel.js?v=20261030-plan-preview-apply',
             'js/agreement-list.js?v=20261027-agreement-tabs',
-            'js/agreement-sync.js?v=20261028-abstract-parties',
+            'js/agreement-sync.js?v=20261030-plan-preview-apply',
             'js/suggested-layouts-2d.js?v=20261029-building-use',
             'js/proposals/replay-status.js',
             // bundle:end plans-agreements
-            'js/proposals/sharing-routes.js?v=20261030-source-lists',
+            'js/proposals/sharing-routes.js?v=20261030-plan-preview-apply',
             'js/proposals/grain-score-rules.js',
             'js/proposals/core.js?v=20261022-agreement-chain',
             'js/proposals/data.js?v=20261029-no-epoch',
@@ -2411,8 +2409,6 @@
             'js/corridor-junction.js',
             'js/corridor-junction-paint.js',
             'js/corridor-transition.js',
-            'js/corridor-import-opendrive.js',
-            'js/corridor-import-osm.js',
             'js/corridor-import.js',
             'js/corridor-footprint.js',
             'js/corridor-clearance.js',

@@ -550,7 +550,7 @@ test('a scheme with an authority: owner support by area, then the municipality a
 
   await openAgreement(page, agreement);
   await expect(card(page).locator('[data-approval-regime="es-ct-basic"]')).toContainText('Catalonia — basic compensation');
-  await expect(card(page).locator('.approval-card__rule')).toHaveText('Configured approval rules require more than 1/2 of the area and the municipality’s approval of the compensation project.');
+  await expect(card(page).locator('.approval-card__rule')).toHaveText('Configured approval rules require more than 1/2 of the area and the municipality’s approval of the compensation project. For area tests, a parcel or lease counts only after all its counted co-holders approve.');
   await expect(card(page).locator('[data-approval-meter="area"]')).toContainText('Needs more than 87.5');
   // Heads are not a test here: owners are shown, not counted.
   await expect(card(page).locator('[data-approval-meter="owners"]')).toContainText('Heard, not counted');

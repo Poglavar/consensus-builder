@@ -30,7 +30,7 @@ test('a narrow building takes a whole parcel, previews demolition, saves and reo
   await expect(page.locator(`[data-parcel-id="${first}"]`)).toHaveValue('footprint');
   await expect(page.locator('#single-ground-treatment')).toBeDisabled();
   await expect(page.locator('#single-ground-treatment-edit')).toBeDisabled();
-  expect(await page.evaluate(() => (window as any).getActiveProposalDesignDraft().editorPayload.context.groundSurface)).toBeNull();
+  expect(await page.evaluate(() => (window as any).getActiveProposalDesignDraft().editorPayload.context.surroundings)).toBeNull();
   await selectNativeOption(page.locator(`[data-parcel-id="${first}"]`),'whole');
   await expect(page.locator('[data-land-status]')).toContainText('1 buildings removed');
   await expect(page.locator('[data-land-accept]')).toHaveCount(0);

@@ -448,7 +448,7 @@ describe('building proposal adapters', () => {
         const source = {
             ...proposal,
             proposalId: `building-open-${typology}`,
-            geometry: { ...proposal.geometry, groundSurface: { treatment: 'green', polygon: feature.geometry } },
+            geometry: { ...proposal.geometry, surroundings: { treatment: 'green', polygon: feature.geometry } },
             goal: typology === 'single' ? 'single' : 'buildings',
             typologyType: typology,
             site: {
@@ -578,7 +578,7 @@ describe('building proposal adapters', () => {
     // The paved/green surround of a freeform proposal (building-ground.js) has to survive an edit
     // that never reopens the design editor, and must not follow the design into another typology.
     describe('building surroundings', () => {
-        const groundSurface = {
+        const surroundings = {
             treatment: 'paved',
             polygon: { type: 'Polygon', coordinates: [manualRing] }
         };
@@ -587,7 +587,7 @@ describe('building proposal adapters', () => {
             proposalId: 'building-single',
             goal: 'single',
             typologyType: 'single',
-            geometry: { buildings: [feature], groundSurface },
+            geometry: { buildings: [feature], surroundings },
             buildingProposal: {
                 ...proposal.buildingProposal,
                 typologyType: 'single',
@@ -598,8 +598,8 @@ describe('building proposal adapters', () => {
         it('round-trips the surround through an untouched draft', () => {
             const adapter = buildBuildingAdapter('single');
             const draft = draftFor(adapter, freeform);
-            expect(draft.editorPayload.context.groundSurface).toEqual(groundSurface);
-            expect(adapter.serializeProposal(draft).geometry.groundSurface).toEqual(groundSurface);
+            expect(draft.editorPayload.context.surroundings).toEqual(surroundings);
+            expect(adapter.serializeProposal(draft).geometry.surroundings).toEqual(surroundings);
         });
 
         it.each(['single', 'block', 'row', 'parcelBased'])('round-trips surroundings for %s designs', typology => {
@@ -607,21 +607,21 @@ describe('building proposal adapters', () => {
             const draft = draftFor(adapter, freeform);
             draft.editorPayload = { ...draft.editorPayload, typology };
             const saved = adapter.serializeProposal(draft);
-            expect(saved.geometry.groundSurface).toEqual(groundSurface);
-            expect(adapter.draftFromProposal(saved).editorPayload.context.groundSurface).toEqual(groundSurface);
+            expect(saved.geometry.surroundings).toEqual(surroundings);
+            expect(adapter.draftFromProposal(saved).editorPayload.context.surroundings).toEqual(surroundings);
         });
 
         it('leaves a proposal without a surround alone', () => {
             const adapter = buildBuildingAdapter('single');
             const draft = draftFor(adapter, { ...freeform, geometry: { buildings: [feature] } });
-            expect(draft.editorPayload.context.groundSurface).toBeNull();
-            expect(adapter.serializeProposal(draft).geometry.groundSurface).toBeUndefined();
+            expect(draft.editorPayload.context.surroundings).toBeNull();
+            expect(adapter.serializeProposal(draft).geometry.surroundings).toBeUndefined();
         });
 
         it('reports a changed treatment as a real change', () => {
             const adapter = buildBuildingAdapter('single');
             const draft = draftFor(adapter, freeform);
-            draft.editorPayload.context.groundSurface = { ...groundSurface, treatment: 'green' };
+            draft.editorPayload.context.surroundings = { ...surroundings, treatment: 'green' };
             const summary = adapter.summarizeChanges(freeform, draft);
             expect(summary.groundTreatment).toMatchObject({ before: 'paved', after: 'green', changed: true });
             expect(summary.unchanged).toBe(false);
@@ -648,7 +648,7 @@ describe('building proposal adapters', () => {
             const past = metres => {
                 const draft = draftFor(adapter, freeform);
                 draft.editorPayload.context.landTake = freeform.geometry.buildings[0];
-                draft.editorPayload.context.groundSurface = null;
+                draft.editorPayload.context.surroundings = null;
                 draft.fields.site = turf.transformTranslate(feature, metres, 90, { units: 'meters' }).geometry;
                 return () => adapter.serializeProposal(draft);
             };
@@ -662,11 +662,11 @@ describe('building proposal adapters', () => {
             draft.editorPayload.context.landTake = freeform.geometry.buildings[0];
             const site = turf.buffer(feature, 0.01, { units: 'kilometers' });
             draft.fields.site = site.geometry;
-            draft.editorPayload.context.groundSurface = null;
+            draft.editorPayload.context.surroundings = null;
             expect(adapter.serializeProposal(draft).geometry.landTake).toEqual(feature);
             const surface = turf.difference(site, feature);
             expect(surface).toBeTruthy();
-            draft.editorPayload.context.groundSurface = { treatment: 'green', polygon: surface.geometry };
+            draft.editorPayload.context.surroundings = { treatment: 'green', polygon: surface.geometry };
             expect(() => adapter.serializeProposal(draft)).toThrow(/land take/i);
         });
     });
@@ -1336,7 +1336,7 @@ describe('site-first drafts', () => {
                 source: 'server:live-cadastre', coverage: 'none', parcels: []
             } };
             draft.editorPayload.placement = { ...placement.placement, bindingStatus: 'bound' };
-            draft.editorPayload.context.groundSurface = { treatment: 'green', polygon: ground };
+            draft.editorPayload.context.surroundings = { treatment: 'green', polygon: ground };
             return { adapter, draft };
         };
         const feature = geometry => ({ type: 'Feature', properties: {}, geometry });
@@ -1408,7 +1408,7 @@ describe('site-first drafts', () => {
             context: {
                 ...draft.editorPayload.context,
                 groundBoundary: { type: 'Feature', properties: { role: 'ground-boundary' }, geometry: POLYGON },
-                groundSurface: { treatment: 'green', polygon: POLYGON },
+                surroundings: { treatment: 'green', polygon: POLYGON },
                 landTake: { type: 'Feature', properties: {}, geometry: POLYGON }
             }
         };
@@ -1529,7 +1529,7 @@ describe('site-first drafts', () => {
         ]] };
         draft.editorPayload.placement = { free: true, site: SITE, bindingStatus: 'bound' };
         draft.fields.binding = { source: 'server:live-cadastre', coverage: 'complete', parcels: [] };
-        draft.editorPayload.context.groundSurface = { treatment: 'green', polygon: outside };
+        draft.editorPayload.context.surroundings = { treatment: 'green', polygon: outside };
 
         expect(() => adapter.serializeProposal(draft)).toThrow(/surroundings must fit/i);
     });

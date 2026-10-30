@@ -74,20 +74,20 @@ for (const [tool, typology, root, prefix, done] of [
     const select = page.locator(`#${prefix}-ground-treatment`);
     await expect(select).toHaveValue('paved');
     await expect(select.locator('option')).toHaveCount(2);
-    await expect.poll(() => page.evaluate(() => (window as any).OnMapEditor.getPreview()?.groundSurface?.treatment)).toBe('paved');
-    const preview = await page.evaluate(() => (window as any).OnMapEditor.getPreview().groundSurface);
+    await expect.poll(() => page.evaluate(() => (window as any).OnMapEditor.getPreview()?.surroundings?.treatment)).toBe('paved');
+    const preview = await page.evaluate(() => (window as any).OnMapEditor.getPreview().surroundings);
     expect(preview.polygon.type).toMatch(/Polygon/);
     await finishEditor(page, editor, done);
     const id = await page.evaluate(key => (window as any).proposalStorage.getAllProposals()
       .find((p: any) => p.buildingProposal?.typologyType === key)?.proposalId, typology);
     expect(id).toBeTruthy();
-    expect((await proposalState(page, id)).geometry.groundSurface).toEqual(preview);
+    expect((await proposalState(page, id)).geometry.surroundings).toEqual(preview);
     const published = await page.evaluate(id => {
       const w = window as any;
       const saved = w.proposalStorage.getAllProposals().find((p: any) => p.proposalId === id);
       const content = w.DesignRecord.published(saved);
       const imported = w.DesignSync.localDesignFromRow({ cid: w.Cid.cidOfObject(content), content }, { apiBase: location.origin });
-      return { content: content.geometry.groundSurface, imported: imported.geometry.groundSurface };
+      return { content: content.geometry.surroundings, imported: imported.geometry.surroundings };
     }, id);
     expect(published.content).toEqual(preview);
     expect(published.imported).toEqual(preview);
@@ -99,7 +99,7 @@ for (const [tool, typology, root, prefix, done] of [
     await expect(select).toHaveValue('paved');
     await selectNativeOption(select, 'green');
     await finishEditor(page, editor, done);
-    expect((await proposalState(page, id)).geometry.groundSurface.treatment).toBe('green');
+    expect((await proposalState(page, id)).geometry.surroundings.treatment).toBe('green');
 
     await showProposal(page, id);
     await page.locator('#proposal-details-footer .btn-edit-geometry').click();
@@ -148,7 +148,7 @@ for (const [tool, typology, root, prefix, done, treatment] of [
     await expect(page.locator(`#${prefix}-ground-treatment`)).toHaveValue('paved');
     await selectNativeOption(page.locator(`#${prefix}-ground-treatment`), treatment);
     await expect(edit).toBeEnabled();
-    const surfaceForPoints = await page.evaluate(() => (window as any).OnMapEditor.getPreview().groundSurface);
+    const surfaceForPoints = await page.evaluate(() => (window as any).OnMapEditor.getPreview().surroundings);
     await edit.click();
     const child = page.locator('#structure-geometry-editor');
     await expect(child.locator('.on-map-editor__panel')).toBeVisible();
@@ -165,7 +165,7 @@ for (const [tool, typology, root, prefix, done, treatment] of [
     await expect(child).toHaveCount(0);
     await expect(parent.locator('.on-map-editor__panel')).toBeVisible();
     await expect(page.locator('#mode-3d-toggle')).toBeEnabled();
-    expect(await page.evaluate(() => (window as any).OnMapEditor.getPreview().groundSurface.decorationDesign || null)).toBeNull();
+    expect(await page.evaluate(() => (window as any).OnMapEditor.getPreview().surroundings.decorationDesign || null)).toBeNull();
 
     await edit.click();
     await expect(page.locator('.structure-geometry-icon.is-tree')).toHaveCount(0);
@@ -177,7 +177,7 @@ for (const [tool, typology, root, prefix, done, treatment] of [
     await child.locator('[data-action="save"]').click();
     await expect(child).toHaveCount(0);
     await expect(parent.locator('.on-map-editor__panel')).toBeVisible();
-    const surface = await page.evaluate(() => (window as any).OnMapEditor.getPreview().groundSurface);
+    const surface = await page.evaluate(() => (window as any).OnMapEditor.getPreview().surroundings);
     await expect(page.locator('#mode-3d-toggle')).toBeEnabled();
     expect(surface.decorationDesign.trees).toHaveLength(1);
     expect(surface.decorationDesign.trees[0].pit ?? null).toBe(treatment === 'paved' ? 'grille' : null);
@@ -185,13 +185,13 @@ for (const [tool, typology, root, prefix, done, treatment] of [
     expect(await page.evaluate(() => (window as any).proposalStorage.getAllProposals().length)).toBe(0);
     await finishEditor(page, parent, done);
     const saved = await page.evaluate(() => (window as any).proposalStorage.getAllProposals().slice(-1)[0]);
-    expect(saved.geometry.groundSurface).toEqual(surface);
+    expect(saved.geometry.surroundings).toEqual(surface);
     const imported = await page.evaluate(record => {
       const w = window as any;
       const content = JSON.parse(JSON.stringify(w.DesignRecord.published(record)));
       return w.DesignSync.localDesignFromRow({ content, cid: w.Cid.cidOfObject(content) }, { apiBase: location.origin });
     }, saved);
-    expect(imported.geometry.groundSurface).toEqual(surface);
+    expect(imported.geometry.surroundings).toEqual(surface);
     expect(imported.structureProposal).toBeUndefined();
     await showProposal(page, saved.proposalId);
     await page.locator('#proposal-details-footer .btn-edit-geometry').click();
@@ -204,6 +204,6 @@ for (const [tool, typology, root, prefix, done, treatment] of [
     await cancelEditor(child);
     // Cancelling the entire building edit leaves the saved layout unchanged.
     await cancelEditor(parent);
-    expect((await proposalState(page, saved.proposalId)).geometry.groundSurface).toEqual(surface);
+    expect((await proposalState(page, saved.proposalId)).geometry.surroundings).toEqual(surface);
   });
 }

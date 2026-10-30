@@ -1,7 +1,7 @@
 <!-- Plan for CityGML and CityJSON beside our own formats: imports wherever they are used to exchange what we import, exports as an extra option, and how our records map onto CityGML and LADM. -->
 # CityGML and CityJSON (plan)
 
-Status: city-model building sources are built for Vienna (`wien-lod2`, CityGML) and the Netherlands (`nl-3dbag`, CityJSON); the other imports and the exports are not started.
+Status: built: city-model building sources for Vienna (`wien-lod2`, CityGML), the Netherlands (`nl-3dbag`, CityJSON), North Rhine-Westphalia (`nrw-lod2`), Berlin (`berlin-lod2`), Hamburg (`hamburg-lod2`), Baden-Württemberg (`bw-lod2`) and Saxony (`sachsen-lod2`), all CityGML, and New York (`nyc-3d`, CityJSON tiles cut from the city's CityGML), the building upload and the building editors' footprint import, both MCP imports, CityJSON plan and design export and import, and a person's CityJSON or CityGML file as a building source. Not started: Hesse and Bremen.
 
 CityGML (OGC) is the open standard for 3D city models: buildings and their storeys, rooms and
 units, roads and rail, vegetation, water, land use, terrain and city furniture, each with
@@ -26,38 +26,71 @@ loosely in INSPIRE planned land use) and agreements (no standard).
 
 | Our import or export | CityGML / CityJSON | Why |
 |---|---|---|
-| City building sources (`backend/buildings/`) | Import: CityGML sheets (built: Vienna), CityJSON API pages (built: 3D BAG); German state LoD2 (CityGML), NYC's 3D model (CityGML) | How cities publish their 3D buildings. |
-| A person's building source URL (Data sources) | Import: a CityJSON / CityJSONSeq or CityGML URL, beside ArcGIS, WFS, OGC API and GeoJSON | The same files, chosen by the person. |
+| City building sources (`backend/buildings/`) | Import: CityGML sheets (built: Vienna, North Rhine-Westphalia, Berlin, Hamburg, Baden-Württemberg, Saxony), CityJSON API pages (built: 3D BAG), a city's single CityGML file cut into our CityJSON tiles (built: New York); Hesse (a WFS) and Bremen (one zip of 2 km tiles) not yet | How cities publish their 3D buildings. |
+| A person's building source URL (Data sources) | Import: a CityJSON or CityGML file URL (built), beside ArcGIS, WFS, OGC API and GeoJSON; CityJSONSeq not yet | The same files, chosen by the person. |
 | Building model upload (`building-upload.js`, MCP `ugt_import_model`) | Import: a CityGML or CityJSON building beside GLB/glTF, with its storeys and units when present | GIS tools and city portals hand out single buildings this way. |
 | Footprint import in the building editors (Freeform, Row, Block) | Import: CityGML / CityJSON buildings as footprints with heights | Same files, when only the outline is wanted. |
 | Plan file import and download | Import and export: CityJSON beside `ugt-plan-file/v1` | Opens in QGIS, FME, ninja and cjio. |
 | Design download | Export: CityJSON for building, park, square, lake and road designs | Same, one design at a time. |
-| Roads (OSM document, OpenDRIVE) | Export only: road surfaces in the plan or design CityJSON | Roads are exchanged as OSM and OpenDRIVE, rarely as CityGML. |
+| Roads (OSM document, OpenDRIVE) | Export only: road surfaces in the plan or design CityJSON | Roads are exchanged as OSM and OpenDRIVE, rarely as CityGML: Road → Import reads OSM (XML and JSON) and OpenDRIVE, a road design downloads as OSM JSON and OSM XML. |
 | Parcels, parcel layouts, ownership, agreements | None | Parcels travel as cadastral GML/GeoJSON (LADM concepts), not CityGML; agreements have no standard. |
 | Parks, land use, terrain, trees as imports | None for now | Little exchanged as CityGML; revisit when a source needs it. |
 
-Order (3D BAG done): building upload and footprint import from one shared
-reader, then the CityJSON plan and design export, then CityJSON plan import, then the person's URL
-sources and the remaining city sources. CityGML XML and CityJSON share one reader output (the
-`citygml.js` building shape), so each import point reads both.
+Order: other German states next; the 3D BAG, North Rhine-Westphalia and New York sources, building upload, footprint import, CityJSON export and import and the person's file
+sources are done. CityGML XML and
+CityJSON share one reader (`frontend/js/city-model-reader.js`), so each import point reads both.
+
+## Building upload and footprint import
+
+One reader, `frontend/js/city-model-reader.js`, loaded by the page and required by the backend
+(`backend/buildings/citygml.js` feeds it CityGML through saxes, the browser through DOMParser):
+
+- **Footprints:** the Freeform, Row and Block editors' footprint import (Upload footprints, Import
+  Freeform footprints) takes GeoJSON, CityGML or CityJSON. A city model's buildings become one
+  footprint each (their ground surfaces joined, else the outline of all faces from above) with
+  height and storeys, placed by the file's coordinate system. MCP `ugt_import_design` takes
+  `format: citygml | cityjson` through the same reader.
+- **Model:** Upload model (`building-upload.js`) takes one CityGML or CityJSON building beside
+  glTF. `buildingGlb` writes it as a GLB (roof, wall and other faces as materials, x east, −z north,
+  centred on its box) and returns where it stands: its centre and the grid's convergence as the
+  rotation. The GLB then takes the glTF path (preview, outline, upload), and the building stands
+  where the file puts it instead of in the selected block. MCP `ugt_import_model` converts the same
+  way and needs no `center` for such a file (`asset.convertedFrom`).
+- **Coordinate systems:** the file states its system (`srsName`, `metadata.referenceSystem`; compound
+  names read their horizontal part). The reader knows Austria GK (31254–31256), RD New (28992,
+  7415), HTRS96/TM (3765), Helsinki GK25 (3879), Swiss LV95 (2056), Lambert 93 (2154), Belgian
+  Lambert 72 (31370), New York State Plane in feet (2263) and every WGS84 and ETRS89 UTM zone; any
+  other is named in the error, and a file stating none says so.
+- Still open: storeys, rooms and units of a CityGML 3.0 or CityJSON 2.0 building as its floor model.
 
 ## 1. CityJSON plan and design files
 
-Export a Plan, or one Design, as one CityJSON 2.0 file, as an option beside `ugt-plan-file/v1`
-([portable plan files](portable-plan-files.md)); import reads it back without loss.
+Download plan and Download design offer **Download CityJSON** beside the editable plan
+(`ugt-plan-file/v1`, [portable plan files](portable-plan-files.md)) and GeoJSON.
+`frontend/js/city-json-export.js` builds a CityJSON 2.0 document from the same plan file the
+editable download makes:
 
-- The physical content of each Design becomes standard city objects (mapping below), so QGIS, FME,
-  ninja and cjio open the file as it is.
-- A CityJSON Extension (`+ugt…` types and attributes, with its schema published beside the
-  [plan-file schema](../frontend/schemas/)) carries what the standard lacks: the Plan record and
-  its CID, each Design record and CID with its kind, the city objects it owns, the parcel layouts
-  and the rule designs. Import rebuilds the Design records from the extension and checks their
-  CIDs, as `PlanFileUI.commitImport` does today.
-- CityJSON's core has no versioning, so the before/after relationship stays in our records: a
-  Design names what it replaces, and the file holds the proposed state.
-- Agreements stay in our own JSON. Plan files carry no agreements today.
-- `metadata.referenceSystem` is the Plan's projected CRS, or a local transverse Mercator at the
-  Plan's anchor ([projections](projections.md)) when the city has no standard one.
+- Buildings are LoD1 `Building`s (a MultiSurface of ground, wall and roof faces, oriented outward)
+  with `measuredHeight`, `storeysAboveGround` and `function` (the building use); a building with an
+  uploaded model keeps its URL as `ugtModelUrl`. Roads are `Road` surfaces (traffic area), parks
+  `PlantCover`, squares `TransportSquare`, lakes `WaterBody`; green surroundings are `PlantCover`,
+  paved ones `LandUse`, both with `function`.
+- Each Design is a `CityObjectGroup` named by its CID, with its title and goal, whose children are
+  its objects; designs without physical objects (rules, parcel layouts) are empty groups. The root
+  group `ugt-plan` holds the whole plan file in its attributes (`ugtPlanFile`), so nothing is lost
+  and no extension schema is needed; QGIS, FME, ninja and cjio read the city objects as they are.
+- Coordinates are the WGS84 UTM zone of the plan, integer millimetres with a `transform`; heights
+  are above the ground each design stands on (no vertical datum).
+- CityJSON's core has no versioning: the file holds the proposed state, and the before/after
+  relationship stays in our records. Agreements stay in our own JSON.
+- Import: Lists → Import (Plans and Designs) reads a CityJSON file we wrote back as the plan file it
+  carries (`CityJsonExport.readBack`), validated as any plan file. When its city objects are no
+  longer what that plan exports to (edited in another tool), the review says that the carried plan
+  is what is imported. A city model without our plan is refused there with a pointer to the
+  building editors' Upload footprints, which reads its buildings into a design. MCP
+  `ugt_get_plan`, `ugt_inspect_plan` and `ugt_edit_plan` take the same CityJSON as `plan` (with the
+  edited warning); `ugt_import_design` reads a foreign one's buildings.
+- Still open: CityGML 3.0 XML export.
 
 ## 2. CityGML and CityJSON as a building source
 
@@ -86,12 +119,67 @@ A building source for cities that publish their city model as CityGML sheets:
   `wien-lod2` (`backend/buildings/wien-lod2.js`) reads Vienna's generalised roof model (LOD2.1):
   500 m sheets in EPSG:31256, heights above Wiener Null (+156.68 m to the Adriatic datum),
   CC BY 4.0. Vienna lists it before OpenStreetMap.
+  `nrw-lod2` (`backend/buildings/nrw-lod2.js`) reads North Rhine-Westphalia's 3D-Gebäudemodell LoD2:
+  plain 1 km GML tiles from opengeodata.nrw.de in EPSG:25832, heights above sea level (DHHN2016, no
+  offset), dl-de/zero-2-0. Tiles are large (central Cologne: 56 MB, 1,594 buildings, about 9 s to
+  download and 0.8 s to parse), so it keeps 6 parsed tiles (`sheetCache`; the default is 64). The
+  23 cities in the state list it before OpenStreetMap.
+  The other German states publish the same model (CityGML, heights above sea level in DHHN2016, no
+  offset) packaged differently; each source lists before OpenStreetMap in its state's cities:
+  - `berlin-lod2` (`backend/buildings/berlin-lod2.js`): one zip per 1 km tile
+    (`gdi.berlin.de/data/a_lod2/atom/LoD2_{E}_{N}.zip`, EPSG:25833), dl-de/zero-2-0. Alexanderplatz
+    is a 3.5 MB zip of 28 MB, 732 buildings.
+  - `hamburg-lod2` (`backend/buildings/hamburg-lod2.js`): one zip a year of 783 1 km tiles (2026:
+    660 MB, EPSG:25832), dl-de/by-2-0. `backend/buildings/remote-zip.js` reads its directory once
+    and then each tile by HTTP range (about 2 MB a tile, 1.5 s); `HAMBURG_LOD2_ZIP_URL` points it
+    at a later release.
+  - `bw-lod2` (`backend/buildings/bw-lod2.js`): 2 km zips of four 1 km tiles
+    (`opengeodata.lgl-bw.de/data/lod2/LoD2_32_{E}_{N}_2_bw.zip`, E odd, N even, EPSG:25832),
+    dl-de/by-2-0. A sheet is one 1 km tile, so only that tile is parsed; the last four zips (about
+    18 MB each in Stuttgart) are kept for their other tiles.
+  - `sachsen-lod2` (`backend/buildings/sachsen-lod2.js`): one zip per 2 km tile on GeoSN's public
+    cloud share (EPSG:25833), dl-de/by-2-0. The share id is read from the download portal's app
+    config (`geoviewer.sachsen.de/.../produktdownload/app.json`), since the ids in GeoSN's own tile
+    index no longer answer. Central Dresden is a 9 MB zip of 70 MB, 1,523 buildings.
+  - Not yet: Hesse publishes LoD2 as an INSPIRE WFS (`bu-core3d:Building`, about 20 kB a building,
+    no paging), which needs its own reader; Bremen publishes one 403 MB zip of 2 km tiles of up to
+    160 MB each, too large to parse per request, so it would need tiles cut once as for New York.
+  `nyc-3d` (`backend/buildings/nyc-3d.js`) reads New York's 3D Building Model (NYC OTI, LoD2, 2014
+  survey). The city publishes it only as one 916 MB zip of 20 delivery-area CityGML files (13.8 GB,
+  EPSG:2263 feet, NAVD88 heights), so `backend/buildings/build-nyc-3d-tiles.mjs` streams each file
+  through saxes once (`createCityGmlStream`) and cuts it into 1,000 ft tiles of CityJSON 2.0
+  (`city-model-tiles.js`; a building on a tile edge is in each tile it touches, readers join by id).
+  The 2014 release is 8,108 tiles, 334 MB gzipped (about 240 bytes per building), built in about
+  6 minutes on the laptop and stored on R2 under `uk-cadastre/nyc-3d/2014-v1/` (served at
+  `uk-cadastre.urbangametheory.xyz`, `Content-Encoding: gzip`, with a `manifest.json`).
+  `NYC_3D_TILES_URL` points the source at another release. New York lists it before
+  `nyc-arcgis`, which answers any cell it fails or leaves empty; buildings newer than 2014 are not
+  in it.
+
+  ```
+  node backend/buildings/build-nyc-3d-tiles.mjs --zip DA_WISE_GML.zip --out tmp/nyc-3d --run
+  rclone copy tmp/nyc-3d/tiles r2-uk-cadastre:uk-cadastre/nyc-3d/<release>/tiles --transfers 64 \
+      --header-upload "Content-Encoding: gzip" --header-upload "Content-Type: application/json" \
+      --header-upload "Cache-Control: public, max-age=31536000, immutable"
+  rclone copy tmp/nyc-3d/manifest.json r2-uk-cadastre:uk-cadastre/nyc-3d/<release>
+  ```
 - A first request costs 2–5 s per sheet (download and parse); a LOD2 building is about 25 kB of
   faces, so a 120 m radius in the old town is about 100 buildings and 2.5 MB.
-- Still open: the `function` / `usage` codes mapped to our [building uses](vocabulary.md#building-use);
+- A person's file: Data sources → Building sources → Add a source takes the HTTPS URL of a CityJSON
+  or CityGML file (`.json`, `.gml`, `.xml`); discovery (`GET /building-sources/discover`) reads it
+  whole and answers a `city-model` source (`backend/buildings/city-model-url-source.js`) carrying the
+  file's format, its buildings' WGS84 extent and the SHA-256 of its bytes. The browser's adapter
+  worker reads the file itself (it must allow other sites to read it, CORS), once per page, and
+  refuses it when its bytes changed; the pin is a hash because a browser cannot read an ETag the
+  host does not expose. Its buildings are the editors' footprints with their height and storeys, as
+  LoD1 bodies; files are limited to 8 MiB and 5,000 buildings, like GeoJSON snapshots. Where the
+  file has no buildings the next source in the list stands in. The check accepts a file whose
+  buildings lie outside the view being checked and says how many the file holds and where. The
+  reader loads in the worker only for such a source.
+- Still open: a person's file drawn as its LoD2 surfaces (heights need the file's vertical datum),
+  CityJSONSeq and zipped files; the `function` / `usage` codes mapped to our [building uses](vocabulary.md#building-use);
   storeys and units, where a source has them, as the building's floor model
-  (`backend/buildings/floor-models.js`); CityJSON sources (3D BAG, tiled) and one German state's LoD2
-  buildings; storing parsed sheets instead of reading them live when a source is slow or large.
+  (`backend/buildings/floor-models.js`); Hesse's and Bremen's LoD2 buildings; storing parsed sheets instead of reading them live when a source is slow or large.
 
 ## How our records map
 
@@ -123,7 +211,8 @@ do not adopt an encoding until a source or a consumer needs one.
 
 GeoJSON features and Three.js stay the working model. CityJSON is converted at the file and
 source boundary, by one pure module (no DOM, no Three.js) that node tests drive in both
-directions.
+directions. In the page the reader and the exporter load on first use (`optional-tools-loader.js`
+groups `cityModel` and `cityJson`), not with the page.
 
 ## Open questions
 

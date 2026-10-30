@@ -15,6 +15,15 @@ const { createFootprintProvider } = require('../../frontend/js/footprint-provide
 const MAX_SHEETS = 16;
 const SHEET_CACHE = 64;
 
+// The sheets "x_y" (lower-left corner in km) of a grid of `km`-kilometre sheets under a box in metres.
+export function kmSheets([minX, minY, maxX, maxY], km = 1) {
+    const ids = [];
+    for (let x = Math.floor(minX / 1000 / km) * km; x <= maxX / 1000; x += km) {
+        for (let y = Math.floor(minY / 1000 / km) * km; y <= maxY / 1000; y += km) ids.push(`${x}_${y}`);
+    }
+    return ids;
+}
+
 // The buildings of one zipped CityGML sheet at url, or [] when it is not published (404).
 export async function readZippedCityGml(url, fetchImpl, label) {
     const response = await fetchImpl(url);
@@ -27,7 +36,8 @@ export async function readZippedCityGml(url, fetchImpl, label) {
 }
 
 // config: { id, crs (proj4 definition), heightOffsetM, sheetsFor([minX, minY, maxX, maxY]) → [sheet ids],
-// readSheet(sheet, { fetchImpl }) → parsed buildings (citygml.js shape), attribution }. fetchImpl and
+// readSheet(sheet, { fetchImpl }) → parsed buildings (citygml.js shape), attribution, and optionally
+// sheetCache, how many parsed sheets to keep (default 64), and zToMetres for heights in feet }. fetchImpl and
 // log are injectable for tests.
 export function createCityGmlSource(config, { fetchImpl = fetch, log = console } = {}) {
     const toLngLat = proj4(config.crs, 'EPSG:4326');
@@ -43,13 +53,13 @@ export function createCityGmlSource(config, { fetchImpl = fetch, log = console }
             const started = Date.now();
             const records = (await config.readSheet(sheet, { fetchImpl }))
                 .map(building => buildingRecord(building, (x, y) => toLngLat.forward([x, y]),
-                    { heightOffsetM: config.heightOffsetM || 0, idPrefix: `${config.id}:` }))
+                    { heightOffsetM: config.heightOffsetM || 0, idPrefix: `${config.id}:`, zToMetres: config.zToMetres || 1 }))
                 .filter(Boolean);
             log.log(`[${new Date().toISOString()}] [${config.id}] sheet ${sheet}: ${records.length} buildings in ${Date.now() - started} ms`);
             return records;
         })();
         sheets.set(sheet, entry);
-        if (sheets.size > SHEET_CACHE) sheets.delete(sheets.keys().next().value);
+        if (sheets.size > (config.sheetCache || SHEET_CACHE)) sheets.delete(sheets.keys().next().value);
         entry.catch(() => sheets.delete(sheet));
         return entry;
     }

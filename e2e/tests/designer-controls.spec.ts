@@ -355,7 +355,7 @@ test.describe('Designer controls persist their edits @features', () => {
     const context = await page.evaluate(() => (window as any).pendingBuildingProposalContext);
     expect(context.parameters.height).toBe(oldHeight + 1);
     expect(context.buildings).toHaveLength(1);
-    expect(context.groundSurface.treatment).toBe('green');
+    expect(context.surroundings.treatment).toBe('green');
     expect(context.landTake?.geometry).toBeTruthy();
     expect(context.landTake.geometry.coordinates).toEqual([[[15.9819,45.8],[15.9825,45.8],[15.9825,45.8005],[15.9819,45.8005],[15.9819,45.8]]]);
     expect(context.buildings.every((feature: any) => feature.geometry?.type === 'Polygon')).toBe(true);

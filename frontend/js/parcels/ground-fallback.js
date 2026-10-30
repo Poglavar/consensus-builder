@@ -488,7 +488,7 @@
         const center = global.map && typeof global.map.getCenter === 'function' ? global.map.getCenter() : null;
         const zoom = global.map && typeof global.map.getZoom === 'function' ? global.map.getZoom() : null;
         if (center && global.WorldEntryModel) {
-            url.searchParams.set('at', global.WorldEntryModel.formatAt({ lat: center.lat, lon: center.lng, zoom: Math.round(zoom) }));
+            url.searchParams.set('at', global.WorldEntryModel.formatAt({ lat: center.lat, lon: center.lng, zoom }));
         }
         global.location.replace(url.href);
     }

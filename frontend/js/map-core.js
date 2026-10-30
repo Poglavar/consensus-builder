@@ -91,6 +91,10 @@ function resolveInitialZoom() {
 
 // Initialize the map with city-specific defaults
 const map = L.map('map', {
+    // Zoom is continuous: wheel, trackpad and pinch move by what the input moved
+    // (js/map-wheel-zoom.js), not rounded to a step. Keys and double-click still move whole
+    // levels (zoomDelta 1).
+    zoomSnap: 0,
     zoomControl: false,
     attributionControl: false // MapCredits keeps provider credits compact; details live in Information.
 });

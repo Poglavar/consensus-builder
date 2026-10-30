@@ -91,7 +91,7 @@
         if (typeof options.onClose === 'function') {
             closeEl = doc.createElement('button');
             closeEl.type = 'button';
-            closeEl.className = 'map-compare__close';
+            closeEl.className = 'close-circle-btn map-compare__close';
             closeEl.setAttribute('aria-label', options.closeLabel || 'Close comparison');
             closeEl.title = options.closeLabel || 'Close comparison';
             closeEl.innerHTML = '<i class="fa-solid fa-xmark" aria-hidden="true"></i>';

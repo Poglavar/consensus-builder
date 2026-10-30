@@ -47,14 +47,20 @@
         if (!numbers.every(Number.isFinite)) return null;
         const [lat, lon, rawZoom] = numbers;
         if (Math.abs(lat) > MAX_LAT || Math.abs(lon) > 180) return null;
-        const zoom = parts.length === 3 ? Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, Math.round(rawZoom))) : null;
+        const zoom = parts.length === 3 ? Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, roundZoom(rawZoom))) : null;
         return { lat, lon, zoom };
     }
 
     function formatAt(view) {
         if (!view || !finite(view.lat) || !finite(view.lon)) throw new Error('formatAt: lat/lon must be finite numbers');
         const head = `${view.lat.toFixed(5)},${view.lon.toFixed(5)}`;
-        return finite(view.zoom) ? `${head},${Math.round(view.zoom)}` : head;
+        return finite(view.zoom) ? `${head},${roundZoom(view.zoom)}` : head;
+    }
+
+    // The map zooms continuously (js/map-core.js zoomSnap 0), so the address keeps two decimals
+    // (under 1% of scale): `17.43`, and `17` for a whole level.
+    function roundZoom(zoom) {
+        return Math.round(zoom * 100) / 100;
     }
 
     // The address bar follows the map (js/map-core.js, on every move): the current address with the

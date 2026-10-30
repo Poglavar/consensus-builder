@@ -339,7 +339,7 @@
             ruleMassing: clone(proposal?.geometry?.ruleMassing || null),
             ineligibleParcels: clone(bp.ineligibleParcels || []),
             // Freeform proposals may pave or green the parcel area around their buildings.
-            groundSurface: clone(proposal?.geometry?.groundSurface || null),
+            surroundings: clone(proposal?.geometry?.surroundings || null),
             // Keep the authored host outline separate from the effective ground surface.
             groundBoundary: clone(proposal?.geometry?.groundBoundary || null),
             // §15a: footprint parcel (default) vs taking the whole host parcels.
@@ -1173,7 +1173,7 @@
                         initialBuildings: features,
                         site: placementSite || authoredSite,
                         placement: relocated ? clone(context.placement) : null,
-                        initialGroundTreatment: context.groundSurface?.treatment || null, initialDecorationDesign: context.groundSurface?.decorationDesign || null,
+                        initialGroundTreatment: context.surroundings?.treatment || null, initialDecorationDesign: context.surroundings?.decorationDesign || null,
                         initialLandTake: clone(context.landTake || null),
                         initialGroundBoundary: clone(context.groundBoundary || null)
                     });
@@ -1184,7 +1184,7 @@
                         blockName: context.blockName,
                         parcelIds: selection.ids,
                         initialParameters: context.parameters || null,
-                        initialGroundTreatment: context.groundSurface?.treatment || null, initialDecorationDesign: context.groundSurface?.decorationDesign || null,
+                        initialGroundTreatment: context.surroundings?.treatment || null, initialDecorationDesign: context.surroundings?.decorationDesign || null,
                         site: authoredSite,
                         // The saved buildings are per-parcel pieces; the editor reopens on the whole terrace.
                         initialFeature: context.ruleMassing || features[0] || null
@@ -1192,14 +1192,14 @@
                     return opened !== false;
                 }
                 if (typology === 'parcelBased' && typeof global.openParcelBasedForParcels === 'function') {
-                    const opened = await global.openParcelBasedForParcels({ blockName: context.blockName, parcelIds: selection.ids, site: authoredSite, initialParameters: context.parameters || null, initialGroundTreatment: context.groundSurface?.treatment || null, initialDecorationDesign: context.groundSurface?.decorationDesign || null });
+                    const opened = await global.openParcelBasedForParcels({ blockName: context.blockName, parcelIds: selection.ids, site: authoredSite, initialParameters: context.parameters || null, initialGroundTreatment: context.surroundings?.treatment || null, initialDecorationDesign: context.surroundings?.decorationDesign || null });
                     return opened !== false;
                 }
                 if (typeof global.openUrbanRuleForParcels === 'function') {
                     const seed = { ...(typeof global.buildBlockifySeed === 'function'
                         ? (global.buildBlockifySeed(context) || {})
                         : (context.parameters || {})) };
-                    const opened = await global.openUrbanRuleForParcels({ blockName: context.blockName, parcelIds: selection.ids, site: authoredSite, initialState: seed || null, initialGroundTreatment: context.groundSurface?.treatment || null, initialDecorationDesign: context.groundSurface?.decorationDesign || null });
+                    const opened = await global.openUrbanRuleForParcels({ blockName: context.blockName, parcelIds: selection.ids, site: authoredSite, initialState: seed || null, initialGroundTreatment: context.surroundings?.treatment || null, initialDecorationDesign: context.surroundings?.decorationDesign || null });
                     return opened !== false;
                 }
                 return false;
@@ -1218,7 +1218,7 @@
                         throw new Error(placementMessage('buildingOutsideSite', 'The moved building geometry must fit entirely inside its new site.'));
                     }
                     context.ineligibleParcels = [];
-                    if (context.groundSurface?.polygon && !geometryWithinSite(context.groundSurface.polygon, site)) {
+                    if (context.surroundings?.polygon && !geometryWithinSite(context.surroundings.polygon, site)) {
                         throw new Error(placementMessage('surroundingsOutsideSite', 'The moved surroundings must fit entirely inside the new site. Move the whole design or adjust its ground boundary before saving.'));
                     }
                 }
@@ -1232,16 +1232,16 @@
                 if (ruleMassing) output.geometry.ruleMassing = ruleMassing;
                 else delete output.geometry.ruleMassing;
                 // Every building typology owns its authored surroundings within this same design.
-                const groundSurface = clone(context.groundSurface || null);
-                if (groundSurface) output.geometry.groundSurface = groundSurface;
-                else delete output.geometry.groundSurface;
+                const surroundings = clone(context.surroundings || null);
+                if (surroundings) output.geometry.surroundings = surroundings;
+                else delete output.geometry.surroundings;
                 const groundBoundary = typology === 'single' ? clone(context.groundBoundary || null) : null;
                 if (groundBoundary) output.geometry.groundBoundary = groundBoundary;
                 else delete output.geometry.groundBoundary;
                 const landTake = typology === 'single' ? clone(context.landTake || null) : null;
                 if (landTake) {
                     if (!geometryWithinSite(landTake, output.site) || !features.every(building => geometryWithinSite(building, landTake))
-                        || (groundSurface?.polygon && !geometryWithinSite(groundSurface.polygon, landTake))) {
+                        || (surroundings?.polygon && !geometryWithinSite(surroundings.polygon, landTake))) {
                         throw new Error(global.i18n?.t?.('landTake.invalid') || 'The reviewed land take must contain the building and fit within the site.');
                     }
                     output.geometry.landTake = landTake;
@@ -1268,7 +1268,7 @@
                 const beforeFeatures = beforeContext.buildings?.length ? beforeContext.buildings : [beforeContext.buildingFeature].filter(Boolean);
                 const afterFeatures = afterContext.buildings?.length ? afterContext.buildings : [afterContext.buildingFeature].filter(Boolean);
                 const height = feature => Number(feature?.properties?.height || feature?.properties?.heightM || feature?.properties?.floors || 0) || null;
-                const groundTreatment = context => context?.groundSurface?.treatment || 'none';
+                const groundTreatment = context => context?.surroundings?.treatment || 'none';
                 summary.groundTreatment = {
                     before: groundTreatment(beforeContext),
                     after: groundTreatment(afterContext)

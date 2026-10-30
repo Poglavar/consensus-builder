@@ -140,8 +140,12 @@ describe('unapply failure feedback', () => {
         };
         const helpersStart = executionSource.indexOf('function proposalApplyFailureReason(');
         const helpersEnd = executionSource.indexOf('function computeOwnershipStatsFromSelection(', helpersStart);
-        const removeStart = source.indexOf('async function removeProposalFromMap(');
+        // removeProposalFromMap first asks about the designs standing on this one; its helper sits
+        // directly above it in the same file.
+        const removeStart = source.indexOf('async function chooseUnapplyDependents(');
         const removeEnd = source.indexOf('\nfunction focusOnRemovedParcelLocation(', removeStart);
+        expect(removeStart, 'chooseUnapplyDependents not found').toBeGreaterThanOrEqual(0);
+        expect(source.indexOf('async function removeProposalFromMap(', removeStart), 'removeProposalFromMap not after its helper').toBeGreaterThan(removeStart);
         runInNewContext(`${executionSource.slice(helpersStart, helpersEnd)}\n${source.slice(removeStart, removeEnd)}\nthis.remove = removeProposalFromMap;`, globals);
         return { remove: globals.remove, globals, manager, messages, panelError, button: buttonNode };
     }

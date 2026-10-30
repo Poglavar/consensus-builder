@@ -89,10 +89,8 @@ test('file import only succeeds after atomic commit; invalid input, cancellation
         }
         return { close() {} };
     };
-    const ui = FileUI.browser(win), group = ui.controls(), input = group.children.find(c => c.type === 'file');
-    const choose = group.children.find(c => c.dataset.planFileAction === 'import');
-    const select = async (text, size = 10) => { input.files = [{ size, text: async () => text }]; await input.listeners.change();
-        assert.equal(choose.disabled, false); assert.equal(BusyControl.isBusy(choose), false); };
+    const ui = FileUI.browser(win);
+    const select = (text, size = 10) => ui.importFile('plans', { size, text: async () => text });
     await select('bad'); await select('valid', 1001); cancel = true; await select('valid'); assert.equal(commits, 0);
     cancel = false; commitFails = true; await select('valid'); assert.equal(commits, 0);
     commitFails = false; await select('valid'); assert.equal(commits, 1);
@@ -100,6 +98,35 @@ test('file import only succeeds after atomic commit; invalid input, cancellation
     const outcomes = win.AppDiagnostics.snapshot().entries.filter(row => row.operation === 'import').map(row => row.outcome);
     assert.deepEqual(outcomes, ['failure', 'failure', 'cancelled', 'failure', 'success']);
     assert.ok(alerts.every(message => !message.includes('SECRET'))); assert.ok(!win.AppDiagnostics.exportText().includes('SECRET'));
+});
+
+test('a design file read on the Designs tab adds its designs and keeps no imported plan', async () => {
+    const { win, stored } = browser(); let reviewed = null, notice = null;
+    win.PlanFile = { MAX_BYTES: 1000, parse: () => ({ plan: { title: 'One park', view: { at: '45,15,17' } }, designs: [{ content: { title: 'Park' } }] }),
+        validate() {}, importInto: () => ({ cid: 'cid', memberIds: ['file-1'], content: { title: 'One park' } }) };
+    win.ProposalManager = { runParcelMutation: async (_kind, _id, action) => action({ _parcelMutation: { proposals: {}, storage: {
+        setItem(key, value) { win.PersistentStorage.setItem(key, value); } } } }) };
+    win.showSimpleShareModal = options => {
+        reviewed = options.title; queueMicrotask(() => options.actions.find(a => a.id === 'import').onClick({ close() {} }));
+        return { close() {} };
+    };
+    win.showEphemeralMessage = message => { notice = message; };
+    await FileUI.browser(win).importFile('designs', { size: 10, text: async () => '{}' });
+    assert.equal(reviewed, 'Review design file');
+    assert.equal(notice, 'Designs imported as local drafts: {{count}}');
+    assert.equal([...stored.keys()].filter(key => key.startsWith('ugt-imported-plan:')).length, 0);
+});
+
+test('Imported lists what files brought to this device: designs by their file id, agreements by their mark', () => {
+    const { win } = browser();
+    win.proposalStorage = { getAllProposals: () => [{ proposalId: 'file-1', title: 'From a file' }, { proposalId: 'p-2', title: 'Drawn here' }] };
+    win.AgreementStore = { get: id => (id === 'ag-1' ? { id, title: 'Imported terms' } : null) };
+    win.PersistentStorage.setItem('ugt-imported-agreement:ag-1', '1');
+    win.PersistentStorage.setItem('ugt-imported-agreement:ag-gone', '1');
+    const ui = FileUI.browser(win);
+    assert.deepEqual(ui.importedRows('designs').map(row => row.title), ['From a file']);
+    assert.deepEqual(ui.importedRows('agreements').map(row => row.title), ['Imported terms']);
+    assert.deepEqual(ui.importedRows('plans'), []);
 });
 
 test('named plan save verifies readback before success and preserves recovery on network failure', async () => {
@@ -149,9 +176,8 @@ test('plan import and repeated saves share one private handle for a CID, while d
         if (options.title === 'Review plan file') queueMicrotask(() => options.actions.find(action => action.id === 'import').onClick({ close() {} }));
         return { close() {} };
     };
-    const fileUi = FileUI.browser(win), controls = fileUi.controls(), input = controls.children.find(child => child.type === 'file');
-    input.files = [{ size: 10, text: async () => '{"valid":true}' }];
-    await input.listeners.change();
+    const fileUi = FileUI.browser(win);
+    await fileUi.importFile('plans', { size: 10, text: async () => '{"valid":true}' });
     const cid = cidOfObject(imported);
     assert.ok(win.PersistentStorage.getItem(`ugt-imported-plan:${cid}`));
     assert.deepEqual(win.AppDiagnostics.snapshot().entries.filter(entry => entry.operation === 'import').map(entry => entry.outcome), ['success']);

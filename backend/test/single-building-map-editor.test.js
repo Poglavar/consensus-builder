@@ -62,7 +62,7 @@ function closeHarness(options = {}) {
         tryStartDragFromMap() {}, positionSingleBuildingToolbar() {}, clearSingleBuildingPendingState: vi.fn(() => { calls.cleared = true; }),
         refreshSingleBuildingDensityStats: vi.fn(), cloneSingleFeature: feature => feature,
         singleBuildingDesignChanges: () => ({ changed: () => true }),
-        currentGroundSurface: () => null, buildingEntries: [], currentGroundTreatment: 'none', currentTakeWholeParcels: false,
+        currentSurroundings: () => null, buildingEntries: [], currentGroundTreatment: 'none', currentTakeWholeParcels: false,
         singleUploadOnConfirm: options.singleUploadOnConfirm || null,
         disabledViewButtons: [{ button: { disabled: true }, disabled: false }], suspendedPanels: [{ panel, display: 'block' }],
         threeControls: { removeEventListener: vi.fn() }, editorFocusReturn: null,
@@ -130,7 +130,7 @@ describe('single-building map editor lifecycle', () => {
         const review = { take };
         const placement = extract('currentPlacementSite', '', {
             buildingEntries: [{ feature: building }], singleLandTakeReview: review,
-            singleGroundBoundary: ground, turf, currentGroundSurface: () => ({ polygon: ground.geometry }),
+            singleGroundBoundary: ground, turf, currentSurroundings: () => ({ polygon: ground.geometry }),
             cloneSingleFeature: value => JSON.parse(JSON.stringify(value))
         });
         const site = turf.feature(placement());
@@ -184,7 +184,7 @@ describe('single-building map editor lifecycle', () => {
         const feature = { type: 'Feature', geometry: { type: 'Polygon', coordinates: [] } };
         const singleSession = { setPreview: vi.fn() };
         const stubs = { singleLandTakeReview: null, singleSession, singleEditor: {}, buildingEntries: [{ feature }],
-            singleBlockFeature: { geometry: {} }, currentGroundSurface: () => ({ treatment: 'green', polygon: {} }),
+            singleBlockFeature: { geometry: {} }, currentSurroundings: () => ({ treatment: 'green', polygon: {} }),
             cloneSingleFeature: value => JSON.parse(JSON.stringify(value)),
             renderSharedPolygonEditor: vi.fn(), refreshSingleBuildingDensityStats: vi.fn(), positionSingleBuildingToolbar: vi.fn() };
         const bindings = Object.keys(stubs).filter(key => key !== 'singleUploadOnConfirm').map(key => `const ${key}=this.${key};`).join('\n');
@@ -194,7 +194,7 @@ describe('single-building map editor lifecycle', () => {
         expect(stubs.renderSharedPolygonEditor).toHaveBeenCalledOnce();
         expect(singleSession.setPreview).toHaveBeenCalledWith({
             draftPreview: { kind: 'buildings', features: [feature] }, boundary: { geometry: {} },
-            groundSurface: { treatment: 'green', polygon: {} }
+            surroundings: { treatment: 'green', polygon: {} }
         });
     });
 
@@ -339,7 +339,7 @@ describe('single-building map editor lifecycle', () => {
             window: { SingleBuildingGeometry: { clipFootprintToBoundary: vi.fn(value => value) } }, turf: {},
             singleSession: { placement: { locked: false } }, currentPlacementSite: () => ({ type: 'MultiPolygon', coordinates: [] }),
             singleUploadOnConfirm: afterUploadDone, cloneSingleFeature: value => structuredClone(value),
-            currentGroundSurface: () => ({ treatment: 'green' }), setPendingBuildingProposalContext: value => pendingContexts.push(value),
+            currentSurroundings: () => ({ treatment: 'green' }), setPendingBuildingProposalContext: value => pendingContexts.push(value),
             closeSingleBuildingMapEditor: close, document: { getElementById: () => null }
         };
         const variables = `let buildingEntries=[this.entry], singleBlockFeature={geometry:{}}, singleGroundBoundary={geometry:{}}, currentTakeWholeParcels=true, pendingSingleBuildingMeta=null, singleUploadOnConfirm=this.singleUploadOnConfirm; const DEFAULT_HEIGHT_M=12;`;

@@ -10,13 +10,17 @@ test('sharing a plan publishes its exact selected designs and another device res
   await createSpace(page, 'square');
   await page.locator('#proposals-button').click();
   await page.locator('#shareAppliedProposalsButton').click();
-  // Lists (01268caee): Create plan sits in #lists-actions; the saved plan opens in the click stack.
+  // Lists (01268caee): Create plan sits in #lists-actions and ticks the designs in Lists → Designs;
+  // Continue opens the composer listing them. The saved plan opens in the click stack.
   await page.locator('#lists-actions').getByRole('button', { name: 'Create plan', exact: true }).click();
+  const choices = page.locator('#proposal-list-host input[type=checkbox]');
+  await expect(choices).toHaveCount(2);
+  await choices.nth(0).check();
+  await choices.nth(1).uncheck();
+  await page.locator('#lists-actions [data-lists-continue]').click();
   const form = page.locator('.plan-composer');
+  await expect(form.locator('.plan-dialog__members li')).toHaveCount(1);
   await form.getByLabel('Plan name', { exact: true }).fill('Two gardens');
-  await expect(form.locator('input[type=checkbox]')).toHaveCount(2);
-  await form.locator('input[type=checkbox]').nth(0).check();
-  await form.locator('input[type=checkbox]').nth(1).uncheck();
   await form.getByRole('button', { name: 'Create plan', exact: true }).click();
   await expect(stackSection(page, 'plans')).toContainText('Two gardens');
   const row = await page.evaluate(() => (window as any).PlanWorkspace.list()[0]);

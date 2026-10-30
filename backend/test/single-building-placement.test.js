@@ -120,7 +120,7 @@ function movementHarness({ moveTogether = true, treatment = 'paved', locked = fa
             const [lng, lat] = turf.centroid(value).geometry.coordinates;
             return { lng, lat };
         },
-        currentGroundSurface: () => null,
+        currentSurroundings: () => null,
         updateGroundPreview: renderEvents.ground,
         updateSingleBuildingPreview: renderEvents.preview,
         refreshBuildingSelector: renderEvents.selectors,

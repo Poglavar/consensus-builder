@@ -155,7 +155,9 @@ describe('hosted MCP agent acceptance boundary', () => {
         expect(publishedDesign.url).toBe(`https://app.example/designs/${renamed.cid}`);
         const reopenedDesign = await ok('ugt_inspect_design', { design: publishedDesign.url, paths: [''] });
         expect(canonicalBytes(reopenedDesign.values[0].untrustedValue)).toEqual(canonicalBytes(renamed.untrusted.design));
-        const park = await ok('ugt_draft_space', { city: 'london', parcelSourceId: 'boundary-source-0', outline, spaceKind: 'park', title: 'Garden' });
+        // Beside the tower: a plan's designs stand together, so a park cannot take the tower's ground.
+        const besideTower = { type: 'Polygon', coordinates: [[[-0.0995, 51.5], [-0.0991, 51.5], [-0.0991, 51.5004], [-0.0995, 51.5004], [-0.0995, 51.5]]] };
+        const park = await ok('ugt_draft_space', { city: 'london', parcelSourceId: 'boundary-source-0', outline: besideTower, spaceKind: 'park', title: 'Garden' });
         const plan = await ok('ugt_draft_plan', { title: 'Initial neighbourhood', designs: [renamed.draftRef, park.draftRef] });
         expect(plan.untrusted.plan.designCids).toEqual([renamed.cid, park.cid].sort());
         const inventory = await ok('ugt_inspect_plan', { plan: plan.draftRef, filter: { kind: 'building' } });

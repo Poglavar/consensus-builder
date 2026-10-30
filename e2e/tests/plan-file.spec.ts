@@ -13,12 +13,17 @@ const test = base.extend<{ checkPageErrors: void }>({
 });
 
 test.beforeEach(async ({ page }) => {
-  await page.route('http://localhost/plan-file-fixture', route => route.fulfill({ contentType: 'text/html', body: '<div id="plan-file-actions"></div><div id="downloads"></div><div id="status-log-modal"><div class="cb-dialog__footer"></div></div>' }));
+  await page.route('http://localhost/plan-file-fixture', route => route.fulfill({ contentType: 'text/html', body: '<div id="downloads"></div><div id="status-log-modal"><div class="cb-dialog__footer"></div></div>' }));
+  for (const file of ['city-model-reader.js', 'city-json-export.js']) {
+    await page.route(`http://localhost/js/${file}`, route => route.fulfill({
+      contentType: 'application/javascript', body: readFileSync(path.join(root, 'js', file), 'utf8')
+    }));
+  }
   await page.goto('http://localhost/plan-file-fixture');
   await page.evaluate(() => { (window as any).MapHighlight = { color: '#469973' }; });
   for (const file of ['js/app-diagnostics.js', 'vendor/noble-hashes-1.8.0/sha256.js', 'vendor/ipfs-file-cid/ipfs-file-cid.js', 'js/cid.js',
     'js/proposals/authored-record.js', 'js/proposals/formation-depth.js', 'js/design-record.js', 'js/plan-record.js',
-    'js/plan-file.js', 'js/data-source.js', 'js/ui/busy-control.js', 'js/ui/file-download.js', 'js/ui/modal-escape.js', 'js/ui/dialogs.js', 'js/proposals/dialog-share.js']) {
+    'js/plan-file.js', 'js/optional-tools-loader.js', 'js/data-source.js', 'js/ui/busy-control.js', 'js/ui/file-download.js', 'js/ui/modal-escape.js', 'js/ui/dialogs.js', 'js/proposals/dialog-share.js']) {
     await page.addScriptTag({ path: path.join(root, file) });
   }
   await page.evaluate(() => {
@@ -46,12 +51,15 @@ test.beforeEach(async ({ page }) => {
   await page.addStyleTag({ content: '.cb-dialog-backdrop{position:fixed;inset:0;background:#fff}.cb-dialog{background:white;padding:20px}.cb-dialog button{margin:5px}' });
 });
 
+// Lists → Plans → Import plan file hands the chosen file to PlanFileUI.importFile and keeps its
+// button busy until that settles; `settled` waits for the same promise.
 async function choose(page: any, body?: string) {
   const text = body ?? await page.evaluate(async () => {
     const w = window as any; return w.PlanFile.stringify(await w.PlanFile.create([w.sample], { title: 'File plan', view: w.MapShare.capture() }));
   });
-  await page.locator('input[type=file]').first().setInputFiles({ name: 'test.ugt.json', mimeType: 'application/json', buffer: Buffer.from(text) });
+  await page.evaluate((text: string) => { const w = window as any; w.importing = w.PlanFileUI.importFile('plans', new File([text], 'test.ugt.json', { type: 'application/json' })); }, text);
 }
+const settled = (page: any) => page.evaluate(() => (window as any).importing.then(() => true));
 
 test('preview, cancel, repeated choice and confirmation preserve unapplied drafts', async ({ page }) => {
   await choose(page);
@@ -59,7 +67,7 @@ test('preview, cancel, repeated choice and confirmation preserve unapplied draft
   expect(await page.evaluate(() => document.querySelectorAll('.cb-dialog-body img').length)).toBe(0);
   await page.getByRole('button', { name: 'Cancel', exact: true }).click();
   expect(await page.evaluate(() => (window as any).writes)).toBe(0);
-  await expect(page.getByRole('button', { name: 'Import plan file', exact: true })).toBeEnabled();
+  expect(await settled(page)).toBe(true);
   await choose(page);
   await page.getByRole('button', { name: 'Import as drafts' }).click();
   expect(await page.evaluate(() => (window as any).errors)).toEqual([]);
@@ -77,14 +85,14 @@ test('malformed, unsupported and storage-failed flows leave no writes and restor
   for (const text of ['{', '{"schema":"ugt-plan-file/v99"}']) {
     await choose(page, text);
     await expect.poll(() => page.evaluate(() => (window as any).errors.length)).toBeGreaterThan(0);
-    await expect(page.getByRole('button', { name: 'Import plan file', exact: true })).toBeEnabled();
+    expect(await settled(page)).toBe(true);
   }
   await page.evaluate(() => { (window as any).failImport = true; });
   await choose(page); await page.getByRole('button', { name: 'Import as drafts' }).click();
   await expect.poll(() => page.evaluate(() => (window as any).AppDiagnostics.snapshot().entries.some((row: any) => row.code === 'plan-import-failed'))).toBe(true);
   expect(await page.evaluate(() => (window as any).errors.some((message: string) => message.includes('Storage failed')))).toBe(false);
   expect(await page.evaluate(() => (window as any).writes)).toBe(0);
-  await expect(page.getByRole('button', { name: 'Import plan file', exact: true })).toBeEnabled();
+  expect(await settled(page)).toBe(true);
 });
 
 test('diagnostic download redacts private error text and sends nothing automatically', async ({ page }) => {
@@ -117,7 +125,7 @@ test('Escape and closing the review settle cancellation and allow the same file 
     if (method === 'escape') await page.keyboard.press('Escape');
     else await page.getByRole('button', { name: 'Close', exact: true }).click();
     await expect(page.getByRole('heading', { name: 'Review plan file' })).toHaveCount(0);
-    await expect(page.getByRole('button', { name: 'Import plan file', exact: true })).toBeEnabled();
+    expect(await settled(page)).toBe(true);
     expect(await page.evaluate(() => (window as any).writes)).toBe(0);
   }
 });

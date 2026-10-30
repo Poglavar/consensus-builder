@@ -105,16 +105,23 @@ test.describe('proposal detail button controls @features', () => {
     const sheet = page.locator('#proposals-sheet');
     await sheet.locator('#shareAppliedProposalsButton').click();
     // Lists (01268caee): the Plans tab's Create plan sits in #lists-actions; the saved plan opens in
-    // the click stack's Plan section, which holds Share plan.
+    // the click stack's Plan section, which holds Share plan. Create plan ticks the designs in
+    // Lists → Designs; Continue opens the composer listing them.
     await sheet.locator('#lists-actions').getByRole('button', { name: 'Create plan', exact: true }).click();
+    const selection = sheet.locator('#lists-actions .lists-selection-count');
+    const next = sheet.locator('#lists-actions [data-lists-continue]');
+    await expect(selection).toHaveText('0 selected');
+    await expect(next).toBeDisabled();
+    await sheet.locator('#proposal-list-host input[type="checkbox"]').first().check();
+    await expect(selection).toHaveText('1 selected');
+    await expect(next).toBeEnabled();
+    await next.click();
     const composer = page.locator('.plan-composer');
-    await expect(composer.locator('.plan-dialog__count')).toHaveText('0 selected');
+    await expect(composer.locator('.plan-dialog__count')).toHaveText('1 selected');
+    await expect(composer.locator('.plan-dialog__members li')).toHaveCount(1);
     const save = composer.getByRole('button', { name: 'Create plan', exact: true });
     await expect(save).toBeDisabled();
     await composer.getByLabel('Plan name', { exact: true }).fill('Garden plan');
-    await expect(save).toBeDisabled();
-    await composer.locator('.plan-dialog__choice input[type="checkbox"]').first().check();
-    await expect(composer.locator('.plan-dialog__count')).toHaveText('1 selected');
     await expect(save).toBeEnabled();
     const beforeSave = index.requests.filter(request => request.method === 'POST').length;
     await save.click();

@@ -2,6 +2,8 @@
 // replays to read the ground under a design as it stood before that design.
 import { describe, it, expect } from 'vitest';
 import { createRequire } from 'node:module';
+import { readFileSync } from 'node:fs';
+import vm from 'node:vm';
 const require = createRequire(import.meta.url);
 const { replayScope } = require('../../frontend/js/freeform-ground-before.js');
 
@@ -21,5 +23,14 @@ describe('the replay behind the land review', () => {
     it('leaves the design under edit out, and a design with no parcels', () => {
         const tower = design('tower', ['C']);
         expect(replayScope([tower, design('drawn', [])], ['C'], 'tower')).toEqual({ ids: ['C'], designs: [] });
+    });
+    it('reads no ground, without a replay, under a design moved off every parcel', async () => {
+        const refused = () => { throw new Error('Cadastral replacement scope cannot be empty.'); };
+        const window = {
+            proposalStorage: { getAllProposals: () => [design('tower', ['C'])] }, isApplied: () => true,
+            CadastralParcelRepository: { ensureIds: refused, getMany: refused }, AgreementHeadless: { materialize: refused }
+        };
+        vm.runInNewContext(readFileSync(new URL('../../frontend/js/freeform-ground-before.js', import.meta.url), 'utf8'), { window, console });
+        await expect(window.FreeformGroundBefore.read({ ownId: 'tower', cadastreIds: [] })).resolves.toEqual({ ids: [], pieces: [] });
     });
 });

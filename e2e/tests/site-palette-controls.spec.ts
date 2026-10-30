@@ -70,7 +70,7 @@ async function expectFreeformDraftSite(page: import('@playwright/test').Page, au
       sameFootprint,
       placement: draft?.editorPayload?.placement || null,
       insideGuide,
-      groundTreatment: draft?.editorPayload?.context?.groundSurface?.treatment || 'none',
+      groundTreatment: draft?.editorPayload?.context?.surroundings?.treatment || 'none',
       takeWholeParcels: draft?.editorPayload?.context?.takeWholeParcels === true
     };
   });

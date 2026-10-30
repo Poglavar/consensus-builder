@@ -470,7 +470,7 @@ async function launchUrbanRuleToolForSelection() {
         blockName: formatParcelSelectionLabel(selection.ids),
         parcelIds: selection.ids,
         initialState: (seed && typeof buildBlockifySeed === 'function') ? buildBlockifySeed(seed) : null,
-        initialGroundTreatment: seed?.groundSurface?.treatment || null, initialDecorationDesign: seed?.groundSurface?.decorationDesign || null
+        initialGroundTreatment: seed?.surroundings?.treatment || null, initialDecorationDesign: seed?.surroundings?.decorationDesign || null
     });
     return true;
 }

@@ -26,7 +26,8 @@ describe('?at= parsing', () => {
     it('reads lat,lon,zoom and lat,lon', () => {
         expect(Model.parseAt('45.80450,15.97879,17')).toEqual({ lat: 45.8045, lon: 15.97879, zoom: 17 });
         expect(Model.parseAt(' 35.68 , 139.76 ')).toEqual({ lat: 35.68, lon: 139.76, zoom: null });
-        expect(Model.parseAt('-34.6,-58.4,12.6')).toEqual({ lat: -34.6, lon: -58.4, zoom: 13 });
+        // The map zooms continuously, so the address keeps two decimals.
+        expect(Model.parseAt('-34.6,-58.4,12.634')).toEqual({ lat: -34.6, lon: -58.4, zoom: 12.63 });
     });
 
     it('clamps the zoom into the usable range', () => {
@@ -197,15 +198,16 @@ describe('zoom out return to globe', () => {
 
 describe('the address follows the map', () => {
     it('writes the view as ?at=, keeping the rest of the address, and nothing when it is already there', () => {
-        const next = Model.addressWithView(`http://localhost:5682/designs/${DESIGN_A}?city=zagreb&lang=hr`, { lat: 45.800451, lon: 15.978789, zoom: 17.4 });
+        const next = Model.addressWithView(`http://localhost:5682/designs/${DESIGN_A}?city=zagreb&lang=hr`, { lat: 45.800451, lon: 15.978789, zoom: 17.434 });
         const url = new URL(next);
         expect(url.pathname).toBe(`/designs/${DESIGN_A}`);
         expect(url.searchParams.get('city')).toBe('zagreb');
         expect(url.searchParams.get('lang')).toBe('hr');
-        expect(url.searchParams.get('at')).toBe('45.80045,15.97879,17');
+        expect(url.searchParams.get('at')).toBe('45.80045,15.97879,17.43');
         // what the boot reads back is the view written
-        expect(Model.parseAt(url.searchParams.get('at'))).toMatchObject({ lat: 45.80045, lon: 15.97879, zoom: 17 });
-        expect(Model.addressWithView(next, { lat: 45.800451, lon: 15.978789, zoom: 17.2 })).toBeNull();
+        expect(Model.parseAt(url.searchParams.get('at'))).toMatchObject({ lat: 45.80045, lon: 15.97879, zoom: 17.43 });
+        expect(Model.addressWithView(next, { lat: 45.800451, lon: 15.978789, zoom: 17.4300000001 })).toBeNull();
+        expect(Model.formatAt({ lat: 1, lon: 2, zoom: 18 })).toBe('1.00000,2.00000,18');
     });
 });
 

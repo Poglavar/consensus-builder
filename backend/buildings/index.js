@@ -8,13 +8,20 @@ import { createCustomBuildingProvider } from './custom-source-3d.js';
 import { createOverpassBuildingProvider } from './overpass-source.js';
 import { createWienLod2Provider } from './wien-lod2.js';
 import { createNl3dbagProvider } from './nl-3dbag.js';
+import { createNrwLod2Provider } from './nrw-lod2.js';
+import { createNyc3dProvider } from './nyc-3d.js';
+import { createBerlinLod2Provider } from './berlin-lod2.js';
+import { createHamburgLod2Provider } from './hamburg-lod2.js';
+import { createBwLod2Provider } from './bw-lod2.js';
+import { createSachsenLod2Provider } from './sachsen-lod2.js';
 import { decodeCustomBuildingSource } from '../parcels/custom-source-config.js';
 
 import { createRequire } from 'node:module';
 const SourceRuntime = createRequire(import.meta.url)('../../frontend/js/source-runtime.js');
 
 const builtins = [
-    ['wien-lod2', 'wien-lod2'], ['nl-3dbag', 'nl-3dbag'],
+    ['wien-lod2', 'wien-lod2'], ['nl-3dbag', 'nl-3dbag'], ['nrw-lod2', 'nrw-lod2'], ['nyc-3d', 'nyc-3d'],
+    ['berlin-lod2', 'berlin-lod2'], ['hamburg-lod2', 'hamburg-lod2'], ['bw-lod2', 'bw-lod2'], ['sachsen-lod2', 'sachsen-lod2'],
     ['gdi-3d', 'gdi-3d'], ['dgu', 'dgu'], ['nyc-arcgis', 'nyc-arcgis'], ['nyc-socrata', 'nyc-socrata'], ['osm', 'osm']
 ];
 export const buildingSourceRegistry = SourceRuntime.createRegistry({
@@ -27,11 +34,18 @@ export const buildingSourceRegistry = SourceRuntime.createRegistry({
         osm: { create: (_config, { pool }) => createOsmProvider(pool), custom: false },
         'wien-lod2': { create: () => createWienLod2Provider(), custom: false },
         'nl-3dbag': { create: () => createNl3dbagProvider(), custom: false },
+        'nrw-lod2': { create: () => createNrwLod2Provider(), custom: false },
+        'nyc-3d': { create: () => createNyc3dProvider(), custom: false },
+        'berlin-lod2': { create: () => createBerlinLod2Provider(), custom: false },
+        'hamburg-lod2': { create: () => createHamburgLod2Provider(), custom: false },
+        'bw-lod2': { create: () => createBwLod2Provider(), custom: false },
+        'sachsen-lod2': { create: () => createSachsenLod2Provider(), custom: false },
         arcgis: { create: createCustomBuildingProvider },
         wfs: { create: createCustomBuildingProvider },
         'ogc-api': { create: createCustomBuildingProvider },
         socrata: { create: createCustomBuildingProvider },
         'geojson-snapshot': { create: createCustomBuildingProvider },
+        'city-model': { create: createCustomBuildingProvider },
         overpass: { create: createOverpassBuildingProvider }
     },
     sources: builtins.map(([id, adapter]) => SourceRuntime.source('buildings', adapter, { id })),

@@ -329,6 +329,8 @@ test.describe('Road editor complete controls @features', () => {
     const fileChooser = await picker;
     await expect(chooser).toBeHidden();
     expect(await page.locator('#corridorImportInput').getAttribute('accept')).toBe('.xodr');
+    // The OpenDRIVE reader loads with the first file, not with the page.
+    expect(await page.evaluate(() => typeof (window as any).__corridorImportOpenDrive)).toBe('undefined');
     await fileChooser.setFiles({
       name: 'e2e-road.xodr',
       mimeType: 'application/xml',

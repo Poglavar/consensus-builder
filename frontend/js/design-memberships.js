@@ -280,6 +280,19 @@
             shareIcon.setAttribute('aria-hidden', 'true');
             share.replaceChildren(shareIcon, node('span', '', t('sharePlan')));
             actions.appendChild(share);
+            // A plan opened from a copied address is only previewed; applying it is one click here.
+            const planRow = () => win.NamedPlans.list().find(row => row.cid === instance.cid)
+                || { cid: instance.cid, content: instance.content, published: !instance.draft };
+            if (kind === 'plans' && instance.content && !win.PlanWorkspace.appliedMembers(planRow())) {
+                const applyPlan = action(win.i18n.t('panel.proposal.actions.apply'), async () => {
+                    try {
+                        const result = await win.BusyControl.track(applyPlan, () => win.PlanWorkspace.apply(planRow()));
+                        if (!result.blocked) { applyPlan.remove(); onFocus(instance); }
+                    } catch (error) { win.showStyledAlert(error.message); }
+                });
+                applyPlan.className = 'btn click-stack__apply-plan';
+                actions.appendChild(applyPlan);
+            }
             const createAgreement = action(t('createAgreement'), async () => {
                 try {
                     let selectedPlan;

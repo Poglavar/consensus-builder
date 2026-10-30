@@ -535,7 +535,7 @@
         refreshParcelBasedDensityStats(envelopes);
 
         parcelBasedModal?.setPreview({
-            groundSurface: parcelBasedSurroundings?.refresh() || null,
+            surroundings: parcelBasedSurroundings?.refresh() || null,
             draftPreview: { kind: 'buildings', features: houses },
             boundary: parcelBasedBoundary,
             envelopes: currentRuleKind === 'exact' ? [] : envelopes,
@@ -620,7 +620,7 @@
             parentDetails,
             blockName: getParcelBasedDisplayName(),
             parameters: parcelBasedDesignParameters(),
-            groundSurface: parcelBasedSurroundings?.surface() || null,
+            surroundings: parcelBasedSurroundings?.surface() || null,
             buildings,
             buildingFeature: buildings[0] || null
         }, { coalesceKey: 'parcel-based-live' });
@@ -1306,7 +1306,7 @@
             parentDetails: parentDetails.slice(),
             blockName: getParcelBasedDisplayName(),
             parameters: parcelBasedDesignParameters(),
-            groundSurface: parcelBasedSurroundings?.surface() || null,
+            surroundings: parcelBasedSurroundings?.surface() || null,
             buildings: clonedFeatures,
             buildingFeature: clonedFeatures[0] || null
         };

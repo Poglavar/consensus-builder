@@ -130,7 +130,7 @@ describe('the command line (dry runs only)', () => {
         expect(result.status).toBe(0);
         const neighbourhoods = PROJECTS.filter(entry => entry.collection === 'nova-naselja');
         neighbourhoods.forEach((entry, index) => {
-            expect(result.stdout).toContain(`plan ${index + 1}/3 nova-naselja/${entry.project} "${entry.manifest.title}": ${entry.files.length} designs (0 parcel layout(s))`);
+            expect(result.stdout).toContain(`plan ${index + 1}/3 nova-naselja/${entry.project} "${entry.manifest.title}": ${entry.files.length} designs\n`);
             expect(result.stdout).toContain(`nova-naselja/${entry.project} ${entry.files.length}/${entry.files.length} single bafkrei`);
             expect(result.stdout).toContain(`nova-naselja/${entry.project}: no ground file yet`);
         });

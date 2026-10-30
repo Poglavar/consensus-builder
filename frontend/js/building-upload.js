@@ -1,4 +1,5 @@
-// Building upload modal: lets a proposer upload a glTF 2.0 (.glb/.gltf) building model,
+// Building upload modal: lets a proposer upload a glTF 2.0 (.glb/.gltf) building model, or a
+// CityGML/CityJSON building (city-model-reader.js turns it into a GLB placed where the file puts it),
 // preview it in a three.js scene, and turn its footprint + height into a single-building
 // placement (via window.createSingleBuildingFromUpload). Review the asset here, then place
 // its editable footprint on the main map; the saved model reference supplies its 3D mesh.
@@ -33,6 +34,8 @@
     let loadedDims = null;
     let loadedName = null;
     let loadedFile = null;
+    // Where a city-model building stands ({ center, rotationDeg }); null for a glTF model.
+    let loadedPlacement = null;
     let loadVersion = 0;
 
     const STRUCTURE_KINDS = ['park', 'square', 'lake'];
@@ -83,7 +86,8 @@
             closeLabel: t('modal.buildingUpload.closeLabel', 'Close upload modal'),
             previewLabel: t('modal.buildingUpload.previewLabel', '3D Preview'),
             chooseFile: t('modal.buildingUpload.chooseFile', 'Choose a model file'),
-            hint: t('modal.buildingUpload.hint', 'Supported: glTF 2.0 (.glb or .gltf).'),
+            hint: t('modal.buildingUpload.hint', 'Supported: glTF 2.0 (.glb or .gltf).')
+                + (structure ? '' : ' ' + t('modal.buildingUpload.cityModelHint', 'A CityGML or CityJSON file with one building also works: it stands where the file puts it.')),
             noFile: t('modal.buildingUpload.noFile', 'No model loaded yet.'),
             cancel: t('modal.buildingUpload.cancel', 'Cancel'),
             confirm: structure
@@ -105,7 +109,7 @@
                 <div class="cb-dialog__body">
                     <label class="building-upload-file">
                         <span class="btn">${text.chooseFile}</span>
-                        <input id="building-upload-file" type="file" accept=".glb,.gltf,model/gltf-binary,model/gltf+json" hidden>
+                        <input id="building-upload-file" type="file" accept="${structure ? '.glb,.gltf,model/gltf-binary,model/gltf+json' : '.glb,.gltf,.gml,.xml,.json,model/gltf-binary,model/gltf+json,application/gml+xml,application/json'}" hidden>
                     </label>
                     <p class="building-upload-hint">${text.hint}</p>
                     <div class="cb-kicker">${text.previewLabel}</div>
@@ -287,8 +291,25 @@
             : t('modal.buildingUpload.previewUnavailable', '3D preview unavailable. You can still use this building.');
     }
 
+    // A CityGML or CityJSON building → a GLB File and where it stands, or throws with a user message.
+    async function cityModelGlb(file) {
+        await window.ensureOptionalTool('cityModel');
+        const model = window.CityModelReader.readCityModel(await file.text());
+        if (!model) throw Object.assign(new Error('Not a city model'), { code: 'not-city-model' });
+        if (!model.buildings.length) throw Object.assign(new Error('No building'), { userMessage: t('modal.buildingUpload.errorEmpty', 'The model contains no visible geometry.') });
+        if (model.buildings.length > 1) throw Object.assign(new Error('Several buildings'), { userMessage: t('modal.buildingUpload.errorManyBuildings',
+            'This file holds {{count}} buildings. Use Upload footprints to import them all, or choose a file with one building.', { count: model.buildings.length }) });
+        const transform = proj4(model.crs.definition, 'EPSG:4326');
+        const triangulate = (contour, holes) => THREE.ShapeUtils.triangulateShape(contour.map(([x, y]) => new THREE.Vector2(x, y)),
+            holes.map(ring => ring.map(([x, y]) => new THREE.Vector2(x, y))));
+        const out = window.CityModelReader.buildingGlb(model.buildings[0], {
+            toLngLat: (x, y) => transform.forward([x, y]), unitToMetres: model.crs.zToMetres, triangulate });
+        const name = file.name.replace(/\.(gml|xml|json)$/i, '') + '.glb';
+        return { file: new File([out.glb], name, { type: 'model/gltf-binary' }), placement: { center: out.center, rotationDeg: out.rotationDeg } };
+    }
+
     async function onFileChosen(event) {
-        const file = event.target && event.target.files && event.target.files[0];
+        let file = event.target && event.target.files && event.target.files[0];
         if (!file) return;
         const version = ++loadVersion;
         cancelFootprintJob();
@@ -299,6 +320,7 @@
         loadedDims = null;
         loadedName = file.name;
         loadedFile = file;
+        loadedPlacement = null;
         setConfirmEnabled(false);
         setStatus(t('modal.buildingUpload.loading', 'Loading model…'));
 
@@ -313,6 +335,21 @@
         if (!ok) {
             setStatus(t('modal.buildingUpload.errorEngine', 'Could not load the model parser.'), true);
             return;
+        }
+        if (!isStructureUpload() && /\.(gml|xml|json)$/i.test(file.name)) {
+            try {
+                const converted = await cityModelGlb(file);
+                if (!isCurrent()) return;
+                file = converted.file;
+                loadedFile = file;
+                loadedPlacement = converted.placement;
+            } catch (error) {
+                if (!isCurrent()) return;
+                console.warn('City model upload failed', error);
+                setStatus(error.userMessage || window.CityModelReader?.crsErrorMessage(error, window.i18n)
+                    || t('modal.buildingUpload.errorCityModel', 'Could not read this file as a CityGML or CityJSON building.'), true);
+                return;
+            }
         }
 
         const isText = /\.gltf$/i.test(file.name);
@@ -412,7 +449,7 @@
         const version = loadVersion;
         const use = onUseCb || window.createSingleBuildingFromUpload;
         const input = {
-            ...currentContext, ...loadedDims, modelName: loadedName, onConfirm: onConfirmCb
+            ...currentContext, ...loadedDims, modelName: loadedName, placement: loadedPlacement, onConfirm: onConfirmCb
         };
 
         // The imported building needs its mesh. A failed upload stays here for a retry.
@@ -481,6 +518,7 @@
         loadedDims = null;
         loadedName = null;
         loadedFile = null;
+        loadedPlacement = null;
     }
 
     // context: { parcelIds: string[], site?: Polygon | MultiPolygon, blockName: string,

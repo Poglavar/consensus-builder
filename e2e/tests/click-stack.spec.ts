@@ -63,8 +63,16 @@ test.describe('Click stack @core', () => {
     await expect(clickStack(page)).toBeVisible(); await expect(agreementPanel(page)).toBeHidden();
     await expect(stackSection(page, 'plans').locator('.click-stack__row')).toHaveAttribute('aria-expanded', 'true');
     await expect(stackSection(page, 'plans')).toContainText('Agreement action coverage');
+    // The address names the selection (selection-address.js): ?agreement= gives way to the plan's CID,
+    // written in place; nothing else in it changes.
+    const planCid = await page.evaluate(() => (window as any).AgreementStore.list()
+      .find((agreement: any) => agreement.title === 'Agreement action coverage').plan.cid);
+    const expectedUrl = new URL(before.url);
+    expect(expectedUrl.searchParams.get('agreement')).toBeTruthy();
+    expectedUrl.searchParams.delete('agreement'); expectedUrl.searchParams.set('plan', planCid);
     expect(await page.evaluate(() => { const w = window as any; return { designs: JSON.stringify(w.proposalStorage.getAllProposals()),
-      at: [w.map.getCenter().lat, w.map.getCenter().lng, w.map.getZoom()], url: location.href }; })).toEqual(before);
+      at: [w.map.getCenter().lat, w.map.getCenter().lng, w.map.getZoom()], url: location.href }; }))
+      .toEqual({ ...before, url: expectedUrl.toString().replace(/([?&]at=)([^&#]*)/, (match, key, value) => key + value.replace(/%2C/gi, ',')) });
     expect(await page.evaluate(() => (window as any).__planNavigationToken)).toBe('same-window');
     expect(await page.evaluate(() => (window as any).__planApplyCalls)).toBe(0);
   });

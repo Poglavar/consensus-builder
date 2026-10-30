@@ -108,16 +108,23 @@ test.describe('proposal button controls: modal and alternate states @features', 
     const sheet = page.locator('#proposals-sheet');
     const shareTab = sheet.locator('#shareAppliedProposalsButton');
     await shareTab.click();
-    // Lists (01268caee): the Plans tab's Create plan sits in #lists-actions and starts an empty composer.
+    // Lists (01268caee): the Plans tab's Create plan sits in #lists-actions and starts an empty
+    // selection in Lists → Designs; Continue opens the composer listing the ticked designs.
     await sheet.locator('#lists-actions').getByRole('button', { name: 'Create plan', exact: true }).click();
+    const selection = sheet.locator('#lists-actions .lists-selection-count');
+    const next = sheet.locator('#lists-actions [data-lists-continue]');
+    await expect(selection).toHaveText('0 selected');
+    await expect(next).toBeDisabled();
+    await sheet.locator('#proposal-list-host input[type="checkbox"]').first().check();
+    await expect(selection).toHaveText('1 selected');
+    await expect(next).toBeEnabled();
+    await next.click();
     const composer = page.locator('.plan-composer');
-    await expect(composer.locator('.plan-dialog__count')).toHaveText('0 selected');
+    await expect(composer.locator('.plan-dialog__count')).toHaveText('1 selected');
+    await expect(composer.locator('.plan-dialog__members li')).toHaveCount(1);
     const save = composer.getByRole('button', { name: 'Create plan', exact: true });
     await expect(save).toBeDisabled();
     await composer.getByLabel('Plan name', { exact: true }).fill('Button control plan');
-    await expect(save).toBeDisabled();
-    await composer.locator('.plan-dialog__choice input[type="checkbox"]').first().check();
-    await expect(composer.locator('.plan-dialog__count')).toHaveText('1 selected');
     await expect(save).toBeEnabled();
     const index = pageIndex(page);
     const beforeSave = index.requests.filter(request => request.method === 'POST').length;
@@ -188,6 +195,8 @@ test.describe('proposal button controls: modal and alternate states @features', 
     allowRecovery = true;
     await list.getByRole('button', { name: 'Refresh', exact: true }).click();
     await expect.poll(() => requests).toBeGreaterThanOrEqual(2);
-    await expect(status).toHaveText('0 of 0 loaded items');
+    // An empty recovered page hides the status and shows the list's empty note instead.
+    await expect(status).toBeHidden();
+    await expect(list.locator('#proposal-list-host')).toContainText('Nothing here yet.');
   });
 });

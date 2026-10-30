@@ -73,7 +73,7 @@ describe('proposal authored building geometry compaction', () => {
         expect(compacted).not.toBe(geometry);
         expect(compacted).toEqual({ buildings: [feature], metadata: { keep: true } });
         expect(geometry).toHaveProperty('ruleMassing');
-        const unrelated = { groundSurface: feature };
+        const unrelated = { surroundings: feature };
         expect(authored.compactBuildingGeometry(unrelated)).toBe(unrelated);
     });
 });

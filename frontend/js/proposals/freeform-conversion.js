@@ -206,7 +206,7 @@
             buildings: list,
             ruleMassing: null,
             ineligibleParcels: [],
-            groundSurface: null,
+            surroundings: null,
             groundBoundary: null,
             landTake: null
         };

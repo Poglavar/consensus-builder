@@ -28,7 +28,7 @@
     };
     const kindOf = kind => KINDS[kind] || KINDS.parcel;
     // Strings whose parcel wording would be wrong for buildings: never borrowed from parcelSources.
-    const BUILDING_ONLY = new Set(['title', 'intro', 'url', 'matched', 'levelsOnly', 'noHeights', 'heightField', 'heightUnit', 'metres', 'feet', 'overpass', 'retry', 'add']);
+    const BUILDING_ONLY = new Set(['title', 'intro', 'url', 'matched', 'levelsOnly', 'noHeights', 'heightField', 'heightUnit', 'metres', 'feet', 'overpass', 'cityModel', 'retry', 'add']);
     function backend(global) {
         const param = new URLSearchParams(global.location?.search || '').get('backend');
         return String(global.getBackendBase?.() || param || 'https://api.urbangametheory.xyz').replace(/\/+$/, '');
@@ -47,8 +47,9 @@
             const encoded = sourceId.slice(spec.idPrefix.length).replace(/-/g, '+').replace(/_/g, '/');
             const json = typeof atob === 'function' ? atob(encoded) : Buffer.from(encoded, 'base64').toString('utf8');
             const value = JSON.parse(json);
-            // 'overpass' (an OpenStreetMap mirror) is a building source only; the kind check below holds it there.
-            if (!['arcgis', 'wfs', 'ogc-api', 'socrata', 'geojson-snapshot', 'overpass'].includes(value.adapter)) return null;
+            // 'overpass' (an OpenStreetMap mirror) and 'city-model' (a CityJSON or CityGML file) are building
+            // sources only; the kind check below holds them there.
+            if (!['arcgis', 'wfs', 'ogc-api', 'socrata', 'geojson-snapshot', 'overpass', 'city-model'].includes(value.adapter)) return null;
             if (value.cityIds?.length !== 1 || value.cityIds[0] !== city || !spec.idPattern.test(value.idPrefix)) return null;
             if ((value.kind === 'building') !== (kind === 'building')) return null;
             const url = new URL(value.endpoint);
@@ -106,7 +107,7 @@
         const param = kindOf(kind).param;
         if (sourceId) url.searchParams.set(param, sourceId); else url.searchParams.delete(param);
         const center = global.map?.getCenter?.();
-        if (center && global.map?.getZoom) url.searchParams.set('at', [center.lat, center.lng, global.map.getZoom()].join(','));
+        if (center && global.map?.getZoom) url.searchParams.set('at', [center.lat, center.lng, Math.round(global.map.getZoom() * 100) / 100].join(','));
         global.location.assign(url.href);
     }
     // What the city uses when the person has chosen nothing (parcels and imagery).
@@ -351,7 +352,10 @@
                     else result.textContent = cors ? t('cors', 'This service does not allow browsers to read it directly.')
                         : error.code === 'invalid-source-url'
                         ? t('invalidUrl', 'Use a public HTTPS URL without credentials or access keys.')
-                        : imagery ? error.code === 'imagery-crs-unsupported' ? t('unsupportedCrs', 'This WMS needs a supported geographic or Web Mercator coordinate system.') : error.message : global.ParcelSourceHealth?.describeFailure?.(error, { offline: global.navigator?.onLine === false, translate: global.i18n?.t?.bind(global.i18n) }) || error.message;
+                        : imagery ? error.code === 'imagery-crs-unsupported' ? t('unsupportedCrs', 'This WMS needs a supported geographic or Web Mercator coordinate system.') : error.message
+                        // A building source refused for what it holds says why; the parcel wording below is for parcel services.
+                        : building && response.status === 422 && data.error ? data.error
+                        : global.ParcelSourceHealth?.describeFailure?.(error, { offline: global.navigator?.onLine === false, translate: global.i18n?.t?.bind(global.i18n) }) || error.message;
                     if (Array.isArray(data.attempts)) element('p', t('attempts', 'Tried: {{adapters}}', { adapters: data.attempts.map(item => item.adapter).join(', ') }), result);
                     for (const attempt of data.attempts || []) {
                         if (attempt.error?.message) element('p', attempt.adapter + ': ' + attempt.error.message, result);
@@ -371,7 +375,7 @@
                 result.textContent = imagery ? t('matched', 'Image verified using {{adapter}}. Coverage outside the test area depends on the source.', { adapter: candidate.adapter }) : building
                     ? t('matched', 'Adapter found: {{adapter}}. {{count}} buildings in the test area. Coverage outside this area depends on the source.', { adapter: candidate.adapter, count: data[spec.countField] })
                     : t('matched', 'Adapter found: {{adapter}}. {{count}} parcels in the test area. Coverage outside this area depends on the source.', { adapter: candidate.adapter, count: data[spec.countField] });
-                if (building) describeHeights(candidate);
+                if (building) describeHeights(candidate, data);
                 use.hidden = false;
             } catch (error) {
                 if (requestController !== controller || !dialog.isConnected) return;
@@ -381,9 +385,16 @@
             finally { clearTimeout(timer); if (requestController === controller) { check.disabled = false; input.disabled = false; } }
         }
         // Which fields give the heights, and in what unit: names rarely say (NYC's HEIGHT_ROOF is feet).
-        function describeHeights(source) {
+        function describeHeights(source, data = {}) {
             if (source.adapter === 'overpass') {
                 element('p', t('overpass', 'An OpenStreetMap mirror: heights come from OpenStreetMap where mapped and are estimated elsewhere.'), result);
+                return;
+            }
+            if (source.adapter === 'city-model') {
+                // The file's buildings may lie outside the view that was checked: say where they are.
+                const [west, south, east, north] = source.bbox;
+                element('p', t('cityModel', 'A city model file with {{count}} buildings around {{at}}: each building keeps its own height and storeys, and the file is read again only while it is unchanged.',
+                    { count: data.fileBuildingCount, at: `${((south + north) / 2).toFixed(5)}, ${((west + east) / 2).toFixed(5)}` }), result);
                 return;
             }
             if (!source.heightField) {

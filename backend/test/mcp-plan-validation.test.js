@@ -44,7 +44,10 @@ describe('named plan validation without cadastral reads',()=>{
         const read={siteOfDesign:content=>content.site,request:vi.fn()};
         const drafts={resolveDesignSource:async input=>({content:input.content || input,parcelSourceId:input.parcelSourceId || null})};
         const plans=createMcpNamedPlanTools({read,drafts,appOrigin:'https://app.example'});
-        const original=await plans.draftPlan({title:'Review',designs:[{content:first,parcelSourceId:'source-a'},{content:second,parcelSourceId:'source-b'}]});
+        // ugt_draft_plan refuses overlapping buildings now; a plan saved before that rule can hold them, and
+        // validation still reports them.
+        const content=PlanRecord.create('Review',[cidOfObject(first),cidOfObject(second)],{at:'45.001,15.001,17',mode:'2d',city:first.city||null});
+        const original=await plans.resolvePlan({plan:content,designs:[{content:first,parcelSourceId:'source-a'},{content:second,parcelSourceId:'source-b'}]});
         const revised=await plans.editPlan({plan:original,expectedCid:original.cid,operations:[{type:'modify',ref:`design:${cidOfObject(first)}`,changes:[{type:'retitle',value:'Revised'}]}]});
         const result=await createMcpValidationTools({plans}).validatePlan({plan:revised});
         expect(result.cid).toBe(revised.cid);expect(result.cid).not.toBe(original.cid);

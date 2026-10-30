@@ -143,7 +143,7 @@ Undo restores the authored take and furniture from the history snapshot instead.
 Review reads immutable source cadastral boundaries, including when reopening an
 applied design whose own live fragments would otherwise hide its occupied yard.
 
-The ground surface is clipped to the recomputed take; leaving the last whole parcel
+The surroundings are clipped to the recomputed take; leaving the last whole parcel
 also clears stale furniture. Save uses the same take for site, binding and demolition.
 The pure regression checks edge contact, saved choices, source immutability, removal
 preview and tiny genuine overlap that merely rounds to 0%. Browser checks cover

@@ -205,7 +205,7 @@ test('unnamed parcel owners work and ownership/lens settings open separate dialo
   await expect(editor).toBeHidden(); await expect(page.locator('.agreement-editor-modal')).toHaveCount(0);
 });
 
-test('a saved private plan can apply its unpublished members before agreement authoring', async ({ mockApi: page }) => {
+test('a previewed private plan asks to apply its unpublished members before agreement authoring', async ({ mockApi: page }) => {
   const { layoutId } = await applyLayout(page);
   const editor = await create(page, layoutId);
   const planCid = await editor.locator('[data-agreement-plan]').inputValue();
@@ -216,8 +216,10 @@ test('a saved private plan can apply its unpublished members before agreement au
     const plan = w.NamedPlans.list().find((row: any) => row.cid === planCid);
     void w.AgreementDialog.open({ plan });
   }, { layoutId, planCid });
-  await expect(agreementEditor(page).locator('[data-agreement-action="apply-plan"]')).toBeVisible();
-  await agreementEditor(page).locator('[data-agreement-action="apply-plan"]').click();
+  // Create agreement asks once before applying the plan; the editor opens on its land.
+  const ask = page.locator('.cb-dialog--confirm');
+  await expect(ask).toContainText('The designs of this plan are not on your map.');
+  await ask.getByRole('button', { name: 'Apply and continue', exact: true }).click();
   await expect(agreementEditor(page).locator('[data-agreement-input]')).toHaveCount(1);
   await expect(editorSave(agreementEditor(page))).toBeEnabled();
   expect(await agreementEditor(page).locator('[data-agreement-plan]').inputValue()).toBe(planCid);

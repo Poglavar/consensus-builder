@@ -86,14 +86,17 @@ for (const width of [1280, 390]) {
     const planSection = stack2d.locator('.click-stack__section[data-kind="plans"]');
     await expect(planSection).toBeVisible();
     await expect(planSection).toHaveClass(/is-expanded/);
+    // Share, Create agreement, Schedule (build-out timeline) and Download, one shared button style.
     const planActions = planSection.locator('.click-stack__actions > button');
-    await expect(planActions).toHaveCount(2);
+    expect(await planActions.evaluateAll(buttons => buttons.map(button => button.className))).toEqual([
+      'btn btn-primary click-stack__share-plan', 'btn click-stack__create-agreement',
+      'btn click-stack__schedule-plan', 'btn click-stack__download-plan']);
     const planActionSizes = await planActions.evaluateAll(buttons => buttons.map(button => {
       const style = getComputedStyle(button);
       return { fontSize: style.fontSize, height: button.getBoundingClientRect().height };
     }));
     expect(planActionSizes.every(action => action.fontSize === '15px' && action.height > 0)).toBe(true);
-    expect(Math.abs(planActionSizes[0].height - planActionSizes[1].height)).toBeLessThan(1);
+    expect(planActionSizes.every(action => Math.abs(action.height - planActionSizes[0].height) < 1)).toBe(true);
     await expect(planSection.locator('[style]')).toHaveCount(0);
 
     // Restore the source parcel before showing its 3D value panel; the park design clears its

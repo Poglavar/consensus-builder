@@ -266,23 +266,14 @@
     line-height: var(--cb-leading);
 }
 
-/* A word on the Bets button ("New") instead of a count, until the sheet has been opened once. */
-.map-shell-badge--text {
-    min-width: 0;
-    padding: 0 var(--cb-space-2);
-    font-size: var(--cb-text-xs);
-    letter-spacing: var(--cb-tracking-caps);
+/* "Experimental" beside the sheet title (a cb-badge): yellow in both themes, and kept next to the
+   title rather than pushed to the close button. */
+.bets-experimental {
+    margin-right: auto;
+    background: var(--cb-map-highlight);
+    color: var(--cb-map-highlight-ink);
     text-transform: uppercase;
-    background: var(--cb-success);
-    color: var(--cb-success-ink);
-}
-
-@media (max-width: 767.98px) {
-    /* On the phone bar the word sits beside the icon, not over it. */
-    .map-shell-cluster--bottom-right .map-shell-button--labelled .map-shell-badge--text {
-        right: auto;
-        left: calc(50% + var(--cb-space-1));
-    }
+    letter-spacing: var(--cb-tracking-caps);
 }
 
 /* ---- The list as a catalogue ----

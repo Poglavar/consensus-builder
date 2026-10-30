@@ -498,8 +498,8 @@ async function materializeQueuedSharedProposals(proposalIds, options = {}) {
     // remains the position used for ordinary per-proposal progress.
     const reportProgress = (record, id, done) => {
         if (typeof updateProposalLoadOverlay !== 'function') return;
-        // The name alone. formatSharedProposalLabel appends "(#id)", which is useful in a failure
-        // report but noisy in a status line that changes every second.
+        // The name alone, as in the failure report: formatSharedProposalLabel appends "(#id)",
+        // which is kept only for a design without a title.
         const title = (record && typeof record.title === 'string') ? record.title.trim() : '';
         reportSharedPlanProgress({
             phase: 'proposal-apply',
@@ -768,7 +768,8 @@ async function handleSharedDesignRoute(cids, options = {}) {
     const tShare = getShareI18nHelper();
     const log = (message, ...rest) => console.log(`[${new Date().toISOString()}] [handleSharedDesignRoute] ${message}`, ...rest);
     const result = { applied: [], skipped: [], omitted: [], failed: [], blocked: false, localIds: new Map() };
-    const labelOf = (record, fallback) => formatSharedProposalLabel(record, fallback);
+    // A design is named by its title; its id only stands in for a missing one.
+    const labelOf = (record, fallback) => (record && record.title ? String(record.title) : formatSharedProposalLabel(record, fallback));
     let replayTakeover = null;
     try {
         if (typeof map === 'undefined' || !map) throw new Error('The map is not ready.');
@@ -966,6 +967,17 @@ async function handleSharedDesignRoute(cids, options = {}) {
             });
             updateProposalLayer();
             updateShowProposalsButton();
+        }
+        // Each member's own apply can succeed while a later member takes its ground (two designs of
+        // one site in one plan): only the members that still stand count as applied.
+        const displaced = [...result.applied, ...result.skipped].filter(id => !isProposalCurrentlyApplied(proposalStorage.getProposal(id)));
+        if (displaced.length) {
+            const gone = new Set(displaced);
+            result.applied = result.applied.filter(id => !gone.has(id));
+            result.skipped = result.skipped.filter(id => !gone.has(id));
+            displaced.forEach(id => result.failed.push({ id, label: labelOf(proposalStorage.getProposal(id), id),
+                reason: t('proposals.share.errors.displaced', 'Another design of this plan takes the same ground, so the two cannot stand together.') }));
+            log(`${displaced.length} member(s) displaced by another member`, displaced);
         }
         hideLoad();
         log(`applied ${result.applied.length}, already applied ${result.skipped.length}, failed ${result.failed.length}`);

@@ -39,7 +39,7 @@ describe('granular authored editing', () => {
         const design=make('building',{floors:4,coverage:.05});
         const body=design.geometry.buildings[0];
         design.geometry.groundBoundary=turf.feature(structuredClone(site));
-        design.geometry.groundSurface={treatment:'green',polygon:turf.difference(turf.feature(site),body).geometry,
+        design.geometry.surroundings={treatment:'green',polygon:turf.difference(turf.feature(site),body).geometry,
             decorationDesign:{trees:[{coordinate:[-.099,51.501],kind:'broadleaf',heightM:8}]}};
         design.geometry.landTake={geometry:structuredClone(body.geometry)};
         const before=structuredClone(design);
@@ -47,8 +47,8 @@ describe('granular authored editing', () => {
             {op:'replace',path:'/geometry/landTake/geometry',value:structuredClone(site)}]);
         expect(next.geometry.buildings[0].geometry).not.toEqual(body.geometry);
         expect(next.geometry.groundBoundary).toEqual(design.geometry.groundBoundary);
-        expect(next.geometry.groundSurface.decorationDesign).toEqual(design.geometry.groundSurface.decorationDesign);
-        expect(turf.bbox(next.geometry.groundSurface.polygon)).toEqual(turf.bbox(site));
+        expect(next.geometry.surroundings.decorationDesign).toEqual(design.geometry.surroundings.decorationDesign);
+        expect(turf.bbox(next.geometry.surroundings.polygon)).toEqual(turf.bbox(site));
         expect(next.geometry.landTake.geometry).toEqual(site);
         expect(design).toEqual(before);
     });
@@ -56,26 +56,26 @@ describe('granular authored editing', () => {
         const design=make('building',{floors:4,coverage:.05});
         const body=design.geometry.buildings[0];
         design.geometry.groundBoundary=turf.feature(structuredClone(site));
-        design.geometry.groundSurface={treatment:'paved',polygon:turf.difference(turf.feature(site),body).geometry,
+        design.geometry.surroundings={treatment:'paved',polygon:turf.difference(turf.feature(site),body).geometry,
             decorationDesign:{trees:[{coordinate:[-.099,51.501],kind:'broadleaf',heightM:8}]}};
-        const pitted=edit(design,[{op:'add',path:'/geometry/groundSurface/decorationDesign/trees/0/pit',value:'grille'},
-            {op:'replace',path:'/geometry/groundSurface/decorationDesign/trees/0/heightM',value:9}]);
-        expect(pitted.geometry.groundSurface.decorationDesign.trees[0]).toEqual({coordinate:[-.099,51.501],kind:'broadleaf',heightM:9,pit:'grille'});
-        expect(()=>edit(pitted,[{op:'replace',path:'/geometry/groundSurface/treatment',value:'green'}])).toThrow(expect.objectContaining({code:'invalid-tree'}));
-        const green=edit(pitted,[{op:'replace',path:'/geometry/groundSurface/treatment',value:'green'},
-            {op:'remove',path:'/geometry/groundSurface/decorationDesign/trees/0/pit'}]);
-        expect(green.geometry.groundSurface.decorationDesign.trees[0]).not.toHaveProperty('pit');
+        const pitted=edit(design,[{op:'add',path:'/geometry/surroundings/decorationDesign/trees/0/pit',value:'grille'},
+            {op:'replace',path:'/geometry/surroundings/decorationDesign/trees/0/heightM',value:9}]);
+        expect(pitted.geometry.surroundings.decorationDesign.trees[0]).toEqual({coordinate:[-.099,51.501],kind:'broadleaf',heightM:9,pit:'grille'});
+        expect(()=>edit(pitted,[{op:'replace',path:'/geometry/surroundings/treatment',value:'green'}])).toThrow(expect.objectContaining({code:'invalid-tree'}));
+        const green=edit(pitted,[{op:'replace',path:'/geometry/surroundings/treatment',value:'green'},
+            {op:'remove',path:'/geometry/surroundings/decorationDesign/trees/0/pit'}]);
+        expect(green.geometry.surroundings.decorationDesign.trees[0]).not.toHaveProperty('pit');
     });
     it('a footprint-only land-take edit removes surrounding ground and furniture', () => {
         const design=make('building',{floors:4,coverage:.05});
         const body=design.geometry.buildings[0];
         design.geometry.landTake=turf.feature(structuredClone(site));
         design.geometry.groundBoundary=turf.feature(structuredClone(site));
-        design.geometry.groundSurface={treatment:'green',polygon:turf.difference(turf.feature(site),body).geometry,
+        design.geometry.surroundings={treatment:'green',polygon:turf.difference(turf.feature(site),body).geometry,
             decorationDesign:{trees:[{coordinate:[-.099,51.501],kind:'broadleaf',heightM:8}]}};
         const before=structuredClone(design);
         const next=edit(design,[{op:'replace',path:'/geometry/landTake',value:body}]);
-        expect(next.geometry.groundSurface).toBeNull();
+        expect(next.geometry.surroundings).toBeNull();
         expect(next.geometry.buildings).toEqual(design.geometry.buildings);
         expect(next.geometry.landTake).toEqual(body);
         expect(design).toEqual(before);
@@ -86,7 +86,7 @@ describe('granular authored editing', () => {
         const body=design.geometry.buildings[0], before=structuredClone(design);
         design.geometry.landTake=turf.feature(structuredClone(site));
         design.geometry.groundBoundary=turf.feature(structuredClone(site));
-        design.geometry.groundSurface={treatment:'paved',polygon:turf.difference(turf.feature(site),body).geometry,
+        design.geometry.surroundings={treatment:'paved',polygon:turf.difference(turf.feature(site),body).geometry,
             decorationDesign:{trees:[{coordinate:[-.099,51.501],kind:'broadleaf',heightM:8}]}};
         const original=structuredClone(design);
         const moved=structuredClone(body);
@@ -96,7 +96,7 @@ describe('granular authored editing', () => {
             {op:'replace',path:'/geometry/landTake',value:moved},
             {op:'replace',path:'/site',value:moved.geometry}
         ]);
-        expect(next.geometry.groundSurface).toBeNull();
+        expect(next.geometry.surroundings).toBeNull();
         expect(turf.intersect(turf.feature(next.site),turf.feature(before.site))).toBeNull();
         expect(validateDesignContent(next).ok).toBe(true);
         expect(design).toEqual(original);

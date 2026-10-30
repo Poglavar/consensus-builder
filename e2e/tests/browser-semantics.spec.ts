@@ -162,8 +162,11 @@ test.describe('Browser-readable controls', () => {
       void w.PlanDialog.create({ members: [record] }); return record.title;
     }, id);
     const dialog = page.getByRole('dialog', { name: 'Create plan', exact: true });
-    const member = dialog.getByRole('checkbox', { name: new RegExp(title) });
+    await expect(dialog.getByRole('listitem').filter({ hasText: title })).toBeVisible();
+    await dialog.getByRole('button', { name: 'Change designs', exact: true }).click();
+    const sheet = page.locator('#proposals-sheet');
+    const member = sheet.getByRole('checkbox', { name: new RegExp(title) });
     await expect(member).toBeChecked(); await member.uncheck(); await expect(member).not.toBeChecked();
-    await expect(dialog.getByRole('button', { name: 'Create plan', exact: true })).toBeDisabled();
+    await expect(sheet.getByRole('button', { name: 'Continue', exact: true })).toBeDisabled();
   });
 });

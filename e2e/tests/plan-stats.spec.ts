@@ -97,7 +97,7 @@ test.describe('Plan arithmetic @features', () => {
     const compare = sheet.locator('[data-lists-compare]');
     await expect(compare).toBeDisabled();
     await expect(sheet.getByRole('button', { name: 'Continue', exact: true })).toHaveCount(0);
-    const check = (title: string) => sheet.locator('#proposal-list-host .lists-item').filter({ has: page.getByRole('button', { name: title, exact: true }) }).locator('input[type=checkbox]').check();
+    const check = (title: string) => sheet.locator('#proposal-list-host .lists-item').filter({ has: page.getByRole('heading', { name: title, exact: true }) }).locator('input[type=checkbox]').check();
     await check(titles[0]);
     await expect(compare).toBeDisabled();
     await check(titles[1]);

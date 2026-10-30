@@ -75,7 +75,7 @@ describe('phone proposal list', () => {
     it('opens the lists panel with its filters folded and without focusing search', () => {
         const src = read('../../frontend/js/lists-panel.js');
         expect(src).toMatch(/filtersOpen: false/);
-        expect(src).toContain("node('details', 'lists-filter-details'); filters.open = state.filtersOpen;");
+        expect(src).toContain("filters.hidden = !state.filtersOpen;");
         expect(src).not.toMatch(/search\.focus\(/);
     });
 });

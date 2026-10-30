@@ -50,7 +50,7 @@ test.describe('World navigation and open ground @features', () => {
     const sheet = page.locator('#proposals-sheet');
     await sheet.locator('[data-list-source="published"]').click();
     await expect(sheet.locator('#proposal-list-host .lists-item')).toHaveCount(7);
-    await expect(sheet.locator('#lists-status')).toHaveText('7 of 7 loaded items');
+    await expect(sheet.locator('#lists-status')).toHaveText('Shown: 7');
   });
 
   test('Explore Lists Published lists server designs in the visible area', async ({ mockApi: page }) => {
@@ -262,11 +262,14 @@ test.describe('World navigation and open ground @features', () => {
       await expect(link).toHaveAttribute('href', `/agreements/${cid}?city=zagreb&reduceMotion=1`);
       await link.click();
       await expect(page.locator('#world-view')).toHaveCount(0);
-      await expect.poll(() => page.evaluate(() => location.pathname)).toBe(`/agreements/${cid}`);
       const panel = page.locator('section#agreement-panel');
       await expect(panel).toBeVisible({ timeout: 30_000 });
       await expect(page.locator('#agreement-panel-title')).toHaveText(title);
       await expect(panel.locator('code.agreement-panel-cid')).toHaveAttribute('title', cid);
+      // The record link has done its work once the agreement is selected: the address names the
+      // selection instead (SelectionAddress), so a reload does not import and apply it again.
+      await expect.poll(() => page.evaluate(() => ({ path: location.pathname, named: !!new URLSearchParams(location.search).get('agreement') })))
+        .toEqual({ path: '/', named: true });
       // Its design stands on the map, and the agreement matches what it shapes there.
       await expect.poll(isApplied, { timeout: 30_000 }).toBe(true);
       await expect(panel).toHaveAttribute('data-agreement-check', 'current', { timeout: 30_000 });

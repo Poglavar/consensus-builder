@@ -6,8 +6,10 @@ for (const width of [1280, 390]) {
   test(`a saved plan shares its immutable snapshot at ${width}px`, async ({ mockApi: page, browser, baseURL }) => {
     test.setTimeout(180_000); await page.setViewportSize({ width, height: 844 }); await openCity(page); await page.evaluate(()=>(window as any).guestPolicyBlocks('publish')); await chooseProfileName(page,'Plan author');
     const id=await createSpace(page,'park'); await page.locator('#proposals-button').click(); await page.locator('#shareAppliedProposalsButton').click();
+    // Create plan ticks the designs in Lists → Designs; Continue opens the composer listing them.
     await page.locator('#lists-actions').getByRole('button',{name:'Create plan',exact:true}).click();
-    const form=page.locator('.plan-composer'); await form.getByLabel('Plan name',{exact:true}).fill('Riverside Garden'); await form.locator('input[type=checkbox]').check(); await form.getByRole('button',{name:'Create plan',exact:true}).click();
+    await page.locator('#proposal-list-host input[type=checkbox]').check(); await page.locator('#lists-actions [data-lists-continue]').click();
+    const form=page.locator('.plan-composer'); await expect(form.locator('.plan-dialog__members li')).toHaveCount(1); await form.getByLabel('Plan name',{exact:true}).fill('Riverside Garden'); await form.getByRole('button',{name:'Create plan',exact:true}).click();
     await expect(form).toBeHidden(); await expect(page.locator('.plan-details')).toHaveCount(0);
     const section=page.locator('#click-stack .click-stack__section[data-kind="plans"]');
     await expect(section.locator('.click-stack__row')).toHaveAttribute('aria-expanded','true');
@@ -28,7 +30,8 @@ for (const width of [1280, 390]) {
 
 test('a failed plan publish remains retryable and does not create a plan link',async({mockApi:page})=>{
   await openCity(page);await page.evaluate(()=>(window as any).guestPolicyBlocks('publish'));await chooseProfileName(page,'Plan author');await createSpace(page,'park');await page.locator('#proposals-button').click();await page.locator('#shareAppliedProposalsButton').click();
-  await page.locator('#lists-actions').getByRole('button',{name:'Create plan',exact:true}).click();const form=page.locator('.plan-composer');await form.getByLabel('Plan name',{exact:true}).fill('Retry garden');await form.locator('input[type=checkbox]').check();await form.getByRole('button',{name:'Create plan',exact:true}).click();
+  await page.locator('#lists-actions').getByRole('button',{name:'Create plan',exact:true}).click();await page.locator('#proposal-list-host input[type=checkbox]').check();await page.locator('#lists-actions [data-lists-continue]').click();
+  const form=page.locator('.plan-composer');await expect(form.locator('.plan-dialog__members li')).toHaveCount(1);await form.getByLabel('Plan name',{exact:true}).fill('Retry garden');await form.getByRole('button',{name:'Create plan',exact:true}).click();
   await page.route('**/plans',route=>route.fulfill({status:503,contentType:'application/json',body:JSON.stringify({error:'Storage is unavailable'})}));
   await page.locator('#click-stack .click-stack__section[data-kind="plans"]').getByRole('button',{name:'Share plan',exact:true}).click();const share=page.locator('.plan-share');await share.getByRole('button',{name:'Publish and copy link',exact:true}).click();
   await expect(share.locator('[role=status]')).toContainText('Storage is unavailable');await expect(share.getByRole('button',{name:'Publish and copy link',exact:true})).toBeEnabled();await expect(share.getByLabel('Plan link',{exact:true})).toBeHidden();

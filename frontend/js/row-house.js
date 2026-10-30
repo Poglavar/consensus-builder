@@ -848,13 +848,16 @@
         const reader = new FileReader();
         reader.onload = async () => {
             try {
-                await window.openFreeformGeoJSONBuildings(JSON.parse(reader.result), {
+                await window.ensureOptionalTool('cityModel');
+                await window.openFreeformGeoJSONBuildings(window.CityModelReader.geoJsonFromFileText(reader.result, { proj4: window.proj4, turf }), {
                     blockName: rowHouseBlockNameOverride || null,
                     closeSource: () => closeRowHouseModal({ preservePending: true, continueDesignSession: true })
                 });
             } catch (error) {
                 console.error('Row-house GeoJSON import failed', error);
-                showRowHouseEditorAlert('uploadNoPolygon', 'Could not import the file. Use valid Polygon or MultiPolygon building footprints.');
+                const crsMessage = window.CityModelReader?.crsErrorMessage(error, window.i18n);
+                if (crsMessage) window.CbDialog.alert(crsMessage);
+                else showRowHouseEditorAlert('uploadNoPolygon', 'Could not import the file. Use valid Polygon or MultiPolygon building footprints.');
             }
         };
         reader.onerror = () => showRowHouseEditorAlert('uploadError', 'Could not read that file.');
@@ -1048,7 +1051,7 @@
 
         const previewFeatures = rowBuildOut.length ? rowBuildOut : [feature];
         rowHouseModal?.setPreview({
-            groundSurface: rowHouseSurroundings?.refresh() || null,
+            surroundings: rowHouseSurroundings?.refresh() || null,
             draftPreview: { kind: 'buildings', features: rowBuildOut },
             // The whole terrace the houses are cut from, present even when no plot can hold one.
             massing: feature,
@@ -1142,7 +1145,7 @@
             buildingFeature: ruleMassing,
             buildings,
             ruleMassing,
-            groundSurface: rowHouseSurroundings?.surface() || null,
+            surroundings: rowHouseSurroundings?.surface() || null,
             // A Row stays on its parcels (proposals/freeform-conversion.js): never a free placement.
             placement: { free: false, site: cloneRowHouseFeature(rowHouseSiteBoundary()) }
         }, { coalesceKey: 'row-house-live' });
@@ -1276,8 +1279,8 @@
                             <input type="range" id="rowhouse-chamfer-slider" min="0" max="10" value="${DEFAULT_CHAMFER}" step="0.5">
                         </div>
                         <div class="parameter-group">
-                            <button id="rowhouse-geojson-upload" class="btn btn-block" type="button" data-i18n-key="rowHouses.modal.uploadGeojson" data-i18n-attr="text">Import Freeform GeoJSON</button>
-                            <input id="rowhouse-geojson-input" type="file" accept=".geojson,.json,application/geo+json,application/json" hidden>
+                            <button id="rowhouse-geojson-upload" class="btn btn-block" type="button" title="${translateRowHouseText('common.footprintFileFormats', 'GeoJSON, CityGML or CityJSON')}" data-i18n-key="rowHouses.modal.uploadGeojson" data-i18n-attr="text">Import Freeform footprints</button>
+                            <input id="rowhouse-geojson-input" type="file" accept=".geojson,.json,.gml,.xml,application/geo+json,application/json,application/gml+xml" hidden>
                         </div>
                         <div class="parameter-metrics">
                             <div class="metric-row">
@@ -1837,7 +1840,7 @@
             buildingFeature: clonedFeature,
             buildings: clonedUnits,
             ruleMassing: clonedFeature,
-            groundSurface: rowHouseSurroundings?.surface() || null,
+            surroundings: rowHouseSurroundings?.surface() || null,
             placement: { free: false, site: cloneRowHouseFeature(rowHouseSiteBoundary()) }
         };
 
