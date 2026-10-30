@@ -6582,16 +6582,16 @@
             "deleteVertexTitle": "Obriši ovu tačku ograde"
         },
         "furniture": {
-            "title": "Modeli opreme",
+            "title": "Modeli urbane opreme",
             "upload": "Učitaj",
             "default": "Podrazumevano",
             "uploaded": "Učitani model",
-            "errorTriangles": "Ovaj model ima {{triangles}} trouglova. Model opreme sme da ima najviše {{max}}.",
-            "errorTexture": "Tekstura je {{width}} × {{height}} px. Teksture opreme smeju da imaju najviše {{max}} px po stranici.",
-            "errorBytes": "Datoteka ima {{size}} MB. Model opreme sme da ima najviše {{max}} MB.",
+            "errorTriangles": "Ovaj model ima {{triangles}} trouglova. Model urbane opreme sme da ima najviše {{max}}.",
+            "errorTexture": "Tekstura je {{width}} × {{height}} px. Teksture urbane opreme smeju da imaju najviše {{max}} px po stranici.",
+            "errorBytes": "Datoteka ima {{size}} MB. Model urbane opreme sme da ima najviše {{max}} MB.",
             "errorEmpty": "Ovaj model nema vidljivu geometriju.",
             "errorParse": "Ova datoteka ne može da se pročita kao glTF/GLB. Koristite samostalni izvoz .glb ili .gltf.",
-            "errorUpload": "Model opreme nije učitan. Proverite vezu i pokušajte ponovo."
+            "errorUpload": "Model urbane opreme nije učitan. Proverite vezu i pokušajte ponovo."
         },
         "uploadModel": "Učitaj model (.glb)",
         "importBoundary": "Uvezi granicu (GeoJSON)",

@@ -2468,16 +2468,16 @@
             "deleteVertexTitle": "Apagar este ponto da vedação"
         },
         "furniture": {
-            "title": "Modelos de mobiliário",
+            "title": "Modelos de mobiliário urbano",
             "upload": "Carregar",
             "default": "Predefinido",
             "uploaded": "Modelo carregado",
-            "errorTriangles": "Este modelo tem {{triangles}} triângulos. Um modelo de mobiliário pode ter no máximo {{max}}.",
-            "errorTexture": "Uma textura mede {{width}} × {{height}} px. As texturas de mobiliário podem medir no máximo {{max}} px por lado.",
-            "errorBytes": "Este ficheiro tem {{size}} MB. Um modelo de mobiliário pode ter no máximo {{max}} MB.",
+            "errorTriangles": "Este modelo tem {{triangles}} triângulos. Um modelo de mobiliário urbano pode ter no máximo {{max}}.",
+            "errorTexture": "Uma textura mede {{width}} × {{height}} px. As texturas de mobiliário urbano podem medir no máximo {{max}} px por lado.",
+            "errorBytes": "Este ficheiro tem {{size}} MB. Um modelo de mobiliário urbano pode ter no máximo {{max}} MB.",
             "errorEmpty": "Este modelo não tem geometria visível.",
             "errorParse": "Não foi possível ler este ficheiro como glTF/GLB. Use uma exportação .glb ou .gltf autónoma.",
-            "errorUpload": "Não foi possível carregar o modelo de mobiliário. Verifique a ligação e tente novamente."
+            "errorUpload": "Não foi possível carregar o modelo de mobiliário urbano. Verifique a ligação e tente novamente."
         },
         "uploadModel": "Carregar modelo (.glb)",
         "importBoundary": "Importar limite (GeoJSON)",

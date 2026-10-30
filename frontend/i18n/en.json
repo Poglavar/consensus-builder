@@ -6548,16 +6548,16 @@
             "deleteVertexTitle": "Delete this fence point"
         },
         "furniture": {
-            "title": "Furniture models",
+            "title": "City furniture models",
             "upload": "Upload",
             "default": "Default",
             "uploaded": "Uploaded model",
-            "errorTriangles": "This model has {{triangles}} triangles. A furniture model may have at most {{max}}.",
-            "errorTexture": "A texture is {{width}} × {{height}} px. Furniture textures may be at most {{max}} px on each side.",
-            "errorBytes": "This file is {{size}} MB. A furniture model may be at most {{max}} MB.",
+            "errorTriangles": "This model has {{triangles}} triangles. A city furniture model may have at most {{max}}.",
+            "errorTexture": "A texture is {{width}} × {{height}} px. City furniture textures may be at most {{max}} px on each side.",
+            "errorBytes": "This file is {{size}} MB. A city furniture model may be at most {{max}} MB.",
             "errorEmpty": "This model has no visible geometry.",
             "errorParse": "Could not read this file as glTF/GLB. Use a self-contained .glb or .gltf export.",
-            "errorUpload": "The furniture model could not be uploaded. Check the connection and try again."
+            "errorUpload": "The city furniture model could not be uploaded. Check the connection and try again."
         },
         "uploadModel": "Upload model (.glb)",
         "importBoundary": "Import boundary (GeoJSON)",
