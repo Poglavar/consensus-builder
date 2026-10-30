@@ -124,7 +124,7 @@ describe('Urban rule shared-map editor behavior', () => {
         expect(setPreview).toHaveBeenCalledWith({
             draftPreview: { kind: 'buildings', features: [example] },
             boundary: authoredSite,
-            groundSurface: null,
+            surroundings: null,
             envelopes: [envelope],
             excluded: [excluded]
         });

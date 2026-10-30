@@ -2568,7 +2568,7 @@ function autosaveBlockifyDraft(featuresOverride = null) {
         buildingFeature: buildings[0] || null,
         buildings,
         ...(ruleMassing ? { ruleMassing } : {}),
-        groundSurface: blockifySurroundings?.surface() || null,
+        surroundings: blockifySurroundings?.surface() || null,
         // A Block stays on its parcels (proposals/freeform-conversion.js): never a free placement.
         placement: { free: false, site: blockifyClone(blockifyDesignBoundary()) }
     }, { coalesceKey: 'blockify-live' });
@@ -2636,7 +2636,7 @@ function refreshBlockPieceHeights() {
 function publishBlockifyPreview({ exampleBuildings = [], envelopes = [], excluded = [] } = {}) {
     if (!blockifyModal) return;
     blockifyModal.setPreview({
-        groundSurface: blockifySurroundings?.refresh() || null,
+        surroundings: blockifySurroundings?.refresh() || null,
         draftPreview: {
             kind: 'buildings',
             features: (Array.isArray(exampleBuildings) ? exampleBuildings : []).filter(feature => feature?.geometry)
@@ -3580,7 +3580,7 @@ async function saveBlockifyDesignForProposal() {
         parentDetails: parentDetails.slice(),
         blockName: getBlockifyDisplayName(),
         parameters,
-        groundSurface: blockifySurroundings?.surface() || null,
+        surroundings: blockifySurroundings?.surface() || null,
         ineligibleParcels,
         buildingFeature: clonedFeature,
         ...(ruleMassing ? { ruleMassing } : {}),

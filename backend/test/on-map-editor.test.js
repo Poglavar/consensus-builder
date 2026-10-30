@@ -125,7 +125,7 @@ describe('OnMapEditor shared floating-panel lifecycle', () => {
     it('returns from a child editor with the parent preview and ownership intact', () => {
         const { editor, env, map } = runtime();
         const parent = editor.open({ owner: 'building', modes: ['2d', 'model'] });
-        const preview = { groundSurface: { treatment: 'green' } };
+        const preview = { surroundings: { treatment: 'green' } };
         parent.setPreview(preview);
         const cancel = vi.fn();
         const child = editor.open({ owner: 'structure-geometry-editor', parentSession: parent, modes: ['2d'], onCancel: cancel });

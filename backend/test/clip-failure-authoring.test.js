@@ -132,7 +132,7 @@ describe('building-ground', () => {
         const ground = require('../../frontend/js/building-ground.js');
         globalThis.turf = failingTurf('difference');
         const proposals = [
-            { buildingProposal: {}, geometry: { groundSurface: { treatment: 'green', polygon: WEST.geometry } } },
+            { buildingProposal: {}, geometry: { surroundings: { treatment: 'green', polygon: WEST.geometry } } },
             { roadProposal: { definition: { polygon: WEST.geometry } } }
         ];
         expectRefusal(() => ground.appliedSurfaces(proposals, () => true), 'building-ground.surfaceWithoutCorridors');
@@ -405,7 +405,7 @@ describe('editor sites (refuse)', () => {
             singleMap: { removeLayer() {} },
             singleGroundPreviewLayer: null,
             singleGroundPreviewSuspended: false,
-            currentGroundSurface: () => { throw refusal; },
+            currentSurroundings: () => { throw refusal; },
             buildingGroundApi: () => null
         });
         const degraded = health().degraded;

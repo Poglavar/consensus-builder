@@ -112,7 +112,7 @@ function seedPendingGeometryFromProposal(source, goalKey, selectedLiveParcelIds 
             buildingFeature: copyDeepClone(primary),
             buildings: copyDeepClone(buildings.length ? buildings : [primary]),
             // A building proposal's paved/green surroundings copy with its buildings.
-            groundSurface: copyDeepClone(source.geometry && source.geometry.groundSurface) || null
+            surroundings: copyDeepClone(source.geometry && source.geometry.surroundings) || null
         };
         window.pendingBuildingProposalContext = context;
         if (typeof setPendingBuildingProposalContext === 'function') setPendingBuildingProposalContext(context);

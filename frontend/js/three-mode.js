@@ -2435,7 +2435,7 @@
 
     function addOnMapEditorContextPreview3D(detail, target) {
         if (!detail || !target) return;
-        const surface = detail.groundSurface;
+        const surface = detail.surroundings;
         if (surface?.polygon) {
             const material = new THREE.MeshLambertMaterial({
                 color: surface.treatment === 'green' ? 0x4f8b55 : 0x8a8d91,

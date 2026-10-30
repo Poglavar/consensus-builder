@@ -92,11 +92,11 @@
             for (const key of ['rotation', 'offsetX', 'offsetY']) delete parameters[key];
             // Restore the old footprint holes, then cut the revised footprints from exactly the
             // same authored surroundings. Decoration positions stay authored and are clipped on apply.
-            const surface = record.geometry.groundSurface;
+            const surface = record.geometry.surroundings;
             if (surface?.polygon) {
                 let ground = before.reduce((out, building) => turf.union(out, building), feature(surface.polygon));
                 for (const building of items) if (ground) ground = turf.difference(ground, building);
-                record.geometry.groundSurface = ground ? { ...surface, polygon: ground.geometry } : null;
+                record.geometry.surroundings = ground ? { ...surface, polygon: ground.geometry } : null;
             }
         }
     }
@@ -346,17 +346,17 @@
                 record.geometry.ruleMassing = rules.massingWithRule(massing, parameters.rule, massing.properties.variationSeed, { turf });
                 record.geometry.ruleMassing.properties.floors = parameters.floors;
             }
-            if (changedShape && record.geometry.groundSurface && !touched('/geometry/groundSurface')) {
-                const surface = record.geometry.groundSurface;
+            if (changedShape && record.geometry.surroundings && !touched('/geometry/surroundings')) {
+                const surface = record.geometry.surroundings;
                 let ground = oldItems.reduce((out,b) => turf.union(out,b), feature(surface.polygon));
                 for (const building of items) if (ground) ground = turf.difference(ground, building);
-                record.geometry.groundSurface = ground ? { ...surface, polygon: ground.geometry } : null;
+                record.geometry.surroundings = ground ? { ...surface, polygon: ground.geometry } : null;
             }
-            if (record.geometry.landTake && record.geometry.groundSurface) {
+            if (record.geometry.landTake && record.geometry.surroundings) {
                 const ground = load('BuildingGround', './building-ground.js');
-                record.geometry.groundSurface = ground.clipSurfaceToLandTake(record.geometry.groundSurface, record.geometry.landTake, turf);
+                record.geometry.surroundings = ground.clipSurfaceToLandTake(record.geometry.surroundings, record.geometry.landTake, turf);
             }
-            validateDecorations(record.geometry?.groundSurface?.decorationDesign, { paved: record.geometry?.groundSurface?.treatment !== 'green', ground: record.geometry?.groundSurface?.polygon || null });
+            validateDecorations(record.geometry?.surroundings?.decorationDesign, { paved: record.geometry?.surroundings?.treatment !== 'green', ground: record.geometry?.surroundings?.polygon || null });
         }
     }
     return { buildings, planting, rowEnvelope, transform, reconcile };

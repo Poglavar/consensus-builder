@@ -172,7 +172,7 @@ describe('three-mode on-map editor live preview', () => {
         const harness = previewHarness();
         const decorationDesign = { version: 3, trees: [{ coordinate: [10, 45], kind: 'conifer', heightM: 12 }] };
         harness.editor.isActive = () => true;
-        harness.editor.getPreview = () => ({ draftPreview: { kind: 'buildings', features: [] }, groundSurface: { treatment, polygon: { type: 'Polygon', coordinates: [] }, decorationDesign } });
+        harness.editor.getPreview = () => ({ draftPreview: { kind: 'buildings', features: [] }, surroundings: { treatment, polygon: { type: 'Polygon', coordinates: [] }, decorationDesign } });
         harness.api.rebuildProposalDraftPreview3D();
         expect(harness.calls.furniture.kind).toBe(kind);
         expect(harness.calls.furniture.features[0].properties.decorations).toEqual(decorationDesign);
@@ -229,11 +229,11 @@ describe('three-mode on-map editor live preview', () => {
         };
         const building = { id: 'live-building', geometry: { type: 'Polygon', coordinates: [] } };
         const boundary = { id: 'parcel-boundary', geometry: { type: 'Polygon', coordinates: [] } };
-        const groundSurface = { polygon: { type: 'Polygon', coordinates: [] }, treatment: 'green' };
+        const surroundings = { polygon: { type: 'Polygon', coordinates: [] }, treatment: 'green' };
 
         // The editor was already open when the lazy-loaded model module starts building its scene.
         harness.editor.isActive = () => true;
-        harness.editor.getPreview = () => ({ draftPreview: { kind: 'buildings', features: [building] }, boundary, groundSurface });
+        harness.editor.getPreview = () => ({ draftPreview: { kind: 'buildings', features: [building] }, boundary, surroundings });
         harness.api.rebuildProposalDraftPreview3D(comparison);
 
         expect(harness.calls.added).toEqual([{ feature: building, style: 'draft', kind: 'buildings' }]);
@@ -242,7 +242,7 @@ describe('three-mode on-map editor live preview', () => {
         expect(harness.calls.context[1].feature).toBe(boundary);
 
         const movedBuilding = { id: 'moved-building', geometry: { type: 'Polygon', coordinates: [] } };
-        harness.editor.getPreview = () => ({ draftPreview: { kind: 'buildings', features: [movedBuilding] }, boundary, groundSurface });
+        harness.editor.getPreview = () => ({ draftPreview: { kind: 'buildings', features: [movedBuilding] }, boundary, surroundings });
         harness.api.handleOnMapEditorPreviewChange();
         expect(harness.calls.added.at(-1).feature).toBe(movedBuilding);
         expect(harness.calls.invalidations).toBe(2);

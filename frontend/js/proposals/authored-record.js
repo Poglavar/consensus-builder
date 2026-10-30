@@ -160,7 +160,7 @@
         }
 
         if (out.geometry && typeof out.geometry === 'object' && !Array.isArray(out.geometry)) {
-            ['ruleMassing', 'groundSurface', 'parkGraphics', 'squareGraphics', 'lakeGraphics', 'stationGraphics']
+            ['ruleMassing', 'surroundings', 'parkGraphics', 'squareGraphics', 'lakeGraphics', 'stationGraphics']
                 .forEach(key => {
                     if (out.geometry[key]?.type === 'Feature') {
                         out.geometry[key] = cleanFeature(out.geometry[key]);

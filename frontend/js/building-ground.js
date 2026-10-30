@@ -94,7 +94,7 @@
     }
 
     function surfaceOf(proposal) {
-        const raw = proposal && proposal.geometry ? proposal.geometry.groundSurface : null;
+        const raw = proposal && proposal.geometry ? proposal.geometry.surroundings : null;
         if (!raw || typeof raw !== 'object') return null;
         if (!TREATMENTS.includes(raw.treatment)) return null;
         const treatment = raw.treatment;
@@ -184,7 +184,7 @@
         applied.filter(proposal => !proposal.parcelLayout).forEach(proposal => {
             (proposal.geometry?.buildings || []).forEach(add);
             add(proposal.geometry?.landTake);
-            add(proposal.geometry?.groundSurface?.polygon);
+            add(proposal.geometry?.surroundings?.polygon);
             add(proposal.structureProposal?.geometry);
             add(proposal.roadProposal?.definition?.polygon);
         });

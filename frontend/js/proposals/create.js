@@ -719,9 +719,9 @@ async function createProposal() {
             if (ruleMassing?.geometry) proposal.geometry.ruleMassing = ruleMassing;
             else delete proposal.geometry.ruleMassing;
             // Building surroundings belong to the same authored design for every typology.
-            const groundSurface = safeClone(pendingBuildingContext.groundSurface);
-            if (groundSurface) proposal.geometry.groundSurface = groundSurface;
-            else delete proposal.geometry.groundSurface;
+            const surroundings = safeClone(pendingBuildingContext.surroundings);
+            if (surroundings) proposal.geometry.surroundings = surroundings;
+            else delete proposal.geometry.surroundings;
 
             proposal.buildingProposal = {
                 typologyType: resolvedTypology,

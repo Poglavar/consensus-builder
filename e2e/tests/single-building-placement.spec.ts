@@ -298,9 +298,9 @@ test.describe('Single-building placement and immutable replacement @features', (
       .toEqual(moved.buildings.map(feature => feature.geometry).sort((a, b) => JSON.stringify(a).localeCompare(JSON.stringify(b))));
     const first = saved[0];
     const second = saved[1];
-    expect(first.geometry.groundSurface || null).toBeNull();
+    expect(first.geometry.surroundings || null).toBeNull();
     expect(first.geometry.groundBoundary || null).toBeNull();
-    expect(second.geometry.groundSurface || null).toBeNull();
+    expect(second.geometry.surroundings || null).toBeNull();
     expect(second.geometry.groundBoundary || null).toBeNull();
     const boundParcelIds = saved.flatMap((proposal: any) => proposal.binding.parcels.map((parcel: any) => parcel.parcelId));
     expect(boundParcelIds).toContain(DESTINATION_PARCEL_ID);
@@ -310,7 +310,7 @@ test.describe('Single-building placement and immutable replacement @features', (
       await page.waitForFunction(id => !!(window as any).proposalStorage?.getProposal(id), proposal.proposalId);
       const restored = await proposalState(page, proposal.proposalId);
       expect(restored.geometry.buildings).toEqual(proposal.geometry.buildings);
-      expect(restored.geometry.groundSurface || null).toEqual(proposal.geometry.groundSurface || null);
+      expect(restored.geometry.surroundings || null).toEqual(proposal.geometry.surroundings || null);
       expect(restored.geometry.groundBoundary || null).toEqual(proposal.geometry.groundBoundary || null);
       expect(restored.site).toEqual(proposal.site);
       expect(restored.binding.parcels).toEqual(proposal.binding.parcels);
@@ -381,7 +381,7 @@ test.describe('Single-building placement and immutable replacement @features', (
       const context = w.getActiveProposalDesignDraft?.()?.editorPayload?.context || {};
       const currentSite = context.placement?.site;
       const currentBoundary = context.groundBoundary;
-      const currentGreenSurface = context.groundSurface?.polygon || ground;
+      const currentGreenSurface = context.surroundings?.polygon || ground;
       return {
         buildingAreas: buildings.map((building: any) => sourceBuildings.map((source: any) => overlapArea(building, source))),
         boundaryArea: overlapArea(currentBoundary, sourceSite),
@@ -425,7 +425,7 @@ test.describe('Single-building placement and immutable replacement @features', (
     const forkId = await page.evaluate(sourceId => (window as any).proposalStorage.getAllProposals()
       .find((p: any) => p.proposalId !== sourceId && p.proposalOrigin?.relation === 'revision' && p.applied).proposalId, publishedId);
     const fork = await proposalState(page, forkId);
-    expect(fork.geometry.groundSurface).toBeUndefined();
+    expect(fork.geometry.surroundings).toBeUndefined();
     await beginGeometryEdit(page, forkId);
     await expect(page.locator(`#single-land-take select[data-parcel-id="${PARCEL_ID}"]`)).toHaveCount(0);
     await expect(page.locator('#single-ground-treatment')).toBeDisabled();

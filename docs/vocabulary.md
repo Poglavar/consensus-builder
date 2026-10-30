@@ -411,13 +411,13 @@ The preview of modeled full building removals and partial cuts caused by a land 
 
 Reviewing a replacement design evaluates observed stock before the source design's own removals. Application evaluates removals against the transaction's applied composition, including sources stood down by that replacement; an unchanged land take does not lose its removals merely because the source is still visible until commit.
 
-### Ground surface
+### Surroundings
 
-An authored paving or green treatment of the land around proposed buildings, represented by `geometry.groundSurface`. Paving is the default for new and edited building designs and uses ordinary sidewalk slabs, distinct from square paving. Its area excludes the stored building footprints and stays within the design’s ground boundary; a surface treatment does not independently determine land take, demolition or transfer rights.
+An authored paving or green treatment of the land around proposed buildings, represented by `geometry.surroundings` (in CityGML terms paving is a traffic area, green a plant cover; CityGML's `GroundSurface` is a building's base, see [building surfaces](#building-surfaces)). Paving is the default for new and edited building designs and uses ordinary sidewalk slabs, distinct from square paving. Its area excludes the stored building footprints and stays within the design’s ground boundary; a surface treatment does not independently determine land take, demolition or transfer rights.
 
 Its visible geometry excludes applied corridor footprints in every map view, including its furniture and planting. The authored surface remains unchanged; removing a corridor restores the surrounding treatment.
 
-A ground surface does not make land shared. Every parcel boundary that crosses its open ground is shown as a fence, along the street edge too but never along a building wall, whether the surface is paved or green. A courtyard is shared ground only when the parcel layout makes it a parcel of its own; a block's **Courtyard as a parcel** action opens that layout with the courtyard carved.
+Surroundings do not make land shared. Every parcel boundary that crosses its open ground is shown as a fence, along the street edge too but never along a building wall, whether the surface is paved or green. A courtyard is shared ground only when the parcel layout makes it a parcel of its own; a block's **Courtyard as a parcel** action opens that layout with the courtyard carved.
 
 ### Corridor
 
@@ -625,7 +625,7 @@ A portion of one building with its own height or roof, such as a lower wing or a
 
 ### Building surfaces
 
-The semantic faces of a building's shell: roof surfaces, wall surfaces, the ground face it stands on and closure surfaces that close an open volume (CityGML `RoofSurface`, `WallSurface`, `GroundSurface`, `ClosureSurface`). A source building read from a city model carries them per face; a building's ground face is its footprint at its base. It is a different thing from the authored [ground surface](#ground-surface) around buildings.
+The semantic faces of a building's shell: roof surfaces, wall surfaces, the ground face it stands on and closure surfaces that close an open volume (CityGML `RoofSurface`, `WallSurface`, `GroundSurface`, `ClosureSurface`). A source building read from a city model carries them per face; a building's ground face is its footprint at its base. It is a different thing from the authored [surroundings](#surroundings) around buildings.
 
 ### Roof type
 

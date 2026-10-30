@@ -601,7 +601,7 @@
     }
 
     // The paved/green surround of an applied freeform building proposal. See building-ground.js.
-    function appliedBuildingGroundSurfaces() {
+    function appliedBuildingSurroundings() {
         if (typeof window.BuildingGround === 'undefined' || !window.BuildingGround) return [];
         if (typeof proposalStorage === 'undefined' || typeof proposalStorage.getAllProposals !== 'function') return [];
         if (typeof isApplied !== 'function') return [];
@@ -722,7 +722,7 @@
         });
         // A freeform building proposal can pave or green the parcel area around its buildings. That
         // surround clears the mesh exactly like a square or a park, and takes the matching apron cap.
-        appliedBuildingGroundSurfaces().forEach(function (surface) {
+        appliedBuildingSurroundings().forEach(function (surface) {
             if (isolationFilter && String(surface.proposalId) !== isolationFilter) return;
             out.push({
                 geometry: surface.geometry,

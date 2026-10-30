@@ -12,9 +12,9 @@ const design = (cid, authoredAt, content) => ({ cid, content: { authoredAt, ...c
 describe('MCP road cut effects', () => {
     it('reports all road cuts to a ground surface and gives every notice the final area without mutation', () => {
         const building = design('building-cid', '2026-01-01T00:00:00Z', {
-            title: 'Building', geometry: { groundSurface: { polygon: box(0, 0, 0.002, 0.001) } }
+            title: 'Building', geometry: { surroundings: { polygon: box(0, 0, 0.002, 0.001) } }
         });
-        const sourceGeometry = structuredClone(building.content.geometry.groundSurface.polygon);
+        const sourceGeometry = structuredClone(building.content.geometry.surroundings.polygon);
         const earlierRoad = design('road-early', '2025-12-31T00:00:00Z', {
             title: 'Earlier road', roadProposal: { definition: { polygon: box(0.0004, -0.001, 0.0006, 0.002) } }
         });
@@ -24,14 +24,14 @@ describe('MCP road cut effects', () => {
         const effects = describeRoadCuts([building, road, earlierRoad]);
         expect(effects).toHaveLength(2);
         expect(effects[0]).toMatchObject({
-            designRef: 'design:building-cid', surfaceKind: 'ground-surface',
+            designRef: 'design:building-cid', surfaceKind: 'surroundings',
             behavior: 'effective-ground-carved; authored-geometry-unchanged'
         });
         expect(effects.map(effect => effect.roadCid)).toEqual(['road-early', 'road-late']);
         expect(effects.every(effect => effect.overlapM2 > 0.25)).toBe(true);
         expect(effects[0].remainingAreaM2AfterAllRoadCuts).toBeLessThan(effects[0].authoredAreaM2);
         expect(effects[1].remainingAreaM2AfterAllRoadCuts).toBe(effects[0].remainingAreaM2AfterAllRoadCuts);
-        expect(building.content.geometry.groundSurface.polygon).toEqual(sourceGeometry);
+        expect(building.content.geometry.surroundings.polygon).toEqual(sourceGeometry);
     });
 
     it('keeps formation cuts limited to later roads and ignores non-overlap', () => {

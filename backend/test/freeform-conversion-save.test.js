@@ -386,10 +386,10 @@ describe('stageActiveFreeformBuildings: fixed imported geometry uses ordinary Fr
             { type: 'Feature', properties: { height: 9 }, geometry: box(16 + 3 * D, 45, 16 + 4 * D, 45 + D) }
         ];
         const site = box(16 - D, 45 - D, 16 + 5 * D, 45 + 2 * D);
-        const surroundings = { groundSurface: { treatment: 'green', polygon: site }, groundBoundary: site, takeWholeParcels: false };
+        const ground = { surroundings: { treatment: 'green', polygon: site }, groundBoundary: site, takeWholeParcels: false };
         const draft = store.createDraft({
             goal: 'single', adapterKey: 'single', fields: { site },
-            editorPayload: { typology: 'single', context: { buildings, buildingFeature: buildings[0], ...surroundings } },
+            editorPayload: { typology: 'single', context: { buildings, buildingFeature: buildings[0], ...ground } },
             previewGeometry: buildings
         });
         globalThis.beginProposalDraftDesignSession(draft.id);
@@ -401,7 +401,7 @@ describe('stageActiveFreeformBuildings: fixed imported geometry uses ordinary Fr
             return true;
         });
         const entries = buildings.map((building, index) => ({ building, site: index === 0 ? site : building.geometry,
-            ...(index === 0 ? { surroundings } : {}) }));
+            ...(index === 0 ? { ground } : {}) }));
         globalThis.stageActiveFreeformBuildings({ buildings: entries });
         store.buildProposalFromDraft.mockImplementationOnce(() => { throw new Error('Site binding unavailable'); });
 

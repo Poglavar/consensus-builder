@@ -1050,7 +1050,7 @@
 
         const previewFeatures = rowBuildOut.length ? rowBuildOut : [feature];
         rowHouseModal?.setPreview({
-            groundSurface: rowHouseSurroundings?.refresh() || null,
+            surroundings: rowHouseSurroundings?.refresh() || null,
             draftPreview: { kind: 'buildings', features: rowBuildOut },
             // The whole terrace the houses are cut from, present even when no plot can hold one.
             massing: feature,
@@ -1144,7 +1144,7 @@
             buildingFeature: ruleMassing,
             buildings,
             ruleMassing,
-            groundSurface: rowHouseSurroundings?.surface() || null,
+            surroundings: rowHouseSurroundings?.surface() || null,
             // A Row stays on its parcels (proposals/freeform-conversion.js): never a free placement.
             placement: { free: false, site: cloneRowHouseFeature(rowHouseSiteBoundary()) }
         }, { coalesceKey: 'row-house-live' });
@@ -1839,7 +1839,7 @@
             buildingFeature: clonedFeature,
             buildings: clonedUnits,
             ruleMassing: clonedFeature,
-            groundSurface: rowHouseSurroundings?.surface() || null,
+            surroundings: rowHouseSurroundings?.surface() || null,
             placement: { free: false, site: cloneRowHouseFeature(rowHouseSiteBoundary()) }
         };
 

@@ -100,7 +100,7 @@ describe('buildSurface', () => {
     it('retains an independent authored furniture layout through storage and rendering projections', () => {
         const design = { version: 3, trees: [{ coordinate: [15.9701, 45.8101], kind: 'conifer', heightM: 12 }] };
         const surface = BuildingGround.buildSurface('green', BLOCK, [BUILDING], design);
-        const proposal = { proposalId: 'building', buildingProposal: {}, geometry: { groundSurface: surface } };
+        const proposal = { proposalId: 'building', buildingProposal: {}, geometry: { surroundings: surface } };
         expect(BuildingGround.surfaceOf(proposal).decorationDesign).toEqual(design);
         expect(BuildingGround.appliedSurfaces([proposal], () => true)[0].decorationDesign).toEqual(design);
         surface.decorationDesign.trees[0].heightM = 18;
@@ -142,7 +142,7 @@ describe('surfaceOf / treatmentOf', () => {
     const proposal = {
         proposalId: 'p1',
         buildingProposal: {},
-        geometry: { groundSurface: { treatment: 'paved', polygon: BLOCK.geometry } }
+        geometry: { surroundings: { treatment: 'paved', polygon: BLOCK.geometry } }
     };
 
     it('reads a persisted surface back', () => {
@@ -158,16 +158,16 @@ describe('surfaceOf / treatmentOf', () => {
 
     it('rejects a surface with an unusable polygon', () => {
         expect(BuildingGround.surfaceOf({
-            geometry: { groundSurface: { treatment: 'paved', polygon: { type: 'Point', coordinates: [1, 2] } } }
+            geometry: { surroundings: { treatment: 'paved', polygon: { type: 'Point', coordinates: [1, 2] } } }
         })).toBeNull();
         expect(BuildingGround.surfaceOf({
-            geometry: { groundSurface: { treatment: 'paved', polygon: null } }
+            geometry: { surroundings: { treatment: 'paved', polygon: null } }
         })).toBeNull();
     });
 
     it('rejects a surface whose treatment is not a real one', () => {
         expect(BuildingGround.surfaceOf({
-            geometry: { groundSurface: { treatment: 'none', polygon: BLOCK.geometry } }
+            geometry: { surroundings: { treatment: 'none', polygon: BLOCK.geometry } }
         })).toBeNull();
     });
 });
@@ -177,17 +177,17 @@ describe('appliedSurfaces', () => {
     const paved = {
         proposalId: 'a',
         buildingProposal: { applied: true },
-        geometry: { groundSurface: { treatment: 'paved', polygon: BLOCK.geometry } }
+        geometry: { surroundings: { treatment: 'paved', polygon: BLOCK.geometry } }
     };
     const unapplied = {
         proposalId: 'b',
         buildingProposal: { applied: false },
-        geometry: { groundSurface: { treatment: 'green', polygon: BLOCK.geometry } }
+        geometry: { surroundings: { treatment: 'green', polygon: BLOCK.geometry } }
     };
     const structure = {
         proposalId: 'c',
         structureProposal: { applied: true, kind: 'square' },
-        geometry: { groundSurface: { treatment: 'paved', polygon: BLOCK.geometry } }
+        geometry: { surroundings: { treatment: 'paved', polygon: BLOCK.geometry } }
     };
 
     it('returns only applied building proposals that have a surface', () => {
@@ -208,7 +208,7 @@ describe('appliedSurfaces', () => {
     });
 
     it.each(['green', 'paved'])('carves applied roads out of %s surrounds without changing authored designs', treatment => {
-        const surface = { ...paved, geometry: { groundSurface: { treatment, polygon: BLOCK.geometry } } };
+        const surface = { ...paved, geometry: { surroundings: { treatment, polygon: BLOCK.geometry } } };
         // A road completely crosses the surround, leaving two disconnected visible parts.
         const corridor = turf.bboxPolygon([15.9704, 45.8099, 15.9705, 45.811]);
         const road = { roadProposal: { applied: true, definition: { polygon: corridor.geometry } } };
@@ -225,7 +225,7 @@ describe('appliedSurfaces', () => {
 
     it('subtracts every applied corridor, retains furniture intent, and omits fully covered ground', () => {
         const decorationDesign = { trees: [{ coordinate: [15.97045, 45.8103], kind: 'conifer' }] };
-        const surface = { ...paved, geometry: { groundSurface: {
+        const surface = { ...paved, geometry: { surroundings: {
             treatment: 'green', polygon: BLOCK.geometry, decorationDesign
         } } };
         const road = geometry => ({ roadProposal: { applied: true, definition: { polygon: geometry } } });
@@ -264,7 +264,7 @@ describe('vacant layout plots', () => {
             ...(kind === 'buildings' ? { geometry: { buildings: [turf.feature(geometry)] } } : {}),
             ...(kind === 'park' ? { structureProposal: { geometry } } : {}),
             ...(kind === 'road' ? { roadProposal: { definition: { polygon: geometry } } } : {}),
-            ...(kind === 'surroundings' ? { geometry: { groundSurface: { polygon: geometry } } } : {})
+            ...(kind === 'surroundings' ? { geometry: { surroundings: { polygon: geometry } } } : {})
         };
         expect(vacant([layout, content])).toEqual(['east']);
         expect(vacant([layout, { ...content, applied: false }])).toEqual(['west', 'east']);

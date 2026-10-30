@@ -57,7 +57,7 @@
     }
 
     // The polygon the proposal will pave or green: the block minus every building footprint on it.
-    function currentGroundSurface() {
+    function currentSurroundings() {
         const api = buildingGroundApi();
         if (!api) return null;
         const buildings = buildingEntries.filter(entry => entry?.feature).map(entry => entry.feature);
@@ -68,7 +68,7 @@
     function currentPlacementSite(buildings = null) {
         const features = buildings ? buildings.slice() : buildingEntries.filter(entry => entry?.feature).map(entry => entry.feature);
         if (singleLandTakeReview?.take) features.unshift(singleLandTakeReview.take);
-        const ground = currentGroundSurface();
+        const ground = currentSurroundings();
         if (ground?.polygon) features.unshift(turf.feature(ground.polygon));
         let combined = null;
         for (const feature of features) combined = combined ? turf.union(combined, feature) : cloneSingleFeature(feature);
@@ -471,7 +471,7 @@
         return {
             draftPreview: { kind: 'buildings', features: buildingEntries.map(entry => cloneSingleFeature(entry.feature)).filter(Boolean) },
             boundary: cloneSingleFeature(singleBlockFeature),
-            groundSurface: currentGroundSurface(),
+            surroundings: currentSurroundings(),
             ...(singleLandTakeReview?.preview || {})
         };
     }
@@ -589,7 +589,7 @@
             },
             buildingFeature: buildings[0] || null,
             buildings,
-            groundSurface: currentGroundSurface(),
+            surroundings: currentSurroundings(),
             groundBoundary: cloneSingleFeature(singleGroundBoundary),
             landTake: cloneSingleFeature(singleLandTakeReview?.take),
             placement: { site: currentPlacementSite(), free: true }
@@ -672,7 +672,7 @@
         // The preview only degrades (no paint) when the surround cannot be cut; saving the proposal
         // computes the same surface and refuses on the same failure.
         let surface = null;
-        try { surface = currentGroundSurface(); } catch (error) {
+        try { surface = currentSurroundings(); } catch (error) {
             if (!error || error.code !== 'clip-failed') throw error;
             (window.__parcelArrangement || null)?.reportClipFailure('difference', error, { site: 'single-building.groundPreview' }, []);
             return;
@@ -685,7 +685,7 @@
         if (!surface || !style) return;
         try {
             singleGroundPreviewLayer = L.featureGroup().addTo(singleMap);
-            window.drawBuildingGroundSurface(singleGroundPreviewLayer, surface, EDIT_PANE);
+            window.drawBuildingSurroundings(singleGroundPreviewLayer, surface, EDIT_PANE);
             singleGroundPreviewLayer.bringToBack();
         } catch (error) {
             console.warn('[single-building] ground preview failed', error);
@@ -1239,7 +1239,7 @@
             },
             buildingFeature: buildingFeatures[0] || null,
             buildings: buildingFeatures,
-            groundSurface: currentGroundSurface(),
+            surroundings: currentSurroundings(),
             groundBoundary: cloneSingleFeature(singleGroundBoundary),
             landTake: cloneSingleFeature(singleLandTakeReview?.take),
             placement: { site: currentPlacementSite(buildingFeatures), free: true }
@@ -1454,7 +1454,7 @@
                 });
             }
             document.getElementById('single-ground-treatment-edit').addEventListener('click', () => {
-                window.BuildingSurroundingsEditor.edit({ session: singleSession, surface: currentGroundSurface(),
+                window.BuildingSurroundingsEditor.edit({ session: singleSession, surface: currentSurroundings(),
                     onOpen: () => {
                         singleGroundPreviewSuspended = true;
                         updateGroundPreview();
