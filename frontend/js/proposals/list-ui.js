@@ -984,11 +984,12 @@ function getProposalCountAreaContext() {
     try { config = manager?.getCurrentCityConfig?.() || null; } catch (_) { }
     const explore = !!(config?.explore || manager?.isExplore?.());
     const map = (typeof window !== 'undefined') ? window.map : null;
+    // Explore lists the designs in view: the 2D map's, or the 3D camera's in 3D (load-view.js).
     let bounds = null;
-    if (explore && map?.getBounds) {
+    if (explore && window.LoadView) {
         try {
-            const b = map.getBounds();
-            const values = { west: b.getWest(), south: b.getSouth(), east: b.getEast(), north: b.getNorth() };
+            const [west, south, east, north] = window.LoadView.current()?.bbox || [];
+            const values = { west, south, east, north };
             if (Object.values(values).every(Number.isFinite)) bounds = values;
         } catch (_) { }
     }
@@ -1114,7 +1115,7 @@ function watchProposalCountArrival() {
         const map = window.map;
         if (!map?.on || map.__proposalCountViewportWatching) return;
         map.__proposalCountViewportWatching = true;
-        map.on('moveend zoomend', () => {
+        const viewMoved = () => {
             if (!getProposalCountAreaContext().explore) return;
             clearTimeout(_proposalCountViewportTimer);
             _proposalCountViewportTimer = setTimeout(() => {
@@ -1124,7 +1125,10 @@ function watchProposalCountArrival() {
                     renderProposalListModal();
                 }
             }, 350);
-        });
+        };
+        map.on('moveend zoomend', viewMoved);
+        // The 3D camera settling, or the map changing mode, moves the area too (load-view.js).
+        window.addEventListener('loadviewchange', viewMoved);
     };
     let boot;
     try { boot = typeof window.whenAppBooted === 'function' ? window.whenAppBooted() : window.whenAppBooted; } catch (_) { }

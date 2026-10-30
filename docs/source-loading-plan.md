@@ -108,6 +108,15 @@ per-adapter tests cover that nothing else moved.
 - **3D.** The radius slider (300 m by default) is the load distance; cells are loaded nearest
   first and only buildings reaching into the radius are kept (Bogotá: 1,835 at 300 m).
 - **2D.** No footprints below zoom 17 (already the rule in `fetchBuildings`).
+- **Which zoom.** Layers that load by viewport read `LoadView.current()` (`frontend/js/load-view.js`):
+  the 2D map's view and zoom in 2D; in 3D, the camera's distance as the 2D zoom showing the same
+  width, around where the scene was entered (the camera's pan does not move it, as E2 is deferred).
+  They reload on `loadviewchange` (the camera settling, or a mode change). Permitted massing and
+  Explore's designs read it.
+- **Permitted massing** loads by cells too (`planning/scene.js` `viewCells`, 0.0025°, about 280 m):
+  nearest the centre first, two at a time, each drawn as it lands and cached on its own; a failed
+  cell is asked once more, alone, after the rest. No view is refused for its size; below zoom 16
+  the layer says "zoom in".
 - **Open:** loading only the cells in the camera's view, and simpler drawing for far cells. Both
   need measurements on the laptop and a phone first, and view-dependent loading needs the camera
   to trigger loads, which is step E2.
@@ -332,7 +341,7 @@ The same list shape, editor and cell loader replace the single parcel choice and
 |---|---|
 | A. Area-limit error code | done: `areaLimitError` in `source-contract.js`, 52 sites in 26 adapters |
 | B. Buildings on the parcel grid | done, except one 3D group per cell |
-| C. View budget | distance and zoom rules done; camera-view loading and far-cell drawing open |
+| C. View budget | distance and zoom rules done; 3D layers read the camera's zoom (not its pan); permitted massing by cells; camera-view loading and far-cell drawing open |
 | D. Sources independent in the browser | done |
 | E1. Cells with a view budget | as B and C |
 | E2. Re-centre on demand | deferred (user decision 2026-10-30) |

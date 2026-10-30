@@ -289,8 +289,9 @@ describe('gumb u bočnoj traci', () => {
         const getContext = new Function('window', 'getCurrentCityId', 'normalizeCityCodeForApi',
             `let _proposalCountArrivalCenter = [44.8, 16.1]; ${contextHelper} return getProposalCountAreaContext;`)(
             { CityConfigManager: { isExplore: () => true, getCurrentCityConfig: () => ({ id: 'explore', explore: true, map: { defaultCenter: [44.8, 16.1] } }) },
-                map: { getBounds: () => ({ getWest: () => 15.9, getSouth: () => 44.7, getEast: () => 16.2, getNorth: () => 44.9 }),
-                    getCenter: () => ({ lat: 45.1, lng: 17.2 }) } }, () => 'explore', city => city);
+                // The area in view comes from load-view.js: the map's view in 2D, the 3D camera's zoom in 3D.
+                LoadView: { current: () => ({ mode: '2d', bbox: [15.9, 44.7, 16.2, 44.9], centre: [45.1, 17.2], zoom: 12 }) },
+                map: { getCenter: () => ({ lat: 45.1, lng: 17.2 }) } }, () => 'explore', city => city);
         const area = getContext();
         expect(area.arrivalKey).toBe('explore:44.8,16.1');
         expect(area.key).toBe('explore:15.9,44.7,16.2,44.9');

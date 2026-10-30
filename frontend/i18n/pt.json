@@ -8369,7 +8369,8 @@
             "one": "{{count}} volumetria em cache visível",
             "other": "{{count}} volumetrias em cache visíveis"
         },
-        "loadingProgress": "A carregar a volumetria permitida… {{count}} de {{total}} perfis lidos",
+        "loadingCells": "A carregar a volumetria permitida… {{count}} de {{total}} zonas",
+        "cellsFailed": "algumas zonas não foram carregadas; Tentar novamente volta a lê-las",
         "partial": {
             "one": "{{count}} opção apresentada · parte da geometria de origem está indisponível",
             "other": "{{count}} opções apresentadas · parte da geometria de origem está indisponível"

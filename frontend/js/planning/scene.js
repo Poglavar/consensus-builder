@@ -115,6 +115,46 @@
         const midLat = (bbox[1] + bbox[3]) / 2 * Math.PI / 180;
         return Math.abs(bbox[2] - bbox[0]) * 111.32 * Math.cos(midLat) * Math.abs(bbox[3] - bbox[1]) * 110.57;
     }
+    // Permitted massing loads as buildings do (building-cells.js): by cells of a fixed grid, nearest
+    // the view's centre first, each asked, drawn and cached on its own, so a view of any size fills in
+    // and a pan asks only for cells not yet held. A cell is 0.0025° a side (about 280 m north to
+    // south, 0.08 km² at the equator), well inside the API's area and lot limits.
+    const PLANNING_CELL_DEGREES = 0.0025;
+    const MAX_PLANNING_CELLS = 400;
+    // The cells covering `bbox`, nearest to `centre` ([lat, lng]) first, as [{ key, bbox, distanceM }].
+    function viewCells(bbox, centre, size = PLANNING_CELL_DEGREES) {
+        if (!finiteBox(bbox) || !(size > 0)) throw new TypeError('Cells need a finite box and a positive size.');
+        const [lat, lng] = Array.isArray(centre) ? centre : [(bbox[1] + bbox[3]) / 2, (bbox[0] + bbox[2]) / 2];
+        const tolerance = 1e-9;
+        const x0 = Math.floor(bbox[0] / size + tolerance), y0 = Math.floor(bbox[1] / size + tolerance);
+        const x1 = Math.max(x0, Math.ceil(bbox[2] / size - tolerance) - 1), y1 = Math.max(y0, Math.ceil(bbox[3] / size - tolerance) - 1);
+        const cos = Math.cos(lat * Math.PI / 180), edge = index => Number((index * size).toFixed(7));
+        const cells = [];
+        for (let x = x0; x <= x1; x++) for (let y = y0; y <= y1; y++) {
+            const box = [edge(x), edge(y), edge(x + 1), edge(y + 1)];
+            const dx = Math.max(box[0] - lng, 0, lng - box[2]) * 111320 * cos, dy = Math.max(box[1] - lat, 0, lat - box[3]) * 110570;
+            cells.push({ key: `${x},${y}`, bbox: box, distanceM: Math.hypot(dx, dy) });
+        }
+        return cells.sort((a, b) => a.distanceM - b.distanceM || a.key.localeCompare(b.key)).slice(0, MAX_PLANNING_CELLS);
+    }
+    // The cells' answers as one: an item, or an unavailable parcel, reaching over a cell line once;
+    // each source's counts summed; everything else as the first answer has it.
+    function mergeAnswers(answers) {
+        if (!answers.length) return null;
+        const items = new Map(), unavailable = new Map(), summaries = new Map();
+        let omitted = 0;
+        for (const answer of answers) {
+            for (const item of answer.items || []) items.set(item.id, item);
+            for (const entry of answer.unavailable || []) unavailable.set(entry.parcelId ?? JSON.stringify(entry), entry);
+            for (const summary of answer.summaries || []) {
+                const known = summaries.get(summary.sourceId);
+                summaries.set(summary.sourceId, known ? Object.fromEntries(Object.entries(known).map(([key, value]) =>
+                    [key, typeof value === 'number' && typeof summary[key] === 'number' ? value + summary[key] : value])) : { ...summary });
+            }
+            omitted += answer.omitted || 0;
+        }
+        return { ...answers[0], items: [...items.values()], unavailable: [...unavailable.values()], summaries: [...summaries.values()], omitted };
+    }
     // A bounded least-recently-used cache of area answers with single-flight loading. `scope` names
     // what was asked (city, source, scenario); entries are keyed by scope and the exact box asked for.
     // `find` returns a fresh entry whose box contains the given one; `load` returns the stored entry
@@ -175,5 +215,6 @@
         return roles.filter(role => loading[role] && shown[role] !== false).map((role, slot) => ({ role, slot }));
     }
     return { roles, displayStates, choices, defaults, settings, displayPolicy, permittedRepresentationControl, itemAppearance, createStore, builtGeometry, queryKey, parcelItemOf, loadingArcs,
-        VIEWPORT_CELL_DEGREES, viewportCellSize, snapBbox, bboxContains, bboxIntersects, bboxAreaKm2, createViewportCache };
+        VIEWPORT_CELL_DEGREES, viewportCellSize, snapBbox, bboxContains, bboxIntersects, bboxAreaKm2, createViewportCache,
+        PLANNING_CELL_DEGREES, viewCells, mergeAnswers };
 });

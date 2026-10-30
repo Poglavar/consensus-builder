@@ -261,15 +261,16 @@
     function isPhoto() { return root.__mapModeState?.desired === 'photo'; }
     function stateText() {
         if (policy().permitted === 'off' && store.get().zoningAreas === 'off') return t('permittedOff');
-        if (status === 'loading' && progress?.total) return t('loadingProgress', progress);
+        if (status === 'loading' && progress?.total) return t('loadingCells', progress);
         if (status !== 'ready') return t(status);
         if (!payload?.sources?.length) return t('unavailable');
+        const failedNote = failedCells ? ` · ${t('cellsFailed')}` : '';
         if (payload.envelopes) return t('envelopesLoaded', { count: items.filter(item => item.parcelEnvelope).length,
-            missing: payload.unavailable.length });
+            missing: payload.unavailable.length }) + failedNote;
         if (!items.length) return t('empty');
         const text = t(payload.omitted ? 'partial' : payload.sources.some(source => source.capabilities.areas) ? 'areasLoaded' : 'loaded', { count: items.length });
         const pending = (payload.summaries || []).reduce((sum, entry) => sum + (entry.awaitingRefresh || 0), 0);
-        return pending ? `${text} · ${t('refreshCount', { count: pending })}` : text;
+        return (pending ? `${text} · ${t('refreshCount', { count: pending })}` : text) + failedNote;
     }
     function renderInspector() {
         const item = selected();
@@ -527,7 +528,7 @@
         panel.querySelector('.planning-view-status').textContent = noPermittedSource ? '' : stateText();
         panel.querySelector('.planning-view-status').setAttribute('aria-busy', String(status === 'loading'));
         const retry = panel.querySelector('.planning-view-retry');
-        retry.hidden = status !== 'error' || policy().permitted === 'off' && store.get().zoningAreas === 'off'; retry.textContent = t('retry');
+        retry.hidden = !(status === 'error' || status === 'ready' && failedCells) || policy().permitted === 'off' && store.get().zoningAreas === 'off'; retry.textContent = t('retry');
         panel.querySelector('.planning-coverage summary').textContent = t('coverageTitle');
         panel.querySelector('.planning-coverage p').textContent = t(payload?.envelopes ? 'envelopeCoverage' : 'coverageNote');
         const summary = panel.querySelector('.planning-cache-summary');
@@ -594,112 +595,118 @@
         }
         if (settingsChanged && (view.permitted !== 'off' || state.zoningAreas !== 'off')) refresh();
     }
-    // Two viewport answers: envelopes do not depend on the housing type (every configuration ships
-    // with the item), zoning areas do. A housing-type change therefore redraws the envelopes at
-    // once and re-reads only the areas, when they are shown. Each answer comes from `viewCache`,
-    // which keeps recent areas asked for (snapped to the viewport grid), so a pan inside an
-    // answered area or back to one asks for nothing; Retry and a source re-read clear it.
-    const viewCache = core.createViewportCache({ limit: 64, maxAgeMs: 10 * 60 * 1000 });
-    // The API's area limits (backend/routes/planning.js validateBounds): a larger view is answered
-    // 400 (over 1,000 lots), shown as "zoom in". Snapping never pushes a view over them; a view already over one asks
-    // for nothing, since the answer is known.
-    const MAX_AREA_KM2 = { envelopes: 0.5, areas: 4 };
+    // Permitted massing loads by cells (planning/scene.js viewCells), as buildings do: the cells under
+    // the view, nearest its centre first, a few in flight, each drawn as it lands and kept in
+    // `viewCache`, so a view of any size fills in and a pan asks only for cells not yet held. Two
+    // answers per cell: envelopes do not depend on the housing type (every configuration ships with
+    // the item), zoning areas do, so a housing-type change redraws the envelopes at once and re-reads
+    // only the areas, when they are shown. A source re-read clears the cache.
+    const viewCache = core.createViewportCache({ limit: 2048, maxAgeMs: 10 * 60 * 1000 });
+    // Upstream parcel services slow down under parallel reads (Bogotá's times cells out at four), so
+    // two cells at a time, and a cell that fails is asked once more, alone, after the rest.
+    const CELL_CONCURRENCY = 2;
     const MOVE_REFRESH_DELAY_MS = 300;
-    let areaCache = { key: '', answer: null }, envelopeCache = { key: '', answer: null }, assembled = '';
-    function invalidate() { areaCache = { key: '', answer: null }; envelopeCache = { key: '', answer: null }; assembled = ''; }
-    // The area to ask for: the view snapped to whole cells, or the view itself where snapping would
-    // cross the endpoint's area limit.
-    function requestBox(kind, bbox) {
-        const snapped = core.snapBbox(bbox);
-        return core.bboxAreaKm2(snapped) <= MAX_AREA_KM2[kind] ? snapped : bbox;
-    }
-    function tooLarge(error) { return Object.assign(new Error('Planning view area is too large'), { status: 400, cause: error }); }
+    // What is drawn: the scopes and cells of the answers assembled, and how many cells failed.
+    let assembled = '', failedCells = 0;
+    function invalidate() { assembled = ''; failedCells = 0; }
     async function refresh({ force = false } = {}) {
         if (!ready || !catalogReady || policy().permitted === 'off' && store.get().zoningAreas === 'off') return;
-        if (root.map.getZoom() < 16) {
+        // The 2D map's view in 2D; in 3D, the camera's zoom around where the scene was entered (load-view.js).
+        const view = root.LoadView.current();
+        if (!view || view.zoom < 16) {
             viewCache.abortExcept([]); request++; invalidate(); items = []; status = 'zoom'; payload = null;
             if (!selected()) store.select(null);
             drawMap(); render(); notifyGeometry(); return;
         }
         const city = root.CityConfigManager.getCurrentCityId();
-        const bounds = root.map.getBounds();
-        const bbox = [bounds.getWest(), bounds.getSouth(), bounds.getEast(), bounds.getNorth()];
-        if (force) viewCache.clear();
+        const bbox = view.bbox;
+        if (force) { viewCache.clear(); invalidate(); }
         // Bounds-registered sources come and go with the viewport; re-list them when it moves.
         if (!(await ensureSources(city, bbox))) return;
         const descriptor = sourceOptions.find(source => source.id === sourceId);
         const envelopeScope = descriptor?.parcelStudy && policy().permitted !== 'off' ? `envelopes:${city}:${sourceId}` : '';
         const areaScope = descriptor && (!descriptor.capabilities.areas || store.get().zoningAreas !== 'off') ? `areas:${city}:${sourceId}:${scenarioId}` : '';
-        if (force) invalidate();
-        if (!envelopeScope) envelopeCache = { key: '', answer: null };
-        if (!areaScope) areaCache = { key: '', answer: null };
-        const wanted = [];
-        if (envelopeScope) wanted.push({ kind: 'envelopes', scope: envelopeScope });
-        if (areaScope) wanted.push({ kind: 'areas', scope: areaScope });
+        const cells = core.viewCells(bbox, view.centre);
+        const jobs = [];
+        for (const [kind, scope] of [['envelopes', envelopeScope], ['areas', areaScope]]) {
+            if (scope) for (const cell of cells) jobs.push({ kind, scope, cell, key: `${scope}|${cell.key}` });
+        }
         const generation = ++request;
-        const fail = error => {
-            if (generation !== request || error.name === 'AbortError') return;
-            if (error.status === 400) {
-                invalidate(); items = []; payload = null; status = 'zoom';
-                if (!selected()) store.select(null);
-                drawMap(); render(); notifyGeometry(); return;
-            }
-            console.error('[planning] Could not load source representations', error);
-            invalidate(); items = []; payload = null; status = 'error';
-            if (!selected()) store.select(null);
-            drawMap(); render(); notifyGeometry();
-        };
-        const oversized = wanted.find(({ kind }) => core.bboxAreaKm2(bbox) > MAX_AREA_KM2[kind]);
-        if (oversized) { viewCache.abortExcept([]); fail(tooLarge()); return; }
-        const show = (kind, entry) => {
-            if (kind === 'areas') areaCache = { key: entry.key, answer: entry.value };
-            else envelopeCache = { key: entry.key, answer: entry.value };
-        };
-        const pending = wanted.filter(want => {
-            const hit = viewCache.find(want.scope, bbox);
-            if (hit) show(want.kind, hit);
+        // Only this view's cells keep loading; an older view's others stop.
+        viewCache.abortExcept(jobs.map(job => viewCache.keyOf(job.scope, job.cell.bbox)));
+        const answers = new Map();
+        const pending = jobs.filter(job => {
+            const hit = viewCache.find(job.scope, job.cell.bbox);
+            if (hit) answers.set(job.key, hit.value);
             return !hit;
         });
-        const composition = () => `${envelopeScope ? envelopeCache.key : ''}|${areaScope ? areaCache.key : ''}`;
+        const composition = jobs.map(job => job.key).sort().join(';');
+        let failed = 0;
         const assemble = () => {
-            const answers = [areaCache.answer, envelopeCache.answer].filter(Boolean);
-            const answer = envelopeCache.answer || areaCache.answer || { sources: descriptor ? [descriptor] : [], summaries: [], unavailable: [], omitted: 0, items: [] };
-            payload = { ...answer, items: answers.flatMap(entry => entry.items) }; items = payload.items; status = 'ready'; assembled = composition();
+            const ordered = jobs.map(job => answers.get(job.key)).filter(Boolean);
+            // Envelopes lead: their answer says how the status line counts.
+            const merged = core.mergeAnswers([...ordered.filter(answer => answer.envelopes), ...ordered.filter(answer => !answer.envelopes)]);
+            payload = merged || { sources: descriptor ? [descriptor] : [], summaries: [], unavailable: [], omitted: 0, items: [] };
+            items = payload.items; assembled = composition; failedCells = failed;
             if (!selected()) store.select(null);
             drawMap(); render(); notifyGeometry();
         };
-        if (!pending.length) { viewCache.abortExcept([]); if (assembled !== composition()) assemble(); return; }
+        if (!pending.length) {
+            if (assembled !== composition || status !== 'ready') { status = 'ready'; assemble(); }
+            return;
+        }
         const url = new URL(`${root.getBackendBase()}/planning/representations`);
         url.searchParams.set('city', city);
         if (sourceId) url.searchParams.set('source', sourceId);
         const scenario = scenarioParam();
-        const fetchArea = (kind, box) => signal => {
+        const fetchCell = (kind, box) => signal => {
             const target = new URL(url); target.searchParams.set('bbox', box.join(','));
             if (kind === 'envelopes') target.pathname = '/planning/envelopes';
             else if (scenario) target.searchParams.set('scenario', scenario);
-            return root.PlanningFeed.loadViewport(target, { city, signal,
-                onProgress(value) { if (generation === request) { progress = value; render(); } } })
+            return root.PlanningFeed.loadViewport(target, { city, signal })
                 .then(answer => (kind === 'envelopes' ? { ...answer, envelopes: true } : answer));
         };
-        // A snapped area the source refuses (too many parcels in it) is asked again as the view
-        // itself, which is what was asked before snapping; that answer is kept for that view only.
-        const loadKind = async ({ kind, scope }) => {
-            const box = requestBox(kind, bbox);
-            try { return await viewCache.load(scope, box, fetchArea(kind, box)); }
+        status = 'loading'; progress = { count: jobs.length - pending.length, total: jobs.length };
+        if (answers.size) assemble(); else render();
+        // Redraw when the first cell lands and then at each quarter, as the 3D buildings do.
+        let done = jobs.length - pending.length, nextDrawAt = done + 1, firstError = null;
+        const queue = [...pending].sort((a, b) => a.cell.distanceM - b.cell.distanceM), retries = [];
+        const loadJob = async job => {
+            try { answers.set(job.key, (await viewCache.load(job.scope, job.cell.bbox, fetchCell(job.kind, job.cell.bbox))).value); return true; }
             catch (error) {
-                if (error.status !== 400 || box === bbox) throw error;
-                return viewCache.load(scope, bbox, fetchArea(kind, bbox));
+                if (generation !== request || error.name === 'AbortError') return null;
+                firstError ||= error; return false;
             }
         };
-        // Only the requests this view still wants keep running; an older view's others stop.
-        viewCache.abortExcept(pending.map(({ kind, scope }) => viewCache.keyOf(scope, requestBox(kind, bbox))));
-        status = 'loading'; progress = null; render();
-        try {
-            await Promise.all(pending.map(want => loadKind(want).then(entry => { if (generation === request) show(want.kind, entry); })));
-            if (generation !== request) return;
-            assemble();
-            restoreSelection();
-        } catch (error) { fail(error); }
+        const worker = async () => {
+            while (queue.length && generation === request) {
+                const job = queue.shift();
+                const loaded = await loadJob(job);
+                if (loaded === null || generation !== request) return;
+                if (!loaded) { retries.push(job); continue; }
+                done++; progress = { count: done, total: jobs.length };
+                if (done >= nextDrawAt && done < jobs.length) {
+                    nextDrawAt = Math.max(done + 1, Math.ceil(jobs.length * (Math.floor(done / jobs.length * 4) + 1) / 4));
+                    assemble();
+                } else render();
+            }
+        };
+        await Promise.all(Array.from({ length: Math.min(CELL_CONCURRENCY, queue.length) }, worker));
+        if (generation !== request) return;
+        for (const job of retries) {
+            const loaded = await loadJob(job);
+            if (loaded === null || generation !== request) return;
+            if (loaded) { done++; progress = { count: done, total: jobs.length }; assemble(); } else failed++;
+        }
+        if (firstError) console.error(`[planning] ${failed} of ${jobs.length} cells could not be loaded`, firstError);
+        // Nothing loaded: a source refusing every cell (400) is asked for less by zooming in.
+        if (failed && failed === jobs.length) {
+            invalidate(); items = []; payload = null; status = firstError?.status === 400 ? 'zoom' : 'error';
+            if (!selected()) store.select(null);
+            drawMap(); render(); notifyGeometry(); return;
+        }
+        status = 'ready'; assemble();
+        restoreSelection();
     }
     async function restoreSelection() {
         if (!restoreId || restoring) return;
@@ -728,10 +735,7 @@
         } catch (error) { console.error('[planning] Could not restore source selection', error); }
         finally { restoring = false; }
     }
-    function viewportBbox() {
-        const bounds = root.map?.getBounds?.();
-        return bounds ? [bounds.getWest(), bounds.getSouth(), bounds.getEast(), bounds.getNorth()] : null;
-    }
+    function viewportBbox() { return root.LoadView?.current()?.bbox || null; }
     async function listSources(city, bbox) {
         const url = new URL(`${root.getBackendBase()}/planning/sources`);
         url.searchParams.set('city', city);
@@ -828,7 +832,7 @@
             // selected zoning area is re-read for the new type and re-selected when it returns.
             const previousId = selected()?.areas?.length ? store.get().selectedId : null;
             scenarioId = scenarioInput.value; pins = {};
-            areaCache = { key: '', answer: null }; assembled = ''; items = items.filter(item => item.parcelEnvelope);
+            assembled = ''; items = items.filter(item => item.parcelEnvelope);
             if (previousId) { focusedRecord = null; store.select(null); restoreId = previousId; }
             const url = new URL(location.href); url.searchParams.set('planningScenario', scenarioId); history.replaceState(history.state, '', url);
             drawMap(); render(); notifyGeometry(); refresh();
@@ -881,7 +885,8 @@
             });
         }
         panel.querySelector('.planning-open-model').addEventListener('click', () => root.requestMapMode('model'));
-        panel.querySelector('.planning-view-retry').addEventListener('click', () => refresh({ force: true }));
+        // A failed cell is never kept, so asking again reads only the cells that failed.
+        panel.querySelector('.planning-view-retry').addEventListener('click', () => { assembled = ''; refresh(); });
         root.map.createPane('planningSources');
         root.map.getPane('planningSources').classList.add('planning-sources-pane');
         layer = root.L.featureGroup().addTo(root.map);
@@ -895,10 +900,13 @@
         let moveTimer = null;
         const cancelMoveRefresh = () => { if (moveTimer) clearTimeout(moveTimer); moveTimer = null; };
         root.map.on('movestart', cancelMoveRefresh);
-        root.map.on('moveend', () => {
+        const scheduleMoveRefresh = () => {
             cancelMoveRefresh();
             moveTimer = setTimeout(() => { moveTimer = null; refresh(); }, MOVE_REFRESH_DELAY_MS);
-        });
+        };
+        root.map.on('moveend', scheduleMoveRefresh);
+        // The 3D camera settling, or the map changing mode, moves the area too (load-view.js).
+        root.addEventListener('loadviewchange', scheduleMoveRefresh);
         root.map.on('click', () => select(null));
         root.addEventListener('cityChanged', () => {
             viewCache.clear(); sourceListings.clear(); request++; invalidate(); items = []; payload = null; status = 'loading';

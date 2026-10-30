@@ -8369,7 +8369,8 @@
             "one": "{{count}} volumétrie en cache dans la vue",
             "other": "{{count}} volumétries en cache dans la vue"
         },
-        "loadingProgress": "Chargement de la volumétrie autorisée… {{count}} profils lus sur {{total}}",
+        "loadingCells": "Chargement de la volumétrie autorisée… {{count}} zones sur {{total}}",
+        "cellsFailed": "certaines zones n’ont pas pu être chargées ; Réessayer les relit",
         "partial": {
             "one": "{{count}} option affichée · une partie de la géométrie source est indisponible",
             "other": "{{count}} options affichées · une partie de la géométrie source est indisponible"

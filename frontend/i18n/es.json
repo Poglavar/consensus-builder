@@ -8255,7 +8255,8 @@
             "one": "{{count}} volumen guardado en la vista",
             "other": "{{count}} volúmenes guardados en la vista"
         },
-        "loadingProgress": "Cargando volúmenes permitidos… {{count}} de {{total}} perfiles leídos",
+        "loadingCells": "Cargando volúmenes permitidos… {{count}} de {{total}} zonas",
+        "cellsFailed": "algunas zonas no se pudieron cargar; Reintentar las vuelve a leer",
         "partial": {
             "one": "{{count}} opción visible · parte de la geometría de origen no está disponible",
             "other": "{{count}} opciones visibles · parte de la geometría de origen no está disponible"

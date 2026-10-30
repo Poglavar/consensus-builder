@@ -104,80 +104,179 @@ describe('viewport answer cache', () => {
     });
 });
 
+describe('planning cells', () => {
+    it('covers a view with whole grid cells, nearest its centre first', () => {
+        const view = [15.97611, 45.80381, 15.98147, 45.80519];
+        const cells = scene.viewCells(view, [45.8045, 15.9788]);
+        const size = scene.PLANNING_CELL_DEGREES;
+        expect(cells.length).toBe(3 * 2);
+        for (const cell of cells) {
+            expect(cell.bbox[2] - cell.bbox[0]).toBeCloseTo(size, 9);
+            expect(scene.bboxIntersects(cell.bbox, view)).toBe(true);
+        }
+        expect(cells[0].distanceM).toBe(0);
+        expect(cells.map(cell => cell.distanceM)).toEqual([...cells.map(cell => cell.distanceM)].sort((a, b) => a - b));
+        // Every cell stays well inside the API's 0.5 km² envelope limit, at the equator too.
+        expect(scene.bboxAreaKm2(scene.viewCells([-74.09, 4.61, -74.088, 4.612])[0].bbox)).toBeLessThan(0.1);
+    });
+
+    it('merges cell answers: an item over a cell line once, source counts summed', () => {
+        const merged = scene.mergeAnswers([
+            { envelopes: true, sources: ['s'], items: [{ id: 'a' }, { id: 'b' }], unavailable: [{ parcelId: 'p1' }], summaries: [{ sourceId: 's', withGeometry: 2, label: 'S' }], omitted: 1 },
+            { envelopes: true, sources: ['s'], items: [{ id: 'b' }, { id: 'c' }], unavailable: [{ parcelId: 'p1' }, { parcelId: 'p2' }], summaries: [{ sourceId: 's', withGeometry: 3, label: 'S' }], omitted: 0 }
+        ]);
+        expect(merged.items.map(item => item.id)).toEqual(['a', 'b', 'c']);
+        expect(merged.unavailable.map(entry => entry.parcelId)).toEqual(['p1', 'p2']);
+        expect(merged.summaries).toEqual([{ sourceId: 's', withGeometry: 5, label: 'S' }]);
+        expect(merged.omitted).toBe(1);
+        expect(merged.envelopes).toBe(true);
+        expect(scene.mergeAnswers([])).toBe(null);
+    });
+});
+
+describe('load view', () => {
+    const LoadView = require('../../frontend/js/load-view.js');
+    it('reads a 3D camera as the 2D zoom showing the same width, around the given centre', () => {
+        // The reported Bogotá camera: 267 m from its target, a 1080 px window.
+        const view = LoadView.ofCamera({ targetLat: 4.62, targetLng: -74.07, range: 267 }, [4.6135, -74.0838], 1080);
+        expect(view.mode).toBe('3d');
+        expect(view.zoom).toBeCloseTo(18.25, 1);
+        expect(view.centre).toEqual([4.6135, -74.0838]);
+        expect((view.bbox[0] + view.bbox[2]) / 2).toBeCloseTo(-74.0838, 9);
+        expect((view.bbox[3] - view.bbox[1]) * 110570).toBeCloseTo(534, 0);
+        // Farther out the zoom falls, under the permitted layer's zoom-in line of 16 by about 1.2 km.
+        expect(LoadView.ofCamera({ range: 1500 }, [4.6135, -74.0838], 1080).zoom).toBeLessThan(16);
+        // Up close it still loads a street's width.
+        expect((LoadView.ofCamera({ range: 5 }, [45.8, 16], 1080).bbox[3] - LoadView.ofCamera({ range: 5 }, [45.8, 16], 1080).bbox[1]) * 110570).toBeCloseTo(150, 0);
+        expect(LoadView.ofCamera(null, [45.8, 16], 1080)).toBe(null);
+    });
+});
+
 describe('planning view refresh', () => {
     // planning/views.js refresh() with its collaborators stubbed and the real viewport cache.
-    function planningHarness({ view, descriptor = { id: 'src', parcelStudy: true, capabilities: { areas: false } } }) {
+    function planningHarness({ view, zoom = 19, descriptor = { id: 'src', parcelStudy: true, capabilities: { areas: false } }, fail = () => null }) {
         const source = read('../../frontend/js/planning/views.js');
         const body = parse(source).program.body.find(node => node.type === 'ExpressionStatement').expression.callee.body.body;
-        const functions = ['refresh', 'requestBox', 'tooLarge'].map(name => {
+        const functions = ['refresh', 'invalidate'].map(name => {
             const node = body.find(entry => entry.type === 'FunctionDeclaration' && entry.id.name === name);
             return source.slice(node.start, node.end);
         });
         const state = { selectedId: null, zoningAreas: 'off' };
-        const loadViewport = vi.fn(async url => ({ items: [{ id: `envelope:${new URL(url).searchParams.get('bbox')}`, role: 'permitted' }],
-            sources: [descriptor], summaries: [], unavailable: [], omitted: 0 }));
-        const box = { current: view };
+        const loadViewport = vi.fn(async url => {
+            const bbox = new URL(url).searchParams.get('bbox');
+            const error = fail(url);
+            if (error) throw error;
+            return { items: [{ id: `${new URL(url).pathname}:${bbox}`, role: 'permitted' }], sources: [descriptor], summaries: [], unavailable: [], omitted: 0 };
+        });
+        const box = { current: view, zoom };
         const context = vm.createContext({
-            URL, console, ready: true, catalogReady: true, core: scene, request: 0, items: [], payload: null, status: 'loading', progress: null,
-            viewCache: scene.createViewportCache({ limit: 64 }), MAX_AREA_KM2: { envelopes: 0.5, areas: 4 },
-            areaCache: { key: '', answer: null }, envelopeCache: { key: '', answer: null }, assembled: '',
-            invalidate() { context.areaCache = { key: '', answer: null }; context.envelopeCache = { key: '', answer: null }; context.assembled = ''; },
+            URL, console: { ...console, error: vi.fn() }, Promise, Math, Array, ready: true, catalogReady: true, core: scene, request: 0, items: [], payload: null, status: 'loading', progress: null,
+            viewCache: scene.createViewportCache({ limit: 2048 }), CELL_CONCURRENCY: 2, assembled: '', failedCells: 0,
             policy: () => ({ permitted: 'ghost' }), store: { get: () => state, select: vi.fn() }, selected: () => null,
             ensureSources: async () => true, sourceOptions: [descriptor], sourceId: descriptor.id, scenarioId: '', scenarioParam: () => '',
             drawMap: vi.fn(), render() {}, notifyGeometry() {}, restoreSelection() {},
             root: {
-                map: { getZoom: () => 19, getBounds: () => ({ getWest: () => box.current[0], getSouth: () => box.current[1], getEast: () => box.current[2], getNorth: () => box.current[3] }) },
+                LoadView: { current: () => ({ mode: '2d', bbox: box.current, zoom: box.zoom,
+                    centre: [(box.current[1] + box.current[3]) / 2, (box.current[0] + box.current[2]) / 2] }) },
                 CityConfigManager: { getCurrentCityId: () => 'zagreb' }, getBackendBase: () => 'http://api', PlanningFeed: { loadViewport }
             }
         });
         vm.runInContext(functions.join('\n'), context);
-        return { context, loadViewport, box };
+        const asked = () => loadViewport.mock.calls.map(([url]) => `${new URL(url).pathname} ${new URL(url).searchParams.get('bbox')}`);
+        return { context, loadViewport, box, asked };
     }
+    const cellsOf = view => scene.viewCells(view, [(view[1] + view[3]) / 2, (view[0] + view[2]) / 2]);
 
-    it('asks for the snapped view once; a pan back and a pan inside it ask for nothing', async () => {
+    it('asks for each cell of the view once, nearest its centre first; a pan asks only for new cells, a pan back for nothing', async () => {
         const view = [15.97611, 45.80381, 15.98147, 45.80519];
-        const { context, loadViewport, box } = planningHarness({ view });
+        const { context, box, asked } = planningHarness({ view });
         await context.refresh();
-        // One request per answer kind: the envelopes and the source's own results.
-        expect(loadViewport).toHaveBeenCalledTimes(2);
-        const asked = loadViewport.mock.calls.map(([url]) => new URL(url));
-        expect(asked.map(url => url.pathname).sort()).toEqual(['/planning/envelopes', '/planning/representations']);
-        expect(asked.map(url => url.searchParams.get('bbox'))).toEqual([scene.snapBbox(view).join(','), scene.snapBbox(view).join(',')]);
+        const cells = cellsOf(view);
+        // Two answers per cell: the envelopes and the source's own results.
+        expect(asked().sort()).toEqual(cells.flatMap(cell => ['/planning/envelopes', '/planning/representations'].map(path => `${path} ${cell.bbox.join(',')}`)).sort());
+        expect(asked()[0]).toBe(`/planning/envelopes ${cells[0].bbox.join(',')}`);
         expect(context.status).toBe('ready');
-        expect(context.drawMap).toHaveBeenCalledTimes(1);
+        expect(context.items).toHaveLength(cells.length * 2);
 
         box.current = view.map((value, index) => value + (index % 2 ? 0 : 0.003));
+        const before = asked().length;
         await context.refresh();
-        expect(loadViewport).toHaveBeenCalledTimes(4);
+        const fresh = cellsOf(box.current).filter(cell => !cells.some(known => known.key === cell.key));
+        expect(fresh.length).toBeGreaterThan(0);
+        expect(asked().length - before).toBe(fresh.length * 2);
 
         box.current = view;
         await context.refresh();
-        expect(loadViewport).toHaveBeenCalledTimes(4);
-        expect(context.items.map(item => item.id)).toEqual([`envelope:${scene.snapBbox(view).join(',')}`, `envelope:${scene.snapBbox(view).join(',')}`]);
+        expect(asked().length - before).toBe(fresh.length * 2);
+        expect(context.items).toHaveLength(cells.length * 2);
 
+        // A pan inside the same cells: same answers, nothing asked and nothing redrawn.
         box.current = view.map((value, index) => value + (index % 2 ? 0.00001 : 0.0001));
         const draws = context.drawMap.mock.calls.length;
         await context.refresh();
-        expect(loadViewport).toHaveBeenCalledTimes(4);
-        // Same answers, same composition: nothing is redrawn.
+        expect(asked().length - before).toBe(fresh.length * 2);
         expect(context.drawMap.mock.calls.length).toBe(draws);
     });
 
-    it('a view over the envelope area limit asks for nothing and reads as zoom in', async () => {
-        const { context, loadViewport } = planningHarness({ view: [15.96, 45.80, 15.98, 45.81] });
+    it('a view larger than one request allows loads every cell, drawing as they land', async () => {
+        // The reported Bogotá view: 0.93 km², over the API's 0.5 km² envelope limit per request.
+        const view = [-74.08870, 4.61033, -74.07900, 4.61674];
+        expect(scene.bboxAreaKm2(view)).toBeGreaterThan(0.5);
+        const { context, asked } = planningHarness({ view });
+        await context.refresh();
+        expect(asked()).toHaveLength(cellsOf(view).length * 2);
+        expect(context.status).toBe('ready');
+        expect(context.items).toHaveLength(cellsOf(view).length * 2);
+        // The first cell, each quarter and the end each redraw.
+        expect(context.drawMap.mock.calls.length).toBeGreaterThanOrEqual(4);
+    });
+
+    it('zoomed out past 16 asks for nothing and reads as zoom in', async () => {
+        const { context, loadViewport } = planningHarness({ view: [15.96, 45.80, 15.98, 45.81], zoom: 15.5 });
         await context.refresh();
         expect(loadViewport).not.toHaveBeenCalled();
         expect(context.status).toBe('zoom');
     });
 
-    it('asks for the view itself where snapping would cross the area limit', async () => {
-        // ~0.47 km²: under the 0.5 km² limit, its snapped area is over it.
-        const view = [15.9701, 45.8001, 15.9789, 45.8049];
-        expect(scene.bboxAreaKm2(view)).toBeLessThan(0.5);
-        expect(scene.bboxAreaKm2(scene.snapBbox(view))).toBeGreaterThan(0.5);
-        const { context, loadViewport } = planningHarness({ view });
+    it('a cell that fails once is asked again, alone, after the rest', async () => {
+        const view = [15.97611, 45.80381, 15.98147, 45.80519];
+        const broken = cellsOf(view)[1].bbox.join(',');
+        let failures = 1;
+        const { context, asked } = planningHarness({ view, fail: url => String(url).includes('/planning/envelopes') && new URL(url).searchParams.get('bbox') === broken && failures-- > 0
+            ? Object.assign(new Error('HTTP 503'), { status: 503 }) : null });
         await context.refresh();
-        expect(new URL(loadViewport.mock.calls[0][0]).searchParams.get('bbox')).toBe(view.join(','));
+        expect(context.status).toBe('ready');
+        expect(context.failedCells).toBe(0);
+        expect(asked().at(-1)).toBe(`/planning/envelopes ${broken}`);
+        expect(asked().filter(entry => entry === `/planning/envelopes ${broken}`)).toHaveLength(2);
+        expect(context.items).toHaveLength(cellsOf(view).length * 2);
+    });
+
+    it('a cell that fails twice leaves the others drawn, and asking again reads only that cell', async () => {
+        const view = [15.97611, 45.80381, 15.98147, 45.80519];
+        const broken = cellsOf(view)[1].bbox.join(',');
+        let failing = true;
+        const { context, asked } = planningHarness({ view, fail: url => failing && String(url).includes('/planning/envelopes') && new URL(url).searchParams.get('bbox') === broken
+            ? Object.assign(new Error('HTTP 502'), { status: 502 }) : null });
+        await context.refresh();
+        expect(context.status).toBe('ready');
+        expect(context.failedCells).toBe(1);
+        expect(context.items).toHaveLength(cellsOf(view).length * 2 - 1);
+        failing = false;
+        const before = asked().length;
+        context.assembled = '';
+        await context.refresh();
+        expect(asked().slice(before)).toEqual([`/planning/envelopes ${broken}`]);
+        expect(context.failedCells).toBe(0);
+        expect(context.items).toHaveLength(cellsOf(view).length * 2);
+    });
+
+    it('a source refusing every cell reads as zoom in', async () => {
+        const { context } = planningHarness({ view: [15.97611, 45.80381, 15.98147, 45.80519],
+            fail: () => Object.assign(new Error('HTTP 400'), { status: 400 }) });
+        await context.refresh();
+        expect(context.status).toBe('zoom');
+        expect(context.items).toEqual([]);
     });
 });
 

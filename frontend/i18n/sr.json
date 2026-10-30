@@ -8277,7 +8277,8 @@
             "few": "{{count}} sačuvane građevinske mase u prikazu",
             "other": "{{count}} sačuvanih građevinskih masa u prikazu"
         },
-        "loadingProgress": "Učitavanje dozvoljenih volumena… {{count}} od {{total}} profila učitano",
+        "loadingCells": "Učitavanje dozvoljenih volumena… {{count}} od {{total}} područja",
+        "cellsFailed": "neka područja nisu učitana; Pokušaj ponovo ih ponovo čita",
         "partial": {
             "one": "Prikazana je {{count}} varijanta · deo izvorne geometrije nije dostupan",
             "few": "Prikazane su {{count}} varijante · deo izvorne geometrije nije dostupan",

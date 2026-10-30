@@ -8227,7 +8227,8 @@
             "one": "{{count}} cached massing in view",
             "other": "{{count}} cached massings in view"
         },
-        "loadingProgress": "Loading permitted massing… {{count}} of {{total}} profiles read",
+        "loadingCells": "Loading permitted massing… {{count}} of {{total}} areas",
+        "cellsFailed": "some areas could not be loaded; Retry reads them again",
         "partial": {
             "one": "{{count}} option shown · some source geometry is unavailable",
             "other": "{{count}} options shown · some source geometry is unavailable"
