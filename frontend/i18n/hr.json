@@ -12,8 +12,15 @@
         "help": "Formati datoteka i ograničenja",
         "design": "Preuzmi dizajn",
         "plan": "Preuzmi plan",
-        "roadOsm": "Preuzmi cestu (OSM, za uvoz)",
+        "roadOsm": "Preuzmi cestu za uvoz (OSM)",
         "layoutPlots": "Preuzmi čestice (GeoJSON)",
+        "agreementNoPlan": "Ovaj sporazum još nema plan, pa se ne može preuzeti.",
+        "importAgreement": "Uvezi datoteku sporazuma",
+        "reviewAgreement": "Pregledaj datoteku sporazuma",
+        "agreementPreview": "„{{title}}”: sporazum o planu „{{plan}}” s {{count}} dizajna. Uvoz dodaje dizajne kao lokalne, neprimijenjene nacrte, a sporazum kao lokalni nacrt. Nije predložen ni objavljen, i ne uvozi se nijedan glas ni potpis.",
+        "agreementImported": "Sporazum je uvezen",
+        "agreementImportedBody": "Sporazum i dizajni njegova plana spremljeni su ovdje kao nacrti. Primijeni dizajne plana da bi se pročitalo njegovo zemljište.",
+        "openAgreement": "Otvori uvezeni sporazum",
         "review": "Pregled datoteke plana",
         "cancel": "Odustani",
         "importDrafts": "Uvezi kao nacrte",
@@ -1032,8 +1039,8 @@
         "slantedRoof": "Kosi krov s potkrovljem"
     },
     "common": {
-        "maxFloors": "Maks. katova:",
-        "minFloors": "Min. katova:",
+        "maxFloors": "Maks. etaža:",
+        "minFloors": "Min. etaža:",
         "copied": "Kopirano",
         "lifecycle": {
             "draft": "Nacrt",
@@ -2637,7 +2644,7 @@
                 "paved": "Popločano (kamen)"
             },
             "measuredAgainst": "Mjereno prema",
-            "measuredFallback": "ništa nije prikazano — mjeri se prema GDI-ju",
+            "measuredFallback": "ništa nije prikazano — mjeri se prema zgradama u upotrebi",
             "lockedControl": "Nedostupno dok je presjek otvoren — prvo primijeni ili odustani",
             "ceilingOver": "Šire nego što ovdje stane ({{max}} m) bez novog rušenja — otvori karticu Koridor da vidiš kako bi moglo stati",
             "ceilingTitle": "Najveća širina koju ova cesta ovdje može imati bez novog rušenja; možda je treba pomaknuti (vidi karticu Koridor)",
@@ -2697,6 +2704,7 @@
             "keep": "Zadrži nacrt"
         },
         "buildingLayers": {
+            "done": "Gotovo",
             "title": "Koje zgrade prikazati?",
             "gdi": "3D zgrade (GDI)",
             "gdiHint": "Fotogrametrija: ono što stvarno postoji. Na tome se temelji 3D model, i po tome se ruši i prosijeca.",
@@ -3342,10 +3350,10 @@
             },
             "existing": {
                 "toggle": "Na temelju postojećih zgrada",
-                "proposedHeight": "Predložena visina (katova):",
-                "additionalFloors": "Dodatni katovi:",
-                "floorHeight": "Visina kata (m):",
-                "helper": "Odaberite pravilo: predložena visina crta svaku zgradu točno na toj visini; dodatni katovi dodaju katove na trenutnu visinu svake zgrade (zahtijeva poznate visine).",
+                "proposedHeight": "Predložena visina (etaža):",
+                "additionalFloors": "Dodatne etaže:",
+                "floorHeight": "Visina etaže (m):",
+                "helper": "Odaberite pravilo: predložena visina crta svaku zgradu točno na toj visini; dodatne etaže dodaju etaže na trenutnu visinu svake zgrade (zahtijeva poznate visine).",
                 "summaryExact": {
                     "one": "Predlaže se {{count}} zgrada visine {{height}} m.",
                     "few": "Predlažu se {{count}} zgrade visine {{height}} m.",
@@ -3453,7 +3461,7 @@
                 "buildingCount": "Gabariti prema pravilu:",
                 "totalArea": "Tlocrtna površina prema pravilu (m²):",
                 "totalVolume": "Volumen prema pravilu (m³):",
-                "avgFloors": "Katova u primjeru (pros.):",
+                "avgFloors": "Etaža u primjeru (pros.):",
                 "ruleType": "Što pravilo obvezuje:",
                 "ruleTypeMax": "Najviše ovoliko",
                 "ruleTypeRange": "Između minimuma i ovoga",
@@ -7284,7 +7292,7 @@
         "buildings": {
             "footprint": "tlocrt {{area}}",
             "floorArea": "BRP {{area}}",
-            "height": "katova: {{floors}} · {{height}}"
+            "height": "etaža: {{floors}} · {{height}}"
         },
         "structure": {
             "park": "Park",
@@ -7395,13 +7403,28 @@
         "title": "Izvori podataka"
     },
     "buildingSources": {
+        "listTitle": "Izvori zgrada",
+        "listIntro": "Izvori u upotrebi pokrivaju svako područje ovim redom: gdje jedan nema zgrada, zamjenjuje ga sljedeći. Izvor s uključenim obrisom crta se samo za usporedbu.",
+        "addSource": "Dodaj izvor",
+        "add": "Dodaj ovaj izvor",
+        "added": "{{name}} je sada prvi na popisu i u upotrebi.",
+        "resetList": "Vrati popis grada",
+        "useSwitch": "Koristi",
+        "outlineSwitch": "Obris",
+        "outlineHint": "Obris crta izvor koji nije u upotrebi, za usporedbu.",
+        "keepOne": "Jedan izvor uvijek ostaje u upotrebi.",
+        "moveUp": "Pomakni {{name}} gore",
+        "moveDown": "Pomakni {{name}} dolje",
+        "remove": "Ukloni {{name}}",
+        "outlinedName": "{{name}} kao obris",
+        "cors": "Ova usluga ne dopušta preglednicima da je izravno čitaju.",
         "unavailableTitle": "Zgrade nisu dostupne",
         "title": "Odaberi izvor zgrada",
-        "intro": "Dodaj javni HTTPS URL tlocrta zgrada za ovaj grad ili OpenStreetMap zrcala (adresa Overpass API-ja koja završava na /interpreter). Isprobavamo svaki podržani format i čitamo polje visine ili broja katova ako postoji; ostale visine se procjenjuju.",
+        "intro": "Dodaj javni HTTPS URL tlocrta zgrada za ovaj grad ili OpenStreetMap zrcala (adresa Overpass API-ja koja završava na /interpreter). Isprobavamo svaki podržani format i čitamo polje visine ili broja etaža ako postoji; ostale visine se procjenjuju.",
         "url": "URL izvora zgrada",
         "matched": "Pronađen adapter: {{adapter}}. {{count}} zgrada u testnom području. Pokrivenost izvan tog područja ovisi o izvoru.",
         "defaultGdi": "3D model Zagreba (GDI)",
-        "levelsOnly": "Visine iz polja broja katova {{field}}, 3 m po katu.",
+        "levelsOnly": "Visine iz polja broja etaža {{field}}, 3 m po etaži.",
         "noHeights": "Ovaj izvor nema polje visine; visine se procjenjuju.",
         "heightField": "Visine iz polja {{field}}, u",
         "heightUnit": "Jedinica visine",
@@ -8310,7 +8333,7 @@
             "sideSetback": "Najmanji bočni odmak",
             "rearSetback": "Najmanji stražnji odmak",
             "height": "Najveća visina",
-            "storeys": "Najveći broj katova",
+            "storeys": "Najveći broj etaža",
             "lotArea": "Najmanja površina čestice"
         },
         "photoNote": "Dopuštene volumene pregledajte na karti ili u 3D modelu.",
@@ -8377,7 +8400,7 @@
         },
         "scenario": {
             "general": "Opće (karta tretmana)",
-            "sustainable": "Katovi za održivu gradnju (Dekret 676/2025)",
+            "sustainable": "Etaže za održivu gradnju (Dekret 676/2025)",
             "all": "Svi tipovi stanovanja (nasumično po čestici)",
             "family1": "Jednoobiteljsko",
             "family2": "Dvije obitelji",

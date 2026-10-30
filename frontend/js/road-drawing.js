@@ -1912,7 +1912,8 @@ function seededSurfaceBuildingIds() {
     const ids = new Set();
     if (typeof findBuildingTunnelIntersections !== 'function' || typeof collectLoadedCorridorBuildings !== 'function'
         || typeof turf === 'undefined') return ids;
-    const tunnelled = new Set(roadBuildingTunnels.flatMap(record => (record?.buildingIds || []).map(String)));
+    const widest = Math.max(0, ...roadSegments.map((_segment, index) => Number(roadDrawingWidthForSegmentIndex(index)) || 0));
+    const underTunnel = tunnelSpanTest(roadBuildingTunnels, () => widest);
     try {
         const polygons = [];
         roadSegments.forEach((segment, segmentIndex) => {
@@ -1925,7 +1926,7 @@ function seededSurfaceBuildingIds() {
         });
         if (!polygons.length) return ids;
         findBuildingTunnelIntersections(turf.multiPolygon(polygons), collectLoadedCorridorBuildings(), turf)
-            .forEach(hit => { if (!tunnelled.has(String(hit.id))) ids.add(String(hit.id)); });
+            .forEach(hit => { if (!underTunnel(hit)) ids.add(String(hit.id)); });
     } catch (error) {
         console.error(`[${new Date().toISOString()}] [road-drawing] could not find the buildings a continued corridor already crosses`, error);
     }
@@ -1992,10 +1993,9 @@ function insertRoadNodeOnEdge(segmentIndex, insertAfter, latlng) {
     }
     if (tunnel && typeof removeBuildingTunnelEdge === 'function' && typeof makeBuildingTunnelRecord === 'function') {
         roadBuildingTunnels = removeBuildingTunnelEdge(roadBuildingTunnels, from, to);
-        const hits = (tunnel.buildingIds || []).map(id => ({ id }));
         const segmentId = roadSegmentIds[segmentIndex] || tunnel.segmentId || null;
-        addBuildingTunnelRecord(roadBuildingTunnels, makeBuildingTunnelRecord(from, latlng, hits, { segmentId }));
-        addBuildingTunnelRecord(roadBuildingTunnels, makeBuildingTunnelRecord(latlng, to, hits, { segmentId }));
+        addBuildingTunnelRecord(roadBuildingTunnels, makeBuildingTunnelRecord(from, latlng, { segmentId }));
+        addBuildingTunnelRecord(roadBuildingTunnels, makeBuildingTunnelRecord(latlng, to, { segmentId }));
         refreshRoadBuildingTunnelLayer();
     }
     // An undecided edge's obstacles follow it into its two halves. They are found again rather than
@@ -2786,18 +2786,16 @@ function isAnyModalOpen() {
 }
 
 // Entering road drawing SHOWS the buildings the cutter collides with. Detection intersects the
-// corridor with the GDI survey pool — footprints the default map never draws — so a segment could
+// corridor with the building pool — footprints the default map never draws — so a segment could
 // LOOK clear of a building the click then reports as hit (the raster basemap draws a different,
-// smaller outline). WYSIWYG: R turns the GDI reference layer on silently (no B dialog, the other
-// surveys untouched); leaving the tool restores the map as it was, unless the user flipped the
-// layer themselves in between.
+// smaller outline). WYSIWYG: R turns the Buildings layer on silently (no B dialog, outlines
+// untouched); leaving the tool restores the map as it was, unless the user flipped the layer
+// themselves in between.
 let roadDrawingAutoShowedBuildings = false;
 function autoShowBuildingsForRoadDrawing() {
     const gdiBox = document.getElementById('showBuildings');
     if (!gdiBox || gdiBox.checked) { roadDrawingAutoShowedBuildings = false; return; }
-    const dguBox = document.getElementById('showBuildingsDgu');
-    const osmBox = document.getElementById('showBuildingsOsm');
-    setBuildingReferenceLayers(true, !!(dguBox && dguBox.checked), !!(osmBox && osmBox.checked));
+    setBuildingReferenceLayers(true);
     roadDrawingAutoShowedBuildings = true;
 }
 function restoreBuildingsAfterRoadDrawing() {
@@ -2805,30 +2803,21 @@ function restoreBuildingsAfterRoadDrawing() {
     roadDrawingAutoShowedBuildings = false;
     const gdiBox = document.getElementById('showBuildings');
     if (!gdiBox || !gdiBox.checked) return; // the user turned it off themselves — nothing to undo
-    const dguBox = document.getElementById('showBuildingsDgu');
-    const osmBox = document.getElementById('showBuildingsOsm');
-    setBuildingReferenceLayers(false, !!(dguBox && dguBox.checked), !!(osmBox && osmBox.checked));
+    setBuildingReferenceLayers(false);
 }
 
 // Any road operation needs the buildings on the map IMMEDIATELY — a corridor decision is a
-// decision about buildings. GDI (the survey detection and cutting run on) switches on
-// automatically, no dialog; a survey combination the user already chose is left alone.
+// decision about buildings. The Buildings layer (the sources detection and cutting run on) switches
+// on automatically, no dialog; outlines the user already chose are left alone.
 function ensureRoadOperationBuildings(bounds) {
     // This prepares the Leaflet editing viewport, never the model/photo scene. A 3D selection
     // must not reload 2D footprints and trigger another 3D rebuild/selection notification.
     if ((window.__mapModeState?.desired && window.__mapModeState.desired !== '2d')
         || window.__pending3DMode || window.isThreeModeActive?.()) return Promise.resolve();
     try {
-        const dialog = window.BuildingLayersDialog;
-        const current = (dialog && typeof dialog.currentBuildingLayerState === 'function')
-            ? dialog.currentBuildingLayerState()
-            : null;
-        if (!current || (!current.gdi && !current.dgu && !current.osm)) {
-            if (dialog && typeof dialog.remember === 'function') {
-                try { dialog.remember({ gdi: true, dgu: false, osm: false }); } catch (_) { }
-            }
-            setBuildingReferenceLayers(true, false, false);
-        }
+        const box = document.getElementById('showBuildings');
+        const outlined = window.SourceList?.outlined(window.CityConfigManager?.getBuildingSources?.() || []) || [];
+        if (box && !box.checked && !outlined.length) setBuildingReferenceLayers(true);
         if (typeof window.rebuildBuildingLayerFromPool === 'function') {
             try { window.rebuildBuildingLayerFromPool(); } catch (_) { }
         }
@@ -2842,37 +2831,25 @@ function ensureRoadOperationBuildings(bounds) {
     return Promise.resolve();
 }
 
-function setBuildingReferenceLayers(gdi, dgu, osm) {
-    const gdiBox = document.getElementById('showBuildings');
-    const dguBox = document.getElementById('showBuildingsDgu');
-    const osmBox = document.getElementById('showBuildingsOsm');
-    if (gdiBox && gdiBox.checked !== gdi) {
-        gdiBox.checked = gdi;
+// The Buildings layer on or off (the sources in use); outlined sources are the source list's.
+function setBuildingReferenceLayers(on) {
+    const box = document.getElementById('showBuildings');
+    if (box && box.checked !== on) {
+        box.checked = on;
         if (typeof toggleLayer === 'function') toggleLayer('buildings');
     }
-    if (dguBox && dguBox.checked !== dgu) {
-        dguBox.checked = dgu;
-        if (typeof toggleLayer === 'function') toggleLayer('buildingsDgu');
-    }
-    if (osmBox && osmBox.checked !== osm) {
-        osmBox.checked = osm;
-        if (typeof toggleLayer === 'function') toggleLayer('buildingsOsm');
-    }
-    // The road profiler measures against whatever survey is on the map, so it has to hear about it.
+    // The road profiler measures against whatever is on the map, so it has to hear about it.
     try {
-        document.dispatchEvent(new CustomEvent('building-layers-changed', { detail: { gdi, dgu, osm } }));
+        document.dispatchEvent(new CustomEvent('building-layers-changed'));
     } catch (_) { }
 }
 
-// B opens the building-layers picker — EVERY time, prefilled with what is currently on. The three
-// surveys are independent references (any combination is legal), so it is a set of checkboxes with
-// Show focused: Enter takes the answer, Escape leaves the map alone. It never changes what a
-// corridor cuts — that reads the feature pool — but it does decide what the profiler measures.
+// B opens the building source list (BuildingLayersDialog): which sources are in use, in what order,
+// and which are outlined. It never changes what a corridor cuts beyond that — cutting reads the
+// feature pool — but it does decide what the profiler measures.
 async function toggleBuildingReferenceLayers() {
     if (!window.BuildingLayersDialog) return;
-    const picked = await window.BuildingLayersDialog.open();
-    if (!picked) return;
-    setBuildingReferenceLayers(picked.gdi, picked.dgu, picked.osm);
+    await window.BuildingLayersDialog.open();
 }
 
 function handleRoadDrawHotkey(event) {
@@ -3023,9 +3000,9 @@ function detectRoadEdgeConflicts(from, to, segmentPolygon, profile) {
         // a corridor reloads its tunnels into roadBuildingTunnels (seedRoadDrawing), so an edge that
         // grazes a building already tunnelled is not asked about again — the same building-keyed
         // reuse the two edit paths use, so a road's relation to a building is decided once.
-        const alreadyTunnelledIds = new Set((roadBuildingTunnels || []).flatMap(record => (record?.buildingIds || []).map(String)));
+        const underTunnel = tunnelSpanTest(roadBuildingTunnels || [], () => corridorProfileWidth(profile));
         entry.buildings = detectLoadedBuildingTunnelIntersections(segmentPolygon)
-            .filter(hit => !roadSurfaceBuildingIds.has(String(hit.id)) && !alreadyTunnelledIds.has(String(hit.id)));
+            .filter(hit => !roadSurfaceBuildingIds.has(String(hit.id)) && !underTunnel(hit));
         // Subdivision/readjustment plots in the way, and the proposal buildings standing in the way
         // (corridor-structures.js, proposals/plot-crossings.js).
         if (typeof detectPlotCrossings === 'function') {

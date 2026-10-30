@@ -569,38 +569,14 @@ body.corridor-busy .leaflet-interactive {
     color: var(--cb-warning-soft-ink);
 }
 
-/* The building-layers picker (B, js/building-layers-dialog.js): the shared dialog with
-   `building-layers-dialog` as its identity class. Three checkboxes, because the surveys stack. */
-.building-layers-dialog .building-layers-options {
+/* The building-layers dialog (B, js/building-layers-dialog.js): the shared dialog with
+   `building-layers-dialog` as its identity class. The Buildings switch, then the building source
+   list (css/parcel-sources.css, .source-list-editor). */
+.building-layers-dialog .building-layers-body {
     display: flex;
     flex-direction: column;
     gap: var(--cb-space-3);
-    margin: 0;
-    text-align: left;
-}
-
-.building-layers-option {
-    display: flex;
-    align-items: flex-start;
-    gap: var(--cb-space-2);
-    cursor: pointer;
-}
-
-.building-layers-option input {
-    margin-top: 3px;
-    accent-color: var(--cb-primary);
-}
-
-.building-layers-option strong {
-    display: block;
-    font-weight: var(--cb-weight-semibold);
-}
-
-.building-layers-option small {
-    display: block;
-    color: var(--cb-text-muted);
-    font-size: var(--cb-text-sm);
-    line-height: var(--cb-leading);
+    text-align: start;
 }
 
 /* Which limit the road answers to. A segmented pair rather than a checkbox: the two are exclusive

@@ -274,18 +274,19 @@
         };
         const keyOf = feature => String(feature.properties && (feature.properties.parcelId ?? feature.id));
 
-        // Existing buildings on parcels, clipped to them, as freeform building records.
+        // Existing buildings on parcels, clipped to them, as freeform building records: the buildings the
+        // city's sources give for that land, through the same cells as the map (demolition-index.js).
         async function existingOn(parcels, floorHeightM) {
             const parcelsById = new Map(parcels.map(feature => [keyOf(feature), feature]));
+            const stock = (await win.DemolitionIndex.stockUnder(parcels.map(feature => feature.geometry)))
+                .map(feature => ({ ...feature.properties, id: `${feature.properties.source}:${feature.properties.id}`, geometry: feature.geometry,
+                    box: bboxOf([feature]) }));
             const regions = new Map();
-            const list = [...parcelsById.entries()];
-            for (let i = 0; i < list.length; i += 200) {
-                const chunk = list.slice(i, i + 200).map(([key, feature]) => ({ key, geometry: feature.geometry }));
-                const payload = await win.BuildingSourceClient.request('/buildings/under', { regions: chunk });
-                if (!payload || payload.supported === false) throw new Error('No building data covers this land.');
-                if (payload.truncated || payload.unavailable) throw new Error('The building data for this land is incomplete.');
-                Object.entries(payload.regions || {}).forEach(([key, buildings]) => regions.set(key, buildings));
-            }
+            parcelsById.forEach((feature, key) => {
+                const box = bboxOf([feature]);
+                regions.set(key, box ? stock.filter(building => building.box && building.box[0] <= box[2] && box[0] <= building.box[2]
+                    && building.box[1] <= box[3] && box[1] <= building.box[3]) : []);
+            });
             return builtRecords({ regions, parcelsById, ops, floorHeightM });
         }
 

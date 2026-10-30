@@ -82,7 +82,9 @@
     function inspectBuilding(feature, key, { hosted = false } = {}) {
         if (!hosted) return root.ClickStack?.showBuilding?.(feature, key) || false;
         const record = root.PlanningRepresentations.built(feature, { key: key || root.buildingPoolFeatureKey?.(feature),
-            city: root.CityConfigManager.getCurrentCityId(), footprintM2: feature.geometry ? root.turf.area(feature) : null });
+            city: root.CityConfigManager.getCurrentCityId(), footprintM2: feature.geometry ? root.turf.area(feature) : null,
+            title: root.ClickStackHits?.buildingLabel?.(feature) || null,
+            sourceName: root.CityConfigManager.getBuildingSources?.().find(source => source.id === feature.properties?.source)?.name || null });
         if (record) { selectRecord(record); return true; }
         return false;
     }
@@ -263,7 +265,8 @@
         const heading = element('div');
         const sourceResult = item.role === 'permitted';
         heading.append(element('p', 'planning-eyebrow', item.parcelEnvelope ? t('envelopeTitle')
-            : t(item.areas?.length ? 'zoningArea' : sourceResult ? (item.volumes.length ? 'sourceProposal' : 'savedResult') : 'builtRecord')), element('h2', 'click-stack__title', item.title));
+            : t(item.areas?.length ? 'zoningArea' : sourceResult ? (item.volumes.length ? 'sourceProposal' : 'savedResult') : 'builtRecord')));
+        if (item.title) heading.append(element('h2', 'click-stack__title', item.title));
         // A parcel's massing names its parcel; the title alone is the source edition and ratio.
         const parcelLabel = parcelOf(item);
         if (parcelLabel) heading.append(element('p', 'planning-inspector__parcel', `${t('focusParcel')} ${parcelLabel}`));

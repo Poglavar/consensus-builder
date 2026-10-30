@@ -262,7 +262,6 @@
             arrayId(pass.buildings),
             pass.buildings?.length || 0,
             stableSerialize(pass.carveRecords || []),
-            stableSerialize(pass.structureRegions || []),
             stableSerialize({
                 showSurviving: pass.visibility?.showSurviving !== false,
                 showDemolished: pass.visibility?.showDemolished !== false

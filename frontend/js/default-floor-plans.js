@@ -2,7 +2,7 @@
 // lift, or an open stairwell) entered from the building's long side, two apartments per core with
 // rooms, windows on every free facade and a balcony for the living room, blind party walls and
 // boundary walls, one extra core per ~2 × 120 m² of floor, an optional active ground floor and a
-// garage level. The output is the SAME `consensus-builder.building-floor-plans.v2` contract that
+// garage level. The output is the SAME `consensus-builder.building-floor-plans.v3` contract that
 // evidence-backed reconstructions use (building-floor-plans.js validates it, three-floor-plans.js
 // renders it), so a generated layout is just another source adapter. It is flagged `suggested: true`
 // and its layout sources are `{ kind: 'generated' }` — a suggestion for X-ray, never part of the
@@ -23,7 +23,7 @@
     }
 
     const GENERATOR_ID = 'consensus-builder.default-floor-plan.v1';
-    const PLANS_SCHEMA = 'consensus-builder.building-floor-plans.v2';
+    const PLANS_SCHEMA = 'consensus-builder.building-floor-plans.v3';
     const ARCHITECTURE_SCHEMA = 'consensus-builder.floor-architecture.v1';
 
     // Regulation presets, selected by region (ISO 3166 alpha-2) or explicitly. Only the numbers a
@@ -247,7 +247,7 @@
 
     // One warning summary that callers can show without re-deriving the geometry.
     function describe(result) {
-        if (result.floorPlans) return `${result.summary.cores} core(s), ${result.summary.apartmentsPerFloor} apartments per floor`;
+        if (result.floorPlans) return `${result.summary.cores} core(s), ${result.summary.apartmentsPerFloor} apartments per storey`;
         return result.warnings.filter(w => w.severity === 'error').map(w => w.message).join(' ') || 'No layout generated.';
     }
 
@@ -671,16 +671,15 @@
         const unitList = (furnished, level) => furnished.units.map((unit, index) => ({
             id: `core-${unit.apartment.block.k + 1}-${unit.apartment.side}-${level}`, areaM2: Math.round(unit.apartment.areaM2 * 10) / 10, kind: unit.kind, rooms: unit.rooms
         }));
-        const floorList = [];
+        const storeyList = [];
         for (let level = 0 - summary.garageLevels; level < floors; level++) {
             const isGarage = level < 0, isGround = level === 0;
             const layout = isGarage ? layouts[layouts.length - 1] : layouts[isGround ? 0 : Math.min(1, layouts.length - 1)];
             const units = isGarage ? [] : unitList(isGround ? ground : typical, level);
-            floorList.push({
-                id: `${buildingId}:default-floor-${level}`, level, elevationM: Math.round(level * storeyHeightM * 1000) / 1000,
+            storeyList.push({
+                id: `${buildingId}:default-storey-${level}`, level, elevationM: Math.round(level * storeyHeightM * 1000) / 1000,
                 elevationBasis: 'estimated', layoutId: layout.id,
-                apartments: units.filter(unit => unit.kind === 'apartment').map(({ kind, ...apartment }) => apartment),
-                units: isGarage ? [{ id: `garage-${level}`, kind: 'garage', areaM2: round2(usableM2) }] : units.filter(unit => unit.kind !== 'apartment')
+                units: isGarage ? [{ id: `garage-${level}`, kind: 'garage', areaM2: round2(usableM2) }] : units
             });
         }
         // Corners keep a tenth of a millimetre: a sixth decimal of a degree is already a decimetre.
@@ -695,7 +694,7 @@
                 accuracy: 'generated', frontBasis, frontEdge: summary.frontEdge
             },
             layouts,
-            floors: floorList,
+            storeys: storeyList,
             notes: [
                 'A suggested default layout, not part of the proposal: a point-access core entered from the long side with two apartments per core.',
                 `Stair: ${core.stair.risers} risers of ${Math.round(core.stair.riserM * 1000)} mm with ${Math.round(rules.minTreadM * 1000)} mm treads and ${Math.round(rules.flightWidthM * 100)} cm flights (${rules.regulationBasis}).`,

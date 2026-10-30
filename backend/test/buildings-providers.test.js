@@ -14,6 +14,15 @@ import OVERTURE_CITIES from '../../frontend/data/overture-source-presets.json' w
 import { createMockPool } from './helpers/mock-pool.js';
 
 describe('Zagreb 3D provider — near()', () => {
+    it('says truncated when the area holds more than the 4,000 cap, so a cell reader splits it', async () => {
+        const pool = createMockPool();
+        pool.setResult({ rows: Array.from({ length: 4001 }, (_, i) => ({ object_id: i, z_min: 0, z_max: 9, faces: [] })), rowCount: 4001 });
+        const full = await createZagrebProvider(pool).near({ type: 'Point', coordinates: [15.977, 45.813] }, 0);
+        expect(full).toMatchObject({ count: 4000, truncated: true });
+        pool.setResult({ rows: [{ object_id: 1, z_min: 0, z_max: 9, faces: [] }], rowCount: 1 });
+        expect((await createZagrebProvider(pool).near({ type: 'Point', coordinates: [15.977, 45.813] }, 0)).truncated).toBeUndefined();
+    });
+
     it('orders candidates by distance before the cap so the cap is deterministic (nearest-first)', async () => {
         const pool = createMockPool();
         const provider = createZagrebProvider(pool);
@@ -24,7 +33,8 @@ describe('Zagreb 3D provider — near()', () => {
         // The distance ordering must precede the cap — without it the LIMIT keeps an arbitrary
         // subset. (Match the clause tokens, not bare ORDER BY/LIMIT, which also appear in comments.)
         const orderIdx = sql.indexOf('b.geom2d_3765 <-> q.g');
-        const limitIdx = sql.indexOf('LIMIT 4000');
+        // One row past the 4,000 cap, so a full answer can say it is truncated (split-read.js).
+        const limitIdx = sql.indexOf('LIMIT 4001');
         expect(orderIdx).toBeGreaterThan(-1);
         // Cap is well above the densest 500m-radius query so the radius is the real limiter.
         expect(limitIdx).toBeGreaterThan(orderIdx);

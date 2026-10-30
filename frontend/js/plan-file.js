@@ -197,7 +197,9 @@
 
     // schedule: the plan's construction windows by design CID; a design whose CID changes when its
     // models are embedded keeps its window.
-    async function create(records, { title, view, schedule = null, designSources = {}, fetchModel = () => fail('A model dependency could not be embedded.') } = {}) {
+    // `cidMap`, when given, receives each design's CID before and after its models were embedded
+    // ({ [originalCid]: fileCid }): an agreement file uses it to follow its designs into the file.
+    async function create(records, { title, view, schedule = null, designSources = {}, fetchModel = () => fail('A model dependency could not be embedded.'), cidMap = null } = {}) {
         if (!Array.isArray(records) || !records.length || records.length > api('PlanRecord').MAX_DESIGNS) fail('Choose between 1 and 1000 designs.');
         const rows = new Map(), sources = {}, windows = {};
         for (const record of records) {
@@ -206,6 +208,7 @@
             const originalCid = api('Cid').cidOfObject(content);
             await embedModels(content, fetchModel);
             const cid = api('Cid').cidOfObject(content);
+            if (cidMap) cidMap[originalCid] = cid;
             rows.set(cid, { cid, content });
             if (schedule?.[originalCid]) windows[cid] = schedule[originalCid];
             const source = designSources[originalCid] || record.planFileSource || record.binding?.parcelSource;

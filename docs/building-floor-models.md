@@ -11,7 +11,7 @@ The JSON model contains:
 
 - WGS84 registration corners, placement method and accuracy notes.
 - Reusable floor layouts: wall and slab polygons, openings, door hinges, stairs, landings and railings, plus their metric dimensions.
-- Floors referencing those layouts, each with its level, elevation, elevation basis and source evidence.
+- Storeys referencing those layouts, each with its level, elevation, elevation basis, source evidence and units (apartments, shops, offices, garages).
 - Source URLs/checksums and optional PDF page/crop metadata. Non-PDF sources use the same contract without page or crop fields.
 - Explicit inference notes. Estimated dimensions are not measurements.
 
@@ -56,4 +56,4 @@ For a native building, use `--models path/to/models.json` with an envelope `{"sc
 
 Production imports use the production environment, `--target production`, and `--confirm-production` when applying. Each project is one transaction: models are validated, versioned and read back before any old inline copies are removed. Changed models retain older versions; equal semantic JSON is a no-op despite PostgreSQL key ordering. Missing source pages never delete a saved model. The source-search inventory records gaps separately.
 
-The current authored Pionir corpus covers 67 floors across nine owners and four sites. Missing floors and proxy intervals remain explicit and are never cloned. Shared below-ground models are attached once under their explicit owner: Savica under F3 and Lovinčićeva under C1. Savica raster traces are reviewed source evidence, not survey geometry; ramps retain flat plan footprints because no vertical profile is known; Lovinčićeva labels do not imply modeled stair runs. Native identities remain source-specific (`sourceFeatureId`, `dguBuildingId`, or `sourceLayerId`).
+The current authored Pionir corpus covers 67 storeys across nine owners and four sites. Missing storeys and proxy intervals remain explicit and are never cloned. Shared below-ground models are attached once under their explicit owner: Savica under F3 and Lovinčićeva under C1. Savica raster traces are reviewed source evidence, not survey geometry; ramps retain flat plan footprints because no vertical profile is known; Lovinčićeva labels do not imply modeled stair runs. Native identities remain source-specific (`sourceFeatureId`, `dguBuildingId`, or `sourceLayerId`).

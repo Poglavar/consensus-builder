@@ -808,25 +808,16 @@
                             data-i18n-key="sidebar.buildings.title">Buildings</span>
                     </summary>
                     <div class="sheet-section-body">
-                        <!-- Three views of the same city, and they disagree. GDI is the working set —
-                             the objects the 3D model, the carve and every demolition record use. DGU is
-                             the cadastre, a legal reference only. OSM is the community map behind the
-                             basemap, so its outlines match the tiles on screen. Any can be ticked at
-                             once: overlaying them is how the disagreement becomes visible. None of these
-                             toggles changes what a corridor cuts. -->
+                        <!-- One switch for the existing buildings. Where they come from is the city's
+                             building source list (js/source-list.js): the sources in use stand in for
+                             each other area by area, and a source with Outline on is drawn beside them
+                             for comparison. The summary line names the list; Building sources edits it.
+                             No toggle changes what a corridor cuts. -->
                         <div class="control-group">
                             <div class="checkbox-group">
                                 <label>
                                     <input type="checkbox" id="showBuildings" onchange="toggleLayer('buildings')">
-                                    <span data-i18n-key="sidebar.buildings.showGdi">GDI buildings (3D model)</span>
-                                </label>
-                                <label>
-                                    <input type="checkbox" id="showBuildingsDgu" onchange="toggleLayer('buildingsDgu')">
-                                    <span data-i18n-key="sidebar.buildings.showDgu">DGU cadastre (legal reference)</span>
-                                </label>
-                                <label>
-                                    <input type="checkbox" id="showBuildingsOsm" onchange="toggleLayer('buildingsOsm')">
-                                    <span data-i18n-key="sidebar.buildings.showOsm">OSM buildings (matches the map)</span>
+                                    <span data-i18n-key="sidebar.buildings.title">Buildings</span>
                                 </label>
                                 <!-- The shared view selector owns proposed-building visibility. -->
                                 <label hidden>
@@ -835,9 +826,10 @@
                                     <span data-i18n-key="sidebar.buildings.showProposed">Show Proposed Buildings</span>
                                 </label>
                             </div>
+                            <p id="building-sources-summary" class="sheet-note building-sources-summary"></p>
                         </div>
                         <div class="cb-actions layer-source-actions"><button type="button" id="building-source-settings-button" class="btn" data-section-independent="true" onclick="openBuildingSourceSettings()">
-                                <span data-i18n-key="buildingSources.title">Choose a building source</span>
+                                <span data-i18n-key="buildingSources.listTitle">Building sources</span>
                             </button></div>
                     </div>
                 </details>
@@ -1140,7 +1132,10 @@
                     <div id="plan-file-actions"></div>
                     <div id="plan-list-host" class="lists-rows"></div>
                 </div>
-                <div id="designs-agreements" class="lists-rows" role="tabpanel" aria-labelledby="designs-agreements-tab" hidden></div>
+                <div id="designs-agreements" class="lists-rows" role="tabpanel" aria-labelledby="designs-agreements-tab" hidden>
+                    <div id="agreement-file-actions"></div>
+                    <div id="agreement-list-host" class="lists-rows"></div>
+                </div>
             </div>
         </section>
 
@@ -1897,12 +1892,13 @@
             'js/metric-frame.js',
             'js/imagery-source.js',
             'js/parcel-source-settings.js',
+            'js/source-list.js?v=20261030-lists',
             // The index of every city (light configurations) and its row format, read by city-config.js,
             // which then writes the current city's full configuration (data/cities/<id>.js) into the page.
             'js/city-light-config.js',
             'data/city-index.js',
             // bundle:end environment-before-city
-            'js/city-config.js?v=20261029-stored-city',
+            'js/city-config.js?v=20261030-lists',
             // bundle:start environment-after-city
             'js/parcel-source-notice.js',
             'js/ui/world-entry.js?v=20261026-globe-failure',
@@ -1986,12 +1982,12 @@
             'js/map-screenshot.js',
             'js/og-metadata.js',
             // bundle:end chain-clients
-            'js/parcels/browser-client.js',
+            'js/parcels/browser-client.js?v=20261030-source-lists',
             // bundle:start parcel-data-clients
             'js/data-source.js',
             'js/basemap.js?v=20261020-estimates',
             'js/parcels/source-in-view.js',
-            'js/ui/map-credits.js?v=20261013-source-in-view',
+            'js/ui/map-credits.js?v=20261030-lists',
             'js/parcels/utils/fetch-config.js',
             'js/parcels/controller.js',
             'js/parcels/activity-listener.js',
@@ -1999,14 +1995,15 @@
             // and the client routing every building read through the backend.
             'js/building-extrusion.js',
             'js/footprint-provider.js',
-            'js/building-source-client.js?v=20261030-keep-truncated',
+            'js/building-cells.js?v=20261030-source-lists',
+            'js/building-source-client.js?v=20261030-source-lists',
             // bundle:end parcel-data-clients
             // What each Buildings and massing role is still loading; the map's first fetches report to it.
             'js/planning/loading.js',
-            'js/map-core.js?v=20261030-xray-radius',
+            'js/map-core.js?v=20261030-source-lists',
             'js/user-management.js?v=20261020-modeled-totals',
             'js/site-intro.js',
-            'js/map-controls.js?v=20261027-panel-buttons',
+            'js/map-controls.js?v=20261030-source-lists',
             // bundle:start map-ui
             'js/urban-blocks-model.js',
             'js/urban-blocks-controller.js',
@@ -2024,16 +2021,16 @@
             'js/release-updates.js',
             'js/ui/app-updates.js',
             'js/ui/settings-panel.js',
-            'js/ui/commands.js?v=20261027-station-inspection',
+            'js/ui/commands.js?v=20261030-source-lists',
             'js/ui/map-shell.js',
             'js/ui/dock-clearance.js',
             'js/planning/scene.js?v=20261029-loading-ring',
             'js/planning/envelopes.js?v=20261021-envelopes',
-            'js/planning/representations.js?v=20261020-qualified-inspection',
+            'js/planning/representations.js?v=20261030-built-title',
             'js/planning/source-proposal.js',
             'js/planning/feed.js',
             'js/planning/parcel-assessment.js?v=20261021-permitted-envelopes',
-            'js/planning/views.js?v=20261029-loading-ring',
+            'js/planning/views.js?v=20261030-built-title',
             'js/approval-link.js',
             'js/draft-link.js',
             'js/draft-preview.js?v=20261029-buildout',
@@ -2193,7 +2190,7 @@
             'js/building-ground.js?v=20261028-ground-fences',
             'js/freeform-land-take.js?v=20261029-ground-before',
             'js/freeform-ground-before.js',
-            'js/freeform-land-take-review.js?v=20261029-ground-replay',
+            'js/freeform-land-take-review.js?v=20261030-source-lists',
             'js/building-surroundings-editor.js',
             'js/proposal-own-parcel.js',
             'js/proposals/area.js?v=20261020-complete-area',
@@ -2264,6 +2261,7 @@
             'js/design-record.js',
             'js/plan-file.js?v=20261029-schedule',
             'js/design-file-exports.js',
+            'js/agreement-file.js',
             'js/plan-file-ui.js?v=20261029-schedule',
             'js/community/voting.js',
             'js/community/voting-roster.js',
@@ -2282,7 +2280,7 @@
             'js/suggested-layouts-2d.js?v=20261029-building-use',
             'js/proposals/replay-status.js',
             // bundle:end plans-agreements
-            'js/proposals/sharing-routes.js?v=20261020-publication-copies',
+            'js/proposals/sharing-routes.js?v=20261030-source-lists',
             'js/proposals/grain-score-rules.js',
             'js/proposals/core.js?v=20261022-agreement-chain',
             'js/proposals/data.js?v=20261029-no-epoch',
@@ -2295,7 +2293,7 @@
             'js/proposals/demolition-prefetch.js',
             'js/agreement-headless.js?v=20261028-abstract-parties',
             'js/plan-analysis.js',
-            'js/proposals/present-state.js?v=20261029-laid-out-units',
+            'js/proposals/present-state.js?v=20261030-source-lists',
             'js/proposals/grain-score.js',
             'js/proposals/plan-stats.js?v=20261030-compare-agreements',
             'js/parcel-coverage-debug.js',
@@ -2430,6 +2428,9 @@
             'js/road-in-parcel.js',
             // bundle:start corridor-structures
             'js/corridor-tunnel.js',
+            // Demolitions derived from the applied designs' land against the buildings shown.
+            'js/demolition-derive.js?v=20261030-source-lists',
+            'js/demolition-index.js?v=20261030-source-lists',
             'js/corridor-grade-separation.js',
             'js/proposals/plot-crossings.js',
             'js/corridor-structures.js',
@@ -2511,7 +2512,7 @@
             'js/geometry-edit/vertex-controls.js',
             'js/polygon-geometry-editor.js',
             'js/street-frontage.js',
-            'js/site-drawing.js?v=20261027-tab-icons',
+            'js/site-drawing.js?v=20261030-source-lists',
             'js/building-density-stats.js',
             'js/blockify-map-fit.js',
             'js/design-change-tracker.js',

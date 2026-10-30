@@ -19,7 +19,7 @@
       "strokeGray": 0.391,
       "registrationFloorLevel": 1,
       "elevationNote": "A1 commercial ground floor uses an estimated 3.7 m floor-to-floor height from the printed 3.5 m PP1 ceiling plus an assumed 0.2 m slab; upper levels use estimated 3 m storeys.",
-      "floors": [
+      "storeys": [
         {
           "level": 0,
           "elevationM": 0,
@@ -327,7 +327,7 @@
       "id": "B1",
       "northInDrawing": "up",
       "strokeGray": 0.391,
-      "floors": [
+      "storeys": [
         {
           "level": 0,
           "elevationM": 0,
@@ -699,7 +699,7 @@
       "id": "B2",
       "northInDrawing": "up",
       "strokeGray": 0.391,
-      "floors": [
+      "storeys": [
         {
           "level": 0,
           "elevationM": 0,
@@ -1624,7 +1624,7 @@
       "id": "B3",
       "northInDrawing": "right",
       "strokeGray": 0.391,
-      "floors": [
+      "storeys": [
         {
           "level": 0,
           "elevationM": 0,
@@ -2549,7 +2549,7 @@
       "id": "B4",
       "northInDrawing": "up",
       "strokeGray": 0.391,
-      "floors": [
+      "storeys": [
         {
           "level": 0,
           "elevationM": 0,
@@ -3803,7 +3803,7 @@
       "id": "C1",
       "northInDrawing": "up",
       "strokeGray": 0.391,
-      "floors": [
+      "storeys": [
         {
           "level": 0,
           "elevationM": 0,

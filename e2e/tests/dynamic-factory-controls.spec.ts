@@ -3,7 +3,8 @@ import { test, expect } from '../helpers/fixtures';
 import { clickMapPoint, createBuilding, createSpace, drawCorridor, openCity, openParcel } from '../helpers/runtime';
 import { connectWalletByConnectorId, injectMockSolanaWallet, waitForBlockchainRuntime } from '../helpers/blockchain';
 import { selectNativeOption } from '../helpers/controls';
-import { surveyResponse } from '../helpers/mocks/survey-data';
+import { openLayerSection } from '../helpers/layers';
+import { mockFootprintCells } from '../helpers/mocks/building-data';
 import { pageIndex } from '../helpers/mocks/shared-server';
 import { fileIndexedAgreement, MINTED_ACCOUNT, OPEN_POOL, selectDevnetUsdc } from '../helpers/agreements';
 import { encodeAgreementAccount } from '../helpers/agreement-chain';
@@ -204,15 +205,14 @@ test.describe('shared dynamic button factories @features', () => {
   });
 
   test('Dismiss source warning removes the real failed-building banner', async ({ mockApi: page }) => {
-    await page.route('**/buildings/osm?*', route => route.fulfill({
-      status: 503, json: { error: 'Reference temporarily unavailable', retryAfterSeconds: 0 },
-    }));
-    await openCity(page);
-    await page.evaluate(() => {
-      (document.getElementById('showBuildingsOsm') as HTMLInputElement).checked = true;
-      const map = (window as any).map;
-      for (let i = 0; i < 5; i += 1) map.panBy([40, 0], { animate: false });
+    await page.route('**/buildings**', route => {
+      const path = new URL(route.request().url()).pathname;
+      if (path !== '/buildings' && path !== '/buildings/cell') return route.fallback();
+      return route.fulfill({ status: 503, json: { error: 'Buildings temporarily unavailable', retryAfterSeconds: 0 } });
     });
+    await openCity(page);
+    await openLayerSection(page, 'buildings');
+    await page.locator('#showBuildings').check();
 
     const banner = page.locator('#building-source-status');
     await expect(banner).toBeVisible();
@@ -432,15 +432,9 @@ test.describe('shared dynamic button factories @features', () => {
       await openCity(page);
       // These prompts apply to an existing surveyed building. A new proposal building is
       // deliberately forbidden as a crossing and only offers "Choose another route".
-      await page.route('**/buildings?*', route => route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify(surveyResponse([{
-          type: 'Feature',
-          properties: { id: 'e2e-existing-obstacle', object_id: 'e2e-existing-obstacle', height_m: 12, floors: 4 },
-          geometry: { type: 'Polygon', coordinates: [[[15.98205, 45.8002], [15.98235, 45.8002], [15.98235, 45.8003], [15.98205, 45.8003], [15.98205, 45.8002]]] },
-        }])),
-      }));
+      await page.evaluate(() => (window as any).BuildingCellLoader.clear());
+      await mockFootprintCells(page, () => [{ id: 'e2e-existing-obstacle', height_m: 12, floors: 4,
+        geometry: { type: 'Polygon', coordinates: [[[15.98205, 45.8002], [15.98235, 45.8002], [15.98235, 45.8003], [15.98205, 45.8003], [15.98205, 45.8002]]] } }]);
       await startRoadFromAdjacentParcel(page);
       await clickMapPoint(page, 15.9819, 45.80025);
       await clickMapPoint(page, 15.9825, 45.80025);
@@ -472,6 +466,15 @@ test.describe('shared dynamic button factories @features', () => {
       const tunnels = road.roadProposal.definition.tunnels || [];
       if (decision.action === 'tunnel') expect(tunnels.length).toBeGreaterThan(0);
       else expect(tunnels).toHaveLength(0);
+      // The building's fate is derived from the road's land: at the surface the road takes it, under a
+      // tunnel span it passes beneath it. Keyed by its source.
+      const outcome = () => page.evaluate(() => {
+        const index = (window as any).DemolitionIndex;
+        return { taken: index.records().map((record: any) => record.id), tunnelled: [...index.tunnelledKeys()] };
+      });
+      await expect.poll(outcome).toEqual(decision.action === 'tunnel'
+        ? { taken: [], tunnelled: ['gdi-3d:e2e-existing-obstacle'] }
+        : { taken: ['gdi-3d:e2e-existing-obstacle'], tunnelled: [] });
     });
   }
 });

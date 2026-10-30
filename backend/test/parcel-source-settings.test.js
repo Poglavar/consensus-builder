@@ -174,27 +174,56 @@ describe('building source choices', () => {
         expect(settings.decodeChoice(id, 'test_city')).toBeNull();
         expect(settings.decodeChoice(choice('test_city').id, 'test_city', 'building')).toBeNull();
         expect(settings.storageKey('test_city', global, 'building')).not.toBe(settings.storageKey('test_city', global));
-        settings.saveChoice('test_city', { id }, global, 'building');
-        expect(settings.choiceForCity('test_city', global, 'building')).toMatchObject({ id });
-        expect(settings.choiceForCity('test_city', global)).toBeNull();
+    });
+});
+
+// The building source list editor's edits (the Building sources and B-key dialogs).
+describe('building source list edits', () => {
+    const zagreb = () => [
+        { id: 'gdi-3d', name: 'Zagreb 3D model (GDI)', use: true, outline: false, city: true },
+        { id: 'dgu', name: 'DGU cadastre', use: false, outline: false, city: true },
+        { id: 'osm', name: 'OpenStreetMap', use: false, outline: false, city: true }
+    ];
+    const ids = list => list.map(entry => entry.id);
+
+    it('turns Outline on only for a source not in use, and Use on clears it', () => {
+        const outlined = settings.editSourceList(zagreb(), 'outline', 'dgu');
+        expect(outlined[1]).toMatchObject({ id: 'dgu', use: false, outline: true });
+        expect(settings.editSourceList(outlined, 'outline', 'gdi-3d')[0].outline).toBe(false);
+        expect(settings.editSourceList(outlined, 'use', 'dgu')[1]).toMatchObject({ use: true, outline: false });
     });
 
-    it('lets ?buildingSource= win over the stored building choice', () => {
-        const stored = buildingId('test_city');
-        const other = encodeCustomSource({ ...buildingConfig('test_city'), endpoint: 'https://other.example/FeatureServer/0' });
-        const global = globalFor({ search: '?buildingSource=' + other });
-        settings.saveChoice('test_city', { id: stored }, global, 'building');
-        expect(settings.choiceForCity('test_city', global, 'building').id).toBe(other);
+    it('keeps one source in use: the last one can be neither turned off nor removed', () => {
+        expect(settings.editSourceList(zagreb(), 'use', 'gdi-3d')[0].use).toBe(true);
+        const added = settings.addToSourceList(zagreb().map(entry => ({ ...entry, use: false })), 'building.mine');
+        expect(settings.editSourceList(added, 'remove', 'building.mine')).toHaveLength(4);
+        const both = settings.editSourceList(added, 'use', 'osm');
+        expect(ids(settings.editSourceList(both, 'remove', 'building.mine'))).toEqual(['gdi-3d', 'dgu', 'osm']);
+        // A city source is never removed, only turned off.
+        expect(settings.editSourceList(both, 'remove', 'osm')).toHaveLength(4);
     });
 
-    it('replaces the city buildings with the chosen source and keeps the default on record', () => {
-        const id = buildingId('zagreb');
-        const global = globalFor({ search: '?buildingSource=' + id });
-        const { manager } = bootCity('zagreb', global);
-        expect(manager.getCityConfig('zagreb').buildings).toMatchObject({ source: 'custom', sourceId: id, defaultSource: 'gdi' });
-        expect(manager.getBuildingSourceId()).toBe(id);
-        const plain = bootCity('zagreb', globalFor()).manager;
-        expect(plain.getBuildingSourceId()).toBe('gdi-3d');
+    it('moves a source up and down within the list, and leaves the input untouched', () => {
+        const list = zagreb();
+        expect(ids(settings.editSourceList(list, 'up', 'dgu'))).toEqual(['dgu', 'gdi-3d', 'osm']);
+        expect(ids(settings.editSourceList(list, 'down', 'dgu'))).toEqual(['gdi-3d', 'osm', 'dgu']);
+        expect(ids(settings.editSourceList(list, 'up', 'gdi-3d'))).toEqual(['gdi-3d', 'dgu', 'osm']);
+        expect(ids(settings.editSourceList(list, 'down', 'osm'))).toEqual(['gdi-3d', 'dgu', 'osm']);
+        expect(ids(list)).toEqual(['gdi-3d', 'dgu', 'osm']);
+    });
+
+    it('adds a verified source first, in use, without a duplicate', () => {
+        const added = settings.addToSourceList(zagreb(), 'building.mine');
+        expect(added[0]).toEqual({ id: 'building.mine', use: true, outline: false, city: false });
+        expect(ids(settings.addToSourceList(added, 'building.mine'))).toEqual(['building.mine', 'gdi-3d', 'dgu', 'osm']);
+    });
+
+    it('names the list in one line: the sources in use, then the outlined ones', () => {
+        const t = (key, fallback, params) => fallback.replace(/\{\{(\w+)\}\}/g, (_, name) => params[name]);
+        const list = settings.editSourceList(zagreb(), 'outline', 'dgu');
+        expect(settings.sourceListSummary(list, t)).toBe('Zagreb 3D model (GDI) · DGU cadastre outlined');
+        expect(settings.sourceListSummary(settings.editSourceList(list, 'use', 'osm'), t))
+            .toBe('Zagreb 3D model (GDI) · OpenStreetMap · DGU cadastre outlined');
     });
 });
 

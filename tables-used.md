@@ -8,13 +8,14 @@ Rules that shape the list:
 
 - Building tables carry their source in the name: `dgu_*` is the DGU cadastre, `gdi_*` the GDI
   photogrammetry, `overture_*` Overture Maps. The GDI objects (`gdi_building_footprint`, keyed by
-  `object_id`, 1:1 with `gdi_building_3d`) are the working set that is cut, tunnelled, demolished and
-  rendered; `dgu_building` is a drawn reference layer only. `gdi_building` holds per-object heights.
+  `object_id`, 1:1 with `gdi_building_3d`) are Zagreb's building source in use (`gdi-3d`);
+  `dgu_building` is the `dgu` source, listed for comparison and usable in its place
+  (docs/source-loading-plan.md F1). `gdi_building` holds per-object heights.
 - Generic-city 3D sources (`overture_building_footprint`, `osm_decor`) are ingested by `cadastre-data`
   and keyed by area, not city (`backend/buildings/overture-cities.js`).
 
-- `gdi_building_footprint` (**object_id**) is the **working set**. `GET /buildings?bbox=` serves it,
-- `dgu_building` (**zgrada_id**) is the **cadastre reference layer** — `GET /buildings?bbox=&source=dgu`.
+- `gdi_building_footprint` (**object_id**) is the **`gdi-3d` building source** — `POST /buildings/cell` with `source: 'gdi-3d'`, `kind: 'footprints'`.
+- `dgu_building` (**zgrada_id**) is the **`dgu` building source** — `POST /buildings/cell` with `source: 'dgu'`.
 - ads.ad
 - ads.ad_parcel
 - public.area_monitor

@@ -26,7 +26,7 @@ def build_offices(feature, sources):
     # All eight source pages align after translation. The reference is the 1st floor.
     frame=[4,34,1158,1384];W,H=frame[2]-frame[0],frame[3]-frame[1]
     refcrop=[470+frame[0]/2,70+frame[1]/2,470+frame[2]/2,70+frame[3]/2]
-    reg=rec.registration(feature,{'id':'F3','northInDrawing':'up','floors':[{'source':{'crop':refcrop},'level':1}]});scale=reg['metresPerPdfPoint']/2
+    reg=rec.registration(feature,{'id':'F3','northInDrawing':'up','storeys':[{'source':{'crop':refcrop},'level':1}]});scale=reg['metresPerPdfPoint']/2
     reg['basis']='Uniform-scale fit of the published F3 L-shaped floor outline to the oriented DGU footprint; the north symbol fixes rotation.'
     print('Registered F3 office outline', flush=True)
     uv=lambda p:[round((p[0]-frame[0])/W,6),round((p[1]-frame[1])/H,6)]
@@ -100,13 +100,13 @@ def build_offices(feature, sources):
      def polys(g):return [[[uv(p) for p in list(r.coords)[:-1]] for r in [poly.exterior,*poly.interiors]] for poly in pieces(g,'Polygon') if poly.area>1]
      def points(d):return {k:uv(v) if k in ['a','b','hinge','openTip'] else round(v,5) if isinstance(v,float) else v for k,v in d.items()}
      return {'schema':'consensus-builder.floor-architecture.v1','dimensionsM':[round(W*scale,4),round(H*scale,4)],'wallHeightM':2.8,'slabThicknessM':.2,'walls':polys(walls),'slabs':polys(slab),'openings':[points(o) for o in openings],'stairs':[points(f) for f in flights],'landings':[],'platforms':[{'rings':[[uv(p) for p in ring] for ring in q['rings']],'elevationM':q['elevationM']} for q in platforms],'railings':[points(r) for r in rails],'inference':{'wallFootprints':'reviewed raster wall and column traces','openings':'reviewed window strokes, door swings and lift shaft entries','verticalDimensions':'estimated','stairRise':'measured tread counts divide an estimated 3 m storey','coverage':'open office on levels 0–6; level 7 northern office with southern roof terrace'},'quality':{'floorAreaM2':round(outline.area*scale**2,2),'wallAreaM2':round(walls.area*scale**2,2),'modelledOpenings':len(openings)}}
-    layouts=[];floors=[]
+    layouts=[];storeys=[]
     shifts=[12,0,17,5,13,11,9,4]
     for level in range(8):
      source=dict(sources[level]); source['crop']=[refcrop[0]+shifts[level]/2,refcrop[1],refcrop[2]+shifts[level]/2,refcrop[3]]; source['method']='reviewed raster trace; source frame translated to the common building coordinates'
-     model=build(level);layouts.append({'id':f'F3-layout-{level}','source':source,'architecture':model});floors.append({'id':f'F3-floor-{level}','level':level,'elevationM':level*3,'elevationBasis':'estimated','layoutId':f'F3-layout-{level}','source':source,'apartments':[]})
-    plans={'schema':'consensus-builder.building-floor-plans.v2','registration':reg,'layouts':layouts,'floors':floors,'notes':['Published office catalogue, not an as-built survey.','All storey heights, window sills/heads and lift-door construction are estimates.','Furniture-free open office areas follow the raster drawing; dashed service clearance zones are not walls.']}
-    print('wrote',len(floors),'floor models',flush=True)
+     model=build(level);layouts.append({'id':f'F3-layout-{level}','source':source,'architecture':model});storeys.append({'id':f'F3-floor-{level}','level':level,'elevationM':level*3,'elevationBasis':'estimated','layoutId':f'F3-layout-{level}','source':source,'units':[]})
+    plans={'schema':'consensus-builder.building-floor-plans.v3','registration':reg,'layouts':layouts,'storeys':storeys,'notes':['Published office catalogue, not an as-built survey.','All storey heights, window sills/heads and lift-door construction are estimates.','Furniture-free open office areas follow the raster drawing; dashed service clearance zones are not walls.']}
+    print('wrote',len(storeys),'storey models',flush=True)
     # Check registration against the entire L shape, not merely its bounding rectangle.
     cs=reg['corners'];lnglat=lambda p:[(1-p[0])*(1-p[1])*cs[0][k]+p[0]*(1-p[1])*cs[1][k]+p[0]*p[1]*cs[2][k]+(1-p[0])*p[1]*cs[3][k] for k in [0,1]]
     traced=Polygon([lnglat(uv(p)) for p in list(outline.exterior.coords)]);target=Polygon(feature['geometry']['coordinates'][0][0]);overlap=traced.intersection(target).area/traced.union(target).area
@@ -161,9 +161,9 @@ def append_basement(plans, trace, source):
     def pointobj(o):return {k:uv(v) if k in ['a','b','hinge','openTip'] else v for k,v in o.items()}
     model={'schema':'consensus-builder.floor-architecture.v1','dimensionsM':[width,height],'wallHeightM':2.8,'slabThicknessM':.2,'walls':polys(walls),'slabs':polys(slab),'openings':[pointobj(o) for o in openings],'stairs':[pointobj(f) for f in flights],'landings':[],'platforms':[{'rings':[[uv(p) for p in r] for r in q['rings']],'elevationM':q['elevationM']} for q in platforms],'railings':[],'inference':{'wallFootprints':'reviewed raster wall mask, thick neutral strokes; text and parking lines excluded','verticalDimensions':'estimated 3 m basement storey','coverage':'shared F1/F2/F3 basement, stored once under F3','ramp':'ramp outline retained in slab; its undocumented vertical profile is not reconstructed'},'quality':{'floorAreaM2':round(outline.area*scale**2,2),'wallAreaM2':round(walls.area*scale**2,2),'modelledOpenings':len(openings)}}
     source=dict(source); source['crop']=[55+frame[0]/4,250+frame[1]/4,55+frame[2]/4,250+frame[3]/4]; source['method']='reviewed raster mask and traced service cores'
-    plans['layouts'].insert(0,{'id':'F3-shared-basement','source':source,'architecture':model});plans['floors'].insert(0,{'id':'F3-floor--1','level':-1,'elevationM':-3,'elevationBasis':'estimated','layoutId':'F3-shared-basement','source':source,'apartments':[]})
+    plans['layouts'].insert(0,{'id':'F3-shared-basement','source':source,'architecture':model});plans['storeys'].insert(0,{'id':'F3-floor--1','level':-1,'elevationM':-3,'elevationBasis':'estimated','layoutId':'F3-shared-basement','source':source,'units':[]})
     plans['notes'].append('The connected basement spans F1/F2/F3 and is owned once by F3; ramp elevation, drainage and fixtures are not documented in the catalogue.')
-    print(model['quality'],len(model['walls']),'floors',len(plans['floors']))
+    print(model['quality'],len(model['walls']),'storeys',len(plans['storeys']))
     return plans
 
 def main():
@@ -176,7 +176,7 @@ def main():
     parser.add_argument('--fetch',action='store_true',help='Download missing PDFs and verify their recorded checksums')
     if len(sys.argv)==1: parser.print_help(); return
     args=parser.parse_args()
-    sources={f['level']:f['source'] for f in json.loads(args.sources.read_text())['buildings'][0]['floors']}
+    sources={f['level']:f['source'] for f in json.loads(args.sources.read_text())['buildings'][0]['storeys']}
     for source in sources.values(): rec.source_file(source,args.cache_dir,args.fetch)
     trace=json.loads(args.traces.read_text())
     if trace['sourceSha256'] != sources[-1]['sha256']: raise ValueError('Raster trace source changed')
@@ -188,8 +188,8 @@ def main():
     for layout in plans['layouts']:
         key=json.dumps(layout['architecture'],sort_keys=True,separators=(',',':'))
         if key in unique:
-            for floor in plans['floors']:
-                if floor['layoutId']==layout['id']: floor['layoutId']=unique[key]
+            for storey in plans['storeys']:
+                if storey['layoutId']==layout['id']: storey['layoutId']=unique[key]
         else: unique[key]=layout['id']; layouts.append(layout)
     plans['layouts']=layouts
     feature['properties']['floorPlans']=plans
@@ -197,6 +197,6 @@ def main():
         text=json.dumps(archive,ensure_ascii=False,indent=2)+'\n'
         text=re.sub(r'\[\n\s+(-?\d+(?:\.\d+)?),\n\s+(-?\d+(?:\.\d+)?)\n\s+\]',r'[\1, \2]',text)
         temporary=args.proposal.with_suffix('.geojson.part');temporary.write_text(text);temporary.replace(args.proposal)
-    print(f"{'Wrote' if args.write else 'Validated'} {len(plans['floors'])} floors, {len(layouts)} layouts.")
+    print(f"{'Wrote' if args.write else 'Validated'} {len(plans['storeys'])} storeys, {len(layouts)} layouts.")
 
 if __name__=='__main__': main()

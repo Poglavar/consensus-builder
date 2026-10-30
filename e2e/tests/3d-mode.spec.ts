@@ -1,8 +1,7 @@
 import { selectNativeOption } from '../helpers/controls';
 import { test, expect } from '../helpers/fixtures';
 import { openCity, createSpace, createBuilding, proposalState } from '../helpers/runtime';
-import { mockBuildingScene } from '../helpers/mocks/building-data';
-import { surveyResponse } from '../helpers/mocks/survey-data';
+import { mockBuildingScene, mockFootprintCells } from '../helpers/mocks/building-data';
 import { openLayerSection } from '../helpers/layers';
 import { Page } from '@playwright/test';
 
@@ -457,10 +456,18 @@ test.describe('3D rendering and controls @features', () => {
 
   test('radius preview follows hover, keyboard, and drag in Layers, then refetches on release', async ({ mockApi: page }) => {
     const requests = await mockBuildingScene(page);
+    // A load asks for the building cells it has not seen yet; wait until a load has asked for all of them.
+    const settled = async () => {
+      let seen = -1;
+      await expect.poll(() => { const now = requests.length; const same = now > 0 && now === seen; seen = now; return same; }, { intervals: [750] }).toBe(true);
+      return seen;
+    };
+    // Each finished load says its radius ('[3D] Loaded … (camera+300m)'); cached cells are not asked again.
+    const loads: string[] = [];
+    page.on('console', message => { const m = message.text().match(/\[3D\] Loaded \d+ nearby 3D buildings .*\+(\d+)m/); if (m) loads.push(m[1]); });
     await openCity(page);
     await enter3D(page);
-    await expect.poll(() => requests.length).toBe(1);
-    const initial = requests[0];
+    const initialCells = await settled();
     await openModelLayers(page);
     const slider = page.locator('#layers-sheet .three-mode-radius-slider');
     await expect(page.locator('#settings-sheet .three-mode-radius-slider')).toHaveCount(0);
@@ -477,7 +484,7 @@ test.describe('3D rendering and controls @features', () => {
     expect(hovered?.latitude).toEqual(expect.any(Number));
     expect(hovered!.ringRadius).toBeGreaterThan(0);
     expect(hovered!.ringRadius).toBeCloseTo(initialValue, -1);
-    expect(requests).toHaveLength(1);
+    expect(requests).toHaveLength(initialCells);
     await page.screenshot({ path: '/private/tmp/colosseum-3d-building-radius-preview.png' });
 
     // Focus and keyboard input update both the control and ring; blur removes the preview.
@@ -491,7 +498,8 @@ test.describe('3D rendering and controls @features', () => {
     await expect.poll(async () => (await modelRadiusPreview(page))?.ringRadius).toBeCloseTo(keyboardValue, -1);
     await page.locator('#three-mode-facades').focus();
     await expect.poll(async () => (await modelRadiusPreview(page))?.visible ?? false).toBe(false);
-    await expect.poll(() => requests.length).toBe(2);
+    await expect.poll(() => loads).toContain(String(keyboardValue));
+    const keyboardCells = await settled();
     await expect(page.locator('.three-mode-radius-value')).toContainText(String(keyboardValue));
 
     // A pointer drag previews continuously but defers its expensive buildings request to release.
@@ -504,11 +512,14 @@ test.describe('3D rendering and controls @features', () => {
     expect(draggedValue).toBeGreaterThan(keyboardValue);
     await expect.poll(async () => (await modelRadiusPreview(page))?.radiusMeters).toBe(draggedValue);
     await expect.poll(async () => (await modelRadiusPreview(page))?.ringRadius).toBeCloseTo(draggedValue, -1);
-    expect(requests).toHaveLength(2);
+    expect(requests).toHaveLength(keyboardCells);
+    expect(loads).not.toContain(String(draggedValue));
     await page.mouse.up();
-    await expect.poll(() => requests.length).toBe(3);
-    expect(requests[2].buffer_meters).toBeGreaterThan(requests[1].buffer_meters);
-    expect(requests[2].geometry).toEqual(initial.geometry);
+    await expect.poll(() => loads).toContain(String(draggedValue));
+    expect(requests.length).toBeGreaterThan(initialCells);
+    // Every load is around the same anchor: a wider radius asks only for cells not loaded before.
+    expect(requests.every(request => request.kind === 'near')).toBe(true);
+    expect(new Set(requests.map(request => request.bbox.join())).size).toBe(requests.length);
     const saved = await slider.inputValue();
     await page.mouse.move(box.x + box.width + 30, box.y + box.height / 2);
     await page.locator('#three-mode-facades').focus();
@@ -634,19 +645,13 @@ test('X-ray and Suggested layouts buttons render and remove real generated floor
 
 test('3D suggested-existing toggle and floor cutaway change rendered floor plans', async ({ mockApi: page }) => {
   await mockBuildingScene(page);
-  await page.route('**/buildings?*', route => route.fulfill({ json: {
-    source: 'gdi',
-    ...surveyResponse([{
-      type: 'Feature',
-      properties: { object_id: 91001, height_m: 18, floors: 5, building: 'yes' },
-      geometry: { type: 'Polygon', coordinates: [[[15.98270,45.80029],[15.98284,45.80029],[15.98284,45.80043],[15.98270,45.80043],[15.98270,45.80029]]] },
-    }]),
-  } }));
+  await mockFootprintCells(page, () => [{ id: 91001, height_m: 18, floors: 5, building: 'yes',
+    geometry: { type: 'Polygon', coordinates: [[[15.98270,45.80029],[15.98284,45.80029],[15.98284,45.80043],[15.98270,45.80043],[15.98270,45.80029]]] } }]);
   await openCity(page);
   await openLayerSection(page, 'buildings');
   await page.locator('#showBuildings').check();
   await expect.poll(() => page.evaluate(() => (window as any).buildingFeaturePool
-    ?.some((feature: any) => feature.properties?.object_id === 91001) ?? false)).toBe(true);
+    ?.some((feature: any) => feature.properties?.id === 91001) ?? false)).toBe(true);
   await closeSheets(page);
   await enter3D(page);
   await openModelLayers(page);

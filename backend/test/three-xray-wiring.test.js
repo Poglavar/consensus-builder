@@ -130,7 +130,7 @@ describe('three-mode Xray wiring', () => {
     });
     it('appendBuildingFloorPlans does no work while disabled and deduplicates registered geometry', () => {
         const add = vi.fn(), create = vi.fn(() => ({ userData: { cbFloorPlan: true } }));
-        const feature = { properties: { floorPlans: { registration: { corners: [[1, 2]] }, floors: [{ id: 'f1' }] } } };
+        const feature = { properties: { floorPlans: { registration: { corners: [[1, 2]] }, storeys: [{ id: 'f1' }] } } };
         const [append] = extracted('appendBuildingFloorPlans', 'let xrayEnabled=false; let floorPlanGroup={add:this.add}; let renderedFloorPlanKeys=new Set(); let floorPlanErrors=0;', { add, THREE: {}, floorPlanRenderer: { createBuildingGroup: create, setCutaway: vi.fn() }, floorPlanGeometry: {}, latLngToXY: () => [0, 0] });
         append(feature); expect(create).not.toHaveBeenCalled(); expect(add).not.toHaveBeenCalled();
         const [enabledAppend] = extracted('appendBuildingFloorPlans', 'let xrayEnabled=true; let floorCutawayLevel=1; let floorPlanGroup={add:this.add}; let renderedFloorPlanKeys=new Set(); let floorPlanErrors=0;', { add, THREE: {}, floorPlanRenderer: { createBuildingGroup: create, setCutaway: vi.fn() }, floorPlanGeometry: {}, latLngToXY: () => [0, 0] });
@@ -139,7 +139,7 @@ describe('three-mode Xray wiring', () => {
     it('appendBuildingFloorPlans reports renderer failures without throwing', () => {
         const error = vi.spyOn(console, 'error').mockImplementation(() => {});
         const [append] = extracted('appendBuildingFloorPlans', 'let xrayEnabled=true; let floorCutawayLevel=1; let floorPlanGroup={add(){}}; let renderedFloorPlanKeys=new Set(); let floorPlanErrors=0;', { THREE: {}, floorPlanRenderer: { createBuildingGroup: () => { throw new Error('bad plan'); } }, floorPlanGeometry: {}, latLngToXY: () => [0, 0] });
-        expect(() => append({ properties: { name: 'bad', floorPlans: { registration: {}, floors: [] } } })).not.toThrow();
+        expect(() => append({ properties: { name: 'bad', floorPlans: { registration: {}, storeys: [] } } })).not.toThrow();
         expect(error).toHaveBeenCalled(); error.mockRestore();
     });
     it('cutaway changes visibility without rebuilding mesh geometry', () => {
@@ -177,7 +177,7 @@ describe('three-mode Xray wiring', () => {
 
     // Suggested default layouts: generated per parcel slice, flagged red when the core does not fit.
     function suggestedHarness(overrides = {}) {
-        const okPlans = { suggested: true, registration: { corners: [[0, 0], [1, 0], [1, 1], [0, 1]] }, floors: [{ id: 'f0' }] };
+        const okPlans = { suggested: true, registration: { corners: [[0, 0], [1, 0], [1, 1], [0, 1]] }, storeys: [{ id: 'f0' }] };
         const slices = overrides.slices || [
             { parcelId: 'A', footprint: { type: 'Feature', geometry: { type: 'Polygon', coordinates: [] } },
                 result: { floorPlans: okPlans, warnings: [], summary: { cores: 1, apartmentsPerFloor: 2, heightM: 12 } } },
@@ -252,18 +252,18 @@ describe('three-mode Xray wiring', () => {
         const stubs = { threeI18n: (key, fallback) => fallback };
         const [record, c] = extracted('recordSuggestedSlice', variables, stubs);
         const owner = { properties: { proposalId: 'p1' } };
-        const ok = { floorPlans: { floors: [{ apartments: [{}, {}] }, { apartments: [{}, {}] }] }, warnings: [], summary: { cores: 1, apartmentsPerFloor: 2, rooms: 9 } };
+        const ok = { floorPlans: { storeys: [{ units: [{ kind: 'apartment' }, { kind: 'apartment' }] }, { units: [{ kind: 'apartment' }, { kind: 'apartment' }] }] }, warnings: [], summary: { cores: 1, apartmentsPerFloor: 2, rooms: 9 } };
         const bad = { floorPlans: null, warnings: [{ severity: 'error', message: 'Too small to fit a minimum stair core of 4.6 × 5.87 m behind the front facade.' }], summary: { cores: 0, apartmentsPerFloor: 0 } };
         record(owner, { parcelId: 'A', wing: null, result: ok }, 2);
         record(owner, { parcelId: 'B', wing: null, result: bad }, 2);
         expect(c.byProposal.get('p1')).toEqual({ buildings: 1, flagged: 1, apartmentsPerFloor: 2, apartments: 4, cores: 1 });
         const panelVariables = `let suggestedPlansEnabled=true; const suggestedPlanByParcel=this.byParcel; const suggestedPlanByProposal=this.byProposal;`;
         const [parcelText] = extracted('suggestedParcelPanelText', panelVariables, { ...stubs, byParcel: c.byParcel, byProposal: c.byProposal });
-        expect(parcelText('A')).toBe('1 core(s) · 2 apartments per floor · 9 rooms');
+        expect(parcelText('A')).toBe('1 core(s) · 2 apartments per storey · 9 rooms');
         expect(parcelText('B')).toMatch(/^No default layout fits: Too small/);
         expect(parcelText('Z')).toBe('');
         const [proposalText] = extracted('suggestedProposalPanelText', panelVariables, { ...stubs, byParcel: c.byParcel, byProposal: c.byProposal });
-        expect(proposalText({ proposalId: 'p1' })).toBe('Suggested layouts: 1 buildings · 2 apartments per floor · 4 in total 1 in red: too small for a minimum stair core.');
+        expect(proposalText({ proposalId: 'p1' })).toBe('Suggested layouts: 1 buildings · 2 apartments per storey · 4 in total 1 in red: too small for a minimum stair core.');
         const [offText] = extracted('suggestedProposalPanelText', `let suggestedPlansEnabled=false; const suggestedPlanByParcel=new Map(); const suggestedPlanByProposal=this.byProposal;`, { ...stubs, byProposal: c.byProposal });
         expect(offText({ proposalId: 'p1' })).toBe('');
     });
@@ -322,7 +322,7 @@ describe('three-mode Xray wiring', () => {
             estimateBuildingHeightMeters: () => null, reportThreeClip: vi.fn(), appendBuildingFloorPlans: vi.fn(() => true) });
         append('material');
         append('material');
-        expect(ensure).toHaveBeenCalledExactlyOnceWith([[4.61, -74.11], [4.62, -74.10]], { pad: 0 });
+        expect(ensure).toHaveBeenCalledExactlyOnceWith([[4.61, -74.11], [4.62, -74.10]]);
         expect(planBuilding.mock.calls.map(([feature]) => feature.properties.id)).toEqual(['b5', 'b20', 'b5', 'b20']);
         expect(c.totals).toMatchObject({ existing: 4, existingCapped: true });
     });

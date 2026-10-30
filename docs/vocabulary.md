@@ -170,6 +170,10 @@ An implementation of an abstraction's reader operations for a particular transpo
 
 A selected dataset described by stable `id`, `abstraction`, `adapter`, `kind`, readable `label` and adapter-specific `config`. A default source is registered by the application; a custom source supplies configuration to an adapter that accepts custom sources. These kinds describe configuration ownership, not legal authority or data quality. Existing domain source IDs and qualified record identities remain authoritative.
 
+### Source list
+
+The ordered sources of one abstraction for a city (buildings so far): the city's declared sources (`buildings.sources`) and any a person adds, each in use or not, and a source not in use optionally drawn as reference outlines. The sources in use stand in for each other in list order, one cell at a time: a cell is answered wholly by the first source that does not fail it or find it empty. The person's list is kept per backend and city, or given in the URL (`buildingSources`); a change applies at once. A URL source (`building.<base64url>`, a public ArcGIS, WFS, OGC API, Socrata, GeoJSON or Overpass service) is read in the browser; a database source (`gdi-3d`, `dgu`, `osm`, New York's) through our server.
+
 ## Land and parcel geometry
 
 ### Cadastral parcel
@@ -397,11 +401,19 @@ A horizontal outline whose subject must be qualified. A building footprint descr
 
 ### Building use
 
-What a building is for, by storey, stored on the building as `properties.use`: residential, residential-shops (shops on the ground floor, flats above), mixed (shops on the ground floor, offices on the first, flats above), office, public (school, clinic, civic) or industrial (`frontend/js/building-use.js`). A word naming one ('housing', 'offices', 'school') reads as that use; any other value is no stated use. A drawn Freeform building starts as residential; an imported one, and a design saved before uses existed, states none. Only a housing use, or a Block, Row or Detached rule building, gets the suggested default layout and its counted apartments; a building of another use counts its storeys as work. A building with no stated use follows the Plan stats housing share. Building use is distinct from a design's Land use (park, square or as is).
+What a building is for, by storey, stored on the building as `properties.use`: residential, residential-shops (shops on the ground floor, flats above), mixed (shops on the ground floor, offices on the first, flats above), office, public (school, clinic, civic) or industrial (`frontend/js/building-use.js`). A word naming one ('housing', 'offices', 'school') reads as that use; any other value is no stated use. A drawn Freeform building starts as residential; an imported one, and a design saved before uses existed, states none. Only a housing use, or a Block, Row or Detached rule building, gets the suggested default layout and its counted apartments; a building of another use counts its storeys as work. A building with no stated use follows the Plan stats housing share. Building use is distinct from a design's Land use (park, square or as is). It is the building's intended use (CityGML `function`); a city model's stated `function` or observed `usage` codes map onto the same values when imported.
 
 ### Land take
 
 The exact ground a design consumes. A Freeform design's `geometry.landTake` can combine footprint cuts and chosen whole parcels while its material building footprint stays unchanged. A chosen whole parcel remains taken only while a building footprint overlaps it. When the last building leaves, that parcel and its surroundings leave the design, restoring its source state. It governs land formation and building-removal effects. Surrounding paving or green space occupies only taken land outside the building footprint; a footprint-only take has no surroundings.
+
+### Derived demolition
+
+What the applied designs do to the source buildings shown: razed, cut (the rest stands) or passed under by a road tunnel. It is derived from each design's land (a road's footprint, a building design's parcels and footprints, a structure's body) against the buildings of the sources in use, against the union of every design's land, so the order of the designs does not matter: under 2 m² of overlap a building is untouched, and when under 10 m² or 15 % of its footprint is left it is razed. Nothing is stored on a design; a change to a design derives again the buildings under its old and new land, and a source switch derives everything again.
+
+### Building tunnel
+
+A span of a road's centre line (an edge, from one portal to the other) along which the road passes under buildings. The record is the span; which buildings it passes under is derived from it against the buildings shown, at the road's width along that span.
 
 ### Demolition review
 
@@ -473,7 +485,7 @@ A selectable item of cadastral ground, fabric or design content in the map's int
 
 ### Source building
 
-An observed building object identified within a survey or provider dataset. Its geometry, identity and measurements retain that source's provenance.
+An observed building object identified within a survey or provider dataset. Its geometry, identity and measurements retain that source's provenance. Its key is `<source>:<id>`: surveys of one city number their buildings in their own key spaces, so an id alone does not identify a building.
 
 A source building is baseline context, not a member of a Plan. Its cadastral parcel supplies the
 ground context for inspection. An explicit design impact can link it to an affecting design;
@@ -608,6 +620,30 @@ The stated strength and limitations of the evidence supporting a representation 
 ### Massing
 
 A footprint with vertical extent, represented as volumes or extrudable geometry. Its role must distinguish observed built form, permitted form, proposed form and an illustrative realization.
+
+### Level of detail
+
+How much of a building's form a model holds, in CityGML's levels (LoD): LoD0 the footprint, LoD1 a block (the footprint raised to one height; our massing and extruded buildings), LoD2 the real roof shapes (Zagreb's GDI meshes, Vienna's roof model, 3D BAG's LoD 2.2), LoD3 the facades with openings. 3D BAG refines LoD1 and LoD2 by decimals (1.2, 1.3, 2.2). A source states its level; interiors (storeys, rooms, units) are separate from it.
+
+### City object
+
+Any physical object of a city model: a building, building part, road, water body, vegetation, city furniture or terrain (CityGML `CityObject`). Imports and exports in CityGML or CityJSON read and write city objects; inside the app they are source buildings, designs and their geometry.
+
+### Building part
+
+A portion of one building with its own height or roof, such as a lower wing or a tower (CityGML `BuildingPart`). Imported parts join their building: the building is the identity, its parts only its form.
+
+### Building surfaces
+
+The semantic faces of a building's shell: roof surfaces, wall surfaces, the ground face it stands on and closure surfaces that close an open volume (CityGML `RoofSurface`, `WallSurface`, `GroundSurface`, `ClosureSurface`). A source building read from a city model carries them per face; a building's ground face is its footprint at its base. It is a different thing from the authored [ground surface](#ground-surface) around buildings.
+
+### Roof type
+
+The shape class of a building's roof: flat, gabled (saddle), hipped, mansard, shed and similar, as a city model states it (CityGML `roofType`, a code list each source defines). A permitted slanted roof (`roof: "pitched"`) is a rule allowance, not an observed roof type.
+
+### City model
+
+A source's 3D model of a city's buildings and other city objects, published as CityGML or CityJSON in sheets, tiles or an API (Vienna's roof model, the 3D BAG). A city model source answers buildings with their surfaces at the source's level of detail.
 
 ### Built / Permitted / Proposed
 
@@ -879,7 +915,7 @@ A stated distance between a building or permitted form and the relevant land bou
 
 ### Height
 
-A vertical size in metres with an identified basis, such as measured roof height, authored building height or storeys multiplied by an assumed floor height.
+A vertical size in metres with an identified basis, such as measured roof height, authored building height or storeys multiplied by an assumed storey height.
 
 ### Elevation
 
@@ -887,7 +923,7 @@ A vertical position relative to a stated datum or reference. An elevation is not
 
 ### Storey
 
-A vertical subdivision of a building. A storey count, floor index, local label and elevation are separate quantities and require an explicit numbering or height convention to relate them.
+A vertical subdivision of a building, and the one name for it: counts, rules, the floor model and the UI say storey (CityGML `Storey`, IFC `IfcBuildingStorey`). A storey count, storey number (`level`, 0 at the ground floor, negative below ground), local label and elevation are separate quantities and require an explicit numbering or height convention to relate them. "Floor" names only floor area, floor plans and a single storey's label (Ground floor, Floor 3, Basement 1). The building property `floors` and the rule fields `maxFloors`, `minFloors` and `floorHeightM` are storey counts and a storey height.
 
 ### Land area
 
@@ -895,7 +931,7 @@ The horizontal area of a stated parcel, site, footprint or land piece, in m². T
 
 ### Floor area
 
-An area summed over the stated floors and measurement convention, in m². GFA and GBP name floor-area measures; a model's estimate need not equal a jurisdiction's statutory measure.
+An area summed over the stated storeys and measurement convention, in m². GFA and GBP name floor-area measures; a model's estimate need not equal a jurisdiction's statutory measure.
 
 ### Site coverage
 
@@ -911,23 +947,23 @@ The deterministic area value used in agreement input and output commitments, exp
 
 ### Floor plan
 
-A drawing or architectural layout describing a whole floor or an accommodation unit. The source drawing, its interpreted reconstruction and a generated suggested layout are distinct artifacts.
+A drawing or architectural layout describing a whole storey or an accommodation unit. The source drawing, its interpreted reconstruction and a generated suggested layout are distinct artifacts.
 
 ### Published floor plan
 
-An architectural artifact with a stable publication ID, retained source evidence, unit or whole-floor scope, architectural content and review status. Its geographic building association and interpretation revision are separate from that publication identity.
+An architectural artifact with a stable publication ID, retained source evidence, unit or whole-storey scope, architectural content and review status. Its geographic building association and interpretation revision are separate from that publication identity.
 
 ### Floor model
 
-A versioned architectural model associated with `(city, source, ownerId, buildingId)`. For a proposal building, `ownerId` identifies the containing design rather than a landowner; version identity and the current-version designation are separate.
+A versioned architectural model associated with `(city, source, ownerId, buildingId)`, in the `building-floor-plans.v3` format: reusable layouts and the building's `storeys`, each with its level, elevation, layout and `units`. For a proposal building, `ownerId` identifies the containing design rather than a landowner; version identity and the current-version designation are separate.
 
 ### Unit
 
-An identified accommodation or layout within a building or floor. A modeled unit or its count does not by itself establish a separately registered property title.
+An identified accommodation or layout within a building or storey (CityGML `BuildingUnit`). A floor model's unit has a kind: apartment, shop, office or garage; only apartments count as housing. A modeled unit or its count does not by itself establish a separately registered property title.
 
 ### Room
 
-A subdivision of an architectural layout. Its modeled walls, openings and use belong to the floor interpretation or design.
+A subdivision of an architectural layout. Its modeled walls, openings and use belong to the storey's interpretation or design.
 
 ### Floor registration
 
@@ -1033,6 +1069,14 @@ A versioned `ugt-plan-file/v1` JSON envelope containing a `plan/v1`, its exact c
 embedded authored model assets and known source references. The plan owns membership and the saved
 view. Import creates local, unapplied drafts and retains that membership; it conveys no publication,
 agreement decisions, signatures or ownership. Referenced source datasets are independent dependencies.
+
+### Portable agreement file
+
+A versioned `ugt-agreement-file/v1` JSON envelope (`agreement-file.js`): an `agreement/v1` record,
+the portable plan file of its plan, and `designCids`, which maps each design CID the agreement names
+to that design's CID in the plan file (embedding a model changes it). Import adds the plan's designs
+as local, unapplied drafts and saves the agreement as a local draft under a new id over them, with
+no publication, chain account, votes or signatures.
 
 ### Private preview
 

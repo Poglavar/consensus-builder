@@ -12,7 +12,7 @@ CREATE TABLE IF NOT EXISTS consensus.building_floor_model (
     footprint jsonb NOT NULL CHECK (footprint->>'type' IN ('Polygon', 'MultiPolygon')),
     geom_hash text NOT NULL CHECK (length(geom_hash) = 64),
     model_hash text NOT NULL CHECK (length(model_hash) = 64),
-    floor_plans jsonb NOT NULL CHECK (floor_plans->>'schema' = 'consensus-builder.building-floor-plans.v2'),
+    floor_plans jsonb NOT NULL CHECK (floor_plans->>'schema' = 'consensus-builder.building-floor-plans.v3'),
     date_missing timestamptz,
     created_at timestamptz NOT NULL DEFAULT now(),
     updated_at timestamptz NOT NULL DEFAULT now(),
@@ -20,5 +20,10 @@ CREATE TABLE IF NOT EXISTS consensus.building_floor_model (
         OR (source <> 'proposal' AND owner_id = '')),
     UNIQUE (city, source, owner_id, building_id, version)
 );
+-- The schema check follows the current model version. Rows of an earlier version are recreated
+-- by importing their archives again (import-building-floor-plans.mjs), not converted.
+ALTER TABLE consensus.building_floor_model DROP CONSTRAINT IF EXISTS building_floor_model_floor_plans_check;
+ALTER TABLE consensus.building_floor_model ADD CONSTRAINT building_floor_model_floor_plans_check
+    CHECK (floor_plans->>'schema' = 'consensus-builder.building-floor-plans.v3');
 CREATE UNIQUE INDEX IF NOT EXISTS building_floor_model_current_identity
     ON consensus.building_floor_model (city, source, owner_id, building_id) WHERE current;

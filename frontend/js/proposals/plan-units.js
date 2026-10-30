@@ -25,20 +25,20 @@
         return HOUSING_TYPOLOGIES.includes(typology) ? 'residential' : null;
     }
 
-    // { apartments, shopNetM2, workNetM2 } from a floor-plan model (building-floor-plans v2): the
-    // apartments on every floor, the shops' net area, and the apartments of a storey the use gives to
-    // offices (mixed: the first floor) as office area.
+    // { apartments, shopNetM2, workNetM2 } from a floor-plan model (building-floor-plans v3): the
+    // apartments on every storey, the shops' net area, and the offices' net area, which includes the
+    // apartments of a storey the use gives to offices (mixed: the first floor).
     function countModel(floorPlans, use = null) {
-        const floors = (Array.isArray(floorPlans && floorPlans.floors) ? floorPlans.floors : []).filter(floor => !(floor.level < 0));
-        const storeys = use ? useApi().storeyUses(use, floors.length) : [];
-        return floors.reduce((sum, floor, index) => {
-            const apartments = Array.isArray(floor.apartments) ? floor.apartments : [];
-            const office = storeys[Number.isInteger(floor.level) ? floor.level : index] === 'office';
+        const storeys = (Array.isArray(floorPlans && floorPlans.storeys) ? floorPlans.storeys : []).filter(storey => !(storey.level < 0));
+        const uses = use ? useApi().storeyUses(use, storeys.length) : [];
+        const area = (units, kind) => units.filter(unit => unit.kind === kind).reduce((sum, unit) => sum + (Number(unit.areaM2) || 0), 0);
+        return storeys.reduce((sum, storey, index) => {
+            const units = Array.isArray(storey.units) ? storey.units : [];
+            const office = uses[Number.isInteger(storey.level) ? storey.level : index] === 'office';
             return {
-                apartments: sum.apartments + (office ? 0 : apartments.length),
-                workNetM2: sum.workNetM2 + (office ? apartments.reduce((area, unit) => area + (Number(unit.areaM2) || 0), 0) : 0),
-                shopNetM2: sum.shopNetM2 + (Array.isArray(floor.units) ? floor.units : [])
-                    .filter(unit => unit.kind === 'shop').reduce((area, unit) => area + (Number(unit.areaM2) || 0), 0)
+                apartments: sum.apartments + (office ? 0 : units.filter(unit => unit.kind === 'apartment').length),
+                workNetM2: sum.workNetM2 + area(units, 'office') + (office ? area(units, 'apartment') : 0),
+                shopNetM2: sum.shopNetM2 + area(units, 'shop')
             };
         }, { apartments: 0, shopNetM2: 0, workNetM2: 0 });
     }

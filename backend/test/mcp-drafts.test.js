@@ -50,7 +50,7 @@ describe('intent design artifacts', () => {
         const agreement = store.decorate(await tools.draftAgreement({ currency: 'EUR', plan: plan.draftRef, allocations }));
         expect(agreement.agreement.planCid).toBe(plan.cid);
         expect(agreement.plan.content.designCids).toContain(first.cid);
-        const compared = await tools.compare({ buildingSourceId:'osm', targets: [fork.draftRef, agreement.draftRef] });
+        const compared = await tools.compare({ buildingSources:['osm'], targets: [fork.draftRef, agreement.draftRef] });
         expect(compared.alternatives.every(alternative => alternative.measurementErrors.length === 0)).toBe(true);
         expect(paths.some(path => /^\/designs\//.test(path) && path !== '/designs/binding')).toBe(false);
         await expect(store.resolve(first.draftRef.replace('mcp.example', 'other.example'))).rejects.toThrow(/this server/);
@@ -119,7 +119,7 @@ describe('intent design artifacts', () => {
         const ground = await tools.inspectGround({ designs: [cid] });
         const allocations = ground.outputs.map(output => ({ output: output.hash, to: { kind: 'public' } }));
         expect((await tools.draftAgreement({ currency: 'EUR', plan: plan.draftArtifact, allocations })).parcelSourceId).toBe('non-default');
-        const compared = await tools.compare({ buildingSourceId:'osm', targets: [cid, cid] });
+        const compared = await tools.compare({ buildingSources:['osm'], targets: [cid, cid] });
         expect(compared.alternatives.every(a => a.measurementErrors.length === 0)).toBe(true);
         expect(bindings).toEqual(['non-default', 'non-default', 'non-default', 'non-default', 'non-default']);
     });

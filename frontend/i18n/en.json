@@ -12,8 +12,15 @@
         "help": "File formats and limits",
         "design": "Download design",
         "plan": "Download plan",
-        "roadOsm": "Download road (OSM, for Import)",
+        "roadOsm": "Download road for import (OSM)",
         "layoutPlots": "Download plots (GeoJSON)",
+        "agreementNoPlan": "This agreement has no plan yet, so it cannot be downloaded.",
+        "importAgreement": "Import agreement file",
+        "reviewAgreement": "Review agreement file",
+        "agreementPreview": "“{{title}}”: an agreement over the plan “{{plan}}” with {{count}} designs. Import adds the designs as local, unapplied drafts and the agreement as a local draft. It is not proposed or published, and no vote or signature is imported.",
+        "agreementImported": "Agreement imported",
+        "agreementImportedBody": "The agreement and its plan’s designs are saved here as drafts. Apply the plan’s designs to read its land.",
+        "openAgreement": "Open imported agreement",
         "review": "Review plan file",
         "cancel": "Cancel",
         "importDrafts": "Import as drafts",
@@ -1031,8 +1038,8 @@
         "slantedRoof": "Slanted roof with attic"
     },
     "common": {
-        "maxFloors": "Max floors:",
-        "minFloors": "Min floors:",
+        "maxFloors": "Max storeys:",
+        "minFloors": "Min storeys:",
         "copied": "Copied",
         "lifecycle": {
             "draft": "Draft",
@@ -2614,7 +2621,7 @@
                 "paved": "Paved (stone)"
             },
             "measuredAgainst": "Measured against",
-            "measuredFallback": "nothing shown — measuring against GDI",
+            "measuredFallback": "nothing shown — measuring against the buildings in use",
             "lockedControl": "Not available while the cross-section is open — apply or cancel first",
             "ceilingOver": "Wider than fits here ({{max}} m) without a new demolition — open the Corridor tab to see how it could fit",
             "ceilingTitle": "The widest this road fits here without a new demolition; it may need to be moved (see the Corridor tab)",
@@ -2670,6 +2677,7 @@
             "keep": "Keep draft"
         },
         "buildingLayers": {
+            "done": "Done",
             "title": "Which buildings to show?",
             "gdi": "3D buildings (GDI)",
             "gdiHint": "Photogrammetry: what is actually there. The 3D model uses this, and so does every cut and demolition.",
@@ -3312,10 +3320,10 @@
             },
             "existing": {
                 "toggle": "Based on existing buildings",
-                "proposedHeight": "Proposed height (floors):",
-                "additionalFloors": "Additional floors:",
-                "floorHeight": "Floor height (m):",
-                "helper": "Pick a rule: proposed height draws every building at exactly that height; additional floors adds floors on top of each building's current height (needs known heights).",
+                "proposedHeight": "Proposed height (storeys):",
+                "additionalFloors": "Additional storeys:",
+                "floorHeight": "Storey height (m):",
+                "helper": "Pick a rule: proposed height draws every building at exactly that height; additional storeys adds storeys on top of each building's current height (needs known heights).",
                 "summaryExact": {
                     "one": "Proposing {{count}} building at {{height}} m.",
                     "other": "Proposing {{count}} buildings at {{height}} m."
@@ -3421,7 +3429,7 @@
                 "buildingCount": "Rule envelopes:",
                 "totalArea": "Rule footprint (m²):",
                 "totalVolume": "Rule volume (m³):",
-                "avgFloors": "Example floors (avg):",
+                "avgFloors": "Example storeys (avg):",
                 "ruleType": "What the rule compels:",
                 "ruleTypeMax": "At most this",
                 "ruleTypeRange": "Between a minimum and this",
@@ -6330,15 +6338,15 @@
             "facadeStyleTooltip": "Mixed assigns a style independently to each building; glass is used only at 10+ storeys. Other presets apply to every building.",
             "facadesNote": "Illustrative designs for proposed buildings.",
             "xray": "X-ray",
-            "xrayTooltip": "Show modelled floors, walls, doors and windows.",
+            "xrayTooltip": "Show modelled storeys, walls, doors and windows.",
             "xraySection": "X-ray floor plans",
-            "floorCutawayTooltip": "Choose which floors remain visible in X-ray view",
-            "xrayCount": "Floors: {{floors}} · buildings: {{buildings}}",
+            "floorCutawayTooltip": "Choose which storeys remain visible in X-ray view",
+            "xrayCount": "Storeys: {{floors}} · buildings: {{buildings}}",
             "xrayEmpty": "No floor plans available for the visible buildings.",
             "xrayEstimated": "Heights and opening types are inferred.",
             "xrayAlignment": "Plan alignment is approximate.",
             "floorCutaway": "Cut above",
-            "floorAll": "All floors",
+            "floorAll": "All storeys",
             "floorGround": "Ground floor",
             "floorBasement": "Basement {{level}}",
             "floorLevel": "Floor {{level}}",
@@ -6346,7 +6354,7 @@
             "suggestedLayouts": "Suggested layouts",
             "suggestedLayoutsTooltip": "Generate a default layout for proposed buildings without a modelled interior: a stair and lift core entered from the street side, two apartments per core. A suggestion, not part of the design.",
             "suggestedNote": "Suggested layouts are generated defaults, not part of the design.",
-            "suggestedCount": "Suggested: {{buildings}} buildings · {{apartments}} apartments per floor",
+            "suggestedCount": "Suggested: {{buildings}} buildings · {{apartments}} apartments per storey",
             "suggestedFlagged": "{{count}} in red: too small for a minimum stair core.",
             "suggestedPendingStreets": "Street data is loading; entrances face the longest facade until it arrives.",
             "suggestedExisting": "Existing buildings too",
@@ -6407,7 +6415,7 @@
             "proposed": "Proposed",
             "volume": "Volume",
             "floorArea": "Floor area",
-            "floorNote": "@ {{h}} m/floor",
+            "floorNote": "@ {{h}} m/storey",
             "planned": "Planned",
             "plannedConditional": "Planned is what the rules grant; {{floorArea}} more needs: {{condition}}",
             "value": "Value",
@@ -6420,13 +6428,13 @@
             "proposalLabel": "Design",
             "show": "show",
             "suggestedLayout": "Suggested layout",
-            "suggestedSummary": "{{cores}} core(s) · {{apartments}} apartments per floor · {{rooms}} rooms",
+            "suggestedSummary": "{{cores}} core(s) · {{apartments}} apartments per storey · {{rooms}} rooms",
             "suggestedFlagged": "No default layout fits: {{reason}}"
         },
         "proposalPanel": {
             "title": "Design info",
             "parcelsLabel": "Parcels",
-            "suggestedTotals": "Suggested layouts: {{buildings}} buildings · {{apartmentsPerFloor}} apartments per floor · {{apartments}} in total",
+            "suggestedTotals": "Suggested layouts: {{buildings}} buildings · {{apartmentsPerFloor}} apartments per storey · {{apartments}} in total",
             "avgPerParcel": "Avg / parcel"
         },
         "isolation": {
@@ -7247,7 +7255,7 @@
         "buildings": {
             "footprint": "footprint {{area}}",
             "floorArea": "floor area {{area}}",
-            "height": "{{floors}} floors · {{height}}"
+            "height": "{{floors}} storeys · {{height}}"
         },
         "structure": {
             "park": "Park",
@@ -7358,6 +7366,21 @@
         "title": "Data sources"
     },
     "buildingSources": {
+        "listTitle": "Building sources",
+        "listIntro": "Sources in use fill each area in this order: where one has no buildings, the next stands in. A source with Outline on is drawn for comparison only.",
+        "addSource": "Add a source",
+        "add": "Add this source",
+        "added": "{{name}} is now first in the list, in use.",
+        "resetList": "Reset to the city's list",
+        "useSwitch": "Use",
+        "outlineSwitch": "Outline",
+        "outlineHint": "Outline draws a source that is not in use, for comparison.",
+        "keepOne": "One source always stays in use.",
+        "moveUp": "Move {{name}} up",
+        "moveDown": "Move {{name}} down",
+        "remove": "Remove {{name}}",
+        "outlinedName": "{{name}} outlined",
+        "cors": "This service does not allow browsers to read it directly.",
         "unavailableTitle": "Buildings unavailable",
         "title": "Choose a building source",
         "intro": "Add a public HTTPS URL of building footprints for this city, or of an OpenStreetMap mirror (an Overpass API address ending in /interpreter). We try each supported format and read a height or storey field when it has one; other heights are estimated.",

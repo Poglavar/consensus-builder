@@ -52,6 +52,13 @@ User decisions, 2026-10-30:
   place, with the stand-in said in the layer status; no ad-hoc fallback branches in code.
 - 3D free panning comes in steps (E), after the cell grid exists, and only as far as it proves
   worth it.
+- A concept's sources are an ordered list: the city's declared sources plus any the person adds,
+  each in use or not; the sources in use stand in for each other in that order (step F).
+- Every building carries its source, and a cell is answered by one source.
+- Demolitions are derived from design geometry against whichever buildings are shown, never stored
+  as building ids, so a source switch or a stand-in only redraws. No display-only guards.
+- Switching sources is part of the data-source switching flow: the cells reload and derived
+  demolitions are recomputed; buildings only another listed source has are surfaced.
 
 ## Steps
 
@@ -67,64 +74,67 @@ per-adapter tests cover that nothing else moved.
 
 ### B. Buildings on the parcel grid
 
-- **Server.** `/buildings/cell` answers one cell of the city grid (`city`, `gridE,gridN` key, the
-  cell's box, `source`), in the same shape `/buildings/footprints` uses, with the building's height
-  fields, cached per source and cell. A cell over the source's limit is split into its four
-  quarters server-side, so no city needs a hand-tuned tile size. `/buildings/near` and
-  `/buildings/footprints` become readers of cells; `fitBox`, the 320 m tiling and the
-  padded-box shrink in `custom-source-3d.js` go.
-- **Browser.** One building loader (`frontend/js/buildings/cell-loader.js`, a pure module) owns the
-  per-cell cache, the in-flight set, nearest-first ordering around a point, a concurrency of six,
-  and a `k of N` progress figure. The 2D pool is keyed by cells instead of covered rectangles;
-  `ensureBuildingFootprintsForBounds` becomes "ensure these cells". The 3D scene gets one group per
-  cell, so a cell that lands is added without rebuilding the rest, and a demolition carve touches
-  only the cell groups it intersects.
-- **Completeness loads stay separate.** Demolition checks, corridor building detection and X-ray's
-  typical layouts must see every building in their own area whatever is on screen; they ensure the
-  cells under their geometry through the same loader and are never limited by the display budget.
+- **Server.** `POST /buildings/cell` (`backend/routes/buildings.js`) answers one building cell
+  (`kind: 'near'` for 3D records or `'footprints'` for the 2D pool, `bbox`, `source`) from one named
+  source, cached per source, kind and cell for 15 minutes. `backend/buildings/split-read.js` reads a
+  box whole or, while the source says it is capped (an area-limit error, or a provider's `truncated`
+  answer such as Zagreb's 4,000-row cap), in quarters merged by id; one failed quarter makes the
+  whole cell unavailable. The custom sources (`custom-source-3d.js`) read their adapter through the
+  same splitter, so the 950 m shrink and the fixed 320 m tiles are gone. `/buildings/near` and
+  `/buildings/footprints` stay for geometry callers (demolition scans, MCP) and read the primary
+  source only.
+- **Browser.** `frontend/js/building-cells.js` (pure) turns the parcel grid into building cells:
+  aligned blocks of parcel cells about 300 m wide (Bogotá's 0.0025° grid is one parcel cell per
+  building cell, a 100 m grid three by three), the cells over a view or within a radius of a 3D
+  anchor, nearest first. Its loader keeps the per-cell cache, the in-flight set, six requests at a
+  time, per-source back-off and the fallback chain. One loader per page
+  (`window.BuildingCellLoader`) serves the 2D pool and the 3D scene.
+- **2D pool** (`map-core.js` `fetchProviderBuildingCells`): every provider city loads the cells under
+  the view and merges each into the pool as it lands; `ensureBuildingFootprintsForBounds` ensures
+  cells. Zagreb's GDI survey keeps its own bbox path (`GET /buildings`, covered rectangles,
+  `buildingsRetryAt`): it is our database, and its pool features carry GDI properties the corridor
+  tools read.
+- **3D scene** (`three-mode.js` `ensureNearbyProposalBuildings`): the cells within the radius of the
+  anchor (or over a proposal plus its apron), nearest first; the scene rebuilds when the first cell
+  lands and at each quarter, and keeps the buildings that reach into the radius. The previous
+  buildings stay drawn until new cells replace them.
+- **Completeness loads** (demolition checks, corridor building detection, X-ray's typical layouts)
+  ensure the cells under their own geometry through the same loader, whatever is on screen.
+- **Open:** one 3D group per cell, so a landing cell is added without rebuilding the rest; today a
+  load rebuilds the existing buildings up to five times.
 
 ### C. A view budget
 
-The screen decides what loads, starting values measured on the laptop and a phone before they are
-fixed:
-
-- **3D.** Cells inside the camera's view out to about 500 m, nearest first; cells behind the
-  camera or beyond the distance are not loaded. Near cells draw full buildings; far cells draw
-  simple extrusions; beyond the distance nothing. The radius slider becomes this distance.
-- **2D.** Individual buildings from about zoom 16; below it, no footprints (the parcel layer
-  already behaves this way for small parcels).
+- **3D.** The radius slider (300 m by default) is the load distance; cells are loaded nearest
+  first and only buildings reaching into the radius are kept (Bogotá: 1,835 at 300 m).
+- **2D.** No footprints below zoom 17 (already the rule in `fetchBuildings`).
+- **Open:** loading only the cells in the camera's view, and simpler drawing for far cells. Both
+  need measurements on the laptop and a phone first, and view-dependent loading needs the camera
+  to trigger loads, which is step E2.
 
 ### D. Sources independent in the browser
 
-The server already isolates sources: cooldown and concurrency are per source. The browser has shared
-gates, each replaced by per-layer state:
+The server isolates sources (cooldown and concurrency per source). In the browser:
 
-| Shared gate today | Replacement |
+| Shared gate | Now |
 |---|---|
-| `serverAnswerIsEmpty` in `building-source-client.js` swaps a failed, empty or truncated city answer for OpenStreetMap, mixing identities in one pool | A declared fallback chain resolved per cell in one place (below) |
-| `getSceneReadiness({ requireExisting })` in `three-mode.js` holds the 3D scene as not ready while existing buildings have not loaded | Readiness is per layer; the scene is ready when its own geometry is, and each layer reports loading, loaded, partial or failed on its own |
-| `reportBuildingsUnavailable` routes building failures into `ParcelSourceSettings.reportFailure`, one banner for parcels and buildings | One status line per layer in the Layers panel (parcels, buildings, trees, water, roads, planning), each with its own Retry; the banner stays for parcels only |
-| `buildingsRetryAt` in `map-core.js` stops every building fetch for the upstream's retry time | The back-off lives in the cell loader, per source, and other layers never read it |
+| `serverAnswerIsEmpty` in `building-source-client.js` swapped a failed, empty or truncated city answer for OpenStreetMap inside one request, mixing identities | Removed: the client is transport only; the fallback chain is declared and resolved per cell (below) |
+| `buildingsRetryAt` paused every building fetch after any building failure | Set by the GDI path only; provider cities back off per source in the cell loader |
+| 3D water and green waited for the buildings fetch | They load alongside it (their own query area) |
+| Building failures and parcel failures | Already separate banners (`ParcelSourceSettings.reportFailure` by kind), each with its own Retry; unchanged |
+| `ThreeSceneReady` waits for existing buildings | Unchanged: each caller says whether it needs them (`requireExisting`), which is right for captures |
 
 Rule for new code: a layer owns its loading, its failure state and its place in the status display;
 a failure shows in that layer only, with its own retry, while the others load and draw as usual.
 
-**Fallback sources.** Fallbacks stay, declared rather than coded. A city's building config lists its
-sources in order (`buildings.sources: ['building.<city source>', 'osm']`, replacing the single
-`sourceId` plus `fallback: 'osm'`); the `osm` source is the backend one (the staged copy in
-`overture_building_footprint` where a region is staged, else Overpass through
-`backend/buildings/osm-reference.js`). The cell loader is the only place the chain is resolved:
+**Stand-ins.** The cell loader is the only place a source chain is resolved (the chain itself is
+step F's source list):
 
-- A cell is answered wholly by one source and records which. When the first source fails it (outage,
-  block, rate limit, timeout; not an area limit, which splits the cell instead), the next source
-  answers that cell. Cells are never merged across sources.
-- Building identities carry their source (`CUSTOM-B-…`, OSM ids), so a demolition record names the
-  survey it was made against, and a stand-in cell is never read as the primary survey.
-- The layer's status says how many cells came from a stand-in ("Buildings: 12 cells from
-  OpenStreetMap while the city source is unavailable"); its Retry asks those cells of the first
-  source again.
-- `building-source-client.js` keeps only transport; no source decisions remain in it. Parcels keep
-  their existing user-chosen sources ("choose another source"), not an automatic chain.
+- A cell is answered wholly by one source and records which. A stand-in answers a cell the source
+  before it failed (outage, block, rate limit, timeout; an area limit splits the cell instead) or
+  found empty (a city survey ends at its boundary). Cells are never merged across sources.
+- A stand-in cell is not cached: once the failed source's back-off ends, the next load asks it
+  again. The status line says how many areas came from a stand-in.
 
 ### E. 3D panning, in order
 
@@ -138,20 +148,193 @@ sources in order (`buildings.sources: ['building.<city source>', 'osm']`, replac
    (click stack, compare split, isolation, build-out timeline, X-ray) coping with cells appearing
    and disappearing.
 
-### Removed when superseded
+### F. Source lists, browser reads and derived demolitions
 
-The 950 m `fitBox`, the 320 m tiling and the keep-truncated-footprints rule in
-`building-source-client.js` (all 2026-10-30 stopgaps), the pool's covered-rectangle list and its
-12,000 cap, X-ray's one-off radius request, `buildingsRetryAt`.
+Buildings now; parcels and the other concepts adopt the same list and loader later (F7). Done in one
+change: F1–F6 depend on each other.
+
+#### F1. One source list per concept
+
+City config (`frontend/data/city-configs.js`, regenerated by `scripts/build-city-files.mjs`):
+
+```js
+buildings: { sources: [
+    { id: 'gdi-3d', name: 'GDI photogrammetric survey' },
+    { id: 'dgu', name: 'DGU cadastre', use: false },
+    { id: 'osm', name: 'OpenStreetMap', use: false }
+] }
+```
+
+Bogotá lists its cadastre (`building.<base64url>`) then `osm`, both in use; New York `nyc-arcgis`
+then `osm` (not in use); every OSM city `[{ id: 'osm' }]`. `source`, `sourceId`, `fallbacks`,
+`defaultSource` and the single custom-choice override in `getCityConfig` go; their readers
+(`city-config.js`, `map-credits`, `data-source.js`, `building-source-client.js`, the GDI request
+builder) read the list.
+
+The person's list is stored per backend and city (`cb_building_sources:<backend>:<city>`, entries
+`{ id, use, outline }` in order) and can be given in the URL (`buildingSources=a,b`, the sources in
+use, in order). One pure module, `frontend/js/source-list.js`, resolves city list + person list into
+the effective list: unknown ids dropped, a city source the person never mentioned appended with the
+city's default. The "Choose a building source" dialog becomes the list editor: each row has Use and
+Outline switches and up/down order; user-added sources (the existing discovery flow) can be removed;
+"Reset to the city's list" clears the person's list. The B-key layers dialog and the Layers panel
+show the same list instead of the three fixed checkboxes.
+
+#### F2. Each building carries its source; each cell has one
+
+- A building's key is `<source>:<id>` everywhere: pool features, 3D records, derived demolitions,
+  click stack, photoreal razed footprints, Compare. `corridorBuildingKey`/`buildingPoolFeatureKey`
+  produce it; an id-less feature keeps `geom:` behind its source; proposed buildings keep
+  `proposal:<pid>:<idx>`.
+- A building belongs to the cell holding the first vertex of its outline, so a building straddling
+  two cells is drawn once. The loader drops the rest of an answer.
+- Where neighbouring cells came from different sources, a stand-in's building that overlaps, by more
+  than half its area, a building of a source earlier in the list is dropped. This is the same overlap
+  test as F5's "only in".
+- The 2D pool tracks `cellKey → { source, keys }`. A new answer for a cell replaces the old one
+  whole, and the 12,000 cap evicts the farthest cells whole.
+- Zagreb's GDI moves onto the cells: `/buildings/cell` with `gdi-3d` answers footprints carrying the
+  properties `GET /buildings` gives today. `fetchBuildings`' bbox path, its covered rectangles and
+  `buildingsRetryAt` go.
+- DGU becomes a cell source (`dgu`). Its heights come from the storey count, else the shared estimate
+  (`building-heights.js`). `GET /buildings?source=dgu` and `GET /buildings/osm` go once nothing reads
+  them.
+
+#### F3. A URL source is read in the browser
+
+- **The rule.** A source that is a public URL (ArcGIS, WFS, OGC API, Socrata, GeoJSON: every
+  `building.<base64url>` descriptor, city-declared or added by the person) is read in the browser,
+  by the parcel adapter worker (`frontend/assets/parcel-adapters/`). Our server answers
+  `/buildings/cell` only for sources in our database: `gdi-3d`, `dgu` and `osm` (the staged table,
+  else Overpass).
+- **New York** stays a server source: `nyc-arcgis` keeps only `FEATURE_CODE = 2100` (buildings, not
+  the layer's ~214k canopies, tanks and skybridges), and a `building.` descriptor has no attribute
+  filter. Adding `attributeFilters` (which the ArcGIS adapter already supports) to the descriptor
+  codec would let it move to the browser.
+- **Shared module.** The adapter-feature → building mapping (`customBuildingFeature`,
+  `footprintFeatureToBuilding`, the height rules) and `split-read.js` move into one module that both
+  the worker bundle and the server import.
+- **Routing.** `BuildingSourceClient.requestCell` sends a URL source to the worker and a database
+  source to the server. The cell loader's back-off and cache stay where they are.
+- **No relay.** A URL source without CORS cannot be read, and discovery says so when it is added.
+  There is no server relay (Bogotá's service sends `access-control-allow-origin: *`).
+- **Server-side reader stays.** The server keeps its reader of URL sources only for server-side
+  consumers (MCP compare). The browser never sends a URL source to it.
+- **Deploy consequence.** A city whose sources are all URLs, or OSM through the browser's own reader
+  if one exists by then, works without our server.
+
+#### F4. Demolitions derived from design geometry
+
+- **The module.** One pure module, `frontend/js/demolition-derive.js` (UMD, loaded by the browser and
+  by `backend/agents/mcp-compare.js`), maps (applied designs, shown buildings) to
+  `Map<buildingKey, { outcome: 'razed'|'cut'|'tunnelled', demolishedPart, remainder, proposalIds }>`.
+- **Takers.** Their regions are:
+  - roads: `definition.polygon`;
+  - buildings: `geometry.landTake`, else the cleared parcels plus the authored footprints
+    (`buildingDemolitionGeometry`);
+  - structures: their geometry carved by later corridors.
+
+  A building is cut against the union of the takers, so order does not matter. The thresholds are
+  the current ones (under 2 m² untouched; a remainder under max(10 m², 15 %) razed).
+- **Tunnels.** A tunnel record keeps its authored span (`edgeKey`, `from`, `to`, `segmentId`) and
+  loses `buildingIds`. A building whose overlap with the corridor lies within a tunnel span is
+  tunnelled, not taken. Tunnel creation still finds the buildings over the corridor to propose a
+  span, but stores only the span. This is a contract break; a span written by an older tunnel
+  record still applies.
+- **Where it runs.** A page-level `DemolitionIndex` derives incrementally:
+  - when the applied set or a design's land changes, for the buildings under the old and the new
+    land of the designs that changed (by the boxes of their polygon parts, so a long road edited at
+    one end measures only the buildings near that end), loading only the cells under the new land;
+    every other record is kept;
+  - when the source list changes or an area did not load, for everything.
+
+  The cells under every applied design's region are ensured through the cell loader, which replaces
+  the replay's `/buildings/under` prefetch.
+- **Readers.** All of them read the index instead of `demolishedBuildings`: the 2D outcome state,
+  the 3D carve (by key; `structureClearanceCarve` folds in, structures being takers like any other),
+  photoreal razed footprints, vacant plots, the click stack, Compare (each side derives its own
+  index over the same buildings), the corridor detection pool, and plan stats and `present-state`
+  clearance (against the shown buildings, no longer a separate `/buildings/under` read).
+- **What stays separate.** A design over a proposed building parks that building
+  (`demolishBuildingsUnderFootprint`'s proposal branch). That is a relation between designs and
+  stays, split out of the existing-building path.
+- **Roads raze again.** Applied roads raze and cut existing buildings in 2D and 3D again, consistent
+  with plan stats. This is a visible change.
+- **Out of scope.** The legacy server carve (`/buildings/carve`, `/buildings/near` with
+  `proposals`, read by the walk sim from the frozen `proposal` table) is unchanged.
+
+#### F5. Switching, and buildings only one source has
+
+- **Applies live, no reload.** A change to the list keys new cells: the cache key already includes
+  the list. The pool drops cells and reloads the view's cells nearest first. The `DemolitionIndex`
+  re-derives as each cell lands, and the 3D scene rebuilds.
+- **Status line.** It says how many areas each source answered.
+- **Outlines.** A source with Outline on is drawn as reference outlines from its own cells, with no
+  stand-ins, and is never cut against, as DGU and OSM are today. Its buildings that the shown
+  buildings cover by at most half their area are drawn in an "only in <source>" style, and its status
+  line counts them.
+- **MCP compare** takes the ordered source list (`buildingSources`) instead of one `buildingSourceId`.
+  On the server the land is asked of each source in turn and the first complete answer is measured
+  (by the same derivation, `demolition-derive.js`); it is not resolved per cell.
+- **What doesn't change.** Parcel and imagery sources keep their single choice and reload.
+
+#### F6. Tests
+
+**Headless unit tests:**
+- `source-list` (resolve and reset).
+- `demolition-derive`:
+  - order independence;
+  - the thresholds;
+  - a tunnel span;
+  - two sources' keys never colliding;
+  - a road razing.
+- `building-cells`: first-vertex ownership and the cross-source overlap drop.
+- The worker's building reader against a fixture ArcGIS answer.
+- `building-source-client` routing: URL to the worker, database to the server.
+- The `demolition-replay` and characterization tests, updated to read the index.
+
+**Headless Playwright:**
+- Bogotá 3D and 2D load with no request to our server's building routes.
+- A source switch redraws demolitions without a reload.
+- A road razes a building.
+- Zagreb's DGU outline counts "only in DGU".
+- The existing building specs, updated.
+
+**Docs updated in the same change:** `vocabulary.md` (building key, derived demolition, tunnel span),
+`source-adapters.md`, `click-stack.md`, `frontend-source-configuration.md`, `rethink-proposals.md`.
+
+#### F7. Later: parcels and the other concepts
+
+The same list shape, editor and cell loader replace the single parcel choice and
+`ParcelGroundFallback`'s session source, then imagery. Not part of this change.
+
+### Removed
+
+- **2026-10-30 stopgaps:** the 950 m `fitBox`, the 320 m tiling and the keep-truncated-footprints
+  rule.
+- **Fallback machinery:** `serverAnswerIsEmpty`, the provider path's covered rectangles and
+  `buildings.fallback`.
+- **With F:**
+  - **Config:** `buildings.source`, `sourceId` and `fallbacks`, and the single building choice in
+    `ParcelSourceSettings`.
+  - **Zagreb's GDI loading:** `fetchBuildings`' GDI bbox path and `buildingsRetryAt`.
+  - **Reference layers:** `#showBuildingsDgu` and `#showBuildingsOsm`, with their routes.
+  - **Demolition records:** `demolishedBuildings`, `demolitionScanned` and `demolitionScanFailed`,
+    `_deriveDemolishedBuildings`, `_prefetchDemolitionBuildings` and the `keepDemolition` carry.
+  - **Tunnels:** tunnel `buildingIds`.
+  - **3D:** `structureClearanceCarve`.
+  - **Browser routes:** the browser's use of `/buildings/near`, `/buildings/footprints` and
+    `/buildings/under`. The routes stay for server-side consumers only.
 
 ## Status
 
 | Step | State |
 |---|---|
 | A. Area-limit error code | done: `areaLimitError` in `source-contract.js`, 52 sites in 26 adapters |
-| B. Buildings on the parcel grid | open |
-| C. View budget | open |
-| D. Sources independent in the browser | open |
-| E1. Cells with a view budget | open (same as B and C) |
-| E2. Re-centre on demand | open |
-| E3. Streaming with eviction | not started; decided after E2 |
+| B. Buildings on the parcel grid | done, except one 3D group per cell |
+| C. View budget | distance and zoom rules done; camera-view loading and far-cell drawing open |
+| D. Sources independent in the browser | done |
+| E1. Cells with a view budget | as B and C |
+| E2. Re-centre on demand | deferred (user decision 2026-10-30) |
+| E3. Streaming with eviction | deferred |
+| F. Source lists, browser reads, derived demolitions | done (F1–F6); F7 open |

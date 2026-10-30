@@ -15,7 +15,7 @@ const architecture = () => ({
 const data = () => ({
     schema:SCHEMA, registration:{basis:'corners',corners:[[15,45],[15.001,45],[15.001,45.001],[15,45.001]]},
     layouts:[{id:'a',architecture:architecture(),source:{url:'https://example.test/a',page:1,crop:[0,0,10,8],sha256:'abc'}}],
-    floors:[{id:'f1',level:1,elevationM:7.5,elevationBasis:'documented',layoutId:'a',apartments:[{id:'apt'}]}]
+    storeys:[{id:'f1',level:1,elevationM:7.5,elevationBasis:'documented',layoutId:'a',units:[{id:'apt',kind:'apartment'}]}]
 });
 const project = (lng,lat) => [(lng-15)*10000,(lat-45)*8000];
 const render = d => buildFloorPlanGeometry({properties:{floorPlans:d}},project);
@@ -23,7 +23,7 @@ const bounds = part => part.rings[0].reduce((b,p)=>[Math.min(b[0],p[0]),Math.min
 
 describe('building floor architecture', () => {
     it('projects XY once per shared layout, preserves slab holes, and keeps metre heights separate', () => {
-        const d=data();d.floors.push({...d.floors[0],id:'f2',level:2,elevationM:10.5,source:{url:'https://example.test/floor2'}});
+        const d=data();d.storeys.push({...d.storeys[0],id:'f2',level:2,elevationM:10.5,source:{url:'https://example.test/floor2'}});
         const floors=render(d),wall=floors[0].parts[0],slab=floors[0].parts.find(p=>p.kind==='slab');
         expect(validateFloorPlans(d)).toEqual([]);
         expect(wall).toMatchObject({kind:'wall',baseM:0,heightM:2.8});
@@ -68,7 +68,7 @@ describe('building floor architecture', () => {
         d=>{ d.layouts[0].architecture.stairs[0].steps=Infinity; },
         d=>{ d.layouts[0].architecture.slabs[0][1][0]=[NaN,.2]; },
         d=>{ d.registration.corners[2]=d.registration.corners[1]; },
-        d=>{ d.floors[0].elevationM=null; }
+        d=>{ d.storeys[0].elevationM=null; }
     ])('rejects invalid geometry before allocating render parts', mutate => {
         const d=data();mutate(d);expect(validateFloorPlans(d).length).toBeGreaterThan(0);
         expect(()=>render(d)).toThrow(/Invalid floorPlans/);
@@ -110,13 +110,13 @@ describe('building floor architecture', () => {
 
     it('returns uncovered proxy bands for partial, overlapping, clipped, and underground models', () => {
         const feature = { properties: { floorPlans: data() } };
-        feature.properties.floorPlans.floors = [
-            { id:'f1', level:1, elevationM:0, elevationBasis:'documented', layoutId:'a', apartments:[] },
-            { id:'f7', level:7, elevationM:6, elevationBasis:'documented', layoutId:'a', apartments:[] },
-            { id:'f8', level:8, elevationM:7, elevationBasis:'documented', layoutId:'a', apartments:[] }
+        feature.properties.floorPlans.storeys = [
+            { id:'f1', level:1, elevationM:0, elevationBasis:'documented', layoutId:'a', units:[] },
+            { id:'f7', level:7, elevationM:6, elevationBasis:'documented', layoutId:'a', units:[] },
+            { id:'f8', level:8, elevationM:7, elevationBasis:'documented', layoutId:'a', units:[] }
         ];
         expect(uncoveredFloorBands(feature, 10)).toEqual([{ baseM: 3, heightM: 3 }]);
-        feature.properties.floorPlans.floors.push({ id:'below', level:-1, elevationM:-3, elevationBasis:'documented', layoutId:'a', apartments:[] });
+        feature.properties.floorPlans.storeys.push({ id:'below', level:-1, elevationM:-3, elevationBasis:'documented', layoutId:'a', units:[] });
         expect(uncoveredFloorBands(feature, 10)).toEqual([{ baseM: 3, heightM: 3 }]);
     });
 
@@ -124,14 +124,14 @@ describe('building floor architecture', () => {
         const plans = data();
         const storeyHeight = 114 / 35;
         plans.layouts[0].architecture.wallHeightM = Math.round((storeyHeight - .2) * 1000) / 1000;
-        plans.floors = Array.from({ length: 35 }, (_, level) => ({
+        plans.storeys = Array.from({ length: 35 }, (_, level) => ({
             id: `floor-${level}`, level, layoutId: 'a', elevationM: Math.round(level * storeyHeight * 1000) / 1000
         }));
         const feature = { properties: { floorPlans: plans } };
         expect(uncoveredFloorBands(feature, 114)).toEqual([]);
 
         // An actually missing storey still needs its proxy, at the recorded bounds.
-        plans.floors.splice(12, 1);
+        plans.storeys.splice(12, 1);
         const gaps = uncoveredFloorBands(feature, 114);
         expect(gaps).toHaveLength(1);
         expect(gaps[0].baseM).toBeCloseTo(39.086);
@@ -140,7 +140,7 @@ describe('building floor architecture', () => {
 
     it('ignores rounded ground/roof joins but preserves genuine unmodelled bands', () => {
         const plans = data();
-        plans.floors = [0.001, 3.002, 6.002].map((elevationM, level) => ({
+        plans.storeys = [0.001, 3.002, 6.002].map((elevationM, level) => ({
             id: `floor-${level}`, level, layoutId: 'a', elevationM
         }));
         const feature = { properties: { floorPlans: plans } };
@@ -153,20 +153,20 @@ describe('building floor architecture', () => {
 
     it('returns the full proxy band for basement-only or unusable evidence, and no band without plans', () => {
         const basement = { properties: { floorPlans: data() } };
-        basement.properties.floorPlans.floors = [{ id:'b', level:-1, elevationM:-3, elevationBasis:'documented', layoutId:'a', apartments:[] }];
+        basement.properties.floorPlans.storeys = [{ id:'b', level:-1, elevationM:-3, elevationBasis:'documented', layoutId:'a', units:[] }];
         expect(uncoveredFloorBands(basement, 8)).toEqual([{ baseM:0, heightM:8 }]);
         expect(uncoveredFloorBands({ properties:{} }, 8)).toEqual([]);
         expect(uncoveredFloorBands(basement, Infinity)).toEqual([]);
-        basement.properties.floorPlans.floors[0].elevationM = 0;
+        basement.properties.floorPlans.storeys[0].elevationM = 0;
         basement.properties.floorPlans.layouts[0].architecture.wallHeightM = 0;
         basement.properties.floorPlans.layouts[0].architecture.slabThicknessM = 0;
         expect(uncoveredFloorBands(basement, 8)).toEqual([{ baseM:0, heightM:8 }]);
         for (const [field, value] of [['elevationM', null], ['wallHeightM', null], ['slabThicknessM', ''], ['wallHeightM', '2.8']]) {
             const invalid = structuredClone(basement);
-            invalid.properties.floorPlans.floors[0].elevationM = 0;
+            invalid.properties.floorPlans.storeys[0].elevationM = 0;
             invalid.properties.floorPlans.layouts[0].architecture.wallHeightM = 0;
             invalid.properties.floorPlans.layouts[0].architecture.slabThicknessM = 0;
-            if (field === 'elevationM') invalid.properties.floorPlans.floors[0][field] = value;
+            if (field === 'elevationM') invalid.properties.floorPlans.storeys[0][field] = value;
             else invalid.properties.floorPlans.layouts[0].architecture[field] = value;
             expect(uncoveredFloorBands(invalid, 8)).toEqual([{ baseM:0, heightM:8 }]);
         }

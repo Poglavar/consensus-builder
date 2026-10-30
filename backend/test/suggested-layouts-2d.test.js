@@ -39,7 +39,7 @@ describe('collectLayouts', () => {
         for (const entry of entries) {
             expect(entry.building).toBe(row);
             expect(entry.floorPlans).toMatchObject({ suggested: true });
-            expect(entry.floorPlans.floors.some(floor => floor.level === 0)).toBe(true);
+            expect(entry.floorPlans.storeys.some(floor => floor.level === 0)).toBe(true);
             expect(Math.round(turf.area(entry.footprint))).toBe(144);
             // No roads are passed in 2D: the entrance faces the longest facade, and says so.
             expect(entry.warnings.map(warning => warning.code)).toContain('front-assumed-longest');

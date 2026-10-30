@@ -265,7 +265,7 @@
             : getCityConfig(resolveCityId(cityId) || cityId);
         const parcels = config?.parcels;
         return { city: config?.id || cityId, parcelSourceId: parcels?.sourceId || parcels?.source || null,
-            buildingSourceId: config?.buildings?.sourceId || (config?.buildings?.source === 'osm' ? 'osm' : null),
+            buildingSourceId: buildingSourceIds(config)[0] || null,
             floorModelNamespace: config?.floorModels?.namespace };
     }
 
@@ -397,21 +397,22 @@
         } catch (_) { /* ignore */ }
     }
 
-    // A person's own building source (ParcelSourceSettings, kind 'building') replaces the city's
-    // buildings for every /buildings/* request, which then carries it as `source`. The city's own
-    // source stays on record as `defaultSource`, so "Use the city default" can name it.
     function getCityConfig(id) {
-        const config = parcelConfigFor(id);
-        if (!config) return null;
-        const building = window.ParcelSourceSettings?.choiceForCity?.(id, window, 'building');
-        if (!building) return config;
-        return { ...config, buildings: { ...(config.buildings || {}), source: 'custom', sourceId: building.id,
-            name: building.name, fallback: undefined, attribution: undefined, defaultSource: config.buildings?.source || 'gdi',
-            defaultSourceName: config.buildings?.name } };
+        return parcelConfigFor(id);
     }
 
-    function getBuildingSourceId() {
-        return getDataContext(null).buildingSourceId || undefined;
+    // A city's building sources, the person's list over the city's (source-list.js): every entry, in
+    // order, with `use` and `outline`. At a point when given, else the current city.
+    function getBuildingSources(lat, lng) {
+        const config = Number.isFinite(lat) && Number.isFinite(lng) ? getCityConfigAt(lat, lng) : getCurrentCityConfig();
+        return config && window.SourceList ? window.SourceList.forConfig(config, window) : [];
+    }
+    function buildingSourceIds(config) {
+        return config && window.SourceList ? window.SourceList.inUse(window.SourceList.forConfig(config, window)) : [];
+    }
+    // The building sources in use, in order, as one key (a scene or cache scope changes with it).
+    function getBuildingSourceKey() {
+        return buildingSourceIds(getCurrentCityConfig()).join('>');
     }
 
     // Live alternatives are opt-in for this boot. A reload switches providers without changing
@@ -689,37 +690,8 @@
             });
         });
 
-        applyBuildingLayerChoices();
         // Apply feature visibility after sidebar configuration
         applyFeatureVisibility();
-    }
-
-    // Every city has buildings now (OpenStreetMap at the least), so the Layers Buildings section is
-    // always on; which surveys it lists depends on the city's source. GDI and DGU are Zagreb's; the
-    // separate OSM reference only adds something where OSM is not already the working set.
-    function applyBuildingLayerChoices() {
-        const source = getCurrentCityConfig()?.buildings?.source || 'gdi';
-        const row = id => document.getElementById(id)?.closest('label');
-        const show = (id, visible) => {
-            const label = row(id);
-            if (!label) return;
-            label.hidden = !visible;
-            // The palette shares the source gate, even while its parent sheet is closed.
-            if (visible) label.removeAttribute('data-feature-hidden');
-            else label.setAttribute('data-feature-hidden', 'true');
-        };
-        show('showBuildings', source !== 'none');
-        show('showBuildingsDgu', source === 'gdi');
-        show('showBuildingsOsm', source !== 'osm');
-        const text = row('showBuildings')?.querySelector('[data-i18n-key]');
-        if (!text) return;
-        const key = source === 'osm' ? 'sidebar.buildings.showOsm'
-            : source === 'cadastre' ? 'sidebar.buildings.showCadastre'
-            : source === 'nyc' ? 'sidebar.buildings.showLayer'
-            : source === 'custom' ? 'sidebar.buildings.showCustom'
-            : 'sidebar.buildings.showGdi';
-        text.setAttribute('data-i18n-key', key);
-        text.textContent = translateCityText(key, text.textContent);
     }
 
     // Reload into another city. The path is kept by default, so a shared link (/proposals/<id>,
@@ -935,8 +907,7 @@
     function getPlaceDataKey(cityId) {
         const cadastre = getCadastreKey(cityId);
         if (!cadastre) return null;
-        const buildings = getCityConfig(cityId)?.buildings;
-        return `${cadastre}|${(buildings && (buildings.sourceId || buildings.source)) || 'gdi'}`;
+        return `${cadastre}|${buildingSourceIds(getCityConfig(cityId)).join('>')}`;
     }
 
     // The cities whose parcels come from a given backend source ('oss-wfs' is the Croatian DGU
@@ -1098,7 +1069,8 @@
         applySidebarConfiguration,
         getFeatureConfig,
         isFeatureEnabled,
-        getBuildingSourceId,
+        getBuildingSources,
+        getBuildingSourceKey,
         applyFeatureVisibility
     };
 })();

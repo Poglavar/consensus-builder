@@ -43,6 +43,14 @@ ways cannot say: tunnels, grade separations, the road-in-parcel `bound`, edge fi
 construction frame and metadata (`CARRIED_FIELDS` in `corridor-import.js`). The import keeps a
 stretch id a way already carries (`cb:segment`), so a tunnel's `segmentId` still points at its
 stretch. Footprint, demolitions and connections to other roads are derived again on placement.
+An agreement downloads as an agreement file (`<title>.ugt-agreement.json`, `agreement-file.js`)
+from its row in Lists → Agreements and from the agreement panel (standalone or in the click stack);
+a published agreement this device does not hold is fetched for it. The file holds the agreement
+record, the plan file of its plan and `designCids` (agreement design CID → CID in the plan file).
+Import agreement file, in the Agreements tab, imports the plan file as for a plan and saves the
+agreement as a local draft under a new id over the imported designs, without its publication or
+chain account. MCP agents author the same records with `ugt_draft_plan` and `ugt_draft_agreement`.
+
 A parcel layout downloads its plots as GeoJSON polygons (`<title>-plots.geojson`); the layout
 editor's Download plots button saves the plots being edited, and its Upload GeoJSON reads either back.
 

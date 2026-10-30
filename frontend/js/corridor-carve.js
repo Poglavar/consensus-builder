@@ -1,4 +1,7 @@
-// What an applied proposal does to the EXISTING buildings under it.
+// What an applied proposal does to the EXISTING buildings under it, by stored demolition records:
+// the server carve (backend/buildings/carve.js) of the frozen legacy `proposal` table, which the walk
+// sim reads. The app derives its demolitions from design geometry instead (demolition-derive.js,
+// docs/source-loading-plan.md F4); the browser loads this file only for buildingFootprintFromFaces.
 //
 // A corridor crossing a building can end in one of three ways, and they must not collapse into
 // each other: the building is DEMOLISHED (razed), it is CUT (the corridor slices a piece out and
@@ -140,13 +143,9 @@ function carveBuildingByObjectId(objectId, carveRecords) {
     return { remainder: record.remainder, demolished: record.demolishedPart || null };
 }
 
+// The browser derives its demolitions instead (demolition-index.js); it reads only the footprint helper.
 if (typeof window !== 'undefined') {
-    window.CARVE_MIN_REMAINDER_AREA_M2 = CARVE_MIN_REMAINDER_AREA_M2;
-    window.CARVE_MIN_REMAINDER_FRACTION = CARVE_MIN_REMAINDER_FRACTION;
-    window.demolishedBuildingRecordsFrom = demolishedBuildingRecordsFrom;
-    window.collectCarveRecords = collectCarveRecords;
     window.buildingFootprintFromFaces = buildingFootprintFromFaces;
-    window.carveBuildingByObjectId = carveBuildingByObjectId;
 }
 
 // Node-visible for unit tests and for the server carve; the browser loads this file as a classic script.

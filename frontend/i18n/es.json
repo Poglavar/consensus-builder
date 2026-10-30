@@ -12,8 +12,15 @@
         "help": "Formatos y límites",
         "design": "Descargar diseño",
         "plan": "Descargar plan",
-        "roadOsm": "Descargar vía (OSM, para Importar)",
+        "roadOsm": "Descargar vía para importar (OSM)",
         "layoutPlots": "Descargar lotes (GeoJSON)",
+        "agreementNoPlan": "Este acuerdo aún no tiene plan, así que no se puede descargar.",
+        "importAgreement": "Importar archivo de acuerdo",
+        "reviewAgreement": "Revisar archivo de acuerdo",
+        "agreementPreview": "«{{title}}»: un acuerdo sobre el plan «{{plan}}» con {{count}} diseños. La importación añade los diseños como borradores locales sin aplicar y el acuerdo como borrador local. No se propone ni se publica, y no se importa ningún voto ni firma.",
+        "agreementImported": "Acuerdo importado",
+        "agreementImportedBody": "El acuerdo y los diseños de su plan se guardan aquí como borradores. Aplica los diseños del plan para leer su terreno.",
+        "openAgreement": "Abrir acuerdo importado",
         "review": "Revisar archivo de plan",
         "cancel": "Cancelar",
         "importDrafts": "Importar como borradores",
@@ -1032,7 +1039,7 @@
     },
     "common": {
         "maxFloors": "Máximo de plantas:",
-        "minFloors": "Pisos mínimos:",
+        "minFloors": "Mínimo de plantas:",
         "copied": "Copiado",
         "lifecycle": {
             "draft": "Borrador",
@@ -2641,7 +2648,7 @@
                 "paved": "Adoquinada (piedra)"
             },
             "measuredAgainst": "Medido contra",
-            "measuredFallback": "no se muestra nada — se mide contra GDI",
+            "measuredFallback": "no se muestra nada — se mide contra los edificios en uso",
             "lockedControl": "No disponible mientras la sección esté abierta — aplica o cancela primero",
             "ceilingOver": "Más ancho de lo que cabe aquí ({{max}} m) sin una nueva demolición: abre la pestaña Corredor para ver cómo podría caber",
             "ceilingTitle": "El ancho máximo que cabe aquí para esta vía sin una nueva demolición; quizá haya que desplazarla (ver la pestaña Corredor)",
@@ -2697,6 +2704,7 @@
             "keep": "Conservar borrador"
         },
         "buildingLayers": {
+            "done": "Listo",
             "title": "¿Qué edificios mostrar?",
             "gdi": "Edificios 3D (GDI)",
             "gdiHint": "Fotogrametría: lo que realmente existe. El modelo 3D usa esto, y también cada corte y demolición.",
@@ -3448,7 +3456,7 @@
                 "buildingCount": "Envolventes según la regla:",
                 "totalArea": "Huella según la regla (m²):",
                 "totalVolume": "Volumen según la regla (m³):",
-                "avgFloors": "Pisos del ejemplo (prom.):",
+                "avgFloors": "Plantas del ejemplo (prom.):",
                 "ruleType": "Qué obliga la norma:",
                 "ruleTypeMax": "Como máximo esto",
                 "ruleTypeRange": "Entre un mínimo y esto",
@@ -7385,6 +7393,21 @@
         "title": "Fuentes de datos"
     },
     "buildingSources": {
+        "listTitle": "Fuentes de edificios",
+        "listIntro": "Las fuentes en uso cubren cada zona en este orden: donde una no tiene edificios, la siguiente la sustituye. Una fuente con Contorno activado se dibuja solo para comparar.",
+        "addSource": "Añadir una fuente",
+        "add": "Añadir esta fuente",
+        "added": "{{name}} es ahora la primera de la lista y está en uso.",
+        "resetList": "Restablecer la lista de la ciudad",
+        "useSwitch": "Usar",
+        "outlineSwitch": "Contorno",
+        "outlineHint": "Contorno dibuja una fuente que no está en uso, para comparar.",
+        "keepOne": "Siempre queda al menos una fuente en uso.",
+        "moveUp": "Subir {{name}}",
+        "moveDown": "Bajar {{name}}",
+        "remove": "Quitar {{name}}",
+        "outlinedName": "{{name}} en contorno",
+        "cors": "Este servicio no permite que los navegadores lo lean directamente.",
         "unavailableTitle": "Edificios no disponibles",
         "title": "Elegir una fuente de edificios",
         "intro": "Añade una URL pública HTTPS de huellas de edificios para esta ciudad, o de un espejo de OpenStreetMap (una dirección de la API de Overpass que termina en /interpreter). Probamos cada formato compatible y leemos un campo de altura o de plantas si lo tiene; las demás alturas se estiman.",
@@ -8287,7 +8310,7 @@
             "sideSetback": "Retiro lateral mínimo",
             "rearSetback": "Retiro posterior mínimo",
             "height": "Altura máxima",
-                "storeys": "Pisos máximos",
+                "storeys": "Máximo de plantas",
             "lotArea": "Superficie mínima de parcela"
         },
         "photoNote": "Explora los volúmenes permitidos en el mapa o en el modelo 3D.",
@@ -8362,7 +8385,7 @@
             "cached-calculation": "Cálculo guardado",
             "new-attached-multifamily": "Nueva vivienda multifamiliar adosada",
             "general": "General (mapa de tratamientos)",
-            "sustainable": "Pisos de construcción sostenible (Decreto 676/2025)"
+            "sustainable": "Plantas de construcción sostenible (Decreto 676/2025)"
         },
         "evidence": {
             "direct": "Valor directo de la fuente",

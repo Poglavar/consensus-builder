@@ -180,17 +180,18 @@ describe('shared building and proposal representations', () => {
         const source = readFileSync(new URL('../../frontend/js/three-mode.js', import.meta.url), 'utf8');
         const body = parse(source).program.body.find(node => node.type === 'ExpressionStatement').expression.callee.body.body;
         const declaration = body.find(node => node.type === 'FunctionDeclaration' && node.id.name === 'buildNearbyProposalBuildings3D');
-        const feature = { type: 'Feature', geometry, properties: { object_id: 12, height_m: 8 } };
+        const feature = { type: 'Feature', geometry, properties: { object_id: 12, source: 'gdi-3d', height_m: 8 } };
         const mesh = () => ({ userData: {} });
         const group = { add: vi.fn() };
         let carved = false;
         const context = vm.createContext({
-            window: { collectCarveRecords: () => [], carveBuildingByObjectId: () => carved ? { remainder: geometry, demolished: geometry } : null,
-                buildingFeaturePool: [feature], buildingPoolFeatureKey: f => f.properties.object_id, PlanningRepresentations: representations },
-            proposalStorage: { getAllProposals: () => [] }, displayedProposals: () => [], demolishedMaterialFor: () => ({}), collectAppliedStructureClearanceRegions: () => [],
-            nearbyBuildingGeometryCache: { beginPass: () => ({}) }, nearbyProposalBuildings: [{ object_id: 12 }],
+            window: { DemolitionIndex: { carveRecords: () => ({ records: new Map(), carveOf: () => (carved ? { remainder: geometry, demolished: geometry } : null) }) },
+                buildingFeaturePool: [feature], buildingPoolFeatureKey: f => `${f.properties.source}:${f.properties.object_id}`, PlanningRepresentations: representations },
+            proposalStorage: { getAllProposals: () => [] }, displayedProposals: () => [], demolishedMaterialFor: () => ({}),
+            nearbyBuildingGeometryCache: { beginPass: () => ({}) }, nearbyProposalBuildings: [{ object_id: 12, source: 'gdi-3d' }],
+            threeBuildingKey: building => `${building.source}:${building.object_id}`, buildingFootprintPolygon: () => null,
             xrayEnabled: false, suggestedPlansEnabled: false, suggestedExistingEnabled: false, origin3857: null,
-            sceneWork: { forEach: async (items, fn) => items.forEach(fn) }, structureClearanceCarve: () => null,
+            sceneWork: { forEach: async (items, fn) => items.forEach(fn) },
             buildingDisplayPolicy: { resolveBuildingRenderParts: () => ({ detailed: true, remainder: true, demolished: true }) },
             appendBuildingFloorPlans: () => false, building3DHeightMeters: () => 8, buildMeshFromBuilding3D: mesh,
             polygonFeatureToMeshes: () => [mesh()], ensureNearbyProposalBuildings() {}, console
@@ -216,6 +217,21 @@ describe('shared building and proposal representations', () => {
         expect(item.id).toBe('built:sample:a'); expect(item.role).toBe('existing');
         expect(item.volumes).toEqual([]); expect(item.metrics).toEqual({ floorAreaM2: null, heightM: null, footprintM2: 30 });
         expect(JSON.stringify(feature)).toBe(before);
+    });
+    it('titles a building by its name or the given label, never by its record key', () => {
+        const key = 'building.eyJhZGFwdGVyIjoiYXJjZ2lzIn0:CUSTOM-B-58c2-78778';
+        const unnamed = { type: 'Feature', geometry, properties: { FID: 78778 } };
+        expect(representations.built(unnamed, { key, city: 'sample' }).title).toBeNull();
+        expect(representations.built(unnamed, { key, city: 'sample', title: '120 m²' }).title).toBe('120 m²');
+        expect(representations.built({ ...unnamed, properties: { name: 'Town hall' } }, { key, city: 'sample' }).title).toBe('Town hall');
+        expect(representations.built(unnamed, { key, city: 'sample' }).source.recordId).toBe(key);
+    });
+    it('names a building’s source by its display name, never by its encoded source id', () => {
+        const feature = { type: 'Feature', geometry, properties: { source: 'building.eyJhZGFwdGVyIjoiYXJjZ2lzIn0' } };
+        const record = representations.built(feature, { key: 'a', city: 'sample', sourceName: 'IDECA/UAECD Construcción' });
+        expect(record.source.label).toBe('IDECA/UAECD Construcción');
+        expect(record.source.id).toBe('building.eyJhZGFwdGVyIjoiYXJjZ2lzIn0');
+        expect(representations.built(feature, { key: 'a', city: 'sample' }).source.label).toBeNull();
     });
     it('keeps proposed identity, authored geometry and lifecycle separate from local application', () => {
         const proposal = { proposalId: 'p1', name: 'Example', lifecycleStatus: 'Active',

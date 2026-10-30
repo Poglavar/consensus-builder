@@ -84,8 +84,7 @@
         // honours a localhost worktree's `?backend=` override. Hardcoding LOCAL_BASE sent every
         // parcel request to port 3000 no matter which port ./dev.sh had actually started the
         // backend on, so a worktree loaded zero parcels while every OTHER city source — which all
-        // call getBackendBase() — worked fine. Same bug, same fix, as buildBuildingRequestParams
-        // below; that one was caught earlier and this one was missed.
+        // call getBackendBase() — worked fine.
         const url = `${getBackendBase()}/parcels?bbox=${encodeURIComponent(bbox)}`;
         return { url, isOSS: false, returnsWGS84: true };
     }
@@ -135,51 +134,6 @@
         };
     }
 
-    // Return URL for building footprints. `source` picks WHICH SURVEY:
-    //
-    //   'gdi' (default) — the photogrammetric objects, keyed by object_id. This is the WORKING SET:
-    //                     the same features gdi_building_3d meshes, so it is what detection scans
-    //                     and what the 3D view renders.
-    //   'dgu'           — the cadastre (DKP_ZGRADE), keyed by zgrada_id. Reference layer only.
-    //
-    // Both surveys come from our backend. Dataset providers are configured separately.
-    // GDI and DGU are Croatian services: their bbox is the view in HTRS96/TM (EPSG:3765, map-core.js
-    // bboxInCrs), computed only once the request applies — a view on another continent may not
-    // project into 3765 at all (proj4 gives no finite answer near the equator in much of Asia and the
-    // Americas), and computing it first used to stop every city's own provider from loading there.
-    function buildBuildingRequestParams(bounds, source = 'gdi') {
-        // The city whose data applies at the view's centre (location-first.md), not the session's.
-        let cityConfig = null;
-        if (CityConfigManager) {
-            const center = bounds && typeof bounds.getCenter === 'function' ? bounds.getCenter() : null;
-            cityConfig = center && typeof CityConfigManager.getCityConfigAt === 'function'
-                ? CityConfigManager.getCityConfigAt(center.lat, center.lng)
-                : CityConfigManager.getCurrentCityConfig();
-        }
-        const configured = (cityConfig && cityConfig.buildings) ? cityConfig.buildings.source : null;
-        if (configured === 'none') {
-            return null;
-        }
-        // GDI is the ZAGREB survey. Asking for it in a city whose footprints come from somewhere
-        // else returns nothing, every time — and a reload replaying a hundred corridors asks once
-        // per corridor, so Šibenik (Overture) filled its status log with "Loaded 0 buildings" for
-        // a dataset it does not have. Zagreb declares no `buildings` block at all, so an unset
-        // source means the GDI default and still asks.
-        //
-        // DGU is deliberately NOT gated: it is the national building registry, valid in every
-        // Croatian city, and it has its own opt-in toggle.
-        if (source !== 'dgu' && configured && configured !== 'gdi') {
-            return null;
-        }
-        // Honour the localhost worktree's `?backend=` override just like every other backend
-        // request. Using LOCAL_BASE here silently sent demolition-footprint scans to port 3000
-        // while the same page loaded 3D meshes from its requested backend port.
-        const base = getBackendBase();
-        const bbox = window.bboxInCrs(bounds, 'EPSG:3765');
-        const search = new URLSearchParams({ bbox, source: source === 'dgu' ? 'dgu' : 'gdi' });
-        return { url: `${base}/buildings?${search.toString()}`, isOSS: false };
-    }
-
     // Files the backend stores (proposal thumbnails, uploaded images, models, metadata) are served
     // at PATHS: the API returns `/uploads/images/<file>` unless a public origin is pinned on the
     // server. Resolve a path against the backend this page talks to — the `?backend=` override
@@ -202,7 +156,6 @@
     // Expose builder to other modules
     window.resolveBackendAssetUrl = resolveBackendAssetUrl;
     window.buildParcelRequestParams = buildParcelRequestParams;
-    window.buildBuildingRequestParams = buildBuildingRequestParams;
     window.buildPlannedRoadRequestParams = buildPlannedRoadRequestParams;
     window.buildStreetRequestParams = buildStreetRequestParams;
     window.getBackendBase = getBackendBase;

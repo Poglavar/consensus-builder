@@ -126,15 +126,8 @@ test.describe('Layers sheet behavior @features', () => {
     await openLayers(page);
     await openLayerSection(page, 'buildings');
     await page.locator('#showBuildings').check();
-    await expect.poll(() => page.evaluate(() => (window as any).buildingFeaturePool.some((feature: any) => feature.properties.object_id === 9001))).toBe(true);
+    await expect.poll(() => page.evaluate(() => (window as any).buildingFeaturePool.some((feature: any) => feature.properties.source === 'gdi-3d' && feature.properties.id === 9001))).toBe(true);
     await expect.poll(() => page.evaluate(() => (window as any).map.hasLayer((window as any).buildingLayer))).toBe(true);
-
-    await page.locator('#showBuildingsDgu').check();
-    await expect.poll(() => page.evaluate(() => (window as any).dguBuildingLayer?.getLayers?.().length || 0)).toBe(1);
-    await expect.poll(() => page.evaluate(() => (window as any).map.hasLayer((window as any).dguBuildingLayer))).toBe(true);
-    await page.locator('#showBuildingsOsm').check();
-    await expect.poll(() => page.evaluate(() => (window as any).osmBuildingLayer?.getLayers?.().length || 0)).toBe(1);
-    await expect.poll(() => page.evaluate(() => (window as any).map.hasLayer((window as any).osmBuildingLayer))).toBe(true);
 
     await page.locator('#showGovernmentRoadPlan').check();
     await expect.poll(() => page.evaluate(() => (window as any).governmentRoadPlanLayer?.getLayers?.().length || 0)).toBeGreaterThan(0);

@@ -1,6 +1,7 @@
 import { openPlanActions } from '../helpers/plan-actions';
 import { test, expect } from '../helpers/fixtures';
 import { openCity, createBuilding, createSpace } from '../helpers/runtime';
+import { mockFootprintCells } from '../helpers/mocks/building-data';
 
 test.describe('Plan arithmetic @features', () => {
   test('a saved plan counts its unapplied building independently of an unrelated applied park', async ({ mockApi: page }) => {
@@ -139,13 +140,11 @@ test.describe('Plan arithmetic @features', () => {
     await openPlanActions(page, 'Houses only', [building]);
     await page.locator('#proposals-button').click();
     await openPlanActions(page, 'Houses and park', [building, park]);
-    // From here on the parcel carries one existing two-storey building covering it: both plans clear
-    // it (the block takes its parcel, the park its ground), the present state keeps it.
-    await page.route('**/buildings/under', route => {
-      const regions = route.request().postDataJSON()?.regions || [];
-      return route.fulfill({ json: { supported: true, truncated: false, source: 'gdi',
-        regions: Object.fromEntries(regions.map((region: any) => [region.key, [{ id: 'existing-1', geometry: region.geometry, height_m: null, floors: 2 }]])) } });
-    });
+    // From here on the parcel carries one existing two-storey building where the block stands: both
+    // plans clear it (the block takes its parcel), the present state keeps it.
+    const existing = await page.evaluate(id => (window as any).proposalStorage.getProposal(id).geometry.buildings[0].geometry, building);
+    await page.evaluate(() => (window as any).BuildingCellLoader.clear());
+    await mockFootprintCells(page, () => [{ id: 'existing-1', geometry: existing, height_m: null, floors: 2 }]);
     const applied = () => page.evaluate(() => (window as any).proposalStorage.getAllProposals().filter((p: any) => p.applied).map((p: any) => p.proposalId));
     const before = await applied();
     await page.getByRole('button', { name: 'Compare plans', exact: true }).click();

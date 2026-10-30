@@ -411,8 +411,7 @@
                 if (box) return !!box.checked;
                 return !!(w.buildingLayer && w.map && typeof w.map.hasLayer === 'function' && w.map.hasLayer(w.buildingLayer));
             },
-            buildingStyle: () => (w.BuildingLayersDialog && w.BuildingLayersDialog.style)
-                || (typeof w.buildingStyleForFeature === 'function' ? w.buildingStyleForFeature({}) : {}),
+            buildingStyle: () => (typeof w.buildingStyleForFeature === 'function' ? w.buildingStyleForFeature({}) : {}),
             parcelStyle: (id, feature) => (typeof w.getParcelBaseStyle === 'function' ? w.getParcelBaseStyle(id, null, { feature }) : null)
                 || w.normalStyle || {},
             t: (key, fallback) => {

@@ -490,28 +490,8 @@ async function materializeQueuedSharedProposals(proposalIds, options = {}) {
     try {
         if (ProposalManager) {
             ProposalManager._lastReplayGroundProfile = null;
-            ProposalManager._lastDemolitionPrefetchProfile = null;
         }
     } catch (_) { }
-    // Start the one existing-stock request immediately. Ordinary packages begin with a corridor
-    // batch, so this network wait runs behind their ground derivation and is normally finished by
-    // the time the first building needs its exact slice.
-    const demolitionPromise = (ProposalManager && typeof ProposalManager._prefetchDemolitionBuildings === 'function')
-        ? Promise.resolve(ProposalManager._prefetchDemolitionBuildings(orderedRecords, {
-            onProgress: reportSharedPlanProgress
-        }))
-            .catch(error => {
-                console.warn('[shared-apply] demolition prefetch failed; members fall back individually', error);
-                return new Map();
-            })
-        : Promise.resolve(new Map());
-    let demolitionBuildings = null;
-    const demolitionFor = async id => {
-        if (!demolitionBuildings) demolitionBuildings = await demolitionPromise;
-        if (!demolitionBuildings || typeof demolitionBuildings.has !== 'function'
-            || !demolitionBuildings.has(String(id))) return { covered: false, features: undefined };
-        return { covered: true, features: demolitionBuildings.get(String(id)) };
-    };
     // This loop is the tail of a plan open. Without phase reports the overlay held one "Applying
     // shared plan…" across ground loading, parcel cutting, noding, and storage, and even named the
     // first track while the whole corridor batch ran. Roads now report their batch phases; `index`
@@ -619,8 +599,6 @@ async function materializeQueuedSharedProposals(proposalIds, options = {}) {
                     }
                 }
                 const applyOptions = { replay: true, silent: true, deferPresentation: true };
-                const demolition = await demolitionFor(id);
-                if (demolition.covered) applyOptions.preloadedBuildings = demolition.features;
                 const ok = await ProposalManager.applyProposal(id, applyOptions);
                 if (ok) appliedIds.push(id);
                 else failedIds.push(id);
@@ -659,7 +637,6 @@ async function materializeQueuedSharedProposals(proposalIds, options = {}) {
         storageMs = now() - storageStarted;
 
         const ground = (ProposalManager && ProposalManager._lastReplayGroundProfile) || {};
-        const demolition = (ProposalManager && ProposalManager._lastDemolitionPrefetchProfile) || {};
         const profile = {
             members: orderedIds.length,
             applied: appliedIds.length,
@@ -671,9 +648,6 @@ async function materializeQueuedSharedProposals(proposalIds, options = {}) {
             groundCoveredMembers: Number(ground.coveredMembers) || 0,
             groundFetchedMembers: Number(ground.fetchedMembers) || 0,
             groundRequests: Number(ground.requests) || 0,
-            demolitionRegions: Number(demolition.regions) || 0,
-            demolitionRequests: Number(demolition.requests) || 0,
-            demolitionFallbacks: Number(demolition.fallbackRegions) || 0,
             presentationMs,
             storageMs,
             totalMs: now() - started

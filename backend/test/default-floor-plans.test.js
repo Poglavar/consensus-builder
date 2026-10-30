@@ -41,11 +41,11 @@ describe('default floor plan generator', () => {
         expect(floorPlans.suggested).toBe(true);
         expect(floorPlans.layouts.map(layout => layout.source.kind)).toEqual(['generated', 'generated']);
         expect(floorPlans.layouts[0].source.generator).toBe(generator.GENERATOR_ID);
-        expect(floorPlans.floors.map(floor => floor.elevationM)).toEqual([0, 3, 6, 9]);
-        expect(floorPlans.floors.map(floor => floor.layoutId)).toEqual(['b1:default-ground', 'b1:default-typical', 'b1:default-typical', 'b1:default-typical']);
+        expect(floorPlans.storeys.map(floor => floor.elevationM)).toEqual([0, 3, 6, 9]);
+        expect(floorPlans.storeys.map(floor => floor.layoutId)).toEqual(['b1:default-ground', 'b1:default-typical', 'b1:default-typical', 'b1:default-typical']);
         expect(floorPlans.registration.accuracy).toBe('generated');
         // Each apartment has a living room, a bedroom, a bathroom and a hall, and the partitions are real walls.
-        const apartment = floorPlans.floors[2].apartments[0];
+        const apartment = floorPlans.storeys[2].units[0];
         expect(apartment.rooms.map(room => room.kind)).toEqual(expect.arrayContaining(['living', 'bedroom', 'bathroom', 'hall']));
         expect(result.summary.rooms).toBeGreaterThanOrEqual(8);
         const bare = plan({ footprint: rectangle(0, 0, 20, 12), floors: 4, storeyHeightM: 3, front: southEdge(0, 0, 20, 12) }, { balconies: false });
@@ -179,7 +179,7 @@ describe('default floor plan generator', () => {
         expect(result.summary).toMatchObject({ cores: 4, apartmentsPerFloor: 8, lift: true });
         expect(openingsOf(result, 0, 'glazedDoor', 'entrance')).toHaveLength(4);
         expect(layoutOf(result, 1).stairs).toHaveLength(8);
-        expect(result.floorPlans.floors[0].apartments.map(apartment => apartment.id)).toEqual(
+        expect(result.floorPlans.storeys[0].units.filter(unit => unit.kind === 'apartment').map(apartment => apartment.id)).toEqual(
             ['core-1-left-0', 'core-1-right-0', 'core-2-left-0', 'core-2-right-0', 'core-3-left-0', 'core-3-right-0', 'core-4-left-0', 'core-4-right-0']);
         result.summary.apartmentAreasM2.forEach(area => expect(area).toBeLessThan(120));
     });
@@ -248,9 +248,8 @@ describe('default floor plan generator', () => {
         // 30 × 14 m asks for two cores, so two shops per core on the ground floor and four apartments above.
         expect(block.summary.groundFloorUse).toBe('commercial');
         expect(block.summary.shopsOnGround).toBe(4);
-        expect(block.floorPlans.floors[0].apartments).toEqual([]);
-        expect(block.floorPlans.floors[0].units.map(unit => unit.kind)).toEqual(['shop', 'shop', 'shop', 'shop']);
-        expect(block.floorPlans.floors[1].apartments).toHaveLength(4);
+        expect(block.floorPlans.storeys[0].units.map(unit => unit.kind)).toEqual(['shop', 'shop', 'shop', 'shop']);
+        expect(block.floorPlans.storeys[1].units.filter(unit => unit.kind === 'apartment')).toHaveLength(4);
         const storefront = openingsOf(block, 0, 'window', 'shop');
         expect(storefront.length).toBeGreaterThan(0);
         storefront.forEach(window => expect(window).toMatchObject({ sillM: 0.4, heightM: 2.2 }));
@@ -264,8 +263,8 @@ describe('default floor plan generator', () => {
     it('adds a garage level with columns and a ramp that surfaces through the ground slab', () => {
         const result = plan({ footprint: rectangle(0, 0, 40, 24), floors: 5, storeyHeightM: 3, front: southEdge(0, 0, 40, 24) }, { garage: 'auto' });
         expect(result.summary.garageLevels).toBe(1);
-        expect(result.floorPlans.floors[0]).toMatchObject({ level: -1, elevationM: -3, layoutId: 'building:default-garage', apartments: [] });
-        expect(result.floorPlans.floors[0].units[0].kind).toBe('garage');
+        expect(result.floorPlans.storeys[0]).toMatchObject({ level: -1, elevationM: -3, layoutId: 'building:default-garage' });
+        expect(result.floorPlans.storeys[0].units.map(unit => unit.kind)).toEqual(['garage']);
         const garage = result.floorPlans.layouts.find(layout => layout.id.endsWith('default-garage')).architecture;
         expect(garage.platforms.length).toBe(10);
         garage.platforms.forEach(platform => { expect(platform.elevationM).toBeGreaterThan(0); expect(platform.elevationM).toBeLessThan(3); });

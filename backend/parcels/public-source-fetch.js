@@ -98,6 +98,8 @@ export function createPublicSourceFetch({ lookupImpl = lookup, requestImpl = req
                         // A descriptive User-Agent: Overpass (and other public APIs) refuse requests without one.
                         headers: { Accept: 'application/geo+json, application/json', 'Accept-Encoding': 'identity',
                             'User-Agent': 'consensus-builder/1.0 (+https://urbangametheory.xyz)',
+                            // A browser origin, sent only by a check of whether the browser may read the source (CORS).
+                            ...(headers.get('origin') ? { Origin: headers.get('origin') } : {}),
                             ...(method === 'POST' ? { 'Content-Type': 'application/x-www-form-urlencoded', 'Content-Length': String(Buffer.byteLength(options.body)) } : {}) },
                         lookup: (_hostname, opts, callback) => {
                             if (typeof opts === 'function') { callback = opts; opts = {}; }

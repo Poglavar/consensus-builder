@@ -4,6 +4,7 @@ export { PARCEL_BUILDINGS_SQL } from '../buildings/map-source.js';
 import { createBuildingProviders } from '../buildings/index.js';
 import { osmReferenceSourceRegistry } from '../buildings/map-source.js';
 import { attachNearbyFloorModels, nativeFloorModelSource } from '../buildings/floor-models.js';
+import { splitRead, boxPolygon, boxSideMeters } from '../buildings/split-read.js';
 import {
     fetchProposalsForCarve,
     carveRecordsFor,
@@ -53,7 +54,7 @@ export function setupBuildingsRoute(app, pool) {
     // Body: { geometry: <GeoJSON Geometry in EPSG:4326>, buffer_meters?: number,
     //         proposals?: string[] | string }
     //
-    // `source` explicitly names gdi-3d, nyc-arcgis, nyc-socrata, osm or a portable building descriptor.
+    // `source` explicitly names gdi-3d, dgu, nyc-arcgis, nyc-socrata, osm, wien-lod2, nl-3dbag or a portable building descriptor.
     // `floorModelNamespace` optionally selects stored floor evidence. No city or location selects
     // a provider or evidence namespace on the server.
     //
@@ -317,6 +318,80 @@ export function setupBuildingsRoute(app, pool) {
             // A malformed user building source id is the caller's error.
             if (err && err.status === 400) return res.status(400).json({ error: err.message, code: err.code });
             console.error('Error in POST /buildings/footprints:', err);
+            res.status(500).json({ error: 'Internal server error' });
+        }
+    });
+
+    // POST /buildings/cell - One cell of the city's grid from one building source, the unit the
+    // browser loads buildings in (docs/source-loading-plan.md). Body:
+    //   { source, kind: 'near' | 'footprints', bbox: [w, s, e, n] (WGS84, at most 2 km a side),
+    //     floorModelNamespace? }
+    // `near` answers 3D records (as POST /buildings/near), `footprints` the 2D pool's flat entries
+    // ({ id, geometry, height_m, floors, ...extra }): a provider's `mapFootprints` (every building
+    // touching the cell, with its survey's own properties) where it has one, else its `footprints`
+    // (as POST /buildings/footprints). The browser reads URL sources (`building.<base64url>`) itself,
+    // in its adapter worker; this route answers database and server sources (gdi-3d, dgu, osm, NYC).
+    // A cell the source caps is read in quarters (split-read.js), so
+    // `complete` is false only when splitting ran out. A failed source answers `unavailable` for the
+    // whole cell, never part of it, so the browser can answer it whole from a fallback source.
+    // Complete answers are cached per source, kind and cell.
+    const cellCache = new Map();
+    const CELL_CACHE_TTL_MS = 15 * 60 * 1000;
+    const CELL_CACHE_MAX = 2000;
+    app.post('/buildings/cell', async (req, res) => {
+        try {
+            const body = req.body || {};
+            const kind = body.kind;
+            const bbox = Array.isArray(body.bbox) ? body.bbox.map(Number) : null;
+            if (kind !== 'near' && kind !== 'footprints') {
+                return res.status(400).json({ error: 'Invalid `kind` (near or footprints).' });
+            }
+            if (!bbox || bbox.length !== 4 || !bbox.every(Number.isFinite) || !(bbox[0] < bbox[2]) || !(bbox[1] < bbox[3])
+                || Math.abs(bbox[1]) > 90 || Math.abs(bbox[3]) > 90 || boxSideMeters(bbox) > 2000) {
+                return res.status(400).json({ error: 'Invalid `bbox` (WGS84 [w, s, e, n], at most 2 km a side).' });
+            }
+            const floorModelCity = body.floorModelNamespace;
+            if (floorModelCity !== undefined && (typeof floorModelCity !== 'string' || !floorModelCity.trim() || floorModelCity.length > 100)) {
+                return res.status(400).json({ error: 'Invalid floorModelNamespace.' });
+            }
+            const provider = buildingProviders.forRequest({ source: body.source, geometry: boxPolygon(bbox) });
+            const readFootprints = kind !== 'footprints' ? null
+                : typeof provider?.mapFootprints === 'function' ? provider.mapFootprints
+                    : typeof provider?.footprints === 'function' ? provider.footprints : null;
+            if (!provider || (kind === 'footprints' && !readFootprints)) {
+                return res.json({ supported: false, kind, bbox, items: [], complete: true, source: null });
+            }
+            const key = JSON.stringify([body.source || null, kind, floorModelCity || null, bbox.map(value => value.toFixed(7))]);
+            const cached = cellCache.get(key);
+            if (cached && cached.expires > Date.now()) return res.json(cached.answer);
+
+            let source = null, floorModelSource = null;
+            const read = await splitRead(bbox, async box => {
+                const result = kind === 'near' ? await provider.near(boxPolygon(box), 0) : await readFootprints(boxPolygon(box));
+                source = result.source ?? source;
+                if (result.unavailable) return { unavailable: true, retryAfter: result.retryAfter ?? null };
+                // A capped answer is split; a partial one (an upstream that answered in part) is not.
+                if (result.truncated === true && result.partial !== true) return { areaLimited: true };
+                return { items: kind === 'near' ? result.buildings : result.footprints, complete: result.partial !== true };
+            }, { idOf: item => kind === 'near' ? item.object_id : item.id });
+            if (read.unavailable) {
+                return res.json({ supported: true, kind, bbox, items: [], complete: false, source, unavailable: true, retryAfter: read.retryAfter });
+            }
+            let items = read.items;
+            if (kind === 'near') {
+                floorModelSource = nativeFloorModelSource(body.source, source);
+                items = await attachNearbyFloorModels(pool, floorModelCity, floorModelSource, items);
+            }
+            const answer = { supported: true, kind, bbox, items, count: items.length, complete: read.complete, source,
+                ...(kind === 'near' ? { floorModelSource } : {}) };
+            if (read.complete) {
+                if (cellCache.size >= CELL_CACHE_MAX) cellCache.delete(cellCache.keys().next().value);
+                cellCache.set(key, { expires: Date.now() + CELL_CACHE_TTL_MS, answer });
+            }
+            res.json(answer);
+        } catch (err) {
+            if (err && err.status === 400) return res.status(400).json({ error: err.message, code: err.code });
+            console.error('Error in POST /buildings/cell:', err);
             res.status(500).json({ error: 'Internal server error' });
         }
     });

@@ -11,9 +11,9 @@ pieces fit, and what is still open. The storage and import contract is specified
 
 | Part | State | Where |
 |---|---|---|
-| Floor-plan data model (`building-floor-plans.v2`), validation, 3D rendering, X-ray + cutaway UI | **Done** (Oct 6–7) | `frontend/js/building-floor-plans.js`, `frontend/js/three-floor-plans.js`, `frontend/js/three-mode.js` |
+| Floor-plan data model (`building-floor-plans.v3`), validation, 3D rendering, X-ray + cutaway UI | **Done** (Oct 6–7) | `frontend/js/building-floor-plans.js`, `frontend/js/three-floor-plans.js`, `frontend/js/three-mode.js` |
 | Versioned registry of authored models, joined onto proposals and surveyed buildings on read | **Done** (Oct 7) | `consensus.building_floor_model`, `backend/buildings/floor-models.js`, `backend/scripts/import-building-floor-plans.mjs` |
-| Source adapter for developer PDF catalogues (vector CAD insets → architecture) | **Done**, 67 floors / 9 buildings / 4 sites | `backend/scripts/pionir_floor_architecture.py`, `backend/scripts/reconstruct-*-floors.py`, `restatements/**/floor-plan-sources.json` |
+| Source adapter for developer PDF catalogues (vector CAD insets → architecture) | **Done**, 67 storeys / 9 buildings / 4 sites | `backend/scripts/pionir_floor_architecture.py`, `backend/scripts/reconstruct-*-floors.py`, `restatements/**/floor-plan-sources.json` |
 | Agency floor-plan archive (public listing drawings → immutable archive → OCR drafts → reviewed unit models) | **Done**, daily crawl; 5 reviewed apartment units for one project | [Private zagreb-novogradnje owner](https://github.com/Poglavar/zagreb-novogradnje), schema `floor_plan` |
 | **New buildings**: a repeatable way to obtain more or less every floor plan | **Done** through the two sources above | this file, section "New buildings" |
 | **Old buildings**: deduce floor plans where no drawing exists | **Pending** (TBD); first step: typical layouts by era behind "Existing buildings too" | section "Pending: old buildings", section "Existing buildings" |
@@ -21,7 +21,7 @@ pieces fit, and what is still open. The storage and import contract is specified
 
 ## The data model, once
 
-Everything downstream shares one contract, `consensus-builder.building-floor-plans.v2`:
+Everything downstream shares one contract, `consensus-builder.building-floor-plans.v3`:
 
 - **registration** — four WGS84 corners of a quadrilateral, a textual `basis`, an `accuracy` word.
   Layout geometry is expressed in unit UV coordinates of that quad and mapped bilinearly, so a
@@ -32,13 +32,15 @@ Everything downstream shares one contract, `consensus-builder.building-floor-pla
   `stairs` (run, width, steps, from/to height) and `railings`. Each layout names its **source**: a
   document (`url`, `sha256`, optional PDF `page` and `crop`) or, since this branch, a generator
   (`kind: 'generated'`, `generator`, `parameters`).
-- **floors[]** — level, `elevationM`, `elevationBasis` (`documented` | `estimated`), the layout
-  used, optional apartments with areas and listing URLs.
+- **storeys[]** — level (0 at the ground floor, negative below ground), `elevationM`,
+  `elevationBasis` (`documented` | `estimated`), the layout used, and optional **units[]**: each
+  with an `id`, a `kind` (`apartment`, `shop`, `office` or `garage`), and optionally its area and
+  listing URL. The names follow CityGML's `Storey` and `BuildingUnit`.
 - **notes / inference** — what was measured and what was assumed. An estimated dimension is never
   presented as a measurement.
 
 The browser turns this into meshes (`three-floor-plans.js`): one geometry per layout and material
-kind, shared by every floor that reuses the layout, with a floor cutaway and a below-ground cut.
+kind, shared by every storey that reuses the layout, with a storey cutaway and a below-ground cut.
 Buildings without a model keep the ordinary exterior. Validation is the same function everywhere
 (`validateFloorPlans`), called by the importer, the registry, the renderer and the generator.
 
@@ -49,7 +51,7 @@ flowchart LR
         AG["Agency listing drawings<br/>(crawl → archive → OCR draft)"] --> UM["Reviewed unit models<br/>unit-models.json"]
         PR["Proposed footprint + parcel<br/>+ storeys + street side"] --> GEN["default-floor-plans.js<br/>(generator, pure)"]
     end
-    PY --> V["validateFloorPlans<br/>building-floor-plans.v2"]
+    PY --> V["validateFloorPlans<br/>building-floor-plans.v3"]
     UM --> V
     GEN --> V
     V --> REG["consensus.building_floor_model<br/>(versioned, evidence only)"]
@@ -71,9 +73,9 @@ reading. `reconstruct-*-floors.py` registers each layout to the proposal's footp
 `floorPlans` into the canonical reconstruction archive; the importer validates footprint identity
 and versions the model into the registry.
 
-Corpus: 67 floors across nine buildings on four sites (one site contributes 54 floors over six
-buildings; one office tower levels −1 and 0–7; one site levels 1, 7 and a recessed top floor; one
-shared basement attached once under its owning building). Missing floors stay missing: unmodelled
+Corpus: 67 storeys across nine buildings on four sites (one site contributes 54 storeys over six
+buildings; one office tower levels −1 and 0–7; one site levels 1, 7 and a recessed top storey; one
+shared basement attached once under its owning building). Missing storeys stay missing: unmodelled
 vertical intervals keep the source massing in X-ray.
 
 ### 2. Agency archive (apartment units)
@@ -233,10 +235,10 @@ sequenceDiagram
   own applied corridors, and road parcels of the fabric; each source is optional. Until streets
   arrive the entrance takes the longest facade and the note says so; their arrival drops the cache
   and rebuilds once. Clicking a building opens the parcel panel with its suggested layout (cores,
-  apartments per floor, rooms) or the reason nothing fits; the proposal panel totals its buildings.
+  apartments per storey, rooms) or the reason nothing fits; the proposal panel totals its buildings.
 - `frontend/js/proposals/plan-units.js` — Plan stats and Compare plans count apartments from the
   same generator: every new and remaining building of a plan is laid out (no roads; the entrance
-  takes the longest facade) and its apartments on every floor are counted, a building's own floor
+  takes the longest facade) and its apartments on every storey are counted, a building's own floor
   plans as they are; its shops count as work. Only a building of a housing use is laid out
   (building-use.js; a Block, Row or Detached rule building counts as housing): its use sets the
   ground floor (shops for residential-shops and mixed) and mixed use's first floor counts as

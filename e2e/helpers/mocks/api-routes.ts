@@ -239,6 +239,14 @@ export async function mockBuildingsRoute(page: Page): Promise<void> {
     }
 
     const source = new URL(request.url()).searchParams.get('source') || 'gdi';
+    // A building cell (building-cells.js): empty and complete, so a scene with no fixture is ready.
+    if (new URL(request.url()).pathname.endsWith('/buildings/cell')) {
+      const body = request.postDataJSON() || {};
+      route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({
+        supported: true, kind: body.kind, bbox: body.bbox, source: body.source || null, items: [], complete: true,
+      }) });
+      return;
+    }
     if (new URL(request.url()).pathname.endsWith('/buildings/under')) {
       const regions = request.postDataJSON()?.regions || [];
       route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({

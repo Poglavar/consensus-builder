@@ -20,17 +20,21 @@ export function createZagrebProvider(pool) {
             FROM gdi_building_3d b, q
             WHERE ST_DWithin(b.geom2d_3765, q.g, $2)
             ORDER BY b.geom2d_3765 <-> q.g
-            LIMIT 4000
+            LIMIT 4001
         `;
 
-        const { rows } = await pool.query(sql, [JSON.stringify(geometry), bufferMeters]);
+        const { rows: found } = await pool.query(sql, [JSON.stringify(geometry), bufferMeters]);
+        // One row past the cap says the area holds more than 4,000: the answer is truncated, so a
+        // cell reader splits the cell (split-read.js) instead of drawing the nearest 4,000.
+        const truncated = found.length > 4000;
+        const rows = truncated ? found.slice(0, 4000) : found;
         const buildings = rows.map(row => ({
             object_id: row.object_id,
             z_min: row.z_min,
             z_max: row.z_max,
             faces: row.faces || []
         }));
-        return { buildings, count: buildings.length, source: 'zagreb-3d' };
+        return { buildings, count: buildings.length, source: 'zagreb-3d', ...(truncated ? { truncated: true } : {}) };
     }
 
     // 2D footprints (with measured heights) of existing buildings mostly inside a GeoJSON polygon.
@@ -77,6 +81,38 @@ export function createZagrebProvider(pool) {
         return { footprints, count: footprints.length, source: 'zagreb-cadastre' };
     }
 
+    // The 2D map's footprints for one cell (POST /buildings/cell, kind 'footprints'): every GDI
+    // footprint touching the area, with the GDI properties GET /buildings gives (map-source.js), as
+    // the flat items every source answers: { id: object_id, geometry, height_m, floors, ...extra }.
+    // One row past the cap says the area holds more: truncated, so the cell reader splits it.
+    async function mapFootprints(geometry) {
+        const { rows: found } = await pool.query(`
+            WITH q AS (
+                SELECT ST_Transform(ST_SetSRID(ST_GeomFromGeoJSON($1), 4326), 3765) AS g
+            )
+            SELECT ST_AsGeoJSON(ST_Transform(f.geom, 4326), 7)::json AS geometry,
+                   -- jsonb, as GET /buildings builds it: object_id and the numeric columns arrive as numbers.
+                   jsonb_build_object(
+                       'object_id',     f.object_id,
+                       'area_m2',       g.area_m2,
+                       'height_m',      g.height_m,
+                       'eave_height_m', g.eave_height_m,
+                       'survey_year',   g.survey_year
+                   ) AS properties
+            FROM gdi_building_footprint f
+            JOIN q ON f.geom && q.g AND ST_Intersects(f.geom, q.g)
+            LEFT JOIN gdi_building g ON g.object_id = f.object_id
+            ORDER BY f.object_id
+            LIMIT 4001
+        `, [JSON.stringify(geometry)]);
+        const truncated = found.length > 4000;
+        const footprints = (truncated ? found.slice(0, 4000) : found).map(({ geometry: shape, properties: p }) => ({
+            id: p.object_id, geometry: shape, height_m: p.height_m ?? null, floors: null,
+            area_m2: p.area_m2 ?? null, eave_height_m: p.eave_height_m ?? null, survey_year: p.survey_year ?? null
+        }));
+        return { footprints, count: footprints.length, truncated, source: 'gdi-footprints' };
+    }
+
     // Demolition follows the observed GDI objects rendered by near(), not the legal-cadastre
     // stock used by footprints(). Include every intersection, even a sliver of a building.
     async function footprintsUnder(regions) {
@@ -110,5 +146,5 @@ export function createZagrebProvider(pool) {
         return { regions: byKey, truncated, source: 'gdi' };
     }
 
-    return { near, footprints, footprintsUnder };
+    return { near, footprints, mapFootprints, footprintsUnder };
 }

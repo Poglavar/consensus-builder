@@ -207,6 +207,8 @@
 }
 
 .agreement-panel-actions > .btn { flex: 1 1 0; min-width: 0; white-space: normal; }
+/* Four actions (Propose, Before / after, Edit, Download) are two equal columns, not a squeezed row. */
+.agreement-panel-actions:has(> .btn:nth-child(4)) > .btn { flex-basis: calc(50% - var(--cb-space-1)); }
 .agreement-properties-tabs { flex-shrink: 0; }
 .agreement-properties-tabs > .cb-tab { min-width: 0; white-space: normal; padding-inline: var(--cb-space-1); }
 .agreement-properties-tabpanel:not([hidden]) { display: flex; flex-direction: column; gap: var(--cb-space-3); }

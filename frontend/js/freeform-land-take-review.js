@@ -140,8 +140,7 @@
                 outcomes = null;
                 render();
                 paint();
-                stock = await env.__demolitionPrefetch.loadBuildingStock(current.take.geometry,
-                    (...args) => env.BuildingSourceClient.request(...args));
+                stock = await env.DemolitionIndex.stockUnder([current.take.geometry]);
                 if (closed || ticket !== sequence) return false;
                 // Replacing this source must review its original stock, before its own removals.
                 const pool = env.collectLoadedCorridorBuildings({ extraPool: stock, includeLoadedSurveyPool: false,

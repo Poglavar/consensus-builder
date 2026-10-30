@@ -13,7 +13,7 @@ import {
 import { importFloorModels, parseArgs } from '../scripts/import-building-floor-plans.mjs';
 
 const footprint = (x = 15) => ({ type: 'Polygon', coordinates: [[[x, 45], [x + .001, 45], [x + .001, 45.001], [x, 45],]] });
-const plans = () => ({ schema: 'consensus-builder.building-floor-plans.v2', registration: { basis: 'corners', corners: [[15,45],[15.001,45],[15.001,45.001],[15,45.001]] }, layouts: [{ id: 'a', source: { url: 'https://example.test/scan.jpg', page: 2, crop: [0, 0, 10, 8], sha256: 'fixture-sha256' }, architecture: { schema: 'consensus-builder.floor-architecture.v1', dimensionsM: [10,8], wallHeightM: 2.8, slabThicknessM: .2, walls: [[[[0,0],[1,0],[1,.1],[0,.1]]]], slabs: [[[[0,0],[1,0],[1,1],[0,1]]]], landings: [], openings: [], stairs: [], railings: [] } }], floors: [{ id: 'f1', level: 1, elevationM: 0, elevationBasis: 'documented', layoutId: 'a', apartments: [] }] });
+const plans = () => ({ schema: 'consensus-builder.building-floor-plans.v3', registration: { basis: 'corners', corners: [[15,45],[15.001,45],[15.001,45.001],[15,45.001]] }, layouts: [{ id: 'a', source: { url: 'https://example.test/scan.jpg', page: 2, crop: [0, 0, 10, 8], sha256: 'fixture-sha256' }, architecture: { schema: 'consensus-builder.floor-architecture.v1', dimensionsM: [10,8], wallHeightM: 2.8, slabThicknessM: .2, walls: [[[[0,0],[1,0],[1,.1],[0,.1]]]], slabs: [[[[0,0],[1,0],[1,1],[0,1]]]], landings: [], openings: [], stairs: [], railings: [] } }], storeys: [{ id: 'f1', level: 1, elevationM: 0, elevationBasis: 'documented', layoutId: 'a', units: [] }] });
 const model = (extra = {}) => ({ city: 'city_a', source: 'survey-3d', buildingId: 'b1', footprint: footprint(), floorPlans: plans(), ...extra });
 
 function dbClient(rows = [], readback = null) {
@@ -119,7 +119,7 @@ describe('building floor model registry', () => {
     });
 
     it('versions changed models, retains history, and validates production readback', async () => {
-        const next = prepareFloorModel(model({ floorPlans: { ...plans(), floors: [{ id: 'f2', level: 2, elevationM: 3, elevationBasis: 'documented', layoutId: 'a', apartments: [] }] } }));
+        const next = prepareFloorModel(model({ floorPlans: { ...plans(), storeys: [{ id: 'f2', level: 2, elevationM: 3, elevationBasis: 'documented', layoutId: 'a', units: [] }] } }));
         const client = dbClient([{ version: 2, current: true, geom_hash: 'old', model_hash: 'old' }], { footprint: next.footprint, floor_plans: next.floorPlans });
         const saved = await saveFloorModel(client, next, { apply: true });
         expect(saved).toMatchObject({ changed: true, version: 3 });
@@ -158,7 +158,7 @@ describe('building floor model registry', () => {
         } };
         const archive = { reconstruction: { schema: 'consensus-builder.reconstruction.v1', proposal: { city: 'city_a', proposalId: 'p1' } }, features: [source] };
         const result = await importFloorModels(client, { archive: 'fixture', apply: true }, archive);
-        expect(result).toMatchObject({ buildings: 1, floors: 1, removedInlineCopies: true });
+        expect(result).toMatchObject({ buildings: 1, storeys: 1, removedInlineCopies: true });
         const [cleaned] = JSON.parse(update[1]);
         expect(update[0]).toBe(9);
         expect(cleaned.geometry).toEqual(original.geometry);

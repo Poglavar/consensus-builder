@@ -150,7 +150,7 @@
     // The existing-building layers drawn on the map right now (GDI or the city's provider, DGU, OSM):
     // whatever the Layers sheet has on. Their features are already in memory; nothing is fetched.
     function shownBuildingLayers() {
-        return [win.buildingLayer, win.dguBuildingLayer, win.osmBuildingLayer]
+        return [win.buildingLayer, win.outlineBuildingLayer]
             .filter((layer, index, all) => layer && all.indexOf(layer) === index && typeof layer.eachLayer === 'function' && map().hasLayer(layer));
     }
 

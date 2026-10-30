@@ -362,7 +362,7 @@ describe('the explore city (city-config.js)', () => {
         }
         // Buildings need no parcels: Explore's city default is OpenStreetMap through the backend.
         expect(disabled).not.toContain('buildings');
-        expect(tokyo.manager.getCityConfig('explore').buildings.source).toBe('osm');
+        expect(tokyo.manager.getCityConfig('explore').buildings.sources).toEqual([{ id: 'osm' }]);
         // A site drawn here has an empty binding (PARCEL-OPTIONAL.md): proposals and stations
         // need no parcels.
         expect(disabled).not.toContain('proposals');

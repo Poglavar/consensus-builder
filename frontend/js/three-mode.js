@@ -176,7 +176,7 @@
     function currentSceneKey() {
         const center = map.getCenter();
         return JSON.stringify([window.CityConfigManager?.getCurrentCityId?.(),
-            window.CityConfigManager?.getBuildingSourceId?.(), center.lat.toFixed(6), center.lng.toFixed(6),
+            window.CityConfigManager?.getBuildingSourceKey?.(), center.lat.toFixed(6), center.lng.toFixed(6),
             map.getZoom(), sceneRevision]);
     }
     function stopSceneWork() {
@@ -974,7 +974,7 @@
             profit: threeI18n('threeMode.parcelPanel.profit', 'Profit'),
             profitNote: threeI18n('threeMode.parcelPanel.profitNote', 'Profit = value − construction cost − built value'),
             floorArea: threeI18n('threeMode.parcelPanel.floorArea', 'Floor area'),
-            floorNote: threeI18n('threeMode.parcelPanel.floorNote', '@ {{h}} m/floor', { h: FLOOR_HEIGHT_M }),
+            floorNote: threeI18n('threeMode.parcelPanel.floorNote', '@ {{h}} m/storey', { h: FLOOR_HEIGHT_M }),
             parcelsLabel: threeI18n('threeMode.proposalPanel.parcelsLabel', 'Parcels')
         };
     }
@@ -1591,7 +1591,7 @@
     function observedBuildingFeatures() {
         const observed = new Map((window.buildingFeaturePool || []).map(feature => [clickedBuildingId(feature), feature]));
         for (const building of nearbyProposalBuildings) {
-            const feature = window.PlanningRepresentations.observedMeshFeature(building, observed.get(String(building.object_id)));
+            const feature = window.PlanningRepresentations.observedMeshFeature(building, observed.get(threeBuildingKey(building)));
             if (['Polygon', 'MultiPolygon'].includes(feature?.geometry?.type)) observed.set(clickedBuildingId(feature), feature);
         }
         return [...observed.values()].filter(feature => ['Polygon', 'MultiPolygon'].includes(feature?.geometry?.type));
@@ -1894,7 +1894,7 @@
         xrayButton.className = 'btn three-mode-xray-button';
         xrayButton.textContent = threeI18n('threeMode.controls.xray', 'X-ray');
         xrayButton.title = threeI18n('threeMode.controls.xrayTooltip',
-            'Show modelled floors, walls, doors and windows.');
+            'Show modelled storeys, walls, doors and windows.');
         xrayButton.addEventListener('click', () => setXrayEnabled(!xrayEnabled));
         const xrayButtons = document.createElement('div');
         xrayButtons.className = 'three-mode-xray-buttons';
@@ -1936,7 +1936,7 @@
         floorCutawaySelect = document.createElement('select');
         floorCutawaySelect.id = 'three-mode-floor-cutaway';
         floorCutawaySelect.className = 'three-mode-display-select';
-        floorCutawaySelect.setAttribute('aria-label', threeI18n('threeMode.controls.floorCutawayTooltip', 'Choose which floors remain visible in X-ray view'));
+        floorCutawaySelect.setAttribute('aria-label', threeI18n('threeMode.controls.floorCutawayTooltip', 'Choose which storeys remain visible in X-ray view'));
         floorCutawaySelect.title = floorCutawaySelect.getAttribute('aria-label');
         floorCutawayControl.title = floorCutawaySelect.title;
         floorCutawaySelect.addEventListener('change', () => {
@@ -3695,19 +3695,9 @@
     // which holds only what earlier 2D viewports happened to fetch. Always the normal state: the
     // build-out (displayedProposals) does not redraw vacant plots.
     function standingBuildingFootprints3D() {
-        const proposals = (typeof proposalStorage !== 'undefined' && proposalStorage.getAllProposals()) || [];
-        const carveRecords = window.collectCarveRecords(
-            proposals,
-            {
-                consolidateCorridorRecords: (records, region) =>
-                    window.consolidateCorridorDemolitionRecords(records, region, window.turf),
-                consolidateBuildingRecords: records =>
-                    window.consolidateBuildingDemolitionRecords(records, window.turf)
-            }
-        );
-        const structureRegions = collectAppliedStructureClearanceRegions(proposals);
+        const carve = window.DemolitionIndex.carveRecords();
         return window.__threeSiteGround.standingBuildingFootprints(nearbyProposalBuildings,
-            bld => window.carveBuildingByObjectId(bld.object_id, carveRecords) || structureClearanceCarve(bld, structureRegions), turf);
+            bld => carve.carveOf(threeBuildingKey(bld), () => buildingFootprintPolygon(bld)?.geometry || null), turf);
     }
 
     // The vacant-plot ground depends on which existing buildings stand in the band, so it follows
@@ -5755,82 +5745,6 @@
         });
     }
 
-    // Every APPLIED park/square/lake footprint, as a clearance region { region, bbox }. A structure
-    // footprint IS a clearance region: it razes the ground under it by default. See
-    // structureClearanceCarve for why this record-less fallback exists.
-    function collectAppliedStructureClearanceRegions(proposals = null) {
-        const regions = [];
-        if (typeof turf === 'undefined' || typeof proposalStorage === 'undefined') return regions;
-        try {
-            (proposals || displayedProposals()).forEach(proposal => {
-                const sp = proposal && proposal.structureProposal;
-                if (!sp || !sp.geometry || !sp.geometry.type) return;
-                if (!isApplied(proposal, sp)) return;
-                try {
-                    const region = { type: 'Feature', properties: {}, geometry: sp.geometry };
-                    regions.push({ region, bbox: turf.bbox(region) });
-                } catch (_) { }
-            });
-        } catch (error) {
-            console.error('[three-mode] structure clearance regions could not be collected', error);
-        }
-        return regions;
-    }
-
-    // Carve one 3D mesh against the applied structure regions, in the SAME shape the record-based
-    // carve returns: null (untouched) / { remainder: null, demolished } (razed whole) /
-    // { remainder, demolished } (partial, at the footprint edge). The record carve
-    // (carveBuildingByObjectId) hides a mesh only if the 2D footprint scan produced a record whose
-    // id === object_id; a building that scan missed — a coverage gap, or a /buildings/near mesh with
-    // no counterpart in the 2D footprint pool — has NO record and would otherwise survive inside the
-    // park. This is the record-less clearance carve commit 18cf211 removed, now scoped to structures
-    // only (roads keep their precise record-based cut, which handles tunnels and partial slices). A
-    // park is a region, not a precise cut, so the hull-footprint approximation is immaterial here.
-    function structureClearanceCarve(bld, regions) {
-        if (!regions || !regions.length || typeof turf === 'undefined') return null;
-        try {
-            const footprint = buildingFootprintPolygon(bld);
-            if (!footprint) return null;
-            const footprintBbox = turf.bbox(footprint);
-            const bboxesOverlap = (a, b) => a[0] <= b[2] && b[0] <= a[2] && a[1] <= b[3] && b[1] <= a[3];
-            let demolishedUnion = null;
-            for (const { region, bbox } of regions) {
-                if (!bboxesOverlap(footprintBbox, bbox)) continue;
-                let part = null;
-                try { part = turf.intersect(footprint, region); } catch (error) {
-                    // This region does not clear the building in the view.
-                    reportThreeClip('intersect', error, 'three-mode.structureClearanceCarve', [footprint, region]);
-                    part = null;
-                }
-                if (!part || (Number(turf.area(part)) || 0) < 2) continue;
-                if (!demolishedUnion) demolishedUnion = part;
-                else {
-                    try { demolishedUnion = turf.union(demolishedUnion, part) || demolishedUnion; } catch (error) {
-                        // Only the earlier regions' clearance is drawn.
-                        reportThreeClip('union', error, 'three-mode.structureClearanceCarve', [demolishedUnion, part]);
-                    }
-                }
-            }
-            if (!demolishedUnion) return null;
-            let remainder = null;
-            try { remainder = turf.difference(footprint, demolishedUnion); } catch (error) {
-                // No remainder: the building is drawn as cleared whole.
-                reportThreeClip('difference', error, 'three-mode.structureClearanceCarve', [footprint, demolishedUnion]);
-                remainder = null;
-            }
-            const footprintArea = Number(turf.area(footprint)) || 0;
-            const remainderArea = remainder ? (Number(turf.area(remainder)) || 0) : 0;
-            const minArea = window.CARVE_MIN_REMAINDER_AREA_M2 || 10;
-            const minFraction = window.CARVE_MIN_REMAINDER_FRACTION || 0.15;
-            // Same sliver rule as the 2D cut: a remainder under max(10 m², 15%) is not worth keeping —
-            // the whole building reads as demolished (small sheds fully inside a park clear cleanly).
-            if (!remainder || remainderArea < Math.max(minArea, footprintArea * minFraction)) {
-                return { remainder: null, demolished: (demolishedUnion.geometry) || footprint.geometry };
-            }
-            return { remainder: remainder.geometry, demolished: demolishedUnion.geometry };
-        } catch (_) { return null; }
-    }
-
     const nearbyBuildingGeometryCache = threeResources.createBuildingGeometryCache({
         maxBytes: 64 * 1024 * 1024
     });
@@ -5844,23 +5758,13 @@
         // cut building is found here by ID, exactly. They stay reddish but follow the Built
         // solid/transparent control like every other existing building.
         try {
-            // The carve lives in corridor-carve.js — the SAME module the server runs, so the 3D
-            // view here and the walk sim's carved meshes cannot disagree about which buildings
-            // survive. Hard dependency: a missing export is a load-order bug, fail loud.
-            //
-            // There is no geometry matching here any more, and no thresholds. A demolition record
-            // NAMES its mesh (record.id === object_id) and carries the polygons the draw-time
-            // subtraction produced against that object's own footprint. Lookup, not guesswork.
-            // A TUNNELLED building simply has no record, so it comes back untouched.
-            const carveRecords = window.collectCarveRecords(
-                displayedProposals(),
-                {
-                    consolidateCorridorRecords: (records, region) =>
-                        window.consolidateCorridorDemolitionRecords(records, region, window.turf),
-                    consolidateBuildingRecords: records =>
-                        window.consolidateBuildingDemolitionRecords(records, window.turf)
-                }
-            );
+            // The carve is the plan's derived demolitions (demolition-index.js): a record NAMES its
+            // mesh by key (`<source>:<id>`) and carries the polygons derived against that building's
+            // own footprint. A mesh the footprint stock does not hold (a duplicate mesh of the survey)
+            // is measured by its own outline against the same designs. A TUNNELLED building has no
+            // record, so it comes back untouched.
+            const carving = window.DemolitionIndex.carveRecords(displayedProposals());
+            const carveRecords = carving.records;
             // One response can contain the same source surface twice: within one object (usually
             // opposite winding) or across adjacent/duplicate object_ids. Share these sets across the
             // entire rebuild so only one copy reaches the depth buffer.
@@ -5868,12 +5772,10 @@
             // null → untouched; { remainder: null, demolished } → whole building razed;
             // { remainder, demolished } → partial: prisms for both parts. Both are raw geometries.
             const asFeature = (geometry) => (geometry ? { type: 'Feature', properties: {}, geometry } : null);
-            // Structures clear their whole footprint even for meshes the 2D scan never recorded.
-            const structureRegions = collectAppliedStructureClearanceRegions();
             const meshDedupeState = nearbyBuildingGeometryCache.beginPass({
                 buildings: nearbyProposalBuildings,
-                carveRecords,
-                structureRegions,
+                // Which buildings are razed or cut, and how: a changed carve rebuilds the pass.
+                carveRecords: [...carveRecords.entries()].map(([key, record]) => [key, record.remainder ? JSON.stringify(record.remainder).length : 0]).sort(),
                 visibility,
                 xrayEnabled,
                 suggestedPlansEnabled,
@@ -5885,13 +5787,12 @@
                     [String(window.buildingPoolFeatureKey(feature)), feature]));
                 await sceneWork.forEach(nearbyProposalBuildings, bld => {
                     try {
-                        const inspectionFeature = window.PlanningRepresentations.observedMeshFeature(bld, observed.get(String(bld.object_id)));
+                        const inspectionFeature = window.PlanningRepresentations.observedMeshFeature(bld, observed.get(threeBuildingKey(bld)));
                         const addObserved = mesh => {
                             mesh.userData.planningBuiltFeature = inspectionFeature;
                             targetGroup.add(mesh);
                         };
-                        const carve = window.carveBuildingByObjectId(bld.object_id, carveRecords)
-                            || structureClearanceCarve(bld, structureRegions);
+                        const carve = carving.carveOf(threeBuildingKey(bld), () => buildingFootprintPolygon(bld)?.geometry || null);
                         const renderParts = buildingDisplayPolicy.resolveBuildingRenderParts(carve, visibility);
                         if (!carve) {
                             if (!renderParts.detailed) return;
@@ -6272,18 +6173,13 @@
     function updateBuildingsSourceNote() {
         if (!buildingsSourceNoteEl) return;
         const info = nearbyBuildingsProvenance;
-        if (!info || !['osm-3d', 'custom-3d', 'overture-tiles-3d'].includes(info.source)) { buildingsSourceNoteEl.hidden = true; return; }
+        // Zagreb's survey measures every height: nothing to say about it.
+        if (!info || !info.source || info.source === 'gdi-3d') { buildingsSourceNoteEl.hidden = true; return; }
         const heights = info.heights || { measured: 0, levels: 0, estimated: 0 };
         const total = heights.measured + heights.levels + heights.estimated;
-        // A server source is the person's own, or the city's own survey (Bogotá's cadastre).
-        const citySource = window.CityConfigManager?.getCurrentCityConfig?.()?.buildings?.source;
-        const parts = [info.source === 'overture-tiles-3d'
-            ? threeI18n('threeMode.buildingsSource.overture', 'Overture Maps buildings')
-            : info.source === 'custom-3d' && citySource === 'cadastre'
-                ? threeI18n('sidebar.buildings.showCadastre', 'Cadastre buildings')
-                : info.source === 'custom-3d'
-                    ? threeI18n('sidebar.buildings.showCustom', 'Your building source')
-                    : threeI18n('threeMode.buildingsSource.osm', 'OpenStreetMap buildings')];
+        // The source in use first, as the source list names it.
+        const entry = (window.CityConfigManager?.getBuildingSources?.() || []).find(item => item.id === info.source);
+        const parts = [info.source === 'osm' ? threeI18n('threeMode.buildingsSource.osm', 'OpenStreetMap buildings') : (entry?.name || info.source)];
         if (heights.estimated > 0) {
             parts.push(threeI18n('threeMode.buildingsSource.estimated', '{{count}} of {{total}} heights estimated',
                 { count: heights.estimated, total }).replace('{{count}}', heights.estimated).replace('{{total}}', total));
@@ -6331,57 +6227,117 @@
         key = nearbyDataScope + '|' + key;
         if (key === nearbyProposalBuildingsKey) return;
 
+        // The building cells of the city grid over the scene (building-cells.js), nearest the anchor
+        // first. Each cell lands on its own: the scene rebuilds when the first one does and then at
+        // each quarter, so the nearest buildings show while the rest still load.
+        const manager = window.CityConfigManager;
+        const anchor = turf.centroid(geometry).geometry.coordinates;
+        const toLatLng = (easting, northing) => manager.datasetToLatLng(easting, northing);
+        const gridSize = Number(manager?.getParcelGridSize?.());
+        const cells = proposalGeom
+            ? window.BuildingCells.cellsCovering({ box: turf.bbox(turf.buffer(geometry, buffer, { units: 'meters' })), centre: anchor,
+                gridSize, toDataset: window.wgs84ToDataset, toLatLng })
+            : window.BuildingCells.cellsAround({ centre: anchor, radiusM: buffer, gridSize, toDataset: window.wgs84ToDataset, toLatLng });
+        const sources = window.SourceList.inUse(manager.getBuildingSources(anchor[1], anchor[0]));
+        // The previous buildings stay drawn until the first cells of the new area replace them.
         nearbyProposalBuildingsFetching = true;
         nearbyBuildingsOutcome = null;
         updateBuildingsLoader();
-        // The 3D building source is that of the city where the geometry lies: resolved server-side,
-        // or read in the browser from Overture's tiles (building-source-client.js).
         const signal = sceneAbort?.signal;
         const current = () => isActive && !signal?.aborted && sceneAbort?.signal === signal;
-        window.BuildingSourceClient.request('/buildings/near', { geometry, buffer_meters: buffer }, { signal })
-            .then(payload => {
+        if (!cells.length || !sources.length) {
+            nearbyProposalBuildingsFetching = false;
+            nearbyBuildingsOutcome = sources.length ? 'empty' : 'unsupported';
+            nearbyProposalBuildingsKey = key;
+            updateBuildingsLoader();
+            return;
+        }
+        const byId = new Map();
+        let raw = 0, nextRebuildAt = 1;
+        // Whole cells reach past the radius; around a point only the buildings reaching into it are
+        // kept (any vertex of the first face), so the slider still says how much of the city is drawn.
+        const metresPerDegLng = 111320 * Math.cos(anchor[1] * Math.PI / 180);
+        const withinRadius = building => {
+            if (proposalGeom) return true;
+            const ring = building.faces?.[0]?.coordinates?.[0];
+            if (!Array.isArray(ring) || !ring.length) return true;
+            return ring.some(vertex => Math.hypot((vertex[0] - anchor[0]) * metresPerDegLng, (vertex[1] - anchor[1]) * 110540) <= buffer);
+        };
+        // Each record carries its source and is keyed `<source>:<id>` like every building (F2).
+        const landed = (_cell, result) => {
+            if (!current() || result.failed) return;
+            for (const item of result.items) {
+                if (item?.object_id == null || !withinRadius(item)) continue;
+                const building = { ...item, source: result.source };
+                const key = threeBuildingKey(building);
+                if (!byId.has(key)) raw++;
+                byId.set(key, building);
+            }
+        };
+        // A stand-in's building duplicating, over a cell line, one of an earlier source is left out.
+        const settled = () => {
+            const list = [...byId.values()];
+            const standIn = list.filter(building => sources.indexOf(building.source) > 0);
+            if (!standIn.length || typeof window.buildingFootprintFromFaces !== 'function') return dedupeCoincidentBuildings(list);
+            const footprint = building => window.buildingFootprintFromFaces(building.faces, turf)?.geometry || null;
+            const earlier = list.filter(building => sources.indexOf(building.source) === 0).map(building => ({ geometry: footprint(building) })).filter(entry => entry.geometry);
+            const covered = window.BuildingCells.coveredKeys(standIn.map(building => ({ key: threeBuildingKey(building), geometry: footprint(building) })), earlier, turf);
+            return dedupeCoincidentBuildings(list.filter(building => !covered.has(threeBuildingKey(building))));
+        };
+        const progress = summary => {
+            if (!current() || summary.done < nextRebuildAt) return;
+            nextRebuildAt = summary.done >= summary.total ? Infinity : Math.max(summary.done + 1, Math.ceil(summary.total * (Math.floor(summary.done / summary.total * 4) + 1) / 4));
+            nearbyProposalBuildings = settled();
+            nearbyBuildingsRevision++;
+            if (isActive && summary.done < summary.total) rebuild3DBuildingsOnly({ family: 'existing' });
+        };
+        window.BuildingCellLoader.load({ kind: 'near', sources, cells, signal, onCell: landed, onProgress: progress })
+            .then(summary => {
                 if (!current()) return;
-                const rawBuildings = (payload && Array.isArray(payload.buildings)) ? payload.buildings : [];
-                nearbyProposalBuildings = dedupeCoincidentBuildings(rawBuildings);
+                nearbyProposalBuildings = settled();
                 nearbyBuildingsRevision++;
                 nearbyProposalBuildingsKey = key;
                 nearbyProposalBuildingsFetching = false;
-                nearbyBuildingsProvenance = payload ? { source: payload.source, heights: payload.heights || null, partial: payload.partial === true } : null;
-                nearbyBuildingsOutcome = payload?.supported === false ? 'unsupported'
-                    : !payload || payload.unavailable || !Array.isArray(payload.buildings) ? 'failed'
-                        : payload.partial === true || payload.truncated === true ? 'partial'
-                            : nearbyProposalBuildings.length ? 'loaded' : 'empty';
+                const heights = { measured: 0, levels: 0, estimated: 0 };
+                nearbyProposalBuildings.forEach(building => { if (building.height_source in heights) heights[building.height_source]++; });
+                nearbyBuildingsProvenance = { source: sources[0], heights: heights.measured + heights.levels + heights.estimated ? heights : null,
+                    partial: summary.failed > 0 || summary.incomplete > 0, standIn: summary.standIn, cells: summary.total };
+                nearbyBuildingsOutcome = summary.unsupported === summary.total ? 'unsupported'
+                    : summary.failed === summary.total ? 'failed'
+                    : summary.failed || summary.incomplete ? 'partial'
+                        : nearbyProposalBuildings.length ? 'loaded' : 'empty';
                 updateBuildingsSourceNote();
-                // The upstream failed outright: an empty scene must not pass for a city without buildings.
-                if (payload && payload.unavailable) reportNearbyBuildingsUnavailable(payload.retryAfter);
-                else if (rawBuildings.length) window.clearBuildingsUnavailable?.();
-                const dupCount = rawBuildings.length - nearbyProposalBuildings.length;
-                console.log(`[3D] Loaded ${nearbyProposalBuildings.length} nearby 3D buildings (${sceneLoadGeometrySource}+${buffer}m${dupCount > 0 ? `, dropped ${dupCount} coincident duplicate${dupCount === 1 ? '' : 's'}` : ''})`);
+                // A cell no source could answer: an empty patch must not pass for ground without buildings.
+                if (summary.failed) reportNearbyBuildingsUnavailable(summary.retryAfter, summary.status, sources[0]);
+                else window.clearBuildingsUnavailable?.();
+                const dupCount = raw - nearbyProposalBuildings.length;
+                console.log(`[${new Date().toISOString()}] [3D] Loaded ${nearbyProposalBuildings.length} nearby 3D buildings in ${summary.loaded} of ${summary.total} cells (${sceneLoadGeometrySource}+${buffer}m${summary.standIn ? `, ${summary.standIn} from a stand-in source` : ''}${summary.failed ? `, ${summary.failed} failed` : ''}${dupCount > 0 ? `, dropped ${dupCount} coincident duplicate${dupCount === 1 ? '' : 's'}` : ''})`);
                 if (isActive) rebuild3DBuildingsOnly({ family: 'existing' });
                 rebuildProposalGrounds3D();
                 refreshLifeSurface();
                 updateBuildingsLoader();
-                ensureNearbyWater();
-                ensureNearbyGreen();
             })
             .catch(err => {
                 if (!current() || err.name === 'AbortError') return;
-                console.warn('Failed to fetch nearby buildings:', err);
+                console.warn(`[${new Date().toISOString()}] [3D] Failed to load nearby building cells`, err);
                 nearbyProposalBuildingsFetching = false;
                 nearbyBuildingsOutcome = 'failed';
                 updateBuildingsLoader();
                 reportNearbyBuildingsUnavailable(null, err.status);
-                ensureNearbyWater();
-                ensureNearbyGreen();
             });
     }
 
     // Said in the building banner (map-core.js), whose Retry asks for this scene's band again.
-    function reportNearbyBuildingsUnavailable(retryAfter, status = null) {
+    function reportNearbyBuildingsUnavailable(retryAfter, status = null, source = null) {
         window.reportBuildingsUnavailable?.(retryAfter, () => {
             nearbyProposalBuildingsKey = null;
             ensureNearbyProposalBuildings();
-        }, false, status);
+        }, source, status);
+    }
+
+    // A 3D building record's key, the same `<source>:<id>` the 2D pool and the demolitions use.
+    function threeBuildingKey(building) {
+        return `${building.source}:${building.object_id}`;
     }
 
     // --- Real-world OSM trees (Overture base/land) ---
@@ -7169,8 +7125,8 @@
     }
 
     function ensureNearbyWater() {
-        // Wait for the buildings: their extent is the area to cover.
-        if (!waterEnabled || nearbyWaterFetching || nearbyProposalBuildingsFetching) return;
+        // Its own query area (sceneryQuery), so it loads alongside the buildings, not after them.
+        if (!waterEnabled || nearbyWaterFetching) return;
         const { queryGeometry, buffer } = sceneryQuery();
         if (!queryGeometry) return;
         const key = nearbyDataScope + '|' + JSON.stringify(queryGeometry.coordinates) + '|r' + buffer;
@@ -7300,8 +7256,8 @@
     }
 
     function ensureNearbyGreen() {
-        // Wait for the buildings, like the water: their extent is the area to cover.
-        if (!greenEnabled || nearbyGreenFetching || nearbyProposalBuildingsFetching) return;
+        // Its own query area, like the water: it loads alongside the buildings, not after them.
+        if (!greenEnabled || nearbyGreenFetching) return;
         const { queryGeometry, buffer } = sceneryQuery();
         if (!queryGeometry) return;
         const key = nearbyDataScope + '|' + JSON.stringify(queryGeometry.coordinates) + '|r' + buffer;
@@ -7445,8 +7401,8 @@
     // Which existing buildings the displayed designs demolish or clear: the existing family is redrawn
     // only when a design's start month changes this.
     function buildoutDemolitionSignature() {
-        const { records } = window.collectCarveRecords(displayedProposals());
-        return JSON.stringify([[...records.keys()].sort(), collectAppliedStructureClearanceRegions().length]);
+        const { records } = window.DemolitionIndex.carveRecords(displayedProposals());
+        return JSON.stringify([...records.keys()].sort());
     }
 
     function rebuildCorridors3D() {
@@ -8545,7 +8501,7 @@
             totals.buildings++;
             totals.cores += result.summary.cores;
             totals.apartmentsPerFloor += result.summary.apartmentsPerFloor;
-            totals.apartments += result.floorPlans.floors.reduce((sum, floor) => sum + (floor.apartments || []).length, 0);
+            totals.apartments += result.floorPlans.storeys.reduce((sum, storey) => sum + (storey.units || []).filter(unit => unit.kind === 'apartment').length, 0);
         } else totals.flagged++;
         suggestedPlanByProposal.set(String(proposalId), totals);
     }
@@ -8563,14 +8519,14 @@
         const cores = planned.reduce((sum, slice) => sum + slice.result.summary.cores, 0);
         const apartments = planned.reduce((sum, slice) => sum + slice.result.summary.apartmentsPerFloor, 0);
         const rooms = planned.reduce((sum, slice) => sum + (slice.result.summary.rooms || 0), 0);
-        return threeI18n('threeMode.parcelPanel.suggestedSummary', `${cores} core(s) · ${apartments} apartments per floor · ${rooms} rooms`, { cores, apartments, rooms });
+        return threeI18n('threeMode.parcelPanel.suggestedSummary', `${cores} core(s) · ${apartments} apartments per storey · ${rooms} rooms`, { cores, apartments, rooms });
     }
     function suggestedProposalPanelText(proposal) {
         if (!suggestedPlansEnabled || !proposal) return '';
         const totals = suggestedPlanByProposal.get(String(proposal.proposalId ?? proposal.id));
         if (!totals || (!totals.buildings && !totals.flagged)) return '';
         const line = threeI18n('threeMode.proposalPanel.suggestedTotals',
-            `Suggested layouts: ${totals.buildings} buildings · ${totals.apartmentsPerFloor} apartments per floor · ${totals.apartments} in total`,
+            `Suggested layouts: ${totals.buildings} buildings · ${totals.apartmentsPerFloor} apartments per storey · ${totals.apartments} in total`,
             { buildings: totals.buildings, apartmentsPerFloor: totals.apartmentsPerFloor, apartments: totals.apartments });
         return totals.flagged ? `${line} ${threeI18n('threeMode.controls.suggestedFlagged', `${totals.flagged} in red: too small for a minimum stair core.`, { count: totals.flagged })}` : line;
     }
@@ -8699,7 +8655,7 @@
         if (suggestedExistingPoolKey !== radiusKey) {
             suggestedExistingPoolKey = radiusKey;
             const [west, south, east, north] = turf.bbox(turf.circle(centre, buildingLoadRadiusM / 1000, { units: 'kilometers' }));
-            window.ensureBuildingFootprintsForBounds?.([[south, west], [north, east]], { pad: 0 })?.catch(error =>
+            window.ensureBuildingFootprintsForBounds?.([[south, west], [north, east]])?.catch(error =>
                 console.error(`[${new Date().toISOString()}] [3D] Footprints for typical layouts could not be loaded`, error));
         }
         const pool = Array.isArray(window.buildingFeaturePool) ? window.buildingFeaturePool : [];
@@ -8769,7 +8725,7 @@
         // A building can have several parcel slices or appear in both data families. Its
         // registered drawing is owned once, independent of how many exterior meshes it has.
         try {
-            const key = JSON.stringify([plans.registration, plans.floors?.map(floor => floor.id)]);
+            const key = JSON.stringify([plans.registration, plans.storeys?.map(storey => storey.id)]);
             if (renderedFloorPlanKeys.has(key)) return true;
             const group = floorPlanRenderer.createBuildingGroup(THREE, feature,
                 (lng, lat) => latLngToXY(lat, lng), floorPlanGeometry, { proxyMaterial, proxyHeightM });
@@ -9004,7 +8960,7 @@
                 [null, ...levels].forEach(level => {
                     const option = document.createElement('option');
                     option.value = level === null ? 'all' : String(level);
-                    option.textContent = level === null ? threeI18n('threeMode.controls.floorAll', 'All floors')
+                    option.textContent = level === null ? threeI18n('threeMode.controls.floorAll', 'All storeys')
                         : level < 0 ? threeI18n('threeMode.controls.floorBasement', `Basement ${-level}`, { level: -level })
                         : level === 0 ? threeI18n('threeMode.controls.floorGround', 'Ground floor')
                         : threeI18n('threeMode.controls.floorLevel', `Floor ${level}`, { level });
@@ -9024,7 +8980,7 @@
             return total;
         }, { floors: 0, buildings: 0, estimatedFloors: 0, apartments: 0 });
         const lines = [totals.floors
-            ? threeI18n('threeMode.controls.xrayCount', `Floors: ${totals.floors} · Buildings: ${totals.buildings}`, totals)
+            ? threeI18n('threeMode.controls.xrayCount', `Storeys: ${totals.floors} · Buildings: ${totals.buildings}`, totals)
             : threeI18n('threeMode.controls.xrayEmpty', 'No floor plans available for the visible buildings.')];
         if (totals.estimatedFloors) lines.push(threeI18n('threeMode.controls.xrayEstimated',
             'Heights and opening types are inferred.'));
@@ -9037,7 +8993,7 @@
             lines.push(threeI18n('threeMode.controls.suggestedNote', 'Suggested layouts are generated defaults, not part of the design.'));
             const buildings = suggestedPlanTotals.slices - suggestedPlanTotals.flagged;
             if (buildings) lines.push(threeI18n('threeMode.controls.suggestedCount',
-                `Suggested: ${buildings} buildings · ${suggestedPlanTotals.apartments} apartments per floor`,
+                `Suggested: ${buildings} buildings · ${suggestedPlanTotals.apartments} apartments per storey`,
                 { buildings, apartments: suggestedPlanTotals.apartments }));
             if (suggestedPlanTotals.flagged) lines.push(threeI18n('threeMode.controls.suggestedFlagged',
                 `${suggestedPlanTotals.flagged} in red: too small for a minimum stair core.`, { count: suggestedPlanTotals.flagged }));
@@ -9582,7 +9538,7 @@
         // Build content
         origin3857 = getOrigin3857();
         buildoutSites = computeBuildoutSites();
-        const dataScope = JSON.stringify([window.CityConfigManager?.getCurrentCityId?.(), window.CityConfigManager?.getBuildingSourceId?.()]);
+        const dataScope = JSON.stringify([window.CityConfigManager?.getCurrentCityId?.(), window.CityConfigManager?.getBuildingSourceKey?.()]);
         if (dataScope !== nearbyDataScope) {
             nearbyProposalBuildings = []; nearbyProposalBuildingsKey = null;
             nearbyBuildingsOutcome = null; nearbyBuildingsProvenance = null;
@@ -10552,6 +10508,24 @@
         if (!isActive) return;
         rebuild3DBuildingsOnly({ family: 'existing' });
         refreshLifeSurface();
+    });
+
+    // The plan's demolitions were derived again (a commit, a source switch, a cell that landed):
+    // the existing buildings are carved anew, and the vacant-plot ground follows them.
+    window.addEventListener('demolitionsChanged', () => {
+        sceneRevision++;
+        if (!isActive) return;
+        rebuild3DBuildingsOnly({ family: 'existing' });
+        rebuildProposalGrounds3D();
+    });
+
+    // A new building source list: the scene's buildings are the new sources' (their cells are keyed by
+    // the list), loaded again around the same anchor.
+    window.addEventListener('sourceListChanged', event => {
+        if (event.detail?.concept !== 'buildings') return;
+        nearbyDataScope = JSON.stringify([window.CityConfigManager?.getCurrentCityId?.(), window.CityConfigManager?.getBuildingSourceKey?.()]);
+        nearbyProposalBuildingsKey = null;
+        if (isActive) ensureNearbyProposalBuildings();
     });
 
     window.addEventListener('planninggeometrychange', rebuildPlanningSources3D);

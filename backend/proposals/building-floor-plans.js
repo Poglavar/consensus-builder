@@ -1,4 +1,4 @@
-// Attaches authored floors only to the exact source building and footprint they were registered to.
+// Attaches authored storeys only to the exact source building and footprint they were registered to.
 import { createRequire } from 'node:module';
 import { isDeepStrictEqual } from 'node:util';
 
@@ -11,7 +11,7 @@ export function attachBuildingFloorPlans(buildings, sourceBuildings) {
     }
     const result = structuredClone(buildings);
     let changed = 0;
-    let floors = 0;
+    let storeys = 0;
     for (const source of sourceBuildings) {
         const plans = source.properties?.floorPlans;
         if (!plans) continue;
@@ -26,11 +26,11 @@ export function attachBuildingFloorPlans(buildings, sourceBuildings) {
             || JSON.stringify(target.geometry?.coordinates) !== JSON.stringify(source.geometry?.coordinates)) {
             throw new Error(`Footprint changed for ${sourceId}; re-register its floor plans before importing.`);
         }
-        floors += plans.floors.length;
+        storeys += plans.storeys.length;
         if (!isDeepStrictEqual(target.properties.floorPlans, plans)) {
             target.properties.floorPlans = structuredClone(plans);
             changed++;
         }
     }
-    return { buildings: result, changed, floors };
+    return { buildings: result, changed, storeys };
 }

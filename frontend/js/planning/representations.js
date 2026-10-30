@@ -15,14 +15,16 @@
         if (!['Polygon', 'MultiPolygon'].includes(feature?.geometry?.type) || height === null || height <= 0) return null;
         return { id, geometry: feature.geometry, baseM, topM: baseM + height };
     }
-    function built(feature, { key, city, footprintM2 = null } = {}) {
+    // `title` and `sourceName` are what the viewer reads (a name, address or footprint area; the
+    // source's name); the record key and source id are internal identities and are never shown.
+    function built(feature, { key, city, footprintM2 = null, title = null, sourceName = null } = {}) {
         if (!feature || !key || !city) return null;
         const id = `built:${city}:${key}`, p = feature.properties || {};
         const part = volume(feature, `${id}:volume`);
-        return { id, role: 'existing', proposalId: null, title: p.name || String(key),
+        return { id, role: 'existing', proposalId: null, title: title || p.name || null,
             site: feature.geometry || null, volumes: part ? [part] : [], spatialReference,
             source: { id: p.source || 'observed-buildings', recordId: String(key), city,
-                label: p.source || p.dataset || null, version: p.version || null,
+                label: sourceName || p.dataset || null, version: p.version || null,
                 observedAt: p.observed_at || null, parcel: p.parcelId || null },
             assessment: { meaning: 'observed-building', geometry: part ? 'available' : 'footprint-only',
                 constraints: 'not-evaluated', status: p.__outcome || null },

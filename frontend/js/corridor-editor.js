@@ -326,10 +326,9 @@ function corridorEditorCollectWidthHits(width) {
     if (typeof calculateRoadPolygon !== 'function') return result;
     const frame = corridorEditorFrame();
     const segments = corridorEditorScopedSegments();
-    const tunnelled = new Set();
+    const underTunnel = tunnelSpanTest(state.definition.tunnels || [], () => width);
     const tunnelEdgeKeys = new Set();
     (state.definition.tunnels || []).forEach(record => {
-        (record?.buildingIds || []).forEach(id => tunnelled.add(String(id)));
         if (record?.edgeKey) tunnelEdgeKeys.add(record.edgeKey);
     });
     const seenBuildings = new Set();
@@ -344,7 +343,7 @@ function corridorEditorCollectWidthHits(width) {
             if (typeof detectLoadedBuildingTunnelIntersections === 'function') {
                 detectLoadedBuildingTunnelIntersections(polygon).forEach(hit => {
                     const id = String(hit.id);
-                    if (tunnelled.has(id) || seenBuildings.has(id)) return;
+                    if (seenBuildings.has(id) || underTunnel(hit)) return;
                     seenBuildings.add(id);
                     result.buildings.push(hit);
                 });
@@ -595,10 +594,11 @@ function corridorEditorConstraintFeatures() {
         return Array.isArray(coord) && coord[1] >= south && coord[1] <= north && coord[0] >= west && coord[0] <= east;
     };
 
-    const tunnelled = new Set();
-    (state.definition.tunnels || []).forEach(record => {
-        (record?.buildingIds || []).forEach(id => tunnelled.add(String(id)));
-    });
+    // A building the road already passes under is no obstacle: the corridor's width along each span.
+    const entries = corridorSegmentEntries(state.definition);
+    const underTunnel = tunnelSpanTest(state.definition.tunnels || [], record =>
+        entries.find(entry => entry.segmentId !== null && String(entry.segmentId) === String(record.segmentId))?.width
+            || Math.max(0, ...entries.map(entry => Number(entry.width) || 0)));
     // The two limits are EXCLUSIVE. Going for the buildings means ignoring the road parcel — that
     // is the whole point of the mode, since the road parcel is the thing that does not match the
     // street. Respecting the road parcels means the parcel edge is the limit and a building behind
@@ -608,7 +608,7 @@ function corridorEditorConstraintFeatures() {
         collectLoadedCorridorBuildings({ surveys: corridorEditorBuildingSurveys() }).forEach(feature => {
             if (!feature || !feature.geometry || !nearRoad(feature.geometry)) return;
             const id = String(corridorBuildingKey(feature));
-            if (tunnelled.has(id)) return;
+            if (underTunnel(feature)) return;
             obstacles.push({ id, kind: 'building', feature });
         });
     }
@@ -2830,21 +2830,17 @@ function proposalHasEditableCorridor(proposal) {
     return !!corridorProfileOf(definition);
 }
 
-// Which building surveys the profiler answers to: the ones currently drawn on the map. GDI is the
-// working set the cuts themselves run on; DGU and OSM are reference layers, so measuring against
-// them measures against a different survey than the one a demolition would cut. That is a real
-// choice, which is why it is named in the header rather than assumed.
+// Which building sources the profiler answers to: the ones currently drawn on the map
+// (corridor-tunnel.js drawnBuildingSurveys). The sources in use are the working set the cuts run on;
+// an outlined source is a reference, so measuring against it measures against a different survey
+// than the one a demolition would cut. That is a real choice, which is why it is named in the header.
 function corridorEditorBuildingSurveys() {
-    const read = id => !!document.getElementById(id)?.checked;
-    const surveys = { gdi: read('showBuildings'), dgu: read('showBuildingsDgu'), osm: read('showBuildingsOsm') };
-    // Nothing on the map: fall back to the working set rather than measure against nothing.
-    if (!surveys.gdi && !surveys.dgu && !surveys.osm) return { gdi: true, dgu: false, osm: false, fallback: true };
-    return surveys;
+    return drawnBuildingSurveys();
 }
 
 function corridorEditorBuildingSurveyKey() {
     const surveys = corridorEditorBuildingSurveys();
-    return ['gdi', 'dgu', 'osm'].filter(key => surveys[key]).join('+') || 'none';
+    return surveys.sources.join('+') || 'none';
 }
 
 // Two full-width header rows, both live on both tabs: WHAT limits the road, and WHICH survey of
@@ -2852,8 +2848,8 @@ function corridorEditorBuildingSurveyKey() {
 // fill drawn on the map alike — the same question asked twice — so neither may be buried in a tab.
 //
 // The limit is two icons because it is a choice between two pictures of the street: the plot lines,
-// or the buildings. The survey is three independent toggles because the surveys STACK (see
-// building-layers-dialog.js) — and because a toggle is tappable, which the B key is not on a phone.
+// or the buildings. The survey is a toggle per drawn group because the sources STACK — the sources in
+// use, and each outlined one — and because a toggle is tappable, which the B key is not on a phone.
 const CORRIDOR_LIMIT_ICONS = {
     // A plot with the road running through it: the land, as registered.
     parcels: '<svg viewBox="0 0 20 20" width="17" height="17" aria-hidden="true"><rect x="1.5" y="3.5" width="17" height="13" rx="1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-dasharray="3 2"/><path d="M6.5 3.5 L6.5 16.5 M13.5 3.5 L13.5 16.5" stroke="currentColor" stroke-width="1.4" opacity="0.75"/></svg>',
@@ -2873,25 +2869,28 @@ function corridorEditorLimitRowHtml() {
             ${CORRIDOR_LIMIT_ICONS[limit]}
         </button>`;
 
+    // One toggle for the sources in use (the Buildings layer) and one per other listed source (its
+    // outline), named as the source list names them (source-list.js).
     const surveys = corridorEditorBuildingSurveys();
-    const names = { gdi: 'GDI', dgu: 'DGU', osm: 'OSM' };
-    const titles = {
-        gdi: corridorEditorI18n('modal.buildingLayers.gdiHint', 'Photogrammetry: what is actually there.'),
-        dgu: corridorEditorI18n('modal.buildingLayers.dguHint', 'DGU cadastre: what is officially registered.'),
-        osm: corridorEditorI18n('modal.buildingLayers.osmHint', 'OSM buildings: the community map.')
-    };
+    const list = window.CityConfigManager?.getBuildingSources?.() || [];
+    const used = list.filter(entry => entry.use);
+    const escape = value => String(value).replace(/[&<>"']/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[ch]);
+    const groups = [
+        { key: 'used', name: used.map(entry => entry.name).join(' + '), pressed: !surveys.fallback && used.some(entry => surveys.sources.includes(entry.id)) },
+        ...list.filter(entry => !entry.use).map(entry => ({ key: entry.id, name: entry.name, pressed: !surveys.fallback && surveys.sources.includes(entry.id) }))
+    ].filter(group => group.name);
     const surveyRow = parcelLimit ? '' : `
         <div class="corridor-editor-limit-row">
             <span class="corridor-limit-label">${corridorEditorI18n('modal.corridor.measuredAgainst', 'Measured against')}</span>
             <div class="cb-segmented corridor-limit-toggle corridor-survey-toggle" role="group"
                  aria-label="${corridorEditorI18n('modal.corridor.measuredAgainst', 'Measured against')}">
-                ${['gdi', 'dgu', 'osm'].map(key => `
+                ${groups.map(group => `
                     <button type="button" class="cb-segmented__option corridor-limit-option"
-                            data-survey="${key}" aria-pressed="${!!surveys[key] && !surveys.fallback}" title="${titles[key]}">
-                        ${names[key]}
+                            data-survey="${escape(group.key)}" aria-pressed="${group.pressed}" title="${escape(group.name)}">
+                        ${escape(group.name)}
                     </button>`).join('')}
             </div>
-            ${surveys.fallback ? `<span class="corridor-limit-note">${corridorEditorI18n('modal.corridor.measuredFallback', 'nothing shown — measuring against GDI')}</span>` : ''}
+            ${surveys.fallback ? `<span class="corridor-limit-note">${corridorEditorI18n('modal.corridor.measuredFallback', 'nothing shown — measuring against the buildings in use')}</span>` : ''}
         </div>`;
 
     return `
@@ -2923,19 +2922,21 @@ function corridorEditorRenderLimitRow() {
         });
     });
     // Toggling a survey switches the LAYER, not a private editor setting: what the profiler measures
-    // against and what the map shows are the same thing, and B stays the keyboard way to say it.
+    // against and what the map shows are the same thing. The sources in use are the Buildings layer;
+    // another source is its outline in the person's source list.
     host.querySelectorAll('[data-survey]').forEach(option => {
         option.addEventListener('click', () => {
-            if (typeof window.setBuildingReferenceLayers !== 'function') return;
-            const surveys = corridorEditorBuildingSurveys();
-            const next = {
-                gdi: !!surveys.gdi && !surveys.fallback,
-                dgu: !!surveys.dgu && !surveys.fallback,
-                osm: !!surveys.osm && !surveys.fallback
-            };
-            next[option.dataset.survey] = !next[option.dataset.survey];
-            if (window.BuildingLayersDialog) window.BuildingLayersDialog.remember(next);
-            window.setBuildingReferenceLayers(next.gdi, next.dgu, next.osm);
+            const key = option.dataset.survey;
+            if (key === 'used') {
+                const box = document.getElementById('showBuildings');
+                if (typeof window.setBuildingReferenceLayers === 'function') window.setBuildingReferenceLayers(!(box && box.checked));
+                return;
+            }
+            const manager = window.CityConfigManager;
+            const list = manager?.getBuildingSources?.() || [];
+            const cityId = manager?.getCurrentCityId?.();
+            if (!cityId || !window.SourceList) return;
+            window.SourceList.save(cityId, list.map(entry => entry.id === key ? { ...entry, outline: !entry.outline } : entry), window);
         });
     });
 }

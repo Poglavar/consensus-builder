@@ -1,5 +1,5 @@
 // Unit tests for building collision detection and stable tunnel-edge metadata.
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import { createRequire } from 'node:module';
 import * as turf from '@turf/turf';
 
@@ -14,7 +14,7 @@ const {
     removeBuildingTunnelEdge,
     corridorSurfaceRuns,
     retainLiveCorridorTunnelRecords,
-    demolishBuildingsUnderFootprint,
+    parkProposedBuildingsUnder,
     upsertCutRecord,
     consolidateCorridorDemolitionRecords,
     consolidateBuildingDemolitionRecords,
@@ -76,38 +76,36 @@ describe('corridor building tunnels', () => {
     });
 
     it('adds, replaces and removes records by edge rather than direction', () => {
-        const first = makeBuildingTunnelRecord(from, to, [{ id: 'building-a' }], { segmentId: 's1' });
-        const replacement = makeBuildingTunnelRecord(to, from, [{ id: 'building-b' }], { segmentId: 's1' });
+        const first = makeBuildingTunnelRecord(from, to, { segmentId: 's1' });
+        const replacement = makeBuildingTunnelRecord(to, from, { segmentId: 's2' });
         const records = addBuildingTunnelRecord([], first);
         addBuildingTunnelRecord(records, replacement);
-        expect(records).toHaveLength(1);
-        expect(records[0].buildingIds).toEqual(['building-b']);
+        expect(records).toEqual([replacement]);
+        // A record is its span: the buildings it passes under are derived from it, never stored.
+        expect(Object.keys(replacement).sort()).toEqual(['edgeKey', 'from', 'id', 'kind', 'segmentId', 'to']);
         expect(removeBuildingTunnelEdge(records, from, to)).toEqual([]);
     });
 });
 
-describe('structure demolition scan', () => {
-    it('turns an overlapping GDI footprint into an object_id-keyed demolition record', async () => {
-        const footprint = turf.polygon([[[15.97, 45.81], [15.9704, 45.81], [15.9704, 45.8103], [15.97, 45.8103], [15.97, 45.81]]], {
-            object_id: 61075
-        });
+describe('parking proposed buildings under a new design', () => {
+    it('parks the design of an applied proposed building under it and leaves existing buildings to the derivation', async () => {
+        const square = (x, y) => turf.polygon([[[x, y], [x + 0.0004, y], [x + 0.0004, y + 0.0003], [x, y + 0.0003], [x, y]]]).geometry;
+        const existing = { type: 'Feature', properties: { object_id: 61075, source: 'gdi-3d' }, geometry: square(15.97, 45.81) };
+        const proposed = { type: 'Feature', properties: { proposalId: 'block-1', buildingIndex: 0 }, geometry: square(15.97, 45.81) };
         const structure = turf.polygon([[[15.9699, 45.8099], [15.9705, 45.8099], [15.9705, 45.8104], [15.9699, 45.8104], [15.9699, 45.8099]]]);
-        const keys = ['turf', 'buildingFeaturePool', 'proposedBuildings', 'proposalStorage', 'ensureBuildingFootprintsForBounds', 'ProposalManager'];
+        const unapplyProposal = vi.fn(async () => true);
+        const keys = ['turf', 'buildingFeaturePool', 'proposedBuildings', 'proposalStorage', 'ProposalManager', 'DemolitionIndex'];
         const descriptors = new Map(keys.map(key => [key, Object.getOwnPropertyDescriptor(globalThis, key)]));
         try {
-            globalThis.turf = turf;
-            globalThis.buildingFeaturePool = [footprint];
-            globalThis.proposedBuildings = [];
-            globalThis.proposalStorage = { getAllProposals: () => [] };
-            globalThis.ensureBuildingFootprintsForBounds = async () => true;
-            globalThis.ProposalManager = null;
-
-            const records = await demolishBuildingsUnderFootprint(structure.geometry);
-
-            expect(records).toHaveLength(1);
-            expect(records[0].id).toBe('61075');
-            expect(records[0].geometry).toEqual(footprint.geometry);
-            expect(records[0].remainder).toBeUndefined();
+            Object.assign(globalThis, { turf, buildingFeaturePool: [existing], proposedBuildings: [proposed],
+                proposalStorage: { getAllProposals: () => [] }, ProposalManager: { unapplyProposal }, DemolitionIndex: { records: () => [] } });
+            await parkProposedBuildingsUnder(structure.geometry, { proposalId: 'park-1' });
+            expect(unapplyProposal).toHaveBeenCalledExactlyOnceWith('block-1', expect.objectContaining({ skipConfirm: true, skipRebuild: true }));
+            // Its own building is not an obstacle, and a replay never turns another design off.
+            unapplyProposal.mockClear();
+            await parkProposedBuildingsUnder(structure.geometry, { proposalId: 'block-1' });
+            await parkProposedBuildingsUnder(structure.geometry, { proposalId: 'park-1', preserveAppliedSet: true });
+            expect(unapplyProposal).not.toHaveBeenCalled();
         } finally {
             keys.forEach(key => {
                 const descriptor = descriptors.get(key);

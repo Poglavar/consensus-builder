@@ -72,7 +72,7 @@ describe('the search box moves in place only onto the same parcel data', () => {
                 // an in-place move from a to b's centre ('here'): only onto the same parcel and building data
                 if (Model.classifyPlaceLocation(centreOf(b.id), cities, a.id).kind !== 'here') continue;
                 if (manager.getCadastreKey(a.id) !== manager.getCadastreKey(b.id)
-                    || manager.getCityConfig(a.id).buildings?.source !== manager.getCityConfig(b.id).buildings?.source) wrong.push(`${a.id} -> ${b.id}`);
+                    || JSON.stringify(manager.getCityConfig(a.id).buildings?.sources) !== JSON.stringify(manager.getCityConfig(b.id).buildings?.sources)) wrong.push(`${a.id} -> ${b.id}`);
             }
         }
         expect(asked).toBeGreaterThan(0);

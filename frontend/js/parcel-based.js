@@ -70,7 +70,7 @@
     // limit field states no limit; `scale` shows a stored share (0–1) as a percentage.
     const NUMBER_FIELDS = {
         maxHeightM: { id: 'maxheight', label: 'maxHeight', text: 'Max height (m):', min: 2, max: 100, step: 0.5, empty: 'noLimit' },
-        floorHeightM: { id: 'floorheight', i18nKey: 'blockify.modal.existing.floorHeight', text: 'Floor height (m):', min: 2, max: 8, step: 0.1 },
+        floorHeightM: { id: 'floorheight', i18nKey: 'blockify.modal.existing.floorHeight', text: 'Storey height (m):', min: 2, max: 8, step: 0.1 },
         frontSetbackM: { id: 'frontsetback', label: 'frontSetback', text: 'Front yard (m):', min: 0, max: 50, step: 0.5, empty: 'sameAsBorders',
             hint: 'frontage', hintText: 'Front and rear are measured from the plot edge facing the nearest street, else its longest edge.' },
         rearSetbackM: { id: 'rearsetback', label: 'rearSetback', text: 'Rear yard (m):', min: 0, max: 50, step: 0.5, empty: 'sameAsBorders' },
@@ -868,14 +868,14 @@
                     </div>
                     <div class="parameter-group">
                         <label for="parcelbased-maxfloors-slider">
-                            <span data-i18n-key="common.maxFloors" data-i18n-attr="text">Max floors:</span>
+                            <span data-i18n-key="common.maxFloors" data-i18n-attr="text">Max storeys:</span>
                             <span id="parcelbased-maxfloors-value">${DEFAULT_MAX_FLOORS}</span>
                         </label>
                         <input type="range" id="parcelbased-maxfloors-slider" min="1" max="20" value="${DEFAULT_MAX_FLOORS}" step="1">
                     </div>
                     <div class="parameter-group parcelbased-range-only" hidden>
                         <label for="parcelbased-minfloors-slider">
-                            <span data-i18n-key="common.minFloors" data-i18n-attr="text">Min floors:</span>
+                            <span data-i18n-key="common.minFloors" data-i18n-attr="text">Min storeys:</span>
                             <span id="parcelbased-minfloors-value">${DEFAULT_MIN_FLOORS}</span>
                         </label>
                         <input type="range" id="parcelbased-minfloors-slider" min="1" max="${DEFAULT_MAX_FLOORS}" value="${DEFAULT_MIN_FLOORS}" step="1">
@@ -925,7 +925,7 @@
                             <span id="parcelbased-total-volume-value">0</span>
                         </div>
                         <div class="metric-row">
-                            <span data-i18n-key="parcelBased.modal.labels.avgFloors" data-i18n-attr="text">Example floors (avg):</span>
+                            <span data-i18n-key="parcelBased.modal.labels.avgFloors" data-i18n-attr="text">Example storeys (avg):</span>
                             <span id="parcelbased-avg-floors-value">0</span>
                         </div>
                     </div>

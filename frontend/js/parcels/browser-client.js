@@ -68,5 +68,9 @@
         queryPoint: (sourceId, point, options) => query(sourceId, 'queryPoint', [point], options),
         // The source's catalog wording and links, read from the bundled catalog (no server request).
         describe: (sourceId, options) => query(sourceId, 'describe', [], options) });
+    // One cell of a URL building source (`building.<base64url>`), read by the same worker straight from
+    // the source's service: { kind: 'near' | 'footprints', bbox } → the answer POST /buildings/cell gives.
+    global.BrowserBuildingSources = Object.freeze({
+        readCell: (sourceId, { kind, bbox }, options) => query(sourceId, 'buildingCell', [{ kind, bbox }], options) });
     global.addEventListener?.('pagehide', () => reset(new Error('Parcel page closed.')));
 })(typeof window !== 'undefined' ? window : globalThis);

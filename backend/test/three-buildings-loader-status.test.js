@@ -15,7 +15,8 @@ function harness() {
     const updateStatus = vi.fn();
     const release = vi.fn();
     const beginStatusActivity = vi.fn(() => release);
-    const api = new Function('threeI18n', 'updateStatus', 'beginStatusActivity', `
+    const planningLoading = { set: vi.fn() };
+    const api = new Function('threeI18n', 'updateStatus', 'beginStatusActivity', 'window', `
         let isActive = true, nearbyProposalBuildingsFetching = false, pendingModelLoads = 0;
         let buildingsLoaderRelease = null, buildingsLoaderText = '', nearbyBuildingsOutcome = null;
         ${source.slice(start, end)}
@@ -28,8 +29,8 @@ function harness() {
                 if ('outcome' in state) nearbyBuildingsOutcome = state.outcome;
             }
         };
-    `)((_key, fallback) => fallback, updateStatus, beginStatusActivity);
-    return { ...api, updateStatus, beginStatusActivity, release };
+    `)((_key, fallback) => fallback, updateStatus, beginStatusActivity, { PlanningLoading: planningLoading });
+    return { ...api, updateStatus, beginStatusActivity, release, planningLoading };
 }
 
 describe('3D buildings loader on the status line', () => {

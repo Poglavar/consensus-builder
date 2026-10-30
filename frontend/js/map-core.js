@@ -42,12 +42,11 @@ const DEFAULT_FALLBACK_DATASET = CURRENT_CITY_CONFIG?.projection?.fallbackDatase
 let TOTAL_SPENT = 0; // Total amount spent on roads, in the city's currency (city-money.js)
 
 // Global map variables
-// buildingLayer draws the GDI footprints — the WORKING SET (object_id), the same objects the 3D
-// meshes and the carve use. dguBuildingLayer draws the DGU cadastre (zgrada_id) as a pure visual
-// reference. osmBuildingLayer draws the OSM footprints behind the basemap — a third visual
-// reference that lines up with the tiles the user sees. They are independent: any of them can be on
-// at once, which is how you SEE the surveys disagree. NONE is ever read by detection — that reads
-// buildingFeaturePool (the DATA), so no checkbox can change what a corridor cuts.
+// buildingLayer draws the buildings of the sources in use (source-list.js), each cell from one
+// source — the WORKING SET the carve and the corridor tools read through buildingFeaturePool.
+// outlineBuildingLayer draws the sources a person outlines for comparison (Zagreb's DGU cadastre,
+// OpenStreetMap): purely visual, never detected against or cut, with the buildings only that source
+// has drawn apart. No checkbox changes what a corridor cuts: detection reads the pool, not a layer.
 let buildingLayer = null;
 // Indexes for LOCAL outcome updates. Applying one park/road changes a handful of surveyed
 // buildings; it must not discard and recreate every loaded footprint in the city.
@@ -55,8 +54,7 @@ let buildingFeatureById = new Map();
 let buildingRenderedLayersById = new Map();
 let renderedBuildingOutcomeSignatures = new Map();
 let renderedBuildingFeatureSignatures = new Map();
-let dguBuildingLayer = null;
-let osmBuildingLayer = null;
+let outlineBuildingLayer = null;
 let roadLayer = null;
 let blockLayer = null;
 let currentCenterline = null;
@@ -295,398 +293,284 @@ function drawRoadVisualization(metrics) {
     });
 }
 
-// Areas already fetched into the footprint pool. Corridor tools consult this to load buildings
-// along the DRAWN geometry — the pool otherwise only covers viewports the user happened to view,
-// and buildings never loaded can never be detected, prompted for, or demolished.
-const buildingFetchCoverage = [];
-
-function boundsCoveredByBuildingFetch(bounds) {
-    try {
-        return buildingFetchCoverage.some(rect => rect.contains(bounds));
-    } catch (_) {
-        return false;
-    }
-}
-
-// Ensure footprints exist for `bounds` (an L.LatLngBounds or anything L.latLngBounds accepts).
-// Fetches with generous padding so neighbouring corridor edges reuse one fetch; `pad: 0` asks for
-// exactly the bounds (a source refuses or truncates a box over its own size limit).
-async function ensureBuildingFootprintsForBounds(rawBounds, { pad = 0.5 } = {}) {
+// Ensure footprints exist for `bounds` (an L.LatLngBounds or anything L.latLngBounds accepts): the
+// building cells under it, each from the city's sources (cached cells answer at once). Corridor tools
+// load the buildings along DRAWN geometry this way — the pool otherwise only covers viewports the user
+// happened to view, and a building never loaded can never be detected, prompted for, or demolished.
+async function ensureBuildingFootprintsForBounds(rawBounds) {
     if (!rawBounds) return;
     let bounds = null;
     try { bounds = L.latLngBounds(rawBounds); } catch (_) { return; }
     if (!bounds || !bounds.isValid()) return;
-    if (buildingsConfigAt(bounds)?.source === 'none') return;
-    if (boundsCoveredByBuildingFetch(bounds)) return;
-    await fetchBuildings(pad ? bounds.pad(pad) : bounds);
+    return fetchBuildingCells(bounds);
 }
 window.ensureBuildingFootprintsForBounds = ensureBuildingFootprintsForBounds;
 
-// The buildings config of the city whose data applies at the centre of `bounds` (location-first.md):
-// a view panned from Zagreb to Split reads Split's source, not Zagreb's survey.
-function buildingsConfigAt(bounds) {
-    try {
-        const manager = (typeof CityConfigManager !== 'undefined') ? CityConfigManager : null;
-        if (!manager) return null;
-        const center = bounds.getCenter();
-        const config = typeof manager.getCityConfigAt === 'function'
-            ? manager.getCityConfigAt(center.lat, center.lng)
-            : manager.getCurrentCityConfig?.();
-        return (config && config.buildings) || null;
-    } catch (_) { return null; }
+// The pool by cell: each cell's buildings came from one source and are replaced whole when the cell
+// is answered again (a stand-in giving way to the city's own survey once it is back). Keyed like every
+// other building consumer (corridorBuildingKey: `<source>:<id>`).
+const buildingPoolByKey = new Map();
+const buildingPoolCells = new Map();
+const BUILDING_POOL_CAP = 12000;
+window.buildingFeaturePool = [];
+
+function poolFeatureOf(item, source) {
+    const { geometry, ...properties } = item;
+    return { type: 'Feature', properties: { ...properties, source }, geometry };
 }
 
-// Whether the existing stock at `bounds` is served by a provider rather than by the GDI bbox layer:
-// false for Zagreb (GDI) and where the city has declared no buildings at all.
-function hasFootprintProvider(bounds) {
-    const source = buildingsConfigAt(bounds)?.source || null;
-    return !!source && source !== 'none' && source !== 'gdi';
+function publishBuildingPool() {
+    window.buildingFeaturePool = Array.from(buildingPoolByKey.values());
 }
 
-// The GDI bbox layer: EPSG:3765 out of the backend, so it is declared and converted.
-async function loadGdiFootprints(req) {
-    const response = await fetch(req.url);
-    if (!response.ok) throw Object.assign(new Error('Failed to fetch building data'), { status: response.status });
-    const data = await response.json();
-    const converted = typeof convertGeoJSON === 'function' ? convertGeoJSON(data, { sourceSrid: 3765 }) : data;
-    return { features: (converted && converted.features) || [], truncated: data && data.truncated === true };
+// One cell's answer into the pool. A stand-in's building that duplicates, over a cell line, one an
+// earlier source of the list already shows is left out (building-cells.js coveredKeys).
+function mergeCellIntoPool(cell, result, sources) {
+    const previous = buildingPoolCells.get(cell.key);
+    if (previous) previous.keys.forEach(key => buildingPoolByKey.delete(key));
+    let features = result.items.filter(item => item && item.geometry && item.id != null).map(item => poolFeatureOf(item, result.source));
+    const rank = sources.indexOf(result.source);
+    if (rank > 0 && window.turf) {
+        const earlier = [];
+        buildingPoolByKey.forEach(feature => {
+            if (sources.indexOf(feature.properties?.source) < rank) earlier.push(feature);
+        });
+        const keyed = features.map(feature => ({ key: buildingPoolFeatureKey(feature), geometry: feature.geometry, feature }));
+        const covered = window.BuildingCells.coveredKeys(keyed, earlier, window.turf);
+        features = keyed.filter(entry => !covered.has(entry.key)).map(entry => entry.feature);
+    }
+    const keys = new Set();
+    features.forEach(feature => {
+        const key = buildingPoolFeatureKey(feature);
+        keys.add(key);
+        buildingPoolByKey.set(key, feature);
+    });
+    const [w, s, e, n] = cell.bbox;
+    buildingPoolCells.set(cell.key, { source: result.source, keys, centre: [(w + e) / 2, (s + n) / 2] });
+    evictFarBuildingCells();
+    publishBuildingPool();
 }
 
-// The per-city provider: the same /buildings/footprints answer the urban-rule editor reads, already
-// in WGS84, from the backend or straight from Overture's tiles (building-source-client.js). Its ids
-// land on `properties.id`, which is exactly what corridor-tunnel's building identity accepts for the
-// non-Zagreb sources — so a road cuts, tunnels under and demolishes these the same way it does GDI
-// objects.
-async function loadProviderFootprints(bounds) {
-    const west = bounds.getWest(), south = bounds.getSouth(), east = bounds.getEast(), north = bounds.getNorth();
-    const geometry = {
-        type: 'Polygon',
-        coordinates: [[[west, south], [east, south], [east, north], [west, north], [west, south]]]
-    };
-    const payload = await window.BuildingSourceClient.request('/buildings/footprints', { geometry });
-    // A city with no footprint capability is not an error and not worth a status line about zero.
-    if (!payload || payload.supported === false) return null;
-    // The upstream failed outright (OSM throttling, a user's source down): an empty answer here is
-    // not "no buildings", and must not be merged or claimed as covered.
-    if (payload.unavailable) throw Object.assign(new Error('Building source unavailable'), { unavailable: true, retryAfter: payload.retryAfter ?? null });
-    const features = (payload.footprints || [])
-        .filter(entry => entry && entry.geometry)
-        .map(entry => ({
-            type: 'Feature',
-            properties: {
-                id: entry.id,
-                height_m: (typeof entry.height_m === 'number' && Number.isFinite(entry.height_m)) ? entry.height_m : null,
-                floors: (typeof entry.floors === 'number' && Number.isFinite(entry.floors)) ? entry.floors : null,
-                source: payload.source || null
-            },
-            geometry: entry.geometry
-        }));
-    return { features, truncated: payload.truncated === true };
+// Over the cap, whole cells go, farthest from the view first; the cell loader is asked again for them.
+function evictFarBuildingCells() {
+    if (buildingPoolByKey.size <= BUILDING_POOL_CAP) return;
+    let centre = null;
+    try { const c = map.getCenter(); centre = [c.lng, c.lat]; } catch (_) { return; }
+    const far = [...buildingPoolCells.entries()]
+        .map(([key, cell]) => ({ key, cell, distance: Math.hypot(cell.centre[0] - centre[0], cell.centre[1] - centre[1]) }))
+        .sort((a, b) => b.distance - a.distance);
+    for (const { key, cell } of far) {
+        if (buildingPoolByKey.size <= BUILDING_POOL_CAP) break;
+        cell.keys.forEach(id => buildingPoolByKey.delete(id));
+        buildingPoolCells.delete(key);
+    }
 }
 
-// A building load whose upstream failed (throttled OpenStreetMap, a person's own source down): said in
-// the building banner, with Retry and the source chooser, never silently. Viewport loads then wait
-// out the upstream's own retry time instead of asking again on every pan.
-let buildingsRetryAt = 0;
-// `fromOsm` marks a failure of the OpenStreetMap reference layer, which is OSM whatever the city uses.
-function reportBuildingsUnavailable(retryAfter, retry, fromOsm = false, status = null) {
-    const seconds = Number(retryAfter);
-    if (Number.isFinite(seconds) && seconds > 0) buildingsRetryAt = Date.now() + seconds * 1000;
-    console.warn(`[${new Date().toISOString()}] [buildings] building data unavailable${seconds > 0 ? `; retry in ${seconds}s` : ''}`);
-    const settings = window.ParcelSourceSettings;
-    if (!settings || typeof settings.reportFailure !== 'function') return;
+function clearBuildingPool() {
+    buildingPoolByKey.clear();
+    buildingPoolCells.clear();
+    publishBuildingPool();
+}
+
+// The building cells covering a box, nearest its centre first, and the sources in use there.
+function buildingCellsFor(box) {
+    const cellsApi = window.BuildingCells;
     const manager = window.CityConfigManager;
-    let origin = 'other';
-    try {
-        if (fromOsm) origin = 'osm';
-        else if (manager?.getCurrentCityConfig?.()?.buildings?.source === 'custom') origin = 'custom';
-        else if (manager?.getCurrentCityConfig?.()?.buildings?.source === 'osm') origin = 'osm';
-    } catch (_) { /* the generic wording is still true */ }
-    settings.reportFailure(window, settings.buildingFailureMessage(window, { retryAfter: seconds > 0 ? seconds : null, origin, status }), 'building', retry);
+    if (!cellsApi || !manager) return { cells: [], sources: [] };
+    const centre = [(box[0] + box[2]) / 2, (box[1] + box[3]) / 2];
+    const cells = cellsApi.cellsCovering({ box, centre, gridSize: Number(manager.getParcelGridSize?.()),
+        toDataset: wgs84ToDataset, toLatLng: (easting, northing) => manager.datasetToLatLng(easting, northing) });
+    const sources = window.SourceList.inUse(manager.getBuildingSources(centre[1], centre[0]));
+    return { cells, sources, list: manager.getBuildingSources(centre[1], centre[0]) };
 }
-window.reportBuildingsUnavailable = reportBuildingsUnavailable;
-function clearBuildingsUnavailable() {
-    buildingsRetryAt = 0;
-    window.ParcelSourceSettings?.clearFailure?.(window, 'building');
-}
-window.clearBuildingsUnavailable = clearBuildingsUnavailable;
+window.buildingCellsFor = buildingCellsFor;
 
-// Fetch buildings from data source. With `boundsOverride` (L.LatLngBounds) the fetch targets that
-// area regardless of zoom — used by corridor tools to cover drawn geometry; without it, the
-// current viewport is fetched (zoom-gated so a city-wide view never requests everything).
-//
-// `announce` is what the user ASKED FOR, and only that talks. Ticking the reference layer on is a
-// request to see buildings and says so; a demolition scan preloading the ground under a proposal is
-// not, and on a reload of a big plan it fired once per proposal — which is why the status log filled
-// with "Fetching buildings..." on a Ctrl+R with the layer switched off. The pool is still filled
-// either way: what a road demolishes must never depend on a display toggle, and the LAYER already
-// respects it (rebuildBuildingLayerFromPool only adds it to the map when the box is checked).
-// Fetches still running, for the Built arc around the Buildings and massing button (planning/loading.js).
-let buildingFetchesInFlight = 0;
-async function fetchBuildings(boundsOverride = null, options = {}) {
-    const announce = options && options.announce === true;
-    // Zoom-gated at the BOTTOM only: below 17 the viewport is a whole city and the request is
-    // enormous. There is no ceiling — zooming in asks for LESS, and a ceiling of 19 meant that road
-    // editing (which now zooms to 22) silently stopped loading buildings, so ticking the box did
-    // nothing and the profiler measured against whatever had loaded before.
-    if (!boundsOverride) {
-        try {
-            const z = map && typeof map.getZoom === 'function' ? map.getZoom() : null;
-            if (!isFinite(z) || z < 17) {
-                return;
-            }
-        } catch (_) { /* noop */ }
-    }
-    // Decide whether there is anything to ask for BEFORE announcing it. This used to say "Fetching
-    // buildings..." first and then discover the city has no GDI dataset — so a reload replaying a
-    // hundred corridors wrote two lines per corridor about a fetch that never happened.
-    let bounds = null;
-    try {
-        bounds = boundsOverride || map.getBounds();
-    } catch (_) { return; }
-    const builder = (typeof buildBuildingRequestParams === 'function') ? buildBuildingRequestParams : null;
-    let req = null;
-    try {
-        req = builder ? builder(bounds, 'gdi') : null;
-    } catch (error) {
-        // the Zagreb survey has nothing where the view does not even project into its CRS
-        console.warn(`[${new Date().toISOString()}] [buildings] the view lies outside the GDI survey's CRS; nothing to ask for`, error.message);
-        return;
-    }
-    // GDI is the Zagreb survey. Everywhere else the existing stock comes from the city's own
-    // provider (Overture for Šibenik/Split/Belgrade, Socrata for NYC), served by the same
-    // POST /buildings/footprints the urban-rule editor reads. There is no WFS fallback — the WFS
-    // serves the CADASTRE, which is a different survey and must never enter this pool.
-    const useProvider = !req && hasFootprintProvider(bounds);
-    if (!req && !useProvider) return;
-    // Inside the upstream's back-off a viewport pan asks for nothing; a tool covering its own
-    // geometry still asks (the backend answers from its cache or says unavailable at once).
-    if (!boundsOverride && Date.now() < buildingsRetryAt) return;
-
-    // "Buildings" here are the SURVEYED ones — the existing-building reference layer for the current
-    // viewport, nothing to do with proposals. Said plainly, because these two lines sit in the same
-    // status log as the proposal applies and "Loaded 0 buildings" next to "Applied building ..."
-    // reads like a proposal produced nothing.
-    if (announce && typeof updateStatus === 'function') {
-        updateStatus('Fetching existing buildings...');
-    }
-
+// The building cells under `bounds`, each from the city's ordered sources and merged into the pool as
+// it lands, nearest first. The cell loader keeps each source's back-off and cache; a failed source
+// never stops another layer.
+async function fetchBuildingCells(bounds, { announce = false } = {}) {
+    const loader = window.BuildingCellLoader;
+    if (!loader) return;
+    const box = [bounds.getWest(), bounds.getSouth(), bounds.getEast(), bounds.getNorth()];
+    const { cells, sources } = buildingCellsFor(box);
+    if (!cells.length || !sources.length) return;
+    if (announce && typeof updateStatus === 'function') updateStatus('Fetching existing buildings...');
     buildingFetchesInFlight += 1;
     window.PlanningLoading?.set('existing', 'map', true);
+    let landed = 0, layerPending = false;
+    const repaint = () => {
+        if (layerPending) return;
+        layerPending = true;
+        queueMicrotask(() => { layerPending = false; rebuildBuildingLayerFromPool(); });
+    };
     try {
-        const loaded = req
-            ? await loadGdiFootprints(req)
-            : await loadProviderFootprints(bounds);
-        if (!loaded) return;
-        const data = { truncated: loaded.truncated };
-        const convertedData = { type: 'FeatureCollection', features: loaded.features };
-
-        // MERGE with what's already loaded instead of replacing it: the fetch covers only the
-        // requested bbox (cap-limited), so replacing left a single-viewport patch and panning
-        // "lost" buildings. Dedupe by object_id. Same identity as demolition records use
-        // (corridor-tunnel.js) — the two MUST agree, or click-time decisions stop matching
-        // the pool.
-        const buildingKeyOf = (feature) => {
-            if (typeof window.corridorBuildingKey === 'function') return window.corridorBuildingKey(feature);
-            const props = feature?.properties || {};
-            const direct = props.object_id ?? props.objectId ?? props.OBJECT_ID ?? props.id ?? feature?.id;
-            if (direct !== undefined && direct !== null && String(direct)) return String(direct);
-            try { return JSON.stringify(feature?.geometry?.coordinates?.[0]?.[0] || feature?.geometry?.coordinates || ''); } catch (error) {
-                console.error('[fetchBuildings] building has no id and unserializable geometry — dedup disabled for it', error);
-                return Math.random().toString(36);
-            }
-        };
-        // Merge onto the POOL, not onto the layer: the layer is a filtered, visibility-dependent
-        // VIEW of the pool (demolished buildings are dropped from it), so rebuilding the pool from
-        // it would quietly delete every demolished building from the working set.
-        const mergedById = new Map();
-        (Array.isArray(window.buildingFeaturePool) ? window.buildingFeaturePool : []).forEach(feature => {
-            if (feature?.geometry) mergedById.set(buildingKeyOf(feature), feature);
-        });
-        (convertedData?.features || []).forEach(feature => {
-            if (feature?.geometry) mergedById.set(buildingKeyOf(feature), feature);
-        });
-        let mergedFeatures = Array.from(mergedById.values());
-        const BUILDING_POOL_CAP = 12000;
-        if (mergedFeatures.length > BUILDING_POOL_CAP) {
-            // Keep the newest fetches: drop from the front (oldest insertions first in Map order).
-            mergedFeatures = mergedFeatures.slice(mergedFeatures.length - BUILDING_POOL_CAP);
-            // Coverage describes what is PRESENT in the pool, not merely what was fetched once.
-            // Evicting features while retaining their old coverage made later corridor scans skip
-            // the refetch and then conclude that the evicted buildings did not exist.
-            buildingFetchCoverage.length = 0;
-        }
-        // The full pool survives demolition filtering, so unapplying the road brings them back.
-        window.buildingFeaturePool = mergedFeatures;
-        // A fetch that hit the cap was TRUNCATED — it must not claim its bbox as covered, or the
-        // corridor preload would trust a hole-riddled area and a building that never loaded would
-        // never be detected and so never be demolished. The backend says so explicitly.
-        try {
-            if (!data?.truncated) {
-                buildingFetchCoverage.push(L.latLngBounds(bounds.getSouthWest(), bounds.getNorthEast()));
-            } else {
-                console.warn('[fetchBuildings] response truncated — bbox not fully covered', bbox);
-            }
-        } catch (_) { }
-        rebuildBuildingLayerFromPool();
-
-        // Notify other modules (e.g., 3D) that buildings layer has updated
+        const summary = await loader.load({ kind: 'footprints', sources, cells, onCell: (cell, result) => {
+            if (result.failed) return;
+            landed += result.items.length;
+            const known = buildingPoolCells.get(cell.key);
+            // A cached answer already in the pool changes nothing.
+            if (known && known.source === result.source && result.items.every(item => known.keys.has(`${result.source}:${item.id}`))) return;
+            mergeCellIntoPool(cell, result, sources);
+            repaint();
+        } });
         try { window.buildingLayer = buildingLayer; } catch (_) { }
         try { window.dispatchEvent(new CustomEvent('buildingsLayerUpdated')); } catch (_) { }
-
-        clearBuildingsUnavailable();
+        if (summary.failed) {
+            reportBuildingsUnavailable(summary.retryAfter, () => {
+                loader.retry();
+                fetchBuildingCells(bounds, { announce: true });
+            }, sources[0], summary.status);
+        } else clearBuildingsUnavailable();
         if (announce && typeof updateStatus === 'function') {
-            const surveyed = loaded.features.length;
-            updateStatus(surveyed
-                ? `Loaded ${surveyed} existing buildings`
+            const standIn = summary.standIn ? ` (${summary.standIn} of ${summary.total} areas from a stand-in source)` : '';
+            updateStatus(landed || summary.cached ? `Loaded existing buildings in ${summary.loaded} of ${summary.total} areas${standIn}`
                 : 'No existing buildings surveyed here');
         }
     } catch (error) {
-        // A failure is always worth saying, asked for or not: a silent one leaves a road cutting
-        // against a pool that never loaded.
-        console.error('Error fetching building data:', error);
-        if (typeof updateStatus === 'function') {
-            updateStatus('Error fetching building data. Please try again.');
-        }
-        reportBuildingsUnavailable(error && error.retryAfter, () => {
-            buildingsRetryAt = 0;
-            fetchBuildings(boundsOverride, { announce: true });
-        }, false, error?.status);
+        if (error?.name === 'AbortError') return;
+        console.error(`[${new Date().toISOString()}] [buildings] cell load failed`, error);
     } finally {
         buildingFetchesInFlight -= 1;
         if (!buildingFetchesInFlight) window.PlanningLoading?.set('existing', 'map', false);
     }
 }
 
-// The DGU CADASTRE reference layer — what is REGISTERED, as opposed to the GDI footprints above,
-// which are what is actually THERE. Purely visual: it feeds nothing, is never detected against and
-// is never cut. Overlaying it on the GDI layer is how the two surveys' disagreement becomes visible.
-async function fetchDguBuildings(boundsOverride = null) {
-    // Bottom-gated only, like the GDI fetch above: a ceiling would blank the layer exactly where
-    // the work is closest.
+// A building load whose upstream failed (throttled OpenStreetMap, a person's own source down): said in
+// the building banner, with Retry and the source chooser, never silently. Each source keeps its own
+// back-off in the cell loader, so one source's failure never pauses another.
+// `source` is the id of the source that failed (the first in use for the view).
+function reportBuildingsUnavailable(retryAfter, retry, source = null, status = null) {
+    const seconds = Number(retryAfter);
+    console.warn(`[${new Date().toISOString()}] [buildings] building data unavailable${seconds > 0 ? `; retry in ${seconds}s` : ''}`);
+    const settings = window.ParcelSourceSettings;
+    if (!settings || typeof settings.reportFailure !== 'function') return;
+    const origin = source === 'osm' ? 'osm' : window.SourceList?.isUrlSource(source) ? 'custom' : 'other';
+    settings.reportFailure(window, settings.buildingFailureMessage(window, { retryAfter: seconds > 0 ? seconds : null, origin, status }), 'building', retry);
+}
+window.reportBuildingsUnavailable = reportBuildingsUnavailable;
+function clearBuildingsUnavailable() {
+    window.ParcelSourceSettings?.clearFailure?.(window, 'building');
+}
+window.clearBuildingsUnavailable = clearBuildingsUnavailable;
+
+// Fetch the existing buildings of the view (or of `boundsOverride`, an L.LatLngBounds, regardless of
+// zoom — used by corridor tools to cover drawn geometry). Zoom-gated at the BOTTOM only for the view:
+// below 17 the viewport is a whole city. There is no ceiling: road editing zooms to 22.
+//
+// `announce` is what the user ASKED FOR, and only that talks. A demolition scan or a corridor
+// preload is not, and on a reload of a big plan it would fire once per proposal. The pool is filled
+// either way: what a road demolishes must never depend on a display toggle, and the LAYER already
+// respects it (rebuildBuildingLayerFromPool only adds it to the map when the box is checked).
+// Fetches still running, for the Built arc around the Buildings and massing button (planning/loading.js).
+let buildingFetchesInFlight = 0;
+async function fetchBuildings(boundsOverride = null, options = {}) {
+    const announce = options && options.announce === true;
     if (!boundsOverride) {
         try {
             const z = map && typeof map.getZoom === 'function' ? map.getZoom() : null;
             if (!isFinite(z) || z < 17) return;
         } catch (_) { /* noop */ }
     }
-    try {
-        const bounds = boundsOverride || map.getBounds();
-        const builder = (typeof buildBuildingRequestParams === 'function') ? buildBuildingRequestParams : null;
-        const req = builder ? builder(bounds, 'dgu') : null;
-        if (!req) return;
-
-        const response = await fetch(req.url);
-        if (!response.ok) throw new Error('Failed to fetch DGU building data');
-        const data = await response.json();
-        const converted = typeof convertGeoJSON === 'function' ? convertGeoJSON(data, { sourceSrid: 3765 }) : data;
-
-        if (dguBuildingLayer) {
-            try { map.removeLayer(dguBuildingLayer); } catch (_) { }
-        }
-        if (!map.getPane('observedReferences')) map.createPane('observedReferences');
-        dguBuildingLayer = L.geoJSON({ type: 'FeatureCollection', features: (converted?.features || []) }, {
-            // Reference only: it must never intercept clicks meant for the parcels beneath it.
-            pane: 'observedReferences', interactive: false,
-            style: window.BuildingLayersDialog?.style || { color: '#7c3aed', opacity: 0.55, weight: 1, fillColor: '#7c3aed', fillOpacity: 0.12 }
-        });
-        const checkbox = document.getElementById('showBuildingsDgu');
-        if (!checkbox || checkbox.checked) dguBuildingLayer.addTo(map);
-        try { window.dguBuildingLayer = dguBuildingLayer; } catch (_) { }
-    } catch (error) {
-        console.error('Error fetching DGU building data:', error);
-    }
+    let bounds = null;
+    try { bounds = boundsOverride || map.getBounds(); } catch (_) { return; }
+    return fetchBuildingCells(bounds, { announce });
 }
-window.fetchDguBuildings = fetchDguBuildings;
+window.fetchBuildings = fetchBuildings;
 
-function hideDguBuildingLayer() {
-    if (dguBuildingLayer) {
-        try { map.removeLayer(dguBuildingLayer); } catch (_) { }
-    }
-}
-window.hideDguBuildingLayer = hideDguBuildingLayer;
-
-// The OSM buildings reference layer — the community footprints behind the basemap, so its outlines
-// coincide with the tiles the user sees (GDI/DGU come from other surveys and drift from them). Live
-// via Overpass through our backend (cached by viewport box), and like DGU it is purely visual: it
-// feeds nothing, is never detected against and is never cut. The bbox is WGS84 straight off the map
-// bounds — no HTRS96 conversion, unlike the GDI/DGU fetches.
-// When the backend says Overpass is throttling us it also says for how long. Asking again inside
-// that window is what turned a slow layer into a dead one, so the fetch simply does not run — and it
-// says so ONCE, not once per pan.
-let osmBuildingsRetryAt = 0;
-
-// While the upstream is rate-limited nothing new can load, but a layer already fetched is still
-// worth showing: unticking and re-ticking the box used to leave the map empty for the back-off.
-function showFetchedOsmBuildingLayer() {
-    const checkbox = document.getElementById('showBuildingsOsm');
-    if (osmBuildingLayer && (!checkbox || checkbox.checked) && !map.hasLayer(osmBuildingLayer)) {
-        osmBuildingLayer.addTo(map);
-    }
-}
-
-async function fetchOsmBuildings(boundsOverride = null) {
-    if (Date.now() < osmBuildingsRetryAt) {
-        showFetchedOsmBuildingLayer();
-        return;
-    }
-    // Bottom-gated only, like the GDI fetch above: a ceiling would blank the layer exactly where
-    // the work is closest.
+// The sources a person outlines for comparison (source-list.js `outline`), each loaded alone through
+// the cells — no stand-ins — and drawn as reference outlines. A building the shown buildings cover by
+// at most half its area is one only that source has, drawn apart and counted.
+let outlineBuildingsByKey = new Map();
+let drawnOutlineSources = '';
+async function fetchOutlineBuildings(boundsOverride = null) {
+    const loader = window.BuildingCellLoader;
     if (!boundsOverride) {
         try {
             const z = map && typeof map.getZoom === 'function' ? map.getZoom() : null;
             if (!isFinite(z) || z < 17) return;
-        } catch (_) { /* noop */ }
+        } catch (_) { return; }
     }
-    try {
-        const bounds = boundsOverride || map.getBounds();
-        const sw = bounds.getSouthWest();
-        const ne = bounds.getNorthEast();
-        const bbox = `${sw.lng},${sw.lat},${ne.lng},${ne.lat}`;
-        const base = (typeof window.getBackendBase === 'function') ? window.getBackendBase() : '';
-        // The server decides from the box whether the staged rows in shared geodata answer
-        // (instant) or Overpass has to (rate-limited).
-        const url = `${base.replace(/\/$/, '')}/buildings/osm?bbox=${encodeURIComponent(bbox)}`;
-
-        const response = await fetch(url);
-        if (response.status === 503) {
-            const body = await response.json().catch(() => ({}));
-            const seconds = Number(body.retryAfter) > 0 ? Number(body.retryAfter) : 60;
-            osmBuildingsRetryAt = Date.now() + seconds * 1000;
-            console.warn(`[buildings] OSM reference request returned HTTP 503; not asking again for ${seconds}s`);
-            showFetchedOsmBuildingLayer();
-            reportBuildingsUnavailable(seconds, () => { osmBuildingsRetryAt = 0; fetchOsmBuildings(boundsOverride); }, true, response.status);
-            return;
+    if (!loader) return;
+    let bounds = null;
+    try { bounds = boundsOverride || map.getBounds(); } catch (_) { return; }
+    const box = [bounds.getWest(), bounds.getSouth(), bounds.getEast(), bounds.getNorth()];
+    const { cells, list } = buildingCellsFor(box);
+    const outlined = window.SourceList.outlined(list);
+    if (!outlined.length) { drawOutlineBuildings(); return; }
+    await Promise.all(outlined.map(async entry => {
+        const summary = await loader.load({ kind: 'footprints', sources: [entry.id], cells, onCell: (_cell, result) => {
+            if (result.failed) return;
+            result.items.filter(item => item && item.geometry && item.id != null).forEach(item => {
+                const feature = poolFeatureOf(item, entry.id);
+                outlineBuildingsByKey.set(buildingPoolFeatureKey(feature), feature);
+            });
+        } });
+        if (summary.failed) {
+            reportBuildingsUnavailable(summary.retryAfter, () => { loader.retry(); fetchOutlineBuildings(boundsOverride); }, entry.id, summary.status);
         }
-        if (!response.ok) throw Object.assign(new Error(`Failed to fetch OSM building data (HTTP ${response.status})`), { status: response.status });
-        const data = await response.json();
-
-        if (osmBuildingLayer) {
-            try { map.removeLayer(osmBuildingLayer); } catch (_) { }
-        }
-        if (!map.getPane('observedReferences')) map.createPane('observedReferences');
-        osmBuildingLayer = L.geoJSON({ type: 'FeatureCollection', features: (data?.features || []) }, {
-            // Reference only: it must never intercept clicks meant for the parcels beneath it.
-            pane: 'observedReferences', interactive: false,
-            style: window.BuildingLayersDialog?.style || { color: '#7c3aed', opacity: 0.55, weight: 1, fillColor: '#7c3aed', fillOpacity: 0.12 }
-        });
-        const checkbox = document.getElementById('showBuildingsOsm');
-        if (!checkbox || checkbox.checked) osmBuildingLayer.addTo(map);
-        try { window.osmBuildingLayer = osmBuildingLayer; } catch (_) { }
-        clearBuildingsUnavailable();
-    } catch (error) {
-        console.error('Error fetching OSM building data:', error);
-        reportBuildingsUnavailable(null, () => fetchOsmBuildings(boundsOverride), true, error?.status);
-    }
+    }));
+    drawOutlineBuildings();
 }
-window.fetchOsmBuildings = fetchOsmBuildings;
+window.fetchOutlineBuildings = fetchOutlineBuildings;
 
-function hideOsmBuildingLayer() {
-    if (osmBuildingLayer) {
-        try { map.removeLayer(osmBuildingLayer); } catch (_) { }
-    }
+// The observed-building palette lives in tokens.css: a faint survey fill with a contrasting outline,
+// and the "only in" variant for an outlined source's building the shown buildings lack.
+function observedBuildingStyle(variant = '') {
+    const palette = getComputedStyle(document.documentElement);
+    const token = (name, fallbackName = name) => (palette.getPropertyValue(`--cb-observed-building${variant}-${name}`)
+        || palette.getPropertyValue(`--cb-observed-building-${fallbackName}`)).trim();
+    return { color: token('stroke'), opacity: Number(token('stroke-opacity')), weight: Number(token('stroke-width')),
+        fillColor: token('fill'), fillOpacity: Number(token('fill-opacity')) };
 }
-window.hideOsmBuildingLayer = hideOsmBuildingLayer;
+window.observedBuildingStyle = observedBuildingStyle;
+
+// The outlined sources' buildings in view, the "only in" ones marked; their count per source is said
+// in the status line.
+function drawOutlineBuildings() {
+    const manager = window.CityConfigManager;
+    const outlinedIds = new Set(window.SourceList.outlined(manager?.getBuildingSources?.() || []).map(entry => entry.id));
+    [...outlineBuildingsByKey.keys()].forEach(key => {
+        if (!outlinedIds.has(outlineBuildingsByKey.get(key).properties.source)) outlineBuildingsByKey.delete(key);
+    });
+    if (outlineBuildingLayer) {
+        try { map.removeLayer(outlineBuildingLayer); } catch (_) { }
+        outlineBuildingLayer = null;
+    }
+    window.outlineBuildingLayer = null;
+    // The profiler measures against what is drawn: say when the outlined sources on the map change.
+    const drawnNow = [...outlinedIds].sort().join('+');
+    if (drawnNow !== drawnOutlineSources) {
+        drawnOutlineSources = drawnNow;
+        try { document.dispatchEvent(new CustomEvent('building-layers-changed')); } catch (_) { }
+    }
+    if (!outlineBuildingsByKey.size) return;
+    let view = null;
+    try { view = map.getBounds().pad(0.2); } catch (_) { return; }
+    const inView = [...outlineBuildingsByKey.entries()].filter(([, feature]) => {
+        try { return view.intersects(L.geoJSON(feature).getBounds()); } catch (_) { return false; }
+    });
+    const shown = (window.buildingFeaturePool || []).map(feature => ({ geometry: feature.geometry }));
+    const covered = window.turf ? window.BuildingCells.coveredKeys(inView.map(([key, feature]) => ({ key, geometry: feature.geometry })), shown, window.turf)
+        : new Set(inView.map(([key]) => key));
+    const onlyIn = new Map();
+    const features = inView.map(([key, feature]) => {
+        const only = !covered.has(key);
+        if (only) onlyIn.set(feature.properties.source, (onlyIn.get(feature.properties.source) || 0) + 1);
+        return { ...feature, properties: { ...feature.properties, __onlyIn: only } };
+    });
+    if (!map.getPane('observedReferences')) map.createPane('observedReferences');
+    outlineBuildingLayer = L.geoJSON({ type: 'FeatureCollection', features }, {
+        // Reference only: it must never intercept clicks meant for the parcels beneath it.
+        pane: 'observedReferences', interactive: false,
+        style: feature => observedBuildingStyle(feature.properties.__onlyIn ? '-only' : '')
+    });
+    outlineBuildingLayer.addTo(map);
+    window.outlineBuildingLayer = outlineBuildingLayer;
+    const names = new Map((manager?.getBuildingSources?.() || []).map(entry => [entry.id, entry.name]));
+    onlyIn.forEach((count, source) => {
+        if (typeof updateStatus === 'function') updateStatus(`${count} buildings in view only in ${names.get(source) || source}`);
+    });
+}
 
 // Existing buildings drawn on the map whose footprint covers a point, with what demolishes them
 // (the click stack's Built section). Footprints come from the rendered layers, so only what the
@@ -851,7 +735,7 @@ function stableBuildingFeatureSignature(feature, style = null) {
 function buildingStyleForFeature(feature) {
     return (typeof window.buildingOutcomeStyle === 'function')
         ? window.buildingOutcomeStyle(feature?.properties?.__outcome)
-        : (window.BuildingLayersDialog?.style || { color: '#7c3aed', opacity: 0.55, weight: 1, fillColor: '#7c3aed', fillOpacity: 0.12 });
+        : observedBuildingStyle();
 }
 
 function applyBuildingFeatureLayerChanges(layerGroup, layersById, changes) {
@@ -924,10 +808,18 @@ function rebuildBuildingLayerFromPool() {
 }
 window.rebuildBuildingLayerFromPool = rebuildBuildingLayerFromPool;
 
-// A proposal only changes outcome records for buildings under its own geometry. Compare the ids
-// represented before and after the mutation, then replace those Leaflet features in place. The
-// untouched thousands never leave the layer and never pay GeoJSON parsing/styling again.
+// A plan change: derive its demolitions again (demolition-index.js, which announces
+// `demolitionsChanged` when they moved) and redraw with what is known now.
 function refreshBuildingOutcomesFromRecords() {
+    window.DemolitionIndex?.refresh();
+    redrawBuildingOutcomes();
+}
+window.refreshBuildingOutcomesFromRecords = refreshBuildingOutcomesFromRecords;
+
+// A plan only changes the outcome of buildings under its own geometry. Compare the ids represented
+// before and after, then replace those Leaflet features in place. The untouched thousands never leave
+// the layer and never pay GeoJSON parsing/styling again.
+function redrawBuildingOutcomes() {
     const state = currentBuildingOutcomeState();
     const nextSignatures = buildingOutcomeSignatures(state);
     const changedIds = new Set();
@@ -962,7 +854,23 @@ function refreshBuildingOutcomesFromRecords() {
     });
     try { window.buildingLayer = buildingLayer; } catch (_) { }
 }
-window.refreshBuildingOutcomesFromRecords = refreshBuildingOutcomesFromRecords;
+window.addEventListener('demolitionsChanged', () => {
+    redrawBuildingOutcomes();
+    drawOutlineBuildings();
+});
+
+// A new source list: the pool and the outlines are the new sources' (their cells are keyed by the
+// list, so nothing of the old one answers), and the demolitions are derived again over them.
+window.addEventListener('sourceListChanged', event => {
+    if (event.detail?.concept !== 'buildings') return;
+    clearBuildingPool();
+    outlineBuildingsByKey = new Map();
+    rebuildBuildingLayerFromPool();
+    drawOutlineBuildings();
+    const box = document.getElementById('showBuildings');
+    if (!box || box.checked) fetchBuildings(null, { announce: true });
+    fetchOutlineBuildings();
+});
 
 // Function to update the total spent display
 function updateTotalSpentDisplay() {
@@ -995,23 +903,9 @@ function setupMapEventHandlers() {
             });
         }
 
-        // Every building survey that is switched ON follows the map. Only OSM did before, so
-        // panning with GDI or DGU ticked showed whatever had been fetched when the box was ticked
-        // and nothing more — a toggle that looked broken because its layer never grew. Each fetch is
-        // zoom-gated and cached (per bbox for GDI/DGU, per grid cell for OSM), so a pan is cheap and
-        // a repeat view is free. The existing-buildings pool records the areas it holds completely
-        // (buildingFetchCoverage), so a view inside one is not asked for again.
-        const fetchBuildingsUnlessCovered = typeof fetchBuildings === 'function' ? () => {
-            let view = null;
-            try { view = map.getBounds(); } catch (_) { view = null; }
-            if (view && boundsCoveredByBuildingFetch(view)) return;
-            fetchBuildings();
-        } : null;
-        const followMap = [
-            ['showBuildings', fetchBuildingsUnlessCovered],
-            ['showBuildingsDgu', typeof fetchDguBuildings === 'function' ? fetchDguBuildings : null],
-            ['showBuildingsOsm', typeof fetchOsmBuildings === 'function' ? fetchOsmBuildings : null]
-        ];
+        // The buildings and the outlined sources follow the map. Each load is zoom-gated and goes by
+        // cell, and a loaded cell answers from the cell loader's cache, so a pan is cheap and a repeat
+        // view is free.
         // After the same pause as parcels: a pan is a burst of moveends, and each fetch may go out to
         // a rate-limited upstream (public Overpass rations requests per machine).
         if (buildingFollowTimer) clearTimeout(buildingFollowTimer);
@@ -1019,10 +913,9 @@ function setupMapEventHandlers() {
         buildingFollowTimer = setTimeout(() => {
             buildingFollowTimer = null;
             if (!isTwoDimensionalViewportActive()) return;
-            followMap.forEach(([id, fetcher]) => {
-                const box = document.getElementById(id);
-                if (box && box.checked && fetcher) fetcher();
-            });
+            const box = document.getElementById('showBuildings');
+            if (!box || box.checked) fetchBuildings();
+            fetchOutlineBuildings();
         }, debounceMs);
 
         isMapMoving = false;
@@ -1052,13 +945,13 @@ function setupMapEventHandlers() {
             if (layerRef && map.hasLayer(layerRef)) {
                 try { map.removeLayer(layerRef); } catch (_) { }
             }
-            // Hide both reference layers as well when below allowed zoom. This is DISPLAY only —
-            // the pool keeps its buildings, so a corridor still cuts what it crosses.
-            if (typeof window.buildingLayer !== 'undefined' && window.buildingLayer && map.hasLayer(window.buildingLayer)) {
-                try { map.removeLayer(window.buildingLayer); } catch (_) { }
-            }
-            hideDguBuildingLayer();
-            hideOsmBuildingLayer();
+            // Hide the buildings and the outlined sources as well when below allowed zoom. This is
+            // DISPLAY only — the pool keeps its buildings, so a corridor still cuts what it crosses.
+            [window.buildingLayer, outlineBuildingLayer].forEach(layer => {
+                if (layer && map.hasLayer(layer)) {
+                    try { map.removeLayer(layer); } catch (_) { }
+                }
+            });
             if (typeof updateStatus === 'function') updateStatus('Parcels disabled at this zoom');
         } else {
             // If user zoomed back in and parcels are enabled, ensure layer is added

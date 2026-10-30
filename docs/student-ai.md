@@ -94,38 +94,35 @@ undo through `ugt_edit_shared_plan` while it holds control.
 
 ## Remaining work
 
-Prioritize integration and the shared-plan trial before deployment. PostgreSQL session storage,
+Prioritize the shared-plan trial before deployment. PostgreSQL session storage,
 transactional version/control checks, hashed capabilities and protection of the private upload
 path are part of the current implementation. The following work remains, in order:
 
-1. **Integrate the latest Colosseum changes.** Merge `colosseum-worlds-fair` into `student-ai`,
-   resolve overlap and run targeted headless tests for the combined editor, renderer and
-   collaboration paths. A conflict-free Git merge alone does not establish working integration.
-2. **Complete the collaboration trial.** Exercise human-to-agent-to-human handover, pending local
+1. **Complete the collaboration trial.** Exercise human-to-agent-to-human handover, pending local
    edits, undo, reconnect, service restart and stale-save rejection on the integrated code. Check
    movement and rotation in 2D and 3D, reduced motion, a narrow viewport and the student's actual
    input or assistive technology. Use independent clients to confirm both see the accepted revision.
-3. **Merge and deploy the verified revision.** Apply the PostgreSQL schema before starting code
+2. **Merge and deploy the verified revision.** Apply the PostgreSQL schema before starting code
    that requires it, update the API and unbuffered nginx session routes, then update MCP and the
    frontend. Follow the [MCP deployment contract](mcp.md#deployment). Verify a real shared-session
    edit and notification through the public site, and retain the previous release for rollback.
    Recreate experimental file-backed sessions; their old links are not database sessions.
-4. **Improve conversational MCP editing.** Make it straightforward for the agent to inspect the
+3. **Improve conversational MCP editing.** Make it straightforward for the agent to inspect the
    current plan, identify the intended design or object, apply a precise edit and read back the
    accepted result. Improve object descriptions, references, units, validation errors and recovery
    guidance using existing granular operations. Include relevant map selection/context explicitly
    where useful; do not assume the agent sees the person's screen. Ask for clarification when a
    target or instruction is ambiguous. Keep ordinary corrections within the current shared plan.
-5. **Improve human–AI ergonomics.** Make connecting an agent, reopening a session, handing over,
+4. **Improve human–AI ergonomics.** Make connecting an agent, reopening a session, handing over,
    taking control, saving pending edits, undoing and disconnecting easy to find and understand.
    Distinguish agent activity, applying a revision, saved state and connection errors. Provide
    concise change summaries and accessible announcements alongside visual feedback. Preserve
    keyboard focus, the camera and unrelated work; respect reduced motion. Session management
    should serve the person's work with their agent, including ending or deleting finished sessions.
-6. **Improve review and recovery.** Show what the agent changed and allow inspection and restoration
+5. **Improve review and recovery.** Show what the agent changed and allow inspection and restoration
    of earlier revisions as new accepted versions. Extend beyond the current single agent-change
    undo without mutating prior content. Keep publication separate from accepting an edit.
-7. **Evaluate complete conversational tasks.** Use representative instructions for moving and
+6. **Evaluate complete conversational tasks.** Use representative instructions for moving and
    rotating buildings, editing paths, placing furniture, correcting mistakes and undoing changes.
    Check that the agent finds the intended object and that its description matches the saved map
    state. Include ambiguous requests, failed edits and interrupted connections. Evaluate task

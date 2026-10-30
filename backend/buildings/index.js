@@ -1,25 +1,32 @@
 // Source-addressed building services. The caller selects a dataset; geography never selects one.
 import { createZagrebProvider } from './zagreb-3d.js';
+import { createDguProvider } from './dgu-cadastre.js';
 import { createNycProvider } from './nyc-footprints.js';
 import { createNycArcgisProvider } from './nyc-arcgis.js';
 import { createOsmProvider } from './osm-3d.js';
 import { createCustomBuildingProvider } from './custom-source-3d.js';
 import { createOverpassBuildingProvider } from './overpass-source.js';
+import { createWienLod2Provider } from './wien-lod2.js';
+import { createNl3dbagProvider } from './nl-3dbag.js';
 import { decodeCustomBuildingSource } from '../parcels/custom-source-config.js';
 
 import { createRequire } from 'node:module';
 const SourceRuntime = createRequire(import.meta.url)('../../frontend/js/source-runtime.js');
 
 const builtins = [
-    ['gdi-3d', 'gdi-3d'], ['nyc-arcgis', 'nyc-arcgis'], ['nyc-socrata', 'nyc-socrata'], ['osm', 'osm']
+    ['wien-lod2', 'wien-lod2'], ['nl-3dbag', 'nl-3dbag'],
+    ['gdi-3d', 'gdi-3d'], ['dgu', 'dgu'], ['nyc-arcgis', 'nyc-arcgis'], ['nyc-socrata', 'nyc-socrata'], ['osm', 'osm']
 ];
 export const buildingSourceRegistry = SourceRuntime.createRegistry({
     abstraction: 'buildings',
     adapters: {
         'gdi-3d': { create: (_config, { pool }) => createZagrebProvider(pool), custom: false },
+        dgu: { create: (_config, { pool }) => createDguProvider(pool), custom: false },
         'nyc-arcgis': { create: (_config, { env }) => createNycArcgisProvider(env), custom: false },
         'nyc-socrata': { create: (_config, { env }) => createNycProvider(env), custom: false },
         osm: { create: (_config, { pool }) => createOsmProvider(pool), custom: false },
+        'wien-lod2': { create: () => createWienLod2Provider(), custom: false },
+        'nl-3dbag': { create: () => createNl3dbagProvider(), custom: false },
         arcgis: { create: createCustomBuildingProvider },
         wfs: { create: createCustomBuildingProvider },
         'ogc-api': { create: createCustomBuildingProvider },

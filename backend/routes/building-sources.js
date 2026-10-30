@@ -1,7 +1,8 @@
 // GET /building-sources/discover: checks a user-supplied building source URL the way
 // /parcel-sources/discover checks a parcel one (same adapters, same public-URL guard, same limits),
-// and answers a portable `building.<base64url>` id the browser keeps in local storage and sends with
-// its /buildings/* requests as `source`. The browser never fetches the URL itself.
+// and answers a portable `building.<base64url>` id the browser keeps in its source list. The browser
+// then reads the source itself (its adapter worker, never through us), so a service that does not let
+// other websites read its answers (no CORS header for the browser's origin) is refused here.
 import rateLimit from 'express-rate-limit';
 import { HttpError } from '../utils/helpers.js';
 import { createParcelSource } from '../parcels/sources.js';
@@ -9,7 +10,27 @@ import { createPublicSourceFetch, validatePublicSourceUrl } from '../parcels/pub
 import { discoverCustomBuildingSource } from '../parcels/custom-source-discovery.js';
 import { decodeCustomBuildingSource, encodeCustomSource } from '../parcels/custom-source-config.js';
 import { validateBounds, discoverQuery } from '../parcels/source-contract.js';
-import { looksLikeOverpass, discoverOverpassSource } from '../buildings/overpass-source.js';
+import { looksLikeOverpass, discoverOverpassSource, createOverpassFetch } from '../buildings/overpass-source.js';
+
+// The origin a browser reads from when the check arrives without one (a same-origin page, a script).
+const DEFAULT_BROWSER_ORIGIN = 'https://urbangametheory.xyz';
+
+// A fetch that sends the browser's Origin and remembers whether every answer let that origin read it.
+// Simple GETs and form POSTs (all the adapters send) need no preflight, so the answer's own header decides.
+function corsCheckedFetch(fetchImpl, origin) {
+    let refused = false;
+    const fetch = async (target, options = {}) => {
+        const headers = new Headers(options.headers);
+        headers.set('Origin', origin);
+        const response = await fetchImpl(target, { ...options, headers });
+        const allowed = response?.headers?.get?.('access-control-allow-origin');
+        if (allowed !== '*' && allowed !== origin) refused = true;
+        return response;
+    };
+    return { fetch, readable: () => !refused };
+}
+const noCors = () => Object.assign(new HttpError(422, 'This source does not let other websites read it (no CORS header), so the browser cannot load it.'),
+    { code: 'building-source-no-cors' });
 
 export function setupBuildingSourcesRoute(app, { discover = discoverCustomBuildingSource, publicFetch = createPublicSourceFetch(),
     discoverOverpass = discoverOverpassSource } = {}) {
@@ -33,9 +54,14 @@ export function setupBuildingSourcesRoute(app, { discover = discoverCustomBuildi
             const city = input.city;
             if (city !== undefined && (typeof city !== 'string' || !/^[a-z][a-z0-9_]{0,79}$/.test(city))) throw new HttpError(400, 'Invalid source label.');
             const bbox = validateBounds(input.bbox, 1);
+            const requestOrigin = typeof req.get === 'function' ? req.get('origin') : undefined;
+            const origin = typeof requestOrigin === 'string' && /^https?:\/\/[A-Za-z0-9.-]+(?::\d{1,5})?$/.test(requestOrigin)
+                ? requestOrigin : DEFAULT_BROWSER_ORIGIN;
             // An OpenStreetMap (Overpass) mirror reads OSM's own tags, so there is nothing to discover.
             if (looksLikeOverpass(url.href)) {
-                const mirror = await discoverOverpass({ url: url.href, city, bbox });
+                const cors = corsCheckedFetch(createOverpassFetch(), origin);
+                const mirror = await discoverOverpass({ url: url.href, city, bbox }, { fetchImpl: cors.fetch });
+                if (!cors.readable()) throw noCors();
                 return res.set('Cache-Control', 'no-store').json({ source: mirror.source, attempts: [], buildingCount: mirror.buildingCount });
             }
             const lon = (bbox[0] + bbox[2]) / 2, lat = (bbox[1] + bbox[3]) / 2;
@@ -47,9 +73,11 @@ export function setupBuildingSourcesRoute(app, { discover = discoverCustomBuildi
             const heightUnit = ['m', 'ft'].includes(input.heightUnit) && result.descriptor.heightField
                 ? input.heightUnit : result.descriptor.heightUnit;
             const source = decodeCustomBuildingSource(encodeCustomSource({ ...result.descriptor, kind: 'building', heightUnit }));
-            // Re-read using the final portable identity before offering it to the browser.
-            const probe = await createParcelSource(source, { fetchImpl: boundedFetch }).queryBounds(bbox);
+            // Re-read using the final portable identity, as the browser will, before offering it.
+            const cors = corsCheckedFetch(boundedFetch, origin);
+            const probe = await createParcelSource(source, { fetchImpl: cors.fetch }).queryBounds(bbox);
             if (probe.complete !== true) throw new HttpError(502, 'Source did not return complete building coverage.');
+            if (!cors.readable()) throw noCors();
             res.set('Cache-Control', 'no-store').json({ source, attempts: result.attempts, buildingCount: probe.features.length });
         } catch (error) { if (!res.destroyed) fail(res, error); }
         finally { clearTimeout(timer); res.off('close', disconnect); }

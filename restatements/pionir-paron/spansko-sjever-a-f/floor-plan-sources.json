@@ -6,7 +6,7 @@
       "id": "F",
       "northInDrawing": "up",
       "strokeGray": 0,
-      "floors": [
+      "storeys": [
         {
           "level": 1,
           "elevationM": 3,

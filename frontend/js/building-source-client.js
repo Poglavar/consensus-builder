@@ -1,7 +1,11 @@
-// All building reads use our backend. Dedicated city/user sources retain their own
-// identities; a configured OSM fallback also runs through the backend.
+// Building reads, transport only: a URL source (`building.<base64url>`, a public ArcGIS, WFS, OGC API,
+// Socrata, GeoJSON or Overpass service) is read in the browser by the adapter worker
+// (BrowserBuildingSources, js/parcels/browser-client.js) and never reaches our server; a database
+// source (gdi-3d, dgu, osm, NYC's) is read through our backend. Which sources stand in for each other
+// is the ordered source list (source-list.js), applied per cell by the cell loader (building-cells.js).
+// Everything the browser reads goes by cell; the geometry routes (/buildings/near, /footprints,
+// /under, /carve) are for server-side consumers (MCP, the walk sim).
 (function () {
-    const PATHS = ['/buildings/near', '/buildings/footprints', '/buildings/under', '/buildings/carve'];
     // The centre of the request's area ({ lat, lon }): its geometry, or its first region's (one
     // request covers one scene). null when it has no coordinates.
     function requestPoint(body) {
@@ -32,6 +36,8 @@
         return config || {};
     }
 
+    const sourceListOf = global => global.SourceList || (typeof require === 'function' ? require('./source-list.js') : null);
+
     async function askServer(global, path, body, signal) {
         const base = typeof global.getBackendBase === 'function' ? global.getBackendBase() : '';
         const response = await global.fetch(`${base}${path}`, {
@@ -44,36 +50,35 @@
         return response.json();
     }
 
-    function serverAnswerIsEmpty(path, payload) {
-        if (!payload || payload.unavailable || payload.supported === false) return true;
-        // Footprints cut to the source's query limit are still the city's own buildings: the answer
-        // stays truncated (the pool claims no coverage) instead of being swapped for another survey
-        // with other identities.
-        if (path === '/buildings/footprints') return !(payload.footprints && payload.footprints.length);
-        if (payload.truncated === true) return true;
-        if (path === '/buildings/near') return !(payload.buildings && payload.buildings.length);
-        return false;
-    }
-
-
-    async function request(path, body, { signal, global = window } = {}) {
-        if (!PATHS.includes(path)) throw new Error(`Not a building endpoint: ${path}`);
-        const config = configFor(global, body);
-        const buildings = config.buildings;
-        const { city, source, floorModelNamespace, ...rest } = body || {};
-        const serverBody = { ...rest, source: buildings?.sourceId || (buildings?.source === 'osm' ? 'osm' : undefined),
-            floorModelNamespace: config.floorModels?.namespace };
-        if (buildings?.fallback !== 'osm') return askServer(global, path, serverBody, signal);
-        let payload;
-        try {
-            payload = await askServer(global, path, serverBody, signal);
-        } catch (error) {
-            if (error?.name === 'AbortError') throw error;
+    // One cell from one named source: a URL source from the adapter worker, any other from
+    // POST /buildings/cell. Both answer { supported, items, complete, unavailable?, retryAfter? }.
+    async function requestCell({ kind, source, bbox, signal }, { global = window } = {}) {
+        if (sourceListOf(global)?.isUrlSource(source)) {
+            const reader = global.BrowserBuildingSources;
+            if (typeof reader?.readCell !== 'function') throw new Error('URL building sources need the browser adapter worker.');
+            return reader.readCell(source, { kind, bbox }, { signal });
         }
-        if (!serverAnswerIsEmpty(path, payload)) return payload;
-        return askServer(global, path, { ...rest, source: 'osm' }, signal);
+        const config = configFor(global, { geometry: { type: 'Point', coordinates: [(bbox[0] + bbox[2]) / 2, (bbox[1] + bbox[3]) / 2] } });
+        return askServer(global, '/buildings/cell', { kind, bbox, source,
+            ...(kind === 'near' && config.floorModels?.namespace ? { floorModelNamespace: config.floorModels.namespace } : {}) }, signal);
     }
-    const api = { request, requestPoint, serverAnswerIsEmpty };
-    if (typeof window !== 'undefined') window.BuildingSourceClient = api;
+    // Every building of `kind` in the cells covering a WGS84 box [w, s, e, n], each cell from the sources
+    // in use there (map-core.js buildingCellsFor), through the page's one cell loader.
+    // → { items: [{ ...item, source }], failed, retryAfter }
+    async function loadBox({ kind, box, signal }, { global = window } = {}) {
+        const { cells, sources } = global.buildingCellsFor(box);
+        const items = [];
+        if (!cells.length || !sources.length) return { items, failed: 0, retryAfter: null };
+        const summary = await global.BuildingCellLoader.load({ kind, sources, cells, signal, onCell: (_cell, result) => {
+            if (!result.failed) result.items.forEach(item => items.push({ ...item, source: result.source }));
+        } });
+        return { items, failed: summary.failed, retryAfter: summary.retryAfter };
+    }
+    const api = { requestCell, requestPoint, loadBox };
+    if (typeof window !== 'undefined') {
+        window.BuildingSourceClient = api;
+        // One loader per page: its cache and per-source back-off are shared by the 2D pool and the 3D scene.
+        if (window.BuildingCells) window.BuildingCellLoader = window.BuildingCells.createCellLoader({ request: cell => requestCell(cell) });
+    }
     if (typeof module !== 'undefined' && module.exports) module.exports = api;
 })();

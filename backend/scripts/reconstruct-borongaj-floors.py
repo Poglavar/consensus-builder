@@ -145,8 +145,8 @@ def registration(feature, building):
     u0, u1 = min(p[0] for p in uv), max(p[0] for p in uv)
     v0, v1 = min(p[1] for p in uv), max(p[1] for p in uv)
     width, height = u1 - u0, v1 - v0
-    reference = next((floor for floor in building['floors']
-                      if floor['level'] == building.get('registrationFloorLevel')), building['floors'][0])
+    reference = next((storey for storey in building['storeys']
+                      if storey['level'] == building.get('registrationFloorLevel')), building['storeys'][0])
     crop = reference['source']['crop']
     paper_w, paper_h = crop[2] - crop[0], crop[3] - crop[1]
     right = building["northInDrawing"] == "right"
@@ -182,9 +182,9 @@ def registration(feature, building):
 
 
 def build_plans(feature, building, cache, fetch):
-    layouts, floors, layout_by_digest = [], [], {}
+    layouts, storeys, layout_by_digest = [], [], {}
     placement = registration(feature, building)
-    for index, floor in enumerate(building["floors"]):
+    for index, floor in enumerate(building["storeys"]):
         source = floor["source"]
         path = source_file(source, cache, fetch)
         segments = extract_segments(path, source, building["strokeGray"])
@@ -197,13 +197,15 @@ def build_plans(feature, building, cache, fetch):
                                                 placement['metresPerPdfPoint'], floor.get('storeyHeightM', 3))
             layouts.append({"id": layout_id, "source": source, "sourceVectorSha256": signature,
                             "architecture": architecture})
-        floors.append({"id": f"{building['id']}-floor-{floor['level']}",
+        # The manifest lists the source's apartments; the model holds them as units of kind apartment.
+        units = [{"id": a["id"], "kind": "apartment", **{k: v for k, v in a.items() if k != "id"}} for a in floor["apartments"]]
+        storeys.append({"id": f"{building['id']}-floor-{floor['level']}",
                        "level": floor["level"], "elevationM": floor["elevationM"],
                        "elevationBasis": floor["elevationBasis"], "layoutId": layout_id,
-                       "source": source, "apartments": floor["apartments"]})
-        print(f"{building['id']} {index + 1}/{len(building['floors'])} floors: level {floor['level']}, {len(segments)} segments", flush=True)
-    return {"schema": "consensus-builder.building-floor-plans.v2",
-            "registration": placement, "layouts": layouts, "floors": floors,
+                       "source": source, "units": units})
+        print(f"{building['id']} {index + 1}/{len(building['storeys'])} storeys: level {floor['level']}, {len(segments)} segments", flush=True)
+    return {"schema": "consensus-builder.building-floor-plans.v3",
+            "registration": placement, "layouts": layouts, "storeys": storeys,
             "notes": building.get("notes", ["Published catalogue layout, not an as-built survey.",
                       building.get('elevationNote', 'Elevations are estimated from the existing 3 m display storeys; ground floor is relative z=0.'),
                       "Wall footprints and opening positions come from CAD; opening types, vertical dimensions and railing details are inferred.",
@@ -240,7 +242,7 @@ def main():
         temporary = args.proposal.with_suffix(".geojson.part")
         temporary.write_text(text)
         temporary.replace(args.proposal)
-    print(f"{'Wrote' if args.write else 'Validated'} {sum(len(b['floors']) for b in manifest['buildings'])} floors in {len(manifest['buildings'])} buildings.")
+    print(f"{'Wrote' if args.write else 'Validated'} {sum(len(b['storeys']) for b in manifest['buildings'])} storeys in {len(manifest['buildings'])} buildings.")
 
 
 if __name__ == "__main__":

@@ -215,6 +215,77 @@ describe('GET /buildings', () => {
         expect(res.body.truncated).toBe(true);
     });
 });
+describe('POST /buildings/cell', () => {
+    const cell = [15.975, 45.812, 15.979, 45.814];
+    const row = { object_id: 42, z_min: 120, z_max: 135, faces: [
+        { type: 'Polygon', coordinates: [[[15.976, 45.813, 120], [15.977, 45.813, 120], [15.977, 45.8135, 135], [15.976, 45.813, 120]]] }] };
+
+    it('rejects an unknown kind and a bbox that is not a cell', async () => {
+        expect((await request(app).post('/buildings/cell').send({ kind: 'all', bbox: cell, source: 'gdi-3d' })).status).toBe(400);
+        expect((await request(app).post('/buildings/cell').send({ kind: 'near', bbox: [15.98, 45.8, 15.97, 45.81], source: 'gdi-3d' })).status).toBe(400);
+        expect((await request(app).post('/buildings/cell').send({ kind: 'near', bbox: [15.9, 45.8, 16.0, 45.9], source: 'gdi-3d' })).status).toBe(400);
+    });
+
+    it('answers one cell of 3D records from the selected source and serves a repeat from its cache', async () => {
+        pool.setResult({ rows: [row], rowCount: 1 });
+        const first = await request(app).post('/buildings/cell').send({ kind: 'near', bbox: cell, source: 'gdi-3d' });
+        expect(first.status).toBe(200);
+        expect(first.body).toMatchObject({ supported: true, kind: 'near', bbox: cell, count: 1, complete: true });
+        expect(first.body.items[0]).toMatchObject({ object_id: 42, z_max: 135 });
+        const queries = pool.getCalls().length;
+        const again = await request(app).post('/buildings/cell').send({ kind: 'near', bbox: cell, source: 'gdi-3d' });
+        expect(again.body).toEqual(first.body);
+        expect(pool.getCalls().length).toBe(queries);
+    });
+
+    const outline = { type: 'MultiPolygon', coordinates: [[[[15.976, 45.813], [15.977, 45.813], [15.977, 45.8135], [15.976, 45.813]]]] };
+
+    it("answers GDI footprints for the 2D map with the properties GET /buildings gives, never the cadastre's", async () => {
+        pool.setResult({ rows: [{ geometry: outline, properties: { object_id: 42, area_m2: 118.5, height_m: 14.2, eave_height_m: 11, survey_year: 2022 } },
+            { geometry: outline, properties: { object_id: 43, area_m2: null, height_m: null, eave_height_m: null, survey_year: null } }], rowCount: 2 });
+        const res = await request(app).post('/buildings/cell').send({ kind: 'footprints', bbox: cell, source: 'gdi-3d' });
+        expect(res.status).toBe(200);
+        expect(res.body).toMatchObject({ supported: true, kind: 'footprints', count: 2, complete: true, source: 'gdi-footprints' });
+        expect(res.body.items[0]).toEqual({ id: 42, geometry: outline, height_m: 14.2, floors: null, area_m2: 118.5, eave_height_m: 11, survey_year: 2022 });
+        expect(res.body.items[1]).toEqual({ id: 43, geometry: outline, height_m: null, floors: null, area_m2: null, eave_height_m: null, survey_year: null });
+        const { sql, params } = pool.getCalls()[0];
+        expect(sql).toContain('FROM gdi_building_footprint f');
+        expect(sql).toContain('LEFT JOIN gdi_building g');
+        expect(sql).not.toContain('dgu_building');
+        // In WGS84 out, the cell polygon in.
+        expect(sql).toContain('ST_Transform(f.geom, 4326)');
+        expect(JSON.parse(params[0]).type).toBe('Polygon');
+    });
+
+    it('splits a GDI footprint cell over the 4,000-row cap into quarters', async () => {
+        const capped = { rows: Array.from({ length: 4001 }, (_, i) => ({ geometry: outline, properties: { object_id: i } })), rowCount: 4001 };
+        const quarter = n => ({ rows: [{ geometry: outline, properties: { object_id: 10000 + n } }], rowCount: 1 });
+        pool.setResults([capped, quarter(1), quarter(2), quarter(3), quarter(4)]);
+        const res = await request(app).post('/buildings/cell').send({ kind: 'footprints', bbox: cell, source: 'gdi-3d' });
+        expect(res.body).toMatchObject({ count: 4, complete: true });
+        expect(pool.getCalls()).toHaveLength(5);
+    });
+
+    it('answers the DGU cadastre as a building source: estimated 3D blocks and flat footprints keyed by zgrada_id', async () => {
+        const square = { type: 'Polygon', coordinates: [[[15.976, 45.813], [15.9762, 45.813], [15.9762, 45.8132], [15.976, 45.8132], [15.976, 45.813]]] };
+        pool.setResult({ rows: [{ zgrada_id: 9001, broj_zgrade: '12', naziv_vrste_zgrade: 'Stambena zgrada', geometry: square }], rowCount: 1 });
+        const near = await request(app).post('/buildings/cell').send({ kind: 'near', bbox: cell, source: 'dgu' });
+        expect(near.status).toBe(200);
+        expect(near.body).toMatchObject({ supported: true, count: 1, complete: true, source: 'dgu-3d' });
+        expect(near.body.items[0]).toMatchObject({ object_id: '9001', height_source: 'estimated' });
+        expect(near.body.items[0].z_max).toBeGreaterThan(near.body.items[0].z_min);
+        pool.setResult({ rows: [{ zgrada_id: 9001, broj_zgrade: '12', naziv_vrste_zgrade: 'Stambena zgrada', geometry: square }], rowCount: 1 });
+        const flat = await request(app).post('/buildings/cell').send({ kind: 'footprints', bbox: cell, source: 'dgu' });
+        expect(flat.body).toMatchObject({ supported: true, count: 1, source: 'dgu-footprints' });
+        expect(flat.body.items[0]).toEqual({ id: 9001, geometry: square, height_m: null, floors: null, broj_zgrade: '12', naziv_vrste_zgrade: 'Stambena zgrada' });
+        for (const { sql } of pool.getCalls()) {
+            expect(sql).toContain('FROM dgu_building b');
+            expect(sql).toContain('b.current');
+            expect(sql).not.toContain('gdi_building');
+        }
+    });
+});
+
 describe('POST /buildings/footprints', () => {
     const geometry = { type: 'Polygon', coordinates: [[[15.975, 45.812], [15.979, 45.812], [15.979, 45.814], [15.975, 45.814], [15.975, 45.812]]] };
 

@@ -31,11 +31,12 @@ for (const width of [1280, 390]) {
     const tabStrip = await panel.locator('[role="tablist"]').evaluate(el => ({ width: el.clientWidth, scroll: el.scrollWidth }));
     expect(tabStrip.scroll).toBeLessThanOrEqual(tabStrip.width);
     const actions = panel.locator(':scope > .panel-body > .agreement-panel-actions');
-    await expect(actions.locator('button')).toHaveCount(3);
+    // Propose, Before / after, Edit and Download: two equal columns that fill the row.
+    await expect(actions.locator('button')).toHaveCount(4);
     const boxes = await actions.locator('button').evaluateAll(buttons => buttons.map(button => button.getBoundingClientRect().toJSON()));
     expect(Math.max(...boxes.map(b => b.width)) - Math.min(...boxes.map(b => b.width))).toBeLessThan(1);
-    expect(Math.max(...boxes.map(b => b.y)) - Math.min(...boxes.map(b => b.y))).toBeLessThan(1);
-    const row = await actions.boundingBox(); expect(boxes[0].x).toBeCloseTo(row!.x, 0); expect(boxes[2].right).toBeCloseTo(row!.x + row!.width, 0);
+    expect(boxes[0].y).toBeCloseTo(boxes[1].y, 0); expect(boxes[2].y).toBeCloseTo(boxes[3].y, 0); expect(boxes[2].y).toBeGreaterThan(boxes[0].y);
+    const row = await actions.boundingBox(); expect(boxes[0].x).toBeCloseTo(row!.x, 0); expect(boxes[1].right).toBeCloseTo(row!.x + row!.width, 0);
     const design = panel.locator('[data-agreement-inspect="design"]');
     await design.hover(); await expect(page.locator('path.agreement-map-hover').first()).toBeVisible();
     expect(await page.evaluate(() => (window as any).__agreementFitCalls)).toBe(0);

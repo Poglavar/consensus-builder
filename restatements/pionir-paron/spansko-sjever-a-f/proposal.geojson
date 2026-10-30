@@ -564,7 +564,7 @@
         "consensus:role": "building",
         "consensus:index": 5,
         "floorPlans": {
-          "schema": "consensus-builder.building-floor-plans.v2",
+          "schema": "consensus-builder.building-floor-plans.v3",
           "registration": {
             "corners": [
               [15.88274483, 45.803805804],
@@ -9466,7 +9466,7 @@
               }
             }
           ],
-          "floors": [
+          "storeys": [
             {
               "id": "F-floor-1",
               "level": 1,
@@ -9528,7 +9528,7 @@
                   "landingRiseFractions": [0.2, 0.8]
                 }
               },
-              "apartments": []
+              "units": []
             },
             {
               "id": "F-floor-7",
@@ -9591,7 +9591,7 @@
                   "landingRiseFractions": [0.2, 0.8]
                 }
               },
-              "apartments": []
+              "units": []
             },
             {
               "id": "F-floor-8",
@@ -9654,7 +9654,7 @@
                   "landingRiseFractions": [0.2, 0.8]
                 }
               },
-              "apartments": []
+              "units": []
             }
           ],
           "notes": [

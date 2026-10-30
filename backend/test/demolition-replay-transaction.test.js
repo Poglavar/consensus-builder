@@ -3,8 +3,9 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { createRequire } from 'node:module';
 
 const require = createRequire(import.meta.url);
-const { demolishBuildingsUnderFootprint, collectLoadedCorridorBuildings } = require('../../frontend/js/corridor-tunnel.js');
-const { demolishedBuildingRecordsFrom } = require('../../frontend/js/corridor-carve.js');
+// A design applied during a replay parks the proposed buildings under it inside the replay's own
+// transaction; existing buildings are derived (demolition-index.js), read here as its records.
+const { parkProposedBuildingsUnder, collectLoadedCorridorBuildings } = require('../../frontend/js/corridor-tunnel.js');
 
 const REGION = {
     type: 'Polygon',
@@ -38,8 +39,7 @@ const GLOBAL_KEYS = [
     'proposedBuildings',
     'proposalStorage',
     'ProposalManager',
-    'ensureBuildingFootprintsForBounds',
-    'demolishedBuildingRecordsFrom'
+    'DemolitionIndex'
 ];
 
 describe('demolition during canonical replay', () => {
@@ -51,9 +51,8 @@ describe('demolition during canonical replay', () => {
         globalThis.buildingFeaturePool = [];
         globalThis.proposedBuildings = [structuredClone(BUILDING)];
         globalThis.proposalStorage = { getAllProposals: () => [] };
-        globalThis.ensureBuildingFootprintsForBounds = vi.fn(async () => true);
         globalThis.ProposalManager = { unapplyProposal: vi.fn(async () => true) };
-        globalThis.demolishedBuildingRecordsFrom = demolishedBuildingRecordsFrom;
+        globalThis.DemolitionIndex = { records: vi.fn(() => []) };
     });
 
     afterEach(() => {
@@ -68,7 +67,7 @@ describe('demolition during canonical replay', () => {
     it('parks an earlier building inside the active root transaction', async () => {
         const mutation = { id: 17 };
 
-        await demolishBuildingsUnderFootprint(REGION, {
+        await parkProposedBuildingsUnder(REGION, {
             proposalId: 'later-square',
             _parcelMutation: mutation
         });
@@ -83,45 +82,20 @@ describe('demolition during canonical replay', () => {
         );
     });
 
-    it('re-derives removals from the transaction state rather than the still-visible source it replaces', async () => {
-        const stock = { ...structuredClone(BUILDING), properties: { id: 'observed-1' } };
+    it('scans the buildings as they stand without the design being edited', () => {
+        const stock = ['source-stock', 'other-stock'].map(id => ({ ...structuredClone(BUILDING), properties: { id, source: 'osm' } }));
         globalThis.proposedBuildings = [];
-        globalThis.proposalStorage = { getAllProposals: () => [{ proposalId: 'source', applied: true,
-            buildingProposal: { demolishedBuildings: [{ id: 'observed-1', geometry: stock.geometry }] } }] };
-        expect(collectLoadedCorridorBuildings({ extraPool: [stock], includeLoadedSurveyPool: false })).toEqual([]);
-        const transaction = { proposals: { getAllProposals: () => [] }, collections: { proposedBuildings: [] } };
-        const records = await demolishBuildingsUnderFootprint(REGION, {
-            proposalId: 'edited', _parcelMutation: transaction, preloadedBuildings: [stock]
-        });
-        expect(records).toMatchObject([{ id: 'observed-1', geometry: stock.geometry }]);
-        // The editor uses the same stock view when reviewing a replacement, before commit.
-        expect(collectLoadedCorridorBuildings({ extraPool: [stock], includeLoadedSurveyPool: false, excludeProposalId: 'source' }))
-            .toMatchObject([{ properties: { id: 'observed-1' } }]);
-        expect(globalThis.proposalStorage.getAllProposals()[0].applied).toBe(true);
-    });
-
-    it('keeps removals made by other applied designs while reviewing or replacing a source', async () => {
-        const stock = ['source-stock', 'other-stock'].map(id => ({
-            ...structuredClone(BUILDING), properties: { id }
-        }));
-        const source = { proposalId: 'source', applied: true,
-            buildingProposal: { demolishedBuildings: [{ id: 'source-stock', geometry: stock[0].geometry }] } };
-        const other = { proposalId: 'other', applied: true,
-            buildingProposal: { demolishedBuildings: [{ id: 'other-stock', geometry: stock[1].geometry }] } };
-        globalThis.proposedBuildings = [];
-        globalThis.proposalStorage = { getAllProposals: () => [source, other] };
-        const pool = collectLoadedCorridorBuildings({ extraPool: stock, includeLoadedSurveyPool: false,
-            excludeProposalId: 'source' });
-        expect(pool.map(feature => feature.properties.id)).toEqual(['source-stock']);
-        const records = await demolishBuildingsUnderFootprint(REGION, {
-            proposalId: 'edited', preloadedBuildings: stock,
-            _parcelMutation: { proposals: { getAllProposals: () => [other] }, collections: { proposedBuildings: [] } }
-        });
-        expect(records.map(record => record.id)).toEqual(['source-stock']);
+        // The other design's removal stays; the edited one's is read as if it were not applied.
+        globalThis.DemolitionIndex.records.mockImplementation(({ excludeProposalId }) =>
+            (excludeProposalId === 'source' ? [{ id: 'osm:other-stock', geometry: stock[1].geometry }]
+                : [{ id: 'osm:source-stock', geometry: stock[0].geometry }, { id: 'osm:other-stock', geometry: stock[1].geometry }]));
+        expect(collectLoadedCorridorBuildings({ extraPool: stock, includeLoadedSurveyPool: false })).toEqual([]);
+        expect(collectLoadedCorridorBuildings({ extraPool: stock, includeLoadedSurveyPool: false, excludeProposalId: 'source' })
+            .map(feature => feature.properties.id)).toEqual(['source-stock']);
     });
 
     it('does not treat a stale copy of the taker as its own obstacle', async () => {
-        await demolishBuildingsUnderFootprint(REGION, {
+        await parkProposedBuildingsUnder(REGION, {
             proposalId: 'earlier-building',
             _parcelMutation: { id: 18 }
         });
@@ -130,7 +104,7 @@ describe('demolition during canonical replay', () => {
     });
 
     it('does not change another proposal record while boot is materializing its applied-set snapshot', async () => {
-        await demolishBuildingsUnderFootprint(REGION, {
+        await parkProposedBuildingsUnder(REGION, {
             proposalId: 'later-square',
             preserveAppliedSet: true
         });
