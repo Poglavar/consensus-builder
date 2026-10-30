@@ -12,12 +12,11 @@
 .lists-actions__selecting { display: grid; grid-template-columns: 1fr 1fr; align-items: center; }
 .lists-actions__selecting .lists-selection-count { grid-column: 1 / -1; }
 /* While ticking, the selection bar stays in view above a long list. */
-#proposals-sheet .lists-actions:has(.lists-actions__selecting) { position: sticky; top: calc(-1 * var(--cb-space-3)); z-index: 1; padding-block: var(--cb-space-2); background: var(--cb-surface); }
+#proposals-sheet .lists-actions:has(.lists-actions__selecting) { position: sticky; top: calc(-1 * var(--cb-space-3)); z-index: var(--cb-z-local-1); padding-block: var(--cb-space-2); background: var(--cb-surface); }
 .lists-actions__help { justify-self: start; font-size: .85rem; }
 .lists-search-row { display: flex; gap: var(--cb-space-2); align-items: center; }
 .lists-search-row input { flex: 1; }
 .lists-filter-toggle { flex: none; }
-.lists-filter-toggle[aria-expanded="true"] { border-color: var(--cb-primary); }
 .lists-filter-panel:not([hidden]) { display: grid; gap: var(--cb-space-2); }
 .lists-rows { display: grid; gap: var(--cb-space-2); align-content: start; }
 #proposals-sheet #designs-plans { padding: 0; overflow: visible; flex: none; }

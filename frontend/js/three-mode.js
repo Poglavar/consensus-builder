@@ -1335,7 +1335,9 @@
     }
 
     function hostInspector(body) {
-        const el = document.getElementById('planning-inspector');
+        // A refresh empties the open section's body (ThreeClickStack.activate), which detaches the
+        // inspector this stack already hosts: it is still the one to host, though no longer findable by id.
+        const el = document.getElementById('planning-inspector') || stackInspector?.el;
         if (!el || !body) return;
         if (stackInspector?.el !== el) stackInspector = { el, parent: el.parentNode, next: el.nextSibling };
         stackInspector.selectedId = window.PlanningViews?.getSelected()?.id || null;

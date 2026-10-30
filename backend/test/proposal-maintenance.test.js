@@ -57,10 +57,12 @@ function install(proposals) {
     globalThis.Blob = globalThis.Blob || class { constructor(parts) { this.parts = parts; } };
     globalThis.URL = { createObjectURL: () => 'blob:x', revokeObjectURL: () => { } };
     globalThis.document = {
-        createElement: () => ({ click: () => downloads.push('clicked'), style: {} }),
+        createElement: () => ({ click: () => downloads.push('clicked'), remove: () => { }, style: {} }),
         body: { appendChild: () => { }, removeChild: () => { } }
     };
     globalThis.window = globalThis;
+    // The backup downloads through the app's one download helper, loaded before maintenance.js.
+    globalThis.FileDownload = require('../../frontend/js/ui/file-download.js');
     delete require.cache[require.resolve('../../frontend/js/proposals/maintenance.js')];
     maintenance = require('../../frontend/js/proposals/maintenance.js');
 }

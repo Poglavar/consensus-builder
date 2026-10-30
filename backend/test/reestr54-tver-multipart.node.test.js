@@ -9,6 +9,7 @@ import { reestr54Feature } from '../parcels/reestr54-source.js';
 const require = createRequire(import.meta.url);
 const { createLiveParcelFabric } = require('../../frontend/js/parcels/live-fabric.js');
 const workSlicer = require('../../frontend/js/work-slicer.js');
+const geometryGrid = require('../../frontend/js/geometry-tolerances.js');
 const presenterSource = readFileSync(new URL('../../frontend/js/parcels/presenter.js', import.meta.url), 'utf8');
 
 test('Tver full native MultiPolygon resolves to both rendered app component IDs without modifying source geometry', async () => {
@@ -38,7 +39,8 @@ test('Tver full native MultiPolygon resolves to both rendered app component IDs 
     assert.deepEqual(Array.from(resolved, layer => presenter.getIdForLayer(layer)).sort(),
         [source.id + '#cadastre-1', source.id + '#cadastre-2']);
     assert.ok(resolved.every(layer => members.has(layer)));
-    assert.ok(resolved.every(layer => source.geometry.coordinates.some(part =>
-        JSON.stringify(part) === JSON.stringify(layer.feature.geometry.coordinates))));
+    // The fabric keeps each component on the shared coordinate grid (docs/geometry-tolerances.md).
+    assert.deepEqual(Array.from(resolved, layer => layer.feature.geometry.coordinates).sort((a, b) => a[0][0][0] - b[0][0][0]),
+        source.geometry.coordinates.map(part => geometryGrid.snapCoordinates(part)));
     assert.equal(JSON.stringify(source), original);
 });

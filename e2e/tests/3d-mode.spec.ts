@@ -61,16 +61,22 @@ async function modelRadiusPreview(page: Page) {
   });
 }
 // Display changes hide retained building groups instead of rebuilding them (51152a2e), so only
-// meshes visible through their whole ancestor chain are actually drawn.
+// meshes visible through their whole ancestor chain are actually drawn. `lng` is the footprint
+// centre's longitude, which tells the fixture's two buildings apart (101 on parcel 1234, 102 on 1235).
 async function sceneBuildings(page: Page) {
   return page.evaluate(() => {
     const meshes: any[] = [];
     (window as any).getThreeModeInternals().scene.traverseVisible((o: any) => {
-      if (o.userData?.isNearbyBuilding3D) meshes.push({ vertices: o.geometry.attributes.position.count, opacity: o.material.userData?.cbBuildingOpacity ?? o.material.opacity, color: o.material.color.getHex() });
+      if (o.userData?.isNearbyBuilding3D) meshes.push({ vertices: o.geometry.attributes.position.count, opacity: o.material.userData?.cbBuildingOpacity ?? o.material.opacity, color: o.material.color.getHex(),
+        lng: +Number(o.userData.footprintLatLng?.[0]).toFixed(5) });
     });
     return meshes;
   });
 }
+// The fixture parcels' longitude spans (parcel-data.ts): the parcel view (d1c8c3c53) keeps only
+// the buildings whose footprint centre lies on the opened parcel.
+const PARCEL_LNG: Record<string, [number, number]> = { 'HR-335754-1234': [15.9819, 15.9825], 'HR-335754-1235': [15.9826, 15.9832] };
+const standsOn = (building: { lng: number }, parcelId: string) => building.lng > PARCEL_LNG[parcelId][0] && building.lng < PARCEL_LNG[parcelId][1];
 // Project candidate points on the actual rendered surface and accept only points where the
 // nearest visible, selectable 3D hit resolves to the requested parcel/proposal. This mirrors the
 // renderer's priority rules so roofs and overlapping parcel fills cannot redirect the test click.
@@ -288,18 +294,24 @@ test.describe('3D rendering and controls @features', () => {
         await expect(display).toHaveValue('solid');
         await expect(panel).not.toContainText(parcelId);
         await expect(panel.locator('.planning-focus, .planning-parcel-evidence')).toHaveCount(0);
-        await selectNativeOption(display, 'ghost');
-        await expect.poll(async () => {
+        // The open Parcel section is the parcel view: only the one building standing on it is drawn,
+        // and the global display setting governs it.
+        const onParcel = async () => {
           const buildings = await sceneBuildings(page);
-          return buildings.length === 2 && buildings.every(building => building.opacity < 1);
-        }).toBe(true);
+          return buildings.length === 1 && standsOn(buildings[0], parcelId) ? buildings[0] : null;
+        };
+        await expect.poll(async () => !!(await onParcel())).toBe(true);
+        await selectNativeOption(display, 'ghost');
+        await expect.poll(async () => ((await onParcel())?.opacity ?? 1) < 1).toBe(true);
         await selectNativeOption(display, 'off');
         await expect.poll(async () => (await sceneBuildings(page)).length).toBe(0);
         await selectNativeOption(display, 'solid');
-        await expect.poll(async () => (await sceneBuildings(page)).length).toBe(2);
+        await expect.poll(async () => (await onParcel())?.opacity).toBe(1);
       }
       await closeSheets(page);
       await page.keyboard.press('Escape');
+      // Leaving the parcel view shows the whole city again.
+      await expect.poll(async () => (await sceneBuildings(page)).length).toBe(2);
       await openPlanningViews(page);
       await expect(display).toHaveValue('solid');
       await expect(panel.locator('.planning-focus, .planning-parcel-evidence')).toHaveCount(0);
@@ -371,9 +383,11 @@ test.describe('3D rendering and controls @features', () => {
     expect(await camera()).toEqual(before);
     await expect(parcelPanel).toBeVisible();
     expect(await camera()).toEqual(before);
+    // The open Parcel section is the parcel view (d1c8c3c53): the building standing on the parcel
+    // stays, in its own material; the other is hidden, not rebuilt.
     const buildings = await sceneBuildings(page);
-    expect(buildings).toHaveLength(2);
-    expect(buildings.map(building => building.color)).toEqual(originalBuildings.map(building => building.color));
+    expect(buildings).toEqual(originalBuildings.filter(building => standsOn(building, 'HR-335754-1234')));
+    expect(buildings).toHaveLength(1);
     expect(await page.evaluate(() => {
       let selected = false;
       (window as any).getThreeModeInternals().scene.traverse((o: any) => {
@@ -391,13 +405,14 @@ test.describe('3D rendering and controls @features', () => {
       (window as any).getThreeModeInternals().scene.traverse((o: any) => { if (o.userData?.isNearbyBuilding3D && o.visible && o.parent.visible) count++; });
       return count;
     });
-    expect(visible).toBe(2);
+    expect(visible).toBe(1);
     // Escape clears the retained parcel view and closes its click stack.
     await page.keyboard.press('Escape');
     await expect(page.locator('.three-mode-isolation-banner')).toBeHidden();
     await expect(page.locator('#three-click-stack')).toBeHidden();
     expect(await camera()).toEqual(before);
-    expect((await sceneBuildings(page)).map(building => building.color)).toEqual(originalBuildings.map(building => building.color));
+    // Leaving the parcel view shows exactly what it hid.
+    expect(await sceneBuildings(page)).toEqual(originalBuildings);
     await page.screenshot({ path: '/private/tmp/colosseum-3d-parcel-emphasis.png' });
   });
   test('3D enters with real building meshes, orbit and zoom work, and 2D returns', async ({ mockApi: page }) => {

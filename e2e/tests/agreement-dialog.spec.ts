@@ -231,13 +231,15 @@ test('an agreement whose design is taken off the map warns that it does not matc
 test('Create agreement with no saved plan names what is missing and saves nothing', async ({ mockApi: page }) => {
   await openCity(page);
   await page.evaluate(() => (window as any).i18n.setLanguage('en'));
-  // The Agreements tab creates nothing itself: an agreement starts from a plan.
+  // The Agreements tab offers Create, Compare, Import and Imported like every Lists tab, with the
+  // file formats below.
   const list = await openAgreementsList(page);
   await expect(list.locator('.lists-item')).toHaveCount(0);
-  await expect(page.locator('#lists-actions')).toHaveText('Create an agreement from a plan in the Plans tab.');
+  await expect(page.locator('#lists-actions button')).toHaveText(['Create agreement', 'Compare agreements', 'Import agreement file', 'Imported agreements']);
+  await expect(page.locator('#lists-actions .lists-actions__help')).toHaveText('File formats and limits');
 
-  // An editor opened without a plan says to create one, and cannot save.
-  await page.evaluate(() => { void (window as any).AgreementDialog.open(); });
+  // Create agreement without a plan opens an editor that says to create one, and cannot save.
+  await page.locator('#lists-actions').getByRole('button', { name: 'Create agreement', exact: true }).click();
   const editor = await editorOpen(page, 'Create agreement');
   await expect(editor).toContainText('Create a plan first');
   await expect(editor.locator('[data-agreement-plan]')).toHaveValue('');

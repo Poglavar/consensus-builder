@@ -285,12 +285,13 @@ describe('proposal details action footer', () => {
         expect(footer('.btn-duplicate-design').length).toBe(1);
     });
 
-    it('keeps a parcel layout local: no Share or note about it, no Duplicate, Bet or approval action', () => {
+    it('shares a parcel layout on its own like any design, with no Duplicate, Bet or approval action', () => {
         const proposal = { proposalId: 'layout-1', goal: 'parcel-layout', title: 'Layout', cadastreParcelIds: ['source-1'], parcelLayout: { plots: [] } };
         const result = render(proposal, { applied: true });
         const footer = parse(result.footer.innerHTML);
-        // Its agreement publishes it, so there is no Share to disable and explain.
-        expect(footer('.btn-share-proposal').length).toBe(0);
+        // A layout is geometry only: publishing it settles nothing, so its Share is enabled and unexplained.
+        expect(footer('.btn-share-proposal').length).toBe(1);
+        expect(footer('.btn-share-proposal').attr('disabled')).toBeUndefined();
         expect(footer('.proposal-publish-later').length).toBe(0);
         expect(footer('.btn-duplicate-design').length).toBe(0);
         expect(footer('.btn-bet-proposal').length).toBe(0);
@@ -339,7 +340,8 @@ describe('proposal details action footer', () => {
         const layoutFooter = parse(appliedLayout.footer.innerHTML);
         expect(layoutFooter('.btn-create-agreement').length).toBe(0);
         expect(layoutFooter('.btn-add-to-plan').length).toBe(1);
-        expect(layoutFooter('.btn-share-proposal').length).toBe(0);
+        expect(layoutFooter('.btn-share-proposal').hasClass('btn-primary')).toBe(true);
+        expect(layoutFooter('.btn-share-proposal').attr('disabled')).toBeUndefined();
 
         const park = { proposalId: 'park-3', goal: 'park', title: 'Park', cadastreParcelIds: [] };
         const appliedPark = render(park, { applied: true });

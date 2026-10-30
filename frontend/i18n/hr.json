@@ -509,7 +509,6 @@
             },
             "valueGainAll": "Pri raspodjeli prema vrijednosti svaki vlasnik dobiva natrag punu vrijednost koju je unio; cijelo povećanje vrijednosti namiruje se novcem.",
             "valueGainShare": "Pri raspodjeli prema vrijednosti novcem se namiruje {{percent}} % povećanja vrijednosti koje ostvari svaki vlasnik.",
-            "minParties": "Mora odobriti najmanje {{count}} različitih vlasnika ulaznih čestica.",
             "noProposer": "Zemljište se vraća vlasnicima ili ide za javne namjene; predlagatelj ga ne može steći."
         },
         "authority": {
@@ -6584,7 +6583,6 @@
             "useDog": "Prostor za pse",
             "usePlay": "Igralište",
             "summary": "{{area}}, vrata: {{gates}}",
-            "drawn": "Ograđeni prostor",
             "wholePark": "Ograda oko cijelog parka",
             "finish": "Završi prostor",
             "vertexTitle": "Povucite za promjenu oblika ograđenog prostora",

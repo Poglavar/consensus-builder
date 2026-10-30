@@ -1235,7 +1235,7 @@
         const summary = card.querySelector('[data-role="enclosure-summary"]');
         if (summary) {
             summary.textContent = t('enclosure.summary', '{{area}}, gates: {{gates}}', {
-                area: enclosure.ring ? t('enclosure.drawn', 'Fenced area') : t('enclosure.wholePark', 'Fence around the whole park'),
+                area: enclosure.ring ? t('tools.enclosure', 'Fenced area') : t('enclosure.wholePark', 'Fence around the whole park'),
                 gates: enclosure.gates.length
             });
         }

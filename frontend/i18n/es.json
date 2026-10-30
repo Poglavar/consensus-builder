@@ -509,7 +509,6 @@
             },
             "valueGainAll": "Si se reparte por valor, cada propietario recupera íntegramente el valor que aporta; toda la plusvalía se liquida en dinero.",
             "valueGainShare": "Si se reparte por valor, se liquida en dinero el {{percent}} % de la plusvalía de cada propietario.",
-            "minParties": "Al menos {{count}} propietarios distintos de las parcelas de entrada deben aprobar.",
             "noProposer": "El suelo vuelve a sus propietarios o se destina a uso público; un proponente no puede adquirirlo."
         },
         "authority": {
@@ -6577,7 +6576,6 @@
             "useDog": "Zona para perros",
             "usePlay": "Zona de juegos",
             "summary": "{{area}}, puertas: {{gates}}",
-            "drawn": "Zona vallada",
             "wholePark": "Valla alrededor de todo el parque",
             "finish": "Terminar zona",
             "vertexTitle": "Arrastra para cambiar la forma de la zona vallada",

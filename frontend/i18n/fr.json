@@ -2470,7 +2470,6 @@
             "useDog": "Espace canin",
             "usePlay": "Aire de jeux",
             "summary": "{{area}}, portillons : {{gates}}",
-            "drawn": "Espace clôturé",
             "wholePark": "Clôture autour de tout le parc",
             "finish": "Terminer l’espace",
             "vertexTitle": "Faites glisser pour changer la forme de l’espace clôturé",
@@ -3889,7 +3888,6 @@
             },
             "valueGainAll": "Avec une répartition selon la valeur, chaque propriétaire retrouve l’intégralité de la valeur qu’il apporte ; toute la plus-value est réglée en argent.",
             "valueGainShare": "Avec une répartition selon la valeur, la plus-value de chaque propriétaire est réglée en argent à hauteur de {{percent}}%.",
-            "minParties": "Au moins {{count}} propriétaires distincts des parcelles d’entrée doivent approuver.",
             "noProposer": "Les terrains reviennent à leurs propriétaires ou sont affectés à un usage public ; un porteur de projet ne peut pas les acquérir."
         },
         "authority": {

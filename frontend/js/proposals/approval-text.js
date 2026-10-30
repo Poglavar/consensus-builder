@@ -136,7 +136,7 @@
                 ? t('proposalApproval.regime.valueGainAll', 'Distributed by value, each owner is made whole to the value they put in; the whole value gain is settled in money.')
                 : t('proposalApproval.regime.valueGainShare', 'Distributed by value, {{percent}}% of each owner’s value gain is settled in money.', { percent }));
         }
-        if (template?.minParties > 1) lines.push(t('proposalApproval.regime.minParties', 'At least {{count}} distinct input owners must approve.', { count: template.minParties }));
+        if (template?.minParties > 1) lines.push(t('proposalApproval.dimensions.values.minParties.some.long', 'At least {{count}} distinct input owners must approve.', { count: template.minParties }));
         if (template?.family === 'authority-led') lines.push(t('proposalApproval.regime.noProposer', 'Land returns to its owners or goes to public use; a proposer cannot acquire it.'));
         return lines;
     }

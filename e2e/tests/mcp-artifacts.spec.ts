@@ -11,7 +11,7 @@ const root = path.resolve(__dirname, '../../frontend');
 const site = { type: 'Polygon', coordinates: [[[-0.1, 51.5], [-0.099, 51.5], [-0.099, 51.501], [-0.1, 51.501], [-0.1, 51.5]]] };
 const files = [
   'vendor/proj4-2.22.0/proj4.js', 'vendor/turf-6.5.0/turf.min.js', 'vendor/noble-hashes-1.8.0/sha256.js',
-  'vendor/ipfs-file-cid/ipfs-file-cid.js', 'js/cid.js', 'js/metric-frame.js', 'js/corridor-profile.js', 'js/corridor-osm-form.js', 'js/corridor-junction.js',
+  'vendor/ipfs-file-cid/ipfs-file-cid.js', 'js/cid.js', 'js/geometry-tolerances.js', 'js/metric-frame.js', 'js/corridor-profile.js', 'js/corridor-osm-form.js', 'js/corridor-junction.js',
   'js/corridor-transition.js', 'js/proposals/corridor-levels.js', 'js/corridor-footprint.js', 'js/proposals/formation-depth.js',
   'js/proposals/authored-record.js', 'js/proposals/footprint-parts.js', 'js/design-record.js', 'js/proposals/parcel-arrangement.js', 'js/parcel-layout-validation.js', 'js/parcel-layout-layouts.js', 'js/reparcellization-slice.js',
   'js/parcels/schelling-grid.js', 'js/single-building-geometry.js', 'js/park-planting.js', 'js/urban-rule-variation.js', 'js/intent-editing.js', 'js/intent-design.js', 'js/draft-link.js', 'js/approval-link.js'
@@ -55,8 +55,8 @@ test('an approval link focuses its action without clicking or invoking a wallet'
 
 async function loadGroundRuntime(page: any) {
   const scripts = [
-    'js/agreement-record.js', 'js/agreement-ground.js', 'js/work-slicer.js', 'js/proposals/status.js',
-    'js/proposals/parcel-contiguity.js', 'js/proposals/footprint-parts.js', 'js/proposals/parcel-arrangement.js',
+    'js/geometry-tolerances.js', 'js/agreement-record.js', 'js/agreement-ground.js', 'js/work-slicer.js', 'js/proposals/status.js',
+    'js/proposals/parcel-contiguity.js', 'js/proposals/footprint-parts.js', 'js/proposals/parcel-arrangement.js', 'js/proposals/site-binding.js',
     'js/proposals/plan-order.js', 'js/proposals/formation-edit.js', 'js/parcel-layout-record.js', 'js/parcel-layout-ownership.js',
     'js/parcels/live-fabric.js', 'js/proposals/apply/route.js', 'js/proposals/claims.js', 'js/proposals/lineage.js',
     'js/proposals/lifecycle-evidence.js', 'js/proposals/display-state.js', 'js/proposals/open-ground.js', 'js/proposals/apply/transaction.js',

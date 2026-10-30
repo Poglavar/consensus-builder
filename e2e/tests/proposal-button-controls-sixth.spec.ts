@@ -83,7 +83,8 @@ test.describe('proposal button controls sixth pass @features', () => {
           published: { cid, publishedAt: '2026-10-12T10:00:00.000Z', apiBase: w.DesignSync.apiBase() } }),
       ];
     }, { parcelId: PARCEL_ID, cid });
-    // Lists (01268caee): a published row's title imports the design (ListsPanel designOf) and opens it.
+    // Lists (e91bc39d0, af34fc935): a published row (its title) shows the design on the map without storing it;
+    // its Open imports the design (ListsPanel designOf) and opens it.
     await page.locator('#proposals-button').click();
     const list = page.locator('#proposals-sheet');
     await expect(list.locator(`#proposal-list-host .lists-item[data-list-id="${cid}"]`)).toContainText('Draft');
@@ -93,8 +94,11 @@ test.describe('proposal button controls sixth pass @features', () => {
     await expect(row).toBeVisible();
     await expect(row).toHaveAttribute('data-list-id', cid);
     await expect(row.getByRole('button', { name: 'Remove from browser', exact: true })).toHaveCount(0);
-    await row.getByRole('button', { name: 'Downloadable design', exact: true }).click();
+    await row.getByRole('heading', { name: 'Downloadable design', exact: true }).click();
     const importedId = `design-${cid}`;
+    await expect.poll(() => pageIndex(page).requests.some(request => request.method === 'GET' && request.path === `/designs/${cid}`)).toBe(true);
+    expect(await page.evaluate(id => (window as any).proposalStorage.getProposal(id) ?? null, importedId)).toBeNull();
+    await row.getByRole('button', { name: 'Open Downloadable design', exact: true }).click();
     await expect.poll(() => page.evaluate(id => {
       const w = window as any;
       const record = w.proposalStorage.getProposal(id);

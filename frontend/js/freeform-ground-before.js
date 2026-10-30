@@ -35,6 +35,8 @@
         const win = root;
         const applied = win.proposalStorage.getAllProposals().filter(record => win.isApplied(record));
         const scope = replayScope(applied, cadastreIds, ownId);
+        // A design moved off every parcel stands on no ground: nothing to replay.
+        if (!scope.ids.length) return { ids: [], pieces: [] };
         await win.CadastralParcelRepository.ensureIds(scope.ids);
         const parcels = win.CadastralParcelRepository.getMany(scope.ids);
         const missing = scope.ids.filter(id => !parcels.some(parcel => String(parcel.properties?.parcelId ?? parcel.id) === id));

@@ -2470,7 +2470,6 @@
             "useDog": "Área para cães",
             "usePlay": "Parque infantil",
             "summary": "{{area}}, portões: {{gates}}",
-            "drawn": "Área vedada",
             "wholePark": "Vedação à volta de todo o parque",
             "finish": "Terminar área",
             "vertexTitle": "Arraste para mudar a forma da área vedada",
@@ -3889,7 +3888,6 @@
             },
             "valueGainAll": "Na distribuição por valor, cada proprietário recupera integralmente o valor com que contribuiu; toda a mais-valia é liquidada em dinheiro.",
             "valueGainShare": "Na distribuição por valor, liquida-se em dinheiro {{percent}}% da mais-valia de cada proprietário.",
-            "minParties": "Pelo menos {{count}} proprietários distintos das parcelas de entrada têm de aprovar.",
             "noProposer": "O terreno é devolvido aos seus proprietários ou destinado a uso público; um proponente não o pode adquirir."
         },
         "authority": {

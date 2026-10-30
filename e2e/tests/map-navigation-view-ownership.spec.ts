@@ -36,10 +36,14 @@ test('opening Freeform placement preserves the map center and zoom', async ({ mo
   await page.mouse.move(425, 310, { steps: 5 });
   await page.mouse.up();
   await expect(page.locator('#single-building-editor')).toHaveAttribute('data-placing', 'true');
-  await page.mouse.move(400, 350);
-  const outline = await page.locator('.single-building-placement-outline').boundingBox();
-  expect(Math.abs(outline!.x + outline!.width / 2 - 400)).toBeLessThan(2);
-  expect(Math.abs(outline!.y + outline!.height / 2 - 350)).toBeLessThan(2);
+  // The outline follows the pointer. A headed drag leaves the map gliding (Leaflet inertia), which
+  // carries the outline drawn at the last move with it; moving again draws it where the map settled.
+  await expect.poll(async () => {
+    await page.mouse.move(401, 351);
+    await page.mouse.move(400, 350);
+    const outline = await page.locator('.single-building-placement-outline').boundingBox();
+    return Math.max(Math.abs(outline!.x + outline!.width / 2 - 400), Math.abs(outline!.y + outline!.height / 2 - 350));
+  }).toBeLessThan(2);
   await placeFreeformBuilding(page);
   await expect(page.locator('#map-container .single-building-fill--active')).toBeVisible();
   await expect(page.locator('.single-building-label-tooltip')).toHaveCount(0);

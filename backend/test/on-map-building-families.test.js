@@ -1,10 +1,13 @@
 import { describe, expect, it, vi } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { runInNewContext } from 'node:vm';
+import { createRequire } from 'node:module';
 
 const rowHouse = readFileSync(new URL('../../frontend/js/row-house.js', import.meta.url), 'utf8');
 const parcelBased = readFileSync(new URL('../../frontend/js/parcel-based.js', import.meta.url), 'utf8');
 const ruleGeometry = readFileSync(new URL('../../frontend/js/building-rule-geometry.js', import.meta.url), 'utf8');
+// Loaded before both editors in the app (index.html's local-frame-context bundle); both render its rule controls.
+const UrbanRuleVariation = createRequire(import.meta.url)('../../frontend/js/urban-rule-variation.js');
 
 function editorOpenOptions(source, owner, id) {
     const start = Math.max(source.indexOf('window.OnMapEditor.open({'), source.indexOf('window.OnMapEditor?.open({'));
@@ -26,6 +29,7 @@ function loadOpenApi(source, entryName, editorOpen) {
     };
     const window = {
         OnMapEditor: { open: editorOpen },
+        UrbanRuleVariation,
         BuildingDensityStats: { cardMarkup: () => '' },
         resolveDesignParcelFeature: id => id === 'parcel-1' ? polygon : null
     };

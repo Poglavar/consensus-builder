@@ -509,7 +509,6 @@
             },
             "valueGainAll": "Distributed by value, each owner is made whole to the value they put in; the whole value gain is settled in money.",
             "valueGainShare": "Distributed by value, {{percent}}% of each owner’s value gain is settled in money.",
-            "minParties": "At least {{count}} distinct input owners must approve.",
             "noProposer": "Land returns to its owners or goes to public use; a proposer cannot acquire it."
         },
         "authority": {
@@ -6550,7 +6549,6 @@
             "useDog": "Dog area",
             "usePlay": "Play area",
             "summary": "{{area}}, gates: {{gates}}",
-            "drawn": "Fenced area",
             "wholePark": "Fence around the whole park",
             "finish": "Finish area",
             "vertexTitle": "Drag to reshape the fenced area",

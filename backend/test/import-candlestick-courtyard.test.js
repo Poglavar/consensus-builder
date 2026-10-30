@@ -129,7 +129,7 @@ describe('courtyardPlan and the command line', () => {
         expect(dry.stderr).toBe('');
         expect(dry.status).toBe(0);
         expect(dry.stdout).toContain('converted 3 buildings into 2 block designs, dropped 0');
-        expect(dry.stdout).toContain(`plan 1/1 ${PLAN_KEY} "${PLAN_TITLE}": 2 designs (0 parcel layout(s))`);
+        expect(dry.stdout).toContain(`plan 1/1 ${PLAN_KEY} "${PLAN_TITLE}": 2 designs\n`);
         expect(dry.stdout).toMatch(/candlestick-courtyard 2\/2 buildings bafkrei\S+ ".* — block unassigned \(1 building\)"/);
         const missing = run(['--dry-run']);
         expect(missing.status).toBe(1);
