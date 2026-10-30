@@ -555,3 +555,40 @@ it('reads the water and green areas the buildings widened while an earlier read 
         expect(context[`${prefix}Key`]).toContain('[2,2]');
     }
 });
+
+it('reads the trees at a radius changed while an earlier read was out', async () => {
+    const reads = [];
+    const context = loadInContext(threeModeDeclarations(['ensureNearbyTrees']), {
+        isActive: true,
+        treesEnabled: true,
+        nearbyTreesFetching: false,
+        nearbyTreesKey: null,
+        nearbyTrees: [],
+        nearbyDataScope: 'city',
+        sceneTreeLoadGeometry: { type: 'Point', coordinates: [4.36, 52.0085] },
+        sceneTreeLoadGeometrySource: 'camera',
+        buildingLoadRadiusM: 300,
+        NEARBY_BUILDINGS_KEY_PRECISION: 0.0001,
+        sceneAbort: { signal: { aborted: false } },
+        sceneryUrl: (path, geometry, buffer) => `${path}?r=${buffer}`,
+        fetch(url) {
+            return new Promise(resolve => reads.push({ url, land: () => resolve({ ok: true, json: () => ({ trees: [] }) }) }));
+        },
+        rebuildTreesOnly() {},
+        console: { log() {}, warn() {} }
+    });
+    const settle = () => new Promise(resolve => setImmediate(resolve));
+
+    context.ensureNearbyTrees();
+    context.buildingLoadRadiusM = 600;
+    context.ensureNearbyTrees();
+    expect(reads.map(read => read.url)).toEqual(['/decor/near?r=300']);
+
+    reads[0].land();
+    await settle();
+    expect(reads.map(read => read.url)).toEqual(['/decor/near?r=300', '/decor/near?r=600']);
+    reads[1].land();
+    await settle();
+    expect(reads).toHaveLength(2);
+    expect(context.nearbyTreesKey).toContain('|r600');
+});

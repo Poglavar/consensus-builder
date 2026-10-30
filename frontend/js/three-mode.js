@@ -6540,6 +6540,9 @@
                 nearbyTreesFetching = false;
                 console.log(`[3D] Loaded ${nearbyTrees.length} nearby trees (${sceneTreeLoadGeometrySource}+${buffer}m)`);
                 if (isActive) rebuildTreesOnly();
+                // A radius change made while this read was out was skipped; read it now (a no-op
+                // when nothing moved), as the water and green areas do.
+                ensureNearbyTrees();
             })
             .catch(err => {
                 if (!current() || err.name === 'AbortError') return;
