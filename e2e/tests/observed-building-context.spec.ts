@@ -36,7 +36,7 @@ for (const width of [1280, 390]) {
     await page.setContent('<!doctype html><html><body class="three-mode-active"><main id="map-container"></main></body></html>');
     const frontend = path.resolve(__dirname, '../../frontend');
     for (const file of ['tokens','primitives','base','map','panels','utilities','mobile-sheets','three-click-stack']) await page.addStyleTag({ path: path.join(frontend,`css/${file}.css`) });
-    for (const file of ['click-stack/click-stack-model','click-stack/click-stack-relations','three-click-stack']) await page.addScriptTag({ path: path.join(frontend,`js/${file}.js`) });
+    for (const file of ['click-stack/click-stack-model','ui/object-list','click-stack/click-stack-relations','three-click-stack']) await page.addScriptTag({ path: path.join(frontend,`js/${file}.js`) });
     await page.evaluate(() => {
       const w = window as any;
       w.i18n = { t: (key: string) => key === 'clickStackRelations.affectedBy' ? 'Affected by design:' : key };

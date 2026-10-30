@@ -7,6 +7,7 @@
     'use strict';
 
     let selectorId = 0;
+    const objectList = () => (typeof window !== 'undefined' && window.ObjectList) || require('../ui/object-list.js');
     const keys = Object.freeze({
         memberPlans: 'memberPlans', includedDesigns: 'includedDesigns',
         createdBy: 'createdBy', formedFrom: 'formedFrom', formedParcels: 'formedParcels',
@@ -115,19 +116,10 @@
             chip.dataset.kind = group.kind || '';
             chip.dataset.id = instance.id ?? '';
             chip.setAttribute('aria-pressed', 'false');
-            const open = doc.createElement('button');
-            open.type = 'button';
-            open.className = 'btn btn-icon click-stack__open';
+            const open = objectList().openButton(doc, name, win, { className: 'click-stack__open' });
             open.dataset.action = 'related';
             open.dataset.kind = group.kind || '';
             open.dataset.id = instance.id ?? '';
-            const openLabel = win?.i18n?.t?.('lists.openNamed', { title: name }) || `Open ${name}`;
-            open.title = openLabel;
-            open.setAttribute('aria-label', openLabel);
-            const icon = doc.createElement('i');
-            icon.className = 'fas fa-arrow-right';
-            icon.setAttribute('aria-hidden', 'true');
-            open.appendChild(icon);
             item.append(chip, open);
             strip.appendChild(item);
         }
@@ -145,52 +137,17 @@
     }
 
     // Hover and keyboard focus show an item's object; a click keeps it shown (pressed) until it is
-    // clicked again or the stack highlights a section anew. `show(kind, id, { pinned })` draws one
-    // object; `restore()` draws the section's own highlight again.
+    // clicked again or the stack highlights a section anew (ObjectList). `show(kind, id, { pinned })`
+    // draws one object; `restore()` draws the section's own highlight again.
     function bindPreview(container, { show, restore }) {
-        let pinned = null;
-        // The whole item (its name and its open button) shows the object.
-        const itemOf = target => {
-            const item = target?.closest?.('.click-stack__link');
-            return item && container.contains(item) ? item : null;
-        };
         const chipOf = item => item.querySelector('[data-action="preview"]');
-        const back = () => {
-            if (pinned && !pinned.isConnected) pinned = null; // its list was rendered anew
-            if (pinned) show(pinned.dataset.kind, pinned.dataset.id, { pinned: false }); else restore();
-        };
-        const enter = event => {
-            const item = itemOf(event.target);
-            if (!item || item.contains(event.relatedTarget)) return;
-            const chip = chipOf(item);
-            show(chip.dataset.kind, chip.dataset.id, { pinned: false });
-        };
-        const leave = event => {
-            const item = itemOf(event.target);
-            if (item && !item.contains(event.relatedTarget)) back();
-        };
-        container.addEventListener('mouseover', enter);
-        container.addEventListener('mouseout', leave);
-        container.addEventListener('focusin', enter);
-        container.addEventListener('focusout', leave);
-        container.addEventListener('click', event => {
-            const chip = event.target?.closest?.('[data-action="preview"]');
-            if (!chip || !container.contains(chip)) return;
-            const same = pinned === chip;
-            if (pinned) pinned.setAttribute('aria-pressed', 'false');
-            pinned = same ? null : chip;
-            if (pinned) {
-                pinned.setAttribute('aria-pressed', 'true');
-                show(chip.dataset.kind, chip.dataset.id, { pinned: true });
-            } else restore();
+        return objectList().bind(container, {
+            item: '.click-stack__link',
+            keyOf: item => { const chip = chipOf(item); return chip ? `${chip.dataset.kind}\n${chip.dataset.id}` : null; },
+            pressed: chipOf,
+            show: (key, { pinned }) => { const [kind, id] = key.split('\n'); show(kind, id, { pinned }); },
+            restore
         });
-        return {
-            // The section's own highlight came back (a selection, a refresh): no item stays pressed.
-            reset() {
-                if (pinned?.isConnected) pinned.setAttribute('aria-pressed', 'false');
-                pinned = null;
-            }
-        };
     }
 
     function designOptionLabel(instance, win, plans = []) {

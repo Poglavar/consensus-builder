@@ -9,7 +9,7 @@ for (const width of [1280, 390]) for (const theme of ['light', 'dark']) {
     for (const file of ['tokens', 'primitives', 'base', 'map', 'panels', 'map-shell', 'three-click-stack', 'mobile-sheets']) {
       await page.addStyleTag({ path: path.join(frontend, `css/${file}.css`) });
     }
-    for (const file of ['proposals/design-goals', 'click-stack/click-stack-model', 'click-stack/click-stack-relations', 'three-click-stack']) {
+    for (const file of ['proposals/design-goals', 'click-stack/click-stack-model', 'ui/object-list', 'click-stack/click-stack-relations', 'three-click-stack']) {
       await page.addScriptTag({ path: path.join(frontend, `js/${file}.js`) });
     }
     await page.evaluate(() => {

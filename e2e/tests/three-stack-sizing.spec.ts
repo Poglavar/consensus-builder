@@ -19,7 +19,7 @@ for (const viewport of [{ width: 1280, height: 720 }, { width: 390, height: 844 
     });
 
     test('scoped agreement selector sits above Plans and follows the selected plan', async ({ page }) => {
-      for (const file of ['click-stack/click-stack-relations', 'design-memberships', 'ui/busy-control']) {
+      for (const file of ['ui/object-list', 'click-stack/click-stack-relations', 'design-memberships', 'ui/busy-control']) {
         await page.addScriptTag({ path: path.join(frontend, `js/${file}.js`) });
       }
       await page.evaluate(() => {
