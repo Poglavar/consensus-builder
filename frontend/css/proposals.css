@@ -1327,13 +1327,31 @@ textarea.proposal-description-input {
     text-overflow: ellipsis;
 }
 
-/* The other proposals on this land: cb-option rows (title, relation, a lifecycle cb-badge and a
-   chevron), each opening that proposal. */
+/* The other proposals on this land: object-list items (details-panel.js), a cb-option (title,
+   relation, a lifecycle cb-badge) that outlines the design, pressed while kept, and an arrow that
+   opens it. */
 .proposal-parcel-set-relations {
     margin-top: 10px;
 }
 
+.proposal-parcel-set-relation-row {
+    display: flex;
+    align-items: stretch;
+    gap: var(--cb-space-1);
+}
+
+.proposal-parcel-set-relation-row + .proposal-parcel-set-relation-row {
+    margin-top: var(--cb-space-2);
+}
+
+.proposal-parcel-set-relation-row > .object-list__open {
+    align-self: stretch;
+    height: auto;
+}
+
 .proposal-parcel-set-relation {
+    flex: 1 1 auto;
+    min-width: 0;
     align-items: center;
 }
 
@@ -1365,13 +1383,26 @@ textarea.proposal-description-input {
     background-color: var(--cb-surface-2);
 }
 
-/* Descendant navigation uses the shared button face; this hook owns its row layout only. */
+/* A formed parcel or design is an object-list item (details-panel.js): the shared button face
+   outlines it (pressed while kept), and a design's arrow opens it. These hooks own layout only. */
+.proposal-descendants-list .proposal-descendant-row {
+    display: flex;
+    align-items: stretch;
+    gap: var(--cb-space-1);
+    margin: var(--cb-space-1) 0;
+}
+
 .proposal-descendants-list .descendant-item {
     display: block;
-    width: 100%;
-    margin: var(--cb-space-1) 0;
+    flex: 1 1 auto;
+    min-width: 0;
     text-align: left;
     white-space: normal;
+}
+
+.proposal-descendants-list .object-list__open {
+    align-self: stretch;
+    height: auto;
 }
 
 .proposal-parcel-item {

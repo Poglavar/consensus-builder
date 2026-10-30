@@ -52,7 +52,8 @@ test.describe('proposal detail button controls @features', () => {
     await openLandSection(page);
     const relatedButton = page.locator(`#proposal-details-content [data-related-proposal-id="${relatedId}"]`);
     await expect(relatedButton).toBeVisible();
-    await relatedButton.click();
+    // The item only outlines the design; its arrow opens it.
+    await page.locator(`#proposal-details-content [data-open-design-id="${relatedId}"]`).click();
     await expect.poll(() => page.evaluate(() => (window as any).PlanningViews.getSelected()?.proposalId)).toBe(relatedId);
     await expect(page.locator('#proposal-details-panel')).toContainText('Related plan');
     await showExpandedProposal(page, relatedId);

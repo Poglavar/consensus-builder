@@ -45,7 +45,11 @@
 .urban-block-list-status-row button { min-width: var(--cb-control-height); min-height: var(--cb-control-height); flex-shrink: 0; }
 .urban-block-list { margin: 0; padding: 0; list-style: none; }
 .urban-block-list > li + li { margin-top: var(--cb-space-2); }
-/* Each block is a cb-option row (its look, hover and aria-current state are the primitive's). */
+/* Each block is a cb-option row (its look, hover, pressed and aria-current states are the
+   primitive's) that outlines the block, with its open arrow beside it (an object list). */
+.urban-block-item { display: flex; align-items: stretch; gap: var(--cb-space-1); }
+.urban-block-item > .urban-block-row { flex: 1 1 auto; min-width: 0; }
+.urban-block-item > .urban-block-open { flex: 0 0 auto; align-self: stretch; height: auto; }
 .urban-block-row { align-items: center; gap: var(--cb-space-2); min-height: var(--cb-control-height-lg); padding: var(--cb-space-3) var(--cb-space-2); }
 .urban-block-rank { min-width: 2ch; font-size: var(--cb-text-sm); color: var(--cb-text-muted); text-align: right; }
 .urban-block-row-description { display: flex; flex-direction: column; gap: var(--cb-space-1); flex: 1; min-width: 0; }

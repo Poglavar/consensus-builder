@@ -1357,7 +1357,7 @@ a phone it is the bottom sheet, up to half the screen (the phone block at the en
 }
 
 .parcel-proposals-list .proposal-item {
-    cursor: default;
+    cursor: pointer;
     padding: 8px;
     margin: 4px 0;
     border: 1px solid var(--cb-line);
@@ -1396,11 +1396,22 @@ a phone it is the bottom sheet, up to half the screen (the phone block at the en
 }
 
 .parcel-proposals-list .proposal-item-title {
+    flex: 1 1 auto;
     min-width: 0;
     color: var(--cb-primary);
     font-weight: var(--cb-weight-semibold);
     font-size: var(--cb-text-lg);
     margin: 0;
+    overflow-wrap: anywhere;
+}
+
+/* A proposal row is an object-list item (js/ui/object-list.js, parcel-set-proposals.js): its name
+   outlines the design on the map and shows pressed while it is kept; the arrow opens it. */
+.proposal-item-pick {
+    min-width: 0;
+    justify-content: flex-start;
+    text-align: start;
+    white-space: normal;
     overflow-wrap: anywhere;
 }
 

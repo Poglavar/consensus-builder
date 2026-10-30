@@ -11,6 +11,7 @@ const openGround = require('../../frontend/js/proposals/open-ground.js');
 const format = require('../../frontend/js/format.js');
 const financials = require('../../frontend/js/financials.js');
 const CityMoney = require('../../frontend/js/city-money.js');
+const SetProposals = require('../../frontend/js/parcels/parcel-set-proposals.js');
 const ParcelPriceModel = {
     buildEstimate: financials.buildParcelPriceEstimate,
     aggregate: financials.aggregateParcelPriceEstimates
@@ -86,7 +87,10 @@ function renderParcelPanel(properties, { currency = 'EUR', id = 'test-city', pro
             applyFeatureVisibility() {}
         },
         requestAnimationFrame: callback => callback(),
-        ParcelSetProposals: { renderPublishedOnly() {} },
+        ParcelSetProposals: {
+            renderPublishedOnly() {}, bindRows() {},
+            pickButtonHtml: SetProposals.pickButtonHtml, openButtonHtml: SetProposals.openButtonHtml
+        },
         // The Proposals tab's Plans view (cdc103eb); these tests look at the title and Info tab only.
         ProposalPlans: {
             decorateParcelRows() {}, bindPlanRows() {}, current: plans => plans, planRowsHtml: () => '',
@@ -156,16 +160,18 @@ describe('geometry-derived parcel references', () => {
         expect(rendered.info).not.toContain('geometryReferenceNote');
     });
 
-    it('renders each parcel design as an article with a native opening button', () => {
+    // An object-list item (docs/design-language.md, "Object lists"): the name outlines the design,
+    // only the arrow opens it.
+    it('renders each parcel design as an article whose name outlines it and whose arrow opens it', () => {
         const rendered = renderParcelPanel({ parcelId: 'native-123' }, {
             proposals: [{ proposalId: 'design-1', title: 'Pocket park', goal: 'park' }]
         });
-        expect(rendered.proposals).toContain('<article class="proposal-item" data-proposal-id="design-1">');
-        expect(rendered.proposals).toContain('<h3 class="proposal-item-title"><button type="button" class="cb-link"');
-        expect(rendered.proposals).toContain('Pocket park</button></h3>');
+        expect(rendered.proposals).toContain('<article class="proposal-item" data-proposal-id="design-1" data-parcel-id="native-123">');
+        expect(rendered.proposals).toContain('<h3 class="proposal-item-title"><button type="button" class="btn btn-quiet proposal-item-pick" data-proposal-pick aria-pressed="false">Pocket park</button></h3>');
+        expect(rendered.proposals).toContain('data-proposal-open title="Open Pocket park" aria-label="Open Pocket park"');
         expect(rendered.proposals).not.toContain('<div class="proposal-item"');
-        expect(rendered.proposals).not.toMatch(/<article[^>]+onclick=/);
-        expect(rendered.proposals.match(/<button\b/g)).toHaveLength(1);
+        expect(rendered.proposals).not.toMatch(/onclick=/);
+        expect(rendered.proposals.match(/<button\b/g)).toHaveLength(2);
     });
 
     it('labels unchanged source ground without asserting cadastral authority', () => {

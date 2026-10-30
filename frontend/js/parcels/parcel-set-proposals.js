@@ -52,6 +52,19 @@
         return { proposalsForParcel: lookup, publishedOnly: new Set(publishedOnly) };
     }
 
+    // A proposal row is an object-list item (docs/design-language.md, "Object lists"): its name is
+    // the button that outlines the design on the map (pressed while kept outlined), and this arrow,
+    // "Open <title>", is the only control that opens it. The name comes as markup, the arrow's
+    // title as plain text.
+    function pickButtonHtml(titleHtml) {
+        return `<button type="button" class="btn btn-quiet proposal-item-pick" data-proposal-pick aria-pressed="false">${titleHtml}</button>`;
+    }
+
+    function openButtonHtml(title, tr = t) {
+        const label = escapeText(tr('lists.openNamed', 'Open {{title}}', { title }));
+        return `<button type="button" class="btn btn-icon btn-sm object-list__open proposal-item-open" data-proposal-open title="${label}" aria-label="${label}"><i class="fas fa-arrow-right" aria-hidden="true"></i></button>`;
+    }
+
     // describe(proposal) → { title, typeLabel, statusText, statusClass, modifierText?, modifierClass?,
     // thumbHtml }: statusClass is the lifecycle rung (draft · published · minted · executed) and the
     // modifier an expired or concluded record, both drawn as cb-badges (thumbHtml is trusted markup
@@ -81,11 +94,12 @@
             const body = `
                 <div class="proposal-item-body">
                     <div class="proposal-item-header">
-                        <span class="proposal-item-title">${escapeText(info.title)}</span>
+                        <span class="proposal-item-title">${pickButtonHtml(escapeText(info.title))}</span>
                         <div class="proposal-item-badges">
                             <span class="cb-badge cb-badge--${escapeText(info.statusClass)}">${escapeText(info.statusText)}</span>
                             ${info.modifierText ? `<span class="cb-badge ${escapeText(info.modifierClass)}">${escapeText(info.modifierText)}</span>` : ''}
                         </div>
+                        ${openButtonHtml(info.title, t)}
                     </div>
                     <div class="proposal-item-details">${escapeText([info.typeLabel, coverage].filter(Boolean).join(' · '))}</div>
                 </div>`;
@@ -143,6 +157,8 @@
     // re-rendering a panel does not ask again; a failure is kept as long, so it is not retried in a loop.
     const PUBLISHED_TTL_MS = 60 * 1000;
     const publishedCache = new Map();
+    // The index record of each published-only row listed, by its CID: what a hovered row outlines.
+    const publishedRecords = new Map();
 
     function publishedKeyFor(cadastreIds) {
         const city = root.normalizeCityCodeForApi(root.resolveCurrentCityCode());
@@ -201,7 +217,9 @@
         const merged = withPublished(local, state.summaries, cadastreIdsOf, summary => !!root.findLocalCopyOfServerProposal(summary));
         const entries = collect(ids, merged.proposalsForParcel, proposal => proposal.proposalId);
         entries.forEach(entry => {
-            if (merged.publishedOnly.has(entry.proposal)) entry.serverId = String(entry.proposal.cid);
+            if (!merged.publishedOnly.has(entry.proposal)) return;
+            entry.serverId = String(entry.proposal.cid);
+            publishedRecords.set(entry.serverId, entry.proposal);
         });
         return { ids, entries, published: { loading: !!state.promise, error: state.error } };
     }
@@ -212,29 +230,134 @@
         return { entries, published, html: listHtml(entries, { parcelCount: ids.length, describe, t, emptyText: options.emptyText, published }) };
     }
 
-    // A row opens its proposal the way a parcel's list does (selectAndHighlight via
-    // showProposalDetails, with the first parcel of the set it covers); a published-only row (its
-    // data-server-id is the design's CID) is imported first. Bound once per container.
-    function bindRows(container) {
-        if (!container || container.dataset.parcelSetProposalsBound) return;
-        container.dataset.parcelSetProposalsBound = 'true';
-        container.addEventListener('click', async event => {
-            const row = event.target.closest('[data-parcel-set-proposal]');
-            if (!row) return;
-            let key = row.getAttribute('data-parcel-set-proposal');
-            const serverId = row.getAttribute('data-server-id');
-            if (serverId) {
-                try {
-                    const proposal = await root.DesignSync.importDesign(await root.DesignSync.fetchDesign(serverId));
-                    key = root.getProposalKey(proposal) || key;
-                } catch (error) {
-                    console.error(`[${new Date().toISOString()}] [ParcelSetProposals] could not load published proposal ${serverId}`, error);
-                    root.updateStatus(t('modal.roadWidth.proposalList.downloadError', 'Failed to download proposal'));
+    // ---- Object lists beside the map ----------------------------------------------------------
+    // Brings the outlined shapes into the part of the map the panel holding `container` leaves
+    // visible, only when they are out of it or too small to make out (as the click stack frames).
+    function frameIfHidden(win, container, features) {
+        const map = win.map;
+        if (!features.length || !map || !win.L) return;
+        const bounds = win.L.geoJSON({ type: 'FeatureCollection', features }).getBounds();
+        if (!bounds.isValid()) return;
+        const panel = container.closest('.right-dock-panel, .right-screen-panel, .map-sheet--dock');
+        const rect = panel ? panel.getBoundingClientRect() : null;
+        const viewport = { width: win.innerWidth, height: win.innerHeight };
+        const pad = win.proposalPanelFitPadding(rect, viewport, 16);
+        const size = map.getSize();
+        const northWest = map.latLngToContainerPoint(bounds.getNorthWest());
+        const southEast = map.latLngToContainerPoint(bounds.getSouthEast());
+        const box = { left: northWest.x, top: northWest.y, right: southEast.x, bottom: southEast.y };
+        const view = { left: pad.paddingTopLeft[0], top: pad.paddingTopLeft[1],
+            right: size.x - pad.paddingBottomRight[0], bottom: size.y - pad.paddingBottomRight[1] };
+        if (!win.__clickStackModel.framingNeeded(box, view)) return;
+        const { paddingTopLeft, paddingBottomRight } = win.proposalPanelFitPadding(rect, viewport, 48);
+        map.fitBounds(bounds, { paddingTopLeft, paddingBottomRight, maxZoom: 19 });
+    }
+
+    // ObjectList.bind over a list of map objects, drawn on the map: hovering or focusing an item
+    // outlines featuresOf(item) on the hover layer; a pressed item's outline takes the inspection
+    // layer (framed when out of view) until it is let go, when the panel's own highlight (the click
+    // stack's) comes back. In the model view both go through its inspection outline.
+    // Shared by the proposal rows here and the claims breadcrumb (js/proposals/claims-ui.js).
+    function bindOutlines(container, { item, keyOf, pressed, featuresOf, win = root }) {
+        const objectList = win.ObjectList || require('../ui/object-list.js');
+        let held = false; // a pressed item's outline replaced the panel's own
+        let handle = null;
+        const three = () => !!win.isThreeModeActive?.();
+        handle = objectList.bind(container, {
+            item, keyOf, pressed,
+            show(key, { pinned, item: element }) {
+                const features = featuresOf(element) || [];
+                if (pinned) held = true;
+                if (three()) { win.inspectThreeModeFeatures(features); return; }
+                if (pinned) {
+                    win.clearProposalHoverLayers();
+                    win.highlightFeaturesForInspection(features, { weight: 5, className: 'object-list-map-focus' });
+                    frameIfHidden(win, container, features);
+                } else if (handle && handle.pinnedKey() === key) win.clearProposalHoverLayers();
+                else win.highlightFeaturesForHover(features);
+            },
+            restore() {
+                if (three()) {
+                    win.inspectThreeModeFeatures([]);
+                    win.ThreeClickStack?.restoreFocus?.();
+                    held = false;
                     return;
                 }
+                win.clearProposalHoverLayers();
+                if (!held) return;
+                held = false;
+                if (win.ClickStack?.holdsHighlight?.()) win.ClickStack.restoreFocus();
+                else win.highlightFeaturesForInspection([]);
             }
-            root.showProposalDetails(key, row.getAttribute('data-parcel-id'));
         });
+        return {
+            reset() { handle.reset(); held = false; },
+            pinnedKey: () => handle.pinnedKey(),
+            unbind: () => handle.unbind()
+        };
+    }
+
+    // A proposal row: one this module rendered or one of a parcel's own (parcel-panel.js).
+    const ROW = '.proposal-item[data-parcel-set-proposal], .proposal-item[data-proposal-id]';
+    const rowKey = row => row.getAttribute('data-server-id')
+        || row.getAttribute('data-parcel-set-proposal') || row.getAttribute('data-proposal-id') || null;
+
+    // The design's own shapes (ClickStackHits.featuresFor) for a held proposal, by its key. A
+    // published-only one is known by its index record alone, which carries no geometry: it is
+    // outlined by the cadastral parcels the index bound it to.
+    function rowFeatures(row, win) {
+        const key = rowKey(row);
+        if (!key) return [];
+        const serverId = row.getAttribute('data-server-id');
+        const proposal = serverId ? publishedRecords.get(serverId) : win.proposalStorage?.getProposal?.(key);
+        const own = win.ClickStackHits.featuresFor('designs', { id: key, proposal: proposal || null });
+        if (own.length || !proposal) return own;
+        return (proposal.cadastreParcelIds || []).map(id => win.CadastralParcelRepository?.get?.(String(id)))
+            .filter(feature => feature?.geometry);
+    }
+
+    // Opens a row's proposal the way the parcel's list always did (selectAndHighlight via
+    // showProposalDetails, with the first parcel of the set it covers); a published-only row (its
+    // data-server-id is the design's CID) is imported first.
+    async function openRow(row, win) {
+        let key = row.getAttribute('data-parcel-set-proposal') || row.getAttribute('data-proposal-id');
+        const serverId = row.getAttribute('data-server-id');
+        if (serverId) {
+            try {
+                const proposal = await win.DesignSync.importDesign(await win.DesignSync.fetchDesign(serverId));
+                key = win.getProposalKey(proposal) || key;
+            } catch (error) {
+                console.error(`[${new Date().toISOString()}] [ParcelSetProposals] could not load published proposal ${serverId}`, error);
+                win.updateStatus(t('modal.roadWidth.proposalList.downloadError', 'Failed to download proposal'));
+                return;
+            }
+        }
+        win.showProposalDetails(key, row.getAttribute('data-parcel-id'));
+    }
+
+    // The proposal rows in `container` (the rows may be rendered anew inside it) are an object
+    // list: a row outlines its design (bindOutlines) and only its arrow opens it. Bound once per
+    // container; binding it again (its owner rendered a new list) lets go of a pressed row.
+    const boundRows = new WeakMap();
+    function bindRows(container, win = root) {
+        if (!container) return null;
+        const bound = boundRows.get(container);
+        if (bound) { bound.reset(); return bound; }
+        const handle = bindOutlines(container, {
+            item: ROW,
+            keyOf: rowKey,
+            pressed: row => row.querySelector('[data-proposal-pick]') || row,
+            featuresOf: row => rowFeatures(row, win),
+            win
+        });
+        container.addEventListener('click', event => {
+            const button = event.target.closest('[data-proposal-open]');
+            const row = button && button.closest(ROW);
+            if (!row || !container.contains(row)) return;
+            win.BusyControl.track(button, () => openRow(row, win));
+        });
+        boundRows.set(container, handle);
+        return handle;
     }
 
     // Fills `container` and fills it again when the published proposals arrive; onCount(total)
@@ -277,7 +400,7 @@
             if (emptyNote) emptyNote.hidden = publishedOnly.length > 0;
             if (typeof onCount === 'function') onCount(publishedOnly.length);
         };
-        bindRows(container);
+        // Its rows are bound with the parcel's own rows, by the list that holds both (parcel-panel.js).
         paint();
     }
 
@@ -293,5 +416,5 @@
         return { count: entries.length, loading: published.loading, error: published.error };
     }
 
-    return { collect, withPublished, listHtml, lookup, view, bindRows, render, renderPublishedOnly, count };
+    return { collect, withPublished, listHtml, pickButtonHtml, openButtonHtml, lookup, view, bindOutlines, bindRows, render, renderPublishedOnly, count };
 });

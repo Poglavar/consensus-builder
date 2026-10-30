@@ -566,12 +566,13 @@
                 const proposalBody = `
                     <div class="proposal-item-body">
                         <div class="proposal-item-header">
-                            <h3 class="proposal-item-title"><button type="button" class="cb-link" onclick="showProposalDetails(${inlineJsArg(proposal.proposalId)}, ${inlineJsArg(parcelId)})">${proposalTitle}${roadSuffix}</button></h3>
+                            <h3 class="proposal-item-title">${global.ParcelSetProposals.pickButtonHtml(`${proposalTitle}${roadSuffix}`)}</h3>
                             <div class="proposal-item-badges">
                                 ${producerPill}
                                 ${channelChip}
                                 ${global.proposalLadderBadgesHtml(proposal, { applied: mapApplied })}
                             </div>
+                            ${global.ParcelSetProposals.openButtonHtml(proposalTitle)}
                         </div>
                         ${takesLine}
                         <div class="proposal-item-details">
@@ -583,7 +584,7 @@
                     </div>
                 `;
                 return `
-                    <article class="proposal-item" data-proposal-id="${escapeHtml(String(proposal.proposalId))}">
+                    <article class="proposal-item" data-proposal-id="${escapeHtml(String(proposal.proposalId))}" data-parcel-id="${escapeHtml(String(parcelId))}">
                         ${thumbHtml ? `<div class="proposal-item-row">${thumbHtml}${proposalBody}</div>` : proposalBody}
                     </article>
                 `;
@@ -939,6 +940,9 @@
         }
         global.document.getElementById('propose-content').innerHTML = proposeContent;
         global.document.getElementById('proposals-content').innerHTML = proposalsContent;
+        // Its rows (and the published ones added under them) outline their design on hover and
+        // click; each row's arrow opens it (docs/design-language.md, "Object lists").
+        global.ParcelSetProposals.bindRows(global.document.getElementById('proposals-content'));
         // Tick boxes + Compare on the listed proposals (proposals/parcel-compare-ui.js).
         if (global.ParcelCompare) global.ParcelCompare.decoratePanelList(global.document.getElementById('proposals-content'), parcelId);
         // The tab count updates ONLY after the list content is in the DOM — updating it earlier

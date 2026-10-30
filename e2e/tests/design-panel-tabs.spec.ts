@@ -57,6 +57,17 @@ test('a parcel layout lists its input and output parcels on their own tabs; hove
   for (const side of ['left', 'top', 'right', 'bottom'] as const) expect(Math.abs(drawn[side] - parcel[side])).toBeLessThan(6);
   await page.mouse.move(5, 5);
   await expect(hover).toHaveCount(0);
+
+  // A click keeps the parcel outlined and opens nothing; a second click lets go (Object lists).
+  const name = input.locator('[data-object-preview]');
+  const kept = page.locator('#map path.click-stack-map-focus');
+  await name.click();
+  await expect(name).toHaveAttribute('aria-pressed', 'true');
+  await page.mouse.move(5, 5);
+  await expect(kept).toHaveCount(1);
+  await expect(input).toBeVisible();
+  await name.click();
+  await expect(name).toHaveAttribute('aria-pressed', 'false');
 });
 
 test('a design that is not a parcel layout keeps Overview and Details', async ({ mockApi: page }) => {

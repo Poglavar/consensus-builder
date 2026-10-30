@@ -168,7 +168,15 @@ body.cadastre-view.on-map-editing:has(.on-map-reparcellization) .leaflet-map-pan
     font-size: var(--cb-text-sm);
 }
 .claim-breadcrumb-label { color: var(--cb-text-muted); font-weight: var(--cb-weight-semibold); }
-/* Each parcel in the crumb is a script link (button.cb-link, js/proposals/claims-ui.js). */
+/* Each parcel in the crumb is an object-list item (js/proposals/claims-ui.js): its name outlines the
+   parcel on the map (pressed while kept outlined), its arrow opens the parcel's panel. */
+.claim-breadcrumb-item {
+    display: inline-flex;
+    align-items: stretch;
+    gap: var(--cb-space-1);
+    min-width: 0;
+}
+.claim-breadcrumb-link { min-width: 0; white-space: normal; }
 
 /* Loading spinner over a mode-strip label while that view composes. three-mode.js sets
    .mode-btn-loading on #mode-3d-toggle (model view rendering) or #mode-realistic-toggle (photo view
@@ -1363,10 +1371,6 @@ body.three-mode-active #agent-bubbles-container {
     align-self: stretch;
     height: auto;
 }
-.click-stack__chip[aria-pressed="true"] {
-    border-color: var(--cb-accent);
-    box-shadow: inset 0 0 0 1px var(--cb-accent);
-}
 
 /* Saved-plan contents share one inset and row rhythm in both map stacks. */
 .click-stack__body.click-stack__plan {
@@ -1508,19 +1512,22 @@ body.three-mode-active #agent-bubbles-container {
 
     /* A plan's designs are its content: the section grows to the dock's height before its list
        scrolls (its name and actions stay in view), and a short plan stays as tall as its list. */
-    :is(#click-stack, #three-click-stack) .click-stack__plan > .click-stack__membership-details {
+    #click-stack .click-stack__plan > .click-stack__membership-details,
+    #three-click-stack .click-stack__plan > .click-stack__membership-details {
         display: flex;
         flex-direction: column;
         flex: 0 1 auto;
         min-height: 0;
     }
 
-    :is(#click-stack, #three-click-stack) .click-stack__plan > .click-stack__membership-details > .click-stack__choices {
+    #click-stack .click-stack__plan > .click-stack__membership-details > .click-stack__choices,
+    #three-click-stack .click-stack__plan > .click-stack__membership-details > .click-stack__choices {
         flex: 0 1 auto;
         min-height: 0;
     }
 
-    :is(#click-stack, #three-click-stack) .click-stack__plan .click-stack__choices .click-stack__strip {
+    #click-stack .click-stack__plan .click-stack__choices .click-stack__strip,
+    #three-click-stack .click-stack__plan .click-stack__choices .click-stack__strip {
         flex: 0 1 auto;
         min-height: 0;
         max-height: none;
@@ -1529,7 +1536,8 @@ body.three-mode-active #agent-bubbles-container {
     }
 
     /* A long list keeps three rows in view when the dock is short; a short one keeps its height. */
-    :is(#click-stack, #three-click-stack) .click-stack__plan .click-stack__strip:has(> .click-stack__link:nth-child(4)) {
+    #click-stack .click-stack__plan .click-stack__strip:has(> .click-stack__link:nth-child(4)),
+    #three-click-stack .click-stack__plan .click-stack__strip:has(> .click-stack__link:nth-child(4)) {
         min-height: calc(3 * var(--cb-control-height) + 2 * var(--cb-space-2));
     }
 }

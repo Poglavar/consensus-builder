@@ -193,6 +193,13 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
     });
     const areaText = area => area === null ? '—' : `${Math.round(area).toLocaleString()} m²`;
 
+    // An object-list item's open button: ObjectList.openButton's arrow, as markup for these
+    // HTML-built rows. `attributes` say what it opens; `title` may say how, else it is its name.
+    const proposalDetailsOpenButtonHtml = (name, attributes = '', title = '') => {
+        const label = safeAgentText(tProposal('lists.openNamed', 'Open {{title}}', { title: name }));
+        return `<button type="button" class="btn btn-icon object-list__open" title="${title ? safeAgentText(title) : label}" aria-label="${label}" ${attributes}><i class="fas fa-arrow-right" aria-hidden="true"></i></button>`;
+    };
+
     const renderAncestorParcelItem = (parentParcelOrId) => {
         const parentParcel = (typeof parentParcelOrId === 'string')
             ? buildAncestorRow(parentParcelOrId)
@@ -244,20 +251,25 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
             : '';
         const replacedDataAttr = isReplaced ? 'data-parcel-replaced="true"' : '';
 
-        // The row and its status take their look from classes (css/proposal-details.css).
+        // The row and its status take their look from classes (css/proposal-details.css). It is an
+        // object-list item (bindProposalDetailsObjectLists): its name outlines the parcel, and only
+        // the arrow opens it (the parcel's details, or a replaced source's former location).
+        const openHtml = proposalDetailsOpenButtonHtml(parcelLabelText,
+            `${replacedDataAttr} ${geometryDataAttr} onclick="handleProposalParcelClick(${inlineJsArg(parcelId)}, event)"`, parcelTooltip);
         return `
-            <div class="proposal-parcel-item proposal-parcel-row${isReplaced ? ' is-replaced' : ''}" data-parcel-id="${parcelId}" data-reference-state="${parentParcel.referenceState}" ${replacedDataAttr} ${geometryDataAttr}>
+            <div class="proposal-parcel-item proposal-parcel-row${isReplaced ? ' is-replaced' : ''}" data-parcel-id="${parcelId}" data-reference-state="${parentParcel.referenceState}" data-object-kind="source" data-object-id="${safeAgentText(String(parcelId))}" ${replacedDataAttr} ${geometryDataAttr}>
                 <div class="parcel-info proposal-parcel-row__info">
                     <div class="proposal-parcel-row__main">
                         ${ownerAvatarHtml}
                         <div class="proposal-parcel-row__text">
-                            <span class="parcel-number parcel-id-text"><button type="button" class="cb-link" ${replacedDataAttr} ${geometryDataAttr} onclick="handleProposalParcelClick(${inlineJsArg(parcelId)}, event)" title="${parcelTooltip}">${safeAgentText(parcelLabelText)}</button></span>
+                            <span class="parcel-number parcel-id-text"><button type="button" class="cb-link" data-object-preview aria-pressed="false">${safeAgentText(parcelLabelText)}</button></span>
                             ${parcelCompareHtml}
                             ${isReplaced
                 ? `<span class="parcel-status parcel-status-replaced">${replacedLabel}</span>`
                 : (isUnloaded ? `<span class="parcel-status parcel-status-unloaded">${unloadedLabel}</span>` : '')
             }
                         </div>
+                        ${openHtml}
                     </div>
                 </div>
             </div>
@@ -269,14 +281,17 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
     const parentParcelItemsInitial = parentParcels.map(renderAncestorParcelItem).join('');
     const parentParcelItemsRemaining = cadastreParcelIds.slice(MAX_LIST_INITIAL);
 
+    // Each formed parcel or design is an object-list item (bindProposalDetailsObjectLists): the
+    // button outlines it, and a design's arrow opens that design. A parcel has nothing to open.
+    const descendantRow = (kind, id, inner, openHtml = '') => `<div class="proposal-descendant-row" data-object-kind="${kind}" data-object-id="${safeAgentText(id)}">${inner}${openHtml}</div>`;
     const renderDescendantItem = (descendant) => {
         const descendantKey = (descendant !== undefined && descendant !== null) ? String(descendant) : '';
         const descendantData = proposalStorage.getProposal(descendantKey);
         if (descendantData) {
-            const descendantId = descendantData.proposalId || descendantKey;
-            return `<button type="button" class="btn descendant-item" data-descendant-type="proposal" data-proposal-id="${descendantId}">
-                <strong>${descendantData.title}</strong> (${descendantData.type || 'proposal'})
-            </button>`;
+            const descendantId = String(descendantData.proposalId || descendantKey);
+            return descendantRow('design', descendantId, `<button type="button" class="btn descendant-item" data-descendant-type="proposal" data-proposal-id="${safeAgentText(descendantId)}" data-object-preview aria-pressed="false">
+                <strong>${safeAgentText(descendantData.title)}</strong> (${safeAgentText(descendantData.type || 'proposal')})
+            </button>`, proposalDetailsOpenButtonHtml(descendantData.title || descendantId, `data-open-design-id="${safeAgentText(descendantId)}"`));
         }
 
         let parcelNumber = null;
@@ -301,15 +316,15 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
             const plotArea = Number.isFinite(plotProps.calculatedArea) ? CbFormat.formatArea(plotProps.calculatedArea) : '';
             const plotLabel = tProposal('panel.proposal.parcels.newPlot', 'New plot {{n}}', { n: plotProps.syntheticIndex });
             const plotDetail = [plotArea, plotOwners].filter(Boolean).join(' · ');
-            return `<button type="button" class="btn descendant-item" data-descendant-type="parcel" data-parcel-id="${safeAgentText(descendantKey)}">
+            return descendantRow('parcel', descendantKey, `<button type="button" class="btn descendant-item" data-descendant-type="parcel" data-parcel-id="${safeAgentText(descendantKey)}" data-object-preview aria-pressed="false">
             <span class="parcel-id-text" title="${safeAgentText(descendantKey)}">${safeAgentText(plotLabel)}</span>${plotDetail ? ` · ${safeAgentText(plotDetail)}` : ''}
-        </button>`;
+        </button>`);
         }
         const label = parcelNumber ? `Parcel ${parcelNumber}` : `Parcel ${descendantKey}`;
         const roadSuffix = isRoad ? (roadName ? ` • Road: ${roadName}` : ' • Road') : '';
-        return `<button type="button" class="btn descendant-item" data-descendant-type="parcel" data-parcel-id="${descendantKey}">
+        return descendantRow('parcel', descendantKey, `<button type="button" class="btn descendant-item" data-descendant-type="parcel" data-parcel-id="${safeAgentText(descendantKey)}" data-object-preview aria-pressed="false">
             <span class="parcel-id-text" title="${safeAgentText(descendantKey)}">${safeAgentText(label)}</span>${safeAgentText(roadSuffix)}
-        </button>`;
+        </button>`);
     };
 
     const descendantKeys = (typeof window !== 'undefined'
@@ -676,7 +691,8 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
         const rows = shownRelations.map(relation => {
             const candidate = relation.proposal || {};
             const candidateId = safeAgentText(relation.proposalId);
-            const title = safeAgentText(window.ProposalDisplayText.text(candidate.title || candidate.name || relation.proposalId, candidate));
+            const name = window.ProposalDisplayText.text(candidate.title || candidate.name || relation.proposalId, candidate);
+            const title = safeAgentText(name);
             const author = candidate.author ? safeAgentText(candidate.author) : '';
             const shared = safeAgentText(tProposal(
                 'panel.proposal.parcelSet.sharedCount',
@@ -686,15 +702,19 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
             const lifecycle = typeof getProposalLifecycleLabel === 'function'
                 ? safeAgentText(getProposalLifecycleLabel(getProposalLifecycleKey(candidate)))
                 : '';
+            // An object-list item (bindProposalDetailsObjectLists): the row outlines that design,
+            // its arrow opens it.
             return `
-                <button type="button" class="cb-option proposal-parcel-set-relation" data-related-proposal-id="${candidateId}">
-                    <span class="cb-option__text proposal-parcel-set-relation-main">
-                        <span class="cb-option__title">${title}</span>
-                        <span class="cb-option__desc">${safeAgentText(relationLabels[relation.kind])} · ${shared}${author ? ` · ${author}` : ''}</span>
-                    </span>
-                    ${lifecycle ? `<span class="cb-badge proposal-parcel-set-relation-state">${lifecycle}</span>` : ''}
-                    <i class="cb-option__icon fas fa-chevron-right" aria-hidden="true"></i>
-                </button>`;
+                <div class="proposal-parcel-set-relation-row" data-object-kind="design" data-object-id="${candidateId}">
+                    <button type="button" class="cb-option proposal-parcel-set-relation" data-related-proposal-id="${candidateId}" data-object-preview aria-pressed="false">
+                        <span class="cb-option__text proposal-parcel-set-relation-main">
+                            <span class="cb-option__title">${title}</span>
+                            <span class="cb-option__desc">${safeAgentText(relationLabels[relation.kind])} · ${shared}${author ? ` · ${author}` : ''}</span>
+                        </span>
+                        ${lifecycle ? `<span class="cb-badge proposal-parcel-set-relation-state">${lifecycle}</span>` : ''}
+                    </button>
+                    ${proposalDetailsOpenButtonHtml(name, `data-open-design-id="${candidateId}"`)}
+                </div>`;
         }).join('');
 
         return `
@@ -1025,6 +1045,9 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
     if (detailsContent) {
         detailsContent.dataset.proposalId = String(proposalKey);
         detailsContent.dataset.outputCount = String(outputCount);
+        // Its object lists keep an item outlined across a re-render of the same design only.
+        const objectList = bindProposalDetailsObjectLists(detailsContent);
+        if (!sameProposal) releaseProposalDetailsObjectList(objectList);
     }
     subscribeProposalDetailsToFabric();
     if (!sameProposal && preserveScrollPosition === null) preservedScrollTop = 0;
@@ -1045,13 +1068,6 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
                 window.__claimsUi.injectProposalBreadcrumb(detailsContent.querySelector('[data-proposal-section="land"] .proposal-detail-section-content'), fullProposal || proposal);
             }
         } catch (_) { }
-        detailsContent?.querySelectorAll('[data-related-proposal-id]').forEach(button => {
-            button.addEventListener('click', () => {
-                const relatedProposalId = button.dataset.relatedProposalId;
-                if (!relatedProposalId || typeof focusProposalDetails !== 'function') return;
-                focusProposalDetails(relatedProposalId, { centerOnProposal: true, showDetails: true });
-            });
-        });
         // "Based on" opens the source this browser holds, in this panel.
         detailsContent?.querySelectorAll('.proposal-based-on-link[data-lineage-local-id]').forEach(button => {
             button.addEventListener('click', event => {
@@ -1191,73 +1207,9 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
         console.warn('Failed to render building preview overlay', error);
     }
 
-    // Add hover-based map highlighting for parcels listed in the proposal details
-    try {
-        // Clear any previous hover overlay when rendering
-        clearProposalInfoHoverOverlay();
-        const proposalDetailsContainer = document.getElementById('proposal-details-content');
-        const proposalParcelItems = proposalDetailsContainer
-            ? proposalDetailsContainer.querySelectorAll('.proposal-parcel-item[data-parcel-id]')
-            : [];
-        proposalParcelItems.forEach(item => {
-            const hoveredParcelId = item.getAttribute('data-parcel-id');
-            if (!hoveredParcelId) return;
-            // A source a formation replaced lights up its old outline, or nothing when none is
-            // known: resolving it live would light the pieces now covering it, which are outputs.
-            const replaced = item.getAttribute('data-parcel-replaced') === 'true';
-            item.addEventListener('mouseenter', () => {
-                try {
-                    if (!replaced) showProposalInfoHoverOverlay(hoveredParcelId);
-                    else {
-                        const source = removedParcelSourceFeature(hoveredParcelId, item);
-                        if (source) highlightFeaturesForHover([source], { color: window.MapHighlight.color, weight: 6, dashArray: '10 8', showLabels: false });
-                    }
-                } catch (error) {
-                    console.warn(`[${new Date().toISOString()}] [showProposalInfo] parcel ${hoveredParcelId} hover failed`, error);
-                }
-            });
-            item.addEventListener('mouseleave', () => {
-                try {
-                    clearProposalInfoHoverOverlay();
-                } catch (_) { }
-            });
-        });
-
-        const descendantItems = proposalDetailsContainer
-            ? proposalDetailsContainer.querySelectorAll('.descendant-item[data-descendant-type]')
-            : [];
-        descendantItems.forEach(item => {
-            item.addEventListener('mouseenter', () => {
-                try {
-                    handleDescendantItemHover(item);
-                } catch (_) { }
-            });
-            item.addEventListener('mouseleave', () => {
-                try {
-                    clearProposalHoverLayers();
-                } catch (_) { }
-            });
-            item.addEventListener('focus', () => {
-                try {
-                    handleDescendantItemHover(item);
-                } catch (_) { }
-            });
-            item.addEventListener('blur', () => {
-                try {
-                    clearProposalHoverLayers();
-                } catch (_) { }
-            });
-            item.addEventListener('click', event => {
-                event.preventDefault();
-                event.stopPropagation();
-                try {
-                    handleDescendantItemClick(item);
-                } catch (_) { }
-            });
-
-        });
-
-    } catch (_) { }
+    // A hover outline left by the previous render goes; the lists' own behaviour is bound once to
+    // the content (bindProposalDetailsObjectLists), so rows rendered later need no wiring.
+    clearProposalInfoHoverOverlay();
 
     const detailsPanel = document.getElementById('proposal-details-panel');
     if (detailsPanel) {
@@ -1280,6 +1232,94 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
     if (typeof setupGameLogClickListeners === 'function') {
         setupGameLogClickListeners();
     }
+}
+
+// The design panel's lists of map objects (docs/design-language.md, "Object lists"): its source
+// parcels, the parcels and designs it formed, and the designs sharing its references. Hovering or
+// focusing an item outlines its object; a click keeps it outlined, moving the map only when it is
+// out of view, until it is clicked again; only the item's arrow opens the object. Bound once to the
+// panel's content, so rows rendered later (a re-render, setupLazyList) behave the same.
+let proposalDetailsObjectList = null; // { container, bound }
+// Whether a kept item's outline replaced the selection's own (the inspection layer).
+let proposalDetailsInspecting = false;
+
+// The shapes an item names, as the click stack outlines them (ClickStackHits.featuresFor): a
+// design's own geometry, a parcel wherever it lies (in view or not, so a kept one can be brought into
+// view), or the outline a source parcel had before a formation replaced it. A replaced source with no
+// known outline shows nothing: resolving it live would light the pieces now covering it, which are outputs.
+function proposalDetailsObjectFeatures(kind, id, item) {
+    if (kind === 'source' && item.getAttribute('data-parcel-replaced') === 'true') {
+        const source = removedParcelSourceFeature(id, item);
+        return source ? [source] : [];
+    }
+    const stackKind = { design: 'designs', source: 'parcels', parcel: 'formed' }[kind];
+    return window.ClickStackHits.featuresFor(stackKind, { id, live: !!window.LiveParcelFabric.get(id) });
+}
+
+// Brings features into the part of the map the panels leave visible (revealMove): at the same zoom,
+// or zoomed out just enough when they do not fit. Features already in view keep the camera.
+function revealProposalDetailsFeatures(features) {
+    if (!features.length || typeof map === 'undefined' || !map || isCameraMovementSuppressed()) return;
+    const bounds = L.geoJSON({ type: 'FeatureCollection', features }).getBounds();
+    if (!bounds.isValid()) return;
+    const size = map.getSize();
+    const northWest = map.latLngToContainerPoint(bounds.getNorthWest());
+    const southEast = map.latLngToContainerPoint(bounds.getSouthEast());
+    const move = revealMove({ left: northWest.x, top: northWest.y, right: southEast.x, bottom: southEast.y },
+        getProposalPanelFreeArea(size.x, size.y));
+    const animate = !window.__reducedMotion;
+    if (move?.pan) map.panBy(L.point(-move.pan[0], -move.pan[1]), { animate });
+    else if (move?.fit) map.fitBounds(bounds, { ...getProposalPanelFitPadding(40), maxZoom: map.getZoom(), animate });
+}
+
+function bindProposalDetailsObjectLists(container) {
+    if (proposalDetailsObjectList?.container === container) return proposalDetailsObjectList.bound;
+    const bound = window.ObjectList.bind(container, {
+        item: '[data-object-kind]',
+        keyOf: item => `${item.dataset.objectKind}\n${item.dataset.objectId}`,
+        pressed: item => item.querySelector('[data-object-preview]'),
+        show: (key, { pinned, item }) => {
+            clearProposalHoverLayers();
+            // Leaving another item: the kept one is still outlined on the inspection layer.
+            if (!pinned && key === bound.pinnedKey()) return;
+            const [kind, id] = key.split('\n');
+            const features = proposalDetailsObjectFeatures(kind, id, item);
+            if (!pinned) {
+                highlightFeaturesForHover(features, { color: window.MapHighlight.color, weight: 6, dashArray: '10 8', showLabels: true });
+                return;
+            }
+            highlightFeaturesForInspection(features, { weight: 5, className: 'click-stack-map-focus' });
+            proposalDetailsInspecting = true;
+            revealProposalDetailsFeatures(features);
+        },
+        restore: () => {
+            clearProposalHoverLayers();
+            if (!proposalDetailsInspecting) return;
+            proposalDetailsInspecting = false;
+            // The click stack hosting this panel outlines its selection again.
+            if (window.ClickStack?.holdsHighlight()) window.ClickStack.restoreFocus();
+            else highlightFeaturesForInspection([]);
+        }
+    });
+    // A design's arrow opens that design here; a parcel's arrow carries its own handler.
+    container.addEventListener('click', event => {
+        const open = event.target.closest('[data-open-design-id]');
+        if (!open || !container.contains(open)) return;
+        event.preventDefault();
+        clearProposalHoverLayers();
+        focusProposalDetails(open.dataset.openDesignId, { centerOnProposal: true, showDetails: true });
+    });
+    proposalDetailsObjectList = { container, bound };
+    return bound;
+}
+
+// Another design, or none, takes the panel: nothing stays pressed, and a kept outline goes unless
+// the click stack repaints its selection.
+function releaseProposalDetailsObjectList(bound = proposalDetailsObjectList?.bound) {
+    bound?.reset();
+    clearProposalHoverLayers();
+    if (proposalDetailsInspecting && !window.ClickStack?.holdsHighlight()) highlightFeaturesForInspection([]);
+    proposalDetailsInspecting = false;
 }
 
 // A design's output parcels exist once its formation has replayed onto the map, which can finish
@@ -1406,8 +1446,9 @@ function hideProposalDetailsPanel(clearHighlights = false, { preserveCorridorSeg
     // The before/after divider lives and dies with the panel.
     try { window.ProposalBeforeAfter?.dispose(); } catch (_) { /* no map */ }
 
-    // Clear hover overlay when closing
+    // Clear hover overlay when closing, and any list item kept outlined.
     try { clearProposalInfoHoverOverlay(); } catch (_) { }
+    releaseProposalDetailsObjectList();
 
     // Clear any proposal highlights when closing
     if (clearHighlights && typeof clearProposalHighlights === 'function') {

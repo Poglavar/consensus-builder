@@ -257,9 +257,18 @@
     line-height: 1.35;
 }
 
-/* Hovering a row lights its plot up on the map. */
-.reparcel-newplot-row:hover {
+/* Hovering a row lights its plot up on the map; a pressed row (its number, a toggle) keeps it lit. */
+.reparcel-newplot-row:hover,
+.reparcel-oldplot-row:hover {
     background: var(--cb-success-soft);
+}
+
+.reparcel-plot-pick {
+    min-width: 0;
+}
+
+.reparcel-newplots-table tr:has(.reparcel-plot-pick) {
+    cursor: pointer;
 }
 
 /* The building blocks to take a courtyard from, one button each. */

@@ -27,9 +27,15 @@ test('consumed ground remains reachable through proposal breadcrumbs and the cad
   await showProposalTab(page, 'details');
   const landSection = page.locator('#proposal-details-panel details[data-proposal-section="land"]');
   await landSection.locator('summary').click();
-  const breadcrumb = page.locator(`.claim-breadcrumb-link[title="${PARCEL_ID}"]`);
+  // Its parcels are an object list: the name outlines the parcel and stays pressed, opening
+  // nothing; the arrow opens it.
+  const crumb = page.locator(`.claim-breadcrumb-item[data-parcel-id="${PARCEL_ID}"]`);
+  const breadcrumb = crumb.locator('.claim-breadcrumb-link');
   await expect(breadcrumb).toBeVisible();
   await breadcrumb.click();
+  await expect(breadcrumb).toHaveAttribute('aria-pressed', 'true');
+  await expect(page.locator('#proposal-details-panel')).toBeVisible();
+  await crumb.locator('.claim-breadcrumb-open').click();
   await expect(page.locator('#parcel-info-panel')).toBeVisible();
   await expect(page.locator('#parcel-info-title')).toContainText('1234');
   await expect(page.locator('#proposal-details-panel')).toBeHidden();

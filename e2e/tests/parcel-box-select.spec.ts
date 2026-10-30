@@ -36,7 +36,15 @@ test.describe('Shift+drag box selection @core', () => {
     await showSelectionDesignTab(page);
     await expect(page.locator('#propose-tab')).toBeVisible();
     await page.locator('#parcel-info-panel [data-parcel-tab-id="proposals-tab"]').click();
-    await expect(page.locator(`#proposals-content [data-server-id="${publishedCid}"]`)).toContainText('Published park');
+    const row = page.locator(`#proposals-content [data-server-id="${publishedCid}"]`);
+    await expect(row).toContainText('Published park');
+    // The row is an object-list item: its name outlines the design and stays pressed, opening nothing;
+    // only its arrow opens it.
+    await row.locator('[data-proposal-pick]').click();
+    await expect(row.locator('[data-proposal-pick]')).toHaveAttribute('aria-pressed', 'true');
+    await expect.poll(() => page.evaluate(() => (window as any).ensureProposalOverlayGroups().inspection.getLayers().length)).toBeGreaterThan(0);
+    await expect(page.locator('#proposal-details-panel')).toBeHidden();
+    await expect(row.getByRole('button', { name: 'Open Published park' })).toBeVisible();
 
     const center = await page.evaluate(id => (window as any).ParcelPresenter.getLayer(id).getBounds().getCenter(), PARCEL_ID);
     await clickMapPoint(page, center.lng, center.lat);

@@ -1,7 +1,8 @@
 // The Proposals tab for a set of parcels (frontend/js/parcels/parcel-set-proposals.js): a multi-parcel
 // selection or a drawn site lists each proposal once with the parcels of the set it covers.
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { createRequire } from 'node:module';
+import { makeDocument, makeEvent } from './helpers/fake-dom.js';
 
 const require = createRequire(import.meta.url);
 const SetProposals = require('../../frontend/js/parcels/parcel-set-proposals.js');
@@ -85,5 +86,107 @@ describe('proposals on a set of parcels', () => {
             expect(typeof i18n.panel.parcel.historySection).toBe('string');
             expect(Object.keys(i18n.siteTool.proposals).sort()).toEqual(['existing', 'none', 'show']);
         }
+    });
+});
+
+// The rows are an object list (docs/design-language.md, "Object lists"): hovering or focusing a row
+// outlines its design, a click keeps it outlined (its name pressed) until clicked again, a click
+// never opens it, and the row's arrow opens it (importing a published-only one first).
+describe('proposal rows as an object list', () => {
+    const shape = id => ({ type: 'Feature', properties: { id }, geometry: { type: 'Point', coordinates: [0, 0] } });
+    function setup({ inView = true } = {}) {
+        const doc = makeDocument();
+        const host = doc.createElement('div');
+        host.className = 'right-dock-panel';
+        const container = doc.createElement('div');
+        host.appendChild(container);
+        doc.body.appendChild(host);
+        const local = { proposalId: 'p-park', title: 'Park' };
+        const published = { proposalId: NEW_CID, cid: NEW_CID, title: 'Published' };
+        const entries = [{ key: 'p-park', proposal: local, parcelIds: ['a'] },
+            { key: NEW_CID, proposal: published, parcelIds: ['b'], serverId: NEW_CID }];
+        container.innerHTML = SetProposals.listHtml(entries, { parcelCount: 2, describe: describe_ });
+        const calls = [];
+        const log = name => vi.fn((...args) => calls.push([name, ...args]));
+        const fitBounds = vi.fn();
+        const win = {
+            ObjectList: require('../../frontend/js/ui/object-list.js'),
+            proposalStorage: { getProposal: id => (id === 'p-park' ? local : null) },
+            ClickStackHits: { featuresFor: (kind, instance) => (instance.proposal ? [shape(`${kind}:${instance.proposal.title}`)] : []) },
+            highlightFeaturesForHover: log('hover'),
+            highlightFeaturesForInspection: log('inspect'),
+            clearProposalHoverLayers: log('clear'),
+            ClickStack: { holdsHighlight: () => true, restoreFocus: log('restoreFocus') },
+            BusyControl: { track: (_control, work) => Promise.resolve(work()) },
+            showProposalDetails: log('open'),
+            getProposalKey: proposal => proposal.proposalId,
+            DesignSync: { fetchDesign: vi.fn(async cid => ({ cid })), importDesign: vi.fn(async () => ({ proposalId: 'imported-1' })) },
+            updateStatus: vi.fn(),
+            // A 1000 × 800 map; the shape lies inside the free area or far outside it.
+            L: { geoJSON: () => ({ getBounds: () => ({ isValid: () => true, getNorthWest: () => 'nw', getSouthEast: () => 'se' }) }) },
+            map: { getSize: () => ({ x: 1000, y: 800 }), fitBounds,
+                latLngToContainerPoint: corner => (inView ? { x: corner === 'nw' ? 100 : 200, y: corner === 'nw' ? 100 : 200 } : { x: corner === 'nw' ? 5000 : 5100, y: 100 }) },
+            innerWidth: 1000, innerHeight: 800,
+            proposalPanelFitPadding: () => ({ paddingTopLeft: [0, 0], paddingBottomRight: [0, 0] }),
+            __clickStackModel: require('../../frontend/js/click-stack/click-stack-model.js')
+        };
+        const bound = SetProposals.bindRows(container, win);
+        const [park, remote] = container.querySelectorAll('.proposal-item');
+        return { doc, container, win, calls, fitBounds, bound, park, remote };
+    }
+    const move = (type, target, relatedTarget = null) => target.dispatchEvent(makeEvent(type, { target, relatedTarget }));
+    const pick = row => row.querySelector('[data-proposal-pick]');
+
+    it('outlines a hovered row, keeps a clicked one until it is clicked again, and never opens on a click', () => {
+        const { calls, park, remote, win } = setup();
+        move('mouseover', park);
+        expect(calls.pop()).toEqual(['hover', [expect.objectContaining({ properties: { id: 'designs:Park' } })]]);
+        move('mouseout', park, null);
+        expect(calls.pop()).toEqual(['clear']);
+
+        pick(park).click();
+        expect(pick(park).getAttribute('aria-pressed')).toBe('true');
+        expect(calls.slice(-2)).toEqual([['clear'], ['inspect', [expect.objectContaining({ properties: { id: 'designs:Park' } })], expect.any(Object)]]);
+        // Another row's hover draws over the kept one (this published-only row was not listed through
+        // lookup here, so no index record outlines it); leaving it keeps the kept row's outline.
+        calls.length = 0;
+        move('mouseover', remote);
+        expect(calls).toEqual([['hover', []]]);
+        move('mouseout', remote, null);
+        expect(calls.pop()).toEqual(['clear']);
+
+        pick(park).click();
+        expect(pick(park).getAttribute('aria-pressed')).toBe('false');
+        expect(calls.slice(-2)).toEqual([['clear'], ['restoreFocus']]);
+        expect(win.showProposalDetails).not.toHaveBeenCalled();
+    });
+
+    it('moves the map only for a kept design that is out of view', () => {
+        const near = setup({ inView: true });
+        pick(near.park).click();
+        expect(near.fitBounds).not.toHaveBeenCalled();
+        const far = setup({ inView: false });
+        pick(far.park).click();
+        expect(far.fitBounds).toHaveBeenCalledTimes(1);
+    });
+
+    it('opens a row only by its arrow, importing a published-only design first', async () => {
+        const { win, park, remote } = setup();
+        park.querySelector('[data-proposal-open]').click();
+        await vi.waitFor(() => expect(win.showProposalDetails).toHaveBeenCalledWith('p-park', 'a'));
+        expect(pick(park).getAttribute('aria-pressed')).toBe('false');
+        expect(park.querySelector('[data-proposal-open]').getAttribute('aria-label')).toBe('Open Park');
+        remote.querySelector('[data-proposal-open]').click();
+        await vi.waitFor(() => expect(win.showProposalDetails).toHaveBeenCalledWith('imported-1', 'b'));
+        expect(win.DesignSync.fetchDesign).toHaveBeenCalledWith(NEW_CID);
+    });
+
+    it('binds a container once; binding it again lets go of the pressed row', () => {
+        const { container, win, park, bound } = setup();
+        pick(park).click();
+        expect(bound.pinnedKey()).toBe('p-park');
+        expect(SetProposals.bindRows(container, win)).toBe(bound);
+        expect(bound.pinnedKey()).toBe(null);
+        expect(pick(park).getAttribute('aria-pressed')).toBe('false');
     });
 });

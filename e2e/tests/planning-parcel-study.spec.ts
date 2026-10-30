@@ -142,6 +142,12 @@ test('Permitted keeps its envelope controls and ignores retired parcel-study lin
   await expect(inspector.locator('[data-configuration="family2"]')).toContainText('Lot below the');
   await expect(inspector.locator('[data-configuration="family1"]')).not.toContainText('Lot below the');
   await expect(inspector.getByText('Not configurable here: Three-family (Recorded as prohibited).')).toBeVisible();
+  // Hovering a configuration outlines the footprint it would show; leaving it lets go.
+  const hoverOutline = page.locator('path.proposal-hover-outline');
+  await inspector.locator('[data-configuration="family2"] button').hover();
+  await expect(hoverOutline.first()).toBeAttached();
+  await inspector.getByText('Permitted envelope',{exact:true}).hover();
+  await expect(hoverOutline).toHaveCount(0);
   // Picking a configuration pins it for this parcel; the inspector marks it and the map follows.
   await inspector.locator('[data-configuration="family1"] button').click();
   await expect(inspector.locator('[data-configuration="family1"] button')).toHaveAttribute('aria-pressed','true');

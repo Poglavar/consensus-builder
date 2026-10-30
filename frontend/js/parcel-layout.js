@@ -98,6 +98,11 @@
         // The building-block chooser of the courtyard tool, while it is open.
         choicePopup: null,
         newPlotsListEl: null,
+        // The New and Old plots tables are object lists (ObjectList handles), and the plot their
+        // hovered or pressed row lights up on the map (an index into slices, or null).
+        newPlotsList: null,
+        oldPlotsList: null,
+        shownSlice: null,
         // Inputs vs outputs. 'new' edits the layout over a faint underlay of the parcels it replaces;
         // 'old' shows those parcels alone and read-only — the cadastre is a given here.
         oldPlotsListEl: null,
@@ -427,6 +432,8 @@
         state.plotsTab = 'new';
         state.plotsTabBtns = [];
         state.oldPlotsListEl = null;
+        state.newPlotsList?.unbind(); state.oldPlotsList?.unbind();
+        state.newPlotsList = state.oldPlotsList = state.shownSlice = null;
         state.nodeEditWasActive = false;
         state.poolFromOutputs = false;
         state.sitePool = null;
@@ -552,6 +559,7 @@
         const root = session.root;
         state.newPlotsListEl = root.querySelector('[data-reparcel-newplots-table]');
         state.oldPlotsListEl = root.querySelector('[data-reparcel-oldplots-table]');
+        bindPlotLists();
         state.plotsTabBtns = Array.from(root.querySelectorAll('[data-reparcel-plots-tab]'));
         state.plotsTabBtns.forEach(btn => {
             btn.addEventListener('click', () => setPlotsTab(btn.getAttribute('data-reparcel-plots-tab')));
@@ -938,8 +946,41 @@
         return validation;
     }
 
-    // The New plots list: each plot's number (the one drawn on it) and its area. Hovering a row
-    // lights the plot up on the map, which shows that one plot can be several disjoint pieces.
+    // The New and Old plots tables are object lists (docs/design-language.md, "Object lists"):
+    // hovering or focusing a row lights its plot or parcel up on the map, which shows that one plot
+    // can be several disjoint pieces; a click keeps it lit (the row's number pressed) until it is
+    // clicked again. Both lie in the pool the editor frames, and nothing opens from them.
+    function bindPlotLists() {
+        const ObjectList = window.ObjectList;
+        const pick = row => row.querySelector('.reparcel-plot-pick');
+        if (state.newPlotsListEl) {
+            state.newPlotsList = ObjectList.bind(state.newPlotsListEl, {
+                item: 'tr.reparcel-newplot-row', keyOf: row => row.dataset.plotIndex ?? null, pressed: pick,
+                show: key => showSlice(Number(key)), restore: () => showSlice(null)
+            });
+        }
+        if (state.oldPlotsListEl) {
+            state.oldPlotsList = ObjectList.bind(state.oldPlotsListEl, {
+                item: 'tr.reparcel-oldplot-row', keyOf: row => row.dataset.parcelIndex ?? null, pressed: pick,
+                show: key => highlightInputParcel(inputParcelFeatures()[Number(key)], true),
+                restore: clearInputHighlight
+            });
+        }
+    }
+
+    // Lights one plot up (an index into slices) and puts the one lit before back; null lets go.
+    function showSlice(index) {
+        if (state.shownSlice !== null) highlightSlice(state.shownSlice, false);
+        state.shownSlice = Number.isInteger(index) && index >= 0 && index < state.slices.length ? index : null;
+        if (state.shownSlice !== null) highlightSlice(state.shownSlice, true);
+    }
+
+    // The table's number of a row: the button that presses it.
+    function plotPickHtml(label) {
+        return `<button type="button" class="btn btn-quiet btn-sm reparcel-plot-pick" aria-pressed="false"><strong>${label}</strong></button>`;
+    }
+
+    // The New plots list: each plot's number (the one drawn on it) and its area.
     function updateLegend() {
         if (state.newPlotsListEl) {
             state.newPlotsListEl.innerHTML = '';
@@ -956,16 +997,19 @@
                 state.slices.forEach((slice, idx) => {
                     const tr = document.createElement('tr');
                     tr.className = 'reparcel-newplot-row';
+                    tr.dataset.plotIndex = String(idx);
                     tr.innerHTML = `
-                        <td class="plot-cell"><strong>${idx + 1}</strong></td>
+                        <td class="plot-cell">${plotPickHtml(idx + 1)}</td>
                         <td class="area-cell">${formatArea(computeGeometryArea(slice.geometry))}</td>`;
-                    tr.addEventListener('mouseenter', () => highlightSlice(idx, true));
-                    tr.addEventListener('mouseleave', () => highlightSlice(idx, false));
                     tbody.appendChild(tr);
                 });
                 table.appendChild(tbody);
                 state.newPlotsListEl.appendChild(table);
             }
+            // The rows are new: the pressed plot (if it still exists) stays pressed and lit, a
+            // hovered one is let go.
+            const pinned = state.newPlotsList?.pinnedKey();
+            showSlice(pinned === null || pinned === undefined ? null : Number(pinned));
         }
         updateOldPlotsList();
         updateCommitState();
@@ -1016,6 +1060,9 @@
             editControls.setAttribute('aria-disabled', String(next === 'old'));
         }
         (state.modal ? [state.modal] : []).forEach(el => el.classList.toggle('reparcel-old-plots-view', next === 'old'));
+        // A row pressed in the table being left lets go: the other view shows other shapes.
+        state.newPlotsList?.reset(); state.oldPlotsList?.reset();
+        state.shownSlice = null;
         clearInputHighlight();
         drawPreview();
     }
@@ -1059,19 +1106,21 @@
         </tr>`;
         table.appendChild(thead);
         const tbody = document.createElement('tbody');
-        features.forEach(feature => {
+        features.forEach((feature, index) => {
             const tr = document.createElement('tr');
             tr.className = 'reparcel-oldplot-row';
+            tr.dataset.parcelIndex = String(index);
             const area = computeFeatureArea(feature);
             tr.innerHTML = `
-                <td class="plot-cell"><strong>${escapeHtml(inputParcelLabel(feature))}</strong></td>
+                <td class="plot-cell">${plotPickHtml(escapeHtml(inputParcelLabel(feature)))}</td>
                 <td class="area-cell">${formatArea(area)}</td>`;
-            tr.addEventListener('mouseenter', () => highlightInputParcel(feature, true));
-            tr.addEventListener('mouseleave', () => highlightInputParcel(feature, false));
             tbody.appendChild(tr);
         });
         table.appendChild(tbody);
         state.oldPlotsListEl.appendChild(table);
+        const pinned = state.oldPlotsList?.pinnedKey();
+        if (pinned === null || pinned === undefined) clearInputHighlight();
+        else highlightInputParcel(features[Number(pinned)], true);
         if (features.length !== declared && declared) {
             const note = document.createElement('p');
             note.className = 'reparcel-oldplots-empty';
@@ -3108,6 +3157,8 @@
                     layer.on('mouseout', () => layer.setStyle(plotStyle(idx)));
                 }
             }).addTo(state.map);
+            // The plot a New plots row lights up stays lit across the redraw.
+            if (state.shownSlice !== null) highlightSlice(state.shownSlice, true);
         }
 
         // The pool outline, in red and heavy: it is the one line in this editor that cannot be

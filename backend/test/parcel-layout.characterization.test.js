@@ -7,6 +7,7 @@
 import { describe, it, expect, afterEach } from 'vitest';
 import { createRequire } from 'node:module';
 import { makeEditor, box, lngLat } from './helpers/parcel-layout-env.js';
+import { makeEvent } from './helpers/fake-dom.js';
 
 const require = createRequire(import.meta.url);
 const turf = require('@turf/turf');
@@ -611,6 +612,62 @@ describe('other starting layouts and pools', () => {
         expect(await w.editor.openParcelLayoutEditor()).toBe(true);
         w.$('[data-reparcel-commit]').click();
         expect(globalThis.pendingParcelLayout).toMatchObject({ poolSource: 'site', parcelIds: ['P1'] });
+    });
+});
+
+// The New and Old plots tables are object lists (docs/design-language.md, "Object lists").
+describe('the plot tables', () => {
+    const move = (type, target, relatedTarget = null) => target.dispatchEvent(makeEvent(type, { target, relatedTarget }));
+    const pick = row => row.querySelector('.reparcel-plot-pick');
+
+    it('light a New plot on hover, keep a clicked one lit (pressed) across a redraw until it is clicked again', async () => {
+        const w = world();
+        await w.editor.openParcelLayoutEditor();
+        const list = w.state.newPlotsListEl;
+        const rows = () => list.querySelectorAll('tr.reparcel-newplot-row');
+        const lit = () => w.plotLayers().map(layer => layer.options.weight === 4);
+        const [first, second] = rows();
+        move('mouseover', first);
+        expect(lit()).toEqual([true, false]);
+        move('mouseout', first, list);
+        expect(lit()).toEqual([false, false]);
+        pick(second).click();
+        expect(pick(second).getAttribute('aria-pressed')).toBe('true');
+        expect(lit()).toEqual([false, true]);
+        move('mouseover', first);
+        expect(lit()).toEqual([true, false]);
+        move('mouseout', first, list);
+        expect(lit()).toEqual([false, true]);
+        // A new count lays the plots out again: the table and the plots are new, plot 2 stays kept.
+        change(w.$('[data-parcel-layout-count]'), 3);
+        expect(rows().map(row => pick(row).getAttribute('aria-pressed'))).toEqual(['false', 'true', 'false']);
+        expect(lit()).toEqual([false, true, false]);
+        pick(rows()[1]).click();
+        expect(pick(rows()[1]).getAttribute('aria-pressed')).toBe('false');
+        expect(lit()).toEqual([false, false, false]);
+    });
+
+    it('light an Old plots input parcel the same way, and let go when the view switches', async () => {
+        const w = world();
+        await w.editor.openParcelLayoutEditor();
+        w.editor.setPlotsTab('old');
+        const list = w.state.oldPlotsListEl;
+        const [first, second] = list.querySelectorAll('tr.reparcel-oldplot-row');
+        const litId = () => JSON.stringify(w.state.inputHighlightLayer?.getLayers()[0].feature.geometry ?? null);
+        move('mouseover', second);
+        expect(w.state.inputHighlightLayer).not.toBeNull();
+        move('mouseout', second, list);
+        expect(w.state.inputHighlightLayer).toBeNull();
+        pick(first).click();
+        expect(pick(first).getAttribute('aria-pressed')).toBe('true');
+        const kept = litId();
+        move('mouseover', second);
+        expect(litId()).not.toBe(kept);
+        move('mouseout', second, list);
+        expect(litId()).toBe(kept);
+        w.editor.setPlotsTab('new');
+        expect(pick(first).getAttribute('aria-pressed')).toBe('false');
+        expect(w.state.inputHighlightLayer).toBeNull();
     });
 });
 

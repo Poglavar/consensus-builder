@@ -227,6 +227,10 @@ describe('actor explorer view', () => {
         expect(entityButtons.map(button => [button.textContent, button.title])).toEqual([
             ['Agreement bafkreigb4sp…yk2eha', MINTED], ['Design bafkreiehkrt…vygce4', DESIGN]
         ]);
+        // The row names its object, so the Activity panel can outline a design from it.
+        expect(entityButtons.map(button => [button.attributes['data-entity-type'], button.attributes['data-entity-id']])).toEqual([
+            ['agreement', MINTED], ['design', DESIGN]
+        ]);
         entityButtons.forEach(button => button.click());
         expect(opened).toEqual([{ type: 'agreement', id: MINTED }, { type: 'design', id: DESIGN }]);
         expect(element.all().some(node => /^Parcel /.test(node.textContent))).toBe(false);

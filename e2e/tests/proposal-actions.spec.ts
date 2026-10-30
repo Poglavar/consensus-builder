@@ -92,7 +92,11 @@ test.describe('Proposal actions @features', () => {
     const firstRelatedId = await firstRelated.getAttribute('data-related-proposal-id');
     expect(firstRelatedId).toBeTruthy();
     if (!firstRelatedId) throw new Error('The first related proposal has no local identity.');
+    // The item keeps its design outlined and opens nothing (Object lists); its arrow opens it.
     await firstRelated.click();
+    await expect(firstRelated).toHaveAttribute('aria-pressed', 'true');
+    await expect(page.locator('#proposal-details-content')).toHaveAttribute('data-proposal-id', id);
+    await card.locator(`[data-open-design-id="${firstRelatedId}"]`).click();
     await expect.poll(() => page.evaluate(() => (window as any).currentlyHighlightedProposalId)).toBe(firstRelatedId);
     await expect(page.locator('#proposal-details-panel').getByText('Reference comparison 0', { exact: true })).toBeVisible();
   });

@@ -2,12 +2,14 @@
 // Since M2 (plan-design-agreement.md) a design's details carry no lifecycle badges, consent card,
 // terms, funding, support, market or bet: those belong to the agreement that includes the design.
 // Since M3 only an agreement is minted: a design reads Draft or Published, never Minted.
+// Its lists of map objects follow the object-list rule (docs/design-language.md, "Object lists").
 import { describe, expect, it, vi } from 'vitest';
 import { readFileSync } from 'node:fs';
 import vm from 'node:vm';
 import { load } from 'cheerio';
 import { createRequire } from 'node:module';
 import * as turf from '@turf/turf';
+import { makeDocument, makeEvent } from './helpers/fake-dom.js';
 
 const require = createRequire(import.meta.url);
 const displayText = require('../../frontend/js/proposals/display-text.js');
@@ -33,7 +35,7 @@ function render(proposal, { applied = false, road = false, lifecycle = 'Active',
     // Model the renderer's deferred HTML mount as well as its direct innerHTML path.
     const timers = [];
     const htmlContainer = () => ({ innerHTML: '', appendChild(node) { this.innerHTML += node.innerHTML; } });
-    const content = { ...htmlContainer(), dataset: {}, scrollTop: 0, querySelectorAll: () => [], querySelector: () => null };
+    const content = { ...htmlContainer(), dataset: {}, scrollTop: 0, querySelectorAll: () => [], querySelector: () => null, addEventListener() {} };
     const body = { scrollTop: 0, classList: { contains: () => false, add() {} } };
     const footer = { innerHTML: '', querySelector: () => null };
     const panelClasses = new Set();
@@ -59,6 +61,7 @@ function render(proposal, { applied = false, road = false, lifecycle = 'Active',
     const window = {
         ClickStackRelations: require('../../frontend/js/click-stack/click-stack-relations.js'),
         ClickStack: { showDesign: vi.fn() },
+        ObjectList: require('../../frontend/js/ui/object-list.js'),
         CityMoney: require('../../frontend/js/city-money.js'),
         ProposalDesignGoals: require('../../frontend/js/proposals/design-goals.js'),
         i18n: null,
@@ -94,7 +97,8 @@ function render(proposal, { applied = false, road = false, lifecycle = 'Active',
         escapeHtml: require('../../frontend/js/shared-utils.js').escapeHtml,
         performance: { now: () => 1 }, requestAnimationFrame: callback => callback(),
         setTimeout: callback => timers.push(callback), clearTimeout() {},
-        proposalStorage: { getProposal: () => proposal, getAllProposals: () => relatedProposals || [], _indexProposal() {}, save() {} },
+        // A formed plot is a parcel; any other key names the rendered design.
+        proposalStorage: { getProposal: id => formed?.ids.includes(String(id)) ? null : proposal, getAllProposals: () => relatedProposals || [], _indexProposal() {}, save() {} },
         PersistentStorage: { getItem: () => null },
         ProposalManager: { applyProposal() {}, unapplyProposal() {}, _getProposalDescendants: () => [] },
         APPLY_DISABLED_TYPE_KEYS: new Set(),
@@ -235,8 +239,12 @@ describe('proposal details action footer', () => {
         const available = parse(render(proposal, { sourceFeature }).content.innerHTML)('.proposal-parcel-row');
         expect(available.attr('data-reference-state')).toBe('available');
         expect(available.attr('onclick')).toBeUndefined();
+        // The name outlines the parcel and opens nothing; the row's arrow opens it.
         expect(available.find('.parcel-number button[type="button"]').text()).toBeTruthy();
-        expect(available.find('.parcel-number button').attr('onclick')).toContain('handleProposalParcelClick');
+        expect(available.find('.parcel-number button').attr('onclick')).toBeUndefined();
+        expect(available.find('.parcel-number button').attr('aria-pressed')).toBe('false');
+        expect(available.find('.object-list__open').attr('onclick')).toContain('handleProposalParcelClick');
+        expect(available.find('.object-list__open').attr('aria-label')).toBe('Open Parcel source-1');
         // A design has no owner acceptance: an available reference carries no Accepted/Pending status.
         expect(available.find('.parcel-status').length).toBe(0);
         expect(available.hasClass('is-accepted')).toBe(false);
@@ -245,8 +253,8 @@ describe('proposal details action footer', () => {
         expect(replaced.hasClass('is-replaced')).toBe(true);
         expect(replaced.find('.parcel-status').text()).toBe('Replaced in map model');
         expect(JSON.parse(replaced.attr('data-parcel-geometry'))).toEqual(geometry);
-        expect(replaced.find('.parcel-number button').attr('data-parcel-replaced')).toBe('true');
-        expect(JSON.parse(replaced.find('.parcel-number button').attr('data-parcel-geometry'))).toEqual(geometry);
+        expect(replaced.find('.object-list__open').attr('data-parcel-replaced')).toBe('true');
+        expect(JSON.parse(replaced.find('.object-list__open').attr('data-parcel-geometry'))).toEqual(geometry);
     });
 
     it('keeps a failed map-application reason visible in the proposal panel', () => {
@@ -459,5 +467,135 @@ describe('proposal details action footer', () => {
         expect(row.find('.proposal-published-cid').attr('title')).toBe(design.published.cid);
         expect(row.find('.proposal-published-cid').text()).toBe(`${design.published.cid.slice(0, 12)}…${design.published.cid.slice(-6)}`);
         expect(parse(render({ proposalId: 'park-2', goal: 'park', title: 'Local', cadastreParcelIds: [] }).content.innerHTML)('[data-proposal-published-cid]').length).toBe(0);
+    });
+});
+
+// The design panel's object lists, bound to the rows the renderer really writes: hovering or focusing
+// an item outlines its object, a click keeps the outline (moving the map only when it is out of view)
+// until clicked again, and only the item's arrow opens anything.
+const listSource = source.slice(source.indexOf('let proposalDetailsObjectList = null;'), source.indexOf("\n// A design's output parcels exist"));
+const listUiSource = readFileSync(new URL('../../frontend/js/proposals/list-ui.js', import.meta.url), 'utf8');
+const revealMoveSource = listUiSource.slice(listUiSource.indexOf('function revealMove('), listUiSource.indexOf('\n// The part of a width'));
+
+function bindLists(html, { holdsHighlight = true, inView = true, beforeBind = () => {} } = {}) {
+    const doc = makeDocument();
+    const content = doc.createElement('div');
+    content.innerHTML = html;
+    doc.body.appendChild(content);
+    beforeBind(content);
+    const shape = id => ({ type: 'Feature', properties: { id }, geometry: { type: 'Polygon', coordinates: [] } });
+    const box = inView ? { left: 10, top: 10, right: 50, bottom: 50 } : { left: 900, top: 10, right: 950, bottom: 50 };
+    const bounds = { isValid: () => true, getNorthWest: () => ({ x: box.left, y: box.top }), getSouthEast: () => ({ x: box.right, y: box.bottom }) };
+    const calls = { hover: [], inspect: [] };
+    const context = vm.createContext({
+        window: {
+            ObjectList: require('../../frontend/js/ui/object-list.js'), MapHighlight: { color: '#00f' },
+            ClickStackHits: { featuresFor: (kind, { id }) => [shape(`${kind}:${id}`)] },
+            LiveParcelFabric: { get: () => null },
+            ClickStack: { holdsHighlight: () => holdsHighlight, restoreFocus: vi.fn() }
+        },
+        map: { getSize: () => ({ x: 800, y: 600 }), getZoom: () => 17, panBy: vi.fn(), fitBounds: vi.fn(), latLngToContainerPoint: point => point },
+        L: { geoJSON: () => ({ getBounds: () => bounds }), point: (x, y) => ({ x, y }) },
+        removedParcelSourceFeature: (id, item) => item.getAttribute('data-parcel-geometry') ? shape(`former:${id}`) : null,
+        clearProposalHoverLayers: () => calls.hover.push(null),
+        highlightFeaturesForHover: features => calls.hover.push(features.map(feature => feature.properties.id)),
+        highlightFeaturesForInspection: features => calls.inspect.push(features.map(feature => feature.properties.id)),
+        isCameraMovementSuppressed: () => false,
+        getProposalPanelFreeArea: (width, height) => ({ left: 0, top: 0, right: width, bottom: height }),
+        getProposalPanelFitPadding: () => ({ paddingTopLeft: [40, 40], paddingBottomRight: [40, 40] }),
+        focusProposalDetails: vi.fn(), content
+    });
+    vm.runInContext(`${revealMoveSource}\n${listSource}\nbindProposalDetailsObjectLists(content);`, context);
+    const hovered = () => calls.hover.splice(0).filter(Boolean);
+    const move = (type, target, relatedTarget = null) => target.dispatchEvent(makeEvent(type, { target, relatedTarget }));
+    return { content, context, calls, hovered, move };
+}
+
+describe('proposal details object lists', () => {
+    const geometry = { type: 'Polygon', coordinates: [[[0, 0], [1, 0], [1, 1], [0, 0]]] };
+    const layout = { proposalId: 'layout-9', goal: 'parcel-layout', title: 'Layout', cadastreParcelIds: ['source-1'], parcelLayout: { plots: [] } };
+    const layoutHtml = options => render(layout, { applied: true, formed: { ids: ['plot-1', 'plot-2'], listeners: [] },
+        sourceFeature: { type: 'Feature', properties: { parcelId: 'source-1' }, geometry }, ...options }).content.innerHTML;
+
+    it('outlines a source or formed parcel on hover, keeps it on a click until clicked again, rows added later too', () => {
+        let late = null;
+        const { content, context, calls, hovered, move } = bindLists(layoutHtml(), {
+            beforeBind: root => { late = root.querySelectorAll('.proposal-descendant-row')[1]; late.remove(); }
+        });
+        const source = content.querySelector('.proposal-parcel-row');
+        const name = source.querySelector('[data-object-preview]');
+        expect(source.getAttribute('data-object-kind')).toBe('source');
+        expect(name.getAttribute('aria-pressed')).toBe('false');
+
+        move('mouseover', name);
+        move('mouseout', name, content);
+        expect(hovered()).toEqual([['parcels:source-1']]);
+        expect(calls.inspect).toEqual([]);
+
+        name.click();
+        expect(name.getAttribute('aria-pressed')).toBe('true');
+        expect(calls.inspect.splice(0)).toEqual([['parcels:source-1']]);
+        expect(context.map.panBy).not.toHaveBeenCalled();
+
+        // A row setupLazyList appends after binding behaves like the first ones; leaving it shows the kept one.
+        content.querySelector('#proposal-descendants-list').appendChild(late);
+        const plot = late.querySelector('[data-object-preview]');
+        move('mouseover', plot);
+        move('mouseout', plot, content);
+        expect(hovered()).toEqual([['formed:plot-2']]);
+        expect(calls.inspect).toEqual([]);
+
+        name.click();
+        expect(name.getAttribute('aria-pressed')).toBe('false');
+        expect(context.window.ClickStack.restoreFocus).toHaveBeenCalledTimes(1);
+        // A formed parcel has nothing to open; a source parcel's arrow opens it and presses nothing.
+        expect(content.querySelectorAll('.proposal-descendant-row .object-list__open')).toHaveLength(0);
+        source.querySelector('.object-list__open').click();
+        expect(name.getAttribute('aria-pressed')).toBe('false');
+        expect(calls.inspect).toEqual([]);
+    });
+
+    it('moves the map only when a kept object is out of view, and lets go when the panel moves on', () => {
+        const { content, context, calls } = bindLists(layoutHtml(), { inView: false, holdsHighlight: false });
+        const plot = content.querySelector('.proposal-descendant-row [data-object-preview]');
+        plot.click();
+        expect(calls.inspect.splice(0)).toEqual([['formed:plot-1']]);
+        expect(context.map.panBy).toHaveBeenCalledTimes(1);
+        // Off the right edge: the view pans right just far enough to show it inside the margin.
+        expect(context.map.panBy.mock.calls[0][0].x).toBe(950 - (800 - 40));
+        context.releaseProposalDetailsObjectList();
+        expect(plot.getAttribute('aria-pressed')).toBe('false');
+        expect(calls.inspect).toEqual([[]]);
+    });
+
+    it('outlines a replaced source as it was', () => {
+        const { content, hovered, move } = bindLists(layoutHtml({ sourceReplaced: true }));
+        const name = content.querySelector('.proposal-parcel-row [data-object-preview]');
+        move('mouseover', name);
+        expect(hovered()).toEqual([['former:source-1']]);
+    });
+
+    it('outlines a design sharing the references, and only its arrow opens it', () => {
+        const parcelSet = { parcelSource: { sourceId: 'hr-cadastre', snapshotId: null } };
+        const relatedProposals = [{ proposalId: 'related-1', title: 'Neighbour', parcelSet, cadastreParcelIds: ['source-1'] }];
+        const html = render({ proposalId: 'target', cadastreParcelIds: ['source-1'], parcelSet }, { relatedProposals }).content.innerHTML;
+        const { content, context, calls, hovered, move } = bindLists(html);
+        const row = content.querySelector('.proposal-parcel-set-relation-row');
+        const name = row.querySelector('[data-object-preview]');
+        expect(row.querySelector('.fa-chevron-right')).toBeNull();
+        move('focusin', name);
+        expect(hovered()).toEqual([['designs:related-1']]);
+
+        const open = row.querySelector('.object-list__open');
+        expect(open.getAttribute('aria-label')).toBe('Open Neighbour');
+        open.click();
+        expect(context.focusProposalDetails).toHaveBeenCalledWith('related-1', { centerOnProposal: true, showDetails: true });
+        expect(name.getAttribute('aria-pressed')).toBe('false');
+        expect(calls.inspect).toEqual([]);
+
+        name.click();
+        expect(context.focusProposalDetails).toHaveBeenCalledTimes(1);
+        expect(name.getAttribute('aria-pressed')).toBe('true');
+        expect(calls.inspect).toEqual([['designs:related-1']]);
     });
 });

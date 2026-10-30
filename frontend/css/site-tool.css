@@ -300,11 +300,15 @@ body.three-mode-active .site-panel {
 }
 
 .site-panel__parcel {
+    border-bottom: 1px solid var(--cb-line);
+}
+
+/* A bound parcel's row outlines its parcel on the map; pressed while it keeps the outline. */
+.site-panel__parcel-pick {
     display: flex;
     justify-content: space-between;
     gap: var(--cb-space-2);
-    padding: 4px 8px;
-    border-bottom: 1px solid var(--cb-line);
+    text-align: start;
 }
 
 .site-panel__parcel:last-child {

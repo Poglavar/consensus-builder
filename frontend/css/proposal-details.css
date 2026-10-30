@@ -245,8 +245,9 @@
     margin-left: var(--cb-space-2);
 }
 
-/* Source-parcel rows retain owner avatars and reference status. Navigation and comparison are
-   separate native controls; hover can highlight the whole row's parcel on the map. */
+/* Source-parcel rows retain owner avatars and reference status. Each row is an object-list item
+   (details-panel.js): hovering, focusing or clicking it outlines its parcel on the map (a click keeps
+   it, the row shows pressed); its arrow opens the parcel, comparison is its own control. */
 .proposal-parcels-list .proposal-parcel-row {
     display: flex;
     flex-direction: column;
@@ -257,6 +258,13 @@
     padding: var(--cb-space-2);
     border: 1px solid var(--cb-line-strong);
     border-radius: var(--cb-radius-sm);
+    cursor: pointer;
+}
+
+.proposal-parcels-list .proposal-parcel-row:has([data-object-preview][aria-pressed="true"]) {
+    border-color: var(--cb-primary);
+    background: var(--cb-primary-soft);
+    box-shadow: inset 0 0 0 1px var(--cb-primary);
 }
 
 .proposal-parcels-list .proposal-parcel-row:last-child {

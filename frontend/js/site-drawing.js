@@ -46,6 +46,7 @@
         drawingLayers: null,
         panel: null,
         infoPanel: null,
+        parcelOutlines: [], // the bound-parcel lists' ObjectList handles (bindParcelOutlines)
         proposeOpen: false,
         proposeMinimized: false,
         panelMinimized: false, // the site card folded to its header row
@@ -680,9 +681,35 @@
             <div class="site-panel__actions" data-site-region="actions"></div>`;
         panel.addEventListener('click', onPanelClick);
         panel.addEventListener('change', onPanelChange);
+        bindParcelOutlines(panel.querySelector('[data-site-region="parcels"]'));
         host.appendChild(panel);
         state.panel = panel;
         return panel;
+    }
+
+    // The bound parcels listed in a container are an object list (docs/design-language.md, "Object
+    // lists"): hovering a row outlines its parcel, a click keeps the outline (the row pressed) until
+    // it is clicked again. A parcel has nothing to open from here, so a row has no open button.
+    function bindParcelOutlines(container) {
+        const pick = row => row.querySelector('[data-site-parcel]');
+        state.parcelOutlines.push(win.ParcelSetProposals.bindOutlines(container, {
+            item: '.site-panel__parcel',
+            keyOf: row => pick(row)?.getAttribute('data-site-parcel') || null,
+            pressed: pick,
+            featuresOf: row => win.getParcelFeaturesForHighlight(pick(row).getAttribute('data-site-parcel')),
+            win
+        }));
+    }
+
+    // After a list is rendered anew its kept row is pressed again (ObjectList finds it by parcel).
+    function repressParcelOutlines() {
+        state.parcelOutlines.forEach(handle => handle.pinnedKey());
+    }
+
+    // Closing the tool lets go of a kept parcel outline: a second click on its pressed row, which
+    // puts back what the map showed before (ObjectList).
+    function releaseParcelOutlines() {
+        [state.panel, state.infoPanel].forEach(panel => panel?.querySelector('.site-panel__parcel-pick[aria-pressed="true"]')?.click());
     }
 
     function coverageText(sum) {
@@ -753,9 +780,11 @@
                 </span>` : ''}
             </li>`;
         });
+        // A bound parcel is an object-list item: its row outlines the parcel, pressed while kept
+        // outlined (bindParcelOutlines).
         const rows = sum.bound.map(hit => {
             const area = Number.isFinite(hit.overlapM2) ? `<span class="site-panel__parcel-area">${escapeHtml(CbFormat.formatArea(hit.overlapM2))}</span>` : '';
-            return `<li class="site-panel__parcel"><span class="site-panel__parcel-id">${escapeHtml(hit.parcelId)}</span>${area}</li>`;
+            return `<li class="site-panel__parcel"><button type="button" class="btn btn-quiet btn-block site-panel__parcel-pick" data-site-parcel="${escapeHtml(hit.parcelId)}" aria-pressed="false"><span class="site-panel__parcel-id">${escapeHtml(hit.parcelId)}</span>${area}</button></li>`;
         });
         if (!rows.length && !warnings.length) {
             if (sum.coverage === 'unknown') return '';
@@ -897,6 +926,7 @@
                 <div class="parcel-tab-content" role="tabpanel" data-site-tab-panel="proposals" hidden></div>
             </div>`;
         panel.addEventListener('click', onInfoPanelClick);
+        bindParcelOutlines(panel.querySelector('[data-site-tab-panel="info"]'));
         if (win.ParcelSetProposals) win.ParcelSetProposals.bindRows(panel.querySelector('[data-site-tab-panel="proposals"]'));
         host.appendChild(panel);
         state.infoPanel = panel;
@@ -948,6 +978,7 @@
             setRegion(region, regions[tab]());
         });
         panel.classList.add('visible');
+        repressParcelOutlines();
     }
 
     // The proposals already on the parcels this site binds (ParcelSetProposals, which also asks the
@@ -1004,6 +1035,7 @@
             : ''));
         setRegion(region('actions'), actionsHtml());
         renderInfoPanel();
+        repressParcelOutlines();
     }
 
     // On a phone the card and the proposal panel share the bottom half of the screen, so opening
@@ -1364,6 +1396,7 @@
         state.phase = 'idle';
         doc.body.classList.remove('site-tool-active');
         doc.body.classList.remove('site-tool-drawing');
+        releaseParcelOutlines();
         if (state.panel) {
             state.panel.hidden = true;
             state.panel.querySelectorAll('[data-site-region]').forEach(region => setRegion(region, ''));

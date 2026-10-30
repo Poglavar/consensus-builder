@@ -16,6 +16,12 @@
     margin-left: auto;
 }
 
+/* A row about a design outlines it on the map; pressed while it keeps the outline (object list). */
+#activity-sheet :is(.activity-entry, .ae-event)[aria-pressed="true"] {
+    border-color: var(--cb-primary);
+    background: var(--cb-primary-soft);
+}
+
 .activity-panel-tabs {
     position: sticky;
     top: 0;

@@ -82,7 +82,7 @@ test.describe('Area monitor @features', () => {
     await expectRoute(page, '/', 'zg');
   });
 
-  test('list opens from Tools and selecting an item follows the actual monitor route', async ({ mockApi: page }) => {
+  test('list opens from Tools and an item\'s open arrow follows the actual monitor route', async ({ mockApi: page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto('/?city=zg');
     await waitForMapReady(page);
@@ -92,7 +92,11 @@ test.describe('Area monitor @features', () => {
     await expect(list).toBeVisible();
     await expect(list).toContainText('Zapadni Jarunski Most');
     await expect(list).toContainText('Vukovarska Corridor');
-    await list.getByRole('button', { name: /Zapadni Jarunski Most/ }).click();
+    // A row beside the map opens nothing itself (an object-list item); its arrow opens the area.
+    const row = list.locator('.area-monitor-list-item').filter({ hasText: 'Zapadni Jarunski Most' });
+    await row.locator('.cb-option__title').click();
+    await expect(page).not.toHaveURL(/\/monitors\/1$/);
+    await list.getByRole('button', { name: 'Open Zapadni Jarunski Most', exact: true }).click();
     await expect(page).toHaveURL(/\/monitors\/1$/);
     expect(await page.evaluate(() => (window as any).CityConfigManager.getCurrentCityId())).toBe('zagreb');
     await expect(page.locator('#area-monitor-detail-panel')).toBeVisible();

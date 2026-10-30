@@ -143,6 +143,24 @@
         } finally { if (token === requestToken) { loading = false; render(); } }
     }
 
+    // The Events and Actors rows are an object list (docs/design-language.md, "Object lists"): a row
+    // about a design held on this device outlines the design (hover or focus), a click keeps the
+    // outline (the row pressed) until it is clicked again, and only its Open design button opens it.
+    // A row about anything else, or a design only on the server, has no shape to show.
+    const rowDesign = row => {
+        const link = row.querySelector('[data-entity-type="design"][data-entity-id]');
+        return link ? global.DesignSync?.localCopyOf?.(link.dataset.entityId) || null : null;
+    };
+    const panes = sheet.querySelector('.activity-panel-panes');
+    global.ParcelSetProposals.bindOutlines(panes, {
+        item: '.activity-entry, .ae-event',
+        keyOf: row => (rowDesign(row) ? row.querySelector('[data-entity-type="design"]').dataset.entityId : null),
+        featuresOf: row => global.MapPick.outlineOf(rowDesign(row)),
+        win: global
+    });
+    // Closing the panel lets go of a kept outline: a second click on its pressed row.
+    const releaseOutline = () => panes.querySelector('[aria-pressed="true"]:is(.activity-entry, .ae-event)')?.click();
+
     function changeFilter(field, value) { state = model.setFilter(state, field, value); load(); }
     function clearScope() {
         state = model.clearScope(state);
@@ -187,6 +205,7 @@
     document.addEventListener('mapshell:sheetopened', event => { if (event.detail?.id === 'activity-sheet') { capabilities(); load(); } });
     document.addEventListener('mapshell:sheetclosed', event => {
         if (event.detail?.id !== 'activity-sheet') return;
+        releaseOutline();
         const url = new URL(global.location.href);
         if (url.searchParams.has('activity')) { url.searchParams.delete('activity'); global.history.replaceState(global.history.state, '', url); }
     });

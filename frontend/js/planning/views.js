@@ -30,8 +30,24 @@
     const sideWord = (item, edge) => root.i18n.t(`modal.corridor.compass.${envelopes.edgeSide(item.derivation?.parcel, edge)}`);
     const lotNote = configuration => configuration?.lotArea?.status === 'fail' ? t('lotBelowMinimum', { minimum: area(configuration.lotArea.minimumM2) }) : '';
     function pinConfiguration(itemId, configurationId) {
+        outlineConfiguration(null);
         pins = { ...pins, [itemId]: configurationId };
         drawMap(); renderInspector(); notifyGeometry();
+    }
+    // A configuration row outlines the footprint it would show while it is hovered or focused
+    // (docs/design-language.md, "Object lists"); picking it is what shows it. null lets go: the map
+    // view's hover outline goes, the model view gets its click stack's own outline back.
+    function configurationFeatures(item, configurationId) {
+        const selection = { ...displaySelection(), pins: { ...pins, [item.id]: configurationId } };
+        return envelopes.mapFeatures(item, { form: 'configuration', selection, deps: geometryDeps() });
+    }
+    function outlineConfiguration(features) {
+        const three = !!root.isThreeModeActive?.();
+        if (!features) {
+            if (three) root.ThreeClickStack?.restoreFocus?.();
+            else root.clearProposalHoverLayers?.();
+        } else if (three) root.inspectThreeModeFeatures?.(features);
+        else root.highlightFeaturesForHover?.(features);
     }
     const number = value => typeof value === 'number' && Number.isFinite(value)
         ? root.CbFormat.formatNumber(value, { maxFractionDigits: 0 }) : '—';
@@ -396,6 +412,17 @@
             button.addEventListener('click', () => pinConfiguration(item.id, configuration.id));
             row.append(button); list.append(row);
         }
+        const rowOf = event => event.target.closest?.('li[data-configuration]');
+        const enter = event => {
+            const row = rowOf(event);
+            if (row && !row.contains(event.relatedTarget)) outlineConfiguration(configurationFeatures(item, row.dataset.configuration));
+        };
+        const leave = event => {
+            const row = rowOf(event);
+            if (row && !row.contains(event.relatedTarget)) outlineConfiguration(null);
+        };
+        list.addEventListener('mouseover', enter); list.addEventListener('focusin', enter);
+        list.addEventListener('mouseout', leave); list.addEventListener('focusout', leave);
         section.append(list);
         const excluded = Object.entries(item.sourceEvidence?.excludedConfigurations || {});
         if (excluded.length) section.append(element('p', 'planning-source-note', t('excludedConfigurations', {

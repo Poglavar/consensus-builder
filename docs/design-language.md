@@ -173,9 +173,20 @@ meaningful colours when they are not selected.
 sheet or stack card): hovering or focusing an item outlines its object; clicking the item outlines
 it and keeps it outlined (the item shows pressed), moving the map only when the object is out of the
 visible area; clicking it again lets go. A click never navigates. Each item has its own **open**
-button (an arrow, “Open …”) that goes to the object, its section or dialog. Done in the click stack's
-related items (2D and model view, `ClickStackRelations.bindPreview`) and the Lists sheet (the card
-is the item, Open its button).
+button (an arrow, “Open …”, `ObjectList.openButton`) that goes to the object, its section or
+dialog; a list with nothing to open has none. The item's name is a `btn btn-quiet` (or `btn`) button
+and shows pressed with the shared `.btn[aria-pressed="true"]` look. All of them bind
+`ObjectList.bind` (js/ui/object-list.js):
+- the click stack's related items (2D and model view, `ClickStackRelations.bindPreview`);
+- the Lists sheet (the card is the item, Open its button; a hover shows only what this browser
+  already holds);
+- the design panel's source parcels, formed parcels and designs, and designs sharing its references;
+- the Proposals lists of a parcel, a selection and a site, a design's "On parcels" breadcrumb, a
+  site's bound parcels and Activity's design rows (`ParcelSetProposals.bindOutlines`);
+- the OSM blocks ranking and the land readjustment plot tables.
+
+Two exceptions: Activity's watched areas have no shape in their list (only the open arrow), and the
+planning configurations are a choice (one is always shown), so they add only the hover outline.
 
 A **view pill** names a setting that changes how the map reads while it is on, at the top centre
 with × to turn it off (`js/ui/view-pills.js`, `.map-view-pill` in css/map-shell.css): Highlight by

@@ -21,57 +21,6 @@ function syncMultiSelectControls(isActive) {
     document.getElementById('parcel-manual-selection')?.setAttribute('aria-pressed', String(!!isActive));
 }
 
-function handleDescendantItemHover(element) {
-    if (!element) return;
-    const type = element.getAttribute('data-descendant-type');
-    if (type === 'proposal') {
-        const proposalId = element.getAttribute('data-proposal-id');
-        if (proposalId) {
-            highlightProposalHoverById(proposalId, {
-                color: window.MapHighlight.color,
-                weight: 4,
-                dashArray: '4 4',
-                showLabels: true,
-                includeParents: false
-            });
-        }
-    } else if (type === 'parcel') {
-        const parcelId = element.getAttribute('data-parcel-id');
-        if (parcelId) {
-            highlightParcelHover(parcelId, {
-                color: window.MapHighlight.color,
-                weight: 6,
-                dashArray: '10 8',
-                showLabels: true
-            });
-        }
-    }
-}
-
-function handleDescendantItemClick(element) {
-    if (!element) return;
-    clearProposalHoverLayers();
-
-    const type = element.getAttribute('data-descendant-type');
-    if (type === 'proposal') {
-        const proposalIdAttr = element.getAttribute('data-proposal-id');
-        if (!proposalIdAttr) return;
-        const descendantProposal = getProposalByIdOrHash(proposalIdAttr);
-        if (!descendantProposal) return;
-        selectAndHighlightProposal(getProposalKey(descendantProposal) || proposalIdAttr, null, true);
-    } else if (type === 'parcel') {
-        const parcelId = element.getAttribute('data-parcel-id');
-        if (!parcelId) return;
-        focusParcelInMap(parcelId);
-        highlightParcelHover(parcelId, {
-            color: window.MapHighlight.color,
-            weight: 6,
-            dashArray: '10 8',
-            showLabels: true
-        });
-    }
-}
-
 function handleProposalParcelClick(parcelId, event) {
     // Handle case where event is not provided (legacy call)
     if (!event) {

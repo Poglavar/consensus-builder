@@ -77,7 +77,7 @@ test('block-layout ranges, candidate visibility and alternative selection change
   await openLayerUrbanBlocks(page);
   await page.locator('#showUrbanBlocks').check();
   await expect(page.locator('#urban-block-list button[data-block-id]')).toHaveCount(4);
-  await page.locator('#urban-block-list button[data-block-id]').first().click();
+  await page.locator('#urban-block-list .urban-block-open').first().click();
   const targetSummary = page.locator('.urban-block-target-summary strong');
   const originalTarget = await targetSummary.innerText();
   await selectNativeOption(page.locator('#urban-block-target-size'), '75');
@@ -149,7 +149,7 @@ test('Propose turns the selected layout\'s new streets into applied road proposa
   const original = await firstRow.getAttribute('data-block-id');
   const blockIds = () => page.evaluate(() => (window as any).UrbanBlocksView.snapshot().blocks?.features.map((block: any) => block.id) || []);
   const before = await blockIds();
-  await firstRow.click();
+  await page.locator('#urban-block-list .urban-block-open').first().click();
   await page.locator('#urban-block-see-how').click();
   const dialog = page.locator('.urban-block-playground .on-map-editor__panel');
   const propose = dialog.locator('[data-action="propose"]');
@@ -213,7 +213,21 @@ test('OSM block browse, details, fit, copy, collapse, refresh, back, and close b
   const selectedRow = rows.first();
   const blockId = await selectedRow.getAttribute('data-block-id');
   expect(blockId).toMatch(/^osm-block-/);
+  // A row is an object-list item: hovering outlines its block, a click keeps the outline (pressed)
+  // without leaving the list, a second click lets go, and only its arrow opens the details.
+  const outline = page.locator('path.urban-block-preview');
+  await selectedRow.hover();
+  await expect(outline).toHaveCount(1);
   await selectedRow.click();
+  await expect(selectedRow).toHaveAttribute('aria-pressed', 'true');
+  await expect(list).toBeVisible();
+  await page.locator('#urban-block-list-status').hover();
+  await expect(outline).toHaveCount(1);
+  await selectedRow.click();
+  await expect(selectedRow).toHaveAttribute('aria-pressed', 'false');
+  await page.locator('#urban-block-list-status').hover();
+  await expect(outline).toHaveCount(0);
+  await page.locator('#urban-block-list .urban-block-open').first().click();
   const details = page.locator('#urban-block-details-view');
   await expect(details).toBeVisible();
   await expect(list).toBeHidden();

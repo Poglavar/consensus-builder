@@ -23,6 +23,17 @@ test.describe('Detail navigation controls @features', () => {
     await expect(explorer).toBeVisible();
     const link = explorer.locator(`.activity-entity-link[data-entity-type="design"][data-entity-id="${designCid}"]`);
     await expect(link).toBeVisible({ timeout: 30_000 });
+    // The row is an object-list item: hovering outlines the design, a click keeps it outlined
+    // (pressed) and opens nothing, a second click lets go; only Open design opens it.
+    const row = explorer.locator('#game-log-content .activity-entry')
+      .filter({ has: page.locator(`.activity-entity-link[data-entity-id="${designCid}"]`) });
+    await row.locator('.activity-entry-main').hover();
+    await expect(page.locator('path.proposal-hover-outline').first()).toBeAttached();
+    await row.locator('.activity-entry-main').click();
+    await expect(row).toHaveAttribute('aria-pressed', 'true');
+    await expect(explorer).toBeVisible();
+    await row.locator('.activity-entry-main').click();
+    await expect(row).toHaveAttribute('aria-pressed', 'false');
     await link.click();
     await expect(explorer).toBeHidden();
     const planningInspector = page.locator('#planning-inspector');
