@@ -52,6 +52,10 @@
         "slantedRoof": "Toit en pente avec combles"
     },
     "common": {
+        "modelFileFormats": "glTF, CityGML ou CityJSON",
+        "cityModelCrsUnsupported": "Nous ne savons pas encore lire le système de coordonnées du fichier ({{crs}}).",
+        "cityModelCrsMissing": "Le fichier n'indique pas quel système de coordonnées il utilise.",
+        "footprintFileFormats": "GeoJSON, CityGML ou CityJSON",
         "maxFloors": "Nombre maximal de niveaux :",
         "minFloors": "Nombre minimal de niveaux :",
         "cancel": "Annuler",
@@ -470,6 +474,9 @@
             "closeLabel": "Fermer la fenêtre d’importation",
             "chooseFile": "Choisir un fichier de modèle",
             "hint": "Formats pris en charge : glTF 2.0 (.glb ou .gltf). Exportez depuis Blender, SketchUp, Rhino, Revit, etc. L’emprise au sol et la hauteur du modèle servent à placer le bâtiment dans l’îlot sélectionné.",
+            "cityModelHint": "Un fichier CityGML ou CityJSON contenant un bâtiment convient aussi : il se place là où le fichier le situe.",
+            "errorManyBuildings": "Ce fichier contient {{count}} bâtiments. Utilisez Importer des emprises pour tous les importer, ou choisissez un fichier avec un seul bâtiment.",
+            "errorCityModel": "Impossible de lire ce fichier comme un bâtiment CityGML ou CityJSON.",
             "noFile": "Aucun modèle chargé pour le moment.",
             "loading": "Chargement du modèle…",
             "loaded": "Chargé : {{name}}",
@@ -1029,8 +1036,8 @@
             "surroundingsGreen": "Végétation",
             "placeHint": "Cliquez ou touchez la carte pour placer le bâtiment. Faites glisser la carte pour la déplacer. Échap annule.",
             "surroundingsInfo": "Le revêtement ou l’espace vert occupe le terrain pris en dehors de l’emprise du bâtiment. Une prise limitée à l’emprise ne comporte aucun aménagement extérieur.",
-            "uploadGeojsonLabel": "Importer un fichier GeoJSON",
-            "uploadGlbLabel": "Importer un fichier .glb",
+            "uploadGeojsonLabel": "Importer des emprises",
+            "uploadGlbLabel": "Importer un modèle",
             "uploadNoPolygon": "Impossible d’importer le fichier. Utilisez des emprises de bâtiments valides de type Polygon ou MultiPolygon.",
             "uploadOutside": "Le polygone importé ne recoupe pas cet îlot de manière exploitable.",
             "uploadError": "Impossible de lire ce fichier.",
@@ -4202,7 +4209,7 @@
                 "error": "Impossible de générer le bâtiment à partir du contour manuel. Essayez de remettre le sommet à sa position précédente.",
                 "entryFailed": "Ce contour est trop complexe pour être modifié à la main : retour aux curseurs. Conseil : augmentez « Simplification (m) » pour le lisser, puis réessayez de le modifier.",
                 "vertex": "Faites glisser pour modifier la forme",
-                "uploadGeojson": "Importer une forme libre GeoJSON"
+                "uploadGeojson": "Importer des emprises de forme libre"
             },
             "title": "Règle d’urbanisme",
             "mapHint": "Modifiez les lots et leurs limites sur la carte ; utilisez le panneau pour examiner la propriété et les quotes-parts.",
@@ -4322,7 +4329,7 @@
                 "cancel": "Revenir en arrière",
                 "dissimilarParcels": "Les maisons en bande peuvent être définies sur toutes les parcelles, mais les {{count}} parcelles sélectionnées ont des tailles et des formes très variées. Cela fonctionnera tout de même ; les maisons en bande occupent généralement des parcelles de tailles et de formes similaires. Voulez-vous continuer ?"
             },
-            "uploadGeojson": "Importer une forme libre GeoJSON",
+            "uploadGeojson": "Importer des emprises de forme libre",
             "regenerate": "Illustrer",
             "closeAria": "Fermer la fenêtre des maisons en bande",
             "generating": "Génération des maisons en bande…",

@@ -1,7 +1,7 @@
 <!-- Plan for CityGML and CityJSON beside our own formats: imports wherever they are used to exchange what we import, exports as an extra option, and how our records map onto CityGML and LADM. -->
 # CityGML and CityJSON (plan)
 
-Status: city-model building sources are built for Vienna (`wien-lod2`, CityGML) and the Netherlands (`nl-3dbag`, CityJSON); the other imports and the exports are not started.
+Status: built: city-model building sources for Vienna (`wien-lod2`, CityGML) and the Netherlands (`nl-3dbag`, CityJSON), the building upload and the building editors' footprint import, and both MCP imports. Not started: the person's URL sources, the remaining city sources, CityJSON plan import and the exports.
 
 CityGML (OGC) is the open standard for 3D city models: buildings and their storeys, rooms and
 units, roads and rail, vegetation, water, land use, terrain and city furniture, each with
@@ -36,10 +36,33 @@ loosely in INSPIRE planned land use) and agreements (no standard).
 | Parcels, parcel layouts, ownership, agreements | None | Parcels travel as cadastral GML/GeoJSON (LADM concepts), not CityGML; agreements have no standard. |
 | Parks, land use, terrain, trees as imports | None for now | Little exchanged as CityGML; revisit when a source needs it. |
 
-Order (3D BAG done): building upload and footprint import from one shared
+Order (3D BAG, building upload and footprint import done): building upload and footprint import from one shared
 reader, then the CityJSON plan and design export, then CityJSON plan import, then the person's URL
 sources and the remaining city sources. CityGML XML and CityJSON share one reader output (the
 `citygml.js` building shape), so each import point reads both.
+
+## Building upload and footprint import
+
+One reader, `frontend/js/city-model-reader.js`, loaded by the page and required by the backend
+(`backend/buildings/citygml.js` feeds it CityGML through saxes, the browser through DOMParser):
+
+- **Footprints:** the Freeform, Row and Block editors' footprint import (Upload footprints, Import
+  Freeform footprints) takes GeoJSON, CityGML or CityJSON. A city model's buildings become one
+  footprint each (their ground surfaces joined, else the outline of all faces from above) with
+  height and storeys, placed by the file's coordinate system. MCP `ugt_import_design` takes
+  `format: citygml | cityjson` through the same reader.
+- **Model:** Upload model (`building-upload.js`) takes one CityGML or CityJSON building beside
+  glTF. `buildingGlb` writes it as a GLB (roof, wall and other faces as materials, x east, −z north,
+  centred on its box) and returns where it stands: its centre and the grid's convergence as the
+  rotation. The GLB then takes the glTF path (preview, outline, upload), and the building stands
+  where the file puts it instead of in the selected block. MCP `ugt_import_model` converts the same
+  way and needs no `center` for such a file (`asset.convertedFrom`).
+- **Coordinate systems:** the file states its system (`srsName`, `metadata.referenceSystem`; compound
+  names read their horizontal part). The reader knows Austria GK (31254–31256), RD New (28992,
+  7415), HTRS96/TM (3765), Helsinki GK25 (3879), Swiss LV95 (2056), Lambert 93 (2154), Belgian
+  Lambert 72 (31370), New York State Plane in feet (2263) and every WGS84 and ETRS89 UTM zone; any
+  other is named in the error, and a file stating none says so.
+- Still open: storeys, rooms and units of a CityGML 3.0 or CityJSON 2.0 building as its floor model.
 
 ## 1. CityJSON plan and design files
 

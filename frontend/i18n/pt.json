@@ -52,6 +52,10 @@
         "slantedRoof": "Telhado inclinado com sótão"
     },
     "common": {
+        "modelFileFormats": "glTF, CityGML ou CityJSON",
+        "cityModelCrsUnsupported": "Ainda não conseguimos ler o sistema de coordenadas do ficheiro ({{crs}}).",
+        "cityModelCrsMissing": "O ficheiro não indica que sistema de coordenadas usa.",
+        "footprintFileFormats": "GeoJSON, CityGML ou CityJSON",
         "maxFloors": "Máximo de pisos:",
         "minFloors": "Mínimo de pisos:",
         "cancel": "Cancelar",
@@ -470,6 +474,9 @@
             "closeLabel": "Fechar a janela de carregamento",
             "chooseFile": "Escolher um ficheiro de modelo",
             "hint": "Formatos suportados: glTF 2.0 (.glb ou .gltf). Exporte a partir do Blender, SketchUp, Rhino, Revit, etc. A implantação e a altura do modelo são utilizadas para posicionar o edifício no quarteirão selecionado.",
+            "cityModelHint": "Também serve um ficheiro CityGML ou CityJSON com um edifício: fica onde o ficheiro o coloca.",
+            "errorManyBuildings": "Este ficheiro tem {{count}} edifícios. Use Carregar implantações para os importar todos ou escolha um ficheiro com um só edifício.",
+            "errorCityModel": "Não foi possível ler este ficheiro como um edifício CityGML ou CityJSON.",
             "noFile": "Ainda não foi carregado nenhum modelo.",
             "loading": "A carregar o modelo…",
             "loaded": "Carregado: {{name}}",
@@ -1029,8 +1036,8 @@
             "surroundingsGreen": "Espaço verde",
             "placeHint": "Clique ou toque no mapa para colocar o edifício. Arraste o mapa para o deslocar. Esc cancela.",
             "surroundingsInfo": "A pavimentação ou o espaço verde ocupa o terreno tomado fora da implantação do edifício. Se apenas a implantação for tomada, não há espaço envolvente.",
-            "uploadGeojsonLabel": "Carregar GeoJSON",
-            "uploadGlbLabel": "Carregar .glb",
+            "uploadGeojsonLabel": "Carregar implantações",
+            "uploadGlbLabel": "Carregar modelo",
             "uploadNoPolygon": "Não foi possível importar o ficheiro. Utilize implantações de edifícios válidas do tipo Polygon ou MultiPolygon.",
             "uploadOutside": "O polígono carregado não se sobrepõe a este quarteirão de forma utilizável.",
             "uploadError": "Não foi possível ler esse ficheiro.",
@@ -4202,7 +4209,7 @@
                 "error": "Não foi possível construir a partir do contorno manual. Experimente repor o vértice na posição anterior.",
                 "entryFailed": "Este contorno é demasiado complexo para editar manualmente — regresso aos controlos deslizantes. Sugestão: aumente \"Simplificar (m)\" para o suavizar e tente editar novamente.",
                 "vertex": "Arraste para alterar a forma",
-                "uploadGeojson": "Importar GeoJSON de forma livre"
+                "uploadGeojson": "Importar implantações de forma livre"
             },
             "title": "Regra urbanística",
             "mapHint": "Edite os lotes e os limites no mapa; use o painel para rever a propriedade e as quotas.",
@@ -4322,7 +4329,7 @@
                 "cancel": "Voltar",
                 "dissimilarParcels": "É possível definir moradias em banda em quaisquer parcelas, mas as {{count}} parcelas selecionadas variam muito em dimensão e forma. Ainda assim, funcionará — as moradias em banda ocupam normalmente parcelas de dimensão e forma semelhantes. Pretende continuar?"
             },
-            "uploadGeojson": "Importar GeoJSON de forma livre",
+            "uploadGeojson": "Importar implantações de forma livre",
             "regenerate": "Ilustrar",
             "closeAria": "Fechar diálogo de moradias em banda",
             "generating": "A gerar moradias em banda…",

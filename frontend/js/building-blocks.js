@@ -1521,8 +1521,8 @@ function showBlockifyModal() {
                 </div>
                 <div class="parameter-group blockify-freeform-only">
                     <button type="button" id="blockify-manual-toggle" class="btn btn-block" aria-pressed="false" data-i18n-key="blockify.modal.manual.edit" data-i18n-attr="text">Edit shape manually</button>
-                    <button type="button" id="blockify-geojson-upload" class="btn btn-block" data-i18n-key="blockify.modal.manual.uploadGeojson" data-i18n-attr="text">Import Freeform GeoJSON</button>
-                    <input type="file" id="blockify-geojson-input" accept=".geojson,.json,application/geo+json,application/json" hidden>
+                    <button type="button" id="blockify-geojson-upload" class="btn btn-block" title="${translateBuildingText('common.footprintFileFormats', 'GeoJSON, CityGML or CityJSON')}" data-i18n-key="blockify.modal.manual.uploadGeojson" data-i18n-attr="text">Import Freeform footprints</button>
+                    <input type="file" id="blockify-geojson-input" accept=".geojson,.json,.gml,.xml,application/geo+json,application/json,application/gml+xml" hidden>
                 </div>
                 <div class="parameter-info">
                     <p class="blockify-existing-only" style="display:none" data-i18n-key="blockify.modal.existing.helper">Each existing building is raised by the additional floors, up to the maximum height. Buildings already at or above the maximum stay unchanged.</p>
@@ -3333,13 +3333,15 @@ function loadGeojsonFootprint(file) {
     const reader = new FileReader();
     reader.onload = async () => {
         try {
-            await window.openFreeformGeoJSONBuildings(JSON.parse(reader.result), {
+            await window.openFreeformGeoJSONBuildings(window.CityModelReader.geoJsonFromFileText(reader.result, { proj4: window.proj4, turf }), {
                 blockName: getBlockifyDisplayName(),
                 closeSource: () => closeBlockifyModal({ preservePending: true, continueDesignSession: true })
             });
         } catch (error) {
             console.error('GeoJSON building import failed', error);
-            showBuildingAlert('blockify.modal.manual.uploadNoPolygon', 'Could not import the file. Use valid Polygon or MultiPolygon building footprints.');
+            const crsMessage = window.CityModelReader.crsErrorMessage(error, window.i18n);
+            if (crsMessage) window.CbDialog.alert(crsMessage);
+            else showBuildingAlert('blockify.modal.manual.uploadNoPolygon', 'Could not import the file. Use valid Polygon or MultiPolygon building footprints.');
         }
     };
     reader.onerror = () => showBuildingAlert('blockify.modal.manual.uploadError', 'Could not read that file.');

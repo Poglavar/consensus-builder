@@ -62,7 +62,7 @@ export const MCP_FEATURES = Object.freeze([
         categories: { road: ['bus'], track: ['tram', 'elevated', 'underground'] },
         trackPlacement: { ground: 'tram', elevated: 'elevated', underground: 'underground' } },
     { feature: 'urban-rules', create: 'ugt_draft_urban_rule' },
-    { feature: 'imports', create: ['ugt_import_design', 'ugt_import_model'], formats: ['geojson', 'osm', 'opendrive', 'glb', 'gltf'],
+    { feature: 'imports', create: ['ugt_import_design', 'ugt_import_model'], formats: ['geojson', 'citygml', 'cityjson', 'osm', 'opendrive', 'glb', 'gltf'],
         modelKinds: ['building', 'park', 'square', 'lake', 'furniture'], geojsonCorridorProperties: ['name', 'width', 'highway', 'lanes', 'railway'],
         furnitureKinds: FurnitureModels.KINDS, furnitureLimits: FurnitureModels.LIMITS },
     { feature: 'review', validate: 'ugt_validate_plan', compare: 'ugt_compare', render: 'ugt_render_preview', imageViews: ['2d'] }

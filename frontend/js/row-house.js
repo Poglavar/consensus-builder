@@ -848,13 +848,15 @@
         const reader = new FileReader();
         reader.onload = async () => {
             try {
-                await window.openFreeformGeoJSONBuildings(JSON.parse(reader.result), {
+                await window.openFreeformGeoJSONBuildings(window.CityModelReader.geoJsonFromFileText(reader.result, { proj4: window.proj4, turf }), {
                     blockName: rowHouseBlockNameOverride || null,
                     closeSource: () => closeRowHouseModal({ preservePending: true, continueDesignSession: true })
                 });
             } catch (error) {
                 console.error('Row-house GeoJSON import failed', error);
-                showRowHouseEditorAlert('uploadNoPolygon', 'Could not import the file. Use valid Polygon or MultiPolygon building footprints.');
+                const crsMessage = window.CityModelReader.crsErrorMessage(error, window.i18n);
+                if (crsMessage) window.CbDialog.alert(crsMessage);
+                else showRowHouseEditorAlert('uploadNoPolygon', 'Could not import the file. Use valid Polygon or MultiPolygon building footprints.');
             }
         };
         reader.onerror = () => showRowHouseEditorAlert('uploadError', 'Could not read that file.');
@@ -1276,8 +1278,8 @@
                             <input type="range" id="rowhouse-chamfer-slider" min="0" max="10" value="${DEFAULT_CHAMFER}" step="0.5">
                         </div>
                         <div class="parameter-group">
-                            <button id="rowhouse-geojson-upload" class="btn btn-block" type="button" data-i18n-key="rowHouses.modal.uploadGeojson" data-i18n-attr="text">Import Freeform GeoJSON</button>
-                            <input id="rowhouse-geojson-input" type="file" accept=".geojson,.json,application/geo+json,application/json" hidden>
+                            <button id="rowhouse-geojson-upload" class="btn btn-block" type="button" title="${translateRowHouseText('common.footprintFileFormats', 'GeoJSON, CityGML or CityJSON')}" data-i18n-key="rowHouses.modal.uploadGeojson" data-i18n-attr="text">Import Freeform footprints</button>
+                            <input id="rowhouse-geojson-input" type="file" accept=".geojson,.json,.gml,.xml,application/geo+json,application/json,application/gml+xml" hidden>
                         </div>
                         <div class="parameter-metrics">
                             <div class="metric-row">

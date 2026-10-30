@@ -12,11 +12,14 @@ import { renderMapPreview, PREVIEW_WIDTH, PREVIEW_HEIGHT } from '../thumbnails/m
 import { renderProposalThumbnailSet } from '../thumbnails/tile-stitch.js';
 import { trustedMetadata } from './mcp-results.js';
 import { cityDrivingSide } from '../scripts/lib/frontend-city-money.mjs';
+import proj4 from 'proj4';
+import { parseCityGml } from '../buildings/citygml.js';
 const require = createRequire(import.meta.url);
 const imports = require('../../frontend/js/corridor-import.js');
 const modelGeometry = require('../../frontend/js/building-model-geometry.js');
 const singleGeometry = require('../../frontend/js/single-building-geometry.js');
 const FurnitureModels = require('../../frontend/js/furniture-models.js');
+const CityModelReader = require('../../frontend/js/city-model-reader.js');
 const MAX_BYTES = 10 * 1024 * 1024;
 const fail = (code, message) => { throw Object.assign(new Error(message), { code }); };
 const SPACE_KINDS = ['park', 'square', 'lake'];
@@ -109,6 +112,23 @@ async function furnitureSummary(bytes, json, bin) {
     return { triangles, textures, bytes: bytes.length };
 }
 
+// A CityGML or CityJSON file read by the site's reader, or null for any other bytes. The model's own
+// coordinate system places it; a coordinate system the reader does not know fails by name.
+function cityModelOf(bytes) {
+    const text = bytes.toString('utf8');
+    const first = text.replace(/^\uFEFF/, '').trimStart()[0];
+    if (first !== '{' && first !== '<') return null;
+    try {
+        return CityModelReader.readCityModel(text, { parseGml: parseCityGml });
+    } catch (error) {
+        if (error?.code === 'unsupported-crs') fail('import-crs-unsupported', CityModelReader.crsErrorMessage(error, null));
+        throw error;
+    }
+}
+
+const triangulate = (contour, holes) => THREE.ShapeUtils.triangulateShape(contour.map(([x, y]) => new THREE.Vector2(x, y)),
+    holes.map(ring => ring.map(([x, y]) => new THREE.Vector2(x, y))));
+
 async function parseModelBytes(bytes, args) {
     const { json, bin } = readGltf(bytes);
     if (args.kind === 'furniture') return furnitureSummary(bytes, json, bin);
@@ -182,9 +202,18 @@ export function createMcpAssetTools({ read, drafts, appOrigin, resolveDraftRefer
             const parsed = imports.FORMATS.find(entry => entry.id === format).parse(text, { anchor: args.anchor });
             await corridorDesigns(parsed, format);
             warnings = parsed.warnings || []; placement = parsed.placement;
-        } else if (format === 'geojson') {
+        } else if (format === 'geojson' || format === 'citygml' || format === 'cityjson') {
             let input;
-            try { input = JSON.parse(text); } catch { fail('import-invalid-json', 'GeoJSON must be valid JSON.'); }
+            if (format === 'geojson') {
+                try { input = JSON.parse(text); } catch { fail('import-invalid-json', 'GeoJSON must be valid JSON.'); }
+            } else {
+                // The building editors' reader: one footprint per building, with its height and storeys.
+                const model = cityModelOf(Buffer.from(text));
+                if (!model || model.format !== format) fail('import-city-model-invalid', `The data is not a ${format === 'citygml' ? 'CityGML' : 'CityJSON'} city model.`);
+                const transform = proj4(model.crs.definition, 'EPSG:4326');
+                input = CityModelReader.footprintFeatures(model, { toLngLat: (x, y) => transform.forward([x, y]), turf });
+                if (!input.features.length) fail('import-empty', 'The city model holds no building with a footprint.');
+            }
             const features = input.type === 'FeatureCollection' ? input.features : [input.type === 'Feature' ? input : { type: 'Feature', geometry: input, properties: {} }];
             if (!Array.isArray(features) || !features.length || features.length > 100) fail('import-feature-limit', 'Import between 1 and 100 GeoJSON features.');
             // GeoJSON polygons are inputs to the existing intent builders, not a second construction
@@ -197,7 +226,7 @@ export function createMcpAssetTools({ read, drafts, appOrigin, resolveDraftRefer
                 else if (['Polygon', 'MultiPolygon'].includes(geometry?.type)) {
                     if (args.kind === 'space') designs.push(await drafts.draftSpace({ ...common, outline: geometry }));
                     else designs.push(await drafts.draftBuilding({ ...common, outline: geometry, footprint: geometry,
-                        height: args.height ?? properties.height, floors: args.floors ?? properties.floors }));
+                        height: args.height ?? properties.height, floors: args.floors ?? properties.floors ?? properties.storeys }));
                 } else fail('import-geometry-unsupported', 'GeoJSON import accepts LineString, MultiLineString, Polygon or MultiPolygon features.');
             }
             if (lines.length) {
@@ -205,10 +234,10 @@ export function createMcpAssetTools({ read, drafts, appOrigin, resolveDraftRefer
                 await corridorDesigns(parsed, format);
                 warnings = parsed.warnings || [];
             }
-        } else fail('import-format-unsupported', 'Use geojson, osm or opendrive.');
+        } else fail('import-format-unsupported', 'Use geojson, citygml, cityjson, osm or opendrive.');
         // Imported roads are placed in the working plan in turn (agent-working-plan.md), so they join its roads and each other.
         for (const content of roads) designs.push(await privateResult(content, args.parcelSourceId));
-        return { designs, publication: 'private', warnings, import: { format, placement, count: designs.length, parser: format === 'geojson' ? 'app-intent-builders+app-corridor-import' : 'app-corridor-import' } };
+        return { designs, publication: 'private', warnings, import: { format, placement, count: designs.length, parser: ['geojson', 'citygml', 'cityjson'].includes(format) ? 'app-intent-builders+app-corridor-import' : 'app-corridor-import' } };
     }
     async function upload(bytes, args) {
         const uploaded = await read.request('/models', {}, { fileName: args.fileName || 'model.glb', modelData: `data:model/gltf-binary;base64,${bytes.toString('base64')}` });
@@ -239,15 +268,27 @@ export function createMcpAssetTools({ read, drafts, appOrigin, resolveDraftRefer
         if (args.modelData != null && (args.data != null || args.url)) fail('import-input-required', 'Supply exactly one of modelData, data or a public HTTPS URL.');
         if (typeof args.modelData === 'string' && args.modelData.length > 14_000_000) fail('model-size-invalid', 'The model data URL exceeds the upload size limit.');
         if (!parseModel) fail('model-parser-unavailable', 'The shared model parser is unavailable in this runtime.');
-        const bytes = args.modelData ? (() => {
+        let bytes = args.modelData ? (() => {
             const match = /^data:[^;,]*;base64,([A-Za-z0-9+/]+={0,2})$/.exec(args.modelData);
             if (!match) fail('model-data-invalid', 'modelData must be a base64 data URL.');
             return Buffer.from(match[1], 'base64');
         })() : await dataOf(args);
         if (!bytes.length || bytes.length > MAX_BYTES) fail('model-size-invalid', 'A model must contain 1 byte to 10 MiB.');
-        const parsed = await parseModel(bytes, { ...args, kind });
+        // A CityGML or CityJSON building becomes the same GLB the site's upload makes, standing where its
+        // file puts it (its center and rotation replace any supplied).
+        let city = null;
+        const cityModel = kind === 'building' ? cityModelOf(bytes) : null;
+        if (cityModel) {
+            if (cityModel.buildings.length !== 1) fail('model-buildings-count', `The file holds ${cityModel.buildings.length} buildings; import one, or use ugt_import_design with format ${cityModel.format} for their footprints.`);
+            const transform = proj4(cityModel.crs.definition, 'EPSG:4326');
+            const out = CityModelReader.buildingGlb(cityModel.buildings[0], { toLngLat: (x, y) => transform.forward([x, y]), unitToMetres: cityModel.crs.zToMetres, triangulate });
+            bytes = Buffer.from(out.glb);
+            city = { center: [out.center.lng, out.center.lat], rotation: out.rotationDeg, format: cityModel.format };
+        }
+        const parsed = await parseModel(bytes, { ...args, kind, ...(city ? { center: city.center, rotation: city.rotation } : {}) });
         if (kind === 'furniture') return furnitureAsset(bytes, parsed, args);
         const { footprint, height } = parsed;
+        if (city) args = { ...args, center: city.center, rotation: city.rotation };
         if (!footprint || !Number.isFinite(height) || height <= 0) fail('model-geometry-unavailable', 'The model has no measurable building footprint and height.');
         const authoredAt = args.authoredAt || new Date().toISOString();
         // A park, square or lake takes the same placed footprint as its structure polygon; the model is
@@ -266,7 +307,8 @@ export function createMcpAssetTools({ read, drafts, appOrigin, resolveDraftRefer
             Object.assign(content.structureProposal, { ...model, modelName: model.modelName.slice(0, 120) }, empty ? { decorationDesign: empty } : {});
         }
         return { ...result, design: content, cid: cidOfObject(content), publication: 'private',
-            ...await previewArtifact({ design: content, parcelSourceId: result.parcelSourceId }), asset: { modelUrl: url.href, public: true, durable: true, footprint: 'projected-model-triangles', kind } };
+            ...await previewArtifact({ design: content, parcelSourceId: result.parcelSourceId }), asset: { modelUrl: url.href, public: true, durable: true, footprint: 'projected-model-triangles', kind,
+                ...(city ? { convertedFrom: city.format, center: city.center, rotation: city.rotation } : {}) } };
     }
     async function renderDefault(rows) {
         let rendered;
