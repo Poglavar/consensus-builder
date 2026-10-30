@@ -91,13 +91,10 @@ function resolveInitialZoom() {
 
 // Initialize the map with city-specific defaults
 const map = L.map('map', {
-    // Wheel and pinch zoom stop at tenths of a level, so a small trackpad move zooms a little
-    // instead of being rounded up to a whole level (2×). Leaflet divides a Mac's wheel pixels by 3×
-    // the pixel ratio, so at its default 60 px per level a retina mouse notch zoomed only ~0.2 of a
-    // level once the rounding up was gone: 20 keeps a notch near half a level and a full trackpad
-    // swipe at several. Keys and double-click still move whole levels (zoomDelta 1).
-    zoomSnap: 0.1,
-    wheelPxPerZoomLevel: 20,
+    // Zoom is continuous: wheel, trackpad and pinch move by what the input moved
+    // (js/map-wheel-zoom.js), not rounded to a step. Keys and double-click still move whole
+    // levels (zoomDelta 1).
+    zoomSnap: 0,
     zoomControl: false,
     attributionControl: false // MapCredits keeps provider credits compact; details live in Information.
 });

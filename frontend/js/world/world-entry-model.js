@@ -57,10 +57,10 @@
         return finite(view.zoom) ? `${head},${roundZoom(view.zoom)}` : head;
     }
 
-    // The map zooms in tenths of a level (js/map-core.js zoomSnap), so the address keeps one decimal:
-    // `17.4`, and `17` for a whole level.
+    // The map zooms continuously (js/map-core.js zoomSnap 0), so the address keeps two decimals
+    // (under 1% of scale): `17.43`, and `17` for a whole level.
     function roundZoom(zoom) {
-        return Math.round(zoom * 10) / 10;
+        return Math.round(zoom * 100) / 100;
     }
 
     // The address bar follows the map (js/map-core.js, on every move): the current address with the
