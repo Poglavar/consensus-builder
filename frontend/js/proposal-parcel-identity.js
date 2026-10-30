@@ -30,6 +30,16 @@ function _composeSyntheticParcelId(rootParcelId, token, index) {
     return rawRoot ? `${rawRoot}#${token}-${safeIndex}` : `${token}-${safeIndex}`;
 }
 
+// A parcel id as people read it: a cadastral id without its country and municipality prefix
+// (HR-<municipality>-), and a formed piece (`<root>#<token>-<n>`, above) as `<root> #<n>`, since the
+// token is the producing design's id (a 59-character CID for a published design) and says nothing
+// to a reader. Nested pieces read `<root> #<n> #<m>`.
+function _parcelIdLabel(id) {
+    const text = id === undefined || id === null ? '' : String(id);
+    const formed = /^(.+)#[A-Za-z0-9_-]+-(\d+)$/.exec(text);
+    return formed ? `${_parcelIdLabel(formed[1])} #${formed[2]}` : text.replace(/^HR-\d+-/, '');
+}
+
 // NOTE: child parcel ids are assigned solely by the id subsystem (_assignSyntheticChildIdentities /
 // getNextIdentity) from the current rules — deterministically derived from (proposalId → token,
 // root parcel, running index). A proposal never carries a canonical id list to reproduce: if the
@@ -82,7 +92,8 @@ if (typeof module !== 'undefined' && module.exports) {
         _normalizeParcelId,
         _getParcelIdFromProperties,
         _getParcelIdFromFeature,
-        _ensureParcelIdOnProperties
+        _ensureParcelIdOnProperties,
+        _parcelIdLabel
     });
-    module.exports = { _buildSyntheticToken, _composeSyntheticParcelId, _composeSyntheticParcelNumber };
+    module.exports = { _buildSyntheticToken, _composeSyntheticParcelId, _composeSyntheticParcelNumber, _parcelIdLabel };
 }

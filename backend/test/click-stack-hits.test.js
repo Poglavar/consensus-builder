@@ -7,6 +7,7 @@ import { createRequire } from 'node:module';
 const require = createRequire(import.meta.url);
 const formation = require('../../frontend/js/proposals/formation-depth.js');
 const neighbours = require('../../frontend/js/click-stack/click-stack-neighbours.js');
+const { _parcelIdLabel } = require('../../frontend/js/proposal-parcel-identity.js');
 
 const source = readFileSync(new URL('../../frontend/js/click-stack/click-stack-hits.js', import.meta.url), 'utf8');
 
@@ -19,6 +20,7 @@ function loadHits({ stack = [], buildings = [], planning = null, bareGround = fa
     const context = {
         __formationDepth: formation,
         ClickStackNeighbours: neighbours,
+        _parcelIdLabel,
         console,
         __drillUi: { stackAt: vi.fn(() => stack) },
         buildingsAt: vi.fn(() => buildings),
@@ -195,6 +197,10 @@ describe('click stack hits', () => {
         expect(hits.formed.map(f => [f.id, f.designId, f.designLabel])).toEqual([['f1', 'd1', 'Park']]);
         // A cadastral id loses its HR-<KO>- prefix in the label.
         expect(hits.parcels.map(p => [p.id, p.label, p.live])).toEqual([['HR-335550-12', '12', true]]);
+        // A formed piece reads as its root parcel and number, not the producing design's CID.
+        const cid = 'bafkreibwmhm6gtdpvaac4qtx7hnd7bnqj47d4ewbbw375bhaoof42csddi';
+        expect(context.ClickStackHits.parcelLabel(`2931#design-${cid}-9`, null)).toBe('2931 #9');
+        expect(context.ClickStackHits.parcelLabel('x', parcelFeature({ BROJ_CESTICE: 'x' }))).toBe('x');
         expect(hits.ground).toEqual([]);
     });
 

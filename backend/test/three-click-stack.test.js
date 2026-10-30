@@ -354,5 +354,8 @@ describe('3D click stack rules', () => {
         expect(stack.buildingLabel({ properties: {} })).toBe('');
         expect(stack.parcelLabel('HR-339164-2432/1')).toBe('2432/1');
         expect(stack.parcelLabel('UK-77')).toBe('UK-77');
+        // A formed piece: its root parcel and number, not the producing design's 59-character CID.
+        expect(stack.parcelLabel('2931#design-bafkreibwmhm6gtdpvaac4qtx7hnd7bnqj47d4ewbbw375bhaoof42csddi-9')).toBe('2931 #9');
+        expect(stack.parcelLabel('HR-339164-2432/1#p-1ltlwlqt5n8-3')).toBe('2432/1 #3');
     });
 });

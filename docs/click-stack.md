@@ -100,6 +100,9 @@ replace one with its own (the model view reads buildings from its scene).
   list item (design-language.md, "Object lists"): hovering it outlines its object, clicking it keeps
   that outline (framed when out of view in 2D; the model view's camera stays), and its arrow button
   selects and expands the object's section, or opens a plan's design that is not in the stack.
+  Related items are one per row at every width. A formed piece is named `<root parcel> #<n>`
+  (`_parcelIdLabel` in proposal-parcel-identity.js), never by its runtime id, whose token is the
+  producing design's id (a full CID for a published design).
 - A plan's designs are the Plan section's content: on desktop the expanded section grows to the
   dock's height before the list scrolls, its name and actions staying in view; a plan with few
   designs keeps the height of its list. Other relationship lists scroll within three rows.

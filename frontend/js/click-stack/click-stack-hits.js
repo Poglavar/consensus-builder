@@ -6,6 +6,8 @@
 (function (global) {
     'use strict';
 
+    // A formed piece's display number can still be its full id: proposal-parcel-identity.js
+    // shortens either to what a person reads.
     function parcelLabel(id, feature) {
         const props = (feature && feature.properties) || {};
         if (props.rootParcelNumber) {
@@ -14,9 +16,9 @@
         }
         try {
             const number = feature && global.getParcelDisplayNumberFromFeature?.(feature, '');
-            if (number) return String(number);
+            if (number) return global._parcelIdLabel(number);
         } catch (_) { }
-        return String(id).replace(/^HR-\d+-/, '');
+        return global._parcelIdLabel(id);
     }
 
     // A building's name or address when the survey has one, else its footprint area.

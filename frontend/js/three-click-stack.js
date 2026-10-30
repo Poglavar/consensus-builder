@@ -26,8 +26,11 @@
         return String(props.name || props.address || props.addr_street || '');
     }
 
+    // The id as people read it (proposal-parcel-identity.js): a browser global, or required in node.
     function parcelLabel(id) {
-        return String(id).replace(/^HR-\d+-/, '');
+        const label = global && typeof global._parcelIdLabel === 'function' ? global._parcelIdLabel
+            : require('./proposal-parcel-identity.js')._parcelIdLabel;
+        return label(id);
     }
 
     // What a click picked decides which section opens: the thing the ray hit, else the ground,

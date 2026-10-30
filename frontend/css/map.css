@@ -1351,10 +1351,10 @@ body.three-mode-active #agent-bubbles-container {
     min-width: 0;
     white-space: normal;
 }
+/* Related items are a list: one per row, its name beside its open arrow, at any width. */
 .click-stack .click-stack__strip > .click-stack__link {
-    flex: 1 1 calc(50% - var(--cb-space-1)); min-width: 0;
+    flex: 1 1 100%; min-width: 0;
 }
-.click-stack .click-stack__strip:has(> .click-stack__link:nth-child(3):last-child) > .click-stack__link { flex-basis: 0; }
 
 /* A related item: its name highlights the object (pressed while kept shown); the arrow opens it. */
 .click-stack__link {
