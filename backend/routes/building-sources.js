@@ -35,8 +35,10 @@ function corsCheckedFetch(fetchImpl, origin) {
 }
 const refused = (message, code) => Object.assign(new HttpError(422, message), { code });
 
-// A city model file: its buildings in the test area, and the source pinned to the bytes it was read
-// with. null when the file is no city model (a GeoJSON file goes on to the adapters).
+// A city model file: its buildings in the test area and in the whole file, and the source pinned to
+// the bytes it was read with. A file is whole, so the view need not hold any of its buildings; the
+// answer says how many the file has. null when the file is no city model (a GeoJSON file goes on to
+// the adapters).
 export async function discoverCityModelSource({ url, city, bbox }, { fetchImpl }) {
     let read;
     try { read = await readCityModelFile({ endpoint: url, ...BUILDING_SOURCE_LIMITS }, { fetchImpl }); }
@@ -48,10 +50,9 @@ export async function discoverCityModelSource({ url, city, bbox }, { fetchImpl }
     if (!read.bbox) throw refused('The city model holds no building with a footprint.', 'empty-bounds');
     const box = turf.bboxPolygon(bbox);
     const buildingCount = read.features.filter(feature => turf.booleanIntersects(feature, box)).length;
-    if (!buildingCount) throw refused('The city model has no buildings in the test area.', 'empty-bounds');
     const source = decodeCustomBuildingSource(encodeCustomSource({ adapter: 'city-model', endpoint: url, ...(city ? { cityIds: [city] } : {}),
         kind: 'building', format: read.format, bbox: read.bbox, expectedSha256: read.sha256 }));
-    return { source, buildingCount };
+    return { source, buildingCount, fileBuildingCount: read.features.length };
 }
 
 const noCors = () => Object.assign(new HttpError(422, 'This source does not let other websites read it (no CORS header), so the browser cannot load it.'),
@@ -96,7 +97,7 @@ export function setupBuildingSourcesRoute(app, { discover = discoverCustomBuildi
                 const model = await discoverCityModel({ url: url.href, city, bbox }, { fetchImpl: cors.fetch });
                 if (model) {
                     if (!cors.readable()) throw noCors();
-                    return res.set('Cache-Control', 'no-store').json({ source: model.source, attempts: [], buildingCount: model.buildingCount });
+                    return res.set('Cache-Control', 'no-store').json({ source: model.source, attempts: [], buildingCount: model.buildingCount, fileBuildingCount: model.fileBuildingCount });
                 }
             }
             const lon = (bbox[0] + bbox[2]) / 2, lat = (bbox[1] + bbox[3]) / 2;

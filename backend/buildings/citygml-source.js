@@ -27,7 +27,8 @@ export async function readZippedCityGml(url, fetchImpl, label) {
 }
 
 // config: { id, crs (proj4 definition), heightOffsetM, sheetsFor([minX, minY, maxX, maxY]) → [sheet ids],
-// readSheet(sheet, { fetchImpl }) → parsed buildings (citygml.js shape), attribution }. fetchImpl and
+// readSheet(sheet, { fetchImpl }) → parsed buildings (citygml.js shape), attribution, and optionally
+// sheetCache, how many parsed sheets to keep (default 64) }. fetchImpl and
 // log are injectable for tests.
 export function createCityGmlSource(config, { fetchImpl = fetch, log = console } = {}) {
     const toLngLat = proj4(config.crs, 'EPSG:4326');
@@ -49,7 +50,7 @@ export function createCityGmlSource(config, { fetchImpl = fetch, log = console }
             return records;
         })();
         sheets.set(sheet, entry);
-        if (sheets.size > SHEET_CACHE) sheets.delete(sheets.keys().next().value);
+        if (sheets.size > (config.sheetCache || SHEET_CACHE)) sheets.delete(sheets.keys().next().value);
         entry.catch(() => sheets.delete(sheet));
         return entry;
     }

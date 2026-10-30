@@ -7391,7 +7391,7 @@
         "metres": "metros",
         "feet": "pies",
         "overpass": "Un espejo de OpenStreetMap: las alturas vienen de OpenStreetMap donde están cartografiadas y se estiman en el resto.",
-        "cityModel": "Un archivo de modelo de ciudad: cada edificio conserva su propia altura y sus plantas, y el archivo solo se vuelve a leer mientras no cambie.",
+        "cityModel": "Un archivo de modelo de ciudad con {{count}} edificios en torno a {{at}}: cada edificio conserva su propia altura y sus plantas, y el archivo solo se vuelve a leer mientras no cambie.",
         "retry": "Reintentar edificios",
         "requestFailed": "Nuestro servidor no pudo completar la solicitud de datos de edificios (HTTP {{status}}).",
         "osmUnavailable": "No se pudieron cargar los datos de edificios de OpenStreetMap a través de nuestro servidor.",

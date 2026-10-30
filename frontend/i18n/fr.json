@@ -8695,7 +8695,7 @@
         "metres": "mètres",
         "feet": "pieds",
         "overpass": "Miroir OpenStreetMap : les hauteurs proviennent d’OpenStreetMap lorsqu’elles y sont renseignées et sont estimées ailleurs.",
-        "cityModel": "Un fichier de modèle de ville : chaque bâtiment garde sa propre hauteur et ses niveaux, et le fichier n’est relu que tant qu’il n’a pas changé.",
+        "cityModel": "Un fichier de modèle de ville de {{count}} bâtiments autour de {{at}} : chaque bâtiment garde sa propre hauteur et ses niveaux, et le fichier n’est relu que tant qu’il n’a pas changé.",
         "retry": "Réessayer les bâtiments",
         "requestFailed": "Notre serveur n’a pas pu terminer la requête de données de bâtiments (HTTP {{status}}).",
         "osmUnavailable": "Les données de bâtiments OpenStreetMap n’ont pas pu être chargées via notre serveur.",

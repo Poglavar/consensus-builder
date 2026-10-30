@@ -7401,7 +7401,7 @@
         "metres": "metrima",
         "feet": "stopama",
         "overpass": "OpenStreetMap zrcalo: visine dolaze iz OpenStreetMapa gdje su ucrtane, a drugdje se procjenjuju.",
-        "cityModel": "Datoteka modela grada: svaka zgrada zadržava svoju visinu i broj etaža, a datoteka se ponovno čita samo dok je nepromijenjena.",
+        "cityModel": "Datoteka modela grada s {{count}} zgrada oko {{at}}: svaka zgrada zadržava svoju visinu i broj etaža, a datoteka se ponovno čita samo dok je nepromijenjena.",
         "retry": "Ponovno učitaj zgrade",
         "requestFailed": "Naš poslužitelj nije mogao obraditi zahtjev za podatke o zgradama (HTTP {{status}}).",
         "osmUnavailable": "Podaci o zgradama iz OpenStreetMapa nisu se mogli učitati putem našeg poslužitelja.",

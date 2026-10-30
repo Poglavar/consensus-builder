@@ -13,7 +13,7 @@ const manager = cityContext.CityConfigManager;
 const SourceList = cityContext.SourceList;
 
 describe('city building sources', () => {
-    const DATABASE = new Set(['gdi-3d', 'dgu', 'osm', 'nyc-arcgis', 'wien-lod2', 'nl-3dbag']);
+    const DATABASE = new Set(['gdi-3d', 'dgu', 'osm', 'nyc-arcgis', 'wien-lod2', 'nl-3dbag', 'nrw-lod2']);
     const cities = manager.getAvailableCities();
 
     it('lists only sources the app serves, OpenStreetMap for every city without its own survey', () => {

@@ -40,7 +40,7 @@ const sha256 = text => createHash('sha256').update(text).digest('hex');
 describe('a city model file as a building source', () => {
     it('is discovered with its format, extent and hash, and decodes the same on the server and in the browser', async () => {
         const found = await discoverCityModelSource({ url, city: 'vienna', bbox }, { fetchImpl: serve(gml) });
-        expect(found.buildingCount).toBe(expected.length);
+        expect(found).toMatchObject({ buildingCount: expected.length, fileBuildingCount: expected.length });
         expect(found.source).toMatchObject({ adapter: 'city-model', format: 'citygml', expectedSha256: sha256(gml), cityIds: ['vienna'], kind: 'building' });
         expect(found.source.bbox.map(v => +v.toFixed(6))).toEqual(bbox.map(v => +v.toFixed(6)));
         expect(decodeCustomBuildingSource(found.source.id)).toEqual(found.source);
@@ -73,10 +73,11 @@ describe('a city model file as a building source', () => {
         expect(flat.items).toMatchObject([{ height_m: 16, floors: 5 }]);
     });
 
-    it('leaves a GeoJSON file to the other adapters, and refuses a file without buildings in the test area', async () => {
+    it('leaves a GeoJSON file to the other adapters, and takes a file whose buildings lie outside the test area', async () => {
         const geojson = JSON.stringify({ type: 'FeatureCollection', features: [] });
         expect(await discoverCityModelSource({ url: 'https://data.example/b.geojson.json', bbox }, { fetchImpl: serve(geojson) })).toBeNull();
-        await expect(discoverCityModelSource({ url, bbox: [0, 0, 0.001, 0.001] }, { fetchImpl: serve(gml) })).rejects.toMatchObject({ code: 'empty-bounds' });
+        expect(await discoverCityModelSource({ url, city: 'vienna', bbox: [16.3, 48.1, 16.301, 48.101] }, { fetchImpl: serve(gml) }))
+            .toMatchObject({ buildingCount: 0, fileBuildingCount: expected.length, source: { adapter: 'city-model' } });
     });
 
     it('is offered by GET /building-sources/discover only when the browser may read the file', async () => {

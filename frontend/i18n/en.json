@@ -7364,7 +7364,7 @@
         "metres": "metres",
         "feet": "feet",
         "overpass": "An OpenStreetMap mirror: heights come from OpenStreetMap where mapped and are estimated elsewhere.",
-        "cityModel": "A city model file: each building keeps its own height and storeys, and the file is read again only while it is unchanged.",
+        "cityModel": "A city model file with {{count}} buildings around {{at}}: each building keeps its own height and storeys, and the file is read again only while it is unchanged.",
         "retry": "Retry buildings",
         "requestFailed": "Our server could not complete the building-data request (HTTP {{status}}).",
         "osmUnavailable": "OpenStreetMap building data could not be loaded through our server.",

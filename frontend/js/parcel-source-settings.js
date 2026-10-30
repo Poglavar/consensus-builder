@@ -352,7 +352,10 @@
                     else result.textContent = cors ? t('cors', 'This service does not allow browsers to read it directly.')
                         : error.code === 'invalid-source-url'
                         ? t('invalidUrl', 'Use a public HTTPS URL without credentials or access keys.')
-                        : imagery ? error.code === 'imagery-crs-unsupported' ? t('unsupportedCrs', 'This WMS needs a supported geographic or Web Mercator coordinate system.') : error.message : global.ParcelSourceHealth?.describeFailure?.(error, { offline: global.navigator?.onLine === false, translate: global.i18n?.t?.bind(global.i18n) }) || error.message;
+                        : imagery ? error.code === 'imagery-crs-unsupported' ? t('unsupportedCrs', 'This WMS needs a supported geographic or Web Mercator coordinate system.') : error.message
+                        // A building source refused for what it holds says why; the parcel wording below is for parcel services.
+                        : building && response.status === 422 && data.error ? data.error
+                        : global.ParcelSourceHealth?.describeFailure?.(error, { offline: global.navigator?.onLine === false, translate: global.i18n?.t?.bind(global.i18n) }) || error.message;
                     if (Array.isArray(data.attempts)) element('p', t('attempts', 'Tried: {{adapters}}', { adapters: data.attempts.map(item => item.adapter).join(', ') }), result);
                     for (const attempt of data.attempts || []) {
                         if (attempt.error?.message) element('p', attempt.adapter + ': ' + attempt.error.message, result);
@@ -372,7 +375,7 @@
                 result.textContent = imagery ? t('matched', 'Image verified using {{adapter}}. Coverage outside the test area depends on the source.', { adapter: candidate.adapter }) : building
                     ? t('matched', 'Adapter found: {{adapter}}. {{count}} buildings in the test area. Coverage outside this area depends on the source.', { adapter: candidate.adapter, count: data[spec.countField] })
                     : t('matched', 'Adapter found: {{adapter}}. {{count}} parcels in the test area. Coverage outside this area depends on the source.', { adapter: candidate.adapter, count: data[spec.countField] });
-                if (building) describeHeights(candidate);
+                if (building) describeHeights(candidate, data);
                 use.hidden = false;
             } catch (error) {
                 if (requestController !== controller || !dialog.isConnected) return;
@@ -382,13 +385,16 @@
             finally { clearTimeout(timer); if (requestController === controller) { check.disabled = false; input.disabled = false; } }
         }
         // Which fields give the heights, and in what unit: names rarely say (NYC's HEIGHT_ROOF is feet).
-        function describeHeights(source) {
+        function describeHeights(source, data = {}) {
             if (source.adapter === 'overpass') {
                 element('p', t('overpass', 'An OpenStreetMap mirror: heights come from OpenStreetMap where mapped and are estimated elsewhere.'), result);
                 return;
             }
             if (source.adapter === 'city-model') {
-                element('p', t('cityModel', 'A city model file: each building keeps its own height and storeys, and the file is read again only while it is unchanged.'), result);
+                // The file's buildings may lie outside the view that was checked: say where they are.
+                const [west, south, east, north] = source.bbox;
+                element('p', t('cityModel', 'A city model file with {{count}} buildings around {{at}}: each building keeps its own height and storeys, and the file is read again only while it is unchanged.',
+                    { count: data.fileBuildingCount, at: `${((south + north) / 2).toFixed(5)}, ${((west + east) / 2).toFixed(5)}` }), result);
                 return;
             }
             if (!source.heightField) {

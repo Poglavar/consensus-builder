@@ -14978,7 +14978,7 @@
                 liveRadiusKm: 8,
                 attribution: '<a href="https://ogc-api.nrw.de/lika/v1/collections/flurstueck?f=json">Geobasis NRW · ALKIS</a> · <a href="https://www.govdata.de/dl-de/zero-2-0">DL-DE Zero 2.0</a> · adapted'
             },
-            buildings: { sources: [{ id: 'osm' }] },
+            buildings: { sources: [{ id: 'nrw-lod2', name: 'Geobasis NRW (LoD2)', attribution: '<a href="https://www.opengeodata.nrw.de/produkte/geobasis/3dg/lod2_gml/">Geobasis NRW</a> · 3D-Gebäudemodell LoD2 · <a href="https://www.govdata.de/dl-de/zero-2-0">DL-DE Zero 2.0</a>' }, { id: 'osm' }] },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
@@ -15166,7 +15166,7 @@
                 liveRadiusKm: 8,
                 attribution: '<a href="https://ogc-api.nrw.de/lika/v1/collections/flurstueck?f=json">Geobasis NRW · ALKIS</a> · <a href="https://www.govdata.de/dl-de/zero-2-0">DL-DE Zero 2.0</a> · adapted'
             },
-            buildings: { sources: [{ id: 'osm' }] },
+            buildings: { sources: [{ id: 'nrw-lod2', name: 'Geobasis NRW (LoD2)', attribution: '<a href="https://www.opengeodata.nrw.de/produkte/geobasis/3dg/lod2_gml/">Geobasis NRW</a> · 3D-Gebäudemodell LoD2 · <a href="https://www.govdata.de/dl-de/zero-2-0">DL-DE Zero 2.0</a>' }, { id: 'osm' }] },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
@@ -15197,7 +15197,7 @@
                 liveRadiusKm: 8,
                 attribution: '<a href="https://ogc-api.nrw.de/lika/v1/collections/flurstueck?f=json">Geobasis NRW · ALKIS</a> · <a href="https://www.govdata.de/dl-de/zero-2-0">DL-DE Zero 2.0</a> · adapted'
             },
-            buildings: { sources: [{ id: 'osm' }] },
+            buildings: { sources: [{ id: 'nrw-lod2', name: 'Geobasis NRW (LoD2)', attribution: '<a href="https://www.opengeodata.nrw.de/produkte/geobasis/3dg/lod2_gml/">Geobasis NRW</a> · 3D-Gebäudemodell LoD2 · <a href="https://www.govdata.de/dl-de/zero-2-0">DL-DE Zero 2.0</a>' }, { id: 'osm' }] },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
@@ -18096,7 +18096,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://ogc-api.nrw.de/lika/v1/collections/flurstueck?f=json">Geobasis NRW ALKIS parcels</a> · adapted'
             },
-            buildings: { sources: [{ id: 'osm' }] },
+            buildings: { sources: [{ id: 'nrw-lod2', name: 'Geobasis NRW (LoD2)', attribution: '<a href="https://www.opengeodata.nrw.de/produkte/geobasis/3dg/lod2_gml/">Geobasis NRW</a> · 3D-Gebäudemodell LoD2 · <a href="https://www.govdata.de/dl-de/zero-2-0">DL-DE Zero 2.0</a>' }, { id: 'osm' }] },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
@@ -18280,7 +18280,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://ogc-api.nrw.de/lika/v1/collections/flurstueck?f=json">Geobasis NRW ALKIS parcels</a> · adapted'
             },
-            buildings: { sources: [{ id: 'osm' }] },
+            buildings: { sources: [{ id: 'nrw-lod2', name: 'Geobasis NRW (LoD2)', attribution: '<a href="https://www.opengeodata.nrw.de/produkte/geobasis/3dg/lod2_gml/">Geobasis NRW</a> · 3D-Gebäudemodell LoD2 · <a href="https://www.govdata.de/dl-de/zero-2-0">DL-DE Zero 2.0</a>' }, { id: 'osm' }] },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
