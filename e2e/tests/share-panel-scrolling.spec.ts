@@ -12,13 +12,20 @@ for (const width of [1280, 390]) {
     }, id);
     await page.locator('#proposals-button').click();
     await page.locator('#shareAppliedProposalsButton').click();
-    // Lists (01268caee): the Plans tab's Create plan sits in the shared #lists-actions row.
+    // Lists (01268caee): the Plans tab's Create plan sits in the shared #lists-actions row and ticks
+    // the designs in Lists → Designs, which scrolls; Continue opens the composer listing all of them.
     await page.locator('#lists-actions').getByRole('button',{name:'Create plan',exact:true}).click();
-    const list=page.locator('.plan-dialog__choices');
-    await expect(list.locator('input[type=checkbox]')).toHaveCount(24);
+    const list=page.locator('#proposals-sheet .lists-body'), choices=list.locator('#proposal-list-host input[type=checkbox]');
+    await expect(choices).toHaveCount(24);
     await expect.poll(()=>list.evaluate(el=>el.scrollHeight>el.clientHeight)).toBe(true);
     await list.hover(); await page.mouse.wheel(0,2500);
     await expect.poll(()=>list.evaluate(el=>el.scrollTop)).toBeGreaterThan(0);
+    for(const choice of await choices.all())await choice.check();
+    await expect(list.locator('.lists-selection-count')).toHaveText('24 selected');
+    await list.locator('[data-lists-continue]').click();
+    const composer=page.locator('.plan-composer');
+    await expect(composer.locator('.plan-dialog__members li')).toHaveCount(24);
+    await composer.hover(); await page.mouse.wheel(0,2500);
     await expect(page.locator('.plan-dialog__footer')).toBeInViewport();
   });
 }

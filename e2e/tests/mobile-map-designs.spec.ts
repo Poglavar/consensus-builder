@@ -8,9 +8,10 @@ test.use({ viewport: { width: 390, height: 844 } });
 test.beforeEach(async ({ mockApi: page }) => { await stubBasemapTiles(page); });
 const writes=(page:any)=>pageIndex(page).requests.filter(r=>r.method==='POST'&&['/pins','/designs','/plans','/agreements'].includes(r.path));
 async function openPlans(page:any){if(!await page.locator('#proposals-sheet').isVisible())await page.locator('#proposals-button').click();await page.locator('#shareAppliedProposalsButton').click();await expect(page.locator('#designs-plans')).toBeVisible();}
-// Lists (01268caee): Create plan sits in #lists-actions; a saved plan opens in the click stack's Plan section.
+// Lists (01268caee): Create plan sits in #lists-actions and ticks the designs in Lists → Designs;
+// Continue opens the composer listing them. A saved plan opens in the click stack's Plan section.
 const planSection=(page:any)=>page.locator('#click-stack .click-stack__section[data-kind="plans"]');
-async function savePlan(page:any,title:string){await page.locator('#lists-actions').getByRole('button',{name:'Create plan',exact:true}).click();const form=page.locator('.plan-composer');await form.getByLabel('Plan name',{exact:true}).fill(title);for(const box of await form.locator('input[type="checkbox"]').all())await box.check();await form.getByRole('button',{name:'Create plan',exact:true}).click();await expect(planSection(page)).toContainText(title);return page.evaluate(title=>(window as any).PlanWorkspace.list().find((r:any)=>r.content.title===title),title);}
+async function savePlan(page:any,title:string){await page.locator('#lists-actions').getByRole('button',{name:'Create plan',exact:true}).click();const boxes=page.locator('#proposal-list-host input[type="checkbox"]');await expect(boxes.first()).toBeVisible();for(const box of await boxes.all())await box.check();const count=await boxes.count();await page.locator('#lists-actions [data-lists-continue]').click();const form=page.locator('.plan-composer');await expect(form.locator('.plan-dialog__members li')).toHaveCount(count);await form.getByLabel('Plan name',{exact:true}).fill(title);await form.getByRole('button',{name:'Create plan',exact:true}).click();await expect(planSection(page)).toContainText(title);return page.evaluate(title=>(window as any).PlanWorkspace.list().find((r:any)=>r.content.title===title),title);}
 
 test('Designs cards fit a phone; Plans is a tab of the same Lists panel',async({mockApi:page})=>{
   await openCity(page);await page.evaluate(parcelId=>{const w=window as any;for(let i=0;i<15;i++)w.proposalStorage.addProposal({title:`Neighbourhood design ${i}`,goal:'park',author:'Test author',cadastreParcelIds:[parcelId]});},PARCEL_ID);
@@ -20,7 +21,7 @@ test('Designs cards fit a phone; Plans is a tab of the same Lists panel',async({
   await expect(rows.first()).toBeInViewport({ratio:1});await expect(sheet.locator('#agreementsButton, #mintedAgreementsButton')).toHaveCount(0);
   expect(await sheet.evaluate(el=>el.scrollWidth<=el.clientWidth)).toBe(true);
   await sheet.getByRole('tab',{name:'Plans',exact:true}).click();await expect(sheet.locator('#proposals-sheet-title')).toHaveText('Lists');
-  await expect(sheet.locator('#designs-plans')).toContainText('No loaded items match these filters.');await expect(sheet.locator('#designs-plans a[href*="/plans/"]')).toHaveCount(0);
+  await expect(sheet.locator('#designs-plans')).toContainText('Nothing here yet.');await expect(sheet.locator('#designs-plans a[href*="/plans/"]')).toHaveCount(0);
 });
 
 test('a parcel-layout plan shares like any plan, publishing its layout, and plan details still create an agreement',async({mockApi:page})=>{
@@ -31,7 +32,7 @@ test('a parcel-layout plan shares like any plan, publishing its layout, and plan
   await expect(share.getByLabel('Plan link',{exact:true})).toHaveValue(/\/plans\/bafkrei/);
   expect([...pageIndex(page).designs.values()].some((row:any)=>row.content?.goal==='parcel-layout')).toBe(true);
   await page.keyboard.press('Escape');
-  await openPlans(page);const row=page.locator('#plan-list-host .lists-item').filter({has:page.getByRole('button',{name:'Layout agreement plan',exact:true})});
+  await openPlans(page);const row=page.locator('#plan-list-host .lists-item').filter({has:page.getByRole('heading',{name:'Layout agreement plan',exact:true})});
   await row.getByRole('button',{name:'Create agreement',exact:true}).click();const editor=agreementEditor(page);
   await expect(editor).toBeVisible();await expect(editor.locator('#agreement-editor-title')).toHaveText('Create agreement');await expect(editor.locator('[data-agreement-plan]')).toHaveValue(plan.cid);
   expect(await page.evaluate(id=>(window as any).proposalStorage.getProposal(id).goal,layoutId)).toBe('parcel-layout');
@@ -48,7 +49,7 @@ test('a published layout shares its exact saved plan and a fresh device applies 
   await expect(link).toHaveValue(new RegExp(`/plans/${plan.cid}`));const snapshotUrl=new URL(await link.inputValue());
   const requests=writes(page);expect(requests.find(r=>r.path==='/plans')!.body.content).toEqual(plan.content);expect(requests.filter(r=>r.path==='/agreements')).toHaveLength(0);
   const receiver=await openOnAnotherDevice(browser,snapshotUrl.pathname+snapshotUrl.search,pageIndex(page),baseURL);
-  try{await expect.poll(()=>receiver.page.evaluate(cid=>{const w=window as any,p=w.proposalStorage.getProposal(`design-${cid}`);return p&&w.isApplied(p)&&p.parcelLayout.plots.length>0;},plan.content.designCids[0]),{timeout:60_000}).toBe(true);}
+  try{await expect.poll(()=>receiver.page.evaluate(cid=>{const w=window as any,p=w.proposalStorage?.getProposal(`design-${cid}`);return p&&w.isApplied(p)&&p.parcelLayout.plots.length>0;},plan.content.designCids[0]),{timeout:60_000}).toBe(true);}
   finally{await receiver.context.close();}
 });
 

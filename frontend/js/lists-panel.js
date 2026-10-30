@@ -24,9 +24,10 @@
     function browser(win) {
         const doc = win.document;
         const state = { tab: 'designs', source: 'local', search: '', publication: 'all', sort: 'title',
-            // selecting: the tab whose rows show checkboxes; purpose: what they are for (designs → Create
-            // plan or Compare designs, plans → Compare plans, agreements → Compare agreements).
-            filtersOpen: false, selecting: null, purpose: null, selected: new Map(), active: null, previewing: null, remote: new Map() };
+            // selecting: the tab whose rows show checkboxes; purpose: what they are for ('compare', or
+            // 'plan': the designs of a plan, ticked here with all of them shown on the map); planBase:
+            // the plan whose revision they make, if any.
+            filtersOpen: false, selecting: null, purpose: null, planBase: null, selected: new Map(), active: null, previewing: null, remote: new Map() };
         let ready = false;
         const t = (key, params) => win.i18n.t(key, params || {});
         const node = (tag, cls, text) => {
@@ -174,49 +175,89 @@
             }
             refresh();
         }
+        // Ticking a plan's designs (Create plan on the Designs or Plans tab, or Change designs in the
+        // plan dialog): `members` start ticked, `base` is the plan being revised.
+        async function choosePlanDesigns({ members = [], base = null } = {}) {
+            if (!opened()) win.MapShell.openSheet('proposals-sheet');
+            await select('designs');
+            state.source = 'local'; controls();
+            state.selecting = 'designs'; state.purpose = 'plan'; state.planBase = base; state.selected.clear();
+            for (const record of members) state.selected.set(String(record.proposalId), record);
+            renderActions(); renderRows(); showPlanSelection();
+        }
+        // All the ticked designs on the map at once, as the plan they will make.
+        function showPlanSelection() {
+            if (state.purpose !== 'plan') return;
+            const records = [...state.selected.values()];
+            if (records.length) win.previewRecordsOnMap(records, 'list:plan-selection'); else win.clearProposalPreview();
+        }
+        function stopSelecting() {
+            if (state.purpose === 'plan') win.clearProposalPreview();
+            state.selecting = null; state.purpose = null; state.planBase = null; state.selected.clear();
+        }
+        // Each tab offers the same four actions where they apply, two to a row: Create, Compare,
+        // Import and Imported, with the file formats below. Create plan, on Designs and Plans alike,
+        // ticks the plan's designs here; a design starts from its place on the map.
         function renderActions() {
             const actions = doc.getElementById('lists-actions'); actions.replaceChildren();
-            const startSelecting = purpose => { state.selecting = state.tab; state.purpose = purpose; state.selected.clear(); renderActions(); renderRows(); };
-            const stopSelecting = () => { state.selecting = null; state.purpose = null; state.selected.clear(); };
-            // Measured without applying, so plans or designs that cannot stand on the map together compare.
-            const compareButton = run => {
+            const kind = state.tab;
+            const cancel = () => button(t('common.cancel'), () => { stopSelecting(); renderActions(); renderRows(); }, '', 'xmark');
+            const selection = (...buttons) => {
+                const row = node('div', 'cb-actions lists-actions__selecting');
+                row.append(node('span', 'lists-selection-count', t('planDialog.selected', { count: state.selected.size })), ...buttons, cancel());
+                actions.append(row);
+            };
+            if (state.selecting === kind && state.purpose === 'plan') {
+                const next = button(t('modal.track.curvature.continue'), async () => {
+                    const members = [...state.selected.values()], base = state.planBase;
+                    stopSelecting(); win.MapShell.closeSheets();
+                    await win.PlanDialog.create({ members, base });
+                }, 'btn-primary', 'arrow-right'); next.disabled = !state.selected.size;
+                next.dataset.listsContinue = '';
+                return selection(next);
+            }
+            if (state.selecting === kind) {
+                // Measured without applying, so items that cannot stand on the map together compare.
+                const run = {
+                    designs: records => win.comparePlanStats(records.map(designPlan), { subject: 'designs',
+                        // A stored design is also a side on the map's Compare; one fetched only for this is not.
+                        sides: records.map(record => win.proposalStorage.getProposal(record.proposalId) ? `design:${record.proposalId}` : null) }),
+                    plans: plans => win.comparePlanStats(plans),
+                    agreements: rows => win.comparePlanStats(rows.map(row => row.plan), { subject: 'agreements',
+                        titles: rows.map(row => row.title), sides: rows.map(row => row.side), terms: rows.map(row => row.agreement) })
+                }[kind];
                 const compare = button(t('planCompare.compare'), async () => {
                     await run([...state.selected.values()]);
                     stopSelecting(); renderActions(); renderRows();
                 }, 'btn-primary', 'table-columns'); compare.disabled = state.selected.size < 2;
                 compare.dataset.listsCompare = '';
-                return compare;
-            };
-            const cancel = () => button(t('common.cancel'), () => { stopSelecting(); renderActions(); renderRows(); }, '', 'xmark');
-            if (state.selecting === state.tab) actions.append(node('span', 'lists-selection-count', t('planDialog.selected', { count: state.selected.size })));
-            if (state.tab === 'designs') {
-                if (state.selecting !== 'designs') {
-                    actions.append(button(t('planDialog.createPlan'), () => startSelecting('plan'), 'btn-primary', 'cb-icon-plan'));
-                    actions.append(button(t('planCompare.titleDesigns'), () => startSelecting('compare'), '', 'table-columns'));
-                } else if (state.purpose === 'compare') {
-                    // A stored design is also a side on the map's Compare; one fetched only for this is not.
-                    actions.append(compareButton(records => win.comparePlanStats(records.map(designPlan), { subject: 'designs',
-                        sides: records.map(record => win.proposalStorage.getProposal(record.proposalId) ? `design:${record.proposalId}` : null) })), cancel());
-                } else {
-                    const next = button(t('modal.track.curvature.continue'), async () => {
-                        const members = [...state.selected.values()];
-                        win.MapShell.closeSheets(); stopSelecting();
-                        await win.PlanDialog.create({ members });
-                    }, 'btn-primary', 'arrow-right'); next.disabled = !state.selected.size;
-                    actions.append(next, cancel());
-                }
-            } else if (state.tab === 'plans') {
-                if (state.selecting !== 'plans') {
-                    actions.append(button(t('planDialog.createPlan'), () => {
-                        win.MapShell.closeSheets(); return win.PlanDialog.create();
-                    }, 'btn-primary', 'cb-icon-plan'));
-                    actions.append(button(t('planCompare.title'), () => startSelecting('compare'), '', 'table-columns'));
-                } else actions.append(compareButton(plans => win.comparePlanStats(plans)), cancel());
-            } else if (state.selecting !== 'agreements') {
-                actions.append(button(t('planCompare.titleAgreements'), () => startSelecting('compare'), '', 'table-columns'),
-                    node('span', 'sheet-note', t('lists.agreementHint')));
-            } else actions.append(compareButton(rows => win.comparePlanStats(rows.map(row => row.plan), { subject: 'agreements',
-                titles: rows.map(row => row.title), sides: rows.map(row => row.side), terms: rows.map(row => row.agreement) })), cancel());
+                return selection(compare);
+            }
+            const grid = node('div', 'lists-actions__grid');
+            if (kind !== 'agreements') grid.append(button(t('planDialog.createPlan'), () => choosePlanDesigns(), 'btn-primary', 'cb-icon-plan'));
+            if (kind === 'agreements') grid.append(button(t('agreement.list.create'), () => {
+                win.MapShell.closeSheets(); return win.AgreementDialog.open();
+            }, 'btn-primary', 'cb-icon-agreement'));
+            grid.append(button(t({ designs: 'planCompare.titleDesigns', plans: 'planCompare.title', agreements: 'planCompare.titleAgreements' }[kind]), () => {
+                state.selecting = kind; state.purpose = 'compare'; state.selected.clear(); renderActions(); renderRows();
+            }, '', 'table-columns'));
+            // The picker's file is read on its change; a closed picker starts nothing, and clearing the
+            // input lets the same file be chosen again.
+            const input = node('input'); input.type = 'file'; input.accept = '.json,application/json'; input.hidden = true;
+            input.dataset.listsImportInput = kind;
+            const importLabel = t({ designs: 'planFile.importDesign', plans: 'planFile.import', agreements: 'planFile.importAgreement' }[kind]);
+            input.setAttribute('aria-label', importLabel);
+            const choose = node('button', 'btn btn-sm', importLabel); choose.type = 'button'; choose.prepend(icon('file-import'));
+            choose.dataset.listsImport = kind;
+            choose.addEventListener('click', () => { if (!win.BusyControl.isBusy(choose)) input.click(); });
+            input.addEventListener('change', () => {
+                const file = input.files?.[0]; input.value = '';
+                if (file) win.BusyControl.track(choose, () => win.PlanFileUI.importFile(kind, file)).then(refresh);
+            });
+            grid.append(choose, input, button(t({ designs: 'planFile.importedDesigns', plans: 'planFile.importedPlans', agreements: 'planFile.importedAgreements' }[kind]),
+                async () => win.PlanFileUI.imported(kind), '', 'folder-open'));
+            const help = node('a', 'lists-actions__help', t('planFile.help')); help.href = 'plan-files.html'; help.target = '_blank'; help.rel = 'noopener';
+            actions.append(grid, help);
         }
         function renderRows() {
             if (!ready || !opened()) return;
@@ -226,7 +267,8 @@
             const status = doc.getElementById('lists-status');
             status.textContent = page?.loading && state.source === 'published' ? t('lists.loading')
                 : page?.error && state.source === 'published' ? page.error
-                : t('lists.count', { shown: visible.length, total: rows.length });
+                : visible.length ? t('lists.count', { count: visible.length }) : '';
+            status.hidden = !status.textContent;
             list.setAttribute('aria-busy', String(state.source === 'published' && !!page?.loading));
             for (const row of visible) {
                 const item = node('article', `lists-item${state.active === `${kind}:${row.key}` ? ' is-selected' : ''}`);
@@ -250,20 +292,25 @@
                         try {
                             if (check.checked) state.selected.set(row.key, kind === 'plans' ? await planOf(row)
                                 : kind === 'agreements' ? await agreementCompared(row)
-                                : state.purpose === 'compare' ? await designRecord(row) : await designOf(row));
+                                : state.purpose === 'plan' ? await designOf(row) : await designRecord(row));
                             else state.selected.delete(row.key);
+                            showPlanSelection();
                         } catch (error) { check.checked = false; win.showStyledAlert(error.message); }
                         finally { check.disabled = false; item.removeAttribute('aria-busy'); renderActions(); }
                     }); label.append(check); heading.append(label);
                 }
-                const title = button(row.title, () => focus(row, kind), 'btn-quiet lists-item__title');
-                title.title = t('modal.roadWidth.polygonError.showOnMap');
-                // The whole row shows it; its own controls keep their actions.
+                const title = node('h3', 'lists-item__title', row.title);
+                // The whole card shows its object on the map (also by keyboard); its controls keep their actions.
+                item.tabIndex = 0; item.title = t('modal.roadWidth.polygonError.showOnMap');
+                const show = () => focus(row, kind).catch(error => win.showStyledAlert(error.message));
                 item.addEventListener('click', event => {
-                    if (!event.target.closest('button, a, input, label, select, summary')) title.click();
+                    if (!event.target.closest('button, a, input, label, select, summary')) show();
+                });
+                item.addEventListener('keydown', event => {
+                    if (event.target === item && (event.key === 'Enter' || event.key === ' ')) { event.preventDefault(); show(); }
                 });
                 const mark = node('span', 'lists-item__icon'); mark.append(icon(appearance[0]));
-                title.prepend(mark); heading.append(title); item.append(heading);
+                heading.append(mark, title); item.append(heading);
                 const badges = node('div', 'lists-item__badges');
                 if (kind === 'designs' && row.local) badges.innerHTML = win.proposalLadderBadgesHtml(row.local);
                 else badges.append(node('span', `cb-badge cb-badge--${row.published ? 'published' : 'draft'}`, t(row.published ? 'common.lifecycle.published' : 'common.lifecycle.draft')));
@@ -315,7 +362,7 @@
                 }
                 item.append(actions); list.append(item);
             }
-            if (!visible.length && !page?.loading) list.append(node('p', 'sheet-note', t('lists.empty')));
+            if (!visible.length && !page?.loading && !(state.source === 'published' && page?.error)) list.append(node('p', 'sheet-note', t(rows.length ? 'lists.noMatch' : 'lists.empty')));
             if (state.source === 'published' && page?.next != null && !page.loading) list.append(button(t('lists.loadMore'), () => load(true)));
             if (state.source === 'published' && page?.limited) list.append(node('p', 'sheet-note', t('lists.limited')));
         }
@@ -335,12 +382,17 @@
             }
             box.append(scopes);
             const fields = node('div', 'lists-filters');
-            const searchLabel = node('label', '', t('lists.search'));
+            const searchRow = node('div', 'lists-search-row');
             const search = node('input'); search.type = 'search'; search.value = state.search;
-            search.addEventListener('input', () => { state.search = search.value; renderRows(); }); searchLabel.append(search); box.append(searchLabel);
-            const filters = node('details', 'lists-filter-details'); filters.open = state.filtersOpen;
-            filters.addEventListener('toggle', () => { state.filtersOpen = filters.open; });
-            filters.append(node('summary', '', t('modal.roadWidth.proposalList.filters.toggle')));
+            search.placeholder = t('lists.search'); search.setAttribute('aria-label', t('lists.search'));
+            search.addEventListener('input', () => { state.search = search.value; renderRows(); });
+            const filters = node('div', 'lists-filter-panel'); filters.id = 'lists-filter-panel'; filters.hidden = !state.filtersOpen;
+            const toggle = node('button', 'btn btn-sm lists-filter-toggle', t('modal.roadWidth.proposalList.filters.toggle')); toggle.type = 'button';
+            toggle.prepend(icon('sliders')); toggle.setAttribute('aria-controls', filters.id); toggle.setAttribute('aria-expanded', String(state.filtersOpen));
+            toggle.addEventListener('click', () => {
+                state.filtersOpen = !state.filtersOpen; filters.hidden = !state.filtersOpen; toggle.setAttribute('aria-expanded', String(state.filtersOpen));
+            });
+            searchRow.append(search, toggle); box.append(searchRow);
             for (const [key, label, options] of [
                 ['publication', 'modal.roadWidth.proposalList.filters.publication', [['all', 'modal.roadWidth.proposalList.filters.publicationAll'], ['draft', 'common.lifecycle.draft'], ['published', 'common.lifecycle.published']]],
                 ['sort', 'modal.roadWidth.proposalList.filters.sort', [['title', 'lists.byTitle'], ['newest', 'lists.newest']]]
@@ -389,7 +441,7 @@
             await win.i18n.translationsReady;
             init(); state.tab = tab === 'browse' ? 'designs' : tab;
             if (!['designs', 'plans', 'agreements'].includes(state.tab)) state.tab = 'designs';
-            if (state.selecting && state.selecting !== state.tab) { state.selecting = null; state.purpose = null; state.selected.clear(); }
+            if (state.selecting && state.selecting !== state.tab) stopSelecting();
             for (const el of doc.querySelectorAll('[data-list-tab]')) {
                 const active = el.dataset.listTab === state.tab;
                 el.setAttribute('aria-selected', String(active)); el.tabIndex = active ? 0 : -1;
@@ -399,7 +451,7 @@
             if (state.source === 'published' && !state.remote.has(cacheKey())) await load();
         }
         function refresh() { if (ready && opened()) { renderActions(); renderRows(); } }
-        return { open: async () => { await win.i18n.translationsReady; init(); controls(); return select(state.tab); }, select, refresh };
+        return { open: async () => { await win.i18n.translationsReady; init(); controls(); return select(state.tab); }, select, refresh, choosePlanDesigns };
     }
     return { filterRows, indexQuery, browser };
 });

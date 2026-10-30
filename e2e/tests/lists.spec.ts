@@ -27,10 +27,28 @@ for (const width of [1280, 390]) {
     };
     await expectInsets();
     await expect(sheet.locator('input[type=checkbox]')).toHaveCount(0);
+    // Every tab: Create, Compare, Import and Imported two to a row, the file formats below; one count.
+    await expect(sheet.locator('#lists-actions .lists-actions__grid > button')).toHaveText(['Create plan', 'Compare designs', 'Import design file', 'Imported designs']);
+    await expect(sheet.locator('#lists-actions .lists-actions__help')).toHaveText('File formats and limits');
+    const sizes = await sheet.locator('#lists-actions .lists-actions__grid > button').evaluateAll(buttons => buttons.map(b => Math.round(b.getBoundingClientRect().width)));
+    expect(new Set(sizes).size).toBe(1);
+    await expect(sheet.locator('#lists-status')).toHaveText('Shown: 1');
+    await expect(sheet.getByRole('searchbox')).toHaveAttribute('placeholder', 'Search…');
+    // A plan's designs are ticked here, from Plans → Create plan as from Designs, and shown on the map together.
+    await sheet.getByRole('tab', { name: 'Plans', exact: true }).click();
+    await expect(sheet.locator('#lists-actions .lists-actions__grid > button')).toHaveText(['Create plan', 'Compare plans', 'Import plan file', 'Imported plans']);
     await sheet.locator('#lists-actions').getByRole('button', { name: 'Create plan', exact: true }).click();
+    await expect(sheet.getByRole('tab', { name: 'Designs', exact: true })).toHaveAttribute('aria-selected', 'true');
     const next = sheet.getByRole('button', { name: 'Continue', exact: true }); await expect(next).toBeDisabled();
-    await sheet.locator('#proposal-list-host input[type=checkbox]').check(); await expect(next).toBeEnabled(); await next.click();
-    const form = page.locator('.plan-composer'); await expect(form.locator('input[type=checkbox]')).toBeChecked();
+    await sheet.locator('#proposal-list-host input[type=checkbox]').check(); await expect(next).toBeEnabled();
+    await expect(page.locator('.leaflet-container.is-list-previewing')).toHaveCount(1);
+    await next.click();
+    const form = page.locator('.plan-composer'); await expect(form.locator('input[type=checkbox]')).toHaveCount(0);
+    await expect(form.locator('.plan-dialog__members li')).toHaveCount(1);
+    // Change designs goes back to the list with the chosen designs still ticked.
+    await form.getByRole('button', { name: 'Change designs', exact: true }).click();
+    await expect(sheet.locator('#proposal-list-host input[type=checkbox]')).toBeChecked();
+    await next.click();
     await form.getByLabel('Plan name', { exact: true }).fill('Residents plan');
     await form.getByRole('button', { name: 'Create plan', exact: true }).click();
     await expect(page.locator('#click-stack .click-stack__section[data-kind="plans"] .click-stack__row')).toHaveAttribute('aria-expanded', 'true');
@@ -38,8 +56,8 @@ for (const width of [1280, 390]) {
     await page.locator('#proposals-button').click(); await sheet.getByRole('tab', { name: 'Plans', exact: true }).click();
     await expect(sheet.locator('#designs-browse')).toBeHidden();
     const planRow = sheet.locator('#designs-plans .lists-item').filter({ hasText: 'Residents plan' });
-    await expect(sheet.locator('#designs-plans').getByRole('button', { name: 'Import plan file', exact: true })).toBeVisible();
-    await expect(sheet.locator('#designs-plans [data-plan-file-action="import"] .fa-file-import')).toBeVisible();
+    await expect(sheet.locator('#lists-actions').getByRole('button', { name: 'Import plan file', exact: true })).toBeVisible();
+    await expect(sheet.locator('#lists-actions [data-lists-import="plans"] .fa-file-import')).toBeVisible();
     await expect(planRow.locator('.lists-item__icon .cb-icon-plan')).toBeVisible();
     await expect(planRow.getByRole('button', { name: 'Plan stats', exact: true })).toBeVisible();
     const rooster = planRow.getByRole('button', { name: 'Urban rooster', exact: true });
@@ -67,7 +85,8 @@ for (const width of [1280, 390]) {
     }, agreement.parkId);
     await page.evaluate(() => (window as any).map.setView([45.70, 15.80], 17, { animate: false }));
     expect(await parkInView()).toBe(false);
-    await planRow.getByRole('button', { name: 'Residents plan', exact: true }).click();
+    await expect(planRow.getByRole('heading', { name: 'Residents plan', exact: true })).toBeVisible();
+    await planRow.getByRole('heading', { name: 'Residents plan', exact: true }).click();
     await expect.poll(parkInView).toBe(true);
     await expect(planRow).toHaveClass(/is-selected/);
     // The shown designs are marked in the selection colour; any selection behind the list dims.
@@ -117,12 +136,17 @@ for (const width of [1280, 390]) {
     await expect.poll(() => page.evaluate(id => (window as any).AgreementStore.get(id), agreement.id)).toBeNull();
     await sheet.locator('[data-list-source="local"]').click(); await expect(sheet.locator('#designs-agreements .lists-item')).toHaveCount(0);
     // Import agreement file brings it back as a local draft under a new id, not as the published one.
-    await sheet.locator('#agreement-file-actions input[type=file]').setInputFiles({ name: 'residents-agreement.ugt-agreement.json', mimeType: 'application/json', buffer: Buffer.concat(agreementChunks) });
+    await expect(sheet.locator('#lists-actions .lists-actions__grid > button')).toHaveText(['Create agreement', 'Compare agreements', 'Import agreement file', 'Imported agreements']);
+    await sheet.locator('#lists-actions input[data-lists-import-input="agreements"]').setInputFiles({ name: 'residents-agreement.ugt-agreement.json', mimeType: 'application/json', buffer: Buffer.concat(agreementChunks) });
     await page.locator('.cb-dialog').filter({ hasText: 'Review agreement file' }).getByRole('button', { name: 'Import as drafts', exact: true }).click();
     const importedDialog = page.locator('.cb-dialog').filter({ hasText: 'Agreement imported' });
     await expect(importedDialog).toBeVisible(); await page.keyboard.press('Escape'); await expect(importedDialog).toBeHidden();
     const importedRow = sheet.locator('#designs-agreements .lists-item').filter({ hasText: 'Residents agreement' });
     await expect(importedRow).toHaveCount(1); await expect(importedRow).toContainText('Draft');
+    await sheet.locator('#lists-actions').getByRole('button', { name: 'Imported agreements', exact: true }).click();
+    const importedList = page.locator('.cb-dialog').filter({ hasText: 'Imported agreements' });
+    await expect(importedList.getByRole('button', { name: 'Residents agreement', exact: true })).toBeVisible();
+    await page.keyboard.press('Escape'); await expect(importedList).toBeHidden();
     expect(await page.evaluate(id => { const list = (window as any).AgreementStore.list(); return list.length === 1 && list[0].id !== id && !list[0].published; }, agreement.id)).toBe(true);
     await sheet.getByRole('tab', { name: 'Plans', exact: true }).click();
     await planRow.getByRole('button', { name: 'Remove from browser', exact: true }).click();

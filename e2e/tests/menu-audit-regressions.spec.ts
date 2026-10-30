@@ -153,8 +153,8 @@ for (const width of [1180, 390]) test(`Designs Browse keeps filtered draft and p
   const sheet = page.locator('#proposals-sheet');
   await expect(sheet.locator('#designs-browse-tab')).toHaveAttribute('aria-selected', 'true');
   await expect(sheet.locator('#shareAppliedProposalsButton')).toBeVisible();
-  // Lists (01268caee): publication and order are the only filters, behind the shared Filters disclosure.
-  await sheet.locator('.lists-filter-details > summary').click();
+  // Lists (01268caee): publication and order are the only filters, behind the shared Filters button.
+  await sheet.locator('.lists-filter-toggle').click();
   await expect(sheet.locator('#lists-controls select')).toHaveCount(2);
   const status = sheet.locator('select[data-list-filter="publication"]');
   await expect(status).toBeVisible();
@@ -195,7 +195,7 @@ test('phone menus fit the viewport and dismiss; Designs separates publication fr
     expect(box!.y).toBeGreaterThanOrEqual(0);
     expect(box!.y + box!.height).toBeLessThanOrEqual(844);
     if (id === 'proposals') {
-      await sheet.locator('.lists-filter-details > summary').click();
+      await sheet.locator('.lists-filter-toggle').click();
       await expect(sheet.locator('#lists-controls select')).toHaveCount(2);
       const status = sheet.locator('select[data-list-filter="publication"]');
       await expect(status).toBeVisible();

@@ -26,11 +26,17 @@ test('composing a plan selects membership independently of map focus', async ({ 
   await openCity(page); const first=await createSpace(page,'park');
   await page.evaluate(id=>(window as any).ProposalManager.unapplyProposal(id),first);
   await createSpace(page,'square');
-  const center=await page.evaluate(()=>{const c=(window as any).map.getCenter();return[c.lat,c.lng];});
+  const focused=await page.evaluate(()=>(window as any).currentlyHighlightedProposalId);
   await page.locator('#proposals-button').click(); await page.locator('#shareAppliedProposalsButton').click();
+  // Create plan ticks the designs in Lists → Designs. Ticked designs are previewed on the map, so the
+  // map may frame them (the old map-centre check is obsolete); the map's selected design stays put.
   await page.locator('#lists-actions').getByRole('button',{name:'Create plan',exact:true}).click();
-  const form=page.locator('.plan-composer');const choices=form.locator('input[type=checkbox]');
+  const choices=page.locator('#proposal-list-host input[type=checkbox]');
   await expect(choices).toHaveCount(2);await choices.first().check();await choices.nth(1).uncheck();
-  expect(await page.evaluate(()=>{const c=(window as any).map.getCenter();return[c.lat,c.lng];})).toEqual(center);
+  expect(await page.evaluate(()=>(window as any).currentlyHighlightedProposalId)).toBe(focused);
+  await expect(page.locator('#lists-actions .lists-selection-count')).toHaveText('1 selected');
+  await page.locator('#lists-actions [data-lists-continue]').click();
+  const form=page.locator('.plan-composer');
+  await expect(form.locator('.plan-dialog__members li')).toHaveCount(1);
   await expect(form.locator('.plan-dialog__count')).toHaveText('1 selected');
 });

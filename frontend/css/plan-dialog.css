@@ -6,11 +6,8 @@
 .plan-dialog__status:empty { display: none; }
 .plan-dialog__field { display: grid; gap: 6px; font-weight: 600; }
 .plan-dialog__field input { width: 100%; min-width: 0; }
-.plan-dialog__choices { display: grid; gap: 4px; max-height: 45dvh; overflow: auto; }
-.plan-dialog__choice { display: flex; align-items: center; gap: 10px; padding: 10px; border: 1px solid var(--cb-line); border-radius: 8px; cursor: pointer; }
-.plan-dialog__choice span { min-width: 0; overflow-wrap: anywhere; }
-.plan-dialog__choice small { display: block; color: var(--cb-text-muted); font-weight: 400; }
 .plan-dialog__members { padding-inline-start: 20px; overflow-wrap: anywhere; }
+.plan-dialog__members small { display: block; color: var(--cb-text-muted); }
 .plan-dialog__count, .plan-dialog__status { margin: 0; }
 .plan-dialog__view { display: grid; gap: var(--cb-space-2); }
 .plan-dialog__view label { display: flex; align-items: center; gap: var(--cb-space-2); }

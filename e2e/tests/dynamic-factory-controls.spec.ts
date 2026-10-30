@@ -246,7 +246,7 @@ test.describe('shared dynamic button factories @features', () => {
 
     await page.locator('#proposals-button').click();
     await page.locator('[data-list-tab="plans"]').click();
-    const row = page.locator('#plan-list-host .lists-item').filter({ has: page.getByRole('button', { name: title, exact: true }) });
+    const row = page.locator('#plan-list-host .lists-item').filter({ has: page.getByRole('heading', { name: title, exact: true }) });
     await row.getByRole('button', { name: 'Plan stats', exact: true }).click();
     const modal = page.locator('#plan-stats-modal');
     await expect(modal).toBeVisible();

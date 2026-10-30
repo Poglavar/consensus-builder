@@ -24,9 +24,9 @@ async function openDesignList(page: Page): Promise<void> {
   await expect(sheet).toBeVisible();
   await expect(sheet.getByRole('button', { name: 'Urban rooster', exact: true })).toHaveCount(0);
   await expect(sheet.getByRole('button', { name: 'Plan stats', exact: true })).toHaveCount(0);
-  await sheet.locator('.lists-filter-details summary').click();
+  await sheet.locator('.lists-filter-toggle').click();
   await expect(sheet.locator('[data-list-filter="publication"]')).toBeVisible();
-  await sheet.locator('.lists-filter-details summary').click();
+  await sheet.locator('.lists-filter-toggle').click();
 }
 
 async function assertCardsStayAligned(page: Page, viewportWidth: number): Promise<void> {

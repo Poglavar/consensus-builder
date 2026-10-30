@@ -1,18 +1,17 @@
 // File actions use the share panel's explicit membership. Import parks drafts in one atomic
 // mutation, including their local plan membership; no source request or publication is needed.
+// Lists (lists-panel.js) offers Import and Imported on each tab through importFile and imported.
 (function (root, factory) {
     const api = factory();
     if (typeof module === 'object' && module.exports) module.exports = api;
-    if (root) {
-        root.PlanFileUI = api.browser(root);
-        const host = root.document.getElementById('plan-file-actions');
-        if (host) host.appendChild(root.PlanFileUI.controls());
-        const agreements = root.document.getElementById('agreement-file-actions');
-        if (agreements) agreements.appendChild(root.PlanFileUI.agreementControls());
-    }
+    if (root) root.PlanFileUI = api.browser(root);
 })(typeof window !== 'undefined' ? window : null, function () {
     'use strict';
     const PREFIX = 'ugt-imported-plan:';
+    // An agreement read from a file is marked here by its local id, so Imported agreements lists it.
+    const AGREEMENT_PREFIX = 'ugt-imported-agreement:';
+    // A design read from a file is stored under a `file-` id (PlanFile.importInto).
+    const IMPORTED_DESIGN = /^file-/;
     function browser(win) {
         const doc = win.document;
         const t = (key, fallback, params) => win.getProposalI18nHelper()(`planFile.${key}`, fallback, params);
@@ -49,11 +48,15 @@
             for (let i = 0; i < size; i += 8192) binary += String.fromCharCode(...data.subarray(i, i + 8192));
             return 'data:model/gltf-binary;base64,' + win.btoa(binary);
         }
-        function review(file) {
+        // `designsOnly`: a design file (or a plan file read on the Designs tab) adds its designs and
+        // keeps no imported plan.
+        function review(file, { designsOnly = false } = {}) {
             return new Promise(resolve => {
                 const body = doc.createElement('div');
                 const summary = doc.createElement('p');
-                summary.textContent = t('preview', '“{{title}}”: {{count}} designs. Import adds local, unapplied drafts and saves this plan’s membership and view. Existing work stays in place. No agreement, ownership or signature is imported.', { title: file.plan.title, count: file.designs.length });
+                summary.textContent = designsOnly
+                    ? t('designPreview', '“{{title}}”: {{count}} designs. Import adds them as local, unapplied drafts. Existing work stays in place. No agreement, ownership or signature is imported.', { title: file.plan.title, count: file.designs.length })
+                    : t('preview', '“{{title}}”: {{count}} designs. Import adds local, unapplied drafts and saves this plan’s membership and view. Existing work stays in place. No agreement, ownership or signature is imported.', { title: file.plan.title, count: file.designs.length });
                 const list = doc.createElement('ul');
                 file.designs.forEach(({ content }) => {
                     const item = doc.createElement('li'); item.textContent = content.title || content.goal; list.appendChild(item);
@@ -61,7 +64,7 @@
                 const location = doc.createElement('p');
                 location.textContent = t('location', 'Saved location (latitude, longitude, zoom): {{at}}', { at: file.plan.view.at });
                 body.append(summary, location, list);
-                const modal = win.showSimpleShareModal({ title: t('review', 'Review plan file'), body,
+                const modal = win.showSimpleShareModal({ title: designsOnly ? t('reviewDesigns', 'Review design file') : t('review', 'Review plan file'), body,
                     autoCloseActions: false, onClose: () => resolve(false), actions: [
                         { id: 'cancel', label: t('cancel', 'Cancel'), onClick: m => { resolve(false); m.close(); } },
                         { id: 'import', label: t('importDrafts', 'Import as drafts'), primary: true, onClick: m => { resolve(true); m.close(); } }
@@ -69,12 +72,12 @@
                 if (!modal) resolve(false);
             });
         }
-        async function commitImport(file) {
+        async function commitImport(file, { keepPlan = true } = {}) {
             win.PlanFile.validate(file);
             return observe('import', { entity: 'plan', planKey: win.Cid.cidOfObject(file.plan), code: 'plan-import-failed' }, () => win.ProposalManager.runParcelMutation('import-plan-file', null, options => {
                 const context = options._parcelMutation;
                 const plan = win.PlanFile.importInto(file, context.proposals);
-                context.storage.setItem(PREFIX + plan.cid, JSON.stringify(plan));
+                if (keepPlan) context.storage.setItem(PREFIX + plan.cid, JSON.stringify(plan));
                 return plan;
             }, { _mapMutation: false }));
         }
@@ -84,22 +87,44 @@
             const snapshot = await win.PlanWorkspace.resolve(plan, members);
             return win.PlanDialog.details(snapshot);
         }
-        function importedPlans() {
-            const plans = [];
+        // What was read from files on this device, per Lists tab: [{ title, open }].
+        function importedRows(kind) {
+            if (kind === 'designs') return win.proposalStorage.getAllProposals().filter(record => IMPORTED_DESIGN.test(String(record.proposalId)))
+                .map(record => ({ title: record.title || record.name || win.i18n.t('planDialog.untitledDesign'), open: () => {
+                    win.MapShell?.closeSheets(); return win.openListedProposal(record, record.proposalId, 'details');
+                } }));
+            const rows = [];
             win.PersistentStorage.forEach((raw, key) => {
-                if (!String(key).startsWith(PREFIX)) return;
-                try {
-                    const plan = JSON.parse(raw);
-                    if (!win.PlanRecord.validate(plan.content) && Array.isArray(plan.memberIds)) plans.push(plan);
-                } catch (_) { /* leave an invalid local entry untouched */ }
+                key = String(key);
+                if (kind === 'plans' && key.startsWith(PREFIX)) {
+                    try {
+                        const plan = JSON.parse(raw);
+                        if (!win.PlanRecord.validate(plan.content) && Array.isArray(plan.memberIds)) rows.push({ title: plan.content.title, open: () => openPlan(plan) });
+                    } catch (_) { /* leave an invalid local entry untouched */ }
+                }
+                if (kind === 'agreements' && key.startsWith(AGREEMENT_PREFIX)) {
+                    const agreement = win.AgreementStore.get(key.slice(AGREEMENT_PREFIX.length));
+                    if (agreement) rows.push({ title: agreement.title || win.i18n.t('agreement.panel.untitled'), open: () => {
+                        win.MapShell?.closeSheets(); return win.AgreementPanel.open(agreement.id);
+                    } });
+                }
             });
-            const body = doc.createElement('div');
-            if (!plans.length) body.textContent = t('noImports', 'No plans have been imported on this device.');
-            const modal = win.showSimpleShareModal({ title: t('importedPlans', 'Imported plans'), body, actions: [] });
-            for (const plan of plans) {
+            return rows;
+        }
+        const IMPORTED_TEXT = {
+            designs: [['importedDesigns', 'Imported designs'], ['noImportedDesigns', 'No designs have been imported on this device.']],
+            plans: [['importedPlans', 'Imported plans'], ['noImports', 'No plans have been imported on this device.']],
+            agreements: [['importedAgreements', 'Imported agreements'], ['noImportedAgreements', 'No agreements have been imported on this device.']]
+        };
+        function imported(kind) {
+            const rows = importedRows(kind), [title, empty] = IMPORTED_TEXT[kind];
+            const body = doc.createElement('div'); body.className = 'plan-file-imported';
+            if (!rows.length) body.textContent = t(...empty);
+            const modal = win.showSimpleShareModal({ title: t(...title), body, actions: [] });
+            for (const row of rows) {
                 const button = doc.createElement('button'); button.type = 'button'; button.className = 'btn';
-                button.textContent = plan.content.title;
-                button.addEventListener('click', () => { modal.close(); Promise.resolve().then(() => openPlan(plan)).catch(e => error(e)); });
+                button.textContent = row.title;
+                button.addEventListener('click', () => { modal.close(); Promise.resolve().then(row.open).catch(e => error(e)); });
                 body.appendChild(button);
             }
         }
@@ -108,23 +133,21 @@
             icon.setAttribute('aria-hidden', 'true'); button.prepend(icon);
         }
         // `extras`: further downloads, [{ label, hook, make: () => ({ text, name, type }) }].
-        function controls({ getRecords = null, getView = () => win.MapShare.capture(win), getTitle = () => 'My plan', getSources = () => ({}), getSchedule = () => null, importAllowed = true, extras = [] } = {}) {
+        function controls({ getRecords = null, getView = () => win.MapShare.capture(win), getTitle = () => 'My plan', getSources = () => ({}), getSchedule = () => null, extras = [] } = {}) {
             const group = doc.createElement('div'); group.className = 'plan-file-controls';
             let busy = false;
             const buttons = [];
             const button = (label, action, hook) => {
                 const b = doc.createElement('button'); b.type = 'button'; b.className = 'btn'; b.textContent = label;
                 b.dataset.planFileAction = hook;
-                actionIcon(b, hook === 'plans' ? 'folder-open' : 'download');
+                actionIcon(b, 'download');
                 b.addEventListener('click', async () => {
                     if (busy) return;
                     busy = true; buttons.forEach(c => { c.disabled = true; });
-                    const exporting = hook !== 'plans';
                     try { await win.BusyControl.track(b, async () => {
                         await new Promise(win.requestAnimationFrame);
-                        return exporting
-                            ? observe('export', { entity: 'file', code: 'plan-export-failed', context: { format: hook } }, action) : action();
-                    }); } catch (e) { error(e, exporting ? 'plan-export-failed' : 'plan-open-failed'); }
+                        return observe('export', { entity: 'file', code: 'plan-export-failed', context: { format: hook } }, action);
+                    }); } catch (e) { error(e, 'plan-export-failed'); }
                     finally { busy = false; buttons.forEach(c => { c.disabled = false; }); }
                 });
                 buttons.push(b); group.appendChild(b); return b;
@@ -137,53 +160,45 @@
                 button(t('cityjson', 'Download CityJSON'), async () => download(JSON.stringify(win.CityJsonExport.fromPlanFile(await make(), { proj4: win.proj4 })) + '\n', `${fileStem(getTitle())}.city.json`, 'application/city+json'), 'cityjson');
             }
             extras.forEach(extra => button(extra.label, () => { const file = extra.make(); download(file.text, file.name, file.type); }, extra.hook));
-            if (!importAllowed) return group;
-            const input = doc.createElement('input'); input.type = 'file'; input.accept = '.json,application/json'; input.hidden = true;
-            input.setAttribute('aria-label', t('import', 'Import plan file'));
-            // File-picker cancellation starts no work, and clearing after each choice permits the
-            // same file to be chosen again after cancellation or validation failure.
-            const choose = doc.createElement('button'); choose.type = 'button'; choose.className = 'btn';
-            choose.textContent = t('import', 'Import plan file'); choose.dataset.planFileAction = 'import';
-            actionIcon(choose, 'file-import');
-            choose.addEventListener('click', () => { if (!busy) input.click(); });
-            buttons.push(choose); group.append(choose, input);
-            input.addEventListener('change', async () => {
-                const file = input.files?.[0]; input.value = '';
-                if (!file || busy) return;
-                busy = true; buttons.forEach(b => { b.disabled = true; });
-                try {
-                    await win.BusyControl.track(choose, async () => {
-                        let planFile;
-                        try {
-                            if (file.size > win.PlanFile.MAX_BYTES) throw new Error(t('tooLarge', 'Plan files are limited to 32 MiB.'));
-                            planFile = win.PlanFile.parse(await file.text());
-                        } catch (e) {
-                            win.AppDiagnostics?.event('import', 'failure', { entity: 'file', context: { surface: 'plan-file', format: 'json' } });
-                            throw e;
-                        }
-                        if (!await review(planFile)) {
-                            win.AppDiagnostics?.event('import', 'cancelled', { entity: 'file', context: { surface: 'plan-file', format: 'json' } });
-                            return;
-                        }
-                        const plan = await commitImport(planFile);
-                        win.updateShowProposalsButton?.(); win.refreshProposalsLayer?.();
-                        win.showSimpleShareModal({ title: t('imported', 'Plan imported'), body: t('importedBody', 'The designs are saved as local drafts. Open the imported plan to review its members, download it again or publish a link.'),
-                            actions: [{ label: t('open', 'Open imported plan'), primary: true, onClick: () => Promise.resolve().then(() => openPlan(plan)).catch(e => error(e)) }] });
-                    });
-                } catch (e) { error(e, 'plan-import-failed'); }
-                finally { busy = false; buttons.forEach(b => { b.disabled = false; }); }
-            });
-            button(t('importedPlans', 'Imported plans'), importedPlans, 'plans');
-            const help = doc.createElement('a'); help.href = 'plan-files.html'; help.target = '_blank'; help.rel = 'noopener';
-            help.textContent = t('help', 'File formats and limits'); group.appendChild(help);
             return group;
+        }
+        // Read one chosen file into this device: on the Plans tab a plan file (kept as an imported
+        // plan), on the Designs tab a design or plan file (its designs only), on the Agreements tab an
+        // agreement file. Resolves once the import is done, cancelled or refused; a refusal is shown.
+        async function importFile(kind, file) {
+            const format = kind === 'agreements' ? 'agreement' : 'json';
+            const note = outcome => win.AppDiagnostics?.event('import', outcome, { entity: 'file', context: { surface: 'plan-file', format } });
+            try {
+                let parsed;
+                try {
+                    if (file.size > win.PlanFile.MAX_BYTES) throw new Error(t('tooLarge', 'Plan files are limited to 32 MiB.'));
+                    parsed = (kind === 'agreements' ? win.AgreementFile : win.PlanFile).parse(await file.text());
+                } catch (e) { note('failure'); throw e; }
+                const designsOnly = kind === 'designs';
+                if (!await (kind === 'agreements' ? reviewAgreement(parsed) : review(parsed, { designsOnly }))) { note('cancelled'); return; }
+                if (kind === 'agreements') {
+                    const agreement = await importAgreement(parsed);
+                    win.updateShowProposalsButton?.(); win.refreshProposalsLayer?.();
+                    win.showSimpleShareModal({ title: t('agreementImported', 'Agreement imported'), body: t('agreementImportedBody', 'The agreement and its plan’s designs are saved here as drafts. Apply the plan’s designs to read its land.'),
+                        actions: [{ label: t('openAgreement', 'Open imported agreement'), primary: true, onClick: () => Promise.resolve(win.AgreementPanel.open(agreement.id)).catch(e => error(e)) }] });
+                    return;
+                }
+                const plan = await commitImport(parsed, { keepPlan: !designsOnly });
+                win.updateShowProposalsButton?.(); win.refreshProposalsLayer?.();
+                if (designsOnly) {
+                    win.showEphemeralMessage(t('designsImported', 'Designs imported as local drafts: {{count}}', { count: plan.memberIds.length }), 5000, 'success');
+                    return;
+                }
+                win.showSimpleShareModal({ title: t('imported', 'Plan imported'), body: t('importedBody', 'The designs are saved as local drafts. Open the imported plan to review its members, download it again or publish a link.'),
+                    actions: [{ label: t('open', 'Open imported plan'), primary: true, onClick: () => Promise.resolve().then(() => openPlan(plan)).catch(e => error(e)) }] });
+            } catch (e) { error(e, 'plan-import-failed'); }
         }
         // The download controls of one resolved plan (PlanWorkspace.resolve): its members as they are
         // in that exact revision, its view, schedule and sources.
         function planControls(row) {
             return controls({ getRecords: () => win.PlanComposition.localRecords(row, { apiBase: win.DesignSync.apiBase() }),
                 getView: () => row.content.view, getTitle: () => row.content.title, getSources: () => row.designSources || {},
-                getSchedule: () => row.content.schedule || null, importAllowed: false });
+                getSchedule: () => row.content.schedule || null });
         }
         // Download a plan ({ cid, content }, or a stored row) or a design as a file, from any surface.
         async function plan(record, members = []) {
@@ -197,7 +212,7 @@
             const title = () => record.title || 'My design';
             const extras = win.DesignFileExports.downloadsFor(record).map(file => ({ label: t(...EXTRA_LABELS[file.id]), hook: file.id,
                 make: () => ({ text: file.text, name: fileStem(title()) + file.suffix, type: file.type }) }));
-            win.showSimpleShareModal({ title: t('design', 'Download design'), body: controls({ getRecords: () => [record], getTitle: title, importAllowed: false, extras }), actions: [] });
+            win.showSimpleShareModal({ title: t('design', 'Download design'), body: controls({ getRecords: () => [record], getTitle: title, extras }), actions: [] });
         }
         // ---- agreements: the terms with the plan file of their plan (agreement-file.js) ----------
         // Download one agreement, stored or published (`designs`: a published one's fetched designs).
@@ -231,33 +246,11 @@
         async function importAgreement(file) {
             const checked = win.AgreementFile.validate(file);
             const plan = await commitImport(checked.planFile);
-            return win.AgreementStore.save(win.AgreementFile.localAgreement(checked, plan, { id: win.AgreementRecord.newId() }));
+            const agreement = win.AgreementStore.save(win.AgreementFile.localAgreement(checked, plan, { id: win.AgreementRecord.newId() }));
+            win.PersistentStorage.setItem(AGREEMENT_PREFIX + agreement.id, '1');
+            return agreement;
         }
-        function agreementControls() {
-            const group = doc.createElement('div'); group.className = 'plan-file-controls';
-            const input = doc.createElement('input'); input.type = 'file'; input.accept = '.json,application/json'; input.hidden = true;
-            input.setAttribute('aria-label', t('importAgreement', 'Import agreement file'));
-            const choose = doc.createElement('button'); choose.type = 'button'; choose.className = 'btn';
-            choose.textContent = t('importAgreement', 'Import agreement file'); choose.dataset.planFileAction = 'import-agreement';
-            actionIcon(choose, 'file-import');
-            choose.addEventListener('click', () => { if (!win.BusyControl.isBusy(choose)) input.click(); });
-            input.addEventListener('change', () => {
-                const chosen = input.files?.[0]; input.value = '';
-                if (!chosen) return;
-                win.BusyControl.track(choose, async () => {
-                    if (chosen.size > win.PlanFile.MAX_BYTES) throw new Error(t('tooLarge', 'Plan files are limited to 32 MiB.'));
-                    const file = win.AgreementFile.parse(await chosen.text());
-                    if (!await reviewAgreement(file)) return;
-                    const agreement = await importAgreement(file);
-                    win.updateShowProposalsButton?.(); win.refreshProposalsLayer?.();
-                    win.showSimpleShareModal({ title: t('agreementImported', 'Agreement imported'), body: t('agreementImportedBody', 'The agreement and its plan’s designs are saved here as drafts. Apply the plan’s designs to read its land.'),
-                        actions: [{ label: t('openAgreement', 'Open imported agreement'), primary: true, onClick: () => Promise.resolve(win.AgreementPanel.open(agreement.id)).catch(e => error(e)) }] });
-                }).catch(e => error(e, 'plan-import-failed'));
-            });
-            group.append(choose, input);
-            return group;
-        }
-        return { controls, planControls, plan, design, review, commitImport, openPlan, downloadAgreement, importAgreement, agreementControls };
+        return { controls, planControls, plan, design, review, commitImport, openPlan, downloadAgreement, importAgreement, importFile, imported, importedRows };
     }
     return { PREFIX, browser };
 });

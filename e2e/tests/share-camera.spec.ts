@@ -25,10 +25,13 @@ for (const mode of ['model', 'photo'] as const) {
     await page.locator('.command-palette__input').fill('Lists');
     await page.locator('.command-palette__item').filter({ hasText: /^Lists/ }).first().click();
     await page.locator('#shareAppliedProposalsButton').click();
+    // Create plan ticks the designs in Lists → Designs; Continue opens the composer listing them.
     await page.locator('#lists-actions').getByRole('button', { name: 'Create plan', exact: true }).click();
+    await page.locator('#proposal-list-host input[type=checkbox]').check();
+    await page.locator('#lists-actions [data-lists-continue]').click();
     const composer = page.locator('.plan-composer');
+    await expect(composer.locator('.plan-dialog__members li')).toHaveCount(1);
     await composer.getByLabel('Plan name', { exact: true }).fill('Camera view');
-    await composer.locator('.plan-dialog__choices input[type=checkbox]').check();
     const includeCamera = composer.locator('[data-plan-view="camera"]');
     const rotate = composer.locator('[data-plan-view="rotate"]');
     await expect(includeCamera).toBeChecked();
@@ -44,6 +47,8 @@ for (const mode of ['model', 'photo'] as const) {
     expect(saved.content.view).toMatchObject({ mode, rotate: true, camera: null });
     // A new composition can also retain the original captured camera.
     await page.keyboard.press('Escape');
+    // Ticking designs in Lists framed them on the map; return to the original camera first.
+    await page.evaluate(view => (window as any).applyThree3DGeoView(view), camera);
     await page.evaluate(id => (window as any).PlanDialog.create({ members: [(window as any).proposalStorage.getProposal(id)] }), id);
     await composer.getByLabel('Plan name', { exact: true }).fill('Camera included');
     await composer.locator('[data-plan-view="rotate"]').check();

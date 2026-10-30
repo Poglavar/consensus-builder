@@ -2,10 +2,23 @@
 #proposals-sheet > .map-sheet-body.lists-body { padding: var(--cb-space-3); box-sizing: border-box; display: flex; flex-direction: column; gap: var(--cb-space-2); overflow: auto; }
 .lists-controls { display: grid; gap: var(--cb-space-2); padding: var(--cb-space-3); border: 1px solid var(--cb-line); border-radius: var(--cb-radius-md); }
 .lists-filters { display: grid; grid-template-columns: 1fr 1fr; gap: var(--cb-space-2); }
-.lists-controls > label, .lists-filters label { display: grid; gap: 4px; min-width: 0; color: var(--cb-text-muted); font-size: .85rem; }
+.lists-filters label { display: grid; gap: 4px; min-width: 0; color: var(--cb-text-muted); font-size: .85rem; }
 
 .lists-controls input, .lists-filters select { width: 100%; min-width: 0; }
-.lists-actions { align-items: center; }
+.lists-actions { display: grid; gap: var(--cb-space-2); }
+/* Create, Compare, Import, Imported: two to a row, every button the same size. */
+.lists-actions__grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--cb-space-2); }
+.lists-actions__grid > .btn, .lists-actions__selecting > .btn { width: 100%; min-width: 0; justify-content: center; white-space: normal; }
+.lists-actions__selecting { display: grid; grid-template-columns: 1fr 1fr; align-items: center; }
+.lists-actions__selecting .lists-selection-count { grid-column: 1 / -1; }
+/* While ticking, the selection bar stays in view above a long list. */
+#proposals-sheet .lists-actions:has(.lists-actions__selecting) { position: sticky; top: calc(-1 * var(--cb-space-3)); z-index: 1; padding-block: var(--cb-space-2); background: var(--cb-surface); }
+.lists-actions__help { justify-self: start; font-size: .85rem; }
+.lists-search-row { display: flex; gap: var(--cb-space-2); align-items: center; }
+.lists-search-row input { flex: 1; }
+.lists-filter-toggle { flex: none; }
+.lists-filter-toggle[aria-expanded="true"] { border-color: var(--cb-primary); }
+.lists-filter-panel:not([hidden]) { display: grid; gap: var(--cb-space-2); }
 .lists-rows { display: grid; gap: var(--cb-space-2); align-content: start; }
 #proposals-sheet #designs-plans { padding: 0; overflow: visible; flex: none; }
 #proposals-sheet [role="tabpanel"][hidden] { display: none; }
@@ -13,7 +26,9 @@
 .lists-item { border: 1px solid var(--cb-line); border-radius: var(--cb-radius-md); padding: var(--cb-space-3); display: grid; gap: var(--cb-space-2); min-width: 0; cursor: pointer; }
 .lists-item.is-selected { border-color: var(--cb-primary); }
 .lists-item__heading { display: flex; align-items: start; gap: var(--cb-space-2); }
-.lists-item__title { text-align: start; white-space: normal; overflow-wrap: anywhere; flex: 1; justify-content: flex-start; font-weight: 600; }
+.lists-item__heading { align-items: center; }
+.lists-item__title { margin: 0; overflow-wrap: anywhere; flex: 1; font-size: 1rem; font-weight: 600; }
+.lists-item:focus-visible { outline: 2px solid var(--cb-primary); outline-offset: 2px; }
 .lists-item__selection { padding-block: var(--cb-space-2); }
 .lists-item__badges { display: flex; flex-wrap: wrap; gap: 4px; }
 .lists-item p, #lists-status { margin: 0; }
@@ -21,16 +36,12 @@
 #proposals-sheet .designs-panel-tabs { flex-shrink: 0; }
 #proposals-sheet .designs-panel-tabs > button { min-width: 0; flex: 1; }
 
-.lists-filter-details summary { cursor: pointer; color: var(--cb-text-muted); padding-block: var(--cb-space-1); }
-.lists-filter-details[open] { display: grid; gap: var(--cb-space-2); }
 .lists-refresh { justify-self: end; }
 
 /* Every tab uses the same inset and spacing, including empty states and file actions. */
 #proposals-sheet #proposal-list-host { display: grid; overflow: visible; flex: none; }
 #proposals-sheet #designs-browse:not([hidden]) { display: grid; gap: var(--cb-space-3); }
 #proposals-sheet #designs-plans { gap: var(--cb-space-3); }
-#proposals-sheet #plan-file-actions .plan-file-controls,
-#proposals-sheet #agreement-file-actions .plan-file-controls { padding: 0; }
 .lists-controls { flex-shrink: 0; }
 .lists-item { --lists-accent: var(--cb-text-muted); border-inline-start: 3px solid var(--lists-accent); background: color-mix(in srgb, var(--lists-accent) 4%, var(--cb-surface)); }
 .lists-item[data-list-tone="nature"] { --lists-accent: var(--cb-success); }
