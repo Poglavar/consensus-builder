@@ -8940,5 +8940,20 @@
     "landDefinition": "O terreno público são as ruas e os parques e praças do OpenStreetMap; o privado é o resto das parcelas. O estado atual conta cada edifício existente nesse terreno; um plano conta, ao lado dos novos, os existentes que os seus projetos não removem.",
     "noBasis": "Não há nenhum plano guardado de onde tirar o terreno.",
     "sideBySide": "Lado a lado no mapa"
+  },
+  "buildingUseHighlight": {
+    "title": "Uso dos edifícios",
+    "highlight": "Destacar por uso",
+    "note": "Os usos assinalados colorem os seus pisos, nos edifícios existentes e nas propostas; tudo o resto esbate-se.",
+    "pill": "Uso destacado: {{uses}}",
+    "ownershipPill": "Propriedade destacada: {{types}}",
+    "off": "Desativar este destaque",
+    "storey": {
+      "residential": "Habitação",
+      "shop": "Lojas",
+      "office": "Escritórios",
+      "public": "Público",
+      "industrial": "Industrial"
+    }
   }
 }

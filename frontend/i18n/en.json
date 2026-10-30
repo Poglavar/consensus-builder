@@ -8940,5 +8940,20 @@
     "landDefinition": "Public land is roads and OpenStreetMap parks and squares; private land is the rest of the parcels. The present state counts every existing building on that land; a plan counts the existing buildings its designs do not clear beside its new ones.",
     "noBasis": "No saved plan to take the land from.",
     "sideBySide": "Side by side on the map"
+  },
+  "buildingUseHighlight": {
+    "title": "Building use",
+    "highlight": "Highlight by use",
+    "note": "Ticked uses color their storeys, in existing buildings and designs alike; everything else fades.",
+    "pill": "Highlighting use: {{uses}}",
+    "ownershipPill": "Highlighting ownership: {{types}}",
+    "off": "Turn off this highlight",
+    "storey": {
+      "residential": "Housing",
+      "shop": "Shops",
+      "office": "Offices",
+      "public": "Public",
+      "industrial": "Industrial"
+    }
   }
 }

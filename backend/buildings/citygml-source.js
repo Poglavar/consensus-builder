@@ -105,7 +105,8 @@ export function createCityGmlSource(config, { fetchImpl = fetch, log = console }
     async function near(geometry, bufferMeters = 0) {
         const buffered = bufferMeters > 0 ? turf.buffer(turf.feature(geometry), bufferMeters, { units: 'meters' }) : turf.feature(geometry);
         const { records, truncated } = await recordsIn(turf.bbox(buffered));
-        const buildings = records.map(entry => entry.record);
+        // Its use and storeys ride along for Highlight by use.
+        const buildings = records.map(entry => ({ ...entry.record, ...(entry.use ? { use: entry.use } : {}), ...(entry.storeys ? { floors: entry.storeys } : {}) }));
         return { buildings, count: buildings.length, source: config.id, ...(truncated ? { partial: true } : {}),
             attribution: config.attribution };
     }

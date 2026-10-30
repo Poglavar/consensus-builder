@@ -140,10 +140,10 @@
                 'css/game.css',
                 'css/actor-explorer.css',
                 'css/road-analysis.css',
-                'css/utilities.css?v=20261027-panel-buttons',
+                'css/utilities.css?v=20261030-use-highlight',
                 'css/photoreal-mode.css',
                 'css/ai-scene.css',
-                'css/map-shell.css?v=20261029-no-epoch',
+                'css/map-shell.css?v=20261030-use-highlight',
                 'css/activity-feed.css?v=20261027-style',
                 'css/area-monitor-list.css',
                 'css/map-credits.css',
@@ -825,6 +825,8 @@
                             </div>
                             <p id="building-sources-summary" class="sheet-note building-sources-summary"></p>
                         </div>
+                        <!-- Highlight by use: its ticks are rendered by js/ui/view-pills.js. -->
+                        <div class="control-group" data-use-highlight></div>
                         <div class="cb-actions layer-source-actions"><button type="button" id="building-source-settings-button" class="btn" data-section-independent="true" onclick="openBuildingSourceSettings()">
                                 <span data-i18n-key="buildingSources.listTitle">Building sources</span>
                             </button></div>
@@ -1030,7 +1032,9 @@
                     </div>
                 </details>
             </div>
-            <div id="model-layer-controls" class="map-sheet-body" data-map-modes="3d photo" hidden></div>
+            <div id="model-layer-controls" class="map-sheet-body" data-map-modes="3d photo" hidden>
+                <div class="control-group" data-use-highlight data-map-modes="3d"></div>
+            </div>
             <div class="map-sheet-body" data-map-modes="photo" hidden>
                 <div class="checkbox-group"><label><input id="photo-parcels-visible" type="checkbox" checked><span data-i18n-key="threeMode.photoParcels.toggle">Cadastral parcel boundaries</span></label></div>
                 <p id="photo-parcels-status" class="photoreal-parcel-note"></p>
@@ -1990,7 +1994,9 @@
             // bundle:end parcel-data-clients
             // What each Buildings and massing role is still loading; the map's first fetches report to it.
             'js/planning/loading.js',
-            'js/map-core.js?v=20261030-source-lists',
+            // Highlight by use: the 2D and 3D building styles read it (Layers → Building use).
+            'js/building-use-highlight.js',
+            'js/map-core.js?v=20261030-use-highlight',
             'js/user-management.js?v=20261020-modeled-totals',
             'js/site-intro.js',
             'js/map-controls.js?v=20261030-source-lists',
@@ -2135,6 +2141,8 @@
             'js/map-pick.js',
             // What a building is for, by storey: the editor, layouts and Plan stats read it.
             'js/building-use.js',
+            // The top-centre view pills and the Highlight by use ticks in Layers.
+            'js/ui/view-pills.js',
             'js/single-building-geometry.js',
             'js/freeform-placement.js',
             'js/on-map-placement.js',

@@ -8940,5 +8940,20 @@
     "landDefinition": "Le terrain public comprend les routes ainsi que les parcs et places d’OpenStreetMap ; le terrain privé est le reste des parcelles. L’état actuel compte chaque bâtiment existant sur ce terrain ; un plan compte, à côté de ses nouveaux bâtiments, les bâtiments existants que ses projets ne suppriment pas.",
     "noBasis": "Aucun plan enregistré dont prendre le terrain.",
     "sideBySide": "Côte à côte sur la carte"
+  },
+  "buildingUseHighlight": {
+    "title": "Usage des bâtiments",
+    "highlight": "Mettre en évidence par usage",
+    "note": "Les usages cochés colorent leurs étages, dans les bâtiments existants comme dans les propositions ; tout le reste s’estompe.",
+    "pill": "Usage mis en évidence : {{uses}}",
+    "ownershipPill": "Propriété mise en évidence : {{types}}",
+    "off": "Désactiver cette mise en évidence",
+    "storey": {
+      "residential": "Logement",
+      "shop": "Commerces",
+      "office": "Bureaux",
+      "public": "Public",
+      "industrial": "Industriel"
+    }
   }
 }

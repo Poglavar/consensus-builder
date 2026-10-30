@@ -55,6 +55,23 @@
         return { groundFloorUse: key === 'residential' ? 'residential' : 'commercial' };
     }
 
+    // A Block, Row or Detached ('parcelBased') rule building states no use: it is housing, and the
+    // suggested layout's own rule (default-floor-plans.js) gives a Block building of five storeys or
+    // more shops on the ground floor.
+    const HOUSING_TYPOLOGIES = Object.freeze(['block', 'row', 'parcelBased']);
+    const autoGroundFloorUse = (typology, floors) => (typology === 'block' && floors >= 5 ? 'commercial' : 'residential');
+
+    // The use of each storey of a building (its properties), ground floor first: its stated use, else
+    // a housing rule's, else none ([]).
+    function storeyUsesOf(properties, floors) {
+        const props = properties || {};
+        const stated = normalize(props.use);
+        if (stated) return storeyUses(stated, floors);
+        const typology = props.urbanRule && props.urbanRule.typology;
+        if (!HOUSING_TYPOLOGIES.includes(typology)) return [];
+        return storeyUses(autoGroundFloorUse(typology, floors) === 'commercial' ? 'residential-shops' : 'residential', floors);
+    }
+
     // A city model's building function code → one of the six uses. The German states' LoD2 models
     // write ALKIS building functions as "31001_<code>" (31001 is the ALKIS building class); SIG3D's
     // CityGML code list uses the same four-digit codes bare. Ranges by the list's own grouping: 1xxx
@@ -105,5 +122,6 @@
         return osmLookup.get(value.trim().toLowerCase()) || null;
     }
 
-    return { USES, normalize, storeyUses, housingShare, housesPeople, layoutRules, fromCityModel, fromOsmBuilding };
+    return { USES, HOUSING_TYPOLOGIES, normalize, storeyUses, storeyUsesOf, autoGroundFloorUse, housingShare, housesPeople,
+        layoutRules, fromCityModel, fromOsmBuilding };
 });

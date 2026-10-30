@@ -71,6 +71,7 @@ describe('three-mode Xray wiring', () => {
             buildingDisplayPolicy: { resolveBuiltDisplayPolicy: mode => ({ visible: mode !== 'off', material: mode, showSurviving: true, showDemolished: false }) },
             buildingMaterials: { xray: 'xray-material', solid: 'solid-material', ghost: 'ghost-material' },
             buildNearbyProposalBuildings3D: vi.fn(async () => {}), buildProposedBuildings3D: vi.fn(async () => {}), appendSuggestedExistingFloorPlans: vi.fn(),
+            applyUseHighlight3D: vi.fn(),
             buildIneligibleParcels3D: vi.fn(), ensureNearbyProposalBuildings: vi.fn(),
             ensureNearbyTrees: vi.fn(), rebuildTreesOnly: vi.fn(), ensureNearbyWater: vi.fn(), rebuildWaterOnly: vi.fn(),
             applyParcelIsolation: vi.fn(), isolateProposal: vi.fn(), updateXrayControls: vi.fn(), refreshClickStackFigures: vi.fn(),
@@ -101,6 +102,8 @@ describe('three-mode Xray wiring', () => {
         expect(c.buildNearbyProposalBuildings3D.mock.calls[0][1]).toBe('ghost-material');
         expect(c.buildProposedBuildings3D.mock.calls[0][1]).toBe('solid-material');
         expect(c.updateXrayControls).toHaveBeenCalledOnce();
+        // Highlight by use recolours the rebuilt meshes once they are in the scene.
+        expect(c.applyUseHighlight3D).toHaveBeenCalledOnce();
     });
     it('respects display-off families and reapplies isolation after a rebuild', async () => {
         const [rebuild, c] = rebuildHarness(true, 'off', 'off', 'parcel-42');

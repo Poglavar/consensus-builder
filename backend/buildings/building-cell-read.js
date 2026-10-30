@@ -88,7 +88,8 @@ export async function readAdapterBox(adapter, descriptor, bbox, { signal } = {})
 function cityModelBuilding(feature) {
     const lod2 = feature.properties && feature.properties.lod2;
     if (!lod2) return FootprintProvider.footprintFeatureToBuilding(feature);
-    return { object_id: String(feature.id), z_min: lod2.z_min, z_max: lod2.z_max, faces: lod2.faces, height_source: 'measured' };
+    return { object_id: String(feature.id), z_min: lod2.z_min, z_max: lod2.z_max, faces: lod2.faces, height_source: 'measured',
+        ...FootprintProvider.buildingFacts(feature) };
 }
 
 /**

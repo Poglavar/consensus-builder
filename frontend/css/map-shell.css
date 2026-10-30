@@ -41,6 +41,69 @@
 
 
 
+/* ---- View pills (js/ui/view-pills.js) ----
+   Top centre: one pill per setting that changes how the map reads (Highlight by use, Highlight by
+   ownership type), with × to turn it off. In the model view the top centre is the design / parcel
+   view pill's, so they take the row under the top buttons. */
+.map-view-pills {
+    position: absolute;
+    top: var(--map-shell-edge);
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: var(--cb-z-map-chrome);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--cb-space-1);
+    pointer-events: none;
+}
+
+.map-view-pills:empty {
+    display: none;
+}
+
+body.three-mode-active .map-view-pills {
+    top: var(--map-shell-top-clearance);
+}
+
+.map-view-pill {
+    display: flex;
+    align-items: center;
+    gap: var(--cb-space-2);
+    max-width: min(480px, calc(100vw - 2 * var(--map-shell-edge)));
+    padding: var(--cb-space-1) var(--cb-space-1) var(--cb-space-1) var(--cb-space-3);
+    background: var(--cb-glass);
+    border: 1px solid var(--cb-line-glass);
+    border-radius: var(--cb-radius-pill);
+    box-shadow: var(--cb-shadow-md);
+    color: var(--cb-text);
+    font-size: var(--cb-text-sm);
+    font-weight: var(--cb-weight-semibold);
+    pointer-events: auto;
+}
+
+.map-view-pill-label {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* Phones: the top row is full (menu, search, profile, Layers, Settings), so the pills take the row
+   under it, and in the model view the row under the design / parcel view pill. */
+@media (max-width: 767.98px) {
+    .map-view-pills {
+        top: var(--map-shell-top-clearance);
+    }
+    body.three-mode-active .map-view-pills {
+        top: calc(var(--map-shell-top-clearance) + var(--map-shell-button-size));
+    }
+}
+
+/* Ownership types colour parcels in 2D only. */
+body.three-mode-active .map-view-pill--2d {
+    display: none;
+}
+
 /* ---- Floating buttons ---- */
 .map-shell-cluster {
     position: absolute;
@@ -666,7 +729,7 @@ body.three-mode-active .leaflet-control-attribution { visibility: hidden; }
     accent-color: var(--cb-focus);
 }
 
-.map-sheet .checkbox-group .ownership-legend-swatch {
+.map-sheet .checkbox-group :is(.ownership-legend-swatch, .use-legend-swatch) {
     margin-right: 0;
 }
 

@@ -169,6 +169,14 @@ surfaces. Solid versus dashed boundaries and filled versus hollow shapes disting
 design from its source parcels. Ownership, planning roles and invalid geometry retain their own
 meaningful colours when they are not selected.
 
+A **view pill** names a setting that changes how the map reads while it is on, at the top centre
+with × to turn it off (`js/ui/view-pills.js`, `.map-view-pill` in css/map-shell.css): Highlight by
+use and Highlight by ownership type. Ordinary layer switches get none; what they show is on the map.
+In the model view, and on a phone, the pills take the row under the top buttons. Highlight by use
+(`js/building-use-highlight.js`, Layers → Buildings and the model view's Layers) colours the storeys
+of the ticked storey uses, existing buildings and designs alike, and fades everything else; its
+palette is the legend beside each tick.
+
 ## Messages
 
 - Three families share one typography, `.cb-toast` in css/primitives.css: every floating message is

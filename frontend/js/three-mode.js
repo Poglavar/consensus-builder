@@ -442,6 +442,35 @@
 
     for (const [role, material] of Object.entries(buildingMaterials)) material.userData.cbBuildingMaterialRole = role;
 
+    // Highlight by use (building-use-highlight.js): one opaque material per storey use, one faded
+    // material for everything not ticked, and a band material (three-use-bands.js) for a building lit
+    // in part. None carries a building material role, so the retained display leaves them alone.
+    const useHighlight = window.BuildingUseHighlight;
+    const useHighlightMaterials = new Map();
+    const useHighlightFaded = makeBuildingMaterial({ color: 0x8a929c, specular: 0x222222, shininess: 10 }, useHighlight.FADED_OPACITY);
+    function useHighlightMaterialFor(category) {
+        if (!useHighlightMaterials.has(category)) {
+            useHighlightMaterials.set(category, makeBuildingMaterial({ color: new THREE.Color(useHighlight.COLORS[category]),
+                specular: 0x222222, shininess: 12 }));
+        }
+        return useHighlightMaterials.get(category);
+    }
+    function useHighlightBandMaterial(bands, mesh) {
+        const box = new THREE.Box3().setFromObject(mesh);
+        return window.ThreeUseBands.createBandMaterial(THREE, bands, { zMin: box.min.z, zMax: box.max.z });
+    }
+    // A building mesh's storey uses, for the highlight.
+    function tagBuildingStoreys(mesh, properties, facts) {
+        mesh.userData.buildingStoreys = useHighlight.storeysOf(properties, facts);
+    }
+    function applyUseHighlight3D() {
+        const changed = useHighlight.apply3d([existingBuildingsGroup, proposedBuildingsGroup], {
+            materialFor: useHighlightMaterialFor, faded: useHighlightFaded, bandMaterial: useHighlightBandMaterial,
+            skip: object => !!object.userData?.[smoothTransparency.DEPTH_PREPASS_FLAG]
+        });
+        if (changed) invalidateThreeView();
+    }
+
     function demolishedMaterialFor(buildingMaterial) {
         return buildingOpacityOf(buildingMaterial) < 1
             ? buildingMaterials.demolishedGhost
@@ -5873,6 +5902,9 @@
                         const inspectionFeature = window.PlanningRepresentations.observedMeshFeature(bld, observed.get(threeBuildingKey(bld)));
                         const addObserved = mesh => {
                             mesh.userData.planningBuiltFeature = inspectionFeature;
+                            const facts = inspectionFeature?.properties || {};
+                            tagBuildingStoreys(mesh, { use: facts.use ?? bld.use },
+                                { floors: facts.floors ?? bld.floors, heightM: building3DHeightMeters(bld) });
                             targetGroup.add(mesh);
                         };
                         const carve = carving.carveOf(threeBuildingKey(bld), () => buildingFootprintPolygon(bld)?.geometry || null);
@@ -8017,7 +8049,13 @@
     // `ruleDetails` (ruleRoofs.planFor) adds a rule's pitched roof, attic and balconies.
     function createBuildingSlices(buildingFeature, height, material, targetGroup, facadeSource = null, ruleDetails = null) {
         if (!buildingFeature?.geometry) return;
-        if (ruleDetails) ruleRoofs.detailMeshes(ruleDetails, material).forEach(mesh => targetGroup.add(mesh));
+        // Storeys at the rule's storey height, as the suggested layout counts them.
+        const storeyHeightM = buildingFeature.properties?.urbanRule?.floorHeightM || window.STOREY_HEIGHT_M || 3.3;
+        const storeyFacts = { floors: buildingFeature.properties?.floors ?? Math.max(1, Math.round(height / storeyHeightM)), heightM: height };
+        if (ruleDetails) ruleRoofs.detailMeshes(ruleDetails, material).forEach(mesh => {
+            tagBuildingStoreys(mesh, buildingFeature.properties, storeyFacts);
+            targetGroup.add(mesh);
+        });
         const hasFacade = !!facadeSource;
         const city = window.CityConfigManager?.getCurrentCityId?.() || '';
         const ruleFloorHeight = buildingFeature.properties?.urbanRule?.floorHeightM;
@@ -8030,6 +8068,7 @@
             // Preserve the authored identity across parcel slices.
             for (const mesh of meshes) {
                 if (buildingFeature.properties?.proposalId) mesh.userData.proposalId = String(buildingFeature.properties.proposalId);
+                tagBuildingStoreys(mesh, buildingFeature.properties, storeyFacts);
             }
             if (!hasFacade || !meshes.length) return meshes;
             // Each building keeps its style and glass tint; ownership seams vary only the shade.
@@ -9099,7 +9138,8 @@
     }
 
     function applyRetainedBuildingDisplay() {
-        if (!buildingDisplaySnapshot || buildingBuildPending || pendingModelLoads || xrayEnabled
+        // The use highlight holds each mesh's own material aside; a rebuild re-applies it instead.
+        if (!buildingDisplaySnapshot || buildingBuildPending || pendingModelLoads || xrayEnabled || useHighlight.isActive()
             || BUILDING_GHOST_STYLE !== 'smooth' || !existingBuildingsGroup || !proposedBuildingsGroup) return false;
         const builtPolicy = buildingDisplayPolicy.resolveBuiltDisplayPolicy(builtDisplay, window.PlanningViews?.getState()?.existingScope);
         const existingVisible = builtPolicy.visible && !realisticLayerActive;
@@ -9189,6 +9229,7 @@
             existingBuildingsGroup = nextExisting;
             proposedBuildingsGroup = nextProposed;
             committed = true;
+            applyUseHighlight3D();
             if (showExisting) appendSuggestedExistingFloorPlans(existingMaterial);
             if (showIneligibleParcels && rebuildProposed) buildIneligibleParcels3D(ineligibleBuildingsGroup);
             buildingDisplaySnapshot = {
@@ -10390,6 +10431,8 @@
         rebuildPlanningSources3D();
     });
     window.addEventListener('planningviewchange', syncPlanningView3D);
+    // Ticking a use in Layers → Building use recolours the built meshes in place.
+    useHighlight.onChange(() => { if (isActive) applyUseHighlight3D(); });
 
     // Rebuild on proposed buildings updates. Invalidate the nearby cache too so the
     // buffer query re-runs against the new proposal shape.

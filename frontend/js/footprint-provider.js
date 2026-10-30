@@ -44,7 +44,14 @@
         const record = extrusion.extrudeFootprint(id, feature.geometry, height.heightM);
         if (!record) return null;
         record.height_source = height.source;
-        return record;
+        return Object.assign(record, buildingFacts(feature));
+    }
+
+    // What the 3D record says about a building beside its shape, when its source states it: its use
+    // and storey count (Highlight by use colours its storeys by them).
+    function buildingFacts(feature) {
+        const { use, floors } = footprintEntry(feature);
+        return { ...(use ? { use } : {}), ...(floors ? { floors } : {}) };
     }
 
     // What a provider answers instead of buildings when its upstream failed outright: the browser says
@@ -199,7 +206,7 @@
         return { near, footprints, mapFootprints, footprintsUnder };
     }
 
-    const api = { MAX_SPAN_DEG, expandBbox, footprintFeatureToBuilding, unavailableFrom, footprintEntry, createFootprintProvider };
+    const api = { MAX_SPAN_DEG, expandBbox, footprintFeatureToBuilding, buildingFacts, unavailableFrom, footprintEntry, createFootprintProvider };
     if (typeof window !== 'undefined') window.FootprintProvider = api;
     if (typeof module !== 'undefined' && module.exports) module.exports = api;
 })();

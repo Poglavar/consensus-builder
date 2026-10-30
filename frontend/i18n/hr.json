@@ -8992,5 +8992,20 @@
     "landDefinition": "Javna površina su ceste te parkovi i trgovi iz OpenStreetMapa; privatna je ostatak čestica. Postojeće stanje broji svaku postojeću zgradu na tom zemljištu; plan uz svoje nove zgrade broji postojeće koje njegovi dizajni ne uklanjaju.",
     "noBasis": "Nema spremljenog plana s čijeg bi se zemljišta uzelo stanje.",
     "sideBySide": "Usporedno na karti"
+  },
+  "buildingUseHighlight": {
+    "title": "Namjena zgrada",
+    "highlight": "Istakni po namjeni",
+    "note": "Označene namjene boje svoje etaže, u postojećim zgradama i u prijedlozima; sve ostalo blijedi.",
+    "pill": "Istaknuta namjena: {{uses}}",
+    "ownershipPill": "Istaknuto vlasništvo: {{types}}",
+    "off": "Isključi isticanje",
+    "storey": {
+      "residential": "Stanovanje",
+      "shop": "Trgovine",
+      "office": "Uredi",
+      "public": "Javna",
+      "industrial": "Industrija"
+    }
   }
 }

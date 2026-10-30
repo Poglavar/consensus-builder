@@ -22,6 +22,8 @@
         return error;
     }
 
+    const buildingUse = () => (global && global.BuildingUse) || require('./building-use.js');
+
     const GENERATOR_ID = 'consensus-builder.default-floor-plan.v1';
     const PLANS_SCHEMA = 'consensus-builder.building-floor-plans.v3';
     const ARCHITECTURE_SCHEMA = 'consensus-builder.floor-architecture.v1';
@@ -563,7 +565,7 @@
 
         // --- ground-floor use and the garage ------------------------------------------------------
         const groundFloorUse = rules.groundFloorUse === 'auto'
-            ? ((input.typology === 'block' && floors >= 5) ? 'commercial' : 'residential') : rules.groundFloorUse;
+            ? buildingUse().autoGroundFloorUse(input.typology, floors) : rules.groundFloorUse;
         summary.groundFloorUse = groundFloorUse;
         const garageLevels = rules.garage === 'never' ? 0 : rules.garage === 'always' ? Math.max(1, rules.garageLevels)
             : (floors >= rules.garageFromFloors && usableM2 >= rules.garageFromUsableM2 ? Math.max(1, rules.garageLevels) : 0);

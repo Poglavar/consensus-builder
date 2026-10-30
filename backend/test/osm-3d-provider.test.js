@@ -26,6 +26,7 @@ describe('OSM 3D provider', () => {
         const byId = Object.fromEntries(result.buildings.map(b => [b.object_id, b]));
         expect(byId.w1.z_max).toBe(30);
         expect(byId.w2.z_max).toBe(12);
+        expect(byId.w2.floors).toBe(4);
         expect(byId.w3.height_source).toBe('estimated');
         expect(byId.w3.z_max).toBeGreaterThan(0);
     });
@@ -90,6 +91,9 @@ describe('OSM 3D provider', () => {
         ]) });
         const { footprints } = await provider.footprints(box(10, 10, 0.005));
         expect(Object.fromEntries(footprints.map(f => [f.id, f.use ?? null]))).toEqual({ w1: 'residential', w2: 'office', w3: null });
+        // The 3D records carry it too, with the storeys, for Highlight by use.
+        const { buildings } = await provider.near(box(10.001, 10.001), 300);
+        expect(Object.fromEntries(buildings.map(b => [b.object_id, b.use ?? null]))).toEqual({ w1: 'residential', w2: 'office', w3: null });
     });
 
     it('clamps a query box to the Overpass span limit around its centre', () => {

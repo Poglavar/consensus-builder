@@ -8968,5 +8968,20 @@
     "landDefinition": "El suelo público son las calles y los parques y plazas de OpenStreetMap; el privado es el resto de las parcelas. El estado actual cuenta cada edificio existente en ese suelo; un plan cuenta, junto a los nuevos, los existentes que sus diseños no eliminan.",
     "noBasis": "No hay ningún plan guardado del que tomar el suelo.",
     "sideBySide": "Lado a lado en el mapa"
+  },
+  "buildingUseHighlight": {
+    "title": "Uso de los edificios",
+    "highlight": "Resaltar por uso",
+    "note": "Los usos marcados colorean sus plantas, en edificios existentes y propuestas por igual; todo lo demás se atenúa.",
+    "pill": "Uso resaltado: {{uses}}",
+    "ownershipPill": "Propiedad resaltada: {{types}}",
+    "off": "Desactivar este resaltado",
+    "storey": {
+      "residential": "Vivienda",
+      "shop": "Comercios",
+      "office": "Oficinas",
+      "public": "Público",
+      "industrial": "Industrial"
+    }
   }
 }

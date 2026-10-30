@@ -12,7 +12,7 @@
         model: [
             ...floorPlans, 'js/corridor-terrain-formation.js',
             'js/building-height.js', 'js/proposals/gain.js', 'js/three-mesh-sanitize.js',
-            'js/three-screen-door.js', 'js/three-smooth-transparency.js', 'js/three-building-display.js',
+            'js/three-screen-door.js', 'js/three-smooth-transparency.js', 'js/three-building-display.js', 'js/three-use-bands.js',
             'js/three-floor-plans.js', 'js/three-building-facades.js', 'js/rule-building-details.js', 'js/three-rule-roofs.js', 'js/three-resources.js',
             'js/three-scene-work.js', 'js/three-scene-readiness.js', 'js/three-structure-refresh.js', 'js/three-square-paving.js', 'js/three-lake-basin.js',
             'js/three-snapshot-navigation.js', 'js/three-keyboard-context.js', 'js/three-scene-isolation.js',
@@ -23,7 +23,7 @@
             'vendor/suncalc-1.9.0/suncalc.js', 'vendor/tz-lookup-11.7.0/tz.js', 'js/sun-shadows.js', 'js/three-sun.js',
             'js/sky-colors.js', 'js/three-sky.js', 'js/three-night-windows.js',
             'js/buildout-parts.js', 'js/three-buildout.js',
-            'js/three-mode.js?v=20261030-list-reveal'
+            'js/three-mode.js?v=20261030-use-highlight'
         ],
         photo: ['js/photoreal-frame.js', 'js/photoreal-ground.js', 'js/photoreal-seam.js',
             'js/photoreal-protect.js', 'js/photoreal-attribution.js', 'js/photoreal-parcels.js', 'js/photoreal-mode.js'],

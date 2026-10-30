@@ -65,6 +65,18 @@
     background-color: transparent;
 }
 
+/* Highlight by use's ticks are its legend the same way; the colour comes from
+   building-use-highlight.js through --legend-swatch-color. */
+.use-legend-swatch {
+    width: 12px;
+    height: 12px;
+    flex: 0 0 auto;
+    margin-right: 6px;
+    border-radius: 3px;
+    border: 1px solid var(--legend-swatch-color);
+    background-color: var(--legend-swatch-color);
+}
+
 .info-subsection {
     margin-bottom: 15px;
 }

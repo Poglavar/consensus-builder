@@ -14,7 +14,6 @@
     const SLICE_MS = 12;
     const yieldApi = () => (root && root.__planYield) || (typeof require === 'function' ? require('./plan-yield.js') : null);
     const useApi = () => (root && root.BuildingUse) || (typeof require === 'function' ? require('../building-use.js') : null);
-    const HOUSING_TYPOLOGIES = ['block', 'row', 'detached'];
 
     // The building's stated use, or 'residential' for a housing rule's building that states none.
     function useOf(feature) {
@@ -22,7 +21,7 @@
         const stated = useApi().normalize(props.use);
         if (stated) return stated;
         const typology = props.urbanRule && props.urbanRule.typology;
-        return HOUSING_TYPOLOGIES.includes(typology) ? 'residential' : null;
+        return useApi().HOUSING_TYPOLOGIES.includes(typology) ? 'residential' : null;
     }
 
     // { apartments, shopNetM2, workNetM2 } from a floor-plan model (building-floor-plans v3): the

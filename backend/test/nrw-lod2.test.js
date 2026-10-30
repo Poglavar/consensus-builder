@@ -40,6 +40,7 @@ describe('nrw-lod2', () => {
         expect(footprints.footprints.every(item => item.height_m > 0)).toBe(true);
         // The tile's ALKIS function codes (31001_3030 culture, 31001_1100 mixed with housing) as uses.
         expect(footprints.footprints.map(item => item.use).sort()).toEqual(['mixed', 'public']);
+        expect(near.buildings.map(record => record.use).sort()).toEqual(['mixed', 'public']);
         const outside = await createNrwLod2Provider({ fetchImpl, log: quiet }).near({ type: 'Point', coordinates: [6.9, 50.9] }, 50);
         expect(outside).toMatchObject({ count: 0 });
     });
