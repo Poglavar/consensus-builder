@@ -10,6 +10,9 @@
         OuterCeilingSurface: 'roof', OuterFloorSurface: 'ground', FloorSurface: 'floor', CeilingSurface: 'ceiling',
         InteriorWallSurface: 'interior' };
 
+    // The six building uses (building-use.js), which a city model's function codes map onto.
+    const buildingUse = () => (global && global.BuildingUse) || require('./building-use.js');
+
     function finite(value) {
         const number = typeof value === 'string' && value.trim() !== '' ? Number(value) : value;
         return typeof number === 'number' && Number.isFinite(number) ? number : null;
@@ -281,12 +284,14 @@
             record: { object_id: id, z_min: round(zMin, 1e3), z_max: round(zMax, 1e3), faces },
             footprint: ground.length ? { type: 'MultiPolygon', coordinates: ground } : null,
             heightM: building.measuredHeightM != null ? building.measuredHeightM * zToMetres : round(zMax - zMin, 1e3),
-            storeys: building.storeysAboveGround
+            storeys: building.storeysAboveGround,
+            use: buildingUse().fromCityModel(building.function, building.usage)
         };
     }
 
     // A read model's buildings as WGS84 footprint features for the building editors: one Polygon per
-    // building (its ground surfaces joined), with height, storeys and name. A building without ground
+    // building (its ground surfaces joined), with height, storeys, name and the use its function code
+    // maps to (`use`, building-use.js; the code itself stays as `function`). A building without ground
     // surfaces uses the outline of all its faces seen from above. toLngLat(x, y) → [lng, lat].
     function footprintFeatures(model, { toLngLat, turf }) {
         const features = [];
@@ -310,6 +315,7 @@
             if (entry.storeys) properties.storeys = entry.storeys;
             if (building.name) properties.name = String(building.name).slice(0, 120);
             if (building.function) properties.function = building.function;
+            if (entry.use) properties.use = entry.use;
             features.push({ type: 'Feature', ...(building.id ? { id: String(building.id) } : {}), properties, geometry: { type: 'Polygon', coordinates: largest.coordinates } });
         }
         return { type: 'FeatureCollection', features };

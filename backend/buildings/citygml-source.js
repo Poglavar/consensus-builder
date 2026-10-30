@@ -96,7 +96,7 @@ export function createCityGmlSource(config, { fetchImpl = fetch, log = console }
                 truncated,
                 features: records.filter(entry => entry.footprint).map(entry => ({
                     type: 'Feature', id: entry.record.object_id, geometry: entry.footprint,
-                    properties: { measured_height_m: entry.heightM, levels: entry.storeys }
+                    properties: { measured_height_m: entry.heightM, levels: entry.storeys, ...(entry.use ? { use: entry.use } : {}) }
                 }))
             };
         }

@@ -83,6 +83,14 @@ export async function readAdapterBox(adapter, descriptor, bbox, { signal } = {})
     return { features: read.items.map(feature => footprintFeature(descriptor, feature)), complete: read.complete };
 }
 
+// A city model file's building draws its own surfaces (city-model-url-source.js `lod2`); every other
+// footprint is extruded to its height.
+function cityModelBuilding(feature) {
+    const lod2 = feature.properties && feature.properties.lod2;
+    if (!lod2) return FootprintProvider.footprintFeatureToBuilding(feature);
+    return { object_id: String(feature.id), z_min: lod2.z_min, z_max: lod2.z_max, faces: lod2.faces, height_source: 'measured' };
+}
+
 /**
  * One building cell from a URL source: `near` answers 3D records, `footprints` the 2D pool's flat
  * items ({ id, geometry, height_m, floors }), every building touching the box (the cell loader files
@@ -99,7 +107,7 @@ export async function readBuildingCell(adapter, descriptor, { kind, bbox }, { si
         return { supported: true, kind, bbox, items: [], count: 0, complete: false, source, ...FootprintProvider.unavailableFrom(error) };
     }
     const items = kind === 'near'
-        ? found.features.map(FootprintProvider.footprintFeatureToBuilding).filter(Boolean)
+        ? found.features.map(cityModelBuilding).filter(Boolean)
         : found.features.map(FootprintProvider.footprintEntry);
     return { supported: true, kind, bbox, items, count: items.length, complete: found.complete, source };
 }

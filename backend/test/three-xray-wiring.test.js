@@ -307,7 +307,9 @@ describe('three-mode Xray wiring', () => {
     });
     it('typical layouts of existing buildings ask once for the whole radius and plan the nearest first', () => {
         const ensure = vi.fn(() => Promise.resolve());
-        const pool = [40, 5, 400, 20].map(d => ({ geometry: {}, properties: { id: `b${d}`, d, floors: 3 } }));
+        // b10, the second nearest, is an office its source states: it gets no housing layout.
+        const pool = [40, 5, 400, 20].map(d => ({ geometry: {}, properties: { id: `b${d}`, d, floors: 3 } }))
+            .concat([{ geometry: {}, properties: { id: 'b10', d: 10, floors: 3, use: 'office' } }]);
         const turf = { point: coordinates => ({ coordinates }), circle: () => 'circle', bbox: () => [-74.11, 4.61, -74.10, 4.62],
             centroid: feature => feature, distance: (_, feature) => feature.properties.d };
         const planBuilding = vi.fn(feature => ({ slices: [{ footprint: feature, result: { floorPlans: {}, summary: { heightM: 9.9 } } }] }));
@@ -317,7 +319,8 @@ describe('three-mode Xray wiring', () => {
             const SUGGESTED_EXISTING_CAP=2, suggestedFloorPlans={}, suggestedPlanCache=new Map();
             const suggestedPlanTotals={existing:0,existingCapped:false}; this.totals=suggestedPlanTotals;`,
         { turf, suggestedPlanContext: { planBuilding, neighbourPool: () => [] },
-            window: { buildingFeaturePool: pool, proposedBuildings: [], STOREY_HEIGHT_M: 3.3, ensureBuildingFootprintsForBounds: ensure },
+            window: { buildingFeaturePool: pool, proposedBuildings: [], STOREY_HEIGHT_M: 3.3, ensureBuildingFootprintsForBounds: ensure,
+                BuildingUse: require('../../frontend/js/building-use.js') },
             getGeoCameraView: () => ({ targetLng: -74.105, targetLat: 4.615 }), suggestedRegion: () => 'CO', suggestedRoadsFor: () => null,
             estimateBuildingHeightMeters: () => null, reportThreeClip: vi.fn(), appendBuildingFloorPlans: vi.fn(() => true) });
         append('material');

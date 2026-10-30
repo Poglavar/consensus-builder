@@ -61,6 +61,23 @@ describe('a city model file as a building source', () => {
         expect(changed).toMatchObject({ complete: false, items: [] });
     });
 
+    it('draws its buildings in 3D with their own roofs and walls, standing on their lowest point', async () => {
+        const { source } = await discoverCityModelSource({ url, city: 'vienna', bbox }, { fetchImpl: serve(gml) });
+        const near = await createBrowserBuildingCells({ fetchImpl: serve(gml) }).read(source.id, { kind: 'near', bbox });
+        expect(near.items.length).toBe(expected.length);
+        for (const record of near.items) {
+            expect(record.object_id.startsWith(source.idPrefix)).toBe(true);
+            expect(record.height_source).toBe('measured');
+            const kinds = new Set(record.faces.map(face => face.kind));
+            expect(kinds.has('roof') && kinds.has('wall'), record.object_id).toBe(true);
+            const zs = record.faces.flatMap(face => face.coordinates.flat().map(point => point[2]));
+            expect(Math.min(...zs)).toBeCloseTo(record.z_min, 2);
+            expect(Math.max(...zs)).toBeCloseTo(record.z_max, 2);
+        }
+        // An extruded block has one flat roof; a real roof model has more faces than walls + one.
+        expect(near.items.some(record => record.faces.filter(face => face.kind === 'roof').length > 1)).toBe(true);
+    });
+
     it('reads a CityJSON file too, as the site downloads one', async () => {
         const box = { type: 'Polygon', coordinates: [[[15.98, 45.8], [15.9805, 45.8], [15.9805, 45.8004], [15.98, 45.8004], [15.98, 45.8]]] };
         const file = await PlanFile.create([{ proposalId: 'b', goal: 'single', title: 'Block', site: box, city: 'zagreb', author: 'A', createdAt: '2026-10-30T10:00:00.000Z',
@@ -70,7 +87,8 @@ describe('a city model file as a building source', () => {
         const found = await discoverCityModelSource({ url: 'https://data.example/block.city.json', city: 'zagreb', bbox: turf.bbox(box) }, { fetchImpl: serve(text) });
         expect(found).toMatchObject({ buildingCount: 1, source: { format: 'cityjson', expectedSha256: sha256(text) } });
         const flat = await createBrowserBuildingCells({ fetchImpl: serve(text) }).read(found.source.id, { kind: 'footprints', bbox: turf.bbox(box) });
-        expect(flat.items).toMatchObject([{ height_m: 16, floors: 5 }]);
+        // The building's use rides along as the file's `function`, and comes back as its use.
+        expect(flat.items).toMatchObject([{ height_m: 16, floors: 5, use: 'residential' }]);
     });
 
     it('leaves a GeoJSON file to the other adapters, and takes a file whose buildings lie outside the test area', async () => {

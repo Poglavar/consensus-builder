@@ -55,14 +55,16 @@
     }
 
     // Measured height and storeys only, null when the source has none: the same contract the other
-    // providers keep for the footprint pool and the urban rule. Estimates are a 3D concern.
+    // providers keep for the footprint pool and the urban rule. Estimates are a 3D concern. A source
+    // that states the building's use (a city model's function code, building-use.js) adds `use`.
     function footprintEntry(feature) {
         const props = feature.properties || {};
         return {
             id: String(feature.id || props.osm_id),
             geometry: feature.geometry,
             height_m: props.measured_height_m ?? null,
-            floors: props.levels ?? null
+            floors: props.levels ?? null,
+            ...(props.use ? { use: props.use } : {})
         };
     }
 

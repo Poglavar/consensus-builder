@@ -8670,6 +8670,9 @@
         for (const { feature } of nearby) {
             if (count >= SUGGESTED_EXISTING_CAP) { suggestedPlanTotals.existingCapped = true; break; }
             const props = feature.properties || {};
+            // A building its source states for another use than housing gets no housing layout.
+            const statedUse = window.BuildingUse.normalize(props.use);
+            if (statedUse && !window.BuildingUse.housesPeople(statedUse)) continue;
             // The pool carries height_m and floors; a footprint with neither stays a plain volume.
             const height = Number.isFinite(props.height_m) && props.height_m > 0 ? props.height_m
                 : Number.isFinite(props.floors) && props.floors > 0 ? props.floors * storeyM

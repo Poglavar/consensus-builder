@@ -55,5 +55,36 @@
         return { groundFloorUse: key === 'residential' ? 'residential' : 'commercial' };
     }
 
-    return { USES, normalize, storeyUses, housingShare, housesPeople, layoutRules };
+    // A city model's building function code → one of the six uses. The German states' LoD2 models
+    // write ALKIS building functions as "31001_<code>" (31001 is the ALKIS building class); SIG3D's
+    // CityGML code list uses the same four-digit codes bare. Ranges by the list's own grouping: 1xxx
+    // housing (11xx with other uses), 2xxx trade, industry and utilities, 3xxx public; 13xx holiday
+    // and garden houses, 9998 unknown and 9999 other state no use.
+    const ALKIS_USES = Object.freeze([
+        [1000, 1099, 'residential'], [1100, 1100, 'mixed'], [1110, 1110, 'residential'], [1120, 1120, 'residential-shops'],
+        [1121, 1122, 'mixed'], [1123, 1123, 'residential-shops'], [1130, 1131, 'residential-shops'], [1200, 1299, 'residential'],
+        [2000, 2099, 'office'], [2100, 2299, 'industrial'], [2310, 2320, 'mixed'], [2400, 2799, 'industrial'],
+        [3000, 3099, 'public'], [3100, 3100, 'public'], [3200, 3299, 'public']
+    ]);
+    function alkisUse(code) {
+        const match = /^(?:31001_)?(\d{4})$/.exec(String(code).trim());
+        if (!match) return null;
+        const number = Number(match[1]);
+        const range = ALKIS_USES.find(([from, to]) => number >= from && number <= to);
+        return range ? range[2] : null;
+    }
+
+    // The use a city model states for a building: its function code or word, else its usage; null
+    // when neither names one. Other ALKIS classes (51009 canopies and other structures, 53001
+    // bridges) are not buildings with a use.
+    function fromCityModel(functionCode, usageCode) {
+        for (const value of [functionCode, usageCode]) {
+            if (value === null || value === undefined || value === '') continue;
+            const use = alkisUse(value) || normalize(String(value));
+            if (use) return use;
+        }
+        return null;
+    }
+
+    return { USES, normalize, storeyUses, housingShare, housesPeople, layoutRules, fromCityModel };
 });
