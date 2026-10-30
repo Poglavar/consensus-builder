@@ -96,16 +96,16 @@ test.describe('Bets sheet @features', () => {
     await expect(dialog).not.toContainText('Ready to settle');
   });
 
-  test('the Bets button wears "New" until opened, and folds market-less rival agreements away', async ({ mockApi: page }) => {
+  test('the Bets sheet is marked experimental, and folds market-less rival agreements away', async ({ mockApi: page }) => {
     const { cid, rival } = fileContest(page);
     await openCity(page);
     const button = page.locator('#bets-button');
     await expect(button).toBeVisible();
-    await expect(page.locator('#bets-button-new')).toBeVisible();
+    await expect(button).toHaveText('Bets');
     await button.click();
     const sheet = page.locator('#bets-sheet');
     await expect(sheet).toBeVisible();
-    await expect(page.locator('#bets-button-new')).toBeHidden();
+    await expect(sheet.locator('.map-sheet-header .bets-experimental')).toHaveText('Experimental');
     await expect(sheet.locator('.bets-tagline strong')).toHaveText('Bet on cities');
     await expect(sheet.locator('#bets-sheet-filter .bets-filter__btn')).toHaveText(['All', 'Open', 'Settled', 'Mine']);
     await expect(sheet.locator('.bets-filter__btn[data-filter="all"]')).toHaveAttribute('aria-pressed', 'true');
@@ -167,7 +167,6 @@ test.describe('Bets sheet @features', () => {
     const sheet = page.locator('#bets-sheet');
     await expect(sheet).toBeVisible();
     await expect(page.locator('#bets-button')).toHaveAttribute('aria-expanded', 'true');
-    await expect(page.locator('#bets-button-new')).toBeHidden();
     await expect(sheet.locator('.bets-contest')).toHaveCount(1, { timeout: 30_000 });
     await expect(sheet.locator('.bets-contest__title')).toHaveText('Markets for agreements over Parcel 2311');
     await expect(sheet.locator('.bets-row').first().locator('.bets-row__chance')).toContainText('YES price');

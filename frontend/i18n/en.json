@@ -6945,7 +6945,6 @@
             "localData": "Local (browser) data"
         },
         "bets": "Bets",
-        "betsNew": "New",
         "appearance": {
             "label": "Appearance",
             "system": "Follow device",

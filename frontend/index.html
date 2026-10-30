@@ -612,8 +612,6 @@
                 title="Bets" data-i18n-key="mapShell.bets" data-i18n-attr="title">
                 <i class="fas fa-coins" aria-hidden="true"></i>
                 <span class="map-shell-button-label" data-i18n-key="mapShell.bets">Bets</span>
-                <!-- "New" until the sheet has been opened once on this device (js/bets/bets-sheet.js) -->
-                <span id="bets-button-new" class="map-shell-badge map-shell-badge--text cb-shimmer" data-i18n-key="mapShell.betsNew">New</span>
             </button>
         </div>
 
@@ -1139,6 +1137,7 @@
         <section id="bets-sheet" class="map-sheet map-sheet--dock" role="dialog" aria-labelledby="bets-sheet-title" hidden>
             <div class="map-sheet-header">
                 <h2 id="bets-sheet-title" class="map-sheet-title" data-i18n-key="mapShell.bets">Bets</h2>
+                <span class="cb-badge bets-experimental" data-i18n-key="proposalDrafts.approval.experimental">Experimental</span>
                 <button type="button" class="map-sheet-close close-circle-btn close-circle-btn--lg" data-sheet-close
                     aria-label="Close" title="Close" data-i18n-key="common.close" data-i18n-attr="aria-label,title">×</button>
             </div>

@@ -13,7 +13,6 @@
     const CONTENT_ID = 'bets-sheet-content';
     const FILTER_ID = 'bets-sheet-filter';
     const SCOPE_ID = 'bets-sheet-scope';
-    const SEEN_KEY = 'cb.bets.seen';           // per-viewer: the "New" word goes once the sheet was opened
     const FRESH_MS = 20_000;                    // matches the backend's per-city cache
     // positions: the connected wallet's bets per agreement account (solana/market-bridge.js
     // readPositions); changed: the account a confirmed transaction just touched, marked on its row
@@ -845,19 +844,11 @@
     }
 
     function init() {
-        const pill = doc.getElementById('bets-button-new');
-        let seen = false;
-        try { seen = root.localStorage.getItem(SEEN_KEY) === '1'; } catch (_) { seen = false; }
-        if (pill) pill.hidden = seen;
         doc.addEventListener('mapshell:sheetopened', event => {
             if (!event.detail || event.detail.id !== SHEET_ID) return;
             state.discoveryPending = true;
             state.positionTracked = new Set();
             trackBet('entry', null, { entryPoint: 'sheet' });
-            if (pill && !pill.hidden) {
-                pill.hidden = true;
-                try { root.localStorage.setItem(SEEN_KEY, '1'); } catch (_) { }
-            }
             load();
         });
         const isOpen = () => !!(root.MapShell && typeof root.MapShell.isOpen === 'function' && root.MapShell.isOpen(SHEET_ID));
