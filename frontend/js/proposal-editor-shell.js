@@ -414,14 +414,15 @@
                 ${comparisonButton('draft-only', tDraft('proposalDrafts.comparison.draft', 'Draft only'))}
                 ${comparisonButton('overlay', tDraft('proposalDrafts.comparison.overlay', 'Overlay'))}
             </div>
-            ${reviewing ? '' : `<div class="cb-tabs proposal-editor-tabs" role="tablist">${sections.map(section => `<button type="button" class="cb-tab" role="tab" aria-selected="${editorState.tab === section ? 'true' : 'false'}" data-editor-action="tab" data-editor-tab="${escapeHtml(section)}">${escapeHtml(tDraft(TAB_LABELS[section]?.[0] || '', TAB_LABELS[section]?.[1] || section))}</button>`).join('')}</div>`}
-            <div class="proposal-editor-body">${body}${renderValidation(draft)}</div>
+            ${reviewing ? '' : `<div class="cb-tabs proposal-editor-tabs" role="tablist">${sections.map(section => `<button type="button" class="cb-tab" role="tab" id="proposal-editor-tab-${escapeHtml(section)}" aria-controls="proposal-editor-panel" aria-selected="${editorState.tab === section ? 'true' : 'false'}" data-editor-action="tab" data-editor-tab="${escapeHtml(section)}">${escapeHtml(tDraft(TAB_LABELS[section]?.[0] || '', TAB_LABELS[section]?.[1] || section))}</button>`).join('')}</div>`}
+            <div class="proposal-editor-body"${reviewing ? '' : ` id="proposal-editor-panel" role="tabpanel" aria-labelledby="proposal-editor-tab-${escapeHtml(editorState.tab)}"`}>${body}${renderValidation(draft)}</div>
             <footer class="proposal-editor-footer">
                 <button type="button" class="btn btn-danger" data-editor-action="discard">${escapeHtml(tDraft('proposalDrafts.actions.discard', 'Discard draft'))}</button>
                 ${reviewing
                     ? `<div class="proposal-editor-grid"><button type="button" class="btn" data-editor-action="back-to-edit">${escapeHtml(tDraft('proposalDrafts.actions.back', 'Back'))}</button><button type="button" class="btn btn-primary" data-editor-action="publish"${draft.validation?.valid ? '' : ' disabled'}>${escapeHtml(draft.sourceLocalProposalId ? global.ProposalLineage.forkSubmitLabel(draft.sourceLocalProposalId) : tDraft('proposalDrafts.actions.createProposal', 'Create proposal'))}</button></div>`
                     : `<button type="button" class="btn btn-primary" data-editor-action="review">${escapeHtml(tDraft('proposalDrafts.actions.review', 'Review changes'))}</button>`}
             </footer>`;
+        global.CbTabs?.bind(shell.querySelector('.proposal-editor-tabs'));
         shell.classList.add('is-open');
         global.document.body.classList.add('proposal-editor-open');
         renderProposalDraftComparison(draft.id, editorState.comparison);

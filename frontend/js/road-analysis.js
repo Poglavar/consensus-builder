@@ -1573,6 +1573,7 @@ function switchTab(button, tabId) {
     panel.querySelectorAll('.tab-btn').forEach(btn => {
         btn.setAttribute('aria-selected', btn === button ? 'true' : 'false');
     });
+    window.CbTabs?.sync(panel.querySelector('.tabs'));
     panel.querySelectorAll('.tab-content').forEach(content => {
         content.hidden = content.id !== tabId;
     });

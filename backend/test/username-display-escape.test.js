@@ -22,6 +22,7 @@ describe('username display HTML', () => {
     it('renders an untrusted username as text inside the real display updater', () => {
         const display = {
             dataset: {},
+            setAttribute(name, value) { this[name] = value; },
             addEventListener() {},
             click() {},
             innerHTML: ''
@@ -32,6 +33,7 @@ describe('username display HTML', () => {
             currentUserAgent: { name: '<img src=x onerror=alert(1)>', avatarIndex: 2, isGuest: false, id: 'agent-1' },
             userNotifications: { getUnseenCount() { return 0; } },
             getAvatarImagePath(index) { return `/avatars/${index}.png`; },
+            translateUM(key, fallback) { return fallback; },
             showWelcomeModal() {},
             showAgentDialog() {}
         };

@@ -19,6 +19,59 @@
         secondary: 'btn'
     };
     let sequence = 0;
+    const modalLayers = [];
+    const inertBefore = new Map();
+    let isolationObserver = null;
+
+    // Inert removes background controls from both keyboard navigation and the accessibility tree.
+    // Walk ancestors so a nested dialog leaves only its own branch interactive.
+    function refreshIsolation() {
+        for (const [element, wasInert] of inertBefore) element.inert = wasInert;
+        inertBefore.clear();
+        isolationObserver?.disconnect();
+        const isVisible = element => {
+            if (!element.isConnected) return false;
+            for (let node = element; node; node = node.parentElement) {
+                if (node.hidden) return false;
+                const style = root.getComputedStyle(node);
+                if (style.display === 'none' || style.visibility === 'hidden') return false;
+            }
+            return true;
+        };
+        // Some older surfaces register before becoming visible. Watch their visibility without
+        // treating a hidden registration as an active modal or observing the whole map subtree.
+        for (const element of modalLayers) {
+            for (let node = element; node; node = node.parentElement) {
+                isolationObserver?.observe(node, { attributes: true, attributeFilter: ['hidden', 'class', 'style'], childList: true });
+            }
+        }
+        const registered = root.ModalEscape?.topmost?.()?.element;
+        const layer = modalLayers.includes(registered) && isVisible(registered)
+            ? registered : modalLayers.filter(isVisible).at(-1);
+        for (let branch = layer; branch && branch !== doc().body; branch = branch.parentElement) {
+            for (const sibling of branch.parentElement?.children || []) {
+                if (sibling === branch || /^(SCRIPT|STYLE|LINK)$/.test(sibling.tagName)) continue;
+                inertBefore.set(sibling, sibling.inert);
+                sibling.inert = true;
+            }
+        }
+    }
+
+    function isolate(overlay) {
+        modalLayers.push(overlay);
+        if (!isolationObserver && root.MutationObserver) {
+            isolationObserver = new root.MutationObserver(refreshIsolation);
+        }
+        refreshIsolation();
+        let released = false;
+        return () => {
+            if (released) return;
+            released = true;
+            modalLayers.splice(modalLayers.indexOf(overlay), 1);
+            refreshIsolation();
+            if (!modalLayers.length) { isolationObserver?.disconnect(); isolationObserver = null; }
+        };
+    }
 
     function doc() {
         return root && root.document ? root.document : null;
@@ -133,7 +186,9 @@
         body.id = `cb-dialog-body-${id}`;
         appendBody(body, options.body);
         dialog.appendChild(body);
-        if (options.message) dialog.setAttribute('aria-describedby', body.id);
+        if (options.message) {
+            dialog.setAttribute('aria-labelledby', body.id);
+        }
 
         const actions = Array.isArray(options.actions) ? options.actions.filter(Boolean) : [];
         let footer = null;
@@ -173,6 +228,7 @@
         const closedPromise = new Promise(resolve => { resolveClosed = resolve; });
 
         function onKeydown(event) {
+            event.stopPropagation();
             if (event.key !== 'Tab') return;
             const targets = focusable(dialog);
             if (!targets.length) { event.preventDefault(); return; }
@@ -199,6 +255,7 @@
         // stays inside even when the focus was stolen, Enter from outside the box takes the primary
         // answer, and no key reaches the page behind (drawing hotkeys listen on document too).
         function onDocumentKeydown(event) {
+            if (modalLayers.at(-1) !== overlay || dialog.contains(event.target)) return;
             if (event.key === 'Tab' && !dialog.contains(d.activeElement)) {
                 event.preventDefault();
                 const targets = focusable(dialog);
@@ -220,6 +277,7 @@
             dialog.removeEventListener('keydown', onKeydown);
             if (ownsKeyboard) d.removeEventListener('keydown', onDocumentKeydown, true);
             try { overlay.remove(); } catch (_) { /* detached */ }
+            releaseIsolation?.();
             if (previousFocus && previousFocus.isConnected && typeof previousFocus.focus === 'function') {
                 try { previousFocus.focus({ preventScroll: true }); } catch (_) { /* fine */ }
             }
@@ -230,6 +288,7 @@
         const unregisterEscape = closeOnEscape && root.ModalEscape && typeof root.ModalEscape.register === 'function'
             ? root.ModalEscape.register(overlay, () => close(null))
             : null;
+        const releaseIsolation = unregisterEscape ? null : isolate(overlay);
         overlay.addEventListener('click', onOverlayClick);
         dialog.addEventListener('keydown', onKeydown);
         const ownsKeyboard = !!(options.message || options.confirm);
@@ -404,5 +463,5 @@
         return api.closed.then(result => (typeof result === 'string' ? result : null));
     }
 
-    return Object.freeze({ open, confirm, alert, choice, prompt, renderLines, appendBody, confirmActions, linkedMessageParts, dialogClassName });
+    return Object.freeze({ isolate, open, confirm, alert, choice, prompt, renderLines, appendBody, confirmActions, linkedMessageParts, dialogClassName });
 });

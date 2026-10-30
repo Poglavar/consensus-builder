@@ -454,10 +454,10 @@
         </div>
 
         <!-- Username Display -->
-        <div id="username-display" class="username-display" role="button" tabindex="0">
-            <i class="fas fa-user"></i>
+        <button type="button" id="username-display" class="username-display" aria-haspopup="dialog">
+            <i class="fas fa-user" aria-hidden="true"></i>
             <span id="username-text">Guest</span>
-        </div>
+        </button>
 
         <!-- Phase 3 hook: the selection tray mounts here, bottom-centre, while parcels are selected. -->
 
@@ -543,7 +543,7 @@
                     data-planning-tab="compare" data-i18n-key="planningViews.tabs.compare">Compare</button>
             </div>
             <div class="map-sheet-body">
-                <div id="planning-views-display" role="tabpanel" data-planning-tab-panel="display">
+                <div id="planning-views-display" role="tabpanel" aria-labelledby="planning-tab-display" data-planning-tab-panel="display">
                     <div class="planning-layer-controls">
                         <button type="button" id="planning-reroll-permitted" class="btn btn-icon planning-reroll" data-planning-reroll="permitted"><i class="fa-solid fa-dice" aria-hidden="true"></i></button>
                         <button type="button" id="planning-reroll" class="btn btn-icon planning-reroll" data-planning-reroll="proposed"><i class="fa-solid fa-dice" aria-hidden="true"></i></button>
@@ -555,7 +555,7 @@
                     <button type="button" id="planning-open-model" class="cb-link planning-open-model" hidden></button>
                 </div>
                 <!-- Side by side comparison in the model view and on the map (js/three-compare.js, js/compare-on-map.js). -->
-                <div id="planning-views-compare" class="planning-compare" role="tabpanel" data-planning-tab-panel="compare" hidden>
+                <div id="planning-views-compare" class="planning-compare" role="tabpanel" aria-labelledby="planning-tab-compare" data-planning-tab-panel="compare" hidden>
                     <div class="planning-compare-sides">
                         <label class="planning-source-field">
                             <span data-i18n-key="planningViews.compare.left">Left</span>
@@ -1157,7 +1157,7 @@
                     <span data-i18n-key="bets.intro">Bet on whether agreements execute by a deadline. Use points without a wallet, or devnet USDC.</span>
                     <a class="cb-link cb-link--external" href="/deck2.html" target="_blank" rel="noopener" data-i18n-key="bets.pitchLink">Read the Hyperstition pitch</a>
                 </p>
-                <div id="bets-sheet-content" class="bets-content" aria-live="polite"></div>
+                <div id="bets-sheet-content" class="bets-content" role="tabpanel" aria-live="polite"></div>
                 <details class="bets-how">
                     <summary data-i18n-key="bets.how.title">How bets work</summary>
                     <p data-i18n-key="bets.how.pools">Each agreement has its own YES/NO bet. Both, one or neither agreement over the same land can execute.</p>
@@ -1501,22 +1501,22 @@
                  as the hooks switchParcelTab (js/parcels/proposals.js) and the specs find them by. -->
             <div class="cb-tabs cb-tabs--fill parcel-tabs" role="tablist">
                 <button type="button" class="cb-tab parcel-tab-btn parcel-tab-btn--icon" role="tab" aria-selected="true"
-                    aria-controls="propose-tab" data-parcel-tab-id="propose-tab"
+                    id="parcel-propose-tab-button" aria-controls="propose-tab" data-parcel-tab-id="propose-tab"
                     onclick="(window.Parcels?.proposals?.switchParcelTab || window.switchParcelTab || function(){})(this, 'propose-tab')"
                     aria-label="Design" title="Design" data-i18n-key="proposalDrafts.tabs.design" data-i18n-attr="aria-label,title"><i
                         class="fas fa-pen" aria-hidden="true"></i></button>
                 <button type="button" class="cb-tab parcel-tab-btn parcel-tab-btn--icon" role="tab" aria-selected="false"
-                    aria-controls="info-tab" data-parcel-tab-id="info-tab"
+                    id="parcel-info-tab-button" aria-controls="info-tab" data-parcel-tab-id="info-tab"
                     onclick="(window.Parcels?.proposals?.switchParcelTab || window.switchParcelTab || function(){})(this, 'info-tab')"
                     aria-label="Info" title="Info" data-i18n-key="panel.parcel.tabInfo" data-i18n-attr="aria-label,title"><i
                         class="fas fa-circle-info" aria-hidden="true"></i></button>
                 <button type="button" class="cb-tab parcel-tab-btn" role="tab" aria-selected="false"
-                    aria-controls="proposals-tab" data-parcel-tab-id="proposals-tab"
+                    id="parcel-proposals-tab-button" aria-controls="proposals-tab" data-parcel-tab-id="proposals-tab"
                     onclick="(window.Parcels?.proposals?.switchParcelTab || window.switchParcelTab || function(){})(this, 'proposals-tab')"><span
                         class="parcel-tab-label" data-i18n-key="panel.parcel.tabProposals">Designs</span><span
                         class="cb-badge cb-badge--count parcel-tab-count" hidden></span></button>
                 <button type="button" class="cb-tab parcel-tab-btn parcel-tab-btn--icon" role="tab" aria-selected="false"
-                    aria-controls="tools-tab" data-parcel-tab-id="tools-tab"
+                    id="parcel-tools-tab-button" aria-controls="tools-tab" data-parcel-tab-id="tools-tab"
                     onclick="(window.Parcels?.proposals?.switchParcelTab || window.switchParcelTab || function(){})(this, 'tools-tab')"
                     aria-label="Tools" title="Tools" data-i18n-key="panel.parcel.tabTools" data-i18n-attr="aria-label,title"><i
                         class="fas fa-screwdriver-wrench" aria-hidden="true"></i></button>
@@ -1524,7 +1524,7 @@
 
             <div class="panel-body">
                 <!-- Info Tab -->
-                <div id="info-tab" class="parcel-tab-content" role="tabpanel" hidden>
+                <div id="info-tab" class="parcel-tab-content" role="tabpanel" aria-labelledby="parcel-info-tab-button" hidden>
                     <div id="info-content"></div>
                     <!-- The parcel's permanent history, collapsed; js/proposals/parcel-history-card.js
                          fetches it the first time it is opened. Outside #info-content, which is
@@ -1533,12 +1533,12 @@
                 </div>
 
                 <!-- Design Tab -->
-                <div id="propose-tab" class="parcel-tab-content" role="tabpanel">
+                <div id="propose-tab" class="parcel-tab-content" role="tabpanel" aria-labelledby="parcel-propose-tab-button">
                     <div id="propose-content"></div>
                 </div>
 
                 <!-- Proposals Tab -->
-                <div id="proposals-tab" class="parcel-tab-content" role="tabpanel" hidden>
+                <div id="proposals-tab" class="parcel-tab-content" role="tabpanel" aria-labelledby="parcel-proposals-tab-button" hidden>
                     <!-- The parcel's proposals; js/parcels/ui/parcel-panel.js fills it. -->
                     <div id="proposals-content"></div>
                 </div>
@@ -1548,7 +1548,7 @@
                      selected, hides every .button-row but the claim rows), then the inspection tools
                      in two columns. Neighbors and Vertices are toggles (aria-pressed). Mint is the
                      primary while the parcel can be minted, Claim once it is (claim.js swaps it). -->
-                <div id="tools-tab" class="parcel-tab-content" role="tabpanel" hidden>
+                <div id="tools-tab" class="parcel-tab-content" role="tabpanel" aria-labelledby="parcel-tools-tab-button" hidden>
                     <div class="parcel-info-buttons">
                         <div class="button-row button-row-5">
                             <div id="parcelMintStatus" class="claim-status-indicator"
@@ -1642,16 +1642,16 @@
                     onclick="switchBlockTab(this, 'block-tools-tab')" data-i18n-key="panel.block.tabTools">Tools</button>
             </div>
             <div class="panel-body">
-                <div id="block-info-tab" class="block-tab-content" role="tabpanel">
+                <div id="block-info-tab" class="block-tab-content" role="tabpanel" aria-labelledby="block-info-tab-button">
                     <div id="block-info-content" class="block-info-content"></div>
                     <div id="block-parcels-section" class="block-parcels-section">
                         <div id="block-parcels-list" class="block-parcels-list"></div>
                     </div>
                 </div>
-                <div id="block-proposals-tab" class="block-tab-content" role="tabpanel" hidden>
+                <div id="block-proposals-tab" class="block-tab-content" role="tabpanel" aria-labelledby="block-proposals-tab-button" hidden>
                     <div id="block-proposals-content" class="block-proposals-content"></div>
                 </div>
-                <div id="block-tools-tab" class="block-tab-content" role="tabpanel" hidden>
+                <div id="block-tools-tab" class="block-tab-content" role="tabpanel" aria-labelledby="block-tools-tab-button" hidden>
                     <div id="block-tools-content" class="block-tools-content"></div>
                 </div>
             </div>
@@ -1745,9 +1745,11 @@
                 </div>
                 <div class="metric-group">
                     <div class="metric-label" id="road-acquire-difficulty-label">
-                        <span data-i18n-key="panel.road.acquiringDifficultyTitle">Modeled acquisition score</span>
-                        <i class="fas fa-question-circle acquiring-difficulty-help-icon"
-                            onclick="showAcquiringDifficultyDialog()" aria-label="Help"></i>
+                        <span id="road-acquire-difficulty-title" data-i18n-key="panel.road.acquiringDifficultyTitle">Modeled acquisition score</span>
+                        <button type="button" class="acquiring-difficulty-help-icon" onclick="showAcquiringDifficultyDialog()"
+                            aria-labelledby="road-acquire-difficulty-title" aria-haspopup="dialog">
+                            <i class="fas fa-question-circle" aria-hidden="true"></i>
+                        </button>
                     </div>
                     <div class="metric-value" id="road-acquire-difficulty">—</div>
                 </div>
@@ -1775,21 +1777,21 @@
             <!-- switchTab (js/road-analysis.js) moves aria-selected and the panels' hidden attribute; the
                  tab-btn class and the onclick text stay as the hooks the code and the specs find them by. -->
             <div class="cb-tabs tabs" role="tablist">
-                <button type="button" class="cb-tab tab-btn" role="tab" aria-selected="true" aria-controls="segments-tab"
+                <button type="button" class="cb-tab tab-btn" role="tab" id="road-segments-tab-button" aria-selected="true" aria-controls="segments-tab"
                     onclick="switchTab(this, 'segments-tab')" data-i18n-key="panel.roadAnalysis.tabSegments">Segments</button>
-                <button type="button" class="cb-tab tab-btn" role="tab" aria-selected="false" aria-controls="visualization-tab"
+                <button type="button" class="cb-tab tab-btn" role="tab" id="road-visualization-tab-button" aria-selected="false" aria-controls="visualization-tab"
                     onclick="switchTab(this, 'visualization-tab')" data-i18n-key="panel.roadAnalysis.tabVisualization">Visualization</button>
             </div>
 
             <!-- Segments Tab -->
-            <div id="segments-tab" class="tab-content" role="tabpanel">
+            <div id="segments-tab" class="tab-content" role="tabpanel" aria-labelledby="road-segments-tab-button">
                 <div id="segments-list">
                     <p data-i18n-key="panel.roadAnalysis.noSegments">No segments to display.</p>
                 </div>
             </div>
 
             <!-- Visualization Tab -->
-            <div id="visualization-tab" class="tab-content" role="tabpanel" hidden>
+            <div id="visualization-tab" class="tab-content" role="tabpanel" aria-labelledby="road-visualization-tab-button" hidden>
                 <div class="visualization-controls">
                     <div class="checkbox-group">
                         <label>
@@ -1854,6 +1856,7 @@
             'js/optional-tools-loader.js?v=20261029-undated',
             'js/shared-utils.js',
             // bundle:start foundation
+            'js/ui/tabs.js',
             'js/ui/banner-stack.js',
             'js/ui/modal-escape.js',
             'js/ui/dialogs.js?v=20261027-agreement-focus',
@@ -2692,15 +2695,15 @@
             <div class="cb-dialog__body">
                 <form id="welcome-form" onsubmit="submitUsername(event)">
                     <div class="form-group">
-                        <label class="welcome-field-label" for="selected-avatar" data-i18n-key="modal.welcome.avatarLabel">Choose your avatar</label>
+                        <label id="avatar-choice-label" class="welcome-field-label" for="selected-avatar" data-i18n-key="modal.welcome.avatarLabel">Choose your avatar</label>
                         <div id="avatar-selection" class="avatar-selection">
                             <!-- The chosen avatar is a cb-option row that opens the grid of avatar
                                  toggles below it (user-management.js showAvatarOptions). -->
                             <button type="button" id="selected-avatar" class="cb-option selected-avatar"
-                                aria-controls="avatar-options" aria-expanded="false" onclick="showAvatarOptions()">
+                                aria-controls="avatar-options" aria-expanded="false" aria-labelledby="avatar-choice-label avatar-choice-state" onclick="showAvatarOptions()">
                                 <img id="selected-avatar-img" src="avatars/avatar1.png" alt="Avatar" loading="lazy"
                                     data-i18n-key="modal.welcome.avatarAlt" data-i18n-attr="alt">
-                                <span class="avatar-selection-hint" data-i18n-key="modal.welcome.avatarHint">Click to
+                                <span id="avatar-choice-state" class="avatar-selection-hint" data-i18n-key="modal.welcome.avatarHint">Click to
                                     choose</span>
                             </button>
                             <div id="avatar-options" class="avatar-options" hidden>

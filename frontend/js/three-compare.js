@@ -399,6 +399,7 @@
             const tab = event.target.closest('[data-planning-tab]');
             if (!tab || !sheet.contains(tab)) return;
             for (const button of sheet.querySelectorAll('[data-planning-tab]')) button.setAttribute('aria-selected', String(button === tab));
+            window.CbTabs?.sync(sheet.querySelector('.planning-tabs'));
             for (const panel of sheet.querySelectorAll('[data-planning-tab-panel]')) panel.hidden = panel.dataset.planningTabPanel !== tab.dataset.planningTab;
             if (tab.dataset.planningTab === 'compare') refresh();
         });

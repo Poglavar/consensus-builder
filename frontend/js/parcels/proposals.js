@@ -71,6 +71,7 @@
         // The selected tab is an ARIA state (cb-tabs, css/primitives.css), never a class.
         const tabButtons = panel.querySelectorAll('.parcel-tab-btn');
         tabButtons.forEach(btn => btn.setAttribute('aria-selected', String(btn === activeButton)));
+        global.CbTabs?.sync(panel.querySelector('.parcel-tabs'));
 
         // Hide all tab contents (the hidden attribute, css/panels.css)
         const tabContents = panel.querySelectorAll('.parcel-tab-content');

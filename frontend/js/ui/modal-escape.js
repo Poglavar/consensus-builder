@@ -53,9 +53,12 @@
                 if (!element || typeof dismiss !== 'function') return () => {};
                 const entry = { element, dismiss, blocking, order: ++sequence };
                 registrations.add(entry);
-                return () => registrations.delete(entry);
+                // The same modal boundary serves old static dialogs and CbDialog surfaces.
+                const modal = element.matches?.('[aria-modal="true"]') || element.querySelector?.('[aria-modal="true"]');
+                entry.releaseIsolation = blocking && modal ? root?.CbDialog?.isolate?.(element) : null;
+                return () => { registrations.delete(entry); entry.releaseIsolation?.(); };
             },
-            destroy() { doc?.removeEventListener?.('keydown', onKeydown, true); registrations.clear(); },
+            destroy() { doc?.removeEventListener?.('keydown', onKeydown, true); const entries = [...registrations]; registrations.clear(); entries.forEach(entry => entry.releaseIsolation?.()); },
             topmost,
             size: () => registrations.size
         };

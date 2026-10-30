@@ -1548,6 +1548,9 @@ function corridorEditorSyncTabs() {
         const active = state && tab.dataset.tab === state.activeTab;
         tab.setAttribute('aria-selected', active ? 'true' : 'false');
     });
+    window.CbTabs?.sync(document.querySelector('.corridor-editor-tabs'));
+    const body = document.querySelector('.corridor-editor-body');
+    if (body && state?.mode === 'proposal') body.setAttribute('aria-labelledby', `corridor-tab-${state.activeTab}`);
 }
 
 // A proportional bar of the cross-section, drawn to scale across the panel.
@@ -2637,8 +2640,8 @@ function corridorEditorOpenOverlayBody() {
     // room around it allows). Drawing mode keeps the single cross-section view.
     const tabsHtml = drawing ? '' : `
             <div class="cb-tabs corridor-editor-tabs" role="tablist">
-                <button type="button" class="cb-tab corridor-editor-tab" data-tab="section" role="tab" aria-selected="true">${corridorEditorI18n('modal.corridor.tabSection', 'Cross-section')}</button>
-                <button type="button" class="cb-tab corridor-editor-tab" data-tab="corridor" role="tab" aria-selected="false">${corridorEditorI18n('modal.corridor.tabCorridor', 'Corridor')}</button>
+                <button type="button" class="cb-tab corridor-editor-tab" data-tab="section" id="corridor-tab-section" aria-controls="corridor-tab-panel" role="tab" aria-selected="true">${corridorEditorI18n('modal.corridor.tabSection', 'Cross-section')}</button>
+                <button type="button" class="cb-tab corridor-editor-tab" data-tab="corridor" id="corridor-tab-corridor" aria-controls="corridor-tab-panel" role="tab" aria-selected="false">${corridorEditorI18n('modal.corridor.tabCorridor', 'Corridor')}</button>
             </div>`;
     corridorEditorSession = window.OnMapEditor.open({
         owner: 'corridor-editor', id: 'corridor-editor-overlay',
@@ -2653,7 +2656,7 @@ function corridorEditorOpenOverlayBody() {
                 ${totalControl}
             </div>
             <div class="corridor-editor-limit-host"></div>${indicatorsHtml}${tabsHtml}
-            <div class="corridor-editor-body"></div>
+            <div class="corridor-editor-body"${drawing ? '' : ' id="corridor-tab-panel" role="tabpanel" aria-labelledby="corridor-tab-section"'}></div>
 `,
         footer: `
                 <button type="button" class="btn btn-primary corridor-editor-save"${drawing ? '' : ' disabled'}>${corridorEditorI18n('common.done', 'Done')}</button>
@@ -2696,6 +2699,7 @@ function corridorEditorOpenOverlayBody() {
         });
     });
 
+    window.CbTabs?.bind(overlay.querySelector('.corridor-editor-tabs'));
     const fitHint = overlay.querySelector('.corridor-editor-indicator--fit');
     if (fitHint) {
         fitHint.addEventListener('click', () => {

@@ -887,14 +887,14 @@
                 <button type="button" class="close-circle-btn close-circle-btn--lg close-button" data-site-action="close-propose"></button>
             </div>
             <div class="cb-tabs cb-tabs--fill parcel-tabs" role="tablist">
-                <button type="button" role="tab" class="cb-tab parcel-tab-btn parcel-tab-btn--icon" aria-selected="false" data-site-tab="info"><i class="fas fa-circle-info" aria-hidden="true"></i></button>
-                <button type="button" role="tab" class="cb-tab parcel-tab-btn parcel-tab-btn--icon" aria-selected="false" data-site-tab="propose"><i class="fas fa-pen" aria-hidden="true"></i></button>
-                <button type="button" role="tab" class="cb-tab parcel-tab-btn" aria-selected="false" data-site-tab="proposals"><span class="parcel-tab-label"></span><span class="cb-badge cb-badge--count parcel-tab-count" hidden></span></button>
+                <button type="button" role="tab" id="site-tab-info" aria-controls="site-panel-info" class="cb-tab parcel-tab-btn parcel-tab-btn--icon" aria-selected="false" data-site-tab="info"><i class="fas fa-circle-info" aria-hidden="true"></i></button>
+                <button type="button" role="tab" id="site-tab-propose" aria-controls="site-panel-propose" class="cb-tab parcel-tab-btn parcel-tab-btn--icon" aria-selected="false" data-site-tab="propose"><i class="fas fa-pen" aria-hidden="true"></i></button>
+                <button type="button" role="tab" id="site-tab-proposals" aria-controls="site-panel-proposals" class="cb-tab parcel-tab-btn" aria-selected="false" data-site-tab="proposals"><span class="parcel-tab-label"></span><span class="cb-badge cb-badge--count parcel-tab-count" hidden></span></button>
             </div>
             <div class="panel-body">
-                <div class="parcel-tab-content" role="tabpanel" data-site-tab-panel="info" hidden></div>
-                <div class="parcel-tab-content" role="tabpanel" data-site-tab-panel="propose" hidden></div>
-                <div class="parcel-tab-content" role="tabpanel" data-site-tab-panel="proposals" hidden></div>
+                <div class="parcel-tab-content" role="tabpanel" id="site-panel-info" aria-labelledby="site-tab-info" data-site-tab-panel="info" hidden></div>
+                <div class="parcel-tab-content" role="tabpanel" id="site-panel-propose" aria-labelledby="site-tab-propose" data-site-tab-panel="propose" hidden></div>
+                <div class="parcel-tab-content" role="tabpanel" id="site-panel-proposals" aria-labelledby="site-tab-proposals" data-site-tab-panel="proposals" hidden></div>
             </div>`;
         panel.addEventListener('click', onInfoPanelClick);
         if (win.ParcelSetProposals) win.ParcelSetProposals.bindRows(panel.querySelector('[data-site-tab-panel="proposals"]'));
@@ -941,6 +941,8 @@
             if (badge) { badge.textContent = existing.entries.length ? String(existing.entries.length) : ''; badge.hidden = !existing.entries.length; }
             button.setAttribute('aria-selected', String(active));
         });
+        win.CbTabs?.bind(panel.querySelector('.parcel-tabs'));
+        win.CbTabs?.sync(panel.querySelector('.parcel-tabs'));
         const regions = { info: bindingHtml, propose: paletteHtml, proposals: () => existing.html };
         panel.querySelectorAll('[data-site-tab-panel]').forEach(region => {
             const tab = region.getAttribute('data-site-tab-panel');

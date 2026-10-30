@@ -909,7 +909,7 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
     const detailsTabs = isParcelLayout ? ['overview', 'inputs', 'outputs'] : ['overview', 'details'];
     if (document.getElementById('proposal-details-content')?.dataset.proposalId !== String(proposalKey)
         || !detailsTabs.includes(proposalDetailsTab)) proposalDetailsTab = 'overview';
-    const tabButton = (id, label) => `<button type="button" class="cb-tab proposal-details-tab" role="tab" data-proposal-tab="${id}"
+    const tabButton = (id, label) => `<button type="button" class="cb-tab proposal-details-tab" role="tab" id="proposal-details-tab-${id}" aria-controls="proposal-details-panel-${id}" data-proposal-tab="${id}"
         aria-selected="${proposalDetailsTab === id}">${safeAgentText(label)}</button>`;
     const content = `
         <div class="proposal-info">
@@ -919,7 +919,7 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
                 ${tabButton('outputs', `${tProposal('agreement.workflow.outputs', 'Output parcels')} (${outputCount})`)}`
                 : tabButton('details', tProposal('proposalDrafts.tabs.details', 'Details'))}
             </div>
-            <div class="proposal-details-tabpanel" role="tabpanel" data-proposal-tabpanel="overview"${proposalDetailsTab === 'overview' ? '' : ' hidden'}>
+            <div class="proposal-details-tabpanel" role="tabpanel" id="proposal-details-panel-overview" aria-labelledby="proposal-details-tab-overview" data-proposal-tabpanel="overview"${proposalDetailsTab === 'overview' ? '' : ' hidden'}>
             <div class="proposal-badges-row">
                 ${(() => {
             // One badge from the ladder (docs/design-language.md), the same as the list rows: Draft
@@ -979,14 +979,14 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
             </div>
             ${isParcelLayout ? `${verificationSectionHtml}
             </div>
-            <div class="proposal-details-tabpanel" role="tabpanel" data-proposal-tabpanel="inputs"${proposalDetailsTab === 'inputs' ? '' : ' hidden'}>
+            <div class="proposal-details-tabpanel" role="tabpanel" id="proposal-details-panel-inputs" aria-labelledby="proposal-details-tab-inputs" data-proposal-tabpanel="inputs"${proposalDetailsTab === 'inputs' ? '' : ' hidden'}>
             ${inputListHtml(false)}
             </div>
-            <div class="proposal-details-tabpanel" role="tabpanel" data-proposal-tabpanel="outputs"${proposalDetailsTab === 'outputs' ? '' : ' hidden'}>
+            <div class="proposal-details-tabpanel" role="tabpanel" id="proposal-details-panel-outputs" aria-labelledby="proposal-details-tab-outputs" data-proposal-tabpanel="outputs"${proposalDetailsTab === 'outputs' ? '' : ' hidden'}>
             ${outputListHtml(false)}
             </div>` : `
             </div>
-            <div class="proposal-details-tabpanel" role="tabpanel" data-proposal-tabpanel="details"${proposalDetailsTab === 'details' ? '' : ' hidden'}>
+            <div class="proposal-details-tabpanel" role="tabpanel" id="proposal-details-panel-details" aria-labelledby="proposal-details-tab-details" data-proposal-tabpanel="details"${proposalDetailsTab === 'details' ? '' : ' hidden'}>
             ${landSectionHtml}
             ${verificationSectionHtml}
             ${recordSectionHtml}
@@ -1036,9 +1036,11 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
             tab.addEventListener('click', () => {
                 proposalDetailsTab = tab.dataset.proposalTab;
                 detailsContent.querySelectorAll('[data-proposal-tab]').forEach(other => other.setAttribute('aria-selected', String(other === tab)));
+                window.CbTabs?.sync(detailsContent.querySelector('.proposal-details-tabs'));
                 detailsContent.querySelectorAll('[data-proposal-tabpanel]').forEach(panel => { panel.hidden = panel.dataset.proposalTabpanel !== proposalDetailsTab; });
             });
         });
+        window.CbTabs?.bind(detailsContent?.querySelector('.proposal-details-tabs'));
         // Claims breadcrumb: the BASE parcels this proposal stands on, always one tap away.
         try {
             if (window.__claimsUi && typeof window.__claimsUi.injectProposalBreadcrumb === 'function') {

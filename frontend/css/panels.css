@@ -412,6 +412,9 @@ a phone it is the bottom sheet, up to half the screen (the phone block at the en
 }
 
 .acquiring-difficulty-help-icon {
+    background: none;
+    border: 0;
+    padding: 0;
     color: var(--cb-text-faint);
     cursor: pointer;
     font-size: 14px;

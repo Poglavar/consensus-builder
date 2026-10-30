@@ -650,6 +650,8 @@
                 const button = el('button', 'cb-tab bets-scope__tab');
                 button.type = 'button';
                 button.setAttribute('role', 'tab');
+                button.id = `bets-scope-tab-${scope}`;
+                button.setAttribute('aria-controls', CONTENT_ID);
                 button.dataset.scope = scope;
                 button.addEventListener('click', () => {
                     if (state.scope === scope) return;
@@ -660,6 +662,7 @@
             });
             container.before(bar);
         }
+        container.setAttribute('aria-labelledby', `bets-scope-tab-${state.scope}`);
         const count = state.world ? state.world.summary?.agreements ?? 0 : null;
         bar.querySelectorAll('.bets-scope__tab').forEach(button => {
             const world = button.dataset.scope === 'world';
@@ -667,6 +670,8 @@
                 : count === null ? t('bets.scope.worldPending', 'World bets') : t('bets.scope.world', 'World bets ({{count}})', { count });
             button.setAttribute('aria-selected', String(button.dataset.scope === state.scope));
         });
+        root.CbTabs?.bind(bar);
+        root.CbTabs?.sync(bar);
     }
 
     // Every other city's bets, from cache while fresh; redraws the tab count and, on the world tab, the list.

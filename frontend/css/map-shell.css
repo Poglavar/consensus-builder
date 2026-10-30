@@ -384,6 +384,7 @@ body.three-mode-active .leaflet-control-attribution { visibility: hidden; }
 
 /* The user bubble sits left of the Layers and Settings buttons in the same top row. */
 #map-container .username-display {
+    font-family: inherit;
     top: var(--map-shell-edge);
     right: calc(var(--map-shell-edge) + 2 * var(--map-shell-button-size) + 2 * var(--map-shell-gap));
     height: var(--map-shell-button-size);

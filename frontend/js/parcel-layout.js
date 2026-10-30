@@ -507,11 +507,11 @@
         // is a READ-ONLY view — the cadastre is the given, not something this editor edits.
         const sidePanel = `<section class="reparcel-legend-panel">
                             <div class="cb-tabs reparcel-plots-tabs" role="tablist">
-                                <button type="button" role="tab" class="cb-tab" data-reparcel-plots-tab="new" aria-selected="true">${t('reparcellization.modal.newPlots', 'New plots')}</button>
-                                <button type="button" role="tab" class="cb-tab" data-reparcel-plots-tab="old" aria-selected="false">${t('reparcellization.modal.oldPlots', 'Old plots')}</button>
+                                <button type="button" role="tab" class="cb-tab" id="reparcel-tab-new" aria-controls="reparcel-panel-new" data-reparcel-plots-tab="new" aria-selected="true">${t('reparcellization.modal.newPlots', 'New plots')}</button>
+                                <button type="button" role="tab" class="cb-tab" id="reparcel-tab-old" aria-controls="reparcel-panel-old" data-reparcel-plots-tab="old" aria-selected="false">${t('reparcellization.modal.oldPlots', 'Old plots')}</button>
                             </div>
-                            <div class="reparcel-newplots-list" data-reparcel-newplots-table></div>
-                            <div class="reparcel-oldplots-list" data-reparcel-oldplots-table hidden></div>
+                            <div class="reparcel-newplots-list" id="reparcel-panel-new" role="tabpanel" aria-labelledby="reparcel-tab-new" data-reparcel-newplots-table></div>
+                            <div class="reparcel-oldplots-list" id="reparcel-panel-old" role="tabpanel" aria-labelledby="reparcel-tab-old" data-reparcel-oldplots-table hidden></div>
                             <div class="reparcel-coverage" data-reparcel-coverage></div>
                             <div class="reparcel-status" data-reparcel-status></div>
                         </section>`;
@@ -556,6 +556,7 @@
         state.plotsTabBtns.forEach(btn => {
             btn.addEventListener('click', () => setPlotsTab(btn.getAttribute('data-reparcel-plots-tab')));
         });
+        window.CbTabs?.bind(root.querySelector('.reparcel-plots-tabs'));
         state.coverageEl = root.querySelector('[data-reparcel-coverage]');
         state.nodesBtn = root.querySelector('[data-reparcel-nodes]');
         state.undoEditBtn = root.querySelector('[data-reparcel-undo-edit]');
@@ -995,6 +996,7 @@
             const active = btn.getAttribute('data-reparcel-plots-tab') === next;
             btn.setAttribute('aria-selected', active ? 'true' : 'false');
         });
+        window.CbTabs?.sync(state.modal?.querySelector('.reparcel-plots-tabs'));
         if (state.newPlotsListEl) state.newPlotsListEl.hidden = next !== 'new';
         if (state.oldPlotsListEl) state.oldPlotsListEl.hidden = next !== 'old';
         // Editing belongs to the new-plots view only — there is nothing here to edit in the

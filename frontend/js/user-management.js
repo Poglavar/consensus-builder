@@ -420,6 +420,7 @@ function autoStartGame() {
 function showWelcomeModal() {
     const modal = document.getElementById('welcome-modal');
     modal.hidden = false;
+    modal.__previousFocus = document.activeElement;
     modal.__unregisterEscape?.();
     modal.__unregisterEscape = window.ModalEscape?.register(modal, hideWelcomeModal);
 
@@ -453,6 +454,7 @@ function hideWelcomeModal() {
     modal.__unregisterEscape?.();
     modal.__unregisterEscape = null;
     modal.hidden = true;
+    modal.__previousFocus?.focus?.({ preventScroll: true });
 
     // Hide takeover section
     const takeoverSection = document.getElementById('takeover-section');
@@ -516,6 +518,7 @@ function selectAvatar(index) {
     // Hide avatar options
     document.getElementById('avatar-options').hidden = true;
     document.getElementById('selected-avatar')?.setAttribute('aria-expanded', 'false');
+    document.getElementById('selected-avatar')?.focus({ preventScroll: true });
 }
 
 // Update selected avatar display
@@ -905,9 +908,10 @@ function updateUsernameDisplay() {
 
         // The phone bubble shows the avatar alone and reads the state off this attribute.
         usernameDisplay.dataset.wallet = isConnected ? 'connected' : 'disconnected';
+        usernameDisplay.setAttribute('aria-label', `${translateUM('modal.welcome.profileTitle', 'Your agent')}: ${currentUserAgent.name}`);
         // Replace content with avatar, name, and status icon
         usernameDisplay.innerHTML = `
-            <img src="${getAvatarImagePath(currentUserAgent.avatarIndex)}" alt="Avatar" class="user-avatar">
+            <img src="${getAvatarImagePath(currentUserAgent.avatarIndex)}" alt="" class="user-avatar">
             <span id="username-text">${escapeHtml(currentUserAgent.name)}</span>
             ${statusIcon}
             ${badgeHtml}
@@ -922,17 +926,6 @@ function updateUsernameDisplay() {
                 showAgentDialog(currentUserAgent.id);
             }
         };
-
-        // The bubble is a div acting as a button (role="button" tabindex="0" in index.html): Enter
-        // and Space open it like a click, so Tab through the floating controls can use it too.
-        if (!usernameDisplay.dataset.keyboardBound) {
-            usernameDisplay.dataset.keyboardBound = '1';
-            usernameDisplay.addEventListener('keydown', event => {
-                if (event.key !== 'Enter' && event.key !== ' ') return;
-                event.preventDefault();
-                usernameDisplay.click();
-            });
-        }
 
         // No longer need network indicator or wallet button in bubble
     }
@@ -2231,6 +2224,12 @@ function initializeNotifications() {
     userNotifications.load();
     updateUsernameDisplay(); // Update display with any existing badges
 }
+
+// Dynamic accessible names follow the same dictionary change as visible labels.
+window.addEventListener('i18n:translationsLoaded', () => {
+    updateUsernameDisplay();
+    if (document.getElementById('selected-avatar-img')) updateSelectedAvatarDisplay();
+});
 
 // Make functions globally available
 window.initializeUser = initializeUser;

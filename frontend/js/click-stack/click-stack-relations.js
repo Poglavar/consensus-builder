@@ -80,9 +80,11 @@
             button.addEventListener('click', () => {
                 [...tablist.children].forEach(other => other.setAttribute('aria-selected', other === button ? 'true' : 'false'));
                 panels.forEach(other => { other.hidden = other !== panel; });
+                win.CbTabs?.sync(tablist);
             });
             return panel;
         });
+        win.CbTabs?.bind(tablist);
         choices.append(tablist, ...panels);
         return choices;
     }
