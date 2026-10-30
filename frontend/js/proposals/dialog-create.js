@@ -221,10 +221,12 @@ function previewProposalOnMap(proposalIdOrHash, { center = true, blink = true } 
 }
 
 // Shows design records on the map without selecting or opening them: a listed design, or the
-// designs of a listed plan or agreement (lists-panel.js). The records need not be stored. The map, or
-// the model view's camera, frames them in the area the lists sheet leaves visible. They are drawn in
-// the selection colour and the selection behind the list dims until the preview clears (map.css).
-// False when none of them has a place on the map.
+// designs of a listed plan or agreement (lists-panel.js). The records need not be stored. They are
+// drawn in the selection colour and the selection behind the list dims until the preview clears
+// (map.css). When they are not already in the area the lists sheet leaves visible, the map, or the
+// model view's camera, glides over to them (revealMove): at the same zoom, or zoomed out just enough
+// when they are too big for that area, never in, so the old view stays traceable. False when none of
+// them has a place on the map.
 function previewRecordsOnMap(records, previewKey) {
     clearProposalPreview();
     if (typeof map === 'undefined' || !map || typeof L === 'undefined') return false;
@@ -240,13 +242,16 @@ function previewRecordsOnMap(records, previewKey) {
     });
     if (!bounds || !bounds.isValid()) return false;
     if (window.isThreeModeActive?.()) {
-        window.frameThreeModeFeatures([turf.bboxPolygon([bounds.getWest(), bounds.getSouth(), bounds.getEast(), bounds.getNorth()])]);
+        window.revealThreeModeFeatures([turf.bboxPolygon([bounds.getWest(), bounds.getSouth(), bounds.getEast(), bounds.getNorth()])]);
     } else {
-        try {
-            window.suppressCameraMoves = true;
-            map.fitBounds(bounds, { ...getProposalPanelFitPadding(40), maxZoom: 19, animate: false });
-        } finally {
-            window.suppressCameraMoves = false;
+        const size = map.getSize();
+        const nw = map.latLngToContainerPoint(bounds.getNorthWest()), se = map.latLngToContainerPoint(bounds.getSouthEast());
+        const move = revealMove({ left: nw.x, top: nw.y, right: se.x, bottom: se.y }, getProposalPanelFreeArea(size.x, size.y));
+        const animate = !window.__reducedMotion;
+        if (move?.pan) map.panBy(L.point(-move.pan[0], -move.pan[1]), { animate, duration: 0.6, easeLinearity: 0.5 });
+        else if (move?.fit) {
+            const fit = { ...getProposalPanelFitPadding(40), maxZoom: map.getZoom() };
+            if (animate) map.flyToBounds(bounds, { ...fit, duration: 0.8 }); else map.fitBounds(bounds, { ...fit, animate: false });
         }
     }
     records.forEach(record => renderPreviewOverlay(record, { append: true, emphasis: true }));

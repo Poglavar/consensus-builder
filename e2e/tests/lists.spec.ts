@@ -89,6 +89,13 @@ for (const width of [1280, 390]) {
     await planRow.getByRole('heading', { name: 'Residents plan', exact: true }).click();
     await expect.poll(parkInView).toBe(true);
     await expect(planRow).toHaveClass(/is-selected/);
+    // The map moves over at the same zoom (instantly: the specs reduce motion), and stays put for a
+    // plan already in view.
+    const view = () => page.evaluate(() => { const m = (window as any).map; return { zoom: m.getZoom(), center: m.getCenter() }; });
+    const shown = await view();
+    expect(shown.zoom).toBe(17);
+    await planRow.getByRole('heading', { name: 'Residents plan', exact: true }).click();
+    expect(await view()).toEqual(shown);
     // The shown designs are marked in the selection colour; any selection behind the list dims.
     await expect(page.locator('.leaflet-container.is-list-previewing .list-preview-focus').first()).toBeAttached();
     await expect(sheet).toBeVisible();

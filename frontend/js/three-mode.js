@@ -1169,6 +1169,95 @@
         }
     }
 
+    // Brings features into the view a list leaves free as the 2D map does (revealMove), keeping the
+    // camera's heading and pitch: nothing moves when they are already on screen; the camera glides
+    // sideways the shortest way at the same distance, or backs out just enough when they are too big
+    // for that view (a list row's preview).
+    let revealFrame = null;
+    function revealIsolatedFeatures(features) {
+        try {
+            if (!features.length || typeof turf === 'undefined' || !camera || !controls) return;
+            const bbox = turf.bbox(turf.featureCollection(features));
+            if (!bbox.every(Number.isFinite)) return;
+            const startView = getGeoCameraView();
+            if (!startView) return;
+            const rect = renderer.domElement.getBoundingClientRect();
+            const free = getProposalPanelFreeArea(window.innerWidth, window.innerHeight), margin = 40;
+            const screenBox = () => {
+                camera.updateMatrixWorld();
+                const corners = [[bbox[0], bbox[1]], [bbox[0], bbox[3]], [bbox[2], bbox[1]], [bbox[2], bbox[3]]]
+                    .map(([lng, lat]) => latLngToXY(lat, lng)).filter(Boolean)
+                    .map(([x, y]) => new THREE.Vector3(x, y, 0).applyMatrix4(camera.matrixWorldInverse));
+                // Behind the camera has no place on screen; past the far plane still does.
+                if (corners.length !== 4 || corners.some(p => p.z > -camera.near)) return null;
+                corners.forEach(p => p.applyMatrix4(camera.projectionMatrix));
+                const xs = corners.map(p => rect.left + (p.x + 1) / 2 * rect.width), ys = corners.map(p => rect.top + (1 - p.y) / 2 * rect.height);
+                return { left: Math.min(...xs), top: Math.min(...ys), right: Math.max(...xs), bottom: Math.max(...ys) };
+            };
+            // Translating the camera by D moves whatever was seen at a screen point to point + its
+            // shift, so the ground under (screen point + shift) tells how far to go.
+            const ground = (clientX, clientY) => {
+                camera.updateMatrixWorld();
+                const at = pickGroundLatLngFromEvent({ clientX, clientY });
+                return at && latLngToXY(at.lat, at.lng);
+            };
+            const translate = (from, to) => {
+                const view = getGeoCameraView(), at = view && latLngToXY(view.targetLat, view.targetLng);
+                const next = at && xyToLatLng(at[0] + to[0] - from[0], at[1] + to[1] - from[1]);
+                return !!next && applyGeoCameraView({ ...view, targetLat: next.lat, targetLng: next.lng });
+            };
+            const box = screenBox();
+            const move = box ? revealMove(box, free, margin) : { pan: null };
+            if (!move) return;
+            const middle = latLngToXY((bbox[1] + bbox[3]) / 2, (bbox[0] + bbox[2]) / 2);
+            if (!middle) return;
+            const centre = () => {
+                const seen = ground((free.left + free.right) / 2, (free.top + free.bottom) / 2);
+                return !!seen && translate(seen, middle);
+            };
+            // Off screen or beyond the far plane: glide over at the same distance, then look again.
+            if (move.pan) {
+                const seen = ground((box.left + box.right) / 2 + move.pan[0], (box.top + box.bottom) / 2 + move.pan[1]);
+                if (!seen || !translate(seen, middle)) return;
+            } else if (!box && !centre()) return;
+            const seenBox = screenBox();
+            if (!seenBox || revealMove(seenBox, free, margin)?.fit) {
+                // Too big: back out until it fits the free view, centred there. Its size on screen
+                // falls roughly as 1/range, less so close up, so the estimate is refined a few times.
+                const span = [free.right - free.left - 2 * margin, free.bottom - free.top - 2 * margin];
+                let range = startView.range;
+                for (let i = 0; i < 6; i++) {
+                    applyGeoCameraView({ ...getGeoCameraView(), range });
+                    centre();
+                    const next = screenBox();
+                    const scale = next ? Math.max((next.right - next.left) / span[0], (next.bottom - next.top) / span[1]) : 2;
+                    if (scale <= 1 && (scale > 0.9 || range === startView.range)) break;
+                    range = Math.max(startView.range, range * scale * 1.02);
+                }
+            }
+            const endView = getGeoCameraView();
+            applyGeoCameraView(startView);
+            if (!endView) return;
+            const place = share => {
+                const mix = key => startView[key] + (endView[key] - startView[key]) * share;
+                applyGeoCameraView({ ...startView, targetLat: mix('targetLat'), targetLng: mix('targetLng'), range: mix('range') });
+                invalidateThreeView();
+            };
+            if (revealFrame) cancelAnimationFrame(revealFrame);
+            revealFrame = null;
+            if (window.__reducedMotion) return place(1);
+            const start = performance.now(), duration = move.fit ? 800 : 600;
+            const step = now => {
+                const t = Math.min(1, (now - start) / duration);
+                place(t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t); // easeInOutQuad
+                revealFrame = t < 1 ? requestAnimationFrame(step) : null;
+            };
+            revealFrame = requestAnimationFrame(step);
+        } catch (error) {
+            console.warn(`[${new Date().toISOString()}] [three-mode] could not bring the preview into view`, error);
+        }
+    }
+
     // Hide everything except the parcels (and their buildings) belonging to a whole proposal.
     function isolateProposal(proposalId) {
         const store = (typeof window !== 'undefined') ? window.proposalStorage : null;
@@ -11016,8 +11105,8 @@
         if (zoom) frameIsolatedFeatures(features);
         return true;
     };
-    // Moves the camera onto features without selecting anything (a list row's preview).
-    window.frameThreeModeFeatures = features => { if (isActive) frameIsolatedFeatures(features); };
+    // Brings features into view without selecting anything or changing the zoom (a list row's preview).
+    window.revealThreeModeFeatures = features => { if (isActive) revealIsolatedFeatures(features); };
     window.showThreeModeDesign = showThreeModeDesign;
     window.showThreeModeParcel = showThreeModeParcel;
     window.showThreeModeBuilding = showThreeModeBuilding;

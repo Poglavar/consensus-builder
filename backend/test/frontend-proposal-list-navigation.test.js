@@ -273,6 +273,40 @@ describe('proposal panel fit padding', () => {
     });
 });
 
+// A list row's preview moves the map only as far as it must: at the same zoom, or zoomed out when
+// what it shows cannot fit.
+describe('revealing a list preview', () => {
+    const { context } = loadListUi();
+    const reveal = (box, view) => {
+        const move = JSON.parse(JSON.stringify(context.revealMove(box, view, 40)));
+        return move && (move.pan || move);
+    };
+    const view = { left: 0, top: 0, right: 800, bottom: 600 };
+    const at = (left, top, right, bottom) => ({ left, top, right, bottom });
+
+    it('leaves a box already in view where it is', () => {
+        expect(reveal(at(10, 10, 790, 590), view)).toBeNull();
+    });
+
+    it('brings a box off one side just margin inside, without moving the other axis', () => {
+        expect(reveal(at(900, 100, 1000, 200), view)).toEqual([-240, 0]);
+        expect(reveal(at(100, -300, 200, -250), view)).toEqual([0, 340]);
+    });
+
+    it('nudges a box overlapping the edge only as far as the margin', () => {
+        expect(reveal(at(780, 100, 820, 200), view)).toEqual([-60, 0]);
+    });
+
+    it('zooms out for a box too big for the view less its margin, even one partly in view', () => {
+        expect(reveal(at(-500, 100, 1500, 200), view)).toEqual({ fit: true });
+        expect(reveal(at(100, -10, 200, 590), view)).toEqual({ fit: true });
+    });
+
+    it('measures against the area a panel leaves free', () => {
+        expect(reveal(at(600, 100, 700, 200), { ...view, right: 500 })).toEqual([-240, 0]);
+    });
+});
+
 describe('proposal list titles and descriptions', () => {
     const CID = 'bafkreibm6jg3ux5qumhcn2b3flc3tyu6dmlb4xa7u5bf44yegnrjhc4yeq';
     const { context } = loadListUi({ context: {

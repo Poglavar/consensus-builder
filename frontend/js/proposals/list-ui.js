@@ -911,6 +911,27 @@ function proposalPanelFitPadding(rect, viewport, margin = 40) {
     return padding;
 }
 
+// What the camera must do for a box to be seen in view (both { left, top, right, bottom } in the
+// same pixels): null when it already lies inside view; { fit: true } when it is too big for view
+// less the margin, so the camera zooms out to frame it; otherwise { pan: [dx, dy] }, the shortest
+// move on screen that brings it margin inside view at the same zoom, keeping as much of the old
+// view as it can. Pure.
+function revealMove(box, view, margin = 40) {
+    if (box.left >= view.left && box.right <= view.right && box.top >= view.top && box.bottom <= view.bottom) return null;
+    if (box.right - box.left > view.right - view.left - 2 * margin || box.bottom - box.top > view.bottom - view.top - 2 * margin) return { fit: true };
+    const axis = (from, to, low, high) => {
+        if (from < low + margin) return low + margin - from;
+        return to > high - margin ? high - margin - to : 0;
+    };
+    return { pan: [axis(box.left, box.right, view.left, view.right), axis(box.top, box.bottom, view.top, view.bottom)] };
+}
+
+// The part of a width × height map that no proposal panel covers, as revealMove's view.
+function getProposalPanelFreeArea(width, height) {
+    const { paddingTopLeft, paddingBottomRight } = getProposalPanelFitPadding(0);
+    return { left: paddingTopLeft[0], top: paddingTopLeft[1], right: width - paddingBottomRight[0], bottom: height - paddingBottomRight[1] };
+}
+
 // fitBounds padding that keeps content in the VISIBLE map, clear of whichever proposal panel is
 // currently covering it: the list sheet while browsing or the details panel
 // once a proposal or agreement is selected (proposalPanelFitPadding decides which side). Returns a plain
