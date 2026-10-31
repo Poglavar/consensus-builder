@@ -1,12 +1,13 @@
 // Zagreb 3D building provider. Source: the `gdi_building_3d` table (LOD2 MultiPolygonZ meshes in
-// EPSG:3765) — the same city model the Zagreb codechecker uses. Its `object_id` is the same key as
-// `gdi_building_footprint` (the 2D footprint of the SAME GDI feature, 1:1), which is what the map
-// serves and what cut/tunnel/demolish detection scans — so a demolition record names a mesh here
-// exactly, by id. The heavy per-mesh work (dump into faces, reproject 3765→4326, serialize to
+// EPSG:3765) — the same city model the Zagreb codechecker uses. Map and demolition footprints
+// come from its cleaned mesh outline, `footprint_geom`, under the same object_id. The separate
+// ArcGIS 2D footprint product can contain inflated rectangles that cover empty ground.
+// The heavy per-mesh work (dump into faces, reproject 3765→4326, serialize to
 // GeoJSON) is PRECOMPUTED once into columns, since the dataset is static (captured 2022):
 //   faces_4326  jsonb                        — the face polygons already in EPSG:4326 (precision 7)
 //   z_min, z_max real                        — vertical extent
-//   geom2d_3765 geometry(Geometry,3765)      — 2D footprint for the spatial filter (GiST-indexed)
+//   geom2d_3765 geometry(Geometry,3765)      — flattened mesh for the spatial filter (GiST-indexed)
+//   footprint_geom geometry(MultiPolygon,3765) — cleaned outline for map and demolition geometry
 // So a query is just "spatial filter + read JSONB" — no ST_Dump/ST_Transform/ST_AsGeoJSON at request
 // time. This took /buildings/near from ~11s to ~60ms. See backend/buildings/building-3d-precompute.sql.
 
@@ -81,8 +82,8 @@ export function createZagrebProvider(pool) {
         return { footprints, count: footprints.length, source: 'zagreb-cadastre' };
     }
 
-    // The 2D map's footprints for one cell (POST /buildings/cell, kind 'footprints'): every GDI
-    // footprint touching the area, with the GDI properties GET /buildings gives (map-source.js), as
+    // The 2D map's footprints for one cell (POST /buildings/cell, kind 'footprints'): every mesh
+    // outline touching the area, with the GDI properties GET /buildings gives (map-source.js), as
     // the flat items every source answers: { id: object_id, geometry, height_m, floors, ...extra }.
     // One row past the cap says the area holds more: truncated, so the cell reader splits it.
     async function mapFootprints(geometry) {
@@ -90,19 +91,19 @@ export function createZagrebProvider(pool) {
             WITH q AS (
                 SELECT ST_Transform(ST_SetSRID(ST_GeomFromGeoJSON($1), 4326), 3765) AS g
             )
-            SELECT ST_AsGeoJSON(ST_Transform(f.geom, 4326), 7)::json AS geometry,
+            SELECT ST_AsGeoJSON(ST_Transform(b.footprint_geom, 4326), 7)::json AS geometry,
                    -- jsonb, as GET /buildings builds it: object_id and the numeric columns arrive as numbers.
                    jsonb_build_object(
-                       'object_id',     f.object_id,
+                       'object_id',     b.object_id,
                        'area_m2',       g.area_m2,
                        'height_m',      g.height_m,
                        'eave_height_m', g.eave_height_m,
                        'survey_year',   g.survey_year
                    ) AS properties
-            FROM gdi_building_footprint f
-            JOIN q ON f.geom && q.g AND ST_Intersects(f.geom, q.g)
-            LEFT JOIN gdi_building g ON g.object_id = f.object_id
-            ORDER BY f.object_id
+            FROM gdi_building_3d b
+            JOIN q ON b.footprint_geom && q.g AND ST_Intersects(b.footprint_geom, q.g)
+            LEFT JOIN gdi_building g ON g.object_id = b.object_id
+            ORDER BY b.object_id
             LIMIT 4001
         `, [JSON.stringify(geometry)]);
         const truncated = found.length > 4000;
@@ -125,17 +126,14 @@ export function createZagrebProvider(pool) {
             )
             -- The same height rule as footprints above: a plausible survey height, as a number
             -- (numeric comes back from pg as a string, which every consumer reads as no height).
-            SELECT r.key, f.object_id AS id,
+            SELECT r.key, b.object_id AS id,
                    CASE WHEN g.height_m BETWEEN 2 AND 250 THEN g.height_m::float END AS height_m,
-                   ST_AsGeoJSON(ST_Transform(v.geom, 4326), 7)::json AS geometry
+                   ST_AsGeoJSON(ST_Transform(b.footprint_geom, 4326), 7)::json AS geometry
             FROM regions r
-            JOIN gdi_building_footprint f ON f.geom && r.geom
-            CROSS JOIN LATERAL (
-                SELECT ST_CollectionExtract(ST_MakeValid(f.geom), 3) AS geom
-            ) v
-            LEFT JOIN gdi_building g ON g.object_id = f.object_id
-            WHERE ST_Intersects(v.geom, r.geom)
-            ORDER BY r.key, f.object_id
+            JOIN gdi_building_3d b ON b.footprint_geom && r.geom
+            LEFT JOIN gdi_building g ON g.object_id = b.object_id
+            WHERE ST_Intersects(b.footprint_geom, r.geom)
+            ORDER BY r.key, b.object_id
             LIMIT 4001
         `, [JSON.stringify(regions)]);
         const truncated = rows.length > 4000;

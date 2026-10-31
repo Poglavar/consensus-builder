@@ -477,6 +477,8 @@ A selectable item of cadastral ground, fabric or design content in the map's int
 
 An observed building object identified within a survey or provider dataset. Its geometry, identity and measurements retain that source's provenance. Its key is `<source>:<id>`: surveys of one city number their buildings in their own key spaces, so an id alone does not identify a building.
 
+The GDI 3D source uses the cleaned outlines of its meshes for map footprints and demolition calculations. The separately published ArcGIS 2D polygons can contain oversized rectangles and do not define the ground occupied by those meshes.
+
 A source building is baseline context, not a member of a Plan. Its cadastral parcel supplies the
 ground context for inspection. An explicit design impact can link it to an affecting design;
 spatial overlap alone does not establish that relationship. Current agreements allocate land and

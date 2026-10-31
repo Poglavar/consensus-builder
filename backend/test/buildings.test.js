@@ -240,7 +240,7 @@ describe('POST /buildings/cell', () => {
 
     const outline = { type: 'MultiPolygon', coordinates: [[[[15.976, 45.813], [15.977, 45.813], [15.977, 45.8135], [15.976, 45.813]]]] };
 
-    it("answers GDI footprints for the 2D map with the properties GET /buildings gives, never the cadastre's", async () => {
+    it("answers mesh outlines for the GDI 2D map with survey properties, never the cadastre's", async () => {
         pool.setResult({ rows: [{ geometry: outline, properties: { object_id: 42, area_m2: 118.5, height_m: 14.2, eave_height_m: 11, survey_year: 2022 } },
             { geometry: outline, properties: { object_id: 43, area_m2: null, height_m: null, eave_height_m: null, survey_year: null } }], rowCount: 2 });
         const res = await request(app).post('/buildings/cell').send({ kind: 'footprints', bbox: cell, source: 'gdi-3d' });
@@ -249,11 +249,12 @@ describe('POST /buildings/cell', () => {
         expect(res.body.items[0]).toEqual({ id: 42, geometry: outline, height_m: 14.2, floors: null, area_m2: 118.5, eave_height_m: 11, survey_year: 2022 });
         expect(res.body.items[1]).toEqual({ id: 43, geometry: outline, height_m: null, floors: null, area_m2: null, eave_height_m: null, survey_year: null });
         const { sql, params } = pool.getCalls()[0];
-        expect(sql).toContain('FROM gdi_building_footprint f');
+        expect(sql).toContain('FROM gdi_building_3d b');
+        expect(sql).not.toContain('gdi_building_footprint');
         expect(sql).toContain('LEFT JOIN gdi_building g');
         expect(sql).not.toContain('dgu_building');
         // In WGS84 out, the cell polygon in.
-        expect(sql).toContain('ST_Transform(f.geom, 4326)');
+        expect(sql).toContain('ST_Transform(b.footprint_geom, 4326)');
         expect(JSON.parse(params[0]).type).toBe('Polygon');
     });
 
