@@ -393,14 +393,15 @@
         return material;
     }
 
-    // Building faces sit one depth step behind their own edge lines (units), never by their slope
-    // (factor): a slope-scaled push moved an obliquely seen wall behind the ground at its foot, so the
-    // paving covered the bottom pixels of every wall in a band that changed with zoom and pan.
+    // Building faces sit behind their own edge lines by their slope (factor) and a step (units); a
+    // face seen at an angle needs the slope term or its edges break up. The ground sits further
+    // back still (three-ground.js OFFSET.ground), so the same push never puts a wall behind the
+    // paving at its foot.
     function makeBuildingMaterial(parameters, opacity = 1) {
         const material = new THREE.MeshPhongMaterial({
             depthFunc: THREE.LessDepth,
             polygonOffset: true,
-            polygonOffsetFactor: 0,
+            polygonOffsetFactor: 1,
             polygonOffsetUnits: 1,
             ...parameters
         });

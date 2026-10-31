@@ -46,7 +46,15 @@ describe('three-ground', () => {
         expect(layer.group.children.map(m => m.name)).toEqual(['ground-lid', 'ground-roadbed', 'ground-kerb', 'ground-markings', 'ground-pavement']);
         expect(layer.group.children.map(m => m.renderOrder)).toEqual([ORDER.lid, ORDER.roadbed, ORDER.kerb, ORDER.markings, ORDER.pavement]);
         expect(byName(layer, 'ground-markings').material.color).toBe(COLORS.markings);
-        expect(byName(layer, 'ground-markings').material.polygonOffsetFactor).toBeLessThan(0);
+        // Lane lines are pulled forward of the asphalt they lie on…
+        expect(byName(layer, 'ground-markings').material.polygonOffsetFactor).toBeLessThan(byName(layer, 'ground-roadbed').material.polygonOffsetFactor);
+        // …and every coloured ground surface sits behind building faces (factor 1, units 1 in
+        // three-mode.js), or a wall seen at an angle lost its foot to the paving.
+        for (const mesh of layer.group.children.filter(m => m.material.colorWrite !== false)) {
+            expect(mesh.material.polygonOffset, mesh.name).toBe(true);
+            expect(mesh.material.polygonOffsetFactor, mesh.name).toBeGreaterThan(1);
+            expect(mesh.material.polygonOffsetUnits, mesh.name).toBeGreaterThan(1);
+        }
         expect(ORDER.lid).toBeLessThan(ORDER.pavement);
         const roadbed = byName(layer, 'ground-roadbed');
         expect(roadbed.material.color).toBe(COLORS.asphalt);
@@ -95,7 +103,8 @@ describe('three-ground', () => {
         const parcel = layer.parcelSurface({});
         const background = byName(layer, 'ground-pavement');
         expect(background.renderOrder).toBeGreaterThan(0);
-        expect(background.material.polygonOffset).toBeFalsy();
+        // Pushed behind building faces, which does not change the claims' layering by stencil.
+        expect(background.material.polygonOffsetFactor).toBe(parcel.polygonOffsetFactor);
         expect(background.material.stencilFunc).toBe('equal');
         expect(background.material.stencilWriteMask).toBe(0);
         expect(parcel.stencilFunc).toBe('greater');
