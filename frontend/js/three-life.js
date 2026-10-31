@@ -204,9 +204,10 @@
         poolTexture.needsUpdate = true;
         materials.pool = new THREE.MeshBasicMaterial({
             color: HEADLAMP_COLOR, alphaMap: poolTexture, transparent: true, opacity: 0,
-            blending: THREE.AdditiveBlending, depthWrite: false,
-            polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -2
+            blending: THREE.AdditiveBlending, depthWrite: false
         });
+        // Light on the ground: over it, behind building faces (three-ground.js), like a design's ground.
+        ((typeof window !== 'undefined' && window.__threeGround) || require('./three-ground.js')).designSurface(materials.pool, 2);
         geometries.pool = new THREE.PlaneGeometry(1, 1).translate(0.5, 0, 0);
         let night = 0;
 

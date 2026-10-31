@@ -5,7 +5,8 @@ import { describe, it, expect } from 'vitest';
 import { createRequire } from 'node:module';
 
 const require = createRequire(import.meta.url);
-const { create, COLORS, ORDER, STENCIL_BIT, PARCEL_BIT, PAVE_SLAB_M } = require('../../frontend/js/three-ground.js');
+const { create, designSurface, COLORS, OFFSET, MAX_DESIGN_RANK, ORDER, STENCIL_BIT, PARCEL_BIT, PAVE_SLAB_M } = require('../../frontend/js/three-ground.js');
+const { readFileSync } = require('node:fs');
 const { buildGroundGeometry } = require('../../frontend/js/life/ground-geometry.js');
 
 function stubThree() {
@@ -193,5 +194,32 @@ describe('three-ground', () => {
         expect(disposed.filter(d => d === 'geometry')).toHaveLength(10);
         expect(disposed.filter(d => d === 'material')).toHaveLength(5);
         expect(layer.group.children).toEqual([]);
+    });
+
+    it('lays a design\'s ground over the city\'s ground and behind every building face, in rank order', () => {
+        const at = rank => designSurface({}, rank).polygonOffsetFactor;
+        for (let rank = 1; rank <= MAX_DESIGN_RANK; rank++) {
+            const material = designSurface({}, rank);
+            expect(material.polygonOffset).toBe(true);
+            // Building faces are pushed by 1 (three-mode.js makeBuildingMaterial): a design's ground
+            // never comes in front of them, so it never covers the foot of a wall standing on it.
+            expect(material.polygonOffsetFactor).toBeGreaterThan(1);
+            expect(material.polygonOffsetUnits).toBe(material.polygonOffsetFactor);
+            expect(material.polygonOffsetFactor).toBeLessThan(OFFSET.ground);
+        }
+        expect(at(4)).toBeLessThan(at(2));
+        expect(at(99)).toBe(at(MAX_DESIGN_RANK));
+        expect(at(0)).toBe(at(1));
+    });
+
+    it('leaves no ground surface pulled toward the camera, where it would cover the foot of walls', () => {
+        // A negative polygon offset puts a surface in front of building faces too. What is left:
+        // planning envelope tiers (volumes), the draft and surroundings previews shown while
+        // drawing, and the green cover whose claim (parcelSurface) replaces the offset it is built with.
+        const files = ['three-mode.js', 'three-site-ground.js', 'three-buildout.js', 'three-life.js', 'three-ground.js', 'three-fountains.js'];
+        const pulled = files.flatMap(file => readFileSync(new URL(`../../frontend/js/${file}`, import.meta.url), 'utf8')
+            .split('\n').filter(line => /polygonOffsetFactor\s*[:=]\s*-/.test(line)).map(line => `${file}: ${line.trim()}`));
+        expect(pulled).toHaveLength(4);
+        expect(pulled.every(line => line.startsWith('three-mode.js'))).toBe(true);
     });
 });

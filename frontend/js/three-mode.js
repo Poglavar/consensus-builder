@@ -57,6 +57,8 @@
     const nightWindows = window.__threeNightWindows;
     const nightWindowState = nightWindows.createState();
     // Drifting clouds, their shadows and the haze of distance (three-atmosphere.js), through shared uniforms.
+    // A design's ground surface: over the city's ground, behind every building face (three-ground.js).
+    const designSurface = (material, rank) => window.__threeGround.designSurface(material, rank);
     const atmosphere = window.__threeAtmosphere;
     const atmosphereState = atmosphere.createState();
     const atmosphereClouds = { glsl: atmosphere.CLOUD_GLSL, state: atmosphereState };
@@ -2783,9 +2785,7 @@
     function lawnMaterial() {
         const grass = window.__threeGrass;
         if (!grass) throw new Error('three-grass.js is not loaded');
-        return grass.grassTexture(new THREE.MeshLambertMaterial({
-            color: grass.COLORS.lawn, polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -2
-        }), 1 / lifeMercatorK(), 'lawn');
+        return grass.grassTexture(designSurface(new THREE.MeshLambertMaterial({ color: grass.COLORS.lawn }), 2), 1 / lifeMercatorK(), 'lawn');
     }
 
     function buildParks3D(flatTarget, decoTarget, features = null) {
@@ -2793,7 +2793,7 @@
         if (!parks || parks.length === 0) return;
         // Use polygonOffset to float slightly over base to avoid z-fighting and flicker
         const grassMat = lawnMaterial();
-        const waterMat = new THREE.MeshPhongMaterial({ color: 0x2b6cb0, specular: 0x1f3a60, shininess: 40, polygonOffset: true, polygonOffsetFactor: -3, polygonOffsetUnits: -3 });
+        const waterMat = designSurface(new THREE.MeshPhongMaterial({ color: 0x2b6cb0, specular: 0x1f3a60, shininess: 40 }), 3);
         const pathLineMat = new THREE.LineBasicMaterial({ color: 0xdfe8d6, depthTest: true, depthWrite: false });
 
         const isCurrentModel = startStructureModels(decoTarget);
@@ -3117,7 +3117,7 @@
             clump: new THREE.SphereGeometry(1, 7, 5),
             blossom: new THREE.IcosahedronGeometry(1, 0),
             kerbMat: new THREE.MeshLambertMaterial({ color: 0xb8b2a3 }),
-            soilMat: new THREE.MeshLambertMaterial({ color: 0x4a3426, polygonOffset: true, polygonOffsetFactor: -3, polygonOffsetUnits: -3 }),
+            soilMat: designSurface(new THREE.MeshLambertMaterial({ color: 0x4a3426 }), 3),
             leafMat: new THREE.MeshLambertMaterial({ color: 0xffffff }),
             blossomMat: new THREE.MeshLambertMaterial({ color: 0xffffff })
         };
@@ -3220,7 +3220,7 @@
     function ensureEnclosureAssets() {
         if (enclosureAssets) return enclosureAssets;
         const lambert = color => new THREE.MeshLambertMaterial({ color });
-        const ground = color => new THREE.MeshLambertMaterial({ color, polygonOffset: true, polygonOffsetFactor: -4, polygonOffsetUnits: -4 });
+        const ground = color => designSurface(new THREE.MeshLambertMaterial({ color }), 4);
         enclosureAssets = {
             box: new THREE.BoxGeometry(1, 1, 1),
             fence: {
@@ -3380,13 +3380,10 @@
         if (!squareSurfaceMats) {
             const texture = squarePaving.createSquarePavingTexture(THREE, document, renderer);
             squareSurfaceMats = {
-                paving: new THREE.MeshLambertMaterial({
+                paving: designSurface(new THREE.MeshLambertMaterial({
                     color: texture ? 0xffffff : 0xc8c0ae,
-                    map: texture || null,
-                    polygonOffset: true,
-                    polygonOffsetFactor: -2,
-                    polygonOffsetUnits: -2
-                }),
+                    map: texture || null
+                }), 2),
                 border: new THREE.LineBasicMaterial({ color: 0x756f63, transparent: true, opacity: 0.75 }),
                 rim: new THREE.MeshLambertMaterial({ color: 0x9a9a9a }),
                 water: new THREE.MeshPhongMaterial({ color: 0x3a8ad3, specular: 0x1f4f7a, shininess: 60 })
@@ -3600,10 +3597,10 @@
             poleMat: new THREE.MeshLambertMaterial({ color: 0x33383d }),
             headMat: new THREE.MeshLambertMaterial({ color: 0xf2ead8, emissive: 0xffd28a, emissiveIntensity: 0 }),
             pool: new THREE.CircleGeometry(1, 32),
-            poolMat: new THREE.MeshBasicMaterial({
+            poolMat: designSurface(new THREE.MeshBasicMaterial({
                 map: glow, color: 0xffc46b, transparent: true, opacity: 0, visible: false, depthWrite: false,
-                blending: THREE.AdditiveBlending, polygonOffset: true, polygonOffsetFactor: -4, polygonOffsetUnits: -4
-            }),
+                blending: THREE.AdditiveBlending
+            }), 4),
             haloMat: new THREE.PointsMaterial({
                 map: glow, color: 0xffd9a0, size: 2.4, sizeAttenuation: true, transparent: true, opacity: 0,
                 visible: false, depthWrite: false, blending: THREE.AdditiveBlending
@@ -4180,14 +4177,11 @@
                 if (!plot || !plot.geometry) return;
                 try {
                     const feature = { type: 'Feature', geometry: plot.geometry, properties: {} };
-                    const fillMat = new THREE.MeshLambertMaterial({
+                    const fillMat = designSurface(new THREE.MeshLambertMaterial({
                         color: 0xcccccc,
                         transparent: true,
-                        opacity: 0.75,
-                        polygonOffset: true,
-                        polygonOffsetFactor: -2,
-                        polygonOffsetUnits: -2
-                    });
+                        opacity: 0.75
+                    }), 2);
                     // A set-aside layout's plots can overlap ground OTHER formations hold now
                     // (that overlap is often exactly why it refuses to apply), so the preview
                     // must float clearly above the parcel/road/paving stack (z ≤ ~0.1) —

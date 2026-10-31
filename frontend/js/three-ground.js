@@ -26,12 +26,24 @@
     // paving, which covered its bottom pixels in a band that moved with every zoom and pan. Ground
     // surfaces are layered among themselves by stencil claims (ORDER), so the push leaves that alone.
     // Lane lines sit 1 cm over the asphalt and are pulled forward of it so they never sink into it at distance.
-    const OFFSET = Object.freeze({ ground: 3, markings: -1 });
+    // A design's ground (designSurface) lies over the city's ground and still behind every building
+    // face: ranks 1..MAX_DESIGN_RANK sit between the faces (1) and the city's ground (OFFSET.ground).
+    const OFFSET = Object.freeze({ ground: 8, markings: -1 });
+    const MAX_DESIGN_RANK = OFFSET.ground - 3;
     function behindBuildings(material, extra = 0) {
         material.polygonOffset = true;
         material.polygonOffsetFactor = OFFSET.ground + extra;
         material.polygonOffsetUnits = OFFSET.ground + extra;
         return material;
+    }
+    // A design's ground surface: a park's lawn and water, a square's paving, a plot's fill, a site's
+    // sidewalk, earth under construction, the light a lamp casts on the ground. Such surfaces used to
+    // be pulled toward the camera (negative offsets), which put them in front of building faces too,
+    // so they covered the foot of every wall standing on them by a band that changed with the zoom.
+    // `rank` (1..MAX_DESIGN_RANK) keeps their order among themselves: a higher rank lies nearer.
+    function designSurface(material, rank) {
+        const r = Math.min(MAX_DESIGN_RANK, Math.max(1, Math.round(Number(rank) || 1)));
+        return behindBuildings(material, -r);
     }
     // Procedural paving: slabs this big, a thin darker joint between them and a faint per-slab tint.
     const PAVE_SLAB_M = 1.5;
@@ -200,5 +212,5 @@
         };
     }
 
-    return { create, COLORS, OFFSET, ORDER, STENCIL_BIT, PARCEL_BIT, PAVE_SLAB_M };
+    return { create, designSurface, COLORS, OFFSET, MAX_DESIGN_RANK, ORDER, STENCIL_BIT, PARCEL_BIT, PAVE_SLAB_M };
 });

@@ -34,7 +34,8 @@
     // Materials live for the session, like the furniture materials: groups never own them.
     function materials(THREE) {
         if (shared?.THREE === THREE) return shared.materials;
-        const ground = color => new THREE.MeshLambertMaterial({ color, polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -2 });
+        // A design's ground: over the city's ground, behind building faces (three-ground.js).
+        const ground = color => root.__threeGround.designSurface(new THREE.MeshLambertMaterial({ color }), 2);
         shared = { THREE, materials: {
             earth: ground(0x9a7b57),
             pit: ground(0x5b4632),
