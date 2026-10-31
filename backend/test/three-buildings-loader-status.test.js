@@ -19,6 +19,7 @@ function harness() {
     const api = new Function('threeI18n', 'updateStatus', 'beginStatusActivity', 'window', `
         let isActive = true, nearbyProposalBuildingsFetching = false, pendingModelLoads = 0;
         let buildingsLoaderRelease = null, buildingsLoaderText = '', nearbyBuildingsOutcome = null;
+        const noteSceneWork = () => {};
         ${source.slice(start, end)}
         return {
             update: updateBuildingsLoader,

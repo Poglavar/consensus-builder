@@ -393,11 +393,14 @@
         return material;
     }
 
+    // Building faces sit one depth step behind their own edge lines (units), never by their slope
+    // (factor): a slope-scaled push moved an obliquely seen wall behind the ground at its foot, so the
+    // paving covered the bottom pixels of every wall in a band that changed with zoom and pan.
     function makeBuildingMaterial(parameters, opacity = 1) {
         const material = new THREE.MeshPhongMaterial({
             depthFunc: THREE.LessDepth,
             polygonOffset: true,
-            polygonOffsetFactor: 1,
+            polygonOffsetFactor: 0,
             polygonOffsetUnits: 1,
             ...parameters
         });

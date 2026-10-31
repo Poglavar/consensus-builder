@@ -73,6 +73,7 @@ function harness({ request = vi.fn(async () => ({ items: [], complete: true })),
         frameTimer: null, frameId: null, hooksParked: false, lastInputAt: 0,
         requestAnimationFrame: vi.fn(() => 1), clearTimeout: vi.fn(), setTimeout: vi.fn(() => 1),
         frameHooks: [],
+        noteSceneWork: vi.fn(),
     };
     context.nearbyProposalBuildings = [];
     context.buildingGroup.add(context.existingBuildingsGroup, context.proposedBuildingsGroup);
