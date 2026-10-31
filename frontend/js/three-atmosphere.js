@@ -34,8 +34,12 @@ uniform vec2 cbCloudWind;
 uniform vec3 cbCloudSun;
 uniform vec3 cbCloudLit;
 uniform vec3 cbCloudShade;
+// A hash without sin(): every lit pixel evaluates it for the cloud shadows, and sin() is the
+// costly part of the usual one on many GPUs (Dave Hoskins' hash12).
 float cbCloudHash(vec2 p) {
-    return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453);
+    vec3 p3 = fract(vec3(p.xyx) * 0.1031);
+    p3 += dot(p3, p3.yzx + 33.33);
+    return fract((p3.x + p3.y) * p3.z);
 }
 float cbCloudNoise(vec2 p) {
     vec2 i = floor(p);
@@ -44,7 +48,7 @@ float cbCloudNoise(vec2 p) {
     return mix(mix(cbCloudHash(i), cbCloudHash(i + vec2(1.0, 0.0)), u.x),
                mix(cbCloudHash(i + vec2(0.0, 1.0)), cbCloudHash(i + vec2(1.0, 1.0)), u.x), u.y);
 }
-// Cloud density 0..1 at a point of the cloud layer (metres). Shadows take the first three octaves:
+// Cloud density 0..1 at a point of the cloud layer (metres). Shadows take the first two octaves:
 // a shadow is soft, and every lit pixel pays for it.
 float cbCloudField(vec2 metres, float octaves) {
     vec2 p = (metres - cbCloudWind * cbCloudTime) / ${CLOUD_CELL_M.toFixed(1)};
@@ -74,7 +78,7 @@ float cbCloudShadowAt(vec3 point) {
     if (cbCloudShadow <= 0.0) return 0.0;
     float rise = max(cbCloudSun.z, 0.15);
     vec2 crossing = point.xy + cbCloudSun.xy / rise * (${CLOUD_BASE_M.toFixed(1)} - point.z);
-    return cbCloudShadow * cbCloudField(crossing, 3.0);
+    return cbCloudShadow * cbCloudField(crossing, 2.0);
 }`;
 
     function createState() {
