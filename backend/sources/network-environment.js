@@ -280,17 +280,8 @@ export function createDecorSources(pool, { tileReader = createTileReader(), wate
     const treesProvider = createOvertureTreesProvider(pool);
     const trees = registry('trees', 'osm-decor-trees', NETWORK_ENVIRONMENT_SOURCES.trees,
         { resource: 'osm_decor', kinds: ['trees', 'greenery'] }, () => ({
-            near: (...args) => treesProvider.near(...args),
-            async layers(bbox, kinds) {
-                const { rows } = await pool.query(
-                    `SELECT k AS kind FROM unnest($5::text[]) AS k
-                     WHERE EXISTS (SELECT 1 FROM osm_decor d
-                                   WHERE d.kind = k AND d.geom && ST_MakeEnvelope($1, $2, $3, $4, 4326))`,
-                    [...bbox, kinds]
-                );
-                return rows.map(row => row.kind);
-            }
-        }), ['near', 'layers']);
+            near: (...args) => treesProvider.near(...args)
+        }), ['near']);
     const water = registry('water', 'openfreemap-water', NETWORK_ENVIRONMENT_SOURCES.water,
         { tilejson: 'https://tiles.openfreemap.org/planet' }, () => waterProvider, ['near'], { custom: true });
     const green = registry('green', 'openfreemap-green', NETWORK_ENVIRONMENT_SOURCES.green,

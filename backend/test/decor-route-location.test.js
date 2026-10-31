@@ -17,17 +17,15 @@ const response = () => {
 const point = (lon, lat) => ({ type: 'Point', coordinates: [lon, lat] });
 
 describe('GET /decor/layers', () => {
-    it('lists the scenery found in the box, water and green areas everywhere', async () => {
-        const pool = { query: vi.fn(async () => ({ rows: [{ kind: 'trees' }] })) };
+    it('lists trees, water and green areas everywhere, without asking the database', async () => {
+        // Trees come from OSM live wherever the osm_decor cache holds nothing (Austin, The Hague).
+        const pool = { query: vi.fn() };
         const server = app();
         setupDecorRoute(server, pool, { waterProvider: { near: vi.fn() } });
         const res = response();
-        await server.routes['GET /decor/layers']({ query: { bbox: '15.96,45.80,15.98,45.82' } }, res);
+        await server.routes['GET /decor/layers']({ query: { bbox: '-97.75,30.26,-97.74,30.27' } }, res);
         expect(res.body).toEqual({ layers: ['trees', 'water', 'green'] });
-        const [sql, params] = pool.query.mock.calls[0];
-        expect(sql).toMatch(/ST_MakeEnvelope\(\$1, \$2, \$3, \$4, 4326\)/);
-        expect(sql).not.toMatch(/city/);
-        expect(params).toEqual([15.96, 45.8, 15.98, 45.82, ['trees']]);
+        expect(pool.query).not.toHaveBeenCalled();
     });
 
     it('refuses a request without a box (a city name is no longer an answer)', async () => {

@@ -175,7 +175,7 @@
         planning: ['query', 'record'], economics: ['rates'], imagery: ['tileUrl', 'basemap'], geocoding: ['search'],
         'transit-alignments': ['load'], 'terrain-profile': ['profile', 'url'], 'road-network': ['readNetwork', 'readLiveNetwork'], 'frontage-streets': ['near'],
         'block-barriers': ['readBarriers'], 'street-register': ['readStreets'], 'planned-roads': ['readReservations'],
-        'road-classification': ['readIds'], trees: ['near', 'layers'], water: ['near'], ownership: ['lookup'], 'building-details': ['fetchFloorModels'], 'reality-mesh': ['authentication']
+        'road-classification': ['readIds'], trees: ['near'], water: ['near'], ownership: ['lookup'], 'building-details': ['fetchFloorModels'], 'reality-mesh': ['authentication']
     };
 
     const standardOperations = clone(operations);

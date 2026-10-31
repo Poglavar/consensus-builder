@@ -1,22 +1,19 @@
 // Route for 3D "decor" — toggleable OSM-derived scenery (currently trees) around a proposal/camera.
 // The client asks with a GET for a box + radius (the scene's area), and gets back the nearby
 // scenery in a compact shape the Three.js renderer instances. No city: where the geometry lies
-// decides (location-first.md). Trees come from the generic
-// provider (backend/decor/overture-trees.js), reading the shared `osm_decor` table that
-// zagreb-isochrone's 3D world uses too, so any area with loaded scenery rows is covered. Built to
-// grow more `kinds` (parks, water) later — osm_decor already carries greenery/hedges/benches/etc.
+// decides (location-first.md). Trees come from the generic provider (backend/decor/overture-trees.js):
+// the shared `osm_decor` cache that zagreb-isochrone's 3D world uses too where it holds the area, and
+// OpenStreetMap live through our Overpass chain everywhere else, so every city has them.
 //
-// GET /decor/layers tells the frontend which scenery layers an area actually has, so it can render a
-// toggle only for available layers — data-driven from what's ingested, not a hardcoded per-city list.
+// GET /decor/layers tells the frontend which scenery layers an area has, so it renders a toggle only
+// for those. Every layer is worldwide now; the endpoint stays the one place that says so.
 
 import { createDecorSources, NETWORK_ENVIRONMENT_SOURCES } from '../sources/network-environment.js';
 
-// Which osm_decor kinds are renderable scenery toggles in the 3D view. Buildings are not scenery —
-// they render via the Built/Both/Planned controls. Extend as new kinds get a renderer.
-const SCENERY_LAYERS = ['trees'];
-// Layers every city has, whatever is ingested: water and green areas come from OpenFreeMap's
-// worldwide tiles.
-const WORLDWIDE_LAYERS = ['water', 'green'];
+// Scenery toggles in the 3D view, all available everywhere: trees from OSM (cached or live), water
+// and green areas from OpenFreeMap's worldwide tiles. Buildings are not scenery — they render via
+// the Built/Both/Planned controls.
+const WORLDWIDE_LAYERS = ['trees', 'water', 'green'];
 
 export function setupDecorRoute(app, pool, options = {}) {
     // Worldwide scenery is scoped by geometry, without city-specific provider selection.
@@ -25,22 +22,14 @@ export function setupDecorRoute(app, pool, options = {}) {
     const waterProvider = sources.water.open(NETWORK_ENVIRONMENT_SOURCES.water);
     const greenProvider = sources.green.open(NETWORK_ENVIRONMENT_SOURCES.green);
 
-    // GET /decor/layers?bbox=minLon,minLat,maxLon,maxLat → { layers: ['trees', ...] } — the scenery
-    // layers with rows in that box (the 3D scene's area), whatever ingest they came from.
-    app.get('/decor/layers', async (req, res) => {
-        try {
-            const bbox = String(req.query.bbox || '').split(',').map(Number);
-            if (bbox.length !== 4 || bbox.some(v => !Number.isFinite(v))) {
-                return res.status(400).json({ error: 'Invalid bbox. Expected minLon,minLat,maxLon,maxLat in EPSG:4326.' });
-            }
-            // One indexed probe per kind (EXISTS stops at the first row the GIST box finds).
-            const present = new Set(await treesProvider.layers(bbox, SCENERY_LAYERS));
-            const layers = [...SCENERY_LAYERS.filter(l => present.has(l)), ...WORLDWIDE_LAYERS];
-            res.json({ layers });
-        } catch (err) {
-            console.error('Error in GET /decor/layers:', err);
-            res.status(500).json({ error: 'Internal server error' });
+    // GET /decor/layers?bbox=minLon,minLat,maxLon,maxLat → { layers: ['trees', 'water', 'green'] } —
+    // the scenery layers for that box (the 3D scene's area).
+    app.get('/decor/layers', (req, res) => {
+        const bbox = String(req.query.bbox || '').split(',').map(Number);
+        if (bbox.length !== 4 || bbox.some(v => !Number.isFinite(v))) {
+            return res.status(400).json({ error: 'Invalid bbox. Expected minLon,minLat,maxLon,maxLat in EPSG:4326.' });
         }
+        res.json({ layers: WORLDWIDE_LAYERS });
     });
 
     // The area of a scenery read: `?bbox=west,south,east,north` (a point when the corners meet) and

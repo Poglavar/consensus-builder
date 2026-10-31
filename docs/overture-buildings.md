@@ -6,12 +6,16 @@ and OSM open data to the Three.js view:
 
 - **Buildings** — footprints + heights (`theme=buildings`) extruded to flat-top **LOD1** blocks,
   from `public.overture_building_footprint`.
-- **Trees** — instanced trunk+crown scenery, toggleable in the 3D panel, from `public.osm_decor`:
-  mapped tree points (`kind='trees'`) **plus** trees scattered through mapped green areas
-  (`kind='greenery'`). See "Why trees are planted, not just read" below.
+- **Trees** — instanced trunk+crown scenery, toggleable in the 3D panel, in every city: mapped tree
+  points **plus** trees scattered through tree-bearing green areas (forest, park, cemetery, meadow,
+  grass; never water, car parks, pitches, paving or sand). Read from the `public.osm_decor` cache
+  (`kind='trees'`, `kind='greenery'`) where it holds the area; everywhere else, or when it cannot
+  be read, from OpenStreetMap live through the backend's shared Overpass chain
+  (`decor/osm-trees-overpass.js`), planted by the same query. See "Why trees are planted, not just
+  read" below.
 
-The frontend renders a scenery toggle only for layers a city actually has (via `GET /decor/layers`).
-Cities wired up: **Belgrade**, **Split**, **Šibenik**.
+The cache holds Croatia (trees and greenery) and Belgrade (trees); it only answers faster.
+`GET /decor/layers` lists trees, water and green areas for every box.
 
 ## One ingestion, shared with zagreb-isochrone (2026-08-02)
 
@@ -115,11 +119,10 @@ flowchart LR
     J[OSM PBF / Overpass] -->|load-osm-decor.mjs| S[(osm_decor)]
   end
   T -->|city = cfg.region, extrude| Pb[overture-3d provider] --> R[/buildings/near/]
-  S -->|kind='trees'| Pt[overture-trees provider] --> D[/decor/near/]
-  S -->|DISTINCT kind| L[/decor/layers/]
+  S -->|cache: kind='trees', greenery| Pt[overture-trees provider] --> D[/decor/near/]
+  OP[OSM via our Overpass chain] -->|where the cache holds nothing| Pt
   R --> F[Three.js 3D view]
   D --> F
-  L -->|which toggles to show| F
   T --> Z[zagreb-isochrone Station3D]
   S --> Z
 ```
@@ -130,14 +133,15 @@ Files (under `backend/`):
 |------|------|
 | `buildings/overture-cities.js` | **The generalization point.** One entry per city: the `region` it reads + height-extrusion fallbacks. Also `effectiveHeight()`. |
 | `buildings/overture-3d.js` | Buildings provider. `near()` → `{ object_id, z_min, z_max, faces[] }`. |
-| `decor/overture-trees.js` | Trees provider. `near()` → `{ trees: [[lng,lat], ...] }`. |
-| `routes/decor.js` | `GET /decor/near`, `/decor/water`, `/decor/green` (`?bbox=&buffer_meters=`: scenery near a box) + `GET /decor/layers?bbox=` (which scenery layers an area has). |
+| `decor/overture-trees.js` | Trees provider. `near()` → `{ trees: [[lng,lat], ...], source }`: `osm_decor` where it covers the area, else OSM live. |
+| `decor/osm-trees-overpass.js` | Mapped trees and tree-bearing green areas from OSM through the shared Overpass cell source. |
+| `routes/decor.js` | `GET /decor/near`, `/decor/water`, `/decor/green` (`?bbox=&buffer_meters=`: scenery near a box) + `GET /decor/layers?bbox=` (the scenery layers, all worldwide). |
 | `scripts/copy-overture-to-prod.sh` | Push **one region's** buildings local → prod (prod has no DuckDB). |
 | `buildings/index.js` | Wires every `overture-cities.js` key to the buildings provider automatically. |
 
 Frontend: `three-mode.js` renders both layers. Buildings need only `buildings.source: 'overture'` on
 the city config. Scenery layers (trees, future parks/water) are **data-driven toggles**: on entering
-3D, the panel calls `GET /decor/layers?city=` and renders a checkbox per available layer that also has
+3D, the panel calls `GET /decor/layers?bbox=` and renders a checkbox per available layer that also has
 a frontend renderer (`DECOR_LAYERS` registry). Trees are an instanced layer (two draw calls), persisted
 in `cb_3d_trees_enabled` (default ON), reusing the buildings near-query + radius slider. Tree heights
 are assigned deterministically per point (the source carries no tree height).
