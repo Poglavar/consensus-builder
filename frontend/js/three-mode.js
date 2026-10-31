@@ -8922,6 +8922,9 @@
             xrayEnabled && floorCutawayLevel !== null && floorCutawayLevel < 0);
         renderedBuildingDisplaySnapshot = buildingDisplaySnapshot;
         renderedSceneVisualRevision = sceneVisualRevision;
+        // From the first drawn frame of an entry the 3D view covers the 2D map (map-shell.css);
+        // until then the map stays in view instead of an empty surface.
+        if (isActive && !document.body.classList.contains('three-scene-drawn')) document.body.classList.add('three-scene-drawn');
     }
 
     // ── Side by side comparison (three-compare.js) ─────────────────────────────────────────────
@@ -10378,7 +10381,7 @@
 
     function exit3D() {
         stopBuildingRadiusPreview?.();
-        try { document.body.classList.remove('three-mode-active'); } catch (_) { }
+        try { document.body.classList.remove('three-mode-active', 'three-scene-drawn'); } catch (_) { }
         cancelViewAngleHint(); // never let it land on the 2D map after the user has left
         if (!isActive) return;
         // Capture this before disposing the local scene frame. The Leaflet map intentionally stays

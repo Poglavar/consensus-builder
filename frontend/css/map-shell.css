@@ -210,10 +210,16 @@ body.three-mode-active :is(.map-editor-toolbar, .area-monitor-creation-panel) {
     display: none;
 }
 
-/* Both 3D views (model and photo) cover the 2D map entirely. It keeps its size and state, since
-   parcels load from its view and 3D builds on them, but none of it is drawn or reachable: before,
-   it showed through wherever the 3D canvas had not drawn yet, as when the window was resized. */
-body.three-mode-active #map {
+/* Both 3D views (model and photo) cover the 2D map entirely once the scene has drawn its first
+   frame (three-scene-drawn, set by three-mode.js). It keeps its size and state, since parcels load
+   from its view and 3D builds on them, but none of it is drawn or reachable: before, it showed
+   through wherever the 3D canvas had not drawn yet, as when the window was resized. Until that
+   first frame the map stays in view and the empty canvas is hidden. */
+body.three-mode-active.three-scene-drawn #map {
+    visibility: hidden;
+}
+
+body.three-mode-active:not(.three-scene-drawn) #three-container canvas {
     visibility: hidden;
 }
 
