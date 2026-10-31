@@ -1,6 +1,6 @@
 import { openLayerSection } from '../helpers/layers';
 import { test, expect } from '../helpers/fixtures';
-import { openCity, createSpace, showProposal, clickMapPoint, PARCEL_ID, proposalState, closeParcel, showProposalTab } from '../helpers/runtime';
+import { openCity, createSpace, showProposal, clickMapPoint, PARCEL_ID, proposalState, closeParcel } from '../helpers/runtime';
 import { Page } from '@playwright/test';
 
 // The original-cadastre toggle moved from the lower-left mode strip into the 2D Layers sheet
@@ -14,7 +14,7 @@ async function toggleCadastreView(page: Page, pressed: boolean) {
   await expect(page.locator('#layers-sheet')).toBeHidden();
 }
 
-test('consumed ground remains reachable through proposal breadcrumbs and the cadastral map', async ({ mockApi: page }) => {
+test('consumed ground remains reachable through design parcel tabs and the cadastral map', async ({ mockApi: page }) => {
   await openCity(page);
   const original = await page.evaluate(id => JSON.stringify((window as any).CadastralParcelRepository.get(id)), PARCEL_ID);
   const id = await createSpace(page, 'park');
@@ -23,19 +23,13 @@ test('consumed ground remains reachable through proposal breadcrumbs and the cad
   await showProposal(page, id);
   const expand = page.locator('#proposal-details-panel').getByRole('button', { name: 'Expand', exact: true });
   if (await expand.isVisible()) await expand.click();
-  // The breadcrumb is intentionally inside the collapsed Land & ownership disclosure, under Details.
-  await showProposalTab(page, 'details');
-  const landSection = page.locator('#proposal-details-panel details[data-proposal-section="land"]');
-  await landSection.locator('summary').click();
-  // Its parcels are an object list: the name outlines the parcel and stays pressed, opening
-  // nothing; the arrow opens it.
-  const crumb = page.locator(`.claim-breadcrumb-item[data-parcel-id="${PARCEL_ID}"]`);
-  const breadcrumb = crumb.locator('.claim-breadcrumb-link');
-  await expect(breadcrumb).toBeVisible();
-  await breadcrumb.click();
-  await expect(breadcrumb).toHaveAttribute('aria-pressed', 'true');
-  await expect(page.locator('#proposal-details-panel')).toBeVisible();
-  await crumb.locator('.claim-breadcrumb-open').click();
+  await page.locator('#click-stack [data-page="relation-parcels"]').click();
+  const row = page.locator('#click-stack .click-stack__choices[data-kind="parcels"] .click-stack__link');
+  const parcel = row.locator('.click-stack__chip');
+  await expect(parcel).toBeVisible();
+  await parcel.click();
+  await expect(parcel).toHaveAttribute('aria-pressed', 'true');
+  await row.locator('.click-stack__open').click();
   await expect(page.locator('#parcel-info-panel')).toBeVisible();
   await expect(page.locator('#parcel-info-title')).toContainText('1234');
   await expect(page.locator('#proposal-details-panel')).toBeHidden();
@@ -44,6 +38,7 @@ test('consumed ground remains reachable through proposal breadcrumbs and the cad
   // (its formed piece); the design two levels up is a "Designs on this parcel" link in the parcel's
   // card (docs/click-stack.md, "Rows, relationships and expansion").
   const designs = page.locator('#click-stack .click-stack__section[data-kind="parcels"] .click-stack__chip[data-action="preview"][data-kind="designs"]');
+  await page.locator('#click-stack [data-page="relation-designs"]').click();
   await expect(designs).toContainText(/park/i);
   await closeParcel(page);
   await toggleCadastreView(page, true);
@@ -51,6 +46,7 @@ test('consumed ground remains reachable through proposal breadcrumbs and the cad
   const paths = () => page.evaluate(() => (window as any).map.getPane('cadastreViewPane').querySelectorAll('path').length);
   await expect.poll(paths).toBeGreaterThan(0);
   await clickMapPoint(page, 15.9822, 45.80025);
+  await page.locator('#click-stack [data-page="parcel-info-tab"]').click();
   await expect(page.locator('#parcel-info-panel')).toBeVisible();
   await expect(page.locator('#parcel-info-title')).toContainText('1234');
   await closeParcel(page);

@@ -56,6 +56,7 @@ async function openCompactFromProposalList(page: import('@playwright/test').Page
   await expect(panel).toBeVisible();
   await expect(panel).toHaveClass(/is-hosted/);
   await expect(panel.locator('#proposal-details-minimize')).toBeHidden();
+  await page.locator('#click-stack [data-page="actions"]').click();
 }
 
 test.describe('compact proposal card actions @features', () => {
@@ -73,7 +74,7 @@ test.describe('compact proposal card actions @features', () => {
     await expect(footer.locator('.btn-edit-geometry')).toBeVisible();
     await expect(footer.locator('.btn-share-proposal')).toBeVisible();
     await expect(panel.locator('[data-proposal-tab="overview"]')).toHaveAttribute('aria-selected', 'true');
-    await expect(panel.locator('[data-proposal-tab="details"]')).toBeVisible();
+    await expect(panel.locator('[data-proposal-tab="details"]')).toHaveCount(0);
     const mapButton = footer.locator(`#proposal-action-btn-${proposalId}`);
     await expect(mapButton).toBeVisible();
 
@@ -105,7 +106,7 @@ test.describe('compact proposal card actions @features', () => {
     await expect(reopenedFooter.locator(`#proposal-action-btn-${proposalId}`)).toContainText(/Remove|Unapply/i);
   });
 
-  test('the Details tab and mobile 320px footer keep Share and Copy usable', async ({ mockApi: page }) => {
+  test('the Info tab and mobile 320px actions keep Share and Copy usable', async ({ mockApi: page }) => {
     await page.setViewportSize({ width: 320, height: 780 });
     await openCity(page);
     await page.evaluate(() => (window as any).i18n.setLanguage('en'));
@@ -117,11 +118,11 @@ test.describe('compact proposal card actions @features', () => {
     const panel = page.locator('#proposal-details-panel');
     const footer = panel.locator('#proposal-details-footer');
     const share = footer.locator('.btn-share-proposal');
-    const detailsTab = panel.locator('[data-proposal-tab="details"]');
+    const infoTab = page.locator('#click-stack [data-page="design-overview"]');
     await share.scrollIntoViewIfNeeded();
     await expect(share).toBeInViewport({ ratio: 1 });
-    await detailsTab.scrollIntoViewIfNeeded();
-    await expect(detailsTab).toBeInViewport({ ratio: 0.95 });
+    await infoTab.scrollIntoViewIfNeeded();
+    await expect(infoTab).toBeInViewport({ ratio: 0.95 });
     const dimensions = await page.evaluate(() => {
       const footer = document.querySelector('#proposal-details-footer') as HTMLElement;
       return { scrollWidth: footer.scrollWidth, clientWidth: footer.clientWidth };
@@ -132,8 +133,8 @@ test.describe('compact proposal card actions @features', () => {
     await share.click();
     await expectSharedAsDesign(page, proposalId);
 
-    await showProposalTab(page, 'details');
-    await expect(detailsTab).toHaveAttribute('aria-selected', 'true');
+    await showProposalTab(page, 'overview');
+    await expect(infoTab).toHaveAttribute('aria-selected', 'true');
     const record = panel.locator('#proposal-details-content details[data-proposal-section="record"]');
     await record.scrollIntoViewIfNeeded();
     if (!(await record.evaluate(element => (element as HTMLDetailsElement).open))) {

@@ -378,31 +378,21 @@ test.describe('Click stack @core', () => {
     });
   }
 
-  test('design Details scrolls inside the click stack and its actions remain reachable',async({mockApi:page},testInfo)=>{
+  test('design Info keeps its record and separate actions reachable',async({mockApi:page})=>{
     await openCity(page);
     const id=await createSpace(page,'park');
-    await page.evaluate(parcelId=>{
-      const w=window as any;
-      for(let i=0;i<14;i++)w.proposalStorage.addProposal({goal:'as-is',title:`Related design ${i}`,cadastreParcelIds:[parcelId],lifecycleStatus:'Active',applied:false});
-    },PARCEL_ID);
     for(const width of [1280,390]){
       await page.setViewportSize({width,height:width===1280?600:844});
       await page.keyboard.press('Escape');
       await clickDesignOnMap(page,id);
       const panel=page.locator('#click-stack #proposal-details-panel.is-hosted');
-      await panel.getByRole('tab',{name:'Details',exact:true}).click();
-      const land=panel.locator('details[data-proposal-section="land"]');
-      if(!await land.evaluate(el=>(el as HTMLDetailsElement).open)) await land.locator(':scope > summary').click();
-      const scroller=width>=768?panel.locator('.panel-body'):page.locator('#click-stack .click-stack__sections');
-      await expect.poll(()=>scroller.evaluate(el=>el.scrollHeight-el.clientHeight)).toBeGreaterThan(20);
-      await scroller.hover();
-      const top=await scroller.evaluate(el=>el.scrollTop);
-      await page.mouse.wheel(0,600);
-      await expect.poll(()=>scroller.evaluate(el=>el.scrollTop)).toBeGreaterThan(top);
-      await page.screenshot({path:testInfo.outputPath(`design-details-scroll-${width}.png`)});
-      // Add to plan heads the design card, so the hosted footer has five actions (7cc412330).
+      await page.locator('#click-stack [data-page="design-overview"]').click();
+      const record=panel.locator('details[data-proposal-section="record"]');
+      if(!await record.evaluate(el=>(el as HTMLDetailsElement).open)) await record.locator(':scope > summary').click();
+      await expect(record.locator('.proposal-id-copy')).toBeVisible();
+      await expect(panel.locator('[data-proposal-section="land"]')).toHaveCount(0);
+      await page.locator('#click-stack [data-page="actions"]').click();
       const actions=panel.locator('.proposal-primary-actions > button:visible');
-      await expect(actions).toHaveCount(5);
       await actions.last().scrollIntoViewIfNeeded();
       await expect(actions.last()).toBeVisible();
     }

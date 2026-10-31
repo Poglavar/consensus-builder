@@ -62,7 +62,7 @@ Both desktop and mobile use one **content tab bar** at the top of the expanded b
 above any instance selector. Existing panel tabs are promoted into this bar, retaining
 their editors, controls, loading behavior and state:
 
-- Designs: Info, Details (or Input parcels / Output parcels for a parcel layout), Actions,
+- Designs: Info, Actions, Input parcels / Output parcels for a parcel layout,
   and tabs for related Plans and parcels where present. The model view keeps its figures
   and sliders in Info; Actions opens the same design's Actions tab in 2D.
 - Plans: Designs, Agreements, Actions and Info. Agreements always has a tab, including
@@ -173,11 +173,12 @@ replace one with its own (the model view reads buildings from its scene).
     spatial rows, and clicking frames and highlights them without leaving the agreement. Person
     rows inspect their contributed and allocated land. Hash-only outputs remain non-spatial.
   - Design: the proposal's actions panel itself (2026-10-23), without its own − and ×: an
-    Info tab (name, rung badges, type, author, parcel count and one area), a Details tab
-    (land and ownership, verification, the record), and a separate Actions tab; related
-    plans have their own tab. A parcel layout's panel has Overview (name,
+    Info tab (name, rung badges, type, author, parcel count, one area, verification and the
+    record), and a separate Actions tab; related
+    plans have their own tab. Land and ownership inspection belongs to the parcel tabs, without
+    a duplicate land disclosure in the design. A parcel layout's panel has Overview (name,
     badges, author, site area), Input parcels (the cadastral parcels it takes) and Output parcels
-    (the plots it forms) instead, and no Share: its agreement publishes it. Its 2D section adds no
+    (the plots it forms) instead. Share remains in Actions. Its 2D section adds no
     parcel links of its own, since those tabs list them. Other designs, and every design in the
     model view's section (which has no panel), list the parcels as Input parcels and Output
     parcels tabs, in that order. The panel re-renders when the design's formed parcels change, so

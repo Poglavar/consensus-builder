@@ -24,8 +24,11 @@ for (const width of [390, 1280]) {
     await stack.locator(`#proposal-action-btn-${id}`).click();
     await expect.poll(() => page.evaluate(id => !!(window as any).proposalStorage.getProposal(id).applied, id)).toBe(false);
     await expect(tabs.locator('[data-page="actions"]')).toHaveAttribute('aria-selected', 'true');
-    await tabs.locator('[data-page="design-details"]').click();
-    await expect(stack.locator('[data-proposal-tabpanel="details"]')).toBeVisible();
+    await tabs.locator('[data-page="design-overview"]').click();
+    await expect(tabs.locator('[data-page="design-details"]')).toHaveCount(0);
+    await expect(stack.locator('[data-proposal-section="land"]')).toHaveCount(0);
+    await stack.locator('[data-proposal-section="record"] > summary').click();
+    await expect(stack.locator('.proposal-id-copy')).toBeVisible();
     await expect(stack.locator('.proposal-primary-actions')).toBeHidden();
 
     await page.evaluate(async id => {

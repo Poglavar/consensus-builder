@@ -118,6 +118,8 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
     // PERFORMANCE: Start timing parent parcel processing
     const perfStartParentIds = performance.now();
 
+    const isParcelLayout = fullProposal.goal === 'parcel-layout';
+
     // The proposal has one durable land declaration. Typology-specific parent arrays are not
     // alternate sources of truth and generated output ids never appear in this ancestor list.
     const cadastreParcelIds = Array.isArray(fullProposal.cadastreParcelIds)
@@ -166,7 +168,7 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
     // Resolve only the first batch synchronously. Remaining rows resolve via setupLazyList
     // (string ids → buildAncestorRow on render) so initial open cost is bounded by MAX_LIST_INITIAL,
     // not by cadastreParcelIds.length.
-    const parentParcels = cadastreParcelIds.slice(0, MAX_LIST_INITIAL).map(buildAncestorRow).filter(Boolean);
+    const parentParcels = isParcelLayout ? cadastreParcelIds.slice(0, MAX_LIST_INITIAL).map(buildAncestorRow).filter(Boolean) : [];
     const perfEndParcelFeatures = performance.now();
 
     // Site and source-parcel area are different extents. Inspect all retained source records,
@@ -331,7 +333,7 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
         && window.__claims?.materializedParcelIdsOf)
         ? window.__claims.materializedParcelIdsOf(fullProposal)
         : [];
-    const descendantItemsInitial = descendantKeys.slice(0, MAX_LIST_INITIAL).map(renderDescendantItem).join('');
+    const descendantItemsInitial = isParcelLayout ? descendantKeys.slice(0, MAX_LIST_INITIAL).map(renderDescendantItem).join('') : '';
     const descendantItemsRemaining = descendantKeys.slice(MAX_LIST_INITIAL);
 
     // PERFORMANCE: Start timing HTML generation
@@ -646,92 +648,6 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
     const escapedProposalDisplayId = proposalDisplayId && typeof escapeHtml === 'function'
         ? escapeHtml(proposalDisplayId)
         : proposalDisplayId;
-    const parcelSetRelationsHtml = (() => {
-        const relationApi = (typeof window !== 'undefined') ? window.ParcelSetRelations : null;
-        if (!relationApi || typeof relationApi.findParcelSetRelations !== 'function') return '';
-
-        const activeProposal = fullProposal || proposal;
-        const declaredIds = relationApi.normalizeParcelIds(activeProposal);
-        if (!declaredIds.length) return '';
-
-        let allProposals = [];
-        try {
-            allProposals = (typeof proposalStorage !== 'undefined'
-                && typeof proposalStorage.getAllProposals === 'function')
-                ? proposalStorage.getAllProposals()
-                : [];
-        } catch (error) {
-            console.warn('[showProposalInfo] Could not enumerate declared-reference matches:', error);
-        }
-        const relations = relationApi.findParcelSetRelations(activeProposal, allProposals);
-        const shownRelations = relations.slice(0, 12);
-        const exactCount = relations.filter(relation => relation.kind === 'same').length;
-        const overlapCount = relations.length - exactCount;
-        const setHash = typeof activeProposal?.parcelSet?.setHash === 'string'
-            ? activeProposal.parcelSet.setHash
-            : '';
-        const shortHash = setHash ? `${setHash.slice(0, 13)}…${setHash.slice(-6)}` : '';
-        const summary = relations.length
-            ? tProposal(
-                'panel.proposal.parcelSet.summary',
-                '{{count}} declared cadastral references. Of {{total}} loaded matches, {{exact}} use the same references and {{overlap}} share some. Showing {{shown}}.',
-                { count: declaredIds.length, total: relations.length, exact: exactCount, overlap: overlapCount, shown: shownRelations.length }
-            )
-            : tProposal(
-                'panel.proposal.parcelSet.noRelated',
-                '{{count}} declared cadastral references. No other loaded proposal shares these references.',
-                { count: declaredIds.length }
-            );
-        const relationLabels = {
-            same: tProposal('panel.proposal.parcelSet.relationSame', 'Same references'),
-            'contains-target': tProposal('panel.proposal.parcelSet.relationContains', 'Includes all these references'),
-            'inside-target': tProposal('panel.proposal.parcelSet.relationInside', 'Subset of these references'),
-            overlap: tProposal('panel.proposal.parcelSet.relationOverlap', 'Some shared references')
-        };
-        const rows = shownRelations.map(relation => {
-            const candidate = relation.proposal || {};
-            const candidateId = safeAgentText(relation.proposalId);
-            const name = window.ProposalDisplayText.text(candidate.title || candidate.name || relation.proposalId, candidate);
-            const title = safeAgentText(name);
-            const author = candidate.author ? safeAgentText(candidate.author) : '';
-            const shared = safeAgentText(tProposal(
-                'panel.proposal.parcelSet.sharedCount',
-                '{{shared}} of {{count}} references shared',
-                { shared: relation.sharedCount, count: relation.targetCount }
-            ));
-            const lifecycle = typeof getProposalLifecycleLabel === 'function'
-                ? safeAgentText(getProposalLifecycleLabel(getProposalLifecycleKey(candidate)))
-                : '';
-            // An object-list item (bindProposalDetailsObjectLists): the row outlines that design,
-            // its arrow opens it.
-            return `
-                <div class="proposal-parcel-set-relation-row" data-object-kind="design" data-object-id="${candidateId}">
-                    <button type="button" class="cb-option proposal-parcel-set-relation" data-related-proposal-id="${candidateId}" data-object-preview aria-pressed="false">
-                        <span class="cb-option__text proposal-parcel-set-relation-main">
-                            <span class="cb-option__title">${title}</span>
-                            <span class="cb-option__desc">${safeAgentText(relationLabels[relation.kind])} · ${shared}${author ? ` · ${author}` : ''}</span>
-                        </span>
-                        ${lifecycle ? `<span class="cb-badge proposal-parcel-set-relation-state">${lifecycle}</span>` : ''}
-                    </button>
-                    ${proposalDetailsOpenButtonHtml(name, `data-open-design-id="${candidateId}"`)}
-                </div>`;
-        }).join('');
-
-        return `
-            <section class="proposal-parcel-set-card" aria-label="${safeAgentText(tProposal('panel.proposal.parcelSet.title', 'Proposals sharing references'))}">
-                <div class="proposal-parcel-set-head">
-                    <div>
-                        <div class="proposal-funding-eyebrow">${safeAgentText(tProposal('panel.proposal.parcelSet.eyebrow', 'Declared cadastral references'))}</div>
-                        <h3>${safeAgentText(tProposal('panel.proposal.parcelSet.title', 'Proposals sharing references'))}</h3>
-                    </div>
-                    <span class="cb-badge cb-badge--applied proposal-parcel-set-count">${declaredIds.length}</span>
-                </div>
-                <p>${safeAgentText(summary)}</p>
-                ${shortHash ? `<div class="proposal-parcel-set-hash" title="${safeAgentText(setHash)}"><span>${safeAgentText(tProposal('panel.proposal.parcelSet.hash', 'Recorded set hash'))}</span><code>${safeAgentText(shortHash)}</code></div>` : ''}
-                ${rows ? `<div class="proposal-parcel-set-relations">${rows}</div>` : ''}
-            </section>`;
-    })();
-
     const createdAtLabel = fullProposal.createdAt
         ? new Date(fullProposal.createdAt).toLocaleString(undefined, {
             year: 'numeric',
@@ -777,10 +693,8 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
         <summary><span class="proposal-detail-section-label"><span>${safeAgentText(title)}</span><small>${safeAgentText(hint)}</small></span><i class="fas fa-chevron-down" aria-hidden="true"></i></summary>
         <div class="proposal-detail-section-content">`;
     const sectionEnd = '</div></details>';
-    // Two tabs (Overview and Details): the overview is the name, its rung, type, author and size; the
-    // records behind it are under Details. A parcel layout instead has Overview, Input parcels (the
-    // cadastral parcels it takes) and Output parcels (the plots it forms), which say what Details
-    // would. The actions stay in the footer under every tab.
+    // Info contains metadata, provenance and the record. Parcel layouts retain their input/output
+    // tabs; other designs use the stack's parcel tabs for land navigation.
     // The parcel lists: the cadastral parcels a design takes and the parcels it forms. A parcel layout
     // shows each on a tab of its own, counted in the tab, so without the heading.
     const outputCount = descendantKeys.length;
@@ -800,114 +714,6 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
         'proposal-parcels-list', 'proposal-parent-parcels-list', parentParcelItemsInitial, heading);
     const outputListHtml = heading => listBlock(tProposal('panel.proposal.sections.generatedParcels', 'Generated parcels:'), outputCount,
         'proposal-descendants-list', 'proposal-descendants-list', descendantItemsInitial, heading);
-    const landSectionHtml = `
-            ${sectionStart('land', tProposal('panel.proposal.detailsSections.land', 'Land & ownership'), tProposal('panel.proposal.detailsSections.landHintDesign', 'Declared references: {{count}} · designs on the same parcels', { count: cadastreParcelIds.length }))}
-            ${parcelSetRelationsHtml}
-            ${areaSummary.declaredCount ? `<div class="metric-group" data-proposal-area-basis="source-parcels" data-area-complete="${areaSummary.sourceComplete}">
-                <span class="metric-label">${areaSummary.sourceComplete
-                    ? tProposal('panel.proposal.metrics.sourceArea', 'Source parcel area sum:')
-                    : tProposal('panel.proposal.metrics.availableSourceArea', 'Available source parcel area:')}</span>
-                <span class="metric-value">${areaText(areaSummary.sourceAreaM2)}</span>
-            </div><p class="proposal-area-coverage"><small>${tProposal('panel.proposal.metrics.areaCoverage', 'Areas available for {{known}} of {{total}} declared references.', {
-                known: areaSummary.sourceCount, total: areaSummary.declaredCount
-            })}</small></p>` : ''}
-            ${inputListHtml(true)}
-            ${outputListHtml(true)}
-            <!-- Ownership & Acquisition Stats Section -->
-            ${(() => {
-            // Check if proposal has ownershipAndAcquisitionStats
-            const roadProposal = fullProposal.roadProposal || proposal.roadProposal;
-            const stats = roadProposal?.definition?.metadata?.ownershipAndAcquisitionStats ||
-                fullProposal.ownershipAndAcquisitionStats ||
-                proposal.ownershipAndAcquisitionStats;
-
-            if (!stats) {
-                return '';
-            }
-
-            const statsItems = [];
-
-            if (stats.ownerEntryCount !== null && stats.ownerEntryCount !== undefined) {
-                statsItems.push(`
-                    <div class="metric-group">
-                        <span class="metric-label">${tProposal('panel.proposal.stats.ownerEntryCount', 'Listed owner entries:')}</span>
-                        <span class="metric-value">${stats.ownerEntryCount}</span>
-                    </div>
-                `);
-            }
-            if (stats.ownershipCounts) {
-                if (stats.ownershipCounts.individual !== null && stats.ownershipCounts.individual !== undefined) {
-                    statsItems.push(`
-                        <div class="metric-group">
-                            <span class="metric-label">${tProposal('panel.proposal.stats.ownedByIndividuals', 'Parcels classed as individually owned:')}</span>
-                            <span class="metric-value">${stats.ownershipCounts.individual}</span>
-                        </div>
-                    `);
-                }
-                if (stats.ownershipCounts.company !== null && stats.ownershipCounts.company !== undefined) {
-                    statsItems.push(`
-                        <div class="metric-group">
-                            <span class="metric-label">${tProposal('panel.proposal.stats.ownedByCompanies', 'Parcels classed as company owned:')}</span>
-                            <span class="metric-value">${stats.ownershipCounts.company}</span>
-                        </div>
-                    `);
-                }
-                if (stats.ownershipCounts.government !== null && stats.ownershipCounts.government !== undefined) {
-                    statsItems.push(`
-                        <div class="metric-group">
-                            <span class="metric-label">${tProposal('panel.proposal.stats.ownedByGovernment', 'Parcels classed as publicly owned:')}</span>
-                            <span class="metric-value">${stats.ownershipCounts.government}</span>
-                        </div>
-                    `);
-                }
-                if (stats.ownershipCounts.institution !== null && stats.ownershipCounts.institution !== undefined) {
-                    statsItems.push(`
-                        <div class="metric-group">
-                            <span class="metric-label">${tProposal('panel.proposal.stats.ownedByInstitution', 'Parcels classed as institution owned:')}</span>
-                            <span class="metric-value">${stats.ownershipCounts.institution}</span>
-                        </div>
-                    `);
-                }
-                if (stats.ownershipCounts.mixed !== null && stats.ownershipCounts.mixed !== undefined) {
-                    statsItems.push(`
-                        <div class="metric-group">
-                            <span class="metric-label">${tProposal('panel.proposal.stats.ownershipMixed', 'Parcels classed as mixed ownership:')}</span>
-                            <span class="metric-value">${stats.ownershipCounts.mixed}</span>
-                        </div>
-                    `);
-                }
-            }
-            if (Number.isFinite(stats.totalMarketPrice) && stats.currency) {
-                statsItems.push(`
-                    <div class="metric-group">
-                        <span class="metric-label">${tProposal('panel.proposal.stats.totalMarketPrice', 'Modeled total parcel value:')}</span>
-                        <span class="metric-value">${CbFormat.formatMoney(stats.totalMarketPrice, stats.currency, { maxFractionDigits: 0 })}</span>
-                    </div>
-                `);
-            }
-            if (stats.totalAcquiringDifficulty !== null && stats.totalAcquiringDifficulty !== undefined) {
-                statsItems.push(`
-                    <div class="metric-group">
-                        <span class="metric-label">${tProposal('panel.proposal.stats.totalAcquiringDifficulty', 'Modeled acquisition difficulty:')}</span>
-                        <span class="metric-value">${Math.round(stats.totalAcquiringDifficulty).toLocaleString('hr-HR')}</span>
-                    </div>
-                `);
-            }
-
-            if (statsItems.length === 0) {
-                return '';
-            }
-
-            return `
-            <hr class="proposal-details-divider">
-            <div class="metric-group">
-                <div class="metric-label proposal-ownership-stats-heading">${tProposal('panel.proposal.sections.ownershipStats', 'Modeled ownership and acquisition')}</div>
-            </div>
-            <p><small data-ownership-estimates>${tProposal('panel.proposal.stats.summaryScope', 'Estimates from proposal metadata; owner entries may repeat across parcels and include assumed owners.')}</small></p>
-            ${statsItems.join('')}
-            `;
-        })()}
-            ${sectionEnd}`;
     const verificationSectionHtml = `
             ${agentProvenanceHtml ? sectionStart('verification', tProposal('panel.proposal.detailsSections.verification', 'Verification & history'), tProposal('panel.proposal.detailsSections.verificationHint', 'Lens, evidence and activity')) : ''}
             ${agentProvenanceHtml}
@@ -925,8 +731,7 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
                     <button type="button" class="btn btn-quiet proposal-id-copy" title="${escapedProposalDisplayId}" onclick="copyProposalIdToClipboard(${inlineJsArg(String(fullProposal.proposalId || proposal.proposalId || ''))})"><i class="fas fa-copy" aria-hidden="true"></i> ${tProposal('panel.proposal.copyId', 'Copy local ID')}</button>
                 </div>` : ''}
             ${sectionEnd}`;
-    const isParcelLayout = (fullProposal || proposal).goal === 'parcel-layout';
-    const detailsTabs = isParcelLayout ? ['overview', 'inputs', 'outputs'] : ['overview', 'details'];
+    const detailsTabs = isParcelLayout ? ['overview', 'inputs', 'outputs'] : ['overview'];
     if (document.getElementById('proposal-details-content')?.dataset.proposalId !== String(proposalKey)
         || !detailsTabs.includes(proposalDetailsTab)) proposalDetailsTab = 'overview';
     const tabButton = (id, label) => `<button type="button" class="cb-tab proposal-details-tab" role="tab" data-proposal-tab="${id}"
@@ -937,7 +742,7 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
                 ${tabButton('overview', tProposal('panel.proposal.tabs.overview', 'Overview'))}
                 ${isParcelLayout ? `${tabButton('inputs', `${tProposal('agreement.workflow.inputs', 'Input parcels')} (${cadastreParcelIds.length})`)}
                 ${tabButton('outputs', `${tProposal('agreement.workflow.outputs', 'Output parcels')} (${outputCount})`)}`
-                : tabButton('details', tProposal('proposalDrafts.tabs.details', 'Details'))}
+                : ''}
             </div>
             <div class="proposal-details-tabpanel" role="tabpanel" data-proposal-tabpanel="overview"${proposalDetailsTab === 'overview' ? '' : ' hidden'}>
             <div class="proposal-badges-row">
@@ -989,28 +794,24 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
                 <span class="metric-label">${tProposal('panel.proposal.metrics.siteArea', 'Site area:')}</span>
                 <span class="metric-value">${areaText(areaSummary.siteAreaM2)}</span>
             </div>` : ''}
-            ${!areaSummary.hasSite && areaSummary.declaredCount ? `<div class="metric-group" data-proposal-area-basis="source-parcels-overview">
-                <span class="metric-label">${tProposal('panel.proposal.metrics.area', 'Area:')}</span>
+            ${!areaSummary.hasSite && areaSummary.declaredCount ? `<div class="metric-group" data-proposal-area-basis="source-parcels-overview" data-area-complete="${areaSummary.sourceComplete}">
+                <span class="metric-label">${areaSummary.sourceComplete ? tProposal('panel.proposal.metrics.area', 'Area:') : tProposal('panel.proposal.metrics.availableSourceArea', 'Available source parcel area:')}</span>
                 <span class="metric-value">${areaText(areaSummary.sourceAreaM2)}</span>
             </div>` : ''}
+            ${!areaSummary.hasSite && areaSummary.declaredCount && !areaSummary.sourceComplete ? `<p class="proposal-area-coverage"><small>${tProposal('panel.proposal.metrics.areaCoverage', 'Areas available for {{known}} of {{total}} declared references.', { known: areaSummary.sourceCount, total: areaSummary.declaredCount })}</small></p>` : ''}
             ${!areaSummary.hasSite && !areaSummary.declaredCount ? `<div class="metric-group" data-proposal-area-basis="unknown">
                 <span class="metric-label">${tProposal('panel.proposal.metrics.area', 'Area:')}</span><span class="metric-value">—</span>
             </div>` : ''}
             </div>
-            ${isParcelLayout ? `${verificationSectionHtml}
+            ${verificationSectionHtml}
+            ${recordSectionHtml}
             </div>
-            <div class="proposal-details-tabpanel" role="tabpanel" data-proposal-tabpanel="inputs"${proposalDetailsTab === 'inputs' ? '' : ' hidden'}>
+            ${isParcelLayout ? `<div class="proposal-details-tabpanel" role="tabpanel" data-proposal-tabpanel="inputs"${proposalDetailsTab === 'inputs' ? '' : ' hidden'}>
             ${inputListHtml(false)}
             </div>
             <div class="proposal-details-tabpanel" role="tabpanel" data-proposal-tabpanel="outputs"${proposalDetailsTab === 'outputs' ? '' : ' hidden'}>
             ${outputListHtml(false)}
-            </div>` : `
-            </div>
-            <div class="proposal-details-tabpanel" role="tabpanel" data-proposal-tabpanel="details"${proposalDetailsTab === 'details' ? '' : ' hidden'}>
-            ${landSectionHtml}
-            ${verificationSectionHtml}
-            ${recordSectionHtml}
-            </div>`}
+            </div>` : ''}
         </div>
     `;
 
@@ -1029,14 +830,7 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
         preservedScrollTop = preserveScrollPosition;
     }
 
-    // Show loading spinner briefly while rendering (for large proposals)
-    // WHY HTML: The HTML string contains the entire proposal details UI:
-    //   - Design metadata (title, description, author, dates)
-    //   - Status badges (draft or published; applied)
-    //   - List of all ancestor parcels with their details (parcel numbers, owners)
-    //   - Ancestors/descendants proposals
-    //   - Ownership & acquisition stats
-    // This HTML is inserted into #proposal-details-content to display the proposal info panel
+    // Render metadata and the parcel layout's input/output lists into the hosted panel.
     const detailsContent = document.getElementById('proposal-details-content');
     const sameProposal = detailsContent?.dataset.proposalId === String(proposalKey);
     const openSections = new Set(sameProposal
@@ -1062,12 +856,6 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
                 detailsContent.querySelectorAll('[data-proposal-tabpanel]').forEach(panel => { panel.hidden = panel.dataset.proposalTabpanel !== proposalDetailsTab; });
             });
         });
-        // Claims breadcrumb: the BASE parcels this proposal stands on, always one tap away.
-        try {
-            if (window.__claimsUi && typeof window.__claimsUi.injectProposalBreadcrumb === 'function') {
-                window.__claimsUi.injectProposalBreadcrumb(detailsContent.querySelector('[data-proposal-section="land"] .proposal-detail-section-content'), fullProposal || proposal);
-            }
-        } catch (_) { }
         // "Based on" opens the source this browser holds, in this panel.
         detailsContent?.querySelectorAll('.proposal-based-on-link[data-lineage-local-id]').forEach(button => {
             button.addEventListener('click', event => {

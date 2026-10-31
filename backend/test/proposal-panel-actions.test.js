@@ -174,27 +174,27 @@ describe('proposal details action footer', () => {
     it('shows unknown source areas as an em dash and gives partial sums their actual coverage', () => {
         const proposal = { proposalId: 'areas', cadastreParcelIds: ['source-1', 'source-2'] };
         let content = parse(render(proposal).content.innerHTML);
-        expect(content('[data-proposal-area-basis="source-parcels"] .metric-value').text()).toBe('—');
+        expect(content('[data-proposal-area-basis="source-parcels-overview"] .metric-value').text()).toBe('—');
         expect(content('.proposal-area-coverage').text()).toBe('Areas available for 0 of 2 declared references.');
         content = parse(render(proposal, { sourceFeature: { type: 'Feature', geometry: null,
             properties: { parcelId: 'source-1', calculated_area: 100 } } }).content.innerHTML);
-        expect(content('[data-proposal-area-basis="source-parcels"]').attr('data-area-complete')).toBe('false');
-        expect(content('[data-proposal-area-basis="source-parcels"] .metric-label').text()).toBe('Available source parcel area:');
-        expect(content('[data-proposal-area-basis="source-parcels"] .metric-value').text()).toBe('100 m²');
+        expect(content('[data-proposal-area-basis="source-parcels-overview"]').attr('data-area-complete')).toBe('false');
+        expect(content('[data-proposal-area-basis="source-parcels-overview"] .metric-label').text()).toBe('Available source parcel area:');
+        expect(content('[data-proposal-area-basis="source-parcels-overview"] .metric-value').text()).toBe('100 m²');
         expect(content('.proposal-area-coverage').text()).toBe('Areas available for 1 of 2 declared references.');
     });
 
     it('sums every retained source area even when only twenty parcel rows are rendered', () => {
         const sourceFeatures = Array.from({ length: 25 }, (_, i) => ({ type: 'Feature', geometry: null,
             properties: { parcelId: `source-${i}`, calculatedArea: 10 } }));
-        const proposal = { proposalId: 'areas', cadastreParcelIds: sourceFeatures.map(feature => feature.properties.parcelId) };
+        const proposal = { proposalId: 'areas', goal: 'parcel-layout', cadastreParcelIds: sourceFeatures.map(feature => feature.properties.parcelId) };
         const result = render(proposal, { sourceFeatures });
         const content = parse(result.content.innerHTML);
         expect(result.window.CadastralParcelRepository.get).toHaveBeenCalledTimes(20);
         expect(content('.proposal-parcel-row')).toHaveLength(20);
-        expect(content('[data-proposal-area-basis="source-parcels"]').attr('data-area-complete')).toBe('true');
-        expect(content('[data-proposal-area-basis="source-parcels"] .metric-value').text()).toBe('250 m²');
-        expect(content('.proposal-area-coverage').text()).toBe('Areas available for 25 of 25 declared references.');
+        expect(content('[data-proposal-area-basis="source-parcels-overview"]').attr('data-area-complete')).toBe('true');
+        expect(content('[data-proposal-area-basis="source-parcels-overview"] .metric-value').text()).toBe('250 m²');
+        expect(content('.proposal-area-coverage')).toHaveLength(0);
     });
 
     it('measures the site separately even when all source parcel areas are known', () => {
@@ -205,26 +205,12 @@ describe('proposal details action footer', () => {
         const siteArea = Number(content('[data-proposal-area-basis="site"] .metric-value').text().replace(/[^\d]/g, ''));
         expect(siteArea).toBeGreaterThan(12000);
         expect(siteArea).toBeLessThan(12500);
-        expect(content('[data-proposal-area-basis="source-parcels"] .metric-value').text()).toBe('100 m²');
+        expect(content('[data-proposal-area-basis="source-parcels-overview"]')).toHaveLength(0);
     });
 
-    it('counts all loaded reference matches before limiting the visible list', () => {
-        const parcelSet = { parcelSource: { sourceId: 'hr-cadastre', snapshotId: null } };
-        const proposal = { proposalId: 'target', cadastreParcelIds: ['source-1', 'source-2'], parcelSet };
-        const relatedProposals = Array.from({ length: 15 }, (_, i) => ({
-            proposalId: `related-${i}`, title: `Reference match ${i}`, parcelSet,
-            cadastreParcelIds: i < 13 ? ['source-1', 'source-2'] : ['source-2']
-        }));
-        const card = parse(render(proposal, { relatedProposals }).content.innerHTML)('.proposal-parcel-set-card');
-        expect(card.find('h3').text()).toBe('Proposals sharing references');
-        expect(card.find('p').text()).toBe('2 declared cadastral references. Of 15 loaded matches, 13 use the same references and 2 share some. Showing 12.');
-        expect(card.find('[data-related-proposal-id]')).toHaveLength(12);
-        expect(card.text()).not.toContain('Overlapping land');
-    });
-
-    it.each([false, true])('does not describe unloaded source geometry as removed or pooled (parcel layout: %s)', layout => {
+    it('does not describe an unloaded layout input as removed or pooled', () => {
         const proposal = { proposalId: 'source-state', cadastreParcelIds: ['source-1'],
-            ...(layout ? { goal: 'parcel-layout', parcelLayout: { plots: [] } } : {}) };
+            goal: 'parcel-layout', parcelLayout: { plots: [] } };
         const row = parse(render(proposal).content.innerHTML)('.proposal-parcel-row');
         expect(row.attr('data-reference-state')).toBe('unloaded');
         expect(row.attr('data-parcel-replaced')).toBeUndefined();
@@ -310,20 +296,20 @@ describe('proposal details action footer', () => {
         expect(park('.proposal-publish-later').length).toBe(0);
     });
 
-    it('gives a parcel layout Overview, Input parcels and Output parcels, and every other design Overview and Details', () => {
+    it('keeps metadata and the record in Info, with separate parcel tabs for layouts', () => {
         const tabs = content => content('[data-proposal-tab]').map((_, tab) => content(tab).attr('data-proposal-tab')).get();
         const layout = parse(render({ proposalId: 'layout-3', goal: 'parcel-layout', title: 'Layout', cadastreParcelIds: ['source-1', 'source-2'], parcelLayout: { plots: [] } }).content.innerHTML);
         expect(tabs(layout)).toEqual(['overview', 'inputs', 'outputs']);
         expect(layout('[data-proposal-tab="inputs"]').text().trim()).toBe('Input parcels (2)');
         expect(layout('[data-proposal-tabpanel="inputs"] .proposal-parcel-row')).toHaveLength(2);
-        // The tabs say what Land & ownership, the record and the source-parcel count said.
-        expect(layout('[data-proposal-section]')).toHaveLength(0);
+        expect(layout('[data-proposal-tabpanel="overview"] [data-proposal-section="record"]')).toHaveLength(1);
+        expect(layout('[data-proposal-section="land"]')).toHaveLength(0);
         expect(layout('.metric-label').map((_, label) => layout(label).text()).get()).not.toContain('Source parcels:');
 
         const park = parse(render({ proposalId: 'park-4', goal: 'park', title: 'Park', cadastreParcelIds: ['source-1'] }).content.innerHTML);
-        expect(tabs(park)).toEqual(['overview', 'details']);
-        expect(park('[data-proposal-tabpanel="details"] [data-proposal-section="land"] .proposal-parcel-row')).toHaveLength(1);
-        expect(park('[data-proposal-tabpanel="details"] [data-proposal-section="record"]')).toHaveLength(1);
+        expect(tabs(park)).toEqual(['overview']);
+        expect(park('[data-proposal-section="land"], .proposal-parcel-row, [data-ownership-estimates]')).toHaveLength(0);
+        expect(park('[data-proposal-tabpanel="overview"] [data-proposal-section="record"]')).toHaveLength(1);
     });
 
     it('re-renders a layout\'s counts once its plots replay onto the map after the panel opened', () => {
@@ -573,29 +559,5 @@ describe('proposal details object lists', () => {
         const name = content.querySelector('.proposal-parcel-row [data-object-preview]');
         move('mouseover', name);
         expect(hovered()).toEqual([['former:source-1']]);
-    });
-
-    it('outlines a design sharing the references, and only its arrow opens it', () => {
-        const parcelSet = { parcelSource: { sourceId: 'hr-cadastre', snapshotId: null } };
-        const relatedProposals = [{ proposalId: 'related-1', title: 'Neighbour', parcelSet, cadastreParcelIds: ['source-1'] }];
-        const html = render({ proposalId: 'target', cadastreParcelIds: ['source-1'], parcelSet }, { relatedProposals }).content.innerHTML;
-        const { content, context, calls, hovered, move } = bindLists(html);
-        const row = content.querySelector('.proposal-parcel-set-relation-row');
-        const name = row.querySelector('[data-object-preview]');
-        expect(row.querySelector('.fa-chevron-right')).toBeNull();
-        move('focusin', name);
-        expect(hovered()).toEqual([['designs:related-1']]);
-
-        const open = row.querySelector('.object-list__open');
-        expect(open.getAttribute('aria-label')).toBe('Open Neighbour');
-        open.click();
-        expect(context.focusProposalDetails).toHaveBeenCalledWith('related-1', { centerOnProposal: true, showDetails: true });
-        expect(name.getAttribute('aria-pressed')).toBe('false');
-        expect(calls.inspect).toEqual([]);
-
-        name.click();
-        expect(context.focusProposalDetails).toHaveBeenCalledTimes(1);
-        expect(name.getAttribute('aria-pressed')).toBe('true');
-        expect(calls.inspect).toEqual([['designs:related-1']]);
     });
 });

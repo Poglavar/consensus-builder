@@ -1,13 +1,9 @@
 import { openPlanActions } from '../helpers/plan-actions';
-// Exercise proposal action buttons and assert the resulting UI and stored state: the related-design
-// link, the grain-score Repeat control, and Share publishing a design (POST /designs).
+// Exercise proposal action buttons and assert the resulting UI and stored state:
+// the grain-score Repeat control and Share publishing a design (POST /designs).
 import { test, expect } from '../helpers/fixtures';
-import { openCity, createSpace, showProposal, PARCEL_ID, showProposalTab } from '../helpers/runtime';
+import { openCity, createSpace, showProposal } from '../helpers/runtime';
 import { pageIndex } from '../helpers/mocks/shared-server';
-
-async function addProposal(page: import('@playwright/test').Page, proposal: Record<string, unknown>): Promise<string> {
-  return page.evaluate(record => (window as any).proposalStorage.addProposal(record), proposal);
-}
 
 async function showExpandedProposal(page: import('@playwright/test').Page, proposalId: string): Promise<void> {
   await showProposal(page, proposalId);
@@ -15,15 +11,6 @@ async function showExpandedProposal(page: import('@playwright/test').Page, propo
   const expand = panel.getByRole('button', { name: 'Expand', exact: true });
   if (await expand.isVisible()) await expand.click();
   await expect(panel.locator('.panel-body')).toBeVisible();
-}
-
-async function openLandSection(page: import('@playwright/test').Page): Promise<void> {
-  await showProposalTab(page, 'details');
-  const section = page.locator('#proposal-details-content details[data-proposal-section="land"]');
-  if (!(await section.evaluate(element => (element as HTMLDetailsElement).open))) {
-    await section.locator(':scope > summary').click();
-  }
-  await expect(section).toHaveJSProperty('open', true);
 }
 
 async function establishLocalProfile(page: import('@playwright/test').Page): Promise<void> {
@@ -35,35 +22,6 @@ async function establishLocalProfile(page: import('@playwright/test').Page): Pro
 }
 
 test.describe('proposal detail button controls @features', () => {
-  test('a parcel-set related design link selects that design', async ({ mockApi: page }) => {
-    await openCity(page);
-    await page.evaluate(() => (window as any).i18n.setLanguage('en'));
-    const parcelSource = { sourceId: 'hr-cadastre', snapshotId: null };
-    const sourceId = await addProposal(page, {
-      title: 'Source plan', goal: 'park', lifecycleStatus: 'Active', cadastreParcelIds: [PARCEL_ID],
-      parcelSet: { setHash: 'e2e-parcel-set-hash', parcelSource },
-    });
-    const relatedId = await addProposal(page, {
-      title: 'Related plan', goal: 'square', lifecycleStatus: 'Active', cadastreParcelIds: [PARCEL_ID],
-      parcelSet: { parcelSource },
-    });
-
-    await showExpandedProposal(page, sourceId);
-    await openLandSection(page);
-    const relatedButton = page.locator(`#proposal-details-content [data-related-proposal-id="${relatedId}"]`);
-    await expect(relatedButton).toBeVisible();
-    // The item only outlines the design; its arrow opens it.
-    await page.locator(`#proposal-details-content [data-open-design-id="${relatedId}"]`).click();
-    await expect.poll(() => page.evaluate(() => (window as any).PlanningViews.getSelected()?.proposalId)).toBe(relatedId);
-    await expect(page.locator('#proposal-details-panel')).toContainText('Related plan');
-    await showExpandedProposal(page, relatedId);
-    await openLandSection(page);
-    // The related design lists the source design back.
-    await expect(page.locator(`#proposal-details-content [data-related-proposal-id="${sourceId}"]`)).toBeVisible();
-    // Activity is an agreement's (M3): a design's land section offers no activity scope of its own.
-    await expect(page.locator('#proposal-details-content .proposal-parcel-set-card .activity-scope-link')).toHaveCount(0);
-  });
-
   test('the grain-score Repeat control runs another inspection and returns to its result', async ({ mockApi: page }) => {
     await openCity(page);
     await createSpace(page, 'park');

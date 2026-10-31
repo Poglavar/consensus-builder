@@ -187,7 +187,7 @@ export async function closeParcel(page: Page): Promise<void> {
     await expect(panel).toBeHidden();
     return;
   }
-  if (await clickStack(page).locator('#parcel-info-panel').isVisible()) {
+  if (await clickStack(page).isVisible() && await clickStack(page).locator('#parcel-info-panel').count()) {
     await page.keyboard.press('Escape');
     await expect(clickStack(page)).toBeHidden();
   } else {
@@ -307,10 +307,10 @@ export async function proposalState(page: Page, id: string): Promise<any> {
   return page.evaluate(id => JSON.parse(JSON.stringify((window as any).getProposalByIdOrHash(id))), id);
 }
 
-// The proposal panel's tabs: Overview (name, rung, type, author, size) and Details (land and
-// ownership, verification, the record); a parcel layout has Overview, Input parcels and Output
-// parcels instead. The inspector promotes these alongside its separate Actions tab.
-export async function showProposalTab(page: Page, tab: 'overview' | 'details' | 'inputs' | 'outputs'): Promise<void> {
+// The proposal panel's Info page includes metadata, verification and the record;
+// a parcel layout also has Input parcels and Output parcels.
+// The inspector promotes these alongside its separate Actions tab.
+export async function showProposalTab(page: Page, tab: 'overview' | 'inputs' | 'outputs'): Promise<void> {
   const button = page.locator(`#proposal-details-panel [data-proposal-tab="${tab}"]:visible, #click-stack .click-stack__content-tabs [data-page="design-${tab}"]`);
   if (await button.getAttribute('aria-selected') !== 'true') await button.click();
   await expect(page.locator(`#proposal-details-panel [data-proposal-tabpanel="${tab}"]`)).toBeVisible();

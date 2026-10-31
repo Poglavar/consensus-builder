@@ -1,6 +1,6 @@
 // The design panel's tabs: a parcel layout has Overview, Input parcels (n) and Output parcels (n), and
 // hovering the parcel it replaced lights that parcel's old outline only, never the plots now on it;
-// every other design keeps Overview and Details.
+// every other design keeps metadata and its record together in Info.
 import { test, expect } from '../helpers/fixtures';
 import { openCity, createSpace, showProposal, showProposalTab, PARCEL_ID, PARCEL_GEOMETRY } from '../helpers/runtime';
 import { layOutParcel } from '../helpers/agreements';
@@ -28,7 +28,7 @@ test('a parcel layout lists its input and output parcels on their own tabs; hove
   await showProposal(page, layoutId);
   await page.evaluate(() => (window as any).toggleProposalDetailsPanelMinimized?.(false));
 
-  const tabs = panel(page).getByRole('tab');
+  const tabs = panel(page).locator('[data-proposal-tab]');
   await expect(tabs).toHaveText(['Overview', 'Input parcels (1)', /^Output parcels \(\d+\)$/]);
   const outputCount = Number((await tabs.nth(2).textContent())?.match(/\((\d+)\)/)?.[1]);
   expect(outputCount).toBeGreaterThanOrEqual(2);
@@ -70,13 +70,17 @@ test('a parcel layout lists its input and output parcels on their own tabs; hove
   await expect(name).toHaveAttribute('aria-pressed', 'false');
 });
 
-test('a design that is not a parcel layout keeps Overview and Details', async ({ mockApi: page }) => {
+test('a design keeps its record in Info and land navigation in the parcel tabs', async ({ mockApi: page }) => {
   await openCity(page);
   const parkId = await createSpace(page, 'park');
   await showProposal(page, parkId);
   await page.evaluate(() => (window as any).toggleProposalDetailsPanelMinimized?.(false));
-  await expect(panel(page).getByRole('tab')).toHaveText(['Overview', 'Details']);
-  await showProposalTab(page, 'details');
-  await expect(panel(page).locator('[data-proposal-tabpanel="details"] details[data-proposal-section="land"]')).toHaveCount(1);
+  await expect(panel(page).locator('[data-proposal-tab]')).toHaveText(['Overview']);
+  await showProposalTab(page, 'overview');
+  await expect(panel(page).locator('[data-proposal-section="land"], [data-proposal-tab="details"]')).toHaveCount(0);
+  await panel(page).locator('[data-proposal-section="record"] > summary').click();
+  await expect(panel(page).locator('.proposal-id-copy')).toBeVisible();
+  await page.locator('#click-stack [data-page="relation-parcels"]').click();
+  await expect(page.locator('#click-stack .click-stack__chip[data-kind="parcels"]')).toHaveCount(1);
   await expect(panel(page).locator('[data-proposal-tab="inputs"], [data-proposal-tab="outputs"]')).toHaveCount(0);
 });
