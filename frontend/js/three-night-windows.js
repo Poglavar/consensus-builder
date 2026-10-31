@@ -3,24 +3,45 @@
 // wall-local grid from the world position (storeys of 3 m, bays of 3.2 m); a procedural facade
 // (three-building-facades.js) lights its own panes instead. Each window is on or off, warm, white or
 // cool and brighter or dimmer by a hash of its address, never of the camera or time; more windows
-// come on as the dusk deepens, ground floors (shops) more and brighter. Roofs never glow. No meshes
-// and no material copies: the hook chains onto existing ones and every material shares two uniforms.
+// come on as the dusk deepens, ground floors (shops) more and brighter. Roofs never glow. By day the
+// same panes of plain massing are darker glass that reflects the sky (three-sky.js cbSkyColor along
+// the reflected ray, by a Fresnel term), and every wall darkens toward its foot over its lowest
+// 2 m, the way light is blocked near the ground. No meshes and no material copies: the hook chains
+// onto existing ones and every material shares the same uniforms.
 // UMD: window.__threeNightWindows in the browser, require()-able in node.
 (function (root, factory) {
-    const api = factory();
+    const api = factory(root);
     if (typeof module === 'object' && module.exports) module.exports = api;
     if (root) root.__threeNightWindows = api;
-})(typeof window !== 'undefined' ? window : globalThis, function () {
+})(typeof window !== 'undefined' ? window : globalThis, function (root) {
     'use strict';
 
-    const CACHE_KEY = '|cb-night-windows-v1';
+    const CACHE_KEY = '|cb-night-windows-v2';
+    const skyApi = () => (root && root.__threeSky) || require('./three-sky.js');
     // Translucent planning hulls and warning-coloured blocks are not rooms.
     const DARK_ROLES = new Set(['massing', 'flagged']);
     const configured = new WeakSet();
 
-    // cbNightGlow: 0 by day … 1 at night (the lamps' ramp); cbNightK: scene units per metre in XY.
+    // The sky's uniforms (three-sky.js SKY_COLOR_GLSL), read by the daytime glass.
+    const SKY_UNIFORMS = Object.freeze({
+        cbSkyZenith: 'vec3', cbSkyHorizon: 'vec3', cbSkyGlow: 'vec3', cbSkySun: 'vec3', cbSkyGlowStrength: 'float', cbSkySunDisc: 'float'
+    });
+    // cbNightGlow: 0 by day … 1 at night (the lamps' ramp); cbNightK: scene units per metre in XY;
+    // the cbSky* uniforms read the current scene's sky (setSky), and zeros before there is one.
     function createState() {
-        return { cbNightGlow: { value: 0 }, cbNightK: { value: 1 } };
+        const state = { cbNightGlow: { value: 0 }, cbNightK: { value: 1 } };
+        let sky = null;
+        Object.defineProperty(state, 'useSky', { enumerable: false, value: uniforms => { sky = uniforms || sky; } });
+        for (const [name, type] of Object.entries(SKY_UNIFORMS)) {
+            const zero = type === 'vec3' ? { x: 0, y: 0, z: 0, isVector3: true } : 0;
+            state[name] = { get value() { return sky && sky[name] ? sky[name].value : zero; } };
+        }
+        return state;
+    }
+
+    // Points the glass at a scene's sky uniforms (null keeps the last sky).
+    function setSky(state, skyUniforms) {
+        state.useSky(skyUniforms);
     }
 
     const VERTEX_HEADER = `
@@ -69,16 +90,14 @@ vec3 cbNightLit(vec3 address, float ground) {
 vec3 cbNightAverage(float area, float ground) {
     return vec3(1.0, 0.7, 0.38) * 0.62 * area * mix(0.42, 0.8, ground) * cbNightGlow * mix(1.0, 1.7, ground);
 }
-vec3 cbNightWindowLight() {
-    if (cbNightGlow <= 0.0) return vec3(0.0);
-#ifdef CB_FACADE_WINDOWS
-    if (cbFacadeEnabled > 0.5) {
-        if (cbFacadeWindowGlass <= 0.0) return vec3(0.0);
-        return cbNightLit(cbFacadeWindowCell, 1.0 - step(0.5, cbFacadeWindowCell.y)) * cbFacadeWindowGlass;
-    }
-#endif
+// One pane of a plain massing wall's window grid at this pixel: how much of the pixel is glass
+// (0 off a wall), the window's address, whether it is on the ground floor, how sharply the grid is
+// resolved (0 far away) and the share of a wall that is glass.
+struct CbPane { float glass; vec3 address; float ground; float detail; float share; };
+CbPane cbWindowPane() {
+    CbPane pane = CbPane(0.0, vec3(0.0), 0.0, 0.0, 0.0);
     vec3 normal = normalize(vCbNightNormal);
-    if (abs(normal.z) > 0.35 || vCbNightHeight < 0.0) return vec3(0.0);
+    if (abs(normal.z) > 0.35 || vCbNightHeight < 0.0) return pane;
     vec2 facing = normalize(normal.xy);
     float along = dot(vCbNightWorld.xy, vec2(-facing.y, facing.x)) / cbNightK;
     float across = dot(vCbNightWorld.xy, facing) / cbNightK;
@@ -92,21 +111,65 @@ vec3 cbNightWindowLight() {
     float glass = (1.0 - edge.x) * (1.0 - edge.y);
     // The wall's own address (its direction and plane), so parallel walls do not repeat a pattern.
     float wall = floor(across * 0.5) + dot(floor(facing * 8.0 + 0.5), vec2(3.1, 7.7));
-    vec3 exact = cbNightLit(vec3(cell, wall), ground) * glass;
-    float detail = 1.0 - smoothstep(0.3, 0.8, max(footprint.x, footprint.y));
-    return mix(cbNightAverage(4.0 * halfSize.x * halfSize.y, ground), exact, detail);
+    pane.glass = glass;
+    pane.address = vec3(cell, wall);
+    pane.ground = ground;
+    pane.detail = 1.0 - smoothstep(0.3, 0.8, max(footprint.x, footprint.y));
+    pane.share = 4.0 * halfSize.x * halfSize.y;
+    return pane;
+}
+vec3 cbNightWindowLight() {
+    if (cbNightGlow <= 0.0) return vec3(0.0);
+#ifdef CB_FACADE_WINDOWS
+    if (cbFacadeEnabled > 0.5) {
+        if (cbFacadeWindowGlass <= 0.0) return vec3(0.0);
+        return cbNightLit(cbFacadeWindowCell, 1.0 - step(0.5, cbFacadeWindowCell.y)) * cbFacadeWindowGlass;
+    }
+#endif
+    CbPane pane = cbWindowPane();
+    if (pane.share <= 0.0) return vec3(0.0);
+    vec3 exact = cbNightLit(pane.address, pane.ground) * pane.glass;
+    return mix(cbNightAverage(pane.share, pane.ground), exact, pane.detail);
+}
+// Daylight on the panes of plain massing: darker glass that mirrors the sky, more so at a grazing
+// angle; far away, the wall's average glass. Facades draw their own glass.
+vec3 cbDayGlass(vec3 lit) {
+    float day = 1.0 - cbNightGlow;
+    if (day <= 0.0) return lit;
+#ifdef CB_FACADE_WINDOWS
+    if (cbFacadeEnabled > 0.5) return lit;
+#endif
+    CbPane pane = cbWindowPane();
+    float glass = mix(pane.share * 0.8, pane.glass, pane.detail) * day;
+    if (glass <= 0.0) return lit;
+    vec3 normal = normalize(vCbNightNormal);
+    vec3 toEye = normalize(cameraPosition - vCbNightWorld);
+    vec3 ray = reflect(-toEye, normal);
+    ray.z = abs(ray.z);
+    float fresnel = 0.06 + 0.94 * pow(1.0 - clamp(dot(toEye, normal), 0.0, 1.0), 5.0);
+    vec3 dark = lit * (1.0 - 0.38 * glass);
+    return mix(dark, cbSkyColor(normalize(ray)), glass * min(0.2 + fresnel, 0.7));
+}
+// The foot of a wall: up to a third darker at the ground, fading out over the lowest 2.2 m.
+float cbWallFoot() {
+    if (vCbNightHeight < 0.0 || abs(normalize(vCbNightNormal).z) > 0.35) return 1.0;
+    return mix(0.68, 1.0, smoothstep(0.0, 2.2, vCbNightHeight));
 }
 `;
 
     function patchShader(shader) {
         if (!shader.vertexShader.includes('#include <project_vertex>')
-            || !shader.fragmentShader.includes('#include <emissivemap_fragment>')) {
+            || !shader.fragmentShader.includes('#include <emissivemap_fragment>')
+            || !shader.fragmentShader.includes('#include <color_fragment>')
+            || !shader.fragmentShader.includes('#include <opaque_fragment>')) {
             throw new Error('Night windows require the Three.js Phong shader chunks.');
         }
         shader.vertexShader = VERTEX_HEADER + shader.vertexShader.replace(
             '#include <project_vertex>', '#include <project_vertex>\n' + VERTEX_BODY);
-        shader.fragmentShader = FRAGMENT_HEADER + shader.fragmentShader.replace(
-            '#include <emissivemap_fragment>', '#include <emissivemap_fragment>\ntotalEmissiveRadiance += cbNightWindowLight();');
+        shader.fragmentShader = skyApi().SKY_COLOR_GLSL + FRAGMENT_HEADER + shader.fragmentShader
+            .replace('#include <color_fragment>', '#include <color_fragment>\ndiffuseColor.rgb *= cbWallFoot();')
+            .replace('#include <emissivemap_fragment>', '#include <emissivemap_fragment>\ntotalEmissiveRadiance += cbNightWindowLight();')
+            .replace('#include <opaque_fragment>', 'outgoingLight = cbDayGlass(outgoingLight);\n#include <opaque_fragment>');
         return shader;
     }
 
@@ -142,5 +205,5 @@ vec3 cbNightWindowLight() {
         return true;
     }
 
-    return { CACHE_KEY, createState, patchShader, configureMaterial, setState };
+    return { CACHE_KEY, createState, setSky, patchShader, configureMaterial, setState };
 });

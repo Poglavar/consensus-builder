@@ -3751,6 +3751,7 @@
         sky?.update(sun, !!window.PhotorealMode?.isActive?.());
         const night = furnitureApi().lampGlowStrength(sun ? sun.altitudeDeg : null);
         nightWindows.setState(nightWindowState, night, lifeMercatorK());
+        nightWindows.setSky(nightWindowState, sky?.uniforms);
         lifeLayer?.setNight(night);
     }
 
