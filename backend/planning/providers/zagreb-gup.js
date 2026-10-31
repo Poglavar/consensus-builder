@@ -15,17 +15,31 @@ export const zagrebGup2016Source = Object.freeze({ ...zagrebGupSource,
     url: 'https://geoportal.zagreb.hr/' });
 const sourceFor = row => Number(row.gup_id) === 2016 ? zagrebGup2016Source : zagrebGupSource;
 const finite = value => typeof value === 'number' && Number.isFinite(value);
+const isStock = row => row.result_status === 'existing_stock_estimate' || row.source === 'empirical';
+
+// The summary can select retained stock while an independent future result is smaller.
+// A parcel-clipped stock contribution is accounting geometry, never a new-building option.
+function displayedProfile(row) {
+    if (!isStock(row)) return row;
+    const future = row.future_profile;
+    return future && /^[0-9a-f]{64}$/.test(row.calculation_id || '')
+        && future.calculation_id === row.calculation_id && future.gup_id === row.gup_id
+        && future.source === 'rule' && ['solved', 'geometry_validated'].includes(future.result_status)
+        && future.geometry_status === 'passed' && future.zero_capacity_bound !== true
+        && finite(future.gbp_m2) && future.gbp_m2 > 0 ? { ...future, build_regime: 'new_build' } : null;
+}
 
 export function gupRepresentation(row) {
-    if (!row.parcel_id || !Array.isArray(row.floors) || !row.floors.length) return null;
-    if (['geometry_failed', 'condition_failed'].includes(row.result_status)
-        || row.geometry_status === 'failed' || row.zero_capacity_bound === true) return null;
+    const profile = displayedProfile(row);
+    if (!row.parcel_id || !profile || !Array.isArray(profile.floors) || !profile.floors.length) return null;
+    if (['geometry_failed', 'condition_failed'].includes(profile.result_status)
+        || profile.geometry_status === 'failed' || profile.zero_capacity_bound === true) return null;
     const id = `${sourceFor(row).id}:${row.parcel_id}`;
     const volumes = [];
     // Adjacent floors with identical outlines form one prism; setbacks and overhangs retain
     // their actual elevations. Never substitute a ground-based column or an estimated footprint.
     let previousGeometry;
-    for (const [index, floor] of row.floors.entries()) {
+    for (const [index, floor] of profile.floors.entries()) {
         if (!floor || typeof floor !== 'object') return null;
         const baseM = floor.base_elevation_m, topM = floor.top_elevation_m;
         if (!validateGeometry(floor.geometry) || !finite(baseM) || !finite(topM) || topM <= baseM
@@ -35,17 +49,19 @@ export function gupRepresentation(row) {
         else volumes.push({ id: `${id}:floor:${index}`, geometry: floor.geometry, baseM, topM });
         previousGeometry = geometryKey;
     }
-    return gupRecord(row, volumes);
+    return gupRecord(row, volumes, profile);
 }
 
 // A saved outcome is useful evidence even when it contains no renderable volume. Its reason
 // comes verbatim from the cache; absence is not reclassified by the application.
-export function gupRecord(row, volumes = []) {
+export function gupRecord(row, volumes = [], profile = row) {
     const source = sourceFor(row);
     const id = `${source.id}:${row.parcel_id}`;
-    const { floors, parcel_geometry, refresh_pending, ...evidence } = row;
+    const { floors, parcel_geometry, refresh_pending, future_profile, ...evidence } = row;
     const { current, ...calculation } = evidence;
-    const stockEstimate = row.result_status === 'existing_stock_estimate' || row.source === 'empirical';
+    const stockEstimate = isStock(profile);
+    if (profile !== row) evidence.displayed_future_result = { typology: profile.typology,
+        calculation_id: profile.calculation_id, gbp_m2: profile.gbp_m2, result_status: profile.result_status };
     return withSourceProposal({
         id, role: 'permitted', proposalId: null,
         title: `GUP ${source.edition} · ${row.zone || ''}`.trim(),
@@ -53,17 +69,17 @@ export function gupRecord(row, volumes = []) {
         volumes,
         spatialReference: { horizontal: 'OGC:CRS84', vertical: 'relative-ground', unit: 'm' },
         source: { ...source, recordId: row.parcel_id,
-            version: sourceRevision({ ...calculation, floors, parcel_geometry }),
+            version: sourceRevision({ ...calculation, floors, parcel_geometry, future_profile }),
             computedAt: row.computed_at, solverVersion: row.solver_version, rule: row.rule_id, parcel: row.parcel_id },
-        authority: { effect: 'obligatory', basis: 'solver-cache', applicability: row.applicability_status || 'unresolved' },
-        assessment: { geometry: row.geometry_status || 'unknown',
+        authority: { effect: 'obligatory', basis: 'solver-cache', applicability: profile.applicability_status || 'unresolved' },
+        assessment: { geometry: profile.geometry_status || 'unknown',
             meaning: stockEstimate ? 'existing-stock-estimate' : 'one-calculated-option',
-            constraints: 'not-evaluated', status: row.result_status, reason: row.reason,
-            regime: row.build_regime, zeroCapacityBound: row.zero_capacity_bound,
+            constraints: 'not-evaluated', status: profile.result_status, reason: profile.reason,
+            regime: profile.build_regime, zeroCapacityBound: profile.zero_capacity_bound,
             current: row.current !== false, refresh: refresh_pending || null },
-        metrics: { floorAreaM2: finite(row.gbp_m2) ? row.gbp_m2 : null,
+        metrics: { floorAreaM2: finite(profile.gbp_m2) ? profile.gbp_m2 : null,
             heightM: volumes.length ? Math.max(...volumes.map(volume => volume.topM)) : null },
-        constraints: finite(row.max_units) ? [{ quantity: 'dwellings', value: row.max_units, unit: 'count',
+        constraints: finite(profile.max_units) ? [{ quantity: 'dwellings', value: profile.max_units, unit: 'count',
             bound: 'maximum', evaluation: 'not-evaluated' }] : [],
         // These are the cached facts, including independent new-build and retained-stock
         // quantities. Joining today's rule variables would mix different source revisions.
@@ -71,18 +87,35 @@ export function gupRecord(row, volumes = []) {
     });
 }
 
+// Choose one mutually exclusive future type from the same immutable calculation, without
+// summing alternatives or joining today's planning variables to the saved result.
+const FUTURE_PROFILE_JOIN = `LEFT JOIN LATERAL (
+    SELECT to_jsonb(t) - 'footprint_geom' AS profile
+    FROM public.parcel_build_envelope_typology t
+    WHERE t.cestica_id=e.cestica_id AND t.gup_id=e.gup_id AND t.calculation_id=e.calculation_id
+      AND (e.source='empirical' OR e.result_status='existing_stock_estimate')
+      AND t.source='rule' AND t.result_status IN ('solved','geometry_validated')
+      AND t.geometry_status='passed' AND NOT t.zero_capacity_bound AND t.gbp_m2>0
+      AND t.footprint_geom IS NOT NULL
+      AND CASE WHEN jsonb_typeof(t.floors)='array' THEN jsonb_array_length(t.floors)>0 ELSE false END
+    ORDER BY t.gbp_m2 DESC,t.typology LIMIT 1
+) future ON true`;
+
 // One spatial read provides both the viewport's result counts and a bounded set of drawable
 // profiles. Rows without geometry cannot consume the geometry limit or disappear from coverage.
 export const ZAGREB_CACHE_QUERY = `WITH visible AS MATERIALIZED (
-    SELECT e.*, CASE WHEN f.cestica_id IS NOT NULL THEN jsonb_build_object(
+    SELECT e.*, future.profile AS future_profile, CASE WHEN f.cestica_id IS NOT NULL THEN jsonb_build_object(
         'code',f.error_code,'requestedAt',f.updated_at) END AS refresh_pending
     FROM public.parcel_build_envelope e
+    ${FUTURE_PROFILE_JOIN}
     LEFT JOIN public.envelope_cache_error f ON f.gup_id=e.gup_id AND f.cestica_id=e.cestica_id
     WHERE e.current AND e.gup_id = $7
       AND e.geom && ST_Transform(ST_MakeEnvelope($1,$2,$3,$4,4326),3765)
       AND ST_Intersects(e.geom, ST_Transform(ST_MakeEnvelope($1,$2,$3,$4,4326),3765))
 ), profiles AS (
-    SELECT * FROM visible WHERE CASE WHEN jsonb_typeof(floors) = 'array' THEN jsonb_array_length(floors) > 0 ELSE false END
+    SELECT * FROM visible WHERE CASE WHEN source='empirical' OR result_status='existing_stock_estimate'
+      THEN future_profile IS NOT NULL
+      WHEN jsonb_typeof(floors)='array' THEN jsonb_array_length(floors)>0 ELSE false END
 ), selected AS (
     SELECT * FROM profiles WHERE ($6::integer IS NULL OR cestica_id > $6)
     ORDER BY cestica_id LIMIT $5
@@ -124,9 +157,11 @@ export async function readZagrebParcel(pool, { parcel, edition = '2025' }) {
     if (!match) return [];
     const { rows } = await pool.query(`SELECT (to_jsonb(e) - 'geom' - 'footprint_geom') || jsonb_build_object(
         'parcel_geometry', ST_AsGeoJSON(ST_Transform(e.geom,4326),9)::jsonb,
+        'future_profile', future.profile,
         'refresh_pending', CASE WHEN f.cestica_id IS NOT NULL THEN jsonb_build_object(
             'code', f.error_code, 'requestedAt', f.updated_at) END) AS record
         FROM public.parcel p JOIN public.parcel_build_envelope e ON e.cestica_id=p.cestica_id
+        ${FUTURE_PROFILE_JOIN}
         LEFT JOIN public.envelope_cache_error f ON f.cestica_id=e.cestica_id AND f.gup_id=e.gup_id
         WHERE p.current AND p.maticni_broj_ko=$1 AND p.broj_cestice=$2
           AND e.gup_id=$3 AND e.parcel_id=$4

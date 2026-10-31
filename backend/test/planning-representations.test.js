@@ -2,7 +2,7 @@
 // and serve bounded read-only queries without inventing permission or applying proposals.
 import { describe, expect, it, vi } from 'vitest';
 import { createRequire } from 'node:module';
-import { gupRepresentation, queryZagrebGup } from '../planning/providers/zagreb-gup.js';
+import { gupRepresentation, gupRecord, queryZagrebGup } from '../planning/providers/zagreb-gup.js';
 import { planningRepresentations } from '../planning/sources.js';
 import { setupPlanningRoutes } from '../routes/planning.js';
 const require = createRequire(import.meta.url);
@@ -57,10 +57,40 @@ describe('planning source adapters', () => {
         expect(result.metrics.floorAreaM2).toBeNull(); expect(result.constraints).toEqual([]);
         input.floors = null; input.gbp_m2 = 500; expect(gupRepresentation(input)).toBeNull();
     });
-    it('labels empirical existing-stock geometry separately from a calculated new-build option', () => {
-        const result = gupRepresentation({ ...row(), source: 'empirical', result_status: 'existing_stock_estimate',
-            geometry_status: 'not_checked', build_regime: 'reconstruction' });
+    it('keeps clipped existing-stock quantities as evidence without drawing them as permitted buildings', () => {
+        const input = { ...row(), source: 'empirical', result_status: 'existing_stock_estimate',
+            geometry_status: 'not_checked', build_regime: 'reconstruction', gbp_m2: 500 };
+        expect(gupRepresentation(input)).toBeNull();
+        const result = gupRecord(input);
+        expect(result.volumes).toEqual([]);
+        expect(result.metrics.floorAreaM2).toBe(500);
+        expect(result.sourceEvidence.retained_stock_gbp_m2).toBe(70);
         expect(result.assessment).toMatchObject({ meaning: 'existing-stock-estimate', geometry: 'not_checked', regime: 'reconstruction' });
+    });
+    it('draws an independent smaller future typology while preserving the selected stock evidence', () => {
+        const input = { ...row(), calculation_id: 'a'.repeat(64), source: 'empirical',
+            result_status: 'existing_stock_estimate', build_regime: 'reconstruction', gbp_m2: 500,
+            retained_stock_gbp_m2: 500, geometry_status: 'not_checked', floors: null };
+        input.future_profile = { ...row(), calculation_id: input.calculation_id, typology: 'row', max_units: 2 };
+        const result = gupRepresentation(input);
+        expect(result.volumes).toHaveLength(2);
+        expect(result.metrics.floorAreaM2).toBe(150);
+        expect(result.constraints[0].value).toBe(2);
+        expect(result.assessment).toMatchObject({ meaning: 'one-calculated-option', geometry: 'passed', regime: 'new_build' });
+        expect(result.sourceEvidence.retained_stock_gbp_m2).toBe(500);
+        expect(result.sourceEvidence.displayed_future_result.typology).toBe('row');
+        expect(result.sourceEvidence).not.toHaveProperty('future_profile');
+        input.future_profile.calculation_id = 'b'.repeat(64);
+        expect(gupRepresentation(input)).toBeNull();
+        input.future_profile.calculation_id = input.calculation_id;
+        input.future_profile.geometry_status = 'failed';
+        expect(gupRepresentation(input)).toBeNull();
+        input.future_profile.geometry_status = 'passed';
+        input.future_profile.gup_id = 2016;
+        expect(gupRepresentation(input)).toBeNull();
+        input.future_profile.gup_id = 2025;
+        delete input.calculation_id; delete input.future_profile.calculation_id;
+        expect(gupRepresentation(input)).toBeNull();
     });
     it('preserves overhangs and below-ground floors without the native proposal import restrictions', () => {
         const input = row(); input.floors = [

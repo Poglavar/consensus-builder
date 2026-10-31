@@ -637,7 +637,7 @@ A source's 3D model of a city's buildings and other city objects, published as C
 
 ### Built / Permitted / Proposed
 
-The three planning display roles: observed buildings; source-derived permitted massing; and the browser's applied building designs. These roles classify represented content, independently of its display appearance. Buildings and massing settings apply to every represented object in each role across the view; selecting or inspecting a parcel, building or design does not create a separate display configuration. Permitted and Proposed have independent display-only example rolls; rolling either role changes no authored design or source record and leaves the other role's example unchanged.
+The three planning display roles: observed buildings; source-derived permitted massing; and the browser's applied building designs. Zagreb permitted massing uses saved future-building geometry. Parcel-clipped existing-stock allocations remain stock evidence; they do not become permitted standalone buildings. When the cache summary selects stock, a validated future typology from the same calculation may supply the permitted geometry. These roles classify represented content, independently of its display appearance. Buildings and massing settings apply to every represented object in each role across the view; selecting or inspecting a parcel, building or design does not create a separate display configuration. Permitted and Proposed have independent display-only example rolls; rolling either role changes no authored design or source record and leaves the other role's example unchanged.
 
 ### Illustrative facade
 
