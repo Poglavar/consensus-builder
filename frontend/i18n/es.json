@@ -8555,6 +8555,23 @@
         "sharePlan": "Compartir plan",
         "chooseSharePlan": "¿Qué plan quieres compartir?"
     },
+    "clickStackNavigation": {
+        "objects": "Objetos en esta ubicación",
+        "content": "Contenido de la sección",
+        "actions": "Acciones",
+        "info": "Información",
+        "plans": "Planes",
+        "parcels": "Parcelas",
+        "formed": "Parcelas formadas",
+        "designs": "Diseños",
+        "agreements": "Acuerdos",
+        "built": "Edificios",
+        "permitted": "Permitido",
+        "fullScreen": "Pantalla completa",
+        "showMap": "Mostrar mapa",
+        "close": "Cerrar inspector",
+        "noAgreements": "Ningún acuerdo hace referencia a este plan todavía."
+    },
     "clickStackRelations": {
         "designParcels": "Parcelas",
         "formedParcelsTab": "Parcelas resultantes",

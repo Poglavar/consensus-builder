@@ -48,7 +48,7 @@ it('shows an observed building with its parcel instead of an authored-plan chain
     const designs = [{ id: 'demolisher', label: 'Redevelop' }, { id: 'nearby', label: 'Nearby park' }];
     const hits = { designs, plans: [{ id: 'plan' }] };
     expect(model.contextFor('built', { id: 'house' }, hits)).toEqual([]);
-    const links = model.visibleContextFor('built', { id: 'house', demolition: { proposalKey: 'demolisher' } }, hits);
+    const links = model.contextFor('built', { id: 'house', demolition: { proposalKey: 'demolisher' } }, hits);
     expect(links.map(group => [group.relation, group.instances.map(row => row.id)])).toEqual([['affectedBy', ['demolisher']]]);
 });
 
@@ -64,8 +64,8 @@ it('shows the design that formed a parcel above the buildings and massing standi
     // An authored level above keeps the one-step rule.
     expect(shown({ ...hits, built: [], permitted: [] }, 'formed')).toEqual(['designs', 'formed', 'parcels']);
     expect(shown(hits, 'designs')).toEqual(['plans', 'designs', 'built']);
-    // The design row is then on screen, so its single "Created by" strip would only repeat it.
-    expect(model.visibleContextFor('formed', formed, hits).filter(group => group.relation === 'createdBy')).toEqual([]);
+    // Single relationships remain accessible on their own content tab.
+    expect(model.contextFor('formed', formed, hits).filter(group => group.relation === 'createdBy')[0].instances).toEqual([design]);
 });
 
 describe('click stack model', () => {
@@ -118,11 +118,11 @@ describe('click stack model', () => {
         const plan = { id: 'pl1', content: { designs: [{ proposalId: 'd1' }] } };
         const hits = { designs: [design], plans: [plan] };
         expect(model.contextFor('designs', design, hits).map(group => group.kind)).toEqual(['plans']);
-        expect(model.visibleContextFor('designs', design, hits)[0].instances).toEqual([plan]);
-        expect(model.visibleContextFor('designs', design, { designs: [design], plans: [{ id: 'pl2' }, plan] }))
+        expect(model.contextFor('designs', design, hits)[0].instances).toEqual([plan]);
+        expect(model.contextFor('designs', design, { designs: [design], plans: [{ id: 'pl2' }, plan] }))
             .toHaveLength(1);
         // The relationship still navigates when its target isn't represented in the current stack.
-        expect(model.visibleContextFor('plans', plan, { designs: [] })[0].instances)
+        expect(model.contextFor('plans', plan, { designs: [] })[0].instances)
             .toEqual([{ id: 'd1', label: 'd1' }]);
     });
 

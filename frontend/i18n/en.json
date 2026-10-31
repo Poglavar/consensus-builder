@@ -8527,6 +8527,23 @@
         "sharePlan": "Share plan",
         "chooseSharePlan": "Which plan do you want to share?"
     },
+    "clickStackNavigation": {
+        "objects": "Objects at this location",
+        "content": "Section content",
+        "actions": "Actions",
+        "info": "Info",
+        "plans": "Plans",
+        "parcels": "Parcels",
+        "formed": "Formed parcels",
+        "designs": "Designs",
+        "agreements": "Agreements",
+        "built": "Buildings",
+        "permitted": "Permitted",
+        "fullScreen": "Full screen",
+        "showMap": "Show map",
+        "close": "Close inspector",
+        "noAgreements": "No agreements reference this plan yet."
+    },
     "clickStackRelations": {
         "designParcels": "Parcels",
         "formedParcelsTab": "Output parcels",

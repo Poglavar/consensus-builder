@@ -5916,6 +5916,23 @@
         "shareMap": "مشاركة هذه الخريطة",
         "designActions": "إجراءات التصميم"
     },
+    "clickStackNavigation": {
+        "objects": "العناصر في هذا الموقع",
+        "content": "محتوى القسم",
+        "actions": "الإجراءات",
+        "info": "المعلومات",
+        "plans": "المخططات",
+        "parcels": "قطع الأراضي",
+        "formed": "قطع الأراضي المُشكّلة",
+        "designs": "التصاميم",
+        "agreements": "الاتفاقيات",
+        "built": "المباني",
+        "permitted": "المسموح",
+        "fullScreen": "ملء الشاشة",
+        "showMap": "عرض الخريطة",
+        "close": "إغلاق لوحة التفاصيل",
+        "noAgreements": "لا توجد اتفاقيات تشير إلى هذا المخطط حتى الآن."
+    },
     "clickStackRelations": {
         "designParcels": "القطع",
         "formedParcelsTab": "القطع الناتجة",

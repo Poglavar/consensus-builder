@@ -10,7 +10,7 @@
     // Info panels in the right dock become bottom sheets on phones (the click stack among them);
     // a panel hosted inside the click stack is part of that sheet, not a sheet of its own.
     const PANEL_SELECTOR = '.info-panel.right-dock-panel:not(.is-hosted)';
-    const SURFACE_SELECTOR = PANEL_SELECTOR + ', .map-sheet, .cb-dialog:not(.cb-dialog--message), .on-map-editor__panel, #click-stack, #three-click-stack, #grain-score-panel, #area-monitor-detail-panel, #urban-block-panel, .site-panel';
+    const SURFACE_SELECTOR = PANEL_SELECTOR + ', .map-sheet, .cb-dialog:not(.cb-dialog--message), .on-map-editor__panel, #grain-score-panel, #area-monitor-detail-panel, #urban-block-panel, .site-panel';
     const HANDLE_CLASS = 'mobile-dock-sheet-handle';
     const DEFAULT_RATIO = 0.5;
     const MIN_RATIO = 0.25;
@@ -119,7 +119,7 @@
         if (win.matchMedia?.('(max-width: 767.98px)').matches) {
             // The compact proposal card (not a draggable sheet, but a bottom sheet all the same).
             const card = doc.querySelector?.('#proposal-details-panel.is-minimized');
-            [...doc.querySelectorAll(PANEL_SELECTOR), ...(card ? [card] : [])].forEach(panel => {
+            [...doc.querySelectorAll(PANEL_SELECTOR + ', #click-stack.visible, #three-click-stack.visible'), ...(card ? [card] : [])].forEach(panel => {
                 const box = panel.getBoundingClientRect();
                 if (box.height > 0) occupied = Math.max(occupied, occupiedBottom({ viewportHeight: viewport, top: box.top }));
             });
@@ -130,7 +130,7 @@
         // in a maps app; the bar's own sheets (Lists, Activity, Bets) keep it, since it moves
         // between them (css/mobile-sheets.css).
         const phone = !!win.matchMedia?.('(max-width: 767.98px)').matches;
-        const context = phone && [...container.querySelectorAll('.mobile-sheet-ready:not(.map-sheet--dock):not(.is-hosted):not(.is-minimized)')]
+        const context = phone && [...container.querySelectorAll('.mobile-sheet-ready:not(.map-sheet--dock):not(.is-hosted):not(.is-minimized), #click-stack.visible, #three-click-stack.visible')]
             .some(panel => panel.getBoundingClientRect().height > 0);
         doc.body?.classList.toggle('mobile-context-sheet-open', context);
     }
@@ -156,7 +156,7 @@
     }
 
     function wirePanel(win, panel, options = {}) {
-        if (!panel || panel.classList?.contains('is-hosted') || panel.querySelector(`:scope > .${HANDLE_CLASS}`)) return;
+        if (!panel || ['click-stack', 'three-click-stack'].includes(panel.id) || panel.classList?.contains('is-hosted') || panel.querySelector(`:scope > .${HANDLE_CLASS}`)) return;
         if (!panel.id) panel.id = `mobile-sheet-${++sequence}`;
         const handle = makeHandle(win, panel);
         panel.classList.add('mobile-sheet-ready');
@@ -311,7 +311,7 @@
         win.visualViewport?.addEventListener?.('scroll', onResize);
     }
 
-    const api = { clamp, limits, sheetHeight, draggedHeight, restingHeight, occupiedBottom, reportOccupancy, wirePanel, wireAddedPanelNode, install };
+    const api = { clamp, limits, sheetHeight, draggedHeight, restingHeight, occupiedBottom, reportOccupancy, observeOccupancy, wirePanel, wireAddedPanelNode, install };
     if (typeof window !== 'undefined') install(window);
     return api;
 });

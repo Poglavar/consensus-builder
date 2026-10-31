@@ -16,14 +16,14 @@
             'js/three-floor-plans.js', 'js/three-building-facades.js', 'js/rule-building-details.js', 'js/three-rule-roofs.js', 'js/three-resources.js',
             'js/three-scene-work.js', 'js/three-scene-readiness.js', 'js/three-structure-refresh.js', 'js/three-square-paving.js', 'js/three-lake-basin.js',
             'js/three-snapshot-navigation.js', 'js/three-keyboard-context.js', 'js/three-scene-isolation.js',
-            'js/elevated-rail-3d.js', 'js/three-focus-plan.js', 'js/three-click-plan.js', 'js/three-click-stack.js?v=20261029-selection',
+            'js/elevated-rail-3d.js', 'js/three-focus-plan.js', 'js/three-click-plan.js', 'js/three-click-stack.js?v=20261031-tabs',
             'js/life/life-graph.js', 'js/life/life-surface.js', 'js/life/life-agents.js', 'js/three-life.js',
             'js/life/ground-geometry.js', 'js/three-ground.js', 'js/tree-species.js', 'js/three-grass.js',
             'js/three-site-ground.js?v=20261028-trees-grass',
             'vendor/suncalc-1.9.0/suncalc.js', 'vendor/tz-lookup-11.7.0/tz.js', 'js/sun-shadows.js', 'js/three-sun.js',
             'js/sky-colors.js', 'js/three-atmosphere.js', 'js/three-sky.js', 'js/three-water-sheen.js', 'js/three-night-windows.js', 'js/three-birds.js', 'js/three-fountains.js', 'js/three-sound.js',
             'js/buildout-parts.js', 'js/three-buildout.js',
-            'js/three-mode.js?v=20261030-use-highlight'
+            'js/three-mode.js?v=20261031-inspector-tabs'
         ],
         photo: ['js/photoreal-frame.js', 'js/photoreal-ground.js', 'js/photoreal-seam.js',
             'js/photoreal-protect.js', 'js/photoreal-attribution.js', 'js/photoreal-parcels.js', 'js/photoreal-mode.js'],

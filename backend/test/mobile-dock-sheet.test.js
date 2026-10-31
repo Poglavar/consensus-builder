@@ -288,13 +288,13 @@ describe('mobile dock sheet geometry', () => {
         expect(panel.handle).toBeTruthy();
     });
 
-    it('makes the click stack and unhosted proposal reader sheets, but not a hosted panel', () => {
+    it('keeps click stacks and hosted panels free of drag handles while wiring standalone readers', () => {
         const { added } = installWithObserver();
         const stack = dockPanel({ id: 'click-stack', classes: ['click-stack', 'info-panel', 'right-dock-panel'] });
         const hosted = dockPanel({ classes: ['info-panel', 'right-dock-panel', 'is-hosted'] });
         const reader = dockPanel({ id: 'proposal-details-panel' });
         added([stack, hosted, reader]);
-        expect(stack.handle).toBeTruthy();
+        expect(stack.handle).toBeNull();
         expect(hosted.handle).toBeNull();
         expect(reader.handle).toBeTruthy();
     });

@@ -8579,6 +8579,23 @@
         "sharePlan": "Podeli plan",
         "chooseSharePlan": "Koji plan želite da podelite?"
     },
+    "clickStackNavigation": {
+        "objects": "Objekti na ovoj lokaciji",
+        "content": "Sadržaj odeljka",
+        "actions": "Radnje",
+        "info": "Info",
+        "plans": "Planovi",
+        "parcels": "Parcele",
+        "formed": "Formirane parcele",
+        "designs": "Dizajni",
+        "agreements": "Sporazumi",
+        "built": "Zgrade",
+        "permitted": "Dozvoljeno",
+        "fullScreen": "Ceo ekran",
+        "showMap": "Prikaži mapu",
+        "close": "Zatvori pregled",
+        "noAgreements": "Nijedan sporazum još ne upućuje na ovaj plan."
+    },
     "clickStackRelations": {
         "designParcels": "Parcele",
         "formedParcelsTab": "Nove parcele",

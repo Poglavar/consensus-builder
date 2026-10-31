@@ -5723,6 +5723,23 @@
         "shareMap": "Partager cette carte",
         "designActions": "Actions sur le projet"
     },
+    "clickStackNavigation": {
+        "objects": "Objets à cet endroit",
+        "content": "Contenu de la section",
+        "actions": "Actions",
+        "info": "Informations",
+        "plans": "Plans",
+        "parcels": "Parcelles",
+        "formed": "Parcelles formées",
+        "designs": "Projets",
+        "agreements": "Accords",
+        "built": "Bâtiments",
+        "permitted": "Autorisé",
+        "fullScreen": "Plein écran",
+        "showMap": "Afficher la carte",
+        "close": "Fermer l’inspecteur",
+        "noAgreements": "Aucun accord ne fait encore référence à ce plan."
+    },
     "clickStackRelations": {
         "designParcels": "Parcelles",
         "formedParcelsTab": "Parcelles créées",

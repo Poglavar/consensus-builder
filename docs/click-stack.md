@@ -43,6 +43,39 @@ right-side panels that clicks used to open one at a time.
 7. **Cadastral parcels** under the point (or under the selected design).
 8. Footer: the coordinates (copyable).
 
+## Mobile navigation
+
+On phones, 2D and both 3D views show one horizontal **object tab bar** with the standard
+object icons. Ground and selected sets come first, followed by cadastral parcels, formed
+parcels, built/permitted records, designs, plans and agreements. Small chevrons between
+adjacent authored levels indicate their order; buildings and permitted records are not
+presented as members of that chain. Selecting an icon opens its section. Desktop keeps
+the neighbouring section headers described below.
+
+The selected header remains below the object tabs. Collapsing it leaves those two rows
+and the map; there is no drag handle. Expanded content fits its contents up to 55% of the
+visible viewport, then scrolls. **Full screen** gives it the viewport; **Show map** restores
+the content-sized panel. List previews and **Focus** return to map-visible mode. Closing
+uses the header's close button, Escape, or the existing map selection behavior.
+
+Both desktop and mobile use one **content tab bar** at the top of the expanded body,
+above any instance selector. Existing panel tabs are promoted into this bar, retaining
+their editors, controls, loading behavior and state:
+
+- Designs: Info, Details (or Input parcels / Output parcels for a parcel layout), Actions,
+  and tabs for related Plans and parcels where present. The model view keeps its figures
+  and sliders in Info; Actions opens the same design's Actions tab in 2D.
+- Plans: Designs, Agreements, Actions and Info. Agreements always has a tab, including
+  an empty state when no agreement references the exact Plan revision.
+- Cadastral/formed parcels: Actions, Info, Tools and applicable relationship lists such
+  as Designs. A selected set keeps its native whole-set design list.
+- Agreements: Overview, Input parcels, Rules, Actions and, for owners' agreements,
+  Output parcels and Persons. Voting and chain controls remain with their overview.
+
+Changing content tabs remembers the active page per object and the scroll position
+within that mounted section. Full-screen/map-visible switching preserves its contents.
+Relationship lists remain one item per row with single-line, ellipsized labels.
+
 ## Neighbours
 
 The stack is built from the selected object outward, in both directions. Each kind has one
@@ -67,7 +100,7 @@ replace one with its own (the model view reads buildings from its scene).
 
 ## Rows, relationships and expansion
 
-- The stack displays the selected level and the nearest available level above and below it.
+- On desktop, the stack displays the selected level and the nearest available level above and below it.
   Selecting a neighbouring row moves this window; the complete inventory remains available.
   Observed-building inspection instead shows Building and its cadastral parcel: source buildings
   are baseline context, not members of a surrounding Plan. An explicit design impact appears as an
@@ -87,7 +120,7 @@ replace one with its own (the model view reads buildings from its scene).
   collection count or type badge. The expanded header shows the authored type as a prominent
   colored icon pill, repeated in its details; its name may wrap below the type row. Color
   supplements the type text and icon; it does not indicate publication or approval.
-- Relationship groups are small, explicitly labelled link groups **inside the expanded card body**.
+- Relationship groups are explicitly labelled lists **inside the expanded card body**.
   Their links fill the card's width; they do not create horizontal scrolling. A group navigates
   related objects, never siblings of the object already selected:
   - A plan offers its included designs. An agreement references exactly one Plan revision;
@@ -95,17 +128,16 @@ replace one with its own (the model view reads buildings from its scene).
   - A design offers the plans and agreements it belongs to, plus its affected parcels or formed land.
   - A formed parcel offers its producing design and source cadastral parcels.
   - A source parcel can offer its formed pieces or designs on that parcel.
-  A group is omitted when its sole target is the same sole visible instance already shown in the
-  target section. Missing or off-screen targets remain useful links. A related item is an object
+  Each group has its own content tab, including when it has only one target.
+  Missing or off-screen targets remain useful links. A related item is an object
   list item (design-language.md, "Object lists"): hovering it outlines its object, clicking it keeps
   that outline (framed when out of view in 2D; the model view's camera stays), and its arrow button
   selects and expands the object's section, or opens a plan's design that is not in the stack.
   Related items are one per row at every width. A formed piece is named `<root parcel> #<n>`
   (`_parcelIdLabel` in proposal-parcel-identity.js), never by its runtime id, whose token is the
   producing design's id (a full CID for a published design).
-- A plan's designs are the Plan section's content: on desktop the expanded section grows to the
-  dock's height before the list scrolls, its name and actions staying in view; a plan with few
-  designs keeps the height of its list. Other relationship lists scroll within three rows.
+- A plan's Designs tab contains its members. Short content fits its rows; long lists scroll
+  within the available body height. Actions have their own content tab.
 - **Agreements sit above Plans, followed by Designs.** Plans are discovered for the exact design
   revision; agreements are loaded only for the selected exact Plan CID. Switching Plans replaces
   the agreement choices, and stale responses from the previous plan are discarded. Agreement
@@ -139,17 +171,16 @@ replace one with its own (the model view reads buildings from its scene).
     spatial rows, and clicking frames and highlights them without leaving the agreement. Person
     rows inspect their contributed and allocated land. Hash-only outputs remain non-spatial.
   - Design: the proposal's actions panel itself (2026-10-23), without its own − and ×: an
-    Overview tab (name, rung badges, type, author, parcel count and one area) and a Details tab
-    (land and ownership, verification, the record), with the actions under both; plus the
-    member plans and agreements inside the card body. A parcel layout's panel has Overview (name,
+    Info tab (name, rung badges, type, author, parcel count and one area), a Details tab
+    (land and ownership, verification, the record), and a separate Actions tab; related
+    plans have their own tab. A parcel layout's panel has Overview (name,
     badges, author, site area), Input parcels (the cadastral parcels it takes) and Output parcels
     (the plots it forms) instead, and no Share: its agreement publishes it. Its 2D section adds no
     parcel links of its own, since those tabs list them. Other designs, and every design in the
     model view's section (which has no panel), list the parcels as Input parcels and Output
     parcels tabs, in that order. The panel re-renders when the design's formed parcels change, so
-    a layout opened before it has replayed onto the map does not keep a count of 0. **Add to plan** heads the card, under the
-    design selector and above the panel, in the map and the model view (2026-10-28); the hosted
-    panel's footer does not repeat it. Starting Before / after from it folds the stack to its
+    a layout opened before it has replayed onto the map does not keep a count of 0. **Add to plan** heads
+    the Actions tab in the map and model view; the hosted panel's footer does not repeat it. Starting Before / after from it folds the stack to its
     rows (the card stays hosted, so the comparison keeps running); a row click unfolds it.
 - A proposal opened from a list, shared link, restored selection, or just placed (an editor's Done,
   a one-click structure, the create dialog) opens the
@@ -159,22 +190,20 @@ replace one with its own (the model view reads buildings from its scene).
   - Cadastral or formed parcel: the parcel info panel. The cadastral section heading is
     **Cadastral parcel · <reference>**; it replaces the panel's duplicate identity heading and
     the former area/ownership summary. Source and formed-ground provenance remains in Info.
-    **Select multiple parcels** (Manually / Detect block) sits above the tabs, before
+    **Select multiple parcels** (Manually / Detect block) sits in Actions, before
     **Custom site**. Custom site starts an editable working boundary; it does not change the
     parcel layout and remains available for drawing a design over that boundary.
-    **Design · Info · Tools** are the tabs. Design opens first; a selected tab stays selected
-    on subsequent parcel clicks. A source parcel replaced by applied designs opens on Info,
-    explaining that its original cadastral boundary is retained and highlighted. Its Design tab
-    offers selection of the current parcels for further design work. Source selection always
+    **Actions · Info · Tools** are the parcel panel tabs promoted into the content bar. Actions
+    opens first; each object remembers its selected content tab. Info explains source and formed
+    ground provenance. Actions offers selection of current parcels for further design work. Source selection always
     outlines the immutable repository geometry, including while collapsed.
-    The panel's Proposals tab is hidden inside the stack because
-    Designs already lists those records. The selected-set section retains Proposals for the whole
+    The panel's Proposals tab is replaced by the relationship Designs tab when that list is present. The selected-set section retains Proposals for the whole
     set. Parcel information and proposal actions open only inside the click panel; there is no
     automatic companion parcel panel beside a selected proposal. Hosted Built/Permitted inspectors have no close
     button: their section heading collapses them or another section takes over.
 - The selected object has a pulsing map outline, retained while collapsed and protected from hover.
-  Reduced motion uses a steady border. The selected card and its distinct circular icon node carry
-  the selected highlight. Short connectors run behind the cards on the icon axis near the left edge.
+  Reduced motion uses a steady border. Desktop highlights the selected card and circular icon
+  node, with short connectors behind the cards. Mobile highlights the selected object tab.
 - **Memory:** the kind of the expanded section is remembered (also across reloads). The next
   click expands that kind if it exists there, otherwise the topmost section.
 
@@ -186,21 +215,24 @@ replace one with its own (the model view reads buildings from its scene).
   layers (drill stack for designs and parcels, building layers, planning items, agreements), and
   supplies the neighbour lookups.
 - `frontend/js/click-stack/click-stack-neighbours.js`: the pure neighbours rule (unit tested).
+- `frontend/js/click-stack/click-stack-navigation.js` and `css/click-stack-navigation.css`: shared
+  object tabs, promoted content tabs, per-object page memory and explicit mobile sizing.
 - `frontend/js/click-stack/click-stack-panel.js`: the panel; hosts the existing panels
   (planning inspector, proposal card, parcel info panel) inside the expanded section.
 - In Manual or Shift multi-selection, **Selected parcels (N)** replaces the point-specific
   sections. It shows measured total area and hosts the parcel Design / Info / Proposals / Tools tabs for the
-  whole selection. Clear keeps selection mode active, including an empty selection; Done exits
-  selection mode and retains the selected parcels. The header can fold while map clicks keep changing the selection. There is no
-  bottom selection tray. Detect block and Custom site remain in the section, before the tabs.
+  whole selection through the shared content bar. Clear keeps selection mode active, including
+  an empty selection; Done exits selection mode and retains the selected parcels. The header can
+  fold while map clicks keep changing the selection. There is no bottom selection tray. Detect
+  block and Custom site remain available in Actions.
 
 ## 3D model view
 
 The 3D model view has its own click stack (`frontend/js/three-click-stack.js`, user decisions
 2026-10-23): the 2D stack's frame and card/row/relationship look (`#click-stack, #three-click-stack` share the
-rules in `css/map.css`), with what a click in the scene stands on. Like 2D it has no panel, header or
-close button: the section cards float over the scene, and the stack closes on Escape, a click on
-nothing, or another selection. It replaced the floating top-left parcel /
+rules in `css/map.css`), with what a click in the scene stands on. Desktop section cards float
+over the scene; mobile uses the shared object tabs, content tabs and sizing controls. The stack
+closes on Escape, a click on nothing, another selection, or the mobile close button. It replaced the floating top-left parcel /
 "Proposal info" panel.
 
 - Sections, top to bottom: **Built** (the clicked building, and the existing buildings standing on
@@ -229,8 +261,8 @@ nothing, or another selection. It replaced the floating top-left parcel /
   section with a shape: it highlights the object and always fits the map to it, clear of the
   stack. Ground has no Focus button. The model view's stack has the same button, which moves
   the camera in or out over the object while keeping heading and tilt.
-- Expanded cards fit their content. Long content scrolls within the available dock height after
-  reserving room for every other section header; a short Built record leaves Parcel visible below.
+- Expanded cards fit their content. On desktop, long content scrolls within the dock height after
+  reserving room for neighbouring headers. Mobile uses the viewport limits described above.
 - Design open: the composition stays visible and the section shows the whole design's info
   and Built / Planned / Proposed figures with the price sliders. **Proposal actions** switches to
   the same design in the 2D click panel. Restoring a design or entering through a shared model link

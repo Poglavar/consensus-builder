@@ -80,7 +80,7 @@ function loadPanel({ memory = null, withEditLock = false } = {}) {
         ProposalDesignGoals: require('../../frontend/js/proposals/design-goals.js'),
         DesignSync: { publishedCid: proposal => proposal?.cid || null },
         DesignMemberships: { mountSection: (body, kind, instance, _session, win, options) => {
-            for (const group of model.visibleContextFor(kind, instance, options?.hits || {})) {
+            for (const group of model.contextFor(kind, instance, options?.hits || {})) {
                 body.appendChild(relations.renderGroup(group, doc, win));
             }
         } },
@@ -221,7 +221,7 @@ describe('click stack selected objects and contextual navigation', () => {
         h.click(SPOT_A);
         expect(h.api.current()).toMatchObject({ expanded: 'designs' });
         // The model still offers them, for the 3D stack, which has no design panel.
-        expect(model.visibleContextFor('designs', hits.designs[0], hits).map(group => group.relation)).toEqual(['designParcels']);
+        expect(model.contextFor('designs', hits.designs[0], hits).map(group => group.relation)).toEqual(['designParcels']);
         expect(h.section('designs').querySelector('.click-stack__body .click-stack__choices')).toBeNull();
         h.api.close();
         // Any other design keeps them in its section.

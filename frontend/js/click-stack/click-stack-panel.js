@@ -28,7 +28,7 @@
     const ICONS = Object.freeze({ agreements: 'fas cb-icon-agreement', plans: 'fas cb-icon-plan', designs: 'fas cb-icon-design', built: 'fas fa-building',
         permitted: 'fas fa-cube', formed: 'fas fa-vector-square', parcels: 'fas fa-border-all', selection: 'fas fa-object-group', ground: 'fas fa-seedling' });
 
-    const relationsFor = (kind, instance) => model.visibleContextFor(kind, instance, state.hits)
+    const relationsFor = (kind, instance) => model.contextFor(kind, instance, state.hits)
         .filter(group => kind !== 'designs' || instance?.proposal?.goal !== 'parcel-layout' || !PANEL_RELATIONS.has(group.relation));
 
     const state = { el: null, stack: null, frameRequest: null, keepView: false, latlng: null, hits: null, hosted: null, expanding: false, lastClick: null, observing: false, memberships: null, membershipVersion: 0, membershipDesign: null , baseHits: null, derived: {} };
@@ -165,7 +165,7 @@
                 const instance = global.ClickStackRelations.relatedInstance(state.stack, kind, id, model.selectedInstance);
                 const features = global.ClickStackHits.featuresFor?.(kind, instance) || [];
                 global.highlightFeaturesForInspection?.(features, focusStyle());
-                if (pinned) frameFeatures(features);
+                if (pinned) { global.ClickStackNavigation?.showMap(el); frameFeatures(features); }
             },
             restore: () => {
                 if (state.stack) highlightSection(state.stack.selectedKind, model.selectedInstance(state.stack, state.stack.selectedKind));
@@ -245,6 +245,7 @@
         // The hosted panel goes home (still open) before the old bodies are dropped; the section
         // that expands next hosts it again.
         if (state.hosted && !keepBody) unhost({ hide: false });
+        global.ClickStackNavigation?.release(el, keepBody);
         el.textContent = '';
         el.setAttribute('aria-label', stack.topRef === 'selection:current'
             ? t('selectedParcels.label', 'Selected parcels') : t('title', 'At this spot'));
@@ -319,6 +320,8 @@
             list.appendChild(wrap);
         });
         el.appendChild(list);
+        global.ClickStackNavigation?.frame(el, stack, ICONS, rowTitle, expand, close);
+        if (keepBody) global.ClickStackNavigation?.content(keepBody, stack.expanded, model.selectedInstance(stack, stack.expanded)?.id);
         syncAgreements();
 
     }
@@ -341,6 +344,7 @@
                 const sameAgreement = expanded === 'agreements' && model.selectedInstance(previous, 'agreements')?.id === model.selectedInstance(state.stack, 'agreements')?.id;
                 const keepBody = expanded && (expanded !== 'agreements' || sameAgreement) ? bodyOf(expanded) : null;
                 render({ keepBody }); if (!keepBody && expanded) activate(expanded);
+                if (expanded === 'plans') global.ClickStackNavigation?.agreements(bodyOf('plans'), rows, group);
                 if (keepBody && expanded === 'agreements') global.DesignMemberships.updateAgreementGroup(keepBody, group, global);
             }
         });
@@ -423,6 +427,7 @@
     }
 
     function focusSection(kind) {
+        global.ClickStackNavigation?.showMap(state.el);
         const instance = model.selectedInstance(state.stack, kind);
         const features = global.ClickStackHits.featuresFor?.(kind, instance) || [];
         if (!features.length) {
@@ -519,6 +524,8 @@
             if (kind !== 'plans') {
                 for (const group of relationsFor(kind, instance)) body.appendChild(global.ClickStackRelations.renderGroup(group, doc, global));
             }
+            if (kind === 'plans') global.ClickStackNavigation?.agreements(body, state.hits.agreements || [], state.agreementGroup);
+            global.ClickStackNavigation?.content(body, kind, instance.id);
             if (!instance.serverId) highlightSection(kind, instance);
         } catch (error) {
             console.error(`[ClickStack] the ${kind} section could not open`, error);
@@ -715,6 +722,8 @@
 
     function show(stack, latlng, hits, { frame = false } = {}) {
         observePanels();
+        // A fresh hit inventory must receive its plan's agreements even if the CID is unchanged.
+        state.agreementScope?.dispose(); state.agreementScope = null;
         state.frameRequest = frame && !state.keepView ? stack.selectedKind : null;
         state.keepView = false;
         ensureElement().classList.remove('is-folded');
@@ -780,6 +789,8 @@
         state.baseHits = null;
         state.derived = {};
         state.latlng = null;
+        global.ClickStackNavigation?.release(state.el);
+        global.ClickStackNavigation?.showMap(state.el);
         state.el.hidden = true;
         state.el.textContent = '';
         state.el.classList.remove('is-folded');
@@ -790,7 +801,10 @@
     // Before / after needs the map: the stack folds to its rows. The expanded section keeps its
     // panel hosted (hidden), so the comparison it started keeps running; a row click unfolds.
     function fold() {
-        if (isOpen()) state.el.classList.add('is-folded');
+        if (isOpen()) {
+            global.ClickStackNavigation?.showMap(state.el);
+            state.el.classList.add('is-folded');
+        }
     }
 
     function isOpen() {

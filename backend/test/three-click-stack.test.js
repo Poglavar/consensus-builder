@@ -155,7 +155,7 @@ describe('3D click stack contextual selection', () => {
         const document = makeDocument();
         const tagged = cls => () => { const el = document.createElement('div'); el.className = cls; return el; };
         const context = { document, console, i18n: testI18n(),
-            __clickStackModel: { ...model, visibleContextFor: () => [{ kind: 'designs' }] },
+            __clickStackModel: { ...model, contextFor: () => [{ kind: 'designs' }] },
             ClickStackRelations: { ...relations, renderGroup: tagged('click-stack__choices'), renderSelector: tagged('click-stack__selector-wrap') } };
         context.window = context; vm.createContext(context);
         vm.runInContext(readFileSync(new URL('../../frontend/js/three-click-stack.js', import.meta.url), 'utf8'), context);
@@ -179,7 +179,7 @@ describe('3D click stack contextual selection', () => {
         const adapter = { activate: (_kind, item, body) => { body.textContent = item.label; }, focus: (kind, item) => focused.push([kind, item.id]) };
         api.show({ designs: [{ id: 'a', label: 'Garden', proposal: { cadastreParcelIds: ['p'] } }], parcels: [{ id: 'p', label: '12' }] }, { focus: 'designs' }, adapter);
         const section = kind => document.querySelector(`.click-stack__section[data-kind="${kind}"]`);
-        expect(section('designs').querySelector('.click-stack__choices')).toBeNull();
+        expect(section('designs').querySelector('.click-stack__choices[data-kind="parcels"]')).not.toBeNull();
         section('parcels').querySelector('.click-stack__row').click();
         expect(api.current()).toMatchObject({ selectedKind: 'parcels', expanded: 'parcels' });
         expect(section('parcels').querySelector('.click-stack__choices').textContent).toContain('Designs on this parcel:');

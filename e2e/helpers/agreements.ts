@@ -215,6 +215,7 @@ export async function createFromPlan(page: Page, layoutId: string, planTitle = '
   const composer = page.locator('.plan-dialog');
   await composer.locator('input[type="text"]').fill(planTitle);
   await composer.getByRole('button', { name: 'Create plan', exact: true }).click();
+  await page.locator('#click-stack .click-stack__section[data-kind="plans"] [data-page="actions"]').click();
   await page.locator('#click-stack .click-stack__section[data-kind="plans"]').getByRole('button', { name: 'Create agreement', exact: true }).click();
   const editor = await editorOpen(page, 'Create agreement');
   await expect(editor.locator('[data-agreement-input]')).toHaveCount(1, { timeout: 30_000 });

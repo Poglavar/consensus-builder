@@ -34,7 +34,7 @@ for (const width of [1280, 390]) {
     const parcels2d = stack2d.locator('.click-stack__section[data-kind="parcels"]');
     await expect(parcels2d).toBeVisible();
     await expect(parcels2d.locator('#parcel-info-panel')).toBeVisible();
-    await expect(page.locator('#parcel-info-panel [data-parcel-tab-id="info-tab"]')).toBeVisible();
+    await expect(stack2d.locator('[data-page="parcel-info-tab"]')).toBeVisible();
     const row2d = parcels2d.locator('.click-stack__row');
     await expect(row2d).toHaveAttribute('aria-expanded', 'true');
     await expect(parcels2d.locator('.click-stack__heading')).toHaveJSProperty('tagName', 'H2');
@@ -56,6 +56,7 @@ for (const width of [1280, 390]) {
     await expect(detailsPanel).toBeVisible();
     await expect(detailsPanel.locator('[style]')).toHaveCount(0);
     // Add to plan heads the card, above the hosted panel, and the panel's footer does not repeat it.
+    await design.locator('[data-page="actions"]').click();
     const addToPlan = design.locator('.click-stack__actions--design [data-design-action="add-to-plan"]');
     await expect(addToPlan).toBeVisible();
     await expect(addToPlan).toHaveText('Add to plan');
@@ -87,6 +88,7 @@ for (const width of [1280, 390]) {
     await expect(planSection).toBeVisible();
     await expect(planSection).toHaveClass(/is-expanded/);
     // Share, Create agreement, Schedule (build-out timeline) and Download, one shared button style.
+    await planSection.locator('[data-page="actions"]').click();
     const planActions = planSection.locator('.click-stack__actions > button');
     expect(await planActions.evaluateAll(buttons => buttons.map(button => button.className))).toEqual([
       'btn btn-primary click-stack__share-plan', 'btn click-stack__create-agreement',
@@ -156,5 +158,10 @@ for (const width of [1280, 390]) {
     const screenshot = testInfo.outputPath(`click-stack-semantics-${width}.png`);
     await page.screenshot({ path: screenshot });
     await testInfo.attach(`Click stack semantics ${width}px`, { path: screenshot, contentType: 'image/png' });
+    await page.evaluate(id => (window as any).showThreeModeDesign(id), proposalId);
+    await stack3d.locator('[data-page="actions"]').click();
+    await stack3d.getByRole('button', { name: 'Design actions', exact: true }).click();
+    await expect(stack2d.locator('[data-page="actions"]')).toHaveAttribute('aria-selected', 'true');
+    await expect(stack2d.locator('.proposal-primary-actions')).toBeVisible();
   });
 }

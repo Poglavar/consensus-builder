@@ -1,0 +1,54 @@
+/* One content tab bar in either inspector; object tabs and explicit sizing on phones. */
+.click-stack__object-tabs, .click-stack__size, .click-stack__dismiss { display: none; }
+.click-stack__content-tabs { flex: 0 0 auto; overflow-x: auto; flex-wrap: nowrap; position: sticky; top: 0; z-index: 2; background: var(--cb-surface); }
+.click-stack__content-tabs > .cb-tab { flex: 0 0 auto; white-space: nowrap; }
+:is(#click-stack, #three-click-stack) .has-content-tabs [data-stack-hidden] { display: none; }
+.has-content-tabs .proposal-details-tabs,
+.has-content-tabs .agreement-properties-tabs,
+.has-content-tabs .parcel-tabs,
+.has-content-tabs .click-stack__choices--tabs > .cb-tabs { display: none; }
+.has-content-tabs #proposal-details-panel[data-stack-page="actions"] .panel-body,
+.has-content-tabs #proposal-details-panel:not([data-stack-page="actions"]) .panel-footer { display: none; }
+.has-content-tabs .click-stack__agreement-properties[data-stack-page="actions"] .agreement-properties-tabpanel,
+.has-content-tabs .click-stack__agreement-properties:not([data-stack-page="actions"]) .panel-body > .agreement-panel-actions { display: none; }
+.has-content-tabs .click-stack__relation-label { display: none; }
+:is(#click-stack, #three-click-stack) .has-content-tabs .click-stack__strip { max-height: none; }
+
+@media (max-width: 767.98px) {
+    :is(#click-stack, #three-click-stack).visible {
+        top: auto; bottom: var(--mobile-visual-bottom, 0px); left: 0; right: 0;
+        width: 100%; max-width: 100%; height: auto;
+        max-height: calc(var(--mobile-visual-height, 100dvh) * .55);
+        border-radius: var(--cb-radius-lg) var(--cb-radius-lg) 0 0;
+        background: var(--cb-glass-sheet); backdrop-filter: blur(var(--cb-panel-blur));
+        pointer-events: auto; padding-bottom: env(safe-area-inset-bottom, 0px);
+    }
+    :is(#click-stack, #three-click-stack).is-mobile-full {
+        height: var(--mobile-visual-height, 100dvh); max-height: var(--mobile-visual-height, 100dvh);
+    }
+    .click-stack__object-tabs { display: flex; flex: 0 0 auto; overflow-x: auto; min-height: 44px; border-bottom: 1px solid var(--cb-line); }
+    .click-stack__object-tab { position: relative; flex: 1 0 44px; min-width: 44px; min-height: 44px; padding: var(--cb-space-2); border: 0; border-radius: 0; background: transparent; color: var(--cb-text-muted); }
+    .click-stack__object-tab[aria-selected="true"] { color: var(--cb-primary-soft-ink); background: var(--cb-primary-soft); box-shadow: inset 0 -3px var(--cb-focus); }
+    .click-stack__object-tab > i { font-size: var(--cb-text-lg); }
+    .click-stack__progression { position: absolute; right: -3px; top: 50%; transform: translateY(-50%); color: var(--cb-text-muted); z-index: 1; pointer-events: none; }
+    .click-stack__size, .click-stack__dismiss { display: inline-flex; flex: 0 0 44px; }
+    :is(#click-stack, #three-click-stack) .click-stack__section:not(.is-selected) { display: none; }
+    :is(#click-stack, #three-click-stack) .click-stack__sections { min-height: 0; overflow: hidden; }
+    :is(#click-stack, #three-click-stack) .click-stack__section.is-selected { flex: 0 1 auto; min-height: 0; padding: 0; margin: 0; }
+    .click-stack__section::before, .click-stack__section::after { display: none; }
+    :is(#click-stack, #three-click-stack) .click-stack__card { display: flex; flex-direction: column; min-height: 0; border: 0; border-radius: 0; box-shadow: none; background: transparent; }
+    :is(#click-stack, #three-click-stack) .click-stack__heading { flex: 0 0 auto; gap: 0; }
+    :is(#click-stack, #three-click-stack) .click-stack__row { flex-wrap: nowrap; min-height: 44px; padding: var(--cb-space-2); gap: var(--cb-space-2); }
+    :is(#click-stack, #three-click-stack) .click-stack__row > i:first-child,
+    :is(#click-stack, #three-click-stack) .click-stack__row > .proposal-type-badge { display: none; }
+    :is(#click-stack, #three-click-stack) .click-stack__row-title { flex: 0 1 auto; max-width: 55%; overflow: hidden; text-overflow: ellipsis; }
+    :is(#click-stack, #three-click-stack) .click-stack__section.is-selected[data-kind] .click-stack__row .click-stack__row-detail { display: block; order: 0; flex: 1 1 auto; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+    :is(#click-stack, #three-click-stack) .click-stack__body { flex: 0 1 auto; min-height: 0; overflow-y: auto; padding: 0 var(--cb-space-2) var(--cb-space-2); gap: var(--cb-space-2); }
+    :is(#click-stack, #three-click-stack).is-mobile-full .click-stack__sections,
+    :is(#click-stack, #three-click-stack).is-mobile-full .is-selected,
+    :is(#click-stack, #three-click-stack).is-mobile-full .click-stack__card,
+    :is(#click-stack, #three-click-stack).is-mobile-full .click-stack__body { flex: 1 1 auto; }
+    .click-stack__content-tabs { min-height: 44px; margin-inline: calc(-1 * var(--cb-space-2)); }
+    .click-stack__content-tabs > .cb-tab { min-height: 44px; }
+    .click-stack__selector-wrap { padding: 0; }
+}

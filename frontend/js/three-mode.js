@@ -1675,6 +1675,7 @@
                 actions.addEventListener('click', async () => {
                     await window.requestMapMode('2d');
                     window.ClickStack.showDesign(instance.id);
+                    window.ClickStackNavigation?.selectPage(document.querySelector('#click-stack .click-stack__body'), 'actions');
                 });
                 body.appendChild(actions);
             } else if (kind === 'parcels' || kind === 'formed') {

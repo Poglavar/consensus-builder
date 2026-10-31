@@ -97,7 +97,7 @@
         choices.setAttribute('role', 'group');
         const label = doc.createElement('span');
         label.className = 'click-stack__relation-label';
-        label.textContent = translate(keys[group.relation] || group.relation, win);
+        label.textContent = group.label || translate(keys[group.relation] || group.relation, win);
         choices.setAttribute('aria-label', label.textContent);
         const strip = doc.createElement('div');
         strip.className = 'click-stack__strip';
