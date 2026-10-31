@@ -6,6 +6,7 @@ import { createRequire } from 'node:module';
 const require = createRequire(import.meta.url);
 const sheen = require('../../frontend/js/three-water-sheen.js');
 const { SKY_COLOR_GLSL, DOME_FRAGMENT } = require('../../frontend/js/three-sky.js');
+const atmosphere = require('../../frontend/js/three-atmosphere.js');
 
 const SHADER = () => ({
     uniforms: {},
@@ -50,6 +51,26 @@ describe('water sheen', () => {
 
     it('shares one sky function with the dome', () => {
         expect(DOME_FRAGMENT.startsWith(SKY_COLOR_GLSL)).toBe(true);
-        expect(DOME_FRAGMENT).toContain('cbSkyColor(normalize(vCbSkyDir))');
+        expect(DOME_FRAGMENT).toContain('mix(cbSkyColor(cbDir), cbCloud.rgb, cbCloud.a)');
+    });
+
+    it('reflects the clouds and moves its ripple on the weather clock when given the weather', () => {
+        const plain = {};
+        sheen.apply(plain, { skyGlsl: SKY_COLOR_GLSL, skyUniforms: () => null });
+        const still = SHADER();
+        plain.onBeforeCompile(still);
+        expect(still.fragmentShader).not.toContain('cbCloudSky');
+        expect(still.fragmentShader).toContain('float cbT = 0.0;');
+
+        const state = atmosphere.createState();
+        const weathered = {};
+        sheen.apply(weathered, { skyGlsl: SKY_COLOR_GLSL, skyUniforms: () => null, clouds: { glsl: atmosphere.CLOUD_GLSL, state } });
+        const shader = SHADER();
+        weathered.onBeforeCompile(shader);
+        expect(shader.fragmentShader).toContain('float cbCloudField(');
+        expect(shader.fragmentShader).toContain('float cbT = cbCloudTime;');
+        expect(shader.fragmentShader).toContain('cbSky = mix(cbSky, cbCloud.rgb, cbCloud.a);');
+        expect(shader.uniforms.cbCloudTime).toBe(state.cbCloudTime);
+        expect(weathered.customProgramCacheKey()).toBe('cb-water-sheen-clouds');
     });
 });

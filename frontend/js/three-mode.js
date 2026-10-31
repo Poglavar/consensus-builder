@@ -56,6 +56,10 @@
     // Lit windows at night on every building material (three-night-windows.js), through shared uniforms.
     const nightWindows = window.__threeNightWindows;
     const nightWindowState = nightWindows.createState();
+    // Drifting clouds, their shadows and the haze of distance (three-atmosphere.js), through shared uniforms.
+    const atmosphere = window.__threeAtmosphere;
+    const atmosphereState = atmosphere.createState();
+    const atmosphereClouds = { glsl: atmosphere.CLOUD_GLSL, state: atmosphereState };
     const floorPlanGeometry = window.__buildingFloorPlans;
     const floorPlanRenderer = window.__threeFloorPlans;
     if (!floorPlanGeometry || !floorPlanRenderer) {
@@ -3750,6 +3754,41 @@
         lifeLayer?.setNight(night);
     }
 
+    // Before each render: the weather (three-atmosphere.js). The cloud clock advances on frames drawn
+    // anyway; cloud colours follow the sky only when the sun moved; the haze takes the horizon's
+    // colour and starts past the camera's target. Lit materials new to the scene get cloud shadows
+    // (a set lookup per material, only when the scene changed). Photo view: no haze.
+    let atmosphereSunKey = null;
+    let atmosphereMaterials = 0;   // lit materials given cloud shadows so far (__threeFrameDebug)
+    function updateAtmosphere(sceneChanged) {
+        const k = lifeMercatorK();
+        const sun = window.__threeSun?.currentSun?.() || null;
+        const sunKey = sun ? `${sun.altitudeDeg.toFixed(2)}|${sun.azimuthRad.toFixed(3)}` : 'neutral';
+        let colors = null, sunDirection = null;
+        if (sunKey !== atmosphereSunKey) {
+            atmosphereSunKey = sunKey;
+            const skyApi = window.SkyColors;
+            colors = atmosphere.cloudColors(skyApi.skyColors(sun ? sun.altitudeDeg : null), sun ? sun.altitudeDeg : null);
+            sunDirection = sun ? skyApi.sunDirection(sun.altitudeDeg * Math.PI / 180, sun.azimuthRad) : null;
+        }
+        atmosphere.setState(atmosphereState, { timeS: performance.now() / 1000, k, sunDirection, colors });
+        if (sceneChanged) atmosphereMaterials += atmosphere.configureTree(scene, atmosphereState);
+        if (!scene.fog) return;
+        if (window.PhotorealMode?.isActive?.()) {
+            scene.fog.near = 1e11;
+            scene.fog.far = 1e12;
+            return;
+        }
+        if (sky) scene.fog.color.copy(sky.uniforms.cbSkyHorizon.value);
+        const target = controls?.target;
+        const distanceM = target
+            ? Math.hypot((camera.position.x - target.x) / k, (camera.position.y - target.y) / k, camera.position.z - target.z)
+            : 0;
+        const range = atmosphere.hazeRange(distanceM, k);
+        scene.fog.near = range.near;
+        scene.fog.far = range.far;
+    }
+
     function buildingSidewalkMaterial() {
         ensureGroundLayer();
         return window.__threeSiteGround.sidewalkMaterial(THREE, groundLayer, 1 / lifeMercatorK());
@@ -7207,7 +7246,7 @@
             waterMaterial = new THREE.MeshPhongMaterial({ color: 0x3b7fc4, specular: 0x1f3a60, shininess: 40 });
             groundLayer.parcelSurface(waterMaterial);
             // It reflects the scene's sky (three-water-sheen.js), whichever sky the current scene has.
-            window.__threeWaterSheen.apply(waterMaterial, { skyGlsl: window.__threeSky.SKY_COLOR_GLSL, skyUniforms: () => sky?.uniforms || null });
+            window.__threeWaterSheen.apply(waterMaterial, { skyGlsl: window.__threeSky.SKY_COLOR_GLSL, skyUniforms: () => sky?.uniforms || null, clouds: atmosphereClouds });
         }
         for (const piece of nearbyWater) {
             try {
@@ -8920,6 +8959,7 @@
         if (shadowsPerPass && renderer.shadowMap.enabled) renderer.shadowMap.needsUpdate = true;
         updateLampGlow();
         updateSkyAndWindows();
+        updateAtmosphere(renderedSceneVisualRevision !== sceneVisualRevision);
         floorPlanRenderer.renderCutaway(renderer, scene, camera, floorPlanGroup,
             xrayEnabled && floorCutawayLevel !== null && floorCutawayLevel < 0);
         renderedBuildingDisplaySnapshot = buildingDisplaySnapshot;
@@ -9389,8 +9429,11 @@
         // uncovered while the drawing buffer catches up; only the buffer is sized here.
         renderer.setSize(width, height, false);
         renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
-        sky = window.__threeSky.createSky(THREE, { pixelRatio: renderer.getPixelRatio() });
+        sky = window.__threeSky.createSky(THREE, { pixelRatio: renderer.getPixelRatio(), clouds: atmosphereState });
         scene.add(sky.group);
+        // Haze (updateAtmosphere sets its colour and range every frame); from the start, so no
+        // material compiles twice for it.
+        scene.fog = new THREE.Fog(0xffffff, 1e11, 1e12);
         threeContainer.innerHTML = '';
         threeContainer.appendChild(renderer.domElement);
         perfReadout = null;
@@ -9909,7 +9952,8 @@
         hooks: frameHooks.map(hook => hook.name || 'anonymous'), live: [...lastFrameDebug.live],
         moving: lastFrameDebug.moving, wasInvalidated: lastFrameDebug.wasInvalidated, hooksParked,
         idleMs: Math.round(performance.now() - lastInputAt), autoRotate: !!controls?.autoRotate || manualAutoRotateActive,
-        frameAgeMs: Math.round(performance.now() - lastFrameDebug.at), loopRunning, frameId: frameId !== null, frameTimer: !!frameTimer
+        frameAgeMs: Math.round(performance.now() - lastFrameDebug.at), loopRunning, frameId: frameId !== null, frameTimer: !!frameTimer,
+        clouds: { cover: atmosphereState.cbCloudCover.value, shadow: atmosphereState.cbCloudShadow.value, materials: atmosphereMaterials, timeS: atmosphereState.cbCloudTime.value }
     });
     // Input keeps the decorative hooks awake; once they have parked, the first input restarts the loop.
     function noteInput() {

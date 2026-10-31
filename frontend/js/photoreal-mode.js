@@ -2559,6 +2559,8 @@
             const THREE = window.THREE;
             scaleNode = new THREE.Group();
             scaleNode.name = 'PhotorealScale';
+            // The photo mesh carries its own light and sky: no cloud shadows (three-atmosphere.js).
+            scaleNode.userData.cbNoAtmosphere = true;
             scaleNode.scale.set(mercatorK, mercatorK, 1);
             seatNode = new THREE.Group();
             seatNode.name = 'PhotorealSeat';
