@@ -3477,12 +3477,13 @@
 
     // One matrix per spot: position, bearing (the model's +X faces it) and the Mercator (k, k, 1)
     // scale that turns a model in metres into scene units (FurnitureModels.instanceTransform).
-    function furniturePlacements(spots) {
+    // `groundZ`: the surface it stands on (a park or square's, or the street's for OSM furniture).
+    function furniturePlacements(spots, groundZ = FURNITURE_GROUND_Z) {
         const k = lifeMercatorK();
         const dummy = new THREE.Object3D();
         return spots.map(spot => {
             const [x, y] = latLngToXY(spot.lat, spot.lng);
-            const transform = furnitureApi().instanceTransform({ x, y, z: FURNITURE_GROUND_Z, bearingDeg: spot.bearing, k });
+            const transform = furnitureApi().instanceTransform({ x, y, z: groundZ, bearingDeg: spot.bearing, k });
             dummy.position.set(...transform.position);
             dummy.rotation.set(0, 0, transform.rotationZ);
             dummy.scale.set(...transform.scale);
@@ -3612,11 +3613,19 @@
     }
 
     // The default lamp: a pole and a head, each one InstancedMesh for all lamps of a structure.
-    function addProceduralLamps3D(decoTarget, spots) {
+    // The lamp model: lamps placed in parks and squares and street lamps mapped in OSM both stand here
+    // (pole and head, and their glow at night), so they look and light up alike.
+    function addLamps3D(target, spots, groundZ = FURNITURE_GROUND_Z) {
+        if (!spots.length) return;
+        addProceduralLamps3D(target, spots, groundZ);
+        addLampGlow3D(target, spots, LAMP_HEAD_Z - FURNITURE_GROUND_Z, groundZ);
+    }
+
+    function addProceduralLamps3D(decoTarget, spots, groundZ = FURNITURE_GROUND_Z) {
         const assets = ensureLampAssets();
         const poles = ownInstances(new THREE.InstancedMesh(assets.pole, assets.poleMat, spots.length));
         const heads = ownInstances(new THREE.InstancedMesh(assets.head, assets.headMat, spots.length));
-        furniturePlacements(spots).forEach((matrix, index) => {
+        furniturePlacements(spots, groundZ).forEach((matrix, index) => {
             poles.setMatrixAt(index, matrix);
             heads.setMatrixAt(index, matrix);
         });
@@ -3630,7 +3639,7 @@
     // The night glow of a structure's lamps: one Points for every head (a halo) and one InstancedMesh
     // of flat discs for the light pools on the ground. No lights; additive, never written to depth,
     // never picked.
-    function addLampGlow3D(decoTarget, spots, headHeightM) {
+    function addLampGlow3D(decoTarget, spots, headHeightM, groundZ = FURNITURE_GROUND_Z) {
         const assets = ensureLampAssets();
         const k = lifeMercatorK();
         const positions = new Float32Array(spots.length * 3);
@@ -3640,8 +3649,8 @@
             const [x, y] = latLngToXY(spot.lat, spot.lng);
             positions[index * 3] = x;
             positions[index * 3 + 1] = y;
-            positions[index * 3 + 2] = FURNITURE_GROUND_Z + headHeightM;
-            dummy.position.set(x, y, FURNITURE_GROUND_Z + 0.02);
+            positions[index * 3 + 2] = groundZ + headHeightM;
+            dummy.position.set(x, y, groundZ + 0.02);
             dummy.scale.set(LAMP_POOL_RADIUS_M * k, LAMP_POOL_RADIUS_M * k, 1);
             dummy.updateMatrix();
             pools.setMatrixAt(index, dummy.matrix);
@@ -3663,10 +3672,8 @@
     }
 
     function placeLamps3D(items, models, decoTarget, isCurrent) {
-        placeFurniture3D('lamp', items, models, decoTarget, isCurrent, spots => {
-            addProceduralLamps3D(decoTarget, spots);
-            addLampGlow3D(decoTarget, spots, LAMP_HEAD_Z - FURNITURE_GROUND_Z);
-        }, (spots, layout) => addLampGlow3D(decoTarget, spots, layout.height * 0.92));
+        placeFurniture3D('lamp', items, models, decoTarget, isCurrent, spots => addLamps3D(decoTarget, spots),
+            (spots, layout) => addLampGlow3D(decoTarget, spots, layout.height * 0.92));
     }
 
     // Before each render: lamps glow with the night (FurnitureModels.lampGlowStrength of the sun's
@@ -6726,7 +6733,6 @@
     let nearbyFurniture = null;         // { fountains: [[lng, lat, radiusM]], lamps: [[lng, lat]] } or null
     let nearbyFurnitureKey = null;
     let nearbyFurnitureFetching = false;
-    let furnitureFountains = null;      // the three-fountains.js layer drawn into furnitureGroup
 
     function ensureNearbyFurniture() {
         if (nearbyFurnitureFetching) return;
@@ -6759,17 +6765,28 @@
 
     function rebuildFurnitureOnly() {
         if (!isActive || !furnitureGroup) return;
-        furnitureFountains?.dispose();
-        furnitureFountains = null;
+        threeResources.disposeOwnedSubtree(furnitureGroup);
         furnitureGroup.clear();
         if (!nearbyFurniture) return;
-        // Like the trees, none stands on an applied corridor's land.
-        const outside = points => window.__threeSiteGround.contextTreesOutsideCorridors(points, displayedProposals(), {
+        // Like the trees, none stands on an applied corridor's land; nor inside a park or square
+        // shown in the scene, whose design brings its own furniture.
+        const outside = points => outsideStructures(window.__threeSiteGround.contextTreesOutsideCorridors(points, displayedProposals(), {
             isAppliedCorridor: isAppliedCorridorProposal, featureSets: collectProposalFeatureSets, turf
-        });
+        }));
         const fountains = outside(nearbyFurniture.fountains).map(([lng, lat, radiusM]) => ({ lng, lat, radiusM }));
-        furnitureFountains = addFountains3D(furnitureGroup, fountains, 0);
+        addFountains3D(furnitureGroup, fountains, 0);
+        addLamps3D(furnitureGroup, outside(nearbyFurniture.lamps).map(([lng, lat]) => ({ lng, lat, bearing: 0 })), 0);
         invalidateThreeView();
+    }
+
+    // [lng, lat, ...] points that fall in no park or square of the scene.
+    function outsideStructures(points) {
+        const areas = displayedFeatures([...(Array.isArray(window.parks) ? window.parks : []), ...(Array.isArray(window.squares) ? window.squares : [])])
+            .filter(feature => ['Polygon', 'MultiPolygon'].includes(feature?.geometry?.type))
+            .map(feature => ({ feature, bbox: turf.bbox(feature) }));
+        if (!areas.length) return points;
+        return points.filter(point => !areas.some(({ feature, bbox: [w, s, e, n] }) =>
+            point[0] >= w && point[0] <= e && point[1] >= s && point[1] <= n && turf.booleanPointInPolygon([point[0], point[1]], feature)));
     }
 
     // The scene's fountain water: the water's colour and its sky reflection and ripple, without the
@@ -7732,6 +7749,7 @@
         }
         if (corridors) timed('corridors', rebuildCorridors3D);
         if (corridors && diff.plannedChanged) timed('trees', rebuildTreesOnly);
+        if ((corridors && diff.plannedChanged) || ofKind(window.parks) || ofKind(window.squares)) timed('street furniture', rebuildFurnitureOnly);
         const structures = [['parks', parkGroundGroup, parkGroup, () => buildParks3D(parkGroundGroup, parkGroup)],
             ['squares', squareGroundGroup, squareGroup, () => buildSquares3D(squareGroundGroup, squareGroup)],
             ['lakes', lakeGroundGroup, lakeGroup, () => buildLakes3D(lakeGroundGroup, lakeGroup)]];
@@ -10593,6 +10611,7 @@
     }
 
     window.addEventListener('parcelFabricCommitted', rebuildTreesOnly);
+    window.addEventListener('parcelFabricCommitted', rebuildFurnitureOnly);
 
     window.addEventListener('buildingsLayerUpdated', () => {
         if (!isActive) return;
@@ -10671,6 +10690,8 @@
         }, eventName);
         // Parks and plazas are where people wander, so the population follows a structure change.
         try { rebuildLifeOnly(); } catch (error) { console.warn('[3D life] rebuild after structures failed', error); }
+        // OSM furniture leaves a park or square to its design.
+        rebuildFurnitureOnly();
     }
 
     ['parksUpdated', 'squaresUpdated', 'lakesUpdated', 'stationsUpdated', 'buildingGroundsUpdated'].forEach(eventName => {
