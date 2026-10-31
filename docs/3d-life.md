@@ -116,8 +116,8 @@ Streets come from OSM everywhere, through one endpoint: `/osm-road` answers from
 `osm_road` table where the city has rows, and otherwise (a scene-sized bbox with no rows) from the
 backend's shared Overpass chain in `backend/roads/osm-road-overpass.js` — the paid Tracestrack
 instance first (`TRACESTRACK_API_KEY` in backend/.env, local and prod; the key never reaches a
-browser), then the public server, with the per-cell cache, throttle and cool-off of
-`osm-reference.js`. The response carries `source: 'osm_road' | 'overpass'`. Only when the backend
+browser), then the public server, with the per-cell cache and the shared admission gate of
+`osm-reference.js` (docs/source-adapters.md, "OpenStreetMap through our backend"). The response carries `source: 'osm_road' | 'overpass'`. Only when the backend
 cannot answer does the browser ask a public Overpass instance itself (three instances in turn,
 clipped to about 3 km, 60 s each), so the layer survives our server being down; failing that, life
 runs on proposals and plazas only. The population rebuilds once the ways arrive.

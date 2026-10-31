@@ -13,6 +13,8 @@
 // with 429 and 504 (each surfacing as a 502 here), and the reference layer simply stopped drawing.
 // Snapped cells mean panning inside a cell is free, and a pan across one costs a single fetch.
 
+import { createOverpassGate, PRIORITY, REFUSED_MS } from './overpass-gate.js';
+
 const DEFAULT_OVERPASS_URL = 'https://overpass-api.de/api/interpreter';
 // Buildings do not move; the only reason to expire at all is to pick up mapping edits eventually.
 const CACHE_TTL_MS = 60 * 60 * 1000;
@@ -20,24 +22,26 @@ const CACHE_MAX_ENTRIES = 400;
 // ~0.005 deg is ~550 m north-south, ~390 m east-west at Zagreb's latitude: a zoom-17..19 viewport
 // covers one to four of them, so a session spent working one street re-uses the same cells.
 const OSM_CELL_DEG = 0.005;
-// After Overpass throttles us, stop asking for a while. Hammering a rate limiter is how a slow
-// layer becomes a dead one.
-const THROTTLE_COOLOFF_MS = 60 * 1000;
 const FEATURE_CAP = 8000;          // above the densest zoom-17..19 viewport; only binds pathologically
 const MAX_SPAN_DEG = 0.06;         // ~6.6 km — a safety valve; the frontend zoom-gates to small boxes
 const FETCH_TIMEOUT_MS = 25000;
 
-// A paid endpoint that refuses us (a bad key, a Referer it does not accept, the month's credits
-// spent) stays refused for a while, so we stop asking and use the next endpoint.
-const REFUSED_COOLOFF_MS = 15 * 60 * 1000;
 // Tracestrack checks the Referer against the one set in its dashboard; the public servers ignore it.
 const OVERPASS_REFERER = 'https://urbangametheory.xyz/';
 
-// Shared by every Overpass source here, per endpoint: Overpass throttles per client, not per query,
-// so a 429 for buildings must also quiet the streets source. A mirror someone plugged in has its own
-// clock, so the public server throttling us never silences it.
-const throttledUntil = new Map();
-const throttleEndsAt = endpoint => throttledUntil.get(endpoint) || 0;
+// One admission gate per endpoint, shared by every Overpass source here (overpass-gate.js): a
+// provider limits per client, not per query, so roads, buildings and the rest take turns at one
+// queue, in that order, and a 429 for one of them backs all of them off. A mirror someone plugged in
+// has its own gate, so the public server throttling us never silences it.
+const gates = new Map();
+function gateOf(endpoint, options) {
+    if (!gates.has(endpoint)) {
+        const kind = options.overpassUrl ? 'mirror' : /tracestrack\.com\//.test(endpoint) ? 'tracestrack' : 'public';
+        gates.set(endpoint, createOverpassGate(kind));
+    }
+    return gates.get(endpoint);
+}
+const throttleEndsAt = endpoint => gates.get(endpoint)?.blockedUntil() || 0;
 
 // The endpoints our own requests try, in order: the paid Tracestrack instance when its key is set
 // (TRACESTRACK_API_KEY, a secret, so it lives only in .env), then the public server. A user's mirror
@@ -192,16 +196,31 @@ function buildOverpassQuery(bbox) {
  * `truncated` (a cell hit the cap) and `partial` (some cell could not be fetched). It throws (with
  * .status and .retryAfter) only when nothing at all could be served.
  */
-function createOverpassCellSource({ label, buildQuery, convert, featureCap = FEATURE_CAP }) {
+// `priority` (overpass-gate.js PRIORITY): roads first, buildings second, everything else after.
+function createOverpassCellSource({ label, buildQuery, convert, featureCap = FEATURE_CAP, priority = PRIORITY.other }) {
     // In-memory cache, one entry per grid cell. Bounded to avoid unbounded growth.
     const cache = new Map();
     // One in-flight request per cell: a viewport spanning four cells, fired twice by two moveend
     // events, must be four Overpass calls and not eight.
     const inFlight = new Map();
 
-    // One Overpass request to ONE endpoint → { features, truncated }. Throws with .status on failure,
-    // after starting that endpoint's cool-off when it throttled, refused or did not answer.
+    // One Overpass request to ONE endpoint → { features, truncated }, holding a slot of its gate for
+    // as long as it runs. Throws with .status on failure; the gate hears whether the provider
+    // throttled or refused us (backs off), or the request merely failed (falls back, nothing blocked).
     async function queryEndpoint(overpassUrl, bbox, options, cap) {
+        const gate = gateOf(overpassUrl, options);
+        await gate.acquire(priority);
+        let outcome = 'failed', retryAfter = null;
+        try {
+            const fc = await requestEndpoint(overpassUrl, bbox, options, cap, (result, header) => { outcome = result; retryAfter = header; });
+            outcome = 'ok';
+            return fc;
+        } finally {
+            gate.release(outcome, { retryAfter });
+        }
+    }
+
+    async function requestEndpoint(overpassUrl, bbox, options, cap, report) {
         const own = !options.overpassUrl;
         // A user's mirror goes through the public-URL guard (options.fetchImpl); ours do not need it.
         const fetchImpl = options.fetchImpl || fetch;
@@ -225,21 +244,21 @@ function createOverpassCellSource({ label, buildQuery, convert, featureCap = FEA
                     signal: controller.signal
                 });
             } catch (err) {
-                // No answer at all (timeout, network): asking again at once would only wait again.
-                throttledUntil.set(overpassUrl, cacheNow() + THROTTLE_COOLOFF_MS);
+                // No answer at all (timeout, network): this request fails over; it says nothing
+                // about the provider's limits, so nothing else is held back.
                 throw err;
             }
             if (!resp.ok) {
-                // 429 (too many requests) and 504 (the query queue timed out) both mean the same
-                // thing to us: back off. 401/402/403 is a paid endpoint refusing the key, the Referer
-                // or a spent month. Anything else is a genuine upstream failure.
-                const throttled = resp.status === 429 || resp.status === 504;
+                // 429 is the provider's rate limit (Tracestrack: per key; the public server: per IP,
+                // after 15 s in its queue); the public server's 504 is its time or memory budget,
+                // equally a reason to back off. 401/402/403 is a paid endpoint refusing the key, the
+                // Referer or a spent month. Anything else is a genuine upstream failure.
+                const throttled = resp.status === 429 || (resp.status === 504 && !/tracestrack\.com\//.test(overpassUrl));
                 const refused = [401, 402, 403].includes(resp.status);
-                if (throttled) throttledUntil.set(overpassUrl, cacheNow() + THROTTLE_COOLOFF_MS);
-                if (refused) throttledUntil.set(overpassUrl, cacheNow() + REFUSED_COOLOFF_MS);
+                report(throttled ? 'throttled' : refused ? 'refused' : 'failed', resp.headers?.get?.('retry-after') ?? null);
                 const err = new Error(`Overpass HTTP ${resp.status} from ${hostOf(overpassUrl)} (${label}): ${(await resp.text()).slice(0, 200)}`);
                 err.status = throttled ? 503 : 502;
-                if (refused) console.error(`[${new Date().toISOString()}] [osm ${label}] ${hostOf(overpassUrl)} refused us (HTTP ${resp.status}); not asking it again for ${REFUSED_COOLOFF_MS / 60000} min`);
+                if (refused) console.error(`[${new Date().toISOString()}] [osm ${label}] ${hostOf(overpassUrl)} refused us (HTTP ${resp.status}); not asking it again for ${REFUSED_MS / 60000} min`);
                 throw err;
             }
             json = await resp.json();
@@ -409,7 +428,8 @@ function createOverpassCellSource({ label, buildQuery, convert, featureCap = FEA
 const fetchOsmBuildings = createOverpassCellSource({
     label: 'buildings',
     buildQuery: buildOverpassQuery,
-    convert: overpassElementsToGeoJSON
+    convert: overpassElementsToGeoJSON,
+    priority: PRIORITY.buildings
 });
 
-export { overpassElementsToGeoJSON, buildOverpassQuery, osmHeightMeters, osmCellsForBbox, fetchOsmBuildings, createOverpassCellSource };
+export { overpassElementsToGeoJSON, buildOverpassQuery, osmHeightMeters, osmCellsForBbox, fetchOsmBuildings, createOverpassCellSource, PRIORITY };

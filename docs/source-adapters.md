@@ -50,6 +50,30 @@ A building source that is a public URL (`building.<base64url>`) is read in the b
 
 The wrapper schema is intentionally stable while `config` stays adapter-owned. For example, the custom parcel/building transport config is validated by `canonicalConfig` in `backend/parcels/custom-source-config.js`; imagery config is decoded in `frontend/js/imagery-source.js`; economics snapshots are normalized by `rateTable` in `frontend/js/economic-sources.js`. Do not duplicate these validations as a competing universal config format. Update the machine-readable operation contract when a consumer-visible normalized field, unit, null/partial meaning or provenance rule changes; keep implementation findings and change history in separate documents.
 
+### OpenStreetMap through our backend
+
+OSM is read through one backend chain (`backend/buildings/osm-reference.js` `createOverpassCellSource`):
+our paid Tracestrack Overpass instance, with the public overpass-api.de only as a last resort. It is
+the default for every OSM-derived layer in every city; ingested tables (`osm_road`, `osm_decor`)
+only answer faster and fall back to it. Answers are cached per layer, per 0.005° grid cell, for an
+hour, in the API process's memory, so everyone viewing an area shares them.
+
+Each endpoint has one admission gate (`backend/buildings/overpass-gate.js`) shared by every layer:
+
+- **Order:** roads (roads, streets, block roads) first, buildings second, everything else after.
+- **Concurrency:** Tracestrack documents no cap; we send up to four at once. Each 429 halves that,
+  down to one, and 20 successes in a row give a slot back. The public server takes two (its per-IP
+  slots).
+- **Backoff:** only on the provider's own push-back. Tracestrack's 429 ("rate limit exceeded for this
+  key") backs off 2 s, doubling to 60 s and reset by a success; the public server's 429 or 504 backs
+  off 15 s, as its manual's reference client does. A `Retry-After` header, which neither documents,
+  is honoured if it comes. 401, 402 and 403 (bad key, Referer or spent credits) set the key aside for
+  15 minutes.
+- **A slow answer or network failure** fails that request over to the next endpoint and blocks
+  nothing else.
+
+Tracestrack bills 6 credits per Overpass call against the plan's monthly allowance.
+
 ## Adapter configuration examples
 
 The model is **abstraction → adapter → source**: an abstraction names the domain, an adapter implements a concrete reader, and a source binds public configuration to that adapter. `kind: "default"` means application-registered configuration; `kind: "custom"` means caller-provided configuration accepted by that particular adapter. It does not select a second reader implementation.
