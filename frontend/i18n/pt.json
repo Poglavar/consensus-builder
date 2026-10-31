@@ -8685,7 +8685,14 @@
         "access": "Acesso do agente",
         "inviteHint": "Copie o convite na conversa com o agente. Você decide quando ele pode editar.",
         "connection": "Conexão",
-        "disconnectHint": "Desconecte para excluir esta sessão compartilhada e revogar o acesso. Seu plano local será mantido."
+        "disconnectHint": "Desconecte para excluir esta sessão compartilhada e revogar o acesso. Seu plano local será mantido.",
+        "publication": "Publicação",
+        "publicationHint": "Autorize o agente a publicar este plano salvo e os projetos que ele contém. A publicação é pública e permanente.",
+        "publicationApproved": "O agente pode publicar esta revisão salva. Salvar alterações ou mudar o turno cancela a autorização.",
+        "publicationTakeControl": "Assuma o controle e revise o plano salvo antes de autorizar a publicação.",
+        "approvePublication": "Autorizar publicação",
+        "revokePublication": "Revogar autorização de publicação",
+        "publicationSaveFirst": "Conclua a edição e salve as alterações antes de autorizar a publicação."
     },
     "pageHeader": {
         "backToMap": "Voltar ao mapa"

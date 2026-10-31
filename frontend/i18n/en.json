@@ -8863,7 +8863,14 @@
         "access": "Agent access",
         "inviteHint": "Copy the invitation into your agent conversation. You choose when it can edit.",
         "connection": "Connection",
-        "disconnectHint": "Disconnect to delete this shared session and revoke access. Your local plan is kept."
+        "disconnectHint": "Disconnect to delete this shared session and revoke access. Your local plan is kept.",
+        "publication": "Publication",
+        "publicationHint": "Approve the agent to publish this saved plan and its member designs. Publication is public and permanent.",
+        "publicationApproved": "The agent may publish this saved revision. Saving or changing turns cancels approval.",
+        "publicationTakeControl": "Take control and review the saved plan before approving publication.",
+        "approvePublication": "Approve publication",
+        "revokePublication": "Revoke publication approval",
+        "publicationSaveFirst": "Finish editing and save your changes before approving publication."
     },
     "pageHeader": {
         "backToMap": "Back to the map"

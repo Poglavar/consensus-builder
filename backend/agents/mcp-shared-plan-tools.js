@@ -12,6 +12,18 @@ export function createSharedPlanMcpTools({ actions, sharedPlans }) {
         inspectSharedPlan({ sessionId, capability }) {
             return sharedPlans.inspect(sessionId, capability);
         },
+        async publishSharedPlan({ sharedSession: { sessionId, capability }, expectedVersion, expectedCid, confirm }) {
+            if (confirm !== true) throw Object.assign(new Error('Confirm publication of this exact approved revision.'), { code: 'confirmation-required' });
+            const current = await sharedPlans.approvedPublication(sessionId, capability, { expectedVersion, expectedCid });
+            // Reuse ordinary publication and its CID readback; never accept caller-supplied members.
+            try { return await actions.publishPlan({ plan: current.artifact, expectedCid, confirm: true }); }
+            catch (error) {
+                // The ordinary publisher suggests retrying its artifact directly. Shared retries
+                // must return through approval, including after a partially completed publication.
+                error.next = { tool: 'ugt_publish_plan', action: 'Inspect this shared session again and retry using sharedSession, expectedVersion, expectedCid and confirm:true. If approval was cleared, ask the owner to approve again.' };
+                throw error;
+            }
+        },
         async editSharedPlan({ sessionId, capability, expectedVersion, expectedCid, operations, title, view, schedule, when, buildout, undoLastAgentChange }) {
             const current = await sharedPlans.assertEditable(sessionId, capability, expectedVersion);
             // Check before the expensive immutable revision work, then check again in replace(). An

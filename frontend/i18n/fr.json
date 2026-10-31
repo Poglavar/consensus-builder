@@ -8685,7 +8685,14 @@
         "access": "Accès de l’agent",
         "inviteHint": "Copiez l’invitation dans votre conversation avec l’agent. Vous décidez quand il peut modifier le plan.",
         "connection": "Connexion",
-        "disconnectHint": "Déconnectez-vous pour supprimer cette session partagée et révoquer l’accès. Votre plan local est conservé."
+        "disconnectHint": "Déconnectez-vous pour supprimer cette session partagée et révoquer l’accès. Votre plan local est conservé.",
+        "publication": "Publication",
+        "publicationHint": "Autorisez l’agent à publier ce plan enregistré et les projets qu’il contient. La publication est publique et permanente.",
+        "publicationApproved": "L’agent peut publier cette version enregistrée. Enregistrer des modifications ou changer de tour annule l’autorisation.",
+        "publicationTakeControl": "Reprenez le contrôle et vérifiez le plan enregistré avant d’autoriser sa publication.",
+        "approvePublication": "Autoriser la publication",
+        "revokePublication": "Révoquer l’autorisation de publication",
+        "publicationSaveFirst": "Terminez les modifications et enregistrez-les avant d’autoriser la publication."
     },
     "pageHeader": {
         "backToMap": "Retour à la carte"

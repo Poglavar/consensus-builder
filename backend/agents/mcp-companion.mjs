@@ -166,9 +166,21 @@ export function registerMcpCompanion(server, { actions, handler, readOnly, disco
                 title: z.string().trim().min(1).max(160).optional(), view: view.optional(), schedule, when, buildout, undoLastAgentChange: z.boolean().optional() }).strict(),
             annotations: { ...readOnly, readOnlyHint: false } }, handler(args => actions.editSharedPlan(args)));
     }
-    server.registerTool('ugt_publish_plan', { description: 'Publish the exact named plan revision and any unpublished member designs, then verify and return its permanent /plans URL. Existing links remain unchanged. Parcel layouts need prior agreement publication.',
-        inputSchema: z.object({ plan: designInput, expectedCid: cid, confirm: z.literal(true) }).strict(),
-        annotations: { ...readOnly, readOnlyHint: false } }, handler(args => { server.ugtPublishGate?.(); return actions.publishPlan(args); }));
+    const publicationInput = z.object({ plan: designInput.optional(),
+        sharedSession: z.object({ sessionId: z.string().regex(/^[\w-]{24}$/), capability: z.string().regex(/^[\w-]{32}$/) }).strict().optional(),
+        expectedCid: cid, expectedVersion: z.number().int().nonnegative().optional(), confirm: z.literal(true) }).strict()
+        .refine(args => (args.plan !== undefined) !== (args.sharedSession !== undefined), { message: 'Provide either plan or sharedSession.' })
+        .refine(args => args.sharedSession ? args.expectedVersion !== undefined : args.expectedVersion === undefined, { message: 'expectedVersion is required only for sharedSession.' });
+    server.registerTool('ugt_publish_plan', { description: 'Publish an exact named plan and its unpublished members, then verify its permanent /plans URL. For a shared plan, pass sharedSession {sessionId, capability}, expectedVersion and expectedCid from inspection; the browser owner must approve that saved revision in Collaborate. This permission is separate from the editing turn. Saving, changing turns or revoking the invitation cancels approval. Otherwise pass plan and expectedCid for ordinary anonymous publication. Do not substitute copied shared content for the sharedSession flow. Parcel layouts need prior agreement publication.',
+        inputSchema: publicationInput,
+        annotations: { ...readOnly, readOnlyHint: false } }, handler(args => {
+            server.ugtPublishGate?.();
+            if (args.sharedSession) {
+                if (!actions.publishSharedPlan) throw Object.assign(new Error('Shared plan publication is unavailable on this service.'), { code: 'shared-plan-unavailable' });
+                return actions.publishSharedPlan(args);
+            }
+            return actions.publishPlan(args);
+        }));
     server.registerTool('ugt_help', { description: 'Read workflow instructions or a tool input/output schema. Works in clients without resource support.',
         inputSchema: z.object({ topic: z.string().max(100).default('workflow') }).strict(), annotations: readOnly }, handler(args => discovery.help(args)));
     server.registerTool('ugt_list_sources', { description: 'Discover sources by abstraction, city and location with bounded pagination. Include configuration/contracts only when preparing a custom source or inspecting an adapter.',

@@ -36,7 +36,7 @@ export function createSharedPlanSessions({ pool, now = Date.now, repository = cr
         return [...result, ...[...removed].map(beforeCid => ({ beforeCid })), ...[...added].map(afterCid => ({ afterCid }))];
     }
     function publicState(value, includeArtifact = true) {
-        return { id: value.id, version: value.version, controller: value.controller, cid: value.artifact.cid, updatedAt: new Date(value.updatedAt).toISOString(), expiresAt: new Date(value.expiresAt).toISOString(), lastChange: structuredClone(value.lastChange || null), canUndo: !!value.undo && value.undo.afterCid === value.artifact.cid, ...(includeArtifact ? { artifact: structuredClone(value.artifact) } : {}) };
+        return { id: value.id, version: value.version, controller: value.controller, cid: value.artifact.cid, updatedAt: new Date(value.updatedAt).toISOString(), expiresAt: new Date(value.expiresAt).toISOString(), publicationApproval: structuredClone(value.publicationApproval || null), lastChange: structuredClone(value.lastChange || null), canUndo: !!value.undo && value.undo.afterCid === value.artifact.cid, ...(includeArtifact ? { artifact: structuredClone(value.artifact) } : {}) };
     }
     function access(value, capability, { allowExpired = false } = {}) {
         if (!value) throw failure('shared-plan-not-found', 'This shared plan is unavailable.', 404);
@@ -57,6 +57,35 @@ export function createSharedPlanSessions({ pool, now = Date.now, repository = cr
         return { ...publicState(value), ownerToken, inviteToken };
     }
     async function inspect(id, capability) { const { value } = access(await repository.read(id), capability); return publicState(value); }
+    function requireCid(value, expectedCid) {
+        if (expectedCid !== value.artifact.cid) throw failure('shared-plan-revision-mismatch', 'Use the exact current plan revision.', 409,
+            { currentVersion: value.version, currentCid: value.artifact.cid });
+    }
+    async function approvePublication(id, capability, { expectedVersion, expectedCid, approve }) {
+        if (typeof approve !== 'boolean') throw failure('shared-plan-approval-invalid', 'Choose whether to approve publication.');
+        const result = await repository.change(id, previous => {
+            const { value, role } = access(previous, capability);
+            if (role !== 'owner') throw failure('shared-plan-owner-required', 'Only the browser owner can approve publication.', 403);
+            if (approve) {
+                requireVersion(value, expectedVersion); requireCid(value, expectedCid);
+                if (value.controller !== 'owner') throw failure('shared-plan-control-required', 'Take control before approving publication.', 403);
+            }
+            const version = value.version + 1;
+            return { ...value, version, updatedAt: now(), publicationApproval: approve
+                ? { cid: value.artifact.cid, version, approvedAt: new Date(now()).toISOString() } : null };
+        });
+        return publicState(result);
+    }
+    async function approvedPublication(id, capability, { expectedVersion, expectedCid }) {
+        // Check one consistent stored snapshot immediately before publication starts. The returned
+        // immutable artifact is the only content this approval permits; later changes cannot alter it.
+        const { value } = access(await repository.read(id), capability);
+        requireVersion(value, expectedVersion); requireCid(value, expectedCid);
+        if (value.publicationApproval?.cid !== expectedCid || value.publicationApproval.version !== value.version) {
+            throw failure('shared-plan-publication-approval-required', 'Ask the browser owner to approve this saved revision in Collaborate before publishing.', 403);
+        }
+        return publicState(value);
+    }
     async function terminate(id, capability) {
         await repository.remove(id, previous => {
             const { role } = access(previous, capability, { allowExpired: true });
@@ -74,7 +103,7 @@ export function createSharedPlanSessions({ pool, now = Date.now, repository = cr
             if (revoke !== true) requireVersion(value, expectedVersion);
             if (revoke && (revoke !== true || controller !== 'owner')) throw failure('shared-plan-controller-invalid', 'Revocation must return control to the owner.');
             if (!['owner', 'agent'].includes(controller)) throw failure('shared-plan-controller-invalid', 'Choose owner or agent as the editor.');
-            const next = { ...value, controller, version: value.version + 1, updatedAt: now(), ...(revoke ? { inviteTokenHash: hash(inviteToken) } : {}) };
+            const next = { ...value, controller, publicationApproval: null, version: value.version + 1, updatedAt: now(), ...(revoke ? { inviteTokenHash: hash(inviteToken) } : {}) };
             return next;
         });
         return { ...publicState(result), ...(revoke ? { inviteToken } : {}) };
@@ -86,7 +115,7 @@ export function createSharedPlanSessions({ pool, now = Date.now, repository = cr
             requireVersion(value, expectedVersion);
             if (value.controller !== role) throw failure('shared-plan-control-required', `The ${value.controller} currently holds editing control.`, 403, { controller: value.controller });
             const changed = value.artifact.cid !== artifact.cid;
-            const next = { ...value, artifact: structuredClone(artifact), version: value.version + 1, updatedAt: now(),
+            const next = { ...value, artifact: structuredClone(artifact), publicationApproval: null, version: value.version + 1, updatedAt: now(),
                 ...(changed ? { lastChange: { fromCid: value.artifact.cid, toCid: artifact.cid, actor: role, kind: 'edit', members: membersBetween(value.artifact, artifact, [...changes, ...(consequences.junctions || [])]) },
                     undo: role === 'agent' ? { artifact: structuredClone(value.artifact), afterCid: artifact.cid } : null } : role === 'owner' ? { undo: null } : {}) };
             return next;
@@ -99,7 +128,7 @@ export function createSharedPlanSessions({ pool, now = Date.now, repository = cr
             if (value.controller !== role) throw failure('shared-plan-control-required', `The ${value.controller} currently holds editing control.`, 403);
             if (!value.undo || value.undo.afterCid !== value.artifact.cid) throw failure('shared-plan-undo-unavailable', 'There is no agent change to undo.', 409);
             const artifact = structuredClone(value.undo.artifact); validateArtifact(artifact);
-            const next = { ...value, artifact, undo: null, version: value.version + 1, updatedAt: now(),
+            const next = { ...value, artifact, undo: null, publicationApproval: null, version: value.version + 1, updatedAt: now(),
                 lastChange: { fromCid: value.artifact.cid, toCid: artifact.cid, actor: role, kind: 'undo', members: membersBetween(value.artifact, artifact, (value.lastChange?.members || []).map(row => ({ ...row, beforeCid: row.afterCid, afterCid: row.beforeCid }))) } };
             return next;
         });
@@ -111,5 +140,5 @@ export function createSharedPlanSessions({ pool, now = Date.now, repository = cr
         if (value.controller !== role) throw failure('shared-plan-control-required', `The ${value.controller} currently holds editing control.`, 403, { controller: value.controller });
         return publicState(value);
     }
-    return withSharedPlanActivity({ create, inspect, terminate, control, replace, undo, assertEditable, subscribe, eventState, dispose: () => repository.dispose() });
+    return withSharedPlanActivity({ create, inspect, approvePublication, approvedPublication, terminate, control, replace, undo, assertEditable, subscribe, eventState, dispose: () => repository.dispose() });
 }

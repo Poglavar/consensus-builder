@@ -345,6 +345,12 @@ While the owner edits a connected member, the browser keeps a pending ordinary p
 
 Agent activity means an edit operation is in progress while the agent holds the current session version; holding control alone is not activity. Authenticated notifications report session state and activity, while the full accepted artifact and receipt are read separately.
 
+### Shared-session publication approval
+
+A browser-owner grant allowing publication of one exact saved shared-plan revision and its members. The grant binds the plan CID and session version and is recorded separately from authored content. The owner must hold editing control and review the saved revision before granting it. The invited agent can publish that approved revision without holding the editing turn. Saving a revision, undoing, changing turns or revoking the invitation clears approval; expiry and termination also end it. Owner revocation of publication approval does not need a current version.
+
+The shared publication path checks approval immediately before starting and uses the server's immutable artifact. A publication already started may finish after approval is withdrawn or the session changes; it still publishes only that approved artifact. Retrying the same approved revision is idempotent. This grant does not require an account and does not restrict the ordinary anonymous publication API or prevent a reader from copying content.
+
 ### Plan area
 
 The land a plan covers: every cadastral parcel its members stand on, counted once, plus their open ground (site area on no parcel), in m².

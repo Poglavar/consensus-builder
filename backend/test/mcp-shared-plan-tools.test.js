@@ -24,6 +24,47 @@ function setup() {
 }
 
 describe('shared plan asynchronous commit', () => {
+    it('keeps failed publication retries on the approved shared-session path', async () => {
+        const { store, created } = setup(), session = await created;
+        await store.approvePublication(session.id, session.ownerToken, { expectedVersion: 0, expectedCid: 'initial', approve: true });
+        const error = Object.assign(new Error('Readback failed'), { code: 'publication-failed', publishedCids: ['initial'], next: { arguments: { plan: 'copied-artifact' } } });
+        const tools = createSharedPlanMcpTools({ actions: { publishPlan: async () => { throw error; } }, sharedPlans: store });
+        await expect(tools.publishSharedPlan({ sharedSession: { sessionId: session.id, capability: session.inviteToken }, expectedVersion: 1, expectedCid: 'initial', confirm: true }))
+            .rejects.toMatchObject({ code: 'publication-failed', publishedCids: ['initial'], next: { tool: 'ugt_publish_plan', action: expect.stringContaining('sharedSession') } });
+        expect(error.next).not.toHaveProperty('arguments');
+        await store.dispose();
+    });
+
+    it('publishes only the server-approved artifact and keeps approval usable for an idempotent retry', async () => {
+        const { store, created } = setup(), session = await created;
+        const publishPlan = vi.fn(async args => ({ cid: args.expectedCid, publication: 'published' }));
+        const tools = createSharedPlanMcpTools({ actions: { publishPlan }, sharedPlans: store });
+        const args = { sharedSession: { sessionId: session.id, capability: session.inviteToken }, expectedVersion: 0, expectedCid: 'initial', confirm: true };
+        await expect(tools.publishSharedPlan(args)).rejects.toMatchObject({ code: 'shared-plan-publication-approval-required' });
+        expect(publishPlan).not.toHaveBeenCalled();
+        await store.approvePublication(session.id, session.ownerToken, { expectedVersion: 0, expectedCid: 'initial', approve: true });
+        await expect(tools.publishSharedPlan({ ...args, expectedVersion: 1, confirm: false })).rejects.toMatchObject({ code: 'confirmation-required' });
+        await expect(tools.publishSharedPlan({ ...args, expectedVersion: 1, expectedCid: 'forged' })).rejects.toMatchObject({ code: 'shared-plan-revision-mismatch' });
+        for (let i = 0; i < 2; i++) await expect(tools.publishSharedPlan({ ...args, expectedVersion: 1 })).resolves.toMatchObject({ cid: 'initial', publication: 'published' });
+        expect(publishPlan).toHaveBeenCalledTimes(2);
+        expect(publishPlan.mock.calls[0][0]).toEqual({ plan: revision('initial'), expectedCid: 'initial', confirm: true });
+        await store.approvePublication(session.id, session.ownerToken, { approve: false });
+        await expect(tools.publishSharedPlan({ ...args, expectedVersion: 2 })).rejects.toMatchObject({ code: 'shared-plan-publication-approval-required' });
+        expect(publishPlan).toHaveBeenCalledTimes(2);
+    });
+    it('publishes the approved snapshot even if a later edit changes the session after publication starts', async () => {
+        const { store, created } = setup(), session = await created;
+        await store.approvePublication(session.id, session.ownerToken, { expectedVersion: 0, expectedCid: 'initial', approve: true });
+        let finish;
+        const publishPlan = vi.fn(args => new Promise(resolve => { finish = () => resolve({ cid: args.expectedCid }); }));
+        const tools = createSharedPlanMcpTools({ actions: { publishPlan }, sharedPlans: store });
+        const running = tools.publishSharedPlan({ sharedSession: { sessionId: session.id, capability: session.inviteToken }, expectedVersion: 1, expectedCid: 'initial', confirm: true });
+        await vi.waitFor(() => expect(publishPlan).toHaveBeenCalledOnce());
+        await store.replace(session.id, session.ownerToken, { expectedVersion: 1, artifact: revision('later') });
+        finish(); expect(await running).toEqual({ cid: 'initial' });
+        expect(publishPlan.mock.calls[0][0].plan).toEqual(revision('initial'));
+        expect((await store.inspect(session.id, session.ownerToken)).publicationApproval).toBeNull();
+    });
     it('rejects an edit that was authorized when it started but finishes after human takeover', async () => {
         const { store, created, pending, edit } = setup();
         const session = await created;

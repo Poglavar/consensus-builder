@@ -73,7 +73,7 @@ export function createMcpHttpService({ env = process.env, fetchImpl, factory,
         const json = (status, body, headers = {}) => { res.writeHead(status, { 'Content-Type': 'application/json', ...headers }); res.end(JSON.stringify(body)); };
         const rawSessionPath = req.url?.split('?')[0] || '';
         const sessionRoot = rawSessionPath === '/mcp/plan-sessions' || rawSessionPath === '/mcp/plan-sessions/';
-        const sessionPath = /^\/mcp\/plan-sessions\/([\w-]{24})(?:\/(control|events|undo))?\/?$/.exec(rawSessionPath);
+        const sessionPath = /^\/mcp\/plan-sessions\/([\w-]{24})(?:\/(control|events|undo|publication-approval))?\/?$/.exec(rawSessionPath);
         if (sessionRoot || sessionPath) {
             if (req.headers.origin === appOrigin) { res.setHeader('Access-Control-Allow-Origin', appOrigin); res.setHeader('Vary', 'Origin'); }
             if (req.method === 'OPTIONS') return json(204, {}, { Allow: 'GET, POST, PUT, DELETE, OPTIONS', 'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS', 'Access-Control-Allow-Headers': 'Authorization, Content-Type' });
@@ -129,6 +129,7 @@ export function createMcpHttpService({ env = process.env, fetchImpl, factory,
                 }
                 if (req.method === 'GET' && !action) return json(200, await sharedPlans.inspect(id, capability), { 'Referrer-Policy': 'no-referrer' });
                 const body = await readJson(req);
+                if (req.method === 'POST' && action === 'publication-approval') return json(200, await sharedPlans.approvePublication(id, capability, body), { 'Referrer-Policy': 'no-referrer' });
                 if (req.method === 'POST' && control) return json(200, await sharedPlans.control(id, capability, body), { 'Referrer-Policy': 'no-referrer' });
                 if (req.method === 'POST' && action === 'undo') return json(200, await sharedPlans.undo(id, capability, body), { 'Referrer-Policy': 'no-referrer' });
                 if (req.method === 'PUT' && !action) {

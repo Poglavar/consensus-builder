@@ -36,6 +36,65 @@ const row = { cid: 'plan-cid', content: { schema: 'plan/v1', title: 'Park', desi
     designs: [{ cid: 'design-cid', content: { schema: 'design/v1', title: 'Bench' } }], memberIds: ['bench-local'], designSources: {} };
 
 describe('shared plan browser client', () => {
+    it.each([false, true])('approves the saved revision with busy feedback and retryable failure (%s)', async failure => {
+        const prefix = 'ugt.shared-plan-session/v1:https://urbangametheory.xyz:workspace-test:';
+        const saved = { id: 'session-a', cid: row.cid, version: 0, controller: 'owner', artifact: { plan: row.content, designs: row.designs } };
+        let finish;
+        const response = new Promise(resolve => { finish = resolve; });
+        const fixture = browser({ plans: [row], replies: [saved, { ok: !failure, status: failure ? 503 : 200, data: response }], stored: {
+            [`${prefix}active`]: { id: saved.id, cid: row.cid, memberIds: row.memberIds },
+            [`${prefix}plan:${row.cid}`]: saved.id,
+            [`${prefix}${saved.id}`]: { ownerToken: 'owner-secret', controller: 'owner', version: 0 }
+        } });
+        fixture.win.BusyControl = require('../../frontend/js/ui/busy-control.js');
+        fixture.win.proposalStorage = { getAllProposals: () => [{ proposalId: 'bench-local', cid: 'design-cid', applied: true }] };
+        fixture.win.PlanComposition.create = () => row;
+        const doc = makeDocument(), createElement = doc.createElement;
+        doc.createElement = tag => {
+            const el = createElement(tag);
+            el.focus = () => { doc.activeElement = el; };
+            return el;
+        };
+        const host = doc.createElement('div'); doc.body.append(host);
+        const mounted = fixture.api.mount({ row, host }); await mounted.ready;
+        const button = label => [...host.querySelectorAll('button')].find(el => el.textContent === label);
+        button('Approve publication').focus();
+        button('Approve publication').click();
+        await vi.waitFor(() => expect(fixture.calls).toHaveLength(2));
+        expect(button('Approve publication').getAttribute('aria-busy')).toBe('true');
+        expect(fixture.calls[1].url).toMatch(/publication-approval$/);
+        expect(fixture.calls[1].options.headers.Authorization).toBe('Bearer owner-secret');
+        expect(JSON.parse(fixture.calls[1].options.body)).toEqual({ expectedVersion: 0, expectedCid: row.cid, approve: true });
+        finish(failure ? { message: 'Storage unavailable' } : { ...saved, version: 1, publicationApproval: { cid: row.cid, version: 1 } });
+        await vi.waitFor(() => expect(host.querySelector('[aria-busy]')).toBeNull());
+        expect(button(failure ? 'Approve publication' : 'Revoke publication approval').disabled).toBe(false);
+        expect(doc.activeElement).toBe(button(failure ? 'Approve publication' : 'Revoke publication approval'));
+        if (failure) expect(host.querySelector('[role="alert"]').textContent).toBe('Storage unavailable');
+        mounted.dispose();
+    });
+    it.each(['agent', 'changed', 'editing'])('does not approve when %s work has not been reviewed and saved', async condition => {
+        const prefix = 'ugt.shared-plan-session/v1:https://urbangametheory.xyz:workspace-test:';
+        const saved = { id: 'session-a', cid: row.cid, version: 0, controller: condition === 'agent' ? 'agent' : 'owner', artifact: { plan: row.content, designs: row.designs } };
+        const fixture = browser({ plans: [row], replies: [saved], stored: {
+            [`${prefix}active`]: { id: saved.id, cid: row.cid, memberIds: row.memberIds },
+            [`${prefix}plan:${row.cid}`]: saved.id,
+            [`${prefix}${saved.id}`]: { ownerToken: 'owner-secret', controller: saved.controller, version: 0 }
+        } });
+        fixture.win.BusyControl = require('../../frontend/js/ui/busy-control.js');
+        fixture.win.proposalStorage = { getAllProposals: () => [{ proposalId: 'bench-local', cid: 'design-cid', applied: true }] };
+        fixture.win.PlanComposition.create = () => ({ ...row, cid: condition === 'changed' ? 'changed-plan' : row.cid });
+        if (condition === 'editing') fixture.win.getActiveProposalDesignDraft = () => ({ sourceLocalProposalId: 'bench-local' });
+        const doc = makeDocument(), host = doc.createElement('div'); doc.body.append(host);
+        const mounted = fixture.api.mount({ row, host }); await mounted.ready;
+        const button = [...host.querySelectorAll('button')].find(el => el.textContent === 'Approve publication');
+        if (condition === 'agent' || condition === 'changed') expect(button.disabled).toBe(true);
+        else {
+            button.click();
+            await vi.waitFor(() => expect(host.querySelector('[role="alert"]').textContent).toMatch(/Finish/));
+        }
+        expect(fixture.calls).toHaveLength(1); mounted.dispose();
+    });
+
     it.each(['deleted', 'absent', 'failed', 'unconfirmed'])('Disconnect retains credentials until deletion is confirmed: %s', async outcome => {
         const prefix = 'ugt.shared-plan-session/v1:https://urbangametheory.xyz:workspace-test:';
         const accepted = { id: 'session-a', version: 1, controller: 'agent', artifact: { plan: row.content, designs: row.designs } };

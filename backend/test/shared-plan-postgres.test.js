@@ -46,6 +46,16 @@ describe.skipIf(process.env.SHARED_PLAN_PG_TESTS !== '1')('shared plans in Postg
         if (createdSchema) await pool.query(`DROP SCHEMA ${schema} CASCADE`);
         await pool?.end();
     });
+    it('persists owner publication approval across workers and clears it before later saves can publish', async () => {
+        const first = store(), second = store(), created = await first.create(artifact('Approved'));
+        await expect(second.approvePublication(created.id, created.inviteToken, { expectedVersion: 0, expectedCid: created.cid, approve: true })).rejects.toMatchObject({ code: 'shared-plan-owner-required' });
+        const approved = await first.approvePublication(created.id, created.ownerToken, { expectedVersion: 0, expectedCid: created.cid, approve: true });
+        expect((await second.approvedPublication(created.id, created.inviteToken, { expectedVersion: approved.version, expectedCid: created.cid })).artifact).toEqual(artifact('Approved'));
+        const revised = await second.replace(created.id, created.ownerToken, { expectedVersion: approved.version, artifact: artifact('Changed') });
+        await expect(first.approvedPublication(created.id, created.inviteToken, { expectedVersion: revised.version, expectedCid: revised.cid })).rejects.toMatchObject({ code: 'shared-plan-publication-approval-required' });
+        const row = (await pool.query(`SELECT state FROM ${schema}.shared_plan_session WHERE id = $1`, [created.id])).rows[0].state;
+        expect(row.publicationApproval).toBeNull();
+    });
     it('deletes the current row across workers without a version or capacity dependency', async () => {
         const first = store({ maxEntries: 1 }), created = await first.create(artifact('First'));
         const second = store({ maxBytes: 1 });
@@ -130,6 +140,13 @@ describe.skipIf(process.env.SHARED_PLAN_PG_TESTS !== '1')('shared plans in Postg
             closers.push(() => remote.dispose()); return remote;
         }
         const a = await api(), b = await api(), created = await a.create(artifact('First'));
+        await expect(b.approvePublication(created.id, created.inviteToken, { expectedVersion: 0, expectedCid: created.cid, approve: true })).rejects.toMatchObject({ code: 'shared-plan-owner-required' });
+        const approved = await a.approvePublication(created.id, created.ownerToken, { expectedVersion: 0, expectedCid: created.cid, approve: true });
+        expect((await b.approvedPublication(created.id, created.inviteToken, { expectedVersion: approved.version, expectedCid: created.cid })).artifact).toEqual(artifact('First'));
+        await a.approvePublication(created.id, created.ownerToken, { approve: false });
+        // The remainder checks the event sequence from its original zero version.
+        await a.terminate(created.id, created.ownerToken);
+        Object.assign(created, await a.create(artifact('First')));
         const states = [], errors = [];
         await a.subscribe(created.id, created.inviteToken, async () => {
             try { states.push(await a.eventState(created.id, created.inviteToken)); } catch {}

@@ -230,8 +230,9 @@ Owner lifecycle controls are separate from authored editing. Disconnect uses the
 owner-authenticated DELETE through the hosted MCP session API and the backend API. It removes
 the current session regardless of version or turn; invitation capabilities cannot perform it.
 The invited agent retains inspect/edit/undo parity without receiving owner control or a termination
-tool. Termination tests cover both API transports, cross-worker database deletion, notification
-closure and refusal of later reads or saves.
+tool. Browser-owner publication approval is a separate exact-version grant; the existing
+`ugt_publish_plan` accepts a shared-session reference and checks that grant through the API before
+calling the ordinary publication path. No new publication tool or account is required.
 
 See [Student AI assistance](student-ai.md) for the handover, update and save workflow.
 

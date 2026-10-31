@@ -46,7 +46,8 @@ export const MCP_FEATURES = Object.freeze([
         eligibility: 'Fixed code hashes in consultation.voting; generate codes and retain contact assignments locally. Changing eligibility creates a new agreement without transferring votes.' },
     { feature: 'named-plans', create: 'ugt_draft_plan', inspect: 'ugt_inspect_plan', edit: 'ugt_edit_plan', publish: 'ugt_publish_plan' },
     { feature: 'shared-plan-session', inspect: 'ugt_inspect_shared_plan', edit: 'ugt_edit_shared_plan',
-        control: 'The person creates the session and changes turns through the private browser session API. The invitation capability grants an agent only its active turn.',
+        control: 'The person creates the session and changes turns through the private browser session API. The invitation capability permits reads until revoked or expired, and edits only during the agent turn.',
+        publication: 'Use ugt_publish_plan with sharedSession {sessionId, capability}, expectedVersion, expectedCid and confirm:true. The browser owner takes control, saves local changes and approves the exact saved revision in Collaborate. Publication does not require the agent editing turn. Any save, control change or invitation revocation cancels approval. Only the owner capability can grant it; account sign-in is not required.',
         undo: 'When canUndo is true, use ugt_edit_shared_plan with undoLastAgentChange: true, the inspected expectedVersion and expectedCid, and no content edits. The agent must hold control.' },
     { feature: 'individual-designs', inspect: 'ugt_inspect_design', edit: 'ugt_modify_design', granularEdit: 'ugt_edit_design', publish: 'ugt_publish_design' },
     { feature: 'agreements', create: 'ugt_draft_agreement', inspect: 'ugt_inspect_agreement', edit: 'ugt_edit_agreement', publish: 'ugt_propose_agreement' },
@@ -80,7 +81,7 @@ export function createMcpDiscoveryTools({ read, contracts = new Map(), mode = 'h
             features: MCP_FEATURES.filter(item => item.feature !== 'shared-plan-session' || contracts.has('ugt_inspect_shared_plan')), tools: (contracts.size ? [...contracts.values()] : (mode === 'hosted' ? MCP_HOSTED_TOOLS : MCP_LOCAL_TOOLS).map(name => ({ name })))
                 .map(({ name, title, annotations }) => trustedMetadata({ name, ...(title ? { title } : {}), ...(annotations ? { readOnly: annotations.readOnlyHint === true } : {}) })),
             coordinates: 'GeoJSON WGS84 [longitude, latitude]; distances metres; areas square metres. Missing measurements stay null.',
-            publication: { public: true, permanent: true, confirmRequired: true, expectedCidRequiredForReferences: true },
+            publication: { public: true, permanent: true, confirmRequired: true, expectedCidRequiredForReferences: true, sharedSessionApproval: 'Browser-owner approval of the inspected session version and plan CID. Anonymous publication remains available; this does not prevent copying readable content.' },
             drafts: { retention: 'Persisted private bearer references; use previewExpiresAt. Export exact content for retention beyond expiry.', exportTool: 'ugt_export_draft' },
             next: trustedMetadata({ tool: 'ugt_help', arguments: { topic: 'workflow' } }) };
     }

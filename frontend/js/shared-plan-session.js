@@ -195,6 +195,11 @@
                     const capability = stored(origin, id); if (!capability?.ownerToken) throw fail('This browser no longer has control of that shared plan.', 'owner-capability-missing');
                     return request(origin, id, { token: capability.ownerToken });
                 },
+                approvePublication: async (id, expectedVersion, expectedCid, approve) => {
+                    const capability = stored(origin, id); if (!capability?.ownerToken) throw fail('This browser no longer has control of that shared plan.', 'owner-capability-missing');
+                    return request(origin, [id, 'publication-approval'], { method: 'POST', token: capability.ownerToken,
+                        body: { expectedVersion, expectedCid, approve } });
+                },
                 terminate: async id => {
                     const capability = stored(origin, id); if (!capability?.ownerToken) throw fail('This browser no longer has control of that shared plan.', 'owner-capability-missing');
                     let result;
@@ -245,16 +250,24 @@
                 const controls = doc.createElement('div'); controls.className = 'shared-plan-session__actions';
                 section.append(heading, hint, controls); actions.append(section); return controls;
             };
-            const action = (label, task, primary = false, serialize = false, target = actions) => {
+            const action = (label, task, primary = false, serialize = false, target = actions, focusKey = label) => {
                 const el = doc.createElement('button'); el.type = 'button'; el.className = `btn${primary ? ' btn-primary' : ''}`; el.textContent = label;
+                el.setAttribute('data-action', focusKey);
                 el.addEventListener('click', async () => {
                     if (busy) return;
+                    const restoreFocus = doc.activeElement === el;
                     busy = true; sessionError = null; notice = ''; feedback.textContent = '';
                     panel.querySelectorAll('button').forEach(button => { button.disabled = true; });
                     try {
                         await win.BusyControl.track(el, () => serialize ? exclusive(task) : task());
                     } catch (error) { sessionError = error; }
-                    finally { busy = false; if (!stopped) render(); }
+                    finally {
+                        busy = false;
+                        if (!stopped) {
+                            render();
+                            if (restoreFocus) [...panel.querySelectorAll('button')].find(button => button.getAttribute('data-action') === focusKey)?.focus();
+                        }
+                    }
                 }); target.append(el); return el;
             };
             const currentRow = () => {
@@ -374,6 +387,21 @@
                         session = { ...session, ...changed }; publishActive();
                     } catch (error) { session = { ...session, controller: previousController }; publishActive(); throw error; }
                 }, true, true, control);
+                const approved = !!session.publicationApproval && session.publicationApproval.cid === session.cid && session.publicationApproval?.version === session.version;
+                const publication = group(t('publication', 'Publication'), approved
+                    ? t('publicationApproved', 'The agent may publish this saved revision. Saving or changing turns cancels approval.')
+                    : agent ? t('publicationTakeControl', 'Take control and review the saved plan before approving publication.')
+                    : t('publicationHint', 'Approve the agent to publish this saved plan and its member designs. Publication is public and permanent.'), 'publication');
+                const approval = action(approved ? t('revokePublication', 'Revoke publication approval') : t('approvePublication', 'Approve publication'), async () => {
+                    if (!approved && (conflict || currentRow().cid !== session.cid)) {
+                        throw fail(t('publicationSaveFirst', 'Finish editing and save your changes before approving publication.'), 'shared-plan-publication-local-changes');
+                    }
+                    const { id, base, version, cid } = session;
+                    const accepted = await client(base).approvePublication(id, version, cid, !approved);
+                    if (session?.id !== id) return;
+                    session = { ...session, ...accepted }; publishActive();
+                }, false, true, publication, 'publication-approval');
+                approval.disabled = !approved && (agent || pending || conflict || applying);
                 const access = group(t('access', 'Agent access'), t('inviteHint', 'Copy the invitation into your agent conversation. You choose when it can edit.'), 'access');
                 action(t('copyInvite', 'Copy invitation'), async () => {
                     const text = invitation(session, session.base); const copied = await win.DesignSync.copyLink(text);

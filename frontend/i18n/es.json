@@ -8891,7 +8891,14 @@
         "access": "Acceso del agente",
         "inviteHint": "Copia la invitación en tu conversación con el agente. Tú decides cuándo puede editar.",
         "connection": "Conexión",
-        "disconnectHint": "Desconéctate para eliminar esta sesión compartida y revocar el acceso. Tu plan local se conserva."
+        "disconnectHint": "Desconéctate para eliminar esta sesión compartida y revocar el acceso. Tu plan local se conserva.",
+        "publication": "Publicación",
+        "publicationHint": "Autoriza al agente a publicar este plan guardado y los diseños que contiene. La publicación es pública y permanente.",
+        "publicationApproved": "El agente puede publicar esta revisión guardada. Guardar cambios o cambiar el turno cancela la autorización.",
+        "publicationTakeControl": "Toma el control y revisa el plan guardado antes de autorizar su publicación.",
+        "approvePublication": "Autorizar publicación",
+        "revokePublication": "Revocar autorización de publicación",
+        "publicationSaveFirst": "Termina de editar y guarda los cambios antes de autorizar la publicación."
     },
     "pageHeader": {
         "backToMap": "Volver al mapa"

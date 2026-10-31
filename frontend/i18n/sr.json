@@ -8915,7 +8915,14 @@
         "access": "Pristup agenta",
         "inviteHint": "Kopirajte pozivnicu u razgovor sa agentom. Vi birate kada može da uređuje.",
         "connection": "Veza",
-        "disconnectHint": "Prekinite vezu da izbrišete zajedničku sesiju i ukinete pristup. Lokalni plan ostaje sačuvan."
+        "disconnectHint": "Prekinite vezu da izbrišete zajedničku sesiju i ukinete pristup. Lokalni plan ostaje sačuvan.",
+        "publication": "Objava",
+        "publicationHint": "Odobrite agentu objavu ovog sačuvanog plana i pripadajućih dizajna. Objava je javna i trajna.",
+        "publicationApproved": "Agent sme da objavi ovu sačuvanu verziju. Čuvanje promena ili promena kontrole poništava odobrenje.",
+        "publicationTakeControl": "Preuzmite kontrolu i pregledajte sačuvani plan pre odobravanja objave.",
+        "approvePublication": "Odobri objavu",
+        "revokePublication": "Povuci odobrenje objave",
+        "publicationSaveFirst": "Završite uređivanje i sačuvajte promene pre odobravanja objave."
     },
     "pageHeader": {
         "backToMap": "Nazad na mapu"

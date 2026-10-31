@@ -53,6 +53,27 @@ async function toolsByName() {
 }
 
 describe('Urban Game Theory MCP server', () => {
+    it('routes shared publication through owner approval and rejects ambiguous tool inputs', async () => {
+        const sessions = createSharedPlanSessions({ repository: createMemorySharedPlanRepository(), validateArtifact: () => {} });
+        const artifact = { cid: DESIGN_CID, plan: { schema: 'plan/v1', title: 'Saved plan' }, designs: [] };
+        const created = await sessions.create(artifact), tools = stubTools();
+        tools.publishPlan = vi.fn(async args => ({ cid: args.expectedCid, plan: args.plan.plan, publication: 'published', url: 'https://app.example/plans/test', publishedDesignCids: [] }));
+        try {
+            await connect(tools, { sharedPlans: sessions });
+            const args = { sharedSession: { sessionId: created.id, capability: created.inviteToken }, expectedCid: DESIGN_CID, expectedVersion: 0, confirm: true };
+            const call = arguments_ => client.callTool({ name: 'ugt_publish_plan', arguments: arguments_ });
+            expect(await call(args)).toMatchObject({ isError: true, structuredContent: { code: 'shared-plan-publication-approval-required' } });
+            expect(tools.publishPlan).not.toHaveBeenCalled();
+            await sessions.approvePublication(created.id, created.ownerToken, { expectedVersion: 0, expectedCid: DESIGN_CID, approve: true });
+            const { expectedVersion, ...missingVersion } = args;
+            expect((await call(missingVersion)).isError).toBe(true);
+            expect((await call({ ...args, expectedVersion: 1, plan: artifact })).isError).toBe(true);
+            expect((await call({ ...args, expectedVersion: 1 })).isError).not.toBe(true);
+            expect(tools.publishPlan).toHaveBeenCalledWith({ plan: artifact, expectedCid: DESIGN_CID, confirm: true });
+            expect((await call({ plan: artifact, expectedCid: DESIGN_CID, confirm: true })).isError).not.toBe(true);
+        } finally { await sessions.dispose(); }
+    });
+
     it('carries a shared-plan turn through the real MCP tool boundary and rejects a late agent write', async () => {
         const sessions = createSharedPlanSessions({ repository: createMemorySharedPlanRepository(), validateArtifact: value => {
             if (!value?.cid || !value?.plan || !Array.isArray(value.designs)) throw new Error('invalid test artifact');

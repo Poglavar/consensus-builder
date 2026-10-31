@@ -10,6 +10,46 @@ function sessions(repository = createMemorySharedPlanRepository()) {
 }
 
 describe('shared plan sessions', () => {
+    it('requires owner approval of the exact saved version and CID, independently of the agent turn', async () => {
+        const store = sessions(), created = await store.create(artifact('baf-first'));
+        const args = { expectedVersion: 0, expectedCid: created.cid };
+        await expect(store.approvedPublication(created.id, created.inviteToken, args)).rejects.toMatchObject({ code: 'shared-plan-publication-approval-required' });
+        await expect(store.approvePublication(created.id, created.inviteToken, { ...args, approve: true })).rejects.toMatchObject({ code: 'shared-plan-owner-required' });
+        await expect(store.approvePublication(created.id, created.ownerToken, { ...args, expectedCid: 'baf-other', approve: true })).rejects.toMatchObject({ code: 'shared-plan-revision-mismatch' });
+        await expect(store.approvePublication(created.id, created.ownerToken, { ...args, expectedVersion: 9, approve: true })).rejects.toMatchObject({ code: 'shared-plan-version-conflict' });
+        const approved = await store.approvePublication(created.id, created.ownerToken, { ...args, approve: true });
+        expect(approved).toMatchObject({ version: 1, controller: 'owner', publicationApproval: { cid: created.cid, version: 1 } });
+        const read = await store.approvedPublication(created.id, created.inviteToken, { ...args, expectedVersion: 1 });
+        expect(read.artifact).toEqual(artifact('baf-first'));
+        read.artifact.plan.title = 'Cannot alter stored content';
+        expect((await store.inspect(created.id, created.ownerToken)).artifact).toEqual(artifact('baf-first'));
+        await expect(store.approvePublication(created.id, created.inviteToken, { approve: false })).rejects.toMatchObject({ code: 'shared-plan-owner-required' });
+        const revoked = await store.approvePublication(created.id, created.ownerToken, { expectedVersion: 0, approve: false });
+        expect(revoked.publicationApproval).toBeNull();
+        await expect(store.approvedPublication(created.id, created.inviteToken, { expectedVersion: revoked.version, expectedCid: created.cid })).rejects.toMatchObject({ code: 'shared-plan-publication-approval-required' });
+        await store.dispose();
+    });
+    it.each(['save', 'control', 'revoke'])('invalidates publication approval on %s', async operation => {
+        const store = sessions(), created = await store.create(artifact('baf-first'));
+        await store.approvePublication(created.id, created.ownerToken, { expectedVersion: 0, expectedCid: created.cid, approve: true });
+        const changed = operation === 'save'
+            ? await store.replace(created.id, created.ownerToken, { expectedVersion: 1, artifact: artifact('baf-next') })
+            : await store.control(created.id, created.ownerToken, { expectedVersion: 1, controller: operation === 'control' ? 'agent' : 'owner', revoke: operation === 'revoke' });
+        expect(changed.publicationApproval).toBeNull();
+        await expect(store.approvedPublication(created.id, created.ownerToken, { expectedVersion: changed.version, expectedCid: changed.cid })).rejects.toMatchObject({ code: 'shared-plan-publication-approval-required' });
+        if (operation === 'control') await expect(store.approvePublication(created.id, created.ownerToken, { expectedVersion: changed.version, expectedCid: changed.cid, approve: true })).rejects.toMatchObject({ code: 'shared-plan-control-required' });
+        await store.dispose();
+    });
+    it('invalidates publication approval on undo and never revives it when an old CID returns', async () => {
+        const store = sessions(), created = await store.create(artifact('baf-first'));
+        await store.control(created.id, created.ownerToken, { expectedVersion: 0, controller: 'agent' });
+        await store.replace(created.id, created.inviteToken, { expectedVersion: 1, artifact: artifact('baf-next') });
+        await store.control(created.id, created.ownerToken, { expectedVersion: 2, controller: 'owner' });
+        await store.approvePublication(created.id, created.ownerToken, { expectedVersion: 3, expectedCid: 'baf-next', approve: true });
+        const undone = await store.undo(created.id, created.ownerToken, { expectedVersion: 4 });
+        expect(undone).toMatchObject({ cid: 'baf-first', publicationApproval: null });
+        await store.dispose();
+    });
     it('lets only the owner terminate during the agent turn and immediately reclaim capacity', async () => {
         const repository = createMemorySharedPlanRepository({ maxEntries: 1 });
         const store = sessions(repository), created = await store.create(artifact('baf-first'));

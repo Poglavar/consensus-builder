@@ -17,7 +17,7 @@ export function setupSharedPlanSessionsRoute(app, pool, { sessions = createShare
         skip: req => req.method !== 'POST' || !['', '/'].includes(req.path) });
     app.use('/shared-plan-sessions', creationLimiter, limiter, async (req, res) => {
         res.set({ 'Cache-Control': 'no-store', 'Referrer-Policy': 'no-referrer' });
-        const match = /^\/([\w-]{24})(?:\/(control|undo|check|state|events))?\/?$/.exec(req.path);
+        const match = /^\/([\w-]{24})(?:\/(control|undo|check|state|events|publication-approval|publication-check))?\/?$/.exec(req.path);
         const root = req.path === '/' || req.path === '';
         const token = capability(req), id = match?.[1], action = match?.[2];
         try {
@@ -56,6 +56,8 @@ export function setupSharedPlanSessionsRoute(app, pool, { sessions = createShare
             if (action === 'state' && req.method === 'GET') return res.json(await sessions.eventState(id, token));
             if (!action && req.method === 'PUT') return res.json(await sessions.replace(id, token, { ...req.body, artifact: canonicalArtifact(req.body?.artifact) }));
             if (req.method === 'POST') {
+                if (action === 'publication-approval') return res.json(await sessions.approvePublication(id, token, req.body || {}));
+                if (action === 'publication-check') return res.json(await sessions.approvedPublication(id, token, req.body || {}));
                 if (action === 'control') return res.json(await sessions.control(id, token, req.body || {}));
                 if (action === 'undo') return res.json(await sessions.undo(id, token, req.body || {}));
                 if (action === 'check') return res.json(await sessions.assertEditable(id, token, req.body?.expectedVersion));

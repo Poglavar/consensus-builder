@@ -28,6 +28,8 @@ export function createSharedPlanClient({ env = {}, fetchImpl = fetch } = {}) {
         create: artifact => request('', null, 'POST', { artifact }),
         inspect: (id, capability) => request(path(id), capability),
         terminate: (id, capability) => request(path(id), capability, 'DELETE'),
+        approvePublication: (id, capability, body) => request(`${path(id)}/publication-approval`, capability, 'POST', body),
+        approvedPublication: (id, capability, body) => request(`${path(id)}/publication-check`, capability, 'POST', body),
         eventState: (id, capability) => request(`${path(id)}/state`, capability),
         control: (id, capability, body) => request(`${path(id)}/control`, capability, 'POST', body),
         replace: (id, capability, body) => request(path(id), capability, 'PUT', body),

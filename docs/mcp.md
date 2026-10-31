@@ -104,6 +104,16 @@ Read the exact list and schemas from `ugt_capabilities` and `ugt_help`. The grou
   (on an existing named plan: owner deal, owner vote or community vote).
 - **Publish (hosted, local), unsigned, `confirm: true`:** `ugt_publish_design`, `ugt_publish_plan`,
   `ugt_propose_agreement`; community votes through `ugt_cast_community_vote`.
+- **Shared-plan publication:** use `ugt_publish_plan` with `sharedSession: { sessionId, capability }`,
+  `expectedVersion`, `expectedCid` and `confirm: true`, without `plan`. The owner takes control,
+  saves local changes and uses **Approve publication** in Collaborate. The API records a grant for
+  that session version and plan CID; the MCP tool checks it and publishes the server's exact artifact
+  through the ordinary validated publication/readback path. The agent need not hold the editing turn.
+  `publicationApproval` is returned by session inspection. Saves, undo, control changes and invitation
+  revocation clear it. **Revoke publication approval** clears it even from a stale owner view.
+  The same approved revision can be retried safely; withdrawal cannot stop publication already started.
+  Anonymous publication remains available. `confirm: true` alone is an agent assertion, not browser-owner
+  approval. This scoped workflow does not prevent copying readable content into another publication path.
 - **Feedback (hosted, local):** `ugt_submit_feedback`, a confirmed private write to `POST /feedback`
   returning a receipt id; see [development.md](development.md#private-feedback-inbox-and-telegram).
 - **Sign (local only):** mint, fund, bet, shares, pledge, donate, refund, void, revoke, release,
@@ -195,6 +205,9 @@ load. Links carry no secret and are safe to forward.
   keeps all local plans after success; a retry finding the record absent also completes disconnect.
   Session lifecycle controls require the owner capability; invited MCP participants cannot terminate
   sessions, just as they cannot grant themselves an editing turn.
+  `POST /mcp/plan-sessions/:id/publication-approval` forwards the owner's grant/revoke request
+  (`approve`, `expectedVersion`, `expectedCid`) to the API. The MCP worker checks grants through
+  `POST /shared-plan-sessions/:id/publication-check`; invitation capabilities cannot create grants.
   Hosted pages ignore `?mcp=`; only loopback pages may select a loopback MCP origin. Private
   browser requests reject redirects.
   Experimental file-backed session links must be recreated; there is no file reader or import path.

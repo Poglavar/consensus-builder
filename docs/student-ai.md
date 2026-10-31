@@ -59,6 +59,15 @@ local changes are pending or all changes are saved; Save is disabled when the ac
 already matches. Actions show a spinner while running, failures remain visible, and copying an
 invitation confirms completion. Disconnect is separated from editing controls and keeps local work.
 
+To allow the agent to publish, take control, finish editing and save the plan. Review that saved
+revision, then choose **Approve publication** in Collaborate's **Publication** section. This permits
+the agent to publish that revision and its member designs through `ugt_publish_plan` using its
+shared-session reference. It does not grant another editing turn. **Revoke publication approval**
+cancels future starts; saving changes or changing turns also cancels approval. Publication already
+started can finish with the approved snapshot. Anonymous access remains available and no sign-in
+is needed. The ordinary publication API remains open, so this workflow cannot prevent a reader
+from copying the content elsewhere.
+
 The copied invitation is a private capability. Keep it out of public plan descriptions and links.
 The owner capability remains in the browser's private workspace storage. Revoking the invitation
 ends agent access. Disconnect deletes the shared session and its private server state, closes both
