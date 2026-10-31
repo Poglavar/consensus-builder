@@ -60,6 +60,10 @@ describe('Urban Game Theory MCP server', () => {
         tools.publishPlan = vi.fn(async args => ({ cid: args.expectedCid, plan: args.plan.plan, publication: 'published', url: 'https://app.example/plans/test', publishedDesignCids: [] }));
         try {
             await connect(tools, { sharedPlans: sessions });
+            const contracts = await toolsByName();
+            expect(contracts.ugt_publish_plan.inputSchema.oneOf).toHaveLength(2);
+            expect(contracts.ugt_inspect_shared_plan.outputSchema.properties).toHaveProperty('expiresAt');
+            expect(contracts.ugt_inspect_shared_plan.outputSchema.properties).toHaveProperty('publicationApproval');
             const args = { sharedSession: { sessionId: created.id, capability: created.inviteToken }, expectedCid: DESIGN_CID, expectedVersion: 0, confirm: true };
             const call = arguments_ => client.callTool({ name: 'ugt_publish_plan', arguments: arguments_ });
             expect(await call(args)).toMatchObject({ isError: true, structuredContent: { code: 'shared-plan-publication-approval-required' } });

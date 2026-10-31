@@ -36,7 +36,15 @@ export function markUntrusted(value) {
 export function toolError(error) {
     const code = typeof error?.code === 'string' && /^[A-Za-z0-9][A-Za-z0-9_-]{0,79}$/.test(error.code) ? error.code : 'tool-failed';
     // body.next is supplied by another service and must never become an instruction.
-    const next = error?.next || (code.startsWith('shared-plan-')
+    const recovery = {
+        'shared-plan-expired': { action: 'Stop using this expired session. Ask the person to start a new session from their retained local plan and provide a new invitation.' },
+        'shared-plan-not-found': { action: 'Stop using this unavailable session. Ask the person to create a new session from their local plan and provide its invitation.' },
+        'shared-plan-forbidden': { action: 'Stop using this capability. Ask the person for a current invitation; do not retry the rejected credential.' },
+        'shared-plan-control-required': { tool: 'ugt_inspect_shared_plan', action: 'Inspect the current session. Wait for the person to hand over editing control before editing again.' },
+        'shared-plan-publication-approval-required': { action: 'Ask the person to take control, save and review this revision, then choose Approve publication in Collaborate. Inspect again before publishing with sharedSession.' },
+        'shared-plan-owner-required': { action: 'Ask the browser owner to perform this session-management action. The invitation cannot grant owner authority.' }
+    };
+    const next = error?.next || recovery[code] || (code.startsWith('shared-plan-')
         ? { tool: 'ugt_inspect_shared_plan', action: 'Inspect this shared session again. Use its latest version and CID, and edit only while the person has given you control.' }
         : code === 'structure-over-road'
         ? { action: 'Move or resize the structure clear of the applied road, or revise/remove the road design itself.' }

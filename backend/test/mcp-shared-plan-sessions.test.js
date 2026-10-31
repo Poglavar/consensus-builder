@@ -77,6 +77,18 @@ describe('shared plan sessions', () => {
         expect(await repository.read(created.id)).toBeUndefined();
         await store.dispose();
     });
+    it('takes control from a stale owner view, preserving the accepted artifact and invitation', async () => {
+        const store = sessions(), created = await store.create(artifact('baf-first'));
+        await store.control(created.id, created.ownerToken, { expectedVersion: 0, controller: 'agent' });
+        await store.replace(created.id, created.inviteToken, { expectedVersion: 1, artifact: artifact('baf-agent') });
+        await expect(store.control(created.id, created.inviteToken, { controller: 'owner' })).rejects.toMatchObject({ code: 'shared-plan-owner-required' });
+        const taken = await store.control(created.id, created.ownerToken, { expectedVersion: 1, controller: 'owner' });
+        expect(taken).toMatchObject({ cid: 'baf-agent', version: 3, controller: 'owner', canUndo: true });
+        expect((await store.inspect(created.id, created.inviteToken)).cid).toBe('baf-agent');
+        await expect(store.replace(created.id, created.inviteToken, { expectedVersion: 3, artifact: artifact('baf-late') })).rejects.toMatchObject({ code: 'shared-plan-control-required' });
+        await expect(store.control(created.id, created.ownerToken, { expectedVersion: 1, controller: 'agent' })).rejects.toMatchObject({ code: 'shared-plan-version-conflict' });
+        await store.dispose();
+    });
     it('revokes against the latest revision after an intervening agent save', async () => {
         const store = sessions(), created = await store.create(artifact('baf-first'));
         await store.control(created.id, created.ownerToken, { expectedVersion: 0, controller: 'agent' });
@@ -187,7 +199,7 @@ describe('shared plan sessions', () => {
         await expect(store.create(artifact('baf-second'))).rejects.toMatchObject({ code: 'shared-plan-capacity', status: 503 });
         const writes = await Promise.allSettled([
             store.control(created.id, created.ownerToken, { expectedVersion: 0, controller: 'agent' }),
-            store.control(created.id, created.ownerToken, { expectedVersion: 0, controller: 'owner' })
+            store.control(created.id, created.ownerToken, { expectedVersion: 0, controller: 'agent' })
         ]);
         expect(writes.filter(row => row.status === 'fulfilled')).toHaveLength(1);
         expect(writes.filter(row => row.status === 'rejected')[0].reason).toMatchObject({ code: 'shared-plan-version-conflict', status: 409 });

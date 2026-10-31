@@ -98,9 +98,9 @@ export function createSharedPlanSessions({ pool, now = Date.now, repository = cr
         const result = await repository.change(id, previous => {
             const { value, role } = access(previous, capability);
             if (role !== 'owner') throw failure('shared-plan-owner-required', 'Only the plan owner can change editing control.', 403);
-            // Revocation takes effect on the locked current row, regardless of intervening edits.
+            // Owner takeover and revocation use the locked current row despite intervening edits.
             // It preserves the accepted artifact and always returns control to the owner.
-            if (revoke !== true) requireVersion(value, expectedVersion);
+            if (controller !== 'owner' && revoke !== true) requireVersion(value, expectedVersion);
             if (revoke && (revoke !== true || controller !== 'owner')) throw failure('shared-plan-controller-invalid', 'Revocation must return control to the owner.');
             if (!['owner', 'agent'].includes(controller)) throw failure('shared-plan-controller-invalid', 'Choose owner or agent as the editor.');
             const next = { ...value, controller, publicationApproval: null, version: value.version + 1, updatedAt: now(), ...(revoke ? { inviteTokenHash: hash(inviteToken) } : {}) };

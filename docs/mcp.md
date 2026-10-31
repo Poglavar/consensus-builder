@@ -109,7 +109,7 @@ Read the exact list and schemas from `ugt_capabilities` and `ugt_help`. The grou
   saves local changes and uses **Approve publication** in Collaborate. The API records a grant for
   that session version and plan CID; the MCP tool checks it and publishes the server's exact artifact
   through the ordinary validated publication/readback path. The agent need not hold the editing turn.
-  `publicationApproval` is returned by session inspection. Saves, undo, control changes and invitation
+  `publicationApproval` and `expiresAt` are declared in the session inspection result schema. Saves, undo, control changes and invitation
   revocation clear it. **Revoke publication approval** clears it even from a stale owner view.
   The same approved revision can be retried safely; withdrawal cannot stop publication already started.
   Anonymous publication remains available. `confirm: true` alone is an agent assertion, not browser-owner

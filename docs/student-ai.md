@@ -32,9 +32,9 @@ publication. Neither path uploads design or plan content to IPFS.
 
 The session holds the current revision, a version counter, editing control, the last accepted
 content-change receipt and one undo snapshot for the latest agent change. Every save checks the
-expected version and current controller atomically. Taking control invalidates an agent request
-still computing its edit. Undo restores the prior exact artifact as a new session version; it does
-not mutate published content. An owner save clears the undo snapshot.
+expected version and current controller atomically. Taking control uses the latest accepted revision
+even from a stale browser view and invalidates an agent request still computing its edit. Undo
+restores the prior exact artifact as a new session version; it does not mutate published content. An owner save clears the undo snapshot.
 
 ## Shared-plan trial
 

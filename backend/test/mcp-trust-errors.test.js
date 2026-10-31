@@ -13,6 +13,17 @@ import { createMcpNamedPlanTools } from '../agents/mcp-named-plans.js';
 
 const reads = fetchImpl => createMcpReadTools({ apiBase: 'https://api.example', appOrigin: 'https://app.example', fetchImpl });
 describe('MCP schemas, data and recovery trust boundaries', () => {
+    it.each([
+        ['shared-plan-expired', 'new session'], ['shared-plan-not-found', 'new session'],
+        ['shared-plan-forbidden', 'current invitation'], ['shared-plan-control-required', 'Wait'],
+        ['shared-plan-publication-approval-required', 'Approve publication']
+    ])('returns actionable recovery for %s', (code, instruction) => {
+        const result = toolError(Object.assign(new Error('Untrusted upstream message'), { code }));
+        expect(result.next.action).toContain(instruction);
+        expect(result.next.action).not.toContain('Untrusted');
+        if (['shared-plan-expired', 'shared-plan-not-found', 'shared-plan-forbidden'].includes(code)) expect(result.next).not.toHaveProperty('tool');
+    });
+
     it('preserves complete JSON Schema documents and property definitions', () => {
         const schema = { $schema: 'https://json-schema.org/draft/2020-12/schema', title: 'Contract',
             $defs: { design: { type: 'object', required: ['title', 'author', 'description'], properties: {

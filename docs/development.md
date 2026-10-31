@@ -232,7 +232,10 @@ the current session regardless of version or turn; invitation capabilities canno
 The invited agent retains inspect/edit/undo parity without receiving owner control or a termination
 tool. Browser-owner publication approval is a separate exact-version grant; the existing
 `ugt_publish_plan` accepts a shared-session reference and checks that grant through the API before
-calling the ordinary publication path. No new publication tool or account is required.
+calling the ordinary publication path. No new publication tool or account is required. Owner
+takeover uses the latest accepted revision despite a stale browser version, and later agent saves
+are rejected. MCP recovery distinguishes expired/deleted sessions, rejected capabilities, editing
+turns and publication approval; only revision conflicts direct immediate reinspection and retry.
 
 See [Student AI assistance](student-ai.md) for the handover, update and save workflow.
 

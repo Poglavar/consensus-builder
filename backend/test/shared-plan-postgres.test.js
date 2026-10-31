@@ -46,6 +46,14 @@ describe.skipIf(process.env.SHARED_PLAN_PG_TESTS !== '1')('shared plans in Postg
         if (createdSchema) await pool.query(`DROP SCHEMA ${schema} CASCADE`);
         await pool?.end();
     });
+    it('takes control from a stale independent worker without reverting the agent save', async () => {
+        const first = store(), second = store(), created = await first.create(artifact('First'));
+        await first.control(created.id, created.ownerToken, { expectedVersion: 0, controller: 'agent' });
+        const saved = await second.replace(created.id, created.inviteToken, { expectedVersion: 1, artifact: artifact('Agent') });
+        const taken = await first.control(created.id, created.ownerToken, { expectedVersion: 1, controller: 'owner' });
+        expect(taken).toMatchObject({ version: 3, cid: saved.cid, controller: 'owner', canUndo: true });
+        await expect(second.replace(created.id, created.inviteToken, { expectedVersion: taken.version, artifact: artifact('Late') })).rejects.toMatchObject({ code: 'shared-plan-control-required' });
+    });
     it('persists owner publication approval across workers and clears it before later saves can publish', async () => {
         const first = store(), second = store(), created = await first.create(artifact('Approved'));
         await expect(second.approvePublication(created.id, created.inviteToken, { expectedVersion: 0, expectedCid: created.cid, approve: true })).rejects.toMatchObject({ code: 'shared-plan-owner-required' });

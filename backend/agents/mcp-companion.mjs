@@ -170,7 +170,11 @@ export function registerMcpCompanion(server, { actions, handler, readOnly, disco
         sharedSession: z.object({ sessionId: z.string().regex(/^[\w-]{24}$/), capability: z.string().regex(/^[\w-]{32}$/) }).strict().optional(),
         expectedCid: cid, expectedVersion: z.number().int().nonnegative().optional(), confirm: z.literal(true) }).strict()
         .refine(args => (args.plan !== undefined) !== (args.sharedSession !== undefined), { message: 'Provide either plan or sharedSession.' })
-        .refine(args => args.sharedSession ? args.expectedVersion !== undefined : args.expectedVersion === undefined, { message: 'expectedVersion is required only for sharedSession.' });
+        .refine(args => args.sharedSession ? args.expectedVersion !== undefined : args.expectedVersion === undefined, { message: 'expectedVersion is required only for sharedSession.' })
+        .meta({ oneOf: [
+            { required: ['plan'], not: { anyOf: [{ required: ['sharedSession'] }, { required: ['expectedVersion'] }] } },
+            { required: ['sharedSession', 'expectedVersion'], not: { required: ['plan'] } }
+        ] });
     server.registerTool('ugt_publish_plan', { description: 'Publish an exact named plan and its unpublished members, then verify its permanent /plans URL. For a shared plan, pass sharedSession {sessionId, capability}, expectedVersion and expectedCid from inspection; the browser owner must approve that saved revision in Collaborate. This permission is separate from the editing turn. Saving, changing turns or revoking the invitation cancels approval. Otherwise pass plan and expectedCid for ordinary anonymous publication. Do not substitute copied shared content for the sharedSession flow. Parcel layouts need prior agreement publication.',
         inputSchema: publicationInput,
         annotations: { ...readOnly, readOnlyHint: false } }, handler(args => {
