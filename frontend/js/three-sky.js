@@ -20,16 +20,16 @@ void main() {
     vCbSkyDir = position;
     gl_Position = (projectionMatrix * vec4(mat3(viewMatrix) * position, 1.0)).xyww;
 }`;
-    const DOME_FRAGMENT = `
+    // The sky's colour in a world direction (z up), with its uniforms: the dome draws it, and the
+    // water reflects it (three-water-sheen.js), so the two always show the same sky.
+    const SKY_COLOR_GLSL = `
 uniform vec3 cbSkyZenith;
 uniform vec3 cbSkyHorizon;
 uniform vec3 cbSkyGlow;
 uniform vec3 cbSkySun;
 uniform float cbSkyGlowStrength;
 uniform float cbSkySunDisc;
-varying vec3 vCbSkyDir;
-void main() {
-    vec3 dir = normalize(vCbSkyDir);
+vec3 cbSkyColor(vec3 dir) {
     float up = clamp(dir.z, 0.0, 1.0);
     vec3 color = mix(cbSkyHorizon, cbSkyZenith, pow(up, 0.5));
     // The glow: a band along the horizon on the sun's side, and a halo around the sun itself.
@@ -40,8 +40,12 @@ void main() {
     float band = toward * toward * toward * exp(-up * 8.0);
     float glow = 0.9 * band + 0.5 * pow(facing, 48.0);
     color = mix(color, cbSkyGlow, clamp(cbSkyGlowStrength * glow, 0.0, 1.0));
-    color = mix(color, vec3(1.0, 0.95, 0.84), smoothstep(0.9999, 0.99995, facing) * cbSkySunDisc);
-    gl_FragColor = vec4(color, 1.0);
+    return mix(color, vec3(1.0, 0.95, 0.84), smoothstep(0.9999, 0.99995, facing) * cbSkySunDisc);
+}`;
+    const DOME_FRAGMENT = SKY_COLOR_GLSL + `
+varying vec3 vCbSkyDir;
+void main() {
+    gl_FragColor = vec4(cbSkyColor(normalize(vCbSkyDir)), 1.0);
     #include <tonemapping_fragment>
     #include <colorspace_fragment>
 }`;
@@ -134,5 +138,5 @@ void main() {
         return { group, update, setPixelRatio, uniforms, starUniforms };
     }
 
-    return { createSky, SKY_RENDER_ORDER, DOME_FRAGMENT };
+    return { createSky, SKY_RENDER_ORDER, DOME_FRAGMENT, SKY_COLOR_GLSL };
 });

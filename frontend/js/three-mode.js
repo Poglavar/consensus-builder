@@ -7206,6 +7206,8 @@
             // while zooming (Delft, 2026-10-30). Planned lakes (0.065) still cover it by depth.
             waterMaterial = new THREE.MeshPhongMaterial({ color: 0x3b7fc4, specular: 0x1f3a60, shininess: 40 });
             groundLayer.parcelSurface(waterMaterial);
+            // It reflects the scene's sky (three-water-sheen.js), whichever sky the current scene has.
+            window.__threeWaterSheen.apply(waterMaterial, { skyGlsl: window.__threeSky.SKY_COLOR_GLSL, skyUniforms: () => sky?.uniforms || null });
         }
         for (const piece of nearbyWater) {
             try {
