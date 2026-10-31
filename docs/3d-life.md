@@ -113,7 +113,9 @@ Four classic scripts, three of them pure and node-tested:
    `sin(stride)·0.55`, stride 5.2 rad per metre walked (Station3D's values). One frame hook steps the
    simulation with the real dt clamped to 0.1 s and writes matrices straight into the instance
    attribute arrays. The hook is unregistered when the layer is off, hidden (photo mode) or the scene
-   is disposed, so the loop goes back to on-demand.
+   is disposed, so the loop goes back to on-demand. People, vehicles and birds also park while the
+   page has no focus (another app's window in front, another tab): a hidden page gets no frames
+   anyway, but a visible unfocused window would animate on. Focus or input wakes them.
    At dusk and night (`setNight`, the lamps' darkness from the sun's altitude) two more draws switch
    on: unlit headlamps and red tail lamps (four per vehicle, two on a motorcycle) and an additive
    pool of headlight on the road ahead of each vehicle. By day both are hidden and not rewritten.
@@ -127,8 +129,7 @@ Four classic scripts, three of them pure and node-tested:
    barks at its breed's pitch, a stopped vehicle hoots, and by day below 200 m birds sing. Toggle
    "City sounds" in the layer panel of both views (preference `cb_3d_sound_enabled`, default off,
    since a page that starts making noise on its own is a surprise). A 10 Hz timer feeds it while it
-   is on; it plays only while the 3D view is up and the tab visible, and goes on as the parked
-   scene's sound when the life layer parks after 20 s without input.
+   is on; it plays only while the 3D view is up and the page has focus.
 
 Streets come from OSM everywhere, through one endpoint: `/osm-road` answers from the ingested
 `osm_road` table where the city has rows, and otherwise (a scene-sized bbox with no rows) from the

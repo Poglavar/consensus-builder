@@ -1029,3 +1029,5 @@ Postpone refresh/server-to-local synchronization. For empty parcels, display onl
 - 2026-10-31, user decision: OpenStreetMap through our backend (the shared Overpass chain, buildings/osm-reference.js) is the default source for everything OSM-derived, in every city. Per-city caches (osm_road, osm_decor) only answer faster, and the live read is also the fallback where a cache holds nothing or cannot be read. Trees (decor/overture-trees.js) follow it since 2026-10-31.
 
 - Mobile inspection uses standard object-icon tabs and explicit map-visible/full-screen sizing without a drag handle. Expanded sections use one top content tab bar separating relationship lists, actions and information while retaining existing controls; desktop keeps neighbouring object headers. See docs/click-stack.md.
+
+- 2026-10-31, user decision: decorative 3D animation (people, vehicles, dogs, birds, the playing day) and the city sound pause when the page loses focus, not after a stretch without input. Rationale: the user wants the view alive while they watch it and quiet when they work elsewhere.

@@ -169,11 +169,17 @@
     let renderedBuildingDisplaySnapshot = null;
     let sceneVisualRevision = 0;   // bumped when something in the scene changes (invalidateThreeView)
     let renderedSceneVisualRevision = -1;
-    // When the person last touched the view (pointer, wheel, keyboard, camera). Frame hooks that only
-    // decorate (people and vehicles) park themselves after LIFE_IDLE_MS without input.
+    // When the person last touched the view (pointer, wheel, keyboard, camera; __threeFrameDebug).
+    // Frame hooks that only decorate (people, vehicles, birds) park while the page has no focus: a
+    // hidden page gets no frames anyway, but a visible window behind another app's would animate on.
     let lastInputAt = 0;
-    let hooksParked = false;       // the last frame found every hook idle: the next input wakes them
-    const LIFE_IDLE_MS = 20000;
+    let hooksParked = false;       // the last frame found every hook idle: focus or input wakes them
+    const decorationAwake = () => !document.hidden && document.hasFocus();
+    function wakeDecoration() {
+        if (isActive && loopRunning && hooksParked && decorationAwake()) scheduleThreeFrame(0);
+    }
+    window.addEventListener('focus', wakeDecoration);
+    document.addEventListener('visibilitychange', wakeDecoration);
     let nearbyDataScope = null;
     const WARM_SCENE_TTL_MS = 60000;
     const WARM_SCENE_MAX_BYTES = 128 * 1024 * 1024;
@@ -3752,7 +3758,7 @@
             birdsLayer.update(performance.now() / 1000);
             scene.add(birdsLayer.group);
             birdsFrameHook = (now) => {
-                if (!birdsLayer?.visible || now - lastInputAt > LIFE_IDLE_MS) return false;
+                if (!birdsLayer?.visible || !decorationAwake()) return false;
                 birdsLayer.update(now / 1000);
                 return true;
             };
@@ -7145,10 +7151,10 @@
 
     function setLifeHook(on) {
         if (on && !lifeFrameHook && lifeLayer) {
-            // People and vehicles are decoration: they park after LIFE_IDLE_MS without input (the hook
-            // reports nothing to animate, so the loop stops) and walk on at the next touch of the view.
+            // People and vehicles are decoration: they park while the page has no focus (the hook
+            // reports nothing to animate, so the loop stops) and walk on when the page has it again.
             lifeFrameHook = (now) => {
-                if (now - lastInputAt > LIFE_IDLE_MS) return false;
+                if (!decorationAwake()) return false;
                 lifeLayer.onFrame(now);
                 return true;
             };
@@ -7322,9 +7328,8 @@
 
     // --- City sound (three-sound.js) ---
     // Heard from the camera: the life layer's vehicles and dogs where they are shown, birds by day,
-    // the city's hum always. A 10 Hz tick feeds it whether or not frames are drawn (the life layer
-    // parks when idle and the sound goes on as the parked scene's), and plays only while the model
-    // view is up and the tab is visible. The AudioContext is made on the first enabling, inside the
+    // the city's hum always. A 10 Hz tick feeds it, and it plays only while the model view is up
+    // and the page has focus, like the people and vehicles it is the sound of. The AudioContext is made on the first enabling, inside the
     // checkbox's click, so the browser lets it play.
     const SOUND_STORAGE_KEY = 'cb_3d_sound_enabled';
     const SOUND_TICK_MS = 100;
@@ -7352,7 +7357,7 @@
     }
 
     function soundTick() {
-        const on = soundEnabled && isActive && !!scene && !!camera && !document.hidden;
+        const on = soundEnabled && isActive && !!scene && !!camera && decorationAwake();
         soundscape.setPlaying(on);
         if (!on) return;
         const lifeShown = !!(lifeSim && lifeGroup && lifeGroup.visible);
@@ -9632,6 +9637,7 @@
             getCamera: () => camera,
             getTarget: () => controls?.target || null,
             isPhotoActive: () => !!window.PhotorealMode?.isActive?.(),
+            isAwake: decorationAwake,
             invalidate: () => invalidateThreeView(),
             excludedRoots: () => [lifeGroup],
             // The playing day keeps the loop running through a frame hook, like the life layer.

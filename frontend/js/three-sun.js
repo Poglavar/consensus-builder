@@ -258,7 +258,8 @@
     let lastTick = null;
     function onFrame(nowMs) {
         const a = attached;
-        if (!a || !state.playing || !state.enabled || a.isPhotoActive() || state.minutes === null) {
+        // A page without focus pauses the day (isAwake): it resumes where it stopped.
+        if (!a || !state.playing || !state.enabled || a.isPhotoActive() || state.minutes === null || (a.isAwake && !a.isAwake())) {
             lastTick = null;
             return false;
         }
@@ -304,7 +305,7 @@
 
     // ---- The scene ----
     // options: { THREE, scene, renderer, light, hemi, getOrigin, getK, getCamera, getTarget,
-    //            isPhotoActive, invalidate, excludedRoots, addFrameHook, removeFrameHook }
+    //            isPhotoActive, invalidate, excludedRoots, addFrameHook, removeFrameHook, isAwake? }
     function attach(options) {
         detach();
         const { renderer, light, hemi } = options;
