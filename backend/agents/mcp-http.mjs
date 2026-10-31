@@ -76,7 +76,7 @@ export function createMcpHttpService({ env = process.env, fetchImpl, factory,
         const sessionPath = /^\/mcp\/plan-sessions\/([\w-]{24})(?:\/(control|events|undo))?\/?$/.exec(rawSessionPath);
         if (sessionRoot || sessionPath) {
             if (req.headers.origin === appOrigin) { res.setHeader('Access-Control-Allow-Origin', appOrigin); res.setHeader('Vary', 'Origin'); }
-            if (req.method === 'OPTIONS') return json(204, {}, { Allow: 'GET, POST, PUT, OPTIONS', 'Access-Control-Allow-Methods': 'GET, POST, PUT, OPTIONS', 'Access-Control-Allow-Headers': 'Authorization, Content-Type' });
+            if (req.method === 'OPTIONS') return json(204, {}, { Allow: 'GET, POST, PUT, DELETE, OPTIONS', 'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS', 'Access-Control-Allow-Headers': 'Authorization, Content-Type' });
             if (closing) return json(503, { code: 'shared-plan-unavailable' });
             const capability = bearer(req);
             if (!sessionRoot && !capability) return json(401, { code: 'shared-plan-capability-required', message: 'Use a shared plan capability.' });
@@ -122,6 +122,11 @@ export function createMcpHttpService({ env = process.env, fetchImpl, factory,
                 }
                 if (!sessionPath || !capability) return json(401, { code: 'shared-plan-capability-required', message: 'Use a shared plan capability.' });
                 const id = sessionPath[1], action = sessionPath[2], control = action === 'control';
+                if (req.method === 'DELETE' && !action) {
+                    const result = await sharedPlans.terminate(id, capability);
+                    for (const stream of [...streams]) if (stream.id === id) stream.close();
+                    return json(200, result, { 'Referrer-Policy': 'no-referrer' });
+                }
                 if (req.method === 'GET' && !action) return json(200, await sharedPlans.inspect(id, capability), { 'Referrer-Policy': 'no-referrer' });
                 const body = await readJson(req);
                 if (req.method === 'POST' && control) return json(200, await sharedPlans.control(id, capability, body), { 'Referrer-Policy': 'no-referrer' });
@@ -130,7 +135,7 @@ export function createMcpHttpService({ env = process.env, fetchImpl, factory,
                     await sharedPlans.assertEditable(id, capability, body.expectedVersion);
                     return json(200, await sharedPlans.replace(id, capability, { expectedVersion: body.expectedVersion, artifact: await resolveSharedPlan(body.plan) }), { 'Referrer-Policy': 'no-referrer' });
                 }
-                return json(405, { code: 'method-not-allowed' }, { Allow: control ? 'POST, OPTIONS' : 'GET, PUT, OPTIONS' });
+                return json(405, { code: 'method-not-allowed' }, { Allow: control ? 'POST, OPTIONS' : 'GET, PUT, DELETE, OPTIONS' });
             } catch (error) { return json(error.status || 400, { code: error.code || 'shared-plan-invalid', message: error.message, ...(error.currentVersion != null ? { currentVersion: error.currentVersion, currentCid: error.currentCid } : {}) }); }
             finally { active--; }
         }

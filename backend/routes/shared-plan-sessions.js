@@ -47,6 +47,11 @@ export function setupSharedPlanSessionsRoute(app, pool, { sessions = createShare
                 timer = setInterval(send, 15_000); timer.unref();
                 ready = true; send(); return;
             }
+            if (!action && req.method === 'DELETE') {
+                const result = await sessions.terminate(id, token);
+                for (const stream of [...streams]) if (stream.id === id) stream.close();
+                return res.json(result);
+            }
             if (!action && req.method === 'GET') return res.json(await sessions.inspect(id, token));
             if (action === 'state' && req.method === 'GET') return res.json(await sessions.eventState(id, token));
             if (!action && req.method === 'PUT') return res.json(await sessions.replace(id, token, { ...req.body, artifact: canonicalArtifact(req.body?.artifact) }));

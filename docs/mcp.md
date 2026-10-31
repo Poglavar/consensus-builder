@@ -188,6 +188,13 @@ load. Links carry no secret and are safe to forward.
   Creation is limited to ten requests per minute per API caller IP (a proxy shares that budget).
   Session requests are budgeted per capability; missing credentials use an IP budget.
   Owner revocation takes control and rotates the invitation atomically even with a stale version.
+  Disconnect calls owner-authenticated `DELETE /mcp/plan-sessions/:id` (forwarded to the API's
+  `DELETE /shared-plan-sessions/:id`). It deletes the locked session row without a version check,
+  reclaims storage immediately and closes owner and invitation streams across workers. Neither
+  capability can read or save afterward. The browser keeps its credential if deletion fails and
+  keeps all local plans after success; a retry finding the record absent also completes disconnect.
+  Session lifecycle controls require the owner capability; invited MCP participants cannot terminate
+  sessions, just as they cannot grant themselves an editing turn.
   Hosted pages ignore `?mcp=`; only loopback pages may select a loopback MCP origin. Private
   browser requests reject redirects.
   Experimental file-backed session links must be recreated; there is no file reader or import path.

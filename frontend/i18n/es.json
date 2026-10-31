@@ -8891,7 +8891,7 @@
         "access": "Acceso del agente",
         "inviteHint": "Copia la invitación en tu conversación con el agente. Tú decides cuándo puede editar.",
         "connection": "Conexión",
-        "disconnectHint": "Desconéctate para revocar el acceso del agente. Tu plan local se conserva."
+        "disconnectHint": "Desconéctate para eliminar esta sesión compartida y revocar el acceso. Tu plan local se conserva."
     },
     "pageHeader": {
         "backToMap": "Volver al mapa"

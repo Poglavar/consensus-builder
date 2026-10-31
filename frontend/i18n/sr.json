@@ -8915,7 +8915,7 @@
         "access": "Pristup agenta",
         "inviteHint": "Kopirajte pozivnicu u razgovor sa agentom. Vi birate kada može da uređuje.",
         "connection": "Veza",
-        "disconnectHint": "Prekinite vezu da ukinete pristup agentu. Lokalni plan ostaje sačuvan."
+        "disconnectHint": "Prekinite vezu da izbrišete zajedničku sesiju i ukinete pristup. Lokalni plan ostaje sačuvan."
     },
     "pageHeader": {
         "backToMap": "Nazad na mapu"

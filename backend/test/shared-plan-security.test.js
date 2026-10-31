@@ -19,6 +19,17 @@ function fixture() {
     return { app, sessions, artifact: canonicalArtifact({ cid: cidOfObject(plan), plan, designs: [{ cid, content }] }) };
 }
 describe('shared plan API security', () => {
+    it('authenticates deletion as the owner and leaves no readable or editable session', async () => {
+        const { app, sessions, artifact } = fixture(), created = await sessions.create(artifact);
+        const path = `/shared-plan-sessions/${created.id}`;
+        expect((await request(app).delete(path)).status).toBe(401);
+        expect((await request(app).delete(path).set('Authorization', `Bearer ${created.inviteToken}`)).status).toBe(403);
+        const response = await request(app).delete(path).set('Authorization', `Bearer ${created.ownerToken}`);
+        expect(response.status).toBe(200); expect(response.body).toEqual({ id: created.id, terminated: true });
+        expect((await request(app).get(path).set('Authorization', `Bearer ${created.ownerToken}`)).status).toBe(404);
+        expect((await request(app).put(path).set('Authorization', `Bearer ${created.inviteToken}`).send({ expectedVersion: 0, artifact })).status).toBe(404);
+        expect((await request(app).delete(path).set('Authorization', `Bearer ${created.ownerToken}`)).status).toBe(404);
+    });
     it('keeps missing, invalid and invited credentials out of the owner budget', async () => {
         const { app, sessions, artifact } = fixture(), created = await sessions.create(artifact);
         const path = `/shared-plan-sessions/${created.id}`;

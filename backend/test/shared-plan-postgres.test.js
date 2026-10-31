@@ -46,6 +46,22 @@ describe.skipIf(process.env.SHARED_PLAN_PG_TESTS !== '1')('shared plans in Postg
         if (createdSchema) await pool.query(`DROP SCHEMA ${schema} CASCADE`);
         await pool?.end();
     });
+    it('deletes the current row across workers without a version or capacity dependency', async () => {
+        const first = store({ maxEntries: 1 }), created = await first.create(artifact('First'));
+        const second = store({ maxBytes: 1 });
+        await first.control(created.id, created.ownerToken, { expectedVersion: 0, controller: 'agent' });
+        await expect(second.terminate(created.id, created.inviteToken)).rejects.toMatchObject({ code: 'shared-plan-owner-required' });
+        await first.replace(created.id, created.inviteToken, { expectedVersion: 1, artifact: artifact('Latest') });
+        const observed = [];
+        const off = await first.subscribe(created.id, created.ownerToken, async () => {
+            try { await first.inspect(created.id, created.ownerToken); } catch (error) { observed.push(error.code); }
+        });
+        expect(await second.terminate(created.id, created.ownerToken)).toEqual({ id: created.id, terminated: true });
+        expect((await pool.query(`SELECT state FROM ${schema}.shared_plan_session WHERE id = $1`, [created.id])).rows).toEqual([]);
+        await vi.waitFor(() => expect(observed).toEqual(['shared-plan-not-found'])); off();
+        await expect(first.replace(created.id, created.inviteToken, { expectedVersion: 2, artifact: artifact('Late') })).rejects.toMatchObject({ code: 'shared-plan-not-found' });
+        expect((await first.create(artifact('Next'))).version).toBe(0);
+    });
     it('reclaims expired PostgreSQL rows before an independent worker checks capacity', async () => {
         let time = Date.now();
         const options = { maxEntries: 1, ttlMs: 100, now: () => time };

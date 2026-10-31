@@ -8685,7 +8685,7 @@
         "access": "Accès de l’agent",
         "inviteHint": "Copiez l’invitation dans votre conversation avec l’agent. Vous décidez quand il peut modifier le plan.",
         "connection": "Connexion",
-        "disconnectHint": "Déconnectez-vous pour révoquer l’accès de l’agent. Votre plan local est conservé."
+        "disconnectHint": "Déconnectez-vous pour supprimer cette session partagée et révoquer l’accès. Votre plan local est conservé."
     },
     "pageHeader": {
         "backToMap": "Retour à la carte"

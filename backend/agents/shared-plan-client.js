@@ -27,6 +27,7 @@ export function createSharedPlanClient({ env = {}, fetchImpl = fetch } = {}) {
     const store = {
         create: artifact => request('', null, 'POST', { artifact }),
         inspect: (id, capability) => request(path(id), capability),
+        terminate: (id, capability) => request(path(id), capability, 'DELETE'),
         eventState: (id, capability) => request(`${path(id)}/state`, capability),
         control: (id, capability, body) => request(`${path(id)}/control`, capability, 'POST', body),
         replace: (id, capability, body) => request(path(id), capability, 'PUT', body),

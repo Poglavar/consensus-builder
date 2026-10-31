@@ -8863,7 +8863,7 @@
         "access": "Agent access",
         "inviteHint": "Copy the invitation into your agent conversation. You choose when it can edit.",
         "connection": "Connection",
-        "disconnectHint": "Disconnect to revoke agent access. Your local plan is kept."
+        "disconnectHint": "Disconnect to delete this shared session and revoke access. Your local plan is kept."
     },
     "pageHeader": {
         "backToMap": "Back to the map"

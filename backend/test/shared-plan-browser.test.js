@@ -36,6 +36,44 @@ const row = { cid: 'plan-cid', content: { schema: 'plan/v1', title: 'Park', desi
     designs: [{ cid: 'design-cid', content: { schema: 'design/v1', title: 'Bench' } }], memberIds: ['bench-local'], designSources: {} };
 
 describe('shared plan browser client', () => {
+    it.each(['deleted', 'absent', 'failed', 'unconfirmed'])('Disconnect retains credentials until deletion is confirmed: %s', async outcome => {
+        const prefix = 'ugt.shared-plan-session/v1:https://urbangametheory.xyz:workspace-test:';
+        const accepted = { id: 'session-a', version: 1, controller: 'agent', artifact: { plan: row.content, designs: row.designs } };
+        let finish;
+        const pending = new Promise(resolve => { finish = resolve; });
+        const fixture = browser({ plans: [row], replies: [accepted, { ok: !['absent', 'failed'].includes(outcome), status: outcome === 'absent' ? 404 : outcome === 'failed' ? 503 : 200, data: pending }], stored: {
+            [`${prefix}active`]: { id: accepted.id, cid: row.cid, memberIds: row.memberIds },
+            [`${prefix}plan:${row.cid}`]: accepted.id,
+            [`${prefix}${accepted.id}`]: { ownerToken: 'owner-secret', controller: 'agent', version: 1, designCids: row.content.designCids, memberIds: row.memberIds }
+        } });
+        fixture.win.BusyControl = require('../../frontend/js/ui/busy-control.js');
+        const doc = makeDocument(), host = doc.createElement('div'); doc.body.append(host);
+        const mounted = fixture.api.mount({ row, host }); await mounted.ready;
+        const button = () => [...host.querySelectorAll('button')].find(el => el.textContent === 'Disconnect');
+        button().click();
+        await vi.waitFor(() => expect(fixture.calls.some(call => call.options.method === 'DELETE')).toBe(true));
+        expect(button().getAttribute('aria-busy')).toBe('true');
+        expect(fixture.values.has(`${prefix}${accepted.id}`)).toBe(true);
+        const call = fixture.calls.find(call => call.options.method === 'DELETE');
+        expect(call.url).toBe('https://urbangametheory.xyz/mcp/plan-sessions/session-a');
+        expect(call.options.headers.Authorization).toBe('Bearer owner-secret');
+        finish(outcome === 'deleted' ? { id: accepted.id, terminated: true }
+            : outcome === 'absent' ? { code: 'shared-plan-not-found', message: 'Unavailable' }
+            : outcome === 'failed' ? { code: 'shared-plan-unavailable', message: 'Storage unavailable' } : {});
+        await vi.waitFor(() => expect(host.querySelector('[aria-busy]')).toBe(null));
+        if (['deleted', 'absent'].includes(outcome)) {
+            expect([...host.querySelectorAll('button')].map(el => el.textContent)).toEqual(['Collaborate']);
+            expect(fixture.values.has(`${prefix}${accepted.id}`)).toBe(false);
+            expect(fixture.values.has(`${prefix}active`)).toBe(false);
+            expect(fixture.api.editBlocked({ cid: 'design-cid' })).toBe(false);
+        } else {
+            expect(button().disabled).toBe(false);
+            expect(fixture.values.has(`${prefix}${accepted.id}`)).toBe(true);
+            expect(fixture.values.has(`${prefix}active`)).toBe(true);
+            expect(host.querySelector('[role="alert"]').textContent).toContain(outcome === 'failed' ? 'Storage unavailable' : 'not confirmed');
+        }
+        expect(fixture.win.NamedPlans.list()).toEqual([row]); mounted.dispose();
+    });
     it.each(['https://receiver.invalid', 'http://127.0.0.1:3097', 'not a URL'])('ignores a hosted-page MCP override %s for private content and owner reads', async target => {
         const created = { id: 'session-a', ownerToken: 'owner-secret', version: 0 };
         const fixture = browser({ search: `?mcp=${encodeURIComponent(target)}`, replies: [created, created] });

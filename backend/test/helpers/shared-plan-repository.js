@@ -42,6 +42,12 @@ export function createMemorySharedPlanRepository({ maxEntries = 1000, maxBytes =
                 ensureCapacity(next, previous); rows.set(id, clone(next)); publish(id, next); return clone(next);
             });
         },
+        async remove(id, authorize) {
+            return serialize(() => {
+                authorize(clone(rows.get(id)));
+                rows.delete(id); publish(id);
+            });
+        },
         async subscribe(id, listener, onError) {
             const set = listeners.get(id) || new Set(); set.add({ listener, onError }); listeners.set(id, set);
             return () => { for (const row of set) if (row.listener === listener) set.delete(row); if (!set.size) listeners.delete(id); };

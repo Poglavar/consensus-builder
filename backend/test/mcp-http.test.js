@@ -35,6 +35,23 @@ async function host(options = {}) {
     return `http://127.0.0.1:${service.http.address().port}`;
 }
 describe('hosted MCP HTTP', () => {
+    it('deletes only with owner authority and closes both owner and invitation streams', async () => {
+        const sharedPlans = createSharedPlanSessions({ repository: createMemorySharedPlanRepository(), validateArtifact: () => {} });
+        const created = await sharedPlans.create({ cid: 'baf-private', plan: { schema: 'plan/v1' }, designs: [] });
+        await sharedPlans.control(created.id, created.ownerToken, { expectedVersion: 0, controller: 'agent' });
+        const base = await host({ sharedPlans }), url = `${base}/mcp/plan-sessions/${created.id}`;
+        const readers = [];
+        for (const capability of [created.ownerToken, created.inviteToken]) {
+            const response = await fetch(`${url}/events`, { headers: { authorization: `Bearer ${capability}` } });
+            expect(response.status).toBe(200);
+            const reader = response.body.getReader(); readers.push(reader); await reader.read();
+        }
+        expect((await fetch(url, { method: 'DELETE', headers: { authorization: `Bearer ${created.inviteToken}` } })).status).toBe(403);
+        const deleted = await fetch(url, { method: 'DELETE', headers: { authorization: `Bearer ${created.ownerToken}` } });
+        expect(deleted.status).toBe(200); expect(await deleted.json()).toEqual({ id: created.id, terminated: true });
+        for (const reader of readers) { let chunk; do { chunk = await reader.read(); } while (!chunk.done); }
+        for (const capability of [created.ownerToken, created.inviteToken]) expect((await fetch(url, { headers: { authorization: `Bearer ${capability}` } })).status).toBe(404);
+    });
     it('isolates session capability budgets from unauthenticated callers and the invited agent', async () => {
         const sharedPlans = createSharedPlanSessions({ repository: createMemorySharedPlanRepository(), validateArtifact: () => {} });
         const created = await sharedPlans.create({ cid: 'baf-private', plan: { schema: 'plan/v1' }, designs: [] });

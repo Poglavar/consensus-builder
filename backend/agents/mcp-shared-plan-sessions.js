@@ -38,9 +38,9 @@ export function createSharedPlanSessions({ pool, now = Date.now, repository = cr
     function publicState(value, includeArtifact = true) {
         return { id: value.id, version: value.version, controller: value.controller, cid: value.artifact.cid, updatedAt: new Date(value.updatedAt).toISOString(), expiresAt: new Date(value.expiresAt).toISOString(), lastChange: structuredClone(value.lastChange || null), canUndo: !!value.undo && value.undo.afterCid === value.artifact.cid, ...(includeArtifact ? { artifact: structuredClone(value.artifact) } : {}) };
     }
-    function access(value, capability) {
+    function access(value, capability, { allowExpired = false } = {}) {
         if (!value) throw failure('shared-plan-not-found', 'This shared plan is unavailable.', 404);
-        if (!Number.isFinite(value.expiresAt) || value.expiresAt <= now()) throw failure('shared-plan-expired', 'This shared plan session expired. Start a new session from your local plan.', 410);
+        if (!allowExpired && (!Number.isFinite(value.expiresAt) || value.expiresAt <= now())) throw failure('shared-plan-expired', 'This shared plan session expired. Start a new session from your local plan.', 410);
         if (!TOKEN.test(capability || '')) throw failure('shared-plan-forbidden', 'This shared plan capability is not valid.', 403);
         if (hash(capability) === value.ownerTokenHash) return { value, role: 'owner' };
         if (hash(capability) === value.inviteTokenHash) return { value, role: 'agent' };
@@ -57,6 +57,13 @@ export function createSharedPlanSessions({ pool, now = Date.now, repository = cr
         return { ...publicState(value), ownerToken, inviteToken };
     }
     async function inspect(id, capability) { const { value } = access(await repository.read(id), capability); return publicState(value); }
+    async function terminate(id, capability) {
+        await repository.remove(id, previous => {
+            const { role } = access(previous, capability, { allowExpired: true });
+            if (role !== 'owner') throw failure('shared-plan-owner-required', 'Only the plan owner can end this shared session.', 403);
+        });
+        return { id, terminated: true };
+    }
     async function control(id, capability, { expectedVersion, controller, revoke = false }) {
         const inviteToken = revoke ? token() : null;
         const result = await repository.change(id, previous => {
@@ -104,5 +111,5 @@ export function createSharedPlanSessions({ pool, now = Date.now, repository = cr
         if (value.controller !== role) throw failure('shared-plan-control-required', `The ${value.controller} currently holds editing control.`, 403, { controller: value.controller });
         return publicState(value);
     }
-    return withSharedPlanActivity({ create, inspect, control, replace, undo, assertEditable, subscribe, eventState, dispose: () => repository.dispose() });
+    return withSharedPlanActivity({ create, inspect, terminate, control, replace, undo, assertEditable, subscribe, eventState, dispose: () => repository.dispose() });
 }

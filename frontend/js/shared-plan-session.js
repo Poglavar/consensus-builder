@@ -195,6 +195,18 @@
                     const capability = stored(origin, id); if (!capability?.ownerToken) throw fail('This browser no longer has control of that shared plan.', 'owner-capability-missing');
                     return request(origin, id, { token: capability.ownerToken });
                 },
+                terminate: async id => {
+                    const capability = stored(origin, id); if (!capability?.ownerToken) throw fail('This browser no longer has control of that shared plan.', 'owner-capability-missing');
+                    let result;
+                    try { result = await request(origin, id, { method: 'DELETE', token: capability.ownerToken }); }
+                    catch (error) {
+                        // A lost deletion response can be retried: an absent record is already ended.
+                        if (error.code !== 'shared-plan-not-found') throw error;
+                        result = { id, terminated: true };
+                    }
+                    if (result?.id !== id || result.terminated !== true) throw fail('The shared session termination was not confirmed.', 'shared-plan-termination-unconfirmed');
+                    return result;
+                },
                 control: async (id, expectedVersion, controller, revoke = false) => {
                     const capability = stored(origin, id); if (!capability?.ownerToken) throw fail('This browser no longer has control of that shared plan.', 'owner-capability-missing');
                     return request(origin, [id, 'control'], { method: 'POST', token: capability.ownerToken,
@@ -367,11 +379,12 @@
                     const text = invitation(session, session.base); const copied = await win.DesignSync.copyLink(text);
                     notice = copied ? t('inviteCopied', 'Invitation copied. Give it to the agent you choose.') : text;
                 }, false, false, access);
-                const end = group(t('connection', 'Connection'), t('disconnectHint', 'Disconnect to revoke agent access. Your local plan is kept.'), 'connection');
+                const end = group(t('connection', 'Connection'), t('disconnectHint', 'Disconnect to delete this shared session and revoke access. Your local plan is kept.'), 'connection');
                 action(t('disconnect', 'Disconnect'), async () => {
-                    // Revocation is an owner action even when the agent holds the edit turn.
-                    await client(session.base).control(session.id, session.version, 'owner', true);
-                    client(session.base).forget(session.id, row.cid); win.PersistentStorage.removeItem(activeKey(session.base)); session = null; sessionError = null;
+                    // The notification can clear session while deletion is in flight.
+                    const { id, base } = session;
+                    await client(base).terminate(id);
+                    client(base).forget(id, row.cid); win.PersistentStorage.removeItem(activeKey(base)); session = null; sessionError = null;
                     closeConnection(); announce('');
                     publishActive();
                 }, false, true, end);

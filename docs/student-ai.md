@@ -61,7 +61,10 @@ invitation confirms completion. Disconnect is separated from editing controls an
 
 The copied invitation is a private capability. Keep it out of public plan descriptions and links.
 The owner capability remains in the browser's private workspace storage. Revoking the invitation
-or disconnecting ends its access.
+ends agent access. Disconnect deletes the shared session and its private server state, closes both
+participants' connections, and removes the browser credential after deletion is confirmed. Failed
+deletion keeps the credential for a retry. Local plans remain editable. Sessions otherwise expire
+24 hours after creation.
 
 While connected, the browser receives authenticated event notifications when control, accepted
 state or agent activity changes. It fetches the accepted artifact when the revision changes and

@@ -12,19 +12,23 @@ export function createSharedPlanRepository({ pool, schema = 'consensus', maxEntr
     const cleanup = setInterval(() => { prune().catch(() => { console.error('Shared plan expiry cleanup failed'); }); }, 60_000);
     cleanup.unref();
     async function read(id) { return (await pool.query(`SELECT state FROM ${table} WHERE id = $1`, [id])).rows[0]?.state; }
-    async function write(id, change, insert = false) {
+    async function write(id, change, insert = false, remove = false) {
         const client = await pool.connect();
         try {
             await client.query('BEGIN');
             // The small global quota must be checked atomically with every size-changing write.
             await client.query('SELECT pg_advisory_xact_lock(hashtext($1))', [table]);
-            await prune(client);
+            if (!remove) await prune(client);
             const previous = insert ? undefined : (await client.query(`SELECT state FROM ${table} WHERE id = $1 FOR UPDATE`, [id])).rows[0]?.state;
-            const next = change(previous), json = JSON.stringify(next), bytes = Buffer.byteLength(json);
-            const totals = (await client.query(`SELECT count(*)::int AS count, COALESCE(sum(storage_bytes), 0)::bigint AS bytes FROM ${table} WHERE id <> $1`, [id])).rows[0];
-            if (totals.count >= maxEntries || Number(totals.bytes) + bytes > maxBytes) throw Object.assign(new Error('Shared plan storage is full.'), { code: 'shared-plan-capacity', status: 503 });
-            if (insert) await client.query(`INSERT INTO ${table} (id, state, storage_bytes) VALUES ($1, $2::jsonb, $3)`, [id, json, bytes]);
-            else await client.query(`UPDATE ${table} SET state = $2::jsonb, storage_bytes = $3, updated_at = now() WHERE id = $1`, [id, json, bytes]);
+            const next = change(previous);
+            if (remove) await client.query(`DELETE FROM ${table} WHERE id = $1`, [id]);
+            else {
+                const json = JSON.stringify(next), bytes = Buffer.byteLength(json);
+                const totals = (await client.query(`SELECT count(*)::int AS count, COALESCE(sum(storage_bytes), 0)::bigint AS bytes FROM ${table} WHERE id <> $1`, [id])).rows[0];
+                if (totals.count >= maxEntries || Number(totals.bytes) + bytes > maxBytes) throw Object.assign(new Error('Shared plan storage is full.'), { code: 'shared-plan-capacity', status: 503 });
+                if (insert) await client.query(`INSERT INTO ${table} (id, state, storage_bytes) VALUES ($1, $2::jsonb, $3)`, [id, json, bytes]);
+                else await client.query(`UPDATE ${table} SET state = $2::jsonb, storage_bytes = $3, updated_at = now() WHERE id = $1`, [id, json, bytes]);
+            }
             // PostgreSQL delivers this only after COMMIT; the payload contains no content or capability.
             await client.query('SELECT pg_notify($1, $2)', [channel, id]);
             await client.query('COMMIT');
@@ -62,6 +66,7 @@ export function createSharedPlanRepository({ pool, schema = 'consensus', maxEntr
         read,
         insert: value => write(value.id, () => value, true),
         change: (id, mutate) => write(id, mutate),
+        remove: (id, authorize) => write(id, authorize, false, true),
         async subscribe(id, listener, onError = () => {}) {
             await listen();
             const entry = { id, listener, onError }; listeners.add(entry);
