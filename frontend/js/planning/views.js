@@ -274,7 +274,8 @@
     }
     function renderInspector() {
         const item = selected();
-        const hostedBuilt = item?.role === 'existing' && inspector.classList.contains('is-hosted');
+        const hosted = inspector.classList.contains('is-hosted');
+        const hostedBuilt = item?.role === 'existing' && hosted;
         inspector.hidden = !item || item.role === 'proposed' || (item.role === 'existing' && !hostedBuilt);
         inspector.replaceChildren();
         if (!item || item.role === 'proposed' || (item.role === 'existing' && !hostedBuilt)) return;
@@ -283,36 +284,47 @@
         const sourceResult = item.role === 'permitted';
         heading.append(element('p', 'planning-eyebrow', item.parcelEnvelope ? t('envelopeTitle')
             : t(item.areas?.length ? 'zoningArea' : sourceResult ? (item.volumes.length ? 'sourceProposal' : 'savedResult') : 'builtRecord')));
-        if (item.title) heading.append(element('h2', 'click-stack__title', item.title));
+        // The hosted stack already supplies the object's title and parcel reference.
+        if (!hosted && item.title) heading.append(element('h2', 'click-stack__title', item.title));
         // A parcel's massing names its parcel; the title alone is the source edition and ratio.
         const parcelLabel = parcelOf(item);
-        if (parcelLabel) heading.append(element('p', 'planning-inspector__parcel', `${t('focusParcel')} ${parcelLabel}`));
+        if (!hosted && parcelLabel) heading.append(element('p', 'planning-inspector__parcel', `${t('focusParcel')} ${parcelLabel}`));
         const close = element('button', 'close-circle-btn', '×');
         close.type = 'button'; close.setAttribute('aria-label', t('close'));
         close.addEventListener('click', () => { select(null); document.getElementById('planning-views-button').focus(); });
         header.append(heading, close);
         inspector.append(header);
+        const page = (key, label) => {
+            const node = element('div', 'planning-inspector__page');
+            node.dataset.stackPageKey = key;
+            node.dataset.stackPageLabel = label;
+            inspector.append(node);
+            return node;
+        };
+        const info = page('info', root.i18n.t('clickStackNavigation.info'));
+        const options = sourceResult && item.configurations?.length ? page('options', root.i18n.t('planningViews.tabs.options')) : null;
+        const rules = sourceResult ? page('rules', root.i18n.t('planningViews.tabs.rules')) : null;
         const badges = element('div', 'planning-inspector__badges');
         badges.append(element('span', 'cb-badge', t(inspectorBadgeKey(item))));
         if (sourceResult && item.volumes.length) badges.append(element('span', 'cb-badge cb-badge--warning',
             t(item.assessment.meaning === 'existing-stock-estimate' ? 'stockBadge' : item.parcelEnvelope ? 'bound' : 'approximate')));
         if (item.assessment.refresh) badges.append(element('span', 'cb-badge cb-badge--warning', t('refreshPending')));
-        inspector.append(badges);
-        inspector.append(element('p', 'planning-inspector__description',
+        info.append(badges);
+        info.append(element('p', 'planning-inspector__description',
             t(item.assessment.meaning === 'existing-stock-estimate' ? 'stockEstimate'
                 : item.assessment.meaning === 'public-screen' ? 'evidenceOnly'
                     : item.assessment.meaning === 'zoning-area' ? 'zoningAreaNote'
                         : item.parcelEnvelope ? 'envelopeNote'
                         : sourceResult ? (item.volumes.length ? 'oneOption' : 'savedNoShape')
                         : 'observedNote')));
-        if (item.assessment.status && !item.parcelEnvelope) inspector.append(element('p', 'planning-inspector__description', resultLabel(item.assessment.status)));
-        if (item.assessment.reason) inspector.append(element('p', 'planning-cache-reason', item.assessment.reason));
-        if (item.assessment.current === false) inspector.append(element('p', 'planning-inspector__description', t('savedWithdrawn')));
-        if (referenceStatus && referenceStatus !== 'same') inspector.append(element('p', 'planning-assessment', t('referenceChanged')));
+        if (item.assessment.status && !item.parcelEnvelope) info.append(element('p', 'planning-inspector__description', resultLabel(item.assessment.status)));
+        if (item.assessment.reason) info.append(element('p', 'planning-cache-reason', item.assessment.reason));
+        if (item.assessment.current === false) info.append(element('p', 'planning-inspector__description', t('savedWithdrawn')));
+        if (referenceStatus && referenceStatus !== 'same') info.append(element('p', 'planning-assessment', t('referenceChanged')));
         if (item.assessment.refresh) {
             const key = `planningViews.refreshCause.${item.assessment.refresh.code}`;
             const reason = root.i18n.t(key);
-            inspector.append(element('p', 'planning-inspector__description', `${t('refreshNote')} ${reason === key ? t('refreshFailed') : reason}`));
+            info.append(element('p', 'planning-inspector__description', `${t('refreshNote')} ${reason === key ? t('refreshFailed') : reason}`));
         }
         const metrics = element('dl', 'planning-metrics');
         const unitLimit = item.constraints?.find(constraint => constraint.quantity === 'dwellings')?.value;
@@ -327,19 +339,19 @@
         for (const [label, value] of displayedMetrics) {
             const entry = element('div'); entry.append(element('dt', '', label), element('dd', '', value)); metrics.append(entry);
         }
-        if (displayedMetrics.length) inspector.append(metrics);
+        if (displayedMetrics.length) info.append(metrics);
         const heights = [...new Set(item.volumes.map(volume => volume.topM))].sort((a, b) => a - b);
-        if (heights.length > 1) inspector.append(element('p', 'planning-inspector__description', t('heightParts', { heights: heights.map(height => root.CbFormat.formatLength(height)).join(' · ') })));
+        if (heights.length > 1) info.append(element('p', 'planning-inspector__description', t('heightParts', { heights: heights.map(height => root.CbFormat.formatLength(height)).join(' · ') })));
         const realization = permittedFeatures(item), shown = realization.configuration;
-        if (item.configurations?.length) inspector.append(renderConfigurations(item, shown));
+        if (options) options.append(renderConfigurations(item, shown));
         if (realization.frontEdge != null) {
-            inspector.append(element('p', 'planning-inspector__description', t('assumedSide', { side: sideWord(item, realization.frontEdge) })));
+            (rules || info).append(element('p', 'planning-inspector__description', t('assumedSide', { side: sideWord(item, realization.frontEdge) })));
             const frontage = root.StreetFrontage?.basisText(item.sourceEvidence?.frontage);
-            if (frontage) inspector.append(element('p', 'planning-inspector__description', frontage));
+            if (frontage) (rules || info).append(element('p', 'planning-inspector__description', frontage));
         }
         const assessment = element('div', 'planning-assessment');
         assessment.append(element('strong', '', t('conditionsTitle')), element('p', '', t('conditionsNote')));
-        if (sourceResult && item.volumes.length) inspector.append(assessment);
+        if (sourceResult && item.volumes.length) (rules || info).append(assessment);
         const constraints = shown ? shown.constraints : item.constraints;
         if (constraints?.length) {
             const limits = element('dl', 'planning-limits');
@@ -353,7 +365,7 @@
                 const evidence = constraint.evidence ? ` · ${t(`evidence.${constraint.evidence}`)}` : '';
                 limits.append(element('dt', '', t(`constraint.${constraint.quantity}`)), element('dd', '', value + evidence));
             }
-            inspector.append(limits);
+            (rules || info).append(limits);
         }
         const evidence = element('details', 'planning-evidence');
         evidence.append(element('summary', '', t('sourceDetails')));
@@ -368,7 +380,7 @@
             const terms = element('pre', 'planning-evidence__terms', JSON.stringify(item.sourceEvidence, null, 2));
             evidence.append(element('p', '', t('sourceTerms')), terms);
         }
-        inspector.append(evidence);
+        info.append(evidence);
         for (const reference of item.sourceEvidence?.sourceReferences || []) {
             const button = element('button', 'btn', t('referencedSource', { source: reference.providerId, revision: reference.revision.slice(0, 8) }));
             button.type = 'button'; button.addEventListener('click', async () => {
@@ -383,7 +395,7 @@
                 } catch (error) { console.error('[planning] Referenced source read failed', error); button.textContent = t('error'); }
                 finally { button.disabled = false; }
             });
-            inspector.append(button);
+            evidence.append(button);
         }
         const footer = element('footer', 'planning-inspector__footer');
         if (item.source.url) {
@@ -391,7 +403,7 @@
             link.href = item.source.url; link.target = '_blank'; link.rel = 'noopener noreferrer';
             footer.append(link);
         }
-        inspector.append(footer);
+        evidence.append(footer);
     }
     // Every source configuration, with the shown one marked. Picking one pins the housing type;
     // the dice varies the sample building without changing that choice.

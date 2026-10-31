@@ -6475,13 +6475,15 @@
             "show": "ver",
             "suggestedLayout": "Distribución sugerida",
             "suggestedSummary": "{{cores}} núcleo(s) · {{apartments}} viviendas por planta · {{rooms}} habitaciones",
-            "suggestedFlagged": "Ninguna distribución por defecto cabe: {{reason}}"
+            "suggestedFlagged": "Ninguna distribución por defecto cabe: {{reason}}",
+            "stats": "Estadísticas"
         },
         "proposalPanel": {
             "title": "Información del diseño",
             "parcelsLabel": "Parcelas",
             "suggestedTotals": "Distribuciones sugeridas: {{buildings}} edificios · {{apartmentsPerFloor}} viviendas por planta · {{apartments}} en total",
-            "avgPerParcel": "Media / parcela"
+            "avgPerParcel": "Media / parcela",
+            "openActions2d": "Abrir acciones en 2D"
         },
         "isolation": {
             "singleParcel": "Parcela seleccionada",
@@ -7792,7 +7794,8 @@
             "none": "Propietarios sin porción",
             "several": "Propietarios con varias porciones",
             "noneList": "Sin porción:",
-            "severalList": "Varias porciones:"
+            "severalList": "Varias porciones:",
+            "heading": "Resultados de propiedad"
         },
         "dialog": {
             "titleCreate": "Crear acuerdo",
@@ -7938,7 +7941,9 @@
                 "contributes": "Aporta",
                 "receives": "Recibe",
                 "change": "Variación neta",
-                "cash": "Dinero"
+                "cash": "Dinero",
+                "byParty": "Por parte de parcela",
+                "byPerson": "Por persona"
             },
             "deadline": "Plazo: {{date}}",
             "actions": {
@@ -7950,7 +7955,11 @@
             },
             "collapse": "Cerrar acuerdo",
             "removeLocalConfirm": "¿Quitar este acuerdo de este dispositivo? Sus diseños permanecen en el mapa. El acuerdo publicado sigue disponible a través de su enlace.",
-            "designs": "Diseños del plan"
+            "designs": "Diseños del plan",
+            "tabs": {
+                "info": "Información",
+                "decision": "Decisión"
+            }
         },
         "list": {
             "create": "Crear acuerdo",
@@ -8174,7 +8183,9 @@
     "planningViews": {
         "tabs": {
             "display": "Vista",
-            "compare": "Comparar"
+            "compare": "Comparar",
+            "options": "Opciones",
+            "rules": "Reglas"
         },
         "compare": {
             "stop": "Dejar de comparar",
@@ -8553,7 +8564,9 @@
         "openAgreement": "Detalles del acuerdo",
         "geometryUnavailable": "No se pudieron cargar todos los diseños incluidos. No se puede resaltar su extensión completa.",
         "sharePlan": "Compartir plan",
-        "chooseSharePlan": "¿Qué plan quieres compartir?"
+        "chooseSharePlan": "¿Qué plan quieres compartir?",
+        "published": "Publicado",
+        "revision": "Versión"
     },
     "clickStackNavigation": {
         "objects": "Objetos en esta ubicación",

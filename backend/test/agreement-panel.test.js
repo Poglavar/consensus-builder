@@ -20,11 +20,12 @@ const Cid = require('../../frontend/js/cid.js');
 
 describe('agreement panel tabs', () => {
     it('shows how many input parcels, output parcels and persons the agreement has', () => {
-        const html = panel.tabbedHtml({ overview: '', inputs: '', outputs: '', persons: '', rules: '' }, 'overview', (_key, fallback) => fallback, { inputs: 4, outputs: 9, persons: 3 });
+        const html = panel.tabbedHtml({ overview: '', decision: '', inputs: '', outputs: '', persons: '', rules: '' }, 'overview', (_key, fallback) => fallback, { inputs: 4, outputs: 9, persons: 3 });
         expect(html).toContain('data-agreement-properties-tab="inputs">Input parcels (4)</button>');
         expect(html).toContain('data-agreement-properties-tab="outputs">Output parcels (9)</button>');
         expect(html).toContain('data-agreement-properties-tab="persons">Persons (3)</button>');
-        expect(html).toContain('data-agreement-properties-tab="overview">Overview</button>');
+        expect(html).toContain('data-agreement-properties-tab="overview">Info</button>');
+        expect(html).toContain('data-agreement-properties-tab="decision">Decision</button>');
     });
 });
 
@@ -145,7 +146,7 @@ describe('landSummary', () => {
     });
 });
 
-describe('ownerOutcomes and piecesHtml', () => {
+describe('ownerOutcomes, resulting land and people', () => {
     it('counts the pieces each input parcel\'s party receives, and names who gets none or several', () => {
         const value = agreement();
         expect(panel.ownerOutcomes(value)).toEqual({ owners: 2, none: [],
@@ -160,18 +161,20 @@ describe('ownerOutcomes and piecesHtml', () => {
         expect(panel.ownerOutcomes(null)).toEqual({ owners: 0, none: [], several: [] });
     });
 
-    it('puts the resulting pieces and the owner counts in the Output parcels summary, not the land', () => {
+    it('keeps resulting land in Output parcels and ownership outcomes with People', () => {
         globalThis.CbFormat = format;
         const value = agreement();
         value.allocations[1] = { output: value.outputs[1].hash, to: { kind: 'public' } };
-        const html = panel.piecesHtml({ ...panel.landSummary(value), openGroundM2: 59.6 }, panel.ownerOutcomes(value));
-        expect(html).toContain('Resulting pieces');
-        expect(html).toContain('Open ground');
-        expect(html).toMatch(/data-agreement-owners="none">No piece: <button[^>]+data-agreement-object-id="parcel-owner:k10"[^>]*>Owner\(s\) of parcel k10<\/button>/);
-        expect(html).toMatch(/data-agreement-owners="several">Several pieces: <button[^>]+>Owner\(s\) of parcel k9 \(2\)<\/button>/);
+        const pieces = panel.piecesHtml({ ...panel.landSummary(value), openGroundM2: 59.6 });
+        expect(pieces).toContain('Resulting pieces');
+        expect(pieces).toContain('Open ground');
+        expect(pieces).not.toContain('data-agreement-owners');
+        const outcomes = panel.outcomesHtml(panel.ownerOutcomes(value));
+        expect(outcomes).toMatch(/data-agreement-owners="none">No piece: <button[^>]+data-agreement-object-id="parcel-owner:k10"[^>]*>Owner\(s\) of parcel k10<\/button>/);
+        expect(outcomes).toMatch(/data-agreement-owners="several">Several pieces: <button[^>]+>Owner\(s\) of parcel k9 \(2\)<\/button>/);
         const land = panel.landHtml(panel.landSummary(value));
         expect(land).not.toContain('Resulting pieces');
-        expect(panel.landHtml(panel.landSummary(value), undefined, { outputs: true })).toContain('Resulting pieces');
+        expect(land).not.toContain('data-agreement-owners');
     });
 });
 
@@ -254,6 +257,11 @@ describe('ledgerRows', () => {
         const html = panel.personsHtml(derived);
         expect(html).toContain('data-agreement-derived-persons');
         expect(html).toContain('<tr data-agreement-person="ben"><th scope="row">ben</th>');
+        const byParty = panel.ledgerHtml({ rows: panel.ledgerRows(record.ledger(named)) }, undefined,
+            { title: 'By parcel party', collapsible: true, open: true });
+        const byPerson = panel.personsHtml(derived, undefined, { title: 'By person', collapsible: true });
+        expect(byParty).toContain('<details class="agreement-panel-disclosure" open><summary>By parcel party</summary>');
+        expect(byPerson).toContain('<details class="agreement-panel-disclosure"><summary>By person</summary>');
     });
 });
 
@@ -349,16 +357,17 @@ describe('panel HTML', () => {
             .not.toContain('data-agreement-action="mint"');
     });
 
-    it('gives the Rules tab the scheme guide for an owners’ rule and a counter-agreement button', () => {
+    it('keeps the scheme guide in Rules and puts counter-agreement in Actions', () => {
         const summary = { electorate: 'Decided by the owners', binding: 'Non-binding', detail: '' };
-        const owners = panel.ruleHtml(summary, '', undefined, { owners: true, scheme: true, counter: true });
+        const owners = panel.ruleHtml(summary, '', undefined, { owners: true, scheme: true });
         expect(owners).toContain('data-agreement-action="scheme-guide"');
         expect(owners).toContain('How this scheme works…');
-        expect(owners).toContain('data-agreement-action="counter"');
-        expect(panel.ruleHtml(summary, '', undefined, { owners: true, scheme: false, counter: true })).toContain('Compare with a scheme…');
-        const community = panel.ruleHtml(summary, '', undefined, { owners: false, counter: true });
+        expect(owners).not.toContain('data-agreement-action="counter"');
+        expect(panel.ruleHtml(summary, '', undefined, { owners: true, scheme: false })).toContain('Compare with a scheme…');
+        const community = panel.ruleHtml(summary, '', undefined, { owners: false });
         expect(community).not.toContain('data-agreement-action="scheme-guide"');
-        expect(community).toContain('data-agreement-action="counter"');
+        expect(community).not.toContain('data-agreement-action="counter"');
+        expect(panel.actionsHtml({ canCounter: true })).toContain('data-agreement-action="counter"');
         expect(panel.ruleHtml(summary, '')).not.toContain('agreement-panel-actions');
     });
 
@@ -414,7 +423,8 @@ describe('panel HTML', () => {
         expect(panelBody.innerHTML).toContain('data-agreement-read-only');
         expect(panelBody.innerHTML).toContain('data-agreement-read-only-status');
         expect(panelBody.innerHTML).toContain('data-agreement-action="plan"');
-        expect(panelBody.innerHTML).toContain('Designs in the plan');
+        expect(panelBody.innerHTML).toContain('Designs in the plan (1)');
+        expect(panelBody.innerHTML).not.toContain('data-agreement-design=');
         expect(panelBody.innerHTML).toContain('Agreement plan');
         expect(panelBody.innerHTML).not.toContain('Reading the land under the designs');
         expect(panelBody.innerHTML).not.toContain('data-agreement-action="edit"');

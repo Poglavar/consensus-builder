@@ -22,6 +22,7 @@ const DYNAMIC_KEY_PREFIXES = [
     'alerts.messages.',
     'designMemberships.',
     'clickStackRelations.',
+    'clickStackNavigation.', // shared inspector page and object labels
     'pageHeader.',
     'parcelReport.',
     'feedback.',                  // feedback.js selects status messages from the registered feature dictionary

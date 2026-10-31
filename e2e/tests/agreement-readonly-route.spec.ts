@@ -35,12 +35,13 @@ test('a Plan agreement link opens terms without applying or storing designs', as
   const panel = agreementPanel(primary);
   await expect(panel).toBeVisible({ timeout: 90_000 });
   await expect(panel.locator('code.agreement-panel-cid')).toHaveAttribute('title', cid);
-  await expect(panel.locator('.agreement-panel-designs')).toContainText('Shared read-only agreement park');
+  await expect(panel.locator('[data-agreement-plan-design-count]')).toHaveText('Designs in the plan (1)');
+  await expect(panel.locator('.agreement-panel-designs, [data-agreement-design]')).toHaveCount(0);
   await expect(panel.locator('[data-agreement-read-only-status]')).toContainText('Local map status is not evaluated');
   await expect(panel.locator('[data-agreement-status], [data-agreement-action="edit"], [data-agreement-action="delete"], [data-agreement-action="propose"]')).toHaveCount(0);
-  await expect(panel.locator('[data-agreement-design]')).toBeEnabled();
   expect(await primary.evaluate(() => (window as any).AgreementStore.list())).toEqual([]);
   expect(await primary.evaluate(() => (window as any).proposalStorage.getAllProposals())).toEqual([]);
+  await primary.locator('#click-stack .click-stack__content-tabs').getByRole('tab', { name: 'Info', exact: true }).click();
   await expect(panel.locator('[data-agreement-action="plan"]')).toBeVisible();
   await expect(panel).toHaveClass(/is-hosted/);
   await expect(primary.getByRole('button', { name: 'Agreement details', exact: true })).toHaveCount(0);

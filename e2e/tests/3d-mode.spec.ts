@@ -349,6 +349,8 @@ test.describe('3D rendering and controls @features', () => {
     // The parcel's figures open in the Parcel section of the 3D click stack.
     await expect(page.locator('#three-click-stack .click-stack__section[data-kind="parcels"].is-expanded')).toBeVisible();
     const parcelPanel = page.locator('#three-click-stack .three-mode-parcel-panel');
+    await expect(page.locator('#three-click-stack [data-page="actions"]')).toHaveAttribute('aria-selected', 'true');
+    await page.locator('#three-click-stack [data-page="stats"]').click();
     await expect(parcelPanel).toBeVisible();
     // The sale price slider reprices the Built / Planned / Proposed comparison; the built value follows it.
     const priceSlider = parcelPanel.locator('[data-role="sale-slider"]');

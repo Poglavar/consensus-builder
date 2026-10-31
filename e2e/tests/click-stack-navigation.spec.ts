@@ -12,7 +12,9 @@ for (const width of [390, 1280]) {
     await showProposal(page, id);
     const stack = page.locator('#click-stack');
     const tabs = stack.locator('.is-expanded .click-stack__content-tabs');
-    await expect(tabs.locator('[data-page="design-overview"]')).toHaveAttribute('aria-selected', 'true');
+    await expect(tabs.getByRole('tab').first()).toHaveText('Actions');
+    await expect(tabs.locator('[data-page="actions"]')).toHaveAttribute('aria-selected', 'true');
+    await tabs.locator('[data-page="design-overview"]').click();
     await expect(stack.locator('.proposal-overview-facts')).toBeVisible();
     await page.evaluate(() => (window as any).setProposalDetailsPanelMinimized(document.getElementById('proposal-details-panel'), true));
     await expect(stack.locator('.proposal-overview-facts')).toBeVisible();
@@ -38,7 +40,11 @@ for (const width of [390, 1280]) {
       w.PlanWorkspace.save(plan);
       await w.ClickStack.showPlan({ cid: plan.cid, content: plan.content }, { designs: [proposal] });
     }, id);
-    await expect(tabs.locator('[data-page="relation-designs"]')).toHaveAttribute('aria-selected', 'true');
+    await expect(tabs.locator('[data-page="actions"]')).toHaveAttribute('aria-selected', 'true');
+    await tabs.locator('[data-page="info"]').click();
+    await expect(stack.locator('.click-stack__schedule-plan')).toBeVisible();
+    await expect(stack.locator('.click-stack__revision')).toBeVisible();
+    await tabs.locator('[data-page="relation-designs"]').click();
     await expect(stack.locator('.click-stack__membership-details .click-stack__link')).toHaveCount(1);
     await expect(tabs.locator('[data-page="relation-designs"]')).toHaveText('Designs (1)');
     await tabs.locator('[data-page="relation-agreements"]').click();
@@ -78,10 +84,15 @@ for (const width of [390, 1280]) {
     await expect(stack.locator('#tools-tab')).toBeVisible();
     await expect(stack.locator('#parcel-manual-selection')).toBeHidden();
     await expect(stack.locator('.multi-select-detect-btn')).toBeHidden();
-    await tabs.locator('[data-page="parcel-propose-tab"]').click();
+    await tabs.locator('[data-page="actions"]').click();
     await expect(stack.locator('.parcel-build-btn--park')).toBeVisible();
     await expect(stack.locator('#parcel-manual-selection')).toBeVisible();
     await expect(stack.locator('.multi-select-detect-btn')).toBeVisible();
+    await stack.locator('#parcel-manual-selection').click();
+    await expect(tabs.getByRole('tab', { name: 'Actions', exact: true })).toHaveCount(1);
+    await expect(stack.locator('[data-command="selection.clear"]')).toBeVisible();
+    await tabs.locator('[data-page="parcel-info-tab"]').click();
+    await expect(stack.locator('[data-command="selection.clear"]')).toBeVisible();
   });
 }
 
@@ -92,13 +103,15 @@ test('mobile agreement content tabs retain controls and exact plan references', 
   await page.evaluate(id => (window as any).ClickStack.showAgreement((window as any).AgreementStore.get(id)), agreement.id);
   const stack = page.locator('#click-stack');
   const tabs = stack.locator('.click-stack__content-tabs');
-  await expect(tabs.locator('[data-page="agreement-overview"]')).toHaveAttribute('aria-selected', 'true');
+  await expect(tabs.locator('[data-page="actions"]')).toHaveAttribute('aria-selected', 'true');
+  await tabs.locator('[data-page="agreement-overview"]').click();
   await expect(stack.locator('[data-agreement-action="plan"]')).toBeVisible();
   await tabs.locator('[data-page="agreement-inputs"]').click();
   await expect(stack.locator('[data-agreement-inspect="input"]')).toBeVisible();
   await tabs.locator('[data-page="agreement-rules"]').click();
-  await expect(stack.locator('[data-agreement-action="counter"]')).toBeVisible();
+  await expect(stack.locator('[data-agreement-action="counter"]')).toBeHidden();
   await tabs.locator('[data-page="actions"]').click();
+  await expect(stack.locator('[data-agreement-action="counter"]')).toBeVisible();
   await expect(stack.locator('[data-agreement-action="download"]')).toBeVisible();
   await expect(stack.locator('[data-agreement-action="compare"]')).toBeVisible();
   await tabs.locator('[data-page="agreement-overview"]').click();

@@ -6482,13 +6482,15 @@
             "show": "prikaži",
             "suggestedLayout": "Predloženi tlocrt",
             "suggestedSummary": "{{cores}} jezgro · {{apartments}} stanova po etaži · {{rooms}} prostorija",
-            "suggestedFlagged": "Podrazumevani tlocrt ne staje: {{reason}}"
+            "suggestedFlagged": "Podrazumevani tlocrt ne staje: {{reason}}",
+            "stats": "Statistika"
         },
         "proposalPanel": {
             "title": "Podaci o dizajnu",
             "parcelsLabel": "Parcele",
             "suggestedTotals": "Predloženi tlocrti: {{buildings}} zgrada · {{apartmentsPerFloor}} stanova po etaži · ukupno {{apartments}}",
-            "avgPerParcel": "Prosek / parceli"
+            "avgPerParcel": "Prosek / parceli",
+            "openActions2d": "Otvori radnje u 2D"
         },
         "isolation": {
             "singleParcel": "Izabrana parcela",
@@ -7806,7 +7808,8 @@
             "none": "Vlasnici bez dela",
             "several": "Vlasnici sa više delova",
             "noneList": "Bez dela:",
-            "severalList": "Više delova:"
+            "severalList": "Više delova:",
+            "heading": "Ishodi vlasništva"
         },
         "dialog": {
             "titleCreate": "Napravi sporazum",
@@ -7952,7 +7955,9 @@
                 "contributes": "Unosi",
                 "receives": "Dobija",
                 "change": "Neto promena",
-                "cash": "Novac"
+                "cash": "Novac",
+                "byParty": "Po stranci parcele",
+                "byPerson": "Po osobi"
             },
             "deadline": "Rok: {{date}}",
             "actions": {
@@ -7964,7 +7969,11 @@
             },
             "collapse": "Zatvori sporazum",
             "removeLocalConfirm": "Ukloniti ovaj sporazum sa ovog uređaja? Njegova dizajni ostaju na mapi. Objavljeni sporazum ostaje dostupan putem veze.",
-            "designs": "Dizajni u planu"
+            "designs": "Dizajni u planu",
+            "tabs": {
+                "info": "Info",
+                "decision": "Odluka"
+            }
         },
         "list": {
             "create": "Napravi sporazum",
@@ -8192,7 +8201,9 @@
     "planningViews": {
         "tabs": {
             "display": "Prikaz",
-            "compare": "Poređenje"
+            "compare": "Poređenje",
+            "options": "Opcije",
+            "rules": "Pravila"
         },
         "compare": {
             "stop": "Prekini poređenje",
@@ -8577,7 +8588,9 @@
         "openAgreement": "Detalji sporazuma",
         "geometryUnavailable": "Nije moguće učitati sve uključene dizajne. Njihov pun obuhvat nije moguće istaći.",
         "sharePlan": "Podeli plan",
-        "chooseSharePlan": "Koji plan želite da podelite?"
+        "chooseSharePlan": "Koji plan želite da podelite?",
+        "published": "Objavljeno",
+        "revision": "Verzija"
     },
     "clickStackNavigation": {
         "objects": "Objekti na ovoj lokaciji",

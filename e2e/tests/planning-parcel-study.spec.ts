@@ -137,6 +137,9 @@ test('Permitted keeps its envelope controls and ignores retired parcel-study lin
   await page.getByRole('button',{name:'Inspect permitted massing on parcel-test',exact:true}).click();
   const inspector=page.locator('#planning-inspector');
   await expect(inspector.getByText('Permitted envelope',{exact:true})).toBeVisible();
+  await expect(inspector.locator('[data-stack-page-key="info"]')).toBeVisible();
+  await expect(inspector.locator('[data-stack-page-key="options"] .planning-configurations__pick')).toHaveCount(3);
+  await expect(inspector.locator('[data-stack-page-key="rules"] .planning-limits')).toBeVisible();
   await expect(inspector.locator('.planning-configurations__pick')).toHaveCount(3);
   await expect(inspector.locator('[data-configuration="family4"]')).toContainText('No direct height limit');
   await expect(inspector.locator('[data-configuration="family2"]')).toContainText('Lot below the');

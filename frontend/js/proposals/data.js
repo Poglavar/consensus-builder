@@ -1379,7 +1379,7 @@ const multiParcelSelection = {
         }
 
         // Clear all tab content
-        ['info-content', 'propose-content', 'proposals-content'].forEach(id => {
+        ['info-content', 'propose-content', 'proposals-content', 'selected-parcels-content'].forEach(id => {
             const content = document.getElementById(id);
             if (content) content.innerHTML = '';
         });
@@ -1484,11 +1484,12 @@ const multiParcelSelection = {
             parcelButtons.style.display = '';
         }
 
-        // Clear the regular info content and use parcel-info-content for multi-parcel display
+        // Info remains a compact selection summary. Its parcel rows have their own page so that a
+        // long selection does not displace the actions users came here to start.
         document.getElementById('info-content').innerHTML = '';
         window.ParcelsUIParcelPanel.renderParcelHistory(null); // one parcel's history, not the selection's
 
-        const content = `
+        const infoContent = `
             <div class="multi-parcel-metrics">
                 <div class="metric-group">
                     <div class="metric-label">${totalEstimateLabel}:</div>
@@ -1499,9 +1500,9 @@ const multiParcelSelection = {
                     <div class="metric-value">${totalOwners}</div>
                 </div>
             </div>
-            <hr>
+        `;
+        const parcelsContent = `
             <div class="selected-parcels-section">
-                <div class="metric-label" data-i18n-key="panel.parcel.multi.selectedParcelsHeading">${tParcelMulti('panel.parcel.multi.selectedParcelsHeading', {}, 'Selected Parcels:')}</div>
                 <div class="selected-parcels-list">
                         ${parcelSummaries.map(({ parcelId, feature, area, estimate }) => {
             const isRoad = parcelId && typeof window.isRoadParcel === 'function' ? window.isRoadParcel(parcelId) : false;
@@ -1527,9 +1528,10 @@ const multiParcelSelection = {
             </div>
         `;
 
-        // Show multi-parcel content in the Info tab
-        document.getElementById('info-content').innerHTML = content;
-        const selectedParcelList = document.querySelector('.selected-parcels-list');
+        document.getElementById('info-content').innerHTML = infoContent;
+        document.getElementById('selected-parcels-content').innerHTML = parcelsContent;
+        window.ParcelsUIParcelPanel.setSelectedParcelsTabCount(parcelSummaries.length);
+        const selectedParcelList = document.querySelector('#selected-parcels-content .selected-parcels-list');
         if (selectedParcelList) {
             selectedParcelList.onpointerover = event => {
                 const item = event.target.closest?.('.selected-parcel-item');
@@ -1601,7 +1603,7 @@ const multiParcelSelection = {
         }
 
         // Clear all tab content areas
-        ['info-content', 'propose-content', 'proposals-content'].forEach(id => {
+        ['info-content', 'propose-content', 'proposals-content', 'selected-parcels-content'].forEach(id => {
             const content = document.getElementById(id);
             if (content) content.innerHTML = '';
         });

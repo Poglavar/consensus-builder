@@ -121,7 +121,12 @@
                 if (!page.nodes.includes(node)) page.nodes.push(node);
             };
             for (const node of [...body.children]) {
-                if (node === nav || node.classList.contains('click-stack__selector-wrap')) continue;
+                if (node === nav || node.hasAttribute('data-stack-persistent') || node.classList.contains('click-stack__selector-wrap')) continue;
+                const explicit = node.matches('[data-stack-page-key]') ? [node] : [...node.querySelectorAll('[data-stack-page-key]')];
+                if (explicit.length) {
+                    for (const page of explicit) add(page.dataset.stackPageKey, page.dataset.stackPageLabel, page);
+                    continue;
+                }
                 if (node.id === 'proposal-details-panel') {
                     for (const tab of node.querySelectorAll('[data-proposal-tab]')) {
                         const key = tab.dataset.proposalTab;
@@ -130,12 +135,12 @@
                     add('actions', t('actions'), node);
                 } else if (node.id === 'parcel-info-panel') {
                     for (const tab of node.querySelectorAll('[data-parcel-tab-id]')) {
+                        if (tab.hidden) continue;
                         const key = tab.dataset.parcelTabId;
-                        // The relationship list already represents designs on this one parcel.
-                        if (key === 'proposals-tab' && kind !== 'selection' && body.querySelector('.click-stack__choices[data-kind="designs"]')) continue;
                         const label = key === 'proposals-tab' ? `${t('designs')} (${tab.querySelector('.parcel-tab-count')?.textContent || '0'})`
+                            : key === 'selected-parcels-tab' ? `${t('parcels')} (${tab.querySelector('.selected-parcels-tab-count')?.textContent || '0'})`
                             : key === 'propose-tab' ? t('actions') : (tab.getAttribute('aria-label') || tab.textContent.trim());
-                        add(`parcel-${key}`, label, node, tab);
+                        add(key === 'propose-tab' ? 'actions' : `parcel-${key}`, label, node, tab);
                     }
                 } else if (node.classList.contains('click-stack__agreement-properties') && node.querySelector('[data-agreement-properties-tab]')) {
                     for (const tab of node.querySelectorAll('[data-agreement-properties-tab]')) {
@@ -143,6 +148,11 @@
                     }
                     add('actions', t('actions'), node);
                 } else if (node.classList.contains('click-stack__choices')) {
+                    // The native parcel list retains type, author and status alongside each design.
+                    if (node.dataset.kind === 'designs' && body.querySelector('#parcel-info-panel [data-parcel-tab-id="proposals-tab"]')) {
+                        node.setAttribute('data-stack-hidden', '');
+                        continue;
+                    }
                     if (node.classList.contains('click-stack__choices--tabs')) {
                         for (const panel of node.querySelectorAll(':scope > .click-stack__choices')) {
                             const tab = node.querySelector(`[aria-controls="${panel.id}"]`);
@@ -154,9 +164,12 @@
                 else add('info', t('info'), node);
             }
             if (!pages.length) return;
+            const priority = key => key === 'actions' ? 0 : /(^info$|overview$|info-tab$)/.test(key) ? 1
+                : /^(relation-|parcel-(proposals|selected-parcels)-tab)|^design-(inputs|outputs)$|^agreement-(inputs|outputs|persons)$/.test(key) ? 2
+                : key === 'parcel-tools-tab' ? 4 : 3;
+            pages.sort((a, b) => priority(a.key) - priority(b.key));
             if (!pages.some(page => page.key === active)) {
-                active = pages.find(page => page.key === (kind === 'plans' ? 'relation-designs' : 'design-overview'))?.key
-                    || pages.find(page => page.key === 'parcel-propose-tab')?.key || pages[0].key;
+                active = pages[0].key;
             }
             const next = pages.map(page => `${page.key}:${page.label}`).join('|');
             if (signature !== next) {
@@ -168,7 +181,10 @@
                     return tab;
                 }));
             }
-            if (nav.parentNode !== body) body.insertBefore(nav, body.firstChild);
+            if (nav.parentNode !== body) {
+                const persistent = [...body.children].filter(node => node.hasAttribute('data-stack-persistent'));
+                body.insertBefore(nav, persistent.length ? persistent[persistent.length - 1].nextSibling : body.firstChild);
+            }
             body.classList.add('has-content-tabs'); apply();
         }
         const observer = new win.MutationObserver(mutations => {

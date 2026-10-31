@@ -163,10 +163,10 @@
                 'css/buildout-clock.css?v=20261029-panes',
                 'css/lists.css?v=20261030-list-tokens',
                 'css/proposal-approval.css?v=20261020-approval-rules',
-                'css/agreement.css?v=20261027-agreement-tabs',
+                'css/agreement.css?v=20261031-inspector-organization',
                 'css/agreement-dialog.css?v=20261027-panel-buttons',
                 'css/mobile-sheets.css?v=20261027-style',
-                'css/click-stack-navigation.css?v=20261031-tabs',
+                'css/click-stack-navigation.css?v=20261031-inspector-organization',
                 'css/planning-views.css?v=20261029-loading-ring',
                 'css/three-sun.css',
                 'css/three-click-stack.css?v=20261027-stack-semantics',
@@ -1492,6 +1492,10 @@
                     aria-label="Info" title="Info" data-i18n-key="panel.parcel.tabInfo" data-i18n-attr="aria-label,title"><i
                         class="fas fa-circle-info" aria-hidden="true"></i></button>
                 <button type="button" class="cb-tab parcel-tab-btn" role="tab" aria-selected="false"
+                    aria-controls="selected-parcels-tab" data-parcel-tab-id="selected-parcels-tab" hidden
+                    onclick="(window.Parcels?.proposals?.switchParcelTab || window.switchParcelTab || function(){})(this, 'selected-parcels-tab')"><span
+                        class="parcel-tab-label" data-i18n-key="clickStackNavigation.parcels">Parcels</span><span class="cb-badge cb-badge--count selected-parcels-tab-count" hidden></span></button>
+                <button type="button" class="cb-tab parcel-tab-btn" role="tab" aria-selected="false"
                     aria-controls="proposals-tab" data-parcel-tab-id="proposals-tab"
                     onclick="(window.Parcels?.proposals?.switchParcelTab || window.switchParcelTab || function(){})(this, 'proposals-tab')"><span
                         class="parcel-tab-label" data-i18n-key="panel.parcel.tabProposals">Designs</span><span
@@ -1527,6 +1531,10 @@
                                     onclick="(window.animateFloodfillFromSelected || function(){})();">Detect block</button>
                             </div>
                         </div>
+                        <button id="parcelBuilderButton" class="btn btn-sm" type="button"
+                            onclick="(window.Parcels?.uiClaim?.openParcelBuilder || window.openParcelBuilder || function(){})()"
+                            title="Open Parcel Builder"><i class="fas fa-trowel-bricks" aria-hidden="true"></i><span
+                                data-i18n-key="panel.parcel.builderLabel">Parcel builder</span></button>
                     </div>
                     <div id="propose-content"></div>
                 </div>
@@ -1535,6 +1543,12 @@
                 <div id="proposals-tab" class="parcel-tab-content" role="tabpanel" hidden>
                     <!-- The parcel's proposals; js/parcels/ui/parcel-panel.js fills it. -->
                     <div id="proposals-content"></div>
+                </div>
+
+                <!-- The selected-parcel rows are separate from selection facts so the map remains
+                     readable while a long selection is inspected. Hidden for an ordinary parcel. -->
+                <div id="selected-parcels-tab" class="parcel-tab-content" role="tabpanel" hidden>
+                    <div id="selected-parcels-content"></div>
                 </div>
 
                 <!-- Tools Tab: the parcel NFT first (Mint is the tab's one primary action; claim.js
@@ -1559,10 +1573,6 @@
                                     data-i18n-key="panel.parcel.claimButton">Claim</span></button>
                         </div>
                         <div class="button-row button-row-1 cb-actions">
-                            <button id="parcelBuilderButton" class="btn" type="button"
-                                onclick="(window.Parcels?.uiClaim?.openParcelBuilder || window.openParcelBuilder || function(){})()"
-                                title="Open Parcel Builder"><i class="fas fa-trowel-bricks" aria-hidden="true"></i><span
-                                    data-i18n-key="panel.parcel.builderLabel">Parcel builder</span></button>
                             <button id="visualizeButton" class="btn" type="button"
                                 onclick="showAnimationModalForCurrentParcel()"><i class="fas fa-film" aria-hidden="true"></i><span
                                     data-i18n-key="panel.parcel.visualizeButton">Visualize</span></button>
@@ -2027,7 +2037,7 @@
             'js/planning/source-proposal.js',
             'js/planning/feed.js',
             'js/planning/parcel-assessment.js?v=20261021-permitted-envelopes',
-            'js/planning/views.js?v=20261030-built-title',
+            'js/planning/views.js?v=20261031-inspector-organization',
             'js/approval-link.js',
             'js/draft-link.js',
             'js/draft-preview.js?v=20261029-buildout',
@@ -2061,13 +2071,13 @@
             'js/parcels/parcel-id.js',
             'js/parcels/state.js',
             'js/parcels/styles.js?v=20261020-local-estimates',
-            'js/parcels/proposals.js',
+            'js/parcels/proposals.js?v=20261031-inspector-organization',
             'js/parcels/selection.js?v=20260404b',
             'js/parcels/ui/parcel-selection.js?v=20261020-local-estimates',
             'js/parcels/ui/box-select.js',
             'js/parcels/share-format.js',
             'js/parcels/parcel-set-proposals.js',
-            'js/parcels/ui/parcel-panel.js?v=20261027-stack-semantics',
+            'js/parcels/ui/parcel-panel.js?v=20261031-inspector-organization',
             'js/parcels/ui/locate.js',
             'js/parcels/ui/road.js?v=20261027-stack-semantics',
             'js/parcels/ui/labels.js',
@@ -2222,10 +2232,10 @@
             'js/selection-address.js?v=20261029-selection',
             'js/click-stack/click-stack-model.js?v=20261031-tabs',
             'js/click-stack/click-stack-relations.js?v=20261031-tab-counts',
-            'js/click-stack/click-stack-navigation.js?v=20261031-tab-counts',
+            'js/click-stack/click-stack-navigation.js?v=20261031-inspector-organization',
             'js/click-stack/click-stack-neighbours.js?v=20261028-neighbours',
             'js/click-stack/click-stack-hits.js?v=20261028-neighbours',
-            'js/click-stack/click-stack-panel.js?v=20261031-tab-counts',
+            'js/click-stack/click-stack-panel.js?v=20261031-inspector-organization',
             'js/buildout-clock.js?v=20261029-undated',
             'js/compare-unapplied.js?v=20261029-compare-status',
             'js/three-compare.js?v=20261030-compare-agreements',
@@ -2274,7 +2284,7 @@
             'js/agreement-ground.js?v=20261028-abstract-parties',
             'js/agreement-store.js',
             'js/agreement-dialog.js?v=20261030-plan-preview-apply',
-            'js/agreement-panel.js?v=20261030-plan-preview-apply',
+            'js/agreement-panel.js?v=20261031-inspector-organization',
             'js/agreement-list.js?v=20261027-agreement-tabs',
             'js/agreement-sync.js?v=20261030-plan-preview-apply',
             'js/suggested-layouts-2d.js?v=20261029-building-use',
@@ -2283,7 +2293,7 @@
             'js/proposals/sharing-routes.js?v=20261030-plan-preview-apply',
             'js/proposals/grain-score-rules.js',
             'js/proposals/core.js?v=20261022-agreement-chain',
-            'js/proposals/data.js?v=20261029-no-epoch',
+            'js/proposals/data.js?v=20261031-inspector-organization',
             'js/proposals/bootstrap.js?v=20261019-local-purchase',
             // bundle:start plan-analysis
             'js/proposals/plan-yield.js?v=20261029-building-use',

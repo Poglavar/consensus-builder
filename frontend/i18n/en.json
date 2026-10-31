@@ -6448,13 +6448,15 @@
             "show": "show",
             "suggestedLayout": "Suggested layout",
             "suggestedSummary": "{{cores}} core(s) · {{apartments}} apartments per storey · {{rooms}} rooms",
-            "suggestedFlagged": "No default layout fits: {{reason}}"
+            "suggestedFlagged": "No default layout fits: {{reason}}",
+            "stats": "Stats"
         },
         "proposalPanel": {
             "title": "Design info",
             "parcelsLabel": "Parcels",
             "suggestedTotals": "Suggested layouts: {{buildings}} buildings · {{apartmentsPerFloor}} apartments per storey · {{apartments}} in total",
-            "avgPerParcel": "Avg / parcel"
+            "avgPerParcel": "Avg / parcel",
+            "openActions2d": "Open actions in 2D"
         },
         "isolation": {
             "singleParcel": "Selected parcel",
@@ -7765,7 +7767,8 @@
             "none": "Owners with no piece",
             "several": "Owners with several pieces",
             "noneList": "No piece:",
-            "severalList": "Several pieces:"
+            "severalList": "Several pieces:",
+            "heading": "Ownership outcomes"
         },
         "dialog": {
             "titleCreate": "Create agreement",
@@ -7911,7 +7914,9 @@
                 "contributes": "Contributes",
                 "receives": "Receives",
                 "change": "Net change",
-                "cash": "Cash"
+                "cash": "Cash",
+                "byParty": "By parcel party",
+                "byPerson": "By person"
             },
             "deadline": "Deadline: {{date}}",
             "actions": {
@@ -7923,7 +7928,11 @@
             },
             "collapse": "Close agreement",
             "removeLocalConfirm": "Remove this agreement from this device? Its designs stay on the map. Any published agreement remains available through its link.",
-            "designs": "Designs in the plan"
+            "designs": "Designs in the plan",
+            "tabs": {
+                "info": "Info",
+                "decision": "Decision"
+            }
         },
         "list": {
             "create": "Create agreement",
@@ -8146,7 +8155,9 @@
     "planningViews": {
         "tabs": {
             "display": "Display",
-            "compare": "Compare"
+            "compare": "Compare",
+            "options": "Options",
+            "rules": "Rules"
         },
         "compare": {
             "stop": "Stop comparing",
@@ -8525,7 +8536,9 @@
         "openAgreement": "Agreement details",
         "geometryUnavailable": "Could not load all included designs. Their full extent cannot be highlighted.",
         "sharePlan": "Share plan",
-        "chooseSharePlan": "Which plan do you want to share?"
+        "chooseSharePlan": "Which plan do you want to share?",
+        "published": "Published",
+        "revision": "Revision"
     },
     "clickStackNavigation": {
         "objects": "Objects at this location",

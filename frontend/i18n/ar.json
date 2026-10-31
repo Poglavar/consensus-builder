@@ -1817,7 +1817,8 @@
             "none": "مالكون بلا جزء",
             "several": "مالكون بعدة أجزاء",
             "noneList": "بلا جزء:",
-            "severalList": "عدة أجزاء:"
+            "severalList": "عدة أجزاء:",
+            "heading": "نتائج الملكية"
         },
         "chain": {
             "actions": {
@@ -2039,12 +2040,18 @@
                 "contributes": "يساهم بـ",
                 "receives": "يتلقى",
                 "change": "صافي التغير",
-                "cash": "النقد"
+                "cash": "النقد",
+                "byParty": "حسب طرف القطعة",
+                "byPerson": "حسب الشخص"
             },
             "deadline": "الموعد النهائي: {{date}}",
             "collapse": "إغلاق الاتفاق",
             "removeLocalConfirm": "هل تريد إزالة هذا الاتفاق من هذا الجهاز؟ تبقى تصاميمه على الخريطة. ويظل أي اتفاق منشور متاحا عبر رابطه.",
-            "designs": "التصاميم في المخطط"
+            "designs": "التصاميم في المخطط",
+            "tabs": {
+                "info": "معلومات",
+                "decision": "القرار"
+            }
         },
         "addTo": {
             "title": "إضافة إلى اتفاق",
@@ -4801,13 +4808,15 @@
             "show": "إظهار",
             "suggestedLayout": "توزيع مقترح",
             "suggestedSummary": "{{cores}} نواة · {{apartments}} شقة لكل طابق · {{rooms}} غرفة",
-            "suggestedFlagged": "لا يلائم المكان أي توزيع افتراضي: {{reason}}"
+            "suggestedFlagged": "لا يلائم المكان أي توزيع افتراضي: {{reason}}",
+            "stats": "الإحصاءات"
         },
         "proposalPanel": {
             "parcelsLabel": "قطع الأراضي",
             "title": "معلومات التصميم",
             "suggestedTotals": "التوزيعات المقترحة: {{buildings}} مبنى · {{apartmentsPerFloor}} شقة لكل طابق · {{apartments}} إجمالا",
-            "avgPerParcel": "المتوسط / قطعة عقارية"
+            "avgPerParcel": "المتوسط / قطعة عقارية",
+            "openActions2d": "فتح الإجراءات في العرض ثنائي الأبعاد"
         },
         "ai": {
             "download": "تنزيل",
@@ -5536,7 +5545,9 @@
         "openAgreement": "تفاصيل الاتفاق",
         "geometryUnavailable": "تعذر تحميل جميع التصاميم المدرجة. لا يمكن تمييز نطاقها الكامل.",
         "sharePlan": "مشاركة المخطط",
-        "chooseSharePlan": "أي مخطط تريد مشاركته؟"
+        "chooseSharePlan": "أي مخطط تريد مشاركته؟",
+        "published": "منشور",
+        "revision": "الإصدار"
     },
     "agentDialog": {
         "logoutButton": "تسجيل الخروج",
@@ -8555,7 +8566,9 @@
     "planningViews": {
         "tabs": {
             "display": "العرض",
-            "compare": "مقارنة"
+            "compare": "مقارنة",
+            "options": "الخيارات",
+            "rules": "القواعد"
         },
         "compare": {
             "stop": "أوقف المقارنة",

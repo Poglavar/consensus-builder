@@ -59,18 +59,32 @@ the content-sized panel. List previews and **Focus** return to map-visible mode.
 uses the header's close button, Escape, or the existing map selection behavior.
 
 Both desktop and mobile use one **content tab bar** at the top of the expanded body,
-above any instance selector. Existing panel tabs are promoted into this bar, retaining
-their editors, controls, loading behavior and state:
+above any instance selector. Selection controls and a bare-ground explanation stay above
+the bar. Actions is first and opens by default wherever available, followed by Info,
+relationship lists, specialized pages and Tools. Existing panel tabs are promoted into
+this bar, retaining their editors, controls, loading behavior and state:
 
-- Designs: Info, Actions, Input parcels / Output parcels for a parcel layout,
+- Designs: Actions, Info, Input parcels / Output parcels for a parcel layout,
   and tabs for related Plans and parcels where present. The model view keeps its figures
-  and sliders in Info; Actions opens the same design's Actions tab in 2D.
-- Plans: Designs, Agreements, Actions and Info. Agreements always has a tab, including
+  and sliders together in Stats, with metadata and the record in Info; Actions opens the
+  same design's Actions tab in 2D.
+- Plans: Actions, Info, Designs and Agreements. Info shows publication state and revision;
+  schedule editing sits beside the timeline. Agreements always has a tab, including
   an empty state when no agreement references the exact Plan revision.
-- Cadastral/formed parcels: Actions, Info, Tools and applicable relationship lists such
-  as Designs. A selected set keeps its native whole-set design list.
-- Agreements: Overview, Input parcels, Rules, Actions and, for owners' agreements,
-  Output parcels and Persons. Voting and chain controls remain with their overview.
+- Cadastral/formed parcels: Actions, Info, Designs, applicable parcel relationships and Tools.
+  The native Designs list retains type, author, status and producing-design information.
+  It does not infer consent or allocation outcomes from a design; those belong to agreements.
+  Selected sets have a Parcels tab for their rows; Clear and Done remain above every page.
+  Parcel builder has one home in Actions. Info orders identity and measurements before
+  ownership, then provenance and history. In the model view, Actions opens the same parcel
+  in 2D; figures, comparison and price controls stay together in Stats.
+- Agreements: Actions, Info, Input parcels, Output parcels when present, Persons for owners'
+  agreements, Decision and Rules. Info links to the plan's Designs list. Decision groups
+  status, publication, approvals, voting and chain controls. Outputs contains allocations;
+  Persons contains ownership outcomes and separate By parcel party / By person disclosures.
+- Built: Info with facts and collapsed source evidence. Permitted adds Options for
+  configurations and Rules for limits, conditions and frontage assumptions.
+- Ground: context above Actions, without a separate Info page for one sentence.
 
 Changing content tabs remembers the active page per object and the scroll position
 within that mounted section. Full-screen/map-visible switching preserves its contents.
@@ -163,13 +177,13 @@ replace one with its own (the model view reads buildings from its scene).
     counts cadastral inputs. Switching peer designs replaces this
     ground context while retaining the plan and design choices. Unapplied designs have no live
     formed outputs; inspecting them does not create any.
-  - Plan: meaning, name, included designs, combined map highlight, Share plan and Create agreement.
+  - Plan: revision, publication state, included designs, combined map highlight, Share plan and Create agreement.
     Agreement: the full agreement record, including decision/allocation terms, publication,
     approvals and other applicable actions, with the inherited plan extent. There is no separate
     properties dock. Editing opens the existing modal and returns to this section.
-    Overview contains the plan, designs, publication and applicable voting/chain controls. Input
-    parcels, Output parcels, Persons and Rules have their own tabs; community agreements omit the
-    allocation and person tabs. Tabs retain their selection through refresh. Hover/focus previews
+    Info links to the plan and its design list; Decision contains publication and applicable
+    voting/chain controls. Input parcels, Output parcels, Persons and Rules have their own tabs;
+    community agreements omit Persons, and empty output lists have no tab. Tabs retain their selection through refresh. Hover/focus previews
     spatial rows, and clicking frames and highlights them without leaving the agreement. Person
     rows inspect their contributed and allocated land. Hash-only outputs remain non-spatial.
   - Design: the proposal's actions panel itself (2026-10-23), without its own − and ×: an
@@ -196,12 +210,12 @@ replace one with its own (the model view reads buildings from its scene).
     **Select multiple parcels** (Manually / Detect block) sits only in Actions, before
     **Custom site**. Custom site starts an editable working boundary; it does not change the
     parcel layout and remains available for drawing a design over that boundary.
-    **Actions · Info · Tools** are the parcel panel tabs promoted into the content bar. Actions
+    **Actions · Info · Designs · Tools** are the parcel panel tabs promoted into the content bar. Actions
     opens first; each object remembers its selected content tab. Info explains source and formed
     ground provenance. Actions offers selection of current parcels for further design work. Source selection always
     outlines the immutable repository geometry, including while collapsed.
-    The panel's Proposals tab is replaced by the relationship Designs tab when that list is present. The selected-set section retains Proposals for the whole
-    set. Parcel information and proposal actions open only inside the click panel; there is no
+    The panel's native Designs tab is the canonical rich list for both single parcels and selected
+    sets; the simple relationship list is suppressed when it is present. Parcel information and proposal actions open only inside the click panel; there is no
     automatic companion parcel panel beside a selected proposal. Hosted Built/Permitted inspectors have no close
     button: their section heading collapses them or another section takes over.
 - The selected object has a pulsing map outline, retained while collapsed and protected from hover.
@@ -223,8 +237,8 @@ replace one with its own (the model view reads buildings from its scene).
 - `frontend/js/click-stack/click-stack-panel.js`: the panel; hosts the existing panels
   (planning inspector, proposal card, parcel info panel) inside the expanded section.
 - In Manual or Shift multi-selection, **Selected parcels (N)** replaces the point-specific
-  sections. It shows measured total area and hosts the parcel Design / Info / Proposals / Tools tabs for the
-  whole selection through the shared content bar. Clear keeps selection mode active, including
+  sections. It shows measured total area and hosts Actions / Info / Parcels / Designs / Tools for the
+  whole selection through the shared content bar. Parcels appears for multi-parcel sets. Clear keeps selection mode active, including
   an empty selection; Done exits selection mode and retains the selected parcels. The header can
   fold while map clicks keep changing the selection. There is no bottom selection tray. Detect
   block and Custom site remain available in Actions.

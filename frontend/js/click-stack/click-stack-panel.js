@@ -486,7 +486,7 @@
             } else if (kind === 'permitted') {
                 global.PlanningViews.selectAt(instance.id, state.latlng);
             } else if (kind === 'selection') {
-                renderCommands(body, 'parcel-selection', global.UiCommands.createBrowserContext(global));
+                renderCommands(body, 'parcel-selection', global.UiCommands.createBrowserContext(global)).setAttribute('data-stack-persistent', '');
                 if (section.count) global.multiParcelSelection.showSelectionInPanel();
                 else {
                     unhost();
@@ -508,6 +508,7 @@
                 const text = global.GroundMenuModel.describeGround(facts.kind);
                 const line = doc.createElement('p');
                 line.className = 'click-stack__facts';
+                line.setAttribute('data-stack-persistent', '');
                 line.textContent = global.i18n.t(text.factsKey);
                 body.appendChild(line);
                 renderCommands(body, 'ground-menu', global.UiCommands.createBrowserContext(global, { ground: facts, parcel: null }));

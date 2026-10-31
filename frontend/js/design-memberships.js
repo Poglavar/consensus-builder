@@ -260,12 +260,14 @@
             button.addEventListener('click', run); return button;
         };
         host.classList.add('click-stack__plan');
-        const intro = node('p', 'click-stack__facts', t(kind === 'plans' ? 'planMeaning' : 'agreementMeaning'));
-        host.appendChild(intro);
         if (!instance.membershipPlaceholder) {
             const summary = node('div', 'click-stack__summary');
-            summary.appendChild(node('h3', 'click-stack__title', instance.label));
-            if (instance.draft) summary.appendChild(node('span', 'click-stack__facts', t('draft')));
+            summary.appendChild(node('p', 'click-stack__facts', instance.draft ? t('draft') : t('published')));
+            const revision = node('p', 'click-stack__facts', `${t('revision')}: `);
+            const cid = node('code', 'click-stack__revision', instance.cid);
+            cid.title = instance.cid;
+            revision.appendChild(cid);
+            summary.appendChild(revision);
             host.appendChild(summary);
             const actions = node('div', 'cb-actions click-stack__actions');
             const share = action(t('sharePlan'), async () => {
@@ -312,21 +314,21 @@
                 .catch(error => win.showStyledAlert(error.message));
             const scheduleButton = action(win.i18n.t('planDialog.schedule'), () => editSchedule());
             scheduleButton.className = 'btn click-stack__schedule-plan';
-            actions.appendChild(scheduleButton);
             const download = action(win.i18n.t('common.download'), () => win.BusyControl.track(download,
                 () => win.PlanFileUI.plan({ cid: instance.cid, content: instance.content }, instance.localDesigns || []))
                 .catch(error => win.showStyledAlert(error.message)));
             download.className = 'btn click-stack__download-plan';
             actions.appendChild(download);
             host.appendChild(actions);
+            const strip = node('div', 'click-stack__schedule');
+            strip.appendChild(scheduleButton);
             if (instance.content?.schedule && win.PlanDialog?.scheduleStrip) {
-                const strip = node('div', 'click-stack__schedule');
                 const titles = new Map((instance.localDesigns || []).flatMap(record => {
                     try { return [[win.DesignRecord.cidOf(record), record.title]]; } catch (_) { return []; }
                 }));
                 strip.appendChild(win.PlanDialog.scheduleStrip(instance.content, { titles, onPick: editSchedule }));
-                host.appendChild(strip);
             }
+            host.appendChild(strip);
             const details = node('div', 'click-stack__membership-details');
             host.appendChild(details);
             const load = async () => {

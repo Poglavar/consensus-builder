@@ -66,7 +66,7 @@
         if (!activeButton) {
             return;
         }
-        if (tabId !== 'info-tab') global.multiParcelSelection?.clearInfoListHighlight?.();
+        if (tabId !== 'selected-parcels-tab') global.multiParcelSelection?.clearInfoListHighlight?.();
 
         // The selected tab is an ARIA state (cb-tabs, css/primitives.css), never a class.
         const tabButtons = panel.querySelectorAll('.parcel-tab-btn');
@@ -80,6 +80,12 @@
         const selectedTab = document.getElementById(tabId);
         if (selectedTab) {
             selectedTab.hidden = false;
+        }
+        // Contextual links use the same switch; keep the promoted bar in sync as well.
+        const host = panel.closest('.has-content-tabs');
+        const key = tabId === 'propose-tab' ? 'actions' : `parcel-${tabId}`;
+        if (host && host.querySelector(`[data-page="${key}"]`)?.getAttribute('aria-selected') !== 'true') {
+            global.ClickStackNavigation?.selectPage(host, key);
         }
 
         if (tabId === 'tools-tab') {

@@ -2,6 +2,10 @@
 .click-stack__object-tabs, .click-stack__size, .click-stack__dismiss { display: none; }
 .click-stack__content-tabs { flex: 0 0 auto; overflow-x: auto; flex-wrap: nowrap; position: sticky; top: 0; z-index: 2; background: var(--cb-surface); }
 .click-stack__content-tabs > .cb-tab { flex: 0 0 auto; white-space: nowrap; }
+.click-stack__revision { display: inline-block; max-width: 100%; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; vertical-align: bottom; }
+.parcel-panel-record code { display: block; max-width: 100%; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.has-content-tabs [data-stack-persistent] { flex: 0 0 auto; }
+#click-stack .has-content-tabs #proposal-details-panel.is-hosted > .panel-header { display: none; }
 :is(#click-stack, #three-click-stack) .has-content-tabs [data-stack-hidden] { display: none; }
 .has-content-tabs .proposal-details-tabs,
 .has-content-tabs .agreement-properties-tabs,
@@ -13,6 +17,14 @@
 .has-content-tabs .click-stack__agreement-properties:not([data-stack-page="actions"]) .panel-body > .agreement-panel-actions { display: none; }
 .has-content-tabs .click-stack__relation-label { display: none; }
 :is(#click-stack, #three-click-stack) .has-content-tabs .click-stack__strip { max-height: none; }
+.has-content-tabs .selected-parcels-list { max-height: none; }
+.has-content-tabs .parcel-proposals-list .proposal-item-header { display: grid; grid-template-columns: minmax(0, 1fr) auto; }
+.has-content-tabs .parcel-proposals-list .proposal-item-title { grid-column: 1; }
+.has-content-tabs .parcel-proposals-list .proposal-item-badges { grid-column: 1; grid-row: 2; justify-content: flex-start; }
+.has-content-tabs .parcel-proposals-list .proposal-item-header > .object-list__open { grid-column: 2; grid-row: 1 / 3; }
+.has-content-tabs .proposal-item-pick { display: block; max-width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.has-content-tabs .proposal-item-id { min-width: 0; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.has-content-tabs .selected-parcel-item .parcel-number { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
 
 @media (max-width: 767.98px) {
     :is(#click-stack, #three-click-stack).visible {

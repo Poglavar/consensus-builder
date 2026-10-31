@@ -163,10 +163,13 @@ export async function expandStackSection(page: Page, kind: string): Promise<void
   await expect(row).toHaveAttribute('aria-expanded', 'true');
 }
 
-// The parcel panel's tab buttons (Info, Propose, Proposals, Tools). Hosted in the stack it shows
-// Info, Propose and Tools: the Designs section lists the parcel's proposals. The parcel section
+// The parcel panel's tab buttons (Actions, Info, Designs, Tools). Hosted in the stack it retains
+// the rich Designs list and its original controls. The parcel section
 // shows only the actions the panel does not offer (Compare, Use as site) as [data-command] buttons.
-export const parcelTab = (page: Page, tabId: string) => page.locator(`#parcel-info-panel [data-parcel-tab-id="${tabId}"]:visible, #click-stack .click-stack__content-tabs [data-page="parcel-${tabId}"]`);
+export const parcelTab = (page: Page, tabId: string) => {
+  const key = tabId === 'propose-tab' ? 'actions' : `parcel-${tabId}`;
+  return page.locator(`#parcel-info-panel [data-parcel-tab-id="${tabId}"]:visible, #click-stack .click-stack__content-tabs [data-page="${key}"]`);
+};
 
 // Before / after folds the click stack to its rows; the Design row shows its card again. A
 // stack that is not folded is left as it is.
@@ -320,7 +323,7 @@ export async function showProposal(page: Page, id: string): Promise<void> {
   await page.evaluate(id => (window as any).showProposalDetails(id), id);
   if (await page.locator('body').evaluate(el => el.classList.contains('three-mode-active'))) {
     await page.locator('#three-click-stack [data-page="actions"]').click();
-    await page.locator('#three-click-stack').getByRole('button', { name: 'Design actions', exact: true }).click();
+    await page.locator('#three-click-stack').getByRole('button', { name: 'Open actions in 2D', exact: true }).click();
   }
   await expect(stackSection(page, 'designs').locator('#proposal-details-panel')).toBeVisible();
   await expect(page.locator('#planning-inspector')).toBeHidden();

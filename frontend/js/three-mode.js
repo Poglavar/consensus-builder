@@ -1025,6 +1025,38 @@
             ${slider('construction-slider', 'construction-label', prices.construction)}`;
     }
 
+    function panelPage(key, label, content) {
+        return `<section class="three-mode-parcel-page" data-stack-page-key="${key}" data-stack-page-label="${escapeHtml(label)}">${content}</section>`;
+    }
+
+    // The 3D Design page keeps the same basic identity facts as 2D; geometry and money comparison
+    // stay in Stats so the map-facing summary does not become a second details panel.
+    function proposalInfoHtml(proposal, lines) {
+        const type = window.ClickStackRelations?.designType?.({ proposal }, window);
+        const state = window.__proposalDisplayState?.of?.(proposal, {
+            applied: proposalApplied3D(proposal), serial: window.DesignSync?.publishedCid?.(proposal)
+        });
+        const translate = (key, fallback, params) => threeI18n(key, fallback, params);
+        const rung = state?.rung && window.__proposalDisplayState?.rungLabel
+            ? window.__proposalDisplayState.rungLabel(state.rung, translate) : '';
+        const badges = [
+            type?.label ? `<span class="cb-badge cb-badge--${escapeHtml(type.tone || 'neutral')}">${escapeHtml(type.label)}</span>` : '',
+            state?.applied ? `<span class="cb-badge cb-badge--applied">${escapeHtml(threeI18n('panel.proposal.mapStatus.applied', 'Applied'))}</span>` : '',
+            rung ? `<span class="cb-badge">${escapeHtml(rung)}</span>` : ''
+        ].filter(Boolean).join('');
+        const author = typeof proposal.author === 'string' && proposal.author.trim() ? proposal.author.trim() : '';
+        const created = proposal.createdAt ? new Date(proposal.createdAt) : null;
+        const createdLabel = created && Number.isFinite(created.getTime()) ? CbFormat.formatDate(created) : '';
+        const id = proposal.proposalId || proposal.id || '';
+        return `${badges ? `<div class="proposal-badges-row">${badges}</div>` : ''}
+            ${proposal.description ? `<p class="parcel-panel-subnote">${escapeHtml(proposal.description)}</p>` : ''}
+            ${author ? `<p class="parcel-panel-subnote">${escapeHtml(threeI18n('panel.proposal.metrics.author', 'Author:'))} ${escapeHtml(author)}</p>` : ''}
+            ${lines.map(line => `<p class="parcel-panel-subnote">${escapeHtml(line)}</p>`).join('')}
+            ${id ? `<details class="parcel-panel-record"><summary>${escapeHtml(threeI18n('panel.proposal.detailsSections.record', 'Design record'))}</summary>
+                ${createdLabel ? `<p class="parcel-panel-subnote">${escapeHtml(threeI18n('panel.proposal.metrics.created', 'Created:'))} ${escapeHtml(createdLabel)}</p>` : ''}
+                <code title="${escapeHtml(String(id))}">${escapeHtml(String(id))}</code></details>` : ''}`;
+    }
+
     function panelLabels() {
         return {
             built: threeI18n('threeMode.parcelPanel.built', 'Built'),
@@ -1058,13 +1090,14 @@
             <p class="parcel-panel-subnote parcel-panel-suggested">${escapeHtml(threeI18n('threeMode.parcelPanel.suggestedLayout', 'Suggested layout'))}: ${escapeHtml(suggestedText)}</p>` : '';
         // The full cadastral id: the stack's row shows the short number.
         panel.innerHTML = `
-            <p class="parcel-panel-subnote parcel-id-text">${escapeHtml(String(parcelId))}</p>
-            ${suggestedRow}
-            ${metricsTableHtml(L, {
+            ${panelPage('info', threeI18n('clickStackNavigation.info', 'Info'), `
+                <p class="parcel-panel-subnote parcel-id-text">${escapeHtml(String(parcelId))}</p>
+                ${suggestedRow}`)}
+            ${panelPage('stats', threeI18n('threeMode.parcelPanel.stats', 'Stats'), metricsTableHtml(L, {
                 built: { volume: m.builtVolume, floorArea: m.builtFloorArea },
                 planned,
                 proposed: hasProposed ? { volume: m.proposedVolume, floorArea: m.proposedFloorArea } : null
-            })}
+            }))}
         `;
 
         wireSliderAndGain(panel);
@@ -1122,13 +1155,13 @@
         const suggestedLine = suggestedProposalPanelText(proposal);
         if (suggestedLine) lines.push(suggestedLine);
         panel.innerHTML = `
-            ${lines.map(line => `<p class="parcel-panel-subnote">${escapeHtml(line)}</p>`).join('')}
-            ${metricsTableHtml(L, {
+            ${panelPage('info', threeI18n('clickStackNavigation.info', 'Info'),
+                proposalInfoHtml(proposal, lines))}
+            ${panelPage('stats', threeI18n('threeMode.parcelPanel.stats', 'Stats'), `${metricsTableHtml(L, {
                 built: { volume: summary.builtVolume, floorArea: summary.builtFloorArea },
                 planned,
                 proposed: hasProposed ? { volume: summary.proposedVolume, floorArea: summary.proposedFloorArea } : null
-            })}
-            <div class="parcel-panel-avg" data-role="avg-gain"></div>
+            })}<div class="parcel-panel-avg" data-role="avg-gain"></div>`)}
         `;
         wireSliderAndGain(panel);
         return true;
@@ -1658,6 +1691,19 @@
         invalidateThreeView();
     }
 
+    function appendMapActions(body, select) {
+        const actions = document.createElement('button');
+        actions.type = 'button';
+        actions.className = 'btn';
+        actions.textContent = threeI18n('threeMode.proposalPanel.openActions2d', 'Open actions in 2D');
+        actions.addEventListener('click', () => window.BusyControl.track(actions, async () => {
+            await window.requestMapMode('2d');
+            await select();
+            window.ClickStackNavigation?.selectPage(document.querySelector('#click-stack .is-selected .click-stack__body'), 'actions');
+        }).catch(error => window.showStyledAlert(error.message)));
+        body.appendChild(actions);
+    }
+
     // What each section means in the scene, and what fills its body.
     const clickStackAdapter = {
         activate(kind, instance, body) {
@@ -1674,19 +1720,11 @@
                 if (proposal && updateProposalInfoPanel(proposal, getProposalParcelIdSet(proposal))) body.appendChild(parcelInfoPanelEl);
                 // Editing actions use the same Design section in the map view, never a second
                 // inspector floating beside this scene's figures.
-                const actions = document.createElement('button');
-                actions.type = 'button';
-                actions.className = 'btn';
-                actions.textContent = threeI18n('planningViews.proposalActions', 'Design actions');
-                actions.addEventListener('click', async () => {
-                    await window.requestMapMode('2d');
-                    window.ClickStack.showDesign(instance.id);
-                    window.ClickStackNavigation?.selectPage(document.querySelector('#click-stack .click-stack__body'), 'actions');
-                });
-                body.appendChild(actions);
+                appendMapActions(body, () => window.ClickStack.showDesign(instance.id));
             } else if (kind === 'parcels' || kind === 'formed') {
                 isolateParcel(instance.id);
                 if (updateParcelInfoPanel(instance.id)) body.appendChild(parcelInfoPanelEl);
+                appendMapActions(body, () => window.ClickStack.showParcel(instance.feature || getParcelFeatureById(instance.id)));
             } else if (kind === 'built') {
                 hostInspector(body);
                 withStackDriving(() => window.PlanningViews.inspectBuilding(instance.feature, instance.id, { hosted: true }));

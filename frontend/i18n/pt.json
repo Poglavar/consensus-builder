@@ -1729,7 +1729,8 @@
             "none": "Proprietários sem porção",
             "several": "Proprietários com várias porções",
             "noneList": "Sem porção:",
-            "severalList": "Várias porções:"
+            "severalList": "Várias porções:",
+            "heading": "Resultados de propriedade"
         },
         "chain": {
             "actions": {
@@ -1941,12 +1942,18 @@
                 "contributes": "Contribui",
                 "receives": "Recebe",
                 "change": "Variação líquida",
-                "cash": "Dinheiro"
+                "cash": "Dinheiro",
+                "byParty": "Por parte da parcela",
+                "byPerson": "Por pessoa"
             },
             "deadline": "Prazo: {{date}}",
             "collapse": "Fechar acordo",
             "removeLocalConfirm": "Remover este acordo deste dispositivo? Os respetivos projetos permanecem no mapa. Qualquer acordo publicado continua disponível através da sua ligação.",
-            "designs": "Projetos do plano"
+            "designs": "Projetos do plano",
+            "tabs": {
+                "info": "Informações",
+                "decision": "Decisão"
+            }
         },
         "addTo": {
             "title": "Adicionar ao acordo",
@@ -4624,13 +4631,15 @@
             "show": "mostrar",
             "suggestedLayout": "Distribuição sugerida",
             "suggestedSummary": "{{cores}} núcleo(s) · {{apartments}} apartamentos por piso · {{rooms}} divisões",
-            "suggestedFlagged": "Não é possível acomodar uma distribuição predefinida: {{reason}}"
+            "suggestedFlagged": "Não é possível acomodar uma distribuição predefinida: {{reason}}",
+            "stats": "Estatísticas"
         },
         "proposalPanel": {
             "parcelsLabel": "Parcelas",
             "title": "Informações do projeto",
             "suggestedTotals": "Distribuições sugeridas: {{buildings}} edifícios · {{apartmentsPerFloor}} apartamentos por piso · {{apartments}} no total",
-            "avgPerParcel": "Média / parcela"
+            "avgPerParcel": "Média / parcela",
+            "openActions2d": "Abrir ações em 2D"
         },
         "ai": {
             "download": "Descarregar",
@@ -5351,7 +5360,9 @@
         "openAgreement": "Detalhes do acordo",
         "geometryUnavailable": "Não foi possível carregar todos os projetos incluídos. Não é possível realçar toda a sua extensão.",
         "sharePlan": "Partilhar plano",
-        "chooseSharePlan": "Que plano pretende partilhar?"
+        "chooseSharePlan": "Que plano pretende partilhar?",
+        "published": "Publicado",
+        "revision": "Versão"
     },
     "agentDialog": {
         "logoutButton": "Terminar sessão",
@@ -8304,7 +8315,9 @@
     "planningViews": {
         "tabs": {
             "display": "Visualização",
-            "compare": "Comparar"
+            "compare": "Comparar",
+            "options": "Opções",
+            "rules": "Regras"
         },
         "compare": {
             "stop": "Parar de comparar",

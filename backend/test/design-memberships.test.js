@@ -269,7 +269,11 @@ describe('read-only parent inspection', () => {
         const session = { groups: { plans: { loading: false, error: false, nextOffset: null } }, details: vi.fn(async () => ({ members: [], features: [] })) };
         mountSection(host, 'plans', { id: 'plan-cid', cid: 'plan-cid', label: 'Plan title' }, session, f.win);
         await vi.waitFor(() => expect(host.querySelector('.click-stack__membership-details')).toBeTruthy());
-        expect(host.textContent).toContain('Plan meaning');
+        expect(host.textContent).not.toContain('Plan meaning');
+        expect(host.querySelector('.click-stack__title')).toBeNull();
+        expect(host.querySelector('.click-stack__revision').textContent).toBe('plan-cid');
+        expect(host.querySelector('.click-stack__schedule').querySelector('.click-stack__schedule-plan')).toBeTruthy();
+        expect(host.querySelector('.click-stack__actions').querySelector('.click-stack__schedule-plan')).toBeNull();
         expect(host.querySelector('.click-stack__actions').querySelector('a')).toBeNull();
         expect(host.querySelector('.click-stack__share-plan')).toBeTruthy();
     });

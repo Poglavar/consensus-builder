@@ -3,6 +3,7 @@ import { describe, expect, it, vi } from 'vitest';
 import { createRequire } from 'node:module';
 import { readFileSync } from 'node:fs';
 import vm from 'node:vm';
+import { makeDocument } from './helpers/fake-dom.js';
 import { parse } from '@babel/parser';
 import { gupRecord, readZagrebParcel } from '../planning/providers/zagreb-gup.js';
 import { nycPilotSource, readNycPilotParcel } from '../planning/providers/nyc-pilot.js';
@@ -142,13 +143,46 @@ describe('shared building and proposal representations', () => {
         // Authored records keep their selection projection, but their visible reader belongs to
         // the click panel. A restored selection must clear the former standalone inspector.
         const inspectorSource = source.slice(inspector.start, inspector.end);
-        const panel = { hidden: false, replaceChildren: vi.fn() };
+        const panel = { hidden: false, replaceChildren: vi.fn(), classList: { contains: () => false } };
         const renderContext = vm.createContext({ selected: () => proposal, inspector: panel, isPhoto: () => false });
         vm.runInContext(inspectorSource, renderContext);
         renderContext.renderInspector();
         expect(panel.hidden).toBe(true);
         expect(panel.replaceChildren).toHaveBeenCalledOnce();
-        expect(inspectorSource).toContain('if (sourceResult && item.volumes.length) inspector.append(assessment);');
+        expect(inspectorSource).toContain("const rules = sourceResult ? page('rules', root.i18n.t('planningViews.tabs.rules')) : null;");
+        expect(inspectorSource).toContain('if (sourceResult && item.volumes.length) (rules || info).append(assessment);');
+    });
+    it('separates a permitted result into Info, Options and Rules pages without moving evidence out of Info', () => {
+        const source = readFileSync(new URL('../../frontend/js/planning/views.js', import.meta.url), 'utf8');
+        const body = parse(source).program.body.find(node => node.type === 'ExpressionStatement').expression.callee.body.body;
+        const declaration = body.find(node => node.type === 'FunctionDeclaration' && node.id.name === 'renderInspector');
+        const document = makeDocument();
+        const inspector = document.createElement('aside'); inspector.className = 'planning-inspector'; document.body.append(inspector);
+        const item = {
+            role: 'permitted', title: 'Permitted fixture', parcelEnvelope: false, areas: [], volumes: [{}],
+            assessment: { meaning: 'source-result', refresh: null, status: null, reason: null, current: true },
+            metrics: { floorAreaM2: 100, heightM: 12, conditional: null, footprintM2: 40 },
+            constraints: [{ quantity: 'height', value: 12, unit: 'm', evidence: null }], configurations: [{ id: 'family', metrics: { heightM: 12, footprintM2: 40 } }],
+            source: { label: 'Fixture source', computedAt: null, fetchedAt: null, solverVersion: null, parcel: null, url: null }, sourceEvidence: null
+        };
+        const element = (tag, className, text) => {
+            const node = document.createElement(tag); if (className) node.className = className; if (text !== undefined) node.textContent = text; return node;
+        };
+        const t = key => ({ sourceProposal: 'Permitted massing', sourceEvidenceBadge: 'Source evidence', approximate: 'Approximate',
+            conditionsTitle: 'Conditions', conditionsNote: 'Rules need checking', sourceDetails: 'Source and evidence',
+            floorArea: 'Floor area', height: 'Height', footprintArea: 'Footprint', close: 'Close', info: 'Info' }[key] || key);
+        const root = { i18n: { t: key => ({ 'clickStackNavigation.info': 'Info', 'planningViews.tabs.options': 'Options', 'planningViews.tabs.rules': 'Rules' }[key] || key) },
+            CbFormat: { formatLength: value => `${value} m`, formatNumber: value => String(value), formatArea: value => `${value} m²`, formatDate: value => String(value) } };
+        const context = vm.createContext({ selected: () => item, inspector, root, element, t, parcelOf: () => null,
+            inspectorBadgeKey: () => 'sourceEvidenceBadge', area: value => `${value} m²`, number: value => String(value), resultLabel: value => String(value),
+            permittedFeatures: () => ({ configuration: null }), renderConfigurations: () => element('section', 'planning-configurations'), scenarioLabel: value => value,
+            sourceRecord: async () => [], selectRecord() {}, select() {}, referenceStatus: null, document });
+        vm.runInContext(source.slice(declaration.start, declaration.end), context);
+        context.renderInspector();
+        expect(inspector.querySelector('[data-stack-page-key="info"] .planning-evidence')).not.toBeNull();
+        expect(inspector.querySelector('[data-stack-page-key="options"] .planning-configurations')).not.toBeNull();
+        expect(inspector.querySelector('[data-stack-page-key="rules"] .planning-limits')).not.toBeNull();
+        expect(inspector.querySelector('[data-stack-page-key="info"] .planning-limits')).toBeNull();
     });
     it('does not clear an authored selection when source massing becomes unavailable at a wider zoom', async () => {
         const source = readFileSync(new URL('../../frontend/js/planning/views.js', import.meta.url), 'utf8');
@@ -194,7 +228,7 @@ describe('shared building and proposal representations', () => {
             sceneWork: { forEach: async (items, fn) => items.forEach(fn) },
             buildingDisplayPolicy: { resolveBuildingRenderParts: () => ({ detailed: true, remainder: true, demolished: true }) },
             appendBuildingFloorPlans: () => false, building3DHeightMeters: () => 8, buildMeshFromBuilding3D: mesh,
-            polygonFeatureToMeshes: () => [mesh()], ensureNearbyProposalBuildings() {}, console
+            polygonFeatureToMeshes: () => [mesh()], tagBuildingStoreys() {}, ensureNearbyProposalBuildings() {}, console
         });
         vm.runInContext(source.slice(declaration.start, declaration.end), context);
         await context.buildNearbyProposalBuildings3D(group, {});
