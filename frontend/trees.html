@@ -1,0 +1,33 @@
+<!doctype html>
+<!-- A small, read-only tree inventory viewer on an OpenStreetMap basemap. -->
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Zagreb trees</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="vendor/leaflet-1.9.4/leaflet.css">
+  <link rel="stylesheet" href="css/primitives.css">
+  <link rel="stylesheet" href="css/tree-viewer.css">
+  <script defer src="vendor/leaflet-1.9.4/leaflet.js"></script>
+  <script defer src="js/ui/busy-control.js"></script>
+  <script type="module" src="js/tree-viewer.mjs"></script>
+</head>
+<body>
+  <header class="toolbar">
+    <div class="identity"><span class="tree-symbol" aria-hidden="true">♧</span><div><h1>Zagreb trees</h1><p>Zrinjevac tree inventory · OpenStreetMap</p></div></div>
+    <nav aria-label="Map actions">
+      <button class="action" id="reset" type="button">Your area</button>
+      <button class="action" id="refresh" type="button">Refresh trees</button>
+    </nav>
+  </header>
+  <main id="map" aria-label="Map of tree locations"></main>
+  <aside class="map-card" aria-label="Tree layer information">
+    <label class="layer-toggle"><input type="checkbox" id="show-trees" checked><span class="tree-dot" aria-hidden="true"></span>Tree locations</label>
+    <p id="status" role="status" aria-live="polite">Loading trees…</p>
+    <p class="hint">Select a dot for its ID and coordinates. Pan to explore.</p>
+    <a href="https://gis.zrinjevac.hr/" target="_blank" rel="noopener">Source: Zrinjevac ↗</a>
+  </aside>
+  <noscript>This map needs JavaScript enabled.</noscript>
+</body>
+</html>
