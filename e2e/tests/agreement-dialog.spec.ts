@@ -9,7 +9,7 @@ import { openCity, showProposal, stubBasemapTiles, PARCEL_ID } from '../helpers/
 import { fillNativeDateTime, selectNativeOption } from '../helpers/controls';
 import {
   OWNER, applyLayout, agreementPanel, storedAgreements, createFromPlan, openStackAgreement, openAgreementsList, agreementListItem, openListedAgreement,
-  closeAgreementPanel, panelStatus, editorOpen, editorClosed, editorSave, editorCancel, editorClose,
+  closeAgreementPanel, panelStatus, editorOpen, editorClosed, editorSave, editorCancel, editorClose, openAgreementContentTab,
 } from '../helpers/agreements';
 import type { Page } from '@playwright/test';
 
@@ -98,9 +98,9 @@ test('an agreement over an applied parcel layout is created from its plan, compa
   await expect(page.locator('body')).toHaveClass(/\bagreement-panel-open\b/);
   await expect(page.locator('#agreement-panel-title')).toHaveText(TITLE);
   const body = agreementPanel(page).locator('[data-agreement-region="body"]');
-  await expect(body.locator(`[data-agreement-design="${layoutId}"]`)).toBeEnabled();
-  // Switching to a community consultation clears the settlement terms authored above.
-  await expect(body.locator('[data-agreement-piece]')).toHaveCount(0);
+  await openAgreementContentTab(page, 'Info');
+  await expect(body.locator('[data-agreement-plan-design-count]')).toHaveText('Designs in the plan (1)');
+  // The saved record below remains the source of truth for community settlement terms.
   await expect(body).toContainText('Decided by a community vote · Non-binding');
   await expect(body).toContainText(/Deadline: .*2030/);
 
@@ -126,6 +126,7 @@ test('an agreement over an applied parcel layout is created from its plan, compa
   expect(saved.outputs.map((output: any) => output.hash)).toEqual(hashes);
 
   // Before / after over the agreement's input parcels, on and off.
+  await openAgreementContentTab(page, 'Actions');
   const compare = body.locator('[data-agreement-action="compare"]');
   const beforeMap = page.locator('#map .map-compare__before');
   await expect(compare).toHaveAttribute('aria-pressed', 'false');
@@ -205,9 +206,11 @@ test('an agreement whose design is taken off the map warns that it does not matc
   const layoutTitle = await page.evaluate(id => String((window as any).proposalStorage.getProposal(id).title), layoutId);
   const list = await openAgreementsList(page);
   await openListedAgreement(list, stored[0].id);
+  await openAgreementContentTab(page, 'Decision');
   const stale = await panelStatus(page, 'stale');
   await expect(stale.locator('.agreement-panel-status-text'))
     .toHaveText(`Does not match the map: a design is not applied (${layoutTitle}). Propose and Before / after need it to match.`);
+  await openAgreementContentTab(page, 'Actions');
   await expect(agreementPanel(page).locator('[data-agreement-action="compare"]')).toBeDisabled();
   expect(await storedAgreements(page)).toHaveLength(1);
 
@@ -220,6 +223,7 @@ test('an agreement whose design is taken off the map warns that it does not matc
   await expect(ask).toHaveCount(0);
   await expect(page.locator('.agreement-editor-modal')).toHaveCount(0);
   expect(await isLayoutApplied(page, layoutId)).toBe(false);
+  await openAgreementContentTab(page, 'Decision');
   await panelStatus(page, 'stale');
 
   // The warning's Apply plan designs puts the design back; the warning goes and Before / after returns.

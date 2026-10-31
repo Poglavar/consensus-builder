@@ -32,6 +32,7 @@ test('AI scene captures real pixels and height map, validates prompt, retries ge
   await openCity(page);
   await createBuilding(page);
   await page.locator('#mode-realistic-toggle').click();
+  await expect(page.locator('#mode-realistic-toggle')).not.toHaveClass(/mode-btn-loading/, { timeout: 15_000 });
   await expect(page.locator('#three-container canvas')).toBeVisible();
   await page.locator('#mode-ai-toggle').click();
   const modal = page.locator('#ai-scene-overlay');

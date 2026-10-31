@@ -18,7 +18,8 @@ const osmLifeWays = {
 };
 
 // The sky light (hemisphere) and the Life group's vehicle lamps (three-life.js creates its instanced
-// meshes in the order bodies, glass, wheels, heads, torsos, arms, legs, lamps, pools).
+// meshes in the order bodies, glass, wheels, heads, torsos, arms, legs, lamps, pools; optional
+// animal meshes are appended after them).
 async function nightState(page: Page) {
   return page.evaluate(() => {
     const scene = (window as any).getThreeModeInternals().scene;
@@ -72,7 +73,7 @@ test('night darkens the ground light and switches on headlights; noon switches t
   await expect(page.locator('#sun-button')).toHaveAttribute('data-sun', 'day');
   await expect.poll(async () => (await nightState(page)).lampsVisible).toBe(false);
   const noon = await nightState(page);
-  expect(noon.lifeMeshes).toBe(9);
+  expect(noon.lifeMeshes).toBeGreaterThanOrEqual(9);
   expect(noon.poolsVisible).toBe(false);
 
   // 22:00 in June: the sun is well below the horizon.

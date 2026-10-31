@@ -4,30 +4,40 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Zagreb trees</title>
+  <title>Trees · Consensus Builder</title>
   <link rel="icon" href="data:,">
-  <link rel="stylesheet" href="vendor/leaflet-1.9.4/leaflet.css">
+  <link rel="stylesheet" href="css/tokens.css">
   <link rel="stylesheet" href="css/primitives.css">
+  <link rel="stylesheet" href="css/page-chrome.css">
+  <link rel="stylesheet" href="vendor/fontawesome-6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="vendor/leaflet-1.9.4/leaflet.css">
   <link rel="stylesheet" href="css/tree-viewer.css">
   <script defer src="vendor/leaflet-1.9.4/leaflet.js"></script>
   <script defer src="js/ui/busy-control.js"></script>
   <script type="module" src="js/tree-viewer.mjs"></script>
 </head>
-<body>
-  <header class="toolbar">
-    <div class="identity"><span class="tree-symbol" aria-hidden="true">♧</span><div><h1>Zagreb trees</h1><p>Zrinjevac tree inventory · OpenStreetMap</p></div></div>
+<body class="cb-page tree-viewer">
+  <header class="cb-page-header">
+    <span class="cb-page-header__brand"><img class="cb-page-header__logo" src="images/consensus-builder-logo.png" alt="" width="28" height="28"><span>Consensus Builder</span></span>
+    <div class="cb-page-header__title"><h1>Trees</h1></div>
+    <a class="cb-link cb-back-link" href="/"><i class="fa-solid fa-arrow-left" aria-hidden="true"></i><span>Back to the map</span></a>
+  </header>
+  <section class="toolbar" aria-label="Tree viewer controls">
+    <div class="identity"><span class="tree-symbol" aria-hidden="true">♧</span><div><p class="tree-viewer__title">Zagreb trees</p><p>Zrinjevac tree inventory · OpenStreetMap</p></div></div>
     <nav aria-label="Map actions">
       <button class="action" id="reset" type="button">Your area</button>
       <button class="action" id="refresh" type="button">Refresh trees</button>
     </nav>
-  </header>
-  <main id="map" aria-label="Map of tree locations"></main>
-  <aside class="map-card" aria-label="Tree layer information">
-    <label class="layer-toggle"><input type="checkbox" id="show-trees" checked><span class="tree-dot" aria-hidden="true"></span>Tree locations</label>
-    <p id="status" role="status" aria-live="polite">Loading trees…</p>
-    <p class="hint">Select a dot for its ID and coordinates. Pan to explore.</p>
-    <a href="https://gis.zrinjevac.hr/" target="_blank" rel="noopener">Source: Zrinjevac ↗</a>
-  </aside>
+  </section>
+  <div class="tree-map-shell">
+    <main id="map" aria-label="Map of tree locations"></main>
+    <aside class="map-card" aria-label="Tree layer information">
+      <label class="layer-toggle"><input type="checkbox" id="show-trees" checked><span class="tree-dot" aria-hidden="true"></span>Tree locations</label>
+      <p id="status" role="status" aria-live="polite">Loading trees…</p>
+      <p class="hint">Select a dot for its ID and coordinates. Pan to explore.</p>
+      <a class="cb-link" href="https://gis.zrinjevac.hr/" target="_blank" rel="noopener">Source: Zrinjevac ↗</a>
+    </aside>
+  </div>
   <noscript>This map needs JavaScript enabled.</noscript>
 </body>
 </html>

@@ -358,6 +358,12 @@ describe('configuration display logic', () => {
         });
         expect(scene.permittedRepresentationControl(null)).toMatchObject({ disabled: true });
     });
+    it('detects a same-ID source metadata change while ignoring object key order', () => {
+        const fixed = { id: 'cached-option', capabilities: { volumes: true }, scenario: 'cached' };
+        const study = { scenario: 'cached', capabilities: { volumes: true }, parcelStudy: 'direct-dimensions.v1', id: 'cached-option' };
+        expect(scene.sourceCatalogSignature([fixed])).toBe(scene.sourceCatalogSignature([{ scenario: 'cached', id: 'cached-option', capabilities: { volumes: true } }]));
+        expect(scene.sourceCatalogSignature([fixed])).not.toBe(scene.sourceCatalogSignature([study]));
+    });
     it('restores the chosen representation when switching back to a source with alternatives', () => {
         const source = { parcelStudy: 'direct-dimensions.v1', capabilities: { areas: true, volumes: false } };
         const store = scene.createStore({ permittedForm: 'bound' });

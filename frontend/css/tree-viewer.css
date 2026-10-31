@@ -1,37 +1,37 @@
-/* Tree viewer theme and semantic components: toolbar, actions, map card and status. */
-:root { color-scheme: light; --surface: #fffefb; --text: #21372e; --muted: #5d6c64; --accent: #19774d; --border: #d9e2db; --error: #a03025; --radius: 14px; font-family: system-ui, sans-serif; color: var(--text); }
-* { box-sizing: border-box; }
-body { margin: 0; height: 100dvh; display: flex; flex-direction: column; background: var(--surface); }
-.toolbar { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 16px 24px; border-bottom: 1px solid var(--border); z-index: 1000; background: var(--surface); }
+/* Tree viewer components use the shared page palette. */
+.tree-viewer { height: 100dvh; display: flex; flex-direction: column; background: var(--cb-surface); color: var(--cb-text); }
+.tree-viewer *, .tree-viewer *::before, .tree-viewer *::after { box-sizing: border-box; }
+.tree-viewer .toolbar { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 16px 24px; border-bottom: 1px solid var(--cb-line); background: var(--cb-surface); }
 .identity { display: flex; align-items: center; gap: 12px; }
-.tree-symbol { display: grid; place-items: center; width: 42px; height: 42px; border-radius: 50%; background: #e5f1e8; color: var(--accent); font-size: 32px; }
-h1 { margin: 0; font-size: 21px; letter-spacing: -.5px; }
-.identity p { margin: 3px 0 0; color: var(--muted); font-size: 12px; }
-nav { display: flex; gap: 8px; }
-.action { min-height: 42px; padding: 8px 14px; border: 1px solid var(--border); border-radius: 9px; background: var(--surface); color: var(--text); font: inherit; font-size: 13px; cursor: pointer; }
-.action:hover { background: #edf4ee; }
-:focus-visible { outline: 3px solid #cf861b; outline-offset: 3px; }
-#map { flex: 1; min-height: 0; background: #e5e9df; }
-.map-card { position: absolute; z-index: 800; top: 108px; left: 24px; max-width: min(320px, calc(100vw - 94px)); background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: 0 4px 20px #243b2220; padding: 16px 18px; font-size: 13px; }
+.tree-symbol { display: grid; place-items: center; width: 42px; height: 42px; border-radius: var(--cb-radius-pill); background: var(--cb-success-soft); color: var(--cb-success); font-size: 32px; }
+.tree-viewer__title { margin: 0; font-size: 21px; font-weight: var(--cb-weight-semibold); letter-spacing: -.5px; }
+.identity p { margin: 3px 0 0; color: var(--cb-text-muted); font-size: var(--cb-text-sm); }
+.tree-viewer nav { display: flex; gap: var(--cb-space-2); }
+.action { min-height: 42px; padding: var(--cb-space-2) 14px; border: 1px solid var(--cb-line); border-radius: var(--cb-radius-md); background: var(--cb-surface); color: var(--cb-text); font: inherit; font-size: var(--cb-text-md); cursor: pointer; }
+.action:hover { background: var(--cb-success-soft); }
+.tree-viewer :focus-visible { outline: 3px solid var(--cb-focus); outline-offset: 3px; }
+.tree-map-shell { position: relative; flex: 1; min-height: 0; }
+#map { width: 100%; height: 100%; background: var(--cb-surface-3); }
+.map-card { position: absolute; z-index: var(--cb-z-map-raised); top: 24px; left: 24px; max-width: min(320px, calc(100vw - 94px)); background: var(--cb-surface); border: 1px solid var(--cb-line); border-radius: var(--cb-radius-lg); box-shadow: var(--cb-shadow-md); padding: 16px 18px; font-size: var(--cb-text-md); }
 .layer-toggle { display: flex; gap: 8px; align-items: center; font-weight: 650; cursor: pointer; }
-input { accent-color: var(--accent); width: 17px; height: 17px; margin: 0; }
-.tree-dot { width: 11px; height: 11px; border: 2px solid #146340; background: #58b278; border-radius: 50%; }
-.tree-marker { stroke: #146340; stroke-width: 1.5; fill: #58b278; fill-opacity: .9; }
+input { accent-color: var(--cb-success); width: 17px; height: 17px; margin: 0; }
+.tree-dot { width: 11px; height: 11px; border: 2px solid var(--cb-success-hover); background: var(--cb-success); border-radius: var(--cb-radius-pill); }
+.tree-marker { stroke: var(--cb-success-hover); stroke-width: 1.5; fill: var(--cb-success); fill-opacity: .9; }
 .map-card p { margin: 10px 0; }
-.hint { color: var(--muted); line-height: 1.5; font-size: 12px; }
-a { color: var(--accent); }
-#status[data-state="error"] { color: var(--error); }
-#status[data-state="loading"] { color: var(--muted); }
+.hint { color: var(--cb-text-muted); line-height: 1.5; font-size: var(--cb-text-sm); }
+.map-card .cb-link { color: var(--cb-success); }
+#status[data-state="error"] { color: var(--cb-danger); }
+#status[data-state="loading"] { color: var(--cb-text-muted); }
 .tree-popup h2 { font-size: 16px; margin: 0 0 8px; }
 .tree-popup p { margin: 6px 0; }
 .tree-popup a { display: inline-block; margin-top: 5px; }
-.leaflet-interactive:focus { outline: 3px solid #cf861b; }
+.leaflet-interactive:focus { outline: 3px solid var(--cb-focus); }
 @media (max-width: 540px) {
   .toolbar { padding: 12px 14px; flex-wrap: wrap; gap: 10px; }
-  h1 { font-size: 19px; }
+  .tree-viewer__title { font-size: 19px; }
   .identity { gap: 8px; }
   nav { width: 100%; }
   .action { flex: 1; }
-  .map-card { top: 148px; left: 12px; padding: 12px; }
+  .map-card { top: 12px; left: 12px; padding: 12px; }
   .hint { display: none; }
 }

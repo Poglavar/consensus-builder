@@ -5361,7 +5361,6 @@
         "geometryUnavailable": "Não foi possível carregar todos os projetos incluídos. Não é possível realçar toda a sua extensão.",
         "sharePlan": "Partilhar plano",
         "chooseSharePlan": "Que plano pretende partilhar?",
-        "published": "Publicado",
         "revision": "Versão"
     },
     "agentDialog": {
@@ -8316,8 +8315,7 @@
         "tabs": {
             "display": "Visualização",
             "compare": "Comparar",
-            "options": "Opções",
-            "rules": "Regras"
+            "options": "Opções"
         },
         "compare": {
             "stop": "Parar de comparar",

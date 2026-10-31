@@ -8184,8 +8184,7 @@
         "tabs": {
             "display": "Vista",
             "compare": "Comparar",
-            "options": "Opciones",
-            "rules": "Reglas"
+            "options": "Opciones"
         },
         "compare": {
             "stop": "Dejar de comparar",
@@ -8565,7 +8564,6 @@
         "geometryUnavailable": "No se pudieron cargar todos los diseños incluidos. No se puede resaltar su extensión completa.",
         "sharePlan": "Compartir plan",
         "chooseSharePlan": "¿Qué plan quieres compartir?",
-        "published": "Publicado",
         "revision": "Versión"
     },
     "clickStackNavigation": {

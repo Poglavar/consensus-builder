@@ -259,7 +259,9 @@ test.describe('Single-building placement and immutable replacement @features', (
     await page.locator(`${EDITOR} [data-placement="snap"]`).uncheck();
     // The imported pair initially overlaps. Separate their land before expecting both
     // independent proposals to remain applied; overlapping proposals replace each other.
-    await dragActive(page, 190);
+    // At the import zoom the two footprints are about one building-width apart; clear that width
+    // as well as their initial overlap before asking the map to review each separate land take.
+    await dragActive(page, 320);
     await waitForLandTakeReview(page);
     const before = await editorDesign(page);
     expect(await page.evaluate(buildings => (window as any).turf.intersect(buildings[0], buildings[1]), before.buildings)).toBeNull();

@@ -30,7 +30,7 @@ async function appliedBuildingDesign(page: Page, parcelId: string): Promise<stri
 
 // Row houses over the sample block: an urban rule with one house per parcel.
 async function createRowHouses(page: Page): Promise<string> {
-  await openParcel(page, 'info', 'HR-335754-1234');
+  await openParcel(page, 'proposals', 'HR-335754-1234');
   await page.locator('.multi-select-detect-btn').click();
   await expect.poll(() => page.evaluate(() => (window as any).multiParcelSelection.selectedParcels.size)).toBeGreaterThan(1);
   await closeParcel(page);

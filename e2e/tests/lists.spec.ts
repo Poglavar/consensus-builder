@@ -7,7 +7,16 @@ for (const width of [1280, 390]) {
     test.setTimeout(180_000);
     await page.setViewportSize({ width, height: 844 }); await stubBasemapTiles(page); await openCity(page);
     const agreement = await proposeOverPark(page, { title: 'Residents agreement' });
-    await page.locator('#proposals-button').click();
+    const openLists = async () => {
+      // On phones the contextual stack owns the screen while a selection is open.
+      // Dismiss it before moving to the bottom-navigation Lists surface.
+      if (width < 768 && await page.locator('#click-stack').isVisible()) {
+        await page.keyboard.press('Escape');
+        await expect(page.locator('#click-stack')).toBeHidden();
+      }
+      await page.locator('#proposals-button').click();
+    };
+    await openLists();
     const sheet = page.locator('#proposals-sheet');
     await expect(page.locator('#proposals-button')).toHaveAccessibleName('Lists');
     await expect(sheet.getByRole('tab')).toHaveCount(3);
@@ -53,7 +62,7 @@ for (const width of [1280, 390]) {
     await form.getByRole('button', { name: 'Create plan', exact: true }).click();
     await expect(page.locator('#click-stack .click-stack__section[data-kind="plans"] .click-stack__row')).toHaveAttribute('aria-expanded', 'true');
     await page.keyboard.press('Escape');
-    await page.locator('#proposals-button').click(); await sheet.getByRole('tab', { name: 'Plans', exact: true }).click();
+    await openLists(); await sheet.getByRole('tab', { name: 'Plans', exact: true }).click();
     await expect(sheet.locator('#designs-browse')).toBeHidden();
     const planRow = sheet.locator('#designs-plans .lists-item').filter({ hasText: 'Residents plan' });
     await expect(sheet.locator('#lists-actions').getByRole('button', { name: 'Import plan file', exact: true })).toBeVisible();
@@ -106,7 +115,7 @@ for (const width of [1280, 390]) {
     await expect(page.locator('.leaflet-container.is-list-previewing')).toHaveCount(0);
     await expect(page.locator('#click-stack')).toContainText('Residents plan');
     await expect(page.locator('#click-stack').getByRole('button', { name: 'Delete draft', exact: true })).toHaveCount(0);
-    await page.locator('#proposals-button').click();
+    await openLists();
     await sheet.getByRole('searchbox').fill('Residents');
     await sheet.getByRole('tab', { name: 'Agreements', exact: true }).click();
     await expect(sheet.getByRole('searchbox')).toHaveValue('Residents');
@@ -126,7 +135,7 @@ for (const width of [1280, 390]) {
     await expect(sheet).toBeHidden();
     await expect(page.locator('#click-stack')).toContainText('Residents agreement');
     await expect(page.locator('[data-agreement-action="delete"]')).toHaveCount(0);
-    await page.locator('#proposals-button').click();
+    await openLists();
     await expect(agreementRow).toBeVisible();
     // Download: the agreement with its plan's file, which Import agreement file reads back below.
     const agreementDownload = page.waitForEvent('download');

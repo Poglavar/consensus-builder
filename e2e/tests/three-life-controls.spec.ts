@@ -92,8 +92,8 @@ test.describe('3D people and traffic layer @features', () => {
     await enter3D(page);
     await expect.poll(async () => (await lifeScene(page)).groupVisible).toBe(true);
     let population = await lifeScene(page);
-    // Seven body/figure draws plus vehicle lamps and headlight pools (hidden by day).
-    expect(population.meshCount).toBe(9);
+    // The nine base meshes remain present; optional animal meshes may follow them.
+    expect(population.meshCount).toBeGreaterThanOrEqual(9);
     expect(population.instanceCounts[0]).toBeGreaterThan(1); // vehicle bodies
     expect(population.instanceCounts[3]).toBeGreaterThan(1); // heads: people and any riders
     expect(population.instanceCounts[4]).toBeGreaterThan(1); // walking/riding figures
@@ -206,6 +206,7 @@ test.describe('3D people and traffic layer @features', () => {
     await enter3D(page);
     await openLifeLayers(page);
     const toggle = page.getByLabel('Show or hide schematic people and vehicles moving through the 3D view');
+    await toggle.scrollIntoViewIfNeeded();
     const hit = await toggle.evaluate((element: HTMLInputElement) => {
       const row = element.closest('label') as HTMLElement;
       const rect = row.getBoundingClientRect();

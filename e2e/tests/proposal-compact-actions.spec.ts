@@ -73,7 +73,7 @@ test.describe('compact proposal card actions @features', () => {
     await expect(footer.locator('.btn-duplicate-design')).toBeVisible();
     await expect(footer.locator('.btn-edit-geometry')).toBeVisible();
     await expect(footer.locator('.btn-share-proposal')).toBeVisible();
-    await expect(panel.locator('[data-proposal-tab="overview"]')).toHaveAttribute('aria-selected', 'true');
+    await expect(page.locator('#click-stack [data-page="actions"]')).toHaveAttribute('aria-selected', 'true');
     await expect(panel.locator('[data-proposal-tab="details"]')).toHaveCount(0);
     const mapButton = footer.locator(`#proposal-action-btn-${proposalId}`);
     await expect(mapButton).toBeVisible();

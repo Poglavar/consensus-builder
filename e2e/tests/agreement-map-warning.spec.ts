@@ -2,7 +2,7 @@
 // the map shows one warning naming why, and its Apply plan designs button puts the design back.
 import { test, expect } from '../helpers/fixtures';
 import { openCity } from '../helpers/runtime';
-import { agreementPanel, panelStatus, proposeOverPark } from '../helpers/agreements';
+import { agreementPanel, openAgreementDecision, panelStatus, proposeOverPark } from '../helpers/agreements';
 
 test('an agreement warns only when it does not match the map, and Apply plan designs restores it', async ({ mockApi: page }) => {
   test.setTimeout(120_000);
@@ -16,12 +16,14 @@ test('an agreement warns only when it does not match the map, and Apply plan des
 
   await page.evaluate(async proposalId => { await (window as any).ProposalManager.unapplyProposal(proposalId, { silent: true, suppressCameraMove: true }); }, parkId);
   expect(await isApplied()).toBe(false);
+  await openAgreementDecision(page);
   const warning = await panelStatus(page, 'stale');
-  await expect(warning.locator('.agreement-panel-status-text'))
+  const visibleWarning = panel.locator('[data-agreement-status]');
+  await expect(visibleWarning.locator('.agreement-panel-status-text'))
     .toHaveText(`Does not match the map: a design is not applied (${parkTitle}). Before / after needs it to match.`);
   await expect(panel.locator('[data-agreement-action="compare"]')).toBeDisabled();
 
-  await warning.locator('[data-agreement-action="apply-designs"]').click();
+  await visibleWarning.locator('[data-agreement-action="apply-designs"]').click();
   await expect.poll(isApplied, { timeout: 30_000 }).toBe(true);
   await panelStatus(page, 'current');
   await expect(panel.locator('[data-agreement-action="compare"]')).toBeEnabled();

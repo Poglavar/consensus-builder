@@ -224,7 +224,7 @@ async function reopenGeometryEditor(page: Page, proposalId: string, editorRoot: 
 // Picks the given parcels by hand: the first from its Details panel, the rest by clicking them with
 // Select multiple on, and opens the Build palette for the selection.
 async function selectParcelsByHand(page: Page, ids: string[]): Promise<void> {
-  await openParcel(page, 'info', ids[0]);
+  await openParcel(page, 'proposals', ids[0]);
   await page.locator('#parcel-manual-selection').click();
   await closeParcel(page);
   for (const id of ids.slice(1)) {

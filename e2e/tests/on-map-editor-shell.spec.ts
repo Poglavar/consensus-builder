@@ -36,7 +36,7 @@ async function openEditor(page: Page, kind: 'block' | 'single' | 'detached' | 'r
   if (kind === 'row') {
     const blockParcels = ['HR-335754-1234', 'HR-335754-1235', 'HR-335754-1236', 'HR-335754-1237', 'HR-335754-1238'];
     await page.evaluate(async ids => (window as any).CadastralParcelRepository.ensureIds(ids), blockParcels);
-    await openParcel(page, 'info', blockParcels[0]);
+    await openParcel(page, 'proposals', blockParcels[0]);
     await page.locator('.multi-select-detect-btn').click();
     await expect.poll(() => page.evaluate(() => (window as any).multiParcelSelection.selectedParcels.size)).toBeGreaterThan(1);
     await closeParcel(page);

@@ -149,7 +149,7 @@ describe('shared building and proposal representations', () => {
         renderContext.renderInspector();
         expect(panel.hidden).toBe(true);
         expect(panel.replaceChildren).toHaveBeenCalledOnce();
-        expect(inspectorSource).toContain("const rules = sourceResult ? page('rules', root.i18n.t('planningViews.tabs.rules')) : null;");
+        expect(inspectorSource).toContain("const rules = sourceResult ? page('rules', root.i18n.t('proposalDrafts.approval.policyType')) : null;");
         expect(inspectorSource).toContain('if (sourceResult && item.volumes.length) (rules || info).append(assessment);');
     });
     it('separates a permitted result into Info, Options and Rules pages without moving evidence out of Info', () => {
@@ -171,7 +171,7 @@ describe('shared building and proposal representations', () => {
         const t = key => ({ sourceProposal: 'Permitted massing', sourceEvidenceBadge: 'Source evidence', approximate: 'Approximate',
             conditionsTitle: 'Conditions', conditionsNote: 'Rules need checking', sourceDetails: 'Source and evidence',
             floorArea: 'Floor area', height: 'Height', footprintArea: 'Footprint', close: 'Close', info: 'Info' }[key] || key);
-        const root = { i18n: { t: key => ({ 'clickStackNavigation.info': 'Info', 'planningViews.tabs.options': 'Options', 'planningViews.tabs.rules': 'Rules' }[key] || key) },
+        const root = { i18n: { t: key => ({ 'clickStackNavigation.info': 'Info', 'planningViews.tabs.options': 'Options', 'proposalDrafts.approval.policyType': 'Rules' }[key] || key) },
             CbFormat: { formatLength: value => `${value} m`, formatNumber: value => String(value), formatArea: value => `${value} m²`, formatDate: value => String(value) } };
         const context = vm.createContext({ selected: () => item, inspector, root, element, t, parcelOf: () => null,
             inspectorBadgeKey: () => 'sourceEvidenceBadge', area: value => `${value} m²`, number: value => String(value), resultLabel: value => String(value),

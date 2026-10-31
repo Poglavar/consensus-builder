@@ -75,7 +75,7 @@ describe('three-mode Xray wiring', () => {
             buildIneligibleParcels3D: vi.fn(), ensureNearbyProposalBuildings: vi.fn(),
             ensureNearbyTrees: vi.fn(), rebuildTreesOnly: vi.fn(), ensureNearbyWater: vi.fn(), rebuildWaterOnly: vi.fn(),
             applyParcelIsolation: vi.fn(), isolateProposal: vi.fn(), updateXrayControls: vi.fn(), refreshClickStackFigures: vi.fn(),
-            invalidateThreeView: vi.fn(), ensureNearbyGreen: vi.fn(), noteSceneWork: vi.fn(),
+            invalidateThreeView: vi.fn(), ensureNearbyGreen: vi.fn(), ensureNearbyFurniture: vi.fn(), noteSceneWork: vi.fn(),
             // Replacements are built off-scene and swapped into the scene group (7ed6200e9).
             THREE: { Group: class { constructor() { this.children = []; this.userData = {}; } } },
             sceneWork

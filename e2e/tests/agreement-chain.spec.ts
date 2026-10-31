@@ -16,7 +16,7 @@ import { attachSharedIndex, E2E_LENS_MEMBER_KEY, pageIndex, SharedIndex } from '
 import { agreementAccountAddress, encodeAgreementAccount, serveAgreementAccounts, DECISION, AgreementAccount } from '../helpers/agreement-chain';
 import {
   applyLayout, agreementPanel, storedAgreements, createFromPlan, openStackAgreement, openAgreementsList, agreementListItem, openListedAgreement, closeAgreementPanel,
-  panelStatus, editorSave, editorClosed,
+  panelStatus, editorSave, editorClosed, openAgreementDecision, openAgreementActions,
 } from '../helpers/agreements';
 
 test.beforeEach(async ({ mockApi: page }) => {
@@ -70,6 +70,7 @@ async function propose(page: Page, panel: Locator): Promise<void> {
   await panel.locator('[data-agreement-action="propose"]').click();
   await chooseProfileName(page, AUTHOR);
   await panel.locator('[data-agreement-action="propose"]').click();
+  await openAgreementDecision(page);
   await expect(panel.locator('code.agreement-panel-cid')).toBeVisible({ timeout: 30_000 });
 }
 
@@ -80,6 +81,7 @@ async function reopen(page: Page, id: string): Promise<void> {
   const list = await openAgreementsList(page);
   await openListedAgreement(list, id);
   await panelStatus(page, 'current');
+  await openAgreementDecision(page);
 }
 
 // Another device, reading this device's index and the same chain, opening `url`.
@@ -132,6 +134,7 @@ test.describe('Agreements on chain @core', () => {
     await expect(repropose).toBeEnabled();
     await repropose.click();
     await expect.poll(() => index.agreements.size, { timeout: 30_000 }).toBe(2);
+    await openAgreementDecision(page);
     const secondCid = [...index.agreements.keys()].find(cid => cid !== firstCid)!;
     expect(index.agreements.get(secondCid)!.content).toMatchObject({ sponsor: SPONSOR, title: TITLE, author: AUTHOR, rule: { binding: true, lens: [E2E_LENS_MEMBER_KEY] } });
     await expect(panel.locator('code.agreement-panel-cid')).toHaveAttribute('title', secondCid, { timeout: 30_000 });
@@ -176,6 +179,7 @@ test.describe('Agreements on chain @core', () => {
     try {
       const remote = agreementPanel(receiver.page);
       await expect(remote).toBeVisible({ timeout: 90_000 });
+      await openAgreementDecision(receiver.page);
       await expect(remote.locator('code.agreement-panel-cid')).toHaveAttribute('title', secondCid);
       await expect(remote.locator('[data-agreement-chain="unminted"] [data-agreement-action="mint"]')).toBeDisabled();
       await expect(remote.locator('[data-agreement-chain="unminted"]')).toContainText(`Connect the sponsor’s Solana wallet (${short(SPONSOR)}) to mint it.`);
@@ -288,6 +292,7 @@ test.describe('Agreements on chain @core', () => {
     accounts.set(account, encodeAgreementAccount(base));
     await reopen(page, id);
     await expect(minted.locator('[data-agreement-chain-decision="Pending"]')).toBeVisible({ timeout: 30_000 });
+    await openAgreementActions(page);
     await panel.locator('[data-agreement-action="bet"]').click();
     const bet = page.locator('#proposalMarketOverlay');
     await expect(bet.locator('.cb-dialog__title')).toHaveText(`Will ${TITLE} execute on-chain?`, { timeout: 30_000 });
@@ -308,11 +313,13 @@ test.describe('Agreements on chain @core', () => {
     await openListedAgreement(list, id);
     await expect(list).toBeHidden();
     await panelStatus(page, 'current');
+    await openAgreementDecision(page);
     await expect(page.locator('#agreement-panel-title')).toHaveText(TITLE);
 
     // Without a wallet (another device): no Fund or Cancel, and Execute and Record decision wait for one.
     const receiver = await openDevice(browser, `/agreements/${cid}?city=zg&reduceMotion=1`, index, accounts, baseURL);
     try {
+      await openAgreementDecision(receiver.page);
       const remote = agreementPanel(receiver.page).locator('[data-agreement-chain="minted"]');
       await expect(remote).toBeVisible({ timeout: 90_000 });
       await expect(remote.locator('[data-agreement-chain-status="Active"]')).toBeVisible();

@@ -5546,7 +5546,6 @@
         "geometryUnavailable": "تعذر تحميل جميع التصاميم المدرجة. لا يمكن تمييز نطاقها الكامل.",
         "sharePlan": "مشاركة المخطط",
         "chooseSharePlan": "أي مخطط تريد مشاركته؟",
-        "published": "منشور",
         "revision": "الإصدار"
     },
     "agentDialog": {
@@ -8567,8 +8566,7 @@
         "tabs": {
             "display": "العرض",
             "compare": "مقارنة",
-            "options": "الخيارات",
-            "rules": "القواعد"
+            "options": "الخيارات"
         },
         "compare": {
             "stop": "أوقف المقارنة",

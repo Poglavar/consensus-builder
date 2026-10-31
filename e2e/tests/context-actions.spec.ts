@@ -1,5 +1,5 @@
 import { test, expect } from '../helpers/fixtures';
-import { clickMapPoint, createSpace, openCity, openParcel, proposalState, showProposal, PARCEL_ID, closeParcel, runSelectionCommand } from '../helpers/runtime';
+import { clickMapPoint, createSpace, openCity, openParcel, proposalState, showProposal, PARCEL_ID, closeParcel, runSelectionCommand, parcelTab } from '../helpers/runtime';
 import { sampleParcels } from '../helpers/mocks/parcel-data';
 
 const SECOND_PARCEL_ID = 'HR-335754-1235';
@@ -32,7 +32,7 @@ test.describe('Map context actions @features', () => {
     await openCity(page);
     await ensureSecondParcel(page);
     const selectedFeatures = await page.evaluate(ids => JSON.parse(JSON.stringify(ids.map(id => (window as any).LiveParcelFabric.get(id)))), [PARCEL_ID, SECOND_PARCEL_ID]);
-    await openParcel(page);
+    await openParcel(page, 'proposals');
     await page.locator('#parcel-manual-selection').click();
     await closeParcel(page);
     await clickMapPoint(page, 15.9829, 45.80025);
@@ -212,9 +212,10 @@ test.describe('Map context actions @features', () => {
       w.__claimsUi.openBaseParcel(id);
     }, PARCEL_ID);
     const panel = page.locator('#parcel-info-panel');
+    await parcelTab(page, 'info-tab').click();
     await expect(panel.locator('[data-parcel-tab-id="info-tab"]')).toHaveAttribute('aria-selected', 'true');
     await expect(panel.locator('[data-original-parcel-boundary]')).toContainText('Its original boundary is highlighted.');
-    expect(await panel.locator('#info-content').evaluate(el => el.firstElementChild?.hasAttribute('data-original-parcel-boundary'))).toBe(true);
+    expect(await panel.locator('#info-content').evaluate(el => !!el.querySelector('[data-original-parcel-boundary]'))).toBe(true);
     await page.evaluate(() => (window as any).ClickStack.collapse());
     await expect(page.locator('path.click-stack-map-focus').first()).toBeVisible();
     const originalOutline = await page.evaluate(id => {
@@ -227,7 +228,7 @@ test.describe('Map context actions @features', () => {
     expect(originalOutline.actual).toEqual([originalOutline.original]);
     await expect(page.locator('#click-stack .click-stack__section[data-kind="parcels"]')).toHaveClass(/is-selected/);
     await page.locator('#click-stack .click-stack__section[data-kind="parcels"] .click-stack__row').click();
-    await panel.locator('[data-parcel-tab-id="propose-tab"]').click();
+    await parcelTab(page, 'propose-tab').click();
     const recovery = panel.locator('[data-parcel-build-state="replaced"]');
     await expect(recovery).toContainText('This is the original cadastral parcel. Applied designs have replaced it in the working map. Select the current parcels to add a design.');
     expect(await page.evaluate(() => (window as any).proposalStorage.getAllProposals().length)).toBe(before);

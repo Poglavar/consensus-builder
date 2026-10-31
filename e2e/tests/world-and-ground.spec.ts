@@ -63,9 +63,10 @@ test.describe('World navigation and open ground @features', () => {
     });
     // Dhaka: no configured city covers it, so the address alone opens explore there
     await page.goto('/?at=23.7104,90.4074,16&lang=en&reduceMotion=1'); await waitForMapReady(page);
+    // Opening Lists starts its visible-area request synchronously, so clear navigation-time calls first.
+    listQueries.length = 0;
     await page.locator('#proposals-button').click();
     const sheet = page.locator('#proposals-sheet');
-    listQueries.length = 0;
     await expect(sheet.locator('#proposal-list-host .lists-item')).toHaveCount(7);
     expect(listQueries.length).toBeGreaterThan(0);
     const bbox = await page.evaluate(() => (window as any).getProposalCountAreaContext().bbox.join(','));

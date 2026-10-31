@@ -2,7 +2,7 @@
 import fs from 'node:fs';
 import { test, expect } from '../helpers/fixtures';
 import { openCity, stubBasemapTiles } from '../helpers/runtime';
-import { applyLayout, agreementEditor, editorSave, editorClosed, storedAgreements, proposeOverPark } from '../helpers/agreements';
+import { applyLayout, agreementEditor, editorSave, editorClosed, storedAgreements, proposeOverPark, openAgreementDecision } from '../helpers/agreements';
 import { fileAgreement, pageIndex } from '../helpers/mocks/shared-server';
 
 test('organiser generates and restores local assignments while the agreement stores only verifiers', async ({ mockApi: page }) => {
@@ -67,6 +67,7 @@ test('a voter checks, changes and reviews one ballot without a wallet', async ({
       counts:{support:choice==='support'?1:0,oppose:choice==='oppose'?1:0,abstain:choice==='abstain'?1:0},...(body?{entry:{version,choice,history}}:{})})});
   });
   await page.goto(`/agreements/${cid}?city=zg`);
+  await openAgreementDecision(page);
   const panel=page.locator('[data-community-voting]');await expect(panel).toBeVisible({timeout:45_000});
   const turnout=panel.locator('[data-voting-meter="turnout"]');
   await expect(turnout).toHaveAttribute('value','0');

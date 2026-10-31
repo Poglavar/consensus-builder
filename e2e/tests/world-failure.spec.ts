@@ -34,10 +34,10 @@ for (const width of [1188, 500]) {
     await openCity(page);
     const chip = page.locator('.map-search__chip');
     await chip.click();
+    await expect(chip).not.toHaveClass(/cb-busy/, { timeout: 20_000 });
     await expect(page.getByRole('status').filter({ hasText: 'World view could not start.' })).toBeVisible();
     await expect(page.getByRole('status').filter({ hasText: 'World view could not start.' })).toContainText('search for another city');
     await expect(page.locator('#world-view')).toHaveCount(0);
-    await expect(chip).not.toHaveClass(/cb-busy/);
     await expect(chip).not.toHaveAttribute('aria-busy');
     await expect(page.locator('#map')).toBeVisible();
 

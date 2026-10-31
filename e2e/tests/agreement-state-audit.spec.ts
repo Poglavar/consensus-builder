@@ -1,7 +1,7 @@
 // Check agreement badges and available actions against deterministic index and chain states.
 import { test, expect } from '../helpers/fixtures';
 import { openCity, stubBasemapTiles } from '../helpers/runtime';
-import { closeAgreementPanel, proposeOverPark, MINTED_SPONSOR } from '../helpers/agreements';
+import { closeAgreementPanel, openAgreementDecision, proposeOverPark, MINTED_SPONSOR } from '../helpers/agreements';
 import { pageIndex, E2E_LENS_MEMBER_KEY } from '../helpers/mocks/shared-server';
 import { agreementAccountAddress, encodeAgreementAccount, serveAgreementAccounts, STATUS, DECISION } from '../helpers/agreement-chain';
 
@@ -20,6 +20,7 @@ test('agreement summary follows terminal index and account states without offeri
     accounts.set(account, encodeAgreementAccount({ cid, authority: MINTED_SPONSOR, payout: MINTED_SPONSOR, lens: E2E_LENS_MEMBER_KEY,
       status: STATUS[status], decision: status === 'executed' ? DECISION.satisfied : DECISION.pending }));
     await page.evaluate(id => (window as any).AgreementPanel.open(id), id);
+    await openAgreementDecision(page);
     const panel = page.locator('#agreement-panel');
     await expect(panel.locator('[data-agreement-chain-status]')).toHaveText(status[0].toUpperCase() + status.slice(1));
     await expect(panel.locator('[data-agreement-remote-status]')).toHaveText(status[0].toUpperCase() + status.slice(1));
@@ -31,5 +32,6 @@ test('agreement summary follows terminal index and account states without offeri
   accounts.set(account, encodeAgreementAccount({ cid, authority: MINTED_SPONSOR, payout: MINTED_SPONSOR, lens: E2E_LENS_MEMBER_KEY,
     status: STATUS.executed, decision: DECISION.satisfied }));
   await page.evaluate(id => (window as any).AgreementPanel.open(id), id);
+  await openAgreementDecision(page);
   await expect(page.locator('#agreement-panel [data-agreement-remote-status]')).toHaveText('Executed');
 });

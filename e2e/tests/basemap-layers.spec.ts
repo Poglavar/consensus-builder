@@ -177,6 +177,7 @@ test.describe('Basemap and layer controls @features', () => {
   });
 
   test('Settings omits the data-source switch and leaves draft and local settings intact', async ({ mockApi: page }) => {
+    await mockNewYorkParcels(page);
     await page.goto('/');
     await waitForMapReady(page);
     const source = await page.evaluate(() => {

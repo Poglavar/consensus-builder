@@ -139,7 +139,7 @@ test('design links ignore a local key equal to the CID and fork ancestry, then r
       await expect(model.locator('#planning-inspector')).toBeHidden();
       await expect(model.getByText('Authored proposal', { exact: true })).toHaveCount(0);
       await model.screenshot({ path: '/tmp/shared-design-model-click-panel.png' });
-      await modelDesign.getByRole('button', { name: 'Design actions', exact: true }).click();
+      await modelDesign.getByRole('button', { name: 'Open actions in 2D', exact: true }).click();
       await expect(model.locator('body')).not.toHaveClass(/three-mode-active/);
       await expect(model.locator('#click-stack .click-stack__section[data-kind="designs"] #proposal-details-panel')).toBeVisible();
       await expect(model.locator('#planning-inspector')).toBeHidden();

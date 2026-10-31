@@ -20,7 +20,7 @@ describe('frontend data context',()=>{
             expect(context.buildingSourceId,city.id).toBeTruthy();
         }
         expect(manager.getDataContext(null,'zagreb')).toMatchObject({parcelSourceId:'oss-wfs',buildingSourceId:'gdi-3d',floorModelNamespace:'zagreb'});
-        expect(manager.getDataContext(null,'new_york')).toMatchObject({parcelSourceId:'parcel-nyc',buildingSourceId:'nyc-arcgis',floorModelNamespace:'new_york'});
+        expect(manager.getDataContext(null,'new_york')).toMatchObject({parcelSourceId:'parcel-nyc',buildingSourceId:'nyc-3d',floorModelNamespace:'new_york'});
     });
     it('selects by the requested geometry in the frontend, independently of the session city',()=>{
         const manager=frontend();

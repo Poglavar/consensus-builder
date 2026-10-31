@@ -49,7 +49,8 @@ for (const viewport of [{ width: 320, height: 640 }, { width: 390, height: 844 }
     await page.keyboard.press('End');
     const expanded = (await settings.boundingBox())!.height;
     await dragHandle(page, settings, 120);
-    expect((await settings.boundingBox())!.height).toBeLessThan(expanded - 80);
+    // Release snaps to the sheet's half-height stop after its short settle transition.
+    await expect.poll(async () => (await settings.boundingBox())!.height).toBeLessThan(expanded - 80);
     await settings.locator(':scope > .mobile-dock-sheet-handle').focus();
     await page.keyboard.press('Home');
     await dragHandle(page, settings, 120);
@@ -104,18 +105,17 @@ test('map agreement details resize without losing the saved agreement or applied
   const editor = await createFromPlan(page, layoutId);
   await editorSave(editor).click();
   const panel = await openStackAgreement(page);
-  // The agreement panel is hosted in the click stack, and the stack is the phone sheet: a hosted
-  // panel has no handle of its own (mobile-dock-sheet.js, cf72195aa).
+  // The agreement panel is hosted in the click stack. Object inspection uses the explicit
+  // map/full-size control rather than a draggable sheet handle.
   const sheet = page.locator('#click-stack');
   await expect(panel.locator(':scope > .mobile-dock-sheet-handle')).toHaveCount(0);
-  // The stack fits its cards, so dragging it up grows it until the whole stack shows, no further.
+  await expect(sheet.locator(':scope > .mobile-dock-sheet-handle')).toHaveCount(0);
   const initial = (await sheet.boundingBox())!.height;
-  await dragHandle(page, sheet, -150);
+  await sheet.locator('.click-stack__size').click();
   expect((await sheet.boundingBox())!.height).toBeGreaterThan(initial + 20);
   expect(await sheet.locator('.click-stack__sections').evaluate(el => el.scrollHeight - el.clientHeight)).toBeLessThanOrEqual(1);
-  await sheet.locator(':scope > .mobile-dock-sheet-handle').focus();
-  await page.keyboard.press('Home');
-  await dragHandle(page, sheet, 140);
+  await sheet.locator('.click-stack__size').click();
+  await sheet.locator('.click-stack__dismiss').click();
   await expect(sheet).toBeHidden();
   await expect(panel).toBeHidden();
   expect(await page.evaluate(id => {

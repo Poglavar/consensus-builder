@@ -107,6 +107,9 @@ test('Permitted keeps its envelope controls and ignores retired parcel-study lin
   await page.getByRole('button',{name:'Buildings and massing',exact:true}).click();
   const panel=page.locator('#planning-views');
   await expect(panel.locator('.planning-scenario-select')).toHaveValue('all');
+  await expect(panel.locator('.planning-view-status')).toHaveAttribute('aria-busy', 'false');
+  const initialEnvelopeReads = envelopeReads;
+  expect(initialEnvelopeReads).toBeGreaterThan(0);
   // The housing type roll preserves frontage evidence; pinning a type overrides the roll.
   const proposedBeforeRoll = await page.evaluate(() => (window as any).PlanningViews.getState().proposedVariation);
   await panel.locator('#planning-reroll-permitted').click();
@@ -119,8 +122,9 @@ test('Permitted keeps its envelope controls and ignores retired parcel-study lin
   await expectShownGeometry();
   expect((await shown()).configuration).toBe('family2');
   await selectNativeOption(panel.locator('.planning-scenario-select'), 'all');
-  // Envelopes carry every housing type: the control redraws them without another viewport read.
-  expect(envelopeReads).toBe(1);
+  // The viewport loads several cells; choosing a housing type reuses those envelopes.
+  await expect(panel.locator('.planning-view-status')).toHaveAttribute('aria-busy', 'false');
+  expect(envelopeReads).toBe(initialEnvelopeReads);
   await selectNativeOption(panel.locator('[data-planning-setting="permittedForm"]'), 'bound');
   await expectShownGeometry();
   await selectNativeOption(panel.locator('[data-planning-setting="permittedForm"]'), 'both');
@@ -139,11 +143,13 @@ test('Permitted keeps its envelope controls and ignores retired parcel-study lin
   await expect(inspector.getByText('Permitted envelope',{exact:true})).toBeVisible();
   await expect(inspector.locator('[data-stack-page-key="info"]')).toBeVisible();
   await expect(inspector.locator('[data-stack-page-key="options"] .planning-configurations__pick')).toHaveCount(3);
+  await page.getByRole('tab', {name:'Rules', exact:true}).click();
   await expect(inspector.locator('[data-stack-page-key="rules"] .planning-limits')).toBeVisible();
   await expect(inspector.locator('.planning-configurations__pick')).toHaveCount(3);
   await expect(inspector.locator('[data-configuration="family4"]')).toContainText('No direct height limit');
   await expect(inspector.locator('[data-configuration="family2"]')).toContainText('Lot below the');
   await expect(inspector.locator('[data-configuration="family1"]')).not.toContainText('Lot below the');
+  await page.getByRole('tab', {name:'Options', exact:true}).click();
   await expect(inspector.getByText('Not configurable here: Three-family (Recorded as prohibited).')).toBeVisible();
   // Hovering a configuration outlines the footprint it would show; leaving it lets go.
   const hoverOutline = page.locator('path.proposal-hover-outline');
@@ -155,6 +161,7 @@ test('Permitted keeps its envelope controls and ignores retired parcel-study lin
   await inspector.locator('[data-configuration="family1"] button').click();
   await expect(inspector.locator('[data-configuration="family1"] button')).toHaveAttribute('aria-pressed','true');
   await expectShownGeometry();
+  await page.getByRole('tab', {name:'Rules', exact:true}).click();
   await expect(inspector.getByText(/^Assumed street side: (north|east|south|west)\./)).toBeVisible();
   await expect(page.getByRole('button', { name: 'Test a parcel here', exact: true })).toHaveCount(0);
   await expect(page.locator('[data-study-input], [data-study-results]')).toHaveCount(0);

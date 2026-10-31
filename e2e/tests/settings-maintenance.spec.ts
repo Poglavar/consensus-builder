@@ -2,7 +2,7 @@ import { openLayerSection } from '../helpers/layers';
 import { selectNativeOption } from '../helpers/controls';
 import { test, expect } from '../helpers/fixtures';
 import { waitForMapReady } from '../helpers/app';
-import { openCity, PARCEL_ID } from '../helpers/runtime';
+import { expectStatusLogged, openCity, PARCEL_ID } from '../helpers/runtime';
 
 async function openSettings(page: import('@playwright/test').Page) {
   await page.locator('#settings-button').click();
@@ -117,11 +117,11 @@ test.describe('Settings maintenance @features', () => {
     await openResets(page);
     await page.locator('#settings-sheet [data-section="blocks"] button.btn-danger').click();
     await expect.poll(() => page.evaluate(() => (window as any).blockStorage.blocks.size)).toBe(0);
-    await expect(page.locator('#floating-status-text')).toContainText(/Cleared .* blocks/i);
+    await expectStatusLogged(page, `Cleared ${seeded.blockCount} blocks`);
 
     await page.locator('#settings-sheet [data-section="roads"] button.btn-danger').click();
     await expect.poll(() => page.evaluate(() => (window as any).getRoadParcelCount())).toBe(0);
-    await expect(page.locator('#floating-status-text')).toContainText(/Cleared .* road parcels/i);
+    await expectStatusLogged(page, `Cleared ${seeded.roadCount} road parcels`);
 
     await page.locator('#settings-sheet [data-section="parcels"] button.btn-danger').click();
     await expect.poll(() => page.evaluate(() => (window as any).PersistentStorage.getItem('parcel_e2e-maintenance_geometry'))).toBeNull();

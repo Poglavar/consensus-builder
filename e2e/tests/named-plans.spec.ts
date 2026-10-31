@@ -5,7 +5,7 @@ import { pageIndex } from '../helpers/mocks/shared-server';
 for (const width of [1280, 390]) {
   test(`a saved plan shares its immutable snapshot at ${width}px`, async ({ mockApi: page, browser, baseURL }) => {
     test.setTimeout(180_000); await page.setViewportSize({ width, height: 844 }); await openCity(page); await page.evaluate(()=>(window as any).guestPolicyBlocks('publish')); await chooseProfileName(page,'Plan author');
-    const id=await createSpace(page,'park'); await page.locator('#proposals-button').click(); await page.locator('#shareAppliedProposalsButton').click();
+    const id=await createSpace(page,'park'); const lists=page.locator('#proposals-button'); if(!await lists.isVisible())await page.keyboard.press('Escape'); await lists.click(); await page.locator('#shareAppliedProposalsButton').click();
     // Create plan ticks the designs in Lists → Designs; Continue opens the composer listing them.
     await page.locator('#lists-actions').getByRole('button',{name:'Create plan',exact:true}).click();
     await page.locator('#proposal-list-host input[type=checkbox]').check(); await page.locator('#lists-actions [data-lists-continue]').click();
@@ -23,7 +23,7 @@ for (const width of [1280, 390]) {
     const linkField=share.getByLabel('Plan link',{exact:true}); await expect(linkField).toBeVisible(); await expect(linkField).toHaveValue(new RegExp(`/plans/${plan.cid}`));
     const link=await linkField.inputValue(); expect(pageIndex(page).requests.find(r=>r.method==='POST'&&r.path==='/plans')!.body.content).toEqual(snapshot);
     const receiver=await openOnAnotherDevice(browser,link,pageIndex(page),baseURL);
-    try { await expect(receiver.page).toHaveTitle('Riverside Garden · Consensus Builder'); await expect.poll(()=>receiver.page.evaluate(cid=>!!(window as any).PlanWorkspace.list().find((p:any)=>p.cid===cid),plan.cid)).toBe(true); }
+    try { await expect.poll(()=>receiver.page.evaluate(cid=>!!(window as any).PlanWorkspace.list().find((p:any)=>p.cid===cid),plan.cid)).toBe(true); await expect(receiver.page).toHaveTitle('Riverside Garden · Consensus Builder'); }
     finally { await receiver.context.close(); }
   });
 }

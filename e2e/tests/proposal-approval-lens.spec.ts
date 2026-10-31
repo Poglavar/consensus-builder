@@ -16,6 +16,7 @@ import { mockAllApiRoutes } from '../helpers/mocks/api-routes';
 import { cidOfObject, pageIndex } from '../helpers/mocks/shared-server';
 import { openCity } from '../helpers/runtime';
 import { selectNativeOption } from '../helpers/controls';
+import { openAgreementDecision } from '../helpers/agreements';
 
 const BACKEND = path.resolve(__dirname, '../../backend');
 const PARCELS = { a: 'HR-335754-1234', b: 'HR-335754-1235', c: 'HR-335754-1236' };
@@ -132,6 +133,7 @@ function agreementRow(index: ReturnType<typeof pageIndex>, cid: string, content:
 async function openAgreement(page: Page, agreement: ProposedAgreement): Promise<void> {
   await page.evaluate(id => (window as any).AgreementPanel.open(id), agreement.id);
   await expect(page.locator('section#agreement-panel')).toBeVisible();
+  await openAgreementDecision(page);
   await expect(card(page)).toBeVisible({ timeout: 30_000 });
 }
 

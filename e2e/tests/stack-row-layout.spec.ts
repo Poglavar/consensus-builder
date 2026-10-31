@@ -1,5 +1,5 @@
 import { test, expect } from '../helpers/fixtures';
-import { openCity, createSpace, stackSection, PARCEL_ID } from '../helpers/runtime';
+import { openCity, createSpace, stackSection, parcelTab, PARCEL_ID } from '../helpers/runtime';
 
 for (const width of [1280, 390]) {
   test(`source parcel label, equal design actions and inline History at ${width}px`, async ({ mockApi: page }, testInfo) => {
@@ -24,7 +24,7 @@ for (const width of [1280, 390]) {
     await page.evaluate(id => {
       const w = window as any; return w.ClickStack.showParcel(w.CadastralParcelRepository.get(id));
     }, PARCEL_ID);
-    const parcel = stackSection(page, 'parcels'); await parcel.getByRole('tab', { name: 'Info', exact: true }).click();
+    const parcel = stackSection(page, 'parcels'); await parcelTab(page, 'info-tab').click();
     const history = parcel.locator('.parcel-history-section > summary').first(); await expect(history).toBeVisible();
     const geometry = await history.evaluate(summary => {
       const icon = summary.querySelector('i')!.getBoundingClientRect(), label = summary.querySelector('span')!.getBoundingClientRect();

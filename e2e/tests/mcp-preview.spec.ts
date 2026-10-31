@@ -27,7 +27,7 @@ test('MCP draft reference opens an applied local park with no publication @core'
     const record = records.find((r: any) => r.title === 'MCP preview park');
     return record ? { published: !!record.published, lifecycle: record.lifecycleStatus, cid: w.DesignRecord.cidOf(record), pieces: w.LiveParcelFabric.producedBy(record.proposalId).length } : null;
   }), { timeout: 60_000 }).toEqual({ published: false, lifecycle: 'draft', cid: cid.cidOfObject(edited), pieces: 1 });
-  await expect(page.getByRole('heading', { name: 'MCP preview park', exact: true })).toBeVisible();
+  await expect(page.getByRole('region', { name: 'MCP preview park', exact: true })).toBeVisible();
   await expect(page.locator('.park-tree-glyph')).toHaveCount(25);
   await page.screenshot({ path: testInfo.outputPath('draft-preview.png') });
   expect(pageIndex(page).requests.filter(r => r.method === 'POST' && ['/pins', '/designs', '/plans', '/agreements'].includes(r.path))).toEqual([]);

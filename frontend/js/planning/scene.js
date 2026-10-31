@@ -28,6 +28,17 @@
         return { values, value: values.includes(preferred) ? preferred : values[values.length - 1],
             disabled: values.length === 1 || !source };
     }
+    // Source IDs do not fully describe a planning catalog: representation policy follows source
+    // metadata such as parcelStudy. Sort object keys so equivalent descriptors never cause a rerender.
+    function sourceCatalogSignature(sources) {
+        const normalize = value => {
+            if (Array.isArray(value)) return value.map(normalize);
+            if (value && typeof value === 'object') return Object.fromEntries(Object.keys(value).sort()
+                .map(key => [key, normalize(value[key])]));
+            return value;
+        };
+        return JSON.stringify(normalize(sources));
+    }
     function itemAppearance(item, state) {
         const values = settings(state);
         return item.assessment?.meaning === 'zoning-area' ? values.zoningAreas : values[item.role];
@@ -214,7 +225,7 @@
     function loadingArcs(loading = {}, shown = {}) {
         return roles.filter(role => loading[role] && shown[role] !== false).map((role, slot) => ({ role, slot }));
     }
-    return { roles, displayStates, choices, defaults, settings, displayPolicy, permittedRepresentationControl, itemAppearance, createStore, builtGeometry, queryKey, parcelItemOf, loadingArcs,
+    return { roles, displayStates, choices, defaults, settings, displayPolicy, permittedRepresentationControl, sourceCatalogSignature, itemAppearance, createStore, builtGeometry, queryKey, parcelItemOf, loadingArcs,
         VIEWPORT_CELL_DEGREES, viewportCellSize, snapBbox, bboxContains, bboxIntersects, bboxAreaKm2, createViewportCache,
         PLANNING_CELL_DEGREES, viewCells, mergeAnswers };
 });

@@ -100,13 +100,13 @@ for (const blocksEnabled of [false, true]) test(`planning source, scenario, disp
 });
 
 test('the Buildings and massing button rims a third of its circle in green while Permitted loads', async ({ mockApi: page }) => {
-  let release: () => void = () => {};
+  const releases: Array<() => void> = [];
   let hold = false;
   await page.route('**/planning/**', async route => {
     if (!['xhr', 'fetch'].includes(route.request().resourceType())) return route.fallback();
     const url = new URL(route.request().url());
     if (url.pathname.endsWith('/sources')) return route.fulfill({ json: { city: sources[0].city, sources } });
-    if (hold) await new Promise<void>(resolve => { release = resolve; });
+    if (hold) await new Promise<void>(resolve => { releases.push(resolve); });
     return route.fulfill({ json: payload([massing()]) });
   });
   await openCity(page);
@@ -129,7 +129,8 @@ test('the Buildings and massing button rims a third of its circle in green while
   await page.evaluate(() => (window as any).PlanningLoading.set('existing', 'test', true));
   await expect(arcs).toHaveCount(2);
   expect(await arcs.evaluateAll(list => list.map(arc => `${(arc as HTMLElement).dataset.role}:${(arc as HTMLElement).dataset.slot}`))).toEqual(['existing:0', 'permitted:1']);
-  hold = false; release();
+  hold = false;
+  releases.splice(0).forEach(release => release());
   await expect(arcs).toHaveCount(1);
   await expect(arcs).toHaveAttribute('data-role', 'existing');
   await page.evaluate(() => (window as any).PlanningLoading.set('existing', 'test', false));
@@ -139,15 +140,29 @@ test('the Buildings and massing button rims a third of its circle in green while
 
 test('Permitted keeps its Illustration dropdown visible for a single-option source', async ({ mockApi: page }) => {
   const available = [sources[0], { ...sources[1], parcelStudy: 'direct-dimensions.v1' }];
+  const broadFirst = [{ ...available[0], parcelStudy: 'direct-dimensions.v1' }, available[1]];
+  let sourceRequests = 0;
+  let narrowCatalog = false;
   await page.route('**/planning/**', async route => {
     if (!['xhr', 'fetch'].includes(route.request().resourceType())) return route.fallback();
     const url = new URL(route.request().url());
-    if (url.pathname.endsWith('/sources')) return route.fulfill({ json: { city: sources[0].city, sources: available } });
+    if (url.pathname.endsWith('/sources')) {
+      sourceRequests += 1;
+      const west = Number(url.searchParams.get('bbox')?.split(',')[0]);
+      return route.fulfill({ json: { city: sources[0].city, sources: narrowCatalog || west > 16 ? available : broadFirst } });
+    }
     return route.fulfill({ json: payload([massing()], available) });
   });
   await openCity(page);
+  await expect.poll(() => sourceRequests).toBeGreaterThan(0);
+  // A viewport refresh returns the same source IDs, but A no longer has a parcel study. The
+  // catalog must apply this metadata update rather than retaining the original descriptor.
+  await page.evaluate(() => (window as any).map.setView([45.85, 16.05], 18, { animate: false }));
+  await expect.poll(() => sourceRequests, { timeout: 10_000 }).toBeGreaterThan(1);
+  narrowCatalog = true;
   await page.locator('#planning-views-button').click();
   const panel = page.locator('#planning-views');
+  const sourceSelect = panel.locator('.planning-source-select');
   const form = panel.locator('[data-planning-setting="permittedForm"]');
   await expect(form).toBeVisible();
   await expect(form).toBeDisabled();
@@ -155,14 +170,14 @@ test('Permitted keeps its Illustration dropdown visible for a single-option sour
   expect(await form.locator('option').allTextContents()).toEqual(['Illustration']);
   expect(await panel.locator('[data-planning-setting="proposedForm"] option').allTextContents())
     .toEqual(['Max envelope', 'Illustration', 'Both']);
-  await selectNativeOption(panel.locator('.planning-source-select'), available[1].id);
+  await selectNativeOption(sourceSelect, available[1].id);
   await expect(form).toBeEnabled();
   expect(await form.locator('option').allTextContents()).toEqual(['Max envelope', 'Illustration', 'Both']);
   await selectNativeOption(form, 'bound');
-  await selectNativeOption(panel.locator('.planning-source-select'), available[0].id);
+  await selectNativeOption(sourceSelect, available[0].id);
   await expect(form).toBeDisabled();
   await expect(form).toHaveValue('configuration');
-  await selectNativeOption(panel.locator('.planning-source-select'), available[1].id);
+  await selectNativeOption(sourceSelect, available[1].id);
   await expect(form).toHaveValue('bound');
 });
 
@@ -196,6 +211,7 @@ test('saved parcel evidence opens its pinned source without creating a proposal 
   await page.locator('#parcel-info-panel').getByRole('button', { name: 'Inspect result', exact: true }).click();
   const inspector = page.locator('#planning-inspector');
   await expect(inspector.getByRole('heading', { name: 'Saved source result', exact: true })).toBeVisible();
+  await inspector.locator('.planning-evidence summary').click();
   await inspector.getByRole('button', { name: /^Source: zagreb-gup-2025/ }).click();
   await expect(inspector.getByRole('heading', { name: 'Pinned planning source', exact: true })).toBeVisible();
   expect(requestedRecord).toBe(reference.recordId);

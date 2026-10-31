@@ -124,7 +124,7 @@ test.describe('Designer controls persist their edits @features', () => {
     await installLayerDatasets(page);
     await openCity(page);
     await page.evaluate(async ids => { await (window as any).CadastralParcelRepository.ensureIds(ids); }, BLOCK_PARCEL_IDS);
-    await openParcel(page, 'info', BLOCK_PARCEL_IDS[0]);
+    await openParcel(page, 'proposals', BLOCK_PARCEL_IDS[0]);
     await page.locator('.multi-select-detect-btn').click();
     await expect.poll(() => page.evaluate(() => (window as any).multiParcelSelection.selectedParcels.size)).toBeGreaterThan(1);
     await closeParcel(page);
@@ -365,7 +365,7 @@ test.describe('Designer controls persist their edits @features', () => {
     await installLayerDatasets(page);
     await openCity(page);
     await page.evaluate(async ids => { await (window as any).CadastralParcelRepository.ensureIds(ids); }, BLOCK_PARCEL_IDS);
-    await openParcel(page, 'info', BLOCK_PARCEL_IDS[0]);
+    await openParcel(page, 'proposals', BLOCK_PARCEL_IDS[0]);
     await page.locator('.multi-select-detect-btn').click();
     await expect.poll(() => page.evaluate(() => (window as any).multiParcelSelection.selectedParcels.size)).toBeGreaterThan(1);
     await closeParcel(page);

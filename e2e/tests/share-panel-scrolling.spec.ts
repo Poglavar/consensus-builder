@@ -10,6 +10,9 @@ for (const width of [1280, 390]) {
       const w:any=window, source=w.proposalStorage.getProposal(seedId);
       for(let i=1;i<24;i++)w.proposalStorage.addProposal({...structuredClone(source),proposalId:`long-list-${i}`,title:`Park design ${i}`,applied:true});
     }, id);
+    // On phones the design inspector deliberately owns the map controls; dismiss it before opening
+    // the independent Lists sheet used to compose a plan.
+    if (width < 768) await page.locator('#click-stack .click-stack__dismiss').click();
     await page.locator('#proposals-button').click();
     await page.locator('#shareAppliedProposalsButton').click();
     // Lists (01268caee): the Plans tab's Create plan sits in the shared #lists-actions row and ticks

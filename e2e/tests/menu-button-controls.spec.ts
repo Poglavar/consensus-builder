@@ -1,6 +1,6 @@
 // Check contextual parcel and ground actions through the map's visible menus.
 import { test, expect } from '../helpers/fixtures';
-import { openCity, clickMapPoint, PARCEL_ID, PARCEL_GEOMETRY, runParcelCommand, openParcelAt, selectionSection } from '../helpers/runtime';
+import { openCity, clickMapPoint, PARCEL_ID, PARCEL_GEOMETRY, runParcelCommand, openParcelAt, selectionSection, parcelTab } from '../helpers/runtime';
 import { installLayerDatasets } from '../helpers/mocks/layer-datasets';
 import { mockBuildingScene } from '../helpers/mocks/building-data';
 
@@ -14,7 +14,7 @@ test('Escape dismisses the parcel and History opens its actual history card', as
   await expect(page.locator('#parcel-info-panel')).toBeHidden();
   // Elsewhere on the same parcel: one physical click at one point is counted once.
   await openParcelAt(page, 15.9821, 45.8002);
-  await page.locator('#parcel-info-panel [data-parcel-tab-id="info-tab"]').click();
+  await parcelTab(page, 'info-tab').click();
   // The History section sits collapsed at the end of the Info tab; opening it fetches the history.
   const history = page.locator('#parcel-info-panel [data-parcel-history]');
   await expect(history.first()).toBeVisible();
@@ -84,6 +84,7 @@ test('global 3D mode keeps the selected parcel while inspecting its unapplied de
   const design = page.locator('#three-click-stack .click-stack__section[data-kind="designs"]');
   await expect(design.locator('.click-stack__row-detail')).toHaveText('3D parcel proposal');
   await design.locator('[data-action="row"]').click();
+  await design.locator('[data-page="info"]').click();
   await expect(design.locator('.three-mode-parcel-panel')).toBeVisible();
   await expect(page.locator('.three-mode-isolation-banner')).toContainText('Selected parcel');
   await expect.poll(() => page.evaluate(() => (window as any).getThreeSceneSummary().isolatedProposal)).toBe(false);

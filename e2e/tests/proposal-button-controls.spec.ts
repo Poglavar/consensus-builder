@@ -10,7 +10,7 @@ async function showExpandedProposal(page: import('@playwright/test').Page, propo
   const panel = page.locator('#proposal-details-panel');
   const expand = panel.getByRole('button', { name: 'Expand', exact: true });
   if (await expand.isVisible()) await expand.click();
-  await expect(panel.locator('.panel-body')).toBeVisible();
+  await expect(panel.locator('#proposal-details-footer .btn-share-proposal')).toBeVisible();
 }
 
 async function establishLocalProfile(page: import('@playwright/test').Page): Promise<void> {

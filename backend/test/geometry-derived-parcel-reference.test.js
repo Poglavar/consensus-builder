@@ -52,7 +52,8 @@ function renderParcelPanel(properties, { currency = 'EUR', id = 'test-city', pro
     const cityConfig = { id, parcels: { ownership: false }, currency: { code: currency } };
     const ids = [
         'parcel-info-panel', 'parcel-info-title', 'info-content', 'propose-content', 'proposals-content',
-        'parcel-owners-count', 'tools-tab', 'measureAsRoadButton', 'roadMeasurements', 'parcel-plans-content'
+        'selected-parcels-content', 'parcel-owners-count', 'tools-tab', 'measureAsRoadButton', 'roadMeasurements',
+        'parcel-plans-content'
     ];
     const elements = new Map(ids.map(id => [id, new Element(id)]));
     const copied = [];

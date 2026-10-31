@@ -5,7 +5,7 @@
 // a selector; each plan links to its agreements in a separate dialog.
 import { Page } from '@playwright/test';
 import { test, expect } from '../helpers/fixtures';
-import { clickDesignOnMap, clickMapPoint, clickStack, createSpace, drawCorridor, expandStackSection, openCity, stackSection, PARCEL_ID } from '../helpers/runtime';
+import { clickDesignOnMap, clickMapPoint, clickStack, createSpace, drawCorridor, expandStackSection, openCity, openParcel, stackSection, parcelTab, PARCEL_ID } from '../helpers/runtime';
 import { agreementPanel, agreementEditor, editorSave, storedAgreements, proposeOverPark } from '../helpers/agreements';
 
 const SECOND_PARCEL_ID = 'HR-335754-1235';
@@ -55,6 +55,7 @@ test.describe('Click stack @core', () => {
     await testInfo.attach('Agreements section', { path: screenshot, contentType: 'image/png' });
     await expect(agreements.getByRole('button', { name: 'Agreement details', exact: true })).toHaveCount(0);
     await expect(agreements.locator('#agreement-panel')).toBeVisible();
+    await agreements.locator('.click-stack__content-tabs [data-page="agreement-overview"]').click();
     const before = await page.evaluate(() => { const w = window as any; w.__planNavigationToken = 'same-window'; w.__planApplyCalls = 0;
       const apply = w.handleSharedDesignRoute; w.handleSharedDesignRoute = (...args: any[]) => { w.__planApplyCalls++; return apply(...args); }; return {
       designs: JSON.stringify(w.proposalStorage.getAllProposals()), at: [w.map.getCenter().lat, w.map.getCenter().lng, w.map.getZoom()], url: location.href
@@ -109,6 +110,7 @@ test.describe('Click stack @core', () => {
     await expandStackSection(page, 'agreements'); expect(await sectionKinds(page)).toEqual(['agreements', 'plans']);
     const properties = stackSection(page, 'agreements').locator('#agreement-panel');
     await expect(properties).toBeVisible(); await expect(properties).toHaveClass(/is-hosted/);
+    await stackSection(page, 'agreements').locator('.click-stack__content-tabs [data-page="agreement-overview"]').click();
     await expect(properties.locator('[data-agreement-region="body"]')).toContainText('Decision rule');
     await expect(properties.locator('[data-agreement-action="plan"]')).toBeVisible();
     await expect(properties.locator('.panel-header')).toBeHidden();
@@ -145,7 +147,7 @@ test.describe('Click stack @core', () => {
       const trigger = section.locator('.click-stack__create-agreement');
       const share = section.locator('.click-stack__share-plan');
       const agreements = stackSection(page, 'agreements');
-      await expect(agreements).toBeVisible();
+      await expect(width < 768 ? clickStack(page).locator('.click-stack__object-tab[data-kind="agreements"]') : agreements).toBeVisible();
       await expandStackSection(page, 'agreements');
       await expect(agreements.locator('.click-stack__selector option')).toHaveCount(2);
       await expandStackSection(page, 'plans');
@@ -153,7 +155,7 @@ test.describe('Click stack @core', () => {
       expect(Math.abs(shareBox!.height - createBox!.height)).toBeLessThan(1);
       expect(Math.abs(shareBox!.width - createBox!.width)).toBeLessThan(1);
       expect(Math.abs(shareBox!.y - createBox!.y)).toBeLessThan(1);
-      await expect(section.locator('[data-kind="agreements"]')).toHaveCount(0);
+      await expect(section.locator('.click-stack__content-tabs [data-page="relation-agreements"]')).toBeVisible();
       const before = await page.evaluate(() => {
         const w = window as any, state = w.ClickStack.current(), map = w.map;
         return { selected: state.selectedKind, expanded: state.expanded, point: w.ClickStack.point(), top: state.topRef,
@@ -210,6 +212,7 @@ test.describe('Click stack @core', () => {
       const selected = await page.evaluate(() => (window as any).currentlyHighlightedProposalId);
       if (kind === 'designs') {
         expect(selected).toBeTruthy();
+        await stackSection(page, kind).locator('[data-page="design-overview"]').click();
         await expect(stackSection(page, kind).locator('.click-stack__body .proposal-badges-row .proposal-type-badge')).toBeVisible();
         await stackSection(page, kind).locator('.click-stack__row').click();
         expect(await page.evaluate(() => (window as any).isProposalUIActive())).toBe(true);
@@ -221,18 +224,12 @@ test.describe('Click stack @core', () => {
       await page.evaluate(() => (window as any).map.fire('mouseout'));
       expect(await focus.evaluateAll(paths => paths.map(path => path.getAttribute('d')))).toEqual(paths);
     }
-    // The stack shows the selected level and its nearest neighbours (docs/click-stack.md, Rows):
-    // with the cadastral parcel selected, Formed heads the stack and the connector belongs to the
-    // parcel section below it.
+    // The phone shows a single caption and the neighbouring object icons, joined by progression marks.
     await expect(stackSection(page, 'designs')).toHaveCount(0);
-    const connector = await stackSection(page, 'parcels').evaluate(el => {
-      const style = getComputedStyle(el, '::before');
-      const icon = el.querySelector('.click-stack__row > i')!.getBoundingClientRect();
-      return { left: el.getBoundingClientRect().left + parseFloat(style.left) + parseFloat(style.borderLeftWidth) / 2,
-        axis: icon.x + icon.width / 2, width: style.borderLeftWidth, z: style.zIndex };
-    });
-    expect(Math.abs(connector.left - connector.axis)).toBeLessThanOrEqual(1);
-    expect(connector).toMatchObject({ width: '4px', z: '-1' });
+    const objectTabs = clickStack(page).locator('.click-stack__object-tab');
+    expect(await objectTabs.evaluateAll(tabs => tabs.map(tab => (tab as HTMLElement).dataset.kind))).toEqual(['parcels', 'formed', 'designs']);
+    await expect(objectTabs.locator('.click-stack__progression')).toHaveText(['›', '›']);
+    await expect(stackSection(page, 'formed')).toBeHidden();
     await expect(focus.first()).toHaveCSS('animation-name', 'click-stack-focus-pulse');
     await page.emulateMedia({ reducedMotion: 'reduce' });
     await expect(focus.first()).toHaveCSS('animation-name', 'none');
@@ -243,15 +240,16 @@ test.describe('Click stack @core', () => {
     const stack = clickStack(page);
     await expect(stack.locator('.click-stack__choices')).toHaveCount(0);
     await expect(stack.locator('.click-stack__copy-reference')).toHaveCount(0);
-    // Selecting Formed brings its producing design back into the window as a collapsed header.
-    await stackSection(page, 'formed').locator('.click-stack__row').click();
+    // Selecting Formed brings its producing design back as another object tab.
+    await stack.locator('.click-stack__object-tab[data-kind="formed"]').click();
     await expect(stackSection(page, 'formed')).toHaveClass(/is-selected/);
     await stackSection(page, 'formed').locator('.click-stack__row').click();
     await expect(stackSection(page, 'formed').locator('.click-stack__row')).toHaveAttribute('aria-expanded', 'false');
     for (const kind of ['designs', 'formed', 'parcels']) {
+      await expect(stack.locator(`.click-stack__object-tab[data-kind="${kind}"]`)).toBeVisible();
       const row = stackSection(page, kind).locator('.click-stack__row');
+      if (kind !== 'formed') { await expect(row).toBeHidden(); continue; }
       expect((await row.boundingBox())!.height).toBeLessThanOrEqual(48);
-      if (kind === 'designs') await expect(row.locator('.proposal-type-badge')).toHaveCount(0);
       await expect(row.locator('.click-stack__row-title')).toHaveCSS('white-space', 'nowrap');
       await expect(row.locator('.click-stack__row-detail')).toHaveCSS('text-overflow', 'ellipsis');
     }
@@ -282,16 +280,12 @@ test.describe('Click stack @core', () => {
     await expect(parcels.locator('.click-stack__copy-reference')).toHaveCount(0);
     await expect(stack.locator('.click-stack__head')).toHaveCount(0);
     await expect(panel.locator('.panel-header')).toBeHidden();
-    const designTab = panel.getByRole('tab', { name: 'Design', exact: true });
-    await expect(designTab).toHaveAttribute('aria-selected', 'true');
-    await expect(panel.getByRole('tab').first()).toHaveAccessibleName('Design');
-    await expect(designTab).toHaveAttribute('title','Design');
-    await expect(designTab.locator('.fa-pen')).toBeVisible();
-    await expect(designTab).toHaveText('');
-    const infoTab=panel.getByRole('tab',{name:'Info',exact:true});
-    await expect(infoTab.locator('.fa-circle-info')).toBeVisible();
-    await expect(infoTab).toHaveAttribute('title','Info');
-    await expect(infoTab).toHaveText('');
+    const tabs = parcels.locator('.click-stack__content-tabs');
+    const actions = tabs.getByRole('tab', { name: 'Actions', exact: true });
+    await expect(actions).toHaveAttribute('aria-selected', 'true');
+    await expect(tabs.getByRole('tab').first()).toHaveAccessibleName('Actions');
+    await expect(tabs.getByRole('tab', { name: 'Info', exact: true })).toBeVisible();
+    await expect(panel.locator('.parcel-tabs')).toBeHidden();
     await expect(panel.locator('.parcel-transport-btn--track .cb-icon-track')).toHaveCSS('mask-image', /track\.svg/);
     const selection = panel.locator('.multi-select-group');
     const customSite = panel.getByRole('button', { name: 'Custom site', exact: true });
@@ -305,11 +299,11 @@ test.describe('Click stack @core', () => {
     }));
     expect(Math.max(...boxes.map(box=>box.y))-Math.min(...boxes.map(box=>box.y))).toBeLessThanOrEqual(1);
     expect(boxes[0].x+boxes[0].width).toBeLessThanOrEqual(boxes[1].x);
-    expect(boxes[1].y+boxes[1].height).toBeLessThanOrEqual((await panel.locator('.parcel-tabs').boundingBox())!.y);
-    // The tab choice survives a different parcel and section collapse/reopen.
-    await panel.getByRole('tab', { name: 'Info', exact: true }).click();
+    expect((await tabs.boundingBox())!.y + (await tabs.boundingBox())!.height).toBeLessThanOrEqual(boxes[0].y);
+    // A selected page belongs to this object; another parcel opens ready for work.
+    await parcelTab(page, 'info-tab').click();
     await expect(page.locator('#parcel-info-title')).toContainText(PARCEL_ID);
-    await expect(panel.locator('[data-parcel-tab-id="propose-tab"]')).toBeVisible();
+    await expect(parcelTab(page, 'propose-tab')).toBeVisible();
     for (const id of ['parcel.propose', 'parcel.details', 'parcel.proposals', 'parcel.tools', 'parcel.history', 'parcel.selectMore', 'parcel.detectBlock']) {
       await expect(parcels.locator(`[data-command="${id}"]`)).toHaveCount(0);
     }
@@ -327,7 +321,7 @@ test.describe('Click stack @core', () => {
     await clickMapPoint(page, 15.9829, 45.80025);
     await expect(stack).toBeVisible();
     await expect(page.locator('#parcel-info-title')).toContainText(SECOND_PARCEL_ID);
-    await expect(stackSection(page, 'parcels').getByRole('tab', { name: 'Info', exact: true })).toHaveAttribute('aria-selected', 'true');
+    await expect(parcelTab(page, 'propose-tab')).toHaveAttribute('aria-selected', 'true');
     await expect(stackSection(page, 'parcels').locator('#parcel-info-panel')).toBeVisible();
 
     // Escape closes it, and the hosted panel with it.
@@ -340,7 +334,8 @@ test.describe('Click stack @core', () => {
     await openCity(page);
     for (const width of [390, 320]) {
       await page.setViewportSize({width,height:844});
-      await clickMapPoint(page,15.9822,45.80025);
+      await expect.poll(() => page.evaluate(() => (window as any).map.getSize().x)).toBe(width);
+      await openParcel(page, 'proposals');
       const panel=page.locator('#parcel-info-panel');
       const row=panel.locator('.multi-select-options');
       await expect(row.getByRole('button',{name:'Manual',exact:true})).toBeVisible();
@@ -354,9 +349,9 @@ test.describe('Click stack @core', () => {
       expect(boxes[1].right).toBeLessThanOrEqual(width);
       expect(boxes[0].right).toBeLessThanOrEqual(boxes[1].x);
       await page.screenshot({path:testInfo.outputPath(`selection-row-${width}.png`)});
-      const tabWidths=await panel.getByRole('tab').evaluateAll(tabs=>tabs.filter(tab=>tab.getBoundingClientRect().width>0).map(tab=>tab.getBoundingClientRect().width));
-      expect(Math.max(...tabWidths)-Math.min(...tabWidths)).toBeLessThanOrEqual(1);
-      await panel.getByRole('tab',{name:'Info',exact:true}).click();
+      const tabs = page.locator('#click-stack .click-stack__content-tabs');
+      expect((await tabs.boundingBox())!.width).toBeLessThanOrEqual(width);
+      await parcelTab(page, 'info-tab').click();
       await page.keyboard.press('Escape');
       await expect(clickStack(page)).toBeHidden();
     }
@@ -371,7 +366,7 @@ test.describe('Click stack @core', () => {
       const designs = stackSection(page, 'designs');
       await expect(designs.locator('.click-stack__row')).toHaveAttribute('aria-expanded', 'true');
       await expect(designs.locator('#proposal-details-panel')).toBeVisible();
-      await expect(designs.locator('#proposal-details-panel [data-proposal-tab="overview"]')).toBeVisible();
+      await expect(designs.locator('.click-stack__content-tabs [data-page="design-overview"]')).toBeVisible();
       const key = await page.evaluate(proposalId => String((window as any).getProposalKey(
         (window as any).proposalStorage.getProposal(proposalId))), id);
       await expect(designs.locator('#proposal-details-content')).toHaveAttribute('data-proposal-id', key);
@@ -415,6 +410,7 @@ test.describe('Click stack @core', () => {
     await expect(designs.locator('.click-stack__row')).toHaveAttribute('aria-expanded', 'true');
     await expect(designs.locator('.click-stack__body #planning-inspector, .click-stack__body #proposal-details-panel')).toBeVisible();
     await expect(designs.locator('#proposal-details-content .proposal-type-badge')).toHaveCount(1);
+    await designs.locator('[data-page="design-overview"]').click();
     const badges=designs.locator('.proposal-badges-row > .cb-badge');
     await expect(badges.nth(0)).toContainText('Park');
     await expect(badges.nth(1)).toContainText('Applied');
@@ -430,6 +426,7 @@ test.describe('Click stack @core', () => {
     expect(fonts.author).toEqual(fonts.parcel);
     // Add to plan heads the design card above the hosted panel; its footer does not repeat it
     // (7cc412330, docs/click-stack.md).
+    await designs.locator('[data-page="actions"]').click();
     await expect(designs.locator('.click-stack__actions--design .btn-add-to-plan')).toBeVisible();
     const actions=designs.locator('.proposal-primary-actions > button:visible');
     await expect(actions).toHaveCount(5);
@@ -494,6 +491,7 @@ test.describe('Click stack @core', () => {
     await expect(agreements.locator('#agreement-panel')).toBeVisible();
     await expect(agreements.getByRole('button', { name: 'Agreement details', exact: true })).toHaveCount(0);
     await expect(page.locator('#agreement-panel-title')).toHaveText(titles[1]);
+    await agreements.locator('[data-page="agreement-overview"]').click();
     const lastProperty = agreements.locator('[data-agreement-properties-panel="overview"] > :last-child');
     await lastProperty.scrollIntoViewIfNeeded();
     await expect(lastProperty).toBeInViewport();
@@ -552,7 +550,7 @@ test.describe('Click stack @core', () => {
     const formed = stackSection(page, 'formed');
     await expect(formed.locator('.click-stack__row')).toHaveAttribute('aria-expanded', 'true');
     await expect(formed.locator('#parcel-info-panel')).toBeVisible();
-    await formed.locator('#parcel-info-panel [data-parcel-tab-id="propose-tab"]').click();
+    await parcelTab(page, 'propose-tab').click();
     await expect(formed.locator('.parcel-build-btn--park')).toBeVisible();
   });
 });

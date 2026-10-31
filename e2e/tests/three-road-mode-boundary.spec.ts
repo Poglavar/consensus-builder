@@ -15,6 +15,7 @@ test('3D road selection keeps buildings stable, ground continuous and 2D handles
   // openCity suppresses decorative motion; this regression must exercise the real pulsing outline.
   await page.evaluate(() => { (window as any).__reducedMotion = false; });
   await page.locator('#mode-3d-toggle').click();
+  await expect(page.locator('#mode-3d-toggle')).not.toHaveClass(/mode-btn-loading/, { timeout: 20_000 });
   await expect(page.locator('body')).toHaveClass(/three-mode-active/);
   await expect.poll(() => page.evaluate(() => (window as any).__mapModeState?.pending)).toBe(false);
   await expect(page.locator('.road-node-handle')).toHaveCount(0);

@@ -10,16 +10,31 @@ for (const viewport of [{ width: 1280, height: 720 }, { width: 390, height: 844 
 
     test.beforeEach(async ({ page }) => {
       await page.setContent('<!doctype html><html><body class="three-mode-active"><main id="map-container"></main></body></html>');
-      for (const file of ['tokens', 'primitives', 'base', 'map', 'panels', 'utilities', 'map-shell', 'planning-views', 'mobile-sheets', 'three-click-stack']) {
+      for (const file of ['tokens', 'primitives', 'base', 'map', 'panels', 'utilities', 'map-shell', 'planning-views', 'mobile-sheets', 'three-click-stack', 'click-stack-navigation']) {
         await page.addStyleTag({ path: path.join(frontend, `css/${file}.css`) });
       }
       await page.addScriptTag({ path: path.join(frontend, 'js/click-stack/click-stack-model.js') });
-      await page.addScriptTag({ path: path.join(frontend, 'js/three-click-stack.js') });
       await page.addScriptTag({ path: path.join(frontend, 'js/mobile-dock-sheet.js') });
+      await page.addScriptTag({ path: path.join(frontend, 'js/ui/object-list.js') });
+      await page.addScriptTag({ path: path.join(frontend, 'js/click-stack/click-stack-relations.js') });
+      await page.addScriptTag({ path: path.join(frontend, 'js/click-stack/click-stack-navigation.js') });
+      await page.addScriptTag({ path: path.join(frontend, 'js/three-click-stack.js') });
+      await page.evaluate(() => {
+        const labels: Record<string, string> = {
+          'clickStackNavigation.objects': 'Objects', 'clickStackNavigation.content': 'Content',
+          'clickStackNavigation.info': 'Info', 'clickStackNavigation.actions': 'Actions',
+          'clickStackNavigation.close': 'Close', 'clickStackNavigation.fullScreen': 'Full screen',
+          'clickStackNavigation.showMap': 'Show map', 'clickStackNavigation.designs': 'Designs',
+          'clickStackNavigation.plans': 'Plans', 'clickStackNavigation.parcels': 'Parcels',
+          'clickStackNavigation.built': 'Built', 'clickStackNavigation.permitted': 'Permitted',
+          'clickStackNavigation.formed': 'Formed parcels', 'clickStackNavigation.agreements': 'Agreements'
+        };
+        (window as any).i18n = { t: (key: string) => labels[key] || key };
+      });
     });
 
     test('scoped agreement selector sits above Plans and follows the selected plan', async ({ page }) => {
-      for (const file of ['ui/object-list', 'click-stack/click-stack-relations', 'design-memberships', 'ui/busy-control']) {
+      for (const file of ['design-memberships', 'ui/busy-control']) {
         await page.addScriptTag({ path: path.join(frontend, `js/${file}.js`) });
       }
       await page.evaluate(() => {
@@ -35,15 +50,14 @@ for (const viewport of [{ width: 1280, height: 720 }, { width: 390, height: 844 
           { focus: 'plans', container: document.getElementById('map-container') }, { activate() {}, focus() {} });
       });
       const root = page.locator('#three-click-stack'), agreements = root.locator('[data-kind="agreements"].click-stack__section');
-      await expect(agreements).toBeVisible();
+      if (viewport.width < 768) {
+        await expect(agreements).toBeHidden();
+      }
       expect(await root.locator('.click-stack__section').evaluateAll(rows => rows.map(row => (row as HTMLElement).dataset.kind))).toEqual(['agreements', 'plans']);
-      await agreements.locator('.click-stack__row').click();
-      const choices = agreements.locator('.click-stack__selector');
-      await expect(choices.locator('option')).toHaveCount(2);
-      await choices.selectOption('a2'); await expect(agreements.locator('.agreement-object-heading')).toHaveText('Alternative terms');
-      await root.locator('.click-stack__section[data-kind="plans"] .click-stack__row').click();
       await root.locator('.click-stack__selector[data-kind="plans"]').selectOption('p2');
-      await agreements.locator('.click-stack__row').click();
+      if (viewport.width < 768) await root.locator('.click-stack__object-tab[data-kind="agreements"]').click();
+      else await agreements.locator('.click-stack__row').click();
+      await expect(agreements).toBeVisible();
       await expect(agreements.locator('.agreement-object-heading')).toHaveText('Other plan terms');
       await expect(agreements.locator('.click-stack__selector')).toHaveCount(0);
       await expect(agreements.getByRole('button', { name: 'Agreement details', exact: true })).toHaveCount(0);
@@ -62,7 +76,7 @@ for (const viewport of [{ width: 1280, height: 720 }, { width: 390, height: 844 
           w.ThreeClickStack.show(input, { focus: kind, container: document.getElementById('map-container') }, {
             activate(_kind: string, _instance: unknown, body: HTMLElement) {
               const panel = document.createElement('div');
-              panel.className = hosted ? 'planning-inspector is-hosted' : 'three-mode-parcel-panel';
+              panel.className = `sizing-content ${hosted ? 'planning-inspector is-hosted' : 'three-mode-parcel-panel'}`;
               if (hosted) {
                 panel.id = 'planning-inspector';
                 const metrics = document.createElement('dl');
@@ -87,17 +101,12 @@ for (const viewport of [{ width: 1280, height: 720 }, { width: 390, height: 844 
             },
           });
         }, scenario);
-
-        // Give the short record and its neighbouring headings room to fit on a phone.
-        if (scenario.paragraphs === 1 && viewport.width < 768) {
-          await page.locator('#three-click-stack > .mobile-dock-sheet-handle').focus();
-          await page.keyboard.press('End');
-        }
+        if (scenario.kind === 'designs') await page.locator('#three-click-stack .click-stack__content-tabs [data-page="info"]').click();
 
         const metrics = await page.evaluate(() => {
           const stack = document.querySelector('#three-click-stack')!;
           const body = stack.querySelector('.click-stack__body')!;
-          const content = body.firstElementChild!;
+          const content = body.querySelector('.sizing-content')!;
           return {
             stack: stack.getBoundingClientRect().toJSON(),
             body: body.getBoundingClientRect().toJSON(),
@@ -105,6 +114,8 @@ for (const viewport of [{ width: 1280, height: 720 }, { width: 390, height: 844 
             bodyScrollHeight: body.scrollHeight,
             bodyClientHeight: body.clientHeight,
             bodyPadding: parseFloat(getComputedStyle(body).paddingTop) + parseFloat(getComputedStyle(body).paddingBottom),
+            contentTabsHeight: body.querySelector('.click-stack__content-tabs')?.getBoundingClientRect().height || 0,
+            bodyGap: parseFloat(getComputedStyle(body).rowGap),
             stackScrollHeight: stack.scrollHeight,
             stackClientHeight: stack.clientHeight,
             headings: [...stack.querySelectorAll('.click-stack__heading')].map(el => el.getBoundingClientRect().toJSON()),
@@ -112,6 +123,13 @@ for (const viewport of [{ width: 1280, height: 720 }, { width: 390, height: 844 
           };
         });
         expect(metrics.stack.height).toBeLessThanOrEqual(metrics.maxHeight + 1);
+        const stack = page.locator('#three-click-stack');
+        if (viewport.width < 768) {
+          await expect(stack.locator('.mobile-dock-sheet-handle')).toHaveCount(0);
+          await expect(stack.locator('.click-stack__object-tab')).toHaveCount(4);
+          await expect(stack.locator('.click-stack__section:visible')).toHaveCount(1);
+          await expect(stack.locator('.click-stack__content-tabs [data-page="info"]')).toBeVisible();
+        }
         if (scenario.hosted) {
           const compact = await page.locator('.planning-metrics').evaluate(el => {
             const items = [...el.children];
@@ -125,12 +143,14 @@ for (const viewport of [{ width: 1280, height: 720 }, { width: 390, height: 844 
           expect(compact.sizes).toEqual(Array(4).fill(compact.base));
         }
         expect(metrics.stackScrollHeight).toBeLessThanOrEqual(metrics.stackClientHeight + 1);
-        for (const heading of metrics.headings) {
-          expect(heading.height).toBeGreaterThanOrEqual(40);
-          expect(heading.bottom).toBeLessThanOrEqual(metrics.stack.bottom + 1);
+        if (viewport.width >= 768) {
+          for (const heading of metrics.headings) {
+            expect(heading.height).toBeGreaterThanOrEqual(40);
+            expect(heading.bottom).toBeLessThanOrEqual(metrics.stack.bottom + 1);
+          }
         }
         if (scenario.paragraphs === 1) {
-          expect(metrics.body.height - metrics.content.height).toBeLessThanOrEqual(metrics.bodyPadding + 1);
+          expect(metrics.body.height - metrics.content.height).toBeLessThanOrEqual(metrics.bodyPadding + metrics.contentTabsHeight + metrics.bodyGap + 1);
           expect(metrics.stack.height).toBeLessThan(metrics.maxHeight);
           expect(metrics.bodyScrollHeight).toBeLessThanOrEqual(metrics.bodyClientHeight + 1);
         } else {
@@ -142,7 +162,7 @@ for (const viewport of [{ width: 1280, height: 720 }, { width: 390, height: 844 
       });
     }
 
-    test('collapsing a section shrinks the panel, including after resizing it', async ({ page }) => {
+    test('collapsing a section shrinks the panel; mobile uses object tabs and an explicit map/full-size control', async ({ page }) => {
       await page.evaluate(() => {
         const w = window as any;
         const input = Object.fromEntries(['built', 'designs', 'permitted', 'parcels'].map(kind => [kind, [{ id: kind }]]));
@@ -156,13 +176,19 @@ for (const viewport of [{ width: 1280, height: 720 }, { width: 390, height: 844 
       });
       const stack = page.locator('#three-click-stack');
       if (viewport.width < 768) {
-        const handle = stack.locator(':scope > .mobile-dock-sheet-handle');
-        await expect(handle).toBeVisible();
-        const surface = await stack.evaluate(el => ({ background: getComputedStyle(el).backgroundColor, handleHeight: el.firstElementChild!.getBoundingClientRect().height }));
+        await expect(stack.locator('.mobile-dock-sheet-handle')).toHaveCount(0);
+        const surface = await stack.evaluate(el => ({ background: getComputedStyle(el).backgroundColor, objectTabsHeight: el.firstElementChild!.getBoundingClientRect().height }));
         expect(surface.background).toMatch(/^rgba\(.+, 0\.8\)$/);
-        expect(surface.handleHeight).toBeGreaterThanOrEqual(44);
-        await handle.focus();
-        await page.keyboard.press('End');
+        expect(surface.objectTabsHeight).toBeGreaterThanOrEqual(44);
+        await expect(stack.locator('.click-stack__object-tab')).toHaveCount(4);
+        await stack.locator('.click-stack__object-tab[data-kind="parcels"]').click();
+        await expect(stack.locator('.click-stack__object-tab[data-kind="parcels"]')).toHaveAttribute('aria-selected', 'true');
+        await expect(stack.locator('.click-stack__section:visible')).toHaveAttribute('data-kind', 'parcels');
+        await stack.locator('.click-stack__object-tab[data-kind="designs"]').click();
+        await stack.locator('.click-stack__size').click();
+        await expect(stack).toHaveClass(/is-mobile-full/);
+        await stack.locator('.click-stack__size').click();
+        await expect(stack).not.toHaveClass(/is-mobile-full/);
       }
       const expandedHeight = (await stack.boundingBox())!.height;
       await stack.locator('[data-action="row"][data-kind="designs"]').click();

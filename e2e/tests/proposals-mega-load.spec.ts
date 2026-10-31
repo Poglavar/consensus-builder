@@ -132,7 +132,7 @@ test.describe('Mega proposal loading @features', () => {
     if (await panel.evaluate(element => element.classList.contains('is-minimized'))) {
       await minimizeButton.click();
     }
-    await expect(panel.locator('.panel-body')).toBeVisible();
+    await expect(panel.locator('#proposal-details-footer')).toBeVisible();
     await page.locator('#click-stack [data-page="relation-parcels"]').click();
     const ancestorsList = page.locator('#click-stack .click-stack__choices[data-kind="parcels"]');
     await expect(ancestorsList).toBeVisible();

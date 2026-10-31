@@ -184,6 +184,17 @@ export async function layOutParcel(page: Page, parcelId: string): Promise<string
 
 export const agreementEditor = (page: Page) => page.locator('section#agreement-editor');
 export const agreementPanel = (page: Page) => page.locator('section#agreement-panel');
+// The mobile/stack inspector promotes its content pages into the shared tab bar. Tests choose a
+// page explicitly: opening an agreement deliberately remains on Actions.
+export async function openAgreementContentTab(page: Page, name: string): Promise<void> {
+  const tabs = page.locator('#click-stack .click-stack__content-tabs');
+  const tab = tabs.getByRole('tab', { name, exact: true });
+  await expect(tab).toBeVisible();
+  await tab.click();
+  await expect(tab).toHaveAttribute('aria-selected', 'true');
+}
+export const openAgreementDecision = (page: Page) => openAgreementContentTab(page, 'Decision');
+export const openAgreementActions = (page: Page) => openAgreementContentTab(page, 'Actions');
 export const storedAgreements = (page: Page) => page.evaluate(() => JSON.parse(JSON.stringify((window as any).AgreementStore.list())));
 export const editorSave = (editor: Locator) => editor.locator('[data-agreement-action="save"]');
 // The footer's Cancel (the header's close button is the other [data-agreement-action="cancel"]).

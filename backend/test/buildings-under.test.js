@@ -36,7 +36,7 @@ describe('what it asks the database', () => {
         pool.setResult({ rows: [] });
         await post({ regions: [{ key: 'p-1', geometry: square() }] });
         const sql = pool.getCalls().map(call => call.sql).join('\n');
-        expect(sql).toContain('WHERE ST_Intersects(v.geom, r.geom)');
+        expect(sql).toContain('WHERE ST_Intersects(b.footprint_geom, r.geom)');
         // An authored MultiPolygon of edge-touching buildings is OGC-invalid, and ST_Intersects
         // THROWS on invalid input — one bad region among 300 500'd the whole first live replay.
         expect(sql).toMatch(/ST_MakeValid\(ST_Transform\(\s*ST_SetSRID\(ST_GeomFromGeoJSON/);

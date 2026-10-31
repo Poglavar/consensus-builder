@@ -8156,8 +8156,7 @@
         "tabs": {
             "display": "Display",
             "compare": "Compare",
-            "options": "Options",
-            "rules": "Rules"
+            "options": "Options"
         },
         "compare": {
             "stop": "Stop comparing",
@@ -8537,7 +8536,6 @@
         "geometryUnavailable": "Could not load all included designs. Their full extent cannot be highlighted.",
         "sharePlan": "Share plan",
         "chooseSharePlan": "Which plan do you want to share?",
-        "published": "Published",
         "revision": "Revision"
     },
     "clickStackNavigation": {

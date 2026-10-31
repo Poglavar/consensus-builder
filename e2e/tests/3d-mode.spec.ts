@@ -213,7 +213,7 @@ test.describe('3D rendering and controls @features', () => {
     const stack = page.locator('#three-click-stack');
     await page.screenshot({ path: '/private/tmp/selection-ground-design-390.png' });
     // An applied park forms the ground it stands on, so the coincident parcel is the Formed section (fa52dcba8).
-    await stack.locator('.click-stack__section[data-kind="formed"] .click-stack__row').click();
+    await stack.locator('.click-stack__object-tab[data-kind="formed"]').click();
     await expect.poll(selection).toMatchObject({ kind: 'formed', representation: 'ground', pattern: 'outline', hatches: 0 });
     await page.screenshot({ path: '/private/tmp/selection-ground-parcel-390.png' });
     await page.keyboard.press('Escape');

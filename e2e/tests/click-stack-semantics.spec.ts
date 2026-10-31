@@ -87,18 +87,22 @@ for (const width of [1280, 390]) {
     const planSection = stack2d.locator('.click-stack__section[data-kind="plans"]');
     await expect(planSection).toBeVisible();
     await expect(planSection).toHaveClass(/is-expanded/);
-    // Share, Create agreement, Schedule (build-out timeline) and Download, one shared button style.
+    // Actions share button styling; schedule editing stays beside its timeline in Info.
     await planSection.locator('[data-page="actions"]').click();
     const planActions = planSection.locator('.click-stack__actions > button');
     expect(await planActions.evaluateAll(buttons => buttons.map(button => button.className))).toEqual([
       'btn btn-primary click-stack__share-plan', 'btn click-stack__create-agreement',
-      'btn click-stack__schedule-plan', 'btn click-stack__download-plan']);
+      'btn click-stack__download-plan']);
     const planActionSizes = await planActions.evaluateAll(buttons => buttons.map(button => {
       const style = getComputedStyle(button);
       return { fontSize: style.fontSize, height: button.getBoundingClientRect().height };
     }));
     expect(planActionSizes.every(action => action.fontSize === '15px' && action.height > 0)).toBe(true);
     expect(planActionSizes.every(action => Math.abs(action.height - planActionSizes[0].height) < 1)).toBe(true);
+    await expect(planSection.locator('.click-stack__schedule-plan')).toBeHidden();
+    await planSection.locator('[data-page="info"]').click();
+    await expect(planSection.locator('.click-stack__schedule-plan')).toBeVisible();
+    await expect(planSection.locator('.click-stack__schedule-plan')).toHaveCSS('font-size', '15px');
     await expect(planSection.locator('[style]')).toHaveCount(0);
 
     // Restore the source parcel before showing its 3D value panel; the park design clears its
@@ -131,6 +135,7 @@ for (const width of [1280, 390]) {
     expect(row3dStyle.size).toBe('15px');
     expect(parseFloat(row3dStyle.minHeight)).toBeGreaterThanOrEqual(36);
 
+    await parcels3d.locator('[data-page="stats"]').click();
     const parcelPanel = parcels3d.locator('.three-mode-parcel-panel');
     await expect(parcelPanel).toBeVisible();
     const tableSemantics = await parcelPanel.evaluate(panel => {
@@ -160,7 +165,7 @@ for (const width of [1280, 390]) {
     await testInfo.attach(`Click stack semantics ${width}px`, { path: screenshot, contentType: 'image/png' });
     await page.evaluate(id => (window as any).showThreeModeDesign(id), proposalId);
     await stack3d.locator('[data-page="actions"]').click();
-    await stack3d.getByRole('button', { name: 'Design actions', exact: true }).click();
+    await stack3d.getByRole('button', { name: 'Open actions in 2D', exact: true }).click();
     await expect(stack2d.locator('[data-page="actions"]')).toHaveAttribute('aria-selected', 'true');
     await expect(stack2d.locator('.proposal-primary-actions')).toBeVisible();
   });

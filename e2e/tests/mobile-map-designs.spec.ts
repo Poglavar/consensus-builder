@@ -7,7 +7,7 @@ import { pageIndex, fileDesign } from '../helpers/mocks/shared-server';
 test.use({ viewport: { width: 390, height: 844 } });
 test.beforeEach(async ({ mockApi: page }) => { await stubBasemapTiles(page); });
 const writes=(page:any)=>pageIndex(page).requests.filter(r=>r.method==='POST'&&['/pins','/designs','/plans','/agreements'].includes(r.path));
-async function openPlans(page:any){if(!await page.locator('#proposals-sheet').isVisible())await page.locator('#proposals-button').click();await page.locator('#shareAppliedProposalsButton').click();await expect(page.locator('#designs-plans')).toBeVisible();}
+async function openPlans(page:any){if(!await page.locator('#proposals-sheet').isVisible()){const trigger=page.locator('#proposals-button');if(!await trigger.isVisible())await page.keyboard.press('Escape');await expect(trigger).toBeVisible();await trigger.click();}await page.locator('#shareAppliedProposalsButton').click();await expect(page.locator('#designs-plans')).toBeVisible();}
 // Lists (01268caee): Create plan sits in #lists-actions and ticks the designs in Lists → Designs;
 // Continue opens the composer listing them. A saved plan opens in the click stack's Plan section.
 const planSection=(page:any)=>page.locator('#click-stack .click-stack__section[data-kind="plans"]');

@@ -8202,8 +8202,7 @@
         "tabs": {
             "display": "Prikaz",
             "compare": "Poređenje",
-            "options": "Opcije",
-            "rules": "Pravila"
+            "options": "Opcije"
         },
         "compare": {
             "stop": "Prekini poređenje",
@@ -8589,7 +8588,6 @@
         "geometryUnavailable": "Nije moguće učitati sve uključene dizajne. Njihov pun obuhvat nije moguće istaći.",
         "sharePlan": "Podeli plan",
         "chooseSharePlan": "Koji plan želite da podelite?",
-        "published": "Objavljeno",
         "revision": "Verzija"
     },
     "clickStackNavigation": {

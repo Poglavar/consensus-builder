@@ -51,6 +51,7 @@ function viewer(parcelFeatures = parcels) {
         proposedBuildingsGroup: null, buildingMaterials: { massing: null },
         cloneBuildingMaterial: material, stringToColor: () => '#abcdef', materials: { sliceEdges: {} },
         addBuildingFloorLines: vi.fn(), console,
+        tagBuildingStoreys() {},
         markOwnedGeometry: (_object, geometry) => geometry,
         markOwnedMaterial: (_object, surface) => surface,
         polygonFeatureToMeshes: (_feature, surface) => [{

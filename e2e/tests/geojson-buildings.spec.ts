@@ -30,7 +30,7 @@ async function openTool(page: any, kind: string) {
     await page.evaluate(async () => {
       await (window as any).CadastralParcelRepository.ensureIds(['HR-335754-1234','HR-335754-1235','HR-335754-1236','HR-335754-1237','HR-335754-1238']);
     });
-    await openParcel(page, 'info');
+    await openParcel(page, 'proposals');
     await page.locator('.multi-select-detect-btn').click();
     await expect.poll(() => page.evaluate(() => (window as any).multiParcelSelection.selectedParcels.size)).toBeGreaterThan(1);
     await closeParcel(page);

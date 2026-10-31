@@ -87,7 +87,7 @@ test.describe('proposal button controls sixth pass @features', () => {
     // its Open imports the design (ListsPanel designOf) and opens it.
     await page.locator('#proposals-button').click();
     const list = page.locator('#proposals-sheet');
-    await expect(list.locator(`#proposal-list-host .lists-item[data-list-id="${cid}"]`)).toContainText('Draft');
+    await expect(list.locator(`#proposal-list-host .lists-item[data-list-id="${cid}"]`).filter({ hasText: 'Unrelated local key' })).toContainText('Draft');
     await expect(list.locator('#proposal-list-host .lists-item[data-list-id="p-stale-mark"]')).toContainText('Draft');
     const row = list.locator('#proposal-list-host .lists-item').filter({ hasText: 'Downloadable design' });
     await expect(row).toBeVisible();

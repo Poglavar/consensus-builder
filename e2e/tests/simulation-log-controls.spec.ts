@@ -3,7 +3,7 @@ import { openDesignReview } from '../helpers/design-review';
 // creates designs (plan-design-agreement.md, M3: owners decide on agreements, so the simulation no
 // longer accepts, donates or pledges).
 import { test, expect } from '../helpers/fixtures';
-import { openCity, showProposal, PARCEL_ID } from '../helpers/runtime';
+import { openCity, showProposal, showProposalTab, PARCEL_ID } from '../helpers/runtime';
 import { sampleParcels } from '../helpers/mocks/parcel-data';
 
 const SECOND_PARCEL_ID = 'HR-335754-1235';
@@ -17,15 +17,12 @@ async function openActivityPanel(page: import('@playwright/test').Page): Promise
 }
 
 async function expectProposalTarget(page: import('@playwright/test').Page, proposalId: string, title: string): Promise<void> {
-  const inspector = page.locator('#planning-inspector');
-  const details = page.locator('#proposal-details-panel');
   await expect.poll(() => page.evaluate(() => {
     const w = window as any;
     return w.ProposalSelection?.getKey?.() || w.currentlyHighlightedProposalId || w.PlanningViews?.getSelected?.()?.proposalId;
   })).toBe(proposalId);
-  const inspectorTitle = inspector.getByRole('heading', { name: title, exact: true });
-  const detailsTitle = details.getByRole('heading', { name: title, exact: true });
-  await expect.poll(async () => await inspectorTitle.isVisible() || await detailsTitle.isVisible()).toBe(true);
+  await showProposalTab(page, 'overview');
+  await expect(page.locator('#click-stack').getByRole('region', { name: title, exact: true })).toBeVisible();
 }
 
 test.describe('simulation log links @features', () => {

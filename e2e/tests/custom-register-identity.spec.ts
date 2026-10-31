@@ -1,7 +1,12 @@
 import { test, expect } from '../helpers/fixtures';
 import { waitForMapReady } from '../helpers/app';
+import { stubBasemapTiles } from '../helpers/runtime';
 
 test('custom register references stay source-qualified after UI selection and reload', async ({ mockApi: page }) => {
+  // Each accepted register changes the active source by navigating, then this test deliberately
+  // reloads once more to prove the source-qualified reference is session-safe.
+  test.setTimeout(120_000);
+  await stubBasemapTiles(page);
   const geometry = { type: 'Polygon', coordinates: [[[-0.121, 51.499], [-0.119, 51.499],
     [-0.119, 51.501], [-0.121, 51.501], [-0.121, 51.499]]] };
   await page.route('**/semantic-register-*.geojson', route => route.fulfill({ json: {

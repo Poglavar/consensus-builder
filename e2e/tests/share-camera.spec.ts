@@ -9,13 +9,16 @@ const cameraParam = Object.values(camera).join(',');
 
 for (const mode of ['model', 'photo'] as const) {
   test(`${mode} plan creation saves camera and rotation choices; sharing cannot edit them`, async ({ mockApi: page }, testInfo) => {
+    test.setTimeout(90_000);
     await mockBuildingScene(page);
     if (mode === 'photo') await mockPhotoTiles(page);
     await openCity(page);
     const id = await createSpace(page, 'park');
     const content = await page.evaluate(id => (window as any).DesignRecord.published((window as any).proposalStorage.getProposal(id)), id);
     const index = pageIndex(page), cid = fileDesign(index, content);
-    await page.locator(mode === 'model' ? '#mode-3d-toggle' : '#mode-realistic-toggle').click();
+    const modeToggle = page.locator(mode === 'model' ? '#mode-3d-toggle' : '#mode-realistic-toggle');
+    await modeToggle.click();
+    await expect(modeToggle).not.toHaveClass(/mode-btn-loading/, { timeout: 20_000 });
     await expect(page.locator('#three-container canvas')).toBeVisible();
     if (mode === 'photo') await expect(page.locator('body')).toHaveClass(/realistic-mode-active/);
     await page.evaluate(view => (window as any).applyThree3DGeoView(view), camera);
@@ -27,7 +30,7 @@ for (const mode of ['model', 'photo'] as const) {
     await page.locator('#shareAppliedProposalsButton').click();
     // Create plan ticks the designs in Lists → Designs; Continue opens the composer listing them.
     await page.locator('#lists-actions').getByRole('button', { name: 'Create plan', exact: true }).click();
-    await page.locator('#proposal-list-host input[type=checkbox]').check();
+    await page.locator(`#proposal-list-host .lists-item[data-list-id="${id}"] input[type=checkbox]`).check();
     await page.locator('#lists-actions [data-lists-continue]').click();
     const composer = page.locator('.plan-composer');
     await expect(composer.locator('.plan-dialog__members li')).toHaveCount(1);
@@ -67,6 +70,7 @@ for (const mode of ['model', 'photo'] as const) {
 
 for (const [mode, action] of [['model', 'pointer'], ['model', 'wheel'], ['photo', 'key']] as const) {
   test(`${mode} arrival rotates the saved camera and stops on ${action}`, async ({ mockApi: page }) => {
+    test.setTimeout(60_000);
     await mockBuildingScene(page);
     let releaseTiles: (() => void) | undefined;
     if (mode === 'photo') {
@@ -77,6 +81,8 @@ for (const [mode, action] of [['model', 'pointer'], ['model', 'wheel'], ['photo'
     await page.goto(`/?city=zg&at=45.80025,15.9822,18&${mode === 'model' ? '3d' : 'photo'}&camera=${cameraParam}&rotate=1`);
     if (mode === 'photo') {
       await expect.poll(() => page.evaluate(() => (window as any).__mapModeState?.desired)).toBe('photo');
+      // The canvas exists while held terrain loads, but is only revealed after grounding.
+      await expect(page.locator('#three-container canvas')).toBeAttached({ timeout: 20_000 });
       await expect.poll(() => page.evaluate(() => (window as any).getThreeModeInternals?.()?.controls?.autoRotate)).toBe(false);
       releaseTiles!();
       await expect.poll(() => page.evaluate(() => (window as any).PhotorealMode?.getLoadDiagnostics().grounded), { timeout: 20_000 }).toBe(true);

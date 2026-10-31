@@ -712,6 +712,20 @@
       "controlType": "button"
     },
     {
+      "id": "control-a742d340d4db90-1",
+      "source": "index.html",
+      "markup": "<button type=\"button\" class=\"btn btn-primary\" data-app-update-reload data-i18n-key=\"appUpdates.reload\">",
+      "interaction": "click",
+      "controlType": "button"
+    },
+    {
+      "id": "control-a56e0869bc399e-1",
+      "source": "index.html",
+      "markup": "<button type=\"button\" id=\"app-update-later\" class=\"btn\" data-i18n-key=\"appUpdates.later\">",
+      "interaction": "click",
+      "controlType": "button"
+    },
+    {
       "id": "control-3fa03fcb7c4be1-1",
       "source": "index.html",
       "markup": "<button type=\"button\" id=\"planning-views-button\" class=\"map-shell-button\" data-sheet-target=\"planning-views\" aria-controls=\"planning-views\" aria-expanded=\"false\" title=\"Buildings and massing\" aria-label=\"Buildings and massing\" data-i18n-key=\"planningViews.title\" data-i18n-attr=\"title,aria-label\" hidden>"
@@ -736,6 +750,41 @@
       "markup": "<button type=\"button\" id=\"settings-button\" class=\"map-shell-button\" data-sheet-target=\"settings-sheet\" aria-controls=\"settings-sheet\" aria-expanded=\"false\" title=\"Settings\" aria-label=\"Settings\" data-i18n-key=\"mapShell.settings\" data-i18n-attr=\"title,aria-label\">",
       "interaction": "click",
       "controlType": "button"
+    },
+    {
+      "id": "control-668630620fcf16-1",
+      "source": "index.html",
+      "markup": "<button type=\"button\" id=\"buildout-clock-button\" class=\"map-shell-button\" aria-controls=\"buildout-clock\" aria-expanded=\"false\" title=\"Build-out over time\" aria-label=\"Build-out over time\" data-i18n-key=\"buildout.open\" data-i18n-attr=\"title,aria-label\" hidden>"
+    },
+    {
+      "id": "control-54cec8d0212fae-1",
+      "source": "index.html",
+      "markup": "<button type=\"button\" id=\"buildout-clock-reroll\" class=\"btn btn-icon buildout-clock__reroll\" aria-label=\"Another simulated build-out\" title=\"Another simulated build-out\" data-i18n-key=\"buildout.reroll\" data-i18n-attr=\"aria-label,title\">"
+    },
+    {
+      "id": "control-ade09aac827e47-1",
+      "source": "index.html",
+      "markup": "<button type=\"button\" id=\"buildout-clock-close\" class=\"close-circle-btn\" aria-label=\"Back to now\" title=\"Back to now\" data-i18n-key=\"buildout.close\" data-i18n-attr=\"aria-label,title\">"
+    },
+    {
+      "id": "control-1495290cfed728-1",
+      "source": "index.html",
+      "markup": "<button type=\"button\" id=\"buildout-clock-back\" class=\"btn btn-icon\" aria-label=\"Previous month\" title=\"Previous month\" data-i18n-key=\"buildout.back\" data-i18n-attr=\"aria-label,title\">"
+    },
+    {
+      "id": "control-87a43e9dc7f201-1",
+      "source": "index.html",
+      "markup": "<button type=\"button\" id=\"buildout-clock-play\" class=\"btn btn-icon\" aria-pressed=\"false\" aria-label=\"Play\" title=\"Play\">"
+    },
+    {
+      "id": "control-dad600ba6220b7-1",
+      "source": "index.html",
+      "markup": "<button type=\"button\" id=\"buildout-clock-forward\" class=\"btn btn-icon\" aria-label=\"Next month\" title=\"Next month\" data-i18n-key=\"buildout.forward\" data-i18n-attr=\"aria-label,title\">"
+    },
+    {
+      "id": "control-958a8a715b1c35-1",
+      "source": "index.html",
+      "markup": "<input type=\"range\" id=\"buildout-clock-slider\" class=\"buildout-clock__slider\" min=\"0\" max=\"0\" step=\"1\" value=\"0\" aria-label=\"Month\" data-i18n-key=\"buildout.month\" data-i18n-attr=\"aria-label\">"
     },
     {
       "id": "control-da506e99b14eb0-1",
@@ -792,6 +841,16 @@
       "controlType": "button"
     },
     {
+      "id": "control-5ed129e08af24e-1",
+      "source": "index.html",
+      "markup": "<button type=\"button\" id=\"planning-tab-display\" class=\"cb-tab\" role=\"tab\" aria-selected=\"true\" aria-controls=\"planning-views-display\" data-planning-tab=\"display\" data-i18n-key=\"planningViews.tabs.display\">"
+    },
+    {
+      "id": "control-3ba1ddc87f7672-1",
+      "source": "index.html",
+      "markup": "<button type=\"button\" id=\"planning-tab-compare\" class=\"cb-tab\" role=\"tab\" aria-selected=\"false\" aria-controls=\"planning-views-compare\" data-planning-tab=\"compare\" data-i18n-key=\"planningViews.tabs.compare\">"
+    },
+    {
       "id": "control-bd7f2ed239ad8b-1",
       "source": "index.html",
       "markup": "<button type=\"button\" id=\"planning-reroll-permitted\" class=\"btn btn-icon planning-reroll\" data-planning-reroll=\"permitted\">"
@@ -810,6 +869,31 @@
       "id": "control-04cbde91858531-1",
       "source": "index.html",
       "markup": "<button type=\"button\" id=\"planning-open-model\" class=\"cb-link planning-open-model\" hidden>"
+    },
+    {
+      "id": "control-282e39c9840c65-1",
+      "source": "index.html",
+      "markup": "<select id=\"planning-compare-left\" class=\"planning-layer-select\">"
+    },
+    {
+      "id": "control-07a1905fbb6aca-1",
+      "source": "index.html",
+      "markup": "<button type=\"button\" id=\"planning-compare-swap\" class=\"btn btn-icon planning-compare-swap\" title=\"Swap sides\" aria-label=\"Swap sides\" data-i18n-key=\"planningViews.compare.swap\" data-i18n-attr=\"title,aria-label\">"
+    },
+    {
+      "id": "control-2a57f67545551a-1",
+      "source": "index.html",
+      "markup": "<select id=\"planning-compare-right\" class=\"planning-layer-select\">"
+    },
+    {
+      "id": "control-1eaf9d477f10c9-1",
+      "source": "index.html",
+      "markup": "<button type=\"button\" id=\"planning-compare-enable\" class=\"btn btn-primary planning-compare-toggle\" aria-pressed=\"false\">"
+    },
+    {
+      "id": "control-bd61597e374f24-1",
+      "source": "index.html",
+      "markup": "<button type=\"button\" id=\"planning-compare-open-model\" class=\"cb-link\" data-i18n-key=\"planningViews.openModel\">"
     },
     {
       "id": "control-8be057f29ea7fe-1",
@@ -1023,20 +1107,6 @@
       "id": "control-501df78a9d2d19-1",
       "source": "index.html",
       "markup": "<input type=\"checkbox\" id=\"showBuildings\" onchange=\"toggleLayer('buildings')\">",
-      "interaction": "change",
-      "controlType": "checkbox"
-    },
-    {
-      "id": "control-5ad5ecdbade863-1",
-      "source": "index.html",
-      "markup": "<input type=\"checkbox\" id=\"showBuildingsDgu\" onchange=\"toggleLayer('buildingsDgu')\">",
-      "interaction": "change",
-      "controlType": "checkbox"
-    },
-    {
-      "id": "control-4b1851fd11a992-1",
-      "source": "index.html",
-      "markup": "<input type=\"checkbox\" id=\"showBuildingsOsm\" onchange=\"toggleLayer('buildingsOsm')\">",
       "interaction": "change",
       "controlType": "checkbox"
     },
@@ -1512,6 +1582,48 @@
       "controlType": "button"
     },
     {
+      "id": "control-841ff79aa8f0d8-1",
+      "source": "index.html",
+      "markup": "<button type=\"button\" id=\"parcel-source-notice-button\" class=\"btn\" onclick=\"openParcelSourceNotice()\">",
+      "interaction": "click",
+      "controlType": "button"
+    },
+    {
+      "id": "control-4686c0a7017863-1",
+      "source": "index.html",
+      "markup": "<button type=\"button\" class=\"btn site-intro-reopen\" data-site-intro-open>",
+      "interaction": "click",
+      "controlType": "button"
+    },
+    {
+      "id": "control-646e89a26bfc19-1",
+      "source": "index.html",
+      "markup": "<a class=\"btn\" href=\"how-to-use.html\" target=\"_blank\" rel=\"noopener noreferrer\" data-i18n-key=\"settingsPanel.userGuide\">",
+      "interaction": "click",
+      "controlType": "button"
+    },
+    {
+      "id": "control-c603e7c453cc0f-1",
+      "source": "index.html",
+      "markup": "<button type=\"button\" id=\"settings-credits-button\" class=\"btn\" data-settings-reference=\"credits\" data-i18n-key=\"mapCredits.title\">",
+      "interaction": "click",
+      "controlType": "button"
+    },
+    {
+      "id": "control-5a7fa8938eb4a7-1",
+      "source": "index.html",
+      "markup": "<button type=\"button\" id=\"settings-contact-button\" class=\"btn\" data-settings-reference=\"contact\" data-i18n-key=\"sidebar.info.contactTitle\">",
+      "interaction": "click",
+      "controlType": "button"
+    },
+    {
+      "id": "control-87ab2b1bf0841a-1",
+      "source": "index.html",
+      "markup": "<button type=\"button\" id=\"settings-about-button\" class=\"btn\" data-settings-reference=\"about\" data-i18n-key=\"sidebar.info.aboutTitle\">",
+      "interaction": "click",
+      "controlType": "button"
+    },
+    {
       "id": "control-ccd18ba64c54d8-1",
       "source": "index.html",
       "markup": "<button type=\"button\" id=\"showParcelCoverageButton\" data-map-modes=\"2d\" class=\"btn\" title=\"Visualize which grid cells are cached locally and how they compare to the current view.\" data-i18n-key=\"sidebar.parcels.coverageTooltip\" data-i18n-attr=\"title\">",
@@ -1536,27 +1648,6 @@
       "id": "control-ef7c7846791b15-1",
       "source": "index.html",
       "markup": "<button type=\"button\" class=\"btn btn-danger debug-only-control\" onclick=\"clearDetectedRoads()\" data-i18n-key=\"sidebar.roads.clearTooltip\" data-i18n-attr=\"title\">",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-6c8aa20fa93de8-1",
-      "source": "index.html",
-      "markup": "<button type=\"button\" id=\"wipeLocalDataButton\" class=\"btn btn-danger\" onclick=\"wipeLocalData()\" title=\"Clear all locally stored data (parcels, roads, designs, settings)\" data-i18n-key=\"sidebar.info.wipeDataTooltip\" data-i18n-attr=\"title\">",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-4686c0a7017863-1",
-      "source": "index.html",
-      "markup": "<button type=\"button\" class=\"btn site-intro-reopen\" data-site-intro-open>",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-841ff79aa8f0d8-1",
-      "source": "index.html",
-      "markup": "<button type=\"button\" id=\"parcel-source-notice-button\" class=\"btn\" onclick=\"openParcelSourceNotice()\">",
       "interaction": "click",
       "controlType": "button"
     },
@@ -1594,6 +1685,27 @@
       "markup": "<input type=\"checkbox\" id=\"debugModeCheckbox\" onchange=\"toggleDebugMode()\">",
       "interaction": "change",
       "controlType": "checkbox"
+    },
+    {
+      "id": "control-6c8aa20fa93de8-1",
+      "source": "index.html",
+      "markup": "<button type=\"button\" id=\"wipeLocalDataButton\" class=\"btn btn-danger\" onclick=\"wipeLocalData()\" title=\"Clear all locally stored data (parcels, roads, designs, settings)\" data-i18n-key=\"sidebar.info.wipeDataTooltip\" data-i18n-attr=\"title\">",
+      "interaction": "click",
+      "controlType": "button"
+    },
+    {
+      "id": "control-b7d4914a2af334-1",
+      "source": "index.html",
+      "markup": "<button type=\"button\" id=\"app-update-check\" class=\"btn\">",
+      "interaction": "click",
+      "controlType": "button"
+    },
+    {
+      "id": "control-ba886f3416d765-1",
+      "source": "index.html",
+      "markup": "<button type=\"button\" class=\"btn btn-primary\" data-app-update-reload data-i18n-key=\"appUpdates.reload\" hidden>",
+      "interaction": "click",
+      "controlType": "button"
     },
     {
       "id": "control-d572c33f597b6d-1",
@@ -1639,20 +1751,6 @@
       ]
     },
     {
-      "id": "control-a0de29e6745122-1",
-      "source": "index.html",
-      "markup": "<button type=\"button\" id=\"parcel-manual-selection\" class=\"btn btn-sm\" aria-pressed=\"false\" onclick=\"multiParcelSelection.toggle()\" data-i18n-key=\"panel.parcel.selectManually\">",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-54bc94246e2fdf-1",
-      "source": "index.html",
-      "markup": "<button type=\"button\" class=\"btn btn-sm multi-select-detect-btn\" data-i18n-key=\"panel.parcel.detectBlock\" onclick=\"(window.animateFloodfillFromSelected || function(){})();\">",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
       "id": "control-b4e4da87e76fda-1",
       "source": "index.html",
       "markup": "<button type=\"button\" class=\"cb-tab parcel-tab-btn parcel-tab-btn--icon\" role=\"tab\" aria-selected=\"true\" aria-controls=\"propose-tab\" data-parcel-tab-id=\"propose-tab\" onclick=\"(window.Parcels?.proposals?.switchParcelTab || window.switchParcelTab || function(){})(this, 'propose-tab')\" aria-label=\"Design\" title=\"Design\" data-i18n-key=\"proposalDrafts.tabs.design\" data-i18n-attr=\"aria-label,title\">",
@@ -1665,6 +1763,11 @@
       "markup": "<button type=\"button\" class=\"cb-tab parcel-tab-btn parcel-tab-btn--icon\" role=\"tab\" aria-selected=\"false\" aria-controls=\"info-tab\" data-parcel-tab-id=\"info-tab\" onclick=\"(window.Parcels?.proposals?.switchParcelTab || window.switchParcelTab || function(){})(this, 'info-tab')\" aria-label=\"Info\" title=\"Info\" data-i18n-key=\"panel.parcel.tabInfo\" data-i18n-attr=\"aria-label,title\">",
       "interaction": "click",
       "controlType": "button"
+    },
+    {
+      "id": "control-863d216bcc9027-1",
+      "source": "index.html",
+      "markup": "<button type=\"button\" class=\"cb-tab parcel-tab-btn\" role=\"tab\" aria-selected=\"false\" aria-controls=\"selected-parcels-tab\" data-parcel-tab-id=\"selected-parcels-tab\" hidden onclick=\"(window.Parcels?.proposals?.switchParcelTab || window.switchParcelTab || function(){})(this, 'selected-parcels-tab')\">"
     },
     {
       "id": "control-79eef0dec8b570-1",
@@ -1681,6 +1784,27 @@
       "controlType": "button"
     },
     {
+      "id": "control-a0de29e6745122-1",
+      "source": "index.html",
+      "markup": "<button type=\"button\" id=\"parcel-manual-selection\" class=\"btn btn-sm\" aria-pressed=\"false\" onclick=\"multiParcelSelection.toggle()\" data-i18n-key=\"panel.parcel.selectManually\">",
+      "interaction": "click",
+      "controlType": "button"
+    },
+    {
+      "id": "control-54bc94246e2fdf-1",
+      "source": "index.html",
+      "markup": "<button type=\"button\" class=\"btn btn-sm multi-select-detect-btn\" data-i18n-key=\"panel.parcel.detectBlock\" onclick=\"(window.animateFloodfillFromSelected || function(){})();\">",
+      "interaction": "click",
+      "controlType": "button"
+    },
+    {
+      "id": "control-237f019cbbd1a9-1",
+      "source": "index.html",
+      "markup": "<button id=\"parcelBuilderButton\" class=\"btn btn-sm\" type=\"button\" onclick=\"(window.Parcels?.uiClaim?.openParcelBuilder || window.openParcelBuilder || function(){})()\" title=\"Open Parcel Builder\">",
+      "interaction": "click",
+      "controlType": "button"
+    },
+    {
       "id": "control-3c526decb3664e-1",
       "source": "index.html",
       "markup": "<button id=\"mintAndClaimButton\" class=\"btn btn-primary\" type=\"button\" onclick=\"(window.Parcels?.uiClaim?.openParcelMintModal || window.openParcelMintModal || function(){})()\" title=\"Mint the parcel NFT\" disabled>",
@@ -1691,13 +1815,6 @@
       "id": "control-983329113addb5-1",
       "source": "index.html",
       "markup": "<button id=\"claimButton\" class=\"btn\" type=\"button\" onclick=\"(window.Parcels?.uiClaim?.openClaimOnly || window.openClaimOnly || function(){})()\" title=\"Claim existing parcel NFT\" disabled>",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-31c45b3488e444-1",
-      "source": "index.html",
-      "markup": "<button id=\"parcelBuilderButton\" class=\"btn\" type=\"button\" onclick=\"(window.Parcels?.uiClaim?.openParcelBuilder || window.openParcelBuilder || function(){})()\" title=\"Open Parcel Builder\">",
       "interaction": "click",
       "controlType": "button"
     },
@@ -1807,9 +1924,9 @@
       "controlType": "button"
     },
     {
-      "id": "control-4c39955237e201-1",
+      "id": "control-acf1face0ab88d-1",
       "source": "index.html",
-      "markup": "<input type=\"file\" id=\"corridorImportInput\" accept=\".osm,.json,.xodr\" hidden>",
+      "markup": "<input type=\"file\" id=\"corridorImportInput\" accept=\".osm,.json,.geojson,.xodr\" hidden>",
       "interaction": "change",
       "controlType": "file"
     },
@@ -2403,6 +2520,16 @@
       "markup": "<select data-agreement-allocation-mode>"
     },
     {
+      "id": "control-86d84eeb544e6c-1",
+      "source": "js/agreement-dialog.js",
+      "markup": "<input type=\"number\" min=\"0\" step=\"0.01\" value=\"${esc(centsText(values[row.id]))}\" data-agreement-value-kind=\"${kind}\" data-agreement-value-id=\"${esc(row.id)}\" aria-label=\"${esc(`${row.title}: ${unit}`)}\">"
+    },
+    {
+      "id": "control-d0585760578507-1",
+      "source": "js/agreement-dialog.js",
+      "markup": "<input type=\"number\" min=\"0\" step=\"0.01\" data-agreement-value-all=\"${kind}\">"
+    },
+    {
       "id": "control-d7f25321d05961-1",
       "source": "js/agreement-dialog.js",
       "markup": "<input type=\"radio\" name=\"agreement-electorate\" value=\"${value}\" data-agreement-electorate${(value === 'owners') === owners ? ' checked' : ''}>",
@@ -2529,16 +2656,6 @@
       "markup": "<input type=\"range\" min=\"0\" max=\"${limit}\" step=\"1\" value=\"${terms.contributionBasisPoints}\" data-agreement-contribution>"
     },
     {
-      "id": "control-86d84eeb544e6c-1",
-      "source": "js/agreement-dialog.js",
-      "markup": "<input type=\"number\" min=\"0\" step=\"0.01\" value=\"${esc(centsText(values[row.id]))}\" data-agreement-value-kind=\"${kind}\" data-agreement-value-id=\"${esc(row.id)}\" aria-label=\"${esc(`${row.title}: ${unit}`)}\">"
-    },
-    {
-      "id": "control-d0585760578507-1",
-      "source": "js/agreement-dialog.js",
-      "markup": "<input type=\"number\" min=\"0\" step=\"0.01\" data-agreement-value-all=\"${kind}\">"
-    },
-    {
       "id": "control-6f58e3c4f41453-1",
       "source": "js/agreement-dialog.js",
       "markup": "<button type=\"button\" class=\"btn\" data-agreement-action=\"apply-plan\">"
@@ -2575,6 +2692,16 @@
       "markup": "<button type=\"button\" class=\"btn btn-secondary\" data-agreement-action=\"minted\">"
     },
     {
+      "id": "control-6b4c93deb26093-1",
+      "source": "js/agreement-panel.js",
+      "markup": "<button type=\"button\" class=\"btn btn-sm\" data-agreement-action=\"apply-designs\">"
+    },
+    {
+      "id": "control-34f7151d328903-1",
+      "source": "js/agreement-panel.js",
+      "markup": "<button type=\"button\" class=\"btn btn-primary\" data-agreement-action=\"apply-agreement\">"
+    },
+    {
       "id": "control-c071f79cfa3db8-1",
       "source": "js/agreement-panel.js",
       "markup": "<button type=\"button\" class=\"btn btn-primary\" data-agreement-action=\"propose\">",
@@ -2582,9 +2709,9 @@
       "controlType": "button"
     },
     {
-      "id": "control-448975bb2e4e0c-1",
+      "id": "control-ff2b24f7c3289a-1",
       "source": "js/agreement-panel.js",
-      "markup": "<button type=\"button\" class=\"btn${canPropose ? '' : ' btn-primary'}\" data-agreement-action=\"compare\" aria-pressed=\"${comparing ? 'true' : 'false'}\"${canCompare && !readOnly ? '' : ' disabled'}>"
+      "markup": "<button type=\"button\" class=\"btn${canPropose || readOnly ? '' : ' btn-primary'}\" data-agreement-action=\"compare\" aria-pressed=\"${comparing ? 'true' : 'false'}\"${canCompare && !readOnly ? '' : ' disabled'}>"
     },
     {
       "id": "control-f91e5db54a0384-1",
@@ -2597,6 +2724,16 @@
       "markup": "<button type=\"button\" class=\"btn\" data-agreement-action=\"edit\">",
       "interaction": "click",
       "controlType": "button"
+    },
+    {
+      "id": "control-dbd135e7fa17f1-1",
+      "source": "js/agreement-panel.js",
+      "markup": "<button type=\"button\" class=\"btn\" data-agreement-action=\"counter\">"
+    },
+    {
+      "id": "control-6c15f6cfa38f9b-1",
+      "source": "js/agreement-panel.js",
+      "markup": "<button type=\"button\" class=\"btn\" data-agreement-action=\"download\">"
     },
     {
       "id": "control-2178e35d035b73-1",
@@ -2652,6 +2789,116 @@
           "name": "Inspect agreement design",
           "attrs": {
             "data-agreement-inspect": "design"
+          }
+        }
+      ]
+    },
+    {
+      "id": "control-88a1ef3eb2d397-1",
+      "source": "js/agreement-panel.js",
+      "markup": "<button type=\"button\" class=\"cb-link\" data-agreement-inspect=\"person\" data-agreement-object-id=\"${esc(owner.ownerKey)}\" aria-pressed=\"false\">"
+    },
+    {
+      "id": "control-5bf08e81c39db1-1",
+      "source": "js/agreement-panel.js",
+      "markup": "<button type=\"button\" class=\"cb-option agreement-panel-object\" data-agreement-inspect=\"output\" data-agreement-object-id=\"${esc(line.hash)}\" aria-pressed=\"false\"${line.hasGeometry ? '' : ' disabled'}>",
+      "interaction": "click",
+      "controlType": "button",
+      "exhaustiveVariants": true,
+      "variants": [
+        {
+          "name": "Select agreement output piece",
+          "attrs": {
+            "data-agreement-inspect": "output"
+          }
+        }
+      ]
+    },
+    {
+      "id": "control-b36b8d2240109f-1",
+      "source": "js/agreement-panel.js",
+      "markup": "<button type=\"button\" class=\"cb-link\" data-agreement-inspect=\"${row.recipientKind === 'party' ? 'person' : esc(row.recipientKind)}\" data-agreement-object-id=\"${esc(row.ownerKey || row.recipientKind)}\" aria-pressed=\"false\">",
+      "interaction": "click",
+      "controlType": "button",
+      "exhaustiveVariants": true,
+      "variants": [
+        {
+          "name": "Inspect person ledger row",
+          "attrs": {
+            "data-agreement-inspect": "person"
+          }
+        },
+        {
+          "name": "Inspect proposer ledger row",
+          "attrs": {
+            "data-agreement-inspect": "proposer"
+          }
+        },
+        {
+          "name": "Inspect public ledger row",
+          "attrs": {
+            "data-agreement-inspect": "public"
+          }
+        }
+      ]
+    },
+    {
+      "id": "control-e033046cb59a32-1",
+      "source": "js/agreement-panel.js",
+      "markup": "<button type=\"button\" class=\"btn btn-sm\" data-agreement-action=\"scheme-guide\">"
+    },
+    {
+      "id": "control-a95a3fa21ec212-1",
+      "source": "js/agreement-panel.js",
+      "markup": "<button type=\"button\" class=\"cb-option agreement-panel-object\" data-agreement-inspect=\"input\" data-agreement-object-id=\"${esc(parcel.parcelId)}\" aria-pressed=\"false\">",
+      "interaction": "click",
+      "controlType": "button",
+      "exhaustiveVariants": true,
+      "variants": [
+        {
+          "name": "Select agreement input parcel",
+          "attrs": {
+            "data-agreement-inspect": "input"
+          }
+        }
+      ]
+    },
+    {
+      "id": "control-b2deafc1d3315d-1",
+      "source": "js/agreement-panel.js",
+      "markup": "<button type=\"button\" class=\"cb-tab\" role=\"tab\" id=\"agreement-properties-tab-${kind}\" aria-controls=\"agreement-properties-panel-${kind}\" aria-selected=\"${kind === selected}\" tabindex=\"${kind === selected ? 0 : -1}\" data-agreement-properties-tab=\"${kind}\">",
+      "interaction": "click",
+      "controlType": "button",
+      "exhaustiveVariants": true,
+      "variants": [
+        {
+          "name": "Agreement properties overview tab",
+          "attrs": {
+            "data-agreement-properties-tab": "overview"
+          }
+        },
+        {
+          "name": "Agreement properties inputs tab",
+          "attrs": {
+            "data-agreement-properties-tab": "inputs"
+          }
+        },
+        {
+          "name": "Agreement properties outputs tab",
+          "attrs": {
+            "data-agreement-properties-tab": "outputs"
+          }
+        },
+        {
+          "name": "Agreement properties persons tab",
+          "attrs": {
+            "data-agreement-properties-tab": "persons"
+          }
+        },
+        {
+          "name": "Agreement properties rules tab",
+          "attrs": {
+            "data-agreement-properties-tab": "rules"
           }
         }
       ]
@@ -2806,11 +3053,9 @@
       "controlType": "button"
     },
     {
-      "id": "control-60848a2f37dd3f-1",
+      "id": "control-1d2549f6062953-1",
       "source": "js/area-monitor/ui.js",
-      "markup": "document.createElement('button')",
-      "interaction": "click",
-      "controlType": "button"
+      "markup": "document.createElement(besideMap ? 'div' : 'button')"
     },
     {
       "id": "control-3b4d6be3e033f3-1",
@@ -3283,9 +3528,9 @@
       "controlType": "range"
     },
     {
-      "id": "control-06085040468773-1",
+      "id": "control-d5f546f8ab6c3b-1",
       "source": "js/building-blocks.js",
-      "markup": "<input type=\"range\" id=\"height-slider\" min=\"3\" max=\"80\" value=\"${DEFAULT_BUILDING_HEIGHT}\" step=\"0.5\">",
+      "markup": "<input type=\"range\" id=\"height-slider\" min=\"1\" max=\"${BLOCK_MAX_FLOORS}\" value=\"${blockFloors(DEFAULT_BUILDING_HEIGHT)}\" step=\"1\">",
       "interaction": "change",
       "controlType": "range"
     },
@@ -3297,9 +3542,9 @@
       "controlType": "select"
     },
     {
-      "id": "control-89dab3166ac670-1",
+      "id": "control-28b2cffed4a94b-1",
       "source": "js/building-blocks.js",
-      "markup": "<input type=\"range\" id=\"blockify-minheight-slider\" min=\"0\" max=\"80\" value=\"0\" step=\"0.5\">",
+      "markup": "<input type=\"range\" id=\"blockify-minheight-slider\" min=\"0\" max=\"${BLOCK_MAX_FLOORS}\" value=\"0\" step=\"1\">",
       "interaction": "change",
       "controlType": "range"
     },
@@ -3353,16 +3598,16 @@
       "controlType": "button"
     },
     {
-      "id": "control-7b2f9c91090779-1",
+      "id": "control-c008ec638b63f1-1",
       "source": "js/building-blocks.js",
-      "markup": "<button type=\"button\" id=\"blockify-geojson-upload\" class=\"btn btn-block\" data-i18n-key=\"blockify.modal.manual.uploadGeojson\" data-i18n-attr=\"text\">",
+      "markup": "<button type=\"button\" id=\"blockify-geojson-upload\" class=\"btn btn-block\" title=\"${translateBuildingText('common.footprintFileFormats', 'GeoJSON, CityGML or CityJSON')}\" data-i18n-key=\"blockify.modal.manual.uploadGeojson\" data-i18n-attr=\"text\">",
       "interaction": "click",
       "controlType": "button"
     },
     {
-      "id": "control-411248a703fa36-1",
+      "id": "control-b8e0cc68c44d09-1",
       "source": "js/building-blocks.js",
-      "markup": "<input type=\"file\" id=\"blockify-geojson-input\" accept=\".geojson,.json,application/geo+json,application/json\" hidden>",
+      "markup": "<input type=\"file\" id=\"blockify-geojson-input\" accept=\".geojson,.json,.gml,.xml,application/geo+json,application/json,application/gml+xml\" hidden>",
       "interaction": "change",
       "controlType": "file"
     },
@@ -3430,9 +3675,9 @@
       "controlType": "button"
     },
     {
-      "id": "control-257a8a8addefb6-1",
+      "id": "control-9686409eb14d9d-1",
       "source": "js/building-upload.js",
-      "markup": "<input id=\"building-upload-file\" type=\"file\" accept=\".glb,.gltf,model/gltf-binary,model/gltf+json\" hidden>",
+      "markup": "<input id=\"building-upload-file\" type=\"file\" accept=\"${structure ? '.glb,.gltf,model/gltf-binary,model/gltf+json' : '.glb,.gltf,.gml,.xml,.json,model/gltf-binary,model/gltf+json,application/gml+xml,application/json'}\" hidden>",
       "interaction": "change",
       "controlType": "file"
     },
@@ -3470,6 +3715,11 @@
       "markup": "<button type=\"button\" class=\"btn btn-primary\" id=\"btn-play\">",
       "interaction": "click",
       "controlType": "button"
+    },
+    {
+      "id": "control-dd61e5054d0cba-1",
+      "source": "js/click-stack/click-stack-navigation.js",
+      "markup": "document.createElement('button')"
     },
     {
       "id": "control-bda2b1e4843e6b-1",
@@ -3602,6 +3852,16 @@
       "markup": "doc.createElement('select')"
     },
     {
+      "id": "control-56b96b1ca1b37d-3",
+      "source": "js/click-stack/click-stack-relations.js",
+      "markup": "doc.createElement('button')"
+    },
+    {
+      "id": "control-56b96b1ca1b37d-4",
+      "source": "js/click-stack/click-stack-relations.js",
+      "markup": "doc.createElement('button')"
+    },
+    {
       "id": "control-f4c1140e2687eb-1",
       "source": "js/community/consultation.js",
       "markup": "<a class=\"btn btn-sm btn-secondary\" href=\"${esc(report.url)}\" target=\"_blank\" rel=\"noopener noreferrer\">",
@@ -3713,11 +3973,9 @@
       "controlType": "button"
     },
     {
-      "id": "control-f576436f1fdf0a-1",
+      "id": "control-75d7b12c6257d2-1",
       "source": "js/community/voting-roster.js",
-      "markup": "<input type=\"file\" accept=\"application/json,.json\" data-roster-import>",
-      "interaction": "change",
-      "controlType": "file"
+      "markup": "<input type=\"file\" accept=\"application/json,.json\" data-roster-import hidden>"
     },
     {
       "id": "control-aea91cac9f1cd2-1",
@@ -4058,41 +4316,9 @@
       "controlType": "button"
     },
     {
-      "id": "control-56410ca371e8b8-1",
+      "id": "control-e806a8c1b81513-1",
       "source": "js/corridor-editor.js",
-      "markup": "<button type=\"button\" class=\"cb-segmented__option corridor-limit-option\" data-survey=\"${key}\" aria-pressed=\"${!!surveys[key] && !surveys.fallback}\" title=\"${titles[key]}\">",
-      "variants": [
-        {
-          "name": "GDI survey",
-          "classes": [
-            "corridor-limit-option"
-          ],
-          "attrs": {
-            "data-survey": "gdi"
-          }
-        },
-        {
-          "name": "DGU survey",
-          "classes": [
-            "corridor-limit-option"
-          ],
-          "attrs": {
-            "data-survey": "dgu"
-          }
-        },
-        {
-          "name": "OSM survey",
-          "classes": [
-            "corridor-limit-option"
-          ],
-          "attrs": {
-            "data-survey": "osm"
-          }
-        }
-      ],
-      "exhaustiveVariants": true,
-      "interaction": "click",
-      "controlType": "button"
+      "markup": "<button type=\"button\" class=\"cb-segmented__option corridor-limit-option\" data-survey=\"${escape(group.key)}\" aria-pressed=\"${group.pressed}\" title=\"${escape(group.name)}\">"
     },
     {
       "id": "control-8c3b21a184da79-1",
@@ -4473,6 +4699,11 @@
       "exhaustiveVariants": true
     },
     {
+      "id": "control-7c1b90117029a0-1",
+      "source": "js/parcel-based.js",
+      "markup": "<input type=\"number\" class=\"parameter-number\" id=\"${id}\" inputmode=\"decimal\" min=\"${field.min}\" max=\"${field.max}\" step=\"${field.step}\"${placeholder}>"
+    },
+    {
       "id": "control-34c8fe27f731f3-1",
       "source": "js/parcel-based.js",
       "markup": "<select id=\"parcelbased-ruletype-select\">",
@@ -4487,13 +4718,6 @@
       "controlType": "range"
     },
     {
-      "id": "control-954c4618e57b93-1",
-      "source": "js/parcel-based.js",
-      "markup": "<input type=\"range\" id=\"parcelbased-mindistance-slider\" min=\"0.5\" max=\"20\" value=\"${DEFAULT_MIN_DISTANCE}\" step=\"0.5\">",
-      "interaction": "change",
-      "controlType": "range"
-    },
-    {
       "id": "control-82896d390dcdcd-1",
       "source": "js/parcel-based.js",
       "markup": "<input type=\"range\" id=\"parcelbased-minfloors-slider\" min=\"1\" max=\"${DEFAULT_MAX_FLOORS}\" value=\"${DEFAULT_MIN_FLOORS}\" step=\"1\">",
@@ -4501,9 +4725,9 @@
       "controlType": "range"
     },
     {
-      "id": "control-6372dfa6a87407-1",
+      "id": "control-954c4618e57b93-1",
       "source": "js/parcel-based.js",
-      "markup": "<input type=\"range\" id=\"parcelbased-minfootprint-slider\" min=\"0\" max=\"500\" value=\"${DEFAULT_MIN_FOOTPRINT_M2}\" step=\"5\">",
+      "markup": "<input type=\"range\" id=\"parcelbased-mindistance-slider\" min=\"0.5\" max=\"20\" value=\"${DEFAULT_MIN_DISTANCE}\" step=\"0.5\">",
       "interaction": "change",
       "controlType": "range"
     },
@@ -4511,6 +4735,13 @@
       "id": "control-bb2cb4178cbcc2-1",
       "source": "js/parcel-based.js",
       "markup": "<input type=\"range\" id=\"parcelbased-minplot-slider\" min=\"0\" max=\"10000\" value=\"${DEFAULT_MIN_PLOT_AREA_M2}\" step=\"10\">",
+      "interaction": "change",
+      "controlType": "range"
+    },
+    {
+      "id": "control-6372dfa6a87407-1",
+      "source": "js/parcel-based.js",
+      "markup": "<input type=\"range\" id=\"parcelbased-minfootprint-slider\" min=\"0\" max=\"500\" value=\"${DEFAULT_MIN_FOOTPRINT_M2}\" step=\"5\">",
       "interaction": "change",
       "controlType": "range"
     },
@@ -4879,6 +5110,11 @@
       "controlType": "file"
     },
     {
+      "id": "control-06c6adb0a8f73c-1",
+      "source": "js/parcel-layout.js",
+      "markup": "<button type=\"button\" class=\"btn btn-icon\" data-reparcel-download title=\"${downloadLabel}\" aria-label=\"${downloadLabel}\">"
+    },
+    {
       "id": "control-df22876ff3f0e7-1",
       "source": "js/parcel-layout.js",
       "markup": "<button type=\"button\" class=\"btn btn-sm\" data-reparcel-undo>",
@@ -4951,6 +5187,11 @@
       ]
     },
     {
+      "id": "control-5491093eac297d-1",
+      "source": "js/parcel-layout.js",
+      "markup": "<button type=\"button\" class=\"btn btn-quiet btn-sm reparcel-plot-pick\" aria-pressed=\"false\">"
+    },
+    {
       "id": "control-e4967dab06f3e1-2",
       "source": "js/parcel-layout.js",
       "markup": "document.createElement('button')",
@@ -4983,6 +5224,11 @@
           "label": "Erase this boundary"
         }
       ]
+    },
+    {
+      "id": "control-a7e750dd787122-1",
+      "source": "js/parcel-source-settings.js",
+      "markup": "doc.createElement(tag)"
     },
     {
       "id": "control-5fdd8d06255e29-1",
@@ -5217,6 +5463,16 @@
       "controlType": "dynamic"
     },
     {
+      "id": "control-99e2b3a29bc613-1",
+      "source": "js/parcels/parcel-set-proposals.js",
+      "markup": "<button type=\"button\" class=\"btn btn-quiet proposal-item-pick\" data-proposal-pick aria-pressed=\"false\">"
+    },
+    {
+      "id": "control-e0dacb368817c1-1",
+      "source": "js/parcels/parcel-set-proposals.js",
+      "markup": "<button type=\"button\" class=\"btn btn-icon btn-sm object-list__open proposal-item-open\" data-proposal-open title=\"${label}\" aria-label=\"${label}\">"
+    },
+    {
       "id": "control-ec00f19db4edfd-1",
       "source": "js/parcels/ui/claim.js",
       "markup": "global.document.createElement('button')",
@@ -5243,11 +5499,6 @@
       "controlType": "button"
     },
     {
-      "id": "control-9af9fb9173dbcf-1",
-      "source": "js/parcels/ui/parcel-panel.js",
-      "markup": "<button type=\"button\" class=\"cb-link\" onclick=\"showProposalDetails(${inlineJsArg(proposal.proposalId)}, ${inlineJsArg(parcelId)})\">"
-    },
-    {
       "id": "control-8ac4337e59b12a-1",
       "source": "js/parcels/ui/parcel-panel.js",
       "markup": "<button type=\"button\" class=\"btn btn-success btn-sm parcel-ad-link-btn\" onclick=\"(window.toggleAdActionsDialog || function(){} )('${adLink}'); return false;\" data-i18n-key=\"panel.parcel.forSale\">",
@@ -5258,13 +5509,6 @@
       "id": "control-8c351bade6d13b-1",
       "source": "js/parcels/ui/parcel-panel.js",
       "markup": "<button type=\"button\" class=\"btn btn-sm\" onclick=\"window.open(${inlineJsArg(adLink)}, '_blank', 'noopener,noreferrer'); return false;\">",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-398b24f034838c-1",
-      "source": "js/parcels/ui/parcel-panel.js",
-      "markup": "<button type=\"button\" class=\"btn btn-sm\" onclick=\"(window.Parcels?.uiClaim?.openParcelBuilder || window.openParcelBuilder || function(){})(); return false;\">",
       "interaction": "click",
       "controlType": "button"
     },
@@ -5711,20 +5955,6 @@
     },
     {
       "id": "control-81498b74fc7752-2",
-      "source": "js/plan-file-ui.js",
-      "markup": "doc.createElement('button')",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-042471578a5164-1",
-      "source": "js/plan-file-ui.js",
-      "markup": "doc.createElement('input')",
-      "interaction": "change",
-      "controlType": "input"
-    },
-    {
-      "id": "control-81498b74fc7752-3",
       "source": "js/plan-file-ui.js",
       "markup": "doc.createElement('button')",
       "interaction": "click",
@@ -6274,11 +6504,9 @@
       ]
     },
     {
-      "id": "control-a4c23ce2a2672d-1",
+      "id": "control-ff1ffe174e6010-1",
       "source": "js/proposals/approval-setup.js",
-      "markup": "<input type=\"file\" accept=\"application/json,.json\" data-approval-file${selectedSource !== 'upload' ? ' disabled' : ''}>",
-      "interaction": "change",
-      "controlType": "file"
+      "markup": "<input type=\"file\" accept=\"application/json,.json\" data-approval-file hidden${selectedSource !== 'upload' ? ' disabled' : ''}>"
     },
     {
       "id": "control-a0ceb95358ecf2-1",
@@ -6309,6 +6537,16 @@
       "controlType": "textarea"
     },
     {
+      "id": "control-633bf752ee4669-1",
+      "source": "js/proposals/approval-setup.js",
+      "markup": "<button type=\"button\" class=\"cb-link\" data-editor-action=\"approval-scheme-guide\" data-scheme-id=\"${esc(template.id)}\" data-scheme-version=\"${esc(template.version)}\">"
+    },
+    {
+      "id": "control-29bf3985189d79-1",
+      "source": "js/proposals/approval-setup.js",
+      "markup": "<button type=\"button\" class=\"cb-link\" data-scheme-guide-choose=\"${esc(template.id)}\">"
+    },
+    {
       "id": "control-7ed6db7682f5a5-1",
       "source": "js/proposals/approval-setup.js",
       "markup": "<select data-approval-rule ${attribute} aria-label=\"${esc(label)}\">",
@@ -6337,6 +6575,11 @@
       "controlType": "button"
     },
     {
+      "id": "control-dc78e5c090e3b2-1",
+      "source": "js/proposals/approval-setup.js",
+      "markup": "<select data-scheme-guide-pick>"
+    },
+    {
       "id": "control-3708b2045166eb-1",
       "source": "js/proposals/approval-setup.js",
       "markup": "<input type=\"text\" data-approval-rule data-approval-authority-id=\"${index}\" value=\"${esc(value)}\" autocomplete=\"off\">",
@@ -6356,11 +6599,6 @@
       "markup": "<select data-approval-rule data-approval-regime>",
       "interaction": "change",
       "controlType": "select"
-    },
-    {
-      "id": "control-3736a067d21034-1",
-      "source": "js/proposals/approval-setup.js",
-      "markup": "<button type=\"button\" class=\"cb-link approval-setup__guide\" data-editor-action=\"approval-scheme-guide\" data-scheme-id=\"${esc(template.id)}\" data-scheme-version=\"${esc(template.version)}\">"
     },
     {
       "id": "control-bf79701bd9dee2-1",
@@ -6389,6 +6627,11 @@
       "markup": "<div class=\"selected-parcel-item\" data-parcel-id=\"${escapeHtml(String(parcelId))}\" tabindex=\"0\" role=\"button\" aria-label=\"${escapeHtml(parcelLabel)}\">"
     },
     {
+      "id": "control-cd209dbadb7ba6-1",
+      "source": "js/proposals/details-panel.js",
+      "markup": "<button type=\"button\" class=\"btn btn-icon object-list__open\" title=\"${title ? safeAgentText(title) : label}\" aria-label=\"${label}\" ${attributes}>"
+    },
+    {
       "id": "control-5337cbe7487528-1",
       "source": "js/proposals/details-panel.js",
       "markup": "<button type=\"button\" class=\"btn btn-quiet btn-compare-parcel\" data-focus-parcel=\"${safeAgentText(String(parcelId))}\" aria-pressed=\"${parcelCompare.isActive(proposalKeyForCompare) && parcelCompare.activeFocus() === String(parcelId) ? 'true' : 'false'}\" title=\"${tProposal('mapCompare.sliderLabel', 'Before and after comparison')}\" onclick=\"event.stopPropagation(); event.preventDefault(); BusyControl.track(this, () =>",
@@ -6396,24 +6639,24 @@
       "controlType": "button"
     },
     {
-      "id": "control-3b7eccd53f54e4-1",
+      "id": "control-89ffed247e0379-1",
       "source": "js/proposals/details-panel.js",
-      "markup": "<button type=\"button\" class=\"cb-link\" ${replacedDataAttr} ${geometryDataAttr} onclick=\"handleProposalParcelClick(${inlineJsArg(parcelId)}, event)\" title=\"${parcelTooltip}\">"
+      "markup": "<button type=\"button\" class=\"cb-link\" data-object-preview aria-pressed=\"false\">"
     },
     {
-      "id": "control-4f363d99a196fa-1",
+      "id": "control-d41e87cec418ec-1",
       "source": "js/proposals/details-panel.js",
-      "markup": "<button type=\"button\" class=\"btn descendant-item\" data-descendant-type=\"proposal\" data-proposal-id=\"${descendantId}\">"
+      "markup": "<button type=\"button\" class=\"btn descendant-item\" data-descendant-type=\"proposal\" data-proposal-id=\"${safeAgentText(descendantId)}\" data-object-preview aria-pressed=\"false\">"
     },
     {
-      "id": "control-8f40822830e2c1-1",
+      "id": "control-7e8edd00f246fe-1",
       "source": "js/proposals/details-panel.js",
-      "markup": "<button type=\"button\" class=\"btn descendant-item\" data-descendant-type=\"parcel\" data-parcel-id=\"${safeAgentText(descendantKey)}\">"
+      "markup": "<button type=\"button\" class=\"btn descendant-item\" data-descendant-type=\"parcel\" data-parcel-id=\"${safeAgentText(descendantKey)}\" data-object-preview aria-pressed=\"false\">"
     },
     {
-      "id": "control-f3dc331d58ba0b-1",
+      "id": "control-7e8edd00f246fe-2",
       "source": "js/proposals/details-panel.js",
-      "markup": "<button type=\"button\" class=\"btn descendant-item\" data-descendant-type=\"parcel\" data-parcel-id=\"${descendantKey}\">"
+      "markup": "<button type=\"button\" class=\"btn descendant-item\" data-descendant-type=\"parcel\" data-parcel-id=\"${safeAgentText(descendantKey)}\" data-object-preview aria-pressed=\"false\">"
     },
     {
       "id": "control-d097b1cc842125-1",
@@ -6493,6 +6736,11 @@
       "exhaustiveVariants": true
     },
     {
+      "id": "control-e66602251d9f01-1",
+      "source": "js/proposals/details-panel.js",
+      "markup": "<button type=\"button\" class=\"btn btn-download-design\" onclick=\"window.PlanFileUI.design(window.proposalStorage.getProposal(${inlineJsArg(proposalKey)}))\">"
+    },
+    {
       "id": "control-08edf049b57aee-1",
       "source": "js/proposals/details-panel.js",
       "markup": "<button type=\"button\" class=\"btn btn-duplicate-design\" onclick=\"startDesignDuplication(${inlineJsArg(proposalKey)})\" title=\"${tProposal('panel.proposal.actions.duplicateDesignHint', 'Move a copy with the pointer and click to place a new design.')}\" aria-label=\"${tProposal('panel.proposal.actions.duplicateDesign', 'Duplicate')}\">",
@@ -6512,6 +6760,11 @@
       "markup": "<button type=\"button\" class=\"btn btn-edit-geometry\" onclick=\"editProposalGeometry(${inlineJsArg(proposalKey)})\">",
       "interaction": "click",
       "controlType": "button"
+    },
+    {
+      "id": "control-63c7ebc4986e89-1",
+      "source": "js/proposals/details-panel.js",
+      "markup": "<button type=\"button\" class=\"btn btn-courtyard-layout\" onclick=\"BusyControl.track(this, () =>"
     },
     {
       "id": "control-f23a3c9e1fc53a-1",
@@ -6566,9 +6819,9 @@
       "markup": "<button type=\"button\" class=\"cb-link proposal-based-on-link\" data-lineage-local-id=\"${safeAgentText(sourceProposal.proposalId)}\">"
     },
     {
-      "id": "control-31f0fa8091a56b-1",
+      "id": "control-486b7a464be372-1",
       "source": "js/proposals/details-panel.js",
-      "markup": "<button type=\"button\" class=\"cb-option proposal-parcel-set-relation\" data-related-proposal-id=\"${candidateId}\">",
+      "markup": "<button type=\"button\" class=\"btn btn-quiet proposal-id-copy\" title=\"${escapedProposalDisplayId}\" onclick=\"copyProposalIdToClipboard(${inlineJsArg(String(fullProposal.proposalId || proposal.proposalId || ''))})\">",
       "interaction": "click",
       "controlType": "button"
     },
@@ -6581,13 +6834,6 @@
       "id": "control-1780954d86d286-1",
       "source": "js/proposals/details-panel.js",
       "markup": "<button type=\"button\" data-agent-id=\"${agent.id}\" class=\"cb-link agent-link-clickable\">",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-486b7a464be372-1",
-      "source": "js/proposals/details-panel.js",
-      "markup": "<button type=\"button\" class=\"btn btn-quiet proposal-id-copy\" title=\"${escapedProposalDisplayId}\" onclick=\"copyProposalIdToClipboard(${inlineJsArg(String(fullProposal.proposalId || proposal.proposalId || ''))})\">",
       "interaction": "click",
       "controlType": "button"
     },
@@ -7215,6 +7461,11 @@
       "controlType": "button"
     },
     {
+      "id": "control-7a95da54390004-1",
+      "source": "js/road-in-parcel.js",
+      "markup": "doc.createElement(tag)"
+    },
+    {
       "id": "control-37ebab6ebce812-1",
       "source": "js/row-house.js",
       "markup": "document.createElement('button')",
@@ -7229,9 +7480,9 @@
       "controlType": "select"
     },
     {
-      "id": "control-69f9d9063ad878-1",
+      "id": "control-ee0bcf1b26a70f-1",
       "source": "js/row-house.js",
-      "markup": "<input type=\"range\" id=\"rowhouse-minheight-slider\" min=\"0\" max=\"80\" value=\"0\" step=\"0.5\">",
+      "markup": "<input type=\"range\" id=\"rowhouse-minheight-slider\" min=\"0\" max=\"${ROW_MAX_FLOORS}\" value=\"0\" step=\"1\">",
       "interaction": "change",
       "controlType": "range"
     },
@@ -7264,9 +7515,9 @@
       "controlType": "range"
     },
     {
-      "id": "control-14ff3b389e2bf6-1",
+      "id": "control-58e8a1fb7d6880-1",
       "source": "js/row-house.js",
-      "markup": "<input type=\"range\" id=\"rowhouse-height-slider\" min=\"3\" max=\"80\" value=\"${DEFAULT_BUILDING_HEIGHT}\" step=\"1\">",
+      "markup": "<input type=\"range\" id=\"rowhouse-height-slider\" min=\"1\" max=\"${ROW_MAX_FLOORS}\" value=\"${rowFloors(DEFAULT_BUILDING_HEIGHT)}\" step=\"1\">",
       "interaction": "change",
       "controlType": "range"
     },
@@ -7292,16 +7543,16 @@
       "controlType": "range"
     },
     {
-      "id": "control-fac8f720ae1d91-1",
+      "id": "control-31e7a0c4ed93d2-1",
       "source": "js/row-house.js",
-      "markup": "<button id=\"rowhouse-geojson-upload\" class=\"btn btn-block\" type=\"button\" data-i18n-key=\"rowHouses.modal.uploadGeojson\" data-i18n-attr=\"text\">",
+      "markup": "<button id=\"rowhouse-geojson-upload\" class=\"btn btn-block\" type=\"button\" title=\"${translateRowHouseText('common.footprintFileFormats', 'GeoJSON, CityGML or CityJSON')}\" data-i18n-key=\"rowHouses.modal.uploadGeojson\" data-i18n-attr=\"text\">",
       "interaction": "click",
       "controlType": "button"
     },
     {
-      "id": "control-dac56655dd14de-1",
+      "id": "control-a157f0f44885fb-1",
       "source": "js/row-house.js",
-      "markup": "<input id=\"rowhouse-geojson-input\" type=\"file\" accept=\".geojson,.json,application/geo+json,application/json\" hidden>",
+      "markup": "<input id=\"rowhouse-geojson-input\" type=\"file\" accept=\".geojson,.json,.gml,.xml,application/geo+json,application/json,application/gml+xml\" hidden>",
       "interaction": "change",
       "controlType": "file"
     },
@@ -7376,6 +7627,11 @@
       "controlType": "range"
     },
     {
+      "id": "control-884b947cdc1f44-1",
+      "source": "js/single-building.js",
+      "markup": "<select id=\"single-building-use\">"
+    },
+    {
       "id": "control-899ec4d6210e9f-1",
       "source": "js/single-building.js",
       "markup": "<button class=\"btn btn-sm\" type=\"button\" data-land-footprint disabled>"
@@ -7398,23 +7654,23 @@
       "markup": "<button id=\"single-ground-treatment-edit\" class=\"btn btn-sm\" type=\"button\" disabled>"
     },
     {
-      "id": "control-ab4f0dbf4e35d6-1",
+      "id": "control-ac4cb07631a5c4-1",
       "source": "js/single-building.js",
-      "markup": "<button id=\"single-building-geojson-upload\" class=\"btn\" type=\"button\">",
+      "markup": "<button id=\"single-building-geojson-upload\" class=\"btn\" type=\"button\" title=\"${modalText.footprintFormats}\">",
       "interaction": "click",
       "controlType": "button"
     },
     {
-      "id": "control-71aa198815cbd3-1",
+      "id": "control-8cc4b331f2c325-1",
       "source": "js/single-building.js",
-      "markup": "<button id=\"single-building-glb-upload\" class=\"btn\" type=\"button\">",
+      "markup": "<button id=\"single-building-glb-upload\" class=\"btn\" type=\"button\" title=\"${modalText.modelFormats}\">",
       "interaction": "click",
       "controlType": "button"
     },
     {
-      "id": "control-fc7ec81cfd7350-1",
+      "id": "control-7050fb3898ac3c-1",
       "source": "js/single-building.js",
-      "markup": "<input id=\"single-building-geojson-input\" type=\"file\" accept=\".geojson,.json,application/geo+json,application/json\" hidden>",
+      "markup": "<input id=\"single-building-geojson-input\" type=\"file\" accept=\".geojson,.json,.gml,.xml,application/geo+json,application/json,application/gml+xml\" hidden>",
       "interaction": "change",
       "controlType": "file"
     },
@@ -7445,6 +7701,11 @@
       "markup": "<button type=\"button\" class=\"btn btn-sm\" data-site-trim=\"${escapeHtml(warning.parcelId)}\">",
       "interaction": "click",
       "controlType": "button"
+    },
+    {
+      "id": "control-6881ac7ea37356-1",
+      "source": "js/site-drawing.js",
+      "markup": "<button type=\"button\" class=\"btn btn-quiet btn-block site-panel__parcel-pick\" data-site-parcel=\"${escapeHtml(hit.parcelId)}\" aria-pressed=\"false\">"
     },
     {
       "id": "control-ab0768ab41b9e7-1",
@@ -7487,6 +7748,11 @@
       "markup": "<button type=\"button\" class=\"btn\" data-site-action=\"redraw\">",
       "interaction": "click",
       "controlType": "button"
+    },
+    {
+      "id": "control-f6259041fdf632-1",
+      "source": "js/site-drawing.js",
+      "markup": "<input type=\"file\" data-site-import-file accept=\".geojson,.json,application/geo+json,application/json\" hidden>"
     },
     {
       "id": "control-390f0fba56e3f8-1",
@@ -7562,7 +7828,7 @@
       "guards": [
         {
           "source": "js/source-explorer.js",
-          "includes": "link.download = 'source-contracts.v1.json';"
+          "includes": "root.FileDownload.save(root, json(data.contracts), 'source-contracts.v1.json', 'application/json');"
         },
         {
           "source": "js/source-explorer.js",
@@ -7642,6 +7908,66 @@
       "controlType": "button"
     },
     {
+      "id": "control-5c674312d3219a-1",
+      "source": "js/structure-geometry-editor.js",
+      "markup": "<button type=\"button\" class=\"btn btn-sm\" data-action=\"upload-model\">"
+    },
+    {
+      "id": "control-4f5789a67264ca-1",
+      "source": "js/structure-geometry-editor.js",
+      "markup": "<input type=\"file\" data-role=\"boundary-file\" accept=\".geojson,.json,application/geo+json,application/json\" hidden>"
+    },
+    {
+      "id": "control-41d7b406fd66e8-1",
+      "source": "js/structure-geometry-editor.js",
+      "markup": "<button type=\"button\" class=\"btn btn-sm\" data-action=\"fence-park\">"
+    },
+    {
+      "id": "control-160e255a09ebb3-1",
+      "source": "js/structure-geometry-editor.js",
+      "markup": "<button type=\"button\" class=\"btn btn-sm\" data-tree-pit=\"${pit}\" aria-pressed=\"false\">"
+    },
+    {
+      "id": "control-09574a23afe2bf-1",
+      "source": "js/structure-geometry-editor.js",
+      "markup": "<button type=\"button\" class=\"btn btn-sm\" data-action=\"tree-shorter\">"
+    },
+    {
+      "id": "control-a7c331c97907c3-1",
+      "source": "js/structure-geometry-editor.js",
+      "markup": "<button type=\"button\" class=\"btn btn-sm\" data-action=\"tree-taller\">"
+    },
+    {
+      "id": "control-0193acf99c3e85-1",
+      "source": "js/structure-geometry-editor.js",
+      "markup": "<button type=\"button\" class=\"btn btn-sm\" data-action=\"tree-reroll\">"
+    },
+    {
+      "id": "control-37ef2e56d06f54-1",
+      "source": "js/structure-geometry-editor.js",
+      "markup": "<button type=\"button\" class=\"btn btn-sm\" data-enclosure-fence=\"${kind}\" aria-pressed=\"false\">"
+    },
+    {
+      "id": "control-a97b6744d707b4-1",
+      "source": "js/structure-geometry-editor.js",
+      "markup": "<button type=\"button\" class=\"btn btn-sm\" data-enclosure-use=\"${use}\" aria-pressed=\"false\">"
+    },
+    {
+      "id": "control-862b24c834b9ed-1",
+      "source": "js/structure-geometry-editor.js",
+      "markup": "<button type=\"button\" class=\"btn btn-sm\" data-action=\"remove-enclosure\">"
+    },
+    {
+      "id": "control-3efed3c2684a22-1",
+      "source": "js/structure-geometry-editor.js",
+      "markup": "<input type=\"file\" data-role=\"furniture-model-file\" accept=\".glb,.gltf,model/gltf-binary,model/gltf+json\" hidden>"
+    },
+    {
+      "id": "control-c5629c983d9b98-1",
+      "source": "js/structure-geometry-editor.js",
+      "markup": "<button type=\"button\" class=\"btn btn-sm\" data-action=\"remove-furniture-model\">"
+    },
+    {
       "id": "control-7226a538813eaf-1",
       "source": "js/structure-geometry-editor.js",
       "markup": "<button type=\"button\" class=\"btn btn-sm\" data-action=\"undo\" aria-label=\"${undoLabel}\">",
@@ -7654,6 +7980,11 @@
       "markup": "<button type=\"button\" class=\"btn btn-sm\" data-action=\"finish-path\" hidden>",
       "interaction": "click",
       "controlType": "button"
+    },
+    {
+      "id": "control-f529ba143d4838-1",
+      "source": "js/structure-geometry-editor.js",
+      "markup": "<button type=\"button\" class=\"btn btn-sm\" data-action=\"finish-area\" hidden>"
     },
     {
       "id": "control-134839decde8fd-1",
@@ -7672,6 +8003,11 @@
     {
       "id": "control-6c4be3813e11eb-1",
       "source": "js/three-click-stack.js",
+      "markup": "doc.createElement('button')"
+    },
+    {
+      "id": "control-43313b66fc767c-1",
+      "source": "js/three-compare.js",
       "markup": "doc.createElement('button')"
     },
     {
@@ -7753,6 +8089,11 @@
       "controlType": "select"
     },
     {
+      "id": "control-0f72c2ba2aa79f-5",
+      "source": "js/three-mode.js",
+      "markup": "document.createElement('button')"
+    },
+    {
       "id": "control-46b5da01d9d0cc-4",
       "source": "js/three-mode.js",
       "markup": "document.createElement('input')",
@@ -7777,6 +8118,39 @@
       "id": "control-46b5da01d9d0cc-7",
       "source": "js/three-mode.js",
       "markup": "document.createElement('input')"
+    },
+    {
+      "id": "control-46b5da01d9d0cc-8",
+      "source": "js/three-mode.js",
+      "markup": "document.createElement('input')"
+    },
+    {
+      "id": "control-43cb5f849d5571-1",
+      "source": "js/transit-stations.js",
+      "markup": "global.document.createElement('button')",
+      "interaction": "click",
+      "controlType": "button",
+      "exhaustiveVariants": true,
+      "variants": [
+        {
+          "name": "Ground-level track station",
+          "attrs": {
+            "data-station-level": "tram"
+          }
+        },
+        {
+          "name": "Elevated track station",
+          "attrs": {
+            "data-station-level": "elevated"
+          }
+        },
+        {
+          "name": "Underground track station",
+          "attrs": {
+            "data-station-level": "underground"
+          }
+        }
+      ]
     },
     {
       "id": "control-d1342cf843b1ad-1",
@@ -7812,6 +8186,11 @@
       "markup": "<button type=\"button\" class=\"btn btn-primary\" data-station-editor-action=\"save\">",
       "interaction": "click",
       "controlType": "button"
+    },
+    {
+      "id": "control-9d4df482df3788-1",
+      "source": "js/tree-viewer.mjs",
+      "markup": "element.setAttribute('role', 'button')"
     },
     {
       "id": "control-a30dea3d3feb33-1",
@@ -8048,6 +8427,11 @@
       "controlType": "input"
     },
     {
+      "id": "control-ad1409caf61997-1",
+      "source": "js/ui/map-before-after.js",
+      "markup": "doc.createElement('button')"
+    },
+    {
       "id": "control-238f8889bfb66b-1",
       "source": "js/ui/map-compare-control.js",
       "markup": "handle.setAttribute('role', 'slider')",
@@ -8089,6 +8473,21 @@
       "dispatchEvidence": "The shared map-search button factory creates the current-city chip, Search opener, and Clear control; each dispatches to world view, search presentation, and query/results reset respectively.",
       "interaction": "auto",
       "controlType": "dynamic"
+    },
+    {
+      "id": "control-66575a114a315a-1",
+      "source": "js/ui/object-list.js",
+      "markup": "doc.createElement('button')"
+    },
+    {
+      "id": "control-c7e3c78927698d-1",
+      "source": "js/ui/view-pills.js",
+      "markup": "doc.createElement('button')"
+    },
+    {
+      "id": "control-2cd82319869468-1",
+      "source": "js/ui/view-pills.js",
+      "markup": "doc.createElement('input')"
     },
     {
       "id": "control-912798e09b0935-1",
@@ -8224,6 +8623,26 @@
       "markup": "doc.createElement('select')",
       "interaction": "change",
       "controlType": "select"
+    },
+    {
+      "id": "control-d3e0df24c40705-1",
+      "source": "js/urban-rule-variation.js",
+      "markup": "<select id=\"${prefix}-use\">"
+    },
+    {
+      "id": "control-faf0aab894c7af-1",
+      "source": "js/urban-rule-variation.js",
+      "markup": "<input type=\"checkbox\" id=\"${prefix}-balconies\">"
+    },
+    {
+      "id": "control-fd1ad5caaa8a51-1",
+      "source": "js/urban-rule-variation.js",
+      "markup": "<input type=\"number\" id=\"${prefix}-balcony-depth\" min=\"0.5\" max=\"${MAX_BALCONY_DEPTH_M}\" step=\"0.1\" value=\"${DEFAULT_BALCONY_DEPTH_M}\">"
+    },
+    {
+      "id": "control-38447ddf1b5f85-1",
+      "source": "js/urban-rule-variation.js",
+      "markup": "<input type=\"checkbox\" id=\"${prefix}-slanted-roof\">"
     },
     {
       "id": "control-d66c3b33c9c151-1",
@@ -9186,6 +9605,21 @@
       "controlType": "select"
     },
     {
+      "id": "control-808b3820eb2d8b-1",
+      "source": "trees.html",
+      "markup": "<button class=\"action\" id=\"reset\" type=\"button\">"
+    },
+    {
+      "id": "control-19e00fa68e96b1-1",
+      "source": "trees.html",
+      "markup": "<button class=\"action\" id=\"refresh\" type=\"button\">"
+    },
+    {
+      "id": "control-b3084d6ac3d1d3-1",
+      "source": "trees.html",
+      "markup": "<input type=\"checkbox\" id=\"show-trees\" checked>"
+    },
+    {
       "id": "control-3abdbd3f1cac2d-1",
       "source": "tx-explorer.html",
       "markup": "<button id=\"tx-refresh\" type=\"button\" class=\"btn\">",
@@ -9261,190 +9695,6 @@
       "markup": "<a class=\"btn btn-primary\" href=\"/\">",
       "interaction": "click",
       "controlType": "button"
-    },
-    {
-      "id": "control-43cb5f849d5571-1",
-      "source": "js/transit-stations.js",
-      "markup": "global.document.createElement('button')",
-      "interaction": "click",
-      "controlType": "button",
-      "exhaustiveVariants": true,
-      "variants": [
-        {
-          "name": "Ground-level track station",
-          "attrs": {
-            "data-station-level": "tram"
-          }
-        },
-        {
-          "name": "Elevated track station",
-          "attrs": {
-            "data-station-level": "elevated"
-          }
-        },
-        {
-          "name": "Underground track station",
-          "attrs": {
-            "data-station-level": "underground"
-          }
-        }
-      ]
-    },
-    {
-      "id": "control-a742d340d4db90-1",
-      "source": "index.html",
-      "markup": "<button type=\"button\" class=\"btn btn-primary\" data-app-update-reload data-i18n-key=\"appUpdates.reload\">",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-a56e0869bc399e-1",
-      "source": "index.html",
-      "markup": "<button type=\"button\" id=\"app-update-later\" class=\"btn\" data-i18n-key=\"appUpdates.later\">",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-b7d4914a2af334-1",
-      "source": "index.html",
-      "markup": "<button type=\"button\" id=\"app-update-check\" class=\"btn\">",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-ba886f3416d765-1",
-      "source": "index.html",
-      "markup": "<button type=\"button\" class=\"btn btn-primary\" data-app-update-reload data-i18n-key=\"appUpdates.reload\" hidden>",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-c603e7c453cc0f-1",
-      "source": "index.html",
-      "markup": "<button type=\"button\" id=\"settings-credits-button\" class=\"btn\" data-settings-reference=\"credits\" data-i18n-key=\"mapCredits.title\">",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-5a7fa8938eb4a7-1",
-      "source": "index.html",
-      "markup": "<button type=\"button\" id=\"settings-contact-button\" class=\"btn\" data-settings-reference=\"contact\" data-i18n-key=\"sidebar.info.contactTitle\">",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-87ab2b1bf0841a-1",
-      "source": "index.html",
-      "markup": "<button type=\"button\" id=\"settings-about-button\" class=\"btn\" data-settings-reference=\"about\" data-i18n-key=\"sidebar.info.aboutTitle\">",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-646e89a26bfc19-1",
-      "source": "index.html",
-      "markup": "<a class=\"btn\" href=\"how-to-use.html\" target=\"_blank\" rel=\"noopener noreferrer\" data-i18n-key=\"settingsPanel.userGuide\">",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-5bf08e81c39db1-1",
-      "source": "js/agreement-panel.js",
-      "markup": "<button type=\"button\" class=\"cb-option agreement-panel-object\" data-agreement-inspect=\"output\" data-agreement-object-id=\"${esc(line.hash)}\" aria-pressed=\"false\"${line.hasGeometry ? '' : ' disabled'}>",
-      "interaction": "click",
-      "controlType": "button",
-      "exhaustiveVariants": true,
-      "variants": [
-        {
-          "name": "Select agreement output piece",
-          "attrs": {
-            "data-agreement-inspect": "output"
-          }
-        }
-      ]
-    },
-    {
-      "id": "control-b36b8d2240109f-1",
-      "source": "js/agreement-panel.js",
-      "markup": "<button type=\"button\" class=\"cb-link\" data-agreement-inspect=\"${row.recipientKind === 'party' ? 'person' : esc(row.recipientKind)}\" data-agreement-object-id=\"${esc(row.ownerKey || row.recipientKind)}\" aria-pressed=\"false\">",
-      "interaction": "click",
-      "controlType": "button",
-      "exhaustiveVariants": true,
-      "variants": [
-        {
-          "name": "Inspect person ledger row",
-          "attrs": {
-            "data-agreement-inspect": "person"
-          }
-        },
-        {
-          "name": "Inspect proposer ledger row",
-          "attrs": {
-            "data-agreement-inspect": "proposer"
-          }
-        },
-        {
-          "name": "Inspect public ledger row",
-          "attrs": {
-            "data-agreement-inspect": "public"
-          }
-        }
-      ]
-    },
-    {
-      "id": "control-a95a3fa21ec212-1",
-      "source": "js/agreement-panel.js",
-      "markup": "<button type=\"button\" class=\"cb-option agreement-panel-object\" data-agreement-inspect=\"input\" data-agreement-object-id=\"${esc(parcel.parcelId)}\" aria-pressed=\"false\">",
-      "interaction": "click",
-      "controlType": "button",
-      "exhaustiveVariants": true,
-      "variants": [
-        {
-          "name": "Select agreement input parcel",
-          "attrs": {
-            "data-agreement-inspect": "input"
-          }
-        }
-      ]
-    },
-    {
-      "id": "control-b2deafc1d3315d-1",
-      "source": "js/agreement-panel.js",
-      "markup": "<button type=\"button\" class=\"cb-tab\" role=\"tab\" id=\"agreement-properties-tab-${kind}\" aria-controls=\"agreement-properties-panel-${kind}\" aria-selected=\"${kind === selected}\" tabindex=\"${kind === selected ? 0 : -1}\" data-agreement-properties-tab=\"${kind}\">",
-      "interaction": "click",
-      "controlType": "button",
-      "exhaustiveVariants": true,
-      "variants": [
-        {
-          "name": "Agreement properties overview tab",
-          "attrs": {
-            "data-agreement-properties-tab": "overview"
-          }
-        },
-        {
-          "name": "Agreement properties inputs tab",
-          "attrs": {
-            "data-agreement-properties-tab": "inputs"
-          }
-        },
-        {
-          "name": "Agreement properties outputs tab",
-          "attrs": {
-            "data-agreement-properties-tab": "outputs"
-          }
-        },
-        {
-          "name": "Agreement properties persons tab",
-          "attrs": {
-            "data-agreement-properties-tab": "persons"
-          }
-        },
-        {
-          "name": "Agreement properties rules tab",
-          "attrs": {
-            "data-agreement-properties-tab": "rules"
-          }
-        }
-      ]
     }
   ],
   "variantExclusions": [

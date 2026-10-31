@@ -303,7 +303,7 @@
         };
         const info = page('info', root.i18n.t('clickStackNavigation.info'));
         const options = sourceResult && item.configurations?.length ? page('options', root.i18n.t('planningViews.tabs.options')) : null;
-        const rules = sourceResult ? page('rules', root.i18n.t('planningViews.tabs.rules')) : null;
+        const rules = sourceResult ? page('rules', root.i18n.t('proposalDrafts.approval.policyType')) : null;
         const badges = element('div', 'planning-inspector__badges');
         badges.append(element('span', 'cb-badge', t(inspectorBadgeKey(item))));
         if (sourceResult && item.volumes.length) badges.append(element('span', 'cb-badge cb-badge--warning',
@@ -781,7 +781,8 @@
             if (generation !== sourceGeneration) return false;
             sourcesKey = key;
             const previousSource = sourceId, previousScenario = scenarioId;
-            if (JSON.stringify(sources.map(source => source.id)) !== JSON.stringify(sourceOptions.map(source => source.id))) applySources(sources);
+            // An ID alone is not a display contract: parcelStudy changes the permitted choices.
+            if (core.sourceCatalogSignature(sources) !== core.sourceCatalogSignature(sourceOptions)) applySources(sources);
             if (previousSource !== sourceId || previousScenario !== scenarioId) { pins = {}; invalidate(); render(); }
             return true;
         } catch (error) {
@@ -856,7 +857,7 @@
             if (clearSourceSelection) { focusedRecord = null; store.select(null); }
             const url = new URL(location.href); url.searchParams.set('planningSource', sourceId);
             url.searchParams.set('planningScenario', scenarioId); history.replaceState(history.state, '', url);
-            drawMap(); notifyGeometry(); refresh({ force: true });
+            drawMap(); render(); notifyGeometry(); refresh({ force: true });
             if (parcelPanel?.container.isConnected) showParcelEvidence(parcelPanel.container, parcelPanel.parcel);
         });
         const controls = panel.querySelector('.planning-layer-controls');

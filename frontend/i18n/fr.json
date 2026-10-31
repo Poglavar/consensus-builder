@@ -5361,7 +5361,6 @@
         "geometryUnavailable": "Impossible de charger tous les projets inclus. Leur étendue complète ne peut pas être mise en évidence.",
         "sharePlan": "Partager le plan",
         "chooseSharePlan": "Quel plan souhaitez-vous partager ?",
-        "published": "Publié",
         "revision": "Version"
     },
     "agentDialog": {
@@ -8316,8 +8315,7 @@
         "tabs": {
             "display": "Affichage",
             "compare": "Comparer",
-            "options": "Options",
-            "rules": "Règles"
+            "options": "Options"
         },
         "compare": {
             "stop": "Arrêter la comparaison",

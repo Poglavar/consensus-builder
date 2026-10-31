@@ -79,8 +79,8 @@ for (const viewport of VIEWPORTS) {
     await page.keyboard.press('Escape');
     await expect(page.locator('#click-stack')).toBeHidden();
     await expect(panel).toBeHidden();
-    // The phone sheet owns its translucent surface; hiding it also hides its resize handle.
-    await expect(page.locator('#click-stack')).toHaveCSS('background-color', viewport.width < 768 ? 'rgba(255, 255, 255, 0.8)' : 'rgba(0, 0, 0, 0)');
+    // A dismissed sheet owns neither a visible surface nor its resize affordance.
+    await expect(page.locator('#click-stack')).not.toHaveClass(/visible/);
     const handle = page.locator('#click-stack > .mobile-dock-sheet-handle');
     await expect(handle).toBeHidden();
   });

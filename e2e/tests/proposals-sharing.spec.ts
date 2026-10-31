@@ -49,5 +49,5 @@ test('a plan cannot be published when a member snapshot is missing', async ({ mo
     const plan={content,cid:w.Cid.cidOfObject(content)};
     try{await w.PlanWorkspace.resolve(plan);return null;}catch(error:any){return error.message;}
   });
-  expect(result).toContain('could not be found');
+  expect(result).toContain('neither in this browser nor on the server');
 });

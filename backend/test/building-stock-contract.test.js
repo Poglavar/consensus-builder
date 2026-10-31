@@ -110,9 +110,9 @@ it('Zagreb demolition stock uses observed GDI identities and intersections, not 
     expect(result.regions.get('take')[0]).toEqual({ id: 71, geometry: box(), height_m: null, floors: null });
     expect(result.regions.get('empty')).toEqual([]);
     const sql = pool.query.mock.calls[0][0];
-    expect(sql).toContain('gdi_building_footprint');
-    expect(sql).toContain('ST_MakeValid(f.geom)');
-    expect(sql).toContain('ST_Intersects(v.geom, r.geom)');
+    expect(sql).toContain('gdi_building_3d');
+    expect(sql).toContain('b.footprint_geom');
+    expect(sql).toContain('ST_Intersects(b.footprint_geom, r.geom)');
     expect(sql).not.toContain('dgu_building');
 });
 it('Zagreb cap voids every region, never an apparently empty complete scan', async () => {

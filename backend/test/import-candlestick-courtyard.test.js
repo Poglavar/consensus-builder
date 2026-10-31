@@ -105,6 +105,9 @@ describe('courtyardPlan and the command line', () => {
     const source = path.join(dir, 'model.json');
     fs.writeFileSync(source, JSON.stringify(MODEL));
     afterAll(() => fs.rmSync(dir, { recursive: true, force: true }));
+    const childEnv = { ...process.env };
+    // The parent test runner sets both colour controls; only script diagnostics belong on stderr.
+    delete childEnv.NO_COLOR;
 
     it('builds the plan from the model file it names, with that file\'s hash in every design', () => {
         vi.spyOn(console, 'log').mockImplementation(() => {});
@@ -121,7 +124,7 @@ describe('courtyardPlan and the command line', () => {
     });
 
     const run = args => spawnSync(process.execPath, ['scripts/import-candlestick-courtyard.mjs', ...args], {
-        cwd: fileURLToPath(new URL('..', import.meta.url)), encoding: 'utf8', timeout: 120_000, env: { ...process.env, HOME: dir }
+        cwd: fileURLToPath(new URL('..', import.meta.url)), encoding: 'utf8', timeout: 120_000, env: { ...childEnv, HOME: dir }
     });
 
     it('--dry-run prints the block designs without the network, and refuses to run without --source', () => {

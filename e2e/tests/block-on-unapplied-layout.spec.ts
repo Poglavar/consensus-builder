@@ -19,7 +19,7 @@ test.describe('Block on an unapplied parcel layout @features', () => {
     await page.evaluate(id => (window as any).ClickStack.showParcel((window as any).LiveParcelFabric.get(id)), plotIds[0]);
     await expandStackSection(page, 'formed');
     await expect(stackSection(page, 'formed').locator('#parcel-info-panel')).toBeVisible();
-    await parcelTab(page, 'info-tab').click();
+    await parcelTab(page, 'propose-tab').click();
     await page.locator('#parcel-manual-selection').click();
     await closeParcel(page);
     const [lng, lat] = await page.evaluate(id => (window as any).turf.pointOnFeature((window as any).LiveParcelFabric.get(id)).geometry.coordinates, plotIds[1]);

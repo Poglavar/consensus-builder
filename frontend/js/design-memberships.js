@@ -262,7 +262,7 @@
         host.classList.add('click-stack__plan');
         if (!instance.membershipPlaceholder) {
             const summary = node('div', 'click-stack__summary');
-            summary.appendChild(node('p', 'click-stack__facts', instance.draft ? t('draft') : t('published')));
+            summary.appendChild(node('p', 'click-stack__facts', instance.draft ? t('draft') : win.i18n.t('proposals.share.panel.published')));
             const revision = node('p', 'click-stack__facts', `${t('revision')}: `);
             const cid = node('code', 'click-stack__revision', instance.cid);
             cid.title = instance.cid;

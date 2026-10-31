@@ -54,7 +54,7 @@ test('walking-time color and threshold controls recolor the block map and its le
   await openLayerUrbanBlocks(page);
   await page.locator('#showUrbanBlocks').check();
   await expect(page.locator('#urban-block-list button[data-block-id]')).toHaveCount(4);
-  const colors = () => page.evaluate(() => Array.from((window as any).map.getPane('urbanBlocksPane').querySelectorAll('path'))
+  const colors = () => page.evaluate(() => Array.from((window as any).map.getPane('urbanBlocksPane').querySelectorAll('path:not(.urban-block-preview)'))
     .map((path: any) => path.getAttribute('fill')));
   const distinct = await colors();
   expect(new Set(distinct).size).toBeGreaterThan(1);
@@ -321,7 +321,7 @@ test('parcel block inspector tabs switch to their supported information and tool
   }, PARCEL_IDS);
   await expect.poll(() => page.evaluate(ids => ids.filter((id: string) => !!(window as any).ParcelPresenter.getLayer(id)).length, PARCEL_IDS)).toBe(PARCEL_IDS.length);
 
-  await openParcel(page);
+  await openParcel(page, 'proposals');
   await page.locator('.multi-select-detect-btn').click();
   await expect.poll(() => page.evaluate(() => (window as any).multiParcelSelection.selectedParcels.size)).toBeGreaterThan(1);
 

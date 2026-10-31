@@ -196,7 +196,7 @@ describe('proposal details and compact card on phones', () => {
         expect(read('js/three-click-stack.js')).toContain("el.className = 'click-stack right-dock-panel right-screen-panel';");
         expect(dockSheet).toContain("const PANEL_SELECTOR = '.info-panel.right-dock-panel:not(.is-hosted)';");
         expect(dockSheet).toContain(".map-sheet, .cb-dialog:not(.cb-dialog--message)");
-        expect(dockSheet).toContain('#click-stack, #three-click-stack');
+        expect(dockSheet).toContain('#click-stack.visible, #three-click-stack.visible');
         expect(mobileSheetsCss).toMatch(/#map-container \.mobile-sheet-ready:not\(\.is-minimized\):not\(\.is-hosted\):not\(\.is-folded\):not\(\[hidden\]\)/);
         expect(mobileSheetsCss).toMatch(/height:\s*var\(--mobile-sheet-layout-height, auto\)/);
         expect(mobileSheetsCss).toContain('--mobile-sheet-layout-height: var(--mobile-sheet-height, var(--mobile-sheet-initial-height, 50dvh))');
