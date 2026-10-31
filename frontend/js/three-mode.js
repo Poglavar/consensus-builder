@@ -8923,8 +8923,20 @@
         renderedBuildingDisplaySnapshot = buildingDisplaySnapshot;
         renderedSceneVisualRevision = sceneVisualRevision;
         // From the first drawn frame of an entry the 3D view covers the 2D map (map-shell.css);
-        // until then the map stays in view instead of an empty surface.
-        if (isActive && !document.body.classList.contains('three-scene-drawn')) document.body.classList.add('three-scene-drawn');
+        // until then the map stays in view instead of an empty surface. Photo asked for from 2D
+        // passes through the model scene: the map stays until the photo itself is shown (or the
+        // photo request has ended without it), not the model scene in between.
+        if (isActive && !document.body.classList.contains('three-scene-drawn') && !awaitingPhotoReveal()) {
+            document.body.classList.add('three-scene-drawn');
+        }
+    }
+
+    // Whether photo was asked for and is still composing: the mode request is still running, or the
+    // photo layer is loading its tiles, and the mesh has not been revealed yet.
+    function awaitingPhotoReveal() {
+        const state = window.__mapModeState;
+        if (state?.desired !== 'photo' || realisticLayerActive) return false;
+        return !!state.pending || !!window.PhotorealMode?.isLoading?.();
     }
 
     // ── Side by side comparison (three-compare.js) ─────────────────────────────────────────────
