@@ -6372,6 +6372,8 @@
             "trees": "Árboles",
             "life": "Personas y tráfico",
             "lifeTooltip": "Muestra u oculta personas y vehículos esquemáticos que se mueven por la vista 3D",
+            "sound": "Sonidos de la ciudad",
+            "soundTooltip": "Reproduce el tráfico, los perros y los pájaros que se oirían donde está la cámara de la vista 3D",
             "ground": "Calles y aceras",
             "groundTooltip": "Muestra u oculta la calzada y las aceras derivadas de OpenStreetMap en la vista 3D",
             "water": "Agua",

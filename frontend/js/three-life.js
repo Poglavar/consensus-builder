@@ -1,6 +1,6 @@
 // Life renderer for the 3D model view: draws a life-agents simulation (life/life-agents.js) as a
 // handful of InstancedMesh draws — vehicle bodies, glass and wheels; person heads, bodies, arms and
-// legs; at dusk and night headlamps, tail lamps and the pool of light ahead of each vehicle — and
+// legs; dogs (body and muzzle, head, legs, ears, tail and lead); at dusk and night headlamps, tail lamps and the pool of light ahead of each vehicle — and
 // advances it from three-mode's frame hook. The group works in TRUE metres and is mounted
 // with scale (k, k, 1) because the scene's XY is Mercator-inflated while Z is metric. Matrix writes go
 // straight into the instance attribute arrays; the matrix maths is pure and exported for tests.
@@ -12,6 +12,7 @@
     'use strict';
 
     const LIMB_SWING_RAD = 0.55;     // Station3D's walk-cycle amplitude
+    const DOG_SWING_RAD = 0.35;      // a trot's leg swing
     const MAX_FRAME_DT_S = 0.1;      // a long stall never teleports agents
 
     // Writes M = T(p) · Rz(yaw) · T(o) · Ry(a) · S(s) into `target` (column-major, three.js layout)
@@ -172,6 +173,56 @@
     const HEADLAMP_COLOR = 0xfff3d6;
     const TAIL_LAMP_COLOR = 0xff2a1a;
 
+    // Dog part placement (metres, dog frame: x forward, z up from the ground under its body) for a
+    // dog of the simulation (life-agents.js DOG_BREEDS sizes) with a given leg swing. The body and
+    // the muzzle are columns lying along x (a = π/2); legs, ears and tail are limbs hanging from
+    // their pivot (a = 0 down, π up). Legs move in diagonal pairs, as in a trot. `nose` (0…1) lowers
+    // the head to sniff; the tail carries its own yaw (`yaw`, the wag) about its root.
+    function dogParts(d, swing) {
+        const nose = d.nose || 0;
+        const bodyZ = d.legM + d.depthM / 2;
+        const headX = d.bodyM / 2 + d.headM * 0.4;
+        const headZ = d.legM + d.depthM + d.headM * 0.6 - nose * (d.depthM * 0.7 + d.headM * 0.6);
+        const legPivot = d.legM + d.depthM * 0.25;
+        const legR = Math.max(0.018, d.widthM * 0.16);
+        const legX = d.bodyM * 0.36, legY = d.widthM * 0.3;
+        const ears = [1, -1].map(side => d.earsUp
+            ? { ox: headX - d.headM * 0.2, oy: side * d.headM * 0.5, oz: headZ + d.headM * 0.55, a: Math.PI, sx: d.earM * 0.25, sy: d.earM * 0.3, sz: d.earM }
+            : { ox: headX - d.headM * 0.1, oy: side * d.headM * 0.85, oz: headZ + d.headM * 0.4, a: 0.15, sx: d.earM * 0.4, sy: 0.015, sz: d.earM });
+        return {
+            body: { ox: -d.bodyM / 2, oy: 0, oz: bodyZ, a: Math.PI / 2, sx: d.depthM / 2, sy: d.widthM / 2, sz: d.bodyM },
+            head: { ox: headX, oy: 0, oz: headZ, a: 0, sx: d.headM * 1.1, sy: d.headM, sz: d.headM },
+            snout: { ox: headX + d.headM * 0.5, oy: 0, oz: headZ - d.headM * 0.25, a: Math.PI / 2 + nose * 0.6, sx: d.headM * 0.5, sy: d.headM * 0.45, sz: d.snoutM },
+            legs: [
+                { ox: legX, oy: legY, oz: legPivot, a: swing, sx: legR, sy: legR, sz: legPivot },
+                { ox: legX, oy: -legY, oz: legPivot, a: -swing, sx: legR, sy: legR, sz: legPivot },
+                { ox: -legX, oy: legY, oz: legPivot, a: -swing, sx: legR, sy: legR, sz: legPivot },
+                { ox: -legX, oy: -legY, oz: legPivot, a: swing, sx: legR, sy: legR, sz: legPivot }
+            ],
+            ears,
+            tail: { ox: -d.bodyM / 2, oy: 0, oz: d.legM + d.depthM * 0.85, a: Math.PI / 2 + d.tailRad, yaw: Math.sin(d.wag || 0) * 0.5,
+                sx: Math.max(0.015, d.widthM * 0.1), sy: Math.max(0.015, d.widthM * 0.1), sz: d.tailM },
+            collar: { ox: d.bodyM / 2, oy: 0, oz: d.legM + d.depthM * 0.85 }
+        };
+    }
+
+    // The lead from the walker's hand on the dog's side to the dog's collar, as a hanging limb:
+    // pivot at the hand, yawed to face away from the dog so a positive swing `a` points it there.
+    function leashSegment(owner, dog, collar) {
+        const g = owner.height / 1.75;
+        const side = dog.side || 1;
+        const c = Math.cos(owner.heading), s = Math.sin(owner.heading);
+        const hx = owner.x + c * 0.1 * g - s * side * 0.27 * g, hy = owner.y + s * 0.1 * g + c * side * 0.27 * g, hz = owner.z + 0.85 * g;
+        const dc = Math.cos(dog.heading), ds = Math.sin(dog.heading);
+        const cx = dog.x + dc * collar.ox - ds * collar.oy, cy = dog.y + ds * collar.ox + dc * collar.oy, cz = dog.z + collar.oz;
+        const dx = cx - hx, dy = cy - hy, dz = cz - hz;
+        const h = Math.hypot(dx, dy);
+        return { x: hx, y: hy, z: hz, yaw: Math.atan2(dy, dx) + Math.PI, a: Math.atan2(h, -dz), len: Math.hypot(h, dz) };
+    }
+    const LEASH_COLOR = 0x7a1f1f;
+    const LEASH_RADIUS_M = 0.008;
+    const DOG_LIMBS = 8;   // four legs, two ears, the tail and the lead
+
     const RIDER_SKIN = [0xf1c9a5, 0xe0ac69, 0xc68642, 0x8d5524];
     const RIDER_SHIRT = [0x1f1f1f, 0x2f4f7f, 0x8b1e3f, 0x5b5b5b];
 
@@ -257,6 +308,19 @@
                 pools: instanced(geometries.pool, materials.pool, vehicles.length)
             };
             meshes.pools.renderOrder = 1;
+            const dogs = sim.dogs || [];
+            if (dogs.length) {
+                meshes.dogTrunks = instanced(geometries.column, materials.tinted, dogs.length * 2);
+                meshes.dogHeads = instanced(geometries.head, materials.tinted, dogs.length);
+                meshes.dogLimbs = instanced(geometries.limb, materials.tinted, dogs.length * DOG_LIMBS);
+                dogs.forEach((d, i) => {
+                    meshes.dogTrunks.setColorAt(i * 2, color.setHex(d.coat.body));
+                    meshes.dogTrunks.setColorAt(i * 2 + 1, color.setHex(d.coat.head));
+                    meshes.dogHeads.setColorAt(i, color.setHex(d.coat.head));
+                    const limbColors = [d.coat.legs, d.coat.legs, d.coat.legs, d.coat.legs, d.coat.head, d.coat.head, d.coat.body, LEASH_COLOR];
+                    limbColors.forEach((hex, slot) => meshes.dogLimbs.setColorAt(i * DOG_LIMBS + slot, color.setHex(hex)));
+                });
+            }
             vehicles.forEach((v, i) => {
                 meshes.bodies.setColorAt(i, color.setHex(v.color));
                 for (let slot = 0; slot < LAMPS_PER_VEHICLE; slot++) {
@@ -335,6 +399,35 @@
             }
         }
 
+        function writePart(mesh, index, x, y, z, yaw, part) {
+            if (part.yaw) {
+                // A part with its own yaw (the tail's wag) turns about its root: place the root, then yaw there.
+                const c = Math.cos(yaw), s = Math.sin(yaw);
+                writeMatrix(mesh.instanceMatrix.array, index * 16, x + c * part.ox - s * part.oy, y + s * part.ox + c * part.oy, z, yaw + part.yaw, part.a, part.sx, part.sy, part.sz, 0, 0, part.oz);
+            } else {
+                writeMatrix(mesh.instanceMatrix.array, index * 16, x, y, z, yaw, part.a, part.sx, part.sy, part.sz, part.ox, part.oy, part.oz);
+            }
+        }
+
+        function writeDogs() {
+            const dogs = sim.dogs || [];
+            if (!dogs.length || !meshes.dogTrunks) return;
+            const m = meshes;
+            dogs.forEach((d, i) => {
+                const parts = dogParts(d, Math.sin(d.stride) * DOG_SWING_RAD * d.amp);
+                writePart(m.dogTrunks, i * 2, d.x, d.y, d.z, d.heading, parts.body);
+                writePart(m.dogTrunks, i * 2 + 1, d.x, d.y, d.z, d.heading, parts.snout);
+                writePart(m.dogHeads, i, d.x, d.y, d.z, d.heading, parts.head);
+                const base = i * DOG_LIMBS;
+                parts.legs.forEach((leg, k) => writePart(m.dogLimbs, base + k, d.x, d.y, d.z, d.heading, leg));
+                writePart(m.dogLimbs, base + 4, d.x, d.y, d.z, d.heading, parts.ears[0]);
+                writePart(m.dogLimbs, base + 5, d.x, d.y, d.z, d.heading, parts.ears[1]);
+                writePart(m.dogLimbs, base + 6, d.x, d.y, d.z, d.heading, parts.tail);
+                const lead = leashSegment(sim.people[d.owner], d, parts.collar);
+                writeMatrix(m.dogLimbs.instanceMatrix.array, (base + 7) * 16, lead.x, lead.y, lead.z, lead.yaw, lead.a, LEASH_RADIUS_M, LEASH_RADIUS_M, lead.len, 0, 0, 0);
+            });
+        }
+
         function writeAll() {
             if (!sim || !meshes) return;
             const m = meshes;
@@ -369,6 +462,7 @@
                 const swing = Math.sin(p.stride) * LIMB_SWING_RAD * (p.amp == null ? 1 : p.amp) * (p.swing == null ? 1 : p.swing);
                 writeFigure(i, p.x, p.y, p.z, p.heading, personParts(p.height, swing, !!p.child));
             });
+            writeDogs();
             // Hidden lamps are not rewritten, so they need no upload either.
             Object.values(m).forEach(mesh => { if (mesh.visible) mesh.instanceMatrix.needsUpdate = true; });
         }
@@ -399,10 +493,10 @@
             group, setSimulation, setNight, onFrame, clear, dispose,
             stats: () => ({
                 frameMs: lastFrameMs, simMs: lastSimMs, drawCalls: meshes ? Object.values(meshes).filter(mesh => mesh.visible).length : 0,
-                vehicles: sim ? sim.vehicles.length : 0, people: sim ? sim.people.length : 0
+                vehicles: sim ? sim.vehicles.length : 0, people: sim ? sim.people.length : 0, dogs: sim && sim.dogs ? sim.dogs.length : 0
             })
         };
     }
 
-    return { create, writeMatrix, writeHidden, vehicleParts, vehicleLamps, headlightPool, poolAlpha, personParts, riderParts, LIMB_SWING_RAD };
+    return { create, writeMatrix, writeHidden, vehicleParts, vehicleLamps, headlightPool, poolAlpha, personParts, riderParts, dogParts, leashSegment, LIMB_SWING_RAD, DOG_SWING_RAD };
 });

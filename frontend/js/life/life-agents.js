@@ -1,7 +1,7 @@
 // Life agents: the schematic population moving in the 3D model view — vehicles following directed
 // lane tracks (life-graph.js) with simple car-following, steered like real vehicles (the front axle
 // rides the lane and the junction curve, the rear axle trails it), and people wandering the walkable surface
-// (life-surface.js). Pure and deterministic (seeded), no DOM, no THREE; true metres and seconds.
+// (life-surface.js), some of them walking a dog on a lead. Pure and deterministic (seeded), no DOM, no THREE; true metres and seconds.
 // The renderer reads the agents' x/y/z/heading/stride each frame. Behaviour is deliberately minimal:
 // stay on the path or the surface, pick a random continuation, never drive into the vehicle ahead.
 // See 3d-life.md.
@@ -25,6 +25,8 @@
     const PAIR_SHARE = 0.3;       // walkers who set out as a pair (a companion beside them)
     const PAIR_CHILD_SHARE = 0.5; // companions who are a child walking with an adult
     const PAIR_GAP_M = 0.7;       // shoulder to shoulder in a pair
+    const DOG_SHARE = 0.16;       // adults walking on their own who walk a dog
+    const LEASH_M = 1.8;          // how far a dog strays from its walker's hand
 
     // To-scale schematic vehicle classes (metres). `clearance` is the body's height above the road;
     // `frontAxle`/`rearAxle` are the axles' distances ahead of and behind the body centre (a city bus
@@ -43,6 +45,34 @@
     const SKIN_COLORS = [0xf1c9a5, 0xe0ac69, 0xc68642, 0x8d5524, 0xffdbac];
     const SHIRT_COLORS = [0x2f4f7f, 0x8b1e3f, 0x3c7a4d, 0xd9d2c5, 0xe8b04a, 0x5b5b5b, 0xffffff, 0x1f1f1f, 0xc0392b, 0x2980b9, 0xf39c12, 0x7f8c8d];
     const LEG_COLORS = [0x2b2b3a, 0x3d3d3d, 0x4a5568, 0x6b4f3a, 0x1b2a49, 0xbfb8a8];
+
+    // Dog breeds, metres: `legM` the leg from the elbow down to the ground, `bodyM` nose-less body
+    // length, `depthM`/`widthM` the chest, `headM` the skull's radius, `snoutM` the muzzle. Ears stand
+    // (`earsUp`) or hang; the tail is carried at `tailRad` above the horizontal. A coat is
+    // { body, head, legs }. `bark` is the voice's fundamental (Hz): small dogs yap, big dogs woof.
+    const DOG_BREEDS = {
+        labrador: { weight: 0.24, legM: 0.32, bodyM: 0.72, depthM: 0.27, widthM: 0.22, headM: 0.1, snoutM: 0.12, earM: 0.1, earsUp: false, tailM: 0.36, tailRad: 0.25, bark: 260,
+            coats: [{ body: 0xd8b26a, head: 0xd8b26a, legs: 0xd8b26a }, { body: 0x1d1a18, head: 0x1d1a18, legs: 0x1d1a18 }, { body: 0x5a3a22, head: 0x5a3a22, legs: 0x5a3a22 }] },
+        shepherd: { weight: 0.14, legM: 0.36, bodyM: 0.8, depthM: 0.28, widthM: 0.22, headM: 0.1, snoutM: 0.14, earM: 0.12, earsUp: true, tailM: 0.42, tailRad: -0.7, bark: 230,
+            coats: [{ body: 0x3a2a1c, head: 0xa9743b, legs: 0xb98445 }] },
+        husky: { weight: 0.12, legM: 0.32, bodyM: 0.68, depthM: 0.25, widthM: 0.21, headM: 0.095, snoutM: 0.1, earM: 0.09, earsUp: true, tailM: 0.32, tailRad: 1.1, bark: 300,
+            coats: [{ body: 0x6f7378, head: 0x8d9196, legs: 0xe9e9e6 }, { body: 0x2c2c2e, head: 0x4a4a4c, legs: 0xe9e9e6 }] },
+        beagle: { weight: 0.16, legM: 0.2, bodyM: 0.5, depthM: 0.2, widthM: 0.16, headM: 0.075, snoutM: 0.08, earM: 0.1, earsUp: false, tailM: 0.22, tailRad: 1.0, bark: 420,
+            coats: [{ body: 0x2a2018, head: 0x9a6430, legs: 0xf1ece2 }] },
+        terrier: { weight: 0.18, legM: 0.17, bodyM: 0.42, depthM: 0.15, widthM: 0.13, headM: 0.065, snoutM: 0.06, earM: 0.05, earsUp: false, tailM: 0.12, tailRad: 1.3, bark: 620,
+            coats: [{ body: 0xf0ebe0, head: 0xb07a40, legs: 0xf0ebe0 }, { body: 0xf0ebe0, head: 0x2a2018, legs: 0xf0ebe0 }] },
+        dachshund: { weight: 0.16, legM: 0.09, bodyM: 0.52, depthM: 0.17, widthM: 0.14, headM: 0.065, snoutM: 0.09, earM: 0.08, earsUp: false, tailM: 0.2, tailRad: 0.2, bark: 520,
+            coats: [{ body: 0x8b4513, head: 0x8b4513, legs: 0x8b4513 }, { body: 0x231a14, head: 0x7a4a24, legs: 0x7a4a24 }] }
+    };
+
+    function pickDogBreed(rng) {
+        let r = rng();
+        for (const [breed, spec] of Object.entries(DOG_BREEDS)) {
+            if (r < spec.weight) return breed;
+            r -= spec.weight;
+        }
+        return 'labrador';
+    }
 
     // Small deterministic PRNG so a scene looks the same on every entry and tests are repeatable.
     function mulberry32(seed) {
@@ -92,6 +122,9 @@
 
         const vehicles = [];
         const people = [];
+        const dogs = [];
+        // Dogs draw from their own stream, so adding them never reshuffles the crowd or the traffic.
+        const dogRng = mulberry32((o.seed != null ? o.seed : 1) ^ 0x5bd1e995);
         const queues = tracks.map(() => []);
 
         // ---- vehicles -------------------------------------------------------------------------
@@ -330,11 +363,13 @@
             return [leader.x - Math.cos(leader.heading) * 0.8, leader.y - Math.sin(leader.heading) * 0.8];
         }
 
-        // One more walker, and with PAIR_SHARE odds a companion beside them when the budget allows.
+        // One more walker, and with PAIR_SHARE odds a companion beside them when the budget allows;
+        // an adult left on their own may walk a dog instead.
         function addPerson(wanted) {
             const p = makePerson(people.length);
             if (!placePerson(p)) return false;
             people.push(p);
+            if (!p.child && dogRng() < DOG_SHARE) addDog(p);
             if (people.length < wanted && rng() < PAIR_SHARE) {
                 const c = makePerson(people.length, { child: rng() < PAIR_CHILD_SHARE, partner: p.id, pace: p.speed });
                 // Beside its partner when that ground is the same kind (a sidewalk stays a sidewalk), else on the same spot.
@@ -428,6 +463,87 @@
             }
         }
 
+        // ---- dogs ---------------------------------------------------------------------------------
+        // A dog on a lead: it trots a little ahead of its walker on the walker's leash side, and
+        // while the walker stands it noses about within the lead's reach. It never strays further
+        // than LEASH_M from the walker and steps only onto walkable ground; one left behind (a new
+        // surface, a corner it could not round) rejoins at the walker's feet.
+        function addDog(owner) {
+            const breed = pickDogBreed(dogRng);
+            const spec = DOG_BREEDS[breed];
+            const side = dogRng() < 0.5 ? 1 : -1;
+            const dog = {
+                id: dogs.length, owner: owner.id, breed, side,
+                legM: spec.legM, bodyM: spec.bodyM, depthM: spec.depthM, widthM: spec.widthM, headM: spec.headM,
+                snoutM: spec.snoutM, earM: spec.earM, earsUp: spec.earsUp, tailM: spec.tailM, tailRad: spec.tailRad, bark: spec.bark,
+                coat: pick(dogRng, spec.coats),
+                x: owner.x, y: owner.y, z: owner.z, heading: owner.heading,
+                stride: dogRng() * Math.PI * 2, amp: 0, wag: dogRng() * Math.PI * 2, nose: 0,
+                lead: 0.5 + dogRng() * 0.6, sniff: null, sniffWait: 0
+            };
+            dogs.push(dog);
+            owner.dog = dog.id;
+            return dog;
+        }
+
+        function stepDog(d, dt) {
+            const owner = people[d.owner];
+            const ox = owner.x, oy = owner.y;
+            let tx, ty, pace;
+            if (owner.wait > 0) {
+                // Standing walker: pick a spot to sniff within reach every few seconds.
+                d.sniffWait -= dt;
+                if (!d.sniff || d.sniffWait <= 0) {
+                    const a = dogRng() * Math.PI * 2, r = 0.5 + dogRng() * (LEASH_M - 0.6);
+                    const sx = ox + Math.cos(a) * r, sy = oy + Math.sin(a) * r;
+                    d.sniff = walk.isBlocked(sx, sy) ? [ox, oy] : [sx, sy];
+                    d.sniffWait = 2 + dogRng() * 4;
+                }
+                [tx, ty] = d.sniff;
+                pace = 0.7;
+            } else {
+                d.sniff = null;
+                const c = Math.cos(owner.heading), s = Math.sin(owner.heading);
+                const ahead = d.lead, aside = d.side * 0.45;
+                tx = ox + c * ahead - s * aside; ty = oy + s * ahead + c * aside;
+                if (walk.isBlocked(tx, ty)) { tx = ox - c * 0.6; ty = oy - s * 0.6; }
+                pace = Math.max(0.6, owner.speed) * 1.6;
+            }
+            const dx = tx - d.x, dy = ty - d.y, dist = Math.hypot(dx, dy);
+            const fromOwner = Math.hypot(d.x - ox, d.y - oy);
+            if (fromOwner > LEASH_M + 3) {
+                d.x = ox; d.y = oy; d.z = owner.z; d.heading = owner.heading;
+                return;
+            }
+            let moved = 0;
+            const step = Math.min(pace * dt, dist);
+            if (step > 1e-6) {
+                const nx = d.x + dx / dist * step, ny = d.y + dy / dist * step;
+                if (!walk.isBlocked(nx, ny) && Math.hypot(nx - ox, ny - oy) <= LEASH_M + 0.5) { d.x = nx; d.y = ny; moved = step; }
+                else if (fromOwner > 0.3) {
+                    // The lead pulls it back toward its walker.
+                    const toward = Math.min(pace * dt, fromOwner - 0.3);
+                    const px = d.x + (ox - d.x) / fromOwner * toward, py = d.y + (oy - d.y) / fromOwner * toward;
+                    if (!walk.isBlocked(px, py)) { d.x = px; d.y = py; moved = toward; }
+                }
+                d.z = walk.zAt(d.x, d.y);
+            }
+            if (moved > 1e-4) d.heading = Math.atan2(dy, dx);
+            // A quadruped's legs cycle faster the shorter they are.
+            d.stride += moved * 3.4 / d.legM;
+            const walking = moved > 0.2 * pace * dt;
+            d.amp = walking ? Math.min(1, d.amp + dt * 4) : Math.max(0, d.amp - dt * 4);
+            // Nose down once it stands at its spot; tail wags faster while it moves.
+            const sniffing = owner.wait > 0 && !walking && dist < 0.3;
+            d.nose = sniffing ? Math.min(1, d.nose + dt * 2) : Math.max(0, d.nose - dt * 3);
+            d.wag += dt * (walking ? 9 : 5);
+        }
+
+        function stepDogs(dt) {
+            if (!walk) return;
+            for (const d of dogs) stepDog(d, dt);
+        }
+
         // A later surface (footprints that arrived after the first build) keeps the crowd but
         // moves anyone now standing inside a footprint and re-checks every current leg.
         function replaceSurface(next) {
@@ -442,6 +558,11 @@
                 if (p.target && !walk.legOk(p.x, p.y, p.target[0], p.target[1])) p.target = null;
                 p.z = walk.zAt(p.x, p.y);
             }
+            for (const d of dogs) {
+                if (walk.isWalkable(d.x, d.y)) { d.z = walk.zAt(d.x, d.y); continue; }
+                const owner = people[d.owner];
+                d.x = owner.x; d.y = owner.y; d.z = owner.z; d.sniff = null;
+            }
             const wanted = wantedPeople();
             while (people.length < wanted && addPerson(wanted)) { /* until the crowd is full */ }
         }
@@ -454,6 +575,7 @@
                 const h = Math.min(MAX_STEP_S, remaining);
                 stepVehicles(h);
                 stepPeople(h);
+                stepDogs(h);
                 remaining -= h;
             }
         }
@@ -462,15 +584,15 @@
         spawnPeople();
 
         return {
-            vehicles, people, tracks, graph, step, replaceSurface,
+            vehicles, people, dogs, tracks, graph, step, replaceSurface,
             get surface() { return walk; },
             stats: () => ({
-                vehicles: vehicles.length, people: people.length, driveLength,
+                vehicles: vehicles.length, people: people.length, dogs: dogs.length, driveLength,
                 walkableM2: walk ? walk.stats.preferredAreaM2 + walk.stats.openAreaM2 : 0,
                 preferredM2: walk ? walk.stats.preferredAreaM2 : 0
             })
         };
     }
 
-    return { createSimulation, mulberry32, VEHICLE_KINDS, GAP_MIN_M, HEADWAY_S, STRIDE_RAD_PER_M, WANDER_RADIUS_M, PERSON_PER_M2, PAIR_SHARE, PAIR_GAP_M };
+    return { createSimulation, mulberry32, VEHICLE_KINDS, DOG_BREEDS, GAP_MIN_M, HEADWAY_S, STRIDE_RAD_PER_M, WANDER_RADIUS_M, PERSON_PER_M2, PAIR_SHARE, PAIR_GAP_M, DOG_SHARE, LEASH_M };
 });

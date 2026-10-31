@@ -270,6 +270,8 @@
     let groundLayer = null; // __threeGround instance: OSM-derived asphalt roadbed + pavement plane under the scene
     let groundEnabled = true; // user toggle (default ON); real value loaded from storage on 3D init
     let groundToggleEl = null;
+    let soundEnabled = false; // user toggle (default OFF); real value loaded from storage on 3D init
+    let soundToggleEl = null;
     // Plots an applied urban rule left out, drawn as see-through volumes. Default OFF: it answers
     // "why is there nothing on this plot", it is not part of the plan being looked at.
     let showIneligibleParcels = false;
@@ -2172,6 +2174,29 @@
         buildingModeControlsEl.appendChild(lifeRow);
         lifeToggleEl = lifeBox;
 
+        // City sound heard from the camera (three-sound.js). Off until asked for: a page that starts
+        // making noise on its own is a surprise. Same row shape again.
+        soundEnabled = loadSoundEnabledPref();
+        const soundRow = document.createElement('div');
+        soundRow.className = 'three-mode-trees-row three-mode-wide-row';
+        const soundLabel = document.createElement('label');
+        soundLabel.className = 'three-mode-trees-toggle three-mode-wide-toggle';
+        const soundBox = document.createElement('input');
+        soundBox.type = 'checkbox';
+        soundBox.checked = soundEnabled;
+        soundBox.addEventListener('change', () => setSoundEnabled(soundBox.checked));
+        const soundText = document.createElement('span');
+        soundText.className = 'three-mode-emphasis-label';
+        soundText.textContent = threeI18n('threeMode.controls.sound', 'City sounds');
+        soundLabel.title = threeI18n('threeMode.controls.soundTooltip', 'Play the traffic, dogs and birds you would hear where the 3D view\'s camera is');
+        soundLabel.setAttribute('aria-label', soundLabel.title);
+        soundLabel.appendChild(soundBox);
+        soundLabel.appendChild(soundText);
+        soundRow.appendChild(soundLabel);
+        buildingModeControlsEl.appendChild(soundRow);
+        soundToggleEl = soundBox;
+        if (soundEnabled) setSoundEnabled(true);
+
         // Ground: the asphalt roadbed under every street and pavement everywhere else, derived
         // from the same OSM streets the vehicles drive (three-ground.js). Same row shape again.
         groundEnabled = loadGroundEnabledPref();
@@ -2208,6 +2233,7 @@
 
         // These layers describe the flat model context. Google supplies its own ground and
         // existing scenery; proposed-building appearance and inspection work in both views.
+        // City sound is heard in both views, so its row stays in photo view too.
         [radiusRow, decorTogglesEl, lifeRow, groundRow].forEach(row => row.setAttribute('data-map-modes', '3d'));
 
         layersHost.appendChild(buildingModeControlsEl);
@@ -3710,6 +3736,7 @@
         nightWindows.setState(nightWindowState, night, lifeMercatorK());
         nightWindows.setSky(nightWindowState, sky?.uniforms);
         lifeLayer?.setNight(night);
+        soundNight = night;
         updateBirds(night);
     }
 
@@ -7292,6 +7319,63 @@
         lifeSim = null;
     }
 
+    // --- City sound (three-sound.js) ---
+    // Heard from the camera: the life layer's vehicles and dogs where they are shown, birds by day,
+    // the city's hum always. A 10 Hz tick feeds it whether or not frames are drawn (the life layer
+    // parks when idle and the sound goes on as the parked scene's), and plays only while the model
+    // view is up and the tab is visible. The AudioContext is made on the first enabling, inside the
+    // checkbox's click, so the browser lets it play.
+    const SOUND_STORAGE_KEY = 'cb_3d_sound_enabled';
+    const SOUND_TICK_MS = 100;
+    let soundscape = null;
+    let soundTimer = null;
+    let soundNight = 0;
+    let soundUnlock = null;
+
+    function loadSoundEnabledPref() {
+        try {
+            if (typeof PersistentStorage !== 'undefined' && PersistentStorage) {
+                const v = PersistentStorage.getItem(SOUND_STORAGE_KEY);
+                return v === '1' || v === 'true';
+            }
+        } catch (_) { }
+        return false;
+    }
+
+    // The camera as a listener in the life layer's true metres, with its horizontal right-hand side.
+    function soundListener() {
+        const k = lifeMercatorK();
+        const e = camera.matrixWorld.elements;
+        const right = Math.hypot(e[0], e[1]) || 1;
+        return { x: camera.position.x / k, y: camera.position.y / k, z: camera.position.z, rightX: e[0] / right, rightY: e[1] / right };
+    }
+
+    function soundTick() {
+        const on = soundEnabled && isActive && !!scene && !!camera && !document.hidden;
+        soundscape.setPlaying(on);
+        if (!on) return;
+        const lifeShown = !!(lifeSim && lifeGroup && lifeGroup.visible);
+        soundscape.update({
+            dt: SOUND_TICK_MS / 1000, listener: soundListener(), night: soundNight,
+            vehicles: lifeShown ? lifeSim.vehicles : [], dogs: lifeShown ? lifeSim.dogs : []
+        });
+    }
+
+    function setSoundEnabled(on) {
+        soundEnabled = !!on;
+        try { PersistentStorage.setItem(SOUND_STORAGE_KEY, soundEnabled ? '1' : '0'); } catch (_) { }
+        if (soundToggleEl && soundToggleEl.checked !== soundEnabled) soundToggleEl.checked = soundEnabled;
+        if (soundEnabled && !soundscape) {
+            soundscape = window.__threeSound.create();
+            // A saved "on" from an earlier visit has no click behind it: the first touch of the page starts it.
+            soundUnlock = () => { if (soundscape && soundscape.state === 'suspended' && soundscape.playing) soundTick(); };
+            document.addEventListener('pointerdown', soundUnlock, true);
+        }
+        if (soundEnabled && !soundTimer) soundTimer = setInterval(soundTick, SOUND_TICK_MS);
+        if (!soundEnabled && soundTimer) { clearInterval(soundTimer); soundTimer = null; }
+        if (soundscape) soundTick();
+    }
+
     // --- Real-world water (sea, lakes, rivers, streams) ---
     // Fetched via GET /decor/water for the same area and radius as the trees, every piece
     // already a polygon (the backend widens river and stream lines), drawn flat just above the ground
@@ -10048,7 +10132,8 @@
         moving: lastFrameDebug.moving, wasInvalidated: lastFrameDebug.wasInvalidated, hooksParked,
         idleMs: Math.round(performance.now() - lastInputAt), autoRotate: !!controls?.autoRotate || manualAutoRotateActive,
         frameAgeMs: Math.round(performance.now() - lastFrameDebug.at), loopRunning, frameId: frameId !== null, frameTimer: !!frameTimer,
-        clouds: { cover: atmosphereState.cbCloudCover.value, shadow: atmosphereState.cbCloudShadow.value, materials: atmosphereMaterials, timeS: atmosphereState.cbCloudTime.value }
+        clouds: { cover: atmosphereState.cbCloudCover.value, shadow: atmosphereState.cbCloudShadow.value, materials: atmosphereMaterials, timeS: atmosphereState.cbCloudTime.value },
+        sound: soundscape ? soundscape.stats() : null, dogs: lifeSim?.dogs?.length || 0
     });
     // Input keeps the decorative hooks awake; once they have parked, the first input restarts the loop.
     function noteInput() {
@@ -10080,7 +10165,7 @@
         const text = `${fps} fps · worst frame ${w.maxFrame.toFixed(1)} ms · hooks ${w.maxHooks.toFixed(1)} ms · render ${w.maxRender.toFixed(1)} ms`
             + ` · ${renderer ? renderer.info.render.calls : 0} draw calls`
             + (life && (life.vehicles || life.people)
-                ? ` · life ${life.frameMs.toFixed(2)} ms (${life.vehicles} vehicles, ${life.people} people, ${life.drawCalls} draws)` : '');
+                ? ` · life ${life.frameMs.toFixed(2)} ms (${life.vehicles} vehicles, ${life.people} people, ${life.dogs} dogs, ${life.drawCalls} draws)` : '');
         if (perfReadout) perfReadout.textContent = text;
         if (now - w.lastLog > 5000) { console.log('[3D perf] ' + text); w.lastLog = now; }
         w.start = now; w.frames = 0; w.maxFrame = 0; w.maxHooks = 0; w.maxRender = 0;

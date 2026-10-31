@@ -4710,6 +4710,8 @@
             "trees": "Arbres",
             "life": "Personnes et circulation",
             "lifeTooltip": "Afficher ou masquer les personnes et véhicules schématiques qui se déplacent dans la vue 3D",
+            "sound": "Sons de la ville",
+            "soundTooltip": "Faire entendre la circulation, les chiens et les oiseaux que l’on entendrait à l’emplacement de la caméra de la vue 3D",
             "ground": "Rues et trottoirs",
             "groundTooltip": "Afficher ou masquer la chaussée asphaltée et les trottoirs issus d’OpenStreetMap sous la vue 3D",
             "water": "Eau",

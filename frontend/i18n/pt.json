@@ -4710,6 +4710,8 @@
             "trees": "Árvores",
             "life": "Pessoas e trânsito",
             "lifeTooltip": "Mostrar ou ocultar pessoas e veículos esquemáticos em movimento na vista 3D",
+            "sound": "Sons da cidade",
+            "soundTooltip": "Reproduzir o trânsito, os cães e as aves que se ouviriam onde está a câmara da vista 3D",
             "ground": "Ruas e passeios",
             "groundTooltip": "Mostrar ou ocultar a faixa de rodagem em asfalto e os passeios derivados do OpenStreetMap sob a vista 3D",
             "water": "Água",

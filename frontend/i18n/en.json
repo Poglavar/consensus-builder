@@ -6345,6 +6345,8 @@
             "trees": "Trees",
             "life": "People and traffic",
             "lifeTooltip": "Show or hide schematic people and vehicles moving through the 3D view",
+            "sound": "City sounds",
+            "soundTooltip": "Play the traffic, dogs and birds you would hear where the 3D view's camera is",
             "ground": "Streets and pavement",
             "groundTooltip": "Show or hide the asphalt roadbed and pavement derived from OpenStreetMap under the 3D view",
             "water": "Water",

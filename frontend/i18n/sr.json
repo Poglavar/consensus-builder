@@ -6379,6 +6379,8 @@
             "trees": "Drveće",
             "life": "Ljudi i saobraćaj",
             "lifeTooltip": "Prikažite ili sakrijte shematske ljude i vozila koji se kreću kroz 3D prikaz",
+            "sound": "Zvuci grada",
+            "soundTooltip": "Pustite saobraćaj, pse i ptice koje biste čuli na mestu kamere 3D prikaza",
             "ground": "Ulice i trotoari",
             "groundTooltip": "Prikažite ili sakrijte kolovoze i trotoare izvedene iz OpenStreetMapa u 3D prikazu",
             "water": "Voda",
