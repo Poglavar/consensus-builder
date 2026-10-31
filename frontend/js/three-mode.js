@@ -185,7 +185,11 @@
         buildingRefreshQueue.cancel();
         buildingsWorkGeneration++;
         buildingsRenderGeneration++;
+        // A cancelled build only clears its own flag while its generation is current, so the flag
+        // ends here; a warm re-entry would otherwise read a build that will never finish.
+        buildingBuildPending = false;
         nearbyProposalBuildingsFetching = nearbyTreesFetching = nearbyWaterFetching = nearbyGreenFetching = false;
+        noteSceneWork();
     }
     let origin3857 = null; // Leaflet EPSG:3857 origin for local XY
     let sceneLoadGeometry = null; // frozen at 3D entry; panning never moves the backend query
@@ -290,7 +294,10 @@
             const pendingMode = window.__pending3DMode;
             const photoLoading = pendingMode === 'photo'
                 || !!(window.PhotorealMode && typeof window.PhotorealMode.isLoading === 'function' && window.PhotorealMode.isLoading());
-            const modelLoading = (pendingMode === 'model' || isTransitioning3D || !!renderingStatusRelease) && !photoLoading && !rw;
+            // After entry the model spins on while the scene still loads or places anything
+            // (sceneWorkLoading): buildings and their models, trees, water, green areas, street life.
+            const modelLoading = (pendingMode === 'model' || isTransitioning3D || !!renderingStatusRelease
+                || (isActive && sceneWorkLoading())) && !photoLoading && !rw;
             const desired = window.__mapModeState?.desired;
             const photoSelected = desired ? desired === 'photo' : rw || photoLoading;
             const modelSelected = desired ? desired === 'model' : !photoSelected && (isActive || modelLoading);
@@ -317,6 +324,13 @@
         } catch (_) { }
     }
     window.updateModeButtonStates = updateModeButtonStates;
+    // Whether the model scene is still fetching or placing anything after entry.
+    function sceneWorkLoading() {
+        return nearbyProposalBuildingsFetching || pendingModelLoads > 0 || buildingBuildPending || buildingRefreshQueue.pending
+            || nearbyTreesFetching || nearbyWaterFetching || nearbyGreenFetching || lifeOsmFetching;
+    }
+    // Called wherever one of those starts or ends, so the model tile's spinner follows it.
+    function noteSceneWork() { updateModeButtonStates(); }
 
     // Walk-mode launcher state. Target is a per-city 3D walk overlay configured via
     // city-config `walk.url` (Zagreb points at the transit planner at zagreb.lol/prijevoz/
@@ -6649,7 +6663,7 @@
         key = nearbyDataScope + '|' + key;
         if (key === nearbyTreesKey) return;
 
-        nearbyTreesFetching = true;
+        nearbyTreesFetching = true; noteSceneWork();
         const signal = sceneAbort?.signal;
         const current = () => isActive && !signal?.aborted && sceneAbort?.signal === signal;
         fetch(sceneryUrl('/decor/near', geometry, buffer, { kinds: 'trees' }), { signal })
@@ -6658,7 +6672,7 @@
                 if (!current()) return;
                 nearbyTrees = (payload && Array.isArray(payload.trees)) ? payload.trees : [];
                 nearbyTreesKey = key;
-                nearbyTreesFetching = false;
+                nearbyTreesFetching = false; noteSceneWork();
                 console.log(`[3D] Loaded ${nearbyTrees.length} nearby trees (${sceneTreeLoadGeometrySource}+${buffer}m)`);
                 if (isActive) rebuildTreesOnly();
                 // A radius change made while this read was out was skipped; read it now (a no-op
@@ -6668,7 +6682,7 @@
             .catch(err => {
                 if (!current() || err.name === 'AbortError') return;
                 console.warn('Failed to fetch nearby trees:', err);
-                nearbyTreesFetching = false;
+                nearbyTreesFetching = false; noteSceneWork();
             });
     }
 
@@ -7100,7 +7114,7 @@
         const key = bounds.map(v => Number(v).toFixed(5)).join(',');
         if (lifeOsmKey === key && (lifeOsmFeatures || lifeOsmFetching)) return;
         lifeOsmKey = key;
-        lifeOsmFetching = true;
+        lifeOsmFetching = true; noteSceneWork();
         lifeOsmFeatures = null;
         const base = (typeof window.getBackendBase === 'function') ? window.getBackendBase() : '';
         const llBounds = L.latLngBounds([[bounds[1], bounds[0]], [bounds[3], bounds[2]]]);
@@ -7108,7 +7122,7 @@
             : `bbox=${bounds[0]},${bounds[1]},${bounds[2]},${bounds[3]}&crs=EPSG:4326`;
         const settle = (features, source) => {
             if (lifeOsmKey !== key) return;
-            lifeOsmFetching = false;
+            lifeOsmFetching = false; noteSceneWork();
             lifeOsmFeatures = Array.isArray(features) ? features : [];
             console.log(`[3D life] ${lifeOsmFeatures.length} OSM ways from ${source}`);
             if (isActive && scene) rebuildLifeOnly();
@@ -7126,7 +7140,7 @@
             })
             .catch(error => {
                 if (lifeOsmKey !== key) return;
-                lifeOsmFetching = false;
+                lifeOsmFetching = false; noteSceneWork();
                 lifeOsmFeatures = [];
                 console.warn('[3D life] existing streets unavailable; life runs on proposals and plazas only', error);
             });
@@ -7269,7 +7283,7 @@
         if (!queryGeometry) return;
         const key = nearbyDataScope + '|' + JSON.stringify(queryGeometry.coordinates) + '|r' + buffer;
         if (key === nearbyWaterKey) return;
-        nearbyWaterFetching = true;
+        nearbyWaterFetching = true; noteSceneWork();
         const signal = sceneAbort?.signal;
         const current = () => isActive && !signal?.aborted && sceneAbort?.signal === signal;
         fetch(sceneryUrl('/decor/water', queryGeometry, buffer), { signal })
@@ -7278,7 +7292,7 @@
                 if (!current()) return;
                 nearbyWater = (payload && Array.isArray(payload.areas)) ? payload.areas : [];
                 nearbyWaterKey = key;
-                nearbyWaterFetching = false;
+                nearbyWaterFetching = false; noteSceneWork();
                 console.log(`[3D] Loaded ${nearbyWater.length} nearby water pieces (${sceneTreeLoadGeometrySource}+${buffer}m)`);
                 rebuildWaterOnly();
                 refreshLifeSurface();
@@ -7291,7 +7305,7 @@
                 if (!current() || err.name === 'AbortError') return;
                 // Scenery: the scene stands without it, so this is a log line, not a banner.
                 console.warn('Failed to fetch nearby water:', err);
-                nearbyWaterFetching = false;
+                nearbyWaterFetching = false; noteSceneWork();
             });
     }
 
@@ -7404,7 +7418,7 @@
         if (!queryGeometry) return;
         const key = nearbyDataScope + '|' + JSON.stringify(queryGeometry.coordinates) + '|r' + buffer;
         if (key === nearbyGreenKey) return;
-        nearbyGreenFetching = true;
+        nearbyGreenFetching = true; noteSceneWork();
         const signal = sceneAbort?.signal;
         const current = () => isActive && !signal?.aborted && sceneAbort?.signal === signal;
         fetch(sceneryUrl('/decor/green', queryGeometry, buffer), { signal })
@@ -7413,7 +7427,7 @@
                 if (!current()) return;
                 nearbyGreen = (payload && Array.isArray(payload.areas)) ? payload.areas : [];
                 nearbyGreenKey = key;
-                nearbyGreenFetching = false;
+                nearbyGreenFetching = false; noteSceneWork();
                 console.log(`[3D] Loaded ${nearbyGreen.length} nearby green areas (${sceneTreeLoadGeometrySource}+${buffer}m)`);
                 rebuildGreenOnly();
                 // As for the water: a query area the buildings widened meanwhile is read now.
@@ -7423,7 +7437,7 @@
                 if (!current() || err.name === 'AbortError') return;
                 // Scenery: the scene stands without it, so this is a log line, not a banner.
                 console.warn('Failed to fetch nearby green areas:', err);
-                nearbyGreenFetching = false;
+                nearbyGreenFetching = false; noteSceneWork();
             });
     }
 
@@ -9187,7 +9201,11 @@
 
     async function rebuild3DBuildingsOnly(options = {}) {
         if (!isActive || !buildingGroup) return;
-        return buildingRefreshQueue.request(options.family || 'all');
+        const done = buildingRefreshQueue.request(options.family || 'all');
+        // The queue is pending from this request until its last build has finished.
+        noteSceneWork();
+        done.then(noteSceneWork, noteSceneWork);
+        return done;
     }
 
     async function build3DBuildingFamilies(requestedFamily) {
@@ -9692,6 +9710,7 @@
             // The same two waits as the Built and Proposed arcs around Buildings and massing.
             window.PlanningLoading?.set('existing', 'model', isActive && nearbyProposalBuildingsFetching);
             window.PlanningLoading?.set('proposed', 'model', isActive && pendingModelLoads > 0);
+            noteSceneWork();
             const loading = isActive && (nearbyProposalBuildingsFetching || pendingModelLoads > 0);
             if (!loading) {
                 if (buildingsLoaderRelease) {

@@ -242,11 +242,12 @@ it('does not reschedule an inactive render frame', () => {
 });
 
 it('marks pending uploaded-model loads incomplete before the exit path clears their counter', () => {
-    let aborted = false;
+    let aborted = false, noted = 0;
     const context = loadInContext(threeModeDeclarations(['stopSceneWork']), {
         buildingRefreshQueue: { pending: false, cancel() {} },
         sceneAbort: { abort() { aborted = true; } },
-        buildingBuildPending: false,
+        noteSceneWork() { noted++; },
+        buildingBuildPending: true,
         pendingModelLoads: 2,
         buildingWorkIncomplete: false,
         buildingsWorkGeneration: 3,
@@ -266,6 +267,9 @@ it('marks pending uploaded-model loads incomplete before the exit path clears th
     expect(context.nearbyProposalBuildingsFetching).toBe(false);
     expect(context.nearbyTreesFetching).toBe(false);
     expect(context.nearbyWaterFetching).toBe(false);
+    // A cancelled build never clears its own flag, so a warm re-entry's model tile would spin on.
+    expect(context.buildingBuildPending).toBe(false);
+    expect(noted).toBe(1);
 });
 
 it('repaints existing life simulation from changed building footprints on active building events only', () => {
@@ -524,6 +528,7 @@ it('reads the water and green areas the buildings widened while an earlier read 
             nearbyDataScope: 'city',
             sceneTreeLoadGeometrySource: 'camera',
             sceneAbort: { signal: { aborted: false } },
+            noteSceneWork() {},
             sceneryQuery: () => ({ queryGeometry: { type: 'Polygon', coordinates: box.coordinates }, buffer: 0 }),
             sceneryUrl: (path, geometry) => `${path}?${JSON.stringify(geometry.coordinates)}`,
             fetch(url) {
@@ -598,6 +603,7 @@ it('reads the trees at a radius changed while an earlier read was out', async ()
         buildingLoadRadiusM: 300,
         NEARBY_BUILDINGS_KEY_PRECISION: 0.0001,
         sceneAbort: { signal: { aborted: false } },
+        noteSceneWork() {},
         sceneryUrl: (path, geometry, buffer) => `${path}?r=${buffer}`,
         fetch(url) {
             return new Promise(resolve => reads.push({ url, land: () => resolve({ ok: true, json: () => ({ trees: [] }) }) }));

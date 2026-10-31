@@ -23,7 +23,7 @@ function button() {
     };
 }
 
-function paintStrip(mode, extra = {}) {
+function paintStrip(mode, extra = {}, { sceneWork = false } = {}) {
     const buttons = new Map(['mode-2d-toggle', 'mode-3d-toggle', 'mode-realistic-toggle', 'mode-ai-toggle']
         .map(id => [id, button()]));
     const window = {
@@ -33,8 +33,8 @@ function paintStrip(mode, extra = {}) {
     };
     const document = { getElementById: id => buttons.get(id) || null };
     const paint = new Function('window', 'document', 'threeI18n', 'isActive', 'isTransitioning3D', 'renderingStatusRelease',
-        `${functionSource}; return updateModeButtonStates;`)(window, document, (_key, fallback) => fallback,
-        mode !== '2d', false, null);
+        'sceneWorkLoading', `${functionSource}; return updateModeButtonStates;`)(window, document, (_key, fallback) => fallback,
+        mode !== '2d', false, null, () => sceneWork);
     paint();
     return buttons;
 }
@@ -58,5 +58,15 @@ describe('2D tile while cadastral parcels load', () => {
             const idle = paintStrip(mode, { mapParcelsLoading: () => false });
             expect(idle.get('mode-2d-toggle').classes.has('mode-btn-loading')).toBe(false);
         }
+    });
+});
+
+describe('Model tile while the 3D scene still loads after entry', () => {
+    it('spins the model tile in model view while buildings or scenery load, not in photo view', () => {
+        const spins = (mode, sceneWork) => paintStrip(mode, {}, { sceneWork }).get('mode-3d-toggle').classes.has('mode-btn-loading');
+        expect(spins('model', true)).toBe(true);
+        expect(spins('model', false)).toBe(false);
+        expect(spins('photo', true)).toBe(false);
+        expect(spins('2d', true)).toBe(false);
     });
 });

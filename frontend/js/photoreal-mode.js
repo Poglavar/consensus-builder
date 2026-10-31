@@ -229,12 +229,14 @@
         } else {
             releaseStreaming();
         }
-        // The globe-icon spinner MIRRORS this loader exactly — on while tiles stream (loader visible),
-        // off when they finish (loader hidden) — so the two start and stop together. loadProgress is
-        // not monotonic (it reaches 1, dips as more tiles queue, then settles), which is why the
+        // The globe-icon spinner runs while tiles stream and on until the mesh is seated and shown
+        // (tryLockGround): until then the model view is still what is on screen, and seating waits
+        // for the content to go quiet after loadProgress first reaches 1. loadProgress is not
+        // monotonic (it reaches 1, dips as more tiles queue, then settles), which is why the
         // spinner is synced frame-by-frame here rather than stopped once. Only fires on a transition,
         // so it does not re-run updateModeButtonStates every frame.
-        if (active && loading !== show) setPhotorealLoading(show);
+        const composing = show || (active && !grounded);
+        if (active && loading !== composing) setPhotorealLoading(composing);
     }
 
     // Built once per entry; later refreshes only touch the text node, and only when it changed.
@@ -410,8 +412,7 @@
         seatNode.position.z -= (use + GROUND_BELOW_CONTENT_M);
         grounded = true;
         setStatus('');
-        // The globe spinner is no longer stopped here — updateLoader syncs it to the "Streaming 3D
-        // tiles…" indicator, so it stops exactly when that does (seating can lag a little behind).
+        // The globe spinner stops on the next frame's updateLoader, which sees the mesh seated.
         cancelTerrainGridBuild();
         terrainGrid = null; // re-seated: the height field must be re-sampled in the new frame
         groundTexture?.dispose();
