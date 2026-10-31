@@ -210,6 +210,13 @@ body.three-mode-active :is(.map-editor-toolbar, .area-monitor-creation-panel) {
     display: none;
 }
 
+/* Both 3D views (model and photo) cover the 2D map entirely. It keeps its size and state, since
+   parcels load from its view and 3D builds on them, but none of it is drawn or reachable: before,
+   it showed through wherever the 3D canvas had not drawn yet, as when the window was resized. */
+body.three-mode-active #map {
+    visibility: hidden;
+}
+
 /* The 3D scene uses its selection controls; the map navigation row belongs to 2D. Reclaim its
    clearance as well as hiding its buttons, while respecting a phone's home indicator. */
 body.three-mode-active {

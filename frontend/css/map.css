@@ -1631,6 +1631,17 @@ body.three-mode-active #agent-bubbles-container {
 #three-container.active {
     display: block;
     pointer-events: auto; /* enable interaction in 3D mode */
+    /* Opaque before the first frame and wherever the canvas has not drawn yet: the 2D map below
+       is hidden in 3D (map-shell.css), so this is what shows, never the map. */
+    background: var(--cb-surface);
+}
+
+/* The canvas fills the container in CSS; three-mode.js sizes only its drawing buffer. While a
+   window resizes, the last frame stretches for a moment instead of a strip of page showing. */
+#three-container canvas {
+    display: block;
+    width: 100%;
+    height: 100%;
 }
 
 /* Provenance of the 3D context buildings (OSM: how many heights are estimated). */

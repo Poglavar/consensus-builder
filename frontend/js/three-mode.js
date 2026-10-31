@@ -9367,7 +9367,9 @@
         // The smooth ghost pass uses stencil to ensure that only one nearest translucent facade
         // blends at each pixel, even if a residual coincident triangle survives sanitation.
         renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false, stencil: true });
-        renderer.setSize(width, height);
+        // The canvas's CSS box follows the container (map.css), so a resize never leaves a strip
+        // uncovered while the drawing buffer catches up; only the buffer is sized here.
+        renderer.setSize(width, height, false);
         renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
         sky = window.__threeSky.createSky(THREE, { pixelRatio: renderer.getPixelRatio() });
         scene.add(sky.group);
@@ -10024,7 +10026,7 @@
         if (w <= 1 || h <= 1) return; // container not laid out yet; don't clamp to a fallback
         renderer.getSize(_rendererSize);
         if (Math.round(_rendererSize.x) === w && Math.round(_rendererSize.y) === h) return;
-        renderer.setSize(w, h);
+        renderer.setSize(w, h, false);
         camera.aspect = w / h;
         camera.updateProjectionMatrix();
     }
@@ -10035,7 +10037,7 @@
         const h = Math.max(1, threeContainer.clientHeight || 600);
         camera.aspect = w / h;
         camera.updateProjectionMatrix();
-        renderer.setSize(w, h);
+        renderer.setSize(w, h, false);
         invalidateThreeView();
         // Do not reframe here: camera + controls.target are the user's current pan/orbit state.
         // Updating only the projection keeps that state intact across layout and window resizes.
@@ -10171,7 +10173,8 @@
         try { map.doubleClickZoom && map.doubleClickZoom.disable(); } catch (_) { }
         try { map.boxZoom && map.boxZoom.disable(); } catch (_) { }
         try { map.keyboard && map.keyboard.disable(); } catch (_) { }
-        // Hide attribution if desired? Keep it.
+        try { map.touchZoom && map.touchZoom.disable(); } catch (_) { }
+        try { map.tap && map.tap.disable(); } catch (_) { }
     }
 
     function enableLeafletInteractions() {
@@ -10180,6 +10183,8 @@
         try { map.doubleClickZoom && map.doubleClickZoom.enable(); } catch (_) { }
         try { map.boxZoom && map.boxZoom.enable(); } catch (_) { }
         try { map.keyboard && map.keyboard.enable(); } catch (_) { }
+        try { map.touchZoom && map.touchZoom.enable(); } catch (_) { }
+        try { map.tap && map.tap.enable(); } catch (_) { }
     }
 
     function closeAllPanelsAndModalsFor3D() {
