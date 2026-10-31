@@ -110,7 +110,10 @@
             const chip = doc.createElement('button');
             chip.type = 'button';
             chip.className = 'btn click-stack__chip';
-            chip.textContent = name;
+            const chipLabel = doc.createElement('span');
+            chipLabel.className = 'click-stack__chip-label';
+            chipLabel.textContent = name;
+            chip.appendChild(chipLabel);
             chip.title = name;
             chip.dataset.action = 'preview';
             chip.dataset.kind = group.kind || '';

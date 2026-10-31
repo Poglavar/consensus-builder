@@ -76,8 +76,8 @@ replace one with its own (the model view reads buildings from its scene).
   disposes its membership lookup, including pending responses, so refresh cannot restore stale Plans.
   Every displayed section has a clickable header. Expanding a section collapses the others;
   at most one is expanded. There is no coordinate footer.
-- Parallel action buttons share their row's width equally, including pairs and triples. Larger
-  relationship groups wrap into equal-width rows; long labels wrap within their button.
+- Parallel action buttons share their row's width equally, including pairs and triples.
+  Relationship lists show one item per row; long labels stay on one line with an ellipsis.
 - Desktop navigation and feedback stay centred on the viewport when inspection opens. The
   right column can extend to the bottom edge while it clears those controls horizontally; where
   they overlap, its maximum height stops above the highest visible control with a small gap.
@@ -88,7 +88,7 @@ replace one with its own (the model view reads buildings from its scene).
   colored icon pill, repeated in its details; its name may wrap below the type row. Color
   supplements the type text and icon; it does not indicate publication or approval.
 - Relationship groups are small, explicitly labelled link groups **inside the expanded card body**.
-  Their links wrap to fit the card; they do not create horizontal scrolling. A group navigates
+  Their links fill the card's width; they do not create horizontal scrolling. A group navigates
   related objects, never siblings of the object already selected:
   - A plan offers its included designs. An agreement references exactly one Plan revision;
     it has no independently authored design membership.

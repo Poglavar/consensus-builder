@@ -1166,7 +1166,7 @@ body.three-mode-active #agent-bubbles-container {
     transform: rotate(180deg);
 }
 
-/* Relationship links sit inside the selected card body as small, wrapping groups. */
+/* Relationship links sit inside the selected card body as labelled lists. */
 .click-stack__choices {
     display: flex;
     flex-direction: column;
@@ -1199,9 +1199,8 @@ body.three-mode-active #agent-bubbles-container {
 
 .click-stack__strip {
     flex: 1 1 auto;
-    display: flex;
-    align-items: flex-start;
-    flex-wrap: wrap;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
     gap: var(--cb-space-1);
     width: 100%;
     min-width: 0;
@@ -1231,10 +1230,15 @@ body.three-mode-active #agent-bubbles-container {
     flex: 0 1 auto;
     min-width: 0;
     max-width: 100%;
-    white-space: normal;
-    overflow-wrap: anywhere;
     text-align: left;
     justify-content: flex-start;
+}
+
+.click-stack__chip-label {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .click-stack__selector-wrap {
@@ -1351,20 +1355,15 @@ body.three-mode-active #agent-bubbles-container {
     min-width: 0;
     white-space: normal;
 }
-/* Related items are a list: one per row, its name beside its open arrow, at any width. */
-.click-stack .click-stack__strip > .click-stack__link {
-    flex: 1 1 100%; min-width: 0;
-}
-
 /* A related item: its name highlights the object (pressed while kept shown); the arrow opens it. */
 .click-stack__link {
     display: flex;
+    min-width: 0;
     align-items: stretch;
     gap: var(--cb-space-1);
 }
 .click-stack__link > .click-stack__chip {
-    flex: 1 1 auto;
-    white-space: normal;
+    flex: 1 1 0;
 }
 .click-stack__link > .click-stack__open {
     flex: 0 0 auto;
@@ -1392,8 +1391,6 @@ body.three-mode-active #agent-bubbles-container {
     white-space: normal;
 }
 .click-stack__plan .click-stack__strip {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr);
     gap: var(--cb-space-2);
 }
 .click-stack__plan .click-stack__chip {
