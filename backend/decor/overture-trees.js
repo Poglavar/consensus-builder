@@ -138,7 +138,7 @@ function plantingSql(source) {
 const toTrees = rows => rows.map(r => [Number(r.lng), Number(r.lat)]);
 
 // The WGS84 box a geometry and a metres buffer cover (a plain-degree envelope, generous at the edges).
-function bufferedBbox(geometry, bufferMeters) {
+export function bufferedBbox(geometry, bufferMeters) {
     let w = Infinity, s = Infinity, e = -Infinity, n = -Infinity;
     const visit = coords => {
         if (typeof coords[0] === 'number') {

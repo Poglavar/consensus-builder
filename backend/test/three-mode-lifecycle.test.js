@@ -111,6 +111,7 @@ it('resolves a caller waiting on scene readiness as false when the pending scene
         handleResize() {},
         cancelLoop() {},
         disposeLife() {},
+        disposeBirds() {},
         disposeGround() {},
         perfReadout: null,
         disposeFloorPlans() {},
@@ -376,6 +377,7 @@ function warmEnterFixture() {
         startLoop() { calls.startLoop += 1; },
         ensureNearbyProposalBuildings() {},
         ensureNearbyTrees() {},
+        ensureNearbyFurniture() {},
         ensureNearbyWater() {},
         ensureNearbyGreen() {},
         initScene: async () => { calls.init += 1; return true; },
@@ -591,7 +593,7 @@ it('widens water and green areas when the camera settles at another zoom', () =>
 
 it('reads the trees at a radius changed while an earlier read was out', async () => {
     const reads = [];
-    const context = loadInContext(threeModeDeclarations(['ensureNearbyTrees']), {
+    const context = loadInContext(threeModeDeclarations(['ensureNearbyTrees', 'sceneryQueryArea']), {
         isActive: true,
         treesEnabled: true,
         nearbyTreesFetching: false,

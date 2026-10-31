@@ -251,6 +251,7 @@
     let stationGroup = null; // placeable bus/tram/underground/elevated station models
     let existingTransitAlignmentGroup = null; // immutable tram/heavy-rail snapshot (city-gated)
     let treesGroup = null; // real-world OSM trees (Overture base/land), toggleable scenery
+    let furnitureGroup = null; // street furniture mapped in OSM (fountains, lamps), drawn with the placed ones' models
     let waterGroup = null; // real-world sea, lakes and rivers (OpenFreeMap tiles), toggleable scenery
     let greenGroup = null; // real-world lawns, parks, meadows and woods (OpenFreeMap tiles), toggleable scenery
     let proposalInteractionGroup = null; // selectable applied/unapplied proposal surfaces
@@ -3401,8 +3402,6 @@
 
         const squareMats = squareSurfaceMaterials();
         const stoneMat = surfaceMaterial || squareMats.paving;
-        const rimMat = squareMats.rim;
-        const waterMat = squareMats.water;
 
         const isCurrentModel = startStructureModels(decoTarget);
         squares.forEach(sq => {
@@ -3442,57 +3441,9 @@
                 const fountains = (Array.isArray(dec.fountains) && dec.fountains.length)
                     ? dec.fountains
                     : (Array.isArray(dec.fountain) ? [dec.fountain] : []);
-                placeFurniture3D('fountain', fountains, models, decoTarget, isCurrentModel, spots => spots.forEach(spot => {
-                const { lng, lat } = spot;
-                const [x, y] = latLngToXY(lat, lng);
-
-                // Simple fountain: pedestal + basin + water disk + small spout
-                const group = new THREE.Group();
-
-                // Pedestal
-                const pedH = 0.3;
-                const pedR = 0.8;
-                const pedGeo = new THREE.CylinderGeometry(pedR, pedR, pedH, 24);
-                pedGeo.rotateX(Math.PI / 2);
-                pedGeo.translate(x, y, 0.06 + pedH / 2);
-                const pedestal = new THREE.Mesh(pedGeo, rimMat);
-                markOwnedGeometry(pedestal, pedGeo);
-                group.add(pedestal);
-
-                // Basin rim
-                const basinH = 0.2;
-                const basinR = 2.0;
-                const basinGeo = new THREE.CylinderGeometry(basinR, basinR, basinH, 48, 1, false);
-                basinGeo.rotateX(Math.PI / 2);
-                basinGeo.translate(x, y, 0.06 + pedH + basinH / 2);
-                const basin = new THREE.Mesh(basinGeo, rimMat);
-                markOwnedGeometry(basin, basinGeo);
-                group.add(basin);
-
-                // Water disk inside basin
-                const waterR = basinR * 0.85;
-                const waterGeo = new THREE.CylinderGeometry(waterR, waterR, 0.06, 48);
-                waterGeo.rotateX(Math.PI / 2);
-                waterGeo.translate(x, y, 0.06 + pedH + basinH + 0.03);
-                const water = new THREE.Mesh(waterGeo, waterMat);
-                markOwnedGeometry(water, waterGeo);
-                water.renderOrder = 8000;
-                group.add(water);
-
-                // Central spout
-                const spoutH = 0.8;
-                const spoutR = 0.12;
-                const spoutGeo = new THREE.CylinderGeometry(spoutR, spoutR, spoutH, 12);
-                spoutGeo.rotateX(Math.PI / 2);
-                spoutGeo.translate(x, y, 0.06 + pedH + basinH + spoutH / 2);
-                const spout = new THREE.Mesh(spoutGeo, waterMat);
-                markOwnedGeometry(spout, spoutGeo);
-                spout.material.transparent = true;
-                spout.material.opacity = 0.9;
-                group.add(spout);
-
-                decoTarget.add(group);
-                }));
+                // The default fountain is the one OSM fountains get too (three-fountains.js).
+                placeFurniture3D('fountain', fountains, models, decoTarget, isCurrentModel,
+                    spots => addFountains3D(decoTarget, spots.map(spot => ({ lng: spot.lng, lat: spot.lat })), FURNITURE_GROUND_Z));
             } catch (_) { }
         });
     }
@@ -6716,11 +6667,11 @@
         invalidateThreeView();
     }
 
-    function ensureNearbyTrees() {
-        if (!treesEnabled || nearbyTreesFetching) return;
-
+    // The area trees and street furniture are read for: the scene's tree geometry (a proposal's
+    // footprint or the camera point) and the buildings' radius, with the key of that read.
+    function sceneryQueryArea() {
         const queryGeometry = sceneTreeLoadGeometry;
-        if (!queryGeometry) return;
+        if (!queryGeometry) return null;
         const proposalGeom = queryGeometry.type === 'Point' ? null : queryGeometry;
         let geometry, buffer, key;
         if (proposalGeom) {
@@ -6730,13 +6681,20 @@
             key = 'prop:' + bb.map(p => p.map(n => n.toFixed(6)).join(',')).join('|') + '|r' + buildingLoadRadiusM;
         } else {
             const pt = queryGeometry;
-            if (!pt) return;
+            if (!pt) return null;
             geometry = pt;
             buffer = buildingLoadRadiusM;
             const snap = v => Math.round(v / NEARBY_BUILDINGS_KEY_PRECISION) * NEARBY_BUILDINGS_KEY_PRECISION;
             key = `pt:${snap(pt.coordinates[0]).toFixed(5)},${snap(pt.coordinates[1]).toFixed(5)}|r${buildingLoadRadiusM}`;
         }
-        key = nearbyDataScope + '|' + key;
+        return { geometry, buffer, key: nearbyDataScope + '|' + key };
+    }
+
+    function ensureNearbyTrees() {
+        if (!treesEnabled || nearbyTreesFetching) return;
+        const area = sceneryQueryArea();
+        if (!area) return;
+        const { geometry, buffer, key } = area;
         if (key === nearbyTreesKey) return;
 
         nearbyTreesFetching = true; noteSceneWork();
@@ -6760,6 +6718,91 @@
                 console.warn('Failed to fetch nearby trees:', err);
                 nearbyTreesFetching = false; noteSceneWork();
             });
+    }
+
+    // ---- Street furniture mapped in OSM (GET /decor/furniture) ----
+    // Read for the same area as the trees, and drawn with the models placed furniture uses, so a
+    // mapped fountain and one put in a square look and move alike.
+    let nearbyFurniture = null;         // { fountains: [[lng, lat, radiusM]], lamps: [[lng, lat]] } or null
+    let nearbyFurnitureKey = null;
+    let nearbyFurnitureFetching = false;
+    let furnitureFountains = null;      // the three-fountains.js layer drawn into furnitureGroup
+
+    function ensureNearbyFurniture() {
+        if (nearbyFurnitureFetching) return;
+        const area = sceneryQueryArea();
+        if (!area || area.key === nearbyFurnitureKey) return;
+        nearbyFurnitureFetching = true;
+        const signal = sceneAbort?.signal;
+        const current = () => isActive && !signal?.aborted && sceneAbort?.signal === signal;
+        fetch(sceneryUrl('/decor/furniture', area.geometry, area.buffer), { signal })
+            .then(r => r.ok ? r.json() : Promise.reject(new Error(`HTTP ${r.status}`)))
+            .then(payload => {
+                if (!current()) return;
+                nearbyFurniture = {
+                    fountains: Array.isArray(payload?.fountains) ? payload.fountains : [],
+                    lamps: Array.isArray(payload?.lamps) ? payload.lamps : []
+                };
+                nearbyFurnitureKey = area.key;
+                nearbyFurnitureFetching = false;
+                console.log(`[3D] Loaded ${nearbyFurniture.fountains.length} fountains and ${nearbyFurniture.lamps.length} street lamps from OSM`);
+                rebuildFurnitureOnly();
+                ensureNearbyFurniture();
+            })
+            .catch(err => {
+                if (!current() || err.name === 'AbortError') return;
+                // Scenery: the scene stands without OSM furniture; the next scene change tries again.
+                console.warn('Failed to fetch street furniture:', err);
+                nearbyFurnitureFetching = false;
+            });
+    }
+
+    function rebuildFurnitureOnly() {
+        if (!isActive || !furnitureGroup) return;
+        furnitureFountains?.dispose();
+        furnitureFountains = null;
+        furnitureGroup.clear();
+        if (!nearbyFurniture) return;
+        // Like the trees, none stands on an applied corridor's land.
+        const outside = points => window.__threeSiteGround.contextTreesOutsideCorridors(points, displayedProposals(), {
+            isAppliedCorridor: isAppliedCorridorProposal, featureSets: collectProposalFeatureSets, turf
+        });
+        const fountains = outside(nearbyFurniture.fountains).map(([lng, lat, radiusM]) => ({ lng, lat, radiusM }));
+        furnitureFountains = addFountains3D(furnitureGroup, fountains, 0);
+        invalidateThreeView();
+    }
+
+    // The scene's fountain water: the water's colour and its sky reflection and ripple, without the
+    // ground water's stencil claims (a basin stands above the ground).
+    let fountainWaterMaterial = null;
+    function fountainWater() {
+        if (!fountainWaterMaterial) {
+            fountainWaterMaterial = new THREE.MeshPhongMaterial({ color: 0x3b7fc4, specular: 0x1f3a60, shininess: 40 });
+            window.__threeWaterSheen.apply(fountainWaterMaterial, { skyGlsl: window.__threeSky.SKY_COLOR_GLSL, skyUniforms: () => sky?.uniforms || null, clouds: atmosphereClouds });
+        }
+        return fountainWaterMaterial;
+    }
+
+    // Fountains at { lng, lat, radiusM? } standing at height z (scene), all drawn by the one
+    // fountain model (three-fountains.js) in four draws. Returns the layer (dispose()).
+    function addFountains3D(target, spots, z = 0) {
+        const k = lifeMercatorK();
+        const layer = window.__threeFountains.create(THREE, {
+            fountains: spots.map(spot => {
+                const [x, y] = latLngToXY(spot.lat, spot.lng);
+                return { x: x / k, y: y / k, z, radiusM: spot.radiusM };
+            }),
+            waterMaterial: fountainWater(), clock: atmosphereState
+        });
+        if (!layer.count) return layer;
+        // A square's rebuild releases what its decorations own; the water is the scene's.
+        Object.values(layer.meshes).forEach(mesh => {
+            markOwnedGeometry(mesh, mesh.geometry);
+            if (mesh.material !== fountainWaterMaterial) markOwnedMaterial(mesh, mesh.material);
+        });
+        layer.group.scale.set(k, k, 1);
+        target.add(layer.group);
+        return layer;
     }
 
     // Flip the trees toggle: persist, show/hide the group, and fetch+build on first enable.
@@ -9372,6 +9415,7 @@
             };
             ensureNearbyProposalBuildings();
             ensureNearbyTrees();
+            ensureNearbyFurniture();
             ensureNearbyWater();
             ensureNearbyGreen();
             if (isolatedParcelId !== null) applyParcelIsolation();
@@ -9522,6 +9566,8 @@
         lakeGroup = new THREE.Group();
         stationGroup = new THREE.Group();
         treesGroup = new THREE.Group();
+        furnitureGroup = new THREE.Group();
+        furnitureGroup.name = 'StreetFurniture';
         waterGroup = new THREE.Group();
         greenGroup = new THREE.Group();
         proposalInteractionGroup = new THREE.Group();
@@ -9540,6 +9586,7 @@
                 PersistentStorage.getItem(FACADE_STYLE_KEY), false);
         } catch (_) { }
         treesGroup.visible = treesEnabled && !realisticLayerActive;
+        furnitureGroup.visible = !realisticLayerActive;
         waterGroup.visible = waterEnabled && !realisticLayerActive;
         greenGroup.visible = greenEnabled && !realisticLayerActive;
         scene.add(flatGroup);
@@ -9552,6 +9599,7 @@
         scene.add(lakeGroup);
         scene.add(stationGroup);
         scene.add(treesGroup);
+        scene.add(furnitureGroup);
         scene.add(waterGroup);
         scene.add(greenGroup);
         scene.add(proposalInteractionGroup);
@@ -9576,6 +9624,7 @@
             nearbyBuildingsOutcome = null; nearbyBuildingsProvenance = null;
             nearbyBuildingsRevision++;
             nearbyTrees = []; nearbyTreesKey = null;
+            nearbyFurniture = null; nearbyFurnitureKey = null;
             nearbyWater = []; nearbyWaterKey = null;
             nearbyGreen = []; nearbyGreenKey = null;
             nearbyDataScope = dataScope;
@@ -9637,6 +9686,7 @@
         buildingViewDirty = false;
         buildingWorkIncomplete = false;
         rebuildTreesOnly();
+        rebuildFurnitureOnly();
         rebuildWaterOnly();
         rebuildGreenOnly();
         try { rebuildLifeOnly(); } catch (error) { console.warn('[3D life] build failed', error); }
@@ -10221,6 +10271,7 @@
         waterGroup = null;
         greenGroup = null;
         treesGroup = null;
+        furnitureGroup = null;
         existingTransitAlignmentGroup = null;
         sceneParcelSnapshot = [];
         nearbyWaterKey = null;
@@ -10446,6 +10497,7 @@
             startLoop();
             ensureNearbyProposalBuildings();
             ensureNearbyTrees();
+            ensureNearbyFurniture();
             ensureNearbyWater();
             ensureNearbyGreen();
         } else if (!await initScene()) return false;
@@ -11169,6 +11221,7 @@
         rebuildPlanningSources3D();
         if (flatGroup) flatGroup.visible = !realisticLayerActive;
         if (treesGroup) treesGroup.visible = treesEnabled && !realisticLayerActive;
+        if (furnitureGroup) furnitureGroup.visible = !realisticLayerActive;
         if (waterGroup) waterGroup.visible = waterEnabled && !realisticLayerActive;
         if (greenGroup) greenGroup.visible = greenEnabled && !realisticLayerActive;
         syncLifeVisibility();

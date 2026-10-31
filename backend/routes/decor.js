@@ -9,6 +9,7 @@
 // for those. Every layer is worldwide now; the endpoint stays the one place that says so.
 
 import { createDecorSources, NETWORK_ENVIRONMENT_SOURCES } from '../sources/network-environment.js';
+import { createStreetFurnitureProvider } from '../decor/osm-street-furniture.js';
 
 // Scenery toggles in the 3D view, all available everywhere: trees from OSM (cached or live), water
 // and green areas from OpenFreeMap's worldwide tiles. Buildings are not scenery — they render via
@@ -21,6 +22,8 @@ export function setupDecorRoute(app, pool, options = {}) {
     const treesProvider = sources.trees.open(NETWORK_ENVIRONMENT_SOURCES.trees);
     const waterProvider = sources.water.open(NETWORK_ENVIRONMENT_SOURCES.water);
     const greenProvider = sources.green.open(NETWORK_ENVIRONMENT_SOURCES.green);
+    // Fountains and street lamps from OSM; `options.furnitureProvider` replaces it (tests).
+    const furnitureProvider = options.furnitureProvider || createStreetFurnitureProvider();
 
     // GET /decor/layers?bbox=minLon,minLat,maxLon,maxLat → { layers: ['trees', 'water', 'green'] } —
     // the scenery layers for that box (the 3D scene's area).
@@ -79,6 +82,22 @@ export function setupDecorRoute(app, pool, options = {}) {
         } catch (err) {
             console.error('Error in GET /decor/near:', err);
             res.status(500).json({ error: 'Internal server error' });
+        }
+    });
+
+    // GET /decor/furniture?bbox=…&buffer_meters=… - fountains and street lamps mapped in OSM within
+    // `buffer_meters` of the box, anywhere (read live, cell by cell).
+    //
+    // Response: { fountains: [[lng, lat, radiusM], ...], lamps: [[lng, lat], ...], count, source: 'overpass' }
+    app.get('/decor/furniture', async (req, res) => {
+        try {
+            const area = sceneryArea(req, res);
+            if (!area) return;
+            res.json(await furnitureProvider.near(area.geometry, area.bufferMeters));
+        } catch (err) {
+            // Scenery: the scene draws without OSM fountains and lamps, and the log says why.
+            console.error('Error in GET /decor/furniture:', err.message);
+            res.status(err.status === 429 || err.status === 503 ? 503 : 502).json({ error: 'Street furniture is unavailable' });
         }
     });
 

@@ -135,7 +135,7 @@ Files (under `backend/`):
 | `buildings/overture-3d.js` | Buildings provider. `near()` → `{ object_id, z_min, z_max, faces[] }`. |
 | `decor/overture-trees.js` | Trees provider. `near()` → `{ trees: [[lng,lat], ...], source }`: `osm_decor` where it covers the area, else OSM live. |
 | `decor/osm-trees-overpass.js` | Mapped trees and tree-bearing green areas from OSM through the shared Overpass cell source. |
-| `routes/decor.js` | `GET /decor/near`, `/decor/water`, `/decor/green` (`?bbox=&buffer_meters=`: scenery near a box) + `GET /decor/layers?bbox=` (the scenery layers, all worldwide). |
+| `routes/decor.js` | `GET /decor/near`, `/decor/water`, `/decor/green`, `/decor/furniture` (`?bbox=&buffer_meters=`: scenery near a box; furniture is OSM fountains and street lamps, read live through the Overpass gate by `decor/osm-street-furniture.js`) + `GET /decor/layers?bbox=` (the scenery layers, all worldwide). |
 | `scripts/copy-overture-to-prod.sh` | Push **one region's** buildings local → prod (prod has no DuckDB). |
 | `buildings/index.js` | Wires every `overture-cities.js` key to the buildings provider automatically. |
 
