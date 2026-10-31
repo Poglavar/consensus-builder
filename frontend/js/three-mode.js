@@ -3755,6 +3755,36 @@
         nightWindows.setState(nightWindowState, night, lifeMercatorK());
         nightWindows.setSky(nightWindowState, sky?.uniforms);
         lifeLayer?.setNight(night);
+        updateBirds(night);
+    }
+
+    // Birds (three-birds.js): made once the scene has its place (their flocks follow from it), shown
+    // by day outside photo view, and flown by a frame hook that parks with people and vehicles.
+    let birdsLayer = null;
+    let birdsFrameHook = null;
+    function updateBirds(night) {
+        if (!scene || !origin3857) return;
+        if (!birdsLayer) {
+            birdsLayer = window.__threeBirds.create(THREE, { seed: lifeSeed() });
+            birdsLayer.update(performance.now() / 1000);
+            scene.add(birdsLayer.group);
+            birdsFrameHook = (now) => {
+                if (!birdsLayer?.visible || now - lastInputAt > LIFE_IDLE_MS) return false;
+                birdsLayer.update(now / 1000);
+                return true;
+            };
+            window.registerThreeModeFrameHook(birdsFrameHook);
+        }
+        const k = lifeMercatorK();
+        birdsLayer.group.scale.set(k, k, 1);
+        if (controls?.target && birdsLayer.follow(controls.target.x / k, controls.target.y / k)) birdsLayer.update(performance.now() / 1000);
+        birdsLayer.setShown(night, !!window.PhotorealMode?.isActive?.());
+    }
+    function disposeBirds() {
+        if (birdsFrameHook) window.unregisterThreeModeFrameHook(birdsFrameHook);
+        birdsFrameHook = null;
+        birdsLayer?.dispose();
+        birdsLayer = null;
     }
 
     // Before each render: the weather (three-atmosphere.js). The cloud clock advances on frames drawn
@@ -10112,6 +10142,7 @@
         releaseRetiredGroups();
         lampGlowObjects.clear();
         sky = null;   // its dome and stars go with the scene below
+        disposeBirds();
         clearTimeout(warmSceneTimer);
         warmSceneTimer = null;
         warmSceneKey = null;
