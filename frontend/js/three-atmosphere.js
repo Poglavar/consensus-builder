@@ -4,7 +4,8 @@
 // (three-water-sheen.js), and as the clouds' shadows on every lit surface, which dims a surface's
 // direct sunlight where the sun's ray to it crosses a cloud. Haze is three.js linear fog in the
 // horizon's colour that starts past the camera's target, so what is looked at stays clear. No
-// textures, no extra draws, no frames of its own: the clouds move only on frames drawn anyway.
+// textures, no extra draws, no frames of its own: the clouds move only on frames drawn anyway. The
+// same wind and clock sway the near trees (configureSway).
 // UMD: window.__threeAtmosphere in the browser, require()-able in node.
 (function (root, factory) {
     const api = factory();
@@ -181,6 +182,42 @@ float cbCloudShadowAt(vec3 point) {
         return true;
     }
 
+    // Trees sway in the wind: an instanced tree whose geometry is one unit tall (scaled to its
+    // height) bends along the wind, more toward the top, with a phase from where it stands, so
+    // neighbours do not move in step. At most about 1.5 % of the height at the crown.
+    const SWAY_VERTEX = `
+#ifdef USE_INSTANCING
+{
+    float cbBend = clamp(transformed.z, 0.0, 1.0);
+    float cbPhase = dot(instanceMatrix[3].xy, vec2(0.37, 0.53));
+    vec2 cbAlong = normalize(cbCloudWind);
+    float cbGust = sin(cbCloudTime * 1.1 + cbPhase) + 0.4 * sin(cbCloudTime * 2.7 + cbPhase * 1.7);
+    // The instance's XY is a yaw times one scale: its transpose over that scale turns the wind into
+    // the tree's own frame, where one unit is the tree's height.
+    vec2 cbLocal = transpose(mat2(instanceMatrix)) * cbAlong / max(length(instanceMatrix[0].xy), 1e-6);
+    transformed.xy += cbLocal * 0.011 * cbBend * cbBend * cbGust;
+}
+#endif`;
+    const SWAY_KEY = '|cb-sway-v1';
+    function configureSway(material, state) {
+        const priorCompile = material.onBeforeCompile;
+        const priorKey = material.customProgramCacheKey;
+        material.onBeforeCompile = function (shader, renderer) {
+            if (priorCompile) priorCompile.call(this, shader, renderer);
+            if (!shader.vertexShader.includes('#include <begin_vertex>')) return;
+            shader.uniforms.cbCloudTime = state.cbCloudTime;
+            shader.uniforms.cbCloudWind = state.cbCloudWind;
+            shader.vertexShader = shader.vertexShader
+                .replace('#include <common>', '#include <common>\nuniform float cbCloudTime;\nuniform vec2 cbCloudWind;')
+                .replace('#include <begin_vertex>', `#include <begin_vertex>\n${SWAY_VERTEX}`);
+        };
+        material.customProgramCacheKey = function () {
+            return (priorKey ? priorKey.call(this) : '') + SWAY_KEY;
+        };
+        material.needsUpdate = true;
+        return material;
+    }
+
     // Every lit material under `root`, skipping subtrees marked userData.cbNoAtmosphere (the photo
     // tiles bring their own light). Already configured materials cost one set lookup.
     function configureTree(root, state) {
@@ -197,6 +234,6 @@ float cbCloudShadowAt(vec3 point) {
 
     return {
         CLOUD_GLSL, CLOUD_BASE_M, CLOUD_COVER, SHADOW_STRENGTH, CACHE_KEY,
-        createState, cloudColors, hazeRange, setState, configureMaterial, configureTree
+        createState, cloudColors, hazeRange, setState, configureMaterial, configureTree, configureSway
     };
 });

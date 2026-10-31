@@ -2959,7 +2959,9 @@
             geometry.computeBoundingSphere();
             geometries[id] = geometry;
         });
-        speciesAssets = { geometries, shared: new Set(Object.values(geometries)), material: new THREE.MeshLambertMaterial({ vertexColors: true }) };
+        // The near trees sway in the weather's wind (three-atmosphere.js), on frames drawn anyway.
+        const material = atmosphere.configureSway(new THREE.MeshLambertMaterial({ vertexColors: true }), atmosphereState);
+        speciesAssets = { geometries, shared: new Set(Object.values(geometries)), material };
         return speciesAssets;
     }
 

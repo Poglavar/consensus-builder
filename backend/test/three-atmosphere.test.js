@@ -100,6 +100,22 @@ describe('cloud shadows on lit materials', () => {
     });
 });
 
+describe('trees in the wind', () => {
+    it('bend instanced trees along the wind on the weather clock, more toward the crown', () => {
+        const state = atmosphere.createState();
+        const material = atmosphere.configureSway(new THREE.MeshLambertMaterial({ vertexColors: true }), state);
+        const shader = { uniforms: {}, vertexShader: '#include <common>\nvoid main() {\n#include <begin_vertex>\n#include <project_vertex>\n}', fragmentShader: '' };
+        material.onBeforeCompile(shader);
+        expect(shader.uniforms.cbCloudTime).toBe(state.cbCloudTime);
+        expect(shader.uniforms.cbCloudWind).toBe(state.cbCloudWind);
+        const swayAt = shader.vertexShader.indexOf('transformed.xy += cbLocal');
+        expect(swayAt).toBeGreaterThan(shader.vertexShader.indexOf('#include <begin_vertex>'));
+        expect(swayAt).toBeLessThan(shader.vertexShader.indexOf('#include <project_vertex>'));
+        expect(shader.vertexShader).toContain('cbBend * cbBend');
+        expect(material.customProgramCacheKey()).toContain('cb-sway');
+    });
+});
+
 describe('haze', () => {
     it('starts past the camera\'s target and is in scene units', () => {
         const near = atmosphere.hazeRange(100, 1);
