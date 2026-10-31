@@ -31,6 +31,8 @@
     }
 
     // Vehicle part placement (metres, vehicle frame). Pure so the proportions can be unit-tested.
+    // 4 cm: the depth buffer separates it to about 600 m away, where a car is a few pixels.
+    const TYRE_INSET_M = 0.04;
     function vehicleParts(v) {
         const parts = { body: null, glass: null, wheels: [], rider: null };
         if (v.kind === 'bus') {
@@ -51,8 +53,10 @@
             parts.rider = true;
         } else {
             // The axles where the simulation steers them from (VEHICLE_KINDS frontAxle/rearAxle).
+            // The tyre's outer face sits TYRE_INSET_M inside the body's side: flush with it, the two
+            // faces were coplanar where the wheel rises into the body, and they fought.
             const tyre = v.kind === 'bus' ? 0.3 : 0.22;
-            const y = v.width / 2 - tyre / 2;
+            const y = v.width / 2 - tyre / 2 - TYRE_INSET_M;
             parts.wheels.push(
                 { ox: v.frontAxle, oy: y, oz: r, r, w: tyre, steers: true }, { ox: v.frontAxle, oy: -y, oz: r, r, w: tyre, steers: true },
                 { ox: -v.rearAxle, oy: y, oz: r, r, w: tyre }, { ox: -v.rearAxle, oy: -y, oz: r, r, w: tyre });
