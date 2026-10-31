@@ -35,6 +35,21 @@ async function host(options = {}) {
     return `http://127.0.0.1:${service.http.address().port}`;
 }
 describe('hosted MCP HTTP', () => {
+    it('isolates session capability budgets from unauthenticated callers and the invited agent', async () => {
+        const sharedPlans = createSharedPlanSessions({ repository: createMemorySharedPlanRepository(), validateArtifact: () => {} });
+        const created = await sharedPlans.create({ cid: 'baf-private', plan: { schema: 'plan/v1' }, designs: [] });
+        const base = await host({ sharedPlans, maxPerMinute: 2 });
+        const url = `${base}/mcp/plan-sessions/${created.id}`;
+        for (let i = 0; i < 3; i++) expect((await fetch(url)).status).toBe(401);
+        const read = token => fetch(url, { headers: { authorization: `Bearer ${token}` } });
+        for (const [token, status] of [['x'.repeat(32), 403], [created.inviteToken, 200]]) {
+            expect((await read(token)).status).toBe(status);
+            expect((await read(token)).status).toBe(status);
+            expect((await read(token)).status).toBe(429);
+        }
+        expect((await read(created.ownerToken)).status).toBe(200);
+        expect((await fetch(`${url}/control`, { method: 'POST', headers: { authorization: `Bearer ${created.ownerToken}`, 'content-type': 'application/json' }, body: JSON.stringify({ expectedVersion: -1, controller: 'owner', revoke: true }) })).status).toBe(200);
+    });
     it('returns geometry-free links to exact JSON objects with no redirect and expires them', async () => {
         let now = 0;
         const design = { schema: 'design/v1', title: 'Private draft', geometry: { coordinates: [1, 2, 3] } };

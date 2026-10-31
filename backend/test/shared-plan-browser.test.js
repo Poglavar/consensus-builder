@@ -36,6 +36,22 @@ const row = { cid: 'plan-cid', content: { schema: 'plan/v1', title: 'Park', desi
     designs: [{ cid: 'design-cid', content: { schema: 'design/v1', title: 'Bench' } }], memberIds: ['bench-local'], designSources: {} };
 
 describe('shared plan browser client', () => {
+    it.each(['https://receiver.invalid', 'http://127.0.0.1:3097', 'not a URL'])('ignores a hosted-page MCP override %s for private content and owner reads', async target => {
+        const created = { id: 'session-a', ownerToken: 'owner-secret', version: 0 };
+        const fixture = browser({ search: `?mcp=${encodeURIComponent(target)}`, replies: [created, created] });
+        const client = fixture.api.client();
+        await client.create(row); await client.read(created.id);
+        expect(fixture.calls.map(call => new URL(call.url).origin)).toEqual(['https://urbangametheory.xyz', 'https://urbangametheory.xyz']);
+        expect(fixture.calls[0].options.body).toContain('Park');
+        expect(fixture.calls[1].options.headers.Authorization).toBe('Bearer owner-secret');
+        expect(fixture.calls.every(call => call.options.redirect === 'error')).toBe(true);
+    });
+    it.each(['https://receiver.invalid', 'https://localhost.receiver.invalid', 'http://user:pass@localhost', 'file:///tmp/socket', 'http://localhost/path'])('refuses unsafe local overrides %s before sending content', target => {
+        const fixture = browser({ search: `?mcp=${encodeURIComponent(target)}` });
+        fixture.win.location.origin = 'http://localhost:5937';
+        expect(() => fixture.api.client()).toThrow(/loopback HTTP origin/);
+        expect(fixture.win.fetch).not.toHaveBeenCalled();
+    });
     it.each([false, true])('shows the result of an actual dialog save, including failures (%s)', async failure => {
         const prefix = 'ugt.shared-plan-session/v1:https://urbangametheory.xyz:workspace-test:';
         const original = structuredClone(row);
@@ -82,6 +98,29 @@ describe('shared plan browser client', () => {
         mounted.dispose();
     });
 
+    it.each([['shared-plan-expired', false], ['shared-plan-not-found', false], ['shared-plan-expired', true], ['shared-plan-not-found', true]])('releases the local editing lock after %s (live=%s)', async (code, live) => {
+        const prefix = 'ugt.shared-plan-session/v1:https://urbangametheory.xyz:workspace-test:';
+        const accepted = { id: 'expired', version: 1, controller: 'agent', artifact: { plan: row.content, designs: row.designs } };
+        const fixture = browser({ plans: [row], replies: [...(live ? [accepted] : []), { ok: false, status: code === 'shared-plan-expired' ? 410 : 404, data: { code, message: 'Session expired' } }], stored: {
+            [`${prefix}active`]: { id: 'expired', cid: row.cid, memberIds: row.memberIds },
+            [`${prefix}plan:${row.cid}`]: 'expired',
+            [`${prefix}expired`]: { ownerToken: 'owner-secret', controller: 'agent', designCids: row.content.designCids, memberIds: row.memberIds }
+        } });
+        const doc = makeDocument(), host = doc.createElement('div'); doc.body.append(host);
+        const mounted = fixture.api.mount({ row, host }); await mounted.ready;
+        if (live) {
+            expect(fixture.api.editBlocked({ cid: 'design-cid' })).toBe(true);
+            const callbacks = fixture.win.SharedPlanEvents.connect.mock.calls[0][0];
+            callbacks.onStatus('unavailable', { status: code === 'shared-plan-expired' ? 410 : 404 });
+        }
+        await vi.waitFor(() => expect([...host.querySelectorAll('button')].map(button => button.textContent)).toEqual(['Collaborate']));
+        expect(host.querySelector('[role="alert"]').textContent).toBe('Session expired');
+        expect(fixture.api.editBlocked({ cid: 'design-cid' })).toBe(false);
+        expect(fixture.values.has(`${prefix}active`)).toBe(false);
+        expect(fixture.values.has(`${prefix}expired`)).toBe(false);
+        expect(fixture.win.NamedPlans.list()).toEqual([row]);
+        mounted.dispose();
+    });
     it('keeps capabilities in workspace storage and addresses control as a path segment', async () => {
         const created = { id: 'session-a', ownerToken: 'owner-secret', inviteToken: 'invite-secret', version: 1, controller: 'owner', artifact: { plan: row.content, designs: row.designs } };
         const fixture = browser({ replies: [created, { id: 'session-a', version: 2, controller: 'agent', artifact: created.artifact }] });
@@ -339,8 +378,9 @@ describe('shared plan browser client', () => {
         expect([...host.querySelectorAll('button')].find(el => el.textContent === 'Undo last agent change').disabled).toBe(true);
         expect(f.calls.filter(call => call.url.endsWith('/undo'))).toHaveLength(0); mounted.dispose();
     });
-    it('uses an explicit MCP origin without putting a capability in the URL', () => {
+    it('allows a loopback MCP origin only on a loopback page without putting capabilities in its URL', () => {
         const fixture = browser({ search: '?mcp=http%3A%2F%2F127.0.0.1%3A3097' });
+        fixture.win.location.origin = 'http://localhost:5937';
         expect(fixture.api.endpoint()).toBe('http://127.0.0.1:3097/mcp/plan-sessions');
         expect(fixture.api.invitation({ id: 's', inviteToken: 'private-invite' }, fixture.api.endpoint())).toContain('"inviteToken"');
         expect(fixture.api.endpoint()).not.toContain('private-invite');

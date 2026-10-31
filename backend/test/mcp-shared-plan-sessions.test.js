@@ -10,6 +10,38 @@ function sessions(repository = createMemorySharedPlanRepository()) {
 }
 
 describe('shared plan sessions', () => {
+    it('revokes against the latest revision after an intervening agent save', async () => {
+        const store = sessions(), created = await store.create(artifact('baf-first'));
+        await store.control(created.id, created.ownerToken, { expectedVersion: 0, controller: 'agent' });
+        await store.replace(created.id, created.inviteToken, { expectedVersion: 1, artifact: artifact('baf-agent') });
+        const revoked = await store.control(created.id, created.ownerToken, { expectedVersion: 1, controller: 'owner', revoke: true });
+        expect(revoked).toMatchObject({ version: 3, cid: 'baf-agent', controller: 'owner', canUndo: true });
+        await expect(store.inspect(created.id, created.inviteToken)).rejects.toMatchObject({ code: 'shared-plan-forbidden' });
+        await expect(store.replace(created.id, created.inviteToken, { expectedVersion: 3, artifact: artifact('baf-late') })).rejects.toMatchObject({ code: 'shared-plan-forbidden' });
+        await expect(store.control(created.id, revoked.inviteToken, { expectedVersion: 0, controller: 'owner', revoke: true })).rejects.toMatchObject({ code: 'shared-plan-owner-required' });
+        await store.dispose();
+    });
+    it('expires access at a fixed deadline and reclaims quota without activity extending it', async () => {
+        let time = 1000;
+        const repository = createMemorySharedPlanRepository({ maxEntries: 1, now: () => time });
+        const store = createSharedPlanSessions({ repository, now: () => time, ttlMs: 100, validateArtifact: () => {} });
+        const first = await store.create(artifact('baf-first'));
+        expect(first.expiresAt).toBe(new Date(1100).toISOString());
+        time = 1099;
+        expect((await store.replace(first.id, first.ownerToken, { expectedVersion: 0, artifact: artifact('baf-edited') })).expiresAt).toBe(first.expiresAt);
+        expect((await store.eventState(first.id, first.inviteToken)).expiresAt).toBe(first.expiresAt);
+        await expect(store.create(artifact('baf-too-soon'))).rejects.toMatchObject({ code: 'shared-plan-capacity' });
+        time = 1100;
+        for (const capability of [first.ownerToken, first.inviteToken]) {
+            await expect(store.inspect(first.id, capability)).rejects.toMatchObject({ code: 'shared-plan-expired', status: 410 });
+            await expect(store.eventState(first.id, capability)).rejects.toMatchObject({ code: 'shared-plan-expired' });
+            await expect(store.subscribe(first.id, capability, () => {})).rejects.toMatchObject({ code: 'shared-plan-expired' });
+        }
+        const next = await store.create(artifact('baf-next'));
+        expect(next.expiresAt).toBe(new Date(1200).toISOString());
+        await expect(store.replace(first.id, first.ownerToken, { expectedVersion: 1, artifact: artifact('baf-revive') })).rejects.toMatchObject({ code: 'shared-plan-not-found' });
+        await store.dispose();
+    });
     it('keeps an exact revision across restart without exposing capabilities in reads', async () => {
         const repository = createMemorySharedPlanRepository();
         const first = sessions(repository), created = await first.create(artifact('baf-first'));

@@ -23,7 +23,7 @@ describe.skipIf(process.env.SHARED_PLAN_PG_TESTS !== '1')('shared plans in Postg
         return canonicalArtifact({ cid: cidOfObject(plan), plan, designs: [{ cid, content, parcelSourceId: null }] });
     };
     function store(options = {}) {
-        const value = createSharedPlanSessions({ repository: createSharedPlanRepository({ pool, schema, ...options }), validateArtifact: canonicalArtifact });
+        const value = createSharedPlanSessions({ ...options, repository: createSharedPlanRepository({ pool, schema, ...options }), validateArtifact: canonicalArtifact });
         stores.push(value); return value;
     }
     beforeAll(async () => {
@@ -45,6 +45,21 @@ describe.skipIf(process.env.SHARED_PLAN_PG_TESTS !== '1')('shared plans in Postg
     afterAll(async () => {
         if (createdSchema) await pool.query(`DROP SCHEMA ${schema} CASCADE`);
         await pool?.end();
+    });
+    it('reclaims expired PostgreSQL rows before an independent worker checks capacity', async () => {
+        let time = Date.now();
+        const options = { maxEntries: 1, ttlMs: 100, now: () => time };
+        const first = store(options), created = await first.create(artifact('Expiring'));
+        const second = store(options);
+        time += 99;
+        await second.replace(created.id, created.ownerToken, { expectedVersion: 0, artifact: artifact('Edited before expiry') });
+        await expect(second.create(artifact('Too soon'))).rejects.toMatchObject({ code: 'shared-plan-capacity' });
+        time += 1;
+        await expect(first.inspect(created.id, created.inviteToken)).rejects.toMatchObject({ code: 'shared-plan-expired' });
+        const next = await second.create(artifact('Next'));
+        const rows = (await pool.query(`SELECT id FROM ${schema}.shared_plan_session`)).rows;
+        expect(rows).toEqual([{ id: next.id }]);
+        await expect(first.inspect(created.id, created.ownerToken)).rejects.toMatchObject({ code: 'shared-plan-not-found' });
     });
     it('stores private content with hashed capabilities and reads it from a fresh store', async () => {
         const first = store(), created = await first.create(artifact('First'));
@@ -83,7 +98,8 @@ describe.skipIf(process.env.SHARED_PLAN_PG_TESTS !== '1')('shared plans in Postg
         await first.control(created.id, created.ownerToken, { expectedVersion: 0, controller: 'agent' });
         await first.replace(created.id, created.inviteToken, { expectedVersion: 1, artifact: artifact('Edited') });
         const second = store();
-        const revoked = await second.control(created.id, created.ownerToken, { expectedVersion: 2, controller: 'owner', revoke: true });
+        const revoked = await second.control(created.id, created.ownerToken, { expectedVersion: 1, controller: 'owner', revoke: true });
+        expect(revoked).toMatchObject({ version: 3, controller: 'owner', canUndo: true });
         await expect(first.inspect(created.id, created.inviteToken)).rejects.toMatchObject({ code: 'shared-plan-forbidden' });
         expect(await first.inspect(created.id, revoked.inviteToken)).toMatchObject({ canUndo: true });
         expect(await second.undo(created.id, created.ownerToken, { expectedVersion: 3 })).toMatchObject({ version: 4, cid: created.cid, canUndo: false });

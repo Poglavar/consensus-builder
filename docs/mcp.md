@@ -181,14 +181,22 @@ load. Links carry no secret and are safe to forward.
 - Apply `backend/db/shared-plan-session-ddl.sql` before starting the changed API/MCP services; the
   backend deploy script includes it. Install the unbuffered `/shared-plan-sessions` location in the
   API nginx configuration as well as the public MCP locations below. Back up the table with the
-  database. Sessions do not expire; writes exceeding 1,024 sessions or 128 MiB are refused atomically.
+  database. Sessions expire 24 hours after creation, without renewal on reads or edits. The API
+  removes expired records every minute and before quota checks; writes exceeding 1,024 live
+  sessions or 128 MiB are refused atomically. Session state exposes `expiresAt`; expired reads
+  fail with 410 until cleanup, then 404. Existing sessions without expiry must be recreated.
+  Creation is limited to ten requests per minute per API caller IP (a proxy shares that budget).
+  Session requests are budgeted per capability; missing credentials use an IP budget.
+  Owner revocation takes control and rotates the invitation atomically even with a stale version.
+  Hosted pages ignore `?mcp=`; only loopback pages may select a loopback MCP origin. Private
+  browser requests reject redirects.
   Experimental file-backed session links must be recreated; there is no file reader or import path.
   `/uploads/mcp-drafts` is denied, including old session files. Private preview files remain separate
   from collaboration storage. The public MCP session API exposes authenticated
   `GET /mcp/plan-sessions/:id/events` as server-sent state notifications and
   `POST /mcp/plan-sessions/:id/undo` with `expectedVersion`. Capabilities travel in the Bearer
   authorization header. Event streams are limited to 128 globally and four per session, send
-  heartbeat comments every 15 seconds, and close on revocation or shutdown. Session state includes
+  authenticated state checks every 15 seconds, and close on revocation, expiry or shutdown. Session state includes
   the last content-change receipt and whether the current revision can undo an agent change.
 - nginx `location = /mcp`, `= /mcp/`, `^~ /mcp/plan-sessions`, `^~ /mcp/previews/` and `= /mcp/server-card` in
   `backend/nginx/urbangametheory.xyz.nginx.conf`, ahead of the app fallback. Directory ownership

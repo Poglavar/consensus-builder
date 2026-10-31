@@ -1,6 +1,8 @@
 #!/usr/bin/env node
 // Stateless public MCP on loopback. This entry deliberately never loads the backend's secret .env.
 import { createServer } from 'node:http';
+import { createHash } from 'node:crypto';
+import { MemoryStore } from 'express-rate-limit';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { createMcpHandler } from '@modelcontextprotocol/server';
 import { toNodeHandler, hostHeaderValidation, originValidation } from '@modelcontextprotocol/node';
@@ -39,6 +41,7 @@ export function createMcpHttpService({ env = process.env, fetchImpl, factory,
     const hostGuard = hostHeaderValidation(allowed), originGuard = originValidation(allowed);
     let active = 0, count = 0, publishes = 0, start = now();
     const streams = new Set();
+    const sessionBudgets = new MemoryStore(); sessionBudgets.init({ windowMs: 60_000 });
     const previews = createPreviewLinks({ origin: previewOrigin, appOrigin, storeDirectory, now, ...(previewTtlMs == null ? {} : { ttlMs: previewTtlMs }) });
     const sharedPlans = providedSharedPlans || createSharedPlanClient({ env, fetchImpl });
     // REST needs the same reference resolver as MCP. It only constructs private immutable artifacts;
@@ -75,10 +78,13 @@ export function createMcpHttpService({ env = process.env, fetchImpl, factory,
             if (req.headers.origin === appOrigin) { res.setHeader('Access-Control-Allow-Origin', appOrigin); res.setHeader('Vary', 'Origin'); }
             if (req.method === 'OPTIONS') return json(204, {}, { Allow: 'GET, POST, PUT, OPTIONS', 'Access-Control-Allow-Methods': 'GET, POST, PUT, OPTIONS', 'Access-Control-Allow-Headers': 'Authorization, Content-Type' });
             if (closing) return json(503, { code: 'shared-plan-unavailable' });
-            resetWindow();
-            if (active >= maxConcurrent || count >= maxPerMinute) return json(429, { code: 'rate-limited', message: 'MCP request budget exhausted.' }, { 'Retry-After': '60' });
-            count++;
             const capability = bearer(req);
+            if (!sessionRoot && !capability) return json(401, { code: 'shared-plan-capability-required', message: 'Use a shared plan capability.' });
+            // These requests must not consume the public MCP or another capability's budget.
+            const key = sessionRoot ? `create:${req.socket.remoteAddress}`
+                : `cap:${createHash('sha256').update(capability).digest('hex')}`;
+            const { totalHits } = await sessionBudgets.increment(key);
+            if (active >= maxConcurrent || totalHits > (sessionRoot ? 10 : maxPerMinute)) return json(429, { code: 'rate-limited', message: 'Shared plan request budget exhausted.' }, { 'Retry-After': '60' });
             if (sessionPath?.[2] === 'events' && req.method === 'GET') {
                 if (!capability) return json(401, { code: 'shared-plan-capability-required', message: 'Use a shared plan capability.' });
                 const id = sessionPath[1];
@@ -102,7 +108,7 @@ export function createMcpHttpService({ env = process.env, fetchImpl, factory,
                     catch (error) { streams.delete(stream); res.removeListener('close', close); throw error; }
                     if (closed || closing || res.destroyed) { close(); unsubscribe(); return; }
                     res.writeHead(200, { 'Content-Type': 'text/event-stream', 'Connection': 'keep-alive', 'Referrer-Policy': 'no-referrer', 'X-Accel-Buffering': 'no' });
-                    timer = setInterval(() => { if (!res.write(': heartbeat\n\n')) { close(); res.destroy(); } }, 15_000); timer.unref();
+                    timer = setInterval(send, 15_000); timer.unref();
                     ready = true; send();
                 } catch (error) { if (!res.headersSent) json(error.status || 400, { code: error.code || 'shared-plan-invalid', message: error.message }); else res.destroy(); }
                 return;
@@ -177,7 +183,7 @@ export function createMcpHttpService({ env = process.env, fetchImpl, factory,
                 await closed;
             }
             try { await handler.close(); }
-            finally { previews.dispose(); await sharedPlans.dispose(); }
+            finally { sessionBudgets.shutdown(); previews.dispose(); await sharedPlans.dispose(); }
         })();
     } };
 }

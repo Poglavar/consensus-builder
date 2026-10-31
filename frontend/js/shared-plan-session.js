@@ -87,10 +87,19 @@
             Object.keys(schedule).length ? schedule : null);
     }
     function endpoint(win) {
-        // Hosted MCP and the app deliberately share an origin. A local frontend may override it
-        // for a test or a self-hosted MCP through ?mcp=; capabilities never travel in that URL.
+        // URL parameters cannot choose a recipient for private content on a hosted page.
+        // Development overrides are restricted to loopback pages and loopback services.
+        const page = new URL(win.location.origin);
+        const loopback = url => ['localhost', '127.0.0.1', '[::1]'].includes(url.hostname);
         const explicit = new URLSearchParams(win.location.search).get('mcp');
-        return cleanBase(explicit || win.resolveFrontendBaseUrl?.() || win.location.origin) + '/mcp/plan-sessions';
+        if (explicit && loopback(page)) {
+            const target = new URL(explicit);
+            if (!loopback(target) || !['http:', 'https:'].includes(target.protocol) || target.username || target.password || target.pathname !== '/' || target.search || target.hash) {
+                throw fail('The local MCP override must be a loopback HTTP origin.', 'shared-plan-endpoint-invalid');
+            }
+            return target.origin + '/mcp/plan-sessions';
+        }
+        return cleanBase(win.resolveFrontendBaseUrl?.() || page.origin) + '/mcp/plan-sessions';
     }
     function browser(win) {
         let active = null;
@@ -153,13 +162,25 @@
             const segments = Array.isArray(path) ? path : (path ? [path] : []);
             const suffix = segments.map(segment => encodeURIComponent(segment)).join('/');
             const response = await win.fetch(suffix ? `${base}/${suffix}` : base, {
-                method, cache: 'no-store', headers: { Accept: 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}),
+                method, cache: 'no-store', redirect: 'error', headers: { Accept: 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}),
                     ...(body ? { 'Content-Type': 'application/json' } : {}) }, ...(body ? { body: JSON.stringify(body) } : {}),
                 signal: AbortSignal.timeout(method === 'GET' ? 30_000 : 120_000)
             });
             let data = null; try { data = await response.json(); } catch (_) { /* normalized below */ }
-            if (!response.ok) throw Object.assign(new Error(data?.message || data?.error || `Shared plan request failed (${response.status}).`),
-                { code: data?.code || `http-${response.status}`, status: response.status, current: data?.current || null });
+            if (!response.ok) {
+                const error = Object.assign(new Error(data?.message || data?.error || `Shared plan request failed (${response.status}).`),
+                    { code: data?.code || `http-${response.status}`, status: response.status, current: data?.current || null });
+                if (segments[0] && ['shared-plan-expired', 'shared-plan-not-found'].includes(error.code)) {
+                    // Keep every local revision, but release the expired server's editing lock.
+                    forget(base, segments[0]);
+                    let pointer; try { pointer = JSON.parse(win.PersistentStorage.getItem(activeKey(base)) || 'null'); } catch (_) { }
+                    if (pointer?.id === segments[0]) {
+                        win.PersistentStorage.removeItem(activeKey(base)); active = null; closeConnection();
+                    }
+                    notifyPanels({ id: segments[0], ended: true, error });
+                }
+                throw error;
+            }
             return data;
         };
         function client(base = endpoint(win)) {
@@ -375,6 +396,7 @@
                 if (stopped || !session) return;
                 if (detail?.statusChanged) { render(); return; }
                 if (detail?.id !== session.id) return;
+                if (detail.ended) { session = null; sessionError = detail.error; conflict = false; render(); return; }
                 const changed = (detail.session && session.version !== detail.session.version)
                     || (detail.row && row.cid !== detail.row.cid)
                     || conflict !== (detail.conflict === true) || (detail.error && sessionError !== detail.error);
@@ -529,7 +551,10 @@
                     if (status === 'connected' && announcement === t('reconnecting', 'Reconnecting to the shared plan…')) announce('');
                     notifyPanels({ statusChanged: true });
                     if (status === 'reconnecting') announce(t('reconnecting', 'Reconnecting to the shared plan…'));
-                    if (status === 'unavailable') pause(error);
+                    if (status === 'unavailable') {
+                        if ([404, 410].includes(error?.status)) queueRefresh();
+                        else pause(error);
+                    }
                 }
             });
         };

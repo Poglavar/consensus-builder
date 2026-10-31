@@ -1,10 +1,16 @@
 // PostgreSQL is the source of truth; each mutation checks authority against its locked row.
-export function createSharedPlanRepository({ pool, schema = 'consensus', maxEntries = 1024, maxBytes = 128 * 1024 * 1024 }) {
+export function createSharedPlanRepository({ pool, schema = 'consensus', maxEntries = 1024, maxBytes = 128 * 1024 * 1024, now = Date.now }) {
     if (!pool?.query || !/^[a-z][a-z0-9_]*$/.test(schema)) throw new Error('Shared plans require a PostgreSQL pool and a valid schema');
     if (!Number.isInteger(maxEntries) || maxEntries < 1 || !Number.isFinite(maxBytes) || maxBytes <= 0) throw new Error('Shared plan session bounds must be positive');
     const table = `${schema}.shared_plan_session`, channel = `${schema}_shared_plan_changed`;
     const listeners = new Set();
     let connection, connecting, disposed = false;
+    async function prune(client = pool) {
+        const removed = await client.query(`DELETE FROM ${table} WHERE NOT state ? 'expiresAt' OR (state->>'expiresAt')::double precision <= $1 RETURNING id`, [now()]);
+        for (const row of removed.rows) await client.query('SELECT pg_notify($1, $2)', [channel, row.id]);
+    }
+    const cleanup = setInterval(() => { prune().catch(() => { console.error('Shared plan expiry cleanup failed'); }); }, 60_000);
+    cleanup.unref();
     async function read(id) { return (await pool.query(`SELECT state FROM ${table} WHERE id = $1`, [id])).rows[0]?.state; }
     async function write(id, change, insert = false) {
         const client = await pool.connect();
@@ -12,6 +18,7 @@ export function createSharedPlanRepository({ pool, schema = 'consensus', maxEntr
             await client.query('BEGIN');
             // The small global quota must be checked atomically with every size-changing write.
             await client.query('SELECT pg_advisory_xact_lock(hashtext($1))', [table]);
+            await prune(client);
             const previous = insert ? undefined : (await client.query(`SELECT state FROM ${table} WHERE id = $1 FOR UPDATE`, [id])).rows[0]?.state;
             const next = change(previous), json = JSON.stringify(next), bytes = Buffer.byteLength(json);
             const totals = (await client.query(`SELECT count(*)::int AS count, COALESCE(sum(storage_bytes), 0)::bigint AS bytes FROM ${table} WHERE id <> $1`, [id])).rows[0];
@@ -61,7 +68,7 @@ export function createSharedPlanRepository({ pool, schema = 'consensus', maxEntr
             return () => listeners.delete(entry);
         },
         async dispose() {
-            disposed = true;
+            disposed = true; clearInterval(cleanup);
             await connecting?.catch(() => {});
             failed(new Error('Shared plan repository closed'));
         }

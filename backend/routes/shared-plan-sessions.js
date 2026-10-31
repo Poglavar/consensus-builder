@@ -1,4 +1,5 @@
 import rateLimit, { ipKeyGenerator } from 'express-rate-limit';
+import { createHash } from 'node:crypto';
 import { createSharedPlanSessions } from '../agents/mcp-shared-plan-sessions.js';
 import { canonicalArtifact } from '../agents/shared-plan-artifact.js';
 
@@ -7,10 +8,14 @@ export function setupSharedPlanSessionsRoute(app, pool, { sessions = createShare
     let closing = false;
     const capability = req => /^Bearer ([\w-]{32})$/.exec(String(req.headers.authorization || ''))?.[1];
     const limiter = rateLimiter || rateLimit({ windowMs: 60_000, max: 600,
-        // Session ids are not secrets. Reads and saves for different plans get separate budgets.
-        keyGenerator: req => /^[\w-]{24}$/.test(req.path.split('/')[1]) ? req.path.split('/')[1] : ipKeyGenerator(req.ip),
+        // Public session ids and invalid/missing credentials cannot spend an owner's budget.
+        keyGenerator: req => capability(req)
+            ? `cap:${createHash('sha256').update(capability(req)).digest('hex')}`
+            : `ip:${ipKeyGenerator(req.ip)}`,
         standardHeaders: true, legacyHeaders: false });
-    app.use('/shared-plan-sessions', limiter, async (req, res) => {
+    const creationLimiter = rateLimit({ windowMs: 60_000, max: 10, standardHeaders: true, legacyHeaders: false,
+        skip: req => req.method !== 'POST' || !['', '/'].includes(req.path) });
+    app.use('/shared-plan-sessions', creationLimiter, limiter, async (req, res) => {
         res.set({ 'Cache-Control': 'no-store', 'Referrer-Policy': 'no-referrer' });
         const match = /^\/([\w-]{24})(?:\/(control|undo|check|state|events))?\/?$/.exec(req.path);
         const root = req.path === '/' || req.path === '';
@@ -39,7 +44,7 @@ export function setupSharedPlanSessionsRoute(app, pool, { sessions = createShare
                 if (closed || closing) { off(); close(); return; }
                 res.status(200).set({ 'Content-Type': 'text/event-stream', 'Connection': 'keep-alive', 'X-Accel-Buffering': 'no' });
                 res.flushHeaders();
-                timer = setInterval(() => { if (!res.write(': heartbeat\n\n')) { close(); res.destroy(); } }, 15_000); timer.unref();
+                timer = setInterval(send, 15_000); timer.unref();
                 ready = true; send(); return;
             }
             if (!action && req.method === 'GET') return res.json(await sessions.inspect(id, token));

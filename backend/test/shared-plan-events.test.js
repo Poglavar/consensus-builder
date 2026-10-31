@@ -39,8 +39,8 @@ describe('shared plan event parser', () => {
 });
 
 describe('shared plan event transport', () => {
-    it('sends the capability only in the Authorization header and stops on authorization failure', async () => {
-        const fetch = vi.fn(async () => response(403));
+    it.each([403, 410])('sends the capability only in the Authorization header and stops on terminal status %s', async status => {
+        const fetch = vi.fn(async () => response(status));
         const statuses = [], timer = clock();
         const connection = events.connect({ base: '/sharing/sessions', sessionId: 'id/one', token: 'example-capability', onState: vi.fn(),
             onStatus: (value, error) => statuses.push([value, error?.status]), fetch, setTimeout: timer.later, clearTimeout: timer.clear });
@@ -51,7 +51,8 @@ describe('shared plan event transport', () => {
         expect(url).not.toContain('example-capability');
         expect(options.headers).toEqual({ Accept: 'text/event-stream', Authorization: 'Bearer example-capability' });
         expect(options.cache).toBe('no-store');
-        expect(statuses).toEqual([['connecting', undefined], ['unavailable', 403]]);
+        expect(options.redirect).toBe('error');
+        expect(statuses).toEqual([['connecting', undefined], ['unavailable', status]]);
         expect(timer.pending()).toEqual([]);
     });
     it('retries transient failures with Retry-After then stops for a missing session', async () => {

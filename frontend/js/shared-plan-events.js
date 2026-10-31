@@ -39,11 +39,11 @@
                     status(failures ? 'reconnecting' : 'connecting');
                     timer = later(() => controller.abort(), idleMs);
                     const response = await fetchImpl(`${base}/${encodeURIComponent(sessionId)}/events`, {
-                        headers: { Accept: 'text/event-stream', Authorization: `Bearer ${token}` }, cache: 'no-store', signal: controller.signal
+                        headers: { Accept: 'text/event-stream', Authorization: `Bearer ${token}` }, cache: 'no-store', redirect: 'error', signal: controller.signal
                     });
                     if (!response.ok) {
                         const error = Object.assign(new Error(`Shared-plan connection failed (${response.status}).`), { status: response.status });
-                        if ([401, 403, 404].includes(response.status)) { status('unavailable', error); return; }
+                        if ([401, 403, 404, 410].includes(response.status)) { status('unavailable', error); return; }
                         const seconds = response.headers?.get?.('retry-after');
                         if (seconds && /^\d+$/.test(seconds)) retryAfter = Math.min(60000, Number(seconds) * 1000);
                         throw error;

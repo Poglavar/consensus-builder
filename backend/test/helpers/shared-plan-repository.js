@@ -1,5 +1,5 @@
 // Test-only repository with the same serialized mutation boundary as PostgreSQL.
-export function createMemorySharedPlanRepository({ maxEntries = 1000, maxBytes = 16 * 1024 * 1024 } = {}) {
+export function createMemorySharedPlanRepository({ maxEntries = 1000, maxBytes = 16 * 1024 * 1024, now = Date.now } = {}) {
     const rows = new Map(), listeners = new Map();
     let writes = Promise.resolve();
     const clone = value => structuredClone(value);
@@ -14,6 +14,9 @@ export function createMemorySharedPlanRepository({ maxEntries = 1000, maxBytes =
             try { listener(clone(value)); } catch (error) { try { onError?.(error); } catch {} }
         }
     }
+    function prune() {
+        for (const [id, value] of rows) if (!Number.isFinite(value.expiresAt) || value.expiresAt <= now()) { rows.delete(id); publish(id); }
+    }
     function ensureCapacity(next, previous) {
         let bytes = 0;
         for (const [id, value] of rows) bytes += size(id === next.id ? next : value);
@@ -25,12 +28,14 @@ export function createMemorySharedPlanRepository({ maxEntries = 1000, maxBytes =
         async read(id) { const value = rows.get(id); return value === undefined ? undefined : clone(value); },
         async insert(state) {
             return serialize(() => {
+                prune();
                 if (rows.has(state.id)) throw new Error('Shared plan already exists.');
                 const next = clone(state); ensureCapacity(next); rows.set(next.id, next); publish(next.id, next); return clone(next);
             });
         },
         async change(id, mutate) {
             return serialize(() => {
+                prune();
                 const previous = rows.get(id);
                 if (previous === undefined) return mutate(undefined);
                 const next = mutate(clone(previous));
