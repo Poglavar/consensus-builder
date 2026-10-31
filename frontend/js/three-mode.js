@@ -7180,15 +7180,19 @@
         if (!isActive || !waterGroup) return;
         disposeWaterGroup();
         if (!waterEnabled || !nearbyWater.length || !origin3857) return;
+        ensureGroundLayer();
         if (!waterMaterial) {
-            // Below planned lakes (0.065) and above the parcel slabs; the offset keeps it off the ground.
-            waterMaterial = new THREE.MeshPhongMaterial({ color: 0x3b7fc4, specular: 0x1f3a60, shininess: 40,
-                polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -2 });
+            // Layered over the green cover, the parcel slabs and the pavement by stencil claims
+            // (three-ground.js ORDER.water), not by its lift: a few centimetres and a polygon offset
+            // lost to the pavement plane's huge triangles at a distance, so canals flickered grey
+            // while zooming (Delft, 2026-10-30). Planned lakes (0.065) still cover it by depth.
+            waterMaterial = new THREE.MeshPhongMaterial({ color: 0x3b7fc4, specular: 0x1f3a60, shininess: 40 });
+            groundLayer.parcelSurface(waterMaterial);
         }
         for (const piece of nearbyWater) {
             try {
                 polygonFeatureToMeshes({ type: 'Feature', geometry: piece.geometry }, waterMaterial, 0.04, 0)
-                    .forEach(mesh => { mesh.userData.water = piece.kind; waterGroup.add(mesh); });
+                    .forEach(mesh => { mesh.renderOrder = window.__threeGround.ORDER.water; mesh.userData.water = piece.kind; waterGroup.add(mesh); });
             } catch (error) {
                 console.warn('[3D] water piece skipped', piece.kind, error);
             }
@@ -7305,8 +7309,8 @@
     // --- Real-world green areas (lawns and parks, meadows and farmland, woods) ---
     // Fetched via GET /decor/green for the same area as the water (OpenFreeMap landcover, every city)
     // and merged into one mesh per look with the grass pattern (three-grass.js): three draw calls
-    // however many pieces. Just above the parcel slabs (0), below water (0.04), corridor strips (0.05)
-    // and planned parks and squares (0.06), which all cover it.
+    // however many pieces. Just above the parcel slabs (0), below corridor strips (0.05) and planned
+    // parks and squares (0.06), which cover it; real-world water claims its pixels first.
     const GREEN_STORAGE_KEY = 'cb_3d_green_enabled';
     const GREEN_Z = 0.03;
     const GREEN_VARIANT = { lawn: 'lawn', meadow: 'wild', forest: 'forest' }; // look → grass pattern
