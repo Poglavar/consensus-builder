@@ -518,7 +518,14 @@
         </button>
         <button type="button" id="measurement-button" class="map-shell-button map-utility-button" data-map-modes="2d" data-sheet-target="measurement-sheet" aria-controls="measurement-sheet" aria-expanded="false" title="Measure" aria-label="Measure" data-i18n-key="sidebar.measurement.measureButton" data-i18n-attr="title,aria-label"><i class="fas fa-ruler" aria-hidden="true"></i></button>
         <!-- Sun and shadows (js/three-sun.js): the model view's occupant of the utility slot that Measure holds in 2D. -->
-        <button type="button" id="sun-button" class="map-shell-button map-utility-button" data-map-modes="3d" data-sheet-target="sun-sheet" aria-controls="sun-sheet" aria-expanded="false" data-sun="day" title="Sun and shadows" aria-label="Sun and shadows" data-i18n-key="threeMode.sun.title" data-i18n-attr="title,aria-label" hidden><i class="fas fa-sun" aria-hidden="true"></i></button>
+        <button type="button" id="sun-button" class="map-shell-button map-utility-button" data-map-modes="3d" data-sheet-target="sun-sheet" aria-controls="sun-sheet" aria-expanded="false" data-sun="day" title="Sun and shadows" aria-label="Sun and shadows" data-i18n-key="threeMode.sun.title" data-i18n-attr="title,aria-label" hidden>
+            <i class="fas fa-sun" aria-hidden="true"></i>
+            <svg class="sun-dial" viewBox="0 0 40 40" aria-hidden="true" focusable="false">
+                <circle class="sun-dial__night" cx="20" cy="20" r="17" />
+                <circle class="sun-dial__day" cx="20" cy="20" r="17" pathLength="1440" transform="rotate(90 20 20)" />
+                <circle class="sun-dial__marker" cx="20" cy="37" r="2.5" />
+            </svg>
+        </button>
         <button id="mode-2d-toggle" class="map-mode-toggle map-mode-tile" title="2D map" aria-label="2D map" aria-pressed="true" data-i18n-key="threeMode.toggle.switchTo2d" data-i18n-attr="title,aria-label"><span aria-hidden="true">2D</span></button>
         <button id="mode-3d-toggle" class="map-mode-toggle map-mode-tile" title="3D models" aria-label="3D models" aria-pressed="false" data-i18n-key="threeMode.toggle.switchTo3d" data-i18n-attr="title,aria-label"><span aria-hidden="true">3D</span></button>
         <button id="mode-realistic-toggle" class="map-mode-realistic-btn map-mode-tile" title="3D aerial imagery (Google)" aria-label="3D aerial imagery (Google)" aria-pressed="false" data-i18n-key="threeMode.toggle.realistic" data-i18n-attr="title,aria-label">

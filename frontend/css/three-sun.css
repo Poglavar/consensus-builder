@@ -1,7 +1,7 @@
 /* Sun and shadows sheet and button in the 3D model view (js/three-sun.js, #sun-sheet in index.html).
    The button takes the mode strip's utility slot through .map-utility-button (css/map-shell.css).
-   Colours are theme tokens (css/tokens.css, --cb-sun-*); JS supplies only --sun-glow (0…1, the
-   sun's height) and the daylight band's --sun-rise / --sun-set (percent of 24 h). */
+   Colours are theme tokens (css/tokens.css, --cb-sun-*); JS supplies the sun's height,
+   daylight interval and clock angle. The rim uses the same local day as the sheet. */
 
 .sun-controls {
     margin: var(--cb-space-2) 0 0;
@@ -97,6 +97,31 @@
 #sun-button {
     --sun-glow: 1;
 }
+
+.sun-dial {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    fill: none;
+    stroke-width: 2;
+}
+
+.sun-dial__night { stroke: var(--cb-sun-night-band); }
+.sun-dial__day {
+    stroke: var(--cb-sun-noon);
+    stroke-dasharray: var(--sun-dial-daylight, 0) 1440;
+    stroke-dashoffset: calc(-1 * var(--sun-dial-rise, 0));
+}
+.sun-dial__marker {
+    fill: var(--cb-text);
+    stroke: var(--cb-surface);
+    stroke-width: 1;
+    transform-origin: 20px 20px;
+    transform: rotate(var(--sun-dial-angle, 0deg));
+}
+#sun-button[data-sun="off"] .sun-dial { opacity: 0.35; }
 
 #sun-button[data-sun="day"] i {
     color: color-mix(in srgb, var(--cb-sun-noon) calc(var(--sun-glow) * 100%), var(--cb-sun-dawn));
