@@ -516,7 +516,7 @@
             const selected = Object.fromEntries(state.stack.sections.map(section => [section.kind, section.instances[section.selectedIndex].id]));
             const previous = state.stack;
             state.input = { ...state.input, plans: Array.from(new Map([...session.instances('plans', previous.selectedKind === 'plans'), ...(state.input.planContext ? [state.input.planContext] : [])].map(item => [item.id, item])).values()) };
-            state.input.designs = state.input.designs.map(item => item.id === design.id ? { ...item, cid: session.cid } : item);
+            state.input.designs = state.input.designs.map(item => item.id === design.id ? { ...item, cid: session.cid || session.revision } : item);
             const next = buildThreeStack(state.input, { selected, focus: previous.selectedKind });
             state.stack = { ...next, expanded: previous.expanded && next.sections.some(section => section.kind === previous.expanded) ? previous.expanded : null };
             const keepBody = previous.expanded !== 'plans'

@@ -120,6 +120,8 @@ describe('design membership sessions', () => {
         const session = f.session();
         await session.ready;
         expect(session.groups.plans.items).toMatchObject([{ cid: 'matching-plan', title: 'Private park plan', draft: true }]);
+        expect(session.revision).toBe('local-revision');
+        expect(session.instances('plans')[0].membershipDesignCid).toBe('local-revision');
         expect(f.win.fetch).not.toHaveBeenCalled();
     });
 

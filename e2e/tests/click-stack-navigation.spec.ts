@@ -14,6 +14,8 @@ for (const width of [390, 1280]) {
     const tabs = stack.locator('.is-expanded .click-stack__content-tabs');
     await expect(tabs.locator('[data-page="design-overview"]')).toHaveAttribute('aria-selected', 'true');
     await expect(stack.locator('.proposal-overview-facts')).toBeVisible();
+    await page.evaluate(() => (window as any).setProposalDetailsPanelMinimized(document.getElementById('proposal-details-panel'), true));
+    await expect(stack.locator('.proposal-overview-facts')).toBeVisible();
     await tabs.locator('[data-page="actions"]').click();
     await expect(stack.locator('[data-design-action="add-to-plan"]')).toBeVisible();
     await expect(stack.locator('.proposal-primary-actions')).toBeVisible();
@@ -35,8 +37,10 @@ for (const width of [390, 1280]) {
     }, id);
     await expect(tabs.locator('[data-page="relation-designs"]')).toHaveAttribute('aria-selected', 'true');
     await expect(stack.locator('.click-stack__membership-details .click-stack__link')).toHaveCount(1);
+    await expect(tabs.locator('[data-page="relation-designs"]')).toHaveText('Designs (1)');
     await tabs.locator('[data-page="relation-agreements"]').click();
     await expect(stack).toContainText('No agreements reference this plan yet.');
+    await expect(tabs.locator('[data-page="relation-agreements"]')).toHaveText('Agreements (0)');
     await tabs.locator('[data-page="actions"]').click();
     await expect(stack.locator('.click-stack__create-agreement')).toBeVisible();
     await expect(stack.locator('.click-stack__share-plan')).toBeVisible();
@@ -59,14 +63,22 @@ for (const width of [390, 1280]) {
       await stack.locator('.click-stack__dismiss').click();
       await expect(stack).toBeHidden();
     }
+    await showProposal(page, id);
+    await expect(tabs.locator('[data-page="relation-plans"]')).toHaveText('Plans (1)');
     // Parcel editors and tools remain reachable through the promoted native tabs.
     await page.evaluate(id => (window as any).ClickStack.showParcel((window as any).CadastralParcelRepository.get(id)), PARCEL_ID);
     await tabs.locator('[data-page="parcel-info-tab"]').click();
     await expect(stack.locator('#info-tab')).toBeVisible();
+    await expect(stack.locator('#parcel-manual-selection')).toBeHidden();
+    await expect(stack.locator('.multi-select-detect-btn')).toBeHidden();
     await tabs.locator('[data-page="parcel-tools-tab"]').click();
     await expect(stack.locator('#tools-tab')).toBeVisible();
+    await expect(stack.locator('#parcel-manual-selection')).toBeHidden();
+    await expect(stack.locator('.multi-select-detect-btn')).toBeHidden();
     await tabs.locator('[data-page="parcel-propose-tab"]').click();
     await expect(stack.locator('.parcel-build-btn--park')).toBeVisible();
+    await expect(stack.locator('#parcel-manual-selection')).toBeVisible();
+    await expect(stack.locator('.multi-select-detect-btn')).toBeVisible();
   });
 }
 
@@ -91,4 +103,5 @@ test('mobile agreement content tabs retain controls and exact plan references', 
   await tabs.locator('[data-page="relation-agreements"]').click();
   await expect(stack.locator('[data-stack-agreements] .click-stack__link')).toHaveCount(1);
   await expect(stack.locator('[data-stack-agreements]')).toContainText('Navigation agreement');
+  await expect(tabs.locator('[data-page="relation-agreements"]')).toHaveText('Agreements (1)');
 });

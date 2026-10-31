@@ -96,6 +96,7 @@
         choices.dataset.kind = group.kind || '';
         choices.setAttribute('role', 'group');
         const label = doc.createElement('span');
+        choices.dataset.itemCount = String((group.instances || []).filter(instance => !instance.membershipPlaceholder).length);
         label.className = 'click-stack__relation-label';
         label.textContent = group.label || translate(keys[group.relation] || group.relation, win);
         choices.setAttribute('aria-label', label.textContent);

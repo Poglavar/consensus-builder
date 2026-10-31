@@ -1479,6 +1479,8 @@ function getProposalDetailsPanelLabels() {
 
 function setProposalDetailsPanelMinimized(panel, minimized, labels = null) {
     if (!panel) return;
+    // The stack owns folding; an asynchronous compact-card refresh must not hide its body.
+    minimized = minimized && !panel.classList.contains('is-hosted');
 
     const resolvedLabels = labels || getProposalDetailsPanelLabels();
     panel.classList.toggle('is-minimized', minimized);

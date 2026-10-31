@@ -1475,21 +1475,6 @@
                     onclick="(window.Parcels?.uiParcelPanel?.hideParcelInfoPanel || window.hideParcelInfoPanel || function(){})();">×</button>
             </div>
 
-            <div class="cb-actions parcel-context-actions">
-                <div class="multi-select-group">
-                    <span class="multi-select-title" data-i18n-key="panel.parcel.selectMultiple">Select a parcel to start designing. You can also select multiple parcels manually or auto detect and select a block of parcels.</span>
-                    <div class="multi-select-options">
-                        <button type="button" id="parcel-manual-selection" class="btn btn-sm" aria-pressed="false"
-                            onclick="multiParcelSelection.toggle()"
-                            data-i18n-key="panel.parcel.selectManually">Manual</button>
-                        <button type="button" class="btn btn-sm multi-select-detect-btn"
-                            data-i18n-key="panel.parcel.detectBlock"
-                            onclick="(window.animateFloodfillFromSelected || function(){})();">Detect block</button>
-                    </div>
-                </div>
-            </div>
-
-
             <!-- Tab Navigation -->
             <!-- Design holds the palette of things to create; Proposals lists what already exists
                  here (its count rides in a badge); Tools is an icon so four tabs fit a phone. The
@@ -1530,6 +1515,19 @@
 
                 <!-- Design Tab -->
                 <div id="propose-tab" class="parcel-tab-content" role="tabpanel">
+                    <div class="cb-actions parcel-context-actions">
+                        <div class="multi-select-group">
+                            <span class="multi-select-title" data-i18n-key="panel.parcel.selectMultiple">Select a parcel to start designing. You can also select multiple parcels manually or auto detect and select a block of parcels.</span>
+                            <div class="multi-select-options">
+                                <button type="button" id="parcel-manual-selection" class="btn btn-sm" aria-pressed="false"
+                                    onclick="multiParcelSelection.toggle()"
+                                    data-i18n-key="panel.parcel.selectManually">Manual</button>
+                                <button type="button" class="btn btn-sm multi-select-detect-btn"
+                                    data-i18n-key="panel.parcel.detectBlock"
+                                    onclick="(window.animateFloodfillFromSelected || function(){})();">Detect block</button>
+                            </div>
+                        </div>
+                    </div>
                     <div id="propose-content"></div>
                 </div>
 
@@ -2223,11 +2221,11 @@
             'js/proposals/drill-ui.js',
             'js/selection-address.js?v=20261029-selection',
             'js/click-stack/click-stack-model.js?v=20261031-tabs',
-            'js/click-stack/click-stack-relations.js?v=20261031-tabs',
-            'js/click-stack/click-stack-navigation.js?v=20261031-tabs',
+            'js/click-stack/click-stack-relations.js?v=20261031-tab-counts',
+            'js/click-stack/click-stack-navigation.js?v=20261031-tab-counts',
             'js/click-stack/click-stack-neighbours.js?v=20261028-neighbours',
             'js/click-stack/click-stack-hits.js?v=20261028-neighbours',
-            'js/click-stack/click-stack-panel.js?v=20261031-tabs',
+            'js/click-stack/click-stack-panel.js?v=20261031-tab-counts',
             'js/buildout-clock.js?v=20261029-undated',
             'js/compare-unapplied.js?v=20261029-compare-status',
             'js/three-compare.js?v=20261030-compare-agreements',
@@ -2237,7 +2235,7 @@
             'js/proposals/approval-panel.js?v=20261027-experimental',
             'js/proposals/parcel-history-card.js?v=20261020-anchor-observation',
             // bundle:end proposal-inspection
-            'js/proposals/details-panel.js?v=20261028-ground-fences',
+            'js/proposals/details-panel.js?v=20261031-hosted-refresh',
             // bundle:start parcel-compare
             'js/proposals/parcel-compare.js?v=20261020-comparison-status',
             'js/proposals/parcel-compare-ui.js?v=20261020-comparison-status',

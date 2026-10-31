@@ -888,7 +888,7 @@
             const previous = state.stack;
             state.hits = { ...state.hits, plans: Array.from(new Map([...session.instances('plans', previous.selectedKind === 'plans'), ...(state.hits.planContext ? [state.hits.planContext] : [])].map(item => [item.id, item])).values()) };
             // Annotate only the exact inspected revision for relationship matching.
-            state.hits.designs = state.hits.designs.map(item => item.id === design.id ? { ...item, cid: session.cid } : item);
+            state.hits.designs = state.hits.designs.map(item => item.id === design.id ? { ...item, cid: session.cid || session.revision } : item);
             const next = model.buildClickStack(state.hits, { selected });
             const has = kind => next.sections.some(section => section.kind === kind);
             state.stack = { ...next, expanded: previous.expanded && has(previous.expanded) ? previous.expanded : null,

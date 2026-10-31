@@ -6,6 +6,11 @@
     const sessions = new WeakMap();
     const remembered = new Map();
     const t = key => win.i18n.t(`clickStackNavigation.${key}`);
+    function listLabel(kind, node) {
+        const list = node.matches('.click-stack__choices') ? node : node.querySelector('.click-stack__choices');
+        if (!['designs', 'plans', 'agreements'].includes(kind) || !list) return t(kind);
+        return `${t(kind)} (${list.dataset.itemCount}${list.dataset.more === 'true' ? '+' : ''})`;
+    }
     const icon = name => { const el = document.createElement('i'); el.className = name; el.setAttribute('aria-hidden', 'true'); return el; };
     function button(label, className, run) {
         const el = document.createElement('button'); el.type = 'button'; el.className = className;
@@ -128,7 +133,9 @@
                         const key = tab.dataset.parcelTabId;
                         // The relationship list already represents designs on this one parcel.
                         if (key === 'proposals-tab' && kind !== 'selection' && body.querySelector('.click-stack__choices[data-kind="designs"]')) continue;
-                        add(`parcel-${key}`, key === 'propose-tab' ? t('actions') : (tab.getAttribute('aria-label') || tab.textContent.trim()), node, tab);
+                        const label = key === 'proposals-tab' ? `${t('designs')} (${tab.querySelector('.parcel-tab-count')?.textContent || '0'})`
+                            : key === 'propose-tab' ? t('actions') : (tab.getAttribute('aria-label') || tab.textContent.trim());
+                        add(`parcel-${key}`, label, node, tab);
                     }
                 } else if (node.classList.contains('click-stack__agreement-properties') && node.querySelector('[data-agreement-properties-tab]')) {
                     for (const tab of node.querySelectorAll('[data-agreement-properties-tab]')) {
@@ -141,8 +148,8 @@
                             const tab = node.querySelector(`[aria-controls="${panel.id}"]`);
                             add(`relation-${panel.dataset.kind}`, tab?.textContent.trim() || t(panel.dataset.kind), node, tab);
                         }
-                    } else add(`relation-${node.dataset.kind}`, t(node.dataset.kind), node);
-                } else if (node.classList.contains('click-stack__membership-details')) add('relation-designs', t('designs'), node);
+                    } else add(`relation-${node.dataset.kind}`, listLabel(node.dataset.kind, node), node);
+                } else if (node.classList.contains('click-stack__membership-details')) add('relation-designs', listLabel('designs', node), node);
                 else if (node.classList.contains('click-stack__actions') || node.matches('.click-stack__agreement-more, button')) add('actions', t('actions'), node);
                 else add('info', t('info'), node);
             }
@@ -180,6 +187,7 @@
         const items = rows.filter(row => !row.membershipPlaceholder);
         const next = win.ClickStackRelations.renderGroup({ kind: 'agreements', label: t('agreements'), instances: items }, document, win);
         next.setAttribute('data-stack-agreements', '');
+        next.dataset.more = String(!!status.more);
         if (!items.length || status.loading || status.failed) {
             const message = document.createElement('p'); message.className = 'click-stack__facts';
             message.setAttribute('role', 'status');

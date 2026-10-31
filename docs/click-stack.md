@@ -75,6 +75,8 @@ their editors, controls, loading behavior and state:
 Changing content tabs remembers the active page per object and the scroll position
 within that mounted section. Full-screen/map-visible switching preserves its contents.
 Relationship lists remain one item per row with single-line, ellipsized labels.
+Designs, Plans and Agreements content tabs show their list counts in parentheses;
+an agreement list with another page available adds `+` to its loaded count.
 
 ## Neighbours
 
@@ -190,7 +192,7 @@ replace one with its own (the model view reads buildings from its scene).
   - Cadastral or formed parcel: the parcel info panel. The cadastral section heading is
     **Cadastral parcel · <reference>**; it replaces the panel's duplicate identity heading and
     the former area/ownership summary. Source and formed-ground provenance remains in Info.
-    **Select multiple parcels** (Manually / Detect block) sits in Actions, before
+    **Select multiple parcels** (Manually / Detect block) sits only in Actions, before
     **Custom site**. Custom site starts an editable working boundary; it does not change the
     parcel layout and remains available for drawing a design over that boundary.
     **Actions · Info · Tools** are the parcel panel tabs promoted into the content bar. Actions

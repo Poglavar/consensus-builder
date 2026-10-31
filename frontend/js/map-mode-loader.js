@@ -16,7 +16,7 @@
             'js/three-floor-plans.js', 'js/three-building-facades.js', 'js/rule-building-details.js', 'js/three-rule-roofs.js', 'js/three-resources.js',
             'js/three-scene-work.js', 'js/three-scene-readiness.js', 'js/three-structure-refresh.js', 'js/three-square-paving.js', 'js/three-lake-basin.js',
             'js/three-snapshot-navigation.js', 'js/three-keyboard-context.js', 'js/three-scene-isolation.js',
-            'js/elevated-rail-3d.js', 'js/three-focus-plan.js', 'js/three-click-plan.js', 'js/three-click-stack.js?v=20261031-tabs',
+            'js/elevated-rail-3d.js', 'js/three-focus-plan.js', 'js/three-click-plan.js', 'js/three-click-stack.js?v=20261031-tab-counts',
             'js/life/life-graph.js', 'js/life/life-surface.js', 'js/life/life-agents.js', 'js/three-life.js',
             'js/life/ground-geometry.js', 'js/three-ground.js', 'js/tree-species.js', 'js/three-grass.js',
             'js/three-site-ground.js?v=20261028-trees-grass',

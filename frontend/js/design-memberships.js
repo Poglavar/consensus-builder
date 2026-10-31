@@ -81,12 +81,12 @@
         for (const group of Object.values(groups)) Object.assign(group, { nextOffset: cid ? 0 : null, loading: !!cid, error: false });
         const detailCache = new Map();
         const notify = () => { if (!controller.signal.aborted) onChange(session); };
-        const session = { groups, cid, proposalId: String(proposal.proposalId),
+        const session = { groups, cid, revision, proposalId: String(proposal.proposalId),
             dispose: () => controller.abort(), load,
             instances(kind, keepEmpty = false) {
                 const state = groups[kind];
                 const items = state.items.map(row => ({ ...row, id: String(row.localId || row.cid), label: row.title || String(row.cid || row.localId),
-                    membershipDesignCid: cid, onParcel: true }));
+                    membershipDesignCid: cid || revision, onParcel: true }));
                 if (!items.length && (state.loading || state.error || keepEmpty)) items.push({ id: `membership-${kind}`, membershipPlaceholder: true, onParcel: true,
                     label: t(state.loading ? 'loading' : state.error ? 'failed' : 'empty') });
                 return items;
