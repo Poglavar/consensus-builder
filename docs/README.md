@@ -69,6 +69,7 @@ Each document describes a current contract, an open plan or research. Verificati
 
 - [Human–AI map editing: accessibility, ergonomics and next steps](student-ai.md).
 - [MCP design of record](mcp.md), [workflow](mcp-workflow.md), [editing contract](mcp-editing.md), [agent working plan](agent-working-plan.md) (open plan), [directory listings](mcp-directory-submissions.md).
+- [Chat with an agent inside the app](chat-agent.md) (open plan): a chat panel whose hosted agent edits the plan through the public MCP tools.
 
 **Hackathon and plans**
 
