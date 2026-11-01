@@ -14,6 +14,7 @@
     const IMPORTED_DESIGN = /^file-/;
     function browser(win) {
         const doc = win.document;
+        const recordLabel = () => win.RecordLabel || (typeof require === 'function' ? require('./ui/record-label.js') : null);
         const t = (key, fallback, params) => win.getProposalI18nHelper()(`planFile.${key}`, fallback, params);
         const error = (e, code = 'plan-open-failed') => {
             const diagnostic = win.AppDiagnostics?.report(e, { code, context: { surface: 'plan-file' } });
@@ -58,8 +59,12 @@
                     ? t('designPreview', '“{{title}}”: {{count}} designs. Import adds them as local, unapplied drafts. Existing work stays in place. No agreement, ownership or signature is imported.', { title: file.plan.title, count: file.designs.length })
                     : t('preview', '“{{title}}”: {{count}} designs. Import adds local, unapplied drafts and saves this plan’s membership and view. Existing work stays in place. No agreement, ownership or signature is imported.', { title: file.plan.title, count: file.designs.length });
                 const list = doc.createElement('ul');
-                file.designs.forEach(({ content }) => {
-                    const item = doc.createElement('li'); item.textContent = content.title || content.goal; list.appendChild(item);
+                const designIds = file.designs.map(row => row.cid || '');
+                file.designs.forEach(({ cid, content }) => {
+                    const item = doc.createElement('li');
+                    item.textContent = recordLabel().label(content.title || content.goal, cid, designIds);
+                    if (cid) item.title = cid;
+                    list.appendChild(item);
                 });
                 const location = doc.createElement('p');
                 location.textContent = t('location', 'Saved location (latitude, longitude, zoom): {{at}}', { at: file.plan.view.at });
@@ -92,10 +97,10 @@
             const snapshot = await win.PlanWorkspace.resolve(plan, members);
             return win.PlanDialog.details(snapshot);
         }
-        // What was read from files on this device, per Lists tab: [{ title, open }].
+        // What was read from files on this device, per Lists tab: [{ title, id, open }].
         function importedRows(kind) {
             if (kind === 'designs') return win.proposalStorage.getAllProposals().filter(record => IMPORTED_DESIGN.test(String(record.proposalId)))
-                .map(record => ({ title: record.title || record.name || win.i18n.t('planDialog.untitledDesign'), open: () => {
+                .map(record => ({ title: record.title || record.name || win.i18n.t('planDialog.untitledDesign'), id: record.published?.cid || record.cid || record.proposalId, open: () => {
                     win.MapShell?.closeSheets(); return win.openListedProposal(record, record.proposalId, 'details');
                 } }));
             const rows = [];
@@ -104,12 +109,12 @@
                 if (kind === 'plans' && key.startsWith(PREFIX)) {
                     try {
                         const plan = JSON.parse(raw);
-                        if (!win.PlanRecord.validate(plan.content) && Array.isArray(plan.memberIds)) rows.push({ title: plan.content.title, open: () => openPlan(plan) });
+                        if (!win.PlanRecord.validate(plan.content) && Array.isArray(plan.memberIds)) rows.push({ title: plan.content.title, id: plan.published?.cid || plan.cid, open: () => openPlan(plan) });
                     } catch (_) { /* leave an invalid local entry untouched */ }
                 }
                 if (kind === 'agreements' && key.startsWith(AGREEMENT_PREFIX)) {
                     const agreement = win.AgreementStore.get(key.slice(AGREEMENT_PREFIX.length));
-                    if (agreement) rows.push({ title: agreement.title || win.i18n.t('agreement.panel.untitled'), open: () => {
+                    if (agreement) rows.push({ title: agreement.title || win.i18n.t('agreement.panel.untitled'), id: agreement.published?.cid || agreement.id, open: () => {
                         win.MapShell?.closeSheets(); return win.AgreementPanel.open(agreement.id);
                     } });
                 }
@@ -123,12 +128,14 @@
         };
         function imported(kind) {
             const rows = importedRows(kind), [title, empty] = IMPORTED_TEXT[kind];
+            const ids = rows.map(row => row.id);
             const body = doc.createElement('div'); body.className = 'plan-file-imported';
             if (!rows.length) body.textContent = t(...empty);
             const modal = win.showSimpleShareModal({ title: t(...title), body, actions: [] });
             for (const row of rows) {
                 const button = doc.createElement('button'); button.type = 'button'; button.className = 'btn';
                 button.textContent = row.title;
+                if (row.id) button.append(' ', recordLabel().badge(doc, row.id, ids));
                 button.addEventListener('click', () => { modal.close(); Promise.resolve().then(row.open).catch(e => error(e)); });
                 body.appendChild(button);
             }

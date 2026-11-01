@@ -36,7 +36,7 @@ for (const width of [1280, 390]) {
     await page.setContent('<!doctype html><html><body class="three-mode-active"><main id="map-container"></main></body></html>');
     const frontend = path.resolve(__dirname, '../../frontend');
     for (const file of ['tokens','primitives','base','map','panels','utilities','mobile-sheets','three-click-stack']) await page.addStyleTag({ path: path.join(frontend,`css/${file}.css`) });
-    for (const file of ['click-stack/click-stack-model','ui/object-list','click-stack/click-stack-relations','three-click-stack']) await page.addScriptTag({ path: path.join(frontend,`js/${file}.js`) });
+    for (const file of ['click-stack/click-stack-model','ui/record-label','ui/object-list','click-stack/click-stack-relations','three-click-stack']) await page.addScriptTag({ path: path.join(frontend,`js/${file}.js`) });
     await page.evaluate(() => {
       const w = window as any;
       w.i18n = { t: (key: string) => key === 'clickStackRelations.affectedBy' ? 'Affected by design:' : key };
@@ -49,7 +49,7 @@ for (const width of [1280, 390]) {
     await expect(root.getByRole('group', { name: 'Affected by design:' })).toBeVisible();
     await page.screenshot({ path: testInfo.outputPath('building-explicit-impact.png') });
     // The design's name only outlines it; its arrow opens it.
-    const redevelop = root.getByRole('button', { name: 'Redevelop', exact: true });
+    const redevelop = root.getByRole('button', { name: 'Redevelop · design', exact: true });
     await redevelop.click();
     await expect(redevelop).toHaveAttribute('aria-pressed', 'true');
     await expect(root.locator('[data-kind="designs"] .click-stack__row')).toHaveCount(0);

@@ -48,6 +48,7 @@
 .lists-item[data-list-tone="building"], .lists-item[data-list-tone="plan"] { --lists-accent: var(--cb-primary); }
 .lists-item[data-list-tone="agreement"] { --lists-accent: var(--cb-warning); }
 .lists-item__title { min-width: 0; }
+.lists-item__heading > .record-id { flex: none; max-width: min(10rem, 40%); overflow: hidden; text-overflow: ellipsis; }
 .lists-item__icon { display: inline-flex; align-items: center; justify-content: center; width: 32px; height: 32px; flex: 0 0 32px; border-radius: var(--cb-radius-sm); color: var(--lists-accent); background: color-mix(in srgb, var(--lists-accent) 10%, transparent); }
 .lists-share-icon { color: var(--cb-info); }
 .lists-item__remove { margin-inline-start: auto; }

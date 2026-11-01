@@ -162,9 +162,12 @@ replace one with its own (the model view reads buildings from its scene).
   designs. The Plan button in agreement details selects that Plan in the current stack, preserving
   the camera, workspace and address. Multiple agreements share the same native instance selector.
 - When a section has multiple instances, its expanded card contains a compact native selector for
-  switching among those peers. A singleton has no selector.
+  switching among those peers. A singleton has no selector. Design, Plan and Agreement choices
+  pair their freely reusable titles with short IDs; relation lists use the same labels. Published
+  records use their CID and local records use their local key. The full ID is available on hover.
 - The Design selector says **Location you clicked has multiple designs. Select which to inspect:**
-  above the control. Its closed face shows only the selected design's title. The native menu
+  above the control. Its closed face shows the selected design's title and short ID. Long titles
+  truncate while the short ID stays visible. The native menu
   includes each design's authored type and available exact-revision plan membership alongside
   its title. The selector replaces the repeated title in the expanded card; a singleton keeps
   its ordinary title. Membership updates refresh menu labels without replacing the control.

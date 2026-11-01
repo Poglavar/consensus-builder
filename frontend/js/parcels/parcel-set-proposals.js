@@ -56,13 +56,30 @@
     // the button that outlines the design on the map (pressed while kept outlined), and this arrow,
     // "Open <title>", is the only control that opens it. The name comes as markup, the arrow's
     // title as plain text.
-    function pickButtonHtml(titleHtml) {
-        return `<button type="button" class="btn btn-quiet proposal-item-pick" data-proposal-pick aria-pressed="false">${titleHtml}</button>`;
+    function pickButtonHtml(titleHtml, label = '') {
+        const accessibleName = label ? ` aria-label="${escapeText(label)}"` : '';
+        return `<button type="button" class="btn btn-quiet proposal-item-pick" data-proposal-pick aria-pressed="false"${accessibleName}>${titleHtml}</button>`;
     }
 
     function openButtonHtml(title, tr = t) {
         const label = escapeText(tr('lists.openNamed', 'Open {{title}}', { title }));
         return `<button type="button" class="btn btn-icon btn-sm object-list__open proposal-item-open" data-proposal-open title="${label}" aria-label="${label}"><i class="fas fa-arrow-right" aria-hidden="true"></i></button>`;
+    }
+
+    function recordLabelApi() {
+        if (root?.RecordLabel) return root.RecordLabel;
+        if (typeof require === 'function') return require('../ui/record-label.js');
+        throw new Error('RecordLabel must be loaded before ParcelSetProposals');
+    }
+
+    function recordIdOf(proposal) {
+        return root?.DesignSync?.publishedCid?.(proposal) || proposal?.cid || proposal?.published?.cid || proposal?.proposalId || '';
+    }
+
+    function recordBadgeHtml(id, peers = []) {
+        const value = String(id || '');
+        if (!value) return '';
+        return `<code class="record-id" title="${escapeText(value)}">${escapeText(recordLabelApi().shortId(value, peers))}</code>`;
     }
 
     // describe(proposal) → { title, typeLabel, statusText, statusClass, modifierText?, modifierClass?,
@@ -85,8 +102,11 @@
         const total = summary
             ? `<p class="parcel-set-proposals-summary">${escapeText(t('panel.parcel.setProposals.summary', '{{count}} designs on these parcels', { count: entries.length }))}</p>`
             : '';
+        const recordIds = entries.map(entry => recordIdOf(entry.proposal)).filter(Boolean);
         const rows = entries.map(entry => {
             const info = describe(entry.proposal);
+            const recordId = recordIdOf(entry.proposal);
+            const recordLabel = recordLabelApi().label(info.title, recordId, recordIds);
             // "On 2 of 5 parcels" says which part of the set a proposal stands on; with one parcel it says nothing.
             const coverage = parcelCount > 1
                 ? t('panel.parcel.setProposals.covers', 'On {{covered}} of {{count}} parcels', { covered: entry.parcelIds.length, count: parcelCount })
@@ -94,12 +114,12 @@
             const body = `
                 <div class="proposal-item-body">
                     <div class="proposal-item-header">
-                        <span class="proposal-item-title">${pickButtonHtml(escapeText(info.title))}</span>
+                        <span class="proposal-item-title">${pickButtonHtml(escapeText(info.title), recordLabel)}${recordBadgeHtml(recordId, recordIds)}</span>
                         <div class="proposal-item-badges">
                             <span class="cb-badge cb-badge--${escapeText(info.statusClass)}">${escapeText(info.statusText)}</span>
                             ${info.modifierText ? `<span class="cb-badge ${escapeText(info.modifierClass)}">${escapeText(info.modifierText)}</span>` : ''}
                         </div>
-                        ${openButtonHtml(info.title, t)}
+                        ${openButtonHtml(recordLabel, t)}
                     </div>
                     <div class="proposal-item-details">${escapeText([info.typeLabel, coverage].filter(Boolean).join(' · '))}</div>
                 </div>`;

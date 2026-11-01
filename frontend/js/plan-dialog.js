@@ -7,6 +7,15 @@
         if (text !== undefined) el.textContent = text;
         return el;
     };
+    const recordLabel = (title, id, peerIds = []) => win.RecordLabel.label(title, id, peerIds);
+    const recordBadge = (id, peerIds = []) => win.RecordLabel.badge(document, id, peerIds);
+    const designId = record => win.DesignSync.publishedCid(record) || record?.proposalId || record?.id || '';
+    function appendRecordLabel(parent, title, id, peerIds = []) {
+        parent.append(document.createTextNode(title || t('untitledDesign')));
+        if (id) parent.append(document.createTextNode(' '), recordBadge(id, peerIds));
+        return parent;
+    }
+    const normalizedName = value => String(value || '').trim().replace(/\s+/gu, ' ').toLowerCase();
     const button = (label, run, primary = false) => {
         const el = node('button', `btn${primary ? ' btn-primary' : ''}`, label); el.type = 'button';
         el.addEventListener('click', async () => {
@@ -25,7 +34,8 @@
     }
     function memberList(row) {
         const list = node('ul', 'plan-dialog__members');
-        row.designs.forEach(member => list.append(node('li', '', member.content.title || t('untitledDesign'))));
+        const peerIds = row.designs.map(member => member.cid);
+        row.designs.forEach(member => list.append(appendRecordLabel(node('li'), member.content.title, member.cid, peerIds)));
         return list;
     }
     // A plan's designs are ticked in Lists → Designs, where they show on the map (ListsPanel.
@@ -43,7 +53,9 @@
         const view = structuredClone(baseRow?.content.view || win.MapShare.capture(win));
         const nameLabel = node('label', 'plan-dialog__field', t('name'));
         const name = node('input'); name.type='text'; name.required=true; name.maxLength=win.PlanRecord.MAX_TITLE;
-        name.value=baseRow?.content.title || ''; nameLabel.append(name); body.append(nameLabel);
+        const duplicateId = `plan-name-advisory-${Date.now()}`;
+        const duplicate = node('p', 'plan-dialog__duplicate'); duplicate.id = duplicateId; duplicate.setAttribute('role', 'status'); duplicate.hidden = true;
+        name.value=baseRow?.content.title || ''; name.setAttribute('aria-describedby', duplicateId); nameLabel.append(name, duplicate); body.append(nameLabel);
         if (baseRow) body.append(node('p','sheet-note',t('revisionHint')));
         const count=node('p','plan-dialog__count'); body.append(count);
         const list=node('ul','plan-dialog__members'); body.append(list);
@@ -88,11 +100,22 @@
             await win.ClickStack.showPlan(row, { designs: win.PlanComposition.localRecords(row, { apiBase: win.DesignSync.apiBase() }), draft: !row.published });
         },true);
         const cancel=button(t('cancel'),()=>dialog.close()); footer.append(cancel,save); body.append(footer);
-        const update=()=>{count.textContent=t('selected',{count:selected.size});save.disabled=!name.value.trim()||!selected.size;};
+        const update=()=>{
+            count.textContent=t('selected',{count:selected.size});save.disabled=!name.value.trim()||!selected.size;
+            const duplicateRows = normalizedName(name.value) ? win.PlanWorkspace.list().filter(row => row.cid !== baseRow?.cid
+                && normalizedName(row.content?.title) === normalizedName(name.value)) : [];
+            duplicate.replaceChildren(); duplicate.hidden = !duplicateRows.length;
+            if (duplicateRows.length) {
+                duplicate.append(document.createTextNode(t('duplicateName')));
+                const peerIds = duplicateRows.map(row => row.cid);
+                for (const row of duplicateRows) duplicate.append(document.createTextNode(' '), recordBadge(row.cid, peerIds));
+            }
+        };
         const render=()=>{
             list.replaceChildren();
+            const peerIds = [...sources.values()].map(designId);
             for (const record of sources.values()) {
-                const item=node('li','',record.title||t('untitledDesign'));
+                const item=appendRecordLabel(node('li'), record.title, designId(record), peerIds);
                 item.append(node('small','',win.getProposalGoalLabel?.(record.goal)||record.goal));list.append(item);
             }
             update();
@@ -105,8 +128,9 @@
         const record=win.proposalStorage.getProposal(id);if(!record)throw new Error(t('designMissing'));
         const plans=win.PlanWorkspace.list();
         if(!plans.length)return create({add:record});
+        const planIds = plans.map(plan => plan.cid);
         const chosen=await win.CbDialog.choice(t('choosePlan'),[
-            {value:'new',label:t('newPlan'),primary:true},...plans.map(plan=>({value:plan.cid,label:plan.content.title})),
+            {value:'new',label:t('newPlan'),primary:true},...plans.map(plan=>({value:plan.cid,label:recordLabel(plan.content.title, plan.cid, planIds)})),
             {value:'cancel',label:t('cancel')}
         ],{title:t('addToPlan')});
         if(!chosen||chosen==='cancel')return null;
@@ -140,12 +164,13 @@
         const lanes=node('div','plan-schedule__lanes');
         for(const bar of bars){
             const title=titles.get(bar.cid)||t('untitledDesign');
+            const accessibleTitle=recordLabel(title, bar.cid, content.designCids);
             const item=node(onPick?'button':'span','plan-schedule__bar');
             if(onPick){item.type='button';item.addEventListener('click',()=>onPick(bar.cid));}
             // Data-dependent geometry only: where on the axis the window sits.
             item.style.setProperty('--plan-schedule-offset',String(bar.offset));
             item.style.setProperty('--plan-schedule-width',String(bar.width));
-            item.title=`${title}: ${bar.start} – ${bar.end}`;
+            item.title=`${accessibleTitle}: ${bar.start} – ${bar.end}`;
             item.setAttribute('aria-label',item.title);
             lanes.append(item);
         }
@@ -156,7 +181,8 @@
             const row=node('div','plan-schedule__undated');
             row.append(node('span','plan-schedule__undated-label',t('scheduleUndated')));
             for(const cid of undated){
-                const item=node(onPick?'button':'span','plan-schedule__undated-item',titles.get(cid)||t('untitledDesign'));
+                const item=node(onPick?'button':'span','plan-schedule__undated-item');
+                appendRecordLabel(item, titles.get(cid), cid, content.designCids);
                 if(onPick){item.type='button';item.addEventListener('click',()=>onPick(cid));}
                 row.append(item);
             }
@@ -211,7 +237,7 @@
         };
         const monthInput=(cid,key,label)=>{
             const input=node('input','plan-schedule__month');input.type='month';input.min=R.MONTHS.first;input.max=R.MONTHS.last;
-            input.placeholder='YYYY-MM';input.pattern='\\d{4}-\\d{2}';input.value=windows.get(cid)?.[key]||'';input.setAttribute('aria-label',`${titles.get(cid)}: ${label}`);
+            input.placeholder='YYYY-MM';input.pattern='\\d{4}-\\d{2}';input.value=windows.get(cid)?.[key]||'';input.setAttribute('aria-label',`${recordLabel(titles.get(cid), cid, row.content.designCids)}: ${label}`);
             input.addEventListener('input',()=>{
                 const window={...(windows.get(cid)||{}),[key]:input.value};
                 // A start alone gives a one-month window until its end is chosen.
@@ -222,12 +248,12 @@
         };
         for(const cid of row.content.designCids){
             const item=node('li','plan-schedule__row');
-            const name=node('span','plan-schedule__name',titles.get(cid));
+            const name=node('span','plan-schedule__name');appendRecordLabel(name, titles.get(cid), cid, row.content.designCids);
             const fields=node('div','plan-schedule__fields');
             const start=monthInput(cid,'start',t('scheduleStart')),end=monthInput(cid,'end',t('scheduleEnd'));
             inputs.set(cid,[start,end]);
             const clear=node('button','btn btn-icon plan-schedule__clear');clear.type='button';
-            clear.title=t('scheduleClear');clear.setAttribute('aria-label',`${titles.get(cid)}: ${t('scheduleClear')}`);
+            clear.title=t('scheduleClear');clear.setAttribute('aria-label',`${recordLabel(titles.get(cid), cid, row.content.designCids)}: ${t('scheduleClear')}`);
             const icon=node('i','fas fa-xmark');icon.setAttribute('aria-hidden','true');clear.append(icon);
             clear.addEventListener('click',()=>{windows.delete(cid);start.value='';end.value='';update();});
             const startLabel=node('label','plan-schedule__field',t('scheduleStart'));startLabel.append(start);

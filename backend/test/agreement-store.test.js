@@ -404,7 +404,19 @@ describe('the sections as HTML (the hooks the browser spec targets)', () => {
 
     it('escapes plan labels and preselects the selected exact revision', () => {
         const html = Dialog.planSelectorHtml([{ cid: 'saved-cid', content: { title: '<b>Plan</b>' } }], { cid: 'saved-cid' });
-        expect(html).toContain('value="saved-cid" selected'); expect(html).toContain('&lt;b&gt;Plan&lt;/b&gt;');
+        expect(html).toContain('value="saved-cid" title="saved-cid" selected');
+        expect(html).toContain('&lt;b&gt;Plan&lt;/b&gt; · saved-cid');
+    });
+
+    it('disambiguates plan choices and input designs with their full identifier on hover', () => {
+        const suffix = '12345678';
+        const first = `bafkfirst-${suffix}`;
+        const second = `bafksecond-${suffix}`;
+        const plans = Dialog.planSelectorHtml([{ cid: first, content: { title: 'Neighbourhood' } }, { cid: second, content: { title: 'Neighbourhood' } }]);
+        expect(plans).toContain(`title="${first}">Neighbourhood · …${first.slice(-12)}`);
+        expect(plans).toContain(`title="${second}">Neighbourhood · …${second.slice(-12)}`);
+        const designs = Dialog.inputDesignsHtml([{ proposalId: 'design-1', cid: first, title: 'Courtyard', goal: 'parcel-layout' }]);
+        expect(designs).toContain(`class="agreement-object-row__title" title="${first}">Courtyard · …${suffix}</span>`);
     });
 
     it('offers the two electorates; a community vote has no binding and no owner form', () => {

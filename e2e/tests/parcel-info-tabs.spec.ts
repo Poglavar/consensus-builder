@@ -69,6 +69,9 @@ test.describe('Parcel info panel tabs @core', () => {
     await expect(row.locator('.proposal-item-badges')).toBeVisible();
     await expect(row.locator('.proposal-item-channel, .proposal-item-takes')).toHaveCount(0);
     await expect(designs.locator('.parcel-dossier-remainder')).toHaveCount(0);
+    await expect(row.locator('.record-id')).toHaveText(`…${parkId.slice(-8)}`);
+    await expect(row.locator('.record-id')).toHaveAttribute('title', parkId);
+    await expect(row.locator('.proposal-item-open')).toHaveAccessibleName(new RegExp(`Open .*…${parkId.slice(-8)}$`));
     await row.getByRole('button', { name: /Open Park/i }).click();
     await expect(page.locator('#proposal-details-panel')).toBeVisible();
   });
@@ -80,6 +83,9 @@ test.describe('Parcel info panel tabs @core', () => {
     const designs = page.locator('#proposals-content');
     const row = designs.locator(`[data-server-id="${publishedCid}"]`);
     await expect(row).toContainText('Published park');
+    await expect(row.locator('.record-id')).toHaveText(`…${publishedCid.slice(-8)}`);
+    await expect(row.locator('.record-id')).toHaveAttribute('title', publishedCid);
+    await expect(row.locator('.proposal-item-open')).toHaveAccessibleName(new RegExp(`Open Published park · …${publishedCid.slice(-8)}$`));
     expect(await page.evaluate(() => (window as any).proposalStorage.getAllProposals().length)).toBe(0);
     await row.getByRole('button', { name: 'Open Published park' }).click();
     await expect(page.locator('#proposal-details-panel')).toContainText('Published park');

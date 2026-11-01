@@ -9,6 +9,20 @@ const relations = require('../../frontend/js/click-stack/click-stack-relations.j
 const goals = require('../../frontend/js/proposals/design-goals.js');
 
 describe('click stack relationship rendering', () => {
+    it.each(['designs', 'plans', 'agreements'])('distinguishes equal %s titles without changing selected record keys', kind => {
+        const doc = makeDocument(), win = { i18n: testI18n() };
+        const instances = [{ id: 'local-a', cid: 'bafkreifirstrevision11111111', label: 'Same name' },
+            { id: 'local-b', cid: 'bafkreisecondrevision22222222', label: 'Same name' }];
+        const wrapper = relations.renderSelector({ kind, multi: true, selectedIndex: 0, instances }, doc, win);
+        const select = wrapper.querySelector('select');
+        expect(select.children.map(option => option.textContent)).toEqual(['Same name · …11111111', 'Same name · …22222222']);
+        expect(select.children.map(option => option.value)).toEqual(['local-a', 'local-b']);
+        expect(wrapper.querySelector('.record-id').title).toBe(instances[0].cid);
+        select.value = 'local-b';
+        select.dispatchEvent({ type: 'change', target: select });
+        expect(wrapper.querySelector('.record-id').textContent).toBe('…22222222');
+        expect(wrapper.querySelector('.click-stack__selector-name').textContent).toBe('Same name');
+    });
     it('renders translated relation labels and safe related items: a highlighting name and an open button with their routing data', () => {
         const doc = makeDocument();
         const win = { i18n: testI18n('hr') };
@@ -23,14 +37,15 @@ describe('click stack relationship rendering', () => {
         expect(label.textContent).toBe('Uključeno u planove:');
         expect(group.getAttribute('aria-label')).toBe('Uključeno u planove:');
         expect(group.querySelectorAll('img')).toHaveLength(0);
-        expect(button.textContent).toBe('<img src=x onerror=alert(1)>');
+        expect(button.querySelector('.click-stack__chip-label').textContent).toBe('<img src=x onerror=alert(1)>');
+        expect(button.querySelector('.record-id').textContent).toBe('p-7');
         expect(button.getAttribute('data-action')).toBe('preview');
         expect(button.getAttribute('aria-pressed')).toBe('false');
         const open = group.querySelector('.click-stack__open');
         expect(open.getAttribute('data-action')).toBe('related');
         expect(open.getAttribute('data-kind')).toBe('plans');
         expect(open.getAttribute('data-id')).toBe('p-7');
-        expect(open.getAttribute('aria-label')).toBe('Otvori <img src=x onerror=alert(1)>');
+        expect(open.getAttribute('aria-label')).toBe('Otvori <img src=x onerror=alert(1)> · p-7');
         expect(open.textContent).toBe('');
     });
 
@@ -94,13 +109,13 @@ describe('click stack relationship rendering', () => {
         expect(select.getAttribute('data-action')).toBe('instance');
         expect(select.getAttribute('data-kind')).toBe('designs');
         expect(select.children.map(option => option.value)).toEqual(['d-1', 'd-2']);
-        expect(select.children.map(option => option.textContent)).toEqual(['Park · First', 'Urban rule · Second']);
+        expect(select.children.map(option => option.textContent)).toEqual(['Park · First · d-1', 'Urban rule · Second · d-2']);
         expect(select.selectedIndex).toBe(1);
-        expect(wrapper.querySelector('.click-stack__selector-value').textContent).toBe('Second');
+        expect(wrapper.querySelector('.click-stack__selector-name').textContent).toBe('Second');
         expect(wrapper.querySelector('.click-stack__selector-value').getAttribute('aria-hidden')).toBe('true');
         select.value = 'd-1';
         select.dispatchEvent({ type: 'change', target: select });
-        expect(wrapper.querySelector('.click-stack__selector-value').textContent).toBe('First');
+        expect(wrapper.querySelector('.click-stack__selector-name').textContent).toBe('First');
         expect(relations.renderSelector({ multi: false, instances: [{ id: 'one' }] }, doc, win)).toBeNull();
     });
 
@@ -117,14 +132,14 @@ describe('click stack relationship rendering', () => {
             { label: 'Loading…', membershipPlaceholder: true, membershipDesignCid: 'cid-a' }
         ]);
         const select = wrapper.querySelector('select');
-        expect(select.children[0].textContent).toBe(`${goals.get('single').label} · Tower A · Included in plans: Other plan, Riverside plan`);
-        expect(select.children[1].textContent).toBe('Park · Garden · Included in plans: Riverside plan');
-        expect(wrapper.querySelector('.click-stack__selector-value').textContent).toBe('Tower A');
+        expect(select.children[0].textContent).toBe(`${goals.get('single').label} · Tower A · cid-a · Included in plans: Other plan, Riverside plan`);
+        expect(select.children[1].textContent).toBe('Park · Garden · cid-b · Included in plans: Riverside plan');
+        expect(wrapper.querySelector('.click-stack__selector-name').textContent).toBe('Tower A');
         relations.updateSelector(section, wrapper, win, [{ label: 'New plan', membershipDesignCid: 'cid-a' }]);
         expect(wrapper.querySelector('select')).toBe(select);
         expect(select.children[0].textContent).toContain('New plan, Riverside plan');
         expect(select.children[0].textContent).not.toContain('Other plan');
-        expect(wrapper.querySelector('.click-stack__selector-value').textContent).toBe('Tower A');
+        expect(wrapper.querySelector('.click-stack__selector-name').textContent).toBe('Tower A');
     });
 
     it.each(goals.keys)('keeps the authored %s type independent of a misleading design title', goal => {

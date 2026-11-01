@@ -443,22 +443,18 @@
         let proposalsHtml = tParcel('panel.parcel.proposalsSection.empty', {}, 'No designs');
         const proposalFallbackTitle = tParcel('panel.parcel.proposalsSection.fallbackTitle', {}, 'Design');
         const proposalRoadSuffix = tParcel('panel.parcel.proposalsSection.roadSuffix', {}, ' (Road)');
-        const proposalIdLabel = tParcel('panel.parcel.proposalsSection.details.id', {}, 'ID:');
         const proposalAuthorLabel = tParcel('panel.parcel.proposalsSection.details.author', {}, 'Author:');
         const proposalUnknownAuthor = tParcel('panel.parcel.proposalsSection.details.unknownAuthor', {}, 'Unknown');
 
-        const getProposalDisplayId = (proposal) => {
-            const resolvedId = proposal.proposalId;
-            if (resolvedId) {
-                const str = String(resolvedId);
-                if (str.startsWith('local-') || str.startsWith('local_prop') || str.startsWith('local-prop')) {
-                    return str;
-                }
-                return str;
-            }
+        const proposalRecordId = proposal => global.DesignSync?.publishedCid?.(proposal) || proposal.published?.cid || proposal.proposalId || '';
+        const proposalRecordBadgeHtml = (id, peers = []) => {
+            const value = String(id || '');
+            if (!value) return '';
+            return `<code class="record-id" title="${escapeHtml(value)}">${escapeHtml(global.RecordLabel.shortId(value, peers))}</code>`;
         };
 
         if (parcelProposals.length > 0) {
+            const recordIds = parcelProposals.map(proposalRecordId).filter(Boolean);
             const proposalItems = parcelProposals.map(proposal => {
                 const goalKey = (typeof window.normalizeProposalGoalKey === 'function') ? window.normalizeProposalGoalKey(proposal.goal) : (proposal.goal || '').toLowerCase();
                 const isRoadProposal = goalKey === 'road-track' || (!!proposal.roadProposal && goalKey === '');
@@ -492,10 +488,8 @@
                 ].map(v => (typeof v === 'string' ? v.trim() : '')).filter(Boolean);
                 const proposalTitle = proposalNameCandidates[0] || proposalTypeLabel || proposalFallbackTitle;
                 const roadSuffix = isRoadProposal ? proposalRoadSuffix : '';
-                const proposalIdText = `
-                    <span class="proposal-item-label" data-i18n-key="panel.parcel.proposalsSection.details.id">${proposalIdLabel}</span>
-                    <span class="proposal-item-id" title="${escapeHtml(String(getProposalDisplayId(proposal) || ''))}">${escapeHtml(String(getProposalDisplayId(proposal) || ''))}</span>
-                `.trim();
+                const recordId = proposalRecordId(proposal);
+                const recordLabel = global.RecordLabel.label(`${proposalTitle}${roadSuffix}`, recordId, recordIds);
                 const authorValue = proposal.author || proposal.username || proposalUnknownAuthor;
 
                 const thumbHtml = (typeof global.buildProposalThumbHtml === 'function')
@@ -504,16 +498,13 @@
                 const proposalBody = `
                     <div class="proposal-item-body">
                         <div class="proposal-item-header">
-                            <h3 class="proposal-item-title">${global.ParcelSetProposals.pickButtonHtml(`${proposalTitle}${roadSuffix}`)}</h3>
+                            <h3 class="proposal-item-title">${global.ParcelSetProposals.pickButtonHtml(`${proposalTitle}${roadSuffix}`, recordLabel)}${proposalRecordBadgeHtml(recordId, recordIds)}</h3>
                             <div class="proposal-item-badges">
                                 <span class="cb-badge">${escapeHtml(proposalTypeLabel)}</span>
                                 ${producerPill}
                                 ${global.proposalLadderBadgesHtml(proposal, { applied: mapApplied })}
                             </div>
-                            ${global.ParcelSetProposals.openButtonHtml(proposalTitle)}
-                        </div>
-                        <div class="proposal-item-details">
-                            ${proposalIdText}
+                            ${global.ParcelSetProposals.openButtonHtml(recordLabel)}
                         </div>
                         <div class="proposal-item-details">
                             <span class="proposal-item-label" data-i18n-key="panel.parcel.proposalsSection.details.author">${proposalAuthorLabel}</span> <span class="proposal-author-value">${authorValue}</span>

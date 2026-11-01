@@ -26,6 +26,7 @@
     const recordApi = () => root.AgreementRecord || (typeof require === 'function' ? require('./agreement-record.js') : null);
     const personsApi = () => root.AgreementPersons || (typeof require === 'function' ? require('./agreement-persons.js') : null);
     const bridgeApi = () => root.AgreementBridge || (typeof require === 'function' ? require('./solana/agreement-bridge.js') : null);
+    const recordLabel = () => root.RecordLabel || (typeof require === 'function' ? require('./ui/record-label.js') : null);
 
     function t(key, fallback, params = {}) {
         let value = null;
@@ -267,12 +268,19 @@
     // The designs the agreement names, as this browser holds them now: a deleted one cannot be
     // selected, an applied one carries the Applied badge.
     function designRows(agreement, { designOf, isApplied, typeLabel } = {}) {
-        return (agreement && Array.isArray(agreement.designs) ? agreement.designs : []).map(design => {
-            const proposalId = idOf(design && design.proposalId);
-            const record = typeof designOf === 'function' ? designOf(proposalId) : null;
+        const designs = agreement && Array.isArray(agreement.designs) ? agreement.designs : [];
+        const held = designs.map(design => {
+            const proposalId = idOf(design?.proposalId);
+            return { design, proposalId, record: typeof designOf === 'function' ? designOf(proposalId) : null };
+        });
+        const labelIdOf = ({ design, record, proposalId }) => idOf(design?.published?.cid || record?.published?.cid || design?.cid || record?.cid || proposalId);
+        const labelIds = held.map(labelIdOf);
+        return held.map(({ design, proposalId, record }) => {
+            const labelId = idOf(design?.published?.cid || record?.published?.cid || design?.cid || record?.cid || proposalId);
             return {
                 proposalId,
-                title: (design && design.title) || (record && (record.title || record.name)) || t('modal.roadWidth.proposalList.untitled', 'Untitled design'),
+                labelId,
+                title: recordLabel().label((design && design.title) || (record && (record.title || record.name)) || t('modal.roadWidth.proposalList.untitled', 'Untitled design'), labelId, labelIds),
                 type: typeof typeLabel === 'function' ? typeLabel(record || design) || '' : '',
                 missing: !record,
                 applied: !!record && typeof isApplied === 'function' && !!isApplied(record)
@@ -538,7 +546,7 @@
 
     function designsHtml(rows, tr = t) {
         const items = rows.map(row => `<li><button type="button" class="cb-option agreement-panel-object agreement-panel-design" data-agreement-design="${esc(row.proposalId)}" data-agreement-inspect="design" data-agreement-object-id="${esc(row.proposalId)}" aria-pressed="false"${row.missing ? ' disabled' : ''}>`
-            + `<span class="agreement-panel-design__text"><span class="agreement-panel-design__title">${esc(row.title)}</span>`
+            + `<span class="agreement-panel-design__text"><span class="agreement-panel-design__title" title="${esc(row.labelId || row.proposalId)}">${esc(row.title)}</span>`
             + (row.type ? `<span class="agreement-panel-design__type">${esc(row.type)}</span>` : '') + '</span>'
             + (row.applied ? `<span class="cb-badge cb-badge--applied">${esc(tr('agreement.designs.onMap', 'Applied'))}</span>` : '')
             + '</button></li>').join('');
@@ -854,7 +862,7 @@
             // Info only identifies the plan and its design count. The same Plan button opens the
             // plan's Designs tab, which is the canonical rich list rather than a second copy here.
             const overview = agreement.plan ? sectionHtml(t('agreement.panel.plan', 'Agreement plan'),
-                `<button type="button" class="btn btn-sm" data-agreement-action="plan">${esc(agreement.plan.content.title)}</button>`
+                `<button type="button" class="btn btn-sm" data-agreement-action="plan" title="${esc(agreement.plan.cid)}">${esc(recordLabel().label(agreement.plan.content.title, agreement.plan.cid))}</button>`
                 + `<p class="agreement-panel-meta" data-agreement-plan-design-count>${esc(`${t('agreement.panel.designs', 'Designs in the plan')} (${(agreement.designs || []).length})`)}</p>`) : '';
             // Decision keeps the agreement's mutable status, voting and settlement controls together.
             const decision = (!published ? `<p class="agreement-panel-meta"><span class="cb-badge">${esc(t('designMemberships.draft', 'Draft'))}</span></p>` : '') + status

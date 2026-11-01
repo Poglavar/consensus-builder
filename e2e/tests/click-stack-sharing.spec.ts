@@ -40,8 +40,9 @@ async function expectExactPlanShare(page: Page, title: string, planCid: string, 
   await expect(dialog.locator('h3')).toHaveText(title);
   const members = dialog.locator('.plan-dialog__members li');
   await expect(members).toHaveCount(expectedMembers.length);
-  await expect.poll(() => members.allTextContents().then(titles => titles.sort()))
+  await expect.poll(() => members.allTextContents().then(titles => titles.map(title => title.replace(/\s…[^\s]+$/, '')).sort()))
     .toEqual([...expectedMembers].sort());
+  await expect(members.locator('code.record-id')).toHaveCount(expectedMembers.length);
   await expect(dialog.locator('input[type="checkbox"]')).toHaveCount(0);
   const link = dialog.getByLabel('Plan link', { exact: true });
   await expect(link).toBeVisible();

@@ -1238,6 +1238,17 @@ button.cb-link {
 }
 
 /* URLs, addresses and code stay readable within either interface direction. */
+.record-id {
+    display: inline-block;
+    flex: 0 0 auto;
+    max-width: 100%;
+    color: var(--cb-text-muted);
+    font-size: var(--cb-text-xs);
+    font-weight: var(--cb-weight-normal);
+    white-space: nowrap;
+    vertical-align: baseline;
+}
+
 :is(input[type="url"], input[type="email"], code, pre) {
     direction: ltr;
     unicode-bidi: isolate;

@@ -9,7 +9,7 @@ for (const width of [1280, 390]) for (const theme of ['light', 'dark']) {
     for (const file of ['tokens', 'primitives', 'base', 'map', 'panels', 'map-shell', 'three-click-stack', 'mobile-sheets']) {
       await page.addStyleTag({ path: path.join(frontend, `css/${file}.css`) });
     }
-    for (const file of ['proposals/design-goals', 'click-stack/click-stack-model', 'ui/object-list', 'click-stack/click-stack-relations', 'three-click-stack']) {
+    for (const file of ['proposals/design-goals', 'click-stack/click-stack-model', 'ui/record-label', 'ui/object-list', 'click-stack/click-stack-relations', 'three-click-stack']) {
       await page.addScriptTag({ path: path.join(frontend, `js/${file}.js`) });
     }
     await page.evaluate(() => {
@@ -43,10 +43,12 @@ for (const width of [1280, 390]) for (const theme of ['light', 'dark']) {
     await expect(badge).toBeInViewport();
     const select = panel.getByLabel('Location you clicked has multiple designs. Select which to inspect:', { exact: true });
     await expect(select).toBeVisible();
-    await expect(select.locator('option')).toHaveText(['Park · River garden · Included in plans: Riverside plan', 'Urban rule · Courtyard heights · Included in plans: Riverside plan', 'Road or track · Main street']);
-    const selectedTitle = panel.locator('.click-stack__selector-value');
+    await expect(select.locator('option')).toHaveText(['Park · River garden · …ark-revision · Included in plans: Riverside plan', 'Urban rule · Courtyard heights · …ule-revision · Included in plans: Riverside plan', 'Road or track · Main street · road']);
+    const selectedTitle = panel.locator('.click-stack__selector-name');
     await expect(selectedTitle).toHaveText('River garden');
     await expect(selectedTitle).toBeVisible();
+    await expect(panel.locator('.click-stack__selector-value .record-id')).toHaveAttribute('title', 'park-revision');
+    await expect(panel.locator('.click-stack__selector-value .record-id')).toBeInViewport();
     await expect(row.locator('.click-stack__row-detail')).toBeHidden();
     await expect(panel.locator('.click-stack__selector-hint')).toHaveCount(0);
     const parkStyle = await badge.evaluate(el => ({ color: getComputedStyle(el).color, bg: getComputedStyle(el).backgroundColor }));

@@ -70,6 +70,36 @@ test('Plan creation is local; sharing publishes only the saved immutable snapsho
   expect(writes(page)).toHaveLength(before);
 });
 
+test('known duplicate plan names are advisory while saving stays available', async ({ mockApi: page }) => {
+  await openCity(page);
+  const designId = await createSpace(page, 'park');
+  const existing = await page.evaluate(id => {
+    const w = window as any;
+    const plan = w.PlanComposition.create('Garden  Plan', [w.proposalStorage.getProposal(id)], w.MapShare.capture(w));
+    return w.PlanWorkspace.save(plan);
+  }, designId);
+
+  // The plan being revised is not a duplicate of itself.
+  await page.evaluate(plan => { void (window as any).PlanDialog.create({ base: plan }); }, existing);
+  const composer = page.locator('.plan-composer');
+  await expect(composer).toBeVisible();
+  await expect(composer.locator('.plan-dialog__duplicate')).toBeHidden();
+  await page.keyboard.press('Escape');
+
+  await page.evaluate(id => { void (window as any).PlanDialog.create({ members: [(window as any).proposalStorage.getProposal(id)] }); }, designId);
+  await expect(composer).toBeVisible();
+  const name = composer.getByLabel('Plan name', { exact: true });
+  await name.fill('  garden   plan  ');
+  const advisory = composer.locator('.plan-dialog__duplicate');
+  await expect(advisory).toHaveText(/already available here.*still use this name/i);
+  await expect(advisory.locator('code.record-id')).toHaveText(`…${existing.cid.slice(-8)}`);
+  await expect(composer.getByRole('button', { name: 'Create plan', exact: true })).toBeEnabled();
+  await composer.getByRole('button', { name: 'Create plan', exact: true }).click();
+  await expect(composer).toBeHidden();
+  expect(await page.evaluate(() => (window as any).PlanWorkspace.list()
+    .filter((row: any) => row.content.title.toLowerCase().replace(/\s+/g, ' ').trim() === 'garden plan').length)).toBe(2);
+});
+
 // A plan's designs stand together: a park and a square on one parcel cannot share a plan.
 async function rivalSpaces(page:any) {
   await openCity(page);

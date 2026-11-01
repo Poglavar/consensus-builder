@@ -109,7 +109,10 @@ for (const width of [1280, 390]) {
     await expect(page.locator('.leaflet-container.is-list-previewing .list-preview-focus').first()).toBeAttached();
     await expect(sheet).toBeVisible();
     await expect(page.locator('#click-stack .click-stack__section[data-kind="plans"]')).toBeHidden();
-    await planRow.getByRole('button', { name: 'Open Residents plan', exact: true }).click();
+    const planIdBadge = planRow.locator('.record-id');
+    await expect(planIdBadge).toHaveAttribute('title', agreement.parkId);
+    const planShortId = await planIdBadge.textContent();
+    await planRow.getByRole('button', { name: `Open Residents plan · ${planShortId}`, exact: true }).click();
     await expect(sheet).toBeHidden();
     await expect(page.locator('#click-stack .click-stack__section[data-kind="plans"]')).toBeVisible();
     await expect(page.locator('.leaflet-container.is-list-previewing')).toHaveCount(0);

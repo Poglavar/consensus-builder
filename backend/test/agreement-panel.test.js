@@ -291,8 +291,8 @@ describe('the rule, the title and the designs', () => {
             { proposalId: 'road-9', title: null, goal: 'road-track' }
         ] }), { designOf: id => held[id] || null, isApplied: r => r.applied === true, typeLabel: r => `type:${r.goal}` });
         expect(rows).toEqual([
-            { proposalId: 'layout-1', title: 'Courtyard layout', type: 'type:parcel-layout', missing: false, applied: true },
-            { proposalId: 'road-9', title: 'Untitled design', type: 'type:road-track', missing: true, applied: false }
+            { proposalId: 'layout-1', labelId: 'layout-1', title: 'Courtyard layout · layout-1', type: 'type:parcel-layout', missing: false, applied: true },
+            { proposalId: 'road-9', labelId: 'road-9', title: 'Untitled design · road-9', type: 'type:road-track', missing: true, applied: false }
         ]);
     });
 
@@ -462,9 +462,10 @@ describe('panel HTML', () => {
     });
 
     it('makes designs and output pieces inspectable rows, disabling missing geometry', () => {
-        const designs = panel.designsHtml([{ proposalId: 'layout-1', title: 'Layout', type: 'Parcel layout', missing: false, applied: true },
+        const designs = panel.designsHtml([{ proposalId: 'layout-1', labelId: 'bafkreiaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa12345678', title: 'Layout · …12345678', type: 'Parcel layout', missing: false, applied: true },
             { proposalId: 'gone', title: 'Gone', type: '', missing: true, applied: false }]);
         expect(designs).toMatch(/<button[^>]+data-agreement-design="layout-1"[^>]+data-agreement-inspect="design"[^>]*>/);
+        expect(designs).toContain('class="agreement-panel-design__title" title="bafkreiaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa12345678">Layout · …12345678</span>');
         expect(designs).toMatch(/data-agreement-design="gone"[^>]+ disabled/);
         expect(designs.match(/cb-badge--applied/g)).toHaveLength(1);
         const pieces = panel.allocationHtml(panel.allocationLines(agreement()));
@@ -475,11 +476,12 @@ describe('panel HTML', () => {
 
 describe('Agreements list rows', () => {
     it('words a row: the title, the designs counted by the plural key, and the rule', () => {
-        expect(list.rowLabel(agreement({ title: 'Block 7' }))).toEqual({ title: 'Block 7', meta: '1 design · Decided by the owners · Binding' });
+        expect(list.rowLabel(agreement({ title: 'Block 7' }))).toEqual({ title: 'Block 7 · ag-1', id: 'ag-1', meta: '1 design · Decided by the owners · Binding' });
         const three = agreement({ designs: ['a', 'b', 'c'].map(id => ({ proposalId: id })), rule: { electorate: 'community', binding: false } });
         expect(list.rowLabel(three).meta).toBe('3 designs · Decided by a community vote · Non-binding');
         expect(list.rowLabel(three, keys)).toEqual({
-            title: 'agreement.panel.untitled',
+            title: 'agreement.panel.untitled · ag-1',
+            id: 'ag-1',
             meta: 'agreement.list.designs#3 · agreement.rule.electorate.community · agreement.rule.nonBinding'
         });
     });
@@ -493,6 +495,7 @@ describe('Agreements list rows', () => {
     it('renders one button per agreement, or says there is none yet', () => {
         const html = list.rowsHtml([agreement({ id: 'ag-"1"', title: 'A & B' })]);
         expect(html).toContain('class="btn btn-quiet agreement-item" data-agreement-id="ag-&quot;1&quot;"');
+        expect(html).toContain('title="ag-&quot;1&quot;"');
         expect(html).toContain('A &amp; B');
         expect(list.rowsHtml([])).toContain('No agreements yet. Apply designs, then create one.');
         expect(list.bodyHtml('')).toContain('<button type="button" class="btn btn-primary" data-agreement-action="create">');
@@ -694,11 +697,11 @@ describe('Minted agreements rows', () => {
     });
 
     it('words a minted agreement: its title, its designs, its status on chain and its account', () => {
-        expect(list.mintedRowLabel(minted())).toEqual({ title: 'Block 7', meta: `2 designs · Active · ${panel.shortKey(ACCOUNT)}` });
+        expect(list.mintedRowLabel(minted())).toEqual({ title: `Block 7 · …${CID.slice(-8)}`, id: CID, meta: `2 designs · Active · ${panel.shortKey(ACCOUNT)}` });
         const untitled = minted({ title: null, content: { title: null, createdAt: '2026-10-21T10:00:00.000Z', planCid: CID }, designCids: [CID],
             onchain: { ...minted().onchain, status: 'executed' } });
         expect(list.mintedRowLabel(untitled)).toEqual({
-            title: `Agreement of ${format.formatDate('2026-10-21T10:00:00.000Z')}`, meta: `1 design · Executed · ${panel.shortKey(ACCOUNT)}`
+            title: `Agreement of ${format.formatDate('2026-10-21T10:00:00.000Z')} · …${CID.slice(-8)}`, id: CID, meta: `1 design · Executed · ${panel.shortKey(ACCOUNT)}`
         });
         expect(list.mintedRowLabel(minted(), keys).meta).toBe(`agreement.list.designs#2 · agreement.chain.status.active · ${panel.shortKey(ACCOUNT)}`);
     });
@@ -708,6 +711,7 @@ describe('Minted agreements rows', () => {
         expect(html.match(/data-agreement-cid=/g)).toHaveLength(2);
         expect(html).toContain('<button type="button" class="btn btn-quiet agreement-item" data-agreement-cid="bafk&quot;&lt;x&gt;">');
         expect(html).toContain(`data-agreement-cid="${CID}"`);
+        expect(html).toContain(`title="${CID}"`);
         expect(html).not.toContain('data-agreement-id=');
         expect(list.mintedRowsHtml([])).toContain('No agreement of this city is minted yet.');
     });

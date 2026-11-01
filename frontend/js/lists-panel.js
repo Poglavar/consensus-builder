@@ -26,7 +26,7 @@
     }
     function filterRows(rows, { search = '', publication = 'all', sort = 'title' } = {}) {
         const query = search.trim().toLocaleLowerCase();
-        return rows.filter(row => (!query || `${row.title} ${row.author || ''}`.toLocaleLowerCase().includes(query))
+        return rows.filter(row => (!query || `${row.title} ${row.author || ''} ${row.cid || ''} ${row.key || ''}`.toLocaleLowerCase().includes(query))
             && (publication === 'all' || stageOf(row) === publication))
             .sort((a, b) => sort === 'title' ? a.title.localeCompare(b.title)
                 : String(b.createdAt || '').localeCompare(String(a.createdAt || '')) || a.title.localeCompare(b.title));
@@ -87,7 +87,7 @@
         }
         function remoteRows(rows, kind) {
             const plans = kind === 'plans' ? new Map(localRows('plans').map(row => [row.key, row.local])) : null;
-            return rows.map(record => ({ key: record.cid, title: record.title || record.content?.title || t(kind === 'designs' ? 'planDialog.untitledDesign' : 'agreement.panel.untitled'),
+            return rows.map(record => ({ key: record.cid, cid: record.cid || null, title: record.title || record.content?.title || t(kind === 'designs' ? 'planDialog.untitledDesign' : 'agreement.panel.untitled'),
                 author: record.author, createdAt: record.createdAt, published: true, onChain: !!record.onchain, record,
                 local: kind === 'designs' ? win.DesignSync.localCopyOf(record.cid)
                     : kind === 'plans' ? plans.get(record.cid) : win.AgreementSync.localCopyOf(record.cid) }));
@@ -343,9 +343,12 @@
                 : visible.length ? t('lists.count', { count: visible.length }) : '';
             status.hidden = !status.textContent;
             list.setAttribute('aria-busy', String(!!page?.loading));
+            const recordIds = visible.map(row => String(row.cid || row.key || '')).filter(Boolean);
             for (const row of visible) {
                 const item = node('article', `lists-item${state.active === `${kind}:${row.key}` ? ' is-selected' : ''}`);
                 item.dataset.listId = row.key;
+                const recordId = String(row.cid || row.key || '');
+                const recordLabel = win.RecordLabel.label(row.title, recordId, recordIds);
                 const goal = row.local?.goal || row.record.goal || row.record.content?.goal;
                 const appearance = kind === 'plans' ? ['cb-icon-plan', 'plan']
                     : kind === 'agreements' ? ['cb-icon-agreement', 'agreement']
@@ -359,7 +362,7 @@
                 if (state.selecting === kind) {
                     const label = node('label', 'lists-item__selection');
                     const check = node('input'); check.type = 'checkbox'; check.checked = state.selected.has(row.key);
-                    check.setAttribute('aria-label', t('lists.select', { title: row.title }));
+                    check.setAttribute('aria-label', t('lists.select', { title: recordLabel }));
                     check.addEventListener('change', async () => {
                         check.disabled = true; item.setAttribute('aria-busy', 'true');
                         try {
@@ -387,7 +390,9 @@
                 item.addEventListener('mouseenter', () => hover(row, kind));
                 item.addEventListener('mouseleave', () => unhover(row, kind));
                 const mark = node('span', 'lists-item__icon'); mark.append(icon(appearance[0]));
-                heading.append(mark, title); item.append(heading);
+                heading.append(mark, title);
+                if (recordId) heading.append(win.RecordLabel.badge(doc, recordId, recordIds));
+                item.append(heading);
                 const badges = node('div', 'lists-item__badges');
                 if (kind === 'designs' && row.local) badges.innerHTML = win.proposalLadderBadgesHtml(row.local);
                 else badges.append(node('span', `cb-badge cb-badge--${row.published ? 'published' : 'draft'}`, t(row.published ? 'common.lifecycle.published' : 'common.lifecycle.draft')));
@@ -400,7 +405,7 @@
                 if (kind === 'agreements' && row.local) item.append(node('p', 'sheet-note', win.AgreementPanel.ruleShort(row.local.rule)));
                 const actions = node('div', 'cb-actions lists-item__actions');
                 const open = button(t('lists.open'), () => inspect(row, kind), 'btn-primary lists-item__open', 'arrow-pointer');
-                open.setAttribute('aria-label', t('lists.openNamed', { title: row.title }));
+                open.setAttribute('aria-label', t('lists.openNamed', { title: recordLabel }));
                 actions.append(open);
                 const shareButton = button(t('panel.proposal.actions.share'), () => share(row, kind), '', 'share-nodes');
                 shareButton.querySelector('i').classList.add('lists-share-icon');

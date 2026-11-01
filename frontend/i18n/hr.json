@@ -8885,6 +8885,7 @@
         "editPlan": "Uredi plan",
         "saveRevision": "Spremi novu verziju",
         "name": "Naziv plana",
+        "duplicateName": "Plan s ovim nazivom već je dostupan ovdje. I dalje možete koristiti ovaj naziv.",
         "selected": "Odabrano: {{count}}",
         "untitledDesign": "Projekt bez naziva",
         "revisionHint": "Spremanje promjena izrađuje novu verziju plana. Postojeće poveznice ostaju nepromijenjene.",

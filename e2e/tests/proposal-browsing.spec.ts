@@ -44,6 +44,21 @@ test.describe('Proposal browsing @features', () => {
     await list.getByRole('searchbox').fill('Ada');
     await expect(titles).toHaveText(['North park plan', 'Road safety plan']);
 
+    // A compact identifier distinguishes same-named records, remains searchable, and gives the
+    // Open control enough context for assistive technology.
+    const north = list.locator(`#proposal-list-host .lists-item[data-list-id="${ids[0]}"]`);
+    const northBadge = north.locator('.record-id');
+    const northId = await north.getAttribute('data-list-id');
+    const northShortId = await northBadge.innerText();
+    await expect(northBadge).toHaveAttribute('title', northId!);
+    const otherShortId = await rows.nth(1).locator('.record-id').innerText();
+    expect(northShortId).not.toBe(otherShortId);
+    await expect(north.getByRole('button', { name: `Open North park plan · ${northShortId}`, exact: true })).toBeVisible();
+    await list.getByRole('searchbox').fill(northId!);
+    // A collision-derived local key can be another key's prefix; searching the full key still
+    // finds the named record, while the peer-aware badges keep both visible rows distinct.
+    await expect(north).toBeVisible();
+
     await list.getByRole('searchbox').fill('');
     await expect(titles).toHaveText(['North park plan', 'Road safety plan', 'South park plan']);
     await selectNativeOption(order, 'newest');

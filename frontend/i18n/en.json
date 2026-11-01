@@ -8833,6 +8833,7 @@
         "editPlan": "Edit plan",
         "saveRevision": "Save new revision",
         "name": "Plan name",
+        "duplicateName": "A plan with this name is already available here. You can still use this name.",
         "selected": "{{count}} selected",
         "untitledDesign": "Untitled design",
         "revisionHint": "Saving changes creates a new plan revision. Existing links stay unchanged.",

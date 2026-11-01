@@ -8655,6 +8655,7 @@
         "editPlan": "Modifier le plan",
         "saveRevision": "Enregistrer une nouvelle version",
         "name": "Nom du plan",
+        "duplicateName": "Un plan portant ce nom est déjà disponible ici. Vous pouvez tout de même utiliser ce nom.",
         "selected": "{{count}} sélectionnés",
         "untitledDesign": "Conception sans titre",
         "revisionHint": "Enregistrer les modifications crée une nouvelle version du plan. Les liens existants restent inchangés.",

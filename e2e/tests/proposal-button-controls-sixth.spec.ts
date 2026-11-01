@@ -97,7 +97,10 @@ test.describe('proposal button controls sixth pass @features', () => {
     const importedId = `design-${cid}`;
     await expect.poll(() => pageIndex(page).requests.some(request => request.method === 'GET' && request.path === `/designs/${cid}`)).toBe(true);
     expect(await page.evaluate(id => (window as any).proposalStorage.getProposal(id) ?? null, importedId)).toBeNull();
-    await row.getByRole('button', { name: 'Open Downloadable design', exact: true }).click();
+    const designIdBadge = row.locator('.record-id');
+    await expect(designIdBadge).toHaveAttribute('title', cid);
+    const designShortId = await designIdBadge.textContent();
+    await row.getByRole('button', { name: `Open Downloadable design · ${designShortId}`, exact: true }).click();
     await expect.poll(() => page.evaluate(id => {
       const w = window as any;
       const record = w.proposalStorage.getProposal(id);

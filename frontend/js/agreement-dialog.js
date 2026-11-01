@@ -19,6 +19,7 @@
     const LOCAL_RIGHTS_PROVIDER = 'local-owners';
 
     const idOf = value => (value === undefined || value === null ? '' : String(value).trim());
+    const recordLabel = () => root.RecordLabel || (typeof require === 'function' ? require('./ui/record-label.js') : null);
     const isNumber = value => typeof value === 'number' && Number.isFinite(value);
     const setup = () => root.ProposalApprovalSetup;
     const emptyLand = () => ({ inputs: { parcels: [], openGroundM2: 0 }, outputs: [] });
@@ -467,7 +468,7 @@
 
     // Parcels and designs share one inspectable row: title and supporting facts, never membership controls.
     function inspectionListHtml(items, kind, hook) {
-        return `<ul class="agreement-object-list" ${hook}>${items.map(item => `<li data-agreement-${kind === 'parcel' ? 'input' : 'plan-design'}="${esc(item.id)}"><button type="button" class="cb-option agreement-object-row" data-agreement-inspect="${kind}" data-agreement-object-id="${esc(item.id)}" aria-pressed="false"><span class="agreement-object-row__title">${esc(item.title)}</span><span class="agreement-object-row__facts">${esc(item.facts)}</span></button></li>`).join('')}</ul>`;
+        return `<ul class="agreement-object-list" ${hook}>${items.map(item => `<li data-agreement-${kind === 'parcel' ? 'input' : 'plan-design'}="${esc(item.id)}"><button type="button" class="cb-option agreement-object-row" data-agreement-inspect="${kind}" data-agreement-object-id="${esc(item.id)}" aria-pressed="false"><span class="agreement-object-row__title"${item.labelId ? ` title="${esc(item.labelId)}"` : ''}>${esc(item.title)}</span><span class="agreement-object-row__facts">${esc(item.facts)}</span></button></li>`).join('')}</ul>`;
     }
     function inputsTableHtml(parcels, rights = null, names = new Map()) {
         return `<h4 class="agreement-object-heading">${esc(t('agreement.land.inputsHeading', 'Input parcels'))}</h4>`
@@ -475,8 +476,9 @@
                 facts: `${areaText(parcel.areaM2)} · ${ownersText(parcel.parcelId, rights, names)}` })), 'parcel', 'data-agreement-inputs');
     }
     function inputDesignsHtml(designs) {
+        const labelIds = designs.map(design => idOf(design.published?.cid || design.cid || design.proposalId));
         return `<h4 class="agreement-object-heading">${esc(t('sidebar.proposals.title', 'Designs'))}</h4>`
-            + inspectionListHtml(designs.map(design => ({ id: idOf(design.proposalId), title: designTitle(design),
+            + inspectionListHtml(designs.map(design => ({ id: idOf(design.proposalId), labelId: idOf(design.published?.cid || design.cid || design.proposalId), title: recordLabel().label(designTitle(design), idOf(design.published?.cid || design.cid || design.proposalId), labelIds),
                 facts: typeLabelOf(design) })), 'design', 'data-agreement-input-designs');
     }
 
@@ -597,7 +599,8 @@
         return { inputs: (inputs.parcels || []).length, outputs: (land && Array.isArray(land.outputs) ? land.outputs : []).length, persons: partiesOf(inputs).length };
     }
     function planSelectorHtml(plans, selected) {
-        return `<label class="proposal-editor-field"><span>${esc(t('plan.label', 'Plan'))}</span><select data-agreement-plan><option value="">${esc(t('agreement.workflow.choosePlan', 'Choose a saved plan'))}</option>${plans.map(plan => `<option value="${esc(plan.cid)}"${plan.cid === selected?.cid ? ' selected' : ''}>${esc(plan.content.title)}</option>`).join('')}</select></label>`
+        const planIds = plans.map(plan => idOf(plan.cid));
+        return `<label class="proposal-editor-field"><span>${esc(t('plan.label', 'Plan'))}</span><select data-agreement-plan><option value="">${esc(t('agreement.workflow.choosePlan', 'Choose a saved plan'))}</option>${plans.map(plan => `<option value="${esc(plan.cid)}" title="${esc(plan.cid)}"${plan.cid === selected?.cid ? ' selected' : ''}>${esc(recordLabel().label(plan.content.title, plan.cid, planIds))}</option>`).join('')}</select></label>`
             + (!plans.length ? `<p class="agreement-notice">${esc(t('agreement.workflow.noPlans', 'Create a plan first. Open Plans and choose Create plan.'))}</p>` : '');
     }
     // The persons tally: each abstract party (one per input parcel), the proposer or sponsor and the

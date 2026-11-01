@@ -89,7 +89,8 @@ test.describe('proposal detail button controls @features', () => {
     expect(index.requests.filter(request => request.method === 'POST')).toHaveLength(beforeSave);
     await details.getByRole('button', { name: 'Share plan', exact: true }).click();
     const planShare = page.locator('.plan-share');
-    await expect(planShare.locator('.plan-dialog__members li')).toHaveText(['Park · parcel 1234']);
+    await expect(planShare.locator('.plan-dialog__members li')).toContainText('Park · parcel 1234');
+    await expect(planShare.locator('.plan-dialog__members code.record-id')).toHaveCount(1);
     const beforePlanShare = index.requests.filter(request => request.method === 'POST').length;
     await planShare.getByRole('button', { name: 'Publish and copy link', exact: true }).click();
     const planLink = planShare.getByLabel('Plan link', { exact: true });

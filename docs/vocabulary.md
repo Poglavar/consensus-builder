@@ -120,6 +120,10 @@ Whether a local agreement still matches its referenced designs, their applicatio
 
 A browser-local identifier used to find a working record. A `proposalId` or local agreement key is distinct from a publication CID, database row ID and chain account.
 
+### Record title
+
+A human-readable name for a design, plan or agreement. Titles are not unique and do not identify records. The interface pairs titles with abbreviated existing identifiers: publication CIDs where available, otherwise local keys. These abbreviations are display labels, never new record identities or lookup keys. A matching known plan title produces an advisory during plan creation, without reserving the name or preventing creation.
+
 ### Remove from this device
 
 Removal of a browser-local agreement copy. Its designs retain their map application, and any published agreement retains its CID and remains accessible through its link.

@@ -15,6 +15,7 @@ for (const width of [360, 390, 1280]) {
       </head><body></body></html>`,
     }));
     await page.goto('/__relationship-layout');
+    await page.addScriptTag({ url: '/js/ui/record-label.js' });
     await page.addScriptTag({ url: '/js/ui/object-list.js' });
     await page.addScriptTag({ url: '/js/click-stack/click-stack-relations.js' });
 
@@ -57,6 +58,7 @@ for (const width of [360, 390, 1280]) {
             return { x: row.x, y: row.y, width: row.width, height: row.height, right: row.right,
               openX: open.x, openRight: open.right, openWidth: open.width, openHeight: open.height,
               chipRight: chip.getBoundingClientRect().right, title: chip.getAttribute('title'), text: label.textContent,
+              id: chip.querySelector('.record-id')?.getAttribute('title'),
               clipped: label.scrollWidth > label.clientWidth, overflow: css.textOverflow, whiteSpace: css.whiteSpace };
           }));
           for (const [index, box] of boxes.entries()) {
@@ -68,7 +70,7 @@ for (const width of [360, 390, 1280]) {
             expect(box.chipRight).toBeLessThanOrEqual(box.openX);
             expect(box.openWidth).toBeGreaterThanOrEqual(32);
             expect(box.openHeight).toBeGreaterThanOrEqual(32);
-            expect(box.title).toBe(box.text);
+            expect(box.title).toBe(box.id ? `${box.text} · ${box.id}` : box.text);
             expect(box.overflow).toBe('ellipsis');
             expect(box.whiteSpace).toBe('nowrap');
             if (index > 0) expect(box.y).toBeGreaterThanOrEqual(boxes[index - 1].y + boxes[index - 1].height);

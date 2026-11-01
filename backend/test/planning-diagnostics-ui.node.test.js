@@ -6,6 +6,7 @@ const require = createRequire(import.meta.url);
 const D = require('../../frontend/js/app-diagnostics.js');
 const Cid = require('../../frontend/js/cid.js');
 const FileUI = require('../../frontend/js/plan-file-ui.js');
+const RecordLabel = require('../../frontend/js/ui/record-label.js');
 const NamedPlans = require('../../frontend/js/named-plans.js');
 const PlanRecord = require('../../frontend/js/plan-record.js');
 const DesignSync = require('../../frontend/js/proposals/design-sync.js');
@@ -119,14 +120,28 @@ test('a design file read on the Designs tab adds its designs and keeps no import
 
 test('Imported lists what files brought to this device: designs by their file id, agreements by their mark', () => {
     const { win } = browser();
+    win.RecordLabel = RecordLabel;
     win.proposalStorage = { getAllProposals: () => [{ proposalId: 'file-1', title: 'From a file' }, { proposalId: 'p-2', title: 'Drawn here' }] };
     win.AgreementStore = { get: id => (id === 'ag-1' ? { id, title: 'Imported terms' } : null) };
     win.PersistentStorage.setItem('ugt-imported-agreement:ag-1', '1');
     win.PersistentStorage.setItem('ugt-imported-agreement:ag-gone', '1');
     const ui = FileUI.browser(win);
-    assert.deepEqual(ui.importedRows('designs').map(row => row.title), ['From a file']);
-    assert.deepEqual(ui.importedRows('agreements').map(row => row.title), ['Imported terms']);
+    assert.deepEqual(ui.importedRows('designs').map(row => [row.title, row.id]), [['From a file', 'file-1']]);
+    assert.deepEqual(ui.importedRows('agreements').map(row => [row.title, row.id]), [['Imported terms', 'ag-1']]);
     assert.deepEqual(ui.importedRows('plans'), []);
+});
+
+test('Imported chooser retains the full record identifier in its short-ID badge', () => {
+    const { win } = browser(); let modal = null;
+    win.RecordLabel = RecordLabel;
+    win.proposalStorage = { getAllProposals: () => [{ proposalId: 'file-local', published: { cid: 'bafkreiaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa12345678' }, title: 'From a file' }] };
+    win.showSimpleShareModal = options => { modal = options; return { close() {} }; };
+    FileUI.browser(win).imported('designs');
+    const button = modal.body.children[0], badge = button.children[1];
+    assert.equal(button.textContent, 'From a file');
+    assert.equal(badge.className, 'record-id');
+    assert.equal(badge.textContent, '…12345678');
+    assert.equal(badge.title, 'bafkreiaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa12345678');
 });
 
 test('named plan save verifies readback before success and preserves recovery on network failure', async () => {

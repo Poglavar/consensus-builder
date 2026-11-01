@@ -1262,7 +1262,7 @@ body.three-mode-active #agent-bubbles-container {
     font: inherit;
 }
 
-/* The native menu keeps its full option labels; its closed face is the design's title. */
+/* Native menus retain full labels; the closed face keeps the short ID visible beside the title. */
 .click-stack__selector-field {
     position: relative;
     display: block;
@@ -1272,6 +1272,9 @@ body.three-mode-active #agent-bubbles-container {
 .click-stack__selector-field > select { display: block; appearance: none; }
 
 .click-stack__selector-value {
+    display: flex;
+    align-items: center;
+    gap: var(--cb-space-2);
     position: absolute;
     inset: 1px;
     padding: var(--cb-space-1) var(--cb-space-2);
@@ -1285,6 +1288,14 @@ body.three-mode-active #agent-bubbles-container {
     overflow: hidden;
     text-overflow: ellipsis;
     pointer-events: none;
+}
+
+.click-stack__selector-name {
+    flex: 1 1 auto;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .click-stack__selector-arrow {

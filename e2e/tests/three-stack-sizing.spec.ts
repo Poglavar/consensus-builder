@@ -15,6 +15,7 @@ for (const viewport of [{ width: 1280, height: 720 }, { width: 390, height: 844 
       }
       await page.addScriptTag({ path: path.join(frontend, 'js/click-stack/click-stack-model.js') });
       await page.addScriptTag({ path: path.join(frontend, 'js/mobile-dock-sheet.js') });
+      await page.addScriptTag({ path: path.join(frontend, 'js/ui/record-label.js') });
       await page.addScriptTag({ path: path.join(frontend, 'js/ui/object-list.js') });
       await page.addScriptTag({ path: path.join(frontend, 'js/click-stack/click-stack-relations.js') });
       await page.addScriptTag({ path: path.join(frontend, 'js/click-stack/click-stack-navigation.js') });

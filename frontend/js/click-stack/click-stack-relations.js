@@ -8,6 +8,25 @@
 
     let selectorId = 0;
     const objectList = () => (typeof window !== 'undefined' && window.ObjectList) || require('../ui/object-list.js');
+    const recordLabels = win => win?.RecordLabel || require('../ui/record-label.js');
+    const namedKinds = new Set(['designs', 'plans', 'agreements']);
+    function recordId(instance, kind, win) {
+        if (!instance || instance.membershipPlaceholder || !namedKinds.has(kind)) return '';
+        return (kind === 'designs' ? win?.DesignSync?.publishedCid?.(instance.proposal || instance) : null)
+            || instance.agreement?.published?.cid || instance.published?.cid
+            || instance.cid || instance.serverId || instance.id || '';
+    }
+    function instanceLabel(instance, kind, win, peers = []) {
+        return recordLabels(win).label(instance?.label || instance?.id || '', recordId(instance, kind, win), peers);
+    }
+    function selectedLabel(value, instance, kind, win, peers) {
+        const doc = value.ownerDocument;
+        const name = doc.createElement('span');
+        name.className = 'click-stack__selector-name';
+        name.textContent = instance?.label || instance?.id || '';
+        const id = recordId(instance, kind, win);
+        value.replaceChildren(name, ...(id ? [recordLabels(win).badge(doc, id, peers)] : []));
+    }
     const keys = Object.freeze({
         memberPlans: 'memberPlans', includedDesigns: 'includedDesigns',
         createdBy: 'createdBy', formedFrom: 'formedFrom', formedParcels: 'formedParcels',
@@ -106,6 +125,7 @@
         strip.className = 'click-stack__strip';
         // An item highlights its object (hover, focus, click) and never navigates; its own open
         // button takes the stack to the object (docs/click-stack.md, "Object lists").
+        const peers = (group.instances || []).map(instance => recordId(instance, group.kind, win));
         for (const instance of group.instances || []) {
             const name = instance.label || instance.id || '';
             const item = doc.createElement('span');
@@ -117,12 +137,15 @@
             chipLabel.className = 'click-stack__chip-label';
             chipLabel.textContent = name;
             chip.appendChild(chipLabel);
-            chip.title = name;
+            const id = recordId(instance, group.kind, win);
+            if (id) chip.appendChild(recordLabels(win).badge(doc, id, peers));
+            chip.title = id ? `${name} · ${id}` : name;
+            chip.setAttribute('aria-label', instanceLabel(instance, group.kind, win, peers));
             chip.dataset.action = 'preview';
             chip.dataset.kind = group.kind || '';
             chip.dataset.id = instance.id ?? '';
             chip.setAttribute('aria-pressed', 'false');
-            const open = objectList().openButton(doc, name, win, { className: 'click-stack__open' });
+            const open = objectList().openButton(doc, instanceLabel(instance, group.kind, win, peers), win, { className: 'click-stack__open' });
             open.dataset.action = 'related';
             open.dataset.kind = group.kind || '';
             open.dataset.id = instance.id ?? '';
@@ -156,7 +179,7 @@
         });
     }
 
-    function designOptionLabel(instance, win, plans = []) {
+    function designOptionLabel(instance, win, plans = [], peers = []) {
         const name = instance.label || instance.id || '';
         const type = designType(instance, win);
         const proposal = instance.proposal || instance;
@@ -164,9 +187,10 @@
         const current = win?.NamedPlans?.current;
         const memberships = plans.filter(plan => !plan.membershipPlaceholder && cid
             && (plan.membershipDesignCid === cid || (plan.designCids || plan.content?.designCids || []).includes(cid)));
-        if (cid && current?.content?.designCids.includes(cid)) memberships.push({ label: current.content.title });
-        const names = [...new Set(memberships.map(plan => plan.label || plan.title).filter(Boolean))];
-        return [type && type.label !== name ? type.label : '', name,
+        if (cid && current?.content?.designCids.includes(cid)) memberships.push({ label: current.content.title, cid: current.cid });
+        const planIds = memberships.map(plan => plan.cid || plan.id);
+        const names = [...new Set(memberships.map(plan => recordLabels(win).label(plan.label || plan.title, plan.cid || plan.id, planIds)).filter(Boolean))];
+        return [type && type.label !== name ? type.label : '', instanceLabel(instance, 'designs', win, peers),
             names.length ? `${translate('memberPlans', win)} ${names.join(', ')}` : ''].filter(Boolean).join(' · ');
     }
 
@@ -180,17 +204,19 @@
         }
         if (select.dataset.kind !== section.kind) return;
         const ids = section.instances.map(instance => String(instance.id));
+        const peers = section.instances.map(instance => recordId(instance, section.kind, win));
         if (select.children.length !== ids.length || [...select.children].some((option, index) => option.value !== ids[index])) {
             select.replaceChildren(...ids.map(id => { const option = container.ownerDocument.createElement('option'); option.value = id; return option; }));
         }
         [...select.children].forEach((option, index) => {
             const instance = section.instances[index];
-            option.textContent = section.kind === 'designs' ? designOptionLabel(instance, win, plans) : instance.label || instance.id || '';
+            option.textContent = section.kind === 'designs' ? designOptionLabel(instance, win, plans, peers) : instanceLabel(instance, section.kind, win, peers);
+            option.title = recordId(instance, section.kind, win);
         });
         select.selectedIndex = Number.isInteger(section.selectedIndex) ? section.selectedIndex : 0;
         const value = container.querySelector('.click-stack__selector-value');
         const instance = section.instances[select.selectedIndex];
-        if (value) value.textContent = instance?.label || instance?.id || '';
+        if (value) selectedLabel(value, instance, section.kind, win, peers);
     }
 
     function renderSelector(section, doc, win, plans = []) {
@@ -217,7 +243,7 @@
             select.appendChild(option);
         });
         wrap.appendChild(caption);
-        if (section.kind === 'designs') {
+        if (namedKinds.has(section.kind)) {
             const field = doc.createElement('span');
             field.className = 'click-stack__selector-field';
             const value = doc.createElement('span');
@@ -230,7 +256,7 @@
             wrap.appendChild(field);
             select.addEventListener('change', () => {
                 const selected = section.instances.find(instance => String(instance.id) === select.value);
-                value.textContent = selected?.label || selected?.id || '';
+                selectedLabel(value, selected, section.kind, win, section.instances.map(instance => recordId(instance, section.kind, win)));
             });
         } else wrap.appendChild(select);
         updateSelector(section, wrap, win, plans);
