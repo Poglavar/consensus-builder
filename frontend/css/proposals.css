@@ -1161,10 +1161,17 @@ textarea.proposal-description-input {
     font-size: 0.82rem;
     color: var(--cb-text-muted);
 }
+.parcel-compare-bar__hint { min-width: 0; }
+.parcel-compare-bar__run { flex: 0 0 auto; white-space: nowrap; }
 .proposal-item-compare {
     float: right;
-    margin: -4px -4px 4px 8px;
-    padding: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: var(--cb-control-height-sm);
+    min-height: var(--cb-control-height-sm);
+    margin: 0 0 4px 8px;
+    padding: 0;
     cursor: pointer;
 }
 .proposal-item-compare input {
@@ -1175,6 +1182,7 @@ textarea.proposal-description-input {
 }
 /* Phones: a bottom sheet, and the two columns stack — each row shows its label, then A, then B. */
 @media (max-width: 767.98px) {
+    .proposal-item-compare { width: 44px; min-height: 44px; }
     .parcel-compare[open] {
         inset: auto 0 0;
         transform: none;
