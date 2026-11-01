@@ -207,8 +207,8 @@
 }
 
 .agreement-panel-actions > .btn { flex: 1 1 0; min-width: 0; white-space: normal; }
-/* Four actions (Propose, Before / after, Edit, Download) are two equal columns, not a squeezed row. */
-.agreement-panel-actions:has(> .btn:nth-child(4)) > .btn { flex-basis: calc(50% - var(--cb-space-1)); }
+/* Action grids use equal columns instead of squeezing their labels into one row. */
+.agreement-panel-actions:has(> .btn:nth-child(4)) { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
 .agreement-properties-tabs { flex-shrink: 0; }
 .agreement-properties-tabs > .cb-tab { min-width: 0; white-space: normal; padding-inline: var(--cb-space-1); }
 .agreement-properties-tabpanel:not([hidden]) { display: flex; flex-direction: column; gap: var(--cb-space-3); }
@@ -237,6 +237,25 @@
     font-size: var(--cb-text-base);
     font-weight: var(--cb-weight-semibold);
 }
+
+/* Party and person tables describe different levels of the same allocation. The party view opens
+   first; the person view stays available without making the People tab start as two full tables. */
+.agreement-panel-disclosure {
+    display: block;
+    min-width: 0;
+    border: 1px solid var(--cb-line);
+    border-radius: var(--cb-radius-md);
+    background: var(--cb-surface-2);
+}
+
+.agreement-panel-disclosure > summary {
+    cursor: pointer;
+    padding: var(--cb-space-2);
+    font-weight: var(--cb-weight-semibold);
+}
+
+.agreement-panel-disclosure > :not(summary) { margin-inline: var(--cb-space-2); }
+.agreement-panel-disclosure > .agreement-panel-meta { margin-block: 0 var(--cb-space-2); }
 
 .agreement-panel-rule {
     margin: 0;

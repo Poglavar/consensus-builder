@@ -1,7 +1,7 @@
 // The Rules tab of an agreement: the scheme guide with its picker, and a counter-agreement drafted
 // from the agreement's plan and terms (optionally under the scheme the guide landed on).
 import { test, expect } from '../helpers/fixtures';
-import { applyLayout } from '../helpers/agreements';
+import { applyLayout, openAgreementActions, openAgreementContentTab } from '../helpers/agreements';
 
 test('the Rules tab opens the scheme guide and drafts a counter-agreement from the agreement', async ({ mockApi: page }, testInfo) => {
   await page.setViewportSize({ width: 1280, height: 900 });
@@ -25,7 +25,7 @@ test('the Rules tab opens the scheme guide and drafts a counter-agreement from t
     return snapshot.cid as string;
   }, layoutId);
   const panel = page.locator('#click-stack #agreement-panel');
-  await panel.getByRole('tab', { name: 'Rules', exact: true }).click();
+  await openAgreementContentTab(page, 'Rules');
   const rules = panel.getByRole('tabpanel', { name: 'Rules', exact: true });
   // No scheme is pinned: the guide opens on the catalogue to compare with.
   await rules.getByRole('button', { name: 'Compare with a scheme…', exact: true }).click();
@@ -51,15 +51,15 @@ test('the Rules tab opens the scheme guide and drafts a counter-agreement from t
   // Cancelled: nothing was saved, and the original agreement is still the one shown.
   expect(await page.evaluate(() => (window as any).AgreementStore.list().length)).toBe(1);
   await expect(panel).toBeVisible();
-  // Counter-agreement from the Rules tab itself: a copy under the same rule, saved as a second record.
-  await panel.getByRole('tab', { name: 'Rules', exact: true }).click();
-  await rules.getByRole('button', { name: 'Counter-agreement', exact: true }).click();
+  // Counter-agreement is an ordinary action: it copies the same rule into a new draft.
+  await openAgreementActions(page);
+  await panel.getByRole('button', { name: 'Counter-agreement', exact: true }).click();
   await expect(editor).toBeVisible();
   await expect(editor.locator('select[data-approval-regime]')).toHaveValue('unanimous');
   await editor.locator('[data-agreement-action="save"]').click();
   await expect(editor).toBeHidden();
   await expect.poll(() => page.evaluate(() => (window as any).AgreementStore.list().map((row: any) => row.title).sort())).toEqual(['Counter to Land agreement', 'Land agreement']);
   await expect(panel).toContainText('Counter to Land agreement');
-  await panel.getByRole('tab', { name: 'Rules', exact: true }).click();
+  await openAgreementContentTab(page, 'Rules');
   await page.screenshot({ path: testInfo.outputPath('rules-tab.png') });
 });

@@ -30,8 +30,24 @@
     const sideWord = (item, edge) => root.i18n.t(`modal.corridor.compass.${envelopes.edgeSide(item.derivation?.parcel, edge)}`);
     const lotNote = configuration => configuration?.lotArea?.status === 'fail' ? t('lotBelowMinimum', { minimum: area(configuration.lotArea.minimumM2) }) : '';
     function pinConfiguration(itemId, configurationId) {
+        outlineConfiguration(null);
         pins = { ...pins, [itemId]: configurationId };
         drawMap(); renderInspector(); notifyGeometry();
+    }
+    // A configuration row outlines the footprint it would show while it is hovered or focused
+    // (docs/design-language.md, "Object lists"); picking it is what shows it. null lets go: the map
+    // view's hover outline goes, the model view gets its click stack's own outline back.
+    function configurationFeatures(item, configurationId) {
+        const selection = { ...displaySelection(), pins: { ...pins, [item.id]: configurationId } };
+        return envelopes.mapFeatures(item, { form: 'configuration', selection, deps: geometryDeps() });
+    }
+    function outlineConfiguration(features) {
+        const three = !!root.isThreeModeActive?.();
+        if (!features) {
+            if (three) root.ThreeClickStack?.restoreFocus?.();
+            else root.clearProposalHoverLayers?.();
+        } else if (three) root.inspectThreeModeFeatures?.(features);
+        else root.highlightFeaturesForHover?.(features);
     }
     const number = value => typeof value === 'number' && Number.isFinite(value)
         ? root.CbFormat.formatNumber(value, { maxFractionDigits: 0 }) : '—';
@@ -245,19 +261,21 @@
     function isPhoto() { return root.__mapModeState?.desired === 'photo'; }
     function stateText() {
         if (policy().permitted === 'off' && store.get().zoningAreas === 'off') return t('permittedOff');
-        if (status === 'loading' && progress?.total) return t('loadingProgress', progress);
+        if (status === 'loading' && progress?.total) return t('loadingCells', progress);
         if (status !== 'ready') return t(status);
         if (!payload?.sources?.length) return t('unavailable');
+        const failedNote = failedCells ? ` · ${t('cellsFailed')}` : '';
         if (payload.envelopes) return t('envelopesLoaded', { count: items.filter(item => item.parcelEnvelope).length,
-            missing: payload.unavailable.length });
+            missing: payload.unavailable.length }) + failedNote;
         if (!items.length) return t('empty');
         const text = t(payload.omitted ? 'partial' : payload.sources.some(source => source.capabilities.areas) ? 'areasLoaded' : 'loaded', { count: items.length });
         const pending = (payload.summaries || []).reduce((sum, entry) => sum + (entry.awaitingRefresh || 0), 0);
-        return pending ? `${text} · ${t('refreshCount', { count: pending })}` : text;
+        return (pending ? `${text} · ${t('refreshCount', { count: pending })}` : text) + failedNote;
     }
     function renderInspector() {
         const item = selected();
-        const hostedBuilt = item?.role === 'existing' && inspector.classList.contains('is-hosted');
+        const hosted = inspector.classList.contains('is-hosted');
+        const hostedBuilt = item?.role === 'existing' && hosted;
         inspector.hidden = !item || item.role === 'proposed' || (item.role === 'existing' && !hostedBuilt);
         inspector.replaceChildren();
         if (!item || item.role === 'proposed' || (item.role === 'existing' && !hostedBuilt)) return;
@@ -266,36 +284,47 @@
         const sourceResult = item.role === 'permitted';
         heading.append(element('p', 'planning-eyebrow', item.parcelEnvelope ? t('envelopeTitle')
             : t(item.areas?.length ? 'zoningArea' : sourceResult ? (item.volumes.length ? 'sourceProposal' : 'savedResult') : 'builtRecord')));
-        if (item.title) heading.append(element('h2', 'click-stack__title', item.title));
+        // The hosted stack already supplies the object's title and parcel reference.
+        if (!hosted && item.title) heading.append(element('h2', 'click-stack__title', item.title));
         // A parcel's massing names its parcel; the title alone is the source edition and ratio.
         const parcelLabel = parcelOf(item);
-        if (parcelLabel) heading.append(element('p', 'planning-inspector__parcel', `${t('focusParcel')} ${parcelLabel}`));
+        if (!hosted && parcelLabel) heading.append(element('p', 'planning-inspector__parcel', `${t('focusParcel')} ${parcelLabel}`));
         const close = element('button', 'close-circle-btn', '×');
         close.type = 'button'; close.setAttribute('aria-label', t('close'));
         close.addEventListener('click', () => { select(null); document.getElementById('planning-views-button').focus(); });
         header.append(heading, close);
         inspector.append(header);
+        const page = (key, label) => {
+            const node = element('div', 'planning-inspector__page');
+            node.dataset.stackPageKey = key;
+            node.dataset.stackPageLabel = label;
+            inspector.append(node);
+            return node;
+        };
+        const info = page('info', root.i18n.t('clickStackNavigation.info'));
+        const options = sourceResult && item.configurations?.length ? page('options', root.i18n.t('planningViews.tabs.options')) : null;
+        const rules = sourceResult ? page('rules', root.i18n.t('proposalDrafts.approval.policyType')) : null;
         const badges = element('div', 'planning-inspector__badges');
         badges.append(element('span', 'cb-badge', t(inspectorBadgeKey(item))));
         if (sourceResult && item.volumes.length) badges.append(element('span', 'cb-badge cb-badge--warning',
             t(item.assessment.meaning === 'existing-stock-estimate' ? 'stockBadge' : item.parcelEnvelope ? 'bound' : 'approximate')));
         if (item.assessment.refresh) badges.append(element('span', 'cb-badge cb-badge--warning', t('refreshPending')));
-        inspector.append(badges);
-        inspector.append(element('p', 'planning-inspector__description',
+        info.append(badges);
+        info.append(element('p', 'planning-inspector__description',
             t(item.assessment.meaning === 'existing-stock-estimate' ? 'stockEstimate'
                 : item.assessment.meaning === 'public-screen' ? 'evidenceOnly'
                     : item.assessment.meaning === 'zoning-area' ? 'zoningAreaNote'
                         : item.parcelEnvelope ? 'envelopeNote'
                         : sourceResult ? (item.volumes.length ? 'oneOption' : 'savedNoShape')
                         : 'observedNote')));
-        if (item.assessment.status && !item.parcelEnvelope) inspector.append(element('p', 'planning-inspector__description', resultLabel(item.assessment.status)));
-        if (item.assessment.reason) inspector.append(element('p', 'planning-cache-reason', item.assessment.reason));
-        if (item.assessment.current === false) inspector.append(element('p', 'planning-inspector__description', t('savedWithdrawn')));
-        if (referenceStatus && referenceStatus !== 'same') inspector.append(element('p', 'planning-assessment', t('referenceChanged')));
+        if (item.assessment.status && !item.parcelEnvelope) info.append(element('p', 'planning-inspector__description', resultLabel(item.assessment.status)));
+        if (item.assessment.reason) info.append(element('p', 'planning-cache-reason', item.assessment.reason));
+        if (item.assessment.current === false) info.append(element('p', 'planning-inspector__description', t('savedWithdrawn')));
+        if (referenceStatus && referenceStatus !== 'same') info.append(element('p', 'planning-assessment', t('referenceChanged')));
         if (item.assessment.refresh) {
             const key = `planningViews.refreshCause.${item.assessment.refresh.code}`;
             const reason = root.i18n.t(key);
-            inspector.append(element('p', 'planning-inspector__description', `${t('refreshNote')} ${reason === key ? t('refreshFailed') : reason}`));
+            info.append(element('p', 'planning-inspector__description', `${t('refreshNote')} ${reason === key ? t('refreshFailed') : reason}`));
         }
         const metrics = element('dl', 'planning-metrics');
         const unitLimit = item.constraints?.find(constraint => constraint.quantity === 'dwellings')?.value;
@@ -310,19 +339,19 @@
         for (const [label, value] of displayedMetrics) {
             const entry = element('div'); entry.append(element('dt', '', label), element('dd', '', value)); metrics.append(entry);
         }
-        if (displayedMetrics.length) inspector.append(metrics);
+        if (displayedMetrics.length) info.append(metrics);
         const heights = [...new Set(item.volumes.map(volume => volume.topM))].sort((a, b) => a - b);
-        if (heights.length > 1) inspector.append(element('p', 'planning-inspector__description', t('heightParts', { heights: heights.map(height => root.CbFormat.formatLength(height)).join(' · ') })));
+        if (heights.length > 1) info.append(element('p', 'planning-inspector__description', t('heightParts', { heights: heights.map(height => root.CbFormat.formatLength(height)).join(' · ') })));
         const realization = permittedFeatures(item), shown = realization.configuration;
-        if (item.configurations?.length) inspector.append(renderConfigurations(item, shown));
+        if (options) options.append(renderConfigurations(item, shown));
         if (realization.frontEdge != null) {
-            inspector.append(element('p', 'planning-inspector__description', t('assumedSide', { side: sideWord(item, realization.frontEdge) })));
+            (rules || info).append(element('p', 'planning-inspector__description', t('assumedSide', { side: sideWord(item, realization.frontEdge) })));
             const frontage = root.StreetFrontage?.basisText(item.sourceEvidence?.frontage);
-            if (frontage) inspector.append(element('p', 'planning-inspector__description', frontage));
+            if (frontage) (rules || info).append(element('p', 'planning-inspector__description', frontage));
         }
         const assessment = element('div', 'planning-assessment');
         assessment.append(element('strong', '', t('conditionsTitle')), element('p', '', t('conditionsNote')));
-        if (sourceResult && item.volumes.length) inspector.append(assessment);
+        if (sourceResult && item.volumes.length) (rules || info).append(assessment);
         const constraints = shown ? shown.constraints : item.constraints;
         if (constraints?.length) {
             const limits = element('dl', 'planning-limits');
@@ -336,7 +365,7 @@
                 const evidence = constraint.evidence ? ` · ${t(`evidence.${constraint.evidence}`)}` : '';
                 limits.append(element('dt', '', t(`constraint.${constraint.quantity}`)), element('dd', '', value + evidence));
             }
-            inspector.append(limits);
+            (rules || info).append(limits);
         }
         const evidence = element('details', 'planning-evidence');
         evidence.append(element('summary', '', t('sourceDetails')));
@@ -351,7 +380,7 @@
             const terms = element('pre', 'planning-evidence__terms', JSON.stringify(item.sourceEvidence, null, 2));
             evidence.append(element('p', '', t('sourceTerms')), terms);
         }
-        inspector.append(evidence);
+        info.append(evidence);
         for (const reference of item.sourceEvidence?.sourceReferences || []) {
             const button = element('button', 'btn', t('referencedSource', { source: reference.providerId, revision: reference.revision.slice(0, 8) }));
             button.type = 'button'; button.addEventListener('click', async () => {
@@ -366,7 +395,7 @@
                 } catch (error) { console.error('[planning] Referenced source read failed', error); button.textContent = t('error'); }
                 finally { button.disabled = false; }
             });
-            inspector.append(button);
+            evidence.append(button);
         }
         const footer = element('footer', 'planning-inspector__footer');
         if (item.source.url) {
@@ -374,7 +403,7 @@
             link.href = item.source.url; link.target = '_blank'; link.rel = 'noopener noreferrer';
             footer.append(link);
         }
-        inspector.append(footer);
+        evidence.append(footer);
     }
     // Every source configuration, with the shown one marked. Picking one pins the housing type;
     // the dice varies the sample building without changing that choice.
@@ -396,6 +425,17 @@
             button.addEventListener('click', () => pinConfiguration(item.id, configuration.id));
             row.append(button); list.append(row);
         }
+        const rowOf = event => event.target.closest?.('li[data-configuration]');
+        const enter = event => {
+            const row = rowOf(event);
+            if (row && !row.contains(event.relatedTarget)) outlineConfiguration(configurationFeatures(item, row.dataset.configuration));
+        };
+        const leave = event => {
+            const row = rowOf(event);
+            if (row && !row.contains(event.relatedTarget)) outlineConfiguration(null);
+        };
+        list.addEventListener('mouseover', enter); list.addEventListener('focusin', enter);
+        list.addEventListener('mouseout', leave); list.addEventListener('focusout', leave);
         section.append(list);
         const excluded = Object.entries(item.sourceEvidence?.excludedConfigurations || {});
         if (excluded.length) section.append(element('p', 'planning-source-note', t('excludedConfigurations', {
@@ -500,7 +540,7 @@
         panel.querySelector('.planning-view-status').textContent = noPermittedSource ? '' : stateText();
         panel.querySelector('.planning-view-status').setAttribute('aria-busy', String(status === 'loading'));
         const retry = panel.querySelector('.planning-view-retry');
-        retry.hidden = status !== 'error' || policy().permitted === 'off' && store.get().zoningAreas === 'off'; retry.textContent = t('retry');
+        retry.hidden = !(status === 'error' || status === 'ready' && failedCells) || policy().permitted === 'off' && store.get().zoningAreas === 'off'; retry.textContent = t('retry');
         panel.querySelector('.planning-coverage summary').textContent = t('coverageTitle');
         panel.querySelector('.planning-coverage p').textContent = t(payload?.envelopes ? 'envelopeCoverage' : 'coverageNote');
         const summary = panel.querySelector('.planning-cache-summary');
@@ -567,112 +607,118 @@
         }
         if (settingsChanged && (view.permitted !== 'off' || state.zoningAreas !== 'off')) refresh();
     }
-    // Two viewport answers: envelopes do not depend on the housing type (every configuration ships
-    // with the item), zoning areas do. A housing-type change therefore redraws the envelopes at
-    // once and re-reads only the areas, when they are shown. Each answer comes from `viewCache`,
-    // which keeps recent areas asked for (snapped to the viewport grid), so a pan inside an
-    // answered area or back to one asks for nothing; Retry and a source re-read clear it.
-    const viewCache = core.createViewportCache({ limit: 64, maxAgeMs: 10 * 60 * 1000 });
-    // The API's area limits (backend/routes/planning.js validateBounds): a larger view is answered
-    // 400 (over 1,000 lots), shown as "zoom in". Snapping never pushes a view over them; a view already over one asks
-    // for nothing, since the answer is known.
-    const MAX_AREA_KM2 = { envelopes: 0.5, areas: 4 };
+    // Permitted massing loads by cells (planning/scene.js viewCells), as buildings do: the cells under
+    // the view, nearest its centre first, a few in flight, each drawn as it lands and kept in
+    // `viewCache`, so a view of any size fills in and a pan asks only for cells not yet held. Two
+    // answers per cell: envelopes do not depend on the housing type (every configuration ships with
+    // the item), zoning areas do, so a housing-type change redraws the envelopes at once and re-reads
+    // only the areas, when they are shown. A source re-read clears the cache.
+    const viewCache = core.createViewportCache({ limit: 2048, maxAgeMs: 10 * 60 * 1000 });
+    // Upstream parcel services slow down under parallel reads (Bogotá's times cells out at four), so
+    // two cells at a time, and a cell that fails is asked once more, alone, after the rest.
+    const CELL_CONCURRENCY = 2;
     const MOVE_REFRESH_DELAY_MS = 300;
-    let areaCache = { key: '', answer: null }, envelopeCache = { key: '', answer: null }, assembled = '';
-    function invalidate() { areaCache = { key: '', answer: null }; envelopeCache = { key: '', answer: null }; assembled = ''; }
-    // The area to ask for: the view snapped to whole cells, or the view itself where snapping would
-    // cross the endpoint's area limit.
-    function requestBox(kind, bbox) {
-        const snapped = core.snapBbox(bbox);
-        return core.bboxAreaKm2(snapped) <= MAX_AREA_KM2[kind] ? snapped : bbox;
-    }
-    function tooLarge(error) { return Object.assign(new Error('Planning view area is too large'), { status: 400, cause: error }); }
+    // What is drawn: the scopes and cells of the answers assembled, and how many cells failed.
+    let assembled = '', failedCells = 0;
+    function invalidate() { assembled = ''; failedCells = 0; }
     async function refresh({ force = false } = {}) {
         if (!ready || !catalogReady || policy().permitted === 'off' && store.get().zoningAreas === 'off') return;
-        if (root.map.getZoom() < 16) {
+        // The 2D map's view in 2D; in 3D, the camera's zoom around where the scene was entered (load-view.js).
+        const view = root.LoadView.current();
+        if (!view || view.zoom < 16) {
             viewCache.abortExcept([]); request++; invalidate(); items = []; status = 'zoom'; payload = null;
             if (!selected()) store.select(null);
             drawMap(); render(); notifyGeometry(); return;
         }
         const city = root.CityConfigManager.getCurrentCityId();
-        const bounds = root.map.getBounds();
-        const bbox = [bounds.getWest(), bounds.getSouth(), bounds.getEast(), bounds.getNorth()];
-        if (force) viewCache.clear();
+        const bbox = view.bbox;
+        if (force) { viewCache.clear(); invalidate(); }
         // Bounds-registered sources come and go with the viewport; re-list them when it moves.
         if (!(await ensureSources(city, bbox))) return;
         const descriptor = sourceOptions.find(source => source.id === sourceId);
         const envelopeScope = descriptor?.parcelStudy && policy().permitted !== 'off' ? `envelopes:${city}:${sourceId}` : '';
         const areaScope = descriptor && (!descriptor.capabilities.areas || store.get().zoningAreas !== 'off') ? `areas:${city}:${sourceId}:${scenarioId}` : '';
-        if (force) invalidate();
-        if (!envelopeScope) envelopeCache = { key: '', answer: null };
-        if (!areaScope) areaCache = { key: '', answer: null };
-        const wanted = [];
-        if (envelopeScope) wanted.push({ kind: 'envelopes', scope: envelopeScope });
-        if (areaScope) wanted.push({ kind: 'areas', scope: areaScope });
+        const cells = core.viewCells(bbox, view.centre);
+        const jobs = [];
+        for (const [kind, scope] of [['envelopes', envelopeScope], ['areas', areaScope]]) {
+            if (scope) for (const cell of cells) jobs.push({ kind, scope, cell, key: `${scope}|${cell.key}` });
+        }
         const generation = ++request;
-        const fail = error => {
-            if (generation !== request || error.name === 'AbortError') return;
-            if (error.status === 400) {
-                invalidate(); items = []; payload = null; status = 'zoom';
-                if (!selected()) store.select(null);
-                drawMap(); render(); notifyGeometry(); return;
-            }
-            console.error('[planning] Could not load source representations', error);
-            invalidate(); items = []; payload = null; status = 'error';
-            if (!selected()) store.select(null);
-            drawMap(); render(); notifyGeometry();
-        };
-        const oversized = wanted.find(({ kind }) => core.bboxAreaKm2(bbox) > MAX_AREA_KM2[kind]);
-        if (oversized) { viewCache.abortExcept([]); fail(tooLarge()); return; }
-        const show = (kind, entry) => {
-            if (kind === 'areas') areaCache = { key: entry.key, answer: entry.value };
-            else envelopeCache = { key: entry.key, answer: entry.value };
-        };
-        const pending = wanted.filter(want => {
-            const hit = viewCache.find(want.scope, bbox);
-            if (hit) show(want.kind, hit);
+        // Only this view's cells keep loading; an older view's others stop.
+        viewCache.abortExcept(jobs.map(job => viewCache.keyOf(job.scope, job.cell.bbox)));
+        const answers = new Map();
+        const pending = jobs.filter(job => {
+            const hit = viewCache.find(job.scope, job.cell.bbox);
+            if (hit) answers.set(job.key, hit.value);
             return !hit;
         });
-        const composition = () => `${envelopeScope ? envelopeCache.key : ''}|${areaScope ? areaCache.key : ''}`;
+        const composition = jobs.map(job => job.key).sort().join(';');
+        let failed = 0;
         const assemble = () => {
-            const answers = [areaCache.answer, envelopeCache.answer].filter(Boolean);
-            const answer = envelopeCache.answer || areaCache.answer || { sources: descriptor ? [descriptor] : [], summaries: [], unavailable: [], omitted: 0, items: [] };
-            payload = { ...answer, items: answers.flatMap(entry => entry.items) }; items = payload.items; status = 'ready'; assembled = composition();
+            const ordered = jobs.map(job => answers.get(job.key)).filter(Boolean);
+            // Envelopes lead: their answer says how the status line counts.
+            const merged = core.mergeAnswers([...ordered.filter(answer => answer.envelopes), ...ordered.filter(answer => !answer.envelopes)]);
+            payload = merged || { sources: descriptor ? [descriptor] : [], summaries: [], unavailable: [], omitted: 0, items: [] };
+            items = payload.items; assembled = composition; failedCells = failed;
             if (!selected()) store.select(null);
             drawMap(); render(); notifyGeometry();
         };
-        if (!pending.length) { viewCache.abortExcept([]); if (assembled !== composition()) assemble(); return; }
+        if (!pending.length) {
+            if (assembled !== composition || status !== 'ready') { status = 'ready'; assemble(); }
+            return;
+        }
         const url = new URL(`${root.getBackendBase()}/planning/representations`);
         url.searchParams.set('city', city);
         if (sourceId) url.searchParams.set('source', sourceId);
         const scenario = scenarioParam();
-        const fetchArea = (kind, box) => signal => {
+        const fetchCell = (kind, box) => signal => {
             const target = new URL(url); target.searchParams.set('bbox', box.join(','));
             if (kind === 'envelopes') target.pathname = '/planning/envelopes';
             else if (scenario) target.searchParams.set('scenario', scenario);
-            return root.PlanningFeed.loadViewport(target, { city, signal,
-                onProgress(value) { if (generation === request) { progress = value; render(); } } })
+            return root.PlanningFeed.loadViewport(target, { city, signal })
                 .then(answer => (kind === 'envelopes' ? { ...answer, envelopes: true } : answer));
         };
-        // A snapped area the source refuses (too many parcels in it) is asked again as the view
-        // itself, which is what was asked before snapping; that answer is kept for that view only.
-        const loadKind = async ({ kind, scope }) => {
-            const box = requestBox(kind, bbox);
-            try { return await viewCache.load(scope, box, fetchArea(kind, box)); }
+        status = 'loading'; progress = { count: jobs.length - pending.length, total: jobs.length };
+        if (answers.size) assemble(); else render();
+        // Redraw when the first cell lands and then at each quarter, as the 3D buildings do.
+        let done = jobs.length - pending.length, nextDrawAt = done + 1, firstError = null;
+        const queue = [...pending].sort((a, b) => a.cell.distanceM - b.cell.distanceM), retries = [];
+        const loadJob = async job => {
+            try { answers.set(job.key, (await viewCache.load(job.scope, job.cell.bbox, fetchCell(job.kind, job.cell.bbox))).value); return true; }
             catch (error) {
-                if (error.status !== 400 || box === bbox) throw error;
-                return viewCache.load(scope, bbox, fetchArea(kind, bbox));
+                if (generation !== request || error.name === 'AbortError') return null;
+                firstError ||= error; return false;
             }
         };
-        // Only the requests this view still wants keep running; an older view's others stop.
-        viewCache.abortExcept(pending.map(({ kind, scope }) => viewCache.keyOf(scope, requestBox(kind, bbox))));
-        status = 'loading'; progress = null; render();
-        try {
-            await Promise.all(pending.map(want => loadKind(want).then(entry => { if (generation === request) show(want.kind, entry); })));
-            if (generation !== request) return;
-            assemble();
-            restoreSelection();
-        } catch (error) { fail(error); }
+        const worker = async () => {
+            while (queue.length && generation === request) {
+                const job = queue.shift();
+                const loaded = await loadJob(job);
+                if (loaded === null || generation !== request) return;
+                if (!loaded) { retries.push(job); continue; }
+                done++; progress = { count: done, total: jobs.length };
+                if (done >= nextDrawAt && done < jobs.length) {
+                    nextDrawAt = Math.max(done + 1, Math.ceil(jobs.length * (Math.floor(done / jobs.length * 4) + 1) / 4));
+                    assemble();
+                } else render();
+            }
+        };
+        await Promise.all(Array.from({ length: Math.min(CELL_CONCURRENCY, queue.length) }, worker));
+        if (generation !== request) return;
+        for (const job of retries) {
+            const loaded = await loadJob(job);
+            if (loaded === null || generation !== request) return;
+            if (loaded) { done++; progress = { count: done, total: jobs.length }; assemble(); } else failed++;
+        }
+        if (firstError) console.error(`[planning] ${failed} of ${jobs.length} cells could not be loaded`, firstError);
+        // Nothing loaded: a source refusing every cell (400) is asked for less by zooming in.
+        if (failed && failed === jobs.length) {
+            invalidate(); items = []; payload = null; status = firstError?.status === 400 ? 'zoom' : 'error';
+            if (!selected()) store.select(null);
+            drawMap(); render(); notifyGeometry(); return;
+        }
+        status = 'ready'; assemble();
+        restoreSelection();
     }
     async function restoreSelection() {
         if (!restoreId || restoring) return;
@@ -701,10 +747,7 @@
         } catch (error) { console.error('[planning] Could not restore source selection', error); }
         finally { restoring = false; }
     }
-    function viewportBbox() {
-        const bounds = root.map?.getBounds?.();
-        return bounds ? [bounds.getWest(), bounds.getSouth(), bounds.getEast(), bounds.getNorth()] : null;
-    }
+    function viewportBbox() { return root.LoadView?.current()?.bbox || null; }
     async function listSources(city, bbox) {
         const url = new URL(`${root.getBackendBase()}/planning/sources`);
         url.searchParams.set('city', city);
@@ -738,7 +781,8 @@
             if (generation !== sourceGeneration) return false;
             sourcesKey = key;
             const previousSource = sourceId, previousScenario = scenarioId;
-            if (JSON.stringify(sources.map(source => source.id)) !== JSON.stringify(sourceOptions.map(source => source.id))) applySources(sources);
+            // An ID alone is not a display contract: parcelStudy changes the permitted choices.
+            if (core.sourceCatalogSignature(sources) !== core.sourceCatalogSignature(sourceOptions)) applySources(sources);
             if (previousSource !== sourceId || previousScenario !== scenarioId) { pins = {}; invalidate(); render(); }
             return true;
         } catch (error) {
@@ -801,7 +845,7 @@
             // selected zoning area is re-read for the new type and re-selected when it returns.
             const previousId = selected()?.areas?.length ? store.get().selectedId : null;
             scenarioId = scenarioInput.value; pins = {};
-            areaCache = { key: '', answer: null }; assembled = ''; items = items.filter(item => item.parcelEnvelope);
+            assembled = ''; items = items.filter(item => item.parcelEnvelope);
             if (previousId) { focusedRecord = null; store.select(null); restoreId = previousId; }
             const url = new URL(location.href); url.searchParams.set('planningScenario', scenarioId); history.replaceState(history.state, '', url);
             drawMap(); render(); notifyGeometry(); refresh();
@@ -813,7 +857,7 @@
             if (clearSourceSelection) { focusedRecord = null; store.select(null); }
             const url = new URL(location.href); url.searchParams.set('planningSource', sourceId);
             url.searchParams.set('planningScenario', scenarioId); history.replaceState(history.state, '', url);
-            drawMap(); notifyGeometry(); refresh({ force: true });
+            drawMap(); render(); notifyGeometry(); refresh({ force: true });
             if (parcelPanel?.container.isConnected) showParcelEvidence(parcelPanel.container, parcelPanel.parcel);
         });
         const controls = panel.querySelector('.planning-layer-controls');
@@ -854,7 +898,8 @@
             });
         }
         panel.querySelector('.planning-open-model').addEventListener('click', () => root.requestMapMode('model'));
-        panel.querySelector('.planning-view-retry').addEventListener('click', () => refresh({ force: true }));
+        // A failed cell is never kept, so asking again reads only the cells that failed.
+        panel.querySelector('.planning-view-retry').addEventListener('click', () => { assembled = ''; refresh(); });
         root.map.createPane('planningSources');
         root.map.getPane('planningSources').classList.add('planning-sources-pane');
         layer = root.L.featureGroup().addTo(root.map);
@@ -868,10 +913,13 @@
         let moveTimer = null;
         const cancelMoveRefresh = () => { if (moveTimer) clearTimeout(moveTimer); moveTimer = null; };
         root.map.on('movestart', cancelMoveRefresh);
-        root.map.on('moveend', () => {
+        const scheduleMoveRefresh = () => {
             cancelMoveRefresh();
             moveTimer = setTimeout(() => { moveTimer = null; refresh(); }, MOVE_REFRESH_DELAY_MS);
-        });
+        };
+        root.map.on('moveend', scheduleMoveRefresh);
+        // The 3D camera settling, or the map changing mode, moves the area too (load-view.js).
+        root.addEventListener('loadviewchange', scheduleMoveRefresh);
         root.map.on('click', () => select(null));
         root.addEventListener('cityChanged', () => {
             viewCache.clear(); sourceListings.clear(); request++; invalidate(); items = []; payload = null; status = 'loading';

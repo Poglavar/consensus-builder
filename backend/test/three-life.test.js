@@ -144,7 +144,7 @@ describe('vehicleParts', () => {
         expect(bus.frontAxle + bus.rearAxle).toBeCloseTo(5.9, 9); // a 12 m city bus's wheelbase
     });
 
-    it('keeps every glass part visible outside its opaque body and every wheel on the road, flush inside the sides', () => {
+    it('keeps every glass part visible outside its opaque body and every wheel on the road, inside the sides', () => {
         for (const kind of Object.keys(VEHICLE_KINDS)) {
             const v = vehicle(kind);
             const parts = vehicleParts(v);
@@ -156,6 +156,8 @@ describe('vehicleParts', () => {
             parts.wheels.forEach(wheel => {
                 expect(wheel.oz).toBe(v.wheelRadius);
                 expect(Math.abs(wheel.oy) + wheel.w / 2).toBeLessThanOrEqual(v.width / 2 + 1e-9);
+                // Not flush: a tyre face in the plane of the body's side fought it (z-fighting).
+                if (wheel.oy !== 0) expect(Math.abs(wheel.oy) + wheel.w / 2).toBeLessThanOrEqual(v.width / 2 - 0.03);
             });
         }
     });

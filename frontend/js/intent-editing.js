@@ -26,12 +26,26 @@
         if (dimensional) {
             if (change.type === 'set_floors' && (!Number.isInteger(change.value) || change.value < 1 || change.value > 200)) fail('invalid-intent', 'Floors must be an integer from 1 to 200.');
             if (change.type === 'set_height' && (!finite(change.value) || change.value <= 0 || change.value > 800)) fail('invalid-intent', 'Height must be positive and at most 800 metres.');
-            // One of the Freeform editor's uses (building-use.js), or a word naming one ('housing', 'offices').
-            const use = change.type === 'set_use' ? load('BuildingUse', './building-use.js').normalize(change.value) : null;
-            if (change.type === 'set_use' && !use) fail('invalid-intent', `Supply a building use: ${load('BuildingUse', './building-use.js').USES.join(', ')}.`);
+            // One of the editors' uses (building-use.js), or a word naming one ('housing', 'offices'). A
+            // Block, Row or Detached design's use is its rule's (urbanRule.use), for all its buildings;
+            // a Block may also leave it automatic (shops on the ground floor from five storeys).
+            const ruled = items.some(building => building.properties?.urbanRule);
+            const automatic = change.type === 'set_use' && change.value === 'automatic' && items.every(building => building.properties?.urbanRule?.typology === 'block');
+            const use = change.type === 'set_use' && !automatic ? load('BuildingUse', './building-use.js').normalize(change.value) : null;
+            if (change.type === 'set_use' && !use && !automatic) fail('invalid-intent', `Supply a building use: ${load('BuildingUse', './building-use.js').USES.join(', ')}${ruled ? ' (a Block also takes automatic)' : ''}.`);
+            if (change.type === 'set_use' && ruled && index != null) fail('rule-use', 'A rule design\'s use belongs to its rule; set it without buildingIndex for all its buildings.');
+            const withRuleUse = rule => {
+                const next = { ...rule };
+                if (use) next.use = use; else delete next.use;
+                return next;
+            };
             for (const building of selected) {
                 const p = building.properties ||= {};
-                if (change.type === 'set_use') p.use = use;
+                if (change.type === 'set_use' && p.urbanRule) {
+                    p.urbanRule = withRuleUse(p.urbanRule);
+                    delete p.use;
+                    if (p.ruleProvenance) p.ruleProvenance.definition = structuredClone(p.urbanRule);
+                } else if (change.type === 'set_use') p.use = use;
                 else {
                     const floorHeight = change.floorHeightM ?? p.urbanRule?.floorHeightM
                         ?? (finite(p.height) && finite(p.floors) && p.floors > 0 ? p.height / p.floors : 3);
@@ -50,7 +64,10 @@
             const massing = record.geometry.ruleMassing;
             if (massing) {
                 const lead = items[0].properties;
-                if (change.type === 'set_use') massing.properties.use = use;
+                if (change.type === 'set_use' && massing.properties?.urbanRule) {
+                    massing.properties.urbanRule = withRuleUse(massing.properties.urbanRule);
+                    delete massing.properties.use;
+                } else if (change.type === 'set_use') massing.properties.use = use;
                 else if (massing.properties?.urbanRule && lead.urbanRule) {
                     const rules = load('UrbanRuleVariation', './urban-rule-variation.js');
                     record.geometry.ruleMassing = rules.massingWithRule(massing, lead.urbanRule, massing.properties.variationSeed, { turf });

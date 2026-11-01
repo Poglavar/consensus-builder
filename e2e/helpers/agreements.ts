@@ -184,6 +184,17 @@ export async function layOutParcel(page: Page, parcelId: string): Promise<string
 
 export const agreementEditor = (page: Page) => page.locator('section#agreement-editor');
 export const agreementPanel = (page: Page) => page.locator('section#agreement-panel');
+// The mobile/stack inspector promotes its content pages into the shared tab bar. Tests choose a
+// page explicitly: opening an agreement deliberately remains on Actions.
+export async function openAgreementContentTab(page: Page, name: string): Promise<void> {
+  const tabs = page.locator('#click-stack .click-stack__content-tabs');
+  const tab = tabs.getByRole('tab', { name, exact: true });
+  await expect(tab).toBeVisible();
+  await tab.click();
+  await expect(tab).toHaveAttribute('aria-selected', 'true');
+}
+export const openAgreementDecision = (page: Page) => openAgreementContentTab(page, 'Decision');
+export const openAgreementActions = (page: Page) => openAgreementContentTab(page, 'Actions');
 export const storedAgreements = (page: Page) => page.evaluate(() => JSON.parse(JSON.stringify((window as any).AgreementStore.list())));
 export const editorSave = (editor: Locator) => editor.locator('[data-agreement-action="save"]');
 // The footer's Cancel (the header's close button is the other [data-agreement-action="cancel"]).
@@ -215,20 +226,20 @@ export async function createFromPlan(page: Page, layoutId: string, planTitle = '
   const composer = page.locator('.plan-dialog');
   await composer.locator('input[type="text"]').fill(planTitle);
   await composer.getByRole('button', { name: 'Create plan', exact: true }).click();
+  await page.locator('#click-stack .click-stack__section[data-kind="plans"] [data-page="actions"]').click();
   await page.locator('#click-stack .click-stack__section[data-kind="plans"]').getByRole('button', { name: 'Create agreement', exact: true }).click();
   const editor = await editorOpen(page, 'Create agreement');
   await expect(editor.locator('[data-agreement-input]')).toHaveCount(1, { timeout: 30_000 });
   return editor;
 }
 
-// The Lists panel on its Agreements tab, listing the agreements on this device (or, with
-// `published`, the city's agreements in the index, with their chain status).
-export async function openAgreementsList(page: Page, { published = false } = {}): Promise<Locator> {
+// The Lists panel on its Agreements tab: this device's drafts and the city's agreements in the index,
+// with their chain status, one row per agreement (a published one stored here under its local id).
+export async function openAgreementsList(page: Page): Promise<Locator> {
   const sheet = page.locator('#proposals-sheet');
   if (!(await sheet.isVisible())) await page.locator('#proposals-button').click();
   await expect(sheet).toBeVisible();
   await sheet.getByRole('tab', { name: 'Agreements', exact: true }).click();
-  await sheet.locator(`[data-list-source="${published ? 'published' : 'local'}"]`).click();
   const list = sheet.locator('#designs-agreements');
   await expect(list).toBeVisible();
   return list;

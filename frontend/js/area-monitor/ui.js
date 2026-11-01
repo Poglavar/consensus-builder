@@ -239,11 +239,18 @@
         return Array.isArray(payload?.monitors) ? payload.monitors : [];
     }
 
-    // One watched area: a selectable cb-option row (css/primitives.css).
-    function createMonitorListItem(monitor) {
-        const item = document.createElement('button');
-        item.type = 'button';
-        item.className = 'cb-option area-monitor-list-item';
+    // One watched area. In the centred "other monitors" dialog it is a cb-option row
+    // (css/primitives.css) that opens the area. Beside the map (the Activity sheet) it is an
+    // object-list item (docs/design-language.md, "Object lists"): a click on it never opens
+    // anything, its arrow does. The list's summaries carry no outline, so the row shows none.
+    function createMonitorListItem(monitor, { besideMap = false } = {}) {
+        const label = monitor.name || `Area ${monitor.id}`;
+        const item = document.createElement(besideMap ? 'div' : 'button');
+        if (besideMap) item.className = 'area-monitor-list-row area-monitor-list-item';
+        else {
+            item.type = 'button';
+            item.className = 'cb-option area-monitor-list-item';
+        }
         const icon = document.createElement('i');
         icon.className = 'cb-option__icon fa-solid fa-draw-polygon';
         icon.setAttribute('aria-hidden', 'true');
@@ -251,7 +258,7 @@
         text.className = 'cb-option__text';
         const name = document.createElement('span');
         name.className = 'cb-option__title area-monitor-list-item__name';
-        name.textContent = monitor.name || `Area ${monitor.id}`;
+        name.textContent = label;
         const meta = document.createElement('span');
         meta.className = 'cb-option__desc area-monitor-list-item__meta';
         const parcelText = t('proposals.autoName.parcels', { count: monitor.parcelCount })
@@ -260,7 +267,10 @@
         meta.textContent = [parcelText, createdLabel].filter(Boolean).join(' · ');
         text.append(name, meta);
         item.append(icon, text);
-        item.addEventListener('click', () => openMonitorFromList(monitor.id));
+        if (besideMap) {
+            item.append(global.ObjectList.openButton(document, label, global, {
+                className: 'area-monitor-list-row__open', onOpen: () => openMonitorFromList(monitor.id) }));
+        } else item.addEventListener('click', () => openMonitorFromList(monitor.id));
         return item;
     }
 
@@ -312,7 +322,7 @@
             const list = document.createElement('div');
             list.className = 'area-monitor-list-items';
             const records = monitors.map(monitor => {
-                const item = createMonitorListItem(monitor);
+                const item = createMonitorListItem(monitor, { besideMap: true });
                 item.dataset.monitorName = String(monitor.name || `Area ${monitor.id}`).toLowerCase();
                 list.appendChild(item);
                 return item;

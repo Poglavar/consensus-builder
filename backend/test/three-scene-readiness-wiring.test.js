@@ -64,21 +64,23 @@ function harness({ request = vi.fn(async () => ({ items: [], complete: true })),
         buildNearbyProposalBuildings3D: build,
         buildProposedBuildings3D: vi.fn(async () => {}),
         appendSuggestedExistingFloorPlans: vi.fn(), buildIneligibleParcels3D: vi.fn(),
-        ensureNearbyTrees: vi.fn(), ensureNearbyWater: vi.fn(), ensureNearbyGreen: vi.fn(), refreshClickStackFigures: vi.fn(),
+        ensureNearbyTrees: vi.fn(), ensureNearbyFurniture: vi.fn(), ensureNearbyWater: vi.fn(), ensureNearbyGreen: vi.fn(), refreshClickStackFigures: vi.fn(),
+        applyUseHighlight3D: vi.fn(),
         updateXrayControls: vi.fn(), updateBuildingsLoader: vi.fn(), updateBuildingsSourceNote: vi.fn(),
         refreshLifeSurface: vi.fn(), reportNearbyBuildingsUnavailable: vi.fn(),
         dedupeCoincidentBuildings: buildings => buildings,
-        floorPlanRenderer: { renderCutaway: vi.fn() }, floorPlanGroup: null, updateLampGlow: vi.fn(), updateSkyAndWindows: vi.fn(), retierTreesIfMoved: vi.fn(), rebuildProposalGrounds3D: vi.fn(),
-        document: { hidden: false }, loopRunning: true, renderInvalidated: false,
+        floorPlanRenderer: { renderCutaway: vi.fn() }, floorPlanGroup: null, updateLampGlow: vi.fn(), updateSkyAndWindows: vi.fn(), updateAtmosphere: vi.fn(), retierTreesIfMoved: vi.fn(), rebuildProposalGrounds3D: vi.fn(),
+        document: { hidden: false, body: { classList: (classes => ({ add: c => classes.add(c), contains: c => classes.has(c) }))(new Set()) } }, loopRunning: true, renderInvalidated: false,
         frameTimer: null, frameId: null, hooksParked: false, lastInputAt: 0,
         requestAnimationFrame: vi.fn(() => 1), clearTimeout: vi.fn(), setTimeout: vi.fn(() => 1),
         frameHooks: [],
+        noteSceneWork: vi.fn(),
     };
     context.nearbyProposalBuildings = [];
     context.buildingGroup.add(context.existingBuildingsGroup, context.proposedBuildingsGroup);
     const names = [
         'ensureNearbyProposalBuildings', 'rebuild3DBuildingsOnly', 'build3DBuildingFamilies', 'renderScene',
-        'getSceneReadiness', 'invalidateThreeView', 'queueThreeFrame', 'scheduleThreeFrame', 'threeBuildingKey'
+        'getSceneReadiness', 'invalidateThreeView', 'queueThreeFrame', 'scheduleThreeFrame', 'threeBuildingKey', 'awaitingPhotoReveal'
     ];
     vm.createContext(context);
     vm.runInContext(`function renderFrame() {}\n${names.map(name => declarations.get(name)).join('\n')}\n${names.map(name => `this.${name}=${name};`).join('\n')}`, context);

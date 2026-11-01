@@ -48,7 +48,6 @@ test.describe('World navigation and open ground @features', () => {
     await expect(page.locator('#proposals-button')).toHaveAccessibleName('Lists');
     await page.locator('#proposals-button').click();
     const sheet = page.locator('#proposals-sheet');
-    await sheet.locator('[data-list-source="published"]').click();
     await expect(sheet.locator('#proposal-list-host .lists-item')).toHaveCount(7);
     await expect(sheet.locator('#lists-status')).toHaveText('Shown: 7');
   });
@@ -64,10 +63,10 @@ test.describe('World navigation and open ground @features', () => {
     });
     // Dhaka: no configured city covers it, so the address alone opens explore there
     await page.goto('/?at=23.7104,90.4074,16&lang=en&reduceMotion=1'); await waitForMapReady(page);
+    // Opening Lists starts its visible-area request synchronously, so clear navigation-time calls first.
+    listQueries.length = 0;
     await page.locator('#proposals-button').click();
     const sheet = page.locator('#proposals-sheet');
-    listQueries.length = 0;
-    await sheet.locator('[data-list-source="published"]').click();
     await expect(sheet.locator('#proposal-list-host .lists-item')).toHaveCount(7);
     expect(listQueries.length).toBeGreaterThan(0);
     const bbox = await page.evaluate(() => (window as any).getProposalCountAreaContext().bbox.join(','));
@@ -241,6 +240,29 @@ test.describe('World navigation and open ground @features', () => {
     await expect(track).toHaveCSS('animation-name', 'none');
     await page.mouse.wheel(0, -1000);
     await expect.poll(() => activity.locator('.world-activity__viewport').evaluate(node => node.scrollTop)).toBe(0);
+  });
+
+  test('between phone and desktop widths the activity floats beside the planet, clear of the search and the legend', async ({ mockApi: page }) => {
+    const cid = cidOfObject({ schema: 'agreement/v1', title: 'Community park agreement' });
+    const events = ['propose', 'execute'].map((type, index) => agreementEvent(`event-${index}`, type, cid, { occurredAt: `2026-10-02T12:0${index}:00Z` }));
+    await page.route('**/activity/recent?*', route => route.fulfill({ json: { events } }));
+    // Below 1100 px the panel once went in-flow while its container was display: contents above
+    // 600 px, so it landed at the top of the globe view under the search box.
+    for (const width of [865, 620]) {
+      await page.setViewportSize({ width, height: 900 });
+      await page.goto('/?city=zg&lang=en'); await waitForMapReady(page);
+      await openWorldFromCity(page);
+      const activity = page.locator('.world-activity');
+      await expect(activity.getByRole('link')).toHaveCount(2, { timeout: 15000 });
+      const box = async (selector: string) => (await page.locator(selector).first().boundingBox())!;
+      const panel = await box('.world-activity');
+      for (const other of ['.world-search', '.world-view__close', '.world-legend']) {
+        const rect = await box(other);
+        const overlaps = panel.x < rect.x + rect.width && rect.x < panel.x + panel.width && panel.y < rect.y + rect.height && rect.y < panel.y + panel.height;
+        expect(overlaps, `activity overlaps ${other} at ${width} px`).toBe(false);
+      }
+      expect(panel.x + panel.width).toBeLessThanOrEqual(width);
+    }
   });
 
   // An agreement in the feed opens its link in place: its designs are applied (a design unapplied here

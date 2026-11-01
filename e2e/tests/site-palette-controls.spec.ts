@@ -102,6 +102,14 @@ test.describe('Site proposals already on its parcels @core', () => {
     await expect(infoTab).toHaveText('');
     await infoTab.click();
     await expect(panel.locator('[data-site-tab-panel="info"]')).toContainText('Bound parcels (1)');
+    // A bound parcel's row outlines it on hover and keeps the outline (pressed) until clicked again.
+    const parcelRow = panel.locator('[data-site-tab-panel="info"] .site-panel__parcel-pick');
+    await parcelRow.hover();
+    await expect(page.locator('path.proposal-hover-outline').first()).toBeAttached();
+    await parcelRow.click();
+    await expect(parcelRow).toHaveAttribute('aria-pressed', 'true');
+    await parcelRow.click();
+    await expect(parcelRow).toHaveAttribute('aria-pressed', 'false');
     const designTab=panel.getByRole('tab',{name:'Design',exact:true});
     await expect(designTab.locator('.fa-pen')).toBeVisible();
     await expect(designTab).toHaveAttribute('title','Design');

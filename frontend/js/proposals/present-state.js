@@ -195,6 +195,9 @@
             const height = measuredNumber(building.height_m), floors = measuredNumber(building.floors);
             if (height !== null) properties.height = height;
             if (floors !== null) properties.floors = floors;
+            // The use the building's source states (a city model's function code), else none: Plan
+            // stats splits its floor area by that use instead of the housing share.
+            if (building.use) properties.use = building.use;
             return {
                 proposalId: `built:${id}`, applied: true, lifecycleStatus: 'active',
                 buildingProposal: { buildings: [{ type: 'Feature', properties,

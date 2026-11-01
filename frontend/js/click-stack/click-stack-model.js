@@ -256,20 +256,6 @@
         return groups;
     }
 
-    // A relationship strip is redundant only when its sole target is also the sole visible
-    // instance in that target section. Missing/offscreen targets remain useful navigation.
-    // The stack shows only the selected level and its neighbours, so a target section it leaves
-    // out (a formed parcel's design, above the buildings on it) cannot stand in for the strip.
-    function visibleContextFor(kind, instance, hits = {}) {
-        const shown = new Set(visibleSections({ ...buildClickStack(hits), selectedKind: kind }).map(section => section.kind));
-        return contextFor(kind, instance, hits).filter(group => {
-            if (['memberPlans', 'designsOnParcel', 'affectedBy'].includes(group.relation)) return true;
-            if (group.count !== 1 || !shown.has(group.kind)) return true;
-            const visible = instancesOf(group.kind, hits[group.kind]);
-            return visible.length !== 1 || visible[0].id !== group.instances[0].id;
-        });
-    }
-
     // Whether an object opened from a list or link has to be brought into view. box is its screen
     // extent and view the part of the map the panels leave visible, both { left, top, right, bottom }
     // in map pixels. An object wholly inside the view and big enough to make out keeps the camera;
@@ -281,5 +267,5 @@
         return !inside || Math.max(box.right - box.left, box.bottom - box.top) < minPx;
     }
 
-    return Object.freeze({ ORDER, framingNeeded, summarizeSelection, buildSelectionStack, buildClickStack, clickAction, expand, selectInstance, selectedInstance, visibleSections, contextFor, visibleContextFor });
+    return Object.freeze({ ORDER, framingNeeded, summarizeSelection, buildSelectionStack, buildClickStack, clickAction, expand, selectInstance, selectedInstance, visibleSections, contextFor });
 });

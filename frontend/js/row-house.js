@@ -1487,7 +1487,7 @@
         rowRuleKind = DEFAULT_ROW_RULE_KIND;
         rowMinHeightM = 0;
         rowMinPlotAreaM2 = DEFAULT_ROW_MIN_PLOT_AREA_M2;
-        rowRuleExtras = {};
+        rowRuleExtras = window.UrbanRuleVariation.defaultRuleExtras('row');
         rowVariationSeed = (Math.floor(Math.random() * 0xffffffff) >>> 0);
         rowHouseManualMode = false;
         rowUnits = [];

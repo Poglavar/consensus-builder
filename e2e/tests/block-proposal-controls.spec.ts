@@ -109,8 +109,8 @@ for (const kind of ['road', 'building', 'park'] as const) {
     // boundaries"); the block inspector row has no delete of its own.
     await expect(row.locator('.proposal-delete-btn')).toHaveCount(0);
     await page.locator('#proposals-button').click();
-    await page.locator(`#proposals-sheet .lists-item[data-list-id="${id}"]`).getByRole('button', { name: 'Remove from browser', exact: true }).click();
-    await page.locator('.cb-dialog').getByRole('button', { name: 'Remove from browser', exact: true }).click();
+    await page.locator(`#proposals-sheet .lists-item[data-list-id="${id}"]`).getByRole('button', { name: 'Delete draft', exact: true }).click();
+    await page.locator('.cb-dialog').getByRole('button', { name: 'Delete draft', exact: true }).click();
     await expect.poll(() => page.evaluate(id => !!(window as any).proposalStorage.getProposal(id), id)).toBe(false);
     await expect(row).toHaveCount(0);
   });

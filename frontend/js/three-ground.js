@@ -20,8 +20,31 @@
     // darker than both, because a sunlit vertical face renders brighter than a flat one and a
     // light kerb read as a white line instead of a step.
     const COLORS = Object.freeze({ pavement: 0xcdccc8, asphalt: 0x5b5d61, kerb: 0x8e8c87, markings: 0xe9e7df });
-    // Lane lines sit 1 cm over the asphalt and are pulled forward so they never sink into it at distance.
-    const OFFSET = Object.freeze({ markings: -1 });
+    // Every ground surface is pushed back further than building faces (three-mode.js
+    // makeBuildingMaterial pushes them by factor 1, units 1 so their edge lines stay in front). At
+    // the same push or none, the faces' push put the foot of a wall seen at an angle behind the
+    // paving, which covered its bottom pixels in a band that moved with every zoom and pan. Ground
+    // surfaces are layered among themselves by stencil claims (ORDER), so the push leaves that alone.
+    // Lane lines sit 1 cm over the asphalt and are pulled forward of it so they never sink into it at distance.
+    // A design's ground (designSurface) lies over the city's ground and still behind every building
+    // face: ranks 1..MAX_DESIGN_RANK sit between the faces (1) and the city's ground (OFFSET.ground).
+    const OFFSET = Object.freeze({ ground: 8, markings: -1 });
+    const MAX_DESIGN_RANK = OFFSET.ground - 3;
+    function behindBuildings(material, extra = 0) {
+        material.polygonOffset = true;
+        material.polygonOffsetFactor = OFFSET.ground + extra;
+        material.polygonOffsetUnits = OFFSET.ground + extra;
+        return material;
+    }
+    // A design's ground surface: a park's lawn and water, a square's paving, a plot's fill, a site's
+    // sidewalk, earth under construction, the light a lamp casts on the ground. Such surfaces used to
+    // be pulled toward the camera (negative offsets), which put them in front of building faces too,
+    // so they covered the foot of every wall standing on them by a band that changed with the zoom.
+    // `rank` (1..MAX_DESIGN_RANK) keeps their order among themselves: a higher rank lies nearer.
+    function designSurface(material, rank) {
+        const r = Math.min(MAX_DESIGN_RANK, Math.max(1, Math.round(Number(rank) || 1)));
+        return behindBuildings(material, -r);
+    }
     // Procedural paving: slabs this big, a thin darker joint between them and a faint per-slab tint.
     const PAVE_SLAB_M = 1.5;
     // Runs after Lambert's colour setup. `vPaveXY` is the local XY in metres; the joint is
@@ -52,10 +75,11 @@
     // lift of a few centimetres cannot reliably separate coplanar surfaces, especially large
     // triangles viewed at changing distances, and not at all on a phone's coarser depth buffer
     // (green areas striped through the parcels on Android, 2026-10-28). Each claiming surface
-    // (parcelSurface) draws only on pixels nothing claimed before it and claims them: the ground
-    // cover (`cover`, the real-world lawns, meadows and woods, most specific first) before the
-    // parcel slabs at the default order (0), and the background fills what is left afterwards.
-    const ORDER = Object.freeze({ lid: -20, roadbed: -10, kerb: -10, markings: -10, cover: -5, pavement: 1 });
+    // (parcelSurface) draws only on pixels nothing claimed before it and claims them: real-world
+    // water (`water`) first, then the ground cover (`cover`, the real-world lawns, meadows and woods,
+    // most specific first), then the parcel slabs at the default order (0), and the background fills
+    // what is left afterwards.
+    const ORDER = Object.freeze({ lid: -20, roadbed: -10, kerb: -10, markings: -10, water: -8, cover: -5, pavement: 1 });
 
     function create(options) {
         const THREE = options.THREE;
@@ -65,6 +89,7 @@
 
         // A pavement-level material skips every pixel the lid marked.
         function cutHoles(material) {
+            behindBuildings(material);
             material.stencilWrite = true;
             material.stencilWriteMask = 0;
             material.stencilFuncMask = STENCIL_BIT;
@@ -126,9 +151,9 @@
                 stencilWrite: true, stencilRef: STENCIL_BIT, stencilWriteMask: STENCIL_BIT, stencilFuncMask: STENCIL_BIT,
                 stencilFunc: THREE.AlwaysStencilFunc, stencilFail: THREE.KeepStencilOp, stencilZFail: THREE.KeepStencilOp, stencilZPass: THREE.ReplaceStencilOp
             }),
-            asphalt: new THREE.MeshLambertMaterial({ color: COLORS.asphalt }),
-            kerb: new THREE.MeshLambertMaterial({ color: COLORS.kerb, side: THREE.DoubleSide }),
-            markings: new THREE.MeshLambertMaterial({ color: COLORS.markings, polygonOffset: true, polygonOffsetFactor: OFFSET.markings, polygonOffsetUnits: OFFSET.markings }),
+            asphalt: behindBuildings(new THREE.MeshLambertMaterial({ color: COLORS.asphalt })),
+            kerb: behindBuildings(new THREE.MeshLambertMaterial({ color: COLORS.kerb, side: THREE.DoubleSide })),
+            markings: behindBuildings(new THREE.MeshLambertMaterial({ color: COLORS.markings }), OFFSET.markings),
             pavement: paveTexture(backgroundSurface(new THREE.MeshLambertMaterial({ color: COLORS.pavement })), 1)
         };
         let meshes = [];
@@ -187,5 +212,5 @@
         };
     }
 
-    return { create, COLORS, OFFSET, ORDER, STENCIL_BIT, PARCEL_BIT, PAVE_SLAB_M };
+    return { create, designSurface, COLORS, OFFSET, MAX_DESIGN_RANK, ORDER, STENCIL_BIT, PARCEL_BIT, PAVE_SLAB_M };
 });

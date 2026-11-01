@@ -4,7 +4,7 @@
 // copied /designs/<cid> link imports and applies the design on another device, and a second Share
 // sends nothing again.
 import { test, expect } from '../helpers/fixtures';
-import { openCity, createSpace, showProposal, proposalState, chooseProfileName, stubBasemapTiles, openOnAnotherDevice } from '../helpers/runtime';
+import { openCity, createSpace, showProposal, showProposalTab, proposalState, chooseProfileName, stubBasemapTiles, openOnAnotherDevice } from '../helpers/runtime';
 import { canonicalJson, cidOfBytes, cidOfObject, pageIndex, SharedIndex } from '../helpers/mocks/shared-server';
 
 test.beforeEach(async ({ mockApi: page }) => {
@@ -26,8 +26,10 @@ test('Share on an applied park publishes its design object under the CID the bro
 
   await showProposal(page, proposalId);
   const details = page.locator('#proposal-details-panel');
+  await showProposalTab(page, 'overview');
   await expect(details.locator('.cb-badge--draft')).toBeVisible();
   // A guest chooses a profile name first: the design carries its author, and nothing left the device.
+  await page.locator('#click-stack [data-page="actions"]').click();
   await details.locator('.btn-share-proposal').click();
   await expect(page.getByRole('alertdialog', { name: 'Share design or plan?', exact: true })).toHaveCount(0);
   await chooseProfileName(page, 'Share author');
@@ -36,6 +38,7 @@ test('Share on an applied park publishes its design object under the CID the bro
   await showProposal(page, proposalId);
   await details.locator('.btn-share-proposal').click();
   await expect(page.getByRole('alertdialog', { name: 'Share design or plan?', exact: true })).toHaveCount(0);
+  await showProposalTab(page, 'overview');
   await expect(details.locator('.cb-badge--published')).toBeVisible({ timeout: 30_000 });
 
   // The index got the object under the CID of its canonical bytes (recomputed here with node's
@@ -69,6 +72,7 @@ test('Share on an applied park publishes its design object under the CID the bro
 
   // Sharing it again copies the same link and sends nothing: it still hashes to its published CID.
   await page.evaluate(() => navigator.clipboard.writeText(''));
+  await page.locator('#click-stack [data-page="actions"]').click();
   await details.locator('.btn-share-proposal').click();
   await expect(page.getByRole('alertdialog', { name: 'Share design or plan?', exact: true })).toHaveCount(0);
   await expect.poll(() => page.evaluate(() => navigator.clipboard.readText())).toBe(link);
@@ -94,6 +98,7 @@ test('Share on an applied park publishes its design object under the CID the bro
     // The shared-design route opens the current design details inside the click stack.
     const receiverDetails = receiver.page.locator('#proposal-details-panel');
     await expect(receiverDetails).toBeVisible({ timeout: 30_000 });
+    await showProposalTab(receiver.page, 'overview');
     await expect(receiverDetails.locator(`[data-proposal-published-cid="${cid}"]`)).toBeAttached({ timeout: 30_000 });
     await expect(receiverDetails.locator('.cb-badge--published')).toBeVisible();
     // The receiving device sent nothing to the courier or the index.

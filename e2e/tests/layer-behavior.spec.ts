@@ -1,6 +1,6 @@
 import { openLayerSection } from '../helpers/layers';
 import { test, expect } from '../helpers/fixtures';
-import { openCity, openParcel, createBuilding, proposalState, PARCEL_ID, expectStatusLogged } from '../helpers/runtime';
+import { openCity, openParcel, createBuilding, proposalState, parcelTab, PARCEL_ID, expectStatusLogged } from '../helpers/runtime';
 import { installLayerDatasets } from '../helpers/mocks/layer-datasets';
 import { openAndClosePopup, selectNativeOption } from '../helpers/controls';
 
@@ -103,8 +103,7 @@ test.describe('Layers sheet behavior @features', () => {
     const adActions = page.locator('#parcel-ad-dialog');
     await expect(adActions).toBeVisible();
     const adUrl = 'https://example.invalid/fixture-ad';
-    const builderUrl = await page.evaluate(() => (window as any).CityConfigManager.getParcelBuilderConfig().url);
-    for (const [name, url] of [['Marketplace', adUrl], ['Parcel builder', builderUrl]]) {
+    for (const [name, url] of [['Marketplace', adUrl]]) {
       // Returning from an external tab can refresh the parcel panel and close its popover.
       if (!(await adActions.isVisible())) await page.locator('.parcel-ad-link-btn').click();
       await page.context().route(`${url}**`, route => route.fulfill({ contentType: 'text/html', body: '<title>External destination fixture</title>' }));
@@ -120,6 +119,14 @@ test.describe('Layers sheet behavior @features', () => {
     if (!(await adActions.isVisible())) await page.locator('.parcel-ad-link-btn').click();
     await page.locator('.parcel-ad-link-btn').click();
     await expect(adActions).toBeHidden();
+    // Parcel Builder is authoring work, not a sale/marketplace action: it lives in the promoted
+    // Actions page alongside the creation palette.
+    const builderUrl = await page.evaluate(() => (window as any).CityConfigManager.getParcelBuilderConfig().url);
+    await parcelTab(page, 'propose-tab').click();
+    await openAndClosePopup(page, () => page.locator('#parcelBuilderButton').click(), async child => {
+      await child.waitForURL(actual => actual.href.startsWith(builderUrl), { waitUntil: 'commit' });
+      expect(new URL(child.url()).searchParams.get('parcel_identifier')).toBe('1234-335754');
+    });
   });
 
   test('building and road reference layers load real features on checkbox clicks', async ({ mockApi: page }) => {

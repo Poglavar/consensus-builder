@@ -26,8 +26,11 @@
         return String(props.name || props.address || props.addr_street || '');
     }
 
+    // The id as people read it (proposal-parcel-identity.js): a browser global, or required in node.
     function parcelLabel(id) {
-        return String(id).replace(/^HR-\d+-/, '');
+        const label = global && typeof global._parcelIdLabel === 'function' ? global._parcelIdLabel
+            : require('./proposal-parcel-identity.js')._parcelIdLabel;
+        return label(id);
     }
 
     // What a click picked decides which section opens: the thing the ray hit, else the ground,
@@ -138,6 +141,14 @@
             if (event.key !== 'Escape' || event.defaultPrevented || global.isEditableTarget?.(event.target) || global.isAnyModalOpen?.()) return;
             event.preventDefault(); close();
         });
+        // A related item outlines its own object; the camera stays (the Focus button frames).
+        state.preview = global.ClickStackRelations?.bindPreview(el, {
+            show: (kind, id, { pinned }) => {
+                if (pinned) global.ClickStackNavigation?.showMap(el);
+                state.adapter?.focus?.(kind, global.ClickStackRelations.relatedInstance(state.stack, kind, id, selectedInstance));
+            },
+            restore: () => { if (state.stack) state.adapter?.focus?.(state.stack.selectedKind, selectedInstance(state.stack, state.stack.selectedKind)); }
+        });
         container.appendChild(el);
         state.el = el;
         return el;
@@ -150,6 +161,7 @@
         global.SelectionAddress?.write(global.SelectionAddress.selectionOf(stack, selectedInstance));
         // Whatever the old body hosted goes home first; the expanded section hosts it again.
         if (!keepBody) state.adapter?.release?.({ keepSelection: !stack.expanded });
+        global.ClickStackNavigation?.release(el, keepBody);
         el.textContent = '';
         el.setAttribute('aria-label', t('clickStack.title', 'At this spot'));
         const list = doc.createElement('div');
@@ -223,6 +235,11 @@
             list.appendChild(wrap);
         });
         el.appendChild(list);
+        global.ClickStackNavigation?.frame(el, stack, ICONS, rowTitle, kind => {
+            state.stack = expand(state.stack, kind); absorbNeighbours(kind); render(); activate();
+            if (kind === 'designs' || kind === 'built') syncMemberships();
+        }, close);
+        if (keepBody) global.ClickStackNavigation?.content(keepBody, stack.expanded, selectedInstance(stack, stack.expanded)?.id);
         syncAgreements();
     }
 
@@ -245,6 +262,7 @@
                 const keepBody = state.stack.expanded && (state.stack.expanded !== 'agreements' || sameAgreement)
                     ? state.el.querySelector(`.click-stack__section[data-kind="${state.stack.expanded}"] .click-stack__body`) : null;
                 render({ keepBody }); if (!keepBody) activate();
+                if (state.stack.expanded === 'plans') global.ClickStackNavigation?.agreements(state.el.querySelector('.click-stack__body'), rows, group);
                 if (keepBody && state.stack.expanded === 'agreements') global.DesignMemberships.updateAgreementGroup(keepBody, group, global);
             }
         });
@@ -260,6 +278,7 @@
             const instance = selectedInstance(state.stack, kind);
             // A refresh re-runs this on the open section: start from an empty body, or every scene
             // rebuild (a Layers toggle) would add another copy of the selector and the related lists.
+            global.ClickStackNavigation?.release(state.el);
             body.replaceChildren();
             state.adapter.activate(kind, instance, body, options);
             if (kind === 'agreements') {
@@ -278,7 +297,7 @@
                 if (global.DesignMemberships) mount();
                 else global.ensureOptionalTool('designMemberships').then(mount).catch(error => global.showStyledAlert(error.message));
             } else {
-                for (const group of global.__clickStackModel?.visibleContextFor(kind, instance, state.input) || []) {
+                for (const group of global.__clickStackModel?.contextFor(kind, instance, state.input) || []) {
                     body.appendChild(global.ClickStackRelations.renderGroup(group, doc, global));
                 }
             }
@@ -286,6 +305,8 @@
             const section = state.stack.sections.find(item => item.kind === kind);
             const selector = global.ClickStackRelations?.renderSelector(section, doc, global, state.input?.plans);
             if (selector) body.insertBefore(selector, body.firstChild);
+            if (kind === 'plans') global.ClickStackNavigation?.agreements(body, state.input.agreements || [], state.agreementGroup);
+            global.ClickStackNavigation?.content(body, kind, instance.id);
         } catch (error) {
             console.error(`[${new Date().toISOString()}] [ThreeClickStack] the ${kind} section could not open`, error);
         }
@@ -303,6 +324,7 @@
         state.derived = {};
 
         state.click = options.click || null;
+        state.agreementScope?.dispose(); state.agreementScope = null;
         state.activationOptions = {};
         state.stack = buildThreeStack(input, options);
         if (!state.stack.sections.length) { close({ silent: true }); return false; }
@@ -385,6 +407,8 @@
         if (!isOpen()) return;
         global.AgreementPanel?.release?.(state.el);
         const adapter = state.adapter;
+        global.ClickStackNavigation?.release(state.el);
+        global.ClickStackNavigation?.showMap(state.el);
         adapter?.release?.();
         state.memberships?.dispose();
         state.agreementScope?.dispose(); state.agreementScope = null;
@@ -416,6 +440,7 @@
         if (!target || !state.el.contains(target)) return;
         const { action, kind, id } = target.dataset;
         if (action === 'focus') {
+            global.ClickStackNavigation?.showMap(state.el);
             const instance = selectedInstance(state.stack, kind);
             state.adapter.focus?.(kind, instance);
             if (!state.adapter.frame(kind, instance)) global.updateStatus?.(t('clickStack.focusUnavailable', 'This has no shape on the map yet.'));
@@ -482,7 +507,7 @@
             if (!isOpen() || version !== state.membershipVersion) return;
             const current = selectedInstance(state.stack, 'designs');
             const currentProposal = global.proposalStorage?.getProposal?.(current?.id) || current?.proposal;
-            if (current?.id !== design.id || (global.DesignRecord?.cidOf(currentProposal) || global.DesignSync?.publishedCid(currentProposal) || null) !== session.cid) {
+            if (current?.id !== design.id || (global.DesignRecord?.cidOf(currentProposal) || global.DesignSync?.publishedCid(currentProposal) || null) !== session.revision) {
                 session.dispose();
                 syncMemberships(true);
                 return;
@@ -491,7 +516,7 @@
             const selected = Object.fromEntries(state.stack.sections.map(section => [section.kind, section.instances[section.selectedIndex].id]));
             const previous = state.stack;
             state.input = { ...state.input, plans: Array.from(new Map([...session.instances('plans', previous.selectedKind === 'plans'), ...(state.input.planContext ? [state.input.planContext] : [])].map(item => [item.id, item])).values()) };
-            state.input.designs = state.input.designs.map(item => item.id === design.id ? { ...item, cid: session.cid } : item);
+            state.input.designs = state.input.designs.map(item => item.id === design.id ? { ...item, cid: session.cid || session.revision } : item);
             const next = buildThreeStack(state.input, { selected, focus: previous.selectedKind });
             state.stack = { ...next, expanded: previous.expanded && next.sections.some(section => section.kind === previous.expanded) ? previous.expanded : null };
             const keepBody = previous.expanded !== 'plans'
@@ -499,7 +524,7 @@
             render({ keepBody });
             if (keepBody) {
                 [...keepBody.children].filter(child => child.classList.contains('click-stack__choices')).forEach(child => child.remove());
-                for (const group of global.__clickStackModel?.visibleContextFor(previous.expanded, selectedInstance(state.stack, previous.expanded), state.input) || []) {
+                for (const group of global.__clickStackModel?.contextFor(previous.expanded, selectedInstance(state.stack, previous.expanded), state.input) || []) {
                     keepBody.appendChild(global.ClickStackRelations.renderGroup(group, doc, global));
                 }
             } else activate();

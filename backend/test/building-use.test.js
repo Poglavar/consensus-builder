@@ -1,5 +1,5 @@
-// A building's Use (building-use.js): the presets, the words that name them, their storeys, and the
-// set_use intent the editor and MCP share.
+// A building's Use (building-use.js): the presets, the words that name them, their storeys, the
+// city models' function codes, and the set_use intent the editor and MCP share.
 import { describe, expect, it } from 'vitest';
 import { createRequire } from 'node:module';
 import * as turf from '@turf/turf';
@@ -26,6 +26,62 @@ describe('building use', () => {
         expect(use.layoutRules('residential')).toEqual({ groundFloorUse: 'residential' });
         expect(use.layoutRules('mixed')).toEqual({ groundFloorUse: 'commercial' });
         expect([use.layoutRules('office'), use.layoutRules('industrial'), use.layoutRules(null)]).toEqual([null, null, null]);
+    });
+});
+
+describe("a city model's function code", () => {
+    it('maps the German LoD2 models\' ALKIS codes onto the six uses, bare or with the building class', () => {
+        // Codes as Cologne, Berlin, Hamburg, Stuttgart and Dresden tiles carry them.
+        const codes = { '31001_1010': 'residential', '31001_1000': 'residential', '31001_1100': 'mixed', '31001_1120': 'residential-shops',
+            '31001_1122': 'mixed', '31001_1123': 'residential-shops', '31001_2000': 'office', '31001_2020': 'office', '31001_2071': 'office',
+            '31001_2112': 'industrial', '31001_2310': 'mixed', '31001_2463': 'industrial', '31001_2523': 'industrial', '31001_3010': 'public',
+            '31001_3021': 'public', '31001_3065': 'public', '31001_3211': 'public', '1010': 'residential', '3051': 'public' };
+        for (const [code, expected] of Object.entries(codes)) expect(use.fromCityModel(code), code).toBe(expected);
+    });
+    it('states no use for an unknown or other building, a holiday house, or a structure that is no building', () => {
+        expect(['31001_9998', '31001_9999', '31001_1313', '51009_1610', '53001_1800', '12345', 'Gebäude'].map(code => use.fromCityModel(code)))
+            .toEqual([null, null, null, null, null, null, null]);
+        expect(use.fromCityModel(null, null)).toBeNull();
+    });
+    it('reads a word as a preset, and the usage when the function names none', () => {
+        expect(use.fromCityModel('residential')).toBe('residential');
+        expect(use.fromCityModel('Offices')).toBe('office');
+        expect(use.fromCityModel('31001_9998', '31001_2020')).toBe('office');
+        expect(use.fromCityModel(undefined, 'school')).toBe('public');
+    });
+});
+
+describe("a rule design's use", () => {
+    const variation = require('../../frontend/js/urban-rule-variation.js');
+    it('is the rule\'s alone, whatever the building carries, and sets every storey', () => {
+        expect(use.statedUse({ urbanRule: { typology: 'row', use: 'office' } })).toBe('office');
+        // An older agent draft carries a per-building use; the rule's Use still decides.
+        expect(use.statedUse({ use: 'public', urbanRule: { use: 'office' } })).toBe('office');
+        expect(use.statedUse({ use: 'public', urbanRule: { typology: 'block' } })).toBe(null);
+        expect(use.statedUse({ use: 'public' })).toBe('public');
+        expect(use.storeyUsesOf({ urbanRule: { typology: 'block', use: 'mixed' } }, 3)).toEqual(['shop', 'office', 'residential']);
+        expect(use.storeyUsesOf({ urbanRule: { typology: 'block', use: 'office' } }, 6)).toEqual(new Array(6).fill('office'));
+    });
+    it('rides the rule\'s extras: a new Row or Detached rule is housing, a Block automatic', () => {
+        expect(variation.normalizeRuleExtras({ use: 'Offices', roof: 'pitched' })).toEqual({ roof: 'pitched', use: 'office' });
+        expect(variation.normalizeRuleExtras({ use: '' })).toEqual({});
+        expect(variation.normalizeBlockRule({ use: 'industrial' }).use).toBe('industrial');
+        expect(variation.normalizeParcelRule({ use: 'residential-shops' }).use).toBe('residential-shops');
+        expect([variation.defaultRuleExtras('block'), variation.defaultRuleExtras('row'), variation.defaultRuleExtras('parcelBased')])
+            .toEqual([{}, { use: 'residential' }, { use: 'residential' }]);
+    });
+});
+
+describe("OpenStreetMap's building tag", () => {
+    it('maps building=* values (and Overture class and subtype words) onto the six uses', () => {
+        const tags = { apartments: 'residential', house: 'residential', terrace: 'residential', detached: 'residential',
+            retail: 'office', commercial: 'office', office: 'office', warehouse: 'industrial', industrial: 'industrial',
+            school: 'public', hospital: 'public', church: 'public', civic: 'public', education: 'public', ' Apartments ': 'residential' };
+        for (const [tag, expected] of Object.entries(tags)) expect(use.fromOsmBuilding(tag), tag).toBe(expected);
+    });
+    it('states no use for building=yes, outbuildings, or no tag', () => {
+        expect(['yes', 'garage', 'shed', 'roof', 'barn', 'outbuilding', '', null, undefined].map(tag => use.fromOsmBuilding(tag)))
+            .toEqual([null, null, null, null, null, null, null, null, null]);
     });
 });
 

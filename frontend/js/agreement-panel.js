@@ -227,14 +227,18 @@
         };
     }
 
-    function personsHtml(derived, tr = t) {
+    function personsHtml(derived, tr = t, { title = null, collapsible = false, open = false } = {}) {
         if (!derived || !derived.rows.length) return '';
         const head = [tr('agreement.workflow.person', 'Person'), tr('agreement.panel.ledger.contributes', 'Contributes'),
             tr('agreement.panel.ledger.receives', 'Receives'), tr('agreement.panel.ledger.cash', 'Cash')];
         const body = derived.rows.map(row => `<tr data-agreement-person="${esc(row.personId)}"><th scope="row">${esc(row.name)}</th><td>${esc(row.contributes)}</td><td>${esc(row.receives)}</td><td>${esc(row.cash)}</td></tr>`).join('');
-        return sectionHtml(tr('agreement.workflow.personsByRights', 'Persons by ownership rights'), '<div class="agreement-panel-ledger-scroll"><table class="agreement-panel-ledger" data-agreement-derived-persons>'
+        const content = '<div class="agreement-panel-ledger-scroll"><table class="agreement-panel-ledger" data-agreement-derived-persons>'
             + `<thead><tr>${head.map(label => `<th scope="col">${esc(label)}</th>`).join('')}</tr></thead><tbody>${body}</tbody></table></div>`
-            + (derived.unresolved ? `<p class="agreement-panel-meta" data-agreement-persons-unresolved>${esc(tr('agreement.workflow.personsUnresolved', 'Without complete ownership rights, the owners of {{count}} parcel(s) stay one party.', { count: derived.unresolved }))}</p>` : ''));
+            + (derived.unresolved ? `<p class="agreement-panel-meta" data-agreement-persons-unresolved>${esc(tr('agreement.workflow.personsUnresolved', 'Without complete ownership rights, the owners of {{count}} parcel(s) stay one party.', { count: derived.unresolved }))}</p>` : '');
+        const heading = title || tr('agreement.workflow.personsByRights', 'Persons by ownership rights');
+        return collapsible
+            ? `<details class="agreement-panel-disclosure"${open ? ' open' : ''}><summary>${esc(heading)}</summary>${content}</details>`
+            : sectionHtml(heading, content);
     }
 
     // Who decides and whether it binds; for the owners, the approval rule in one line.
@@ -312,7 +316,7 @@
     // Propose is the main action of a current agreement not yet proposed; a proposed agreement is
     // immutable, so it has no Edit (a change is a new agreement). Bet appears when the markets offer
     // one on the agreement (window.AgreementBets.available).
-    function actionsHtml({ canCompare = false, comparing = false, canPropose = false, published = false, canBet = false, readOnly = false } = {}, tr = t) {
+    function actionsHtml({ canCompare = false, comparing = false, canPropose = false, published = false, canBet = false, canCounter = false, readOnly = false } = {}, tr = t) {
         canPropose = canPropose && !readOnly;
         // A read-only view (a copied address) applies its designs here to take part: vote, compare, bet.
         return '<div class="agreement-panel-actions">'
@@ -322,6 +326,7 @@
             + `<i class="fas fa-left-right" aria-hidden="true"></i> ${esc(tr('mapCompare.toggle', 'Before / after'))}</button>`
             + (canBet && !readOnly ? `<button type="button" class="btn" data-agreement-action="bet"><i class="fas fa-chart-line" aria-hidden="true"></i> ${esc(tr('agreement.panel.actions.bet', 'Bet'))}</button>` : '')
             + (published || readOnly ? '' : `<button type="button" class="btn" data-agreement-action="edit"><i class="fas fa-pen" aria-hidden="true"></i> ${esc(tr('agreement.panel.actions.edit', 'Edit'))}</button>`)
+            + (canCounter ? `<button type="button" class="btn" data-agreement-action="counter"><i class="fas fa-reply" aria-hidden="true"></i> ${esc(tr('agreement.panel.actions.counter', 'Counter-agreement'))}</button>` : '')
             + `<button type="button" class="btn" data-agreement-action="download"><i class="fas fa-download" aria-hidden="true"></i> ${esc(tr('common.download', 'Download'))}</button>`
             + '</div>';
     }
@@ -540,37 +545,43 @@
         return sectionHtml(tr('agreement.panel.designs', 'Designs in the plan'), `<ul class="agreement-panel-designs">${items}</ul>`);
     }
 
-    // The input side (parcels and area); `outputs` adds the resulting pieces and open ground, for an
-    // agreement without an Output parcels tab to hold them.
-    function landHtml(summary, tr = t, { outputs = false } = {}) {
+    // The input side: input parcels and their recorded area. Resulting land has its own tab.
+    function landHtml(summary, tr = t) {
         const facts = [
             [tr('agreement.land.inputsHeading', 'Input parcels'), format().formatInteger(summary.parcels)],
             [tr('agreement.land.area', 'Area'), format().formatArea(summary.areaM2, { missing: NO_VALUE })]
         ];
         return sectionHtml(tr('agreement.sections.land', 'Land'),
-            `<dl class="agreement-panel-facts">${facts.map(([label, value]) => `<div><dt>${esc(label)}</dt><dd>${esc(value)}</dd></div>`).join('')}</dl>`)
-            + (outputs ? piecesHtml(summary, null, tr) : '');
+            `<dl class="agreement-panel-facts">${facts.map(([label, value]) => `<div><dt>${esc(label)}</dt><dd>${esc(value)}</dd></div>`).join('')}</dl>`);
     }
 
-    // The Output parcels tab's summary: how many pieces result, the open ground among them, and which
-    // owners of the input parcels end up with no piece or with several.
-    function piecesHtml(summary, outcomes, tr = t) {
+    // The Output parcels tab's summary: how many pieces result and the open ground among them.
+    // Ownership outcomes belong with the people and parties that receive the pieces.
+    function piecesHtml(summary, tr = t) {
         const facts = [[tr('agreement.land.outputsHeading', 'Resulting pieces'), format().formatInteger(summary.pieces)]];
-        if (outcomes && outcomes.owners) {
-            facts.push([tr('agreement.outcomes.owners', 'Owners of input parcels'), format().formatInteger(outcomes.owners)],
-                [tr('agreement.outcomes.none', 'Owners with no piece'), format().formatInteger(outcomes.none.length)],
-                [tr('agreement.outcomes.several', 'Owners with several pieces'), format().formatInteger(outcomes.several.length)]);
-        }
         const openGround = finite(summary.openGroundM2) && summary.openGroundM2 > 0
             ? `<p class="agreement-panel-meta">${esc(tr('agreement.land.openGround', 'Open ground: {{area}}', { area: format().formatArea(summary.openGroundM2) }))}</p>`
             : '';
-        // Each owner named is a button that shows their input parcels and pieces on the map.
+        return sectionHtml(tr('agreement.sections.pieces', 'Resulting land'),
+            `<dl class="agreement-panel-facts">${facts.map(([label, value]) => `<div><dt>${esc(label)}</dt><dd>${esc(value)}</dd></div>`).join('')}</dl>${openGround}`);
+    }
+
+    // Each named party is a map row for its original parcel and allocated pieces. Kept with the
+    // people tables rather than repeated beside output geometry.
+    function outcomesHtml(outcomes, tr = t) {
+        if (!outcomes || !outcomes.owners) return '';
+        const facts = [
+            [tr('agreement.outcomes.owners', 'Owners of input parcels'), format().formatInteger(outcomes.owners)],
+            [tr('agreement.outcomes.none', 'Owners with no piece'), format().formatInteger(outcomes.none.length)],
+            [tr('agreement.outcomes.several', 'Owners with several pieces'), format().formatInteger(outcomes.several.length)]
+        ];
         const who = (label, list, count) => (list.length ? `<p class="agreement-panel-meta agreement-panel-owners" data-agreement-owners="${count}">${esc(label)} `
             + list.map(owner => `<button type="button" class="cb-link" data-agreement-inspect="person" data-agreement-object-id="${esc(owner.ownerKey)}" aria-pressed="false">${esc(owner.name)}`
                 + (count === 'several' ? ` (${esc(format().formatInteger(owner.pieces))})` : '') + '</button>').join(', ') + '</p>' : '');
-        return sectionHtml(tr('agreement.sections.pieces', 'Resulting land'),
-            `<dl class="agreement-panel-facts">${facts.map(([label, value]) => `<div><dt>${esc(label)}</dt><dd>${esc(value)}</dd></div>`).join('')}</dl>${openGround}`
-            + (outcomes ? who(tr('agreement.outcomes.noneList', 'No piece:'), outcomes.none, 'none') + who(tr('agreement.outcomes.severalList', 'Several pieces:'), outcomes.several, 'several') : ''));
+        return sectionHtml(tr('agreement.outcomes.heading', 'Ownership outcomes'),
+            `<dl class="agreement-panel-facts">${facts.map(([label, value]) => `<div><dt>${esc(label)}</dt><dd>${esc(value)}</dd></div>`).join('')}</dl>`
+            + who(tr('agreement.outcomes.noneList', 'No piece:'), outcomes.none, 'none')
+            + who(tr('agreement.outcomes.severalList', 'Several pieces:'), outcomes.several, 'several'));
     }
 
     function allocationHtml(lines, tr = t) {
@@ -583,8 +594,8 @@
         return sectionHtml(tr('agreement.sections.allocation', 'Allocation'), `<ul class="agreement-panel-allocations">${items}</ul>`);
     }
 
-    function ledgerHtml({ rows = [], sponsor = '', error = null } = {}, tr = t) {
-        const title = tr('agreement.panel.ledgerHeading', 'Ledger');
+    function ledgerHtml({ rows = [], sponsor = '', error = null } = {}, tr = t, { title = null, collapsible = false, open = false } = {}) {
+        title = title || tr('agreement.panel.ledgerHeading', 'Ledger');
         if (error) return sectionHtml(title, `<p class="agreement-panel-note agreement-panel-note--danger" role="alert">${esc(error)}</p>`);
         if (!rows.length) return '';
         const head = [
@@ -593,17 +604,19 @@
         ];
         const body = rows.map(row => `<tr data-agreement-row-inspect><th scope="row"><button type="button" class="cb-link" data-agreement-inspect="${row.recipientKind === 'party' ? 'person' : esc(row.recipientKind)}" data-agreement-object-id="${esc(row.ownerKey || row.recipientKind)}" aria-pressed="false">${esc(row.name)}</button></th><td>${esc(row.contributes)}</td><td>${esc(row.receives)}</td>`
             + `<td>${esc(row.change)}</td><td>${esc(row.cash)}</td></tr>`).join('');
-        return sectionHtml(title, '<div class="agreement-panel-ledger-scroll"><table class="agreement-panel-ledger">'
+        const content = '<div class="agreement-panel-ledger-scroll"><table class="agreement-panel-ledger">'
             + `<thead><tr>${head.map(label => `<th scope="col">${esc(label)}</th>`).join('')}</tr></thead><tbody>${body}</tbody></table></div>`
-            + (sponsor ? `<p class="agreement-panel-meta">${esc(sponsor)}</p>` : ''));
+            + (sponsor ? `<p class="agreement-panel-meta">${esc(sponsor)}</p>` : '');
+        return collapsible
+            ? `<details class="agreement-panel-disclosure"${open ? ' open' : ''}><summary>${esc(title)}</summary>${content}</details>`
+            : sectionHtml(title, content);
     }
 
-    // `owners`: an owners' rule gets the scheme guide (its pinned scheme, or the catalogue to compare
-    // with); `counter`: a new draft from this agreement's plan and terms.
-    function ruleHtml(summary, deadline, tr = t, { owners = false, scheme = false, counter = false } = {}) {
+    // An owners' rule gets the scheme guide (its pinned scheme, or the catalogue to compare with).
+    // Creating a counter-agreement is a general action, so it lives in Actions.
+    function ruleHtml(summary, deadline, tr = t, { owners = false, scheme = false } = {}) {
         const actions = (owners ? `<button type="button" class="btn btn-sm" data-agreement-action="scheme-guide"><i class="fas fa-book-open" aria-hidden="true"></i> ${esc(scheme
-                ? tr('proposalDrafts.approval.guide.open', 'How this scheme works…') : tr('agreement.panel.actions.schemes', 'Compare with a scheme…'))}</button>` : '')
-            + (counter ? `<button type="button" class="btn btn-sm" data-agreement-action="counter"><i class="fas fa-reply" aria-hidden="true"></i> ${esc(tr('agreement.panel.actions.counter', 'Counter-agreement'))}</button>` : '');
+                ? tr('proposalDrafts.approval.guide.open', 'How this scheme works…') : tr('agreement.panel.actions.schemes', 'Compare with a scheme…'))}</button>` : '');
         return sectionHtml(tr('agreement.sections.rule', 'Decision rule'),
             `<p class="agreement-panel-rule">${esc(summary.electorate)} · ${esc(summary.binding)}</p>`
             + (summary.detail ? `<p class="agreement-panel-meta">${esc(summary.detail)}</p>` : '')
@@ -636,8 +649,9 @@
 
     // counts: { inputs, outputs, persons } shown in brackets, since inputs and outputs differ in number.
     function tabbedHtml(panels, selected, tr = t, counts = {}) {
-        const labels = { overview: tr('panel.proposal.tabs.overview', 'Overview'), inputs: tr('agreement.workflow.inputs', 'Input parcels'),
-            outputs: tr('agreement.workflow.outputs', 'Output parcels'), persons: tr('agreement.workflow.persons', 'Persons'), rules: tr('proposalDrafts.approval.policyType', 'Rules') };
+        const labels = { overview: tr('agreement.panel.tabs.info', 'Info'), decision: tr('agreement.panel.tabs.decision', 'Decision'),
+            inputs: tr('agreement.workflow.inputs', 'Input parcels'), outputs: tr('agreement.workflow.outputs', 'Output parcels'),
+            persons: tr('agreement.workflow.persons', 'Persons'), rules: tr('proposalDrafts.approval.policyType', 'Rules') };
         const label = kind => labels[kind] + (Number.isInteger(counts[kind]) ? ` (${counts[kind]})` : '');
         const kinds = Object.keys(panels);
         return `<div class="cb-tabs cb-tabs--fill agreement-properties-tabs" role="tablist" aria-label="${esc(tr('agreement.panel.title', 'Agreement'))}">`
@@ -837,22 +851,29 @@
                     ? t('agreement.publish.readOnlyPieces', 'Its pieces are available by hash only in this read-only view.')
                     : t('agreement.publish.rederive', 'Its pieces are known here by their hashes only: apply its designs on the same ground to re-derive them and compare.'))}</p>`
                 : '';
-            const overview = (agreement.plan ? sectionHtml(t('agreement.panel.plan', 'Agreement plan'),
-                    `<button type="button" class="btn btn-sm" data-agreement-action="plan">${esc(agreement.plan.content.title)}</button>`) : '')
+            // Info only identifies the plan and its design count. The same Plan button opens the
+            // plan's Designs tab, which is the canonical rich list rather than a second copy here.
+            const overview = agreement.plan ? sectionHtml(t('agreement.panel.plan', 'Agreement plan'),
+                `<button type="button" class="btn btn-sm" data-agreement-action="plan">${esc(agreement.plan.content.title)}</button>`
+                + `<p class="agreement-panel-meta" data-agreement-plan-design-count>${esc(`${t('agreement.panel.designs', 'Designs in the plan')} (${(agreement.designs || []).length})`)}</p>`) : '';
+            // Decision keeps the agreement's mutable status, voting and settlement controls together.
+            const decision = (!published ? `<p class="agreement-panel-meta"><span class="cb-badge">${esc(t('designMemberships.draft', 'Draft'))}</span></p>` : '') + status
                 + publishedHtml({ published: agreement.published, remote: observedRemote(state.remote, chainView(agreement)?.chain), electorate: agreement.rule && agreement.rule.electorate, readOnly, consultation: community && agreement.consultation })
                 + (community && agreement.rule?.electorate === 'community' ? '<section class="agreement-panel-section" data-community-consultation></section>' : '')
                 + (voting && agreement.rule?.electorate === 'community' && agreement.consultation?.voting && agreement.published ? '<section class="agreement-panel-section" data-community-voting></section>' : '')
                 + (community && agreement.rule?.electorate === 'community' ? win.CommunityConsultation.picturesHtml(state.remote) : '')
-                + (binding ? chainHtml({ ...chainView(agreement), readOnly }) : nonBindingChainHtml(agreement.published))
-                + designsHtml(designRows(agreement, { designOf, isApplied: win.isApplied, typeLabel }));
-            const separateOutputs = agreement.rule?.electorate !== 'community';
+                + (binding ? chainHtml({ ...chainView(agreement), readOnly }) : nonBindingChainHtml(agreement.published));
+            const hasOutputs = (agreement.outputs || []).length > 0;
+            const hasPeople = agreement.rule?.electorate !== 'community';
             const land = landSummary(agreement);
-            const panels = { overview, inputs: landHtml(land, t, { outputs: !separateOutputs }) + inputsHtml(agreement),
-                ...(separateOutputs ? { outputs: byHashOnly + piecesHtml(land, ownerOutcomes(agreement)) + allocationHtml(allocationLines(agreement)), persons: ledgerHtml(ledger) + personsHtml(persons) } : {}),
-                rules: ruleHtml(rule, deadline, t, { owners: agreement.rule?.electorate === 'owners', scheme: !!win.AgreementRecord.schemeOf(agreement.rule), counter: true }) };
+            const panels = { overview, decision, inputs: landHtml(land, t) + inputsHtml(agreement),
+                ...(hasOutputs ? { outputs: byHashOnly + piecesHtml(land, t) + allocationHtml(allocationLines(agreement)) } : {}),
+                ...(hasPeople ? { persons: outcomesHtml(ownerOutcomes(agreement), t)
+                    + ledgerHtml(ledger, t, { title: t('agreement.panel.ledger.byParty', 'By parcel party'), collapsible: true, open: true })
+                    + personsHtml(persons, t, { title: t('agreement.panel.ledger.byPerson', 'By person'), collapsible: true }) } : {}),
+                rules: ruleHtml(rule, deadline, t, { owners: agreement.rule?.electorate === 'owners', scheme: !!win.AgreementRecord.schemeOf(agreement.rule) }) };
             if (!(state.tab in panels)) state.tab = 'overview';
-            return status
-                + actionsHtml({ canCompare: current, comparing: comparing(state.id), canPropose: current && !published, published, canBet: binding && betAvailable(agreement), readOnly })
+            return actionsHtml({ canCompare: current, comparing: comparing(state.id), canPropose: current && !published, published, canBet: binding && betAvailable(agreement), canCounter: true, readOnly })
                 + tabbedHtml(panels, state.tab, t, counts);
         }
 
@@ -1490,7 +1511,14 @@
             if (state.readOnlyAgreement && !['close', 'link', 'plan', 'scheme-guide', 'counter', 'download', 'apply-agreement'].includes(actionName)) return;
             switch (actionName) {
                 case 'close': close(); break;
-                case 'plan': win.BusyControl.track(action, () => win.ClickStack.showPlan(state.agreement.plan, { designs: state.agreement.designs, draft: !state.agreement.published })).catch(error => win.showStyledAlert(error.message)); break;
+                case 'plan': win.BusyControl.track(action, async () => {
+                    await win.ClickStack.showPlan(state.agreement.plan, { designs: state.agreement.designs, draft: !state.agreement.published });
+                    // The Agreement's Info count opens the Plan's canonical Designs list, rather
+                    // than leaving the user on its default action page.
+                    await Promise.resolve();
+                    const body = doc.querySelector('#click-stack.visible .is-selected .click-stack__body, #three-click-stack.visible .is-selected .click-stack__body');
+                    win.ClickStackNavigation?.selectPage(body, 'relation-designs');
+                }).catch(error => win.showStyledAlert(error.message)); break;
                 case 'compare': win.BusyControl.track(action, () => win.toggleAgreementBeforeAfter(state.id)); break;
                 case 'apply-designs': win.BusyControl.track(action, () => applyDesigns()).catch(error => win.showStyledAlert(error.message)); break;
                 // The agreement's own link route: applies its designs, keeps it here and opens it in full.
@@ -1654,7 +1682,7 @@
 
     return {
         titleOf, statusOf, landSummary, ownerOutcomes, allocationLines, ledgerRows, personRows, personsHtml, ruleSummary, ruleShort, designRows, groundIds, partyLabel,
-        statusHtml, actionsHtml, remoteStatusOf, observedRemote, publishedHtml, designsHtml, landHtml, piecesHtml, allocationHtml, ledgerHtml, ruleHtml,
+        statusHtml, actionsHtml, remoteStatusOf, observedRemote, publishedHtml, designsHtml, landHtml, piecesHtml, outcomesHtml, allocationHtml, ledgerHtml, ruleHtml,
         inputsHtml, inspectionFeatures, tabbedHtml, compareTerms,
         shortKey, chainStatusText, mintReadiness, isBinding, chainHtml, nonBindingChainHtml, browserPanel
     };

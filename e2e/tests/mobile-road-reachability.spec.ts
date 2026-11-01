@@ -175,6 +175,9 @@ test('mobile mode switching works before drawing; the road draft locks modes unt
   await handle.focus();
   await page.keyboard.press('Home');
   expect((await road.boundingBox())!.height).toBeLessThan(fullHeight - 80);
+  // The road's points in the middle of the map left above the sheet, clear of the status line that
+  // sits on the sheet's top edge (a tap there copies the line instead of reaching the map).
+  await page.evaluate(() => (window as any).map.panTo([45.8001, 15.98215], { animate: false }));
   await clickMapPoint(page, 15.98195, 45.8001);
   await clickMapPoint(page, 15.98215, 45.8001);
   await clickMapPoint(page, 15.9824, 45.8001);

@@ -1,5 +1,5 @@
 import { test, expect } from '../helpers/fixtures';
-import { openCity, openParcel, clickMapPoint, createSpace, PARCEL_ID, closeParcel } from '../helpers/runtime';
+import { openCity, openParcel, clickMapPoint, createSpace, parcelTab, PARCEL_ID, closeParcel } from '../helpers/runtime';
 
 test.describe('Parcel inspector @core', () => {
   test('a map click exposes cadastral identity, area and private ownership', async ({ mockApi: page }) => {
@@ -78,14 +78,13 @@ test.describe('Parcel inspector @core', () => {
     await expect(page.locator('#info-content')).toContainText('REPUBLIKA HRVATSKA');
     await expect(page.locator('#parcel-info-title')).toContainText('1235');
   });
-  test('tabs open the palette and tools; close dismisses the inspector', async ({ mockApi: page }) => {
+  test('Actions opens the palette and Parcel Builder; close dismisses the inspector', async ({ mockApi: page }) => {
     await openCity(page);
     await openParcel(page);
-    await page.locator('#parcel-info-panel').getByRole('tab', { name: 'Design', exact: true }).click();
+    await parcelTab(page, 'propose-tab').click();
     await expect(page.locator('#propose-content .parcel-build-palette')).toBeVisible();
     // 13 tools: 8 design tiles; transport Road, Road in parcel, Track, Road station, Track station.
     await expect(page.locator('.parcel-build-btn')).toHaveCount(13);
-    await page.locator('#parcel-info-panel').getByRole('tab', { name: 'Tools', exact: true }).click();
     await expect(page.locator('#parcelBuilderButton')).toBeVisible();
     await closeParcel(page);
     await expect(page.locator('#parcel-info-panel')).toBeHidden();

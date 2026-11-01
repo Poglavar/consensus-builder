@@ -144,6 +144,21 @@
         }, phase === 'night' ? 'moon' : 'sun');
         const glow = sun ? Math.round(core().sunGlow(sun.altitude) * 20) / 20 : 1;
         write('glow', button, (node, value) => { node.style.setProperty('--sun-glow', String(value)); }, glow);
+        if (!sun) return;
+        // One turn is the place's 24-hour clock: midnight below, noon above. Reuse the
+        // sheet's sunrise/sunset evidence, including days when the sun never rises or sets.
+        const day = sun.day;
+        const rise = day.polar ? 0 : day.sunrise;
+        const duration = day.polar === 'day' ? core().MINUTES_PER_DAY
+            : day.polar === 'night' ? 0 : day.sunset - day.sunrise;
+        write('dial-daylight', button, (node, value) => {
+            const [start, length] = value.split('|');
+            node.style.setProperty('--sun-dial-rise', start);
+            node.style.setProperty('--sun-dial-daylight', length);
+        }, `${rise}|${duration}`);
+        write('dial-time', button, (node, value) => {
+            node.style.setProperty('--sun-dial-angle', `${value}deg`);
+        }, sun.minutes / core().MINUTES_PER_DAY * 360);
     }
 
     // The parts of the sheet that move with the clock. Every row keeps its height whatever it says.
@@ -258,7 +273,8 @@
     let lastTick = null;
     function onFrame(nowMs) {
         const a = attached;
-        if (!a || !state.playing || !state.enabled || a.isPhotoActive() || state.minutes === null) {
+        // A page without focus pauses the day (isAwake): it resumes where it stopped.
+        if (!a || !state.playing || !state.enabled || a.isPhotoActive() || state.minutes === null || (a.isAwake && !a.isAwake())) {
             lastTick = null;
             return false;
         }
@@ -304,7 +320,7 @@
 
     // ---- The scene ----
     // options: { THREE, scene, renderer, light, hemi, getOrigin, getK, getCamera, getTarget,
-    //            isPhotoActive, invalidate, excludedRoots, addFrameHook, removeFrameHook }
+    //            isPhotoActive, invalidate, excludedRoots, addFrameHook, removeFrameHook, isAwake? }
     function attach(options) {
         detach();
         const { renderer, light, hemi } = options;

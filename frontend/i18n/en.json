@@ -1046,7 +1046,8 @@
     "urbanRule": {
         "balconies": "Balconies",
         "balconyDepth": "May stand out of the envelope by (m):",
-        "slantedRoof": "Slanted roof with attic"
+        "slantedRoof": "Slanted roof with attic",
+        "useAutomatic": "Automatic: shops on the ground floor from 5 storeys"
     },
     "common": {
         "modelFileFormats": "glTF, CityGML or CityJSON",
@@ -6347,6 +6348,8 @@
             "trees": "Trees",
             "life": "People and traffic",
             "lifeTooltip": "Show or hide schematic people and vehicles moving through the 3D view",
+            "sound": "City sounds",
+            "soundTooltip": "Play the traffic, dogs and birds you would hear where the 3D view's camera is",
             "ground": "Streets and pavement",
             "groundTooltip": "Show or hide the asphalt roadbed and pavement derived from OpenStreetMap under the 3D view",
             "water": "Water",
@@ -6448,13 +6451,15 @@
             "show": "show",
             "suggestedLayout": "Suggested layout",
             "suggestedSummary": "{{cores}} core(s) · {{apartments}} apartments per storey · {{rooms}} rooms",
-            "suggestedFlagged": "No default layout fits: {{reason}}"
+            "suggestedFlagged": "No default layout fits: {{reason}}",
+            "stats": "Stats"
         },
         "proposalPanel": {
             "title": "Design info",
             "parcelsLabel": "Parcels",
             "suggestedTotals": "Suggested layouts: {{buildings}} buildings · {{apartmentsPerFloor}} apartments per storey · {{apartments}} in total",
-            "avgPerParcel": "Avg / parcel"
+            "avgPerParcel": "Avg / parcel",
+            "openActions2d": "Open actions in 2D"
         },
         "isolation": {
             "singleParcel": "Selected parcel",
@@ -7808,7 +7813,8 @@
             "none": "Owners with no piece",
             "several": "Owners with several pieces",
             "noneList": "No piece:",
-            "severalList": "Several pieces:"
+            "severalList": "Several pieces:",
+            "heading": "Ownership outcomes"
         },
         "dialog": {
             "titleCreate": "Create agreement",
@@ -7954,7 +7960,9 @@
                 "contributes": "Contributes",
                 "receives": "Receives",
                 "change": "Net change",
-                "cash": "Cash"
+                "cash": "Cash",
+                "byParty": "By parcel party",
+                "byPerson": "By person"
             },
             "deadline": "Deadline: {{date}}",
             "actions": {
@@ -7966,7 +7974,11 @@
             },
             "collapse": "Close agreement",
             "removeLocalConfirm": "Remove this agreement from this device? Its designs stay on the map. Any published agreement remains available through its link.",
-            "designs": "Designs in the plan"
+            "designs": "Designs in the plan",
+            "tabs": {
+                "info": "Info",
+                "decision": "Decision"
+            }
         },
         "list": {
             "create": "Create agreement",
@@ -8189,7 +8201,8 @@
     "planningViews": {
         "tabs": {
             "display": "Display",
-            "compare": "Compare"
+            "compare": "Compare",
+            "options": "Options"
         },
         "compare": {
             "stop": "Stop comparing",
@@ -8272,7 +8285,8 @@
             "one": "{{count}} cached massing in view",
             "other": "{{count}} cached massings in view"
         },
-        "loadingProgress": "Loading permitted massing… {{count}} of {{total}} profiles read",
+        "loadingCells": "Loading permitted massing… {{count}} of {{total}} areas",
+        "cellsFailed": "some areas could not be loaded; Retry reads them again",
         "partial": {
             "one": "{{count}} option shown · some source geometry is unavailable",
             "other": "{{count}} options shown · some source geometry is unavailable"
@@ -8567,7 +8581,25 @@
         "openAgreement": "Agreement details",
         "geometryUnavailable": "Could not load all included designs. Their full extent cannot be highlighted.",
         "sharePlan": "Share plan",
-        "chooseSharePlan": "Which plan do you want to share?"
+        "chooseSharePlan": "Which plan do you want to share?",
+        "revision": "Revision"
+    },
+    "clickStackNavigation": {
+        "objects": "Objects at this location",
+        "content": "Section content",
+        "actions": "Actions",
+        "info": "Info",
+        "plans": "Plans",
+        "parcels": "Parcels",
+        "formed": "Formed parcels",
+        "designs": "Designs",
+        "agreements": "Agreements",
+        "built": "Buildings",
+        "permitted": "Permitted",
+        "fullScreen": "Full screen",
+        "showMap": "Show map",
+        "close": "Close inspector",
+        "noAgreements": "No agreements reference this plan yet."
     },
     "clickStackRelations": {
         "designParcels": "Parcels",
@@ -8792,7 +8824,11 @@
         "applyTitle": "Apply “{{title}}” to your map?",
         "applyQuestion": "The designs of this plan are not on your map. To continue, they are applied to it. Designs you already applied stay; if any of them conflict with this plan, you are asked what to do.",
         "applyAndContinue": "Apply and continue",
-        "applyFailed": "The plan could not be applied to the map.",
+        "otherCid": "the server filed it under another CID",
+        "lookupFailed": "The plan could not be looked up on the server: {{reason}}",
+        "planInvalid": "This plan’s record is not valid any more: {{reason}}",
+        "notOnMap": "The plan’s designs are not all on the map after applying it: {{titles}} did not stay applied.",
+        "groundFailed": "“{{title}}”: its ground could not be looked up ({{reason}}).",
         "cannotStand": "These designs cannot stand together with the rest of this plan: {{titles}}. Use Change designs to keep the ones you want.",
         "editPlan": "Edit plan",
         "saveRevision": "Save new revision",
@@ -8816,9 +8852,9 @@
         "createAgreement": "Create agreement",
         "openPlan": "Open plan",
         "noPlans": "No saved plans yet.",
-        "membersMissing": "Some plan designs could not be found.",
-        "revisionChanged": "The plan changed while it was being resolved. Try again.",
-        "publicationFailed": "A plan design could not be published.",
+        "membersMissing": "{{count}} of the plan’s {{total}} designs are neither in this browser nor on the server.",
+        "revisionChanged": "The server’s copy of this plan does not match its link.",
+        "publicationFailed": "“{{title}}” could not be published: {{reason}}",
         "shareDesignHint": "Share this design"
     },
     "sharedPlan": {
@@ -8966,12 +9002,11 @@
     "lists": {
         "title": "Lists",
         "plans": "Plans",
-        "source": "Source",
         "search": "Search…",
         "byTitle": "Title",
         "newest": "Newest first",
-        "remove": "Remove from browser",
-        "removeConfirm": "Remove “{{title}}” from this browser? Published links and other records remain available.",
+        "remove": "Delete draft",
+        "removeConfirm": "Delete the draft “{{title}}”? It is saved only in this browser, so it cannot be recovered.",
         "select": "Select {{title}}",
         "open": "Open",
         "openNamed": "Open {{title}}",
@@ -8982,7 +9017,7 @@
         "count": "Shown: {{count}}",
         "empty": "Nothing here yet.",
         "noMatch": "No items match these filters.",
-        "takesGround": "{{title}} cannot be in this plan: it takes the ground of {{others}}, already ticked. Untick that first to use this one.",
+        "takesGround": "{{title}} takes the ground of {{others}}, so {{others}} is no longer ticked.",
         "cannotStand": "{{title}} cannot stand with the designs already ticked, so it is not added.",
         "loadMore": "Load more",
         "limited": "Showing up to 1,000 published designs."
@@ -9037,5 +9072,20 @@
     "landDefinition": "Public land is roads and OpenStreetMap parks and squares; private land is the rest of the parcels. The present state counts every existing building on that land; a plan counts the existing buildings its designs do not clear beside its new ones.",
     "noBasis": "No saved plan to take the land from.",
     "sideBySide": "Side by side on the map"
+  },
+  "buildingUseHighlight": {
+    "title": "Building use",
+    "highlight": "Highlight by use",
+    "note": "Ticked uses color their storeys, in existing buildings and designs alike; everything else fades.",
+    "pill": "Highlighting use: {{uses}}",
+    "ownershipPill": "Highlighting ownership: {{types}}",
+    "off": "Turn off this highlight",
+    "storey": {
+      "residential": "Housing",
+      "shop": "Shops",
+      "office": "Offices",
+      "public": "Public",
+      "industrial": "Industrial"
+    }
   }
 }

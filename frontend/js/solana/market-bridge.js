@@ -8,7 +8,10 @@
     const DEVNET_USDC_MINT = '4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU';
     const MODEL = 'lmsr';
     const ASSET = 'devnet-usdc';
-    const DEFAULT_B = 100_000_000n;
+    // New markets open with b = 5 devnet USDC (seed ≈ 3.47 USDC); markets opened before 2026-10-30 keep b = 100.
+    // Must match backend/agents/bettor.js.
+    const DEFAULT_B = 5_000_000n;
+    const ACCEPTED_B = new Set([DEFAULT_B, 100_000_000n]);
     const GRACE_SECONDS = 0;
     const MAX_POSITION = 0n;
 
@@ -145,11 +148,11 @@
             || raw.proposal !== publicKey(proposal)
             || raw.creator !== sponsor
             || raw.stakeMint !== DEVNET_USDC_MINT
-            || raw.b !== DEFAULT_B
+            || !ACCEPTED_B.has(raw.b)
             || raw.closesAt !== BigInt(deadline)
             || raw.graceSeconds !== GRACE_SECONDS
             || raw.maxPosition !== MAX_POSITION
-            || raw.seed !== root.Lmsr.maxLoss(DEFAULT_B)) {
+            || raw.seed !== root.Lmsr.maxLoss(raw.b)) {
             throw new Error('Market account does not match the canonical agreement market terms.');
         }
         const [expected] = client.getMarketPda(proposal, sponsor, programId);

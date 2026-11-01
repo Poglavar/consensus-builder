@@ -56,6 +56,12 @@
     // Lit windows at night on every building material (three-night-windows.js), through shared uniforms.
     const nightWindows = window.__threeNightWindows;
     const nightWindowState = nightWindows.createState();
+    // Drifting clouds, their shadows and the haze of distance (three-atmosphere.js), through shared uniforms.
+    // A design's ground surface: over the city's ground, behind every building face (three-ground.js).
+    const designSurface = (material, rank) => window.__threeGround.designSurface(material, rank);
+    const atmosphere = window.__threeAtmosphere;
+    const atmosphereState = atmosphere.createState();
+    const atmosphereClouds = { glsl: atmosphere.CLOUD_GLSL, state: atmosphereState };
     const floorPlanGeometry = window.__buildingFloorPlans;
     const floorPlanRenderer = window.__threeFloorPlans;
     if (!floorPlanGeometry || !floorPlanRenderer) {
@@ -163,11 +169,17 @@
     let renderedBuildingDisplaySnapshot = null;
     let sceneVisualRevision = 0;   // bumped when something in the scene changes (invalidateThreeView)
     let renderedSceneVisualRevision = -1;
-    // When the person last touched the view (pointer, wheel, keyboard, camera). Frame hooks that only
-    // decorate (people and vehicles) park themselves after LIFE_IDLE_MS without input.
+    // When the person last touched the view (pointer, wheel, keyboard, camera; __threeFrameDebug).
+    // Frame hooks that only decorate (people, vehicles, birds) park while the page has no focus: a
+    // hidden page gets no frames anyway, but a visible window behind another app's would animate on.
     let lastInputAt = 0;
-    let hooksParked = false;       // the last frame found every hook idle: the next input wakes them
-    const LIFE_IDLE_MS = 20000;
+    let hooksParked = false;       // the last frame found every hook idle: focus or input wakes them
+    const decorationAwake = () => !document.hidden && document.hasFocus();
+    function wakeDecoration() {
+        if (isActive && loopRunning && hooksParked && decorationAwake()) scheduleThreeFrame(0);
+    }
+    window.addEventListener('focus', wakeDecoration);
+    document.addEventListener('visibilitychange', wakeDecoration);
     let nearbyDataScope = null;
     const WARM_SCENE_TTL_MS = 60000;
     const WARM_SCENE_MAX_BYTES = 128 * 1024 * 1024;
@@ -185,7 +197,11 @@
         buildingRefreshQueue.cancel();
         buildingsWorkGeneration++;
         buildingsRenderGeneration++;
+        // A cancelled build only clears its own flag while its generation is current, so the flag
+        // ends here; a warm re-entry would otherwise read a build that will never finish.
+        buildingBuildPending = false;
         nearbyProposalBuildingsFetching = nearbyTreesFetching = nearbyWaterFetching = nearbyGreenFetching = false;
+        noteSceneWork();
     }
     let origin3857 = null; // Leaflet EPSG:3857 origin for local XY
     let sceneLoadGeometry = null; // frozen at 3D entry; panning never moves the backend query
@@ -243,6 +259,7 @@
     let stationGroup = null; // placeable bus/tram/underground/elevated station models
     let existingTransitAlignmentGroup = null; // immutable tram/heavy-rail snapshot (city-gated)
     let treesGroup = null; // real-world OSM trees (Overture base/land), toggleable scenery
+    let furnitureGroup = null; // street furniture mapped in OSM (fountains, lamps), drawn with the placed ones' models
     let waterGroup = null; // real-world sea, lakes and rivers (OpenFreeMap tiles), toggleable scenery
     let greenGroup = null; // real-world lawns, parks, meadows and woods (OpenFreeMap tiles), toggleable scenery
     let proposalInteractionGroup = null; // selectable applied/unapplied proposal surfaces
@@ -259,6 +276,8 @@
     let groundLayer = null; // __threeGround instance: OSM-derived asphalt roadbed + pavement plane under the scene
     let groundEnabled = true; // user toggle (default ON); real value loaded from storage on 3D init
     let groundToggleEl = null;
+    let soundEnabled = false; // user toggle (default OFF); real value loaded from storage on 3D init
+    let soundToggleEl = null;
     // Plots an applied urban rule left out, drawn as see-through volumes. Default OFF: it answers
     // "why is there nothing on this plot", it is not part of the plan being looked at.
     let showIneligibleParcels = false;
@@ -290,7 +309,10 @@
             const pendingMode = window.__pending3DMode;
             const photoLoading = pendingMode === 'photo'
                 || !!(window.PhotorealMode && typeof window.PhotorealMode.isLoading === 'function' && window.PhotorealMode.isLoading());
-            const modelLoading = (pendingMode === 'model' || isTransitioning3D || !!renderingStatusRelease) && !photoLoading && !rw;
+            // After entry the model spins on while the scene still loads or places anything
+            // (sceneWorkLoading): buildings and their models, trees, water, green areas, street life.
+            const modelLoading = (pendingMode === 'model' || isTransitioning3D || !!renderingStatusRelease
+                || (isActive && sceneWorkLoading())) && !photoLoading && !rw;
             const desired = window.__mapModeState?.desired;
             const photoSelected = desired ? desired === 'photo' : rw || photoLoading;
             const modelSelected = desired ? desired === 'model' : !photoSelected && (isActive || modelLoading);
@@ -317,6 +339,13 @@
         } catch (_) { }
     }
     window.updateModeButtonStates = updateModeButtonStates;
+    // Whether the model scene is still fetching or placing anything after entry.
+    function sceneWorkLoading() {
+        return nearbyProposalBuildingsFetching || pendingModelLoads > 0 || buildingBuildPending || buildingRefreshQueue.pending
+            || nearbyTreesFetching || nearbyWaterFetching || nearbyGreenFetching || lifeOsmFetching;
+    }
+    // Called wherever one of those starts or ends, so the model tile's spinner follows it.
+    function noteSceneWork() { updateModeButtonStates(); }
 
     // Walk-mode launcher state. Target is a per-city 3D walk overlay configured via
     // city-config `walk.url` (Zagreb points at the transit planner at zagreb.lol/prijevoz/
@@ -379,6 +408,10 @@
         return material;
     }
 
+    // Building faces sit behind their own edge lines by their slope (factor) and a step (units); a
+    // face seen at an angle needs the slope term or its edges break up. The ground sits further
+    // back still (three-ground.js OFFSET.ground), so the same push never puts a wall behind the
+    // paving at its foot.
     function makeBuildingMaterial(parameters, opacity = 1) {
         const material = new THREE.MeshPhongMaterial({
             depthFunc: THREE.LessDepth,
@@ -441,6 +474,35 @@
     };
 
     for (const [role, material] of Object.entries(buildingMaterials)) material.userData.cbBuildingMaterialRole = role;
+
+    // Highlight by use (building-use-highlight.js): one opaque material per storey use, one faded
+    // material for everything not ticked, and a band material (three-use-bands.js) for a building lit
+    // in part. None carries a building material role, so the retained display leaves them alone.
+    const useHighlight = window.BuildingUseHighlight;
+    const useHighlightMaterials = new Map();
+    const useHighlightFaded = makeBuildingMaterial({ color: 0x8a929c, specular: 0x222222, shininess: 10 }, useHighlight.FADED_OPACITY);
+    function useHighlightMaterialFor(category) {
+        if (!useHighlightMaterials.has(category)) {
+            useHighlightMaterials.set(category, makeBuildingMaterial({ color: new THREE.Color(useHighlight.COLORS[category]),
+                specular: 0x222222, shininess: 12 }));
+        }
+        return useHighlightMaterials.get(category);
+    }
+    function useHighlightBandMaterial(bands, mesh) {
+        const box = new THREE.Box3().setFromObject(mesh);
+        return window.ThreeUseBands.createBandMaterial(THREE, bands, { zMin: box.min.z, zMax: box.max.z });
+    }
+    // A building mesh's storey uses, for the highlight.
+    function tagBuildingStoreys(mesh, properties, facts) {
+        mesh.userData.buildingStoreys = useHighlight.storeysOf(properties, facts);
+    }
+    function applyUseHighlight3D() {
+        const changed = useHighlight.apply3d([existingBuildingsGroup, proposedBuildingsGroup], {
+            materialFor: useHighlightMaterialFor, faded: useHighlightFaded, bandMaterial: useHighlightBandMaterial,
+            skip: object => !!object.userData?.[smoothTransparency.DEPTH_PREPASS_FLAG]
+        });
+        if (changed) invalidateThreeView();
+    }
 
     function demolishedMaterialFor(buildingMaterial) {
         return buildingOpacityOf(buildingMaterial) < 1
@@ -963,6 +1025,38 @@
             ${slider('construction-slider', 'construction-label', prices.construction)}`;
     }
 
+    function panelPage(key, label, content) {
+        return `<section class="three-mode-parcel-page" data-stack-page-key="${key}" data-stack-page-label="${escapeHtml(label)}">${content}</section>`;
+    }
+
+    // The 3D Design page keeps the same basic identity facts as 2D; geometry and money comparison
+    // stay in Stats so the map-facing summary does not become a second details panel.
+    function proposalInfoHtml(proposal, lines) {
+        const type = window.ClickStackRelations?.designType?.({ proposal }, window);
+        const state = window.__proposalDisplayState?.of?.(proposal, {
+            applied: proposalApplied3D(proposal), serial: window.DesignSync?.publishedCid?.(proposal)
+        });
+        const translate = (key, fallback, params) => threeI18n(key, fallback, params);
+        const rung = state?.rung && window.__proposalDisplayState?.rungLabel
+            ? window.__proposalDisplayState.rungLabel(state.rung, translate) : '';
+        const badges = [
+            type?.label ? `<span class="cb-badge cb-badge--${escapeHtml(type.tone || 'neutral')}">${escapeHtml(type.label)}</span>` : '',
+            state?.applied ? `<span class="cb-badge cb-badge--applied">${escapeHtml(threeI18n('panel.proposal.mapStatus.applied', 'Applied'))}</span>` : '',
+            rung ? `<span class="cb-badge">${escapeHtml(rung)}</span>` : ''
+        ].filter(Boolean).join('');
+        const author = typeof proposal.author === 'string' && proposal.author.trim() ? proposal.author.trim() : '';
+        const created = proposal.createdAt ? new Date(proposal.createdAt) : null;
+        const createdLabel = created && Number.isFinite(created.getTime()) ? CbFormat.formatDate(created) : '';
+        const id = proposal.proposalId || proposal.id || '';
+        return `${badges ? `<div class="proposal-badges-row">${badges}</div>` : ''}
+            ${proposal.description ? `<p class="parcel-panel-subnote">${escapeHtml(proposal.description)}</p>` : ''}
+            ${author ? `<p class="parcel-panel-subnote">${escapeHtml(threeI18n('panel.proposal.metrics.author', 'Author:'))} ${escapeHtml(author)}</p>` : ''}
+            ${lines.map(line => `<p class="parcel-panel-subnote">${escapeHtml(line)}</p>`).join('')}
+            ${id ? `<details class="parcel-panel-record"><summary>${escapeHtml(threeI18n('panel.proposal.detailsSections.record', 'Design record'))}</summary>
+                ${createdLabel ? `<p class="parcel-panel-subnote">${escapeHtml(threeI18n('panel.proposal.metrics.created', 'Created:'))} ${escapeHtml(createdLabel)}</p>` : ''}
+                <code title="${escapeHtml(String(id))}">${escapeHtml(String(id))}</code></details>` : ''}`;
+    }
+
     function panelLabels() {
         return {
             built: threeI18n('threeMode.parcelPanel.built', 'Built'),
@@ -996,13 +1090,14 @@
             <p class="parcel-panel-subnote parcel-panel-suggested">${escapeHtml(threeI18n('threeMode.parcelPanel.suggestedLayout', 'Suggested layout'))}: ${escapeHtml(suggestedText)}</p>` : '';
         // The full cadastral id: the stack's row shows the short number.
         panel.innerHTML = `
-            <p class="parcel-panel-subnote parcel-id-text">${escapeHtml(String(parcelId))}</p>
-            ${suggestedRow}
-            ${metricsTableHtml(L, {
+            ${panelPage('info', threeI18n('clickStackNavigation.info', 'Info'), `
+                <p class="parcel-panel-subnote parcel-id-text">${escapeHtml(String(parcelId))}</p>
+                ${suggestedRow}`)}
+            ${panelPage('stats', threeI18n('threeMode.parcelPanel.stats', 'Stats'), metricsTableHtml(L, {
                 built: { volume: m.builtVolume, floorArea: m.builtFloorArea },
                 planned,
                 proposed: hasProposed ? { volume: m.proposedVolume, floorArea: m.proposedFloorArea } : null
-            })}
+            }))}
         `;
 
         wireSliderAndGain(panel);
@@ -1060,13 +1155,13 @@
         const suggestedLine = suggestedProposalPanelText(proposal);
         if (suggestedLine) lines.push(suggestedLine);
         panel.innerHTML = `
-            ${lines.map(line => `<p class="parcel-panel-subnote">${escapeHtml(line)}</p>`).join('')}
-            ${metricsTableHtml(L, {
+            ${panelPage('info', threeI18n('clickStackNavigation.info', 'Info'),
+                proposalInfoHtml(proposal, lines))}
+            ${panelPage('stats', threeI18n('threeMode.parcelPanel.stats', 'Stats'), `${metricsTableHtml(L, {
                 built: { volume: summary.builtVolume, floorArea: summary.builtFloorArea },
                 planned,
                 proposed: hasProposed ? { volume: summary.proposedVolume, floorArea: summary.proposedFloorArea } : null
-            })}
-            <div class="parcel-panel-avg" data-role="avg-gain"></div>
+            })}<div class="parcel-panel-avg" data-role="avg-gain"></div>`)}
         `;
         wireSliderAndGain(panel);
         return true;
@@ -1166,6 +1261,95 @@
             });
         } catch (error) {
             console.warn(`[${new Date().toISOString()}] [three-mode] could not frame the isolated view`, error);
+        }
+    }
+
+    // Brings features into the view a list leaves free as the 2D map does (revealMove), keeping the
+    // camera's heading and pitch: nothing moves when they are already on screen; the camera glides
+    // sideways the shortest way at the same distance, or backs out just enough when they are too big
+    // for that view (a list row's preview).
+    let revealFrame = null;
+    function revealIsolatedFeatures(features) {
+        try {
+            if (!features.length || typeof turf === 'undefined' || !camera || !controls) return;
+            const bbox = turf.bbox(turf.featureCollection(features));
+            if (!bbox.every(Number.isFinite)) return;
+            const startView = getGeoCameraView();
+            if (!startView) return;
+            const rect = renderer.domElement.getBoundingClientRect();
+            const free = getProposalPanelFreeArea(window.innerWidth, window.innerHeight), margin = 40;
+            const screenBox = () => {
+                camera.updateMatrixWorld();
+                const corners = [[bbox[0], bbox[1]], [bbox[0], bbox[3]], [bbox[2], bbox[1]], [bbox[2], bbox[3]]]
+                    .map(([lng, lat]) => latLngToXY(lat, lng)).filter(Boolean)
+                    .map(([x, y]) => new THREE.Vector3(x, y, 0).applyMatrix4(camera.matrixWorldInverse));
+                // Behind the camera has no place on screen; past the far plane still does.
+                if (corners.length !== 4 || corners.some(p => p.z > -camera.near)) return null;
+                corners.forEach(p => p.applyMatrix4(camera.projectionMatrix));
+                const xs = corners.map(p => rect.left + (p.x + 1) / 2 * rect.width), ys = corners.map(p => rect.top + (1 - p.y) / 2 * rect.height);
+                return { left: Math.min(...xs), top: Math.min(...ys), right: Math.max(...xs), bottom: Math.max(...ys) };
+            };
+            // Translating the camera by D moves whatever was seen at a screen point to point + its
+            // shift, so the ground under (screen point + shift) tells how far to go.
+            const ground = (clientX, clientY) => {
+                camera.updateMatrixWorld();
+                const at = pickGroundLatLngFromEvent({ clientX, clientY });
+                return at && latLngToXY(at.lat, at.lng);
+            };
+            const translate = (from, to) => {
+                const view = getGeoCameraView(), at = view && latLngToXY(view.targetLat, view.targetLng);
+                const next = at && xyToLatLng(at[0] + to[0] - from[0], at[1] + to[1] - from[1]);
+                return !!next && applyGeoCameraView({ ...view, targetLat: next.lat, targetLng: next.lng });
+            };
+            const box = screenBox();
+            const move = box ? revealMove(box, free, margin) : { pan: null };
+            if (!move) return;
+            const middle = latLngToXY((bbox[1] + bbox[3]) / 2, (bbox[0] + bbox[2]) / 2);
+            if (!middle) return;
+            const centre = () => {
+                const seen = ground((free.left + free.right) / 2, (free.top + free.bottom) / 2);
+                return !!seen && translate(seen, middle);
+            };
+            // Off screen or beyond the far plane: glide over at the same distance, then look again.
+            if (move.pan) {
+                const seen = ground((box.left + box.right) / 2 + move.pan[0], (box.top + box.bottom) / 2 + move.pan[1]);
+                if (!seen || !translate(seen, middle)) return;
+            } else if (!box && !centre()) return;
+            const seenBox = screenBox();
+            if (!seenBox || revealMove(seenBox, free, margin)?.fit) {
+                // Too big: back out until it fits the free view, centred there. Its size on screen
+                // falls roughly as 1/range, less so close up, so the estimate is refined a few times.
+                const span = [free.right - free.left - 2 * margin, free.bottom - free.top - 2 * margin];
+                let range = startView.range;
+                for (let i = 0; i < 6; i++) {
+                    applyGeoCameraView({ ...getGeoCameraView(), range });
+                    centre();
+                    const next = screenBox();
+                    const scale = next ? Math.max((next.right - next.left) / span[0], (next.bottom - next.top) / span[1]) : 2;
+                    if (scale <= 1 && (scale > 0.9 || range === startView.range)) break;
+                    range = Math.max(startView.range, range * scale * 1.02);
+                }
+            }
+            const endView = getGeoCameraView();
+            applyGeoCameraView(startView);
+            if (!endView) return;
+            const place = share => {
+                const mix = key => startView[key] + (endView[key] - startView[key]) * share;
+                applyGeoCameraView({ ...startView, targetLat: mix('targetLat'), targetLng: mix('targetLng'), range: mix('range') });
+                invalidateThreeView();
+            };
+            if (revealFrame) cancelAnimationFrame(revealFrame);
+            revealFrame = null;
+            if (window.__reducedMotion) return place(1);
+            const start = performance.now(), duration = move.fit ? 800 : 600;
+            const step = now => {
+                const t = Math.min(1, (now - start) / duration);
+                place(t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t); // easeInOutQuad
+                revealFrame = t < 1 ? requestAnimationFrame(step) : null;
+            };
+            revealFrame = requestAnimationFrame(step);
+        } catch (error) {
+            console.warn(`[${new Date().toISOString()}] [three-mode] could not bring the preview into view`, error);
         }
     }
 
@@ -1507,6 +1691,19 @@
         invalidateThreeView();
     }
 
+    function appendMapActions(body, select) {
+        const actions = document.createElement('button');
+        actions.type = 'button';
+        actions.className = 'btn';
+        actions.textContent = threeI18n('threeMode.proposalPanel.openActions2d', 'Open actions in 2D');
+        actions.addEventListener('click', () => window.BusyControl.track(actions, async () => {
+            await window.requestMapMode('2d');
+            await select();
+            window.ClickStackNavigation?.selectPage(document.querySelector('#click-stack .is-selected .click-stack__body'), 'actions');
+        }).catch(error => window.showStyledAlert(error.message)));
+        body.appendChild(actions);
+    }
+
     // What each section means in the scene, and what fills its body.
     const clickStackAdapter = {
         activate(kind, instance, body) {
@@ -1523,18 +1720,11 @@
                 if (proposal && updateProposalInfoPanel(proposal, getProposalParcelIdSet(proposal))) body.appendChild(parcelInfoPanelEl);
                 // Editing actions use the same Design section in the map view, never a second
                 // inspector floating beside this scene's figures.
-                const actions = document.createElement('button');
-                actions.type = 'button';
-                actions.className = 'btn';
-                actions.textContent = threeI18n('planningViews.proposalActions', 'Design actions');
-                actions.addEventListener('click', async () => {
-                    await window.requestMapMode('2d');
-                    window.ClickStack.showDesign(instance.id);
-                });
-                body.appendChild(actions);
+                appendMapActions(body, () => window.ClickStack.showDesign(instance.id));
             } else if (kind === 'parcels' || kind === 'formed') {
                 isolateParcel(instance.id);
                 if (updateParcelInfoPanel(instance.id)) body.appendChild(parcelInfoPanelEl);
+                appendMapActions(body, () => window.ClickStack.showParcel(instance.feature || getParcelFeatureById(instance.id)));
             } else if (kind === 'built') {
                 hostInspector(body);
                 withStackDriving(() => window.PlanningViews.inspectBuilding(instance.feature, instance.id, { hosted: true }));
@@ -2029,6 +2219,29 @@
         buildingModeControlsEl.appendChild(lifeRow);
         lifeToggleEl = lifeBox;
 
+        // City sound heard from the camera (three-sound.js). Off until asked for: a page that starts
+        // making noise on its own is a surprise. Same row shape again.
+        soundEnabled = loadSoundEnabledPref();
+        const soundRow = document.createElement('div');
+        soundRow.className = 'three-mode-trees-row three-mode-wide-row';
+        const soundLabel = document.createElement('label');
+        soundLabel.className = 'three-mode-trees-toggle three-mode-wide-toggle';
+        const soundBox = document.createElement('input');
+        soundBox.type = 'checkbox';
+        soundBox.checked = soundEnabled;
+        soundBox.addEventListener('change', () => setSoundEnabled(soundBox.checked));
+        const soundText = document.createElement('span');
+        soundText.className = 'three-mode-emphasis-label';
+        soundText.textContent = threeI18n('threeMode.controls.sound', 'City sounds');
+        soundLabel.title = threeI18n('threeMode.controls.soundTooltip', 'Play the traffic, dogs and birds you would hear where the 3D view\'s camera is');
+        soundLabel.setAttribute('aria-label', soundLabel.title);
+        soundLabel.appendChild(soundBox);
+        soundLabel.appendChild(soundText);
+        soundRow.appendChild(soundLabel);
+        buildingModeControlsEl.appendChild(soundRow);
+        soundToggleEl = soundBox;
+        if (soundEnabled) setSoundEnabled(true);
+
         // Ground: the asphalt roadbed under every street and pavement everywhere else, derived
         // from the same OSM streets the vehicles drive (three-ground.js). Same row shape again.
         groundEnabled = loadGroundEnabledPref();
@@ -2065,6 +2278,7 @@
 
         // These layers describe the flat model context. Google supplies its own ground and
         // existing scenery; proposed-building appearance and inspection work in both views.
+        // City sound is heard in both views, so its row stays in photo view too.
         [radiusRow, decorTogglesEl, lifeRow, groundRow].forEach(row => row.setAttribute('data-map-modes', '3d'));
 
         layersHost.appendChild(buildingModeControlsEl);
@@ -2642,9 +2856,7 @@
     function lawnMaterial() {
         const grass = window.__threeGrass;
         if (!grass) throw new Error('three-grass.js is not loaded');
-        return grass.grassTexture(new THREE.MeshLambertMaterial({
-            color: grass.COLORS.lawn, polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -2
-        }), 1 / lifeMercatorK(), 'lawn');
+        return grass.grassTexture(designSurface(new THREE.MeshLambertMaterial({ color: grass.COLORS.lawn }), 2), 1 / lifeMercatorK(), 'lawn');
     }
 
     function buildParks3D(flatTarget, decoTarget, features = null) {
@@ -2652,7 +2864,7 @@
         if (!parks || parks.length === 0) return;
         // Use polygonOffset to float slightly over base to avoid z-fighting and flicker
         const grassMat = lawnMaterial();
-        const waterMat = new THREE.MeshPhongMaterial({ color: 0x2b6cb0, specular: 0x1f3a60, shininess: 40, polygonOffset: true, polygonOffsetFactor: -3, polygonOffsetUnits: -3 });
+        const waterMat = designSurface(new THREE.MeshPhongMaterial({ color: 0x2b6cb0, specular: 0x1f3a60, shininess: 40 }), 3);
         const pathLineMat = new THREE.LineBasicMaterial({ color: 0xdfe8d6, depthTest: true, depthWrite: false });
 
         const isCurrentModel = startStructureModels(decoTarget);
@@ -2819,7 +3031,9 @@
             geometry.computeBoundingSphere();
             geometries[id] = geometry;
         });
-        speciesAssets = { geometries, shared: new Set(Object.values(geometries)), material: new THREE.MeshLambertMaterial({ vertexColors: true }) };
+        // The near trees sway in the weather's wind (three-atmosphere.js), on frames drawn anyway.
+        const material = atmosphere.configureSway(new THREE.MeshLambertMaterial({ vertexColors: true }), atmosphereState);
+        speciesAssets = { geometries, shared: new Set(Object.values(geometries)), material };
         return speciesAssets;
     }
 
@@ -2974,7 +3188,7 @@
             clump: new THREE.SphereGeometry(1, 7, 5),
             blossom: new THREE.IcosahedronGeometry(1, 0),
             kerbMat: new THREE.MeshLambertMaterial({ color: 0xb8b2a3 }),
-            soilMat: new THREE.MeshLambertMaterial({ color: 0x4a3426, polygonOffset: true, polygonOffsetFactor: -3, polygonOffsetUnits: -3 }),
+            soilMat: designSurface(new THREE.MeshLambertMaterial({ color: 0x4a3426 }), 3),
             leafMat: new THREE.MeshLambertMaterial({ color: 0xffffff }),
             blossomMat: new THREE.MeshLambertMaterial({ color: 0xffffff })
         };
@@ -3077,7 +3291,7 @@
     function ensureEnclosureAssets() {
         if (enclosureAssets) return enclosureAssets;
         const lambert = color => new THREE.MeshLambertMaterial({ color });
-        const ground = color => new THREE.MeshLambertMaterial({ color, polygonOffset: true, polygonOffsetFactor: -4, polygonOffsetUnits: -4 });
+        const ground = color => designSurface(new THREE.MeshLambertMaterial({ color }), 4);
         enclosureAssets = {
             box: new THREE.BoxGeometry(1, 1, 1),
             fence: {
@@ -3237,13 +3451,10 @@
         if (!squareSurfaceMats) {
             const texture = squarePaving.createSquarePavingTexture(THREE, document, renderer);
             squareSurfaceMats = {
-                paving: new THREE.MeshLambertMaterial({
+                paving: designSurface(new THREE.MeshLambertMaterial({
                     color: texture ? 0xffffff : 0xc8c0ae,
-                    map: texture || null,
-                    polygonOffset: true,
-                    polygonOffsetFactor: -2,
-                    polygonOffsetUnits: -2
-                }),
+                    map: texture || null
+                }), 2),
                 border: new THREE.LineBasicMaterial({ color: 0x756f63, transparent: true, opacity: 0.75 }),
                 rim: new THREE.MeshLambertMaterial({ color: 0x9a9a9a }),
                 water: new THREE.MeshPhongMaterial({ color: 0x3a8ad3, specular: 0x1f4f7a, shininess: 60 })
@@ -3259,8 +3470,6 @@
 
         const squareMats = squareSurfaceMaterials();
         const stoneMat = surfaceMaterial || squareMats.paving;
-        const rimMat = squareMats.rim;
-        const waterMat = squareMats.water;
 
         const isCurrentModel = startStructureModels(decoTarget);
         squares.forEach(sq => {
@@ -3300,57 +3509,9 @@
                 const fountains = (Array.isArray(dec.fountains) && dec.fountains.length)
                     ? dec.fountains
                     : (Array.isArray(dec.fountain) ? [dec.fountain] : []);
-                placeFurniture3D('fountain', fountains, models, decoTarget, isCurrentModel, spots => spots.forEach(spot => {
-                const { lng, lat } = spot;
-                const [x, y] = latLngToXY(lat, lng);
-
-                // Simple fountain: pedestal + basin + water disk + small spout
-                const group = new THREE.Group();
-
-                // Pedestal
-                const pedH = 0.3;
-                const pedR = 0.8;
-                const pedGeo = new THREE.CylinderGeometry(pedR, pedR, pedH, 24);
-                pedGeo.rotateX(Math.PI / 2);
-                pedGeo.translate(x, y, 0.06 + pedH / 2);
-                const pedestal = new THREE.Mesh(pedGeo, rimMat);
-                markOwnedGeometry(pedestal, pedGeo);
-                group.add(pedestal);
-
-                // Basin rim
-                const basinH = 0.2;
-                const basinR = 2.0;
-                const basinGeo = new THREE.CylinderGeometry(basinR, basinR, basinH, 48, 1, false);
-                basinGeo.rotateX(Math.PI / 2);
-                basinGeo.translate(x, y, 0.06 + pedH + basinH / 2);
-                const basin = new THREE.Mesh(basinGeo, rimMat);
-                markOwnedGeometry(basin, basinGeo);
-                group.add(basin);
-
-                // Water disk inside basin
-                const waterR = basinR * 0.85;
-                const waterGeo = new THREE.CylinderGeometry(waterR, waterR, 0.06, 48);
-                waterGeo.rotateX(Math.PI / 2);
-                waterGeo.translate(x, y, 0.06 + pedH + basinH + 0.03);
-                const water = new THREE.Mesh(waterGeo, waterMat);
-                markOwnedGeometry(water, waterGeo);
-                water.renderOrder = 8000;
-                group.add(water);
-
-                // Central spout
-                const spoutH = 0.8;
-                const spoutR = 0.12;
-                const spoutGeo = new THREE.CylinderGeometry(spoutR, spoutR, spoutH, 12);
-                spoutGeo.rotateX(Math.PI / 2);
-                spoutGeo.translate(x, y, 0.06 + pedH + basinH + spoutH / 2);
-                const spout = new THREE.Mesh(spoutGeo, waterMat);
-                markOwnedGeometry(spout, spoutGeo);
-                spout.material.transparent = true;
-                spout.material.opacity = 0.9;
-                group.add(spout);
-
-                decoTarget.add(group);
-                }));
+                // The default fountain is the one OSM fountains get too (three-fountains.js).
+                placeFurniture3D('fountain', fountains, models, decoTarget, isCurrentModel,
+                    spots => addFountains3D(decoTarget, spots.map(spot => ({ lng: spot.lng, lat: spot.lat })), FURNITURE_GROUND_Z));
             } catch (_) { }
         });
     }
@@ -3384,12 +3545,13 @@
 
     // One matrix per spot: position, bearing (the model's +X faces it) and the Mercator (k, k, 1)
     // scale that turns a model in metres into scene units (FurnitureModels.instanceTransform).
-    function furniturePlacements(spots) {
+    // `groundZ`: the surface it stands on (a park or square's, or the street's for OSM furniture).
+    function furniturePlacements(spots, groundZ = FURNITURE_GROUND_Z) {
         const k = lifeMercatorK();
         const dummy = new THREE.Object3D();
         return spots.map(spot => {
             const [x, y] = latLngToXY(spot.lat, spot.lng);
-            const transform = furnitureApi().instanceTransform({ x, y, z: FURNITURE_GROUND_Z, bearingDeg: spot.bearing, k });
+            const transform = furnitureApi().instanceTransform({ x, y, z: groundZ, bearingDeg: spot.bearing, k });
             dummy.position.set(...transform.position);
             dummy.rotation.set(0, 0, transform.rotationZ);
             dummy.scale.set(...transform.scale);
@@ -3514,10 +3676,10 @@
             poleMat: new THREE.MeshLambertMaterial({ color: 0x33383d }),
             headMat: new THREE.MeshLambertMaterial({ color: 0xf2ead8, emissive: 0xffd28a, emissiveIntensity: 0 }),
             pool: new THREE.CircleGeometry(1, 32),
-            poolMat: new THREE.MeshBasicMaterial({
+            poolMat: designSurface(new THREE.MeshBasicMaterial({
                 map: glow, color: 0xffc46b, transparent: true, opacity: 0, visible: false, depthWrite: false,
-                blending: THREE.AdditiveBlending, polygonOffset: true, polygonOffsetFactor: -4, polygonOffsetUnits: -4
-            }),
+                blending: THREE.AdditiveBlending
+            }), 4),
             haloMat: new THREE.PointsMaterial({
                 map: glow, color: 0xffd9a0, size: 2.4, sizeAttenuation: true, transparent: true, opacity: 0,
                 visible: false, depthWrite: false, blending: THREE.AdditiveBlending
@@ -3527,11 +3689,19 @@
     }
 
     // The default lamp: a pole and a head, each one InstancedMesh for all lamps of a structure.
-    function addProceduralLamps3D(decoTarget, spots) {
+    // The lamp model: lamps placed in parks and squares and street lamps mapped in OSM both stand here
+    // (pole and head, and their glow at night), so they look and light up alike.
+    function addLamps3D(target, spots, groundZ = FURNITURE_GROUND_Z) {
+        if (!spots.length) return;
+        addProceduralLamps3D(target, spots, groundZ);
+        addLampGlow3D(target, spots, LAMP_HEAD_Z - FURNITURE_GROUND_Z, groundZ);
+    }
+
+    function addProceduralLamps3D(decoTarget, spots, groundZ = FURNITURE_GROUND_Z) {
         const assets = ensureLampAssets();
         const poles = ownInstances(new THREE.InstancedMesh(assets.pole, assets.poleMat, spots.length));
         const heads = ownInstances(new THREE.InstancedMesh(assets.head, assets.headMat, spots.length));
-        furniturePlacements(spots).forEach((matrix, index) => {
+        furniturePlacements(spots, groundZ).forEach((matrix, index) => {
             poles.setMatrixAt(index, matrix);
             heads.setMatrixAt(index, matrix);
         });
@@ -3545,7 +3715,7 @@
     // The night glow of a structure's lamps: one Points for every head (a halo) and one InstancedMesh
     // of flat discs for the light pools on the ground. No lights; additive, never written to depth,
     // never picked.
-    function addLampGlow3D(decoTarget, spots, headHeightM) {
+    function addLampGlow3D(decoTarget, spots, headHeightM, groundZ = FURNITURE_GROUND_Z) {
         const assets = ensureLampAssets();
         const k = lifeMercatorK();
         const positions = new Float32Array(spots.length * 3);
@@ -3555,8 +3725,8 @@
             const [x, y] = latLngToXY(spot.lat, spot.lng);
             positions[index * 3] = x;
             positions[index * 3 + 1] = y;
-            positions[index * 3 + 2] = FURNITURE_GROUND_Z + headHeightM;
-            dummy.position.set(x, y, FURNITURE_GROUND_Z + 0.02);
+            positions[index * 3 + 2] = groundZ + headHeightM;
+            dummy.position.set(x, y, groundZ + 0.02);
             dummy.scale.set(LAMP_POOL_RADIUS_M * k, LAMP_POOL_RADIUS_M * k, 1);
             dummy.updateMatrix();
             pools.setMatrixAt(index, dummy.matrix);
@@ -3578,10 +3748,8 @@
     }
 
     function placeLamps3D(items, models, decoTarget, isCurrent) {
-        placeFurniture3D('lamp', items, models, decoTarget, isCurrent, spots => {
-            addProceduralLamps3D(decoTarget, spots);
-            addLampGlow3D(decoTarget, spots, LAMP_HEAD_Z - FURNITURE_GROUND_Z);
-        }, (spots, layout) => addLampGlow3D(decoTarget, spots, layout.height * 0.92));
+        placeFurniture3D('lamp', items, models, decoTarget, isCurrent, spots => addLamps3D(decoTarget, spots),
+            (spots, layout) => addLampGlow3D(decoTarget, spots, layout.height * 0.92));
     }
 
     // Before each render: lamps glow with the night (FurnitureModels.lampGlowStrength of the sun's
@@ -3619,7 +3787,74 @@
         sky?.update(sun, !!window.PhotorealMode?.isActive?.());
         const night = furnitureApi().lampGlowStrength(sun ? sun.altitudeDeg : null);
         nightWindows.setState(nightWindowState, night, lifeMercatorK());
+        nightWindows.setSky(nightWindowState, sky?.uniforms);
         lifeLayer?.setNight(night);
+        soundNight = night;
+        updateBirds(night);
+    }
+
+    // Birds (three-birds.js): made once the scene has its place (their flocks follow from it), shown
+    // by day outside photo view, and flown by a frame hook that parks with people and vehicles.
+    let birdsLayer = null;
+    let birdsFrameHook = null;
+    function updateBirds(night) {
+        if (!scene || !origin3857) return;
+        if (!birdsLayer) {
+            birdsLayer = window.__threeBirds.create(THREE, { seed: lifeSeed() });
+            birdsLayer.update(performance.now() / 1000);
+            scene.add(birdsLayer.group);
+            birdsFrameHook = (now) => {
+                if (!birdsLayer?.visible || !decorationAwake()) return false;
+                birdsLayer.update(now / 1000);
+                return true;
+            };
+            window.registerThreeModeFrameHook(birdsFrameHook);
+        }
+        const k = lifeMercatorK();
+        birdsLayer.group.scale.set(k, k, 1);
+        if (controls?.target && birdsLayer.follow(controls.target.x / k, controls.target.y / k)) birdsLayer.update(performance.now() / 1000);
+        birdsLayer.setShown(night, !!window.PhotorealMode?.isActive?.());
+    }
+    function disposeBirds() {
+        if (birdsFrameHook) window.unregisterThreeModeFrameHook(birdsFrameHook);
+        birdsFrameHook = null;
+        birdsLayer?.dispose();
+        birdsLayer = null;
+    }
+
+    // Before each render: the weather (three-atmosphere.js). The cloud clock advances on frames drawn
+    // anyway; cloud colours follow the sky only when the sun moved; the haze takes the horizon's
+    // colour and starts past the camera's target. Lit materials new to the scene get cloud shadows
+    // (a set lookup per material, only when the scene changed). Photo view: no haze.
+    let atmosphereSunKey = null;
+    let atmosphereMaterials = 0;   // lit materials given cloud shadows so far (__threeFrameDebug)
+    function updateAtmosphere(sceneChanged) {
+        const k = lifeMercatorK();
+        const sun = window.__threeSun?.currentSun?.() || null;
+        const sunKey = sun ? `${sun.altitudeDeg.toFixed(2)}|${sun.azimuthRad.toFixed(3)}` : 'neutral';
+        let colors = null, sunDirection = null;
+        if (sunKey !== atmosphereSunKey) {
+            atmosphereSunKey = sunKey;
+            const skyApi = window.SkyColors;
+            colors = atmosphere.cloudColors(skyApi.skyColors(sun ? sun.altitudeDeg : null), sun ? sun.altitudeDeg : null);
+            sunDirection = sun ? skyApi.sunDirection(sun.altitudeDeg * Math.PI / 180, sun.azimuthRad) : null;
+        }
+        atmosphere.setState(atmosphereState, { timeS: performance.now() / 1000, k, sunDirection, colors });
+        if (sceneChanged) atmosphereMaterials += atmosphere.configureTree(scene, atmosphereState);
+        if (!scene.fog) return;
+        if (window.PhotorealMode?.isActive?.()) {
+            scene.fog.near = 1e11;
+            scene.fog.far = 1e12;
+            return;
+        }
+        if (sky) scene.fog.color.copy(sky.uniforms.cbSkyHorizon.value);
+        const target = controls?.target;
+        const distanceM = target
+            ? Math.hypot((camera.position.x - target.x) / k, (camera.position.y - target.y) / k, camera.position.z - target.z)
+            : 0;
+        const range = atmosphere.hazeRange(distanceM, k);
+        scene.fog.near = range.near;
+        scene.fog.far = range.far;
     }
 
     function buildingSidewalkMaterial() {
@@ -4022,14 +4257,11 @@
                 if (!plot || !plot.geometry) return;
                 try {
                     const feature = { type: 'Feature', geometry: plot.geometry, properties: {} };
-                    const fillMat = new THREE.MeshLambertMaterial({
+                    const fillMat = designSurface(new THREE.MeshLambertMaterial({
                         color: 0xcccccc,
                         transparent: true,
-                        opacity: 0.75,
-                        polygonOffset: true,
-                        polygonOffsetFactor: -2,
-                        polygonOffsetUnits: -2
-                    });
+                        opacity: 0.75
+                    }), 2);
                     // A set-aside layout's plots can overlap ground OTHER formations hold now
                     // (that overlap is often exactly why it refuses to apply), so the preview
                     // must float clearly above the parcel/road/paving stack (z ≤ ~0.1) —
@@ -5792,6 +6024,9 @@
                         const inspectionFeature = window.PlanningRepresentations.observedMeshFeature(bld, observed.get(threeBuildingKey(bld)));
                         const addObserved = mesh => {
                             mesh.userData.planningBuiltFeature = inspectionFeature;
+                            const facts = inspectionFeature?.properties || {};
+                            tagBuildingStoreys(mesh, { use: facts.use ?? bld.use },
+                                { floors: facts.floors ?? bld.floors, heightM: building3DHeightMeters(bld) });
                             targetGroup.add(mesh);
                         };
                         const carve = carving.carveOf(threeBuildingKey(bld), () => buildingFootprintPolygon(bld)?.geometry || null);
@@ -6513,11 +6748,11 @@
         invalidateThreeView();
     }
 
-    function ensureNearbyTrees() {
-        if (!treesEnabled || nearbyTreesFetching) return;
-
+    // The area trees and street furniture are read for: the scene's tree geometry (a proposal's
+    // footprint or the camera point) and the buildings' radius, with the key of that read.
+    function sceneryQueryArea() {
         const queryGeometry = sceneTreeLoadGeometry;
-        if (!queryGeometry) return;
+        if (!queryGeometry) return null;
         const proposalGeom = queryGeometry.type === 'Point' ? null : queryGeometry;
         let geometry, buffer, key;
         if (proposalGeom) {
@@ -6527,16 +6762,23 @@
             key = 'prop:' + bb.map(p => p.map(n => n.toFixed(6)).join(',')).join('|') + '|r' + buildingLoadRadiusM;
         } else {
             const pt = queryGeometry;
-            if (!pt) return;
+            if (!pt) return null;
             geometry = pt;
             buffer = buildingLoadRadiusM;
             const snap = v => Math.round(v / NEARBY_BUILDINGS_KEY_PRECISION) * NEARBY_BUILDINGS_KEY_PRECISION;
             key = `pt:${snap(pt.coordinates[0]).toFixed(5)},${snap(pt.coordinates[1]).toFixed(5)}|r${buildingLoadRadiusM}`;
         }
-        key = nearbyDataScope + '|' + key;
+        return { geometry, buffer, key: nearbyDataScope + '|' + key };
+    }
+
+    function ensureNearbyTrees() {
+        if (!treesEnabled || nearbyTreesFetching) return;
+        const area = sceneryQueryArea();
+        if (!area) return;
+        const { geometry, buffer, key } = area;
         if (key === nearbyTreesKey) return;
 
-        nearbyTreesFetching = true;
+        nearbyTreesFetching = true; noteSceneWork();
         const signal = sceneAbort?.signal;
         const current = () => isActive && !signal?.aborted && sceneAbort?.signal === signal;
         fetch(sceneryUrl('/decor/near', geometry, buffer, { kinds: 'trees' }), { signal })
@@ -6545,7 +6787,7 @@
                 if (!current()) return;
                 nearbyTrees = (payload && Array.isArray(payload.trees)) ? payload.trees : [];
                 nearbyTreesKey = key;
-                nearbyTreesFetching = false;
+                nearbyTreesFetching = false; noteSceneWork();
                 console.log(`[3D] Loaded ${nearbyTrees.length} nearby trees (${sceneTreeLoadGeometrySource}+${buffer}m)`);
                 if (isActive) rebuildTreesOnly();
                 // A radius change made while this read was out was skipped; read it now (a no-op
@@ -6555,8 +6797,103 @@
             .catch(err => {
                 if (!current() || err.name === 'AbortError') return;
                 console.warn('Failed to fetch nearby trees:', err);
-                nearbyTreesFetching = false;
+                nearbyTreesFetching = false; noteSceneWork();
             });
+    }
+
+    // ---- Street furniture mapped in OSM (GET /decor/furniture) ----
+    // Read for the same area as the trees, and drawn with the models placed furniture uses, so a
+    // mapped fountain and one put in a square look and move alike.
+    let nearbyFurniture = null;         // { fountains: [[lng, lat, radiusM]], lamps: [[lng, lat]] } or null
+    let nearbyFurnitureKey = null;
+    let nearbyFurnitureFetching = false;
+
+    function ensureNearbyFurniture() {
+        if (nearbyFurnitureFetching) return;
+        const area = sceneryQueryArea();
+        if (!area || area.key === nearbyFurnitureKey) return;
+        nearbyFurnitureFetching = true;
+        const signal = sceneAbort?.signal;
+        const current = () => isActive && !signal?.aborted && sceneAbort?.signal === signal;
+        fetch(sceneryUrl('/decor/furniture', area.geometry, area.buffer), { signal })
+            .then(r => r.ok ? r.json() : Promise.reject(new Error(`HTTP ${r.status}`)))
+            .then(payload => {
+                if (!current()) return;
+                nearbyFurniture = {
+                    fountains: Array.isArray(payload?.fountains) ? payload.fountains : [],
+                    lamps: Array.isArray(payload?.lamps) ? payload.lamps : []
+                };
+                nearbyFurnitureKey = area.key;
+                nearbyFurnitureFetching = false;
+                console.log(`[3D] Loaded ${nearbyFurniture.fountains.length} fountains and ${nearbyFurniture.lamps.length} street lamps from OSM`);
+                rebuildFurnitureOnly();
+                ensureNearbyFurniture();
+            })
+            .catch(err => {
+                if (!current() || err.name === 'AbortError') return;
+                // Scenery: the scene stands without OSM furniture; the next scene change tries again.
+                console.warn('Failed to fetch street furniture:', err);
+                nearbyFurnitureFetching = false;
+            });
+    }
+
+    function rebuildFurnitureOnly() {
+        if (!isActive || !furnitureGroup) return;
+        threeResources.disposeOwnedSubtree(furnitureGroup);
+        furnitureGroup.clear();
+        if (!nearbyFurniture) return;
+        // Like the trees, none stands on an applied corridor's land; nor inside a park or square
+        // shown in the scene, whose design brings its own furniture.
+        const outside = points => outsideStructures(window.__threeSiteGround.contextTreesOutsideCorridors(points, displayedProposals(), {
+            isAppliedCorridor: isAppliedCorridorProposal, featureSets: collectProposalFeatureSets, turf
+        }));
+        const fountains = outside(nearbyFurniture.fountains).map(([lng, lat, radiusM]) => ({ lng, lat, radiusM }));
+        addFountains3D(furnitureGroup, fountains, 0);
+        addLamps3D(furnitureGroup, outside(nearbyFurniture.lamps).map(([lng, lat]) => ({ lng, lat, bearing: 0 })), 0);
+        invalidateThreeView();
+    }
+
+    // [lng, lat, ...] points that fall in no park or square of the scene.
+    function outsideStructures(points) {
+        const areas = displayedFeatures([...(Array.isArray(window.parks) ? window.parks : []), ...(Array.isArray(window.squares) ? window.squares : [])])
+            .filter(feature => ['Polygon', 'MultiPolygon'].includes(feature?.geometry?.type))
+            .map(feature => ({ feature, bbox: turf.bbox(feature) }));
+        if (!areas.length) return points;
+        return points.filter(point => !areas.some(({ feature, bbox: [w, s, e, n] }) =>
+            point[0] >= w && point[0] <= e && point[1] >= s && point[1] <= n && turf.booleanPointInPolygon([point[0], point[1]], feature)));
+    }
+
+    // The scene's fountain water: the water's colour and its sky reflection and ripple, without the
+    // ground water's stencil claims (a basin stands above the ground).
+    let fountainWaterMaterial = null;
+    function fountainWater() {
+        if (!fountainWaterMaterial) {
+            fountainWaterMaterial = new THREE.MeshPhongMaterial({ color: 0x3b7fc4, specular: 0x1f3a60, shininess: 40 });
+            window.__threeWaterSheen.apply(fountainWaterMaterial, { skyGlsl: window.__threeSky.SKY_COLOR_GLSL, skyUniforms: () => sky?.uniforms || null, clouds: atmosphereClouds });
+        }
+        return fountainWaterMaterial;
+    }
+
+    // Fountains at { lng, lat, radiusM? } standing at height z (scene), all drawn by the one
+    // fountain model (three-fountains.js) in four draws. Returns the layer (dispose()).
+    function addFountains3D(target, spots, z = 0) {
+        const k = lifeMercatorK();
+        const layer = window.__threeFountains.create(THREE, {
+            fountains: spots.map(spot => {
+                const [x, y] = latLngToXY(spot.lat, spot.lng);
+                return { x: x / k, y: y / k, z, radiusM: spot.radiusM };
+            }),
+            waterMaterial: fountainWater(), clock: atmosphereState
+        });
+        if (!layer.count) return layer;
+        // A square's rebuild releases what its decorations own; the water is the scene's.
+        Object.values(layer.meshes).forEach(mesh => {
+            markOwnedGeometry(mesh, mesh.geometry);
+            if (mesh.material !== fountainWaterMaterial) markOwnedMaterial(mesh, mesh.material);
+        });
+        layer.group.scale.set(k, k, 1);
+        target.add(layer.group);
+        return layer;
     }
 
     // Flip the trees toggle: persist, show/hide the group, and fetch+build on first enable.
@@ -6860,10 +7197,10 @@
 
     function setLifeHook(on) {
         if (on && !lifeFrameHook && lifeLayer) {
-            // People and vehicles are decoration: they park after LIFE_IDLE_MS without input (the hook
-            // reports nothing to animate, so the loop stops) and walk on at the next touch of the view.
+            // People and vehicles are decoration: they park while the page has no focus (the hook
+            // reports nothing to animate, so the loop stops) and walk on when the page has it again.
             lifeFrameHook = (now) => {
-                if (now - lastInputAt > LIFE_IDLE_MS) return false;
+                if (!decorationAwake()) return false;
                 lifeLayer.onFrame(now);
                 return true;
             };
@@ -6987,7 +7324,7 @@
         const key = bounds.map(v => Number(v).toFixed(5)).join(',');
         if (lifeOsmKey === key && (lifeOsmFeatures || lifeOsmFetching)) return;
         lifeOsmKey = key;
-        lifeOsmFetching = true;
+        lifeOsmFetching = true; noteSceneWork();
         lifeOsmFeatures = null;
         const base = (typeof window.getBackendBase === 'function') ? window.getBackendBase() : '';
         const llBounds = L.latLngBounds([[bounds[1], bounds[0]], [bounds[3], bounds[2]]]);
@@ -6995,7 +7332,7 @@
             : `bbox=${bounds[0]},${bounds[1]},${bounds[2]},${bounds[3]}&crs=EPSG:4326`;
         const settle = (features, source) => {
             if (lifeOsmKey !== key) return;
-            lifeOsmFetching = false;
+            lifeOsmFetching = false; noteSceneWork();
             lifeOsmFeatures = Array.isArray(features) ? features : [];
             console.log(`[3D life] ${lifeOsmFeatures.length} OSM ways from ${source}`);
             if (isActive && scene) rebuildLifeOnly();
@@ -7013,7 +7350,7 @@
             })
             .catch(error => {
                 if (lifeOsmKey !== key) return;
-                lifeOsmFetching = false;
+                lifeOsmFetching = false; noteSceneWork();
                 lifeOsmFeatures = [];
                 console.warn('[3D life] existing streets unavailable; life runs on proposals and plazas only', error);
             });
@@ -7033,6 +7370,62 @@
         lifeLayer = null;
         lifeGroup = null;
         lifeSim = null;
+    }
+
+    // --- City sound (three-sound.js) ---
+    // Heard from the camera: the life layer's vehicles and dogs where they are shown, birds by day,
+    // the city's hum always. A 10 Hz tick feeds it, and it plays only while the model view is up
+    // and the page has focus, like the people and vehicles it is the sound of. The AudioContext is made on the first enabling, inside the
+    // checkbox's click, so the browser lets it play.
+    const SOUND_STORAGE_KEY = 'cb_3d_sound_enabled';
+    const SOUND_TICK_MS = 100;
+    let soundscape = null;
+    let soundTimer = null;
+    let soundNight = 0;
+    let soundUnlock = null;
+
+    function loadSoundEnabledPref() {
+        try {
+            if (typeof PersistentStorage !== 'undefined' && PersistentStorage) {
+                const v = PersistentStorage.getItem(SOUND_STORAGE_KEY);
+                return v === '1' || v === 'true';
+            }
+        } catch (_) { }
+        return false;
+    }
+
+    // The camera as a listener in the life layer's true metres, with its horizontal right-hand side.
+    function soundListener() {
+        const k = lifeMercatorK();
+        const e = camera.matrixWorld.elements;
+        const right = Math.hypot(e[0], e[1]) || 1;
+        return { x: camera.position.x / k, y: camera.position.y / k, z: camera.position.z, rightX: e[0] / right, rightY: e[1] / right };
+    }
+
+    function soundTick() {
+        const on = soundEnabled && isActive && !!scene && !!camera && decorationAwake();
+        soundscape.setPlaying(on);
+        if (!on) return;
+        const lifeShown = !!(lifeSim && lifeGroup && lifeGroup.visible);
+        soundscape.update({
+            dt: SOUND_TICK_MS / 1000, listener: soundListener(), night: soundNight,
+            vehicles: lifeShown ? lifeSim.vehicles : [], dogs: lifeShown ? lifeSim.dogs : []
+        });
+    }
+
+    function setSoundEnabled(on) {
+        soundEnabled = !!on;
+        try { PersistentStorage.setItem(SOUND_STORAGE_KEY, soundEnabled ? '1' : '0'); } catch (_) { }
+        if (soundToggleEl && soundToggleEl.checked !== soundEnabled) soundToggleEl.checked = soundEnabled;
+        if (soundEnabled && !soundscape) {
+            soundscape = window.__threeSound.create();
+            // A saved "on" from an earlier visit has no click behind it: the first touch of the page starts it.
+            soundUnlock = () => { if (soundscape && soundscape.state === 'suspended' && soundscape.playing) soundTick(); };
+            document.addEventListener('pointerdown', soundUnlock, true);
+        }
+        if (soundEnabled && !soundTimer) soundTimer = setInterval(soundTick, SOUND_TICK_MS);
+        if (!soundEnabled && soundTimer) { clearInterval(soundTimer); soundTimer = null; }
+        if (soundscape) soundTick();
     }
 
     // --- Real-world water (sea, lakes, rivers, streams) ---
@@ -7067,15 +7460,21 @@
         if (!isActive || !waterGroup) return;
         disposeWaterGroup();
         if (!waterEnabled || !nearbyWater.length || !origin3857) return;
+        ensureGroundLayer();
         if (!waterMaterial) {
-            // Below planned lakes (0.065) and above the parcel slabs; the offset keeps it off the ground.
-            waterMaterial = new THREE.MeshPhongMaterial({ color: 0x3b7fc4, specular: 0x1f3a60, shininess: 40,
-                polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -2 });
+            // Layered over the green cover, the parcel slabs and the pavement by stencil claims
+            // (three-ground.js ORDER.water), not by its lift: a few centimetres and a polygon offset
+            // lost to the pavement plane's huge triangles at a distance, so canals flickered grey
+            // while zooming (Delft, 2026-10-30). Planned lakes (0.065) still cover it by depth.
+            waterMaterial = new THREE.MeshPhongMaterial({ color: 0x3b7fc4, specular: 0x1f3a60, shininess: 40 });
+            groundLayer.parcelSurface(waterMaterial);
+            // It reflects the scene's sky (three-water-sheen.js), whichever sky the current scene has.
+            window.__threeWaterSheen.apply(waterMaterial, { skyGlsl: window.__threeSky.SKY_COLOR_GLSL, skyUniforms: () => sky?.uniforms || null, clouds: atmosphereClouds });
         }
         for (const piece of nearbyWater) {
             try {
                 polygonFeatureToMeshes({ type: 'Feature', geometry: piece.geometry }, waterMaterial, 0.04, 0)
-                    .forEach(mesh => { mesh.userData.water = piece.kind; waterGroup.add(mesh); });
+                    .forEach(mesh => { mesh.renderOrder = window.__threeGround.ORDER.water; mesh.userData.water = piece.kind; waterGroup.add(mesh); });
             } catch (error) {
                 console.warn('[3D] water piece skipped', piece.kind, error);
             }
@@ -7110,15 +7509,30 @@
         return Number.isFinite(w) && e > w && n > s ? [w, s, e, n] : null;
     }
 
-    // The area tile-based scenery (water, green areas) covers: the loaded buildings' box, or with no
-    // buildings (none here, or they failed) the radius around the scene anchor.
+    // The farthest scenery reaches from the scene's centre. Water and green areas are a few flat
+    // polygons read from ~2.4 km tiles, so they cover what the camera shows, well past the buildings.
+    const MAX_SCENERY_HALF_SIDE_M = 2500;
+    // What this scene's scenery covers so far, [w, s, e, n]. It only grows, so zooming in and out
+    // again neither cuts a lake back nor reads it again; a new scene starts it afresh.
+    let sceneryReach = null;
+    // The area tile-based scenery (water, green areas) covers: the loaded buildings' box and what the
+    // camera shows (load-view.js: its zoom, around where the scene was entered), or with neither the
+    // radius around the scene anchor. Before, only the buildings' box: on a phone the camera shows
+    // over a kilometre, and a lake stopped in a straight line a few hundred metres out.
     function sceneryQuery() {
-        const extent = loadedBuildingsExtent();
-        if (extent) {
-            const [w, s, e, n] = extent;
-            return { queryGeometry: { type: 'Polygon', coordinates: [[[w, s], [e, s], [e, n], [w, n], [w, s]]] }, buffer: 0 };
+        const boxes = [loadedBuildingsExtent(), sceneryReach];
+        const view = window.LoadView?.current();
+        if (view?.mode === '3d') {
+            const [lat, lng] = view.centre;
+            const dLat = MAX_SCENERY_HALF_SIDE_M / 110570, dLng = MAX_SCENERY_HALF_SIDE_M / (111320 * Math.cos(lat * Math.PI / 180));
+            const [w, s, e, n] = view.bbox;
+            boxes.push([Math.max(w, lng - dLng), Math.max(s, lat - dLat), Math.min(e, lng + dLng), Math.min(n, lat + dLat)]);
         }
-        return { queryGeometry: sceneTreeLoadGeometry, buffer: buildingLoadRadiusM };
+        const known = boxes.filter(Boolean);
+        if (!known.length) return { queryGeometry: sceneTreeLoadGeometry, buffer: buildingLoadRadiusM };
+        const [w, s, e, n] = sceneryReach = [Math.min(...known.map(box => box[0])), Math.min(...known.map(box => box[1])),
+            Math.max(...known.map(box => box[2])), Math.max(...known.map(box => box[3]))];
+        return { queryGeometry: { type: 'Polygon', coordinates: [[[w, s], [e, s], [e, n], [w, n], [w, s]]] }, buffer: 0 };
     }
 
     // A scenery read (GET /decor/near, /decor/water, /decor/green): the query area as its WGS84 box
@@ -7137,7 +7551,7 @@
         if (!queryGeometry) return;
         const key = nearbyDataScope + '|' + JSON.stringify(queryGeometry.coordinates) + '|r' + buffer;
         if (key === nearbyWaterKey) return;
-        nearbyWaterFetching = true;
+        nearbyWaterFetching = true; noteSceneWork();
         const signal = sceneAbort?.signal;
         const current = () => isActive && !signal?.aborted && sceneAbort?.signal === signal;
         fetch(sceneryUrl('/decor/water', queryGeometry, buffer), { signal })
@@ -7146,7 +7560,7 @@
                 if (!current()) return;
                 nearbyWater = (payload && Array.isArray(payload.areas)) ? payload.areas : [];
                 nearbyWaterKey = key;
-                nearbyWaterFetching = false;
+                nearbyWaterFetching = false; noteSceneWork();
                 console.log(`[3D] Loaded ${nearbyWater.length} nearby water pieces (${sceneTreeLoadGeometrySource}+${buffer}m)`);
                 rebuildWaterOnly();
                 refreshLifeSurface();
@@ -7159,7 +7573,7 @@
                 if (!current() || err.name === 'AbortError') return;
                 // Scenery: the scene stands without it, so this is a log line, not a banner.
                 console.warn('Failed to fetch nearby water:', err);
-                nearbyWaterFetching = false;
+                nearbyWaterFetching = false; noteSceneWork();
             });
     }
 
@@ -7177,8 +7591,8 @@
     // --- Real-world green areas (lawns and parks, meadows and farmland, woods) ---
     // Fetched via GET /decor/green for the same area as the water (OpenFreeMap landcover, every city)
     // and merged into one mesh per look with the grass pattern (three-grass.js): three draw calls
-    // however many pieces. Just above the parcel slabs (0), below water (0.04), corridor strips (0.05)
-    // and planned parks and squares (0.06), which all cover it.
+    // however many pieces. Just above the parcel slabs (0), below corridor strips (0.05) and planned
+    // parks and squares (0.06), which cover it; real-world water claims its pixels first.
     const GREEN_STORAGE_KEY = 'cb_3d_green_enabled';
     const GREEN_Z = 0.03;
     const GREEN_VARIANT = { lawn: 'lawn', meadow: 'wild', forest: 'forest' }; // look → grass pattern
@@ -7272,7 +7686,7 @@
         if (!queryGeometry) return;
         const key = nearbyDataScope + '|' + JSON.stringify(queryGeometry.coordinates) + '|r' + buffer;
         if (key === nearbyGreenKey) return;
-        nearbyGreenFetching = true;
+        nearbyGreenFetching = true; noteSceneWork();
         const signal = sceneAbort?.signal;
         const current = () => isActive && !signal?.aborted && sceneAbort?.signal === signal;
         fetch(sceneryUrl('/decor/green', queryGeometry, buffer), { signal })
@@ -7281,7 +7695,7 @@
                 if (!current()) return;
                 nearbyGreen = (payload && Array.isArray(payload.areas)) ? payload.areas : [];
                 nearbyGreenKey = key;
-                nearbyGreenFetching = false;
+                nearbyGreenFetching = false; noteSceneWork();
                 console.log(`[3D] Loaded ${nearbyGreen.length} nearby green areas (${sceneTreeLoadGeometrySource}+${buffer}m)`);
                 rebuildGreenOnly();
                 // As for the water: a query area the buildings widened meanwhile is read now.
@@ -7291,7 +7705,7 @@
                 if (!current() || err.name === 'AbortError') return;
                 // Scenery: the scene stands without it, so this is a log line, not a banner.
                 console.warn('Failed to fetch nearby green areas:', err);
-                nearbyGreenFetching = false;
+                nearbyGreenFetching = false; noteSceneWork();
             });
     }
 
@@ -7465,6 +7879,7 @@
         }
         if (corridors) timed('corridors', rebuildCorridors3D);
         if (corridors && diff.plannedChanged) timed('trees', rebuildTreesOnly);
+        if ((corridors && diff.plannedChanged) || ofKind(window.parks) || ofKind(window.squares)) timed('street furniture', rebuildFurnitureOnly);
         const structures = [['parks', parkGroundGroup, parkGroup, () => record3DStructureBuild('parks', () => buildParks3D(parkGroundGroup, parkGroup))],
             ['squares', squareGroundGroup, squareGroup, () => record3DStructureBuild('squares', () => buildSquares3D(squareGroundGroup, squareGroup))],
             ['lakes', lakeGroundGroup, lakeGroup, () => record3DStructureBuild('lakes', () => buildLakes3D(lakeGroundGroup, lakeGroup))]];
@@ -7940,7 +8355,11 @@
     // `ruleDetails` (ruleRoofs.planFor) adds a rule's pitched roof, attic and balconies.
     function createBuildingSlices(buildingFeature, height, material, targetGroup, facadeSource = null, ruleDetails = null) {
         if (!buildingFeature?.geometry) return;
+        // Storeys at the rule's storey height, as the suggested layout counts them.
+        const storeyHeightM = buildingFeature.properties?.urbanRule?.floorHeightM || window.STOREY_HEIGHT_M || 3.3;
+        const storeyFacts = { floors: buildingFeature.properties?.floors ?? Math.max(1, Math.round(height / storeyHeightM)), heightM: height };
         if (ruleDetails) ruleRoofs.detailMeshes(ruleDetails, material).forEach(mesh => {
+            tagBuildingStoreys(mesh, buildingFeature.properties, storeyFacts);
             mesh.userData.proposalId = String(buildingFeature.properties?.proposalId || '');
             mesh.userData.sharedPlanBuildingIndex = facadeSource?.properties?.buildingIndex ?? buildingFeature.properties?.buildingIndex;
             targetGroup.add(mesh);
@@ -7958,6 +8377,7 @@
             for (const mesh of meshes) {
                 if (buildingFeature.properties?.proposalId) mesh.userData.proposalId = String(buildingFeature.properties.proposalId);
                 mesh.userData.sharedPlanBuildingIndex = facadeSource?.properties?.buildingIndex ?? buildingFeature.properties?.buildingIndex;
+                tagBuildingStoreys(mesh, buildingFeature.properties, storeyFacts);
             }
             if (!hasFacade || !meshes.length) return meshes;
             // Each building keeps its style and glass tint; ownership seams vary only the shade.
@@ -8582,7 +9002,7 @@
         if (!feature?.geometry || feature.properties?.modelUrl || feature.properties?.floorPlans) return false;
         // The suggested layout is a housing layout: a building stated for another use gets none, and
         // a stated housing use sets its ground floor (building-use.js).
-        const use = window.BuildingUse.normalize(feature.properties?.use);
+        const use = window.BuildingUse.statedUse(feature.properties);
         if (use && !window.BuildingUse.housesPeople(use)) return false;
         let plan;
         try { plan = window.UrbanRuleVariation.plannedDrawPlan(feature, plannedRepresentation, variationDeps, buildOutDisplaySalt); } catch (_) { return false; }
@@ -8687,6 +9107,9 @@
         for (const { feature } of nearby) {
             if (count >= SUGGESTED_EXISTING_CAP) { suggestedPlanTotals.existingCapped = true; break; }
             const props = feature.properties || {};
+            // A building its source states for another use than housing gets no housing layout.
+            const statedUse = window.BuildingUse.normalize(props.use);
+            if (statedUse && !window.BuildingUse.housesPeople(statedUse)) continue;
             // The pool carries height_m and floors; a footprint with neither stays a plain volume.
             const height = Number.isFinite(props.height_m) && props.height_m > 0 ? props.height_m
                 : Number.isFinite(props.floors) && props.floors > 0 ? props.floors * storeyM
@@ -8767,10 +9190,26 @@
         if (shadowsPerPass && renderer.shadowMap.enabled) renderer.shadowMap.needsUpdate = true;
         updateLampGlow();
         updateSkyAndWindows();
+        updateAtmosphere(renderedSceneVisualRevision !== sceneVisualRevision);
         floorPlanRenderer.renderCutaway(renderer, scene, camera, floorPlanGroup,
             xrayEnabled && floorCutawayLevel !== null && floorCutawayLevel < 0);
         renderedBuildingDisplaySnapshot = buildingDisplaySnapshot;
         renderedSceneVisualRevision = sceneVisualRevision;
+        // From the first drawn frame of an entry the 3D view covers the 2D map (map-shell.css);
+        // until then the map stays in view instead of an empty surface. Photo asked for from 2D
+        // passes through the model scene: the map stays until the photo itself is shown (or the
+        // photo request has ended without it), not the model scene in between.
+        if (isActive && !document.body.classList.contains('three-scene-drawn') && !awaitingPhotoReveal()) {
+            document.body.classList.add('three-scene-drawn');
+        }
+    }
+
+    // Whether photo was asked for and is still composing: the mode request is still running, or the
+    // photo layer is loading its tiles, and the mesh has not been revealed yet.
+    function awaitingPhotoReveal() {
+        const state = window.__mapModeState;
+        if (state?.desired !== 'photo' || realisticLayerActive) return false;
+        return !!state.pending || !!window.PhotorealMode?.isLoading?.();
     }
 
     // ── Side by side comparison (three-compare.js) ─────────────────────────────────────────────
@@ -9024,7 +9463,8 @@
     }
 
     function applyRetainedBuildingDisplay() {
-        if (!buildingDisplaySnapshot || buildingBuildPending || pendingModelLoads || xrayEnabled
+        // The use highlight holds each mesh's own material aside; a rebuild re-applies it instead.
+        if (!buildingDisplaySnapshot || buildingBuildPending || pendingModelLoads || xrayEnabled || useHighlight.isActive()
             || BUILDING_GHOST_STYLE !== 'smooth' || !existingBuildingsGroup || !proposedBuildingsGroup) return false;
         const builtPolicy = buildingDisplayPolicy.resolveBuiltDisplayPolicy(builtDisplay, window.PlanningViews?.getState()?.existingScope);
         const existingVisible = builtPolicy.visible && !realisticLayerActive;
@@ -9284,7 +9724,11 @@
 
     async function rebuild3DBuildingsOnly(options = {}) {
         if (!isActive || !buildingGroup) return;
-        return buildingRefreshQueue.request(options.family || 'all');
+        const done = buildingRefreshQueue.request(options.family || 'all');
+        // The queue is pending from this request until its last build has finished.
+        noteSceneWork();
+        done.then(noteSceneWork, noteSceneWork);
+        return done;
     }
 
     async function build3DBuildingFamilies(requestedFamily) {
@@ -9346,6 +9790,7 @@
             existingBuildingsGroup = nextExisting;
             proposedBuildingsGroup = nextProposed;
             committed = true;
+            applyUseHighlight3D();
             if (showExisting) appendSuggestedExistingFloorPlans(existingMaterial);
             if (showIneligibleParcels && rebuildProposed) buildIneligibleParcels3D(ineligibleBuildingsGroup);
             buildingDisplaySnapshot = {
@@ -9357,6 +9802,7 @@
             };
             ensureNearbyProposalBuildings();
             ensureNearbyTrees();
+            ensureNearbyFurniture();
             ensureNearbyWater();
             ensureNearbyGreen();
             if (isolatedParcelId !== null) applyParcelIsolation();
@@ -9443,10 +9889,15 @@
         // The smooth ghost pass uses stencil to ensure that only one nearest translucent facade
         // blends at each pixel, even if a residual coincident triangle survives sanitation.
         renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false, stencil: true });
-        renderer.setSize(width, height);
+        // The canvas's CSS box follows the container (map.css), so a resize never leaves a strip
+        // uncovered while the drawing buffer catches up; only the buffer is sized here.
+        renderer.setSize(width, height, false);
         renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
-        sky = window.__threeSky.createSky(THREE, { pixelRatio: renderer.getPixelRatio() });
+        sky = window.__threeSky.createSky(THREE, { pixelRatio: renderer.getPixelRatio(), clouds: atmosphereState });
         scene.add(sky.group);
+        // Haze (updateAtmosphere sets its colour and range every frame); from the start, so no
+        // material compiles twice for it.
+        scene.fog = new THREE.Fog(0xffffff, 1e11, 1e12);
         threeContainer.innerHTML = '';
         threeContainer.appendChild(renderer.domElement);
         perfReadout = null;
@@ -9471,6 +9922,7 @@
             getCamera: () => camera,
             getTarget: () => controls?.target || null,
             isPhotoActive: () => !!window.PhotorealMode?.isActive?.(),
+            isAwake: decorationAwake,
             invalidate: () => invalidateThreeView(),
             excludedRoots: () => [lifeGroup],
             // The playing day keeps the loop running through a frame hook, like the life layer.
@@ -9502,6 +9954,8 @@
         lakeGroup = new THREE.Group();
         stationGroup = new THREE.Group();
         treesGroup = new THREE.Group();
+        furnitureGroup = new THREE.Group();
+        furnitureGroup.name = 'StreetFurniture';
         waterGroup = new THREE.Group();
         greenGroup = new THREE.Group();
         proposalInteractionGroup = new THREE.Group();
@@ -9520,6 +9974,7 @@
                 PersistentStorage.getItem(FACADE_STYLE_KEY), false);
         } catch (_) { }
         treesGroup.visible = treesEnabled && !realisticLayerActive;
+        furnitureGroup.visible = !realisticLayerActive;
         waterGroup.visible = waterEnabled && !realisticLayerActive;
         greenGroup.visible = greenEnabled && !realisticLayerActive;
         scene.add(flatGroup);
@@ -9532,6 +9987,7 @@
         scene.add(lakeGroup);
         scene.add(stationGroup);
         scene.add(treesGroup);
+        scene.add(furnitureGroup);
         scene.add(waterGroup);
         scene.add(greenGroup);
         scene.add(proposalInteractionGroup);
@@ -9556,11 +10012,13 @@
             nearbyBuildingsOutcome = null; nearbyBuildingsProvenance = null;
             nearbyBuildingsRevision++;
             nearbyTrees = []; nearbyTreesKey = null;
+            nearbyFurniture = null; nearbyFurnitureKey = null;
             nearbyWater = []; nearbyWaterKey = null;
             nearbyGreen = []; nearbyGreenKey = null;
             nearbyDataScope = dataScope;
         }
         captureSceneLoadGeometry();
+        sceneryReach = null;
         // Ground covers the same frozen band as the nearby buildings, including room to orbit/pan.
         // A focused proposal can be away from Leaflet's view, so it owns its own snapshot bounds.
         const view = map.getBounds().pad(0.2);
@@ -9616,6 +10074,7 @@
         buildingViewDirty = false;
         buildingWorkIncomplete = false;
         rebuildTreesOnly();
+        rebuildFurnitureOnly();
         rebuildWaterOnly();
         rebuildGreenOnly();
         try { rebuildLifeOnly(); } catch (error) { console.warn('[3D life] build failed', error); }
@@ -9788,6 +10247,7 @@
             // The same two waits as the Built and Proposed arcs around Buildings and massing.
             window.PlanningLoading?.set('existing', 'model', isActive && nearbyProposalBuildingsFetching);
             window.PlanningLoading?.set('proposed', 'model', isActive && pendingModelLoads > 0);
+            noteSceneWork();
             const loading = isActive && (nearbyProposalBuildingsFetching || pendingModelLoads > 0);
             if (!loading) {
                 if (buildingsLoaderRelease) {
@@ -9963,7 +10423,9 @@
         hooks: frameHooks.map(hook => hook.name || 'anonymous'), live: [...lastFrameDebug.live],
         moving: lastFrameDebug.moving, wasInvalidated: lastFrameDebug.wasInvalidated, hooksParked,
         idleMs: Math.round(performance.now() - lastInputAt), autoRotate: !!controls?.autoRotate || manualAutoRotateActive,
-        frameAgeMs: Math.round(performance.now() - lastFrameDebug.at), loopRunning, frameId: frameId !== null, frameTimer: !!frameTimer
+        frameAgeMs: Math.round(performance.now() - lastFrameDebug.at), loopRunning, frameId: frameId !== null, frameTimer: !!frameTimer,
+        clouds: { cover: atmosphereState.cbCloudCover.value, shadow: atmosphereState.cbCloudShadow.value, materials: atmosphereMaterials, timeS: atmosphereState.cbCloudTime.value },
+        sound: soundscape ? soundscape.stats() : null, dogs: lifeSim?.dogs?.length || 0
     });
     // Input keeps the decorative hooks awake; once they have parked, the first input restarts the loop.
     function noteInput() {
@@ -9995,7 +10457,7 @@
         const text = `${fps} fps · worst frame ${w.maxFrame.toFixed(1)} ms · hooks ${w.maxHooks.toFixed(1)} ms · render ${w.maxRender.toFixed(1)} ms`
             + ` · ${renderer ? renderer.info.render.calls : 0} draw calls`
             + (life && (life.vehicles || life.people)
-                ? ` · life ${life.frameMs.toFixed(2)} ms (${life.vehicles} vehicles, ${life.people} people, ${life.drawCalls} draws)` : '');
+                ? ` · life ${life.frameMs.toFixed(2)} ms (${life.vehicles} vehicles, ${life.people} people, ${life.dogs} dogs, ${life.drawCalls} draws)` : '');
         if (perfReadout) perfReadout.textContent = text;
         if (now - w.lastLog > 5000) { console.log('[3D perf] ' + text); w.lastLog = now; }
         w.start = now; w.frames = 0; w.maxFrame = 0; w.maxHooks = 0; w.maxRender = 0;
@@ -10098,7 +10560,7 @@
         if (w <= 1 || h <= 1) return; // container not laid out yet; don't clamp to a fallback
         renderer.getSize(_rendererSize);
         if (Math.round(_rendererSize.x) === w && Math.round(_rendererSize.y) === h) return;
-        renderer.setSize(w, h);
+        renderer.setSize(w, h, false);
         camera.aspect = w / h;
         camera.updateProjectionMatrix();
     }
@@ -10109,7 +10571,7 @@
         const h = Math.max(1, threeContainer.clientHeight || 600);
         camera.aspect = w / h;
         camera.updateProjectionMatrix();
-        renderer.setSize(w, h);
+        renderer.setSize(w, h, false);
         invalidateThreeView();
         // Do not reframe here: camera + controls.target are the user's current pan/orbit state.
         // Updating only the projection keeps that state intact across layout and window resizes.
@@ -10120,6 +10582,7 @@
         releaseRetiredGroups();
         lampGlowObjects.clear();
         sky = null;   // its dome and stars go with the scene below
+        disposeBirds();
         clearTimeout(warmSceneTimer);
         warmSceneTimer = null;
         warmSceneKey = null;
@@ -10198,6 +10661,7 @@
         waterGroup = null;
         greenGroup = null;
         treesGroup = null;
+        furnitureGroup = null;
         existingTransitAlignmentGroup = null;
         sceneParcelSnapshot = [];
         nearbyWaterKey = null;
@@ -10246,7 +10710,8 @@
         try { map.doubleClickZoom && map.doubleClickZoom.disable(); } catch (_) { }
         try { map.boxZoom && map.boxZoom.disable(); } catch (_) { }
         try { map.keyboard && map.keyboard.disable(); } catch (_) { }
-        // Hide attribution if desired? Keep it.
+        try { map.touchZoom && map.touchZoom.disable(); } catch (_) { }
+        try { map.tap && map.tap.disable(); } catch (_) { }
     }
 
     function enableLeafletInteractions() {
@@ -10255,6 +10720,8 @@
         try { map.doubleClickZoom && map.doubleClickZoom.enable(); } catch (_) { }
         try { map.boxZoom && map.boxZoom.enable(); } catch (_) { }
         try { map.keyboard && map.keyboard.enable(); } catch (_) { }
+        try { map.touchZoom && map.touchZoom.enable(); } catch (_) { }
+        try { map.tap && map.tap.enable(); } catch (_) { }
     }
 
     function closeAllPanelsAndModalsFor3D() {
@@ -10420,6 +10887,7 @@
             startLoop();
             ensureNearbyProposalBuildings();
             ensureNearbyTrees();
+            ensureNearbyFurniture();
             ensureNearbyWater();
             ensureNearbyGreen();
         } else if (!await initScene()) return false;
@@ -10447,7 +10915,7 @@
 
     function exit3D() {
         stopBuildingRadiusPreview?.();
-        try { document.body.classList.remove('three-mode-active'); } catch (_) { }
+        try { document.body.classList.remove('three-mode-active', 'three-scene-drawn'); } catch (_) { }
         cancelViewAngleHint(); // never let it land on the 2D map after the user has left
         if (!isActive) return;
         // Capture this before disposing the local scene frame. The Leaflet map intentionally stays
@@ -10515,6 +10983,7 @@
     }
 
     window.addEventListener('parcelFabricCommitted', rebuildTreesOnly);
+    window.addEventListener('parcelFabricCommitted', rebuildFurnitureOnly);
 
     window.addEventListener('buildingsLayerUpdated', () => {
         if (!isActive) return;
@@ -10541,6 +11010,8 @@
     });
 
     window.addEventListener('planninggeometrychange', rebuildPlanningSources3D);
+    // The camera settled at another zoom: water and green areas widen to what it shows.
+    window.addEventListener('loadviewchange', () => { if (isActive) { ensureNearbyWater(); ensureNearbyGreen(); } });
     window.addEventListener('planningselectionchange', () => {
         // An outside inspector selection ends the click's view; the stack's own section switches
         // select there too and are not an outside choice.
@@ -10548,6 +11019,8 @@
         rebuildPlanningSources3D();
     });
     window.addEventListener('planningviewchange', syncPlanningView3D);
+    // Ticking a use in Layers → Building use recolours the built meshes in place.
+    useHighlight.onChange(() => { if (isActive) applyUseHighlight3D(); });
 
     // Rebuild on proposed buildings updates. Invalidate the nearby cache too so the
     // buffer query re-runs against the new proposal shape.
@@ -10591,6 +11064,8 @@
         }, eventName);
         // Parks and plazas are where people wander, so the population follows a structure change.
         try { rebuildLifeOnly(); } catch (error) { console.warn('[3D life] rebuild after structures failed', error); }
+        // OSM furniture leaves a park or square to its design.
+        rebuildFurnitureOnly();
     }
 
     ['parksUpdated', 'squaresUpdated', 'lakesUpdated', 'stationsUpdated', 'buildingGroundsUpdated'].forEach(eventName => {
@@ -11141,6 +11616,7 @@
         rebuildPlanningSources3D();
         if (flatGroup) flatGroup.visible = !realisticLayerActive;
         if (treesGroup) treesGroup.visible = treesEnabled && !realisticLayerActive;
+        if (furnitureGroup) furnitureGroup.visible = !realisticLayerActive;
         if (waterGroup) waterGroup.visible = waterEnabled && !realisticLayerActive;
         if (greenGroup) greenGroup.visible = greenEnabled && !realisticLayerActive;
         syncLifeVisibility();
@@ -11265,8 +11741,8 @@
         if (zoom) frameIsolatedFeatures(features);
         return true;
     };
-    // Moves the camera onto features without selecting anything (a list row's preview).
-    window.frameThreeModeFeatures = features => { if (isActive) frameIsolatedFeatures(features); };
+    // Brings features into view without selecting anything or changing the zoom (a list row's preview).
+    window.revealThreeModeFeatures = features => { if (isActive) revealIsolatedFeatures(features); };
     window.showThreeModeDesign = showThreeModeDesign;
     window.showThreeModeParcel = showThreeModeParcel;
     window.showThreeModeBuilding = showThreeModeBuilding;

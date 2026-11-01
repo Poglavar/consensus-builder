@@ -265,3 +265,35 @@ describe('our endpoint chain: Tracestrack first, the public server after', () =>
         });
     });
 });
+
+describe('a slow answer on one OSM layer', () => {
+    it('does not stop the next layer from asking the same server', async () => {
+        const { createOverpassCellSource, buildOverpassQuery, overpassElementsToGeoJSON, PRIORITY } = await import('../buildings/osm-reference.js');
+        const way = (id, lon, lat) => ({ type: 'way', id, tags: { building: 'yes' }, geometry: [
+            { lon, lat }, { lon: lon + 0.0001, lat }, { lon: lon + 0.0001, lat: lat + 0.0001 }, { lon, lat: lat + 0.0001 }
+        ] });
+        let calls = 0;
+        const realFetch = globalThis.fetch;
+        // An endpoint of its own: the gates are per endpoint and module-wide.
+        const realUrl = process.env.OVERPASS_URL, realKey = process.env.TRACESTRACK_API_KEY;
+        process.env.OVERPASS_URL = 'https://slow-layer.example/api/interpreter';
+        delete process.env.TRACESTRACK_API_KEY;
+        globalThis.fetch = async () => {
+            calls += 1;
+            if (calls === 1) throw Object.assign(new Error('The operation was aborted due to timeout'), { name: 'TimeoutError' });
+            return { ok: true, json: async () => ({ elements: [way(7, 60.0012, 40.0012)] }) };
+        };
+        try {
+            const trees = createOverpassCellSource({ label: 'slow-trees', buildQuery: buildOverpassQuery, convert: overpassElementsToGeoJSON });
+            const roads = createOverpassCellSource({ label: 'roads-after', buildQuery: buildOverpassQuery, convert: overpassElementsToGeoJSON, priority: PRIORITY.roads });
+            const bbox = [60.0, 40.0, 60.004, 40.004];
+            await expect(trees(bbox)).rejects.toThrow();
+            const answer = await roads(bbox);
+            expect(answer.features.map(f => f.id)).toEqual(['w7']);
+        } finally {
+            globalThis.fetch = realFetch;
+            if (realUrl === undefined) delete process.env.OVERPASS_URL; else process.env.OVERPASS_URL = realUrl;
+            if (realKey !== undefined) process.env.TRACESTRACK_API_KEY = realKey;
+        }
+    });
+});

@@ -1,5 +1,5 @@
 import { test, expect } from '../helpers/fixtures';
-import { openCity, openParcel } from '../helpers/runtime';
+import { expectStatusLogged, openCity, openParcel, parcelTab } from '../helpers/runtime';
 import { sampleParcels } from '../helpers/mocks/parcel-data';
 
 test.describe('Parcel diagnostics @features', () => {
@@ -18,7 +18,7 @@ test.describe('Parcel diagnostics @features', () => {
       const metres = Number(metrics.length);
       return metres.toLocaleString('en-GB', { maximumFractionDigits: metres < 100 ? 1 : 0 });
     });
-    await page.locator('#parcel-info-panel .parcel-tab-btn[data-parcel-tab-id="info-tab"]').click();
+    await parcelTab(page, 'info-tab').click();
     await expect(page.locator('#roadMeasurements')).toBeVisible();
     await expect(page.locator('#roadMeasurements .metric-value').first()).toHaveText(new RegExp(`^${length.replace(/[.,]/g, '\\$&')}\\s?m$`)); // narrow no-break space before the unit
     await expect(page.locator('#roadMeasurements')).not.toContainText(/NaN|N\/A|undefined/);
@@ -28,7 +28,7 @@ test.describe('Parcel diagnostics @features', () => {
 
   test('Parcel Builder opens the configured external tool with the selected cadastral identifier', async ({ mockApi: page }) => {
     await openCity(page);
-    await openParcel(page, 'tools');
+    await openParcel(page, 'proposals');
     const base = await page.evaluate(() => (window as any).CityConfigManager.getParcelBuilderConfig().url);
     await page.context().route(`${base}**`, route => route.fulfill({ contentType: 'text/html', body: '<title>External tool fixture</title>' }));
     const opened = page.context().waitForEvent('page');
@@ -51,7 +51,7 @@ test.describe('Parcel diagnostics @features', () => {
     await openParcel(page, 'tools');
     await page.locator('#neighboursButton').click();
     await expect(page.locator('#neighboursButton')).toHaveAttribute('aria-pressed', 'true');
-    await expect(page.locator('#floating-status-text')).toContainText('Highlighted 1 neighboring parcels');
+    await expectStatusLogged(page, 'Highlighted 1 neighboring parcels');
     const highlights = () => page.evaluate(() => {
       let count = 0;
       (window as any).map.eachLayer((layer: any) => { if (layer.feature?.properties?.parcelId === 'HR-335754-1235' && layer.options?.weight === 3) count++; });

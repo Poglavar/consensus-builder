@@ -120,7 +120,6 @@ test.describe('Plan arithmetic @features', () => {
     await expect(sheet.locator('#proposal-list-host input[type=checkbox]')).toHaveCount(0);
     await sheet.locator('#lists-actions').getByRole('button', { name: 'Compare designs', exact: true }).click();
     await check(titles[0]);
-    await sheet.locator('[data-list-source="published"]').click();
     await check('Published park');
     await compare.click();
     await expect(dialog.getByRole('heading', { name: 'Compare designs' })).toBeVisible();

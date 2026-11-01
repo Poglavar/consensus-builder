@@ -10,7 +10,7 @@
     // Info panels in the right dock become bottom sheets on phones (the click stack among them);
     // a panel hosted inside the click stack is part of that sheet, not a sheet of its own.
     const PANEL_SELECTOR = '.info-panel.right-dock-panel:not(.is-hosted)';
-    const SURFACE_SELECTOR = PANEL_SELECTOR + ', .map-sheet, .cb-dialog:not(.cb-dialog--message), .on-map-editor__panel, #click-stack, #three-click-stack, #grain-score-panel, #area-monitor-detail-panel, #urban-block-panel, .site-panel';
+    const SURFACE_SELECTOR = PANEL_SELECTOR + ', .map-sheet, .cb-dialog:not(.cb-dialog--message), .on-map-editor__panel, #grain-score-panel, #area-monitor-detail-panel, #urban-block-panel, .site-panel';
     const HANDLE_CLASS = 'mobile-dock-sheet-handle';
     const DEFAULT_RATIO = 0.5;
     const MIN_RATIO = 0.25;
@@ -48,6 +48,22 @@
             bottomClearance,
             desiredHeight: finiteNumber(startHeight) - finiteNumber(deltaY)
         });
+    }
+
+    // A flick at least this fast (px/ms) picks the next resting height in its direction.
+    const FLING_PX_PER_MS = 0.5;
+    // Where a released sheet comes to rest (Material and iOS sheet detents): half or full height,
+    // whichever is nearer, or the next one in a flick's direction; null closes it (dragged under its
+    // smallest height, or flicked down from half). velocity is px/ms, positive downward.
+    function restingHeight({ height, velocity = 0, half, full, min }) {
+        const stops = [...new Set([Math.min(half, full), full])];
+        if (height < min - 48) return null;
+        if (Math.abs(velocity) >= FLING_PX_PER_MS) {
+            if (velocity < 0) return stops.find(stop => stop > height + 1) ?? full;
+            const below = [...stops].reverse().find(stop => stop < height - 1);
+            return below ?? null;
+        }
+        return stops.reduce((best, stop) => Math.abs(stop - height) < Math.abs(best - height) ? stop : best, stops[0]);
     }
 
     function numberProperty(style, name) {
@@ -103,13 +119,20 @@
         if (win.matchMedia?.('(max-width: 767.98px)').matches) {
             // The compact proposal card (not a draggable sheet, but a bottom sheet all the same).
             const card = doc.querySelector?.('#proposal-details-panel.is-minimized');
-            [...doc.querySelectorAll(PANEL_SELECTOR), ...(card ? [card] : [])].forEach(panel => {
+            [...doc.querySelectorAll(PANEL_SELECTOR + ', #click-stack.visible, #three-click-stack.visible'), ...(card ? [card] : [])].forEach(panel => {
                 const box = panel.getBoundingClientRect();
                 if (box.height > 0) occupied = Math.max(occupied, occupiedBottom({ viewportHeight: viewport, top: box.top }));
             });
         }
         if (occupied > 0) container.style.setProperty('--map-sheet-occupied', `${occupied}px`);
         else container.style.removeProperty('--map-sheet-occupied');
+        // A sheet about something on the map covers the bottom navigation bar, as a place sheet does
+        // in a maps app; the bar's own sheets (Lists, Activity, Bets) keep it, since it moves
+        // between them (css/mobile-sheets.css).
+        const phone = !!win.matchMedia?.('(max-width: 767.98px)').matches;
+        const context = phone && [...container.querySelectorAll('.mobile-sheet-ready:not(.map-sheet--dock):not(.is-hosted):not(.is-minimized), #click-stack.visible, #three-click-stack.visible')]
+            .some(panel => panel.getBoundingClientRect().height > 0);
+        doc.body?.classList.toggle('mobile-context-sheet-open', context);
     }
 
     function observeOccupancy(win, element) {
@@ -133,7 +156,7 @@
     }
 
     function wirePanel(win, panel, options = {}) {
-        if (!panel || panel.classList?.contains('is-hosted') || panel.querySelector(`:scope > .${HANDLE_CLASS}`)) return;
+        if (!panel || ['click-stack', 'three-click-stack'].includes(panel.id) || panel.classList?.contains('is-hosted') || panel.querySelector(`:scope > .${HANDLE_CLASS}`)) return;
         if (!panel.id) panel.id = `mobile-sheet-${++sequence}`;
         const handle = makeHandle(win, panel);
         panel.classList.add('mobile-sheet-ready');
@@ -147,23 +170,31 @@
         };
         let drag = null;
         let suppressClick = false;
+        const stopsOf = () => {
+            const viewport = viewportHeight(win), range = limits(viewport, 0, clearances(win, panel).bottomClearance);
+            return { half: clamp(viewport * DEFAULT_RATIO, range.min, range.max), full: range.max, min: range.min };
+        };
         handle.addEventListener('click', () => {
             if (suppressClick) { suppressClick = false; return; }
-            const viewport = viewportHeight(win), available = limits(viewport, 0, clearances(win, panel).bottomClearance).max;
-            setHeight(win, panel, panel.getBoundingClientRect().height > available * 0.75 ? viewport * 0.5 : available);
+            const { half, full } = stopsOf();
+            setHeight(win, panel, panel.getBoundingClientRect().height > (half + full) / 2 ? half : full);
         });
 
         handle.addEventListener('pointerdown', event => {
             if (!win.matchMedia('(max-width: 767.98px)').matches || panel.classList.contains('is-minimized')) return;
-            drag = { pointerId: event.pointerId, y: event.clientY, height: panel.getBoundingClientRect().height, deltaY: 0 };
+            panel.classList.remove('is-sheet-settling');
+            drag = { pointerId: event.pointerId, y: event.clientY, height: panel.getBoundingClientRect().height, deltaY: 0,
+                samples: [{ y: event.clientY, t: event.timeStamp }] };
             handle.setPointerCapture?.(event.pointerId);
             handle.classList.add('is-dragging');
+            panel.classList.add('is-sheet-dragging');
             event.preventDefault();
         });
 
         handle.addEventListener('pointermove', event => {
             if (!drag || event.pointerId !== drag.pointerId) return;
             drag.deltaY = event.clientY - drag.y;
+            drag.samples = [...drag.samples.filter(sample => event.timeStamp - sample.t < 100), { y: event.clientY, t: event.timeStamp }];
             setHeight(win, panel, draggedHeight({
                 startHeight: drag.height,
                 deltaY: event.clientY - drag.y,
@@ -177,14 +208,28 @@
             if (!drag || event.pointerId !== drag.pointerId) return;
             handle.releasePointerCapture?.(event.pointerId);
             handle.classList.remove('is-dragging');
+            panel.classList.remove('is-sheet-dragging');
             suppressClick = event.type !== 'pointercancel' && Math.abs(drag.deltaY) > 5;
-            if (event.type !== 'pointercancel' && drag.height - drag.deltaY < limits(viewportHeight(win), 0, clearances(win, panel).bottomClearance).min - 48) close();
+            if (event.type !== 'pointercancel' && suppressClick) {
+                // The pointer's speed over its last 100 ms decides a flick.
+                const first = drag.samples[0], last = drag.samples[drag.samples.length - 1];
+                const velocity = last.t > first.t ? (last.y - first.y) / (last.t - first.t) : 0;
+                const rest = restingHeight({ height: drag.height - drag.deltaY, velocity, ...stopsOf() });
+                if (rest === null) close();
+                else {
+                    // Only this settle animates (css/mobile-sheets.css); keyboard steps stay immediate.
+                    panel.classList.add('is-sheet-settling');
+                    panel.addEventListener?.('transitionend', () => panel.classList.remove('is-sheet-settling'), { once: true });
+                    setHeight(win, panel, rest);
+                }
+            }
             drag = null;
         };
         handle.addEventListener('pointerup', finishDrag);
         handle.addEventListener('pointercancel', finishDrag);
         handle.addEventListener('keydown', event => {
             if (!win.matchMedia('(max-width: 767.98px)').matches || panel.classList.contains('is-minimized')) return;
+            panel.classList.remove('is-sheet-settling');
             const current = panel.getBoundingClientRect().height;
             const viewport = viewportHeight(win);
             const step = Math.max(32, Math.round(viewport * 0.08));
@@ -266,7 +311,7 @@
         win.visualViewport?.addEventListener?.('scroll', onResize);
     }
 
-    const api = { clamp, limits, sheetHeight, draggedHeight, occupiedBottom, reportOccupancy, wirePanel, wireAddedPanelNode, install };
+    const api = { clamp, limits, sheetHeight, draggedHeight, restingHeight, occupiedBottom, reportOccupancy, observeOccupancy, wirePanel, wireAddedPanelNode, install };
     if (typeof window !== 'undefined') install(window);
     return api;
 });

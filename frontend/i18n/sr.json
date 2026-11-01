@@ -1047,7 +1047,8 @@
     "urbanRule": {
         "balconies": "Balkoni",
         "balconyDepth": "Smeju da izađu iz gabarita za (m):",
-        "slantedRoof": "Kosi krov s potkrovljem"
+        "slantedRoof": "Kosi krov s potkrovljem",
+        "useAutomatic": "Automatski: prodavnice u prizemlju od 5 spratova"
     },
     "common": {
         "modelFileFormats": "glTF, CityGML ili CityJSON",
@@ -6381,6 +6382,8 @@
             "trees": "Drveće",
             "life": "Ljudi i saobraćaj",
             "lifeTooltip": "Prikažite ili sakrijte shematske ljude i vozila koji se kreću kroz 3D prikaz",
+            "sound": "Zvuci grada",
+            "soundTooltip": "Pustite saobraćaj, pse i ptice koje biste čuli na mestu kamere 3D prikaza",
             "ground": "Ulice i trotoari",
             "groundTooltip": "Prikažite ili sakrijte kolovoze i trotoare izvedene iz OpenStreetMapa u 3D prikazu",
             "water": "Voda",
@@ -6482,13 +6485,15 @@
             "show": "prikaži",
             "suggestedLayout": "Predloženi tlocrt",
             "suggestedSummary": "{{cores}} jezgro · {{apartments}} stanova po etaži · {{rooms}} prostorija",
-            "suggestedFlagged": "Podrazumevani tlocrt ne staje: {{reason}}"
+            "suggestedFlagged": "Podrazumevani tlocrt ne staje: {{reason}}",
+            "stats": "Statistika"
         },
         "proposalPanel": {
             "title": "Podaci o dizajnu",
             "parcelsLabel": "Parcele",
             "suggestedTotals": "Predloženi tlocrti: {{buildings}} zgrada · {{apartmentsPerFloor}} stanova po etaži · ukupno {{apartments}}",
-            "avgPerParcel": "Prosek / parceli"
+            "avgPerParcel": "Prosek / parceli",
+            "openActions2d": "Otvori radnje u 2D"
         },
         "isolation": {
             "singleParcel": "Izabrana parcela",
@@ -7849,7 +7854,8 @@
             "none": "Vlasnici bez dela",
             "several": "Vlasnici sa više delova",
             "noneList": "Bez dela:",
-            "severalList": "Više delova:"
+            "severalList": "Više delova:",
+            "heading": "Ishodi vlasništva"
         },
         "dialog": {
             "titleCreate": "Napravi sporazum",
@@ -7995,7 +8001,9 @@
                 "contributes": "Unosi",
                 "receives": "Dobija",
                 "change": "Neto promena",
-                "cash": "Novac"
+                "cash": "Novac",
+                "byParty": "Po stranci parcele",
+                "byPerson": "Po osobi"
             },
             "deadline": "Rok: {{date}}",
             "actions": {
@@ -8007,7 +8015,11 @@
             },
             "collapse": "Zatvori sporazum",
             "removeLocalConfirm": "Ukloniti ovaj sporazum sa ovog uređaja? Njegova dizajni ostaju na mapi. Objavljeni sporazum ostaje dostupan putem veze.",
-            "designs": "Dizajni u planu"
+            "designs": "Dizajni u planu",
+            "tabs": {
+                "info": "Info",
+                "decision": "Odluka"
+            }
         },
         "list": {
             "create": "Napravi sporazum",
@@ -8235,7 +8247,8 @@
     "planningViews": {
         "tabs": {
             "display": "Prikaz",
-            "compare": "Poređenje"
+            "compare": "Poređenje",
+            "options": "Opcije"
         },
         "compare": {
             "stop": "Prekini poređenje",
@@ -8322,7 +8335,8 @@
             "few": "{{count}} sačuvane građevinske mase u prikazu",
             "other": "{{count}} sačuvanih građevinskih masa u prikazu"
         },
-        "loadingProgress": "Učitavanje dozvoljenih volumena… {{count}} od {{total}} profila učitano",
+        "loadingCells": "Učitavanje dozvoljenih volumena… {{count}} od {{total}} područja",
+        "cellsFailed": "neka područja nisu učitana; Pokušaj ponovo ih ponovo čita",
         "partial": {
             "one": "Prikazana je {{count}} varijanta · deo izvorne geometrije nije dostupan",
             "few": "Prikazane su {{count}} varijante · deo izvorne geometrije nije dostupan",
@@ -8619,7 +8633,25 @@
         "openAgreement": "Detalji sporazuma",
         "geometryUnavailable": "Nije moguće učitati sve uključene dizajne. Njihov pun obuhvat nije moguće istaći.",
         "sharePlan": "Podeli plan",
-        "chooseSharePlan": "Koji plan želite da podelite?"
+        "chooseSharePlan": "Koji plan želite da podelite?",
+        "revision": "Verzija"
+    },
+    "clickStackNavigation": {
+        "objects": "Objekti na ovoj lokaciji",
+        "content": "Sadržaj odeljka",
+        "actions": "Radnje",
+        "info": "Info",
+        "plans": "Planovi",
+        "parcels": "Parcele",
+        "formed": "Formirane parcele",
+        "designs": "Dizajni",
+        "agreements": "Sporazumi",
+        "built": "Zgrade",
+        "permitted": "Dozvoljeno",
+        "fullScreen": "Ceo ekran",
+        "showMap": "Prikaži mapu",
+        "close": "Zatvori pregled",
+        "noAgreements": "Nijedan sporazum još ne upućuje na ovaj plan."
     },
     "clickStackRelations": {
         "designParcels": "Parcele",
@@ -8844,7 +8876,11 @@
         "applyTitle": "Primeniti „{{title}}” na mapu?",
         "applyQuestion": "Dizajni ovog plana nisu na vašoj mapi. Za nastavak se primenjuju na nju. Već primenjeni dizajni ostaju; ako se neki od njih sukobljava sa ovim planom, pitaćemo vas šta da uradite.",
         "applyAndContinue": "Primeni i nastavi",
-        "applyFailed": "Plan nije moguće primeniti na mapu.",
+        "otherCid": "server ga je sačuvao pod drugim CID-om",
+        "lookupFailed": "Plan nije pronađen na serveru: {{reason}}",
+        "planInvalid": "Zapis ovog plana više nije važeći: {{reason}}",
+        "notOnMap": "Posle primene nisu svi dizajni plana na mapi: {{titles}} nije ostao primenjen.",
+        "groundFailed": "„{{title}}”: zemljište mu nije moglo da se dohvati ({{reason}}).",
         "cannotStand": "Ovi dizajni ne mogu da stoje zajedno sa ostatkom plana: {{titles}}. Pomoću „Promeni dizajne” zadržite one koje želite.",
         "editPlan": "Уреди план",
         "saveRevision": "Сачувај нову верзију",
@@ -8868,9 +8904,9 @@
         "createAgreement": "Направи споразум",
         "openPlan": "Отвори план",
         "noPlans": "Још нема сачуваних планова.",
-        "membersMissing": "Неки пројекти из плана нису пронађени.",
-        "revisionChanged": "План се променио током учитавања. Покушај поново.",
-        "publicationFailed": "Пројекат из плана није могуће објавити.",
+        "membersMissing": "{{count}} od {{total}} dizajna plana nema ni u ovom pregledaču ni na serveru.",
+        "revisionChanged": "Kopija ovog plana na serveru ne odgovara njegovoj vezi.",
+        "publicationFailed": "„{{title}}” nije bilo moguće objaviti: {{reason}}",
         "shareDesignHint": "Podeli ovaj dizajn"
     },
     "sharedPlan": {
@@ -9018,12 +9054,11 @@
     "lists": {
         "title": "Liste",
         "plans": "Planovi",
-        "source": "Izvor",
         "search": "Pretraži…",
         "byTitle": "Naslov",
         "newest": "Najnovije prvo",
-        "remove": "Ukloni iz pregledača",
-        "removeConfirm": "Ukloniti „{{title}}” iz ovog pregledača? Objavljene veze i ostali zapisi ostaju dostupni.",
+        "remove": "Izbriši nacrt",
+        "removeConfirm": "Izbrisati nacrt „{{title}}”? Sačuvan je samo u ovom pregledaču pa se ne može vratiti.",
         "select": "Izaberi {{title}}",
         "open": "Otvori",
         "openNamed": "Otvori {{title}}",
@@ -9034,7 +9069,7 @@
         "count": "Prikazano: {{count}}",
         "empty": "Ovde još nema ničega.",
         "noMatch": "Nijedna stavka ne odgovara filterima.",
-        "takesGround": "{{title}} ne može biti u ovom planu: zauzima zemljište već označenog {{others}}. Najpre odznačite taj dizajn da biste koristili ovaj.",
+        "takesGround": "{{title}} zauzima zemljište dizajna {{others}}, pa {{others}} više nije označen.",
         "cannotStand": "{{title}} ne može da stoji uz već označene dizajne pa nije dodat.",
         "loadMore": "Učitaj još",
         "limited": "Prikazuje se do 1.000 objavljenih dizajna."
@@ -9089,5 +9124,20 @@
     "landDefinition": "Javna površina su putevi te parkovi i trgovi iz OpenStreetMap-a; privatna je ostatak parcela. Postojeće stanje broji svaku postojeću zgradu na tom zemljištu; plan uz svoje nove zgrade broji postojeće koje njegovi dizajni ne uklanjaju.",
     "noBasis": "Nema sačuvanog plana sa čijeg bi se zemljišta uzelo stanje.",
     "sideBySide": "Uporedo na karti"
+  },
+  "buildingUseHighlight": {
+    "title": "Namena zgrada",
+    "highlight": "Istakni po nameni",
+    "note": "Označene namene boje svoje spratove, u postojećim zgradama i u predlozima; sve ostalo bledi.",
+    "pill": "Istaknuta namena: {{uses}}",
+    "ownershipPill": "Istaknuto vlasništvo: {{types}}",
+    "off": "Isključi isticanje",
+    "storey": {
+      "residential": "Stanovanje",
+      "shop": "Prodavnice",
+      "office": "Kancelarije",
+      "public": "Javna",
+      "industrial": "Industrija"
+    }
   }
 }

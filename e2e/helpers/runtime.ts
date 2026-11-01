@@ -156,14 +156,20 @@ export async function showSelectionDesignTab(page: Page): Promise<void> {
 // Expands a section of the open stack unless it already is.
 export async function expandStackSection(page: Page, kind: string): Promise<void> {
   const row = stackSection(page, kind).locator('.click-stack__row');
-  if (await row.getAttribute('aria-expanded') !== 'true') await row.click();
+  if (await row.getAttribute('aria-expanded') !== 'true') {
+    const tab = clickStack(page).locator(`.click-stack__object-tab[data-kind="${kind}"]`);
+    if (await tab.isVisible()) await tab.click(); else await row.click();
+  }
   await expect(row).toHaveAttribute('aria-expanded', 'true');
 }
 
-// The parcel panel's tab buttons (Info, Propose, Proposals, Tools). Hosted in the stack it shows
-// Info, Propose and Tools: the Designs section lists the parcel's proposals. The parcel section
+// The parcel panel's tab buttons (Actions, Info, Designs, Tools). Hosted in the stack it retains
+// the rich Designs list and its original controls. The parcel section
 // shows only the actions the panel does not offer (Compare, Use as site) as [data-command] buttons.
-export const parcelTab = (page: Page, tabId: string) => page.locator(`#parcel-info-panel [data-parcel-tab-id="${tabId}"]`);
+export const parcelTab = (page: Page, tabId: string) => {
+  const key = tabId === 'propose-tab' ? 'actions' : `parcel-${tabId}`;
+  return page.locator(`#parcel-info-panel [data-parcel-tab-id="${tabId}"]:visible, #click-stack .click-stack__content-tabs [data-page="${key}"]`);
+};
 
 // Before / after folds the click stack to its rows; the Design row shows its card again. A
 // stack that is not folded is left as it is.
@@ -184,7 +190,7 @@ export async function closeParcel(page: Page): Promise<void> {
     await expect(panel).toBeHidden();
     return;
   }
-  if (await clickStack(page).locator('#parcel-info-panel').isVisible()) {
+  if (await clickStack(page).isVisible() && await clickStack(page).locator('#parcel-info-panel').count()) {
     await page.keyboard.press('Escape');
     await expect(clickStack(page)).toBeHidden();
   } else {
@@ -304,11 +310,11 @@ export async function proposalState(page: Page, id: string): Promise<any> {
   return page.evaluate(id => JSON.parse(JSON.stringify((window as any).getProposalByIdOrHash(id))), id);
 }
 
-// The proposal panel's tabs: Overview (name, rung, type, author, size) and Details (land and
-// ownership, verification, the record); a parcel layout has Overview, Input parcels and Output
-// parcels instead. The actions stay in the footer under every tab.
-export async function showProposalTab(page: Page, tab: 'overview' | 'details' | 'inputs' | 'outputs'): Promise<void> {
-  const button = page.locator(`#proposal-details-panel [data-proposal-tab="${tab}"]`);
+// The proposal panel's Info page includes metadata, verification and the record;
+// a parcel layout also has Input parcels and Output parcels.
+// The inspector promotes these alongside its separate Actions tab.
+export async function showProposalTab(page: Page, tab: 'overview' | 'inputs' | 'outputs'): Promise<void> {
+  const button = page.locator(`#proposal-details-panel [data-proposal-tab="${tab}"]:visible, #click-stack .click-stack__content-tabs [data-page="design-${tab}"]`);
   if (await button.getAttribute('aria-selected') !== 'true') await button.click();
   await expect(page.locator(`#proposal-details-panel [data-proposal-tabpanel="${tab}"]`)).toBeVisible();
 }
@@ -316,7 +322,8 @@ export async function showProposalTab(page: Page, tab: 'overview' | 'details' | 
 export async function showProposal(page: Page, id: string): Promise<void> {
   await page.evaluate(id => (window as any).showProposalDetails(id), id);
   if (await page.locator('body').evaluate(el => el.classList.contains('three-mode-active'))) {
-    await page.locator('#three-click-stack').getByRole('button', { name: 'Design actions', exact: true }).click();
+    await page.locator('#three-click-stack [data-page="actions"]').click();
+    await page.locator('#three-click-stack').getByRole('button', { name: 'Open actions in 2D', exact: true }).click();
   }
   await expect(stackSection(page, 'designs').locator('#proposal-details-panel')).toBeVisible();
   await expect(page.locator('#planning-inspector')).toBeHidden();

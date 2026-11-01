@@ -1,7 +1,7 @@
 // Shift+drag on the map draws a box that adds every parcel it touches to the multi-parcel selection
 // (js/parcels/ui/box-select.js); plain clicks then add or remove single parcels.
 import { test, expect } from '../helpers/fixtures';
-import { clickMapPoint, openCity, publishOn, PARCEL_ID, showSelectionDesignTab, selectionSection } from '../helpers/runtime';
+import { clickMapPoint, openCity, publishOn, PARCEL_ID, showSelectionDesignTab, selectionSection, parcelTab } from '../helpers/runtime';
 
 async function parcelBox(page: import('@playwright/test').Page, id: string) {
   return page.evaluate(parcelId => {
@@ -35,8 +35,16 @@ test.describe('Shift+drag box selection @core', () => {
     // The selection's Proposals tab totals what stands on its parcels, published ones included.
     await showSelectionDesignTab(page);
     await expect(page.locator('#propose-tab')).toBeVisible();
-    await page.locator('#parcel-info-panel [data-parcel-tab-id="proposals-tab"]').click();
-    await expect(page.locator(`#proposals-content [data-server-id="${publishedCid}"]`)).toContainText('Published park');
+    await parcelTab(page, 'proposals-tab').click();
+    const row = page.locator(`#proposals-content [data-server-id="${publishedCid}"]`);
+    await expect(row).toContainText('Published park');
+    // The row is an object-list item: its name outlines the design and stays pressed, opening nothing;
+    // only its arrow opens it.
+    await row.locator('[data-proposal-pick]').click();
+    await expect(row.locator('[data-proposal-pick]')).toHaveAttribute('aria-pressed', 'true');
+    await expect.poll(() => page.evaluate(() => (window as any).ensureProposalOverlayGroups().inspection.getLayers().length)).toBeGreaterThan(0);
+    await expect(page.locator('#proposal-details-panel')).toBeHidden();
+    await expect(row.getByRole('button', { name: 'Open Published park' })).toBeVisible();
 
     const center = await page.evaluate(id => (window as any).ParcelPresenter.getLayer(id).getBounds().getCenter(), PARCEL_ID);
     await clickMapPoint(page, center.lng, center.lat);

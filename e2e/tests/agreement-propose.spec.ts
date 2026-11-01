@@ -7,7 +7,7 @@ import { waitForMapReady } from '../helpers/app';
 import { fillNativeDateTime } from '../helpers/controls';
 import { chooseProfileName, openOnAnotherDevice, stubBasemapTiles, PARCEL_ID } from '../helpers/runtime';
 import {
-  applyLayout, agreementPanel, storedAgreements, createFromPlan, openStackAgreement, openAgreementsList, openListedAgreement, closeAgreementPanel, panelStatus, editorSave, editorClosed,
+  applyLayout, agreementPanel, storedAgreements, createFromPlan, openStackAgreement, openAgreementsList, openListedAgreement, closeAgreementPanel, panelStatus, editorSave, editorClosed, openAgreementDecision,
 } from '../helpers/agreements';
 import { canonicalJson, cidOfBytes, cidOfObject, pageIndex, SharedIndex } from '../helpers/mocks/shared-server';
 
@@ -45,6 +45,7 @@ test('Propose publishes a community agreement with its parcel layout, and its li
   expect(postsOf(index)).toEqual([]);
   await panelStatus(page, 'current');
   await panel.locator('[data-agreement-action="propose"]').click();
+  await openAgreementDecision(page);
 
   // The panel says Proposed, under the agreement's CID, with the index's status, and is no longer edited.
   const cidCode = panel.locator('code.agreement-panel-cid');
@@ -112,6 +113,7 @@ test('Propose publishes a community agreement with its parcel layout, and its li
   try {
     const remotePanel = agreementPanel(receiver.page);
     await expect(remotePanel).toBeVisible({ timeout: 90_000 });
+    await openAgreementDecision(receiver.page);
     await panelStatus(receiver.page, 'current');
     await expect(receiver.page.locator('#agreement-panel-title')).toHaveText(TITLE);
     await expect(remotePanel.locator('code.agreement-panel-cid')).toHaveAttribute('title', cid);
@@ -148,6 +150,7 @@ test('a proposed owners’ agreement shows the owners’ decisions card, reads i
   await panel.locator('[data-agreement-action="propose"]').click();
   await chooseProfileName(page, AUTHOR);
   await panel.locator('[data-agreement-action="propose"]').click();
+  await openAgreementDecision(page);
   await expect(panel.locator('code.agreement-panel-cid')).toBeVisible({ timeout: 30_000 });
 
   const [cid] = [...index.agreements.keys()];
@@ -170,6 +173,7 @@ test('a proposed owners’ agreement shows the owners’ decisions card, reads i
   const [{ id }] = await storedAgreements(page);
   const list = await openAgreementsList(page);
   await openListedAgreement(list, id);
+  await openAgreementDecision(page);
   await expect(panel.locator('[data-agreement-remote-status="expired"]')).toHaveText('Expired', { timeout: 30_000 });
   await expect(card.locator('[data-approval-closed]')).toHaveText('This agreement no longer takes decisions.');
   await expect(card.locator('[data-approval-action="verify"]')).toHaveCount(0);

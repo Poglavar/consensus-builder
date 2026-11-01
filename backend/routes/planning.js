@@ -42,7 +42,7 @@ export function setupPlanningRoutes(app, pool, { sources = getPlanningSources(),
             res.json(await envelopeQuery({ city, source, scenario, bbox }));
         } catch (error) {
             const status = [400, 422].includes(error.status) ? error.status : 503;
-            if (status === 503) console.error('[planning-envelopes] Source read failed.');
+            if (status === 503) console.error(`[${new Date().toISOString()}] [planning-envelopes] Source read failed (${city} ${source} ${bbox.join(',')})`, error);
             res.status(status).json({ code: status === 400 ? 'envelope-area-too-large' : 'planning-source-unavailable' });
         }
     });
@@ -60,7 +60,7 @@ export function setupPlanningRoutes(app, pool, { sources = getPlanningSources(),
         try { res.json(await studyQuery({ city, source, scenario, parcel, point: coordinates })); }
         catch (error) {
             const status = [400, 422].includes(error.status) ? error.status : 503;
-            if (status === 503) console.error(`[${new Date().toISOString()}] [planning-study] Source read failed (${error.code || 'upstream-error'}).`);
+            if (status === 503) console.error(`[${new Date().toISOString()}] [planning-study] Source read failed (${city} ${source} ${parcel || point})`, error);
             res.status(status).json({ error: 'Parcel study could not be assembled.',
                 code: status === 503 ? 'study-source-unavailable' : error.code || 'study-unavailable' });
         }

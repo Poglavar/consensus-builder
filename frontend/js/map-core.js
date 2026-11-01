@@ -737,10 +737,17 @@ function stableBuildingFeatureSignature(feature, style = null) {
 }
 
 function buildingStyleForFeature(feature) {
-    return (typeof window.buildingOutcomeStyle === 'function')
+    const base = (typeof window.buildingOutcomeStyle === 'function')
         ? window.buildingOutcomeStyle(feature?.properties?.__outcome)
         : observedBuildingStyle();
+    // Highlight by use (building-use-highlight.js) colours a building by its storeys' uses.
+    const highlight = window.BuildingUseHighlight;
+    if (!highlight?.isActive()) return base;
+    const props = feature?.properties || {};
+    return highlight.style2d(base, highlight.storeysOf(props, { floors: props.floors, heightM: props.height_m }));
 }
+// A changed highlight restyles every building: their signatures include the style.
+window.BuildingUseHighlight?.onChange(() => { if (buildingLayer) rebuildBuildingLayerFromPool(); });
 
 function applyBuildingFeatureLayerChanges(layerGroup, layersById, changes) {
     changes.removed.concat(changes.changed.map(entry => entry.id)).forEach(id => {

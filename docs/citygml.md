@@ -171,15 +171,23 @@ A building source for cities that publish their city model as CityGML sheets:
   file's format, its buildings' WGS84 extent and the SHA-256 of its bytes. The browser's adapter
   worker reads the file itself (it must allow other sites to read it, CORS), once per page, and
   refuses it when its bytes changed; the pin is a hash because a browser cannot read an ETag the
-  host does not expose. Its buildings are the editors' footprints with their height and storeys, as
-  LoD1 bodies; files are limited to 8 MiB and 5,000 buildings, like GeoJSON snapshots. Where the
+  host does not expose. Its buildings are the editors' footprints with their height, storeys and
+  use, and in 3D their own surfaces (the view stands each building on the terrain by its lowest
+  point, so the file's height datum does not matter); files are limited to 8 MiB and 5,000 buildings, like GeoJSON snapshots. Where the
   file has no buildings the next source in the list stands in. The check accepts a file whose
   buildings lie outside the view being checked and says how many the file holds and where. The
   reader loads in the worker only for such a source.
-- Still open: a person's file drawn as its LoD2 surfaces (heights need the file's vertical datum),
-  CityJSONSeq and zipped files; the `function` / `usage` codes mapped to our [building uses](vocabulary.md#building-use);
-  storeys and units, where a source has them, as the building's floor model
-  (`backend/buildings/floor-models.js`); Hesse's and Bremen's LoD2 buildings; storing parsed sheets instead of reading them live when a source is slow or large.
+- Building uses: a city model's `function` (else `usage`) maps onto our six
+  [building uses](vocabulary.md#building-use) (`BuildingUse.fromCityModel`): the German states' ALKIS
+  codes (`31001_<code>`, or the bare four digits of SIG3D's code list) by the list's ranges, a word
+  by the presets' names. Imported footprints take it as their use; the city sources' footprints carry
+  it as `use`, so Plan stats splits an existing building's floor area by it instead of the housing
+  share, and X-ray gives no housing layout to an existing building stated for another use. Canopies
+  and other ALKIS structures (51009, 53001), unknown (9998) and other (9999) state none.
+- Storey counts reach the footprints as `levels` (Hamburg states them for nearly every building).
+- Still open: CityJSONSeq and zipped files; storeys and units as objects (CityJSON `BuildingStorey`,
+  `BuildingUnit`) as the building's floor model (`backend/buildings/floor-models.js`), which no source
+  we read carries yet; Hesse's and Bremen's LoD2 buildings; storing parsed sheets instead of reading them live when a source is slow or large.
 
 ## How our records map
 

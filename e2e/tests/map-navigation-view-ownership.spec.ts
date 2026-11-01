@@ -96,7 +96,11 @@ test('Freeform placement works in model view without switching back to the map',
   await openParcel(page, 'proposals');
   await page.locator('.parcel-build-btn--single').click();
   await page.locator('#mode-3d-toggle').click();
-  await expect.poll(() => page.evaluate(() => (window as any).isThreeModeActive?.())).toBe(true);
+  // The 3D toggle remains pressed while its scene is loading.  Do not send the placement click
+  // into that transition: it belongs to the Leaflet map until the model canvas takes ownership.
+  await expect(page.locator('#mode-3d-toggle')).not.toHaveClass(/mode-btn-loading/, { timeout: 20_000 });
+  await expect(page.locator('#three-container canvas')).toBeVisible({ timeout: 20_000 });
+  await expect.poll(() => page.evaluate(() => (window as any).isThreeModeActive?.()), { timeout: 20_000 }).toBe(true);
   const at = { x: 400, y: 300 };
   const expected = await page.evaluate(at => (window as any).getThreeModeInternals().pickGroundLatLng({ clientX: at.x, clientY: at.y }), at);
   await page.mouse.click(at.x, at.y);

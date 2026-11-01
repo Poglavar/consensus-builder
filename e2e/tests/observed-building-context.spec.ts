@@ -36,7 +36,7 @@ for (const width of [1280, 390]) {
     await page.setContent('<!doctype html><html><body class="three-mode-active"><main id="map-container"></main></body></html>');
     const frontend = path.resolve(__dirname, '../../frontend');
     for (const file of ['tokens','primitives','base','map','panels','utilities','mobile-sheets','three-click-stack']) await page.addStyleTag({ path: path.join(frontend,`css/${file}.css`) });
-    for (const file of ['click-stack/click-stack-model','click-stack/click-stack-relations','three-click-stack']) await page.addScriptTag({ path: path.join(frontend,`js/${file}.js`) });
+    for (const file of ['click-stack/click-stack-model','ui/object-list','click-stack/click-stack-relations','three-click-stack']) await page.addScriptTag({ path: path.join(frontend,`js/${file}.js`) });
     await page.evaluate(() => {
       const w = window as any;
       w.i18n = { t: (key: string) => key === 'clickStackRelations.affectedBy' ? 'Affected by design:' : key };
@@ -48,7 +48,12 @@ for (const width of [1280, 390]) {
     expect(await root.locator('.click-stack__section').evaluateAll(rows => rows.map(row => (row as HTMLElement).dataset.kind))).toEqual(['built', 'parcels']);
     await expect(root.getByRole('group', { name: 'Affected by design:' })).toBeVisible();
     await page.screenshot({ path: testInfo.outputPath('building-explicit-impact.png') });
-    await root.getByRole('button', { name: 'Redevelop', exact: true }).click();
+    // The design's name only outlines it; its arrow opens it.
+    const redevelop = root.getByRole('button', { name: 'Redevelop', exact: true });
+    await redevelop.click();
+    await expect(redevelop).toHaveAttribute('aria-pressed', 'true');
+    await expect(root.locator('[data-kind="designs"] .click-stack__row')).toHaveCount(0);
+    await root.locator('.click-stack__open[data-kind="designs"][data-id="design"]').click();
     await expect(root.locator('[data-kind="designs"] .click-stack__row')).toHaveAttribute('aria-expanded', 'true');
     await expect(root.locator('.click-stack__section[data-kind="plans"]')).toBeVisible();
   });

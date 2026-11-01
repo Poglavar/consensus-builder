@@ -165,6 +165,28 @@ describe('night windows', () => {
         expect(key).toContain(screenDoor.SHADER_VERSION);
     });
 
+    it('by day mirrors the scene\'s sky in the panes and darkens the foot of each wall', () => {
+        const state = nightWindows.createState();
+        const material = phong();
+        nightWindows.configureMaterial(material, state);
+        const shader = phongShader();
+        material.onBeforeCompile(shader);
+        const fragment = shader.fragmentShader;
+        expect(fragment).toContain('vec3 cbSkyColor(vec3 dir)');
+        expect(fragment).toContain('diffuseColor.rgb *= cbWallFoot();');
+        const glassAt = fragment.indexOf('outgoingLight = cbDayGlass(outgoingLight);');
+        expect(glassAt).toBeGreaterThan(fragment.indexOf('vec3 outgoingLight'));
+        expect(glassAt).toBeLessThan(fragment.indexOf('#include <opaque_fragment>'));
+        // The glass reads whichever sky the scene has, by reference.
+        const sky = threeSky.createSky(THREE);
+        nightWindows.setSky(state, sky.uniforms);
+        expect(shader.uniforms.cbSkyHorizon.value).toBe(sky.uniforms.cbSkyHorizon.value);
+        sky.update({ altitudeDeg: 30, azimuthRad: 0 });
+        expect(shader.uniforms.cbSkyGlowStrength.value).toBe(sky.uniforms.cbSkyGlowStrength.value);
+        nightWindows.setSky(state, null);
+        expect(shader.uniforms.cbSkyHorizon.value).toBe(sky.uniforms.cbSkyHorizon.value);
+    });
+
     it('fails clearly if a Three upgrade removes a shader integration point', () => {
         expect(() => nightWindows.patchShader({ vertexShader: '', fragmentShader: '' })).toThrow(/shader chunks/);
     });

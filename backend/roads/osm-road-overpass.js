@@ -3,7 +3,7 @@
 // the paid Tracestrack instance first when its key is set, then the public server; per-cell cache,
 // throttle and cool-off). Output is the /osm-road feature shape, so the frontend cannot tell an
 // ingested row from a live way. Keeps the browser free of any Overpass credential.
-import { createOverpassCellSource } from '../buildings/osm-reference.js';
+import { createOverpassCellSource, PRIORITY } from '../buildings/osm-reference.js';
 
 const ROAD_FEATURE_CAP = 8000;     // matches /osm-road's own cap
 export const ROAD_MAX_SPAN_DEG = 0.06;  // ≈ 6 km; a wider box is a city, not a scene
@@ -77,7 +77,8 @@ export const fetchOverpassRoads = createOverpassCellSource({
     label: 'roads',
     buildQuery: buildRoadQuery,
     convert: overpassRoadsToFeatures,
-    featureCap: ROAD_FEATURE_CAP
+    featureCap: ROAD_FEATURE_CAP,
+    priority: PRIORITY.roads
 });
 
 // Streets and railways, for /osm-road?railways=1. Its own cell cache: a cell answered without rails
@@ -86,5 +87,6 @@ export const fetchOverpassRoadsAndRailways = createOverpassCellSource({
     label: 'roads+railways',
     buildQuery: bbox => buildRoadQuery(bbox, { railways: true }),
     convert: (elements, cap) => overpassRoadsToFeatures(elements, cap, { railways: true }),
-    featureCap: ROAD_FEATURE_CAP
+    featureCap: ROAD_FEATURE_CAP,
+    priority: PRIORITY.roads
 });

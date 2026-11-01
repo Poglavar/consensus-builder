@@ -45,6 +45,12 @@ describe('mergedBuilding: a Block or Row becomes one Freeform building', () => {
         expect(turf.area(result.building)).toBeCloseTo(turf.area(box(0, 0, 3 * D, D)), 0);
         expect(result.building.properties).toEqual({ type: 'proposedBuildingSingle', height: 12, rotation: 0, footprintMode: 'polygon' });
     });
+    it('keeps the rule\'s use as the Freeform building\'s own, an automatic Block\'s included', () => {
+        const ruled = (rule, height) => [box(0, 0, D, D, { height, urbanRule: rule }), box(D, 0, 2 * D, D, { height, urbanRule: rule })];
+        expect(conversion.mergedBuilding(ruled({ typology: 'row', use: 'office' }, 12), ops).building.properties.use).toBe('office');
+        expect(conversion.mergedBuilding(ruled({ typology: 'block' }, 18), ops).building.properties.use).toBe('residential-shops');
+        expect(conversion.mergedBuilding(ruled({ typology: 'block' }, 9), ops).building.properties.use).toBe('residential');
+    });
 
     it('keeps a courtyard block\'s hole and drops every rule input, freezing the massing at the rule\'s maximum height', () => {
         const outer = [[0, 0], [4 * D, 0], [4 * D, 4 * D], [0, 4 * D], [0, 0]];

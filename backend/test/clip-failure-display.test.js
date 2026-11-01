@@ -403,7 +403,8 @@ describe('three-mode (3D display)', () => {
             window: {
                 __parcelArrangement: A,
                 buildingFeaturePool: [{ ...LEFT, properties: { height_m: 9 } }],
-                proposedBuildings: [RIGHT]
+                proposedBuildings: [RIGHT],
+                BuildingUse: require('../../frontend/js/building-use.js')
             },
             xrayEnabled: true, suggestedPlansEnabled: true, suggestedExistingEnabled: true,
             floorPlanGroup: {}, suggestedFloorPlans: {}, suggestedPlanTotals: {},

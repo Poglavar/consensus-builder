@@ -10,7 +10,7 @@
 // is comfortably above that and small enough to keep test runtime sane.
 
 import { test, expect } from '../helpers/fixtures';
-import { openCity, showProposal, showProposalTab } from '../helpers/runtime';
+import { openCity, showProposal } from '../helpers/runtime';
 
 const MEGA_PARCEL_COUNT = 320;
 
@@ -132,13 +132,11 @@ test.describe('Mega proposal loading @features', () => {
     if (await panel.evaluate(element => element.classList.contains('is-minimized'))) {
       await minimizeButton.click();
     }
-    await expect(panel.locator('.panel-body')).toBeVisible();
-    await showProposalTab(page, 'details');
-    await panel.locator('summary').filter({ hasText: 'Land & ownership' }).click();
-    const ancestorsList = page.locator('#proposal-parent-parcels-list');
+    await expect(panel.locator('#proposal-details-footer')).toBeVisible();
+    await page.locator('#click-stack [data-page="relation-parcels"]').click();
+    const ancestorsList = page.locator('#click-stack .click-stack__choices[data-kind="parcels"]');
     await expect(ancestorsList).toBeVisible();
-    const firstAncestor = ancestorsList.locator('[data-parcel-id]').first();
-    await expect(firstAncestor).toHaveAttribute('data-parcel-id', 'HR-335754-MEGA0000');
-    await expect(firstAncestor.locator('.parcel-number')).toContainText('Parcel MEGA0');
+    const firstAncestor = ancestorsList.locator('.click-stack__chip').first();
+    await expect(firstAncestor).toHaveAttribute('data-id', 'HR-335754-MEGA0000');
   });
 });

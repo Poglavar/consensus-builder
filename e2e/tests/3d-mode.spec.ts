@@ -213,7 +213,7 @@ test.describe('3D rendering and controls @features', () => {
     const stack = page.locator('#three-click-stack');
     await page.screenshot({ path: '/private/tmp/selection-ground-design-390.png' });
     // An applied park forms the ground it stands on, so the coincident parcel is the Formed section (fa52dcba8).
-    await stack.locator('.click-stack__section[data-kind="formed"] .click-stack__row').click();
+    await stack.locator('.click-stack__object-tab[data-kind="formed"]').click();
     await expect.poll(selection).toMatchObject({ kind: 'formed', representation: 'ground', pattern: 'outline', hatches: 0 });
     await page.screenshot({ path: '/private/tmp/selection-ground-parcel-390.png' });
     await page.keyboard.press('Escape');
@@ -349,6 +349,8 @@ test.describe('3D rendering and controls @features', () => {
     // The parcel's figures open in the Parcel section of the 3D click stack.
     await expect(page.locator('#three-click-stack .click-stack__section[data-kind="parcels"].is-expanded')).toBeVisible();
     const parcelPanel = page.locator('#three-click-stack .three-mode-parcel-panel');
+    await expect(page.locator('#three-click-stack [data-page="actions"]')).toHaveAttribute('aria-selected', 'true');
+    await page.locator('#three-click-stack [data-page="stats"]').click();
     await expect(parcelPanel).toBeVisible();
     // The sale price slider reprices the Built / Planned / Proposed comparison; the built value follows it.
     const priceSlider = parcelPanel.locator('[data-role="sale-slider"]');

@@ -1262,12 +1262,16 @@ function drawProposedBuildingsForProposal(proposalId, { announce = true } = {}) 
             // The same rule realization and salt drive the map and model; source records stay intact.
             const state = window.PlanningViews.getState();
             const plan = window.UrbanRuleVariation.plannedDrawPlan(building, state.proposedForm, { turf }, state.proposedVariation);
+            // Highlight by use (building-use-highlight.js) colours the building by its storeys' uses.
+            const highlight = window.BuildingUseHighlight;
+            const storeys = highlight?.isActive() ? highlight.storeysOf(building.properties, { heightM: building.properties.height }) : null;
             for (const [feature, envelope] of [[plan.massing, plan.massingStyle === 'envelope'], [plan.buildOut, false]]) {
                 if (!feature) continue;
+                const style = { ...PROPOSED_BUILDING_STYLE, color: window.PlanningViews.color('proposed'),
+                    fillColor: window.PlanningViews.color('proposed'),
+                    fillOpacity: envelope ? 0.12 : 1 };
                 const visual = L.geoJSON(feature, {
-                    style: { ...PROPOSED_BUILDING_STYLE, color: window.PlanningViews.color('proposed'),
-                        fillColor: window.PlanningViews.color('proposed'),
-                        fillOpacity: envelope ? 0.12 : 1 },
+                    style: storeys ? highlight.style2d(style, storeys) : style,
                     interactive: false, pane: 'proposedBuildingsPane', renderer: proposedBuildingCanvas()
                 });
                 visual.sharedPlanBuildingIndex = Number(building.properties.buildingIndex);
@@ -1291,6 +1295,9 @@ function drawProposedBuildingsForProposal(proposalId, { announce = true } = {}) 
     else announceProposedBuildings();
     return true;
 }
+
+// Ticking a use in Layers → Building use restyles every design's buildings.
+window.BuildingUseHighlight?.onChange(() => updateProposedBuildingsLayer({ announce: false }));
 
 // Every proposal redrawn. Still needed — a removal, a state change or a boot has no single proposal
 // to redraw — but it is now expressed as "draw each one", so the incremental path and the full one
@@ -1532,7 +1539,7 @@ function showBlockifyModal() {
                     </label>
                     <input type="range" id="blockify-minplot-slider" min="0" max="10000" value="${DEFAULT_BLOCK_MIN_PLOT_AREA_M2}" step="10">
                 </div>
-                <div class="blockify-freeform-only">${window.UrbanRuleVariation.extrasControlsMarkup('blockify')}</div>
+                <div class="blockify-freeform-only">${window.UrbanRuleVariation.extrasControlsMarkup('blockify', { automaticUse: true })}</div>
                 <div class="parameter-group blockify-freeform-only">
                     <label for="gaps-slider">
                         <span data-i18n-key="blockify.modal.labels.gaps" data-i18n-attr="text">Number of gaps:</span>

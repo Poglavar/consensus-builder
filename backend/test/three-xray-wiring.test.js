@@ -71,10 +71,11 @@ describe('three-mode Xray wiring', () => {
             buildingDisplayPolicy: { resolveBuiltDisplayPolicy: mode => ({ visible: mode !== 'off', material: mode, showSurviving: true, showDemolished: false }) },
             buildingMaterials: { xray: 'xray-material', solid: 'solid-material', ghost: 'ghost-material' },
             buildNearbyProposalBuildings3D: vi.fn(async () => {}), buildProposedBuildings3D: vi.fn(async () => {}), appendSuggestedExistingFloorPlans: vi.fn(),
+            applyUseHighlight3D: vi.fn(),
             buildIneligibleParcels3D: vi.fn(), ensureNearbyProposalBuildings: vi.fn(),
             ensureNearbyTrees: vi.fn(), rebuildTreesOnly: vi.fn(), ensureNearbyWater: vi.fn(), rebuildWaterOnly: vi.fn(),
             applyParcelIsolation: vi.fn(), isolateProposal: vi.fn(), updateXrayControls: vi.fn(), refreshClickStackFigures: vi.fn(),
-            invalidateThreeView: vi.fn(), ensureNearbyGreen: vi.fn(),
+            invalidateThreeView: vi.fn(), ensureNearbyGreen: vi.fn(), ensureNearbyFurniture: vi.fn(), noteSceneWork: vi.fn(),
             // Replacements are built off-scene and swapped into the scene group (7ed6200e9).
             THREE: { Group: class { constructor() { this.children = []; this.userData = {}; } } },
             sceneWork
@@ -101,6 +102,8 @@ describe('three-mode Xray wiring', () => {
         expect(c.buildNearbyProposalBuildings3D.mock.calls[0][1]).toBe('ghost-material');
         expect(c.buildProposedBuildings3D.mock.calls[0][1]).toBe('solid-material');
         expect(c.updateXrayControls).toHaveBeenCalledOnce();
+        // Highlight by use recolours the rebuilt meshes once they are in the scene.
+        expect(c.applyUseHighlight3D).toHaveBeenCalledOnce();
     });
     it('respects display-off families and reapplies isolation after a rebuild', async () => {
         const [rebuild, c] = rebuildHarness(true, 'off', 'off', 'parcel-42');
@@ -307,7 +310,9 @@ describe('three-mode Xray wiring', () => {
     });
     it('typical layouts of existing buildings ask once for the whole radius and plan the nearest first', () => {
         const ensure = vi.fn(() => Promise.resolve());
-        const pool = [40, 5, 400, 20].map(d => ({ geometry: {}, properties: { id: `b${d}`, d, floors: 3 } }));
+        // b10, the second nearest, is an office its source states: it gets no housing layout.
+        const pool = [40, 5, 400, 20].map(d => ({ geometry: {}, properties: { id: `b${d}`, d, floors: 3 } }))
+            .concat([{ geometry: {}, properties: { id: 'b10', d: 10, floors: 3, use: 'office' } }]);
         const turf = { point: coordinates => ({ coordinates }), circle: () => 'circle', bbox: () => [-74.11, 4.61, -74.10, 4.62],
             centroid: feature => feature, distance: (_, feature) => feature.properties.d };
         const planBuilding = vi.fn(feature => ({ slices: [{ footprint: feature, result: { floorPlans: {}, summary: { heightM: 9.9 } } }] }));
@@ -317,7 +322,8 @@ describe('three-mode Xray wiring', () => {
             const SUGGESTED_EXISTING_CAP=2, suggestedFloorPlans={}, suggestedPlanCache=new Map();
             const suggestedPlanTotals={existing:0,existingCapped:false}; this.totals=suggestedPlanTotals;`,
         { turf, suggestedPlanContext: { planBuilding, neighbourPool: () => [] },
-            window: { buildingFeaturePool: pool, proposedBuildings: [], STOREY_HEIGHT_M: 3.3, ensureBuildingFootprintsForBounds: ensure },
+            window: { buildingFeaturePool: pool, proposedBuildings: [], STOREY_HEIGHT_M: 3.3, ensureBuildingFootprintsForBounds: ensure,
+                BuildingUse: require('../../frontend/js/building-use.js') },
             getGeoCameraView: () => ({ targetLng: -74.105, targetLat: 4.615 }), suggestedRegion: () => 'CO', suggestedRoadsFor: () => null,
             estimateBuildingHeightMeters: () => null, reportThreeClip: vi.fn(), appendBuildingFloorPlans: vi.fn(() => true) });
         append('material');

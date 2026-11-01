@@ -9,7 +9,7 @@ function pendingUpload() {
     let finish;
     const response = new Promise(resolve => { finish = resolve; });
     const custom = vi.fn(() => true), fallback = vi.fn(() => true);
-    const env = { console, modalEl: {}, loadVersion: 1, loadedFile: { name: 'model.glb' },
+    const env = { console, modalEl: {}, loadVersion: 1, loadedFile: { name: 'model.glb' }, loadedPlacement: null,
         loadedDims: { width: 16, length: 20, height: 16 }, loadedName: 'model.glb',
         currentContext: { parcelIds: ['source-ground'] }, onConfirmCb: null, onUseCb: custom,
         window: { createSingleBuildingFromUpload: fallback }, setStatus: vi.fn(), t: (_key, value) => value,

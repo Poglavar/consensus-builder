@@ -1,6 +1,6 @@
 import { openLayerSection } from '../helpers/layers';
 import { test, expect } from '../helpers/fixtures';
-import { openCity, openParcel } from '../helpers/runtime';
+import { openCity, openParcel, parcelTab } from '../helpers/runtime';
 import { installLayerDatasets, FIXTURE_ROAD_PARCEL_ID } from '../helpers/mocks/layer-datasets';
 
 const PARCEL_IDS = ['HR-335754-1234', 'HR-335754-1235', 'HR-335754-1236', 'HR-335754-1237', 'HR-335754-1238'];
@@ -144,6 +144,7 @@ test.describe('Dataset road tools @features', () => {
     await page.evaluate(async ids => { await (window as any).CadastralParcelRepository.ensureIds(ids); }, PARCEL_IDS);
     await expect.poll(() => page.evaluate(ids => ids.filter((id: string) => !!(window as any).ParcelPresenter.getLayer(id)).length, PARCEL_IDS)).toBe(PARCEL_IDS.length);
     await openParcel(page);
+    await parcelTab(page, 'propose-tab').click();
     await page.locator('.multi-select-detect-btn').click();
     await expect.poll(() => page.evaluate(() => {
       return (window as any).multiParcelSelection.selectedParcels.has('HR-335754-1234')

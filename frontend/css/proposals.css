@@ -1279,78 +1279,6 @@ textarea.proposal-description-input {
     font-size: 16px;
 }
 
-.proposal-parcel-set-card {
-    margin: 12px 0;
-    padding: 14px;
-    border: 1px solid var(--cb-line);
-    border-radius: var(--cb-radius-lg);
-    background: var(--cb-surface-2);
-}
-
-.proposal-parcel-set-head {
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    gap: 12px;
-}
-
-.proposal-parcel-set-head h3 {
-    margin: 2px 0 0;
-    font-size: 16px;
-}
-
-/* The set's parcel count is a cb-badge (js/proposals/details-panel.js). */
-.proposal-parcel-set-count {
-    flex-shrink: 0;
-}
-
-.proposal-parcel-set-card > p {
-    margin: 10px 0;
-    color: var(--cb-text-muted);
-    font-size: 13px;
-    line-height: 1.45;
-}
-
-.proposal-parcel-set-hash {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 10px;
-    margin: 8px 0 10px;
-    color: var(--cb-text-muted);
-    font-size: var(--cb-text-xs);
-}
-
-.proposal-parcel-set-hash code {
-    overflow: hidden;
-    color: var(--cb-text);
-    text-overflow: ellipsis;
-}
-
-/* The other proposals on this land: cb-option rows (title, relation, a lifecycle cb-badge and a
-   chevron), each opening that proposal. */
-.proposal-parcel-set-relations {
-    margin-top: 10px;
-}
-
-.proposal-parcel-set-relation {
-    align-items: center;
-}
-
-.proposal-parcel-set-relation-main {
-    flex: 1 1 auto;
-}
-
-.proposal-parcel-set-relation-state {
-    flex-shrink: 0;
-}
-
-@media (max-width: 767.98px) {
-    .proposal-parcel-set-relation-state {
-        display: none;
-    }
-}
-
 .proposal-parcels-list,
 .proposal-descendants-list {
     max-height: 200px;
@@ -1365,13 +1293,26 @@ textarea.proposal-description-input {
     background-color: var(--cb-surface-2);
 }
 
-/* Descendant navigation uses the shared button face; this hook owns its row layout only. */
+/* A formed parcel or design is an object-list item (details-panel.js): the shared button face
+   outlines it (pressed while kept), and a design's arrow opens it. These hooks own layout only. */
+.proposal-descendants-list .proposal-descendant-row {
+    display: flex;
+    align-items: stretch;
+    gap: var(--cb-space-1);
+    margin: var(--cb-space-1) 0;
+}
+
 .proposal-descendants-list .descendant-item {
     display: block;
-    width: 100%;
-    margin: var(--cb-space-1) 0;
+    flex: 1 1 auto;
+    min-width: 0;
     text-align: left;
     white-space: normal;
+}
+
+.proposal-descendants-list .object-list__open {
+    align-self: stretch;
+    height: auto;
 }
 
 .proposal-parcel-item {

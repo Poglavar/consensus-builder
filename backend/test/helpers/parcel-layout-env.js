@@ -30,7 +30,8 @@ const MODULES = {
     __planOrder: 'proposals/plan-order.js',
     GeometryTolerances: 'geometry-tolerances.js',
     GeometryEditHistory: 'geometry-edit/history.js',
-    CbFormat: 'format.js'
+    CbFormat: 'format.js',
+    ObjectList: 'ui/object-list.js'
 };
 
 // The pool: metres from an origin at 45.81 N, so turf areas are real square metres.

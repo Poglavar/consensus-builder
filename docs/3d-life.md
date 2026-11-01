@@ -98,6 +98,12 @@ Four classic scripts, three of them pure and node-tested:
      1.0–1.5 m/s, straight legs to random surface destinations, pauses of 2–8 s, walk-cycle phase
      from distance walked; `replaceSurface` repaints under the crowd when footprints arrive late and
      only moves whoever now stands inside one;
+   - dogs: 16% of adults walking on their own walk a dog on a 1.8 m lead, drawn from their own
+     seeded stream so the crowd and traffic stay as they were. Six breeds (`DOG_BREEDS`: labrador,
+     shepherd, husky, beagle, terrier, dachshund) each with its own build, coats, ears up or down,
+     tail carriage and bark pitch. A dog trots a little ahead of its walker on its side, noses about
+     within the lead while the walker stands, steps only onto walkable ground, and rejoins its
+     walker's feet when left behind; dogs do not count against the people cap;
    - caps 100 vehicles / 64 people, halved on small screens.
    - this allocation is shared rendering behavior for human-authored and MCP-authored designs;
      it adds no editing operation or authored-record field, so no MCP schema change is needed.
@@ -107,17 +113,30 @@ Four classic scripts, three of them pure and node-tested:
    `sin(stride)·0.55`, stride 5.2 rad per metre walked (Station3D's values). One frame hook steps the
    simulation with the real dt clamped to 0.1 s and writes matrices straight into the instance
    attribute arrays. The hook is unregistered when the layer is off, hidden (photo mode) or the scene
-   is disposed, so the loop goes back to on-demand.
+   is disposed, so the loop goes back to on-demand. People, vehicles and birds also park while the
+   page has no focus (another app's window in front, another tab): a hidden page gets no frames
+   anyway, but a visible unfocused window would animate on. Focus or input wakes them.
    At dusk and night (`setNight`, the lamps' darkness from the sun's altitude) two more draws switch
    on: unlit headlamps and red tail lamps (four per vehicle, two on a motorcycle) and an additive
    pool of headlight on the road ahead of each vehicle. By day both are hidden and not rewritten.
+   Dogs add three draws when there are any: body and muzzle (columns), heads, and limbs (four legs,
+   two ears, the tail and the lead from the walker's hand to the collar), legs trotting in diagonal
+   pairs, the tail wagging about its root.
+5. `frontend/js/three-sound.js` (Web Audio, level maths pure and tested). City sound heard from the
+   camera, synthesised, no sound files: engine rumble and tyre hiss summed over the vehicles by
+   inverse square (a car at full speed 15 m away plays at half level), panned to where the traffic
+   is; the city's hum under it, quieter at night and from high up; now and then a dog in earshot
+   barks at its breed's pitch, a stopped vehicle hoots, and by day below 200 m birds sing. Toggle
+   "City sounds" in the layer panel of both views (preference `cb_3d_sound_enabled`, default off,
+   since a page that starts making noise on its own is a surprise). A 10 Hz timer feeds it while it
+   is on; it plays only while the 3D view is up and the page has focus.
 
 Streets come from OSM everywhere, through one endpoint: `/osm-road` answers from the ingested
 `osm_road` table where the city has rows, and otherwise (a scene-sized bbox with no rows) from the
 backend's shared Overpass chain in `backend/roads/osm-road-overpass.js` — the paid Tracestrack
 instance first (`TRACESTRACK_API_KEY` in backend/.env, local and prod; the key never reaches a
-browser), then the public server, with the per-cell cache, throttle and cool-off of
-`osm-reference.js`. The response carries `source: 'osm_road' | 'overpass'`. Only when the backend
+browser), then the public server, with the per-cell cache and the shared admission gate of
+`osm-reference.js` (docs/source-adapters.md, "OpenStreetMap through our backend"). The response carries `source: 'osm_road' | 'overpass'`. Only when the backend
 cannot answer does the browser ask a public Overpass instance itself (three instances in turn,
 clipped to about 3 km, 60 s each), so the layer survives our server being down; failing that, life
 runs on proposals and plazas only. The population rebuilds once the ways arrive.
@@ -132,7 +151,7 @@ ms and render ms, worst frame per second window) so the cost is measured, not as
 |---|---|
 | People cap | 64 |
 | Vehicle cap | 100 |
-| Draw calls added | 7 (9 at dusk and night) |
+| Draw calls added | 7 (9 at dusk and night), 3 more with dogs |
 | Target CPU per frame | under 1 ms on a quiet laptop |
 
 ## Phases

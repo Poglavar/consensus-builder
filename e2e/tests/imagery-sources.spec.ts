@@ -28,6 +28,7 @@ test.describe('Imagery area sources', () => {
   });
 
   test('verifies XYZ, persists through reload and resets to the standard map', async ({ mockApi: page }) => {
+    test.setTimeout(90_000); // Verification, tile recovery and reset each reload the app.
     const source = descriptor();
     let failTiles = false;
     let tileRequests = 0;

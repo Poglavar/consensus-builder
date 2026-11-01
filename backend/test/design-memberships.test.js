@@ -120,6 +120,8 @@ describe('design membership sessions', () => {
         const session = f.session();
         await session.ready;
         expect(session.groups.plans.items).toMatchObject([{ cid: 'matching-plan', title: 'Private park plan', draft: true }]);
+        expect(session.revision).toBe('local-revision');
+        expect(session.instances('plans')[0].membershipDesignCid).toBe('local-revision');
         expect(f.win.fetch).not.toHaveBeenCalled();
     });
 
@@ -135,7 +137,8 @@ describe('design membership sessions', () => {
         await session.ready;
         expect(f.win.SharedPlanSession.captureLocalRevision).toHaveBeenCalledTimes(1);
         expect(session.instances('plans')).toMatchObject([{ id: 'pending-plan', label: 'Garden', draft: true, membershipDesignCid: 'edited-design' }]);
-        expect(session.cid).toBe('edited-design');
+        expect(session.revision).toBe('edited-design');
+        expect(session.cid).toBeNull();
         expect(session.instances('plans').some(plan => plan.id === 'accepted-plan')).toBe(false);
         expect(f.win.fetch).not.toHaveBeenCalled();
     });
@@ -284,7 +287,11 @@ describe('read-only parent inspection', () => {
         const session = { groups: { plans: { loading: false, error: false, nextOffset: null } }, details: vi.fn(async () => ({ members: [], features: [] })) };
         mountSection(host, 'plans', { id: 'plan-cid', cid: 'plan-cid', label: 'Plan title' }, session, f.win);
         await vi.waitFor(() => expect(host.querySelector('.click-stack__membership-details')).toBeTruthy());
-        expect(host.textContent).toContain('Plan meaning');
+        expect(host.textContent).not.toContain('Plan meaning');
+        expect(host.querySelector('.click-stack__title')).toBeNull();
+        expect(host.querySelector('.click-stack__revision').textContent).toBe('plan-cid');
+        expect(host.querySelector('.click-stack__schedule').querySelector('.click-stack__schedule-plan')).toBeTruthy();
+        expect(host.querySelector('.click-stack__actions').querySelector('.click-stack__schedule-plan')).toBeNull();
         expect(host.querySelector('.click-stack__actions').querySelector('a')).toBeNull();
         expect(host.querySelector('.click-stack__share-plan')).toBeTruthy();
     });

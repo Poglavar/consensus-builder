@@ -1,7 +1,8 @@
 // The 3D model view's sky: one gradient dome (zenith to horizon, warm toward a low sun, the sun's
 // disc) and, at night, one star field, both behind everything at infinite distance. The
 // colours come from sky-colors.js for the sun three-sun.js resolved; update() writes uniforms only
-// when the sun moved, so an idle view does no sky work. Photo view hides it (the tiles keep their own
+// when the sun moved, so an idle view does no sky work. The dome also draws the drifting cloud layer
+// of three-atmosphere.js, whose uniforms the scene passes in. Photo view hides it (the tiles keep their own
 // background). UMD: window.__threeSky in the browser, require()-able in node.
 (function (root, factory) {
     const api = factory(root);
@@ -11,6 +12,7 @@
     'use strict';
 
     const colorsApi = () => (root && root.SkyColors) || require('./sky-colors.js');
+    const { CLOUD_GLSL } = (root && root.__threeAtmosphere) || require('./three-atmosphere.js');
 
     // Rotation only (the view matrix without its translation) and z = w: the dome sits at infinite
     // distance around the camera wherever it moves, with no per-frame work in JavaScript.
@@ -20,16 +22,16 @@ void main() {
     vCbSkyDir = position;
     gl_Position = (projectionMatrix * vec4(mat3(viewMatrix) * position, 1.0)).xyww;
 }`;
-    const DOME_FRAGMENT = `
+    // The sky's colour in a world direction (z up), with its uniforms: the dome draws it, and the
+    // water reflects it (three-water-sheen.js), so the two always show the same sky.
+    const SKY_COLOR_GLSL = `
 uniform vec3 cbSkyZenith;
 uniform vec3 cbSkyHorizon;
 uniform vec3 cbSkyGlow;
 uniform vec3 cbSkySun;
 uniform float cbSkyGlowStrength;
 uniform float cbSkySunDisc;
-varying vec3 vCbSkyDir;
-void main() {
-    vec3 dir = normalize(vCbSkyDir);
+vec3 cbSkyColor(vec3 dir) {
     float up = clamp(dir.z, 0.0, 1.0);
     vec3 color = mix(cbSkyHorizon, cbSkyZenith, pow(up, 0.5));
     // The glow: a band along the horizon on the sun's side, and a halo around the sun itself.
@@ -40,8 +42,15 @@ void main() {
     float band = toward * toward * toward * exp(-up * 8.0);
     float glow = 0.9 * band + 0.5 * pow(facing, 48.0);
     color = mix(color, cbSkyGlow, clamp(cbSkyGlowStrength * glow, 0.0, 1.0));
-    color = mix(color, vec3(1.0, 0.95, 0.84), smoothstep(0.9999, 0.99995, facing) * cbSkySunDisc);
-    gl_FragColor = vec4(color, 1.0);
+    return mix(color, vec3(1.0, 0.95, 0.84), smoothstep(0.9999, 0.99995, facing) * cbSkySunDisc);
+}`;
+    // The clouds are seen from the camera (scene XY is metres times cbCloudK).
+    const DOME_FRAGMENT = SKY_COLOR_GLSL + CLOUD_GLSL + `
+varying vec3 vCbSkyDir;
+void main() {
+    vec3 cbDir = normalize(vCbSkyDir);
+    vec4 cbCloud = cbCloudSky(vec3(cameraPosition.xy / cbCloudK, cameraPosition.z), cbDir);
+    gl_FragColor = vec4(mix(cbSkyColor(cbDir), cbCloud.rgb, cbCloud.a), 1.0);
     #include <tonemapping_fragment>
     #include <colorspace_fragment>
 }`;
@@ -70,8 +79,9 @@ void main() {
     const SKY_RENDER_ORDER = 999000;
 
     // The sky for one scene. Its objects are never picked, culled, depth-written or shadowed; the
-    // scene's disposal releases their geometry and materials.
-    function createSky(THREE, { pixelRatio = 1 } = {}) {
+    // scene's disposal releases their geometry and materials. `clouds`: three-atmosphere.js state
+    // (shared uniforms); without it the dome has no clouds.
+    function createSky(THREE, { pixelRatio = 1, clouds = null } = {}) {
         const uniforms = {
             cbSkyZenith: { value: new THREE.Color() },
             cbSkyHorizon: { value: new THREE.Color() },
@@ -81,7 +91,7 @@ void main() {
             cbSkySunDisc: { value: 0 }
         };
         const dome = new THREE.Mesh(new THREE.SphereGeometry(1, 48, 24), new THREE.ShaderMaterial({
-            uniforms, vertexShader: DOME_VERTEX, fragmentShader: DOME_FRAGMENT,
+            uniforms: { ...uniforms, ...(clouds || {}) }, vertexShader: DOME_VERTEX, fragmentShader: DOME_FRAGMENT,
             side: THREE.BackSide, depthWrite: false
         }));
         const field = colorsApi().starField();
@@ -134,5 +144,5 @@ void main() {
         return { group, update, setPixelRatio, uniforms, starUniforms };
     }
 
-    return { createSky, SKY_RENDER_ORDER, DOME_FRAGMENT };
+    return { createSky, SKY_RENDER_ORDER, DOME_FRAGMENT, SKY_COLOR_GLSL };
 });

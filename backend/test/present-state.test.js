@@ -82,6 +82,12 @@ describe('existing buildings as freeform buildings', () => {
         const surveyed = State.builtRecords({ regions: new Map([['A', [{ id: 's1', geometry: box(15.9001, 45.8001, 0.0002).geometry, height_m: 18.39, floors: null }]]]), parcelsById: parcels, ops });
         expect(surveyed[0].buildingProposal.buildings[0].properties).toMatchObject({ height: 18.39 });
         expect(surveyed[0].buildingProposal.buildings[0].properties).not.toHaveProperty('floors');
+        // A use the source states (a city model's function code) is the building's use in Plan stats.
+        const office = State.builtRecords({ regions: new Map([['A', [{ id: 'o1', geometry: box(15.9001, 45.8001, 0.0002).geometry, height_m: 12, floors: 4, use: 'office' }]]]), parcelsById: parcels, ops });
+        expect(office[0].buildingProposal.buildings[0].properties).toMatchObject({ use: 'office', floors: 4 });
+        const officeYield = planYield.planYield(office, { floorHeightM: 3 });
+        expect(officeYield.total.housingFloorAreaM2).toBe(0);
+        expect(officeYield.total.workFloorAreaM2).toBeCloseTo(officeYield.total.grossFloorAreaM2, 6);
         const records = State.builtRecords({ regions: new Map([['A', [wide, unknown]], ['B', [wide]]]), parcelsById: parcels, ops, floorHeightM: 3 });
         expect(records.map(r => r.proposalId)).toEqual(['built:w7', 'built:w8']);
         expect(records[0].buildingProposal.buildings[0].geometry.type).toBe('MultiPolygon');

@@ -37,6 +37,7 @@ const addProposal = (page: Page, title: string, id: string, geometry: any) => pa
 async function enter3DOnTheSampleParcel(page: Page): Promise<void> {
   await clickMapPoint(page, 15.9822, 45.80025);
   await page.locator('#mode-3d-toggle').click();
+  await expect(page.locator('#mode-3d-toggle')).not.toHaveClass(/mode-btn-loading/, { timeout: 20_000 });
   await expect(page.locator('#three-container canvas')).toBeVisible();
   await expect(page.locator('body')).toHaveClass(/three-mode-active/);
 }

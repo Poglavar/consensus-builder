@@ -5,7 +5,8 @@ import { describe, it, expect } from 'vitest';
 import { createRequire } from 'node:module';
 
 const require = createRequire(import.meta.url);
-const { create, COLORS, ORDER, STENCIL_BIT, PARCEL_BIT, PAVE_SLAB_M } = require('../../frontend/js/three-ground.js');
+const { create, designSurface, COLORS, OFFSET, MAX_DESIGN_RANK, ORDER, STENCIL_BIT, PARCEL_BIT, PAVE_SLAB_M } = require('../../frontend/js/three-ground.js');
+const { readFileSync } = require('node:fs');
 const { buildGroundGeometry } = require('../../frontend/js/life/ground-geometry.js');
 
 function stubThree() {
@@ -46,7 +47,15 @@ describe('three-ground', () => {
         expect(layer.group.children.map(m => m.name)).toEqual(['ground-lid', 'ground-roadbed', 'ground-kerb', 'ground-markings', 'ground-pavement']);
         expect(layer.group.children.map(m => m.renderOrder)).toEqual([ORDER.lid, ORDER.roadbed, ORDER.kerb, ORDER.markings, ORDER.pavement]);
         expect(byName(layer, 'ground-markings').material.color).toBe(COLORS.markings);
-        expect(byName(layer, 'ground-markings').material.polygonOffsetFactor).toBeLessThan(0);
+        // Lane lines are pulled forward of the asphalt they lie on…
+        expect(byName(layer, 'ground-markings').material.polygonOffsetFactor).toBeLessThan(byName(layer, 'ground-roadbed').material.polygonOffsetFactor);
+        // …and every coloured ground surface sits behind building faces (factor 1, units 1 in
+        // three-mode.js), or a wall seen at an angle lost its foot to the paving.
+        for (const mesh of layer.group.children.filter(m => m.material.colorWrite !== false)) {
+            expect(mesh.material.polygonOffset, mesh.name).toBe(true);
+            expect(mesh.material.polygonOffsetFactor, mesh.name).toBeGreaterThan(1);
+            expect(mesh.material.polygonOffsetUnits, mesh.name).toBeGreaterThan(1);
+        }
         expect(ORDER.lid).toBeLessThan(ORDER.pavement);
         const roadbed = byName(layer, 'ground-roadbed');
         expect(roadbed.material.color).toBe(COLORS.asphalt);
@@ -95,7 +104,8 @@ describe('three-ground', () => {
         const parcel = layer.parcelSurface({});
         const background = byName(layer, 'ground-pavement');
         expect(background.renderOrder).toBeGreaterThan(0);
-        expect(background.material.polygonOffset).toBeFalsy();
+        // Pushed behind building faces, which does not change the claims' layering by stencil.
+        expect(background.material.polygonOffsetFactor).toBe(parcel.polygonOffsetFactor);
         expect(background.material.stencilFunc).toBe('equal');
         expect(background.material.stencilWriteMask).toBe(0);
         expect(parcel.stencilFunc).toBe('greater');
@@ -114,6 +124,9 @@ describe('three-ground', () => {
         // Ground cover claims before the parcels, the background after them.
         expect(ORDER.cover).toBeLessThan(0);
         expect(ORDER.cover).toBeGreaterThan(ORDER.lid);
+        // Real-world water claims before the ground cover, so a canal is never grassed or paved over.
+        expect(ORDER.water).toBeGreaterThan(ORDER.lid);
+        expect(ORDER.water).toBeLessThan(-7); // three-mode's most specific cover, lawn, is -7
         expect(passes(background.material, 0)).toBe(true);
         for (const occupied of [PARCEL_BIT, STENCIL_BIT, PARCEL_BIT | STENCIL_BIT]) {
             expect(passes(background.material, occupied)).toBe(false);
@@ -181,5 +194,32 @@ describe('three-ground', () => {
         expect(disposed.filter(d => d === 'geometry')).toHaveLength(10);
         expect(disposed.filter(d => d === 'material')).toHaveLength(5);
         expect(layer.group.children).toEqual([]);
+    });
+
+    it('lays a design\'s ground over the city\'s ground and behind every building face, in rank order', () => {
+        const at = rank => designSurface({}, rank).polygonOffsetFactor;
+        for (let rank = 1; rank <= MAX_DESIGN_RANK; rank++) {
+            const material = designSurface({}, rank);
+            expect(material.polygonOffset).toBe(true);
+            // Building faces are pushed by 1 (three-mode.js makeBuildingMaterial): a design's ground
+            // never comes in front of them, so it never covers the foot of a wall standing on it.
+            expect(material.polygonOffsetFactor).toBeGreaterThan(1);
+            expect(material.polygonOffsetUnits).toBe(material.polygonOffsetFactor);
+            expect(material.polygonOffsetFactor).toBeLessThan(OFFSET.ground);
+        }
+        expect(at(4)).toBeLessThan(at(2));
+        expect(at(99)).toBe(at(MAX_DESIGN_RANK));
+        expect(at(0)).toBe(at(1));
+    });
+
+    it('leaves no ground surface pulled toward the camera, where it would cover the foot of walls', () => {
+        // A negative polygon offset puts a surface in front of building faces too. What is left:
+        // planning envelope tiers (volumes), the draft and surroundings previews shown while
+        // drawing, and the green cover whose claim (parcelSurface) replaces the offset it is built with.
+        const files = ['three-mode.js', 'three-site-ground.js', 'three-buildout.js', 'three-life.js', 'three-ground.js', 'three-fountains.js'];
+        const pulled = files.flatMap(file => readFileSync(new URL(`../../frontend/js/${file}`, import.meta.url), 'utf8')
+            .split('\n').filter(line => /polygonOffsetFactor\s*[:=]\s*-/.test(line)).map(line => `${file}: ${line.trim()}`));
+        expect(pulled).toHaveLength(4);
+        expect(pulled.every(line => line.startsWith('three-mode.js'))).toBe(true);
     });
 });

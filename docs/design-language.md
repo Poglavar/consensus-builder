@@ -169,6 +169,33 @@ surfaces. Solid versus dashed boundaries and filled versus hollow shapes disting
 design from its source parcels. Ownership, planning roles and invalid geometry retain their own
 meaningful colours when they are not selected.
 
+**Object lists** (a list of designs, plans, agreements, parcels or other map objects, in a panel,
+sheet or stack card): hovering or focusing an item outlines its object; clicking the item outlines
+it and keeps it outlined (the item shows pressed), moving the map only when the object is out of the
+visible area; clicking it again lets go. A click never navigates. Each item has its own **open**
+button (an arrow, “Open …”, `ObjectList.openButton`) that goes to the object, its section or
+dialog; a list with nothing to open has none. The item's name is a `btn btn-quiet` (or `btn`) button
+and shows pressed with the shared `.btn[aria-pressed="true"]` look. All of them bind
+`ObjectList.bind` (js/ui/object-list.js):
+- the click stack's related items (2D and model view, `ClickStackRelations.bindPreview`);
+- the Lists sheet (the card is the item, Open its button; a hover shows only what this browser
+  already holds);
+- the design panel's source parcels, formed parcels and designs, and designs sharing its references;
+- the Proposals lists of a parcel, a selection and a site, a design's "On parcels" breadcrumb, a
+  site's bound parcels and Activity's design rows (`ParcelSetProposals.bindOutlines`);
+- the OSM blocks ranking and the land readjustment plot tables.
+
+Two exceptions: Activity's watched areas have no shape in their list (only the open arrow), and the
+planning configurations are a choice (one is always shown), so they add only the hover outline.
+
+A **view pill** names a setting that changes how the map reads while it is on, at the top centre
+with × to turn it off (`js/ui/view-pills.js`, `.map-view-pill` in css/map-shell.css): Highlight by
+use and Highlight by ownership type. Ordinary layer switches get none; what they show is on the map.
+In the model view, and on a phone, the pills take the row under the top buttons. Highlight by use
+(`js/building-use-highlight.js`, Layers → Buildings and the model view's Layers) colours the storeys
+of the ticked storey uses, existing buildings and designs alike, and fades everything else; its
+palette is the legend beside each tick.
+
 ## Messages
 
 - Three families share one typography, `.cb-toast` in css/primitives.css: every floating message is
@@ -203,13 +230,19 @@ meaningful colours when they are not selected.
   in both shapes; `--map-shell-bottom-clearance` keeps the tray and toast above it. The credits and
   the scale bar are set straight on the map with a text halo (`--cb-text-halo`) and no boxes: on a
   phone in the row right above the bar, on a wide map in the pills' own row, from the corners.
-- Mobile map panels, navigation sheets, lists and task forms use one top-handle interaction.
-  Drag up to enlarge, drag down to shrink, or drag below the compact limit to close through the
-  surface's existing cancel/close handler. A tap alternates half and expanded height; keyboard
-  arrows resize, Home/End choose compact/expanded, and Escape closes. Hosted cards share their
+- Mobile map panels, navigation sheets, lists and task forms use one top-handle interaction, as
+  Material 3 and iOS sheets do: a 32 × 4 px grabber in a 44 px touch strip. The sheet follows the
+  finger; released, it rests at half or full height, whichever is nearer, or the next one in a
+  flick's direction, gliding there in 200 ms (no glide with reduced motion). A drag below the
+  compact limit, or a flick down from half, closes through the surface's existing cancel/close
+  handler (`mobile-dock-sheet.js` `restingHeight`). A tap alternates half and expanded height;
+  keyboard arrows resize, Home/End choose compact/expanded, and Escape closes. Hosted cards share their
   outer sheet's handle. A second visible X is omitted; its accessible close action remains available.
 - Map-context panels start at half-height. Navigation lists, Settings and long forms start expanded.
-  Map sheets stop above the reachable navigation dock; blocking forms may fill the phone. Headers
+  A sheet about something on the map (the click stack, a parcel or design panel, an editor)
+  covers the navigation dock, as a place sheet does in a maps app, and the dock returns when it
+  closes; the dock's own sheets (Lists, Activity, Bets) stop above it, since it moves between them.
+  Blocking forms may fill the phone. Headers
   and actions stay reachable while content scrolls. Visual-viewport changes re-clamp the sheet.
 - Short confirmations keep direct action buttons and have no resize handle. Primary and compact
   phone buttons and form fields have at least 44 px touch areas; form text is at least 16 px.

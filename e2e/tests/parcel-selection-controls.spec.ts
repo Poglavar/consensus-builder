@@ -1,12 +1,12 @@
 // The selection section's Done command exits selection from any parcel panel tab.
 import { test, expect } from '../helpers/fixtures';
-import { openCity, openParcel, clickMapPoint, PARCEL_ID, closeParcel, showSelectionDesignTab, selectionSection, stackCommand, runSelectionCommand, expandSelectionSection } from '../helpers/runtime';
+import { openCity, openParcel, clickMapPoint, PARCEL_ID, closeParcel, showSelectionDesignTab, selectionSection, stackCommand, runSelectionCommand, expandSelectionSection, parcelTab } from '../helpers/runtime';
 
 test('section Done exits selection after switching parcel panel tabs', async ({ mockApi: page }) => {
   await openCity(page);
   const second = 'HR-335754-1235';
   await page.evaluate(async id => (window as any).CadastralParcelRepository.ensureIds([id]), second);
-  await openParcel(page);
+  await openParcel(page, 'proposals');
   const detect = page.locator('.multi-select-detect-btn');
   const manual = page.locator('#parcel-manual-selection');
   await expect(detect).not.toHaveClass(/\bbtn-primary\b/);
@@ -19,7 +19,7 @@ test('section Done exits selection after switching parcel panel tabs', async ({ 
   await expect.poll(() => page.evaluate(() => [...(window as any).multiParcelSelection.selectedParcels].sort()))
     .toEqual([PARCEL_ID, second].sort());
   await showSelectionDesignTab(page);
-  await page.locator('#parcel-info-panel [data-i18n-key="panel.parcel.tabInfo"]').click();
+  await parcelTab(page, 'info-tab').click();
   await expect(stackCommand(page, 'selection.done')).toBeVisible();
   await runSelectionCommand(page, 'selection.done');
   await expect.poll(() => page.evaluate(() => ({
@@ -36,7 +36,7 @@ test('Escape and Manual toggle off keep the selected parcels and highlights', as
   await openCity(page);
   const second = 'HR-335754-1235';
   await page.evaluate(async id => (window as any).CadastralParcelRepository.ensureIds([id]), second);
-  await openParcel(page);
+  await openParcel(page, 'proposals');
   const manual = page.locator('#parcel-manual-selection');
   await manual.click();
   await expect(manual).toHaveAttribute('aria-pressed', 'true');

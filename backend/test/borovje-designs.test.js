@@ -207,10 +207,13 @@ describe('urbanBlocksPlan', () => {
 describe('the scripts\' command lines (dry runs and usage only)', () => {
     const HOME = fs.mkdtempSync(path.join(os.tmpdir(), 'borovje-scripts-'));
     afterAll(() => fs.rmSync(HOME, { recursive: true, force: true }));
+    const childEnv = { ...process.env };
+    // The parent test runner sets both colour controls; only script diagnostics belong on stderr.
+    delete childEnv.NO_COLOR;
     const run = (script, args) => spawnSync(process.execPath, [path.join(DIR, script), ...args], {
         cwd: ROOT, encoding: 'utf8', timeout: 120_000,
         // A non-local database: a step that reached for the cadastre would be refused, never connected.
-        env: { ...process.env, HOME, DATABASE_URL: 'postgres://reader@db.invalid:5432/none' }
+        env: { ...childEnv, HOME, DATABASE_URL: 'postgres://reader@db.invalid:5432/none' }
     });
 
     it('build-and-upload.mjs --dry-run prints the official plan\'s 22 designs and waits for its ground file', async () => {

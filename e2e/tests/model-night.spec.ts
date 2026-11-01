@@ -18,7 +18,8 @@ const osmLifeWays = {
 };
 
 // The sky light (hemisphere) and the Life group's vehicle lamps (three-life.js creates its instanced
-// meshes in the order bodies, glass, wheels, heads, torsos, arms, legs, lamps, pools).
+// meshes in the order bodies, glass, wheels, heads, torsos, arms, legs, lamps, pools; optional
+// animal meshes are appended after them).
 async function nightState(page: Page) {
   return page.evaluate(() => {
     const scene = (window as any).getThreeModeInternals().scene;
@@ -70,9 +71,16 @@ test('night darkens the ground light and switches on headlights; noon switches t
   await slider.fill('720');
   await expect(sheet.locator('#sun-time-value')).toHaveText('12:00');
   await expect(page.locator('#sun-button')).toHaveAttribute('data-sun', 'day');
+  const sunButton = page.locator('#sun-button');
+  const marker = sunButton.locator('.sun-dial__marker');
+  const noonButtonBox = (await sunButton.boundingBox())!;
+  const noonMarkerBox = (await marker.boundingBox())!;
+  expect(noonMarkerBox.y + noonMarkerBox.height / 2).toBeLessThan(noonButtonBox.y + noonButtonBox.height / 2);
+  const summerDaylight = await sunButton.evaluate(node => Number((node as HTMLElement).style.getPropertyValue('--sun-dial-daylight')));
+  expect(summerDaylight).toBeGreaterThan(12 * 60);
   await expect.poll(async () => (await nightState(page)).lampsVisible).toBe(false);
   const noon = await nightState(page);
-  expect(noon.lifeMeshes).toBe(9);
+  expect(noon.lifeMeshes).toBeGreaterThanOrEqual(9);
   expect(noon.poolsVisible).toBe(false);
 
   // 22:00 in June: the sun is well below the horizon.
@@ -80,6 +88,10 @@ test('night darkens the ground light and switches on headlights; noon switches t
   await expect(sheet.locator('#sun-time-value')).toHaveText('22:00');
   await expect(sheet.locator('#sun-status')).toHaveText('Night: the sun is below the horizon.');
   await expect(page.locator('#sun-button')).toHaveAttribute('data-sun', 'night');
+  const nightMarkerBox = (await marker.boundingBox())!;
+  expect(nightMarkerBox.y + nightMarkerBox.height / 2).toBeGreaterThan(noonButtonBox.y + noonButtonBox.height / 2);
+  // The daylight arc describes the whole date, and stays put as the marker enters the night.
+  expect(await sunButton.evaluate(node => Number((node as HTMLElement).style.getPropertyValue('--sun-dial-daylight')))).toBe(summerDaylight);
   await expect.poll(async () => (await nightState(page)).lampsVisible, { timeout: 10_000 }).toBe(true);
   const night = await nightState(page);
   expect(night.poolsVisible).toBe(true);
@@ -95,4 +107,6 @@ test('night darkens the ground light and switches on headlights; noon switches t
   const again = await nightState(page);
   expect(again.poolsVisible).toBe(false);
   expect(again.hemiIntensity).toBeCloseTo(noon.hemiIntensity!, 5);
+  await sheet.locator('#sun-date').fill('2026-12-21');
+  await expect.poll(() => sunButton.evaluate(node => Number((node as HTMLElement).style.getPropertyValue('--sun-dial-daylight')))).toBeLessThan(12 * 60);
 });

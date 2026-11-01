@@ -22,6 +22,19 @@ describe('plan composition',()=>{
   expect(()=>Composition.validate({...row,cid:'bad'})).toThrow();
   expect(()=>Composition.validate({...row,memberIds:['']})).toThrow();
  });
+ it('binds a stored plan as it is: an older view without rotate keeps its content and CID, and only its exact members fit',()=>{
+  const Cid=require('../../frontend/js/cid.js'),PlanRecord=require('../../frontend/js/plan-record.js');
+  const first=design('local-1'),second=design('local-2','Square'),current=Composition.create('Parks',[first,second],view);
+  // Saved before 2026-10-25: the same plan with no rotate in its view, so another CID than today's create gives.
+  const content={...current.content,view:Object.fromEntries(Object.entries(current.content.view).filter(([key])=>key!=='rotate'))};
+  const stored={cid:Cid.cidOfObject(content),content};
+  expect(PlanRecord.validate(content)).toBeNull();expect(stored.cid).not.toBe(current.cid);
+  const row=Composition.bind(stored,[second,first]);
+  expect(row.cid).toBe(stored.cid);expect(row.content).toEqual(content);expect(row.designs.map(d=>d.cid)).toEqual(content.designCids);
+  expect(row.memberIds).toEqual(content.designCids.map(cid=>cid===current.designs[0].cid?current.memberIds[0]:current.memberIds[1]));
+  expect(()=>Composition.bind(stored,[first])).toThrow(/members/);
+  expect(()=>Composition.bind({...stored,content:{...content,title:'Changed'}},[first,second])).toThrow(/CID/);
+ });
  it('reconstructs publication records with ephemeral identities',()=>{
   const row=Composition.create('Parks',[design('local-1')],view),locals=Composition.localRecords(row,{apiBase:'https://api.example.test'});
   expect(locals[0].proposalId).toMatch(/^plan-member-/);expect(locals[0].published.cid).toBe(row.designs[0].cid);

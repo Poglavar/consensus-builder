@@ -1,6 +1,6 @@
 import path from 'node:path';
 import { test, expect } from '../helpers/fixtures';
-import { openCity, openParcel, createSpace } from '../helpers/runtime';
+import { openCity, openParcel, stackSection, createSpace } from '../helpers/runtime';
 
 async function dialogs(page: any) {
   await page.setContent('<button id="opener">Open editor</button><section id="already-inert" inert><button>Unavailable</button></section>');
@@ -128,7 +128,7 @@ test.describe('Browser-readable controls', () => {
 
   test('parcel tabs navigate only visible tabs and expose their associated panels', async ({ mockApi: page }) => {
     await openCity(page); await openParcel(page);
-    const panel = page.locator('#parcel-info-panel');
+    const panel = stackSection(page, 'parcels').locator('.click-stack__content-tabs');
     const info = panel.getByRole('tab', { name: 'Info', exact: true });
     await info.focus(); await page.keyboard.press('ArrowRight');
     const selected = panel.locator('[role="tab"][aria-selected="true"]');
@@ -138,7 +138,7 @@ test.describe('Browser-readable controls', () => {
     await page.keyboard.press('End');
     await expect(panel.locator('[role="tab"][aria-selected="true"]')).toBeFocused();
     await page.keyboard.press('Home');
-    const first = panel.getByRole('tab', { name: 'Design', exact: true });
+    const first = panel.getByRole('tab', { name: 'Actions', exact: true });
     await expect(first).toBeFocused();
     await expect(first).toHaveAttribute('tabindex', '0');
     await expect(panel.locator('[role="tab"][tabindex="0"]')).toHaveCount(1);

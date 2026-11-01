@@ -6,7 +6,7 @@
 // Whether osm_road reaches a bbox is read from the table's own extent, not from a city list (the
 // estimated extent runs a little past the border, where osm_road simply has fewer streets).
 // Features: LineString, properties { osm_id, name, highway, source }.
-import { createOverpassCellSource } from '../buildings/osm-reference.js';
+import { createOverpassCellSource, PRIORITY } from '../buildings/osm-reference.js';
 
 // Ways a plot can front: roads people live on or reach a door from. Footways, paths, cycleways,
 // motorways and their links are not frontage; a service road is only when it is named.
@@ -53,7 +53,8 @@ const fetchOverpassStreets = createOverpassCellSource({
     label: 'streets',
     buildQuery: buildStreetQuery,
     convert: overpassStreetsToGeoJSON,
-    featureCap: STREET_FEATURE_CAP
+    featureCap: STREET_FEATURE_CAP,
+    priority: PRIORITY.roads
 });
 
 async function osmRoadExtentOf(pool) {

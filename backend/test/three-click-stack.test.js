@@ -33,7 +33,7 @@ describe('3D click stack contextual selection', () => {
         vm.runInContext(readFileSync(new URL('../../frontend/js/three-click-stack.js', import.meta.url), 'utf8'), context);
         const api = context.ThreeClickStack, adapter = { activate: vi.fn(), focus: vi.fn() };
         api.show({ designs: [{ id: 'design', proposal: { proposalId: 'design', cid: 'cid' } }] }, { focus: 'designs' }, adapter);
-        const session = { cid: 'cid', proposalId: 'design', dispose: vi.fn(), instances: () => [{ id: 'plan' }] };
+        const session = { cid: 'cid', revision: 'cid', proposalId: 'design', dispose: vi.fn(), instances: () => [{ id: 'plan' }] };
         pending[0].callback(session); pending[0].resolve(session); await Promise.resolve();
         api.show({ built: [{ id: 'house', feature }], parcels: [{ id: 'parcel', feature }] }, { focus: 'built' }, adapter);
         pending[0].callback(session);
@@ -155,7 +155,7 @@ describe('3D click stack contextual selection', () => {
         const document = makeDocument();
         const tagged = cls => () => { const el = document.createElement('div'); el.className = cls; return el; };
         const context = { document, console, i18n: testI18n(),
-            __clickStackModel: { ...model, visibleContextFor: () => [{ kind: 'designs' }] },
+            __clickStackModel: { ...model, contextFor: () => [{ kind: 'designs' }] },
             ClickStackRelations: { ...relations, renderGroup: tagged('click-stack__choices'), renderSelector: tagged('click-stack__selector-wrap') } };
         context.window = context; vm.createContext(context);
         vm.runInContext(readFileSync(new URL('../../frontend/js/three-click-stack.js', import.meta.url), 'utf8'), context);
@@ -179,7 +179,7 @@ describe('3D click stack contextual selection', () => {
         const adapter = { activate: (_kind, item, body) => { body.textContent = item.label; }, focus: (kind, item) => focused.push([kind, item.id]) };
         api.show({ designs: [{ id: 'a', label: 'Garden', proposal: { cadastreParcelIds: ['p'] } }], parcels: [{ id: 'p', label: '12' }] }, { focus: 'designs' }, adapter);
         const section = kind => document.querySelector(`.click-stack__section[data-kind="${kind}"]`);
-        expect(section('designs').querySelector('.click-stack__choices')).toBeNull();
+        expect(section('designs').querySelector('.click-stack__choices[data-kind="parcels"]')).not.toBeNull();
         section('parcels').querySelector('.click-stack__row').click();
         expect(api.current()).toMatchObject({ selectedKind: 'parcels', expanded: 'parcels' });
         expect(section('parcels').querySelector('.click-stack__choices').textContent).toContain('Designs on this parcel:');
@@ -216,7 +216,7 @@ describe('3D click stack contextual selection', () => {
         expect(api.current().expanded).toBeNull();
 
         const session = {
-            cid: 'cid-d1', dispose: vi.fn(),
+            cid: 'cid-d1', revision: 'cid-d1', dispose: vi.fn(),
             instances(kind) { return kind === 'plans'
                 ? [{ id: 'plan-1', label: 'Spatial plan', designCids: ['cid-d1'] }, { id: 'plan-2', label: 'Plan option', designCids: ['cid-d1'] }]
                 : []; }
@@ -279,13 +279,13 @@ describe('3D click stack contextual selection', () => {
         api.show({ designs: [{ id: 'd1', label: 'Road', proposal }] }, { focus: 'designs' }, { activate: vi.fn(), focus: vi.fn() });
         expect(pending).toHaveLength(1);
         proposal.cid = 'revised';
-        const stale = { cid: 'current', dispose: vi.fn(), instances: kind => kind === 'plans' ? [{ id: 'stale-plan' }] : [{ id: 'stale-agreement' }] };
+        const stale = { cid: kind === 'private' ? null : 'current', revision: 'current', dispose: vi.fn(), instances: kind => kind === 'plans' ? [{ id: 'stale-plan' }] : [{ id: 'stale-agreement' }] };
         pending[0].callback(stale);
         pending[0].resolve(stale);
         expect(stale.dispose).toHaveBeenCalled();
         expect(pending).toHaveLength(2);
         expect(api.current().sections.map(section => section.kind)).toEqual(['designs']);
-        const current = { cid: 'revised', dispose: vi.fn(), instances: kind => kind === 'plans' ? [{ id: 'current-plan', label: 'Current', membershipDesignCid: 'revised' }] : [{ id: 'current-agreement' }] };
+        const current = { cid: kind === 'private' ? null : 'revised', revision: 'revised', dispose: vi.fn(), instances: kind => kind === 'plans' ? [{ id: 'current-plan', label: 'Current', membershipDesignCid: 'revised' }] : [{ id: 'current-agreement' }] };
         pending[1].callback(current);
         expect(api.current().sections.map(section => section.kind)).toEqual(['plans', 'designs']);
     });
@@ -355,5 +355,8 @@ describe('3D click stack rules', () => {
         expect(stack.buildingLabel({ properties: {} })).toBe('');
         expect(stack.parcelLabel('HR-339164-2432/1')).toBe('2432/1');
         expect(stack.parcelLabel('UK-77')).toBe('UK-77');
+        // A formed piece: its root parcel and number, not the producing design's 59-character CID.
+        expect(stack.parcelLabel('2931#design-bafkreibwmhm6gtdpvaac4qtx7hnd7bnqj47d4ewbbw375bhaoof42csddi-9')).toBe('2931 #9');
+        expect(stack.parcelLabel('HR-339164-2432/1#p-1ltlwlqt5n8-3')).toBe('2432/1 #3');
     });
 });

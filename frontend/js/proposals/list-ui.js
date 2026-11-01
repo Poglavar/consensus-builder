@@ -21,57 +21,6 @@ function syncMultiSelectControls(isActive) {
     document.getElementById('parcel-manual-selection')?.setAttribute('aria-pressed', String(!!isActive));
 }
 
-function handleDescendantItemHover(element) {
-    if (!element) return;
-    const type = element.getAttribute('data-descendant-type');
-    if (type === 'proposal') {
-        const proposalId = element.getAttribute('data-proposal-id');
-        if (proposalId) {
-            highlightProposalHoverById(proposalId, {
-                color: window.MapHighlight.color,
-                weight: 4,
-                dashArray: '4 4',
-                showLabels: true,
-                includeParents: false
-            });
-        }
-    } else if (type === 'parcel') {
-        const parcelId = element.getAttribute('data-parcel-id');
-        if (parcelId) {
-            highlightParcelHover(parcelId, {
-                color: window.MapHighlight.color,
-                weight: 6,
-                dashArray: '10 8',
-                showLabels: true
-            });
-        }
-    }
-}
-
-function handleDescendantItemClick(element) {
-    if (!element) return;
-    clearProposalHoverLayers();
-
-    const type = element.getAttribute('data-descendant-type');
-    if (type === 'proposal') {
-        const proposalIdAttr = element.getAttribute('data-proposal-id');
-        if (!proposalIdAttr) return;
-        const descendantProposal = getProposalByIdOrHash(proposalIdAttr);
-        if (!descendantProposal) return;
-        selectAndHighlightProposal(getProposalKey(descendantProposal) || proposalIdAttr, null, true);
-    } else if (type === 'parcel') {
-        const parcelId = element.getAttribute('data-parcel-id');
-        if (!parcelId) return;
-        focusParcelInMap(parcelId);
-        highlightParcelHover(parcelId, {
-            color: window.MapHighlight.color,
-            weight: 6,
-            dashArray: '10 8',
-            showLabels: true
-        });
-    }
-}
-
 function handleProposalParcelClick(parcelId, event) {
     // Handle case where event is not provided (legacy call)
     if (!event) {
@@ -911,6 +860,27 @@ function proposalPanelFitPadding(rect, viewport, margin = 40) {
     return padding;
 }
 
+// What the camera must do for a box to be seen in view (both { left, top, right, bottom } in the
+// same pixels): null when it already lies inside view; { fit: true } when it is too big for view
+// less the margin, so the camera zooms out to frame it; otherwise { pan: [dx, dy] }, the shortest
+// move on screen that brings it margin inside view at the same zoom, keeping as much of the old
+// view as it can. Pure.
+function revealMove(box, view, margin = 40) {
+    if (box.left >= view.left && box.right <= view.right && box.top >= view.top && box.bottom <= view.bottom) return null;
+    if (box.right - box.left > view.right - view.left - 2 * margin || box.bottom - box.top > view.bottom - view.top - 2 * margin) return { fit: true };
+    const axis = (from, to, low, high) => {
+        if (from < low + margin) return low + margin - from;
+        return to > high - margin ? high - margin - to : 0;
+    };
+    return { pan: [axis(box.left, box.right, view.left, view.right), axis(box.top, box.bottom, view.top, view.bottom)] };
+}
+
+// The part of a width × height map that no proposal panel covers, as revealMove's view.
+function getProposalPanelFreeArea(width, height) {
+    const { paddingTopLeft, paddingBottomRight } = getProposalPanelFitPadding(0);
+    return { left: paddingTopLeft[0], top: paddingTopLeft[1], right: width - paddingBottomRight[0], bottom: height - paddingBottomRight[1] };
+}
+
 // fitBounds padding that keeps content in the VISIBLE map, clear of whichever proposal panel is
 // currently covering it: the list sheet while browsing or the details panel
 // once a proposal or agreement is selected (proposalPanelFitPadding decides which side). Returns a plain
@@ -1014,11 +984,12 @@ function getProposalCountAreaContext() {
     try { config = manager?.getCurrentCityConfig?.() || null; } catch (_) { }
     const explore = !!(config?.explore || manager?.isExplore?.());
     const map = (typeof window !== 'undefined') ? window.map : null;
+    // Explore lists the designs in view: the 2D map's, or the 3D camera's in 3D (load-view.js).
     let bounds = null;
-    if (explore && map?.getBounds) {
+    if (explore && window.LoadView) {
         try {
-            const b = map.getBounds();
-            const values = { west: b.getWest(), south: b.getSouth(), east: b.getEast(), north: b.getNorth() };
+            const [west, south, east, north] = window.LoadView.current()?.bbox || [];
+            const values = { west, south, east, north };
             if (Object.values(values).every(Number.isFinite)) bounds = values;
         } catch (_) { }
     }
@@ -1144,7 +1115,7 @@ function watchProposalCountArrival() {
         const map = window.map;
         if (!map?.on || map.__proposalCountViewportWatching) return;
         map.__proposalCountViewportWatching = true;
-        map.on('moveend zoomend', () => {
+        const viewMoved = () => {
             if (!getProposalCountAreaContext().explore) return;
             clearTimeout(_proposalCountViewportTimer);
             _proposalCountViewportTimer = setTimeout(() => {
@@ -1154,7 +1125,10 @@ function watchProposalCountArrival() {
                     renderProposalListModal();
                 }
             }, 350);
-        });
+        };
+        map.on('moveend zoomend', viewMoved);
+        // The 3D camera settling, or the map changing mode, moves the area too (load-view.js).
+        window.addEventListener('loadviewchange', viewMoved);
     };
     let boot;
     try { boot = typeof window.whenAppBooted === 'function' ? window.whenAppBooted() : window.whenAppBooted; } catch (_) { }

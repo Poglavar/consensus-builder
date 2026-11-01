@@ -28,9 +28,7 @@
     }
 
     function sidewalkMaterial(THREE, ground, metresPerUnit) {
-        return ground.paveTexture(new THREE.MeshLambertMaterial({
-            color: 0xcdccc8, polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -2
-        }), metresPerUnit);
+        return ground.paveTexture(groundApi().designSurface(new THREE.MeshLambertMaterial({ color: 0xcdccc8 }), 2), metresPerUnit);
     }
 
     // Metric height and post spacing, even when the map's horizontal units are Mercator-scaled.
@@ -59,6 +57,12 @@
         return positions;
     }
 
+    // The ground's layering rules (three-ground.js designSurface): the browser global, or required in node.
+    function groundApi() {
+        const scope = typeof window !== 'undefined' ? window : globalThis;
+        return scope.__threeGround || require('./three-ground.js');
+    }
+
     // The wild-grass pattern (three-grass.js): the browser global, or required in node.
     function grassApi() {
         const scope = typeof window !== 'undefined' ? window : globalThis;
@@ -67,9 +71,9 @@
 
     function buildVacantPlots({ THREE, features, target, polygonMeshes, project, metresPerUnit, ownMaterial, ownGeometry }) {
         features.forEach(feature => {
-            const grass = grassApi().grassTexture(new THREE.MeshLambertMaterial({
-                color: grassApi().COLORS.wild, polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -2
-            }), metresPerUnit, 'wild');
+            const grass = grassApi().grassTexture(groundApi().designSurface(new THREE.MeshLambertMaterial({
+                color: grassApi().COLORS.wild
+            }), 2), metresPerUnit, 'wild');
             polygonMeshes(feature, grass, 0.08, 0).forEach(mesh => {
                 ownMaterial(mesh, grass);
                 mesh.userData.isVacantPlot = true;

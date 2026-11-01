@@ -16,6 +16,10 @@ const RESTATEMENTS = fileURLToPath(new URL('../../restatements/', import.meta.ur
 const readJson = file => JSON.parse(fs.readFileSync(file, 'utf8'));
 const HOME = fs.mkdtempSync(path.join(os.tmpdir(), 'restatement-archives-'));
 afterAll(() => fs.rmSync(HOME, { recursive: true, force: true }));
+const CHILD_ENV = { ...process.env };
+// Node warns when the parent runner sets both colour controls. Script stderr remains reserved for
+// the dry run's own diagnostics.
+delete CHILD_ENV.NO_COLOR;
 
 // The committed projects and their archives in plan order, read from the manifests themselves.
 const PROJECTS = ['pionir-paron', 'nova-naselja'].flatMap(collection => fs.readdirSync(path.join(RESTATEMENTS, collection))
@@ -113,7 +117,7 @@ describe('designFromArchive', () => {
 
 describe('the command line (dry runs only)', () => {
     const run = args => spawnSync(process.execPath, ['scripts/publish-restatement-archives.mjs', ...args], {
-        cwd: BACKEND, encoding: 'utf8', timeout: 120_000, env: { ...process.env, HOME }
+        cwd: BACKEND, encoding: 'utf8', timeout: 120_000, env: { ...CHILD_ENV, HOME }
     });
 
     it('lists every project as a plan key in its usage', () => {

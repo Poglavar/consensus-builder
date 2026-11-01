@@ -28,7 +28,7 @@
     const ICONS = Object.freeze({ agreements: 'fas cb-icon-agreement', plans: 'fas cb-icon-plan', designs: 'fas cb-icon-design', built: 'fas fa-building',
         permitted: 'fas fa-cube', formed: 'fas fa-vector-square', parcels: 'fas fa-border-all', selection: 'fas fa-object-group', ground: 'fas fa-seedling' });
 
-    const relationsFor = (kind, instance) => model.visibleContextFor(kind, instance, state.hits)
+    const relationsFor = (kind, instance) => model.contextFor(kind, instance, state.hits)
         .filter(group => kind !== 'designs' || instance?.proposal?.goal !== 'parcel-layout' || !PANEL_RELATIONS.has(group.relation));
 
     const state = { el: null, stack: null, frameRequest: null, keepView: false, latlng: null, hits: null, hosted: null, expanding: false, lastClick: null, observing: false, memberships: null, membershipVersion: 0, membershipDesign: null , baseHits: null, derived: {} };
@@ -159,6 +159,18 @@
             if (state.stack?.topRef === 'selection:current') dismissSelection();
             else close();
         });
+        // A related item outlines its own object; a pressed one is framed when out of view.
+        state.preview = global.ClickStackRelations?.bindPreview(el, {
+            show: (kind, id, { pinned }) => {
+                const instance = global.ClickStackRelations.relatedInstance(state.stack, kind, id, model.selectedInstance);
+                const features = global.ClickStackHits.featuresFor?.(kind, instance) || [];
+                global.highlightFeaturesForInspection?.(features, focusStyle());
+                if (pinned) { global.ClickStackNavigation?.showMap(el); frameFeatures(features); }
+            },
+            restore: () => {
+                if (state.stack) highlightSection(state.stack.selectedKind, model.selectedInstance(state.stack, state.stack.selectedKind));
+            }
+        });
         (doc.getElementById('map-container') || doc.body).appendChild(el);
         state.el = el;
         return el;
@@ -173,8 +185,10 @@
         return node;
     }
 
+    // As people read it (proposal-parcel-identity.js _parcelIdLabel): a formed piece as its root
+    // parcel and number, not its runtime id with the producing design's CID in it.
     function parcelReference(instance) {
-        return global.ParcelMenuModel?.displayParcelId?.(instance?.feature?.properties || {}, instance?.id) || instance?.id || '';
+        return global._parcelIdLabel(global.ParcelMenuModel?.displayParcelId?.(instance?.feature?.properties || {}, instance?.id) || instance?.id || '');
     }
 
     function focusButton(kind) {
@@ -231,6 +245,7 @@
         // The hosted panel goes home (still open) before the old bodies are dropped; the section
         // that expands next hosts it again.
         if (state.hosted && !keepBody) unhost({ hide: false });
+        global.ClickStackNavigation?.release(el, keepBody);
         el.textContent = '';
         el.setAttribute('aria-label', stack.topRef === 'selection:current'
             ? t('selectedParcels.label', 'Selected parcels') : t('title', 'At this spot'));
@@ -305,6 +320,8 @@
             list.appendChild(wrap);
         });
         el.appendChild(list);
+        global.ClickStackNavigation?.frame(el, stack, ICONS, rowTitle, expand, close);
+        if (keepBody) global.ClickStackNavigation?.content(keepBody, stack.expanded, model.selectedInstance(stack, stack.expanded)?.id);
         syncAgreements();
 
     }
@@ -327,6 +344,7 @@
                 const sameAgreement = expanded === 'agreements' && model.selectedInstance(previous, 'agreements')?.id === model.selectedInstance(state.stack, 'agreements')?.id;
                 const keepBody = expanded && (expanded !== 'agreements' || sameAgreement) ? bodyOf(expanded) : null;
                 render({ keepBody }); if (!keepBody && expanded) activate(expanded);
+                if (expanded === 'plans') global.ClickStackNavigation?.agreements(bodyOf('plans'), rows, group);
                 if (keepBody && expanded === 'agreements') global.DesignMemberships.updateAgreementGroup(keepBody, group, global);
             }
         });
@@ -373,6 +391,7 @@
     // A section opened from a list or link asks for its object to be framed; the request waits
     // here until the object's shape is known (a plan's member geometry arrives after it opens).
     function highlightSection(kind, instance) {
+        state.preview?.reset();
         const features = global.ClickStackHits.featuresFor?.(kind, instance) || [];
         global.highlightFeaturesForInspection?.(features, focusStyle());
         if (state.frameRequest === kind && features.length) {
@@ -408,6 +427,7 @@
     }
 
     function focusSection(kind) {
+        global.ClickStackNavigation?.showMap(state.el);
         const instance = model.selectedInstance(state.stack, kind);
         const features = global.ClickStackHits.featuresFor?.(kind, instance) || [];
         if (!features.length) {
@@ -466,7 +486,7 @@
             } else if (kind === 'permitted') {
                 global.PlanningViews.selectAt(instance.id, state.latlng);
             } else if (kind === 'selection') {
-                renderCommands(body, 'parcel-selection', global.UiCommands.createBrowserContext(global));
+                renderCommands(body, 'parcel-selection', global.UiCommands.createBrowserContext(global)).setAttribute('data-stack-persistent', '');
                 if (section.count) global.multiParcelSelection.showSelectionInPanel();
                 else {
                     unhost();
@@ -488,6 +508,7 @@
                 const text = global.GroundMenuModel.describeGround(facts.kind);
                 const line = doc.createElement('p');
                 line.className = 'click-stack__facts';
+                line.setAttribute('data-stack-persistent', '');
                 line.textContent = global.i18n.t(text.factsKey);
                 body.appendChild(line);
                 renderCommands(body, 'ground-menu', global.UiCommands.createBrowserContext(global, { ground: facts, parcel: null }));
@@ -504,6 +525,8 @@
             if (kind !== 'plans') {
                 for (const group of relationsFor(kind, instance)) body.appendChild(global.ClickStackRelations.renderGroup(group, doc, global));
             }
+            if (kind === 'plans') global.ClickStackNavigation?.agreements(body, state.hits.agreements || [], state.agreementGroup);
+            global.ClickStackNavigation?.content(body, kind, instance.id);
             if (!instance.serverId) highlightSection(kind, instance);
         } catch (error) {
             console.error(`[ClickStack] the ${kind} section could not open`, error);
@@ -554,7 +577,7 @@
         if (state.memberships && state.stack.selectedKind !== 'built') {
             hits.plans = state.memberships.instances('plans', state.stack.selectedKind === 'plans');
             hits.designs = hits.designs.map(item => String(item.proposal?.proposalId) === state.memberships.proposalId
-                ? { ...item, cid: state.memberships.cid } : item);
+                ? { ...item, cid: state.memberships.revision } : item);
         }
         // A list can open a design that is not a geometry hit here.
         // A background lookup adds choices; it must not discard the object being inspected.
@@ -700,6 +723,8 @@
 
     function show(stack, latlng, hits, { frame = false } = {}) {
         observePanels();
+        // A fresh hit inventory must receive its plan's agreements even if the CID is unchanged.
+        state.agreementScope?.dispose(); state.agreementScope = null;
         state.frameRequest = frame && !state.keepView ? stack.selectedKind : null;
         state.keepView = false;
         ensureElement().classList.remove('is-folded');
@@ -765,6 +790,8 @@
         state.baseHits = null;
         state.derived = {};
         state.latlng = null;
+        global.ClickStackNavigation?.release(state.el);
+        global.ClickStackNavigation?.showMap(state.el);
         state.el.hidden = true;
         state.el.textContent = '';
         state.el.classList.remove('is-folded');
@@ -775,7 +802,10 @@
     // Before / after needs the map: the stack folds to its rows. The expanded section keeps its
     // panel hosted (hidden), so the comparison it started keeps running; a row click unfolds.
     function fold() {
-        if (isOpen()) state.el.classList.add('is-folded');
+        if (isOpen()) {
+            global.ClickStackNavigation?.showMap(state.el);
+            state.el.classList.add('is-folded');
+        }
     }
 
     function isOpen() {
@@ -849,7 +879,7 @@
             if (!isOpen() || version !== state.membershipVersion) return;
             const current = model.selectedInstance(state.stack, 'designs');
             const currentProposal = global.proposalStorage?.getProposal?.(current?.id) || current?.proposal;
-            if (current?.id !== design.id || (global.DesignRecord?.cidOf(currentProposal) || global.DesignSync?.publishedCid(currentProposal) || null) !== session.cid) {
+            if (current?.id !== design.id || (global.DesignRecord?.cidOf(currentProposal) || global.DesignSync?.publishedCid(currentProposal) || null) !== session.revision) {
                 session.dispose();
                 syncMemberships(true);
                 return;
@@ -859,7 +889,7 @@
             const previous = state.stack;
             state.hits = { ...state.hits, plans: Array.from(new Map([...session.instances('plans', previous.selectedKind === 'plans'), ...(state.hits.planContext ? [state.hits.planContext] : [])].map(item => [item.id, item])).values()) };
             // Annotate only the exact inspected revision for relationship matching.
-            state.hits.designs = state.hits.designs.map(item => item.id === design.id ? { ...item, cid: session.cid } : item);
+            state.hits.designs = state.hits.designs.map(item => item.id === design.id ? { ...item, cid: session.cid || session.revision } : item);
             const next = model.buildClickStack(state.hits, { selected });
             const has = kind => next.sections.some(section => section.kind === kind);
             state.stack = { ...next, expanded: previous.expanded && has(previous.expanded) ? previous.expanded : null,

@@ -306,6 +306,32 @@ describe('the sun in the scene', () => {
         expect(hooks.size).toBe(0);
     });
 
+    it('pauses the playing day while the page has no focus and resumes where it stopped', () => {
+        threeSun.state.playing = true;
+        threeSun.state.minutes = 600;
+        let awake = true;
+        handle = threeSun.attach({
+            THREE: { PCFShadowMap: 1, SRGBColorSpace: THREE.SRGBColorSpace }, scene, renderer, light, hemi,
+            getOrigin: () => origin, getK: () => 1 / Math.cos(ZAGREB.lat * DEG),
+            getCamera: () => camera, getTarget: () => target,
+            isPhotoActive: () => photo, isAwake: () => awake, invalidate: () => { invalidations++; }, excludedRoots: () => [],
+            addFrameHook: fn => hooks.add(fn), removeFrameHook: fn => hooks.delete(fn)
+        });
+        handle.onFrame(1000);
+        handle.onFrame(1050);
+        const played = threeSun.state.minutes;
+        awake = false;
+        expect(handle.onFrame(1100)).toBe(false);
+        expect(handle.onFrame(60000)).toBe(false);
+        expect(threeSun.state.minutes).toBe(played);
+        awake = true;
+        handle.onFrame(61000);
+        expect(threeSun.state.minutes).toBe(played);   // the first frame back starts the clock again
+        handle.onFrame(61050);
+        expect(threeSun.state.minutes).toBeCloseTo(played + 50 * 1440 / threeSun.DAY_CYCLE_MS, 9);
+        threeSun.detach();
+    });
+
     it('starts a playing night at sunrise and keeps running from there', () => {
         threeSun.state.playing = true;
         threeSun.state.dateISO = null;

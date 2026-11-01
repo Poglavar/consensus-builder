@@ -1046,7 +1046,8 @@
     "urbanRule": {
         "balconies": "Balcones",
         "balconyDepth": "Pueden sobresalir de la envolvente (m):",
-        "slantedRoof": "Tejado inclinado con ático"
+        "slantedRoof": "Tejado inclinado con ático",
+        "useAutomatic": "Automático: comercios en la planta baja desde 5 plantas"
     },
     "common": {
         "modelFileFormats": "glTF, CityGML o CityJSON",
@@ -6374,6 +6375,8 @@
             "trees": "Árboles",
             "life": "Personas y tráfico",
             "lifeTooltip": "Muestra u oculta personas y vehículos esquemáticos que se mueven por la vista 3D",
+            "sound": "Sonidos de la ciudad",
+            "soundTooltip": "Reproduce el tráfico, los perros y los pájaros que se oirían donde está la cámara de la vista 3D",
             "ground": "Calles y aceras",
             "groundTooltip": "Muestra u oculta la calzada y las aceras derivadas de OpenStreetMap en la vista 3D",
             "water": "Agua",
@@ -6475,13 +6478,15 @@
             "show": "ver",
             "suggestedLayout": "Distribución sugerida",
             "suggestedSummary": "{{cores}} núcleo(s) · {{apartments}} viviendas por planta · {{rooms}} habitaciones",
-            "suggestedFlagged": "Ninguna distribución por defecto cabe: {{reason}}"
+            "suggestedFlagged": "Ninguna distribución por defecto cabe: {{reason}}",
+            "stats": "Estadísticas"
         },
         "proposalPanel": {
             "title": "Información del diseño",
             "parcelsLabel": "Parcelas",
             "suggestedTotals": "Distribuciones sugeridas: {{buildings}} edificios · {{apartmentsPerFloor}} viviendas por planta · {{apartments}} en total",
-            "avgPerParcel": "Media / parcela"
+            "avgPerParcel": "Media / parcela",
+            "openActions2d": "Abrir acciones en 2D"
         },
         "isolation": {
             "singleParcel": "Parcela seleccionada",
@@ -7835,7 +7840,8 @@
             "none": "Propietarios sin porción",
             "several": "Propietarios con varias porciones",
             "noneList": "Sin porción:",
-            "severalList": "Varias porciones:"
+            "severalList": "Varias porciones:",
+            "heading": "Resultados de propiedad"
         },
         "dialog": {
             "titleCreate": "Crear acuerdo",
@@ -7981,7 +7987,9 @@
                 "contributes": "Aporta",
                 "receives": "Recibe",
                 "change": "Variación neta",
-                "cash": "Dinero"
+                "cash": "Dinero",
+                "byParty": "Por parte de parcela",
+                "byPerson": "Por persona"
             },
             "deadline": "Plazo: {{date}}",
             "actions": {
@@ -7993,7 +8001,11 @@
             },
             "collapse": "Cerrar acuerdo",
             "removeLocalConfirm": "¿Quitar este acuerdo de este dispositivo? Sus diseños permanecen en el mapa. El acuerdo publicado sigue disponible a través de su enlace.",
-            "designs": "Diseños del plan"
+            "designs": "Diseños del plan",
+            "tabs": {
+                "info": "Información",
+                "decision": "Decisión"
+            }
         },
         "list": {
             "create": "Crear acuerdo",
@@ -8217,7 +8229,8 @@
     "planningViews": {
         "tabs": {
             "display": "Vista",
-            "compare": "Comparar"
+            "compare": "Comparar",
+            "options": "Opciones"
         },
         "compare": {
             "stop": "Dejar de comparar",
@@ -8300,7 +8313,8 @@
             "one": "{{count}} volumen guardado en la vista",
             "other": "{{count}} volúmenes guardados en la vista"
         },
-        "loadingProgress": "Cargando volúmenes permitidos… {{count}} de {{total}} perfiles leídos",
+        "loadingCells": "Cargando volúmenes permitidos… {{count}} de {{total}} zonas",
+        "cellsFailed": "algunas zonas no se pudieron cargar; Reintentar las vuelve a leer",
         "partial": {
             "one": "{{count}} opción visible · parte de la geometría de origen no está disponible",
             "other": "{{count}} opciones visibles · parte de la geometría de origen no está disponible"
@@ -8595,7 +8609,25 @@
         "openAgreement": "Detalles del acuerdo",
         "geometryUnavailable": "No se pudieron cargar todos los diseños incluidos. No se puede resaltar su extensión completa.",
         "sharePlan": "Compartir plan",
-        "chooseSharePlan": "¿Qué plan quieres compartir?"
+        "chooseSharePlan": "¿Qué plan quieres compartir?",
+        "revision": "Versión"
+    },
+    "clickStackNavigation": {
+        "objects": "Objetos en esta ubicación",
+        "content": "Contenido de la sección",
+        "actions": "Acciones",
+        "info": "Información",
+        "plans": "Planes",
+        "parcels": "Parcelas",
+        "formed": "Parcelas formadas",
+        "designs": "Diseños",
+        "agreements": "Acuerdos",
+        "built": "Edificios",
+        "permitted": "Permitido",
+        "fullScreen": "Pantalla completa",
+        "showMap": "Mostrar mapa",
+        "close": "Cerrar inspector",
+        "noAgreements": "Ningún acuerdo hace referencia a este plan todavía."
     },
     "clickStackRelations": {
         "designParcels": "Parcelas",
@@ -8820,7 +8852,11 @@
         "applyTitle": "¿Aplicar «{{title}}» a tu mapa?",
         "applyQuestion": "Los diseños de este plan no están en tu mapa. Para continuar, se aplican a él. Los diseños que ya aplicaste se mantienen; si alguno entra en conflicto con este plan, se te preguntará qué hacer.",
         "applyAndContinue": "Aplicar y continuar",
-        "applyFailed": "No se pudo aplicar el plan al mapa.",
+        "otherCid": "el servidor lo guardó con otro CID",
+        "lookupFailed": "No se pudo consultar el plan en el servidor: {{reason}}",
+        "planInvalid": "El registro de este plan ya no es válido: {{reason}}",
+        "notOnMap": "Tras aplicarlo, no todos los diseños del plan están en el mapa: {{titles}} no quedó aplicado.",
+        "groundFailed": "«{{title}}»: no se pudo consultar su terreno ({{reason}}).",
         "cannotStand": "Estos diseños no pueden estar junto al resto de este plan: {{titles}}. Usa «Cambiar diseños» para quedarte con los que quieras.",
         "editPlan": "Editar plan",
         "saveRevision": "Guardar nueva versión",
@@ -8844,9 +8880,9 @@
         "createAgreement": "Crear acuerdo",
         "openPlan": "Abrir plan",
         "noPlans": "Aún no hay planes guardados.",
-        "membersMissing": "No se encontraron algunos diseños del plan.",
-        "revisionChanged": "El plan cambió mientras se resolvía. Inténtalo de nuevo.",
-        "publicationFailed": "No se pudo publicar un diseño del plan.",
+        "membersMissing": "{{count}} de los {{total}} diseños del plan no están ni en este navegador ni en el servidor.",
+        "revisionChanged": "La copia de este plan en el servidor no coincide con su enlace.",
+        "publicationFailed": "No se pudo publicar «{{title}}»: {{reason}}",
         "shareDesignHint": "Compartir este diseño"
     },
     "sharedPlan": {
@@ -8994,12 +9030,11 @@
     "lists": {
         "title": "Listas",
         "plans": "Planes",
-        "source": "Origen",
         "search": "Buscar…",
         "byTitle": "Título",
         "newest": "Más recientes primero",
-        "remove": "Eliminar del navegador",
-        "removeConfirm": "¿Eliminar «{{title}}» de este navegador? Los enlaces publicados y los demás registros seguirán disponibles.",
+        "remove": "Eliminar borrador",
+        "removeConfirm": "¿Eliminar el borrador «{{title}}»? Solo está guardado en este navegador, así que no se podrá recuperar.",
         "select": "Seleccionar {{title}}",
         "open": "Abrir",
         "openNamed": "Abrir {{title}}",
@@ -9010,7 +9045,7 @@
         "count": "Mostrados: {{count}}",
         "empty": "Aún no hay nada aquí.",
         "noMatch": "Ningún elemento coincide con estos filtros.",
-        "takesGround": "{{title}} no puede estar en este plan: ocupa el terreno de {{others}}, ya marcado. Desmárcalo primero para usar este.",
+        "takesGround": "{{title}} ocupa el terreno de {{others}}, así que {{others}} ya no está marcado.",
         "cannotStand": "{{title}} no puede estar junto a los diseños ya marcados, así que no se añade.",
         "loadMore": "Cargar más",
         "limited": "Se muestran hasta 1.000 diseños publicados."
@@ -9065,5 +9100,20 @@
     "landDefinition": "El suelo público son las calles y los parques y plazas de OpenStreetMap; el privado es el resto de las parcelas. El estado actual cuenta cada edificio existente en ese suelo; un plan cuenta, junto a los nuevos, los existentes que sus diseños no eliminan.",
     "noBasis": "No hay ningún plan guardado del que tomar el suelo.",
     "sideBySide": "Lado a lado en el mapa"
+  },
+  "buildingUseHighlight": {
+    "title": "Uso de los edificios",
+    "highlight": "Resaltar por uso",
+    "note": "Los usos marcados colorean sus plantas, en edificios existentes y propuestas por igual; todo lo demás se atenúa.",
+    "pill": "Uso resaltado: {{uses}}",
+    "ownershipPill": "Propiedad resaltada: {{types}}",
+    "off": "Desactivar este resaltado",
+    "storey": {
+      "residential": "Vivienda",
+      "shop": "Comercios",
+      "office": "Oficinas",
+      "public": "Público",
+      "industrial": "Industrial"
+    }
   }
 }

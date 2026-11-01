@@ -425,13 +425,13 @@
             return pending;
         }
 
-        // The local record published as `cid` at the current index, or null. A record applied on the
-        // map wins over a parked copy of the same design.
+        // The local record of the design `cid` names, or null: one whose content hashes to it, whether
+        // it was published from here, imported, or never published (a plan made of this browser's own
+        // designs names them so, and opening it must find them, not import duplicates beside them).
+        // A record applied on the map wins over a parked copy of the same design.
         function localCopyOf(cid, { store = storage() } = {}) {
             if (!cidApi().isCid(cid)) return null;
-            const apiBase = currentApiBase();
-            const copies = store.getAllProposals().filter(record => record && record.published && record.published.cid === cid
-                && publishedCid(record, apiBase) === cid);
+            const copies = store.getAllProposals().filter(record => record && contentCid(record) === cid);
             return copies.find(record => typeof win.isProposalCurrentlyApplied === 'function' && win.isProposalCurrentlyApplied(record)) || copies[0] || null;
         }
 

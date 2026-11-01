@@ -1,6 +1,6 @@
 // Exercise app-shell buttons and verify navigation and dialog state.
 import { test, expect } from '../helpers/fixtures';
-import { openCity, clickMapPoint, createSpace } from '../helpers/runtime';
+import { openCity, clickMapPoint, createSpace, showProposalTab } from '../helpers/runtime';
 import { installAreaMonitorSpaFallback } from '../helpers/mocks/area-monitor-server';
 
 test('The keyboard shortcut opens the command palette', async ({ mockApi: page }) => {
@@ -95,7 +95,7 @@ test('the expanded technical status buttons copy the log and follow a proposal e
   await dialog.getByRole('button', { name: 'Button coverage park event', exact: true }).click();
   await expect(dialog).toBeHidden();
   await expect.poll(() => page.evaluate(() => (window as any).currentlyHighlightedProposalId)).toBe(proposalId);
-  const details = page.locator('#proposal-details-panel');
-  await expect(details.getByText(proposalTitle, { exact: true })).toBeVisible();
+  await showProposalTab(page, 'overview');
+  await expect(page.locator('#click-stack').getByRole('region', { name: proposalTitle, exact: true })).toBeVisible();
   await expect.poll(() => page.evaluate(() => (window as any).ProposalSelection?.getKey?.())).toBe(proposalId);
 });

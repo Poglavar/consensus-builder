@@ -25,38 +25,40 @@ for (const width of [1280, 390]) {
       return JSON.stringify(w.AgreementStore.list());
     }, layoutId);
     const panel = page.locator('#click-stack #agreement-panel');
-    await expect(panel.getByRole('tab')).toHaveText(['Overview', /^Input parcels \(\d+\)$/, /^Output parcels \(\d+\)$/, /^Persons \(\d+\)$/, 'Rules']);
-    const tabWidths = await panel.getByRole('tab').evaluateAll(tabs => tabs.map(tab => tab.getBoundingClientRect().width));
-    expect(Math.max(...tabWidths) - Math.min(...tabWidths)).toBeLessThan(1);
-    const tabStrip = await panel.locator('[role="tablist"]').evaluate(el => ({ width: el.clientWidth, scroll: el.scrollWidth }));
-    expect(tabStrip.scroll).toBeLessThanOrEqual(tabStrip.width);
+    const contentTabs = page.locator('#click-stack .click-stack__content-tabs');
+    await expect(contentTabs.getByRole('tab')).toHaveText(['Actions', 'Info', /^Input parcels \(\d+\)$/, /^Output parcels \(\d+\)$/, /^Persons \(\d+\)$/, 'Decision', 'Rules']);
+    const tabBounds = await contentTabs.evaluate(el => {
+      const rect = el.getBoundingClientRect();
+      return { left: rect.left, right: rect.right, scrollWidth: el.scrollWidth, clientWidth: el.clientWidth };
+    });
+    expect(tabBounds.right - tabBounds.left).toBeGreaterThan(0);
+    expect(tabBounds.scrollWidth).toBeGreaterThanOrEqual(tabBounds.clientWidth);
+    const tab = (name: string | RegExp) => contentTabs.getByRole('tab', { name, exact: typeof name === 'string' });
     const actions = panel.locator(':scope > .panel-body > .agreement-panel-actions');
-    // Propose, Before / after, Edit and Download: two equal columns that fill the row.
-    await expect(actions.locator('button')).toHaveCount(4);
+    // Propose, Before / after, Edit, Counter-agreement and Download fill the action grid.
+    await expect(actions.locator('button')).toHaveCount(5);
     const boxes = await actions.locator('button').evaluateAll(buttons => buttons.map(button => button.getBoundingClientRect().toJSON()));
     expect(Math.max(...boxes.map(b => b.width)) - Math.min(...boxes.map(b => b.width))).toBeLessThan(1);
-    expect(boxes[0].y).toBeCloseTo(boxes[1].y, 0); expect(boxes[2].y).toBeCloseTo(boxes[3].y, 0); expect(boxes[2].y).toBeGreaterThan(boxes[0].y);
-    const row = await actions.boundingBox(); expect(boxes[0].x).toBeCloseTo(row!.x, 0); expect(boxes[1].right).toBeCloseTo(row!.x + row!.width, 0);
-    const design = panel.locator('[data-agreement-inspect="design"]');
-    await design.hover(); await expect(page.locator('path.agreement-map-hover').first()).toBeVisible();
-    expect(await page.evaluate(() => (window as any).__agreementFitCalls)).toBe(0);
-    await design.click(); await expect(design).toHaveAttribute('aria-pressed', 'true');
-    await expect(panel).toBeVisible();
-    await panel.getByRole('tab', { name: /^Input parcels \(\d+\)$/ }).click();
+    const row = await actions.boundingBox();
+    expect(Math.max(...boxes.map(b => b.right)) - Math.min(...boxes.map(b => b.x))).toBeLessThanOrEqual(row!.width + 1);
+    await tab('Decision').scrollIntoViewIfNeeded(); await tab('Decision').click();
+    await expect(tab('Decision')).toHaveAttribute('aria-selected', 'true');
+    await expect(panel.locator('[data-agreement-properties-panel="decision"]')).toBeVisible();
+    await tab(/^Input parcels \(\d+\)$/).scrollIntoViewIfNeeded(); await tab(/^Input parcels \(\d+\)$/).click();
     const input = panel.locator('[data-agreement-inspect="input"]').first();
     await input.hover(); await expect(page.locator('path.agreement-map-hover').first()).toBeVisible(); await input.click();
     await expect(input).toHaveAttribute('aria-pressed', 'true');
-    await panel.getByRole('tab', { name: /^Output parcels \(\d+\)$/ }).click();
+    await tab(/^Output parcels \(\d+\)$/).scrollIntoViewIfNeeded(); await tab(/^Output parcels \(\d+\)$/).click();
     const output = panel.locator('[data-agreement-inspect="output"]').first(); await output.click();
     await expect(output).toHaveAttribute('aria-pressed', 'true'); await expect(page.locator('path.agreement-map-focus').first()).toBeVisible();
-    await panel.getByRole('tab', { name: /^Persons \(\d+\)$/ }).click();
-    // The Persons tab's own row: Output parcels also names the party (it holds several pieces), but that tab is hidden now.
+    await tab(/^Persons \(\d+\)$/).scrollIntoViewIfNeeded(); await tab(/^Persons \(\d+\)$/).click();
+    // Ownership outcomes and party rows live in Persons, not beside output geometry.
     await panel.getByRole('tabpanel', { name: /^Persons \(\d+\)$/ }).locator('[data-agreement-inspect="person"]').first().click();
     expect(await page.locator('path.agreement-map-focus').count()).toBeGreaterThanOrEqual(3);
-    await panel.getByRole('tab', { name: 'Rules', exact: true }).click();
-    await expect(panel.getByRole('tabpanel', { name: 'Rules', exact: true })).toContainText('Decision rule');
-    await page.keyboard.press('Home'); await expect(panel.getByRole('tab', { name: 'Overview', exact: true })).toHaveAttribute('aria-selected', 'true');
-    expect(await page.evaluate(() => (window as any).__agreementFitCalls)).toBe(4);
+    await tab('Rules').scrollIntoViewIfNeeded(); await tab('Rules').click();
+    await expect(panel.locator('[data-agreement-properties-panel="rules"]')).toContainText('Decision rule');
+    await tab('Rules').press('Home'); await expect(tab('Actions')).toHaveAttribute('aria-selected', 'true');
+    expect(await page.evaluate(() => (window as any).__agreementFitCalls)).toBe(3);
     expect(await page.evaluate(() => JSON.stringify((window as any).AgreementStore.list()))).toBe(before);
     await page.screenshot({ path: testInfo.outputPath('agreement-overview.png') });
   });

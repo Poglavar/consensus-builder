@@ -1,6 +1,6 @@
 import { openLayerSection } from '../helpers/layers';
 import { test, expect } from '../helpers/fixtures';
-import { clickMapPoint, openCity, openParcel } from '../helpers/runtime';
+import { clickMapPoint, openCity, openParcel, parcelTab } from '../helpers/runtime';
 import { installLayerDatasets } from '../helpers/mocks/layer-datasets';
 
 const PARCEL_IDS = ['HR-335754-1234', 'HR-335754-1235', 'HR-335754-1236', 'HR-335754-1237', 'HR-335754-1238'];
@@ -72,7 +72,7 @@ test.describe('Government plan and road analysis controls @features', () => {
     await installLayerDatasets(page);
     await openCity(page);
     await openParcel(page);
-    await page.locator('#parcel-info-panel').getByRole('tab', { name: 'Tools' }).click();
+    await parcelTab(page, 'tools-tab').click();
     await page.locator('#analyzeRoadButton').click();
     await expect(page.locator('#road-analysis-panel')).toHaveClass(/visible/);
     await expect.poll(() => page.evaluate(() => document.querySelectorAll('#map .leaflet-overlay-pane path').length)).toBeGreaterThan(0);

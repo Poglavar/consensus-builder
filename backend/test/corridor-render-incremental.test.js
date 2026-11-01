@@ -110,6 +110,8 @@ function environment(proposals) {
     context.globalThis = context;
     // The refresh is a step function run by work-slicer.js, loaded before it in the browser.
     context.__workSlicer = require('../../frontend/js/work-slicer.js');
+    // The junction paint clips with the shared clip, loaded before it on the page.
+    context.__parcelArrangement = require('../../frontend/js/proposals/parcel-arrangement.js');
     vm.runInNewContext(renderSource, context);
     const clipped = [];
     const enableJunctionPaint = () => {

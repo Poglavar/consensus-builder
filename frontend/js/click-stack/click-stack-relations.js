@@ -7,6 +7,7 @@
     'use strict';
 
     let selectorId = 0;
+    const objectList = () => (typeof window !== 'undefined' && window.ObjectList) || require('../ui/object-list.js');
     const keys = Object.freeze({
         memberPlans: 'memberPlans', includedDesigns: 'includedDesigns',
         createdBy: 'createdBy', formedFrom: 'formedFrom', formedParcels: 'formedParcels',
@@ -97,24 +98,62 @@
         choices.dataset.kind = group.kind || '';
         choices.setAttribute('role', 'group');
         const label = doc.createElement('span');
+        choices.dataset.itemCount = String((group.instances || []).filter(instance => !instance.membershipPlaceholder).length);
         label.className = 'click-stack__relation-label';
-        label.textContent = translate(keys[group.relation] || group.relation, win);
+        label.textContent = group.label || translate(keys[group.relation] || group.relation, win);
         choices.setAttribute('aria-label', label.textContent);
         const strip = doc.createElement('div');
         strip.className = 'click-stack__strip';
+        // An item highlights its object (hover, focus, click) and never navigates; its own open
+        // button takes the stack to the object (docs/click-stack.md, "Object lists").
         for (const instance of group.instances || []) {
+            const name = instance.label || instance.id || '';
+            const item = doc.createElement('span');
+            item.className = 'click-stack__link';
             const chip = doc.createElement('button');
             chip.type = 'button';
             chip.className = 'btn click-stack__chip';
-            chip.textContent = instance.label || instance.id || '';
-            chip.title = instance.label || instance.id || '';
-            chip.dataset.action = 'related';
+            const chipLabel = doc.createElement('span');
+            chipLabel.className = 'click-stack__chip-label';
+            chipLabel.textContent = name;
+            chip.appendChild(chipLabel);
+            chip.title = name;
+            chip.dataset.action = 'preview';
             chip.dataset.kind = group.kind || '';
             chip.dataset.id = instance.id ?? '';
-            strip.appendChild(chip);
+            chip.setAttribute('aria-pressed', 'false');
+            const open = objectList().openButton(doc, name, win, { className: 'click-stack__open' });
+            open.dataset.action = 'related';
+            open.dataset.kind = group.kind || '';
+            open.dataset.id = instance.id ?? '';
+            item.append(chip, open);
+            strip.appendChild(item);
         }
         choices.append(label, strip);
         return choices;
+    }
+
+    // The object a related item names: a peer in its own section, else a member of the selected
+    // object (a plan's designs, which are read without being imported).
+    function relatedInstance(stack, kind, id, selectedOf) {
+        const section = stack?.sections?.find(entry => entry.kind === kind);
+        return section?.instances.find(instance => String(instance.id) === String(id))
+            || selectedOf(stack, stack?.selectedKind)?.members?.find(member => String(member.id) === String(id))
+            || null;
+    }
+
+    // Hover and keyboard focus show an item's object; a click keeps it shown (pressed) until it is
+    // clicked again or the stack highlights a section anew (ObjectList). `show(kind, id, { pinned })`
+    // draws one object; `restore()` draws the section's own highlight again.
+    function bindPreview(container, { show, restore }) {
+        const chipOf = item => item.querySelector('[data-action="preview"]');
+        return objectList().bind(container, {
+            item: '.click-stack__link',
+            keyOf: item => { const chip = chipOf(item); return chip ? `${chip.dataset.kind}\n${chip.dataset.id}` : null; },
+            pressed: chipOf,
+            show: (key, { pinned }) => { const [kind, id] = key.split('\n'); show(kind, id, { pinned }); },
+            restore
+        });
     }
 
     function designOptionLabel(instance, win, plans = []) {
@@ -244,5 +283,6 @@
         return actions;
     }
 
-    return Object.freeze({ designType, designOptionLabel, renderDesignType, renderGroup, renderSelector, updateSelector, renderDesignActions });
+    return Object.freeze({ designType, designOptionLabel, renderDesignType, renderGroup, relatedInstance, bindPreview,
+        renderSelector, updateSelector, renderDesignActions });
 });

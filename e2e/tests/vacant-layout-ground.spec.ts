@@ -26,6 +26,7 @@ test('empty layout plots have wild ground and fences, replaced when a park occup
   });
   await page.keyboard.press('Escape');
   await page.locator('#mode-3d-toggle').click();
+  await expect(page.locator('#mode-3d-toggle')).not.toHaveClass(/mode-btn-loading/, { timeout: 20_000 });
   await expect(page.locator('#three-container canvas')).toBeVisible();
   await expect.poll(fences).toBe(2);
   expect(await page.evaluate(() => {
@@ -44,6 +45,7 @@ test('empty layout plots have wild ground and fences, replaced when a park occup
   await expect(page.locator('.vacant-layout-plot')).toHaveCount(1);
   await page.keyboard.press('Escape');
   await page.locator('#mode-3d-toggle').click();
+  await expect(page.locator('#mode-3d-toggle')).not.toHaveClass(/mode-btn-loading/, { timeout: 20_000 });
   await expect.poll(fences).toBe(1);
 });
 
@@ -81,6 +83,7 @@ test('plots outside the 2D view but inside the 3D band stay painted across 2D/3D
   });
   for (let round = 0; round < 2; round++) {
     await page.locator('#mode-3d-toggle').click();
+    await expect(page.locator('#mode-3d-toggle')).not.toHaveClass(/mode-btn-loading/, { timeout: 20_000 });
     await expect(page.locator('#three-container canvas')).toBeVisible();
     await expect.poll(vacantMeshes).toBe(2);
     await page.locator('#mode-2d-toggle').click();

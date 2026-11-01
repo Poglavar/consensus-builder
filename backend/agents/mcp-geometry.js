@@ -19,7 +19,7 @@ for (const path of ['cid.js', 'metric-frame.js', 'local-frame.js', 'footprint-ge
     'corridor-geometry.js', 'proposals/corridor-authoring.js', 'proposals/formation-depth.js',
     'geometry-tolerances.js', 'proposals/parcel-arrangement.js',
     'design-record.js', 'parcel-layout-validation.js', 'parcel-layout-layouts.js', 'reparcellization-slice.js', 'proposals/site-plots.js',
-    'parcels/schelling-grid.js', 'proposals/corridor-site-centreline.js', 'proposals/corridor-site-fit.js', 'proposals/road-in-site.js', 'single-building-geometry.js', 'park-planting.js', 'urban-rule-variation.js', 'building-rule-geometry.js', 'vendor/transit-station-models.js', 'transit-stations.js', 'intent-editing.js', 'intent-design.js']) {
+    'parcels/schelling-grid.js', 'proposals/corridor-site-centreline.js', 'proposals/corridor-site-fit.js', 'proposals/road-in-site.js', 'single-building-geometry.js', 'park-planting.js', 'building-use.js', 'urban-rule-variation.js', 'building-rule-geometry.js', 'vendor/transit-station-models.js', 'transit-stations.js', 'intent-editing.js', 'intent-design.js']) {
     const url = new URL(path, frontend);
     context.require = createRequire(url);
     runInContext(readFileSync(url, 'utf8'), context, { filename: path, timeout: 10_000 });
@@ -37,5 +37,5 @@ export const corridorRuntime = {
 // Thin adapters call these same app generators; no parallel construction geometry.
 export const constructorRuntime = {
     record: context.DesignRecord, singleBuilding: context.SingleBuildingGeometry, footprints: context.FootprintGeometry, rules: context.UrbanRuleVariation,
-    buildingRules: context.BuildingRuleGeometry, stations: context.TransitStations, sitePlots: context.__sitePlots
+    buildingRules: context.BuildingRuleGeometry, stations: context.TransitStations, sitePlots: context.__sitePlots, use: context.BuildingUse
 };

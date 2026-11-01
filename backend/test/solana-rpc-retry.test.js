@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 import { PublicKey } from '@solana/web3.js';
-import { createRetryingRpcFetch, createRpcConnection } from '../solana/rpc.js';
+import { createRetryingRpcFetch, createRpcConnection, createRequestPacer, rpcMinIntervalMs } from '../solana/rpc.js';
 import { createRpcMethodCounter } from '../solana/rpc-method-counts.js';
 
 const rpcUrl = 'https://rpc.example.test/provider-secret-key';
@@ -258,5 +258,25 @@ describe('bounded Solana RPC retries', () => {
             [primary, ['getBalance']],
             [secondary, ['getProgramAccounts']]
         ]);
+    });
+});
+
+describe('RPC request pacing for scheduled agents', () => {
+    it('spaces request starts by the minimum interval instead of bursting', async () => {
+        const waits = [];
+        const pacer = createRequestPacer(1000, { now: () => 0, sleep: async ms => { waits.push(ms); } });
+        const fetchImpl = vi.fn(async () => response({ jsonrpc: '2.0', id: 7, result: 1 }));
+        const retry = createRetryingRpcFetch({ fetchImpl, pacer, wait: vi.fn(async () => {}), log: vi.fn() });
+        // Three requests issued at once: the first starts now, the next ones one and two intervals later.
+        await Promise.all([1, 2, 3].map(() => retry(rpcUrl, { method: 'POST', body: rpcRequest('getBlock') })));
+        expect(waits).toEqual([1000, 2000]);
+        expect(fetchImpl).toHaveBeenCalledTimes(3);
+    });
+
+    it('reads the interval from SOLANA_RPC_MIN_INTERVAL_MS, unpaced when unset, and refuses nonsense', () => {
+        expect(rpcMinIntervalMs({})).toBe(0);
+        expect(rpcMinIntervalMs({ SOLANA_RPC_MIN_INTERVAL_MS: '1000' })).toBe(1000);
+        expect(() => rpcMinIntervalMs({ SOLANA_RPC_MIN_INTERVAL_MS: 'slow' })).toThrow(/non-negative integer/);
+        expect(() => rpcMinIntervalMs({ SOLANA_RPC_MIN_INTERVAL_MS: '-5' })).toThrow(/non-negative integer/);
     });
 });

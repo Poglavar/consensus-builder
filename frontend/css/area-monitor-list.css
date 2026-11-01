@@ -18,9 +18,30 @@
 }
 
 /* The list keeps one gap; a row hidden by the filter takes no room. */
-.area-monitor-list-items .cb-option {
+.area-monitor-list-items :is(.cb-option, .area-monitor-list-row) {
     flex: 0 0 auto;
     margin: 0;
+}
+
+/* Beside the map a row is an object-list item: the cb-option's card look without its pointer
+   affordance (the row opens nothing), its name and details, and its open arrow. */
+.area-monitor-list-row {
+    display: flex;
+    align-items: center;
+    gap: var(--cb-space-3);
+    padding: var(--cb-space-2) var(--cb-space-2) var(--cb-space-2) var(--cb-space-4);
+    border: 1px solid var(--cb-line);
+    border-radius: var(--cb-radius-lg);
+    background: var(--cb-surface);
+    color: var(--cb-text);
+}
+
+.area-monitor-list-row > .cb-option__text {
+    flex: 1 1 auto;
+}
+
+.area-monitor-list-row > .area-monitor-list-row__open {
+    flex: 0 0 auto;
 }
 
 .area-monitor-list-items [hidden] {

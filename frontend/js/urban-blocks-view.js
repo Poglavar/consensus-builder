@@ -6,6 +6,8 @@
     const doc = win.document;
     const PANE = 'urbanBlocksPane';
     let layer = null, selectionLayer = null, selected = null, selectedRoads = null, wired = false, fitting = false;
+    // The list's outline of a hovered or pressed row ({ id, layer }), and its ObjectList binding.
+    let preview = null, blockList = null;
     let panelMode = 'list', rankedBlocks = [], colorBy = 'distinct', walkThresholdMinutes = 10;
     let targetSideM = 100;
     let linkedBlock = win.UrbanBlocksLinks.parse(win.location.href);
@@ -55,7 +57,20 @@
         return { color: '#ffffff', weight: 1, opacity: active ? 0 : 1,
             fillColor: blockColor(feature), fillOpacity: active ? 0 : 0.38 };
     }
+    // A list row outlines its block (docs/design-language.md, "Object lists"): hovering or focusing
+    // it, or pressing it, which also frames the block when it is out of view. null lets go.
+    function previewBlock(id, { frame = false } = {}) {
+        if (preview) win.map.removeLayer(preview.layer);
+        preview = null;
+        const feature = id && rankedBlocks.find(block => block.id === id);
+        if (!feature) return;
+        preview = { id, layer: win.L.geoJSON(feature, { pane: PANE, interactive: false,
+            style: win.MapHighlight.style({ className: 'urban-block-preview' }) }).addTo(win.map) };
+        if (frame) frameBounds(preview.layer.getBounds(), { onlyHidden: true });
+    }
     function clearSelection() {
+        previewBlock(null);
+        blockList?.reset();
         if (selected) clearBlockUrl();
         selected = null;
         selectedRoads = null;
@@ -122,9 +137,11 @@
         el('urban-block-list-status').setAttribute('role', state.phase === 'error' ? 'alert' : 'status');
         el('urban-block-list-refresh').disabled = !state.enabled || ['roads', 'blocks'].includes(state.phase);
         const rows = rankedBlocks.map((feature, index) => {
-            const item = doc.createElement('li');
-            // A selectable cb-option row (css/primitives.css); the framed block is aria-current.
+            const item = doc.createElement('li'); item.className = 'urban-block-item';
+            // A cb-option row (css/primitives.css) that outlines its block, pressed while kept
+            // outlined; the block open in the details is aria-current. Its arrow opens the details.
             const button = doc.createElement('button'); button.type = 'button'; button.className = 'cb-option urban-block-row'; button.dataset.blockId = feature.id;
+            button.setAttribute('aria-pressed', String(blockList?.pinnedKey() === feature.id));
             const rank = doc.createElement('span'); rank.className = 'urban-block-rank'; rank.textContent = format(index + 1);
             const description = doc.createElement('span'); description.className = 'urban-block-row-description';
             const name = doc.createElement('strong'); name.className = 'urban-block-row-name';
@@ -138,10 +155,14 @@
             const walk = doc.createElement('strong'); walk.className = 'urban-block-row-walk';
             walk.textContent = `≈ ${format(feature.properties.walkMinutes, 1)} min`;
             button.append(rank, swatch(blockColor(feature)), description, walk);
-            button.addEventListener('click', () => { showBlock(feature); el('urban-block-back').focus({ preventScroll: true }); });
-            item.append(button); return item;
+            const open = win.ObjectList.openButton(doc, name.textContent, win, { className: 'urban-block-open',
+                onOpen: () => { showBlock(feature); el('urban-block-back').focus({ preventScroll: true }); } });
+            item.append(button, open); return item;
         });
         el('urban-block-list').replaceChildren(...rows);
+        // A block split or merged by the new detection is gone from the list and from the map.
+        if (preview && !rankedBlocks.some(block => block.id === preview.id)) previewBlock(null);
+        preview?.layer.bringToFront();
         updatePanel();
     }
     function render(state) {
@@ -302,8 +323,14 @@
         // Frame only while the block panel is on screen. A tool that takes over the map (See how
         // opens the playground through OnMapEditor) hides the panel with display:none; the resize
         // that causes used to re-fit the block with no panel padding, under the tool's panel.
+        if (selected && selectionLayer) frameBounds(selectionLayer.getBounds());
+    }
+
+    // Frames bounds in the map the panel and map controls leave visible. onlyHidden: only when they
+    // lie outside it (a pressed list row moves the map only to bring its block into view).
+    function frameBounds(bounds, { onlyHidden = false } = {}) {
         const panel = el('urban-block-panel');
-        if (!selected || fitting || panel.hidden || !panel.getClientRects().length) return;
+        if (fitting || panel.hidden || !panel.getClientRects().length) return;
         fitting = true;
         try {
             // Leaflet can still cache the previous viewport height during a phone resize. Fit
@@ -321,9 +348,16 @@
             add('#urban-block-panel', win.matchMedia('(max-width: 767.98px)').matches ? 'bottom' : 'right');
             const padding = win.UrbanBlocksLayout.fitPadding(win.map.getContainer().getBoundingClientRect(), obstacles);
             if (!padding) return;
+            if (onlyHidden) {
+                const size = win.map.getSize();
+                const northWest = win.map.latLngToContainerPoint(bounds.getNorthWest());
+                const southEast = win.map.latLngToContainerPoint(bounds.getSouthEast());
+                if (northWest.x >= padding.paddingTopLeft[0] && northWest.y >= padding.paddingTopLeft[1]
+                    && southEast.x <= size.x - padding.paddingBottomRight[0] && southEast.y <= size.y - padding.paddingBottomRight[1]) return;
+            }
             // Synchronous framing keeps moveend from triggering another road load. Parcel
             // viewport listeners still run normally, and the selected polygon stays available.
-            win.map.fitBounds(selectionLayer.getBounds(), { ...padding, maxZoom: 19, animate: false });
+            win.map.fitBounds(bounds, { ...padding, maxZoom: 19, animate: false });
         } finally { fitting = false; }
     }
 
@@ -480,6 +514,14 @@
         });
         for (const id of ['urban-blocks-refresh', 'urban-block-list-refresh']) el(id).addEventListener('click', () => {
             clearSelection(); showList(); refresh(true);
+        });
+        // Rows outline their block; a click keeps it outlined until clicked again; the arrow opens it.
+        blockList = win.ObjectList.bind(el('urban-block-list'), {
+            item: '.urban-block-item',
+            keyOf: item => item.querySelector('[data-block-id]')?.dataset.blockId || null,
+            pressed: item => item.querySelector('.urban-block-row'),
+            show: (id, { pinned }) => previewBlock(id, { frame: pinned }),
+            restore: () => previewBlock(null)
         });
         for (const id of ['urban-blocks-browse', 'urban-blocks-open-map', 'urban-block-back']) el(id).addEventListener('click', () => {
             showList();

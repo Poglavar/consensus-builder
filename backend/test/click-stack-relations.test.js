@@ -2,14 +2,14 @@
 import { createRequire } from 'node:module';
 import { describe, expect, it, vi } from 'vitest';
 import { dictionary, testI18n } from './helpers/i18n.js';
-import { makeDocument } from './helpers/fake-dom.js';
+import { makeDocument, makeEvent } from './helpers/fake-dom.js';
 
 const require = createRequire(import.meta.url);
 const relations = require('../../frontend/js/click-stack/click-stack-relations.js');
 const goals = require('../../frontend/js/proposals/design-goals.js');
 
 describe('click stack relationship rendering', () => {
-    it('renders translated relation labels and safe related buttons with their routing data', () => {
+    it('renders translated relation labels and safe related items: a highlighting name and an open button with their routing data', () => {
         const doc = makeDocument();
         const win = { i18n: testI18n('hr') };
 
@@ -24,9 +24,58 @@ describe('click stack relationship rendering', () => {
         expect(group.getAttribute('aria-label')).toBe('Uključeno u planove:');
         expect(group.querySelectorAll('img')).toHaveLength(0);
         expect(button.textContent).toBe('<img src=x onerror=alert(1)>');
-        expect(button.getAttribute('data-action')).toBe('related');
-        expect(button.getAttribute('data-kind')).toBe('plans');
-        expect(button.getAttribute('data-id')).toBe('p-7');
+        expect(button.getAttribute('data-action')).toBe('preview');
+        expect(button.getAttribute('aria-pressed')).toBe('false');
+        const open = group.querySelector('.click-stack__open');
+        expect(open.getAttribute('data-action')).toBe('related');
+        expect(open.getAttribute('data-kind')).toBe('plans');
+        expect(open.getAttribute('data-id')).toBe('p-7');
+        expect(open.getAttribute('aria-label')).toBe('Otvori <img src=x onerror=alert(1)>');
+        expect(open.textContent).toBe('');
+    });
+
+    it('outlines an item on hover and focus, keeps a clicked one until clicked again, and never navigates', () => {
+        const doc = makeDocument();
+        const panel = doc.createElement('div');
+        doc.body.appendChild(panel);
+        panel.appendChild(relations.renderGroup({ relation: 'includedDesigns', kind: 'designs', count: 2,
+            instances: [{ id: 'd-1', label: 'Streets' }, { id: 'd-2', label: 'Block' }] }, doc, { i18n: testI18n() }));
+        const shown = [];
+        const preview = relations.bindPreview(panel, { show: (kind, id, { pinned }) => shown.push(`${kind}:${id}${pinned ? ' pinned' : ''}`), restore: () => shown.push('section') });
+        const [streets, block] = panel.querySelectorAll('.click-stack__link');
+        const chip = item => item.querySelector('.click-stack__chip');
+        const move = (type, target, relatedTarget = null) => target.dispatchEvent(makeEvent(type, { target, relatedTarget }));
+
+        move('mouseover', chip(streets));
+        // moving onto the item's own open button keeps the outline
+        move('mouseout', chip(streets), streets.querySelector('.click-stack__open'));
+        move('mouseout', streets.querySelector('.click-stack__open'), panel);
+        expect(shown.splice(0)).toEqual(['designs:d-1', 'section']);
+
+        chip(block).click();
+        expect(chip(block).getAttribute('aria-pressed')).toBe('true');
+        move('mouseover', chip(streets));
+        move('mouseout', chip(streets), panel);
+        move('focusin', chip(streets));
+        move('focusout', chip(streets));
+        expect(shown.splice(0)).toEqual(['designs:d-2 pinned', 'designs:d-1', 'designs:d-2', 'designs:d-1', 'designs:d-2']);
+
+        chip(block).click();
+        expect(chip(block).getAttribute('aria-pressed')).toBe('false');
+        chip(streets).click();
+        preview.reset();
+        expect(chip(streets).getAttribute('aria-pressed')).toBe('false');
+        move('mouseout', chip(streets), panel);
+        expect(shown.splice(0)).toEqual(['section', 'designs:d-1 pinned', 'section']);
+    });
+
+    it('finds a related item among its section\'s peers or the selected object\'s members', () => {
+        const plan = { id: 'p-1', members: [{ id: 'cid-a', proposal: { title: 'A' } }] };
+        const stack = { selectedKind: 'plans', sections: [{ kind: 'plans', instances: [plan] }, { kind: 'parcels', instances: [{ id: '12' }] }] };
+        const selectedOf = (s, kind) => s.sections.find(section => section.kind === kind).instances[0];
+        expect(relations.relatedInstance(stack, 'parcels', '12', selectedOf)).toEqual({ id: '12' });
+        expect(relations.relatedInstance(stack, 'designs', 'cid-a', selectedOf)).toBe(plan.members[0]);
+        expect(relations.relatedInstance(stack, 'designs', 'missing', selectedOf)).toBeNull();
     });
 
     it('renders a labelled selector for all instances, selects the current id, and omits it for single items', () => {

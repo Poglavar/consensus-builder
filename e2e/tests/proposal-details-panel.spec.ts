@@ -23,6 +23,7 @@ test.describe('Proposal details panel @features', () => {
     const row = section.locator('.click-stack__row');
     const panel = section.locator('#proposal-details-panel');
     await expect(panel).toBeVisible();
+    await expect(section.locator('.click-stack__content-tabs [data-page="actions"]')).toHaveAttribute('aria-selected', 'true');
     await expect(panel.locator('#proposal-details-minimize')).toBeHidden();
     await row.click();
     await expect(row).toHaveAttribute('aria-expanded', 'false');
@@ -46,6 +47,7 @@ test.describe('Proposal details panel @features', () => {
 
     await row.click();
     await expect(row).toHaveAttribute('aria-expanded', 'true');
-    await expect(section.locator('#proposal-details-panel .panel-body')).toBeVisible();
+    await expect(section.locator('.click-stack__content-tabs [data-page="actions"]')).toHaveAttribute('aria-selected', 'true');
+    await expect(panel.locator('#proposal-details-footer')).toBeVisible();
   });
 });

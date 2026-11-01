@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { createRequire } from 'node:module';
 const require = createRequire(import.meta.url);
-const { filterRows, indexQuery } = require('../../frontend/js/lists-panel.js');
+const { stageOf, mergeRows, filterRows, indexQuery } = require('../../frontend/js/lists-panel.js');
 const NamedPlans = require('../../frontend/js/named-plans.js');
 const PlanRecord = require('../../frontend/js/plan-record.js');
 const Cid = require('../../frontend/js/cid.js');
@@ -29,6 +29,23 @@ describe('shared lists', () => {
         expect(Object.fromEntries(indexQuery('designs', { city: 'zg', area: { explore: false, bbox: null } }))).toEqual({ limit: '1000', city: 'zg' });
         // Plans and agreements page by offset and stay city-scoped.
         expect(Object.fromEntries(indexQuery('plans', { city: 'zg', area: explore, offset: 50 }))).toEqual({ limit: '50', city: 'zg', offset: '50' });
+    });
+    it('lists each object once: a browser copy of a published object joins its server row, drafts stay', () => {
+        const draft = { key: 'local-1', title: 'Draft', published: false, cid: null, local: { id: 'local-1' } };
+        const copy = { key: 'local-2', title: 'Mine, published', published: true, cid: 'cid-b', local: { id: 'local-2' } };
+        const offPage = { key: 'local-3', title: 'Published elsewhere', published: true, cid: 'cid-z', local: { id: 'local-3' } };
+        const server = [{ key: 'cid-a', title: 'Theirs', published: true, local: null }, { key: 'cid-b', title: 'Mine, published', published: true, local: null }];
+        const merged = mergeRows([draft, copy, offPage], server);
+        expect(merged.map(row => row.key)).toEqual(['cid-a', 'local-2', 'local-1', 'local-3']);
+        expect(merged[1]).toMatchObject({ title: 'Mine, published', published: true, local: { id: 'local-2' } });
+        expect(mergeRows([draft], [])).toEqual([draft]);
+    });
+    it('filters by stage of saving: draft, published, and on chain for an agreement', () => {
+        const staged = [{ title: 'A', published: false }, { title: 'B', published: true }, { title: 'C', published: true, onChain: true }];
+        expect(staged.map(stageOf)).toEqual(['draft', 'published', 'onchain']);
+        expect(filterRows(staged, { publication: 'published' }).map(row => row.title)).toEqual(['B']);
+        expect(filterRows(staged, { publication: 'onchain' }).map(row => row.title)).toEqual(['C']);
+        expect(filterRows(staged, { publication: 'all' })).toHaveLength(3);
     });
     it('orders loaded records by their authored date', () => {
         expect(filterRows(rows, { sort: 'newest' }).map(row => row.title)).toEqual(['Alpha', 'Zebra']);

@@ -5,7 +5,7 @@ import { createRequire } from 'node:module';
 import path from 'node:path';
 import { test, expect } from '../helpers/fixtures';
 import { openCity, stubBasemapTiles } from '../helpers/runtime';
-import { applyLayout, agreementEditor, editorSave, editorClosed, storedAgreements, proposeOverPark } from '../helpers/agreements';
+import { applyLayout, agreementEditor, editorSave, editorClosed, storedAgreements, proposeOverPark, openAgreementDecision } from '../helpers/agreements';
 import { fileAgreement, pageIndex, cidOfObject } from '../helpers/mocks/shared-server';
 import { injectMockSolanaWallet } from '../helpers/blockchain';
 
@@ -93,6 +93,7 @@ test('a shared consultation signs results, keeps history and rechecks website au
   await page.goto(`/agreements/${cid}?city=zg`);
   const panel = page.locator('#agreement-panel');
   await expect(panel).toBeVisible({ timeout: 45_000 });
+  await openAgreementDecision(page);
   await expect(panel.locator('[data-community-participate]')).toHaveAttribute('href', 'https://ngo.example/vote');
   await expect(panel).toContainText('No result has been reported yet.');
   const [participation] = await Promise.all([page.waitForEvent('popup'), panel.locator('[data-community-participate]').click()]);

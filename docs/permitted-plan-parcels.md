@@ -35,17 +35,18 @@ from the layout's public-owner pieces.
   `changedCadastreIds` also lists lots a viewport seed or a release touched, so it cannot drive
   recomputation by itself. Helpers: `peek(id)`, `peekBounds(bbox, {includeCorridors})`,
   `entriesForCadastre`, `producedBy(proposalId)`. Removed pieces' geometry is gone after commit.
-- **Permitted layer** `frontend/js/planning/views.js`: `refresh()` on `moveend` (300 ms), source or
-  city change; `viewCache = createViewportCache` (`frontend/js/planning/scene.js` 124-171) keyed
-  `${scope}|${bbox}`, `find` by containment, `load` joins an in-flight request with the same key,
-  no per-area eviction; items keyed `envelope:<source>:<cadastralId>`; `drawMap` redraws only
+- **Permitted layer** `frontend/js/planning/views.js`: `refresh()` on `moveend` and
+  `loadviewchange` (300 ms), source or city change, over `LoadView.current()` (the 3D camera's zoom
+  in 3D); the view is split into `PlanningScene.viewCells` cells, each one request per answer kind,
+  two in flight, nearest first; `viewCache = createViewportCache` keyed `${scope}|${cellBbox}`,
+  `load` joins an in-flight request with the same key; `mergeAnswers` joins the cells; items keyed `envelope:<source>:<cadastralId>`; `drawMap` redraws only
   items whose object changed; `notifyGeometry()` → `planninggeometrychange` → 3D rebuild.
   `PlanningScene.parcelItemOf` already matches on `source.parcel`; `plannedMetrics`
   (`three-mode.js`) returns null for `#` ids only because no item carries one. `showParcelEvidence`
   skips `#` ids on purpose (saved results are cadastral) and keeps doing so.
   `PlanningFeed.loadViewport` (`frontend/js/planning/feed.js`) is GET-only with cursor paging.
 - **Server** `GET /planning/envelopes` (`backend/routes/planning.js`): `validateBounds(bbox, 0.5)`,
-  every 400 is reported as `envelope-area-too-large` (the client shows "zoom in"), 10-minute
+  every 400 is reported as `envelope-area-too-large` (a cell is far inside it), 10-minute
   promise cache keyed `[city, source, scenario, bbox]`. `loadParcelEnvelopes` reads lots by
   `queryBounds(expand(bbox, 45 m))`; the 45 m margin supplies obstacles for `streetWidthAcross`
   (`backend/planning/street-width.js`); `parcelOverlapProblems` makes overlapping lots unavailable;

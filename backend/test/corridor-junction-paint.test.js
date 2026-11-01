@@ -166,6 +166,23 @@ describe('the footway\'s edge fill is clipped the same way', () => {
     });
 });
 
+describe('a junction raw turf cannot unite', () => {
+    // Klara grid 3's junction: arm boxes meeting at vertices 4e-8° apart, which raw turf 6.5 refuses
+    // with "Unable to complete output ring". On the shared grid it unites, so it paints once.
+    const fixture = require('./fixtures/junction-union-klara-grid-3.json');
+    const rings = [...fixture.united.geometry.coordinates.map(polygon => polygon[0]), fixture.ring.geometry.coordinates[0]]
+        .map(ring => ring.map(([lng, lat]) => [lat, lng]));
+    const clips = require('../../frontend/js/proposals/parcel-arrangement.js');
+
+    it('unites on the shared grid with no clip failure', () => {
+        const before = clips.clipHealth().bySite['corridor-junction-paint.unionOfRings'] || 0;
+        const united = paint.unionOfRings(rings);
+        expect(united.type).toBe('Polygon');
+        expect(turf.area(turf.feature(united))).toBeCloseTo(190.672, 2);
+        expect(clips.clipHealth().bySite['corridor-junction-paint.unionOfRings'] || 0).toBe(before);
+    });
+});
+
 describe('when turf refuses a piece', () => {
     const clips = require('../../frontend/js/proposals/parcel-arrangement.js');
     beforeEach(() => { vi.spyOn(console, 'error').mockImplementation(() => {}); });

@@ -44,7 +44,14 @@
         const record = extrusion.extrudeFootprint(id, feature.geometry, height.heightM);
         if (!record) return null;
         record.height_source = height.source;
-        return record;
+        return Object.assign(record, buildingFacts(feature));
+    }
+
+    // What the 3D record says about a building beside its shape, when its source states it: its use
+    // and storey count (Highlight by use colours its storeys by them).
+    function buildingFacts(feature) {
+        const { use, floors } = footprintEntry(feature);
+        return { ...(use ? { use } : {}), ...(floors ? { floors } : {}) };
     }
 
     // What a provider answers instead of buildings when its upstream failed outright: the browser says
@@ -54,15 +61,21 @@
         return { unavailable: true, retryAfter: Number.isFinite(seconds) && seconds > 0 ? Math.ceil(seconds) : null };
     }
 
+    const buildingUse = () => (typeof window !== 'undefined' && window.BuildingUse) || require('./building-use.js');
+
     // Measured height and storeys only, null when the source has none: the same contract the other
-    // providers keep for the footprint pool and the urban rule. Estimates are a 3D concern.
+    // providers keep for the footprint pool and the urban rule. Estimates are a 3D concern. A source
+    // that states the building's use adds `use`: a city model's function code (building-use.js), or
+    // OpenStreetMap's building=* value (Overture's class) when it names one.
     function footprintEntry(feature) {
         const props = feature.properties || {};
+        const use = props.use || buildingUse().fromOsmBuilding(props.building);
         return {
             id: String(feature.id || props.osm_id),
             geometry: feature.geometry,
             height_m: props.measured_height_m ?? null,
-            floors: props.levels ?? null
+            floors: props.levels ?? null,
+            ...(use ? { use } : {})
         };
     }
 
@@ -193,7 +206,7 @@
         return { near, footprints, mapFootprints, footprintsUnder };
     }
 
-    const api = { MAX_SPAN_DEG, expandBbox, footprintFeatureToBuilding, unavailableFrom, footprintEntry, createFootprintProvider };
+    const api = { MAX_SPAN_DEG, expandBbox, footprintFeatureToBuilding, buildingFacts, unavailableFrom, footprintEntry, createFootprintProvider };
     if (typeof window !== 'undefined') window.FootprintProvider = api;
     if (typeof module !== 'undefined' && module.exports) module.exports = api;
 })();

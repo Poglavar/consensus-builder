@@ -41,7 +41,7 @@ function viewer({ parcelFeatures = parcels, fabric = true, proposed = true, enve
         turf, THREE, proposedBuildingsGroup: proposed && !staged ? group : new THREE.Group(), buildingMaterials: { massing },
         cloneBuildingMaterial: original => original.clone(), materials: { sliceEdges: new THREE.LineBasicMaterial() },
         polygonFeatureToMeshes: (_feature, surface) => [new THREE.Mesh(new THREE.BoxGeometry(), surface)],
-        markOwnedMaterial() {}, markOwnedGeometry() {}, addBuildingFloorLines() {},
+        markOwnedMaterial() {}, markOwnedGeometry() {}, addBuildingFloorLines() {}, tagBuildingStoreys() {},
         prepareProceduralFacadeMeshes: meshes => meshes, console
     };
     vm.runInNewContext(['stringToColor', 'createBuildingSlices'].map(name => declarations.get(name)).join('\n'), context);

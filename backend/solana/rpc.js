@@ -23,12 +23,41 @@ async function transientJsonRpcResponse(response) {
     } catch { return 'invalid RPC response'; }
 }
 
+// Scheduled agents are not in a hurry: SOLANA_RPC_MIN_INTERVAL_MS spaces the start of every RPC request (each
+// retry included) by at least that many milliseconds, so a run spreads its calls out instead of bursting into
+// provider rate limits. Unset or 0 leaves a process unpaced (the API). One pacer per interval per process.
+export function rpcMinIntervalMs(env = process.env) {
+    const raw = env.SOLANA_RPC_MIN_INTERVAL_MS;
+    if (raw === undefined || raw === '') return 0;
+    const ms = Number(raw);
+    if (!Number.isSafeInteger(ms) || ms < 0) throw new Error(`SOLANA_RPC_MIN_INTERVAL_MS must be a non-negative integer, got "${raw}"`);
+    return ms;
+}
+
+export function createRequestPacer(minIntervalMs, { now = Date.now, sleep = ms => new Promise(resolve => setTimeout(resolve, ms)) } = {}) {
+    let nextStartAt = 0;
+    return fetchImpl => async (input, init) => {
+        const startAt = Math.max(now(), nextStartAt);
+        nextStartAt = startAt + minIntervalMs;
+        const delay = startAt - now();
+        if (delay > 0) await sleep(delay);
+        return fetchImpl(input, init);
+    };
+}
+
+const processPacers = new Map();
+function processPacer(minIntervalMs) {
+    if (!processPacers.has(minIntervalMs)) processPacers.set(minIntervalMs, createRequestPacer(minIntervalMs));
+    return processPacers.get(minIntervalMs);
+}
+
 export function createRetryingRpcFetch({ fetchImpl = globalThis.fetch, onRpcRequest = null, attempts = 4,
     firstDelayMs = 1000, maxDelayMs = 10000, timeoutMs = 15000, wait,
-    programAccountsEndpoint = null, primaryEndpoint = null,
+    programAccountsEndpoint = null, primaryEndpoint = null, minIntervalMs = rpcMinIntervalMs(), pacer = null,
     log = message => console.warn(`[${new Date().toISOString()}] [solana-rpc] ${message}`) } = {}) {
     if (!Number.isInteger(attempts) || attempts < 1 || attempts > 6) throw new Error('RPC attempts must be between 1 and 6');
-    const retryFetch = createRetryingFetch({ fetchImpl, attempts, firstDelayMs, maxDelayMs, timeoutMs, wait, log,
+    const pace = pacer || (minIntervalMs > 0 ? processPacer(minIntervalMs) : null);
+    const retryFetch = createRetryingFetch({ fetchImpl: pace ? pace(fetchImpl) : fetchImpl, attempts, firstDelayMs, maxDelayMs, timeoutMs, wait, log,
         shouldRetryRequest: ({ init }) => {
             const methods = requestMethods(init.body);
             return methods.length > 0 && methods.every(retryableMethod);

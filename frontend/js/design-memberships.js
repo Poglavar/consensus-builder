@@ -84,12 +84,12 @@
         for (const group of Object.values(groups)) Object.assign(group, { nextOffset: cid ? 0 : null, loading: !!cid, error: false });
         const detailCache = new Map();
         const notify = () => { if (!controller.signal.aborted) onChange(session); };
-        const session = { groups, cid: revision, proposalId: String(proposal.proposalId),
+        const session = { groups, cid, revision, proposalId: String(proposal.proposalId),
             dispose: () => controller.abort(), load,
             instances(kind, keepEmpty = false) {
                 const state = groups[kind];
                 const items = state.items.map(row => ({ ...row, id: String(row.localId || row.cid), label: row.title || String(row.cid || row.localId),
-                    membershipDesignCid: revision, onParcel: true }));
+                    membershipDesignCid: cid || revision, onParcel: true }));
                 if (!items.length && (state.loading || state.error || keepEmpty)) items.push({ id: `membership-${kind}`, membershipPlaceholder: true, onParcel: true,
                     label: t(state.loading ? 'loading' : state.error ? 'failed' : 'empty') });
                 return items;
@@ -263,12 +263,14 @@
             button.addEventListener('click', run); return button;
         };
         host.classList.add('click-stack__plan');
-        const intro = node('p', 'click-stack__facts', t(kind === 'plans' ? 'planMeaning' : 'agreementMeaning'));
-        host.appendChild(intro);
         if (!instance.membershipPlaceholder) {
             const summary = node('div', 'click-stack__summary');
-            summary.appendChild(node('h3', 'click-stack__title', instance.label));
-            if (instance.draft) summary.appendChild(node('span', 'click-stack__facts', t('draft')));
+            summary.appendChild(node('p', 'click-stack__facts', instance.draft ? t('draft') : win.i18n.t('proposals.share.panel.published')));
+            const revision = node('p', 'click-stack__facts', `${t('revision')}: `);
+            const cid = node('code', 'click-stack__revision', instance.cid);
+            cid.title = instance.cid;
+            revision.appendChild(cid);
+            summary.appendChild(revision);
             host.appendChild(summary);
             const actions = node('div', 'cb-actions click-stack__actions');
             const share = action(t('sharePlan'), async () => {
@@ -315,7 +317,6 @@
                 .catch(error => win.showStyledAlert(error.message));
             const scheduleButton = action(win.i18n.t('planDialog.schedule'), () => editSchedule());
             scheduleButton.className = 'btn click-stack__schedule-plan';
-            actions.appendChild(scheduleButton);
             const collaborate = action(win.i18n.t('sharedPlan.collaborate'), async () => {
                 try {
                     await win.BusyControl.track(collaborate, async () => {
@@ -333,14 +334,15 @@
             download.className = 'btn click-stack__download-plan';
             actions.appendChild(download);
             host.appendChild(actions);
+            const strip = node('div', 'click-stack__schedule');
+            strip.appendChild(scheduleButton);
             if (instance.content?.schedule && win.PlanDialog?.scheduleStrip) {
-                const strip = node('div', 'click-stack__schedule');
                 const titles = new Map((instance.localDesigns || []).flatMap(record => {
                     try { return [[win.DesignRecord.cidOf(record), record.title]]; } catch (_) { return []; }
                 }));
                 strip.appendChild(win.PlanDialog.scheduleStrip(instance.content, { titles, onPick: editSchedule }));
-                host.appendChild(strip);
             }
+            host.appendChild(strip);
             const details = node('div', 'click-stack__membership-details');
             host.appendChild(details);
             const load = async () => {

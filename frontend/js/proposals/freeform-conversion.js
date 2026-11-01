@@ -17,6 +17,8 @@
     if (root) root.__freeformConversion = api;
 })(typeof window !== 'undefined' ? window : globalThis, function (root) {
     'use strict';
+    const buildingUse = () => (root && root.BuildingUse) || require('../building-use.js');
+    const STOREY_M = 3;
 
     const RULE_TYPOLOGIES = Object.freeze(['block', 'row', 'parcelBased']);
     // The rules a saved record converts from (convertsToFreeform). Detached is a per-parcel rule over
@@ -148,11 +150,13 @@
             const properties = feature.properties || {};
             polygonsOf(feature.geometry).forEach(coordinates => {
                 if (!Array.isArray(coordinates) || !Array.isArray(coordinates[0]) || coordinates[0].length < 4) return;
+                const height = Math.max(MIN_HEIGHT_M, Math.round(heightOf(properties) * 10) / 10);
+                const floors = finitePositive(properties.storeys) || finitePositive(properties.floors) || finitePositive(properties.levels);
                 parts.push({
                     feature: { type: 'Feature', properties: {}, geometry: { type: 'Polygon', coordinates: clone(coordinates) } },
-                    height: Math.max(MIN_HEIGHT_M, Math.round(heightOf(properties) * 10) / 10),
-                    floors: finitePositive(properties.storeys) || finitePositive(properties.floors) || finitePositive(properties.levels),
-                    modelUrl: properties.modelUrl || null
+                    height, floors, modelUrl: properties.modelUrl || null,
+                    // Its use, or its rule's (building-use.js), kept as the Freeform building's own.
+                    use: buildingUse().effectiveUse(properties, Math.round(floors || height / STOREY_M))
                 });
             });
         });
@@ -186,6 +190,7 @@
                     rotation: 0,
                     footprintMode: 'polygon',
                     ...(floors ? { floors: Math.round(floors) } : {}),
+                    ...(tallest.use ? { use: tallest.use } : {}),
                     ...(modelUrl ? { modelUrl } : {})
                 },
                 geometry: { type: 'Polygon', coordinates: clone(merged[0]) }

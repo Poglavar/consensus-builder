@@ -1,6 +1,6 @@
 // Verify the walk gate's publish actions and the click stack's instance strips.
 import { test, expect } from '../helpers/fixtures';
-import { clickMapPoint, openCity, PARCEL_GEOMETRY, PARCEL_ID } from '../helpers/runtime';
+import { clickMapPoint, openCity, PARCEL_GEOMETRY, PARCEL_ID, parcelTab } from '../helpers/runtime';
 import { sampleParcels } from '../helpers/mocks/parcel-data';
 import { pageIndex } from '../helpers/mocks/shared-server';
 
@@ -97,8 +97,15 @@ test.describe('proposal button controls follow-up @features', () => {
     await expect(designs).toHaveClass(/is-selected/);
     await expect(designs.locator('.click-stack__row-title')).toHaveText('Design (2)');
     const sourceParcels = designs.locator('.click-stack__choices[data-kind="parcels"]');
+    await designs.locator('.click-stack__content-tabs [data-page="relation-parcels"]').click();
     await expect(sourceParcels.locator('.click-stack__chip')).toHaveCount(2);
-    await sourceParcels.locator(`.click-stack__chip[data-id="${SECOND_PARCEL_ID}"]`).click();
+    // A related item only outlines its object: the design stays selected and the item shows pressed.
+    const secondParcel = sourceParcels.locator(`.click-stack__chip[data-id="${SECOND_PARCEL_ID}"]`);
+    await secondParcel.click();
+    await expect(secondParcel).toHaveAttribute('aria-pressed', 'true');
+    await expect(designs).toHaveClass(/is-selected/);
+    // Its open button goes to the parcel.
+    await sourceParcels.locator(`.click-stack__open[data-id="${SECOND_PARCEL_ID}"]`).click();
 
     const parcels = stack.locator('.click-stack__section[data-kind="parcels"]');
     await expect(parcels).toHaveClass(/is-selected/);
@@ -106,11 +113,11 @@ test.describe('proposal button controls follow-up @features', () => {
     await expect(page.locator('#parcel-info-panel')).toBeVisible();
     await expect(page.locator('#parcel-info-title')).toContainText(SECOND_PARCEL_ID);
     await expect(page.locator('path.click-stack-map-focus').first()).toBeVisible();
-    // The selected source parcel offers its related designs inside its section.
-    const relatedDesigns = parcels.locator('.click-stack__choices[data-kind="designs"]');
-    await expect(relatedDesigns.locator('.click-stack__chip')).toHaveCount(2);
-    const chosenDesign = relatedDesigns.locator(`.click-stack__chip[data-id="${proposalIds[0]}"]`);
-    await chosenDesign.click();
+    // The selected source parcel exposes its richer related-design rows on its native Designs tab.
+    await parcelTab(page, 'proposals-tab').click();
+    const relatedDesigns = page.locator('#proposals-content');
+    await expect(relatedDesigns.locator('.proposal-item')).toHaveCount(2);
+    await relatedDesigns.locator(`.proposal-item[data-proposal-id="${proposalIds[0]}"] [data-proposal-open]`).click();
 
     await expect(designs).toHaveClass(/is-selected/);
     await expect(designs.locator('.click-stack__row-title')).toHaveText('Design (2)');

@@ -425,6 +425,8 @@
                     if (typeof openEntity === 'function') {
                         const button = text(doc, 'button', label, 'cb-link'); button.type = 'button';
                         button.title = entity.id;
+                        // What the row is about: a host lists it as an object (activity-panel.js).
+                        button.setAttribute('data-entity-type', entity.type); button.setAttribute('data-entity-id', entity.id);
                         button.addEventListener('click', () => openEntity(entity));
                         meta.append(button);
                     } else {

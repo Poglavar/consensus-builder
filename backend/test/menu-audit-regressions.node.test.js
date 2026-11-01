@@ -281,7 +281,7 @@ test('an unavailable parcel source offers reload and rerenders the same context'
 
 test('manual selection control reflects the current selection mode', () => {
     const source = fs.readFileSync(new URL('../../frontend/js/proposals/list-ui.js', import.meta.url), 'utf8');
-    const fn = source.slice(source.indexOf('function syncMultiSelectControls('), source.indexOf('function handleDescendantItemHover('));
+    const fn = source.slice(source.indexOf('function syncMultiSelectControls('), source.indexOf('function handleProposalParcelClick('));
     const document = makeDocument();
     document.body.innerHTML = '<button id="parcel-manual-selection" aria-pressed="false"></button>';
     const context = { document };

@@ -63,23 +63,24 @@ for (const viewport of VIEWPORTS) {
     // In the stack the section row folds and the stack's × closes: the panel's own − and × are hidden.
     await expect(panel.locator('#parcel-info-minimize')).toBeHidden();
     await expect(panel.locator('.panel-header .close-button')).toBeHidden();
-    // The parcel row remains the readable selection caption; it has no section copy action.
+    // The parcel row remains the readable selection caption (the number people read, without the
+    // HR-<municipality>- prefix); it has no section copy action.
     const row = page.locator('#click-stack .click-stack__section[data-kind=parcels] .click-stack__row');
-    await expect(row.locator('.click-stack__row-detail')).toHaveText(PARCEL_ID);
+    await expect(row.locator('.click-stack__row-detail')).toHaveText(PARCEL_ID.replace(/^HR-\d+-/, ''));
     await expect(row.locator('.click-stack__copy-reference')).toHaveCount(0);
     await expectCompactBounds(page, viewport.width, viewport.height);
     await row.click();
     await expect(row).toHaveAttribute('aria-expanded', 'false');
     await expect(page.locator('#click-stack')).toBeVisible();
     await expect(page.locator('#click-stack .click-stack__section[data-kind=parcels]')).toHaveClass(/is-selected/);
-    await expect(row.locator('.click-stack__row-detail')).toHaveText(PARCEL_ID);
+    await expect(row.locator('.click-stack__row-detail')).toHaveText(PARCEL_ID.replace(/^HR-\d+-/, ''));
     await page.locator('#map').focus();
     await expect(page.locator('#map')).toBeFocused();
     await page.keyboard.press('Escape');
     await expect(page.locator('#click-stack')).toBeHidden();
     await expect(panel).toBeHidden();
-    // The phone sheet owns its translucent surface; hiding it also hides its resize handle.
-    await expect(page.locator('#click-stack')).toHaveCSS('background-color', viewport.width < 768 ? 'rgba(255, 255, 255, 0.8)' : 'rgba(0, 0, 0, 0)');
+    // A dismissed sheet owns neither a visible surface nor its resize affordance.
+    await expect(page.locator('#click-stack')).not.toHaveClass(/visible/);
     const handle = page.locator('#click-stack > .mobile-dock-sheet-handle');
     await expect(handle).toBeHidden();
   });

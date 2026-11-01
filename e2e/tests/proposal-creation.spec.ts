@@ -45,7 +45,7 @@ test.describe('Proposal creation and map lifecycle @features', () => {
   for (const [type, done] of [['buildings', '#btn-blockify-done'], ['row', '#btn-rowhouse-done'], ['parcelBased', '#btn-parcelbased-done'], ['single', '#single-building-confirm']]) {
     test(`${type}: finish its design tool into an applied building proposal`, async ({ mockApi: page }) => {
       await openCity(page);
-      await openParcel(page, type === 'row' ? 'info' : 'proposals');
+      await openParcel(page, 'proposals');
       if (type === 'row') {
         await page.locator('#parcel-manual-selection').click();
         await closeParcel(page);

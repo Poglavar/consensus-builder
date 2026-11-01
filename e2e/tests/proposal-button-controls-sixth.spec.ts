@@ -87,13 +87,12 @@ test.describe('proposal button controls sixth pass @features', () => {
     // its Open imports the design (ListsPanel designOf) and opens it.
     await page.locator('#proposals-button').click();
     const list = page.locator('#proposals-sheet');
-    await expect(list.locator(`#proposal-list-host .lists-item[data-list-id="${cid}"]`)).toContainText('Draft');
+    await expect(list.locator(`#proposal-list-host .lists-item[data-list-id="${cid}"]`).filter({ hasText: 'Unrelated local key' })).toContainText('Draft');
     await expect(list.locator('#proposal-list-host .lists-item[data-list-id="p-stale-mark"]')).toContainText('Draft');
-    await list.locator('[data-list-source="published"]').click();
     const row = list.locator('#proposal-list-host .lists-item').filter({ hasText: 'Downloadable design' });
     await expect(row).toBeVisible();
     await expect(row).toHaveAttribute('data-list-id', cid);
-    await expect(row.getByRole('button', { name: 'Remove from browser', exact: true })).toHaveCount(0);
+    await expect(row.getByRole('button', { name: 'Delete draft', exact: true })).toHaveCount(0);
     await row.getByRole('heading', { name: 'Downloadable design', exact: true }).click();
     const importedId = `design-${cid}`;
     await expect.poll(() => pageIndex(page).requests.some(request => request.method === 'GET' && request.path === `/designs/${cid}`)).toBe(true);

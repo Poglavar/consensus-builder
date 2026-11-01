@@ -22,7 +22,7 @@ describe('algorithmic agent schedule', () => {
         // A settled agreement signs at most four transactions: attest, execute or expire, resolve, claim.
         const perSettlement = SIGNED_SETTLEMENT_STEPS.length - 1;
         for (const proposer of proposers) {
-            expect(proposer.env.AGENT_MARKET_SEED_USDC_CAP).toBe('70');
+            expect(proposer.env.AGENT_MARKET_SEED_USDC_CAP).toBe('3.5');
             expect(proposer.args).toContain('--seed-owners');
             expect(proposer.args).toContain('--live');
             const name = proposer.args.match(/--persona (\S+)/)[1];
@@ -83,7 +83,7 @@ describe('algorithmic agent schedule', () => {
         expect(app.env).toMatchObject({
             AGENT_DAILY_ACTION_CAP: '15',
             AGENT_SETTLE_MAX_PER_RUN: '3',
-            AGENT_DAILY_USDC_CAP: '0.35', AGENT_MARKET_SEED_USDC_CAP: '70'
+            AGENT_DAILY_USDC_CAP: '0.35', AGENT_MARKET_SEED_USDC_CAP: '3.5'
         });
         expect(app.env).not.toHaveProperty('AGENT_LLM_MODEL');
         expect(app.env).not.toHaveProperty('AGENT_LLM_DAILY_CAP_USD');
@@ -147,7 +147,7 @@ describe('algorithmic agent schedule', () => {
         ]) {
             const entry = apps.find(item => item.name === name);
             expect(entry).toMatchObject({ script: 'agents/run.mjs', instances: 1, autorestart: false, cron_restart: cron,
-                env: { AGENT_DAILY_ACTION_CAP: '15', AGENT_SETTLE_MAX_PER_RUN: '3', AGENT_DAILY_USDC_CAP: '0.35', AGENT_MARKET_SEED_USDC_CAP: '70' } });
+                env: { AGENT_DAILY_ACTION_CAP: '15', AGENT_SETTLE_MAX_PER_RUN: '3', AGENT_DAILY_USDC_CAP: '0.35', AGENT_MARKET_SEED_USDC_CAP: '3.5' } });
             expect(entry.args).toContain(`--persona ${persona}`);
             expect(entry.args).toContain('--controller algorithm');
             expect(entry.args).toContain('--slot auto');
@@ -235,5 +235,14 @@ describe('algorithmic agent schedule', () => {
             keypairPath: '~/.config/solana/ugt-notary-01.json',
             service: { port: 3095, kind: 'owner-consent', priceUsdc: '0.01' }
         });
+    });
+});
+
+describe('scheduled agent RPC pacing', () => {
+    it('paces every scheduled agent job to one RPC request per second and leaves the lens services unpaced', () => {
+        const scheduled = apps.filter(app => app.cron_restart);
+        expect(scheduled.length).toBeGreaterThanOrEqual(12);
+        for (const app of scheduled) expect(app.env.SOLANA_RPC_MIN_INTERVAL_MS, app.name).toBe('1000');
+        for (const app of apps.filter(item => !item.cron_restart)) expect(app.env.SOLANA_RPC_MIN_INTERVAL_MS, app.name).toBeUndefined();
     });
 });

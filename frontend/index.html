@@ -123,11 +123,11 @@
                 'css/community-voting.css',
                 'css/base.css',
                 'css/layout.css',
-                'css/map.css?v=20261030-compare-close',
+                'css/map.css?v=20261031-relationship-rows',
                 'css/panels.css?v=20261027-panel-buttons',
                 'css/modals.css?v=20261030-compare-agreements',
                 'css/parcel-sources.css',
-                'css/proposals.css?v=20261030-list-actions',
+                'css/proposals.css?v=20261031-design-info',
                 'css/grain-score.css?v=20261027-panel-buttons',
                 'css/proposal-editor.css?v=20261027-experimental',
                 'css/structure-geometry-editor.css?v=20261029-enclosure-hidden',
@@ -141,10 +141,10 @@
                 'css/game.css',
                 'css/actor-explorer.css',
                 'css/road-analysis.css',
-                'css/utilities.css?v=20261027-panel-buttons',
+                'css/utilities.css?v=20261030-use-highlight',
                 'css/photoreal-mode.css',
                 'css/ai-scene.css',
-                'css/map-shell.css?v=20261029-no-epoch',
+                'css/map-shell.css?v=20261030-use-highlight',
                 'css/activity-feed.css?v=20261027-style',
                 'css/area-monitor-list.css',
                 'css/map-credits.css',
@@ -165,9 +165,10 @@
                 'css/buildout-clock.css?v=20261029-panes',
                 'css/lists.css?v=20261030-list-tokens',
                 'css/proposal-approval.css?v=20261020-approval-rules',
-                'css/agreement.css?v=20261027-agreement-tabs',
+                'css/agreement.css?v=20261031-inspector-organization',
                 'css/agreement-dialog.css?v=20261027-panel-buttons',
                 'css/mobile-sheets.css?v=20261027-style',
+                'css/click-stack-navigation.css?v=20261031-inspector-organization',
                 'css/planning-views.css?v=20261029-loading-ring',
                 'css/three-sun.css',
                 'css/three-click-stack.css?v=20261027-stack-semantics',
@@ -519,7 +520,14 @@
         </button>
         <button type="button" id="measurement-button" class="map-shell-button map-utility-button" data-map-modes="2d" data-sheet-target="measurement-sheet" aria-controls="measurement-sheet" aria-expanded="false" title="Measure" aria-label="Measure" data-i18n-key="sidebar.measurement.measureButton" data-i18n-attr="title,aria-label"><i class="fas fa-ruler" aria-hidden="true"></i></button>
         <!-- Sun and shadows (js/three-sun.js): the model view's occupant of the utility slot that Measure holds in 2D. -->
-        <button type="button" id="sun-button" class="map-shell-button map-utility-button" data-map-modes="3d" data-sheet-target="sun-sheet" aria-controls="sun-sheet" aria-expanded="false" data-sun="day" title="Sun and shadows" aria-label="Sun and shadows" data-i18n-key="threeMode.sun.title" data-i18n-attr="title,aria-label" hidden><i class="fas fa-sun" aria-hidden="true"></i></button>
+        <button type="button" id="sun-button" class="map-shell-button map-utility-button" data-map-modes="3d" data-sheet-target="sun-sheet" aria-controls="sun-sheet" aria-expanded="false" data-sun="day" title="Sun and shadows" aria-label="Sun and shadows" data-i18n-key="threeMode.sun.title" data-i18n-attr="title,aria-label" hidden>
+            <i class="fas fa-sun" aria-hidden="true"></i>
+            <svg class="sun-dial" viewBox="0 0 40 40" aria-hidden="true" focusable="false">
+                <circle class="sun-dial__night" cx="20" cy="20" r="17" />
+                <circle class="sun-dial__day" cx="20" cy="20" r="17" pathLength="1440" transform="rotate(90 20 20)" />
+                <circle class="sun-dial__marker" cx="20" cy="37" r="2.5" />
+            </svg>
+        </button>
         <button id="mode-2d-toggle" class="map-mode-toggle map-mode-tile" title="2D map" aria-label="2D map" aria-pressed="true" data-i18n-key="threeMode.toggle.switchTo2d" data-i18n-attr="title,aria-label"><span aria-hidden="true">2D</span></button>
         <button id="mode-3d-toggle" class="map-mode-toggle map-mode-tile" title="3D models" aria-label="3D models" aria-pressed="false" data-i18n-key="threeMode.toggle.switchTo3d" data-i18n-attr="title,aria-label"><span aria-hidden="true">3D</span></button>
         <button id="mode-realistic-toggle" class="map-mode-realistic-btn map-mode-tile" title="3D aerial imagery (Google)" aria-label="3D aerial imagery (Google)" aria-pressed="false" data-i18n-key="threeMode.toggle.realistic" data-i18n-attr="title,aria-label">
@@ -827,6 +835,8 @@
                             </div>
                             <p id="building-sources-summary" class="sheet-note building-sources-summary"></p>
                         </div>
+                        <!-- Highlight by use: its ticks are rendered by js/ui/view-pills.js. -->
+                        <div class="control-group" data-use-highlight></div>
                         <div class="cb-actions layer-source-actions"><button type="button" id="building-source-settings-button" class="btn" data-section-independent="true" onclick="openBuildingSourceSettings()">
                                 <span data-i18n-key="buildingSources.listTitle">Building sources</span>
                             </button></div>
@@ -1032,7 +1042,9 @@
                     </div>
                 </details>
             </div>
-            <div id="model-layer-controls" class="map-sheet-body" data-map-modes="3d photo" hidden></div>
+            <div id="model-layer-controls" class="map-sheet-body" data-map-modes="3d photo" hidden>
+                <div class="control-group" data-use-highlight data-map-modes="3d"></div>
+            </div>
             <div class="map-sheet-body" data-map-modes="photo" hidden>
                 <div class="checkbox-group"><label><input id="photo-parcels-visible" type="checkbox" checked><span data-i18n-key="threeMode.photoParcels.toggle">Cadastral parcel boundaries</span></label></div>
                 <p id="photo-parcels-status" class="photoreal-parcel-note"></p>
@@ -1472,21 +1484,6 @@
                     onclick="(window.Parcels?.uiParcelPanel?.hideParcelInfoPanel || window.hideParcelInfoPanel || function(){})();">×</button>
             </div>
 
-            <div class="cb-actions parcel-context-actions">
-                <div class="multi-select-group">
-                    <span class="multi-select-title" data-i18n-key="panel.parcel.selectMultiple">Select a parcel to start designing. You can also select multiple parcels manually or auto detect and select a block of parcels.</span>
-                    <div class="multi-select-options">
-                        <button type="button" id="parcel-manual-selection" class="btn btn-sm" aria-pressed="false"
-                            onclick="multiParcelSelection.toggle()"
-                            data-i18n-key="panel.parcel.selectManually">Manual</button>
-                        <button type="button" class="btn btn-sm multi-select-detect-btn"
-                            data-i18n-key="panel.parcel.detectBlock"
-                            onclick="(window.animateFloodfillFromSelected || function(){})();">Detect block</button>
-                    </div>
-                </div>
-            </div>
-
-
             <!-- Tab Navigation -->
             <!-- Design holds the palette of things to create; Proposals lists what already exists
                  here (its count rides in a badge); Tools is an icon so four tabs fit a phone. The
@@ -1503,6 +1500,10 @@
                     onclick="(window.Parcels?.proposals?.switchParcelTab || window.switchParcelTab || function(){})(this, 'info-tab')"
                     aria-label="Info" title="Info" data-i18n-key="panel.parcel.tabInfo" data-i18n-attr="aria-label,title"><i
                         class="fas fa-circle-info" aria-hidden="true"></i></button>
+                <button type="button" class="cb-tab parcel-tab-btn" role="tab" aria-selected="false"
+                    id="parcel-selected-parcels-tab-button" aria-controls="selected-parcels-tab" data-parcel-tab-id="selected-parcels-tab" hidden
+                    onclick="(window.Parcels?.proposals?.switchParcelTab || window.switchParcelTab || function(){})(this, 'selected-parcels-tab')"><span
+                        class="parcel-tab-label" data-i18n-key="clickStackNavigation.parcels">Parcels</span><span class="cb-badge cb-badge--count selected-parcels-tab-count" hidden></span></button>
                 <button type="button" class="cb-tab parcel-tab-btn" role="tab" aria-selected="false"
                     id="parcel-proposals-tab-button" aria-controls="proposals-tab" data-parcel-tab-id="proposals-tab"
                     onclick="(window.Parcels?.proposals?.switchParcelTab || window.switchParcelTab || function(){})(this, 'proposals-tab')"><span
@@ -1527,6 +1528,23 @@
 
                 <!-- Design Tab -->
                 <div id="propose-tab" class="parcel-tab-content" role="tabpanel" aria-labelledby="parcel-propose-tab-button">
+                    <div class="cb-actions parcel-context-actions">
+                        <div class="multi-select-group">
+                            <span class="multi-select-title" data-i18n-key="panel.parcel.selectMultiple">Select a parcel to start designing. You can also select multiple parcels manually or auto detect and select a block of parcels.</span>
+                            <div class="multi-select-options">
+                                <button type="button" id="parcel-manual-selection" class="btn btn-sm" aria-pressed="false"
+                                    onclick="multiParcelSelection.toggle()"
+                                    data-i18n-key="panel.parcel.selectManually">Manual</button>
+                                <button type="button" class="btn btn-sm multi-select-detect-btn"
+                                    data-i18n-key="panel.parcel.detectBlock"
+                                    onclick="(window.animateFloodfillFromSelected || function(){})();">Detect block</button>
+                            </div>
+                        </div>
+                        <button id="parcelBuilderButton" class="btn btn-sm" type="button"
+                            onclick="(window.Parcels?.uiClaim?.openParcelBuilder || window.openParcelBuilder || function(){})()"
+                            title="Open Parcel Builder"><i class="fas fa-trowel-bricks" aria-hidden="true"></i><span
+                                data-i18n-key="panel.parcel.builderLabel">Parcel builder</span></button>
+                    </div>
                     <div id="propose-content"></div>
                 </div>
 
@@ -1534,6 +1552,12 @@
                 <div id="proposals-tab" class="parcel-tab-content" role="tabpanel" aria-labelledby="parcel-proposals-tab-button" hidden>
                     <!-- The parcel's proposals; js/parcels/ui/parcel-panel.js fills it. -->
                     <div id="proposals-content"></div>
+                </div>
+
+                <!-- The selected-parcel rows are separate from selection facts so the map remains
+                     readable while a long selection is inspected. Hidden for an ordinary parcel. -->
+                <div id="selected-parcels-tab" class="parcel-tab-content" role="tabpanel" aria-labelledby="parcel-selected-parcels-tab-button" hidden>
+                    <div id="selected-parcels-content"></div>
                 </div>
 
                 <!-- Tools Tab: the parcel NFT first (Mint is the tab's one primary action; claim.js
@@ -1558,10 +1582,6 @@
                                     data-i18n-key="panel.parcel.claimButton">Claim</span></button>
                         </div>
                         <div class="button-row button-row-1 cb-actions">
-                            <button id="parcelBuilderButton" class="btn" type="button"
-                                onclick="(window.Parcels?.uiClaim?.openParcelBuilder || window.openParcelBuilder || function(){})()"
-                                title="Open Parcel Builder"><i class="fas fa-trowel-bricks" aria-hidden="true"></i><span
-                                    data-i18n-key="panel.parcel.builderLabel">Parcel builder</span></button>
                             <button id="visualizeButton" class="btn" type="button"
                                 onclick="showAnimationModalForCurrentParcel()"><i class="fas fa-film" aria-hidden="true"></i><span
                                     data-i18n-key="panel.parcel.visualizeButton">Visualize</span></button>
@@ -1853,6 +1873,7 @@
             'js/ui/banner-stack.js',
             'js/ui/modal-escape.js',
             'js/ui/dialogs.js?v=20261027-agreement-focus',
+            'js/ui/object-list.js',
             'js/persistent-storage.js',
             'js/i18n.js',
             'js/format.js',
@@ -1876,13 +1897,13 @@
             'js/buildout-schedule.js',
             'js/buildout-simulation.js',
             'js/named-plans.js?v=20261029-buildout',
-            'js/plan-composition.js?v=20261030-plan-preview-apply',
-            'js/plan-workspace.js?v=20261030-plan-rivals',
+            'js/plan-composition.js?v=20261030-own-designs',
+            'js/plan-workspace.js?v=20261030-own-designs',
             'js/shared-plan-events.js',
             'js/shared-plan-motion.js',
             'js/shared-plan-session.js',
             'js/plan-dialog.js?v=20261030-plan-rivals',
-            'js/lists-panel.js?v=20261030-plan-rivals',
+            'js/lists-panel.js?v=20261030-own-designs',
             'js/wipe-local-data.js',
             'js/world/world-entry-model.js?v=20261020-point-destinations',
             'data/boot-coverage.js',
@@ -1998,7 +2019,9 @@
             // bundle:end parcel-data-clients
             // What each Buildings and massing role is still loading; the map's first fetches report to it.
             'js/planning/loading.js',
-            'js/map-core.js?v=20261030-source-lists',
+            // Highlight by use: the 2D and 3D building styles read it (Layers → Building use).
+            'js/building-use-highlight.js',
+            'js/map-core.js?v=20261030-use-highlight',
             'js/user-management.js?v=20261020-modeled-totals',
             'js/site-intro.js',
             'js/map-controls.js?v=20261030-source-lists',
@@ -2022,13 +2045,14 @@
             'js/ui/commands.js?v=20261030-source-lists',
             'js/ui/map-shell.js',
             'js/ui/dock-clearance.js',
+            'js/load-view.js',
             'js/planning/scene.js?v=20261029-loading-ring',
             'js/planning/envelopes.js?v=20261021-envelopes',
             'js/planning/representations.js?v=20261030-built-title',
             'js/planning/source-proposal.js',
             'js/planning/feed.js',
             'js/planning/parcel-assessment.js?v=20261021-permitted-envelopes',
-            'js/planning/views.js?v=20261030-built-title',
+            'js/planning/views.js?v=20261031-inspector-organization',
             'js/approval-link.js',
             'js/draft-link.js',
             'js/draft-preview.js?v=20261029-buildout',
@@ -2043,7 +2067,7 @@
             'js/bets/bets-model.js?v=20261025-lmsr',
             'js/bets/bets-dialog.js?v=20261025-lmsr',
             'js/bets/bets-sheet.js?v=20261025-lmsr',
-            'js/mobile-dock-sheet.js',
+            'js/mobile-dock-sheet.js?v=20261031-tabs',
             'js/ui/simulation-indicator.js',
             'js/ui/parcel-menu-model.js?v=20261020-local-estimates',
             'js/ui/parcel-menu.js?v=20261019-plot-provenance',
@@ -2062,13 +2086,13 @@
             'js/parcels/parcel-id.js',
             'js/parcels/state.js',
             'js/parcels/styles.js?v=20261020-local-estimates',
-            'js/parcels/proposals.js',
+            'js/parcels/proposals.js?v=20261031-inspector-organization',
             'js/parcels/selection.js?v=20260404b',
             'js/parcels/ui/parcel-selection.js?v=20261020-local-estimates',
             'js/parcels/ui/box-select.js',
             'js/parcels/share-format.js',
             'js/parcels/parcel-set-proposals.js',
-            'js/parcels/ui/parcel-panel.js?v=20261027-stack-semantics',
+            'js/parcels/ui/parcel-panel.js?v=20261031-inspector-organization',
             'js/parcels/ui/locate.js',
             'js/parcels/ui/road.js?v=20261027-stack-semantics',
             'js/parcels/ui/labels.js',
@@ -2143,6 +2167,8 @@
             'js/map-pick.js',
             // What a building is for, by storey: the editor, layouts and Plan stats read it.
             'js/building-use.js',
+            // The top-centre view pills and the Highlight by use ticks in Layers.
+            'js/ui/view-pills.js',
             'js/single-building-geometry.js',
             'js/freeform-placement.js',
             'js/on-map-placement.js',
@@ -2199,14 +2225,14 @@
             'js/proposals/storage.js?v=20261020-estimated-city',
             // bundle:start proposal-sync
             'js/proposals/agent-provenance.js',
-            'js/proposals/design-sync.js',
+            'js/proposals/design-sync.js?v=20261030-own-designs',
             // bundle:end proposal-sync
             'js/proposals/urban-rules.js',
             // bundle:start proposal-panel-text
             'js/proposals/display-text.js',
             'js/proposals/panel-presentation.js?v=20261020-complete-area',
             // bundle:end proposal-panel-text
-            'js/proposals/list-ui.js?v=20261029-no-epoch',
+            'js/proposals/list-ui.js?v=20261030-list-reveal',
             // bundle:start proposal-map-actions
             'js/proposals/map-action.js',
             'js/proposals/before-after.js',
@@ -2219,11 +2245,12 @@
             // bundle:start proposal-inspection
             'js/proposals/drill-ui.js',
             'js/selection-address.js?v=20261029-selection',
-            'js/click-stack/click-stack-model.js?v=20261028-stack-focus',
-            'js/click-stack/click-stack-relations.js?v=20261027-observed-context',
+            'js/click-stack/click-stack-model.js?v=20261031-tabs',
+            'js/click-stack/click-stack-relations.js?v=20261031-tab-counts',
+            'js/click-stack/click-stack-navigation.js?v=20261031-inspector-organization',
             'js/click-stack/click-stack-neighbours.js?v=20261028-neighbours',
             'js/click-stack/click-stack-hits.js?v=20261028-neighbours',
-            'js/click-stack/click-stack-panel.js?v=20261029-selection',
+            'js/click-stack/click-stack-panel.js?v=20261031-inspector-organization',
             'js/buildout-clock.js?v=20261029-undated',
             'js/compare-unapplied.js?v=20261029-compare-status',
             'js/three-compare.js?v=20261030-compare-agreements',
@@ -2233,7 +2260,7 @@
             'js/proposals/approval-panel.js?v=20261027-experimental',
             'js/proposals/parcel-history-card.js?v=20261020-anchor-observation',
             // bundle:end proposal-inspection
-            'js/proposals/details-panel.js?v=20261028-ground-fences',
+            'js/proposals/details-panel.js?v=20261031-design-info',
             // bundle:start parcel-compare
             'js/proposals/parcel-compare.js?v=20261020-comparison-status',
             'js/proposals/parcel-compare-ui.js?v=20261020-comparison-status',
@@ -2251,7 +2278,7 @@
             'js/building-layers-dialog.js',
             'js/road-node-edit.js',
             // bundle:end proposal-editor
-            'js/proposals/dialog-create.js?v=20261029-no-epoch',
+            'js/proposals/dialog-create.js?v=20261030-list-reveal',
             'js/proposals/ready-signal.js',
             'js/proposals/create-preview.js',
             'js/proposals/dialog-share.js?v=20261027-agreement-tabs',
@@ -2272,7 +2299,7 @@
             'js/agreement-ground.js?v=20261028-abstract-parties',
             'js/agreement-store.js',
             'js/agreement-dialog.js?v=20261030-plan-preview-apply',
-            'js/agreement-panel.js?v=20261030-plan-preview-apply',
+            'js/agreement-panel.js?v=20261031-inspector-organization',
             'js/agreement-list.js?v=20261027-agreement-tabs',
             'js/agreement-sync.js?v=20261030-plan-preview-apply',
             'js/suggested-layouts-2d.js?v=20261029-building-use',
@@ -2281,7 +2308,7 @@
             'js/proposals/sharing-routes.js?v=20261030-plan-preview-apply',
             'js/proposals/grain-score-rules.js',
             'js/proposals/core.js?v=20261022-agreement-chain',
-            'js/proposals/data.js?v=20261029-no-epoch',
+            'js/proposals/data.js?v=20261031-inspector-organization',
             'js/proposals/bootstrap.js?v=20261019-local-purchase',
             // bundle:start plan-analysis
             'js/proposals/plan-yield.js?v=20261029-building-use',

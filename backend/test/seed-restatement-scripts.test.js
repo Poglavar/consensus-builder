@@ -16,6 +16,10 @@ const RESTATEMENTS = fileURLToPath(new URL('../../restatements/', import.meta.ur
 const NOT_LOCAL = 'postgres://reader@db.invalid:5432/none';
 const HOME = fs.mkdtempSync(path.join(os.tmpdir(), 'seed-scripts-'));
 afterAll(() => fs.rmSync(HOME, { recursive: true, force: true }));
+const CHILD_ENV = { ...process.env };
+// Node warns when the parent runner sets both colour controls. Script stderr remains reserved for
+// the dry run's own diagnostics.
+delete CHILD_ENV.NO_COLOR;
 
 // The nine seeds, and whether their sources include the local cadastre (else only committed files).
 const SEEDS = [
@@ -31,7 +35,7 @@ const SEEDS = [
 ];
 
 const run = (script, args) => spawnSync(process.execPath, [`scripts/${script}`, ...args], {
-    cwd: BACKEND, encoding: 'utf8', timeout: 120_000, env: { ...process.env, HOME, DATABASE_URL: NOT_LOCAL }
+    cwd: BACKEND, encoding: 'utf8', timeout: 120_000, env: { ...CHILD_ENV, HOME, DATABASE_URL: NOT_LOCAL }
 });
 const sha = file => createHash('sha256').update(fs.readFileSync(file)).digest('hex');
 

@@ -1,6 +1,6 @@
 // Worldwide, parcel-independent OSM road input for urban blocks. Reuses the cached Overpass
 // transport, but keeps its broader road policy separate from frontage and cadastral analysis.
-import { createOverpassCellSource } from '../buildings/osm-reference.js';
+import { createOverpassCellSource, PRIORITY } from '../buildings/osm-reference.js';
 
 export const BLOCK_HIGHWAYS = Object.freeze([
     'motorway', 'trunk', 'primary', 'secondary', 'tertiary', 'unclassified',
@@ -30,7 +30,7 @@ export function blockRoadsToGeoJSON(elements, cap = 8000, response = {}) {
 }
 
 const cachedSource = createOverpassCellSource({
-    label: 'block roads', buildQuery: buildBlockRoadQuery, convert: blockRoadsToGeoJSON
+    label: 'block roads', buildQuery: buildBlockRoadQuery, convert: blockRoadsToGeoJSON, priority: PRIORITY.roads
 });
 
 export async function fetchBlockRoads(bbox, options = {}) {

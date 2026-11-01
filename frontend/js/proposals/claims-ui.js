@@ -85,12 +85,17 @@
             label.textContent = t()('claims.onParcels', 'On parcels:');
             wrap.appendChild(label);
 
-            // Each parcel is a script link (button.cb-link) to its own panel; the id clamps to two
-            // lines inside it (parcel-id-text).
+            // The parcels are an object list (docs/design-language.md, "Object lists"): a parcel's
+            // name outlines it on the map (hover, focus; a click keeps it, pressed) and its arrow
+            // opens its own panel. The id clamps to two lines inside the name (parcel-id-text).
             ids.forEach(id => {
+                const item = document.createElement('span');
+                item.className = 'claim-breadcrumb-item';
+                item.dataset.parcelId = String(id);
                 const link = document.createElement('button');
                 link.type = 'button';
-                link.className = 'cb-link claim-breadcrumb-link';
+                link.className = 'btn btn-sm claim-breadcrumb-link';
+                link.setAttribute('aria-pressed', 'false');
                 const readableLabel = global.ProposalDisplayText?.parcelLabel(id);
                 const text = document.createElement('span');
                 text.className = 'parcel-id-text';
@@ -98,12 +103,21 @@
                     ? readableLabel : (api ? api.shortParcelLabel(id) : String(id));
                 link.appendChild(text);
                 link.title = String(id);
-                link.addEventListener('click', (event) => {
-                    event.preventDefault();
-                    event.stopPropagation();
-                    openBaseParcel(id);
+                const open = global.ObjectList.openButton(document, text.textContent, global, {
+                    className: 'btn-sm claim-breadcrumb-open',
+                    onOpen: () => openBaseParcel(id)
                 });
-                wrap.appendChild(link);
+                item.append(link, open);
+                wrap.appendChild(item);
+            });
+            // The parcel's cadastral shape, also once a design consumed it (it is not drawn then).
+            global.ParcelSetProposals.bindOutlines(wrap, {
+                item: '.claim-breadcrumb-item',
+                keyOf: item => item.dataset.parcelId || null,
+                pressed: item => item.querySelector('.claim-breadcrumb-link'),
+                featuresOf: item => [global.CadastralParcelRepository?.get?.(item.dataset.parcelId)
+                    || global.LiveParcelFabric?.get?.(item.dataset.parcelId)].filter(feature => feature?.geometry),
+                win: global
             });
 
             containerEl.insertBefore(wrap, containerEl.firstChild);

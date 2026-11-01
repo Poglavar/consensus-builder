@@ -1,6 +1,6 @@
 // Cover proposal and parcel links that navigate from their semantic detail surfaces.
 import { test, expect } from '../helpers/fixtures';
-import { openCity, openParcel, showProposal, PARCEL_ID, PARCEL_GEOMETRY } from '../helpers/runtime';
+import { openCity, openParcel, showProposal, showProposalTab, PARCEL_ID, PARCEL_GEOMETRY } from '../helpers/runtime';
 import { proposeOverPark } from '../helpers/agreements';
 
 async function addProposal(page: import('@playwright/test').Page, record: Record<string, unknown>): Promise<string> {
@@ -23,6 +23,17 @@ test.describe('Detail navigation controls @features', () => {
     await expect(explorer).toBeVisible();
     const link = explorer.locator(`.activity-entity-link[data-entity-type="design"][data-entity-id="${designCid}"]`);
     await expect(link).toBeVisible({ timeout: 30_000 });
+    // The row is an object-list item: hovering outlines the design, a click keeps it outlined
+    // (pressed) and opens nothing, a second click lets go; only Open design opens it.
+    const row = explorer.locator('#game-log-content .activity-entry')
+      .filter({ has: page.locator(`.activity-entity-link[data-entity-id="${designCid}"]`) });
+    await row.locator('.activity-entry-main').hover();
+    await expect(page.locator('path.proposal-hover-outline').first()).toBeAttached();
+    await row.locator('.activity-entry-main').click();
+    await expect(row).toHaveAttribute('aria-pressed', 'true');
+    await expect(explorer).toBeVisible();
+    await row.locator('.activity-entry-main').click();
+    await expect(row).toHaveAttribute('aria-pressed', 'false');
     await link.click();
     await expect(explorer).toBeHidden();
     const planningInspector = page.locator('#planning-inspector');
@@ -84,6 +95,7 @@ test.describe('Detail navigation controls @features', () => {
     });
 
     await showProposal(page, childId);
+    await showProposalTab(page, 'overview');
     const panel = page.locator('#proposal-details-panel');
     if (await panel.evaluate(element => element.classList.contains('is-minimized'))) {
       await panel.locator('#proposal-details-minimize').click();
@@ -96,6 +108,7 @@ test.describe('Detail navigation controls @features', () => {
     await expect(panel).toContainText('Based-on source destination');
 
     await showProposal(page, childId);
+    await showProposalTab(page, 'overview');
     if (await panel.evaluate(element => element.classList.contains('is-minimized'))) {
       await panel.locator('#proposal-details-minimize').click();
     }

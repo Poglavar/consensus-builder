@@ -80,11 +80,12 @@ function loadPanel({ memory = null, withEditLock = false } = {}) {
         ProposalDesignGoals: require('../../frontend/js/proposals/design-goals.js'),
         DesignSync: { publishedCid: proposal => proposal?.cid || null },
         DesignMemberships: { mountSection: (body, kind, instance, _session, win, options) => {
-            for (const group of model.visibleContextFor(kind, instance, options?.hits || {})) {
+            for (const group of model.contextFor(kind, instance, options?.hits || {})) {
                 body.appendChild(relations.renderGroup(group, doc, win));
             }
         } },
         ClickStackNeighbours: neighbours,
+        _parcelIdLabel: require('../../frontend/js/proposal-parcel-identity.js')._parcelIdLabel,
         ClickStackHits: { hitsAt: vi.fn(latlng => hitsBySpot.get(latlng.lat) || {}), withNeighbours: vi.fn(hits => ({ hits, added: {} })), featuresFor: vi.fn((_kind, item) => item.feature ? [item.feature] : []), buildingLabel: vi.fn(() => 'House') },
         __drillUi: { stackAt: vi.fn(() => [{ kind: 'parcel', id: 'p1', depth: 0 }, { kind: 'proposal', key: 'd1' }]) },
         MapPick: { active: () => false, pick: vi.fn() },
@@ -170,6 +171,16 @@ describe('click stack selected objects and contextual navigation', () => {
         expect(h.parcelPanel.parentNode).toBe(h.section('parcels').querySelector('.click-stack__body'));
     });
 
+    it('names parcels in section headers as people read them, not by runtime id', () => {
+        const h = loadPanel();
+        const cid = 'bafkreibwmhm6gtdpvaac4qtx7hnd7bnqj47d4ewbbw375bhaoof42csddi';
+        h.context.ClickStackHits.hitsAt.mockReturnValue({ formed: [{ id: `3014#design-${cid}-2`, feature: parcelFeature, live: true }],
+            parcels: [{ id: 'HR-335533-521/1', feature: parcelFeature, live: true }] });
+        h.click(SPOT_A);
+        expect(h.section('formed').querySelector('.click-stack__row-detail').textContent).toBe('3014 #2');
+        expect(h.section('parcels').querySelector('.click-stack__row-detail').textContent).toBe('521/1');
+    });
+
     it.each([['built', 'Building'], ['permitted', 'Permitted'], ['formed', 'Formed parcel'], ['parcels', 'Cadastral parcel'], ['designs', 'Design']])('keeps the selected %s header and focus when collapsed', (kind, noun) => {
         const h = loadPanel();
         h.context.ClickStackHits.hitsAt.mockReturnValue({ [kind]: [{ id: 'first', label: 'Long object name', feature: parcelFeature }] });
@@ -210,7 +221,7 @@ describe('click stack selected objects and contextual navigation', () => {
         h.click(SPOT_A);
         expect(h.api.current()).toMatchObject({ expanded: 'designs' });
         // The model still offers them, for the 3D stack, which has no design panel.
-        expect(model.visibleContextFor('designs', hits.designs[0], hits).map(group => group.relation)).toEqual(['designParcels']);
+        expect(model.contextFor('designs', hits.designs[0], hits).map(group => group.relation)).toEqual(['designParcels']);
         expect(h.section('designs').querySelector('.click-stack__body .click-stack__choices')).toBeNull();
         h.api.close();
         // Any other design keeps them in its section.
@@ -235,7 +246,7 @@ describe('click stack selected objects and contextual navigation', () => {
         expect(pending).toHaveLength(1);
         expect(h.api.current()).toMatchObject({ expanded: 'designs', selectedKind: 'designs' });
         const session = {
-            cid: 'cid-d1', proposalId: 'd1', dispose: vi.fn(),
+            cid: 'cid-d1', revision: 'cid-d1', proposalId: 'd1', dispose: vi.fn(),
             instances(kind) { return kind === 'plans'
                 ? [{ id: 'plan-1', label: 'Shared plan', designCids: ['cid-d1'] }, { id: 'plan-2', label: 'Alternative plan', designCids: ['cid-d1'] }]
                 : []; }
@@ -286,7 +297,7 @@ describe('click stack selected objects and contextual navigation', () => {
         })) });
         h.click(SPOT_A);
         h.api.collapse();
-        pending[0].callback({ cid: 'cid-d1', proposalId: 'd1', dispose: vi.fn(), instances: kind => kind === 'plans' ? [{ id: 'late-plan', label: 'Late plan', designCids: ['cid-d1'] }] : [] });
+        pending[0].callback({ cid: 'cid-d1', revision: 'cid-d1', proposalId: 'd1', dispose: vi.fn(), instances: kind => kind === 'plans' ? [{ id: 'late-plan', label: 'Late plan', designCids: ['cid-d1'] }] : [] });
         pending[0].resolve({ dispose: vi.fn() });
         await Promise.resolve();
         expect(h.api.current()).toMatchObject({ expanded: null, selectedKind: 'designs' });
@@ -298,12 +309,12 @@ describe('click stack selected objects and contextual navigation', () => {
         select.dispatchEvent({ type: 'change', target: select });
         expect(pending).toHaveLength(2);
         const sectionsBeforeStale = h.kinds();
-        pending[0].callback({ cid: 'stale-cid', proposalId: 'd1', dispose: vi.fn(), instances: () => [{ id: 'stale-agreement', label: 'Stale' }] });
+        pending[0].callback({ cid: 'stale-cid', revision: 'stale-cid', proposalId: 'd1', dispose: vi.fn(), instances: () => [{ id: 'stale-agreement', label: 'Stale' }] });
         expect(h.kinds()).toEqual(sectionsBeforeStale);
 
         h.api.close();
         expect(h.api.isOpen()).toBe(false);
-        pending[1].callback({ cid: 'closed-cid', proposalId: 'd2', dispose: vi.fn(), instances: () => [{ id: 'closed-agreement', label: 'Closed' }] });
+        pending[1].callback({ cid: 'closed-cid', revision: 'closed-cid', proposalId: 'd2', dispose: vi.fn(), instances: () => [{ id: 'closed-agreement', label: 'Closed' }] });
         expect(h.api.isOpen()).toBe(false);
     });
 
@@ -318,13 +329,13 @@ describe('click stack selected objects and contextual navigation', () => {
         h.click(SPOT_A);
         expect(pending).toHaveLength(1);
         proposal.cid = 'revised';
-        const stale = { cid: 'current', dispose: vi.fn(), instances: () => [{ id: 'stale-plan', label: 'Stale' }] };
+        const stale = { cid: kind === 'private' ? null : 'current', revision: 'current', dispose: vi.fn(), instances: () => [{ id: 'stale-plan', label: 'Stale' }] };
         pending[0].callback(stale);
         pending[0].resolve(stale);
         expect(stale.dispose).toHaveBeenCalled();
         expect(pending).toHaveLength(2);
         expect(h.kinds()).not.toContain('plans');
-        const current = { cid: 'revised', dispose: vi.fn(), instances: kind => kind === 'plans' ? [{ id: 'current-plan', label: 'Current' }] : [] };
+        const current = { cid: kind === 'private' ? null : 'revised', revision: 'revised', dispose: vi.fn(), instances: kind => kind === 'plans' ? [{ id: 'current-plan', label: 'Current' }] : [] };
         pending[1].callback(current);
         expect(h.kinds()).toContain('plans');
     });
@@ -723,7 +734,7 @@ describe('observed building context', () => {
         const buildingHits = { built: [{ id: 'house', feature: parcelFeature }], ...HITS_B };
         h.context.ClickStackHits.hitsAt.mockImplementation(spot => spot === SPOT_A ? designHits : buildingHits);
         h.click(SPOT_A);
-        const session = { cid: 'cid-d1', proposalId: 'd1', dispose: vi.fn(), instances: () => [{ id: 'old-plan', label: 'Old plan' }] };
+        const session = { cid: 'cid-d1', revision: 'cid-d1', proposalId: 'd1', dispose: vi.fn(), instances: () => [{ id: 'old-plan', label: 'Old plan' }] };
         pending[0].callback(session); pending[0].resolve(session); await Promise.resolve();
         expect(h.api.current().sections.some(row => row.kind === 'plans')).toBe(true);
         h.click(SPOT_B);

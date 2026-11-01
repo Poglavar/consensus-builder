@@ -1,6 +1,8 @@
 // A city model file at a public URL (CityJSON or CityGML) as a person's building source: the whole file
 // read once and pinned by the SHA-256 of its bytes, its buildings as footprints with their height and storeys, read by
-// the building editors' rule (city-model-reader.js footprintFeatures). One module for discovery, the
+// the building editors' rule (city-model-reader.js footprintFeatures), and their own surfaces for the 3D
+// view (`lod2`, the reader's mesh record: the view stands each building on the terrain by its lowest
+// point, so the file's height datum does not matter). One module for discovery, the
 // server's reader (custom-source-3d.js) and the browser's adapter worker (browser-building-cells.js).
 // No Node imports. The pin is a hash, not an ETag: a browser reads no ETag the host does not expose.
 // Named Turf functions only: the reader is handed just what it calls, so the worker bundle stays small.
@@ -16,20 +18,27 @@ export const looksLikeCityModelFile = url => /\.(?:json|gml|xml)$/i.test(new URL
 const unreadable = message => upstreamError(message, 422, 'no-available-adapter');
 
 // The text of a city model → its buildings as footprint features ({ id, geometry, properties:
-// { measured_height_m, levels, building } }) and their WGS84 extent; null when the text is no city model.
+// { measured_height_m, levels, building, use?, lod2? } }) and their WGS84 extent; null when the text is
+// no city model. lod2 is { z_min, z_max, faces } in metres.
 export function cityModelFootprints(text, { idPrefix = '' } = {}) {
     const model = CityModelReader.readCityModel(text, { parseGml: parseCityGml });
     if (!model) return null;
     const transform = proj4(model.crs.definition, 'EPSG:4326');
-    const { features } = CityModelReader.footprintFeatures(model, { toLngLat: (x, y) => transform.forward([x, y]), turf: { polygon, union, area } });
+    const toLngLat = (x, y) => transform.forward([x, y]);
+    const { features } = CityModelReader.footprintFeatures(model, { toLngLat, turf: { polygon, union, area } });
+    const surfaces = new Map(model.buildings.filter(building => building.id).map(building => [String(building.id), building]));
     const seen = new Set();
     const buildings = features.map((feature, index) => {
         let id = feature.id || `building-${index}`;
         if (seen.has(id)) id = `${id}-${index}`;
         seen.add(id);
+        const source = feature.id ? surfaces.get(feature.id) : null;
+        const mesh = source ? CityModelReader.buildingRecord(source, toLngLat, { zToMetres: model.crs.zToMetres }) : null;
         return { type: 'Feature', id: idPrefix + id, geometry: feature.geometry, properties: {
             measured_height_m: feature.properties.height > 0 ? feature.properties.height : null,
-            levels: feature.properties.storeys || null, building: null } };
+            levels: feature.properties.storeys || null, building: null,
+            ...(feature.properties.use ? { use: feature.properties.use } : {}),
+            ...(mesh ? { lod2: { z_min: mesh.record.z_min, z_max: mesh.record.z_max, faces: mesh.record.faces } } : {}) } };
     });
     return { format: model.format, features: buildings, bbox: buildings.length ? extentOf({ type: 'FeatureCollection', features: buildings }) : null };
 }

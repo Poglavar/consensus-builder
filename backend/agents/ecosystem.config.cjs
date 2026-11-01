@@ -20,6 +20,9 @@ const botEnv = {
   AGENT_USDC_FUNDING_ENABLED: '1',
   SOLANA_RPC_MAX_ACCOUNTS: apiEnv.SOLANA_RPC_MAX_ACCOUNTS
 };
+// Scheduled jobs run slowly on purpose: one RPC request per second each (solana/rpc.js), never a burst. The lens
+// members are services that answer requests and stay unpaced.
+const jobEnv = { ...botEnv, SOLANA_RPC_MIN_INTERVAL_MS: '1000' };
 const lensEnv = {
   ...botEnv,
   NODE_ENV: 'production',
@@ -53,13 +56,13 @@ function proposerJob(name, persona, cron) {
     kill_timeout: 900000,
     env: {
       NODE_ENV: 'production',
-      ...botEnv,
+      ...jobEnv,
       // A pick takes at most 3 signed actions (create+fund, seed top-up, market), each settled agreement at
       // most 4 (attest, execute or expire, resolve, claim): 3 + 3 × 4.
       AGENT_DAILY_ACTION_CAP: '15',
       AGENT_SETTLE_MAX_PER_RUN: '3',
       AGENT_DAILY_USDC_CAP: '0.35',
-      AGENT_MARKET_SEED_USDC_CAP: '70',
+      AGENT_MARKET_SEED_USDC_CAP: '3.5',
       AGENT_API_BASE: 'https://api.urbangametheory.xyz'
     },
     ...LOGS
@@ -80,7 +83,7 @@ function societyJob(name, persona, cron, caps) {
     kill_timeout: 900000,
     env: {
       NODE_ENV: 'production',
-      ...botEnv,
+      ...jobEnv,
       AGENT_API_BASE: 'https://api.urbangametheory.xyz',
       AGENT_SOCIETY_ACTION_CAP: caps.actions,
       AGENT_SOCIETY_USDC_CAP: caps.usdc
@@ -104,13 +107,13 @@ module.exports = {
     kill_timeout: 900000,
     env: {
       NODE_ENV: 'production',
-      ...botEnv,
+      ...jobEnv,
       // 3 for the day's pick (create+fund, seed top-up, market) + up to 3 settled agreements × 4 (attest,
       // execute or expire, resolve, claim). Market seed has a separate bounded devnet allowance.
       AGENT_DAILY_ACTION_CAP: '15',
       AGENT_SETTLE_MAX_PER_RUN: '3',
       AGENT_DAILY_USDC_CAP: '0.35',
-      AGENT_MARKET_SEED_USDC_CAP: '70',
+      AGENT_MARKET_SEED_USDC_CAP: '3.5',
       // The settlement's decision steps go through the operated lifecycle-01 member (consensus-builder-
       // lifecycle-member): AGENT_LIFECYCLE_LENS_OPERATOR_TOKEN must be in backend/.env on the host, or
       // the live run refuses to start.
@@ -132,7 +135,7 @@ module.exports = {
     kill_timeout: 900000,
     env: {
       NODE_ENV: 'production',
-      ...botEnv,
+      ...jobEnv,
       AGENT_API_BASE: 'https://api.urbangametheory.xyz',
       AGENT_SUPPORT_USDC_CAP: '0.25'
     },
@@ -157,7 +160,7 @@ module.exports = {
     kill_timeout: 900000,
     env: {
       NODE_ENV: 'production',
-      ...botEnv,
+      ...jobEnv,
       AGENT_API_BASE: 'https://api.urbangametheory.xyz',
       // One NO stake (0.01 USDC) plus a possible market creation, after collecting any winnings.
       AGENT_SOCIETY_ACTION_CAP: '3',
@@ -183,7 +186,7 @@ module.exports = {
     kill_timeout: 900000,
     env: {
       NODE_ENV: 'production',
-      ...botEnv,
+      ...jobEnv,
       AGENT_API_BASE: 'https://api.urbangametheory.xyz',
       // One pledge or one revoke per invocation (a pledge is a soft 0.05 USDC commitment), after
       // collecting any winnings.
@@ -214,7 +217,7 @@ module.exports = {
     autorestart: false,
     cron_restart: '*/20 * * * *',
     kill_timeout: 600000,
-    env: { NODE_ENV: 'production' },
+    env: { NODE_ENV: 'production', SOLANA_RPC_MIN_INTERVAL_MS: jobEnv.SOLANA_RPC_MIN_INTERVAL_MS },
     error_file: path.join(BACKEND_ROOT, 'logs', 'tx-sync-error.log'),
     out_file: path.join(BACKEND_ROOT, 'logs', 'tx-sync.log'),
     merge_logs: true,
@@ -236,6 +239,7 @@ module.exports = {
     kill_timeout: 600000,
     env: {
       NODE_ENV: 'production',
+      SOLANA_RPC_MIN_INTERVAL_MS: jobEnv.SOLANA_RPC_MIN_INTERVAL_MS,
       // The run-stats artifact the operations page and the monitor read, written by every applied pass.
       LAND_ORACLE_RUN_STATS: path.join(BACKEND_ROOT, 'logs', 'land-oracle-stats.json')
       // Chain reads use SOLANA_RPC_URL (devnet) and SOLANA_RPC_MAX_ACCOUNTS from backend/.env.
@@ -257,6 +261,7 @@ module.exports = {
     kill_timeout: 900000,
     env: {
       NODE_ENV: 'production',
+      SOLANA_RPC_MIN_INTERVAL_MS: jobEnv.SOLANA_RPC_MIN_INTERVAL_MS,
       SOLANA_KEYPAIR: path.join(SOLANA_CONFIG, 'court-oracle.json'),
       PROSPECTIVE_BETTOR_KEYPAIR: path.join(SOLANA_CONFIG, 'ugt-persona-01.json'),
       PROSPECTIVE_MARKET_STATE: path.join(SOLANA_CONFIG, 'ugt-prospective-court-v2.json'),

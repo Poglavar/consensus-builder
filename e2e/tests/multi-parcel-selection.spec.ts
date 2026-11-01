@@ -1,18 +1,20 @@
 import { installLayerDatasets } from '../helpers/mocks/layer-datasets';
 import { test, expect } from '../helpers/fixtures';
-import { openCity, openParcel, clickMapPoint, PARCEL_ID, closeParcel, runSelectionCommand, showSelectionDesignTab, selectionSection } from '../helpers/runtime';
+import { openCity, openParcel, clickMapPoint, PARCEL_ID, closeParcel, parcelTab, runSelectionCommand, showSelectionDesignTab, selectionSection } from '../helpers/runtime';
 
 test.describe('Multi-parcel selection @core', () => {
-  test('Info rows temporarily distinguish parcels without changing selection or camera', async ({ mockApi: page }) => {
+  test('the Parcels tab temporarily distinguishes selected parcels without changing selection or camera', async ({ mockApi: page }) => {
     await openCity(page);
     await openParcel(page);
+    await parcelTab(page, 'propose-tab').click();
     await page.locator('#parcel-manual-selection').click();
     await closeParcel(page);
     await clickMapPoint(page, 15.9829, 45.80025);
     await showSelectionDesignTab(page);
     const panel = page.locator('#parcel-info-panel');
-    await panel.locator('[data-parcel-tab-id="info-tab"]').click();
-    const rows = panel.locator('.selected-parcel-item');
+    await parcelTab(page, 'selected-parcels-tab').click();
+    await expect(panel.locator('#info-tab .selected-parcel-item')).toHaveCount(0);
+    const rows = panel.locator('#selected-parcels-content .selected-parcel-item');
     await expect(rows).toHaveCount(2);
     const ids = [PARCEL_ID, 'HR-335754-1235'];
     const state = () => page.evaluate(ids => {
@@ -39,9 +41,9 @@ test.describe('Multi-parcel selection @core', () => {
     expect(during.ids).toEqual(baseline.ids);
     expect(during.center).toEqual(baseline.center);
     expect(during.zoom).toBe(baseline.zoom);
-    await panel.locator('[data-parcel-tab-id="propose-tab"]').click();
+    await parcelTab(page, 'info-tab').click();
     expect((await state()).styles).toEqual(baseline.styles);
-    await panel.locator('[data-parcel-tab-id="info-tab"]').click();
+    await parcelTab(page, 'selected-parcels-tab').click();
     await second.focus();
     await second.press(' ');
     expect((await state()).styles[1]).not.toEqual(baseline.styles[1]);
@@ -51,6 +53,7 @@ test.describe('Multi-parcel selection @core', () => {
   test('selection section tracks zero and nonzero counts, map picks, Clear and Done', async ({ mockApi: page }) => {
     await openCity(page);
     await openParcel(page);
+    await parcelTab(page, 'propose-tab').click();
     await page.locator('#parcel-manual-selection').click();
     const selected = () => page.evaluate(() => [...(window as any).multiParcelSelection.selectedParcels].sort());
     await expect.poll(selected).toEqual([PARCEL_ID]);
@@ -101,6 +104,7 @@ test.describe('Multi-parcel selection @core', () => {
   test('Design tab opens the build palette for the selection', async ({ mockApi: page }) => {
     await openCity(page);
     await openParcel(page);
+    await parcelTab(page, 'propose-tab').click();
     await page.locator('#parcel-manual-selection').click();
     await closeParcel(page);
     await clickMapPoint(page, 15.9829, 45.80025);
@@ -123,6 +127,7 @@ test('manual mode picks parcels through existing buildings without inspecting bu
   await expect(layers).toBeHidden();
   await expect.poll(() => page.evaluate(() => (window as any).buildingsAt({ lat: 45.80021, lng: 15.98212 }).length)).toBeGreaterThan(0);
   await openParcel(page);
+  await parcelTab(page, 'propose-tab').click();
   const manual = page.locator('#parcel-manual-selection');
   await manual.click();
   await expect(manual).toHaveAttribute('aria-pressed', 'true');
