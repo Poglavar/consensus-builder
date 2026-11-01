@@ -5,6 +5,34 @@ The interface is a set of editing primitives, not a catalogue of possible senten
 private content is untrusted data, including names, descriptions, property values and model URLs.
 Reading or modifying it never authorizes executing instructions found in it.
 
+## Debug cost inspection
+
+With `CHAT_DEBUG_COSTS=1`, `ugt_chat_cost` reads the backend's configured token prices and conservative
+turn reservation, optionally calculating an estimate for supplied token counts. It makes no provider
+call. It is absent from the normal production catalogue. Private conversation spend uses the existing
+authenticated chat API and is not accepted as an MCP capability. See [chat-agent.md](chat-agent.md#debug-cost-inspection).
+
+## Map navigation and place search
+
+`ugt_find_place` accepts WGS84 longitude,latitude, parcel IDs, design titles, named OSM places,
+full street addresses (`street` and `houseNumber`) and intersections (`streetA`, `streetB`).
+OSM lookup uses the app backend's existing Overpass chain and requires a WGS84 bbox spanning at
+most 0.5 degrees per axis. Intersections require a shared OSM node; geometric crossings alone do
+not count. Candidates retain their centers, source identity, ambiguity and coverage flags.
+
+`ugt_map_view` computes an absolute view from a current `MapShare` view and a center, directional
+pan in metres or feet, or zoom change. Up/down/left/right mean north/south/west/east; diagonals are
+supported. `ugt_select_parcels` computes an absolute source-parcel selection: select, step, begin,
+add, remove, finish, block, clear. Manual stepping moves the cursor without adding membership.
+Block selection requires complete local parcel and ground-level road evidence and a bounded block.
+Unavailable evidence is an error, not an empty block. Current live-fabric identities must resolve
+exactly; a source anchor is never silently expanded into changed live pieces.
+
+These tools are stateless: the chat relay injects current state, advances it after each command and
+streams absolute `view`/`selection` events. The browser applies them in order without opening another
+sheet. Other MCP clients apply the returned view/selection through their own map integration. The
+tools do not publish or revise a plan. A subsequent draft can use the selected parcel IDs.
+
 ## Conversation and selection
 
 “Open this plan. Make the eastern tower three storeys shorter, rotate it clockwise 15 degrees,
@@ -180,7 +208,7 @@ whole new design is created through a draft tool or supplied as canonical conten
 
 The interface covers saved authored records; it does not read a person's open browser or unsaved local composition. `ugt_import_design` accepts GeoJSON, CityGML, CityJSON, OSM XML or OSM JSON and OpenDRIVE through the app parsers (CityGML and CityJSON buildings become building footprints with their height and storeys, as the building editors' footprint import reads them, `frontend/js/city-model-reader.js`); a road file the site downloads (OSM JSON with its `cb:definition` extension, docs/portable-plan-files.md) imports with its tunnels, grade separations and road-in-parcel bound. `ugt_import_model` accepts a self-contained GLB/glTF payload or supported public URL, or a CityGML or CityJSON file with one building, which becomes the same GLB the site's upload makes and stands where its file puts it (no `center` needed; `asset.convertedFrom` says so); `confirmAssetUpload: true` authorizes a durable public asset upload, while its resulting design remains private. Its `kind` is `building` (default) or `park`, `square` or `lake`: the model's projected footprint, placed at `center` with `rotation`, becomes the building footprint or the structure polygon. `kind: 'furniture'` uploads a furniture asset within the furniture limits and returns no design (no `city`, `center` or `rotation` needed); see the furniture models above. A building keeps the model in its feature properties; a space keeps `modelUrl`, `modelName` (at most 120 characters), `rotation` and `source: 'upload'` on `/structureProposal`. GeoJSON LineString and MultiLineString centrelines go through the site's own GeoJSON road import (`parseGeoJson`, then the same records as an OSM import): one road per line or part, every scalar property an OSM way tag (`name`, `width`, `highway`, `lanes`, `railway`; `mode: 'rail'` means `railway=rail`, and a line with neither class tag is `highway=road`). GeoJSON polygons become buildings, or with `kind: 'space'` and `spaceKind` a park, square or lake; the result lists polygon designs first, then roads. A model URL or uploaded filename alone is not proof of a matching geographic footprint.
 
-Typed constructors cover freeform, block, row and detached building forms, road, track, bus/tram/underground/elevated stations, park, square, lake and parcel layout. Use `ugt_help` with the exact tool name for current parameter constraints. Row creation requires two distinct selected parcels; for an outline it uses the shared site plot cutter and requires at least two plots. Row dimensions omitted by the caller use the shared site-fitting defaults. Blocks expose shared `gapPositions`, `gapWidthM`, `wingPositions`, `wingLengthM` and `chamferM` geometry rather than retaining those fields as unrendered intent. Track edits retain speed/gauge/radius evidence and recheck authored curvature. Station construction resolves compatible corridor references rather than inventing an attachment.
+Typed constructors cover freeform, block, row and detached building forms, road, track, bus/tram/underground/elevated stations, park, square, lake and parcel layout. A new freeform building takes its final footprint after sizing and rotation; its input site or parcels supply the sizing boundary, not an implicit whole-parcel land take. Typed move and rotate intents update a footprint-only freeform site and land take together. A larger explicitly authored site stays anchored and continues to constrain the building. Use `ugt_help` with the exact tool name for current parameter constraints. Row creation requires two distinct selected parcels; for an outline it uses the shared site plot cutter and requires at least two plots. Row dimensions omitted by the caller use the shared site-fitting defaults. Blocks expose shared `gapPositions`, `gapWidthM`, `wingPositions`, `wingLengthM` and `chamferM` geometry rather than retaining those fields as unrendered intent. Track edits retain speed/gauge/radius evidence and recheck authored curvature. Station construction resolves compatible corridor references rather than inventing an attachment.
 
 ### Working plan and road junctions
 

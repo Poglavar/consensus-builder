@@ -9124,6 +9124,10 @@
     "send": "Enviar",
     "undo": "Deshacer el último cambio",
     "newConversation": "Nueva conversación",
+    "copyReply": "Copiar respuesta",
+    "copyConversation": "Copiar conversación",
+    "copyFailed": "No se pudo copiar el texto.",
+    "optionsLabel": "Opciones",
     "working": "Trabajando…",
     "steps": {
       "one": "{{count}} paso",

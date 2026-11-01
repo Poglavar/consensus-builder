@@ -3,15 +3,15 @@
 import { readFileSync, writeFileSync, renameSync, existsSync } from 'node:fs';
 import { createHash } from 'node:crypto';
 import { pathToFileURL } from 'node:url';
-import Anthropic from '@anthropic-ai/sdk';
 import { createMcpToolCaller } from '../chat/mcp-client.js';
 import { runTurn } from '../chat/turn-runner.js';
 import { scoreTurn } from '../chat/eval-score.js';
 import { costUsd } from '../chat/cost.js';
-import { MAX_CHAT_INPUT_TOKENS } from '../chat/model.js';
+import { createChatModelCaller, MAX_CHAT_INPUT_TOKENS } from '../chat/model.js';
+import { isSupportedChatModel } from '../chat/openai-config.js';
 import { cidOfObject } from '../cid.js';
 
-export const USAGE = 'Usage: node scripts/chat-eval.mjs --run --cases <json> --mcp <url> --model <id> --budget-usd <amount> --input-price <usd/MTok> --output-price <usd/MTok> --cache-read-price <usd/MTok> --cache-write-price <usd/MTok> --output <checkpoint.json> [--limit N] [--case id] [--retry-failed]';
+export const USAGE = 'Usage: node scripts/chat-eval.mjs --run --cases <json> --mcp <url> --model <id> --budget-usd <amount> --input-price <usd/MTok> --output-price <usd/MTok> --cache-read-price <usd/MTok> --cache-write-price <usd/MTok> --output <checkpoint.json> [--provider anthropic|openai] [--limit N] [--case id] [--retry-failed]';
 /**
  * Case contract: {id,language,context,turns:[{text,expect}]}. `context.planSeed` is a list of
  * free MCP setup calls: {tool,args,asPlan?,useWorkingPlan?}. `context.selection.memberIndex` is
@@ -21,7 +21,7 @@ export const USAGE = 'Usage: node scripts/chat-eval.mjs --run --cases <json> --m
  * parcelIds must be observed source IDs. Turn expectations use scoreTurn's tools, forbidTools,
  * outcome, planChanged, and dotted args assertions.
  */
-const flags = new Set(['--run', '--cases', '--mcp', '--model', '--budget-usd', '--input-price', '--output-price', '--cache-read-price', '--cache-write-price', '--output', '--limit', '--case', '--retry-failed']);
+const flags = new Set(['--run', '--cases', '--mcp', '--model', '--budget-usd', '--input-price', '--output-price', '--cache-read-price', '--cache-write-price', '--output', '--provider', '--limit', '--case', '--retry-failed']);
 export function parseArgs(argv) {
     const out = { run: false, retryFailed: false }, seen = new Set();
     for (let i = 0; i < argv.length; i++) {
@@ -44,8 +44,8 @@ export function callEstimateUsd(prices, { messages = [], tools = [], system = ''
     const inputTokens = MAX_CHAT_INPUT_TOKENS;
     return costUsd({ input_tokens: inputTokens, cache_creation_input_tokens: inputTokens, output_tokens: 2048 }, prices);
 }
-export function checkpointFingerprint(cases, { model, mcp, prices }) {
-    return createHash('sha256').update(JSON.stringify({ cases, model, mcp: new URL(mcp).href, prices })).digest('hex');
+export function checkpointFingerprint(cases, { provider = 'anthropic', model, mcp, prices }) {
+    return createHash('sha256').update(JSON.stringify({ cases, provider, model, mcp: new URL(mcp).href, prices })).digest('hex');
 }
 export function writeCheckpoint(path, checkpoint) {
     const tmp = `${path}.tmp`;
@@ -100,12 +100,16 @@ async function main(argv) {
     let args;
     try { args = parseArgs(argv); } catch (error) { console.error(`${error.message}\n${USAGE}`); process.exitCode = 2; return; }
     if (!args.run) { console.log(USAGE); return; }
-    if (!process.env.ANTHROPIC_API_KEY) { console.error('ANTHROPIC_API_KEY is required to run a paid evaluation.'); process.exitCode = 2; return; }
+    const provider = args.provider || process.env.CHAT_PROVIDER || 'anthropic';
+    if (!['anthropic', 'openai'].includes(provider)) { console.error('--provider must be anthropic or openai.'); process.exitCode = 2; return; }
+    if (!isSupportedChatModel(provider, args.model)) { console.error(`Model ${args.model} is not configured for ${provider}.`); process.exitCode = 2; return; }
+    const apiKey = provider === 'openai' ? process.env.OPENAI_API_KEY : process.env.ANTHROPIC_API_KEY;
+    if (!apiKey) { console.error(`${provider === 'openai' ? 'OPENAI_API_KEY' : 'ANTHROPIC_API_KEY'} is required to run a paid evaluation.`); process.exitCode = 2; return; }
     const allCases = JSON.parse(readFileSync(args.cases, 'utf8'));
     const selected = allCases.filter(c => !args.case || c.id === args.case).slice(0, args.limit ? Number(args.limit) : undefined);
     if (!selected.length) throw new Error('No evaluation cases selected.');
-    const prices = pricesOf(args), budgetUsd = Number(args.budgetusd), fingerprint = checkpointFingerprint(selected, { model: args.model, mcp: args.mcp, prices });
-    let checkpoint = { fingerprint, model: args.model, mcp: new URL(args.mcp).href, prices, budgetUsd, spentUsd: 0, cases: {}, inflight: null };
+    const prices = pricesOf(args), budgetUsd = Number(args.budgetusd), fingerprint = checkpointFingerprint(selected, { provider, model: args.model, mcp: args.mcp, prices });
+    let checkpoint = { fingerprint, provider, model: args.model, mcp: new URL(args.mcp).href, prices, budgetUsd, spentUsd: 0, cases: {}, inflight: null };
     if (existsSync(args.output)) {
         checkpoint = JSON.parse(readFileSync(args.output, 'utf8'));
         if (checkpoint.fingerprint !== fingerprint) throw new Error('Checkpoint fingerprint differs from the selected cases or run configuration.');
@@ -113,7 +117,7 @@ async function main(argv) {
         if (checkpoint.inflight) throw new Error(`Checkpoint records an uncertain paid call for ${checkpoint.inflight.case}; refusing to spend again blindly.`);
         if (Object.values(checkpoint.cases || {}).some(row => row.status === 'running') && !args.retryFailed) throw new Error('Checkpoint has an incomplete case; pass --retry-failed to restart incomplete cases within the remaining budget.');
     }
-    const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY, maxRetries: 0 });
+    const modelCaller = createChatModelCaller({ provider, apiKey, model: args.model });
     const mcp = createMcpToolCaller({ url: args.mcp });
     try {
         const mcpTools = (await mcp.listTools()).tools;
@@ -140,26 +144,22 @@ async function main(argv) {
                 if (memberSelector) runContext.selection = await refreshSelectionFromPlan(mcp, memberSelector, conversation.plan);
                 const turnCalls = [];
                 const callModel = async (request, { signal } = {}) => {
-                    const tokenParams = { model: args.model, system: [{ type: 'text', text: request.system, cache_control: { type: 'ephemeral' } }], tools: request.tools, messages: request.messages };
-                    let counted;
-                    try { counted = await client.messages.countTokens(tokenParams, { signal, timeout: 60_000, maxRetries: 0 }); }
-                    catch (cause) { throw Object.assign(new Error('Could not verify the prompt size; no model request was sent.'), { code: 'token-count-failed', noModelCall: true, cause }); }
-                    if (!Number.isSafeInteger(counted?.input_tokens) || counted.input_tokens < 0) throw Object.assign(new Error('The prompt size could not be verified.'), { code: 'token-count-failed', noModelCall: true });
-                    if (counted.input_tokens > MAX_CHAT_INPUT_TOKENS) throw Object.assign(new Error(`Prompt is over the ${MAX_CHAT_INPUT_TOKENS} token evaluation limit; no model call was sent.`), { code: 'context-limit', noModelCall: true, inputTokens: counted.input_tokens });
                     const estimate = callEstimateUsd(prices, request);
                     assertBudget({ spentUsd: checkpoint.spentUsd, budgetUsd, nextEstimateUsd: estimate });
                     checkpoint.inflight = { case: item.id, turn: turnIndex, estimateUsd: estimate, startedAt: new Date().toISOString() };
                     writeCheckpoint(args.output, checkpoint);
-                    const response = await client.messages.create({ model: args.model, max_tokens: 2048,
-                        system: tokenParams.system, tools: request.tools,
-                        tool_choice: request.toolChoice || { type: 'auto', disable_parallel_tool_use: true }, output_config: { effort: 'low' }, messages: request.messages
-                    }, { signal, timeout: 60_000, maxRetries: 0 });
+                    let response;
+                    try { response = await modelCaller(request, { signal }); }
+                    catch (error) {
+                        if (error.noModelCall) { checkpoint.inflight = null; writeCheckpoint(args.output, checkpoint); }
+                        throw error;
+                    }
                     const usd = costUsd(response.usage, prices);
                     checkpoint.spentUsd = Math.round((checkpoint.spentUsd + usd) * 1e6) / 1e6;
                     checkpoint.inflight = null;
                     checkpoint.cases[item.id] = { status: 'running', calls: [...calls], turnScores: [...turnScores], usage: response.usage, lastCallUsd: usd };
                     writeCheckpoint(args.output, checkpoint);
-                    return { content: response.content, stop_reason: response.stop_reason, usage: response.usage, model: response.model };
+                    return response;
                 };
                 const callTool = async (name, toolArgs, options) => {
                     const result = await mcp.callTool(name, toolArgs, options);

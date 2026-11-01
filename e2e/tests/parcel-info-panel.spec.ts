@@ -78,14 +78,17 @@ test.describe('Parcel inspector @core', () => {
     await expect(page.locator('#info-content')).toContainText('REPUBLIKA HRVATSKA');
     await expect(page.locator('#parcel-info-title')).toContainText('1235');
   });
-  test('Actions opens the palette and Parcel Builder; close dismisses the inspector', async ({ mockApi: page }) => {
+  test('Actions opens the palette and Parcel Builder is in Tools; close dismisses the inspector', async ({ mockApi: page }) => {
     await openCity(page);
     await openParcel(page);
     await parcelTab(page, 'propose-tab').click();
     await expect(page.locator('#propose-content .parcel-build-palette')).toBeVisible();
     // 13 tools: 8 design tiles; transport Road, Road in parcel, Track, Road station, Track station.
     await expect(page.locator('.parcel-build-btn')).toHaveCount(13);
-    await expect(page.locator('#parcelBuilderButton')).toBeVisible();
+    await expect(page.locator('#propose-tab #parcelBuilderButton')).toHaveCount(0);
+    await parcelTab(page, 'tools-tab').click();
+    await expect(page.locator('#tools-tab #parcelBuilderButton')).toBeVisible();
+    await expect(page.locator('#tools-tab #parcelBuilderButton')).toBeEnabled();
     await closeParcel(page);
     await expect(page.locator('#parcel-info-panel')).toBeHidden();
   });

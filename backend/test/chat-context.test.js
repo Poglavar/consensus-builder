@@ -4,6 +4,7 @@ import { createRequire } from 'node:module';
 import { canonicalArtifact } from '../agents/shared-plan-artifact.js';
 const require = createRequire(import.meta.url);
 const context = require('../../frontend/js/chat/chat-context.js');
+const motion = require('../../frontend/js/shared-plan-motion.js');
 const Composition = require('../../frontend/js/plan-composition.js');
 const DesignRecord = require('../../frontend/js/design-record.js');
 const Session = require('../../frontend/js/shared-plan-session.js');
@@ -34,14 +35,25 @@ describe('chat plan context', () => {
             parcelSourceId: 'default-source', designSources: { 'member-cid': 'member-source' } };
         expect(context.artifactFromDraft(loaded, { cidOf: () => 'member-cid', cid: 'plan-cid' }).designs[0].parcelSourceId).toBe('member-source');
     });
-    it('carries plan member identities by CID and computes the change from relayed CIDs', () => {
+    it('carries plan member identities by CID and rejects receipts absent from the plan revisions', () => {
         const first = Composition.create('Working', [record('a')], view);
         const loaded = Session.artifactOf(first);
         const artifact = context.artifactFromDraft(loaded, { cidOf: DesignRecord.cidOf, cid: first.cid });
         const next = context.nextRowFromDraft(artifact, first, { rowOf: Session.rowOf });
         expect(next.memberIds).toEqual(first.memberIds);
         expect(() => context.nextRowFromDraft({ ...artifact, cid: 'wrong-cid' }, first, { rowOf: Session.rowOf })).toThrow(/does not match/);
-        expect(context.lastChangeOf(first, next, [{ beforeCid: first.designs[0].cid, afterCid: 'bafybeigdyrzt5sfp7udm7hu76uh7y26nf3rj6g5z4q3f7zq4xw2gq2l5ty' }])).toMatchObject({ fromCid: first.cid, toCid: next.cid, members: [{ beforeCid: first.designs[0].cid }] });
+        expect(context.lastChangeOf(first, next, [{ beforeCid: first.designs[0].cid, afterCid: 'bafybeigdyrzt5sfp7udm7hu76uh7y26nf3rj6g5z4q3f7zq4xw2gq2l5ty' }])).toMatchObject({ fromCid: first.cid, toCid: next.cid, members: [] });
+    });
+    it('maps an MCP move receipt only to members in both plan revisions', () => {
+        const ring = [[15,45],[15.0001,45],[15.0001,45.0001],[15,45.0001],[15,45]];
+        const moved = ring.map(([x, y]) => [x + 0.00001, y + 0.00002]);
+        const building = coordinates => ({ type: 'Feature', properties: { type: 'proposedBuildingSingle', floors: 4, height: 12, use: 'residential' }, geometry: { type: 'Polygon', coordinates: [coordinates] } });
+        const previous = { cid: 'old-plan', content: { designCids: ['old-design'] }, designs: [{ cid: 'old-design', content: { title: 'Tower', geometry: { buildings: [building(ring)] } } }] };
+        const next = { cid: 'new-plan', content: { designCids: ['new-design'] }, designs: [{ cid: 'new-design', content: { title: 'Tower', geometry: { buildings: [building(moved)] } } }] };
+        const receipt = context.lastChangeOf(previous, next, [{ type: 'modify', ref: 'design:old-design', beforeCid: 'old-design', afterCid: 'new-design' }]);
+        expect(receipt.members).toEqual([{ beforeCid: 'old-design', afterCid: 'new-design' }]);
+        expect(motion.describe({ previous, next, change: receipt }).map(item => item.kind)).toEqual(['move']);
+        expect(context.lastChangeOf(previous, next, [{ type: 'modify', beforeCid: 'stale-design', afterCid: 'stale-revision' }]).members).toEqual(receipt.members);
     });
     it('keeps canonical private draft CIDs without reserializing them as local records', () => {
         const first = Composition.create('Working', [record('a')], view);

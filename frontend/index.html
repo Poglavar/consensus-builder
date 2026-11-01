@@ -1554,10 +1554,6 @@
                                     onclick="(window.animateFloodfillFromSelected || function(){})();">Detect block</button>
                             </div>
                         </div>
-                        <button id="parcelBuilderButton" class="btn btn-sm" type="button"
-                            onclick="(window.Parcels?.uiClaim?.openParcelBuilder || window.openParcelBuilder || function(){})()"
-                            title="Open Parcel Builder"><i class="fas fa-trowel-bricks" aria-hidden="true"></i><span
-                                data-i18n-key="panel.parcel.builderLabel">Parcel builder</span></button>
                     </div>
                     <div id="propose-content"></div>
                 </div>
@@ -1599,6 +1595,12 @@
                             <button id="visualizeButton" class="btn" type="button"
                                 onclick="showAnimationModalForCurrentParcel()"><i class="fas fa-film" aria-hidden="true"></i><span
                                     data-i18n-key="panel.parcel.visualizeButton">Visualize</span></button>
+                        </div>
+                        <div class="button-row button-row-1 cb-actions">
+                            <button id="parcelBuilderButton" class="btn" type="button" disabled
+                                onclick="(window.Parcels?.uiClaim?.openParcelBuilder || window.openParcelBuilder || function(){})()"
+                                title="Not available in this city"><i class="fas fa-trowel-bricks" aria-hidden="true"></i><span
+                                    data-i18n-key="panel.parcel.builderLabel">Parcel builder</span></button>
                         </div>
                         <div class="button-row button-row-2 cb-actions">
                             <button id="neighboursButton" class="btn" type="button" aria-pressed="false"

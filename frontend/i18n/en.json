@@ -9096,6 +9096,10 @@
     "send": "Send",
     "undo": "Undo last change",
     "newConversation": "New conversation",
+    "copyReply": "Copy reply",
+    "copyConversation": "Copy conversation",
+    "copyFailed": "Could not copy the text.",
+    "optionsLabel": "Options",
     "working": "Working…",
     "steps": {
       "one": "{{count}} steps",

@@ -9378,6 +9378,10 @@
     "send": "إرسال",
     "undo": "التراجع عن آخر تغيير",
     "newConversation": "محادثة جديدة",
+    "copyReply": "نسخ الرد",
+    "copyConversation": "نسخ المحادثة",
+    "copyFailed": "تعذر نسخ النص.",
+    "optionsLabel": "الخيارات",
     "working": "جارٍ العمل…",
     "steps": {
       "one": "{{count}} خطوة",

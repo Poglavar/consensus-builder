@@ -63,18 +63,51 @@ const auth = req => req.set('Authorization', `Bearer ${token}`);
 const turn = (app, id = 'conv-1', data = body()) => auth(request(app).post(`/chat/conversations/${id}/turns`)).send(data);
 
 describe('chat conversation routes', () => {
+    it('reports configured prices and server-computed estimates without provider calls', async () => {
+        const { app, callModel } = makeHarness({ env: { CHAT_DEBUG_COSTS: 'true', CHAT_PROVIDER: 'openai', CHAT_MODEL: 'gpt-6-luna' } });
+        const configured = await request(app).get('/chat/cost');
+        expect(configured.status).toBe(200);
+        expect(configured.headers['cache-control']).toBe('no-store');
+        expect(configured.body).toMatchObject({ provider: 'openai', model: 'gpt-6-luna', currency: 'USD',
+            pricesPerMillionTokens: { input: 0.1, output: 0.5, cacheRead: 0.01, cacheWrite: 0.125 },
+            maximumTurnReservationUsd: 0.130716 });
+        expect(configured.body).not.toHaveProperty('estimate');
+        const estimate = await request(app).get('/chat/cost?inputTokens=100&outputTokens=50&cachedInputTokens=20&cacheWriteTokens=10');
+        expect(estimate.status).toBe(200);
+        expect(estimate.body.estimate).toEqual({ costUsd: 0.000036, basis: 'configured-token-prices', actual: false,
+            tokenCounts: { inputTokens: 100, outputTokens: 50, cachedInputTokens: 20, cacheWriteTokens: 10 } });
+        const current = await auth(request(app).get('/chat/conversations/conv-1'));
+        expect(current.body.debugCosts).toBe(true);
+        expect(callModel).not.toHaveBeenCalled();
+    });
+
+    it('bounds cost query token counts and fails closed when prices are not configured', async () => {
+        const { app } = makeHarness({ env: { CHAT_DEBUG_COSTS: '1' } });
+        expect((await request(app).get('/chat/cost?inputTokens=-1')).status).toBe(400);
+        expect((await request(app).get('/chat/cost?inputTokens=1000001')).status).toBe(400);
+        expect((await request(app).get('/chat/cost?inputTokens=700000&outputTokens=300001')).status).toBe(400);
+        const missing = makeHarness({ env: { CHAT_DEBUG_COSTS: 'true', CHAT_PRICE_USD_PER_MTOK_CACHE_READ: undefined } });
+        expect((await request(missing.app).get('/chat/cost')).status).toBe(503);
+        const unsupported = makeHarness({ env: { CHAT_DEBUG_COSTS: 'true', CHAT_PROVIDER: 'unknown', CHAT_MODEL: 'unknown' } });
+        expect((await request(unsupported.app).get('/chat/cost')).status).toBe(503);
+        const disabled = makeHarness();
+        expect((await request(disabled.app).get('/chat/cost')).status).toBe(404);
+    });
+
     it('enforces the bearer token shape and creates private conversations without returning capabilities', async () => {
         const { app } = makeHarness();
         const bad = await request(app).get('/chat/conversations/conv-1').set('Authorization', 'Bearer short');
         expect(bad.status).toBe(401); expect(JSON.stringify(bad.body)).not.toContain(token);
         const created = await auth(request(app).post('/chat/conversations')).send({ city: 'london', language: 'hr' });
-        expect(created.status).toBe(201); expect(created.body).toMatchObject({ id: 'conv-1', expiresAt: expect.any(Number) });
+        expect(created.status).toBe(201); expect(created.body).toMatchObject({ id: 'conv-1', expiresAt: expect.any(Number), debugCosts: false });
+        const current = await auth(request(app).get('/chat/conversations/conv-1'));
+        expect(current.body.debugCosts).toBe(false);
         expect(JSON.stringify(created.body)).not.toContain(token);
     });
 
     it('streams step, plan, reply and done in order, then replays the stored result without another model call', async () => {
         let cooldownCalls = 0;
-        const { app, callModel, budget } = makeHarness({ limiters: { cooldown: (_req, res, next) => {
+        const { app, callModel, budget } = makeHarness({ env: { CHAT_DEBUG_COSTS: 'true' }, limiters: { cooldown: (_req, res, next) => {
             cooldownCalls++;
             if (cooldownCalls > 1) return res.status(429).json({ code: 'rate_limited_cooldown' });
             next();
@@ -84,6 +117,7 @@ describe('chat conversation routes', () => {
         expect(first.headers['cache-control']).toBe('no-store');
         const events = parseSse(first.text);
         expect(events.map(event => event.name)).toEqual(['step', 'plan', 'reply', 'done']);
+        expect(events.at(-1).data.debugCosts).toBe(true);
         expect(events[2].data).toEqual({ text: 'The park is ready.' });
         const calls = callModel.mock.calls.length;
         const replay = await turn(app);
@@ -91,6 +125,24 @@ describe('chat conversation routes', () => {
         expect(callModel).toHaveBeenCalledTimes(calls);
         expect(cooldownCalls).toBe(1);
         expect([...budget.rows.values()][0].result.events).toHaveLength(4);
+    });
+
+    it('accepts current locale and cursor and replays absolute navigation without another runner call', async () => {
+        const runTurn = vi.fn(async ({ context: received, emit }) => {
+            expect(received.language).toBe('fr');
+            expect(received.selection).toMatchObject({ focusParcelId: 'p2', parcelIds: ['p1'], active: true });
+            emit('view', { view: { at: '51.5,-0.1,18' } });
+            emit('selection', { selection: { parcelSourceId: 'source', focusParcelId: 'p2', parcelIds: ['p1', 'p2'], active: false } });
+            return { plan: null, planHistory: [], messages: [], planChanged: false, steps: [], usage: {}, costUsd: 0,
+                modelCalls: 0, usageUncertain: false, outcome: { type: 'reply', text: 'Terminé.' } };
+        });
+        const { app } = makeHarness({ runTurn });
+        const data = body({ language: 'fr', context: { ...context, selection: { focusParcelId: 'p2', parcelIds: ['p1'], active: true } } });
+        const first = await turn(app, 'conv-1', data), replay = await turn(app, 'conv-1', data);
+        expect(first.status).toBe(200);
+        expect(parseSse(first.text).map(event => event.name)).toEqual(['view', 'selection', 'reply', 'done']);
+        expect(parseSse(replay.text)).toEqual(parseSse(first.text));
+        expect(runTurn).toHaveBeenCalledTimes(1);
     });
 
     it('returns 402 on an exhausted budget and 409 when a changed plan lacks its artifact', async () => {

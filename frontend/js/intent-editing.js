@@ -10,6 +10,24 @@
     const fail = (code, message) => { throw Object.assign(new Error(message), { code }); };
     const feature = geometry => ({ type: 'Feature', properties: {}, geometry });
 
+    function footprintOnlySingle(record, turf) {
+        if (record.goal !== 'single' || !record.geometry?.landTake || record.geometry?.ruleMassing
+            || record.geometry?.buildings?.some(building => building.properties?.urbanRule)) return false;
+        const landTake = load('FreeformLandTake', './freeform-land-take.js');
+        if (!landTake?.union || !landTake?.contains) return false;
+        const buildings = record.geometry.buildings || [];
+        if (!buildings.length) return false;
+        const footprint = landTake.union(buildings, turf);
+        return !!footprint && landTake.contains(record.geometry.landTake, buildings, turf)
+            && landTake.contains(footprint, [record.geometry.landTake], turf);
+    }
+    function updateFootprintOnlySite(record, turf) {
+        const landTake = load('FreeformLandTake', './freeform-land-take.js');
+        const plan = landTake.plan({ buildings: record.geometry.buildings, parcels: [], whole: new Set(), turf });
+        record.site = structuredClone(plan.footprint.geometry);
+        record.geometry.landTake = structuredClone(plan.take.geometry);
+    }
+
     function buildings(record, change, turf) {
         const items = record.geometry?.buildings;
         if (!items?.length) fail('building-required', 'This design has no authored buildings to edit.');
@@ -81,6 +99,7 @@
         } else if (change.type === 'rotate' || change.type === 'move') {
             if (change.type === 'rotate' && (!finite(change.degrees) || Math.abs(change.degrees) > 360)) fail('invalid-intent', 'Rotation must be between -360 and 360 degrees, positive counterclockwise.');
             if (change.type === 'move' && (![change.eastM, change.northM].every(finite) || Math.hypot(change.eastM, change.northM) > 100)) fail('invalid-intent', 'Move at most 100 metres using eastM and northM.');
+            const footprintOnly = footprintOnlySingle(record, turf);
             for (const building of selected) {
                 if (change.type === 'rotate') building.geometry = shape.rotateGeometry(building.geometry, change.degrees);
                 else {
@@ -88,10 +107,11 @@
                     const at = frame.toMetric([from.lng, from.lat]), to = frame.toLngLat([at[0] + change.eastM, at[1] + change.northM]);
                     building.geometry = shape.moveGeometry(building.geometry, from, { lng: to[0], lat: to[1] });
                 }
-                if (!building.geometry || !shape.footprintWithinBoundary(building, feature(record.site), turf)) fail('building-outside-site', 'The edit moves the building outside its site. Reduce the move/rotation or author a larger site explicitly.');
+                if (!building.geometry || (!footprintOnly && !shape.footprintWithinBoundary(building, feature(record.site), turf))) fail('building-outside-site', 'The edit moves the building outside its site. Reduce the move/rotation or author a larger site explicitly.');
                 // The feature geometry is authoritative; editor placement metadata is no longer a generator recipe.
                 for (const key of ['_corners', '_sideMidpoints', 'rotation', 'offsetX', 'offsetY']) delete building.properties?.[key];
             }
+            if (footprintOnly) updateFootprintOnlySite(record, turf);
         } else fail('invalid-change', 'This change does not apply to a building.');
         const parameters = record.buildingProposal.parameters ||= {};
         if (items.length === 1 || index == null) {

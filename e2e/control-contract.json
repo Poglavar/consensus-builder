@@ -1810,9 +1810,9 @@
       "controlType": "button"
     },
     {
-      "id": "control-237f019cbbd1a9-1",
+      "id": "control-28786ea276b1ca-1",
       "source": "index.html",
-      "markup": "<button id=\"parcelBuilderButton\" class=\"btn btn-sm\" type=\"button\" onclick=\"(window.Parcels?.uiClaim?.openParcelBuilder || window.openParcelBuilder || function(){})()\" title=\"Open Parcel Builder\">",
+      "markup": "<button id=\"parcelBuilderButton\" class=\"btn\" type=\"button\" disabled onclick=\"(window.Parcels?.uiClaim?.openParcelBuilder || window.openParcelBuilder || function(){})()\" title=\"Not available in this city\">",
       "interaction": "click",
       "controlType": "button"
     },

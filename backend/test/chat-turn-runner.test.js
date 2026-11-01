@@ -7,6 +7,23 @@ const model = (...responses) => vi.fn(async () => responses.shift());
 const base = { conversation: {}, text: 'make a place', context: { city: 'london', language: 'en' }, prices: { input: 1, output: 2, cache_read: 0.1, cache_creation: 0.5 }, mcpTools: { tools: [{ name: 'ugt_draft_space', description: 'Draft', inputSchema: { type: 'object', properties: { plan: { type: 'string' } } } }] } };
 
 describe('chat turn runner', () => {
+    it('advances injected navigation state between tools and uses the selected site for drafting', async () => {
+        const selection = { parcelSourceId: 'source', focusParcelId: 'p2', parcelIds: ['p1', 'p2'], active: false };
+        const view = { at: '51.5,-0.1,18' };
+        const callModel = model({ content: [tool('ugt_map_view', { zoomDelta: 1 })] },
+            { content: [tool('ugt_select_parcels', { action: 'finish' })] },
+            { content: [tool('ugt_draft_space', { spaceKind: 'park' })] },
+            { content: [{ type: 'text', text: 'Done.' }] });
+        const callTool = vi.fn(async name => ({ structuredContent: name === 'ugt_map_view' ? { view } : name === 'ugt_select_parcels' ? { selection } : { ok: true } }));
+        const emit = vi.fn();
+        await runTurn({ ...base, context: { city: 'london', parcelSourceId: 'source', view: { at: '51.5,-0.1,17' }, selection: { parcelIds: ['p1'], active: true } }, callModel, callTool, emit });
+        expect(callTool.mock.calls[0][1].view.at).toBe('51.5,-0.1,17');
+        expect(callTool.mock.calls[1][1].selection).toEqual({ parcelIds: ['p1'], active: true });
+        expect(callTool.mock.calls[2][1]).toMatchObject({ parcelIds: ['p1', 'p2'], city: 'london', parcelSourceId: 'source' });
+        expect(emit).toHaveBeenCalledWith('view', { view });
+        expect(emit).toHaveBeenCalledWith('selection', { selection });
+    });
+
     it('keeps the request as an instruction and gives selection refs without exposing plan refs', () => {
         const prompt = contextBlock({ city: 'london', language: 'en', selection: { designCid: 'design-cid', buildingIndex: 2 } }, { cid: 'private-plan-cid', draftRef: 'https://private.test/plan' }, []);
         expect(prompt).toContain('<instruction>'); expect(prompt).toContain('"ref":"building:design-cid:2"');
@@ -16,7 +33,7 @@ describe('chat turn runner', () => {
         const callModel = model({ content: [tool('ugt_draft_space')] }, { content: [{ type: 'text', text: 'Done.' }] });
         const callTool = vi.fn(async () => ({ structuredContent: { ok: true, plan: { draftRef: 'http://localhost/draft', cid: 'plan-1' } } }));
         const result = await runTurn({ ...base, callModel, callTool });
-        expect(callTool).toHaveBeenCalledWith('ugt_draft_space', {}, expect.anything());
+        expect(callTool).toHaveBeenCalledWith('ugt_draft_space', { city: 'london' }, expect.anything());
         expect(result.plan).toEqual({ draftRef: 'http://localhost/draft', cid: 'plan-1' });
         expect(result.planChanged).toBe(true); expect(result.outcome).toEqual({ type: 'reply', text: 'Done.' });
     });

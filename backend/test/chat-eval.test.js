@@ -4,7 +4,7 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { assertBudget, assertEvalTurnCanContinue, callEstimateUsd, checkpointFingerprint, contextForEvalCase, parseArgs, planFromSeed, pricesOf, refreshSelectionFromPlan, resolveSeededSelection, writeCheckpoint } from '../scripts/chat-eval.mjs';
 import { costUsd, estimateTurnUsd, pricesFromEnv } from '../chat/cost.js';
-import { createAnthropicModelCaller, MAX_CHAT_INPUT_TOKENS } from '../chat/model.js';
+import { createOpenAIModelCaller, MAX_CHAT_INPUT_TOKENS } from '../chat/model.js';
 import { cidOfObject } from '../cid.js';
 
 // This test covers the paid-eval CLI guards and checkpoint behavior without making model calls.
@@ -21,9 +21,10 @@ describe('chat eval CLI guards', () => {
         const estimate = callEstimateUsd(prices, { system: 'prompt', messages: [], tools: [] });
         expect(estimate).toBeGreaterThan(0);
         expect(() => assertBudget({ spentUsd: 0.999, budgetUsd: 1, nextEstimateUsd: estimate })).toThrowError(expect.objectContaining({ code: 'eval-budget-exhausted' }));
-        const cases = [{ id: 'one' }], config = { model: 'haiku', mcp: 'http://localhost:3098/mcp', prices };
+        const cases = [{ id: 'one' }], config = { provider: 'anthropic', model: 'haiku', mcp: 'http://localhost:3098/mcp', prices };
         expect(checkpointFingerprint(cases, config)).toBe(checkpointFingerprint(cases, config));
         expect(checkpointFingerprint(cases, { ...config, model: 'sonnet' })).not.toBe(checkpointFingerprint(cases, config));
+        expect(checkpointFingerprint(cases, { ...config, provider: 'openai' })).not.toBe(checkpointFingerprint(cases, config));
     });
     it('writes an atomic checkpoint that carries cumulative spend and fingerprint', () => {
         directory = mkdtempSync(join(tmpdir(), 'chat-eval-'));
@@ -41,8 +42,8 @@ describe('chat eval CLI guards', () => {
         expect(estimateTurnUsd(prices, { maxSteps: 2 })).toBeGreaterThan(costUsd({ input_tokens: 30_000, output_tokens: 2048 }, prices));
     });
     it('checks token count before the paid model endpoint and marks over-limit failures as no-call', async () => {
-        const client = { messages: { countTokens: async () => ({ input_tokens: MAX_CHAT_INPUT_TOKENS + 1 }), create: async () => { throw new Error('must not call'); } } };
-        const callModel = createAnthropicModelCaller({ client, model: 'test' });
+        const client = { responses: { inputTokens: { count: async () => ({ input_tokens: MAX_CHAT_INPUT_TOKENS + 1 }) }, create: async () => { throw new Error('must not call'); } } };
+        const callModel = createOpenAIModelCaller({ client, model: 'test' });
         await expect(callModel({ system: 'prompt', tools: [], messages: [] })).rejects.toMatchObject({ code: 'context-limit', noModelCall: true });
     });
     it('resolves eval-only member selectors to canonical seeded plan members', () => {

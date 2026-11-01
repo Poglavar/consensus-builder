@@ -12,7 +12,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import { createUrbanGameTheoryMcpServer } from '../agents/mcp-server.mjs';
 import { createUrbanGameTheoryTools } from '../agents/ugt-agent-tools.js';
 import { cidOfObject } from '../cid.js';
-import { MCP_LOCAL_TOOLS } from '../agents/mcp-catalog.js';
+import { MCP_DEBUG_TOOLS, MCP_LOCAL_TOOLS } from '../agents/mcp-catalog.js';
 import { createSharedPlanSessions } from '../agents/mcp-shared-plan-sessions.js';
 import { createMemorySharedPlanRepository } from './helpers/shared-plan-repository.js';
 
@@ -32,13 +32,13 @@ afterEach(async () => {
 
 async function connect(tools, options = {}) {
     const [clientTransport, serverTransport] = InMemoryTransport.createLinkedPair();
-    server = createUrbanGameTheoryMcpServer({ tools, ...options });
+    server = createUrbanGameTheoryMcpServer({ tools, env: {}, ...options });
     client = new Client({ name: 'ugt-test', version: '1.0.0' });
     await Promise.all([server.connect(serverTransport), client.connect(clientTransport)]);
 }
 
 const TOOL_METHODS = [
-    'capabilities', 'getActivity', 'listAgreements', 'getAgreement', 'listAttesters', 'getSupport', 'getOracleEvents',
+    'capabilities', 'getActivity', 'listAgreements', 'getAgreement', 'listAttesters', 'getSupport', 'getOracleEvents', 'chatCost',
     'inspectVerifiedFact', 'publishDesign', 'proposeAgreement', 'mintAgreement', 'fundAgreement', 'betOnAgreement',
     'buyVerifiedFact', 'requestOwnership', 'pledge', 'donate', 'refundDonation', 'voidPledge', 'revokePledge',
     'releaseDonations', 'fulfillPledge', 'resolve', 'claim', 'resolveExternal', 'claimExternal'
@@ -53,6 +53,23 @@ async function toolsByName() {
 }
 
 describe('Urban Game Theory MCP server', () => {
+    it('exposes configured costs through a bounded read-only tool', async () => {
+        const tools = stubTools();
+        tools.chatCost = vi.fn(async args => ({ provider: 'openai', model: 'test', currency: 'USD', pricesPerMillionTokens: { input: 1, output: 2, cacheRead: 0.5, cacheWrite: 1.5 }, maximumTurnReservationUsd: 1,
+            ...(Object.keys(args).length ? { estimate: { costUsd: 0.00001, basis: 'configured-token-prices', actual: false, tokenCounts: { inputTokens: args.inputTokens || 0, outputTokens: args.outputTokens || 0, cachedInputTokens: args.cachedInputTokens || 0, cacheWriteTokens: args.cacheWriteTokens || 0 } } } : {}) }));
+        await connect(tools, { env: { CHAT_DEBUG_COSTS: 'true' } });
+        const listed = await client.listTools(), tool = listed.tools.find(row => row.name === 'ugt_chat_cost');
+        const contextIndex = MCP_LOCAL_TOOLS.indexOf('ugt_parcel_context');
+        expect(listed.tools.map(row => row.name)).toEqual([...MCP_LOCAL_TOOLS.slice(0, contextIndex), ...MCP_DEBUG_TOOLS, ...MCP_LOCAL_TOOLS.slice(contextIndex)]);
+        const capabilities = await client.callTool({ name: 'ugt_capabilities', arguments: {} });
+        expect(capabilities.structuredContent.tools.map(row => row.name)).toContain('ugt_chat_cost');
+        expect(capabilities.structuredContent.features.map(row => row.feature)).toContain('chat-cost');
+        expect(tool.annotations).toMatchObject({ readOnlyHint: true });
+        expect(tool.inputSchema.properties.inputTokens.maximum).toBe(1_000_000);
+        expect((await client.callTool({ name: 'ugt_chat_cost', arguments: { inputTokens: 10 } })).structuredContent).toMatchObject({ provider: 'openai', estimate: { actual: false } });
+        expect(tools.chatCost).toHaveBeenCalledWith({ inputTokens: 10 });
+    });
+
     it('routes shared publication through owner approval and rejects ambiguous tool inputs', async () => {
         const sessions = createSharedPlanSessions({ repository: createMemorySharedPlanRepository(), validateArtifact: () => {} });
         const artifact = { cid: DESIGN_CID, plan: { schema: 'plan/v1', title: 'Saved plan' }, designs: [] };
@@ -128,6 +145,9 @@ describe('Urban Game Theory MCP server', () => {
         await connect(stubTools());
         const names = (await client.listTools()).tools.map(tool => tool.name);
         expect(names).toEqual(MCP_LOCAL_TOOLS);
+        expect(names).not.toContain('ugt_chat_cost');
+        const capabilities = await client.callTool({ name: 'ugt_capabilities', arguments: {} });
+        expect(capabilities.structuredContent.features.map(row => row.feature)).not.toContain('chat-cost');
         expect(names).toContain('ugt_publish_plan');
         expect(names).toContain('ugt_inspect_agreement');
         expect(names.some(name => /proposal|forecast|verdict|accept/.test(name))).toBe(false);

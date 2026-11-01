@@ -3,7 +3,7 @@
     // Loaded on the chat sheet's first open; the transcript outlives other sheets closing it.
     const transcript = win.__chatTranscript, context = win.__chatContext;
     const t = (key, values) => win.i18n?.t?.(key, values) || key;
-    let host, introNode, messages, status, total, input, sendButton, undoButton, newButton, state = transcript.initial(), lastSynced = null, turnBaseRow = null, turnBaseCaptured = false, resetAfterTurn = false, operation = false;
+    let host, introNode, messages, status, total, input, sendButton, undoButton, newButton, conversationCopyButton, state = transcript.initial(), lastSynced = null, turnBaseRow = null, turnBaseCaptured = false, resetAfterTurn = false, operation = false;
     const records = () => win.proposalStorage?.getAllProposals?.() || win.proposals || win.currentProposals || [];
     function dispatch(action) { state = transcript.reduce(state, action); render(); }
     function formatCost(value) { return win.CbFormat?.formatMoney?.(+value || 0, 'USD', { minFractionDigits: 4, maxFractionDigits: 4 }) || `$${(+value || 0).toFixed(4)}`; }
@@ -33,6 +33,19 @@
         const button = node('button', cls, t(key)); button.type = 'button';
         button.addEventListener('click', () => win.BusyControl.track(button, action).catch(showError)); return button;
     }
+    function copyButton(key, readText) {
+        const button = node('button', 'btn btn-quiet btn-sm chat-copy-button'); button.type = 'button';
+        button.setAttribute('aria-label', t(key)); button.title = t(key);
+        const icon = node('i', 'fas fa-copy'); icon.setAttribute('aria-hidden', 'true'); button.append(icon);
+        button.addEventListener('click', () => win.BusyControl.track(button, async () => {
+            const copied = await win.copyTextWithFeedback?.(readText());
+            status.textContent = copied ? '' : t('chat.copyFailed');
+        }).catch(() => { status.textContent = t('chat.copyFailed'); }));
+        return button;
+    }
+    function serializeConversation() {
+        return transcript.serializeConversation(state, { you: t('chat.roles.you'), agent: t('chat.roles.agent'), options: t('chat.optionsLabel') });
+    }
     function buildContext(forceArtifact = false) {
         const city = win.CityConfigManager?.getCurrentCityId?.() || win.currentCityId || win.currentCity;
         const stack = win.ClickStack?.current?.();
@@ -56,6 +69,7 @@
                 compose: (...args) => win.PlanComposition.create(...args) });
             if (row) { build.planCid = row.cid; build.planArtifact = { ...win.SharedPlanSession.artifactOf(row), cid: row.cid }; }
         }
+        build.selection = { ...build.selection, ...win.ChatNavigation?.capture?.() };
         return build;
     }
     function mount(root) {
@@ -68,7 +82,8 @@
         total = node('p', 'chat-cost');
         const controls = node('div', 'chat-controls');
         undoButton = actionButton('chat.undo', 'btn btn-quiet btn-sm', undo);
-        newButton = actionButton('chat.newConversation', 'btn btn-quiet btn-sm', reset); controls.append(undoButton, newButton);
+        conversationCopyButton = copyButton('chat.copyConversation', serializeConversation);
+        newButton = actionButton('chat.newConversation', 'btn btn-quiet btn-sm', reset); controls.append(undoButton, conversationCopyButton, newButton);
         const composer = node('div', 'chat-composer'); input = node('textarea', 'chat-input'); input.rows = 2; input.enterKeyHint = 'send'; input.placeholder = t('chat.placeholder'); input.setAttribute('aria-label', t('chat.placeholder'));
         sendButton = actionButton('chat.send', 'btn btn-primary btn-sm', () => send(input.value));
         input.addEventListener('keydown', event => { if (event.key === 'Enter' && !event.shiftKey) { event.preventDefault(); win.BusyControl.track(sendButton, () => send(input.value)).catch(showError); } });
@@ -83,16 +98,24 @@
         try {
             let conv = state.conversation || win.ChatClient.conversation();
             if (!conv) { conv = await win.ChatClient.start(win.i18n?.getLanguage?.() || win.i18n?.language || 'en', win.CityConfigManager?.getCurrentCityId?.() || win.currentCityId || win.currentCity); dispatch({ type: 'conversation', conversation: conv }); }
-            dispatch({ type: 'turn:start', text: value }); status.textContent = t('chat.working'); let planEvent = null;
+            dispatch({ type: 'turn:start', text: value }); status.textContent = t('chat.working'); let planEvent = null, navigation = Promise.resolve(), navigationError = null;
             const turnKey = win.crypto?.randomUUID?.() || `${Date.now()}-${Math.random().toString(16).slice(2)}`;
             const sendTurn = includeArtifact => win.ChatClient.turn(conv.id, { text: value,
                 language: win.i18n?.getLanguage?.() || 'en', turnKey, context: buildContext(includeArtifact) },
-                { onEvent(event) { if (event.name === 'plan') planEvent = event; dispatch({ type: 'event', event }); } });
+                { onEvent(event) {
+                    if (event.name === 'plan') planEvent = event;
+                    if (['view', 'selection'].includes(event.name)) navigation = navigation.then(async () => {
+                        if (!navigationError) await win.ChatNavigation.apply(event);
+                    }).catch(error => { navigationError = error; });
+                    dispatch({ type: 'event', event });
+                } });
             try { await sendTurn(false); }
             catch (error) {
                 if (error.status !== 409 || !['plan_artifact_required', 'plan_reference_expired'].includes(error.code)) throw error;
                 await sendTurn(true);
             }
+            await navigation;
+            if (navigationError) throw navigationError;
             if (planEvent) await applyPlan(planEvent);
         } catch (error) {
             if (state.conversation && win.ChatClient.sync) {
@@ -193,13 +216,15 @@
                 message.steps.forEach(step => list.append(node('li', '', step.tool || step.name || t('chat.stepFailed')))); details.append(summary, list); article.append(details);
             }
             if (message.options?.length) { const options = node('div', 'chat-options'); message.options.forEach((option, index) => { const chip = node('button', 'btn btn-sm chat-option', option.label); chip.type = 'button'; chip.dataset.chatOptionKey = `${message.id}:${index}`; chip.addEventListener('focus', () => highlight(option.ref)); chip.addEventListener('mouseenter', () => highlight(option.ref)); chip.addEventListener('blur', () => win.highlightFeaturesForInspection?.([])); chip.addEventListener('mouseleave', () => win.highlightFeaturesForInspection?.([])); chip.addEventListener('click', () => win.BusyControl.track(sendButton, () => send(option.label)).catch(showError)); options.append(chip); }); article.append(options); }
-            if (message.costUsd != null) article.append(node('p', 'chat-message-cost', t('chat.turnCost', { cost: formatCost(message.costUsd) })));
+            if (message.role === 'agent' && message.text?.trim()) article.append(copyButton('chat.copyReply', () => message.text));
             messages.append(article);
         });
         messages.scrollTop = messages.scrollHeight;
         if (focused) [...messages.querySelectorAll('.chat-option')].find(button => button.dataset.chatOptionKey === focused)?.focus({ preventScroll: true });
         status.textContent = state.pending ? t('chat.working') : state.error ? t(state.error.key || transcript.errorKey(state.error.code, state.error.status)) : '';
-        total.textContent = state.totals.turns ? t('chat.sessionTotal.other', { cost: formatCost(state.totals.spentUsd), count: state.totals.turns }) : '';
+        total.hidden = state.conversation?.debugCosts !== true || !state.totals.turns;
+        total.textContent = !total.hidden ? t('chat.sessionTotal.other', { cost: formatCost(state.totals.spentUsd), count: state.totals.turns }) : '';
+        conversationCopyButton.disabled = !serializeConversation();
         input.disabled = !!state.pending || operation; sendButton.disabled = !!state.pending || operation;
         undoButton.disabled = !state.lastPlan?.applied || !!state.pending || operation; newButton.disabled = !!state.pending || operation;
     }
@@ -209,6 +234,7 @@
         introNode.textContent = t('chat.intro');
         input.placeholder = t('chat.placeholder'); input.setAttribute('aria-label', t('chat.placeholder'));
         sendButton.textContent = t('chat.send'); undoButton.textContent = t('chat.undo'); newButton.textContent = t('chat.newConversation');
+        conversationCopyButton.setAttribute('aria-label', t('chat.copyConversation')); conversationCopyButton.title = t('chat.copyConversation');
         messages.setAttribute('aria-label', t('chat.title')); render();
     });
     win.ChatPanel = Object.freeze({ mount, open: mount, send, undo, reset, state: () => state });

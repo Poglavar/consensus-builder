@@ -8,6 +8,17 @@
     const copy = value => value == null ? value : JSON.parse(JSON.stringify(value));
     const initial = () => ({ conversation: null, messages: [], pending: false,
         totals: { spentUsd: 0, turns: 0 }, lastPlan: null, error: null });
+    function serializeConversation(state, { you = 'You', agent = 'Agent', options = 'Options' } = {}) {
+        return (state?.messages || []).map(message => {
+            const lines = [];
+            const text = String(message.text || '').trim();
+            if (text) lines.push(`${message.role === 'user' ? you : agent}: ${text}`);
+            if (message.role === 'agent' && message.options?.length) {
+                lines.push(`${options}: ${message.options.map(option => String(option.label || '').trim()).filter(Boolean).join(' · ')}`);
+            }
+            return lines.filter(Boolean).join('\n');
+        }).filter(Boolean).join('\n\n');
+    }
     function errorKey(code, status) {
         if (code === 'budget_exhausted' || status === 402) return 'chat.errors.budget';
         if (String(code || '').startsWith('rate_limited') || status === 429) return 'chat.errors.rateLimited';
@@ -41,6 +52,7 @@
             else if (event.name === 'reply') { message.text = event.text || ''; if (event.costUsd != null) message.costUsd = Number(event.costUsd); }
             else if (event.name === 'plan') message.plan = copy(event);
             else if (event.name === 'done') {
+                if (next.conversation) next.conversation = { ...next.conversation, debugCosts: event.debugCosts === true };
                 if (event.reply && !message.text) message.text = event.reply;
                 if (event.turnCostUsd != null) message.costUsd = Number(event.turnCostUsd);
                 else if (event.costUsd != null) message.costUsd = Number(event.costUsd);
@@ -51,6 +63,7 @@
                 else if (Number.isFinite(Number(event.spentUsd))) next.totals.spentUsd = Number(event.spentUsd);
                 else if (Number.isFinite(message.costUsd)) next.totals.spentUsd += message.costUsd;
             } else if (event.name === 'error') {
+                if (next.conversation) next.conversation = { ...next.conversation, debugCosts: event.debugCosts === true };
                 message.code = event.code || 'stream_error'; message.text = event.message || '';
                 if (event.turnCostUsd != null) message.costUsd = Number(event.turnCostUsd);
                 if (Number.isFinite(Number(event.turns))) next.totals.turns = Number(event.turns);
@@ -74,5 +87,5 @@
         }
         return next;
     }
-    return { initial, reduce, errorKey };
+    return { initial, reduce, errorKey, serializeConversation };
 });

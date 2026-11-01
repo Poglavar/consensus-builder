@@ -56,7 +56,8 @@ module.exports = {
       AI_SCENE_QUOTA_MAX: 10,             // at most 10 successful renders per IP...
       AI_SCENE_QUOTA_WINDOW_MS: 86400000, // ...per rolling 24h
       // Hosted chat: prices and caps are public config; credentials stay in the API environment.
-      CHAT_MODEL: 'claude-haiku-5-5',
+      CHAT_PROVIDER: process.env.CHAT_PROVIDER || 'openai',
+      CHAT_MODEL: process.env.CHAT_MODEL || (process.env.CHAT_PROVIDER === 'anthropic' ? 'claude-haiku-5-5' : 'gpt-6-luna'),
       CHAT_PRICE_USD_PER_MTOK_INPUT: 0.10,
       CHAT_PRICE_USD_PER_MTOK_OUTPUT: 0.50,
       CHAT_PRICE_USD_PER_MTOK_CACHE_READ: 0.01,

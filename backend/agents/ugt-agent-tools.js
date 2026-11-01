@@ -14,6 +14,7 @@ import { createMcpDraftTools } from './mcp-drafts.js';
 import { createMcpPlanTools } from './mcp-plan.js';
 import { createMcpNamedPlanTools } from './mcp-named-plans.js';
 import { createMcpReadTools } from './mcp-read-tools.js';
+import { createMcpNavigation } from './mcp-navigation.js';
 import { createMcpAssetTools } from './mcp-assets.js';
 import { createMcpComparison } from './mcp-compare.js';
 import { createMcpValidationTools } from './mcp-validation.js';
@@ -356,6 +357,7 @@ export function createUrbanGameTheoryTools({
                 next: trustedMetadata({ action: 'Save this exact artifact. Supply it as canonical input to restore the draft after its reference expires.' }) };
         },
         ...companion,
+        ...createMcpNavigation({ read: companion }),
         ...createMcpVotingTools({ read: companion }),
         ...drafts,
         ...agreements,

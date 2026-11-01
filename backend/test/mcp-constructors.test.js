@@ -53,6 +53,53 @@ describe('MCP shared construction generators', () => {
         const design = buildTypedDesign({ kind: 'building', typology: 'freeform', site, height: 21 }, options);
         expect(design.geometry.buildings[0].properties).toMatchObject({ floors: 7, height: 21 });
     });
+    it('rotates the coverage-derived body at construction instead of only recording rotation metadata', () => {
+        const parcels = [];
+        for (let x = 0; x < 4; x++) for (let y = 0; y < 4; y++) {
+            const west = 15 + x * 0.0002, south = 45 + y * 0.0002;
+            parcels.push([[[west, south], [west + 0.0001, south], [west + 0.0001, south + 0.0001], [west, south + 0.0001], [west, south]]]);
+        }
+        const site16 = { type: 'MultiPolygon', coordinates: parcels };
+        const baseline = buildTypedDesign({ kind: 'building', typology: 'freeform', site: site16, coverage: 0.4 }, options);
+        const rotated = buildTypedDesign({ kind: 'building', typology: 'freeform', site: site16, coverage: 0.4, rotationDegrees: 35 }, options);
+        const rotatedBaseline = constructorRuntime.singleBuilding.rotateGeometry(baseline.geometry.buildings[0].geometry, 35);
+        expect(rotated.geometry.buildings[0].geometry).toEqual(turf.intersect({ type: 'Feature', properties: {}, geometry: site16 }, { type: 'Feature', properties: {}, geometry: rotatedBaseline }).geometry);
+        expect(constructorRuntime.singleBuilding.footprintWithinBoundary(rotated.geometry.buildings[0], { type: 'Feature', properties: {}, geometry: site16 }, turf)).toBe(true);
+        expect(rotated.geometry.buildings[0].properties.rotation).toBe(35);
+        const body = rotated.geometry.buildings[0].geometry;
+        expect(rotated.site).toEqual(body);
+        expect(rotated.geometry.landTake).toEqual(body);
+        expect(turf.area({ type: 'Feature', properties: {}, geometry: rotated.site })).toBeLessThan(turf.area({ type: 'Feature', properties: {}, geometry: site16 }));
+    });
+    it('uses the final explicit rotated and offset footprint as freeform site and land take', () => {
+        const [lng, lat] = turf.pointOnFeature(parcel).geometry.coordinates;
+        const footprint = { type: 'Polygon', coordinates: [constructorRuntime.singleBuilding.buildRectangleRing({ lng, lat }, { widthM: 8, lengthM: 18 })] };
+        const design = buildTypedDesign({ kind: 'building', typology: 'freeform', site, footprint, rotationDegrees: 25, offsetEastM: 12, offsetNorthM: -4 }, options);
+        const body = design.geometry.buildings[0].geometry;
+        expect(design.site).toEqual(body);
+        expect(design.geometry.landTake).toEqual(body);
+        expect(turf.area({ type: 'Feature', properties: {}, geometry: design.site })).toBeLessThan(turf.area(parcel));
+    });
+    it('moves and rotates a footprint-only draft with its site, while a larger authored take stays anchored', () => {
+        const draft = buildTypedDesign({ kind: 'building', typology: 'freeform', site, coverage: 0.2 }, options);
+        const moved = intentDesign.modify(draft, [{ type: 'move', eastM: 30, northM: 10 }], { turf });
+        expect(moved.site).toEqual(moved.geometry.buildings[0].geometry);
+        expect(moved.geometry.landTake).toEqual(moved.geometry.buildings[0].geometry);
+        expect(moved.site).not.toEqual(draft.site);
+        const rotated = intentDesign.modify(moved, [{ type: 'rotate', degrees: 35 }], { turf });
+        expect(rotated.site).toEqual(rotated.geometry.buildings[0].geometry);
+        expect(rotated.geometry.landTake).toEqual(rotated.geometry.buildings[0].geometry);
+
+        const authoredTake = structuredClone(draft);
+        authoredTake.site = structuredClone(site);
+        authoredTake.geometry.landTake = turf.feature(structuredClone(site));
+        const before = structuredClone(authoredTake);
+        const within = intentDesign.modify(authoredTake, [{ type: 'move', eastM: 10, northM: 0 }], { turf });
+        expect(within.site).toEqual(site);
+        expect(within.geometry.landTake).toEqual(turf.feature(site));
+        expect(() => intentDesign.modify(authoredTake, [{ type: 'move', eastM: 100, northM: 0 }], { turf })).toThrow(/outside its site/);
+        expect(authoredTake).toEqual(before);
+    });
     it('uses app editor defaults for Block, Row and Freeform starting geometry', () => {
         const block = buildTypedDesign({ kind: 'building', typology: 'block', site }, options);
         expect(block.buildingProposal.parameters).toMatchObject({ height: 17.5, width: 15, setback: 2, rule: { kind: 'exact', minPlotAreaM2: 50 } });
@@ -62,6 +109,9 @@ describe('MCP shared construction generators', () => {
         const freeform = buildTypedDesign({ kind: 'building', typology: 'freeform', site }, options);
         const [lng, lat] = turf.pointOnFeature(parcel).geometry.coordinates;
         expect(freeform.geometry.buildings[0].geometry.coordinates[0]).toEqual(constructorRuntime.singleBuilding.buildRectangleRing({lng,lat},{widthM:20,lengthM:20}));
+        expect(freeform.site).toEqual(freeform.geometry.buildings[0].geometry);
+        expect(freeform.geometry.landTake).toEqual(freeform.geometry.buildings[0].geometry);
+        expect(turf.area({ type: 'Feature', properties: {}, geometry: freeform.site })).toBeLessThan(turf.area(parcel));
         expect(freeform.geometry.buildings[0].properties.height).toBe(10);
     });
     it('uses the shared Block ring and Row chamfer generators without alternate massing', () => {

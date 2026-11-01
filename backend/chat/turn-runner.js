@@ -1,6 +1,7 @@
 import { CHAT_TOOL_ALLOWLIST, injectPlanArgs, restrictHelpTopic, toModelTools } from './tool-catalog.js';
 import { compactForModel, planFromResult, summarizeStep } from './tool-results.js';
 import { contextBlock, SYSTEM_PROMPT } from './system-prompt.js';
+import { injectMapArgs, navigationResult } from './navigation.js';
 import { costUsd } from './cost.js';
 
 // Pure orchestration for one chat turn; callers own persistence, transport, and cancellation policy.
@@ -12,6 +13,7 @@ const toolResultBlock = (id, content, isError = false) => ({ type: 'tool_result'
 export async function runTurn({ conversation = {}, text = '', context = {}, callModel, callTool, mcpTools, emit = () => {}, limits = {}, prices = {}, now = Date.now, signal } = {}) {
     const maxSteps = Math.max(1, Number(limits.maxSteps) || 8), messages = clone(conversation.messages || []);
     let plan = conversation.plan || null, planHistory = clone(conversation.planHistory || []), usage = { input_tokens: 0, output_tokens: 0, cache_read_input_tokens: 0, cache_creation_input_tokens: 0 };
+    const mapContext = structuredClone(context);
     let totalCost = 0, planChanged = false, modelCalls = 0, usageUncertain = false, outcome;
     messages.push({ role: 'user', content: contextBlock({ ...context, instruction: text }, plan, conversation.notes || []) });
     const finish = () => ({ messages, plan, planHistory, steps, usage, costUsd: totalCost, planChanged, modelCalls, usageUncertain, outcome });
@@ -74,12 +76,18 @@ export async function runTurn({ conversation = {}, text = '', context = {}, call
         const toolStarted = now();
         try {
             args = name === 'ugt_help' ? restrictHelpTopic(input) : input;
-            args = injectPlanArgs(name, args, plan);
+            args = injectMapArgs(name, injectPlanArgs(name, args, plan), mapContext);
             result = await callTool(name, args, { signal });
         } catch (error) { result = { isError: true, structuredContent: { ok: false, code: error.code || 'tool-error', message: error.message } }; }
         const wasAborted = signal?.aborted;
         const compact = compactForModel(name, result), parsed = (() => { try { return JSON.parse(compact); } catch { return {}; } })();
         const ok = !result?.isError && parsed.ok !== false;
+        const navigation = ok ? navigationResult(name, result) : null;
+        if (navigation) {
+            if (navigation.name === 'view') mapContext.view = navigation.data.view;
+            else mapContext.selection = { ...mapContext.selection, ...navigation.data.selection };
+            emit(navigation.name, navigation.data);
+        }
         const nextPlan = ok ? planFromResult(name, result) : null;
         if (nextPlan && nextPlan.cid && nextPlan.cid !== plan?.cid) {
             planHistory.push(plan ? { ...plan, turn: conversation.turns || 0 } : { draftRef: null, cid: null, turn: conversation.turns || 0 });

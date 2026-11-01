@@ -75,9 +75,9 @@ this bar, retaining their editors, controls, loading behavior and state:
   The native Designs list retains type, author, status and producing-design information.
   It does not infer consent or allocation outcomes from a design; those belong to agreements.
   Selected sets have a Parcels tab for their rows; Clear and Done remain above every page.
-  Parcel builder has one home in Actions. Info orders identity and measurements before
-  ownership, then provenance and history. In the model view, Actions opens the same parcel
-  in 2D; figures, comparison and price controls stay together in Stats.
+  Parcel Builder is in Tools for Zagreb and unavailable in other cities. Info orders identity
+  and measurements before ownership, then provenance and history. In the model view, Actions
+  opens the same parcel in 2D; figures, comparison and price controls stay together in Stats.
 - Agreements: Actions, Info, Input parcels, Output parcels when present, Persons for owners'
   agreements, Decision and Rules. Info links to the plan's Designs list. Decision groups
   status, publication, approvals, voting and chain controls. Outputs contains allocations;

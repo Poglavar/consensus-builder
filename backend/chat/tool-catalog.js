@@ -1,6 +1,6 @@
 // This module translates the MCP catalogue to the narrow tool contract exposed to the chat model.
 export const CHAT_TOOL_ALLOWLIST = Object.freeze([
-    'ugt_find_place', 'ugt_parcel_context', 'ugt_list_designs', 'ugt_get_design', 'ugt_list_sources', 'ugt_explain', 'ugt_help',
+    'ugt_chat_cost', 'ugt_map_view', 'ugt_select_parcels', 'ugt_find_place', 'ugt_parcel_context', 'ugt_list_designs', 'ugt_get_design', 'ugt_list_sources', 'ugt_explain', 'ugt_help',
     'ugt_draft_road', 'ugt_draft_building', 'ugt_draft_track', 'ugt_draft_station', 'ugt_draft_space', 'ugt_draft_parcel_layout', 'ugt_draft_urban_rule',
     'ugt_modify_design', 'ugt_inspect_design', 'ugt_edit_design', 'ugt_compare', 'ugt_draft_plan', 'ugt_get_plan',
     'ugt_validate_plan', 'ugt_inspect_plan', 'ugt_edit_plan'
@@ -23,8 +23,9 @@ export function toModelTools(mcpTools = []) {
         delete schema.$schema;
         schema.type = 'object';
         schema.properties ||= {};
-        for (const key of STRIPPED_PARAMS) delete schema.properties[key];
-        if (Array.isArray(schema.required)) schema.required = schema.required.filter(key => !STRIPPED_PARAMS.includes(key));
+        const hidden = [...STRIPPED_PARAMS, ...(tool.name === 'ugt_map_view' ? ['view'] : tool.name === 'ugt_select_parcels' ? ['selection'] : [])];
+        for (const key of hidden) delete schema.properties[key];
+        if (Array.isArray(schema.required)) schema.required = schema.required.filter(key => !hidden.includes(key));
         return { name: tool.name, description: tool.description || '', input_schema: schema };
     });
     tools.push(...structuredClone(RELAY_TOOLS));

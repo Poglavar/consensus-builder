@@ -9103,6 +9103,10 @@
     "send": "Enviar",
     "undo": "Desfazer a última alteração",
     "newConversation": "Nova conversa",
+    "copyReply": "Copiar resposta",
+    "copyConversation": "Copiar conversa",
+    "copyFailed": "Não foi possível copiar o texto.",
+    "optionsLabel": "Opções",
     "working": "A trabalhar…",
     "steps": {
       "one": "{{count}} passo",

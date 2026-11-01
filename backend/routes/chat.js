@@ -6,9 +6,10 @@ import { clientIp } from './ai-scene.js';
 import { canonicalArtifact } from '../agents/shared-plan-artifact.js';
 import { createConversationStore } from '../chat/conversations.js';
 import * as ledger from '../chat/ledger.js';
-import { pricesFromEnv, estimateTurnUsd } from '../chat/cost.js';
+import { pricesFromEnv, estimateTurnUsd, costUsd } from '../chat/cost.js';
 import { createMcpToolCaller } from '../chat/mcp-client.js';
-import { createAnthropicModelCaller } from '../chat/model.js';
+import { createChatModelCaller } from '../chat/model.js';
+import { DEFAULT_CHAT_PROVIDER, isSupportedChatModel, modelForProvider } from '../chat/openai-config.js';
 import { runTurn as defaultRunTurn } from '../chat/turn-runner.js';
 import { openSse } from '../chat/sse.js';
 
@@ -17,7 +18,8 @@ const contextSchema = z.object({
     city: z.string().min(1).max(100), parcelSourceId: z.string().max(3507).optional(),
     view: z.record(z.string(), z.unknown()).optional(),
     selection: z.object({ designCid: z.string().max(100).optional(), buildingIndex: z.number().int().min(0).max(999).optional(),
-        parcelIds: z.array(z.string().min(1).max(200)).max(100).optional() }).optional(),
+        parcelIds: z.array(z.string().min(1).max(200)).max(100).optional(),
+        focusParcelId: z.string().min(1).max(200).nullable().optional(), active: z.boolean().optional() }).optional(),
     planCid: z.string().min(1).max(100).nullable(), planArtifact: z.unknown().optional()
 });
 const turnSchema = z.object({ turnKey: z.uuid(), text: z.string().trim().min(1).max(2000), language: languages.optional(), context: contextSchema });
@@ -25,7 +27,7 @@ const hash = value => createHash('sha256').update(value).digest('hex');
 const fail = (code, status, message = code) => Object.assign(new Error(message), { code, status });
 const statusOf = error => error.status || ({ turn_in_progress: 409, rate_limited_quota: 429 })[error.code] || 503;
 const unwrap = value => value?.structuredContent || value;
-const publicState = c => ({ id: c.id, expiresAt: c.expiresAt, turns: c.turns, spentUsd: c.spentUsd, plan: c.plan });
+const publicState = (c, debugCosts) => ({ id: c.id, expiresAt: c.expiresAt, turns: c.turns, spentUsd: c.spentUsd, plan: c.plan, debugCosts });
 function compactHistory(messages, result) {
     if (Buffer.byteLength(JSON.stringify(messages)) <= 120_000) return messages;
     const replies = messages.flatMap(m => typeof m.content === 'string' ? [m.content.slice(0, 1000)] :
@@ -38,8 +40,35 @@ export function setupChatRoute(app, pool, { env = process.env, store: suppliedSt
     const running = new Map(), limits = { maxSteps: 8 };
     let prices;
     try { prices = pricesFromEnv(env); } catch { /* Missing chat config must not prevent the rest of the API starting. */ }
-    const model = env.CHAT_MODEL || 'claude-haiku-5-5';
+    const provider = env.CHAT_PROVIDER || DEFAULT_CHAT_PROVIDER;
+    const model = env.CHAT_MODEL || modelForProvider(provider);
+    const apiKey = provider === 'openai' ? env.OPENAI_API_KEY : provider === 'anthropic' ? env.ANTHROPIC_API_KEY : null;
     const cap = Number(env.CHAT_DAILY_CAP_USD ?? 5), maxTurns = Number(env.CHAT_MAX_TURNS ?? 25), ipDailyTurns = Number(env.CHAT_IP_DAILY_TURNS ?? 100);
+    const debugCosts = /^(1|true)$/i.test(String(env.CHAT_DEBUG_COSTS || ''));
+    app.get('/chat/cost', (req, res) => {
+        res.set('Cache-Control', 'no-store');
+        if (!debugCosts) return res.status(404).json({ code: 'not_found' });
+        if (!prices || !isSupportedChatModel(provider, model)) return res.status(503).json({ code: 'cost_unavailable', message: 'Chat cost configuration is unavailable.' });
+        const fields = ['inputTokens', 'outputTokens', 'cachedInputTokens', 'cacheWriteTokens'];
+        const counts = {};
+        let supplied = false, total = 0;
+        for (const field of fields) {
+            const value = req.query[field];
+            if (value === undefined) { counts[field] = 0; continue; }
+            supplied = true;
+            if (!/^(0|[1-9]\d*)$/.test(String(value)) || !Number.isSafeInteger(Number(value)) || Number(value) > 1_000_000) {
+                return res.status(400).json({ code: 'invalid_token_count', field, message: `${field} must be an integer from 0 to 1000000.` });
+            }
+            counts[field] = Number(value); total += counts[field];
+        }
+        if (total > 1_000_000) return res.status(400).json({ code: 'token_count_limit', message: 'Combined token counts must not exceed 1000000.' });
+        const estimate = supplied ? costUsd({ input_tokens: counts.inputTokens, output_tokens: counts.outputTokens,
+            cache_read_input_tokens: counts.cachedInputTokens, cache_creation_input_tokens: counts.cacheWriteTokens }, prices) : null;
+        res.json({ provider, model, currency: 'USD', pricesPerMillionTokens: { input: prices.input, output: prices.output,
+            cacheRead: prices.cache_read, cacheWrite: prices.cache_creation },
+            maximumTurnReservationUsd: estimateTurnUsd(prices, limits),
+            ...(supplied ? { estimate: { costUsd: estimate, basis: 'configured-token-prices', actual: false, tokenCounts: counts } } : {}) });
+    });
     const limiter = (windowMs, limit, code) => rateLimit({ windowMs, limit, keyGenerator: clientIp,
         standardHeaders: 'draft-7', legacyHeaders: false, handler: (_req, res) => res.status(429).json({ code }) });
     const createLimiter = limiters.create || limiter(60_000, 10, 'rate_limited_cooldown');
@@ -55,7 +84,7 @@ export function setupChatRoute(app, pool, { env = process.env, store: suppliedSt
     app.use('/chat/conversations', (req, res, next) => {
         res.set('Cache-Control', 'no-store');
         if (closing) return res.status(503).json({ code: 'chat_unavailable' });
-        if (!env.ANTHROPIC_API_KEY && !suppliedModel) return res.status(501).json({ code: 'not_configured' });
+        if ((!apiKey || !isSupportedChatModel(provider, model)) && !suppliedModel) return res.status(501).json({ code: 'not_configured' });
         const token = /^Bearer ([a-fA-F0-9]{64})$/.exec(req.get('authorization') || '')?.[1];
         if (!token) return res.status(401).json({ code: 'token_required' });
         req.chatTokenHash = hash(token); next();
@@ -69,9 +98,9 @@ export function setupChatRoute(app, pool, { env = process.env, store: suppliedSt
         const parsed = z.object({ language: languages.default('en'), city: z.string().min(1).max(100) }).safeParse(req.body);
         if (!parsed.success) throw fail('invalid_request', 400);
         const conversation = await store.create({ ...parsed.data, tokenHash: req.chatTokenHash, clientIp: clientIp(req) });
-        res.status(201).json({ id: conversation.id, expiresAt: conversation.expiresAt });
+        res.status(201).json({ id: conversation.id, expiresAt: conversation.expiresAt, debugCosts });
     }));
-    app.get('/chat/conversations/:id', wrap(async (req, res) => res.json(publicState(await load(req)))));
+    app.get('/chat/conversations/:id', wrap(async (req, res) => res.json(publicState(await load(req), debugCosts))));
     async function exclusive(req, action) {
         const id = req.params.id;
         if (running.has(id)) throw fail('turn_in_progress', 409);
@@ -143,7 +172,7 @@ export function setupChatRoute(app, pool, { env = process.env, store: suppliedSt
                 catch (error) { throw fail(error.code === 'turn_in_progress' || error.code === 'rate_limited_quota' ? error.code : 'budget_check_failed', statusOf(error)); }
                 if (!reservation) throw fail('budget_exhausted', 402);
                 stream = openSse(res);
-                modelCaller ||= createAnthropicModelCaller({ apiKey: env.ANTHROPIC_API_KEY, model });
+                modelCaller ||= createChatModelCaller({ provider, apiKey, model });
                 const events = [], emit = (name, data) => { events.push({ name, data }); stream.send(name, data); };
                 const result = await runTurn({ conversation, text, context: { ...context, language: language || conversation.language },
                     callModel: async (...args) => { modelCalls++; try { return await modelCaller(...args); } catch (error) { if (error.noModelCall) modelCalls--; throw error; } }, callTool, mcpTools,
@@ -155,10 +184,10 @@ export function setupChatRoute(app, pool, { env = process.env, store: suppliedSt
                 if (result.planChanged) terminal.push({ name: 'plan', data: { draftRef: result.plan?.draftRef || null, cid: result.plan?.cid || null,
                     previousCid: conversation.plan?.cid || null, changes: result.plan?.changes || [], consequences: result.plan?.consequences || null } });
                 if (result.outcome.type === 'error') terminal.push({ name: 'error', data: { code: result.outcome.code, message: result.outcome.message,
-                    turnCostUsd: charged, conversationSpentUsd: patch.spentUsd, turns: patch.turns } });
+                    turnCostUsd: charged, conversationSpentUsd: patch.spentUsd, turns: patch.turns, debugCosts } });
                 else {
                     const { type, ...data } = result.outcome;
-                    terminal.push({ name: type, data }, { name: 'done', data: { turnCostUsd: charged, conversationSpentUsd: patch.spentUsd, turns: patch.turns, steps: result.steps.length } });
+                    terminal.push({ name: type, data }, { name: 'done', data: { turnCostUsd: charged, conversationSpentUsd: patch.spentUsd, turns: patch.turns, steps: result.steps.length, debugCosts } });
                 }
                 // Save state and replay events atomically with settlement when using the SQL adapters.
                 const finalResult = { events: [...events, ...terminal] };
@@ -182,7 +211,7 @@ export function setupChatRoute(app, pool, { env = process.env, store: suppliedSt
                     else await budget.settleTurn(pool, reservation.id, { costUsd: null, status: controller.signal.aborted ? 'aborted' : 'interrupted', result: { events: [{ name: 'error', data: { code: 'turn_interrupted' } }] } });
                     await store.saveTurn(conversation.id, conversation);
                 }
-                if (stream) stream.send('error', { code: controller.signal.aborted ? 'aborted' : error.code || 'chat_unavailable', message: 'The turn could not be completed.' });
+                if (stream) stream.send('error', { code: controller.signal.aborted ? 'aborted' : error.code || 'chat_unavailable', message: 'The turn could not be completed.', debugCosts });
                 else throw error;
             } finally { res.removeListener('close', disconnect); stream?.close(); await mcp?.close(); }
         });

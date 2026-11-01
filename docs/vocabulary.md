@@ -506,7 +506,7 @@ Authored building geometry, parameters and optional architectural evidence belon
 
 ### Freeform building
 
-A building design with one connected authored footprint, including any courtyard holes, and its vertical dimensions. Its land take can extend beyond that footprint. Dragging moves only the selected building footprint; surroundings stay anchored on occupied parcels. Leaving a parcel releases its surrounding treatment and furniture.
+A building design with one connected authored footprint, including any courtyard holes, and its vertical dimensions. Its land take can extend beyond that footprint. A new MCP Freeform design takes only its final building footprint; the constructor's input land supplies its sizing boundary. Typed movement or rotation of a footprint-only design updates its site and land take with the building. Dragging moves only the selected building footprint; surroundings stay anchored on occupied parcels. Leaving a parcel releases its surrounding treatment and furniture.
 
 ### Imported model footprint
 
@@ -1103,6 +1103,14 @@ One person message and its bounded sequence of model and MCP calls. A client-gen
 identifies retries of the same turn; replaying it makes no further model call. Confirmed plan
 changes survive a disconnected stream. Usage records distinguish settled cost from a reserved
 estimate whose final provider usage is unknown.
+
+### Chat map selection
+
+The chat cursor identifies one exact parcel in the active parcel source. The selection is a separate
+set of parcel IDs used as the next design's site. During manual multi-selection, moving the cursor
+does not add parcels; Add changes membership and Done ends selection while retaining it. A source
+ID and parcel ID must resolve in the current live fabric before the browser applies a selection.
+Map navigation and selection are transient view state, separate from immutable plan revisions.
 
 ### Working plan (chat)
 

@@ -9148,6 +9148,10 @@
     "send": "Pošalji",
     "undo": "Poništi posljednju promjenu",
     "newConversation": "Novi razgovor",
+    "copyReply": "Kopiraj odgovor",
+    "copyConversation": "Kopiraj razgovor",
+    "copyFailed": "Tekst nije moguće kopirati.",
+    "optionsLabel": "Opcije",
     "working": "Radim…",
     "steps": {
       "one": "{{count}} korak",

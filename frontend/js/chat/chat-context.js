@@ -76,13 +76,19 @@
     }
     function lastChangeOf(previous, next, changes, kind = 'edit') {
         const fromCid = previous?.cid || null, toCid = next?.cid || null;
+        const before = new Set(previous?.content?.designCids || (previous?.designs || []).map(row => row.cid));
+        const after = new Set(next?.content?.designCids || (next?.designs || []).map(row => row.cid));
         const members = (changes || []).map(change => ({ beforeCid: change.beforeCid ?? change.fromCid ?? null,
-            afterCid: change.afterCid ?? change.toCid ?? null })).filter(change => change.beforeCid || change.afterCid);
+            afterCid: change.afterCid ?? change.toCid ?? null })).filter(change =>
+                (change.beforeCid && before.has(change.beforeCid) || change.afterCid && after.has(change.afterCid))
+                && (!change.beforeCid || before.has(change.beforeCid)) && (!change.afterCid || after.has(change.afterCid)));
         if (!members.length) {
-            const before = new Set(previous?.content?.designCids || []), after = new Set(next?.content?.designCids || []);
-            [...new Set([...before, ...after])].forEach(cid => {
-                if (before.has(cid) !== after.has(cid)) members.push({ beforeCid: before.has(cid) ? cid : null, afterCid: after.has(cid) ? cid : null });
-            });
+            const removed = [...before].filter(cid => !after.has(cid)), added = [...after].filter(cid => !before.has(cid));
+            if (removed.length === 1 && added.length === 1) members.push({ beforeCid: removed[0], afterCid: added[0] });
+            else {
+                removed.forEach(cid => members.push({ beforeCid: cid, afterCid: null }));
+                added.forEach(cid => members.push({ beforeCid: null, afterCid: cid }));
+            }
         }
         return { fromCid, toCid, members, kind };
     }

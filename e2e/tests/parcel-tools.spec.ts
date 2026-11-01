@@ -1,5 +1,6 @@
 import { test, expect } from '../helpers/fixtures';
 import { expectStatusLogged, openCity, openParcel, parcelTab } from '../helpers/runtime';
+import { waitForMapReady } from '../helpers/app';
 import { sampleParcels } from '../helpers/mocks/parcel-data';
 
 test.describe('Parcel diagnostics @features', () => {
@@ -26,17 +27,36 @@ test.describe('Parcel diagnostics @features', () => {
     expect(await page.evaluate(() => JSON.stringify((window as any).LiveParcelFabric.get((window as any).currentParcel.id)))).toBe(before);
   });
 
-  test('Parcel Builder opens the configured external tool with the selected cadastral identifier', async ({ mockApi: page }) => {
+  test('Parcel Builder is in Tools, opens in Zagreb, and is unavailable in London', async ({ mockApi: page }) => {
     await openCity(page);
-    await openParcel(page, 'proposals');
+    await openParcel(page, 'tools');
     const base = await page.evaluate(() => (window as any).CityConfigManager.getParcelBuilderConfig().url);
+    await expect(page.locator('#propose-tab #parcelBuilderButton')).toHaveCount(0);
+    await expect(page.locator('#tools-tab #parcelBuilderButton')).toBeEnabled();
     await page.context().route(`${base}**`, route => route.fulfill({ contentType: 'text/html', body: '<title>External tool fixture</title>' }));
     const opened = page.context().waitForEvent('page');
-    await page.locator('#parcelBuilderButton').click({ noWaitAfter: true });
+    await page.locator('#parcelBuilderButton').focus();
+    await page.locator('#parcelBuilderButton').press('Enter');
     const child = await opened;
     await child.waitForURL(url => url.href.startsWith(base));
     expect(new URL(child.url()).searchParams.get('parcel_identifier')).toBe('1234-335754');
     await child.close();
+
+    await page.goto('/?city=london&at=51.5098,-0.1263,18&reduceMotion=1', { waitUntil: 'domcontentloaded' });
+    await waitForMapReady(page);
+    const londonButton = page.locator('#tools-tab #parcelBuilderButton');
+    await expect(londonButton).toBeDisabled();
+    await expect(londonButton).toHaveAttribute('title', 'Not available in this city');
+    await expect(page.locator('#propose-tab #parcelBuilderButton')).toHaveCount(0);
+    const gated = await page.evaluate(() => {
+      const w = window as any;
+      let opens = 0, status = '';
+      w.open = () => { opens += 1; };
+      w.updateStatus = (message: string) => { status = message; };
+      const result = w.ParcelsUIClaim.openParcelBuilder();
+      return { opens, status, result };
+    });
+    expect(gated).toEqual({ opens: 0, status: 'Not available in this city', result: false });
   });
   test('neighbor highlighting and vertex markers follow actual adjacent cadastral geometry', async ({ mockApi: page }) => {
     const adjacent = JSON.parse(JSON.stringify(sampleParcels));
