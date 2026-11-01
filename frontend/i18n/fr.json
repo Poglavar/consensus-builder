@@ -9096,4 +9096,58 @@
       "industrial": "Industriel"
     }
   }
+,
+  "chat": {
+    "title": "Demander à Mechaurbanista",
+    "intro": "Décrivez une modification de votre plan de travail.",
+    "tips": {
+      "title": "Essayez de demander",
+      "design": "Concevez un parc sur les parcelles sélectionnées ou déplacez un bâtiment de 50 m vers le nord.",
+      "agreement": "Préparez un accord privé pour le plan actuel.",
+      "feedback": "Envoyez un commentaire sur une fonctionnalité utile.",
+      "sources": "Quelles sources de parcelles et de bâtiments sont disponibles dans cette ville ?",
+      "affordableHousing": "Explorez les parcelles près des transports en commun pour du logement abordable."
+    },
+    "reviewAgreement": "Examiner l’accord",
+    "agreementStale": "Cet accord concerne une version antérieure du plan. Demandez un nouvel accord pour le plan actuel.",
+    "placeholder": "Que souhaitez-vous modifier ?",
+    "send": "Envoyer",
+    "undo": "Annuler le changement du plan",
+    "newConversation": "Nouvelle conversation",
+    "copyReply": "Copier la réponse",
+    "copyConversation": "Copier la conversation",
+    "copyFailed": "Impossible de copier le texte.",
+    "optionsLabel": "Options",
+    "working": "En cours…",
+    "steps": {
+      "one": "{{count}} étape",
+      "other": "{{count}} étapes"
+    },
+    "stepFailed": "Une étape n’a pas pu être effectuée.",
+    "planUpdated": {
+      "one": "Mis à jour en {{count}} étape",
+      "other": "Mis à jour en {{count}} étapes"
+    },
+    "planApplied": "La modification est sur la carte.",
+    "planFailed": "Impossible d’appliquer la modification : {{reason}}",
+    "turnCost": "Ce tour : {{cost}}",
+    "sessionTotal": {
+      "one": "Total de la session : {{cost}} · {{count}} tour",
+      "other": "Total de la session : {{cost}} · {{count}} tours"
+    },
+    "expired": "Cette conversation a expiré. Commencez-en une nouvelle.",
+    "optionsHint": "Choisissez une option ou écrivez une réponse.",
+    "planTitle": "Travail en cours",
+    "roles": {
+      "you": "Vous",
+      "agent": "Agent"
+    },
+    "errors": {
+        "budget": "Le budget quotidien du chat est atteint.",
+        "rateLimited": "Attendez avant d’envoyer un autre message.",
+        "unavailable": "Le service de chat est indisponible.",
+        "stream": "La réponse a été interrompue. Vous pouvez réessayer.",
+        "mapCommand": "La commande de la carte n’a pas pu être effectuée. Les changements du projet n’ont pas été appliqués."
+      }
+  }
 }

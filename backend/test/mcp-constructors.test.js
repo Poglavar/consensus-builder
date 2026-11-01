@@ -1,8 +1,13 @@
 // Check typed MCP construction against the shared app geometry and retained constraints.
 import { describe, expect, it } from 'vitest';
+import { createRequire } from 'node:module';
 import { buildTypedDesign, validateTrackDesign } from '../agents/mcp-constructors.js';
 import { appTurf as turf, constructorRuntime, intentDesign, intentEditing, corridorRuntime } from '../agents/mcp-geometry.js';
 import { cidOfObject } from '../cid.js';
+const require = createRequire(import.meta.url);
+const metricFrame = require('../../frontend/js/metric-frame.js');
+const DesignRecord = require('../../frontend/js/design-record.js');
+const { localDesignFromRow } = require('../../frontend/js/proposals/design-sync.js');
 const site = { type: 'Polygon', coordinates: [[[15,45],[15.002,45],[15.002,45.002],[15,45.002],[15,45]]] };
 const parcel = { type: 'Feature', id: 'A', properties: { parcelId: 'A' }, geometry: site };
 const common = { kind: 'building', site, city: 'london', floors: 4, authoredAt: '2026-01-01T00:00:00.000Z' };
@@ -53,6 +58,95 @@ describe('MCP shared construction generators', () => {
         const design = buildTypedDesign({ kind: 'building', typology: 'freeform', site, height: 21 }, options);
         expect(design.geometry.buildings[0].properties).toMatchObject({ floors: 7, height: 21 });
     });
+    it('rotates the coverage-derived body at construction instead of only recording rotation metadata', () => {
+        const parcels = [];
+        for (let x = 0; x < 4; x++) for (let y = 0; y < 4; y++) {
+            const west = 15 + x * 0.0002, south = 45 + y * 0.0002;
+            parcels.push([[[west, south], [west + 0.0001, south], [west + 0.0001, south + 0.0001], [west, south + 0.0001], [west, south]]]);
+        }
+        const site16 = { type: 'MultiPolygon', coordinates: parcels };
+        const baseline = buildTypedDesign({ kind: 'building', typology: 'freeform', site: site16, coverage: 0.4 }, options);
+        const rotated = buildTypedDesign({ kind: 'building', typology: 'freeform', site: site16, coverage: 0.4, rotationDegrees: 35 }, options);
+        const rotatedBaseline = constructorRuntime.singleBuilding.rotateGeometry(baseline.geometry.buildings[0].geometry, 35);
+        expect(rotated.geometry.buildings[0].geometry).toEqual(turf.intersect({ type: 'Feature', properties: {}, geometry: site16 }, { type: 'Feature', properties: {}, geometry: rotatedBaseline }).geometry);
+        expect(constructorRuntime.singleBuilding.footprintWithinBoundary(rotated.geometry.buildings[0], { type: 'Feature', properties: {}, geometry: site16 }, turf)).toBe(true);
+        expect(rotated.geometry.buildings[0].properties.rotation).toBe(35);
+        const body = rotated.geometry.buildings[0].geometry;
+        expect(rotated.site).toEqual(body);
+        expect(rotated.geometry.landTake).toEqual(body);
+        expect(turf.area({ type: 'Feature', properties: {}, geometry: rotated.site })).toBeLessThan(turf.area({ type: 'Feature', properties: {}, geometry: site16 }));
+    });
+    it('uses the final explicit rotated and offset footprint as freeform site and land take', () => {
+        const [lng, lat] = turf.pointOnFeature(parcel).geometry.coordinates;
+        const footprint = { type: 'Polygon', coordinates: [constructorRuntime.singleBuilding.buildRectangleRing({ lng, lat }, { widthM: 8, lengthM: 18 })] };
+        const design = buildTypedDesign({ kind: 'building', typology: 'freeform', site, footprint, rotationDegrees: 25, offsetEastM: 12, offsetNorthM: -4 }, options);
+        const body = design.geometry.buildings[0].geometry;
+        expect(design.site).toEqual(body);
+        expect(design.geometry.landTake).toEqual(body);
+        expect(turf.area({ type: 'Feature', properties: {}, geometry: design.site })).toBeLessThan(turf.area(parcel));
+    });
+    it('moves and rotates a footprint-only draft with its site, while a larger authored take stays anchored', () => {
+        const draft = buildTypedDesign({ kind: 'building', typology: 'freeform', site, coverage: 0.2 }, options);
+        const moved = intentDesign.modify(draft, [{ type: 'move', eastM: 30, northM: 10 }], { turf });
+        expect(moved.site).toEqual(moved.geometry.buildings[0].geometry);
+        expect(moved.geometry.landTake).toEqual(moved.geometry.buildings[0].geometry);
+        expect(moved.site).not.toEqual(draft.site);
+        const rotated = intentDesign.modify(moved, [{ type: 'rotate', degrees: 35 }], { turf });
+        expect(rotated.site).toEqual(rotated.geometry.buildings[0].geometry);
+        expect(rotated.geometry.landTake).toEqual(rotated.geometry.buildings[0].geometry);
+
+        const authoredTake = structuredClone(draft);
+        authoredTake.site = structuredClone(site);
+        authoredTake.geometry.landTake = turf.feature(structuredClone(site));
+        const before = structuredClone(authoredTake);
+        const within = intentDesign.modify(authoredTake, [{ type: 'move', eastM: 10, northM: 0 }], { turf });
+        expect(within.site).toEqual(site);
+        expect(within.geometry.landTake).toEqual(turf.feature(site));
+        expect(() => intentDesign.modify(authoredTake, [{ type: 'move', eastM: 100, northM: 0 }], { turf })).toThrow(/outside its site/);
+        expect(authoredTake).toEqual(before);
+    });
+    it.each(['park', 'square', 'lake'])('moves a %s site, body and authored features together on repeated typed moves', kind => {
+        const design = intentDesign.build({ kind: 'space', spaceKind: kind, site, authoredAt: common.authoredAt }, { turf });
+        design.structureProposal.decorationDesign = {
+            trees: [{ coordinate: [15.0005, 45.0005], kind: 'broadleaf', heightM: 8 }],
+            paths: [[[15.0004, 45.0004], [15.0006, 45.0006]]],
+            benches: [{ coordinate: [15.0007, 45.0007], bearing: 37 }],
+            ...(kind === 'park' ? { enclosures: [{ fence: 'iron', use: 'play', ring: [[15.0008,45.0008],[15.0012,45.0008],[15.0012,45.0012],[15.0008,45.0012],[15.0008,45.0008]], gates: [[15.001,45.0008]] }] } : {})
+        };
+        design.structureProposal.center = [15.001, 45.001];
+        design.structureProposal.pathPoints = [[15.0003, 45.0003], [15.0008, 45.0008]];
+        const before = structuredClone(design);
+        const moveCoordinates = constructorRuntime.singleBuilding.moveCoordinateCollection;
+        const from = constructorRuntime.singleBuilding.geometryCenter(design.structureProposal.geometry);
+        const targetFor = (origin, eastM, northM) => {
+            const frame = metricFrame.frameFor([[origin.lng, origin.lat]]), xy = frame.toMetric([origin.lng, origin.lat]);
+            const point = frame.toLngLat([xy[0] + eastM, xy[1] + northM]);
+            return { lng: point[0], lat: point[1] };
+        };
+        const expectedFirst = moveCoordinates(design.site.coordinates[0][0], from, targetFor(from, 12, 6));
+        const moved = intentDesign.modify(design, [{ type: 'move', eastM: 12, northM: 6 }], { turf });
+        expect(moved.site).toEqual(moved.structureProposal.geometry);
+        expect(moved.site.coordinates[0][0]).toEqual(expectedFirst);
+        expect(moved.structureProposal.decorationDesign.trees[0].coordinate).toEqual(moveCoordinates(before.structureProposal.decorationDesign.trees[0].coordinate, from,
+            targetFor(from, 12, 6)));
+        expect(moved.structureProposal.decorationDesign.benches[0].bearing).toBe(37);
+        if (kind === 'park') {
+            expect(moved.structureProposal.decorationDesign.enclosures[0].ring).toEqual(moveCoordinates(before.structureProposal.decorationDesign.enclosures[0].ring, from, targetFor(from, 12, 6)));
+            expect(moved.structureProposal.decorationDesign.enclosures[0].gates).toEqual(moveCoordinates(before.structureProposal.decorationDesign.enclosures[0].gates, from, targetFor(from, 12, 6)));
+        }
+        expect(moved.structureProposal.center).not.toEqual(before.structureProposal.center);
+        expect(moved.structureProposal.pathPoints).not.toEqual(before.structureProposal.pathPoints);
+        const twice = intentDesign.modify(moved, [{ type: 'move', eastM: -4, northM: 3 }], { turf });
+        expect(twice.site).toEqual(twice.structureProposal.geometry);
+        expect(twice.structureProposal.decorationDesign.paths[0][0]).toEqual(moveCoordinates(moved.structureProposal.decorationDesign.paths[0][0],
+            constructorRuntime.singleBuilding.geometryCenter(moved.site), targetFor(constructorRuntime.singleBuilding.geometryCenter(moved.site), -4, 3)));
+        expect(design).toEqual(before);
+        expect(() => intentDesign.modify(design, [{ type: 'move', eastM: 101, northM: 0 }], { turf })).toThrow(/100 metres/);
+    });
+    it('keeps attached stations out of free-space movement', () => {
+        expect(() => intentEditing.moveSpace({ goal: 'station', structureProposal: { kind: 'station', attachment: { corridorId: 'corridor-a' } } },
+            { type: 'move', eastM: 5, northM: 0 }, turf)).toThrow(/stays on its corridor/);
+    });
     it('uses app editor defaults for Block, Row and Freeform starting geometry', () => {
         const block = buildTypedDesign({ kind: 'building', typology: 'block', site }, options);
         expect(block.buildingProposal.parameters).toMatchObject({ height: 17.5, width: 15, setback: 2, rule: { kind: 'exact', minPlotAreaM2: 50 } });
@@ -62,6 +156,9 @@ describe('MCP shared construction generators', () => {
         const freeform = buildTypedDesign({ kind: 'building', typology: 'freeform', site }, options);
         const [lng, lat] = turf.pointOnFeature(parcel).geometry.coordinates;
         expect(freeform.geometry.buildings[0].geometry.coordinates[0]).toEqual(constructorRuntime.singleBuilding.buildRectangleRing({lng,lat},{widthM:20,lengthM:20}));
+        expect(freeform.site).toEqual(freeform.geometry.buildings[0].geometry);
+        expect(freeform.geometry.landTake).toEqual(freeform.geometry.buildings[0].geometry);
+        expect(turf.area({ type: 'Feature', properties: {}, geometry: freeform.site })).toBeLessThan(turf.area(parcel));
         expect(freeform.geometry.buildings[0].properties.height).toBe(10);
     });
     it('uses the shared Block ring and Row chamfer generators without alternate massing', () => {
@@ -149,7 +246,7 @@ describe('MCP shared construction generators', () => {
         const design = buildTypedDesign({ ...common, typology:'detached', setbackM:5, ruleKind:'range', minFloors:2 },options);
         const rule = design.buildingProposal.parameters.rule;
         expect(design.geometry.buildings[0].geometry).toEqual(constructorRuntime.rules.evaluateParcel(parcel,rule,{turf,largestPolygon:constructorRuntime.footprints.toSingleLargestPolygon}).envelope.geometry);
-        expect(design.geometry.buildings[0].properties.parcelId).toBe('A');
+        expect(design.geometry.buildings[0].properties).not.toHaveProperty('parcelId');
     });
     it('creates metre-gauge tracks and retains speed/radius/cross-section through modifications', () => {
         const original = track();
@@ -188,7 +285,12 @@ describe('Block pieces and their coupled massing', () => {
 
     it('builds one building per parcel, each with its own seed, inside one massing', () => {
         const design = block();
-        expect(design.geometry.buildings.map(b => b.properties.parcelId)).toEqual(['A', 'B']);
+        expect(design.geometry.buildings).toHaveLength(twoParcels.length);
+        for (const [index, building] of design.geometry.buildings.entries()) {
+            expect(turf.booleanWithin(building, twoParcels[index])).toBe(true);
+            expect(building.properties).not.toHaveProperty('parcelId');
+            expect(building.properties).not.toHaveProperty('buildingIndex');
+        }
         expect(new Set(design.geometry.buildings.map(b => b.properties.variationSeed)).size).toBe(2);
         expect(design.geometry.ruleMassing.properties).toMatchObject({ massing: true, height: design.geometry.buildings[0].properties.height });
     });
@@ -206,10 +308,54 @@ describe('Block pieces and their coupled massing', () => {
         expect(next.buildingProposal.parameters.rule).toEqual(next.geometry.buildings[0].properties.urbanRule);
     });
 
+    it('moves the whole Block massing and all pieces from one pivot without changing its site or authored rule', () => {
+        const original = block();
+        const prepared = intentDesign.modify(original, [
+            { type: 'set_floors', value: 4 },
+            { type: 'set_use', value: 'public' }
+        ], { turf });
+        const before = structuredClone(prepared), shape = constructorRuntime.singleBuilding;
+        const from = shape.geometryCenter(before.geometry.ruleMassing.geometry);
+        const targetFor = (origin, eastM, northM) => {
+            const frame = metricFrame.frameFor([[origin.lng, origin.lat]]), xy = frame.toMetric([origin.lng, origin.lat]);
+            const point = frame.toLngLat([xy[0] + eastM, xy[1] + northM]);
+            return { lng: point[0], lat: point[1] };
+        };
+        const to = targetFor(from, 1, 0);
+        const moved = intentDesign.modify(prepared, [{ type: 'move', eastM: 1, northM: 0 }], { turf });
+        expect(moved.site).toEqual(before.site);
+        expect(moved.geometry.ruleMassing.geometry).toEqual(shape.moveGeometry(before.geometry.ruleMassing.geometry, from, to));
+        for (const [index, building] of moved.geometry.buildings.entries()) {
+            expect(building.geometry).toEqual(shape.moveGeometry(before.geometry.buildings[index].geometry, from, to));
+            expect(shape.footprintWithinBoundary(building, { type: 'Feature', properties: {}, geometry: before.site }, turf)).toBe(true);
+            expect(building.properties).toMatchObject({
+                floors: before.geometry.buildings[index].properties.floors,
+                height: before.geometry.buildings[index].properties.height,
+                urbanRule: before.geometry.buildings[index].properties.urbanRule
+            });
+        }
+        expect(moved.geometry.ruleMassing.properties.urbanRule.use).toBe('public');
+        expect(moved.buildingProposal.parameters.rule.use).toBe('public');
+
+        const movedTwice = intentDesign.modify(moved, [{ type: 'move', eastM: 1, northM: 0 }], { turf });
+        const secondFrom = shape.geometryCenter(moved.geometry.ruleMassing.geometry), secondTo = targetFor(secondFrom, 1, 0);
+        expect(movedTwice.site).toEqual(before.site);
+        expect(movedTwice.geometry.ruleMassing.geometry).toEqual(shape.moveGeometry(moved.geometry.ruleMassing.geometry, secondFrom, secondTo));
+        for (const [index, building] of movedTwice.geometry.buildings.entries()) {
+            expect(building.geometry).toEqual(shape.moveGeometry(moved.geometry.buildings[index].geometry, secondFrom, secondTo));
+        }
+        expect(DesignRecord.validate(movedTwice).valid).toBe(true);
+        expect(cidOfObject(JSON.parse(JSON.stringify(movedTwice)))).toBe(cidOfObject(movedTwice));
+        expect(prepared).toEqual(before);
+        expect(() => intentDesign.modify(prepared, [{ type: 'move', eastM: 100, northM: 0 }], { turf })).toThrow(/outside its site/);
+        expect(prepared).toEqual(before);
+    });
+
     it('refuses a single-piece or footprint edit that would part a piece from its massing', () => {
         const design = block();
         expect(() => intentDesign.modify(design, [{ type: 'set_height', value: 10.5, buildingIndex: 0 }], { turf })).toThrow(/massing/);
-        expect(() => intentDesign.modify(design, [{ type: 'move', eastM: 5, northM: 0 }], { turf })).toThrow(/massing/);
+        expect(() => intentDesign.modify(design, [{ type: 'move', eastM: 5, northM: 0, buildingIndex: 0 }], { turf })).toThrow(/move the complete Block/);
+        expect(() => intentDesign.modify(design, [{ type: 'rotate', degrees: 10 }], { turf })).toThrow(/move the complete Block/);
         expect(() => intentDesign.modify(design, [{ type: 'remove_building', buildingIndex: 0 }], { turf })).toThrow(/massing/);
         expect(intentEditing).toBeTruthy();
     });
@@ -232,4 +378,36 @@ describe('Agent-drafted rule seeds', () => {
         const named = intentDesign.build({ kind: 'urban-rule', site, rule: { typology: 'row', kind: 'max', floors: 3, depthM: 10, seed: 42 } }, { turf });
         expect(named.geometry.buildings[0].properties.variationSeed).toBe(42);
     });
+});
+
+describe('canonical typed building constructor output', () => {
+    it.each([['block', 'buildings'], ['row', 'row'], ['detached', 'parcelBased']])(
+        'round-trips %s construction through browser persistence without changing its CID', (typology, goal) => {
+            const sourceParcels = structuredClone(rowParcels);
+            const originalParcels = structuredClone(sourceParcels);
+            const design = buildTypedDesign({ ...common, typology }, { parcels: sourceParcels });
+            const sourceIds = sourceParcels.map(item => item.id);
+            expect(sourceIds).toEqual(['A', 'B']);
+            expect(design.goal).toBe(goal);
+            expect(design.geometry.buildings).toHaveLength(sourceIds.length);
+
+            // The index in the generated array corresponds to the exact source parcel at that index.
+            for (const [index, building] of design.geometry.buildings.entries()) {
+                expect(turf.booleanWithin(building, sourceParcels[index])).toBe(true);
+                expect(building.properties).not.toHaveProperty('parcelId');
+                expect(building.properties).not.toHaveProperty('buildingIndex');
+            }
+            const expectedCid = cidOfObject(design);
+
+            const imported = localDesignFromRow({
+                cid: expectedCid,
+                content: design,
+                binding: { parcels: sourceIds.map(parcelId => ({ parcelId })) },
+                createdAt: design.authoredAt
+            }, { apiBase: 'https://api.example.test/' });
+            expect(DesignRecord.cidOf(imported)).toBe(expectedCid);
+            expect(imported.cadastreParcelIds).toEqual(sourceIds);
+            expect(sourceParcels).toEqual(originalParcels);
+        }
+    );
 });

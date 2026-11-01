@@ -24,7 +24,8 @@
         "build:parcels:browser": "node scripts/build-browser-parcels.mjs",
         "build:vocabulary": "node scripts/build-vocabulary.mjs",
         "mcp:http": "node agents/mcp-launch.mjs",
-        "mcp:check": "node scripts/mcp-check-contracts.mjs"
+        "mcp:check": "node scripts/mcp-check-contracts.mjs",
+        "chat:eval": "node scripts/chat-eval.mjs"
     },
     "dependencies": {
         "@anthropic-ai/sdk": "^0.126.0",
@@ -33,6 +34,7 @@
         "@ipld/car": "5.4.7",
         "@ipld/dag-pb": "4.2.0",
         "@mapbox/vector-tile": "^3.0.0",
+        "@modelcontextprotocol/client": "^2.3.1",
         "@modelcontextprotocol/node": "^2.1.1",
         "@modelcontextprotocol/server": "^2.3.1",
         "@noble/hashes": "1.8.0",
@@ -71,7 +73,6 @@
     },
     "devDependencies": {
         "@babel/parser": "^7.29.9",
-        "@modelcontextprotocol/client": "^2.3.1",
         "@vitest/coverage-v8": "^4.1.12",
         "esbuild": "0.28.2",
         "jsonld": "9.0.0",

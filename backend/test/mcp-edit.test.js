@@ -294,6 +294,27 @@ describe('granular authored editing', () => {
         expect(shorter.buildingProposal.parameters.rule.maxHeightM).toBe(6);
         expect(()=>edit(row,[{op:'replace',path:'/buildingProposal/parameters/rule/minPlotAreaM2',value:500}])).toThrow(/geometry/);
     });
+    it('edits geometry-free urban rules and as-is or ownership-transfer records without requiring a building drawing', () => {
+        const rule = make('urban-rule', { rule: { typology: 'block', floors: 4, depthM: 10 } });
+        expect(rule.geometry).toBeNull();
+        const revisedRule = edit(rule, [
+            { op: 'replace', path: '/buildingProposal/parameters/floors', value: 5 },
+            { op: 'replace', path: '/buildingProposal/parameters/depthM', value: 12 }
+        ]);
+        expect(revisedRule.buildingProposal.parameters).toMatchObject({ floors: 5, depthM: 12 });
+        expect(revisedRule.geometry).toBeNull();
+
+        const shiftedSite = { type: 'Polygon', coordinates: [[[-0.09,51.5],[-0.088,51.5],[-0.088,51.502],[-0.09,51.502],[-0.09,51.5]]] };
+        for (const goal of ['as-is', 'ownership-transfer']) {
+            const design = { ...make('urban-rule', { rule: { typology: 'block', floors: 4 } }), goal };
+            const updated = edit(design, [
+                { op: 'replace', path: '/title', value: `${goal} update` },
+                { op: 'replace', path: '/site', value: shiftedSite }
+            ]);
+            expect(updated).toMatchObject({ goal, title: `${goal} update`, site: shiftedSite });
+            expect(updated.geometry).toBeNull();
+        }
+    });
     it('refuses tree looks the renderer would silently replace or clamp', () => {
         const park=make('space',{spaceKind:'park',treeCount:2});
         expect(()=>edit(park,[{op:'replace',path:'/structureProposal/decorationDesign/trees/0/kind',value:'unknown'}])).toThrow(/tree/);

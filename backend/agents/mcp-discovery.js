@@ -36,12 +36,17 @@ const steps = [
     'Work in a plan: it is your applied map. Every draft and design edit takes plan (omit it once to start one, or start one from existing designs with ugt_draft_plan) and returns the new plan revision; pass that draftRef to the next call. A named plan does not need agreement terms.',
     'Read each result’s placement and consequences and tell the person: designs it would take off the plan (refused until they agree, then retry with displace), roads it joins, ground roads cut.',
     'Inspect objects with ugt_inspect_plan, then edit explicit refs with expectedCid. Retain the prior draftRef for undo.',
+    'To regenerate or relocate a design, drafting tools accept replaceDesignCid naming an exact current plan member. Replacement is atomic, preserves its schedule, and refuses stale targets or conflicts with other members.',
+    'Unpublished member CIDs resolve within an optional plan on ugt_inspect_design, ugt_compare, ugt_edit_design and ugt_modify_design; pass plan for a station whose corridors are private member CIDs too.',
     'Portable ugt-plan-file/v1 JSON, or a CityJSON file the site downloaded (it carries that plan file), can be passed as plan to ugt_get_plan, ugt_inspect_plan and ugt_edit_plan. It embeds canonical plan/v1 and design/v1 content; importing conveys no publication or consent.',
     'Validate and compare the result, render a preview, and show its URL. An unavailable source is not evidence of empty land.',
     'When publication is authorized, publish the exact reviewed reference and expectedCid. Return the verified permanent URL.',
     'Use agreement tools only for allocations and decision rules. An agreement uses its named plan exactly and revises no design.'
 ];
 export const MCP_FEATURES = Object.freeze([
+    { feature: 'chat-cost', read: 'ugt_chat_cost', contract: 'Backend-configured model token prices, conservative maximum turn reservation and optional token-count estimate. Estimates are not actual charges; private conversation totals remain in the authenticated chat session.' },
+    { feature: 'map-navigation', view: 'ugt_map_view', selection: 'ugt_select_parcels',
+        contract: 'Stateless commands returning an absolute view or source-parcel selection. The chat applies them; other clients apply returned state. Show/hide parcel IDs with parcelIdsVisible; select exact displayed parcelNumber within a complete live-label snapshot or bounded source area. Duplicate labels require clarification. Landmark near uses actual edge/end/corner/beside geometry and nearest parcel boundaries within 50 metres by default (200 maximum). Random selection offers one real starting parcel near a point, optionally on a compass side; it never substitutes for a failed landmark relation. Step accepts an adjacent direction or a distance in metres/feet. Manual selection separates the focused cursor from added parcels. Block selection requires complete road and parcel evidence.' },
     { feature: 'community-code-voting', prepare: 'ugt_draft_agreement', edit: 'ugt_edit_agreement', inspect: 'ugt_voting_status', vote: 'ugt_cast_community_vote',
         eligibility: 'Fixed code hashes in consultation.voting; generate codes and retain contact assignments locally. Changing eligibility creates a new agreement without transferring votes.' },
     { feature: 'named-plans', create: 'ugt_draft_plan', inspect: 'ugt_inspect_plan', edit: 'ugt_edit_plan', publish: 'ugt_publish_plan' },
@@ -78,7 +83,8 @@ const bounded = (value, maximum = 400) => typeof value === 'string' ? value.slic
 export function createMcpDiscoveryTools({ read, contracts = new Map(), mode = 'hosted', appOrigin = 'https://urbangametheory.xyz' }) {
     function capabilities() {
         return { version: '0.4.0', mode, endpoint: `${appOrigin}/mcp`, workflow: steps,
-            features: MCP_FEATURES.filter(item => item.feature !== 'shared-plan-session' || contracts.has('ugt_inspect_shared_plan')), tools: (contracts.size ? [...contracts.values()] : (mode === 'hosted' ? MCP_HOSTED_TOOLS : MCP_LOCAL_TOOLS).map(name => ({ name })))
+            features: MCP_FEATURES.filter(item => (item.feature !== 'shared-plan-session' || contracts.has('ugt_inspect_shared_plan')) &&
+                (item.feature !== 'chat-cost' || contracts.has('ugt_chat_cost'))), tools: (contracts.size ? [...contracts.values()] : (mode === 'hosted' ? MCP_HOSTED_TOOLS : MCP_LOCAL_TOOLS).map(name => ({ name })))
                 .map(({ name, title, annotations }) => trustedMetadata({ name, ...(title ? { title } : {}), ...(annotations ? { readOnly: annotations.readOnlyHint === true } : {}) })),
             coordinates: 'GeoJSON WGS84 [longitude, latitude]; distances metres; areas square metres. Missing measurements stay null.',
             publication: { public: true, permanent: true, confirmRequired: true, expectedCidRequiredForReferences: true, sharedSessionApproval: 'Browser-owner approval of the inspected session version and plan CID. Anonymous publication remains available; this does not prevent copying readable content.' },
@@ -113,11 +119,13 @@ export function createMcpDiscoveryTools({ read, contracts = new Map(), mode = 'h
         });
         return { items, total: all.length, offset, truncated: offset + items.length < all.length,
             abstractions: families.map(family => ({ id: family.id, sourceCount: family.sources?.length || 0,
+                registered: family.registered !== false, runtime: family.runtime || family.runtimes || null,
+                adapters: (family.adapters || []).filter(adapter => !adapterId || adapter.id === adapterId).map(adapter => ({ id: adapter.id, registered: adapter.registered !== false })),
                 operations: Object.keys(family.contract?.operations || {}), ...(includeContract ? { untrusted: {
                     contract: { id: family.id, schemaVersion: family.contract?.schemaVersion, operations: Object.keys(family.contract?.operations || {}) },
                     adapters: (family.adapters || []).filter(adapter => all.some(row => row.family.id === family.id && row.source.adapter === adapter.id))
                 } } : {}) })),
-            warnings: ['An unlisted geographic restriction is unknown coverage, not confirmation that a dataset covers the site.'],
+            warnings: ['Registration describes app support, not current browser selection or live service health.', 'An unlisted geographic restriction is unknown coverage, not confirmation that a dataset covers the site.'],
             ...(offset + items.length < all.length ? { next: trustedMetadata({ tool: 'ugt_list_sources', arguments: { ...(city ? { city } : {}), ...(abstraction ? { abstraction } : {}),
                 ...(sourceId ? { sourceId } : {}), ...(adapterId ? { adapterId } : {}), ...(bbox ? { bbox } : {}), offset: offset + items.length, limit, includeConfiguration, includeContract } }) } : {}) };
     }

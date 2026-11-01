@@ -9127,4 +9127,58 @@
       "industrial": "Industrial"
     }
   }
+,
+  "chat": {
+    "title": "Ask Mechaurbanista",
+    "intro": "Tell the agent what you want to change.",
+    "tips": {
+      "title": "Try asking",
+      "design": "Design a park on the selected parcels or move a building 50 m north.",
+      "agreement": "Prepare a private agreement for the current plan.",
+      "feedback": "Send feedback about a feature that would help.",
+      "sources": "Which parcel and building sources are available in this city?",
+      "affordableHousing": "Explore parcels near transit for affordable housing."
+    },
+    "reviewAgreement": "Review agreement",
+    "agreementStale": "This agreement is for an earlier version of the plan. Ask for a new agreement for the current plan.",
+    "placeholder": "What would you like to change?",
+    "send": "Send",
+    "undo": "Undo plan change",
+    "newConversation": "New conversation",
+    "copyReply": "Copy reply",
+    "copyConversation": "Copy conversation",
+    "copyFailed": "Could not copy the text.",
+    "optionsLabel": "Options",
+    "working": "Working…",
+    "steps": {
+      "one": "{{count}} steps",
+      "other": "{{count}} steps"
+    },
+    "stepFailed": "A step could not be completed.",
+    "planUpdated": {
+      "one": "Updated in {{count}} step",
+      "other": "Updated in {{count}} steps"
+    },
+    "planApplied": "The change is on the map.",
+    "planFailed": "Could not apply the change: {{reason}}",
+    "turnCost": "This turn: {{cost}}",
+    "sessionTotal": {
+      "one": "Session total: {{cost}}",
+      "other": "Session total: {{cost}}"
+    },
+    "expired": "This conversation expired. Start a new one.",
+    "optionsHint": "Choose an option or write a reply.",
+    "planTitle": "Current work",
+    "roles": {
+      "you": "You",
+      "agent": "Agent"
+    },
+    "errors": {
+      "budget": "The daily chat budget has been reached.",
+      "rateLimited": "Please wait before sending another message.",
+      "unavailable": "The chat service is unavailable.",
+      "stream": "The response was interrupted. Try again.",
+      "mapCommand": "The map command could not be completed. The design changes were not applied."
+    }
+  }
 }

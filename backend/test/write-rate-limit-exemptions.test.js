@@ -45,14 +45,14 @@ function app() {
 // is ~3,600 listen/close cycles per run, and roughly one request in a couple of thousand was reset
 // against a closing server (ECONNRESET / "socket hang up") — half of all runs failed, on a random
 // test each time, on an idle machine.
-async function hammer(expressApp, path, body, times) {
+async function hammer(expressApp, path, body, times, headers = {}) {
     const server = http.createServer(expressApp);
     await new Promise(resolve => server.listen(0, resolve));
     const agent = new http.Agent({ keepAlive: true, maxSockets: 1 });
     const codes = [];
     try {
         for (let i = 0; i < times; i += 1) {
-            const res = await request(server).post(path).agent(agent).send(body).set('Origin', 'http://localhost:5583');
+            const res = await request(server).post(path).agent(agent).send(body).set({ Origin: 'http://localhost:5583', ...headers });
             codes.push(res.status);
         }
     } finally {
@@ -65,6 +65,12 @@ async function hammer(expressApp, path, body, times) {
 const served = codes => codes.filter(code => code !== 403 && code !== 429).length;
 
 describe('read-only POSTs are not rationed as writes', () => {
+    it('lets chat requests reach chat authentication/configuration without consuming the write budget', async () => {
+        const instance = createApp({ env: { ...process.env, NODE_ENV: 'test', ANTHROPIC_API_KEY: '' }, pool: stubPool, writeRateLimit: 1 }).app;
+        const codes = await hammer(instance, '/chat/conversations', { city: 'london', language: 'en' }, 3, { Authorization: `Bearer ${'a'.repeat(64)}` });
+        expect(codes).toEqual([501, 501, 501]);
+    });
+
     it('leaves ballot authentication to its dedicated limits without consuming the authoring budget', async () => {
         const instance = createApp({ env: { ...process.env, NODE_ENV: 'test' }, pool: stubPool, writeRateLimit: 1 }).app;
         for (const action of ['access', 'ballot']) {

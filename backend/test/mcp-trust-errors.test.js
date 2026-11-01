@@ -78,11 +78,18 @@ describe('MCP schemas, data and recovery trust boundaries', () => {
         });
         const tools=createUrbanGameTheoryTools({mode:'local',env,fetchImpl});
         const server=createUrbanGameTheoryMcpServer({mode:'local',env,tools});
+        const placeSchema = server.contracts.get('ugt_find_place').inputSchema;
+        expect(placeSchema.properties).toHaveProperty('street');
+        expect(placeSchema.properties).toHaveProperty('houseNumber');
+        expect(placeSchema.properties).toHaveProperty('streetA');
+        expect(placeSchema.properties).toHaveProperty('streetB');
         const client=new Client({name:'local-artifact-boundary',version:'1.0.0'});
         const [clientTransport,serverTransport]=InMemoryTransport.createLinkedPair();
         try {
             await Promise.all([server.connect(serverTransport),client.connect(clientTransport)]);
             const call=async(name,args)=>{const result=await client.callTool({name,arguments:args});expect(result.isError,JSON.stringify(result.structuredContent)).not.toBe(true);return result.structuredContent;};
+            const place = await call('ugt_find_place', { query: '15.98,45.81', city: 'london' });
+            expect(place.candidates[0].point).toEqual([15.98, 45.81]);
             const outline={type:'Polygon',coordinates:[[[15,45],[15.001,45],[15.001,45.001],[15,45.001],[15,45]]]};
             const draft=await call('ugt_draft_building',{city:'london',parcelSourceId:'source-a',outline,authoredAt:'2026-01-01T00:00:00.000Z'});
             const plan=await call('ugt_draft_plan',{title:'Portable private plan',designs:[draft]});

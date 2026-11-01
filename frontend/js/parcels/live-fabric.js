@@ -120,6 +120,41 @@
         return Number.isFinite(west) ? Object.freeze([west, south, east, north]) : null;
     }
 
+    // The immutable source may contain disconnected polygons. These are the exact pieces the
+    // map seeds, shared with headless selection; authored cuts never use this identity convention.
+    function cadastralPartOf(id) {
+        const match = /^(.*)#cadastre-([1-9][0-9]*)$/.exec(String(id || ''));
+        return match && match[1] && Number.isSafeInteger(Number(match[2]))
+            ? { cadastreId: match[1], partIndex: Number(match[2]) } : null;
+    }
+
+    function cadastralParts(input) {
+        if (input?.geometry?.type !== 'MultiPolygon') return [input];
+        const components = input.geometry.coordinates;
+        if (!Array.isArray(components) || !components.length || !components.every(Array.isArray)) {
+            throw new TypeError('Cadastral MultiPolygon has invalid components.');
+        }
+        const cadastralId = featureId(input);
+        if (!cadastralId) throw new TypeError('Cadastral source geometry needs an identity.');
+        const ordered = components.map(coordinates => ({
+            coordinates,
+            box: bboxOf({ type: 'Feature', properties: {}, geometry: { type: 'Polygon', coordinates } })
+        })).sort((left, right) => {
+            for (let index = 0; index < 4; index += 1) {
+                const delta = Number(left.box?.[index]) - Number(right.box?.[index]);
+                if (Number.isFinite(delta) && delta !== 0) return delta;
+            }
+            return JSON.stringify(left.coordinates).localeCompare(JSON.stringify(right.coordinates));
+        });
+        return ordered.map((component, index) => {
+            const id = components.length > 1 ? `${cadastralId}#cadastre-${index + 1}` : cadastralId;
+            return { ...input, id, properties: { ...(input.properties || {}), parcelId: id, id,
+                cadastreParcelIds: [cadastralId],
+                ...(components.length > 1 ? { cadastralPart: true, cadastralPartIndex: index + 1 } : {}) },
+                geometry: { type: 'Polygon', coordinates: component.coordinates } };
+        });
+    }
+
     function boundsArray(bounds) {
         if (Array.isArray(bounds) && bounds.length >= 4) return bounds.map(Number);
         if (!bounds || typeof bounds.getSouthWest !== 'function' || typeof bounds.getNorthEast !== 'function') return null;
@@ -242,29 +277,7 @@
 
             const cadastralId = featureId(input);
             if (!cadastralId) return [normalizeFeature(input, config)];
-            const ordered = components.map(coordinates => ({
-                coordinates,
-                box: bboxOf({ type: 'Feature', properties: {}, geometry: { type: 'Polygon', coordinates } })
-            })).sort((left, right) => {
-                for (let index = 0; index < 4; index += 1) {
-                    const delta = Number(left.box?.[index]) - Number(right.box?.[index]);
-                    if (Number.isFinite(delta) && delta !== 0) return delta;
-                }
-                return JSON.stringify(left.coordinates).localeCompare(JSON.stringify(right.coordinates));
-            });
-            return ordered.map((component, index) => normalizeFeature({
-                ...input,
-                properties: {
-                    ...(input.properties || {}),
-                    parcelId: components.length > 1 ? `${cadastralId}#cadastre-${index + 1}` : cadastralId,
-                    id: components.length > 1 ? `${cadastralId}#cadastre-${index + 1}` : cadastralId,
-                    ...(components.length > 1 ? {
-                        cadastralPart: true,
-                        cadastralPartIndex: index + 1
-                    } : {})
-                },
-                geometry: { type: 'Polygon', coordinates: component.coordinates }
-            }, { cadastreSeed: true, cadastreId: cadastralId }));
+            return cadastralParts(input).map(part => normalizeFeature(part, { cadastreSeed: true, cadastreId: cadastralId }));
         }
 
         function normalizeCadastreFact(input) {
@@ -1164,10 +1177,11 @@
             revision,
             diagnostics,
             featureId,
+            cadastralPartOf,
             explicitCadastreIds,
             explicitGroundIds
         });
     }
 
-    return Object.freeze({ createLiveParcelFabric, featureId, explicitCadastreIds, explicitGroundIds });
+    return Object.freeze({ createLiveParcelFabric, featureId, explicitCadastreIds, explicitGroundIds, cadastralPartOf, cadastralParts });
 });

@@ -35,6 +35,7 @@ import { setupStreetsRoute } from './routes/streets.js';
 import { setupUrbanBlocksRoutes } from './routes/urban-blocks.js';
 import { setupOsmRoadRoute } from './routes/osm-road.js';
 import { setupOsmPublicSpacesRoute } from './routes/osm-public-spaces.js';
+import { setupPlacesRoute } from './routes/places.js';
 import { setupEstimateContextRoute } from './parcels/estimate-context.js';
 import { setupUrbanRulesRoute } from './routes/urban-rules.js';
 import { setupLandUsesRoute } from './routes/land-uses.js';
@@ -74,6 +75,7 @@ import { setupCityStatsRoute } from './routes/city-stats.js';
 import { setupAreaMonitorsRoute } from './routes/area-monitors.js';
 import { setupEnsRoute } from './routes/ens.js';
 import { setupAiSceneRoute } from './routes/ai-scene.js';
+import { setupChatRoute } from './routes/chat.js';
 import { forwardAsyncErrors } from './utils/async-routes.js';
 import { createPool as createDatabasePool } from './db/connection.cjs';
 
@@ -412,6 +414,7 @@ export function createApp({
             // Betting telemetry has its own bounded-batch limiter and must not consume the authoring budget.
             // Code voting has its own HTTP limit and persistent authentication budget.
             if (req.path === '/shared-plan-sessions' || req.path.startsWith('/shared-plan-sessions/')) return next();
+            if (req.path === '/chat/conversations' || req.path.startsWith('/chat/conversations/')) return next();
             if (req.method === 'POST' && /^\/agreements\/[^/]+\/voting\/(access|ballot)$/.test(req.path)) return next();
             if (req.method === 'POST' && (READ_ONLY_POST_PATHS.has(req.path) || isAgentPath(req.path) || req.path === '/bets/events' || req.path.startsWith('/bets/points/'))) {
                 return next();
@@ -463,6 +466,7 @@ export function createApp({
     setupOsmRoadRoute(app, activePool);
     setupEstimateContextRoute(app);
     setupOsmPublicSpacesRoute(app); // OSM parks and squares for Plan stats' public land (present-state.js)
+    setupPlacesRoute(app); // Bounded OSM name, address and shared-node intersection lookup.
     setupUrbanRulesRoute(app, activePool);
     setupLandUsesRoute(app, activePool);
     setupWellKnownRoutes(app, { env }); // /.well-known/x402, llms.txt, openapi.json, robots.txt; must precede docs (/agents.json aliases /docs/agents.json)
@@ -497,6 +501,7 @@ export function createApp({
     setupAreaMonitorsRoute(app, activePool);
     setupEnsRoute(app, activePool);
     setupAiSceneRoute(app, activePool); // AI photorealistic scene render + shared-render persistence (ai_scene)
+    app.locals.chat = setupChatRoute(app, activePool, { env });
 
     // Global error handler — catches errors thrown or rejected by routes/middleware (async ones
     // arrive here via forwardAsyncErrors). A 4xx that says it is safe to expose (HttpError, or a
@@ -554,6 +559,7 @@ export function startServer({ env = process.env, pool } = {}) {
         const drained = new Promise((resolve, reject) => {
             server.close((error) => error ? reject(error) : resolve());
         });
+        await app.locals.chat?.close();
         await app.locals.sharedPlanSessions.close();
         await Promise.all([drained, feedbackNotifications.close()]);
         if (typeof activePool?.end === 'function') {

@@ -241,7 +241,8 @@
     font-size: var(--cb-text-sm);
 }
 
-/* Monochrome authoring icons inherit the control colour. */
+/* Monochrome interface icons inherit the control colour. */
+.cb-icon-robot-smile,
 .cb-icon-track,
 .cb-icon-road-in-parcel,
 .cb-icon-freeform,
@@ -255,6 +256,10 @@
     mask-position: center;
     mask-size: contain;
     mask-repeat: no-repeat;
+}
+
+.cb-icon-robot-smile {
+    mask-image: url('../assets/icons/robot-smile.svg');
 }
 
 .cb-icon-track {

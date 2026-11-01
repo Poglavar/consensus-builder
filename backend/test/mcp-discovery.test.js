@@ -56,6 +56,19 @@ describe('tool-only MCP discovery', () => {
         expect(result.abstractions[0].untrusted.adapters[0].contract.configSchema.properties.name).toEqual({ type: 'string' });
         expect(JSON.stringify(result).length).toBeLessThan(2000);
     });
+    it('reports adapter registration separately from source selection and service health', async () => {
+        const read = { request: async () => ({ abstractions: [
+            { id: 'parcels', registered: true, runtime: 'server', adapters: [{ id: 'arcgis', registered: true }], sources: [] },
+            { id: 'terrain-profile', registered: false, runtime: 'browser', adapters: [{ id: 'dem', registered: false }], sources: [] }
+        ] }) };
+        const result = await createMcpDiscoveryTools({ read }).listSources();
+        expect(result.abstractions).toMatchObject([
+            { id: 'parcels', registered: true, runtime: 'server', adapters: [{ id: 'arcgis', registered: true }] },
+            { id: 'terrain-profile', registered: false, adapters: [{ id: 'dem', registered: false }] }
+        ]);
+        expect(result.warnings[0]).toMatch(/not current browser selection or live service health/);
+        expect(result.abstractions.every(row => !Object.hasOwn(row, 'connected'))).toBe(true);
+    });
     it('provides corrective tools and valid choices for unknown topics and abstractions', async () => {
         const tools = fixture();
         expect(() => tools.help({ topic: 'invented' })).toThrow(expect.objectContaining({ code: 'help-topic-unknown', next: { tool: 'ugt_capabilities', arguments: {} } }));

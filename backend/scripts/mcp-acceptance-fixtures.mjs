@@ -50,7 +50,7 @@ export async function acceptanceFixtures({ apiBase, appOrigin, agreementCid, fet
         ugt_draft_building: { ...scope, floors: 4, authoredAt },
         ugt_draft_space: { ...scope, spaceKind: 'park', authoredAt },
         ugt_draft_parcel_layout: { ...scope, algorithm: 'equal', count: 4, authoredAt },
-        ugt_draft_urban_rule: { ...scope, rule: { floors: 6 }, authoredAt },
+        ugt_draft_urban_rule: { ...scope, rule: { typology: 'block', floors: 6 }, authoredAt },
         ugt_modify_design: { design, parcelSourceId, changes: [{ type: 'retitle', value: 'MCP acceptance draft' }] },
         ugt_inspect_design: { design, paths: ['/structureProposal'] },
         ugt_edit_design: { design, parcelSourceId, expectedCid: cidOfObject(design), edits: [{ op: 'replace', path: '/title', value: 'MCP acceptance edit' }] },

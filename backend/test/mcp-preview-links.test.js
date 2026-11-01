@@ -50,6 +50,12 @@ describe('temporary hosted MCP object references', () => {
         expect(url.searchParams.get('buildout')).toBe('seed-1');
         expect(new URL(store.create({ plan, designs, parcelSourceId: 'ground' }).previewUrl).searchParams.has('when')).toBe(false);
     });
+    it('resolves plan members when an explicitly empty design-source map has no member key', async () => {
+        const store = storeOf(), designs = [design('Source-free member')];
+        const plan = { schema: 'plan/v1', title: 'Source-free', designCids: designs.map(cidOfObject), view: {} };
+        const preview = store.create({ plan, designs, designSources: {} });
+        expect(await store.resolve(preview.draftRef)).toEqual({ plan, designs, parcelSourceId: null, designSources: {} });
+    });
     it('keeps a large plan as references and fetches member objects individually with CID checks', async () => {
         const store = storeOf(), designs = Array.from({ length: 20 }, (_, i) => design(`Building ${i}`));
         const plan = { schema: 'plan/v1', title: 'A neighbourhood', designCids: designs.map(cidOfObject).sort(), view: {} };

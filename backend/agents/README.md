@@ -329,7 +329,8 @@ new form/tool requires frontend, API and MCP releases, plus the increased nginx 
 
 `ugt_find_place`, `ugt_parcel_context`, design/agreement reads, markets and `ugt_explain` discover
 the place and its contract. The intent tools draft roads, buildings, spaces, parcel layouts and
-urban rules with the app's pure modules; `ugt_modify_design` makes a fork with `origin.cid` and typed
+Block, Row or Detached urban rules with the app's pure modules; an urban rule includes its generated
+envelope and is a typed building design. `ugt_modify_design` makes a fork with `origin.cid` and typed
 changes. Local stdio returns canonical `draftArtifact` data. Hosted HTTP stores each draft object
 separately and returns a short `draftRef` plus an app `previewUrl` containing that reference only.
 URLs never carry geometry, compressed content or serialized records; the former fragment format is

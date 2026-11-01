@@ -187,7 +187,10 @@
         if (!instance) return [];
         // A plan's member that was read but never imported carries its record in memory.
         const designFeatures = key => {
-            const proposal = global.proposalStorage?.getProposal?.(String(key)) || instance.proposal;
+            const record = global.proposalStorage?.getProposal?.(String(key)) || instance.proposal;
+            const proposal = record?.content && typeof record.content === 'object'
+                ? { ...record.content, proposalId: record.proposalId || record.id || key }
+                : record;
             if (!proposal) return [];
             if (global.collectProposalFeatureSets) return global.collectProposalFeatureSets(proposal, { includeBuildingGeometry: true }).primaryFeatures;
             const footprint = global.__planOrder?.footprintOf?.(proposal);

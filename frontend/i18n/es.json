@@ -9155,4 +9155,58 @@
       "industrial": "Industrial"
     }
   }
+,
+  "chat": {
+    "title": "Pregúntale a Mechaurbanista",
+    "intro": "Describe un cambio para tu plan de trabajo.",
+    "tips": {
+      "title": "Prueba a pedir",
+      "design": "Diseña un parque en las parcelas seleccionadas o mueve un edificio 50 m al norte.",
+      "agreement": "Prepara un acuerdo privado para el plan actual.",
+      "feedback": "Envía comentarios sobre una función que sería útil.",
+      "sources": "¿Qué fuentes de parcelas y edificios están disponibles en esta ciudad?",
+      "affordableHousing": "Explora parcelas cerca del transporte público para vivienda asequible."
+    },
+    "reviewAgreement": "Revisar el acuerdo",
+    "agreementStale": "Este acuerdo corresponde a una versión anterior del plan. Pide un acuerdo nuevo para el plan actual.",
+    "placeholder": "¿Qué quieres cambiar?",
+    "send": "Enviar",
+    "undo": "Deshacer cambio del plan",
+    "newConversation": "Nueva conversación",
+    "copyReply": "Copiar respuesta",
+    "copyConversation": "Copiar conversación",
+    "copyFailed": "No se pudo copiar el texto.",
+    "optionsLabel": "Opciones",
+    "working": "Trabajando…",
+    "steps": {
+      "one": "{{count}} paso",
+      "other": "{{count}} pasos"
+    },
+    "stepFailed": "No se pudo completar un paso.",
+    "planUpdated": {
+      "one": "Actualizado en {{count}} paso",
+      "other": "Actualizado en {{count}} pasos"
+    },
+    "planApplied": "El cambio se aplicó al mapa.",
+    "planFailed": "No se pudo aplicar el cambio: {{reason}}",
+    "turnCost": "Este turno: {{cost}}",
+    "sessionTotal": {
+      "one": "Total de la sesión: {{cost}} · {{count}} turno",
+      "other": "Total de la sesión: {{cost}} · {{count}} turnos"
+    },
+    "expired": "Esta conversación ha caducado. Inicia una nueva.",
+    "optionsHint": "Elige una opción o escribe una respuesta.",
+    "planTitle": "Trabajo actual",
+    "roles": {
+      "you": "Tú",
+      "agent": "Agente"
+    },
+    "errors": {
+        "budget": "Se alcanzó el presupuesto diario del chat.",
+        "rateLimited": "Espera antes de enviar otro mensaje.",
+        "unavailable": "El servicio de chat no está disponible.",
+        "stream": "La respuesta se interrumpió. Puedes volver a intentarlo.",
+        "mapCommand": "No se pudo completar el comando del mapa. No se aplicaron los cambios del diseño."
+      }
+  }
 }

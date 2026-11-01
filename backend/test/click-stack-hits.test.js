@@ -139,6 +139,14 @@ describe('click stack hits', () => {
         expect(focus('designs', { id: 'missing' })).toEqual([]);
     });
 
+    it('focuses an MCP record body instead of its larger authoring site', () => {
+        const body = parcelFeature({ source: 'building-body' }), site = parcelFeature({ source: 'sixteen-parcel-site' });
+        const record = { proposalId: 'mcp-freeform', content: { goal: 'buildings', site: site.geometry, buildingProposal: { typologyType: 'single' }, geometry: { buildings: [body] } } };
+        const { context } = loadHits({ proposals: { 'mcp-freeform': record } });
+        context.collectProposalFeatureSets = proposal => ({ primaryFeatures: proposal.geometry.buildings });
+        expect(context.ClickStackHits.featuresFor('designs', { id: 'mcp-freeform', proposal: record })).toEqual([body]);
+    });
+
     it('uses only inspected plan features without falling back to mutable local designs', () => {
         const mutable = parcelFeature({ design: 'mutable-local-copy' });
         const inspected = parcelFeature({ design: 'inspected-canonical-revision' });

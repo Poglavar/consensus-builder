@@ -7,6 +7,7 @@ import { createRequire } from 'node:module';
 
 const require = createRequire(import.meta.url);
 const { ensureParcelId, getParcelId } = require('../../frontend/js/parcels/parcel-id.js');
+const { getParcelDisplayNumberFromFeature } = require('../../frontend/js/proposals/parcel-id.js');
 
 describe('ensureParcelId', () => {
     it('reads parcelId, parcel_id and id, in that order of preference', () => {
@@ -67,5 +68,11 @@ describe('getParcelId', () => {
         const props = { parcel_id: '  HR-335754-5678 ' };
         expect(getParcelId({ properties: props })).toBe('HR-335754-5678');
         expect(props).toEqual({ parcel_id: '  HR-335754-5678 ' });
+    });
+});
+
+describe('getParcelDisplayNumberFromFeature', () => {
+    it('uses Belgrade parcel numbers through the shared display accessor', () => {
+        expect(getParcelDisplayNumberFromFeature({ properties: { parcelId: 'belgrade-id', parcelNum: '  42/7 ' } })).toBe('42/7');
     });
 });

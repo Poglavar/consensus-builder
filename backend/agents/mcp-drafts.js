@@ -16,8 +16,27 @@ const geometry = value => value?.type === 'Feature' ? value.geometry : value;
 function union(features) {
     return features.reduce((a, b) => a ? turf.union(a, b) : b, null)?.geometry;
 }
+const URBAN_RULE_COMMON_FIELDS = new Set(['typology', 'kind', 'floors', 'height', 'floorHeightM', 'minPlotAreaM2', 'use', 'roof', 'balconyDepthM', 'seed']);
+const URBAN_RULE_FIELDS = {
+    block: new Set(['minHeightM', 'minDepthM', 'setbackM', 'depthM', 'simplifyM', 'chamferM', 'gapPositions', 'gapWidthM', 'wingPositions', 'wingLengthM']),
+    row: new Set(['minHeightM', 'minDepthM', 'depthM', 'lengthM', 'chamferM', 'rotationDegrees', 'offsetEastM', 'offsetNorthM']),
+    detached: new Set(['setbackM', 'minFootprintAreaM2', 'minFloors', 'frontSetbackM', 'rearSetbackM', 'setbackHeightRatio',
+        'maxHeightM', 'minFrontageM', 'coverage', 'minNaturalGround', 'maxFloorAreaRatio', 'maxFootprintAreaM2'])
+};
+function urbanRuleIntent(args) {
+    const rule = args?.rule;
+    if (!rule || typeof rule !== 'object' || Array.isArray(rule)) throw fail('urban-rule-required', 'Supply an urban rule with a supported typology.', { action: 'Set rule.typology to block, row or detached, and include floors or height.' });
+    if (!['block', 'row', 'detached'].includes(rule.typology)) throw fail('unsupported-urban-rule-typology', 'Choose a block, row or detached urban rule.', { action: 'Set rule.typology to block, row or detached.' });
+    const unsupported = Object.keys(rule).filter(key => !URBAN_RULE_COMMON_FIELDS.has(key) && !URBAN_RULE_FIELDS[rule.typology].has(key));
+    if (unsupported.length) throw fail('unsupported-urban-rule-parameter', `Unsupported ${rule.typology} rule parameter: ${unsupported.join(', ')}.`, { action: 'Use only the rule fields supported for this typology.' });
+    if (rule.floors == null && rule.height == null) throw fail('incomplete-urban-rule', 'An urban rule needs a floor count or height.', { action: 'Add rule.floors or rule.height.' });
+    if (args.parcelIds?.length && !args.parcelSourceId) throw fail('parcel-source-required', 'Selected urban-rule parcels need their exact source ID.', { action: 'Pass parcelSourceId with parcelIds from the current parcel selection.' });
+    if (rule.typology !== 'row' && !args.parcelIds?.length) throw fail('parcel-source-required', `${rule.typology} rules need exact source parcel IDs.`, { action: 'Select source parcels and supply parcelIds with parcelSourceId.' });
+    const { typology, kind: ruleKind, ...parameters } = rule;
+    return { ...args, ...parameters, kind: 'building', typology, ...(ruleKind == null ? {} : { ruleKind }), rule: undefined };
+}
 
-export function createMcpDraftTools({ read, appOrigin, resolveDraftReference }) {
+export function createMcpDraftTools({ read, appOrigin, resolveDraftReference, resolvePlan }) {
     async function result(design, parcelSourceId) {
         const binding = await read.request('/designs/binding', {}, { site: read.siteOfDesign(design), city: design.city, toleranceM: design.toleranceM, parcelSourceId });
         parcelSourceId = parcelSourceIdOf(binding) || parcelSourceId;
@@ -35,7 +54,7 @@ export function createMcpDraftTools({ read, appOrigin, resolveDraftReference }) 
         if (kind === 'road' || kind === 'track') intent.drivingSide = cityDrivingSide(args.city);
         let parcelFeatures = [];
         if (kind === 'station') {
-            intent.corridors = await roadCorridors(args.corridors);
+            intent.corridors = await roadCorridors(args.corridors, args.plan);
         } else if (kind === 'road' && !intent.points && (args.parcelIds?.length || args.outline)) {
             // A road placed into a parcel (docs/road-in-parcel.md): the site is its land and its
             // streets are read from the site's shape.
@@ -96,16 +115,21 @@ export function createMcpDraftTools({ read, appOrigin, resolveDraftReference }) 
         return result(checked.content, intent.parcelSourceId || args.parcelSourceId);
     }
     // A station's named corridor designs, resolved as immutable references.
-    async function roadCorridors(inputs = []) {
+    async function roadCorridors(inputs = [], plan) {
         return Promise.all(inputs.map(async input => {
-            const resolved = await resolveDesignSource(input);
+            const resolved = await resolveDesignSource(input, plan);
             if (!resolved.content.roadProposal) throw fail('corridor-road-required', 'Name only road or track designs in corridors.', { action: 'Remove designs that are not roads or tracks from corridors.' });
             return { cid: cidOfObject(resolved.content), content: resolved.content, parcelSourceId: resolved.parcelSourceId };
         }));
     }
-    async function resolveDesignSource(value) {
+    async function resolveDesignSource(value, plan) {
         if (typeof value === 'string' && !isCid(value)) {
             try { const url = new URL(value); if (url.origin === new URL(appOrigin).origin && /^\/designs\/baf(?:krei|ybei)[a-z2-7]{52}\/?$/.test(url.pathname)) value = url.pathname.split('/')[2]; } catch { /* Private reference errors are reported below. */ }
+        }
+        if (isCid(value) && plan != null) {
+            const resolved = await resolvePlan(plan);
+            const member = resolved.designs.find(row => row.cid === value);
+            if (member) return { content: structuredClone(member.content), parcelSourceId: member.parcelSourceId };
         }
         const reference = typeof value === 'string' && !isCid(value) ? value : value?.draftRef;
         if (reference) {
@@ -129,27 +153,28 @@ export function createMcpDraftTools({ read, appOrigin, resolveDraftReference }) 
         if (row?.cid && row.cid !== rebuilt.cid) throw fail('cid-mismatch', 'The supplied canonical design differs from its claimed CID.');
         return { content, parcelSourceId: row?.parcelSourceId };
     }
-    const resolveDesign = async value => (await resolveDesignSource(value)).content;
+    const resolveDesign = async (value, plan) => (await resolveDesignSource(value, plan)).content;
     return {
         resolveDesign, resolveDesignSource, roadCorridors, designResult: result,
         draftRoad: args => draft('road', args), draftTrack: args => draft('track', args), draftStation: args => draft('station', args), draftBuilding: args => draft('building', args),
-        draftSpace: args => draft('space', args), draftParcelLayout: args => draft('parcel-layout', args), draftUrbanRule: args => draft('urban-rule', args),
-        async inspectDesign({ design, paths = [''] }) {
-            const resolved = await resolveDesignSource(design), content = resolved.content;
+        draftSpace: args => draft('space', args), draftParcelLayout: args => draft('parcel-layout', args),
+        draftUrbanRule: args => draft('building', urbanRuleIntent(args)),
+        async inspectDesign({ design, paths = [''], plan }) {
+            const resolved = await resolveDesignSource(design, plan), content = resolved.content;
             return { cid: cidOfObject(content), parcelSourceId: resolved.parcelSourceId,
                 values: paths.map(path => ({ path, untrustedValue: valueAt(content, path) })),
                 editableRoots: Object.keys(content).filter(key => !['schema', 'origin', 'authoredAt'].includes(key)).map(key => `/${key}`),
                 next: trustedMetadata({ tool: 'ugt_edit_design', action: 'Use this CID as expectedCid. Patch the authored JSON with ordered JSON Pointer edits. Canonical OSM changes rebuild the road footprint; coupled building geometry must remain consistent.' }) };
         },
-        async editDesign({ design, expectedCid, edits, parcelSourceId }) {
-            const resolved = await resolveDesignSource(design);
+        async editDesign({ design, expectedCid, edits, parcelSourceId, plan }) {
+            const resolved = await resolveDesignSource(design, plan);
             if (cidOfObject(resolved.content) !== expectedCid) throw Object.assign(new Error('Inspect the intended design revision before editing.'), {
                 code: 'design-revision-mismatch', currentCid: cidOfObject(resolved.content), expectedCid,
                 next: { tool: 'ugt_inspect_design', arguments: { design }, action: 'Inspect this reference and use its current CID as expectedCid.' } });
             return result(editedDesign(resolved.content, expectedCid, edits), parcelSourceId || resolved.parcelSourceId);
         },
-        async modifyDesign({ design, changes, parcelSourceId }) {
-            const resolved = await resolveDesignSource(design), original = resolved.content;
+        async modifyDesign({ design, changes, parcelSourceId, plan }) {
+            const resolved = await resolveDesignSource(design, plan), original = resolved.content;
             parcelSourceId ||= resolved.parcelSourceId;
             let modified = original;
             for (const change of changes) {

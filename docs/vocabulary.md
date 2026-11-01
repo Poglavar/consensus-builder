@@ -28,7 +28,7 @@ The kind of change a design intends, identified by the canonical design-goal reg
 
 ### Keep-as-is design
 
-A design that retains the selected ground or existing form while proposing different rights or terms. Its absence of new construction is an explicit design choice.
+A design that retains the selected ground or existing form while proposing different rights or terms. Its absence of new construction is an explicit design choice. Applying it records the design locally without changing modeled geometry.
 
 ### Ownership-transfer design
 
@@ -229,7 +229,7 @@ A difference between a retained binding and a later calculation against the iden
 
 ### Live parcel
 
-A selectable piece of land in the working parcel fabric, including unchanged source land, formed outputs and remainders. Its runtime identity and geometry are distinct from the underlying cadastral references.
+A selectable piece of land in the working parcel fabric, including unchanged source land, formed outputs and remainders. Its runtime identity and geometry are distinct from the underlying cadastral references. Disconnected polygons of an unchanged source parcel are separate selectable cadastral pieces with deterministic `#cadastre-N` identities, each retaining its parent cadastral reference. Selecting a multipart parent requires choosing a piece; authored cuts retain their own live identities.
 
 ### Parcel fabric
 
@@ -477,7 +477,7 @@ A station attached to a compatible corridor. Road stations use a road with drivi
 Track stations use rail and are placed at ground level, elevated or underground; these are
 placement levels rather than tram or metro service types. The chosen level determines the station
 model, footprint and attachment. The current record identifiers are `bus` for road stations and
-`tram`, `elevated`, `underground` for the three track-station levels.
+`tram`, `elevated`, `underground` for the three track-station levels. The attachment names the exact corridor source identity. A station and that corridor may share ground; overlapping unrelated corridors remain placement conflicts.
 
 ### Decoration design
 
@@ -510,7 +510,7 @@ Authored building geometry, parameters and optional architectural evidence belon
 
 ### Freeform building
 
-A building design with one connected authored footprint, including any courtyard holes, and its vertical dimensions. Its land take can extend beyond that footprint. Dragging moves only the selected building footprint; surroundings stay anchored on occupied parcels. Leaving a parcel releases its surrounding treatment and furniture.
+A building design with one connected authored footprint, including any courtyard holes, and its vertical dimensions. Its land take can extend beyond that footprint. A new MCP Freeform design takes only its final building footprint; the constructor's input land supplies its sizing boundary. Typed movement or rotation of a footprint-only design updates its site and land take with the building. Dragging moves only the selected building footprint; surroundings stay anchored on occupied parcels. Leaving a parcel releases its surrounding treatment and furniture.
 
 ### Imported model footprint
 
@@ -1093,6 +1093,44 @@ no publication, chain account, votes or signatures.
 ### Private preview
 
 A temporary means of inspecting a draft artifact. An opaque bearer reference grants access to a stored draft object, independently of permanent publication and wallet approval. Collection previews reference their member designs individually; URLs contain no serialized records or geometry.
+
+### Chat conversation
+
+A private, token-authorized conversation with the application's hosted design agent. It retains a
+working plan and optional working agreement, message history, undo revisions, turn count and spending
+total for 24 hours. Its content is not published. Deleting or expiring it removes the messages and
+replay payloads while retaining the separate daily spending ledger.
+
+### Chat turn
+
+One person message and its bounded sequence of model and MCP calls. A client-generated turn key
+identifies retries of the same turn; replaying it makes no further model call. Confirmed plan
+changes survive a disconnected stream. Usage records distinguish settled cost from a reserved
+estimate whose final provider usage is unknown.
+
+### Chat map selection
+
+The chat cursor identifies one exact parcel in the active parcel source. The selection is a separate
+set of parcel IDs used as the next design's site. During manual multi-selection, moving the cursor
+does not add parcels; Add changes membership and Done ends selection while retaining it. A source
+ID and parcel ID must resolve in the current live fabric before the browser applies a selection.
+Map navigation and selection are transient view state, separate from immutable plan revisions. A random starting parcel is a suggested site drawn from actual nearby source parcels, not a resolved interpretation of an ambiguous location. Choosing it changes only the selection; the person decides whether to draft there. Distance-based selection moves the cursor to a parcel near the requested destination. A landmark-relative selection uses the mapped edge, end, corner or boundary and distance to actual parcel boundaries. Its highlighted parcel is a suggested interpretation for the person to confirm. A displayed parcel number is a source-dependent map label, distinct from the full parcel identity; resolving it requires the active source and current lookup area, and duplicate labels remain ambiguous.
+
+### Working plan (chat)
+
+The conversation's current private `plan/v1` revision, addressed by an opaque draft reference.
+There is no plan until a first design is drafted or the browser supplies its applied composition.
+The relay injects the plan reference and revision checks into public MCP edits. Successful changes
+are applied immediately on the map; undo restores the previous revision, including the empty map
+before the first draft. Browser edits rebase the conversation onto the exact current composition.
+
+### Working agreement (chat)
+
+The conversation's current private `agreement/v1` draft, addressed by its opaque draft reference and
+agreement CID. It names the working-plan revision by `planCid`; a later plan revision does not change
+the agreement, but makes that relationship stale. Agreement edits change terms against the exact
+agreement CID, and its own undo history is separate from plan undo. The draft remains private until
+the person reviews and takes a separate action in the app.
 
 ### Agent editing reference
 

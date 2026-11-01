@@ -55,6 +55,17 @@ module.exports = {
       AI_SCENE_COOLDOWN_MS: 20000,        // at most one render per IP per 20s
       AI_SCENE_QUOTA_MAX: 10,             // at most 10 successful renders per IP...
       AI_SCENE_QUOTA_WINDOW_MS: 86400000, // ...per rolling 24h
+      // Hosted chat: prices and caps are public config; credentials stay in the API environment.
+      CHAT_PROVIDER: process.env.CHAT_PROVIDER || 'openai',
+      CHAT_MODEL: process.env.CHAT_MODEL || (process.env.CHAT_PROVIDER === 'anthropic' ? 'claude-haiku-5-5' : 'gpt-6-luna'),
+      CHAT_PRICE_USD_PER_MTOK_INPUT: 0.10,
+      CHAT_PRICE_USD_PER_MTOK_OUTPUT: 0.50,
+      CHAT_PRICE_USD_PER_MTOK_CACHE_READ: 0.01,
+      CHAT_PRICE_USD_PER_MTOK_CACHE_WRITE: 0.125,
+      CHAT_DAILY_CAP_USD: 5,
+      CHAT_IP_DAILY_TURNS: 100,
+      CHAT_MAX_TURNS: 25,
+      MCP_INTERNAL_URL: 'http://127.0.0.1:3098/mcp',
       // --- Agents functionality for UGT: x402 paid proposal and verified-fact gates ---
       // These values are public (network id, facilitator, treasury pubkey, prices). The CDP
       // API key id + secret stay in the server-local .env. With any required value unset the route
@@ -86,6 +97,7 @@ module.exports = {
     env: {
       NODE_ENV: 'production',
       MCP_PORT: '3097',
+      MCP_INTERNAL_PORT: '3098',
       MCP_PUBLIC_ORIGIN: 'https://urbangametheory.xyz',
       UGT_APP_ORIGIN: 'https://urbangametheory.xyz',
       UGT_API_BASE: 'https://api.urbangametheory.xyz'

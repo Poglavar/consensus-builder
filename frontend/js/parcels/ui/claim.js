@@ -1129,17 +1129,40 @@
         return targetUrl;
     }
 
+    function isParcelBuilderAvailable() {
+        const cityId = global.CityConfigManager?.getCurrentCityId?.() || global.currentCityId;
+        return String(cityId || '').toLowerCase() === 'zagreb';
+    }
+
+    function updateParcelBuilderButton() {
+        const button = global.document?.getElementById('parcelBuilderButton');
+        if (!button) return;
+        const enabled = isParcelBuilderAvailable();
+        setButtonEnabledState(button, enabled);
+        button.title = enabled
+            ? tParcel('panel.parcel.builderTooltip', {}, 'Open parcel builder')
+            : tParcel('commandPalette.reason.hiddenForCity', {}, 'Not available in this city');
+    }
+
     function openParcelBuilder() {
+        if (!isParcelBuilderAvailable()) {
+            if (typeof global.updateStatus === 'function') {
+                global.updateStatus(tParcel('commandPalette.reason.hiddenForCity', {}, 'Not available in this city'));
+            }
+            return false;
+        }
         try {
             const targetUrl = buildParcelBuilderUrl();
             if (typeof global.open === 'function') {
                 global.open(targetUrl, '_blank', 'noopener,noreferrer');
             }
+            return true;
         } catch (error) {
             console.error('Failed to open Parcel Builder', error);
             if (typeof global.updateStatus === 'function') {
                 global.updateStatus(tParcel('status.messages.unable_to_open_parcel_builder_please_try_again', {}, 'Unable to open Parcel Builder. Please try again.'));
             }
+            return false;
         }
     }
 
@@ -2221,13 +2244,13 @@
         if (!doc) return;
         const titles = [
             ['mintAndClaimButton', 'panel.parcel.mintTooltip', 'Mint the parcel NFT'],
-            ['claimButton', 'panel.parcel.claimExistingTooltip', 'Claim existing parcel NFT'],
-            ['parcelBuilderButton', 'panel.parcel.builderTooltip', 'Open Parcel Builder']
+            ['claimButton', 'panel.parcel.claimExistingTooltip', 'Claim existing parcel NFT']
         ];
         titles.forEach(([id, key, fallback]) => {
             const el = doc.getElementById(id);
             if (el) el.title = tParcel(key, {}, fallback);
         });
+        updateParcelBuilderButton();
     }
 
     function handleToolsTabLanguageChange() {
@@ -2245,6 +2268,7 @@
     }
     if (typeof global.addEventListener === 'function') {
         global.addEventListener('i18n:translationsLoaded', handleToolsTabLanguageChange);
+        global.addEventListener('cityChanged', localizeToolsTab);
     }
     if (global.document && typeof global.document.addEventListener === 'function') {
         if (global.document.readyState === 'loading') {
@@ -2272,6 +2296,7 @@
         buildMintDeclareUrl,
         openMintAttestFlow,
         openParcelBuilder,
+        isParcelBuilderAvailable,
         buildParcelBuilderUrl,
         openClaimOnly,
         openClaimPortal,

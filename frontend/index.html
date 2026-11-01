@@ -145,6 +145,7 @@
                 'css/photoreal-mode.css',
                 'css/ai-scene.css',
                 'css/map-shell.css?v=20261030-use-highlight',
+                'css/chat-panel.css',
                 'css/activity-feed.css?v=20261027-style',
                 'css/area-monitor-list.css',
                 'css/map-credits.css',
@@ -465,6 +466,9 @@
 
         <!-- Top-right, beside the user bubble: Layers and Settings -->
         <div id="map-shell-top-right" class="map-shell-cluster map-shell-cluster--top-right">
+            <button type="button" id="chat-button" class="map-shell-button" data-sheet-target="chat-sheet" aria-controls="chat-sheet" aria-expanded="false" data-i18n-key="chat.title" data-i18n-attr="title,aria-label">
+                <i class="cb-icon-robot-smile" aria-hidden="true"></i>
+            </button>
             <button type="button" id="layers-button" class="map-shell-button" data-sheet-target="layers-sheet"
                 aria-controls="layers-sheet" aria-expanded="false" title="Layers" aria-label="Layers"
                 data-i18n-key="mapShell.layers" data-i18n-attr="title,aria-label">
@@ -625,6 +629,16 @@
                 <span class="map-shell-button-label" data-i18n-key="mapShell.bets">Bets</span>
             </button>
         </div>
+
+        <!-- Chat sheet -->
+        <section id="chat-sheet" class="right-screen-panel map-sheet chat-sheet" role="dialog" aria-labelledby="chat-sheet-title" hidden>
+            <div class="map-sheet-header">
+                <h2 id="chat-sheet-title" class="map-sheet-title"><i class="cb-icon-robot-smile" aria-hidden="true"></i> <span data-i18n-key="chat.title">Ask Mechaurbanista</span></h2>
+                <button type="button" class="map-sheet-close close-circle-btn close-circle-btn--lg" data-sheet-close
+                    aria-label="Close" title="Close" data-i18n-key="common.close" data-i18n-attr="aria-label,title">×</button>
+            </div>
+            <div class="map-sheet-body chat-sheet__body" data-chat-host></div>
+        </section>
 
         <!-- Layers sheet -->
         <section id="layers-sheet" class="right-screen-panel map-sheet" role="dialog" aria-labelledby="layers-sheet-title" hidden>
@@ -1254,7 +1268,7 @@
                         data-i18n-attr="title,aria-label"
                         title="This platform is AI-friendly, meaning that all the main functionality is accessible and usable by AI agents. Certified by the UN Bureau of Human–AI Affairs"
                         aria-label="This platform is AI-friendly, meaning that all the main functionality is accessible and usable by AI agents. Certified by the UN Bureau of Human–AI Affairs">
-                        <i class="fas fa-robot" aria-hidden="true"></i>
+                        <i class="cb-icon-robot-smile" aria-hidden="true"></i>
                         <span data-i18n-key="sidebar.header.aiBadge">AI-friendly</span>
                     </span>
                 </div>
@@ -1540,10 +1554,6 @@
                                     onclick="(window.animateFloodfillFromSelected || function(){})();">Detect block</button>
                             </div>
                         </div>
-                        <button id="parcelBuilderButton" class="btn btn-sm" type="button"
-                            onclick="(window.Parcels?.uiClaim?.openParcelBuilder || window.openParcelBuilder || function(){})()"
-                            title="Open Parcel Builder"><i class="fas fa-trowel-bricks" aria-hidden="true"></i><span
-                                data-i18n-key="panel.parcel.builderLabel">Parcel builder</span></button>
                     </div>
                     <div id="propose-content"></div>
                 </div>
@@ -1585,6 +1595,12 @@
                             <button id="visualizeButton" class="btn" type="button"
                                 onclick="showAnimationModalForCurrentParcel()"><i class="fas fa-film" aria-hidden="true"></i><span
                                     data-i18n-key="panel.parcel.visualizeButton">Visualize</span></button>
+                        </div>
+                        <div class="button-row button-row-1 cb-actions">
+                            <button id="parcelBuilderButton" class="btn" type="button" disabled
+                                onclick="(window.Parcels?.uiClaim?.openParcelBuilder || window.openParcelBuilder || function(){})()"
+                                title="Not available in this city"><i class="fas fa-trowel-bricks" aria-hidden="true"></i><span
+                                    data-i18n-key="panel.parcel.builderLabel">Parcel builder</span></button>
                         </div>
                         <div class="button-row button-row-2 cb-actions">
                             <button id="neighboursButton" class="btn" type="button" aria-pressed="false"
@@ -2069,6 +2085,7 @@
             'js/bets/bets-dialog.js?v=20261025-lmsr',
             'js/bets/bets-sheet.js?v=20261025-lmsr',
             'js/mobile-dock-sheet.js?v=20261031-tabs',
+            'js/chat/chat-entry.js',
             'js/ui/simulation-indicator.js',
             'js/ui/parcel-menu-model.js?v=20261020-local-estimates',
             'js/ui/parcel-menu.js?v=20261019-plot-provenance',
@@ -2382,6 +2399,7 @@
             'js/structures.js?v=20261029-enclosures',
             'js/structure-editor-objects.js',
             'js/structure-object-controls.js',
+            'js/structure-decoration-transform.js',
             'js/structure-geometry-editor.js?v=20261029-enclosures',
             'js/vendor/transit-station-models.js',
             'js/transit-alignments.js',

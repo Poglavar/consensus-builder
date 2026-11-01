@@ -1,5 +1,7 @@
 # Student AI assistance
 
+The [in-app chat](chat-agent.md) is the hosted agent for people who do not run an external agent app.
+
 A person and an MCP agent can work on the same plan through a private server session. The
 browser keeps its normal map and editors; the agent uses the hosted MCP. Completed, accepted
 revisions are reflected in the browser. The two take turns rather than editing concurrently.

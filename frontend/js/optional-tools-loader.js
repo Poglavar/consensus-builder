@@ -18,6 +18,7 @@
         cityModel: ['js/city-model-reader.js'],
         // CityJSON plan and design download, and reading such a file back.
         cityJson: ['js/city-model-reader.js', 'js/city-json-export.js'],
+        chat: ['js/chat/chat-transcript.js', 'js/chat/chat-context.js', 'js/chat/chat-navigation.js', 'js/chat/chat-client.js', 'js/chat/chat-panel.js'],
         // Road → Import's file readers (corridor-import.js), loaded when a file is imported.
         // The OSM reader reads XML with the OpenDRIVE module's parser.
         roadImportOsm: ['js/corridor-import-opendrive.js', 'js/corridor-import-osm.js'],

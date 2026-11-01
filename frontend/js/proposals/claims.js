@@ -130,6 +130,29 @@
         const value = record && (record.proposalId || record.id);
         return value === undefined || value === null ? '' : String(value);
     };
+    const contentCidOf = record => {
+        const designRecord = (global && global.DesignRecord)
+            || (typeof require === 'function' ? require('../design-record.js') : null);
+        if (!designRecord || typeof designRecord.cidOf !== 'function') return null;
+        try { return designRecord.cidOf(record); } catch (_) { return null; }
+    };
+    const isCid = value => {
+        const cid = (global && global.Cid) || (typeof require === 'function' ? require('../cid.js') : null);
+        return !!cid?.isCid?.(value);
+    };
+    function isAttachedCorridor(sourceId, candidate) {
+        if (!sourceId || !candidate?.roadProposal) return false;
+        const candidateId = recordIdOf(candidate);
+        if (candidateId === sourceId) {
+            // MCP plan rows use the canonical CID as their record identity. Unpublished drafts
+            // can use that same identity directly as well.
+            if (!candidate.published && isCid(sourceId)) return true;
+            if (!isCid(sourceId)) return true;
+        }
+        // Browser imports and private previews use local ids. Their authored content CID is the
+        // identity; a publication mark is optional and can be absent on a private draft.
+        return contentCidOf(candidate) === sourceId;
+    }
 
     function isBuildingContentProposal(proposal) {
         return !!(proposal && (
@@ -190,10 +213,15 @@
             }
             return targetFootprint;
         };
+        const attachedCorridorId = proposal.structureProposal?.kind === 'station'
+            ? String(proposal.structureProposal.attachment?.sourceId || '') : '';
 
         return (Array.isArray(records) ? records : []).filter(Boolean).filter(candidate => {
             const candidateId = recordIdOf(candidate);
             if (!candidateId || candidateId === targetId || !isApplied(candidate)) return false;
+            // The committed source identity is the only overlap exempted here; every other
+            // corridor remains a normal ground rival, and non-corridor conflicts are unchanged.
+            if (isAttachedCorridor(attachedCorridorId, candidate)) return false;
             // A standing park, square or lake holds its ground as exclusively as a building does:
             // a plan member whose footprint lies inside an applied park must be refused, not
             // stacked on top of it (Šibenik, 2026-09-03: a plan re-applied two buildings inside

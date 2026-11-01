@@ -12,7 +12,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import { createUrbanGameTheoryMcpServer } from '../agents/mcp-server.mjs';
 import { createUrbanGameTheoryTools } from '../agents/ugt-agent-tools.js';
 import { cidOfObject } from '../cid.js';
-import { MCP_LOCAL_TOOLS } from '../agents/mcp-catalog.js';
+import { MCP_DEBUG_TOOLS, MCP_LOCAL_TOOLS } from '../agents/mcp-catalog.js';
 import { createSharedPlanSessions } from '../agents/mcp-shared-plan-sessions.js';
 import { createMemorySharedPlanRepository } from './helpers/shared-plan-repository.js';
 
@@ -32,13 +32,13 @@ afterEach(async () => {
 
 async function connect(tools, options = {}) {
     const [clientTransport, serverTransport] = InMemoryTransport.createLinkedPair();
-    server = createUrbanGameTheoryMcpServer({ tools, ...options });
+    server = createUrbanGameTheoryMcpServer({ tools, env: {}, ...options });
     client = new Client({ name: 'ugt-test', version: '1.0.0' });
     await Promise.all([server.connect(serverTransport), client.connect(clientTransport)]);
 }
 
 const TOOL_METHODS = [
-    'capabilities', 'getActivity', 'listAgreements', 'getAgreement', 'listAttesters', 'getSupport', 'getOracleEvents',
+    'capabilities', 'getActivity', 'listAgreements', 'getAgreement', 'listAttesters', 'getSupport', 'getOracleEvents', 'chatCost',
     'inspectVerifiedFact', 'publishDesign', 'proposeAgreement', 'mintAgreement', 'fundAgreement', 'betOnAgreement',
     'buyVerifiedFact', 'requestOwnership', 'pledge', 'donate', 'refundDonation', 'voidPledge', 'revokePledge',
     'releaseDonations', 'fulfillPledge', 'resolve', 'claim', 'resolveExternal', 'claimExternal'
@@ -53,6 +53,23 @@ async function toolsByName() {
 }
 
 describe('Urban Game Theory MCP server', () => {
+    it('exposes configured costs through a bounded read-only tool', async () => {
+        const tools = stubTools();
+        tools.chatCost = vi.fn(async args => ({ provider: 'openai', model: 'test', currency: 'USD', pricesPerMillionTokens: { input: 1, output: 2, cacheRead: 0.5, cacheWrite: 1.5 }, maximumTurnReservationUsd: 1,
+            ...(Object.keys(args).length ? { estimate: { costUsd: 0.00001, basis: 'configured-token-prices', actual: false, tokenCounts: { inputTokens: args.inputTokens || 0, outputTokens: args.outputTokens || 0, cachedInputTokens: args.cachedInputTokens || 0, cacheWriteTokens: args.cacheWriteTokens || 0 } } } : {}) }));
+        await connect(tools, { env: { CHAT_DEBUG_COSTS: 'true' } });
+        const listed = await client.listTools(), tool = listed.tools.find(row => row.name === 'ugt_chat_cost');
+        const contextIndex = MCP_LOCAL_TOOLS.indexOf('ugt_parcel_context');
+        expect(listed.tools.map(row => row.name)).toEqual([...MCP_LOCAL_TOOLS.slice(0, contextIndex), ...MCP_DEBUG_TOOLS, ...MCP_LOCAL_TOOLS.slice(contextIndex)]);
+        const capabilities = await client.callTool({ name: 'ugt_capabilities', arguments: {} });
+        expect(capabilities.structuredContent.tools.map(row => row.name)).toContain('ugt_chat_cost');
+        expect(capabilities.structuredContent.features.map(row => row.feature)).toContain('chat-cost');
+        expect(tool.annotations).toMatchObject({ readOnlyHint: true });
+        expect(tool.inputSchema.properties.inputTokens.maximum).toBe(1_000_000);
+        expect((await client.callTool({ name: 'ugt_chat_cost', arguments: { inputTokens: 10 } })).structuredContent).toMatchObject({ provider: 'openai', estimate: { actual: false } });
+        expect(tools.chatCost).toHaveBeenCalledWith({ inputTokens: 10 });
+    });
+
     it('routes shared publication through owner approval and rejects ambiguous tool inputs', async () => {
         const sessions = createSharedPlanSessions({ repository: createMemorySharedPlanRepository(), validateArtifact: () => {} });
         const artifact = { cid: DESIGN_CID, plan: { schema: 'plan/v1', title: 'Saved plan' }, designs: [] };
@@ -128,9 +145,22 @@ describe('Urban Game Theory MCP server', () => {
         await connect(stubTools());
         const names = (await client.listTools()).tools.map(tool => tool.name);
         expect(names).toEqual(MCP_LOCAL_TOOLS);
+        expect(names).not.toContain('ugt_chat_cost');
+        const capabilities = await client.callTool({ name: 'ugt_capabilities', arguments: {} });
+        expect(capabilities.structuredContent.features.map(row => row.feature)).not.toContain('chat-cost');
         expect(names).toContain('ugt_publish_plan');
         expect(names).toContain('ugt_inspect_agreement');
         expect(names.some(name => /proposal|forecast|verdict|accept/.test(name))).toBe(false);
+    });
+
+    it('declares only supported typed urban-rule inputs', async () => {
+        await connect(stubTools());
+        const rule = (await toolsByName()).ugt_draft_urban_rule.inputSchema.properties.rule;
+        expect(rule.additionalProperties).toBe(false);
+        expect(rule.required).toContain('typology');
+        expect(rule.properties.typology.enum).toEqual(['block', 'row', 'detached']);
+        expect(rule.properties.floors.maximum).toBe(200);
+        expect(rule.properties.height.maximum).toBe(800);
     });
 
     it('refuses malformed successful authoring output while keeping structured recovery errors valid', async () => {
@@ -147,6 +177,37 @@ describe('Urban Game Theory MCP server', () => {
         expect(refused).toMatchObject({ isError: true, structuredContent: { code: 'ground-unavailable', next: expect.any(Object) } });
         expect(refused.structuredContent).not.toHaveProperty('cid');
         expect(observations.map(row => row.outcome)).toEqual(['failure', 'failure']);
+    });
+
+    it('exposes bounded random-start and distance selection through the public parcel primitive', async () => {
+        const tools = stubTools();
+        tools.selectParcels = vi.fn(async () => ({ selection: { parcelSourceId: 'source', focusParcelId: 'p', parcelIds: ['p'], active: false }, point: [0, 0] }));
+        await connect(tools);
+        const tool = (await toolsByName()).ugt_select_parcels;
+        expect(tool.annotations).toMatchObject({ readOnlyHint: true, idempotentHint: false });
+        expect(tool.inputSchema.properties.action.enum).toContain('random');
+        expect(tool.inputSchema.properties.radiusM.maximum).toBe(1000);
+        const args = { city: 'london', parcelSourceId: 'source', action: 'random', point: [-0.08, 51.5], direction: 'southwest', radiusM: 500 };
+        expect((await client.callTool({ name: 'ugt_select_parcels', arguments: args })).structuredContent.selection.parcelIds).toEqual(['p']);
+        expect(tools.selectParcels).toHaveBeenCalledWith(args);
+        expect((await client.callTool({ name: 'ugt_select_parcels', arguments: { ...args, radiusM: 1001 } })).isError).toBe(true);
+        expect(tools.selectParcels).toHaveBeenCalledTimes(1);
+    });
+
+    it('exposes landmark relations and displayed parcel numbers through existing public primitives', async () => {
+        const tools = stubTools();
+        tools.selectParcels = vi.fn(async () => ({ selection: { parcelSourceId: 'source', focusParcelId: 'p', parcelIds: ['p'], active: false }, parcelNumber: '17/2' }));
+        tools.mapView = vi.fn(async () => ({ view: { at: '0,0,18' }, parcelIdsVisible: true }));
+        await connect(tools);
+        const byName = await toolsByName();
+        expect(byName.ugt_select_parcels.inputSchema.properties.action.enum).toContain('near');
+        expect(byName.ugt_select_parcels.inputSchema.properties.maxDistanceM.maximum).toBe(200);
+        expect(byName.ugt_select_parcels.inputSchema.properties.visibleParcels.maxItems).toBe(500);
+        const args = { city: 'london', parcelSourceId: 'source', action: 'near', landmark: { osmId: 'way/1', point: [0,0] }, relation: 'edge', direction: 'southwest' };
+        expect((await client.callTool({ name: 'ugt_select_parcels', arguments: args })).isError).toBeFalsy();
+        expect(tools.selectParcels).toHaveBeenCalledWith(args);
+        expect((await client.callTool({ name: 'ugt_map_view', arguments: { view: { at: '0,0,18' }, parcelIdsVisible: true } })).structuredContent.parcelIdsVisible).toBe(true);
+        expect((await client.callTool({ name: 'ugt_select_parcels', arguments: { ...args, maxDistanceM: 201 } })).isError).toBe(true);
     });
 
     it('marks reads read-only, publishing additive and idempotent, and chain actions destructive', async () => {

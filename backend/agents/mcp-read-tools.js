@@ -9,7 +9,7 @@ const require = createRequire(import.meta.url);
 const approvalLink = require('../../frontend/js/approval-link.js');
 const footprintParts = require('../../frontend/js/proposals/footprint-parts.js');
 const search = require('../../frontend/js/ui/search-model.js');
-const browserSources = require('../../frontend/js/browser-source-readers.js');
+const { cadastralPartOf, cadastralParts } = require('../../frontend/js/parcels/live-fabric.js');
 const databaseSources = JSON.parse(readFileSync(new URL('../../frontend/data/source-catalog.json', import.meta.url), 'utf8')).databaseSources;
 const vocabulary = () => readFileSync(new URL('../../docs/vocabulary.md', import.meta.url), 'utf8');
 const failure = (code, message, next) => Object.assign(new Error(message), { code, next });
@@ -51,6 +51,13 @@ export function createMcpReadTools({ apiBase, appOrigin, fetchImpl }) {
         if (bbox) url.searchParams.set('at', `${(bbox[1] + bbox[3]) / 2},${(bbox[0] + bbox[2]) / 2},17`);
         return url.toString();
     };
+    function coordinateQuery(value) {
+        const match = /^\s*(-?\d+(?:\.\d+)?)\s*,\s*(-?\d+(?:\.\d+)?)\s*$/.exec(String(value || ''));
+        if (!match) return null;
+        const point = [Number(match[1]), Number(match[2])]; // lng, lat
+        if (point[0] < -180 || point[0] > 180 || point[1] < -90 || point[1] > 90) throw failure('invalid-place-coordinate', 'Coordinate search must be longitude, latitude in WGS84.', { action: 'Supply longitude,latitude within the WGS84 range.' });
+        return point;
+    }
     async function parcels({ city, parcelSourceId, parcelIds, point, geometry }) {
         if (!geometry && (Boolean(parcelIds) === Boolean(point))) throw Object.assign(failure('invalid-parcel-query', 'Provide exactly one of parcel ids or point.', { action: 'Supply parcelId or point.' }), { field: ['parcelIds', 'point'], constraints: { exactlyOne: ['parcelIds', 'point'] } });
         let source = parcelSourceId;
@@ -58,6 +65,8 @@ export function createMcpReadTools({ apiBase, appOrigin, fetchImpl }) {
             tool: 'ugt_list_sources', arguments: { ...(city ? { city } : {}), abstraction: 'parcels' },
             action: 'Choose a source with the required parcel lookup capability and pass its id as parcelSourceId.'
         }), { field: 'parcelSourceId', constraints: { required: true, abstraction: 'parcels' } });
+        const requestedIds = parcelIds;
+        if (parcelIds) parcelIds = [...new Set(parcelIds.map(id => cadastralPartOf(id)?.cadastreId || id))];
         let result;
         if (databaseSources.some(item => item.id === source)) {
             const path = source === 'oss-wfs' ? '/parcels' : `/${source}`;
@@ -92,6 +101,13 @@ export function createMcpReadTools({ apiBase, appOrigin, fetchImpl }) {
         if (parcelIds && parcelIds.some(id => !result.features.some(f => String(f.id ?? f.properties?.parcelId) === id))) {
             throw failure('parcel-missing', 'One or more requested parcels are absent.', { action: 'Correct the parcel ids using ugt_find_place.' });
         }
+        if (requestedIds?.some(id => cadastralPartOf(id))) {
+            const originals = new Map(result.features.map(f => [String(f.id ?? f.properties?.parcelId), f]));
+            const parts = new Map(result.features.flatMap(cadastralParts).map(f => [String(f.id ?? f.properties?.parcelId), f]));
+            const features = requestedIds.map(id => cadastralPartOf(id) ? parts.get(id) : originals.get(id));
+            if (features.some(feature => !feature)) throw failure('parcel-missing', 'That cadastral map piece does not exist in the current source geometry.', { action: 'Refresh the map and choose an exact current parcel piece.' });
+            result = { ...result, features };
+        }
         return { ...result, parcelSourceId: source };
     }
     const listDesigns = async query => {
@@ -110,6 +126,7 @@ export function createMcpReadTools({ apiBase, appOrigin, fetchImpl }) {
     }
     return {
         request, parcels, mapUrl, listDesigns, getDesign, getAgreement,
+        chatCost: args => request('/chat/cost', args),
         siteOfDesign(content) {
             if (content.site) return content.site;
             const parts = footprintParts.footprintParts(content);
@@ -118,7 +135,8 @@ export function createMcpReadTools({ apiBase, appOrigin, fetchImpl }) {
         },
         cities: async () => ({ sources: [...databaseSources, ...(await request('/parcel-sources')).sources] }),
         approvalLink: args => ({ approvalUrl: approvalLink.build({ origin: appOrigin, ...args }), next: trustedMetadata({ action: 'Open the link, review the agreement and press the selected action to sign with your wallet.' }) }),
-        async findPlace({ query, city, parcelSourceId, bbox, limit = 5 }) {
+        async findPlace({ query, city, parcelSourceId, bbox, limit = 5, street, houseNumber, streetA, streetB }) {
+            query = typeof query === 'string' ? query.trim() : '';
             if (isCid(query)) {
                 try { return { candidates: [{ kind: 'design', ...await getDesign({ designCid: query }) }] }; }
                 catch (error) {
@@ -131,14 +149,28 @@ export function createMcpReadTools({ apiBase, appOrigin, fetchImpl }) {
                 return { candidates: result.features.map(feature => ({ kind: 'parcel', city, parcelIds: [String(feature.id ?? feature.properties.parcelId)],
                     parcelSourceId: result.parcelSourceId, bbox: turf.bbox(feature), previewUrl: mapUrl(city, turf.bbox(feature)) })) };
             }
-            const [designs, agreements] = await Promise.all([listDesigns({ city, q: query, limit }), request('/agreements', { city, limit: 100 })]);
-            const places = await browserSources.geocoder().search({ q: query, limit, ...(bbox ? { bbox: bbox.join(',') } : {}) },
-                { requestJson: url => request(url, {}, undefined, true) });
-            return { candidates: [...(designs.designs || []).map(row => ({ kind: 'design', ...row, previewUrl: `${appOrigin}/designs/${row.cid}` })),
+            const coordinate = coordinateQuery(query);
+            if (coordinate) return { candidates: [{ kind: 'place', city: city || null, title: query, point: coordinate,
+                previewUrl: mapUrl(city, [coordinate[0], coordinate[1], coordinate[0], coordinate[1]]) }], partial: false, truncated: false, noMatch: false };
+            const hasAddress = Boolean(street || houseNumber), hasIntersection = Boolean(streetA || streetB);
+            if ((hasAddress && (!street || !houseNumber)) || (hasIntersection && (!streetA || !streetB)) ||
+                (Number(hasAddress) + Number(hasIntersection) + Number(Boolean(query)) !== 1)) {
+                throw failure('place-query-required', 'Provide one place name, complete address, street intersection, coordinate or CID.', { action: 'Supply one complete place search.' });
+            }
+            const [designs, agreements] = query ? await Promise.all([listDesigns({ city, q: query, limit }), request('/agreements', { city, limit: 100 })]) : [{ designs: [] }, { agreements: [], count: 0 }];
+            let places = { candidates: [], partial: false, truncated: false };
+            if (bbox) places = await request('/places', { bbox: bbox.join(','), ...(query ? { q: query } : {}), street, houseNumber, streetA, streetB, limit });
+            const candidates = [...(designs.designs || []).map(row => ({ kind: 'design', ...row, previewUrl: `${appOrigin}/designs/${row.cid}` })),
                 ...(agreements.agreements || []).filter(row => search.matchRank(row.title || row.content?.title, query) !== null).map(row => ({ kind: 'agreement', ...row, previewUrl: `${appOrigin}/agreements/${row.cid}` })),
-                ...(places.features || []).map(feature => ({ kind: 'place', city: null, requestedCity: city || null, point: feature.geometry.coordinates,
-                    title: feature.properties?.name, description: feature.properties, bbox: feature.properties?.extent || null,
-                    previewUrl: mapUrl(city, [...feature.geometry.coordinates, ...feature.geometry.coordinates]) }))].slice(0, limit), warnings: agreements.count >= 100 ? ['Agreement title search covers the latest 100 agreements.'] : [] };
+                ...(places.candidates || []).map(place => ({ ...place, city: city || null, requestedCity: city || null,
+                    previewUrl: mapUrl(city, [place.point[0], place.point[1], place.point[0], place.point[1]]) }))];
+            const truncated = places.truncated === true || agreements.count >= 100 || candidates.length > limit;
+            const warnings = [];
+            if (agreements.count >= 100) warnings.push('Agreement title search covers the latest 100 agreements.');
+            if (!bbox) warnings.push('OSM place candidates require a WGS84 bbox no larger than 0.5 degrees.');
+            if (places.partial) warnings.push('OSM place coverage is partial; this result may omit matches.');
+            return { candidates: candidates.slice(0, limit), partial: places.partial === true, truncated,
+                noMatch: candidates.length === 0 && places.partial !== true, warnings };
         },
         async parcelContext(args) {
             const result = await parcels({ ...args, parcelIds: args.parcelId ? [args.parcelId] : undefined });

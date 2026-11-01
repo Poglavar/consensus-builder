@@ -2,7 +2,7 @@
 // page-level override, and the rule that only the contract's own "Parcel does not exist" revert may
 // be reported as "not minted" — an RPC failure must surface as "couldn't check", never as absence.
 
-import { describe, it, expect, beforeAll } from 'vitest';
+import { describe, it, expect, beforeAll, vi } from 'vitest';
 import { createRequire } from 'node:module';
 
 const require = createRequire(import.meta.url);
@@ -33,6 +33,35 @@ describe('parcel claim RPC defaults', () => {
         } finally {
             delete globalThis.EVM_RPC_URLS;
             delete globalThis.self;
+        }
+    });
+});
+
+describe('Parcel Builder city gate', () => {
+    it('allows Zagreb and refuses every other city before opening the external tool', () => {
+        const previous = {
+            CityConfigManager: globalThis.CityConfigManager,
+            open: globalThis.open,
+            updateStatus: globalThis.updateStatus
+        };
+        const open = vi.fn();
+        const updateStatus = vi.fn();
+        let cityId = 'zagreb';
+        globalThis.CityConfigManager = { getCurrentCityId: () => cityId };
+        globalThis.open = open;
+        globalThis.updateStatus = updateStatus;
+        try {
+            expect(globalThis.ParcelsUIClaim.isParcelBuilderAvailable()).toBe(true);
+            cityId = 'london';
+            expect(globalThis.ParcelsUIClaim.isParcelBuilderAvailable()).toBe(false);
+            expect(globalThis.ParcelsUIClaim.openParcelBuilder()).toBe(false);
+            expect(open).not.toHaveBeenCalled();
+            expect(updateStatus).toHaveBeenCalledWith('Not available in this city');
+        } finally {
+            for (const [key, value] of Object.entries(previous)) {
+                if (value === undefined) delete globalThis[key];
+                else globalThis[key] = value;
+            }
         }
     });
 });

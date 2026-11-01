@@ -47,6 +47,20 @@ describe('agreement MCP editing surface', () => {
         const drafted = await tools.draftAgreement({ plan: namedPlan.draftArtifact, rulePreset: 'owner-vote', allocations });
         expect(drafted.agreement.allocations).toEqual(allocations);
     });
+    it('reports community voting without hypothetical owner allocations or cash positions', async () => {
+        const { tools, namedPlan } = await runtime();
+        const agreement = await tools.draftAgreement({ plan: namedPlan.draftArtifact, rulePreset: 'community-vote' });
+        const inspected = await tools.inspectAgreement({ plan: agreement.draftArtifact });
+        expect(inspected.rule).toEqual({ electorate: 'community', binding: false });
+        expect(inspected.communityPosition).toEqual({ allocations: 'not-defined', cashTransfers: 'not-defined' });
+        expect(inspected).toMatchObject({ parties: null, persons: null, publicM2: null, proposerM2: null,
+            settlement: null, valued: null, contributedValueCents: null, distributableValueCents: null,
+            publicValueCents: null, proposerValueCents: null, scheme: null, cashSchedule: null });
+        expect(inspected.items.filter(item => item.kind === 'piece').every(item => !Object.hasOwn(item, 'recipient'))).toBe(true);
+        expect(JSON.stringify(inspected)).not.toContain('changeM2');
+        expect(JSON.stringify(inspected)).not.toContain('cashCents');
+    });
+
     it('requires an existing named plan to draft an agreement and has no design or cash-line inputs', () => {
         const draft = schemas().get('ugt_draft_agreement');
         const plan = { schema: 'plan/v1', title: 'Existing plan', designCids: [], view: { at: '51.5,-0.1,17', mode: '2d', city: 'london' } };

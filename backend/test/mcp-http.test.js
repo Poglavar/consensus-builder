@@ -114,8 +114,8 @@ describe('hosted MCP HTTP', () => {
     });
     it('rejects credential-bearing environments before starting', () => {
         for (const key of ['UGT_AGENT_KEYPAIR', 'DATABASE_URL', 'PINATA_JWT_TOKEN']) expect(() => createMcpHttpService({ env: { [key]: 'configured' } })).toThrow(/no credentials/);
-        expect(hostedEnvironment({ PATH: '/bin', UGT_API_BASE: 'https://api.example', UGT_AGENT_KEYPAIR: 'configured', DATABASE_URL: 'configured', ANTHROPIC_API_KEY: 'configured' }))
-            .toEqual({ PATH: '/bin', UGT_API_BASE: 'https://api.example' });
+        expect(hostedEnvironment({ PATH: '/bin', UGT_API_BASE: 'https://api.example', CHAT_DEBUG_COSTS: 'true', UGT_AGENT_KEYPAIR: 'configured', DATABASE_URL: 'configured', ANTHROPIC_API_KEY: 'configured' }))
+            .toEqual({ PATH: '/bin', UGT_API_BASE: 'https://api.example', CHAT_DEBUG_COSTS: 'true' });
     });
     it('enforces hosts, origins, body size and no-store', async () => {
         const base = await host();

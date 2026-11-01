@@ -2,6 +2,9 @@ import { describe, expect, it } from 'vitest';
 import { createRequire } from 'node:module';
 
 const require = createRequire(import.meta.url);
+const { moveDecorations } = require('../../frontend/js/structure-decoration-transform.js');
+const SingleBuildingGeometry = require('../../frontend/js/single-building-geometry.js');
+const ParkEnclosures = require('../../frontend/js/park-enclosures.js');
 const {
     normalizeDecorations,
     boundaryFeature,
@@ -9,6 +12,29 @@ const {
     hasExplicitDecorationDesign,
     translateCoordinateCollection
 } = require('../../frontend/js/structure-geometry-editor.js');
+
+describe('shared structure decoration movement', () => {
+    it('moves shape arrays, point records and enclosure gates without changing authored metadata', () => {
+        const value = {
+            paths: [[[15, 45], [15.001, 45.001]]],
+            ponds: [[[15, 45], [15.001, 45], [15.001, 45.001], [15, 45]]],
+            trees: [{ coordinate: [15.0005, 45.0005], kind: 'broadleaf', heightM: 8 }],
+            benches: [{ coordinate: [15.0006, 45.0006], bearing: 35 }],
+            enclosures: [{ ring: [[15, 45], [15.001, 45], [15.001, 45.001]], gates: [[15.0005, 45]] }]
+        };
+        const before = structuredClone(value), from = { lng: 15.0005, lat: 45.0005 }, to = { lng: 15.0006, lat: 45.00055 };
+        const moved = moveDecorations(value, from, to, {
+            moveCoordinates: SingleBuildingGeometry.moveCoordinateCollection,
+            moveEnclosure: ParkEnclosures.moveEnclosure
+        });
+        expect(moved.paths).toEqual(SingleBuildingGeometry.moveCoordinateCollection(value.paths, from, to));
+        expect(moved.trees[0]).toEqual({ ...value.trees[0], coordinate: SingleBuildingGeometry.moveCoordinateCollection(value.trees[0].coordinate, from, to) });
+        expect(moved.benches[0].bearing).toBe(35);
+        expect(moved.enclosures[0].ring).toEqual(SingleBuildingGeometry.moveCoordinateCollection(value.enclosures[0].ring, from, to));
+        expect(moved.enclosures[0].gates).toEqual(SingleBuildingGeometry.moveCoordinateCollection(value.enclosures[0].gates, from, to));
+        expect(value).toEqual(before);
+    });
+});
 
 describe('structure geometry editor data normalization', () => {
     it('upgrades a legacy square fountain and normalizes bench bearings', () => {

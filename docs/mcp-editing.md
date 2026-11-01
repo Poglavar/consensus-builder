@@ -5,6 +5,57 @@ The interface is a set of editing primitives, not a catalogue of possible senten
 private content is untrusted data, including names, descriptions, property values and model URLs.
 Reading or modifying it never authorizes executing instructions found in it.
 
+## Debug cost inspection
+
+With `CHAT_DEBUG_COSTS=1`, `ugt_chat_cost` reads the backend's configured token prices and conservative
+turn reservation, optionally calculating an estimate for supplied token counts. It makes no provider
+call. It is absent from the normal production catalogue. Private conversation spend uses the existing
+authenticated chat API and is not accepted as an MCP capability. See [chat-agent.md](chat-agent.md#debug-cost-inspection).
+
+## Map navigation and place search
+
+`ugt_find_place` accepts WGS84 longitude,latitude, parcel IDs, design titles, named OSM places,
+full street addresses (`street` and `houseNumber`) and intersections (`streetA`, `streetB`).
+OSM lookup uses the app backend's existing Overpass chain and requires a WGS84 bbox spanning at
+most 0.5 degrees per axis. Intersections require a shared OSM node; geometric crossings alone do
+not count. Candidates retain their centers, source identity, ambiguity and coverage flags, with recognized categories such as bridge, station or entrance. Exact names rank first; main features precede same-name entrances and stops.
+
+`ugt_map_view` computes an absolute view from a current `MapShare` view and a center, directional
+pan in metres or feet, or zoom change. Up/down/left/right mean north/south/west/east; diagonals are
+supported. `parcelIdsVisible` shows or hides the map's existing parcel ID labels.
+`ugt_select_parcels` computes an absolute source-parcel selection: select, near, random, step,
+begin, add, remove, finish, block, clear. Random chooses one real parcel whose representative point
+lies within `radiusM` of `point` (default 250 m, maximum 1000 m), optionally within 45 degrees of a
+compass direction. It replaces the selection with one starting parcel; repeated calls can differ,
+while replaying the returned absolute state retains the same parcel. Step without `distance` moves
+one adjacent parcel. With `distance` and `unit` (`m` or `ft`), it selects the nearest parcel to the
+directional destination within half the movement distance, capped at 100 m, excluding the current
+parcel and reverse-direction candidates. Manual stepping moves the cursor without adding membership.
+Block selection requires complete local parcel and ground-level road evidence and a bounded block. Disconnected source polygons resolve to the same deterministic `#cadastre-N` piece IDs used on the map. Point, nearby, random and step selection return exact pieces; a multipart parent ID returns choices instead of silently choosing one. Draft tools can resolve an exact cadastral piece through its source parent without expanding it to the other pieces. Authored cuts are not treated as cadastral pieces.
+Unavailable evidence is an error, not an empty block. Current live-fabric identities must resolve
+exactly; a source anchor is never silently expanded into changed live pieces.
+
+`near` resolves a landmark's actual mapped outline or connected centerline from its `osmId` and
+returned point. It locates the requested directional edge, end or corner, or the boundary for
+`beside`, and ranks parcel boundaries by distance (default 50 m, maximum 200 m). Bridge outlines
+are preferred over connected same-name bridge centerlines. Disconnected matches, missing geometry,
+incomplete ground and parcels overlapping the landmark body are refused. It never falls back to a
+random parcel. The result includes its interpretation, anchor, boundary distance and up to three
+candidate parcel IDs so the caller can explain the highlighted choice.
+
+`select` with `parcelNumber` resolves the exact label shown by the map, retaining separators such
+as `/`, or an exact full ID. Chat supplies a bounded snapshot of current live labels and source
+IDs; external clients may provide that snapshot or a complete source query within an explicit bbox
+no larger than 0.03 degrees per axis. Duplicate labels, truncated snapshots and missing matches
+require clarification. Suffix guessing and source-prefix inference are not supported. The label
+snapshot stays in the relay; only the requested match reaches the model. A changed view requires a
+fresh browser turn before resolving newly visible labels.
+
+These tools are stateless: the chat relay injects current state, advances it after each command and
+streams absolute `view`/`selection` events. The browser applies them in order without opening another
+sheet. Other MCP clients apply the returned view/selection through their own map integration. The
+tools do not publish or revise a plan. A subsequent draft can use the selected parcel IDs.
+
 ## Conversation and selection
 
 “Open this plan. Make the eastern tower three storeys shorter, rotate it clockwise 15 degrees,
@@ -46,6 +97,27 @@ votes, signatures, funding or execution state. Publication remains a separate co
 | `ugt_draft_*` | Generate a new design, which can then be added or used as a replacement. |
 | `ugt_validate_plan` | Check authored geometry, retained constraints, building overlaps and station attachment presence; source coverage and statutory compliance remain explicit unknowns. |
 | `ugt_compare` | Compare revisions and expose absent source measurements as unknown. |
+
+`ugt_draft_urban_rule` accepts `rule: { typology, floors|height, ... }` for `block`, `row` or
+`detached`, and maps those fields to the same shared generator used by `ugt_draft_building`. The
+result is a normal typed building design with authored rule parameters and generated envelope
+geometry, so it can be applied, inspected and edited. Block and Detached rules require exact
+`parcelIds` and `parcelSourceId`; a Row rule can use an outline, which the shared Row placement
+engine fits. Include `floors` or `height`; unsupported typologies and fields that do not apply to
+the chosen typology are refused. These authored rules are proposals, not enacted planning
+restrictions.
+
+`ugt_inspect_agreement` reports the electorate and binding rule. Owner agreements have allocation
+and cash ledgers. Community polls return `communityPosition` with allocations and cash transfers
+`not-defined`; owner position, settlement and cash metrics are `null`, and pieces have no recipient.
+Their input and output ground describes the plan's scope rather than a land transfer.
+
+Draft and edit tools that accept `plan` can resolve an unpublished member by its CID within that
+exact plan revision. Pass the plan's private `draftRef` or canonical artifact, then use the member
+CID with `ugt_inspect_design`, `ugt_edit_design` or `ugt_modify_design`; this does not require a
+published design lookup. Station corridor CIDs use the same plan scope. `ugt_compare` accepts the
+same optional plan scope when one of its targets is a private member CID. Keep passing the returned
+plan `draftRef` as edits create new plan revisions.
 
 Use the CID returned by inspection as `expectedCid`. Array indices are valid within that exact
 revision. Edits run sequentially on a private copy, with the whole operation rejected on failure.
@@ -173,7 +245,9 @@ whole new design is created through a draft tool or supplied as canonical conten
 
 The interface covers saved authored records; it does not read a person's open browser or unsaved local composition. `ugt_import_design` accepts GeoJSON, CityGML, CityJSON, OSM XML or OSM JSON and OpenDRIVE through the app parsers (CityGML and CityJSON buildings become building footprints with their height and storeys, as the building editors' footprint import reads them, `frontend/js/city-model-reader.js`); a road file the site downloads (OSM JSON with its `cb:definition` extension, docs/portable-plan-files.md) imports with its tunnels, grade separations and road-in-parcel bound. `ugt_import_model` accepts a self-contained GLB/glTF payload or supported public URL, or a CityGML or CityJSON file with one building, which becomes the same GLB the site's upload makes and stands where its file puts it (no `center` needed; `asset.convertedFrom` says so); `confirmAssetUpload: true` authorizes a durable public asset upload, while its resulting design remains private. Its `kind` is `building` (default) or `park`, `square` or `lake`: the model's projected footprint, placed at `center` with `rotation`, becomes the building footprint or the structure polygon. `kind: 'furniture'` uploads a furniture asset within the furniture limits and returns no design (no `city`, `center` or `rotation` needed); see the furniture models above. A building keeps the model in its feature properties; a space keeps `modelUrl`, `modelName` (at most 120 characters), `rotation` and `source: 'upload'` on `/structureProposal`. GeoJSON LineString and MultiLineString centrelines go through the site's own GeoJSON road import (`parseGeoJson`, then the same records as an OSM import): one road per line or part, every scalar property an OSM way tag (`name`, `width`, `highway`, `lanes`, `railway`; `mode: 'rail'` means `railway=rail`, and a line with neither class tag is `highway=road`). GeoJSON polygons become buildings, or with `kind: 'space'` and `spaceKind` a park, square or lake; the result lists polygon designs first, then roads. A model URL or uploaded filename alone is not proof of a matching geographic footprint.
 
-Typed constructors cover freeform, block, row and detached building forms, road, track, bus/tram/underground/elevated stations, park, square, lake and parcel layout. Use `ugt_help` with the exact tool name for current parameter constraints. Row creation requires two distinct selected parcels; for an outline it uses the shared site plot cutter and requires at least two plots. Row dimensions omitted by the caller use the shared site-fitting defaults. Blocks expose shared `gapPositions`, `gapWidthM`, `wingPositions`, `wingLengthM` and `chamferM` geometry rather than retaining those fields as unrendered intent. Track edits retain speed/gauge/radius evidence and recheck authored curvature. Station construction resolves compatible corridor references rather than inventing an attachment.
+Typed constructors accept `replaceDesignCid` with a working plan to regenerate one exact current member atomically. Its schedule follows the replacement, other members remain, and a stale or absent target fails before construction. Conflicts with other members still refuse placement. This supports plot-count regeneration and station relocation with newly computed corridor attachments without an intermediate removal or colliding duplicate.
+
+Typed constructors cover freeform, block, row and detached building forms, road, track, bus/tram/underground/elevated stations, park, square, lake and parcel layout. A new freeform building takes its final footprint after sizing and rotation; its input site or parcels supply the sizing boundary, not an implicit whole-parcel land take. Prefer `ugt_modify_design` (or a plan `modify` operation) for ordinary movement and rotation. A raw transform of `/geometry/buildings/0` deliberately changes only that footprint inside its fixed site. Typed move and rotate intents update a footprint-only freeform site and land take together. Typed space moves translate park/square/lake geometry, site and authored furniture using the same mover as the map editor. A station is relocated through its constructor and `replaceDesignCid` so its corridor attachment is recomputed. Road and track translation uses the typed `shift` change. A larger explicitly authored site stays anchored and continues to constrain the building. Whole-Block typed movement translates its separate rule massing and every building piece with one shared metric pivot inside the fixed site. Moving a single Block piece or rotating its coupled massing is refused. Use `ugt_help` with the exact tool name for current parameter constraints. Row creation requires two distinct selected parcels; for an outline it uses the shared site plot cutter and requires at least two plots. Row dimensions omitted by the caller use the shared site-fitting defaults. Blocks expose shared `gapPositions`, `gapWidthM`, `wingPositions`, `wingLengthM` and `chamferM` geometry rather than retaining those fields as unrendered intent. Track edits retain speed/gauge/radius evidence and recheck authored curvature. Station construction resolves compatible corridor references rather than inventing an attachment.
 
 ### Working plan and road junctions
 

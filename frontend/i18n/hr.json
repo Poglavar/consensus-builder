@@ -9179,4 +9179,58 @@
       "industrial": "Industrija"
     }
   }
+,
+  "chat": {
+    "title": "Pitajte Mechaurbanista",
+    "intro": "Opišite promjenu plana na kojem radite.",
+    "tips": {
+      "title": "Pokušajte pitati",
+      "design": "Osmisli park na odabranim česticama ili pomakni zgradu 50 m prema sjeveru.",
+      "agreement": "Pripremi privatni sporazum za trenutačni plan.",
+      "feedback": "Pošalji povratnu informaciju o značajci koja bi pomogla.",
+      "sources": "Koji su izvori čestica i zgrada dostupni u ovom gradu?",
+      "affordableHousing": "Istraži čestice blizu javnog prijevoza za priuštivo stanovanje."
+    },
+    "reviewAgreement": "Pregledaj sporazum",
+    "agreementStale": "Ovaj je sporazum za stariju verziju plana. Zatražite novi sporazum za trenutačni plan.",
+    "placeholder": "Što želite promijeniti?",
+    "send": "Pošalji",
+    "undo": "Poništi promjenu plana",
+    "newConversation": "Novi razgovor",
+    "copyReply": "Kopiraj odgovor",
+    "copyConversation": "Kopiraj razgovor",
+    "copyFailed": "Tekst nije moguće kopirati.",
+    "optionsLabel": "Opcije",
+    "working": "Radim…",
+    "steps": {
+      "one": "{{count}} korak",
+      "other": "{{count}} koraka"
+    },
+    "stepFailed": "Korak nije dovršen.",
+    "planUpdated": {
+      "one": "Ažurirano u {{count}} koraku",
+      "other": "Ažurirano u {{count}} koraka"
+    },
+    "planApplied": "Promjena je prikazana na karti.",
+    "planFailed": "Promjena nije primijenjena: {{reason}}",
+    "turnCost": "Ovaj upit: {{cost}}",
+    "sessionTotal": {
+      "one": "Ukupno u razgovoru: {{cost}} · {{count}} upit",
+      "other": "Ukupno u razgovoru: {{cost}} · {{count}} upita"
+    },
+    "expired": "Razgovor je istekao. Započnite novi.",
+    "optionsHint": "Odaberite opciju ili napišite odgovor.",
+    "planTitle": "Trenutačni rad",
+    "roles": {
+      "you": "Vi",
+      "agent": "Agent"
+    },
+    "errors": {
+        "budget": "Dosegnut je dnevni limit za chat.",
+        "rateLimited": "Pričekajte prije slanja nove poruke.",
+        "unavailable": "Usluga chata nije dostupna.",
+        "stream": "Odgovor je prekinut. Pokušajte ponovno.",
+        "mapCommand": "Nije moguće izvršiti naredbu na karti. Promjene dizajna nisu primijenjene."
+      }
+  }
 }

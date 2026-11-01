@@ -7,6 +7,13 @@ const geometry = { type: 'Polygon', coordinates: [[[0, 0], [0.001, 0], [0.001, 0
 const sourceFeature = id => ({ type: 'Feature', id, properties: { parcelId: id }, geometry });
 const json = body => new Response(JSON.stringify(body));
 describe('MCP public source reads', () => {
+    it('reads the backend chat cost endpoint and forwards optional token counts', async () => {
+        const fetchImpl = vi.fn(async url => json({ provider: 'openai', model: 'test', currency: 'USD', pricesPerMillionTokens: { input: 1, output: 2, cacheRead: 0.5, cacheWrite: 1.5 }, maximumTurnReservationUsd: 1 }));
+        const reads = createMcpReadTools({ apiBase: 'https://api.example', appOrigin: 'https://app.example', fetchImpl });
+        expect(await reads.chatCost({ inputTokens: 10, cachedInputTokens: 5 })).toMatchObject({ currency: 'USD' });
+        expect(fetchImpl).toHaveBeenCalledTimes(1);
+        expect(fetchImpl.mock.calls[0][0]).toBe('https://api.example/chat/cost?inputTokens=10&cachedInputTokens=5');
+    });
     it('maps the current Croatian binding namespace to its public gateway identity', () => {
         expect(parcelSourceIdOf({ binding: { parcelSource: { sourceId: 'hr-cadastre' } } })).toBe('oss-wfs');
         expect(parcelSourceIdOf({ parcelSourceId: 'selected', binding: { parcelSource: { sourceId: 'other' } } })).toBe('selected');
@@ -17,6 +24,43 @@ describe('MCP public source reads', () => {
         const found = await reads.findPlace({ query: 'HR-335550-1', city: 'zagreb', parcelSourceId: 'oss-wfs' });
         expect(found.candidates[0]).toMatchObject({ parcelSourceId: 'oss-wfs', parcelIds: ['HR-335550-1'], previewUrl: expect.stringContaining('city=zagreb') });
         expect(fetchImpl.mock.calls[0][0]).toBe('https://api.example/parcels?parcel_id=HR-335550-1');
+    });
+    it('forwards bounded place queries and keeps center points as map coordinates', async () => {
+        const fetchImpl = vi.fn(async url => {
+            const parsed = new URL(url);
+            if (parsed.pathname === '/designs') return json({ designs: [] });
+            if (parsed.pathname === '/agreements') return json({ agreements: [], count: 0 });
+            if (parsed.pathname === '/places') return json({ candidates: [{ kind: 'neighbourhood', title: 'Old Town', point: [-0.09, 51.505], osmId: 'way/12' }], partial: false, truncated: false, source: 'osm-overpass' });
+            throw new Error(`unexpected ${parsed.pathname}`);
+        });
+        const reads = createMcpReadTools({ apiBase: 'https://api.example', appOrigin: 'https://app.example', fetchImpl });
+        const found = await reads.findPlace({ query: 'Old Town', city: 'london', bbox: [-0.15, 51.45, -0.05, 51.55], limit: 5 });
+        const placesUrl = new URL(fetchImpl.mock.calls.find(([url]) => new URL(url).pathname === '/places')[0]);
+        expect(placesUrl.searchParams.get('bbox')).toBe('-0.15,51.45,-0.05,51.55');
+        expect(placesUrl.searchParams.get('q')).toBe('Old Town');
+        expect(found).toMatchObject({ partial: false, truncated: false, noMatch: false,
+            candidates: [{ kind: 'neighbourhood', point: [-0.09, 51.505], osmId: 'way/12', previewUrl: expect.stringContaining('at=51.505%2C-0.09%2C17') }] });
+    });
+    it('supports address and intersection selectors, direct lng/lat input, and partial/no-match reporting', async () => {
+        const fetchImpl = vi.fn(async url => {
+            const parsed = new URL(url);
+            if (parsed.pathname === '/places') return json({ candidates: [], partial: true, truncated: false, source: 'osm-overpass' });
+            if (parsed.pathname === '/designs') return json({ designs: [] });
+            if (parsed.pathname === '/agreements') return json({ agreements: [], count: 0 });
+            throw new Error(`unexpected ${parsed.pathname}`);
+        });
+        const reads = createMcpReadTools({ apiBase: 'https://api.example', appOrigin: 'https://app.example', fetchImpl });
+        const intersection = await reads.findPlace({ streetA: 'King Street', streetB: 'Main Street', bbox: [-0.15, 51.45, -0.05, 51.55] });
+        expect(new URL(fetchImpl.mock.calls[0][0]).searchParams.get('streetA')).toBe('King Street');
+        expect(intersection).toMatchObject({ partial: true, noMatch: false });
+        await reads.findPlace({ street: 'King Street', houseNumber: '8', bbox: [-0.15, 51.45, -0.05, 51.55] });
+        expect(new URL(fetchImpl.mock.calls[1][0]).searchParams.get('houseNumber')).toBe('8');
+        const beforeCoordinates = fetchImpl.mock.calls.length;
+        const point = await reads.findPlace({ query: '-0.09,51.505', city: 'london' });
+        expect(fetchImpl).toHaveBeenCalledTimes(beforeCoordinates);
+        expect(point.candidates[0]).toMatchObject({ kind: 'place', point: [-0.09, 51.505], title: '-0.09,51.505' });
+        const empty = await reads.findPlace({ query: 'A place with no bounded OSM search', city: 'london' });
+        expect(empty).toMatchObject({ candidates: [], partial: false, noMatch: true, warnings: [expect.stringContaining('bbox')] });
     });
     it('assembles actual parcel bindings and city rules rather than treating every bbox hit as a design on the parcel', async () => {
         const fetchImpl = vi.fn(async url => {
@@ -29,6 +73,21 @@ describe('MCP public source reads', () => {
         const result = await reads.parcelContext({ city: 'zagreb', parcelSourceId: 'oss-wfs', parcelId: 'HR-335550-1' });
         expect(result.designs.designs.map(d => d.cid)).toEqual(['on-parcel']);
         expect(result.urbanRules).toEqual({ source: '/urban-rules' });
+    });
+    it('resolves exact cadastral map parts through their immutable source parent', async () => {
+        const source = sourceFeature('P');
+        const east = structuredClone(geometry.coordinates).map(r => r.map(([x,y]) => [x + 0.01, y]));
+        source.geometry = { type: 'MultiPolygon', coordinates: [east, geometry.coordinates] };
+        const original = structuredClone(source);
+        const fetchImpl = vi.fn(async () => json({ complete: true, features: [source] }));
+        const reads = createMcpReadTools({ apiBase: 'https://api.example', appOrigin: 'https://app.example', fetchImpl });
+        const found = await reads.parcels({ parcelSourceId: 'test', parcelIds: ['P#cadastre-2', 'P#cadastre-1'] });
+        expect(new URL(fetchImpl.mock.calls[0][0]).searchParams.get('ids')).toBe('P');
+        expect(found.features.map(f => f.id)).toEqual(['P#cadastre-2', 'P#cadastre-1']);
+        expect(found.features[0].geometry).toEqual({ type: 'Polygon', coordinates: east });
+        expect(source).toEqual(original);
+        await expect(reads.parcels({ parcelSourceId: 'test', parcelIds: ['P#cadastre-3'] })).rejects.toMatchObject({ code: 'parcel-missing' });
+        expect((await reads.parcels({ parcelSourceId: 'test', parcelIds: ['P'] })).features[0].geometry.type).toBe('MultiPolygon');
     });
     it('refuses partial coverage and omitted exact ids', async () => {
         const fetchImpl = vi.fn().mockResolvedValueOnce(json({ complete: false, features: [] })).mockResolvedValueOnce(json({ complete: true, features: [] }));

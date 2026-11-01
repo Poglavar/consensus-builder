@@ -77,7 +77,11 @@
         return position;
     }
 
-    global.ParcelLabelModel = Object.freeze({ currentCity, position: parcelLabelPosition });
+    function isParcelLabelEligible(parcelId) {
+        return !parcelNumberLabelFilter || parcelId == null || parcelNumberLabelFilter.has(String(parcelId));
+    }
+
+    global.ParcelLabelModel = Object.freeze({ currentCity, position: parcelLabelPosition, isEligible: isParcelLabelEligible });
 
     function parcelIdForLayer(layer) {
         return global.ParcelPresenter?.getIdForLayer?.(layer) || null;
@@ -143,19 +147,14 @@
             parcelNumberLabelCity = city;
         }
         const bounds = global.map.getBounds();
-        const parcelNumberProperty = city === 'buenos_aires'
-            ? 'smp'
-            : city === 'belgrade'
-                ? 'parcelNum'
-                : 'BROJ_CESTICE';
         const visibleIds = new Set();
 
         parcelLayersInViewport(bounds).forEach(layer => {
             const parcelId = parcelIdForLayer(layer);
             const feature = parcelFeature(parcelId);
             if (!feature) return;
-            const parcelNumber = feature.properties?.[parcelNumberProperty];
-            if (!parcelNumber || (parcelNumberLabelFilter && parcelId && !parcelNumberLabelFilter.has(parcelId))) return;
+            const parcelNumber = global.getParcelDisplayNumberFromFeature?.(feature, '');
+            if (!parcelNumber || !isParcelLabelEligible(parcelId)) return;
             const position = parcelLabelPosition(feature, layer, parcelId);
             if (!position || (bounds && !bounds.contains(position))) return;
 

@@ -197,7 +197,7 @@ function buildOverpassQuery(bbox) {
  * .status and .retryAfter) only when nothing at all could be served.
  */
 // `priority` (overpass-gate.js PRIORITY): roads first, buildings second, everything else after.
-function createOverpassCellSource({ label, buildQuery, convert, featureCap = FEATURE_CAP, priority = PRIORITY.other }) {
+function createOverpassCellSource({ label, buildQuery, convert, featureCap = FEATURE_CAP, priority = PRIORITY.other, maxSpanDeg = MAX_SPAN_DEG }) {
     // In-memory cache, one entry per grid cell. Bounded to avoid unbounded growth.
     const cache = new Map();
     // One in-flight request per cell: a viewport spanning four cells, fired twice by two moveend
@@ -256,7 +256,7 @@ function createOverpassCellSource({ label, buildQuery, convert, featureCap = FEA
                 const throttled = resp.status === 429 || (resp.status === 504 && !/tracestrack\.com\//.test(overpassUrl));
                 const refused = [401, 402, 403].includes(resp.status);
                 report(throttled ? 'throttled' : refused ? 'refused' : 'failed', resp.headers?.get?.('retry-after') ?? null);
-                const err = new Error(`Overpass HTTP ${resp.status} from ${hostOf(overpassUrl)} (${label}): ${(await resp.text()).slice(0, 200)}`);
+                const err = new Error(`Overpass HTTP ${resp.status} from ${hostOf(overpassUrl)} (${label})`);
                 err.status = throttled ? 503 : 502;
                 if (refused) console.error(`[${new Date().toISOString()}] [osm ${label}] ${hostOf(overpassUrl)} refused us (HTTP ${resp.status}); not asking it again for ${REFUSED_MS / 60000} min`);
                 throw err;
@@ -265,7 +265,12 @@ function createOverpassCellSource({ label, buildQuery, convert, featureCap = FEA
         } finally {
             clearTimeout(timer);
         }
-        const fc = convert(json && json.elements, cap, json);
+        if (!json || !Array.isArray(json.elements) || json.remark) {
+            const err = new Error(`Overpass returned an incomplete ${label} response`);
+            err.status = 502;
+            throw err;
+        }
+        const fc = convert(json.elements, cap, json);
         if (own) console.log(`[${new Date().toISOString()}] [osm ${label}] ${hostOf(overpassUrl)} answered in ${cacheNow() - started} ms (${fc.features.length} features)`);
         return fc;
     }
@@ -352,7 +357,7 @@ function createOverpassCellSource({ label, buildQuery, convert, featureCap = FEA
             err.status = 400;
             throw err;
         }
-        if ((e - w) > MAX_SPAN_DEG || (n - s) > MAX_SPAN_DEG || e <= w || n <= s) {
+        if ((e - w) > maxSpanDeg || (n - s) > maxSpanDeg || e <= w || n <= s) {
             const err = new Error(`bbox too large or malformed for the OSM ${label} source`);
             err.status = 400;
             throw err;
