@@ -107,13 +107,15 @@ test('chat navigation events begin, add, finish, and replay exact parcel selecti
       ? { parcelSourceId: source, focusParcelId: PARCEL_ID, parcelIds: [], active: true }
       : turn === 2
         ? { parcelSourceId: source, focusParcelId: second, parcelIds: [PARCEL_ID, second], active: true }
-        : { parcelSourceId: source, focusParcelId: second, parcelIds: [PARCEL_ID, second], active: false };
+        : turn === 3
+          ? { parcelSourceId: source, focusParcelId: second, parcelIds: [PARCEL_ID, second], active: false }
+          : { parcelSourceId: source, focusParcelId: PARCEL_ID, parcelIds: [PARCEL_ID], active: false };
     const events: string[] = [];
     if (turn === 1) events.push('event: step\ndata: {"tool":"ugt_map_view"}');
-    events.push(`event: view\ndata: ${JSON.stringify({ view })}`);
+    events.push(`event: view\ndata: ${JSON.stringify({ view, ...(turn === 1 ? { parcelIdsVisible: true } : {}) })}`);
     events.push(`event: selection\ndata: ${JSON.stringify({ selection })}`);
     if (turn === 3) events.push(`event: selection\ndata: ${JSON.stringify({ selection })}`);
-    events.push(`event: reply\ndata: ${JSON.stringify({ text: turn === 1 ? 'Manual parcel selection is active.' : turn === 2 ? 'Both parcels are selected.' : 'Selection is finished.' })}`);
+    events.push(`event: reply\ndata: ${JSON.stringify({ text: turn === 1 ? 'Manual parcel selection is active.' : turn === 2 ? 'Both parcels are selected.' : turn === 3 ? 'Selection is finished.' : 'Selected parcel 1234.' })}`);
     events.push(`event: done\ndata: ${JSON.stringify({ turnCostUsd: 0.001, conversationSpentUsd: turn / 1000, turns: turn })}`);
     await route.fulfill({ status: 200, headers: { 'content-type': 'text/event-stream' }, body: events.join('\n\n') + '\n\n' });
   });
@@ -134,6 +136,14 @@ test('chat navigation events begin, add, finish, and replay exact parcel selecti
   await composer.fill('Begin manual parcel selection');
   await composer.press('Enter');
   await expect(sheet.getByText('Manual parcel selection is active.')).toBeVisible();
+  expect(sent[0].context.mapContext.parcelSourceId).toBeTruthy();
+  expect(sent[0].context.mapContext.display.parcelIds).toBe(false);
+  expect(sent[0].context.mapContext.viewBounds).toHaveLength(4);
+  expect(sent[0].context.mapContext.visibleParcels).toEqual(expect.arrayContaining([
+    expect.objectContaining({ parcelId: PARCEL_ID, label: '1234', point: [expect.any(Number), expect.any(Number)] })
+  ]));
+  await expect(page.locator('#showParcelNumbers')).toBeChecked();
+  await expect(page.locator('.parcel-number-label').filter({ hasText: /^1234$/ })).toHaveCount(1);
   await expect.poll(() => page.evaluate(() => ({ active: (window as any).multiParcelSelection.isActive, ids: [...(window as any).multiParcelSelection.selectedParcels], focus: (window as any).ChatNavigation.capture().focusParcelId })))
     .toEqual({ active: true, ids: [], focus: PARCEL_ID });
   expect((await page.evaluate(() => (window as any).__chatViewCalls.set)).at(-1)).toMatchObject({ center: [45.8003, 15.9823], zoom: 18, options: { animate: false } });
@@ -154,7 +164,16 @@ test('chat navigation events begin, add, finish, and replay exact parcel selecti
     .toEqual({ active: false, ids: [PARCEL_ID, second].sort() });
   const updates = await page.evaluate(() => (window as any).__chatSelectionUpdates);
   expect(updates).toBe(3);
-  expect(sent).toHaveLength(3);
+  await composer.fill('Select parcel 1234');
+  await composer.press('Enter');
+  await expect(sheet.getByText('Selected parcel 1234.')).toBeVisible();
+  expect(sent[3].context.mapContext.visibleParcels).toEqual(expect.arrayContaining([
+    expect.objectContaining({ parcelId: PARCEL_ID, label: '1234' })
+  ]));
+  await expect.poll(() => page.evaluate(() => [...(window as any).multiParcelSelection.selectedParcels]))
+    .toEqual([PARCEL_ID]);
+  expect(sent[3].text).toBe('Select parcel 1234');
+  expect(sent).toHaveLength(4);
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
   await page.screenshot({ path: '/private/tmp/chat-navigation-360.png' });
 });

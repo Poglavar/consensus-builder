@@ -2,6 +2,7 @@ import { readFileSync } from 'node:fs';
 import vm from 'node:vm';
 import { createRequire } from 'node:module';
 const planningScene = createRequire(import.meta.url)('../../frontend/js/planning/scene.js');
+const parcelDisplay = createRequire(import.meta.url)('../../frontend/js/proposals/parcel-id.js');
 const turf = createRequire(import.meta.url)('@turf/turf');
 import { parse } from '@babel/parser';
 import { describe, expect, it } from 'vitest';
@@ -152,6 +153,7 @@ function makeMapContext(features) {
             }
         },
         getCurrentCityId: () => fixture.city,
+        getParcelDisplayNumberFromFeature: parcelDisplay.getParcelDisplayNumberFromFeature,
         getParcelsInBounds() { fixture.boundsQueries += 1; return fixture.layers; },
         ensureParcelId: feature => feature.properties.parcelId,
         ParcelsOwnershipUi: { parcelOwnerDataCache: new Map() }

@@ -1,6 +1,8 @@
 // Resolve agent navigation against exact source parcels and the same road-aware block topology as the map.
 import { createRequire } from 'node:module';
 import { appTurf as turf } from './mcp-geometry.js';
+import { resolveParcelNumber } from './mcp-parcel-numbers.js';
+import { landmarkTarget, rankLandmarkParcels } from '../places/landmark-target.js';
 const require = createRequire(import.meta.url);
 const blockModel = require('../../frontend/js/urban-blocks-model.js');
 const topology = require('../../frontend/js/parcels/block-topology.js');
@@ -94,7 +96,8 @@ function candidatesNear(features, center, radiusM, direction = null, sectorDegre
 export function createMcpNavigation({ read, random = Math.random }) {
     if (!read?.parcels || !read?.request) throw new TypeError('createMcpNavigation needs parcel and request readers');
 
-    function mapView({ view, center, direction, distance, unit = 'm', zoom, zoomDelta } = {}) {
+    function mapView({ view, center, direction, distance, unit = 'm', zoom, zoomDelta, parcelIdsVisible } = {}) {
+        if (parcelIdsVisible != null && typeof parcelIdsVisible !== 'boolean') throw fail('invalid-parcel-display', 'parcelIdsVisible must be boolean.', 'Use true to show parcel ids or false to hide them.');
         if (view != null && (typeof view !== 'object' || Array.isArray(view) || !view.at)) throw fail('invalid-map-view', 'An absolute map view needs an at coordinate.', 'Supply view.at as latitude,longitude[,zoom].');
         if (zoom != null && (!Number.isFinite(zoom) || zoom < 0 || zoom > 22)) throw fail('invalid-zoom', 'Zoom must be between 0 and 22.', 'Supply a zoom in the supported range.');
         if (zoomDelta != null && (!Number.isFinite(zoomDelta) || Math.abs(zoomDelta) > 10 || zoom != null)) throw fail('invalid-zoom-delta', 'zoomDelta must be between -10 and 10 and cannot be combined with zoom.', 'Supply zoom or zoomDelta.');
@@ -129,16 +132,22 @@ export function createMcpNavigation({ read, random = Math.random }) {
         }
         const includeZoom = zoom != null || zoomDelta != null || original.hadZoom;
         nextView.at = `${coords[1]},${coords[0]}${includeZoom ? `,${nextZoom}` : ''}`;
-        return { view: nextView };
+        return { view: nextView, ...(parcelIdsVisible == null ? {} : { parcelIdsVisible }) };
     }
 
     async function selectParcels(input = {}) {
-        const { city, parcelSourceId, selection, action, parcelId, point, direction, distance, unit = 'm' } = input;
+        const { city, parcelSourceId, selection, action, parcelId, parcelNumber, point, landmark, relation, direction, distance, unit = 'm' } = input;
         const radiusM = input.radiusM ?? 250;
         const sourceId = idOf(parcelSourceId);
         if (!sourceId) throw fail('parcel-source-required', 'Supply an explicit parcelSourceId.', 'Use ugt_list_sources to choose a parcel source.');
         if (!idOf(city)) throw fail('city-required', 'Supply a city for parcel navigation.', 'Choose a city.');
-        if (!['select', 'step', 'random', 'add', 'remove', 'block', 'clear', 'begin', 'finish'].includes(action)) throw fail('invalid-selection-action', 'Unsupported parcel selection action.', 'Use select, step, random, add, remove, block, clear, begin or finish.');
+        if (!['select', 'near', 'step', 'random', 'add', 'remove', 'block', 'clear', 'begin', 'finish'].includes(action)) throw fail('invalid-selection-action', 'Unsupported parcel selection action.', 'Use select, near, step, random, add, remove, block, clear, begin or finish.');
+        if (action !== 'select' && parcelNumber != null) throw fail('invalid-parcel-action', 'parcelNumber applies only to select.', 'Use action select for an exact displayed parcel number.');
+        if (action !== 'near' && (landmark != null || relation != null || input.maxDistanceM != null)) throw fail('invalid-parcel-action', 'Landmark relations apply only to near.', 'Use action near with a landmark reference.');
+        if (action === 'near' && (!landmark || !['edge', 'end', 'corner', 'beside'].includes(relation) || parcelId != null || parcelNumber != null || point != null || distance != null))
+            throw fail('invalid-landmark-selection', 'Near needs a landmark reference and edge, end, corner or beside relation.', 'Find the landmark, then pass its osmId and point with the requested relation.');
+        if (parcelNumber != null && (parcelId != null || point != null)) throw fail('parcel-target-ambiguous', 'Choose a parcel number, full ID or point, not several targets.', 'Supply exactly one parcel target.');
+        if (parcelNumber == null && (input.visibleParcels != null || input.visibleParcelsTruncated != null || input.bbox != null)) throw fail('invalid-parcel-action', 'Visible labels and bbox apply only to parcelNumber lookup.', 'Remove unused label lookup arguments.');
         if (action === 'random') {
             if (point == null || parcelId != null || distance != null) throw fail('invalid-parcel-action', 'Random selection needs a point and cannot include parcelId or distance.', 'Supply a point, optional direction and radiusM.');
             if (!Number.isFinite(radiusM) || radiusM <= 0 || radiusM > 1000) throw fail('invalid-radius', 'radiusM must be positive and at most 1,000 metres.', 'Supply a radiusM from 0 to 1,000.');
@@ -148,7 +157,7 @@ export function createMcpNavigation({ read, random = Math.random }) {
             if (distance == null && input.unit != null) throw fail('invalid-parcel-action', 'unit requires a distance-based step.', 'Supply distance or omit unit.');
         } else if (distance != null) throw fail('invalid-parcel-action', 'distance applies only to step.', 'Remove distance or choose action step.');
         if (action !== 'random' && input.radiusM != null) throw fail('invalid-parcel-action', 'radiusM applies only to random.', 'Remove radiusM or choose action random.');
-        if (action !== 'random' && action !== 'step' && direction != null) throw fail('invalid-parcel-action', 'direction applies only to random or step.', 'Remove direction or choose action random or step.');
+        if (!['random', 'step', 'near'].includes(action) && direction != null) throw fail('invalid-parcel-action', 'direction applies only to random, near or step.', 'Remove direction or choose action random, near or step.');
         if (action !== 'step' && action !== 'random' && input.unit != null) throw fail('invalid-parcel-action', 'unit applies only to a distance-based step.', 'Remove unit or choose a distance-based step.');
         if (!['select', 'random'].includes(action) && point != null) throw fail('invalid-parcel-action', 'point applies only to select or random.', 'Remove point or choose action select or random.');
         if (!['select', 'add', 'remove', 'block'].includes(action) && parcelId != null) throw fail('invalid-parcel-action', 'parcelId does not apply to this action.', 'Remove parcelId or choose select, add, remove or block.');
@@ -161,6 +170,28 @@ export function createMcpNavigation({ read, random = Math.random }) {
         if (ids.some(id => !id)) throw fail('invalid-selection', 'Selection contains an invalid parcel ID.', 'Reload the map selection and try again.');
         if (ids.length > MAX_BLOCK_PARCELS) throw fail('parcel-selection-limit', `Selection cannot contain more than ${MAX_BLOCK_PARCELS} parcels.`, 'Clear parcels or keep a smaller selection.');
         let focus = idOf(current.focusParcelId);
+        if (parcelNumber != null) {
+            const match = await resolveParcelNumber({ ...input, parcelSourceId: sourceId, read });
+            return { selection: { parcelSourceId: sourceId, focusParcelId: match.parcelId, parcelIds: current.active ? ids : [match.parcelId], active: current.active === true }, point: match.point, parcelNumber: match.label };
+        }
+        if (action === 'near') {
+            if (!/^(way|relation)\/[1-9]\d*$/.test(landmark.osmId || '')) throw fail('landmark-geometry-required', 'The landmark must have an OSM way or relation geometry.', 'Choose a mapped outline or linear landmark from ugt_find_place.');
+            const coordinate = normalizeCenter(landmark.point);
+            const maxDistanceM = input.maxDistanceM ?? 50;
+            if (!Number.isFinite(maxDistanceM) || maxDistanceM <= 0 || maxDistanceM > 200) throw fail('invalid-landmark-distance', 'Landmark parcel distance must be positive and at most 200 metres.', 'Start with 50 metres; expand only when needed.');
+            const source = await read.request('/places/geometry', { osmId: landmark.osmId, point: coordinate.join(',') });
+            if (source.partial || source.truncated || !Array.isArray(source.features) || source.osmId !== landmark.osmId) throw fail('landmark-coverage-incomplete', 'Complete landmark geometry is unavailable.', 'Choose the parcel manually or supply an address or parcel number.');
+            const target = landmarkTarget({ features: source.features, osmId: landmark.osmId, relation, direction });
+            if (!target) throw fail('landmark-target-unavailable', 'The mapped geometry cannot establish that landmark relation.', 'Choose a mapped outline or endpoint, an address or an exact parcel number. Do not substitute a random parcel.');
+            const area = turf.buffer(turf.feature(target.geometry), maxDistanceM, { units: 'meters' }).geometry;
+            const ground = await read.parcels({ city, parcelSourceId: sourceId, geometry: area });
+            if (ground.complete !== true || ground.truncated || !Array.isArray(ground.features)) throw fail('parcel-coverage-incomplete', 'Landmark parcel selection needs complete source coverage.', 'Retry when the source is available or choose a parcel manually.');
+            const candidates = rankLandmarkParcels({ target, parcels: ground.features, maxDistanceM });
+            if (!candidates.length) throw fail('landmark-parcel-not-found', 'No parcel lies beside the requested part of the landmark within the search distance.', 'Explain the limitation; offer a wider search up to 200 metres or an exact parcel number. Do not substitute a random parcel.');
+            const chosen = candidates[0];
+            return { selection: { parcelSourceId: sourceId, focusParcelId: chosen.parcelId, parcelIds: current.active ? ids : [chosen.parcelId], active: current.active === true }, point: chosen.point,
+                location: { osmId: landmark.osmId, title: source.title, anchor: target.anchor, ...target.interpretation, distanceM: chosen.distanceM }, candidates: candidates.slice(0, 3) };
+        }
         let features = [];
         let selectedParcelId = idOf(parcelId);
         let pointFeature = null;

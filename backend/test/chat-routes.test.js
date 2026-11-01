@@ -63,6 +63,17 @@ const auth = req => req.set('Authorization', `Bearer ${token}`);
 const turn = (app, id = 'conv-1', data = body()) => auth(request(app).post(`/chat/conversations/${id}/turns`)).send(data);
 
 describe('chat conversation routes', () => {
+    it('accepts bounded live parcel labels in turn context without sending an extra model payload', async () => {
+        const runTurn = vi.fn(async ({ context: received }) => ({ messages: [], usage: {}, costUsd: 0, outcome: { type: 'reply', text: received.mapContext.display.parcelIds ? 'IDs shown.' : 'IDs hidden.' } }));
+        const { app } = makeHarness({ runTurn });
+        const mapContext = { parcelSourceId: 'source', display: { parcelIds: true }, visibleParcels: [{ parcelId: 'live-p', label: '17/2', point: [-0.1,51.5] }], visibleParcelsTruncated: false, viewBounds: [-0.11,51.49,-0.09,51.51] };
+        const res = await turn(app, 'conv-1', body({ context: { ...context, parcelSourceId: 'source', mapContext } }));
+        expect(res.status).toBe(200);
+        expect(runTurn.mock.calls[0][0].context.mapContext).toEqual(mapContext);
+        const bad = await turn(app, 'conv-1', body({ context: { ...context, mapContext: { ...mapContext, visibleParcels: Array(501).fill(mapContext.visibleParcels[0]) } } }));
+        expect(bad.status).toBe(400);
+    });
+
     it('reports configured prices and server-computed estimates without provider calls', async () => {
         const { app, callModel } = makeHarness({ env: { CHAT_DEBUG_COSTS: 'true', CHAT_PROVIDER: 'openai', CHAT_MODEL: 'gpt-6-luna' } });
         const configured = await request(app).get('/chat/cost');

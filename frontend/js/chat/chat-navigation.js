@@ -46,6 +46,48 @@
             return { focusParcelId: focus, parcelIds, active: selection?.isActive === true };
         }
 
+        function mapContext() {
+            const map = root.map;
+            const bounds = map?.getBounds?.() || null;
+            const numbersToggle = root.document?.getElementById?.('showParcelNumbers');
+            const viewBounds = bounds && ['getWest', 'getSouth', 'getEast', 'getNorth'].every(key => typeof bounds[key] === 'function')
+                ? [bounds.getWest(), bounds.getSouth(), bounds.getEast(), bounds.getNorth()]
+                : null;
+            const visibleParcels = [];
+            let visibleParcelsTruncated = false;
+            const validViewBounds = viewBounds?.every(finite)
+                && viewBounds[0] >= -180 && viewBounds[0] <= 180 && viewBounds[2] >= -180 && viewBounds[2] <= 180
+                && viewBounds[1] >= -85 && viewBounds[1] <= 85 && viewBounds[3] >= -85 && viewBounds[3] <= 85
+                && viewBounds[0] <= viewBounds[2] && viewBounds[1] <= viewBounds[3];
+            if (bounds && validViewBounds && typeof bounds.contains === 'function'
+                && typeof root.getParcelsInBounds === 'function' && root.ParcelPresenter?.getIdForLayer
+                && root.LiveParcelFabric?.get && root.ParcelLabelModel?.position && root.ParcelLabelModel?.isEligible
+                && root.getParcelDisplayNumberFromFeature) {
+                for (const layer of root.getParcelsInBounds(bounds) || []) {
+                    const parcelId = idOf(root.ParcelPresenter.getIdForLayer(layer));
+                    if (!parcelId || parcelId.length > 250 || !root.ParcelLabelModel.isEligible(parcelId)) continue;
+                    const feature = root.LiveParcelFabric.get(parcelId);
+                    if (!feature) continue;
+                    const label = root.getParcelDisplayNumberFromFeature(feature, '');
+                    if (typeof label !== 'string' || !label.trim() || label.trim().length > 250) continue;
+                    const position = root.ParcelLabelModel.position(feature, layer, parcelId);
+                    if (!position || !finite(position.lng) || !finite(position.lat) || !bounds.contains(position)) continue;
+                    if (visibleParcels.length >= 500) {
+                        visibleParcelsTruncated = true;
+                        break;
+                    }
+                    visibleParcels.push({ parcelId, label: label.trim(), point: [position.lng, position.lat] });
+                }
+            }
+            return {
+                parcelSourceId: sourceId(),
+                display: { parcelIds: numbersToggle?.checked === true },
+                visibleParcels,
+                visibleParcelsTruncated,
+                viewBounds: validViewBounds ? viewBounds : null
+            };
+        }
+
         function parseAt(value) {
             const parts = Array.isArray(value) ? value : typeof value === 'string' ? value.split(',') : null;
             if (!parts || (parts.length !== 2 && parts.length !== 3)) return null;
@@ -109,7 +151,47 @@
             });
         }
 
-        function applyView(event) {
+        async function setParcelIdsVisible(visible) {
+            const numberToggle = root.document?.getElementById?.('showParcelNumbers');
+            if (!numberToggle) throw new Error('Parcel ID display controls are unavailable.');
+            const toggleNumbers = root.Parcels?.uiLabels?.toggleParcelNumbers || root.toggleParcelNumbers;
+            if (typeof toggleNumbers !== 'function') throw new Error('Parcel ID display controls are unavailable.');
+            if (!visible) {
+                numberToggle.checked = false;
+                toggleNumbers();
+                return true;
+            }
+            if (typeof root.isZoomWithinParcelRange === 'function' && !root.isZoomWithinParcelRange()) {
+                throw new Error('Zoom in to show parcel IDs.');
+            }
+            const bounds = root.map?.getBounds?.();
+            if (!bounds || typeof root.fetchParcelDataReported !== 'function') {
+                throw new Error('Parcel data could not be loaded for this map view.');
+            }
+            // Parcel loading is normally started by map controls and reported asynchronously.
+            // Chat must wait for the current viewport before it tells the agent that IDs are shown.
+            const fetched = await root.fetchParcelDataReported(bounds, 'chat parcel IDs');
+            if (!fetched || !Array.isArray(fetched.features) || fetched.features.length === 0) {
+                throw new Error('No parcels with displayable IDs were loaded for this map view.');
+            }
+            const parcelsToggle = root.document?.getElementById?.('parcelsCheckbox');
+            if (parcelsToggle && !parcelsToggle.checked) {
+                if (typeof root.toggleAccordion !== 'function') throw new Error('Parcel display controls are unavailable.');
+                parcelsToggle.checked = true;
+                root.toggleAccordion(parcelsToggle);
+            }
+            if (!root.parcelLayer) throw new Error('Parcel data is not loaded, so parcel IDs cannot be shown.');
+            numberToggle.checked = true;
+            toggleNumbers();
+            if (mapContext().visibleParcels.length === 0) {
+                numberToggle.checked = false;
+                toggleNumbers();
+                throw new Error('No parcel IDs are visible in this map view.');
+            }
+            return true;
+        }
+
+        async function applyView(event) {
             const view = event?.view || event;
             const at = parseAt(view?.at);
             if (!at) throw new Error('The map view did not contain a valid center and zoom.');
@@ -119,29 +201,37 @@
             if (active3D) {
                 const target = cameraOf(view?.camera, at, root.getThree3DGeoView?.());
                 if (!target) throw new Error('The 3D map view did not contain a valid camera.');
-                return applyCamera(target);
-            }
-            const current = map.getCenter?.();
-            const zoom = at.zoom ?? map.getZoom?.();
-            if (current && Math.abs(current.lat - at.lat) < 1e-7 && Math.abs(current.lng - at.lng) < 1e-7
-                && Math.abs((map.getZoom?.() ?? zoom) - zoom) < 1e-7) return Promise.resolve(true);
-            if (reducedMotion() || typeof map.flyTo !== 'function') {
-                map.setView([at.lat, at.lng], zoom, { animate: false });
-                return Promise.resolve(true);
-            }
-            return new Promise(resolve => {
-                let settled = false;
-                const finish = () => { if (settled) return; settled = true; root.clearTimeout(timer); resolve(true); };
-                const timer = root.setTimeout(finish, VIEW_DURATION * 1000 + 250);
-                try {
-                    map.once?.('moveend', finish);
-                    map.flyTo([at.lat, at.lng], zoom, { animate: true, duration: VIEW_DURATION, easeLinearity: 0.25 });
-                    if (!map.once) finish();
-                } catch (error) {
-                    if (!settled) { settled = true; root.clearTimeout(timer); }
-                    throw error;
+                await applyCamera(target);
+            } else {
+                const current = map.getCenter?.();
+                const zoom = at.zoom ?? map.getZoom?.();
+                const unchanged = current && Math.abs(current.lat - at.lat) < 1e-7 && Math.abs(current.lng - at.lng) < 1e-7
+                    && Math.abs((map.getZoom?.() ?? zoom) - zoom) < 1e-7;
+                if (!unchanged) {
+                    if (reducedMotion() || typeof map.flyTo !== 'function') {
+                        map.setView([at.lat, at.lng], zoom, { animate: false });
+                    } else {
+                        await new Promise((resolve, reject) => {
+                            let settled = false;
+                            const finish = () => { if (settled) return; settled = true; root.clearTimeout(timer); resolve(true); };
+                            const timer = root.setTimeout(finish, VIEW_DURATION * 1000 + 250);
+                            try {
+                                map.once?.('moveend', finish);
+                                map.flyTo([at.lat, at.lng], zoom, { animate: true, duration: VIEW_DURATION, easeLinearity: 0.25 });
+                                if (!map.once) finish();
+                            } catch (error) {
+                                if (!settled) { settled = true; root.clearTimeout(timer); }
+                                reject(error);
+                            }
+                        });
+                    }
                 }
-            });
+            }
+            if (Object.prototype.hasOwnProperty.call(event, 'parcelIdsVisible')) {
+                if (typeof event.parcelIdsVisible !== 'boolean') throw new Error('The parcel ID display state is invalid.');
+                await setParcelIdsVisible(event.parcelIdsVisible);
+            }
+            return true;
         }
 
         function normalizeSelection(selection) {
@@ -295,7 +385,7 @@
             }
         });
 
-        return Object.freeze({ capture, apply });
+        return Object.freeze({ capture, mapContext, apply });
     }
 
     return Object.freeze({ create });

@@ -73,11 +73,14 @@ describe('OSM place lookup', () => {
     });
 
     it('validates route bounds and query shapes without opening a socket', async () => {
-        let handler;
-        setupPlacesRoute({ get: (path, fn) => { expect(path).toBe('/places'); handler = fn; } }, { search: vi.fn(async value => ({ candidates: [], partial: false, truncated: false, source: 'osm-overpass', echoed: value })) });
+        const handlers = new Map();
+        setupPlacesRoute({ get: (path, fn) => handlers.set(path, fn) }, {
+            search: vi.fn(async value => ({ candidates: [], partial: false, truncated: false, source: 'osm-overpass', echoed: value })),
+            landmarkGeometry: vi.fn()
+        });
         const invoke = query => {
             const res = { status: vi.fn(function (code) { this.code = code; return this; }), json: vi.fn(function (body) { this.body = body; return this; }) };
-            return Promise.resolve(handler({ query }, res)).then(() => res);
+            return Promise.resolve(handlers.get('/places')({ query }, res)).then(() => res);
         };
         const bad = await invoke({ bbox: '0,0,1,1', q: 'park' });
         expect(bad.code).toBe(400);

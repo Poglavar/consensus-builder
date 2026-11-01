@@ -103,13 +103,21 @@ The browser validates exact live parcel identities and reports an application er
 longer resolve. Manual multi-selection keeps cursor movement separate from adding parcels.
 
 Mechaurbanista offers a random starting parcel when a design request has no definite site. A resolved
-landmark and requested compass side anchor that suggestion; otherwise the relay supplies the map
+general area and requested compass side anchor that suggestion; otherwise the relay supplies the map
 center. The agent explains direction and distance navigation and offers using the parcel, clicking
 another, or supplying an address/intersection. It asks before drafting on the suggestion. For broad
 road or row-house requests it first explains site selection, route/layout and dimensions, then
 invites the next step. One parcel starts the discussion; row housing still needs at least two
 parcels or a divisible outline, and a road still needs a route. Failed source lookup is reported
-without claiming a parcel was selected.
+without claiming a parcel was selected. A named landmark edge, end, corner or beside request uses
+actual mapped geometry and nearby parcel boundaries through `near`, never a random suggestion.
+The agent explains the selected interpretation and asks whether that parcel is intended.
+
+The agent can show or hide the existing parcel ID labels and resolve a typed or spoken displayed
+number exactly. The browser supplies up to 500 viewport labels, their live IDs, positions and
+source identity. This snapshot is relay-only; the model sees the display state and lookup result.
+Duplicate or incomplete labels require a narrower view or an exact ID. Speech transcription must
+retain the number and separators; unclear transcription requires clarification.
 
 Map pans and design moves/rotations use the app's motion path and respect reduced motion. Single
 member replacements retain their before/after relationship so an edit animates instead of appearing

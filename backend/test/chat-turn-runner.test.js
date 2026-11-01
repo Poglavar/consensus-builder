@@ -26,8 +26,7 @@ describe('chat turn runner', () => {
 
     it.each([
         { text: 'Let us build a road', point: undefined, direction: undefined },
-        { text: 'Let us build a plan of row houses', point: undefined, direction: undefined },
-        { text: 'Place a freeform building southwest of London Bridge', point: [-0.0877, 51.5079], direction: 'southwest' }
+        { text: 'Let us build a plan of row houses', point: undefined, direction: undefined }
     ])('offers a real starting selection and continues with choices before drafting: $text', async ({ text, point, direction }) => {
         const selection = { parcelSourceId: 'source', focusParcelId: 'start', parcelIds: ['start'], active: false };
         const question = 'First choose the land, then the layout and dimensions. I have also selected a random parcel; navigate up, down, north, south, or a direction and how many metres. Continue here, select it yourself, or give an address or intersection?';
@@ -41,6 +40,13 @@ describe('chat turn runner', () => {
         expect(emit).toHaveBeenCalledWith('selection', { selection, point: [-0.09, 51.5] });
         expect(result.outcome).toEqual({ type: 'question', question, options });
         expect(result.planChanged).toBe(false);
+    });
+
+    it('invalidates the old viewport label mapping after a map move', async () => {
+        const callModel = model({ content: [tool('ugt_map_view', { center: [0,0] })] }, { content: [tool('ugt_select_parcels', { action: 'select', parcelNumber: '17/2' })] }, { content: [{ type: 'text', text: 'Refresh the map labels.' }] });
+        const callTool = vi.fn(async name => name === 'ugt_map_view' ? { view: { at: '0,0,18' }, parcelIdsVisible: true } : { isError: true, structuredContent: { code: 'parcel-label-coverage-incomplete' } });
+        await runTurn({ ...base, callModel, callTool, context: { city: 'london', parcelSourceId: 'source', view: { at: '51.5,-0.1,18' }, mapContext: { parcelSourceId: 'source', display: { parcelIds: false }, visibleParcels: [{ parcelId: 'old', label: '17/2', point: [-0.1,51.5] }], visibleParcelsTruncated: false } } });
+        expect(callTool.mock.calls[1][1]).toMatchObject({ visibleParcels: [], visibleParcelsTruncated: true });
     });
 
     it('keeps the request as an instruction and gives selection refs without exposing plan refs', () => {

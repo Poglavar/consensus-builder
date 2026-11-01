@@ -64,8 +64,8 @@ assign(['ugt_chat_cost'], mcpResultSchema.extend({ provider: z.string(), model: 
     maximumTurnReservationUsd: z.number().nonnegative(), estimate: z.object({ costUsd: z.number().nonnegative(), basis: z.literal('configured-token-prices'), actual: z.literal(false),
         tokenCounts: z.object({ inputTokens: count, outputTokens: count, cachedInputTokens: count, cacheWriteTokens: count }) }).optional() }));
 assign(['ugt_help'], mcpResultSchema.extend({ topic: z.string() }));
-assign(['ugt_map_view'], mcpResultSchema.extend({ view: object }));
-assign(['ugt_select_parcels'], mcpResultSchema.extend({ selection: z.object({ parcelSourceId: z.string(), focusParcelId: z.string().nullable(), parcelIds: z.array(z.string()).max(100), active: z.boolean() }), point: z.tuple([z.number(), z.number()]).optional() }));
+assign(['ugt_map_view'], mcpResultSchema.extend({ view: object, parcelIdsVisible: z.boolean().optional() }));
+assign(['ugt_select_parcels'], mcpResultSchema.extend({ selection: z.object({ parcelSourceId: z.string(), focusParcelId: z.string().nullable(), parcelIds: z.array(z.string()).max(100), active: z.boolean() }), point: z.tuple([z.number(), z.number()]).optional(), parcelNumber: z.string().optional(), location: object.optional(), candidates: z.array(object).max(3).optional() }));
 assign(['ugt_list_sources'], mcpResultSchema.extend({ items: z.array(z.object({ id: z.string(), abstraction: z.string() }).passthrough()), total: count, offset: count, truncated: z.boolean(), abstractions: z.array(object) }));
 assign(['ugt_export_draft'], mcpResultSchema.extend({ cid, artifact: object, publication: z.literal('private') }));
 assign(['ugt_import_design'], mcpResultSchema.extend({ designs: z.array(designDraft).min(1), ...placement, publication: z.literal('private'), import: z.object({ format: z.enum(['geojson', 'osm', 'opendrive']), placement: z.string(), count: count, parser: z.string() }) }));

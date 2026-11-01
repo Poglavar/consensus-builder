@@ -184,6 +184,22 @@ describe('Urban Game Theory MCP server', () => {
         expect(tools.selectParcels).toHaveBeenCalledTimes(1);
     });
 
+    it('exposes landmark relations and displayed parcel numbers through existing public primitives', async () => {
+        const tools = stubTools();
+        tools.selectParcels = vi.fn(async () => ({ selection: { parcelSourceId: 'source', focusParcelId: 'p', parcelIds: ['p'], active: false }, parcelNumber: '17/2' }));
+        tools.mapView = vi.fn(async () => ({ view: { at: '0,0,18' }, parcelIdsVisible: true }));
+        await connect(tools);
+        const byName = await toolsByName();
+        expect(byName.ugt_select_parcels.inputSchema.properties.action.enum).toContain('near');
+        expect(byName.ugt_select_parcels.inputSchema.properties.maxDistanceM.maximum).toBe(200);
+        expect(byName.ugt_select_parcels.inputSchema.properties.visibleParcels.maxItems).toBe(500);
+        const args = { city: 'london', parcelSourceId: 'source', action: 'near', landmark: { osmId: 'way/1', point: [0,0] }, relation: 'edge', direction: 'southwest' };
+        expect((await client.callTool({ name: 'ugt_select_parcels', arguments: args })).isError).toBeFalsy();
+        expect(tools.selectParcels).toHaveBeenCalledWith(args);
+        expect((await client.callTool({ name: 'ugt_map_view', arguments: { view: { at: '0,0,18' }, parcelIdsVisible: true } })).structuredContent.parcelIdsVisible).toBe(true);
+        expect((await client.callTool({ name: 'ugt_select_parcels', arguments: { ...args, maxDistanceM: 201 } })).isError).toBe(true);
+    });
+
     it('marks reads read-only, publishing additive and idempotent, and chain actions destructive', async () => {
         await connect(stubTools());
         const byName = await toolsByName();

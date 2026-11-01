@@ -22,7 +22,8 @@ not count. Candidates retain their centers, source identity, ambiguity and cover
 
 `ugt_map_view` computes an absolute view from a current `MapShare` view and a center, directional
 pan in metres or feet, or zoom change. Up/down/left/right mean north/south/west/east; diagonals are
-supported. `ugt_select_parcels` computes an absolute source-parcel selection: select, random, step,
+supported. `parcelIdsVisible` shows or hides the map's existing parcel ID labels.
+`ugt_select_parcels` computes an absolute source-parcel selection: select, near, random, step,
 begin, add, remove, finish, block, clear. Random chooses one real parcel whose representative point
 lies within `radiusM` of `point` (default 250 m, maximum 1000 m), optionally within 45 degrees of a
 compass direction. It replaces the selection with one starting parcel; repeated calls can differ,
@@ -33,6 +34,22 @@ parcel and reverse-direction candidates. Manual stepping moves the cursor withou
 Block selection requires complete local parcel and ground-level road evidence and a bounded block.
 Unavailable evidence is an error, not an empty block. Current live-fabric identities must resolve
 exactly; a source anchor is never silently expanded into changed live pieces.
+
+`near` resolves a landmark's actual mapped outline or connected centerline from its `osmId` and
+returned point. It locates the requested directional edge, end or corner, or the boundary for
+`beside`, and ranks parcel boundaries by distance (default 50 m, maximum 200 m). Bridge outlines
+are preferred over connected same-name bridge centerlines. Disconnected matches, missing geometry,
+incomplete ground and parcels overlapping the landmark body are refused. It never falls back to a
+random parcel. The result includes its interpretation, anchor, boundary distance and up to three
+candidate parcel IDs so the caller can explain the highlighted choice.
+
+`select` with `parcelNumber` resolves the exact label shown by the map, retaining separators such
+as `/`, or an exact full ID. Chat supplies a bounded snapshot of current live labels and source
+IDs; external clients may provide that snapshot or a complete source query within an explicit bbox
+no larger than 0.03 degrees per axis. Duplicate labels, truncated snapshots and missing matches
+require clarification. Suffix guessing and source-prefix inference are not supported. The label
+snapshot stays in the relay; only the requested match reaches the model. A changed view requires a
+fresh browser turn before resolving newly visible labels.
 
 These tools are stateless: the chat relay injects current state, advances it after each command and
 streams absolute `view`/`selection` events. The browser applies them in order without opening another

@@ -84,7 +84,15 @@ export async function runTurn({ conversation = {}, text = '', context = {}, call
         const ok = !result?.isError && parsed.ok !== false;
         const navigation = ok ? navigationResult(name, result) : null;
         if (navigation) {
-            if (navigation.name === 'view') mapContext.view = navigation.data.view;
+            if (navigation.name === 'view') {
+                if (mapContext.mapContext && navigation.data.view.at !== mapContext.view?.at) {
+                    mapContext.mapContext.visibleParcels = [];
+                    mapContext.mapContext.visibleParcelsTruncated = true;
+                }
+                mapContext.view = navigation.data.view;
+                if (typeof navigation.data.parcelIdsVisible === 'boolean' && mapContext.mapContext)
+                    mapContext.mapContext.display = { parcelIds: navigation.data.parcelIdsVisible };
+            }
             else mapContext.selection = { ...mapContext.selection, ...navigation.data.selection };
             emit(navigation.name, navigation.data);
         }

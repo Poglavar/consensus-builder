@@ -70,6 +70,11 @@
             if (row) { build.planCid = row.cid; build.planArtifact = { ...win.SharedPlanSession.artifactOf(row), cid: row.cid }; }
         }
         build.selection = { ...build.selection, ...win.ChatNavigation?.capture?.() };
+        const mapContext = win.ChatNavigation?.mapContext?.();
+        if (mapContext) {
+            build.mapContext = mapContext;
+            if (mapContext.parcelSourceId) build.parcelSourceId = mapContext.parcelSourceId;
+        }
         return build;
     }
     function mount(root) {

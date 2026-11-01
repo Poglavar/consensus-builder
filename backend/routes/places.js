@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { searchOsmPlaces } from '../places/osm-places.js';
+import { searchLandmarkGeometry } from '../places/landmark-source.js';
 
 const text = z.string().trim().min(1).max(200);
 const shortText = z.string().trim().min(1).max(160);
@@ -12,8 +13,29 @@ function parseBbox(raw) {
     if (west < -180 || east > 180 || south < -90 || north > 90 || east <= west || north <= south || east - west > 0.5 || north - south > 0.5) return null;
     return values;
 }
+function parseOsmId(raw) {
+    return typeof raw === 'string' && /^(node|way|relation)\/[1-9]\d{0,17}$/.test(raw) ? raw : null;
+}
+function parsePoint(raw) {
+    if (typeof raw !== 'string' || !/^-?(?:\d+(?:\.\d*)?|\.\d+),-?(?:\d+(?:\.\d*)?|\.\d+)$/.test(raw)) return null;
+    const point = raw.split(',').map(Number);
+    return point.every(Number.isFinite) && point[0] >= -180 && point[0] <= 180 && point[1] >= -90 && point[1] <= 90 ? point : null;
+}
 
-export function setupPlacesRoute(app, { search = searchOsmPlaces } = {}) {
+export function setupPlacesRoute(app, { search = searchOsmPlaces, landmarkGeometry = searchLandmarkGeometry } = {}) {
+    app.get('/places/geometry', async (req, res) => {
+        res.set?.('Cache-Control', 'no-store');
+        const osmId = parseOsmId(req.query.osmId), point = parsePoint(req.query.point);
+        if (!osmId || !point) return res.status(400).json({ code: 'invalid_request', message: 'Provide an OSM id and a WGS84 point as longitude,latitude.' });
+        try {
+            const result = await landmarkGeometry({ osmId, point });
+            res.json(result);
+        } catch (error) {
+            const status = error.status === 400 ? 400 : error.status === 404 ? 404 : 503;
+            res.status(status).json({ code: status === 400 ? 'invalid_request' : status === 404 ? 'landmark_not_found' : 'landmark_unavailable',
+                message: status === 400 ? 'The landmark geometry parameters are invalid.' : status === 404 ? 'The selected OSM feature was not found near that point.' : 'OpenStreetMap landmark geometry is temporarily unavailable or incomplete.' });
+        }
+    });
     app.get('/places', async (req, res) => {
         const bbox = parseBbox(req.query.bbox);
         const queryParsed = req.query.q === undefined ? { success: true, data: undefined } : text.safeParse(req.query.q);
@@ -43,4 +65,4 @@ export function setupPlacesRoute(app, { search = searchOsmPlaces } = {}) {
     });
 }
 
-export const __placesRouteInternals = { parseBbox };
+export const __placesRouteInternals = { parseBbox, parseOsmId, parsePoint };

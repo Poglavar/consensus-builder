@@ -12,7 +12,7 @@ const hasPlan = new Set(['ugt_draft_road', 'ugt_draft_building', 'ugt_draft_trac
 const requiresPlan = new Set(['ugt_get_plan', 'ugt_inspect_plan', 'ugt_validate_plan', 'ugt_edit_plan']);
 
 export const RELAY_TOOLS = Object.freeze([
-    { name: 'ask_person', description: 'Ask the person a concise clarification question and offer options when useful. For an unspecified design site, first use ugt_select_parcels action random to offer a real starting parcel, then explain selection/navigation choices; do not draft until the person chooses.', input_schema: { type: 'object', properties: { question: { type: 'string' }, options: { type: 'array', items: { type: 'object', properties: { label: { type: 'string' }, ref: { type: 'string' } }, required: ['label'], additionalProperties: false } } }, required: ['question'], additionalProperties: false } },
+    { name: 'ask_person', description: 'Ask the person a concise clarification question and offer options when useful. For an unspecified design site, first offer a real starting parcel with ugt_select_parcels action random. For a landmark edge/end/corner/beside request, use action near instead. Explain selection/navigation choices; do not draft until the person chooses.', input_schema: { type: 'object', properties: { question: { type: 'string' }, options: { type: 'array', items: { type: 'object', properties: { label: { type: 'string' }, ref: { type: 'string' } }, required: ['label'], additionalProperties: false } } }, required: ['question'], additionalProperties: false } },
     { name: 'undo_last_change', description: 'Undo the last change to the working plan.', input_schema: { type: 'object', properties: {}, additionalProperties: false } }
 ]);
 
@@ -23,7 +23,7 @@ export function toModelTools(mcpTools = []) {
         delete schema.$schema;
         schema.type = 'object';
         schema.properties ||= {};
-        const hidden = [...STRIPPED_PARAMS, ...(tool.name === 'ugt_map_view' ? ['view'] : tool.name === 'ugt_select_parcels' ? ['selection'] : [])];
+        const hidden = [...STRIPPED_PARAMS, ...(tool.name === 'ugt_map_view' ? ['view'] : tool.name === 'ugt_select_parcels' ? ['selection', 'visibleParcels', 'visibleParcelsTruncated'] : [])];
         for (const key of hidden) delete schema.properties[key];
         if (Array.isArray(schema.required)) schema.required = schema.required.filter(key => !hidden.includes(key));
         return { name: tool.name, description: tool.description || '', input_schema: schema };

@@ -7,6 +7,7 @@ const PARCEL_NUMBER_PROPERTY_CANDIDATES = [
     'BROJ_CESTICE',
     'smp',
     'SMP',
+    'parcelNum',
     'parcelNumber',
     'parcel_number',
     'parcel',
