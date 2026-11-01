@@ -97,6 +97,32 @@ function compactObject(name, raw) {
             ...(Array.isArray(error.constraints?.matches) ? { matches: array(error.constraints.matches, row => ({ parcelId: clip(row.parcelId, 250), label: clip(row.label, 250), point: row.point, partIndex: row.partIndex }), 8) } : {}) };
     }
     const r = payloadOf(raw);
+    if (name === 'ugt_submit_feedback') return { ok: r.report?.status === 'received', report: r.report ? { id: r.report.id, status: r.report.status } : null };
+    if (name === 'ugt_help' && r.topic === 'schemes') return { topic: 'schemes', schemes: array(r.schemes, scheme => ({ id: scheme.id, version: scheme.version, country: scheme.country, family: scheme.family, name: clip(scheme.name, 100) }), 40), text: clip(r.instructions, 600) };
+    if (name === 'ugt_draft_agreement' || name === 'ugt_edit_agreement') {
+        const agreement = r.untrusted?.agreement || r.agreement || r.untrusted?.content || {};
+        const settlement = agreement.rule?.settlement;
+        return { ok: r.ok !== false, title: prose(agreement, 'title') || prose(r, 'title') || null,
+            electorate: agreement.rule?.electorate || null, binding: agreement.rule?.binding === true,
+            inputParcelCount: agreement.inputs?.parcels?.length ?? null, outputCount: agreement.outputs?.length ?? null,
+            allocationCount: agreement.allocations?.length ?? null, currency: agreement.money?.currency || null,
+            settlement: settlement ? { method: settlement.method || null,
+                ...(Number.isFinite(settlement.rateCentsPerM2) ? { rateCentsPerM2: settlement.rateCentsPerM2 } : {}),
+                ...(Number.isFinite(settlement.contributionBasisPoints) ? { contributionBasisPoints: settlement.contributionBasisPoints } : {}) } : null,
+            deadline: agreement.deadline || null, scheme: r.scheme ? refFree(r.scheme) : null,
+            warnings: array(r.warnings, x => typeof x === 'string' ? clip(x, 200) : refFree(x), 8) };
+    }
+    if (name === 'ugt_inspect_agreement') return {
+        ok: r.ok !== false, title: prose(r, 'title') || null, total: r.total, offset: r.offset, truncated: r.truncated,
+        items: array(r.items, item => ({ ref: clip(item.ref, 300), kind: item.kind, ...(item.role ? { role: item.role } : {}),
+            ...(item.goal ? { goal: clip(item.goal, 100) } : {}), ...(item.title ? { title: clip(item.title, 180) } : {}),
+            ...(Number.isFinite(item.areaM2) ? { areaM2: item.areaM2 } : {}), ...(item.recipient ? { recipient: refFree(item.recipient) } : {}) }), 50),
+        rule: r.rule ? { electorate: r.rule.electorate, binding: r.rule.binding === true } : null,
+        communityPosition: r.communityPosition ? refFree(r.communityPosition) : null,
+        parties: r.parties === null ? null : array(r.parties, row => refFree(row), 50), persons: r.persons ? refFree(r.persons) : null,
+        publicM2: r.publicM2, proposerM2: r.proposerM2, settlement: r.settlement ? refFree(r.settlement) : null,
+        cashSchedule: r.cashSchedule ? refFree(r.cashSchedule) : null, scheme: r.scheme ? refFree(r.scheme) : null
+    };
     if (name === 'ugt_draft_plan') return {
         ok: r.ok !== false, title: prose(r, 'title') || prose(r.plan?.untrusted, 'title'),
         designCount: r.plan?.designCids?.length ?? r.designCids?.length,
@@ -142,4 +168,18 @@ export function planFromResult(name, result) {
     if (!draftRef) return null;
     const clean = compactObject(name, result);
     return { draftRef, cid: plan.cid || r.cid, ...(clean.changes ? { changes: clean.changes } : {}), ...(clean.consequences ? { consequences: clean.consequences } : {}), ...(clean.placement ? { placement: clean.placement } : {}) };
+}
+
+export function agreementFromResult(name, result) {
+    if (!['ugt_draft_agreement', 'ugt_edit_agreement'].includes(name)) return null;
+    if (result?.isError) return null;
+    const r = payloadOf(result);
+    if (r.ok === false) return null;
+    const content = r.untrusted?.agreement || r.agreement || r.untrusted?.content;
+    const cid = r.cid;
+    const planCid = content?.planCid || r.plan?.cid;
+    if (typeof cid !== 'string' || typeof planCid !== 'string') return null;
+    return { draftRef: typeof r.draftRef === 'string' ? r.draftRef : null, cid, planCid,
+        previewUrl: typeof r.previewUrl === 'string' ? r.previewUrl : null,
+        previewStatus: r.previewStatus || null, summary: compactObject(name, result), previousCid: r.previousCid || null };
 }

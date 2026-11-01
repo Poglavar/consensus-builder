@@ -116,6 +116,23 @@ describe('chat conversation routes', () => {
         expect(JSON.stringify(created.body)).not.toContain(token);
     });
 
+    it('streams and persists private agreement review state separately from the working plan', async () => {
+        const agreement = { draftRef: 'https://mcp.example/agreement', cid: 'agreement-cid', planCid: 'plan-cid',
+            previewUrl: 'https://app.example/designs?draft=secret', summary: { title: 'Land exchange' } };
+        const runTurn = vi.fn(async () => ({ agreement, agreementHistory: [null], agreementChanged: true,
+            plan: null, planHistory: [], messages: [], turns: 1, spentUsd: 0.01, steps: [], usage: {}, costUsd: 0.01,
+            modelCalls: 1, usageUncertain: false, outcome: { type: 'reply', text: 'The agreement is ready to review.' } }));
+        const { app, store } = makeHarness({ runTurn });
+        const response = await turn(app, 'conv-1', body({ turnKey: '00000000-0000-4000-8000-000000000002' }));
+        const events = parseSse(response.text);
+        expect(events.map(event => event.name)).toEqual(['agreement', 'reply', 'done']);
+        expect(events[0].data).toMatchObject({ draftRef: agreement.draftRef, cid: agreement.cid, planCid: agreement.planCid,
+            previewUrl: agreement.previewUrl, previousCid: null, summary: agreement.summary });
+        expect(store.rows.get('conv-1')).toMatchObject({ plan: null, agreement, agreementHistory: [null] });
+        const state = await auth(request(app).get('/chat/conversations/conv-1'));
+        expect(state.body).toMatchObject({ plan: null, agreement });
+    });
+
     it('streams step, plan, reply and done in order, then replays the stored result without another model call', async () => {
         let cooldownCalls = 0;
         const { app, callModel, budget } = makeHarness({ env: { CHAT_DEBUG_COSTS: 'true' }, limiters: { cooldown: (_req, res, next) => {

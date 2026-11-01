@@ -9,6 +9,8 @@ CREATE TABLE IF NOT EXISTS consensus.chat_conversation (
     plan_ref text,
     plan_cid text,
     plan_history jsonb NOT NULL DEFAULT '[]',
+    agreement_state jsonb NOT NULL DEFAULT 'null'::jsonb,
+    agreement_history jsonb NOT NULL DEFAULT '[]',
     messages jsonb NOT NULL DEFAULT '[]',
     notes jsonb NOT NULL DEFAULT '[]',
     turns integer NOT NULL DEFAULT 0,
@@ -18,6 +20,8 @@ CREATE TABLE IF NOT EXISTS consensus.chat_conversation (
     updated_at timestamptz NOT NULL DEFAULT now(),
     expires_at timestamptz NOT NULL
 );
+ALTER TABLE consensus.chat_conversation ADD COLUMN IF NOT EXISTS agreement_state jsonb NOT NULL DEFAULT 'null'::jsonb;
+ALTER TABLE consensus.chat_conversation ADD COLUMN IF NOT EXISTS agreement_history jsonb NOT NULL DEFAULT '[]';
 CREATE INDEX IF NOT EXISTS chat_conversation_expiry_idx ON consensus.chat_conversation(expires_at);
 CREATE TABLE IF NOT EXISTS consensus.chat_turn (
     id bigserial PRIMARY KEY,

@@ -1093,9 +1093,9 @@ A temporary means of inspecting a draft artifact. An opaque bearer reference gra
 ### Chat conversation
 
 A private, token-authorized conversation with the application's hosted design agent. It retains a
-working plan, message history, undo revisions, turn count and spending total for 24 hours. Its
-content is not published. Deleting or expiring it removes the messages and replay payloads while
-retaining the separate daily spending ledger.
+working plan and optional working agreement, message history, undo revisions, turn count and spending
+total for 24 hours. Its content is not published. Deleting or expiring it removes the messages and
+replay payloads while retaining the separate daily spending ledger.
 
 ### Chat turn
 
@@ -1119,6 +1119,14 @@ There is no plan until a first design is drafted or the browser supplies its app
 The relay injects the plan reference and revision checks into public MCP edits. Successful changes
 are applied immediately on the map; undo restores the previous revision, including the empty map
 before the first draft. Browser edits rebase the conversation onto the exact current composition.
+
+### Working agreement (chat)
+
+The conversation's current private `agreement/v1` draft, addressed by its opaque draft reference and
+agreement CID. It names the working-plan revision by `planCid`; a later plan revision does not change
+the agreement, but makes that relationship stale. Agreement edits change terms against the exact
+agreement CID, and its own undo history is separate from plan undo. The draft remains private until
+the person reviews and takes a separate action in the app.
 
 ### Agent editing reference
 

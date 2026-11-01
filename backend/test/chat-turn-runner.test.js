@@ -62,6 +62,30 @@ describe('chat turn runner', () => {
         expect(result.plan).toEqual({ draftRef: 'http://localhost/draft', cid: 'plan-1' });
         expect(result.planChanged).toBe(true); expect(result.outcome).toEqual({ type: 'reply', text: 'Done.' });
     });
+    it('drafts and revises a private agreement on the working plan without exposing refs to the model', async () => {
+        const agreementContent = (title, planCid = 'plan-1') => ({ schema: 'agreement/v1', title, planCid,
+            inputs: { parcels: [] }, outputs: [], allocations: [], money: { currency: 'GBP' }, rule: { electorate: 'community', binding: false, settlement: null } });
+        const agreementResult = (title, cid, previousCid) => ({ structuredContent: { cid, previousCid,
+            draftRef: `https://mcp.example/${cid}`, previewUrl: `https://app.example/designs?draft=${cid}`,
+            untrusted: { agreement: agreementContent(title) } } });
+        const conversation = { plan: { draftRef: 'https://mcp.example/plan', cid: 'plan-1' } };
+        const callModel = model({ content: [tool('ugt_draft_agreement', { title: 'First terms' })] },
+            { content: [tool('ugt_edit_agreement', { terms: { title: 'Revised terms' } })] },
+            { content: [{ type: 'text', text: 'The private agreement is ready to review.' }] });
+        const callTool = vi.fn(async name => name === 'ugt_draft_agreement'
+            ? agreementResult('First terms', 'agreement-1') : agreementResult('Revised terms', 'agreement-2', 'agreement-1'));
+        const result = await runTurn({ ...base, conversation, callModel, callTool });
+        expect(callTool.mock.calls[0][1]).toEqual({ title: 'First terms', plan: conversation.plan.draftRef });
+        expect(callTool.mock.calls[1][1]).toEqual({ terms: { title: 'Revised terms' }, plan: 'https://mcp.example/agreement-1', expectedCid: 'agreement-1' });
+        expect(result.agreement).toMatchObject({ cid: 'agreement-2', planCid: 'plan-1' });
+        expect(result.agreementHistory).toHaveLength(2);
+        expect(result.agreementHistory[0]).toBeNull();
+        expect(result.agreementHistory[1]).toMatchObject({ cid: 'agreement-1', planCid: 'plan-1' });
+        expect(result.agreementChanged).toBe(true);
+        const modelResults = result.messages.flatMap(message => Array.isArray(message.content) ? message.content : []).filter(block => block.type === 'tool_result');
+        expect(JSON.stringify(modelResults)).not.toContain('https://mcp.example');
+        expect(JSON.stringify(modelResults)).not.toContain('agreement-1');
+    });
     it('does not replace a plan on refused placement and marks tool errors in the result', async () => {
         const callModel = model({ content: [tool('ugt_edit_plan')] }, { content: [{ type: 'text', text: 'No change.' }] });
         const callTool = vi.fn(async () => ({ isError: true, structuredContent: { ok: false, code: 'ground-occupied', message: 'Occupied' } }));

@@ -1,8 +1,9 @@
 import { CHAT_TOOL_ALLOWLIST, injectPlanArgs, restrictHelpTopic, toModelTools } from './tool-catalog.js';
-import { compactForModel, planFromResult, summarizeStep } from './tool-results.js';
+import { agreementFromResult, compactForModel, planFromResult, summarizeStep } from './tool-results.js';
 import { contextBlock, SYSTEM_PROMPT } from './system-prompt.js';
 import { injectMapArgs, navigationResult } from './navigation.js';
 import { costUsd } from './cost.js';
+import { feedbackArgs } from './feedback.js';
 
 // Pure orchestration for one chat turn; callers own persistence, transport, and cancellation policy.
 const clone = value => structuredClone(value ?? []);
@@ -12,11 +13,14 @@ const toolResultBlock = (id, content, isError = false) => ({ type: 'tool_result'
 
 export async function runTurn({ conversation = {}, text = '', context = {}, callModel, callTool, mcpTools, emit = () => {}, limits = {}, prices = {}, now = Date.now, signal } = {}) {
     const maxSteps = Math.max(1, Number(limits.maxSteps) || 8), messages = clone(conversation.messages || []);
-    let plan = conversation.plan || null, planHistory = clone(conversation.planHistory || []), usage = { input_tokens: 0, output_tokens: 0, cache_read_input_tokens: 0, cache_creation_input_tokens: 0 };
+    let plan = conversation.plan || null, planHistory = clone(conversation.planHistory || []);
+    let agreement = conversation.agreement || null, agreementHistory = clone(conversation.agreementHistory || []);
+    let usage = { input_tokens: 0, output_tokens: 0, cache_read_input_tokens: 0, cache_creation_input_tokens: 0 };
     const mapContext = structuredClone(context);
-    let totalCost = 0, planChanged = false, modelCalls = 0, usageUncertain = false, outcome;
-    messages.push({ role: 'user', content: contextBlock({ ...context, instruction: text }, plan, conversation.notes || []) });
-    const finish = () => ({ messages, plan, planHistory, steps, usage, costUsd: totalCost, planChanged, modelCalls, usageUncertain, outcome });
+    let totalCost = 0, planChanged = false, agreementChanged = false, modelCalls = 0, usageUncertain = false, outcome;
+    messages.push({ role: 'user', content: contextBlock({ ...context, instruction: text }, plan, conversation.notes || [], agreement) });
+    const finish = () => ({ messages, plan, planHistory, agreement, agreementHistory, steps, usage, costUsd: totalCost,
+        planChanged, agreementChanged, modelCalls, usageUncertain, outcome });
     const steps = [];
     const addUsage = value => { for (const key of Object.keys(usage)) usage[key] += Number(value?.[key]) || 0; totalCost = costUsd(usage, prices); };
     const listed = mcpTools || await callTool.listTools?.() || conversation.mcpTools || [];
@@ -51,7 +55,7 @@ export async function runTurn({ conversation = {}, text = '', context = {}, call
             continue;
         }
         const use = uses[0], name = use.name, input = use.input || {};
-        if (!CHAT_TOOL_ALLOWLIST.includes(name) && !['ask_person', 'undo_last_change'].includes(name)) {
+        if (!CHAT_TOOL_ALLOWLIST.includes(name) && !['ask_person', 'undo_last_change', 'undo_last_agreement_change'].includes(name)) {
             messages.push({ role: 'user', content: [toolResultBlock(use.id, JSON.stringify({ ok: false, code: 'tool-not-available', message: 'That tool is not available in chat.' }), true)] });
             continue;
         }
@@ -72,11 +76,23 @@ export async function runTurn({ conversation = {}, text = '', context = {}, call
             emit('step', { n, tool: name, summary: summarizeStep(name, input, reply), ok: hadPrior, ...(!hadPrior ? { code: 'nothing-to-undo' } : {}) });
             continue;
         }
+        if (name === 'undo_last_agreement_change') {
+            const hadPrior = agreementHistory.length > 0, prior = agreementHistory.pop();
+            if (hadPrior) { agreement = prior?.draftRef ? prior : null; agreementChanged = true; }
+            const reply = hadPrior
+                ? { ok: true, agreement: agreement ? { title: agreement.summary?.title || null } : null, message: 'The last private agreement change was undone.' }
+                : { ok: false, code: 'nothing-to-undo', message: 'There is no private agreement change to undo.' };
+            messages.push({ role: 'user', content: [toolResultBlock(use.id, JSON.stringify(reply), !hadPrior)] });
+            steps.push({ n, tool: name, ok: hadPrior, ...(!hadPrior ? { code: 'nothing-to-undo' } : {}) , ms: 0 });
+            emit('step', { n, tool: name, summary: summarizeStep(name, input, reply), ok: hadPrior, ...(!hadPrior ? { code: 'nothing-to-undo' } : {}) });
+            continue;
+        }
         let result, args;
         const toolStarted = now();
         try {
             args = name === 'ugt_help' ? restrictHelpTopic(input) : input;
-            args = injectMapArgs(name, injectPlanArgs(name, args, plan), mapContext);
+            args = injectMapArgs(name, injectPlanArgs(name, args, plan, agreement), mapContext);
+            if (name === 'ugt_submit_feedback') args = feedbackArgs(args, conversation, text);
             result = await callTool(name, args, { signal });
         } catch (error) { result = { isError: true, structuredContent: { ok: false, code: error.code || 'tool-error', message: error.message } }; }
         const wasAborted = signal?.aborted;
@@ -100,6 +116,16 @@ export async function runTurn({ conversation = {}, text = '', context = {}, call
         if (nextPlan && nextPlan.cid && nextPlan.cid !== plan?.cid) {
             planHistory.push(plan ? { ...plan, turn: conversation.turns || 0 } : { draftRef: null, cid: null, turn: conversation.turns || 0 });
             planHistory = planHistory.slice(-25); plan = nextPlan; planChanged = true;
+        }
+        const nextAgreement = ok ? agreementFromResult(name, result) : null;
+        if (nextAgreement) {
+            const sameRevision = nextAgreement.cid === agreement?.cid;
+            if (!sameRevision) {
+                agreementHistory.push(agreement ? { ...agreement, turn: conversation.turns || 0 } : null);
+                agreementHistory = agreementHistory.slice(-25);
+                agreementChanged = true;
+            }
+            agreement = nextAgreement;
         }
         const ms = Math.max(0, now() - toolStarted);
         steps.push({ n, tool: name, ok, ...(ok ? {} : { code: parsed.code || 'tool-error' }), ms });

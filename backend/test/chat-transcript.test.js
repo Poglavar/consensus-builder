@@ -35,6 +35,15 @@ describe('chat transcript reducer', () => {
         expect(state.messages.at(-1)).toMatchObject({ role: 'error', code: 'budget_exhausted', pending: false });
         expect(state.error.key).toBe('chat.errors.budget');
     });
+    it('stores and clears the persisted private-agreement review state from stream events', () => {
+        let state = chat.reduce(chat.initial(), { type: 'conversation', conversation: { id: 'c1' } });
+        state = chat.reduce(state, { type: 'turn:start', text: 'Prepare an agreement' });
+        const agreement = { name: 'agreement', draftRef: `https://api.test/mcp/previews/${'a'.repeat(32)}`, cid: 'agreement-cid', planCid: 'plan-cid', previewUrl: 'https://app.test/designs?draft=opaque' };
+        state = chat.reduce(state, { type: 'event', event: agreement });
+        expect(state.conversation.agreement).toMatchObject({ cid: 'agreement-cid', planCid: 'plan-cid' });
+        state = chat.reduce(state, { type: 'event', event: { name: 'agreement', draftRef: null, cid: null, planCid: null, previewUrl: null } });
+        expect(state.conversation).not.toHaveProperty('agreement');
+    });
     it('localizes failed map commands separately from interrupted chat responses', () => {
         expect(chat.errorKey('map_command_failed')).toBe('chat.errors.mapCommand');
         expect(chat.errorKey('stream_error')).toBe('chat.errors.stream');

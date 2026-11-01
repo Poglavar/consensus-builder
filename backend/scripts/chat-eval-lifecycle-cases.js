@@ -32,7 +32,7 @@ export const designFixtures = {
     road: { kind: 'road', ...common, points, preset: '1+1', title: 'Lifecycle road' },
     track: { kind: 'track', ...common, points, gauge: 1435, speed: 80, title: 'Lifecycle track' },
     'parcel-layout': { kind: 'parcel-layout', ...common, algorithm: 'equal', count: 4, title: 'Lifecycle layout' },
-    'urban-rule': { kind: 'urban-rule', ...common, rule: { typology: 'block', floors: 3, floorHeightM: 3, setbackM: 3, depthM: 10 }, title: 'Lifecycle rule' }
+    'urban-rule': { kind: 'building', ...common, typology: 'row', floors: 3, floorHeightM: 3, depthM: 10, title: 'Lifecycle Row rule' }
 };
 
 const moveTurn = (text, tools, moved = null, designIndex = 0) => ({ text, expect: { ...(moved ? { outcome: 'reply' } : { outcome: 'question' }), planChanged: Boolean(moved), forbidTools: forbiddenPublish, anyTools: moved ? [...new Set([...tools, 'ugt_modify_design', 'ugt_edit_plan'])] : tools, ...(moved ? { artifact: { designIndex, moved, previousUnchanged: true } } : {}) } });
@@ -113,13 +113,21 @@ export const lifecycleCases = [
         ]
     },
     {
-        id: 'lifecycle-urban-rule', language: 'en', context: baseContext,
+        id: 'lifecycle-urban-rule', language: 'en', context: caseContext('building', 'row'),
         turns: [
-            createTurn(`Create an urban rule with a block typology, 3 floors, 3-metre floor height, 3-metre setback and 10-metre depth. ${rowOutlineText}`, 'ugt_draft_urban_rule', { paths: { goal: 'urban-rule', 'buildingProposal.parameters.typology': 'block' } }),
-            editTurn('Increase this urban rule to 4 floors and keep its other authored parameters.', { paths: { 'buildingProposal.parameters.floors': 4 } }),
-            editTurn('Change its depth to 12 metres while retaining the other rule parameters.', { paths: { 'buildingProposal.parameters.depthM': 12 } }),
-            moveTurn('Move this urban rule site 10 metres north while keeping its rule parameters.', ['ugt_edit_design'], { paths: ['site'], eastM: 0, northM: 10, toleranceM: 0.3 }),
-            moveTurn('Move the urban rule site another 8 metres east.', ['ugt_edit_design'], { paths: ['site'], eastM: 8, northM: 0, toleranceM: 0.3 })
+            createTurn(`Create an urban rule with a row typology, 3 floors, 3-metre floor height and 10-metre depth. ${rowOutlineText}`, 'ugt_draft_urban_rule',
+                { paths: { goal: 'row', 'buildingProposal.typologyType': 'row' }, building: { index: 0, floors: 3 } }),
+            editTurn('Set this Row rule to office use.', { paths: { 'buildingProposal.parameters.rule.use': 'office' } }),
+            editTurn('Increase this Row rule to 4 floors and keep its other parameters.', { building: { index: 0, floors: 4 } }),
+            ...[
+                'Move the Row buildings 1 metre east inside their fixed site.',
+                'Move the Row buildings another 1 metre east inside the same fixed site.'
+            ].map(text => {
+                const turn = moveTurn(text, ['ugt_modify_design', 'ugt_edit_design'],
+                    { paths: ['geometry.buildings.0'], eastM: 1, northM: 0, toleranceM: 0.2 });
+                turn.expect.artifact.unchangedPaths = ['site'];
+                return turn;
+            })
         ]
     },
     {

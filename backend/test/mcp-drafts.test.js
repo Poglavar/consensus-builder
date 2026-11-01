@@ -5,6 +5,7 @@ import * as turf from '@turf/turf';
 import { validateDesignContent } from '../routes/designs.js';
 import { cidOf, cidOfObject } from '../cid.js';
 import { createUrbanGameTheoryTools } from '../agents/ugt-agent-tools.js';
+import { createMcpDraftTools } from '../agents/mcp-drafts.js';
 import { createTestPreviewLinks as createPreviewLinks } from './helpers/mcp-preview-store.js';
 const require = createRequire(import.meta.url);
 const builder = require('../../frontend/js/intent-design.js');
@@ -27,6 +28,41 @@ describe('intent design artifacts', () => {
         expect(result.design.goal).toBe('row');
         expect(result.design.site).toEqual(site);
         expect(result.design.geometry.buildings.length).toBeGreaterThan(0);
+    });
+    it.each([
+        ['block', 'buildings', { parcelIds: ['A'], parcelSourceId: 'test-source' }],
+        ['row', 'row', { outline: site }],
+        ['detached', 'parcelBased', { parcelIds: ['A'], parcelSourceId: 'test-source' }]
+    ])('drafts an applyable %s urban rule with the shared building generator', async (typology, goal, location) => {
+        const parcel = { type: 'Feature', id: 'A', properties: { parcelId: 'A' }, geometry: site };
+        const drafts = createMcpDraftTools({ appOrigin: 'https://app.example', read: {
+            siteOfDesign: design => design.site,
+            parcels: async () => ({ parcelSourceId: 'test-source', features: [parcel] }),
+            request: async path => {
+                if (path === '/designs/binding') return { parcelSourceId: 'test-source', binding: { coverage: 'complete', parcels: [{ parcelId: 'A' }] } };
+                throw new Error(`Unexpected route ${path}`);
+            }
+        } });
+        const result = await drafts.draftUrbanRule({ city: 'london', ...location,
+            rule: { typology, kind: 'max', floors: 3, floorHeightM: 3,
+                ...(typology === 'block' ? { setbackM: 3, depthM: 10 } : typology === 'row' ? { depthM: 10 } : { setbackM: 3 }) } });
+        expect(result.design.goal).toBe(goal);
+        expect(result.design.buildingProposal.parameters).toBeTruthy();
+        expect(result.design.geometry.buildings.length).toBeGreaterThan(0);
+        expect(result.design.geometry.buildings[0].properties.urbanRule).toBeTruthy();
+        expect(validateDesignContent(result.design)).toMatchObject({ ok: true });
+    });
+    it('refuses incomplete, unsupported or ungrounded urban rules with direct recovery guidance', async () => {
+        const drafts = createMcpDraftTools({ appOrigin: 'https://app.example', read: { request: async () => { throw new Error('must not read'); } } });
+        const capture = fn => { try { fn(); } catch (error) { return error; } throw new Error('Expected the urban rule to be refused.'); };
+        expect(capture(() => drafts.draftUrbanRule({ rule: { floors: 3 } }))).toMatchObject({ code: 'unsupported-urban-rule-typology' });
+        expect(capture(() => drafts.draftUrbanRule({ rule: { typology: 'block', floors: 3, mystery: true } }))).toMatchObject({ code: 'unsupported-urban-rule-parameter' });
+        expect(capture(() => drafts.draftUrbanRule({ rule: { typology: 'detached', floors: 3, depthM: 10 } }))).toMatchObject({ code: 'unsupported-urban-rule-parameter' });
+        expect(capture(() => drafts.draftUrbanRule({ rule: { typology: 'row' } }))).toMatchObject({ code: 'incomplete-urban-rule' });
+        expect(capture(() => drafts.draftUrbanRule({ city: 'london', outline: site, rule: { typology: 'block', floors: 3 } })))
+            .toMatchObject({ code: 'parcel-source-required' });
+        expect(capture(() => drafts.draftUrbanRule({ city: 'london', parcelIds: ['A'], rule: { typology: 'row', floors: 3 } })))
+            .toMatchObject({ code: 'parcel-source-required' });
     });
     it('regenerates an exact layout member in place and refuses stale or unrelated replacement conflicts', async () => {
         const neighbor = { type: 'Polygon', coordinates: [[[-0.099, 51.5], [-0.098, 51.5], [-0.098, 51.501], [-0.099, 51.501], [-0.099, 51.5]]] };

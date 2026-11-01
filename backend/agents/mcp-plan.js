@@ -122,20 +122,26 @@ export function createMcpPlanTools({ read, drafts, agreements, appOrigin, resolv
             return true;
         });
         const recipients = new Map(plan.agreement.allocations.map(row => [row.output, row.to]));
-        const ledger = AgreementRecord.ledger(plan.agreement);
+        const rule = { electorate: plan.agreement.rule.electorate, binding: plan.agreement.rule.binding };
+        const community = rule.electorate === 'community';
+        const ledger = community ? null : AgreementRecord.ledger(plan.agreement);
         // Parties are abstract (one per input parcel); with a rights snapshot in the rule, what each
-        // person holds of them is derived, never stored.
+        // person holds of them is derived, never stored. A community poll defines no party allocation
+        // or cash position, so do not expose the owner's hypothetical ledger for that electorate.
         const rights = plan.agreement.rule?.approvalConfig?.rights;
-        return { cid: plan.cid, parcelSourceId: plan.parcelSourceId, title: plan.agreement.title,
+        return { cid: plan.cid, parcelSourceId: plan.parcelSourceId, title: plan.agreement.title, rule,
+            ...(community ? { communityPosition: { allocations: 'not-defined', cashTransfers: 'not-defined' } } : {}),
             items: matched.slice(offset, offset + limit).map(({ geometry, ...item }) => {
-                const value = item.kind === 'piece' ? { ...item, recipient: recipients.get(item.ref.slice(6)) || null } : item;
+                const value = item.kind === 'piece' && !community ? { ...item, recipient: recipients.get(item.ref.slice(6)) || null } : item;
                 return includeGeometry ? { ...value, geometry } : value;
             }),
-            parties: ledger.parties, persons: rights ? personPositions(plan.agreement, rights) : null, publicM2: ledger.publicM2, proposerM2: ledger.proposerM2, settlement: plan.agreement.rule.settlement,
-            valuation: plan.agreement.valuation ?? null, valued: ledger.valued, contributedValueCents: ledger.contributedValueCents,
-            distributableValueCents: ledger.distributableValueCents, publicValueCents: ledger.publicValueCents, proposerValueCents: ledger.proposerValueCents,
-            scheme: schemeReport(plan.agreement),
-            cashSchedule: ledger.money,
+            parties: ledger?.parties ?? null, persons: ledger && rights ? personPositions(plan.agreement, rights) : null,
+            publicM2: ledger?.publicM2 ?? null, proposerM2: ledger?.proposerM2 ?? null,
+            settlement: community ? null : plan.agreement.rule.settlement,
+            valuation: plan.agreement.valuation ?? null, valued: ledger?.valued ?? null, contributedValueCents: ledger?.contributedValueCents ?? null,
+            distributableValueCents: ledger?.distributableValueCents ?? null, publicValueCents: ledger?.publicValueCents ?? null, proposerValueCents: ledger?.proposerValueCents ?? null,
+            scheme: community ? null : schemeReport(plan.agreement),
+            cashSchedule: ledger?.money ?? null,
             total: matched.length, offset, truncated: offset + limit < matched.length,
             selectionBasis: 'References belong to this immutable plan CID. Compass selection requires the whole object bbox beyond the reference bbox; crossing objects are excluded.',
             next: trustedMetadata({ tool: 'ugt_edit_agreement', action: 'Use expectedCid and explicit terms; revise membership in the named plan first.' }) };

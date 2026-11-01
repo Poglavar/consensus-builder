@@ -40,6 +40,17 @@ test('chat panel sends a turn and announces the streamed reply @core', async ({ 
   await expect(chatHeading).toBeVisible();
   await expect(chatHeading.locator('.cb-icon-robot-smile')).toHaveAttribute('aria-hidden', 'true');
   const composer = sheet.locator('.chat-input');
+  const tips = sheet.locator('details.chat-tips');
+  const tipsSummary = tips.locator('summary');
+  await tipsSummary.focus();
+  await tipsSummary.press('Enter');
+  await expect(tips).toHaveAttribute('open', '');
+  const designTip = sheet.getByRole('button', { name: 'Design a park on the selected parcels or move a building 50 m north.' });
+  await designTip.focus();
+  await designTip.press('Enter');
+  await expect(composer).toBeFocused();
+  await expect(composer).toHaveValue('Design a park on the selected parcels or move a building 50 m north.');
+  expect(sent).toHaveLength(0);
   await composer.fill('Add a park');
   await composer.press('Enter');
   await expect(sheet.getByText('Which direction?')).toBeVisible();
@@ -58,6 +69,7 @@ test('chat panel sends a turn and announces the streamed reply @core', async ({ 
   await option.click();
   await expect(sheet.getByText('I updated the working plan.')).toBeVisible();
   await expect(steps).toHaveAttribute('open', '');
+  await expect(tips).toHaveAttribute('open', '');
   await expect(composer).toBeFocused();
   expect(sent[0].text).toBe('Add a park');
   expect(sent[1].text).toBe('Move it north');
@@ -80,6 +92,7 @@ test('chat panel sends a turn and announces the streamed reply @core', async ({ 
   await sheet.getByRole('button', { name: 'Copier la conversation' }).click();
   await expect.poll(() => page.evaluate(() => navigator.clipboard.readText())).toBe('Vous: Add a park\n\nAgent: Which direction?\nOptions: Move it north\n\nVous: Move it north\n\nAgent: I updated the working plan.');
   await expect(sheet.locator('.chat-status')).toBeEmpty();
+  await expect(sheet.getByRole('button', { name: 'Concevez un parc sur les parcelles sélectionnées ou déplacez un bâtiment de 50 m vers le nord.' })).toBeVisible();
   await expect(sheet.getByRole('button', { name: 'Nouvelle conversation' })).toBeEnabled();
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
 });
@@ -241,6 +254,7 @@ test('chat navigation events begin, add, finish, and replay exact parcel selecti
 test('chat applies a private plan revision and undo removes its first draft @core', async ({ mockApi: page, baseURL }) => {
   test.setTimeout(120_000);
   await stubBasemapTiles(page);
+  await page.setViewportSize({ width: 360, height: 800 });
   page.on('pageerror', error => console.error(`[chat-panel pageerror] ${error.stack || error.message}`));
   const design = builder.build({ kind: 'space', spaceKind: 'park', site: PARCEL_GEOMETRY, city: 'zg', title: 'Chat park', authoredAt: '2026-10-23T00:00:00.000Z' }, { turf });
   const designCid = cid.cidOfObject(design);
@@ -257,6 +271,7 @@ test('chat applies a private plan revision and undo removes its first draft @cor
     turnCount += 1;
     const events = [
       `event: plan\ndata: ${JSON.stringify({ draftRef, cid: planCid, changes: [{ beforeCid: null, afterCid: planCid }] })}`,
+      `event: agreement\ndata: ${JSON.stringify({ draftRef, cid: 'bafybeigdyrzt5sfp7udm7hu76uh7y26nf3rj6g5z4q3f7zq4xw2gq2l5ty', planCid, previewUrl })}`,
       'event: reply\ndata: {"text":"The park is ready."}',
       'event: done\ndata: {"turnCostUsd":0.001,"conversationSpentUsd":0.001,"turns":1}'
     ].join('\n\n') + '\n\n';
@@ -278,10 +293,47 @@ test('chat applies a private plan revision and undo removes its first draft @cor
     const chat = (window as any).ChatPanel?.state?.();
     return { applied: record?.applied === true, planError: chat?.lastPlan?.error, stateError: chat?.error, messages: chat?.messages?.map((message: any) => ({ role: message.role, code: message.code, text: message.text })) };
   }), { timeout: 25_000 }).toMatchObject({ applied: true });
-  await sheet.getByRole('button', { name: 'Undo last change' }).click();
+  const reviewAgreement = sheet.getByRole('link', { name: 'Review agreement' });
+  await expect(reviewAgreement).toBeVisible();
+  const reviewUrl = new URL((await reviewAgreement.getAttribute('href'))!);
+  expect(reviewUrl.searchParams.get('draft')).toBe(draftRef);
+  expect(reviewUrl.searchParams.get('backend')).toBeTruthy();
+  expect(reviewUrl.searchParams.get('city')).toBe('zg');
+  expect(await page.evaluate(() => (window as any).ChatClient.conversation().agreement.planCid)).toBe(planCid);
+  await expect(sheet.locator('.chat-agreement-status')).toBeEmpty();
+  await sheet.getByRole('button', { name: 'Undo plan change' }).click();
   await expect.poll(() => page.evaluate(() => {
     const record = (window as any).proposalStorage?.getAllProposals?.().find((item: any) => item.title === 'Chat park');
     return record?.applied === true;
   }), { timeout: 60_000 }).toBe(false);
+  await expect(sheet.locator('.chat-agreement-status')).toHaveText('This agreement is for an earlier version of the plan. Ask for a new agreement for the current plan.');
+  await page.reload({ waitUntil: 'domcontentloaded' });
+  await waitForMapReady(page);
+  await page.locator(selectors.chatButton).click();
+  const restoredSheet = page.locator(selectors.chatSheet);
+  await expect(restoredSheet.getByRole('link', { name: 'Review agreement' })).toBeVisible();
+  await expect(restoredSheet.locator('.chat-agreement-status')).toHaveText('This agreement is for an earlier version of the plan. Ask for a new agreement for the current plan.');
+  const restoredTips = restoredSheet.locator('details.chat-tips');
+  const restoredSummary = restoredTips.locator('summary');
+  await restoredSummary.focus();
+  await restoredSummary.press('Enter');
+  await expect(restoredTips).toHaveAttribute('open', '');
+  const tipLayout = await restoredTips.evaluate(element => {
+    const summary = element.querySelector('summary')!;
+    const top = summary.getBoundingClientRect().top;
+    element.scrollTop = element.scrollHeight;
+    return { maxHeight: Number.parseFloat(getComputedStyle(element).maxHeight), listScrolls: element.scrollHeight > element.clientHeight,
+      summaryStayedVisible: Math.abs(summary.getBoundingClientRect().top - top) < 1 && summary.getBoundingClientRect().bottom > 0 };
+  });
+  expect(tipLayout.maxHeight).toBeLessThanOrEqual(136);
+  expect(tipLayout.listScrolls).toBe(true);
+  expect(tipLayout.summaryStayedVisible).toBe(true);
+  const agreementTip = restoredSheet.getByRole('button', { name: 'Prepare a private agreement for the current plan.' });
+  await agreementTip.focus();
+  await agreementTip.press('Enter');
+  await expect(restoredSheet.getByRole('textbox')).toBeFocused();
+  await expect(restoredSheet.getByRole('textbox')).toHaveValue('Prepare a private agreement for the current plan.');
+  expect(turnCount).toBe(1);
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
   expect(turnCount).toBe(1);
 });

@@ -67,6 +67,27 @@ describe('chat client', () => {
         expect(client.conversation()).toMatchObject({ id: 'conv-1', turns: 3, plan: { cid: 'p1' } });
         expect(requests.map(([url]) => url)).toEqual(['https://api.test/chat/conversations/conv-1', 'https://api.test/chat/conversations/conv-1']);
     });
+    it('persists private agreement review state across reloads and clears it on the null agreement event', async () => {
+        const storage = new MemoryStorage(), expiresAt = Date.now() + 60_000;
+        storage.setItem('chat-conversation-v1:https://api.test', JSON.stringify({ id: 'conv-1', expiresAt }));
+        const agreement = { draftRef: 'https://api.test/mcp/previews/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa', cid: 'agreement-cid',
+            planCid: 'plan-cid', previewUrl: 'https://app.test/designs?draft=https%3A%2F%2Fapi.test%2Fmcp%2Fpreviews%2Faaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa' };
+        const events = [
+            `event: agreement\ndata: ${JSON.stringify(agreement)}`,
+            `event: agreement\ndata: ${JSON.stringify({ draftRef: null, cid: null, planCid: null, previewUrl: null })}`,
+            'event: done\ndata: {}'
+        ].join('\n\n') + '\n\n';
+        const client = api.create({ window: { getBackendBase: () => 'https://api.test', crypto: { getRandomValues: bytes => bytes.fill(3), randomUUID: () => 'turn-1' } }, storage,
+            fetch: async () => new Response(new ReadableStream({ start(controller) { controller.enqueue(new TextEncoder().encode(events)); controller.close(); } }), { status: 200 }) });
+        const restored = [];
+        await client.turn('conv-1', { text: 'Draft an agreement' }, { onEvent(event) {
+            if (event.name === 'agreement') restored.push(api.create({ window: { getBackendBase: () => 'https://api.test', crypto: { getRandomValues: bytes => bytes.fill(4) } }, storage, fetch: async () => {} }).conversation());
+        } });
+        expect(restored[0]).toMatchObject({ agreement });
+        expect(restored[1]).toMatchObject({ id: 'conv-1' });
+        expect(restored[1]).not.toHaveProperty('agreement');
+        expect(client.conversation()).not.toHaveProperty('agreement');
+    });
     it('throws the server error code and status for non-ok responses', async () => {
         const client = api.create({ window: { crypto: { getRandomValues: bytes => bytes.fill(1) } }, base: 'https://one.test', storage: new MemoryStorage(), fetch: async () => new Response(JSON.stringify({ code: 'budget_exhausted' }), { status: 402 }) });
         await expect(client.turn('conv', { text: 'hi' })).rejects.toMatchObject({ code: 'budget_exhausted', status: 402 });

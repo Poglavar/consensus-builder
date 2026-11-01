@@ -5,7 +5,8 @@ function fromRow(row) {
     if (!row) return null;
     return { id: row.id, tokenHash: row.token_hash, clientIp: row.client_ip, language: row.language, city: row.city,
         plan: row.plan_cid ? { draftRef: row.plan_ref, cid: row.plan_cid } : null,
-        planHistory: row.plan_history, messages: row.messages, notes: row.notes, turns: row.turns, spentUsd: Number(row.spent_usd),
+        planHistory: row.plan_history, agreement: row.agreement_state || null, agreementHistory: row.agreement_history || [],
+        messages: row.messages, notes: row.notes, turns: row.turns, spentUsd: Number(row.spent_usd),
         turnInProgressSince: millis(row.turn_in_progress_since), createdAt: millis(row.created_at), updatedAt: millis(row.updated_at), expiresAt: millis(row.expires_at) };
 }
 export function createConversationStore(pool, { now = Date.now, ttlMs = 86_400_000 } = {}) {
@@ -43,9 +44,10 @@ export function createConversationStore(pool, { now = Date.now, ttlMs = 86_400_0
             return fromRow(result.rows[0]);
         },
         async saveTurn(id, patch, executor = pool) {
-            await executor.query(`UPDATE consensus.chat_conversation SET plan_ref=$2,plan_cid=$3,plan_history=$4,messages=$5,
-                notes=$6,turns=$7,spent_usd=$8,turn_in_progress_since=NULL,updated_at=$9 WHERE id=$1`,
+            await executor.query(`UPDATE consensus.chat_conversation SET plan_ref=$2,plan_cid=$3,plan_history=$4,agreement_state=$5,
+                agreement_history=$6,messages=$7,notes=$8,turns=$9,spent_usd=$10,turn_in_progress_since=NULL,updated_at=$11 WHERE id=$1`,
             [id, patch.plan?.draftRef || null, patch.plan?.cid || null, JSON.stringify(patch.planHistory || []),
+                JSON.stringify(patch.agreement || null), JSON.stringify(patch.agreementHistory || []),
                 JSON.stringify(patch.messages || []), JSON.stringify(patch.notes || []), patch.turns, patch.spentUsd, new Date(now())]);
         },
         async undo(id) {

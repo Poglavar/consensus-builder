@@ -9099,9 +9099,19 @@
   "chat": {
     "title": "Demander à Mechaurbanista",
     "intro": "Décrivez une modification de votre plan de travail.",
+    "tips": {
+      "title": "Essayez de demander",
+      "design": "Concevez un parc sur les parcelles sélectionnées ou déplacez un bâtiment de 50 m vers le nord.",
+      "agreement": "Préparez un accord privé pour le plan actuel.",
+      "feedback": "Envoyez un commentaire sur une fonctionnalité utile.",
+      "sources": "Quelles sources de parcelles et de bâtiments sont disponibles dans cette ville ?",
+      "affordableHousing": "Explorez les parcelles près des transports en commun pour du logement abordable."
+    },
+    "reviewAgreement": "Examiner l’accord",
+    "agreementStale": "Cet accord concerne une version antérieure du plan. Demandez un nouvel accord pour le plan actuel.",
     "placeholder": "Que souhaitez-vous modifier ?",
     "send": "Envoyer",
-    "undo": "Annuler la dernière modification",
+    "undo": "Annuler le changement du plan",
     "newConversation": "Nouvelle conversation",
     "copyReply": "Copier la réponse",
     "copyConversation": "Copier la conversation",

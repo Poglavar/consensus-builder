@@ -98,6 +98,20 @@ votes, signatures, funding or execution state. Publication remains a separate co
 | `ugt_validate_plan` | Check authored geometry, retained constraints, building overlaps and station attachment presence; source coverage and statutory compliance remain explicit unknowns. |
 | `ugt_compare` | Compare revisions and expose absent source measurements as unknown. |
 
+`ugt_draft_urban_rule` accepts `rule: { typology, floors|height, ... }` for `block`, `row` or
+`detached`, and maps those fields to the same shared generator used by `ugt_draft_building`. The
+result is a normal typed building design with authored rule parameters and generated envelope
+geometry, so it can be applied, inspected and edited. Block and Detached rules require exact
+`parcelIds` and `parcelSourceId`; a Row rule can use an outline, which the shared Row placement
+engine fits. Include `floors` or `height`; unsupported typologies and fields that do not apply to
+the chosen typology are refused. These authored rules are proposals, not enacted planning
+restrictions.
+
+`ugt_inspect_agreement` reports the electorate and binding rule. Owner agreements have allocation
+and cash ledgers. Community polls return `communityPosition` with allocations and cash transfers
+`not-defined`; owner position, settlement and cash metrics are `null`, and pieces have no recipient.
+Their input and output ground describes the plan's scope rather than a land transfer.
+
 Draft and edit tools that accept `plan` can resolve an unpublished member by its CID within that
 exact plan revision. Pass the plan's private `draftRef` or canonical artifact, then use the member
 CID with `ugt_inspect_design`, `ugt_edit_design` or `ugt_modify_design`; this does not require a

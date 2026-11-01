@@ -119,11 +119,13 @@ export function createMcpDiscoveryTools({ read, contracts = new Map(), mode = 'h
         });
         return { items, total: all.length, offset, truncated: offset + items.length < all.length,
             abstractions: families.map(family => ({ id: family.id, sourceCount: family.sources?.length || 0,
+                registered: family.registered !== false, runtime: family.runtime || family.runtimes || null,
+                adapters: (family.adapters || []).filter(adapter => !adapterId || adapter.id === adapterId).map(adapter => ({ id: adapter.id, registered: adapter.registered !== false })),
                 operations: Object.keys(family.contract?.operations || {}), ...(includeContract ? { untrusted: {
                     contract: { id: family.id, schemaVersion: family.contract?.schemaVersion, operations: Object.keys(family.contract?.operations || {}) },
                     adapters: (family.adapters || []).filter(adapter => all.some(row => row.family.id === family.id && row.source.adapter === adapter.id))
                 } } : {}) })),
-            warnings: ['An unlisted geographic restriction is unknown coverage, not confirmation that a dataset covers the site.'],
+            warnings: ['Registration describes app support, not current browser selection or live service health.', 'An unlisted geographic restriction is unknown coverage, not confirmation that a dataset covers the site.'],
             ...(offset + items.length < all.length ? { next: trustedMetadata({ tool: 'ugt_list_sources', arguments: { ...(city ? { city } : {}), ...(abstraction ? { abstraction } : {}),
                 ...(sourceId ? { sourceId } : {}), ...(adapterId ? { adapterId } : {}), ...(bbox ? { bbox } : {}), offset: offset + items.length, limit, includeConfiguration, includeContract } }) } : {}) };
     }

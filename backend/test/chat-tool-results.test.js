@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { compactForModel, planFromResult, summarizeStep } from '../chat/tool-results.js';
+import { agreementFromResult, compactForModel, planFromResult, summarizeStep } from '../chat/tool-results.js';
 
 describe('chat tool results', () => {
     it('keeps useful compact placement data without geometry or preview links', () => {
@@ -28,6 +28,29 @@ describe('chat tool results', () => {
         expect(planFromResult('ugt_draft_building', refused)).toBeNull();
         expect(planFromResult('ugt_edit_plan', { isError: true, structuredContent: { plan: { draftRef: '/d', cid: 'x' } } })).toBeNull();
         expect(planFromResult('ugt_find_place', { structuredContent: { plan: { draftRef: '/d', cid: 'x' } } })).toBeNull();
+    });
+    it('keeps agreement terms concise while retaining the private review state outside model context', () => {
+        const result = { structuredContent: { cid: 'agreement-cid', draftRef: 'https://secret.example/agreement',
+            previewUrl: 'https://app.example/designs?draft=secret', previewStatus: 'private-link',
+            untrusted: { agreement: { schema: 'agreement/v1', title: 'Land exchange', planCid: 'plan-cid',
+                inputs: { parcels: [{ parcelId: 'P1' }] }, outputs: [{ hash: 'piece1-sha256:abc' }],
+                allocations: [{ output: 'piece1-sha256:abc', to: { kind: 'proposer' } }], money: { currency: 'GBP' },
+                rule: { electorate: 'owners', binding: true, settlement: { method: 'area', rateCentsPerM2: 1200 } } } } } };
+        const modelText = compactForModel('ugt_draft_agreement', result);
+        expect(JSON.parse(modelText)).toMatchObject({ title: 'Land exchange', electorate: 'owners', binding: true,
+            inputParcelCount: 1, outputCount: 1, allocationCount: 1, currency: 'GBP', settlement: { method: 'area' } });
+        expect(modelText).not.toContain('agreement-cid'); expect(modelText).not.toContain('secret'); expect(modelText).not.toContain('plan-cid');
+        expect(agreementFromResult('ugt_draft_agreement', result)).toMatchObject({ draftRef: 'https://secret.example/agreement',
+            cid: 'agreement-cid', planCid: 'plan-cid', previewUrl: 'https://app.example/designs?draft=secret' });
+        expect(agreementFromResult('ugt_edit_agreement', { isError: true, structuredContent: result.structuredContent })).toBeNull();
+    });
+    it('keeps community agreement scope distinct from owner allocation and cash terms', () => {
+        const compact = JSON.parse(compactForModel('ugt_inspect_agreement', { rule: { electorate: 'community', binding: false },
+            communityPosition: { allocations: 'not-defined', cashTransfers: 'not-defined' }, parties: null, persons: null,
+            publicM2: null, proposerM2: null, settlement: null, cashSchedule: null, items: [] }));
+        expect(compact).toMatchObject({ rule: { electorate: 'community', binding: false },
+            communityPosition: { allocations: 'not-defined', cashTransfers: 'not-defined' }, parties: null,
+            publicM2: null, proposerM2: null, settlement: null, cashSchedule: null });
     });
     it('keeps exact bounded JSON-pointer values and essential CIDs when change arrays are large', () => {
         const inspect = JSON.parse(compactForModel('ugt_inspect_design', { structuredContent: { cid: 'design-cid', values: [{ path: '/geometry/buildings/0/properties/floors', untrustedValue: 6 }, { path: '/geometry/buildings/0/geometry/coordinates', untrustedValue: [[1, 2], [3, 4]] }] } }));

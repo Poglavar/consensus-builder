@@ -153,6 +153,16 @@ describe('Urban Game Theory MCP server', () => {
         expect(names.some(name => /proposal|forecast|verdict|accept/.test(name))).toBe(false);
     });
 
+    it('declares only supported typed urban-rule inputs', async () => {
+        await connect(stubTools());
+        const rule = (await toolsByName()).ugt_draft_urban_rule.inputSchema.properties.rule;
+        expect(rule.additionalProperties).toBe(false);
+        expect(rule.required).toContain('typology');
+        expect(rule.properties.typology.enum).toEqual(['block', 'row', 'detached']);
+        expect(rule.properties.floors.maximum).toBe(200);
+        expect(rule.properties.height.maximum).toBe(800);
+    });
+
     it('refuses malformed successful authoring output while keeping structured recovery errors valid', async () => {
         const tools = stubTools();
         const observations = [];

@@ -9120,9 +9120,19 @@
   "chat": {
     "title": "Pregúntale a Mechaurbanista",
     "intro": "Describe un cambio para tu plan de trabajo.",
+    "tips": {
+      "title": "Prueba a pedir",
+      "design": "Diseña un parque en las parcelas seleccionadas o mueve un edificio 50 m al norte.",
+      "agreement": "Prepara un acuerdo privado para el plan actual.",
+      "feedback": "Envía comentarios sobre una función que sería útil.",
+      "sources": "¿Qué fuentes de parcelas y edificios están disponibles en esta ciudad?",
+      "affordableHousing": "Explora parcelas cerca del transporte público para vivienda asequible."
+    },
+    "reviewAgreement": "Revisar el acuerdo",
+    "agreementStale": "Este acuerdo corresponde a una versión anterior del plan. Pide un acuerdo nuevo para el plan actual.",
     "placeholder": "¿Qué quieres cambiar?",
     "send": "Enviar",
-    "undo": "Deshacer el último cambio",
+    "undo": "Deshacer cambio del plan",
     "newConversation": "Nueva conversación",
     "copyReply": "Copiar respuesta",
     "copyConversation": "Copiar conversación",

@@ -30,7 +30,8 @@ const hash = value => createHash('sha256').update(value).digest('hex');
 const fail = (code, status, message = code) => Object.assign(new Error(message), { code, status });
 const statusOf = error => error.status || ({ turn_in_progress: 409, rate_limited_quota: 429 })[error.code] || 503;
 const unwrap = value => value?.structuredContent || value;
-const publicState = (c, debugCosts) => ({ id: c.id, expiresAt: c.expiresAt, turns: c.turns, spentUsd: c.spentUsd, plan: c.plan, debugCosts });
+const publicState = (c, debugCosts) => ({ id: c.id, expiresAt: c.expiresAt, turns: c.turns, spentUsd: c.spentUsd,
+    plan: c.plan, agreement: c.agreement, debugCosts });
 function compactHistory(messages, result) {
     if (Buffer.byteLength(JSON.stringify(messages)) <= 120_000) return messages;
     const replies = messages.flatMap(m => typeof m.content === 'string' ? [m.content.slice(0, 1000)] :
@@ -181,11 +182,16 @@ export function setupChatRoute(app, pool, { env = process.env, store: suppliedSt
                     callModel: async (...args) => { modelCalls++; try { return await modelCaller(...args); } catch (error) { if (error.noModelCall) modelCalls--; throw error; } }, callTool, mcpTools,
                     emit, limits, prices, now, signal: controller.signal });
                 const charged = result.usageUncertain ? Math.max(estUsd, result.costUsd) : result.costUsd;
-                const patch = { plan: result.plan, planHistory: result.planHistory, messages: compactHistory(result.messages, result), notes: [],
+                const patch = { plan: result.plan, planHistory: result.planHistory, agreement: result.agreement,
+                    agreementHistory: result.agreementHistory, messages: compactHistory(result.messages, result), notes: [],
                     turns: conversation.turns + 1, spentUsd: Number((conversation.spentUsd + charged).toFixed(6)) };
                 const terminal = [];
                 if (result.planChanged) terminal.push({ name: 'plan', data: { draftRef: result.plan?.draftRef || null, cid: result.plan?.cid || null,
                     previousCid: conversation.plan?.cid || null, changes: result.plan?.changes || [], consequences: result.plan?.consequences || null } });
+                if (result.agreementChanged) terminal.push({ name: 'agreement', data: { draftRef: result.agreement?.draftRef || null,
+                    cid: result.agreement?.cid || null, planCid: result.agreement?.planCid || null,
+                    previewUrl: result.agreement?.previewUrl || null, previousCid: conversation.agreement?.cid || null,
+                    summary: result.agreement?.summary || null } });
                 if (result.outcome.type === 'error') terminal.push({ name: 'error', data: { code: result.outcome.code, message: result.outcome.message,
                     turnCostUsd: charged, conversationSpentUsd: patch.spentUsd, turns: patch.turns, debugCosts } });
                 else {

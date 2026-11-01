@@ -52,6 +52,15 @@
             else if (event.name === 'question') { message.text = event.text || event.question || ''; message.options = copy(event.options || []); }
             else if (event.name === 'reply') { message.text = event.text || ''; if (event.costUsd != null) message.costUsd = Number(event.costUsd); }
             else if (event.name === 'plan') message.plan = copy(event);
+            else if (event.name === 'agreement') {
+                const agreement = copy(event);
+                message.agreement = agreement;
+                if (next.conversation) {
+                    next.conversation = { ...next.conversation };
+                    if (['draftRef', 'cid', 'planCid', 'previewUrl'].every(key => agreement[key] === null)) delete next.conversation.agreement;
+                    else next.conversation.agreement = agreement;
+                }
+            }
             else if (event.name === 'done') {
                 if (next.conversation) next.conversation = { ...next.conversation, debugCosts: event.debugCosts === true };
                 if (event.reply && !message.text) message.text = event.reply;

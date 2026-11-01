@@ -9099,9 +9099,19 @@
   "chat": {
     "title": "Pergunte a Mechaurbanista",
     "intro": "Descreva uma alteração para o seu plano de trabalho.",
+    "tips": {
+      "title": "Experimente perguntar",
+      "design": "Desenhe um parque nos lotes selecionados ou mova um edifício 50 m para norte.",
+      "agreement": "Prepare um acordo privado para o plano atual.",
+      "feedback": "Envie comentários sobre uma funcionalidade que seria útil.",
+      "sources": "Que fontes de lotes e edifícios estão disponíveis nesta cidade?",
+      "affordableHousing": "Explore lotes perto do transporte público para habitação acessível."
+    },
+    "reviewAgreement": "Rever acordo",
+    "agreementStale": "Este acordo corresponde a uma versão anterior do plano. Peça um novo acordo para o plano atual.",
     "placeholder": "O que gostaria de alterar?",
     "send": "Enviar",
-    "undo": "Desfazer a última alteração",
+    "undo": "Desfazer alteração do plano",
     "newConversation": "Nova conversa",
     "copyReply": "Copiar resposta",
     "copyConversation": "Copiar conversa",

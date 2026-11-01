@@ -3,7 +3,11 @@
     // Loaded on the chat sheet's first open; the transcript outlives other sheets closing it.
     const transcript = win.__chatTranscript, context = win.__chatContext;
     const t = (key, values) => win.i18n?.t?.(key, values) || key;
-    let host, introNode, messages, status, total, input, sendButton, undoButton, newButton, conversationCopyButton, state = transcript.initial(), lastSynced = null, turnBaseRow = null, turnBaseCaptured = false, resetAfterTurn = false, operation = false;
+    let host, introNode, tips, tipButtons = [], messages, status, agreementStatus, agreementLink, total, input, sendButton, undoButton, newButton, conversationCopyButton, state = transcript.initial(), lastSynced = null, turnBaseRow = null, turnBaseCaptured = false, resetAfterTurn = false, operation = false;
+    const TIPS = [
+        { key: 'chat.tips.design' }, { key: 'chat.tips.agreement' }, { key: 'chat.tips.feedback' },
+        { key: 'chat.tips.sources' }, { key: 'chat.tips.affordableHousing' }
+    ];
     const records = () => win.proposalStorage?.getAllProposals?.() || win.proposals || win.currentProposals || [];
     function dispatch(action) { state = transcript.reduce(state, action); render(); }
     function formatCost(value) { return win.CbFormat?.formatMoney?.(+value || 0, 'USD', { minFractionDigits: 4, maxFractionDigits: 4 }) || `$${(+value || 0).toFixed(4)}`; }
@@ -82,8 +86,23 @@
         if (host === root) { render(); return; }
         host = root; root.replaceChildren();
         introNode = node('p', 'chat-intro', t('chat.intro')); root.append(introNode);
+        tips = node('details', 'chat-tips');
+        const tipsTitle = node('summary', 'chat-tips__summary', t('chat.tips.title')); tips.append(tipsTitle);
+        const tipList = node('div', 'chat-tips__list');
+        tipButtons = TIPS.map(tip => {
+            const button = node('button', 'btn btn-quiet btn-sm chat-tip', t(tip.key)); button.type = 'button';
+            button.addEventListener('click', () => {
+                input.value = t(tip.key);
+                input.focus();
+                input.setSelectionRange(input.value.length, input.value.length);
+            });
+            tipList.append(button); return button;
+        });
+        tips.append(tipList); root.append(tips);
         messages = node('div', 'chat-transcript'); messages.setAttribute('role', 'log'); messages.setAttribute('aria-live', 'polite'); messages.setAttribute('aria-label', t('chat.title'));
         status = node('div', 'chat-status'); status.setAttribute('role', 'status'); status.setAttribute('aria-live', 'polite');
+        agreementStatus = node('p', 'chat-agreement-status'); agreementStatus.setAttribute('role', 'status'); agreementStatus.setAttribute('aria-live', 'polite');
+        agreementLink = node('a', 'btn btn-quiet btn-sm chat-agreement-link', t('chat.reviewAgreement')); agreementLink.target = '_blank'; agreementLink.rel = 'noopener noreferrer'; agreementLink.hidden = true;
         total = node('p', 'chat-cost');
         const controls = node('div', 'chat-controls');
         undoButton = actionButton('chat.undo', 'btn btn-quiet btn-sm', undo);
@@ -92,7 +111,7 @@
         const composer = node('div', 'chat-composer'); input = node('textarea', 'chat-input'); input.rows = 2; input.enterKeyHint = 'send'; input.placeholder = t('chat.placeholder'); input.setAttribute('aria-label', t('chat.placeholder'));
         sendButton = actionButton('chat.send', 'btn btn-primary btn-sm', () => send(input.value));
         input.addEventListener('keydown', event => { if (event.key === 'Enter' && !event.shiftKey) { event.preventDefault(); win.BusyControl.track(sendButton, () => send(input.value)).catch(showError); } });
-        composer.append(input, sendButton); root.append(messages, status, total, controls, composer);
+        composer.append(input, sendButton); root.append(messages, status, agreementStatus, agreementLink, total, controls, composer);
         const saved = win.ChatClient.conversation(); if (saved) dispatch({ type: 'conversation', conversation: saved }); else render();
     }
     function showError(error) { dispatch({ type: 'turn:failed', code: error?.code || 'stream_error', status: error?.status }); }
@@ -232,14 +251,44 @@
         total.textContent = !total.hidden ? t('chat.sessionTotal.other', { cost: formatCost(state.totals.spentUsd), count: state.totals.turns }) : '';
         conversationCopyButton.disabled = !serializeConversation();
         input.disabled = !!state.pending || operation; sendButton.disabled = !!state.pending || operation;
+        tipButtons.forEach(button => { button.disabled = !!state.pending || operation; });
         undoButton.disabled = !state.lastPlan?.applied || !!state.pending || operation; newButton.disabled = !!state.pending || operation;
+        const agreement = state.conversation?.agreement;
+        let preview = null;
+        try {
+            if (agreement?.previewUrl) {
+                const url = new URL(agreement.previewUrl, win.location.href);
+                if (url.pathname === '/designs' && url.searchParams.get('draft') === agreement.draftRef && !url.username && !url.password
+                    && (url.protocol === 'https:' || ['localhost', '127.0.0.1', '[::1]'].includes(url.hostname))) {
+                    const backend = win.getBackendBase?.();
+                    if (backend) url.searchParams.set('backend', backend);
+                    if (!url.searchParams.has('city')) {
+                        const city = win.CityConfigManager?.getCurrentCityId?.() || win.currentCityId || win.currentCity;
+                        if (city) url.searchParams.set('city', city);
+                    }
+                    preview = url.href;
+                }
+            }
+        } catch (_) { /* an invalid private preview link is not offered */ }
+        agreementLink.hidden = !preview;
+        if (preview) agreementLink.href = preview; else agreementLink.removeAttribute('href');
+        let staleAgreement = false;
+        if (agreement) {
+            const liveRow = currentAppliedRow(win.MapShare?.capture?.(win));
+            staleAgreement = agreement.planCid !== (liveRow?.cid || null);
+        }
+        agreementStatus.textContent = agreement && staleAgreement ? t('chat.agreementStale') : '';
     }
     win.addEventListener('cityChanged', () => { if (operation) resetAfterTurn = true; else reset().catch(showError); });
+    win.addEventListener('planschange', render);
+    doc.addEventListener('proposalCreated', render);
     win.addEventListener('i18n:translationsLoaded', () => {
         if (!host) return;
         introNode.textContent = t('chat.intro');
+        tips.querySelector('.chat-tips__summary').textContent = t('chat.tips.title');
+        tipButtons.forEach((button, index) => { button.textContent = t(TIPS[index].key); });
         input.placeholder = t('chat.placeholder'); input.setAttribute('aria-label', t('chat.placeholder'));
-        sendButton.textContent = t('chat.send'); undoButton.textContent = t('chat.undo'); newButton.textContent = t('chat.newConversation');
+        sendButton.textContent = t('chat.send'); undoButton.textContent = t('chat.undo'); newButton.textContent = t('chat.newConversation'); agreementLink.textContent = t('chat.reviewAgreement');
         conversationCopyButton.setAttribute('aria-label', t('chat.copyConversation')); conversationCopyButton.title = t('chat.copyConversation');
         messages.setAttribute('aria-label', t('chat.title')); render();
     });

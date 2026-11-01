@@ -40,9 +40,16 @@ function createPool(now) {
                 const [id, token_hash, client_ip, language, city, expires_at] = values;
                 const old = [...conversations.values()].find(row => row.token_hash === token_hash);
                 if (old) return { rows: [{ ...old }] };
-                const row = { id, token_hash, client_ip, language, city, plan_ref: null, plan_cid: null, plan_history: [], messages: [], notes: [],
+                const row = { id, token_hash, client_ip, language, city, plan_ref: null, plan_cid: null, plan_history: [], agreement_state: null, agreement_history: [], messages: [], notes: [],
                     turns: 0, spent_usd: 0, turn_in_progress_since: null, created_at: new Date(now()), updated_at: new Date(now()), expires_at };
                 conversations.set(id, row); return { rows: [{ ...row }] };
+            }
+            if (text.startsWith('UPDATE consensus.chat_conversation SET plan_ref=$2,plan_cid=$3,plan_history=$4,agreement_state=$5')) {
+                const row = conversations.get(values[0]);
+                if (row) Object.assign(row, { plan_ref: values[1], plan_cid: values[2], plan_history: JSON.parse(values[3]),
+                    agreement_state: JSON.parse(values[4]), agreement_history: JSON.parse(values[5]), messages: JSON.parse(values[6]),
+                    notes: JSON.parse(values[7]), turns: values[8], spent_usd: values[9], turn_in_progress_since: null, updated_at: values[10] });
+                return { rows: [] };
             }
             if (text.startsWith('SELECT * FROM consensus.chat_conversation WHERE id=$1 AND token_hash=$2 AND expires_at>$3')) {
                 const row = conversations.get(values[0]);
@@ -65,7 +72,11 @@ describe('chat conversation store', () => {
             const created = await store.create({ tokenHash: 'a'.repeat(64), clientIp: '198.51.100.4', language: 'en', city: 'london' });
             expect(created).toMatchObject({ city: 'london', expiresAt: now() + 60_000 });
             expect(created.id).toMatch(/^[A-Za-z0-9_-]{24}$/);
+            expect(created.agreement).toBeNull();
             expect(await store.load(created.id, 'a'.repeat(64))).toMatchObject({ id: created.id });
+            const agreement = { draftRef: 'https://mcp.example/agreement', cid: 'agreement-cid', planCid: 'plan-cid', previewUrl: 'https://app.example/draft' };
+            await store.saveTurn(created.id, { plan: null, planHistory: [], agreement, agreementHistory: [null], messages: [], notes: [], turns: 1, spentUsd: 0 });
+            expect(await store.load(created.id, 'a'.repeat(64))).toMatchObject({ agreement, agreementHistory: [null] });
             expect(await store.load(created.id, 'b'.repeat(64))).toBeNull();
         } finally { store.dispose(); }
     });

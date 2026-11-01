@@ -65,6 +65,14 @@
             } catch (_) { return null; }
         }
         const saveConversation = value => { if (value) store?.setItem(conversationKey(), JSON.stringify(value)); else store?.removeItem(conversationKey()); };
+        const agreementState = value => {
+            if (value && ['draftRef', 'cid', 'planCid', 'previewUrl'].every(key => value[key] === null)) return null;
+            if (value && typeof value.draftRef === 'string' && typeof value.cid === 'string'
+                && typeof value.planCid === 'string' && typeof value.previewUrl === 'string') {
+                return { draftRef: value.draftRef, cid: value.cid, planCid: value.planCid, previewUrl: value.previewUrl };
+            }
+            return undefined;
+        };
         async function request(path, { method = 'GET', body, accept = 'application/json', signal } = {}) {
             const response = await fetcher(`${getBase()}/chat${path}`, { method, cache: 'no-store', redirect: 'error',
                 headers: { Accept: accept, Authorization: `Bearer ${token()}`, ...(body ? { 'Content-Type': 'application/json' } : {}) },
@@ -81,7 +89,9 @@
         async function get(id) { return json(`/conversations/${encodeURIComponent(id)}`); }
         async function sync(id) {
             const value = await get(id);
-            saveConversation({ id: value.id, expiresAt: value.expiresAt, turns: value.turns, spentUsd: value.spentUsd, plan: value.plan });
+            const agreement = agreementState(value.agreement);
+            saveConversation({ id: value.id, expiresAt: value.expiresAt, turns: value.turns, spentUsd: value.spentUsd, plan: value.plan,
+                ...(agreement ? { agreement } : {}) });
             return value;
         }
         async function undo(id) { return json(`/conversations/${encodeURIComponent(id)}/undo`, { method: 'POST', body: {} }); }
@@ -103,6 +113,14 @@
                 if (!response.body?.getReader) throw Object.assign(new Error('The chat stream is unavailable.'), { code: 'stream_unavailable', status: response.status });
                 const reader = response.body.getReader(), decoder = new TextDecoder(); const parser = parseSse(event => {
                     if (event.name === 'done' || event.name === 'error') terminal = true;
+                    if (event.name === 'agreement') {
+                        const agreement = agreementState(event), saved = conversation();
+                        if (agreement !== undefined && saved?.id === id) {
+                            const updated = { ...saved };
+                            if (agreement) updated.agreement = agreement; else delete updated.agreement;
+                            saveConversation(updated);
+                        }
+                    }
                     onEvent(event);
                 });
                 while (true) { const { done, value } = await reader.read(); resetIdle(); if (done) break; parser.feed(decoder.decode(value, { stream: true })); }

@@ -9144,9 +9144,19 @@
   "chat": {
     "title": "Pitajte Mechaurbanista",
     "intro": "Opišite promjenu plana na kojem radite.",
+    "tips": {
+      "title": "Pokušajte pitati",
+      "design": "Osmisli park na odabranim česticama ili pomakni zgradu 50 m prema sjeveru.",
+      "agreement": "Pripremi privatni sporazum za trenutačni plan.",
+      "feedback": "Pošalji povratnu informaciju o značajci koja bi pomogla.",
+      "sources": "Koji su izvori čestica i zgrada dostupni u ovom gradu?",
+      "affordableHousing": "Istraži čestice blizu javnog prijevoza za priuštivo stanovanje."
+    },
+    "reviewAgreement": "Pregledaj sporazum",
+    "agreementStale": "Ovaj je sporazum za stariju verziju plana. Zatražite novi sporazum za trenutačni plan.",
     "placeholder": "Što želite promijeniti?",
     "send": "Pošalji",
-    "undo": "Poništi posljednju promjenu",
+    "undo": "Poništi promjenu plana",
     "newConversation": "Novi razgovor",
     "copyReply": "Kopiraj odgovor",
     "copyConversation": "Kopiraj razgovor",
