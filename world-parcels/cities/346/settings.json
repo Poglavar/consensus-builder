@@ -1,0 +1,128 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "346",
+  "name": "San José, Costa Rica",
+  "point": [
+    9.95138590845043,
+    -84.1080972379198
+  ],
+  "bindings": [
+    {
+      "appCityId": "san_jose",
+      "runtimeConfig": {
+        "id": "san_jose",
+        "wupCityCode": "346",
+        "label": "San José, Costa Rica",
+        "currency": {
+          "locale": "es-CR",
+          "code": "CRC"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            9.95138590845043,
+            -84.1080972379198
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            9.95138590845043,
+            -84.1080972379198
+          ],
+          "fallbackDataset": [
+            -84.1080972379198,
+            9.95138590845043
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "cr-msj-nomenclatura-predial",
+          "idPrefix": "CR-MSJ-NOMENCLATURA-OBJECTID-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "Municipalidad de San José, Dpto. Información Catastral y Geográfica, Sección de Información Geográfica"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "cr-msj-nomenclatura-predial",
+      "name": "Municipalidad de San José — Nomenclatura predial",
+      "adapter": "arcgis",
+      "endpoint": "https://services5.arcgis.com/0ZvuJDanWVJc4vYr/ArcGIS/rest/services/SIG_SER_NOMENCLATURA_PREDIAL/FeatureServer/0/query",
+      "idPrefix": "CR-MSJ-NOMENCLATURA-OBJECTID-",
+      "idField": "OBJECTID",
+      "objectIdField": "OBJECTID",
+      "idType": "integer",
+      "outFields": [
+        "OBJECTID"
+      ],
+      "queryFormat": "geojson",
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "pageSize": 1000,
+      "idBatchSize": 80,
+      "maxFeatures": 5000,
+      "maxBboxKm2": 25,
+      "timeoutMs": 15000,
+      "maxConcurrentQueries": 2,
+      "countryCode": "CR",
+      "metricSrid": 32616,
+      "cityIds": [
+        "san_jose"
+      ],
+      "operator": "Municipalidad de San José, Departamento de Información Catastral y Geográfica",
+      "catalogueUrl": "https://services5.arcgis.com/0ZvuJDanWVJc4vYr/ArcGIS/rest/services/SIG_SER_NOMENCLATURA_PREDIAL/FeatureServer/0",
+      "attribution": "Municipalidad de San José, Dpto. Información Catastral y Geográfica, Sección de Información Geográfica",
+      "scope": "Municipal predio polygons linked to finca and cadastral-plan references. Exact WUP locator and nearby bounded observations establish local availability only. Layer description says San José canton; item description says Carmen district. Neither the metadata extent nor bounded samples establish canton-wide or metropolitan completeness.",
+      "licenceNote": "Public anonymous query access. Item licenseInfo: Para uso de la Municipalidad de San José. External reuse permission remains unresolved; no open-data licence is asserted.",
+      "defaultForCity": true,
+      "capabilities": {
+        "bbox": true,
+        "exactId": true,
+        "areaEnumeration": true
+      },
+      "discovery": {
+        "jurisdiction": {
+          "countryCode": "CR",
+          "basis": "Municipal cadastral/geographic layer describes predios and defines FINCA and PLANO as national property-register and cadastral-plan references.",
+          "evidence": [
+            "https://services5.arcgis.com/0ZvuJDanWVJc4vYr/ArcGIS/rest/services/SIG_SER_NOMENCLATURA_PREDIAL/FeatureServer/0?f=pjson",
+            "https://services5.arcgis.com/0ZvuJDanWVJc4vYr/ArcGIS/rest/services/SIG_SER_NOMENCLATURA_PREDIAL/FeatureServer/info/iteminfo?f=pjson"
+          ]
+        },
+        "keepPublishedFields": true
+      }
+    }
+  ]
+}

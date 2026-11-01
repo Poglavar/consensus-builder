@@ -1,0 +1,121 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "2915",
+  "name": "Daegu, South Korea",
+  "point": [
+    35.8589361554858,
+    128.593469060585
+  ],
+  "bindings": [
+    {
+      "appCityId": "daegu",
+      "runtimeConfig": {
+        "id": "daegu",
+        "wupCityCode": "2915",
+        "label": "Daegu, South Korea",
+        "currency": {
+          "locale": "ko-KR",
+          "code": "KRW"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            35.8589361554858,
+            128.593469060585
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            35.8589361554858,
+            128.593469060585
+          ],
+          "fallbackDataset": [
+            128.593469060585,
+            35.8589361554858
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "kr-daegu-gis-go-kr-dg-lsmd-cont-ldreg",
+          "idPrefix": "KR-DAEGU-PNU-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "Daegu Metropolitan City / Daegu Map Portal (gis.go.kr); dg:LSMD_CONT_LDREG."
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "kr-daegu-gis-go-kr-dg-lsmd-cont-ldreg",
+      "name": "Daegu continuous cadastral map parcels",
+      "adapter": "wfs",
+      "endpoint": "https://gis.go.kr/geoserver/dg/ows",
+      "featureType": "dg:LSMD_CONT_LDREG",
+      "version": "1.1.0",
+      "idField": "pnu",
+      "idType": "string",
+      "idPattern": "^[0-9]{19}$",
+      "idPrefix": "KR-DAEGU-PNU-",
+      "geometryField": "geom",
+      "outFields": [
+        "pnu"
+      ],
+      "requestProperties": true,
+      "responseSrid": 5187,
+      "projection": "+proj=tmerc +lat_0=38 +lon_0=129 +k=1 +x_0=200000 +y_0=600000 +ellps=GRS80 +units=m +no_defs",
+      "filterBoundsGeometry": true,
+      "pageSize": 100,
+      "idBatchSize": 40,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 2,
+      "maxConcurrentQueries": 2,
+      "browserTransport": "relay",
+      "metricSrid": 32652,
+      "countryCode": "KR",
+      "cityIds": [
+        "daegu"
+      ],
+      "defaultForCity": true,
+      "capabilities": {
+        "areaEnumeration": true,
+        "exactIds": true,
+        "queryGeometry": true
+      },
+      "operator": "Daegu Metropolitan City / Daegu Map Portal",
+      "catalogueUrl": "https://www.daegu.go.kr/index.do?menu_id=00936100",
+      "attribution": "Daegu Metropolitan City / Daegu Map Portal (gis.go.kr); dg:LSMD_CONT_LDREG.",
+      "scope": "Official municipal continuous cadastral layer, verified only in bounded central and eastern windows. Published extent is not a municipal boundary or citywide completeness proof.",
+      "licenceNote": "National MOLIT cadastral catalogue lists Korea Open Government License Type 1 attribution; applicability to this municipal endpoint is unconfirmed. Preserve municipal attribution; source-specific vector reuse terms remain a follow-up."
+    }
+  ]
+}

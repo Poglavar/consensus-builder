@@ -1,0 +1,131 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "2974",
+  "name": "Johor Bahru, Malaysia",
+  "point": [
+    1.51437766777779,
+    103.755955802362
+  ],
+  "bindings": [
+    {
+      "appCityId": "johor_bahru",
+      "runtimeConfig": {
+        "id": "johor_bahru",
+        "wupCityCode": "2974",
+        "label": "Johor Bahru, Malaysia",
+        "currency": {
+          "locale": "en-MY",
+          "code": "MYR"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            1.51437766777779,
+            103.755955802362
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            1.51437766777779,
+            103.755955802362
+          ],
+          "fallbackDataset": [
+            103.755955802362,
+            1.51437766777779
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "my-iplan-johor-lot",
+          "idPrefix": "MY-IPLAN-JOHOR-UPI-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "PLANMalaysia / i-PLAN — Lot Johor"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "my-iplan-johor-lot",
+      "name": "PLANMalaysia i-PLAN Lot Johor",
+      "adapter": "arcgis",
+      "endpoint": "https://scharms.planmalaysia.gov.my/arcgis/rest/services/iPLAN/LOT_01/MapServer/0",
+      "idField": "UPI",
+      "objectIdField": "OBJECTID",
+      "idType": "string",
+      "idPattern": "^[0-9]+$",
+      "idPrefix": "MY-IPLAN-JOHOR-UPI-",
+      "outFields": [
+        "OBJECTID",
+        "UPI"
+      ],
+      "queryFormat": "geojson",
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "pageSize": 500,
+      "idBatchSize": 80,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "maxConcurrentQueries": 1,
+      "timeoutMs": 40000,
+      "countryCode": "MY",
+      "metricSrid": 32648,
+      "cityIds": [
+        "johor_bahru"
+      ],
+      "sourceCrs": "EPSG:4742",
+      "operator": "PLANMalaysia / Bahagian Maklumat Guna Tanah Negara",
+      "catalogueUrl": "https://scharms.planmalaysia.gov.my/arcgis/rest/services/iPLAN/LOT_01/MapServer/0?f=pjson",
+      "attribution": "PLANMalaysia / i-PLAN — Lot Johor",
+      "licenceNote": "Anonymous public query observed. No explicit reuse or redistribution licence established in inspected first-party metadata; terms and underlying cadastral provenance require second-pass confirmation. Retain attribution.",
+      "scope": "Johor state lot polygons; bounded parcels verified around the immutable Johor Bahru locator. Municipal-boundary coverage, citywide completeness and current/historic validity remain unverified.",
+      "capabilities": {
+        "areaEnumeration": true,
+        "exactId": true,
+        "geometry": "full-wgs84"
+      },
+      "defaultForCity": true,
+      "discovery": {
+        "jurisdiction": {
+          "countryCode": "MY",
+          "basis": "Official Lot Johor polygon layer with native UPI and lot-number fields. MyGeoportal documents UPI as surveyed land-lot identity. Positive geometry at Johor Bahru locator supports bounded city binding only.",
+          "evidenceFiles": [
+            "evidence/layer-metadata.json",
+            "evidence/upi-purpose.html",
+            "evidence/sample-live.geojson"
+          ]
+        }
+      }
+    }
+  ]
+}

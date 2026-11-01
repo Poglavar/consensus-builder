@@ -1104,10 +1104,13 @@
       "registryCityIds": [
         "wup2025:123"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "tabuk"
+      ],
       "cohorts": [
         "registry",
-        "overnight-top1000"
+        "overnight-top1000",
+        "app"
       ],
       "wikipediaLookupStatus": "not_attempted",
       "wupCityCode": 123,
@@ -1119,8 +1122,70 @@
       "populationMatch": {
         "basis": "exact_WUP2025_city_code_fresh_bulk_2025_row",
         "confidence": "high",
-        "sourceName": "UN DESA WUP 2025"
-      }
+        "sourceName": "UN DESA WUP 2025",
+        "evidenceFile": "research/overnight-cities-2026-10-08/provenance.json"
+      },
+      "population2015": null,
+      "annualGrowthPct2015To2025": null,
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null,
+      "parcelSourceId": "sa-geosa-ndm-landparcel",
+      "parcelQualification": "initial-qualification-bounded",
+      "qualificationEvidence": "world-parcels/cities/123/settings.json",
+      "initialQualificationReview": {
+        "policy": "parcel-availability-v1",
+        "passed": true,
+        "requiredChecks": [
+          "classification",
+          "exactIds",
+          "stableGeometry"
+        ],
+        "status": "follow-up-required",
+        "followUp": [
+          {
+            "check": "explicitAbsence",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "sampling",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "completeness",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "binding",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "alignment",
+            "reason": "Deferred to second-pass review."
+          }
+        ]
+      },
+      "qualificationWarnings": [
+        {
+          "check": "explicitAbsence",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "sampling",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "completeness",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "binding",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "alignment",
+          "reason": "Deferred to second-pass review."
+        }
+      ]
     },
     {
       "id": "wup2025:141",
@@ -2111,11 +2176,14 @@
       "registryCityIds": [
         "geonames:1835848"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "seoul"
+      ],
       "wupCityCode": 332,
       "cohorts": [
         "largest200",
-        "registry"
+        "registry",
+        "app"
       ],
       "population2015": 21459415,
       "population2025": 22490482,
@@ -2178,7 +2246,65 @@
           "distanceKm": 8.062
         }
       ],
-      "wikipediaLookupStatus": "verified"
+      "wikipediaLookupStatus": "verified",
+      "wupCityQualityFlag": null,
+      "parcelSourceId": "kr-seoul-smap-cadastral-lp-pa-cbnd",
+      "parcelQualification": "initial-qualification-bounded",
+      "qualificationEvidence": "world-parcels/cities/332/settings.json",
+      "initialQualificationReview": {
+        "policy": "parcel-availability-v1",
+        "passed": true,
+        "requiredChecks": [
+          "classification",
+          "exactIds",
+          "stableGeometry"
+        ],
+        "status": "follow-up-required",
+        "followUp": [
+          {
+            "check": "explicitAbsence",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "sampling",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "completeness",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "binding",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "alignment",
+            "reason": "Deferred to second-pass review."
+          }
+        ]
+      },
+      "qualificationWarnings": [
+        {
+          "check": "explicitAbsence",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "sampling",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "completeness",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "binding",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "alignment",
+          "reason": "Deferred to second-pass review."
+        }
+      ]
     },
     {
       "id": "wup2025:333",
@@ -3442,10 +3568,13 @@
       "registryCityIds": [
         "wup2025:488"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "tijuana"
+      ],
       "cohorts": [
         "registry",
-        "overnight-top1000"
+        "overnight-top1000",
+        "app"
       ],
       "wikipediaLookupStatus": "not_attempted",
       "wupCityCode": 488,
@@ -3457,8 +3586,70 @@
       "populationMatch": {
         "basis": "exact_WUP2025_city_code_fresh_bulk_2025_row",
         "confidence": "high",
-        "sourceName": "UN DESA WUP 2025"
-      }
+        "sourceName": "UN DESA WUP 2025",
+        "evidenceFile": "research/overnight-cities-2026-10-08/provenance.json"
+      },
+      "population2015": null,
+      "annualGrowthPct2015To2025": null,
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null,
+      "parcelSourceId": "mx-tijuana-implan-catastro-wms",
+      "parcelQualification": "initial-qualification-bounded",
+      "qualificationEvidence": "world-parcels/cities/488/settings.json",
+      "initialQualificationReview": {
+        "policy": "parcel-availability-v1",
+        "passed": true,
+        "requiredChecks": [
+          "classification",
+          "exactIds",
+          "stableGeometry"
+        ],
+        "status": "follow-up-required",
+        "followUp": [
+          {
+            "check": "explicitAbsence",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "sampling",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "completeness",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "binding",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "alignment",
+            "reason": "Deferred to second-pass review."
+          }
+        ]
+      },
+      "qualificationWarnings": [
+        {
+          "check": "explicitAbsence",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "sampling",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "completeness",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "binding",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "alignment",
+          "reason": "Deferred to second-pass review."
+        }
+      ]
     },
     {
       "id": "wup2025:492",
@@ -5404,11 +5595,14 @@
       "registryCityIds": [
         "wup2025:772"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "guayaquil"
+      ],
       "wupCityCode": 772,
       "cohorts": [
         "largest200",
-        "registry"
+        "registry",
+        "app"
       ],
       "population2015": 2768223,
       "population2025": 3157825,
@@ -5471,7 +5665,65 @@
           "distanceKm": 0
         }
       ],
-      "wikipediaLookupStatus": "verified"
+      "wikipediaLookupStatus": "verified",
+      "wupCityQualityFlag": null,
+      "parcelSourceId": "ec-guayaquil-urban-predios-official",
+      "parcelQualification": "initial-qualification-bounded",
+      "qualificationEvidence": "world-parcels/cities/772/settings.json",
+      "initialQualificationReview": {
+        "policy": "parcel-availability-v1",
+        "passed": true,
+        "requiredChecks": [
+          "classification",
+          "exactIds",
+          "stableGeometry"
+        ],
+        "status": "follow-up-required",
+        "followUp": [
+          {
+            "check": "explicitAbsence",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "sampling",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "completeness",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "binding",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "alignment",
+            "reason": "Deferred to second-pass review."
+          }
+        ]
+      },
+      "qualificationWarnings": [
+        {
+          "check": "explicitAbsence",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "sampling",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "completeness",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "binding",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "alignment",
+          "reason": "Deferred to second-pass review."
+        }
+      ]
     },
     {
       "id": "wup2025:779",
@@ -10552,10 +10804,13 @@
       "registryCityIds": [
         "wup2025:1513"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "mecca"
+      ],
       "cohorts": [
         "registry",
-        "overnight-top1000"
+        "overnight-top1000",
+        "app"
       ],
       "wikipediaLookupStatus": "not_attempted",
       "wupCityCode": 1513,
@@ -10567,8 +10822,70 @@
       "populationMatch": {
         "basis": "exact_WUP2025_city_code_fresh_bulk_2025_row",
         "confidence": "high",
-        "sourceName": "UN DESA WUP 2025"
-      }
+        "sourceName": "UN DESA WUP 2025",
+        "evidenceFile": "research/overnight-cities-2026-10-08/provenance.json"
+      },
+      "population2015": null,
+      "annualGrowthPct2015To2025": null,
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null,
+      "parcelSourceId": "sa-makkah-municipality-mmsdi-regulatory-parcels",
+      "parcelQualification": "initial-qualification-bounded",
+      "qualificationEvidence": "world-parcels/cities/1513/settings.json",
+      "initialQualificationReview": {
+        "policy": "parcel-availability-v1",
+        "passed": true,
+        "requiredChecks": [
+          "classification",
+          "exactIds",
+          "stableGeometry"
+        ],
+        "status": "follow-up-required",
+        "followUp": [
+          {
+            "check": "explicitAbsence",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "sampling",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "completeness",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "binding",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "alignment",
+            "reason": "Deferred to second-pass review."
+          }
+        ]
+      },
+      "qualificationWarnings": [
+        {
+          "check": "explicitAbsence",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "sampling",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "completeness",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "binding",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "alignment",
+          "reason": "Deferred to second-pass review."
+        }
+      ]
     },
     {
       "id": "wup2025:1530",
@@ -16915,11 +17232,14 @@
       "registryCityIds": [
         "geonames:1609350"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "krung_thep_maha_nakhon_bangkok"
+      ],
       "wupCityCode": 2286,
       "cohorts": [
         "largest200",
-        "registry"
+        "registry",
+        "app"
       ],
       "population2015": 14915059,
       "population2025": 18180280,
@@ -16982,7 +17302,65 @@
           "distanceKm": 5.432
         }
       ],
-      "wikipediaLookupStatus": "verified"
+      "wikipediaLookupStatus": "verified",
+      "wupCityQualityFlag": null,
+      "parcelSourceId": "th-bma-cpudgi-bma-parcel-01",
+      "parcelQualification": "initial-qualification-bounded",
+      "qualificationEvidence": "world-parcels/cities/2286/settings.json",
+      "initialQualificationReview": {
+        "policy": "parcel-availability-v1",
+        "passed": true,
+        "requiredChecks": [
+          "classification",
+          "exactIds",
+          "stableGeometry"
+        ],
+        "status": "follow-up-required",
+        "followUp": [
+          {
+            "check": "explicitAbsence",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "sampling",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "completeness",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "binding",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "alignment",
+            "reason": "Deferred to second-pass review."
+          }
+        ]
+      },
+      "qualificationWarnings": [
+        {
+          "check": "explicitAbsence",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "sampling",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "completeness",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "binding",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "alignment",
+          "reason": "Deferred to second-pass review."
+        }
+      ]
     },
     {
       "id": "wup2025:2289",
@@ -21465,10 +21843,13 @@
       "registryCityIds": [
         "wup2025:2915"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "daegu"
+      ],
       "cohorts": [
         "registry",
-        "overnight-top1000"
+        "overnight-top1000",
+        "app"
       ],
       "wikipediaLookupStatus": "not_attempted",
       "wupCityCode": 2915,
@@ -21480,8 +21861,70 @@
       "populationMatch": {
         "basis": "exact_WUP2025_city_code_fresh_bulk_2025_row",
         "confidence": "high",
-        "sourceName": "UN DESA WUP 2025"
-      }
+        "sourceName": "UN DESA WUP 2025",
+        "evidenceFile": "research/overnight-cities-2026-10-08/provenance.json"
+      },
+      "population2015": null,
+      "annualGrowthPct2015To2025": null,
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null,
+      "parcelSourceId": "kr-daegu-gis-go-kr-dg-lsmd-cont-ldreg",
+      "parcelQualification": "initial-qualification-bounded",
+      "qualificationEvidence": "world-parcels/cities/2915/settings.json",
+      "initialQualificationReview": {
+        "policy": "parcel-availability-v1",
+        "passed": true,
+        "requiredChecks": [
+          "classification",
+          "exactIds",
+          "stableGeometry"
+        ],
+        "status": "follow-up-required",
+        "followUp": [
+          {
+            "check": "explicitAbsence",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "sampling",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "completeness",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "binding",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "alignment",
+            "reason": "Deferred to second-pass review."
+          }
+        ]
+      },
+      "qualificationWarnings": [
+        {
+          "check": "explicitAbsence",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "sampling",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "completeness",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "binding",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "alignment",
+          "reason": "Deferred to second-pass review."
+        }
+      ]
     },
     {
       "id": "wup2025:2918",
@@ -22162,10 +22605,13 @@
       "registryCityIds": [
         "wup2025:2965"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "almaty"
+      ],
       "cohorts": [
         "registry",
-        "overnight-top1000"
+        "overnight-top1000",
+        "app"
       ],
       "wikipediaLookupStatus": "not_attempted",
       "wupCityCode": 2965,
@@ -22177,8 +22623,70 @@
       "populationMatch": {
         "basis": "exact_WUP2025_city_code_fresh_bulk_2025_row",
         "confidence": "high",
-        "sourceName": "UN DESA WUP 2025"
-      }
+        "sourceName": "UN DESA WUP 2025",
+        "evidenceFile": "research/overnight-cities-2026-10-08/provenance.json"
+      },
+      "population2015": null,
+      "annualGrowthPct2015To2025": null,
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null,
+      "parcelSourceId": "kz-almaty-mapalmaty-gzk",
+      "parcelQualification": "initial-qualification-bounded",
+      "qualificationEvidence": "world-parcels/cities/2965/settings.json",
+      "initialQualificationReview": {
+        "policy": "parcel-availability-v1",
+        "passed": true,
+        "requiredChecks": [
+          "classification",
+          "exactIds",
+          "stableGeometry"
+        ],
+        "status": "follow-up-required",
+        "followUp": [
+          {
+            "check": "explicitAbsence",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "sampling",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "completeness",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "binding",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "alignment",
+            "reason": "Deferred to second-pass review."
+          }
+        ]
+      },
+      "qualificationWarnings": [
+        {
+          "check": "explicitAbsence",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "sampling",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "completeness",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "binding",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "alignment",
+          "reason": "Deferred to second-pass review."
+        }
+      ]
     },
     {
       "id": "wup2025:2974",
@@ -22189,10 +22697,13 @@
       "registryCityIds": [
         "wup2025:2974"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "johor_bahru"
+      ],
       "cohorts": [
         "registry",
-        "overnight-top1000"
+        "overnight-top1000",
+        "app"
       ],
       "wikipediaLookupStatus": "not_attempted",
       "wupCityCode": 2974,
@@ -22204,8 +22715,70 @@
       "populationMatch": {
         "basis": "exact_WUP2025_city_code_fresh_bulk_2025_row",
         "confidence": "high",
-        "sourceName": "UN DESA WUP 2025"
-      }
+        "sourceName": "UN DESA WUP 2025",
+        "evidenceFile": "research/overnight-cities-2026-10-08/provenance.json"
+      },
+      "population2015": null,
+      "annualGrowthPct2015To2025": null,
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null,
+      "parcelSourceId": "my-iplan-johor-lot",
+      "parcelQualification": "initial-qualification-bounded",
+      "qualificationEvidence": "world-parcels/cities/2974/settings.json",
+      "initialQualificationReview": {
+        "policy": "parcel-availability-v1",
+        "passed": true,
+        "requiredChecks": [
+          "classification",
+          "exactIds",
+          "stableGeometry"
+        ],
+        "status": "follow-up-required",
+        "followUp": [
+          {
+            "check": "explicitAbsence",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "sampling",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "completeness",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "binding",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "alignment",
+            "reason": "Deferred to second-pass review."
+          }
+        ]
+      },
+      "qualificationWarnings": [
+        {
+          "check": "explicitAbsence",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "sampling",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "completeness",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "binding",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "alignment",
+          "reason": "Deferred to second-pass review."
+        }
+      ]
     },
     {
       "id": "wup2025:2979",
@@ -23616,10 +24189,13 @@
       "registryCityIds": [
         "wup2025:3124"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "bursa"
+      ],
       "cohorts": [
         "registry",
-        "overnight-top1000"
+        "overnight-top1000",
+        "app"
       ],
       "wikipediaLookupStatus": "not_attempted",
       "wupCityCode": 3124,
@@ -23631,8 +24207,70 @@
       "populationMatch": {
         "basis": "exact_WUP2025_city_code_fresh_bulk_2025_row",
         "confidence": "high",
-        "sourceName": "UN DESA WUP 2025"
-      }
+        "sourceName": "UN DESA WUP 2025",
+        "evidenceFile": "research/overnight-cities-2026-10-08/provenance.json"
+      },
+      "population2015": null,
+      "annualGrowthPct2015To2025": null,
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null,
+      "parcelSourceId": "tr-bursa-bbbcbsgateway-kadastro-parseller",
+      "parcelQualification": "initial-qualification-bounded",
+      "qualificationEvidence": "world-parcels/cities/3124/settings.json",
+      "initialQualificationReview": {
+        "policy": "parcel-availability-v1",
+        "passed": true,
+        "requiredChecks": [
+          "classification",
+          "exactIds",
+          "stableGeometry"
+        ],
+        "status": "follow-up-required",
+        "followUp": [
+          {
+            "check": "explicitAbsence",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "sampling",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "completeness",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "binding",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "alignment",
+            "reason": "Deferred to second-pass review."
+          }
+        ]
+      },
+      "qualificationWarnings": [
+        {
+          "check": "explicitAbsence",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "sampling",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "completeness",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "binding",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "alignment",
+          "reason": "Deferred to second-pass review."
+        }
+      ]
     },
     {
       "id": "wup2025:3133",
@@ -36453,7 +37091,71 @@
       "wupLatitude": -27.4017726669095,
       "wupLongitude": -55.9108766976171,
       "registryCityIds": [],
-      "appCityIds": []
+      "appCityIds": [
+        "posadas"
+      ],
+      "population2015": null,
+      "population2025": 375741,
+      "cohorts": [
+        "app"
+      ],
+      "parcelSourceId": "ar-posadas-ide-mae-29-publico-wfs",
+      "parcelQualification": "initial-qualification-bounded",
+      "qualificationEvidence": "world-parcels/cities/4570/settings.json",
+      "initialQualificationReview": {
+        "policy": "parcel-availability-v1",
+        "passed": true,
+        "requiredChecks": [
+          "classification",
+          "exactIds",
+          "stableGeometry"
+        ],
+        "status": "follow-up-required",
+        "followUp": [
+          {
+            "check": "explicitAbsence",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "sampling",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "completeness",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "binding",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "alignment",
+            "reason": "Deferred to second-pass review."
+          }
+        ]
+      },
+      "qualificationWarnings": [
+        {
+          "check": "explicitAbsence",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "sampling",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "completeness",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "binding",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "alignment",
+          "reason": "Deferred to second-pass review."
+        }
+      ]
     },
     {
       "id": "wup2025:4573",
@@ -38330,10 +39032,13 @@
       "registryCityIds": [
         "wup2025:4862"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "goiania"
+      ],
       "cohorts": [
         "registry",
-        "overnight-top1000"
+        "overnight-top1000",
+        "app"
       ],
       "wikipediaLookupStatus": "not_attempted",
       "wupCityCode": 4862,
@@ -38345,8 +39050,70 @@
       "populationMatch": {
         "basis": "exact_WUP2025_city_code_fresh_bulk_2025_row",
         "confidence": "high",
-        "sourceName": "UN DESA WUP 2025"
-      }
+        "sourceName": "UN DESA WUP 2025",
+        "evidenceFile": "research/overnight-cities-2026-10-08/provenance.json"
+      },
+      "population2015": null,
+      "annualGrowthPct2015To2025": null,
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null,
+      "parcelSourceId": "br-goiania-siggo-feature-base-divisas-lote",
+      "parcelQualification": "initial-qualification-bounded",
+      "qualificationEvidence": "world-parcels/cities/4862/settings.json",
+      "initialQualificationReview": {
+        "policy": "parcel-availability-v1",
+        "passed": true,
+        "requiredChecks": [
+          "classification",
+          "exactIds",
+          "stableGeometry"
+        ],
+        "status": "follow-up-required",
+        "followUp": [
+          {
+            "check": "explicitAbsence",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "sampling",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "completeness",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "binding",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "alignment",
+            "reason": "Deferred to second-pass review."
+          }
+        ]
+      },
+      "qualificationWarnings": [
+        {
+          "check": "explicitAbsence",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "sampling",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "completeness",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "binding",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "alignment",
+          "reason": "Deferred to second-pass review."
+        }
+      ]
     },
     {
       "id": "wup2025:4871",
@@ -47078,10 +47845,13 @@
       "registryCityIds": [
         "wup2025:5915"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "puebla"
+      ],
       "cohorts": [
         "registry",
-        "overnight-top1000"
+        "overnight-top1000",
+        "app"
       ],
       "wikipediaLookupStatus": "not_attempted",
       "wupCityCode": 5915,
@@ -47093,8 +47863,70 @@
       "populationMatch": {
         "basis": "exact_WUP2025_city_code_fresh_bulk_2025_row",
         "confidence": "high",
-        "sourceName": "UN DESA WUP 2025"
-      }
+        "sourceName": "UN DESA WUP 2025",
+        "evidenceFile": "research/overnight-cities-2026-10-08/provenance.json"
+      },
+      "population2015": null,
+      "annualGrowthPct2015To2025": null,
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null,
+      "parcelSourceId": "mx-puebla-aguapuebla-predios",
+      "parcelQualification": "initial-qualification-bounded",
+      "qualificationEvidence": "world-parcels/cities/5915/settings.json",
+      "initialQualificationReview": {
+        "policy": "parcel-availability-v1",
+        "passed": true,
+        "requiredChecks": [
+          "classification",
+          "exactIds",
+          "stableGeometry"
+        ],
+        "status": "follow-up-required",
+        "followUp": [
+          {
+            "check": "explicitAbsence",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "sampling",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "completeness",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "binding",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "alignment",
+            "reason": "Deferred to second-pass review."
+          }
+        ]
+      },
+      "qualificationWarnings": [
+        {
+          "check": "explicitAbsence",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "sampling",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "completeness",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "binding",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "alignment",
+          "reason": "Deferred to second-pass review."
+        }
+      ]
     },
     {
       "id": "wup2025:5917",
@@ -51866,10 +52698,13 @@
       "registryCityIds": [
         "wup2025:6315"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "gaziantep"
+      ],
       "cohorts": [
         "registry",
-        "overnight-top1000"
+        "overnight-top1000",
+        "app"
       ],
       "wikipediaLookupStatus": "not_attempted",
       "wupCityCode": 6315,
@@ -51881,8 +52716,70 @@
       "populationMatch": {
         "basis": "exact_WUP2025_city_code_fresh_bulk_2025_row",
         "confidence": "high",
-        "sourceName": "UN DESA WUP 2025"
-      }
+        "sourceName": "UN DESA WUP 2025",
+        "evidenceFile": "research/overnight-cities-2026-10-08/provenance.json"
+      },
+      "population2015": null,
+      "annualGrowthPct2015To2025": null,
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null,
+      "parcelSourceId": "tr-sehitkamil-keos-imar-parcels",
+      "parcelQualification": "initial-qualification-bounded",
+      "qualificationEvidence": "world-parcels/cities/6315/settings.json",
+      "initialQualificationReview": {
+        "policy": "parcel-availability-v1",
+        "passed": true,
+        "requiredChecks": [
+          "classification",
+          "exactIds",
+          "stableGeometry"
+        ],
+        "status": "follow-up-required",
+        "followUp": [
+          {
+            "check": "explicitAbsence",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "sampling",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "completeness",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "binding",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "alignment",
+            "reason": "Deferred to second-pass review."
+          }
+        ]
+      },
+      "qualificationWarnings": [
+        {
+          "check": "explicitAbsence",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "sampling",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "completeness",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "binding",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "alignment",
+          "reason": "Deferred to second-pass review."
+        }
+      ]
     },
     {
       "id": "wup2025:6320",
@@ -55992,11 +56889,14 @@
       "registryCityIds": [
         "wup2025:6721"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "brahmanbaria"
+      ],
       "wupCityCode": 6721,
       "cohorts": [
         "largest200",
-        "registry"
+        "registry",
+        "app"
       ],
       "population2015": 2120993,
       "population2025": 2914727,
@@ -56059,7 +56959,65 @@
           "distanceKm": 0.001
         }
       ],
-      "wikipediaLookupStatus": "verified"
+      "wikipediaLookupStatus": "verified",
+      "wupCityQualityFlag": null,
+      "parcelSourceId": "bd-minland-smart-bhumi-naksha-brahmanbaria-plot-geometry",
+      "parcelQualification": "initial-qualification-bounded",
+      "qualificationEvidence": "world-parcels/cities/6721/settings.json",
+      "initialQualificationReview": {
+        "policy": "parcel-availability-v1",
+        "passed": true,
+        "requiredChecks": [
+          "classification",
+          "exactIds",
+          "stableGeometry"
+        ],
+        "status": "follow-up-required",
+        "followUp": [
+          {
+            "check": "explicitAbsence",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "sampling",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "completeness",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "binding",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "alignment",
+            "reason": "Deferred to second-pass review."
+          }
+        ]
+      },
+      "qualificationWarnings": [
+        {
+          "check": "explicitAbsence",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "sampling",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "completeness",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "binding",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "alignment",
+          "reason": "Deferred to second-pass review."
+        }
+      ]
     },
     {
       "id": "wup2025:6724",
@@ -58363,11 +59321,14 @@
       "registryCityIds": [
         "wup2025:7035"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "yogyakarta"
+      ],
       "wupCityCode": 7035,
       "cohorts": [
         "largest200",
-        "registry"
+        "registry",
+        "app"
       ],
       "population2015": 2873754,
       "population2025": 2793747,
@@ -58430,7 +59391,65 @@
           "distanceKm": 0
         }
       ],
-      "wikipediaLookupStatus": "verified"
+      "wikipediaLookupStatus": "verified",
+      "wupCityQualityFlag": null,
+      "parcelSourceId": "id-jogjaprov-dispertaru-tanah-desa-diy",
+      "parcelQualification": "initial-qualification-bounded",
+      "qualificationEvidence": "world-parcels/cities/7035/settings.json",
+      "initialQualificationReview": {
+        "policy": "parcel-availability-v1",
+        "passed": true,
+        "requiredChecks": [
+          "classification",
+          "exactIds",
+          "stableGeometry"
+        ],
+        "status": "follow-up-required",
+        "followUp": [
+          {
+            "check": "explicitAbsence",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "sampling",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "completeness",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "binding",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "alignment",
+            "reason": "Deferred to second-pass review."
+          }
+        ]
+      },
+      "qualificationWarnings": [
+        {
+          "check": "explicitAbsence",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "sampling",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "completeness",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "binding",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "alignment",
+          "reason": "Deferred to second-pass review."
+        }
+      ]
     },
     {
       "id": "wup2025:7045",
@@ -59399,10 +60418,13 @@
       "registryCityIds": [
         "wup2025:7121"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "campinas"
+      ],
       "cohorts": [
         "registry",
-        "overnight-top1000"
+        "overnight-top1000",
+        "app"
       ],
       "wikipediaLookupStatus": "not_attempted",
       "wupCityCode": 7121,
@@ -59414,8 +60436,70 @@
       "populationMatch": {
         "basis": "exact_WUP2025_city_code_fresh_bulk_2025_row",
         "confidence": "high",
-        "sourceName": "UN DESA WUP 2025"
-      }
+        "sourceName": "UN DESA WUP 2025",
+        "evidenceFile": "research/overnight-cities-2026-10-08/provenance.json"
+      },
+      "population2015": null,
+      "annualGrowthPct2015To2025": null,
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null,
+      "parcelSourceId": "br-sfb-consulta-car-public-wfs",
+      "parcelQualification": "initial-qualification-bounded",
+      "qualificationEvidence": "world-parcels/cities/7121/settings.json",
+      "initialQualificationReview": {
+        "policy": "parcel-availability-v1",
+        "passed": true,
+        "requiredChecks": [
+          "classification",
+          "exactIds",
+          "stableGeometry"
+        ],
+        "status": "follow-up-required",
+        "followUp": [
+          {
+            "check": "explicitAbsence",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "sampling",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "completeness",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "binding",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "alignment",
+            "reason": "Deferred to second-pass review."
+          }
+        ]
+      },
+      "qualificationWarnings": [
+        {
+          "check": "explicitAbsence",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "sampling",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "completeness",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "binding",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "alignment",
+          "reason": "Deferred to second-pass review."
+        }
+      ]
     },
     {
       "id": "wup2025:7129",
@@ -73172,11 +74256,14 @@
       "registryCityIds": [
         "wup2025:8374"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "salvador"
+      ],
       "wupCityCode": 8374,
       "cohorts": [
         "largest200",
-        "registry"
+        "registry",
+        "app"
       ],
       "population2015": 3002379,
       "population2025": 3135157,
@@ -73219,7 +74306,67 @@
           "distanceKm": 0
         }
       ],
-      "wikipediaLookupStatus": "attempted_no_verified_article"
+      "wikipediaLookupStatus": "attempted_no_verified_article",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null,
+      "wupCityQualityFlag": null,
+      "parcelSourceId": "br-salvador-geosalvador-sefaz-parcelamentos-lotes",
+      "parcelQualification": "initial-qualification-bounded",
+      "qualificationEvidence": "world-parcels/cities/8374/settings.json",
+      "initialQualificationReview": {
+        "policy": "parcel-availability-v1",
+        "passed": true,
+        "requiredChecks": [
+          "classification",
+          "exactIds",
+          "stableGeometry"
+        ],
+        "status": "follow-up-required",
+        "followUp": [
+          {
+            "check": "explicitAbsence",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "sampling",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "completeness",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "binding",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "alignment",
+            "reason": "Deferred to second-pass review."
+          }
+        ]
+      },
+      "qualificationWarnings": [
+        {
+          "check": "explicitAbsence",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "sampling",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "completeness",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "binding",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "alignment",
+          "reason": "Deferred to second-pass review."
+        }
+      ]
     },
     {
       "id": "wup2025:8376",
@@ -128508,7 +129655,71 @@
       "wupLatitude": 17.2489124071603,
       "wupLongitude": 80.165271980989,
       "registryCityIds": [],
-      "appCityIds": []
+      "appCityIds": [
+        "khammam"
+      ],
+      "population2015": null,
+      "population2025": 346533,
+      "cohorts": [
+        "app"
+      ],
+      "parcelSourceId": "in-nrsc-bhuvan-telangana-tg-cad-gfi",
+      "parcelQualification": "initial-qualification-bounded",
+      "qualificationEvidence": "world-parcels/cities/10449/settings.json",
+      "initialQualificationReview": {
+        "policy": "parcel-availability-v1",
+        "passed": true,
+        "requiredChecks": [
+          "classification",
+          "exactIds",
+          "stableGeometry"
+        ],
+        "status": "follow-up-required",
+        "followUp": [
+          {
+            "check": "explicitAbsence",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "sampling",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "completeness",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "binding",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "alignment",
+            "reason": "Deferred to second-pass review."
+          }
+        ]
+      },
+      "qualificationWarnings": [
+        {
+          "check": "explicitAbsence",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "sampling",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "completeness",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "binding",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "alignment",
+          "reason": "Deferred to second-pass review."
+        }
+      ]
     },
     {
       "id": "wup2025:10451",
@@ -135315,10 +136526,13 @@
       "registryCityIds": [
         "wup2025:10684"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "yulin"
+      ],
       "cohorts": [
         "registry",
-        "overnight-top1000"
+        "overnight-top1000",
+        "app"
       ],
       "wikipediaLookupStatus": "not_attempted",
       "wupCityCode": 10684,
@@ -135330,8 +136544,70 @@
       "populationMatch": {
         "basis": "exact_WUP2025_city_code_fresh_bulk_2025_row",
         "confidence": "high",
-        "sourceName": "UN DESA WUP 2025"
-      }
+        "sourceName": "UN DESA WUP 2025",
+        "evidenceFile": "research/overnight-cities-2026-10-08/provenance.json"
+      },
+      "population2015": null,
+      "annualGrowthPct2015To2025": null,
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null,
+      "parcelSourceId": "cn-gx-tianditu-zongdi-natural-building",
+      "parcelQualification": "initial-qualification-bounded",
+      "qualificationEvidence": "world-parcels/cities/10684/settings.json",
+      "initialQualificationReview": {
+        "policy": "parcel-availability-v1",
+        "passed": true,
+        "requiredChecks": [
+          "classification",
+          "exactIds",
+          "stableGeometry"
+        ],
+        "status": "follow-up-required",
+        "followUp": [
+          {
+            "check": "explicitAbsence",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "sampling",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "completeness",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "binding",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "alignment",
+            "reason": "Deferred to second-pass review."
+          }
+        ]
+      },
+      "qualificationWarnings": [
+        {
+          "check": "explicitAbsence",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "sampling",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "completeness",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "binding",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "alignment",
+          "reason": "Deferred to second-pass review."
+        }
+      ]
     },
     {
       "id": "wup2025:10685",
@@ -148314,10 +149590,13 @@
       "registryCityIds": [
         "wup2025:11291"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "ranchi"
+      ],
       "cohorts": [
         "registry",
-        "overnight-top1000"
+        "overnight-top1000",
+        "app"
       ],
       "wikipediaLookupStatus": "not_attempted",
       "wupCityCode": 11291,
@@ -148329,8 +149608,70 @@
       "populationMatch": {
         "basis": "exact_WUP2025_city_code_fresh_bulk_2025_row",
         "confidence": "high",
-        "sourceName": "UN DESA WUP 2025"
-      }
+        "sourceName": "UN DESA WUP 2025",
+        "evidenceFile": "research/overnight-cities-2026-10-08/provenance.json"
+      },
+      "population2015": null,
+      "annualGrowthPct2015To2025": null,
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null,
+      "parcelSourceId": "in-jharkhand-gail-bapl-ranchi-cadastral-mapserver-25",
+      "parcelQualification": "initial-qualification-bounded",
+      "qualificationEvidence": "world-parcels/cities/11291/settings.json",
+      "initialQualificationReview": {
+        "policy": "parcel-availability-v1",
+        "passed": true,
+        "requiredChecks": [
+          "classification",
+          "exactIds",
+          "stableGeometry"
+        ],
+        "status": "follow-up-required",
+        "followUp": [
+          {
+            "check": "explicitAbsence",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "sampling",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "completeness",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "binding",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "alignment",
+            "reason": "Deferred to second-pass review."
+          }
+        ]
+      },
+      "qualificationWarnings": [
+        {
+          "check": "explicitAbsence",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "sampling",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "completeness",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "binding",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "alignment",
+          "reason": "Deferred to second-pass review."
+        }
+      ]
     },
     {
       "id": "wup2025:11293",
@@ -154499,11 +155840,14 @@
       "registryCityIds": [
         "wup2025:11580"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "wuxi"
+      ],
       "wupCityCode": 11580,
       "cohorts": [
         "largest200",
-        "registry"
+        "registry",
+        "app"
       ],
       "population2015": 2634581,
       "population2025": 2613100,
@@ -154566,7 +155910,65 @@
           "distanceKm": 0
         }
       ],
-      "wikipediaLookupStatus": "verified"
+      "wikipediaLookupStatus": "verified",
+      "wupCityQualityFlag": null,
+      "parcelSourceId": "cn-wuxi-djt-wxbdc-djsj",
+      "parcelQualification": "initial-qualification-bounded",
+      "qualificationEvidence": "world-parcels/cities/11580/settings.json",
+      "initialQualificationReview": {
+        "policy": "parcel-availability-v1",
+        "passed": true,
+        "requiredChecks": [
+          "classification",
+          "exactIds",
+          "stableGeometry"
+        ],
+        "status": "follow-up-required",
+        "followUp": [
+          {
+            "check": "explicitAbsence",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "sampling",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "completeness",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "binding",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "alignment",
+            "reason": "Deferred to second-pass review."
+          }
+        ]
+      },
+      "qualificationWarnings": [
+        {
+          "check": "explicitAbsence",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "sampling",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "completeness",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "binding",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "alignment",
+          "reason": "Deferred to second-pass review."
+        }
+      ]
     },
     {
       "id": "wup2025:11581",
@@ -160564,10 +161966,13 @@
       "registryCityIds": [
         "wup2025:12135"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "kaohsiung"
+      ],
       "cohorts": [
         "registry",
-        "overnight-top1000"
+        "overnight-top1000",
+        "app"
       ],
       "wikipediaLookupStatus": "not_attempted",
       "wupCityCode": 12135,
@@ -160579,8 +161984,70 @@
       "populationMatch": {
         "basis": "exact_WUP2025_city_code_fresh_bulk_2025_row",
         "confidence": "high",
-        "sourceName": "UN DESA WUP 2025"
-      }
+        "sourceName": "UN DESA WUP 2025",
+        "evidenceFile": "research/overnight-cities-2026-10-08/provenance.json"
+      },
+      "population2015": null,
+      "annualGrowthPct2015To2025": null,
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null,
+      "parcelSourceId": "TW-KAOHSIUNG-QIJIN-ARC-SAMPLE",
+      "parcelQualification": "initial-qualification-bounded",
+      "qualificationEvidence": "world-parcels/cities/12135/settings.json",
+      "initialQualificationReview": {
+        "policy": "parcel-availability-v1",
+        "passed": true,
+        "requiredChecks": [
+          "classification",
+          "exactIds",
+          "stableGeometry"
+        ],
+        "status": "follow-up-required",
+        "followUp": [
+          {
+            "check": "explicitAbsence",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "sampling",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "completeness",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "binding",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "alignment",
+            "reason": "Deferred to second-pass review."
+          }
+        ]
+      },
+      "qualificationWarnings": [
+        {
+          "check": "explicitAbsence",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "sampling",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "completeness",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "binding",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "alignment",
+          "reason": "Deferred to second-pass review."
+        }
+      ]
     },
     {
       "id": "wup2025:2556",
@@ -170038,6 +171505,1187 @@
       "parcelSourceId": "ca-on-kitchener-geoexplorer-property-boundaries",
       "parcelQualification": "initial-qualification-bounded",
       "qualificationEvidence": "world-parcels/cities/2379/settings.json",
+      "initialQualificationReview": {
+        "policy": "parcel-availability-v1",
+        "passed": true,
+        "requiredChecks": [
+          "classification",
+          "exactIds",
+          "stableGeometry"
+        ],
+        "status": "follow-up-required",
+        "followUp": [
+          {
+            "check": "explicitAbsence",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "sampling",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "completeness",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "binding",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "alignment",
+            "reason": "Deferred to second-pass review."
+          }
+        ]
+      },
+      "qualificationWarnings": [
+        {
+          "check": "explicitAbsence",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "sampling",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "completeness",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "binding",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "alignment",
+          "reason": "Deferred to second-pass review."
+        }
+      ]
+    },
+    {
+      "id": "wup2025:25",
+      "wupCityCode": 25,
+      "name": "San Juan",
+      "wupName": "San Juan",
+      "countryCode": "AR",
+      "latitude": -31.5395129374039,
+      "longitude": -68.5413653624017,
+      "wupLatitude": -31.5395129374039,
+      "wupLongitude": -68.5413653624017,
+      "registryCityIds": [],
+      "appCityIds": [
+        "san_juan"
+      ],
+      "population2015": null,
+      "population2025": 464466,
+      "cohorts": [
+        "app"
+      ],
+      "parcelSourceId": "ar-sanjuan-dgc-public-parcel-vector",
+      "parcelQualification": "initial-qualification-bounded",
+      "qualificationEvidence": "world-parcels/cities/25/settings.json",
+      "initialQualificationReview": {
+        "policy": "parcel-availability-v1",
+        "passed": true,
+        "requiredChecks": [
+          "classification",
+          "exactIds",
+          "stableGeometry"
+        ],
+        "status": "follow-up-required",
+        "followUp": [
+          {
+            "check": "explicitAbsence",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "sampling",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "completeness",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "binding",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "alignment",
+            "reason": "Deferred to second-pass review."
+          }
+        ]
+      },
+      "qualificationWarnings": [
+        {
+          "check": "explicitAbsence",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "sampling",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "completeness",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "binding",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "alignment",
+          "reason": "Deferred to second-pass review."
+        }
+      ]
+    },
+    {
+      "id": "wup2025:255",
+      "cohorts": [
+        "app"
+      ],
+      "name": "Novi Sad",
+      "countryCode": "RS",
+      "latitude": 45.2553804142272,
+      "longitude": 19.8244509114482,
+      "wupLatitude": 45.2553804142272,
+      "wupLongitude": 19.8244509114482,
+      "wupName": "Novi Sad",
+      "wupCityCode": 255,
+      "appCityIds": [
+        "novi_sad"
+      ],
+      "population2025": 262324,
+      "population2015": 257151,
+      "annualGrowthPct2015To2025": 0.199169,
+      "registryCityIds": [
+        "wup2025:255"
+      ],
+      "populationMatch": {
+        "basis": "explicit_wup2025_city_code",
+        "sourceName": "UN DESA WUP 2025",
+        "confidence": "high",
+        "distanceKm": 0
+      },
+      "parcelSourceId": "rs-novi-sad-mapanovisad-katastar",
+      "parcelQualification": "initial-qualification-bounded",
+      "qualificationEvidence": "world-parcels/cities/255/settings.json",
+      "initialQualificationReview": {
+        "policy": "parcel-availability-v1",
+        "passed": true,
+        "requiredChecks": [
+          "classification",
+          "exactIds",
+          "stableGeometry"
+        ],
+        "status": "follow-up-required",
+        "followUp": [
+          {
+            "check": "explicitAbsence",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "sampling",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "completeness",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "binding",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "alignment",
+            "reason": "Deferred to second-pass review."
+          }
+        ]
+      },
+      "qualificationWarnings": [
+        {
+          "check": "explicitAbsence",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "sampling",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "completeness",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "binding",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "alignment",
+          "reason": "Deferred to second-pass review."
+        }
+      ]
+    },
+    {
+      "id": "wup2025:266",
+      "wupCityCode": 266,
+      "name": "Skopje",
+      "wupName": "Skopje",
+      "countryCode": "MK",
+      "latitude": 41.9986248004842,
+      "longitude": 21.4316245746407,
+      "wupLatitude": 41.9986248004842,
+      "wupLongitude": 21.4316245746407,
+      "registryCityIds": [],
+      "appCityIds": [
+        "skopje"
+      ],
+      "population2015": null,
+      "population2025": 352624,
+      "cohorts": [
+        "app"
+      ],
+      "parcelSourceId": "mk-skopje-old-bazaar-parcels",
+      "parcelQualification": "initial-qualification-bounded",
+      "qualificationEvidence": "world-parcels/cities/266/settings.json",
+      "initialQualificationReview": {
+        "policy": "parcel-availability-v1",
+        "passed": true,
+        "requiredChecks": [
+          "classification",
+          "exactIds",
+          "stableGeometry"
+        ],
+        "status": "follow-up-required",
+        "followUp": [
+          {
+            "check": "explicitAbsence",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "sampling",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "completeness",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "binding",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "alignment",
+            "reason": "Deferred to second-pass review."
+          }
+        ]
+      },
+      "qualificationWarnings": [
+        {
+          "check": "explicitAbsence",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "sampling",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "completeness",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "binding",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "alignment",
+          "reason": "Deferred to second-pass review."
+        }
+      ]
+    },
+    {
+      "id": "wup2025:320",
+      "wupCityCode": 320,
+      "name": "Ulaanbaatar",
+      "wupName": "Ulaanbaatar",
+      "countryCode": "MN",
+      "latitude": 47.9264085180838,
+      "longitude": 106.873731314057,
+      "wupLatitude": 47.9264085180838,
+      "wupLongitude": 106.873731314057,
+      "registryCityIds": [],
+      "appCityIds": [
+        "ulaanbaatar"
+      ],
+      "population2015": null,
+      "population2025": 1596556,
+      "cohorts": [
+        "app"
+      ],
+      "parcelSourceId": "mn-egazar-geoware-parcels",
+      "parcelQualification": "initial-qualification-bounded",
+      "qualificationEvidence": "world-parcels/cities/320/settings.json",
+      "initialQualificationReview": {
+        "policy": "parcel-availability-v1",
+        "passed": true,
+        "requiredChecks": [
+          "classification",
+          "exactIds",
+          "stableGeometry"
+        ],
+        "status": "follow-up-required",
+        "followUp": [
+          {
+            "check": "explicitAbsence",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "sampling",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "completeness",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "binding",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "alignment",
+            "reason": "Deferred to second-pass review."
+          }
+        ]
+      },
+      "qualificationWarnings": [
+        {
+          "check": "explicitAbsence",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "sampling",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "completeness",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "binding",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "alignment",
+          "reason": "Deferred to second-pass review."
+        }
+      ]
+    },
+    {
+      "id": "wup2025:341",
+      "wupCityCode": 341,
+      "name": "Vancouver",
+      "wupName": "Vancouver",
+      "countryCode": "CA",
+      "latitude": 49.2485786477943,
+      "longitude": -123.033703171079,
+      "wupLatitude": 49.2485786477943,
+      "wupLongitude": -123.033703171079,
+      "registryCityIds": [],
+      "appCityIds": [
+        "vancouver"
+      ],
+      "population2015": null,
+      "population2025": 1707865,
+      "cohorts": [
+        "app"
+      ],
+      "parcelSourceId": "ca-vancouver-opendata-property-parcel-polygons",
+      "parcelQualification": "initial-qualification-bounded",
+      "qualificationEvidence": "world-parcels/cities/341/settings.json",
+      "initialQualificationReview": {
+        "policy": "parcel-availability-v1",
+        "passed": true,
+        "requiredChecks": [
+          "classification",
+          "exactIds",
+          "stableGeometry"
+        ],
+        "status": "follow-up-required",
+        "followUp": [
+          {
+            "check": "explicitAbsence",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "sampling",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "completeness",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "binding",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "alignment",
+            "reason": "Deferred to second-pass review."
+          }
+        ]
+      },
+      "qualificationWarnings": [
+        {
+          "check": "explicitAbsence",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "sampling",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "completeness",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "binding",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "alignment",
+          "reason": "Deferred to second-pass review."
+        }
+      ]
+    },
+    {
+      "id": "wup2025:346",
+      "wupCityCode": 346,
+      "name": "San José",
+      "wupName": "San José",
+      "countryCode": "CR",
+      "latitude": 9.95138590845043,
+      "longitude": -84.1080972379198,
+      "wupLatitude": 9.95138590845043,
+      "wupLongitude": -84.1080972379198,
+      "registryCityIds": [],
+      "appCityIds": [
+        "san_jose"
+      ],
+      "population2015": null,
+      "population2025": 2171213,
+      "cohorts": [
+        "app"
+      ],
+      "parcelSourceId": "cr-msj-nomenclatura-predial",
+      "parcelQualification": "initial-qualification-bounded",
+      "qualificationEvidence": "world-parcels/cities/346/settings.json",
+      "initialQualificationReview": {
+        "policy": "parcel-availability-v1",
+        "passed": true,
+        "requiredChecks": [
+          "classification",
+          "exactIds",
+          "stableGeometry"
+        ],
+        "status": "follow-up-required",
+        "followUp": [
+          {
+            "check": "explicitAbsence",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "sampling",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "completeness",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "binding",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "alignment",
+            "reason": "Deferred to second-pass review."
+          }
+        ]
+      },
+      "qualificationWarnings": [
+        {
+          "check": "explicitAbsence",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "sampling",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "completeness",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "binding",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "alignment",
+          "reason": "Deferred to second-pass review."
+        }
+      ]
+    },
+    {
+      "id": "wup2025:874",
+      "wupCityCode": 874,
+      "name": "Galle",
+      "wupName": "Galle",
+      "countryCode": "LK",
+      "latitude": 6.06146732901066,
+      "longitude": 80.2126280668052,
+      "wupLatitude": 6.06146732901066,
+      "wupLongitude": 80.2126280668052,
+      "registryCityIds": [],
+      "appCityIds": [
+        "galle"
+      ],
+      "population2015": null,
+      "population2025": 346263,
+      "cohorts": [
+        "app"
+      ],
+      "parcelSourceId": "lk-sd-luse-cadastre-2026",
+      "parcelQualification": "initial-qualification-bounded",
+      "qualificationEvidence": "world-parcels/cities/874/settings.json",
+      "initialQualificationReview": {
+        "policy": "parcel-availability-v1",
+        "passed": true,
+        "requiredChecks": [
+          "classification",
+          "exactIds",
+          "stableGeometry"
+        ],
+        "status": "follow-up-required",
+        "followUp": [
+          {
+            "check": "explicitAbsence",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "sampling",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "completeness",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "binding",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "alignment",
+            "reason": "Deferred to second-pass review."
+          }
+        ]
+      },
+      "qualificationWarnings": [
+        {
+          "check": "explicitAbsence",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "sampling",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "completeness",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "binding",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "alignment",
+          "reason": "Deferred to second-pass review."
+        }
+      ]
+    },
+    {
+      "id": "wup2025:893",
+      "wupCityCode": 893,
+      "name": "San Salvador",
+      "wupName": "San Salvador",
+      "countryCode": "SV",
+      "latitude": 13.7182927900234,
+      "longitude": -89.1755135685697,
+      "wupLatitude": 13.7182927900234,
+      "wupLongitude": -89.1755135685697,
+      "registryCityIds": [],
+      "appCityIds": [
+        "san_salvador"
+      ],
+      "population2015": null,
+      "population2025": 1615178,
+      "cohorts": [
+        "app"
+      ],
+      "parcelSourceId": "SV-OPAMSS-SAN-SALVADOR-PLANIMETRIA-31",
+      "parcelQualification": "initial-qualification-bounded",
+      "qualificationEvidence": "world-parcels/cities/893/settings.json",
+      "initialQualificationReview": {
+        "policy": "parcel-availability-v1",
+        "passed": true,
+        "requiredChecks": [
+          "classification",
+          "exactIds",
+          "stableGeometry"
+        ],
+        "status": "follow-up-required",
+        "followUp": [
+          {
+            "check": "explicitAbsence",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "sampling",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "completeness",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "binding",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "alignment",
+            "reason": "Deferred to second-pass review."
+          }
+        ]
+      },
+      "qualificationWarnings": [
+        {
+          "check": "explicitAbsence",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "sampling",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "completeness",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "binding",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "alignment",
+          "reason": "Deferred to second-pass review."
+        }
+      ]
+    },
+    {
+      "id": "wup2025:942",
+      "wupCityCode": 942,
+      "name": "Budapest",
+      "wupName": "Budapest",
+      "countryCode": "HU",
+      "latitude": 47.498413385628,
+      "longitude": 19.0835031026958,
+      "wupLatitude": 47.498413385628,
+      "wupLongitude": 19.0835031026958,
+      "registryCityIds": [],
+      "appCityIds": [
+        "budapest"
+      ],
+      "population2015": null,
+      "population2025": 1609260,
+      "cohorts": [
+        "app"
+      ],
+      "parcelSourceId": "hu-lechner-oeny-cadastral-parcels",
+      "parcelQualification": "initial-qualification-bounded",
+      "qualificationEvidence": "world-parcels/cities/942/settings.json",
+      "initialQualificationReview": {
+        "policy": "parcel-availability-v1",
+        "passed": true,
+        "requiredChecks": [
+          "classification",
+          "exactIds",
+          "stableGeometry"
+        ],
+        "status": "follow-up-required",
+        "followUp": [
+          {
+            "check": "explicitAbsence",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "sampling",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "completeness",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "binding",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "alignment",
+            "reason": "Deferred to second-pass review."
+          }
+        ]
+      },
+      "qualificationWarnings": [
+        {
+          "check": "explicitAbsence",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "sampling",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "completeness",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "binding",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "alignment",
+          "reason": "Deferred to second-pass review."
+        }
+      ]
+    },
+    {
+      "id": "wup2025:1208",
+      "wupCityCode": 1208,
+      "name": "Ras Al Khaimah",
+      "wupName": "Ras Al Khaimah",
+      "countryCode": "AE",
+      "latitude": 25.7741398774474,
+      "longitude": 55.9604795103617,
+      "wupLatitude": 25.7741398774474,
+      "wupLongitude": 55.9604795103617,
+      "registryCityIds": [],
+      "appCityIds": [
+        "ras_al_khaimah"
+      ],
+      "population2015": null,
+      "population2025": 345621,
+      "cohorts": [
+        "app"
+      ],
+      "parcelSourceId": "ae-rak-raklocator-parcels",
+      "parcelQualification": "initial-qualification-bounded",
+      "qualificationEvidence": "world-parcels/cities/1208/settings.json",
+      "initialQualificationReview": {
+        "policy": "parcel-availability-v1",
+        "passed": true,
+        "requiredChecks": [
+          "classification",
+          "exactIds",
+          "stableGeometry"
+        ],
+        "status": "follow-up-required",
+        "followUp": [
+          {
+            "check": "explicitAbsence",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "sampling",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "completeness",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "binding",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "alignment",
+            "reason": "Deferred to second-pass review."
+          }
+        ]
+      },
+      "qualificationWarnings": [
+        {
+          "check": "explicitAbsence",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "sampling",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "completeness",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "binding",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "alignment",
+          "reason": "Deferred to second-pass review."
+        }
+      ]
+    },
+    {
+      "id": "wup2025:1489",
+      "cohorts": [
+        "app"
+      ],
+      "name": "Niš",
+      "countryCode": "RS",
+      "latitude": 43.3188198916352,
+      "longitude": 21.9103223663759,
+      "wupLatitude": 43.3188198916352,
+      "wupLongitude": 21.9103223663759,
+      "wupName": "Niš",
+      "wupCityCode": 1489,
+      "appCityIds": [
+        "nis"
+      ],
+      "population2025": 199431,
+      "population2015": 197718,
+      "annualGrowthPct2015To2025": 0.086265,
+      "registryCityIds": [
+        "wup2025:1489"
+      ],
+      "populationMatch": {
+        "basis": "explicit_wup2025_city_code",
+        "sourceName": "UN DESA WUP 2025",
+        "confidence": "high",
+        "distanceKm": 0
+      },
+      "parcelSourceId": "rs-nis-gis-smartportal-public-parcels",
+      "parcelQualification": "initial-qualification-bounded",
+      "qualificationEvidence": "world-parcels/cities/1489/settings.json",
+      "initialQualificationReview": {
+        "policy": "parcel-availability-v1",
+        "passed": true,
+        "requiredChecks": [
+          "classification",
+          "exactIds",
+          "stableGeometry"
+        ],
+        "status": "follow-up-required",
+        "followUp": [
+          {
+            "check": "explicitAbsence",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "sampling",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "completeness",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "binding",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "alignment",
+            "reason": "Deferred to second-pass review."
+          }
+        ]
+      },
+      "qualificationWarnings": [
+        {
+          "check": "explicitAbsence",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "sampling",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "completeness",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "binding",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "alignment",
+          "reason": "Deferred to second-pass review."
+        }
+      ]
+    },
+    {
+      "id": "wup2025:1533",
+      "wupCityCode": 1533,
+      "name": "Phuket",
+      "wupName": "Phuket",
+      "countryCode": "TH",
+      "latitude": 7.87278877865705,
+      "longitude": 98.3676348479171,
+      "wupLatitude": 7.87278877865705,
+      "wupLongitude": 98.3676348479171,
+      "registryCityIds": [],
+      "appCityIds": [
+        "phuket"
+      ],
+      "population2015": null,
+      "population2025": 389376,
+      "cohorts": [
+        "app"
+      ],
+      "parcelSourceId": "th-dol-lpcpublic-nsl",
+      "parcelQualification": "initial-qualification-bounded",
+      "qualificationEvidence": "world-parcels/cities/1533/settings.json",
+      "initialQualificationReview": {
+        "policy": "parcel-availability-v1",
+        "passed": true,
+        "requiredChecks": [
+          "classification",
+          "exactIds",
+          "stableGeometry"
+        ],
+        "status": "follow-up-required",
+        "followUp": [
+          {
+            "check": "explicitAbsence",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "sampling",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "completeness",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "binding",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "metric",
+            "reason": "Independent geometry quality findings require follow-up; the unchanged parcel evidence remains available."
+          },
+          {
+            "check": "alignment",
+            "reason": "Deferred to second-pass review."
+          }
+        ]
+      },
+      "qualificationWarnings": [
+        {
+          "check": "explicitAbsence",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "sampling",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "completeness",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "binding",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "metric",
+          "reason": "Independent geometry quality findings require follow-up; the unchanged parcel evidence remains available."
+        },
+        {
+          "check": "alignment",
+          "reason": "Deferred to second-pass review."
+        }
+      ]
+    },
+    {
+      "id": "wup2025:4156",
+      "wupCityCode": 4156,
+      "name": "Roma (Rome)",
+      "wupName": "Roma (Rome)",
+      "countryCode": "IT",
+      "latitude": 41.8887787574096,
+      "longitude": 12.5141147622555,
+      "wupLatitude": 41.8887787574096,
+      "wupLongitude": 12.5141147622555,
+      "registryCityIds": [],
+      "appCityIds": [
+        "roma_rome"
+      ],
+      "population2015": null,
+      "population2025": 2376474,
+      "cohorts": [
+        "app"
+      ],
+      "parcelSourceId": "it-roma-metropolitana-sit-cadastral-parcels",
+      "parcelQualification": "initial-qualification-bounded",
+      "qualificationEvidence": "world-parcels/cities/4156/settings.json",
+      "initialQualificationReview": {
+        "policy": "parcel-availability-v1",
+        "passed": true,
+        "requiredChecks": [
+          "classification",
+          "exactIds",
+          "stableGeometry"
+        ],
+        "status": "follow-up-required",
+        "followUp": [
+          {
+            "check": "explicitAbsence",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "sampling",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "completeness",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "binding",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "alignment",
+            "reason": "Deferred to second-pass review."
+          }
+        ]
+      },
+      "qualificationWarnings": [
+        {
+          "check": "explicitAbsence",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "sampling",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "completeness",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "binding",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "alignment",
+          "reason": "Deferred to second-pass review."
+        }
+      ]
+    },
+    {
+      "id": "wup2025:6935",
+      "wupCityCode": 6935,
+      "name": "Kansas City",
+      "wupName": "Kansas City",
+      "countryCode": "US",
+      "latitude": 39.0251330397331,
+      "longitude": -94.614592171342,
+      "wupLatitude": 39.0251330397331,
+      "wupLongitude": -94.614592171342,
+      "registryCityIds": [],
+      "appCityIds": [
+        "kansas_city"
+      ],
+      "population2015": null,
+      "population2025": 344125,
+      "cohorts": [
+        "app"
+      ],
+      "parcelSourceId": "us-mo-kcmo-socrata-parcels-6g4y-sh3m",
+      "parcelQualification": "initial-qualification-bounded",
+      "qualificationEvidence": "world-parcels/cities/6935/settings.json",
+      "initialQualificationReview": {
+        "policy": "parcel-availability-v1",
+        "passed": true,
+        "requiredChecks": [
+          "classification",
+          "exactIds",
+          "stableGeometry"
+        ],
+        "status": "follow-up-required",
+        "followUp": [
+          {
+            "check": "explicitAbsence",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "sampling",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "completeness",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "binding",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "alignment",
+            "reason": "Deferred to second-pass review."
+          }
+        ]
+      },
+      "qualificationWarnings": [
+        {
+          "check": "explicitAbsence",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "sampling",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "completeness",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "binding",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "alignment",
+          "reason": "Deferred to second-pass review."
+        }
+      ]
+    },
+    {
+      "id": "wup2025:7534",
+      "wupCityCode": 7534,
+      "name": "Kemerovo",
+      "wupName": "Kemerovo",
+      "countryCode": "RU",
+      "latitude": 55.3523295052853,
+      "longitude": 86.0912292541964,
+      "wupLatitude": 55.3523295052853,
+      "wupLongitude": 86.0912292541964,
+      "registryCityIds": [],
+      "appCityIds": [
+        "kemerovo"
+      ],
+      "population2015": null,
+      "population2025": 470175,
+      "cohorts": [
+        "app"
+      ],
+      "parcelSourceId": "ru-kemerovo-reestr54-cadastral",
+      "parcelQualification": "initial-qualification-bounded",
+      "qualificationEvidence": "world-parcels/cities/7534/settings.json",
       "initialQualificationReview": {
         "policy": "parcel-availability-v1",
         "passed": true,

@@ -12,6 +12,7 @@ import { sha256Hex } from './portable-hash.js';
 import { createAkwaGisPublicFetch } from './akwagis-public-fetch.js';
 import { createTainanPublicFetch, TAINAN_PUBLIC_TOKEN_URL } from './tainan-public-fetch.js';
 import { createNakshaPublicFetch, NAKSHA_PUBLIC_TOKEN_URL } from './naksha-public-fetch.js';
+import { createMakkahPublicFetch, MAKKAH_CONFIG } from './makkah-public-fetch.js';
 import { isXuchangSource } from './xuchang-transport.js';
 import { isSeyhanSource } from './seyhan-transport.js';
 import { isPingdingshanSource } from './pingdingshan-transport.js';
@@ -20,6 +21,7 @@ import { isJiyuanSource } from './jiyuan-transport.js';
 import { createSourceRequestQueue } from './source-request-pacing.js';
 import { createArcgisIdentifySource } from './arcgis-identify-source.js';
 import { isOttawaParcelSource, OTTAWA_REFERER } from './ottawa-proxy.js';
+import { isRakParcelSource, rakParcelQueryUrl } from './rak-proxy.js';
 import { isGeosaParcelSource, GEOSA_REFERER } from './geosa-transport.js';
 export { validateBounds } from './source-contract.js';
 
@@ -42,7 +44,8 @@ export const splitArcgisCompositeId = value => value.split('~').map(decodeURICom
 export function createArcgisParcelSource(descriptor, { fetchImpl = globalThis.fetch } = {}) {
     if (descriptor.queryMode === 'identify') return createArcgisIdentifySource(descriptor, { fetchImpl });
     if (descriptor.publicTokenUrl !== undefined) fetchImpl = descriptor.publicTokenUrl === TAINAN_PUBLIC_TOKEN_URL
-        ? createTainanPublicFetch(fetchImpl, descriptor) : descriptor.publicTokenUrl === NAKSHA_PUBLIC_TOKEN_URL
+        ? createTainanPublicFetch(fetchImpl, descriptor) : descriptor.publicTokenUrl === MAKKAH_CONFIG
+            ? createMakkahPublicFetch(fetchImpl, descriptor) : descriptor.publicTokenUrl === NAKSHA_PUBLIC_TOKEN_URL
             ? createNakshaPublicFetch(fetchImpl, descriptor) : createAkwaGisPublicFetch(fetchImpl, descriptor);
     const { id, endpoint, idField, objectIdField, idPrefix, outFields } = descriptor;
     // Discovery receipts can bind the query operation itself rather than its parent layer.
@@ -141,6 +144,8 @@ export function createArcgisParcelSource(descriptor, { fetchImpl = globalThis.fe
         || (descriptor.objectIdManifestCheck !== undefined
             && (descriptor.boundsQueryMode !== 'object-ids' || descriptor.idsQueryMode !== 'object-ids'))
         || ![undefined, 'geojson', 'esri-json'].includes(descriptor.queryFormat)
+        || (descriptor.returnTrueCurves !== undefined && (typeof descriptor.returnTrueCurves !== 'boolean'
+            || descriptor.queryFormat !== 'esri-json'))
         || (responseSrid !== undefined && ((!Number.isSafeInteger(responseSrid) || responseSrid <= 0
             || responseSrid === 4326 || (responseSrid !== 3857 && customResponseProjection === undefined))
             || descriptor.queryFormat === 'esri-json'))
@@ -221,7 +226,7 @@ export function createArcgisParcelSource(descriptor, { fetchImpl = globalThis.fe
             const raw = props[idField];
             const value = idQueryBraces && typeof raw === 'string' && raw.startsWith('{') && raw.endsWith('}')
                 ? raw.slice(1, -1) : raw;
-            if (!validNativeId(value)) throw upstreamError('Parcel provider returned a missing or invalid native parcel ID.');
+            if (!validNativeId(value)) throw upstreamError(`Parcel provider returned a missing or invalid native parcel ID (field=${idField}, type=${typeof value}, length=${String(value ?? '').length}).`);
             return value;
         }
         const values = idFields.map(field => props[field]);
@@ -269,12 +274,14 @@ export function createArcgisParcelSource(descriptor, { fetchImpl = globalThis.fe
         let payload;
         try {
             // ArcGIS supports form POST; avoid intermediary URL limits for long OID/GUID batches.
-            const url = `${queryEndpoint}?${search}`;
+            const rak = isRakParcelSource(descriptor);
+            const url = rak ? rakParcelQueryUrl(search) : `${queryEndpoint}?${search}`;
             // GeoOttawa uses the raw nested URL, including its query separators.
             // Keep bounded GETs so proxy parameters cannot become form-body fields.
             const ottawa = isOttawaParcelSource(descriptor);
-            if (ottawa && url.length > 16384) throw upstreamError('Parcel provider query exceeds the URL limit.');
-            const usePost = !ottawa && url.length > 1800;
+            // RAK's configured public proxy also forwards raw nested GET separators only.
+            if ((ottawa || rak) && url.length > 16384) throw upstreamError('Parcel provider query exceeds the URL limit.');
+            const usePost = !ottawa && !rak && url.length > 1800;
             const response = await fetchImpl(usePost ? queryEndpoint : url, {
                 signal, ...(usePost ? { method: 'POST', body: search.toString() } : {}),
                 headers: { Accept: 'application/geo+json, application/json',
@@ -334,7 +341,9 @@ export function createArcgisParcelSource(descriptor, { fetchImpl = globalThis.fe
                 where: baseWhere, outFields: outFields.join(','), returnGeometry: 'true',
                 outSR: String(responseSrid ?? 4326), f: descriptor.queryFormat === 'esri-json' ? 'json' : 'geojson',
                 ...(geometryPrecision === undefined ? {} : { geometryPrecision: String(geometryPrecision) }),
-                ...(descriptor.queryFormat === 'esri-json' ? { returnTrueCurves: 'true' } : {}),
+                // Some viewers request the provider's standard linear rings for curved parcels.
+                // Keep those returned rings intact; never approximate curves in this adapter.
+                ...(descriptor.queryFormat === 'esri-json' ? { returnTrueCurves: String(descriptor.returnTrueCurves ?? true) } : {}),
                 ...(expectedObjects || singleResponse ? {} : { orderByFields: objectIdField,
                     resultRecordCount: String(pageSize), resultOffset: String(offset) }), ...params
             });

@@ -1,0 +1,116 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "11291",
+  "name": "Ranchi, India",
+  "point": [
+    23.3684663759766,
+    85.3229434254194
+  ],
+  "bindings": [
+    {
+      "appCityId": "ranchi",
+      "runtimeConfig": {
+        "id": "ranchi",
+        "wupCityCode": "11291",
+        "label": "Ranchi, India",
+        "currency": {
+          "locale": "en-IN",
+          "code": "INR"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            23.3684663759766,
+            85.3229434254194
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            23.3684663759766,
+            85.3229434254194
+          ],
+          "fallbackDataset": [
+            85.3229434254194,
+            23.3684663759766
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "in-jharkhand-gail-bapl-ranchi-cadastral-mapserver-25",
+          "idPrefix": "IN-JH-RANCHI-GAIL-BAPL-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "Jharkhand cadastral map / RANCHI layer · GAIL/BAPL service at pitarcgis.pipetrakit.com"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "in-jharkhand-gail-bapl-ranchi-cadastral-mapserver-25",
+      "adapter": "arcgis",
+      "endpoint": "https://pitarcgis.pipetrakit.com/arcgis/rest/services/GAIL/BAPL/MapServer/25/query",
+      "idPrefix": "IN-JH-RANCHI-GAIL-BAPL-",
+      "idField": "OBJECTID",
+      "objectIdField": "OBJECTID",
+      "idType": "integer",
+      "outFields": [
+        "OBJECTID"
+      ],
+      "queryFormat": "esri-json",
+      "boundsQueryMode": "offset",
+      "idsQueryMode": "offset",
+      "pageSize": 500,
+      "idBatchSize": 80,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "timeoutMs": 30000,
+      "name": "Ranchi cadastral map — GAIL/BAPL hosted layer",
+      "operator": "Pipetrak IT ArcGIS service publisher; state registry custodianship unverified",
+      "catalogueUrl": "https://pitarcgis.pipetrakit.com/arcgis/rest/services/GAIL/BAPL/MapServer/25",
+      "attribution": "Jharkhand cadastral map / RANCHI layer · GAIL/BAPL service at pitarcgis.pipetrakit.com",
+      "countryCode": "IN",
+      "metricSrid": 32645,
+      "cityIds": [
+        "ranchi"
+      ],
+      "defaultForCity": true,
+      "capabilities": {
+        "areaEnumeration": true
+      },
+      "scope": "Bounded cadastral reference coverage observed in southeast Ranchi (Samlong/Lovadih). Central locator window is empty. Pipeline-project hosting may indicate a corridor subset; citywide and districtwide completeness are unverified.",
+      "licenceNote": "Anonymous public query access observed. No explicit reuse licence or state custodian authentication is published in the service metadata. Redistribution permission, currentness, legal title and survey accuracy remain unverified.",
+      "browserTransport": "relay",
+      "maxConcurrentQueries": 2
+    }
+  ]
+}

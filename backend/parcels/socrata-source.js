@@ -21,12 +21,40 @@ export function createSocrataParcelSource(descriptor, { fetchImpl = globalThis.f
     const pageSize = descriptor.pageSize || 1000;
     const maxFeatures = descriptor.maxFeatures || 10000;
 
+    async function responseJson(response) {
+        if (!response.body?.getReader) return response.json();
+        const reader = response.body.getReader(), chunks = [];
+        let bytes = 0;
+        try {
+            for (;;) {
+                const { value, done } = await reader.read();
+                if (done) break;
+                bytes += value.byteLength;
+                if (bytes > 16 * 1024 * 1024) throw upstreamError('Socrata response exceeds the byte limit.');
+                chunks.push(value);
+            }
+        } finally { await reader.cancel().catch(() => {}); reader.releaseLock(); }
+        const joined = new Uint8Array(bytes);
+        let offset = 0;
+        for (const chunk of chunks) { joined.set(chunk, offset); offset += chunk.byteLength; }
+        return JSON.parse(new TextDecoder().decode(joined));
+    }
+
     async function request(params) {
         const signal = AbortSignal.timeout(15000);
         try {
             const response = await fetchImpl(`${endpoint}?${new URLSearchParams(params)}`, { signal, redirect: 'error', headers: { Accept: 'application/json' } });
             if (!response.ok) throw providerHttpError(response);
-            const rows = await response.json();
+            const data = await responseJson(response);
+            // SODA's .geojson route wraps both aggregate rows and polygon rows as features.
+            // Unwrap only the envelope: preserve the provider's coordinates and fixed endpoint.
+            const rows = base.pathname.endsWith('.geojson') && data?.type === 'FeatureCollection' && Array.isArray(data.features)
+                ? data.features.map(feature => {
+                    if (feature?.type !== 'Feature' || !feature.properties || typeof feature.properties !== 'object' || Array.isArray(feature.properties)) {
+                        throw upstreamError('Socrata provider returned an invalid GeoJSON feature.');
+                    }
+                    return { ...feature.properties, ...(feature.geometry === null ? {} : { [geometryField]: feature.geometry }) };
+                }) : data;
             if (!Array.isArray(rows)) throw upstreamError('Socrata provider returned an invalid row response.');
             return rows;
         } catch (error) {

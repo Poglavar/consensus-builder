@@ -1,0 +1,292 @@
+{
+  "descriptor": {
+    "id": "ec-guayaquil-urban-predios-official",
+    "name": "Municipio de Guayaquil Catastro Urbano / Predios Urbanos",
+    "adapter": "arcgis",
+    "endpoint": "https://geoportalcat.guayaquil.gob.ec/arcgis/rest/services/Catastro_Urbano/Predios_Urbanos/MapServer/0",
+    "idField": "CATASTROGUAYAQUIL.SDE.Predios_Urbanos.codigo",
+    "objectIdField": "CATASTROGUAYAQUIL.SDE.Predios_Urbanos.OBJECTID",
+    "parcelNumberField": "CATASTROGUAYAQUIL.SDE.Predios_Urbanos.codigo",
+    "idType": "string",
+    "idPattern": "^[0-9]+(?:-[0-9]+)+$",
+    "idPrefix": "EC-GYE-URBAN-",
+    "outFields": [
+      "CATASTROGUAYAQUIL.SDE.Predios_Urbanos.OBJECTID",
+      "CATASTROGUAYAQUIL.SDE.Predios_Urbanos.codigo"
+    ],
+    "queryFormat": "geojson",
+    "boundsQueryMode": "object-ids",
+    "idsQueryMode": "object-ids",
+    "pageSize": 500,
+    "idBatchSize": 50,
+    "maxFeatures": 10000,
+    "maxBboxKm2": 2,
+    "timeoutMs": 45000,
+    "maxConcurrentQueries": 2,
+    "countryCode": "EC",
+    "metricSrid": 32717,
+    "sourceCrs": "EPSG:32717",
+    "cityIds": [],
+    "operator": "M.I. Municipalidad de Guayaquil",
+    "attribution": "M.I. Municipalidad de Guayaquil / Geoportal Catastro",
+    "scope": "Municipal urban cadastral parcels in Guayaquil. Bounded central polygons verified; urban boundary, distributed coverage, rural coverage and completeness are unverified.",
+    "licenceNote": "Anonymous public municipal cadastral query. Metadata contains no explicit reuse licence; attribution retained. Reuse terms and currentness remain second-pass follow-ups.",
+    "catalogueUrl": "https://geoportalcat.guayaquil.gob.ec/arcgis/rest/services/Catastro_Urbano/Predios_Urbanos/MapServer",
+    "capabilities": {
+      "areaEnumeration": true,
+      "exactId": true,
+      "geometry": "full-wgs84"
+    },
+    "discovery": {
+      "jurisdiction": {
+        "countryCode": "EC",
+        "basis": "First-party municipal service describes Guayaquil urban predios cartography joined to EMAS; polygon layer displays Código Catastral."
+      }
+    },
+    "identityKind": "native-key-geometry-sha256-v1"
+  },
+  "response": {
+    "type": "FeatureCollection",
+    "features": [
+      {
+        "type": "Feature",
+        "id": 444581,
+        "geometry": {
+          "type": "Polygon",
+          "coordinates": [
+            [
+              [
+                -79.91550793824868,
+                -2.1574759199514193
+              ],
+              [
+                -79.9155960371611,
+                -2.157430700141016
+              ],
+              [
+                -79.91563325420273,
+                -2.1575861620776386
+              ],
+              [
+                -79.91556879884514,
+                -2.1575938498209415
+              ],
+              [
+                -79.91550793824868,
+                -2.1574759199514193
+              ]
+            ]
+          ]
+        },
+        "properties": {
+          "CATASTROGUAYAQUIL.SDE.Predios_Urbanos.OBJECTID": 444581,
+          "CATASTROGUAYAQUIL.SDE.Predios_Urbanos.codigo": "76-257-4-0-0-0"
+        }
+      },
+      {
+        "type": "Feature",
+        "id": 124306,
+        "geometry": {
+          "type": "Polygon",
+          "coordinates": [
+            [
+              [
+                -79.91569932905033,
+                -2.1575782954855707
+              ],
+              [
+                -79.91575066021544,
+                -2.157572234670116
+              ],
+              [
+                -79.91578167433914,
+                -2.1575698833464183
+              ],
+              [
+                -79.91577960659598,
+                -2.1576570656739946
+              ],
+              [
+                -79.91577744913484,
+                -2.1577477748004252
+              ],
+              [
+                -79.91570265489607,
+                -2.1577358380319187
+              ],
+              [
+                -79.91569932905033,
+                -2.1575782954855707
+              ]
+            ]
+          ]
+        },
+        "properties": {
+          "CATASTROGUAYAQUIL.SDE.Predios_Urbanos.OBJECTID": 124306,
+          "CATASTROGUAYAQUIL.SDE.Predios_Urbanos.codigo": "76-257-42-0-0-0"
+        }
+      },
+      {
+        "type": "Feature",
+        "id": 124331,
+        "geometry": {
+          "type": "Polygon",
+          "coordinates": [
+            [
+              [
+                -79.91542613206789,
+                -2.1575178824378507
+              ],
+              [
+                -79.91550793824868,
+                -2.1574759199514193
+              ],
+              [
+                -79.91556879884514,
+                -2.1575938498209415
+              ],
+              [
+                -79.91549130835985,
+                -2.1576322858259043
+              ],
+              [
+                -79.91542613206789,
+                -2.1575178824378507
+              ]
+            ]
+          ]
+        },
+        "properties": {
+          "CATASTROGUAYAQUIL.SDE.Predios_Urbanos.OBJECTID": 124331,
+          "CATASTROGUAYAQUIL.SDE.Predios_Urbanos.codigo": "76-257-5-0-0-0"
+        }
+      }
+    ]
+  },
+  "duplicateCodes": {
+    "type": "FeatureCollection",
+    "features": [
+      {
+        "type": "Feature",
+        "id": 124484,
+        "geometry": {
+          "type": "Polygon",
+          "coordinates": [
+            [
+              [
+                -79.91547764409542,
+                -2.156988640256176
+              ],
+              [
+                -79.91548357588233,
+                -2.156984660844315
+              ],
+              [
+                -79.91556906838754,
+                -2.1570355771554395
+              ],
+              [
+                -79.91553616585925,
+                -2.1570953564708226
+              ],
+              [
+                -79.91543781831116,
+                -2.1570354866941197
+              ],
+              [
+                -79.91546901262613,
+                -2.1569945191091637
+              ],
+              [
+                -79.91547764409542,
+                -2.156988640256176
+              ]
+            ]
+          ]
+        },
+        "properties": {
+          "CATASTROGUAYAQUIL.SDE.Predios_Urbanos.OBJECTID": 124484,
+          "CATASTROGUAYAQUIL.SDE.Predios_Urbanos.codigo": "76-247-13-0-0-0"
+        }
+      },
+      {
+        "type": "Feature",
+        "id": 124500,
+        "geometry": {
+          "type": "Polygon",
+          "coordinates": [
+            [
+              [
+                -79.915374891938,
+                -2.1569854748285717
+              ],
+              [
+                -79.91540914122581,
+                -2.1569424262431585
+              ],
+              [
+                -79.91547764409542,
+                -2.156988640256176
+              ],
+              [
+                -79.91546901262613,
+                -2.1569945191091637
+              ],
+              [
+                -79.91543781831116,
+                -2.1570354866941197
+              ],
+              [
+                -79.91543440284914,
+                -2.157040008833819
+              ],
+              [
+                -79.915374891938,
+                -2.1569854748285717
+              ]
+            ]
+          ]
+        },
+        "properties": {
+          "CATASTROGUAYAQUIL.SDE.Predios_Urbanos.OBJECTID": 124500,
+          "CATASTROGUAYAQUIL.SDE.Predios_Urbanos.codigo": "76-247-13-0-0-0"
+        }
+      }
+    ]
+  },
+  "shortCode": {
+    "type": "Feature",
+    "id": 733625,
+    "geometry": {
+      "type": "Polygon",
+      "coordinates": [
+        [
+          [
+            -79.9137349020873,
+            -2.1582402986086193
+          ],
+          [
+            -79.91379081805367,
+            -2.158217688711511
+          ],
+          [
+            -79.91386138648879,
+            -2.158305322967591
+          ],
+          [
+            -79.91379558240848,
+            -2.1583142778330053
+          ],
+          [
+            -79.9137349020873,
+            -2.1582402986086193
+          ]
+        ]
+      ]
+    },
+    "properties": {
+      "CATASTROGUAYAQUIL.SDE.Predios_Urbanos.OBJECTID": 733625,
+      "CATASTROGUAYAQUIL.SDE.Predios_Urbanos.codigo": "76-255-10-0-0"
+    }
+  }
+}

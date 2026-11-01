@@ -1,0 +1,112 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "5915",
+  "name": "Puebla, Mexico",
+  "point": [
+    19.0430350801074,
+    -98.2032596830628
+  ],
+  "bindings": [
+    {
+      "appCityId": "puebla",
+      "runtimeConfig": {
+        "id": "puebla",
+        "wupCityCode": "5915",
+        "label": "Puebla, Mexico",
+        "currency": {
+          "locale": "es-MX",
+          "code": "MXN"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            19.0430350801074,
+            -98.2032596830628
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            19.0430350801074,
+            -98.2032596830628
+          ],
+          "fallbackDataset": [
+            -98.2032596830628,
+            19.0430350801074
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "mx-puebla-aguapuebla-predios",
+          "idPrefix": "MX-PUE-PREDIO-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "Agua de Puebla · Produccion/General PREDIOS"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "mx-puebla-aguapuebla-predios",
+      "adapter": "arcgis",
+      "endpoint": "https://arcgisouc.aguapuebla.mx/arcgis/rest/services/Produccion/General/FeatureServer/4",
+      "idPrefix": "MX-PUE-PREDIO-",
+      "idField": "OBJECTID",
+      "objectIdField": "OBJECTID",
+      "idType": "integer",
+      "outFields": [
+        "OBJECTID"
+      ],
+      "queryFormat": "geojson",
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "pageSize": 1000,
+      "idBatchSize": 80,
+      "maxFeatures": 5000,
+      "maxBboxKm2": 1,
+      "timeoutMs": 30000,
+      "maxConcurrentQueries": 2,
+      "name": "Agua de Puebla PREDIOS",
+      "operator": "Agua de Puebla",
+      "catalogueUrl": "https://arcgisouc.aguapuebla.mx/arcgis/rest/services/Produccion/General/FeatureServer/4",
+      "attribution": "Agua de Puebla · Produccion/General PREDIOS",
+      "countryCode": "MX",
+      "metricSrid": 32614,
+      "cityIds": [
+        "puebla"
+      ],
+      "scope": "Utility-published cadastral parcel reference polygons. Positive source observations at the immutable Puebla locator and bounded central/east/west windows; municipality-wide completeness and legal registry custody unverified. Full source polygon coordinates retained; only native OBJECTID is requested.",
+      "licenceNote": "Public anonymous REST service; service copyright Agua de puebla. No explicit open-data licence or application-scale reuse grant found in service/layer metadata; reuse authorization, legal-title semantics and survey accuracy remain unverified.",
+      "defaultForCity": true
+    }
+  ]
+}

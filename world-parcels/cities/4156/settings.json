@@ -1,0 +1,126 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "4156",
+  "name": "Roma (Rome), Italy",
+  "point": [
+    41.8887787574096,
+    12.5141147622555
+  ],
+  "bindings": [
+    {
+      "appCityId": "roma_rome",
+      "runtimeConfig": {
+        "id": "roma_rome",
+        "wupCityCode": "4156",
+        "label": "Roma (Rome), Italy",
+        "currency": {
+          "locale": "it-IT",
+          "code": "EUR"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            41.8887787574096,
+            12.5141147622555
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            41.8887787574096,
+            12.5141147622555
+          ],
+          "fallbackDataset": [
+            12.5141147622555,
+            41.8887787574096
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "it-roma-metropolitana-sit-cadastral-parcels",
+          "idPrefix": "IT-ROMA-SIT-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "Città metropolitana di Roma Capitale · Geoportale cartografico / SIT · Catasto Totale"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "it-roma-metropolitana-sit-cadastral-parcels",
+      "name": "Città metropolitana di Roma Capitale SIT cadastral land parcels",
+      "adapter": "roma-qgis-wms",
+      "endpoint": "https://g3w-suite.cittametropolitanaroma.it/ows/19/qdjango/224/",
+      "layer": "Catasto_Totale_0f4af963_a62b_449a_9d28_6f37d9826dc8",
+      "idField": "id",
+      "idPrefix": "IT-ROMA-SIT-",
+      "outFields": [
+        "id"
+      ],
+      "countryCode": "IT",
+      "cityIds": [
+        "roma_rome"
+      ],
+      "defaultForCity": true,
+      "metricSrid": 32633,
+      "sourceCrs": "EPSG:25833",
+      "responseSrid": 4326,
+      "version": "1.1.1",
+      "capabilities": {
+        "point": true,
+        "exactId": true,
+        "bbox": true,
+        "areaEnumeration": true,
+        "geometry": "full-wgs84"
+      },
+      "browserTransport": "relay",
+      "maxConcurrentQueries": 2,
+      "maxAreaKm2": 1,
+      "maxFeatures": 1000,
+      "operator": "Città metropolitana di Roma Capitale Geoportale cartografico / SIT",
+      "attribution": "Città metropolitana di Roma Capitale · Geoportale cartografico / SIT · Catasto Totale",
+      "catalogueUrl": "https://geoportale.cittametropolitanaroma.it/catalogo-cartografico?page=3",
+      "licenceNote": "Public anonymous WMS. An explicit reuse licence is not stated in the inspected layer metadata. Data vintage and legal/survey accuracy are unverified.",
+      "scope": "Roma H501 cadastral land records (tipo T), bounded WMS area and native-gid reads. Observations at the queue point, EUR and Prati do not establish citywide completeness.",
+      "discovery": {
+        "jurisdiction": {
+          "countryCode": "IT",
+          "basis": "Official metropolitan catalogue describes systematic cadastral vectors. Project 224 Catasto Totale Polygon layer carries cadastral sheet/parcel/type and native gid fields.",
+          "evidence": [
+            "https://geoportale.cittametropolitanaroma.it/catalogo-cartografico?page=3",
+            "https://g3w-suite.cittametropolitanaroma.it/api/config/19/qdjango/224"
+          ]
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,54 @@
+{
+  "id": "ar-posadas-ide-mae-29-publico-wfs",
+  "name": "IDE Posadas — Maestro 29 Publico cadastral parcels",
+  "operator": "Municipalidad de Posadas / IDE Posadas",
+  "cadastralCustodianContext": "Dirección General de Catastro de la Provincia de Misiones",
+  "adapter": "wfs",
+  "endpoint": "https://www.ide.posadas.gob.ar/geoserver/ows",
+  "version": "1.0.0",
+  "featureType": "geonode:mae_29_publico",
+  "geometryField": "geometry",
+  "idField": "IDGIS",
+  "idType": "string",
+  "idPattern": "^[0-9A-Za-z]+$",
+  "idPrefix": "AR-POSADAS-IDGIS-",
+  "outFields": [
+    "IDGIS"
+  ],
+  "requestProperties": true,
+  "pageSize": 100,
+  "idBatchSize": 40,
+  "maxFeatures": 5000,
+  "maxBboxKm2": 1,
+  "maxResponseBytes": 1048576,
+  "timeoutMs": 45000,
+  "maxConcurrentQueries": 2,
+  "countryCode": "AR",
+  "countryName": "Argentina",
+  "cityIds": [
+    "posadas"
+  ],
+  "defaultForCity": true,
+  "metricSrid": 32721,
+  "nativeCrs": "EPSG:5348",
+  "responseCrs": "EPSG:4326",
+  "returnsWGS84": true,
+  "capabilities": {
+    "areaEnumeration": true,
+    "exactIds": true
+  },
+  "attribution": "Municipalidad de Posadas / IDE Posadas · Maestro 29 Publico",
+  "catalogueUrl": "https://www.ide.posadas.gob.ar/layers/geonode%3Amae_29_publico/metadata_detail",
+  "homepage": "https://www.ide.posadas.gob.ar/",
+  "licenceNote": "Metadata: License Not Specified; Restrictions: formal permission to do something. Public anonymous access is not a reuse licence. Permission and redistribution terms remain unresolved second-pass follow-ups.",
+  "scope": "Municipal cadastral parcel layer with bounded Posadas availability; no citywide completeness or municipal boundary alignment claim. Preserve full source geometry and native IDGIS including leading zeroes. IDGIS is not globally unique: distinguish each unchanged polygon by the deterministic IDGIS plus geometry SHA-256 reference, retaining native IDGIS separately.",
+  "limitations": [
+    "Independent native CRS datum/operation/grid and wire-axis proof remains unverified.",
+    "Current/historic semantics, long-term reference continuity and currentness remain unverified.",
+    "Municipal-boundary alignment, broader coverage, provider transfer limits and paging require second-pass review.",
+    "Explicit reuse permission remains unresolved; retain municipal attribution."
+  ],
+  "browserTransport": "relay",
+  "identityKind": "attribute-geometry-sha256-v1",
+  "sortField": "fid"
+}

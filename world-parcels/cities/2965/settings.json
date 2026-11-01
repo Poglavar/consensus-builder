@@ -1,0 +1,116 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "2965",
+  "name": "Almaty, Kazakhstan",
+  "point": [
+    43.2612968331175,
+    76.909491597618
+  ],
+  "bindings": [
+    {
+      "appCityId": "almaty",
+      "runtimeConfig": {
+        "id": "almaty",
+        "wupCityCode": "2965",
+        "label": "Almaty, Kazakhstan",
+        "currency": {
+          "locale": "ru-KZ",
+          "code": "KZT"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            43.2612968331175,
+            76.909491597618
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            43.2612968331175,
+            76.909491597618
+          ],
+          "fallbackDataset": [
+            76.909491597618,
+            43.2612968331175
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "kz-almaty-mapalmaty-gzk",
+          "idPrefix": "KZ-ALMATY-GZK-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "Almaty municipal land-cadastral map / GZK"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "kz-almaty-mapalmaty-gzk",
+      "name": "Almaty municipal state land cadastre (GZK)",
+      "adapter": "arcgis",
+      "endpoint": "https://mapalmaty.kz/arcgis/rest/services/pg/pg_uzo/FeatureServer/10",
+      "idField": "kad_nomer",
+      "objectIdField": "objectid",
+      "idType": "string",
+      "idPattern": "^[0-9]+$",
+      "idPrefix": "KZ-ALMATY-GZK-",
+      "outFields": [
+        "objectid",
+        "kad_nomer"
+      ],
+      "queryFormat": "esri-json",
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "boundsSrid": 32643,
+      "boundsProjection": "+proj=utm +zone=43 +datum=WGS84 +units=m +no_defs",
+      "pageSize": 100,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 1,
+      "countryCode": "KZ",
+      "metricSrid": 32643,
+      "projection": "EPSG:32643",
+      "cityIds": [
+        "almaty"
+      ],
+      "maxConcurrentQueries": 2,
+      "operator": "Almaty municipal land-cadastral map / state land cadastre (GZK)",
+      "catalogueUrl": "https://www.gov.kz/org/almaty-zher/activities/10963?lang=ru",
+      "attribution": "Almaty municipal land-cadastral map / GZK",
+      "licenceNote": "Public anonymous map access; vector reuse licence and currentness not established. No survey-accuracy or legal-title claim.",
+      "scope": "Bounded local parcel availability near the immutable Almaty WUP locator. Published service extent and thirteen sampled cells do not establish citywide completeness.",
+      "browserTransport": "relay",
+      "defaultForCity": true
+    }
+  ]
+}

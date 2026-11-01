@@ -1,0 +1,127 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "4862",
+  "name": "Goiânia, Brazil",
+  "point": [
+    -16.7044742060347,
+    -49.2865080463885
+  ],
+  "bindings": [
+    {
+      "appCityId": "goiania",
+      "runtimeConfig": {
+        "id": "goiania",
+        "wupCityCode": "4862",
+        "label": "Goiânia, Brazil",
+        "currency": {
+          "locale": "pt-BR",
+          "code": "BRL"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            -16.7044742060347,
+            -49.2865080463885
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            -16.7044742060347,
+            -49.2865080463885
+          ],
+          "fallbackDataset": [
+            -49.2865080463885,
+            -16.7044742060347
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "br-goiania-siggo-feature-base-divisas-lote",
+          "idPrefix": "BR-GOIANIA-SIGGO-OBJECTID-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "Prefeitura Municipal de Goiânia / SIGGO · Divisas de Lote. Municipal cadastral lot boundaries."
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "br-goiania-siggo-feature-base-divisas-lote",
+      "name": "Goiânia SIGGO Divisas de Lote",
+      "adapter": "arcgis",
+      "endpoint": "https://portalmapa.goiania.go.gov.br/servicogyn/rest/services/MapaServer/Feature_Base/MapServer/0",
+      "idField": "OBJECTID",
+      "idType": "integer",
+      "objectIdField": "OBJECTID",
+      "idPrefix": "BR-GOIANIA-SIGGO-OBJECTID-",
+      "outFields": [
+        "OBJECTID"
+      ],
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "queryFormat": "geojson",
+      "boundsSrid": 31982,
+      "boundsProjection": "+proj=utm +zone=22 +south +ellps=GRS80 +units=m +no_defs",
+      "sourceCrs": "EPSG:31982",
+      "countryCode": "BR",
+      "stateCode": "GO",
+      "metricSrid": 32722,
+      "cityIds": [
+        "goiania"
+      ],
+      "defaultForCity": true,
+      "pageSize": 500,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "timeoutMs": 45000,
+      "maxConcurrentQueries": 2,
+      "browserTransport": "relay",
+      "capabilities": {
+        "bbox": true,
+        "exactId": true,
+        "areaEnumeration": true,
+        "geometry": "full-wgs84"
+      },
+      "operator": "Prefeitura Municipal de Goiânia / SIGGO",
+      "attribution": "Prefeitura Municipal de Goiânia / SIGGO · Divisas de Lote. Municipal cadastral lot boundaries.",
+      "scope": "Municipal cadastral-lot layer; bounded exact-ID polygons checked for Goiânia. Municipal-boundary completeness, currency and legal title are unverified.",
+      "licenceNote": "Official Lotes catalog displays Creative Commons Atribuição in retained public page evidence; current direct dataset page returned HTTP 500. Live ArcGIS metadata has no explicit licence. Attribution retained; service reuse terms require second-pass review.",
+      "limitations": [
+        "OBJECTID is unique in the current published layer; continuity across service republication is unverified. Secondary municipal id is nonunique and is not the canonical identity.",
+        "EPSG:31982 metadata is published; provider outSR=4326 output is retained without geometry editing. Datum operation and independent CRS accuracy remain second-pass follow-ups.",
+        "No citywide completeness, currentness, legal-title or survey-accuracy claim.",
+        "Public service does not return CORS headers; browsers use the existing anonymous provider relay."
+      ]
+    }
+  ]
+}

@@ -1,0 +1,117 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "341",
+  "name": "Vancouver, Canada",
+  "point": [
+    49.2485786477943,
+    -123.033703171079
+  ],
+  "bindings": [
+    {
+      "appCityId": "vancouver",
+      "runtimeConfig": {
+        "id": "vancouver",
+        "wupCityCode": "341",
+        "label": "Vancouver, Canada",
+        "currency": {
+          "locale": "en-CA",
+          "code": "CAD"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            49.2485786477943,
+            -123.033703171079
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            49.2485786477943,
+            -123.033703171079
+          ],
+          "fallbackDataset": [
+            -123.033703171079,
+            49.2485786477943
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "ca-vancouver-opendata-property-parcel-polygons",
+          "idPrefix": "CA-VANCOUVER-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "City of Vancouver; Engineering Services. Property parcel polygons. Open Government Licence - Vancouver."
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "ca-vancouver-opendata-property-parcel-polygons",
+      "name": "City of Vancouver Property parcel polygons",
+      "adapter": "opendatasoft",
+      "endpoint": "https://opendata.vancouver.ca/api/explore/v2.1/catalog/datasets/property-parcel-polygons/records",
+      "idField": "site_id",
+      "idType": "string",
+      "idPrefix": "CA-VANCOUVER-",
+      "geometryField": "geom",
+      "outFields": [
+        "site_id"
+      ],
+      "pageSize": 100,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "countryCode": "CA",
+      "metricSrid": 32610,
+      "cityIds": [
+        "vancouver"
+      ],
+      "defaultForCity": true,
+      "operator": "City of Vancouver, Engineering Services",
+      "scope": "City of Vancouver assessment-based land parcel polygons. Bounded qualification only; no citywide completeness, legal title or adjacent-municipality coverage claim. Blank or repeated site_id rows fail explicitly and are not silently dropped.",
+      "attribution": "City of Vancouver; Engineering Services. Property parcel polygons. Open Government Licence - Vancouver.",
+      "licenceUrl": "https://opendata.vancouver.ca/pages/licence/",
+      "catalogueUrl": "https://opendata.vancouver.ca/explore/assets/property-parcel-polygons/",
+      "capabilities": {
+        "areaEnumeration": true,
+        "exactIds": true
+      },
+      "discovery": {
+        "jurisdiction": {
+          "countryCode": "CA",
+          "cityCode": "341",
+          "basis": "City of Vancouver Engineering Services publishes assessment-based land polygons; see evidence/source-metadata.json."
+        }
+      }
+    }
+  ]
+}

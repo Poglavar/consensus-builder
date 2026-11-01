@@ -1,3 +1,11 @@
+import { createSanJuanDgcSource } from './sanjuan-dgc-source.js';
+import { createMapGuideParcelSource } from './mapguide-selectfeatures-source.js';
+import { createOpendatasoftParcelSource } from './opendatasoft-source.js';
+import { createTijuanaImplanSource } from './tijuana-implan-source.js';
+import { createOenyParcelSource } from './hu-oeny-source.js';
+import { createRomaQgisWmsSource } from './roma-qgis-wms-source.js';
+import { createBhumiNakshaParcelSource } from './bd-bhumi-naksha-source.js';
+import { createBhuvanTgCadSource } from './bhuvan-tg-cad-source.js';
 import { isGuangxiParcelSource, fetchGuangxiParcel } from './cn-gx-tianditu-fetch.js';
 import { isMylandWfsSource, fetchMylandWfs } from './myland-wfs-fetch.js';
 import { createArcgisHubParcelSource } from './arcgis-hub-source.js';
@@ -83,6 +91,14 @@ const runtimeSources = new Map();
 export function clearParcelSourceRuntimeCache() { runtimeSources.clear(); }
 
 const parcelFactories = {
+    'sanjuan-dgc': createSanJuanDgcSource,
+    'mapguide-selectfeatures': createMapGuideParcelSource,
+    'opendatasoft': createOpendatasoftParcelSource,
+    'tijuana-implan-wms': createTijuanaImplanSource,
+    'hu-oeny': createOenyParcelSource,
+    'roma-qgis-wms': createRomaQgisWmsSource,
+    'bd-bhumi-naksha': createBhumiNakshaParcelSource,
+    'bhuvan-tg-cad': createBhuvanTgCadSource,
     'arcgis-hub': createArcgisHubParcelSource,
     'asig-wms-kml': createAsigWmsKmlParcelSource,
     'changhua-urbangis': createChanghuaParcelSource,
