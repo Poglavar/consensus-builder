@@ -1,0 +1,117 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "266",
+  "name": "Skopje, North Macedonia",
+  "point": [
+    41.9986248004842,
+    21.4316245746407
+  ],
+  "bindings": [
+    {
+      "appCityId": "skopje",
+      "runtimeConfig": {
+        "id": "skopje",
+        "wupCityCode": "266",
+        "label": "Skopje, North Macedonia",
+        "currency": {
+          "locale": "mk-MK",
+          "code": "MKD"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            41.9986248004842,
+            21.4316245746407
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            41.9986248004842,
+            21.4316245746407
+          ],
+          "fallbackDataset": [
+            21.4316245746407,
+            41.9986248004842
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "mk-skopje-old-bazaar-parcels",
+          "idPrefix": "MK-SK-OUT-StaraCarsijaWGS-OBJECTID-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "City of Skopje GIS · Stara Carsija cadastral parcels · partial coverage"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "mk-skopje-old-bazaar-parcels",
+      "name": "Skopje Old Bazaar cadastral parcels",
+      "adapter": "arcgis",
+      "endpoint": "https://gisportal.skopje.gov.mk/arcgis/rest/services/OUT/StaraCarsijaWGS/FeatureServer/3",
+      "countryCode": "MK",
+      "operator": "City of Skopje GIS portal",
+      "idField": "OBJECTID",
+      "objectIdField": "OBJECTID",
+      "idType": "integer",
+      "idPrefix": "MK-SK-OUT-StaraCarsijaWGS-OBJECTID-",
+      "outFields": [
+        "OBJECTID"
+      ],
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "queryFormat": "geojson",
+      "pageSize": 100,
+      "idBatchSize": 80,
+      "maxFeatures": 1000,
+      "maxBboxKm2": 25,
+      "timeoutMs": 30000,
+      "maxResponseBytes": 16777216,
+      "metricSrid": 32634,
+      "cityIds": [
+        "skopje"
+      ],
+      "scope": "Partial central Skopje: published Stara Carsija (Old Bazaar) layer extent only. The immutable city locator lies outside coverage; no citywide or national completeness claim.",
+      "attribution": "City of Skopje GIS · Stara Carsija cadastral parcels · partial coverage",
+      "licenceNote": "Anonymous official service; no layer-specific reuse licence published in layer metadata. Attribution retained; legal reuse terms require follow-up.",
+      "capabilities": {
+        "bounds": true,
+        "exactId": true,
+        "areaEnumeration": true,
+        "geometry": "full-wgs84"
+      },
+      "defaultForCity": true
+    }
+  ]
+}

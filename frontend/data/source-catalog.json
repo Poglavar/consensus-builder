@@ -21541,7 +21541,8 @@
       "sourceCrs": "EPSG:4490",
       "cityIds": [
         "beihai",
-        "wuzhou"
+        "wuzhou",
+        "yulin"
       ],
       "defaultForCity": true,
       "operator": "Guangxi Zhuang Autonomous Region Natural Resources Department / TianDiTu Guangxi",
@@ -22449,7 +22450,8 @@
       "countryCode": "SA",
       "metricSrid": 32638,
       "cityIds": [
-        "khamis_mushayt"
+        "khamis_mushayt",
+        "tabuk"
       ],
       "defaultForCity": true,
       "browserTransport": "relay",
@@ -22463,7 +22465,10 @@
         "areaEnumeration": true,
         "geometry": "full-wgs84"
       },
-      "maxConcurrentQueries": 1
+      "maxConcurrentQueries": 1,
+      "metricSridByCity": {
+        "tabuk": 32637
+      }
     },
     {
       "id": "co-ibague-alcaldia-mivuc-area-terrenos-2026",
@@ -25041,7 +25046,8 @@
       "countryCode": "BR",
       "metricSrid": 32725,
       "cityIds": [
-        "campina_grande"
+        "campina_grande",
+        "campinas"
       ],
       "defaultForCity": true,
       "scope": "Bounded Campina Grande observations of declared CAR rural environmental cadastral property perimeters. Does not establish municipal urban fiscal-lot coverage, citywide completeness, legal title, survey accuracy or currentness. National service endpoint; only the admitted city is enabled.",
@@ -25054,7 +25060,10 @@
       "sourceCrs": "EPSG:4674",
       "wireCrs": "CRS:84",
       "reuseTerms": "WFS capabilities advertise Fees NONE / AccessConstraints NONE. No explicit redistribution licence established; publisher terms require second-pass confirmation.",
-      "refresh": "Live WFS reads; publisher update cadence and record currentness unverified."
+      "refresh": "Live WFS reads; publisher update cadence and record currentness unverified.",
+      "metricSridByCity": {
+        "campinas": 32723
+      }
     },
     {
       "id": "tr-sivas-belediyesi-eimar-parsel",
@@ -26207,6 +26216,1671 @@
       "queryFormat": "geojson",
       "boundsSrid": 26917,
       "boundsProjection": "+proj=utm +zone=17 +datum=NAD83 +units=m +no_defs",
+      "defaultForCity": true
+    },
+    {
+      "id": "ar-sanjuan-dgc-public-parcel-vector",
+      "name": "San Juan DGC public cadastral parcels",
+      "adapter": "sanjuan-dgc",
+      "countryCode": "AR",
+      "cityIds": [
+        "san_juan"
+      ],
+      "endpoint": "https://servicioscatastro.sanjuan.gob.ar/DgcConsultasWeb/KusaServer/ClassDataPortal/910003/6",
+      "idPrefix": "AR-SJ-DGC-PARCEL-",
+      "idField": "id",
+      "outFields": [
+        "id"
+      ],
+      "geometryField": "geometry",
+      "sourceCrs": "EPSG:4326",
+      "responseSrid": 4326,
+      "metricSrid": 32719,
+      "operator": "Dirección de Geodesia y Catastro, Gobierno de la Provincia de San Juan",
+      "attribution": "Dirección de Geodesia y Catastro, Gobierno de la Provincia de San Juan · DGC Consultas Web · Parcela",
+      "homepage": "https://catastro.sanjuan.gob.ar/",
+      "viewerUrl": "https://servicioscatastro.sanjuan.gob.ar/DgcConsultasWeb/MapApp/DgcPublico",
+      "browserTransport": "relay",
+      "maxResponseBytes": 8388608,
+      "maxBboxKm2": 6,
+      "maxConcurrentQueries": 1,
+      "lookupBounds": [
+        [
+          -68.55,
+          -31.55,
+          -68.53,
+          -31.53
+        ]
+      ],
+      "capabilities": {
+        "areaEnumeration": true,
+        "exactIds": true,
+        "geometry": true,
+        "ownership": false
+      },
+      "coverage": {
+        "scope": "bounded-lookup-windows",
+        "citywide": false,
+        "basis": "Central San Juan lookup window only; no municipal boundary or citywide completeness claim."
+      },
+      "scope": "Bounded central San Juan window; currentness, native CRS/datum and complete coverage unverified.",
+      "identityProvenance": "Exact decimal native GeoJSON Feature.id prefixed AR-SJ-DGC-PARCEL-; fresh bounded lookup for exact-ID reads.",
+      "licence": "Public anonymous consultation; explicit geometry reuse licence and rate limits unresolved.",
+      "discovery": {
+        "jurisdiction": {
+          "basis": "First-party provincial DGC viewer names Parcela class 910003. Returned polygon 22539 contains the unchanged San Juan locator."
+        },
+        "sourcePurpose": "cadastral-parcels",
+        "purposeEvidenceUrls": [
+          "https://catastro.sanjuan.gob.ar/",
+          "https://servicioscatastro.sanjuan.gob.ar/DgcConsultasWeb/MapApp/DgcPublico"
+        ]
+      },
+      "defaultForCity": true
+    },
+    {
+      "id": "rs-novi-sad-mapanovisad-katastar",
+      "name": "Novi Sad NSMaps cadastral parcels",
+      "operator": "Grad Novi Sad GIS / NSMaps",
+      "countryCode": "RS",
+      "scope": "Municipal cadastral layer; bounded Novi Sad parcel observations only",
+      "adapter": "mapguide-selectfeatures",
+      "endpoint": "http://www.mapanovisad.rs/mapserver2015/mapagent/mapagent.fcgi",
+      "viewerEndpoint": "http://www.mapanovisad.rs/mapserver2015/nsmaps/",
+      "resourceId": "Library://ZigLocations/Data/Topobase_1.FeatureSource",
+      "className": "JPOJOB:KAT_PARCELA",
+      "layerName": "parcele_sve",
+      "geometryField": "GEOM",
+      "idField": "FID",
+      "idType": "integer",
+      "idPrefix": "RS-NS-FID-",
+      "outFields": [
+        "FID"
+      ],
+      "parcelNumberField": "FID",
+      "nativeCrs": "31277_KAT_PARCELA",
+      "nativeProjection": "+proj=tmerc +lat_0=0 +lon_0=21 +k=0.9999 +x_0=7500000 +y_0=0 +ellps=bessel +units=m +no_defs",
+      "responseCrs": "EPSG:4326",
+      "metricSrid": 32634,
+      "pageSize": 100,
+      "maxFeatures": 200,
+      "maxBboxKm2": 0.2,
+      "maxResponseBytes": 1048576,
+      "maxTotalResponseBytes": 16777216,
+      "timeoutMs": 20000,
+      "maxConcurrentQueries": 2,
+      "browserTransport": "relay",
+      "capabilities": {
+        "areaEnumeration": true
+      },
+      "defaultForCity": true,
+      "cityIds": [
+        "novi_sad"
+      ],
+      "attribution": "Grad Novi Sad GIS / NSMaps · Katastarske parcele · informative cadastral data",
+      "discovery": {
+        "jurisdiction": {
+          "basis": "First-party NSMaps Katastar viewer and bounded exact FID polygon reads in Novi Sad; no national coverage claim."
+        }
+      }
+    },
+    {
+      "id": "mk-skopje-old-bazaar-parcels",
+      "name": "Skopje Old Bazaar cadastral parcels",
+      "adapter": "arcgis",
+      "endpoint": "https://gisportal.skopje.gov.mk/arcgis/rest/services/OUT/StaraCarsijaWGS/FeatureServer/3",
+      "countryCode": "MK",
+      "operator": "City of Skopje GIS portal",
+      "idField": "OBJECTID",
+      "objectIdField": "OBJECTID",
+      "idType": "integer",
+      "idPrefix": "MK-SK-OUT-StaraCarsijaWGS-OBJECTID-",
+      "outFields": [
+        "OBJECTID"
+      ],
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "queryFormat": "geojson",
+      "pageSize": 100,
+      "idBatchSize": 80,
+      "maxFeatures": 1000,
+      "maxBboxKm2": 25,
+      "timeoutMs": 30000,
+      "maxResponseBytes": 16777216,
+      "metricSrid": 32634,
+      "cityIds": [
+        "skopje"
+      ],
+      "scope": "Partial central Skopje: published Stara Carsija (Old Bazaar) layer extent only. The immutable city locator lies outside coverage; no citywide or national completeness claim.",
+      "attribution": "City of Skopje GIS · Stara Carsija cadastral parcels · partial coverage",
+      "licenceNote": "Anonymous official service; no layer-specific reuse licence published in layer metadata. Attribution retained; legal reuse terms require follow-up.",
+      "capabilities": {
+        "bounds": true,
+        "exactId": true,
+        "areaEnumeration": true,
+        "geometry": "full-wgs84"
+      },
+      "defaultForCity": true
+    },
+    {
+      "id": "mn-egazar-geoware-parcels",
+      "name": "Mongolia e-gazar Ulaanbaatar district cadastral parcels",
+      "adapter": "wfs",
+      "layerProfile": "mn-egazar-districts-v1",
+      "endpoint": "https://geoserver.egazar.gov.mn/geoserver/geoware/ows",
+      "version": "2.0.0",
+      "layerTemplate": "geoware:geo_view_parcel_soum_egazar_{soumCode}_{date}",
+      "egazarDistrictCodes": [
+        "01119",
+        "01125"
+      ],
+      "idField": "parcel_id",
+      "idType": "string",
+      "idPattern": "^[0-9]{10}$",
+      "idPrefix": "MN-EGAZAR-",
+      "geometryField": "geometry",
+      "outFields": [
+        "parcel_id"
+      ],
+      "requestProperties": true,
+      "pageSize": 100,
+      "idBatchSize": 20,
+      "maxFeatures": 3000,
+      "maxBboxKm2": 2,
+      "minRequestIntervalMs": 250,
+      "maxConcurrentQueries": 1,
+      "countryCode": "MN",
+      "metricSrid": 32648,
+      "cityIds": [
+        "ulaanbaatar"
+      ],
+      "defaultForCity": true,
+      "scope": "Bounded initial availability for native cadastral parcels in districts 01119 and 01125 of Ulaanbaatar. Three reviewed parcels only; capital-wide completeness and the unchanged queue-point parcel coverage are unverified.",
+      "attribution": "Agency for Land Administration and Management, Geodesy and Cartography / e-gazar.gov.mn",
+      "catalogueUrl": "https://www.gazar.gov.mn/system2/static/egazar",
+      "viewerUrl": "https://egazar.gov.mn/map",
+      "sourceCrs": "EPSG:4326",
+      "licence": "WFS Fees NONE and AccessConstraints NONE; explicit reuse licence unverified.",
+      "identityRecipe": "Canonical ID: MN-EGAZAR-{districtCode}-{exact native parcel_id}; sourceParcelId is the unchanged native parcel_id. Dated layer suffix is not part of canonical identity.",
+      "capabilities": {
+        "areaEnumeration": true,
+        "exactIds": true,
+        "geometryQuery": true
+      },
+      "responseSrid": 4326,
+      "maxResponseBytes": 16777216,
+      "browserTransport": "relay",
+      "timeoutMs": 45000
+    },
+    {
+      "id": "kr-seoul-smap-cadastral-lp-pa-cbnd",
+      "name": "Seoul S-MAP continuous cadastral parcels",
+      "adapter": "wfs",
+      "endpoint": "https://smap.seoul.go.kr/imageProxy.do?svc=GEOSERVER&param=%2Fgeoserver%2Fseoul%2Fwfs",
+      "wfsProxyParameter": "param",
+      "featureType": "seoul:lp_pa_cbnd",
+      "version": "1.0.0",
+      "idField": "pnu",
+      "idType": "string",
+      "idPattern": "^[0-9]{19}$",
+      "idPrefix": "KR-SEOUL-SMAP-PNU-",
+      "geometryField": "geom",
+      "outFields": [
+        "pnu"
+      ],
+      "requestProperties": true,
+      "pageSize": 100,
+      "idBatchSize": 40,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 2,
+      "maxConcurrentQueries": 2,
+      "browserTransport": "relay",
+      "metricSrid": 32652,
+      "countryCode": "KR",
+      "cityIds": [
+        "seoul"
+      ],
+      "defaultForCity": true,
+      "capabilities": {
+        "areaEnumeration": true,
+        "exactIds": true,
+        "queryGeometry": true
+      },
+      "operator": "Seoul Metropolitan Government / S-MAP",
+      "catalogueUrl": "https://smap.seoul.go.kr/",
+      "attribution": "Seoul Metropolitan Government · S-MAP continuous cadastral map",
+      "scope": "Official Seoul continuous cadastral layer; bounded observed coverage only. Citywide completeness and currentness are unverified.",
+      "licenceNote": "Anonymous first-party viewer WFS access observed. No source-specific geometry redistribution licence established; preserve Seoul Metropolitan Government / S-MAP attribution."
+    },
+    {
+      "id": "ca-vancouver-opendata-property-parcel-polygons",
+      "name": "City of Vancouver Property parcel polygons",
+      "adapter": "opendatasoft",
+      "endpoint": "https://opendata.vancouver.ca/api/explore/v2.1/catalog/datasets/property-parcel-polygons/records",
+      "idField": "site_id",
+      "idType": "string",
+      "idPrefix": "CA-VANCOUVER-",
+      "geometryField": "geom",
+      "outFields": [
+        "site_id"
+      ],
+      "pageSize": 100,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "countryCode": "CA",
+      "metricSrid": 32610,
+      "cityIds": [
+        "vancouver"
+      ],
+      "defaultForCity": true,
+      "operator": "City of Vancouver, Engineering Services",
+      "scope": "City of Vancouver assessment-based land parcel polygons. Bounded qualification only; no citywide completeness, legal title or adjacent-municipality coverage claim. Blank or repeated site_id rows fail explicitly and are not silently dropped.",
+      "attribution": "City of Vancouver; Engineering Services. Property parcel polygons. Open Government Licence - Vancouver.",
+      "licenceUrl": "https://opendata.vancouver.ca/pages/licence/",
+      "catalogueUrl": "https://opendata.vancouver.ca/explore/assets/property-parcel-polygons/",
+      "capabilities": {
+        "areaEnumeration": true,
+        "exactIds": true
+      },
+      "discovery": {
+        "jurisdiction": {
+          "countryCode": "CA",
+          "cityCode": "341",
+          "basis": "City of Vancouver Engineering Services publishes assessment-based land polygons; see evidence/source-metadata.json."
+        }
+      }
+    },
+    {
+      "id": "cr-msj-nomenclatura-predial",
+      "name": "Municipalidad de San José — Nomenclatura predial",
+      "adapter": "arcgis",
+      "endpoint": "https://services5.arcgis.com/0ZvuJDanWVJc4vYr/ArcGIS/rest/services/SIG_SER_NOMENCLATURA_PREDIAL/FeatureServer/0/query",
+      "idPrefix": "CR-MSJ-NOMENCLATURA-OBJECTID-",
+      "idField": "OBJECTID",
+      "objectIdField": "OBJECTID",
+      "idType": "integer",
+      "outFields": [
+        "OBJECTID"
+      ],
+      "queryFormat": "geojson",
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "pageSize": 1000,
+      "idBatchSize": 80,
+      "maxFeatures": 5000,
+      "maxBboxKm2": 25,
+      "timeoutMs": 15000,
+      "maxConcurrentQueries": 2,
+      "countryCode": "CR",
+      "metricSrid": 32616,
+      "cityIds": [
+        "san_jose"
+      ],
+      "operator": "Municipalidad de San José, Departamento de Información Catastral y Geográfica",
+      "catalogueUrl": "https://services5.arcgis.com/0ZvuJDanWVJc4vYr/ArcGIS/rest/services/SIG_SER_NOMENCLATURA_PREDIAL/FeatureServer/0",
+      "attribution": "Municipalidad de San José, Dpto. Información Catastral y Geográfica, Sección de Información Geográfica",
+      "scope": "Municipal predio polygons linked to finca and cadastral-plan references. Exact WUP locator and nearby bounded observations establish local availability only. Layer description says San José canton; item description says Carmen district. Neither the metadata extent nor bounded samples establish canton-wide or metropolitan completeness.",
+      "licenceNote": "Public anonymous query access. Item licenseInfo: Para uso de la Municipalidad de San José. External reuse permission remains unresolved; no open-data licence is asserted.",
+      "defaultForCity": true,
+      "capabilities": {
+        "bbox": true,
+        "exactId": true,
+        "areaEnumeration": true
+      },
+      "discovery": {
+        "jurisdiction": {
+          "countryCode": "CR",
+          "basis": "Municipal cadastral/geographic layer describes predios and defines FINCA and PLANO as national property-register and cadastral-plan references.",
+          "evidence": [
+            "https://services5.arcgis.com/0ZvuJDanWVJc4vYr/ArcGIS/rest/services/SIG_SER_NOMENCLATURA_PREDIAL/FeatureServer/0?f=pjson",
+            "https://services5.arcgis.com/0ZvuJDanWVJc4vYr/ArcGIS/rest/services/SIG_SER_NOMENCLATURA_PREDIAL/FeatureServer/info/iteminfo?f=pjson"
+          ]
+        },
+        "keepPublishedFields": true
+      }
+    },
+    {
+      "id": "mx-tijuana-implan-catastro-wms",
+      "name": "IMPLAN Tijuana municipal cadastral Predios",
+      "adapter": "tijuana-implan-wms",
+      "endpoint": "https://gemelodigital.implantijuana.gob.mx/geoserver-local-proxy/wms",
+      "countryCode": "MX",
+      "cityIds": [
+        "tijuana"
+      ],
+      "idPrefix": "MX-TIJUANA-CVE-",
+      "idField": "cve_cat",
+      "idFields": [
+        "cve_cat"
+      ],
+      "idType": "string",
+      "outFields": [
+        "cve_cat"
+      ],
+      "geometryField": "geom",
+      "layer": "catastro_pub:predios-211126_Predios",
+      "version": "1.1.1",
+      "sourceCrs": "EPSG:32611",
+      "responseCrs": "EPSG:4326",
+      "responseAxisOrder": "longitude-latitude",
+      "outputSrid": 4326,
+      "responseSrid": 4326,
+      "metricSrid": 32611,
+      "pageSize": 500,
+      "maxFeatures": 500,
+      "maxConcurrentQueries": 4,
+      "browserTransport": "relay",
+      "attribution": "IMPLAN Tijuana / Sistema de Información Geográfica de Tijuana / Dirección de Catastro Municipal; Predios (2021 layer name).",
+      "catalogueUrl": "https://implan.tijuana.gob.mx/servicios/cartografia/gemelo-digital.aspx",
+      "operator": "IMPLAN Tijuana / Dirección de Catastro Municipal",
+      "scope": "Municipal cadastral predio reference layer; only bounded Tijuana samples verified. Citywide completeness and currentness unverified.",
+      "licenceNote": "Public municipal map; no explicit reuse licence established. Attribution required; terms need follow-up.",
+      "capabilities": {
+        "point": true,
+        "exactId": true,
+        "bbox": true,
+        "areaEnumeration": true,
+        "geometry": "full-wgs84"
+      },
+      "sourceExtent": [
+        -117.12429823771853,
+        32.2512730102276,
+        -116.60335857175843,
+        32.56585025841466
+      ],
+      "defaultForCity": true,
+      "maxAreaKm2": 1,
+      "maxResponseBytes": 8388608,
+      "maxBboxWidthM": 1000,
+      "maxBboxHeightM": 1000,
+      "identityKind": "attribute-geometry-sha256-v1",
+      "identityGeometryFormat": "wms-kml-kmattr-false-v1",
+      "identityRecipe": "Verbatim cve_cat + colon + SHA256 of UTF-8 JSON.stringify({type,coordinates}) for the unchanged parsed public KML polygon. Canonical ID is idPrefix + that reference; sourceParcelId remains native cve_cat.",
+      "parcelNumberField": "cve_cat"
+    },
+    {
+      "id": "ec-guayaquil-urban-predios-official",
+      "name": "Municipio de Guayaquil Catastro Urbano / Predios Urbanos",
+      "adapter": "arcgis",
+      "endpoint": "https://geoportalcat.guayaquil.gob.ec/arcgis/rest/services/Catastro_Urbano/Predios_Urbanos/MapServer/0",
+      "idField": "CATASTROGUAYAQUIL.SDE.Predios_Urbanos.codigo",
+      "objectIdField": "CATASTROGUAYAQUIL.SDE.Predios_Urbanos.OBJECTID",
+      "parcelNumberField": "CATASTROGUAYAQUIL.SDE.Predios_Urbanos.codigo",
+      "idType": "string",
+      "idPattern": "^[0-9]+(?:-[0-9]+)+$",
+      "idPrefix": "EC-GYE-URBAN-",
+      "outFields": [
+        "CATASTROGUAYAQUIL.SDE.Predios_Urbanos.OBJECTID",
+        "CATASTROGUAYAQUIL.SDE.Predios_Urbanos.codigo"
+      ],
+      "queryFormat": "geojson",
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "pageSize": 500,
+      "idBatchSize": 50,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 2,
+      "timeoutMs": 45000,
+      "maxConcurrentQueries": 2,
+      "countryCode": "EC",
+      "metricSrid": 32717,
+      "sourceCrs": "EPSG:32717",
+      "cityIds": [
+        "guayaquil"
+      ],
+      "operator": "M.I. Municipalidad de Guayaquil",
+      "attribution": "M.I. Municipalidad de Guayaquil / Geoportal Catastro",
+      "scope": "Municipal urban cadastral parcels in Guayaquil. Bounded central polygons verified; urban boundary, distributed coverage, rural coverage and completeness are unverified.",
+      "licenceNote": "Anonymous public municipal cadastral query. Metadata contains no explicit reuse licence; attribution retained. Reuse terms and currentness remain second-pass follow-ups.",
+      "catalogueUrl": "https://geoportalcat.guayaquil.gob.ec/arcgis/rest/services/Catastro_Urbano/Predios_Urbanos/MapServer",
+      "capabilities": {
+        "areaEnumeration": true,
+        "exactId": true,
+        "geometry": "full-wgs84"
+      },
+      "discovery": {
+        "jurisdiction": {
+          "countryCode": "EC",
+          "basis": "First-party municipal service describes Guayaquil urban predios cartography joined to EMAS; polygon layer displays Código Catastral."
+        }
+      },
+      "identityKind": "native-key-geometry-sha256-v1",
+      "defaultForCity": true
+    },
+    {
+      "id": "lk-sd-luse-cadastre-2026",
+      "name": "Sri Lanka Survey Department SLCadastre — LUSE_Cadastre_2026",
+      "adapter": "arcgis",
+      "endpoint": "https://lis.survey.gov.lk/server/rest/services/Publishing_Server/LUSE_Cadastre_2026/MapServer/0",
+      "operator": "Survey Department of Sri Lanka",
+      "countryCode": "LK",
+      "catalogueUrl": "https://lis.survey.gov.lk/rgd/",
+      "attribution": "Sri Lanka Survey Department; Registrar General’s Department",
+      "licenceNote": "Public reference only. Other use requires approval by the Sri Lanka Survey Department and Registrar General’s Department. No reuse approval or open licence established.",
+      "idPrefix": "LK-SD-LUSE-2026:",
+      "idField": "pcl_pg_id2",
+      "idType": "string",
+      "objectIdField": "OBJECTID",
+      "parcelNumberField": "pcl_pg_id2",
+      "outFields": [
+        "OBJECTID",
+        "pcl_pg_id2"
+      ],
+      "identityKind": "native-key-geometry-sha256-v1",
+      "queryFormat": "geojson",
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "pageSize": 100,
+      "idBatchSize": 10,
+      "maxFeatures": 2000,
+      "maxBboxKm2": 2,
+      "maxResponseBytes": 16777216,
+      "timeoutMs": 45000,
+      "minRequestIntervalMs": 200,
+      "nativeCrs": "EPSG:5235",
+      "responseCrs": "EPSG:4326",
+      "coordinateOrder": "longitude,latitude",
+      "metricSrid": 32644,
+      "cityIds": [
+        "galle"
+      ],
+      "defaultForCity": true,
+      "scope": "Bounded central Galle parcel observations; west/east positive discovery windows and an empty north window. No municipal or district completeness claim. Parcel versions, currentness and overlaps remain unverified.",
+      "capabilities": {
+        "areaEnumeration": true,
+        "exactIds": true
+      }
+    },
+    {
+      "id": "SV-OPAMSS-SAN-SALVADOR-PLANIMETRIA-31",
+      "name": "OPAMSS San Salvador cadastral planimetry (layer 31)",
+      "operator": "OPAMSS",
+      "adapter": "arcgis",
+      "endpoint": "https://geovisor.opamss.org.sv/server/rest/services/Geo_OPAMSS_Planimetria/MapServer/31/query",
+      "idField": "cod_parcel",
+      "idType": "string",
+      "idPattern": "^[0-9]{12,16}$",
+      "objectIdField": "objectid",
+      "idPrefix": "SV-OPAMSS-SAN-SALVADOR-cod_parcel:",
+      "outFields": [
+        "objectid",
+        "cod_parcel"
+      ],
+      "queryFormat": "geojson",
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "pageSize": 100,
+      "idBatchSize": 20,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "maxResponseBytes": 16777216,
+      "timeoutMs": 45000,
+      "countryCode": "SV",
+      "metricSrid": 32616,
+      "scope": "San Salvador layer 31 under San Salvador centro, with published extent [-89.27669718299995,13.632474750000029,-89.16302291799997,13.74593143900006]. Only bounded parcel availability is established. No claim of complete WUP agglomeration, adjacent municipality or AMSS coverage.",
+      "licenceNote": "Public official query endpoint; explicit open-data reuse licence not established. Attribution retained. Legal equivalence to CNR and survey accuracy unverified.",
+      "catalogueUrl": "https://geovisor.opamss.org.sv/server/rest/services/Geo_OPAMSS_Planimetria/MapServer/31",
+      "attribution": "OPAMSS · Geo_OPAMSS_Planimetria · San Salvador layer 31; native parcel geometry and cod_parcel retained.",
+      "cityIds": [
+        "san_salvador"
+      ],
+      "discovery": {
+        "jurisdiction": {
+          "countryCode": "SV",
+          "basis": "City-named San Salvador polygon layer under OPAMSS San Salvador centro. Bounded evidence only.",
+          "evidence": [
+            "https://geovisor.opamss.org.sv/server/rest/services/Geo_OPAMSS_Planimetria/MapServer/31"
+          ]
+        }
+      },
+      "defaultForCity": true
+    },
+    {
+      "id": "hu-lechner-oeny-cadastral-parcels",
+      "name": "OÉNY / Lechner Budapest cadastral parcels",
+      "adapter": "hu-oeny",
+      "endpoint": "https://www.oeny.hu/hk-api/parcels/at",
+      "idField": "id",
+      "idPattern": "^[1-9][0-9]{0,14}$",
+      "idPrefix": "HU-OENY-HRSZ-",
+      "outFields": [
+        "id"
+      ],
+      "countryCode": "HU",
+      "operator": "Lechner Tudásközpont Nonprofit Kft. / OÉNY",
+      "attribution": "Lechner Tudásközpont / OÉNY · cadastral parcel outlines",
+      "licenceNote": "Anonymous public lookup; bulk server-to-server use requires a contract per Lechner HRSZ documentation. Redistribution licence for OÉNY outlines is unconfirmed; initial qualification is not a licence grant.",
+      "scope": "Bounded Budapest parcel queries. The HRSZ intersection API enumerates up to 500 lots under 1 km²; this adapter caps results at 80 and checks complete search/exact pairs. No citywide completeness claim.",
+      "capabilities": {
+        "point": true,
+        "exactId": true,
+        "areaEnumeration": true,
+        "geometry": "full-wgs84"
+      },
+      "queryMode": "bounded-hrsz-intersections",
+      "browserTransport": "relay",
+      "sourceCrs": "EPSG:23700",
+      "projection": "+proj=somerc +lat_0=47.1443937222222 +lon_0=19.0485717777778 +k_0=0.99993 +x_0=650000 +y_0=200000 +ellps=GRS67 +towgs84=52.17,-71.82,-14.9,0,0,0,0 +units=m +no_defs",
+      "nativeAxisOrder": "east-north",
+      "metricSrid": 32634,
+      "maxFeatures": 80,
+      "maxAreaKm2": 0.9,
+      "maxConcurrentQueries": 2,
+      "cityIds": [
+        "budapest"
+      ],
+      "defaultForCity": true,
+      "discovery": {
+        "jurisdiction": {
+          "basis": "First-party Lechner cadastral service documentation and current Budapest point/search/exact responses; bounded initial qualification."
+        }
+      }
+    },
+    {
+      "id": "ae-rak-raklocator-parcels",
+      "name": "Ras Al Khaimah municipal cadastral parcels (RakLocParcels)",
+      "adapter": "arcgis",
+      "endpoint": "https://gis.rak.ae/server/rest/services/RakLocatorMap/RakLocatorMap/MapServer/4",
+      "idField": "ParcelID",
+      "idType": "string",
+      "idPattern": "^[0-9]{1,100}$",
+      "objectIdField": "OBJECTID",
+      "parcelNumberField": "ParcelID",
+      "idPrefix": "AE-RAK-",
+      "outFields": [
+        "OBJECTID",
+        "ParcelID"
+      ],
+      "queryFormat": "esri-json",
+      "pageSize": 200,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "idBatchSize": 40,
+      "maxResponseBytes": 16777216,
+      "timeoutMs": 45000,
+      "minRequestIntervalMs": 200,
+      "maxConcurrentQueries": 2,
+      "countryCode": "AE",
+      "metricSrid": 32640,
+      "nativeCrs": "EPSG:32640",
+      "cityIds": [
+        "ras_al_khaimah"
+      ],
+      "capabilities": {
+        "bbox": true,
+        "exactId": true,
+        "areaEnumeration": true,
+        "geometry": "full-wgs84"
+      },
+      "operator": "Ras Al Khaimah Municipality GIS Center",
+      "catalogueUrl": "https://maps.rak.ae/Addressing/",
+      "attribution": "Ras Al Khaimah Municipality GIS Center / RAK Addressing. Indicative parcel boundaries; coverage and currentness unverified.",
+      "licenceNote": "Public official viewer queries. No explicit open reuse licence found; municipal attribution retained. Curved source records are requested as the provider standard linear-ring representation; full returned rings are retained.",
+      "scope": "Bounded parcel polygons around Ras Al Khaimah verified; citywide and emirate-wide coverage and completeness are unverified.",
+      "browserTransport": "relay",
+      "discovery": {
+        "jurisdiction": {
+          "countryCode": "AE",
+          "basis": "Municipal RakLocParcels layer configured by RAK Addressing; official GIS parcel-fabric system linked to land registration.",
+          "evidence": []
+        }
+      },
+      "returnTrueCurves": false,
+      "defaultForCity": true
+    },
+    {
+      "id": "rs-nis-gis-smartportal-public-parcels",
+      "name": "Niš GIS public-ownership cadastral parcels",
+      "adapter": "arcgis",
+      "endpoint": "https://gis.ni.rs/server/rest/services/Nis_SmartPortal/MapServer/2",
+      "idField": "gis_id",
+      "idType": "string",
+      "idPattern": "^[0-9]{6}-[0-9]+(?:/[0-9]+)?$",
+      "objectIdField": "objectid",
+      "idPrefix": "RS-NIS-",
+      "parcelNumberField": "broj_parcele",
+      "outFields": [
+        "objectid",
+        "gis_id",
+        "broj_parcele"
+      ],
+      "pageSize": 200,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "maxResponseBytes": 16777216,
+      "timeoutMs": 30000,
+      "countryCode": "RS",
+      "metricSrid": 32634,
+      "scope": "Municipal cadastral-derived parcels in public ownership only. Bounded Niš samples establish useful partial coverage; all-ownership and citywide completeness are unproven.",
+      "licenceNote": "No explicit reuse licence exposed in observed public metadata; preserve City of Niš GIS attribution. Public access is not a licence grant.",
+      "catalogueUrl": "https://gis.ni.rs/smartPortal/gunisPublic",
+      "attribution": "Grad Niš GIS · Парцеле у јавној својини · public-ownership cadastral parcels only; provider WGS84 output.",
+      "capabilities": {
+        "areaEnumeration": true
+      },
+      "cityIds": [
+        "nis"
+      ],
+      "defaultForCity": true
+    },
+    {
+      "id": "sa-makkah-municipality-mmsdi-regulatory-parcels",
+      "name": "Holy Makkah Municipality MMSDI regulatory land parcels",
+      "operator": "Holy Makkah Municipality / municipal SDI",
+      "countryCode": "SA",
+      "adapter": "arcgis",
+      "endpoint": "https://maps.holymakkah.gov.sa/arcgis/rest/services/SDI/MMSDI_MD_BusinessMap/MapServer/14",
+      "publicTokenUrl": "https://maps.holymakkah.gov.sa/Data/HashKey1?cv=633889166",
+      "idPrefix": "SA-MAKKAH-PARCEL-",
+      "idField": "PARCEL_KEY",
+      "objectIdField": "OBJECTID",
+      "idType": "integer",
+      "outFields": [
+        "PARCEL_KEY",
+        "OBJECTID"
+      ],
+      "queryFormat": "esri-json",
+      "returnTrueCurves": true,
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "pageSize": 100,
+      "idBatchSize": 20,
+      "maxFeatures": 1000,
+      "maxBboxKm2": 4,
+      "maxResponseBytes": 16777216,
+      "timeoutMs": 30000,
+      "metricSrid": 32637,
+      "browserTransport": "relay",
+      "cityIds": [
+        "mecca"
+      ],
+      "defaultForCity": true,
+      "attribution": "Holy Makkah Municipality / مستكشف مكة الجغرافي · regulatory land parcels; legal-title equivalence unverified",
+      "license": "No explicit redistribution licence established; official anonymous viewer access only.",
+      "sourceUrl": "https://maps.holymakkah.gov.sa/",
+      "capabilities": {
+        "areaEnumeration": true
+      }
+    },
+    {
+      "id": "th-dol-lpcpublic-nsl",
+      "name": "Thailand DOL surveyed NSL public-land parcels",
+      "adapter": "wfs",
+      "endpoint": "https://portal.dol.go.th/geoserver/LPCPUBLIC/ows",
+      "version": "1.0.0",
+      "featureType": "LPCPUBLIC:DOLNSL",
+      "geometryField": "geom",
+      "nativeIdMode": "feature-id",
+      "featureIdParameter": "featureID",
+      "idField": null,
+      "idType": "string",
+      "idPattern": "^DOLNSL\\.[0-9]+$",
+      "idPrefix": "TH-DOL-NSL-",
+      "outFields": [],
+      "requestProperties": true,
+      "pageSize": 100,
+      "idBatchSize": 20,
+      "maxFeatures": 1000,
+      "maxBboxKm2": 25,
+      "maxResponseBytes": 1048576,
+      "timeoutMs": 45000,
+      "minRequestIntervalMs": 250,
+      "countryCode": "TH",
+      "cityIds": [
+        "phuket"
+      ],
+      "defaultForCity": true,
+      "metricSrid": 32647,
+      "responseSrid": 4326,
+      "returnsWGS84": true,
+      "responseCrs": "EPSG:4326",
+      "coordinateOrder": "longitude,latitude",
+      "operator": "Department of Lands, Thailand",
+      "attribution": "Department of Lands, Thailand · surveyed NSL public-land parcels · bounded partial coverage",
+      "scope": "Surveyed NSL public-land parcel subset only. One proven municipal parcel near Kra Soi 8, about 2.7 km east of the unchanged city locator. Private-title, complete municipal and island-wide coverage are unestablished.",
+      "licenceNote": "Anonymous public WFS access. Explicit parcel-geometry reuse/redistribution terms remain unverified; attribute projection is geometry only.",
+      "capabilities": {
+        "bbox": true,
+        "exactId": true,
+        "areaEnumeration": true
+      },
+      "discovery": {
+        "jurisdiction": {
+          "countryCode": "TH",
+          "basis": "DOL mapping centre maintains government-land parcel maps and surveyed NSL certificate boundaries.",
+          "evidence": [
+            "https://www.dol.go.th/landmap/page-1767929726/",
+            "https://www.dol.go.th/en/knowledge-land-department/public-land/"
+          ]
+        }
+      }
+    },
+    {
+      "id": "th-bma-cpudgi-bma-parcel-01",
+      "name": "Bangkok Metropolitan Administration — BMA_PARCEL_01",
+      "adapter": "arcgis",
+      "endpoint": "https://cpudgiportal.bangkok.go.th/arcgis/rest/services/Hosted/BMA_PARCEL_01/FeatureServer/0",
+      "idPrefix": "TH-BMA-BMA_PARCEL_01|fid=",
+      "idField": "fid",
+      "objectIdField": "fid",
+      "outFields": [
+        "fid"
+      ],
+      "idType": "integer",
+      "queryFormat": "geojson",
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "pageSize": 2000,
+      "idBatchSize": 80,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "maxConcurrentQueries": 1,
+      "timeoutMs": 45000,
+      "browserTransport": "relay",
+      "sourceCrs": "EPSG:3857",
+      "metricSrid": 32647,
+      "countryCode": "TH",
+      "cityIds": [
+        "krung_thep_maha_nakhon_bangkok"
+      ],
+      "capabilities": {
+        "bbox": true,
+        "exactId": true,
+        "areaEnumeration": true,
+        "geometry": "full-wgs84"
+      },
+      "operator": "Bangkok Metropolitan Administration, City Planning and Urban Development / Office of Geoinformatics",
+      "attribution": "Bangkok Metropolitan Administration / BMA GIS Portal, BMA_PARCEL_01",
+      "licenceNote": "Anonymous public BMA feature service. Item licenseInfo and attribution are empty; no explicit open reuse licence established. Terms and attribution remain second-pass follow-ups.",
+      "scope": "Partial Bangkok parcel coverage. Retained exact geometries from Bang Sue; positive western/northern discovery counts do not establish polygon distribution. WUP point and nearby/east windows were empty. No citywide completeness, currentness or title/survey accuracy claim.",
+      "defaultForCity": true
+    },
+    {
+      "id": "kr-daegu-gis-go-kr-dg-lsmd-cont-ldreg",
+      "name": "Daegu continuous cadastral map parcels",
+      "adapter": "wfs",
+      "endpoint": "https://gis.go.kr/geoserver/dg/ows",
+      "featureType": "dg:LSMD_CONT_LDREG",
+      "version": "1.1.0",
+      "idField": "pnu",
+      "idType": "string",
+      "idPattern": "^[0-9]{19}$",
+      "idPrefix": "KR-DAEGU-PNU-",
+      "geometryField": "geom",
+      "outFields": [
+        "pnu"
+      ],
+      "requestProperties": true,
+      "responseSrid": 5187,
+      "projection": "+proj=tmerc +lat_0=38 +lon_0=129 +k=1 +x_0=200000 +y_0=600000 +ellps=GRS80 +units=m +no_defs",
+      "filterBoundsGeometry": true,
+      "pageSize": 100,
+      "idBatchSize": 40,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 2,
+      "maxConcurrentQueries": 2,
+      "browserTransport": "relay",
+      "metricSrid": 32652,
+      "countryCode": "KR",
+      "cityIds": [
+        "daegu"
+      ],
+      "defaultForCity": true,
+      "capabilities": {
+        "areaEnumeration": true,
+        "exactIds": true,
+        "queryGeometry": true
+      },
+      "operator": "Daegu Metropolitan City / Daegu Map Portal",
+      "catalogueUrl": "https://www.daegu.go.kr/index.do?menu_id=00936100",
+      "attribution": "Daegu Metropolitan City / Daegu Map Portal (gis.go.kr); dg:LSMD_CONT_LDREG.",
+      "scope": "Official municipal continuous cadastral layer, verified only in bounded central and eastern windows. Published extent is not a municipal boundary or citywide completeness proof.",
+      "licenceNote": "National MOLIT cadastral catalogue lists Korea Open Government License Type 1 attribution; applicability to this municipal endpoint is unconfirmed. Preserve municipal attribution; source-specific vector reuse terms remain a follow-up."
+    },
+    {
+      "id": "kz-almaty-mapalmaty-gzk",
+      "name": "Almaty municipal state land cadastre (GZK)",
+      "adapter": "arcgis",
+      "endpoint": "https://mapalmaty.kz/arcgis/rest/services/pg/pg_uzo/FeatureServer/10",
+      "idField": "kad_nomer",
+      "objectIdField": "objectid",
+      "idType": "string",
+      "idPattern": "^[0-9]+$",
+      "idPrefix": "KZ-ALMATY-GZK-",
+      "outFields": [
+        "objectid",
+        "kad_nomer"
+      ],
+      "queryFormat": "esri-json",
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "boundsSrid": 32643,
+      "boundsProjection": "+proj=utm +zone=43 +datum=WGS84 +units=m +no_defs",
+      "pageSize": 100,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 1,
+      "countryCode": "KZ",
+      "metricSrid": 32643,
+      "projection": "EPSG:32643",
+      "cityIds": [
+        "almaty"
+      ],
+      "maxConcurrentQueries": 2,
+      "operator": "Almaty municipal land-cadastral map / state land cadastre (GZK)",
+      "catalogueUrl": "https://www.gov.kz/org/almaty-zher/activities/10963?lang=ru",
+      "attribution": "Almaty municipal land-cadastral map / GZK",
+      "licenceNote": "Public anonymous map access; vector reuse licence and currentness not established. No survey-accuracy or legal-title claim.",
+      "scope": "Bounded local parcel availability near the immutable Almaty WUP locator. Published service extent and thirteen sampled cells do not establish citywide completeness.",
+      "browserTransport": "relay",
+      "defaultForCity": true
+    },
+    {
+      "id": "my-iplan-johor-lot",
+      "name": "PLANMalaysia i-PLAN Lot Johor",
+      "adapter": "arcgis",
+      "endpoint": "https://scharms.planmalaysia.gov.my/arcgis/rest/services/iPLAN/LOT_01/MapServer/0",
+      "idField": "UPI",
+      "objectIdField": "OBJECTID",
+      "idType": "string",
+      "idPattern": "^[0-9]+$",
+      "idPrefix": "MY-IPLAN-JOHOR-UPI-",
+      "outFields": [
+        "OBJECTID",
+        "UPI"
+      ],
+      "queryFormat": "geojson",
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "pageSize": 500,
+      "idBatchSize": 80,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "maxConcurrentQueries": 1,
+      "timeoutMs": 40000,
+      "countryCode": "MY",
+      "metricSrid": 32648,
+      "cityIds": [
+        "johor_bahru"
+      ],
+      "sourceCrs": "EPSG:4742",
+      "operator": "PLANMalaysia / Bahagian Maklumat Guna Tanah Negara",
+      "catalogueUrl": "https://scharms.planmalaysia.gov.my/arcgis/rest/services/iPLAN/LOT_01/MapServer/0?f=pjson",
+      "attribution": "PLANMalaysia / i-PLAN — Lot Johor",
+      "licenceNote": "Anonymous public query observed. No explicit reuse or redistribution licence established in inspected first-party metadata; terms and underlying cadastral provenance require second-pass confirmation. Retain attribution.",
+      "scope": "Johor state lot polygons; bounded parcels verified around the immutable Johor Bahru locator. Municipal-boundary coverage, citywide completeness and current/historic validity remain unverified.",
+      "capabilities": {
+        "areaEnumeration": true,
+        "exactId": true,
+        "geometry": "full-wgs84"
+      },
+      "defaultForCity": true,
+      "discovery": {
+        "jurisdiction": {
+          "countryCode": "MY",
+          "basis": "Official Lot Johor polygon layer with native UPI and lot-number fields. MyGeoportal documents UPI as surveyed land-lot identity. Positive geometry at Johor Bahru locator supports bounded city binding only.",
+          "evidenceFiles": [
+            "evidence/layer-metadata.json",
+            "evidence/upi-purpose.html",
+            "evidence/sample-live.geojson"
+          ]
+        }
+      }
+    },
+    {
+      "id": "tr-bursa-bbbcbsgateway-kadastro-parseller",
+      "name": "Bursa municipal cadastral parcels (MULKIYET.TKGM_PARSELLER)",
+      "adapter": "arcgis",
+      "endpoint": "https://bbbcbsgateway.bursa.bel.tr/server/rest/services/MULKIYET/KADASTRO/MapServer/0",
+      "idField": "ID",
+      "idType": "integer",
+      "objectIdField": "OBJECTID",
+      "idPrefix": "TR-BBB-KADASTRO-ID-",
+      "outFields": [
+        "OBJECTID",
+        "ID"
+      ],
+      "queryFormat": "geojson",
+      "pageSize": 1000,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "timeoutMs": 45000,
+      "countryCode": "TR",
+      "metricSrid": 32635,
+      "sourceCrs": "EPSG:2320",
+      "cityIds": [
+        "bursa"
+      ],
+      "scope": "Bursa municipal-hosted cadastral parcel records; positive central and east exact reads and discovery windows. Citywide and all-district completeness are unverified.",
+      "attribution": "Bursa Büyükşehir Belediyesi / Coğrafi Bilgi Sistemleri Şube Müdürlüğü",
+      "catalogueUrl": "https://kentrehberi.bursa.bel.tr/",
+      "licenceNotes": "Public informational viewer; not evidence of title or survey accuracy. Explicit parcel redistribution permission is unresolved.",
+      "capabilities": {
+        "bounds": true,
+        "exactIds": true,
+        "areaEnumeration": true
+      },
+      "discovery": {
+        "jurisdiction": {
+          "basis": "Official municipal GIS-unit evidence and municipal ArcGIS MULKIYET.TKGM_PARSELLER metadata; sampled central/east parcels only."
+        },
+        "purpose": "cadastral-parcels"
+      },
+      "defaultForCity": true
+    },
+    {
+      "id": "it-roma-metropolitana-sit-cadastral-parcels",
+      "name": "Città metropolitana di Roma Capitale SIT cadastral land parcels",
+      "adapter": "roma-qgis-wms",
+      "endpoint": "https://g3w-suite.cittametropolitanaroma.it/ows/19/qdjango/224/",
+      "layer": "Catasto_Totale_0f4af963_a62b_449a_9d28_6f37d9826dc8",
+      "idField": "id",
+      "idPrefix": "IT-ROMA-SIT-",
+      "outFields": [
+        "id"
+      ],
+      "countryCode": "IT",
+      "cityIds": [
+        "roma_rome"
+      ],
+      "defaultForCity": true,
+      "metricSrid": 32633,
+      "sourceCrs": "EPSG:25833",
+      "responseSrid": 4326,
+      "version": "1.1.1",
+      "capabilities": {
+        "point": true,
+        "exactId": true,
+        "bbox": true,
+        "areaEnumeration": true,
+        "geometry": "full-wgs84"
+      },
+      "browserTransport": "relay",
+      "maxConcurrentQueries": 2,
+      "maxAreaKm2": 1,
+      "maxFeatures": 1000,
+      "operator": "Città metropolitana di Roma Capitale Geoportale cartografico / SIT",
+      "attribution": "Città metropolitana di Roma Capitale · Geoportale cartografico / SIT · Catasto Totale",
+      "catalogueUrl": "https://geoportale.cittametropolitanaroma.it/catalogo-cartografico?page=3",
+      "licenceNote": "Public anonymous WMS. An explicit reuse licence is not stated in the inspected layer metadata. Data vintage and legal/survey accuracy are unverified.",
+      "scope": "Roma H501 cadastral land records (tipo T), bounded WMS area and native-gid reads. Observations at the queue point, EUR and Prati do not establish citywide completeness.",
+      "discovery": {
+        "jurisdiction": {
+          "countryCode": "IT",
+          "basis": "Official metropolitan catalogue describes systematic cadastral vectors. Project 224 Catasto Totale Polygon layer carries cadastral sheet/parcel/type and native gid fields.",
+          "evidence": [
+            "https://geoportale.cittametropolitanaroma.it/catalogo-cartografico?page=3",
+            "https://g3w-suite.cittametropolitanaroma.it/api/config/19/qdjango/224"
+          ]
+        }
+      }
+    },
+    {
+      "id": "ar-posadas-ide-mae-29-publico-wfs",
+      "name": "IDE Posadas — Maestro 29 Publico cadastral parcels",
+      "operator": "Municipalidad de Posadas / IDE Posadas",
+      "cadastralCustodianContext": "Dirección General de Catastro de la Provincia de Misiones",
+      "adapter": "wfs",
+      "endpoint": "https://www.ide.posadas.gob.ar/geoserver/ows",
+      "version": "1.0.0",
+      "featureType": "geonode:mae_29_publico",
+      "geometryField": "geometry",
+      "idField": "IDGIS",
+      "idType": "string",
+      "idPattern": "^[0-9A-Za-z]+$",
+      "idPrefix": "AR-POSADAS-IDGIS-",
+      "outFields": [
+        "IDGIS"
+      ],
+      "requestProperties": true,
+      "pageSize": 100,
+      "idBatchSize": 40,
+      "maxFeatures": 5000,
+      "maxBboxKm2": 1,
+      "maxResponseBytes": 1048576,
+      "timeoutMs": 45000,
+      "maxConcurrentQueries": 2,
+      "countryCode": "AR",
+      "countryName": "Argentina",
+      "cityIds": [
+        "posadas"
+      ],
+      "defaultForCity": true,
+      "metricSrid": 32721,
+      "nativeCrs": "EPSG:5348",
+      "responseCrs": "EPSG:4326",
+      "returnsWGS84": true,
+      "capabilities": {
+        "areaEnumeration": true,
+        "exactIds": true
+      },
+      "attribution": "Municipalidad de Posadas / IDE Posadas · Maestro 29 Publico",
+      "catalogueUrl": "https://www.ide.posadas.gob.ar/layers/geonode%3Amae_29_publico/metadata_detail",
+      "homepage": "https://www.ide.posadas.gob.ar/",
+      "licenceNote": "Metadata: License Not Specified; Restrictions: formal permission to do something. Public anonymous access is not a reuse licence. Permission and redistribution terms remain unresolved second-pass follow-ups.",
+      "scope": "Municipal cadastral parcel layer with bounded Posadas availability; no citywide completeness or municipal boundary alignment claim. Preserve full source geometry and native IDGIS including leading zeroes. IDGIS is not globally unique: distinguish each unchanged polygon by the deterministic IDGIS plus geometry SHA-256 reference, retaining native IDGIS separately.",
+      "limitations": [
+        "Independent native CRS datum/operation/grid and wire-axis proof remains unverified.",
+        "Current/historic semantics, long-term reference continuity and currentness remain unverified.",
+        "Municipal-boundary alignment, broader coverage, provider transfer limits and paging require second-pass review.",
+        "Explicit reuse permission remains unresolved; retain municipal attribution."
+      ],
+      "browserTransport": "relay",
+      "identityKind": "attribute-geometry-sha256-v1",
+      "sortField": "fid"
+    },
+    {
+      "id": "br-goiania-siggo-feature-base-divisas-lote",
+      "name": "Goiânia SIGGO Divisas de Lote",
+      "adapter": "arcgis",
+      "endpoint": "https://portalmapa.goiania.go.gov.br/servicogyn/rest/services/MapaServer/Feature_Base/MapServer/0",
+      "idField": "OBJECTID",
+      "idType": "integer",
+      "objectIdField": "OBJECTID",
+      "idPrefix": "BR-GOIANIA-SIGGO-OBJECTID-",
+      "outFields": [
+        "OBJECTID"
+      ],
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "queryFormat": "geojson",
+      "boundsSrid": 31982,
+      "boundsProjection": "+proj=utm +zone=22 +south +ellps=GRS80 +units=m +no_defs",
+      "sourceCrs": "EPSG:31982",
+      "countryCode": "BR",
+      "stateCode": "GO",
+      "metricSrid": 32722,
+      "cityIds": [
+        "goiania"
+      ],
+      "defaultForCity": true,
+      "pageSize": 500,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "timeoutMs": 45000,
+      "maxConcurrentQueries": 2,
+      "browserTransport": "relay",
+      "capabilities": {
+        "bbox": true,
+        "exactId": true,
+        "areaEnumeration": true,
+        "geometry": "full-wgs84"
+      },
+      "operator": "Prefeitura Municipal de Goiânia / SIGGO",
+      "attribution": "Prefeitura Municipal de Goiânia / SIGGO · Divisas de Lote. Municipal cadastral lot boundaries.",
+      "scope": "Municipal cadastral-lot layer; bounded exact-ID polygons checked for Goiânia. Municipal-boundary completeness, currency and legal title are unverified.",
+      "licenceNote": "Official Lotes catalog displays Creative Commons Atribuição in retained public page evidence; current direct dataset page returned HTTP 500. Live ArcGIS metadata has no explicit licence. Attribution retained; service reuse terms require second-pass review.",
+      "limitations": [
+        "OBJECTID is unique in the current published layer; continuity across service republication is unverified. Secondary municipal id is nonunique and is not the canonical identity.",
+        "EPSG:31982 metadata is published; provider outSR=4326 output is retained without geometry editing. Datum operation and independent CRS accuracy remain second-pass follow-ups.",
+        "No citywide completeness, currentness, legal-title or survey-accuracy claim.",
+        "Public service does not return CORS headers; browsers use the existing anonymous provider relay."
+      ]
+    },
+    {
+      "id": "mx-puebla-aguapuebla-predios",
+      "adapter": "arcgis",
+      "endpoint": "https://arcgisouc.aguapuebla.mx/arcgis/rest/services/Produccion/General/FeatureServer/4",
+      "idPrefix": "MX-PUE-PREDIO-",
+      "idField": "OBJECTID",
+      "objectIdField": "OBJECTID",
+      "idType": "integer",
+      "outFields": [
+        "OBJECTID"
+      ],
+      "queryFormat": "geojson",
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "pageSize": 1000,
+      "idBatchSize": 80,
+      "maxFeatures": 5000,
+      "maxBboxKm2": 1,
+      "timeoutMs": 30000,
+      "maxConcurrentQueries": 2,
+      "name": "Agua de Puebla PREDIOS",
+      "operator": "Agua de Puebla",
+      "catalogueUrl": "https://arcgisouc.aguapuebla.mx/arcgis/rest/services/Produccion/General/FeatureServer/4",
+      "attribution": "Agua de Puebla · Produccion/General PREDIOS",
+      "countryCode": "MX",
+      "metricSrid": 32614,
+      "cityIds": [
+        "puebla"
+      ],
+      "scope": "Utility-published cadastral parcel reference polygons. Positive source observations at the immutable Puebla locator and bounded central/east/west windows; municipality-wide completeness and legal registry custody unverified. Full source polygon coordinates retained; only native OBJECTID is requested.",
+      "licenceNote": "Public anonymous REST service; service copyright Agua de puebla. No explicit open-data licence or application-scale reuse grant found in service/layer metadata; reuse authorization, legal-title semantics and survey accuracy remain unverified.",
+      "defaultForCity": true
+    },
+    {
+      "id": "tr-sehitkamil-keos-imar-parcels",
+      "name": "Gaziantep Şehitkamil municipal e-İmar cadastral parcels",
+      "adapter": "mersin-eimar",
+      "endpoint": "https://keos.sehitkamil.bel.tr/imardurumu/service/imarsvc.aspx",
+      "viewerEndpoint": "https://keos.sehitkamil.bel.tr/imardurumu/index.aspx",
+      "layer": "parsel",
+      "idPrefix": "tr-sehitkamil-keos-imar-parcels:OBJECTID=",
+      "idField": "OBJECTID",
+      "objectIdField": "OBJECTID",
+      "parcelNumberField": "OBJECTID",
+      "outFields": [
+        "OBJECTID"
+      ],
+      "geometryField": "POLY",
+      "countryCode": "TR",
+      "cityIds": [
+        "gaziantep"
+      ],
+      "metricSrid": 32637,
+      "returnsWGS84": true,
+      "browserTransport": "relay",
+      "queryMode": "configured-cadastral-block-search",
+      "capabilities": {
+        "point": false,
+        "exactId": true,
+        "bbox": true,
+        "areaEnumeration": true,
+        "geometry": "full-wgs84"
+      },
+      "maxResponseBytes": 1048576,
+      "maxFeatures": 999,
+      "maxBboxKm2": 25,
+      "maxConcurrentQueries": 1,
+      "operator": "Şehitkamil Belediyesi, Plan ve Proje Müdürlüğü",
+      "attribution": "Şehitkamil Belediyesi / Plan ve Proje Müdürlüğü · Netcad e-İmar",
+      "scope": "Bounded municipal informational cadastral parcel copy in Şehitkamil, Gaziantep. Live viewport enumeration is limited to verified cadastral block 4707 near 29 Ekim. Exact OBJECTID lookups also observed in Beyreli. No coverage at the immutable city locator, Şahinbey, other blocks, or citywide completeness is claimed.",
+      "licenceNote": "Public anonymous viewer access; no explicit open-data, automated reuse or redistribution permission established. Statutory cadastral lineage, currentness and reuse terms remain second-pass follow-ups.",
+      "catalogueUrl": "https://keos.sehitkamil.bel.tr/imardurumu/index.aspx",
+      "nativeCrsNote": "POLY is returned as geographic GeoJSON-like longitude,latitude near Gaziantep. Coordinates pass through unchanged. Native datum, epoch, formal CRS, wire-axis declaration, operation and grid accuracy are unverified second-pass follow-ups; no fitted offset.",
+      "spatialScopes": [
+        {
+          "block": "4707",
+          "bbox": [
+            37.420953,
+            37.056678,
+            37.422922,
+            37.058448
+          ]
+        }
+      ],
+      "extent": [
+        37.420953,
+        37.056678,
+        37.422922,
+        37.058448
+      ],
+      "defaultForCity": true
+    },
+    {
+      "id": "bd-minland-smart-bhumi-naksha-brahmanbaria-plot-geometry",
+      "name": "Ministry of Land Smart Bhumi Naksha — Brahmanbaria mouza survey plots",
+      "adapter": "bd-bhumi-naksha",
+      "endpoint": "https://map.land.gov.bd/getGeomByCode",
+      "catalogueUrl": "https://map.land.gov.bd/",
+      "countryCode": "BD",
+      "cityName": "Brahmanbaria",
+      "cityIds": [
+        "brahmanbaria"
+      ],
+      "idPrefix": "bd-map-land:",
+      "idFields": [
+        "m_code",
+        "plot_no_en"
+      ],
+      "outFields": [
+        "m_code",
+        "plot_no_en"
+      ],
+      "parcelNumberField": "plot_no_en",
+      "mouzaForm": {
+        "level": "forMauza",
+        "tableName": "cha_bra",
+        "mauzaVal": "201213091071",
+        "plotOrLanduse": "plot"
+      },
+      "sheetNamespaces": [
+        "cha_bra_bra_071_001_bs",
+        "cha_bra_bra_071_002_bs",
+        "cha_bra_bra_071_003_bs",
+        "cha_bra_bra_071_004_bs",
+        "cha_bra_bra_071_005_bs",
+        "cha_bra_bra_071_006_bs",
+        "cha_bra_bra_071_007_bs",
+        "cha_bra_bra_071_008_bs",
+        "cha_bra_bra_071_009_bs",
+        "cha_bra_bra_071_010_bs",
+        "cha_bra_bra_071_011_bs"
+      ],
+      "sourceCrs": "EPSG:4326",
+      "responseSrid": 4326,
+      "metricSrid": 32646,
+      "returnsWGS84": true,
+      "maxBboxKm2": 25,
+      "maxFeatures": 10000,
+      "maxSnapshotFeatures": 6000,
+      "expectedSnapshotFeatures": 4938,
+      "maxSnapshotBytes": 8388608,
+      "maxConcurrentQueries": 2,
+      "browserTransport": "relay",
+      "capabilities": {
+        "areaEnumeration": true,
+        "exactIds": true
+      },
+      "operator": "Ministry of Land, Government of Bangladesh",
+      "attribution": "<a href=\"https://map.land.gov.bd/\">Ministry of Land, Bangladesh · Smart Bhumi Naksha</a> · 071-Brahmanbaria mouza survey plots only; citywide coverage unverified",
+      "license": "No explicit open-data licence established; project copyright/all rights reserved. Reuse permission remains a follow-up.",
+      "coverage": {
+        "scope": "bounded-mouza",
+        "mouzaCode": "201213091071",
+        "name": "071-Brahmanbaria",
+        "bbox": [
+          91.0970559378946,
+          23.967042642778907,
+          91.11630023336744,
+          23.979576421006787
+        ],
+        "citywideVerified": false,
+        "immutableCityPointCovered": false
+      },
+      "discovery": {
+        "jurisdiction": {
+          "basis": "First-party named Brahmanbaria Sadar mouza 071; not whole municipality or WUP extent."
+        },
+        "evidenceUrls": [
+          "https://map.land.gov.bd/",
+          "https://map.land.gov.bd/assets/js/main.js",
+          "https://map.land.gov.bd/land-zoning/privacy-policy"
+        ]
+      },
+      "snapshotTimeoutMs": 45000,
+      "defaultForCity": true
+    },
+    {
+      "id": "us-mo-kcmo-socrata-parcels-6g4y-sh3m",
+      "name": "Kansas City, Missouri ordinary cadastral parcels (Open Data KC)",
+      "adapter": "socrata",
+      "endpoint": "https://data.kcmo.org/resource/6g4y-sh3m.geojson",
+      "idField": "kivapin",
+      "idType": "string",
+      "idPattern": "^[0-9]{1,10}$",
+      "idPrefix": "KCMO-KIVAPIN-",
+      "objectIdField": ":id",
+      "geometryField": "the_geom",
+      "versionField": ":updated_at",
+      "outFields": [
+        "kivapin",
+        "parceltype",
+        ":id",
+        ":updated_at"
+      ],
+      "attributeFilters": {
+        "parceltype": "1"
+      },
+      "pageSize": 200,
+      "maxFeatures": 3000,
+      "maxBboxKm2": 1,
+      "maxConcurrentQueries": 2,
+      "countryCode": "US",
+      "stateCode": "MO",
+      "metricSrid": 32615,
+      "cityIds": [
+        "kansas_city"
+      ],
+      "operator": "City of Kansas City, Missouri — Open Data KC / GIS Office",
+      "catalogueUrl": "https://data.kcmo.org/d/6g4y-sh3m",
+      "attribution": "City of Kansas City, Missouri / Open Data KC / GIS Office; CRS84 parcel geometry.",
+      "scope": "Missouri-side municipal parcels only. Immutable WUP locator is west of State Line Road on the Kansas/Wyandotte side. No parcel coverage at the locator, Kansas-side coverage or citywide completeness is established. Ordinary parceltype 1 records only. Initial proof uses three nearby native KIVAPIN parcels with unchanged provider geometry. Counted ordered reads verify publication revision before and after paging; no owner, address, APN, tax/account or valuation attributes are requested.",
+      "licenceNote": "Anonymous public Open Data KC access. No machine-readable reuse licence confirmed. Metadata rowsUpdatedAt is 2023-12-30; current legal/survey accuracy and update cadence remain unverified.",
+      "capabilities": {
+        "areaEnumeration": true,
+        "exactIds": true
+      },
+      "defaultForCity": true
+    },
+    {
+      "id": "id-jogjaprov-dispertaru-tanah-desa-diy",
+      "name": "DISPERTARU DIY Tanah Desa — village-land parcels",
+      "adapter": "arcgis",
+      "endpoint": "https://geoportal.jogjaprov.go.id/server/rest/services/DISPERTARU/Tanah_Desa_DIY/FeatureServer/0",
+      "countryCode": "ID",
+      "cityIds": [
+        "yogyakarta"
+      ],
+      "idField": "objectid",
+      "objectIdField": "objectid",
+      "idType": "integer",
+      "idPrefix": "ID-JOGJAPROV-TANAH-DESA-DIY-",
+      "outFields": [
+        "objectid"
+      ],
+      "queryFormat": "geojson",
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "pageSize": 2000,
+      "idBatchSize": 80,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "timeoutMs": 45000,
+      "sourceCrs": "EPSG:9489",
+      "outputCrs": "EPSG:4326",
+      "metricSrid": 32749,
+      "operator": "Dinas Pertanahan dan Tata Ruang Daerah Istimewa Yogyakarta (DISPERTARU DIY)",
+      "attribution": "DISPERTARU DIY / Geoportal Jogjaprov — Tanah Desa/Kalurahan village-land parcel inventory; partial coverage.",
+      "license": "Not stated in public metadata; reuse confirmation is a second-pass follow-up.",
+      "scope": "Class-limited village-land inventory; bounded Maguwoharjo/Depok/Sleman sample near immutable Yogyakarta urban-agglomeration point. No complete private-title or Kota-wide coverage claim.",
+      "catalogueUrl": "https://geoportal.jogjaprov.go.id/portal/sharing/rest/content/items/2639d45c3af241579161fae5e879146d",
+      "capabilities": {
+        "areaEnumeration": true,
+        "exactId": true,
+        "geometry": "full-wgs84"
+      },
+      "defaultForCity": true
+    },
+    {
+      "id": "ru-kemerovo-reestr54-cadastral",
+      "name": "Kemerovo public cadastral viewer — three observed land parcels",
+      "operator": "Кадастровые инженеры Новосибирска (independent public-map operator)",
+      "adapter": "reestr54-bounded",
+      "endpoint": "https://kk.reestr54.ru/kemerovo/",
+      "countryCode": "RU",
+      "cityIds": [
+        "kemerovo"
+      ],
+      "defaultForCity": true,
+      "idPrefix": "RU-REESTR54-KEMEROVO-",
+      "idField": "cad_num",
+      "parcelNumberField": "cad_num",
+      "outFields": [
+        "cad_num"
+      ],
+      "nativeCrs": "EPSG:3857",
+      "srsName": "EPSG:4326",
+      "metricSrid": 32645,
+      "maxResponseBytes": 2097152,
+      "maxConcurrentQueries": 1,
+      "browserTransport": "relay",
+      "capabilities": {
+        "areaEnumeration": false,
+        "exactIds": true,
+        "queryBounds": true,
+        "queryPoint": true,
+        "point": true,
+        "exactId": true,
+        "geometry": "full-wgs84"
+      },
+      "coverage": {
+        "scope": "explicit-native-id-subset",
+        "citywide": false,
+        "nativeIds": [
+          "42:24:0401004:2309",
+          "42:24:0101060:4702",
+          "42:24:0000000:2749"
+        ],
+        "basis": "Three discovery-observed native cadastral IDs, checked live by repeatable exact reads. Runtime bounds and point queries filter this finite subset; no systematic area enumeration or authoritative absence is claimed."
+      },
+      "scope": "Three explicitly configured native cadastral numbers only; wider Kemerovo parcel fabric and citywide completeness unverified.",
+      "licence": "Unresolved; anonymous access is not an open-data or redistribution licence.",
+      "licenceNote": "Reuse permission, legal custody and upstream Rosreestr/NSPD lineage remain unverified.",
+      "attribution": "Кадастровые инженеры Новосибирска / reestr54.ru; independent cadastral viewer; three observed Kemerovo land parcels only; wider coverage unverified.",
+      "discovery": {
+        "purpose": "cadastral-parcels",
+        "evidenceUrls": [
+          "https://kk.reestr54.ru/kemerovo/",
+          "https://kk.reestr54.ru/static/pkk/js/mapinit16102025.js",
+          "https://kk.reestr54.ru/static/pkk/js/pkk04112025.js?v=20251210_5"
+        ],
+        "jurisdiction": {
+          "basis": "Kemerovo-specific public cadastral page; accepted northern, southern and eastern samples in district 42:24. The unchanged queue point has no positive observation; no citywide extent or municipal boundary membership inferred."
+        }
+      },
+      "adapterModule": "reestr54-source.js"
+    },
+    {
+      "id": "br-salvador-geosalvador-sefaz-parcelamentos-lotes",
+      "name": "GeoSalvador SEFAZ Parcelamentos (Acervo SEFAZ) — Lotes",
+      "operator": "Prefeitura Municipal de Salvador / Secretaria Municipal da Fazenda (SEFAZ)",
+      "adapter": "arcgis",
+      "endpoint": "https://geo.salvador.ba.gov.br/arcgis/rest/services/SEFAZ/Parcelamentos__Acervo_SEFAZ/MapServer/18",
+      "countryCode": "BR",
+      "cityIds": [
+        "salvador"
+      ],
+      "idPrefix": "BR-SALVADOR-SEFAZ-",
+      "idFields": [
+        "IDLOTEAMEN",
+        "CDQUADRA",
+        "NOLOTE"
+      ],
+      "idFieldTypes": {
+        "IDLOTEAMEN": "integer",
+        "CDQUADRA": "string",
+        "NOLOTE": "string"
+      },
+      "objectIdField": "OBJECTID_1",
+      "outFields": [
+        "OBJECTID_1",
+        "IDLOTEAMEN",
+        "CDQUADRA",
+        "NOLOTE"
+      ],
+      "attributeNotNull": [
+        "IDLOTEAMEN",
+        "CDQUADRA",
+        "NOLOTE"
+      ],
+      "queryFormat": "geojson",
+      "pageSize": 2000,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "timeoutMs": 45000,
+      "maxConcurrentQueries": 2,
+      "metricSrid": 32724,
+      "sourceCrs": "EPSG:31984",
+      "catalogueUrl": "https://geo.salvador.ba.gov.br/arcgis/rest/services/SEFAZ/Parcelamentos__Acervo_SEFAZ/MapServer/18",
+      "attribution": "Prefeitura Municipal de Salvador / SEFAZ / GeoSalvador — Parcelamentos (Acervo SEFAZ), Lotes.",
+      "scope": "Municipal subdivision/lot cadastral-reference archive, layer 18 only. Positive evidence near -38.389,-12.943; geographic distribution and citywide completeness are unverified. This is not verified as an active legal cadastral fabric.",
+      "coverageNote": "Bounded parcel availability; the unchanged WUP point and prior north/west windows returned no lots. Layer extent and qualification cells do not establish citywide completeness. Layers 19 and 53 are not included.",
+      "licenceNote": "Public anonymous queries work. Inspected layer and service metadata state no explicit reuse licence; redistribution terms remain unverified.",
+      "capabilities": {
+        "areaEnumeration": true
+      },
+      "defaultForCity": true
+    },
+    {
+      "id": "in-nrsc-bhuvan-telangana-tg-cad-gfi",
+      "name": "Bhuvan Telangana Cadastral Boundary TG_Cad",
+      "operator": "ISRO / National Remote Sensing Centre (NRSC)",
+      "countryCode": "IN",
+      "stateCode": "TG",
+      "adapter": "bhuvan-tg-cad",
+      "endpoint": "https://bhuvan-vec1.nrsc.gov.in/bhuvan/ows",
+      "layer": "cadastral:TG_Cad",
+      "style": "cad_2d_new",
+      "idPrefix": "IN-NRSC-TG-",
+      "idField": "fid",
+      "idFields": [
+        "fid"
+      ],
+      "outFields": [
+        "fid"
+      ],
+      "nativeCrs": "EPSG:4326",
+      "srsName": "EPSG:4326",
+      "responseCrs": "EPSG:4326",
+      "returnsWGS84": true,
+      "metricSrid": 32644,
+      "cityIds": [
+        "khammam"
+      ],
+      "defaultForCity": true,
+      "scope": "Telangana cadastral layer; Khammam bounded samples only; citywide completeness and currentness unverified. Native-fid lookup is limited to the configured Khammam routing window, not a municipal boundary; unlocated IDs are unresolved, never cached as absent.",
+      "attribution": "ISRO/NRSC Bhuvan · Telangana cadastral boundaries TG_Cad · planning/development use",
+      "catalogueUrl": "https://bhuvan-app1.nrsc.gov.in/state/TG",
+      "licenceNote": "No explicit reuse licence established. Publisher describes planning/development use; not measurements or regulatory applications.",
+      "browserTransport": "relay",
+      "maxConcurrentQueries": 1,
+      "maxFeatures": 500,
+      "maxResponseBytes": 2097152,
+      "capabilities": {
+        "areaEnumeration": true,
+        "exactId": true,
+        "point": true,
+        "geometry": "full-wgs84"
+      },
+      "discovery": {
+        "status": "candidate",
+        "purpose": "cadastral-parcels",
+        "sourceId": "in-nrsc-bhuvan-telangana-tg-cad-gfi",
+        "evidence": [
+          "https://bhuvan-app1.nrsc.gov.in/state/get/layers.php?q=TS",
+          "https://bhuvan-app1.nrsc.gov.in/state/TG"
+        ]
+      },
+      "coverage": {
+        "citywide": false,
+        "basis": "Bounded live checks, not municipal boundary or complete city coverage."
+      },
+      "lookupBounds": [
+        80.05,
+        17.12,
+        80.29,
+        17.38
+      ]
+    },
+    {
+      "id": "in-jharkhand-gail-bapl-ranchi-cadastral-mapserver-25",
+      "adapter": "arcgis",
+      "endpoint": "https://pitarcgis.pipetrakit.com/arcgis/rest/services/GAIL/BAPL/MapServer/25/query",
+      "idPrefix": "IN-JH-RANCHI-GAIL-BAPL-",
+      "idField": "OBJECTID",
+      "objectIdField": "OBJECTID",
+      "idType": "integer",
+      "outFields": [
+        "OBJECTID"
+      ],
+      "queryFormat": "esri-json",
+      "boundsQueryMode": "offset",
+      "idsQueryMode": "offset",
+      "pageSize": 500,
+      "idBatchSize": 80,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "timeoutMs": 30000,
+      "name": "Ranchi cadastral map — GAIL/BAPL hosted layer",
+      "operator": "Pipetrak IT ArcGIS service publisher; state registry custodianship unverified",
+      "catalogueUrl": "https://pitarcgis.pipetrakit.com/arcgis/rest/services/GAIL/BAPL/MapServer/25",
+      "attribution": "Jharkhand cadastral map / RANCHI layer · GAIL/BAPL service at pitarcgis.pipetrakit.com",
+      "countryCode": "IN",
+      "metricSrid": 32645,
+      "cityIds": [
+        "ranchi"
+      ],
+      "defaultForCity": true,
+      "capabilities": {
+        "areaEnumeration": true
+      },
+      "scope": "Bounded cadastral reference coverage observed in southeast Ranchi (Samlong/Lovadih). Central locator window is empty. Pipeline-project hosting may indicate a corridor subset; citywide and districtwide completeness are unverified.",
+      "licenceNote": "Anonymous public query access observed. No explicit reuse licence or state custodian authentication is published in the service metadata. Redistribution permission, currentness, legal title and survey accuracy remain unverified.",
+      "browserTransport": "relay",
+      "maxConcurrentQueries": 2
+    },
+    {
+      "id": "cn-wuxi-djt-wxbdc-djsj",
+      "name": "Wuxi issued-certificate cadastral parcels (已发证宗地)",
+      "adapter": "arcgis",
+      "endpoint": "https://djt.wxbdc.net/bdcserver_arcgis/services/budongchanzhongxin/DJSJ/MapServer/3",
+      "countryCode": "CN",
+      "cityIds": [
+        "wuxi"
+      ],
+      "defaultForCity": true,
+      "idField": "ZDDM",
+      "objectIdField": "FID",
+      "idType": "string",
+      "idPattern": "^[0-9]{12}[A-Z]{2}[0-9]{5}$",
+      "idPrefix": "CN-WUXI-DJSJ-",
+      "parcelNumberField": "ZDDM",
+      "outFields": [
+        "ZDDM",
+        "FID"
+      ],
+      "identityKind": "native-key-geometry-sha256-v1",
+      "queryFormat": "geojson",
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "pageSize": 200,
+      "idBatchSize": 20,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 2,
+      "timeoutMs": 45000,
+      "maxConcurrentQueries": 2,
+      "browserTransport": "relay",
+      "metricSrid": 32651,
+      "nativeCrs": "EPSG:4490",
+      "responseCrs": "EPSG:4326",
+      "coordinateOrder": "longitude,latitude",
+      "capabilities": {
+        "areaEnumeration": true,
+        "exactIds": true
+      },
+      "operator": "Wuxi Municipal Natural Resources and Planning Bureau / Wuxi Real Estate Registration Center",
+      "catalogueUrl": "https://djt.wxbdc.net/map/index.html",
+      "licenceUrl": "https://zrzy.wuxi.gov.cn/doc/2021/09/16/3459882.shtml",
+      "attribution": "Wuxi Municipal Natural Resources and Planning Bureau / Wuxi cadastral-map public viewer",
+      "licenceNote": "Official procedure provides free public query/download. Explicit programmatic redistribution licence remains unverified; source conditions are informational.",
+      "scope": "Issued-certificate cadastral parcel outlines in bounded Wuxi windows including the unchanged WUP locator. Service extent and thirteen local cells do not prove citywide completeness, municipal boundary coverage, survey accuracy, legal title or current-ground status.",
+      "identityPolicy": "Native ZDDM plus SHA-256 of full unchanged GeoJSON geometry (sorted object keys, ECMAScript JSON numbers). Retains distinct outlines sharing a native code without merging versions. FID is used only as an ephemeral query transport token; no status filter is inferred."
+    },
+    {
+      "id": "TW-KAOHSIUNG-QIJIN-ARC-SAMPLE",
+      "adapter": "arcgis",
+      "name": "Kaohsiung Qijin cadastral-map example",
+      "countryCode": "TW",
+      "cityIds": [
+        "kaohsiung"
+      ],
+      "endpoint": "https://services7.arcgis.com/tVmMUEViFfyHBZvj/ArcGIS/rest/services/%E9%AB%98%E9%9B%84%E6%97%97%E6%B4%A5_%E5%9C%B0%E7%B1%8D%E5%9C%96%E7%AF%84%E4%BE%8B/FeatureServer/0",
+      "objectIdField": "FID",
+      "idPrefix": "TW-KAOHSIUNG-QIJIN-ARC-SAMPLE/",
+      "idFields": [
+        "sec_id",
+        "p_num_pa"
+      ],
+      "idFieldTypes": {
+        "sec_id": "string",
+        "p_num_pa": "string"
+      },
+      "compositeIdSeparator": "/",
+      "parcelNumberField": "p_num_pa",
+      "outFields": [
+        "FID",
+        "sec_id",
+        "p_num_pa"
+      ],
+      "metricSrid": 32651,
+      "sourceCrs": "EPSG:3857 (provider wkid 102100/latestWkid 3857); GeoJSON requested as EPSG:4326; original cadastral datum lineage unverified.",
+      "queryFormat": "geojson",
+      "boundsQueryMode": "offset",
+      "idsQueryMode": "offset",
+      "pageSize": 100,
+      "idBatchSize": 80,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "timeoutMs": 15000,
+      "maxConcurrentQueries": 2,
+      "operator": "Public ArcGIS dataset publisher; municipal custodianship unverified",
+      "catalogueUrl": "https://www.arcgis.com/home/item.html?id=b47bd4cd146e46e38407c207c0cde370&sublayer=0",
+      "scope": "Bounded Qijin District section EA1115 example within Kaohsiung; citywide coverage is unobserved.",
+      "coverageNote": "34 polygons observed in bbox [120.2976,22.5745,120.3004,22.5762]. Kaohsiung queue locator lies outside this footprint.",
+      "attribution": "高雄旗津_地籍圖範例, public ArcGIS item b47bd4cd146e46e38407c207c0cde370. Kaohsiung City Land Bureau provides section context only.",
+      "licenceNote": "No explicit licence or official municipal lineage supplied by the publisher. Reuse terms and cadastral currentness remain unverified.",
+      "capabilities": {
+        "areaEnumeration": true
+      },
+      "currentness": "Hosted layer dataLastEditDate 1578457200640 (2020-01-08); current cadastral validity is unverified.",
+      "coverageBbox": [
+        120.29761162133079,
+        22.574589768337713,
+        120.30028042568125,
+        22.576140764053594
+      ],
       "defaultForCity": true
     }
   ],

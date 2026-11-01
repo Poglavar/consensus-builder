@@ -1,0 +1,244 @@
+{
+  "descriptor": {
+    "id": "in-jharkhand-gail-bapl-ranchi-cadastral-mapserver-25",
+    "adapter": "arcgis",
+    "endpoint": "https://pitarcgis.pipetrakit.com/arcgis/rest/services/GAIL/BAPL/MapServer/25/query",
+    "idPrefix": "IN-JH-RANCHI-GAIL-BAPL-",
+    "idField": "OBJECTID",
+    "objectIdField": "OBJECTID",
+    "idType": "integer",
+    "outFields": [
+      "OBJECTID"
+    ],
+    "queryFormat": "esri-json",
+    "boundsQueryMode": "offset",
+    "idsQueryMode": "offset",
+    "pageSize": 500,
+    "idBatchSize": 80,
+    "maxFeatures": 10000,
+    "maxBboxKm2": 25,
+    "timeoutMs": 30000,
+    "name": "Ranchi cadastral map — GAIL/BAPL hosted layer",
+    "operator": "Pipetrak IT ArcGIS service publisher; state registry custodianship unverified",
+    "catalogueUrl": "https://pitarcgis.pipetrakit.com/arcgis/rest/services/GAIL/BAPL/MapServer/25",
+    "attribution": "Jharkhand cadastral map / RANCHI layer · GAIL/BAPL service at pitarcgis.pipetrakit.com",
+    "countryCode": "IN",
+    "metricSrid": 32645,
+    "cityIds": [
+      "ranchi"
+    ],
+    "defaultForCity": true,
+    "capabilities": {
+      "areaEnumeration": true
+    },
+    "scope": "Bounded cadastral reference coverage observed in southeast Ranchi (Samlong/Lovadih). Central locator window is empty. Pipeline-project hosting may indicate a corridor subset; citywide and districtwide completeness are unverified.",
+    "licenceNote": "Anonymous public query access observed. No explicit reuse licence or state custodian authentication is published in the service metadata. Redistribution permission, currentness, legal title and survey accuracy remain unverified.",
+    "browserTransport": "relay",
+    "maxConcurrentQueries": 2
+  },
+  "response": {
+    "displayFieldName": "DESCRIPTION",
+    "fieldAliases": {
+      "OBJECTID": "OBJECTID"
+    },
+    "geometryType": "esriGeometryPolygon",
+    "spatialReference": {
+      "wkid": 4326,
+      "latestWkid": 4326
+    },
+    "fields": [
+      {
+        "name": "OBJECTID",
+        "type": "esriFieldTypeOID",
+        "alias": "OBJECTID"
+      }
+    ],
+    "features": [
+      {
+        "attributes": {
+          "OBJECTID": 220266
+        },
+        "geometry": {
+          "rings": [
+            [
+              [
+                85.36880208847388,
+                23.35657907905301
+              ],
+              [
+                85.36879610815213,
+                23.356534144105737
+              ],
+              [
+                85.36869987143383,
+                23.35653314092931
+              ],
+              [
+                85.3686451268759,
+                23.35651228952187
+              ],
+              [
+                85.36862399824788,
+                23.35644108493137
+              ],
+              [
+                85.36859819901653,
+                23.356434038578836
+              ],
+              [
+                85.36856400636971,
+                23.356424701274893
+              ],
+              [
+                85.36850535355752,
+                23.35642726853686
+              ],
+              [
+                85.36860277704857,
+                23.35663809727837
+              ],
+              [
+                85.3684955023175,
+                23.356668769005736
+              ],
+              [
+                85.36851810818224,
+                23.35677969164888
+              ],
+              [
+                85.36863096657935,
+                23.356770726961987
+              ],
+              [
+                85.36868630020892,
+                23.356743417581896
+              ],
+              [
+                85.3688238123056,
+                23.356742316154186
+              ],
+              [
+                85.36880208847388,
+                23.35657907905301
+              ]
+            ]
+          ]
+        }
+      },
+      {
+        "attributes": {
+          "OBJECTID": 220295
+        },
+        "geometry": {
+          "rings": [
+            [
+              [
+                85.37165373449437,
+                23.35891291829713
+              ],
+              [
+                85.37172225940532,
+                23.358894501123054
+              ],
+              [
+                85.37183093174723,
+                23.358858649231525
+              ],
+              [
+                85.37191925924684,
+                23.35882279147973
+              ],
+              [
+                85.37203672358031,
+                23.358787116706083
+              ],
+              [
+                85.37219949447346,
+                23.358753268640978
+              ],
+              [
+                85.37233897812783,
+                23.358728810126614
+              ],
+              [
+                85.37237454643747,
+                23.358723035732652
+              ],
+              [
+                85.37234406492085,
+                23.358501684957137
+              ],
+              [
+                85.37216085958954,
+                23.358514051933636
+              ],
+              [
+                85.37207535879581,
+                23.35853142306654
+              ],
+              [
+                85.37192551066968,
+                23.358566983100324
+              ],
+              [
+                85.37166554966807,
+                23.35863269785751
+              ],
+              [
+                85.37149988613436,
+                23.358674268865506
+              ],
+              [
+                85.37140638090274,
+                23.358701280380274
+              ],
+              [
+                85.37115345801278,
+                23.358783730620623
+              ],
+              [
+                85.37165373449437,
+                23.35891291829713
+              ]
+            ]
+          ]
+        }
+      },
+      {
+        "attributes": {
+          "OBJECTID": 220296
+        },
+        "geometry": {
+          "rings": [
+            [
+              [
+                85.37182978372832,
+                23.357425008099835
+              ],
+              [
+                85.371855565886,
+                23.3574206635626
+              ],
+              [
+                85.3720518786676,
+                23.357397127926923
+              ],
+              [
+                85.37204428163801,
+                23.357339830613167
+              ],
+              [
+                85.37182202008461,
+                23.357376240178105
+              ],
+              [
+                85.37182978372832,
+                23.357425008099835
+              ]
+            ]
+          ]
+        }
+      }
+    ]
+  }
+}

@@ -1,0 +1,128 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "772",
+  "name": "Guayaquil, Ecuador",
+  "point": [
+    -2.15752353268075,
+    -79.9155807838126
+  ],
+  "bindings": [
+    {
+      "appCityId": "guayaquil",
+      "runtimeConfig": {
+        "id": "guayaquil",
+        "wupCityCode": "772",
+        "label": "Guayaquil, Ecuador",
+        "currency": {
+          "locale": "es-EC",
+          "code": "USD"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            -2.15752353268075,
+            -79.9155807838126
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            -2.15752353268075,
+            -79.9155807838126
+          ],
+          "fallbackDataset": [
+            -79.9155807838126,
+            -2.15752353268075
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "ec-guayaquil-urban-predios-official",
+          "idPrefix": "EC-GYE-URBAN-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "M.I. Municipalidad de Guayaquil / Geoportal Catastro"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "ec-guayaquil-urban-predios-official",
+      "name": "Municipio de Guayaquil Catastro Urbano / Predios Urbanos",
+      "adapter": "arcgis",
+      "endpoint": "https://geoportalcat.guayaquil.gob.ec/arcgis/rest/services/Catastro_Urbano/Predios_Urbanos/MapServer/0",
+      "idField": "CATASTROGUAYAQUIL.SDE.Predios_Urbanos.codigo",
+      "objectIdField": "CATASTROGUAYAQUIL.SDE.Predios_Urbanos.OBJECTID",
+      "parcelNumberField": "CATASTROGUAYAQUIL.SDE.Predios_Urbanos.codigo",
+      "idType": "string",
+      "idPattern": "^[0-9]+(?:-[0-9]+)+$",
+      "idPrefix": "EC-GYE-URBAN-",
+      "outFields": [
+        "CATASTROGUAYAQUIL.SDE.Predios_Urbanos.OBJECTID",
+        "CATASTROGUAYAQUIL.SDE.Predios_Urbanos.codigo"
+      ],
+      "queryFormat": "geojson",
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "pageSize": 500,
+      "idBatchSize": 50,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 2,
+      "timeoutMs": 45000,
+      "maxConcurrentQueries": 2,
+      "countryCode": "EC",
+      "metricSrid": 32717,
+      "sourceCrs": "EPSG:32717",
+      "cityIds": [
+        "guayaquil"
+      ],
+      "operator": "M.I. Municipalidad de Guayaquil",
+      "attribution": "M.I. Municipalidad de Guayaquil / Geoportal Catastro",
+      "scope": "Municipal urban cadastral parcels in Guayaquil. Bounded central polygons verified; urban boundary, distributed coverage, rural coverage and completeness are unverified.",
+      "licenceNote": "Anonymous public municipal cadastral query. Metadata contains no explicit reuse licence; attribution retained. Reuse terms and currentness remain second-pass follow-ups.",
+      "catalogueUrl": "https://geoportalcat.guayaquil.gob.ec/arcgis/rest/services/Catastro_Urbano/Predios_Urbanos/MapServer",
+      "capabilities": {
+        "areaEnumeration": true,
+        "exactId": true,
+        "geometry": "full-wgs84"
+      },
+      "discovery": {
+        "jurisdiction": {
+          "countryCode": "EC",
+          "basis": "First-party municipal service describes Guayaquil urban predios cartography joined to EMAS; polygon layer displays Código Catastral."
+        }
+      },
+      "identityKind": "native-key-geometry-sha256-v1",
+      "defaultForCity": true
+    }
+  ]
+}

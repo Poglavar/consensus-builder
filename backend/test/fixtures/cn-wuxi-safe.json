@@ -1,0 +1,298 @@
+{
+  "descriptor": {
+    "id": "cn-wuxi-djt-wxbdc-djsj",
+    "name": "Wuxi issued-certificate cadastral parcels (已发证宗地)",
+    "adapter": "arcgis",
+    "endpoint": "https://djt.wxbdc.net/bdcserver_arcgis/services/budongchanzhongxin/DJSJ/MapServer/3",
+    "countryCode": "CN",
+    "cityIds": [
+      "wuxi"
+    ],
+    "defaultForCity": true,
+    "idField": "ZDDM",
+    "objectIdField": "FID",
+    "idType": "string",
+    "idPattern": "^[0-9]{12}[A-Z]{2}[0-9]{5}$",
+    "idPrefix": "CN-WUXI-DJSJ-",
+    "parcelNumberField": "ZDDM",
+    "outFields": [
+      "ZDDM",
+      "FID"
+    ],
+    "identityKind": "native-key-geometry-sha256-v1",
+    "queryFormat": "geojson",
+    "boundsQueryMode": "object-ids",
+    "idsQueryMode": "object-ids",
+    "pageSize": 200,
+    "idBatchSize": 20,
+    "maxFeatures": 10000,
+    "maxBboxKm2": 2,
+    "timeoutMs": 45000,
+    "maxConcurrentQueries": 2,
+    "browserTransport": "relay",
+    "metricSrid": 32651,
+    "nativeCrs": "EPSG:4490",
+    "responseCrs": "EPSG:4326",
+    "coordinateOrder": "longitude,latitude",
+    "capabilities": {
+      "areaEnumeration": true,
+      "exactIds": true
+    },
+    "operator": "Wuxi Municipal Natural Resources and Planning Bureau / Wuxi Real Estate Registration Center",
+    "catalogueUrl": "https://djt.wxbdc.net/map/index.html",
+    "licenceUrl": "https://zrzy.wuxi.gov.cn/doc/2021/09/16/3459882.shtml",
+    "attribution": "Wuxi Municipal Natural Resources and Planning Bureau / Wuxi cadastral-map public viewer",
+    "licenceNote": "Official procedure provides free public query/download. Explicit programmatic redistribution licence remains unverified; source conditions are informational.",
+    "scope": "Issued-certificate cadastral parcel outlines in bounded Wuxi windows including the unchanged WUP locator. Service extent and thirteen local cells do not prove citywide completeness, municipal boundary coverage, survey accuracy, legal title or current-ground status.",
+    "identityPolicy": "Native ZDDM plus SHA-256 of full unchanged GeoJSON geometry (sorted object keys, ECMAScript JSON numbers). Retains distinct outlines sharing a native code without merging versions. FID is used only as an ephemeral query transport token; no status filter is inferred."
+  },
+  "response": {
+    "type": "FeatureCollection",
+    "crs": {
+      "type": "name",
+      "properties": {
+        "name": "EPSG:4326"
+      }
+    },
+    "features": [
+      {
+        "type": "Feature",
+        "id": 10,
+        "geometry": {
+          "type": "Polygon",
+          "coordinates": [
+            [
+              [
+                120.27533972976376,
+                31.595206112588823
+              ],
+              [
+                120.27531735194849,
+                31.595222955494158
+              ],
+              [
+                120.27531448809432,
+                31.595225111730983
+              ],
+              [
+                120.27528169125665,
+                31.595194192231304
+              ],
+              [
+                120.27523822808503,
+                31.595153217268003
+              ],
+              [
+                120.27521960660533,
+                31.59513566093328
+              ],
+              [
+                120.2751397394744,
+                31.595060348865452
+              ],
+              [
+                120.2751569652191,
+                31.59504721657031
+              ],
+              [
+                120.27516370307679,
+                31.595042080321544
+              ],
+              [
+                120.27524674387877,
+                31.595119190185923
+              ],
+              [
+                120.27525671030185,
+                31.59512842914913
+              ],
+              [
+                120.27526378072541,
+                31.5951349831611
+              ],
+              [
+                120.27527904997113,
+                31.595149137631225
+              ],
+              [
+                120.27529091290441,
+                31.595160133863914
+              ],
+              [
+                120.27529787743191,
+                31.595164356759906
+              ],
+              [
+                120.27533375372863,
+                31.595200151459085
+              ],
+              [
+                120.27533972976376,
+                31.595206112588823
+              ]
+            ]
+          ]
+        },
+        "properties": {
+          "ZDDM": "320204003037GB00060",
+          "FID": 10
+        }
+      },
+      {
+        "type": "Feature",
+        "id": 6397,
+        "geometry": {
+          "type": "Polygon",
+          "coordinates": [
+            [
+              [
+                120.52114359383701,
+                31.54958521287129
+              ],
+              [
+                120.52112172642244,
+                31.549508090422815
+              ],
+              [
+                120.52123634632015,
+                31.549484255853766
+              ],
+              [
+                120.52125821382283,
+                31.549561378281954
+              ],
+              [
+                120.52114359383701,
+                31.54958521287129
+              ]
+            ]
+          ]
+        },
+        "properties": {
+          "ZDDM": "320205103203JC00750",
+          "FID": 6397
+        }
+      },
+      {
+        "type": "Feature",
+        "id": 92648,
+        "geometry": {
+          "type": "Polygon",
+          "coordinates": [
+            [
+              [
+                120.29002520059595,
+                31.581623131156388
+              ],
+              [
+                120.28997610926987,
+                31.581922351061948
+              ],
+              [
+                120.28998683887261,
+                31.582013377264026
+              ],
+              [
+                120.28998898388876,
+                31.582080760461892
+              ],
+              [
+                120.28998693232451,
+                31.58223579464138
+              ],
+              [
+                120.28995400632357,
+                31.582233672384717
+              ],
+              [
+                120.28916937834893,
+                31.582213220805123
+              ],
+              [
+                120.2891354350335,
+                31.58220746247746
+              ],
+              [
+                120.2891049263418,
+                31.5821921924169
+              ],
+              [
+                120.28908113011573,
+                31.582167857755962
+              ],
+              [
+                120.28906872296037,
+                31.582138219559486
+              ],
+              [
+                120.28905040062578,
+                31.5820571473063
+              ],
+              [
+                120.28902016763811,
+                31.58195265324759
+              ],
+              [
+                120.28899227058444,
+                31.581867006684003
+              ],
+              [
+                120.2889694942221,
+                31.581779828875632
+              ],
+              [
+                120.28895675932722,
+                31.581682181042233
+              ],
+              [
+                120.28895631582704,
+                31.581596825924475
+              ],
+              [
+                120.288963772591,
+                31.581524090009975
+              ],
+              [
+                120.28925050752459,
+                31.58156222105617
+              ],
+              [
+                120.28943860250709,
+                31.58157869722411
+              ],
+              [
+                120.2896233906493,
+                31.58158600132937
+              ],
+              [
+                120.28975666085016,
+                31.58158581467294
+              ],
+              [
+                120.28989562286768,
+                31.581580757469684
+              ],
+              [
+                120.29003370934758,
+                31.58157092126515
+              ],
+              [
+                120.29002520059595,
+                31.581623131156388
+              ]
+            ]
+          ]
+        },
+        "properties": {
+          "ZDDM": "320213013030GB00029",
+          "FID": 92648
+        }
+      }
+    ]
+  },
+  "sampleIds": [
+    "CN-WUXI-DJSJ-320213013030GB00029-66a48be14d20f4da6ac263d8a7485c8140aa45e41ea9bb2638b7212e18e478d5",
+    "CN-WUXI-DJSJ-320204003037GB00060-d6b85c8bc95738221fc2e71164bd7fdbd2d639fb0e2a467a96cce305aada9dc6",
+    "CN-WUXI-DJSJ-320205103203JC00750-a741f3dd5a6aad27c88deb50377695916901fa35ab68c8261af8ce74c8fdd72e"
+  ]
+}

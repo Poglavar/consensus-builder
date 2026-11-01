@@ -61,7 +61,9 @@ export function tileBounds(box, maxBboxKm2) {
 }
 
 // Pure resolution: `targets` get ground computed against everything in `context` (targets included).
-export function resolveOverlapGround(targets, context) {
+export function resolveOverlapGround(targets, context, {
+    overlayGeometry = feature => feature.geometry, geographicGeometry = geometry => geometry
+} = {}) {
     const byId = new Map();
     for (const feature of [...context, ...targets]) if (!byId.has(feature.id)) byId.set(feature.id, feature);
     const entries = [...byId.values()].map(feature => ({ feature, areaM2: area(feature), box: geometryBbox(feature) })).sort(ranked);
@@ -71,20 +73,22 @@ export function resolveOverlapGround(targets, context) {
         const own = entries[rank.get(target.id)];
         const higher = entries.slice(0, rank.get(target.id)).filter(entry => boxesTouch(entry.box, own.box)
             && booleanIntersects(entry.feature, own.feature));
-        let ground = geoFeature(own.feature.geometry);
+        let ground = geoFeature(overlayGeometry(own.feature));
         const cutBy = [];
         try {
             for (const entry of higher) {
-                const overlap = intersect(ground, entry.feature);
-                if (!overlap || !(area(overlap) > 0)) continue;
+                const other = geoFeature(overlayGeometry(entry.feature));
+                const overlap = intersect(ground, other);
+                if (!overlap || !(area(geoFeature(geographicGeometry(overlap.geometry))) > 0)) continue;
                 cutBy.push(entry.feature.id);
-                ground = difference(ground, entry.feature);
+                ground = difference(ground, other);
                 if (!ground) break;
             }
         } catch (error) {
             throw upstreamError(`Parcel overlap resolution failed for ${target.id}: ${error.message}`);
         }
         if (!cutBy.length) { features.push(target); continue; }
+        if (ground) ground = geoFeature(geographicGeometry(ground.geometry));
         if (!ground || !(area(ground) > 0)) { suppressedIds.push(target.id); continue; }
         features.push({ ...target, geometry: ground.geometry, properties: { ...target.properties, geometryKind: 'derived-ground',
             derivation: { policy: OVERLAP_GROUND_POLICY, outlineAreaM2: own.areaM2, groundAreaM2: area(ground), cutByIds: cutBy } } });
@@ -94,7 +98,8 @@ export function resolveOverlapGround(targets, context) {
 
 // Wraps a provider adapter: each read also fetches every outline that touches the returned
 // outlines' extent, so each parcel's higher-ranked neighbours are known before it is cut.
-export function withOverlapGround(adapter, { maxBboxKm2 }) {
+export function withOverlapGround(adapter, { maxBboxKm2, overlayGeometry, geographicGeometry }) {
+    const operations = { overlayGeometry, geographicGeometry };
     async function context(features) {
         if (!features.length) return [];
         // Overlapping envelopes are read together; distant parcels (an ID read) get their own reads.
@@ -135,13 +140,13 @@ export function withOverlapGround(adapter, { maxBboxKm2 }) {
             around.push(...result.features);
             if (typeof slivers === 'number' && typeof result.droppedSliverCuts === 'number') slivers += result.droppedSliverCuts;
         }
-        const resolved = resolveOverlapGround(features, around);
+        const resolved = resolveOverlapGround(features, around, operations);
         return { ...wide, features: resolved.features, suppressedIds: resolved.suppressedIds, overlapPolicy: OVERLAP_GROUND_POLICY,
             ...(typeof slivers === 'number' ? { droppedSliverCuts: slivers } : {}) };
     }
     async function queryIds(ids) {
         const result = await adapter.queryIds(ids);
-        const resolved = resolveOverlapGround(result.features, await context(result.features));
+        const resolved = resolveOverlapGround(result.features, await context(result.features), operations);
         // An outline wholly covered by higher-ranked neighbours has no ground of its own.
         return { ...result, features: resolved.features, suppressedIds: resolved.suppressedIds,
             absentIds: [...(result.absentIds || []), ...resolved.suppressedIds], overlapPolicy: OVERLAP_GROUND_POLICY };

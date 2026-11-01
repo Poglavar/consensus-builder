@@ -1,3 +1,5 @@
+import { isNoviSadSource, isNoviSadPublicRequest, NS_ENDPOINT, createMapGuideParcelSource, parseMapGuideOperation } from './mapguide-selectfeatures-source.js';
+import { isSanJuanSource, isSanJuanRequest, SANJUAN_REQUEST_TIMEOUT_MS } from './sanjuan-dgc-source.js';
 import { isSakaryaSource, isSakaryaRequest, SAKARYA_ORIGIN, SAKARYA_VIEWER } from './sakarya-sbb-source.js';
 import { isGeopixelSource, parseGeopixelOperation, createGeopixelSource } from './geopixel-source.js';
 import { withSourceConcurrency } from './source-controls.js';
@@ -36,11 +38,13 @@ import { isIP } from 'node:net';
 import { readFile } from 'node:fs/promises';
 import { createHttpsJsonFetch } from './https-json-fetch.js';
 import { isCorrientesSource, parseCorrientesOperation, createCorrientesWmsSource } from './corrientes-wms-source.js';
+import { isTijuanaImplanSource, parseTijuanaOperation, createTijuanaImplanSource } from './tijuana-implan-source.js';
 import { createPublicSourceFetch, isPublicSourceAddress, validatePublicSourceUrl } from './public-source-fetch.js';
 import { decodeCustomSource } from './custom-source-config.js';
 import { officialArchiveFetch } from './gml-snapshot-source.js';
 import { AKWAGIS_PUBLIC_TOKEN_URL } from './akwagis-public-fetch.js';
 import { isTainanPublicSource, TAINAN_PUBLIC_TOKEN_URL } from './tainan-public-fetch.js';
+import { isMakkahPublicSource, MAKKAH_CONFIG, MAKKAH_VIEWER } from './makkah-public-fetch.js';
 import { isNakshaPublicSource, NAKSHA_PUBLIC_TOKEN_URL } from './naksha-public-fetch.js';
 import { fetchNakshaRelay } from './naksha-relay-fetch.js';
 import { createUgnlisParcelSource, UGN_SOURCE_ENDPOINT, UGN_FILTER_ENDPOINT } from './ugnlis-source.js';
@@ -54,6 +58,7 @@ import { isPingdingshanSource, isPingdingshanQueryUrl } from './pingdingshan-tra
 import { isMelakaSource, isMelakaQueryUrl } from './melaka-transport.js';
 import { isJiyuanSource, isJiyuanQueryUrl } from './jiyuan-transport.js';
 import { isOttawaParcelSource, isOttawaParcelRequest, OTTAWA_REFERER } from './ottawa-proxy.js';
+import { isRakParcelSource, isRakParcelRequest } from './rak-proxy.js';
 import { isGeosaParcelSource, GEOSA_REFERER } from './geosa-transport.js';
 import { arcgisIdentifyEndpoint } from './arcgis-identify-source.js';
 import { isNcaSource, NCA_HRODNA_SCOPE } from './by-nca-source.js';
@@ -100,6 +105,12 @@ function exactResource(url, resource) {
 
 function descriptorResources(descriptor) {
     const resources = [];
+    if (descriptor.id === 'hu-lechner-oeny-cadastral-parcels' && descriptor.adapter === 'hu-oeny'
+        && descriptor.endpoint === 'https://www.oeny.hu/hk-api/parcels/at') {
+        resources.push('https://www.oeny.hu/hk-api/parcels/search',
+            'https://www.oeny.hu/hk-api/parcels/bounding-box',
+            'https://api.lechnerkozpont.hu/hrsz-terminator/api/hrsz');
+    }
     if (descriptor.id === SALTILLO_SOURCE_ID && descriptor.adapter === 'saltillo-visor'
         && descriptor.endpoint === SALTILLO_ENDPOINT && descriptor.locatorEndpoint === SALTILLO_LOCATOR) resources.push(SALTILLO_LOCATOR);
     const identifyEndpoint = arcgisIdentifyEndpoint(descriptor);
@@ -108,6 +119,7 @@ function descriptorResources(descriptor) {
         && descriptor.endpoint === KARTVERKET_ENDPOINT) resources.push(KARTVERKET_EXACT_ENDPOINT);
     if (isJiyuanSource(descriptor)) resources.push(`${descriptor.endpoint}/0/query`);
     if (isTainanPublicSource(descriptor)) resources.push(TAINAN_PUBLIC_TOKEN_URL);
+    if (isMakkahPublicSource(descriptor)) resources.push(MAKKAH_CONFIG);
     if (isNakshaPublicSource(descriptor)) resources.push(NAKSHA_PUBLIC_TOKEN_URL);
     if (isDncSnigCompanion(descriptor)) resources.push(`${SNIG_CADASTRAL_LAYER}/query`);
     if (descriptor.adapter === 'gwangju-jijuk' && descriptor.endpoint === GWANGJU_AREA_ENDPOINT
@@ -215,6 +227,10 @@ function isHmlr(descriptor) {
 }
 
 function resourceAllowed(url, descriptor, sourceId) {
+    if (isMakkahPublicSource(descriptor) && url.pathname === new URL(MAKKAH_CONFIG).pathname) {
+        return url.href === MAKKAH_CONFIG;
+    }
+    if (isSanJuanSource(descriptor)) return isSanJuanRequest(descriptor, url);
     if (isPraiaGrandeReaderRequest(url, descriptor)) return true;
     if (descriptor.adapter === 'arcgis-hub') return isArcgisHubParcelUrl(descriptor, url);
     if (isHuaibeiSource(descriptor)) return isHuaibeiParcelRequest(url, 'POST', '{"type":0,"fields":["ID","geometry"]}');
@@ -222,6 +238,7 @@ function resourceAllowed(url, descriptor, sourceId) {
     if (isTatarstanSource(descriptor)) return isTatarstanRequest(descriptor, url);
     // Matching only proxy.ashx's path would permit arbitrary nested destinations.
     if (isOttawaParcelSource(descriptor)) return isOttawaParcelRequest(url);
+    if (isRakParcelSource(descriptor)) return isRakParcelRequest(url);
     if (descriptor.adapter === 'ua-kadastr-landuse' && sourceId === 'ua-kadastr-com-ua-landuse'
         && descriptor.endpoint?.startsWith(KADASTR_LOOKUP_ROOT) && descriptor.tileEndpoint === KADASTR_TILE_ENDPOINT) {
         return isKadastrResourceUrl(url);
@@ -291,6 +308,7 @@ function normalizeTarget(sourceId, descriptor, input) {
     if (typeof input?.url !== 'string' || input.url.length > 16384) throw relayError(400);
     let target;
     try { target = new URL(input.url); } catch { throw relayError(400); }
+    const mapguideHttp = isNoviSadSource(descriptor) && target.href === NS_ENDPOINT && input.method === 'POST';
     const huaibeiHttp = isHuaibeiSource(descriptor) && isHuaibeiParcelRequest(target, input.method, input.body);
     const gisarHttp = sourceId === GISAR_SOURCE_ID && descriptor.adapter === 'kg-gisar-wms'
         && descriptor.endpoint === GISAR_ENDPOINT && isGisarParcelUrl(target);
@@ -303,7 +321,7 @@ function normalizeTarget(sourceId, descriptor, input) {
     const jiyuanHttp = isJiyuanSource(descriptor) && isJiyuanQueryUrl(target);
     const melakaHttp = isMelakaSource(descriptor) && isMelakaQueryUrl(target);
     const pingdingshanHttp = isPingdingshanSource(descriptor) && isPingdingshanQueryUrl(target);
-    if ((target.protocol !== 'https:' && !huaibeiHttp && !gisarHttp && !sofiaHttp && !tucumanHttp && !xuchangHttp && !seyhanHttp && !pingdingshanHttp && !melakaHttp && !jiyuanHttp && !isTorinoArchive(descriptor, target.href)) || target.username || target.password || target.hash || !resourceAllowed(target, descriptor, sourceId)) {
+    if ((target.protocol !== 'https:' && !mapguideHttp && !huaibeiHttp && !gisarHttp && !sofiaHttp && !tucumanHttp && !xuchangHttp && !seyhanHttp && !pingdingshanHttp && !melakaHttp && !jiyuanHttp && !isTorinoArchive(descriptor, target.href)) || target.username || target.password || target.hash || !resourceAllowed(target, descriptor, sourceId)) {
         throw relayError(403, 'Parcel provider URL is outside this source.');
     }
     if (sourceId.startsWith('custom.')) {
@@ -338,6 +356,7 @@ function relayRequestHeaders(input, descriptor, target, method) {
     if (isSakaryaSource(descriptor)) { permitted.add('referer'); permitted.add('origin'); }
     if (isOttawaParcelSource(descriptor)) permitted.add('referer');
     if (isGeosaParcelSource(descriptor)) permitted.add('referer');
+    if (isMakkahPublicSource(descriptor)) permitted.add('referer');
     if (isHmlr(descriptor) && target.origin === HMLR) permitted.add('if-match');
     if (special === 'dlrs-sheet' || special === 'bd-bhumi-naksha') permitted.add('referer');
     if (special === 'bd-bhumi-naksha') permitted.add('cookie');
@@ -354,7 +373,8 @@ function relayRequestHeaders(input, descriptor, target, method) {
         if (key === 'referer') {
             let referrer;
             try { referrer = new URL(value); } catch { throw relayError(400); }
-            const valid = isOttawaParcelSource(descriptor) ? value === OTTAWA_REFERER
+            const valid = isMakkahPublicSource(descriptor) ? value === MAKKAH_VIEWER
+                : isOttawaParcelSource(descriptor) ? value === OTTAWA_REFERER
                 : isGeosaParcelSource(descriptor) ? value === GEOSA_REFERER
                 : isSakaryaSource(descriptor) ? value === SAKARYA_VIEWER
                 : isReestr54Source(descriptor) ? value === descriptor.endpoint
@@ -400,15 +420,19 @@ export function validateParcelProviderRelayRequest(sourceId, input, { sources = 
     const method = input.method ?? 'GET';
     if (!['GET', 'POST'].includes(method) || (input.redirect !== undefined && !NO_REDIRECT.has(input.redirect))) throw relayError(400);
     const target = normalizeTarget(sourceId, descriptor, input);
+    if (isSanJuanSource(descriptor) && !isSanJuanRequest(descriptor, target, method, input.body)) throw relayError(400);
     if (isTorinoArchive(descriptor, target.href) && input.redirect && input.redirect !== 'error') throw relayError(400);
+    const mapguideOperation = isNoviSadSource(descriptor) && target.href === NS_ENDPOINT && method === 'POST';
     const sofiaOperation = sourceId === SOFIA_SOURCE_ID && descriptor.adapter === 'sofia-isofmap'
         && descriptor.endpoint === SOFIA_ENDPOINT && target.href === SOFIA_ENDPOINT && method === 'POST';
     const huaibeiOperation = isHuaibeiSource(descriptor) && isHuaibeiParcelRequest(target, method, input.body);
-    if (target.protocol === 'http:' && method !== 'GET' && !sofiaOperation && !huaibeiOperation) throw relayError(400);
+    if (target.protocol === 'http:' && method !== 'GET' && !mapguideOperation && !sofiaOperation && !huaibeiOperation) throw relayError(400);
     if (descriptor.adapter === 'geogeo-emap' && method !== 'GET') throw relayError(400);
     if (descriptor.adapter === 'arcgis-hub' && method !== 'GET') throw relayError(400);
     const headers = relayRequestHeaders(input.headers, descriptor, target, method);
     const body = input.body;
+    if (isMakkahPublicSource(descriptor) && target.href === MAKKAH_CONFIG
+        && (method !== 'POST' || headers.get('content-type') !== 'application/x-www-form-urlencoded' || body !== '')) throw relayError(400);
     if (isNakshaPublicSource(descriptor) && target.href === NAKSHA_PUBLIC_TOKEN_URL
         && (method !== 'POST' || headers.get('content-type') !== 'application/json' || body !== '{}')) throw relayError(400);
     if (descriptor.adapter === 'flatgeobuf-range') {
@@ -420,6 +444,8 @@ export function validateParcelProviderRelayRequest(sourceId, input, { sources = 
     }
     if (isOttawaParcelSource(descriptor) && (method !== 'GET' || input.body !== undefined
         || headers.get('referer') !== OTTAWA_REFERER || input.redirect && input.redirect !== 'error')) throw relayError(400);
+    if (isRakParcelSource(descriptor) && (method !== 'GET' || input.body !== undefined
+        || input.redirect && input.redirect !== 'error')) throw relayError(400);
     if (isHuaibeiSource(descriptor) && (!huaibeiOperation || headers.get('token') !== 'wwg'
         || headers.get('content-type') !== 'application/json;charset=UTF-8')) throw relayError(400);
     if (isSakaryaSource(descriptor) && (!isSakaryaRequest(descriptor, target, method, body)
@@ -452,10 +478,18 @@ export function validateParcelProviderRelayRequest(sourceId, input, { sources = 
         if (target.href !== descriptor.endpoint || headers.get('content-type') !== 'application/json') throw relayError(400);
         parseCorrientesOperation(body);
     }
+    if (isTijuanaImplanSource(descriptor) && method === 'POST') {
+        if (target.href !== descriptor.endpoint || headers.get('content-type') !== 'application/json') throw relayError(400);
+        parseTijuanaOperation(body);
+    }
     if (sourceId === DIYARBAKIR_SOURCE_ID && descriptor.adapter === 'diyarbakir-eimar'
         && descriptor.endpoint === DIYARBAKIR_ENDPOINT) {
         if (target.href !== DIYARBAKIR_ENDPOINT || method !== 'POST' || headers.get('content-type') !== 'application/json') throw relayError(400);
         parseDiyarbakirOperation(body);
+    }
+    if (mapguideOperation) {
+        if (headers.get('content-type') !== 'application/json') throw relayError(400);
+        parseMapGuideOperation(body);
     }
     if (sofiaOperation) {
         if (headers.get('content-type') !== 'application/json') throw relayError(400);
@@ -467,7 +501,8 @@ export function validateParcelProviderRelayRequest(sourceId, input, { sources = 
     return { sourceId, descriptor, target, method, headers, body: body ?? undefined, redirect: input.redirect,
         hmlr: isHmlr(descriptor) && target.origin === HMLR, custom: sourceId.startsWith('custom.'),
         maxResponseBytes: responseByteLimit(descriptor, target),
-        timeoutMs: isHmlr(descriptor) || descriptor.adapter === 'moj-mapxml' || descriptor.adapter === 'flatgeobuf-range' || descriptor.adapter === 'shapefile-range' || descriptor.adapter === 'ugnlis-parcel-search' || descriptor.adapter === 'diyarbakir-eimar' || descriptor.adapter === 'mersin-eimar' || isCorrientesSource(descriptor) || isGeopixelSource(descriptor) || sofiaOperation || descriptor.snapshotFormat === 'shapefile-zip' || descriptor.adapter === 'santos-lotes' ? 60000
+        timeoutMs: isSanJuanSource(descriptor) ? SANJUAN_REQUEST_TIMEOUT_MS
+            : isHmlr(descriptor) || descriptor.adapter === 'moj-mapxml' || descriptor.adapter === 'flatgeobuf-range' || descriptor.adapter === 'shapefile-range' || descriptor.adapter === 'ugnlis-parcel-search' || descriptor.adapter === 'diyarbakir-eimar' || descriptor.adapter === 'mersin-eimar' || isCorrientesSource(descriptor) || isTijuanaImplanSource(descriptor) || isGeopixelSource(descriptor) || mapguideOperation || sofiaOperation || descriptor.snapshotFormat === 'shapefile-zip' || descriptor.adapter === 'santos-lotes' ? 60000
             : ['bd-bhumi-naksha', 'taichung-gismap', 'changhua-urbangis', 'huaibei-cadastre'].includes(descriptor.adapter) ? 45000
                 : ['wfs', 'arcgis'].includes(descriptor.adapter) && Number.isSafeInteger(descriptor.timeoutMs)
                     && descriptor.timeoutMs >= 1000 && descriptor.timeoutMs <= 45000 ? descriptor.timeoutMs : 15000 };
@@ -490,7 +525,7 @@ export function createProviderRelayFetch({ lookupImpl = lookup, requestImpl = re
     const agent = keepAlive ? new Agent({ keepAlive: true, maxSockets: 8, maxFreeSockets: 1, timeout: 10000 }) : false;
     return async function providerRelayFetch(target, { method = 'GET', headers = new Headers(), body, signal,
         userAgent = 'consensus-builder/1.0 (+https://urbangametheory.xyz)' } = {}) {
-        const permittedHttp = isHuaibeiParcelRequest(target, method, body) || target instanceof URL && method === 'GET'
+        const permittedHttp = isNoviSadPublicRequest(target, method, body) || isHuaibeiParcelRequest(target, method, body) || target instanceof URL && method === 'GET'
             && (isGisarParcelUrl(target) || isSofiaParcelUrl(target) || isTucumanWfsUrl(target)
                 || isXuchangQueryUrl(target) || isSeyhanQueryUrl(target) || isPingdingshanQueryUrl(target) || isMelakaQueryUrl(target) || isJiyuanQueryUrl(target) || target.href === TORINO_ARCHIVE_ENDPOINT);
         if (!(target instanceof URL) || (target.protocol !== 'https:' && !permittedHttp) || target.username || target.password || target.hash
@@ -585,7 +620,7 @@ export async function fetchParcelProviderRelay(request, options = {}) {
     if (!transport) {
         const providerFetch = options.providerFetch || (isMylandWfsSource(descriptor)
             ? (mylandRelayFetch ||= createProviderRelayFetch({ keepAlive: true }))
-            : createProviderRelayFetch({ keepAlive: ['ugnlis-parcel-search', 'geojson-range', 'shapefile-range', 'flatgeobuf-range', 'santos-lotes', 'geopixel'].includes(descriptor.adapter) }));
+            : createProviderRelayFetch({ keepAlive: ['ugnlis-parcel-search', 'geojson-range', 'shapefile-range', 'flatgeobuf-range', 'santos-lotes', 'geopixel', 'tijuana-implan-wms'].includes(descriptor.adapter) }));
         transport = (url, init) => providerFetch(url, { ...init, ...(userAgent ? { userAgent } : {}) }, { timeoutMs });
     }
     if (isMylandWfsSource(descriptor)) {
@@ -593,6 +628,13 @@ export async function fetchParcelProviderRelay(request, options = {}) {
         const providerTransport = transport;
         transport = (url, init) => fetchMylandWfs(url, init,
             { fetchImpl: (target, options) => providerTransport(new URL(target), options) });
+    }
+    if (isNoviSadSource(descriptor)) {
+        const envelope = parseMapGuideOperation(body);
+        const adapter = createMapGuideParcelSource(descriptor, { fetchImpl: (url, init) => transport(new URL(url),
+            { ...init, headers: new Headers(init.headers) }) });
+        const data = await adapter[envelope._mapguideOperation](envelope.input, { signal: options.signal });
+        return new Response(JSON.stringify(data), { headers: { 'content-type': 'application/json' } });
     }
     if (isMersinProtocolSource(descriptor) && target.href === descriptor.endpoint && method === 'POST') {
         const envelope = parseMersinOperation(body);
@@ -620,6 +662,13 @@ export async function fetchParcelProviderRelay(request, options = {}) {
         const adapter = createCorrientesWmsSource(descriptor, { fetchImpl: (url, init) => transport(new URL(url),
             { ...init, headers: new Headers(init.headers) }) });
         const data = await adapter[envelope._corrientesOperation](envelope.input, { signal: options.signal });
+        return new Response(JSON.stringify(data), { headers: { 'content-type': 'application/json' } });
+    }
+    if (isTijuanaImplanSource(descriptor) && target.href === descriptor.endpoint && method === 'POST') {
+        const envelope = parseTijuanaOperation(body);
+        const adapter = createTijuanaImplanSource(descriptor, { fetchImpl: (url, init) => transport(new URL(url),
+            { ...init, headers: new Headers(init.headers) }) });
+        const data = await adapter[envelope._tijuanaOperation](envelope.input, { signal: options.signal });
         return new Response(JSON.stringify(data), { headers: { 'content-type': 'application/json' } });
     }
     if (descriptor.id === DIYARBAKIR_SOURCE_ID && descriptor.adapter === 'diyarbakir-eimar'

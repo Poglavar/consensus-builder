@@ -1,0 +1,163 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "6721",
+  "name": "Brahmanbaria, Bangladesh",
+  "point": [
+    24.022258208919,
+    90.9748658017877
+  ],
+  "bindings": [
+    {
+      "appCityId": "brahmanbaria",
+      "runtimeConfig": {
+        "id": "brahmanbaria",
+        "wupCityCode": "6721",
+        "label": "Brahmanbaria, Bangladesh",
+        "currency": {
+          "locale": "en-BD",
+          "code": "BDT"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            24.022258208919,
+            90.9748658017877
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            24.022258208919,
+            90.9748658017877
+          ],
+          "fallbackDataset": [
+            90.9748658017877,
+            24.022258208919
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "bd-minland-smart-bhumi-naksha-brahmanbaria-plot-geometry",
+          "idPrefix": "bd-map-land:",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "<a href=\"https://map.land.gov.bd/\">Ministry of Land, Bangladesh · Smart Bhumi Naksha</a> · 071-Brahmanbaria mouza survey plots only; citywide coverage unverified"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "bd-minland-smart-bhumi-naksha-brahmanbaria-plot-geometry",
+      "name": "Ministry of Land Smart Bhumi Naksha — Brahmanbaria mouza survey plots",
+      "adapter": "bd-bhumi-naksha",
+      "endpoint": "https://map.land.gov.bd/getGeomByCode",
+      "catalogueUrl": "https://map.land.gov.bd/",
+      "countryCode": "BD",
+      "cityName": "Brahmanbaria",
+      "cityIds": [
+        "brahmanbaria"
+      ],
+      "idPrefix": "bd-map-land:",
+      "idFields": [
+        "m_code",
+        "plot_no_en"
+      ],
+      "outFields": [
+        "m_code",
+        "plot_no_en"
+      ],
+      "parcelNumberField": "plot_no_en",
+      "mouzaForm": {
+        "level": "forMauza",
+        "tableName": "cha_bra",
+        "mauzaVal": "201213091071",
+        "plotOrLanduse": "plot"
+      },
+      "sheetNamespaces": [
+        "cha_bra_bra_071_001_bs",
+        "cha_bra_bra_071_002_bs",
+        "cha_bra_bra_071_003_bs",
+        "cha_bra_bra_071_004_bs",
+        "cha_bra_bra_071_005_bs",
+        "cha_bra_bra_071_006_bs",
+        "cha_bra_bra_071_007_bs",
+        "cha_bra_bra_071_008_bs",
+        "cha_bra_bra_071_009_bs",
+        "cha_bra_bra_071_010_bs",
+        "cha_bra_bra_071_011_bs"
+      ],
+      "sourceCrs": "EPSG:4326",
+      "responseSrid": 4326,
+      "metricSrid": 32646,
+      "returnsWGS84": true,
+      "maxBboxKm2": 25,
+      "maxFeatures": 10000,
+      "maxSnapshotFeatures": 6000,
+      "expectedSnapshotFeatures": 4938,
+      "maxSnapshotBytes": 8388608,
+      "maxConcurrentQueries": 2,
+      "browserTransport": "relay",
+      "capabilities": {
+        "areaEnumeration": true,
+        "exactIds": true
+      },
+      "operator": "Ministry of Land, Government of Bangladesh",
+      "attribution": "<a href=\"https://map.land.gov.bd/\">Ministry of Land, Bangladesh · Smart Bhumi Naksha</a> · 071-Brahmanbaria mouza survey plots only; citywide coverage unverified",
+      "license": "No explicit open-data licence established; project copyright/all rights reserved. Reuse permission remains a follow-up.",
+      "coverage": {
+        "scope": "bounded-mouza",
+        "mouzaCode": "201213091071",
+        "name": "071-Brahmanbaria",
+        "bbox": [
+          91.0970559378946,
+          23.967042642778907,
+          91.11630023336744,
+          23.979576421006787
+        ],
+        "citywideVerified": false,
+        "immutableCityPointCovered": false
+      },
+      "discovery": {
+        "jurisdiction": {
+          "basis": "First-party named Brahmanbaria Sadar mouza 071; not whole municipality or WUP extent."
+        },
+        "evidenceUrls": [
+          "https://map.land.gov.bd/",
+          "https://map.land.gov.bd/assets/js/main.js",
+          "https://map.land.gov.bd/land-zoning/privacy-policy"
+        ]
+      },
+      "snapshotTimeoutMs": 45000,
+      "defaultForCity": true
+    }
+  ]
+}

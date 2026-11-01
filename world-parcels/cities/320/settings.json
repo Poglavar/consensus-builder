@@ -1,0 +1,129 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "320",
+  "name": "Ulaanbaatar, Mongolia",
+  "point": [
+    47.9264085180838,
+    106.873731314057
+  ],
+  "bindings": [
+    {
+      "appCityId": "ulaanbaatar",
+      "runtimeConfig": {
+        "id": "ulaanbaatar",
+        "wupCityCode": "320",
+        "label": "Ulaanbaatar, Mongolia",
+        "currency": {
+          "locale": "mn-MN",
+          "code": "MNT"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            47.9264085180838,
+            106.873731314057
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            47.9264085180838,
+            106.873731314057
+          ],
+          "fallbackDataset": [
+            106.873731314057,
+            47.9264085180838
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "mn-egazar-geoware-parcels",
+          "idPrefix": "MN-EGAZAR-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "Agency for Land Administration and Management, Geodesy and Cartography / e-gazar.gov.mn"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "mn-egazar-geoware-parcels",
+      "name": "Mongolia e-gazar Ulaanbaatar district cadastral parcels",
+      "adapter": "wfs",
+      "layerProfile": "mn-egazar-districts-v1",
+      "endpoint": "https://geoserver.egazar.gov.mn/geoserver/geoware/ows",
+      "version": "2.0.0",
+      "layerTemplate": "geoware:geo_view_parcel_soum_egazar_{soumCode}_{date}",
+      "egazarDistrictCodes": [
+        "01119",
+        "01125"
+      ],
+      "idField": "parcel_id",
+      "idType": "string",
+      "idPattern": "^[0-9]{10}$",
+      "idPrefix": "MN-EGAZAR-",
+      "geometryField": "geometry",
+      "outFields": [
+        "parcel_id"
+      ],
+      "requestProperties": true,
+      "pageSize": 100,
+      "idBatchSize": 20,
+      "maxFeatures": 3000,
+      "maxBboxKm2": 2,
+      "minRequestIntervalMs": 250,
+      "maxConcurrentQueries": 1,
+      "countryCode": "MN",
+      "metricSrid": 32648,
+      "cityIds": [
+        "ulaanbaatar"
+      ],
+      "defaultForCity": true,
+      "scope": "Bounded initial availability for native cadastral parcels in districts 01119 and 01125 of Ulaanbaatar. Three reviewed parcels only; capital-wide completeness and the unchanged queue-point parcel coverage are unverified.",
+      "attribution": "Agency for Land Administration and Management, Geodesy and Cartography / e-gazar.gov.mn",
+      "catalogueUrl": "https://www.gazar.gov.mn/system2/static/egazar",
+      "viewerUrl": "https://egazar.gov.mn/map",
+      "sourceCrs": "EPSG:4326",
+      "licence": "WFS Fees NONE and AccessConstraints NONE; explicit reuse licence unverified.",
+      "identityRecipe": "Canonical ID: MN-EGAZAR-{districtCode}-{exact native parcel_id}; sourceParcelId is the unchanged native parcel_id. Dated layer suffix is not part of canonical identity.",
+      "capabilities": {
+        "areaEnumeration": true,
+        "exactIds": true,
+        "geometryQuery": true
+      },
+      "responseSrid": 4326,
+      "maxResponseBytes": 16777216,
+      "browserTransport": "relay",
+      "timeoutMs": 45000
+    }
+  ]
+}

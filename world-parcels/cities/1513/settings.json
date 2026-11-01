@@ -1,0 +1,118 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "1513",
+  "name": "Mecca, Saudi Arabia",
+  "point": [
+    21.4142734047428,
+    39.8243338685429
+  ],
+  "bindings": [
+    {
+      "appCityId": "mecca",
+      "runtimeConfig": {
+        "id": "mecca",
+        "wupCityCode": "1513",
+        "label": "Mecca, Saudi Arabia",
+        "currency": {
+          "locale": "ar-SA",
+          "code": "SAR"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            21.4142734047428,
+            39.8243338685429
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            21.4142734047428,
+            39.8243338685429
+          ],
+          "fallbackDataset": [
+            39.8243338685429,
+            21.4142734047428
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "sa-makkah-municipality-mmsdi-regulatory-parcels",
+          "idPrefix": "SA-MAKKAH-PARCEL-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "Holy Makkah Municipality / مستكشف مكة الجغرافي · regulatory land parcels; legal-title equivalence unverified"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "sa-makkah-municipality-mmsdi-regulatory-parcels",
+      "name": "Holy Makkah Municipality MMSDI regulatory land parcels",
+      "operator": "Holy Makkah Municipality / municipal SDI",
+      "countryCode": "SA",
+      "adapter": "arcgis",
+      "endpoint": "https://maps.holymakkah.gov.sa/arcgis/rest/services/SDI/MMSDI_MD_BusinessMap/MapServer/14",
+      "publicTokenUrl": "https://maps.holymakkah.gov.sa/Data/HashKey1?cv=633889166",
+      "idPrefix": "SA-MAKKAH-PARCEL-",
+      "idField": "PARCEL_KEY",
+      "objectIdField": "OBJECTID",
+      "idType": "integer",
+      "outFields": [
+        "PARCEL_KEY",
+        "OBJECTID"
+      ],
+      "queryFormat": "esri-json",
+      "returnTrueCurves": true,
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "pageSize": 100,
+      "idBatchSize": 20,
+      "maxFeatures": 1000,
+      "maxBboxKm2": 4,
+      "maxResponseBytes": 16777216,
+      "timeoutMs": 30000,
+      "metricSrid": 32637,
+      "browserTransport": "relay",
+      "cityIds": [
+        "mecca"
+      ],
+      "defaultForCity": true,
+      "attribution": "Holy Makkah Municipality / مستكشف مكة الجغرافي · regulatory land parcels; legal-title equivalence unverified",
+      "license": "No explicit redistribution licence established; official anonymous viewer access only.",
+      "sourceUrl": "https://maps.holymakkah.gov.sa/",
+      "capabilities": {
+        "areaEnumeration": true
+      }
+    }
+  ]
+}
