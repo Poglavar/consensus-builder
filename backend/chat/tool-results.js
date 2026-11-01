@@ -116,7 +116,7 @@ function compactObject(name, raw) {
         if (r.designs) compact.designs = array(r.designs, x => ({ cid: x.cid, title: prose(x, 'title'), goal: prose(x, 'goal') }), 30);
         return compact;
     }
-    if (name === 'ugt_find_place') return { ok: r.ok !== false, partial: r.partial === true, truncated: r.truncated === true, noMatch: r.noMatch, warnings: array(r.warnings, x => clip(x, 200), 5), candidates: array(r.candidates, x => ({ kind: x.kind, title: prose(x, 'title', 140), city: prose(x, 'city', 100), parcelIds: array(x.parcelIds, p => clip(p, 100), 30), parcelSourceId: prose(x, 'parcelSourceId', 200), point: x.point, bbox: x.bbox }), 30) };
+    if (name === 'ugt_find_place') return { ok: r.ok !== false, partial: r.partial === true, truncated: r.truncated === true, noMatch: r.noMatch, warnings: array(r.warnings, x => clip(x, 200), 5), candidates: array(r.candidates, x => ({ kind: x.kind, category: prose(x, 'category', 60), title: prose(x, 'title', 140), city: prose(x, 'city', 100), parcelIds: array(x.parcelIds, p => clip(p, 100), 30), parcelSourceId: prose(x, 'parcelSourceId', 200), point: x.point, bbox: x.bbox }), 30) };
     if (name === 'ugt_parcel_context') return { ok: r.ok !== false, parcelSourceId: r.parcelSourceId, areaM2: r.areaM2, designs: array(r.designs, x => ({ cid: x.cid, title: prose(x, 'title', 120), goal: prose(x, 'goal', 120) }), 30), buildings: r.buildings && { count: r.buildings.count }, planning: array(r.planning?.sources, refFree, 20), urbanRules: clip(JSON.stringify(r.urbanRules || ''), 1000) };
     if (name === 'ugt_explain' || name === 'ugt_help') return { text: clip((r.untrusted?.text || r.instructions || r.text || r.entries?.join?.('') || r.markdown || ''), LIMIT - 100) };
     return refFree(r);

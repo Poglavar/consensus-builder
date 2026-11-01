@@ -1110,7 +1110,7 @@ The chat cursor identifies one exact parcel in the active parcel source. The sel
 set of parcel IDs used as the next design's site. During manual multi-selection, moving the cursor
 does not add parcels; Add changes membership and Done ends selection while retaining it. A source
 ID and parcel ID must resolve in the current live fabric before the browser applies a selection.
-Map navigation and selection are transient view state, separate from immutable plan revisions.
+Map navigation and selection are transient view state, separate from immutable plan revisions. A random starting parcel is a suggested site drawn from actual nearby source parcels, not a resolved interpretation of an ambiguous location. Choosing it changes only the selection; the person decides whether to draft there. Distance-based selection moves the cursor to a parcel near the requested destination.
 
 ### Working plan (chat)
 

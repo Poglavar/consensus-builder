@@ -50,6 +50,22 @@ function candidateKind(tags, search) {
     if (NEIGHBOURHOOD_PLACES.has(tags.place)) return 'neighbourhood';
     return 'place';
 }
+function candidateCategory(tags) {
+    if (tags.man_made === 'bridge' || tags.bridge === 'yes') return 'bridge';
+    if (tags.railway === 'station' || tags.public_transport === 'station') return 'station';
+    if (tags.railway === 'subway_entrance' || (tags.entrance && tags.entrance !== 'no')) return 'entrance';
+    if (tags.railway === 'platform' || tags.public_transport === 'platform') return 'platform';
+    if (tags.public_transport === 'stop_position' || tags.highway === 'bus_stop' || ['tram_stop', 'bus_stop'].includes(tags.railway)) return 'stop';
+    if (NEIGHBOURHOOD_PLACES.has(tags.place)) return 'neighbourhood';
+    return undefined;
+}
+function candidateRank(feature) {
+    const category = feature.properties.category;
+    if (category === 'bridge' || category === 'neighbourhood') return 0;
+    if (category === 'station') return 1;
+    if (['entrance', 'stop', 'platform'].includes(category)) return 3;
+    return 2;
+}
 function toFeature(el, search) {
     if (!el || !['node', 'way', 'relation'].includes(el.type) || !Number.isSafeInteger(Number(el.id))) return null;
     const tags = el.tags && typeof el.tags === 'object' ? el.tags : {};
@@ -64,8 +80,9 @@ function toFeature(el, search) {
     const bounds = el.bounds;
     const bbox = bounds && [Number(bounds.minlon), Number(bounds.minlat), Number(bounds.maxlon), Number(bounds.maxlat)].every(Number.isFinite)
         ? [Number(bounds.minlon), Number(bounds.minlat), Number(bounds.maxlon), Number(bounds.maxlat)] : undefined;
+    const category = !search.address && !search.intersection ? candidateCategory(tags) : undefined;
     return { type: 'Feature', id: `${el.type}/${el.id}`, geometry: { type: 'Point', coordinates: [lon, lat] },
-        properties: { kind, title, osmId: `${el.type}/${el.id}`, bbox } };
+        properties: { kind, title, osmId: `${el.type}/${el.id}`, bbox, ...(category ? { category } : {}) } };
 }
 function convert(elements, cap, json, search) {
     const limit = Math.min(cap, QUERY_RESULT_CAP), features = [];
@@ -116,12 +133,14 @@ export async function searchOsmPlaces({ bbox, query, address, intersection, limi
     const result = await fetchBbox(bbox, { cellDeg: CELL_DEG, maxSpanDeg: MAX_SPAN_DEG, fetchImpl, overpassUrl });
     const eligible = result.features.filter(feature => insideBbox(feature, bbox));
     const ranked = eligible.sort((a, b) => {
+        const aRank = candidateRank(a), bRank = candidateRank(b);
         const aExact = a.properties.title.toLocaleLowerCase() === (normalized.query || '').toLocaleLowerCase() ? 0 : 1;
         const bExact = b.properties.title.toLocaleLowerCase() === (normalized.query || '').toLocaleLowerCase() ? 0 : 1;
-        return aExact - bExact || a.properties.title.localeCompare(b.properties.title) || a.id.localeCompare(b.id);
+        return aExact - bExact || aRank - bRank || a.properties.title.localeCompare(b.properties.title) || a.id.localeCompare(b.id);
     });
     const candidates = ranked.slice(0, limit).map(feature => ({ kind: feature.properties.kind, title: feature.properties.title,
-        point: feature.geometry.coordinates, ...(feature.properties.bbox ? { bbox: feature.properties.bbox } : {}), osmId: feature.properties.osmId }));
+        point: feature.geometry.coordinates, ...(feature.properties.category ? { category: feature.properties.category } : {}),
+        ...(feature.properties.bbox ? { bbox: feature.properties.bbox } : {}), osmId: feature.properties.osmId }));
     return { candidates, partial: result.partial === true, truncated: result.truncated === true || ranked.length > limit, source: 'osm-overpass' };
 }
 

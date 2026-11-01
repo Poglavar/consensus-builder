@@ -24,6 +24,25 @@ describe('chat turn runner', () => {
         expect(emit).toHaveBeenCalledWith('selection', { selection });
     });
 
+    it.each([
+        { text: 'Let us build a road', point: undefined, direction: undefined },
+        { text: 'Let us build a plan of row houses', point: undefined, direction: undefined },
+        { text: 'Place a freeform building southwest of London Bridge', point: [-0.0877, 51.5079], direction: 'southwest' }
+    ])('offers a real starting selection and continues with choices before drafting: $text', async ({ text, point, direction }) => {
+        const selection = { parcelSourceId: 'source', focusParcelId: 'start', parcelIds: ['start'], active: false };
+        const question = 'First choose the land, then the layout and dimensions. I have also selected a random parcel; navigate up, down, north, south, or a direction and how many metres. Continue here, select it yourself, or give an address or intersection?';
+        const options = [{ label: 'Continue here' }, { label: 'Select it myself' }, { label: 'Give an address or intersection' }];
+        const callModel = model({ content: [tool('ugt_select_parcels', { action: 'random', radiusM: point ? 500 : 100, ...(point ? { point, direction } : {}) })] },
+            { content: [tool('ask_person', { question, options })] });
+        const callTool = vi.fn(async () => ({ structuredContent: { selection, point: [-0.09, 51.5] } })), emit = vi.fn();
+        const result = await runTurn({ ...base, text, context: { city: 'london', parcelSourceId: 'source', view: { at: '51.5,-0.1,17' } }, callModel, callTool, emit });
+        expect(callTool).toHaveBeenCalledTimes(1);
+        expect(callTool).toHaveBeenCalledWith('ugt_select_parcels', expect.objectContaining({ action: 'random', point: point || [-0.1, 51.5] }), expect.anything());
+        expect(emit).toHaveBeenCalledWith('selection', { selection, point: [-0.09, 51.5] });
+        expect(result.outcome).toEqual({ type: 'question', question, options });
+        expect(result.planChanged).toBe(false);
+    });
+
     it('keeps the request as an instruction and gives selection refs without exposing plan refs', () => {
         const prompt = contextBlock({ city: 'london', language: 'en', selection: { designCid: 'design-cid', buildingIndex: 2 } }, { cid: 'private-plan-cid', draftRef: 'https://private.test/plan' }, []);
         expect(prompt).toContain('<instruction>'); expect(prompt).toContain('"ref":"building:design-cid:2"');

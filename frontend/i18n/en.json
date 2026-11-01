@@ -9090,7 +9090,7 @@
   }
 ,
   "chat": {
-    "title": "Ask the agent",
+    "title": "Ask Mechaurbanista",
     "intro": "Tell the agent what you want to change.",
     "placeholder": "What would you like to change?",
     "send": "Send",

@@ -169,6 +169,21 @@ describe('Urban Game Theory MCP server', () => {
         expect(observations.map(row => row.outcome)).toEqual(['failure', 'failure']);
     });
 
+    it('exposes bounded random-start and distance selection through the public parcel primitive', async () => {
+        const tools = stubTools();
+        tools.selectParcels = vi.fn(async () => ({ selection: { parcelSourceId: 'source', focusParcelId: 'p', parcelIds: ['p'], active: false }, point: [0, 0] }));
+        await connect(tools);
+        const tool = (await toolsByName()).ugt_select_parcels;
+        expect(tool.annotations).toMatchObject({ readOnlyHint: true, idempotentHint: false });
+        expect(tool.inputSchema.properties.action.enum).toContain('random');
+        expect(tool.inputSchema.properties.radiusM.maximum).toBe(1000);
+        const args = { city: 'london', parcelSourceId: 'source', action: 'random', point: [-0.08, 51.5], direction: 'southwest', radiusM: 500 };
+        expect((await client.callTool({ name: 'ugt_select_parcels', arguments: args })).structuredContent.selection.parcelIds).toEqual(['p']);
+        expect(tools.selectParcels).toHaveBeenCalledWith(args);
+        expect((await client.callTool({ name: 'ugt_select_parcels', arguments: { ...args, radiusM: 1001 } })).isError).toBe(true);
+        expect(tools.selectParcels).toHaveBeenCalledTimes(1);
+    });
+
     it('marks reads read-only, publishing additive and idempotent, and chain actions destructive', async () => {
         await connect(stubTools());
         const byName = await toolsByName();

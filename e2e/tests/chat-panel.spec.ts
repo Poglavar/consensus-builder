@@ -27,10 +27,17 @@ test('chat panel sends a turn and announces the streamed reply @core', async ({ 
   });
   await page.goto('/', { waitUntil: 'domcontentloaded' });
   await waitForMapReady(page);
-  await page.locator(selectors.chatButton).click();
+  const openChatButton = page.getByRole('button', { name: 'Ask Mechaurbanista' });
+  await expect(openChatButton).toBeVisible();
+  await expect(openChatButton).toHaveAttribute('title', 'Ask Mechaurbanista');
+  await expect(openChatButton.locator('.fa-robot')).toHaveAttribute('aria-hidden', 'true');
+  await openChatButton.click();
   await page.evaluate(() => { (window as any).selectedProposal = { selectedBuildingIndex: 2 }; });
   const sheet = page.locator(selectors.chatSheet);
   await expect(sheet).toBeVisible();
+  const chatHeading = sheet.getByRole('heading', { name: 'Ask Mechaurbanista' });
+  await expect(chatHeading).toBeVisible();
+  await expect(chatHeading.locator('.fa-robot')).toHaveAttribute('aria-hidden', 'true');
   const composer = sheet.locator('.chat-input');
   await composer.fill('Add a park');
   await composer.press('Enter');
@@ -41,6 +48,8 @@ test('chat panel sends a turn and announces the streamed reply @core', async ({ 
   const option = sheet.getByRole('button', { name: 'Move it north' });
   await option.focus();
   await page.evaluate(() => (window as any).i18n.setLanguage('fr', { persist: false }));
+  await expect(page.locator(selectors.chatButton)).toHaveAttribute('aria-label', 'Demander à Mechaurbanista');
+  await expect(sheet.getByRole('heading', { name: 'Demander à Mechaurbanista' })).toBeVisible();
   await expect(composer).toHaveAttribute('placeholder', 'Que souhaitez-vous modifier ?');
   await expect(option).toBeFocused();
   await option.click();

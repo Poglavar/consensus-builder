@@ -18,12 +18,18 @@ authenticated chat API and is not accepted as an MCP capability. See [chat-agent
 full street addresses (`street` and `houseNumber`) and intersections (`streetA`, `streetB`).
 OSM lookup uses the app backend's existing Overpass chain and requires a WGS84 bbox spanning at
 most 0.5 degrees per axis. Intersections require a shared OSM node; geometric crossings alone do
-not count. Candidates retain their centers, source identity, ambiguity and coverage flags.
+not count. Candidates retain their centers, source identity, ambiguity and coverage flags, with recognized categories such as bridge, station or entrance. Exact names rank first; main features precede same-name entrances and stops.
 
 `ugt_map_view` computes an absolute view from a current `MapShare` view and a center, directional
 pan in metres or feet, or zoom change. Up/down/left/right mean north/south/west/east; diagonals are
-supported. `ugt_select_parcels` computes an absolute source-parcel selection: select, step, begin,
-add, remove, finish, block, clear. Manual stepping moves the cursor without adding membership.
+supported. `ugt_select_parcels` computes an absolute source-parcel selection: select, random, step,
+begin, add, remove, finish, block, clear. Random chooses one real parcel whose representative point
+lies within `radiusM` of `point` (default 250 m, maximum 1000 m), optionally within 45 degrees of a
+compass direction. It replaces the selection with one starting parcel; repeated calls can differ,
+while replaying the returned absolute state retains the same parcel. Step without `distance` moves
+one adjacent parcel. With `distance` and `unit` (`m` or `ft`), it selects the nearest parcel to the
+directional destination within half the movement distance, capped at 100 m, excluding the current
+parcel and reverse-direction candidates. Manual stepping moves the cursor without adding membership.
 Block selection requires complete local parcel and ground-level road evidence and a bounded block.
 Unavailable evidence is an error, not an empty block. Current live-fabric identities must resolve
 exactly; a source anchor is never silently expanded into changed live pieces.

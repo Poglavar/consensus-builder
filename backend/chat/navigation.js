@@ -11,7 +11,13 @@ export function searchBounds(view) {
 export function injectMapArgs(name, input, context = {}) {
     const args = { ...input };
     if (name === 'ugt_map_view') args.view = context.view;
-    if (name === 'ugt_select_parcels') args.selection = context.selection || {};
+    if (name === 'ugt_select_parcels') {
+        args.selection = context.selection || {};
+        if (args.action === 'random' && args.point == null) {
+            const bounds = searchBounds(context.view);
+            if (bounds) { const [lat, lng] = context.view.at.split(',').map(Number); args.point = [lng, lat]; }
+        }
+    }
     if (locationTools.has(name)) {
         if (!args.city && context.city) args.city = context.city;
         if (!args.parcelSourceId && context.parcelSourceId) args.parcelSourceId = context.parcelSourceId;

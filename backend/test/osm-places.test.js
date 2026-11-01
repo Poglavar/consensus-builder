@@ -17,10 +17,26 @@ describe('OSM place lookup', () => {
         const ql = new URLSearchParams(calls[0].options.body).get('data');
         expect(ql).toContain('["name"~"park",i]');
         expect(result).toEqual({ source: 'osm-overpass', partial: false, truncated: false, candidates: [
-            { kind: 'neighbourhood', title: 'Park [East].', point: [0.016, 0.015], osmId: 'node/7' },
+            { kind: 'neighbourhood', title: 'Park [East].', point: [0.016, 0.015], category: 'neighbourhood', osmId: 'node/7' },
             { kind: 'place', title: 'Park House', point: [0.013, 0.014], osmId: 'way/8' }
         ] });
         expect(result.candidates[0]).not.toHaveProperty('geometry');
+    });
+
+    it('keeps same-name bridge and station features ahead of entrance nodes before applying the result limit', async () => {
+        const result = await searchOsmPlaces({ bbox, query: 'London Bridge', limit: 2, overpassUrl: 'https://unit.test/bridge-station-ranking',
+            fetchImpl: async () => ({ ok: true, headers: { get: () => null }, json: async () => ({ elements: [
+                { type: 'node', id: 2, lat: 0.015, lon: 0.016, tags: { name: 'London Bridge', railway: 'subway_entrance' } },
+                { type: 'node', id: 3, lat: 0.016, lon: 0.017, tags: { name: 'London Bridge', railway: 'station' } },
+                { type: 'way', id: 4, center: { lat: 0.014, lon: 0.018 }, tags: { name: 'London Bridge', bridge: 'yes' } },
+                { type: 'way', id: 5, center: { lat: 0.017, lon: 0.019 }, tags: { name: 'London Bridge', public_transport: 'platform' } },
+                { type: 'way', id: 6, center: { lat: 0.017, lon: 0.019 }, tags: { name: 'London Bridge East', bridge: 'yes' } }
+            ] }) }) });
+        expect(result.candidates).toEqual([
+            { kind: 'place', title: 'London Bridge', point: [0.018, 0.014], category: 'bridge', osmId: 'way/4' },
+            { kind: 'place', title: 'London Bridge', point: [0.017, 0.016], category: 'station', osmId: 'node/3' }
+        ]);
+        expect(result.truncated).toBe(true);
     });
 
     it('uses parsed house numbers and street constraints for address queries', async () => {

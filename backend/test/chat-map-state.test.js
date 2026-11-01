@@ -12,9 +12,20 @@ describe('chat map state', () => {
         expect(injectMapArgs('ugt_find_place', {}, context).bbox).toEqual(searchBounds(context.view));
         expect(searchBounds({ at: 'bad' })).toBeNull();
     });
+    it('anchors random starting parcels to the current view unless a resolved location was supplied', () => {
+        const context = { city: 'london', parcelSourceId: 'source', view: { at: '51.5,-0.1,17' } };
+        expect(injectMapArgs('ugt_select_parcels', { action: 'random', radiusM: 100 }, context))
+            .toMatchObject({ city: 'london', parcelSourceId: 'source', point: [-0.1, 51.5], radiusM: 100 });
+        expect(injectMapArgs('ugt_select_parcels', { action: 'random', point: [-0.08, 51.507], direction: 'southwest' }, context))
+            .toMatchObject({ point: [-0.08, 51.507], direction: 'southwest' });
+        expect(injectMapArgs('ugt_select_parcels', { action: 'random' }, { view: { at: 'bad' } })).not.toHaveProperty('point');
+        expect(injectMapArgs('ugt_select_parcels', { action: 'step', direction: 'south', distance: 100 }, context)).not.toHaveProperty('point');
+    });
     it('does not issue commands for failed tools and retains search coverage facts', () => {
         expect(navigationResult('ugt_map_view', { isError: true, structuredContent: { view: { at: '0,0,17' } } })).toBeNull();
         const result = JSON.parse(compactForModel('ugt_find_place', { candidates: [], partial: true, truncated: true, noMatch: false, warnings: ['Incomplete source'] }));
         expect(result).toMatchObject({ partial: true, truncated: true, noMatch: false, warnings: ['Incomplete source'] });
+        const places = JSON.parse(compactForModel('ugt_find_place', { candidates: [{ kind: 'place', category: 'bridge', title: 'River Bridge', point: [0, 0] }] }));
+        expect(places.candidates[0]).toMatchObject({ category: 'bridge', title: 'River Bridge', point: [0, 0] });
     });
 });

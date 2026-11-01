@@ -7,6 +7,11 @@ const topology = require('../../frontend/js/parcels/block-topology.js');
 const MAX_BLOCK_PARCELS = topology.MAX_BLOCK_PARCELS;
 const fail = (code, message, action) => Object.assign(new Error(message), { code, next: { action } });
 const idOf = value => typeof value === 'string' && value.trim() ? value.trim() : null;
+const parcelIdOf = feature => {
+    const value = feature?.id ?? feature?.properties?.parcelId ?? feature?.properties?.parcel_id
+        ?? feature?.properties?.PARCEL_ID ?? feature?.properties?.id;
+    return value == null ? null : String(value);
+};
 
 function centerOf(feature) {
     const coordinates = turf.pointOnFeature(feature).geometry.coordinates;
@@ -14,7 +19,7 @@ function centerOf(feature) {
 }
 function metricFeature(feature) {
     const projected = turf.toMercator(feature);
-    const id = idOf(String(feature.id ?? feature.properties?.parcelId ?? ''));
+    const id = idOf(parcelIdOf(feature));
     if (!id) throw fail('parcel-id-missing', 'A parcel in the source result has no identity.', 'Retry after the parcel source is repaired.');
     const polygons = projected.geometry.type === 'Polygon' ? [projected.geometry.coordinates]
         : projected.geometry.type === 'MultiPolygon' ? projected.geometry.coordinates : null;
@@ -59,8 +64,34 @@ function parcelIdsInBlock(block, parcels) {
     }
     return [...ids];
 }
+function bearingBetween(from, to) {
+    const a = turf.toMercator(turf.point(from)).geometry.coordinates;
+    const b = turf.toMercator(turf.point(to)).geometry.coordinates;
+    return (Math.atan2(b[0] - a[0], b[1] - a[1]) * 180 / Math.PI + 360) % 360;
+}
+function candidatesNear(features, center, radiusM, direction = null, sectorDegrees = 180, hemisphereOrigin = center) {
+    const candidates = new Map();
+    const desired = direction == null ? null : directionBearing(direction);
+    for (const feature of features || []) {
+        if (!['Polygon', 'MultiPolygon'].includes(feature.geometry?.type)) continue;
+        const id = idOf(parcelIdOf(feature));
+        if (!id) throw fail('parcel-id-missing', 'A candidate parcel has no source identity.', 'Retry after the parcel source is repaired.');
+        const point = centerOf(feature);
+        const distanceM = turf.distance(turf.point(center), turf.point(point), { units: 'meters' });
+        if (distanceM > radiusM + 1e-6) continue;
+        if (desired != null) {
+            const fromOrigin = turf.distance(turf.point(hemisphereOrigin), turf.point(point), { units: 'meters' });
+            const delta = Math.abs(((bearingBetween(hemisphereOrigin, point) - desired + 540) % 360) - 180);
+            if (fromOrigin < 1e-6 || delta > sectorDegrees) continue;
+        }
+        const candidate = { id, point, distanceM };
+        const prior = candidates.get(id);
+        if (!prior || distanceM < prior.distanceM) candidates.set(id, candidate);
+    }
+    return [...candidates.values()].sort((a, b) => a.distanceM - b.distanceM || a.id.localeCompare(b.id));
+}
 
-export function createMcpNavigation({ read }) {
+export function createMcpNavigation({ read, random = Math.random }) {
     if (!read?.parcels || !read?.request) throw new TypeError('createMcpNavigation needs parcel and request readers');
 
     function mapView({ view, center, direction, distance, unit = 'm', zoom, zoomDelta } = {}) {
@@ -101,11 +132,27 @@ export function createMcpNavigation({ read }) {
         return { view: nextView };
     }
 
-    async function selectParcels({ city, parcelSourceId, selection, action, parcelId, point, direction } = {}) {
+    async function selectParcels(input = {}) {
+        const { city, parcelSourceId, selection, action, parcelId, point, direction, distance, unit = 'm' } = input;
+        const radiusM = input.radiusM ?? 250;
         const sourceId = idOf(parcelSourceId);
         if (!sourceId) throw fail('parcel-source-required', 'Supply an explicit parcelSourceId.', 'Use ugt_list_sources to choose a parcel source.');
         if (!idOf(city)) throw fail('city-required', 'Supply a city for parcel navigation.', 'Choose a city.');
-        if (!['select', 'step', 'add', 'remove', 'block', 'clear', 'begin', 'finish'].includes(action)) throw fail('invalid-selection-action', 'Unsupported parcel selection action.', 'Use select, step, add, remove, block, clear, begin or finish.');
+        if (!['select', 'step', 'random', 'add', 'remove', 'block', 'clear', 'begin', 'finish'].includes(action)) throw fail('invalid-selection-action', 'Unsupported parcel selection action.', 'Use select, step, random, add, remove, block, clear, begin or finish.');
+        if (action === 'random') {
+            if (point == null || parcelId != null || distance != null) throw fail('invalid-parcel-action', 'Random selection needs a point and cannot include parcelId or distance.', 'Supply a point, optional direction and radiusM.');
+            if (!Number.isFinite(radiusM) || radiusM <= 0 || radiusM > 1000) throw fail('invalid-radius', 'radiusM must be positive and at most 1,000 metres.', 'Supply a radiusM from 0 to 1,000.');
+        } else if (action === 'step') {
+            if (point != null || parcelId != null || input.radiusM != null) throw fail('invalid-parcel-action', 'Step uses the focused parcel and cannot include point, parcelId or radiusM.', 'Supply direction and optional distance with unit m or ft.');
+            if (distance != null && (!Number.isFinite(distance) || distance <= 0 || distance > 100000 || !['m', 'ft'].includes(unit))) throw fail('invalid-distance', 'Step distance must be positive and at most 100,000 metres or feet.', 'Supply a positive distance and unit m or ft.');
+            if (distance == null && input.unit != null) throw fail('invalid-parcel-action', 'unit requires a distance-based step.', 'Supply distance or omit unit.');
+        } else if (distance != null) throw fail('invalid-parcel-action', 'distance applies only to step.', 'Remove distance or choose action step.');
+        if (action !== 'random' && input.radiusM != null) throw fail('invalid-parcel-action', 'radiusM applies only to random.', 'Remove radiusM or choose action random.');
+        if (action !== 'random' && action !== 'step' && direction != null) throw fail('invalid-parcel-action', 'direction applies only to random or step.', 'Remove direction or choose action random or step.');
+        if (action !== 'step' && action !== 'random' && input.unit != null) throw fail('invalid-parcel-action', 'unit applies only to a distance-based step.', 'Remove unit or choose a distance-based step.');
+        if (!['select', 'random'].includes(action) && point != null) throw fail('invalid-parcel-action', 'point applies only to select or random.', 'Remove point or choose action select or random.');
+        if (!['select', 'add', 'remove', 'block'].includes(action) && parcelId != null) throw fail('invalid-parcel-action', 'parcelId does not apply to this action.', 'Remove parcelId or choose select, add, remove or block.');
+        if (action === 'random' && input.unit != null) throw fail('invalid-parcel-action', 'Random radiusM is measured in metres.', 'Remove unit and use radiusM in metres.');
         const current = selection || {};
         if (current.parcelSourceId != null && idOf(current.parcelSourceId) !== sourceId) throw fail('invalid-selection', 'Selection parcel source does not match the requested source.', 'Reload the map selection and try again.');
         if (current.parcelIds != null && !Array.isArray(current.parcelIds)) throw fail('invalid-selection', 'Selection parcel IDs must be an array.', 'Reload the map selection and try again.');
@@ -117,18 +164,33 @@ export function createMcpNavigation({ read }) {
         let features = [];
         let selectedParcelId = idOf(parcelId);
         let pointFeature = null;
+        let stepOrigin = null;
+        let stepDestination = null;
+        let stepRadiusM = null;
+        if (action === 'random') {
+            const origin = normalizeCenter(point);
+            const searchGeometry = turf.buffer(turf.point(origin), radiusM, { units: 'meters' }).geometry;
+            const found = await read.parcels({ city, parcelSourceId: sourceId, geometry: searchGeometry });
+            if (found.complete !== true || found.truncated || !Array.isArray(found.features)) throw fail('parcel-coverage-incomplete', 'The random parcel query did not return complete coverage.', 'Retry when the parcel source returns complete coverage.');
+            const candidates = candidatesNear(found.features, origin, radiusM, direction, 45);
+            if (!candidates.length) throw fail('parcel-not-found', 'No source parcel representative point falls inside the requested search area.', 'Increase radiusM or choose another point or direction.');
+            const sample = random();
+            if (!Number.isFinite(sample) || sample < 0 || sample >= 1) throw fail('random-source-invalid', 'The random source must return a number in [0, 1).', 'Retry parcel selection.');
+            const chosen = candidates[Math.floor(sample * candidates.length)];
+            return { selection: { parcelSourceId: sourceId, focusParcelId: chosen.id, parcelIds: [chosen.id], active: false }, point: chosen.point };
+        }
         if (action === 'select' && point != null) {
             if (selectedParcelId) throw fail('parcel-target-ambiguous', 'Choose a parcelId or a point, not both.', 'Supply exactly one parcel target.');
             const coordinate = normalizeCenter(point);
             const searchGeometry = turf.buffer(turf.point(coordinate), 1, { units: 'meters' }).geometry;
             const found = await read.parcels({ city, parcelSourceId: sourceId, geometry: searchGeometry });
-            if (found.complete !== true || found.truncated) throw fail('parcel-coverage-incomplete', 'The point query did not return complete parcel coverage.', 'Retry when the parcel source returns complete coverage.');
+            if (found.complete !== true || found.truncated || !Array.isArray(found.features)) throw fail('parcel-coverage-incomplete', 'The point query did not return complete parcel coverage.', 'Retry when the parcel source returns complete coverage.');
             const exactPoint = turf.point(coordinate);
             const candidates = (found.features || []).filter(feature => ['Polygon', 'MultiPolygon'].includes(feature.geometry?.type)
                 && turf.booleanPointInPolygon(exactPoint, feature));
             if (candidates.length !== 1) throw fail(candidates.length ? 'parcel-ambiguous' : 'parcel-not-found', candidates.length ? 'The point matches multiple parcels.' : 'The point is outside the available parcels.', 'Choose a parcelId from ugt_find_place.');
             pointFeature = candidates[0];
-            selectedParcelId = idOf(String(candidates[0].id ?? candidates[0].properties?.parcelId ?? ''));
+            selectedParcelId = idOf(parcelIdOf(candidates[0]));
             if (!selectedParcelId) throw fail('parcel-id-missing', 'The point matched ground without a parcel identity.', 'Retry after the parcel source is repaired.');
         }
         if (action === 'select' && !selectedParcelId) throw fail('parcel-id-required', 'Select needs a parcelId or point.', 'Supply a parcelId or a point inside one parcel.');
@@ -142,31 +204,44 @@ export function createMcpNavigation({ read }) {
             if (seed) {
                 const seedRead = pointFeature ? { complete: true, features: [pointFeature] }
                     : await read.parcels({ city, parcelSourceId: sourceId, parcelIds: [seed] });
-                seedFeature = seedRead.features?.find(feature => String(feature.id ?? feature.properties?.parcelId) === seed);
+                seedFeature = seedRead.features?.find(feature => parcelIdOf(feature) === seed);
                 if (seedRead.complete !== true || !seedFeature) throw fail('parcel-coverage-incomplete', `Parcel ${seed} is not available from the selected source.`, 'Retry when the parcel source returns complete coverage.');
                 features = [seedFeature];
             }
             let searchGeometry = null;
             if (action === 'step' || action === 'block') {
-                searchGeometry = turf.buffer(seedFeature, 250, { units: 'meters' }).geometry;
+                if (action === 'step' && distance != null) {
+                    stepOrigin = centerOf(seedFeature);
+                    const meters = distance * (unit === 'ft' ? 0.3048 : 1);
+                    stepDestination = turf.destination(turf.point(stepOrigin), meters / 1000, directionBearing(direction), { units: 'kilometers' }).geometry.coordinates;
+                    stepRadiusM = Math.min(100, meters / 2);
+                    searchGeometry = turf.buffer(turf.point(stepDestination), stepRadiusM, { units: 'meters' }).geometry;
+                } else searchGeometry = turf.buffer(seedFeature, 250, { units: 'meters' }).geometry;
                 const surroundings = await read.parcels({ city, parcelSourceId: sourceId, geometry: searchGeometry });
-                if (surroundings.complete !== true || surroundings.truncated) throw fail('parcel-coverage-incomplete', 'Neighbouring parcel coverage is incomplete.', 'Retry with an available parcel source; navigation needs complete local ground.');
-                features = surroundings.features || [];
-                if (!features.some(feature => String(feature.id ?? feature.properties?.parcelId) === seed)) features.push(seedFeature);
+                if (surroundings.complete !== true || surroundings.truncated || !Array.isArray(surroundings.features)) throw fail('parcel-coverage-incomplete', 'Neighbouring parcel coverage is incomplete.', 'Retry with an available parcel source; navigation needs complete local ground.');
+                features = surroundings.features;
+                if (!features.some(feature => parcelIdOf(feature) === seed)) features.push(seedFeature);
             }
             if (action === 'step') {
-                const bearing = directionBearing(direction);
-                const origin = turf.toMercator(turf.point(centerOf(seedFeature))).geometry.coordinates;
-                const metric = features.map(metricFeature);
-                const adjacent = new Set(topology.neighborPairs(metric, []).flatMap(pair => pair.a === seed ? [pair.b] : pair.b === seed ? [pair.a] : []));
-                const candidates = features.filter(feature => adjacent.has(String(feature.id ?? feature.properties?.parcelId))).map(feature => {
-                    const c = turf.toMercator(turf.point(centerOf(feature))).geometry.coordinates;
-                    const bearingTo = (Math.atan2(c[0] - origin[0], c[1] - origin[1]) * 180 / Math.PI + 360) % 360;
-                    const delta = Math.abs(((bearingTo - bearing + 540) % 360) - 180);
-                    return { id: String(feature.id ?? feature.properties?.parcelId), delta, distance: Math.hypot(c[0] - origin[0], c[1] - origin[1]), feature };
-                }).filter(candidate => candidate.delta <= 60).sort((a, b) => a.delta - b.delta || a.distance - b.distance || a.id.localeCompare(b.id));
-                if (!candidates.length) throw fail('parcel-neighbour-not-found', `No adjacent parcel lies ${direction} of ${seed}.`, 'Choose a different direction or parcel.');
-                focus = candidates[0].id;
+                if (distance != null) {
+                    const candidates = candidatesNear(features, stepDestination, stepRadiusM, direction, 90, stepOrigin)
+                        .filter(candidate => candidate.id !== seed);
+                    if (!candidates.length) throw fail('parcel-neighbour-not-found', `No source parcel representative lies near the ${distance} ${unit} step ${direction} of ${seed}.`, 'Choose a shorter distance, another direction, or another parcel.');
+                    focus = candidates[0].id;
+                } else {
+                    const bearing = directionBearing(direction);
+                    const origin = turf.toMercator(turf.point(centerOf(seedFeature))).geometry.coordinates;
+                    const metric = features.map(metricFeature);
+                    const adjacent = new Set(topology.neighborPairs(metric, []).flatMap(pair => pair.a === seed ? [pair.b] : pair.b === seed ? [pair.a] : []));
+                    const candidates = features.filter(feature => adjacent.has(parcelIdOf(feature))).map(feature => {
+                        const c = turf.toMercator(turf.point(centerOf(feature))).geometry.coordinates;
+                        const bearingTo = (Math.atan2(c[0] - origin[0], c[1] - origin[1]) * 180 / Math.PI + 360) % 360;
+                        const delta = Math.abs(((bearingTo - bearing + 540) % 360) - 180);
+                        return { id: parcelIdOf(feature), delta, distance: Math.hypot(c[0] - origin[0], c[1] - origin[1]), feature };
+                    }).filter(candidate => candidate.delta <= 60).sort((a, b) => a.delta - b.delta || a.distance - b.distance || a.id.localeCompare(b.id));
+                    if (!candidates.length) throw fail('parcel-neighbour-not-found', `No adjacent parcel lies ${direction} of ${seed}.`, 'Choose a different direction or parcel.');
+                    focus = candidates[0].id;
+                }
                 if (!current.active) ids = [focus];
             } else if (action === 'block') {
                 const [west, south, east, north] = turf.bbox(turf.feature(searchGeometry));
@@ -213,7 +288,7 @@ export function createMcpNavigation({ read }) {
             if (!ids.includes(focus)) ids.push(focus);
             if (ids.length > MAX_BLOCK_PARCELS) throw fail('parcel-selection-limit', `Selection cannot contain more than ${MAX_BLOCK_PARCELS} parcels.`, 'Clear parcels or keep a smaller selection.');
         }
-        const feature = features.find(item => String(item.id ?? item.properties?.parcelId) === focus);
+        const feature = features.find(item => parcelIdOf(item) === focus);
         return { selection: { parcelSourceId: sourceId, focusParcelId: focus, parcelIds: ids, active: current.active === true || action === 'add' || action === 'block' }, ...(feature ? { point: centerOf(feature) } : point ? { point } : {}) };
     }
 

@@ -45,7 +45,7 @@ const steps = [
 export const MCP_FEATURES = Object.freeze([
     { feature: 'chat-cost', read: 'ugt_chat_cost', contract: 'Backend-configured model token prices, conservative maximum turn reservation and optional token-count estimate. Estimates are not actual charges; private conversation totals remain in the authenticated chat session.' },
     { feature: 'map-navigation', view: 'ugt_map_view', selection: 'ugt_select_parcels',
-        contract: 'Stateless commands returning an absolute view or source-parcel selection. The chat applies them; other clients apply returned state. Manual selection separates the focused cursor from added parcels. Block selection requires complete road and parcel evidence.' },
+        contract: 'Stateless commands returning an absolute view or source-parcel selection. The chat applies them; other clients apply returned state. Random selection offers one real starting parcel near a point, optionally on a compass side. Step accepts an adjacent direction or a distance in metres/feet. Manual selection separates the focused cursor from added parcels. Block selection requires complete road and parcel evidence.' },
     { feature: 'community-code-voting', prepare: 'ugt_draft_agreement', edit: 'ugt_edit_agreement', inspect: 'ugt_voting_status', vote: 'ugt_cast_community_vote',
         eligibility: 'Fixed code hashes in consultation.voting; generate codes and retain contact assignments locally. Changing eligibility creates a new agreement without transferring votes.' },
     { feature: 'named-plans', create: 'ugt_draft_plan', inspect: 'ugt_inspect_plan', edit: 'ugt_edit_plan', publish: 'ugt_publish_plan' },

@@ -3,9 +3,9 @@ import { createMcpNavigation } from '../agents/mcp-navigation.js';
 
 const square = (id, west, east) => ({ type: 'Feature', id, properties: { parcelId: id }, geometry: { type: 'Polygon', coordinates: [[[west, 0], [east, 0], [east, 0.001], [west, 0.001], [west, 0]]] } });
 const parcels = [square('west', 0, 0.001), square('east', 0.001, 0.002), square('far-east', 0.002, 0.003)];
-function readers({ streets = { features: [] }, result = parcels } = {}) {
+function readers({ streets = { features: [] }, result = parcels, complete = true, truncated = false } = {}) {
     return {
-        parcels: vi.fn(async ({ parcelIds } = {}) => ({ complete: true,
+        parcels: vi.fn(async ({ parcelIds } = {}) => ({ complete, truncated,
             features: parcelIds ? result.filter(f => parcelIds.includes(f.id)) : result })),
         request: vi.fn(async () => streets)
     };
@@ -63,6 +63,52 @@ describe('MCP map navigation', () => {
         expect(movedCursor.selection).toMatchObject({ focusParcelId: 'west', parcelIds: ['west', 'east', 'far-east'], active: true });
         const removed = await navigation.selectParcels({ city: 'test', parcelSourceId: 'source', action: 'remove', selection });
         expect(removed.selection).toMatchObject({ focusParcelId: 'east', parcelIds: ['west', 'east'], active: false });
+    });
+
+    it('steps to the nearest representative around a requested distance in metres or feet', async () => {
+        const read = readers();
+        const navigation = createMcpNavigation({ read });
+        const inMetres = await navigation.selectParcels({ city: 'test', parcelSourceId: 'source', action: 'step', direction: 'east', distance: 110, unit: 'm', selection: { focusParcelId: 'west', parcelIds: ['west'], active: true } });
+        const inFeet = await navigation.selectParcels({ city: 'test', parcelSourceId: 'source', action: 'step', direction: 'east', distance: 110 / 0.3048, unit: 'ft', selection: { focusParcelId: 'west', parcelIds: ['west'], active: true } });
+        expect(inMetres.selection).toEqual({ parcelSourceId: 'source', focusParcelId: 'east', parcelIds: ['west'], active: true });
+        expect(inFeet.selection).toEqual(inMetres.selection);
+        expect(inMetres.point).toEqual(inFeet.point);
+        await expect(navigation.selectParcels({ city: 'test', parcelSourceId: 'source', action: 'step', direction: 'west', distance: 110, selection: { focusParcelId: 'west', parcelIds: [], active: false } })).rejects.toMatchObject({ code: 'parcel-neighbour-not-found' });
+        await expect(navigation.selectParcels({ city: 'test', parcelSourceId: 'source', action: 'step', direction: 'east', distance: 110, point: [0, 0], selection: { focusParcelId: 'west', parcelIds: [], active: false } })).rejects.toMatchObject({ code: 'invalid-parcel-action' });
+    });
+
+    it('chooses a uniformly random exact parcel identity from representative points in a bounded search', async () => {
+        const low = readers();
+        const high = readers({ result: [...parcels, structuredClone(parcels[1])] });
+        const middle = readers();
+        const point = [0.0015, 0.0005];
+        const oldSelection = { focusParcelId: 'west', parcelIds: ['west', 'far-east'], active: true };
+        const first = await createMcpNavigation({ read: low, random: () => 0 }).selectParcels({ city: 'test', parcelSourceId: 'source', action: 'random', point, selection: oldSelection });
+        const last = await createMcpNavigation({ read: high, random: () => 0.999999 }).selectParcels({ city: 'test', parcelSourceId: 'source', action: 'random', point, selection: oldSelection });
+        const middlePick = await createMcpNavigation({ read: middle, random: () => 0.5 }).selectParcels({ city: 'test', parcelSourceId: 'source', action: 'random', point });
+        expect(first.selection).toEqual({ parcelSourceId: 'source', focusParcelId: 'east', parcelIds: ['east'], active: false });
+        expect(last.selection).toEqual({ parcelSourceId: 'source', focusParcelId: 'west', parcelIds: ['west'], active: false });
+        expect(middlePick.selection.focusParcelId).toBe('far-east');
+        expect(first.point).toEqual([0.0015, 0.0005]);
+        expect(low.parcels).toHaveBeenCalledWith({ city: 'test', parcelSourceId: 'source', geometry: expect.objectContaining({ type: 'Polygon' }) });
+        const north = { type: 'Feature', id: 'a-north', properties: { parcelId: 'a-north' }, geometry: { type: 'Polygon', coordinates: [[[0, 0.001], [0.001, 0.001], [0.001, 0.002], [0, 0.002], [0, 0.001]]] } };
+        const east = square('z-east', 0.001, 0.002);
+        const directed = await createMcpNavigation({ read: readers({ result: [north, east] }), random: () => 0 }).selectParcels({ city: 'test', parcelSourceId: 'source', action: 'random', point: [0.0005, 0.0005], direction: 'east', radiusM: 200 });
+        expect(directed.selection.focusParcelId).toBe('z-east');
+    });
+
+    it('refuses incomplete, truncated, empty and invalid random searches', async () => {
+        const args = { city: 'test', parcelSourceId: 'source', action: 'random', point: [0.0005, 0.0005] };
+        await expect(createMcpNavigation({ read: readers({ complete: false }) }).selectParcels(args)).rejects.toMatchObject({ code: 'parcel-coverage-incomplete' });
+        await expect(createMcpNavigation({ read: readers({ truncated: true }) }).selectParcels(args)).rejects.toMatchObject({ code: 'parcel-coverage-incomplete' });
+        await expect(createMcpNavigation({ read: readers({ result: [square('far', 0.01, 0.011)] }) }).selectParcels({ ...args, radiusM: 20 })).rejects.toMatchObject({ code: 'parcel-not-found' });
+        const crossingButFarRepresentative = { type: 'Feature', id: 'spanning', properties: { parcelId: 'spanning' }, geometry: { type: 'Polygon', coordinates: [[[0.0008, 0], [0.01, 0], [0.01, 0.001], [0.0008, 0.001], [0.0008, 0]]] } };
+        await expect(createMcpNavigation({ read: readers({ result: [crossingButFarRepresentative] }) }).selectParcels({ ...args, point: [0.0005, 0.0005], radiusM: 50 })).rejects.toMatchObject({ code: 'parcel-not-found' });
+        await expect(createMcpNavigation({ read: readers() }).selectParcels({ ...args, parcelId: 'west' })).rejects.toMatchObject({ code: 'invalid-parcel-action' });
+        await expect(createMcpNavigation({ read: readers() }).selectParcels({ city: 'test', parcelSourceId: 'source', action: 'random', parcelId: 'west' })).rejects.toMatchObject({ code: 'invalid-parcel-action' });
+        await expect(createMcpNavigation({ read: readers() }).selectParcels({ ...args, radiusM: 1001 })).rejects.toMatchObject({ code: 'invalid-radius' });
+        await expect(createMcpNavigation({ read: readers() }).selectParcels({ ...args, unit: 'm' })).rejects.toMatchObject({ code: 'invalid-parcel-action' });
+        await expect(createMcpNavigation({ read: readers() }).selectParcels({ city: 'test', parcelSourceId: 'source', action: 'step', direction: 'east', radiusM: 250 })).rejects.toMatchObject({ code: 'invalid-parcel-action' });
     });
 
     it('resolves a point to exactly one parcel and omits an absent point', async () => {

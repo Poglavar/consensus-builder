@@ -102,6 +102,15 @@ explicit site. Absolute events are replay-safe and applied serially before the f
 The browser validates exact live parcel identities and reports an application error if they no
 longer resolve. Manual multi-selection keeps cursor movement separate from adding parcels.
 
+Mechaurbanista offers a random starting parcel when a design request has no definite site. A resolved
+landmark and requested compass side anchor that suggestion; otherwise the relay supplies the map
+center. The agent explains direction and distance navigation and offers using the parcel, clicking
+another, or supplying an address/intersection. It asks before drafting on the suggestion. For broad
+road or row-house requests it first explains site selection, route/layout and dimensions, then
+invites the next step. One parcel starts the discussion; row housing still needs at least two
+parcels or a divisible outline, and a road still needs a route. Failed source lookup is reported
+without claiming a parcel was selected.
+
 Map pans and design moves/rotations use the app's motion path and respect reduced motion. Single
 member replacements retain their before/after relationship so an edit animates instead of appearing
 as an unrelated removal and addition. The current UI language is captured on every sent message;
@@ -241,10 +250,10 @@ Common: `Cache-Control: no-store`; `Authorization: Bearer <64 hex>` (the regex o
 
 ### Existing files to touch
 - `frontend/js/plan-dialog.js`: the `{present, notice}` options on `syncSharedPlanOnMap`.
-- `frontend/index.html`: `css/chat-panel.css` in the css list; in the top-right cluster `<button type="button" id="chat-button" class="map-shell-button" data-sheet-target="chat-sheet" aria-controls="chat-sheet" aria-expanded="false" data-i18n-key="chat.title" data-i18n-attr="title,aria-label"><i class="fas fa-comment-dots" aria-hidden="true"></i></button>`; beside `#layers-sheet` a `<section id="chat-sheet" class="right-screen-panel map-sheet chat-sheet" role="dialog" aria-labelledby="chat-sheet-title" hidden>` with the standard header and close button and `<div class="map-sheet-body chat-sheet__body" data-chat-host></div>`; no `data-map-modes` (every view); `js/chat/chat-entry.js` in the script list after `mobile-dock-sheet.js`.
+- `frontend/index.html`: `css/chat-panel.css` in the css list; in the top-right cluster `<button type="button" id="chat-button" class="map-shell-button" data-sheet-target="chat-sheet" aria-controls="chat-sheet" aria-expanded="false" data-i18n-key="chat.title" data-i18n-attr="title,aria-label"><i class="fas fa-robot" aria-hidden="true"></i></button>`; beside `#layers-sheet` a `<section id="chat-sheet" class="right-screen-panel map-sheet chat-sheet" role="dialog" aria-labelledby="chat-sheet-title" hidden>` with the standard header and close button and `<div class="map-sheet-body chat-sheet__body" data-chat-host></div>`; no `data-map-modes` (every view); `js/chat/chat-entry.js` in the script list after `mobile-dock-sheet.js`.
 - `frontend/js/optional-tools-loader.js`: group `chat: ['js/chat/chat-transcript.js', 'js/chat/chat-context.js', 'js/chat/chat-navigation.js', 'js/chat/chat-client.js', 'js/chat/chat-panel.js']`.
 - `e2e/helpers/selectors.ts`: `chatButton: '#chat-button'`, `chatSheet: '#chat-sheet'`.
-- i18n `chat.*` in all seven JSONs: `title` "Ask the agent", `intro`, `placeholder`, `send`, `undo`, `newConversation`, `working`, `steps.one/other`, `stepFailed`, `planUpdated.one/other`, `planApplied`, `planFailed {{reason}}`, `turnCost {{cost}}`, `sessionTotal.one/other {{cost}} {{count}}`, `expired`, `optionsHint`, `planTitle` "Working plan", `roles.you`, `roles.agent`, `errors.budget`, `errors.rateLimited`, `errors.unavailable`, `errors.stream`.
+- i18n `chat.*` in all seven JSONs: `title` "Ask Mechaurbanista", `intro`, `placeholder`, `send`, `undo`, `newConversation`, `working`, `steps.one/other`, `stepFailed`, `planUpdated.one/other`, `planApplied`, `planFailed {{reason}}`, `turnCost {{cost}}`, `sessionTotal.one/other {{cost}} {{count}}`, `expired`, `optionsHint`, `planTitle` "Working plan", `roles.you`, `roles.agent`, `errors.budget`, `errors.rateLimited`, `errors.unavailable`, `errors.stream`.
 
 ### Frontend tests
 `backend/test/chat-transcript.test.js` (recorded event sequences: a question with options, a plan with a reply, 402 → an error entry with `pending = false`, reset) · `backend/test/chat-context.test.js` (the real `PlanComposition`, `DesignRecord`, `Cid` and `shared-plan-session.js` `artifactOf` / `rowOf`: the artifact is omitted when the member CIDs match and included when a member differs or `lastSynced` is null; memberIds are carried by CID; `lastChangeOf`; `parseRef`) · `backend/test/chat-client.test.js` (a fake fetch with a `ReadableStream` SSE body → events in order, the Bearer header and a token per base, 402 → `{code, status}`) · `e2e/tests/chat-panel.spec.ts` (the `mockApi` fixture; `page.route('**/chat/conversations', …)` and `…/conv-1/turns` fulfilling canned `text/event-stream` bodies; a park design and a `plan/v1` served through `privatePreview(page, baseURL, {plan, designs})` so the `plan` event's draftRef resolves; click `#chat-button`, type, Enter; assert the user message, a `.chat-option` chip from a `question` event, and `expect.poll` that the design is applied, as `mcp-preview.spec.ts` does).

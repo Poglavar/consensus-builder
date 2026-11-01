@@ -9118,7 +9118,7 @@
   }
 ,
   "chat": {
-    "title": "Preguntar al agente",
+    "title": "Pregúntale a Mechaurbanista",
     "intro": "Describe un cambio para tu plan de trabajo.",
     "placeholder": "¿Qué quieres cambiar?",
     "send": "Enviar",
