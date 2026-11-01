@@ -214,7 +214,7 @@
             article.append(node('strong', '', t(message.role === 'user' ? 'chat.roles.you' : 'chat.roles.agent')));
             if (message.text) article.append(node('p', '', message.text));
             if (message.pending) article.append(node('p', '', t('chat.working')));
-            if (message.steps?.length) {
+            if (state.conversation?.debugCosts === true && message.steps?.length) {
                 const details = node('details', 'chat-steps'), key = String(message.id), summary = node('summary', '', t('chat.steps.other', { count: message.steps.length })), list = node('ol');
                 details.dataset.chatMessageId = key; details.open = expandedSteps.has(key);
                 details.addEventListener('toggle', () => { if (details.open) expandedSteps.add(key); else expandedSteps.delete(key); });

@@ -43,7 +43,9 @@ test('chat panel sends a turn and announces the streamed reply @core', async ({ 
   await composer.press('Enter');
   await expect(sheet.getByText('Which direction?')).toBeVisible();
   const steps = sheet.locator('.chat-steps');
-  await steps.locator('summary').click();
+  await expect(steps).toBeVisible();
+  await steps.locator('summary').focus();
+  await steps.locator('summary').press('Enter');
   await expect(steps).toHaveAttribute('open', '');
   const option = sheet.getByRole('button', { name: 'Move it north' });
   await option.focus();
@@ -136,6 +138,8 @@ test('chat navigation events begin, add, finish, and replay exact parcel selecti
   await composer.fill('Begin manual parcel selection');
   await composer.press('Enter');
   await expect(sheet.getByText('Manual parcel selection is active.')).toBeVisible();
+  await expect(sheet.locator('.chat-steps')).toHaveCount(0);
+  await expect(sheet.getByText('ugt_map_view', { exact: true })).toHaveCount(0);
   expect(sent[0].context.mapContext.parcelSourceId).toBeTruthy();
   expect(sent[0].context.mapContext.display.parcelIds).toBe(false);
   expect(sent[0].context.mapContext.viewBounds).toHaveLength(4);
