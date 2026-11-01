@@ -31,7 +31,7 @@ export function assertHostedEnvironment(env) {
 
 export function createMcpHttpService({ env = process.env, fetchImpl, factory,
     publicOrigin = 'https://urbangametheory.xyz', maxConcurrent = 8, maxPerMinute = 600,
-    maxPublishPerMinute = 10, now = Date.now, previewOrigin = env.MCP_PREVIEW_ORIGIN || publicOrigin, previewTtlMs,
+    maxPublishPerMinute = 10, requestTimeoutMs = 30_000, providedPreviews, now = Date.now, previewOrigin = env.MCP_PREVIEW_ORIGIN || publicOrigin, previewTtlMs,
     storeDirectory = env.MCP_DRAFT_DIRECTORY || fileURLToPath(new URL('../uploads/mcp-drafts/', import.meta.url)), sharedPlans: providedSharedPlans } = {}) {
     assertHostedEnvironment(env);
     const origin = new URL(publicOrigin);
@@ -42,7 +42,7 @@ export function createMcpHttpService({ env = process.env, fetchImpl, factory,
     let active = 0, count = 0, publishes = 0, start = now();
     const streams = new Set();
     const sessionBudgets = new MemoryStore(); sessionBudgets.init({ windowMs: 60_000 });
-    const previews = createPreviewLinks({ origin: previewOrigin, appOrigin, storeDirectory, now, ...(previewTtlMs == null ? {} : { ttlMs: previewTtlMs }) });
+    const previews = providedPreviews || createPreviewLinks({ origin: previewOrigin, appOrigin, storeDirectory, now, ...(previewTtlMs == null ? {} : { ttlMs: previewTtlMs }) });
     const sharedPlans = providedSharedPlans || createSharedPlanClient({ env, fetchImpl });
     // REST needs the same reference resolver as MCP. It only constructs private immutable artifacts;
     // it neither publishes nor signs, and lets a browser begin from a published plan as well as a draftRef.
@@ -176,10 +176,14 @@ export function createMcpHttpService({ env = process.env, fetchImpl, factory,
             else res.destroy();
         } finally { active--; }
     });
-    http.requestTimeout = 30_000;
+    http.requestTimeout = requestTimeoutMs;
+    http.timeout = requestTimeoutMs;
     http.headersTimeout = 10_000;
     let closing;
-    return { http, close() {
+    return { http, createInternal() {
+        return createMcpHttpService({ env, fetchImpl, factory, publicOrigin, previewOrigin, now,
+            requestTimeoutMs: 120_000, providedPreviews: previews, sharedPlans });
+    }, close() {
         return closing ||= (async () => {
             // Streams are long-lived; close them before waiting for accepted requests.
             for (const stream of [...streams]) stream.close();
@@ -189,7 +193,7 @@ export function createMcpHttpService({ env = process.env, fetchImpl, factory,
                 await closed;
             }
             try { await handler.close(); }
-            finally { sessionBudgets.shutdown(); previews.dispose(); await sharedPlans.dispose(); }
+            finally { sessionBudgets.shutdown(); if (!providedPreviews) previews.dispose(); if (!providedPreviews) await sharedPlans.dispose(); }
         })();
     } };
 }
@@ -199,5 +203,9 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
     const port = Number(process.env.MCP_PORT || 3097);
     if (!Number.isInteger(port) || port < 1 || port > 65535) throw new Error('Invalid MCP_PORT');
     service.http.listen(port, '127.0.0.1', () => console.error(`[${new Date().toISOString()}] [ugt-mcp] listening on loopback:${port}`));
-    for (const signal of ['SIGINT', 'SIGTERM']) process.once(signal, () => service.close().then(() => process.exit(0)));
+    const internalPort = Number(process.env.MCP_INTERNAL_PORT || 3098);
+    if (!Number.isInteger(internalPort) || internalPort < 1 || internalPort > 65535 || internalPort === port) throw new Error('Invalid MCP_INTERNAL_PORT');
+    const internal = service.createInternal();
+    internal.http.listen(internalPort, '127.0.0.1', () => console.error(`[${new Date().toISOString()}] [ugt-mcp] internal listener on loopback:${internalPort}`));
+    for (const signal of ['SIGINT', 'SIGTERM']) process.once(signal, () => internal.close().then(() => service.close()).then(() => process.exit(0)));
 }

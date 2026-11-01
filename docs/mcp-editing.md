@@ -47,6 +47,13 @@ votes, signatures, funding or execution state. Publication remains a separate co
 | `ugt_validate_plan` | Check authored geometry, retained constraints, building overlaps and station attachment presence; source coverage and statutory compliance remain explicit unknowns. |
 | `ugt_compare` | Compare revisions and expose absent source measurements as unknown. |
 
+Draft and edit tools that accept `plan` can resolve an unpublished member by its CID within that
+exact plan revision. Pass the plan's private `draftRef` or canonical artifact, then use the member
+CID with `ugt_inspect_design`, `ugt_edit_design` or `ugt_modify_design`; this does not require a
+published design lookup. Station corridor CIDs use the same plan scope. `ugt_compare` accepts the
+same optional plan scope when one of its targets is a private member CID. Keep passing the returned
+plan `draftRef` as edits create new plan revisions.
+
 Use the CID returned by inspection as `expectedCid`. Array indices are valid within that exact
 revision. Edits run sequentially on a private copy, with the whole operation rejected on failure.
 `test` can add finer assertions. An object `add` sets a property; an array `add` inserts, and `-`

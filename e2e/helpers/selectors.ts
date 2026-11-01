@@ -18,6 +18,8 @@ export const selectors = {
   sheetClose: '[data-sheet-close]',
   layersButton: '#layers-button',
   layersSheet: '#layers-sheet',
+  chatButton: '#chat-button',
+  chatSheet: '#chat-sheet',
   settingsButton: '#settings-button',
   settingsSheet: '#settings-sheet',
   proposalsButton: '#proposals-button',

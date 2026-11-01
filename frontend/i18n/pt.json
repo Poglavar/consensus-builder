@@ -9095,4 +9095,43 @@
       "industrial": "Industrial"
     }
   }
+,
+  "chat": {
+    "title": "Perguntar ao agente",
+    "intro": "Descreva uma alteração para o seu plano de trabalho.",
+    "placeholder": "O que gostaria de alterar?",
+    "send": "Enviar",
+    "undo": "Desfazer a última alteração",
+    "newConversation": "Nova conversa",
+    "working": "A trabalhar…",
+    "steps": {
+      "one": "{{count}} passo",
+      "other": "{{count}} passos"
+    },
+    "stepFailed": "Não foi possível concluir um passo.",
+    "planUpdated": {
+      "one": "Atualizado em {{count}} passo",
+      "other": "Atualizado em {{count}} passos"
+    },
+    "planApplied": "A alteração está no mapa.",
+    "planFailed": "Não foi possível aplicar a alteração: {{reason}}",
+    "turnCost": "Esta interação: {{cost}}",
+    "sessionTotal": {
+      "one": "Total da sessão: {{cost}} · {{count}} interação",
+      "other": "Total da sessão: {{cost}} · {{count}} interações"
+    },
+    "expired": "Esta conversa expirou. Inicie uma nova.",
+    "optionsHint": "Escolha uma opção ou escreva uma resposta.",
+    "planTitle": "Trabalho atual",
+    "roles": {
+      "you": "Você",
+      "agent": "Agente"
+    },
+    "errors": {
+        "budget": "O limite diário do chat foi atingido.",
+        "rateLimited": "Aguarde antes de enviar outra mensagem.",
+        "unavailable": "O serviço de chat está indisponível.",
+        "stream": "A resposta foi interrompida. Pode tentar novamente."
+      }
+  }
 }

@@ -1,0 +1,26 @@
+.chat-sheet__body {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    overflow: hidden;
+    gap: var(--cb-space-2);
+}
+.chat-intro,
+.chat-cost,
+.chat-status { margin: 0; color: var(--cb-text-muted); font-size: var(--cb-text-sm); }
+.chat-transcript {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: var(--cb-space-2);
+    padding: var(--cb-space-1);
+}
+.chat-message { overflow-wrap: anywhere; padding: var(--cb-space-2); border-radius: var(--cb-radius-md); background: var(--cb-surface); }
+.chat-message p { margin: var(--cb-space-1) 0 0; }
+.chat-options,
+.chat-controls { display: flex; flex-wrap: wrap; align-items: center; gap: var(--cb-space-1); }
+.chat-composer { display: flex; align-items: flex-end; gap: var(--cb-space-2); padding-bottom: env(safe-area-inset-bottom, 0px); }
+.chat-input { flex: 1 1 auto; min-width: 0; min-height: 2.75rem; max-height: 35vh; resize: vertical; }
+.chat-message-cost { color: var(--cb-text-muted); font-size: var(--cb-text-xs); }

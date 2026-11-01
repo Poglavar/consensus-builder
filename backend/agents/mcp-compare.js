@@ -38,8 +38,9 @@ export function authoredAreas(designs) {
 }
 
 export function createMcpComparison({ read, resolveDesign, appOrigin, resolveDraftReference, plans }) {
-    return async function compare({ targets, parcelSourceId, buildingSources }) {
+    return async function compare({ targets, parcelSourceId, buildingSources, plan }) {
         const alternatives = [], warnings = [];
+        const scope = plan == null ? null : await plans.resolvePlan(plan);
         for (const target of targets) {
             const supplied = target?.draftArtifact || target;
             let privateArtifact = null, content = supplied?.untrusted?.agreement || supplied?.untrusted?.design || supplied?.untrusted?.plan || supplied?.agreement || supplied?.design || supplied?.plan || supplied;
@@ -58,12 +59,14 @@ export function createMcpComparison({ read, resolveDesign, appOrigin, resolveDra
                     if (target?.cid && target.cid !== cidOfObject(content)) throw fail('cid-mismatch', 'The draftRef does not identify the supplied CID.');
                 }
             }
+            const member = scope?.designs.find(row => row.cid === lookup);
+            if (member) { content = member.content; sourceId ||= member.parcelSourceId; }
             let planResult;
             if (content?.schema === 'plan/v1' || explicitKind === 'plans') {
                 if (!plans?.getPlan) throw fail('plan-resolver-unavailable', 'Named plan comparison needs the shared named plan resolver.');
                 planResult = await plans.getPlan({ plan: explicitKind ? lookup : privateArtifact || target });
                 content = planResult.plan; published = planResult.publication === 'published';
-            } else if (!privateArtifact && typeof lookup === 'string') {
+            } else if (!member && !privateArtifact && typeof lookup === 'string') {
                 const kinds = explicitKind ? [explicitKind] : ['designs', 'agreements', ...(plans?.getPlan ? ['plans'] : [])];
                 for (let index = 0; index < kinds.length; index++) {
                     const kind = kinds[index];

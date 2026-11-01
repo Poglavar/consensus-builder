@@ -9088,4 +9088,43 @@
       "industrial": "Industrial"
     }
   }
+,
+  "chat": {
+    "title": "Ask the agent",
+    "intro": "Tell the agent what you want to change.",
+    "placeholder": "What would you like to change?",
+    "send": "Send",
+    "undo": "Undo last change",
+    "newConversation": "New conversation",
+    "working": "Working…",
+    "steps": {
+      "one": "{{count}} steps",
+      "other": "{{count}} steps"
+    },
+    "stepFailed": "A step could not be completed.",
+    "planUpdated": {
+      "one": "Updated in {{count}} step",
+      "other": "Updated in {{count}} steps"
+    },
+    "planApplied": "The change is on the map.",
+    "planFailed": "Could not apply the change: {{reason}}",
+    "turnCost": "This turn: {{cost}}",
+    "sessionTotal": {
+      "one": "Session total: {{cost}}",
+      "other": "Session total: {{cost}}"
+    },
+    "expired": "This conversation expired. Start a new one.",
+    "optionsHint": "Choose an option or write a reply.",
+    "planTitle": "Current work",
+    "roles": {
+      "you": "You",
+      "agent": "Agent"
+    },
+    "errors": {
+      "budget": "The daily chat budget has been reached.",
+      "rateLimited": "Please wait before sending another message.",
+      "unavailable": "The chat service is unavailable.",
+      "stream": "The response was interrupted. Try again."
+    }
+  }
 }

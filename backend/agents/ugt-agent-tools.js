@@ -286,7 +286,7 @@ export function createUrbanGameTheoryTools({
     }
 
     const companion = createMcpReadTools({ apiBase, appOrigin, fetchImpl });
-    const drafts = createMcpDraftTools({ read: companion, appOrigin, resolveDraftReference });
+    const drafts = createMcpDraftTools({ read: companion, appOrigin, resolveDraftReference, resolvePlan: value => namedPlanTools.resolvePlan(value) });
     const agreements = createMcpAgreementTools({ read: companion, drafts, appOrigin });
     function requirePublish(confirm) {
         if (confirm !== true) throw Object.assign(new Error('confirm must be true: publishing is public and permanent'), { code: 'confirmation-required' });
@@ -733,7 +733,7 @@ export function createUrbanGameTheoryTools({
     const placing = (method, beforeOf = () => null) => {
         const author = actions[method];
         return async ({ plan, displace = false, ...args }) => {
-            const drafted = await author(args);
+            const drafted = await author({ ...args, plan });
             const rows = drafted.designs || [drafted];
             const placed = await namedPlanTools.placeDesigns({ plan, displace,
                 designs: rows.map(row => ({ cid: row.cid, content: row.design, parcelSourceId: row.parcelSourceId, before: beforeOf(row, args) })) });

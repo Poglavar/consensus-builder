@@ -26,6 +26,10 @@ From the repository root:
 
 The launcher starts this checkout’s frontend and API on available local ports and prints the URL. Stop it with Ctrl-C. The map is plain HTML, CSS and JavaScript; its data-dependent flows still require a working API and datasets.
 
+When running the hosted MCP worker locally, it listens on loopback port 3097 for public MCP access
+and port 3098 for trusted API calls. Both listeners use the same private draft store; keep the
+internal listener local to the API process.
+
 ## Languages and translation loading
 
 `frontend/i18n/<language>.json` is the only source of translated UI copy, including feature,

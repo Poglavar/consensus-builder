@@ -731,9 +731,16 @@
       "markup": "<button type=\"button\" id=\"planning-views-button\" class=\"map-shell-button\" data-sheet-target=\"planning-views\" aria-controls=\"planning-views\" aria-expanded=\"false\" title=\"Buildings and massing\" aria-label=\"Buildings and massing\" data-i18n-key=\"planningViews.title\" data-i18n-attr=\"title,aria-label\" hidden>"
     },
     {
-      "id": "control-63429b75a16e55-1",
+      "id": "control-a33eca91a714ac-1",
       "source": "index.html",
-      "markup": "<div id=\"username-display\" class=\"username-display\" role=\"button\" tabindex=\"0\">",
+      "markup": "<button type=\"button\" id=\"username-display\" class=\"username-display\" aria-haspopup=\"dialog\">",
+      "interaction": "click",
+      "controlType": "button"
+    },
+    {
+      "id": "control-aa19345c4d5b57-1",
+      "source": "index.html",
+      "markup": "<button type=\"button\" id=\"chat-button\" class=\"map-shell-button\" data-sheet-target=\"chat-sheet\" aria-controls=\"chat-sheet\" aria-expanded=\"false\" data-i18n-key=\"chat.title\" data-i18n-attr=\"title,aria-label\">",
       "interaction": "click",
       "controlType": "button"
     },
@@ -932,6 +939,13 @@
     },
     {
       "id": "control-dc7af30c67cb8d-2",
+      "source": "index.html",
+      "markup": "<button type=\"button\" class=\"map-sheet-close close-circle-btn close-circle-btn--lg\" data-sheet-close aria-label=\"Close\" title=\"Close\" data-i18n-key=\"common.close\" data-i18n-attr=\"aria-label,title\">",
+      "interaction": "click",
+      "controlType": "button"
+    },
+    {
+      "id": "control-dc7af30c67cb8d-3",
       "source": "index.html",
       "markup": "<button type=\"button\" class=\"map-sheet-close close-circle-btn close-circle-btn--lg\" data-sheet-close aria-label=\"Close\" title=\"Close\" data-i18n-key=\"common.close\" data-i18n-attr=\"aria-label,title\">",
       "interaction": "click",
@@ -1378,7 +1392,7 @@
       "markup": "<input id=\"photo-parcels-visible\" type=\"checkbox\" checked>"
     },
     {
-      "id": "control-dc7af30c67cb8d-3",
+      "id": "control-dc7af30c67cb8d-4",
       "source": "index.html",
       "markup": "<button type=\"button\" class=\"map-sheet-close close-circle-btn close-circle-btn--lg\" data-sheet-close aria-label=\"Close\" title=\"Close\" data-i18n-key=\"common.close\" data-i18n-attr=\"aria-label,title\">",
       "exempt": "Photo parcel heading delegates closing to the 3D click stack.",
@@ -1386,12 +1400,12 @@
         {
           "source": "index.html",
           "pattern": "<button\\s+type=\"button\"\\s+class=\"map-sheet-close\\s+close-circle-btn\\s+close-circle-btn--lg\"\\s+data-sheet-close\\s+aria-label=\"Close\"\\s+title=\"Close\"\\s+data-i18n-key=\"common\\.close\"\\s+data-i18n-attr=\"aria-label,title\">",
-          "occurrences": 8
+          "occurrences": 9
         },
         {
           "source": "index.html",
           "pattern": "<button\\s+type=\"button\"\\s+class=\"map-sheet-close\\s+close-circle-btn\\s+close-circle-btn--lg\"\\s+data-sheet-close\\s+aria-label=\"Close\"\\s+title=\"Close\"\\s+data-i18n-key=\"common\\.close\"\\s+data-i18n-attr=\"aria-label,title\">",
-          "occurrences": 8
+          "occurrences": 9
         }
       ],
       "mustRemainInactive": true
@@ -1418,7 +1432,7 @@
       "controlType": "button"
     },
     {
-      "id": "control-dc7af30c67cb8d-4",
+      "id": "control-dc7af30c67cb8d-5",
       "source": "index.html",
       "markup": "<button type=\"button\" class=\"map-sheet-close close-circle-btn close-circle-btn--lg\" data-sheet-close aria-label=\"Close\" title=\"Close\" data-i18n-key=\"common.close\" data-i18n-attr=\"aria-label,title\">",
       "interaction": "click",
@@ -1450,7 +1464,7 @@
       "markup": "<button type=\"button\" id=\"sun-now\" class=\"btn btn-sm\" data-i18n-key=\"threeMode.sun.now\">"
     },
     {
-      "id": "control-dc7af30c67cb8d-5",
+      "id": "control-dc7af30c67cb8d-6",
       "source": "index.html",
       "markup": "<button type=\"button\" class=\"map-sheet-close close-circle-btn close-circle-btn--lg\" data-sheet-close aria-label=\"Close\" title=\"Close\" data-i18n-key=\"common.close\" data-i18n-attr=\"aria-label,title\">",
       "interaction": "click",
@@ -1494,7 +1508,7 @@
       "controlType": "button"
     },
     {
-      "id": "control-dc7af30c67cb8d-6",
+      "id": "control-dc7af30c67cb8d-7",
       "source": "index.html",
       "markup": "<button type=\"button\" class=\"map-sheet-close close-circle-btn close-circle-btn--lg\" data-sheet-close aria-label=\"Close\" title=\"Close\" data-i18n-key=\"common.close\" data-i18n-attr=\"aria-label,title\">",
       "interaction": "click",
@@ -1506,11 +1520,9 @@
       "markup": "<button type=\"button\" id=\"activity-panel-expand\" class=\"btn btn-icon\" aria-label=\"Expand activity panel\" title=\"Expand activity panel\" aria-controls=\"activity-sheet\" aria-expanded=\"false\" data-i18n-key=\"activityPanel.expand\" data-i18n-attr=\"aria-label,title\">"
     },
     {
-      "id": "control-dc7af30c67cb8d-7",
+      "id": "control-dc7af30c67cb8d-8",
       "source": "index.html",
-      "markup": "<button type=\"button\" class=\"map-sheet-close close-circle-btn close-circle-btn--lg\" data-sheet-close aria-label=\"Close\" title=\"Close\" data-i18n-key=\"common.close\" data-i18n-attr=\"aria-label,title\">",
-      "interaction": "click",
-      "controlType": "button"
+      "markup": "<button type=\"button\" class=\"map-sheet-close close-circle-btn close-circle-btn--lg\" data-sheet-close aria-label=\"Close\" title=\"Close\" data-i18n-key=\"common.close\" data-i18n-attr=\"aria-label,title\">"
     },
     {
       "id": "control-af7ee31982a05d-1",
@@ -1542,7 +1554,7 @@
       "controlType": "button"
     },
     {
-      "id": "control-dc7af30c67cb8d-8",
+      "id": "control-dc7af30c67cb8d-9",
       "source": "index.html",
       "markup": "<button type=\"button\" class=\"map-sheet-close close-circle-btn close-circle-btn--lg\" data-sheet-close aria-label=\"Close\" title=\"Close\" data-i18n-key=\"common.close\" data-i18n-attr=\"aria-label,title\">"
     },
@@ -1751,35 +1763,35 @@
       ]
     },
     {
-      "id": "control-b4e4da87e76fda-1",
+      "id": "control-ebbe45e85b4aaa-1",
       "source": "index.html",
-      "markup": "<button type=\"button\" class=\"cb-tab parcel-tab-btn parcel-tab-btn--icon\" role=\"tab\" aria-selected=\"true\" aria-controls=\"propose-tab\" data-parcel-tab-id=\"propose-tab\" onclick=\"(window.Parcels?.proposals?.switchParcelTab || window.switchParcelTab || function(){})(this, 'propose-tab')\" aria-label=\"Design\" title=\"Design\" data-i18n-key=\"proposalDrafts.tabs.design\" data-i18n-attr=\"aria-label,title\">",
+      "markup": "<button type=\"button\" class=\"cb-tab parcel-tab-btn parcel-tab-btn--icon\" role=\"tab\" aria-selected=\"true\" id=\"parcel-propose-tab-button\" aria-controls=\"propose-tab\" data-parcel-tab-id=\"propose-tab\" onclick=\"(window.Parcels?.proposals?.switchParcelTab || window.switchParcelTab || function(){})(this, 'propose-tab')\" aria-label=\"Design\" title=\"Design\" data-i18n-key=\"proposalDrafts.tabs.design\" data-i18n-attr=\"aria-label,title\">",
       "interaction": "click",
       "controlType": "button"
     },
     {
-      "id": "control-7218dab41820f2-1",
+      "id": "control-64247c70bf166b-1",
       "source": "index.html",
-      "markup": "<button type=\"button\" class=\"cb-tab parcel-tab-btn parcel-tab-btn--icon\" role=\"tab\" aria-selected=\"false\" aria-controls=\"info-tab\" data-parcel-tab-id=\"info-tab\" onclick=\"(window.Parcels?.proposals?.switchParcelTab || window.switchParcelTab || function(){})(this, 'info-tab')\" aria-label=\"Info\" title=\"Info\" data-i18n-key=\"panel.parcel.tabInfo\" data-i18n-attr=\"aria-label,title\">",
+      "markup": "<button type=\"button\" class=\"cb-tab parcel-tab-btn parcel-tab-btn--icon\" role=\"tab\" aria-selected=\"false\" id=\"parcel-info-tab-button\" aria-controls=\"info-tab\" data-parcel-tab-id=\"info-tab\" onclick=\"(window.Parcels?.proposals?.switchParcelTab || window.switchParcelTab || function(){})(this, 'info-tab')\" aria-label=\"Info\" title=\"Info\" data-i18n-key=\"panel.parcel.tabInfo\" data-i18n-attr=\"aria-label,title\">",
       "interaction": "click",
       "controlType": "button"
     },
     {
-      "id": "control-863d216bcc9027-1",
+      "id": "control-3b7369655f57d8-1",
       "source": "index.html",
-      "markup": "<button type=\"button\" class=\"cb-tab parcel-tab-btn\" role=\"tab\" aria-selected=\"false\" aria-controls=\"selected-parcels-tab\" data-parcel-tab-id=\"selected-parcels-tab\" hidden onclick=\"(window.Parcels?.proposals?.switchParcelTab || window.switchParcelTab || function(){})(this, 'selected-parcels-tab')\">"
+      "markup": "<button type=\"button\" class=\"cb-tab parcel-tab-btn\" role=\"tab\" aria-selected=\"false\" id=\"parcel-selected-parcels-tab-button\" aria-controls=\"selected-parcels-tab\" data-parcel-tab-id=\"selected-parcels-tab\" hidden onclick=\"(window.Parcels?.proposals?.switchParcelTab || window.switchParcelTab || function(){})(this, 'selected-parcels-tab')\">"
     },
     {
-      "id": "control-79eef0dec8b570-1",
+      "id": "control-6764cb915f4595-1",
       "source": "index.html",
-      "markup": "<button type=\"button\" class=\"cb-tab parcel-tab-btn\" role=\"tab\" aria-selected=\"false\" aria-controls=\"proposals-tab\" data-parcel-tab-id=\"proposals-tab\" onclick=\"(window.Parcels?.proposals?.switchParcelTab || window.switchParcelTab || function(){})(this, 'proposals-tab')\">",
+      "markup": "<button type=\"button\" class=\"cb-tab parcel-tab-btn\" role=\"tab\" aria-selected=\"false\" id=\"parcel-proposals-tab-button\" aria-controls=\"proposals-tab\" data-parcel-tab-id=\"proposals-tab\" onclick=\"(window.Parcels?.proposals?.switchParcelTab || window.switchParcelTab || function(){})(this, 'proposals-tab')\">",
       "interaction": "click",
       "controlType": "button"
     },
     {
-      "id": "control-cc55ab4397e863-1",
+      "id": "control-2050c53bb25da0-1",
       "source": "index.html",
-      "markup": "<button type=\"button\" class=\"cb-tab parcel-tab-btn parcel-tab-btn--icon\" role=\"tab\" aria-selected=\"false\" aria-controls=\"tools-tab\" data-parcel-tab-id=\"tools-tab\" onclick=\"(window.Parcels?.proposals?.switchParcelTab || window.switchParcelTab || function(){})(this, 'tools-tab')\" aria-label=\"Tools\" title=\"Tools\" data-i18n-key=\"panel.parcel.tabTools\" data-i18n-attr=\"aria-label,title\">",
+      "markup": "<button type=\"button\" class=\"cb-tab parcel-tab-btn parcel-tab-btn--icon\" role=\"tab\" aria-selected=\"false\" id=\"parcel-tools-tab-button\" aria-controls=\"tools-tab\" data-parcel-tab-id=\"tools-tab\" onclick=\"(window.Parcels?.proposals?.switchParcelTab || window.switchParcelTab || function(){})(this, 'tools-tab')\" aria-label=\"Tools\" title=\"Tools\" data-i18n-key=\"panel.parcel.tabTools\" data-i18n-attr=\"aria-label,title\">",
       "interaction": "click",
       "controlType": "button"
     },
@@ -1959,6 +1971,11 @@
       "controlType": "button"
     },
     {
+      "id": "control-9b96c993ff58bf-1",
+      "source": "index.html",
+      "markup": "<button type=\"button\" class=\"acquiring-difficulty-help-icon\" onclick=\"showAcquiringDifficultyDialog()\" aria-labelledby=\"road-acquire-difficulty-title\" aria-haspopup=\"dialog\">"
+    },
+    {
       "id": "control-282ecd81fff1d2-1",
       "source": "index.html",
       "markup": "<button id=\"undoRoadButton\" class=\"btn\" onclick=\"undoLastRoadOrTrackSegment()\" data-i18n-key=\"panel.road.undoButton\">",
@@ -1987,16 +2004,16 @@
       "controlType": "button"
     },
     {
-      "id": "control-c48cf0981cb18d-1",
+      "id": "control-a58dd7e1640832-1",
       "source": "index.html",
-      "markup": "<button type=\"button\" class=\"cb-tab tab-btn\" role=\"tab\" aria-selected=\"true\" aria-controls=\"segments-tab\" onclick=\"switchTab(this, 'segments-tab')\" data-i18n-key=\"panel.roadAnalysis.tabSegments\">",
+      "markup": "<button type=\"button\" class=\"cb-tab tab-btn\" role=\"tab\" id=\"road-segments-tab-button\" aria-selected=\"true\" aria-controls=\"segments-tab\" onclick=\"switchTab(this, 'segments-tab')\" data-i18n-key=\"panel.roadAnalysis.tabSegments\">",
       "interaction": "click",
       "controlType": "button"
     },
     {
-      "id": "control-6218f5a001a902-1",
+      "id": "control-913bddf1ede066-1",
       "source": "index.html",
-      "markup": "<button type=\"button\" class=\"cb-tab tab-btn\" role=\"tab\" aria-selected=\"false\" aria-controls=\"visualization-tab\" onclick=\"switchTab(this, 'visualization-tab')\" data-i18n-key=\"panel.roadAnalysis.tabVisualization\">",
+      "markup": "<button type=\"button\" class=\"cb-tab tab-btn\" role=\"tab\" id=\"road-visualization-tab-button\" aria-selected=\"false\" aria-controls=\"visualization-tab\" onclick=\"switchTab(this, 'visualization-tab')\" data-i18n-key=\"panel.roadAnalysis.tabVisualization\">",
       "interaction": "click",
       "controlType": "button"
     },
@@ -2161,9 +2178,9 @@
       "controlType": "button"
     },
     {
-      "id": "control-6dcc74132dd428-1",
+      "id": "control-674361bbd1f205-1",
       "source": "index.html",
-      "markup": "<button type=\"button\" id=\"selected-avatar\" class=\"cb-option selected-avatar\" aria-controls=\"avatar-options\" aria-expanded=\"false\" onclick=\"showAvatarOptions()\">",
+      "markup": "<button type=\"button\" id=\"selected-avatar\" class=\"cb-option selected-avatar\" aria-controls=\"avatar-options\" aria-expanded=\"false\" aria-labelledby=\"avatar-choice-label avatar-choice-state\" onclick=\"showAvatarOptions()\">",
       "interaction": "click",
       "controlType": "button"
     },
@@ -3717,6 +3734,11 @@
       "controlType": "button"
     },
     {
+      "id": "control-7111cea729397a-1",
+      "source": "js/chat/chat-panel.js",
+      "markup": "doc.createElement(tag)"
+    },
+    {
       "id": "control-dd61e5054d0cba-1",
       "source": "js/click-stack/click-stack-navigation.js",
       "markup": "document.createElement('button')"
@@ -4267,18 +4289,14 @@
       "controlType": "button"
     },
     {
-      "id": "control-de48eb5fb1675b-1",
+      "id": "control-4980420cc7a397-1",
       "source": "js/corridor-editor.js",
-      "markup": "<button type=\"button\" class=\"cb-tab corridor-editor-tab\" data-tab=\"section\" role=\"tab\" aria-selected=\"true\">",
-      "interaction": "click",
-      "controlType": "button"
+      "markup": "<button type=\"button\" class=\"cb-tab corridor-editor-tab\" data-tab=\"section\" id=\"corridor-tab-section\" aria-controls=\"corridor-tab-panel\" role=\"tab\" aria-selected=\"true\">"
     },
     {
-      "id": "control-adebc9abb259d8-1",
+      "id": "control-340f5e9ec6b6da-1",
       "source": "js/corridor-editor.js",
-      "markup": "<button type=\"button\" class=\"cb-tab corridor-editor-tab\" data-tab=\"corridor\" role=\"tab\" aria-selected=\"false\">",
-      "interaction": "click",
-      "controlType": "button"
+      "markup": "<button type=\"button\" class=\"cb-tab corridor-editor-tab\" data-tab=\"corridor\" id=\"corridor-tab-corridor\" aria-controls=\"corridor-tab-panel\" role=\"tab\" aria-selected=\"false\">"
     },
     {
       "id": "control-5037d73f4b5942-1",
@@ -4433,6 +4451,11 @@
       "markup": "<button type=\"button\" data-agent-id=\"${agent.id}\" class=\"cb-link agent-link-clickable\">",
       "interaction": "click",
       "controlType": "button"
+    },
+    {
+      "id": "control-99cea4d56ed3b8-1",
+      "source": "js/geometry-edit/coordinate-controls.js",
+      "markup": "doc.createElement(tag)"
     },
     {
       "id": "control-c06dc769924c1b-1",
@@ -5136,18 +5159,14 @@
       "controlType": "button"
     },
     {
-      "id": "control-8bcb7feaae4ad9-1",
+      "id": "control-9af0aa08264711-1",
       "source": "js/parcel-layout.js",
-      "markup": "<button type=\"button\" role=\"tab\" class=\"cb-tab\" data-reparcel-plots-tab=\"new\" aria-selected=\"true\">",
-      "interaction": "click",
-      "controlType": "button"
+      "markup": "<button type=\"button\" role=\"tab\" class=\"cb-tab\" id=\"reparcel-tab-new\" aria-controls=\"reparcel-panel-new\" data-reparcel-plots-tab=\"new\" aria-selected=\"true\">"
     },
     {
-      "id": "control-a97a467884a93a-1",
+      "id": "control-9805d8164967b7-1",
       "source": "js/parcel-layout.js",
-      "markup": "<button type=\"button\" role=\"tab\" class=\"cb-tab\" data-reparcel-plots-tab=\"old\" aria-selected=\"false\">",
-      "interaction": "click",
-      "controlType": "button"
+      "markup": "<button type=\"button\" role=\"tab\" class=\"cb-tab\" id=\"reparcel-tab-old\" aria-controls=\"reparcel-panel-old\" data-reparcel-plots-tab=\"old\" aria-selected=\"false\">"
     },
     {
       "id": "control-ca09700d052046-1",
@@ -6169,6 +6188,11 @@
       "controlType": "button"
     },
     {
+      "id": "control-736e95a52e8178-2",
+      "source": "js/polygon-geometry-editor.js",
+      "markup": "element.setAttribute('role', 'button')"
+    },
+    {
       "id": "control-b17c6d262d1b8f-1",
       "source": "js/proposal-editor-shell.js",
       "markup": "<select data-draft-goal>",
@@ -6257,11 +6281,9 @@
       "controlType": "button"
     },
     {
-      "id": "control-c53862c4608239-1",
+      "id": "control-75aa94a2c3c996-1",
       "source": "js/proposal-editor-shell.js",
-      "markup": "<button type=\"button\" class=\"cb-tab\" role=\"tab\" aria-selected=\"${editorState.tab === section ? 'true' : 'false'}\" data-editor-action=\"tab\" data-editor-tab=\"${escapeHtml(section)}\">",
-      "interaction": "click",
-      "controlType": "button"
+      "markup": "<button type=\"button\" class=\"cb-tab\" role=\"tab\" id=\"proposal-editor-tab-${escapeHtml(section)}\" aria-controls=\"proposal-editor-panel\" aria-selected=\"${editorState.tab === section ? 'true' : 'false'}\" data-editor-action=\"tab\" data-editor-tab=\"${escapeHtml(section)}\">"
     },
     {
       "id": "control-a75c429356284c-1",
@@ -6826,9 +6848,9 @@
       "controlType": "button"
     },
     {
-      "id": "control-a21fdb6a111f5f-1",
+      "id": "control-8d6bae97c01d0e-1",
       "source": "js/proposals/details-panel.js",
-      "markup": "<button type=\"button\" class=\"cb-tab proposal-details-tab\" role=\"tab\" data-proposal-tab=\"${id}\" aria-selected=\"${proposalDetailsTab === id}\">"
+      "markup": "<button type=\"button\" class=\"cb-tab proposal-details-tab\" role=\"tab\" id=\"proposal-details-tab-${id}\" aria-controls=\"proposal-details-panel-${id}\" data-proposal-tab=\"${id}\" aria-selected=\"${proposalDetailsTab === id}\">"
     },
     {
       "id": "control-1780954d86d286-1",
@@ -7606,6 +7628,11 @@
       "controlType": "dynamic"
     },
     {
+      "id": "control-4d85d331ba5dae-1",
+      "source": "js/shared-plan-session.js",
+      "markup": "doc.createElement('button')"
+    },
+    {
       "id": "control-908265484b4b92-1",
       "source": "js/single-building.js",
       "markup": "<button id=\"single-rotate-counterclockwise\" class=\"btn\" type=\"button\" title=\"${modalText.rotateCounterclockwiseLabel}\" aria-label=\"${modalText.rotateCounterclockwiseLabel}\">",
@@ -7776,25 +7803,19 @@
       "controlType": "button"
     },
     {
-      "id": "control-a83062b22b1d6e-1",
+      "id": "control-99a52d40035c19-1",
       "source": "js/site-drawing.js",
-      "markup": "<button type=\"button\" role=\"tab\" class=\"cb-tab parcel-tab-btn parcel-tab-btn--icon\" aria-selected=\"false\" data-site-tab=\"info\">",
-      "interaction": "click",
-      "controlType": "button"
+      "markup": "<button type=\"button\" role=\"tab\" id=\"site-tab-info\" aria-controls=\"site-panel-info\" class=\"cb-tab parcel-tab-btn parcel-tab-btn--icon\" aria-selected=\"false\" data-site-tab=\"info\">"
     },
     {
-      "id": "control-5e25cee22213b7-1",
+      "id": "control-00a95435467e10-1",
       "source": "js/site-drawing.js",
-      "markup": "<button type=\"button\" role=\"tab\" class=\"cb-tab parcel-tab-btn parcel-tab-btn--icon\" aria-selected=\"false\" data-site-tab=\"propose\">",
-      "interaction": "click",
-      "controlType": "button"
+      "markup": "<button type=\"button\" role=\"tab\" id=\"site-tab-propose\" aria-controls=\"site-panel-propose\" class=\"cb-tab parcel-tab-btn parcel-tab-btn--icon\" aria-selected=\"false\" data-site-tab=\"propose\">"
     },
     {
-      "id": "control-9b4171f6c8e109-1",
+      "id": "control-4ab50d47b904c7-1",
       "source": "js/site-drawing.js",
-      "markup": "<button type=\"button\" role=\"tab\" class=\"cb-tab parcel-tab-btn\" aria-selected=\"false\" data-site-tab=\"proposals\">",
-      "interaction": "click",
-      "controlType": "button"
+      "markup": "<button type=\"button\" role=\"tab\" id=\"site-tab-proposals\" aria-controls=\"site-panel-proposals\" class=\"cb-tab parcel-tab-btn\" aria-selected=\"false\" data-site-tab=\"proposals\">"
     },
     {
       "id": "control-8103eb1705ee66-1",
@@ -7836,6 +7857,11 @@
           "occurrences": 0
         }
       ]
+    },
+    {
+      "id": "control-e5f3a97c488e15-1",
+      "source": "js/structure-geometry-editor.js",
+      "markup": "element.setAttribute('role', 'button')"
     },
     {
       "id": "control-4db10a36078b55-1",

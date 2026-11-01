@@ -239,7 +239,7 @@
         (inputs.get(focus)?.[0]||inputs.values().next().value?.[0])?.focus();
         return dialog;
     }
-    async function syncSharedPlanOnMap(next, previous, { lastChange = null } = {}) {
+    async function syncSharedPlanOnMap(next, previous, { lastChange = null, present = true, notice = 'sharedPlan.updated' } = {}) {
         const previousIds = new Map((previous.designs || []).map((member, index) => [member.cid, previous.memberIds?.[index]]));
         const nextCids = new Set(next.designs.map(member => member.cid));
         const retained = new Map([...previousIds].filter(([cid, id]) => nextCids.has(cid) && id != null));
@@ -265,10 +265,12 @@
         }
         if (opened.failed.length || opened.blocked) throw new Error('The accepted shared revision could not be shown on this map.');
         next.memberIds = next.content.designCids.map(cid => retained.get(cid) || opened.localIds.get(cid) || `shared-plan-${cid}`);
-        win.PlanWorkspace.save(next);
-        await win.ClickStack.showPlan(next, { designs: win.PlanComposition.localRecords(next, { apiBase: win.DesignSync.apiBase() }), draft: true, frame: false });
+        if (present) {
+            win.PlanWorkspace.save(next);
+            await win.ClickStack.showPlan(next, { designs: win.PlanComposition.localRecords(next, { apiBase: win.DesignSync.apiBase() }), draft: true, frame: false });
+        }
         await motion?.finish?.({ next, memberIds: next.memberIds });
-        win.showEphemeralMessage?.(win.i18n.t('sharedPlan.updated'), 5000, 'success');
+        if (notice) win.showEphemeralMessage?.(win.i18n.t(notice), 5000, 'success');
         } catch (error) { motion?.cancel?.(); throw error; }
     }
     async function details(plan, { collaborationOnly = false } = {}) {

@@ -181,6 +181,10 @@ load. Links carry no secret and are safe to forward.
 - PM2 app `ugt-mcp` in `backend/ecosystem.config.cjs`, loopback port 3097, launched through
   `agents/mcp-launch.mjs`. The draft store (`MCP_DRAFT_DIRECTORY`, default
   `backend/uploads/mcp-drafts/`) needs one service process per directory.
+- The worker also opens `MCP_INTERNAL_PORT` (default 3098) on loopback for trusted API-to-MCP
+  calls. It shares private previews and plan-session access with the public listener while keeping
+  independent request budgets and a 120-second request timeout. Keep this listener private; only
+  the API should use it. The public listener remains on port 3097 with its public request limits.
 - Shared plan sessions live in PostgreSQL `consensus.shared_plan_session`, managed by the API through
   `/shared-plan-sessions`. The hosted MCP worker uses capability-authenticated API requests and never
   receives database credentials. The table stores the accepted artifact, version/control, change

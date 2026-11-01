@@ -9140,4 +9140,43 @@
       "industrial": "Industrija"
     }
   }
+,
+  "chat": {
+    "title": "Pitajte agenta",
+    "intro": "Opišite promjenu plana na kojem radite.",
+    "placeholder": "Što želite promijeniti?",
+    "send": "Pošalji",
+    "undo": "Poništi posljednju promjenu",
+    "newConversation": "Novi razgovor",
+    "working": "Radim…",
+    "steps": {
+      "one": "{{count}} korak",
+      "other": "{{count}} koraka"
+    },
+    "stepFailed": "Korak nije dovršen.",
+    "planUpdated": {
+      "one": "Ažurirano u {{count}} koraku",
+      "other": "Ažurirano u {{count}} koraka"
+    },
+    "planApplied": "Promjena je prikazana na karti.",
+    "planFailed": "Promjena nije primijenjena: {{reason}}",
+    "turnCost": "Ovaj upit: {{cost}}",
+    "sessionTotal": {
+      "one": "Ukupno u razgovoru: {{cost}} · {{count}} upit",
+      "other": "Ukupno u razgovoru: {{cost}} · {{count}} upita"
+    },
+    "expired": "Razgovor je istekao. Započnite novi.",
+    "optionsHint": "Odaberite opciju ili napišite odgovor.",
+    "planTitle": "Trenutačni rad",
+    "roles": {
+      "you": "Vi",
+      "agent": "Agent"
+    },
+    "errors": {
+        "budget": "Dosegnut je dnevni limit za chat.",
+        "rateLimited": "Pričekajte prije slanja nove poruke.",
+        "unavailable": "Usluga chata nije dostupna.",
+        "stream": "Odgovor je prekinut. Pokušajte ponovno."
+      }
+  }
 }

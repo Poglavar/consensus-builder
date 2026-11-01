@@ -9116,4 +9116,43 @@
       "industrial": "Industrial"
     }
   }
+,
+  "chat": {
+    "title": "Preguntar al agente",
+    "intro": "Describe un cambio para tu plan de trabajo.",
+    "placeholder": "¿Qué quieres cambiar?",
+    "send": "Enviar",
+    "undo": "Deshacer el último cambio",
+    "newConversation": "Nueva conversación",
+    "working": "Trabajando…",
+    "steps": {
+      "one": "{{count}} paso",
+      "other": "{{count}} pasos"
+    },
+    "stepFailed": "No se pudo completar un paso.",
+    "planUpdated": {
+      "one": "Actualizado en {{count}} paso",
+      "other": "Actualizado en {{count}} pasos"
+    },
+    "planApplied": "El cambio se aplicó al mapa.",
+    "planFailed": "No se pudo aplicar el cambio: {{reason}}",
+    "turnCost": "Este turno: {{cost}}",
+    "sessionTotal": {
+      "one": "Total de la sesión: {{cost}} · {{count}} turno",
+      "other": "Total de la sesión: {{cost}} · {{count}} turnos"
+    },
+    "expired": "Esta conversación ha caducado. Inicia una nueva.",
+    "optionsHint": "Elige una opción o escribe una respuesta.",
+    "planTitle": "Trabajo actual",
+    "roles": {
+      "you": "Tú",
+      "agent": "Agente"
+    },
+    "errors": {
+        "budget": "Se alcanzó el presupuesto diario del chat.",
+        "rateLimited": "Espera antes de enviar otro mensaje.",
+        "unavailable": "El servicio de chat no está disponible.",
+        "stream": "La respuesta se interrumpió. Puedes volver a intentarlo."
+      }
+  }
 }

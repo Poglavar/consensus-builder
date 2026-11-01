@@ -1090,6 +1090,28 @@ no publication, chain account, votes or signatures.
 
 A temporary means of inspecting a draft artifact. An opaque bearer reference grants access to a stored draft object, independently of permanent publication and wallet approval. Collection previews reference their member designs individually; URLs contain no serialized records or geometry.
 
+### Chat conversation
+
+A private, token-authorized conversation with the application's hosted design agent. It retains a
+working plan, message history, undo revisions, turn count and spending total for 24 hours. Its
+content is not published. Deleting or expiring it removes the messages and replay payloads while
+retaining the separate daily spending ledger.
+
+### Chat turn
+
+One person message and its bounded sequence of model and MCP calls. A client-generated turn key
+identifies retries of the same turn; replaying it makes no further model call. Confirmed plan
+changes survive a disconnected stream. Usage records distinguish settled cost from a reserved
+estimate whose final provider usage is unknown.
+
+### Working plan (chat)
+
+The conversation's current private `plan/v1` revision, addressed by an opaque draft reference.
+There is no plan until a first design is drafted or the browser supplies its applied composition.
+The relay injects the plan reference and revision checks into public MCP edits. Successful changes
+are applied immediately on the map; undo restores the previous revision, including the empty map
+before the first draft. Browser edits rebase the conversation onto the exact current composition.
+
 ### Agent editing reference
 
 A design or building reference scoped to one inspected immutable revision. A building reference includes its design CID and feature index; a JSON Pointer addresses authored fields within that design. These are selection addresses, not new persistent object identities. A derived land piece is inspected by its piece hash and changed through the designs that produce it.

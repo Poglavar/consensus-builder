@@ -145,6 +145,7 @@
                 'css/photoreal-mode.css',
                 'css/ai-scene.css',
                 'css/map-shell.css?v=20261030-use-highlight',
+                'css/chat-panel.css',
                 'css/activity-feed.css?v=20261027-style',
                 'css/area-monitor-list.css',
                 'css/map-credits.css',
@@ -465,6 +466,9 @@
 
         <!-- Top-right, beside the user bubble: Layers and Settings -->
         <div id="map-shell-top-right" class="map-shell-cluster map-shell-cluster--top-right">
+            <button type="button" id="chat-button" class="map-shell-button" data-sheet-target="chat-sheet" aria-controls="chat-sheet" aria-expanded="false" data-i18n-key="chat.title" data-i18n-attr="title,aria-label">
+                <i class="fas fa-comment-dots" aria-hidden="true"></i>
+            </button>
             <button type="button" id="layers-button" class="map-shell-button" data-sheet-target="layers-sheet"
                 aria-controls="layers-sheet" aria-expanded="false" title="Layers" aria-label="Layers"
                 data-i18n-key="mapShell.layers" data-i18n-attr="title,aria-label">
@@ -625,6 +629,16 @@
                 <span class="map-shell-button-label" data-i18n-key="mapShell.bets">Bets</span>
             </button>
         </div>
+
+        <!-- Chat sheet -->
+        <section id="chat-sheet" class="right-screen-panel map-sheet chat-sheet" role="dialog" aria-labelledby="chat-sheet-title" hidden>
+            <div class="map-sheet-header">
+                <h2 id="chat-sheet-title" class="map-sheet-title" data-i18n-key="chat.title">Ask the agent</h2>
+                <button type="button" class="map-sheet-close close-circle-btn close-circle-btn--lg" data-sheet-close
+                    aria-label="Close" title="Close" data-i18n-key="common.close" data-i18n-attr="aria-label,title">×</button>
+            </div>
+            <div class="map-sheet-body chat-sheet__body" data-chat-host></div>
+        </section>
 
         <!-- Layers sheet -->
         <section id="layers-sheet" class="right-screen-panel map-sheet" role="dialog" aria-labelledby="layers-sheet-title" hidden>
@@ -2068,6 +2082,7 @@
             'js/bets/bets-dialog.js?v=20261025-lmsr',
             'js/bets/bets-sheet.js?v=20261025-lmsr',
             'js/mobile-dock-sheet.js?v=20261031-tabs',
+            'js/chat/chat-entry.js',
             'js/ui/simulation-indicator.js',
             'js/ui/parcel-menu-model.js?v=20261020-local-estimates',
             'js/ui/parcel-menu.js?v=20261019-plot-provenance',

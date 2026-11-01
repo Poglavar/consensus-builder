@@ -9095,4 +9095,43 @@
       "industrial": "Industriel"
     }
   }
+,
+  "chat": {
+    "title": "Demander à l’agent",
+    "intro": "Décrivez une modification de votre plan de travail.",
+    "placeholder": "Que souhaitez-vous modifier ?",
+    "send": "Envoyer",
+    "undo": "Annuler la dernière modification",
+    "newConversation": "Nouvelle conversation",
+    "working": "En cours…",
+    "steps": {
+      "one": "{{count}} étape",
+      "other": "{{count}} étapes"
+    },
+    "stepFailed": "Une étape n’a pas pu être effectuée.",
+    "planUpdated": {
+      "one": "Mis à jour en {{count}} étape",
+      "other": "Mis à jour en {{count}} étapes"
+    },
+    "planApplied": "La modification est sur la carte.",
+    "planFailed": "Impossible d’appliquer la modification : {{reason}}",
+    "turnCost": "Ce tour : {{cost}}",
+    "sessionTotal": {
+      "one": "Total de la session : {{cost}} · {{count}} tour",
+      "other": "Total de la session : {{cost}} · {{count}} tours"
+    },
+    "expired": "Cette conversation a expiré. Commencez-en une nouvelle.",
+    "optionsHint": "Choisissez une option ou écrivez une réponse.",
+    "planTitle": "Travail en cours",
+    "roles": {
+      "you": "Vous",
+      "agent": "Agent"
+    },
+    "errors": {
+        "budget": "Le budget quotidien du chat est atteint.",
+        "rateLimited": "Attendez avant d’envoyer un autre message.",
+        "unavailable": "Le service de chat est indisponible.",
+        "stream": "La réponse a été interrompue. Vous pouvez réessayer."
+      }
+  }
 }
