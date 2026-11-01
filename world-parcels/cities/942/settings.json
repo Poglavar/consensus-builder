@@ -1,0 +1,120 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "942",
+  "name": "Budapest, Hungary",
+  "point": [
+    47.498413385628,
+    19.0835031026958
+  ],
+  "bindings": [
+    {
+      "appCityId": "budapest",
+      "runtimeConfig": {
+        "id": "budapest",
+        "wupCityCode": "942",
+        "label": "Budapest, Hungary",
+        "currency": {
+          "locale": "hu-HU",
+          "code": "HUF"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            47.498413385628,
+            19.0835031026958
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            47.498413385628,
+            19.0835031026958
+          ],
+          "fallbackDataset": [
+            19.0835031026958,
+            47.498413385628
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "hu-lechner-oeny-cadastral-parcels",
+          "idPrefix": "HU-OENY-HRSZ-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "Lechner Tudásközpont / OÉNY · cadastral parcel outlines"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "hu-lechner-oeny-cadastral-parcels",
+      "name": "OÉNY / Lechner Budapest cadastral parcels",
+      "adapter": "hu-oeny",
+      "endpoint": "https://www.oeny.hu/hk-api/parcels/at",
+      "idField": "id",
+      "idPattern": "^[1-9][0-9]{0,14}$",
+      "idPrefix": "HU-OENY-HRSZ-",
+      "outFields": [
+        "id"
+      ],
+      "countryCode": "HU",
+      "operator": "Lechner Tudásközpont Nonprofit Kft. / OÉNY",
+      "attribution": "Lechner Tudásközpont / OÉNY · cadastral parcel outlines",
+      "licenceNote": "Anonymous public lookup; bulk server-to-server use requires a contract per Lechner HRSZ documentation. Redistribution licence for OÉNY outlines is unconfirmed; initial qualification is not a licence grant.",
+      "scope": "Bounded Budapest parcel queries. The HRSZ intersection API enumerates up to 500 lots under 1 km²; this adapter caps results at 80 and checks complete search/exact pairs. No citywide completeness claim.",
+      "capabilities": {
+        "point": true,
+        "exactId": true,
+        "areaEnumeration": true,
+        "geometry": "full-wgs84"
+      },
+      "queryMode": "bounded-hrsz-intersections",
+      "browserTransport": "relay",
+      "sourceCrs": "EPSG:23700",
+      "projection": "+proj=somerc +lat_0=47.1443937222222 +lon_0=19.0485717777778 +k_0=0.99993 +x_0=650000 +y_0=200000 +ellps=GRS67 +towgs84=52.17,-71.82,-14.9,0,0,0,0 +units=m +no_defs",
+      "nativeAxisOrder": "east-north",
+      "metricSrid": 32634,
+      "maxFeatures": 80,
+      "maxAreaKm2": 0.9,
+      "maxConcurrentQueries": 2,
+      "cityIds": [
+        "budapest"
+      ],
+      "defaultForCity": true,
+      "discovery": {
+        "jurisdiction": {
+          "basis": "First-party Lechner cadastral service documentation and current Budapest point/search/exact responses; bounded initial qualification."
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,130 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "8374",
+  "name": "Salvador, Brazil",
+  "point": [
+    -12.9357592354111,
+    -38.4490712151309
+  ],
+  "bindings": [
+    {
+      "appCityId": "salvador",
+      "runtimeConfig": {
+        "id": "salvador",
+        "wupCityCode": "8374",
+        "label": "Salvador, Brazil",
+        "currency": {
+          "locale": "pt-BR",
+          "code": "BRL"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            -12.9357592354111,
+            -38.4490712151309
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            -12.9357592354111,
+            -38.4490712151309
+          ],
+          "fallbackDataset": [
+            -38.4490712151309,
+            -12.9357592354111
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "br-salvador-geosalvador-sefaz-parcelamentos-lotes",
+          "idPrefix": "BR-SALVADOR-SEFAZ-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "Prefeitura Municipal de Salvador / SEFAZ / GeoSalvador — Parcelamentos (Acervo SEFAZ), Lotes."
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "br-salvador-geosalvador-sefaz-parcelamentos-lotes",
+      "name": "GeoSalvador SEFAZ Parcelamentos (Acervo SEFAZ) — Lotes",
+      "operator": "Prefeitura Municipal de Salvador / Secretaria Municipal da Fazenda (SEFAZ)",
+      "adapter": "arcgis",
+      "endpoint": "https://geo.salvador.ba.gov.br/arcgis/rest/services/SEFAZ/Parcelamentos__Acervo_SEFAZ/MapServer/18",
+      "countryCode": "BR",
+      "cityIds": [
+        "salvador"
+      ],
+      "idPrefix": "BR-SALVADOR-SEFAZ-",
+      "idFields": [
+        "IDLOTEAMEN",
+        "CDQUADRA",
+        "NOLOTE"
+      ],
+      "idFieldTypes": {
+        "IDLOTEAMEN": "integer",
+        "CDQUADRA": "string",
+        "NOLOTE": "string"
+      },
+      "objectIdField": "OBJECTID_1",
+      "outFields": [
+        "OBJECTID_1",
+        "IDLOTEAMEN",
+        "CDQUADRA",
+        "NOLOTE"
+      ],
+      "attributeNotNull": [
+        "IDLOTEAMEN",
+        "CDQUADRA",
+        "NOLOTE"
+      ],
+      "queryFormat": "geojson",
+      "pageSize": 2000,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "timeoutMs": 45000,
+      "maxConcurrentQueries": 2,
+      "metricSrid": 32724,
+      "sourceCrs": "EPSG:31984",
+      "catalogueUrl": "https://geo.salvador.ba.gov.br/arcgis/rest/services/SEFAZ/Parcelamentos__Acervo_SEFAZ/MapServer/18",
+      "attribution": "Prefeitura Municipal de Salvador / SEFAZ / GeoSalvador — Parcelamentos (Acervo SEFAZ), Lotes.",
+      "scope": "Municipal subdivision/lot cadastral-reference archive, layer 18 only. Positive evidence near -38.389,-12.943; geographic distribution and citywide completeness are unverified. This is not verified as an active legal cadastral fabric.",
+      "coverageNote": "Bounded parcel availability; the unchanged WUP point and prior north/west windows returned no lots. Layer extent and qualification cells do not establish citywide completeness. Layers 19 and 53 are not included.",
+      "licenceNote": "Public anonymous queries work. Inspected layer and service metadata state no explicit reuse licence; redistribution terms remain unverified.",
+      "capabilities": {
+        "areaEnumeration": true
+      },
+      "defaultForCity": true
+    }
+  ]
+}

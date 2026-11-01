@@ -1,0 +1,123 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "893",
+  "name": "San Salvador, El Salvador",
+  "point": [
+    13.7182927900234,
+    -89.1755135685697
+  ],
+  "bindings": [
+    {
+      "appCityId": "san_salvador",
+      "runtimeConfig": {
+        "id": "san_salvador",
+        "wupCityCode": "893",
+        "label": "San Salvador, El Salvador",
+        "currency": {
+          "locale": "es-SV",
+          "code": "USD"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            13.7182927900234,
+            -89.1755135685697
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            13.7182927900234,
+            -89.1755135685697
+          ],
+          "fallbackDataset": [
+            -89.1755135685697,
+            13.7182927900234
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "SV-OPAMSS-SAN-SALVADOR-PLANIMETRIA-31",
+          "idPrefix": "SV-OPAMSS-SAN-SALVADOR-cod_parcel:",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "OPAMSS · Geo_OPAMSS_Planimetria · San Salvador layer 31; native parcel geometry and cod_parcel retained."
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "SV-OPAMSS-SAN-SALVADOR-PLANIMETRIA-31",
+      "name": "OPAMSS San Salvador cadastral planimetry (layer 31)",
+      "operator": "OPAMSS",
+      "adapter": "arcgis",
+      "endpoint": "https://geovisor.opamss.org.sv/server/rest/services/Geo_OPAMSS_Planimetria/MapServer/31/query",
+      "idField": "cod_parcel",
+      "idType": "string",
+      "idPattern": "^[0-9]{12,16}$",
+      "objectIdField": "objectid",
+      "idPrefix": "SV-OPAMSS-SAN-SALVADOR-cod_parcel:",
+      "outFields": [
+        "objectid",
+        "cod_parcel"
+      ],
+      "queryFormat": "geojson",
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "pageSize": 100,
+      "idBatchSize": 20,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "maxResponseBytes": 16777216,
+      "timeoutMs": 45000,
+      "countryCode": "SV",
+      "metricSrid": 32616,
+      "scope": "San Salvador layer 31 under San Salvador centro, with published extent [-89.27669718299995,13.632474750000029,-89.16302291799997,13.74593143900006]. Only bounded parcel availability is established. No claim of complete WUP agglomeration, adjacent municipality or AMSS coverage.",
+      "licenceNote": "Public official query endpoint; explicit open-data reuse licence not established. Attribution retained. Legal equivalence to CNR and survey accuracy unverified.",
+      "catalogueUrl": "https://geovisor.opamss.org.sv/server/rest/services/Geo_OPAMSS_Planimetria/MapServer/31",
+      "attribution": "OPAMSS · Geo_OPAMSS_Planimetria · San Salvador layer 31; native parcel geometry and cod_parcel retained.",
+      "cityIds": [
+        "san_salvador"
+      ],
+      "discovery": {
+        "jurisdiction": {
+          "countryCode": "SV",
+          "basis": "City-named San Salvador polygon layer under OPAMSS San Salvador centro. Bounded evidence only.",
+          "evidence": [
+            "https://geovisor.opamss.org.sv/server/rest/services/Geo_OPAMSS_Planimetria/MapServer/31"
+          ]
+        }
+      },
+      "defaultForCity": true
+    }
+  ]
+}

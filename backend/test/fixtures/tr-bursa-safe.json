@@ -1,0 +1,168 @@
+{
+  "descriptor": {
+    "id": "tr-bursa-bbbcbsgateway-kadastro-parseller",
+    "name": "Bursa municipal cadastral parcels (MULKIYET.TKGM_PARSELLER)",
+    "adapter": "arcgis",
+    "endpoint": "https://bbbcbsgateway.bursa.bel.tr/server/rest/services/MULKIYET/KADASTRO/MapServer/0",
+    "idField": "ID",
+    "idType": "integer",
+    "objectIdField": "OBJECTID",
+    "idPrefix": "TR-BBB-KADASTRO-ID-",
+    "outFields": [
+      "OBJECTID",
+      "ID"
+    ],
+    "queryFormat": "geojson",
+    "pageSize": 1000,
+    "maxFeatures": 10000,
+    "maxBboxKm2": 25,
+    "timeoutMs": 45000,
+    "countryCode": "TR",
+    "metricSrid": 32635,
+    "sourceCrs": "EPSG:2320",
+    "cityIds": [
+      "bursa"
+    ],
+    "scope": "Bursa municipal-hosted cadastral parcel records; positive central and east exact reads and discovery windows. Citywide and all-district completeness are unverified.",
+    "attribution": "Bursa Büyükşehir Belediyesi / Coğrafi Bilgi Sistemleri Şube Müdürlüğü",
+    "catalogueUrl": "https://kentrehberi.bursa.bel.tr/",
+    "licenceNotes": "Public informational viewer; not evidence of title or survey accuracy. Explicit parcel redistribution permission is unresolved.",
+    "capabilities": {
+      "bounds": true,
+      "exactIds": true,
+      "areaEnumeration": true
+    },
+    "discovery": {
+      "jurisdiction": {
+        "basis": "Official municipal GIS-unit evidence and municipal ArcGIS MULKIYET.TKGM_PARSELLER metadata; sampled central/east parcels only."
+      },
+      "purpose": "cadastral-parcels"
+    }
+  },
+  "response": {
+    "type": "FeatureCollection",
+    "features": [
+      {
+        "type": "Feature",
+        "id": 583102,
+        "geometry": {
+          "type": "Polygon",
+          "coordinates": [
+            [
+              [
+                29.089726126487513,
+                40.204849264600064
+              ],
+              [
+                29.089705798136222,
+                40.20478943375726
+              ],
+              [
+                29.08972160075813,
+                40.20477586949999
+              ],
+              [
+                29.08994414981717,
+                40.20469964245647
+              ],
+              [
+                29.090001179527388,
+                40.204778366662325
+              ],
+              [
+                29.089985163639476,
+                40.20478469597413
+              ],
+              [
+                29.089909739396006,
+                40.20480373523957
+              ],
+              [
+                29.089726126487513,
+                40.204849264600064
+              ]
+            ]
+          ]
+        },
+        "properties": {
+          "OBJECTID": 583102,
+          "ID": 1734528
+        }
+      },
+      {
+        "type": "Feature",
+        "id": 583438,
+        "geometry": {
+          "type": "Polygon",
+          "coordinates": [
+            [
+              [
+                29.08978499277792,
+                40.20508142394551
+              ],
+              [
+                29.089750620064898,
+                40.2049589331544
+              ],
+              [
+                29.089773154304467,
+                40.20501357266308
+              ],
+              [
+                29.089807745283988,
+                40.205090594048244
+              ],
+              [
+                29.08978499277792,
+                40.20508142394551
+              ]
+            ]
+          ]
+        },
+        "properties": {
+          "OBJECTID": 583438,
+          "ID": 1734863
+        }
+      },
+      {
+        "type": "Feature",
+        "id": 1196838,
+        "geometry": {
+          "type": "Polygon",
+          "coordinates": [
+            [
+              [
+                29.046967804756374,
+                40.2050741395413
+              ],
+              [
+                29.04695498273473,
+                40.20502522368055
+              ],
+              [
+                29.047072364164407,
+                40.20501152534721
+              ],
+              [
+                29.04707898049107,
+                40.20501075490148
+              ],
+              [
+                29.04709102213433,
+                40.2050566924801
+              ],
+              [
+                29.046967804756374,
+                40.2050741395413
+              ]
+            ]
+          ]
+        },
+        "properties": {
+          "OBJECTID": 1196838,
+          "ID": 2348265
+        }
+      }
+    ]
+  }
+}

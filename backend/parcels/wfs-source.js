@@ -17,6 +17,7 @@ import { sha256Hex } from './portable-hash.js';
 import { createMylandWfsSource } from './myland-wfs-source.js';
 import { createHaleconnectInspireSource } from './haleconnect-inspire-source.js';
 import { createPraiaGrandeReaderFetch } from './praia-grande-reader-fetch.js';
+import { createEgazarParcelSource } from './mn-egazar-source.js';
 
 const sourceRequestQueues = new Map();
 
@@ -41,6 +42,7 @@ function queueSourceRequest(key, minRequestIntervalMs, request) {
 }
 
 export function createWfsParcelSource(descriptor, { fetchImpl = globalThis.fetch } = {}) {
+    if (descriptor.layerProfile === 'mn-egazar-districts-v1') return createEgazarParcelSource(descriptor, { fetchImpl }, createWfsParcelSource);
     if (descriptor.wfsPublicReader !== undefined) fetchImpl = createPraiaGrandeReaderFetch(descriptor, fetchImpl);
     if (descriptor.wfsProfile === 'haleconnect-inspire-v1') return createHaleconnectInspireSource(descriptor, { fetchImpl });
     if (descriptor.wfsProfile === 'myland-bounds-cache-v1') return createMylandWfsSource(descriptor, { fetchImpl }, createWfsParcelSource);

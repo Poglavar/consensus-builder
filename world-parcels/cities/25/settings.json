@@ -1,0 +1,139 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "25",
+  "name": "San Juan, Argentina",
+  "point": [
+    -31.5395129374039,
+    -68.5413653624017
+  ],
+  "bindings": [
+    {
+      "appCityId": "san_juan",
+      "runtimeConfig": {
+        "id": "san_juan",
+        "wupCityCode": "25",
+        "label": "San Juan, Argentina",
+        "currency": {
+          "locale": "es-AR",
+          "code": "ARS"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            -31.5395129374039,
+            -68.5413653624017
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            -31.5395129374039,
+            -68.5413653624017
+          ],
+          "fallbackDataset": [
+            -68.5413653624017,
+            -31.5395129374039
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "ar-sanjuan-dgc-public-parcel-vector",
+          "idPrefix": "AR-SJ-DGC-PARCEL-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "Dirección de Geodesia y Catastro, Gobierno de la Provincia de San Juan · DGC Consultas Web · Parcela"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "ar-sanjuan-dgc-public-parcel-vector",
+      "name": "San Juan DGC public cadastral parcels",
+      "adapter": "sanjuan-dgc",
+      "countryCode": "AR",
+      "cityIds": [
+        "san_juan"
+      ],
+      "endpoint": "https://servicioscatastro.sanjuan.gob.ar/DgcConsultasWeb/KusaServer/ClassDataPortal/910003/6",
+      "idPrefix": "AR-SJ-DGC-PARCEL-",
+      "idField": "id",
+      "outFields": [
+        "id"
+      ],
+      "geometryField": "geometry",
+      "sourceCrs": "EPSG:4326",
+      "responseSrid": 4326,
+      "metricSrid": 32719,
+      "operator": "Dirección de Geodesia y Catastro, Gobierno de la Provincia de San Juan",
+      "attribution": "Dirección de Geodesia y Catastro, Gobierno de la Provincia de San Juan · DGC Consultas Web · Parcela",
+      "homepage": "https://catastro.sanjuan.gob.ar/",
+      "viewerUrl": "https://servicioscatastro.sanjuan.gob.ar/DgcConsultasWeb/MapApp/DgcPublico",
+      "browserTransport": "relay",
+      "maxResponseBytes": 8388608,
+      "maxBboxKm2": 6,
+      "maxConcurrentQueries": 1,
+      "lookupBounds": [
+        [
+          -68.55,
+          -31.55,
+          -68.53,
+          -31.53
+        ]
+      ],
+      "capabilities": {
+        "areaEnumeration": true,
+        "exactIds": true,
+        "geometry": true,
+        "ownership": false
+      },
+      "coverage": {
+        "scope": "bounded-lookup-windows",
+        "citywide": false,
+        "basis": "Central San Juan lookup window only; no municipal boundary or citywide completeness claim."
+      },
+      "scope": "Bounded central San Juan window; currentness, native CRS/datum and complete coverage unverified.",
+      "identityProvenance": "Exact decimal native GeoJSON Feature.id prefixed AR-SJ-DGC-PARCEL-; fresh bounded lookup for exact-ID reads.",
+      "licence": "Public anonymous consultation; explicit geometry reuse licence and rate limits unresolved.",
+      "discovery": {
+        "jurisdiction": {
+          "basis": "First-party provincial DGC viewer names Parcela class 910003. Returned polygon 22539 contains the unchanged San Juan locator."
+        },
+        "sourcePurpose": "cadastral-parcels",
+        "purposeEvidenceUrls": [
+          "https://catastro.sanjuan.gob.ar/",
+          "https://servicioscatastro.sanjuan.gob.ar/DgcConsultasWeb/MapApp/DgcPublico"
+        ]
+      },
+      "defaultForCity": true
+    }
+  ]
+}

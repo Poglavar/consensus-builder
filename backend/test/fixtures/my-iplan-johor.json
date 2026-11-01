@@ -1,0 +1,135 @@
+{
+  "purpose": "Safe first-party Johor UPI and unchanged polygon fixture for backend/browser regression checks.",
+  "descriptor": {
+    "id": "my-iplan-johor-lot",
+    "name": "PLANMalaysia i-PLAN Lot Johor",
+    "adapter": "arcgis",
+    "endpoint": "https://scharms.planmalaysia.gov.my/arcgis/rest/services/iPLAN/LOT_01/MapServer/0",
+    "idField": "UPI",
+    "objectIdField": "OBJECTID",
+    "idType": "string",
+    "idPattern": "^[0-9]+$",
+    "idPrefix": "MY-IPLAN-JOHOR-UPI-",
+    "outFields": [
+      "OBJECTID",
+      "UPI"
+    ],
+    "queryFormat": "geojson",
+    "boundsQueryMode": "object-ids",
+    "idsQueryMode": "object-ids",
+    "pageSize": 500,
+    "idBatchSize": 80,
+    "maxFeatures": 10000,
+    "maxBboxKm2": 25
+  },
+  "response": {
+    "type": "FeatureCollection",
+    "features": [
+      {
+        "type": "Feature",
+        "id": 145707,
+        "geometry": {
+          "type": "Polygon",
+          "coordinates": [
+            [
+              [
+                103.75606440300004,
+                1.5145833440000729
+              ],
+              [
+                103.75616639100008,
+                1.5144082600000388
+              ],
+              [
+                103.75622309700009,
+                1.51444170700006
+              ],
+              [
+                103.75612111000004,
+                1.5146168000000557
+              ],
+              [
+                103.75606440300004,
+                1.5145833440000729
+              ]
+            ]
+          ]
+        },
+        "properties": {
+          "OBJECTID": 145707,
+          "UPI": "0102400003793"
+        }
+      },
+      {
+        "type": "Feature",
+        "id": 145708,
+        "geometry": {
+          "type": "Polygon",
+          "coordinates": [
+            [
+              [
+                103.75595100000004,
+                1.5145164500000305
+              ],
+              [
+                103.75605298700003,
+                1.5143413570000348
+              ],
+              [
+                103.75610969400009,
+                1.514374804000056
+              ],
+              [
+                103.75600770600005,
+                1.5145498970000517
+              ],
+              [
+                103.75595100000004,
+                1.5145164500000305
+              ]
+            ]
+          ]
+        },
+        "properties": {
+          "OBJECTID": 145708,
+          "UPI": "0102400003795"
+        }
+      },
+      {
+        "type": "Feature",
+        "id": 145709,
+        "geometry": {
+          "type": "Polygon",
+          "coordinates": [
+            [
+              [
+                103.75589430200006,
+                1.5144830030000662
+              ],
+              [
+                103.75599629000004,
+                1.5143079100000705
+              ],
+              [
+                103.75605298700003,
+                1.5143413570000348
+              ],
+              [
+                103.75595100000004,
+                1.5145164500000305
+              ],
+              [
+                103.75589430200006,
+                1.5144830030000662
+              ]
+            ]
+          ]
+        },
+        "properties": {
+          "OBJECTID": 145709,
+          "UPI": "0102400003796"
+        }
+      }
+    ]
+  }
+}

@@ -7,6 +7,7 @@ import { canonicalParcelFeature, providerHttpError, upstreamError, validateBound
 export const REESTR54_SOURCE = 'ru-altai-reestr54-barnaul-cadastral';
 export const REESTR54_ENDPOINT = 'https://kk.reestr54.ru/barnaul/';
 const CITY_SOURCES = Object.freeze({
+    'ru-kemerovo-reestr54-cadastral': { endpoint: 'https://kk.reestr54.ru/kemerovo/', prefix: 'RU-REESTR54-KEMEROVO-', nativeId: /^42:24:\d{6,7}:\d+$/ },
     'ru-belgorod-reestr54-cadastral': { endpoint: 'https://kk.reestr54.ru/belgorod/', prefix: 'RU-REESTR54-BELGOROD-', nativeId: /^31:(?:15|16):\d{6,7}:\d+$/ },
     'ru-tula-reestr54-cadastral': { endpoint: 'https://kk.reestr54.ru/tula/', prefix: 'RU-REESTR54-TULA-', nativeId: /^71:30:\d{6,7}:\d+$/ },
     'ru-tver-reestr54-tver-cadastral': { endpoint: 'https://kk.reestr54.ru/tver/', prefix: 'RU-REESTR54-TVER-', nativeId: /^69:40:\d{6,7}:\d+$/ },

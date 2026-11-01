@@ -5,23 +5,23 @@
     "asOf": "2026-10-08",
     "demographicSnapshotDate": "2026-10-12",
     "statisticsYear": 2025,
-    "cityCount": 3242,
+    "cityCount": 3257,
     "countryCount": 255,
     "statisticalJurisdictions": 237,
-    "checkedCityCount": 2591,
-    "uncheckedCityCount": 651,
-    "cityRegistryFoundCount": 1990,
-    "verifiedCitySampleCount": 1945,
+    "checkedCityCount": 2616,
+    "uncheckedCityCount": 641,
+    "cityRegistryFoundCount": 2028,
+    "verifiedCitySampleCount": 1983,
     "nationalCadastreCount": 72,
     "countryTwoRegionCount": 50,
-    "populationMatchedCount": 2732,
-    "growthMatchedCount": 1617,
-    "checkedCitiesMissingDate": 2591,
+    "populationMatchedCount": 2749,
+    "growthMatchedCount": 1619,
+    "checkedCitiesMissingDate": 2616,
     "wikiCityCount": 275,
-    "configuredAppCityCount": 1991,
+    "configuredAppCityCount": 2029,
     "unmatchedStatisticalAmounts": {
       "landAreaKm2": 0,
-      "builtUpAreaKm2": 0.003000000084284693,
+      "builtUpAreaKm2": 0.003000000026077032,
       "population": 2
     },
     "warnings": []
@@ -44,13 +44,13 @@
     },
     {
       "id": "local",
-      "jurisdictions": 57,
-      "landAreaKm2": 84037398,
-      "builtUpAreaKm2": 267728.2189999999,
-      "population": 4278054283,
-      "landAreaKm2Pct": 62.371965127529414,
-      "builtUpAreaKm2Pct": 51.90508386294056,
-      "populationPct": 51.9710322462958
+      "jurisdictions": 59,
+      "landAreaKm2": 84322397,
+      "builtUpAreaKm2": 268966.888,
+      "population": 4298157970,
+      "landAreaKm2Pct": 62.58348937878456,
+      "builtUpAreaKm2Pct": 52.14522746290762,
+      "populationPct": 52.21525761049893
     },
     {
       "id": "none",
@@ -64,13 +64,13 @@
     },
     {
       "id": "unknown",
-      "jurisdictions": 108,
-      "landAreaKm2": 25445356,
-      "builtUpAreaKm2": 52300.83900000008,
-      "population": 1105688444,
-      "landAreaKm2Pct": 18.885364074332376,
-      "builtUpAreaKm2Pct": 10.139683611002386,
-      "populationPct": 13.432220812584914
+      "jurisdictions": 106,
+      "landAreaKm2": 25160357,
+      "builtUpAreaKm2": 51062.17000000003,
+      "population": 1085584757,
+      "landAreaKm2Pct": 18.67383982307723,
+      "builtUpAreaKm2Pct": 9.899540011035333,
+      "populationPct": 13.187995448381784
     }
   ],
   "cities": [
@@ -4762,10 +4762,13 @@
       "registryCityIds": [
         "wup2025:2965"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "almaty"
+      ],
       "cohorts": [
         "registry",
-        "overnight-top1000"
+        "overnight-top1000",
+        "app"
       ],
       "wupCityCode": 2965,
       "wupName": "Almaty",
@@ -4779,20 +4782,27 @@
       "populationMatch": {
         "basis": "exact_WUP2025_city_code_fresh_bulk_2025_row",
         "confidence": "high",
-        "sourceName": "UN DESA WUP 2025"
+        "sourceName": "UN DESA WUP 2025",
+        "evidenceFile": "research/overnight-cities-2026-10-08/provenance.json"
       },
-      "checked": false,
+      "checked": true,
       "checkedDate": null,
       "checkedDateEvidence": null,
-      "registryFound": null,
-      "registryFindingBasis": null,
-      "registryBasis": null,
-      "verifiedSample": false,
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": "A validated parcel source is configured for this city; citywide completeness remains unverified.",
+      "verifiedSample": true,
       "impliedParcelsTried": null,
       "integrationAttempts": [],
-      "sourceIds": [],
-      "evidenceUrls": [],
-      "evidenceFiles": [],
+      "sourceIds": [
+        "kz-almaty-mapalmaty-gzk"
+      ],
+      "evidenceUrls": [
+        "https://mapalmaty.kz/arcgis/rest/services/pg/pg_uzo/FeatureServer/10"
+      ],
+      "evidenceFiles": [
+        "cities/2965/settings.json"
+      ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=43.26130&mlon=76.90949#map=12/43.26130/76.90949",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=43.26130%2C76.90949",
       "wikipediaUrl": null,
@@ -25202,10 +25212,13 @@
       "registryCityIds": [
         "wup2025:6721"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "brahmanbaria"
+      ],
       "cohorts": [
         "largest200",
-        "registry"
+        "registry",
+        "app"
       ],
       "wupCityCode": 6721,
       "wupName": "Brahmanbaria",
@@ -25222,18 +25235,24 @@
         "sourceName": "UN DESA WUP 2025",
         "confidence": "high"
       },
-      "checked": false,
+      "checked": true,
       "checkedDate": null,
       "checkedDateEvidence": null,
-      "registryFound": null,
-      "registryFindingBasis": null,
-      "registryBasis": null,
-      "verifiedSample": false,
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": "A validated parcel source is configured for this city; citywide completeness remains unverified.",
+      "verifiedSample": true,
       "impliedParcelsTried": null,
       "integrationAttempts": [],
-      "sourceIds": [],
-      "evidenceUrls": [],
-      "evidenceFiles": [],
+      "sourceIds": [
+        "bd-minland-smart-bhumi-naksha-brahmanbaria-plot-geometry"
+      ],
+      "evidenceUrls": [
+        "https://map.land.gov.bd/getGeomByCode"
+      ],
+      "evidenceFiles": [
+        "cities/6721/settings.json"
+      ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=24.04659&mlon=90.98007#map=12/24.04659/90.98007",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=24.04659%2C90.98007",
       "wikipediaUrl": "https://en.wikipedia.org/wiki/Brahmanbaria",
@@ -26462,6 +26481,56 @@
       "wikipediaEvidence": null
     },
     {
+      "id": "wup2025:942",
+      "name": "Budapest",
+      "country": "Hungary",
+      "countryCode": "HU",
+      "latitude": 47.498413385628,
+      "longitude": 19.0835031026958,
+      "registryCityIds": [
+        "wup2025:942"
+      ],
+      "appCityIds": [
+        "budapest"
+      ],
+      "cohorts": [
+        "app",
+        "registry"
+      ],
+      "wupCityCode": 942,
+      "wupName": "Budapest",
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": null,
+      "population2025": 1609260,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "checked": true,
+      "checkedDate": null,
+      "checkedDateEvidence": null,
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": "A validated parcel source is configured for this city; citywide completeness remains unverified.",
+      "verifiedSample": true,
+      "impliedParcelsTried": null,
+      "integrationAttempts": [],
+      "sourceIds": [
+        "hu-lechner-oeny-cadastral-parcels"
+      ],
+      "evidenceUrls": [
+        "https://www.oeny.hu/hk-api/parcels/at"
+      ],
+      "evidenceFiles": [
+        "cities/942/settings.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=47.49841&mlon=19.08350#map=12/47.49841/19.08350",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=47.49841%2C19.08350",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
       "id": "wup2025:499",
       "name": "Buenaventura",
       "country": "Colombia",
@@ -27537,10 +27606,13 @@
       "registryCityIds": [
         "wup2025:3124"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "bursa"
+      ],
       "cohorts": [
         "registry",
-        "overnight-top1000"
+        "overnight-top1000",
+        "app"
       ],
       "wupCityCode": 3124,
       "wupName": "Bursa",
@@ -27554,25 +27626,30 @@
       "populationMatch": {
         "basis": "exact_WUP2025_city_code_fresh_bulk_2025_row",
         "confidence": "high",
-        "sourceName": "UN DESA WUP 2025"
+        "sourceName": "UN DESA WUP 2025",
+        "evidenceFile": "research/overnight-cities-2026-10-08/provenance.json"
       },
       "checked": true,
       "checkedDate": null,
       "checkedDateEvidence": null,
-      "registryFound": null,
-      "registryFindingBasis": null,
-      "registryBasis": null,
-      "verifiedSample": false,
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": "A validated parcel source is configured for this city; citywide completeness remains unverified.",
+      "verifiedSample": true,
       "impliedParcelsTried": null,
       "integrationAttempts": [],
-      "sourceIds": [],
+      "sourceIds": [
+        "tr-bursa-bbbcbsgateway-kadastro-parseller"
+      ],
       "evidenceUrls": [
+        "https://bbbcbsgateway.bursa.bel.tr/server/rest/services/MULKIYET/KADASTRO/MapServer/0",
         "https://cbsapi.tkgm.gov.tr/megsiswebapi.v3.1/api/parsel/40.2050411327084/29.0470015858534",
         "https://cbsapi.tkgm.gov.tr/megsiswebapi.v3.1/api/parsel/40.195/29.06",
         "https://cbsapi.tkgm.gov.tr/megsiswebapi.v3.1/api/parsel/40.19/29.08",
         "https://cbsapi.tkgm.gov.tr/megsiswebapi.v3.1/api/parsel/40.21/29.08"
       ],
       "evidenceFiles": [
+        "cities/3124/settings.json",
         "cities/3124/failed-urls.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=40.20504&mlon=29.04700#map=12/40.20504/29.04700",
@@ -28668,10 +28745,13 @@
       "registryCityIds": [
         "wup2025:7121"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "campinas"
+      ],
       "cohorts": [
         "registry",
-        "overnight-top1000"
+        "overnight-top1000",
+        "app"
       ],
       "wupCityCode": 7121,
       "wupName": "Campinas",
@@ -28685,24 +28765,29 @@
       "populationMatch": {
         "basis": "exact_WUP2025_city_code_fresh_bulk_2025_row",
         "confidence": "high",
-        "sourceName": "UN DESA WUP 2025"
+        "sourceName": "UN DESA WUP 2025",
+        "evidenceFile": "research/overnight-cities-2026-10-08/provenance.json"
       },
       "checked": true,
       "checkedDate": null,
       "checkedDateEvidence": null,
-      "registryFound": null,
-      "registryFindingBasis": null,
-      "registryBasis": null,
-      "verifiedSample": false,
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": "A validated parcel source is configured for this city; citywide completeness remains unverified.",
+      "verifiedSample": true,
       "impliedParcelsTried": null,
       "integrationAttempts": [],
-      "sourceIds": [],
+      "sourceIds": [
+        "br-sfb-consulta-car-public-wfs"
+      ],
       "evidenceUrls": [
+        "https://consulta.car.gov.br/geoserver/wfs",
         "https://campinas.sp.gov.br/sites/metadadosgeoespaciais",
         "https://zoneamento.campinas.sp.gov.br/",
         "https://portal-adm.campinas.sp.gov.br/servico/consultar-metadados-espaciais"
       ],
       "evidenceFiles": [
+        "cities/7121/settings.json",
         "cities/7121/failed-urls.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=-22.89086&mlon=-47.12736#map=12/-22.89086/-47.12736",
@@ -39108,10 +39193,13 @@
       "registryCityIds": [
         "wup2025:2915"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "daegu"
+      ],
       "cohorts": [
         "registry",
-        "overnight-top1000"
+        "overnight-top1000",
+        "app"
       ],
       "wupCityCode": 2915,
       "wupName": "Daegu",
@@ -39125,20 +39213,27 @@
       "populationMatch": {
         "basis": "exact_WUP2025_city_code_fresh_bulk_2025_row",
         "confidence": "high",
-        "sourceName": "UN DESA WUP 2025"
+        "sourceName": "UN DESA WUP 2025",
+        "evidenceFile": "research/overnight-cities-2026-10-08/provenance.json"
       },
-      "checked": false,
+      "checked": true,
       "checkedDate": null,
       "checkedDateEvidence": null,
-      "registryFound": null,
-      "registryFindingBasis": null,
-      "registryBasis": null,
-      "verifiedSample": false,
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": "A validated parcel source is configured for this city; citywide completeness remains unverified.",
+      "verifiedSample": true,
       "impliedParcelsTried": null,
       "integrationAttempts": [],
-      "sourceIds": [],
-      "evidenceUrls": [],
-      "evidenceFiles": [],
+      "sourceIds": [
+        "kr-daegu-gis-go-kr-dg-lsmd-cont-ldreg"
+      ],
+      "evidenceUrls": [
+        "https://gis.go.kr/geoserver/dg/ows"
+      ],
+      "evidenceFiles": [
+        "cities/2915/settings.json"
+      ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=35.85894&mlon=128.59347#map=12/35.85894/128.59347",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=35.85894%2C128.59347",
       "wikipediaUrl": null,
@@ -51748,6 +51843,60 @@
       "wikipediaEvidence": null
     },
     {
+      "id": "wup2025:874",
+      "name": "Galle",
+      "country": "Sri Lanka",
+      "countryCode": "LK",
+      "latitude": 6.06146732901066,
+      "longitude": 80.2126280668052,
+      "registryCityIds": [
+        "wup2025:874"
+      ],
+      "appCityIds": [
+        "galle"
+      ],
+      "cohorts": [
+        "app",
+        "registry"
+      ],
+      "wupCityCode": 874,
+      "wupName": "Galle",
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": null,
+      "population2025": 346263,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "checked": true,
+      "checkedDate": null,
+      "checkedDateEvidence": null,
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": "A validated parcel source is configured for this city; citywide completeness remains unverified.",
+      "verifiedSample": true,
+      "impliedParcelsTried": null,
+      "integrationAttempts": [],
+      "sourceIds": [
+        "lk-sd-luse-cadastre-2026"
+      ],
+      "evidenceUrls": [
+        "https://lis.survey.gov.lk/server/rest/services/Publishing_Server/LUSE_Cadastre_2026/MapServer/0",
+        "https://survey.gov.lk/sdweb/pages_service_land_info.php?id=817122c8f9f9958a8a7688733ed95c9c58fcb688",
+        "https://it.survey.gov.lk/nsdi/lis/kml_service_tmp.php",
+        "https://gisapps.nsdi.gov.lk/server/rest/services/SLNSDI/Planning_Cadastre/MapServer"
+      ],
+      "evidenceFiles": [
+        "cities/874/settings.json",
+        "cities/874/failed-urls.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=6.06147&mlon=80.21263#map=12/6.06147/80.21263",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=6.06147%2C80.21263",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
       "id": "wup2025:47",
       "name": "Galway",
       "country": "Ireland",
@@ -52729,10 +52878,13 @@
       "registryCityIds": [
         "wup2025:6315"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "gaziantep"
+      ],
       "cohorts": [
         "registry",
-        "overnight-top1000"
+        "overnight-top1000",
+        "app"
       ],
       "wupCityCode": 6315,
       "wupName": "Gaziantep",
@@ -52746,22 +52898,27 @@
       "populationMatch": {
         "basis": "exact_WUP2025_city_code_fresh_bulk_2025_row",
         "confidence": "high",
-        "sourceName": "UN DESA WUP 2025"
+        "sourceName": "UN DESA WUP 2025",
+        "evidenceFile": "research/overnight-cities-2026-10-08/provenance.json"
       },
       "checked": true,
       "checkedDate": null,
       "checkedDateEvidence": null,
-      "registryFound": null,
-      "registryFindingBasis": null,
-      "registryBasis": null,
-      "verifiedSample": false,
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": "A validated parcel source is configured for this city; citywide completeness remains unverified.",
+      "verifiedSample": true,
       "impliedParcelsTried": null,
       "integrationAttempts": [],
-      "sourceIds": [],
+      "sourceIds": [
+        "tr-sehitkamil-keos-imar-parcels"
+      ],
       "evidenceUrls": [
+        "https://keos.sehitkamil.bel.tr/imardurumu/service/imarsvc.aspx",
         "https://cbsapi.tkgm.gov.tr/megsiswebapi.v3.1/api/parsel"
       ],
       "evidenceFiles": [
+        "cities/6315/settings.json",
         "cities/6315/failed-urls.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=37.05058&mlon=37.37588#map=12/37.05058/37.37588",
@@ -54377,10 +54534,13 @@
       "registryCityIds": [
         "wup2025:4862"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "goiania"
+      ],
       "cohorts": [
         "registry",
-        "overnight-top1000"
+        "overnight-top1000",
+        "app"
       ],
       "wupCityCode": 4862,
       "wupName": "Goiânia",
@@ -54394,20 +54554,26 @@
       "populationMatch": {
         "basis": "exact_WUP2025_city_code_fresh_bulk_2025_row",
         "confidence": "high",
-        "sourceName": "UN DESA WUP 2025"
+        "sourceName": "UN DESA WUP 2025",
+        "evidenceFile": "research/overnight-cities-2026-10-08/provenance.json"
       },
       "checked": true,
       "checkedDate": null,
       "checkedDateEvidence": null,
-      "registryFound": null,
-      "registryFindingBasis": null,
-      "registryBasis": null,
-      "verifiedSample": false,
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": "A validated parcel source is configured for this city; citywide completeness remains unverified.",
+      "verifiedSample": true,
       "impliedParcelsTried": null,
       "integrationAttempts": [],
-      "sourceIds": [],
-      "evidenceUrls": [],
+      "sourceIds": [
+        "br-goiania-siggo-feature-base-divisas-lote"
+      ],
+      "evidenceUrls": [
+        "https://portalmapa.goiania.go.gov.br/servicogyn/rest/services/MapaServer/Feature_Base/MapServer/0"
+      ],
       "evidenceFiles": [
+        "cities/4862/settings.json",
         "cities/4862/failed-urls.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=-16.70447&mlon=-49.28651#map=12/-16.70447/-49.28651",
@@ -56235,10 +56401,13 @@
       "registryCityIds": [
         "wup2025:772"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "guayaquil"
+      ],
       "cohorts": [
         "largest200",
-        "registry"
+        "registry",
+        "app"
       ],
       "wupCityCode": 772,
       "wupName": "Guayaquil",
@@ -56255,18 +56424,24 @@
         "sourceName": "UN DESA WUP 2025",
         "confidence": "high"
       },
-      "checked": false,
+      "checked": true,
       "checkedDate": null,
       "checkedDateEvidence": null,
-      "registryFound": null,
-      "registryFindingBasis": null,
-      "registryBasis": null,
-      "verifiedSample": false,
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": "A validated parcel source is configured for this city; citywide completeness remains unverified.",
+      "verifiedSample": true,
       "impliedParcelsTried": null,
       "integrationAttempts": [],
-      "sourceIds": [],
-      "evidenceUrls": [],
-      "evidenceFiles": [],
+      "sourceIds": [
+        "ec-guayaquil-urban-predios-official"
+      ],
+      "evidenceUrls": [
+        "https://geoportalcat.guayaquil.gob.ec/arcgis/rest/services/Catastro_Urbano/Predios_Urbanos/MapServer/0"
+      ],
+      "evidenceFiles": [
+        "cities/772/settings.json"
+      ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=-2.16603&mlon=-79.90993#map=12/-2.16603/-79.90993",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=-2.16603%2C-79.90993",
       "wikipediaUrl": "https://en.wikipedia.org/wiki/Guayaquil",
@@ -71507,10 +71682,13 @@
       "registryCityIds": [
         "wup2025:2974"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "johor_bahru"
+      ],
       "cohorts": [
         "registry",
-        "overnight-top1000"
+        "overnight-top1000",
+        "app"
       ],
       "wupCityCode": 2974,
       "wupName": "Johor Bahru",
@@ -71524,25 +71702,30 @@
       "populationMatch": {
         "basis": "exact_WUP2025_city_code_fresh_bulk_2025_row",
         "confidence": "high",
-        "sourceName": "UN DESA WUP 2025"
+        "sourceName": "UN DESA WUP 2025",
+        "evidenceFile": "research/overnight-cities-2026-10-08/provenance.json"
       },
       "checked": true,
       "checkedDate": null,
       "checkedDateEvidence": null,
-      "registryFound": null,
-      "registryFindingBasis": null,
-      "registryBasis": null,
-      "verifiedSample": false,
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": "A validated parcel source is configured for this city; citywide completeness remains unverified.",
+      "verifiedSample": true,
       "impliedParcelsTried": null,
       "integrationAttempts": [],
-      "sourceIds": [],
+      "sourceIds": [
+        "my-iplan-johor-lot"
+      ],
       "evidenceUrls": [
+        "https://scharms.planmalaysia.gov.my/arcgis/rest/services/iPLAN/LOT_01/MapServer/0",
         "https://geojb.gov.my/gisserver/rest/services/GEOJB/LotJUPEM/FeatureServer/0/query",
         "https://geojb.gov.my/",
         "https://geoportal.johor.gov.my/petaawam/pkpj/jbahru",
         "https://geojb.gov.my/gisportal/sharing/rest/content/items/21cceffcc9e54cb8998f064c7dcf5efa?f=json"
       ],
       "evidenceFiles": [
+        "cities/2974/settings.json",
         "cities/2974/failed-urls.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=1.51438&mlon=103.75596#map=12/1.51438/103.75596",
@@ -75357,6 +75540,56 @@
       }
     },
     {
+      "id": "wup2025:6935",
+      "name": "Kansas City",
+      "country": "United States of America",
+      "countryCode": "US",
+      "latitude": 39.0251330397331,
+      "longitude": -94.614592171342,
+      "registryCityIds": [
+        "wup2025:6935"
+      ],
+      "appCityIds": [
+        "kansas_city"
+      ],
+      "cohorts": [
+        "app",
+        "registry"
+      ],
+      "wupCityCode": 6935,
+      "wupName": "Kansas City",
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": null,
+      "population2025": 344125,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "checked": true,
+      "checkedDate": null,
+      "checkedDateEvidence": null,
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": "A validated parcel source is configured for this city; citywide completeness remains unverified.",
+      "verifiedSample": true,
+      "impliedParcelsTried": null,
+      "integrationAttempts": [],
+      "sourceIds": [
+        "us-mo-kcmo-socrata-parcels-6g4y-sh3m"
+      ],
+      "evidenceUrls": [
+        "https://data.kcmo.org/resource/6g4y-sh3m.geojson"
+      ],
+      "evidenceFiles": [
+        "cities/6935/settings.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=39.02513&mlon=-94.61459#map=12/39.02513/-94.61459",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=39.02513%2C-94.61459",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
       "id": "wup2025:8951",
       "name": "Kanth",
       "country": "India",
@@ -75477,10 +75710,13 @@
       "registryCityIds": [
         "wup2025:12135"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "kaohsiung"
+      ],
       "cohorts": [
         "registry",
-        "overnight-top1000"
+        "overnight-top1000",
+        "app"
       ],
       "wupCityCode": 12135,
       "wupName": "Kaohsiung",
@@ -75494,24 +75730,29 @@
       "populationMatch": {
         "basis": "exact_WUP2025_city_code_fresh_bulk_2025_row",
         "confidence": "high",
-        "sourceName": "UN DESA WUP 2025"
+        "sourceName": "UN DESA WUP 2025",
+        "evidenceFile": "research/overnight-cities-2026-10-08/provenance.json"
       },
       "checked": true,
       "checkedDate": null,
       "checkedDateEvidence": null,
-      "registryFound": null,
-      "registryFindingBasis": null,
-      "registryBasis": null,
-      "verifiedSample": false,
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": "A validated parcel source is configured for this city; citywide completeness remains unverified.",
+      "verifiedSample": true,
       "impliedParcelsTried": null,
       "integrationAttempts": [],
-      "sourceIds": [],
+      "sourceIds": [
+        "TW-KAOHSIUNG-QIJIN-ARC-SAMPLE"
+      ],
       "evidenceUrls": [
+        "https://services7.arcgis.com/tVmMUEViFfyHBZvj/ArcGIS/rest/services/%E9%AB%98%E9%9B%84%E6%97%97%E6%B4%A5_%E5%9C%B0%E7%B1%8D%E5%9C%96%E7%AF%84%E4%BE%8B/FeatureServer/0",
         "https://gisdawh.kcg.gov.tw/landeasy/page.cfm",
         "https://landp.kcg.gov.tw/gis/Default",
         "https://landp.kcg.gov.tw/Scripts/TMap.js"
       ],
       "evidenceFiles": [
+        "cities/12135/settings.json",
         "cities/12135/failed-urls.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=22.63476&mlon=120.33192#map=12/22.63476/120.33192",
@@ -78178,6 +78419,59 @@
       "wikipediaEvidence": null
     },
     {
+      "id": "wup2025:7534",
+      "name": "Kemerovo",
+      "country": "Russian Federation",
+      "countryCode": "RU",
+      "latitude": 55.3523295052853,
+      "longitude": 86.0912292541964,
+      "registryCityIds": [
+        "wup2025:7534"
+      ],
+      "appCityIds": [
+        "kemerovo"
+      ],
+      "cohorts": [
+        "app",
+        "registry"
+      ],
+      "wupCityCode": 7534,
+      "wupName": "Kemerovo",
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": null,
+      "population2025": 470175,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "checked": true,
+      "checkedDate": null,
+      "checkedDateEvidence": null,
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": "A validated parcel source is configured for this city; citywide completeness remains unverified.",
+      "verifiedSample": true,
+      "impliedParcelsTried": null,
+      "integrationAttempts": [],
+      "sourceIds": [
+        "ru-kemerovo-reestr54-cadastral"
+      ],
+      "evidenceUrls": [
+        "https://kk.reestr54.ru/kemerovo/",
+        "https://www.rosreestr.gov.ru/",
+        "https://kemerovo.ru/"
+      ],
+      "evidenceFiles": [
+        "cities/7534/settings.json",
+        "cities/7534/failed-urls.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=55.35233&mlon=86.09123#map=12/55.35233/86.09123",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=55.35233%2C86.09123",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
       "id": "wup2025:6993",
       "name": "Kendal",
       "country": "Indonesia",
@@ -79106,31 +79400,50 @@
       "countryCode": "IN",
       "latitude": 17.2489124071603,
       "longitude": 80.165271980989,
-      "registryCityIds": [],
-      "appCityIds": [],
-      "cohorts": [],
+      "registryCityIds": [
+        "wup2025:10449"
+      ],
+      "appCityIds": [
+        "khammam"
+      ],
+      "cohorts": [
+        "app",
+        "registry"
+      ],
       "wupCityCode": 10449,
       "wupName": "Khammam",
       "growthRank": null,
       "researchFocusRegion": null,
       "researchPriority": null,
       "population2015": null,
-      "population2025": null,
+      "population2025": 346533,
       "annualGrowthPct2015To2025": null,
       "populationPlausibility2025": null,
       "populationMatch": null,
-      "checked": false,
+      "checked": true,
       "checkedDate": null,
       "checkedDateEvidence": null,
-      "registryFound": null,
-      "registryFindingBasis": null,
-      "registryBasis": null,
-      "verifiedSample": false,
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": "A validated parcel source is configured for this city; citywide completeness remains unverified.",
+      "verifiedSample": true,
       "impliedParcelsTried": null,
       "integrationAttempts": [],
-      "sourceIds": [],
-      "evidenceUrls": [],
-      "evidenceFiles": [],
+      "sourceIds": [
+        "in-nrsc-bhuvan-telangana-tg-cad-gfi"
+      ],
+      "evidenceUrls": [
+        "https://bhuvan-vec1.nrsc.gov.in/bhuvan/ows",
+        "https://bhubharati.telangana.gov.in/gis/",
+        "https://khammam.telangana.gov.in/survey-and-land-records/",
+        "https://tgrac.telangana.gov.in/trac/webgis.php",
+        "https://tgrac.telangana.gov.in/arcgis/rest/services/Hydra_Folder/Fourth_Window/MapServer/0?f=pjson",
+        "https://tgrac.telangana.gov.in/arcgis/rest/services/Bhunaksha_Folder/Bhunaksha_query/MapServer/0"
+      ],
+      "evidenceFiles": [
+        "cities/10449/settings.json",
+        "cities/10449/failed-urls.json"
+      ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=17.24891&mlon=80.16527#map=12/17.24891/80.16527",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=17.24891%2C80.16527",
       "wikipediaUrl": null,
@@ -83540,12 +83853,16 @@
       "latitude": 13.753979,
       "longitude": 100.501444,
       "registryCityIds": [
-        "geonames:1609350"
+        "geonames:1609350",
+        "wup2025:2286"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "krung_thep_maha_nakhon_bangkok"
+      ],
       "cohorts": [
         "largest200",
-        "registry"
+        "registry",
+        "app"
       ],
       "wupCityCode": 2286,
       "wupName": "Krung Thep Maha Nakhon (Bangkok)",
@@ -83562,18 +83879,26 @@
         "sourceName": "UN DESA WUP 2025",
         "confidence": "high"
       },
-      "checked": false,
+      "checked": true,
       "checkedDate": null,
       "checkedDateEvidence": null,
-      "registryFound": null,
-      "registryFindingBasis": null,
-      "registryBasis": null,
-      "verifiedSample": false,
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": "A validated parcel source is configured for this city; citywide completeness remains unverified.",
+      "verifiedSample": true,
       "impliedParcelsTried": null,
       "integrationAttempts": [],
-      "sourceIds": [],
-      "evidenceUrls": [],
-      "evidenceFiles": [],
+      "sourceIds": [
+        "th-bma-cpudgi-bma-parcel-01"
+      ],
+      "evidenceUrls": [
+        "https://cpudgiportal.bangkok.go.th/arcgis/rest/services/Hosted/BMA_PARCEL_01/FeatureServer/0",
+        "https://data.go.th/dataset/mapland-parcel"
+      ],
+      "evidenceFiles": [
+        "cities/2286/settings.json",
+        "cities/2286/failed-urls.json"
+      ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=13.75398&mlon=100.50144#map=12/13.75398/100.50144",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=13.75398%2C100.50144",
       "wikipediaUrl": "https://en.wikipedia.org/wiki/Bangkok",
@@ -100948,10 +101273,13 @@
       "registryCityIds": [
         "wup2025:1513"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "mecca"
+      ],
       "cohorts": [
         "registry",
-        "overnight-top1000"
+        "overnight-top1000",
+        "app"
       ],
       "wupCityCode": 1513,
       "wupName": "Mecca",
@@ -100965,19 +101293,23 @@
       "populationMatch": {
         "basis": "exact_WUP2025_city_code_fresh_bulk_2025_row",
         "confidence": "high",
-        "sourceName": "UN DESA WUP 2025"
+        "sourceName": "UN DESA WUP 2025",
+        "evidenceFile": "research/overnight-cities-2026-10-08/provenance.json"
       },
       "checked": true,
       "checkedDate": null,
       "checkedDateEvidence": null,
-      "registryFound": null,
-      "registryFindingBasis": null,
-      "registryBasis": null,
-      "verifiedSample": false,
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": "A validated parcel source is configured for this city; citywide completeness remains unverified.",
+      "verifiedSample": true,
       "impliedParcelsTried": null,
       "integrationAttempts": [],
-      "sourceIds": [],
+      "sourceIds": [
+        "sa-makkah-municipality-mmsdi-regulatory-parcels"
+      ],
       "evidenceUrls": [
+        "https://maps.holymakkah.gov.sa/arcgis/rest/services/SDI/MMSDI_MD_BusinessMap/MapServer/14",
         "https://momah.gov.sa/en/node/15098",
         "https://momah.gov.sa/ar/e-services/alkhrayt-alhdryt",
         "https://maps.holymakkah.gov.sa/",
@@ -100987,6 +101319,7 @@
         "https://www.spa.gov.sa/N2641629"
       ],
       "evidenceFiles": [
+        "cities/1513/settings.json",
         "cities/1513/failed-urls.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=21.41427&mlon=39.82433#map=12/21.41427/39.82433",
@@ -113097,6 +113430,67 @@
       "wikipediaEvidence": null
     },
     {
+      "id": "wup2025:1489",
+      "name": "Niš",
+      "country": "Serbia",
+      "countryCode": "RS",
+      "latitude": 43.3188198916352,
+      "longitude": 21.9103223663759,
+      "registryCityIds": [
+        "wup2025:1489"
+      ],
+      "appCityIds": [
+        "nis"
+      ],
+      "cohorts": [
+        "app"
+      ],
+      "wupCityCode": 1489,
+      "wupName": "Niš",
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": 197718,
+      "population2025": 199431,
+      "annualGrowthPct2015To2025": 0.086265,
+      "populationPlausibility2025": null,
+      "populationMatch": {
+        "basis": "explicit_wup2025_city_code",
+        "sourceName": "UN DESA WUP 2025",
+        "confidence": "high",
+        "distanceKm": 0
+      },
+      "checked": true,
+      "checkedDate": null,
+      "checkedDateEvidence": null,
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": "A validated parcel source is configured for this city; citywide completeness remains unverified.",
+      "verifiedSample": true,
+      "impliedParcelsTried": null,
+      "integrationAttempts": [],
+      "sourceIds": [
+        "rs-nis-gis-smartportal-public-parcels"
+      ],
+      "evidenceUrls": [
+        "https://gis.ni.rs/server/rest/services/Nis_SmartPortal/MapServer/2",
+        "https://gis.ni.rs/smartPortal/gunisPublic",
+        "https://gis.ni.rs/server/rest/services/Hosted/Nis_NEP/MapServer?f=pjson",
+        "https://gis.ni.rs/server/rest/services/Hosted/Nis_NEP/MapServer/0?f=pjson",
+        "https://gis.ni.rs/server/rest/services/Hosted/Nis_NEP/MapServer/0/query?where=nepokretnost%3D%27parcela%27&outFields=objectid&returnGeometry=true&outSR=4326&f=geojson&resultRecordCount=3",
+        "https://gis.ni.rs/server/rest/services/Hosted/Nis_NEP/MapServer/0/query?geometry=21.9103223663759%2C43.3188198916352&geometryType=esriGeometryPoint&inSR=4326&spatialRel=esriSpatialRelIntersects&where=nepokretnost%3D%27parcela%27&outFields=objectid&returnGeometry=true&outSR=4326&f=pjson",
+        "https://www.rgz.gov.rs/javni-pristup"
+      ],
+      "evidenceFiles": [
+        "cities/1489/settings.json",
+        "cities/1489/failed-urls.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=43.31882&mlon=21.91032#map=12/43.31882/21.91032",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=43.31882%2C21.91032",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
       "id": "wup2025:9767",
       "name": "Nizamabad",
       "country": "India",
@@ -113703,6 +114097,65 @@
         "distanceKm": 0.875,
         "coordinateThresholdKm": 30
       }
+    },
+    {
+      "id": "wup2025:255",
+      "name": "Novi Sad",
+      "country": "Serbia",
+      "countryCode": "RS",
+      "latitude": 45.2553804142272,
+      "longitude": 19.8244509114482,
+      "registryCityIds": [
+        "wup2025:255"
+      ],
+      "appCityIds": [
+        "novi_sad"
+      ],
+      "cohorts": [
+        "app"
+      ],
+      "wupCityCode": 255,
+      "wupName": "Novi Sad",
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": 257151,
+      "population2025": 262324,
+      "annualGrowthPct2015To2025": 0.199169,
+      "populationPlausibility2025": null,
+      "populationMatch": {
+        "basis": "explicit_wup2025_city_code",
+        "sourceName": "UN DESA WUP 2025",
+        "confidence": "high",
+        "distanceKm": 0
+      },
+      "checked": true,
+      "checkedDate": null,
+      "checkedDateEvidence": null,
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": "A validated parcel source is configured for this city; citywide completeness remains unverified.",
+      "verifiedSample": true,
+      "impliedParcelsTried": null,
+      "integrationAttempts": [],
+      "sourceIds": [
+        "rs-novi-sad-mapanovisad-katastar"
+      ],
+      "evidenceUrls": [
+        "http://www.mapanovisad.rs/mapserver2015/mapagent/mapagent.fcgi",
+        "https://satelitskisnimci.rgz.gov.rs/geoportal/",
+        "https://preview.rgz.gov.rs/public-access",
+        "https://geosrbija.rs/usluge/rest-api/",
+        "https://a3.geosrbija.rs/katastar"
+      ],
+      "evidenceFiles": [
+        "cities/255/settings.json",
+        "cities/255/failed-urls.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=45.25538&mlon=19.82445#map=12/45.25538/19.82445",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=45.25538%2C19.82445",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
     },
     {
       "id": "wup2025:5917",
@@ -122270,6 +122723,56 @@
       "wikipediaEvidence": null
     },
     {
+      "id": "wup2025:1533",
+      "name": "Phuket",
+      "country": "Thailand",
+      "countryCode": "TH",
+      "latitude": 7.87278877865705,
+      "longitude": 98.3676348479171,
+      "registryCityIds": [
+        "wup2025:1533"
+      ],
+      "appCityIds": [
+        "phuket"
+      ],
+      "cohorts": [
+        "app",
+        "registry"
+      ],
+      "wupCityCode": 1533,
+      "wupName": "Phuket",
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": null,
+      "population2025": 389376,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "checked": true,
+      "checkedDate": null,
+      "checkedDateEvidence": null,
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": "A validated parcel source is configured for this city; citywide completeness remains unverified.",
+      "verifiedSample": true,
+      "impliedParcelsTried": null,
+      "integrationAttempts": [],
+      "sourceIds": [
+        "th-dol-lpcpublic-nsl"
+      ],
+      "evidenceUrls": [
+        "https://portal.dol.go.th/geoserver/LPCPUBLIC/ows"
+      ],
+      "evidenceFiles": [
+        "cities/1533/settings.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=7.87279&mlon=98.36763#map=12/7.87279/98.36763",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=7.87279%2C98.36763",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
       "id": "wup2025:11309",
       "name": "Phulbani",
       "country": "India",
@@ -125453,31 +125956,45 @@
       "countryCode": "AR",
       "latitude": -27.4017726669095,
       "longitude": -55.9108766976171,
-      "registryCityIds": [],
-      "appCityIds": [],
-      "cohorts": [],
+      "registryCityIds": [
+        "wup2025:4570"
+      ],
+      "appCityIds": [
+        "posadas"
+      ],
+      "cohorts": [
+        "app",
+        "registry"
+      ],
       "wupCityCode": 4570,
       "wupName": "Posadas",
       "growthRank": null,
       "researchFocusRegion": null,
       "researchPriority": null,
       "population2015": null,
-      "population2025": null,
+      "population2025": 375741,
       "annualGrowthPct2015To2025": null,
       "populationPlausibility2025": null,
       "populationMatch": null,
-      "checked": false,
+      "checked": true,
       "checkedDate": null,
       "checkedDateEvidence": null,
-      "registryFound": null,
-      "registryFindingBasis": null,
-      "registryBasis": null,
-      "verifiedSample": false,
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": "A validated parcel source is configured for this city; citywide completeness remains unverified.",
+      "verifiedSample": true,
       "impliedParcelsTried": null,
       "integrationAttempts": [],
-      "sourceIds": [],
-      "evidenceUrls": [],
-      "evidenceFiles": [],
+      "sourceIds": [
+        "ar-posadas-ide-mae-29-publico-wfs"
+      ],
+      "evidenceUrls": [
+        "https://www.ide.posadas.gob.ar/geoserver/ows"
+      ],
+      "evidenceFiles": [
+        "cities/4570/settings.json",
+        "cities/4570/failed-urls.json"
+      ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=-27.40177&mlon=-55.91088#map=12/-27.40177/-55.91088",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=-27.40177%2C-55.91088",
       "wikipediaUrl": null,
@@ -126358,10 +126875,13 @@
       "registryCityIds": [
         "wup2025:5915"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "puebla"
+      ],
       "cohorts": [
         "registry",
-        "overnight-top1000"
+        "overnight-top1000",
+        "app"
       ],
       "wupCityCode": 5915,
       "wupName": "Puebla",
@@ -126375,24 +126895,29 @@
       "populationMatch": {
         "basis": "exact_WUP2025_city_code_fresh_bulk_2025_row",
         "confidence": "high",
-        "sourceName": "UN DESA WUP 2025"
+        "sourceName": "UN DESA WUP 2025",
+        "evidenceFile": "research/overnight-cities-2026-10-08/provenance.json"
       },
       "checked": true,
       "checkedDate": null,
       "checkedDateEvidence": null,
-      "registryFound": null,
-      "registryFindingBasis": null,
-      "registryBasis": null,
-      "verifiedSample": false,
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": "A validated parcel source is configured for this city; citywide completeness remains unverified.",
+      "verifiedSample": true,
       "impliedParcelsTried": null,
       "integrationAttempts": [],
-      "sourceIds": [],
+      "sourceIds": [
+        "mx-puebla-aguapuebla-predios"
+      ],
       "evidenceUrls": [
+        "https://arcgisouc.aguapuebla.mx/arcgis/rest/services/Produccion/General/FeatureServer/4",
         "https://sicammpt.pueblacapital.gob.mx/server/rest/services/C_H_PUE/MapServer/103?f=pjson",
         "https://sicammpt.pueblacapital.gob.mx/server/rest/services/C_H_PUE/MapServer/103/query?where=1%3D1&geometry=-98.2032596830628%2C19.0430350801074&geometryType=esriGeometryPoint&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=OBJECTID&returnGeometry=true&outSR=4326&resultRecordCount=3&f=json",
         "https://memorias.pueblacapital.gob.mx/xv-tramites-y-servicios/387-tesoreria-municipal/3194-direccion-de-catastro"
       ],
       "evidenceFiles": [
+        "cities/5915/settings.json",
         "cities/5915/failed-urls.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=19.04304&mlon=-98.20326#map=12/19.04304/-98.20326",
@@ -130652,10 +131177,13 @@
       "registryCityIds": [
         "wup2025:11291"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "ranchi"
+      ],
       "cohorts": [
         "registry",
-        "overnight-top1000"
+        "overnight-top1000",
+        "app"
       ],
       "wupCityCode": 11291,
       "wupName": "Ranchi",
@@ -130669,25 +131197,30 @@
       "populationMatch": {
         "basis": "exact_WUP2025_city_code_fresh_bulk_2025_row",
         "confidence": "high",
-        "sourceName": "UN DESA WUP 2025"
+        "sourceName": "UN DESA WUP 2025",
+        "evidenceFile": "research/overnight-cities-2026-10-08/provenance.json"
       },
       "checked": true,
       "checkedDate": null,
       "checkedDateEvidence": null,
-      "registryFound": null,
-      "registryFindingBasis": null,
-      "registryBasis": null,
-      "verifiedSample": false,
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": "A validated parcel source is configured for this city; citywide completeness remains unverified.",
+      "verifiedSample": true,
       "impliedParcelsTried": null,
       "integrationAttempts": [],
-      "sourceIds": [],
+      "sourceIds": [
+        "in-jharkhand-gail-bapl-ranchi-cadastral-mapserver-25"
+      ],
       "evidenceUrls": [
+        "https://pitarcgis.pipetrakit.com/arcgis/rest/services/GAIL/BAPL/MapServer/25/query",
         "https://jharbhunaksha.jharkhand.gov.in/",
         "https://ranchi.nic.in/service/land-records/",
         "https://gis.jharkhand.gov.in/",
         "https://indianopenmaps.com/not-so-open/cadastrals/jharkhand/jsac/%7Bz%7D/%7Bx%7D/%7By%7D.pbf"
       ],
       "evidenceFiles": [
+        "cities/11291/settings.json",
         "cities/11291/failed-urls.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=23.36847&mlon=85.32294#map=12/23.36847/85.32294",
@@ -131069,6 +131602,63 @@
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=23.57205&mlon=70.64650#map=12/23.57205/70.64650",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=23.57205%2C70.64650",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
+      "id": "wup2025:1208",
+      "name": "Ras Al Khaimah",
+      "country": "United Arab Emirates",
+      "countryCode": "AE",
+      "latitude": 25.7741398774474,
+      "longitude": 55.9604795103617,
+      "registryCityIds": [
+        "wup2025:1208"
+      ],
+      "appCityIds": [
+        "ras_al_khaimah"
+      ],
+      "cohorts": [
+        "app",
+        "registry"
+      ],
+      "wupCityCode": 1208,
+      "wupName": "Ras Al Khaimah",
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": null,
+      "population2025": 345621,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "checked": true,
+      "checkedDate": null,
+      "checkedDateEvidence": null,
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": "A validated parcel source is configured for this city; citywide completeness remains unverified.",
+      "verifiedSample": true,
+      "impliedParcelsTried": null,
+      "integrationAttempts": [],
+      "sourceIds": [
+        "ae-rak-raklocator-parcels"
+      ],
+      "evidenceUrls": [
+        "https://gis.rak.ae/server/rest/services/RakLocatorMap/RakLocatorMap/MapServer/4",
+        "https://mun.rak.ae/home/open-data/rules-regulations/geographic-information-system/",
+        "https://maps.rak.ae/Addressing/Map",
+        "https://www.rakmediaoffice.ae/en/media-center/press-releases/ras-al-khaimah-is-the-first-city-in-the-middle-east-to-implement-parcel-fabric-technology-for-managing-spatial-data/",
+        "https://maps.rak.ae/Addressing/static/media/manual_Ar.da0dac72.pdf",
+        "https://gis.rak.ae/server/rest/services/RakLocator/ParcelLocator/GeocodeServer?f=pjson",
+        "https://gis.rak.ae/server/rest/services/RakLocatorMap/AddressBaseMapEnglish/MapServer?f=pjson"
+      ],
+      "evidenceFiles": [
+        "cities/1208/settings.json",
+        "cities/1208/failed-urls.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=25.77414&mlon=55.96048#map=12/25.77414/55.96048",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=25.77414%2C55.96048",
       "wikipediaUrl": null,
       "wikipediaEvidence": null
     },
@@ -133787,6 +134377,56 @@
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=28.89304&mlon=76.59541#map=12/28.89304/76.59541",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=28.89304%2C76.59541",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
+      "id": "wup2025:4156",
+      "name": "Roma (Rome)",
+      "country": "Italy",
+      "countryCode": "IT",
+      "latitude": 41.8887787574096,
+      "longitude": 12.5141147622555,
+      "registryCityIds": [
+        "wup2025:4156"
+      ],
+      "appCityIds": [
+        "roma_rome"
+      ],
+      "cohorts": [
+        "app",
+        "registry"
+      ],
+      "wupCityCode": 4156,
+      "wupName": "Roma (Rome)",
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": null,
+      "population2025": 2376474,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "checked": true,
+      "checkedDate": null,
+      "checkedDateEvidence": null,
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": "A validated parcel source is configured for this city; citywide completeness remains unverified.",
+      "verifiedSample": true,
+      "impliedParcelsTried": null,
+      "integrationAttempts": [],
+      "sourceIds": [
+        "it-roma-metropolitana-sit-cadastral-parcels"
+      ],
+      "evidenceUrls": [
+        "https://g3w-suite.cittametropolitanaroma.it/ows/19/qdjango/224/"
+      ],
+      "evidenceFiles": [
+        "cities/4156/settings.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=41.88878&mlon=12.51411#map=12/41.88878/12.51411",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=41.88878%2C12.51411",
       "wikipediaUrl": null,
       "wikipediaEvidence": null
     },
@@ -137296,10 +137936,13 @@
       "registryCityIds": [
         "wup2025:8374"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "salvador"
+      ],
       "cohorts": [
         "largest200",
-        "registry"
+        "registry",
+        "app"
       ],
       "wupCityCode": 8374,
       "wupName": "Salvador",
@@ -137319,18 +137962,22 @@
       "checked": true,
       "checkedDate": null,
       "checkedDateEvidence": null,
-      "registryFound": null,
-      "registryFindingBasis": null,
-      "registryBasis": null,
-      "verifiedSample": false,
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": "A validated parcel source is configured for this city; citywide completeness remains unverified.",
+      "verifiedSample": true,
       "impliedParcelsTried": null,
       "integrationAttempts": [],
-      "sourceIds": [],
+      "sourceIds": [
+        "br-salvador-geosalvador-sefaz-parcelamentos-lotes"
+      ],
       "evidenceUrls": [
+        "https://geo.salvador.ba.gov.br/arcgis/rest/services/SEFAZ/Parcelamentos__Acervo_SEFAZ/MapServer/18",
         "https://dados.salvador.ba.gov.br/api/3/action/package_search?q=lote&rows=5",
         "https://mapeamento.salvador.ba.gov.br/geoserver/ows?service=WFS&request=GetCapabilities"
       ],
       "evidenceFiles": [
+        "cities/8374/settings.json",
         "cities/8374/failed-urls.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=-12.93669&mlon=-38.45137#map=12/-12.93669/-38.45137",
@@ -138056,6 +138703,56 @@
       "wikipediaEvidence": null
     },
     {
+      "id": "wup2025:346",
+      "name": "San José",
+      "country": "Costa Rica",
+      "countryCode": "CR",
+      "latitude": 9.95138590845043,
+      "longitude": -84.1080972379198,
+      "registryCityIds": [
+        "wup2025:346"
+      ],
+      "appCityIds": [
+        "san_jose"
+      ],
+      "cohorts": [
+        "app",
+        "registry"
+      ],
+      "wupCityCode": 346,
+      "wupName": "San José",
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": null,
+      "population2025": 2171213,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "checked": true,
+      "checkedDate": null,
+      "checkedDateEvidence": null,
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": "A validated parcel source is configured for this city; citywide completeness remains unverified.",
+      "verifiedSample": true,
+      "impliedParcelsTried": null,
+      "integrationAttempts": [],
+      "sourceIds": [
+        "cr-msj-nomenclatura-predial"
+      ],
+      "evidenceUrls": [
+        "https://services5.arcgis.com/0ZvuJDanWVJc4vYr/ArcGIS/rest/services/SIG_SER_NOMENCLATURA_PREDIAL/FeatureServer/0/query"
+      ],
+      "evidenceFiles": [
+        "cities/346/settings.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=9.95139&mlon=-84.10810#map=12/9.95139/-84.10810",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=9.95139%2C-84.10810",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
       "id": "wup2025:1234",
       "name": "San José del Cabo",
       "country": "Mexico",
@@ -138096,6 +138793,61 @@
       "evidenceFiles": [],
       "osmUrl": "https://www.openstreetmap.org/?mlat=23.09335&mlon=-109.71624#map=12/23.09335/-109.71624",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=23.09335%2C-109.71624",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
+      "id": "wup2025:25",
+      "name": "San Juan",
+      "country": "Argentina",
+      "countryCode": "AR",
+      "latitude": -31.5395129374039,
+      "longitude": -68.5413653624017,
+      "registryCityIds": [
+        "wup2025:25"
+      ],
+      "appCityIds": [
+        "san_juan"
+      ],
+      "cohorts": [
+        "app",
+        "registry"
+      ],
+      "wupCityCode": 25,
+      "wupName": "San Juan",
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": null,
+      "population2025": 464466,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "checked": true,
+      "checkedDate": null,
+      "checkedDateEvidence": null,
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": "A validated parcel source is configured for this city; citywide completeness remains unverified.",
+      "verifiedSample": true,
+      "impliedParcelsTried": null,
+      "integrationAttempts": [],
+      "sourceIds": [
+        "ar-sanjuan-dgc-public-parcel-vector"
+      ],
+      "evidenceUrls": [
+        "https://servicioscatastro.sanjuan.gob.ar/DgcConsultasWeb/KusaServer/ClassDataPortal/910003/6",
+        "https://catastro.sanjuan.gob.ar/",
+        "https://tramite.sanjuan.gob.ar/tramite/d/297/consultas-catastrales",
+        "https://servicioscatastro.sanjuan.gob.ar/descargas/index.php",
+        "https://nomenclaturas.municipiosanjuan.gob.ar/"
+      ],
+      "evidenceFiles": [
+        "cities/25/settings.json",
+        "cities/25/failed-urls.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=-31.53951&mlon=-68.54137#map=12/-31.53951/-68.54137",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=-31.53951%2C-68.54137",
       "wikipediaUrl": null,
       "wikipediaEvidence": null
     },
@@ -138401,6 +139153,56 @@
       "evidenceFiles": [],
       "osmUrl": "https://www.openstreetmap.org/?mlat=37.97864&mlon=-122.53969#map=12/37.97864/-122.53969",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=37.97864%2C-122.53969",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
+      "id": "wup2025:893",
+      "name": "San Salvador",
+      "country": "El Salvador",
+      "countryCode": "SV",
+      "latitude": 13.7182927900234,
+      "longitude": -89.1755135685697,
+      "registryCityIds": [
+        "wup2025:893"
+      ],
+      "appCityIds": [
+        "san_salvador"
+      ],
+      "cohorts": [
+        "app",
+        "registry"
+      ],
+      "wupCityCode": 893,
+      "wupName": "San Salvador",
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": null,
+      "population2025": 1615178,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "checked": true,
+      "checkedDate": null,
+      "checkedDateEvidence": null,
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": "A validated parcel source is configured for this city; citywide completeness remains unverified.",
+      "verifiedSample": true,
+      "impliedParcelsTried": null,
+      "integrationAttempts": [],
+      "sourceIds": [
+        "SV-OPAMSS-SAN-SALVADOR-PLANIMETRIA-31"
+      ],
+      "evidenceUrls": [
+        "https://geovisor.opamss.org.sv/server/rest/services/Geo_OPAMSS_Planimetria/MapServer/31/query"
+      ],
+      "evidenceFiles": [
+        "cities/893/settings.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=13.71829&mlon=-89.17551#map=12/13.71829/-89.17551",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=13.71829%2C-89.17551",
       "wikipediaUrl": null,
       "wikipediaEvidence": null
     },
@@ -142162,12 +142964,16 @@
       "latitude": 37.566,
       "longitude": 126.9784,
       "registryCityIds": [
-        "geonames:1835848"
+        "geonames:1835848",
+        "wup2025:332"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "seoul"
+      ],
       "cohorts": [
         "largest200",
-        "registry"
+        "registry",
+        "app"
       ],
       "wupCityCode": 332,
       "wupName": "Seoul",
@@ -142184,18 +142990,26 @@
         "sourceName": "UN DESA WUP 2025",
         "confidence": "high"
       },
-      "checked": false,
+      "checked": true,
       "checkedDate": null,
       "checkedDateEvidence": null,
-      "registryFound": null,
-      "registryFindingBasis": null,
-      "registryBasis": null,
-      "verifiedSample": false,
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": "A validated parcel source is configured for this city; citywide completeness remains unverified.",
+      "verifiedSample": true,
       "impliedParcelsTried": null,
       "integrationAttempts": [],
-      "sourceIds": [],
-      "evidenceUrls": [],
-      "evidenceFiles": [],
+      "sourceIds": [
+        "kr-seoul-smap-cadastral-lp-pa-cbnd"
+      ],
+      "evidenceUrls": [
+        "https://smap.seoul.go.kr/imageProxy.do?svc=GEOSERVER&param=%2Fgeoserver%2Fseoul%2Fwfs",
+        "https://www.vworld.kr/dtmk/dtmk_ntads_s002.do?svcCde=NA&dsId=23"
+      ],
+      "evidenceFiles": [
+        "cities/332/settings.json",
+        "cities/332/failed-urls.json"
+      ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=37.56600&mlon=126.97840#map=12/37.56600/126.97840",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=37.56600%2C126.97840",
       "wikipediaUrl": "https://en.wikipedia.org/wiki/Seoul",
@@ -148020,6 +148834,56 @@
       "wikipediaEvidence": null
     },
     {
+      "id": "wup2025:266",
+      "name": "Skopje",
+      "country": "North Macedonia",
+      "countryCode": "MK",
+      "latitude": 41.9986248004842,
+      "longitude": 21.4316245746407,
+      "registryCityIds": [
+        "wup2025:266"
+      ],
+      "appCityIds": [
+        "skopje"
+      ],
+      "cohorts": [
+        "app",
+        "registry"
+      ],
+      "wupCityCode": 266,
+      "wupName": "Skopje",
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": null,
+      "population2025": 352624,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "checked": true,
+      "checkedDate": null,
+      "checkedDateEvidence": null,
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": "A validated parcel source is configured for this city; citywide completeness remains unverified.",
+      "verifiedSample": true,
+      "impliedParcelsTried": null,
+      "integrationAttempts": [],
+      "sourceIds": [
+        "mk-skopje-old-bazaar-parcels"
+      ],
+      "evidenceUrls": [
+        "https://gisportal.skopje.gov.mk/arcgis/rest/services/OUT/StaraCarsijaWGS/FeatureServer/3"
+      ],
+      "evidenceFiles": [
+        "cities/266/settings.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=41.99862&mlon=21.43162#map=12/41.99862/21.43162",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=41.99862%2C21.43162",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
       "id": "wup2025:6648",
       "name": "Slawi",
       "country": "Indonesia",
@@ -152416,10 +153280,13 @@
       "registryCityIds": [
         "wup2025:123"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "tabuk"
+      ],
       "cohorts": [
         "registry",
-        "overnight-top1000"
+        "overnight-top1000",
+        "app"
       ],
       "wupCityCode": 123,
       "wupName": "Tabuk",
@@ -152433,24 +153300,29 @@
       "populationMatch": {
         "basis": "exact_WUP2025_city_code_fresh_bulk_2025_row",
         "confidence": "high",
-        "sourceName": "UN DESA WUP 2025"
+        "sourceName": "UN DESA WUP 2025",
+        "evidenceFile": "research/overnight-cities-2026-10-08/provenance.json"
       },
       "checked": true,
       "checkedDate": null,
       "checkedDateEvidence": null,
-      "registryFound": null,
-      "registryFindingBasis": null,
-      "registryBasis": null,
-      "verifiedSample": false,
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": "A validated parcel source is configured for this city; citywide completeness remains unverified.",
+      "verifiedSample": true,
       "impliedParcelsTried": null,
       "integrationAttempts": [],
-      "sourceIds": [],
+      "sourceIds": [
+        "sa-geosa-ndm-landparcel"
+      ],
       "evidenceUrls": [
+        "https://www.geoportal.sa/portal/sharing/servers/c3b7cc00898344d99c5c1781c5f68e9a/rest/services/NDM/LandParcel/FeatureServer/0",
         "https://momah.gov.sa/ar/branches/tabuk-province-municipality",
         "https://momah.gov.sa/sites/default/files/2023-05/land-and-property-affairs-work-2021.pdf",
         "https://momah.gov.sa/ar/e-services/alkhrayt-alhdryt"
       ],
       "evidenceFiles": [
+        "cities/123/settings.json",
         "cities/123/failed-urls.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=28.40146&mlon=36.55679#map=12/28.40146/36.55679",
@@ -157066,10 +157938,13 @@
       "registryCityIds": [
         "wup2025:488"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "tijuana"
+      ],
       "cohorts": [
         "registry",
-        "overnight-top1000"
+        "overnight-top1000",
+        "app"
       ],
       "wupCityCode": 488,
       "wupName": "Tijuana",
@@ -157083,22 +157958,27 @@
       "populationMatch": {
         "basis": "exact_WUP2025_city_code_fresh_bulk_2025_row",
         "confidence": "high",
-        "sourceName": "UN DESA WUP 2025"
+        "sourceName": "UN DESA WUP 2025",
+        "evidenceFile": "research/overnight-cities-2026-10-08/provenance.json"
       },
       "checked": true,
       "checkedDate": null,
       "checkedDateEvidence": null,
-      "registryFound": null,
-      "registryFindingBasis": null,
-      "registryBasis": null,
-      "verifiedSample": false,
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": "A validated parcel source is configured for this city; citywide completeness remains unverified.",
+      "verifiedSample": true,
       "impliedParcelsTried": null,
       "integrationAttempts": [],
-      "sourceIds": [],
+      "sourceIds": [
+        "mx-tijuana-implan-catastro-wms"
+      ],
       "evidenceUrls": [
+        "https://gemelodigital.implantijuana.gob.mx/geoserver-local-proxy/wms",
         "https://www.tijuana.gob.mx/dependencias/sdue/dmc/tramites_cartografia.aspx"
       ],
       "evidenceFiles": [
+        "cities/488/settings.json",
         "cities/488/failed-urls.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=32.49479&mlon=-116.95533#map=12/32.49479/-116.95533",
@@ -161547,6 +162427,56 @@
       "wikipediaEvidence": null
     },
     {
+      "id": "wup2025:320",
+      "name": "Ulaanbaatar",
+      "country": "Mongolia",
+      "countryCode": "MN",
+      "latitude": 47.9264085180838,
+      "longitude": 106.873731314057,
+      "registryCityIds": [
+        "wup2025:320"
+      ],
+      "appCityIds": [
+        "ulaanbaatar"
+      ],
+      "cohorts": [
+        "app",
+        "registry"
+      ],
+      "wupCityCode": 320,
+      "wupName": "Ulaanbaatar",
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": null,
+      "population2025": 1596556,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "checked": true,
+      "checkedDate": null,
+      "checkedDateEvidence": null,
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": "A validated parcel source is configured for this city; citywide completeness remains unverified.",
+      "verifiedSample": true,
+      "impliedParcelsTried": null,
+      "integrationAttempts": [],
+      "sourceIds": [
+        "mn-egazar-geoware-parcels"
+      ],
+      "evidenceUrls": [
+        "https://geoserver.egazar.gov.mn/geoserver/geoware/ows"
+      ],
+      "evidenceFiles": [
+        "cities/320/settings.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=47.92641&mlon=106.87373#map=12/47.92641/106.87373",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=47.92641%2C106.87373",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
       "id": "wup2025:3778",
       "name": "Ulipur",
       "country": "Bangladesh",
@@ -163736,6 +164666,56 @@
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=38.50711&mlon=43.38031#map=12/38.50711/43.38031",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=38.50711%2C43.38031",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
+      "id": "wup2025:341",
+      "name": "Vancouver",
+      "country": "Canada",
+      "countryCode": "CA",
+      "latitude": 49.2485786477943,
+      "longitude": -123.033703171079,
+      "registryCityIds": [
+        "wup2025:341"
+      ],
+      "appCityIds": [
+        "vancouver"
+      ],
+      "cohorts": [
+        "app",
+        "registry"
+      ],
+      "wupCityCode": 341,
+      "wupName": "Vancouver",
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": null,
+      "population2025": 1707865,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "checked": true,
+      "checkedDate": null,
+      "checkedDateEvidence": null,
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": "A validated parcel source is configured for this city; citywide completeness remains unverified.",
+      "verifiedSample": true,
+      "impliedParcelsTried": null,
+      "integrationAttempts": [],
+      "sourceIds": [
+        "ca-vancouver-opendata-property-parcel-polygons"
+      ],
+      "evidenceUrls": [
+        "https://opendata.vancouver.ca/api/explore/v2.1/catalog/datasets/property-parcel-polygons/records"
+      ],
+      "evidenceFiles": [
+        "cities/341/settings.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=49.24858&mlon=-123.03370#map=12/49.24858/-123.03370",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=49.24858%2C-123.03370",
       "wikipediaUrl": null,
       "wikipediaEvidence": null
     },
@@ -168808,10 +169788,13 @@
       "registryCityIds": [
         "wup2025:11580"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "wuxi"
+      ],
       "cohorts": [
         "largest200",
-        "registry"
+        "registry",
+        "app"
       ],
       "wupCityCode": 11580,
       "wupName": "Wuxi",
@@ -168828,18 +169811,24 @@
         "sourceName": "UN DESA WUP 2025",
         "confidence": "high"
       },
-      "checked": false,
+      "checked": true,
       "checkedDate": null,
       "checkedDateEvidence": null,
-      "registryFound": null,
-      "registryFindingBasis": null,
-      "registryBasis": null,
-      "verifiedSample": false,
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": "A validated parcel source is configured for this city; citywide completeness remains unverified.",
+      "verifiedSample": true,
       "impliedParcelsTried": null,
       "integrationAttempts": [],
-      "sourceIds": [],
-      "evidenceUrls": [],
-      "evidenceFiles": [],
+      "sourceIds": [
+        "cn-wuxi-djt-wxbdc-djsj"
+      ],
+      "evidenceUrls": [
+        "https://djt.wxbdc.net/bdcserver_arcgis/services/budongchanzhongxin/DJSJ/MapServer/3"
+      ],
+      "evidenceFiles": [
+        "cities/11580/settings.json"
+      ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=31.58173&mlon=120.28862#map=12/31.58173/120.28862",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=31.58173%2C120.28862",
       "wikipediaUrl": "https://en.wikipedia.org/wiki/Wuxi",
@@ -171354,10 +172343,13 @@
       "registryCityIds": [
         "wup2025:7035"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "yogyakarta"
+      ],
       "cohorts": [
         "largest200",
-        "registry"
+        "registry",
+        "app"
       ],
       "wupCityCode": 7035,
       "wupName": "Yogyakarta",
@@ -171374,18 +172366,24 @@
         "sourceName": "UN DESA WUP 2025",
         "confidence": "high"
       },
-      "checked": false,
+      "checked": true,
       "checkedDate": null,
       "checkedDateEvidence": null,
-      "registryFound": null,
-      "registryFindingBasis": null,
-      "registryBasis": null,
-      "verifiedSample": false,
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": "A validated parcel source is configured for this city; citywide completeness remains unverified.",
+      "verifiedSample": true,
       "impliedParcelsTried": null,
       "integrationAttempts": [],
-      "sourceIds": [],
-      "evidenceUrls": [],
-      "evidenceFiles": [],
+      "sourceIds": [
+        "id-jogjaprov-dispertaru-tanah-desa-diy"
+      ],
+      "evidenceUrls": [
+        "https://geoportal.jogjaprov.go.id/server/rest/services/DISPERTARU/Tanah_Desa_DIY/FeatureServer/0"
+      ],
+      "evidenceFiles": [
+        "cities/7035/settings.json"
+      ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=-7.77432&mlon=110.43477#map=12/-7.77432/110.43477",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=-7.77432%2C110.43477",
       "wikipediaUrl": "https://en.wikipedia.org/wiki/Yogyakarta",
@@ -171765,10 +172763,13 @@
       "registryCityIds": [
         "wup2025:10684"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "yulin"
+      ],
       "cohorts": [
         "registry",
-        "overnight-top1000"
+        "overnight-top1000",
+        "app"
       ],
       "wupCityCode": 10684,
       "wupName": "Yulin",
@@ -171782,22 +172783,27 @@
       "populationMatch": {
         "basis": "exact_WUP2025_city_code_fresh_bulk_2025_row",
         "confidence": "high",
-        "sourceName": "UN DESA WUP 2025"
+        "sourceName": "UN DESA WUP 2025",
+        "evidenceFile": "research/overnight-cities-2026-10-08/provenance.json"
       },
       "checked": true,
       "checkedDate": null,
       "checkedDateEvidence": null,
-      "registryFound": null,
-      "registryFindingBasis": null,
-      "registryBasis": null,
-      "verifiedSample": false,
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": "A validated parcel source is configured for this city; citywide completeness remains unverified.",
+      "verifiedSample": true,
       "impliedParcelsTried": null,
       "integrationAttempts": [],
-      "sourceIds": [],
+      "sourceIds": [
+        "cn-gx-tianditu-zongdi-natural-building"
+      ],
       "evidenceUrls": [
+        "https://guangxi.tianditu.gov.cn/mapgxservice/rest/services/TMP/oldTM260414new/MapServer/8",
         "https://dnr.gxzf.gov.cn/xwzx/zrzx/t18352698.shtml"
       ],
       "evidenceFiles": [
+        "cities/10684/settings.json",
         "cities/10684/failed-urls.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=22.63067&mlon=110.15007#map=12/22.63067/110.15007",
@@ -174051,8 +175057,8 @@
       "population": 45851378,
       "statisticsYear": 2025,
       "missingStatisticsReason": null,
-      "citiesChecked": 10,
-      "citiesWithRegistry": 10,
+      "citiesChecked": 12,
+      "citiesWithRegistry": 12,
       "checked": true,
       "checkedDate": "2026-09-29",
       "nationalCadastreFound": false,
@@ -174519,8 +175525,8 @@
       "population": 175686899,
       "statisticsYear": 2025,
       "missingStatisticsReason": null,
-      "citiesChecked": 14,
-      "citiesWithRegistry": 2,
+      "citiesChecked": 15,
+      "citiesWithRegistry": 3,
       "checked": true,
       "checkedDate": "2026-09-29",
       "nationalCadastreFound": true,
@@ -174919,7 +175925,7 @@
       "statisticsYear": 2025,
       "missingStatisticsReason": null,
       "citiesChecked": 42,
-      "citiesWithRegistry": 28,
+      "citiesWithRegistry": 31,
       "checked": true,
       "checkedDate": "2026-09-29",
       "nationalCadastreFound": null,
@@ -175400,8 +176406,8 @@
       "population": 40126723,
       "statisticsYear": 2025,
       "missingStatisticsReason": null,
-      "citiesChecked": 22,
-      "citiesWithRegistry": 22,
+      "citiesChecked": 23,
+      "citiesWithRegistry": 23,
       "checked": true,
       "checkedDate": "2026-09-29",
       "nationalCadastreFound": false,
@@ -175641,8 +176647,8 @@
       "population": 1416096094,
       "statisticsYear": 2025,
       "missingStatisticsReason": null,
-      "citiesChecked": 202,
-      "citiesWithRegistry": 10,
+      "citiesChecked": 203,
+      "citiesWithRegistry": 12,
       "checked": true,
       "checkedDate": "2026-09-29",
       "nationalCadastreFound": true,
@@ -175896,8 +176902,8 @@
       "population": 5152950,
       "statisticsYear": 2025,
       "missingStatisticsReason": null,
-      "citiesChecked": 0,
-      "citiesWithRegistry": 0,
+      "citiesChecked": 1,
+      "citiesWithRegistry": 1,
       "checked": true,
       "checkedDate": "2026-09-29",
       "nationalCadastreFound": true,
@@ -176271,8 +177277,8 @@
       "population": 18289896,
       "statisticsYear": 2025,
       "missingStatisticsReason": null,
-      "citiesChecked": 2,
-      "citiesWithRegistry": 0,
+      "citiesChecked": 3,
+      "citiesWithRegistry": 1,
       "checked": true,
       "checkedDate": "2026-09-29",
       "nationalCadastreFound": null,
@@ -176285,7 +177291,7 @@
         "registry.json"
       ],
       "evidenceUrls": [],
-      "category": "unknown"
+      "category": "local"
     },
     {
       "code": "EG",
@@ -176329,8 +177335,8 @@
       "population": 6365503,
       "statisticsYear": 2025,
       "missingStatisticsReason": null,
-      "citiesChecked": 0,
-      "citiesWithRegistry": 0,
+      "citiesChecked": 1,
+      "citiesWithRegistry": 1,
       "checked": true,
       "checkedDate": "2026-09-29",
       "nationalCadastreFound": false,
@@ -177426,8 +178432,8 @@
       "population": 9632287,
       "statisticsYear": 2025,
       "missingStatisticsReason": null,
-      "citiesChecked": 0,
-      "citiesWithRegistry": 0,
+      "citiesChecked": 1,
+      "citiesWithRegistry": 1,
       "checked": true,
       "checkedDate": "2026-09-29",
       "nationalCadastreFound": true,
@@ -177486,8 +178492,8 @@
       "population": 1463865524,
       "statisticsYear": 2025,
       "missingStatisticsReason": null,
-      "citiesChecked": 1150,
-      "citiesWithRegistry": 1063,
+      "citiesChecked": 1151,
+      "citiesWithRegistry": 1065,
       "checked": true,
       "checkedDate": "2026-09-29",
       "nationalCadastreFound": false,
@@ -177515,8 +178521,8 @@
       "population": 285721235,
       "statisticsYear": 2025,
       "missingStatisticsReason": null,
-      "citiesChecked": 33,
-      "citiesWithRegistry": 2,
+      "citiesChecked": 34,
+      "citiesWithRegistry": 3,
       "checked": true,
       "checkedDate": "2026-09-29",
       "nationalCadastreFound": null,
@@ -177962,8 +178968,8 @@
       "population": 59146260,
       "statisticsYear": 2025,
       "missingStatisticsReason": null,
-      "citiesChecked": 7,
-      "citiesWithRegistry": 6,
+      "citiesChecked": 8,
+      "citiesWithRegistry": 7,
       "checked": true,
       "checkedDate": "2026-09-29",
       "nationalCadastreFound": true,
@@ -178107,8 +179113,8 @@
       "population": 20843754,
       "statisticsYear": 2025,
       "missingStatisticsReason": null,
-      "citiesChecked": 2,
-      "citiesWithRegistry": 3,
+      "citiesChecked": 3,
+      "citiesWithRegistry": 4,
       "checked": true,
       "checkedDate": "2026-09-29",
       "nationalCadastreFound": null,
@@ -178603,7 +179609,7 @@
       "statisticsYear": 2025,
       "missingStatisticsReason": null,
       "citiesChecked": 11,
-      "citiesWithRegistry": 8,
+      "citiesWithRegistry": 9,
       "checked": true,
       "checkedDate": "2026-09-29",
       "nationalCadastreFound": true,
@@ -178983,7 +179989,7 @@
       "statisticsYear": 2025,
       "missingStatisticsReason": null,
       "citiesChecked": 32,
-      "citiesWithRegistry": 21,
+      "citiesWithRegistry": 23,
       "checked": true,
       "checkedDate": "2026-09-29",
       "nationalCadastreFound": null,
@@ -179298,8 +180304,8 @@
       "population": 3517100,
       "statisticsYear": 2025,
       "missingStatisticsReason": null,
-      "citiesChecked": 0,
-      "citiesWithRegistry": 0,
+      "citiesChecked": 1,
+      "citiesWithRegistry": 1,
       "checked": true,
       "checkedDate": "2026-09-29",
       "nationalCadastreFound": true,
@@ -179783,8 +180789,8 @@
       "population": 1813791,
       "statisticsYear": 2025,
       "missingStatisticsReason": null,
-      "citiesChecked": 0,
-      "citiesWithRegistry": 0,
+      "citiesChecked": 1,
+      "citiesWithRegistry": 1,
       "checked": true,
       "checkedDate": "2026-09-29",
       "nationalCadastreFound": null,
@@ -179797,7 +180803,7 @@
         "registry.json"
       ],
       "evidenceUrls": [],
-      "category": "unknown"
+      "category": "local"
     },
     {
       "code": "XNC",
@@ -180268,8 +181274,8 @@
       "population": 51667030,
       "statisticsYear": 2025,
       "missingStatisticsReason": null,
-      "citiesChecked": 9,
-      "citiesWithRegistry": 6,
+      "citiesChecked": 11,
+      "citiesWithRegistry": 8,
       "checked": true,
       "checkedDate": "2026-09-29",
       "nationalCadastreFound": null,
@@ -180386,8 +181392,8 @@
       "population": 143997393,
       "statisticsYear": 2025,
       "missingStatisticsReason": null,
-      "citiesChecked": 32,
-      "citiesWithRegistry": 14,
+      "citiesChecked": 33,
+      "citiesWithRegistry": 15,
       "checked": true,
       "checkedDate": "2026-09-29",
       "nationalCadastreFound": null,
@@ -180938,7 +181944,7 @@
       "statisticsYear": 2025,
       "missingStatisticsReason": null,
       "citiesChecked": 8,
-      "citiesWithRegistry": 2,
+      "citiesWithRegistry": 4,
       "checked": true,
       "checkedDate": "2026-10-06",
       "nationalCadastreFound": null,
@@ -180995,8 +182001,8 @@
       "population": 6689039,
       "statisticsYear": 2025,
       "missingStatisticsReason": null,
-      "citiesChecked": 1,
-      "citiesWithRegistry": 1,
+      "citiesChecked": 3,
+      "citiesWithRegistry": 3,
       "checked": true,
       "checkedDate": "2026-09-29",
       "nationalCadastreFound": null,
@@ -181422,8 +182428,8 @@
       "population": 23229470,
       "statisticsYear": 2025,
       "missingStatisticsReason": null,
-      "citiesChecked": 1,
-      "citiesWithRegistry": 0,
+      "citiesChecked": 2,
+      "citiesWithRegistry": 1,
       "checked": true,
       "checkedDate": "2026-09-29",
       "nationalCadastreFound": null,
@@ -181842,7 +182848,7 @@
       "statisticsYear": 2025,
       "missingStatisticsReason": null,
       "citiesChecked": 7,
-      "citiesWithRegistry": 4,
+      "citiesWithRegistry": 5,
       "checked": true,
       "checkedDate": "2026-09-29",
       "nationalCadastreFound": true,
@@ -181899,8 +182905,8 @@
       "population": 71619863,
       "statisticsYear": 2025,
       "missingStatisticsReason": null,
-      "citiesChecked": 2,
-      "citiesWithRegistry": 1,
+      "citiesChecked": 4,
+      "citiesWithRegistry": 3,
       "checked": true,
       "checkedDate": "2026-09-29",
       "nationalCadastreFound": true,
@@ -182126,7 +183132,7 @@
       "statisticsYear": 2025,
       "missingStatisticsReason": null,
       "citiesChecked": 22,
-      "citiesWithRegistry": 13,
+      "citiesWithRegistry": 15,
       "checked": true,
       "checkedDate": "2026-09-29",
       "nationalCadastreFound": true,
@@ -182295,8 +183301,8 @@
       "population": 11346000,
       "statisticsYear": 2025,
       "missingStatisticsReason": null,
-      "citiesChecked": 3,
-      "citiesWithRegistry": 3,
+      "citiesChecked": 4,
+      "citiesWithRegistry": 4,
       "checked": true,
       "checkedDate": "2026-10-06",
       "nationalCadastreFound": null,
@@ -182411,8 +183417,8 @@
       "population": 347275807,
       "statisticsYear": 2025,
       "missingStatisticsReason": null,
-      "citiesChecked": 139,
-      "citiesWithRegistry": 166,
+      "citiesChecked": 140,
+      "citiesWithRegistry": 167,
       "checked": true,
       "checkedDate": "2026-09-29",
       "nationalCadastreFound": false,
