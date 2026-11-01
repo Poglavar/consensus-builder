@@ -1,0 +1,132 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "1533",
+  "name": "Phuket, Thailand",
+  "point": [
+    7.87278877865705,
+    98.3676348479171
+  ],
+  "bindings": [
+    {
+      "appCityId": "phuket",
+      "runtimeConfig": {
+        "id": "phuket",
+        "wupCityCode": "1533",
+        "label": "Phuket, Thailand",
+        "currency": {
+          "locale": "th-TH",
+          "code": "THB"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            7.87278877865705,
+            98.3676348479171
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            7.87278877865705,
+            98.3676348479171
+          ],
+          "fallbackDataset": [
+            98.3676348479171,
+            7.87278877865705
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "th-dol-lpcpublic-nsl",
+          "idPrefix": "TH-DOL-NSL-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "Department of Lands, Thailand · surveyed NSL public-land parcels · bounded partial coverage"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "th-dol-lpcpublic-nsl",
+      "name": "Thailand DOL surveyed NSL public-land parcels",
+      "adapter": "wfs",
+      "endpoint": "https://portal.dol.go.th/geoserver/LPCPUBLIC/ows",
+      "version": "1.0.0",
+      "featureType": "LPCPUBLIC:DOLNSL",
+      "geometryField": "geom",
+      "nativeIdMode": "feature-id",
+      "featureIdParameter": "featureID",
+      "idField": null,
+      "idType": "string",
+      "idPattern": "^DOLNSL\\.[0-9]+$",
+      "idPrefix": "TH-DOL-NSL-",
+      "outFields": [],
+      "requestProperties": true,
+      "pageSize": 100,
+      "idBatchSize": 20,
+      "maxFeatures": 1000,
+      "maxBboxKm2": 25,
+      "maxResponseBytes": 1048576,
+      "timeoutMs": 45000,
+      "minRequestIntervalMs": 250,
+      "countryCode": "TH",
+      "cityIds": [
+        "phuket"
+      ],
+      "defaultForCity": true,
+      "metricSrid": 32647,
+      "responseSrid": 4326,
+      "returnsWGS84": true,
+      "responseCrs": "EPSG:4326",
+      "coordinateOrder": "longitude,latitude",
+      "operator": "Department of Lands, Thailand",
+      "attribution": "Department of Lands, Thailand · surveyed NSL public-land parcels · bounded partial coverage",
+      "scope": "Surveyed NSL public-land parcel subset only. One proven municipal parcel near Kra Soi 8, about 2.7 km east of the unchanged city locator. Private-title, complete municipal and island-wide coverage are unestablished.",
+      "licenceNote": "Anonymous public WFS access. Explicit parcel-geometry reuse/redistribution terms remain unverified; attribute projection is geometry only.",
+      "capabilities": {
+        "bbox": true,
+        "exactId": true,
+        "areaEnumeration": true
+      },
+      "discovery": {
+        "jurisdiction": {
+          "countryCode": "TH",
+          "basis": "DOL mapping centre maintains government-land parcel maps and surveyed NSL certificate boundaries.",
+          "evidence": [
+            "https://www.dol.go.th/landmap/page-1767929726/",
+            "https://www.dol.go.th/en/knowledge-land-department/public-land/"
+          ]
+        }
+      }
+    }
+  ]
+}

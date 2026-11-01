@@ -1,0 +1,119 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "332",
+  "name": "Seoul, South Korea",
+  "point": [
+    37.4888394650353,
+    126.945208841006
+  ],
+  "bindings": [
+    {
+      "appCityId": "seoul",
+      "runtimeConfig": {
+        "id": "seoul",
+        "wupCityCode": "332",
+        "label": "Seoul, South Korea",
+        "currency": {
+          "locale": "ko-KR",
+          "code": "KRW"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            37.4888394650353,
+            126.945208841006
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            37.4888394650353,
+            126.945208841006
+          ],
+          "fallbackDataset": [
+            126.945208841006,
+            37.4888394650353
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "kr-seoul-smap-cadastral-lp-pa-cbnd",
+          "idPrefix": "KR-SEOUL-SMAP-PNU-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "Seoul Metropolitan Government · S-MAP continuous cadastral map"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "kr-seoul-smap-cadastral-lp-pa-cbnd",
+      "name": "Seoul S-MAP continuous cadastral parcels",
+      "adapter": "wfs",
+      "endpoint": "https://smap.seoul.go.kr/imageProxy.do?svc=GEOSERVER&param=%2Fgeoserver%2Fseoul%2Fwfs",
+      "wfsProxyParameter": "param",
+      "featureType": "seoul:lp_pa_cbnd",
+      "version": "1.0.0",
+      "idField": "pnu",
+      "idType": "string",
+      "idPattern": "^[0-9]{19}$",
+      "idPrefix": "KR-SEOUL-SMAP-PNU-",
+      "geometryField": "geom",
+      "outFields": [
+        "pnu"
+      ],
+      "requestProperties": true,
+      "pageSize": 100,
+      "idBatchSize": 40,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 2,
+      "maxConcurrentQueries": 2,
+      "browserTransport": "relay",
+      "metricSrid": 32652,
+      "countryCode": "KR",
+      "cityIds": [
+        "seoul"
+      ],
+      "defaultForCity": true,
+      "capabilities": {
+        "areaEnumeration": true,
+        "exactIds": true,
+        "queryGeometry": true
+      },
+      "operator": "Seoul Metropolitan Government / S-MAP",
+      "catalogueUrl": "https://smap.seoul.go.kr/",
+      "attribution": "Seoul Metropolitan Government · S-MAP continuous cadastral map",
+      "scope": "Official Seoul continuous cadastral layer; bounded observed coverage only. Citywide completeness and currentness are unverified.",
+      "licenceNote": "Anonymous first-party viewer WFS access observed. No source-specific geometry redistribution licence established; preserve Seoul Metropolitan Government / S-MAP attribution."
+    }
+  ]
+}

@@ -1,0 +1,138 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "488",
+  "name": "Tijuana, Mexico",
+  "point": [
+    32.4947895827471,
+    -116.955328873562
+  ],
+  "bindings": [
+    {
+      "appCityId": "tijuana",
+      "runtimeConfig": {
+        "id": "tijuana",
+        "wupCityCode": "488",
+        "label": "Tijuana, Mexico",
+        "currency": {
+          "locale": "es-MX",
+          "code": "MXN"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            32.4947895827471,
+            -116.955328873562
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            32.4947895827471,
+            -116.955328873562
+          ],
+          "fallbackDataset": [
+            -116.955328873562,
+            32.4947895827471
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "mx-tijuana-implan-catastro-wms",
+          "idPrefix": "MX-TIJUANA-CVE-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "IMPLAN Tijuana / Sistema de Información Geográfica de Tijuana / Dirección de Catastro Municipal; Predios (2021 layer name)."
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "mx-tijuana-implan-catastro-wms",
+      "name": "IMPLAN Tijuana municipal cadastral Predios",
+      "adapter": "tijuana-implan-wms",
+      "endpoint": "https://gemelodigital.implantijuana.gob.mx/geoserver-local-proxy/wms",
+      "countryCode": "MX",
+      "cityIds": [
+        "tijuana"
+      ],
+      "idPrefix": "MX-TIJUANA-CVE-",
+      "idField": "cve_cat",
+      "idFields": [
+        "cve_cat"
+      ],
+      "idType": "string",
+      "outFields": [
+        "cve_cat"
+      ],
+      "geometryField": "geom",
+      "layer": "catastro_pub:predios-211126_Predios",
+      "version": "1.1.1",
+      "sourceCrs": "EPSG:32611",
+      "responseCrs": "EPSG:4326",
+      "responseAxisOrder": "longitude-latitude",
+      "outputSrid": 4326,
+      "responseSrid": 4326,
+      "metricSrid": 32611,
+      "pageSize": 500,
+      "maxFeatures": 500,
+      "maxConcurrentQueries": 4,
+      "browserTransport": "relay",
+      "attribution": "IMPLAN Tijuana / Sistema de Información Geográfica de Tijuana / Dirección de Catastro Municipal; Predios (2021 layer name).",
+      "catalogueUrl": "https://implan.tijuana.gob.mx/servicios/cartografia/gemelo-digital.aspx",
+      "operator": "IMPLAN Tijuana / Dirección de Catastro Municipal",
+      "scope": "Municipal cadastral predio reference layer; only bounded Tijuana samples verified. Citywide completeness and currentness unverified.",
+      "licenceNote": "Public municipal map; no explicit reuse licence established. Attribution required; terms need follow-up.",
+      "capabilities": {
+        "point": true,
+        "exactId": true,
+        "bbox": true,
+        "areaEnumeration": true,
+        "geometry": "full-wgs84"
+      },
+      "sourceExtent": [
+        -117.12429823771853,
+        32.2512730102276,
+        -116.60335857175843,
+        32.56585025841466
+      ],
+      "defaultForCity": true,
+      "maxAreaKm2": 1,
+      "maxResponseBytes": 8388608,
+      "maxBboxWidthM": 1000,
+      "maxBboxHeightM": 1000,
+      "identityKind": "attribute-geometry-sha256-v1",
+      "identityGeometryFormat": "wms-kml-kmattr-false-v1",
+      "identityRecipe": "Verbatim cve_cat + colon + SHA256 of UTF-8 JSON.stringify({type,coordinates}) for the unchanged parsed public KML polygon. Canonical ID is idPrefix + that reference; sourceParcelId remains native cve_cat.",
+      "parcelNumberField": "cve_cat"
+    }
+  ]
+}

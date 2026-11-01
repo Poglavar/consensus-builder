@@ -13,12 +13,16 @@ export const VAN_SOURCE_ID = 'tr-ipekyolu-belediyesi-eimar-kentrehberi-parsel';
 export const VAN_ENDPOINT = 'https://keos.ipekyolu.bel.tr:90/imardurumu/service/imarsvc.aspx';
 export const SIVAS_SOURCE_ID = 'tr-sivas-belediyesi-eimar-parsel';
 export const SIVAS_ENDPOINT = 'https://keos.sivas.bel.tr/imardurumu/service/imarsvc.aspx';
+export const SEHITKAMIL_SOURCE_ID = 'tr-sehitkamil-keos-imar-parcels';
+export const SEHITKAMIL_ENDPOINT = 'https://keos.sehitkamil.bel.tr/imardurumu/service/imarsvc.aspx';
 const PROFILES = [
     { id: MERSIN_SOURCE_ID, endpoint: MERSIN_ENDPOINT, viewer: MERSIN_VIEWER, prefix: MERSIN_PREFIX },
     { id: VAN_SOURCE_ID, endpoint: VAN_ENDPOINT,
         viewer: 'https://keos.ipekyolu.bel.tr:90/imardurumu/index.aspx', prefix: VAN_SOURCE_ID + ':OBJECTID=' },
     { id: SIVAS_SOURCE_ID, endpoint: SIVAS_ENDPOINT,
-        viewer: 'https://keos.sivas.bel.tr/imardurumu/', prefix: SIVAS_SOURCE_ID + ':OBJECTID=' }
+        viewer: 'https://keos.sivas.bel.tr/imardurumu/', prefix: SIVAS_SOURCE_ID + ':OBJECTID=' },
+    { id: SEHITKAMIL_SOURCE_ID, endpoint: SEHITKAMIL_ENDPOINT,
+        viewer: 'https://keos.sehitkamil.bel.tr/imardurumu/index.aspx', prefix: SEHITKAMIL_SOURCE_ID + ':OBJECTID=' }
 ];
 export function isMersinProtocolSource(d) {
     return d?.adapter === 'mersin-eimar' && PROFILES.some(p => p.id === d.id && p.endpoint === d.endpoint);

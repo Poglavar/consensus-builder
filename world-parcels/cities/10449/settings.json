@@ -1,0 +1,140 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "10449",
+  "name": "Khammam, India",
+  "point": [
+    17.2489124071603,
+    80.165271980989
+  ],
+  "bindings": [
+    {
+      "appCityId": "khammam",
+      "runtimeConfig": {
+        "id": "khammam",
+        "wupCityCode": "10449",
+        "label": "Khammam, India",
+        "currency": {
+          "locale": "en-IN",
+          "code": "INR"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            17.2489124071603,
+            80.165271980989
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            17.2489124071603,
+            80.165271980989
+          ],
+          "fallbackDataset": [
+            80.165271980989,
+            17.2489124071603
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "in-nrsc-bhuvan-telangana-tg-cad-gfi",
+          "idPrefix": "IN-NRSC-TG-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "ISRO/NRSC Bhuvan · Telangana cadastral boundaries TG_Cad · planning/development use"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "in-nrsc-bhuvan-telangana-tg-cad-gfi",
+      "name": "Bhuvan Telangana Cadastral Boundary TG_Cad",
+      "operator": "ISRO / National Remote Sensing Centre (NRSC)",
+      "countryCode": "IN",
+      "stateCode": "TG",
+      "adapter": "bhuvan-tg-cad",
+      "endpoint": "https://bhuvan-vec1.nrsc.gov.in/bhuvan/ows",
+      "layer": "cadastral:TG_Cad",
+      "style": "cad_2d_new",
+      "idPrefix": "IN-NRSC-TG-",
+      "idField": "fid",
+      "idFields": [
+        "fid"
+      ],
+      "outFields": [
+        "fid"
+      ],
+      "nativeCrs": "EPSG:4326",
+      "srsName": "EPSG:4326",
+      "responseCrs": "EPSG:4326",
+      "returnsWGS84": true,
+      "metricSrid": 32644,
+      "cityIds": [
+        "khammam"
+      ],
+      "defaultForCity": true,
+      "scope": "Telangana cadastral layer; Khammam bounded samples only; citywide completeness and currentness unverified. Native-fid lookup is limited to the configured Khammam routing window, not a municipal boundary; unlocated IDs are unresolved, never cached as absent.",
+      "attribution": "ISRO/NRSC Bhuvan · Telangana cadastral boundaries TG_Cad · planning/development use",
+      "catalogueUrl": "https://bhuvan-app1.nrsc.gov.in/state/TG",
+      "licenceNote": "No explicit reuse licence established. Publisher describes planning/development use; not measurements or regulatory applications.",
+      "browserTransport": "relay",
+      "maxConcurrentQueries": 1,
+      "maxFeatures": 500,
+      "maxResponseBytes": 2097152,
+      "capabilities": {
+        "areaEnumeration": true,
+        "exactId": true,
+        "point": true,
+        "geometry": "full-wgs84"
+      },
+      "discovery": {
+        "status": "candidate",
+        "purpose": "cadastral-parcels",
+        "sourceId": "in-nrsc-bhuvan-telangana-tg-cad-gfi",
+        "evidence": [
+          "https://bhuvan-app1.nrsc.gov.in/state/get/layers.php?q=TS",
+          "https://bhuvan-app1.nrsc.gov.in/state/TG"
+        ]
+      },
+      "coverage": {
+        "citywide": false,
+        "basis": "Bounded live checks, not municipal boundary or complete city coverage."
+      },
+      "lookupBounds": [
+        80.05,
+        17.12,
+        80.29,
+        17.38
+      ]
+    }
+  ]
+}

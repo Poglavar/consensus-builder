@@ -1,0 +1,118 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "7035",
+  "name": "Yogyakarta, Indonesia",
+  "point": [
+    -7.77496371723721,
+    110.428772528777
+  ],
+  "bindings": [
+    {
+      "appCityId": "yogyakarta",
+      "runtimeConfig": {
+        "id": "yogyakarta",
+        "wupCityCode": "7035",
+        "label": "Yogyakarta, Indonesia",
+        "currency": {
+          "locale": "id-ID",
+          "code": "IDR"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            -7.77496371723721,
+            110.428772528777
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            -7.77496371723721,
+            110.428772528777
+          ],
+          "fallbackDataset": [
+            110.428772528777,
+            -7.77496371723721
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "id-jogjaprov-dispertaru-tanah-desa-diy",
+          "idPrefix": "ID-JOGJAPROV-TANAH-DESA-DIY-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "DISPERTARU DIY / Geoportal Jogjaprov — Tanah Desa/Kalurahan village-land parcel inventory; partial coverage."
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "id-jogjaprov-dispertaru-tanah-desa-diy",
+      "name": "DISPERTARU DIY Tanah Desa — village-land parcels",
+      "adapter": "arcgis",
+      "endpoint": "https://geoportal.jogjaprov.go.id/server/rest/services/DISPERTARU/Tanah_Desa_DIY/FeatureServer/0",
+      "countryCode": "ID",
+      "cityIds": [
+        "yogyakarta"
+      ],
+      "idField": "objectid",
+      "objectIdField": "objectid",
+      "idType": "integer",
+      "idPrefix": "ID-JOGJAPROV-TANAH-DESA-DIY-",
+      "outFields": [
+        "objectid"
+      ],
+      "queryFormat": "geojson",
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "pageSize": 2000,
+      "idBatchSize": 80,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "timeoutMs": 45000,
+      "sourceCrs": "EPSG:9489",
+      "outputCrs": "EPSG:4326",
+      "metricSrid": 32749,
+      "operator": "Dinas Pertanahan dan Tata Ruang Daerah Istimewa Yogyakarta (DISPERTARU DIY)",
+      "attribution": "DISPERTARU DIY / Geoportal Jogjaprov — Tanah Desa/Kalurahan village-land parcel inventory; partial coverage.",
+      "license": "Not stated in public metadata; reuse confirmation is a second-pass follow-up.",
+      "scope": "Class-limited village-land inventory; bounded Maguwoharjo/Depok/Sleman sample near immutable Yogyakarta urban-agglomeration point. No complete private-title or Kota-wide coverage claim.",
+      "catalogueUrl": "https://geoportal.jogjaprov.go.id/portal/sharing/rest/content/items/2639d45c3af241579161fae5e879146d",
+      "capabilities": {
+        "areaEnumeration": true,
+        "exactId": true,
+        "geometry": "full-wgs84"
+      },
+      "defaultForCity": true
+    }
+  ]
+}

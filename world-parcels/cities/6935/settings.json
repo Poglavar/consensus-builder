@@ -1,0 +1,121 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "6935",
+  "name": "Kansas City, United States",
+  "point": [
+    39.0251330397331,
+    -94.614592171342
+  ],
+  "bindings": [
+    {
+      "appCityId": "kansas_city",
+      "runtimeConfig": {
+        "id": "kansas_city",
+        "wupCityCode": "6935",
+        "label": "Kansas City, United States",
+        "currency": {
+          "locale": "en-US",
+          "code": "USD"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            39.0251330397331,
+            -94.614592171342
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            39.0251330397331,
+            -94.614592171342
+          ],
+          "fallbackDataset": [
+            -94.614592171342,
+            39.0251330397331
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "us-mo-kcmo-socrata-parcels-6g4y-sh3m",
+          "idPrefix": "KCMO-KIVAPIN-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "City of Kansas City, Missouri / Open Data KC / GIS Office; CRS84 parcel geometry."
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "us-mo-kcmo-socrata-parcels-6g4y-sh3m",
+      "name": "Kansas City, Missouri ordinary cadastral parcels (Open Data KC)",
+      "adapter": "socrata",
+      "endpoint": "https://data.kcmo.org/resource/6g4y-sh3m.geojson",
+      "idField": "kivapin",
+      "idType": "string",
+      "idPattern": "^[0-9]{1,10}$",
+      "idPrefix": "KCMO-KIVAPIN-",
+      "objectIdField": ":id",
+      "geometryField": "the_geom",
+      "versionField": ":updated_at",
+      "outFields": [
+        "kivapin",
+        "parceltype",
+        ":id",
+        ":updated_at"
+      ],
+      "attributeFilters": {
+        "parceltype": "1"
+      },
+      "pageSize": 200,
+      "maxFeatures": 3000,
+      "maxBboxKm2": 1,
+      "maxConcurrentQueries": 2,
+      "countryCode": "US",
+      "stateCode": "MO",
+      "metricSrid": 32615,
+      "cityIds": [
+        "kansas_city"
+      ],
+      "operator": "City of Kansas City, Missouri — Open Data KC / GIS Office",
+      "catalogueUrl": "https://data.kcmo.org/d/6g4y-sh3m",
+      "attribution": "City of Kansas City, Missouri / Open Data KC / GIS Office; CRS84 parcel geometry.",
+      "scope": "Missouri-side municipal parcels only. Immutable WUP locator is west of State Line Road on the Kansas/Wyandotte side. No parcel coverage at the locator, Kansas-side coverage or citywide completeness is established. Ordinary parceltype 1 records only. Initial proof uses three nearby native KIVAPIN parcels with unchanged provider geometry. Counted ordered reads verify publication revision before and after paging; no owner, address, APN, tax/account or valuation attributes are requested.",
+      "licenceNote": "Anonymous public Open Data KC access. No machine-readable reuse licence confirmed. Metadata rowsUpdatedAt is 2023-12-30; current legal/survey accuracy and update cadence remain unverified.",
+      "capabilities": {
+        "areaEnumeration": true,
+        "exactIds": true
+      },
+      "defaultForCity": true
+    }
+  ]
+}

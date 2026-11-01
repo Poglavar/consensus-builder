@@ -1,0 +1,134 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "12135",
+  "name": "Kaohsiung, Taiwan",
+  "point": [
+    22.6347645343725,
+    120.331923920849
+  ],
+  "bindings": [
+    {
+      "appCityId": "kaohsiung",
+      "runtimeConfig": {
+        "id": "kaohsiung",
+        "wupCityCode": "12135",
+        "label": "Kaohsiung, Taiwan",
+        "currency": {
+          "locale": "zh-TW",
+          "code": "TWD"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            22.6347645343725,
+            120.331923920849
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            22.6347645343725,
+            120.331923920849
+          ],
+          "fallbackDataset": [
+            120.331923920849,
+            22.6347645343725
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "TW-KAOHSIUNG-QIJIN-ARC-SAMPLE",
+          "idPrefix": "TW-KAOHSIUNG-QIJIN-ARC-SAMPLE/",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "高雄旗津_地籍圖範例, public ArcGIS item b47bd4cd146e46e38407c207c0cde370. Kaohsiung City Land Bureau provides section context only."
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "TW-KAOHSIUNG-QIJIN-ARC-SAMPLE",
+      "adapter": "arcgis",
+      "name": "Kaohsiung Qijin cadastral-map example",
+      "countryCode": "TW",
+      "cityIds": [
+        "kaohsiung"
+      ],
+      "endpoint": "https://services7.arcgis.com/tVmMUEViFfyHBZvj/ArcGIS/rest/services/%E9%AB%98%E9%9B%84%E6%97%97%E6%B4%A5_%E5%9C%B0%E7%B1%8D%E5%9C%96%E7%AF%84%E4%BE%8B/FeatureServer/0",
+      "objectIdField": "FID",
+      "idPrefix": "TW-KAOHSIUNG-QIJIN-ARC-SAMPLE/",
+      "idFields": [
+        "sec_id",
+        "p_num_pa"
+      ],
+      "idFieldTypes": {
+        "sec_id": "string",
+        "p_num_pa": "string"
+      },
+      "compositeIdSeparator": "/",
+      "parcelNumberField": "p_num_pa",
+      "outFields": [
+        "FID",
+        "sec_id",
+        "p_num_pa"
+      ],
+      "metricSrid": 32651,
+      "sourceCrs": "EPSG:3857 (provider wkid 102100/latestWkid 3857); GeoJSON requested as EPSG:4326; original cadastral datum lineage unverified.",
+      "queryFormat": "geojson",
+      "boundsQueryMode": "offset",
+      "idsQueryMode": "offset",
+      "pageSize": 100,
+      "idBatchSize": 80,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "timeoutMs": 15000,
+      "maxConcurrentQueries": 2,
+      "operator": "Public ArcGIS dataset publisher; municipal custodianship unverified",
+      "catalogueUrl": "https://www.arcgis.com/home/item.html?id=b47bd4cd146e46e38407c207c0cde370&sublayer=0",
+      "scope": "Bounded Qijin District section EA1115 example within Kaohsiung; citywide coverage is unobserved.",
+      "coverageNote": "34 polygons observed in bbox [120.2976,22.5745,120.3004,22.5762]. Kaohsiung queue locator lies outside this footprint.",
+      "attribution": "高雄旗津_地籍圖範例, public ArcGIS item b47bd4cd146e46e38407c207c0cde370. Kaohsiung City Land Bureau provides section context only.",
+      "licenceNote": "No explicit licence or official municipal lineage supplied by the publisher. Reuse terms and cadastral currentness remain unverified.",
+      "capabilities": {
+        "areaEnumeration": true
+      },
+      "currentness": "Hosted layer dataLastEditDate 1578457200640 (2020-01-08); current cadastral validity is unverified.",
+      "coverageBbox": [
+        120.29761162133079,
+        22.574589768337713,
+        120.30028042568125,
+        22.576140764053594
+      ],
+      "defaultForCity": true
+    }
+  ]
+}

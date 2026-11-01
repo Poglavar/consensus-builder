@@ -1,0 +1,138 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "6315",
+  "name": "Gaziantep, Turkey",
+  "point": [
+    37.0505785072048,
+    37.3758827160868
+  ],
+  "bindings": [
+    {
+      "appCityId": "gaziantep",
+      "runtimeConfig": {
+        "id": "gaziantep",
+        "wupCityCode": "6315",
+        "label": "Gaziantep, Turkey",
+        "currency": {
+          "locale": "tr-TR",
+          "code": "TRY"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            37.0505785072048,
+            37.3758827160868
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            37.0505785072048,
+            37.3758827160868
+          ],
+          "fallbackDataset": [
+            37.3758827160868,
+            37.0505785072048
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "tr-sehitkamil-keos-imar-parcels",
+          "idPrefix": "tr-sehitkamil-keos-imar-parcels:OBJECTID=",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "Şehitkamil Belediyesi / Plan ve Proje Müdürlüğü · Netcad e-İmar"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "tr-sehitkamil-keos-imar-parcels",
+      "name": "Gaziantep Şehitkamil municipal e-İmar cadastral parcels",
+      "adapter": "mersin-eimar",
+      "endpoint": "https://keos.sehitkamil.bel.tr/imardurumu/service/imarsvc.aspx",
+      "viewerEndpoint": "https://keos.sehitkamil.bel.tr/imardurumu/index.aspx",
+      "layer": "parsel",
+      "idPrefix": "tr-sehitkamil-keos-imar-parcels:OBJECTID=",
+      "idField": "OBJECTID",
+      "objectIdField": "OBJECTID",
+      "parcelNumberField": "OBJECTID",
+      "outFields": [
+        "OBJECTID"
+      ],
+      "geometryField": "POLY",
+      "countryCode": "TR",
+      "cityIds": [
+        "gaziantep"
+      ],
+      "metricSrid": 32637,
+      "returnsWGS84": true,
+      "browserTransport": "relay",
+      "queryMode": "configured-cadastral-block-search",
+      "capabilities": {
+        "point": false,
+        "exactId": true,
+        "bbox": true,
+        "areaEnumeration": true,
+        "geometry": "full-wgs84"
+      },
+      "maxResponseBytes": 1048576,
+      "maxFeatures": 999,
+      "maxBboxKm2": 25,
+      "maxConcurrentQueries": 1,
+      "operator": "Şehitkamil Belediyesi, Plan ve Proje Müdürlüğü",
+      "attribution": "Şehitkamil Belediyesi / Plan ve Proje Müdürlüğü · Netcad e-İmar",
+      "scope": "Bounded municipal informational cadastral parcel copy in Şehitkamil, Gaziantep. Live viewport enumeration is limited to verified cadastral block 4707 near 29 Ekim. Exact OBJECTID lookups also observed in Beyreli. No coverage at the immutable city locator, Şahinbey, other blocks, or citywide completeness is claimed.",
+      "licenceNote": "Public anonymous viewer access; no explicit open-data, automated reuse or redistribution permission established. Statutory cadastral lineage, currentness and reuse terms remain second-pass follow-ups.",
+      "catalogueUrl": "https://keos.sehitkamil.bel.tr/imardurumu/index.aspx",
+      "nativeCrsNote": "POLY is returned as geographic GeoJSON-like longitude,latitude near Gaziantep. Coordinates pass through unchanged. Native datum, epoch, formal CRS, wire-axis declaration, operation and grid accuracy are unverified second-pass follow-ups; no fitted offset.",
+      "spatialScopes": [
+        {
+          "block": "4707",
+          "bbox": [
+            37.420953,
+            37.056678,
+            37.422922,
+            37.058448
+          ]
+        }
+      ],
+      "extent": [
+        37.420953,
+        37.056678,
+        37.422922,
+        37.058448
+      ],
+      "defaultForCity": true
+    }
+  ]
+}

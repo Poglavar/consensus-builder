@@ -1,0 +1,114 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "1489",
+  "name": "Niš, Serbia",
+  "point": [
+    43.3188198916352,
+    21.9103223663759
+  ],
+  "bindings": [
+    {
+      "appCityId": "nis",
+      "runtimeConfig": {
+        "id": "nis",
+        "wupCityCode": "1489",
+        "label": "Niš, Serbia",
+        "currency": {
+          "locale": "sr-RS",
+          "code": "RSD"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            43.3188198916352,
+            21.9103223663759
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            43.3188198916352,
+            21.9103223663759
+          ],
+          "fallbackDataset": [
+            21.9103223663759,
+            43.3188198916352
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "rs-nis-gis-smartportal-public-parcels",
+          "idPrefix": "RS-NIS-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "Grad Niš GIS · Парцеле у јавној својини · public-ownership cadastral parcels only; provider WGS84 output."
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "rs-nis-gis-smartportal-public-parcels",
+      "name": "Niš GIS public-ownership cadastral parcels",
+      "adapter": "arcgis",
+      "endpoint": "https://gis.ni.rs/server/rest/services/Nis_SmartPortal/MapServer/2",
+      "idField": "gis_id",
+      "idType": "string",
+      "idPattern": "^[0-9]{6}-[0-9]+(?:/[0-9]+)?$",
+      "objectIdField": "objectid",
+      "idPrefix": "RS-NIS-",
+      "parcelNumberField": "broj_parcele",
+      "outFields": [
+        "objectid",
+        "gis_id",
+        "broj_parcele"
+      ],
+      "pageSize": 200,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "maxResponseBytes": 16777216,
+      "timeoutMs": 30000,
+      "countryCode": "RS",
+      "metricSrid": 32634,
+      "scope": "Municipal cadastral-derived parcels in public ownership only. Bounded Niš samples establish useful partial coverage; all-ownership and citywide completeness are unproven.",
+      "licenceNote": "No explicit reuse licence exposed in observed public metadata; preserve City of Niš GIS attribution. Public access is not a licence grant.",
+      "catalogueUrl": "https://gis.ni.rs/smartPortal/gunisPublic",
+      "attribution": "Grad Niš GIS · Парцеле у јавној својини · public-ownership cadastral parcels only; provider WGS84 output.",
+      "capabilities": {
+        "areaEnumeration": true
+      },
+      "cityIds": [
+        "nis"
+      ],
+      "defaultForCity": true
+    }
+  ]
+}

@@ -1,0 +1,131 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "1208",
+  "name": "Ras Al Khaimah, United Arab Emirates",
+  "point": [
+    25.7741398774474,
+    55.9604795103617
+  ],
+  "bindings": [
+    {
+      "appCityId": "ras_al_khaimah",
+      "runtimeConfig": {
+        "id": "ras_al_khaimah",
+        "wupCityCode": "1208",
+        "label": "Ras Al Khaimah, United Arab Emirates",
+        "currency": {
+          "locale": "ar-AE",
+          "code": "AED"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            25.7741398774474,
+            55.9604795103617
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            25.7741398774474,
+            55.9604795103617
+          ],
+          "fallbackDataset": [
+            55.9604795103617,
+            25.7741398774474
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "ae-rak-raklocator-parcels",
+          "idPrefix": "AE-RAK-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "Ras Al Khaimah Municipality GIS Center / RAK Addressing. Indicative parcel boundaries; coverage and currentness unverified."
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "ae-rak-raklocator-parcels",
+      "name": "Ras Al Khaimah municipal cadastral parcels (RakLocParcels)",
+      "adapter": "arcgis",
+      "endpoint": "https://gis.rak.ae/server/rest/services/RakLocatorMap/RakLocatorMap/MapServer/4",
+      "idField": "ParcelID",
+      "idType": "string",
+      "idPattern": "^[0-9]{1,100}$",
+      "objectIdField": "OBJECTID",
+      "parcelNumberField": "ParcelID",
+      "idPrefix": "AE-RAK-",
+      "outFields": [
+        "OBJECTID",
+        "ParcelID"
+      ],
+      "queryFormat": "esri-json",
+      "pageSize": 200,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "idBatchSize": 40,
+      "maxResponseBytes": 16777216,
+      "timeoutMs": 45000,
+      "minRequestIntervalMs": 200,
+      "maxConcurrentQueries": 2,
+      "countryCode": "AE",
+      "metricSrid": 32640,
+      "nativeCrs": "EPSG:32640",
+      "cityIds": [
+        "ras_al_khaimah"
+      ],
+      "capabilities": {
+        "bbox": true,
+        "exactId": true,
+        "areaEnumeration": true,
+        "geometry": "full-wgs84"
+      },
+      "operator": "Ras Al Khaimah Municipality GIS Center",
+      "catalogueUrl": "https://maps.rak.ae/Addressing/",
+      "attribution": "Ras Al Khaimah Municipality GIS Center / RAK Addressing. Indicative parcel boundaries; coverage and currentness unverified.",
+      "licenceNote": "Public official viewer queries. No explicit open reuse licence found; municipal attribution retained. Curved source records are requested as the provider standard linear-ring representation; full returned rings are retained.",
+      "scope": "Bounded parcel polygons around Ras Al Khaimah verified; citywide and emirate-wide coverage and completeness are unverified.",
+      "browserTransport": "relay",
+      "discovery": {
+        "jurisdiction": {
+          "countryCode": "AE",
+          "basis": "Municipal RakLocParcels layer configured by RAK Addressing; official GIS parcel-fabric system linked to land registration.",
+          "evidence": []
+        }
+      },
+      "returnTrueCurves": false,
+      "defaultForCity": true
+    }
+  ]
+}

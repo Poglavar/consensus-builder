@@ -1,3 +1,11 @@
+import { createSanJuanDgcSource } from './sanjuan-dgc-source.js';
+import { createMapGuideBrowserSource } from './mapguide-selectfeatures-source.js';
+import { createOpendatasoftParcelSource } from './opendatasoft-source.js';
+import { createTijuanaImplanBrowserSource } from './tijuana-implan-source.js';
+import { createOenyParcelSource } from './hu-oeny-source.js';
+import { createRomaQgisWmsSource } from './roma-qgis-wms-source.js';
+import { createBhumiNakshaParcelSource } from './bd-bhumi-naksha-source.js';
+import { createBhuvanTgCadSource } from './bhuvan-tg-cad-source.js';
 import { createArcgisHubParcelSource } from './arcgis-hub-source.js';
 import { createAsigWmsKmlParcelSource } from './asig-wms-kml-source.js';
 import { createChanghuaBrowserParcelSource } from './changhua-source.js';
@@ -76,6 +84,14 @@ function expectedEtagForUrl(descriptor, url) {
 }
 
 export const browserParcelFactories = Object.freeze({
+    'sanjuan-dgc': createSanJuanDgcSource,
+    'mapguide-selectfeatures': createMapGuideBrowserSource,
+    'opendatasoft': createOpendatasoftParcelSource,
+    'tijuana-implan-wms': createTijuanaImplanBrowserSource,
+    'hu-oeny': createOenyParcelSource,
+    'roma-qgis-wms': createRomaQgisWmsSource,
+    'bd-bhumi-naksha': createBhumiNakshaParcelSource,
+    'bhuvan-tg-cad': createBhuvanTgCadSource,
     'arcgis-hub': createArcgisHubParcelSource,
     'asig-wms-kml': createAsigWmsKmlParcelSource,
     'changhua-urbangis': createChanghuaBrowserParcelSource,
@@ -162,6 +178,7 @@ export function createBrowserProviderFetch(descriptor, { fetchImpl = globalThis.
     // attempt fails for every visitor, so it would only delay the relay and say nothing about them.
     const relayOnly = descriptor.browserTransport === 'relay';
     const needsSession = descriptor.adapter === 'kerala-entebhoomi'
+        || descriptor.adapter === 'bd-bhumi-naksha'
         || descriptor.adapter === 'dgu-wfs'
         || (descriptor.adapter === 'gml-snapshot' && new URL(descriptor.endpoint).hostname === 'use-land-property-data.service.gov.uk');
     async function relay(url, options) {
