@@ -13,6 +13,13 @@ describe('chat tool results', () => {
         expect(JSON.parse(compactForModel('ugt_edit_plan', { isError: true, structuredContent: { code: 'conflict', message: 'Tool request failed.', untrusted: { message: 'occupied' } } }))).toMatchObject({ ok: false, code: 'conflict', message: 'occupied' });
         expect(summarizeStep('ugt_edit_plan', {}, { structuredContent: { title: 'Plan' } })).toContain('Plan');
     });
+    it('retains exact ambiguity choices and array navigation without invented partial geometry', () => {
+        const matches = [{ parcelId: 'P#cadastre-1', point: [1, 2], partIndex: 1 }, { parcelId: 'P#cadastre-2', point: [3, 4], partIndex: 2 }];
+        expect(JSON.parse(compactForModel('ugt_select_parcels', { isError: true, structuredContent: { code: 'parcel-ambiguous', constraints: { matches } } })).matches).toEqual(matches);
+        const value = Array.from({ length: 40 }, () => ({ type: 'node', lat: 51, lon: 0 }));
+        expect(JSON.parse(compactForModel('ugt_inspect_design', { values: [{ path: '/roadProposal/definition/osm/elements', untrustedValue: value }] })).values[0].value)
+            .toMatchObject({ truncated: true, type: 'array', length: 40, itemKeys: ['type', 'lat', 'lon'] });
+    });
     it('extracts plan revisions and ignores refused or unrelated calls', () => {
         expect(planFromResult('ugt_edit_plan', { structuredContent: { plan: { draftRef: 'http://localhost/d', cid: 'p2' }, changes: ['move'] } })).toMatchObject({ cid: 'p2', changes: ['move'] });
         expect(planFromResult('ugt_edit_design', { structuredContent: { cid: 'design-2', draftRef: 'http://localhost/design', plan: { cid: 'p2', draftRef: 'http://localhost/plan' }, placement: { status: 'placed' } } })).toMatchObject({ cid: 'p2', draftRef: 'http://localhost/plan' });
@@ -48,7 +55,7 @@ describe('chat tool results', () => {
         const oversized = { geometry: { content: 'secret?', coordinates: '界'.repeat(1200) }, nested: { untrusted: true } };
         const text = compactForModel('ugt_inspect_design', { structuredContent: { values: [{ path: '/geometry/content', untrustedValue: oversized }] } });
         expect(Buffer.byteLength(text, 'utf8')).toBeLessThanOrEqual(4096);
-        expect(JSON.parse(text).values[0]).toEqual({ path: '/geometry/content', value: { truncated: true, message: 'Value is too large to include. Inspect a narrower pointer.' } });
+        expect(JSON.parse(text).values[0]).toMatchObject({ path: '/geometry/content', value: { truncated: true, type: 'object', fields: { geometry: { keys: ['content', 'coordinates'] }, nested: { keys: ['untrusted'] } } } });
         const exact = { geometry: { content: 'included' }, nested: { untrusted: true } };
         expect(JSON.parse(compactForModel('ugt_inspect_design', { structuredContent: { values: [{ path: '/x', untrustedValue: exact }] } })).values[0].value).toEqual(exact);
     });

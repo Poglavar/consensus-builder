@@ -163,12 +163,17 @@ export function createMcpNamedPlanTools({ read, drafts, appOrigin, resolveDraftR
     // browser's apply rules. Without a plan they start a new private one. A refusal places nothing and
     // leaves the plan as it was, so the agent can ask the person before anything leaves the plan.
     // designs: [{ cid, content, parcelSourceId, before? }], before naming the member an edit revises.
-    async function placeDesigns({ plan: value, designs: incoming, displace = false }) {
+    async function placeDesigns({ plan: value, designs: incoming, displace = false, replaceDesignCid = null }) {
         const original = value === undefined || value === null ? null : await resolvePlan(value);
         let members = original ? original.designs : [];
+        if (replaceDesignCid != null) {
+            if (!members.some(row => row.cid === replaceDesignCid)) fail('replace-design-not-found', 'The replacement target is not a member of this working-plan revision.');
+            if (incoming.length !== 1) fail('replace-design-count', 'Replace exactly one design at a time.');
+        }
         const placed = [], consequences = { removed: [], junctions: [], cuts: [] }, renames = new Map();
         for (const { before = null, ...row } of incoming) {
-            const member = before && members.some(other => other.cid === before) ? before : null;
+            const target = replaceDesignCid || before;
+            const member = target && members.some(other => other.cid === target) ? target : null;
             const result = placeInPlan({ members, incoming: row, before: member, displace });
             if (result.placement.status === 'refused') {
                 return { placement: { ...result.placement, designCid: row.cid, designTitle: row.content.title || null },

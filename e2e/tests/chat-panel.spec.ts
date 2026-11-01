@@ -84,6 +84,61 @@ test('chat panel sends a turn and announces the streamed reply @core', async ({ 
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
 });
 
+test('failed map navigation does not recover and apply the streamed plan @core', async ({ mockApi: page, baseURL }) => {
+  test.setTimeout(120_000);
+  await stubBasemapTiles(page);
+  const design = builder.build({ kind: 'space', spaceKind: 'park', site: PARCEL_GEOMETRY, city: 'zg', title: 'Navigation failure park', authoredAt: '2026-10-23T00:00:00.000Z' }, { turf });
+  const designCid = cid.cidOfObject(design);
+  const planContent = planRecord.create('Navigation failure plan', [designCid], { at: '45.80025,15.9817,18', mode: '2d', city: 'zg', language: 'en' });
+  const planCid = cid.cidOfObject(planContent);
+  const previewUrl = await privatePreview(page, baseURL!, { plan: planContent, designs: [design] });
+  const draftRef = new URL(previewUrl).searchParams.get('draft');
+  const expiry = new Date(Date.now() + 60_000).toISOString();
+  const turnRequests: any[] = [];
+  await page.route('**/chat/conversations', async route => {
+    if (route.request().method() !== 'POST') return route.fallback();
+    await route.fulfill({ status: 201, contentType: 'application/json', body: JSON.stringify({ id: 'conv-map-fail', expiresAt: expiry }) });
+  });
+  await page.route('**/chat/conversations/conv-map-fail/turns', async route => {
+    turnRequests.push(route.request().postDataJSON());
+    if (turnRequests.length > 1) return route.fulfill({ status: 200, headers: { 'content-type': 'text/event-stream' }, body:
+      'event: reply\ndata: {"text":"I can describe the current map."}\n\nevent: done\ndata: {"turns":2,"conversationSpentUsd":0.002}\n\n' });
+    const events = [
+      'event: view\ndata: {"view":{"mode":"2d","at":"45.80025,15.9817,18"}}',
+      'event: selection\ndata: {"selection":{"parcelSourceId":"wrong-source","active":false,"parcelIds":[]}}',
+      `event: plan\ndata: ${JSON.stringify({ draftRef, cid: planCid, changes: [{ beforeCid: null, afterCid: planCid }] })}`,
+      'event: reply\ndata: {"text":"The park is ready."}',
+      'event: done\ndata: {"turns":1,"conversationSpentUsd":0.001}'
+    ].join('\n\n') + '\n\n';
+    await route.fulfill({ status: 200, headers: { 'content-type': 'text/event-stream' }, body: events });
+  });
+  await page.route('**/chat/conversations/conv-map-fail', async route => {
+    if (route.request().method() !== 'GET') return route.fallback();
+    await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({
+      id: 'conv-map-fail', expiresAt: expiry, turns: 1, spentUsd: 0.001, plan: { draftRef, cid: planCid }
+    }) });
+  });
+  await page.goto('/?city=zg&reduceMotion=1', { waitUntil: 'domcontentloaded' });
+  await waitForMapReady(page);
+  await page.locator(selectors.chatButton).click();
+  const sheet = page.locator(selectors.chatSheet);
+  await expect(sheet).toBeVisible();
+  const composer = sheet.getByRole('textbox');
+  await composer.fill('Add a park');
+  await composer.press('Enter');
+  await expect(sheet.locator('.chat-status')).toHaveText('The map command could not be completed. The design changes were not applied.');
+  await expect.poll(() => page.evaluate(() => (window as any).proposalStorage.getAllProposals().some((record: any) => record.title === 'Navigation failure park'))).toBe(false);
+  await expect.poll(() => page.evaluate(() => (window as any).ChatPanel.state().error?.key)).toBe('chat.errors.mapCommand');
+  const currentMapContext = await page.evaluate(() => (window as any).ChatNavigation.mapContext());
+  await composer.fill('Describe the current map');
+  await composer.press('Enter');
+  await expect(sheet.getByText('I can describe the current map.')).toBeVisible();
+  expect(turnRequests).toHaveLength(2);
+  expect(turnRequests[1].context.planCid).toBeNull();
+  expect(turnRequests[1].context).not.toHaveProperty('planArtifact');
+  expect(turnRequests[1].context.mapContext).toEqual(currentMapContext);
+});
+
 test('chat navigation events begin, add, finish, and replay exact parcel selections @core', async ({ mockApi: page }) => {
   await stubBasemapTiles(page);
   await page.setViewportSize({ width: 360, height: 800 });

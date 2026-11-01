@@ -89,7 +89,8 @@ export function createPreviewLinks({ origin, appOrigin, storeDirectory, now = Da
             const child = readReference(member.draftRef);
             if (child.record.schema !== 'design/v1' || child.cid !== member.cid
                 || (row.record.schema !== 'plan/v1' && child.parcelSourceId !== row.parcelSourceId)
-                || (row.designSources && child.parcelSourceId !== row.designSources[member.cid])) throw unavailable('A private draft member is unavailable or expired. Recover the collection from its exported artifact, or draft it again.');
+                || (row.designSources && Object.hasOwn(row.designSources, member.cid)
+                    && child.parcelSourceId !== row.designSources[member.cid])) throw unavailable('A private draft member is unavailable or expired. Recover the collection from its exported artifact, or draft it again.');
             designs.push(child.record);
         }
         return { [row.record.schema === 'plan/v1' ? 'plan' : 'agreement']: row.record,

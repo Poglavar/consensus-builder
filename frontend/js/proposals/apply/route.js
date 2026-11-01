@@ -53,7 +53,7 @@
     function classifyApplyRoute(proposalData) {
         const goalKey = normalizeGoalKey(proposalData && proposalData.goal);
 
-        if (goalKey === 'parcel'
+        if (goalKey === 'parcel' || goalKey === 'as-is'
             || goalKey === 'to-buyer'
             || (typeof goalKey === 'string' && goalKey.startsWith('ownership-transfer'))) {
             return { route: 'noop', goalKey };

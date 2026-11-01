@@ -734,11 +734,21 @@ export function createUrbanGameTheoryTools({
     // The result keeps the design's own fields and adds the plan revision, the placement and its consequences.
     const placing = (method, beforeOf = () => null) => {
         const author = actions[method];
-        return async ({ plan, displace = false, ...args }) => {
+        return async ({ plan, displace = false, replaceDesignCid = null, ...args }) => {
+            if (replaceDesignCid != null) {
+                if (!plan) throw Object.assign(new Error('Replacing a design needs its current working plan.'), {
+                    code: 'replace-plan-required', next: { tool: 'ugt_inspect_plan', action: 'Inspect the current plan and use its draftRef.' }
+                });
+                const current = await namedPlanTools.resolvePlan(plan);
+                if (!current.designs.some(row => row.cid === replaceDesignCid)) throw Object.assign(new Error('The replacement target is not a member of this working-plan revision.'), {
+                    code: 'replace-design-not-found', next: { tool: 'ugt_inspect_plan', action: 'Inspect the current plan and retry with an exact current design CID.' }
+                });
+            }
             const drafted = await author({ ...args, plan });
             const rows = drafted.designs || [drafted];
-            const placed = await namedPlanTools.placeDesigns({ plan, displace,
-                designs: rows.map(row => ({ cid: row.cid, content: row.design, parcelSourceId: row.parcelSourceId, before: beforeOf(row, args) })) });
+            const placed = await namedPlanTools.placeDesigns({ plan, displace, replaceDesignCid,
+                designs: rows.map(row => ({ cid: row.cid, content: row.design, parcelSourceId: row.parcelSourceId,
+                    before: replaceDesignCid || beforeOf(row, args) })) });
             // Joining the plan's roads can revise the placed design itself; its preview follows the placed revision.
             const final = placed.placement.status === 'placed'
                 ? await Promise.all(rows.map((row, index) => placed.designs[index].cid === row.cid ? row

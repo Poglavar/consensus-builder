@@ -43,6 +43,19 @@ function fixture({ ids = ['a', 'b'], active = false, selected = [], focus = null
 }
 
 describe('chat navigation adapter', () => {
+    it('loads the cadastral parent but selects only its exact live piece', async () => {
+        const { nav, root, features, layers } = fixture({ ids: [] });
+        root.LiveParcelFabric.cadastralPartOf = require('../../frontend/js/parcels/live-fabric.js').cadastralPartOf;
+        root.CadastralParcelRepository.ensureIds.mockImplementation(async ids => {
+            features.set('P#cadastre-2', feature('P#cadastre-2'));
+            layers.set('P#cadastre-2', { setStyle: vi.fn() });
+            return { foundIds: ids };
+        });
+        await nav.apply({ name: 'selection', selection: { parcelSourceId: 'source-a', parcelIds: ['P#cadastre-2'], focusParcelId: 'P#cadastre-2', active: false } });
+        expect(root.CadastralParcelRepository.ensureIds).toHaveBeenCalledWith(['P'], { city: 'city-a' });
+        expect(nav.capture().parcelIds).toEqual(['P#cadastre-2']);
+        await expect(nav.apply({ name: 'selection', selection: { parcelSourceId: 'source-a', parcelIds: ['P#building-1'], focusParcelId: 'P#building-1', active: false } })).rejects.toThrow();
+    });
     it('captures a single or multi-parcel selection and its independent cursor', () => {
         const { nav, root, multi } = fixture({ selected: ['a', 'b'], focus: 'b', active: true });
         expect(nav.capture()).toEqual({ focusParcelId: 'b', parcelIds: ['a', 'b'], active: true });

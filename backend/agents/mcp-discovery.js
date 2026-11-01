@@ -36,6 +36,7 @@ const steps = [
     'Work in a plan: it is your applied map. Every draft and design edit takes plan (omit it once to start one, or start one from existing designs with ugt_draft_plan) and returns the new plan revision; pass that draftRef to the next call. A named plan does not need agreement terms.',
     'Read each result’s placement and consequences and tell the person: designs it would take off the plan (refused until they agree, then retry with displace), roads it joins, ground roads cut.',
     'Inspect objects with ugt_inspect_plan, then edit explicit refs with expectedCid. Retain the prior draftRef for undo.',
+    'To regenerate or relocate a design, drafting tools accept replaceDesignCid naming an exact current plan member. Replacement is atomic, preserves its schedule, and refuses stale targets or conflicts with other members.',
     'Unpublished member CIDs resolve within an optional plan on ugt_inspect_design, ugt_compare, ugt_edit_design and ugt_modify_design; pass plan for a station whose corridors are private member CIDs too.',
     'Portable ugt-plan-file/v1 JSON, or a CityJSON file the site downloaded (it carries that plan file), can be passed as plan to ugt_get_plan, ugt_inspect_plan and ugt_edit_plan. It embeds canonical plan/v1 and design/v1 content; importing conveys no publication or consent.',
     'Validate and compare the result, render a preview, and show its URL. An unavailable source is not evidence of empty land.',

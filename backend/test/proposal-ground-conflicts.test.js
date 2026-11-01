@@ -4,12 +4,15 @@
 import { describe, it, expect } from 'vitest';
 import * as turf from '@turf/turf';
 import { createRequire } from 'node:module';
+import { intentDesign } from '../agents/mcp-geometry.js';
 
 const require = createRequire(import.meta.url);
 globalThis.turf = turf;
 const { appliedRivals, editDependents, unapplyDependents } = require('../../frontend/js/proposals/claims.js');
 const lineage = require('../../frontend/js/proposals/lineage.js');
 const Cid = require('../../frontend/js/cid.js');
+const DesignRecord = require('../../frontend/js/design-record.js');
+const { localDesignFromRow } = require('../../frontend/js/proposals/design-sync.js');
 const planOrder = require('../../frontend/js/proposals/plan-order.js');
 const { isApplied } = require('../../frontend/js/proposals/status.js');
 const collectAppliedProposalAlternatives = (proposal, records, options = {}) =>
@@ -296,6 +299,42 @@ describe('overlapping published road revisions', () => {
         expect(collectAppliedProposalAlternatives(moved,[source],{planOrder})).toEqual([]);
         const crossing={...revision,origin:null};
         expect(collectAppliedProposalAlternatives(crossing,[source],{planOrder})).toEqual([]);
+    });
+});
+
+describe('station attachment claims across browser imports', () => {
+    it('matches the imported corridor by its current canonical CID and rejects a stale publication mark', () => {
+        const content = intentDesign.build({ kind: 'track', points: [[15.97,45.8],[15.972,45.8]], gauge: 1435,
+            title: 'Tram corridor', city: 'london', authoredAt: '2026-10-24T00:00:00.000Z' }, { turf });
+        const corridorCid = Cid.cidOfObject(content);
+        const corridor = localDesignFromRow({ cid: corridorCid, content, binding: null }, {
+            apiBase: 'https://api.example.test/', proposalId: 'browser-track-local-key'
+        });
+        corridor.applied = true;
+        const station = { proposalId: 'browser-station-local-key', goal: 'station', structureProposal: {
+            kind: 'station', attachment: { sourceId: corridorCid },
+            geometry: { type: 'Polygon', coordinates: [[[15.9709,45.7999],[15.9711,45.7999],[15.9711,45.8001],[15.9709,45.8001],[15.9709,45.7999]]] }
+        } };
+
+        expect(corridor.proposalId).not.toBe(corridorCid);
+        expect(DesignRecord.cidOf(corridor)).toBe(corridorCid);
+        expect(collectAppliedProposalAlternatives(station, [corridor], { planOrder, replaceOccupiedGround: true })).toEqual([]);
+
+        const privateDraft = structuredClone(corridor);
+        privateDraft.proposalId = `draft-${corridorCid}`;
+        delete privateDraft.published;
+        expect(DesignRecord.cidOf(privateDraft)).toBe(corridorCid);
+        expect(collectAppliedProposalAlternatives(station, [privateDraft], { planOrder, replaceOccupiedGround: true })).toEqual([]);
+
+        const stale = structuredClone(corridor);
+        stale.title = 'Locally revised corridor';
+        expect(stale.published.cid).toBe(corridorCid);
+        expect(DesignRecord.cidOf(stale)).not.toBe(corridorCid);
+        expect(planOrder.footprintOf(station)).toBeTruthy();
+        expect(planOrder.footprintOf(stale)).toBeTruthy();
+        expect(turf.intersect(planOrder.footprintOf(station), planOrder.footprintOf(stale))).toBeTruthy();
+        expect(collectAppliedProposalAlternatives(station, [stale], { planOrder, replaceOccupiedGround: true }).map(record => record.proposalId))
+            .toEqual([corridor.proposalId]);
     });
 });
 

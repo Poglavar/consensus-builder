@@ -2,6 +2,7 @@
 // Run explicitly budgeted model evaluations against a live hosted MCP, checkpointing every paid call.
 import { readFileSync, writeFileSync, renameSync, existsSync } from 'node:fs';
 import { createHash } from 'node:crypto';
+import { createRequire } from 'node:module';
 import { pathToFileURL } from 'node:url';
 import { createMcpToolCaller } from '../chat/mcp-client.js';
 import { runTurn } from '../chat/turn-runner.js';
@@ -11,15 +12,19 @@ import { createChatModelCaller, MAX_CHAT_INPUT_TOKENS } from '../chat/model.js';
 import { isSupportedChatModel } from '../chat/openai-config.js';
 import { cidOfObject } from '../cid.js';
 
+const require = createRequire(import.meta.url);
+const sharedPlanRecord = require('../../frontend/js/plan-record.js');
+
 export const USAGE = 'Usage: node scripts/chat-eval.mjs --run --cases <json> --mcp <url> --model <id> --budget-usd <amount> --input-price <usd/MTok> --output-price <usd/MTok> --cache-read-price <usd/MTok> --cache-write-price <usd/MTok> --output <checkpoint.json> [--provider anthropic|openai] [--limit N] [--case id] [--retry-failed]';
 /**
  * Case contract: {id,language,context,turns:[{text,expect}]}. `context.planSeed` is a list of
- * free MCP setup calls: {tool,args,asPlan?,useWorkingPlan?}. `context.selection.memberIndex` is
- * eval metadata only; after setup, the runner opens the returned private plan with ugt_get_plan,
+ * free MCP setup calls: {tool,args,asPlan?,useWorkingPlan?}. A selection memberIndex or unique
+ * memberGoal is eval metadata only; before each turn the runner opens the plan with ugt_get_plan,
  * verifies the member CID against its canonical content, and replaces the selector with that CID
  * (plus optional buildingIndex) before constructing the model context. Other selections such as
- * parcelIds must be observed source IDs. Turn expectations use scoreTurn's tools, forbidTools,
- * outcome, planChanged, and dotted args assertions.
+ * parcelIds must be observed source IDs. Turn expectations can also assert canonical post-turn
+ * artifacts: paths, building properties, moved geometry paths with metre tolerances, proposal and
+ * decoration counts, and a refetched immutable prior plan.
  */
 const flags = new Set(['--run', '--cases', '--mcp', '--model', '--budget-usd', '--input-price', '--output-price', '--cache-read-price', '--cache-write-price', '--output', '--provider', '--limit', '--case', '--retry-failed']);
 export function parseArgs(argv) {
@@ -65,8 +70,19 @@ export function planFromSeed(tool, result) {
 export function resolveSeededSelection(selection, planResult) {
     const value = planResult?.structuredContent || planResult || {};
     const members = value.designs || [];
-    const index = Number(selection?.memberIndex);
-    if (!Number.isInteger(index) || index < 0 || !members[index]) throw new Error('Eval selection.memberIndex does not resolve to a seeded plan member.');
+    let index;
+    if (selection?.memberGoal != null) {
+        if (typeof selection.memberGoal !== 'string' || !selection.memberGoal.trim()) throw new Error('Eval selection.memberGoal must name a design goal.');
+        const matches = members.flatMap((member, rowIndex) => {
+            const design = member.untrusted?.content || member.untrusted?.design || member.content || member.design;
+            return design?.goal === selection.memberGoal ? [rowIndex] : [];
+        });
+        if (matches.length !== 1) throw new Error(`Eval selection.memberGoal ${selection.memberGoal} resolves to ${matches.length} plan members; exactly one is required.`);
+        index = matches[0];
+    } else {
+        index = Number(selection?.memberIndex);
+        if (!Number.isInteger(index) || index < 0 || !members[index]) throw new Error('Eval selection.memberIndex does not resolve to a seeded plan member.');
+    }
     const member = members[index], design = member.untrusted?.content || member.untrusted?.design || member.content || member.design;
     const designCid = member.cid;
     if (!designCid || !design || cidOfObject(design) !== designCid) throw new Error(`Seeded plan member ${index} has no matching canonical design content and CID.`);
@@ -79,8 +95,63 @@ export function resolveSeededSelection(selection, planResult) {
     return out;
 }
 
+export function canonicalPlanSnapshot(result) {
+    const value = result?.structuredContent || result || {};
+    const planContainer = value.plan || value;
+    const planContent = planContainer?.schema === 'plan/v1' ? planContainer
+        : planContainer?.untrusted?.content || planContainer?.untrusted?.plan
+            || value.untrusted?.content || value.untrusted?.plan || value.content;
+    const planCid = value.cid || value.planCid || planContainer?.cid;
+    const members = value.designs || planContainer?.designs;
+    if (result?.isError || !planContent || planContent.schema !== 'plan/v1') throw new Error('Canonical plan readback did not include exact plan/v1 content.');
+    if (!planCid || !Array.isArray(members)) throw new Error('Canonical plan readback did not include a CID and designs.');
+    const validationError = sharedPlanRecord?.validate?.(planContent);
+    if (validationError) throw new Error(`Plan readback has invalid canonical content: ${validationError}`);
+    if (cidOfObject(planContent) !== planCid) throw new Error('Plan readback CID does not match its canonical content.');
+    if (planContent.designCids.length !== members.length
+        || planContent.designCids.some((cid, index) => members[index]?.cid !== cid)) {
+        throw new Error('Plan readback member rows do not match the ordered canonical plan designCids.');
+    }
+    const designs = members.map((member, index) => {
+        const design = member.untrusted?.content || member.untrusted?.design || member.content || member.design;
+        if (!member.cid || !design || cidOfObject(design) !== member.cid) throw new Error(`Plan readback member ${index} has no matching canonical content and CID.`);
+        return { cid: member.cid, designHash: cidOfObject(design), design: structuredClone(design) };
+    });
+    return { cid: planCid, plan: structuredClone(planContent), designs };
+}
+
+export async function readCanonicalPlan(mcp, planRef) {
+    if (!planRef) throw new Error('Canonical plan readback requires a plan reference.');
+    const result = await mcp.callTool('ugt_get_plan', { plan: planRef });
+    if (result.isError) throw new Error(`Could not read canonical plan: ${result.structuredContent?.untrusted?.message || 'tool-error'}`);
+    return canonicalPlanSnapshot(result);
+}
+
+export function retryAttemptsOf(prior) {
+    const attempts = [...(prior?.attempts || [])];
+    if (prior?.status === 'running') {
+        const incomplete = prior.currentAttempt || { calls: prior.calls || [], turnScores: prior.turnScores || [], plan: prior.plan };
+        attempts.push({ ...incomplete, status: 'incomplete' });
+    } else if (prior && !Array.isArray(prior.attempts) && ['failed', 'passed'].includes(prior.status)) {
+        attempts.push({ status: prior.status, calls: prior.calls || [], turnScores: prior.turnScores || [], plan: prior.plan });
+    }
+    return attempts;
+}
+
+export function recordFailedAttempt(checkpoint, caseId, attempts, attempt, error) {
+    const completed = { ...attempt, status: 'failed', completedAt: new Date().toISOString(), failure: { message: error.message || String(error), ...(error.code ? { code: error.code } : {}) } };
+    checkpoint.cases[caseId] = { ...completed, attempts: [...attempts, completed], currentAttempt: null };
+    return completed;
+}
+
+export function failedEvalCaseIds(checkpoint, selected) {
+    return selected.map(item => item.id).filter(id => checkpoint.cases?.[id]?.status !== 'passed');
+}
+
+export function evalExitCode(checkpoint, selected) { return failedEvalCaseIds(checkpoint, selected).length ? 1 : 0; }
+
 export async function refreshSelectionFromPlan(mcp, selection, plan) {
-    if (selection?.memberIndex == null) return selection;
+    if (selection?.memberIndex == null && selection?.memberGoal == null) return selection;
     if (!plan) throw new Error('Eval selection.memberIndex requires a seeded working plan.');
     const resolved = await mcp.callTool('ugt_get_plan', { plan: plan.draftRef });
     if (resolved.isError) throw new Error(`Could not open the current eval plan: ${resolved.structuredContent?.untrusted?.message || 'tool-error'}`);
@@ -89,6 +160,10 @@ export async function refreshSelectionFromPlan(mcp, selection, plan) {
 
 export function contextForEvalCase(item) {
     return { ...structuredClone(item.context || {}), language: item.language };
+}
+
+export function selectorForEvalTurn(caseSelector, turn) {
+    return turn?.selection?.memberIndex == null && turn?.selection?.memberGoal == null ? caseSelector : structuredClone(turn.selection);
 }
 
 export function assertEvalTurnCanContinue(result, checkpoint) {
@@ -126,22 +201,55 @@ async function main(argv) {
             if (prior?.status === 'passed') continue;
             if (prior?.status === 'failed' && !args.retryFailed) continue;
             const calls = [], turnScores = [], runContext = contextForEvalCase(item);
-            const memberSelector = runContext.selection?.memberIndex == null ? null : { ...runContext.selection };
+            const attempts = retryAttemptsOf(prior);
+            const attempt = { status: 'running', startedAt: new Date().toISOString(), seedCalls: [], calls, turnScores, plan: null };
+            const memberSelector = runContext.selection?.memberIndex == null && runContext.selection?.memberGoal == null
+                ? null : { ...runContext.selection };
             let conversation = { messages: [], plan: null, planHistory: [], turns: 0 };
-            for (const seed of runContext.planSeed || []) {
-                const seedArgs = { ...(seed.args || {}) };
-                if (seed.useWorkingPlan && conversation.plan) seedArgs.plan = conversation.plan.draftRef;
-                const result = await mcp.callTool(seed.tool, seedArgs);
-                if (result.isError) throw new Error(`Case ${item.id} seed ${seed.tool} failed: ${result.structuredContent?.untrusted?.message || result.structuredContent?.message || 'tool-error'}`);
-                if (seed.asPlan || result.structuredContent?.plan?.draftRef || ['ugt_draft_plan','ugt_get_plan'].includes(seed.tool)) conversation.plan = planFromSeed(seed.tool, result);
+            try {
+                for (const seed of runContext.planSeed || []) {
+                    const seedArgs = { ...(seed.args || {}) };
+                    if (seed.useWorkingPlan && conversation.plan) seedArgs.plan = conversation.plan.draftRef;
+                    const result = await mcp.callTool(seed.tool, seedArgs);
+                    const seedRow = { tool: seed.tool, args: seedArgs, isError: Boolean(result.isError), result: result.structuredContent };
+                    attempt.seedCalls.push(seedRow);
+                    if (result.isError) throw new Error(`Case ${item.id} seed ${seed.tool} failed: ${result.structuredContent?.untrusted?.message || result.structuredContent?.message || 'tool-error'}`);
+                    if (seed.asPlan || result.structuredContent?.plan?.draftRef || ['ugt_draft_plan','ugt_get_plan'].includes(seed.tool)) conversation.plan = planFromSeed(seed.tool, result);
+                    attempt.plan = conversation.plan;
+                    checkpoint.cases[item.id] = { status: 'running', attempts, currentAttempt: { ...attempt }, calls, turnScores, plan: conversation.plan };
+                    writeCheckpoint(args.output, checkpoint);
+                }
+                if (memberSelector && !conversation.plan) throw new Error(`Case ${item.id} uses an eval member selector without a seeded working plan.`);
+            } catch (error) {
+                recordFailedAttempt(checkpoint, item.id, attempts, attempt, error);
+                writeCheckpoint(args.output, checkpoint);
+                console.log(`${item.id}: failed during setup; ${error.message}; spent $${checkpoint.spentUsd.toFixed(6)}`);
+                continue;
             }
-            if (memberSelector) {
-                if (!conversation.plan) throw new Error(`Case ${item.id} uses an eval member selector without a seeded working plan.`);
-            }
+            attempt.plan = conversation.plan;
+            checkpoint.cases[item.id] = { status: 'running', attempts, currentAttempt: { ...attempt }, calls, turnScores, plan: conversation.plan };
+            writeCheckpoint(args.output, checkpoint);
             delete runContext.planSeed;
             for (let turnIndex = 0; turnIndex < item.turns.length; turnIndex++) {
                 const turn = item.turns[turnIndex];
-                if (memberSelector) runContext.selection = await refreshSelectionFromPlan(mcp, memberSelector, conversation.plan);
+                const turnSelector = selectorForEvalTurn(memberSelector, turn);
+                if (turnSelector) {
+                    try { runContext.selection = await refreshSelectionFromPlan(mcp, turnSelector, conversation.plan); }
+                    catch (error) {
+                        turnScores.push({ score: { passed: false, reason: 'eval-selection-readback-failed', message: error.message }, outcome: { type: 'error' }, planChanged: false, costUsd: 0 });
+                        attempt.calls = calls; attempt.turnScores = turnScores; attempt.plan = conversation.plan;
+                        checkpoint.cases[item.id] = { status: 'running', attempts, currentAttempt: { ...attempt }, calls, turnScores, plan: conversation.plan };
+                        writeCheckpoint(args.output, checkpoint);
+                        break;
+                    }
+                }
+                const artifactExpected = turn.expect?.artifact;
+                const beforePlanRef = conversation.plan?.draftRef;
+                let artifactBefore = null, artifactBeforeError = null;
+                if (artifactExpected) {
+                    try { artifactBefore = await readCanonicalPlan(mcp, beforePlanRef); }
+                    catch (error) { artifactBeforeError = error.message; }
+                }
                 const turnCalls = [];
                 const callModel = async (request, { signal } = {}) => {
                     const estimate = callEstimateUsd(prices, request);
@@ -157,7 +265,8 @@ async function main(argv) {
                     const usd = costUsd(response.usage, prices);
                     checkpoint.spentUsd = Math.round((checkpoint.spentUsd + usd) * 1e6) / 1e6;
                     checkpoint.inflight = null;
-                    checkpoint.cases[item.id] = { status: 'running', calls: [...calls], turnScores: [...turnScores], usage: response.usage, lastCallUsd: usd };
+                    attempt.calls = [...calls]; attempt.turnScores = [...turnScores]; attempt.plan = conversation.plan;
+                    checkpoint.cases[item.id] = { status: 'running', attempts, currentAttempt: { ...attempt }, calls: [...calls], turnScores: [...turnScores], usage: response.usage, lastCallUsd: usd };
                     writeCheckpoint(args.output, checkpoint);
                     return response;
                 };
@@ -165,23 +274,42 @@ async function main(argv) {
                     const result = await mcp.callTool(name, toolArgs, options);
                     const row = { tool: name, args: toolArgs, isError: Boolean(result.isError), result: result.structuredContent };
                     calls.push(row); turnCalls.push(row);
+                    attempt.calls = calls; attempt.turnScores = turnScores;
+                    checkpoint.cases[item.id] = { status: 'running', attempts, currentAttempt: { ...attempt }, calls, turnScores, plan: conversation.plan };
+                    writeCheckpoint(args.output, checkpoint);
                     return result;
                 };
                 const result = await runTurn({ conversation, text: turn.text, context: { ...runContext, instruction: turn.text }, callModel, callTool, mcpTools, prices, limits: { maxSteps: 8 } });
                 assertEvalTurnCanContinue(result, checkpoint);
                 conversation = { ...conversation, messages: result.messages, plan: result.plan, planHistory: result.planHistory, turns: turnIndex + 1 };
                 const scoreCalls = [...turnCalls, ...result.steps.filter(step => ['ask_person', 'undo_last_change'].includes(step.tool)).map(step => ({ tool: step.tool, args: {} }))];
-                turnScores.push({ score: scoreTurn(turn.expect || {}, result, scoreCalls), outcome: result.outcome, planChanged: result.planChanged, costUsd: result.costUsd });
-                checkpoint.cases[item.id] = { status: 'running', calls, turnScores, plan: conversation.plan };
+                let artifactReadback = null;
+                if (artifactExpected) {
+                    artifactReadback = { before: artifactBefore, after: null, previous: null, error: artifactBeforeError };
+                    try { artifactReadback.after = await readCanonicalPlan(mcp, conversation.plan?.draftRef); }
+                    catch (error) { artifactReadback.error ||= error.message; }
+                    if (artifactExpected.previousUnchanged && beforePlanRef) {
+                        try { artifactReadback.previous = await readCanonicalPlan(mcp, beforePlanRef); }
+                        catch (error) { artifactReadback.error ||= error.message; }
+                    }
+                }
+                turnScores.push({ score: scoreTurn(turn.expect || {}, result, scoreCalls, artifactReadback), outcome: result.outcome, planChanged: result.planChanged, costUsd: result.costUsd,
+                    ...(artifactReadback ? { artifactReadback } : {}) });
+                attempt.calls = calls; attempt.turnScores = turnScores; attempt.plan = conversation.plan;
+                checkpoint.cases[item.id] = { status: 'running', attempts, currentAttempt: { ...attempt }, calls, turnScores, plan: conversation.plan };
                 writeCheckpoint(args.output, checkpoint);
             }
             const passed = turnScores.every(row => row.score.passed);
-            checkpoint.cases[item.id] = { status: passed ? 'passed' : 'failed', calls, turnScores, plan: conversation.plan };
+            const completedAttempt = { ...attempt, status: passed ? 'passed' : 'failed', completedAt: new Date().toISOString(), calls, turnScores, plan: conversation.plan };
+            checkpoint.cases[item.id] = { ...completedAttempt, attempts: [...attempts, completedAttempt], currentAttempt: null };
             writeCheckpoint(args.output, checkpoint);
             console.log(`${item.id}: ${passed ? 'passed' : 'failed'}; spent $${checkpoint.spentUsd.toFixed(6)}`);
         }
     } finally { await mcp.close(); }
     console.log(`Completed ${selected.length} cases; spent $${checkpoint.spentUsd.toFixed(6)} of $${budgetUsd.toFixed(2)}.`);
+    const failed = failedEvalCaseIds(checkpoint, selected);
+    if (failed.length) console.error(`Failed cases: ${failed.join(', ')}`);
+    process.exitCode = evalExitCode(checkpoint, selected) || process.exitCode || 0;
 }
 
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) main(process.argv.slice(2)).catch(error => { console.error(error.message); process.exitCode = 1; });

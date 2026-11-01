@@ -9135,7 +9135,8 @@
         "budget": "O limite diário do chat foi atingido.",
         "rateLimited": "Aguarde antes de enviar outra mensagem.",
         "unavailable": "O serviço de chat está indisponível.",
-        "stream": "A resposta foi interrompida. Pode tentar novamente."
+        "stream": "A resposta foi interrompida. Pode tentar novamente.",
+        "mapCommand": "Não foi possível concluir o comando do mapa. As alterações do projeto não foram aplicadas."
       }
   }
 }

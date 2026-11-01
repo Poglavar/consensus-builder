@@ -259,8 +259,10 @@
             if (!repository?.ensureIds || !live?.get || !draw?.getLayer) throw new Error('The parcel data is not ready.');
             const absentFromFabric = ids.filter(id => !live.get(id));
             if (absentFromFabric.length) {
-                const result = await repository.ensureIds(absentFromFabric, { city: expectedCity });
-                const unavailable = absentFromFabric.filter(id => !result.foundIds?.includes(id));
+                const sourceIdFor = id => live.cadastralPartOf?.(id)?.cadastreId || id;
+                const requestedSourceIds = [...new Set(absentFromFabric.map(sourceIdFor))];
+                const result = await repository.ensureIds(requestedSourceIds, { city: expectedCity });
+                const unavailable = absentFromFabric.filter(id => !result.foundIds?.includes(sourceIdFor(id)));
                 if (unavailable.length) throw new Error(`Parcel IDs are unavailable from the active source: ${unavailable.join(', ')}`);
             }
             if (expectedCity !== city() || expectedSource !== sourceId()) throw new Error('The active city or parcel source changed while loading parcels.');

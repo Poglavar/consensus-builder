@@ -1,6 +1,6 @@
 // Relay-owned map state is injected after model arguments, then advanced after each successful command.
 const siteTools = new Set(['ugt_draft_building', 'ugt_draft_space', 'ugt_draft_parcel_layout', 'ugt_draft_urban_rule']);
-const locationTools = new Set(['ugt_find_place', 'ugt_parcel_context', 'ugt_select_parcels', ...siteTools]);
+const locationTools = new Set(['ugt_find_place', 'ugt_parcel_context', 'ugt_select_parcels', 'ugt_draft_road', 'ugt_draft_track', 'ugt_draft_station', ...siteTools]);
 export function searchBounds(view) {
     const at = typeof view?.at === 'string' ? view.at.split(',').map(Number) : [];
     if (at.length < 2 || !at.every(Number.isFinite)) return null;

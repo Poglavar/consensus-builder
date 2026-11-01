@@ -9180,7 +9180,8 @@
         "budget": "Dosegnut je dnevni limit za chat.",
         "rateLimited": "Pričekajte prije slanja nove poruke.",
         "unavailable": "Usluga chata nije dostupna.",
-        "stream": "Odgovor je prekinut. Pokušajte ponovno."
+        "stream": "Odgovor je prekinut. Pokušajte ponovno.",
+        "mapCommand": "Nije moguće izvršiti naredbu na karti. Promjene dizajna nisu primijenjene."
       }
   }
 }

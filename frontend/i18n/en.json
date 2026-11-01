@@ -9128,7 +9128,8 @@
       "budget": "The daily chat budget has been reached.",
       "rateLimited": "Please wait before sending another message.",
       "unavailable": "The chat service is unavailable.",
-      "stream": "The response was interrupted. Try again."
+      "stream": "The response was interrupted. Try again.",
+      "mapCommand": "The map command could not be completed. The design changes were not applied."
     }
   }
 }

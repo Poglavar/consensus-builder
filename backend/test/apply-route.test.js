@@ -50,7 +50,8 @@ describe('classifyApplyRoute', () => {
         expect(route('station')).toBe('structure');
     });
 
-    it('treats parcel / ownership-transfer / to-buyer as an idempotent no-op', () => {
+    it('treats as-is / parcel / ownership-transfer / to-buyer as an idempotent no-op', () => {
+        expect(route('as-is')).toBe('noop');
         expect(route('parcel')).toBe('noop');
         expect(route('to-buyer')).toBe('noop');
         expect(route('ownership-transfer-to-me')).toBe('noop');

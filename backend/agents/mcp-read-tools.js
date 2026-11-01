@@ -9,6 +9,7 @@ const require = createRequire(import.meta.url);
 const approvalLink = require('../../frontend/js/approval-link.js');
 const footprintParts = require('../../frontend/js/proposals/footprint-parts.js');
 const search = require('../../frontend/js/ui/search-model.js');
+const { cadastralPartOf, cadastralParts } = require('../../frontend/js/parcels/live-fabric.js');
 const databaseSources = JSON.parse(readFileSync(new URL('../../frontend/data/source-catalog.json', import.meta.url), 'utf8')).databaseSources;
 const vocabulary = () => readFileSync(new URL('../../docs/vocabulary.md', import.meta.url), 'utf8');
 const failure = (code, message, next) => Object.assign(new Error(message), { code, next });
@@ -64,6 +65,8 @@ export function createMcpReadTools({ apiBase, appOrigin, fetchImpl }) {
             tool: 'ugt_list_sources', arguments: { ...(city ? { city } : {}), abstraction: 'parcels' },
             action: 'Choose a source with the required parcel lookup capability and pass its id as parcelSourceId.'
         }), { field: 'parcelSourceId', constraints: { required: true, abstraction: 'parcels' } });
+        const requestedIds = parcelIds;
+        if (parcelIds) parcelIds = [...new Set(parcelIds.map(id => cadastralPartOf(id)?.cadastreId || id))];
         let result;
         if (databaseSources.some(item => item.id === source)) {
             const path = source === 'oss-wfs' ? '/parcels' : `/${source}`;
@@ -97,6 +100,13 @@ export function createMcpReadTools({ apiBase, appOrigin, fetchImpl }) {
         if (result.complete !== true) throw failure('parcel-coverage-incomplete', 'The parcel source did not return complete coverage.', { action: 'Retry when the parcel source is available; do not draft from partial ground.' });
         if (parcelIds && parcelIds.some(id => !result.features.some(f => String(f.id ?? f.properties?.parcelId) === id))) {
             throw failure('parcel-missing', 'One or more requested parcels are absent.', { action: 'Correct the parcel ids using ugt_find_place.' });
+        }
+        if (requestedIds?.some(id => cadastralPartOf(id))) {
+            const originals = new Map(result.features.map(f => [String(f.id ?? f.properties?.parcelId), f]));
+            const parts = new Map(result.features.flatMap(cadastralParts).map(f => [String(f.id ?? f.properties?.parcelId), f]));
+            const features = requestedIds.map(id => cadastralPartOf(id) ? parts.get(id) : originals.get(id));
+            if (features.some(feature => !feature)) throw failure('parcel-missing', 'That cadastral map piece does not exist in the current source geometry.', { action: 'Refresh the map and choose an exact current parcel piece.' });
+            result = { ...result, features };
         }
         return { ...result, parcelSourceId: source };
     }

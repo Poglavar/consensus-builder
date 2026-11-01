@@ -6,6 +6,8 @@ import { landmarkTarget, rankLandmarkParcels } from '../places/landmark-target.j
 const require = createRequire(import.meta.url);
 const blockModel = require('../../frontend/js/urban-blocks-model.js');
 const topology = require('../../frontend/js/parcels/block-topology.js');
+const { cadastralParts } = require('../../frontend/js/parcels/live-fabric.js');
+const sourcePieces = features => features.flatMap(cadastralParts);
 const MAX_BLOCK_PARCELS = topology.MAX_BLOCK_PARCELS;
 const fail = (code, message, action) => Object.assign(new Error(message), { code, next: { action } });
 const idOf = value => typeof value === 'string' && value.trim() ? value.trim() : null;
@@ -186,7 +188,7 @@ export function createMcpNavigation({ read, random = Math.random }) {
             const area = turf.buffer(turf.feature(target.geometry), maxDistanceM, { units: 'meters' }).geometry;
             const ground = await read.parcels({ city, parcelSourceId: sourceId, geometry: area });
             if (ground.complete !== true || ground.truncated || !Array.isArray(ground.features)) throw fail('parcel-coverage-incomplete', 'Landmark parcel selection needs complete source coverage.', 'Retry when the source is available or choose a parcel manually.');
-            const candidates = rankLandmarkParcels({ target, parcels: ground.features, maxDistanceM });
+            const candidates = rankLandmarkParcels({ target, parcels: sourcePieces(ground.features), maxDistanceM });
             if (!candidates.length) throw fail('landmark-parcel-not-found', 'No parcel lies beside the requested part of the landmark within the search distance.', 'Explain the limitation; offer a wider search up to 200 metres or an exact parcel number. Do not substitute a random parcel.');
             const chosen = candidates[0];
             return { selection: { parcelSourceId: sourceId, focusParcelId: chosen.parcelId, parcelIds: current.active ? ids : [chosen.parcelId], active: current.active === true }, point: chosen.point,
@@ -203,7 +205,7 @@ export function createMcpNavigation({ read, random = Math.random }) {
             const searchGeometry = turf.buffer(turf.point(origin), radiusM, { units: 'meters' }).geometry;
             const found = await read.parcels({ city, parcelSourceId: sourceId, geometry: searchGeometry });
             if (found.complete !== true || found.truncated || !Array.isArray(found.features)) throw fail('parcel-coverage-incomplete', 'The random parcel query did not return complete coverage.', 'Retry when the parcel source returns complete coverage.');
-            const candidates = candidatesNear(found.features, origin, radiusM, direction, 45);
+            const candidates = candidatesNear(sourcePieces(found.features), origin, radiusM, direction, 45);
             if (!candidates.length) throw fail('parcel-not-found', 'No source parcel representative point falls inside the requested search area.', 'Increase radiusM or choose another point or direction.');
             const sample = random();
             if (!Number.isFinite(sample) || sample < 0 || sample >= 1) throw fail('random-source-invalid', 'The random source must return a number in [0, 1).', 'Retry parcel selection.');
@@ -217,7 +219,7 @@ export function createMcpNavigation({ read, random = Math.random }) {
             const found = await read.parcels({ city, parcelSourceId: sourceId, geometry: searchGeometry });
             if (found.complete !== true || found.truncated || !Array.isArray(found.features)) throw fail('parcel-coverage-incomplete', 'The point query did not return complete parcel coverage.', 'Retry when the parcel source returns complete coverage.');
             const exactPoint = turf.point(coordinate);
-            const candidates = (found.features || []).filter(feature => ['Polygon', 'MultiPolygon'].includes(feature.geometry?.type)
+            const candidates = sourcePieces(found.features).filter(feature => ['Polygon', 'MultiPolygon'].includes(feature.geometry?.type)
                 && turf.booleanPointInPolygon(exactPoint, feature));
             if (candidates.length !== 1) throw fail(candidates.length ? 'parcel-ambiguous' : 'parcel-not-found', candidates.length ? 'The point matches multiple parcels.' : 'The point is outside the available parcels.', 'Choose a parcelId from ugt_find_place.');
             pointFeature = candidates[0];
@@ -237,6 +239,11 @@ export function createMcpNavigation({ read, random = Math.random }) {
                     : await read.parcels({ city, parcelSourceId: sourceId, parcelIds: [seed] });
                 seedFeature = seedRead.features?.find(feature => parcelIdOf(feature) === seed);
                 if (seedRead.complete !== true || !seedFeature) throw fail('parcel-coverage-incomplete', `Parcel ${seed} is not available from the selected source.`, 'Retry when the parcel source returns complete coverage.');
+                const pieces = cadastralParts(seedFeature);
+                if (pieces.length > 1) throw Object.assign(fail('parcel-ambiguous', 'This source parcel has several disconnected map pieces.', 'Ask which map piece is intended, then select its exact parcelId or a point inside it. Do not draft before the person chooses.'), {
+                    constraints: { matches: pieces.slice(0, 8).map(piece => ({ parcelId: parcelIdOf(piece), point: centerOf(piece), partIndex: piece.properties.cadastralPartIndex })) }
+                });
+                seedFeature = pieces[0];
                 features = [seedFeature];
             }
             let searchGeometry = null;
@@ -250,7 +257,7 @@ export function createMcpNavigation({ read, random = Math.random }) {
                 } else searchGeometry = turf.buffer(seedFeature, 250, { units: 'meters' }).geometry;
                 const surroundings = await read.parcels({ city, parcelSourceId: sourceId, geometry: searchGeometry });
                 if (surroundings.complete !== true || surroundings.truncated || !Array.isArray(surroundings.features)) throw fail('parcel-coverage-incomplete', 'Neighbouring parcel coverage is incomplete.', 'Retry with an available parcel source; navigation needs complete local ground.');
-                features = surroundings.features;
+                features = sourcePieces(surroundings.features);
                 if (!features.some(feature => parcelIdOf(feature) === seed)) features.push(seedFeature);
             }
             if (action === 'step') {
@@ -289,7 +296,7 @@ export function createMcpNavigation({ read, random = Math.random }) {
                 const enclosure = matches[0];
                 const sourceGround = await read.parcels({ city, parcelSourceId: sourceId, geometry: enclosure.geometry });
                 if (sourceGround.complete !== true || sourceGround.truncated || !Array.isArray(sourceGround.features)) throw fail('parcel-coverage-incomplete', 'Parcel coverage under the road block is incomplete.', 'Retry when the selected parcel source returns complete coverage.');
-                features = sourceGround.features;
+                features = sourcePieces(sourceGround.features);
                 ids = parcelIdsInBlock(enclosure, features);
                 const sharedCount = blockModel.loadedParcelCount(enclosure, features, turf);
                 if (sharedCount !== ids.length) throw fail('parcel-block-invalid', 'Parcel identities disagree with the shared road-block membership rule.', 'Retry after the parcel source is repaired.');

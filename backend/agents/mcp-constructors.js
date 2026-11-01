@@ -4,6 +4,7 @@ import { createRequire } from 'node:module';
 import { appTurf as turf, intentDesign, intentEditing, constructorRuntime as runtime, corridorRuntime } from './mcp-geometry.js';
 const require = createRequire(import.meta.url);
 const FreeformLandTake = require('../../frontend/js/freeform-land-take.js');
+const ProposalAuthoredRecord = require('../../frontend/js/proposals/authored-record.js');
 const feature = geometry => ({ type: 'Feature', properties: {}, geometry });
 const fail = (code, message, field, constraints) => { throw Object.assign(new Error(message), { code, field, constraints,
     next: { action: 'Correct the named construction parameters and retry.' } }); };
@@ -32,8 +33,9 @@ function siteOf(intent, parcels) {
     return site;
 }
 function publish(intent, record) {
-    return runtime.record.published({ ...record, title: intent.title, description: intent.description, author: intent.author,
+    const authored = ProposalAuthoredRecord.cleanFeatureContainers({ ...record, title: intent.title, description: intent.description, author: intent.author,
         city: intent.city, toleranceM: intent.toleranceM, origin: intent.origin, createdAt: intent.authoredAt });
+    return runtime.record.published(authored);
 }
 function station(intent, parcels) {
     const type = intent.stationType;
@@ -55,7 +57,7 @@ function station(intent, parcels) {
 export function buildTypedDesign(intent, { parcels = [] } = {}) {
     const entries = sourceParcels(parcels);
     if (intent.kind === 'station') return station(intent, entries);
-    if (intent.kind === 'track') return intentDesign.build(intent, { turf });
+    if (intent.kind === 'track') return publish(intent, intentDesign.build(intent, { turf }));
     const typology = intent.typology || 'freeform';
     if (!['freeform', 'block', 'row', 'detached'].includes(typology)) fail('invalid-typology', 'Choose a supported building typology.', 'typology', { enum: ['freeform', 'block', 'row', 'detached'] });
     const site = siteOf(intent, entries);
@@ -94,7 +96,7 @@ export function buildTypedDesign(intent, { parcels = [] } = {}) {
         design.geometry.buildings[0].properties.rotation = rotation;
         design.geometry.buildings[0].properties.footprintMode = 'polygon';
         design.buildingProposal.parameters.rotation = rotation;
-        return runtime.record.published({ ...design, goal: 'single', createdAt: design.authoredAt });
+        return publish(intent, { ...design, goal: 'single' });
     }
     if (typology === 'row' && entries.length && new Set(entries.map(entry => entry.parcelId)).size < 2) fail('row-needs-two-parcels', 'Row houses need at least two selected parcels.', 'parcelIds', { minItems: 2, unique: true });
     if (!entries.length && typology !== 'row') fail('parcel-source-required', 'Building rules need exact source parcels.', 'parcelIds', { minItems: 1 });

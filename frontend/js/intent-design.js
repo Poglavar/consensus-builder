@@ -232,6 +232,8 @@
                 record.goal = change.value; record.structureProposal.kind = change.value;
             } else if (record.structureProposal && ['add_trees', 'set_tree_count'].includes(change.type)) {
                 load('IntentEditing', './intent-editing.js').planting(record, change, d.turf);
+            } else if (record.structureProposal && change.type === 'move') {
+                load('IntentEditing', './intent-editing.js').moveSpace(record, change, d.turf);
             } else if (record.geometry?.buildings && ['set_floors', 'set_height', 'set_use', 'rotate', 'move', 'remove_building'].includes(change.type)) {
                 load('IntentEditing', './intent-editing.js').buildings(record, change, d.turf);
             } else fail('This typed change does not apply to this design');

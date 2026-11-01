@@ -28,6 +28,67 @@ describe('intent design artifacts', () => {
         expect(result.design.site).toEqual(site);
         expect(result.design.geometry.buildings.length).toBeGreaterThan(0);
     });
+    it('regenerates an exact layout member in place and refuses stale or unrelated replacement conflicts', async () => {
+        const neighbor = { type: 'Polygon', coordinates: [[[-0.099, 51.5], [-0.098, 51.5], [-0.098, 51.501], [-0.099, 51.501], [-0.099, 51.5]]] };
+        const expanded = { type: 'Polygon', coordinates: [[[-0.1, 51.5], [-0.098, 51.5], [-0.098, 51.501], [-0.1, 51.501], [-0.1, 51.5]]] };
+        const calls = [];
+        const previews = createPreviewLinks({ origin: 'https://mcp.example', appOrigin: 'https://app.example' });
+        const tools = createUrbanGameTheoryTools({ mode: 'hosted', env: {}, resolveDraftReference: previews.resolve,
+            fetchImpl: async (url, init) => {
+                const path = new URL(url).pathname; calls.push(path);
+                if (path === '/designs/binding') return Response.json({ parcelSourceId: 'test-source', binding: { coverage: 'complete', parcels: [] } });
+                throw new Error(`Unexpected route ${path}`);
+            } });
+        const four = await tools.draftParcelLayout({ city: 'london', outline: site, algorithm: 'equal', count: 4, title: 'Equal plots' });
+        expect(four.placement.status).toBe('placed');
+        expect(four.design.parcelLayout.plots).toHaveLength(4);
+        const beforePlan = structuredClone(four.plan);
+        const requestsBeforeStale = calls.length;
+        await expect(tools.draftParcelLayout({ city: 'london', outline: site, algorithm: 'equal', count: 5,
+            plan: four.plan, replaceDesignCid: 'bafkreibbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb' }))
+            .rejects.toMatchObject({ code: 'replace-design-not-found' });
+        expect(calls).toHaveLength(requestsBeforeStale);
+        expect(four.plan).toEqual(beforePlan);
+
+        const five = await tools.draftParcelLayout({ city: 'london', outline: site, algorithm: 'equal', count: 5,
+            plan: four.plan, replaceDesignCid: four.cid });
+        expect(five.placement.status).toBe('placed');
+        expect(five.design.parcelLayout.plots).toHaveLength(5);
+        expect(five.plan.plan.designCids).toEqual([five.cid]);
+        expect(four.plan.plan.designCids).toEqual([four.cid]);
+        expect(four.design.parcelLayout.plots).toHaveLength(4);
+
+        const withNeighbor = await tools.draftSpace({ city: 'london', outline: neighbor, spaceKind: 'park', plan: five.plan });
+        expect(withNeighbor.placement.status).toBe('placed');
+        const conflict = await tools.draftParcelLayout({ city: 'london', outline: expanded, algorithm: 'equal', count: 5,
+            plan: withNeighbor.plan, replaceDesignCid: five.cid });
+        expect(conflict.placement.status).toBe('refused');
+        expect(conflict.plan).toMatchObject({ cid: withNeighbor.plan.cid, status: 'unchanged' });
+        expect(conflict.designs).toBeUndefined();
+    });
+    it('places and relocates a tram station on its named track without displacing that plan member', async () => {
+        const previews = createPreviewLinks({ origin: 'https://mcp.example', appOrigin: 'https://app.example' });
+        const tools = createUrbanGameTheoryTools({ mode: 'hosted', env: {}, resolveDraftReference: previews.resolve,
+            fetchImpl: async url => {
+                if (new URL(url).pathname === '/designs/binding') return Response.json({ parcelSourceId: 'test-source', binding: { coverage: 'complete', parcels: [] } });
+                throw new Error(`Unexpected route ${new URL(url).pathname}`);
+            } });
+        const track = await tools.draftTrack({ city: 'london', points: [[-0.1,51.5],[-0.099,51.5]], gauge: 1435, speed: 80, title: 'Tram line' });
+        expect(track.placement.status).toBe('placed');
+        const station = await tools.draftStation({ city: 'london', stationType: 'tram', point: [-0.0995,51.5],
+            corridors: [track.cid], plan: track.plan, title: 'First stop' });
+        expect(station.placement.status).toBe('placed');
+        expect(station.plan.plan.designCids).toHaveLength(2);
+        expect(station.plan.plan.designCids).toEqual(expect.arrayContaining([track.cid, station.cid]));
+        expect(station.design.structureProposal.attachment.sourceId).toBe(track.cid);
+
+        const relocated = await tools.draftStation({ city: 'london', stationType: 'tram', point: [-0.0994,51.5],
+            corridors: [track.cid], plan: station.plan, replaceDesignCid: station.cid, title: 'Moved stop' });
+        expect(relocated.placement.status).toBe('placed');
+        expect(relocated.plan.plan.designCids).toHaveLength(2);
+        expect(relocated.plan.plan.designCids).toEqual(expect.arrayContaining([track.cid, relocated.cid]));
+        expect(relocated.design.structureProposal.attachment.sourceId).toBe(track.cid);
+    });
     it('modifies, compares and assembles private drafts by reference without copying geometry or publishing', async () => {
         const store = createPreviewLinks({ origin: 'https://mcp.example', appOrigin: 'https://urbangametheory.xyz' });
         const paths = [];

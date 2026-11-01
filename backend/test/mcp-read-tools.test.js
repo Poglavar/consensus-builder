@@ -74,6 +74,21 @@ describe('MCP public source reads', () => {
         expect(result.designs.designs.map(d => d.cid)).toEqual(['on-parcel']);
         expect(result.urbanRules).toEqual({ source: '/urban-rules' });
     });
+    it('resolves exact cadastral map parts through their immutable source parent', async () => {
+        const source = sourceFeature('P');
+        const east = structuredClone(geometry.coordinates).map(r => r.map(([x,y]) => [x + 0.01, y]));
+        source.geometry = { type: 'MultiPolygon', coordinates: [east, geometry.coordinates] };
+        const original = structuredClone(source);
+        const fetchImpl = vi.fn(async () => json({ complete: true, features: [source] }));
+        const reads = createMcpReadTools({ apiBase: 'https://api.example', appOrigin: 'https://app.example', fetchImpl });
+        const found = await reads.parcels({ parcelSourceId: 'test', parcelIds: ['P#cadastre-2', 'P#cadastre-1'] });
+        expect(new URL(fetchImpl.mock.calls[0][0]).searchParams.get('ids')).toBe('P');
+        expect(found.features.map(f => f.id)).toEqual(['P#cadastre-2', 'P#cadastre-1']);
+        expect(found.features[0].geometry).toEqual({ type: 'Polygon', coordinates: east });
+        expect(source).toEqual(original);
+        await expect(reads.parcels({ parcelSourceId: 'test', parcelIds: ['P#cadastre-3'] })).rejects.toMatchObject({ code: 'parcel-missing' });
+        expect((await reads.parcels({ parcelSourceId: 'test', parcelIds: ['P'] })).features[0].geometry.type).toBe('MultiPolygon');
+    });
     it('refuses partial coverage and omitted exact ids', async () => {
         const fetchImpl = vi.fn().mockResolvedValueOnce(json({ complete: false, features: [] })).mockResolvedValueOnce(json({ complete: true, features: [] }));
         const reads = createMcpReadTools({ apiBase: 'https://api.example', appOrigin: 'https://app.example', fetchImpl });

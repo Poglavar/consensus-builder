@@ -83,6 +83,22 @@ describe('placing a design into a working plan', () => {
         expect(result.members.map(member => member.cid)).toEqual([spine.cid, house.cid]);
     });
 
+    it('allows a station to share only its exactly named corridor and still refuses another overlapping corridor', () => {
+        const attached = row(intentDesign.build({ kind: 'track', points: [[15,45],[15.002,45]], gauge: 1435, title: 'Attached tram line', authoredAt: time }, { turf }));
+        const unrelated = row(intentDesign.build({ kind: 'track', points: [[15,45.00002],[15.002,45.00002]], gauge: 1435, title: 'Other tram line', authoredAt: time }, { turf }));
+        const content = buildTypedDesign({ kind: 'station', stationType: 'tram', point: [15.001,45],
+            corridors: [{ cid: attached.cid, content: attached.content }], authoredAt: later });
+        const station = row(content);
+        expect(content.structureProposal.attachment.sourceId).toBe(attached.cid);
+        const result = placeInPlan({ members: [attached], incoming: station });
+        expect(result.placement.status).toBe('placed');
+        expect(result.members.map(member => member.cid)).toEqual([attached.cid, station.cid]);
+
+        const conflicted = placeInPlan({ members: [attached, unrelated], incoming: station });
+        expect(conflicted.placement).toMatchObject({ status: 'refused', code: 'ground-occupied' });
+        expect(conflicted.placement.conflicts.map(member => member.cid)).toEqual([unrelated.cid]);
+    });
+
     it('replaces an edited member in place, without treating its own earlier revision as a rival', () => {
         const house = building(clear, 'Quiet house');
         const taller = building(clear, 'Quiet house, taller', later);

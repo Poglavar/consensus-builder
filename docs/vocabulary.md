@@ -28,7 +28,7 @@ The kind of change a design intends, identified by the canonical design-goal reg
 
 ### Keep-as-is design
 
-A design that retains the selected ground or existing form while proposing different rights or terms. Its absence of new construction is an explicit design choice.
+A design that retains the selected ground or existing form while proposing different rights or terms. Its absence of new construction is an explicit design choice. Applying it records the design locally without changing modeled geometry.
 
 ### Ownership-transfer design
 
@@ -225,7 +225,7 @@ A difference between a retained binding and a later calculation against the iden
 
 ### Live parcel
 
-A selectable piece of land in the working parcel fabric, including unchanged source land, formed outputs and remainders. Its runtime identity and geometry are distinct from the underlying cadastral references.
+A selectable piece of land in the working parcel fabric, including unchanged source land, formed outputs and remainders. Its runtime identity and geometry are distinct from the underlying cadastral references. Disconnected polygons of an unchanged source parcel are separate selectable cadastral pieces with deterministic `#cadastre-N` identities, each retaining its parent cadastral reference. Selecting a multipart parent requires choosing a piece; authored cuts retain their own live identities.
 
 ### Parcel fabric
 
@@ -473,7 +473,7 @@ A station attached to a compatible corridor. Road stations use a road with drivi
 Track stations use rail and are placed at ground level, elevated or underground; these are
 placement levels rather than tram or metro service types. The chosen level determines the station
 model, footprint and attachment. The current record identifiers are `bus` for road stations and
-`tram`, `elevated`, `underground` for the three track-station levels.
+`tram`, `elevated`, `underground` for the three track-station levels. The attachment names the exact corridor source identity. A station and that corridor may share ground; overlapping unrelated corridors remain placement conflicts.
 
 ### Decoration design
 

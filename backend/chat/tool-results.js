@@ -77,7 +77,11 @@ function bounded(value) {
 function inspectValue(value) {
     if (value === undefined) return null;
     if (byteLength(value) <= 700) return value;
-    return { truncated: true, message: 'Value is too large to include. Inspect a narrower pointer.' };
+    return { truncated: true, message: 'Inspect a child pointer using these exact keys; this is a shape summary, not editable content.',
+        ...(Array.isArray(value) ? { type: 'array', length: value.length, itemKeys: value[0] && typeof value[0] === 'object' ? Object.keys(value[0]).slice(0, 30) : [] }
+            : value && typeof value === 'object' ? { type: 'object', fields: Object.fromEntries(Object.entries(value).slice(0, 40).map(([key, item]) => [key,
+                Array.isArray(item) ? { type: 'array', length: item.length } : item && typeof item === 'object' ? { type: 'object', keys: Object.keys(item).slice(0, 20) }
+                    : typeof item === 'string' ? clip(item, 80) : item])) } : { type: typeof value }) };
 }
 function withoutPlanCids(value, insidePlan = true) {
     if (Array.isArray(value)) return value.map(item => withoutPlanCids(item, false));
@@ -89,7 +93,8 @@ function withoutPlanCids(value, insidePlan = true) {
 function compactObject(name, raw) {
     if (raw?.isError || raw?.ok === false) {
         const error = raw.error || payloadOf(raw);
-        return { ok: false, code: clip(error.code || 'tool-error', 80), message: clip(error.untrusted?.message || error.message || 'The tool could not complete the request.', 300), next: clip(error.next?.action || error.next, 240) };
+        return { ok: false, code: clip(error.code || 'tool-error', 80), message: clip(error.untrusted?.message || error.message || 'The tool could not complete the request.', 300), next: clip(error.next?.action || error.next, 240),
+            ...(Array.isArray(error.constraints?.matches) ? { matches: array(error.constraints.matches, row => ({ parcelId: clip(row.parcelId, 250), label: clip(row.label, 250), point: row.point, partIndex: row.partIndex }), 8) } : {}) };
     }
     const r = payloadOf(raw);
     if (name === 'ugt_draft_plan') return {

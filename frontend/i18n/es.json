@@ -9156,7 +9156,8 @@
         "budget": "Se alcanzó el presupuesto diario del chat.",
         "rateLimited": "Espera antes de enviar otro mensaje.",
         "unavailable": "El servicio de chat no está disponible.",
-        "stream": "La respuesta se interrumpió. Puedes volver a intentarlo."
+        "stream": "La respuesta se interrumpió. Puedes volver a intentarlo.",
+        "mapCommand": "No se pudo completar el comando del mapa. No se aplicaron los cambios del diseño."
       }
   }
 }

@@ -28,15 +28,51 @@
         record.geometry.landTake = structuredClone(plan.take.geometry);
     }
 
+    function moveSpace(record, change, turf) {
+        const space = record.structureProposal;
+        if (!['park', 'square', 'lake'].includes(space?.kind) || !['park', 'square', 'lake'].includes(record.goal)) {
+            fail('space-move-unsupported', 'Typed movement supports parks, squares and lakes; an attached station stays on its corridor.');
+        }
+        if (![change.eastM, change.northM].every(finite) || Math.hypot(change.eastM, change.northM) > 100) {
+            fail('invalid-intent', 'Move at most 100 metres using eastM and northM.');
+        }
+        if (!space.geometry || !record.site) fail('space-geometry-required', 'This space needs authored site and structure geometry before it can move.');
+        const shape = load('SingleBuildingGeometry', './single-building-geometry.js');
+        const from = shape.geometryCenter(space.geometry);
+        if (!from) fail('space-geometry-required', 'This space needs Polygon or MultiPolygon geometry before it can move.');
+        const frame = load('__metricFrame', './metric-frame.js').frameFor([[from.lng, from.lat]]);
+        const at = frame.toMetric([from.lng, from.lat]);
+        const target = frame.toLngLat([at[0] + change.eastM, at[1] + change.northM]);
+        const to = { lng: target[0], lat: target[1] };
+        const geometry = shape.moveGeometry(space.geometry, from, to);
+        const site = shape.moveGeometry(record.site, from, to);
+        if (!geometry || !site) fail('space-geometry-required', 'This space needs Polygon or MultiPolygon site geometry before it can move.');
+        const moveCoordinates = shape.moveCoordinateCollection;
+        space.geometry = geometry;
+        record.site = site;
+        for (const key of ['center', 'pathPoints']) {
+            if (space[key] != null) space[key] = moveCoordinates(space[key], from, to);
+        }
+        for (const key of ['decorationDesign', 'decorations']) if (space[key]) {
+            const transform = load('StructureDecorationTransform', './structure-decoration-transform.js');
+            const enclosures = load('ParkEnclosures', './park-enclosures.js');
+            space[key] = transform.moveDecorations(space[key], from, to, {
+                moveCoordinates,
+                moveEnclosure: (entry, move) => enclosures.moveEnclosure(entry, move)
+            });
+        }
+    }
+
     function buildings(record, change, turf) {
         const items = record.geometry?.buildings;
         if (!items?.length) fail('building-required', 'This design has no authored buildings to edit.');
         const index = change.buildingIndex;
         const dimensional = ['set_floors', 'set_height', 'set_use'].includes(change.type);
+        const wholeMassingMove = change.type === 'move' && !!record.geometry?.ruleMassing && index == null;
         // A Block's buildings are cut from one authored massing (geometry.ruleMassing). Their
         // height, floors and use move together, as the editor's slider moves them, and the massing
-        // is re-stamped below; a footprint, removal or single-building edit would part them from it.
-        if (record.geometry.ruleMassing && (!dimensional || index != null)) fail('coupled-building-geometry', 'This design also has a separate block massing. Edit the height, floors or use of all its buildings together, or edit or replace the whole design in its geometry editor.');
+        // is re-stamped below; a footprint, removal, rotation or single-building edit would part them from it.
+        if (record.geometry.ruleMassing && (!dimensional && !wholeMassingMove || index != null)) fail('coupled-building-geometry', 'This design also has a separate block massing. Edit the height, floors or use of all its buildings together, or move the complete Block.');
         if (index != null && (!Number.isInteger(index) || index < 0 || index >= items.length)) fail('building-not-found', 'Inspect this design revision and choose an existing building index.');
         const selected = index == null ? items : [items[index]];
         const shape = load('SingleBuildingGeometry', './single-building-geometry.js');
@@ -100,16 +136,34 @@
             if (change.type === 'rotate' && (!finite(change.degrees) || Math.abs(change.degrees) > 360)) fail('invalid-intent', 'Rotation must be between -360 and 360 degrees, positive counterclockwise.');
             if (change.type === 'move' && (![change.eastM, change.northM].every(finite) || Math.hypot(change.eastM, change.northM) > 100)) fail('invalid-intent', 'Move at most 100 metres using eastM and northM.');
             const footprintOnly = footprintOnlySingle(record, turf);
-            for (const building of selected) {
-                if (change.type === 'rotate') building.geometry = shape.rotateGeometry(building.geometry, change.degrees);
-                else {
-                    const from = shape.geometryCenter(building.geometry), frame = load('__metricFrame', './metric-frame.js').frameFor([[from.lng, from.lat]]);
-                    const at = frame.toMetric([from.lng, from.lat]), to = frame.toLngLat([at[0] + change.eastM, at[1] + change.northM]);
-                    building.geometry = shape.moveGeometry(building.geometry, from, { lng: to[0], lat: to[1] });
+            if (wholeMassingMove) {
+                const massing = record.geometry.ruleMassing;
+                const from = shape.geometryCenter(massing.geometry);
+                if (!from) fail('coupled-building-geometry', 'The Block massing has no movable polygon geometry.');
+                const frame = load('__metricFrame', './metric-frame.js').frameFor([[from.lng, from.lat]]);
+                const at = frame.toMetric([from.lng, from.lat]), point = frame.toLngLat([at[0] + change.eastM, at[1] + change.northM]);
+                const to = { lng: point[0], lat: point[1] };
+                const movedMassing = { ...massing, geometry: shape.moveGeometry(massing.geometry, from, to) };
+                const boundary = feature(record.site);
+                if (!movedMassing.geometry || !shape.footprintWithinBoundary(movedMassing, boundary, turf)) fail('building-outside-site', 'The edit moves the Block outside its site. Reduce the move or author a larger site explicitly.');
+                const movedBuildings = selected.map(building => ({ ...building, geometry: shape.moveGeometry(building.geometry, from, to) }));
+                if (movedBuildings.some(building => !building.geometry || !shape.footprintWithinBoundary(building, boundary, turf))) {
+                    fail('building-outside-site', 'The edit moves the Block outside its site. Reduce the move or author a larger site explicitly.');
                 }
-                if (!building.geometry || (!footprintOnly && !shape.footprintWithinBoundary(building, feature(record.site), turf))) fail('building-outside-site', 'The edit moves the building outside its site. Reduce the move/rotation or author a larger site explicitly.');
-                // The feature geometry is authoritative; editor placement metadata is no longer a generator recipe.
-                for (const key of ['_corners', '_sideMidpoints', 'rotation', 'offsetX', 'offsetY']) delete building.properties?.[key];
+                movedBuildings.forEach((building, i) => { selected[i].geometry = building.geometry; });
+                record.geometry.ruleMassing = movedMassing;
+            } else {
+                for (const building of selected) {
+                    if (change.type === 'rotate') building.geometry = shape.rotateGeometry(building.geometry, change.degrees);
+                    else {
+                        const from = shape.geometryCenter(building.geometry), frame = load('__metricFrame', './metric-frame.js').frameFor([[from.lng, from.lat]]);
+                        const at = frame.toMetric([from.lng, from.lat]), to = frame.toLngLat([at[0] + change.eastM, at[1] + change.northM]);
+                        building.geometry = shape.moveGeometry(building.geometry, from, { lng: to[0], lat: to[1] });
+                    }
+                    if (!building.geometry || (!footprintOnly && !shape.footprintWithinBoundary(building, feature(record.site), turf))) fail('building-outside-site', 'The edit moves the building outside its site. Reduce the move/rotation or author a larger site explicitly.');
+                    // The feature geometry is authoritative; editor placement metadata is no longer a generator recipe.
+                    for (const key of ['_corners', '_sideMidpoints', 'rotation', 'offsetX', 'offsetY']) delete building.properties?.[key];
+                }
             }
             if (footprintOnly) updateFootprintOnlySite(record, turf);
         } else fail('invalid-change', 'This change does not apply to a building.');
@@ -125,8 +179,10 @@
             if (!items.every(b => b.properties?.[key] === items[0].properties?.[key])) delete parameters[key];
         }
         if (!dimensional) {
-            parameters.manualMode = true;
-            for (const key of ['rotation', 'offsetX', 'offsetY']) delete parameters[key];
+            if (!wholeMassingMove) {
+                parameters.manualMode = true;
+                for (const key of ['rotation', 'offsetX', 'offsetY']) delete parameters[key];
+            }
             // Restore the old footprint holes, then cut the revised footprints from exactly the
             // same authored surroundings. Decoration positions stay authored and are clipped on apply.
             const surface = record.geometry.surroundings;
@@ -390,12 +446,12 @@
                 for (const building of items) if (ground) ground = turf.difference(ground, building);
                 record.geometry.surroundings = ground ? { ...surface, polygon: ground.geometry } : null;
             }
-            if (record.geometry.landTake && record.geometry.surroundings) {
+            if (record.geometry?.landTake && record.geometry.surroundings) {
                 const ground = load('BuildingGround', './building-ground.js');
                 record.geometry.surroundings = ground.clipSurfaceToLandTake(record.geometry.surroundings, record.geometry.landTake, turf);
             }
             validateDecorations(record.geometry?.surroundings?.decorationDesign, { paved: record.geometry?.surroundings?.treatment !== 'green', ground: record.geometry?.surroundings?.polygon || null });
         }
     }
-    return { buildings, planting, rowEnvelope, transform, reconcile };
+    return { buildings, moveSpace, planting, rowEnvelope, transform, reconcile };
 });

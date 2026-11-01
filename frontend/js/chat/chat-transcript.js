@@ -20,6 +20,7 @@
         }).filter(Boolean).join('\n\n');
     }
     function errorKey(code, status) {
+        if (code === 'map_command_failed') return 'chat.errors.mapCommand';
         if (code === 'budget_exhausted' || status === 402) return 'chat.errors.budget';
         if (String(code || '').startsWith('rate_limited') || status === 429) return 'chat.errors.rateLimited';
         if (status >= 500 || ['unavailable', 'budget_check_failed'].includes(code)) return 'chat.errors.unavailable';

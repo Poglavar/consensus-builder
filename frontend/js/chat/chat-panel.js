@@ -120,14 +120,15 @@
                 await sendTurn(true);
             }
             await navigation;
-            if (navigationError) throw navigationError;
+            if (navigationError) throw Object.assign(new Error('The map command could not be completed.'), { code: 'map_command_failed', cause: navigationError });
             if (planEvent) await applyPlan(planEvent);
         } catch (error) {
+            const mapCommandFailed = error?.code === 'map_command_failed';
             if (state.conversation && win.ChatClient.sync) {
                 try {
                     const synced = await win.ChatClient.sync(state.conversation.id);
                     dispatch({ type: 'conversation:sync', conversation: synced });
-                    if (turnBaseCaptured && appliedMembersMatch(turnBaseRow) && synced.plan?.cid !== lastSynced?.cid) {
+                    if (!mapCommandFailed && turnBaseCaptured && appliedMembersMatch(turnBaseRow) && synced.plan?.cid !== lastSynced?.cid) {
                         await applyPlan(synced.plan ? { draftRef: synced.plan.draftRef, cid: synced.plan.cid } : { draftRef: null, cid: null });
                     }
                 } catch (_) { /* retain the stream error */ }

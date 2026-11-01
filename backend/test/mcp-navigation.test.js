@@ -38,6 +38,15 @@ describe('MCP map navigation', () => {
         expect(() => navigation.mapView({ view: { at: '45,16,17', mode: '2d' }, distance: -1, direction: 'east' })).toThrow();
     });
 
+    it('selects exact disconnected source pieces and refuses an ambiguous parent', async () => {
+        const source = { ...square('P', 0, 0.001), geometry: { type: 'MultiPolygon', coordinates: [square('P', 0.003, 0.004).geometry.coordinates, square('P', 0, 0.001).geometry.coordinates] } };
+        const navigation = createMcpNavigation({ read: readers({ result: [source] }), random: () => 0 });
+        await expect(navigation.selectParcels({ city: 'test', parcelSourceId: 'source', action: 'select', parcelId: 'P' })).rejects.toMatchObject({ code: 'parcel-ambiguous', constraints: { matches: [{ parcelId: 'P#cadastre-1' }, { parcelId: 'P#cadastre-2' }] } });
+        const point = await navigation.selectParcels({ city: 'test', parcelSourceId: 'source', action: 'select', point: [0.0035, 0.0005] });
+        expect(point.selection.parcelIds).toEqual(['P#cadastre-2']);
+        const random = await navigation.selectParcels({ city: 'test', parcelSourceId: 'source', action: 'random', point: [0.0035, 0.0005], radiusM: 50 });
+        expect(random.selection.parcelIds).toEqual(['P#cadastre-2']);
+    });
     it('selects inactive parcels, moves the cursor separately while active, and supports a full manual selection workflow', async () => {
         const read = readers();
         const navigation = createMcpNavigation({ read });

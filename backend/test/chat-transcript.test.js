@@ -35,6 +35,10 @@ describe('chat transcript reducer', () => {
         expect(state.messages.at(-1)).toMatchObject({ role: 'error', code: 'budget_exhausted', pending: false });
         expect(state.error.key).toBe('chat.errors.budget');
     });
+    it('localizes failed map commands separately from interrupted chat responses', () => {
+        expect(chat.errorKey('map_command_failed')).toBe('chat.errors.mapCommand');
+        expect(chat.errorKey('stream_error')).toBe('chat.errors.stream');
+    });
     it('does not mutate prior state and resets conversation totals', () => {
         const original = chat.initial();
         const changed = chat.reduce(original, { type: 'conversation', conversation: { id: 'c1' } });

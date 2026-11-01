@@ -12,6 +12,14 @@ describe('chat map state', () => {
         expect(injectMapArgs('ugt_find_place', {}, context).bbox).toEqual(searchBounds(context.view));
         expect(searchBounds({ at: 'bad' })).toBeNull();
     });
+    it('supplies the current source for corridor and station drafting without injecting parcel selection or overwriting an explicit source', () => {
+        const context = { city: 'london', parcelSourceId: 'source', selection: { parcelIds: ['a'] } };
+        for (const name of ['ugt_draft_road', 'ugt_draft_track', 'ugt_draft_station']) {
+            expect(injectMapArgs(name, { point: [-0.1, 51.5] }, context)).toEqual({ point: [-0.1, 51.5], city: 'london', parcelSourceId: 'source' });
+            expect(injectMapArgs(name, { city: 'elsewhere', parcelSourceId: 'explicit' }, context)).toEqual({ city: 'elsewhere', parcelSourceId: 'explicit' });
+        }
+        expect(injectMapArgs('ugt_modify_design', { design: 'existing' }, context)).toEqual({ design: 'existing' });
+    });
     it('anchors random starting parcels to the current view unless a resolved location was supplied', () => {
         const context = { city: 'london', parcelSourceId: 'source', view: { at: '51.5,-0.1,17' } };
         expect(injectMapArgs('ugt_select_parcels', { action: 'random', radiusM: 100 }, context))

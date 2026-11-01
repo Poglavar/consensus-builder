@@ -9135,7 +9135,8 @@
         "budget": "Le budget quotidien du chat est atteint.",
         "rateLimited": "Attendez avant d’envoyer un autre message.",
         "unavailable": "Le service de chat est indisponible.",
-        "stream": "La réponse a été interrompue. Vous pouvez réessayer."
+        "stream": "La réponse a été interrompue. Vous pouvez réessayer.",
+        "mapCommand": "La commande de la carte n’a pas pu être effectuée. Les changements du projet n’ont pas été appliqués."
       }
   }
 }

@@ -2,6 +2,7 @@
 import { createRequire } from 'node:module';
 import { appTurf as turf } from './mcp-geometry.js';
 const require = createRequire(import.meta.url);
+const { cadastralParts } = require('../../frontend/js/parcels/live-fabric.js');
 const { getParcelDisplayNumberFromFeature } = require('../../frontend/js/proposals/parcel-id.js');
 const normalized = value => typeof value === 'string' ? value.normalize('NFKC').trim().toLowerCase() : '';
 const fail = (code, message, action) => Object.assign(new Error(message), { code, next: { action } });
@@ -27,7 +28,7 @@ export async function resolveParcelNumber({ parcelNumber, city, parcelSourceId, 
         const result = await read.parcels({ city, parcelSourceId, geometry: turf.bboxPolygon(bbox).geometry });
         if (result.complete !== true || result.truncated || !Array.isArray(result.features))
             throw fail('parcel-coverage-incomplete', 'Parcel number lookup needs complete source coverage.', 'Retry when the source is available or zoom in.');
-        candidates = result.features.map(feature => ({
+        candidates = result.features.flatMap(cadastralParts).map(feature => ({
             parcelId: String(feature.properties?.parcelId ?? feature.id ?? ''),
             label: getParcelDisplayNumberFromFeature(feature), point: turf.pointOnFeature(feature).geometry.coordinates
         }));

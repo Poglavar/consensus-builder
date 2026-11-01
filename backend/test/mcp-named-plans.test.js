@@ -103,6 +103,36 @@ describe('first-class named plans',()=>{
         expect(next.plan.designCids).toEqual([other.cid,park.cid].sort());expect(next.plan.title).toBe('After');expect(next.plan.view.mode).toBe('photo');
         expect(next.previousCid).toBe(plan.cid);expect(next.cid).not.toBe(plan.cid);expect(plan).toEqual(before);expect(calls).toEqual([]);
     });
+    it('replaces an exact same-site parcel layout, carries its schedule, and rejects stale or conflicting replacements', async () => {
+        const { tools, other } = fixture();
+        const makeLayout = (count, west = -.097) => {
+            const local = intentDesign.build({ kind: 'parcel-layout', site: box(west), algorithm: 'equal', count,
+                city: 'london', title: 'Equal plots', authoredAt: `2026-10-25T10:0${count}:00.000Z` }, { turf });
+            return { ...designObject({ ...local, title: 'Equal plots', createdAt: local.authoredAt }), parcelSourceId: 'source-layout' };
+        };
+        const four = makeLayout(4), original = await tools.draftPlan({ title: 'Four plots', designs: [four],
+            schedule: { [four.cid]: { start: '2027-01', end: '2027-12' } } });
+        const originalSnapshot = structuredClone(original), five = makeLayout(5);
+        const replaced = await tools.placeDesigns({ plan: original, replaceDesignCid: four.cid, designs: [five] });
+        expect(replaced.placement.status).toBe('placed');
+        expect(replaced.plan.plan.designCids).toEqual([five.cid]);
+        expect(replaced.designs).toHaveLength(1);
+        expect(replaced.designs[0].content.parcelLayout.plots).toHaveLength(5);
+        expect(replaced.plan.plan.schedule).toEqual({ [five.cid]: { start: '2027-01', end: '2027-12' } });
+        expect(original).toEqual(originalSnapshot);
+        expect(original.designs[0].content.parcelLayout.plots).toHaveLength(4);
+
+        await expect(tools.placeDesigns({ plan: replaced.plan, replaceDesignCid: four.cid, designs: [five] }))
+            .rejects.toMatchObject({ code: 'replace-design-not-found' });
+
+        const withOther = await tools.draftPlan({ title: 'Four plots and a building', designs: [four, other] });
+        const expanded = makeLayout(5, -.0976);
+        const refused = await tools.placeDesigns({ plan: withOther, replaceDesignCid: four.cid, designs: [expanded] });
+        expect(refused.placement.status).toBe('refused');
+        expect(refused.plan).toEqual({ cid: withOther.cid, status: 'unchanged' });
+        expect(refused.designs).toEqual([]);
+        expect(withOther.designs.map(row => row.cid).sort()).toEqual([four.cid, other.cid].sort());
+    });
     it('inventories explicit refs, text and spatial filters, geometry and pagination',async()=>{
         const {tools,tower,park}=fixture();const plan=await tools.draftPlan({title:'Inspect',designs:[tower,park],view});
         const found=await tools.inspectPlan({plan,filter:{kind:'building',text:'tower'},includeGeometry:true});

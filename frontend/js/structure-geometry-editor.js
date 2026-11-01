@@ -102,26 +102,12 @@
 
     function moveDecorations(value, from, to) {
         const moveCoordinates = global.SingleBuildingGeometry?.moveCoordinateCollection;
-        if (typeof moveCoordinates !== 'function' || !value) return value;
-        const moved = { ...clone(value) };
-        for (const [key, coordinates] of Object.entries(value)) {
-            if (!POINT_RECORD_TYPES.includes(key) && key !== 'enclosures' && Array.isArray(coordinates)) {
-                moved[key] = moveCoordinates(coordinates, from, to);
-            }
-        }
-        if (Array.isArray(value.enclosures)) {
-            moved.enclosures = value.enclosures.map(entry => parkEnclosures().moveEnclosure(entry, item => moveCoordinates(item, from, to)));
-        }
-        // Bench, lamp, stall and tree records carry metadata beside their point, so move the nested coordinate
-        // explicitly and preserve each bearing and look without mutating the drag's starting snapshot.
-        POINT_RECORD_TYPES.forEach(key => {
-            if (!Array.isArray(value[key])) return;
-            moved[key] = value[key].map(record => ({
-                ...record,
-                coordinate: moveCoordinates(record.coordinate, from, to)
-            }));
+        const transform = global.StructureDecorationTransform;
+        if (!value || typeof moveCoordinates !== 'function' || !transform?.moveDecorations) return value;
+        return transform.moveDecorations(value, from, to, {
+            moveCoordinates,
+            moveEnclosure: (entry, move) => parkEnclosures().moveEnclosure(entry, move)
         });
-        return moved;
     }
 
     function normalizeDecorations(kind, input) {
