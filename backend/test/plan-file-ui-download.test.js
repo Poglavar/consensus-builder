@@ -6,6 +6,7 @@ const require = createRequire(import.meta.url);
 const FileUI = require('../../frontend/js/plan-file-ui.js');
 const FileDownload = require('../../frontend/js/ui/file-download.js');
 const DesignFileExports = require('../../frontend/js/design-file-exports.js');
+const RecordLabel = require('../../frontend/js/ui/record-label.js');
 
 class Element {
     constructor(tag) { this.tagName = tag; this.children = []; this.listeners = {}; this.attributes = {}; this.dataset = {}; this.textContent = ''; }
@@ -48,6 +49,20 @@ const actionsOf = modal => modal.body.children.filter(child => child.tagName ===
 const buttonOf = (modal, action) => modal.body.children.find(child => child.dataset.planFileAction === action);
 
 describe('PlanFileUI downloads from any surface', () => {
+    it('keeps an imported file design CID visible in the import review', async () => {
+        const { win, modals } = browser();
+        win.RecordLabel = RecordLabel;
+        const first = 'bafkfirst-12345678', second = 'bafksecond-12345678';
+        const review = FileUI.browser(win).review({ plan: { title: 'Neighbourhood', view: { at: '45.8,15.9,17' } }, designs: [
+            { cid: first, content: { title: 'Courtyard' } }, { cid: second, content: { title: 'Courtyard' } }
+        ] });
+        const list = modals[0].body.children[2];
+        expect(list.children[0].textContent).toBe(`Courtyard · …${first.slice(-12)}`);
+        expect(list.children[0].title).toBe(first);
+        modals[0].actions.find(action => action.id === 'cancel').onClick({ close() {} });
+        await expect(review).resolves.toBe(false);
+    });
+
     it('downloads a design as a one-design file named after its title, with no import offered', async () => {
         const { win, modals, downloads } = browser();
         const ui = FileUI.browser(win);

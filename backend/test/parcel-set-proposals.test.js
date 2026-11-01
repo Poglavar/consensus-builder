@@ -175,7 +175,7 @@ describe('proposal rows as an object list', () => {
         park.querySelector('[data-proposal-open]').click();
         await vi.waitFor(() => expect(win.showProposalDetails).toHaveBeenCalledWith('p-park', 'a'));
         expect(pick(park).getAttribute('aria-pressed')).toBe('false');
-        expect(park.querySelector('[data-proposal-open]').getAttribute('aria-label')).toBe('Open Park');
+        expect(park.querySelector('[data-proposal-open]').getAttribute('aria-label')).toBe('Open Park · p-park');
         remote.querySelector('[data-proposal-open]').click();
         await vi.waitFor(() => expect(win.showProposalDetails).toHaveBeenCalledWith('imported-1', 'b'));
         expect(win.DesignSync.fetchDesign).toHaveBeenCalledWith(NEW_CID);

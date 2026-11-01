@@ -110,7 +110,7 @@ for (const width of [1280, 390]) {
     await expect(sheet).toBeVisible();
     await expect(page.locator('#click-stack .click-stack__section[data-kind="plans"]')).toBeHidden();
     const planIdBadge = planRow.locator('.record-id');
-    await expect(planIdBadge).toHaveAttribute('title', agreement.parkId);
+    await expect(planIdBadge).toHaveAttribute('title', await planRow.getAttribute('data-list-id'));
     const planShortId = await planIdBadge.textContent();
     await planRow.getByRole('button', { name: `Open Residents plan · ${planShortId}`, exact: true }).click();
     await expect(sheet).toBeHidden();
@@ -161,7 +161,8 @@ for (const width of [1280, 390]) {
     await expect(importedRow).toHaveCount(1); await expect(importedRow).toContainText('Draft');
     await sheet.locator('#lists-actions').getByRole('button', { name: 'Imported agreements', exact: true }).click();
     const importedList = page.locator('.cb-dialog').filter({ hasText: 'Imported agreements' });
-    await expect(importedList.getByRole('button', { name: 'Residents agreement', exact: true })).toBeVisible();
+    await expect(importedList.locator('.record-id')).toBeVisible();
+    await expect(importedList.getByRole('button', { name: /^Residents agreement …/ })).toBeVisible();
     await page.keyboard.press('Escape'); await expect(importedList).toBeHidden();
     expect(await page.evaluate(id => (window as any).AgreementStore.list().map((row: any) => row.id === id || !row.published), agreement.id)).toEqual([true, true]);
     await sheet.getByRole('tab', { name: 'Plans', exact: true }).click();

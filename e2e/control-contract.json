@@ -2911,9 +2911,9 @@
       "controlType": "button"
     },
     {
-      "id": "control-e6b3924a886a42-1",
+      "id": "control-6d7e0b1ff18657-1",
       "source": "js/agreement-panel.js",
-      "markup": "<button type=\"button\" class=\"btn btn-sm\" data-agreement-action=\"plan\">"
+      "markup": "<button type=\"button\" class=\"btn btn-sm\" data-agreement-action=\"plan\" title=\"${esc(agreement.plan.cid)}\">"
     },
     {
       "id": "control-35e78e7eb2adc9-1",
@@ -5463,9 +5463,9 @@
       "controlType": "dynamic"
     },
     {
-      "id": "control-99e2b3a29bc613-1",
+      "id": "control-2a36a2b75ed749-1",
       "source": "js/parcels/parcel-set-proposals.js",
-      "markup": "<button type=\"button\" class=\"btn btn-quiet proposal-item-pick\" data-proposal-pick aria-pressed=\"false\">"
+      "markup": "<button type=\"button\" class=\"btn btn-quiet proposal-item-pick\" data-proposal-pick aria-pressed=\"false\"${accessibleName}>"
     },
     {
       "id": "control-e0dacb368817c1-1",
