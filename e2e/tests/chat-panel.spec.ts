@@ -16,7 +16,7 @@ test('chat panel sends a turn and announces the streamed reply @core', async ({ 
   let turn = 0;
   await page.route('**/chat/conversations', async route => {
     if (route.request().method() !== 'POST') return route.fallback();
-    await route.fulfill({ status: 201, contentType: 'application/json', body: JSON.stringify({ id: 'conv-1', expiresAt: new Date(Date.now() + 60_000).toISOString() }) });
+    await route.fulfill({ status: 201, contentType: 'application/json', body: JSON.stringify({ id: 'conv-1', city: route.request().postDataJSON().city, expiresAt: new Date(Date.now() + 60_000).toISOString() }) });
   });
   await page.route('**/chat/conversations/conv-1/turns', async route => {
     sent.push(route.request().postDataJSON()); turn += 1;
@@ -115,7 +115,7 @@ test('failed map navigation does not recover and apply the streamed plan @core',
   const turnRequests: any[] = [];
   await page.route('**/chat/conversations', async route => {
     if (route.request().method() !== 'POST') return route.fallback();
-    await route.fulfill({ status: 201, contentType: 'application/json', body: JSON.stringify({ id: 'conv-map-fail', expiresAt: expiry }) });
+    await route.fulfill({ status: 201, contentType: 'application/json', body: JSON.stringify({ id: 'conv-map-fail', city: route.request().postDataJSON().city, expiresAt: expiry }) });
   });
   await page.route('**/chat/conversations/conv-map-fail/turns', async route => {
     turnRequests.push(route.request().postDataJSON());
@@ -133,7 +133,7 @@ test('failed map navigation does not recover and apply the streamed plan @core',
   await page.route('**/chat/conversations/conv-map-fail', async route => {
     if (route.request().method() !== 'GET') return route.fallback();
     await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({
-      id: 'conv-map-fail', expiresAt: expiry, turns: 1, spentUsd: 0.001, plan: { draftRef, cid: planCid }
+      id: 'conv-map-fail', city: turnRequests[0].context.city, expiresAt: expiry, turns: 1, spentUsd: 0.001, plan: { draftRef, cid: planCid }
     }) });
   });
   await page.goto('/?city=zg&reduceMotion=1', { waitUntil: 'domcontentloaded' });
@@ -173,7 +173,7 @@ test('chat navigation events begin, add, finish, and replay exact parcel selecti
   let turn = 0;
   await page.route('**/chat/conversations', async route => {
     if (route.request().method() !== 'POST') return route.fallback();
-    await route.fulfill({ status: 201, contentType: 'application/json', body: JSON.stringify({ id: 'nav-conv', expiresAt: new Date(Date.now() + 60_000).toISOString() }) });
+    await route.fulfill({ status: 201, contentType: 'application/json', body: JSON.stringify({ id: 'nav-conv', city: route.request().postDataJSON().city, expiresAt: new Date(Date.now() + 60_000).toISOString() }) });
   });
   await page.route('**/chat/conversations/nav-conv/turns', async route => {
     const request = route.request().postDataJSON(); sent.push(request); turn += 1;
@@ -270,7 +270,7 @@ test('chat applies a private plan revision and undo removes its first draft @cor
   let turnCount = 0;
   await page.route('**/chat/conversations', async route => {
     if (route.request().method() !== 'POST') return route.fallback();
-    await route.fulfill({ status: 201, contentType: 'application/json', body: JSON.stringify({ id: 'conv-1', expiresAt: new Date(Date.now() + 60_000).toISOString() }) });
+    await route.fulfill({ status: 201, contentType: 'application/json', body: JSON.stringify({ id: 'conv-1', city: route.request().postDataJSON().city, expiresAt: new Date(Date.now() + 60_000).toISOString() }) });
   });
   await page.route('**/chat/conversations/conv-1/turns', async route => {
     turnCount += 1;

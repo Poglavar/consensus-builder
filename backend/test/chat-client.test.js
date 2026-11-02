@@ -49,27 +49,27 @@ describe('chat client', () => {
     });
     it('reads ISO or numeric expiry and rejects an ended stream without done/error', async () => {
         const storage = new MemoryStorage();
-        storage.setItem('chat-conversation-v1:https://one.test', JSON.stringify({ id: 'iso', expiresAt: '2030-01-01T00:00:00.000Z' }));
-        const client = api.create({ window: { crypto: { getRandomValues: bytes => bytes.fill(2), randomUUID: () => 'turn-uuid' } }, base: 'https://one.test', storage,
+        storage.setItem('chat-conversation-v1:https://one.test', JSON.stringify({ id: 'iso', city: 'london', expiresAt: '2030-01-01T00:00:00.000Z' }));
+        const client = api.create({ window: { currentCity: 'london', crypto: { getRandomValues: bytes => bytes.fill(2), randomUUID: () => 'turn-uuid' } }, base: 'https://one.test', storage,
             now: () => Date.parse('2029-01-01T00:00:00Z'), fetch: async () => new Response(new ReadableStream({ start(controller) { controller.enqueue(new TextEncoder().encode('event: reply\ndata: {"text":"partial"}\n\n')); controller.close(); } }), { status: 200 }) });
         expect(client.conversation()).toMatchObject({ id: 'iso' });
         await expect(client.turn('conv', { text: 'hi' })).rejects.toMatchObject({ code: 'stream_truncated' });
-        storage.setItem('chat-conversation-v1:https://one.test', JSON.stringify({ id: 'expired', expiresAt: Date.parse('2028-01-01T00:00:00Z') }));
+        storage.setItem('chat-conversation-v1:https://one.test', JSON.stringify({ id: 'expired', city: 'london', expiresAt: Date.parse('2028-01-01T00:00:00Z') }));
         expect(client.conversation()).toBeNull();
     });
     it('gets and synchronizes the server conversation state and stored expiry', async () => {
         const storage = new MemoryStorage(), requests = [];
         const expiresAt = Date.now() + 60_000;
-        const client = api.create({ window: { getBackendBase: () => 'https://api.test', crypto: { getRandomValues: bytes => bytes.fill(3) } }, storage,
-            fetch: async (url, options) => { requests.push([url, options]); return Response.json({ id: 'conv-1', expiresAt, turns: 3, spentUsd: 0.04, plan: { cid: 'p1' } }); } });
+        const client = api.create({ window: { currentCity: 'london', getBackendBase: () => 'https://api.test', crypto: { getRandomValues: bytes => bytes.fill(3) } }, storage,
+            fetch: async (url, options) => { requests.push([url, options]); return Response.json({ id: 'conv-1', city: 'london', expiresAt, turns: 3, spentUsd: 0.04, plan: { cid: 'p1' } }); } });
         expect(await client.get('conv-1')).toMatchObject({ turns: 3 });
         expect(await client.sync('conv-1')).toMatchObject({ spentUsd: 0.04 });
-        expect(client.conversation()).toMatchObject({ id: 'conv-1', turns: 3, plan: { cid: 'p1' } });
+        expect(client.conversation()).toMatchObject({ id: 'conv-1', city: 'london', turns: 3, plan: { cid: 'p1' } });
         expect(requests.map(([url]) => url)).toEqual(['https://api.test/chat/conversations/conv-1', 'https://api.test/chat/conversations/conv-1']);
     });
     it('persists private agreement review state across reloads and clears it on the null agreement event', async () => {
         const storage = new MemoryStorage(), expiresAt = Date.now() + 60_000;
-        storage.setItem('chat-conversation-v1:https://api.test', JSON.stringify({ id: 'conv-1', expiresAt }));
+        storage.setItem('chat-conversation-v1:https://api.test', JSON.stringify({ id: 'conv-1', city: 'london', expiresAt }));
         const agreement = { draftRef: 'https://api.test/mcp/previews/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa', cid: 'agreement-cid',
             planCid: 'plan-cid', previewUrl: 'https://app.test/designs?draft=https%3A%2F%2Fapi.test%2Fmcp%2Fpreviews%2Faaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa' };
         const events = [
@@ -77,16 +77,49 @@ describe('chat client', () => {
             `event: agreement\ndata: ${JSON.stringify({ draftRef: null, cid: null, planCid: null, previewUrl: null })}`,
             'event: done\ndata: {}'
         ].join('\n\n') + '\n\n';
-        const client = api.create({ window: { getBackendBase: () => 'https://api.test', crypto: { getRandomValues: bytes => bytes.fill(3), randomUUID: () => 'turn-1' } }, storage,
+        const client = api.create({ window: { currentCity: 'london', getBackendBase: () => 'https://api.test', crypto: { getRandomValues: bytes => bytes.fill(3), randomUUID: () => 'turn-1' } }, storage,
             fetch: async () => new Response(new ReadableStream({ start(controller) { controller.enqueue(new TextEncoder().encode(events)); controller.close(); } }), { status: 200 }) });
         const restored = [];
         await client.turn('conv-1', { text: 'Draft an agreement' }, { onEvent(event) {
-            if (event.name === 'agreement') restored.push(api.create({ window: { getBackendBase: () => 'https://api.test', crypto: { getRandomValues: bytes => bytes.fill(4) } }, storage, fetch: async () => {} }).conversation());
+            if (event.name === 'agreement') restored.push(api.create({ window: { currentCity: 'london', getBackendBase: () => 'https://api.test', crypto: { getRandomValues: bytes => bytes.fill(4) } }, storage, fetch: async () => {} }).conversation());
         } });
         expect(restored[0]).toMatchObject({ agreement });
         expect(restored[1]).toMatchObject({ id: 'conv-1' });
         expect(restored[1]).not.toHaveProperty('agreement');
         expect(client.conversation()).not.toHaveProperty('agreement');
+    });
+    it('restores a conversation only in its city, including after a reload and server sync', async () => {
+        const storage = new MemoryStorage(), expiresAt = Date.now() + 60_000;
+        let city = 'ljubljana';
+        const win = { CityConfigManager: { getCurrentCityId: () => city }, crypto: { getRandomValues: bytes => bytes.fill(5) } };
+        let stored = null;
+        const fetch = vi.fn(async (_url, options) => {
+            if (options.method === 'DELETE') { stored = null; return new Response(null, { status: 204 }); }
+            if (options.method === 'POST') {
+                stored ||= { id: JSON.parse(options.body).city, city: JSON.parse(options.body).city, expiresAt };
+                return Response.json(stored);
+            }
+            return Response.json({ ...stored, plan: { cid: 'old-plan' } });
+        });
+        const client = api.create({ window: win, base: 'https://api.test', storage, fetch });
+        await client.start('en', city);
+        expect(client.conversation()).toMatchObject({ id: 'ljubljana', city: 'ljubljana' });
+        city = 'birmingham';
+        const reloaded = api.create({ window: win, base: 'https://api.test', storage, fetch });
+        expect(reloaded.conversation()).toBeNull();
+        await reloaded.sync('ljubljana');
+        expect(reloaded.conversation()).toBeNull();
+        expect(reloaded.conversation('ljubljana')).toMatchObject({ city: 'ljubljana', plan: { cid: 'old-plan' } });
+        await reloaded.start('en', city);
+        expect(reloaded.conversation()).toMatchObject({ id: 'birmingham', city: 'birmingham' });
+        expect(fetch.mock.calls.map(([, options]) => options.method)).toEqual(['POST', 'GET', 'POST', 'DELETE', 'POST']);
+        expect(JSON.parse(fetch.mock.calls.at(-1)[1].body)).toEqual({ language: 'en', city: 'birmingham' });
+    });
+    it('does not restore a saved conversation whose city is absent', () => {
+        const storage = new MemoryStorage();
+        storage.setItem('chat-conversation-v1:https://api.test', JSON.stringify({ id: 'unscoped', expiresAt: Date.now() + 60_000 }));
+        const client = api.create({ window: { currentCity: 'london' }, base: 'https://api.test', storage });
+        expect(client.conversation()).toBeNull();
     });
     it('throws the server error code and status for non-ok responses', async () => {
         const client = api.create({ window: { crypto: { getRandomValues: bytes => bytes.fill(1) } }, base: 'https://one.test', storage: new MemoryStorage(), fetch: async () => new Response(JSON.stringify({ code: 'budget_exhausted' }), { status: 402 }) });

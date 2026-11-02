@@ -9,6 +9,11 @@
         { key: 'chat.tips.sources' }, { key: 'chat.tips.affordableHousing' }
     ];
     const records = () => win.proposalStorage?.getAllProposals?.() || win.proposals || win.currentProposals || [];
+    const currentCity = () => win.CityConfigManager?.getCurrentCityId?.() || win.currentCityId || win.currentCity;
+    function clearConversationState() {
+        lastSynced = null; turnBaseRow = null; turnBaseCaptured = false;
+        dispatch({ type: 'reset' });
+    }
     function dispatch(action) { state = transcript.reduce(state, action); render(); }
     function formatCost(value) { return win.CbFormat?.formatMoney?.(+value || 0, 'USD', { minFractionDigits: 4, maxFractionDigits: 4 }) || `$${(+value || 0).toFixed(4)}`; }
     function node(tag, cls, text) { const el = doc.createElement(tag); if (cls) el.className = cls; if (text != null) el.textContent = text; return el; }
@@ -51,7 +56,7 @@
         return transcript.serializeConversation(state, { you: t('chat.roles.you'), agent: t('chat.roles.agent'), options: t('chat.optionsLabel') });
     }
     function buildContext(forceArtifact = false) {
-        const city = win.CityConfigManager?.getCurrentCityId?.() || win.currentCityId || win.currentCity;
+        const city = currentCity();
         const stack = win.ClickStack?.current?.();
         const instance = stack && win.__clickStackModel?.selectedInstance?.(stack, stack.selectedKind);
         const selected = win.selectedProposal || instance?.proposal || instance?.record || instance?.localRecord
@@ -120,8 +125,13 @@
         operation = true; render();
         input.value = ''; input.disabled = true;
         try {
+            if (state.conversation && state.conversation.city !== currentCity()) clearConversationState();
             let conv = state.conversation || win.ChatClient.conversation();
-            if (!conv) { conv = await win.ChatClient.start(win.i18n?.getLanguage?.() || win.i18n?.language || 'en', win.CityConfigManager?.getCurrentCityId?.() || win.currentCityId || win.currentCity); dispatch({ type: 'conversation', conversation: conv }); }
+            const startConversation = async () => {
+                conv = await win.ChatClient.start(win.i18n?.getLanguage?.() || win.i18n?.language || 'en', currentCity());
+                dispatch({ type: 'conversation', conversation: conv });
+            };
+            if (!conv) await startConversation();
             dispatch({ type: 'turn:start', text: value }); status.textContent = t('chat.working'); let planEvent = null, navigation = Promise.resolve(), navigationError = null;
             const turnKey = win.crypto?.randomUUID?.() || `${Date.now()}-${Math.random().toString(16).slice(2)}`;
             const sendTurn = includeArtifact => win.ChatClient.turn(conv.id, { text: value,
@@ -135,17 +145,27 @@
                 } });
             try { await sendTurn(false); }
             catch (error) {
-                if (error.status !== 409 || !['plan_artifact_required', 'plan_reference_expired'].includes(error.code)) throw error;
-                await sendTurn(true);
+                if (error.status === 409 && error.code === 'conversation_city_mismatch') {
+                    // A rejected city context has made no model call. Start here and retry this
+                    // message once; syncing the rejected conversation would resurrect its old map.
+                    clearConversationState();
+                    await startConversation();
+                    dispatch({ type: 'turn:start', text: value });
+                    await sendTurn(false);
+                } else {
+                    if (error.status !== 409 || !['plan_artifact_required', 'plan_reference_expired'].includes(error.code)) throw error;
+                    await sendTurn(true);
+                }
             }
             await navigation;
             if (navigationError) throw Object.assign(new Error('The map command could not be completed.'), { code: 'map_command_failed', cause: navigationError });
             if (planEvent) await applyPlan(planEvent);
         } catch (error) {
             const mapCommandFailed = error?.code === 'map_command_failed';
-            if (state.conversation && win.ChatClient.sync) {
+            if (error?.code !== 'conversation_city_mismatch' && state.conversation?.city === currentCity() && win.ChatClient.sync) {
                 try {
                     const synced = await win.ChatClient.sync(state.conversation.id);
+                    if (synced.city !== currentCity()) throw new Error('The conversation belongs to another city.');
                     dispatch({ type: 'conversation:sync', conversation: synced });
                     if (!mapCommandFailed && turnBaseCaptured && appliedMembersMatch(turnBaseRow) && synced.plan?.cid !== lastSynced?.cid) {
                         await applyPlan(synced.plan ? { draftRef: synced.plan.draftRef, cid: synced.plan.cid } : { draftRef: null, cid: null });
@@ -208,8 +228,7 @@
         const ownLock = !operation; if (ownLock) { operation = true; render(); }
         try {
             if (state.conversation) await win.ChatClient.end(state.conversation.id);
-            lastSynced = null; turnBaseRow = null; turnBaseCaptured = false;
-            dispatch({ type: 'reset' }); if (input) input.value = '';
+            clearConversationState(); if (input) input.value = '';
         } finally { if (ownLock) { operation = false; render(); } }
     }
     function highlight(ref) {

@@ -1100,7 +1100,9 @@ A temporary means of inspecting a draft artifact. An opaque bearer reference gra
 
 A private, token-authorized conversation with the application's hosted design agent. It retains a
 working plan and optional working agreement, message history, undo revisions, turn count and spending
-total for 24 hours. Its content is not published. Deleting or expiring it removes the messages and
+total for 24 hours. It belongs to one city; moving to another city starts a fresh conversation while
+keeping existing designs saved. A restored or recovered conversation cannot apply its plan in
+another city. Its content is not published. Deleting or expiring it removes the messages and
 replay payloads while retaining the separate daily spending ledger.
 
 ### Chat turn

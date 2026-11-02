@@ -46,6 +46,7 @@
         const store = storage || win?.localStorage;
         const tokenKey = () => `chat-token-v1:${getBase()}`;
         const conversationKey = () => `chat-conversation-v1:${getBase()}`;
+        const currentCity = () => win?.CityConfigManager?.getCurrentCityId?.() || win?.currentCityId || win?.currentCity;
         function token() {
             let value = store?.getItem(tokenKey());
             if (!/^[0-9a-f]{64}$/i.test(value || '')) {
@@ -56,12 +57,12 @@
             }
             return value;
         }
-        function conversation() {
+        function conversation(city = currentCity()) {
             try {
                 const value = JSON.parse(store?.getItem(conversationKey()) || 'null');
                 const expires = typeof value?.expiresAt === 'number' ? value.expiresAt
                     : typeof value?.expiresAt === 'string' ? Date.parse(value.expiresAt) : NaN;
-                return value?.id && Number.isFinite(expires) && expires > now() ? value : null;
+                return city && value?.city === city && value.id && Number.isFinite(expires) && expires > now() ? value : null;
             } catch (_) { return null; }
         }
         const saveConversation = value => { if (value) store?.setItem(conversationKey(), JSON.stringify(value)); else store?.removeItem(conversationKey()); };
@@ -84,13 +85,21 @@
             if (!response.ok) throw Object.assign(new Error(data?.message || data?.error || `Chat request failed (${response.status}).`), { code: data?.code || `http-${response.status}`, status: response.status });
             return data;
         }
-        async function start(language, city) { const value = await json('/conversations', { method: 'POST', body: { language, city } }); saveConversation(value); return value; }
+        async function start(language, city) {
+            const create = () => json('/conversations', { method: 'POST', body: { language, city } });
+            let value = await create();
+            // Creation is idempotent for this browser's token. A city change must end its
+            // previous conversation before that same token can start one in the new city.
+            if (value.city !== city) { await end(value.id); value = await create(); }
+            if (value.city !== city) throw Object.assign(new Error('The conversation belongs to another city.'), { code: 'conversation_city_mismatch', status: 409 });
+            saveConversation(value); return value;
+        }
         async function end(id) { const response = await request(`/conversations/${encodeURIComponent(id)}`, { method: 'DELETE' }); if (!response.ok && response.status !== 404) throw Object.assign(new Error('Could not end this conversation.'), { code: `http-${response.status}`, status: response.status }); saveConversation(null); }
         async function get(id) { return json(`/conversations/${encodeURIComponent(id)}`); }
         async function sync(id) {
             const value = await get(id);
             const agreement = agreementState(value.agreement);
-            saveConversation({ id: value.id, expiresAt: value.expiresAt, turns: value.turns, spentUsd: value.spentUsd, plan: value.plan,
+            saveConversation({ id: value.id, city: value.city, expiresAt: value.expiresAt, turns: value.turns, spentUsd: value.spentUsd, plan: value.plan,
                 ...(agreement ? { agreement } : {}) });
             return value;
         }

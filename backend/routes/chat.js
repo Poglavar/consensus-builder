@@ -30,7 +30,7 @@ const hash = value => createHash('sha256').update(value).digest('hex');
 const fail = (code, status, message = code) => Object.assign(new Error(message), { code, status });
 const statusOf = error => error.status || ({ turn_in_progress: 409, rate_limited_quota: 429 })[error.code] || 503;
 const unwrap = value => value?.structuredContent || value;
-const publicState = (c, debugCosts) => ({ id: c.id, expiresAt: c.expiresAt, turns: c.turns, spentUsd: c.spentUsd,
+const publicState = (c, debugCosts) => ({ id: c.id, city: c.city, expiresAt: c.expiresAt, turns: c.turns, spentUsd: c.spentUsd,
     plan: c.plan, agreement: c.agreement, debugCosts });
 function compactHistory(messages, result) {
     if (Buffer.byteLength(JSON.stringify(messages)) <= 120_000) return messages;
@@ -102,7 +102,7 @@ export function setupChatRoute(app, pool, { env = process.env, store: suppliedSt
         const parsed = z.object({ language: languages.default('en'), city: z.string().min(1).max(100) }).safeParse(req.body);
         if (!parsed.success) throw fail('invalid_request', 400);
         const conversation = await store.create({ ...parsed.data, tokenHash: req.chatTokenHash, clientIp: clientIp(req) });
-        res.status(201).json({ id: conversation.id, expiresAt: conversation.expiresAt, debugCosts });
+        res.status(201).json({ id: conversation.id, city: conversation.city, expiresAt: conversation.expiresAt, debugCosts });
     }));
     app.get('/chat/conversations/:id', wrap(async (req, res) => res.json(publicState(await load(req), debugCosts))));
     async function exclusive(req, action) {

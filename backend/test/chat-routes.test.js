@@ -110,12 +110,25 @@ describe('chat conversation routes', () => {
         const bad = await request(app).get('/chat/conversations/conv-1').set('Authorization', 'Bearer short');
         expect(bad.status).toBe(401); expect(JSON.stringify(bad.body)).not.toContain(token);
         const created = await auth(request(app).post('/chat/conversations')).send({ city: 'london', language: 'hr' });
-        expect(created.status).toBe(201); expect(created.body).toMatchObject({ id: 'conv-1', expiresAt: expect.any(Number), debugCosts: false });
+        expect(created.status).toBe(201); expect(created.body).toMatchObject({ id: 'conv-1', city: 'london', expiresAt: expect.any(Number), debugCosts: false });
         const current = await auth(request(app).get('/chat/conversations/conv-1'));
-        expect(current.body.debugCosts).toBe(false);
+        expect(current.body).toMatchObject({ city: 'london', debugCosts: false });
         expect(JSON.stringify(created.body)).not.toContain(token);
     });
 
+    it('rejects a different city before calling the model, changing the plan or reserving spend', async () => {
+        const plan = { draftRef: 'https://mcp.example/old-city', cid: 'old-plan' };
+        const store = createStore({ plan }), runTurn = vi.fn();
+        const { app, budget, callModel, callTool } = makeHarness({ store, runTurn });
+        const result = await turn(app, 'conv-1', body({ context: { city: 'birmingham', planCid: null } }));
+        expect(result.status).toBe(409);
+        expect(result.body.code).toBe('conversation_city_mismatch');
+        expect(runTurn).not.toHaveBeenCalled();
+        expect(callModel).not.toHaveBeenCalled();
+        expect(callTool).not.toHaveBeenCalled();
+        expect(budget.rows.size).toBe(0);
+        expect(store.rows.get('conv-1').plan).toEqual(plan);
+    });
     it('streams and persists private agreement review state separately from the working plan', async () => {
         const agreement = { draftRef: 'https://mcp.example/agreement', cid: 'agreement-cid', planCid: 'plan-cid',
             previewUrl: 'https://app.example/designs?draft=secret', summary: { title: 'Land exchange' } };
