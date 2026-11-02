@@ -296,20 +296,6 @@ describe('3D and photo view', () => {
 });
 
 describe('block detection on a small screen', () => {
-    const run = () => {
-        const start = parcelBlocks.indexOf('function selectCurrentBlockIntoMultiSelection(');
-        return parcelBlocks.slice(start, parcelBlocks.indexOf('let addedCount = 0;', start));
-    };
-
-    it('widens the search, loading ground and road classification before each retry', () => {
-        const body = run();
-        expect(body).toContain('searchBounds.pad(BLOCK_SEARCH_EXPANSION_PAD)');
-        expect(body).toContain('await repository.ensureBounds(searchBounds)');
-        expect(body).toContain('await window.fetchCuratedRoadParcels(searchBounds)');
-        // The override must not outlive the attempt, or every later viewport query would use it.
-        expect(body).toMatch(/blockSearchBoundsOverride = searchBounds;\s*try \{ attempt = flood\(\); \} finally \{ blockSearchBoundsOverride = null; \}/);
-    });
-
     it('checks completeness against the search area, not only the viewport', () => {
         const visible = parcelBlocks.slice(parcelBlocks.indexOf('function isParcelFullyVisible('), parcelBlocks.indexOf('function isBlockComplete('));
         expect(visible).toContain('const bounds = blockSearchBounds();');

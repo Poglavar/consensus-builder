@@ -328,11 +328,10 @@ describe('block road source and HTTP route', () => {
         expect(query).toContain('(2,1,4,3)');
         const roads = blockRoadsToGeoJSON([
             { type: 'way', id: 1, tags: { highway: 'residential' }, geometry: [{ lon: 1, lat: 2 }, { lon: 2, lat: 3 }] },
-            { type: 'way', id: 2, tags: { highway: 'footway' }, geometry: [{ lon: 1, lat: 2 }, { lon: 2, lat: 3 }] },
-            { type: 'way', id: 3, tags: { highway: 'service' }, geometry: [{ lon: 1, lat: 2 }, { lon: NaN, lat: 3 }] }
+            { type: 'way', id: 2, tags: { highway: 'footway' }, geometry: [{ lon: 1, lat: 2 }, { lon: 2, lat: 3 }] }
         ]);
-        expect(roads.features).toHaveLength(1);
-        expect(roads.features[0].id).toBe('w1');
+        expect(roads.features.map(feature => feature.id)).toEqual(['w1', 'w2']);
+        expect(() => blockRoadsToGeoJSON([{ type: 'way', id: 3, tags: { highway: 'service' }, geometry: [{ lon: 1, lat: 2 }, { lon: NaN, lat: 3 }] }])).toThrow(/incomplete boundary geometry/);
     });
 
     it('marks caps as truncated and treats Overpass timeout remarks as incomplete', () => {

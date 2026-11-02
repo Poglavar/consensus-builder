@@ -5,6 +5,7 @@ import { resolveParcelNumber } from './mcp-parcel-numbers.js';
 import { landmarkTarget, rankLandmarkParcels } from '../places/landmark-target.js';
 const require = createRequire(import.meta.url);
 const blockModel = require('../../frontend/js/urban-blocks-model.js');
+const blockDetection = require('../../frontend/js/parcels/block-detection.js');
 const topology = require('../../frontend/js/parcels/block-topology.js');
 const { cadastralParts } = require('../../frontend/js/parcels/live-fabric.js');
 const sourcePieces = features => features.flatMap(cadastralParts);
@@ -56,17 +57,6 @@ function parseAt(value) {
         throw fail('invalid-map-view', 'Map view at must be latitude,longitude[,zoom].', 'Supply a valid WGS84 map location.');
     }
     return { lat: values[0], lng: values[1], zoom: values[2] ?? null, hadZoom: values.length === 3 };
-}
-function parcelIdsInBlock(block, parcels) {
-    const ids = new Set();
-    for (const parcel of parcels || []) {
-        if (!['Polygon', 'MultiPolygon'].includes(parcel.geometry?.type)) continue;
-        const id = parcel.properties?.parcelId ?? parcel.properties?.parcel_id ?? parcel.properties?.PARCEL_ID
-            ?? parcel.properties?.id ?? parcel.id;
-        if (id == null || ids.has(String(id))) continue;
-        if (turf.booleanPointInPolygon(turf.pointOnFeature(parcel), block, { ignoreBoundary: true })) ids.add(String(id));
-    }
-    return [...ids];
 }
 function bearingBetween(from, to) {
     const a = turf.toMercator(turf.point(from)).geometry.coordinates;
@@ -247,7 +237,7 @@ export function createMcpNavigation({ read, random = Math.random }) {
                 features = [seedFeature];
             }
             let searchGeometry = null;
-            if (action === 'step' || action === 'block') {
+            if (action === 'step') {
                 if (action === 'step' && distance != null) {
                     stepOrigin = centerOf(seedFeature);
                     const meters = distance * (unit === 'ft' ? 0.3048 : 1);
@@ -282,26 +272,30 @@ export function createMcpNavigation({ read, random = Math.random }) {
                 }
                 if (!current.active) ids = [focus];
             } else if (action === 'block') {
-                const [west, south, east, north] = turf.bbox(turf.feature(searchGeometry));
-                const dLat = 250 / 111320, dLng = dLat / Math.max(0.15, Math.cos((south + north) * Math.PI / 360));
-                const roadBounds = [west - dLng, south - dLat, east + dLng, north + dLat];
-                const roads = await read.request('/blocks/roads', { bbox: roadBounds.join(',') });
-                if (roads?.partial || roads?.truncated || !Array.isArray(roads?.features)) throw fail('street-coverage-incomplete', 'Street barrier coverage is incomplete.', 'Retry when complete street data is available.');
-                let blocks;
-                try { blocks = blockModel.detectBlocks(roads, roadBounds, turf); }
-                catch (_) { throw fail('street-enclosure-invalid', 'The ground-level road network could not define complete blocks.', 'Retry after the street source is repaired.'); }
-                const seedCenter = turf.point(centerOf(seedFeature));
-                const matches = blocks.features.filter(block => turf.booleanPointInPolygon(seedCenter, block, { ignoreBoundary: true }));
-                if (matches.length !== 1) throw fail('parcel-block-unproven', 'The focused parcel is not inside one complete ground-level road block.', 'Choose a parcel inside a fully bounded road block.');
-                const enclosure = matches[0];
-                const sourceGround = await read.parcels({ city, parcelSourceId: sourceId, geometry: enclosure.geometry });
-                if (sourceGround.complete !== true || sourceGround.truncated || !Array.isArray(sourceGround.features)) throw fail('parcel-coverage-incomplete', 'Parcel coverage under the road block is incomplete.', 'Retry when the selected parcel source returns complete coverage.');
-                features = sourcePieces(sourceGround.features);
-                ids = parcelIdsInBlock(enclosure, features);
-                const sharedCount = blockModel.loadedParcelCount(enclosure, features, turf);
-                if (sharedCount !== ids.length) throw fail('parcel-block-invalid', 'Parcel identities disagree with the shared road-block membership rule.', 'Retry after the parcel source is repaired.');
-                if (!ids.includes(seed)) throw fail('parcel-block-incomplete', 'The source parcel is not included by the road-block membership rule.', 'Choose a parcel wholly represented inside a fully bounded road block.');
-                if (ids.length > MAX_BLOCK_PARCELS) throw fail('parcel-block-limit', `The road block contains more than ${MAX_BLOCK_PARCELS} source parcels.`, 'Choose a smaller block or select parcels individually.');
+                let result;
+                try {
+                    result = await blockDetection.detect({ seed: seedFeature, turf, model: blockModel, limit: MAX_BLOCK_PARCELS,
+                        fetchBoundaries: bbox => read.request('/blocks/roads', { bbox: bbox.join(',') }),
+                        async loadParcels(enclosure) {
+                            const ground = await read.parcels({ city, parcelSourceId: sourceId, geometry: enclosure.geometry });
+                            features = sourcePieces(ground.features || []);
+                            return { ...ground, features };
+                        }
+                    });
+                } catch (error) {
+                    const code = error.code === 'block-boundaries-incomplete' ? 'street-coverage-incomplete'
+                        : error.code === 'block-parcels-incomplete' ? 'parcel-coverage-incomplete' : 'street-enclosure-invalid';
+                    throw fail(code, error.message, 'Retry when complete OSM boundary and parcel data are available.');
+                }
+                if (result.invalidReason === 'parcel_limit_exceeded') {
+                    throw Object.assign(fail('parcel-block-limit', `The block contains more than ${MAX_BLOCK_PARCELS} source parcels.`,
+                        'Inspect the first parcels in constraints.previewParcelIds, or select a smaller group manually.'),
+                    { constraints: { limit: MAX_BLOCK_PARCELS, parcelCount: result.count, previewParcelIds: result.previewIds } });
+                }
+                if (!result.isValid) throw fail('parcel-block-unproven',
+                    'The focused parcel is not inside one complete surface block bounded by OSM transport and water features.',
+                    'Choose a parcel inside a bounded block or select parcels individually.');
+                ids = result.ids;
                 focus = seed;
             } else if (action === 'select') {
                 focus = selectedParcelId;

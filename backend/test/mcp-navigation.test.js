@@ -7,7 +7,7 @@ function readers({ streets = { features: [] }, result = parcels, complete = true
     return {
         parcels: vi.fn(async ({ parcelIds } = {}) => ({ complete, truncated,
             features: parcelIds ? result.filter(f => parcelIds.includes(f.id)) : result })),
-        request: vi.fn(async () => streets)
+        request: vi.fn(async () => ({ complete: true, ...streets }))
     };
 }
 const road = (id, coordinates, properties = { highway: 'residential' }) => ({ type: 'Feature', id, properties, geometry: { type: 'LineString', coordinates } });
@@ -175,6 +175,52 @@ describe('MCP map navigation', () => {
         });
         const crowded = readers({ streets: enclosedRoads, result: manyParcels });
         await expect(createMcpNavigation({ read: crowded }).selectParcels({ city: 'test', parcelSourceId: 'source', action: 'block', parcelId: 'inside-0' })).rejects.toMatchObject({ code: 'parcel-block-limit' });
+    });
+
+    it.each([
+        ['rail', { railway: 'rail' }],
+        ['stream', { waterway: 'stream' }]
+    ])('selects an enclosed source parcel using %s boundaries through MCP', async (_name, boundary) => {
+        const seed = { type: 'Feature', id: 'seed', properties: { parcelId: 'seed' }, geometry: {
+            type: 'Polygon', coordinates: [[[-0.0002, -0.0002], [0.0002, -0.0002], [0.0002, 0.0002], [-0.0002, 0.0002], [-0.0002, -0.0002]]] } };
+        const boundaries = { features: [
+            road('north', [[-0.001, 0.001], [0.001, 0.001]], boundary),
+            road('south', [[-0.001, -0.001], [0.001, -0.001]], boundary),
+            road('east', [[0.001, -0.001], [0.001, 0.001]], boundary),
+            road('west', [[-0.001, -0.001], [-0.001, 0.001]], boundary)
+        ] };
+        const read = readers({ streets: boundaries, result: [seed] });
+        const result = await createMcpNavigation({ read }).selectParcels({
+            city: 'test', parcelSourceId: 'source', action: 'block', parcelId: 'seed'
+        });
+
+        expect(result.selection).toMatchObject({ focusParcelId: 'seed', parcelIds: ['seed'], active: true });
+        expect(read.request).toHaveBeenCalledWith('/blocks/roads', { bbox: expect.any(String) });
+    });
+
+    it('returns a bounded 100-ID preview on an MCP block limit error without applying it', async () => {
+        const inside = Array.from({ length: 101 }, (_, index) => {
+            const west = -0.0008 + index * 0.000015;
+            return { type: 'Feature', id: `inside-${index}`, properties: { parcelId: `inside-${index}` }, geometry: {
+                type: 'Polygon', coordinates: [[[west, -0.00005], [west + 0.000005, -0.00005],
+                    [west + 0.000005, 0.00005], [west, 0.00005], [west, -0.00005]]] } };
+        });
+        const boundaries = { features: [
+            road('north', [[-0.001, 0.001], [0.001, 0.001]]), road('south', [[-0.001, -0.001], [0.001, -0.001]]),
+            road('east', [[0.001, -0.001], [0.001, 0.001]]), road('west', [[-0.001, -0.001], [-0.001, 0.001]])
+        ] };
+        const selection = { parcelSourceId: 'source', focusParcelId: 'previous', parcelIds: ['previous'], active: true };
+        const before = structuredClone(selection);
+        const error = await createMcpNavigation({ read: readers({ streets: boundaries, result: inside }) })
+            .selectParcels({ city: 'test', parcelSourceId: 'source', action: 'block', parcelId: 'inside-0', selection })
+            .catch(value => value);
+
+        expect(error).toMatchObject({ code: 'parcel-block-limit', constraints: {
+            limit: 100, parcelCount: 101, previewParcelIds: expect.arrayContaining(['inside-0'])
+        } });
+        expect(error.constraints.previewParcelIds).toHaveLength(100);
+        expect(error).not.toHaveProperty('selection');
+        expect(selection).toEqual(before);
     });
 
     it('requires explicit source identity and keeps begin, finish and clear deterministic', async () => {

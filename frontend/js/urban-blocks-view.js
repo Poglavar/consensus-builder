@@ -24,28 +24,15 @@
         const response = await win.fetch(`${base}/blocks/roads?bbox=${encodeURIComponent(bbox.join(','))}`, { signal });
         if (!response.ok) {
             if (response.status === 503) throw new Error(t('rateLimited', 'OSM is busy. Retry in {{seconds}} seconds.', { seconds: response.headers.get('Retry-After') || 60 }));
-            throw new Error(t('loadError', 'Could not load OSM roads (HTTP {{status}}). Please retry.', { status: response.status }));
+            throw new Error(t('loadError', 'Could not load OSM boundaries (HTTP {{status}}). Please retry.', { status: response.status }));
         }
         const roads = await response.json();
-        if (!Array.isArray(roads.features)) throw new Error(t('invalidData', 'The road source returned invalid data.'));
+        if (!Array.isArray(roads.features)) throw new Error(t('invalidData', 'The boundary source returned invalid data.'));
         return roads;
     }
 
     function detect(roads, bbox, signal) {
-        return new Promise((resolve, reject) => {
-            const worker = new win.Worker(win.appendBuildToken('js/urban-blocks-worker.js'));
-            const finish = (error, blocks) => {
-                signal.removeEventListener('abort', abort);
-                worker.terminate();
-                if (error) reject(error); else resolve(blocks);
-            };
-            const abort = () => finish(new Error('Block analysis cancelled.'));
-            signal.addEventListener('abort', abort, { once: true });
-            worker.onmessage = ({ data }) => finish(data.error ? new Error(data.error) : null, data.blocks);
-            worker.onerror = () => finish(new Error(t('workerError', 'Block analysis failed; please retry.')));
-            if (signal.aborted) { abort(); return; }
-            worker.postMessage({ roads, bbox });
-        });
+        return win.ParcelBlockDetection.detectInWorker(win, roads, bbox, signal);
     }
 
     const blockColor = feature => win.UrbanBlocksModel.blockColor(feature, colorBy, walkThresholdMinutes);
@@ -167,11 +154,11 @@
     }
     function render(state) {
         const messages = {
-            off: t('hint', 'Load OSM roads, then colour the enclosed blocks. Parcel data is optional.'),
+            off: t('hint', 'Load OSM transport and water boundaries, then colour the enclosed blocks. Parcel data is optional.'),
             idle: t('starting', 'Preparing block view…'),
             zoom: t('zoom', 'Zoom in to neighbourhood scale to detect complete blocks.'),
-            roads: t('loadingRoads', '1/2 · Loading OSM roads…'),
-            blocks: t('detecting', '2/2 · Detecting blocks from {{count}} road ways…', { count: format(state.roadCount) }),
+            roads: t('loadingRoads', '1/2 · Loading OSM boundaries…'),
+            blocks: t('detecting', '2/2 · Detecting blocks from {{count}} boundary ways…', { count: format(state.roadCount) }),
             ready: state.blocks?.features.length
                 ? t('ready', '{{count}} blocks · Click a coloured block to analyse it.', { count: format(state.blocks.features.length) })
                 : t('empty', 'No fully enclosed blocks here. Move the map or zoom out slightly.'),
@@ -180,7 +167,7 @@
         el('urban-blocks-status').textContent = messages[state.phase];
         el('urban-blocks-status').setAttribute('role', state.phase === 'error' ? 'alert' : 'status');
         el('urban-blocks-refresh').disabled = !state.enabled || ['roads', 'blocks'].includes(state.phase);
-        el('urban-blocks-refresh').textContent = t(state.phase === 'error' ? 'retry' : 'refresh', state.phase === 'error' ? 'Retry road loading' : 'Refresh this area');
+        el('urban-blocks-refresh').textContent = t(state.phase === 'error' ? 'retry' : 'refresh', state.phase === 'error' ? 'Retry boundary loading' : 'Refresh this area');
         el('urban-blocks-browse').disabled = !state.enabled;
         doc.body.classList.toggle('urban-blocks-active', state.enabled);
         if (state.phase === 'ready') {
@@ -438,7 +425,7 @@
             const streets = doc.createElement('p'); streets.textContent = p.streets.join(' · '); content.append(streets);
         }
         const note = doc.createElement('p'); note.className = 'urban-block-info-note';
-        note.textContent = t('measurementNote', 'Measured between OSM road centrelines, including street space. Walking time is a perimeter estimate, not a routed walk.');
+        note.textContent = t('measurementNote', 'Measured between OSM roads, paths, tracks and water boundaries. Walking time is a perimeter estimate, not a routed walk.');
         content.append(note);
         if (p.proposedStreets) {
             const proposed = doc.createElement('p'); proposed.className = 'urban-block-info-note';

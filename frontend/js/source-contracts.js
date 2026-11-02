@@ -96,7 +96,7 @@
             readLiveNetwork: operation(obj({ bbox, railways: { type: 'boolean' } }), featureCollection, 'Returns provider FeatureCollection from Overpass fallback.', ['bbox', 'railways'])
         },
         'frontage-streets': { near: operation(obj({ bbox }), featureCollection, 'EPSG:4326 frontage-eligible street centrelines only; this is not the complete road network.', ['bbox']) },
-        'block-barriers': { readBarriers: operation(obj({ bbox }), featureCollection, 'EPSG:4326 barriers used by block creation; preserves highway/source tags.', ['bbox']) },
+        'block-barriers': { readBarriers: operation(obj({ bbox }), featureCollection, 'EPSG:4326 OSM highway, railway, waterway and shore boundaries; preserves tags and declares complete/partial/truncated coverage.', ['bbox']) },
         'street-register': { readStreets: operation(obj({ bbox: projectedBbox }), featureCollection, 'Input bbox is EPSG:3765; output line geometries are transformed to EPSG:4326.', ['bboxParts']) },
         'planned-roads': { readReservations: operation(obj({ bbox: projectedBbox }), array(obj({ props: obj({}, [], true), geometry }, ['props', 'geometry'])), 'Reader returns raw rows whose reservation geometry remains in EPSG:3765; route applies display properties and wraps the output separately.', ['client [runtime context]', 'bboxParts']) },
         'road-classification': { readIds: operation(obj({ bbox }), array(obj({ parcel_id: string('Stable parcel id classified as road.') }, ['parcel_id'])), 'Returns rows with parcel_id only; classification does not create parcel geometry.', ['bbox']) },

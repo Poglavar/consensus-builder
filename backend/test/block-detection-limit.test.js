@@ -1,4 +1,5 @@
-// A missing corridor must not let Detect block walk across a city or apply a truncated block.
+// The source-enclosure limit is enforced by the shared detector; the UI previews its bounded
+// sample without replacing the visitor's existing selection.
 import { describe, expect, it, vi } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
@@ -10,7 +11,7 @@ const topology = require('../../frontend/js/parcels/block-topology.js');
 
 function functionsFrom(file, names) {
     const source = readFileSync(new URL(file, import.meta.url), 'utf8');
-    const ast = parse(source, { sourceType: 'script' });
+    const ast = parse(source, { sourceType: 'script', plugins: ['optionalChaining', 'nullishCoalescingOperator'] });
     return names.map(name => {
         const node = ast.program.body.find(item => item.type === 'FunctionDeclaration' && item.id?.name === name);
         if (!node) throw new Error(`Missing function ${name}`);
@@ -19,14 +20,24 @@ function functionsFrom(file, names) {
 }
 
 const detection = functionsFrom('../../frontend/js/parcel-blocks.js', [
-    'formatBlockText', 'tBlock', 'failBlockDetection', 'failBlockParcelLimit',
-    'floodfillBlock', 'selectCurrentBlockIntoMultiSelection'
+    'formatBlockText', 'tBlock', 'failBlockDetection', 'failBlockParcelLimit', 'sourceBlockDetector',
+    'selectCurrentBlockIntoMultiSelection'
 ]);
 const busyHelper = functionsFrom('../../frontend/js/ui-helpers.js', ['runWithButtonBusyState']);
 
-function harness(count, fetchRoads = async () => {}) {
-    const parcels = Array.from({ length: count }, (_, i) => ({ id: `P${i}` }));
-    const byId = new Map(parcels.map(parcel => [parcel.id, parcel]));
+function harness(result, { detectPromise } = {}) {
+    const featureRows = Array.from({ length: 120 }, (_, index) => ({ type: 'Feature', id: `P${index}`, properties: { parcelId: `P${index}` }, geometry: null }));
+    const layerRows = featureRows.map(feature => ({ id: feature.id }));
+    const featuresById = new Map(featureRows.map(feature => [feature.id, feature]));
+    const layersById = new Map(layerRows.map(layer => [layer.id, layer]));
+    const detector = { detect: vi.fn(() => detectPromise || Promise.resolve(result)) };
+    const createBrowser = vi.fn(() => detector);
+    const selectionRows = new Set(['previous']);
+    const selection = { isActive: true, selectedParcels: selectionRows, lastSelectedParcelId: 'P0',
+        clearSelection: vi.fn(() => selectionRows.clear()), updateUI: vi.fn(), addParcelHighlight: vi.fn() };
+    const alert = vi.fn();
+    const preview = vi.fn(() => Promise.resolve('ok'));
+    const reveal = vi.fn();
     const classes = new Set();
     const attrs = new Map();
     const button = {
@@ -36,62 +47,49 @@ function harness(count, fetchRoads = async () => {}) {
         setAttribute: (key, value) => attrs.set(key, value), removeAttribute: key => attrs.delete(key),
         set textContent(value) { this.innerHTML = value; }
     };
-    const bounds = { pad() { return bounds; } };
-    const ensureBounds = vi.fn();
-    const alert = vi.fn();
-    const reveal = vi.fn();
-    const findNeighbors = vi.fn(parcel => {
-        const i = Number(parcel.id.slice(1));
-        return [parcels[i - 1], parcels[i + 1]].filter(Boolean);
-    });
+    const seed = layerRows[0];
     const context = {
-        console,
-        window: { __parcelBlockTopology: topology, fetchCuratedRoadParcels: fetchRoads,
-            CadastralParcelRepository: { ensureBounds }, showStyledAlert: alert },
+        console: { warn: vi.fn(), error: vi.fn() },
+        window: { __parcelBlockTopology: topology, ParcelBlockDetection: { createBrowser },
+            BlockDetectionPreview: { show: preview }, i18n: { t: key => key }, showStyledAlert: alert },
         document: { querySelector: selector => selector === '.multi-select-detect-btn' ? button : null },
-        map: { getBounds: () => bounds },
-        multiParcelSelection: { isActive: true, selectedParcels: new Set(['previous']),
-            clearSelection() { this.selectedParcels.clear(); }, updateUI() {}, addParcelHighlight() {} },
-        blockSearchBoundsOverride: null, BLOCK_SEARCH_MAX_EXPANSIONS: 3, BLOCK_SEARCH_EXPANSION_PAD: 0.6,
-        liveBlockServices: () => ({}), parcelIdFromLayer: parcel => parcel?.id,
-        liveBlockLayerForId: id => byId.get(id), isCorridorParcel: () => false,
-        getVisibleNonCorridorParcels: () => parcels, liveBlockNeighborGraph: () => ({}),
-        findNeighbors, isParcelFullyVisible: () => true, revealBlockParcels: reveal, updateStatus() {}
+        multiParcelSelection: selection, currentParcel: null, selectedParcelId: null,
+        liveBlockServices: () => ({}), parcelIdFromLayer: layer => layer?.id || layer?.properties?.parcelId || null,
+        liveBlockLayerForId: id => layersById.get(String(id)) || null,
+        liveBlockPeek: id => featuresById.get(String(id)) || null,
+        revealBlockParcels: reveal, updateStatus: vi.fn()
     };
     vm.createContext(context);
-    vm.runInContext(`${busyHelper}\n${detection}`, context);
-    return { detect: () => context.selectCurrentBlockIntoMultiSelection(parcels[0], { replaceSelection: true }),
-        selection: context.multiParcelSelection.selectedParcels, ensureBounds, alert, reveal, findNeighbors, button };
+    vm.runInContext(`let parcelBlockDetector = null;\n${busyHelper}\n${detection}`, context);
+    return { detect: () => context.selectCurrentBlockIntoMultiSelection(seed, { replaceSelection: true }),
+        alert, button, createBrowser, detector, featuresById, preview, reveal, selection, updateStatus: context.updateStatus };
 }
 
 describe('Detect block parcel limit', () => {
-    it('allows a complete block of exactly 100 parcels', async () => {
-        const h = harness(100);
-        await h.detect();
-        expect(h.selection.size).toBe(100);
-        expect(h.selection.has('previous')).toBe(false);
-        expect(h.findNeighbors).toHaveBeenCalledTimes(100);
-        expect(h.alert).not.toHaveBeenCalled();
-        expect(h.reveal).toHaveBeenCalledOnce();
-    });
+    it('previews exactly the first 100 features and leaves the prior selection unchanged', async () => {
+        const previewIds = Array.from({ length: 100 }, (_, index) => `P${index}`);
+        const h = harness({ isValid: false, invalidReason: 'parcel_limit_exceeded', ids: [], previewIds, count: 120 });
+        const before = [...h.selection.selectedParcels];
 
-    it('aborts at the 101st parcel, explains the limit and preserves selection without widening', async () => {
-        const h = harness(2000);
-        await h.detect();
-        expect([...h.selection]).toEqual(['previous']);
-        expect(h.findNeighbors).toHaveBeenCalledTimes(100);
-        expect(h.ensureBounds).not.toHaveBeenCalled();
+        expect(await h.detect()).toBe(true);
+        expect(h.createBrowser).toHaveBeenCalledOnce();
+        expect(h.detector.detect).toHaveBeenCalledOnce();
+        expect(h.preview).toHaveBeenCalledOnce();
+        expect(h.preview.mock.calls[0][0]).toHaveLength(100);
+        expect(h.preview.mock.calls[0][0].map(feature => feature.id)).toEqual(previewIds);
+        expect(h.preview.mock.calls[0][1].message).toContain('100');
+        expect([...h.selection.selectedParcels]).toEqual(before);
+        expect(h.selection.clearSelection).not.toHaveBeenCalled();
+        expect(h.selection.addParcelHighlight).not.toHaveBeenCalled();
         expect(h.reveal).not.toHaveBeenCalled();
-        expect(h.alert).toHaveBeenCalledExactlyOnceWith(
-            'Block detection stopped: the connected area exceeds the 100-parcel limit. Select a smaller group of parcels manually.',
-            { title: 'Detect block' });
+        expect(h.alert).not.toHaveBeenCalled();
         expect(h.button.disabled).toBe(false);
         expect(h.button.classList.contains('cb-busy')).toBe(false);
     });
 
-    it('bounds a wide queue before inspecting a 101st parcel', () => {
+    it('bounds a wide queue before inspecting a parcel beyond the limit', () => {
         const inside = vi.fn(() => true);
-        const neighbors = vi.fn(() => Array.from({ length: 1000 }, (_, i) => `N${i}`));
+        const neighbors = vi.fn(() => Array.from({ length: 1000 }, (_, index) => `N${index}`));
         const result = topology.growBlock({ seedId: 'seed', neighborsOf: neighbors, isInside: inside });
         expect(result).toMatchObject({ isValid: false, invalidReason: 'parcel_limit_exceeded', invalidId: 'N99' });
         expect(inside).toHaveBeenCalledTimes(100);
@@ -105,16 +103,15 @@ describe('Detect block parcel limit', () => {
         expect(result.ids).toEqual(['seed', 'other']);
     });
 
-    it('keeps the actual Detect button spinning and disabled until its work settles', async () => {
+    it('keeps the Detect button busy until the shared detector settles', async () => {
         let resolve;
-        const roads = new Promise(done => { resolve = done; });
-        const h = harness(2, () => roads);
+        const pending = new Promise(done => { resolve = done; });
+        const h = harness({ isValid: true, ids: ['P0', 'P1'] }, { detectPromise: pending });
         const work = h.detect();
         expect(h.button.disabled).toBe(true);
         expect(h.button.classList.contains('cb-busy')).toBe(true);
         expect(h.button.getAttribute('aria-busy')).toBe('true');
-        expect(h.findNeighbors).not.toHaveBeenCalled();
-        resolve();
+        resolve({ isValid: true, ids: ['P0', 'P1'] });
         await work;
         expect(h.button.disabled).toBe(false);
         expect(h.button.classList.contains('cb-busy')).toBe(false);

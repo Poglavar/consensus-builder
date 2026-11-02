@@ -1,29 +1,30 @@
-// Worldwide, parcel-independent OSM road input for urban blocks. Reuses the cached Overpass
-// transport, but keeps its broader road policy separate from frontage and cadastral analysis.
+// Worldwide OSM block boundaries: all highways, railways, waterways and shores. The shared
+// model applies ground-level and water-surface rules independently of cadastral classification.
 import { createOverpassCellSource, PRIORITY } from '../buildings/osm-reference.js';
 
-export const BLOCK_HIGHWAYS = Object.freeze([
-    'motorway', 'trunk', 'primary', 'secondary', 'tertiary', 'unclassified',
-    'residential', 'living_street', 'pedestrian', 'service',
-    'motorway_link', 'trunk_link', 'primary_link', 'secondary_link', 'tertiary_link'
-]);
-
 export function buildBlockRoadQuery([w, s, e, n]) {
-    return `[out:json][timeout:25];way["highway"~"^(${BLOCK_HIGHWAYS.join('|')})$"](${s},${w},${n},${e});out geom;`;
+    const box = `(${s},${w},${n},${e})`;
+    return `[out:json][timeout:25];(way["highway"]${box};way["railway"]${box};way["waterway"]${box};way["natural"~"^(coastline|water)$"]${box};);out geom;`;
 }
 
 export function blockRoadsToGeoJSON(elements, cap = 8000, response = {}) {
-    if (response.remark) throw Object.assign(new Error('Overpass returned incomplete road data.'), { status: 502 });
+    if (response.remark) throw Object.assign(new Error('Overpass returned incomplete boundary data.'), { status: 502 });
     const features = [];
+    const seen = new Set();
     let truncated = false;
     for (const way of elements || []) {
-        if (way.type !== 'way' || !BLOCK_HIGHWAYS.includes(way.tags?.highway)) continue;
-        // Do not connect across missing coordinates: that would invent a road segment.
+        const tags = way?.tags;
+        const boundaryWay = tags && (tags.highway !== undefined || tags.railway !== undefined || tags.waterway !== undefined
+            || tags.natural === 'coastline' || tags.natural === 'water');
+        const id = String(way?.id ?? '');
+        if (way?.type !== 'way' || !boundaryWay || !/^[1-9]\d*$/.test(id) || seen.has(id)) continue;
+        // Do not connect across missing coordinates: that would invent a boundary segment.
         if (!Array.isArray(way.geometry) || way.geometry.length < 2
-            || way.geometry.some(p => !Number.isFinite(p?.lon) || !Number.isFinite(p?.lat))) continue;
+            || way.geometry.some(p => !Number.isFinite(p?.lon) || !Number.isFinite(p?.lat))) { throw Object.assign(new Error('Overpass returned incomplete boundary geometry.'), { status: 502 }); }
         if (features.length >= cap) { truncated = true; break; }
-        features.push({ type: 'Feature', id: `w${way.id}`,
-            properties: { osm_id: `w${way.id}`, ...way.tags },
+        seen.add(id);
+        features.push({ type: 'Feature', id: `w${id}`,
+            properties: { ...tags, osm_id: `w${id}` },
             geometry: { type: 'LineString', coordinates: way.geometry.map(p => [p.lon, p.lat]) } });
     }
     return { type: 'FeatureCollection', features, truncated };
@@ -42,5 +43,5 @@ export async function fetchBlockRoads(bbox, options = {}) {
     }
     const fc = await (options.source || cachedSource)(bbox, options);
     // The converter rejects HTTP-200 runtime timeout remarks before the transport caches them.
-    return { ...fc, source: 'overpass', bbox };
+    return { ...fc, complete: !fc.partial && !fc.truncated, source: 'overpass', bbox };
 }

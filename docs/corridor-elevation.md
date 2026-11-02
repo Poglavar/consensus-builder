@@ -128,7 +128,8 @@ Recommended first rule:
 - ramps and portals cut parcels while their absolute Z is below the configured surface-separation threshold, or when explicitly marked `open-cut`/`embankment`;
 - a fully elevated or bored-tunnel section does not cut or split surface parcels;
 - all horizontally intersected parents remain listed as affected by the proposal, but only surface-cut parents produce remainder child parcels;
-- parcel blocks are split only by continuous level-0 public-road sections, not by an overpass or tunnel.
+- Surface block enclosures use complete loaded OSM roads, paths, tracks, railways, waterways and
+  coasts. Bridges, tunnels and other non-ground features do not divide surface blocks.
 
 The continuous road/track should therefore become a proposal-owned corridor asset, not be inferred solely from the existence of a 2D road parcel. Surface pieces may still create road parcels. Elevated and underground pieces remain selectable through corridor hit targets and carry spatial-right records in the proposal.
 

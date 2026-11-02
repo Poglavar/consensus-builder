@@ -202,6 +202,10 @@ An identified captured state or release of a provider's data. A null `snapshotId
 
 A canonical sorted set of parcel IDs with its parcel-source descriptor. Its `setHash` commits to the IDs and normalized source identity, not to current geometry, ownership or legal authority.
 
+### Detected parcel block
+
+A temporary selection derived from one seed parcel and one complete surface enclosure. The enclosure uses all loaded OSM `highway`, `railway` and `waterway` ways, plus `natural=coastline` and `natural=water` ways; current applied surface-level corridor boundaries may also participate. Bridges, tunnels and other non-ground features do not divide surface blocks. A seed belongs to exactly one enclosure by its representative interior point. Membership is the set of whole source parcels whose representative interior points lie inside that enclosure; parcel geometry is never clipped, and a parcel crossing the boundary belongs only to the enclosure containing its point. Detection requires complete OSM boundary and parcel coverage. More than 100 members is refused; the first 100 are shown as a temporary preview without changing the current selection or persisting a block record.
+
 ### Cadastre frame
 
 The source context captured for a cadastral-dependent calculation or commitment, including its observation time and any supplied geometry hash. It is not necessarily a reproducible copy of the entire cadastre.

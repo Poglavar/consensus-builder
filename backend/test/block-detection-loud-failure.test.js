@@ -1,53 +1,88 @@
-// Block detection either forms a block or explains itself in front of the user. It used to refuse
-// into the status line — a message nobody was looking at — and then fly the camera to the parcel it
-// was unhappy about and select it, throwing away the view and the selection to deliver what is only
-// a message. Asserted at the source: the refusals are wiring, not a return value.
-import { describe, expect, it } from 'vitest';
+// Boundary analysis failures are user-visible and leave both selection and camera untouched.
+import { describe, expect, it, vi } from 'vitest';
 import { readFileSync } from 'node:fs';
+import vm from 'node:vm';
+import { parse } from '@babel/parser';
 
 const source = readFileSync(new URL('../../frontend/js/parcel-blocks.js', import.meta.url), 'utf8');
 
-function sectionOf(startMarker, endMarker) {
-    const start = source.indexOf(startMarker);
-    const end = source.indexOf(endMarker, start + startMarker.length);
-    expect(start, `missing source marker: ${startMarker}`).toBeGreaterThanOrEqual(0);
-    expect(end, `missing source marker: ${endMarker}`).toBeGreaterThan(start);
-    return source.slice(start, end);
+function functionSource(name) {
+    const ast = parse(source, { sourceType: 'script', plugins: ['optionalChaining', 'nullishCoalescingOperator'] });
+    const node = ast.program.body.find(statement => statement.type === 'FunctionDeclaration' && statement.id?.name === name);
+    if (!node) throw new Error(`missing function ${name}`);
+    return source.slice(node.start, node.end);
 }
 
-// From the entry point to the first line of the success path: everything in between is a refusal.
-const refusals = () => sectionOf('function selectCurrentBlockIntoMultiSelection(startParcel, options = {})', 'let addedCount = 0;');
+const detection = ['formatBlockText', 'tBlock', 'failBlockDetection', 'sourceBlockDetector', 'selectCurrentBlockIntoMultiSelection']
+    .map(functionSource).join('\n');
+
+function harness({ result, error }) {
+    const feature = { type: 'Feature', id: 'seed', properties: { parcelId: 'seed' }, geometry: null };
+    const layer = { id: 'seed' };
+    const detector = { detect: vi.fn(async () => {
+        if (error) throw error;
+        return result;
+    }) };
+    const createBrowser = vi.fn(() => detector);
+    const selectedParcels = new Set(['previous']);
+    const selection = { isActive: true, selectedParcels, lastSelectedParcelId: 'seed',
+        clearSelection: vi.fn(() => selectedParcels.clear()), updateUI: vi.fn(), addParcelHighlight: vi.fn() };
+    const alert = vi.fn(), updateStatus = vi.fn(), reveal = vi.fn();
+    const map = { fitBounds: vi.fn(), setView: vi.fn() };
+    const context = {
+        console: { warn: vi.fn(), error: vi.fn() },
+        window: { __parcelBlockTopology: { MAX_BLOCK_PARCELS: 100 }, ParcelBlockDetection: { createBrowser },
+            i18n: { t: key => key }, showStyledAlert: alert },
+        document: { querySelector: () => null }, map, multiParcelSelection: selection,
+        currentParcel: null, selectedParcelId: null,
+        liveBlockServices: () => ({}), parcelIdFromLayer: value => value?.id || value?.properties?.parcelId || null,
+        liveBlockLayerForId: id => String(id) === 'seed' ? layer : null,
+        liveBlockPeek: id => String(id) === 'seed' ? feature : null,
+        revealBlockParcels: reveal, updateStatus
+    };
+    vm.createContext(context);
+    vm.runInContext(`let parcelBlockDetector = null;\n${detection}`, context);
+    return { detect: () => context.selectCurrentBlockIntoMultiSelection(layer, { replaceSelection: true }),
+        alert, createBrowser, detector, map, reveal, selection, updateStatus };
+}
 
 describe('a block that cannot be formed', () => {
-    it('says so in a dialog, not only in the status line', () => {
-        const helper = sectionOf('function failBlockDetection(message)', 'function applyBlockTranslations');
-        expect(helper).toContain('showStyledAlert');
-        expect(helper).toContain('updateStatus'); // the status line keeps it too, as a second copy
+    it('shows an unbounded source result in an alert and preserves selection and camera', async () => {
+        const h = harness({ result: { isValid: false, invalidReason: 'unbounded', ids: [], previewIds: [] } });
+        h.selection.isActive = false;
+        const before = [...h.selection.selectedParcels];
+
+        expect(await h.detect()).toBe(true);
+        expect(h.selection.isActive).toBe(false);
+        expect(h.createBrowser).toHaveBeenCalledOnce();
+        expect(h.detector.detect).toHaveBeenCalledOnce();
+        expect(h.alert).toHaveBeenCalledOnce();
+        expect(h.alert.mock.calls[0][0]).toContain('No complete block surrounds this parcel');
+        expect(h.updateStatus).toHaveBeenCalledOnce();
+        expect([...h.selection.selectedParcels]).toEqual(before);
+        expect(h.selection.clearSelection).not.toHaveBeenCalled();
+        expect(h.reveal).not.toHaveBeenCalled();
+        expect(h.map.fitBounds).not.toHaveBeenCalled();
+        expect(h.map.setView).not.toHaveBeenCalled();
     });
 
-    it('routes every refusal through the loud path', () => {
-        const body = refusals();
-        expect(body).toContain('failBlockDetection(');
-        // A bare status-line refusal is exactly the silent no-op this replaces.
-        expect(body).not.toContain('updateStatus(');
-    });
+    it.each([
+        ['block-boundaries-incomplete', 'Could not load complete OSM roads, paths, railways and waterways. Please retry.'],
+        ['block-parcels-incomplete', 'Could not load all parcels inside this block. Please retry.']
+    ])('shows %s as a loud failure while retaining the selection', async (code, message) => {
+        const h = harness({ error: Object.assign(new Error('source data was incomplete'), { code }) });
+        h.selection.isActive = false;
+        const before = [...h.selection.selectedParcels];
 
-    it('names the parcel that broke it, and what the rule actually is', () => {
-        const body = refusals();
-        expect(body).toContain('block_neighbour_not_fully_visible');
-        expect(body).toContain('block_seed_not_fully_visible');
-        expect(body).toContain('{ id: idLabel }');
-    });
-
-    it('keeps the user’s camera and selection', () => {
-        const body = refusals();
-        expect(body).not.toContain('map.fitBounds(');
-        expect(body).not.toContain('selectParcel(');
-    });
-
-    it('replaces stale source ids only after a whole block was formed successfully', () => {
-        const success = sectionOf('if (options.replaceSelection === true)', 'const lastParcelId =');
-        expect(success).toContain('multiParcelSelection.clearSelection()');
-        expect(success).toContain('blockParcels.forEach');
+        expect(await h.detect()).toBe(true);
+        expect(h.selection.isActive).toBe(false);
+        expect(h.detector.detect).toHaveBeenCalledOnce();
+        expect(h.alert).toHaveBeenCalledExactlyOnceWith(message, { title: 'Detect block' });
+        expect(h.updateStatus).toHaveBeenCalledExactlyOnceWith(message);
+        expect([...h.selection.selectedParcels]).toEqual(before);
+        expect(h.selection.clearSelection).not.toHaveBeenCalled();
+        expect(h.reveal).not.toHaveBeenCalled();
+        expect(h.map.fitBounds).not.toHaveBeenCalled();
+        expect(h.map.setView).not.toHaveBeenCalled();
     });
 });

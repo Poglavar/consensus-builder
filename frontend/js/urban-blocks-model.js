@@ -6,9 +6,8 @@
     if (root) root.UrbanBlocksModel = api;
 })(typeof self !== 'undefined' ? self : null, function () {
     'use strict';
-    const HIGHWAYS = new Set(['motorway', 'trunk', 'primary', 'secondary', 'tertiary', 'unclassified',
-        'residential', 'living_street', 'pedestrian', 'service', 'motorway_link', 'trunk_link',
-        'primary_link', 'secondary_link', 'tertiary_link']);
+    const isPresent = value => value != null && String(value).trim() !== ''
+        && !['no', 'false', '0'].includes(String(value).trim().toLowerCase());
     const COLORS = ['#ea9575', '#65b8a6', '#9c97ce', '#e4bc58', '#76a8cf', '#ce86ae', '#a0ba68', '#dd9e55'];
     const WALK_COLORS = Object.freeze({ within: '#0e7490', over: '#d97706' });
     const coord = p => p.map(v => Math.round(v * 1e9) / 1e9);
@@ -19,15 +18,71 @@
     const dot = (a, b) => a[0] * b[0] + a[1] * b[1];
 
     function isGroundRoad(properties = {}) {
-        const activeTag = value => value != null && !['', 'no', 'false', '0'].includes(String(value));
         const layer = Number(properties.layer || 0);
-        return HIGHWAYS.has(properties.highway || properties.highway_type)
-            && !activeTag(properties.bridge) && !activeTag(properties.tunnel)
+        return (isPresent(properties.highway) || isPresent(properties.highway_type))
+            && !isPresent(properties.bridge) && !isPresent(properties.tunnel)
+            && Number.isFinite(layer) && layer === 0 && properties.location !== 'underground';
+    }
+
+    // Any mapped transport or water edge can bound land. Bridges, tunnels and non-ground layers
+    // do not enclose ground parcels.
+    function isGroundBoundary(properties = {}) {
+        const layer = Number(properties.layer || 0);
+        const mappedBoundary = isPresent(properties.highway) || isPresent(properties.highway_type)
+            || isPresent(properties.railway) || isPresent(properties.railway_type)
+            || isPresent(properties.waterway) || isPresent(properties.waterway_type)
+            || ['coastline', 'water'].includes(properties.natural)
+            || properties.isRoad === true || properties.isTrack === true || properties.isCorridor === true;
+        return mappedBoundary && !isPresent(properties.bridge) && !isPresent(properties.tunnel)
             && Number.isFinite(layer) && layer === 0 && properties.location !== 'underground';
     }
 
     function isRoadArea(properties = {}) {
         return ['yes', 'true', '1'].includes(String(properties.area));
+    }
+
+    function waterBodies(roads, turf) {
+        const bodies = [];
+        for (const feature of roads.features) {
+            const properties = feature.properties || {};
+            if (!(properties.natural === 'water' || properties.waterway === 'riverbank'
+                || properties.waterway_type === 'riverbank') || !isGroundBoundary(properties)) continue;
+            const geometry = feature.geometry;
+            if (geometry?.type === 'Polygon') bodies.push(turf.feature(geometry, properties));
+            else if (geometry?.type === 'MultiPolygon') {
+                geometry.coordinates.forEach(coordinates => bodies.push(turf.polygon(coordinates, properties)));
+            } else {
+                const lines = geometry?.type === 'LineString' ? [geometry.coordinates]
+                    : geometry?.type === 'MultiLineString' ? geometry.coordinates : [];
+                for (const ring of lines) {
+                    if (!Array.isArray(ring) || ring.length < 4 || key(coord(ring[0])) !== key(coord(ring[ring.length - 1]))) continue;
+                    bodies.push(turf.polygon([ring], properties));
+                }
+            }
+        }
+        return bodies;
+    }
+
+    // Find a strictly interior point for polygon faces, including faces with holes whose centroid
+    // falls in the hole. Scanlines between vertex latitudes yield points inside the filled rings.
+    function interiorPoint(feature, turf) {
+        const rings = feature.geometry?.type === 'Polygon' ? feature.geometry.coordinates : [];
+        const latitudes = [...new Set(rings.flatMap(ring => ring.map(point => point[1])))].sort((a, b) => a - b);
+        const scanlines = latitudes.slice(1).map((y, i) => (latitudes[i] + y) / 2);
+        for (const y of scanlines) {
+            const crossings = [];
+            for (const ring of rings) for (let i = 1; i < ring.length; i++) {
+                const a = ring[i - 1], b = ring[i];
+                if ((a[1] > y) === (b[1] > y)) continue;
+                crossings.push(a[0] + ((y - a[1]) * (b[0] - a[0])) / (b[1] - a[1]));
+            }
+            crossings.sort((a, b) => a - b);
+            for (let i = 1; i < crossings.length; i += 2) {
+                const point = turf.point([(crossings[i - 1] + crossings[i]) / 2, y]);
+                if (turf.booleanPointInPolygon(point, feature, { ignoreBoundary: true })) return point;
+            }
+        }
+        return null;
     }
 
     // An applied proposal's centreline as ground street lines of [lng, lat]: points carrying a level
@@ -53,7 +108,7 @@
         const features = roads.features.slice();
         const lines = [];
         features.forEach((road, owner) => {
-            if (!isGroundRoad(road.properties)) return;
+            if (!isGroundBoundary(road.properties)) return;
             const type = road.geometry?.type;
             const parts = type === 'LineString' ? [road.geometry.coordinates] : type === 'MultiLineString' ? road.geometry.coordinates : [];
             parts.forEach((coords, part) => lines.push({ owner, part, coords: coords.slice() }));
@@ -124,12 +179,14 @@
     function nodeRoads(roads, bbox, turf) {
         const segments = [];
         for (const road of roads.features) {
-            if (!isGroundRoad(road.properties)) continue;
+            if (!isGroundBoundary(road.properties)) continue;
             const type = road.geometry?.type;
-            if (type !== 'LineString' && type !== 'MultiLineString') continue;
+            if (!['LineString', 'MultiLineString', 'Polygon', 'MultiPolygon'].includes(type)) continue;
             const clipped = turf.bboxClip(road, bbox);
-            const lines = clipped.geometry.type === 'LineString'
-                ? [clipped.geometry.coordinates] : clipped.geometry.coordinates;
+            const lines = clipped.geometry.type === 'LineString' ? [clipped.geometry.coordinates]
+                : clipped.geometry.type === 'MultiLineString' ? clipped.geometry.coordinates
+                    : clipped.geometry.type === 'Polygon' ? clipped.geometry.coordinates
+                        : clipped.geometry.type === 'MultiPolygon' ? clipped.geometry.coordinates.flat() : [];
             for (const line of lines) for (let i = 1; i < line.length; i++) {
                 const a = coord(line[i - 1]), b = coord(line[i]);
                 if (key(a) === key(b)) continue;
@@ -216,6 +273,7 @@
         if (!Array.isArray(roads?.features)) throw new Error('Invalid OSM road data.');
         const edges = nodeRoads(roads, bbox, turf);
         if (!edges.size) return turf.featureCollection([]);
+        const water = waterBodies(roads, turf);
         const junctions = new Set((roads.junctions || []).map(p => key(coord(p))));
         const faces = turf.polygonize(turf.featureCollection([...edges.values()]));
         // Turf 6 emits disconnected nested loops as overlapping shells. Turn each immediate
@@ -239,6 +297,11 @@
         const seen = new Set();
         const blocks = [];
         for (const face of polygons) {
+            // Water surfaces contribute their shore rings to polygonization, but their interiors
+            // are not selectable blocks. Polygon holes remain land; coastline loops are omitted
+            // from this mask because they may enclose islands rather than water.
+            const point = interiorPoint(face, turf);
+            if (point && water.some(body => turf.booleanPointInPolygon(point, body, { ignoreBoundary: true }))) continue;
             // Never manufacture a closed block along the request boundary. The padded request
             // makes most on-screen blocks complete; open or cut-off blocks simply stay unshaded.
             if (face.geometry.coordinates.some(ring => ring.some(([x, y]) =>
@@ -281,16 +344,31 @@
 
     // This is a count of LOADED cadastral parcels whose representative point is inside the block,
     // not a claim that the entire cadastre is present. A spanning parcel belongs to one block.
-    function loadedParcelCount(block, parcels, turf) {
-        if (!Array.isArray(parcels) || !parcels.length) return null;
+    function parcelIdsInBlock(block, parcels, turf) {
         const ids = new Set();
-        for (const parcel of parcels) {
+        for (const parcel of Array.isArray(parcels) ? parcels : []) {
             if (!['Polygon', 'MultiPolygon'].includes(parcel.geometry?.type)) continue;
             const id = parcel.properties?.parcelId ?? parcel.properties?.parcel_id ?? parcel.properties?.PARCEL_ID ?? parcel.properties?.id ?? parcel.id;
             if (id == null || ids.has(String(id))) continue;
             if (turf.booleanPointInPolygon(turf.pointOnFeature(parcel), block, { ignoreBoundary: true })) ids.add(String(id));
         }
-        return ids.size;
+        return [...ids];
+    }
+
+    function loadedParcelCount(block, parcels, turf) {
+        if (!Array.isArray(parcels) || !parcels.length) return null;
+        return parcelIdsInBlock(block, parcels, turf).length;
+    }
+
+    // A seed belongs to exactly one detected enclosure by its representative point. A spanning
+    // cadastral polygon therefore cannot join separate faces through its full geometry.
+    function enclosureForParcel(blocks, seed, turf) {
+        if (!seed || !['Polygon', 'MultiPolygon'].includes(seed.geometry?.type)
+            || !Array.isArray(blocks?.features)) return null;
+        const point = turf.pointOnFeature(seed);
+        const matches = blocks.features.filter(block =>
+            turf.booleanPointInPolygon(point, block, { ignoreBoundary: true }));
+        return matches.length === 1 ? matches[0] : null;
     }
 
     // A transparent area scenario, not a subdivision design: new streets and irregular shapes
@@ -314,6 +392,7 @@
         return colorBy === 'walk' ? WALK_COLORS[walkBand(feature.properties.walkMinutes, thresholdMinutes)] : feature.properties.color;
     }
 
-    return { detectBlocks, nodeRoads, groundRuns, withProposedStreets, metrics, loadedParcelCount, isGroundRoad, isRoadArea, targetBlockCount,
+    return { detectBlocks, nodeRoads, groundRuns, withProposedStreets, metrics, loadedParcelCount, parcelIdsInBlock,
+        enclosureForParcel, isGroundRoad, isGroundBoundary, isRoadArea, targetBlockCount,
         rankBlocks, walkBand, blockColor, WALK_COLORS };
 });

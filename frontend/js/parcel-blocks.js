@@ -37,10 +37,23 @@ function failBlockDetection(message) {
     return true;
 }
 
-function failBlockParcelLimit() {
-    return failBlockDetection(tBlock('alerts.messages.block_parcel_limit_exceeded',
+function failBlockParcelLimit(parcels = [], returnFocus = null) {
+    const message = tBlock('alerts.messages.block_parcel_limit_exceeded',
         { limit: window.__parcelBlockTopology.MAX_BLOCK_PARCELS },
-        'Block detection stopped: the connected area exceeds the {{limit}}-parcel limit. Select a smaller group of parcels manually.'));
+        'Block detection stopped: the area contains more than {{limit}} parcels. The first {{limit}} are highlighted until you close this warning. Your selection is unchanged.');
+    const features = parcels.map(parcel => parcel?.type === 'Feature' ? parcel : liveBlockFeatureForLayer(parcel)).filter(Boolean);
+    if (!features.length) return failBlockDetection(message);
+    window.BlockDetectionPreview.show(features, { message, title: tBlock('panel.parcel.detectBlock', {}, 'Detect block') })
+        .then(() => { if (returnFocus?.isConnected && !returnFocus.disabled) returnFocus.focus({ preventScroll: true }); })
+        .catch(error => { console.error('[blockDetection] preview failed', error); failBlockDetection(message); });
+    if (typeof updateStatus === 'function') updateStatus(message);
+    return true;
+}
+
+let parcelBlockDetector = null;
+function sourceBlockDetector() {
+    if (!parcelBlockDetector) parcelBlockDetector = window.ParcelBlockDetection.createBrowser(window);
+    return parcelBlockDetector;
 }
 
 function applyBlockTranslations(root) {
@@ -2004,11 +2017,12 @@ function revealBlockParcels(blockParcels) {
     }
 }
 
-// Floodfill the current block and add all member parcels to multi-select without entering block mode.
+// Select the OSM enclosure’s member parcels without entering block mode.
 // A whole-block suggestion replaces its one-parcel source selection; the explicit Detect button
 // remains additive so users can deliberately collect more than one block.
 function selectCurrentBlockIntoMultiSelection(startParcel, options = {}) {
-    const button = document.querySelector('.multi-select-detect-btn');
+    const button = document.activeElement?.matches?.('.multi-select-detect-btn')
+        ? document.activeElement : document.querySelector('.multi-select-detect-btn');
 
     const run = async () => {
         const services = liveBlockServices();
@@ -2019,24 +2033,6 @@ function selectCurrentBlockIntoMultiSelection(startParcel, options = {}) {
         if (typeof multiParcelSelection === 'undefined' || !multiParcelSelection || !multiParcelSelection.selectedParcels) {
             return failBlockDetection(tBlock('alerts.messages.block_multiselect_unavailable', {},
                 'Multi-select is unavailable, and a block is delivered as a multi-parcel selection.'));
-        }
-
-        if (!multiParcelSelection.isActive) {
-            if (typeof multiParcelSelection.toggle === 'function') {
-                multiParcelSelection.toggle();
-            } else if (typeof multiParcelSelection.activate === 'function') {
-                multiParcelSelection.activate();
-            } else {
-                multiParcelSelection.isActive = true;
-                if (typeof multiParcelSelection.updateUI === 'function') {
-                    multiParcelSelection.updateUI();
-                }
-            }
-        }
-
-        if (!multiParcelSelection.isActive) {
-            return failBlockDetection(tBlock('alerts.messages.block_multiselect_off', {},
-                'Multi-select could not be turned on, and a block is delivered as a multi-parcel selection.'));
         }
 
         // Resolve the seed by exact id through the committed fabric and presenter. A passed Leaflet
@@ -2073,77 +2069,41 @@ function selectCurrentBlockIntoMultiSelection(startParcel, options = {}) {
             return failBlockDetection(tBlock('alerts.messages.block_seed_unresolved', {},
                 'Could not read the selected parcel’s id, so there is nothing to grow a block from.'));
         }
-        // Roads bound blocks: without their classification the fill would run down them, and a road
-        // seed would be taken for a plot. The background refresh after each parcel load may still be
-        // in flight, so wait for it before judging the seed or flooding.
-        await window.fetchCuratedRoadParcels(map.getBounds());
-        if (isCorridorParcel(startParcelId, seedParcel)) {
+        const seedFeature = liveBlockPeek(startParcelId);
+        const props = seedFeature?.properties || {};
+        if (props.isCorridor === true || props.isRoad === true || props.isTrack === true) {
             return failBlockDetection(tBlock('alerts.messages.block_seed_is_corridor', {},
                 'This is a road or track parcel. A block is the land BETWEEN corridors — start from a parcel inside one.'));
         }
-
-        if (getVisibleNonCorridorParcels().length === 0) {
-            return failBlockDetection(tBlock('alerts.messages.block_no_parcels_in_view', {},
-                'There are no ordinary parcels in view to build a block from — only roads and tracks.'));
+        const result = await sourceBlockDetector().detect(seedFeature);
+        if (result.invalidReason === 'parcel_limit_exceeded') {
+            return failBlockParcelLimit(result.previewIds.map(liveBlockPeek).filter(Boolean), button);
+        }
+        if (!result.isValid) {
+            return failBlockDetection(tBlock('alerts.messages.block_boundary_unproven', {},
+                'No complete block surrounds this parcel in the loaded OSM roads, paths, tracks and waterways. Select a parcel inside a bounded area, or select parcels manually.'));
+        }
+        const blockParcels = result.ids.map(liveBlockLayerForId);
+        if (blockParcels.some(parcel => !parcel)) {
+            throw new Error('The block contains a parcel that could not be displayed.');
         }
 
-        // Grow the block inside the viewport first. When it runs past the edge, widen the search
-        // area, load the ground there, and try again — the completeness rule is unchanged (every
-        // member must lie wholly inside ground that is loaded), only the area it is checked against
-        // grows. Bounded so a block that is really a whole district still stops and explains.
-        // Neighbours are measured parcel by parcel as the fill reaches them, never over the whole
-        // search area: after three widenings that area held ~80,000 central-Zagreb parcels.
-        const flood = () => {
-            const parcels = [];
-            return { parcels, result: floodfillBlock(seedParcel, parcels, liveBlockNeighborGraph(startParcelId)) };
-        };
-        let attempt = flood();
-        const repository = window.CadastralParcelRepository;
-        let searchBounds = map.getBounds();
-        for (let expansion = 0; expansion < BLOCK_SEARCH_MAX_EXPANSIONS; expansion++) {
-            if (attempt.result && attempt.result.isValid) break;
-            if (attempt.result?.invalidReason === 'parcel_limit_exceeded') break;
-            if (!repository || typeof repository.ensureBounds !== 'function') break;
-            searchBounds = searchBounds.pad(BLOCK_SEARCH_EXPANSION_PAD);
-            // A failure to load the wider ground is an error, not an answer: it propagates to the
-            // loud failure below instead of being reported as a block that runs past the view.
-            await repository.ensureBounds(searchBounds);
-            await window.fetchCuratedRoadParcels(searchBounds);
-            blockSearchBoundsOverride = searchBounds;
-            try { attempt = flood(); } finally { blockSearchBoundsOverride = null; }
+        if (!multiParcelSelection.isActive) {
+            if (typeof multiParcelSelection.toggle === 'function') {
+                multiParcelSelection.toggle();
+            } else if (typeof multiParcelSelection.activate === 'function') {
+                multiParcelSelection.activate();
+            } else {
+                multiParcelSelection.isActive = true;
+                if (typeof multiParcelSelection.updateUI === 'function') {
+                    multiParcelSelection.updateUI();
+                }
+            }
         }
-        const blockParcels = attempt.parcels;
-        const floodResult = attempt.result;
-        const isValid = !!(floodResult && floodResult.isValid);
 
-        if (!isValid || blockParcels.length === 0) {
-            const invalidParcel = floodResult ? floodResult.invalidParcel : null;
-            const invalidParcelId = floodResult ? (floodResult.invalidParcelId || parcelIdFromLayer(invalidParcel)) : null;
-            const unknownLabel = tBlock('common.unknown', {}, 'Unknown');
-            const idLabel = invalidParcelId || unknownLabel;
-            const reason = floodResult ? floodResult.invalidReason : null;
-
-            if (reason === 'parcel_limit_exceeded') return failBlockParcelLimit();
-
-            // The rule is about the VIEWPORT, not about roads: a block is grown only through
-            // parcels that lie entirely inside the current view, so that a partly-loaded neighbour
-            // cannot produce a partial block. Say exactly that, and say which parcel broke it —
-            // "a bunch of parcels fully surrounded by a road" still fails when one of them runs
-            // past the screen edge, which is impossible to guess from a silent no-op.
-            // Deliberately NO camera move and NO selection change: this used to fly the map to the
-            // offending parcel and select it, which threw away both the view and the selection the
-            // user was working with to deliver what is only a message.
-            // Visibility outcomes also have a message of their own; anything else is an
-            // internal failure and must not be dressed up as one of them.
-            if (reason === 'start_not_fully_visible') {
-                return failBlockDetection(tBlock('alerts.messages.block_seed_not_fully_visible', {},
-                    'Cannot form the block: the selected parcel itself runs past the edge of the view. Block detection only follows parcels that are entirely visible, so zoom out until this parcel fits, then press Detect block again.'));
-            }
-            if (reason === 'not_fully_visible' && invalidParcelId) {
-                return failBlockDetection(tBlock('alerts.messages.block_neighbour_not_fully_visible', { id: idLabel },
-                    'Cannot form the block: parcel {{id}} belongs to it but runs past the edge of the view. Block detection only follows parcels that are entirely visible — zoom out until the whole block fits, then press Detect block again.'));
-            }
-            throw new Error(`block flood fill returned no block (valid=${isValid}, members=${blockParcels.length}, reason=${reason || 'none'})`);
+        if (!multiParcelSelection.isActive) {
+            return failBlockDetection(tBlock('alerts.messages.block_multiselect_off', {},
+                'Multi-select could not be turned on, and a block is delivered as a multi-parcel selection.'));
         }
 
         if (options.replaceSelection === true) {
@@ -2195,6 +2155,15 @@ function selectCurrentBlockIntoMultiSelection(startParcel, options = {}) {
         try {
             return await run();
         } catch (error) {
+            if (error?.code === 'block-detection-cancelled') return false;
+            if (error?.code?.startsWith('block-boundaries-')) {
+                return failBlockDetection(tBlock('alerts.messages.block_boundary_unavailable', {},
+                    'Could not load complete OSM roads, paths, railways and waterways. Please retry.'));
+            }
+            if (error?.code === 'block-parcels-incomplete' || error?.code?.startsWith('cadastral-transport-')) {
+                return failBlockDetection(tBlock('alerts.messages.block_parcels_incomplete', {},
+                    'Could not load all parcels inside this block. Please retry.'));
+            }
             console.error(`[${new Date().toISOString()}] [blockDetection] FAILED`, error);
             failBlockDetection(`${tBlock('status.messages.error_while_forming_block_from_selected_parcel', {},
                 'Error while forming block from selected parcel.')} ${error && error.message ? error.message : String(error)}`);
@@ -2208,188 +2177,16 @@ function selectCurrentBlockIntoMultiSelection(startParcel, options = {}) {
     return runReportingFailure();
 }
 
-// Rewrite: Animate block formation from selected parcel, highlight accepted, label rejected
-// Silent block detection for UX suggestions ("did you mean the whole block?"): the same
-// visibility + floodfill as the Detect button, but no animation, no selection, no status —
-// returns { count, parcelIds } or null whenever a valid block cannot be derived.
+// Suggestions reuse only a proven source enclosure for this exact fabric revision. A missing
+// cache entry offers explicit detection rather than guessing from whichever parcels are loaded.
 function detectBlockParcelIdsForParcel(parcelId) {
-    try {
-        const idStr = parcelId !== undefined && parcelId !== null ? String(parcelId) : null;
-        if (!idStr) return null;
-        const seed = liveBlockLayerForId(idStr);
-        if (!seed) return null;
-        if (isCorridorParcel(idStr, seed)) return null;
-        if (!getVisibleNonCorridorParcels().length) return null;
-        const blockParcels = [];
-        const floodResult = floodfillBlock(seed, blockParcels, liveBlockNeighborGraph(idStr));
-        if (!floodResult || !floodResult.isValid || !blockParcels.length) return null;
-        const ids = blockParcels.map(parcelIdFromLayer).filter(Boolean).map(String);
-        return { count: ids.length, parcelIds: ids };
-    } catch (error) {
-        console.warn('[parcel-blocks] silent block detection failed', error);
-        return null;
-    }
+    const result = sourceBlockDetector().cached(parcelId);
+    return result?.isValid ? { count: result.ids.length, parcelIds: result.ids } : null;
 }
 window.detectBlockParcelIdsForParcel = detectBlockParcelIdsForParcel;
 
 function animateFloodfillFromSelected(options = {}) {
-    if (window.debugLayer) window.debugLayer.clearLayers();
-    clearRejectionLabels();
-
-    const hasMultiSelect = typeof multiParcelSelection !== 'undefined' && !!multiParcelSelection;
-    if (hasMultiSelect && !multiParcelSelection.isActive) {
-        if (typeof multiParcelSelection.toggle === 'function') {
-            multiParcelSelection.toggle();
-        } else if (typeof multiParcelSelection.activate === 'function') {
-            multiParcelSelection.activate();
-        } else {
-            multiParcelSelection.isActive = true;
-            if (typeof multiParcelSelection.updateUI === 'function') {
-                multiParcelSelection.updateUI();
-            }
-        }
-    }
-
-    if (hasMultiSelect && multiParcelSelection.isActive) {
-        // Allow multi-select flow even if single selection was cleared by toggle
-        return selectCurrentBlockIntoMultiSelection(currentParcel && currentParcel.layer, options);
-    }
-
-    if (!currentParcel || !currentParcel.layer) {
-        updateStatus(tBlock('status.messages.no_parcel_selected_please_select_a_parcel_first', {}, 'No parcel selected. Please select a parcel first.'));
-        return;
-    }
-
-    const startParcelId = parcelIdFromLayer(currentParcel.layer);
-    const startParcel = startParcelId ? liveBlockLayerForId(startParcelId) : null;
-    if (!startParcel) {
-        failBlockDetection(tBlock('alerts.messages.block_seed_unresolved', {},
-            'Could not resolve the selected parcel in the live map, so there is nothing to grow a block from.'));
-        return;
-    }
-    const button = document.querySelector('.multi-select-detect-btn');
-
-    const run = () => new Promise(resolve => {
-        let finished = false;
-        const finish = () => {
-            if (!finished) {
-                finished = true;
-                resolve();
-            }
-        };
-
-        try {
-            console.log('floodfillFromSelected: Starting from parcel:', parcelIdFromLayer(startParcel));
-            const neighborMap = liveBlockNeighborGraph(parcelIdFromLayer(startParcel));
-
-            const visited = new Set();
-            const queued = new Set([parcelIdFromLayer(startParcel)]);
-            const blockParcels = [];
-            const queue = [startParcel];
-            let blockInvalid = false;
-            const acceptedStyle = {
-                fillColor: window.MapHighlight.color, fillOpacity: 0.4, color: window.MapHighlight.color, weight: 2
-            };
-            const rejectedStyle = {
-                fillColor: '#fff3f3', fillOpacity: 0.7, color: '#c00', weight: 2
-            };
-
-            function animateStep() {
-                try {
-                    if (queue.length === 0 || blockInvalid) {
-                        if (!blockInvalid && blockParcels.length > 0) {
-                            const blockName = getBlockName(blockParcels);
-                            console.log(`floodfillFromSelected: Found block "${blockName}" with ${blockParcels.length} parcels:`,
-                                blockParcels.map(parcelIdFromLayer).filter(Boolean));
-                            blockStorage.addBlock(blockName, blockParcels, true);
-                            blockPolygonCache.clear();
-                            L.popup()
-                                .setLatLng(startParcel.getBounds().getCenter())
-                                .setContent(`A block was successfully formed starting from the selected parcel. Block name: ${blockName}, parcel count: ${blockParcels.length}`)
-                                .openOn(map);
-                            updateBlocksList();
-                            if (document.getElementById('parcelBlocksCheckbox') && document.getElementById('parcelBlocksCheckbox').checked) {
-                                updateBlockLayer();
-                            }
-                        } else {
-                            L.popup()
-                                .setLatLng(startParcel.getBounds().getCenter())
-                                .setContent('A block was not formed starting from the selected parcel. No valid block could be formed. Make sure the parcel is part of a group of parcels fully enclosed by corridors and that they are all visible in the current map view.')
-                                .openOn(map);
-                        }
-                        finish();
-                        return;
-                    }
-
-                    const current = queue.shift();
-                    const parcelId = parcelIdFromLayer(current);
-                    if (!parcelId) {
-                        setTimeout(animateStep, 100);
-                        return;
-                    }
-                    if (visited.has(parcelId)) {
-                        setTimeout(animateStep, 100);
-                        return;
-                    }
-                    visited.add(parcelId);
-
-                    let reason = null;
-                    if (isCorridorParcel(parcelId, current)) reason = 'is corridor';
-                    else if (!isParcelFullyVisible(current)) {
-                        reason = 'not fully visible';
-                        blockInvalid = true;
-                    } else if (blockParcels.includes(current)) {
-                        reason = 'already in block';
-                    }
-
-                    if (reason) {
-                        const rejectedFeature = liveBlockFeatureForLayer(current);
-                        if (rejectedFeature) {
-                            L.geoJSON(rejectedFeature, { style: rejectedStyle, interactive: false }).addTo(map);
-                        }
-                        addRejectionLabel(current, reason);
-                        setTimeout(animateStep, 100);
-                        return;
-                    }
-
-                    blockParcels.push(current);
-                    const acceptedFeature = liveBlockFeatureForLayer(current);
-                    if (acceptedFeature) {
-                        L.geoJSON(acceptedFeature, { style: acceptedStyle, interactive: false }).addTo(map);
-                    }
-
-                    const neighbors = findNeighbors(current, neighborMap);
-                    for (const neighbor of neighbors) {
-                        const nId = parcelIdFromLayer(neighbor);
-                        if (!nId || queued.has(nId)) continue;
-                        if (queued.size >= window.__parcelBlockTopology.MAX_BLOCK_PARCELS) {
-                            failBlockParcelLimit();
-                            finish();
-                            return;
-                        }
-                        queued.add(nId);
-                        queue.push(neighbor);
-                    }
-                    setTimeout(animateStep, 100);
-                } catch (err) {
-                    console.error('Error during floodfill animation step:', err);
-                    updateStatus(tBlock('status.messages.error_while_forming_block_from_selected_parcel', {}, 'Error while forming block from selected parcel.'));
-                    finish();
-                }
-            }
-
-            animateStep();
-        } catch (error) {
-            console.error('Error starting floodfill animation:', error);
-            updateStatus(tBlock('status.messages.error_while_forming_block_from_selected_parcel', {}, 'Error while forming block from selected parcel.'));
-            finish();
-        }
-    });
-
-    if (typeof runWithButtonBusyState === 'function' && button) {
-        return runWithButtonBusyState(button, { key: 'common.busy.forming', fallback: 'Forming...' }, run);
-    }
-    return run();
+    return selectCurrentBlockIntoMultiSelection(currentParcel && currentParcel.layer, options);
 }
 
 // Variables to keep track of highlighted neighbors

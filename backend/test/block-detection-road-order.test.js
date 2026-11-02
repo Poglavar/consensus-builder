@@ -1,9 +1,6 @@
-// Detect block knows which parcels are roads before it judges its seed. The curated road
-// classification arrives in the background after a parcel load (road-parcels.js); the seed's
-// corridor check used to run before detection awaited it, so the answer for a road seed depended
-// on which finished first: refused when the classification had landed, a block grown from the road
-// when it had not (the e2e fixture world's flaky Detect block under load).
-import { describe, expect, it } from 'vitest';
+// The seed comes from the committed live fabric. Corridor identity is checked before the shared
+// source detector is created, so a road can never become a block seed.
+import { describe, expect, it, vi } from 'vitest';
 import { readFileSync } from 'node:fs';
 import vm from 'node:vm';
 import { parse } from '@babel/parser';
@@ -17,56 +14,60 @@ function functionSource(name) {
     return source.slice(node.start, node.end);
 }
 
-function harness({ seedIsRoadAfterFetch }) {
-    const roads = new Set();
-    const calls = { failures: [], floods: 0 };
-    const seed = { id: 'seed' };
-    const neighbour = { id: 'neighbour' };
-    const bounds = { pad() { return bounds; } };
+const detection = ['formatBlockText', 'tBlock', 'failBlockDetection', 'sourceBlockDetector', 'selectCurrentBlockIntoMultiSelection']
+    .map(functionSource).join('\n');
+
+function harness({ result, seedProperties = {} }) {
+    const seedFeature = { type: 'Feature', id: 'seed', properties: { parcelId: 'seed', ...seedProperties }, geometry: null };
+    const neighborFeature = { type: 'Feature', id: 'neighbor', properties: { parcelId: 'neighbor' }, geometry: null };
+    const seed = { id: 'seed' }, neighbor = { id: 'neighbor' };
+    const features = new Map([['seed', seedFeature], ['neighbor', neighborFeature]]);
+    const layers = new Map([['seed', seed], ['neighbor', neighbor]]);
+    const detector = { detect: vi.fn(async feature => {
+        expect(feature).toBe(seedFeature);
+        return result;
+    }) };
+    const createBrowser = vi.fn(() => detector);
+    const selectedParcels = new Set(['already-selected']);
+    const selection = { isActive: true, selectedParcels, lastSelectedParcelId: 'seed',
+        clearSelection: vi.fn(() => selectedParcels.clear()), updateUI: vi.fn(), addParcelHighlight: vi.fn() };
+    const alert = vi.fn(), reveal = vi.fn();
     const context = {
-        console,
-        window: {
-            fetchCuratedRoadParcels: async () => { if (seedIsRoadAfterFetch) roads.add('seed'); return seedIsRoadAfterFetch ? 1 : 0; },
-            CadastralParcelRepository: { ensureBounds: async () => {} }
-        },
-        document: { querySelector: () => null },
-        map: { getBounds: () => bounds },
-        multiParcelSelection: { isActive: true, selectedParcels: new Set(), lastSelectedParcelId: null, updateUI() {}, addParcelHighlight() {} },
-        currentParcel: null,
-        selectedParcelId: null,
-        blockSearchBoundsOverride: null,
-        BLOCK_SEARCH_MAX_EXPANSIONS: 3,
-        BLOCK_SEARCH_EXPANSION_PAD: 0.6,
-        tBlock: (_key, _params, fallback) => fallback,
-        failBlockDetection: message => { calls.failures.push(message); return false; },
-        liveBlockServices: () => ({}),
-        parcelIdFromLayer: layer => layer?.id || null,
-        liveBlockLayerForId: id => (id === 'seed' ? seed : null),
-        isCorridorParcel: id => roads.has(String(id)),
-        getVisibleNonCorridorParcels: () => [seed, neighbour],
-        liveBlockNeighborGraph: () => new Map(),
-        floodfillBlock: (_start, parcels) => { calls.floods += 1; parcels.push(seed, neighbour); return { isValid: true }; },
-        revealBlockParcels() {},
-        updateStatus() {}
+        console: { warn: vi.fn(), error: vi.fn() },
+        window: { __parcelBlockTopology: { MAX_BLOCK_PARCELS: 100 }, ParcelBlockDetection: { createBrowser },
+            i18n: { t: key => key }, showStyledAlert: alert },
+        document: { querySelector: () => null }, multiParcelSelection: selection,
+        currentParcel: null, selectedParcelId: null,
+        liveBlockServices: () => ({}), parcelIdFromLayer: layer => layer?.id || layer?.properties?.parcelId || null,
+        liveBlockLayerForId: id => layers.get(String(id)) || null,
+        liveBlockPeek: id => features.get(String(id)) || null,
+        revealBlockParcels: reveal, updateStatus: vi.fn()
     };
     vm.createContext(context);
-    vm.runInContext(`${functionSource('selectCurrentBlockIntoMultiSelection')}\nthis.detect = selectCurrentBlockIntoMultiSelection;`, context);
-    return { detect: () => context.detect(seed), calls, selection: context.multiParcelSelection.selectedParcels };
+    vm.runInContext(`let parcelBlockDetector = null;\n${detection}`, context);
+    return { detect: () => context.selectCurrentBlockIntoMultiSelection(seed), alert, createBrowser, detector, reveal, seedFeature, selection };
 }
 
-describe('Detect block and the road classification', () => {
-    it('refuses a seed the curated classification marks as a road, even when the mark lands during detection', async () => {
-        const { detect, calls, selection } = harness({ seedIsRoadAfterFetch: true });
-        await detect();
-        expect(calls.failures).toEqual(['This is a road or track parcel. A block is the land BETWEEN corridors — start from a parcel inside one.']);
-        expect(calls.floods).toBe(0);
-        expect(selection.size).toBe(0);
+describe('Detect block and live corridor identity', () => {
+    it('refuses a corridor seed before creating or calling the shared detector', async () => {
+        const h = harness({ result: { isValid: true, ids: ['seed'] }, seedProperties: { isCorridor: true } });
+        const before = [...h.selection.selectedParcels];
+        expect(await h.detect()).toBe(true);
+        expect(h.alert).toHaveBeenCalledOnce();
+        expect(h.alert.mock.calls[0][0]).toContain('road or track parcel');
+        expect(h.createBrowser).not.toHaveBeenCalled();
+        expect(h.detector.detect).not.toHaveBeenCalled();
+        expect([...h.selection.selectedParcels]).toEqual(before);
+        expect(h.reveal).not.toHaveBeenCalled();
     });
 
-    it('grows the block from an ordinary seed', async () => {
-        const { detect, calls, selection } = harness({ seedIsRoadAfterFetch: false });
-        expect(await detect()).toBe(true);
-        expect(calls.failures).toEqual([]);
-        expect([...selection].sort()).toEqual(['neighbour', 'seed']);
+    it('uses the shared detector result for an ordinary seed', async () => {
+        const h = harness({ result: { isValid: true, ids: ['seed', 'neighbor'], previewIds: [] } });
+        expect(await h.detect()).toBe(true);
+        expect(h.createBrowser).toHaveBeenCalledOnce();
+        expect(h.detector.detect).toHaveBeenCalledExactlyOnceWith(h.seedFeature);
+        expect([...h.selection.selectedParcels].sort()).toEqual(['already-selected', 'neighbor', 'seed']);
+        expect(h.alert).not.toHaveBeenCalled();
+        expect(h.reveal).toHaveBeenCalledOnce();
     });
 });

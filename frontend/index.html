@@ -771,7 +771,7 @@
                             <label><input type="checkbox" id="showUrbanBlocks">
                                 <span data-i18n-key="urbanBlocks.toggle">Detect and analyse blocks</span></label>
                         </div>
-                        <p id="urban-blocks-status" class="sheet-note" role="status" aria-live="polite">Load OSM roads, then colour the enclosed blocks. Parcel data is optional.</p>
+                        <p id="urban-blocks-status" class="sheet-note" role="status" aria-live="polite">Load OSM transport and water boundaries, then colour the enclosed blocks. Parcel data is optional.</p>
                         <div class="cb-actions cb-actions--grid">
                         <button type="button" id="urban-blocks-refresh" class="btn" disabled>Refresh this area</button>
                         <button type="button" id="urban-blocks-browse" class="btn" data-i18n-key="urbanBlocks.browse" disabled>Browse blocks</button>
@@ -2045,6 +2045,8 @@
             // bundle:start map-ui
             'js/urban-blocks-model.js',
             'js/urban-blocks-controller.js',
+            'js/parcels/block-detection.js',
+            'js/parcels/block-detection-preview.js',
             'js/urban-blocks-layout.js',
             'js/urban-blocks-links.js',
             'js/urban-blocks-propose.js',

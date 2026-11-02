@@ -1,5 +1,7 @@
 # Memory
 
+- 2026-11-02, user decision: Detect block uses all OSM roads, paths, tracks, railways, waterways and coasts as boundaries; an over-limit result temporarily highlights the first 100 parcels while its warning is open. See [vocabulary](docs/vocabulary.md#detected-parcel-block) for the current enclosure and membership contract.
+
 - 2026-10-30: Shared plan collaboration uses authenticated immediate state and activity notifications, one undo of the most recent eligible agent change, and targeted map updates that retain unchanged members. Prioritize MCP and conversational human–AI city editing for accessibility and ergonomics; human-to-human collaboration and simultaneous multi-user editing are deferred (user direction).
 
 - 2026-10-26: Do not add study/concept, illustrative, not-adopted or planning-permission disclaimers to authored plans or UI copy; the tool is already for studies and concepts. Use plain titles and descriptions.
