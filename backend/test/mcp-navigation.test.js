@@ -13,6 +13,24 @@ function readers({ streets = { features: [] }, result = parcels, complete = true
 const road = (id, coordinates, properties = { highway: 'residential' }) => ({ type: 'Feature', id, properties, geometry: { type: 'LineString', coordinates } });
 
 describe('MCP map navigation', () => {
+    it('excludes classified road parcels from source blocks and refuses partial classification', async () => {
+        const boundaries = { complete: true, features: [road('loop', [
+            [-0.001,-0.001], [0.004,-0.001], [0.004,0.002], [-0.001,0.002], [-0.001,-0.001]
+        ])] };
+        let truncated = false;
+        const read = readers();
+        read.request = vi.fn(async path => path === '/road-parcels' ? { ids: ['east'], truncated } : boundaries);
+        const navigation = createMcpNavigation({ read });
+        const args = { city: 'test', parcelSourceId: 'oss-wfs', action: 'block', parcelId: 'west' };
+        expect((await navigation.selectParcels(args)).selection.parcelIds).toEqual(['west', 'far-east']);
+        expect(read.request).toHaveBeenCalledWith('/road-parcels', { bbox: expect.any(String) });
+        await expect(navigation.selectParcels({ ...args, parcelId: 'east' })).rejects.toMatchObject({
+            code: 'parcel-block-unproven', message: expect.stringContaining('road or track ground')
+        });
+        truncated = true;
+        await expect(navigation.selectParcels(args)).rejects.toMatchObject({ code: 'parcel-coverage-incomplete' });
+    });
+
     it('updates a runner-injected absolute view while applying center, pan and zoom as absolute state', () => {
         const navigation = createMcpNavigation({ read: readers() });
         const current = { at: '45,16,17', mode: '2d', city: 'test', settings: { language: 'en' } };

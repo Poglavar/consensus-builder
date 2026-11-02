@@ -26,6 +26,19 @@ async function run({ boundaryTag = { railway: 'rail' }, features = [seed], compl
 }
 
 describe('bounded source-enclosure parcel detection', () => {
+    it('excludes classified source roads and their disconnected pieces without inheriting use onto authored plots', async () => {
+        const road = parcel('road', 0.006, 0.006);
+        const piece = { ...parcel('road#cadastre-2', 0.007, 0.006), properties: {
+            parcelId: 'road#cadastre-2', cadastralPart: true, cadastreParcelIds: ['road'] } };
+        const authored = { ...parcel('new-plot', 0.008, 0.006), properties: {
+            parcelId: 'new-plot', cadastreParcelIds: ['road'], producedByProposalId: 'layout' } };
+        const loadParcels = async () => ({ complete: true, features: [seed, road, piece, authored], roadParcelIds: ['road'] });
+        const { result } = await run({ extra: { loadParcels } });
+        expect(result.ids).toEqual(['seed', 'new-plot']);
+        const fromRoad = await run({ extra: { seed: road, loadParcels } });
+        expect(fromRoad.result).toMatchObject({ isValid: false, invalidReason: 'seed_is_corridor', ids: [] });
+    });
+
     it.each([
         ['rail', { railway: 'rail' }],
         ['stream', { waterway: 'stream' }]

@@ -76,7 +76,8 @@ function loadPanel({ memory = null, withEditLock = false } = {}) {
         navigator: {},
         __clickStackModel: model,
         ClickStackRelations: relations,
-        MapHighlight: { style: vi.fn(options => ({ ...options, color: '#0284c7', dashArray: null, fillOpacity: 0 })) },
+        MapHighlight: { style: vi.fn(options => ({ color: '#0284c7', fillColor: '#0284c7', weight: 4, opacity: 1,
+            fillOpacity: 0, dashArray: null, ...options })) },
         ProposalDesignGoals: require('../../frontend/js/proposals/design-goals.js'),
         DesignSync: { publishedCid: proposal => proposal?.cid || null },
         DesignMemberships: { mountSection: (body, kind, instance, _session, win, options) => {
@@ -195,6 +196,7 @@ describe('click stack selected objects and contextual navigation', () => {
         expect(h.stackEl().querySelector('.click-stack__copy-reference')).toBeNull();
         expect(h.api.holdsHighlight()).toBe(true);
         expect(h.context.highlightFeaturesForInspection).toHaveBeenLastCalledWith([parcelFeature], expect.objectContaining({ className: 'click-stack-map-focus' }));
+        expect(h.context.highlightFeaturesForInspection.mock.lastCall[1].fillOpacity).toBe(0);
         h.api.close();
         expect(h.api.isOpen()).toBe(false);
         expect(h.context.highlightFeaturesForInspection).toHaveBeenLastCalledWith([]);
@@ -344,8 +346,12 @@ describe('click stack selected objects and contextual navigation', () => {
 describe('click stack panel: a click opens, the same click closes', () => {
     it('hosts selected land, retains a collapsed selection while it changes, and keeps an empty mode reachable', () => {
         const h = loadPanel();
+        const secondParcelFeature = { ...parcelFeature, id: 'p2' };
         const multi = { isActive: true, selectedParcels: new Set(['p1']),
             showSelectionInPanel: vi.fn(() => h.parcelPanel.classList.add('visible')) };
+        h.context.ClickStackHits.featuresFor.mockImplementation(kind => kind === 'selection'
+            ? [...multi.selectedParcels].map(id => id === 'p2' ? secondParcelFeature : parcelFeature)
+            : []);
         h.context.multiParcelSelection = multi;
         const change = () => h.doc.dispatchEvent({ type: 'multi-parcel-selection-change' });
         change();
@@ -353,17 +359,24 @@ describe('click stack panel: a click opens, the same click closes', () => {
         expect(h.section('selection').querySelector('.click-stack__row-title').textContent).toBe('Selected parcels (1)');
         expect(h.section('selection').querySelector('.click-stack__row-detail').textContent).toBe('120 m²');
         expect(h.parcelPanel.parentNode).toBe(h.section('selection').querySelector('.click-stack__body'));
+        expect(h.context.highlightFeaturesForInspection).toHaveBeenLastCalledWith([parcelFeature], expect.objectContaining({
+            className: 'click-stack-map-focus', fillOpacity: 0.32
+        }));
         multi.isActive = false;
         change();
         expect(h.api.isOpen()).toBe(true);
         expect(h.parcelPanel.parentNode).toBe(h.section('selection').querySelector('.click-stack__body'));
         multi.isActive = true;
         h.api.collapse();
+        expect(h.context.highlightFeaturesForInspection.mock.lastCall[1].fillOpacity).toBe(0.32);
         multi.selectedParcels.add('p2');
         change();
         expect(h.api.current().expanded).toBeNull();
         expect(h.section('selection').querySelector('.click-stack__row-title').textContent).toBe('Selected parcels (2)');
         h.api.expand('selection');
+        expect(h.context.highlightFeaturesForInspection).toHaveBeenLastCalledWith([parcelFeature, secondParcelFeature], expect.objectContaining({
+            className: 'click-stack-map-focus', fillOpacity: 0.32
+        }));
         multi.selectedParcels.clear();
         change();
         h.observe();

@@ -278,8 +278,14 @@ export function createMcpNavigation({ read, random = Math.random }) {
                         fetchBoundaries: bbox => read.request('/blocks/roads', { bbox: bbox.join(',') }),
                         async loadParcels(enclosure) {
                             const ground = await read.parcels({ city, parcelSourceId: sourceId, geometry: enclosure.geometry });
+                            const roads = sourceId === 'oss-wfs'
+                                ? await read.request('/road-parcels', { bbox: turf.bbox(enclosure).join(',') })
+                                : { ids: [] };
+                            if (!Array.isArray(roads.ids) || roads.truncated || roads.partial) {
+                                throw Object.assign(new Error('Road parcel classification is incomplete.'), { code: 'block-parcels-incomplete' });
+                            }
                             features = sourcePieces(ground.features || []);
-                            return { ...ground, features };
+                            return { ...ground, features, roadParcelIds: roads.ids };
                         }
                     });
                 } catch (error) {
@@ -292,6 +298,8 @@ export function createMcpNavigation({ read, random = Math.random }) {
                         'Inspect the first parcels in constraints.previewParcelIds, or select a smaller group manually.'),
                     { constraints: { limit: MAX_BLOCK_PARCELS, parcelCount: result.count, previewParcelIds: result.previewIds } });
                 }
+                if (result.invalidReason === 'seed_is_corridor') throw fail('parcel-block-unproven',
+                    'The selected parcel is road or track ground, not land inside a block.', 'Choose a parcel inside the block.');
                 if (!result.isValid) throw fail('parcel-block-unproven',
                     'The focused parcel is not inside one complete surface block bounded by OSM transport and water features.',
                     'Choose a parcel inside a bounded block or select parcels individually.');

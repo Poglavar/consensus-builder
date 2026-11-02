@@ -106,9 +106,26 @@ for (const [name, boundary] of [['rail', { railway: 'rail' }], ['stream', { wate
     await page.locator('#parcel-info-panel .multi-select-detect-btn').click();
     await expect.poll(() => page.evaluate(() => [...(window as any).multiParcelSelection.selectedParcels].sort()))
       .toEqual(BLOCK_PARCEL_IDS.slice().sort());
+    await expect(page.locator('.click-stack-map-focus').first()).toHaveCSS('fill', 'rgb(255, 221, 0)');
+    await expect(page.locator('.click-stack-map-focus').first()).toHaveCSS('fill-opacity', '0.32');
     await expect(page.locator('.block-detection-preview')).toHaveCount(0);
   });
 }
+
+test('classified road inside an OSM enclosure is excluded and cannot seed a block', async ({ mockApi: page }) => {
+  await installLayerDatasets(page);
+  await page.route('**/road-parcels?**', route => route.fulfill({ json: { ids: ['HR-335754-1235'], truncated: false } }));
+  await openCity(page);
+  await openParcel(page, 'design', SEED_ID);
+  await page.locator('#parcel-info-panel .multi-select-detect-btn').click();
+  await expect.poll(() => page.evaluate(() => [...(window as any).multiParcelSelection.selectedParcels].sort()))
+    .toEqual(BLOCK_PARCEL_IDS.filter(id => id !== 'HR-335754-1235').sort());
+  await openParcel(page, 'design', 'HR-335754-1235');
+  await page.locator('#parcel-info-panel .multi-select-detect-btn').click();
+  await expect(page.getByRole('alertdialog')).toContainText('This is a road or track parcel');
+  expect(await page.evaluate(() => [...(window as any).multiParcelSelection.selectedParcels]))
+    .not.toContain('HR-335754-1235');
+});
 
 test('incomplete boundary data shows a clear alert and leaves the selection unchanged', async ({ mockApi: page }) => {
   await installLayerDatasets(page);

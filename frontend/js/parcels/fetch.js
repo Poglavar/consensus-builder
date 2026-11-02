@@ -663,6 +663,7 @@
             cache: 'no-store'
         });
         if (!Array.isArray(payload.ids)) throw new Error('Road classification response has no ids array.');
+        if (payload.truncated || payload.partial) throw new Error('Road classification response is incomplete.');
         const ids = payload.ids.map(id => String(id ?? '').trim()).filter(Boolean);
         options.onProgress?.({ done: ids.length, total: ids.length });
         return { status: 'ready', ids: Array.from(new Set(ids)) };

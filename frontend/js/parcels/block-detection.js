@@ -11,6 +11,16 @@
     const idOf = feature => String(feature?.properties?.parcelId ?? feature?.properties?.parcel_id
         ?? feature?.properties?.PARCEL_ID ?? feature?.properties?.id ?? feature?.id ?? '');
 
+    function corridorGround(feature, roadIds) {
+        const props = feature?.properties || {};
+        if (props.isCorridor === true || props.isRoad === true || props.isTrack === true) return true;
+        if (roadIds.has(idOf(feature))) return true;
+        // Disconnected pieces of the same source road retain its classification. Authored plots
+        // and remnants do not inherit road use merely because their provenance includes a road.
+        return props.cadastralPart === true && Array.isArray(props.cadastreParcelIds)
+            && props.cadastreParcelIds.some(id => roadIds.has(String(id)));
+    }
+
     function padBounds(bbox, meters) {
         const dy = meters / 111320;
         const dx = dy / Math.max(0.15, Math.cos((bbox[1] + bbox[3]) * Math.PI / 360));
@@ -48,7 +58,10 @@
         if (ground?.complete !== true || ground.truncated || !Array.isArray(ground.features)) {
             throw fail('block-parcels-incomplete', 'Parcel coverage under the block is incomplete.');
         }
-        const members = ground.features.filter(feature => !isCorridor(feature));
+        const roadIds = new Set(ground.roadParcelIds || []);
+        const excluded = feature => corridorGround(feature, roadIds) || isCorridor(feature);
+        if (excluded(seed)) return { isValid: false, invalidReason: 'seed_is_corridor', ids: [], previewIds: [], enclosure };
+        const members = ground.features.filter(feature => !excluded(feature));
         const ids = model.parcelIdsInBlock(enclosure, members, turf).sort((a, b) =>
             a === seedId ? -1 : b === seedId ? 1 : a.localeCompare(b));
         if (!ids.includes(seedId)) return { isValid: false, invalidReason: 'seed_excluded', ids: [], previewIds: [], enclosure };
@@ -106,9 +119,13 @@
                     async loadParcels(enclosure, signal) {
                         const [w, s, e, n] = win.turf.bbox(enclosure);
                         const bounds = win.L.latLngBounds([s, w], [n, e]);
-                        const loaded = await win.CadastralParcelRepository.ensureBounds(bounds, { signal, city: ownCity });
+                        const [loaded, roads] = await Promise.all([
+                            win.CadastralParcelRepository.ensureBounds(bounds, { signal, city: ownCity }),
+                            win.CadastralParcelRepository.ensureRoadIds(bounds, { city: ownCity })
+                        ]);
                         if (city() !== ownCity) throw fail('block-detection-cancelled', 'The city changed.');
-                        return { complete: loaded.status === 'ready', features: fabric.peekBounds(bounds, { includeCorridors: true }) };
+                        return { complete: loaded.status === 'ready' && ['ready', 'unsupported'].includes(roads.status),
+                            roadParcelIds: roads.ids, features: fabric.peekBounds(bounds, { includeCorridors: true }) };
                     }
                 });
                 if (city() !== ownCity) throw fail('block-detection-cancelled', 'The city changed.');

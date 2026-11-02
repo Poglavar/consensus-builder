@@ -2076,6 +2076,10 @@ function selectCurrentBlockIntoMultiSelection(startParcel, options = {}) {
                 'This is a road or track parcel. A block is the land BETWEEN corridors — start from a parcel inside one.'));
         }
         const result = await sourceBlockDetector().detect(seedFeature);
+        if (result.invalidReason === 'seed_is_corridor') {
+            return failBlockDetection(tBlock('alerts.messages.block_seed_is_corridor', {},
+                'This is a road or track parcel. A block is the land BETWEEN corridors — start from a parcel inside one.'));
+        }
         if (result.invalidReason === 'parcel_limit_exceeded') {
             return failBlockParcelLimit(result.previewIds.map(liveBlockPeek).filter(Boolean), button);
         }

@@ -164,7 +164,7 @@
             show: (kind, id, { pinned }) => {
                 const instance = global.ClickStackRelations.relatedInstance(state.stack, kind, id, model.selectedInstance);
                 const features = global.ClickStackHits.featuresFor?.(kind, instance) || [];
-                global.highlightFeaturesForInspection?.(features, focusStyle());
+                global.highlightFeaturesForInspection?.(features, focusStyle(kind));
                 if (pinned) { global.ClickStackNavigation?.showMap(el); frameFeatures(features); }
             },
             restore: () => {
@@ -384,8 +384,9 @@
         try { return run(); } finally { global.suppressCameraMoves = previous; }
     }
 
-    function focusStyle() {
-        return global.MapHighlight.style({ weight: 5, className: 'click-stack-map-focus' });
+    function focusStyle(kind) {
+        return global.MapHighlight.style({ weight: 5, className: 'click-stack-map-focus',
+            ...(kind === 'selection' ? { fillOpacity: 0.32 } : {}) });
     }
 
     // A section opened from a list or link asks for its object to be framed; the request waits
@@ -393,7 +394,7 @@
     function highlightSection(kind, instance) {
         state.preview?.reset();
         const features = global.ClickStackHits.featuresFor?.(kind, instance) || [];
-        global.highlightFeaturesForInspection?.(features, focusStyle());
+        global.highlightFeaturesForInspection?.(features, focusStyle(kind));
         if (state.frameRequest === kind && features.length) {
             state.frameRequest = null;
             frameFeatures(features);
@@ -434,7 +435,7 @@
             global.updateStatus?.(t('focusUnavailable', 'This has no shape on the map yet.'));
             return;
         }
-        global.highlightFeaturesForInspection?.(features, focusStyle());
+        global.highlightFeaturesForInspection?.(features, focusStyle(kind));
         frameFeatures(features, { always: true });
     }
 
