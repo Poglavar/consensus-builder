@@ -59,7 +59,7 @@
           "attribution": "TianDiTu Guangxi / Guangxi Natural Resources Department · 宗地 (parcel polygons)"
         },
         "buildings": {
-          "source": "overture-tiles"
+          "sources": [{ "id": "osm" }]
         },
         "sidebar": {
           "disabledSections": [

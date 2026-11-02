@@ -59,7 +59,7 @@
           "attribution": "City of Vancouver; Engineering Services. Property parcel polygons. Open Government Licence - Vancouver."
         },
         "buildings": {
-          "source": "overture-tiles"
+          "sources": [{ "id": "osm" }]
         },
         "sidebar": {
           "disabledSections": [

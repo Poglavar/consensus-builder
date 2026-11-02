@@ -2,6 +2,7 @@
 // drives the map's time control; planned designs are veiled, designs under construction hatched
 // with a crane, and ?when= / ?timeline= reopen the same moment (docs/buildout-timeline.md).
 import { test, expect } from '../helpers/fixtures';
+import { fillNativeDateTime } from '../helpers/controls';
 import type { Page } from '@playwright/test';
 import { drawCorridor, openCity, openParcel, stubBasemapTiles } from '../helpers/runtime';
 
@@ -57,6 +58,20 @@ test.describe('Build-out timeline @features', () => {
     await expect(shapes(page, 'construction')).toHaveCount(1);
     await expect(shapes(page, 'planned')).toHaveCount(0);
     await expect(page.locator('#buildout-clock-summary')).toHaveText('1 under construction, 0 not started');
+
+    const playPause = page.locator('#buildout-clock-play');
+    const may = await page.evaluate(() => (window as any).BuildoutClock.month());
+    await playPause.click();
+    await expect(playPause).toHaveAttribute('aria-pressed', 'true');
+    await expect(playPause).toHaveAttribute('aria-label', 'Pause');
+    await expect.poll(() => page.evaluate(() => (window as any).BuildoutClock.month())).not.toBe(may);
+    await playPause.click();
+    await expect(playPause).toHaveAttribute('aria-pressed', 'false');
+    await expect(playPause).toHaveAttribute('aria-label', 'Play');
+    const pausedMonth = await page.evaluate(() => (window as any).BuildoutClock.month());
+    // Give the next playback step a chance to occur; Pause should keep the chosen month in view.
+    await page.waitForTimeout(500);
+    await expect.poll(() => page.evaluate(() => (window as any).BuildoutClock.month())).toBe(pausedMonth);
 
     // The slider's end is the last month: everything built.
     await page.locator('#buildout-clock-slider').focus();
@@ -169,13 +184,22 @@ test.describe('Build-out timeline @features', () => {
     const save = dialog.getByRole('button', { name: 'Save schedule' });
     await expect(save).toBeDisabled();
     const roadCid = await page.evaluate(id => (window as any).DesignRecord.cidOf((window as any).proposalStorage.getProposal(id)), road);
-    const roadRow = dialog.locator('.plan-schedule__row').filter({ has: page.locator(`[aria-label^="${await page.evaluate(id => (window as any).proposalStorage.getProposal(id).title, road)}"]`) });
+    const roadTitle = await page.evaluate(id => (window as any).proposalStorage.getProposal(id).title, road);
+    const roadRow = dialog.locator('.plan-schedule__row').filter({ has: page.locator(`[aria-label^="${roadTitle}"]`) });
+    await dialog.locator(`.plan-schedule__bar[aria-label^="${roadTitle}"]`).click();
+    await expect(roadRow.locator('input[type="month"]').first()).toBeFocused();
+    await roadRow.getByRole('button', { name: /Clear dates$/ }).click();
+    await expect(roadRow.locator('input[type="month"]').first()).toHaveValue('');
+    await expect(roadRow.locator('input[type="month"]').last()).toHaveValue('');
+    await expect(dialog.locator('.plan-schedule__bar')).toHaveCount(1);
+    await dialog.locator(`.plan-schedule__undated-item`).filter({ hasText: roadTitle }).click();
+    await expect(roadRow.locator('input[type="month"]').first()).toBeFocused();
     // A reversed window is refused; a valid one saves.
-    await roadRow.locator('input[type="month"]').nth(0).fill('2028-03');
-    await roadRow.locator('input[type="month"]').nth(1).fill('2028-01');
+    await fillNativeDateTime(roadRow.locator('input[type="month"]').nth(0), '2028-03');
+    await fillNativeDateTime(roadRow.locator('input[type="month"]').nth(1), '2028-01');
     await expect(dialog.locator('.plan-dialog__status')).toContainText('no later than its end');
     await expect(save).toBeDisabled();
-    await roadRow.locator('input[type="month"]').nth(1).fill('2028-09');
+    await fillNativeDateTime(roadRow.locator('input[type="month"]').nth(1), '2028-09');
     await expect(save).toBeEnabled();
     await save.click();
     await expect(dialog).toHaveCount(0);

@@ -59,7 +59,7 @@
           "attribution": "Dirección de Geodesia y Catastro, Gobierno de la Provincia de San Juan · DGC Consultas Web · Parcela"
         },
         "buildings": {
-          "source": "overture-tiles"
+          "sources": [{ "id": "osm" }]
         },
         "sidebar": {
           "disabledSections": [

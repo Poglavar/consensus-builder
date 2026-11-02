@@ -1,5 +1,5 @@
 import { test, expect } from '../helpers/fixtures';
-import { openCity, stubBasemapTiles } from '../helpers/runtime';
+import { openCity, PARCEL_GEOMETRY, stubBasemapTiles } from '../helpers/runtime';
 import { agreementPanel } from '../helpers/agreements';
 import { fileAgreement, fileDesign, filePlan, pageIndex } from '../helpers/mocks/shared-server';
 
@@ -10,8 +10,8 @@ test('a Plan agreement link opens terms without applying or storing designs', as
   const index = pageIndex(primary);
   const designCid = fileDesign(index, {
     schema: 'design/v1', goal: 'park', title: 'Shared read-only agreement park', description: null, author: 'fixture',
-    city, site: { type: 'Polygon', coordinates: [[[15.96,45.8],[15.9601,45.8],[15.9601,45.8001],[15.96,45.8001],[15.96,45.8]]] }, toleranceM: null, geometry: null, origin: null, authoredAt: new Date().toISOString(),
-    structureProposal: { kind: 'park', blockName: null },
+    city, site: PARCEL_GEOMETRY, toleranceM: null, geometry: null, origin: null, authoredAt: new Date().toISOString(),
+    structureProposal: { kind: 'park', blockName: null, geometry: PARCEL_GEOMETRY },
   });
   const planContent = await primary.evaluate(({ designCid, city }) => (window as any).PlanRecord.create('Shared read-only agreement', [designCid],
     { at: '45.8,15.96,16', mode: '2d', city, language: 'en' }), { designCid, city });
@@ -51,4 +51,25 @@ test('a Plan agreement link opens terms without applying or storing designs', as
   expect(requests.some(request => request.method === 'POST' && request.path === '/designs/batch'
     && request.body.cids.includes(designCid))).toBe(true);
   expect(requests.filter(request => request.method === 'POST' && request.path !== '/designs/batch')).toEqual([]);
+
+  await primary.locator('#click-stack .click-stack__content-tabs').getByRole('tab', { name: 'Actions', exact: true }).click();
+  const apply = panel.getByRole('button', { name: 'Apply to map', exact: true });
+  await expect(apply).toBeVisible();
+  const readsBeforeApply = index.requests.filter(request => request.method === 'GET' && request.path === `/agreements/${cid}`).length;
+  await apply.click();
+  await expect.poll(() => primary.evaluate(() => (window as any).AgreementStore.list().length)).toBe(1);
+  const localCopy = await primary.evaluate(cid => {
+    const w = window as any;
+    const agreement = w.AgreementStore.list().find((row: any) => row.published?.cid === cid);
+    const designs = w.proposalStorage.getAllProposals();
+    return { agreement: agreement && { id: agreement.id, cid: agreement.published.cid },
+      designs: designs.map((row: any) => ({ title: row.title, applied: !!row.applied })) };
+  }, cid);
+  expect(localCopy.agreement).toMatchObject({ cid });
+  expect(localCopy.designs).toContainEqual({ title: 'Shared read-only agreement park', applied: true });
+  await expect(panel.locator('[data-agreement-read-only-status]')).toHaveCount(0);
+  await expect(panel).not.toHaveAttribute('data-agreement-check', 'read-only');
+  await expect(panel.getByRole('button', { name: 'Apply to map', exact: true })).toHaveCount(0);
+  expect(index.requests.filter(request => request.method === 'GET' && request.path === `/agreements/${cid}`).length).toBeGreaterThan(readsBeforeApply);
+  expect(index.requests.filter(request => request.method === 'POST' && request.path !== '/designs/batch')).toEqual([]);
 });

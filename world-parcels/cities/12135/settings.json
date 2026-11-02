@@ -59,7 +59,7 @@
           "attribution": "高雄旗津_地籍圖範例, public ArcGIS item b47bd4cd146e46e38407c207c0cde370. Kaohsiung City Land Bureau provides section context only."
         },
         "buildings": {
-          "source": "overture-tiles"
+          "sources": [{ "id": "osm" }]
         },
         "sidebar": {
           "disabledSections": [

@@ -107,6 +107,29 @@ describe('reparcellization plan utilities', () => {
         });
     });
 
+    it('finds the courtyard of a normalized single-building record without ruleMassing', () => {
+        const pool = square(0, 0, 10, 10);
+        const block = turf.polygon([pool.geometry.coordinates[0], [[3, 3], [3, 7], [7, 7], [7, 3], [3, 3]]]);
+        const authored = require('../../frontend/js/proposals/authored-record.js');
+        const proposal = { applied: false, proposalId: 'single-building', buildingProposal: {},
+            geometry: authored.compactBuildingGeometry({ ruleMassing: block, buildings: [block] }) };
+        expect(proposal.geometry).not.toHaveProperty('ruleMassing');
+        const splitProposal = { applied: false, proposalId: 'split-buildings', buildingProposal: {}, geometry: { buildings: [
+            square(0, 0, 10, 3), square(0, 7, 10, 10), square(0, 3, 3, 7), square(7, 3, 10, 7)
+        ] } };
+
+        const building = utils.buildingCourtyard(proposal, turf);
+        const candidates = utils.buildingCourtyardCandidates([proposal], pool, turf);
+        const splitCandidates = utils.buildingCourtyardCandidates([splitProposal], pool, turf);
+
+        expect(building.footprint.geometry).toEqual(block.geometry);
+        expect(building.courtyard.geometry.type).toBe('Polygon');
+        expect(candidates).toHaveLength(1);
+        expect(candidates[0].courtyard).toEqual(building.courtyard);
+        expect(splitCandidates).toHaveLength(1);
+        expect(turf.booleanEqual(splitCandidates[0].courtyard, building.courtyard)).toBe(true);
+    });
+
     it('snapshots building source title and footprint independently of later edits', () => {
         const pool = square(0, 0, 10, 10);
         const footprint = turf.polygon([[[20, 20], [28, 20], [28, 28], [20, 28], [20, 20]], [[3, 3], [3, 7], [7, 7], [7, 3], [3, 3]]]);

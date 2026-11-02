@@ -13,6 +13,7 @@ globalThis.proj4 ||= require('proj4');
 const realTurf = require('@turf/turf');
 const SingleBuildingGeometry = require('../../frontend/js/single-building-geometry.js');
 const ProposalApplyStructures = require('../../frontend/js/proposals/apply/structures.js');
+const StructureDecorationTransform = require('../../frontend/js/structure-decoration-transform.js');
 // A stored park/square tree: its point and its look (park-planting.js).
 const tree = (lng, lat) => ({ coordinate: [lng, lat], kind: 'broadleaf', heightM: 10 });
 
@@ -266,6 +267,7 @@ function makeEditorHarness(decorations, options = {}) {
         SingleBuildingGeometry,
         StructureEditorObjects: require('../../frontend/js/structure-editor-objects.js'),
         ProposalApplyStructures,
+        StructureDecorationTransform,
         __parkPlanting: require('../../frontend/js/park-planting.js'),
         FurnitureModels: require('../../frontend/js/furniture-models.js'),
         ParkEnclosures: require('../../frontend/js/park-enclosures.js'),

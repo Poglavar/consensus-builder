@@ -24,8 +24,8 @@ export async function fillNativeDateTime(input: Locator, value: string): Promise
   const marker = 'data-ui-native-datetime-boundary';
   try {
     const before = await element.evaluate((node, { marker, value }) => {
-      if (!(node instanceof HTMLInputElement) || !['date', 'datetime-local'].includes(node.type)) {
-        throw new Error('Expected a native date or datetime-local input');
+      if (!(node instanceof HTMLInputElement) || !['date', 'datetime-local', 'month'].includes(node.type)) {
+        throw new Error('Expected a native date, datetime-local or month input');
       }
       if (node.disabled || node.readOnly) throw new Error('Native date/time input is not editable');
       const before = node.value;

@@ -60,7 +60,7 @@ test.describe('Accessible map editing @features', () => {
     await expect(objects.getByRole('listbox', { name: 'Select object' }).getByRole('option')).toHaveText(['Tree 1']);
     const before = await marker(page, 'Tree 1');
     await objects.getByLabel('Move distance (m)').fill('2');
-    const east = objects.getByRole('button', { name: 'East 2 m', exact: true });
+    const east = objects.getByRole('button', { name: 'Move east 2 m', exact: true });
     await east.focus();
     await page.keyboard.press('Enter');
     await expect(east).toBeFocused();

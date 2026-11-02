@@ -154,8 +154,8 @@ describe('the left-edge mode strip is never covered on phones', () => {
 
     it('shows the avatar alone on phones with a ring that says whether a wallet is connected', () => {
         const [block] = mediaBlocksContaining(mapShellCss, '(max-width: 767.98px)', '[data-wallet="connected"]');
-        expect(ruleBody(block, '#map-container \\.username-display \\.user-avatar')).toMatch(/border:\s*2px dashed/);
-        expect(ruleBody(block, '#map-container \\.username-display\\[data-wallet="connected"\\] \\.user-avatar')).toMatch(/border:\s*2px solid var\(--cb-success\)/);
+        expect(ruleBody(block, '#map-container #username-display \\.user-avatar')).toMatch(/border:\s*2px dashed/);
+        expect(ruleBody(block, '#map-container #username-display\\[data-wallet="connected"\\] \\.user-avatar')).toMatch(/border:\s*2px solid var\(--cb-success\)/);
         expect(ruleBody(block, '#map-container \\.username-display \\.wallet-status-icon')).toMatch(/display:\s*none/);
         expect(ruleBody(block, '#map-container #username-text')).toMatch(/clip-path/);
     });

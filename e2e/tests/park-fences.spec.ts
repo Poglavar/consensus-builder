@@ -56,6 +56,18 @@ test('fences the park and a play area with gates and a swing, saved and drawn in
   await mockBuildingScene(page);
   await openCity(page);
   const proposalId = await createSpace(page, 'park');
+  const fixturePrepared = await page.evaluate(async id => {
+    const w = window as any;
+    const edited = JSON.parse(JSON.stringify(w.getProposalByIdOrHash(id)));
+    if (!edited?.structureProposal) return false;
+    edited.structureProposal.decorationDesign = {
+      version: 2,
+      trees: [], flowerbeds: [], ponds: [],
+      paths: [[[15.98196, 45.80035], [15.98244, 45.80035]]],
+    };
+    return !!(await w.ProposalManager.updateProposalInPlace(id, edited, { silent: true }))?.applied;
+  }, proposalId);
+  expect(fixturePrepared).toBe(true);
   await showProposal(page, proposalId);
   await page.locator('#proposal-details-footer .btn-edit-geometry').click();
   const editor = page.locator('#structure-geometry-editor');

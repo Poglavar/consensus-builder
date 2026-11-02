@@ -79,7 +79,13 @@ test('a Freeform draft on a tiny parcel preserves the chosen phone view and expo
   const rotation = await page.locator('#single-building-editor .on-map-editor__tools').boundingBox();
   expect(rotation!.y).toBeGreaterThan(box.y + box.height + 12);
   await expect(page.locator('#single-building-confirm')).toBeEnabled();
-  await expect(page.locator('#single-building-editor details')).toHaveCount(0);
+  const vertexControls = page.locator('#single-building-editor details.geometry-controls');
+  await expect(vertexControls).toBeVisible();
+  await expect(vertexControls.locator('summary')).toHaveText('Outline 1 vertices');
+  await vertexControls.locator('summary').focus();
+  await page.keyboard.press('Enter');
+  await expect(vertexControls.getByLabel('Latitude')).toBeVisible();
+  await expect(vertexControls.getByLabel('Longitude')).toBeVisible();
   await expect(page.locator('#single-ground-treatment')).toBeVisible();
   const parcelChoice = page.locator('#single-land-take [data-parcel-id]');
   await expect.poll(() => parcelChoice.count()).toBeGreaterThan(0);

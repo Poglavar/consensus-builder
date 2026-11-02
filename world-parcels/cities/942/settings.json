@@ -59,7 +59,7 @@
           "attribution": "Lechner Tudásközpont / OÉNY · cadastral parcel outlines"
         },
         "buildings": {
-          "source": "overture-tiles"
+          "sources": [{ "id": "osm" }]
         },
         "sidebar": {
           "disabledSections": [

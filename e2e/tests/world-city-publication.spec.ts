@@ -146,7 +146,16 @@ test.describe('Worldwide publication and city routing @core', () => {
     try {
       await device.page.goto(`/agreements/${cid}?city=new_york&reduceMotion=1`);
       await followToCity(device.page, 'zagreb', 'Zagreb');
-      expect(new URL(device.page.url()).pathname).toBe(`/agreements/${cid}`);
+      await expect(device.page.locator('section#agreement-panel')).toBeVisible({ timeout: 60_000 });
+      await expect.poll(() => new URL(device.page.url()).searchParams.get('agreement')).toBeTruthy();
+      const arrivedUrl = new URL(device.page.url());
+      expect(arrivedUrl.pathname).toBe('/');
+      const selectedAgreementId = arrivedUrl.searchParams.get('agreement');
+      expect(selectedAgreementId).toBeTruthy();
+      expect(await device.page.evaluate(({ agreementId, cid }) => {
+        const agreement = agreementId ? (window as any).AgreementStore.get(agreementId) : null;
+        return agreement?.published?.cid === cid;
+      }, { agreementId: selectedAgreementId, cid })).toBe(true);
       const panel = device.page.locator('section#agreement-panel');
       await expect(panel).toBeVisible({ timeout: 60_000 });
       await expect(device.page.locator('#agreement-panel-title')).toHaveText(title);

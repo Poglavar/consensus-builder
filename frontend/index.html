@@ -90,7 +90,7 @@
             // script in the load list. If that one file ever fails to fetch, the gate must fail
             // OPEN, not lock the sidebar forever — window load fires after every sync script.
             window.addEventListener('load', function () {
-                Promise.resolve(window.i18n?.translationsReady).finally(function () {
+                Promise.all([window.PersistentStorage?.ready, window.i18n?.translationsReady]).finally(function () {
                     document.body.classList.remove('app-loading', 'i18n-loading');
                 });
             });
@@ -457,7 +457,7 @@
         </div>
 
         <!-- Username Display -->
-        <button type="button" id="username-display" class="username-display" aria-haspopup="dialog">
+        <button type="button" id="username-display" class="map-shell-button username-display" aria-haspopup="dialog">
             <i class="fas fa-user" aria-hidden="true"></i>
             <span id="username-text">Guest</span>
         </button>
@@ -1775,7 +1775,7 @@
                 <div class="metric-group">
                     <div class="metric-label" id="road-acquire-difficulty-label">
                         <span id="road-acquire-difficulty-title" data-i18n-key="panel.road.acquiringDifficultyTitle">Modeled acquisition score</span>
-                        <button type="button" class="acquiring-difficulty-help-icon" onclick="showAcquiringDifficultyDialog()"
+                        <button type="button" class="btn btn-quiet btn-icon btn-sm" onclick="showAcquiringDifficultyDialog()"
                             aria-labelledby="road-acquire-difficulty-title" aria-haspopup="dialog">
                             <i class="fas fa-question-circle" aria-hidden="true"></i>
                         </button>

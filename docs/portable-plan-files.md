@@ -18,12 +18,15 @@ the same backend asset resolver as rendering, including the selected local backe
 development origins; absolute public model URLs retain their origin.
 
 Import validates the entire envelope before mutation. `PlanFileUI.commitImport` uses
-`ProposalManager.runParcelMutation` with `_mapMutation:false`. Draft definitions and
-`ugt-imported-plan:<plan CID>` membership/view are saved in the same staged storage transaction.
-Identical authored content is reused, regardless of publication or map application; existing
-records are never rewritten. New keys use UUIDs. The store's real normalizer is checked for
-CID equivalence before commit. A failure rolls back the batch. There is no automatic apply,
-source fetch, city switch, signing, agreement import or publication.
+`ProposalManager.runParcelMutation` with `_mapMutation:false`. Draft definitions, the bound private
+`plan:<plan CID>` snapshot and `ugt-imported-plan:<plan CID>` membership/view receipt are saved in
+the same staged storage transaction. The receipt backs the Imported plans list; the canonical
+snapshot backs the Plans list. An existing canonical row, including its publication metadata, is
+preserved when the same plan is imported again. Identical authored content is reused, regardless
+of publication or map application; existing records are never rewritten. New keys use UUIDs. The
+store's real normalizer is checked for CID equivalence before commit. A failure rolls back the
+batch. There is no automatic apply, source fetch, city switch, signing, agreement import or
+publication.
 
 Download CityJSON makes a CityJSON 2.0 file from the same plan file, with the plan file inside ([CityGML and CityJSON](citygml.md)); Import reads such a file back as that plan file. The share panel supplies the same explicit selected set to both downloads, preserving exclusions
 and agreement-scoped membership. Individual design download uses a one-member plan. Opening an
@@ -72,7 +75,8 @@ binding namespaces pass through the existing MCP source resolver before becoming
 (`hr-cadastre` uses the `oss-wfs` gateway). Regression coverage exports a browser record, opens and
 edits it through MCP, then checks the source passed to publication; other source IDs stay unchanged.
 The envelope and its retained source observations are not rewritten, so no schema or discovery
-change is needed.
+change is needed. MCP authors the same plan and member content through `ugt_draft_plan`;
+the browser keeps the local canonical snapshot separate from its import receipt.
 
 ## Verification
 

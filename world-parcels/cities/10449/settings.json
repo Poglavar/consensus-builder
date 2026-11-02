@@ -59,7 +59,7 @@
           "attribution": "ISRO/NRSC Bhuvan · Telangana cadastral boundaries TG_Cad · planning/development use"
         },
         "buildings": {
-          "source": "overture-tiles"
+          "sources": [{ "id": "osm" }]
         },
         "sidebar": {
           "disabledSections": [

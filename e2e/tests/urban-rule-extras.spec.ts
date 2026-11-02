@@ -3,8 +3,9 @@
 // and the model view draws the roof, attic and balconies in addition to the building's massing. The
 // Use select beside them sets the rule's use: a Block starts automatic.
 import { test, expect } from '../helpers/fixtures';
-import { openCity, openParcel, openBlockEditor, showProposal } from '../helpers/runtime';
+import { openCity, openParcel, openBlockEditor, showProposal, PARCEL_ID } from '../helpers/runtime';
 import { mockBuildingScene } from '../helpers/mocks/building-data';
+import { selectNativeOption } from '../helpers/controls';
 import { Page } from '@playwright/test';
 
 // Every urbanRule the design's buildings carry.
@@ -56,7 +57,7 @@ test('Balconies and a slanted roof are saved on the rule, restored on edit, and 
   const use = page.locator('#blockify-use');
   await expect(use).toHaveValue('');
   await expect(use.locator('option[value=""]')).toHaveText(/Automatic/);
-  await use.selectOption('office');
+  await selectNativeOption(use, 'office');
   await expect(balconies).toBeVisible();
   await expect(balconies).not.toBeChecked();
   await expect(depth).toBeHidden();
@@ -84,7 +85,7 @@ test('Balconies and a slanted roof are saved on the rule, restored on edit, and 
   await expect(depth).toHaveValue('1.5');
   await expect(roof).toBeChecked();
   await expect(use).toHaveValue('office');
-  await use.selectOption('');
+  await selectNativeOption(use, '');
   await balconies.uncheck();
   await expect(depth).toBeHidden();
   await roof.uncheck();
@@ -111,10 +112,51 @@ test('A Detached rule starts as housing, its Use is saved on the rule, and it ha
   const use = page.locator('#parcelbased-use');
   await expect(use).toHaveValue('residential');
   await expect(use.locator('option[value=""]')).toHaveCount(0);
-  await use.selectOption('public');
+  await selectNativeOption(use, 'public');
   await page.locator('#btn-parcelbased-done').click();
   await expect.poll(() => appliedBuildingId(page)).not.toBeNull();
   const rules = await savedRules(page, String(await appliedBuildingId(page)));
   expect(rules.length).toBeGreaterThan(0);
   for (const rule of rules) expect(rule).toMatchObject({ typology: 'parcelBased', use: 'public' });
+});
+
+test('Courtyard as a parcel opens the parcel layout and saves its derived plot', async ({ mockApi: page }) => {
+  await openCity(page);
+  const blockId = await page.evaluate(parcelId => {
+    const ring = [[15.9819, 45.8], [15.9825, 45.8], [15.9825, 45.8005], [15.9819, 45.8005], [15.9819, 45.8]];
+    const courtyard = [[15.9821, 45.8001], [15.9823, 45.8001], [15.9823, 45.8003], [15.9821, 45.8003], [15.9821, 45.8001]];
+    const footprint = { type: 'Feature', properties: {}, geometry: { type: 'Polygon', coordinates: [ring, courtyard.slice().reverse()] } };
+    return (window as any).proposalStorage.addProposal({
+      proposalId: 'block-with-courtyard', title: 'Enclosed courtyard block', goal: 'buildings', primaryType: 'Building',
+      cadastreParcelIds: [parcelId], applied: false, buildingProposal: { parameters: { mode: 'block' } },
+      geometry: { ruleMassing: footprint, buildings: [footprint] },
+    });
+  }, PARCEL_ID);
+
+  await showProposal(page, String(blockId));
+  const details = page.locator('#proposal-details-panel');
+  const courtyardAction = details.getByRole('button', { name: 'Courtyard as a parcel', exact: true });
+  await expect(courtyardAction).toBeVisible();
+  await courtyardAction.click();
+
+  const editor = page.locator('.on-map-reparcellization');
+  await expect(editor.locator('.on-map-editor__panel')).toBeVisible();
+  await expect(editor.locator('input[name="reparcel-algorithm"][value="amend"]')).toBeChecked();
+  await expect(editor.locator('[data-reparcel-status]')).toHaveText('Courtyard carved out as a plot of its own.');
+  await expect(editor.locator('[data-reparcel-newplots-table] .reparcel-newplot-row')).toHaveCount(2);
+  await editor.locator('[data-reparcel-commit]').click();
+  await expect(editor).toHaveCount(0);
+
+  const saved = await page.evaluate(() => {
+    const record = (window as any).proposalStorage.getAllProposals().find((proposal: any) => proposal.applied && proposal.goal === 'parcel-layout');
+    return record ? JSON.parse(JSON.stringify(record)) : null;
+  });
+  expect(saved).not.toBeNull();
+  expect(saved.parcelLayout.algorithm).toBe('amend');
+  const courtyardPlot = saved.parcelLayout.plots.find((plot: any) => plot.source === 'form');
+  expect(courtyardPlot?.derivation).toMatchObject({ kind: 'building-courtyard', sourceTitle: 'Enclosed courtyard block' });
+  expect(courtyardPlot.geometry.type).toBe('Polygon');
+  expect(courtyardPlot.geometry.coordinates).toHaveLength(1);
+  expect(courtyardPlot.derivation.sourceFootprint.coordinates).toHaveLength(2);
+  expect(await page.evaluate(geometry => (window as any).turf.area({ type: 'Feature', properties: {}, geometry }), courtyardPlot.geometry)).toBeGreaterThan(1);
 });

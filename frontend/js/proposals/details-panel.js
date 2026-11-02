@@ -522,10 +522,10 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
 
     // A block with an enclosed courtyard: its parcels' ground stays private (fenced) until the
     // parcel layout makes the courtyard a parcel of its own. This is the shortcut to that layout.
-    const courtyardOf = window.ReparcellizationPlanUtils?.deriveCourtyardFromFootprint;
+    const courtyardOf = window.ReparcellizationPlanUtils?.buildingCourtyard;
     const courtyardLayoutButtonHtml = (proposalKey && geometryEditable && courtyardOf
         && typeof window.startCourtyardParcelLayout === 'function'
-        && courtyardOf((fullProposal || proposal)?.geometry?.ruleMassing))
+        && courtyardOf(fullProposal || proposal, window.turf)?.courtyard)
         ? `
         <button type="button" class="btn btn-courtyard-layout"
             onclick="BusyControl.track(this, () => startCourtyardParcelLayout(${inlineJsArg(proposalKey)}))"

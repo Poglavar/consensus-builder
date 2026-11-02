@@ -59,7 +59,7 @@
           "attribution": "Prefeitura Municipal de Goiânia / SIGGO · Divisas de Lote. Municipal cadastral lot boundaries."
         },
         "buildings": {
-          "source": "overture-tiles"
+          "sources": [{ "id": "osm" }]
         },
         "sidebar": {
           "disabledSections": [

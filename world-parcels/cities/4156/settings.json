@@ -59,7 +59,7 @@
           "attribution": "Città metropolitana di Roma Capitale · Geoportale cartografico / SIT · Catasto Totale"
         },
         "buildings": {
-          "source": "overture-tiles"
+          "sources": [{ "id": "osm" }]
         },
         "sidebar": {
           "disabledSections": [

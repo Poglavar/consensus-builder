@@ -42,6 +42,7 @@ const openingTags = (html, tagName) => [...html.matchAll(new RegExp(`<${tagName}
 // Interactive controls in the sheets that are deliberately NOT commands, and why.
 const NOT_COMMANDS = {
     'designs-browse-tab': 'switches the Designs panel back to its browse tab',
+    'username-display': 'opens the profile and wallet controls, handled by UserManagement',
     // View controls now follow the search/user row in DOM order, inside the floating shell's
     // markup range; their handlers belong to the map view rather than the sheet registry.
     'mode-walk-toggle': 'map view control',

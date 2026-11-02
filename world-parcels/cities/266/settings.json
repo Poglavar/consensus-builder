@@ -59,7 +59,7 @@
           "attribution": "City of Skopje GIS · Stara Carsija cadastral parcels · partial coverage"
         },
         "buildings": {
-          "source": "overture-tiles"
+          "sources": [{ "id": "osm" }]
         },
         "sidebar": {
           "disabledSections": [

@@ -59,7 +59,7 @@
           "attribution": "PLANMalaysia / i-PLAN — Lot Johor"
         },
         "buildings": {
-          "source": "overture-tiles"
+          "sources": [{ "id": "osm" }]
         },
         "sidebar": {
           "disabledSections": [

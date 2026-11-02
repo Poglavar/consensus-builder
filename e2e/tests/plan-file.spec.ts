@@ -1,5 +1,5 @@
 // Isolated real-browser file/UI checks. No production plans, source API or wallet is contacted.
-import { test as base, expect } from '@playwright/test';
+import { test as base, expect } from '../helpers/fixtures';
 import path from 'node:path';
 import { readFileSync } from 'node:fs';
 const root = path.resolve(__dirname, '../../frontend');
@@ -13,18 +13,18 @@ const test = base.extend<{ checkPageErrors: void }>({
 });
 
 test.beforeEach(async ({ page }) => {
-  await page.route('http://localhost/plan-file-fixture', route => route.fulfill({ contentType: 'text/html', body: '<div id="downloads"></div><div id="status-log-modal"><div class="cb-dialog__footer"></div></div>' }));
+  await page.route('**/plan-file-fixture', route => route.fulfill({ contentType: 'text/html; charset=utf-8', body: '<meta charset="utf-8"><div id="downloads"></div><div id="status-log-modal"><div class="cb-dialog__footer"></div></div>' }));
   for (const file of ['city-model-reader.js', 'city-json-export.js']) {
-    await page.route(`http://localhost/js/${file}`, route => route.fulfill({
+    await page.route(`**/js/${file}`, route => route.fulfill({
       contentType: 'application/javascript', body: readFileSync(path.join(root, 'js', file), 'utf8')
     }));
   }
-  await page.goto('http://localhost/plan-file-fixture');
+  await page.goto('/plan-file-fixture');
   await page.evaluate(() => { (window as any).MapHighlight = { color: '#469973' }; });
   for (const file of ['js/app-diagnostics.js', 'vendor/noble-hashes-1.8.0/sha256.js', 'vendor/ipfs-file-cid/ipfs-file-cid.js', 'js/cid.js',
-    'js/proposals/authored-record.js', 'js/proposals/formation-depth.js', 'js/design-record.js', 'js/plan-record.js',
-    'js/plan-file.js', 'js/optional-tools-loader.js', 'js/data-source.js', 'js/ui/busy-control.js', 'js/ui/file-download.js', 'js/ui/modal-escape.js', 'js/ui/dialogs.js', 'js/proposals/dialog-share.js']) {
-    await page.addScriptTag({ path: path.join(root, file) });
+    'js/proposals/authored-record.js', 'js/proposals/formation-depth.js', 'js/design-record.js', 'js/plan-record.js', 'js/plan-composition.js',
+    'js/plan-file.js', 'js/optional-tools-loader.js', 'js/data-source.js', 'js/ui/busy-control.js', 'js/ui/file-download.js', 'js/ui/modal-escape.js', 'js/ui/dialogs.js', 'js/ui/record-label.js', 'js/proposals/dialog-share.js']) {
+    await page.addScriptTag({ url: `/${file}` });
   }
   await page.evaluate(() => {
     const w = window as any;
@@ -38,7 +38,10 @@ test.beforeEach(async ({ page }) => {
       const draft = new Map(records), puts = new Map();
       const store = { getAllProposals: () => [...draft.values()], getProposal: (id: string) => draft.get(id),
         importProposal: (record: any) => { if (w.failImport) throw new Error('Storage failed'); draft.set(record.proposalId, record); return record; } };
-      const result = await work({ _parcelMutation: { proposals: store, storage: { setItem: (key: string, value: string) => puts.set(key, value) } } });
+      const result = await work({ _parcelMutation: { proposals: store, storage: {
+        getItem: (key: string) => puts.get(key) ?? values.get(key) ?? null,
+        setItem: (key: string, value: string) => puts.set(key, value)
+      } } });
       draft.forEach((v, k) => records.set(k, v)); puts.forEach((v, k) => values.set(k, v)); w.writes++; return result;
     } };
     w.MapShare = { capture: () => ({ at: '45,15,17', mode: '2d', city: 'zagreb' }) };
@@ -47,7 +50,7 @@ test.beforeEach(async ({ page }) => {
     w.PlanWorkspace = { resolve: async (plan: any, members: any[]) => ({ ...plan, members }) };
     w.PlanDialog = { details: (plan: any) => { w.opened = plan; } };
   });
-  await page.addScriptTag({ path: path.join(root, 'js/plan-file-ui.js') });
+  await page.addScriptTag({ url: '/js/plan-file-ui.js' });
   await page.addStyleTag({ content: '.cb-dialog-backdrop{position:fixed;inset:0;background:#fff}.cb-dialog{background:white;padding:20px}.cb-dialog button{margin:5px}' });
 });
 
@@ -75,7 +78,11 @@ test('preview, cancel, repeated choice and confirmation preserve unapplied draft
   const snapshot = await page.evaluate(() => { const w = window as any; return { writes: w.writes, records: w.proposalStorage.getAllProposals(), applies: w.applies }; });
   expect(snapshot.records).toHaveLength(1); expect(snapshot.records[0].applied).toBe(false); expect(snapshot.records[0].published).toBeUndefined(); expect(snapshot.applies).toBe(0);
   await page.getByRole('button', { name: 'Open imported plan' }).click();
-  expect(await page.evaluate(() => (window as any).opened.content.view.at)).toBe('45,15,17');
+  const opened = await page.evaluate(() => (window as any).opened);
+  expect(opened.content.title).toBe('File plan');
+  expect(opened.content.view.at).toBe('45,15,17');
+  expect(opened.members.map((member: any) => member.proposalId)).toEqual(snapshot.records.map((record: any) => record.proposalId));
+  expect(opened.memberIds).toHaveLength(1);
   await choose(page); await page.getByRole('button', { name: 'Import as drafts' }).click();
   await expect(page.getByRole('heading', { name: 'Plan imported', exact: true })).toBeVisible();
   expect(await page.evaluate(() => (window as any).proposalStorage.getAllProposals().length)).toBe(1);
@@ -110,11 +117,13 @@ test('diagnostic download redacts private error text and sends nothing automatic
   for await (const chunk of stream!) chunks.push(Buffer.from(chunk));
   const text = Buffer.concat(chunks).toString(), data = JSON.parse(text);
   expect(download.suggestedFilename()).toBe('ugt-diagnostics.json');
+  expect(text).toBe(await page.evaluate(() => (window as any).AppDiagnostics.exportText()));
   expect(data.entries[0].code).toBe('plan-export-failed');
   for (const value of ['SECRET', 'alice@example.com', 'PRIVATE', '192.0.2.1', 'Private plan']) expect(text).not.toContain(value);
   await expect(page.getByRole('button', { name: 'Send diagnostic report', exact: true })).toHaveCount(0);
   await page.getByRole('button', { name: 'Clear diagnostics', exact: true }).click();
   expect(await page.evaluate(() => (window as any).AppDiagnostics.snapshot().entries)).toEqual([]);
+  expect(await page.evaluate(() => (window as any).AppDiagnostics.exportText())).toBe('{\n  "version": 1,\n  "entries": []\n}\n');
   expect(requests).toEqual([]);
 });
 
@@ -205,12 +214,12 @@ for (const [label, reference, expectedUrl] of [
 const diagnosticDictionaries = Object.fromEntries(['en', 'es', 'hr', 'sr'].map(lang =>
   [lang, JSON.parse(readFileSync(path.join(root, 'i18n', `${lang}.json`), 'utf8')).diagnostics]));
 async function loadDiagnosticLanguages(page: any) {
-  await page.route('http://localhost/i18n/*.json?*', route => {
+  await page.route('**/i18n/*.json?*', route => {
     const name = path.basename(new URL(route.request().url()).pathname);
     return route.fulfill({ contentType: 'application/json', body: readFileSync(path.join(root, 'i18n', name), 'utf8') });
   });
   // Keep the real startup order and asynchronous dictionary loading.
-  for (const file of ['js/i18n.js', 'js/i18n-loader.js']) await page.addScriptTag({ path: path.join(root, file) });
+  for (const file of ['js/i18n.js', 'js/i18n-loader.js']) await page.addScriptTag({ url: `/${file}` });
   await page.evaluate(() => (window as any).i18n.translationsReady);
 }
 
@@ -231,7 +240,7 @@ test('diagnostic controls and import errors follow all supported languages after
 });
 
 test('optional diagnostic sending localizes confirmation and outcomes and keeps its busy state across a language change', async ({ page }) => {
-  await page.goto('http://localhost/plan-file-fixture');
+  await page.goto('/plan-file-fixture');
   await page.evaluate(() => {
     const w = window as any;
     w.UGT_DIAGNOSTICS_SUBMISSION_ENABLED = true;
@@ -241,7 +250,7 @@ test('optional diagnostic sending localizes confirmation and outcomes and keeps 
       w.finishDiagnosticSend = () => resolve({ ok: true, json: async () => ({ accepted: JSON.parse(options.body).entries.length }) });
     }) : fetch(url, options);
   });
-  for (const file of ['js/app-diagnostics.js', 'js/ui/busy-control.js', 'js/ui/file-download.js']) await page.addScriptTag({ path: path.join(root, file) });
+  for (const file of ['js/app-diagnostics.js', 'js/ui/busy-control.js', 'js/ui/file-download.js']) await page.addScriptTag({ url: `/${file}` });
   await loadDiagnosticLanguages(page);
   await page.evaluate(() => {
     const w = window as any; w.i18n.setLanguage('hr', { persist: false });

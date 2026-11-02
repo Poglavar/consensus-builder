@@ -59,7 +59,7 @@
           "attribution": "Daegu Metropolitan City / Daegu Map Portal (gis.go.kr); dg:LSMD_CONT_LDREG."
         },
         "buildings": {
-          "source": "overture-tiles"
+          "sources": [{ "id": "osm" }]
         },
         "sidebar": {
           "disabledSections": [

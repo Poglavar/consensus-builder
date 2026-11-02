@@ -34,7 +34,8 @@ export async function recordControlCoverage(observeContexts: ObserveContexts, te
     const describe = (element: Element) => {
       const blockifyHandle = element.closest(blockifyHandleSelector);
       const field = element.closest(fieldSelector);
-      const button = blockifyHandle || field || buttonFor(element);
+      const clickable = buttonFor(element);
+      const button = blockifyHandle || (clickable && (!field || field.contains(clickable)) ? clickable : field);
       if (!button) return null;
       // Leaflet gives every keyboard marker a button role, including explicit interactive:false
       // labels. Its leaflet-interactive class identifies live marker targets. Authored DOM handlers
@@ -80,7 +81,7 @@ export async function recordControlCoverage(observeContexts: ObserveContexts, te
       const nativeSelect = event.type === 'change' && field.tagName === 'SELECT'
         && field.hasAttribute('data-ui-native-select-boundary')
         && field.getAttribute('data-ui-native-select-boundary') === field.value;
-      const nativeDateTime = event.type === 'change' && field.tagName === 'INPUT' && ['date', 'datetime-local'].includes(field.type)
+      const nativeDateTime = event.type === 'change' && field.tagName === 'INPUT' && ['date', 'datetime-local', 'month'].includes(field.type)
         && field.hasAttribute('data-ui-native-datetime-boundary')
         && field.getAttribute('data-ui-native-datetime-boundary') === field.value;
       // File selection is an operating-system boundary supplied by Playwright's file chooser.

@@ -11,7 +11,7 @@
 .chat-agreement-status { margin: 0; color: var(--cb-text-muted); font-size: var(--cb-text-sm); }
 .chat-tips { flex: 0 1 auto; max-height: 8.5rem; }
 .chat-tips[open] { overflow-y: auto; }
-.chat-tips__summary { position: sticky; top: 0; z-index: 1; cursor: pointer; color: var(--cb-text-muted); font-size: var(--cb-text-sm); font-weight: 600; background: var(--cb-surface); }
+.chat-tips__summary { position: sticky; top: 0; z-index: var(--cb-z-local-1); cursor: pointer; color: var(--cb-text-muted); font-size: var(--cb-text-sm); font-weight: 600; background: var(--cb-surface); }
 .chat-tips__list { display: flex; flex-wrap: wrap; align-items: center; gap: var(--cb-space-1); }
 .chat-tip { max-width: 100%; white-space: normal; text-align: start; }
 .chat-status:empty,

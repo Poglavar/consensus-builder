@@ -13,8 +13,8 @@ describe('chat MCP client', () => {
     it('round-trips a hosted tool through the internal HTTP listener', async () => {
         storeDirectory = mkdtempSync(join(tmpdir(), 'chat-mcp-'));
         service = createMcpHttpService({ env: {}, storeDirectory, factory: options => createUrbanGameTheoryMcpServer({ ...options, mode: 'hosted', env: {}, tools: { explain: async () => ({ entries: ['ok'] }) } }) });
-        await new Promise(resolve => service.http.listen(0, '127.0.0.1', resolve));
-        caller = createMcpToolCaller({ url: `http://127.0.0.1:${service.http.address().port}/mcp` });
+        await new Promise(resolve => service.http.listen(0, '::', resolve));
+        caller = createMcpToolCaller({ url: `http://[::1]:${service.http.address().port}/mcp` });
         const catalog = await caller.listTools();
         expect(catalog.tools.map(t => t.name)).toContain('ugt_explain');
         const result = await caller.callTool('ugt_explain', { term: 'test' });

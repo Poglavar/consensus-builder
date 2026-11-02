@@ -12,6 +12,9 @@ import { parseCityConfigs } from '../../scripts/lib/parcel-city-settings.mjs';
 
 const REPO = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 const read = rel => readFileSync(path.join(REPO, rel), 'utf8');
+const configs = parseCityConfigs(read(CITY_FILE_PATHS.source));
+const cityCount = Object.values(configs).filter(city => !city.explore).length;
+const generatedFileCount = Object.keys(configs).length + 1;
 const stable = value => JSON.stringify(value, (_k, v) => v === Infinity ? 'Infinity'
     : (v && typeof v === 'object' && !Array.isArray(v)) ? Object.keys(v).sort().reduce((o, k) => { o[k] = v[k]; return o; }, {}) : v);
 
@@ -29,10 +32,10 @@ describe('generated city files', () => {
             writeFileSync(path.join(root, CITY_FILE_PATHS.source), read(CITY_FILE_PATHS.source));
             writeFileSync(path.join(root, CITY_FILE_PATHS.cities, 'gone.js'), '// no city owns this\n');
             const first = writeCityFiles(root);
-            expect(first).toEqual({ written: first.total, removed: 1, total: 1993 });
+            expect(first).toEqual({ written: first.total, removed: 1, total: generatedFileCount });
             expect(existsSync(path.join(root, CITY_FILE_PATHS.cities, 'gone.js'))).toBe(false);
             expect(readFileSync(path.join(root, CITY_FILE_PATHS.index), 'utf8')).toBe(read(CITY_FILE_PATHS.index));
-            expect(writeCityFiles(root)).toEqual({ written: 0, removed: 0, total: 1993 });
+            expect(writeCityFiles(root)).toEqual({ written: 0, removed: 0, total: generatedFileCount });
         } finally { rmSync(root, { recursive: true, force: true }); }
     });
 });
@@ -79,7 +82,7 @@ describe('browser boot', () => {
         run(`${CITY_FILE_PATHS.cities}/zagreb.js`);
         manager.markCityConfigLoaded();
         const cities = manager.getAvailableCities();
-        expect(cities.length).toBe(1991);
+        expect(cities.length).toBe(cityCount);
         const zurich = manager.getCityConfig('zurich');
         expect(zurich.label).toBe('Zurich, Switzerland');
         expect(manager.getCityCenter(zurich)).toEqual([47.3819463819352, 8.53646620813248]);
@@ -117,7 +120,7 @@ describe('node', () => {
         vm.runInContext(read(CITY_FILE_PATHS.source), context, { filename: CITY_FILE_PATHS.source });
         vm.runInContext(read('frontend/js/city-config.js'), context, { filename: 'city-config.js' });
         const manager = context.CityConfigManager;
-        expect(manager.getAvailableCities().length).toBe(1991);
+        expect(manager.getAvailableCities().length).toBe(cityCount);
         expect(manager.getCurrentCityConfig().id).toBe('new_york');
         expect(manager.getCityConfig('zagreb').planning).toBeTruthy();
     });

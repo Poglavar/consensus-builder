@@ -59,7 +59,7 @@
           "attribution": "Bursa Büyükşehir Belediyesi / Coğrafi Bilgi Sistemleri Şube Müdürlüğü"
         },
         "buildings": {
-          "source": "overture-tiles"
+          "sources": [{ "id": "osm" }]
         },
         "sidebar": {
           "disabledSections": [

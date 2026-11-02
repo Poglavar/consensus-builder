@@ -1,6 +1,7 @@
 import { test, expect } from '../helpers/fixtures';
 import { openCity, stubBasemapTiles } from '../helpers/runtime';
 import { proposeOverPark } from '../helpers/agreements';
+import { selectNativeOption } from '../helpers/controls';
 
 for (const width of [1280, 390]) {
   test(`Lists shares filters, composes and inspects plans, and deletes only drafts at ${width}px`, async ({ mockApi: page }) => {
@@ -46,6 +47,12 @@ for (const width of [1280, 390]) {
     // A plan's designs are ticked here, from Plans → Create plan as from Designs, and shown on the map together.
     await sheet.getByRole('tab', { name: 'Plans', exact: true }).click();
     await expect(sheet.locator('#lists-actions .lists-actions__grid > button')).toHaveText(['Create plan', 'Compare plans', 'Import plan file', 'Imported plans']);
+    await sheet.locator('#lists-actions').getByRole('button', { name: 'Compare plans', exact: true }).click();
+    await expect(sheet.locator('#lists-actions .lists-actions__selecting')).toBeVisible();
+    await sheet.locator('#lists-actions').getByRole('button', { name: 'Cancel', exact: true }).click();
+    await expect(sheet.locator('#lists-actions .lists-actions__selecting')).toHaveCount(0);
+    await expect(sheet.locator('#lists-actions .lists-actions__grid')).toBeVisible();
+    await expect(sheet.locator('#plan-list-host input[type=checkbox]')).toHaveCount(0);
     await sheet.locator('#lists-actions').getByRole('button', { name: 'Create plan', exact: true }).click();
     await expect(sheet.getByRole('tab', { name: 'Designs', exact: true })).toHaveAttribute('aria-selected', 'true');
     const next = sheet.getByRole('button', { name: 'Continue', exact: true }); await expect(next).toBeDisabled();
@@ -82,8 +89,38 @@ for (const width of [1280, 390]) {
     await expect(downloadDialog.locator('[data-plan-file-action="import"]')).toHaveCount(0);
     const planDownload = page.waitForEvent('download');
     await downloadDialog.getByRole('button', { name: 'Download editable plan', exact: true }).click();
-    expect((await planDownload).suggestedFilename()).toBe('residents-plan.ugt.json');
+    const downloadedPlan = await planDownload;
+    expect(downloadedPlan.suggestedFilename()).toBe('residents-plan.ugt.json');
+    const planChunks: Buffer[] = [];
+    for await (const chunk of (await downloadedPlan.createReadStream())!) planChunks.push(Buffer.from(chunk));
     await page.keyboard.press('Escape'); await expect(downloadDialog).toBeHidden();
+    const planPicker = page.waitForEvent('filechooser');
+    await sheet.locator('[data-lists-import="plans"]').click();
+    await (await planPicker).setFiles({ name: downloadedPlan.suggestedFilename(), mimeType: 'application/json', buffer: Buffer.concat(planChunks) });
+    await expect(page.getByRole('heading', { name: 'Review plan file', exact: true })).toBeVisible();
+    await page.getByRole('button', { name: 'Import as drafts', exact: true }).click();
+    const planImported = page.locator('.cb-dialog').filter({ hasText: 'Plan imported' });
+    await expect(planImported).toBeVisible(); await page.keyboard.press('Escape'); await expect(planImported).toBeHidden();
+    await sheet.locator('#lists-actions').getByRole('button', { name: 'Imported plans', exact: true }).click();
+    const importedPlans = page.locator('.cb-dialog').filter({ hasText: 'Imported plans' });
+    const importedPlanButton = importedPlans.getByRole('button', { name: /Residents plan/ });
+    await expect(importedPlanButton).toBeVisible();
+    const importedPlanBox = (await importedPlans.boundingBox())!;
+    expect(importedPlanBox.x).toBeGreaterThanOrEqual(0);
+    expect(importedPlanBox.x + importedPlanBox.width).toBeLessThanOrEqual(width);
+    expect(await importedPlans.evaluate(el => el.scrollWidth <= el.clientWidth)).toBe(true);
+    await page.keyboard.press('Escape'); await expect(importedPlans).toBeHidden();
+    const savedPlanCids = await page.evaluate(() => (window as any).PlanWorkspace.list().map((row:any) => row.cid));
+    await planRow.getByRole('button', { name: 'Construction schedule', exact: true }).click();
+    const scheduleEditor = page.locator('.plan-schedule');
+    await expect(scheduleEditor.locator('.plan-schedule__rows li')).toHaveCount(1);
+    const scheduleBox = (await page.locator('.cb-dialog').filter({ has: scheduleEditor }).boundingBox())!;
+    expect(scheduleBox.x).toBeGreaterThanOrEqual(0);
+    expect(scheduleBox.x + scheduleBox.width).toBeLessThanOrEqual(width);
+    await scheduleEditor.getByRole('button', { name: 'Cancel', exact: true }).click();
+    await expect(scheduleEditor).toBeHidden();
+    expect(await page.evaluate(() => (window as any).PlanWorkspace.list().map((row:any) => row.cid))).toEqual(savedPlanCids);
+    await openLists(); await sheet.getByRole('tab', { name: 'Plans', exact: true }).click();
     await expectInsets();
     await expect(planRow).toContainText('Draft');
     // The title shows the plan on the map and keeps the list open; Open selects it.
@@ -153,12 +190,26 @@ for (const width of [1280, 390]) {
     await expect(agreementRow.getByRole('button', { name: 'Delete draft', exact: true })).toHaveCount(0);
     // Import agreement file adds a local draft under a new id beside the published one.
     await expect(sheet.locator('#lists-actions .lists-actions__grid > button')).toHaveText(['Create agreement', 'Compare agreements', 'Import agreement file', 'Imported agreements']);
-    await sheet.locator('#lists-actions input[data-lists-import-input="agreements"]').setInputFiles({ name: 'residents-agreement.ugt-agreement.json', mimeType: 'application/json', buffer: Buffer.concat(agreementChunks) });
+    const agreementPicker = page.waitForEvent('filechooser');
+    await sheet.locator('[data-lists-import="agreements"]').click();
+    await (await agreementPicker).setFiles({ name: 'residents-agreement.ugt-agreement.json', mimeType: 'application/json', buffer: Buffer.concat(agreementChunks) });
     await page.locator('.cb-dialog').filter({ hasText: 'Review agreement file' }).getByRole('button', { name: 'Import as drafts', exact: true }).click();
     const importedDialog = page.locator('.cb-dialog').filter({ hasText: 'Agreement imported' });
     await expect(importedDialog).toBeVisible(); await page.keyboard.press('Escape'); await expect(importedDialog).toBeHidden();
     const importedRow = sheet.locator(`#designs-agreements .lists-item:not([data-list-id="${agreement.id}"])`).filter({ hasText: 'Residents agreement' });
     await expect(importedRow).toHaveCount(1); await expect(importedRow).toContainText('Draft');
+    await sheet.locator('.lists-filter-toggle').click();
+    const publication = sheet.locator('[data-list-filter="publication"]');
+    await selectNativeOption(publication, 'published');
+    await expect(sheet.locator(`#designs-agreements .lists-item[data-list-id="${agreement.id}"]`)).toBeVisible();
+    await expect(importedRow).toHaveCount(0);
+    await sheet.getByRole('searchbox').fill('no agreement with this title');
+    await selectNativeOption(sheet.locator('[data-list-filter="sort"]'), 'newest');
+    await sheet.locator('#lists-filter-panel').getByRole('button', { name: 'Reset', exact: true }).click();
+    await expect(sheet.getByRole('searchbox')).toHaveValue('');
+    await expect(sheet.locator('[data-list-filter="publication"]')).toHaveValue('all');
+    await expect(sheet.locator('[data-list-filter="sort"]')).toHaveValue('title');
+    await expect(importedRow).toHaveCount(1);
     await sheet.locator('#lists-actions').getByRole('button', { name: 'Imported agreements', exact: true }).click();
     const importedList = page.locator('.cb-dialog').filter({ hasText: 'Imported agreements' });
     await expect(importedList.locator('.record-id')).toBeVisible();
@@ -178,10 +229,63 @@ for (const width of [1280, 390]) {
     const designDialog = page.locator('.cb-dialog').filter({ hasText: 'Download design' });
     const designDownload = page.waitForEvent('download');
     await designDialog.getByRole('button', { name: 'Download GeoJSON', exact: true }).click();
-    expect((await designDownload).suggestedFilename()).toMatch(/^park.*\.geojson$/);
+    const downloadedDesign = await designDownload;
+    expect(downloadedDesign.suggestedFilename()).toMatch(/^park.*\.geojson$/);
     await page.keyboard.press('Escape'); await expect(designDialog).toBeHidden();
+    const designFile = await page.evaluate(async id => {
+      const w = window as any;
+      const record = structuredClone(w.proposalStorage.getProposal(id));
+      record.title = 'Residents design import'; record.name = record.title;
+      return w.PlanFile.stringify(await w.PlanFile.create([record], {
+        title: record.title, view: w.MapShare.capture(w)
+      }));
+    }, agreement.parkId);
+    const designPicker = page.waitForEvent('filechooser');
+    await sheet.locator('[data-lists-import="designs"]').click();
+    await (await designPicker).setFiles({ name: 'residents-design.ugt.json', mimeType: 'application/json', buffer: Buffer.from(designFile) });
+    await expect(page.getByRole('heading', { name: 'Review design file', exact: true })).toBeVisible();
+    await page.getByRole('button', { name: 'Import as drafts', exact: true }).click();
+    await expect(page.locator('.ephemeral-message[role="status"]').filter({ hasText: 'Designs imported as local drafts: 1' })).toBeVisible();
+    await sheet.locator('#lists-actions').getByRole('button', { name: 'Imported designs', exact: true }).click();
+    const importedDesigns = page.locator('.cb-dialog').filter({ hasText: 'Imported designs' });
+    const importedDesignButton = importedDesigns.getByRole('button', { name: /Residents design import/ });
+    await expect(importedDesignButton).toBeVisible();
+    await expect(importedDesignButton.locator('.record-id')).toBeVisible();
+    const importedDesignBox = (await importedDesigns.boundingBox())!;
+    expect(importedDesignBox.x).toBeGreaterThanOrEqual(0);
+    expect(importedDesignBox.x + importedDesignBox.width).toBeLessThanOrEqual(width);
+    expect(await importedDesigns.evaluate(el => el.scrollWidth <= el.clientWidth)).toBe(true);
+    await page.keyboard.press('Escape'); await expect(importedDesigns).toBeHidden();
     // The design is published, so it has no delete either.
-    await expect(sheet.locator('#proposal-list-host .lists-item')).toContainText('Published');
-    await expect(sheet.locator('#proposal-list-host .lists-item').getByRole('button', { name: 'Delete draft', exact: true })).toHaveCount(0);
+    const originalDesign = sheet.locator(`#proposal-list-host .lists-item[data-list-id="${agreement.parkId}"]`);
+    await expect(originalDesign).toContainText('Published');
+    await expect(originalDesign.getByRole('button', { name: 'Delete draft', exact: true })).toHaveCount(0);
+    const importedDesign = sheet.locator('#proposal-list-host .lists-item').filter({ hasText: 'Residents design import' });
+    await expect(importedDesign).toContainText('Draft');
+    await expect(importedDesign.getByRole('button', { name: 'Delete draft', exact: true })).toBeVisible();
   });
 }
+
+test('Load more appends the next page of saved plans', async ({ mockApi: page }) => {
+  const offsets: number[] = [];
+  await page.route('**/plans?*', route => {
+    const offset = Number(new URL(route.request().url()).searchParams.get('offset') || 0);
+    offsets.push(offset);
+    const cid = `fixture-plan-${offset}`;
+    const plan = { cid, title: offset ? 'Second page plan' : 'First page plan', author: 'Fixture', createdAt: '2026-10-01T00:00:00.000Z',
+      content: { title: offset ? 'Second page plan' : 'First page plan', designCids: [] } };
+    return route.fulfill({ json: { plans: [plan], hasMore: offset === 0, nextOffset: 1 } });
+  });
+  await openCity(page);
+  await page.locator('#proposals-button').click();
+  const sheet = page.locator('#proposals-sheet');
+  await sheet.getByRole('tab', { name: 'Plans', exact: true }).click();
+  const rows = sheet.locator('#plan-list-host .lists-item');
+  await expect(rows).toHaveCount(1);
+  await expect(rows.first()).toContainText('First page plan');
+  await sheet.locator('#plan-list-host').getByRole('button', { name: 'Load more', exact: true }).click();
+  await expect(rows).toHaveCount(2);
+  await expect(rows.nth(1)).toContainText('Second page plan');
+  await expect(sheet.locator('#lists-status')).toHaveText('Shown: 2');
+  expect(offsets).toEqual([0, 1]);
+});

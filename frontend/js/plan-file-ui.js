@@ -87,7 +87,19 @@
             return observe('import', { entity: 'plan', planKey: win.Cid.cidOfObject(file.plan), code: 'plan-import-failed' }, () => win.ProposalManager.runParcelMutation('import-plan-file', null, options => {
                 const context = options._parcelMutation;
                 const plan = win.PlanFile.importInto(file, context.proposals);
-                if (keepPlan) context.storage.setItem(PREFIX + plan.cid, JSON.stringify(plan));
+                if (keepPlan) {
+                    context.storage.setItem(PREFIX + plan.cid, JSON.stringify(plan));
+                    const planKey = `plan:${plan.cid}`;
+                    // Keep the portable-import receipt for Imported, but expose only the bound
+                    // named-plan shape to Lists. An existing canonical row may carry publication
+                    // metadata; the import receipt must not replace or downgrade it.
+                    if (!context.storage.getItem(planKey)) {
+                        const members = plan.memberIds.map(id => context.proposals.getProposal(id));
+                        if (members.some(member => !member)) throw new Error(t('missingMembers', 'Some imported designs were removed from this device. Import the file again to restore them.'));
+                        const snapshot = win.PlanComposition.bind(plan, members);
+                        context.storage.setItem(planKey, JSON.stringify(snapshot));
+                    }
+                }
                 return plan;
             }, { _mapMutation: false }));
         }

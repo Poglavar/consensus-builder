@@ -72,9 +72,10 @@ describe('headless app formation host', () => {
         expect(result.previewUrl).toBeNull();
         expect(result.draftArtifact).toMatchObject({ agreement: result.agreement, parcelSourceId: 'selected-source' });
         const inspected = await tools.inspectAgreement({ plan: result.draftArtifact, filter: { kind: 'piece' } });
-        expect(inspected.items[0]).toHaveProperty('recipient');
-        expect(inspected).toHaveProperty('parties');
-        expect(inspected).toHaveProperty('cashSchedule');
+        expect(inspected.items[0]).not.toHaveProperty('recipient');
+        expect(inspected.parties).toBeNull();
+        expect(inspected.cashSchedule).toBeNull();
+        expect(inspected.rule).toEqual({ electorate: 'community', binding: false });
         const revised = await tools.editAgreement({ plan: result.draftArtifact, expectedCid: result.cid, terms: { title: 'Revised park agreement' } });
         expect(revised.agreement.planCid).toBe(result.agreement.planCid);
         expect(revised.agreement.title).toBe('Revised park agreement');

@@ -343,9 +343,9 @@ body.three-mode-active .map-search :is(.map-search__chip-label, .map-search__fie
         --map-search-compact-width: 150px;
     }
 
-    /* Leave room for massing, the avatar, Layers and Settings on the same top row. */
+    /* Leave room for massing, the avatar, Chat, Layers and Settings on the same top row. */
     .map-search:not(.is-expanded) {
-        max-width: min(var(--map-search-compact-width), calc(100vw - 2 * var(--map-shell-edge) - 4 * var(--map-shell-button-size) - 4 * var(--map-shell-gap)));
+        max-width: min(var(--map-search-compact-width), calc(100vw - 2 * var(--map-shell-edge) - 5 * var(--map-shell-button-size) - 5 * var(--map-shell-gap)));
     }
 
     .map-search__chip.is-explore {
@@ -416,5 +416,5 @@ body.three-mode-active .map-search :is(.map-search__chip-label, .map-search__fie
     :root { --map-search-compact-width: 120px; }
     body.explore-city { --map-search-compact-width: 120px; }
     .map-search__chip,
-    .map-search__chip.is-explore { max-width: 76px; }
+    .map-search__chip.is-explore { max-width: 76px; padding: 0 4px; gap: 4px; }
 }

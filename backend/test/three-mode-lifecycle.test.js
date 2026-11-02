@@ -102,6 +102,7 @@ it('resolves a caller waiting on scene readiness as false when the pending scene
         isActive: true,
         sceneReady: false,
         sceneReadyPromise: ready,
+        rendered3DStructureSignatures: new Map(),
         resolveSceneReady: resolveReady,
         warmSceneTimer: null,
         warmSceneKey: null,

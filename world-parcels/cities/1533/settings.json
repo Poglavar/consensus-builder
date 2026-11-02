@@ -59,7 +59,7 @@
           "attribution": "Department of Lands, Thailand · surveyed NSL public-land parcels · bounded partial coverage"
         },
         "buildings": {
-          "source": "overture-tiles"
+          "sources": [{ "id": "osm" }]
         },
         "sidebar": {
           "disabledSections": [

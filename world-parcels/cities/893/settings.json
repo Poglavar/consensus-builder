@@ -59,7 +59,7 @@
           "attribution": "OPAMSS · Geo_OPAMSS_Planimetria · San Salvador layer 31; native parcel geometry and cod_parcel retained."
         },
         "buildings": {
-          "source": "overture-tiles"
+          "sources": [{ "id": "osm" }]
         },
         "sidebar": {
           "disabledSections": [

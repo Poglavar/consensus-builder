@@ -96,10 +96,10 @@ describe('MCP private plan member parity', () => {
         const internal = service.createInternal();
         const client = new Client({ name: 'chat-mcp-parity', version: '1' });
         try {
-            service.http.listen(0, '127.0.0.1'); await once(service.http, 'listening');
-            internal.http.listen(0, '127.0.0.1'); await once(internal.http, 'listening');
-            const publicBase = `http://127.0.0.1:${service.http.address().port}`;
-            const internalBase = `http://127.0.0.1:${internal.http.address().port}`;
+            service.http.listen(0, '::'); await once(service.http, 'listening');
+            internal.http.listen(0, '::'); await once(internal.http, 'listening');
+            const publicBase = `http://[::1]:${service.http.address().port}`;
+            const internalBase = `http://[::1]:${internal.http.address().port}`;
             await fetch(`${publicBase}/mcp`);
             expect((await fetch(`${publicBase}/mcp`)).status).toBe(429);
             await client.connect(new StreamableHTTPClientTransport(new URL(`${internalBase}/mcp`)));

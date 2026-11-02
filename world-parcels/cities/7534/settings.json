@@ -59,7 +59,7 @@
           "attribution": "Кадастровые инженеры Новосибирска / reestr54.ru; independent cadastral viewer; three observed Kemerovo land parcels only; wider coverage unverified."
         },
         "buildings": {
-          "source": "overture-tiles"
+          "sources": [{ "id": "osm" }]
         },
         "sidebar": {
           "disabledSections": [

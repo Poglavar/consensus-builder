@@ -59,7 +59,7 @@
           "attribution": "Sri Lanka Survey Department; Registrar General’s Department"
         },
         "buildings": {
-          "source": "overture-tiles"
+          "sources": [{ "id": "osm" }]
         },
         "sidebar": {
           "disabledSections": [

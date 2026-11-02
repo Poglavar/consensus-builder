@@ -7,6 +7,17 @@ import { mutateControlResponse } from '../helpers/control-mutations.mjs';
 
 const port = Number(process.argv[2] || 63941);
 const mime = { '.html': 'text/html', '.js': 'text/javascript', '.mjs': 'text/javascript', '.css': 'text/css', '.json': 'application/json', '.svg': 'image/svg+xml', '.png': 'image/png', '.jpg': 'image/jpeg', '.webp': 'image/webp', '.wasm': 'application/wasm', '.woff2': 'font/woff2', '.glb': 'model/gltf-binary', '.geojson': 'application/geo+json' };
+const rewrites = JSON.parse(fs.readFileSync(path.join(frontendRoot, 'serve.json'), 'utf8')).rewrites;
+function rewrite(pathname) {
+  for (const { source, destination } of rewrites) {
+    if (source === pathname) return destination;
+    if (source.endsWith('/**')) {
+      const base = source.slice(0, -3);
+      if (pathname === base || pathname.startsWith(`${base}/`)) return destination;
+    }
+  }
+  return pathname;
+}
 const cache = new Map();
 const server = http.createServer((request, response) => {
   response.setHeader('Cache-Control', 'no-store, must-revalidate');
@@ -20,7 +31,8 @@ const server = http.createServer((request, response) => {
     response.end(JSON.stringify(sourceInventory())); return;
   }
   let pathname = decodeURIComponent(url.pathname);
-  if (pathname === '/' || /^\/(?:proposals|designs|plans|agreements|proposal|parcel|bets|monitors)(?:\/|$)/.test(pathname)) pathname = '/index.html';
+  pathname = rewrite(pathname);
+  if (/^\/(?:monitors)(?:\/|$)/.test(pathname)) pathname = '/index.html';
   const file = path.resolve(frontendRoot, `.${pathname}`);
   if (!file.startsWith(frontendRoot) || !fs.existsSync(file) || !fs.statSync(file).isFile()) {
     response.writeHead(404); response.end('Not found'); return;

@@ -59,7 +59,7 @@
           "attribution": "Grad Niš GIS · Парцеле у јавној својини · public-ownership cadastral parcels only; provider WGS84 output."
         },
         "buildings": {
-          "source": "overture-tiles"
+          "sources": [{ "id": "osm" }]
         },
         "sidebar": {
           "disabledSections": [

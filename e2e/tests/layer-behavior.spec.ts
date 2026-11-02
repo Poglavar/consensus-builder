@@ -119,10 +119,9 @@ test.describe('Layers sheet behavior @features', () => {
     if (!(await adActions.isVisible())) await page.locator('.parcel-ad-link-btn').click();
     await page.locator('.parcel-ad-link-btn').click();
     await expect(adActions).toBeHidden();
-    // Parcel Builder is authoring work, not a sale/marketplace action: it lives in the promoted
-    // Actions page alongside the creation palette.
+    // Parcel Builder is authoring work, so it lives in the Tools page alongside the creation palette.
     const builderUrl = await page.evaluate(() => (window as any).CityConfigManager.getParcelBuilderConfig().url);
-    await parcelTab(page, 'propose-tab').click();
+    await parcelTab(page, 'tools-tab').click();
     await openAndClosePopup(page, () => page.locator('#parcelBuilderButton').click(), async child => {
       await child.waitForURL(actual => actual.href.startsWith(builderUrl), { waitUntil: 'commit' });
       expect(new URL(child.url()).searchParams.get('parcel_identifier')).toBe('1234-335754');

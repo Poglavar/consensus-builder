@@ -61,15 +61,15 @@ test('map geometry editor uses the same right panel frame and keeps its actions 
   await openCity(page);
   await page.evaluate(() => {
     const w = window as any;
-    w.__rightPanelSession = w.OnMapEditor.open({ owner: 'panel-layout-check', title: 'Edit site', content: '<label>Name <input value="Site"></label>',
-      footer: '<button type="button" class="btn btn-primary">Done</button>', onCancel() { w.__rightPanelSession.close(); } });
+    w.__rightPanelSession = w.OnMapEditor.open({ owner: 'panel-layout-check', title: 'Edit site', content: '<p>Site geometry</p>',
+      onCancel() { w.__rightPanelSession.close(); } });
   });
   const panel = page.locator('#panel-layout-check-editor .on-map-editor__panel');
   await expect(panel).toBeVisible();
   const box = await panel.boundingBox();
   expect(box!.width).toBe(400);
   expect(box!.x + box!.width).toBe(1270);
-  await expect(panel.getByRole('button', { name: 'Done', exact: true })).toBeVisible();
+  await expect(panel.getByRole('button', { name: 'Cancel', exact: true })).toBeInViewport();
   await page.screenshot({ path: testInfo.outputPath('editor.png') });
   await panel.getByRole('button', { name: 'Cancel', exact: true }).click();
   await expect(panel).toHaveCount(0);

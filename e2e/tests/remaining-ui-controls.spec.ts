@@ -166,7 +166,11 @@ test.describe('Remaining UI controls @features', () => {
 
   test('status log header close returns to Settings', async ({ mockApi: page }) => {
     await openCity(page);
-    await page.evaluate(() => (window as any).updateStatus('Status close control fixture'));
+    await page.evaluate(() => {
+      (window as any).updateStatus('Status close control fixture');
+      const error = Object.assign(new Error('Status diagnostics fixture'), { code: 'plan-export-failed' });
+      (window as any).AppDiagnostics.report(error, { context: { surface: 'plan-file' } });
+    });
     await page.locator('#settings-button').click();
     // Diagnostics sits inside the Advanced accordion.
     const advanced = page.locator('#settings-sheet details.accordion-section[data-section="advanced"]');
@@ -177,6 +181,22 @@ test.describe('Remaining UI controls @features', () => {
     await diagnostics.locator('[data-status-open-log]').click();
     const modal = page.locator('#status-log-modal');
     await expect(modal).toBeVisible();
+
+    const downloadStarted = page.waitForEvent('download');
+    await modal.locator('[data-diagnostics-export]').click();
+    const download = await downloadStarted;
+    expect(download.suggestedFilename()).toBe('ugt-diagnostics.json');
+    const stream = await download.createReadStream();
+    const chunks: Buffer[] = [];
+    for await (const chunk of stream!) chunks.push(Buffer.from(chunk));
+    const exported = JSON.parse(Buffer.concat(chunks).toString());
+    expect(exported).toMatchObject({ version: 1 });
+    expect(exported.entries).toEqual(expect.arrayContaining([
+      expect.objectContaining({ kind: 'error', code: 'plan-export-failed', context: { surface: 'plan-file' } })
+    ]));
+
+    await modal.locator('[data-diagnostics-clear]').click();
+    expect(await page.evaluate(() => (window as any).AppDiagnostics.snapshot().entries)).toEqual([]);
     await modal.locator('[data-status-log-close]').click();
     await expect(modal).toBeHidden();
     await expect(page.locator('#settings-sheet')).toBeVisible();

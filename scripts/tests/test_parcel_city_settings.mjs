@@ -7,6 +7,7 @@ import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { createHash } from 'node:crypto';
 import { applyCitySettings, buildCitySettings, exportCitySettings, parseCityConfigs, recoverQualifiedSettings } from '../lib/parcel-city-settings.mjs';
+import { staleCityFiles } from '../build-city-files.mjs';
 import { parseCityConfigs as parseWorldCoverageCities } from '../build-world-coverage.mjs';
 
 const configSource = `const SHARED_DEFAULT_ZOOM = 19; const CITY_CONFIGS = {
@@ -57,7 +58,12 @@ try {
     fs.writeFileSync(settingsFile, JSON.stringify(settings));
     fs.mkdirSync(path.join(root, 'world-parcels/cities/9999'), { recursive: true });
     fs.writeFileSync(path.join(root, 'world-parcels/cities/9999/failed-urls.json'), '[]');
-    assert.deepEqual(applyCitySettings(root), { citySettings: 1, appCities: 1, sources: 1, databaseSources: 0 });
+    assert.deepEqual(applyCitySettings(root), {
+        citySettings: 1, appCities: 1, sources: 1, databaseSources: 0,
+        cityFiles: { written: 2, removed: 0, total: 2 }
+    });
+    const generatedCities = staleCityFiles(root);
+    assert.deepEqual({ stale: generatedCities.stale, extra: generatedCities.extra }, { stale: [], extra: [] });
     const appliedConfigs = parseCityConfigs(fs.readFileSync(path.join(root, 'frontend/data/city-configs.js'), 'utf8'));
     const appliedCatalog = JSON.parse(fs.readFileSync(path.join(root, 'frontend/data/source-catalog.json'), 'utf8'));
     assert.equal(appliedConfigs.test_city.parcels.gridSize, 77);

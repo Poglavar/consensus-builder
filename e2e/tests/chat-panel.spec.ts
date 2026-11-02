@@ -95,6 +95,11 @@ test('chat panel sends a turn and announces the streamed reply @core', async ({ 
   await expect(sheet.getByRole('button', { name: 'Concevez un parc sur les parcelles sélectionnées ou déplacez un bâtiment de 50 m vers le nord.' })).toBeVisible();
   await expect(sheet.getByRole('button', { name: 'Nouvelle conversation' })).toBeEnabled();
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
+  const close = sheet.getByRole('button', { name: 'Fermer', exact: true });
+  await close.focus();
+  await close.press('Enter');
+  await expect(sheet).toBeHidden();
+  await expect(page.locator('#chat-button')).toBeFocused();
 });
 
 test('failed map navigation does not recover and apply the streamed plan @core', async ({ mockApi: page, baseURL }) => {

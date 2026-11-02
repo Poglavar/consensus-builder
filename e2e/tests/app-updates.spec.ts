@@ -69,10 +69,10 @@ test('Reload leaves an active map editor intact', async ({ mockApi: page }) => {
   await expect(page.locator('#app-update-notice')).toBeVisible();
   await page.evaluate(() => {
     const w = window as any;
-    w.__updateEditor = w.OnMapEditor.open({ owner: 'update-edit-check', title: 'Edit site', content: '<input value="Unsaved geometry">', onCancel() { w.__updateEditor.close(); } });
+    w.__updateEditor = w.OnMapEditor.open({ owner: 'update-edit-check', title: 'Edit site', content: '<p data-draft-geometry>Unsaved geometry</p>', onCancel() { w.__updateEditor.close(); } });
   });
   await page.locator('#app-update-notice [data-app-update-reload]').click();
   await expect(page.locator('#app-update-blocked')).toContainText('Finish or cancel editing');
   await expect(page.locator('#update-edit-check-editor .on-map-editor__panel')).toBeVisible();
-  await expect(page.locator('#update-edit-check-editor input')).toHaveValue('Unsaved geometry');
+  await expect(page.locator('#update-edit-check-editor [data-draft-geometry]')).toHaveText('Unsaved geometry');
 });

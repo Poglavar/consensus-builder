@@ -59,7 +59,7 @@
           "attribution": "IMPLAN Tijuana / Sistema de Información Geográfica de Tijuana / Dirección de Catastro Municipal; Predios (2021 layer name)."
         },
         "buildings": {
-          "source": "overture-tiles"
+          "sources": [{ "id": "osm" }]
         },
         "sidebar": {
           "disabledSections": [

@@ -52,7 +52,7 @@
     if (!win || !win.document) return pure;
 
     const doc = win.document;
-    const state = { initialized: false, backdrop: null, input: null, list: null, selectable: [], activeIndex: -1, returnFocus: null };
+    const state = { initialized: false, backdrop: null, input: null, list: null, selectable: [], activeIndex: -1, returnFocus: null, unregisterEscape: null };
 
     const t = (key, fallback, params) => {
         const i18n = win.i18n;
@@ -191,7 +191,6 @@
         backdrop.appendChild(dialog);
         doc.body.appendChild(backdrop);
         Object.assign(state, { backdrop, input, list, title, footer });
-        state.unregisterEscape = win.ModalEscape?.register(backdrop, () => close({ restoreFocus: true }));
         input.addEventListener('input', render);
         input.addEventListener('keydown', onKeyDown);
         backdrop.addEventListener('mousedown', event => {
@@ -217,10 +216,15 @@
 
     function open(query) {
         if (!state.initialized) throw new Error('CommandPalette: not initialized');
-        if (!isOpen()) state.returnFocus = doc.activeElement;
-        if (win.MapShell && typeof win.MapShell.closeSheets === 'function') win.MapShell.closeSheets();
-        state.backdrop.hidden = false;
-        doc.body.classList.add('command-palette-open');
+        if (!isOpen()) {
+            state.returnFocus = doc.activeElement;
+            if (win.MapShell && typeof win.MapShell.closeSheets === 'function') win.MapShell.closeSheets();
+            state.backdrop.hidden = false;
+            doc.body.classList.add('command-palette-open');
+            // Register only while shown: ModalEscape also makes aria-modal surfaces inert, and
+            // hidden-to-visible isolation is observed asynchronously by CbDialog.
+            state.unregisterEscape = win.ModalEscape?.register(state.backdrop, () => close({ restoreFocus: true })) || null;
+        }
         state.input.value = typeof query === 'string' ? query : '';
         render();
         state.input.focus();
@@ -229,6 +233,9 @@
     function close(options = {}) {
         if (!isOpen()) return;
         state.backdrop.hidden = true;
+        const unregisterEscape = state.unregisterEscape;
+        state.unregisterEscape = null;
+        try { unregisterEscape?.(); } catch (_) { /* already gone */ }
         doc.body.classList.remove('command-palette-open');
         const back = state.returnFocus;
         state.returnFocus = null;

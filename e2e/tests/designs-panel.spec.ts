@@ -38,12 +38,22 @@ async function createLocalPlan(page:any,title:string) {
 test('map controls stay inside the viewport after a live desktop-to-phone resize', async ({ mockApi: page }) => {
   await page.setViewportSize({ width: 1180, height: 757 });
   await openCity(page);
-  await page.setViewportSize({ width: 500, height: 757 });
-  for (const selector of ['#username-display', '#map-shell-bottom-right', '#map-shell-top-right']) {
-    await expect.poll(() => page.locator(selector).evaluate(node => {
-      const rect = node.getBoundingClientRect();
-      return rect.left >= 0 && rect.right <= 500;
-    })).toBe(true);
+  for (const width of [500, 375, 320]) {
+    await page.setViewportSize({ width, height: 757 });
+    for (const selector of ['#username-display', '#map-shell-bottom-right', '#map-shell-top-right']) {
+      await expect.poll(() => page.locator(selector).evaluate((node, width) => {
+        const rect = node.getBoundingClientRect();
+        return rect.left >= 0 && rect.right <= width;
+      }, width)).toBe(true);
+    }
+    for (const selector of ['.map-search__chip', '.map-search__icon-button', '#planning-views-button', '#username-display', '#chat-button', '#layers-button', '#settings-button']) {
+      await expect(page.locator(selector)).toBeVisible();
+      await expect.poll(() => page.locator(selector).evaluate(node => {
+        const rect = node.getBoundingClientRect();
+        const target = document.elementFromPoint(rect.x + rect.width / 2, rect.y + rect.height / 2);
+        return rect.left >= 0 && rect.right <= innerWidth && node.contains(target);
+      }), `${selector} remains reachable at ${width}px`).toBe(true);
+    }
   }
 });
 

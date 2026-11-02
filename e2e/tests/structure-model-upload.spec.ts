@@ -2,6 +2,7 @@
 // a real footprint, and the structure record built from it at a point on the site.
 import { readFileSync } from 'node:fs';
 import { test, expect } from '../helpers/fixtures';
+import { createSpace, openCity, showProposal } from '../helpers/runtime';
 
 const index = readFileSync('../frontend/index.html', 'utf8');
 const bootstrap = index.slice(index.indexOf('<script type="importmap">'), index.indexOf('// 2D-coupled files'));
@@ -63,4 +64,37 @@ test('uploads a GLB for a park and builds its structure record from the model fo
   expect(result.area).toBeGreaterThan(300);
   expect(result.area).toBeLessThan(330);
   expect(result.inside).toBe(true);
+});
+
+test('the structure editor uploads a model and saves its footprint', async ({ mockApi: page }) => {
+  let uploaded: any;
+  await page.route('**/models', async route => {
+    uploaded = route.request().postDataJSON();
+    await route.fulfill({ json: { modelUrl: '/uploads/models/editor-park.glb' } });
+  });
+  await openCity(page);
+  const proposalId = await createSpace(page, 'park');
+  await showProposal(page, proposalId);
+  await page.locator('#proposal-details-footer .btn-edit-geometry').click();
+  const editor = page.locator('#structure-geometry-editor');
+  await expect(editor.locator('.on-map-editor__panel')).toBeVisible();
+  await editor.locator('[data-action="upload-model"]').click();
+  const modal = page.locator('#building-upload-modal');
+  await expect(modal).toBeVisible();
+  const chooser = page.waitForEvent('filechooser');
+  await modal.locator('label.building-upload-file').click();
+  await (await chooser).setFiles('../test-assets/test-building.glb');
+  await expect(page.locator('#building-upload-confirm')).toBeEnabled({ timeout: 20_000 });
+  await page.locator('#building-upload-confirm').click();
+  await expect(modal).toHaveCount(0);
+  await editor.locator('[data-action="save"]').click();
+  await expect(editor).toHaveCount(0);
+
+  const saved = await page.evaluate(id => (window as any).proposalStorage.getProposal(id)?.structureProposal, proposalId);
+  expect(uploaded.fileName).toBe('test-building.glb');
+  expect(Buffer.from(uploaded.modelData.split(',')[1], 'base64')).toEqual(model);
+  expect(saved).toMatchObject({
+    modelUrl: '/uploads/models/editor-park.glb', modelName: 'test-building.glb', source: 'upload',
+    geometry: { type: 'Polygon' }
+  });
 });

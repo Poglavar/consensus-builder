@@ -7,6 +7,7 @@ import { selectNativeOption } from '../helpers/controls';
 import { test, expect } from '../helpers/fixtures';
 import { openCity } from '../helpers/runtime';
 import { waitForMapReady } from '../helpers/app';
+import { createHash } from 'node:crypto';
 
 const URL_IN = 'https://data.example/arcgis/rest/services/Buildings/FeatureServer/0';
 const descriptor = (heightUnit: string) => ({
@@ -15,6 +16,14 @@ const descriptor = (heightUnit: string) => ({
   idPrefix: 'CUSTOM-B-0123456789abcdef0123-',
 });
 const sourceId = (heightUnit: string) => 'building.' + Buffer.from(JSON.stringify(descriptor(heightUnit))).toString('base64url');
+const PARCEL_URL = 'https://data.example/arcgis/rest/services/Parcels/FeatureServer/0';
+const parcelDescriptor = () => {
+  const config = { adapter: 'arcgis', endpoint: new URL(PARCEL_URL).href, cityIds: ['zagreb'], metricSrid: 32633,
+    idField: 'OBJECTID', objectIdField: 'OBJECTID', idType: 'integer', outFields: ['OBJECTID'] };
+  const hash = createHash('sha256').update(JSON.stringify(config)).digest('hex').slice(0, 20);
+  const value = { ...config, idPrefix: `CUSTOM-${hash}-` };
+  return { ...value, id: `custom.${Buffer.from(JSON.stringify(value)).toString('base64url')}` };
+};
 
 // The person's stored building list for Zagreb, read from localStorage (a workspace may prefix the key).
 const storedBuildingList = (page: import('@playwright/test').Page) => page.evaluate(() => {
@@ -33,6 +42,64 @@ const listChanges = (page: import('@playwright/test').Page) => page.evaluate(() 
 }));
 
 test.describe('Data sources @features', () => {
+  test('a verified parcel source can be replaced with the city default', async ({ mockApi: page }) => {
+    const source = parcelDescriptor();
+    const features = Array.from({ length: 4 }, (_, index) => {
+      // Keep these in the map's post-reload request area around Zagreb's default view.
+      const west = 15.9780 + (index % 2) * 0.0013, south = 45.7995 + Math.floor(index / 2) * 0.0009;
+      const east = west + 0.0002, north = south + 0.0002;
+      return { type: 'Feature', id: index + 1, properties: { OBJECTID: index + 1 },
+        geometry: { type: 'Polygon', coordinates: [[[west, south], [east, south], [east, north], [west, north], [west, south]]] } };
+    });
+    await page.route(/\/parcel-sources\/discover\?/, route => route.fulfill({ json: {
+      source, attempts: [{ adapter: 'arcgis', status: 'verified' }], parcelCount: 4
+    } }));
+    await page.route('https://data.example/**', route => {
+      const requestUrl = new URL(route.request().url());
+      const params = new URLSearchParams(route.request().postData() || requestUrl.search);
+      const json = params.get('returnCountOnly') === 'true' ? { count: features.length }
+        : params.get('returnIdsOnly') === 'true' ? { objectIdFieldName: 'OBJECTID', objectIds: features.map(feature => feature.properties.OBJECTID) }
+        : { type: 'FeatureCollection', features };
+      return route.fulfill({ status: 200, headers: { 'access-control-allow-origin': '*' }, json });
+    });
+    await openCity(page);
+    const defaults = await page.evaluate(() => {
+      const w = window as any;
+      return { key: w.ParcelSourceSettings.storageKey('zagreb', w, 'parcel'), id: w.CityConfigManager.getDataContext(null, 'zagreb').parcelSourceId };
+    });
+    await page.locator('#layers-button').click();
+    await openLayerSection(page, 'parcels');
+    await page.locator('#parcel-source-settings-button').click();
+    let dialog = page.locator('#parcel-source-settings');
+    await dialog.locator('#parcel-source-url').fill(PARCEL_URL);
+    await dialog.getByRole('button', { name: 'Check URL', exact: true }).click();
+    await expect(dialog.locator('.parcel-source-settings__result')).toContainText('4 parcels in the test area');
+    await dialog.getByRole('button', { name: 'Use this source', exact: true }).click();
+    await page.waitForURL(url => url.searchParams.get('parcelSource') === source.id);
+    await waitForMapReady(page);
+    expect(await page.evaluate(key => (window as any).BrowserWorkspace?.storage?.getItem(key) || localStorage.getItem(key), defaults.key)).toBe(source.id);
+    expect(await page.evaluate(() => (window as any).CityConfigManager.getDataContext(null, 'zagreb').parcelSourceId)).toBe(source.id);
+    await page.waitForFunction(id => (window as any).CadastralParcelRepository.list()
+      .filter((feature: any) => feature.properties.sourceId === id).length === 4, source.id);
+    const customParcels = await page.evaluate(id => (window as any).CadastralParcelRepository.list()
+      .filter((feature: any) => feature.properties.sourceId === id).map((feature: any) => feature.properties), source.id);
+    expect(customParcels.map((feature: any) => feature.sourceParcelId).sort()).toEqual(['1', '2', '3', '4']);
+    expect(customParcels.every((feature: any) => feature.parcelId === source.idPrefix + feature.sourceParcelId
+      && feature.id === feature.parcelId && feature.sourceId === source.id)).toBe(true);
+
+    await page.locator('#layers-button').click();
+    await openLayerSection(page, 'parcels');
+    await page.locator('#parcel-source-settings-button').click();
+    dialog = page.locator('#parcel-source-settings');
+    await dialog.getByRole('button', { name: 'Use the city default', exact: true }).click();
+    await page.waitForURL(url => !url.searchParams.has('parcelSource'));
+    await waitForMapReady(page);
+    expect(await page.evaluate(key => (window as any).BrowserWorkspace?.storage?.getItem(key) || localStorage.getItem(key), defaults.key)).toBeNull();
+    expect(await page.evaluate(() => (window as any).CityConfigManager.getDataContext(null, 'zagreb').parcelSourceId)).toBe(defaults.id);
+    expect(await page.evaluate(id => (window as any).CadastralParcelRepository.list()
+      .filter((feature: any) => feature.properties.sourceId === id).length, source.id)).toBe(0);
+  });
+
   test('Settings shows parcel source information and both source dialogs; a building source is checked and added to the list without a reload', async ({ mockApi: page }) => {
     const discoverBodies: any[] = [];
     await page.route(/\/building-sources\/discover\?/, route => {
@@ -176,6 +243,7 @@ test.describe('Data sources @features', () => {
     await dialog.getByRole('button', { name: 'Close' }).click();
 
     // A successful building retry must not dismiss a still-failing parcel source.
+    await page.evaluate(() => (window as any).fetchParcelData());
     await page.evaluate(() => (window as any).ParcelSourceSettings.reportFailure(window, 'Parcel source is still unavailable.', 'parcel'));
     await expect(page.locator('#parcel-source-status')).toContainText('Parcel source is still unavailable.');
     fail = false;

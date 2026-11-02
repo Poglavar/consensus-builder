@@ -59,7 +59,7 @@
           "attribution": "Grad Novi Sad GIS / NSMaps · Katastarske parcele · informative cadastral data"
         },
         "buildings": {
-          "source": "overture-tiles"
+          "sources": [{ "id": "osm" }]
         },
         "sidebar": {
           "disabledSections": [

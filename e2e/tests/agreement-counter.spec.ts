@@ -1,6 +1,7 @@
 // The Rules tab of an agreement: the scheme guide with its picker, and a counter-agreement drafted
 // from the agreement's plan and terms (optionally under the scheme the guide landed on).
 import { test, expect } from '../helpers/fixtures';
+import { selectNativeOption } from '../helpers/controls';
 import { applyLayout, openAgreementActions, openAgreementContentTab } from '../helpers/agreements';
 
 test('the Rules tab opens the scheme guide and drafts a counter-agreement from the agreement', async ({ mockApi: page }, testInfo) => {
@@ -33,7 +34,7 @@ test('the Rules tab opens the scheme guide and drafts a counter-agreement from t
   await expect(guide).toBeVisible();
   await expect(guide.locator('.cb-dialog__title')).toHaveText('Schemes');
   await expect(guide.locator('[data-scheme-guide]')).toHaveCount(1);
-  await guide.locator('[data-scheme-guide-pick]').selectOption('nl-kavelruil');
+  await selectNativeOption(guide.locator('[data-scheme-guide-pick]'), 'nl-kavelruil');
   await expect(guide.locator('[data-scheme-guide="nl-kavelruil"]')).toBeVisible();
   await expect(guide.locator('[data-scheme-guide-check] li')).not.toHaveCount(0);
   await page.screenshot({ path: testInfo.outputPath('scheme-guide.png') });

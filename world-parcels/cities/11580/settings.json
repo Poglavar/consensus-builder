@@ -59,7 +59,7 @@
           "attribution": "Wuxi Municipal Natural Resources and Planning Bureau / Wuxi cadastral-map public viewer"
         },
         "buildings": {
-          "source": "overture-tiles"
+          "sources": [{ "id": "osm" }]
         },
         "sidebar": {
           "disabledSections": [

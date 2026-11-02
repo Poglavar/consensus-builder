@@ -59,7 +59,7 @@
           "attribution": "Holy Makkah Municipality / مستكشف مكة الجغرافي · regulatory land parcels; legal-title equivalence unverified"
         },
         "buildings": {
-          "source": "overture-tiles"
+          "sources": [{ "id": "osm" }]
         },
         "sidebar": {
           "disabledSections": [

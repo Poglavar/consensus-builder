@@ -59,7 +59,7 @@
           "attribution": "Ras Al Khaimah Municipality GIS Center / RAK Addressing. Indicative parcel boundaries; coverage and currentness unverified."
         },
         "buildings": {
-          "source": "overture-tiles"
+          "sources": [{ "id": "osm" }]
         },
         "sidebar": {
           "disabledSections": [

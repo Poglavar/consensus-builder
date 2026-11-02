@@ -87,6 +87,34 @@ test.describe('Proposal actions @features', () => {
     await expect(claim).toBeDisabled();
   });
 
+  test('parcel NFT status retries a failed read and restores its control', async ({ mockApi: page }) => {
+    await injectMockSolanaWallet(page, { publicKey: SOLANA_WALLET, providerName: 'phantom' });
+    await openCity(page);
+    await connectWalletByConnectorId(page, 'solana-phantom');
+    await waitForBlockchainRuntime(page, ['SolanaChainDataLoader', 'SolanaParcelClient', 'solanaWeb3']);
+    await stubSolanaParcelMint(page, { parcelProgramId: PARCEL_PROGRAM });
+    await page.evaluate(() => {
+      const w = window as any;
+      w.__nftReadCalls = 0;
+      w.SolanaChainDataLoader.getParcelMintStatus = async () => {
+        w.__nftReadCalls++;
+        if (w.__nftReadCalls === 1) throw new Error('NFT read temporarily unavailable');
+        await new Promise(resolve => { w.__completeNftRead = resolve; });
+        return { minted: false };
+      };
+    });
+    await openParcel(page, 'tools');
+    const retry = page.getByRole('button', { name: /Couldn't check NFT status/ });
+    await expect(retry).toBeVisible();
+    await retry.click();
+    await expect.poll(() => page.evaluate(() => (window as any).__nftReadCalls)).toBe(2);
+    const busy = page.getByRole('button', { name: /Checking NFT status/ });
+    await expect(busy).toHaveAttribute('aria-busy', 'true');
+    await expect(busy).toHaveClass(/cb-busy/);
+    await page.evaluate(() => (window as any).__completeNftRead());
+    await expect(page.getByRole('button', { name: /NFT not found/ })).toBeEnabled();
+  });
+
   test('connected parcel owner mints from the parcel tools dialog and receives a confirmed transaction', async ({ mockApi: page }) => {
     await injectMockSolanaWallet(page, { publicKey: SOLANA_WALLET, providerName: 'phantom' });
     await openCity(page);

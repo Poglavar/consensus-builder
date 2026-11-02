@@ -59,7 +59,7 @@
           "attribution": "Agua de Puebla · Produccion/General PREDIOS"
         },
         "buildings": {
-          "source": "overture-tiles"
+          "sources": [{ "id": "osm" }]
         },
         "sidebar": {
           "disabledSections": [

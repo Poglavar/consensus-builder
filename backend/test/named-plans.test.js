@@ -128,6 +128,22 @@ describe('named plan records and API', () => {
 });
 
 describe('named plan browser transport', () => {
+    it('lists only canonical plan rows when an imported receipt shares the CID, in either storage order', () => {
+        const snapshot = { cid, content, designs: [{ cid: a, content: { schema: 'design/v1' } }], memberIds: ['member-a'] };
+        const receipt = { cid, content, memberIds: ['member-a'] };
+        for (const entries of [
+            [[`plan:${cid}`, snapshot], [`ugt-imported-plan:${cid}`, receipt]],
+            [[`ugt-imported-plan:${cid}`, receipt], [`plan:${cid}`, snapshot]]
+        ]) {
+            const storage = new Map(entries.map(([key, row]) => [key, JSON.stringify(row)]));
+            const api = NamedPlans.browser({ location: new URL('https://app.example/'), PlanRecord, Cid,
+                console: { warn: vi.fn() }, PersistentStorage: {
+                    getItem: key => storage.get(key) ?? null,
+                    forEach: callback => storage.forEach((value, key) => callback(value, key))
+                } });
+            expect(api.list({ storedOnly: true })).toEqual([snapshot]);
+        }
+    });
     it('hydrates a bare link once, preserving explicit transport/view overrides', () => {
         const href = `https://app.example/plans/${cid}?backend=https%3A%2F%2Fapi.example`;
         const restored = NamedPlans.restoreUrl(href, view, MapShare);

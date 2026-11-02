@@ -248,7 +248,7 @@
         if (focused) [...messages.querySelectorAll('.chat-option')].find(button => button.dataset.chatOptionKey === focused)?.focus({ preventScroll: true });
         status.textContent = state.pending ? t('chat.working') : state.error ? t(state.error.key || transcript.errorKey(state.error.code, state.error.status)) : '';
         total.hidden = state.conversation?.debugCosts !== true || !state.totals.turns;
-        total.textContent = !total.hidden ? t('chat.sessionTotal.other', { cost: formatCost(state.totals.spentUsd), count: state.totals.turns }) : '';
+        total.textContent = !total.hidden ? t('chat.sessionTotal', { cost: formatCost(state.totals.spentUsd) }) : '';
         conversationCopyButton.disabled = !serializeConversation();
         input.disabled = !!state.pending || operation; sendButton.disabled = !!state.pending || operation;
         tipButtons.forEach(button => { button.disabled = !!state.pending || operation; });

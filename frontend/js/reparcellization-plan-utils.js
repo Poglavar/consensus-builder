@@ -67,35 +67,40 @@
         return next;
     }
 
+    function buildingCourtyard(proposal, turfApi) {
+        if (!proposal?.buildingProposal) return null;
+        // Block massing retains the complete ring even when its rendered buildings are split
+        // into per-parcel pieces. Compacted single-building records keep that ring in buildings.
+        const footprints = proposal.geometry?.ruleMassing?.geometry
+            ? [proposal.geometry.ruleMassing]
+            : (proposal.geometry?.buildings || []).filter(value => value?.geometry);
+        let footprint = null;
+        for (const shape of footprints) {
+            footprint = footprint ? clip(turfApi, 'union', footprint, shape, 'reparcellization-plan-utils.courtyards') : shape;
+        }
+        return footprint ? { footprint, courtyard: deriveCourtyardFromFootprint(footprint) } : null;
+    }
+
     // Candidates are authored building proposals, so an unapplied block can guide a layout without
     // first claiming the ground the layout needs to reshape.
     function buildingCourtyardCandidates(proposals, pool, turfApi) {
         const entries = [];
         for (const proposal of proposals) {
-            if (!proposal.buildingProposal) continue;
-            // Block massing retains the complete ring even when its rendered buildings are split
-            // into per-parcel pieces. Other authored building groups can enclose a courtyard too.
-            const footprints = proposal.geometry?.ruleMassing?.geometry
-                ? [proposal.geometry.ruleMassing]
-                : (proposal.geometry?.buildings || []).filter(value => value?.geometry);
-            let footprintUnion = null;
-            for (const footprint of footprints) {
-                footprintUnion = footprintUnion ? clip(turfApi, 'union', footprintUnion, footprint, 'reparcellization-plan-utils.courtyards') : footprint;
-            }
-            const courtyard = deriveCourtyardFromFootprint(footprintUnion);
-            if (!courtyard) continue;
+            const building = buildingCourtyard(proposal, turfApi);
+            if (!building?.courtyard) continue;
+            const { footprint, courtyard } = building;
             const overlap = clip(turfApi, 'intersect', pool, courtyard, 'reparcellization-plan-utils.courtyards');
             if (overlap && turfApi.area(overlap) >= 1) {
                 const title = proposal.title ?? proposal.name ?? proposal.proposalName ?? '';
                 entries.push({ proposal, courtyard, derivation: {
                     kind: 'building-courtyard',
                     sourceTitle: String(title),
-                    sourceFootprint: clone(footprintUnion.geometry)
+                    sourceFootprint: clone(footprint.geometry)
                 } });
             }
         }
         return entries;
     }
 
-    return { deriveCourtyardFromFootprint, carveLayout, buildingCourtyardCandidates };
+    return { deriveCourtyardFromFootprint, carveLayout, buildingCourtyard, buildingCourtyardCandidates };
 });

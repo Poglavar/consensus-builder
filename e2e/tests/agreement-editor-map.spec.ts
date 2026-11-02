@@ -1,6 +1,7 @@
 // Plan-first agreement editing: tabs preserve the fixed plan, single allocations drive derived
 // money, abstract owners work without a rights import, and advanced controls stay in dialogs.
 import { test, expect } from '../helpers/fixtures';
+import { selectNativeOption } from '../helpers/controls';
 import { stubBasemapTiles, showProposal, PARCEL_ID } from '../helpers/runtime';
 import { applyLayout, agreementEditor, editorSave, storedAgreements } from '../helpers/agreements';
 import type { Page } from '@playwright/test';
@@ -50,18 +51,18 @@ test('bulk proposer acquisition disables parcel selectors and saves explicit rec
   await editor.getByRole('tab', { name: /^Output parcels \(\d+\)$/ }).click();
   const mode = editor.locator('[data-agreement-allocation-mode]');
   const parcels = editor.locator('[data-agreement-allocation]');
-  await mode.selectOption('proposer');
+  await selectNativeOption(mode, 'proposer');
   for (const parcel of await parcels.all()) { await expect(parcel).toBeDisabled(); await expect(parcel).toHaveValue('proposer'); }
-  await mode.selectOption('public');
+  await selectNativeOption(mode, 'public');
   for (const parcel of await parcels.all()) { await expect(parcel).toBeDisabled(); await expect(parcel).toHaveValue('public'); }
-  await mode.selectOption('individual');
+  await selectNativeOption(mode, 'individual');
   for (const parcel of await parcels.all()) { await expect(parcel).toBeEnabled(); await expect(parcel).toHaveValue('public'); }
-  await parcels.first().selectOption('proposer');
+  await selectNativeOption(parcels.first(), 'proposer');
   await expect(parcels.first()).toHaveValue('proposer');
   // Randomize hands every piece to a person, each person before anyone gets a second, and leaves the
   // selects editable; the line above the pieces counts who got none and who got several.
   const persons = Number((await editor.getByRole('tab', { name: /^Persons \(\d+\)$/ }).innerText()).match(/\((\d+)\)/)![1]);
-  await mode.selectOption('random');
+  await selectNativeOption(mode, 'random');
   await expect(mode).toHaveValue('individual');
   for (const parcel of await parcels.all()) { await expect(parcel).toBeEnabled(); await expect(parcel).toHaveValue(/^party:/); }
   const owners = await parcels.evaluateAll(selects => selects.map(select => (select as HTMLSelectElement).value));
@@ -70,7 +71,7 @@ test('bulk proposer acquisition disables parcel selectors and saves explicit rec
   if (owners.length > persons) await expect(summary).toContainText('Persons with more than one parcel:');
   else if (owners.length < persons) await expect(summary).toContainText(`Persons without a parcel: ${persons - owners.length}`);
   else await expect(summary).toBeHidden();
-  await mode.selectOption('proposer');
+  await selectNativeOption(mode, 'proposer');
   await editor.getByRole('tab', { name: /^Persons \(\d+\)$/ }).click();
   const proposer = editor.locator('.agreement-persons-table tbody tr').filter({ hasText: 'Proposer' });
   await expect(proposer).toBeVisible(); await expect(proposer).toContainText('EUR');
@@ -166,7 +167,7 @@ test('public allocation updates compensation, rate and sponsor tally without edi
   const { layoutId, partyKey } = await applyLayout(page);
   const editor = await create(page, layoutId);
   await editor.getByRole('tab', { name: /^Output parcels \(\d+\)$/ }).click();
-  await editor.locator('[data-agreement-allocation]').first().selectOption('public');
+  await selectNativeOption(editor.locator('[data-agreement-allocation]').first(), 'public');
   await editor.getByRole('tab', { name: 'Rules', exact: true }).click();
   await editor.locator('[data-agreement-rate]').fill('150');
   await editor.getByRole('tab', { name: /^Persons \(\d+\)$/ }).click();
@@ -177,6 +178,35 @@ test('public allocation updates compensation, rate and sponsor tally without edi
   const [saved] = await storedAgreements(page);
   const publicArea = saved.outputs.find((o: any) => saved.allocations.some((a: any) => a.output === o.hash && a.to.kind === 'public')).areaM2;
   expect(saved.money.lines).toEqual([{ ownerKey: partyKey, amountCents: Math.round(publicArea * 15000) }]);
+});
+
+test('area compensation and land contribution ranges save their selected terms', async ({ mockApi: page }) => {
+  const { layoutId } = await applyLayout(page);
+  const editor = await create(page, layoutId);
+  await editor.getByRole('tab', { name: 'Rules', exact: true }).click();
+  await selectNativeOption(editor.locator('[data-approval-regime]'), 'de-umlegung-developed');
+
+  const rate = editor.locator('[data-agreement-rate-slider]');
+  await expect(rate).toBeVisible();
+  await rate.scrollIntoViewIfNeeded();
+  await expect(rate).toBeInViewport();
+  await rate.focus();
+  await rate.press('ArrowRight');
+  await expect(editor.locator('[data-agreement-rate]')).toHaveValue('101');
+
+  const contribution = editor.locator('[data-agreement-contribution]');
+  await expect(contribution).toBeVisible();
+  await contribution.scrollIntoViewIfNeeded();
+  await expect(contribution).toBeInViewport();
+  await contribution.focus();
+  await contribution.press('ArrowRight');
+  await expect(editor.locator('[data-agreement-contribution-value]')).toHaveText('0.01%');
+  await expect(editorSave(editor)).toBeEnabled();
+
+  await editorSave(editor).click();
+  await expect(editor).toBeHidden();
+  const [saved] = await storedAgreements(page);
+  expect(saved.rule.settlement).toEqual({ method: 'area', rateCentsPerM2: 10100, contributionBasisPoints: 1 });
 });
 
 test('unnamed parcel owners work and ownership/lens settings open separate dialogs', async ({ mockApi: page }) => {
@@ -299,7 +329,7 @@ test('agreement rules show one yellow experimental pill without research or lega
   const { layoutId } = await applyLayout(page);
   const editor = await create(page, layoutId);
   await editor.getByRole('tab', { name: 'Rules', exact: true }).click();
-  await editor.locator('[data-approval-regime]').selectOption('de-umlegung-new');
+  await selectNativeOption(editor.locator('[data-approval-regime]'), 'de-umlegung-new');
   const pill = editor.locator('[data-approval-experimental]');
   await expect(pill).toHaveCount(1); await expect(pill).toHaveText('Experimental');
   await expect(pill).toHaveClass(/cb-badge--warning/);
@@ -309,7 +339,7 @@ test('agreement rules show one yellow experimental pill without research or lega
   await expect(editor).not.toContainText('Research template'); await expect(editor).not.toContainText('not legal advice');
   // Dictionaries load on demand: wait for Croatian before the rules re-render in it.
   await page.evaluate(async () => { const i18n = (window as any).i18n; i18n.setLanguage('hr'); await i18n.loadLanguage('hr'); });
-  await editor.locator('[data-approval-regime]').selectOption('de-umlegung-developed');
+  await selectNativeOption(editor.locator('[data-approval-regime]'), 'de-umlegung-developed');
   await expect(pill).toHaveText('Eksperimentalno');
   await expect(editor).not.toContainText('Istraživački predložak');
   await expect(editor).not.toContainText('Usporedno istraživanje');
@@ -325,7 +355,7 @@ test('a chosen scheme is checked against the plan, and settlement by value value
   // Both pieces go back to their owner, so the German scheme for developed land (10% cap) is met;
   // a kavelruil needs three parties and one brings land in, which the dropdown says before it is chosen.
   const scheme = editor.locator('[data-approval-regime]');
-  await scheme.selectOption('de-umlegung-developed');
+  await selectNativeOption(scheme, 'de-umlegung-developed');
   const check = editor.locator('[data-approval-scheme-check]');
   await expect(check).toHaveAttribute('data-approval-scheme-ok', 'true');
   await expect(check.locator('li[data-check-ok="true"]').first()).toContainText(`The most any owner gives up is 0% (${party}); the cap is 10%.`);
@@ -335,7 +365,7 @@ test('a chosen scheme is checked against the plan, and settlement by value value
   await editor.screenshot({ path: testInfo.outputPath('rules-scheme-met.png') });
   // Giving a piece to public breaks the cap: the card, the dropdown and the save all say so.
   await editor.getByRole('tab', { name: /^Output parcels \(\d+\)$/ }).click();
-  await editor.locator('[data-agreement-allocation]').first().selectOption('public');
+  await selectNativeOption(editor.locator('[data-agreement-allocation]').first(), 'public');
   await editor.getByRole('tab', { name: 'Rules', exact: true }).click();
   await expect(check).toHaveAttribute('data-approval-scheme-ok', 'false');
   await expect(check.locator('li[data-check-ok="false"]')).toContainText(`${party} gives up`);
@@ -373,15 +403,15 @@ test('a chosen scheme is checked against the plan, and settlement by value value
   await expect(schemes.locator('[data-scheme-guide="nl-kavelruil"]')).toBeVisible();
   await expect(schemes.locator('[data-scheme-compare]')).toHaveAttribute('open', '');
   await expect(schemes.locator('[data-scheme-compare-row="nl-kavelruil"]')).toHaveAttribute('aria-current', 'true');
-  await schemes.locator('[data-scheme-guide-pick]').selectOption('de-umlegung-developed');
+  await selectNativeOption(schemes.locator('[data-scheme-guide-pick]'), 'de-umlegung-developed');
   await expect(guide).toContainText('Set it up here');
   await guide.screenshot({ path: testInfo.outputPath('scheme-guide.png') });
   await guide.getByRole('button', { name: 'Close', exact: true }).last().click();
   await expect(guide).toBeHidden();
   await expect(editor).toBeVisible();
   // By value: every parcel and piece gets a value per m², prefilled, settable for all and per row.
-  await scheme.selectOption('unanimous');
-  await editor.locator('[data-agreement-compensation]').selectOption('value');
+  await selectNativeOption(scheme, 'unanimous');
+  await selectNativeOption(editor.locator('[data-agreement-compensation]'), 'value');
   await expect(editor.locator('[data-agreement-value-hint]')).toBeVisible();
   await expect(editor.locator('[data-agreement-rate]')).toBeHidden();
   await editor.getByRole('tab', { name: /^Input parcels \(\d+\)$/ }).click();
@@ -391,7 +421,7 @@ test('a chosen scheme is checked against the plan, and settlement by value value
   await expect(inputValues).toHaveValue('100');
   await editor.screenshot({ path: testInfo.outputPath('inputs-values.png') });
   await editor.getByRole('tab', { name: /^Output parcels \(\d+\)$/ }).click();
-  await editor.locator('[data-agreement-allocation]').first().selectOption('proposer');
+  await selectNativeOption(editor.locator('[data-agreement-allocation]').first(), 'proposer');
   const pieceValues = editor.locator('[data-agreement-value-kind="outputs"]');
   await expect(pieceValues).toHaveCount(2);
   await editor.locator('[data-agreement-value-all="outputs"]').fill('400');

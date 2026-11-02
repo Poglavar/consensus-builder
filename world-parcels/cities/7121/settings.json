@@ -59,7 +59,7 @@
           "attribution": "Serviço Florestal Brasileiro / SICAR, Consulta Pública — declared rural-property environmental cadastral polygons."
         },
         "buildings": {
-          "source": "overture-tiles"
+          "sources": [{ "id": "osm" }]
         },
         "sidebar": {
           "disabledSections": [

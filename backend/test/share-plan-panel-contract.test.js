@@ -6,7 +6,7 @@ const dialog=read('../../frontend/js/plan-dialog.js'),workspace=read('../../fron
 describe('plan dialog and workspace contract',()=>{
  it('creates local snapshots separately from publication and agreement creation',()=>{
   expect(dialog).toContain('win.PlanComposition.create(');expect(dialog).toContain('win.PlanWorkspace.save(row)');
-  expect(dialog).not.toContain('DesignSync.publishDesign');expect(dialog).toContain('win.AgreementDialog.open({plan:row})');
+  expect(dialog).not.toContain('DesignSync.publishDesign');expect(dialog).toContain('win.AgreementDialog.open({plan:latest})');
  });
  it('shares the fixed saved plan and leaves design membership edits to a new revision',()=>{
   expect(dialog).toContain("t('shareFixed')");expect(dialog).toContain("t('revisionHint')");

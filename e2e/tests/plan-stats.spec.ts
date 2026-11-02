@@ -1,5 +1,6 @@
 import { openPlanActions } from '../helpers/plan-actions';
 import { test, expect } from '../helpers/fixtures';
+import { selectNativeOption } from '../helpers/controls';
 import { openCity, createBuilding, createSpace } from '../helpers/runtime';
 import { mockFootprintCells } from '../helpers/mocks/building-data';
 
@@ -109,6 +110,11 @@ test.describe('Plan arithmetic @features', () => {
     await expect(table.locator('th.plan-compare__plan')).toHaveText(['Present state', ...titles]);
     await expect(dialog.locator('.plan-compare__error')).toHaveCount(0);
     await expect(dialog.locator('[data-plan-compare-basis] option').first()).toHaveText('All compared designs');
+    await selectNativeOption(dialog.locator('[data-plan-compare-basis]'), 'plan:0');
+    await expect(dialog.locator('[data-plan-compare-basis]')).toHaveValue('plan:0');
+    await expect(dialog.locator('.plan-compare__error')).toHaveCount(0);
+    await selectNativeOption(dialog.locator('[data-plan-compare-basis]'), 'compared');
+    await expect(dialog.locator('[data-plan-compare-basis]')).toHaveValue('compared');
     await expect(dialog.locator('[data-plan-compare-side-by-side]')).toBeEnabled();
     expect(await stored()).toEqual(before);
     await page.keyboard.press('Escape');

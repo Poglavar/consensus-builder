@@ -36,6 +36,19 @@ describe('plan workspace',()=>{
   const h=harness(),row=snapshot();h.api.save(row);design.title='Changed live design';
   const resolved=await h.api.resolve(row);expect(resolved.designs[0].content.title).toBe('Pocket park');expect(h.win.DesignSync.fetchDesigns).not.toHaveBeenCalled();
  });
+ it('keeps cached publication metadata when binding members from an imported receipt',async()=>{
+  const DesignRecord=require('../../frontend/js/design-record.js');
+  const member={...design,title:'Imported pocket park'};
+  const row=PlanComposition.create('Imported parks',[member],{at:'45.8,15.96,17',mode:'2d',city:'zagreb',language:'en'});
+  const cached={cid:row.cid,content:row.content,published:true,publicationTag:'canonical-cache'};
+  const receipt={cid:row.cid,content:row.content,memberIds:[member.proposalId]};
+  const h=harness({DesignRecord,proposalStorage:{getAllProposals:()=>[]}});
+  h.store.set(`plan:${row.cid}`,JSON.stringify(cached));
+  const resolved=await h.api.resolve(receipt,[member]);
+  expect(resolved).toMatchObject({published:true,publicationTag:'canonical-cache'});
+  expect(resolved.designs).toEqual(row.designs);
+  expect(JSON.parse(h.store.get(`plan:${row.cid}`))).toMatchObject({published:true,publicationTag:'canonical-cache',designs:row.designs});
+ });
  it('retains construction windows when resolving a published plan for a private shared session',async()=>{
   const base=snapshot(),row=PlanComposition.withSchedule(base,{[base.designs[0].cid]:{start:'2027-01',end:'2027-06'}});
   const h=harness({DesignRecord:require('../../frontend/js/design-record.js'),proposalStorage:{getAllProposals:()=>[design]}});

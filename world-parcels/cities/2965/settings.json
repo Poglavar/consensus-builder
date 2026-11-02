@@ -59,7 +59,7 @@
           "attribution": "Almaty municipal land-cadastral map / GZK"
         },
         "buildings": {
-          "source": "overture-tiles"
+          "sources": [{ "id": "osm" }]
         },
         "sidebar": {
           "disabledSections": [

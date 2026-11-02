@@ -1125,40 +1125,18 @@ input.proposal-author-name {
     position: absolute;
     top: 20px;
     right: 20px;
-    background: var(--cb-glass-sheet);
-    border: 1px solid var(--cb-line-glass);
-    border-radius: var(--cb-radius-pill);
     padding: 8px 15px 8px 12px;
-    display: flex;
-    align-items: center;
     gap: 8px;
-    font-size: var(--cb-text-base);
-    font-weight: var(--cb-weight-medium);
-    color: var(--cb-text);
-    box-shadow: var(--cb-shadow-sm);
     z-index: var(--cb-z-map-chrome);
-    cursor: pointer;
-    transition: all 0.3s;
     max-width: 260px;
 }
 
-.username-display:hover {
-    background: var(--cb-surface);
-    box-shadow: var(--cb-shadow-md);
-    transform: translateY(-1px);
-}
-
-.username-display .user-avatar {
+.user-avatar {
     width: 24px;
     height: 24px;
     border-radius: 50%;
     object-fit: cover;
     border: 1px solid var(--cb-line);
-}
-
-.username-display i.fas {
-    color: var(--cb-text-muted);
-    font-size: 16px;
 }
 
 .wallet-status-icon {

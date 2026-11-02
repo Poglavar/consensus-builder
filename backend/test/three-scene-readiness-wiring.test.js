@@ -49,6 +49,7 @@ function harness({ request = vi.fn(async () => ({ items: [], complete: true })),
         buildingDisplaySnapshot: null, renderedBuildingDisplaySnapshot: null,
         sceneVisualRevision: 0, renderedSceneVisualRevision: -1,
         nearbyBuildingsRevision: 0, nearbyProposalBuildings: [], nearbyProposalBuildingsFetching: false,
+        sharedPlanRetainedIds: null,
         nearbyProposalBuildingsKey: null, nearbyBuildingsOutcome: null, nearbyBuildingsProvenance: null,
         nearbyDataScope: 'scope-a', NEARBY_BUILDINGS_KEY_PRECISION: 0.0001,
         sceneLoadGeometry: { type: 'Point', coordinates: [2, 1] },
@@ -80,7 +81,8 @@ function harness({ request = vi.fn(async () => ({ items: [], complete: true })),
     context.buildingGroup.add(context.existingBuildingsGroup, context.proposedBuildingsGroup);
     const names = [
         'ensureNearbyProposalBuildings', 'rebuild3DBuildingsOnly', 'build3DBuildingFamilies', 'renderScene',
-        'getSceneReadiness', 'invalidateThreeView', 'queueThreeFrame', 'scheduleThreeFrame', 'threeBuildingKey', 'awaitingPhotoReveal'
+        'getSceneReadiness', 'invalidateThreeView', 'queueThreeFrame', 'scheduleThreeFrame', 'threeBuildingKey', 'awaitingPhotoReveal',
+        'sharedPlanReconcile'
     ];
     vm.createContext(context);
     vm.runInContext(`function renderFrame() {}\n${names.map(name => declarations.get(name)).join('\n')}\n${names.map(name => `this.${name}=${name};`).join('\n')}`, context);

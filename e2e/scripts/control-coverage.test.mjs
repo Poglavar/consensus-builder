@@ -99,6 +99,22 @@ function click(target, pointerId, x, y, isTrusted = true) {
   return { target, pointerId, clientX: x, clientY: y, timeStamp: 101, isTrusted };
 }
 
+test('a close button inside a slider keeps its own observation and click attribution', async () => {
+  const slider = new FakeElement('div', { role: 'slider', 'data-ui-control': 'control-divider' });
+  const close = new FakeElement('button', { 'data-ui-control': 'control-divider-close' }, 'Close comparison');
+  const ownClosest = close.closest.bind(close);
+  close.closest = selector => selector.startsWith('input:not') || selector === '[role="slider"]'
+    ? slider : ownClosest(selector);
+  slider.contains = element => element === close;
+  const recorder = await instrumentedRecorder([slider, close]);
+  recorder.dispatch('pointerdown', close, pointer('pointerdown', close, 40, 10, 10));
+  recorder.dispatch('pointerup', close, pointer('pointerup', close, 40, 10, 10));
+  recorder.dispatch('click', close, click(close, 40, 10, 10));
+  const observed = recorder.events.filter(event => event.kind === 'observed');
+  assert.ok(observed.some(event => event.sourceIds.includes('control-divider-close')));
+  assert.deepEqual(recorder.events.filter(event => event.kind === 'clicked').map(event => Array.from(event.sourceIds)), [['control-divider-close']]);
+});
+
 test('captured pointer tap credits the original source button once after its trusted click', async () => {
   const recorder = await instrumentedRecorder();
   recorder.dispatch('pointerdown', recorder.button, pointer('pointerdown', recorder.button, 7, 20, 20));
@@ -243,15 +259,15 @@ test('native date/time picker boundary requires the exact marked datetime input 
   assert.equal(changes[0].attrs['data-ui-native-datetime-boundary'], undefined);
 });
 
-test('the native date/time picker boundary also covers a date input', async () => {
-  const picker = new FakeElement('input', { 'data-ui-control': 'deadline', 'data-ui-native-datetime-boundary': '2035-06-15', type: 'date' });
+for (const [type, value] of [['date', '2035-06-15'], ['month', '2035-06']]) test(`the native date/time picker boundary also covers a ${type} input`, async () => {
+  const picker = new FakeElement('input', { 'data-ui-control': 'deadline', 'data-ui-native-datetime-boundary': value, type });
   const recorder = await instrumentedRecorder([picker]);
-  picker.value = '2035-06-15';
+  picker.value = value;
   recorder.dispatch('change', picker, { isTrusted: false });
   const changes = recorder.events.filter(event => event.kind === 'changed');
   assert.equal(changes.length, 1);
   assert.equal(changes[0].method, 'native-datetime-boundary');
-  assert.equal(changes[0].value, '2035-06-15');
+  assert.equal(changes[0].value, value);
 });
 
 test('custom sliders require a changed ARIA value after trusted keyboard or pointer input', async () => {

@@ -248,8 +248,11 @@ test.describe('Agreements on chain @core', () => {
     const amount = page.locator('.cb-dialog--prompt');
     await expect(amount).toContainText('How much SOL should the escrow receive from the sponsor’s wallet?');
     await expect(amount.locator('.cb-dialog__prompt')).toHaveValue('0.5');
+    await amount.locator('.cb-dialog__prompt').fill('0.25');
+    await expect(amount.locator('.cb-dialog__prompt')).toHaveValue('0.25');
     await amount.locator('[data-action-id="cancel"]').click();
     await expect(amount).toHaveCount(0);
+    await expect(escrow).toHaveText(/^0\sSOL\sof\s0\.5\sSOL$/);
     await minted.locator('[data-agreement-action="cancel"]').click();
     const confirm = page.getByRole('alertdialog');
     await expect(confirm).toContainText('Cancel this agreement on chain? It ends for good and the escrow returns to the sponsor.');

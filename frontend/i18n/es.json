@@ -2816,9 +2816,7 @@
                 "infoLabel": "Información del polígono:",
                 "pointCount": "Número de puntos: {{count}}",
                 "table": {
-                    "index": "Punto #",
-                    "lat": "Latitud",
-                    "lng": "Longitud"
+                    "index": "Punto #"
                 },
                 "showOnMap": "Mostrar en el mapa",
                 "unknownError": "Error desconocido",
@@ -2883,7 +2881,7 @@
                         "row": "Hilera",
                         "other": "Otro"
                     },
-                    "publication": "Publicación",
+                    "publication": "Estado de publicación",
                     "publicationAll": "Borradores y publicados"
                 },
                 "resultCountWord": "mostrados",
@@ -6616,10 +6614,10 @@
         "positionUpdated": "Posición actualizada.",
         "applyCoordinates": "Aplicar coordenadas",
         "nudgeDistance": "Distancia de desplazamiento (m)",
-        "north": "Norte",
-        "west": "Oeste",
-        "east": "Este",
-        "south": "Sur",
+        "north": "Mover al norte",
+        "west": "Mover al oeste",
+        "east": "Mover al este",
+        "south": "Mover al sur",
         "editVertices": "Editar vértices",
         "vertex": "Vértice",
         "insertVertex": "Añadir punto después",
@@ -6633,9 +6631,6 @@
         "treeProperties": "Propiedades del árbol",
         "treeKind": "Tipo de árbol",
         "broadleaf": "Frondoso",
-        "conifer": "Conífera",
-        "columnar": "Columnar",
-        "ornamental": "Ornamental",
         "treeHeight": "Altura (m)",
         "applyProperties": "Aplicar propiedades",
         "propertiesUpdated": "Propiedades actualizadas.",
@@ -8931,8 +8926,8 @@
         "reconnecting": "Reconectando con el plan compartido…",
         "undo": "Deshacer el último cambio del agente",
         "undoPending": "Guarda o vuelve a cargar tus cambios locales antes de deshacer el cambio del agente.",
-        "bench": "banco",
-        "building": "edificio",
+        "bench": "el banco del parque",
+        "building": "el edificio",
         "east": "al este",
         "west": "al oeste",
         "north": "al norte",
@@ -9190,10 +9185,7 @@
     "planApplied": "El cambio se aplicó al mapa.",
     "planFailed": "No se pudo aplicar el cambio: {{reason}}",
     "turnCost": "Este turno: {{cost}}",
-    "sessionTotal": {
-      "one": "Total de la sesión: {{cost}} · {{count}} turno",
-      "other": "Total de la sesión: {{cost}} · {{count}} turnos"
-    },
+    "sessionTotal": "Total de la sesión: {{cost}}",
     "expired": "Esta conversación ha caducado. Inicia una nueva.",
     "optionsHint": "Elige una opción o escribe una respuesta.",
     "planTitle": "Trabajo actual",

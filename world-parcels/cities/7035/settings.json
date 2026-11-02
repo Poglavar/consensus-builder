@@ -59,7 +59,7 @@
           "attribution": "DISPERTARU DIY / Geoportal Jogjaprov — Tanah Desa/Kalurahan village-land parcel inventory; partial coverage."
         },
         "buildings": {
-          "source": "overture-tiles"
+          "sources": [{ "id": "osm" }]
         },
         "sidebar": {
           "disabledSections": [

@@ -256,3 +256,38 @@ test('Create agreement with no saved plan names what is missing and saves nothin
   await expect(agreementPanel(page)).toBeHidden();
   expect(await storedAgreements(page)).toEqual([]);
 });
+
+test('choosing an unapplied plan lets the editor apply it, recover its land and save that plan', async ({ mockApi: page }) => {
+  const { layoutId } = await applyLayout(page);
+  const planCid = await page.evaluate(async id => {
+    const w = window as any;
+    await w.ProposalManager.unapplyProposal(id);
+    const plan = w.PlanComposition.create('Plan requiring application',
+      [w.proposalStorage.getProposal(id)], w.MapShare.capture(w));
+    w.PlanWorkspace.save(plan);
+    return plan.cid as string;
+  }, layoutId);
+  expect(await isLayoutApplied(page, layoutId)).toBe(false);
+
+  await page.evaluate(() => (window as any).i18n.setLanguage('en'));
+  await openAgreementsList(page);
+  await page.locator('#lists-actions').getByRole('button', { name: 'Create agreement', exact: true }).click();
+  const editor = await editorOpen(page, 'Create agreement');
+  const plan = editor.getByRole('combobox', { name: 'Plan', exact: true });
+  await expect(plan).toHaveValue('');
+  await selectNativeOption(plan, { value: planCid });
+
+  const land = editor.locator('[data-agreement-land]');
+  await expect(land).toContainText('Apply every design of this saved plan before reading its land.');
+  const applyPlan = editor.getByRole('button', { name: 'Apply plan designs', exact: true });
+  await applyPlan.click();
+  await expect.poll(() => isLayoutApplied(page, layoutId), { timeout: 30_000 }).toBe(true);
+  await expect(land.locator('[data-agreement-action="apply-plan"]')).toHaveCount(0);
+  await expect(editor.locator('[data-agreement-input]')).toHaveCount(1);
+  await expect(editorSave(editor)).toBeEnabled();
+
+  await editorSave(editor).click();
+  await editorClosed(page);
+  const [saved] = await storedAgreements(page);
+  expect(saved.plan.cid).toBe(planCid);
+});

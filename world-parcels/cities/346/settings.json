@@ -59,7 +59,7 @@
           "attribution": "Municipalidad de San José, Dpto. Información Catastral y Geográfica, Sección de Información Geográfica"
         },
         "buildings": {
-          "source": "overture-tiles"
+          "sources": [{ "id": "osm" }]
         },
         "sidebar": {
           "disabledSections": [

@@ -34,13 +34,14 @@ test.describe('Editor button effects @features', () => {
     await openParcel(page, 'proposals');
     await page.locator('.parcel-transport-btn--road').click();
     await expect(page.locator('#road-info-panel')).toBeVisible();
-    await page.locator('#road-acquire-difficulty-label .acquiring-difficulty-help-icon').click();
+    const acquisitionHelp = page.locator('#road-acquire-difficulty-label').getByRole('button', { name: 'Modeled acquisition score' });
+    await acquisitionHelp.click();
     const explanation = page.locator('.road-acquiring-difficulty-dialog');
     await expect(explanation).toBeVisible();
     await expect(explanation).toContainText(/Government|Institution|Company|Individual/i);
     await explanation.locator('.close-circle-btn').click();
     await expect(explanation).toBeHidden();
-    await page.locator('#road-acquire-difficulty-label .acquiring-difficulty-help-icon').click();
+    await acquisitionHelp.click();
     await expect(explanation).toBeVisible();
     await explanation.locator('.btn-primary').click();
     await expect(explanation).toBeHidden();

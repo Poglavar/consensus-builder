@@ -72,6 +72,15 @@ test('a watched area copies its route and opens and closes the other-area list',
   await list.locator('#am-list-close').click();
   await expect(list).toHaveCount(0);
   await expect(panel).toBeVisible();
+
+  await panel.locator('#am-list-others').click();
+  const other = page.locator('#area-monitor-list-modal .area-monitor-list-item')
+    .filter({ hasText: 'Vukovarska Corridor' });
+  await expect(other).toHaveRole('button');
+  await other.click();
+  await expect(page).toHaveURL(/\/monitors\/2$/);
+  await expect(page.locator('#area-monitor-detail-panel')).toContainText('Vukovarska Corridor');
+  await expect(page.locator('#area-monitor-list-modal')).toHaveCount(0);
 });
 
 test('the expanded technical status buttons copy the log and follow a proposal entry', async ({ mockApi: page, context }) => {

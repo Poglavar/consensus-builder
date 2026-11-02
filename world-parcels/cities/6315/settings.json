@@ -59,7 +59,7 @@
           "attribution": "Şehitkamil Belediyesi / Plan ve Proje Müdürlüğü · Netcad e-İmar"
         },
         "buildings": {
-          "source": "overture-tiles"
+          "sources": [{ "id": "osm" }]
         },
         "sidebar": {
           "disabledSections": [

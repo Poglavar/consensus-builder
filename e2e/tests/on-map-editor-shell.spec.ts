@@ -255,7 +255,9 @@ test.describe('Shared on-map editor shell @features', () => {
     const panel = root.locator('.on-map-editor__panel');
     const handle = panel.locator(':scope > .mobile-dock-sheet-handle');
     await expect(handle).toBeVisible();
-    await expect(root.locator('.on-map-editor__toggle')).toBeHidden();
+    const toggle = root.locator('.on-map-editor__toggle');
+    await expect(toggle).toBeVisible();
+    await expect(toggle).toHaveAccessibleName('Hide controls');
     await expect(root.locator('.on-map-editor__header .close-circle-btn')).toHaveCSS('clip-path', 'inset(50%)');
     await expect(root.locator('.on-map-editor__body')).toBeVisible();
 

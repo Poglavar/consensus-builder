@@ -22,6 +22,14 @@ test('organiser generates and restores local assignments while the agreement sto
   await editor.locator('[data-agreement-title]').fill('Residents vote');
   const traffic:string[]=[];
   page.on('request',request=>traffic.push(request.url()+' '+(request.postData()||'')));
+  await roster.locator('[data-roster-count]').fill('3');
+  await roster.locator('[data-roster-action="generate"]').click();
+  await expect(roster).toContainText('3 eligible codes prepared');
+  page.once('dialog',dialog=>dialog.accept());
+  await roster.locator('[data-roster-action="remove"]').click();
+  await expect(roster).toContainText('0 eligible codes prepared');
+  await expect(roster.locator('[data-roster-action="remove"]')).toHaveCount(0);
+  await expect(editorSave(editor)).toBeEnabled();
   await roster.locator('[data-roster-labels]').fill('local-only-resident@example.test\nLocal resident B');
   await roster.locator('[data-roster-action="generate"]').click();
   await expect(roster).toContainText('2 eligible codes prepared');
@@ -33,6 +41,13 @@ test('organiser generates and restores local assignments while the agreement sto
   expect(local.entries).toHaveLength(2);
   expect(local.entries[0].label).toBe('local-only-resident@example.test');
   await expect(editorSave(editor)).toBeEnabled();
+  const csvDownload=page.waitForEvent('download');
+  await roster.locator('[data-roster-action="csv"]').click();
+  const csvFile=await csvDownload;
+  const csv=fs.readFileSync((await csvFile.path())!, 'utf8');
+  expect(csvFile.suggestedFilename()).toBe('voting-codes.csv');
+  expect(csv).toContain('Person,Code\r\n');
+  expect(csv).toContain(`"${local.entries[0].label}","${local.entries[0].code}"`);
   await roster.locator('[data-roster-import]').setInputFiles({name:'voter-list.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(local))});
   page.once('dialog',dialog=>dialog.accept());
   await expect(roster.locator('[data-roster-progress]')).toHaveText('');
@@ -45,6 +60,35 @@ test('organiser generates and restores local assignments while the agreement sto
   expect(JSON.stringify(saved)).not.toContain(local.entries[0].label);
   expect(traffic.join('\n')).not.toContain(local.entries[0].label);
   expect(traffic.join('\n')).not.toContain(local.entries[0].code);
+});
+
+test('organiser can remove code voting from a draft before saving the agreement', async ({ mockApi: page }) => {
+  test.setTimeout(180_000);
+  await stubBasemapTiles(page);
+  const { layoutId } = await applyLayout(page);
+  await page.evaluate(id => {
+    const w = window as any;
+    const plan = w.PlanComposition.create('Community plan without codes', [w.proposalStorage.getProposal(id)], w.MapShare.capture(w));
+    w.PlanWorkspace.save(plan); w.PlanDialog.details(plan);
+  }, layoutId);
+  await page.getByRole('button', { name: 'Create agreement', exact: true }).click();
+  const editor = agreementEditor(page), roster=editor.locator('[data-voting-roster]');
+  await editor.getByRole('tab', { name: 'Rules', exact: true }).click();
+  await editor.locator('[data-agreement-electorate][value="community"]').check();
+  await editor.locator('[data-agreement-title]').fill('Residents vote without codes');
+  await roster.locator('[data-roster-count]').fill('1');
+  await roster.locator('[data-roster-action="generate"]').click();
+  await expect(roster).toContainText('1 eligible codes prepared');
+  page.once('dialog',dialog=>dialog.accept());
+  await roster.locator('[data-roster-action="remove"]').click();
+  await expect(roster).toContainText('0 eligible codes prepared');
+  await expect(roster.locator('[data-roster-action="remove"]')).toHaveCount(0);
+  await expect(editorSave(editor)).toBeEnabled();
+  await editorSave(editor).click();
+  await editorClosed(page);
+  const [saved]=await storedAgreements(page);
+  expect(saved.rule.electorate).toBe('community');
+  expect(saved.consultation).not.toHaveProperty('voting');
 });
 
 test('a voter checks, changes and reviews one ballot without a wallet', async ({ mockApi: page }) => {

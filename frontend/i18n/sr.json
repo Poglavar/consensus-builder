@@ -2817,9 +2817,7 @@
                 "infoLabel": "Informacije o poligonu:",
                 "pointCount": "Broj tačaka: {{count}}",
                 "table": {
-                    "index": "Tačka #",
-                    "lat": "Geografska širina",
-                    "lng": "Geografska dužina"
+                    "index": "Tačka #"
                 },
                 "showOnMap": "Prikaži na mapi",
                 "unknownError": "Nepoznata greška",
@@ -2884,7 +2882,7 @@
                         "row": "Niz",
                         "other": "Ostalo"
                     },
-                    "publication": "Objava",
+                    "publication": "Status objave",
                     "publicationAll": "Nacrti i objavljena dizajni"
                 },
                 "resultCountWord": "prikazano",
@@ -6623,10 +6621,10 @@
         "positionUpdated": "Položaj je ažuriran.",
         "applyCoordinates": "Primeni koordinate",
         "nudgeDistance": "Udaljenost pomeranja (m)",
-        "north": "Sever",
-        "west": "Zapad",
-        "east": "Istok",
-        "south": "Jug",
+        "north": "Pomeri ka severu",
+        "west": "Pomeri ka zapadu",
+        "east": "Pomeri ka istoku",
+        "south": "Pomeri ka jugu",
         "editVertices": "Uredi temena",
         "vertex": "Teme",
         "insertVertex": "Dodaj tačku iza",
@@ -6640,9 +6638,6 @@
         "treeProperties": "Svojstva stabla",
         "treeKind": "Vrsta stabla",
         "broadleaf": "Lišćar",
-        "conifer": "Četinar",
-        "columnar": "Stubasto",
-        "ornamental": "Ukrasno",
         "treeHeight": "Visina (m)",
         "applyProperties": "Primeni svojstva",
         "propertiesUpdated": "Svojstva su ažurirana.",
@@ -8955,8 +8950,8 @@
         "reconnecting": "Ponovno povezivanje sa zajedničkim planom…",
         "undo": "Opozovi poslednju izmenu agenta",
         "undoPending": "Sačuvajte ili ponovo učitajte lokalne izmene pre opoziva izmene agenta.",
-        "bench": "klupa",
-        "building": "zgrada",
+        "bench": "klupu u parku",
+        "building": "zgradu",
         "east": "istočno",
         "west": "zapadno",
         "north": "severno",
@@ -9214,10 +9209,7 @@
     "planApplied": "Измена је приказана на мапи.",
     "planFailed": "Измена није примењена: {{reason}}",
     "turnCost": "Овај упит: {{cost}}",
-    "sessionTotal": {
-      "one": "Укупно у разговору: {{cost}} · {{count}} упит",
-      "other": "Укупно у разговору: {{cost}} · {{count}} упита"
-    },
+    "sessionTotal": "Укупно у разговору: {{cost}}",
     "expired": "Разговор је истекао. Започните нови.",
     "optionsHint": "Изаберите опцију или напишите одговор.",
     "planTitle": "Тренутни рад",

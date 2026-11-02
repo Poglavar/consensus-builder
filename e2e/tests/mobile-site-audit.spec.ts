@@ -48,7 +48,8 @@ for (const viewport of [{ width: 320, height: 640 }, { width: 390, height: 844 }
     await settings.locator(':scope > .mobile-dock-sheet-handle').focus();
     await page.keyboard.press('End');
     const expanded = (await settings.boundingBox())!.height;
-    await dragHandle(page, settings, 120);
+    // End just above the half-height stop: both a slow drag and a flick settle there.
+    await dragHandle(page, settings, expanded - viewport.height / 2 - 10);
     // Release snaps to the sheet's half-height stop after its short settle transition.
     await expect.poll(async () => (await settings.boundingBox())!.height).toBeLessThan(expanded - 80);
     await settings.locator(':scope > .mobile-dock-sheet-handle').focus();
@@ -151,7 +152,9 @@ test('the road and cross-section sheets share resizing and drag-to-cancel withou
   const editor = page.locator('#corridor-editor-overlay .on-map-editor__panel');
   await expect(editor).toBeVisible();
   await expect(editor.locator(':scope > .mobile-dock-sheet-handle')).toBeVisible();
-  await expect(editor.locator('.on-map-editor__toggle')).toBeHidden();
+  const toggle = editor.locator('.on-map-editor__toggle');
+  await expect(toggle).toBeVisible();
+  await expect(toggle).toHaveAccessibleName('Hide controls');
   const before = await page.evaluate(() => JSON.stringify((window as any).getRoadDrawingProfile()));
   await editor.locator(':scope > .mobile-dock-sheet-handle').focus();
   await page.keyboard.press('End');

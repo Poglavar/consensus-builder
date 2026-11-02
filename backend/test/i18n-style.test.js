@@ -34,6 +34,10 @@ describe('en.json copy rules', () => {
             .toEqual({ titleCaseLabels: Math.min(list.length, ceiling), ceiling, sample: [] });
     });
 
+    it('recognizes Mechaurbanista as the named chat assistant', () => {
+        expect(titleCaseLabels(en)).not.toContain('chat.title = Ask Mechaurbanista');
+    });
+
     it('does not add case conflicts (the same words with different capitals)', () => {
         const ceiling = baseline ? baseline.i18n.caseConflicts : 0;
         const list = caseConflicts(en);

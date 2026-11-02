@@ -38,7 +38,17 @@ test('a parcel layout lists its input and output parcels on their own tabs; hove
 
   await showProposalTab(page, 'outputs');
   await expect(panel(page).locator('[data-proposal-tabpanel="overview"]')).toBeHidden();
-  await expect(panel(page).locator('#proposal-descendants-list .descendant-item[data-descendant-type="parcel"]')).toHaveCount(outputCount);
+  const descendants = panel(page).locator('#proposal-descendants-list .descendant-item[data-descendant-type="parcel"]');
+  await expect(descendants).toHaveCount(outputCount);
+  const descendant = descendants.first();
+  const outputOutline = page.locator('#map path.click-stack-map-focus');
+  await descendant.click();
+  await expect(descendant).toHaveAttribute('aria-pressed', 'true');
+  await page.mouse.move(5, 5);
+  await expect(outputOutline.first()).toBeVisible();
+  await expect(descendant).toBeVisible();
+  await descendant.click();
+  await expect(descendant).toHaveAttribute('aria-pressed', 'false');
 
   await showProposalTab(page, 'inputs');
   await expect(panel(page).locator('[data-proposal-tabpanel="outputs"]')).toBeHidden();
@@ -68,6 +78,14 @@ test('a parcel layout lists its input and output parcels on their own tabs; hove
   await expect(input).toBeVisible();
   await name.click();
   await expect(name).toHaveAttribute('aria-pressed', 'false');
+
+  const openSource = input.getByRole('button', { name: 'Open Parcel 1234', exact: true });
+  await expect(openSource).toHaveAttribute('title', 'Click to focus on the source parcel location');
+  await openSource.click();
+  await expect.poll(() => page.evaluate(geometry => {
+    const w = window as any;
+    return w.map.getBounds().contains(w.L.geoJSON(geometry).getBounds());
+  }, PARCEL_GEOMETRY)).toBe(true);
 });
 
 test('a design keeps its record in Info and land navigation in the parcel tabs', async ({ mockApi: page }) => {

@@ -81,9 +81,12 @@ describe('proposalStorage authored-log persistence', () => {
         expect(DesignRecord.published(reloaded)).toEqual(content);
         expect(DesignRecord.cidOf(reloaded)).toBe(cid);
     });
-    it('rolls back both definitions and imported plan membership if atomic storage fails, and permits retry', async () => {
+    it('rolls back imported definitions, receipt and bound snapshot if atomic storage fails, and permits retry', async () => {
         const File = require('../../frontend/js/plan-file.js');
         const UI = require('../../frontend/js/plan-file-ui.js');
+        install('Cid', require('../../frontend/js/cid.js'));
+        install('DesignRecord', require('../../frontend/js/design-record.js'));
+        install('PlanComposition', require('../../frontend/js/plan-composition.js'));
         const { ParcelMutation } = require('../../frontend/js/proposals/apply/transaction.js');
         const { storage, persisted } = bootStore();
         install('ProposalManager', { runParcelMutation: (kind, proposalId, work) => ParcelMutation.run({ kind, proposalId }, context => work({ _parcelMutation: context }),
@@ -98,6 +101,17 @@ describe('proposalStorage authored-log persistence', () => {
         const plan = await UI.browser(globalThis).commitImport(file);
         expect(storage.getAllProposals()).toHaveLength(1);
         expect(JSON.parse(persisted.get(UI.PREFIX + plan.cid))).toEqual(plan);
+        const snapshot = JSON.parse(persisted.get(`plan:${plan.cid}`));
+        expect(snapshot).toMatchObject({ cid: plan.cid, content: plan.content, memberIds: plan.memberIds });
+        expect(snapshot.designs).toHaveLength(1);
+        expect(snapshot).not.toHaveProperty('published');
+
+        // Reimporting a plan already known as published keeps its canonical metadata intact;
+        // only the portable import receipt is refreshed.
+        const published = { cid: plan.cid, content: plan.content, published: true, publicationTag: 'retained' };
+        persisted.set(`plan:${plan.cid}`, JSON.stringify(published));
+        await UI.browser(globalThis).commitImport(file);
+        expect(persisted.get(`plan:${plan.cid}`)).toBe(JSON.stringify(published));
     });
     it('restores a portable plan through the real normalizer and reloads with identical authored content', async () => {
         const File = require('../../frontend/js/plan-file.js');

@@ -2817,9 +2817,7 @@
                 "infoLabel": "Polygon information:",
                 "pointCount": "Number of points: {{count}}",
                 "table": {
-                    "index": "Point #",
-                    "lat": "Latitude",
-                    "lng": "Longitude"
+                    "index": "Point #"
                 },
                 "showOnMap": "Show on map",
                 "unknownError": "Unknown error",
@@ -2884,7 +2882,7 @@
                         "row": "Row",
                         "other": "Other"
                     },
-                    "publication": "Publication",
+                    "publication": "Publication status",
                     "publicationAll": "Draft & published"
                 },
                 "resultCountWord": "shown",
@@ -6589,10 +6587,10 @@
         "positionUpdated": "Position updated.",
         "applyCoordinates": "Apply coordinates",
         "nudgeDistance": "Move distance (m)",
-        "north": "North",
-        "west": "West",
-        "east": "East",
-        "south": "South",
+        "north": "Move north",
+        "west": "Move west",
+        "east": "Move east",
+        "south": "Move south",
         "editVertices": "Edit vertices",
         "vertex": "Vertex",
         "insertVertex": "Add point after",
@@ -6606,9 +6604,6 @@
         "treeProperties": "Tree properties",
         "treeKind": "Tree kind",
         "broadleaf": "Broadleaf",
-        "conifer": "Conifer",
-        "columnar": "Columnar",
-        "ornamental": "Ornamental",
         "treeHeight": "Height (m)",
         "applyProperties": "Apply properties",
         "propertiesUpdated": "Properties updated.",
@@ -8903,8 +8898,8 @@
         "reconnecting": "Reconnecting to the shared plan…",
         "undo": "Undo last agent change",
         "undoPending": "Save or reload your local changes before undoing the agent change.",
-        "bench": "bench",
-        "building": "building",
+        "bench": "the park bench",
+        "building": "the building",
         "east": "east",
         "west": "west",
         "north": "north",
@@ -9162,10 +9157,7 @@
     "planApplied": "The change is on the map.",
     "planFailed": "Could not apply the change: {{reason}}",
     "turnCost": "This turn: {{cost}}",
-    "sessionTotal": {
-      "one": "Session total: {{cost}}",
-      "other": "Session total: {{cost}}"
-    },
+    "sessionTotal": "Session total: {{cost}}",
     "expired": "This conversation expired. Start a new one.",
     "optionsHint": "Choose an option or write a reply.",
     "planTitle": "Current work",

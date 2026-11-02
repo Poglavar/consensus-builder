@@ -59,7 +59,7 @@
           "attribution": "Bangkok Metropolitan Administration / BMA GIS Portal, BMA_PARCEL_01"
         },
         "buildings": {
-          "source": "overture-tiles"
+          "sources": [{ "id": "osm" }]
         },
         "sidebar": {
           "disabledSections": [

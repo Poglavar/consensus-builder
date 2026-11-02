@@ -46,7 +46,7 @@
         function list({ storedOnly = false } = {}) {
             const rows = new Map();
             win.PersistentStorage.forEach((raw, key) => {
-                if (!String(key).startsWith('plan:') && !String(key).startsWith('ugt-imported-plan:')) return;
+                if (!String(key).startsWith('plan:')) return;
                 try { const row = JSON.parse(raw); verify(row, row.cid); rows.set(row.cid, row); }
                 catch (error) { win.console.warn('[NamedPlans] Invalid local plan', key, error.message); }
             });

@@ -2,6 +2,7 @@ import { test, expect } from '../helpers/fixtures';
 import type { Page } from '@playwright/test';
 import { openCity } from '../helpers/runtime';
 import { connectWalletByConnectorId, injectMockSolanaWallet, waitForBlockchainRuntime } from '../helpers/blockchain';
+import { selectNativeOption } from '../helpers/controls';
 import { marketsPayload, pageIndex, MarketFixture } from '../helpers/mocks/shared-server';
 import { fileIndexedAgreement, MINTED_ACCOUNT, OPEN_POOL, selectDevnetUsdc } from '../helpers/agreements';
 
@@ -36,6 +37,32 @@ async function captureClipboard(page: Page): Promise<void> {
   });
 }
 
+async function connectMarketSponsor(page: Page): Promise<void> {
+  fileIndexedAgreement(pageIndex(page), { title: TITLE, minted: { status: 'active', sponsor: SOLANA_WALLET }, pool: null });
+  await page.exposeFunction('__seedMarketFixture', (account: string) => {
+    pageIndex(page).markets.set(account, { ...OPEN_POOL, creator: SOLANA_WALLET });
+  });
+  await injectMockSolanaWallet(page, { publicKey: SOLANA_WALLET, providerName: 'phantom' });
+  await openCity(page);
+  await connectWalletByConnectorId(page, 'solana-phantom');
+  await waitForBlockchainRuntime(page, ['SolanaMarketBridge', 'solanaWeb3']);
+  await page.evaluate(() => {
+    const w = window as any;
+    w.__marketSeedCalls = [];
+    const bridge = w.SolanaMarketBridge;
+    // Keep the wallet and market UI real while replacing the transaction boundary.
+    bridge.readPositions = async () => ({});
+    bridge.createMarket = async (options: any) => {
+      w.__marketSeedCalls.push({ proposal: options.proposal, wallet: w.solanaWalletManager.getState().accounts[0] });
+      await w.__seedMarketFixture(options.proposal);
+      options.onStatus?.({ state: 'confirmed', signature: 'mock-market', explorerUrl: 'https://explorer.solana.com/tx/mock-market?cluster=devnet' });
+      return { transactionHash: 'mock-market', explorerUrl: 'https://explorer.solana.com/tx/mock-market?cluster=devnet' };
+    };
+  });
+  await page.locator('#bets-button').click();
+  await expect(page.locator(`#bets-sheet .bets-row[data-account="${ACCOUNT}"]`)).toBeVisible();
+}
+
 // The address follows the map as ?at=lat,lon,zoom (js/map-core.js), so the app address is compared
 // without that view parameter.
 const addressWithoutView = (page: Page) => page.evaluate(() => {
@@ -51,6 +78,58 @@ const QUESTION = new RegExp(`Will ${TITLE} execute by`);
 
 test.describe('Bets sheet @features', () => {
   test.beforeEach(async ({ mockApi: page }) => { await selectDevnetUsdc(page); });
+  test('city and world scopes and the asset selector change the Bets view', async ({ mockApi: page }) => {
+    const { cid } = fileContest(page);
+    const worldPayload = marketsPayload(pageIndex(page), 'zagreb') as any;
+    worldPayload.city = 'new_york';
+    for (const contest of worldPayload.contests) {
+      contest.city = 'new_york';
+      for (const agreement of contest.agreements) agreement.city = 'new_york';
+    }
+    const worldRequests: string[] = [];
+    await page.route('**/markets?*', route => {
+      const url = new URL(route.request().url());
+      if (url.searchParams.get('scope') !== 'other') return route.fallback();
+      worldRequests.push(url.search);
+      return route.fulfill({ json: worldPayload });
+    });
+    await page.route('**/bets/points/**', route => {
+      const path = new URL(route.request().url()).pathname;
+      if (path.endsWith('/account')) return route.fulfill({ json: route.request().method() === 'POST'
+        ? { id: 'fixture-account', account: 'fixture-account', alias: 'Fixture', balance: '1000000000', simulationRun: '' }
+        : { id: 'fixture-account', alias: 'Fixture', balance: '1000000000', positions: {}, recent: [] } });
+      if (path.endsWith('/markets')) return route.fulfill({ json: { markets: {}, subjects: {} } });
+      if (path.endsWith('/leaderboard')) return route.fulfill({ json: { leaderboard: [] } });
+      return route.fallback();
+    });
+    await openCity(page);
+    await page.locator('#bets-button').click();
+    const sheet = page.locator('#bets-sheet');
+    const cityRow = sheet.locator(`.bets-row[data-cid="${cid}"]`);
+    await expect(cityRow).toBeVisible();
+    const worldTab = sheet.locator('[data-scope="world"]');
+    await expect(worldTab).toHaveAttribute('role', 'tab');
+    await worldTab.click();
+    await expect(worldTab).toHaveAttribute('aria-selected', 'true');
+    await expect.poll(() => worldRequests.length).toBeGreaterThan(0);
+    const worldRow = sheet.locator(`.bets-row[data-account="${ACCOUNT}"]`);
+    await expect(worldRow).toBeVisible();
+    await expect(worldRow.locator('.bets-row__title')).toHaveAttribute('href', /city=new_york/);
+    await sheet.locator('[data-scope="city"]').click();
+    await expect(sheet.locator('[data-scope="city"]')).toHaveAttribute('aria-selected', 'true');
+    await expect(cityRow).toBeVisible();
+
+    const asset = sheet.locator('[data-bets-asset]');
+    await expect(asset).toHaveValue('devnet-usdc');
+    await selectNativeOption(asset, 'points');
+    await expect.poll(() => page.evaluate(() => (window as any).BetsTrading.asset())).toBe('points');
+    await expect(sheet.locator('[data-bets-asset]')).toHaveValue('points');
+    await expect(sheet.locator('#bets-standings')).toBeVisible();
+    await selectNativeOption(sheet.locator('[data-bets-asset]'), 'devnet-usdc');
+    await expect.poll(() => page.evaluate(() => (window as any).BetsTrading.asset())).toBe('devnet-usdc');
+    await expect(sheet.locator('#bets-standings')).toBeHidden();
+  });
+
   test('an unknown chain status shows no bet or settle action even after the agreement deadline', async ({ mockApi: page }) => {
     // The index never observed the account's status, and the deadline has passed: nothing settles.
     fileIndexedAgreement(pageIndex(page), { title: TITLE, minted: { status: null }, pool: OPEN_POOL, deadline: '2026-10-01T00:00:00.000Z' });
@@ -416,5 +495,38 @@ test.describe('Bets sheet @features', () => {
     await collectButtons.nth(0).click();
     await expect.poll(() => page.evaluate(() => (window as any).__claims)).toHaveLength(2);
     expect(await page.evaluate(() => (window as any).__claims)).toEqual([[ACCOUNT, 1], [ACCOUNT, 0]]);
+  });
+
+  test('the agreement sponsor seeds its USDC market from the Bets row through the mocked bridge', async ({ mockApi: page }) => {
+    await connectMarketSponsor(page);
+    const row = page.locator(`#bets-sheet .bets-row[data-account="${ACCOUNT}"]`);
+    const action = row.getByRole('button', { name: 'Seed USDC market', exact: true });
+    await expect(action).toBeVisible();
+    await action.click();
+    await expect.poll(() => page.evaluate(() => (window as any).__marketSeedCalls)).toHaveLength(1);
+    expect(await page.evaluate(() => (window as any).__marketSeedCalls[0])).toEqual({ proposal: ACCOUNT, wallet: SOLANA_WALLET });
+    await expect(row.locator('.btn-market-yes')).toBeVisible();
+    await expect(row.locator('.btn-market-no')).toBeVisible();
+    await expect(action).toHaveCount(0);
+  });
+
+  test('the agreement sponsor seeds its USDC market from the bet dialog through the mocked bridge', async ({ mockApi: page }) => {
+    await connectMarketSponsor(page);
+    const row = page.locator(`#bets-sheet .bets-row[data-account="${ACCOUNT}"]`);
+    await row.locator('.bets-row__title').click();
+    const dialog = page.locator('#proposalMarketOverlay');
+    await expect(dialog).toContainText('No pool yet');
+    const action = dialog.locator('.cb-dialog__footer').getByRole('button', { name: 'Seed USDC market', exact: true });
+    await expect(action).toBeVisible();
+    await action.click();
+    await expect.poll(() => page.evaluate(() => (window as any).__marketSeedCalls)).toHaveLength(1);
+    expect(await page.evaluate(() => (window as any).__marketSeedCalls[0])).toEqual({ proposal: ACCOUNT, wallet: SOLANA_WALLET });
+    await expect(dialog.locator('[data-market-dialog-status]')).toContainText('Opened the pool');
+    await expect(dialog.locator('.cb-dialog__footer .btn-market-yes')).toBeVisible();
+    await expect(dialog.locator('.cb-dialog__footer .btn-market-no')).toBeVisible();
+    await expect(dialog.locator('.cb-dialog__footer').getByRole('button', { name: 'Seed USDC market', exact: true })).toHaveCount(0);
+    await expect(row.locator('.btn-market-yes')).toBeVisible();
+    await expect(row.locator('.btn-market-no')).toBeVisible();
+    await expect(row.getByRole('button', { name: 'Seed USDC market', exact: true })).toHaveCount(0);
   });
 });

@@ -168,6 +168,36 @@ test('the Build tile opens the editor on equal plots, and the plot count sets ho
   expect(layout.approvalConfig).toBeUndefined();
 });
 
+test('a numbered plot button pins and releases that plot highlight', async ({ mockApi: page }) => {
+  const editor = await openLayoutEditor(page);
+  const pick = editor.locator('[data-reparcel-newplots-table] .reparcel-newplot-row .reparcel-plot-pick').first();
+  await expect(pick).toHaveAccessibleName('1');
+  await expect(pick).toHaveAttribute('aria-pressed', 'false');
+
+  const firstPlotStyle = () => page.evaluate(() => {
+    const matches: any[] = [];
+    const visit = (layer: any) => {
+      if (layer.__reparcelSliceIndex === 0) matches.push(layer);
+      if (typeof layer.eachLayer === 'function') layer.eachLayer(visit);
+    };
+    (window as any).map.eachLayer(visit);
+    const layer = matches[0];
+    return layer ? {
+      color: layer.options.color,
+      weight: layer.options.weight,
+      fillOpacity: layer.options.fillOpacity,
+    } : null;
+  });
+
+  await expect.poll(firstPlotStyle).toMatchObject({ color: '#333', weight: 1, fillOpacity: 0.55 });
+  await pick.click();
+  await expect(pick).toHaveAttribute('aria-pressed', 'true');
+  await expect.poll(firstPlotStyle).toMatchObject({ color: '#111', weight: 4, fillOpacity: 0.8 });
+  await pick.click();
+  await expect(pick).toHaveAttribute('aria-pressed', 'false');
+  await expect.poll(firstPlotStyle).toMatchObject({ color: '#333', weight: 1, fillOpacity: 0.55 });
+});
+
 test('Schelling plots lay the plan out with the Schelling layer\'s own settings', async ({ mockApi: page }) => {
   // The settings the Schelling layer remembers for this viewer (schelling-layer.js): 14 m local
   // streets instead of the default 12, so the plan code shows which settings were used.

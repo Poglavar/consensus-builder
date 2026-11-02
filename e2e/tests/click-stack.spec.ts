@@ -5,6 +5,7 @@
 // a selector; each plan links to its agreements in a separate dialog.
 import { Page } from '@playwright/test';
 import { test, expect } from '../helpers/fixtures';
+import { selectNativeOption } from '../helpers/controls';
 import { clickDesignOnMap, clickMapPoint, clickStack, createSpace, drawCorridor, expandStackSection, openCity, openParcel, stackSection, parcelTab, PARCEL_ID } from '../helpers/runtime';
 import { agreementPanel, agreementEditor, editorSave, storedAgreements, proposeOverPark } from '../helpers/agreements';
 
@@ -39,6 +40,11 @@ async function twoAgreementsOnPark(page: Page, titles = ['First agreement', 'Sec
 }
 
 const remembered = (page: Page) => page.evaluate(() => localStorage.getItem('cb.clickStack.expanded'));
+const agreementId = (page: Page, title: string) => page.evaluate(title => {
+  const agreement = (window as any).AgreementStore.list().find((item: any) => item.title === title);
+  if (!agreement) throw new Error(`Missing fixture agreement ${title}`);
+  return String(agreement.id);
+}, title);
 
 test.describe('Click stack @core', () => {
   test('agreements sit above Plans and their Plan button inspects the exact plan without reload or reapplication', async ({ mockApi: page }, testInfo) => {
@@ -48,7 +54,7 @@ test.describe('Click stack @core', () => {
     await expect(agreements).toBeVisible();
     const kinds = await sectionKinds(page); expect(kinds.indexOf('agreements')).toBeLessThan(kinds.indexOf('plans'));
     await expandStackSection(page, 'agreements');
-    await agreements.locator('.click-stack__selector').selectOption({ label: 'Agreement action coverage' });
+    await selectNativeOption(agreements.locator('.click-stack__selector'), { value: await agreementId(page, 'Agreement action coverage') });
     await expect(agreements.getByRole('heading', { name: 'Allocation', exact: true })).toHaveCount(0);
     const screenshot = testInfo.outputPath('agreements-section.png');
     await clickStack(page).screenshot({ path: screenshot });
@@ -91,12 +97,12 @@ test.describe('Click stack @core', () => {
     }, parkId);
     await clickDesignOnMap(page, parkId); await expandStackSection(page, 'plans');
     const plans = stackSection(page, 'plans'), agreements = stackSection(page, 'agreements');
-    await plans.locator('.click-stack__selector').selectOption(ids.other);
+    await selectNativeOption(plans.locator('.click-stack__selector'), ids.other);
     await expandStackSection(page, 'agreements');
     await expect(agreements.locator('#agreement-panel-title')).toHaveText('Other plan terms');
     await expect(agreements.locator('.click-stack__row-detail')).toBeVisible();
     await expect(agreements.locator('.click-stack__selector')).toHaveCount(0);
-    await expandStackSection(page, 'plans'); await plans.locator('.click-stack__selector').selectOption(ids.old);
+    await expandStackSection(page, 'plans'); await selectNativeOption(plans.locator('.click-stack__selector'), ids.old);
     await expandStackSection(page, 'agreements');
     await expect(agreements.locator('.click-stack__selector option')).toHaveCount(2);
     expect(await agreements.locator('.click-stack__selector option').allTextContents()).not.toContain('Other plan terms');
@@ -127,7 +133,7 @@ test.describe('Click stack @core', () => {
     page.setDefaultNavigationTimeout(60000);
     await twoAgreementsOnPark(page); await expandStackSection(page, 'plans'); await expandStackSection(page, 'agreements');
     const section = stackSection(page, 'agreements');
-    await section.locator('.click-stack__selector').selectOption({ label: 'Second agreement' });
+    await selectNativeOption(section.locator('.click-stack__selector'), { value: await agreementId(page, 'Second agreement') });
     const id = await page.evaluate(() => (window as any).AgreementPanel.current());
     await section.locator('[data-agreement-action="edit"]').click();
     const editor = agreementEditor(page); await expect(editor).toBeVisible();
@@ -184,7 +190,7 @@ test.describe('Click stack @core', () => {
       const count = (await storedAgreements(page)).length;
       await trigger.click();
       await agreementEditor(page).getByRole('tab', { name: /^Output parcels \(\d+\)$/ }).click();
-      await agreementEditor(page).locator('[data-agreement-allocation-mode]').selectOption('proposer');
+      await selectNativeOption(agreementEditor(page).locator('[data-agreement-allocation-mode]'), 'proposer');
       await expect(editorSave(agreementEditor(page))).toBeEnabled();
       const known = new Set((await storedAgreements(page)).map((row: any) => row.id));
       await editorSave(agreementEditor(page)).click(); await expect(agreementEditor(page)).toBeHidden();
@@ -483,7 +489,7 @@ test.describe('Click stack @core', () => {
     await expect(agreements.locator('.click-stack__selector option')).toHaveCount(2);
     const size = await clickStack(page).evaluate(el => ({ width: el.clientWidth, scroll: el.scrollWidth }));
     expect(size.scroll).toBeLessThanOrEqual(size.width);
-    await agreements.locator('.click-stack__selector').selectOption({ label: titles[1] });
+    await selectNativeOption(agreements.locator('.click-stack__selector'), { value: await agreementId(page, titles[1]) });
     await expect(agreements.locator('#agreement-panel-title')).toHaveText(titles[1]);
     const screenshot = testInfo.outputPath('phone-agreements-section.png');
     await clickStack(page).screenshot({ path: screenshot });

@@ -59,7 +59,7 @@
           "attribution": "Municipalidad de Posadas / IDE Posadas · Maestro 29 Publico"
         },
         "buildings": {
-          "source": "overture-tiles"
+          "sources": [{ "id": "osm" }]
         },
         "sidebar": {
           "disabledSections": [

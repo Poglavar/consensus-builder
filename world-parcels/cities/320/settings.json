@@ -59,7 +59,7 @@
           "attribution": "Agency for Land Administration and Management, Geodesy and Cartography / e-gazar.gov.mn"
         },
         "buildings": {
-          "source": "overture-tiles"
+          "sources": [{ "id": "osm" }]
         },
         "sidebar": {
           "disabledSections": [

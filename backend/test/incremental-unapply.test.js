@@ -99,6 +99,7 @@ function managerFor(record, overrides = {}) {
     });
     const manager = {
         _rebuildInProgress: false,
+        _sharedPlanEditBlocked: ProposalManager._sharedPlanEditBlocked,
         _recordedCadastreScope: ProposalManager._recordedCadastreScope,
         _clearDerivedRecordState: ProposalManager._clearDerivedRecordState,
         _unapplyProposalTransactionBody: ProposalManager._unapplyProposalTransactionBody,

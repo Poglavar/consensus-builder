@@ -76,10 +76,12 @@ test('file export success/failure restores controls, uses safe errors and never 
 
 test('file import only succeeds after atomic commit; invalid input, cancellation and storage rollback are separate', async () => {
     const { win, alerts } = browser(); let commits = 0, commitFails = false, cancel = false;
+    win.PlanComposition = { bind: plan => ({ ...plan, designs: [] }) };
     win.PlanFile = { MAX_BYTES: 1000, parse(text) { if (text === 'bad') throw Error(secret); return { plan: { title: secret, view: { at: '45,15,17' } }, designs: [] }; },
         validate() {}, importInto: () => ({ cid: 'private raw cid', memberIds: [], content: { title: secret } }) };
     win.ProposalManager = { runParcelMutation: async (_kind, _id, action) => {
         if (commitFails) throw Error(secret); commits++; return action({ _parcelMutation: { proposals: {}, storage: {
+                getItem(key) { return win.PersistentStorage.getItem(key); },
                 setItem(key, value) { win.PersistentStorage.setItem(key, value); }
             } } });
     } };
@@ -96,6 +98,7 @@ test('file import only succeeds after atomic commit; invalid input, cancellation
     cancel = false; commitFails = true; await select('valid'); assert.equal(commits, 0);
     commitFails = false; await select('valid'); assert.equal(commits, 1);
     assert.equal(JSON.parse(win.PersistentStorage.getItem('ugt-imported-plan:private raw cid')).content.title, secret);
+    assert.deepEqual(JSON.parse(win.PersistentStorage.getItem('plan:private raw cid')).designs, []);
     const outcomes = win.AppDiagnostics.snapshot().entries.filter(row => row.operation === 'import').map(row => row.outcome);
     assert.deepEqual(outcomes, ['failure', 'failure', 'cancelled', 'failure', 'success']);
     assert.ok(alerts.every(message => !message.includes('SECRET'))); assert.ok(!win.AppDiagnostics.exportText().includes('SECRET'));
@@ -179,12 +182,14 @@ test('plan import and repeated saves share one private handle for a CID, while d
     const { win, alerts } = browser();
     win.Cid = Cid;
     win.PlanRecord = PlanRecord;
+    win.PlanComposition = { bind: plan => ({ ...plan, designs: [] }) };
     const designCid = Cid.cidOfObject({ test: 'member' });
     const imported = PlanRecord.create('same plan', [designCid], { at: '45,15,16', mode: '2d', city: 'zagreb', language: 'en' });
     const cidOfObject = Cid.cidOfObject;
     win.PlanFile = { MAX_BYTES: 1000, parse: () => ({ plan: imported, designs: [] }), validate() {},
         importInto: file => ({ cid: cidOfObject(file.plan), content: file.plan, memberIds: [] }) };
     win.ProposalManager = { runParcelMutation: async (_kind, _id, action) => action({ _parcelMutation: { proposals: {}, storage: {
+        getItem(key) { return win.PersistentStorage.getItem(key); },
         setItem(key, value) { win.PersistentStorage.setItem(key, value); }
     } } }) };
     win.showSimpleShareModal = options => {
@@ -195,6 +200,10 @@ test('plan import and repeated saves share one private handle for a CID, while d
     await fileUi.importFile('plans', { size: 10, text: async () => '{"valid":true}' });
     const cid = cidOfObject(imported);
     assert.ok(win.PersistentStorage.getItem(`ugt-imported-plan:${cid}`));
+    assert.deepEqual(fileUi.importedRows('plans').map(row => [row.title, row.id]), [['same plan', cid]]);
+    assert.deepEqual(JSON.parse(win.PersistentStorage.getItem(`plan:${cid}`)), {
+        cid, content: imported, memberIds: [], designs: []
+    });
     assert.deepEqual(win.AppDiagnostics.snapshot().entries.filter(entry => entry.operation === 'import').map(entry => entry.outcome), ['success']);
     let row = null;
     win.fetch = async (_url, options) => {

@@ -3,6 +3,7 @@ import { createRequire } from 'node:module';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import request from 'supertest';
 import { setupDocsRoute } from '../routes/docs.js';
+import { MCP_DEBUG_TOOLS, MCP_SHARED_PLAN_TOOLS } from '../agents/mcp-catalog.js';
 import { createRouteApp } from './helpers/create-route-app.js';
 
 afterEach(() => {
@@ -465,12 +466,12 @@ describe('agent quickstart docs', () => {
             transport: 'streamable-http', source: 'backend/agents/mcp-server.mjs', liveActionsEnabledByDefault: false
         });
         // The advertised list must match exactly what the MCP server registers.
-        const mcpSource = fs.readFileSync(new URL('../agents/mcp-server.mjs', import.meta.url), 'utf8');
         const registrations = fs.readFileSync(repoFile('backend/agents/mcp-server.mjs'), 'utf8')
             + fs.readFileSync(repoFile('backend/agents/mcp-companion.mjs'), 'utf8');
         const registered = [...new Set([...registrations.matchAll(/(?:registerTool|add)\('(ugt_[a-z_]+)'/g)].map(match => match[1]))];
         expect(registered.length).toBeGreaterThan(32);
-        expect([...res.body.mcp.tools].sort()).toEqual([...registered].sort());
+        const conditional = new Set([...MCP_DEBUG_TOOLS, ...MCP_SHARED_PLAN_TOOLS]);
+        expect([...res.body.mcp.tools].sort()).toEqual(registered.filter(name => !conditional.has(name)).sort());
         expect(res.body.lens).toMatchObject({
             ruleField: 'rule.lens',
             schemas: 'https://api.example.test/lenses/schemas',

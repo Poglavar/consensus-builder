@@ -1004,13 +1004,6 @@ textarea.proposal-description-input {
     font-size: 12px;
 }
 
-/* Username display styles */
-
-.username-display i {
-    color: var(--cb-primary);
-    font-size: 13px;
-}
-
 /* "Compare proposals here" (js/proposals/parcel-compare-ui.js): two proposals side by side for one
    parcel, a native <dialog> (showModal) wearing the dialog primitive (css/primitives.css): card,
    header, body. Only what a native dialog needs on top is here: no UA border or padding, centred

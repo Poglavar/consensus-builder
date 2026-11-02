@@ -82,6 +82,7 @@ describe('three-mode Xray wiring', () => {
         };
         const [rebuild, context] = extracted('rebuild3DBuildingsOnly', `
             let isActive=true, buildingGroup={ add() {}, remove() {} }, sunLayer=null;
+            let sharedPlanRetainedIds=null;
             const buildingRefreshQueue = this.sceneWork.createRefreshQueue(family => build3DBuildingFamilies(family));
             let buildingBuildPending=false, buildingDisplaySnapshot=null, buildingsWorkGeneration=0, pendingModelLoads=0;
             let nearbyBuildingsRevision=0;
@@ -91,7 +92,7 @@ describe('three-mode Xray wiring', () => {
             let xrayEnabled=this.enabled, builtDisplay=this.built, plannedDisplay=this.planned;
             let realisticLayerActive=false, existingTransitAlignmentGroup={ visible: true }, showIneligibleParcels=false;
             let isolatedParcelId=this.isolated, isolatedProposalId=null;
-        `, stubs, ['build3DBuildingFamilies']);
+        `, stubs, ['build3DBuildingFamilies', 'sharedPlanReconcile']);
         return [rebuild, context];
     }
 

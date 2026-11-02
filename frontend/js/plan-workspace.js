@@ -44,7 +44,12 @@
         // The stored plan as it is, with these exact members (validate checks its content against its CID).
         const snapshot = win.PlanComposition.bind(plan, plan.content.designCids.map(cid => ({ ...available.get(cid),
             ...(plan.designSources?.[cid] ? { planFileSource: plan.designSources[cid] } : {}) })));
-        return save({ ...snapshot, ...(plan.published ? { published: true } : {}) });
+        // A portable import receipt can supply member ids while the canonical cache supplies
+        // publication state and other metadata. Binding adds exact member content; it must not
+        // replace metadata from that canonical row.
+        const bound = { ...row, ...snapshot };
+        if (row.published === true || plan.published === true) bound.published = true;
+        return save(bound);
     }
     async function publish(plan) {
         const row = await resolve(plan);

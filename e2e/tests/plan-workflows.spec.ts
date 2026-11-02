@@ -2,6 +2,7 @@ import { test, expect } from '../helpers/fixtures';
 import { openCity, createSpace, showProposal, chooseProfileName, stackSection } from '../helpers/runtime';
 import { pageIndex, cidOfObject } from '../helpers/mocks/shared-server';
 import { sampleParcels } from '../helpers/mocks/parcel-data';
+import { fillNativeDateTime } from '../helpers/controls';
 
 // Lists (01268caee) puts Create plan in #lists-actions; a saved plan opens in the click stack's Plan
 // section, which holds Share plan and Create agreement. Add to plan heads the design card (7cc412330).
@@ -29,6 +30,42 @@ async function savePlan(page:any, title:string) {
   await expect(stackSection(page,'plans')).toContainText(title);
   return page.evaluate(title => (window as any).PlanWorkspace.list().find((row:any)=>row.content.title===title),title);
 }
+async function openImportedPlanDetails(page:any, title:string) {
+  if (await page.locator('#click-stack').isVisible()) {
+    await page.keyboard.press('Escape');
+    await expect(page.locator('#click-stack')).toBeHidden();
+  }
+  if (!await page.locator('#proposals-sheet').isVisible()) await page.locator('#proposals-button').click();
+  const sheet = page.locator('#proposals-sheet');
+  await sheet.getByRole('tab', { name: 'Plans', exact: true }).click();
+  await sheet.locator('#lists-actions').getByRole('button', { name: 'Imported plans', exact: true }).click();
+  await page.locator('.plan-file-imported').getByRole('button', { name: new RegExp(title) }).click();
+  await expect(page.locator('.plan-details')).toBeVisible();
+}
+async function importPlanAndOpenDetails(page:any, title:string) {
+  const fileText = await page.evaluate(async title => {
+    const w = window as any;
+    const row = w.PlanWorkspace.list().find((item:any) => item.content.title === title);
+    const records = w.PlanComposition.localRecords(row, { apiBase: w.DesignSync.apiBase() });
+    const file = await w.PlanFile.create(records, { title: row.content.title, view: row.content.view });
+    return w.PlanFile.stringify(file);
+  }, title);
+  if (await page.locator('#click-stack').isVisible()) {
+    await page.keyboard.press('Escape');
+    await expect(page.locator('#click-stack')).toBeHidden();
+  }
+  if (!await page.locator('#proposals-sheet').isVisible()) await page.locator('#proposals-button').click();
+  const sheet = page.locator('#proposals-sheet');
+  await sheet.getByRole('tab', { name: 'Plans', exact: true }).click();
+  const picker = page.waitForEvent('filechooser');
+  await sheet.locator('[data-lists-import="plans"]').click();
+  await (await picker).setFiles({ name: 'saved-plan.ugt.json', mimeType: 'application/json', buffer: Buffer.from(fileText) });
+  await expect(page.getByRole('heading', { name: 'Review plan file', exact: true })).toBeVisible();
+  await page.getByRole('button', { name: 'Import as drafts', exact: true }).click();
+  await expect(page.getByRole('heading', { name: 'Plan imported', exact: true })).toBeVisible();
+  await page.getByRole('button', { name: 'Open imported plan', exact: true }).click();
+  await expect(page.locator('.plan-details')).toBeVisible();
+}
 
 test('Plan creation is local; sharing publishes only the saved immutable snapshot',async({mockApi:page})=>{
   test.setTimeout(120000);
@@ -44,6 +81,22 @@ test('Plan creation is local; sharing publishes only the saved immutable snapsho
   await chooseDesigns(page);
   await expect(page.locator('.plan-composer').getByRole('button',{name:/Share|Publish|agreement/i})).toHaveCount(0);
   const plan=await savePlan(page,'Original park plan');
+  expect(writes(page)).toHaveLength(0);
+  const attemptedSessions: any[] = [];
+  await page.route('**/mcp/plan-sessions', async route => {
+    attemptedSessions.push(route.request().postDataJSON());
+    await route.fulfill({ status: 503, json: { error: 'Shared plan service unavailable' } });
+  });
+  await stackSection(page,'plans').locator('.click-stack__collaborate-plan').click();
+  const collaboration = page.locator('.plan-collaboration');
+  const connect = collaboration.getByRole('button', { name: 'Collaborate', exact: true });
+  await connect.click();
+  await expect(collaboration.getByRole('alert')).toHaveText('Shared plan service unavailable');
+  await expect(connect).toBeEnabled();
+  expect(attemptedSessions).toHaveLength(1);
+  expect(attemptedSessions[0].plan.plan).toEqual(plan.content);
+  await page.keyboard.press('Escape');
+  await expect(collaboration).toHaveCount(0);
   expect(writes(page)).toHaveLength(0);
   // A later edit to the live design does not silently update this saved plan's source bytes.
   await page.evaluate(id=>{const w=window as any,r=w.proposalStorage.getProposal(id);r.title='Later local edit';w.proposalStorage._indexProposal(r);},first);
@@ -68,6 +121,45 @@ test('Plan creation is local; sharing publishes only the saved immutable snapsho
   const before=sent.length;
   await share.getByRole('button',{name:'Copy link',exact:true}).click();
   expect(writes(page)).toHaveLength(before);
+});
+
+test('saved plan details expose Share, Edit, Cancel and Construction schedule actions', async ({ mockApi: page }) => {
+  await openCity(page);
+  await createSpace(page, 'park');
+  await openPlans(page);
+  await page.locator('#lists-actions').getByRole('button', { name: 'Create plan', exact: true }).click();
+  await chooseDesigns(page);
+  const original = await savePlan(page, 'Plan details actions');
+
+  await importPlanAndOpenDetails(page, 'Plan details actions');
+  let details = page.locator('.plan-details');
+  await details.getByRole('button', { name: 'Share plan', exact: true }).click();
+  await expect(page.locator('.plan-share')).toBeVisible();
+  await page.keyboard.press('Escape');
+
+  await openImportedPlanDetails(page, 'Plan details actions');
+  details = page.locator('.plan-details');
+  await details.getByRole('button', { name: 'Edit plan', exact: true }).click();
+  const composer = page.locator('.plan-composer');
+  await expect(composer.getByLabel('Plan name', { exact: true })).toHaveValue('Plan details actions');
+  await composer.getByRole('button', { name: 'Cancel', exact: true }).click();
+  await expect(composer).toBeHidden();
+  expect(await page.evaluate(() => (window as any).PlanWorkspace.list().map((row:any) => row.cid))).toEqual([original.cid]);
+
+  await openImportedPlanDetails(page, 'Plan details actions');
+  details = page.locator('.plan-details');
+  await details.getByRole('button', { name: 'Construction schedule', exact: true }).click();
+  const schedule = page.locator('.plan-schedule');
+  const start = schedule.locator('input[type="month"]').first();
+  await fillNativeDateTime(start, '2026-03');
+  await expect(schedule.getByRole('button', { name: 'Save schedule', exact: true })).toBeEnabled();
+  await schedule.getByRole('button', { name: 'Save schedule', exact: true }).click();
+  await expect(schedule).toBeHidden();
+  const revisions = await page.evaluate(() => (window as any).PlanWorkspace.list());
+  expect(revisions).toHaveLength(2);
+  const revised = revisions.find((row:any) => row.cid !== original.cid);
+  expect(revised.content.schedule).toEqual({ [revised.content.designCids[0]]: { start: '2026-03', end: '2026-03' } });
+  expect((revisions.find((row:any) => row.cid === original.cid)).content.schedule).toBeUndefined();
 });
 
 test('known duplicate plan names are advisory while saving stays available', async ({ mockApi: page }) => {
@@ -149,7 +241,9 @@ test('saving a plan refuses designs that cannot stand together, as Add to plan o
   await page.keyboard.press('Escape');
   await showProposal(page,park);
   await stackSection(page,'designs').locator('[data-design-action="add-to-plan"]').click();
-  await page.getByRole('button',{name:'Square plan',exact:true}).click();
+  const squarePlanCid=await page.evaluate(()=>(window as any).PlanWorkspace.list().find((row:any)=>row.content.title==='Square plan')?.cid);
+  expect(squarePlanCid).toBeTruthy();
+  await page.locator(`.cb-dialog__footer button[data-action-id="${squarePlanCid}"]`).click();
   const composer=page.locator('.plan-composer');
   await composer.getByRole('button',{name:'Save new revision',exact:true}).click();
   await expect(composer.locator('.plan-dialog__status')).toContainText('cannot stand together with the rest of this plan');
@@ -168,7 +262,7 @@ test('Add to plan creates a reviewed revision and retains the old membership',as
   const second=await createSpace(page,'square',sampleParcels.features[1].properties.parcelId);
   await showProposal(page,second);
   await stackSection(page,'designs').locator('[data-design-action="add-to-plan"]').click();
-  await page.getByRole('button',{name:'Pocket spaces',exact:true}).click();
+  await page.locator(`.cb-dialog__footer button[data-action-id="${original.cid}"]`).click();
   const composer=page.locator('.plan-composer');
   await expect(composer.getByText('Saving changes creates a new plan revision. Existing links stay unchanged.')).toBeVisible();
   await expect(composer.locator('.plan-dialog__members li')).toHaveCount(2);

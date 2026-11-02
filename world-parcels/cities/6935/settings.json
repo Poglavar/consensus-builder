@@ -59,7 +59,7 @@
           "attribution": "City of Kansas City, Missouri / Open Data KC / GIS Office; CRS84 parcel geometry."
         },
         "buildings": {
-          "source": "overture-tiles"
+          "sources": [{ "id": "osm" }]
         },
         "sidebar": {
           "disabledSections": [

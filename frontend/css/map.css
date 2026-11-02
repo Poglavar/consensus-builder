@@ -1060,7 +1060,6 @@ body.three-mode-active #agent-bubbles-container {
     }
 
     #click-stack .click-stack__body {
-        flex: none;
         overflow: visible;
     }
 

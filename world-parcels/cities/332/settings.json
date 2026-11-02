@@ -59,7 +59,7 @@
           "attribution": "Seoul Metropolitan Government · S-MAP continuous cadastral map"
         },
         "buildings": {
-          "source": "overture-tiles"
+          "sources": [{ "id": "osm" }]
         },
         "sidebar": {
           "disabledSections": [

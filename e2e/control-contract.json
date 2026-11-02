@@ -731,9 +731,9 @@
       "markup": "<button type=\"button\" id=\"planning-views-button\" class=\"map-shell-button\" data-sheet-target=\"planning-views\" aria-controls=\"planning-views\" aria-expanded=\"false\" title=\"Buildings and massing\" aria-label=\"Buildings and massing\" data-i18n-key=\"planningViews.title\" data-i18n-attr=\"title,aria-label\" hidden>"
     },
     {
-      "id": "control-a33eca91a714ac-1",
+      "id": "control-be9391a55967f2-1",
       "source": "index.html",
-      "markup": "<button type=\"button\" id=\"username-display\" class=\"username-display\" aria-haspopup=\"dialog\">",
+      "markup": "<button type=\"button\" id=\"username-display\" class=\"map-shell-button username-display\" aria-haspopup=\"dialog\">",
       "interaction": "click",
       "controlType": "button"
     },
@@ -1395,20 +1395,8 @@
       "id": "control-dc7af30c67cb8d-4",
       "source": "index.html",
       "markup": "<button type=\"button\" class=\"map-sheet-close close-circle-btn close-circle-btn--lg\" data-sheet-close aria-label=\"Close\" title=\"Close\" data-i18n-key=\"common.close\" data-i18n-attr=\"aria-label,title\">",
-      "exempt": "Photo parcel heading delegates closing to the 3D click stack.",
-      "guards": [
-        {
-          "source": "index.html",
-          "pattern": "<button\\s+type=\"button\"\\s+class=\"map-sheet-close\\s+close-circle-btn\\s+close-circle-btn--lg\"\\s+data-sheet-close\\s+aria-label=\"Close\"\\s+title=\"Close\"\\s+data-i18n-key=\"common\\.close\"\\s+data-i18n-attr=\"aria-label,title\">",
-          "occurrences": 9
-        },
-        {
-          "source": "index.html",
-          "pattern": "<button\\s+type=\"button\"\\s+class=\"map-sheet-close\\s+close-circle-btn\\s+close-circle-btn--lg\"\\s+data-sheet-close\\s+aria-label=\"Close\"\\s+title=\"Close\"\\s+data-i18n-key=\"common\\.close\"\\s+data-i18n-attr=\"aria-label,title\">",
-          "occurrences": 9
-        }
-      ],
-      "mustRemainInactive": true
+      "interaction": "click",
+      "controlType": "button"
     },
     {
       "id": "control-ad81ecd7c9543e-1",
@@ -1767,33 +1755,128 @@
       "source": "index.html",
       "markup": "<button type=\"button\" class=\"cb-tab parcel-tab-btn parcel-tab-btn--icon\" role=\"tab\" aria-selected=\"true\" id=\"parcel-propose-tab-button\" aria-controls=\"propose-tab\" data-parcel-tab-id=\"propose-tab\" onclick=\"(window.Parcels?.proposals?.switchParcelTab || window.switchParcelTab || function(){})(this, 'propose-tab')\" aria-label=\"Design\" title=\"Design\" data-i18n-key=\"proposalDrafts.tabs.design\" data-i18n-attr=\"aria-label,title\">",
       "interaction": "click",
-      "controlType": "button"
+      "controlType": "button",
+      "exempt": "Hosted parcel tabs are proxy entries in ClickStackNavigation; every 2D parcel-panel entry routes through ClickStack, and 3D uses its own parcel panel.",
+      "guards": [
+        {
+          "source": "css/click-stack-navigation.css",
+          "includes": ".has-content-tabs .parcel-tabs,"
+        },
+        {
+          "source": "js/click-stack/click-stack-navigation.js",
+          "includes": "selected.native?.getAttribute('aria-selected') !== 'true' && selected.native?.click();"
+        },
+        {
+          "source": "js/parcels/ui/parcel-panel.js",
+          "includes": "return global.ClickStack.showParcel(feature);"
+        },
+        {
+          "source": "js/click-stack/click-stack-panel.js",
+          "includes": "global.ClickStackNavigation?.content(body, kind, instance.id);"
+        }
+      ]
     },
     {
       "id": "control-64247c70bf166b-1",
       "source": "index.html",
       "markup": "<button type=\"button\" class=\"cb-tab parcel-tab-btn parcel-tab-btn--icon\" role=\"tab\" aria-selected=\"false\" id=\"parcel-info-tab-button\" aria-controls=\"info-tab\" data-parcel-tab-id=\"info-tab\" onclick=\"(window.Parcels?.proposals?.switchParcelTab || window.switchParcelTab || function(){})(this, 'info-tab')\" aria-label=\"Info\" title=\"Info\" data-i18n-key=\"panel.parcel.tabInfo\" data-i18n-attr=\"aria-label,title\">",
       "interaction": "click",
-      "controlType": "button"
+      "controlType": "button",
+      "exempt": "Hosted parcel tabs are proxy entries in ClickStackNavigation; every 2D parcel-panel entry routes through ClickStack, and 3D uses its own parcel panel.",
+      "guards": [
+        {
+          "source": "css/click-stack-navigation.css",
+          "includes": ".has-content-tabs .parcel-tabs,"
+        },
+        {
+          "source": "js/click-stack/click-stack-navigation.js",
+          "includes": "selected.native?.getAttribute('aria-selected') !== 'true' && selected.native?.click();"
+        },
+        {
+          "source": "js/parcels/ui/parcel-panel.js",
+          "includes": "return global.ClickStack.showParcel(feature);"
+        },
+        {
+          "source": "js/click-stack/click-stack-panel.js",
+          "includes": "global.ClickStackNavigation?.content(body, kind, instance.id);"
+        }
+      ]
     },
     {
       "id": "control-3b7369655f57d8-1",
       "source": "index.html",
-      "markup": "<button type=\"button\" class=\"cb-tab parcel-tab-btn\" role=\"tab\" aria-selected=\"false\" id=\"parcel-selected-parcels-tab-button\" aria-controls=\"selected-parcels-tab\" data-parcel-tab-id=\"selected-parcels-tab\" hidden onclick=\"(window.Parcels?.proposals?.switchParcelTab || window.switchParcelTab || function(){})(this, 'selected-parcels-tab')\">"
+      "markup": "<button type=\"button\" class=\"cb-tab parcel-tab-btn\" role=\"tab\" aria-selected=\"false\" id=\"parcel-selected-parcels-tab-button\" aria-controls=\"selected-parcels-tab\" data-parcel-tab-id=\"selected-parcels-tab\" hidden onclick=\"(window.Parcels?.proposals?.switchParcelTab || window.switchParcelTab || function(){})(this, 'selected-parcels-tab')\">",
+      "exempt": "Hosted parcel tabs are proxy entries in ClickStackNavigation; every 2D parcel-panel entry routes through ClickStack, and 3D uses its own parcel panel.",
+      "guards": [
+        {
+          "source": "css/click-stack-navigation.css",
+          "includes": ".has-content-tabs .parcel-tabs,"
+        },
+        {
+          "source": "js/click-stack/click-stack-navigation.js",
+          "includes": "selected.native?.getAttribute('aria-selected') !== 'true' && selected.native?.click();"
+        },
+        {
+          "source": "js/parcels/ui/parcel-panel.js",
+          "includes": "return global.ClickStack.showParcel(feature);"
+        },
+        {
+          "source": "js/click-stack/click-stack-panel.js",
+          "includes": "global.ClickStackNavigation?.content(body, kind, instance.id);"
+        }
+      ]
     },
     {
       "id": "control-6764cb915f4595-1",
       "source": "index.html",
       "markup": "<button type=\"button\" class=\"cb-tab parcel-tab-btn\" role=\"tab\" aria-selected=\"false\" id=\"parcel-proposals-tab-button\" aria-controls=\"proposals-tab\" data-parcel-tab-id=\"proposals-tab\" onclick=\"(window.Parcels?.proposals?.switchParcelTab || window.switchParcelTab || function(){})(this, 'proposals-tab')\">",
       "interaction": "click",
-      "controlType": "button"
+      "controlType": "button",
+      "exempt": "Hosted parcel tabs are proxy entries in ClickStackNavigation; every 2D parcel-panel entry routes through ClickStack, and 3D uses its own parcel panel.",
+      "guards": [
+        {
+          "source": "css/click-stack-navigation.css",
+          "includes": ".has-content-tabs .parcel-tabs,"
+        },
+        {
+          "source": "js/click-stack/click-stack-navigation.js",
+          "includes": "selected.native?.getAttribute('aria-selected') !== 'true' && selected.native?.click();"
+        },
+        {
+          "source": "js/parcels/ui/parcel-panel.js",
+          "includes": "return global.ClickStack.showParcel(feature);"
+        },
+        {
+          "source": "js/click-stack/click-stack-panel.js",
+          "includes": "global.ClickStackNavigation?.content(body, kind, instance.id);"
+        }
+      ]
     },
     {
       "id": "control-2050c53bb25da0-1",
       "source": "index.html",
       "markup": "<button type=\"button\" class=\"cb-tab parcel-tab-btn parcel-tab-btn--icon\" role=\"tab\" aria-selected=\"false\" id=\"parcel-tools-tab-button\" aria-controls=\"tools-tab\" data-parcel-tab-id=\"tools-tab\" onclick=\"(window.Parcels?.proposals?.switchParcelTab || window.switchParcelTab || function(){})(this, 'tools-tab')\" aria-label=\"Tools\" title=\"Tools\" data-i18n-key=\"panel.parcel.tabTools\" data-i18n-attr=\"aria-label,title\">",
       "interaction": "click",
-      "controlType": "button"
+      "controlType": "button",
+      "exempt": "Hosted parcel tabs are proxy entries in ClickStackNavigation; every 2D parcel-panel entry routes through ClickStack, and 3D uses its own parcel panel.",
+      "guards": [
+        {
+          "source": "css/click-stack-navigation.css",
+          "includes": ".has-content-tabs .parcel-tabs,"
+        },
+        {
+          "source": "js/click-stack/click-stack-navigation.js",
+          "includes": "selected.native?.getAttribute('aria-selected') !== 'true' && selected.native?.click();"
+        },
+        {
+          "source": "js/parcels/ui/parcel-panel.js",
+          "includes": "return global.ClickStack.showParcel(feature);"
+        },
+        {
+          "source": "js/click-stack/click-stack-panel.js",
+          "includes": "global.ClickStackNavigation?.content(body, kind, instance.id);"
+        }
+      ]
     },
     {
       "id": "control-a0de29e6745122-1",
@@ -1871,20 +1954,21 @@
       "markup": "<button id=\"proposal-details-minimize\" type=\"button\" class=\"close-circle-btn close-circle-btn--lg proposal-details-toggle\" aria-label=\"Minimize design details\" title=\"Minimize design details\" aria-controls=\"proposal-details-body\" aria-expanded=\"true\" data-i18n-key=\"sidebar.areaMonitor.minimize\" data-i18n-attr=\"aria-label,title\" onclick=\"toggleProposalDetailsPanelMinimized()\">",
       "interaction": "click",
       "controlType": "button",
-      "exempt": "Hosted design panels use the click-stack section row to fold.",
+      "exempt": "Hosted design details fold and close through the click-stack row/dismiss; the native header actions are hidden. Unhosted detail requests are routed to ClickStack.",
       "guards": [
         {
-          "source": "index.html",
-          "pattern": "<button\\s+id=\"proposal-details-minimize\"\\s+type=\"button\"\\s+class=\"close-circle-btn\\s+close-circle-btn--lg\\s+proposal-details-toggle\"\\s+aria-label=\"Minimize\\s+design\\s+details\"\\s+title=\"Minimize\\s+design\\s+details\"\\s+aria-controls=\"proposal-details-body\"\\s+aria-expanded=\"true\"\\s+data-i18n-key=\"sidebar\\.areaMonitor\\.minimize\"\\s+data-i18n-attr=\"aria-label,title\"\\s+onclick=\"toggleProposalDetailsPanelMinimized\\(\\)\">",
-          "occurrences": 1
+          "source": "css/map.css",
+          "includes": "#click-stack #proposal-details-panel.is-hosted .panel-header__actions,"
         },
         {
-          "source": "index.html",
-          "pattern": "<button\\s+id=\"proposal-details-minimize\"\\s+type=\"button\"\\s+class=\"close-circle-btn\\s+close-circle-btn--lg\\s+proposal-details-toggle\"\\s+aria-label=\"Minimize\\s+design\\s+details\"\\s+title=\"Minimize\\s+design\\s+details\"\\s+aria-controls=\"proposal-details-body\"\\s+aria-expanded=\"true\"\\s+data-i18n-key=\"sidebar\\.areaMonitor\\.minimize\"\\s+data-i18n-attr=\"aria-label,title\"\\s+onclick=\"toggleProposalDetailsPanelMinimized\\(\\)\">",
-          "occurrences": 1
+          "source": "js/proposals/details-panel.js",
+          "includes": "return window.ClickStack.showDesign(getProposalKey(proposal));"
+        },
+        {
+          "source": "js/click-stack/click-stack-panel.js",
+          "includes": "global.selectAndHighlightProposal(key, null, false, true, false, { hosted: true, presentation: 'details' });"
         }
-      ],
-      "mustRemainInactive": true
+      ]
     },
     {
       "id": "control-f6903e5946954d-1",
@@ -1892,20 +1976,21 @@
       "markup": "<button id=\"proposal-details-close\" type=\"button\" class=\"close-circle-btn close-circle-btn--lg close-button\" aria-label=\"Close design details\" title=\"Close design details\" data-i18n-key=\"modal.common.close\" data-i18n-attr=\"aria-label,title\" onclick=\"hideProposalDetailsPanel()\">",
       "interaction": "click",
       "controlType": "button",
-      "exempt": "Hosted design panels delegate closing to the click stack and Escape.",
+      "exempt": "Hosted design details fold and close through the click-stack row/dismiss; the native header actions are hidden. Unhosted detail requests are routed to ClickStack.",
       "guards": [
         {
-          "source": "index.html",
-          "pattern": "<button\\s+id=\"proposal-details-close\"\\s+type=\"button\"\\s+class=\"close-circle-btn\\s+close-circle-btn--lg\\s+close-button\"\\s+aria-label=\"Close\\s+design\\s+details\"\\s+title=\"Close\\s+design\\s+details\"\\s+data-i18n-key=\"modal\\.common\\.close\"\\s+data-i18n-attr=\"aria-label,title\"\\s+onclick=\"hideProposalDetailsPanel\\(\\)\">",
-          "occurrences": 1
+          "source": "css/map.css",
+          "includes": "#click-stack #proposal-details-panel.is-hosted .panel-header__actions,"
         },
         {
-          "source": "index.html",
-          "pattern": "<button\\s+id=\"proposal-details-close\"\\s+type=\"button\"\\s+class=\"close-circle-btn\\s+close-circle-btn--lg\\s+close-button\"\\s+aria-label=\"Close\\s+design\\s+details\"\\s+title=\"Close\\s+design\\s+details\"\\s+data-i18n-key=\"modal\\.common\\.close\"\\s+data-i18n-attr=\"aria-label,title\"\\s+onclick=\"hideProposalDetailsPanel\\(\\)\">",
-          "occurrences": 1
+          "source": "js/proposals/details-panel.js",
+          "includes": "return window.ClickStack.showDesign(getProposalKey(proposal));"
+        },
+        {
+          "source": "js/click-stack/click-stack-panel.js",
+          "includes": "global.selectAndHighlightProposal(key, null, false, true, false, { hosted: true, presentation: 'details' });"
         }
-      ],
-      "mustRemainInactive": true
+      ]
     },
     {
       "id": "control-91b31bd88a10a1-1",
@@ -1971,9 +2056,9 @@
       "controlType": "button"
     },
     {
-      "id": "control-9b96c993ff58bf-1",
+      "id": "control-766d61f638976b-1",
       "source": "index.html",
-      "markup": "<button type=\"button\" class=\"acquiring-difficulty-help-icon\" onclick=\"showAcquiringDifficultyDialog()\" aria-labelledby=\"road-acquire-difficulty-title\" aria-haspopup=\"dialog\">"
+      "markup": "<button type=\"button\" class=\"btn btn-quiet btn-icon btn-sm\" onclick=\"showAcquiringDifficultyDialog()\" aria-labelledby=\"road-acquire-difficulty-title\" aria-haspopup=\"dialog\">"
     },
     {
       "id": "control-282ecd81fff1d2-1",
@@ -2682,31 +2767,99 @@
       "source": "js/agreement-list.js",
       "markup": "<button type=\"button\" class=\"btn btn-quiet agreement-item\" data-agreement-id=\"${esc(agreement.id)}\">",
       "interaction": "click",
-      "controlType": "button"
+      "controlType": "button",
+      "exempt": "The legacy AgreementList renderer has no app caller; current agreement rows come from ListsPanel.",
+      "mustRemainInactive": true,
+      "guards": [
+        {
+          "source": "js/agreement-list.js",
+          "includes": "return '<ul class=\"agreement-list\">' + agreements.map(agreement => {"
+        },
+        {
+          "source": "js/agreement-list.js",
+          "includes": "data-agreement-id=\"${esc(agreement.id)}\""
+        },
+        {
+          "pattern": "\\bAgreementList\\.(?:open|openMinted)\\s*\\(",
+          "occurrences": 0
+        }
+      ]
     },
     {
       "id": "control-62c0cebef898e6-1",
       "source": "js/agreement-list.js",
-      "markup": "<button type=\"button\" class=\"btn btn-quiet agreement-item\" data-agreement-cid=\"${esc(row.cid)}\">"
+      "markup": "<button type=\"button\" class=\"btn btn-quiet agreement-item\" data-agreement-cid=\"${esc(row.cid)}\">",
+      "exempt": "The legacy AgreementList renderer has no app caller; current agreement rows come from ListsPanel.",
+      "mustRemainInactive": true,
+      "guards": [
+        {
+          "source": "js/agreement-list.js",
+          "includes": "return '<ul class=\"agreement-list\">' + rows.map(row => {"
+        },
+        {
+          "source": "js/agreement-list.js",
+          "includes": "data-agreement-cid=\"${esc(row.cid)}\""
+        },
+        {
+          "pattern": "\\bAgreementList\\.(?:open|openMinted)\\s*\\(",
+          "occurrences": 0
+        }
+      ]
     },
     {
       "id": "control-e98071567cd733-1",
       "source": "js/agreement-list.js",
       "markup": "<button type=\"button\" class=\"btn btn-primary\" data-agreement-action=\"create\">",
       "interaction": "click",
-      "controlType": "button"
+      "controlType": "button",
+      "exempt": "The legacy AgreementList renderer has no app caller; current agreement actions come from ListsPanel.",
+      "mustRemainInactive": true,
+      "guards": [
+        {
+          "source": "js/agreement-list.js",
+          "includes": "data-agreement-action=\"create\""
+        },
+        {
+          "pattern": "\\bAgreementList\\.(?:open|openMinted)\\s*\\(",
+          "occurrences": 0
+        }
+      ]
     },
     {
       "id": "control-54217211dcc585-1",
       "source": "js/agreement-list.js",
       "markup": "<button type=\"button\" class=\"btn btn-secondary\" data-agreement-action=\"community\">",
       "interaction": "click",
-      "controlType": "button"
+      "controlType": "button",
+      "exempt": "The legacy AgreementList renderer has no app caller; current agreement actions come from ListsPanel.",
+      "mustRemainInactive": true,
+      "guards": [
+        {
+          "source": "js/agreement-list.js",
+          "includes": "data-agreement-action=\"community\""
+        },
+        {
+          "pattern": "\\bAgreementList\\.(?:open|openMinted)\\s*\\(",
+          "occurrences": 0
+        }
+      ]
     },
     {
       "id": "control-a996634711f169-1",
       "source": "js/agreement-list.js",
-      "markup": "<button type=\"button\" class=\"btn btn-secondary\" data-agreement-action=\"minted\">"
+      "markup": "<button type=\"button\" class=\"btn btn-secondary\" data-agreement-action=\"minted\">",
+      "exempt": "The legacy AgreementList renderer has no app caller; current agreement actions come from ListsPanel.",
+      "mustRemainInactive": true,
+      "guards": [
+        {
+          "source": "js/agreement-list.js",
+          "includes": "data-agreement-action=\"minted\""
+        },
+        {
+          "pattern": "\\bAgreementList\\.(?:open|openMinted)\\s*\\(",
+          "occurrences": 0
+        }
+      ]
     },
     {
       "id": "control-6b4c93deb26093-1",
@@ -2807,6 +2960,24 @@
           "attrs": {
             "data-agreement-inspect": "design"
           }
+        }
+      ],
+      "exempt": "The agreement design-row renderer is not used by bodyHtml; the Plan button opens the canonical Designs list.",
+      "mustRemainInactive": true,
+      "guards": [
+        {
+          "source": "js/agreement-panel.js",
+          "pattern": "\\bdesignRows\\s*\\(",
+          "occurrences": 1
+        },
+        {
+          "source": "js/agreement-panel.js",
+          "pattern": "\\bdesignsHtml\\s*\\(",
+          "occurrences": 1
+        },
+        {
+          "source": "js/agreement-panel.js",
+          "includes": " + tabbedHtml(panels, state.tab, t, counts);"
         }
       ]
     },
@@ -2918,6 +3089,25 @@
             "data-agreement-properties-tab": "rules"
           }
         }
+      ],
+      "exempt": "Hosted agreement properties are navigated through ClickStack's visible proxy tabs; the native agreement tabs stay hidden in hosted mode and receive delegated clicks.",
+      "guards": [
+        {
+          "source": "js/agreement-panel.js",
+          "includes": "data-agreement-properties-tab=\"${kind}\">${esc(label(kind))}</button>`).join('')"
+        },
+        {
+          "source": "js/click-stack/click-stack-navigation.js",
+          "includes": "node.classList.contains('click-stack__agreement-properties') && node.querySelector('[data-agreement-properties-tab]')"
+        },
+        {
+          "source": "js/click-stack/click-stack-navigation.js",
+          "includes": "selected.native?.getAttribute('aria-selected') !== 'true' && selected.native?.click();"
+        },
+        {
+          "source": "css/click-stack-navigation.css",
+          "includes": ".has-content-tabs .agreement-properties-tabs,\n.has-content-tabs .parcel-tabs,"
+        }
       ]
     },
     {
@@ -2925,7 +3115,27 @@
       "source": "js/agreement-panel.js",
       "markup": "<button type=\"button\" class=\"close-circle-btn close-circle-btn--lg close-button\" data-agreement-action=\"close\">",
       "interaction": "click",
-      "controlType": "button"
+      "controlType": "button",
+      "exempt": "Every app AgreementPanel opener routes through ClickStack, which hosts the panel and hides its header; the stack owns dismissal.",
+      "mustRemainInactive": true,
+      "guards": [
+        {
+          "source": "js/agreement-panel.js",
+          "includes": "return win.ClickStack.showAgreement(agreement);"
+        },
+        {
+          "source": "js/agreement-panel.js",
+          "includes": "return win.ClickStack.showAgreement(agreement, { readOnly: true, designs: entries });"
+        },
+        {
+          "source": "js/agreement-panel.js",
+          "includes": "state.host = host; panel.classList.add('is-hosted'); host.replaceChildren(panel);"
+        },
+        {
+          "source": "css/agreement.css",
+          "includes": "#click-stack #agreement-panel.is-hosted > .panel-header,\n#three-click-stack #agreement-panel.is-hosted > .panel-header { display: none; }"
+        }
+      ]
     },
     {
       "id": "control-6d7e0b1ff18657-1",
@@ -3207,9 +3417,7 @@
           "classes": [
             "btn"
           ],
-          "attrs": {
-            "data-market-link": ""
-          }
+          "interaction": "click"
         },
         {
           "name": "Open the agreement from its bet dialog",
@@ -3245,42 +3453,30 @@
           ]
         },
         {
-          "name": "Submit a Yes stake",
-          "label": "Bet yes",
+          "name": "Buy Yes shares",
+          "label": "Buy shares",
           "classes": [
             "btn",
+            "btn-yes",
             "btn-market-yes"
           ],
           "attrs": {
             "data-market-submit": ""
-          }
+          },
+          "interaction": "click"
         },
         {
-          "name": "Submit a No stake",
-          "label": "Bet no",
+          "name": "Buy No shares",
+          "label": "Buy shares",
           "classes": [
             "btn",
+            "btn-no",
             "btn-market-no"
           ],
           "attrs": {
             "data-market-submit": ""
-          }
-        },
-        {
-          "name": "Open an unopened pool",
-          "label": "Open the pool",
-          "classes": [
-            "btn",
-            "btn-primary"
-          ]
-        },
-        {
-          "name": "Settle an expired pool",
-          "label": "Settle the pool",
-          "classes": [
-            "btn",
-            "btn-primary"
-          ]
+          },
+          "interaction": "click"
         },
         {
           "name": "Collect Yes winnings",
@@ -3315,6 +3511,121 @@
             "data-market-amount": ""
           },
           "interaction": "change"
+        },
+        {
+          "name": "Show the current position",
+          "label": "Your position",
+          "classes": [
+            "btn"
+          ],
+          "interaction": "click"
+        },
+        {
+          "name": "Settle a market",
+          "label": "Settle market",
+          "classes": [
+            "btn",
+            "btn-primary"
+          ],
+          "interaction": "click"
+        },
+        {
+          "name": "Choose a 10 point amount",
+          "label": "10",
+          "classes": [
+            "cb-segmented__option",
+            "bets-dialog__chip"
+          ],
+          "interaction": "click"
+        },
+        {
+          "name": "Choose a 50 point amount",
+          "label": "50",
+          "classes": [
+            "cb-segmented__option",
+            "bets-dialog__chip"
+          ],
+          "interaction": "click"
+        },
+        {
+          "name": "Choose a 100 point amount",
+          "label": "100",
+          "classes": [
+            "cb-segmented__option",
+            "bets-dialog__chip"
+          ],
+          "interaction": "click"
+        },
+        {
+          "name": "Choose the maximum available points",
+          "classes": [
+            "cb-segmented__option",
+            "bets-dialog__chip"
+          ],
+          "labelPattern": "^Max [\\d,]+(?:\\.\\d+)? points$",
+          "interaction": "click"
+        },
+        {
+          "name": "Choose the maximum available shares",
+          "classes": [
+            "cb-segmented__option",
+            "bets-dialog__chip"
+          ],
+          "labelPattern": "^Max [\\d,]+(?:\\.\\d+)? shares$",
+          "interaction": "click"
+        },
+        {
+          "name": "Sell Yes shares from a position",
+          "label": "Sell yes shares",
+          "classes": [
+            "btn",
+            "btn-quiet"
+          ],
+          "interaction": "click"
+        },
+        {
+          "name": "Sell No shares from a position",
+          "label": "Sell no shares",
+          "classes": [
+            "btn",
+            "btn-quiet"
+          ],
+          "interaction": "click"
+        },
+        {
+          "name": "Submit a Yes share sale",
+          "label": "Sell shares",
+          "classes": [
+            "btn",
+            "btn-yes",
+            "btn-market-yes"
+          ],
+          "attrs": {
+            "data-market-submit": ""
+          },
+          "interaction": "click"
+        },
+        {
+          "name": "Submit a No share sale",
+          "label": "Sell shares",
+          "classes": [
+            "btn",
+            "btn-no",
+            "btn-market-no"
+          ],
+          "attrs": {
+            "data-market-submit": ""
+          },
+          "interaction": "click"
+        },
+        {
+          "name": "Seed a USDC market from the bet dialog",
+          "label": "Seed USDC market",
+          "classes": [
+            "btn",
+            "btn-primary"
+          ],
+          "interaction": "click"
         }
       ],
       "exhaustiveVariants": true,
@@ -3405,20 +3716,6 @@
           ]
         },
         {
-          "name": "Open a pool from a row",
-          "label": "Open the pool",
-          "classes": [
-            "btn"
-          ]
-        },
-        {
-          "name": "Settle a pool from a row",
-          "label": "Settle the pool",
-          "classes": [
-            "btn"
-          ]
-        },
-        {
           "name": "Collect Yes winnings from a row",
           "label": "Collect yes winnings",
           "classes": [
@@ -3440,10 +3737,40 @@
           "classes": [
             "btn"
           ]
+        },
+        {
+          "name": "Choose the city Bets scope",
+          "attrs": {
+            "data-scope": "city"
+          },
+          "interaction": "click"
+        },
+        {
+          "name": "Choose world Bets scope",
+          "attrs": {
+            "data-scope": "world"
+          },
+          "interaction": "click"
+        },
+        {
+          "name": "Settle a market from Bets",
+          "label": "Settle market",
+          "classes": [
+            "btn"
+          ],
+          "interaction": "click"
+        },
+        {
+          "name": "Seed a market from Bets",
+          "label": "Seed USDC market",
+          "classes": [
+            "btn"
+          ],
+          "interaction": "click"
         }
       ],
       "exhaustiveVariants": true,
-      "dispatchEvidence": "The shared element factory creates the four filters, row title/link, Yes/No stake controls, open/settle/collect row actions and retry button.",
+      "dispatchEvidence": "The shared element factory creates the four filters, row title/link, Yes/No stake controls, seed-market and settle-market actions, collect actions, and retry button.",
       "interaction": "auto",
       "controlType": "dynamic"
     },
@@ -3653,22 +3980,15 @@
       "id": "control-94f7d5659dd3f4-1",
       "source": "js/building-layers-dialog.js",
       "markup": "document.createElement('input')",
-      "interaction": "change",
-      "controlType": "input",
+      "interaction": "auto",
+      "controlType": "dynamic",
       "variants": [
         {
-          "name": "GDI survey toggle",
-          "labelPattern": "GDI",
-          "interaction": "change"
-        },
-        {
-          "name": "DGU survey toggle",
-          "labelPattern": "DGU",
-          "interaction": "change"
-        },
-        {
-          "name": "OSM survey toggle",
-          "labelPattern": "OSM",
+          "name": "Show buildings",
+          "label": "Show buildings",
+          "attrs": {
+            "role": "switch"
+          },
           "interaction": "change"
         }
       ],
@@ -3755,33 +4075,9 @@
           }
         },
         {
-          "name": "agreementDesigns",
-          "attrs": {
-            "data-action": "agreement-designs"
-          }
-        },
-        {
-          "name": "agreementDetails",
-          "attrs": {
-            "data-action": "agreement-details"
-          }
-        },
-        {
-          "name": "coords",
-          "attrs": {
-            "data-action": "coords"
-          }
-        },
-        {
           "name": "parcelCompare",
           "attrs": {
             "data-command": "parcel.compare"
-          }
-        },
-        {
-          "name": "parcelUseAsSite",
-          "attrs": {
-            "data-command": "parcel.useAsSite"
           }
         },
         {
@@ -3803,36 +4099,6 @@
           }
         },
         {
-          "name": "groundBusStation",
-          "attrs": {
-            "data-command": "ground.busStation"
-          }
-        },
-        {
-          "name": "groundTramStation",
-          "attrs": {
-            "data-command": "ground.tramStation"
-          }
-        },
-        {
-          "name": "groundUndergroundStation",
-          "attrs": {
-            "data-command": "ground.undergroundStation"
-          }
-        },
-        {
-          "name": "groundElevatedStation",
-          "attrs": {
-            "data-command": "ground.elevatedStation"
-          }
-        },
-        {
-          "name": "selection.useAsSite",
-          "attrs": {
-            "data-command": "selection.useAsSite"
-          }
-        },
-        {
           "name": "selection.clear",
           "attrs": {
             "data-command": "selection.clear"
@@ -3845,21 +4111,54 @@
           }
         },
         {
-          "name": "Open a related design, agreement or parcel",
+          "name": "Show the focused item on the map",
+          "classes": [
+            "click-stack__focus"
+          ],
           "attrs": {
-            "data-action": "related"
-          }
+            "data-action": "focus"
+          },
+          "interaction": "click"
+        },
+        {
+          "name": "Place a road station",
+          "attrs": {
+            "data-command": "ground.roadStation"
+          },
+          "interaction": "click"
+        },
+        {
+          "name": "Place a track station",
+          "attrs": {
+            "data-command": "ground.trackStation"
+          },
+          "interaction": "click"
         }
       ],
       "exhaustiveVariants": true,
       "interaction": "click",
       "controlType": "button",
-      "dispatchEvidence": "The stack renders row, related, coords and agreement actions, plus commands from UiCommands; related chips replace the old instance/open-agreement buttons."
+      "dispatchEvidence": "The stack renders row and focus controls plus commands supplied for its parcel-selection, parcel-menu and ground-menu surfaces."
     },
     {
       "id": "control-56b96b1ca1b37d-1",
       "source": "js/click-stack/click-stack-relations.js",
-      "markup": "doc.createElement('button')"
+      "markup": "doc.createElement('button')",
+      "exempt": "Native relationship tabs are hidden after ClickStackNavigation promotes them into the visible section-content tabs; those visible controls delegate to the native tabs.",
+      "guards": [
+        {
+          "source": "css/click-stack-navigation.css",
+          "includes": ".has-content-tabs .click-stack__choices--tabs > .cb-tabs { display: none; }"
+        },
+        {
+          "source": "js/click-stack/click-stack-navigation.js",
+          "includes": "add(`relation-${panel.dataset.kind}`, tab?.textContent.trim() || t(panel.dataset.kind), node, tab);"
+        },
+        {
+          "source": "js/click-stack/click-stack-navigation.js",
+          "includes": "selected.native?.getAttribute('aria-selected') !== 'true' && selected.native?.click();"
+        }
+      ]
     },
     {
       "id": "control-56b96b1ca1b37d-2",
@@ -4552,13 +4851,6 @@
       "exhaustiveVariants": true,
       "variants": [
         {
-          "name": "Open a list record",
-          "classes": [
-            "lists-item__title"
-          ],
-          "interaction": "click"
-        },
-        {
           "name": "Create plan",
           "label": "Create plan",
           "interaction": "click"
@@ -4584,21 +4876,6 @@
           "interaction": "click"
         },
         {
-          "name": "Remove from browser",
-          "label": "Remove from browser",
-          "interaction": "click"
-        },
-        {
-          "name": "This browser",
-          "label": "This browser",
-          "interaction": "click"
-        },
-        {
-          "name": "Published",
-          "label": "Published",
-          "interaction": "click"
-        },
-        {
           "name": "Reset",
           "label": "Reset",
           "interaction": "click"
@@ -4619,13 +4896,6 @@
             "type": "checkbox"
           },
           "interaction": "change"
-        },
-        {
-          "name": "Search loaded records",
-          "attrs": {
-            "type": "search"
-          },
-          "interaction": "input"
         },
         {
           "name": "Filter publication",
@@ -4661,6 +4931,139 @@
           "attrs": {
             "data-lists-compare": ""
           },
+          "interaction": "click"
+        },
+        {
+          "name": "Open a list record",
+          "classes": [
+            "lists-item__open"
+          ],
+          "interaction": "click"
+        },
+        {
+          "name": "Search list records",
+          "attrs": {
+            "type": "search"
+          },
+          "interaction": "change"
+        },
+        {
+          "name": "Open list filters",
+          "classes": [
+            "lists-filter-toggle"
+          ],
+          "interaction": "click"
+        },
+        {
+          "name": "Refresh list records",
+          "classes": [
+            "lists-refresh"
+          ],
+          "interaction": "click"
+        },
+        {
+          "name": "Import a list file",
+          "attrs": {
+            "data-lists-import": "designs"
+          },
+          "interaction": "click"
+        },
+        {
+          "name": "Import a list file",
+          "attrs": {
+            "data-lists-import": "plans"
+          },
+          "interaction": "click"
+        },
+        {
+          "name": "Import a list file",
+          "attrs": {
+            "data-lists-import": "agreements"
+          },
+          "interaction": "click"
+        },
+        {
+          "name": "Choose a list file",
+          "attrs": {
+            "data-lists-import-input": "designs"
+          },
+          "interaction": "change"
+        },
+        {
+          "name": "Choose a list file",
+          "attrs": {
+            "data-lists-import-input": "plans"
+          },
+          "interaction": "change"
+        },
+        {
+          "name": "Choose a list file",
+          "attrs": {
+            "data-lists-import-input": "agreements"
+          },
+          "interaction": "change"
+        },
+        {
+          "name": "Remove a local draft",
+          "classes": [
+            "lists-item__remove"
+          ],
+          "interaction": "click"
+        },
+        {
+          "name": "Compare designs",
+          "label": "Compare designs",
+          "classes": [
+            "btn"
+          ],
+          "interaction": "click"
+        },
+        {
+          "name": "Compare agreements",
+          "label": "Compare agreements",
+          "classes": [
+            "btn"
+          ],
+          "interaction": "click"
+        },
+        {
+          "name": "Imported designs",
+          "label": "Imported designs",
+          "classes": [
+            "btn"
+          ],
+          "interaction": "click"
+        },
+        {
+          "name": "Imported agreements",
+          "label": "Imported agreements",
+          "classes": [
+            "btn"
+          ],
+          "interaction": "click"
+        },
+        {
+          "name": "Imported plans",
+          "label": "Imported plans",
+          "classes": [
+            "btn"
+          ],
+          "interaction": "click"
+        },
+        {
+          "name": "Construction schedule",
+          "label": "Construction schedule",
+          "classes": [
+            "btn"
+          ],
+          "interaction": "click"
+        },
+        {
+          "name": "Download a list record",
+          "label": "Download",
+          "classes": [
+            "btn"
+          ],
           "interaction": "click"
         }
       ]
@@ -4830,267 +5233,180 @@
       "markup": "document.createElement(tag)",
       "variants": [
         {
-          "name": "Classified land area · National or parent registry identified category segment",
-          "classes": [
-            "bar-segment",
-            "national"
-          ],
-          "labelPattern": "^(?:Classified land area · National or parent registry identified: [0-9.,]+%|Superficie terrestre clasificada · Registro nacional o del país matriz identificado: [0-9.,]+%|Klasificirana kopnena površina · Identificiran nacionalni ili matični registar: [0-9.,]+%|Klasifikovana kopnena površina · Pronađen nacionalni ili matični registar: [0-9.,]+%)$"
-        },
-        {
-          "name": "Classified land area · Local, regional or partial evidence category segment",
-          "classes": [
-            "bar-segment",
-            "local"
-          ],
-          "labelPattern": "^(?:Classified land area · Local, regional or partial evidence: [0-9.,]+%|Superficie terrestre clasificada · Evidencia local, regional o parcial: [0-9.,]+%|Klasificirana kopnena površina · Lokalni, regionalni ili djelomični dokazi: [0-9.,]+%|Klasifikovana kopnena površina · Lokalni, regionalni ili delimični dokazi: [0-9.,]+%)$"
-        },
-        {
-          "name": "Classified land area · Checked, no source established category segment",
-          "classes": [
-            "bar-segment",
-            "none"
-          ],
-          "labelPattern": "^(?:Classified land area · Checked, no source established: [0-9.,]+%|Superficie terrestre clasificada · Comprobada, sin fuente identificada: [0-9.,]+%|Klasificirana kopnena površina · Provjereno, izvor nije utvrđen: [0-9.,]+%|Klasifikovana kopnena površina · Provereno, izvor nije utvrđen: [0-9.,]+%)$"
-        },
-        {
-          "name": "Classified land area · Unresolved or unchecked category segment",
-          "classes": [
-            "bar-segment",
-            "unknown"
-          ],
-          "labelPattern": "^(?:Classified land area · Unresolved or unchecked: [0-9.,]+%|Superficie terrestre clasificada · Sin resolver o sin comprobar: [0-9.,]+%|Klasificirana kopnena površina · Nerazriješeno ili neprovjereno: [0-9.,]+%|Klasifikovana kopnena površina · Nerazrešeno ili neprovereno: [0-9.,]+%)$"
-        },
-        {
-          "name": "Built-up surface · National or parent registry identified category segment",
-          "classes": [
-            "bar-segment",
-            "national"
-          ],
-          "labelPattern": "^(?:Built-up surface · National or parent registry identified: [0-9.,]+%|Superficie edificada · Registro nacional o del país matriz identificado: [0-9.,]+%|Izgrađena površina · Identificiran nacionalni ili matični registar: [0-9.,]+%|Izgrađena površina · Pronađen nacionalni ili matični registar: [0-9.,]+%)$"
-        },
-        {
-          "name": "Built-up surface · Local, regional or partial evidence category segment",
-          "classes": [
-            "bar-segment",
-            "local"
-          ],
-          "labelPattern": "^(?:Built-up surface · Local, regional or partial evidence: [0-9.,]+%|Superficie edificada · Evidencia local, regional o parcial: [0-9.,]+%|Izgrađena površina · Lokalni, regionalni ili djelomični dokazi: [0-9.,]+%|Izgrađena površina · Lokalni, regionalni ili delimični dokazi: [0-9.,]+%)$"
-        },
-        {
-          "name": "Built-up surface · Checked, no source established category segment",
-          "classes": [
-            "bar-segment",
-            "none"
-          ],
-          "labelPattern": "^(?:Built-up surface · Checked, no source established: [0-9.,]+%|Superficie edificada · Comprobada, sin fuente identificada: [0-9.,]+%|Izgrađena površina · Provjereno, izvor nije utvrđen: [0-9.,]+%|Izgrađena površina · Provereno, izvor nije utvrđen: [0-9.,]+%)$"
-        },
-        {
-          "name": "Built-up surface · Unresolved or unchecked category segment",
-          "classes": [
-            "bar-segment",
-            "unknown"
-          ],
-          "labelPattern": "^(?:Built-up surface · Unresolved or unchecked: [0-9.,]+%|Superficie edificada · Sin resolver o sin comprobar: [0-9.,]+%|Izgrađena površina · Nerazriješeno ili neprovjereno: [0-9.,]+%|Izgrađena površina · Nerazrešeno ili neprovereno: [0-9.,]+%)$"
-        },
-        {
-          "name": "Population · National or parent registry identified category segment",
-          "classes": [
-            "bar-segment",
-            "national"
-          ],
-          "labelPattern": "^(?:Population · National or parent registry identified: [0-9.,]+%|Población · Registro nacional o del país matriz identificado: [0-9.,]+%|Stanovništvo · Identificiran nacionalni ili matični registar: [0-9.,]+%|Stanovništvo · Pronađen nacionalni ili matični registar: [0-9.,]+%)$"
-        },
-        {
-          "name": "Population · Local, regional or partial evidence category segment",
-          "classes": [
-            "bar-segment",
-            "local"
-          ],
-          "labelPattern": "^(?:Population · Local, regional or partial evidence: [0-9.,]+%|Población · Evidencia local, regional o parcial: [0-9.,]+%|Stanovništvo · Lokalni, regionalni ili djelomični dokazi: [0-9.,]+%|Stanovništvo · Lokalni, regionalni ili delimični dokazi: [0-9.,]+%)$"
-        },
-        {
-          "name": "Population · Checked, no source established category segment",
-          "classes": [
-            "bar-segment",
-            "none"
-          ],
-          "labelPattern": "^(?:Population · Checked, no source established: [0-9.,]+%|Población · Comprobada, sin fuente identificada: [0-9.,]+%|Stanovništvo · Provjereno, izvor nije utvrđen: [0-9.,]+%|Stanovništvo · Provereno, izvor nije utvrđen: [0-9.,]+%)$"
-        },
-        {
-          "name": "Population · Unresolved or unchecked category segment",
-          "classes": [
-            "bar-segment",
-            "unknown"
-          ],
-          "labelPattern": "^(?:Population · Unresolved or unchecked: [0-9.,]+%|Población · Sin resolver o sin comprobar: [0-9.,]+%|Stanovništvo · Nerazriješeno ili neprovjereno: [0-9.,]+%|Stanovništvo · Nerazrešeno ili neprovereno: [0-9.,]+%)$"
-        },
-        {
           "name": "city-table sort by name",
           "attrs": {
             "data-sort-key": "name"
-          },
-          "labelPattern": "^(?:City: Sort ascending|City: Sort descending|Ciudad: Orden ascendente|Ciudad: Orden descendente|Grad: Sortiraj uzlazno|Grad: Sortiraj silazno|Grad: Sortiraj rastuće|Grad: Sortiraj opadajuće)$"
+          }
         },
         {
           "name": "city-table sort by population2025",
           "attrs": {
             "data-sort-key": "population2025"
-          },
-          "labelPattern": "^(?:Population estimate · 2025: Sort ascending|Population estimate · 2025: Sort descending|Estimación de población · 2025: Orden ascendente|Estimación de población · 2025: Orden descendente|Procjena stanovništva · 2025\\.: Sortiraj uzlazno|Procjena stanovništva · 2025\\.: Sortiraj silazno|Procena stanovništva · 2025\\.: Sortiraj rastuće|Procena stanovništva · 2025\\.: Sortiraj opadajuće)$"
+          }
         },
         {
           "name": "city-table sort by annualGrowthPct2015To2025",
           "attrs": {
             "data-sort-key": "annualGrowthPct2015To2025"
-          },
-          "labelPattern": "^(?:Annual growth · 2015–25: Sort ascending|Annual growth · 2015–25: Sort descending|Crecimiento anual · 2015–25: Orden ascendente|Crecimiento anual · 2015–25: Orden descendente|Godišnji rast · 2015\\.–25\\.: Sortiraj uzlazno|Godišnji rast · 2015\\.–25\\.: Sortiraj silazno|Godišnji rast · 2015–25\\.: Sortiraj rastuće|Godišnji rast · 2015–25\\.: Sortiraj opadajuće)$"
+          }
         },
         {
           "name": "city-table sort by country",
           "attrs": {
             "data-sort-key": "country"
-          },
-          "labelPattern": "^(?:Country: Sort ascending|Country: Sort descending|País: Orden ascendente|País: Orden descendente|Država: Sortiraj uzlazno|Država: Sortiraj silazno|Država: Sortiraj rastuće|Država: Sortiraj opadajuće)$"
+          }
         },
         {
           "name": "city-table sort by checked",
           "attrs": {
             "data-sort-key": "checked"
-          },
-          "labelPattern": "^(?:Checked: Sort ascending|Checked: Sort descending|Comprobadas: Orden ascendente|Comprobadas: Orden descendente|Provjereno: Sortiraj uzlazno|Provjereno: Sortiraj silazno|Provereno: Sortiraj rastuće|Provereno: Sortiraj opadajuće)$"
+          }
         },
         {
           "name": "city-table sort by checkedDate",
           "attrs": {
             "data-sort-key": "checkedDate"
-          },
-          "labelPattern": "^(?:Checked date: Sort ascending|Checked date: Sort descending|Fecha de comprobación: Orden ascendente|Fecha de comprobación: Orden descendente|Datum provjere: Sortiraj uzlazno|Datum provjere: Sortiraj silazno|Datum provere: Sortiraj rastuće|Datum provere: Sortiraj opadajuće)$"
+          }
         },
         {
           "name": "city-table sort by registryFound",
           "attrs": {
             "data-sort-key": "registryFound"
-          },
-          "labelPattern": "^(?:Registry found: Sort ascending|Registry found: Sort descending|Registro encontrado: Orden ascendente|Registro encontrado: Orden descendente|Registar pronađen: Sortiraj uzlazno|Registar pronađen: Sortiraj silazno|Registar pronađen: Sortiraj rastuće|Registar pronađen: Sortiraj opadajuće)$"
+          }
         },
         {
           "name": "city-table sort by impliedParcelsTried",
           "attrs": {
             "data-sort-key": "impliedParcelsTried"
-          },
-          "labelPattern": "^(?:Implied parcels tried: Sort ascending|Implied parcels tried: Sort descending|Pruebas de parcelas inferidas: Orden ascendente|Pruebas de parcelas inferidas: Orden descendente|Pokušaji izvedenih čestica: Sortiraj uzlazno|Pokušaji izvedenih čestica: Sortiraj silazno|Pokušaji izvedenih parcela: Sortiraj rastuće|Pokušaji izvedenih parcela: Sortiraj opadajuće)$"
+          }
         },
         {
           "name": "city-table sort by osmUrl",
           "attrs": {
             "data-sort-key": "osmUrl"
-          },
-          "labelPattern": "^(?:OpenStreetMap: Sort ascending|OpenStreetMap: Sort descending|OpenStreetMap: Orden ascendente|OpenStreetMap: Orden descendente|OpenStreetMap: Sortiraj uzlazno|OpenStreetMap: Sortiraj silazno|OpenStreetMap: Sortiraj rastuće|OpenStreetMap: Sortiraj opadajuće)$"
+          }
         },
         {
           "name": "city-table sort by googleMapsUrl",
           "attrs": {
             "data-sort-key": "googleMapsUrl"
-          },
-          "labelPattern": "^(?:Google Maps: Sort ascending|Google Maps: Sort descending|Google Maps: Orden ascendente|Google Maps: Orden descendente|Google karte: Sortiraj uzlazno|Google karte: Sortiraj silazno|Google mape: Sortiraj rastuće|Google mape: Sortiraj opadajuće)$"
+          }
         },
         {
           "name": "city-table sort by wikipediaUrl",
           "attrs": {
             "data-sort-key": "wikipediaUrl"
-          },
-          "labelPattern": "^(?:Wikipedia: Sort ascending|Wikipedia: Sort descending|Wikipedia: Orden ascendente|Wikipedia: Orden descendente|Wikipedija: Sortiraj uzlazno|Wikipedija: Sortiraj silazno|Vikipedija: Sortiraj rastuće|Vikipedija: Sortiraj opadajuće)$"
+          }
         },
         {
           "name": "country-table sort by name",
           "attrs": {
             "data-sort-key": "name"
-          },
-          "labelPattern": "^(?:Name: Sort ascending|Name: Sort descending|Nombre: Orden ascendente|Nombre: Orden descendente|Naziv: Sortiraj uzlazno|Naziv: Sortiraj silazno|Naziv: Sortiraj rastuće|Naziv: Sortiraj opadajuće)$"
+          }
         },
         {
           "name": "country-table sort by citiesChecked",
           "attrs": {
             "data-sort-key": "citiesChecked"
-          },
-          "labelPattern": "^(?:Cities checked: Sort ascending|Cities checked: Sort descending|Ciudades comprobadas: Orden ascendente|Ciudades comprobadas: Orden descendente|Provjereni gradovi: Sortiraj uzlazno|Provjereni gradovi: Sortiraj silazno|Provereni gradovi: Sortiraj rastuće|Provereni gradovi: Sortiraj opadajuće)$"
+          }
         },
         {
           "name": "country-table sort by citiesWithRegistry",
           "attrs": {
             "data-sort-key": "citiesWithRegistry"
-          },
-          "labelPattern": "^(?:Cities with a registry: Sort ascending|Cities with a registry: Sort descending|Ciudades con registro: Orden ascendente|Ciudades con registro: Orden descendente|Gradovi s registrom: Sortiraj uzlazno|Gradovi s registrom: Sortiraj silazno|Gradovi sa registrom: Sortiraj rastuće|Gradovi sa registrom: Sortiraj opadajuće)$"
+          }
         },
         {
           "name": "country-table sort by nationalCadastreFound",
           "attrs": {
             "data-sort-key": "nationalCadastreFound"
-          },
-          "labelPattern": "^(?:Country-level cadastre found: Sort ascending|Country-level cadastre found: Sort descending|Catastro de ámbito nacional encontrado: Orden ascendente|Catastro de ámbito nacional encontrado: Orden descendente|Pronađen katastar na državnoj razini: Sortiraj uzlazno|Pronađen katastar na državnoj razini: Sortiraj silazno|Pronađen katastar na državnom nivou: Sortiraj rastuće|Pronađen katastar na državnom nivou: Sortiraj opadajuće)$"
+          }
         },
         {
           "name": "breakdown-table sort by label",
           "attrs": {
             "data-sort-key": "label"
-          },
-          "labelPattern": "^(?:Evidence: Sort ascending|Evidence: Sort descending|Evidencia: Orden ascendente|Evidencia: Orden descendente|Dokazi: Sortiraj uzlazno|Dokazi: Sortiraj silazno|Dokazi: Sortiraj rastuće|Dokazi: Sortiraj opadajuće)$"
+          }
         },
         {
           "name": "breakdown-table sort by jurisdictions",
           "attrs": {
             "data-sort-key": "jurisdictions"
-          },
-          "labelPattern": "^(?:Jurisdictions: Sort ascending|Jurisdictions: Sort descending|Jurisdicciones: Orden ascendente|Jurisdicciones: Orden descendente|Jurisdikcije: Sortiraj uzlazno|Jurisdikcije: Sortiraj silazno|Jurisdikcije: Sortiraj rastuće|Jurisdikcije: Sortiraj opadajuće)$"
+          }
         },
         {
           "name": "breakdown-table sort by landAreaKm2",
           "attrs": {
             "data-sort-key": "landAreaKm2"
-          },
-          "labelPattern": "^(?:Land area, km²: Sort ascending|Land area, km²: Sort descending|Superficie terrestre, km²: Orden ascendente|Superficie terrestre, km²: Orden descendente|Kopnena površina, km²: Sortiraj uzlazno|Kopnena površina, km²: Sortiraj silazno|Kopnena površina, km²: Sortiraj rastuće|Kopnena površina, km²: Sortiraj opadajuće)$"
+          }
         },
         {
           "name": "breakdown-table sort by landAreaKm2Pct",
           "attrs": {
             "data-sort-key": "landAreaKm2Pct"
-          },
-          "labelPattern": "^(?:Land share: Sort ascending|Land share: Sort descending|Porcentaje de superficie terrestre: Orden ascendente|Porcentaje de superficie terrestre: Orden descendente|Udio kopnene površine: Sortiraj uzlazno|Udio kopnene površine: Sortiraj silazno|Udeo kopnene površine: Sortiraj rastuće|Udeo kopnene površine: Sortiraj opadajuće)$"
+          }
         },
         {
           "name": "breakdown-table sort by builtUpAreaKm2",
           "attrs": {
             "data-sort-key": "builtUpAreaKm2"
-          },
-          "labelPattern": "^(?:Built-up, km²: Sort ascending|Built-up, km²: Sort descending|Superficie edificada, km²: Orden ascendente|Superficie edificada, km²: Orden descendente|Izgrađeno, km²: Sortiraj uzlazno|Izgrađeno, km²: Sortiraj silazno|Izgrađeno, km²: Sortiraj rastuće|Izgrađeno, km²: Sortiraj opadajuće)$"
+          }
         },
         {
           "name": "breakdown-table sort by builtUpAreaKm2Pct",
           "attrs": {
             "data-sort-key": "builtUpAreaKm2Pct"
-          },
-          "labelPattern": "^(?:Built-up share: Sort ascending|Built-up share: Sort descending|Porcentaje edificado: Orden ascendente|Porcentaje edificado: Orden descendente|Udio izgrađene površine: Sortiraj uzlazno|Udio izgrađene površine: Sortiraj silazno|Udeo izgrađene površine: Sortiraj rastuće|Udeo izgrađene površine: Sortiraj opadajuće)$"
+          }
         },
         {
           "name": "breakdown-table sort by population",
           "attrs": {
             "data-sort-key": "population"
-          },
-          "labelPattern": "^(?:Population: Sort ascending|Population: Sort descending|Población: Orden ascendente|Población: Orden descendente|Stanovništvo: Sortiraj uzlazno|Stanovništvo: Sortiraj silazno|Stanovništvo: Sortiraj rastuće|Stanovništvo: Sortiraj opadajuće)$"
+          }
         },
         {
           "name": "breakdown-table sort by populationPct",
           "attrs": {
             "data-sort-key": "populationPct"
-          },
-          "labelPattern": "^(?:Population share: Sort ascending|Population share: Sort descending|Porcentaje de población: Orden ascendente|Porcentaje de población: Orden descendente|Udio stanovništva: Sortiraj uzlazno|Udio stanovništva: Sortiraj silazno|Udeo stanovništva: Sortiraj rastuće|Udeo stanovništva: Sortiraj opadajuće)$"
+          }
         },
         {
           "name": "Filter country inventory",
           "classes": [
             "cb-link"
           ]
+        },
+        {
+          "name": "Filter by National or parent registry identified",
+          "classes": [
+            "bar-segment",
+            "national"
+          ],
+          "interaction": "click"
+        },
+        {
+          "name": "Filter by Local, regional or partial evidence",
+          "classes": [
+            "bar-segment",
+            "local"
+          ],
+          "interaction": "click"
+        },
+        {
+          "name": "Filter by Checked with no source established",
+          "classes": [
+            "bar-segment",
+            "none"
+          ],
+          "interaction": "click"
+        },
+        {
+          "name": "Filter by Unresolved or unchecked",
+          "classes": [
+            "bar-segment",
+            "unknown"
+          ],
+          "interaction": "click"
         }
       ],
       "exhaustiveVariants": true,
@@ -5286,6 +5602,14 @@
             "aria-label": "WMS layer"
           },
           "interaction": "change"
+        },
+        {
+          "name": "Add this source",
+          "label": "Add this source",
+          "classes": [
+            "btn-primary"
+          ],
+          "interaction": "click"
         }
       ],
       "exhaustiveVariants": true,
@@ -5745,122 +6069,108 @@
       "exhaustiveVariants": true,
       "variants": [
         {
-          "name": "parcel-transport-btn--road",
+          "name": "Fit a road in the parcel",
+          "classes": [
+            "parcel-transport-btn--roadInParcel"
+          ],
+          "attrs": {
+            "onclick": "startParcelTransportTool('roadInParcel')"
+          },
+          "interaction": "click"
+        },
+        {
+          "name": "Fit a road in the site",
+          "classes": [
+            "parcel-transport-btn--roadInParcel"
+          ],
+          "attrs": {
+            "onclick": "SiteTool.transport('roadInParcel')"
+          },
+          "interaction": "click"
+        },
+        {
+          "name": "Place a road station",
+          "classes": [
+            "parcel-transport-btn--roadStation"
+          ],
+          "attrs": {
+            "data-station-type": "bus",
+            "onclick": "startParcelTransportTool('roadStation')"
+          },
+          "interaction": "click"
+        },
+        {
+          "name": "Place a road station in the site",
+          "classes": [
+            "parcel-transport-btn--roadStation"
+          ],
+          "attrs": {
+            "data-station-type": "bus",
+            "onclick": "SiteTool.transport('roadStation')"
+          },
+          "interaction": "click"
+        },
+        {
+          "name": "Place a track station",
+          "classes": [
+            "parcel-transport-btn--trackStation"
+          ],
+          "attrs": {
+            "data-station-type": "track",
+            "onclick": "startParcelTransportTool('trackStation')"
+          },
+          "interaction": "click"
+        },
+        {
+          "name": "Place a track station in the site",
+          "classes": [
+            "parcel-transport-btn--trackStation"
+          ],
+          "attrs": {
+            "data-station-type": "track",
+            "onclick": "SiteTool.transport('trackStation')"
+          },
+          "interaction": "click"
+        },
+        {
+          "name": "Open the manual road drawing tool",
           "classes": [
             "parcel-transport-btn--road"
           ],
           "attrs": {
             "onclick": "startParcelTransportTool('road')"
-          }
+          },
+          "interaction": "click"
         },
         {
-          "name": "parcel-transport-btn--track",
+          "name": "Open the manual road drawing tool from a site",
+          "classes": [
+            "parcel-transport-btn--road"
+          ],
+          "attrs": {
+            "onclick": "SiteTool.transport('road')"
+          },
+          "interaction": "click"
+        },
+        {
+          "name": "Open the manual track drawing tool with curvature constraints",
           "classes": [
             "parcel-transport-btn--track"
           ],
           "attrs": {
             "onclick": "startParcelTransportTool('track')"
-          }
+          },
+          "interaction": "click"
         },
         {
-          "name": "parcel-transport-btn--bus",
+          "name": "Open the manual track drawing tool from a site",
           "classes": [
-            "parcel-transport-btn--bus"
-          ],
-          "attrs": {
-            "onclick": "startParcelTransportTool('bus')"
-          }
-        },
-        {
-          "name": "parcel-transport-btn--tram",
-          "classes": [
-            "parcel-transport-btn--tram"
-          ],
-          "attrs": {
-            "onclick": "startParcelTransportTool('tram')"
-          }
-        },
-        {
-          "name": "parcel-transport-btn--underground",
-          "classes": [
-            "parcel-transport-btn--underground"
-          ],
-          "attrs": {
-            "onclick": "startParcelTransportTool('underground')"
-          }
-        },
-        {
-          "name": "parcel-transport-btn--elevated",
-          "classes": [
-            "parcel-transport-btn--elevated"
-          ],
-          "attrs": {
-            "onclick": "startParcelTransportTool('elevated')"
-          }
-        },
-        {
-          "name": "Open Road drawing",
-          "classes": [
-            "parcel-transport-btn",
-            "parcel-transport-btn--road"
-          ],
-          "attrs": {
-            "onclick": "SiteTool.transport('road')"
-          }
-        },
-        {
-          "name": "Open Track drawing",
-          "classes": [
-            "parcel-transport-btn",
             "parcel-transport-btn--track"
           ],
           "attrs": {
             "onclick": "SiteTool.transport('track')"
-          }
-        },
-        {
-          "name": "Place a Bus station",
-          "classes": [
-            "parcel-transport-btn",
-            "parcel-transport-btn--bus"
-          ],
-          "attrs": {
-            "data-station-type": "bus",
-            "onclick": "SiteTool.transport('bus')"
-          }
-        },
-        {
-          "name": "Place a Tram station",
-          "classes": [
-            "parcel-transport-btn",
-            "parcel-transport-btn--tram"
-          ],
-          "attrs": {
-            "data-station-type": "tram",
-            "onclick": "SiteTool.transport('tram')"
-          }
-        },
-        {
-          "name": "Place an Underground station",
-          "classes": [
-            "parcel-transport-btn",
-            "parcel-transport-btn--underground"
-          ],
-          "attrs": {
-            "data-station-type": "underground",
-            "onclick": "SiteTool.transport('underground')"
-          }
-        },
-        {
-          "name": "Place an Elevated station",
-          "classes": [
-            "parcel-transport-btn",
-            "parcel-transport-btn--elevated"
-          ],
-          "attrs": {
-            "data-station-type": "elevated",
-            "onclick": "SiteTool.transport('elevated')"
-          }
+          },
+          "interaction": "click"
         }
       ],
       "dispatchEvidence": "buildPaletteHtml reuses this source for the parcel palette and SiteTool palette. Each tool key and handler context has a separate assertion-backed click requirement; the SiteTool palette omits Ownership.",
@@ -5903,11 +6213,6 @@
           "interaction": "click"
         },
         {
-          "name": "Open a saved plan",
-          "label": "Open plan",
-          "interaction": "click"
-        },
-        {
           "name": "Share a saved plan",
           "label": "Share plan",
           "interaction": "click"
@@ -5934,20 +6239,10 @@
         },
         {
           "name": "Enter a plan name",
-          "label": "Plan name",
-          "interaction": "change"
-        },
-        {
-          "name": "Search plan designs",
-          "label": "Search designs",
-          "interaction": "change"
-        },
-        {
-          "name": "Select plan members",
+          "interaction": "change",
           "attrs": {
-            "type": "checkbox"
-          },
-          "interaction": "change"
+            "type": "text"
+          }
         },
         {
           "name": "Choose saved camera",
@@ -5962,6 +6257,64 @@
             "data-plan-view": "rotate"
           },
           "interaction": "change"
+        },
+        {
+          "name": "Change plan designs",
+          "attrs": {
+            "data-plan-change-designs": ""
+          },
+          "interaction": "click"
+        },
+        {
+          "name": "Edit a plan construction month",
+          "classes": [
+            "plan-schedule__month"
+          ],
+          "interaction": "change"
+        },
+        {
+          "name": "Clear a design construction window",
+          "classes": [
+            "plan-schedule__clear"
+          ],
+          "interaction": "click"
+        },
+        {
+          "name": "Open a design from its construction bar",
+          "classes": [
+            "plan-schedule__bar"
+          ],
+          "interaction": "click"
+        },
+        {
+          "name": "Open a design without construction dates",
+          "classes": [
+            "plan-schedule__undated-item"
+          ],
+          "interaction": "click"
+        },
+        {
+          "name": "Simulate plan build-out",
+          "classes": [
+            "plan-schedule__simulate"
+          ],
+          "interaction": "click"
+        },
+        {
+          "name": "Save the construction schedule",
+          "label": "Save schedule",
+          "classes": [
+            "btn-primary"
+          ],
+          "interaction": "click"
+        },
+        {
+          "name": "Open the construction schedule",
+          "label": "Construction schedule",
+          "classes": [
+            "btn"
+          ],
+          "interaction": "click"
         }
       ]
     },
@@ -6001,8 +6354,7 @@
         {
           "name": "Open a referenced planning source",
           "classes": [
-            "btn",
-            "btn-sm"
+            "btn"
           ],
           "labelPattern": "^Source: .+ · .+$"
         },
@@ -6190,7 +6542,20 @@
     {
       "id": "control-736e95a52e8178-2",
       "source": "js/polygon-geometry-editor.js",
-      "markup": "element.setAttribute('role', 'button')"
+      "markup": "element.setAttribute('role', 'button')",
+      "variants": [
+        {
+          "name": "Select a polygon vertex",
+          "classes": [
+            "polygon-geometry-editor__vertex"
+          ],
+          "interaction": "click"
+        }
+      ],
+      "exhaustiveVariants": true,
+      "interaction": "click",
+      "controlType": "button",
+      "dispatchEvidence": "Each polygon geometry vertex is a button that selects the vertex for coordinate editing."
     },
     {
       "id": "control-b17c6d262d1b8f-1",
@@ -6556,7 +6921,26 @@
       "source": "js/proposals/approval-setup.js",
       "markup": "<textarea data-approval-lens placeholder=\"${esc(t('proposalDrafts.approval.lensPlaceholder', 'One key per line'))}\">",
       "interaction": "change",
-      "controlType": "textarea"
+      "controlType": "textarea",
+      "exempt": "The agreement editor uses the shared lens dialog; its two ownership-form consumers discard this textarea before presenting the form.",
+      "guards": [
+        {
+          "source": "js/agreement-dialog.js",
+          "includes": "const rules = source.querySelector('[data-approval-rules-card]'); if (owners && rules) container.appendChild(rules);"
+        },
+        {
+          "source": "js/agreement-dialog.js",
+          "includes": "container.querySelector('[data-approval-lens]')?.closest('label')?.remove();"
+        },
+        {
+          "pattern": "(?:setup\\(\\)|ProposalApprovalSetup)\\.html\\(",
+          "occurrences": 2
+        },
+        {
+          "source": "js/agreement-dialog.js",
+          "includes": "auxiliary = root.showLensModal({ parent: modal,"
+        }
+      ]
     },
     {
       "id": "control-633bf752ee4669-1",
@@ -6627,7 +7011,19 @@
       "source": "js/proposals/claims-ui.js",
       "markup": "document.createElement('button')",
       "interaction": "click",
-      "controlType": "button"
+      "controlType": "button",
+      "exempt": "The former proposal breadcrumb renderer has no app caller; parcel relationships are shown by the click stack.",
+      "mustRemainInactive": true,
+      "guards": [
+        {
+          "source": "js/proposals/claims-ui.js",
+          "includes": "function injectProposalBreadcrumb(containerEl, proposal) {"
+        },
+        {
+          "pattern": "\\binjectProposalBreadcrumb\\s*\\(",
+          "occurrences": 1
+        }
+      ]
     },
     {
       "id": "control-18c07f6ff1de12-1",
@@ -6668,7 +7064,31 @@
     {
       "id": "control-d41e87cec418ec-1",
       "source": "js/proposals/details-panel.js",
-      "markup": "<button type=\"button\" class=\"btn descendant-item\" data-descendant-type=\"proposal\" data-proposal-id=\"${safeAgentText(descendantId)}\" data-object-preview aria-pressed=\"false\">"
+      "markup": "<button type=\"button\" class=\"btn descendant-item\" data-descendant-type=\"proposal\" data-proposal-id=\"${safeAgentText(descendantId)}\" data-object-preview aria-pressed=\"false\">",
+      "exempt": "The proposal descendant button consumes materializedParcelIdsOf, whose values are LiveParcelFabric feature IDs (parcel IDs), not child proposal IDs.",
+      "mustRemainInactive": true,
+      "guards": [
+        {
+          "source": "js/proposals/details-panel.js",
+          "includes": "data-descendant-type=\"proposal\" data-proposal-id=\"${safeAgentText(descendantId)}\""
+        },
+        {
+          "source": "js/proposals/details-panel.js",
+          "includes": "window.__claims.materializedParcelIdsOf(fullProposal)"
+        },
+        {
+          "source": "js/proposals/claims.js",
+          "includes": ".map(feature => fabric && typeof fabric.featureId === 'function'"
+        },
+        {
+          "source": "js/proposals/claims.js",
+          "includes": "feature?.properties?.parcelId"
+        },
+        {
+          "source": "js/parcels/live-fabric.js",
+          "includes": "return normalizeId(props && (props.parcelId ?? props.parcel_id ?? props.PARCEL_ID ?? props.id));"
+        }
+      ]
     },
     {
       "id": "control-7e8edd00f246fe-1",
@@ -6678,7 +7098,31 @@
     {
       "id": "control-7e8edd00f246fe-2",
       "source": "js/proposals/details-panel.js",
-      "markup": "<button type=\"button\" class=\"btn descendant-item\" data-descendant-type=\"parcel\" data-parcel-id=\"${safeAgentText(descendantKey)}\" data-object-preview aria-pressed=\"false\">"
+      "markup": "<button type=\"button\" class=\"btn descendant-item\" data-descendant-type=\"parcel\" data-parcel-id=\"${safeAgentText(descendantKey)}\" data-object-preview aria-pressed=\"false\">",
+      "exempt": "Only parcel layouts render descendant parcels here; every valid current output has a producer and numeric plot index and uses the preceding plot-specific button.",
+      "mustRemainInactive": true,
+      "guards": [
+        {
+          "source": "js/proposals/details-panel.js",
+          "includes": "const descendantItemsInitial = isParcelLayout ? descendantKeys.slice(0, MAX_LIST_INITIAL).map(renderDescendantItem).join('') : '';"
+        },
+        {
+          "source": "js/proposals/details-panel.js",
+          "includes": "if ((fullProposal || proposal).parcelLayout && plotProps && Number.isFinite(plotProps.syntheticIndex)"
+        },
+        {
+          "source": "js/proposal-manager.js",
+          "includes": "props.producedByProposalId = String(outputProducer);"
+        },
+        {
+          "source": "js/proposal-manager.js",
+          "includes": "props.syntheticIndex = index;"
+        },
+        {
+          "source": "js/proposals/formation-edit.js",
+          "includes": "props.syntheticIndex = Number(carried.syntheticIndex);"
+        }
+      ]
     },
     {
       "id": "control-d097b1cc842125-1",
@@ -6755,12 +7199,50 @@
           ]
         }
       ],
-      "exhaustiveVariants": true
+      "exhaustiveVariants": true,
+      "exempt": "The hosted details footer copy is hidden; ClickStack renders Add to plan in the design card. Unhosted detail requests route to ClickStack.",
+      "guards": [
+        {
+          "source": "css/map.css",
+          "includes": "#click-stack #proposal-details-panel.is-hosted .proposal-primary-actions > .btn.btn-add-to-plan,"
+        },
+        {
+          "source": "js/proposals/details-panel.js",
+          "includes": "return window.ClickStack.showDesign(getProposalKey(proposal));"
+        },
+        {
+          "source": "js/click-stack/click-stack-panel.js",
+          "includes": "global.ClickStackRelations.renderDesignActions(instance, doc, global);"
+        },
+        {
+          "source": "js/click-stack/click-stack-relations.js",
+          "includes": "add.dataset.designAction = 'add-to-plan';"
+        }
+      ]
     },
     {
       "id": "control-e66602251d9f01-1",
       "source": "js/proposals/details-panel.js",
-      "markup": "<button type=\"button\" class=\"btn btn-download-design\" onclick=\"window.PlanFileUI.design(window.proposalStorage.getProposal(${inlineJsArg(proposalKey)}))\">"
+      "markup": "<button type=\"button\" class=\"btn btn-download-design\" onclick=\"window.PlanFileUI.design(window.proposalStorage.getProposal(${inlineJsArg(proposalKey)}))\">",
+      "exempt": "The hosted details footer copy is hidden; ClickStack renders Download in the design card. Unhosted detail requests route to ClickStack.",
+      "guards": [
+        {
+          "source": "css/map.css",
+          "includes": "#click-stack #proposal-details-panel.is-hosted .proposal-primary-actions > .btn.btn-download-design {"
+        },
+        {
+          "source": "js/proposals/details-panel.js",
+          "includes": "return window.ClickStack.showDesign(getProposalKey(proposal));"
+        },
+        {
+          "source": "js/click-stack/click-stack-panel.js",
+          "includes": "global.ClickStackRelations.renderDesignActions(instance, doc, global);"
+        },
+        {
+          "source": "js/click-stack/click-stack-relations.js",
+          "includes": "download.dataset.designAction = 'download';"
+        }
+      ]
     },
     {
       "id": "control-08edf049b57aee-1",
@@ -6850,7 +7332,22 @@
     {
       "id": "control-8d6bae97c01d0e-1",
       "source": "js/proposals/details-panel.js",
-      "markup": "<button type=\"button\" class=\"cb-tab proposal-details-tab\" role=\"tab\" id=\"proposal-details-tab-${id}\" aria-controls=\"proposal-details-panel-${id}\" data-proposal-tab=\"${id}\" aria-selected=\"${proposalDetailsTab === id}\">"
+      "markup": "<button type=\"button\" class=\"cb-tab proposal-details-tab\" role=\"tab\" id=\"proposal-details-tab-${id}\" aria-controls=\"proposal-details-panel-${id}\" data-proposal-tab=\"${id}\" aria-selected=\"${proposalDetailsTab === id}\">",
+      "exempt": "Native design-detail tabs are promoted into the click-stack content bar, which delegates selection to the native tab handler. Unhosted requests route to ClickStack.",
+      "guards": [
+        {
+          "source": "css/click-stack-navigation.css",
+          "includes": ".has-content-tabs .proposal-details-tabs,"
+        },
+        {
+          "source": "js/click-stack/click-stack-navigation.js",
+          "includes": "selected.native?.getAttribute('aria-selected') !== 'true' && selected.native?.click();"
+        },
+        {
+          "source": "js/proposals/details-panel.js",
+          "includes": "return window.ClickStack.showDesign(getProposalKey(proposal));"
+        }
+      ]
     },
     {
       "id": "control-1780954d86d286-1",
@@ -7282,27 +7779,69 @@
       "source": "js/proposals/list-ui.js",
       "markup": "<button type=\"button\" class=\"btn btn-sm proposal-download-btn\" data-proposal-id=\"${escapeHtml(proposalId)}\" data-cid=\"${escapeHtml(proposal.cid || '')}\" ${isDownloaded ? 'disabled' : ''}>",
       "interaction": "click",
-      "controlType": "button"
+      "controlType": "button",
+      "exempt": "buildProposalListItemsHtml has no caller; the open Proposals sheet is rendered by ListsPanel.",
+      "mustRemainInactive": true,
+      "guards": [
+        {
+          "source": "js/proposals/list-ui.js",
+          "includes": "function buildProposalListItemsHtml(dataset, options = {}) {"
+        },
+        {
+          "pattern": "\\bbuildProposalListItemsHtml\\s*\\(",
+          "occurrences": 1
+        }
+      ]
     },
     {
       "id": "control-8c7ccff12742a7-1",
       "source": "js/proposals/list-ui.js",
       "markup": "<button type=\"button\" class=\"btn btn-sm btn-icon btn-danger proposal-delete-btn\" onclick=\"event.stopPropagation(); deleteProposal('${proposalId}')\" title=\"${escapeHtml(deleteTooltip)}\" aria-label=\"${escapeHtml(deleteTooltip)}\">",
       "interaction": "click",
-      "controlType": "button"
+      "controlType": "button",
+      "exempt": "buildProposalListItemsHtml has no caller; the open Proposals sheet is rendered by ListsPanel.",
+      "mustRemainInactive": true,
+      "guards": [
+        {
+          "source": "js/proposals/list-ui.js",
+          "includes": "function buildProposalListItemsHtml(dataset, options = {}) {"
+        },
+        {
+          "pattern": "\\bbuildProposalListItemsHtml\\s*\\(",
+          "occurrences": 1
+        }
+      ]
     },
     {
       "id": "control-af60aeebbccc22-1",
       "source": "js/proposals/list-ui.js",
       "markup": "<button type=\"button\" class=\"btn btn-sm btn-primary proposal-list-details-btn\" data-proposal-details=\"${escapeHtml(proposalId)}\">",
       "interaction": "click",
-      "controlType": "button"
+      "controlType": "button",
+      "exempt": "buildProposalListItemsHtml has no caller; the open Proposals sheet is rendered by ListsPanel.",
+      "mustRemainInactive": true,
+      "guards": [
+        {
+          "source": "js/proposals/list-ui.js",
+          "includes": "function buildProposalListItemsHtml(dataset, options = {}) {"
+        },
+        {
+          "pattern": "\\bbuildProposalListItemsHtml\\s*\\(",
+          "occurrences": 1
+        }
+      ]
     },
     {
       "id": "control-70ff7f9d99c8e6-1",
       "source": "js/proposals/parcel-compare-ui.js",
       "markup": "doc.createElement(tag)",
       "variants": [
+        {
+          "name": "Compare selected designs",
+          "classes": [
+            "parcel-compare-bar__run"
+          ]
+        },
         {
           "name": "Close comparison",
           "classes": [
@@ -7318,14 +7857,35 @@
         {
           "name": "Choose comparison proposal A",
           "attrs": {
-            "aria-label": "Proposal A"
+            "aria-label": "Design A"
           },
           "interaction": "change"
         },
         {
           "name": "Choose comparison proposal B",
           "attrs": {
-            "aria-label": "Proposal B"
+            "aria-label": "Design B"
+          },
+          "interaction": "change"
+        },
+        {
+          "name": "Choose design A",
+          "attrs": {
+            "aria-label": "Design A"
+          },
+          "interaction": "change"
+        },
+        {
+          "name": "Choose design B",
+          "attrs": {
+            "aria-label": "Design B"
+          },
+          "interaction": "change"
+        },
+        {
+          "name": "Choose a design for comparison",
+          "attrs": {
+            "aria-label": "Select to compare"
           },
           "interaction": "change"
         }
@@ -7342,7 +7902,7 @@
         {
           "name": "Close plan stats",
           "attrs": {
-            "aria-label": "Close applied proposal stats"
+            "data-plan-stats-close": ""
           }
         },
         {
@@ -7358,37 +7918,80 @@
           }
         },
         {
-          "name": "Change plan statistics price",
+          "name": "Change sales price assumption",
+          "classes": [
+            "plan-stats-input"
+          ],
           "attrs": {
-            "id": "plan-stats-price"
+            "data-assumption": "price"
           },
           "interaction": "change"
         },
         {
-          "name": "Change plan statistics housing-share",
+          "name": "Change housing share assumption",
+          "classes": [
+            "plan-stats-input"
+          ],
           "attrs": {
-            "id": "plan-stats-housing-share"
+            "data-assumption": "housing-share"
           },
           "interaction": "change"
         },
         {
-          "name": "Change plan statistics efficiency",
+          "name": "Change net efficiency assumption",
+          "classes": [
+            "plan-stats-input"
+          ],
           "attrs": {
-            "id": "plan-stats-efficiency"
+            "data-assumption": "efficiency"
           },
           "interaction": "change"
         },
         {
-          "name": "Change plan statistics apartment-size",
+          "name": "Change apartment size assumption",
+          "classes": [
+            "plan-stats-input"
+          ],
           "attrs": {
-            "id": "plan-stats-apartment-size"
+            "data-assumption": "apartment-size"
           },
           "interaction": "change"
         },
         {
-          "name": "Change plan statistics persons",
+          "name": "Change people per apartment assumption",
+          "classes": [
+            "plan-stats-input"
+          ],
           "attrs": {
-            "id": "plan-stats-persons"
+            "data-assumption": "persons"
+          },
+          "interaction": "change"
+        },
+        {
+          "name": "Choose the comparison basis",
+          "attrs": {
+            "data-plan-compare-basis": ""
+          },
+          "interaction": "change"
+        },
+        {
+          "name": "Swap comparison rows and columns",
+          "attrs": {
+            "data-plan-compare-swap": ""
+          },
+          "interaction": "click"
+        },
+        {
+          "name": "Show comparison side by side on the map",
+          "attrs": {
+            "data-plan-compare-side-by-side": ""
+          },
+          "interaction": "click"
+        },
+        {
+          "name": "Show only differing comparison rows",
+          "attrs": {
+            "data-plan-compare-differing": ""
           },
           "interaction": "change"
         }
@@ -7861,7 +8464,63 @@
     {
       "id": "control-e5f3a97c488e15-1",
       "source": "js/structure-geometry-editor.js",
-      "markup": "element.setAttribute('role', 'button')"
+      "markup": "element.setAttribute('role', 'button')",
+      "variants": [
+        {
+          "name": "Edit a tree on the map",
+          "classes": [
+            "structure-geometry-icon",
+            "is-tree"
+          ],
+          "interaction": "click"
+        },
+        {
+          "name": "Edit a fountain on the map",
+          "classes": [
+            "structure-geometry-icon",
+            "is-fountain"
+          ],
+          "interaction": "click"
+        },
+        {
+          "name": "Edit a bench on the map",
+          "classes": [
+            "structure-geometry-icon",
+            "is-bench"
+          ],
+          "interaction": "click"
+        },
+        {
+          "name": "Edit a market stall on the map",
+          "classes": [
+            "structure-geometry-icon",
+            "is-stall"
+          ],
+          "interaction": "click"
+        },
+        {
+          "name": "Edit a statue on the map",
+          "classes": [
+            "structure-geometry-icon",
+            "is-statue"
+          ],
+          "interaction": "click"
+        },
+        {
+          "name": "Edit a lamp on the map",
+          "classes": ["structure-geometry-icon", "is-lamp"],
+          "interaction": "click"
+        },
+        {
+          "name": "Edit play equipment on the map",
+          "classes": ["structure-geometry-icon", "is-play"],
+          "interaction": "click"
+        }
+      ],
+      "exhaustiveVariants": true,
+      "interaction": "click",
+      "controlType": "button",
+      "dispatchEvidence": "The editor’s map markers use role=button. A click opens the corresponding tree, fountain, bench, stall, statue, lamp or play equipment editor."
     },
     {
       "id": "control-4db10a36078b55-1",
@@ -7924,10 +8583,67 @@
           }
         },
         {
-          "name": "move",
+          "name": "Boundary",
           "attrs": {
-            "data-tool": "move"
-          }
+            "data-tool": "boundary"
+          },
+          "interaction": "click"
+        },
+        {
+          "name": "Select",
+          "attrs": {
+            "data-tool": "select"
+          },
+          "interaction": "click"
+        },
+        {
+          "name": "Lamp",
+          "attrs": {
+            "data-tool": "lamp"
+          },
+          "interaction": "click"
+        },
+        {
+          "name": "Swing",
+          "attrs": {
+            "data-tool": "swing"
+          },
+          "interaction": "click"
+        },
+        {
+          "name": "Seesaw",
+          "attrs": {
+            "data-tool": "seesaw"
+          },
+          "interaction": "click"
+        },
+        {
+          "name": "Slide",
+          "attrs": {
+            "data-tool": "slide"
+          },
+          "interaction": "click"
+        },
+        {
+          "name": "Fenced area",
+          "attrs": {
+            "data-tool": "enclosure"
+          },
+          "interaction": "click"
+        },
+        {
+          "name": "Gate",
+          "attrs": {
+            "data-tool": "gate"
+          },
+          "interaction": "click"
+        },
+        {
+          "name": "Pavement tree",
+          "attrs": {
+            "data-tool": "pavementTree"
+          },
+          "interaction": "click"
         }
       ],
       "interaction": "click",
@@ -8417,17 +9133,6 @@
           }
         },
         {
-          "name": "Add to agreement: a new agreement",
-          "label": "New agreement",
-          "attrs": {
-            "data-action-id": "__new__"
-          }
-        },
-        {
-          "name": "Add to agreement: an agreement not proposed yet",
-          "labelPattern": " · \\d+ designs?$"
-        },
-        {
           "name": "Mint terms: mint",
           "label": "Mint",
           "attrs": {
@@ -8493,10 +9198,22 @@
             "id": "map-search-input"
           },
           "interaction": "change"
+        },
+        {
+          "name": "Close search",
+          "classes": [
+            "map-search__back"
+          ],
+          "interaction": "click",
+          "label": "Close search",
+          "attrs": {
+            "aria-label": "Close search",
+            "title": "Close search"
+          }
         }
       ],
       "exhaustiveVariants": true,
-      "dispatchEvidence": "The shared map-search button factory creates the current-city chip, Search opener, and Clear control; each dispatches to world view, search presentation, and query/results reset respectively.",
+      "dispatchEvidence": "The shared map-search element factory creates the current-city chip, Search opener, Clear button, and labelled Close search button; they open the globe, expand search, clear query/results, and close search respectively.",
       "interaction": "auto",
       "controlType": "dynamic"
     },
@@ -9836,12 +10553,6 @@
       ]
     },
     {
-      "name": "Select polygon vertex",
-      "classes": [
-        "polygon-geometry-editor__vertex"
-      ]
-    },
-    {
       "name": "Select road node",
       "classes": [
         "road-node-handle"
@@ -9852,41 +10563,6 @@
       "classes": [
         "transit-station-marker",
         "leaflet-interactive"
-      ]
-    },
-    {
-      "name": "Edit tree on the map",
-      "classes": [
-        "structure-geometry-icon",
-        "is-tree"
-      ]
-    },
-    {
-      "name": "Edit fountain on the map",
-      "classes": [
-        "structure-geometry-icon",
-        "is-fountain"
-      ]
-    },
-    {
-      "name": "Edit bench on the map",
-      "classes": [
-        "structure-geometry-icon",
-        "is-bench"
-      ]
-    },
-    {
-      "name": "Edit stall on the map",
-      "classes": [
-        "structure-geometry-icon",
-        "is-stall"
-      ]
-    },
-    {
-      "name": "Edit statue on the map",
-      "classes": [
-        "structure-geometry-icon",
-        "is-statue"
       ]
     },
     {

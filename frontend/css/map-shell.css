@@ -458,11 +458,11 @@ body.three-mode-active .leaflet-control-attribution { visibility: hidden; }
     }
 }
 
-/* The user bubble sits left of the Layers and Settings buttons in the same top row. */
+/* The user bubble sits left of Chat, Layers and Settings in the same top row. */
 #map-container .username-display {
-    font-family: inherit;
+    position: absolute;
     top: var(--map-shell-edge);
-    right: calc(var(--map-shell-edge) + 2 * var(--map-shell-button-size) + 2 * var(--map-shell-gap));
+    right: calc(var(--map-shell-edge) + 3 * var(--map-shell-button-size) + 3 * var(--map-shell-gap));
     height: var(--map-shell-button-size);
     box-sizing: border-box;
     min-width: 0;
@@ -1059,8 +1059,7 @@ body.app-loading .map-shell-cluster {
     #map-container .username-display {
         padding: 6px 8px;
         gap: 4px;
-        font-size: 12px;
-        max-width: calc(100vw - 2 * var(--map-shell-edge) - 2 * var(--map-shell-button-size) - 3 * var(--map-shell-gap) - var(--map-search-compact-width));
+        max-width: calc(100vw - 2 * var(--map-shell-edge) - 3 * var(--map-shell-button-size) - 4 * var(--map-shell-gap) - var(--map-search-compact-width));
     }
 }
 
@@ -1075,13 +1074,13 @@ body.app-loading .map-shell-cluster {
         gap: 0;
         justify-content: center;
     }
-    #map-container .username-display .user-avatar {
+    #map-container #username-display .user-avatar {
         width: 28px;
         height: 28px;
         box-sizing: border-box;
         border: 2px dashed var(--cb-line-strong);
     }
-    #map-container .username-display[data-wallet="connected"] .user-avatar {
+    #map-container #username-display[data-wallet="connected"] .user-avatar {
         border: 2px solid var(--cb-success);
     }
     #map-container .username-display .wallet-status-icon { display: none; }
@@ -1089,11 +1088,17 @@ body.app-loading .map-shell-cluster {
         position: absolute;
         width: 1px;
         height: 1px;
+        font-size: var(--cb-text-sm);
         margin: -1px;
         overflow: hidden;
         clip-path: inset(50%);
         white-space: nowrap;
     }
+}
+
+/* Keep every top-row control at its normal size on narrow phones. */
+@media (max-width: 359.98px) {
+    :root { --map-shell-gap: 4px; }
 }
 
 /* A touch device has no command-key shortcut to use. */

@@ -59,7 +59,7 @@
           "attribution": "M.I. Municipalidad de Guayaquil / Geoportal Catastro"
         },
         "buildings": {
-          "source": "overture-tiles"
+          "sources": [{ "id": "osm" }]
         },
         "sidebar": {
           "disabledSections": [

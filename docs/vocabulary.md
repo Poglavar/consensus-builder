@@ -333,6 +333,8 @@ Plan stats and Compare plans evaluate one exact saved plan revision, including u
 
 A private named-plan draft can reference unpublished design revisions carried with it. Publishing that draft first publishes its missing designs, then the named snapshot, and verifies the same content identifiers. Drafting or editing a named plan derives no agreement ground. Drafting and editing place added and revised designs using the shared working-plan application rules.
 
+Importing a plan saves its exact member revisions as a local named snapshot. A separate import receipt supplies the Imported plans catalogue; the named snapshot owns publication state. Importing or opening that receipt preserves an existing snapshot's publication state.
+
 A plan contains one or more designs and can exist without an agreement. Each agreement references one exact plan revision; any number of agreements may reference that revision. Editing a plan never changes an existing agreement’s subject. Plans and agreements have separate share links. The map click stack orders Agreements above Plans, scoped to the selected exact plan revision, followed by Designs and source objects; it displays the selected level and its nearest available neighbours. Whatever opened the stack, the selected object's own references supply the sections above and below it. Agreements inherit their plan’s extent for inspection; they are not independent spatial picks. Multiple agreements share a selector. The expanded Agreement section contains the full scrollable properties and actions. Its Plan button selects that exact plan in the current view without navigation, importing or applying its designs.
 
 ### Working plan
@@ -524,7 +526,7 @@ Any of the three may also permit **balconies** (`balconyDepthM`: how far, in met
 
 ### Block rule
 
-An urban-rule design generating perimeter building form and courtyard space from its land and stated dimensions. Its record stores one building per parcel, cut from the block massing and carrying the rule and its own variation seed, beside the complete authored block massing (`geometry.ruleMassing`); parcels the rule leaves out are recorded separately as ineligible.
+An urban-rule design generating perimeter building form and courtyard space from its land and stated dimensions. Its record stores one building per parcel, cut from the block massing and carrying the rule and its own variation seed, beside the complete authored block massing (`geometry.ruleMassing`); parcels the rule leaves out are recorded separately as ineligible. When one building contains exactly that massing, its footprint is the sole stored geometry. Courtyard derivation uses the complete massing when present, otherwise the union of the authored building footprints.
 
 ### Row rule
 

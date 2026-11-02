@@ -31,6 +31,44 @@ test.describe('Site authoring @features', () => {
     expect(await page.evaluate(() => (window as any).SiteTool.isActive())).toBe(false);
   });
 
+  test('a GeoJSON import becomes the authored site geometry and saves with its design', async ({ mockApi: page }) => {
+    await openCity(page);
+    await runParcelCommand(page, 15.9822, 45.80025, 'parcel.useAsSite');
+    const imported = {
+      type: 'Feature', properties: { name: 'imported park site' },
+      geometry: { type: 'MultiPolygon', coordinates: [[[[15.98208,45.80018],[15.98232,45.80018],[15.98232,45.80036],[15.98208,45.80036],[15.98208,45.80018]]]] },
+    };
+    const chooserStarted = page.waitForEvent('filechooser');
+    await page.locator('[data-site-import]').click();
+    const chooser = await chooserStarted;
+    await chooser.setFiles({
+      name: 'park-site.geojson', mimeType: 'application/geo+json', buffer: Buffer.from(JSON.stringify(imported)),
+    });
+    await expect(page.locator('#site-panel')).toBeVisible();
+    await expect.poll(() => page.evaluate(() => (window as any).SiteTool.current().site?.type)).toBe('MultiPolygon');
+    const authoredSite = await page.evaluate(() => JSON.parse(JSON.stringify((window as any).SiteTool.current().site)));
+    expect(authoredSite).toEqual(imported.geometry);
+    await page.locator('[data-site-action="propose"]').click();
+    await page.locator('#site-info-panel .parcel-build-btn--park').click();
+    await expect.poll(() => page.evaluate(() => (window as any).proposalStorage.getAllProposals().some((p: any) => p.applied && p.structureProposal?.kind === 'park'))).toBe(true);
+    const savedSite = await page.evaluate(() => (window as any).proposalStorage.getAllProposals().find((p: any) => p.structureProposal?.kind === 'park').site);
+    expect(savedSite).toEqual(authoredSite);
+    expect(await page.evaluate(geometry => (window as any).turf.area(geometry), savedSite)).toBeGreaterThan(0);
+  });
+
+  test('the site transport palette opens Road in parcel and cancellation saves no road', async ({ mockApi: page }) => {
+    await openCity(page);
+    await runParcelCommand(page, 15.9822, 45.80025, 'parcel.useAsSite');
+    await page.locator('[data-site-action="propose"]').click();
+    await page.locator('#site-info-panel .parcel-transport-btn--roadInParcel').click();
+    const road = page.locator('#road-in-parcel');
+    await expect(road.locator('.on-map-editor__panel')).toBeVisible();
+    await expect(road.locator('.road-in-parcel__summary')).toHaveText('Streets: 1 · parcels: 1');
+    await road.getByRole('button', { name: 'Cancel', exact: true }).click();
+    await expect(road).toHaveCount(0);
+    expect(await page.evaluate(() => (window as any).proposalStorage.getAllProposals().length)).toBe(0);
+  });
+
   for (const close of ['.site-panel__close', '.site-panel__actions [data-site-action="cancel"]']) test(`site ${close} discards temporary geometry without creating a proposal`, async ({ mockApi: page }) => {
     await openCity(page);
     await runParcelCommand(page, 15.9822, 45.80025, 'parcel.useAsSite');

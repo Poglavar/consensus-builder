@@ -169,11 +169,10 @@ describe('findNearestCity with a filter', () => {
     });
 
     it('keeps a Croatian parcel out of a foreign city that happens to be nearer', () => {
-        // Vukovar: ~140 km from Belgrade, ~230 km from Zagreb. Unfiltered, Belgrade wins — and
-        // Belgrade's parcels come from a different country's cadastre entirely, so a Croatian
-        // parcel routed there would be fetched from /parcel-bg and never found.
+        // Vukovar is closer to Novi Sad than Zagreb, but a Croatian parcel must still
+        // use a city served by the Croatian cadastral source.
         const unfiltered = CityConfigManager.findNearestCity(45.3511, 18.9946);
-        expect(unfiltered.id).toBe('belgrade');
+        expect(unfiltered.id).toBe('novi_sad');
         const filtered = CityConfigManager.findNearestCity(45.3511, 18.9946, { filter: croatian });
         expect(filtered.id).toBe('zagreb');
     });

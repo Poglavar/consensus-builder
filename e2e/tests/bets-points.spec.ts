@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { test, expect } from '../helpers/fixtures';
 import { randomUUID } from 'node:crypto';
 import { spawn, ChildProcess } from 'node:child_process';
 import { once } from 'node:events';
@@ -58,8 +58,20 @@ test('points buy, sell, reload, simulated resolution and claim use the real loca
   let dialog = page.locator('#proposalMarketOverlay');
   await expect(dialog).toBeVisible();
   await expect(dialog).toContainText('Max 1000 points');
+  const buyAmount = dialog.locator('[data-market-amount]');
+  await dialog.locator('.bets-dialog__chip').filter({ hasText: /^10$/ }).click();
+  await expect(buyAmount).toHaveValue('10');
+  await dialog.locator('.bets-dialog__chip').filter({ hasText: /^50$/ }).click();
+  await expect(buyAmount).toHaveValue('50');
+  const maxPoints = dialog.locator('.bets-dialog__chip').filter({ hasText: /^Max/ });
+  await expect(maxPoints).toBeVisible();
+  const maxPointsAmount = await maxPoints.getAttribute('data-amount');
+  expect(Number(maxPointsAmount)).toBeGreaterThan(100);
+  await maxPoints.click();
+  await expect(buyAmount).toHaveValue(maxPointsAmount!);
   const buyChip = dialog.locator('.bets-dialog__chip').filter({ hasText: /^100$/ });
   await buyChip.click();
+  await expect(buyAmount).toHaveValue('100');
   const buyQuote = dialog.locator('[data-market-towin]');
   await expect(buyQuote).toBeVisible();
   const quoteText = await buyQuote.innerText();
@@ -72,13 +84,39 @@ test('points buy, sell, reload, simulated resolution and claim use the real loca
   await expect(dialog.locator('.bets-dialog__collect').getByRole('button', {name:/sell yes shares/i})).toBeVisible();
   await dialog.locator('.bets-dialog__collect').getByRole('button', {name:/sell yes shares/i}).click();
   const sellAmount = dialog.locator('[data-market-amount]');
+  const maxShares = dialog.locator('.bets-dialog__chip').filter({ hasText: /^Max/ });
+  await expect(maxShares).toBeVisible();
+  const maxSharesAmount = await maxShares.getAttribute('data-amount');
+  expect(Number(maxSharesAmount)).toBeGreaterThan(0);
+  await maxShares.click();
+  await expect(sellAmount).toHaveValue(maxSharesAmount!);
   await sellAmount.fill('50');
+  await expect(sellAmount).toHaveValue('50');
   const sellQuote = await dialog.locator('[data-market-towin]').innerText();
   await dialog.locator('[data-market-submit]').click();
   await expect(dialog.locator('[data-market-dialog-status]')).toContainText(/confirmed/i);
   const balanceAfterSell = BigInt(await page.evaluate(async () => (await (window as any).BetsTrading.readAccount()).balance));
   expect(balanceAfterSell).toBeGreaterThan(balanceAfterBuy);
   expect(sellQuote).toMatch(/Sell/);
+  await dialog.locator('[data-market-done]').click();
+  // The opposite side is also traded through the points ledger before the simulated resolution.
+  await row.locator('.btn-market-no').click();
+  const noBuyAmount = dialog.locator('[data-market-amount]');
+  await dialog.locator('.bets-dialog__chip').filter({ hasText: /^100$/ }).click();
+  await expect(noBuyAmount).toHaveValue('100');
+  await dialog.locator('[data-market-submit]').click();
+  await expect(dialog.locator('[data-market-dialog-status]')).toContainText(/confirmed/i);
+  const balanceAfterNoBuy = BigInt(await page.evaluate(async () => (await (window as any).BetsTrading.readAccount()).balance));
+  expect(balanceAfterNoBuy).toBeLessThan(balanceAfterSell);
+  await dialog.getByRole('button', {name:/your position/i}).click();
+  await dialog.locator('.bets-dialog__collect').getByRole('button', {name:/sell no shares/i}).click();
+  const noSellAmount = dialog.locator('[data-market-amount]');
+  await noSellAmount.fill('50');
+  await expect(noSellAmount).toHaveValue('50');
+  await dialog.locator('[data-market-submit]').click();
+  await expect(dialog.locator('[data-market-dialog-status]')).toContainText(/confirmed/i);
+  const balanceAfterNoSell = BigInt(await page.evaluate(async () => (await (window as any).BetsTrading.readAccount()).balance));
+  expect(balanceAfterNoSell).toBeGreaterThan(balanceAfterNoBuy);
   await dialog.locator('[data-market-done]').click();
   // Buy a fresh YES position so the later simulated execution has something claimable.
   await dialog.locator('.bets-dialog__footer .btn-market-yes').click().catch(async () => {

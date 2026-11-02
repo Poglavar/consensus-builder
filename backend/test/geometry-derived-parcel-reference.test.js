@@ -11,6 +11,7 @@ const openGround = require('../../frontend/js/proposals/open-ground.js');
 const format = require('../../frontend/js/format.js');
 const financials = require('../../frontend/js/financials.js');
 const CityMoney = require('../../frontend/js/city-money.js');
+const RecordLabel = require('../../frontend/js/ui/record-label.js');
 const SetProposals = require('../../frontend/js/parcels/parcel-set-proposals.js');
 const ParcelPriceModel = {
     buildEstimate: financials.buildParcelPriceEstimate,
@@ -68,6 +69,7 @@ function renderParcelPanel(properties, { currency = 'EUR', id = 'test-city', pro
         document,
         console,
         CbFormat: format,
+        RecordLabel,
         ParcelMenuModel: parcelMenu,
         __openGround: openGround,
         CityMoney: { currentLandPriceOptions: kind => CityMoney.landPriceOptions(cityConfig, kind) },
@@ -168,8 +170,8 @@ describe('geometry-derived parcel references', () => {
             proposals: [{ proposalId: 'design-1', title: 'Pocket park', goal: 'park' }]
         });
         expect(rendered.proposals).toContain('<article class="proposal-item" data-proposal-id="design-1" data-parcel-id="native-123">');
-        expect(rendered.proposals).toContain('<h3 class="proposal-item-title"><button type="button" class="btn btn-quiet proposal-item-pick" data-proposal-pick aria-pressed="false">Pocket park</button></h3>');
-        expect(rendered.proposals).toContain('data-proposal-open title="Open Pocket park" aria-label="Open Pocket park"');
+        expect(rendered.proposals).toContain('<button type="button" class="btn btn-quiet proposal-item-pick" data-proposal-pick aria-pressed="false" aria-label="Pocket park · design-1">Pocket park</button>');
+        expect(rendered.proposals).toContain('data-proposal-open title="Open Pocket park · design-1" aria-label="Open Pocket park · design-1"');
         expect(rendered.proposals).not.toContain('<div class="proposal-item"');
         expect(rendered.proposals).not.toMatch(/onclick=/);
         expect(rendered.proposals.match(/<button\b/g)).toHaveLength(2);

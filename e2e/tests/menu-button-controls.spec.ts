@@ -89,6 +89,20 @@ test('global 3D mode keeps the selected parcel while inspecting its unapplied de
   await expect(page.locator('.three-mode-isolation-banner')).toContainText('Selected parcel');
   await expect.poll(() => page.evaluate(() => (window as any).getThreeSceneSummary().isolatedProposal)).toBe(false);
   await expect.poll(() => page.evaluate(() => Math.abs((window as any).map.getCenter().lat - 45.80025))).toBeLessThan(0.0001);
+  const parcelSection = page.locator('#three-click-stack .click-stack__section[data-kind="parcels"]');
+  await parcelSection.locator('[data-action="row"]').click();
+  await expect(parcelSection).toHaveClass(/is-expanded/);
+  await expect(page.locator('.three-mode-isolation-banner')).toContainText('Selected parcel');
+  await page.getByRole('button', { name: 'Exit this view', exact: true }).click();
+  await expect(page.locator('.three-mode-isolation-banner')).toBeHidden();
+  await page.locator('#layers-button').click();
+  const sound = page.locator('#model-layer-controls label').filter({ hasText: 'City sounds' }).locator('input');
+  await sound.check();
+  await expect(sound).toBeChecked();
+  expect(await page.evaluate(() => (window as any).PersistentStorage.getItem('cb_3d_sound_enabled'))).toBe('1');
+  await sound.uncheck();
+  await expect(sound).not.toBeChecked();
+  expect(await page.evaluate(() => (window as any).PersistentStorage.getItem('cb_3d_sound_enabled'))).toBe('0');
 });
 
 test('parcel section Compare opens both proposals and Details follows the chosen side', async ({ mockApi: page }) => {

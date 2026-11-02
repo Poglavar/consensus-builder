@@ -1,8 +1,9 @@
 // Purpose: the supporting pages from the screen (actor explorer, transaction explorer, lens console,
 // decks, coverage report, hackathon demo): their reads, filters and actions against mocked services.
-import { selectNativeOption } from '../helpers/controls';
+import { openAndClosePopup, selectNativeOption } from '../helpers/controls';
 import { test, expect } from '../helpers/fixtures';
 import { cidOfObject } from '../helpers/mocks/shared-server';
+import { openCity } from '../helpers/runtime';
 
 // Agreements and designs are named by their CIDs (plan-design-agreement.md, M2/M3).
 const AGREEMENT_CID = cidOfObject({ schema: 'agreement/v1', title: 'Supporting pages agreement' });
@@ -17,6 +18,17 @@ const json = (route: any, body: unknown, status = 200, headers: Record<string, s
 });
 
 test.describe('Supporting pages @core', () => {
+  test('Settings opens the existing user guide in a new page', async ({ mockApi: page }) => {
+    await openCity(page);
+    await page.locator('#settings-button').click();
+    const guide = page.locator('#settings-sheet [data-section="help"] a[href="how-to-use.html"]');
+    await expect(guide).toBeVisible();
+    await openAndClosePopup(page, () => guide.click(), async popup => {
+      await expect(popup).toHaveURL(/\/how-to-use\.html$/);
+      await expect(popup.getByRole('heading', { name: 'How to use', exact: true })).toBeVisible();
+    });
+  });
+
   test('actor explorer filters activity and opens run provenance', async ({ mockApi: page }) => {
     const events = [
       {

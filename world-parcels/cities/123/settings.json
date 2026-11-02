@@ -59,7 +59,7 @@
           "attribution": "GEOSA · National Geospatial Platform NDM Land Parcels"
         },
         "buildings": {
-          "source": "overture-tiles"
+          "sources": [{ "id": "osm" }]
         },
         "sidebar": {
           "disabledSections": [

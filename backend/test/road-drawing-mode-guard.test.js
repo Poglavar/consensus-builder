@@ -107,6 +107,7 @@ function sharedEditorForButtons(buttons, extras = {}) {
         return {
             children: [], style: {}, attributes: {}, hidden: false, disabled: false,
             classList: { add: vi.fn(), remove: vi.fn(), toggle: vi.fn() },
+            focus() { document.activeElement = this; },
             appendChild(child) { child.remove?.(); child.parentNode = this; this.children.push(child); return child; },
             remove() {
                 const children = this.parentNode?.children || [];

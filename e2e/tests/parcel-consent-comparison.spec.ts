@@ -2,7 +2,7 @@
 // carries no consent, terms or funding of its own (plan-design-agreement.md, M2), so the comparison
 // no longer has those rows.
 import { test, expect } from '../helpers/fixtures';
-import { openCity, PARCEL_ID } from '../helpers/runtime';
+import { openCity, openParcel, PARCEL_ID } from '../helpers/runtime';
 import { isApiDataRequest } from '../helpers/mocks/api-routes';
 import { sampleParcels } from '../helpers/mocks/parcel-data';
 
@@ -18,7 +18,7 @@ test('comparison states each design\'s recorded execution and withdrawal', async
     })) } });
   });
   await openCity(page);
-  await page.evaluate(async parcelId => {
+  const proposalIds = await page.evaluate(async parcelId => {
     const w = window as any;
     await w.i18n.setLanguage('en');
     const parcelSet = { parcelSource: w.CadastralParcelRepository.get(parcelId).properties.parcelSource };
@@ -36,8 +36,24 @@ test('comparison states each design\'s recorded execution and withdrawal', async
     const cancelled = all.find((p: any) => p.proposalId === withdrawn);
     cancelled.lifecycleStatus = 'Cancelled';
     cancelled.applied = true;
-    w.ParcelCompare.open(parcelId, [executed, withdrawn]);
+    return { executed, withdrawn };
   }, PARCEL_ID);
+  await openParcel(page, 'proposals', PARCEL_ID);
+  await page.locator('#click-stack .click-stack__section[data-kind="parcels"] .click-stack__content-tabs')
+    .getByRole('tab', { name: 'Designs (2)', exact: true }).click();
+  const proposalList = page.locator('#proposals-content .parcel-proposals-list');
+  await expect(proposalList.locator('.proposal-item')).toHaveCount(2);
+  const compareBar = page.locator('#proposals-content .parcel-compare-bar');
+  const compare = compareBar.getByRole('button', { name: 'Compare', exact: true });
+  await expect(compare).toBeDisabled();
+  const executedChoice = proposalList.locator(`.proposal-item[data-proposal-id="${proposalIds.executed}"] .proposal-item-compare input`);
+  const withdrawnChoice = proposalList.locator(`.proposal-item[data-proposal-id="${proposalIds.withdrawn}"] .proposal-item-compare input`);
+  await executedChoice.check();
+  await expect(compare).toBeDisabled();
+  await withdrawnChoice.check();
+  await expect(compare).toBeEnabled();
+  await expect(compareBar.locator('.parcel-compare-bar__hint')).toHaveText('Two selected');
+  await compare.click();
   const dialog = page.locator('#parcel-compare-dialog');
   const cell = (name: string) => dialog.locator(`[data-compare-cell="${name}"] .parcel-compare__value`);
   await expect(dialog).toBeVisible();

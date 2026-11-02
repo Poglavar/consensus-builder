@@ -59,7 +59,7 @@
           "attribution": "<a href=\"https://map.land.gov.bd/\">Ministry of Land, Bangladesh · Smart Bhumi Naksha</a> · 071-Brahmanbaria mouza survey plots only; citywide coverage unverified"
         },
         "buildings": {
-          "source": "overture-tiles"
+          "sources": [{ "id": "osm" }]
         },
         "sidebar": {
           "disabledSections": [

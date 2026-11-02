@@ -6,7 +6,7 @@ for (const width of [360, 390, 1280]) {
     await page.setViewportSize({ width, height: 844 });
     await page.route('**/__relationship-layout', route => route.fulfill({
       contentType: 'text/html',
-      body: `<!doctype html><html><head>
+      body: `<!doctype html><html><head><meta charset="utf-8">
         <link rel="stylesheet" href="/css/tokens.css">
         <link rel="stylesheet" href="/css/primitives.css">
         <link rel="stylesheet" href="/css/panels.css">

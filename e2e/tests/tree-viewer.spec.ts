@@ -1,5 +1,5 @@
 // Exercise the standalone tree viewer's controls and failure recovery with bounded source fixtures.
-import { test, expect } from '@playwright/test';
+import { test, expect } from '../helpers/fixtures';
 
 const data = { type: 'FeatureCollection', features: [
   { type: 'Feature', geometry: { type: 'Point', coordinates: [15.9873677, 45.8007523] }, properties: { sifra: 101 } }

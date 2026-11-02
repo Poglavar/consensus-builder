@@ -25,6 +25,16 @@ async function searchFor(page: any, query: string) {
   return input;
 }
 
+test('Close search restores the map search opener on a narrow screen', async ({ mockApi: page }) => {
+  await page.setViewportSize({ width: 360, height: 800 });
+  await openCity(page);
+  await searchFor(page, 'River');
+  await expect(page.locator('#map-search-input')).toBeVisible();
+  await page.getByRole('button', { name: 'Close search', exact: true }).click();
+  await expect(page.locator('#map-search-input')).toBeHidden();
+  await expect(page.locator('.map-search__icon-button')).toBeVisible();
+});
+
 test('typing reuses the city catalogue and resolves source settings only for place matches', async ({ mockApi: page }) => {
   await page.route('https://photon.komoot.io/api/**', route => route.fulfill({ json: { features: [{
     geometry: { coordinates: [15.975, 45.81] },
@@ -103,7 +113,7 @@ test('Enter opens the matching plan while the geocoder is still pending', async 
     // Press immediately: catalog metadata has not arrived yet, and Photon remains blocked.
     await input.press('Enter');
     await expect(page).toHaveURL(new RegExp(`/plans/${cids[0]}`));
-    await expect.poll(() => page.evaluate(() => (window as any).NamedPlans?.current?.cid), { timeout: 30_000 }).toBe(cids[0]);
+    await page.waitForFunction(cid => (window as any).NamedPlans?.current?.cid === cid, cids[0], { timeout: 30_000 });
   } finally { release(); }
 });
 

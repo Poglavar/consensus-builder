@@ -59,7 +59,7 @@
           "attribution": "Jharkhand cadastral map / RANCHI layer · GAIL/BAPL service at pitarcgis.pipetrakit.com"
         },
         "buildings": {
-          "source": "overture-tiles"
+          "sources": [{ "id": "osm" }]
         },
         "sidebar": {
           "disabledSections": [

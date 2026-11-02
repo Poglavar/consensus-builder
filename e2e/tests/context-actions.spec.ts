@@ -1,5 +1,5 @@
 import { test, expect } from '../helpers/fixtures';
-import { clickMapPoint, createSpace, openCity, openParcel, proposalState, showProposal, PARCEL_ID, closeParcel, runSelectionCommand, parcelTab } from '../helpers/runtime';
+import { clickMapPoint, createSpace, openCity, openParcel, proposalState, showProposal, PARCEL_ID, closeParcel, runSelectionCommand, parcelTab, expandStackSection } from '../helpers/runtime';
 import { sampleParcels } from '../helpers/mocks/parcel-data';
 
 const SECOND_PARCEL_ID = 'HR-335754-1235';
@@ -207,10 +207,12 @@ test.describe('Map context actions @features', () => {
     }, PARCEL_ID);
     expect(replacements.length).toBeGreaterThan(0);
     const before = await page.evaluate(() => (window as any).proposalStorage.getAllProposals().length);
-    await page.evaluate(id => {
-      const w = window as any;
-      w.__claimsUi.openBaseParcel(id);
-    }, PARCEL_ID);
+    await clickMapPoint(page, 15.9822, 45.80025);
+    await expandStackSection(page, 'designs');
+    await page.locator('#click-stack [data-page="relation-parcels"]').click();
+    await page.locator(`#click-stack .click-stack__open[data-kind="parcels"][data-id="${PARCEL_ID}"]`).click();
+    const parcels = page.locator('#click-stack .click-stack__section[data-kind="parcels"]');
+    await expect(parcels).toBeVisible();
     const panel = page.locator('#parcel-info-panel');
     await parcelTab(page, 'info-tab').click();
     await expect(panel.locator('[data-parcel-tab-id="info-tab"]')).toHaveAttribute('aria-selected', 'true');
