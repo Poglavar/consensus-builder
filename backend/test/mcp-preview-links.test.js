@@ -55,6 +55,18 @@ describe('temporary hosted MCP object references', () => {
         const plan = { schema: 'plan/v1', title: 'Source-free', designCids: designs.map(cidOfObject), view: {} };
         const preview = store.create({ plan, designs, designSources: {} });
         expect(await store.resolve(preview.draftRef)).toEqual({ plan, designs, parcelSourceId: null, designSources: {} });
+        await expect(links.load(preview.previewUrl, { fetchImpl: fetchFrom(store), cidOf: cidOfObject }))
+            .resolves.toEqual({ plan, designs, parcelSourceId: null, designSources: { [cidOfObject(designs[0])]: null } });
+    });
+    it.each([null, 'ground-a'])('loads a plan with omitted member sources and collection source %s', async parcelSourceId => {
+        const store = storeOf(), designs = [design('Existing layout'), design('New urban rule')];
+        const [layoutCid, ruleCid] = designs.map(cidOfObject);
+        const plan = { schema: 'plan/v1', title: 'Mixed sources', designCids: [layoutCid, ruleCid], view: {} };
+        const designSources = { [ruleCid]: 'ground-b' };
+        const preview = store.create({ plan, designs, parcelSourceId, designSources });
+        await expect(store.resolve(preview.draftRef)).resolves.toEqual({ plan, designs, parcelSourceId, designSources });
+        await expect(links.load(preview.previewUrl, { fetchImpl: fetchFrom(store), cidOf: cidOfObject }))
+            .resolves.toEqual({ plan, designs, parcelSourceId, designSources: { [layoutCid]: parcelSourceId, [ruleCid]: 'ground-b' } });
     });
     it('keeps a large plan as references and fetches member objects individually with CID checks', async () => {
         const store = storeOf(), designs = Array.from({ length: 20 }, (_, i) => design(`Building ${i}`));

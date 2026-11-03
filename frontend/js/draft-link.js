@@ -53,7 +53,8 @@
         for (const member of row.designs) {
             const child = await get(member.draftRef, member.cid);
             if (child.record.schema !== 'design/v1' || (!namedPlan && child.parcelSourceId !== row.parcelSourceId)
-                || (row.designSources && child.parcelSourceId !== row.designSources[member.cid])) throw new Error('Invalid private collection member');
+                || (row.designSources && Object.hasOwn(row.designSources, member.cid)
+                    && child.parcelSourceId !== row.designSources[member.cid])) throw new Error('Invalid private collection member');
             designs.push(child.record);
             designSources[member.cid] = child.parcelSourceId;
         }
