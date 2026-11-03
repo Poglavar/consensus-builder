@@ -150,7 +150,7 @@ describe('parcel-layout UI state', () => {
         expect(w.session().setHint.calls.at(-1)).toEqual(['Edit boundaries (nodes) active']);
         expect(styles).toContain('.on-map-editor.is-collapsed .reparcel-secondary-controls { display: none; }');
         expect(styles).toMatch(/\.on-map-editor__tools\.reparcel-tools-map \{[^}]*width: 400px;[^}]*max-width: min\(400px,/);
-        expect(styles).toMatch(/\.reparcel-geometry-tools \{[^}]*grid-template-columns: repeat\(2, minmax\(0, 1fr\)\);/);
+        expect(styles).toMatch(/\.reparcel-geometry-tools \{[^}]*grid-template-columns: repeat\(4, minmax\(0, 1fr\)\);/);
         expect(styles).toMatch(/\.reparcel-persistent-controls \{[^}]*grid-template-columns: repeat\(2, minmax\(0, 1fr\)\);/);
         // Phones: edge to edge, the mode strip hangs from the top-left (css/map.css).
         expect(styles).toMatch(/\.on-map-editor__tools\.reparcel-tools-map \{[^}]*left: 12px;[^}]*width: calc\(100vw - 24px\);/);

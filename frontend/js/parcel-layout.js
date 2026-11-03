@@ -479,7 +479,16 @@
                     <fieldset class="reparcel-controls" data-reparcel-alg-group aria-label="${t('reparcellization.modal.layoutTitle', 'Starting layout')}" aria-disabled="false">
                       <div class="reparcel-secondary-controls" data-reparcel-secondary-controls>
                         <div class="cb-segmented reparcel-alg-options" role="radiogroup" aria-label="${t('reparcellization.modal.layoutTitle', 'Starting layout')}">${buildAlgorithmRadios(state.algorithm)}</div>
-                        ${plotCountFieldHtml()}
+                        <div class="reparcel-count-row">
+                            ${plotCountFieldHtml()}
+                            <div class="reparcel-file-tools">
+                                <label class="btn btn-icon" title="${uploadLabel}" aria-label="${uploadLabel}">
+                                    <i class="fa-solid fa-folder-open" aria-hidden="true"></i>
+                                    <input type="file" accept=".geojson,.json,application/geo+json,application/json" data-reparcel-upload aria-label="${uploadLabel}" hidden>
+                                </label>
+                                <button type="button" class="btn btn-icon" data-reparcel-download title="${downloadLabel}" aria-label="${downloadLabel}"><i class="fa-solid fa-download" aria-hidden="true"></i></button>
+                            </div>
+                        </div>
                         <div class="reparcel-courtyard-tools" data-reparcel-courtyard-tools hidden>
                             <span class="reparcel-courtyard-label">${t('parcelLayout.editor.courtyard', 'Courtyard')}</span>
                             <button type="button" class="btn" data-reparcel-courtyard-building>${t('reparcellization.modal.courtyardFromBuilding', 'From a building block')}</button>
@@ -492,13 +501,6 @@
                                     ${tool('data-reparcel-line aria-pressed="false"', 'reparcellization.modal.drawLine', 'Draw a line', 'fa-slash')}
                                     ${tool('data-reparcel-erase aria-pressed="false"', 'reparcellization.modal.eraseEdge', 'Erase a boundary', 'fa-eraser')}
                                     ${tool('data-reparcel-nodes aria-pressed="false"', 'reparcellization.modal.editNodes', 'Edit boundaries (nodes)', 'fa-bezier-curve')}
-                                </div>
-                                <div class="reparcel-file-tools">
-                                    <label class="btn btn-icon" title="${uploadLabel}" aria-label="${uploadLabel}">
-                                        <i class="fa-solid fa-folder-open" aria-hidden="true"></i>
-                                        <input type="file" accept=".geojson,.json,application/geo+json,application/json" data-reparcel-upload aria-label="${uploadLabel}" hidden>
-                                    </label>
-                                    <button type="button" class="btn btn-icon" data-reparcel-download title="${downloadLabel}" aria-label="${downloadLabel}"><i class="fa-solid fa-download" aria-hidden="true"></i></button>
                                 </div>
                             </div>
                         </div>

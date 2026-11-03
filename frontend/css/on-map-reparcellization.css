@@ -79,8 +79,12 @@
 }
 
 .reparcel-alg-options {
-    flex-wrap: wrap;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-auto-rows: 1fr;
 }
+
+.reparcel-alg-option { justify-content: center; text-align: center; white-space: normal; }
 
 .reparcel-alg-option:has(input:disabled) {
     opacity: 0.5;
@@ -88,11 +92,18 @@
 }
 
 /* The number of equal plots, under the layouts; shown while Equal plots is the layout. */
-.reparcel-count-field {
+.reparcel-count-row {
     display: flex;
     align-items: center;
     gap: 8px;
     margin-top: 8px;
+}
+
+.reparcel-count-field {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
     color: var(--cb-text);
     font-size: var(--cb-text-sm);
 }
@@ -103,6 +114,7 @@
 
 .reparcel-count-input {
     width: 5em;
+    flex-shrink: 0;
     min-height: 36px;
     font-variant-numeric: tabular-nums;
 }
@@ -150,7 +162,7 @@
 
 .reparcel-geometry-tools {
     display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: repeat(4, minmax(0, 1fr));
     gap: 6px;
     width: 100%;
 }
@@ -160,6 +172,8 @@
 .reparcel-file-tools {
     display: flex;
     gap: 6px;
+    margin-left: auto;
+    flex-shrink: 0;
 }
 
 .reparcel-draw-toolbar {
@@ -181,7 +195,7 @@
 /* The old plots are read-only: the layout tools stand down while they are shown. */
 .reparcel-old-plots-view .reparcel-edit-tools,
 .reparcel-old-plots-view .reparcel-alg-options,
-.reparcel-old-plots-view .reparcel-count-field {
+.reparcel-old-plots-view .reparcel-count-row {
     opacity: 0.4;
     pointer-events: none;
 }
@@ -379,12 +393,8 @@
 
     .on-map-reparcellization .on-map-editor__panel { max-height: min(32dvh, 280px); }
     .on-map-reparcellization .on-map-editor__hint { display: none; }
-    .reparcel-alg-options { flex-wrap: nowrap; gap: 4px; }
-    .reparcel-alg-option { flex: 1 1 0; padding: 4px; white-space: normal; text-align: center; font-size: 12px; }
-    .reparcel-legend-actions { flex-direction: row; overflow-x: auto; padding-bottom: 3px; }
-    .reparcel-geometry-tools { width: auto; }
-    .reparcel-geometry-tools > .btn { width: auto; }
-    .reparcel-file-tools { flex-shrink: 0; }
+    .reparcel-alg-options { gap: 4px; }
+    .reparcel-alg-option { padding: 4px; font-size: 12px; }
 
     .reparcel-newplots-list {
         max-height: min(24vh, 190px);

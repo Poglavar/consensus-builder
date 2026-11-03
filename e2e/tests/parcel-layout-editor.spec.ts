@@ -48,6 +48,26 @@ async function plotRows(editor: Locator): Promise<string[]> {
 const algorithm = (editor: Locator) => editor.locator('input[name="reparcel-algorithm"]:checked').inputValue();
 const chooseLayout = (editor: Locator, value: string) => editor.locator(`label.reparcel-alg-option:has(input[value="${value}"])`).click();
 
+async function expectCompactTools(editor: Locator) {
+  const rows = await editor.locator('.reparcel-alg-option').evaluateAll(buttons => buttons.map(button => {
+    const r = button.getBoundingClientRect();
+    return { y: Math.round(r.top), width: Math.round(r.width) };
+  }));
+  expect(rows).toHaveLength(4);
+  expect(new Set(rows.map(r => r.width)).size).toBe(1);
+  expect(rows[0].y).toBe(rows[1].y);
+  expect(rows[2].y).toBe(rows[3].y);
+  expect(rows[2].y).toBeGreaterThan(rows[0].y);
+  const drawingRows = await editor.locator('.reparcel-geometry-tools > button').evaluateAll(buttons =>
+    [...new Set(buttons.map(button => Math.round(button.getBoundingClientRect().top)))]);
+  expect(drawingRows).toHaveLength(1);
+  const count = await editor.locator('[data-parcel-layout-count]').boundingBox();
+  const fileTools = await editor.locator('.reparcel-file-tools').boundingBox();
+  expect(count).not.toBeNull(); expect(fileTools).not.toBeNull();
+  expect(fileTools!.x).toBeGreaterThan(count!.x + count!.width);
+  expect(Math.abs((fileTools!.y + fileTools!.height / 2) - (count!.y + count!.height / 2))).toBeLessThan(2);
+}
+
 // The one applied parcel layout, as stored.
 async function appliedLayout(page: Page): Promise<any> {
   await expect.poll(() => page.evaluate(() => (window as any).proposalStorage.getAllProposals()
@@ -137,7 +157,8 @@ test('the Build tile opens the editor on equal plots, and the plot count sets ho
   await expect(geometryTools).toHaveCount(4);
   const toolRows = await geometryTools.evaluateAll(buttons => [...new Set(buttons.map(button =>
     Math.round(button.getBoundingClientRect().top)))].length);
-  expect(toolRows).toBe(2);
+  expect(toolRows).toBe(1);
+  await expectCompactTools(editor);
   const undo = editor.getByRole('button', { name: 'Undo' });
   const redo = editor.getByRole('button', { name: 'Redo' });
   await expect(undo).toBeVisible();
@@ -194,6 +215,7 @@ test('the parcel-layout panel fits a narrow viewport without horizontal page ove
   expect(bounds!.width).toBeLessThanOrEqual(336);
   const overflow = await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth);
   expect(overflow).toBe(false);
+  await expectCompactTools(editor);
   await expect(editor.getByRole('button', { name: 'Undo' })).toBeVisible();
   await expect(editor.getByRole('button', { name: 'Redo' })).toBeVisible();
 });

@@ -440,7 +440,9 @@ test.describe('parcel-layout button controls @core', () => {
 
   test('Download plots saves the layout as GeoJSON that Upload GeoJSON reads back', async ({ mockApi: page }) => {
     const editor = await openLayoutEditor(page);
-    await editor.locator('[data-reparcel-upload]').setInputFiles({
+    const choosing = page.waitForEvent('filechooser');
+    await editor.locator('.reparcel-file-tools label').click();
+    await (await choosing).setFiles({
       name: 'two-plots.geojson', mimeType: 'application/geo+json', buffer: Buffer.from(JSON.stringify(TWO_PLOTS)),
     });
     await expect(status(editor)).toHaveText('Loaded 2 polygons from file.');
