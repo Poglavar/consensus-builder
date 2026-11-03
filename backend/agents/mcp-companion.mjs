@@ -217,7 +217,7 @@ export function registerMcpCompanion(server, { actions, handler, readOnly, disco
             }
             return actions.publishPlan(args);
         }));
-    server.registerTool('ugt_help', { description: 'Read workflow instructions or a tool input/output schema. Works in clients without resource support.',
+    server.registerTool('ugt_help', { description: 'Read workflow instructions, app navigation help (topic app), parcel layout editor help (topic app/parcel-layout), or a tool input/output schema. Works in clients without resource support.',
         inputSchema: z.object({ topic: z.string().max(100).default('workflow') }).strict(), annotations: readOnly }, handler(args => discovery.help(args)));
     server.registerTool('ugt_list_sources', { description: 'Discover sources by abstraction, city and location with bounded pagination. Include configuration/contracts only when preparing a custom source or inspecting an adapter.',
         inputSchema: z.object({ city: city.optional(), abstraction: z.string().max(80).optional(), sourceId: z.string().max(3507).optional(), adapterId: z.string().max(100).optional(), bbox: bbox.optional(),

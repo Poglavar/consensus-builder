@@ -13,7 +13,7 @@ plain textarea; nothing to build) and sees the result on the map at once, with U
 
 Decisions:
 - Changes land on the map at once, with Undo (one revision back per press). No preview/accept step.
-- Scope: private design drafting and editing, private agreement preparation for review, registered source discovery, and explicitly requested feedback to the private maintainer inbox. No publishing, proposing, voting, bets or wallet actions.
+- Scope: app and tool help, private design drafting and editing, private agreement preparation for review, registered source discovery, and explicitly requested feedback to the private maintainer inbox. No publishing, proposing, voting, bets or wallet actions.
 - Entry button: top-right header cluster, beside Layers.
 - Caps: global `$5/day`, `100 turns per IP per day`; both set in `ecosystem.config.cjs`.
 - `CHAT_PROVIDER` selects `anthropic` or `openai`. Without configuration it defaults to Anthropic/`claude-haiku-5-5`; the checked-in operator configuration explicitly selects OpenAI/`gpt-6-luna`. The paid eval below measures suitability.
@@ -55,6 +55,15 @@ agent (the list below) rather than worked around in the relay. A test asserts th
 is a subset of `MCP_HOSTED_SHARED_TOOLS`.
 
 ## Feedback and discovery
+
+App help uses the public `ugt_help` topics `app` and `app/parcel-layout`, backed by
+[App help](app-help.md). A turn includes the current map editor's identity; parcel layout also
+supplies its tab, starting layout, plot count, unsaved-change flag and active drawing tool. This is
+a status summary, not the unsaved geometry. While an editor is open, the relay offers and accepts
+only help, source discovery, cost lookup and clarification. The browser preserves the editor and
+blocks chat plan, navigation, selection and undo changes, including recovery after a failed turn.
+Finish or cancel editing to resume chat-driven changes. The same public help topics are available
+to external MCP agents; reorganizing the editor tabs adds no new authoring operation.
 
 The chat exposes `ugt_submit_feedback`, the same private inbox used by `feedback.html`. Submission
 requires the person's explicit request and actual report text. The relay supplies a deterministic

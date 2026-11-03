@@ -3,7 +3,7 @@ import { Client } from '@modelcontextprotocol/client';
 import { InMemoryTransport } from '@modelcontextprotocol/server';
 import { createUrbanGameTheoryMcpServer } from '../agents/mcp-server.mjs';
 import { MCP_HOSTED_SHARED_TOOLS, MCP_DEBUG_TOOLS } from '../agents/mcp-catalog.js';
-import { CHAT_TOOL_ALLOWLIST, injectPlanArgs, RELAY_TOOLS, restrictHelpTopic, STRIPPED_PARAMS, toModelTools } from '../chat/tool-catalog.js';
+import { ACTIVE_EDITOR_TOOL_ALLOWLIST, CHAT_TOOL_ALLOWLIST, injectPlanArgs, RELAY_TOOLS, restrictHelpTopic, STRIPPED_PARAMS, toModelTools } from '../chat/tool-catalog.js';
 
 describe('chat tool catalog', () => {
     it('is a subset of hosted tools and strips internal parameters', () => {
@@ -61,5 +61,12 @@ describe('chat tool catalog', () => {
     it('restricts help discovery to workflow, editing, or allowlisted tools', () => {
         expect(restrictHelpTopic({ topic: 'ugt_edit_plan' }).topic).toBe('ugt_edit_plan');
         expect(restrictHelpTopic({ topic: 'publishing' }).topic).toBe('workflow');
+        expect(restrictHelpTopic({ topic: 'app' }).topic).toBe('app');
+        expect(restrictHelpTopic({ topic: 'app/parcel-layout' }).topic).toBe('app/parcel-layout');
+    });
+    it('limits model-visible tools while an editor is active', () => {
+        const source = CHAT_TOOL_ALLOWLIST.map(name => ({ name, inputSchema: { type: 'object', properties: {} } }));
+        const names = toModelTools(source, { activeEditor: true }).map(tool => tool.name);
+        expect(names.sort()).toEqual([...ACTIVE_EDITOR_TOOL_ALLOWLIST].sort());
     });
 });

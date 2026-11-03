@@ -33,6 +33,26 @@ describe('tool-only MCP discovery', () => {
         expect(result.next.tool).toBe('ugt_help');
         expect(JSON.stringify(result).length).toBeLessThan(16_000);
     });
+    it('serves concise app and parcel-layout help and advertises both topics', () => {
+        const tools = fixture();
+        const app = tools.help({ topic: 'app' });
+        expect(app.topic).toBe('app');
+        expect(app.instructions).toMatch(/map search/);
+        expect(app.instructions).toMatch(/app\/parcel-layout/);
+
+        const layout = tools.help({ topic: 'app/parcel-layout' });
+        expect(layout.topic).toBe('app/parcel-layout');
+        for (const label of ['Editing', 'New parcels', 'Old parcels', 'Equal plots', 'Schelling plots', 'Keep existing borders', 'Draw freely',
+            'Undo point', 'GeoJSON', 'Before / After', 'Coverage', 'Done', 'Cancel']) {
+            expect(layout.instructions).toContain(label);
+        }
+        expect(layout.instructions).toMatch(/Old parcels.*read-only/s);
+        expect(layout.instructions).toMatch(/Undo.*Redo/);
+
+        const capabilities = tools.capabilities();
+        expect(capabilities.workflow.join(' ')).toContain('app/parcel-layout');
+        expect(capabilities.features).toContainEqual(expect.objectContaining({ feature: 'app-guides', topics: ['app', 'app/parcel-layout'] }));
+    });
     it('filters geography and adapter, then paginates without losing options or creating an endless next page', async () => {
         const tools = fixture();
         const first = markUntrusted(await tools.listSources({ city: 'london', bbox: [-0.2, 51.4, 0, 51.6], abstraction: 'parcels', adapterId: 'arcgis', limit: 1, includeConfiguration: true }));

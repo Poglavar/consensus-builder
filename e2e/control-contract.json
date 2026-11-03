@@ -5490,19 +5490,30 @@
       "controlType": "button"
     },
     {
-      "id": "control-9af0aa08264711-1",
+      "id": "control-ee17acdb3b4111-1",
       "source": "js/parcel-layout.js",
-      "markup": "<button type=\"button\" role=\"tab\" class=\"cb-tab\" id=\"reparcel-tab-new\" aria-controls=\"reparcel-panel-new\" data-reparcel-plots-tab=\"new\" aria-selected=\"true\">"
+      "markup": "<button type=\"button\" role=\"tab\" class=\"cb-tab\" id=\"reparcel-tab-editing\" aria-controls=\"reparcel-panel-editing\" data-reparcel-plots-tab=\"editing\" aria-selected=\"true\">",
+      "interaction": "click",
+      "controlType": "button"
+    },
+    {
+      "id": "control-ab0bdbeae1ada2-1",
+      "source": "js/parcel-layout.js",
+      "markup": "<button type=\"button\" role=\"tab\" class=\"cb-tab\" id=\"reparcel-tab-new\" aria-controls=\"reparcel-panel-new\" data-reparcel-plots-tab=\"new\" aria-selected=\"false\">",
+      "interaction": "click",
+      "controlType": "button"
     },
     {
       "id": "control-9805d8164967b7-1",
       "source": "js/parcel-layout.js",
-      "markup": "<button type=\"button\" role=\"tab\" class=\"cb-tab\" id=\"reparcel-tab-old\" aria-controls=\"reparcel-panel-old\" data-reparcel-plots-tab=\"old\" aria-selected=\"false\">"
+      "markup": "<button type=\"button\" role=\"tab\" class=\"cb-tab\" id=\"reparcel-tab-old\" aria-controls=\"reparcel-panel-old\" data-reparcel-plots-tab=\"old\" aria-selected=\"false\">",
+      "interaction": "click",
+      "controlType": "button"
     },
     {
-      "id": "control-ca09700d052046-1",
+      "id": "control-13551445e73886-1",
       "source": "js/parcel-layout.js",
-      "markup": "<button type=\"button\" class=\"btn btn-sm reparcel-compare-btn\" data-reparcel-compare aria-pressed=\"false\" hidden>",
+      "markup": "<button type=\"button\" class=\"btn btn-sm reparcel-compare-btn\" data-reparcel-compare aria-pressed=\"false\">",
       "interaction": "click",
       "controlType": "button"
     },

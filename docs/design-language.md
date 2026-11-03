@@ -291,6 +291,11 @@ tables belong in a centred or full-screen dialog, never in a wider right column;
 utilities and centred dialogs are separate presentation types. On a phone these surfaces keep the
 shared resize handle and viewport limits.
 
+Lay out parcels uses one right-side editor panel. Its Editing tab contains the layout and drawing
+controls; New parcels lists the editable result; Old parcels shows the read-only input parcels.
+Switching between Editing and New parcels preserves the active tool and undo history. The shared
+header collapses that panel's body, leaving Done and Cancel available in its footer.
+
 ## Element names
 
 The names to use for the shell's elements in follow-up discussion.

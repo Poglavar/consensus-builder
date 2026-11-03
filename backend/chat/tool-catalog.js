@@ -6,6 +6,9 @@ export const CHAT_TOOL_ALLOWLIST = Object.freeze([
     'ugt_validate_plan', 'ugt_inspect_plan', 'ugt_edit_plan',
     'ugt_draft_agreement', 'ugt_inspect_agreement', 'ugt_edit_agreement', 'ugt_submit_feedback'
 ]);
+// An open map editor is an unsaved workspace. Chat remains useful for answers, but may not
+// navigate, select, edit, undo or otherwise change the map until the editor is finished.
+export const ACTIVE_EDITOR_TOOL_ALLOWLIST = Object.freeze(['ugt_chat_cost', 'ugt_list_sources', 'ugt_help', 'ask_person']);
 
 const allowed = new Set(CHAT_TOOL_ALLOWLIST);
 export const STRIPPED_PARAMS = Object.freeze(['plan', 'expectedCid', 'when', 'buildout']);
@@ -19,9 +22,10 @@ export const RELAY_TOOLS = Object.freeze([
     { name: 'undo_last_agreement_change', description: 'Undo the last private agreement draft or terms revision.', input_schema: { type: 'object', properties: {}, additionalProperties: false } }
 ]);
 
-export function toModelTools(mcpTools = []) {
+export function toModelTools(mcpTools = [], { activeEditor = false } = {}) {
     const source = Array.isArray(mcpTools) ? mcpTools : mcpTools?.tools || [];
-    const tools = source.filter(tool => allowed.has(tool.name)).map(tool => {
+    const permitted = activeEditor ? new Set(ACTIVE_EDITOR_TOOL_ALLOWLIST) : allowed;
+    const tools = source.filter(tool => permitted.has(tool.name)).map(tool => {
         const schema = structuredClone(tool.inputSchema || tool.input_schema || { type: 'object', properties: {} });
         delete schema.$schema;
         schema.type = 'object';
@@ -35,7 +39,7 @@ export function toModelTools(mcpTools = []) {
         }
         return { name: tool.name, description: tool.description || '', input_schema: schema };
     });
-    tools.push(...structuredClone(RELAY_TOOLS));
+    tools.push(...structuredClone(activeEditor ? RELAY_TOOLS.filter(tool => permitted.has(tool.name)) : RELAY_TOOLS));
     if (tools.length) tools.at(-1).cache_control = { type: 'ephemeral' };
     return tools;
 }
@@ -67,5 +71,5 @@ export function injectPlanArgs(name, input = {}, plan = null, agreement = null) 
 
 export function restrictHelpTopic(input = {}) {
     const topic = String(input.topic || 'workflow');
-    return { ...input, topic: ['workflow', 'editing', 'schemes'].includes(topic) || allowed.has(topic) ? topic : 'workflow' };
+    return { ...input, topic: ['workflow', 'editing', 'schemes', 'app', 'app/parcel-layout'].includes(topic) || allowed.has(topic) ? topic : 'workflow' };
 }

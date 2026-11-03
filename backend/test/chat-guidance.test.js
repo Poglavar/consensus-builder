@@ -11,4 +11,10 @@ describe('chat context boundaries', () => {
         expect(dataOf(contextBlock({}, { cid: 'later' }, [], agreement)).agreement.planMatchesWorkingPlan).toBe(false);
         expect(dataOf(contextBlock({}, null, [], agreement)).agreement.planMatchesWorkingPlan).toBe(false);
     });
+    it('includes only the active editor summary, never its unsaved geometry', () => {
+        const activeEditor = { kind: 'parcel-layout', tab: 'editing', algorithm: 'manual', plotCount: 3, dirty: true, drawing: 'polygon', geometry: { secret: 'unsaved-shape' } };
+        const text = contextBlock({ activeEditor });
+        expect(dataOf(text).activeEditor).toEqual({ kind: 'parcel-layout', tab: 'editing', algorithm: 'manual', plotCount: 3, dirty: true, drawing: 'polygon' });
+        expect(text).not.toContain('unsaved-shape');
+    });
 });

@@ -16,6 +16,9 @@ import { openSse } from '../chat/sse.js';
 const languages = z.enum(['en','hr','sr','es','ar','fr','pt']);
 const contextSchema = z.object({
     city: z.string().min(1).max(100), parcelSourceId: z.string().max(3507).optional(),
+    activeEditor: z.object({ kind: z.string().min(1).max(80), tab: z.enum(['editing', 'new', 'old']).optional(),
+        algorithm: z.enum(['equal', 'schelling', 'amend', 'manual']).optional(), plotCount: z.number().int().min(0).max(1000).optional(),
+        dirty: z.boolean().optional(), drawing: z.string().max(40).optional() }).optional(),
     view: z.record(z.string(), z.unknown()).optional(),
     mapContext: z.object({ parcelSourceId: z.string().max(3507).nullable(), display: z.object({ parcelIds: z.boolean(), roadTracks: z.boolean().optional() }),
         visibleParcels: z.array(z.object({ parcelId: z.string().min(1).max(250), label: z.string().min(1).max(250), point: z.tuple([z.number().min(-180).max(180), z.number().min(-85).max(85)]) })).max(500),

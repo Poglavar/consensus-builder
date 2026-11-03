@@ -148,11 +148,32 @@ async function crossingLine(page: Page): Promise<Array<{ x: number; y: number }>
   });
 }
 
-test('the Build tile opens the editor on equal plots, and the plot count sets how many plots Done applies', async ({ mockApi: page }) => {
+test('the Build tile opens the editor on equal plots, and the plot count sets how many plots Done applies', async ({ mockApi: page }, testInfo) => {
   await page.setViewportSize({ width: 1280, height: 860 });
   const editor = await openLayoutEditor(page);
-  const tools = page.locator('.on-map-editor__tools.reparcel-tools-map');
+  const tools = editor.locator('.on-map-editor__panel');
   await expect(tools).toHaveCSS('width', '400px');
+  await expect(editor.locator('.on-map-editor__tools')).toBeHidden();
+  await expect(editor.getByRole('tab', { name: 'Editing', exact: true })).toHaveAttribute('aria-selected', 'true');
+  await expect(editor.getByRole('tab', { name: 'New parcels', exact: true })).toBeVisible();
+  await expect(editor.getByRole('tab', { name: 'Old parcels', exact: true })).toBeVisible();
+  const toggle = editor.getByRole('button', { name: 'Hide controls', exact: true });
+  await toggle.focus();
+  await toggle.press('Enter');
+  await expect(editor.locator('.on-map-editor__body')).toBeHidden();
+  await expect(editor.locator('[data-reparcel-commit]')).toBeVisible();
+  await expect(page.locator('.reparcel-plot-number')).toHaveCount(2);
+  await editor.getByRole('button', { name: 'Show controls', exact: true }).press('Enter');
+  await expect(editor.locator('#reparcel-panel-editing')).toBeVisible();
+  await editor.getByRole('tab', { name: 'Editing', exact: true }).focus();
+  await page.keyboard.press('ArrowRight');
+  await expect(editor.getByRole('tab', { name: 'New parcels', exact: true })).toBeFocused();
+  await expect(editor.locator('#reparcel-panel-new')).toBeVisible();
+  await page.keyboard.press('End');
+  await expect(editor.getByRole('tab', { name: 'Old parcels', exact: true })).toBeFocused();
+  await page.keyboard.press('Home');
+  await expect(editor.locator('#reparcel-panel-editing')).toBeVisible();
+  await attachEditorScreenshot(page, testInfo, 'single-panel-desktop.png');
   const geometryTools = editor.locator('.reparcel-geometry-tools > button');
   await expect(geometryTools).toHaveCount(4);
   const toolRows = await geometryTools.evaluateAll(buttons => [...new Set(buttons.map(button =>
@@ -205,23 +226,25 @@ test('the Build tile opens the editor on equal plots, and the plot count sets ho
   expect(layout.approvalConfig).toBeUndefined();
 });
 
-test('the parcel-layout panel fits a narrow viewport without horizontal page overflow', async ({ mockApi: page }) => {
+test('the parcel-layout panel fits a narrow viewport without horizontal page overflow', async ({ mockApi: page }, testInfo) => {
   await page.setViewportSize({ width: 360, height: 800 });
   const editor = await openLayoutEditor(page);
-  const tools = page.locator('.on-map-editor__tools.reparcel-tools-map');
+  const tools = editor.locator('.on-map-editor__panel');
   await expect(tools).toBeVisible();
   const bounds = await tools.boundingBox();
   expect(bounds).not.toBeNull();
-  expect(bounds!.width).toBeLessThanOrEqual(336);
+  expect(bounds!.width).toBeLessThanOrEqual(360);
   const overflow = await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth);
   expect(overflow).toBe(false);
   await expectCompactTools(editor);
   await expect(editor.getByRole('button', { name: 'Undo' })).toBeVisible();
   await expect(editor.getByRole('button', { name: 'Redo' })).toBeVisible();
+  await attachEditorScreenshot(page, testInfo, 'single-panel-phone.png');
 });
 
 test('a numbered plot button pins and releases that plot highlight', async ({ mockApi: page }) => {
   const editor = await openLayoutEditor(page);
+  await editor.getByRole('tab', { name: 'New parcels', exact: true }).click();
   const pick = editor.locator('[data-reparcel-newplots-table] .reparcel-newplot-row .reparcel-plot-pick').first();
   await expect(pick).toHaveAccessibleName('1');
   await expect(pick).toHaveAttribute('aria-pressed', 'false');

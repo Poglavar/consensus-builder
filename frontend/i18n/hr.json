@@ -9194,7 +9194,8 @@
       "agreement": "Pripremi privatni sporazum za trenutačni plan.",
       "feedback": "Pošalji povratnu informaciju o značajci koja bi pomogla.",
       "sources": "Koji su izvori čestica i zgrada dostupni u ovom gradu?",
-      "affordableHousing": "Istraži čestice blizu javnog prijevoza za priuštivo stanovanje."
+      "affordableHousing": "Istraži čestice blizu javnog prijevoza za priuštivo stanovanje.",
+      "tools": "Objasni mi otvoreni alat i kako koristiti njegove opcije."
     },
     "reviewAgreement": "Pregledaj sporazum",
     "agreementStale": "Ovaj je sporazum za stariju verziju plana. Zatražite novi sporazum za trenutačni plan.",

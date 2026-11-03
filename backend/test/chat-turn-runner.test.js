@@ -1,12 +1,28 @@
 import { describe, expect, it, vi } from 'vitest';
 import { runTurn } from '../chat/turn-runner.js';
 import { contextBlock } from '../chat/system-prompt.js';
+import { createMcpDiscoveryTools } from '../agents/mcp-discovery.js';
 
 const tool = (name, input = {}, id = 't1') => ({ type: 'tool_use', id, name, input });
 const model = (...responses) => vi.fn(async () => responses.shift());
 const base = { conversation: {}, text: 'make a place', context: { city: 'london', language: 'en' }, prices: { input: 1, output: 2, cache_read: 0.1, cache_creation: 0.5 }, mcpTools: { tools: [{ name: 'ugt_draft_space', description: 'Draft', inputSchema: { type: 'object', properties: { plan: { type: 'string' } } } }] } };
 
 describe('chat turn runner', () => {
+    it('fetches real parcel-layout app help before answering a tool-usage question', async () => {
+        const discovery = createMcpDiscoveryTools({ read: { request: vi.fn() } });
+        const callModel = vi.fn(async request => {
+            if (callModel.mock.calls.length === 1) return { content: [tool('ugt_help', { topic: 'app/parcel-layout' })] };
+            expect(request.system).toContain('app usage, interface controls, tool help');
+            const history = JSON.stringify(request.messages);
+            for (const label of ['Editing', 'New parcels', 'Old parcels', 'Done', 'Cancel']) expect(history).toContain(label);
+            return { content: [{ type: 'text', text: 'Use the Editing tab to change the layout. Done saves it; Cancel exits.' }] };
+        });
+        const callTool = vi.fn(async (name, args) => ({ structuredContent: discovery.help(args) }));
+        const result = await runTurn({ ...base, text: 'How do I use the parcel layout editor?', callModel, callTool,
+            mcpTools: { tools: [{ name: 'ugt_help', description: 'Read app and tool help.', inputSchema: { type: 'object', properties: { topic: { type: 'string' } } } }] } });
+        expect(callTool).toHaveBeenCalledWith('ugt_help', { topic: 'app/parcel-layout' }, expect.any(Object));
+        expect(result.outcome).toMatchObject({ type: 'reply', text: expect.stringContaining('Done saves it') });
+    });
     it('advances injected navigation state between tools and uses the selected site for drafting', async () => {
         const selection = { parcelSourceId: 'source', focusParcelId: 'p2', parcelIds: ['p1', 'p2'], active: false };
         const view = { at: '51.5,-0.1,18' };
@@ -100,6 +116,33 @@ describe('chat turn runner', () => {
         expect(result.messages.at(-1).content[0]).toMatchObject({ type: 'tool_result', tool_use_id: 't1' });
         expect(result.steps).toContainEqual(expect.objectContaining({ tool: 'ask_person', ok: true }));
         expect(emit).toHaveBeenCalledWith('step', expect.objectContaining({ tool: 'ask_person', ok: true, summary: 'ask person completed' }));
+    });
+    it('keeps an active editor help-only even when the model requests undo or plan edits', async () => {
+        const current = { draftRef: 'http://localhost/current', cid: 'current' }, previous = { draftRef: 'http://localhost/previous', cid: 'previous' };
+        const responses = [
+            { content: [tool('undo_last_change')] },
+            { content: [tool('ugt_edit_plan', { title: 'Overwritten' })] },
+            { content: [{ type: 'text', text: 'Finish or cancel the editor before changing the plan.' }] }
+        ];
+        const callModel = vi.fn(async request => {
+            expect(request.tools.map(item => item.name).sort()).toEqual(['ask_person', 'ugt_chat_cost', 'ugt_help', 'ugt_list_sources'].sort());
+            return responses.shift();
+        });
+        const callTool = vi.fn();
+        const result = await runTurn({ ...base,
+            conversation: { plan: current, planHistory: [previous] },
+            context: { city: 'london', activeEditor: { kind: 'parcel-layout', tab: 'editing', dirty: true } },
+            mcpTools: { tools: ['ugt_help', 'ugt_list_sources', 'ugt_chat_cost', 'ugt_edit_plan'].map(name => ({ name, inputSchema: { type: 'object', properties: {} } })) },
+            callModel, callTool
+        });
+        expect(callTool).not.toHaveBeenCalled();
+        expect(result.plan).toEqual(current);
+        expect(result.planHistory).toEqual([previous]);
+        expect(result.planChanged).toBe(false);
+        expect(result.outcome.text).toContain('Finish or cancel');
+        const results = result.messages.flatMap(message => Array.isArray(message.content) ? message.content : []).filter(block => block.type === 'tool_result');
+        expect(results).toHaveLength(2);
+        expect(results.map(block => JSON.parse(block.content).code)).toEqual(['editor-active', 'editor-active']);
     });
     it('refuses a non-allowlisted tool before MCP and computes cached token cost', async () => {
         const callModel = model({ content: [tool('ugt_publish_design')] }, { content: [{ type: 'text', text: 'Not available.' }], usage: { input_tokens: 10, output_tokens: 2, cache_read_input_tokens: 100, cache_creation_input_tokens: 20 } });

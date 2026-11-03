@@ -15,6 +15,7 @@
         root.pendingParcelLayout = null;
     }
     root.openParcelLayoutEditor = editor.openParcelLayoutEditor;
+    root.getParcelLayoutEditorContext = editor.getEditorContext;
 })(typeof window !== 'undefined' ? window : globalThis, function createParcelLayoutEditor() {
     const uiState = window.__reparcellizationUiState;
     if (!uiState
@@ -107,7 +108,7 @@
         // 'old' shows those parcels alone and read-only — the cadastre is a given here.
         oldPlotsListEl: null,
         plotsTabBtns: [],
-        plotsTab: 'new',
+        plotsTab: 'editing',
         inputLayer: null,
         inputHighlightLayer: null,
         nodeEditWasActive: false,
@@ -429,7 +430,7 @@
         clearNodeHandles();
         clearInputHighlight();
         if (state.inputLayer) { try { state.inputLayer.remove(); } catch (_) { } state.inputLayer = null; }
-        state.plotsTab = 'new';
+        state.plotsTab = 'editing';
         state.plotsTabBtns = [];
         state.oldPlotsListEl = null;
         state.newPlotsList?.unbind(); state.oldPlotsList?.unbind();
@@ -519,21 +520,27 @@
         // The layout's output and its input: the plots it draws, and the parcels it redraws. Old plots
         // is a READ-ONLY view — the cadastre is the given, not something this editor edits.
         const sidePanel = `<section class="reparcel-legend-panel">
-                            <div class="cb-tabs reparcel-plots-tabs" role="tablist">
-                                <button type="button" role="tab" class="cb-tab" id="reparcel-tab-new" aria-controls="reparcel-panel-new" data-reparcel-plots-tab="new" aria-selected="true">${t('reparcellization.modal.newPlots', 'New plots')}</button>
-                                <button type="button" role="tab" class="cb-tab" id="reparcel-tab-old" aria-controls="reparcel-panel-old" data-reparcel-plots-tab="old" aria-selected="false">${t('reparcellization.modal.oldPlots', 'Old plots')}</button>
+                            <div class="cb-tabs cb-tabs--fill reparcel-plots-tabs" role="tablist" aria-label="${titleText}" aria-orientation="horizontal">
+                                <button type="button" role="tab" class="cb-tab" id="reparcel-tab-editing" aria-controls="reparcel-panel-editing" data-reparcel-plots-tab="editing" aria-selected="true">${t('onMapEditor.editing', 'Editing')}</button>
+                                <button type="button" role="tab" class="cb-tab" id="reparcel-tab-new" aria-controls="reparcel-panel-new" data-reparcel-plots-tab="new" aria-selected="false">${t('reparcellization.modal.newPlots', 'New parcels')}</button>
+                                <button type="button" role="tab" class="cb-tab" id="reparcel-tab-old" aria-controls="reparcel-panel-old" data-reparcel-plots-tab="old" aria-selected="false">${t('reparcellization.modal.oldPlots', 'Old parcels')}</button>
                             </div>
-                            <div class="reparcel-newplots-list" id="reparcel-panel-new" role="tabpanel" aria-labelledby="reparcel-tab-new" data-reparcel-newplots-table></div>
-                            <div class="reparcel-oldplots-list" id="reparcel-panel-old" role="tabpanel" aria-labelledby="reparcel-tab-old" data-reparcel-oldplots-table hidden></div>
+                            <div class="reparcel-tabpanel reparcel-edit-panel" id="reparcel-panel-editing" role="tabpanel" aria-labelledby="reparcel-tab-editing" data-reparcel-tab-panel="editing" tabindex="0">
+                                <div class="reparcel-tools">
+                                    <div class="reparcel-tools-header"><div class="reparcel-tools-heading"><p class="reparcel-subtitle" data-i18n-key="reparcellization.modal.subtitle" data-i18n-params='${JSON.stringify(subtitleParams)}'>${subtitleText}</p><span class="reparcel-active-mode" data-reparcel-active-mode hidden></span></div>
+                                    <button type="button" class="btn btn-sm reparcel-compare-btn" data-reparcel-compare aria-pressed="false">${t('mapCompare.toggle', 'Before / After')}</button></div>
+                                    ${algorithmControls}
+                                </div>
+                            </div>
+                            <div class="reparcel-tabpanel" id="reparcel-panel-new" role="tabpanel" aria-labelledby="reparcel-tab-new" data-reparcel-tab-panel="new" tabindex="0" hidden>
+                                <div class="reparcel-newplots-list" data-reparcel-newplots-table hidden></div>
+                            </div>
+                            <div class="reparcel-tabpanel" id="reparcel-panel-old" role="tabpanel" aria-labelledby="reparcel-tab-old" data-reparcel-tab-panel="old" tabindex="0" hidden>
+                                <div class="reparcel-oldplots-list" data-reparcel-oldplots-table hidden></div>
+                            </div>
                             <div class="reparcel-coverage" data-reparcel-coverage></div>
                             <div class="reparcel-status" data-reparcel-status></div>
                         </section>`;
-        const tools = document.createElement('div');
-        tools.className = 'reparcel-tools';
-        tools.innerHTML = `
-            <div class="reparcel-tools-header"><div class="reparcel-tools-heading"><p class="reparcel-subtitle" data-i18n-key="reparcellization.modal.subtitle" data-i18n-params='${JSON.stringify(subtitleParams)}'>${subtitleText}</p><span class="reparcel-active-mode" data-reparcel-active-mode hidden></span></div>
-            <button type="button" class="btn btn-sm reparcel-compare-btn" data-reparcel-compare aria-pressed="false" hidden>${t('mapCompare.toggle', 'Before / After')}</button></div>
-            ${algorithmControls}`;
         const content = document.createElement('div');
         content.className = 'reparcel-content';
         content.innerHTML = sidePanel;
@@ -544,12 +551,10 @@
             <button type="button" class="btn btn-primary" data-reparcel-commit disabled data-i18n-key="reparcellization.modal.done" data-i18n-attr="text">${doneLabel}</button>`;
         const session = window.OnMapEditor?.open?.({
             owner: 'parcel-layout',
-            reserveToolsSpace: true,
             id: window.getActiveProposalDesignDraft?.()?.id || 'parcel-layout',
             title: titleText,
             content,
             footer,
-            tools,
             modes: ['2d'],
             hints: { '2d': t('parcelLayout.editor.mapHint', 'Draw the plots here. Who receives which plot is decided later, in the agreement.') },
             handleEscape: false,
@@ -557,8 +562,6 @@
         });
         if (!session) return null;
         session.root.classList.add('on-map-reparcellization');
-        session.tools?.classList?.add('reparcel-tools-map');
-        if (session.tools) session.tools.hidden = false;
         state.session = session;
         state.modal = session.root;
         state.map = session.map;
@@ -1039,24 +1042,29 @@
     }
 
     function setPlotsTab(tab) {
-        const next = tab === 'old' ? 'old' : 'new';
+        const next = ['editing', 'new', 'old'].includes(tab) ? tab : 'editing';
         if (state.plotsTab === next) return;
+        const wasOld = state.plotsTab === 'old';
+        const isOld = next === 'old';
         state.plotsTab = next;
         (state.plotsTabBtns || []).forEach(btn => {
             const active = btn.getAttribute('data-reparcel-plots-tab') === next;
             btn.setAttribute('aria-selected', active ? 'true' : 'false');
         });
         window.CbTabs?.sync(state.modal?.querySelector('.reparcel-plots-tabs'));
+        state.modal?.querySelectorAll('[data-reparcel-tab-panel]').forEach(panel => {
+            panel.hidden = panel.getAttribute('data-reparcel-tab-panel') !== next;
+        });
         if (state.newPlotsListEl) state.newPlotsListEl.hidden = next !== 'new';
         if (state.oldPlotsListEl) state.oldPlotsListEl.hidden = next !== 'old';
         // Editing belongs to the new-plots view only — there is nothing here to edit in the
         // cadastre, and leaving handles up over a read-only view invites a drag that means nothing.
-        if (next === 'old') {
+        if (!wasOld && isOld) {
             state.nodeEditWasActive = state.nodeEdit.active || state.erase.nodeEditWasActive;
             if (state.erase.active) toggleEraseMode(false);
             if (state.nodeEdit.active) toggleNodeEditing(false);
             if (state.drawing.active) cancelDraw();
-        } else if (state.nodeEditWasActive) {
+        } else if (wasOld && !isOld && state.nodeEditWasActive) {
             state.nodeEditWasActive = false;
             toggleNodeEditing(true);
         }
@@ -1064,15 +1072,19 @@
         // retaining each child's own validity/history disabled state for the new-plots view.
         const editControls = state.modal?.querySelector('[data-reparcel-alg-group]');
         if (editControls) {
-            editControls.disabled = next === 'old';
-            editControls.setAttribute('aria-disabled', String(next === 'old'));
+            editControls.disabled = isOld;
+            editControls.setAttribute('aria-disabled', String(isOld));
         }
-        (state.modal ? [state.modal] : []).forEach(el => el.classList.toggle('reparcel-old-plots-view', next === 'old'));
-        // A row pressed in the table being left lets go: the other view shows other shapes.
-        state.newPlotsList?.reset(); state.oldPlotsList?.reset();
-        state.shownSlice = null;
-        clearInputHighlight();
-        drawPreview();
+        (state.modal ? [state.modal] : []).forEach(el => el.classList.toggle('reparcel-old-plots-view', isOld));
+        // Editing and New parcels show the same edited geometry, so switching between them must
+        // keep its selected row, mode and drawing state. Only the read-only inputs view changes map
+        // layers and releases row highlights.
+        if (wasOld !== isOld) {
+            state.newPlotsList?.reset(); state.oldPlotsList?.reset();
+            state.shownSlice = null;
+            clearInputHighlight();
+            drawPreview();
+        }
     }
 
     function clearInputHighlight() {
@@ -3769,10 +3781,17 @@
         return true;
     }
 
+    function getEditorContext() {
+        if (!state.session) return null;
+        return { kind: 'parcel-layout', tab: state.plotsTab, algorithm: state.algorithm,
+            plotCount: state.slices.length, dirty: isDirty(),
+            drawing: state.drawing.active ? state.drawing.mode : state.erase.active ? 'erase' : state.nodeEdit.active ? 'nodes' : 'none' };
+    }
+
     // The editor: openParcelLayoutEditor is what the page calls; `state` and every function above
     // are listed so a test can drive this editor's own session and see what it did.
     return {
-        state,
+        state, getEditorContext,
         log, liveSelectionFeatures, plotColor, clampPlotCount, subdivisionApi, formatTemplate, t,
         applyTranslations, updateSubtitle, getAlgorithmOptions, getAlgorithmOptionByKey, buildAlgorithmRadios,
         plotCountFieldHtml, updateCountField, setStatus, updateActiveModeHint, closeChoicePopup, destroyMap,

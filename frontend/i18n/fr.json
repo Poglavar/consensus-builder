@@ -1447,7 +1447,7 @@
             "courtyardFromBuilding": "À partir d’un îlot bâti",
             "choosePlanTitle": "Choisir un îlot bâti",
             "publicLand": "Foncier public",
-            "newPlots": "Nouveaux lots",
+            "newPlots": "Nouvelles parcelles",
             "colPlot": "Lot",
             "sweepHandleHint": "Faites glisser pour faire pivoter les limites parcellaires",
             "drawPlot": "Dessiner un lot",
@@ -1511,7 +1511,7 @@
             "nodePoolCornerHint": "Le contour appartient aux voisins. Pour le modifier, changez les parcelles regroupées.",
             "nodePoolEdge": "Intersection d’une ligne de division et du contour",
             "nodePoolEdgeHint": "Glisse le long du contour pour déplacer le point de division — sans pouvoir quitter le contour.",
-            "oldPlots": "Anciens lots",
+            "oldPlots": "Anciennes parcelles",
             "oldPlotsPartial": "{{shown}} parcelles d’origine sur {{declared}} ont pu être chargées.",
             "eraseEdge": "Effacer une limite",
             "eraseTooltip": "Effacer cette limite — {{a}} et {{b}} deviennent un seul lot",
@@ -9149,7 +9149,8 @@
       "agreement": "Préparez un accord privé pour le plan actuel.",
       "feedback": "Envoyez un commentaire sur une fonctionnalité utile.",
       "sources": "Quelles sources de parcelles et de bâtiments sont disponibles dans cette ville ?",
-      "affordableHousing": "Explorez les parcelles près des transports en commun pour du logement abordable."
+      "affordableHousing": "Explorez les parcelles près des transports en commun pour du logement abordable.",
+      "tools": "Expliquez-moi l’outil ouvert et comment utiliser ses options."
     },
     "reviewAgreement": "Examiner l’accord",
     "agreementStale": "Cet accord concerne une version antérieure du plan. Demandez un nouvel accord pour le plan actuel.",

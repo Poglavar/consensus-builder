@@ -219,7 +219,7 @@ test.describe('parcel-layout button controls @core', () => {
     const newTab = editor.locator('[data-reparcel-plots-tab="new"]');
     const oldTab = editor.locator('[data-reparcel-plots-tab="old"]');
     const handles = page.locator('#map-container .reparcel-node-handle');
-    await expect(newTab).toHaveAttribute('aria-selected', 'true');
+    await expect(editor.getByRole('tab', { name: 'Editing', exact: true })).toHaveAttribute('aria-selected', 'true');
     await expect.poll(() => handles.count()).toBeGreaterThan(0);
 
     const undoWasDisabled = await editor.locator('[data-reparcel-undo-edit]').isDisabled();

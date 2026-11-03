@@ -74,6 +74,24 @@ describe('chat conversation routes', () => {
         expect(bad.status).toBe(400);
     });
 
+    it('accepts a bounded active editor summary and rejects unsupported values', async () => {
+        const runTurn = vi.fn(async ({ context: received }) => {
+            expect(received.activeEditor).toEqual({ kind: 'parcel-layout', tab: 'new', algorithm: 'amend', plotCount: 4, dirty: true, drawing: 'line' });
+            return { messages: [], usage: {}, costUsd: 0, outcome: { type: 'reply', text: 'The layout is open.' } };
+        });
+        const { app, callModel, callTool } = makeHarness({ runTurn });
+        const activeEditor = { kind: 'parcel-layout', tab: 'new', algorithm: 'amend', plotCount: 4, dirty: true, drawing: 'line' };
+        const accepted = await turn(app, 'conv-1', body({ context: { ...context, activeEditor } }));
+        expect(accepted.status).toBe(200);
+        expect(runTurn).toHaveBeenCalledTimes(1);
+        const invalidAlgorithm = await turn(app, 'conv-1', body({ turnKey: '00000000-0000-4000-8000-000000000021', context: { ...context, activeEditor: { kind: 'parcel-layout', algorithm: 'unknown' } } }));
+        expect(invalidAlgorithm.status).toBe(400);
+        const oversized = await turn(app, 'conv-1', body({ turnKey: '00000000-0000-4000-8000-000000000022', context: { ...context, activeEditor: { kind: 'x'.repeat(81), plotCount: 1001 } } }));
+        expect(oversized.status).toBe(400);
+        expect(callModel).not.toHaveBeenCalled();
+        expect(callTool).not.toHaveBeenCalled();
+    });
+
     it('reports configured prices and server-computed estimates without provider calls', async () => {
         const { app, callModel } = makeHarness({ env: { CHAT_DEBUG_COSTS: 'true', CHAT_PROVIDER: 'openai', CHAT_MODEL: 'gpt-6-luna' } });
         const configured = await request(app).get('/chat/cost');

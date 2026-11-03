@@ -1,4 +1,4 @@
-import { CHAT_TOOL_ALLOWLIST, injectPlanArgs, restrictHelpTopic, toModelTools } from './tool-catalog.js';
+import { ACTIVE_EDITOR_TOOL_ALLOWLIST, CHAT_TOOL_ALLOWLIST, injectPlanArgs, restrictHelpTopic, toModelTools } from './tool-catalog.js';
 import { agreementFromResult, compactForModel, planFromResult, summarizeStep } from './tool-results.js';
 import { contextBlock, SYSTEM_PROMPT } from './system-prompt.js';
 import { injectMapArgs, navigationResult } from './navigation.js';
@@ -24,7 +24,8 @@ export async function runTurn({ conversation = {}, text = '', context = {}, call
     const steps = [];
     const addUsage = value => { for (const key of Object.keys(usage)) usage[key] += Number(value?.[key]) || 0; totalCost = costUsd(usage, prices); };
     const listed = mcpTools || await callTool.listTools?.() || conversation.mcpTools || [];
-    const toolList = toModelTools(Array.isArray(listed) ? listed : listed.tools || []);
+    const editorActive = !!context.activeEditor;
+    const toolList = toModelTools(Array.isArray(listed) ? listed : listed.tools || [], { activeEditor: editorActive });
     const modelCall = async closing => {
         modelCalls++;
         const response = await callModel({ system: SYSTEM_PROMPT, tools: toolList, messages, ...(closing ? { toolChoice: { type: 'none' } } : {}) }, { signal });
@@ -55,8 +56,13 @@ export async function runTurn({ conversation = {}, text = '', context = {}, call
             continue;
         }
         const use = uses[0], name = use.name, input = use.input || {};
-        if (!CHAT_TOOL_ALLOWLIST.includes(name) && !['ask_person', 'undo_last_change', 'undo_last_agreement_change'].includes(name)) {
-            messages.push({ role: 'user', content: [toolResultBlock(use.id, JSON.stringify({ ok: false, code: 'tool-not-available', message: 'That tool is not available in chat.' }), true)] });
+        const turnTools = editorActive ? ACTIVE_EDITOR_TOOL_ALLOWLIST : [...CHAT_TOOL_ALLOWLIST, 'ask_person', 'undo_last_change', 'undo_last_agreement_change'];
+        if (!turnTools.includes(name)) {
+            const code = editorActive ? 'editor-active' : 'tool-not-available';
+            const message = editorActive
+                ? 'The map editor is open. Finish or cancel editing before changing the plan or map from chat.'
+                : 'That tool is not available in chat.';
+            messages.push({ role: 'user', content: [toolResultBlock(use.id, JSON.stringify({ ok: false, code, message }), true)] });
             continue;
         }
         if (name === 'ask_person') {

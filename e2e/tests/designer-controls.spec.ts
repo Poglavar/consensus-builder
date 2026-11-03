@@ -490,7 +490,7 @@ test.describe('Designer controls persist their edits @features', () => {
     await page.locator('.parcel-build-btn--parcel-layout').click();
     const modal = page.locator('.on-map-reparcellization');
     const scopePrompt = page.getByRole('alertdialog');
-    await expect.poll(async () => (await modal.isVisible()) || (await scopePrompt.isVisible())).toBe(true);
+    await expect.poll(async () => (await modal.locator('.on-map-editor__panel').isVisible()) || (await scopePrompt.isVisible())).toBe(true);
     if (await scopePrompt.isVisible()) {
       await scopePrompt.getByRole('button', { name: 'Yes, select the block' }).click();
       await expect(parcelTab(page, 'propose-tab')).toBeVisible();
@@ -503,6 +503,7 @@ test.describe('Designer controls persist their edits @features', () => {
     await expect(modal.locator('[data-reparcel-oldplots-table]')).toContainText('1234');
     await modal.locator('[data-reparcel-plots-tab="new"]').click();
     await expect(modal.locator('[data-reparcel-newplots-table]')).not.toBeEmpty();
+    await modal.locator('[data-reparcel-plots-tab="editing"]').click();
     const plotRows = modal.locator('[data-reparcel-newplots-table] .reparcel-newplot-row');
     const plotCount = await plotRows.count();
     expect(plotCount).toBeGreaterThanOrEqual(2);

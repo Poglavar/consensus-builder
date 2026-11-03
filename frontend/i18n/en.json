@@ -3591,7 +3591,7 @@
             "uploadGeojson": "Upload GeoJSON",
             "downloadGeojson": "Download plots as GeoJSON",
             "publicLand": "Public land",
-            "newPlots": "New plots",
+            "newPlots": "New parcels",
             "colPlot": "Plot",
             "sweepHandleHint": "Drag to rotate the parcel lines",
             "drawPlot": "Draw plot",
@@ -3659,7 +3659,7 @@
             "nodePoolCornerHint": "The outline belongs to the neighbours. To change it, change which parcels are pooled.",
             "nodePoolEdge": "Where a cut meets the outline",
             "nodePoolEdgeHint": "Slides along the outline to change where the cut divides — it cannot leave it.",
-            "oldPlots": "Old plots",
+            "oldPlots": "Old parcels",
             "colParcel": "Parcel",
             "colArea": "Area",
             "unknownParcel": "Parcel",
@@ -9142,7 +9142,8 @@
       "agreement": "Prepare a private agreement for the current plan.",
       "feedback": "Send feedback about a feature that would help.",
       "sources": "Which parcel and building sources are available in this city?",
-      "affordableHousing": "Explore parcels near transit for affordable housing."
+      "affordableHousing": "Explore parcels near transit for affordable housing.",
+      "tools": "Explain the tool I have open and how to use its options."
     },
     "reviewAgreement": "Review agreement",
     "agreementStale": "This agreement is for an earlier version of the plan. Ask for a new agreement for the current plan.",

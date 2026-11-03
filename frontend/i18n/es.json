@@ -3656,7 +3656,7 @@
                 "courtyardError": "No se pudo recortar el patio. Se ha conservado la distribución."
             },
             "colPlot": "Lote",
-            "newPlots": "Nuevos lotes",
+            "newPlots": "Parcelas nuevas",
             "uploadGeojson": "Subir GeoJSON",
             "downloadGeojson": "Descargar lotes como GeoJSON",
             "parcelCount": {
@@ -3686,7 +3686,7 @@
             "nodePoolCornerHint": "El contorno pertenece a los vecinos. Para cambiarlo, cambia qué parcelas se agrupan.",
             "nodePoolEdge": "Donde un corte encuentra el contorno",
             "nodePoolEdgeHint": "Se desliza por el contorno para cambiar dónde divide el corte; no puede abandonarlo.",
-            "oldPlots": "Parcelas antiguas",
+            "oldPlots": "Parcelas anteriores",
             "colParcel": "Parcela",
             "colArea": "Superficie",
             "unknownParcel": "Parcela",
@@ -9170,7 +9170,8 @@
       "agreement": "Prepara un acuerdo privado para el plan actual.",
       "feedback": "Envía comentarios sobre una función que sería útil.",
       "sources": "¿Qué fuentes de parcelas y edificios están disponibles en esta ciudad?",
-      "affordableHousing": "Explora parcelas cerca del transporte público para vivienda asequible."
+      "affordableHousing": "Explora parcelas cerca del transporte público para vivienda asequible.",
+      "tools": "Explica la herramienta que tengo abierta y cómo usar sus opciones."
     },
     "reviewAgreement": "Revisar el acuerdo",
     "agreementStale": "Este acuerdo corresponde a una versión anterior del plan. Pide un acuerdo nuevo para el plan actual.",

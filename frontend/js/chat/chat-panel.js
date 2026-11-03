@@ -6,10 +6,16 @@
     let host, introNode, tips, tipButtons = [], messages, status, agreementStatus, agreementLink, total, input, sendButton, undoButton, newButton, conversationCopyButton, state = transcript.initial(), lastSynced = null, turnBaseRow = null, turnBaseCaptured = false, resetAfterTurn = false, operation = false;
     const TIPS = [
         { key: 'chat.tips.design' }, { key: 'chat.tips.agreement' }, { key: 'chat.tips.feedback' },
-        { key: 'chat.tips.sources' }, { key: 'chat.tips.affordableHousing' }
+        { key: 'chat.tips.sources' }, { key: 'chat.tips.affordableHousing' }, { key: 'chat.tips.tools' }
     ];
     const records = () => win.proposalStorage?.getAllProposals?.() || win.proposals || win.currentProposals || [];
     const currentCity = () => win.CityConfigManager?.getCurrentCityId?.() || win.currentCityId || win.currentCity;
+    const activeEditor = () => {
+        const kind = win.OnMapEditor?.getOwner?.();
+        return kind === 'parcel-layout' ? win.getParcelLayoutEditorContext?.() || { kind } : kind ? { kind } : null;
+    };
+    let turnHasEditor = false;
+    const editorBlocksChanges = () => turnHasEditor || !!activeEditor();
     function clearConversationState() {
         lastSynced = null; turnBaseRow = null; turnBaseCaptured = false;
         dispatch({ type: 'reset' });
@@ -84,6 +90,8 @@
             build.mapContext = mapContext;
             if (mapContext.parcelSourceId) build.parcelSourceId = mapContext.parcelSourceId;
         }
+        const editor = activeEditor();
+        if (editor) build.activeEditor = editor;
         return build;
     }
     function mount(root) {
@@ -122,6 +130,7 @@
     function showError(error) { dispatch({ type: 'turn:failed', code: error?.code || 'stream_error', status: error?.status }); }
     async function send(text) {
         const value = String(text || '').trim(); if (!value || operation) return;
+        turnHasEditor = !!activeEditor();
         operation = true; render();
         input.value = ''; input.disabled = true;
         try {
@@ -137,9 +146,10 @@
             const sendTurn = includeArtifact => win.ChatClient.turn(conv.id, { text: value,
                 language: win.i18n?.getLanguage?.() || 'en', turnKey, context: buildContext(includeArtifact) },
                 { onEvent(event) {
+                    if (['plan', 'view', 'selection'].includes(event.name) && editorBlocksChanges()) return;
                     if (event.name === 'plan') planEvent = event;
                     if (['view', 'selection'].includes(event.name)) navigation = navigation.then(async () => {
-                        if (!navigationError) await win.ChatNavigation.apply(event);
+                        if (!navigationError && !editorBlocksChanges()) await win.ChatNavigation.apply(event);
                     }).catch(error => { navigationError = error; });
                     dispatch({ type: 'event', event });
                 } });
@@ -167,7 +177,7 @@
                     const synced = await win.ChatClient.sync(state.conversation.id);
                     if (synced.city !== currentCity()) throw new Error('The conversation belongs to another city.');
                     dispatch({ type: 'conversation:sync', conversation: synced });
-                    if (!mapCommandFailed && turnBaseCaptured && appliedMembersMatch(turnBaseRow) && synced.plan?.cid !== lastSynced?.cid) {
+                    if (!editorBlocksChanges() && !mapCommandFailed && turnBaseCaptured && appliedMembersMatch(turnBaseRow) && synced.plan?.cid !== lastSynced?.cid) {
                         await applyPlan(synced.plan ? { draftRef: synced.plan.draftRef, cid: synced.plan.cid } : { draftRef: null, cid: null });
                     }
                 } catch (_) { /* retain the stream error */ }
@@ -176,12 +186,14 @@
         }
         finally {
             operation = false; dispatch({ type: 'turn:end' });
+            turnHasEditor = false;
             turnBaseRow = null; turnBaseCaptured = false;
             if (resetAfterTurn) { resetAfterTurn = false; await reset({ locked: true }); }
             else if (host?.closest('.map-sheet') && !host.closest('.map-sheet').hidden) input.focus({ preventScroll: true });
         }
     }
     async function applyPlan(event, kind = 'edit') {
+        if (editorBlocksChanges()) return;
         try {
             const previous = turnBaseRow || lastSynced;
             if (!event.draftRef) {
@@ -193,6 +205,7 @@
             }
             const draftPage = new URL('/designs', win.location.origin); draftPage.searchParams.set('draft', event.draftRef);
             const loaded = await win.DraftLink.load(draftPage.href);
+            if (editorBlocksChanges()) return;
             const artifact = context.artifactFromDraft(loaded, { cidOf: content => win.Cid.cidOfObject(content), cid: event.cid });
             const next = context.nextRowFromDraft(artifact, previous, { rowOf: (value, ids) => win.SharedPlanSession.rowOf(value, ids) });
             if (event.cid && next.cid !== event.cid) throw Object.assign(new Error('The private plan revision does not match its identifier.'), { code: 'plan-cid-mismatch' });
@@ -212,12 +225,13 @@
         lastSynced = null;
     }
     async function undo() {
-        if (!state.lastPlan?.applied || !state.conversation || operation) return;
+        if (activeEditor() || !state.lastPlan?.applied || !state.conversation || operation) return;
         operation = true; render();
         try {
             const result = await win.ChatClient.undo(state.conversation.id);
             await applyPlan({ draftRef: result.draftRef, cid: result.cid, changes: result.changes || [] }, 'undo');
         } finally {
+            turnHasEditor = false;
             operation = false;
             if (resetAfterTurn) { resetAfterTurn = false; await reset(); }
             else render();
@@ -232,6 +246,7 @@
         } finally { if (ownLock) { operation = false; render(); } }
     }
     function highlight(ref) {
+        if (activeEditor()) return;
         const parsed = context.parseRef(ref); if (!parsed) return;
         const record = win.DesignSync.localCopyOf(parsed.designCid);
         if (!record) return;
@@ -271,7 +286,7 @@
         conversationCopyButton.disabled = !serializeConversation();
         input.disabled = !!state.pending || operation; sendButton.disabled = !!state.pending || operation;
         tipButtons.forEach(button => { button.disabled = !!state.pending || operation; });
-        undoButton.disabled = !state.lastPlan?.applied || !!state.pending || operation; newButton.disabled = !!state.pending || operation;
+        undoButton.disabled = !!activeEditor() || !state.lastPlan?.applied || !!state.pending || operation; newButton.disabled = !!state.pending || operation;
         const agreement = state.conversation?.agreement;
         let preview = null;
         try {
@@ -300,6 +315,10 @@
     }
     win.addEventListener('cityChanged', () => { if (operation) resetAfterTurn = true; else reset().catch(showError); });
     win.addEventListener('planschange', render);
+    doc.addEventListener('on-map-editor-preview-change', () => {
+        if (operation && activeEditor()) turnHasEditor = true;
+        render();
+    });
     doc.addEventListener('proposalCreated', render);
     win.addEventListener('i18n:translationsLoaded', () => {
         if (!host) return;

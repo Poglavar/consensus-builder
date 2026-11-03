@@ -5,6 +5,7 @@
 
 ## Use the app
 
+- [App controls and agent help topics](app-help.md).
 - [Start here and watch the twelve walkthroughs](https://urbangametheory.xyz/how-to-use.html#videos).
 - [Buildings and building rules](https://urbangametheory.xyz/how-to-use-buildings.html).
 - [Parks, squares and lakes](https://urbangametheory.xyz/how-to-use-park-square.html).

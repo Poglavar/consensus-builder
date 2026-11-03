@@ -1447,7 +1447,7 @@
             "courtyardFromBuilding": "A partir de um quarteirão edificado",
             "choosePlanTitle": "Escolher um quarteirão edificado",
             "publicLand": "Terreno público",
-            "newPlots": "Novos lotes",
+            "newPlots": "Novas parcelas",
             "colPlot": "Lote",
             "sweepHandleHint": "Arraste para rodar as linhas das parcelas",
             "drawPlot": "Desenhar lote",
@@ -1511,7 +1511,7 @@
             "nodePoolCornerHint": "O contorno pertence aos vizinhos. Para o alterar, altere as parcelas agrupadas.",
             "nodePoolEdge": "Ponto onde um corte encontra o contorno",
             "nodePoolEdgeHint": "Desliza ao longo do contorno para alterar o ponto de divisão do corte — não pode sair dele.",
-            "oldPlots": "Lotes anteriores",
+            "oldPlots": "Parcelas anteriores",
             "oldPlotsPartial": "Foi possível carregar {{shown}} das {{declared}} parcelas de entrada.",
             "eraseEdge": "Apagar um limite",
             "eraseTooltip": "Apagar este limite — {{a}} e {{b}} tornam-se um só lote",
@@ -9149,7 +9149,8 @@
       "agreement": "Prepare um acordo privado para o plano atual.",
       "feedback": "Envie comentários sobre uma funcionalidade que seria útil.",
       "sources": "Que fontes de lotes e edifícios estão disponíveis nesta cidade?",
-      "affordableHousing": "Explore lotes perto do transporte público para habitação acessível."
+      "affordableHousing": "Explore lotes perto do transporte público para habitação acessível.",
+      "tools": "Explique a ferramenta que tenho aberta e como usar as opções dela."
     },
     "reviewAgreement": "Rever acordo",
     "agreementStale": "Este acordo corresponde a uma versão anterior do plano. Peça um novo acordo para o plano atual.",

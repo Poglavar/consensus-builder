@@ -128,32 +128,47 @@ describe('parcel-layout UI state', () => {
         expect(globalThis.map.getLayers().filter(layer => layer.kind === 'geojson')).toEqual([]);
     });
 
-    it('keeps layout undo and an active draw toolbar visible when secondary tools are collapsed', async () => {
+    it('keeps one editor panel with three tabs and preserves layout history across them', async () => {
         const w = await openEditor();
-        const group = w.$('[data-reparcel-alg-group]');
-        const persistent = w.$('.reparcel-persistent-controls');
-        const toolbar = w.$('[data-reparcel-draw-toolbar]');
-        // Undo/redo live outside the collapsible secondary controls, ahead of the draw toolbar.
-        expect(persistent.closest('[data-reparcel-secondary-controls]')).toBeNull();
-        expect(group.children.indexOf(persistent)).toBeGreaterThan(group.children.indexOf(w.$('[data-reparcel-secondary-controls]')));
-        expect(group.children.indexOf(persistent)).toBeLessThan(group.children.indexOf(toolbar));
-        expect(persistent.querySelector('[data-reparcel-undo-edit]').disabled).toBe(true);
-        expect(persistent.querySelector('[data-reparcel-undo-edit]').textContent).toContain('Undo');
-        expect(persistent.querySelector('[data-reparcel-redo-edit]').textContent).toContain('Redo');
-        expect(w.$('.reparcel-geometry-tools').children).toHaveLength(4);
-        expect(w.$('.reparcel-file-tools').children).toHaveLength(2);
-        // The layouts and their count fold away with the other secondary tools.
-        expect(w.$('[data-parcel-layout-count-field]').closest('[data-reparcel-secondary-controls]')).not.toBeNull();
-        expect(toolbar.hidden).toBe(true);
-        // The active mode is named in the panel and handed to the shared editor's hint.
-        expect(w.$('[data-reparcel-active-mode]').textContent).toBe('Edit boundaries (nodes) active');
-        expect(w.session().setHint.calls.at(-1)).toEqual(['Edit boundaries (nodes) active']);
-        expect(styles).toContain('.on-map-editor.is-collapsed .reparcel-secondary-controls { display: none; }');
-        expect(styles).toMatch(/\.on-map-editor__tools\.reparcel-tools-map \{[^}]*width: 400px;[^}]*max-width: min\(400px,/);
-        expect(styles).toMatch(/\.reparcel-geometry-tools \{[^}]*grid-template-columns: repeat\(4, minmax\(0, 1fr\)\);/);
-        expect(styles).toMatch(/\.reparcel-persistent-controls \{[^}]*grid-template-columns: repeat\(2, minmax\(0, 1fr\)\);/);
-        // Phones: edge to edge, the mode strip hangs from the top-left (css/map.css).
-        expect(styles).toMatch(/\.on-map-editor__tools\.reparcel-tools-map \{[^}]*left: 12px;[^}]*width: calc\(100vw - 24px\);/);
-        expect(styles).toMatch(/\.reparcel-actions \[data-reparcel-cancel\],[\s\S]*?min-width: 0;/);
+        const [options] = globalThis.OnMapEditor.open.calls[0];
+        expect(options.tools).toBeUndefined();
+        expect(options.reserveToolsSpace).not.toBe(true);
+        const editing = w.$('#reparcel-panel-editing');
+        const count = w.$('[data-parcel-layout-count-field]');
+        expect(editing.contains(count)).toBe(true);
+        expect(editing.contains(w.$('.reparcel-file-tools'))).toBe(true);
+        expect(editing.contains(w.$('.reparcel-persistent-controls'))).toBe(true);
+        expect(w.state.plotsTab).toBe('editing');
+        expect(editing.hidden).toBe(false);
+        expect(w.state.newPlotsListEl.hidden).toBe(true);
+        expect(w.state.oldPlotsListEl.hidden).toBe(true);
+        await w.editor.setPlotCount(3);
+        const geometry = JSON.stringify(w.state.slices), history = w.state.historyCtl.depth();
+        for (const tab of ['new', 'editing', 'old', 'editing']) {
+            w.editor.setPlotsTab(tab);
+            expect(w.state.plotsTab).toBe(tab);
+            expect(editing.hidden).toBe(tab !== 'editing');
+            expect(w.state.newPlotsListEl.hidden).toBe(tab !== 'new');
+            expect(w.state.oldPlotsListEl.hidden).toBe(tab !== 'old');
+            expect(JSON.stringify(w.state.slices)).toBe(geometry);
+            expect(w.state.historyCtl.depth()).toBe(history);
+        }
+        expect(w.state.nodeEdit.active).toBe(true);
+        expect(w.$('[data-reparcel-undo-edit]').textContent).toContain('Undo');
+        expect(w.$('[data-reparcel-redo-edit]').textContent).toContain('Redo');
+        expect(styles).not.toContain('.reparcel-tools-map');
+    });
+
+    it('reports the live tool context for chat and clears it when the editor closes', async () => {
+        const w = await openEditor();
+        expect(w.editor.getEditorContext()).toEqual({ kind: 'parcel-layout', tab: 'editing',
+            algorithm: 'equal', plotCount: 2, dirty: false, drawing: 'nodes' });
+        await w.editor.setPlotCount(3);
+        w.editor.startDraw('line');
+        expect(w.editor.getEditorContext()).toMatchObject({ plotCount: 3, dirty: true, drawing: 'line' });
+        w.editor.setPlotsTab('new');
+        expect(w.editor.getEditorContext()).toMatchObject({ tab: 'new', drawing: 'line' });
+        w.editor.closeModal({ skipPersist: true, discard: true });
+        expect(w.editor.getEditorContext()).toBeNull();
     });
 });
