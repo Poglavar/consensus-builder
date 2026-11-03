@@ -342,6 +342,20 @@
         return turf.featureCollection(blocks);
     }
 
+    // Turf may return a vertex when the centre falls in a hole or outside a concave parcel.
+    // Such a vertex can lie on a block boundary; use actual parcel interior in that case.
+    function parcelInteriorPoint(parcel, turf) {
+        const point = turf.pointOnFeature(parcel);
+        if (turf.booleanPointInPolygon(point, parcel, { ignoreBoundary: true })) return point;
+        const parts = parcel.geometry.type === 'Polygon' ? [parcel]
+            : parcel.geometry.coordinates.map(rings => turf.polygon(rings));
+        for (const part of parts) {
+            const interior = interiorPoint(part, turf);
+            if (interior) return interior;
+        }
+        return null;
+    }
+
     // This is a count of LOADED cadastral parcels whose representative point is inside the block,
     // not a claim that the entire cadastre is present. A spanning parcel belongs to one block.
     function parcelIdsInBlock(block, parcels, turf) {
@@ -350,7 +364,8 @@
             if (!['Polygon', 'MultiPolygon'].includes(parcel.geometry?.type)) continue;
             const id = parcel.properties?.parcelId ?? parcel.properties?.parcel_id ?? parcel.properties?.PARCEL_ID ?? parcel.properties?.id ?? parcel.id;
             if (id == null || ids.has(String(id))) continue;
-            if (turf.booleanPointInPolygon(turf.pointOnFeature(parcel), block, { ignoreBoundary: true })) ids.add(String(id));
+            const point = parcelInteriorPoint(parcel, turf);
+            if (point && turf.booleanPointInPolygon(point, block, { ignoreBoundary: true })) ids.add(String(id));
         }
         return [...ids];
     }
@@ -365,7 +380,8 @@
     function enclosureForParcel(blocks, seed, turf) {
         if (!seed || !['Polygon', 'MultiPolygon'].includes(seed.geometry?.type)
             || !Array.isArray(blocks?.features)) return null;
-        const point = turf.pointOnFeature(seed);
+        const point = parcelInteriorPoint(seed, turf);
+        if (!point) return null;
         const matches = blocks.features.filter(block =>
             turf.booleanPointInPolygon(point, block, { ignoreBoundary: true }));
         return matches.length === 1 ? matches[0] : null;

@@ -1,5 +1,5 @@
 import { test, expect } from '../helpers/fixtures';
-import { openCity, openParcel } from '../helpers/runtime';
+import { openCity, openParcel, clickMapPoint } from '../helpers/runtime';
 import { installLayerDatasets, TEST_PARCEL_ID } from '../helpers/mocks/layer-datasets';
 import { ensurePageIndex } from '../helpers/mocks/shared-server';
 
@@ -37,8 +37,7 @@ function denseParcels() {
   return parcels;
 }
 
-async function serveDenseParcels(page: any) {
-  const features = denseParcels();
+async function serveDenseParcels(page: any, features = denseParcels()) {
   (await ensurePageIndex(page)).cadastre = features;
   await page.route('**/parcels**', async (route: any) => {
     const request = route.request();
@@ -61,6 +60,42 @@ async function beginSeedSelection(page: any) {
   const selected = () => page.evaluate(() => [...(window as any).multiParcelSelection.selectedParcels].sort());
   await expect.poll(selected).toEqual([SEED_ID]);
   return selected;
+}
+
+for (const innerStreet of [false, true]) {
+  test(`nested courtyard parcels respect their enclosure at 360px (inner street: ${innerStreet})`, async ({ mockApi: page }) => {
+    await page.setViewportSize({ width: 360, height: 780 });
+    await installLayerDatasets(page);
+    const ring = (w: number, s: number, e: number, n: number) => [[w, s], [e, s], [e, n], [w, n], [w, s]];
+    const hole = ring(15.98214, 45.80030, 15.98226, 45.80044);
+    const island = ring(15.98218, 45.80034, 15.98222, 45.80040);
+    const feature = (id: string, coordinates: number[][][]) => ({ type: 'Feature', id,
+      properties: { parcelId: id, parcel_id: id, id }, geometry: { type: 'Polygon', coordinates } });
+    const features = [
+      feature(SEED_ID, [ring(15.98206, 45.80021, 15.98234, 45.80053), hole.slice().reverse()]),
+      feature('E2E-COURTYARD', [hole, island.slice().reverse()]),
+      feature('E2E-INNER', [island]),
+    ];
+    await serveDenseParcels(page, features);
+    await page.route('**/blocks/roads?**', route => route.fulfill({ json: { complete: true,
+      type: 'FeatureCollection', features: [...enclosureFeatures({ highway: 'residential' }),
+        ...(innerStreet ? [{ type: 'Feature', properties: { highway: 'residential' },
+          geometry: { type: 'LineString', coordinates: hole } }] : [])] } }));
+    await openCity(page, SEED_ID);
+    // Click actual ring land: the usual bbox-centre helper hits the innermost parcel.
+    await clickMapPoint(page, 15.98208, 45.80025);
+    await page.locator('#parcel-manual-selection').click();
+    const selected = () => page.evaluate(() => [...(window as any).multiParcelSelection.selectedParcels].sort());
+    await expect.poll(selected).toEqual([SEED_ID]);
+    const detect = page.locator('.click-stack__section[data-kind="selection"] .multi-select-detect-btn');
+    await detect.focus();
+    await detect.press('Enter');
+    await expect(detect).toBeEnabled();
+    await expect.poll(selected).toEqual(innerStreet ? [SEED_ID] : features.map(f => f.id).sort());
+    await expect(page.locator('.styled-alert-overlay:visible')).toHaveCount(0);
+    await expect(page.locator('path[fill="#ffdd00"][fill-opacity="0.32"]')).toHaveCount(innerStreet ? 1 : 3);
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  });
 }
 
 test('over-limit block previews exactly 100 paths and Escape/OK clear them without changing selection at 360px', async ({ mockApi: page }) => {
