@@ -2,6 +2,13 @@ import { describe, expect, it } from 'vitest';
 import { injectMapArgs, navigationResult, searchBounds } from '../chat/navigation.js';
 import { compactForModel } from '../chat/tool-results.js';
 describe('chat map state', () => {
+    it('relays both Road/track states with the unchanged absolute map view', () => {
+        const view = { at: '51.5,-0.1,17', mode: '2d' };
+        for (const visible of [true, false]) {
+            expect(navigationResult('ugt_map_view', { structuredContent: { view, roadTracksVisible: visible } }))
+                .toEqual({ name: 'view', data: { view, roadTracksVisible: visible } });
+        }
+    });
     it('injects authoritative state without overriding an explicit site or location', () => {
         const context = { city: 'london', parcelSourceId: 'source', view: { at: '51.5,-0.1,17' }, selection: { parcelIds: ['a'], active: true } };
         expect(injectMapArgs('ugt_map_view', { view: { at: '0,0,1' }, zoomDelta: 1 }, context)).toEqual({ view: context.view, zoomDelta: 1 });

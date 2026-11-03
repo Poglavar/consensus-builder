@@ -78,6 +78,13 @@
     "optionalTools": {
         "loadFailed": "Alat nije mogao da se učita. Pokušajte ponovo."
     },
+    "roadTrackLayer": {
+        "label": "Put/pruga",
+        "zoom": "Uvećaj prikaz do nivoa naselja da bi video/la puteve i pruge.",
+        "loading": "Učitavanje puteva i pruga…",
+        "ready": "Prikazani su odgovarajući putevi i pruge.",
+        "error": "Učitavanje puteva i pruga nije uspelo. Pokušaj ponovo."
+    },
     "urbanBlocks": {
         "toggle": "Otkrij i analiziraj blokove",
         "hint": "Učitaj OSM granice puteva i voda, pa oboji omeđene blokove. Podaci o parcelama su opcioni.",
@@ -6137,7 +6144,7 @@
             "block_neighbour_not_fully_visible": "Blok nije moguće složiti: parcela {{id}} pripada bloku, ali izlazi izvan ivice prikaza. Traženje bloka prati samo parcele koje su u celosti vidljive — odzumiraj dok ceo blok ne stane u prikaz pa ponovo pritisni Detektuj blok.",
             "block_no_parcels_in_view": "U prikazu nema običnih parcela od kojih bi se složio blok — samo putevi i pruge.",
             "block_parcels_not_loaded": "Parcele se još učitavaju — sačekaj da se mapa smiri pa pokušaj ponovo.",
-            "block_seed_is_corridor": "Ovo je parcela puta ili pruge. Blok je zemljište IZMEĐU koridora — kreni od parcele unutar njega.",
+            "block_seed_is_corridor": "Blokove omeđuju putevi, ulice ili pruge. Izabrana parcela sadrži put ili prugu i nalazi se na granici. Izaberi drugu parcelu da otkriješ njen blok. Da vidiš odgovarajuće granice, uključi „Put/pruga” u slojevima.",
             "block_seed_not_fully_visible": "Blok nije moguće složiti: sama izabrana parcela izlazi izvan ivice prikaza. Traženje bloka prati samo parcele koje su u celosti vidljive, pa odzumiraj dok parcela ne stane u prikaz i onda ponovo pritisni Detektuj blok.",
             "block_seed_unresolved": "Nije moguće pročitati ID izabrane parcele pa nema iz čega izgraditi blok.",
             "block_multiselect_unavailable": "Višestruki izbor nije dostupan, a blok se isporučuje kao izbor više parcela.",

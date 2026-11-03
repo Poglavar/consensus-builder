@@ -6,6 +6,37 @@ import { ensurePageIndex } from '../helpers/mocks/shared-server';
 const SEED_ID = TEST_PARCEL_ID;
 const BLOCK_PARCEL_IDS = ['HR-335754-1234', 'HR-335754-1235', 'HR-335754-1236', 'HR-335754-1237', 'HR-335754-1238'];
 
+test('Road/track is keyboard operable, black, noninteractive and saved at 360px', async ({ mockApi: page }) => {
+  await page.setViewportSize({ width: 360, height: 780 });
+  await installLayerDatasets(page);
+  await installBoundaries(page, { railway: 'rail' });
+  await openCity(page);
+  await page.locator('#layers-button').click();
+  const section = page.locator('#layers-sheet details[data-section="blocks"]');
+  if (!await section.evaluate(el => (el as HTMLDetailsElement).open)) await section.locator('summary').click();
+  const checkbox = page.getByRole('checkbox', { name: 'Road/track', exact: true });
+  await checkbox.focus();
+  await checkbox.press('Space');
+  await expect(checkbox).toBeChecked();
+  await expect(page.locator('#road-track-layer-status')).toContainText('Showing');
+  const lines = page.locator('.road-track-pane path');
+  await expect(lines).toHaveCount(4);
+  await expect(lines.first()).toHaveCSS('stroke', 'rgb(0, 0, 0)');
+  await expect(lines.first()).toHaveCSS('stroke-width', '4px');
+  await expect(lines.first()).toHaveCSS('pointer-events', 'none');
+  expect(await page.evaluate(() => localStorage.getItem('cb-road-track-layer-enabled'))).toBe('1');
+  await page.reload();
+  await expect(lines).toHaveCount(4);
+  await page.locator('#layers-button').click();
+  if (!await section.evaluate(el => (el as HTMLDetailsElement).open)) await section.locator('summary').click();
+  await expect(checkbox).toBeChecked();
+  await checkbox.focus();
+  await checkbox.press('Space');
+  await expect(lines).toHaveCount(0);
+  expect(await page.evaluate(() => localStorage.getItem('cb-road-track-layer-enabled'))).toBe('0');
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+});
+
 function enclosureFeatures(boundary: Record<string, string>) {
   const west = 15.98204, east = 15.98236, south = 45.80019, north = 45.80055;
   const edges = [
@@ -94,6 +125,11 @@ for (const innerBoundary of ['none', 'street', 'workshop']) {
     await detect.press('Enter');
     await expect(detect).toBeEnabled();
     await expect.poll(selected).toEqual(innerStreet ? [SEED_ID] : features.map(f => f.id).sort());
+    if (innerStreet) {
+      await expect(page.getByRole('alertdialog')).toContainText('border parcel');
+      await expect(page.getByRole('alertdialog')).toContainText('Road/track');
+      await page.keyboard.press('Escape');
+    }
     await expect(page.locator('.styled-alert-overlay:visible')).toHaveCount(0);
     await expect(page.locator('path[fill="#ffdd00"][fill-opacity="0.32"]')).toHaveCount(innerStreet ? 1 : 3);
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
@@ -142,7 +178,8 @@ for (const [name, boundary] of [['rail', { railway: 'rail' }], ['stream', { wate
     await openParcel(page, 'design', SEED_ID);
     await page.locator('#parcel-info-panel .multi-select-detect-btn').click();
     await expect.poll(() => page.evaluate(() => [...(window as any).multiParcelSelection.selectedParcels].sort()))
-      .toEqual(BLOCK_PARCEL_IDS.slice().sort());
+      // The northern two parcels touch the rail centreline: they are border parcels.
+      .toEqual((name === 'rail' ? BLOCK_PARCEL_IDS.slice(0, 3) : BLOCK_PARCEL_IDS).slice().sort());
     await expect(page.locator('.click-stack-map-focus').first()).toHaveCSS('fill', 'rgb(255, 221, 0)');
     await expect(page.locator('.click-stack-map-focus').first()).toHaveCSS('fill-opacity', '0.32');
     await expect(page.locator('.block-detection-preview')).toHaveCount(0);
@@ -159,7 +196,7 @@ test('classified road inside an OSM enclosure is excluded and cannot seed a bloc
     .toEqual(BLOCK_PARCEL_IDS.filter(id => id !== 'HR-335754-1235').sort());
   await openParcel(page, 'design', 'HR-335754-1235');
   await page.locator('#parcel-info-panel .multi-select-detect-btn').click();
-  await expect(page.getByRole('alertdialog')).toContainText('This is a road or track parcel');
+  await expect(page.getByRole('alertdialog')).toContainText('border parcel');
   expect(await page.evaluate(() => [...(window as any).multiParcelSelection.selectedParcels]))
     .not.toContain('HR-335754-1235');
 });

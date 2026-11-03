@@ -2636,6 +2636,13 @@
     "optionalTools": {
         "loadFailed": "Não foi possível carregar esta ferramenta. Tente novamente."
     },
+    "roadTrackLayer": {
+        "label": "Rua/via",
+        "zoom": "Aumente o zoom até à escala do bairro para ver ruas e vias.",
+        "loading": "A carregar ruas e vias elegíveis…",
+        "ready": "A mostrar ruas e vias elegíveis.",
+        "error": "Não foi possível carregar ruas e vias. Tente novamente."
+    },
     "urbanBlocks": {
         "toggle": "Detetar e analisar quarteirões",
         "hint": "Carregue os limites de transporte e água do OSM e dê cor aos quarteirões delimitados. Os dados das parcelas são opcionais.",
@@ -6229,7 +6236,7 @@
             "block_neighbour_not_fully_visible": "Não é possível formar o quarteirão: a parcela {{id}} pertence-lhe, mas ultrapassa o limite da área visível. A deteção do quarteirão só segue parcelas inteiramente visíveis — reduza o zoom até todo o quarteirão caber e prima novamente Detetar quarteirão.",
             "block_no_parcels_in_view": "Não há parcelas comuns na área visível para formar um quarteirão — apenas vias e caminhos.",
             "block_parcels_not_loaded": "As parcelas ainda não terminaram de carregar — aguarde até o mapa estabilizar e tente novamente.",
-            "block_seed_is_corridor": "Esta é uma parcela de via ou caminho. Um quarteirão é o terreno ENTRE corredores — comece por uma parcela no interior de um quarteirão.",
+            "block_seed_is_corridor": "Os quarteirões são delimitados por estradas, ruas ou vias. A parcela selecionada contém uma estrada ou via e fica na borda. Selecione outra parcela para detetar o quarteirão. Para ver os limites elegíveis, ative «Rua/via» em Camadas.",
             "block_seed_not_fully_visible": "Não é possível formar o quarteirão: a própria parcela selecionada ultrapassa o limite da área visível. A deteção do quarteirão só segue parcelas inteiramente visíveis, por isso reduza o zoom até esta parcela caber e prima novamente Detetar quarteirão.",
             "block_seed_unresolved": "Não foi possível ler o identificador da parcela selecionada, pelo que não existe um ponto de partida para formar um quarteirão.",
             "block_multiselect_unavailable": "A seleção múltipla está indisponível e um quarteirão é apresentado como uma seleção de várias parcelas.",

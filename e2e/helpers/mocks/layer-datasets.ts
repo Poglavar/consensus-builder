@@ -52,7 +52,8 @@ export async function installLayerDatasets(page: Page): Promise<void> {
   await page.route('**/blocks/roads?**', route => route.fulfill({ json: {
     type: 'FeatureCollection', complete: true, features: [{ type: 'Feature',
       properties: { highway: 'residential' }, geometry: { type: 'LineString', coordinates:
-        [[15.98204,45.80019],[15.98236,45.80019],[15.98236,45.80055],[15.98204,45.80055],[15.98204,45.80019]] }
+        // Run the northern centreline inside the road parcel, away from the ordinary plots.
+        [[15.98204,45.80019],[15.98236,45.80019],[15.98236,45.800575],[15.98204,45.800575],[15.98204,45.80019]] }
     }]
   } }));
 

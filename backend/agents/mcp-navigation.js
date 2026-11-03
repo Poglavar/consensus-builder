@@ -88,7 +88,8 @@ function candidatesNear(features, center, radiusM, direction = null, sectorDegre
 export function createMcpNavigation({ read, random = Math.random }) {
     if (!read?.parcels || !read?.request) throw new TypeError('createMcpNavigation needs parcel and request readers');
 
-    function mapView({ view, center, direction, distance, unit = 'm', zoom, zoomDelta, parcelIdsVisible } = {}) {
+    function mapView({ view, center, direction, distance, unit = 'm', zoom, zoomDelta, parcelIdsVisible, roadTracksVisible } = {}) {
+        if (roadTracksVisible != null && typeof roadTracksVisible !== 'boolean') throw fail('invalid-road-track-display', 'roadTracksVisible must be boolean.', 'Use true to show Road/track or false to hide it.');
         if (parcelIdsVisible != null && typeof parcelIdsVisible !== 'boolean') throw fail('invalid-parcel-display', 'parcelIdsVisible must be boolean.', 'Use true to show parcel ids or false to hide them.');
         if (view != null && (typeof view !== 'object' || Array.isArray(view) || !view.at)) throw fail('invalid-map-view', 'An absolute map view needs an at coordinate.', 'Supply view.at as latitude,longitude[,zoom].');
         if (zoom != null && (!Number.isFinite(zoom) || zoom < 0 || zoom > 22)) throw fail('invalid-zoom', 'Zoom must be between 0 and 22.', 'Supply a zoom in the supported range.');
@@ -124,7 +125,7 @@ export function createMcpNavigation({ read, random = Math.random }) {
         }
         const includeZoom = zoom != null || zoomDelta != null || original.hadZoom;
         nextView.at = `${coords[1]},${coords[0]}${includeZoom ? `,${nextZoom}` : ''}`;
-        return { view: nextView, ...(parcelIdsVisible == null ? {} : { parcelIdsVisible }) };
+        return { view: nextView, ...(parcelIdsVisible == null ? {} : { parcelIdsVisible }), ...(roadTracksVisible == null ? {} : { roadTracksVisible }) };
     }
 
     async function selectParcels(input = {}) {
@@ -299,7 +300,7 @@ export function createMcpNavigation({ read, random = Math.random }) {
                     { constraints: { limit: MAX_BLOCK_PARCELS, parcelCount: result.count, previewParcelIds: result.previewIds } });
                 }
                 if (result.invalidReason === 'seed_is_corridor') throw fail('parcel-block-unproven',
-                    'The selected parcel is road or track ground, not land inside a block.', 'Choose a parcel inside the block.');
+                    'Blocks are defined as bordered by a road/street or track. The parcel you selected is a border parcel. Select another parcel to detect its block. To see eligible borders, check Road/track in Layers.', 'Choose another parcel; use ugt_map_view with roadTracksVisible: true to inspect borders.');
                 if (!result.isValid) throw fail('parcel-block-unproven',
                     'The focused parcel is not inside one complete surface block bounded by OSM transport and water features.',
                     'Choose a parcel inside a bounded block or select parcels individually.');

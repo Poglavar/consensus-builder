@@ -78,6 +78,13 @@
     "optionalTools": {
         "loadFailed": "Alat se nije uspio učitati. Pokušajte ponovno."
     },
+    "roadTrackLayer": {
+        "label": "Cesta/pruga",
+        "zoom": "Povećajte prikaz do razine naselja da biste vidjeli ceste i pruge.",
+        "loading": "Učitavanje cesta i pruga…",
+        "ready": "Prikazane su odgovarajuće ceste i pruge.",
+        "error": "Učitavanje cesta i pruga nije uspjelo. Pokušajte ponovno."
+    },
     "urbanBlocks": {
         "toggle": "Otkrij i analiziraj blokove",
         "hint": "Učitajte OSM prometne i vodne granice, a zatim obojite omeđene blokove. Podaci o parcelama nisu obvezni.",
@@ -6137,7 +6144,7 @@
             "block_neighbour_not_fully_visible": "Blok nije moguće složiti: čestica {{id}} pripada bloku, ali izlazi izvan ruba prikaza. Traženje bloka prati samo čestice koje su u cijelosti vidljive — odzumiraj dok cijeli blok ne stane u prikaz pa ponovno pritisni Detektiraj blok.",
             "block_no_parcels_in_view": "U prikazu nema običnih čestica od kojih bi se složio blok — samo ceste i pruge.",
             "block_parcels_not_loaded": "Čestice se još učitavaju — pričekaj da se karta smiri pa pokušaj ponovno.",
-            "block_seed_is_corridor": "Ovo je čestica ceste ili pruge. Blok je zemljište IZMEĐU koridora — kreni od čestice unutar njega.",
+            "block_seed_is_corridor": "Blokove omeđuju ceste, ulice ili pruge. Odabrana čestica sadrži cestu ili prugu i nalazi se na rubu bloka. Odaberite drugu česticu da biste otkrili njezin blok. Za prikaz odgovarajućih granica uključite „Cesta/pruga” u Slojevima.",
             "block_seed_not_fully_visible": "Blok nije moguće složiti: sama odabrana čestica izlazi izvan ruba prikaza. Traženje bloka prati samo čestice koje su u cijelosti vidljive, pa odzumiraj dok čestica ne stane u prikaz i onda ponovno pritisni Detektiraj blok.",
             "block_seed_unresolved": "Nije moguće pročitati ID odabrane čestice pa nema iz čega izgraditi blok.",
             "block_multiselect_unavailable": "Višestruki odabir nije dostupan, a blok se isporučuje kao odabir više čestica.",

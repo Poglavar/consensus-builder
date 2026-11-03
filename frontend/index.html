@@ -768,6 +768,8 @@
                         <div class="control-group">
                             <div class="control-group-title" data-i18n-key="sidebar.blocks.fromRoadsTitle">From map roads (OSM)</div>
                         <div class="checkbox-group">
+                            <label><input type="checkbox" id="road-track-layer-checkbox"><span data-i18n-key="roadTrackLayer.label">Road/track</span></label>
+                            <p id="road-track-layer-status" class="sheet-note" role="status" aria-live="polite"></p>
                             <label><input type="checkbox" id="showUrbanBlocks">
                                 <span data-i18n-key="urbanBlocks.toggle">Detect and analyse blocks</span></label>
                         </div>
@@ -2049,6 +2051,7 @@
             'js/parcels/block-detection-preview.js',
             'js/urban-blocks-layout.js',
             'js/urban-blocks-links.js',
+            'js/road-track-layer.js',
             'js/urban-blocks-propose.js',
             'js/urban-blocks-playground.js',
             'js/urban-blocks-view.js',
@@ -2421,6 +2424,7 @@
                 window.CommandPalette.initialize();
                 initializeMapControls();
                 window.UrbanBlocksView.initialize();
+                window.RoadTrackLayer.initialize();
                 initializeMapCore();
                 window.SharedPlanSession.start();
                 window.SchellingLayer.initialize();

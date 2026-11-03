@@ -43,7 +43,9 @@ export function injectMapArgs(name, input, context = {}) {
 export function navigationResult(name, result) {
     const data = result?.structuredContent || result;
     if (result?.isError || data?.ok === false) return null;
-    if (name === 'ugt_map_view' && data?.view) return { name: 'view', data: { view: data.view, ...(typeof data.parcelIdsVisible === 'boolean' ? { parcelIdsVisible: data.parcelIdsVisible } : {}) } };
+    if (name === 'ugt_map_view' && data?.view) return { name: 'view', data: { view: data.view,
+        ...(typeof data.parcelIdsVisible === 'boolean' ? { parcelIdsVisible: data.parcelIdsVisible } : {}),
+        ...(typeof data.roadTracksVisible === 'boolean' ? { roadTracksVisible: data.roadTracksVisible } : {}) } };
     if (name === 'ugt_select_parcels' && data?.selection) return { name: 'selection', data: { selection: data.selection, ...(data.point ? { point: data.point } : {}) } };
     return null;
 }

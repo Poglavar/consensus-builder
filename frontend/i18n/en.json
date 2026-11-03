@@ -78,6 +78,13 @@
     "optionalTools": {
         "loadFailed": "Could not load this tool. Please try again."
     },
+    "roadTrackLayer": {
+        "label": "Road/track",
+        "zoom": "Zoom in to neighbourhood scale to show roads and tracks.",
+        "loading": "Loading eligible roads and tracks…",
+        "ready": "Showing eligible roads and tracks.",
+        "error": "Could not load roads and tracks. Please retry."
+    },
     "urbanBlocks": {
         "toggle": "Detect and analyse blocks",
         "hint": "Load OSM transport and water boundaries, then colour the enclosed blocks. Parcel data is optional.",
@@ -2869,8 +2876,8 @@
                     "goals": {
                         "all": "All goals",
                         "station": "Transit station",
-                        "roadTrack": "Road/Track",
-                        "road-track": "Road/Track",
+                        "roadTrack": "Road/track",
+                        "road-track": "Road/track",
                         "buildings": "Buildings",
                         "single": "Single building",
                         "park": "Park",
@@ -2914,7 +2921,7 @@
                     "authorDesc": "Author (Z → A)"
                 },
                 "goalLabels": {
-                    "road-track": "Road/Track",
+                    "road-track": "Road/track",
                     "road": "Road",
                     "track": "Track",
                     "buildings": "Buildings",
@@ -3101,7 +3108,7 @@
                 "park": "Park",
                 "square": "Square",
                 "lake": "Lake",
-                "roadTrack": "Road/Track",
+                "roadTrack": "Road/track",
                 "urbanRule": "Urban rule",
                 "ownershipTransfer": "Ownership transfer"
             },
@@ -6104,7 +6111,7 @@
             "block_neighbour_not_fully_visible": "Cannot form the block: parcel {{id}} belongs to it but runs past the edge of the view. Block detection only follows parcels that are entirely visible — zoom out until the whole block fits, then press Detect block again.",
             "block_no_parcels_in_view": "There are no ordinary parcels in view to build a block from — only roads and tracks.",
             "block_parcels_not_loaded": "The parcels have not finished loading yet — wait for the map to settle and try again.",
-            "block_seed_is_corridor": "This is a road or track parcel. A block is the land BETWEEN corridors — start from a parcel inside one.",
+            "block_seed_is_corridor": "Blocks are bordered by roads, streets or tracks. The parcel you selected contains a road or track and is a border parcel. Select another parcel to detect its block. To see the eligible borders, turn on “Road/track” in Layers.",
             "block_seed_not_fully_visible": "Cannot form the block: the selected parcel itself runs past the edge of the view. Block detection only follows parcels that are entirely visible, so zoom out until this parcel fits, then press Detect block again.",
             "block_seed_unresolved": "Could not read the selected parcel’s id, so there is nothing to grow a block from.",
             "block_multiselect_unavailable": "Multi-select is unavailable, and a block is delivered as a multi-parcel selection.",

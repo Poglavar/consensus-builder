@@ -90,7 +90,7 @@ describe('urban block ground boundaries', () => {
         expect(blocks.features[0].geometry.coordinates).toHaveLength(1);
     });
 
-    it('assigns a spanning parcel to one strict representative-point enclosure', () => {
+    it('rejects a spanning parcel from every enclosure using its whole geometry', () => {
         const blocks = turf.featureCollection([
             turf.polygon([[[0, 0], [1, 0], [1, 1], [0, 1], [0, 0]]], { id: 'west' }),
             turf.polygon([[[1, 0], [2, 0], [2, 1], [1, 1], [1, 0]]], { id: 'east' })
@@ -100,9 +100,9 @@ describe('urban block ground boundaries', () => {
         const eastParcel = turf.polygon([[[1.7, 0.1], [1.8, 0.1], [1.8, 0.2], [1.7, 0.2], [1.7, 0.1]]], { parcelId: 'east-parcel' });
         const west = blocks.features[0], east = blocks.features[1];
 
-        expect(model.enclosureForParcel(blocks, spanning, turf)).toBe(west);
+        expect(model.enclosureForParcel(blocks, spanning, turf)).toBeNull();
         expect(model.parcelIdsInBlock(west, [spanning, westParcel, eastParcel], turf).sort())
-            .toEqual(['span', 'west-parcel']);
+            .toEqual(['west-parcel']);
         expect(model.parcelIdsInBlock(east, [spanning, westParcel, eastParcel], turf))
             .toEqual(['east-parcel']);
         expect(model.enclosureForParcel(blocks, null, turf)).toBeNull();

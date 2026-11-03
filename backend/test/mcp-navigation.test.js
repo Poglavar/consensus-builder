@@ -25,7 +25,7 @@ describe('MCP map navigation', () => {
         expect((await navigation.selectParcels(args)).selection.parcelIds).toEqual(['west', 'far-east']);
         expect(read.request).toHaveBeenCalledWith('/road-parcels', { bbox: expect.any(String) });
         await expect(navigation.selectParcels({ ...args, parcelId: 'east' })).rejects.toMatchObject({
-            code: 'parcel-block-unproven', message: expect.stringContaining('road or track ground')
+            code: 'parcel-block-unproven', message: expect.stringContaining('border parcel')
         });
         truncated = true;
         await expect(navigation.selectParcels(args)).rejects.toMatchObject({ code: 'parcel-coverage-incomplete' });
@@ -34,6 +34,9 @@ describe('MCP map navigation', () => {
     it('updates a runner-injected absolute view while applying center, pan and zoom as absolute state', () => {
         const navigation = createMcpNavigation({ read: readers() });
         const current = { at: '45,16,17', mode: '2d', city: 'test', settings: { language: 'en' } };
+        expect(navigation.mapView({ view: current, roadTracksVisible: true })).toMatchObject({ roadTracksVisible: true });
+        expect(navigation.mapView({ view: current, roadTracksVisible: false })).toMatchObject({ roadTracksVisible: false });
+        expect(() => navigation.mapView({ view: current, roadTracksVisible: 'yes' })).toThrow(/boolean/);
         const moved = navigation.mapView({ view: current, center: [17, 46], direction: 'east', distance: 1000, unit: 'm', zoomDelta: 2 });
         const [lat, lng, movedZoom] = moved.view.at.split(',').map(Number);
         expect(lat).toBeCloseTo(46, 4);

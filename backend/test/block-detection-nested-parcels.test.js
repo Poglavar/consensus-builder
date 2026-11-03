@@ -38,10 +38,10 @@ describe('nested parcels in detected blocks', () => {
         expect(JSON.stringify(f.features)).toBe(before);
     });
 
-    it('keeps parcels behind an inner street loop in their own enclosure', async () => {
+    it('rejects parcels touched by an inner street and excludes their enclosed parcels', async () => {
         const f = fixture({ innerStreet: true });
-        expect((await shared(f, f.features[0])).ids).toEqual(['outer']);
-        expect((await shared(f, f.features[2])).ids.slice().sort()).toEqual(['inner', 'middle']);
+        expect(await shared(f, f.features[0])).toMatchObject({ invalidReason: 'seed_is_corridor', ids: [] });
+        expect((await shared(f, f.features[2])).ids).toEqual([]);
     });
 
     it('selects inner workshop parcels with their surrounding land in both detector and MCP', async () => {
@@ -77,16 +77,15 @@ describe('nested parcels in detected blocks', () => {
             }
         };
         const result = await detection.createBrowser(win).detect(f.features[0]);
-        expect(result.ids.slice().sort()).toEqual(innerStreet ? ['outer'] : ['inner', 'middle', 'outer']);
-        expect(ensureBounds).toHaveBeenCalledExactlyOnceWith({ sw: [0, 0], ne: [0.01, 0.01] },
+        expect(result.ids.slice().sort()).toEqual(innerStreet ? [] : ['inner', 'middle', 'outer']);
+        if (innerStreet) expect(ensureBounds).not.toHaveBeenCalled();
+        else expect(ensureBounds).toHaveBeenCalledExactlyOnceWith({ sw: [0, 0], ne: [0.01, 0.01] },
             { signal: undefined, city: 'test' });
     });
 
     it.each([
         ['outer', false, ['inner', 'middle', 'outer']],
-        ['inner', false, ['inner', 'middle', 'outer']],
-        ['outer', true, ['outer']],
-        ['inner', true, ['inner', 'middle']]
+        ['inner', false, ['inner', 'middle', 'outer']]
     ])('MCP agrees from the %s seed (inner street: %s)', async (seedId, innerStreet, expected) => {
         const f = fixture({ innerStreet });
         const read = {

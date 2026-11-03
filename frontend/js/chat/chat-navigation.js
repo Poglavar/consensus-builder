@@ -81,7 +81,7 @@
             }
             return {
                 parcelSourceId: sourceId(),
-                display: { parcelIds: numbersToggle?.checked === true },
+                display: { parcelIds: numbersToggle?.checked === true, roadTracks: root.RoadTrackLayer?.isEnabled() === true },
                 visibleParcels,
                 visibleParcelsTruncated,
                 viewBounds: validViewBounds ? viewBounds : null
@@ -225,6 +225,13 @@
                             }
                         });
                     }
+                }
+            }
+            if (Object.prototype.hasOwnProperty.call(event, 'roadTracksVisible')) {
+                if (typeof event.roadTracksVisible !== 'boolean') throw new Error('The Road/track display state is invalid.');
+                if (!root.RoadTrackLayer) throw new Error('The Road/track layer is unavailable.');
+                if (!await root.RoadTrackLayer.setEnabled(event.roadTracksVisible)) {
+                    throw new Error(root.document.getElementById('road-track-layer-status')?.textContent || 'Road/track could not be shown.');
                 }
             }
             if (Object.prototype.hasOwnProperty.call(event, 'parcelIdsVisible')) {

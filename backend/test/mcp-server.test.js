@@ -197,7 +197,7 @@ describe('Urban Game Theory MCP server', () => {
     it('exposes landmark relations and displayed parcel numbers through existing public primitives', async () => {
         const tools = stubTools();
         tools.selectParcels = vi.fn(async () => ({ selection: { parcelSourceId: 'source', focusParcelId: 'p', parcelIds: ['p'], active: false }, parcelNumber: '17/2' }));
-        tools.mapView = vi.fn(async () => ({ view: { at: '0,0,18' }, parcelIdsVisible: true }));
+        tools.mapView = vi.fn(async () => ({ view: { at: '0,0,18' }, parcelIdsVisible: true, roadTracksVisible: true }));
         await connect(tools);
         const byName = await toolsByName();
         expect(byName.ugt_select_parcels.inputSchema.properties.action.enum).toContain('near');
@@ -207,6 +207,8 @@ describe('Urban Game Theory MCP server', () => {
         expect((await client.callTool({ name: 'ugt_select_parcels', arguments: args })).isError).toBeFalsy();
         expect(tools.selectParcels).toHaveBeenCalledWith(args);
         expect((await client.callTool({ name: 'ugt_map_view', arguments: { view: { at: '0,0,18' }, parcelIdsVisible: true } })).structuredContent.parcelIdsVisible).toBe(true);
+        expect((await client.callTool({ name: 'ugt_map_view', arguments: { view: { at: '0,0,18' }, roadTracksVisible: true } })).structuredContent.roadTracksVisible).toBe(true);
+        expect(tools.mapView).toHaveBeenLastCalledWith(expect.objectContaining({ roadTracksVisible: true }));
         expect((await client.callTool({ name: 'ugt_select_parcels', arguments: { ...args, maxDistanceM: 201 } })).isError).toBe(true);
     });
 

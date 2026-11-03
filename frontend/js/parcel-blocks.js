@@ -2073,12 +2073,12 @@ function selectCurrentBlockIntoMultiSelection(startParcel, options = {}) {
         const props = seedFeature?.properties || {};
         if (props.isCorridor === true || props.isRoad === true || props.isTrack === true) {
             return failBlockDetection(tBlock('alerts.messages.block_seed_is_corridor', {},
-                'This is a road or track parcel. A block is the land BETWEEN corridors — start from a parcel inside one.'));
+                'Blocks are defined as bordered by a road/street or track. The parcel you selected is a border parcel. Select another parcel to detect its block. To see eligible borders, check Road/track in Layers.'));
         }
         const result = await sourceBlockDetector().detect(seedFeature);
         if (result.invalidReason === 'seed_is_corridor') {
             return failBlockDetection(tBlock('alerts.messages.block_seed_is_corridor', {},
-                'This is a road or track parcel. A block is the land BETWEEN corridors — start from a parcel inside one.'));
+                'Blocks are defined as bordered by a road/street or track. The parcel you selected is a border parcel. Select another parcel to detect its block. To see eligible borders, check Road/track in Layers.'));
         }
         if (result.invalidReason === 'parcel_limit_exceeded') {
             return failBlockParcelLimit(result.previewIds.map(liveBlockPeek).filter(Boolean), button);

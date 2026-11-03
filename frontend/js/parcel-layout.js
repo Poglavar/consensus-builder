@@ -487,21 +487,25 @@
                         </div>
                         <div class="reparcel-edit-tools">
                             <div class="reparcel-legend-actions">
-                                ${tool('data-reparcel-draw aria-pressed="false"', 'reparcellization.modal.drawPlot', 'Draw plot', 'fa-draw-polygon')}
-                                ${tool('data-reparcel-line aria-pressed="false"', 'reparcellization.modal.drawLine', 'Draw a line', 'fa-slash')}
-                                ${tool('data-reparcel-erase aria-pressed="false"', 'reparcellization.modal.eraseEdge', 'Erase a boundary', 'fa-eraser')}
-                                ${tool('data-reparcel-nodes aria-pressed="false"', 'reparcellization.modal.editNodes', 'Edit boundaries (nodes)', 'fa-bezier-curve')}
-                                <label class="btn btn-icon" title="${uploadLabel}">
-                                    <i class="fa-solid fa-folder-open" aria-hidden="true"></i>
-                                    <input type="file" accept=".geojson,.json,application/geo+json,application/json" data-reparcel-upload aria-label="${uploadLabel}" hidden>
-                                </label>
-                                <button type="button" class="btn btn-icon" data-reparcel-download title="${downloadLabel}" aria-label="${downloadLabel}"><i class="fa-solid fa-download" aria-hidden="true"></i></button>
+                                <div class="reparcel-geometry-tools">
+                                    ${tool('data-reparcel-draw aria-pressed="false"', 'reparcellization.modal.drawPlot', 'Draw plot', 'fa-draw-polygon')}
+                                    ${tool('data-reparcel-line aria-pressed="false"', 'reparcellization.modal.drawLine', 'Draw a line', 'fa-slash')}
+                                    ${tool('data-reparcel-erase aria-pressed="false"', 'reparcellization.modal.eraseEdge', 'Erase a boundary', 'fa-eraser')}
+                                    ${tool('data-reparcel-nodes aria-pressed="false"', 'reparcellization.modal.editNodes', 'Edit boundaries (nodes)', 'fa-bezier-curve')}
+                                </div>
+                                <div class="reparcel-file-tools">
+                                    <label class="btn btn-icon" title="${uploadLabel}" aria-label="${uploadLabel}">
+                                        <i class="fa-solid fa-folder-open" aria-hidden="true"></i>
+                                        <input type="file" accept=".geojson,.json,application/geo+json,application/json" data-reparcel-upload aria-label="${uploadLabel}" hidden>
+                                    </label>
+                                    <button type="button" class="btn btn-icon" data-reparcel-download title="${downloadLabel}" aria-label="${downloadLabel}"><i class="fa-solid fa-download" aria-hidden="true"></i></button>
+                                </div>
                             </div>
                         </div>
                       </div>
                       <div class="reparcel-persistent-controls">
-                          ${tool('data-reparcel-undo-edit disabled', 'reparcellization.modal.undoEdit', 'Undo (Cmd/Ctrl+Z)', 'fa-rotate-left')}
-                          ${tool('data-reparcel-redo-edit disabled', 'reparcellization.modal.redoEdit', 'Redo', 'fa-rotate-right')}
+                          <button type="button" class="btn" data-reparcel-undo-edit disabled title="${t('reparcellization.modal.undoEdit', 'Undo (Cmd/Ctrl+Z)')}"><i class="fa-solid fa-rotate-left" aria-hidden="true"></i> ${t('undo', 'Undo')}</button>
+                          <button type="button" class="btn" data-reparcel-redo-edit disabled title="${t('reparcellization.modal.redoEdit', 'Redo')}"><i class="fa-solid fa-rotate-right" aria-hidden="true"></i> ${t('reparcellization.modal.redoEdit', 'Redo')}</button>
                       </div>
                       <div class="reparcel-draw-toolbar" data-reparcel-draw-toolbar hidden>
                           <button type="button" class="btn btn-sm" data-reparcel-undo>${t('reparcellization.modal.drawUndo', 'Undo point')} (U)</button>

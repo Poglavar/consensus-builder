@@ -2636,6 +2636,13 @@
     "optionalTools": {
         "loadFailed": "Impossible de charger cet outil. Veuillez réessayer."
     },
+    "roadTrackLayer": {
+        "label": "Route/voie",
+        "zoom": "Zoomez à l’échelle du quartier pour afficher les routes et voies.",
+        "loading": "Chargement des routes et voies éligibles…",
+        "ready": "Les routes et voies éligibles sont affichées.",
+        "error": "Impossible de charger les routes et voies. Réessayez."
+    },
     "urbanBlocks": {
         "toggle": "Détecter et analyser les îlots",
         "hint": "Chargez les limites de transport et d’eau d’OSM, puis colorez les îlots délimités. Les données parcellaires sont facultatives.",
@@ -6229,7 +6236,7 @@
             "block_neighbour_not_fully_visible": "Impossible de former l’îlot : la parcelle {{id}} en fait partie, mais dépasse les limites de la vue. La détection de l’îlot ne suit que les parcelles entièrement visibles — effectuez un zoom arrière jusqu’à ce que l’îlot entier soit visible, puis appuyez à nouveau sur Détecter l’îlot.",
             "block_no_parcels_in_view": "Aucune parcelle ordinaire n’est visible pour former un îlot — uniquement des routes et des voies.",
             "block_parcels_not_loaded": "Le chargement des parcelles n’est pas encore terminé — attendez que la carte se stabilise et réessayez.",
-            "block_seed_is_corridor": "Cette parcelle correspond à une route ou à une voie. Un îlot est le terrain situé ENTRE les couloirs de circulation — partez d’une parcelle située à l’intérieur d’un îlot.",
+            "block_seed_is_corridor": "Les îlots sont délimités par des routes, rues ou voies. La parcelle sélectionnée contient une route ou une voie et se trouve en bordure. Sélectionnez une autre parcelle pour détecter son îlot. Pour voir les limites éligibles, activez « Route/voie » dans Couches.",
             "block_seed_not_fully_visible": "Impossible de former l’îlot : la parcelle sélectionnée dépasse elle-même les limites de la vue. La détection de l’îlot ne suit que les parcelles entièrement visibles. Effectuez donc un zoom arrière jusqu’à ce que cette parcelle soit entièrement visible, puis appuyez à nouveau sur Détecter l’îlot.",
             "block_seed_unresolved": "Impossible de lire l’identifiant de la parcelle sélectionnée ; aucun point de départ n’est donc disponible pour former un îlot.",
             "block_multiselect_unavailable": "La sélection multiple est indisponible, alors qu’un îlot est fourni sous forme de sélection de plusieurs parcelles.",

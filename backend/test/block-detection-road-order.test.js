@@ -54,7 +54,8 @@ describe('Detect block and live corridor identity', () => {
         const before = [...h.selection.selectedParcels];
         expect(await h.detect()).toBe(true);
         expect(h.alert).toHaveBeenCalledOnce();
-        expect(h.alert.mock.calls[0][0]).toContain('road or track parcel');
+        expect(h.alert.mock.calls[0][0]).toContain('border parcel');
+        expect(h.alert.mock.calls[0][0]).toContain('Road/track in Layers');
         expect(h.createBrowser).not.toHaveBeenCalled();
         expect(h.detector.detect).not.toHaveBeenCalled();
         expect([...h.selection.selectedParcels]).toEqual(before);

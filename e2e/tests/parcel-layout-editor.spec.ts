@@ -129,7 +129,23 @@ async function crossingLine(page: Page): Promise<Array<{ x: number; y: number }>
 }
 
 test('the Build tile opens the editor on equal plots, and the plot count sets how many plots Done applies', async ({ mockApi: page }) => {
+  await page.setViewportSize({ width: 1280, height: 860 });
   const editor = await openLayoutEditor(page);
+  const tools = page.locator('.on-map-editor__tools.reparcel-tools-map');
+  await expect(tools).toHaveCSS('width', '400px');
+  const geometryTools = editor.locator('.reparcel-geometry-tools > button');
+  await expect(geometryTools).toHaveCount(4);
+  const toolRows = await geometryTools.evaluateAll(buttons => [...new Set(buttons.map(button =>
+    Math.round(button.getBoundingClientRect().top)))].length);
+  expect(toolRows).toBe(2);
+  const undo = editor.getByRole('button', { name: 'Undo' });
+  const redo = editor.getByRole('button', { name: 'Redo' });
+  await expect(undo).toBeVisible();
+  await expect(redo).toBeVisible();
+  const [undoBox, redoBox] = await Promise.all([undo.boundingBox(), redo.boundingBox()]);
+  expect(undoBox).not.toBeNull();
+  expect(redoBox).not.toBeNull();
+  expect(Math.round(undoBox!.y)).toBe(Math.round(redoBox!.y));
   await expect(editor.locator('.on-map-editor__heading h2')).toHaveText('Lay out parcels');
   expect(await algorithm(editor)).toBe('equal');
   const count = editor.locator('[data-parcel-layout-count]');
@@ -166,6 +182,20 @@ test('the Build tile opens the editor on equal plots, and the plot count sets ho
   // A layout draws borders only: who gets which plot, and on what terms, is its agreement's business.
   expect(JSON.stringify(layout.parcelLayout)).not.toMatch(/owner|share|cash|offer|budget|currency|approval/i);
   expect(layout.approvalConfig).toBeUndefined();
+});
+
+test('the parcel-layout panel fits a narrow viewport without horizontal page overflow', async ({ mockApi: page }) => {
+  await page.setViewportSize({ width: 360, height: 800 });
+  const editor = await openLayoutEditor(page);
+  const tools = page.locator('.on-map-editor__tools.reparcel-tools-map');
+  await expect(tools).toBeVisible();
+  const bounds = await tools.boundingBox();
+  expect(bounds).not.toBeNull();
+  expect(bounds!.width).toBeLessThanOrEqual(336);
+  const overflow = await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth);
+  expect(overflow).toBe(false);
+  await expect(editor.getByRole('button', { name: 'Undo' })).toBeVisible();
+  await expect(editor.getByRole('button', { name: 'Redo' })).toBeVisible();
 });
 
 test('a numbered plot button pins and releases that plot highlight', async ({ mockApi: page }) => {
@@ -258,6 +288,13 @@ test('a boundary segment drags straight away, undo and redo walk it back and for
   await page.keyboard.press('ControlOrMeta+Shift+z');
   await expect.poll(() => plotRows(editor)).toEqual(dragged);
   expect(await algorithm(editor)).toBe('manual');
+
+  await editor.getByRole('button', { name: 'Undo', exact: true }).focus();
+  await page.keyboard.press('Enter');
+  await expect.poll(() => plotRows(editor)).toEqual(equal);
+  await editor.getByRole('button', { name: 'Redo', exact: true }).focus();
+  await page.keyboard.press('Enter');
+  await expect.poll(() => plotRows(editor)).toEqual(dragged);
 
   // Back to equal plots, then Draw freely: the plots on the map come along.
   await chooseLayout(editor, 'equal');

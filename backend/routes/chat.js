@@ -17,7 +17,7 @@ const languages = z.enum(['en','hr','sr','es','ar','fr','pt']);
 const contextSchema = z.object({
     city: z.string().min(1).max(100), parcelSourceId: z.string().max(3507).optional(),
     view: z.record(z.string(), z.unknown()).optional(),
-    mapContext: z.object({ parcelSourceId: z.string().max(3507).nullable(), display: z.object({ parcelIds: z.boolean() }),
+    mapContext: z.object({ parcelSourceId: z.string().max(3507).nullable(), display: z.object({ parcelIds: z.boolean(), roadTracks: z.boolean().optional() }),
         visibleParcels: z.array(z.object({ parcelId: z.string().min(1).max(250), label: z.string().min(1).max(250), point: z.tuple([z.number().min(-180).max(180), z.number().min(-85).max(85)]) })).max(500),
         visibleParcelsTruncated: z.boolean(), viewBounds: z.tuple([z.number().min(-180).max(180), z.number().min(-85).max(85), z.number().min(-180).max(180), z.number().min(-85).max(85)]).nullable() }).optional(),
     selection: z.object({ designCid: z.string().max(100).optional(), buildingIndex: z.number().int().min(0).max(999).optional(),

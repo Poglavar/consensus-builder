@@ -28,6 +28,22 @@
             && Number.isFinite(layer) && layer === 0 && properties.location !== 'underground';
     }
 
+    function isRoadTrackBoundary(properties = {}) {
+        return isGroundBoundary(properties) && (isGroundRoad(properties)
+            || RAIL_BOUNDARIES.has(properties.railway) || RAIL_BOUNDARIES.has(properties.railway_type)
+            || properties.isRoad === true || properties.isTrack === true || properties.isCorridor === true);
+    }
+
+    function parcelTouchesRoadTrack(parcel, boundaries, turf) {
+        const a = turf.bbox(parcel);
+        return boundaries.some(feature => {
+            if (!isRoadTrackBoundary(feature.properties)) return false;
+            const b = feature.bbox || turf.bbox(feature);
+            return a[0] <= b[2] && a[2] >= b[0] && a[1] <= b[3] && a[3] >= b[1]
+                && turf.booleanIntersects(parcel, feature);
+        });
+    }
+
     // Any mapped transport or water edge can bound land. Bridges, tunnels and non-ground layers
     // do not enclose ground parcels.
     function isGroundBoundary(properties = {}) {
@@ -346,30 +362,28 @@
         return turf.featureCollection(blocks);
     }
 
-    // Turf may return a vertex when the centre falls in a hole or outside a concave parcel.
-    // Such a vertex can lie on a block boundary; use actual parcel interior in that case.
-    function parcelInteriorPoint(parcel, turf) {
-        const point = turf.pointOnFeature(parcel);
-        if (turf.booleanPointInPolygon(point, parcel, { ignoreBoundary: true })) return point;
-        const parts = parcel.geometry.type === 'Polygon' ? [parcel]
-            : parcel.geometry.coordinates.map(rings => turf.polygon(rings));
-        for (const part of parts) {
-            const interior = interiorPoint(part, turf);
-            if (interior) return interior;
-        }
-        return null;
+    function coversParcel(container, parcel, turf) {
+        const a = turf.bbox(container), b = turf.bbox(parcel);
+        if (b[0] < a[0] || b[1] < a[1] || b[2] > a[2] || b[3] > a[3]) return false;
+        return turf.difference(parcel, container) === null;
     }
 
-    // This is a count of LOADED cadastral parcels whose representative point is inside the block,
-    // not a claim that the entire cadastre is present. A spanning parcel belongs to one block.
-    function parcelIdsInBlock(block, parcels, turf) {
+    // Whole geometry decides membership. A rejected enclosing parcel also excludes the parcels
+    // inside its holes or outline; they cannot be reached through border ground.
+    function parcelIdsInBlock(block, parcels, turf, excluded = () => false) {
         const ids = new Set();
-        for (const parcel of Array.isArray(parcels) ? parcels : []) {
-            if (!['Polygon', 'MultiPolygon'].includes(parcel.geometry?.type)) continue;
+        const polygons = (Array.isArray(parcels) ? parcels : [])
+            .filter(parcel => ['Polygon', 'MultiPolygon'].includes(parcel.geometry?.type));
+        const rejected = polygons.filter(parcel => excluded(parcel) || !coversParcel(block, parcel, turf));
+        const shells = rejected.map(parcel => ({ parcel, shell: turf.feature({ type: parcel.geometry.type,
+            coordinates: parcel.geometry.type === 'Polygon' ? [parcel.geometry.coordinates[0]]
+                : parcel.geometry.coordinates.map(rings => [rings[0]]) }) }));
+        for (const parcel of polygons) {
+            if (rejected.includes(parcel) || shells.some(({ parcel: parent, shell }) =>
+                parent !== parcel && coversParcel(shell, parcel, turf))) continue;
             const id = parcel.properties?.parcelId ?? parcel.properties?.parcel_id ?? parcel.properties?.PARCEL_ID ?? parcel.properties?.id ?? parcel.id;
             if (id == null || ids.has(String(id))) continue;
-            const point = parcelInteriorPoint(parcel, turf);
-            if (point && turf.booleanPointInPolygon(point, block, { ignoreBoundary: true })) ids.add(String(id));
+            ids.add(String(id));
         }
         return [...ids];
     }
@@ -379,15 +393,11 @@
         return parcelIdsInBlock(block, parcels, turf).length;
     }
 
-    // A seed belongs to exactly one detected enclosure by its representative point. A spanning
-    // cadastral polygon therefore cannot join separate faces through its full geometry.
+    // A seed must fit wholly inside exactly one enclosure, including all disconnected pieces.
     function enclosureForParcel(blocks, seed, turf) {
         if (!seed || !['Polygon', 'MultiPolygon'].includes(seed.geometry?.type)
             || !Array.isArray(blocks?.features)) return null;
-        const point = parcelInteriorPoint(seed, turf);
-        if (!point) return null;
-        const matches = blocks.features.filter(block =>
-            turf.booleanPointInPolygon(point, block, { ignoreBoundary: true }));
+        const matches = blocks.features.filter(block => coversParcel(block, seed, turf));
         return matches.length === 1 ? matches[0] : null;
     }
 
@@ -413,6 +423,6 @@
     }
 
     return { detectBlocks, nodeRoads, groundRuns, withProposedStreets, metrics, loadedParcelCount, parcelIdsInBlock,
-        enclosureForParcel, isGroundRoad, isGroundBoundary, isRoadArea, targetBlockCount,
+        enclosureForParcel, isGroundRoad, isGroundBoundary, isRoadTrackBoundary, parcelTouchesRoadTrack, isRoadArea, targetBlockCount,
         rankBlocks, walkBand, blockColor, WALK_COLORS };
 });

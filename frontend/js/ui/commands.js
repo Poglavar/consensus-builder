@@ -36,7 +36,7 @@
         'highlightOwnershipPrivate',
         'parcels-in-view',
         // Layers sheet: blocks, buildings, roads
-        'showUrbanBlocks', 'urban-blocks-refresh', 'urban-blocks-browse',
+        'road-track-layer-checkbox', 'road-track-layer-status', 'showUrbanBlocks', 'urban-blocks-refresh', 'urban-blocks-browse',
         'parcelBlocksCheckbox', 'showBlockNames', 'showParksCheckbox', 'showSquaresCheckbox',
         'showBuildings', 'showProposedBuildings',
         'showGovernmentRoadPlan', 'showOSMRoadLines', 'showGUPRoadLines', 'showWFSPolygons',
@@ -295,6 +295,8 @@
             run: clearLocalParcelData },
 
         // ---- Layers sheet: blocks, buildings, roads ----
+        control('road-track-layer-checkbox', { id: 'layers.roadTracks', group: 'layers', kind: 'toggle', surfaces: ['layers'], modes: ['2d'],
+            labelKey: 'roadTrackLayer.label', fallbackLabel: 'Road/track', icon: 'fas fa-road' }),
         control('showUrbanBlocks', { id: 'layers.urbanBlocks', group: 'layers', kind: 'toggle', surfaces: ['layers'],
             labelKey: 'urbanBlocks.toggle', fallbackLabel: 'Detect and analyse blocks', icon: 'fas fa-shapes' }),
         control('showSchellingPlan', { id: 'layers.schellingPlan', group: 'layers', kind: 'toggle', surfaces: ['layers'], modes: ['2d'],

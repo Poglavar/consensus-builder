@@ -40,6 +40,8 @@
         if (!seedId) throw fail('block-seed-unresolved', 'The selected parcel has no identity.');
         let bbox = padBounds(turf.bbox(seed), 500);
         let enclosure = null;
+        let boundaries = [];
+        let roadTracks = [];
         for (let expansion = 0; expansion < 4 && supportedBounds(bbox); expansion++) {
             signal?.throwIfAborted();
             const source = await fetchBoundaries(bbox, signal);
@@ -47,7 +49,13 @@
                 throw fail('block-boundaries-incomplete', 'OSM boundary coverage is incomplete.');
             }
             const extra = typeof extraBoundaries === 'function' ? extraBoundaries(bbox) : extraBoundaries;
-            const blocks = await detectBlocks({ ...source, features: [...source.features, ...extra] }, bbox, signal);
+            boundaries = [...source.features, ...extra];
+            roadTracks = boundaries.filter(feature => model.isRoadTrackBoundary(feature.properties))
+                .map(feature => ({ ...feature, bbox: turf.bbox(feature) }));
+            if (isCorridor(seed) || model.parcelTouchesRoadTrack(seed, roadTracks, turf)) {
+                return { isValid: false, invalidReason: 'seed_is_corridor', ids: [], previewIds: [] };
+            }
+            const blocks = await detectBlocks({ ...source, features: boundaries }, bbox, signal);
             enclosure = model.enclosureForParcel(blocks, seed, turf);
             if (enclosure) break;
             bbox = padBounds(bbox, 500 * (expansion + 1));
@@ -59,10 +67,10 @@
             throw fail('block-parcels-incomplete', 'Parcel coverage under the block is incomplete.');
         }
         const roadIds = new Set(ground.roadParcelIds || []);
-        const excluded = feature => corridorGround(feature, roadIds) || isCorridor(feature);
+        const excluded = feature => corridorGround(feature, roadIds) || isCorridor(feature)
+            || model.parcelTouchesRoadTrack(feature, roadTracks, turf);
         if (excluded(seed)) return { isValid: false, invalidReason: 'seed_is_corridor', ids: [], previewIds: [], enclosure };
-        const members = ground.features.filter(feature => !excluded(feature));
-        const ids = model.parcelIdsInBlock(enclosure, members, turf).sort((a, b) =>
+        const ids = model.parcelIdsInBlock(enclosure, ground.features, turf, excluded).sort((a, b) =>
             a === seedId ? -1 : b === seedId ? 1 : a.localeCompare(b));
         if (!ids.includes(seedId)) return { isValid: false, invalidReason: 'seed_excluded', ids: [], previewIds: [], enclosure };
         if (ids.length > limit) return { isValid: false, invalidReason: 'parcel_limit_exceeded',

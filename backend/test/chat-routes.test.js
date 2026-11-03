@@ -66,7 +66,7 @@ describe('chat conversation routes', () => {
     it('accepts bounded live parcel labels in turn context without sending an extra model payload', async () => {
         const runTurn = vi.fn(async ({ context: received }) => ({ messages: [], usage: {}, costUsd: 0, outcome: { type: 'reply', text: received.mapContext.display.parcelIds ? 'IDs shown.' : 'IDs hidden.' } }));
         const { app } = makeHarness({ runTurn });
-        const mapContext = { parcelSourceId: 'source', display: { parcelIds: true }, visibleParcels: [{ parcelId: 'live-p', label: '17/2', point: [-0.1,51.5] }], visibleParcelsTruncated: false, viewBounds: [-0.11,51.49,-0.09,51.51] };
+        const mapContext = { parcelSourceId: 'source', display: { parcelIds: true, roadTracks: true }, visibleParcels: [{ parcelId: 'live-p', label: '17/2', point: [-0.1,51.5] }], visibleParcelsTruncated: false, viewBounds: [-0.11,51.49,-0.09,51.51] };
         const res = await turn(app, 'conv-1', body({ context: { ...context, parcelSourceId: 'source', mapContext } }));
         expect(res.status).toBe(200);
         expect(runTurn.mock.calls[0][0].context.mapContext).toEqual(mapContext);

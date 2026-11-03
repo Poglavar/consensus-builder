@@ -9,9 +9,8 @@
     flex-wrap: nowrap;
     align-items: stretch;
     gap: 8px;
-    /* As wide as its widest row of buttons, never wider: a fixed width left a band of empty glass over the map. */
-    width: fit-content;
-    max-width: min(720px, calc(100vw - 520px));
+    width: 400px;
+    max-width: min(400px, calc(100vw - 520px));
     max-height: calc(100dvh - 100px);
     overflow: auto;
     overscroll-behavior: contain;
@@ -53,11 +52,12 @@
 .reparcel-active-mode[hidden] { display: none; }
 
 .reparcel-persistent-controls {
-    display: flex;
-    align-items: center;
-    flex-wrap: wrap;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 6px;
 }
+
+.reparcel-persistent-controls > .btn { white-space: nowrap; }
 
 .on-map-editor.is-collapsed .reparcel-secondary-controls { display: none; }
 
@@ -144,8 +144,21 @@
 
 .reparcel-legend-actions {
     display: flex;
-    flex-wrap: wrap;
-    align-items: center;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.reparcel-geometry-tools {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 6px;
+    width: 100%;
+}
+
+.reparcel-geometry-tools > .btn { width: 100%; }
+
+.reparcel-file-tools {
+    display: flex;
     gap: 6px;
 }
 
@@ -368,8 +381,10 @@
     .on-map-reparcellization .on-map-editor__hint { display: none; }
     .reparcel-alg-options { flex-wrap: nowrap; gap: 4px; }
     .reparcel-alg-option { flex: 1 1 0; padding: 4px; white-space: normal; text-align: center; font-size: 12px; }
-    .reparcel-legend-actions { flex-wrap: nowrap; overflow-x: auto; padding-bottom: 3px; }
-    .reparcel-legend-actions > * { flex-shrink: 0; }
+    .reparcel-legend-actions { flex-direction: row; overflow-x: auto; padding-bottom: 3px; }
+    .reparcel-geometry-tools { width: auto; }
+    .reparcel-geometry-tools > .btn { width: auto; }
+    .reparcel-file-tools { flex-shrink: 0; }
 
     .reparcel-newplots-list {
         max-height: min(24vh, 190px);

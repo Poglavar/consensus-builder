@@ -82,7 +82,7 @@ describe('chat navigation adapter', () => {
 
         expect(nav.mapContext()).toEqual({
             parcelSourceId: 'source-a',
-            display: { parcelIds: false },
+            display: { parcelIds: false, roadTracks: false },
             visibleParcels: [
                 { parcelId: 'a', label: '12/3', point: [1.5, 3] },
                 { parcelId: 'b', label: '12/3', point: [2.5, 3] }
@@ -147,6 +147,17 @@ describe('chat navigation adapter', () => {
         await expect(nav.apply({ name: 'view', view: { mode: '2d', at: '0,0,5' }, parcelIdsVisible: true }))
             .rejects.toThrow(/Zoom in/);
         expect(numbers.checked).toBe(false);
+    });
+
+    it('applies Road/track visibility through the shared layer and validates the state', async () => {
+        const { nav, root } = fixture();
+        root.RoadTrackLayer = { setEnabled: vi.fn(async () => true) };
+        await nav.apply({ name: 'view', view: { mode: '2d', at: '0,0,5' }, roadTracksVisible: true });
+        expect(root.RoadTrackLayer.setEnabled).toHaveBeenCalledWith(true);
+        await nav.apply({ name: 'view', view: { mode: '2d', at: '0,0,5' }, roadTracksVisible: false });
+        expect(root.RoadTrackLayer.setEnabled).toHaveBeenCalledWith(false);
+        await expect(nav.apply({ name: 'view', view: { mode: '2d', at: '0,0,5' }, roadTracksVisible: 'yes' }))
+            .rejects.toThrow(/display state/);
     });
 
     it('replaces selection exactly while keeping a focus candidate outside the selected set', async () => {

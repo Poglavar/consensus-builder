@@ -138,6 +138,10 @@ describe('parcel-layout UI state', () => {
         expect(group.children.indexOf(persistent)).toBeGreaterThan(group.children.indexOf(w.$('[data-reparcel-secondary-controls]')));
         expect(group.children.indexOf(persistent)).toBeLessThan(group.children.indexOf(toolbar));
         expect(persistent.querySelector('[data-reparcel-undo-edit]').disabled).toBe(true);
+        expect(persistent.querySelector('[data-reparcel-undo-edit]').textContent).toContain('Undo');
+        expect(persistent.querySelector('[data-reparcel-redo-edit]').textContent).toContain('Redo');
+        expect(w.$('.reparcel-geometry-tools').children).toHaveLength(4);
+        expect(w.$('.reparcel-file-tools').children).toHaveLength(2);
         // The layouts and their count fold away with the other secondary tools.
         expect(w.$('[data-parcel-layout-count-field]').closest('[data-reparcel-secondary-controls]')).not.toBeNull();
         expect(toolbar.hidden).toBe(true);
@@ -145,6 +149,9 @@ describe('parcel-layout UI state', () => {
         expect(w.$('[data-reparcel-active-mode]').textContent).toBe('Edit boundaries (nodes) active');
         expect(w.session().setHint.calls.at(-1)).toEqual(['Edit boundaries (nodes) active']);
         expect(styles).toContain('.on-map-editor.is-collapsed .reparcel-secondary-controls { display: none; }');
+        expect(styles).toMatch(/\.on-map-editor__tools\.reparcel-tools-map \{[^}]*width: 400px;[^}]*max-width: min\(400px,/);
+        expect(styles).toMatch(/\.reparcel-geometry-tools \{[^}]*grid-template-columns: repeat\(2, minmax\(0, 1fr\)\);/);
+        expect(styles).toMatch(/\.reparcel-persistent-controls \{[^}]*grid-template-columns: repeat\(2, minmax\(0, 1fr\)\);/);
         // Phones: edge to edge, the mode strip hangs from the top-left (css/map.css).
         expect(styles).toMatch(/\.on-map-editor__tools\.reparcel-tools-map \{[^}]*left: 12px;[^}]*width: calc\(100vw - 24px\);/);
         expect(styles).toMatch(/\.reparcel-actions \[data-reparcel-cancel\],[\s\S]*?min-width: 0;/);

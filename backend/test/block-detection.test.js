@@ -26,6 +26,39 @@ async function run({ boundaryTag = { railway: 'rail' }, features = [seed], compl
 }
 
 describe('bounded source-enclosure parcel detection', () => {
+    it.each(['crossing', 'contained', 'edge'])('rejects a seed touched by a %s track before looking for an enclosure', async kind => {
+        const coordinates = kind === 'crossing' ? [[0.004, 0.005], [0.006, 0.005]]
+            : kind === 'contained' ? [[0.0048, 0.005], [0.0052, 0.005]]
+                : [[0.0045, 0.0045], [0.0055, 0.0045]];
+        const loadParcels = vi.fn();
+        const { result } = await run({ extra: { loadParcels,
+            fetchBoundaries: async () => ({ complete: true, features: [turf.lineString(coordinates, { railway: 'rail' })] }) } });
+        expect(result).toMatchObject({ isValid: false, invalidReason: 'seed_is_corridor', ids: [] });
+        expect(loadParcels).not.toHaveBeenCalled();
+    });
+
+    it('excludes a crossed neighbour and its enclosed children without excluding the seed', async () => {
+        const parent = parcel('parent', 0.006, 0.006, 0.002);
+        const child = parcel('child', 0.0068, 0.0068);
+        parent.geometry.coordinates.push(child.geometry.coordinates[0].slice().reverse());
+        const { result } = await run({ features: [seed, parent, child], extra: {
+            fetchBoundaries: async () => ({ complete: true, features: [...roadsFor({ highway: 'residential' }).features,
+                turf.lineString([[0.0062, 0.0061], [0.0062, 0.0079]], { railway: 'rail' })] })
+        } });
+        expect(result.ids).toEqual(['seed']);
+    });
+
+    it('does not classify a line entirely in a parcel hole, a workshop or an elevated track as parcel border ground', () => {
+        const donut = parcel('donut', 0, 0, 0.01);
+        donut.geometry.coordinates.push(parcel('hole', 0.003, 0.003, 0.004).geometry.coordinates[0].slice().reverse());
+        const insideHole = turf.lineString([[0.004, 0.004], [0.006, 0.006]], { railway: 'rail' });
+        expect(model.parcelTouchesRoadTrack(donut, [insideHole], turf)).toBe(false);
+        for (const properties of [{ railway: 'workshop' }, { railway: 'rail', bridge: 'yes' },
+            { railway: 'rail', tunnel: 'yes' }, { railway: 'rail', layer: '1' }]) {
+            expect(model.parcelTouchesRoadTrack(seed, [turf.lineString([[0.004, 0.005], [0.006, 0.005]], properties)], turf)).toBe(false);
+        }
+    });
+
     it('excludes classified source roads and their disconnected pieces without inheriting use onto authored plots', async () => {
         const road = parcel('road', 0.006, 0.006);
         const piece = { ...parcel('road#cadastre-2', 0.007, 0.006), properties: {

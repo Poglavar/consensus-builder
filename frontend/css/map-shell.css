@@ -1113,3 +1113,8 @@ body.i18n-loading [data-i18n-key] { visibility: hidden; }
 .designs-panel-tabs { margin: 8px 12px; flex-shrink: 0; }
 #designs-browse:not([hidden]) { display: flex; flex-direction: column; flex: 1 1 0; min-height: 0; overflow: hidden; }
 body.map-pick-mode #proposals-sheet { pointer-events: auto; opacity: 1; }
+
+/* Road/track reference geometry stays visible without taking map pointer events. */
+.leaflet-pane.road-track-pane { z-index: 420; pointer-events: none; }
+.road-track-line { stroke: #000; stroke-width: 4px; stroke-opacity: 1; fill: none; pointer-events: none; }
+#road-track-layer-status:empty { display: none; }

@@ -1055,6 +1055,11 @@
       "controlType": "button"
     },
     {
+      "id": "control-17f67f48dca5b1-1",
+      "source": "index.html",
+      "markup": "<input type=\"checkbox\" id=\"road-track-layer-checkbox\">"
+    },
+    {
       "id": "control-47d76fc5366c17-1",
       "source": "index.html",
       "markup": "<input type=\"checkbox\" id=\"showUrbanBlocks\">",
@@ -1893,13 +1898,6 @@
       "controlType": "button"
     },
     {
-      "id": "control-28786ea276b1ca-1",
-      "source": "index.html",
-      "markup": "<button id=\"parcelBuilderButton\" class=\"btn\" type=\"button\" disabled onclick=\"(window.Parcels?.uiClaim?.openParcelBuilder || window.openParcelBuilder || function(){})()\" title=\"Not available in this city\">",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
       "id": "control-3c526decb3664e-1",
       "source": "index.html",
       "markup": "<button id=\"mintAndClaimButton\" class=\"btn btn-primary\" type=\"button\" onclick=\"(window.Parcels?.uiClaim?.openParcelMintModal || window.openParcelMintModal || function(){})()\" title=\"Mint the parcel NFT\" disabled>",
@@ -1917,6 +1915,13 @@
       "id": "control-717bceca7b743f-1",
       "source": "index.html",
       "markup": "<button id=\"visualizeButton\" class=\"btn\" type=\"button\" onclick=\"showAnimationModalForCurrentParcel()\">",
+      "interaction": "click",
+      "controlType": "button"
+    },
+    {
+      "id": "control-28786ea276b1ca-1",
+      "source": "index.html",
+      "markup": "<button id=\"parcelBuilderButton\" class=\"btn\" type=\"button\" disabled onclick=\"(window.Parcels?.uiClaim?.openParcelBuilder || window.openParcelBuilder || function(){})()\" title=\"Not available in this city\">",
       "interaction": "click",
       "controlType": "button"
     },
@@ -5454,6 +5459,16 @@
       "markup": "<button type=\"button\" class=\"btn btn-icon\" data-reparcel-download title=\"${downloadLabel}\" aria-label=\"${downloadLabel}\">"
     },
     {
+      "id": "control-80345f9f7641d2-1",
+      "source": "js/parcel-layout.js",
+      "markup": "<button type=\"button\" class=\"btn\" data-reparcel-undo-edit disabled title=\"${t('reparcellization.modal.undoEdit', 'Undo (Cmd/Ctrl+Z)')}\">"
+    },
+    {
+      "id": "control-cc64c9aeebec60-1",
+      "source": "js/parcel-layout.js",
+      "markup": "<button type=\"button\" class=\"btn\" data-reparcel-redo-edit disabled title=\"${t('reparcellization.modal.redoEdit', 'Redo')}\">"
+    },
+    {
       "id": "control-df22876ff3f0e7-1",
       "source": "js/parcel-layout.js",
       "markup": "<button type=\"button\" class=\"btn btn-sm\" data-reparcel-undo>",
@@ -8508,12 +8523,18 @@
         },
         {
           "name": "Edit a lamp on the map",
-          "classes": ["structure-geometry-icon", "is-lamp"],
+          "classes": [
+            "structure-geometry-icon",
+            "is-lamp"
+          ],
           "interaction": "click"
         },
         {
           "name": "Edit play equipment on the map",
-          "classes": ["structure-geometry-icon", "is-play"],
+          "classes": [
+            "structure-geometry-icon",
+            "is-play"
+          ],
           "interaction": "click"
         }
       ],

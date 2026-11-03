@@ -107,7 +107,9 @@ export async function runTurn({ conversation = {}, text = '', context = {}, call
                 }
                 mapContext.view = navigation.data.view;
                 if (typeof navigation.data.parcelIdsVisible === 'boolean' && mapContext.mapContext)
-                    mapContext.mapContext.display = { parcelIds: navigation.data.parcelIdsVisible };
+                    mapContext.mapContext.display = { ...mapContext.mapContext.display, parcelIds: navigation.data.parcelIdsVisible };
+                if (typeof navigation.data.roadTracksVisible === 'boolean' && mapContext.mapContext)
+                    mapContext.mapContext.display = { ...mapContext.mapContext.display, roadTracks: navigation.data.roadTracksVisible };
             }
             else mapContext.selection = { ...mapContext.selection, ...navigation.data.selection };
             emit(navigation.name, navigation.data);
