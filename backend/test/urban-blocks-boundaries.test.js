@@ -46,6 +46,16 @@ describe('urban block ground boundaries', () => {
         expect(model.detectBlocks(turf.featureCollection([polygon]), bbox, turf).features).toHaveLength(1);
     });
 
+    it.each(['workshop', 'roundhouse', 'station', 'platform', 'signal_box'])('does not turn a railway %s into an enclosure', railway => {
+        const building = feature('rail-facility', { railway, building: 'industrial' }, [
+            [0.002, 0.002], [0.008, 0.002], [0.008, 0.008], [0.002, 0.008], [0.002, 0.002]
+        ]);
+        const blocks = model.detectBlocks(turf.featureCollection([...roadsFor({ railway: 'rail' }).features, building]), bbox, turf);
+        expect(blocks.features).toHaveLength(1);
+        expect(blocks.features[0].geometry.coordinates).toHaveLength(1);
+        expect(model.isGroundBoundary({ railway_type: railway })).toBe(false);
+    });
+
     it('keeps shores as boundaries while excluding mapped water and retaining its land holes', () => {
         const shore = [[0.002, 0.002], [0.008, 0.002], [0.008, 0.008], [0.002, 0.008], [0.002, 0.002]];
         const island = [[0.004, 0.004], [0.006, 0.004], [0.006, 0.006], [0.004, 0.006], [0.004, 0.004]];

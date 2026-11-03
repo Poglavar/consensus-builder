@@ -44,6 +44,21 @@ describe('nested parcels in detected blocks', () => {
         expect((await shared(f, f.features[2])).ids.slice().sort()).toEqual(['inner', 'middle']);
     });
 
+    it('selects inner workshop parcels with their surrounding land in both detector and MCP', async () => {
+        const f = fixture({ innerStreet: true });
+        f.boundaries.features[1].properties = { railway: 'workshop', building: 'industrial' };
+        expect((await shared(f, f.features[0])).ids.slice().sort()).toEqual(['inner', 'middle', 'outer']);
+        const read = {
+            parcels: async ({ parcelIds } = {}) => ({ complete: true,
+                features: parcelIds ? f.features.filter(feature => parcelIds.includes(feature.id)) : f.features }),
+            request: async () => f.boundaries
+        };
+        const result = await createMcpNavigation({ read }).selectParcels({
+            city: 'test', parcelSourceId: 'source', action: 'block', parcelId: 'outer'
+        });
+        expect(result.selection.parcelIds.slice().sort()).toEqual(['inner', 'middle', 'outer']);
+    });
+
     it.each([false, true])('loads complete browser ground before choosing members (inner street: %s)', async innerStreet => {
         const f = fixture({ innerStreet });
         let loaded = [f.features[0]];

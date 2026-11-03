@@ -62,8 +62,9 @@ async function beginSeedSelection(page: any) {
   return selected;
 }
 
-for (const innerStreet of [false, true]) {
-  test(`nested courtyard parcels respect their enclosure at 360px (inner street: ${innerStreet})`, async ({ mockApi: page }) => {
+for (const innerBoundary of ['none', 'street', 'workshop']) {
+  test(`nested courtyard parcels respect their enclosure at 360px (inner boundary: ${innerBoundary})`, async ({ mockApi: page }) => {
+    const innerStreet = innerBoundary === 'street';
     await page.setViewportSize({ width: 360, height: 780 });
     await installLayerDatasets(page);
     const ring = (w: number, s: number, e: number, n: number) => [[w, s], [e, s], [e, n], [w, n], [w, s]];
@@ -79,7 +80,8 @@ for (const innerStreet of [false, true]) {
     await serveDenseParcels(page, features);
     await page.route('**/blocks/roads?**', route => route.fulfill({ json: { complete: true,
       type: 'FeatureCollection', features: [...enclosureFeatures({ highway: 'residential' }),
-        ...(innerStreet ? [{ type: 'Feature', properties: { highway: 'residential' },
+        ...(innerBoundary !== 'none' ? [{ type: 'Feature', properties: innerStreet
+          ? { highway: 'residential' } : { railway: 'workshop', building: 'industrial' },
           geometry: { type: 'LineString', coordinates: hole } }] : [])] } }));
     await openCity(page, SEED_ID);
     // Click actual ring land: the usual bbox-centre helper hits the innermost parcel.

@@ -63,6 +63,10 @@ waterway ways plus natural coastlines and water boundaries. It retains source wa
 and WGS84 line geometry; it does not assemble geometry from relations. Block detection rejects
 incomplete or capped boundary coverage and separately requires complete parcel coverage before
 returning a selection. Surface enclosures ignore bridges, tunnels and other non-ground features.
+The shared model uses railway track types (`rail`, `tram`, `light_rail`, `subway`, `narrow_gauge`,
+`monorail`, `funicular`, `miniature`, `preserved`, `disused`, `abandoned`, `construction`), not railway
+facilities such as workshop buildings, stations or platforms. Proposed and razed tracks do not
+divide current ground. Raw tags remain available in the source response.
 
 Each endpoint has one admission gate (`backend/buildings/overpass-gate.js`) shared by every layer:
 

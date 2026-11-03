@@ -16,6 +16,10 @@
     const cross = (a, b) => a[0] * b[1] - a[1] * b[0];
     const sub = (a, b) => [a[0] - b[0], a[1] - b[1]];
     const dot = (a, b) => a[0] * b[0] + a[1] * b[1];
+    // railway=* also describes facilities. A workshop, station or platform outline is not
+    // a track centreline and must not cut a building parcel out of its surrounding block.
+    const RAIL_BOUNDARIES = new Set(['rail', 'tram', 'light_rail', 'subway', 'narrow_gauge',
+        'monorail', 'funicular', 'miniature', 'preserved', 'disused', 'abandoned', 'construction']);
 
     function isGroundRoad(properties = {}) {
         const layer = Number(properties.layer || 0);
@@ -29,7 +33,7 @@
     function isGroundBoundary(properties = {}) {
         const layer = Number(properties.layer || 0);
         const mappedBoundary = isPresent(properties.highway) || isPresent(properties.highway_type)
-            || isPresent(properties.railway) || isPresent(properties.railway_type)
+            || RAIL_BOUNDARIES.has(properties.railway) || RAIL_BOUNDARIES.has(properties.railway_type)
             || isPresent(properties.waterway) || isPresent(properties.waterway_type)
             || ['coastline', 'water'].includes(properties.natural)
             || properties.isRoad === true || properties.isTrack === true || properties.isCorridor === true;
