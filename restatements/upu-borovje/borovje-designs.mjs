@@ -342,7 +342,8 @@ export async function officialPlan() {
         title: 'UPU Borovje – zona jug',
         author: AUTHOR,
         city: CITY,
-        parcelSourceId: null,
+        // The imported Croatian cadastre in the app database, as the app binds a Zagreb design.
+        parcelSourceId: 'oss-wfs',
         groundFile: groundFile(PLAN_KEYS.official),
         designs: [
             ...state.roads.map(roadDesign),
@@ -362,7 +363,8 @@ export async function urbanBlocksPlan() {
         title: 'Borovje – urbani blokovi',
         author: BLOCKS_AUTHOR,
         city: CITY,
-        parcelSourceId: null,
+        // The imported Croatian cadastre in the app database, as the app binds a Zagreb design.
+        parcelSourceId: 'oss-wfs',
         groundFile: groundFile(PLAN_KEYS.urbanBlocks),
         blocks: blocks.total,
         designs: [

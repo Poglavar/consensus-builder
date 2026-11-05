@@ -82,6 +82,10 @@ draft) and one agreement over them, in this order:
 The agreement is a community vote with no lens, money, allocations or deadline; its inputs and outputs are
 the land the app derives when it applies the 22 designs (`ground/upu-borovje.json`).
 
+On production the plan is [`/plans/bafkreigwj5qw2gmo3fixhtlvwq5ks3epvtorywmwmm4ydfojqynjzxhdou`](https://urbangametheory.xyz/plans/bafkreigwj5qw2gmo3fixhtlvwq5ks3epvtorywmwmm4ydfojqynjzxhdou)
+and its agreement [`/agreements/bafkreicpzhb7xanyzbdibsnhaf4ea7x4pppy7nypgxivx5ixqzrby7mn7u`](https://urbangametheory.xyz/agreements/bafkreicpzhb7xanyzbdibsnhaf4ea7x4pppy7nypgxivx5ixqzrby7mn7u?city=zagreb).
+The designs are bound with the app's Croatian cadastre (`oss-wfs`), as the app binds a Zagreb design.
+
 **Borovje – urbani blokovi** (`build-urban-blocks.mjs`, authored by Urban Game Theory on 10 October 2026) is
 an alternative on the same eleven building plots: the same street, layout and park designs (the same CIDs,
 so they are published once) with an open urban block on each plot instead of the plan's free-standing slab —

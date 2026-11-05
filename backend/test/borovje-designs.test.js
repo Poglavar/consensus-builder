@@ -13,7 +13,7 @@ import {
     AUTHOR, BLOCKS_AUTHOR, BLOCKS_DATE, CURRENT_VERSION, LAYOUT_KEYS, PLAN_DATE, PLAN_KEYS, STREET_KEYS,
     borovjeState, officialPlan, urbanBlocksPlan
 } from '../../restatements/upu-borovje/borovje-designs.mjs';
-import { planObjects } from '../scripts/lib/restatement-publish.mjs';
+import { planAgreement, planObjects } from '../scripts/lib/restatement-publish.mjs';
 
 const ROOT = fileURLToPath(new URL('../../', import.meta.url));
 const DIR = path.join(ROOT, 'restatements', 'upu-borovje');
@@ -149,7 +149,7 @@ describe('officialPlan', () => {
     it('is two streets, three parcel layouts, eleven buildings and six parks at the current version, dated by the plan', async () => {
         const plan = await officialPlan();
         const state = await stateAt(3);
-        expect(plan).toMatchObject({ key: PLAN_KEYS.official, title: 'UPU Borovje – zona jug', author: AUTHOR, city: 'zagreb', parcelSourceId: null });
+        expect(plan).toMatchObject({ key: PLAN_KEYS.official, title: 'UPU Borovje – zona jug', author: AUTHOR, city: 'zagreb', parcelSourceId: 'oss-wfs' });
         expect(plan.groundFile).toBe(path.join(DIR, 'ground', 'upu-borovje.json'));
         expect(plan.designs.map(design => design.key)).toEqual([STREET_KEYS.main, STREET_KEYS.west, ...LAYOUT_KEYS, ...BUILDING_KEYS, ...PARK_KEYS]);
         plan.designs.forEach(design => {
@@ -216,13 +216,19 @@ describe('the scripts\' command lines (dry runs and usage only)', () => {
         env: { ...childEnv, HOME, DATABASE_URL: 'postgres://reader@db.invalid:5432/none' }
     });
 
-    it('build-and-upload.mjs --dry-run prints the official plan\'s 22 designs and waits for its ground file', async () => {
+    it('build-and-upload.mjs --dry-run prints the official plan\'s 22 designs and the agreement over its captured ground', async () => {
         const result = run('build-and-upload.mjs', ['--dry-run']);
         expect(result.stderr).toBe('');
         expect(result.status).toBe(0);
         expect(result.stdout).toContain('plan 1/1 upu-borovje "UPU Borovje – zona jug": 22 designs\n');
-        for (const object of planObjects(await officialPlan())) expect(result.stdout).toContain(` ${object.content.goal} ${object.cid} `);
-        expect(result.stdout).toContain(`upu-borovje: no ground file yet (${path.join('restatements', 'upu-borovje', 'ground', 'upu-borovje.json')})`);
+        const plan = await officialPlan();
+        const objects = planObjects(plan);
+        for (const object of objects) expect(result.stdout).toContain(` ${object.content.goal} ${object.cid} `);
+        // The committed ground file was captured over exactly these designs (published 2026-11-05).
+        const ground = JSON.parse(fs.readFileSync(path.join(DIR, 'ground', 'upu-borovje.json'), 'utf8'));
+        expect(ground.designCids).toEqual(objects.map(object => object.cid));
+        const agreement = planAgreement(plan, objects, ground);
+        expect(result.stdout).toContain(`upu-borovje: agreement ${agreement.cid} "UPU Borovje – zona jug" over 22 designs, 30 input parcels, 55 outputs`);
         expect(fs.existsSync(path.join(HOME, '.config'))).toBe(false);
     }, 120_000);
 
