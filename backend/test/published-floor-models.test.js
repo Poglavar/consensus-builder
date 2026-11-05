@@ -90,9 +90,9 @@ describe('published plans → one X-ray floor model', () => {
     });
 });
 
-// A fake publication API: full plans at /floor-plans, the proposed compact listing at
-// /floor-plans/summaries, per qualified native id, `limit` per page.
-const summaryOf = plan => ({ id: plan.id, scope: plan.scope, floor: plan.floor ?? null, levels: plan.levels || [], unitId: plan.unitId ?? null,
+// A fake publication API: full plans at /floor-plans, the compact listing at /floor-plans/summaries
+// (cadastre-data's row shape), per qualified native id, `limit` per page.
+const summaryOf = plan => ({ id: plan.id, buildingId: plan.buildingId ?? null, scope: plan.scope, floor: plan.floor ?? null, levels: plan.levels || [], unitId: plan.unitId ?? null,
     quality: plan.quality?.status ?? null, registered: Boolean(plan.registration), buildingRefs: plan.buildingRefs, updatedAt: plan.updatedAt ?? null });
 function fakePublication(plansById, { fail = () => false } = {}) {
     const calls = [];
