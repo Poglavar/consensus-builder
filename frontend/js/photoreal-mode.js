@@ -1713,17 +1713,18 @@
         group.add(new THREE.Mesh(geom, apronMaterial));
     }
 
-    // Fill only the vertical clearance left by removing a canopy/building shell above the road. On
-    // exposed ground `visibleAt` is effectively the formation and no quad is emitted. Retained Google
+    // Fill only the vertical clearance left by removing a canopy/building shell above a cut. On
+    // exposed ground `visibleAt` is effectively the floor and no quad is emitted. Retained Google
     // depth-occludes this neutral wall everywhere except an otherwise sky-blue void. Do not replace
     // this with source-textured per-triangle fascias: disconnected canopy hits become floating fins.
-    function addRoadClearanceCurtain(ringXY, group, supportAt, visibleAt) {
+    // `bottomOffsetM` lifts the wall foot to the surface the cut is covered with.
+    function addClearanceCurtain(ringXY, group, supportAt, visibleAt, bottomOffsetM, name) {
         const THREE = window.THREE;
         const seam = window.__photorealSeam;
         if (!THREE || !group || !apronMaterial || !seam
             || typeof seam.buildClearanceCurtainPositions !== 'function') return 0;
         const built = seam.buildClearanceCurtainPositions(ringXY, supportAt, visibleAt, {
-            bottomOffsetM: ROAD_FOUNDATION_TOP_OFFSET_M - 0.01,
+            bottomOffsetM: bottomOffsetM,
             minimumClearanceM: 0.5,
             topMarginM: 0.1,
             maximumHeightM: 30
@@ -1733,7 +1734,7 @@
         geometry.setAttribute('position', new THREE.Float32BufferAttribute(built.positions, 3));
         geometry.computeBoundingSphere();
         const mesh = new THREE.Mesh(geometry, apronMaterial);
-        mesh.name = 'PhotorealRoadClearanceCurtain';
+        mesh.name = name;
         mesh.frustumCulled = false;
         group.add(mesh);
         return built.segmentCount;
@@ -1889,7 +1890,18 @@
                     - (Number(roadEncoding.quantizationM) || 0) / 2);
         corridorUniforms.uRoadCutOffset.value = Number.isFinite(safeRoadCutOffset)
             ? safeRoadCutOffset : -ROAD_CUT_SAFETY_MARGIN_M;
-        entries.forEach(function (entry) {
+        let structureClearanceCurtainSegments = 0;
+        // Every cut in scene coordinates, so a structure's clearance wall is built only where its ring
+        // meets Google mesh that stays, not where it runs inside a neighbouring cut (a park beside a
+        // building plot, a plot beside a street) and the wall would stand in the open.
+        const cutCoverage = window.__photorealSeam && typeof window.__photorealSeam.createCoverageTest === 'function'
+            ? window.__photorealSeam.createCoverageTest(entries.flatMap(function (entry, index) {
+                try {
+                    return polygonShapesAndRings(entry.geometry, toXY).map(function (sr) { return { rings: sr.rings, owner: index }; });
+                } catch (_) { return []; }
+            }))
+            : null;
+        entries.forEach(function (entry, entryIndex) {
             try {
                 const road = (entry.mode === 'road');
                 // Roads publish only a paired exact station quilt + narrow solid collar.
@@ -1947,6 +1959,22 @@
                                     ring, ROAD_BOUNDARY_SAMPLE_SPACING_M * mercatorK)
                                 : ring;
                             addCurtainRibbon(sampledRing, apronGroup, supportAt, road ? sampleTileSurfaceZ : null);
+                            // The ribbon stops at the terrain. A cut through a Google tree crown or
+                            // roof that straddles the ring opens its hollow shell, and the source has
+                            // no ground under a crown: an oblique ray enters through the cut, leaves
+                            // the shell beyond the ring and shows sky beside the park or building.
+                            // Close that clearance up to the source surface on the ring, as roads do.
+                            const probedRing = window.__photorealSeam
+                                && typeof window.__photorealSeam.densifyClosedRing === 'function'
+                                ? window.__photorealSeam.densifyClosedRing(
+                                    ring, ROAD_BOUNDARY_SAMPLE_SPACING_M * mercatorK)
+                                : ring;
+                            const retainedSurfaceAt = function (x, y) {
+                                return cutCoverage && cutCoverage(x, y, entryIndex) ? null : sampleTileSurfaceZ(x, y);
+                            };
+                            structureClearanceCurtainSegments += addClearanceCurtain(
+                                probedRing, apronGroup, supportAt, retainedSurfaceAt,
+                                CURTAIN_CONTENT_TOP_Z, 'PhotorealStructureClearanceCurtain');
                         });
                     }
                 });
@@ -1986,8 +2014,9 @@
                         ? window.__photorealSeam.densifyClosedRing(
                             ring, ROAD_BOUNDARY_SAMPLE_SPACING_M * mercatorK)
                         : ring;
-                    roadClearanceCurtainSegments += addRoadClearanceCurtain(
-                        sampledRing, apronGroup, supportAt, visibleAt);
+                    roadClearanceCurtainSegments += addClearanceCurtain(
+                        sampledRing, apronGroup, supportAt, visibleAt,
+                        ROAD_FOUNDATION_TOP_OFFSET_M - 0.01, 'PhotorealRoadClearanceCurtain');
                 });
             });
         }
@@ -2009,6 +2038,7 @@
                 buildingProtectShapes: buildingProtectShapes,
                 roadSeamBoundarySegments: roadSeamBoundarySegments,
                 roadClearanceCurtainSegments: roadClearanceCurtainSegments,
+                structureClearanceCurtainSegments: structureClearanceCurtainSegments,
                 exactRoadMasks: exactRoadProposalIds.size,
                 roadFloorMin: roadEncoding.min,
                 roadFloorRange: roadEncoding.range,

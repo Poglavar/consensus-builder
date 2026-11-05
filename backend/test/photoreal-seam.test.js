@@ -5,6 +5,7 @@ import { createRequire } from 'node:module';
 
 const require = createRequire(import.meta.url);
 const {
+    createCoverageTest,
     maskEdgeContract,
     intersectTriangleWithVerticalSegment,
     buildSeamFasciaQuads,
@@ -189,3 +190,24 @@ describe('photoreal road boundary sampling', () => {
         }
     });
 });
+
+describe('createCoverageTest', () => {
+    const square = (x0, y0, size) => [[x0, y0], [x0 + size, y0], [x0 + size, y0 + size], [x0, y0 + size], [x0, y0]];
+
+    it('finds the cut a point lies in, skipping the asking cut and holes', () => {
+        const covered = createCoverageTest([
+            { rings: [square(0, 0, 10)], owner: 0 },
+            { rings: [square(10, 0, 10), square(13, 3, 4)], owner: 1 }
+        ]);
+        // A ring point of cut 0 that lies 1 m into its neighbour: covered by cut 1.
+        expect(covered(11, 5, 0)).toBe(true);
+        // A ring point that lies outside every other cut: retained Google mesh, so a wall is built.
+        expect(covered(-1, 5, 0)).toBe(false);
+        // Inside cut 0 only: not covered by any other cut.
+        expect(covered(5, 5, 0)).toBe(false);
+        // In the hole of cut 1.
+        expect(covered(15, 5, 0)).toBe(false);
+        expect(covered(5, 5)).toBe(true);
+    });
+});
+

@@ -405,7 +405,45 @@
         });
     }
 
+    // Whether a point lies inside any of a set of polygons (each [outer, ...holes] rings of [x, y]),
+    // even-odd per polygon, with a bounding-box prefilter. `polygons[i].owner` lets the caller ask
+    // about every polygon but its own.
+    function createCoverageTest(polygons) {
+        const entries = (polygons || []).map(function (polygon) {
+            const rings = (polygon && polygon.rings) || [];
+            let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+            (rings[0] || []).forEach(function (point) {
+                if (point[0] < minX) minX = point[0];
+                if (point[0] > maxX) maxX = point[0];
+                if (point[1] < minY) minY = point[1];
+                if (point[1] > maxY) maxY = point[1];
+            });
+            return { rings, owner: polygon && polygon.owner, minX, minY, maxX, maxY };
+        }).filter(function (entry) { return entry.rings.length && entry.minX <= entry.maxX; });
+        const inRing = function (ring, x, y) {
+            let inside = false;
+            for (let i = 0, j = ring.length - 1; i < ring.length; j = i++) {
+                const xi = ring[i][0], yi = ring[i][1], xj = ring[j][0], yj = ring[j][1];
+                if ((yi > y) !== (yj > y) && x < (xj - xi) * (y - yi) / (yj - yi) + xi) inside = !inside;
+            }
+            return inside;
+        };
+        return function covered(x, y, exceptOwner) {
+            for (let k = 0; k < entries.length; k++) {
+                const entry = entries[k];
+                if (exceptOwner !== undefined && entry.owner === exceptOwner) continue;
+                if (x < entry.minX || x > entry.maxX || y < entry.minY || y > entry.maxY) continue;
+                if (!inRing(entry.rings[0], x, y)) continue;
+                let inHole = false;
+                for (let h = 1; h < entry.rings.length && !inHole; h++) inHole = inRing(entry.rings[h], x, y);
+                if (!inHole) return true;
+            }
+            return false;
+        };
+    }
+
     return {
+        createCoverageTest,
         maskEdgeContract,
         intersectTriangleWithVerticalSegment,
         buildSeamFasciaQuads,
