@@ -11,7 +11,7 @@ import { readFile } from 'node:fs/promises';
 import { createRequire } from 'node:module';
 import { fileURLToPath } from 'node:url';
 import { buildBorovjeTopology, roadDefinitionFor } from './plan-topology.mjs';
-import { fitBuildingsToPlots } from './flat-plan.mjs';
+import { fitBuildingsToPlots, fitToFloorAreaLimit } from './flat-plan.mjs';
 import { buildingFeature, openBlock, streetSideOf, summarize } from '../../backend/scripts/lib/borovje-alternatives.mjs';
 
 const turf = createRequire(new URL('../../backend/package.json', import.meta.url))('@turf/turf');
@@ -236,9 +236,16 @@ function layoutDesign(layout) {
 
 // A building is content on its plot (goal 'buildings'): a freeform 'single' would take ground of its
 // own and cut the plot a second time. The typology stays single for the geometry editor.
-function buildingDesign(building) {
+// The plan's envelope (površina za smještaj zgrade) is where a building may stand; its floor area is
+// capped by kisn on the plot. A slab filling its whole envelope at full height exceeds that cap on ten
+// of the eleven plots, so each building is shortened along its length to the cap (flat-plan.mjs
+// fitToFloorAreaLimit). The rest of the plot is green ground: the plan's plots are landscaped around
+// the slabs, and the old ground and trees on them do not stay.
+function buildingDesign(building, plot) {
     const rule = PP_RULES[building.pp] || {};
     const height = Math.round(building.floors * FLOOR_HEIGHT_M * 10) / 10;
+    const fit = fitToFloorAreaLimit({ name: building.name, geometry: building.geometry, plot: plot.geometry, floors: building.floors, kisn: rule.kisn }, turf);
+    const footprintM2 = Math.round(fit.footprintM2);
     return {
         key: building.key,
         record: {
@@ -247,6 +254,11 @@ function buildingDesign(building) {
             description: `Kazeta ${building.name}, pravilo provedbe [${building.pp}]: ${rule.etaznost}`
                 + ` (${building.floors} nadzemnih etaža${rule.kisn ? `, kisn ${rule.kisn}` : ''}),`
                 + ` površina za smještaj zgrade ${building.areaM2} m².`
+                + (fit.factor < 1
+                    ? ` Tlocrt ${footprintM2} m² skraćen je uzduž zgrade tako da nadzemna bruto površina`
+                        + ` (${Math.round(fit.floorAreaM2)} m²) ne prelazi kisn × površina čestice (${Math.round(fit.limitM2)} m²).`
+                    : ` Tlocrt ${footprintM2} m², nadzemna bruto površina ${Math.round(fit.floorAreaM2)} m² (najviše ${Math.round(fit.limitM2)} m²).`)
+                + ' Ostatak građevne čestice je zelena površina.'
                 + ' Izvedeno iz kartografskog prikaza 4. Način i uvjeti gradnje,'
                 + ' UPU Borovje – zona jug (prijedlog plana za javnu raspravu, 2026).',
             author: AUTHOR,
@@ -256,8 +268,9 @@ function buildingDesign(building) {
                 buildings: [{
                     type: 'Feature',
                     properties: { type: 'proposedBuildingSingle', height, rotation: 0, block: `UPU Borovje ${building.name}` },
-                    geometry: structuredClone(building.geometry)
-                }]
+                    geometry: structuredClone(fit.geometry)
+                }],
+                surroundings: { treatment: 'green', polygon: structuredClone(plot.geometry) }
             },
             buildingProposal: { typologyType: 'single', parameters: { height, floors: building.floors, typology: 'single', rotation: 0 } }
         }
@@ -348,10 +361,16 @@ export async function officialPlan() {
         designs: [
             ...state.roads.map(roadDesign),
             ...state.layouts.map(layoutDesign),
-            ...state.buildings.map(buildingDesign),
+            ...state.buildings.map(building => buildingDesign(building, plotOf(state, building.key))),
             ...state.parks.map(parkDesign)
         ]
     };
+}
+
+function plotOf(state, key) {
+    const plot = state.layouts.flatMap(layout => layout.plots).find(item => item.key === key);
+    if (!plot) throw new Error(`building ${key} has no plot`);
+    return plot;
 }
 
 /** The urban-blocks alternative: the official streets, layouts and parks, an open block on each building plot. */

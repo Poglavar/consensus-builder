@@ -165,11 +165,24 @@ describe('officialPlan', () => {
         expect(layout.site).toEqual(state.layouts[1].pool);
         expect(layout.parcelLayout.plots.map(plot => plot.geometry)).toEqual(state.layouts[1].plots.map(plot => plot.geometry));
         expect(layout.description).toContain(state.layouts[1].plots.map(plot => plot.name).join(', '));
-        // A building is content on its plot, its height the floors at 3.5 m.
+        // A building is content on its plot, its height the floors at 3.5 m, its floor area at most
+        // kisn × its plot (shortened inside the traced envelope where the envelope holds more), and the
+        // rest of its plot green ground.
         const building = byKey.get('m1-3');
         const traced = state.buildings.find(item => item.key === 'm1-3');
         expect(building.goal).toBe('buildings');
-        expect(building.geometry.buildings[0].geometry).toEqual(traced.geometry);
+        const plots = new Map(plotsOf(state).map(plot => [plot.key, plot.geometry]));
+        const kisn = { 'PP-1': 1.5, 'PP-2': 1.7, 'PP-3': 1.6, 'PP-4': 2.1 };
+        for (const item of state.buildings) {
+            const record = byKey.get(item.key);
+            const footprint = record.geometry.buildings[0].geometry;
+            expect(record.geometry.surroundings, item.key).toEqual({ treatment: 'green', polygon: plots.get(item.key) });
+            expect(area(footprint) * item.floors, item.key).toBeLessThanOrEqual(kisn[item.pp] * area(plots.get(item.key)));
+            const outside = turf.difference(feature(footprint), feature(item.geometry));
+            expect(outside ? area(outside.geometry) : 0, item.key).toBeLessThan(0.05);
+        }
+        // Every envelope but M1-3's holds more than its limit; M1-3's is shortened by about 2 %.
+        expect(area(building.geometry.buildings[0].geometry) / area(traced.geometry)).toBeGreaterThan(0.97);
         expect(building.buildingProposal.parameters).toMatchObject({ floors: traced.floors, height: Math.round(traced.floors * 3.5 * 10) / 10, typology: 'single' });
         expect(building.title).toBe(`UPU Borovje – zgrada ${traced.name} [${traced.pp}]`);
         expect(byKey.get('r2-1').title).toContain('rekreacija');

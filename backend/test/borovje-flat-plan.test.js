@@ -5,7 +5,7 @@ import { describe, it, expect } from 'vitest';
 import { readFile } from 'node:fs/promises';
 import * as turf from '@turf/turf';
 import { buildBorovjeTopology } from '../../restatements/upu-borovje/plan-topology.mjs';
-import { fitBuildingsToPlots, MAX_TRIMMED_SHARE } from '../../restatements/upu-borovje/flat-plan.mjs';
+import { fitBuildingsToPlots, fitToFloorAreaLimit, MAX_TRIMMED_SHARE } from '../../restatements/upu-borovje/flat-plan.mjs';
 
 const load = async file => JSON.parse(await readFile(new URL(`../../restatements/upu-borovje/data/${file}`, import.meta.url), 'utf8'));
 const outsideM2 = (geometry, plot) => {
@@ -80,3 +80,33 @@ describe('fitBuildingsToPlots', () => {
         expect(() => fitBuildingsToPlots([{ name: 'split', geometry: across }], () => notched, turf)).toThrow('split: clipping would disconnect the building');
     });
 });
+
+describe('fitToFloorAreaLimit', () => {
+    const edges = geometry => {
+        const ring = turf.toMercator(turf.feature(geometry)).geometry.coordinates[0];
+        return ring.slice(1).map((point, index) => Math.hypot(point[0] - ring[index][0], point[1] - ring[index][1]));
+    };
+
+    it('leaves a building within kisn × plot as it is', () => {
+        const slab = rectangle(10, 10, 50, 15);
+        const fit = fitToFloorAreaLimit({ name: 'small', geometry: slab, plot: rectangle(0, 0, 100, 40), floors: 4, kisn: 1.5 }, turf);
+        expect(fit.factor).toBe(1);
+        expect(fit.geometry).toBe(slab);
+    });
+
+    it('shortens an oversized slab along its length to the limit, inside its envelope, keeping its depth', () => {
+        const slab = rectangle(10, 10, 80, 16);
+        // 80 × 16 m at four storeys is 5,120 m² against a limit of 1.5 × 3,000 m².
+        const plot = rectangle(0, 0, 100, 30);
+        const limitM2 = 1.5 * turf.area(turf.feature(plot));
+        const fit = fitToFloorAreaLimit({ name: 'slab', geometry: slab, plot, floors: 4, kisn: 1.5 }, turf);
+        expect(fit.factor).toBeLessThan(1);
+        expect(fit.floorAreaM2).toBeLessThanOrEqual(limitM2);
+        expect(fit.floorAreaM2).toBeGreaterThan(limitM2 * 0.99);
+        expect(outsideM2(fit.geometry, slab)).toBeLessThan(0.05);
+        const [long, short] = [Math.max(...edges(slab)), Math.min(...edges(slab))];
+        expect(Math.min(...edges(fit.geometry))).toBeCloseTo(short, 3);
+        expect(Math.max(...edges(fit.geometry))).toBeLessThan(long * 0.9);
+    });
+});
+

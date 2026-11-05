@@ -75,15 +75,20 @@ draft) and one agreement over them, in this order:
 - **11 building designs** (M1-1…M1-11; M1-12 is the existing housing row, kept as-is by the plan, so
   nothing is generated). Heights = floors × 3.5 m per the plan's provedbena pravila: PP-1 P+3, PP-2 P+4,
   PP-3 P+8 (tower), PP-4 P+5. Each is content on its plot (`goal: buildings`, typology `single` for the
-  geometry editor): it never takes ground of its own.
+  geometry editor): it never takes ground of its own. The traced envelope (površina za smještaj zgrade)
+  is where a building may stand; its above-ground floor area is capped at kisn × the plot (PP-1 1.5,
+  PP-2 1.7, PP-3 1.6, PP-4 2.1). A slab filling its whole envelope at full height exceeds the cap on
+  every plot, so each is shortened along its length about its centre (`flat-plan.mjs`
+  `fitToFloorAreaLimit`): the eleven hold 64,159 m² against a cap of 64,224 m². The rest of each plot is
+  green ground (`geometry.surroundings`, treatment `green`), so the old ground and trees on it go.
 - **6 park designs** (5× Z1 + the central R2 recreation zone — modeled as a park until a dedicated
   playground/sports-field structure kind exists), each exactly its plot.
 
 The agreement is a community vote with no lens, money, allocations or deadline; its inputs and outputs are
 the land the app derives when it applies the 22 designs (`ground/upu-borovje.json`).
 
-On production the plan is [`/plans/bafkreigwj5qw2gmo3fixhtlvwq5ks3epvtorywmwmm4ydfojqynjzxhdou`](https://urbangametheory.xyz/plans/bafkreigwj5qw2gmo3fixhtlvwq5ks3epvtorywmwmm4ydfojqynjzxhdou)
-and its agreement [`/agreements/bafkreicpzhb7xanyzbdibsnhaf4ea7x4pppy7nypgxivx5ixqzrby7mn7u`](https://urbangametheory.xyz/agreements/bafkreicpzhb7xanyzbdibsnhaf4ea7x4pppy7nypgxivx5ixqzrby7mn7u?city=zagreb).
+On production the plan is [`/plans/bafkreib4ajzktd5niv6dhooeulpincj6iuxteh2k3zbevxf5lvx6fqukxu`](https://urbangametheory.xyz/plans/bafkreib4ajzktd5niv6dhooeulpincj6iuxteh2k3zbevxf5lvx6fqukxu)
+and its agreement [`/agreements/bafkreih243fwautl6h5ybpz535ppdezqlcqw44f6is3n4skqw47vyes3fe`](https://urbangametheory.xyz/agreements/bafkreih243fwautl6h5ybpz535ppdezqlcqw44f6is3n4skqw47vyes3fe?city=zagreb).
 The designs are bound with the app's Croatian cadastre (`oss-wfs`), as the app binds a Zagreb design.
 
 **Borovje – urbani blokovi** (`build-urban-blocks.mjs`, authored by Urban Game Theory on 10 October 2026) is
