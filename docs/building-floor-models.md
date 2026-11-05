@@ -19,6 +19,27 @@ This is a parametric architectural model, not a stored triangle mesh or a raw PD
 
 The common schemas and validation live in `frontend/js/building-floor-plans.js`; `three-floor-plans.js` only creates and manages Three.js objects. Pionir's PDF interpretation is confined to its authoring scripts. Another supplier needs an adapter to the same schema, not another renderer.
 
+## Published floor plans of native buildings
+
+Floor plans of existing buildings live in one shared database, `buildings.floor_plan` (cadastre-data), served by `GET /api/floor-plans`. Each plan is one unit or one whole floor, lists the native buildings it belongs to (`buildingRefs`: `{city, source, ownerId, buildingId}`) and its own map `registration`. UGT **reads** these plans when it answers `POST /buildings/near` and `POST /buildings/cell`; it never copies them into `consensus.building_floor_model`.
+
+Which plans a city reads is configuration, not code. A city's `floorModels.published` (in `frontend/data/city-configs.js`) lists source adapters in priority order; each maps one of the app's building sources (`buildingSource`, the `floorModelSource` its records carry) to the publication's reference namespace (`city`, `source`), with optional `buildingIds` rules where the two spell an id differently:
+
+```js
+floorModels: { namespace: 'zagreb', published: [
+    { adapter: 'floor-plan-publication', buildingSource: 'zagreb-3d', city: 'zagreb', source: 'zagreb-3d' },
+    { adapter: 'floor-plan-publication', buildingSource: 'dgu-3d', city: 'zagreb', source: 'dgu-building' },
+    { adapter: 'floor-plan-publication', buildingSource: 'osm-3d', city: 'zagreb', source: 'osm',
+        buildingIds: [{ match: '^w(\\d+)$', ref: 'way/$1' }, { match: '^r(\\d+)$', ref: 'relation/$1' }] }
+] }
+```
+
+The server reads every city's light configuration (`frontend/data/city-index.js`) and registers these entries in the `building-details` source registry (`backend/buildings/floor-models.js`). The browser only sends `floorModelNamespace`; the publication's base URL is server configuration (`FLOOR_PLAN_PUBLICATION_API_URL`, default `https://zagreb.lol/api`), and a city entry carrying a URL is refused. A city without `published` gets no published plans. Another city plugs in its own publication namespace, or another adapter, the same way.
+
+- `backend/buildings/floor-plan-publication.js`, the adapter: asks for up to 200 buildings per request, follows pages of 100, three requests at a time, 8 s each, and keeps each building's answer (a model or none) for 10 minutes in the process. A failed request is logged, leaves those buildings without published plans, and is not cached; `/buildings/cell` then serves that cell without caching it.
+- `backend/buildings/published-floor-model.js`, the converter: one building's plans become one `building-floor-plans.v3` model. A storey with a whole-floor plan shows it (it already composes the flats and the corridor); a storey with only unit plans shows them merged into one layout; unit plans list the storey's apartments either way. All plans are expressed in one frame: the reference plan's quad when the others lie inside it, else the rectangle bounding them all, so each point stays where its own registration put it. Elevations come from the plan's `building.envelope.storeys` (estimated unless documented); walls are fitted to the storey height. Plans without a registration, valid architecture or envelope storey are skipped and counted in `floorPlans.publication.skipped`. Review status is not a gate: approximate plans are shown, and the X-ray note says alignment is approximate.
+- Merge rule: an authored registry model for a building wins; only buildings without one ask the publication. Published attachments say `floorModel.origin: 'publication'` with the plan ids and `version: null`.
+
 ## Suggested default layouts
 
 A proposed building without a registered model can show a generated default interior in X-ray when

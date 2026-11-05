@@ -15,9 +15,12 @@ import { createMockPool } from './helpers/mock-pool.js';
 let pool;
 let app;
 
+// Zagreb's namespace also reads published floor plans; answer them offline, with none.
+const publishedFloorModels = { fetchFloorModels: async () => new Map() };
+
 beforeEach(() => {
     pool = createMockPool();
-    app = createRouteApp(setupBuildingsRoute, pool);
+    app = createRouteApp(setupBuildingsRoute, pool, { publishedFloorModels });
 });
 
 const LAT0 = 45.81;

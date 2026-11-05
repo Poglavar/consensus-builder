@@ -13,6 +13,7 @@ pieces fit, and what is still open. The storage and import contract is specified
 |---|---|---|
 | Floor-plan data model (`building-floor-plans.v3`), validation, 3D rendering, X-ray + cutaway UI | **Done** (Oct 6–7) | `frontend/js/building-floor-plans.js`, `frontend/js/three-floor-plans.js`, `frontend/js/three-mode.js` |
 | Versioned registry of authored models, joined onto proposals and surveyed buildings on read | **Done** (Oct 7) | `consensus.building_floor_model`, `backend/buildings/floor-models.js`, `backend/scripts/import-building-floor-plans.mjs` |
+| Published plans of existing buildings (shared `buildings.floor_plan`) in X-ray, per-city source adapters | **Done** (Nov 5) | city `floorModels.published`, `backend/buildings/floor-plan-publication.js`, `published-floor-model.js`; [`building-floor-models.md`](building-floor-models.md#published-floor-plans-of-native-buildings) |
 | Source adapter for developer PDF catalogues (vector CAD insets → architecture) | **Done**, 67 storeys / 9 buildings / 4 sites | `backend/scripts/pionir_floor_architecture.py`, `backend/scripts/reconstruct-*-floors.py`, `restatements/**/floor-plan-sources.json` |
 | Agency floor-plan archive (public listing drawings → immutable archive → OCR drafts → reviewed unit models) | **Done**, daily crawl; 5 reviewed apartment units for one project | [Private zagreb-novogradnje owner](https://github.com/Poglavar/zagreb-novogradnje), schema `floor_plan` |
 | **New buildings**: a repeatable way to obtain more or less every floor plan | **Done** through the two sources above | this file, section "New buildings" |
@@ -57,6 +58,7 @@ flowchart LR
     V --> REG["consensus.building_floor_model<br/>(versioned, evidence only)"]
     V --> SCENE["three-floor-plans.js<br/>X-ray meshes"]
     REG --> API["/proposals, /buildings/near<br/>join on read"] --> SCENE
+    PUB["Shared floor-plan publication<br/>buildings.floor_plan (cadastre-data)"] -- "city's floorModels.published<br/>read, never copied" --> API
     GEN -. never stored .-> REG
 ```
 

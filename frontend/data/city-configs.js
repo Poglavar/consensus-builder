@@ -13047,7 +13047,18 @@
                 requiresBackend: true
             },
             buildings: { sources: [{ id: 'gdi-3d' }, { id: 'dgu', use: false }, { id: 'osm', use: false }] },
-            floorModels: { namespace: 'zagreb' },
+            // Published floor plans (the shared floor-plan publication, buildings.floor_plan) of the
+            // buildings this city's building sources return: `buildingSource` is the app's native key
+            // (floorModelSource), `city`/`source` the publication's building reference namespace. The
+            // server sets the publication URL (FLOOR_PLAN_PUBLICATION_API_URL).
+            floorModels: { namespace: 'zagreb', published: [
+                { adapter: 'floor-plan-publication', buildingSource: 'zagreb-3d', city: 'zagreb', source: 'zagreb-3d' },
+                { adapter: 'floor-plan-publication', buildingSource: 'dgu-3d', city: 'zagreb', source: 'dgu-building' },
+                // OSM buildings (e.g. sites not yet in the survey or cadastre): the app writes w123/r123,
+                // the publication way/123 and relation/123.
+                { adapter: 'floor-plan-publication', buildingSource: 'osm-3d', city: 'zagreb', source: 'osm',
+                    buildingIds: [{ match: '^w(\\d+)$', ref: 'way/$1' }, { match: '^r(\\d+)$', ref: 'relation/$1' }] }
+            ] },
             planning: { sourceIds: ['zagreb-gup-2025', 'zagreb-gup-2016'] },
             sidebar: {
                 // No disabled sections for Zagreb - all sections enabled

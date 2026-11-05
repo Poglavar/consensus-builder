@@ -1,0 +1,3241 @@
+{
+ "comment": "Five published plans of Podbrezje A4 (GDI object 148972) from GET /api/floor-plans on 2026-11-05: the 2nd-floor whole-floor plan, two 2nd-floor flats, two 6th-floor flats; architecture trimmed to a few elements.",
+ "plans": [
+  {
+   "externalId": "podbrezje-a4-floor-2",
+   "label": "Podbrežje A4 · 2. kat · cijeli kat (13 stanova)",
+   "floor": 2,
+   "marketedAreaM2": null,
+   "physicalNetAreaM2": null,
+   "orientation": [],
+   "placement": {
+    "planId": "0cf165c3014822c691b8549854295b3fc61442681c72d5fc246c44b175f7f3e7",
+    "kind": "building-frame",
+    "sourceSha256": "686d3cdb9d144ddfc372e90675793e2a8d63a267f1408ac81a319df752599b78",
+    "listingUrl": "https://www.zagreb.hr/userdocsimages/arhiva/stanovi/1natje%C4%8Daj%20javni%20najam%20naselje%20podbre%C5%BEje/Opis%20stanova%20zgrada%20A4%20s%20pripadcima_.pdf",
+    "unitId": null,
+    "scope": "floor",
+    "floor": 2,
+    "status": "placed",
+    "reason": "Whole floor drawn in the GDI footprint rectangle",
+    "margin": null,
+    "alternatives": 0,
+    "priors": {
+     "rotationDeg": 91.13054898959163,
+     "rotationBasis": "GDI footprint long axis; entrance A at the north end (city house-number map)",
+     "keyPlan": null,
+     "scaleBasis": "GDI footprint dimensions"
+    },
+    "best": {
+     "scale": 1,
+     "rotationDeg": 91.13054898959163,
+     "tx": -5.885275479975205,
+     "ty": -105.80682449558621,
+     "iou": 1,
+     "containment": 1,
+     "coincidence": 1,
+     "positionDistance": null,
+     "score": 1,
+     "outline": [
+      [
+       -5.885275479975205,
+       -105.80682449558621
+      ],
+      [
+       -7.970255778763053,
+       -0.15455428642391114
+      ],
+      [
+       10.993337113288558,
+       0.21968014787537213
+      ],
+      [
+       13.078317412076405,
+       -105.43259006128693
+      ],
+      [
+       -5.885275479975205,
+       -105.80682449558621
+      ]
+     ]
+    }
+   },
+   "scope": "floor",
+   "unitId": null,
+   "levels": [
+    2
+   ],
+   "areaM2": null,
+   "rooms": null,
+   "architecture": {
+    "schema": "consensus-builder.floor-architecture.v1",
+    "dimensionsM": [
+     105.67284108604338,
+     18.967285171771042
+    ],
+    "wallHeightM": 2.7,
+    "slabThicknessM": 0.2,
+    "walls": [
+     [
+      [
+       [
+        0.5890528579325914,
+        0.5986451121670042
+       ],
+       [
+        0.5890528579325914,
+        0.7067021973528108
+       ],
+       [
+        0.589692261272874,
+        0.7067021973528108
+       ],
+       [
+        0.589692261272874,
+        0.5986451121670042
+       ]
+      ]
+     ],
+     [
+      [
+       [
+        0.5218089399795389,
+        0.5843958262084362
+       ],
+       [
+        0.5350232756787124,
+        0.5843958262084362
+       ],
+       [
+        0.5350232756787124,
+        0.5784586237256996
+       ],
+       [
+        0.5218089399795389,
+        0.5784586237256996
+       ]
+      ]
+     ],
+     [
+      [
+       [
+        0.5384334268268862,
+        0.5843958262084362
+       ],
+       [
+        0.5755188205632765,
+        0.5843958262084362
+       ],
+       [
+        0.5755188205632765,
+        0.5784586237256996
+       ],
+       [
+        0.5384334268268862,
+        0.5784586237256996
+       ]
+      ]
+     ],
+     [
+      [
+       [
+        0.5388596957204079,
+        0.5974576716704568
+       ],
+       [
+        0.5610256781835378,
+        0.5974576716704568
+       ],
+       [
+        0.5610256781835378,
+        0.5820209452153416
+       ],
+       [
+        0.5388596957204079,
+        0.5820209452153416
+       ]
+      ]
+     ],
+     [
+      [
+       [
+        0.5527134347598641,
+        0.5998325526635514
+       ],
+       [
+        0.5755188205632765,
+        0.5998325526635514
+       ],
+       [
+        0.5755188205632765,
+        0.5820209452153416
+       ],
+       [
+        0.5527134347598641,
+        0.5820209452153416
+       ]
+      ]
+     ],
+     [
+      [
+       [
+        0.5390728301671688,
+        0.9928753570207162
+       ],
+       [
+        0.5522871658663424,
+        0.9928753570207162
+       ],
+       [
+        0.5522871658663424,
+        0.9857507140414321
+       ],
+       [
+        0.5390728301671688,
+        0.9857507140414321
+       ]
+      ]
+     ],
+     [
+      [
+       [
+        0.5390728301671688,
+        0.9988125595034527
+       ],
+       [
+        0.5522871658663424,
+        0.9988125595034527
+       ],
+       [
+        0.5522871658663424,
+        0.9928753570207162
+       ],
+       [
+        0.5390728301671688,
+        0.9928753570207162
+       ]
+      ]
+     ],
+     [
+      [
+       [
+        0.5068895287062783,
+        0.5974576716704568
+       ],
+       [
+        0.5068895287062783,
+        0.9881255950345267
+       ],
+       [
+        0.5088077387271261,
+        0.9881255950345267
+       ],
+       [
+        0.5088077387271261,
+        0.5974576716704568
+       ]
+      ]
+     ]
+    ],
+    "slabs": [
+     [
+      [
+       [
+        0.5068895287062783,
+        0.5784586237256996
+       ],
+       [
+        0.5916104712937217,
+        0.5784586237256996
+       ],
+       [
+        0.5916104712937217,
+        1
+       ],
+       [
+        0.5068895287062783,
+        1
+       ]
+      ]
+     ],
+     [
+      [
+       [
+        0.5888120613008663,
+        0.5825152643360761
+       ],
+       [
+        0.6491879386991338,
+        0.5825152643360761
+       ],
+       [
+        0.6491879386991338,
+        1
+       ],
+       [
+        0.5888120613008663,
+        1
+       ]
+      ]
+     ],
+     [
+      [
+       [
+        0.58924358943956,
+        0
+       ],
+       [
+        0.6485461179063027,
+        0
+       ],
+       [
+        0.6485461179063027,
+        0.4100627848076763
+       ],
+       [
+        0.58924358943956,
+        0.4100627848076763
+       ]
+      ]
+     ]
+    ],
+    "landings": [],
+    "openings": [
+     {
+      "a": [
+       0.5350232756787124,
+       0.5814272249670679
+      ],
+      "b": [
+       0.5384334268268862,
+       0.5814272249670679
+      ],
+      "kind": "window",
+      "depthM": 0.1126126126126126,
+      "sillM": 0.9,
+      "heightM": 1.4
+     },
+     {
+      "a": [
+       0.5186119232781259,
+       0.9890161754069373
+      ],
+      "b": [
+       0.5311868556370168,
+       0.9890161754069373
+      ],
+      "kind": "window",
+      "depthM": 0.12387387387387387,
+      "sillM": 0.9,
+      "heightM": 1.4
+     },
+     {
+      "a": [
+       0.6066625534217193,
+       0.673169092651671
+      ],
+      "b": [
+       0.6066625534217193,
+       0.7265474981401299
+      ],
+      "kind": "door",
+      "depthM": 0.10180995475113122,
+      "sillM": 0,
+      "heightM": 2.1,
+      "hinge": [
+       0.6066625534217193,
+       0.7265474981401299
+      ],
+      "openTip": [
+       0.6162434772287139,
+       0.7265474981401299
+      ]
+     },
+     {
+      "a": [
+       0.6103289963310999,
+       0.996421559408595
+      ],
+      "b": [
+       0.6278851025249224,
+       0.996421559408595
+      ],
+      "kind": "window",
+      "depthM": 0.13574660633484162,
+      "sillM": 0.9,
+      "heightM": 1.4
+     }
+    ],
+    "stairs": [],
+    "railings": []
+   },
+   "location": null,
+   "source": {
+    "sha256": "686d3cdb9d144ddfc372e90675793e2a8d63a267f1408ac81a319df752599b78",
+    "page": 1,
+    "crop": null,
+    "urls": [
+     "https://www.zagreb.hr/userdocsimages/arhiva/stanovi/1Natje%C4%8Daj%20javni%20najam%20naselje%20Podbre%C5%BEje/Zgrada%20A%204/stan%20A4_C_13.pdf",
+     "https://www.zagreb.hr/userdocsimages/arhiva/stanovi/1Natje%C4%8Daj%20javni%20najam%20naselje%20Podbre%C5%BEje/Zgrada%20A%204/stan%20A4_C_10.pdf"
+    ],
+    "listingUrl": "https://www.zagreb.hr/userdocsimages/arhiva/stanovi/1natje%C4%8Daj%20javni%20najam%20naselje%20podbre%C5%BEje/Opis%20stanova%20zgrada%20A4%20s%20pripadcima_.pdf",
+    "mediaType": "application/pdf",
+    "url": "https://www.zagreb.hr/userdocsimages/arhiva/stanovi/1Natje%C4%8Daj%20javni%20najam%20naselje%20Podbre%C5%BEje/Zgrada%20A%204/stan%20A4_C_13.pdf",
+    "label": "Podbrežje A4 · 2. kat · cijeli kat (13 stanova)",
+    "attribution": "zagreb.hr",
+    "retained": false,
+    "assetUrl": "/api/floor-plans/sources/686d3cdb9d144ddfc372e90675793e2a8d63a267f1408ac81a319df752599b78"
+   },
+   "quality": {
+    "status": "needs_review",
+    "issues": [
+     "Composed from 13 flat plans placed by the shaded cells of the catalogue sheets’ whole-floor key plans and scaled to the GDI footprint; positions without a known layout are left empty.",
+     "Flats: A4-C-05, A4-C-06, A4-C-07, A4-D-05, A4-D-06, A4-D-07, A4-D-08, A4-E-03, A4-E-04, A4-E-06, A4-F-03, A4-F-04, A4-F-06."
+    ]
+   },
+   "building": {
+    "id": "13072388dadb63aa",
+    "label": "Podbrežje A4 — Avenija Većeslava Holjevca 38–38e",
+    "name": "Podbrežje A4",
+    "address": "Avenija Većeslava Holjevca 38",
+    "city": "Zagreb",
+    "country": "HR",
+    "kind": "existing",
+    "constructionYear": 2018,
+    "completionYear": 2018,
+    "envelope": {
+     "schema": "building-envelope.v1",
+     "footprint": {
+      "type": "MultiPolygon",
+      "coordinates": [
+       [
+        [
+         [
+          15.9722063,
+          45.7668612
+         ],
+         [
+          15.9722073,
+          45.7668256
+         ],
+         [
+          15.9722433,
+          45.7668261
+         ],
+         [
+          15.9722424,
+          45.7668563
+         ],
+         [
+          15.9723479,
+          45.7668578
+         ],
+         [
+          15.9724186,
+          45.7668588
+         ],
+         [
+          15.9724232,
+          45.7666951
+         ],
+         [
+          15.9723525,
+          45.7666941
+         ],
+         [
+          15.9723749,
+          45.7659077
+         ],
+         [
+          15.9722695,
+          45.7659063
+         ],
+         [
+          15.9722681,
+          45.7659547
+         ],
+         [
+          15.9722321,
+          45.7659542
+         ],
+         [
+          15.972233,
+          45.765923
+         ],
+         [
+          15.9721302,
+          45.7659215
+         ],
+         [
+          15.9721083,
+          45.7666907
+         ],
+         [
+          15.9720355,
+          45.7666897
+         ],
+         [
+          15.9720308,
+          45.7668534
+         ],
+         [
+          15.9721036,
+          45.7668544
+         ],
+         [
+          15.9721035,
+          45.7668598
+         ],
+         [
+          15.9722063,
+          45.7668612
+         ]
+        ],
+        [
+         [
+          15.9724292,
+          45.7663932
+         ],
+         [
+          15.9723714,
+          45.7663924
+         ],
+         [
+          15.9723682,
+          45.7665038
+         ],
+         [
+          15.9724252,
+          45.7665336
+         ],
+         [
+          15.9724292,
+          45.7663932
+         ]
+        ],
+        [
+         [
+          15.9723971,
+          45.7665352
+         ],
+         [
+          15.9723678,
+          45.7665199
+         ],
+         [
+          15.9723653,
+          45.766607
+         ],
+         [
+          15.9723632,
+          45.7666802
+         ],
+         [
+          15.9723807,
+          45.7666804
+         ],
+         [
+          15.9723921,
+          45.7666806
+         ],
+         [
+          15.9724211,
+          45.766681
+         ],
+         [
+          15.9724228,
+          45.766621
+         ],
+         [
+          15.9724248,
+          45.7665497
+         ],
+         [
+          15.9724076,
+          45.7665407
+         ],
+         [
+          15.9723971,
+          45.7665352
+         ]
+        ]
+       ]
+      ]
+     },
+     "footprintSource": "GDI Zagreb building footprint 148972",
+     "storeys": [
+      {
+       "level": 0,
+       "label": "Pr",
+       "heightM": 4.1,
+       "elevationM": 0,
+       "outline": "footprint",
+       "heightBasis": "estimated: GDI 3D height 29.5 m over ground floor + 8 storeys"
+      },
+      {
+       "level": 1,
+       "label": "1. kat",
+       "heightM": 3.17,
+       "elevationM": 4.1,
+       "outline": "footprint",
+       "heightBasis": "estimated: GDI 3D height 29.5 m over ground floor + 8 storeys"
+      },
+      {
+       "level": 2,
+       "label": "2. kat",
+       "heightM": 3.17,
+       "elevationM": 7.27,
+       "outline": "footprint",
+       "heightBasis": "estimated: GDI 3D height 29.5 m over ground floor + 8 storeys"
+      },
+      {
+       "level": 3,
+       "label": "3. kat",
+       "heightM": 3.17,
+       "elevationM": 10.45,
+       "outline": "footprint",
+       "heightBasis": "estimated: GDI 3D height 29.5 m over ground floor + 8 storeys"
+      },
+      {
+       "level": 4,
+       "label": "4. kat",
+       "heightM": 3.17,
+       "elevationM": 13.62,
+       "outline": "footprint",
+       "heightBasis": "estimated: GDI 3D height 29.5 m over ground floor + 8 storeys"
+      },
+      {
+       "level": 5,
+       "label": "5. kat",
+       "heightM": 3.17,
+       "elevationM": 16.8,
+       "outline": "footprint",
+       "heightBasis": "estimated: GDI 3D height 29.5 m over ground floor + 8 storeys"
+      },
+      {
+       "level": 6,
+       "label": "6. kat",
+       "heightM": 3.17,
+       "elevationM": 19.98,
+       "outline": "footprint",
+       "heightBasis": "estimated: GDI 3D height 29.5 m over ground floor + 8 storeys"
+      },
+      {
+       "level": 7,
+       "label": "7. kat",
+       "heightM": 3.17,
+       "elevationM": 23.15,
+       "outline": "footprint",
+       "heightBasis": "estimated: GDI 3D height 29.5 m over ground floor + 8 storeys"
+      },
+      {
+       "level": 8,
+       "label": "8. kat",
+       "heightM": 3.17,
+       "elevationM": 26.32,
+       "outline": "footprint",
+       "heightBasis": "estimated: GDI 3D height 29.5 m over ground floor + 8 storeys"
+      }
+     ],
+     "storeySource": "GDI 3D height; storey count from the city flat lists",
+     "heightBasis": "estimated: GDI 3D height 29.5 m over ground floor + 8 storeys",
+     "conflicts": [],
+     "heightM": 29.5,
+     "surveyHeightM": 29.5
+    },
+    "sources": [
+     {
+      "url": "https://www.zagreb.hr/odabir-javno-najamnih-stanova-na-lokaciji-podbrezj/127723",
+      "label": "Grad Zagreb — javni najam, naselje Podbrežje (katalog stanova)"
+     },
+     {
+      "url": "https://www.tehnika.hr/en/realized-projects/stambeno-poslovne-gradjevine-podbrezje/",
+      "label": "Tehnika — stambeno-poslovne građevine Podbrežje (A4 i A6 su identične)"
+     }
+    ],
+    "archiveEvidence": null,
+    "location": {
+     "lng": 15.97222794736842,
+     "lat": 45.76652581052631,
+     "status": "located"
+    },
+    "footprint": null
+   },
+   "buildingRefs": [
+    {
+     "city": "zagreb",
+     "source": "dgu-building",
+     "ownerId": "",
+     "buildingId": "12288048"
+    },
+    {
+     "city": "zagreb",
+     "source": "zagreb-3d",
+     "ownerId": "",
+     "buildingId": "148972"
+    }
+   ],
+   "registration": {
+    "corners": [
+     [
+      15.9721305,
+      45.7659043
+     ],
+     [
+      15.9721037,
+      45.7668598
+     ],
+     [
+      15.9723479,
+      45.7668632
+     ],
+     [
+      15.9723747,
+      45.7659077
+     ]
+    ],
+    "basis": "Whole floor drawn in the GDI footprint rectangle (approximate)",
+    "accuracyM": 2
+   },
+   "id": "0cf165c3014822c691b8549854295b3fc61442681c72d5fc246c44b175f7f3e7",
+   "buildingId": "13072388dadb63aa",
+   "updatedAt": "2026-11-05T16:08:39.435Z"
+  },
+  {
+   "externalId": "podbrezje-a4-c-05",
+   "label": "Stan A4-C-05 · 2. kat · Holjevca 38b",
+   "floor": 2,
+   "marketedAreaM2": 60.31,
+   "physicalNetAreaM2": null,
+   "orientation": [],
+   "placement": {
+    "planId": "036916716e866e5335cee21e31553b19a390727f5dd526d092dff73bbdabb3b6",
+    "kind": "key-plan",
+    "sourceSha256": "686d3cdb9d144ddfc372e90675793e2a8d63a267f1408ac81a319df752599b78",
+    "listingUrl": "https://www.zgh.hr/aktualnosti-10/novosti-170/javni-poziv-za-kupnju-stanova-u-naselju-podbrezje/8431",
+    "unitId": "A4-C-05",
+    "scope": "unit",
+    "floor": 2,
+    "status": "placed",
+    "reason": "Key-plan cell mirrored from the symmetric entrance",
+    "margin": null,
+    "alternatives": 0,
+    "priors": {
+     "rotationDeg": 91.13054898959163,
+     "rotationBasis": "GDI footprint long axis; entrance A at the north end (city house-number map)",
+     "keyPlan": [
+      0.54925,
+      0.75
+     ],
+     "scaleBasis": "printed 1:100 dimensions"
+    },
+    "best": {
+     "scale": 1,
+     "rotationDeg": 91.13054898959163,
+     "tx": 4.027523684240982,
+     "ty": -52.036315906700025,
+     "iou": 0.03571338273756684,
+     "containment": 1,
+     "coincidence": 0.964,
+     "positionDistance": null,
+     "score": 0.964,
+     "outline": [
+      [
+       4.027523684240982,
+       -52.036315906700025
+      ],
+      [
+       3.850882188051426,
+       -43.08535598807654
+      ],
+      [
+       11.844821234872402,
+       -42.927600689592786
+      ],
+      [
+       12.021462731061957,
+       -51.87856060821627
+      ],
+      [
+       4.027523684240982,
+       -52.036315906700025
+      ]
+     ]
+    }
+   },
+   "scope": "unit",
+   "unitId": "A4-C-05",
+   "levels": [],
+   "areaM2": 60.31,
+   "rooms": 1.5,
+   "architecture": {
+    "schema": "consensus-builder.floor-architecture.v1",
+    "dimensionsM": [
+     8.952702702702702,
+     7.995495495495495
+    ],
+    "wallHeightM": 2.7,
+    "slabThicknessM": 0.2,
+    "walls": [
+     [
+      [
+       [
+        0.969811320754717,
+        0.04788732394366197
+       ],
+       [
+        0.969811320754717,
+        0.30422535211267604
+       ],
+       [
+        0.9773584905660377,
+        0.30422535211267604
+       ],
+       [
+        0.9773584905660377,
+        0.04788732394366197
+       ]
+      ]
+     ],
+     [
+      [
+       [
+        0.1761006289308176,
+        0.014084507042253521
+       ],
+       [
+        0.3320754716981132,
+        0.014084507042253521
+       ],
+       [
+        0.3320754716981132,
+        0
+       ],
+       [
+        0.1761006289308176,
+        0
+       ]
+      ]
+     ],
+     [
+      [
+       [
+        0.3723270440251572,
+        0.014084507042253521
+       ],
+       [
+        0.810062893081761,
+        0.014084507042253521
+       ],
+       [
+        0.810062893081761,
+        0
+       ],
+       [
+        0.3723270440251572,
+        0
+       ]
+      ]
+     ],
+     [
+      [
+       [
+        0.37735849056603776,
+        0.04507042253521127
+       ],
+       [
+        0.6389937106918239,
+        0.04507042253521127
+       ],
+       [
+        0.6389937106918239,
+        0.008450704225352112
+       ],
+       [
+        0.37735849056603776,
+        0.008450704225352112
+       ]
+      ]
+     ],
+     [
+      [
+       [
+        0.5408805031446541,
+        0.05070422535211268
+       ],
+       [
+        0.810062893081761,
+        0.05070422535211268
+       ],
+       [
+        0.810062893081761,
+        0.008450704225352112
+       ],
+       [
+        0.5408805031446541,
+        0.008450704225352112
+       ]
+      ]
+     ],
+     [
+      [
+       [
+        0.379874213836478,
+        0.9830985915492958
+       ],
+       [
+        0.5358490566037736,
+        0.9830985915492958
+       ],
+       [
+        0.5358490566037736,
+        0.9661971830985916
+       ],
+       [
+        0.379874213836478,
+        0.9661971830985916
+       ]
+      ]
+     ],
+     [
+      [
+       [
+        0.379874213836478,
+        0.9971830985915493
+       ],
+       [
+        0.5358490566037736,
+        0.9971830985915493
+       ],
+       [
+        0.5358490566037736,
+        0.9830985915492958
+       ],
+       [
+        0.379874213836478,
+        0.9830985915492958
+       ]
+      ]
+     ],
+     [
+      [
+       [
+        0,
+        0.04507042253521127
+       ],
+       [
+        0,
+        0.971830985915493
+       ],
+       [
+        0.022641509433962263,
+        0.971830985915493
+       ],
+       [
+        0.022641509433962263,
+        0.04507042253521127
+       ]
+      ]
+     ]
+    ],
+    "slabs": [
+     [
+      [
+       [
+        0,
+        0
+       ],
+       [
+        1,
+        0
+       ],
+       [
+        1,
+        1
+       ],
+       [
+        0,
+        1
+       ]
+      ]
+     ]
+    ],
+    "landings": [],
+    "openings": [
+     {
+      "a": [
+       0.3320754716981132,
+       0.007042253521126761
+      ],
+      "b": [
+       0.3723270440251572,
+       0.007042253521126761
+      ],
+      "kind": "window",
+      "depthM": 0.1126126126126126,
+      "sillM": 0.9,
+      "heightM": 1.4
+     },
+     {
+      "a": [
+       0.13836477987421383,
+       0.973943661971831
+      ],
+      "b": [
+       0.28679245283018867,
+       0.973943661971831
+      ],
+      "kind": "window",
+      "depthM": 0.12387387387387387,
+      "sillM": 0.9,
+      "heightM": 1.4
+     }
+    ],
+    "stairs": [],
+    "railings": []
+   },
+   "location": null,
+   "source": {
+    "sha256": "686d3cdb9d144ddfc372e90675793e2a8d63a267f1408ac81a319df752599b78",
+    "page": 1,
+    "crop": [
+     0.326,
+     0.254,
+     0.562,
+     0.379
+    ],
+    "urls": [
+     "https://www.zagreb.hr/userdocsimages/arhiva/stanovi/1Natje%C4%8Daj%20javni%20najam%20naselje%20Podbre%C5%BEje/Zgrada%20A%204/stan%20A4_C_13.pdf",
+     "https://www.zagreb.hr/userdocsimages/arhiva/stanovi/1Natje%C4%8Daj%20javni%20najam%20naselje%20Podbre%C5%BEje/Zgrada%20A%204/stan%20A4_C_05.pdf"
+    ],
+    "listingUrl": "https://www.zgh.hr/aktualnosti-10/novosti-170/javni-poziv-za-kupnju-stanova-u-naselju-podbrezje/8431",
+    "mediaType": "application/pdf",
+    "url": "https://www.zagreb.hr/userdocsimages/arhiva/stanovi/1Natje%C4%8Daj%20javni%20najam%20naselje%20Podbre%C5%BEje/Zgrada%20A%204/stan%20A4_C_13.pdf",
+    "label": "Stan A4-C-05 · 2. kat · Holjevca 38b",
+    "attribution": "zagreb.hr",
+    "retained": false,
+    "assetUrl": "/api/floor-plans/sources/686d3cdb9d144ddfc372e90675793e2a8d63a267f1408ac81a319df752599b78"
+   },
+   "quality": {
+    "status": "needs_review",
+    "issues": [
+     "Geometry from the sheet of A4-C-13, the same layout in the same entrance on another floor; this flat’s own sheet is linked.",
+     "The printed classification 'jednoipolsobni stan' denotes a fractional room count, which cannot be represented by the integer roomCount field."
+    ]
+   },
+   "building": {
+    "id": "13072388dadb63aa",
+    "label": "Podbrežje A4 — Avenija Većeslava Holjevca 38–38e",
+    "name": "Podbrežje A4",
+    "address": "Avenija Većeslava Holjevca 38b",
+    "city": "Zagreb",
+    "country": "HR",
+    "kind": "existing",
+    "constructionYear": 2018,
+    "completionYear": 2018,
+    "envelope": {
+     "schema": "building-envelope.v1",
+     "footprint": {
+      "type": "MultiPolygon",
+      "coordinates": [
+       [
+        [
+         [
+          15.9722063,
+          45.7668612
+         ],
+         [
+          15.9722073,
+          45.7668256
+         ],
+         [
+          15.9722433,
+          45.7668261
+         ],
+         [
+          15.9722424,
+          45.7668563
+         ],
+         [
+          15.9723479,
+          45.7668578
+         ],
+         [
+          15.9724186,
+          45.7668588
+         ],
+         [
+          15.9724232,
+          45.7666951
+         ],
+         [
+          15.9723525,
+          45.7666941
+         ],
+         [
+          15.9723749,
+          45.7659077
+         ],
+         [
+          15.9722695,
+          45.7659063
+         ],
+         [
+          15.9722681,
+          45.7659547
+         ],
+         [
+          15.9722321,
+          45.7659542
+         ],
+         [
+          15.972233,
+          45.765923
+         ],
+         [
+          15.9721302,
+          45.7659215
+         ],
+         [
+          15.9721083,
+          45.7666907
+         ],
+         [
+          15.9720355,
+          45.7666897
+         ],
+         [
+          15.9720308,
+          45.7668534
+         ],
+         [
+          15.9721036,
+          45.7668544
+         ],
+         [
+          15.9721035,
+          45.7668598
+         ],
+         [
+          15.9722063,
+          45.7668612
+         ]
+        ],
+        [
+         [
+          15.9724292,
+          45.7663932
+         ],
+         [
+          15.9723714,
+          45.7663924
+         ],
+         [
+          15.9723682,
+          45.7665038
+         ],
+         [
+          15.9724252,
+          45.7665336
+         ],
+         [
+          15.9724292,
+          45.7663932
+         ]
+        ],
+        [
+         [
+          15.9723971,
+          45.7665352
+         ],
+         [
+          15.9723678,
+          45.7665199
+         ],
+         [
+          15.9723653,
+          45.766607
+         ],
+         [
+          15.9723632,
+          45.7666802
+         ],
+         [
+          15.9723807,
+          45.7666804
+         ],
+         [
+          15.9723921,
+          45.7666806
+         ],
+         [
+          15.9724211,
+          45.766681
+         ],
+         [
+          15.9724228,
+          45.766621
+         ],
+         [
+          15.9724248,
+          45.7665497
+         ],
+         [
+          15.9724076,
+          45.7665407
+         ],
+         [
+          15.9723971,
+          45.7665352
+         ]
+        ]
+       ]
+      ]
+     },
+     "footprintSource": "GDI Zagreb building footprint 148972",
+     "storeys": [
+      {
+       "level": 0,
+       "label": "Pr",
+       "heightM": 4.1,
+       "elevationM": 0,
+       "outline": "footprint",
+       "heightBasis": "estimated: GDI 3D height 29.5 m over ground floor + 8 storeys"
+      },
+      {
+       "level": 1,
+       "label": "1. kat",
+       "heightM": 3.17,
+       "elevationM": 4.1,
+       "outline": "footprint",
+       "heightBasis": "estimated: GDI 3D height 29.5 m over ground floor + 8 storeys"
+      },
+      {
+       "level": 2,
+       "label": "2. kat",
+       "heightM": 3.17,
+       "elevationM": 7.27,
+       "outline": "footprint",
+       "heightBasis": "estimated: GDI 3D height 29.5 m over ground floor + 8 storeys"
+      },
+      {
+       "level": 3,
+       "label": "3. kat",
+       "heightM": 3.17,
+       "elevationM": 10.45,
+       "outline": "footprint",
+       "heightBasis": "estimated: GDI 3D height 29.5 m over ground floor + 8 storeys"
+      },
+      {
+       "level": 4,
+       "label": "4. kat",
+       "heightM": 3.17,
+       "elevationM": 13.62,
+       "outline": "footprint",
+       "heightBasis": "estimated: GDI 3D height 29.5 m over ground floor + 8 storeys"
+      },
+      {
+       "level": 5,
+       "label": "5. kat",
+       "heightM": 3.17,
+       "elevationM": 16.8,
+       "outline": "footprint",
+       "heightBasis": "estimated: GDI 3D height 29.5 m over ground floor + 8 storeys"
+      },
+      {
+       "level": 6,
+       "label": "6. kat",
+       "heightM": 3.17,
+       "elevationM": 19.98,
+       "outline": "footprint",
+       "heightBasis": "estimated: GDI 3D height 29.5 m over ground floor + 8 storeys"
+      },
+      {
+       "level": 7,
+       "label": "7. kat",
+       "heightM": 3.17,
+       "elevationM": 23.15,
+       "outline": "footprint",
+       "heightBasis": "estimated: GDI 3D height 29.5 m over ground floor + 8 storeys"
+      },
+      {
+       "level": 8,
+       "label": "8. kat",
+       "heightM": 3.17,
+       "elevationM": 26.32,
+       "outline": "footprint",
+       "heightBasis": "estimated: GDI 3D height 29.5 m over ground floor + 8 storeys"
+      }
+     ],
+     "storeySource": "GDI 3D height; storey count from the city flat lists",
+     "heightBasis": "estimated: GDI 3D height 29.5 m over ground floor + 8 storeys",
+     "conflicts": [],
+     "heightM": 29.5,
+     "surveyHeightM": 29.5
+    },
+    "sources": [
+     {
+      "url": "https://www.zagreb.hr/odabir-javno-najamnih-stanova-na-lokaciji-podbrezj/127723",
+      "label": "Grad Zagreb — javni najam, naselje Podbrežje (katalog stanova)"
+     },
+     {
+      "url": "https://www.tehnika.hr/en/realized-projects/stambeno-poslovne-gradjevine-podbrezje/",
+      "label": "Tehnika — stambeno-poslovne građevine Podbrežje (A4 i A6 su identične)"
+     }
+    ],
+    "archiveEvidence": null,
+    "location": {
+     "lng": 15.97222794736842,
+     "lat": 45.76652581052631,
+     "status": "located"
+    },
+    "footprint": null
+   },
+   "buildingRefs": [
+    {
+     "city": "zagreb",
+     "source": "dgu-building",
+     "ownerId": "",
+     "buildingId": "12288048"
+    },
+    {
+     "city": "zagreb",
+     "source": "zagreb-3d",
+     "ownerId": "",
+     "buildingId": "148972"
+    }
+   ],
+   "registration": {
+    "corners": [
+     [
+      15.9722582,
+      45.7663906
+     ],
+     [
+      15.9722559,
+      45.7664715
+     ],
+     [
+      15.9723588,
+      45.766473
+     ],
+     [
+      15.9723611,
+      45.766392
+     ]
+    ],
+    "basis": "Key-plan cell of the catalogue sheet, scaled into the GDI footprint (approximate)",
+    "accuracyM": 2
+   },
+   "id": "036916716e866e5335cee21e31553b19a390727f5dd526d092dff73bbdabb3b6",
+   "buildingId": "13072388dadb63aa",
+   "updatedAt": "2026-11-05T16:08:39.237Z"
+  },
+  {
+   "externalId": "podbrezje-a4-c-06",
+   "label": "Stan A4-C-06 · 2. kat · Holjevca 38b",
+   "floor": 2,
+   "marketedAreaM2": 42.79,
+   "physicalNetAreaM2": null,
+   "orientation": [],
+   "placement": {
+    "planId": "25e44fdf7c3cb98434ba1343673f86877554366ae3da77a5a7e9327a31ed8cad",
+    "kind": "key-plan",
+    "sourceSha256": "2aedf86babbfb4ff182cd1ec44db527a5a7e80a68c00f6c41b9a28c0b742294a",
+    "listingUrl": "https://www.zgh.hr/aktualnosti-10/novosti-170/javni-poziv-za-kupnju-stanova-u-naselju-podbrezje/8431",
+    "unitId": "A4-C-06",
+    "scope": "unit",
+    "floor": 2,
+    "status": "placed",
+    "reason": "Key-plan cell mirrored from the symmetric entrance",
+    "margin": null,
+    "alternatives": 0,
+    "priors": {
+     "rotationDeg": 91.13054898959163,
+     "rotationBasis": "GDI footprint long axis; entrance A at the north end (city house-number map)",
+     "keyPlan": [
+      0.619,
+      0.75
+     ],
+     "scaleBasis": "printed 1:100 dimensions"
+    },
+    "best": {
+     "scale": 1,
+     "rotationDeg": 91.13054898959163,
+     "tx": 3.9336452987990054,
+     "ty": -43.37949622219374,
+     "iou": 0.025206007216093163,
+     "containment": 1,
+     "coincidence": 0.957,
+     "positionDistance": null,
+     "score": 0.957,
+     "outline": [
+      [
+       3.9336452987990054,
+       -43.37949622219374
+      ],
+      [
+       3.8077627839015875,
+       -37.00064770919672
+      ],
+      [
+       11.724773349678019,
+       -36.84441054531695
+      ],
+      [
+       11.850655864575437,
+       -43.223259058313964
+      ],
+      [
+       3.9336452987990054,
+       -43.37949622219374
+      ]
+     ]
+    }
+   },
+   "scope": "unit",
+   "unitId": "A4-C-06",
+   "levels": [],
+   "areaM2": 42.79,
+   "rooms": 1,
+   "architecture": {
+    "schema": "consensus-builder.floor-architecture.v1",
+    "dimensionsM": [
+     6.380090497737556,
+     7.918552036199094
+    ],
+    "wallHeightM": 2.7,
+    "slabThicknessM": 0.2,
+    "walls": [
+     [
+      [
+       [
+        0.9574468085106383,
+        0.03428571428571429
+       ],
+       [
+        0.9574468085106383,
+        0.7285714285714285
+       ],
+       [
+        0.9680851063829787,
+        0.7285714285714285
+       ],
+       [
+        0.9680851063829787,
+        0.03428571428571429
+       ]
+      ]
+     ],
+     [
+      [
+       [
+        0.9574468085106383,
+        0.74
+       ],
+       [
+        0.9574468085106383,
+        0.9342857142857143
+       ],
+       [
+        0.9680851063829787,
+        0.9342857142857143
+       ],
+       [
+        0.9680851063829787,
+        0.74
+       ]
+      ]
+     ],
+     [
+      [
+       [
+        0.26773049645390073,
+        0.03428571428571429
+       ],
+       [
+        0.7606382978723404,
+        0.03428571428571429
+       ],
+       [
+        0.7606382978723404,
+        0
+       ],
+       [
+        0.26773049645390073,
+        0
+       ]
+      ]
+     ],
+     [
+      [
+       [
+        0.299645390070922,
+        0.3514285714285714
+       ],
+       [
+        0.5656028368794326,
+        0.3514285714285714
+       ],
+       [
+        0.5656028368794326,
+        0.3385714285714286
+       ],
+       [
+        0.299645390070922,
+        0.3385714285714286
+       ]
+      ]
+     ],
+     [
+      [
+       [
+        0.030141843971631204,
+        0.9857142857142858
+       ],
+       [
+        0.34929078014184395,
+        0.9857142857142858
+       ],
+       [
+        0.34929078014184395,
+        0.9657142857142857
+       ],
+       [
+        0.030141843971631204,
+        0.9657142857142857
+       ]
+      ]
+     ],
+     [
+      [
+       [
+        0.012411347517730497,
+        1
+       ],
+       [
+        0.34929078014184395,
+        1
+       ],
+       [
+        0.34929078014184395,
+        0.9857142857142858
+       ],
+       [
+        0.012411347517730497,
+        0.9857142857142858
+       ]
+      ]
+     ],
+     [
+      [
+       [
+        0,
+        0.03428571428571429
+       ],
+       [
+        0,
+        0.9685714285714285
+       ],
+       [
+        0.031914893617021274,
+        0.9685714285714285
+       ],
+       [
+        0.031914893617021274,
+        0.03428571428571429
+       ]
+      ]
+     ],
+     [
+      [
+       [
+        0.28368794326241137,
+        0.03142857142857143
+       ],
+       [
+        0.28368794326241137,
+        0.21714285714285714
+       ],
+       [
+        0.299645390070922,
+        0.21714285714285714
+       ],
+       [
+        0.299645390070922,
+        0.03142857142857143
+       ]
+      ]
+     ]
+    ],
+    "slabs": [
+     [
+      [
+       [
+        0,
+        0
+       ],
+       [
+        1,
+        0
+       ],
+       [
+        1,
+        1
+       ],
+       [
+        0,
+        1
+       ]
+      ]
+     ]
+    ],
+    "landings": [],
+    "openings": [
+     {
+      "a": [
+       0.29565602836879434,
+       0.21714285714285714
+      ],
+      "b": [
+       0.29565602836879434,
+       0.345
+      ],
+      "kind": "door",
+      "depthM": 0.10180995475113122,
+      "sillM": 0,
+      "heightM": 2.1,
+      "hinge": [
+       0.29565602836879434,
+       0.345
+      ],
+      "openTip": [
+       0.45434397163120566,
+       0.345
+      ]
+     },
+     {
+      "a": [
+       0.35638297872340424,
+       0.9914285714285714
+      ],
+      "b": [
+       0.6471631205673759,
+       0.9914285714285714
+      ],
+      "kind": "window",
+      "depthM": 0.13574660633484162,
+      "sillM": 0.9,
+      "heightM": 1.4
+     }
+    ],
+    "stairs": [],
+    "railings": []
+   },
+   "location": null,
+   "source": {
+    "sha256": "2aedf86babbfb4ff182cd1ec44db527a5a7e80a68c00f6c41b9a28c0b742294a",
+    "page": 1,
+    "crop": [
+     0.452,
+     0.269,
+     0.446,
+     0.365
+    ],
+    "urls": [
+     "https://www.zagreb.hr/userdocsimages/arhiva/stanovi/1Natje%C4%8Daj%20javni%20najam%20naselje%20Podbre%C5%BEje/Zgrada%20A%204/stan%20A4_C_10.pdf",
+     "https://www.zagreb.hr/userdocsimages/arhiva/stanovi/1Natje%C4%8Daj%20javni%20najam%20naselje%20Podbre%C5%BEje/Zgrada%20A%204/stan%20A4_C_06.pdf"
+    ],
+    "listingUrl": "https://www.zgh.hr/aktualnosti-10/novosti-170/javni-poziv-za-kupnju-stanova-u-naselju-podbrezje/8431",
+    "mediaType": "application/pdf",
+    "url": "https://www.zagreb.hr/userdocsimages/arhiva/stanovi/1Natje%C4%8Daj%20javni%20najam%20naselje%20Podbre%C5%BEje/Zgrada%20A%204/stan%20A4_C_10.pdf",
+    "label": "Stan A4-C-06 · 2. kat · Holjevca 38b",
+    "attribution": "zagreb.hr",
+    "retained": false,
+    "assetUrl": "/api/floor-plans/sources/2aedf86babbfb4ff182cd1ec44db527a5a7e80a68c00f6c41b9a28c0b742294a"
+   },
+   "quality": {
+    "status": "needs_review",
+    "issues": [
+     "Geometry from the sheet of A4-C-10, the same layout in the same entrance on another floor; this flat’s own sheet is linked.",
+     "The entrance door and the door between UL and DB+BL have visible swing symbols but no matching supplied opening candidates; they are not reconstructed."
+    ]
+   },
+   "building": {
+    "id": "13072388dadb63aa",
+    "label": "Podbrežje A4 — Avenija Većeslava Holjevca 38–38e",
+    "name": "Podbrežje A4",
+    "address": "Avenija Većeslava Holjevca 38b",
+    "city": "Zagreb",
+    "country": "HR",
+    "kind": "existing",
+    "constructionYear": 2018,
+    "completionYear": 2018,
+    "envelope": {
+     "schema": "building-envelope.v1",
+     "footprint": {
+      "type": "MultiPolygon",
+      "coordinates": [
+       [
+        [
+         [
+          15.9722063,
+          45.7668612
+         ],
+         [
+          15.9722073,
+          45.7668256
+         ],
+         [
+          15.9722433,
+          45.7668261
+         ],
+         [
+          15.9722424,
+          45.7668563
+         ],
+         [
+          15.9723479,
+          45.7668578
+         ],
+         [
+          15.9724186,
+          45.7668588
+         ],
+         [
+          15.9724232,
+          45.7666951
+         ],
+         [
+          15.9723525,
+          45.7666941
+         ],
+         [
+          15.9723749,
+          45.7659077
+         ],
+         [
+          15.9722695,
+          45.7659063
+         ],
+         [
+          15.9722681,
+          45.7659547
+         ],
+         [
+          15.9722321,
+          45.7659542
+         ],
+         [
+          15.972233,
+          45.765923
+         ],
+         [
+          15.9721302,
+          45.7659215
+         ],
+         [
+          15.9721083,
+          45.7666907
+         ],
+         [
+          15.9720355,
+          45.7666897
+         ],
+         [
+          15.9720308,
+          45.7668534
+         ],
+         [
+          15.9721036,
+          45.7668544
+         ],
+         [
+          15.9721035,
+          45.7668598
+         ],
+         [
+          15.9722063,
+          45.7668612
+         ]
+        ],
+        [
+         [
+          15.9724292,
+          45.7663932
+         ],
+         [
+          15.9723714,
+          45.7663924
+         ],
+         [
+          15.9723682,
+          45.7665038
+         ],
+         [
+          15.9724252,
+          45.7665336
+         ],
+         [
+          15.9724292,
+          45.7663932
+         ]
+        ],
+        [
+         [
+          15.9723971,
+          45.7665352
+         ],
+         [
+          15.9723678,
+          45.7665199
+         ],
+         [
+          15.9723653,
+          45.766607
+         ],
+         [
+          15.9723632,
+          45.7666802
+         ],
+         [
+          15.9723807,
+          45.7666804
+         ],
+         [
+          15.9723921,
+          45.7666806
+         ],
+         [
+          15.9724211,
+          45.766681
+         ],
+         [
+          15.9724228,
+          45.766621
+         ],
+         [
+          15.9724248,
+          45.7665497
+         ],
+         [
+          15.9724076,
+          45.7665407
+         ],
+         [
+          15.9723971,
+          45.7665352
+         ]
+        ]
+       ]
+      ]
+     },
+     "footprintSource": "GDI Zagreb building footprint 148972",
+     "storeys": [
+      {
+       "level": 0,
+       "label": "Pr",
+       "heightM": 4.1,
+       "elevationM": 0,
+       "outline": "footprint",
+       "heightBasis": "estimated: GDI 3D height 29.5 m over ground floor + 8 storeys"
+      },
+      {
+       "level": 1,
+       "label": "1. kat",
+       "heightM": 3.17,
+       "elevationM": 4.1,
+       "outline": "footprint",
+       "heightBasis": "estimated: GDI 3D height 29.5 m over ground floor + 8 storeys"
+      },
+      {
+       "level": 2,
+       "label": "2. kat",
+       "heightM": 3.17,
+       "elevationM": 7.27,
+       "outline": "footprint",
+       "heightBasis": "estimated: GDI 3D height 29.5 m over ground floor + 8 storeys"
+      },
+      {
+       "level": 3,
+       "label": "3. kat",
+       "heightM": 3.17,
+       "elevationM": 10.45,
+       "outline": "footprint",
+       "heightBasis": "estimated: GDI 3D height 29.5 m over ground floor + 8 storeys"
+      },
+      {
+       "level": 4,
+       "label": "4. kat",
+       "heightM": 3.17,
+       "elevationM": 13.62,
+       "outline": "footprint",
+       "heightBasis": "estimated: GDI 3D height 29.5 m over ground floor + 8 storeys"
+      },
+      {
+       "level": 5,
+       "label": "5. kat",
+       "heightM": 3.17,
+       "elevationM": 16.8,
+       "outline": "footprint",
+       "heightBasis": "estimated: GDI 3D height 29.5 m over ground floor + 8 storeys"
+      },
+      {
+       "level": 6,
+       "label": "6. kat",
+       "heightM": 3.17,
+       "elevationM": 19.98,
+       "outline": "footprint",
+       "heightBasis": "estimated: GDI 3D height 29.5 m over ground floor + 8 storeys"
+      },
+      {
+       "level": 7,
+       "label": "7. kat",
+       "heightM": 3.17,
+       "elevationM": 23.15,
+       "outline": "footprint",
+       "heightBasis": "estimated: GDI 3D height 29.5 m over ground floor + 8 storeys"
+      },
+      {
+       "level": 8,
+       "label": "8. kat",
+       "heightM": 3.17,
+       "elevationM": 26.32,
+       "outline": "footprint",
+       "heightBasis": "estimated: GDI 3D height 29.5 m over ground floor + 8 storeys"
+      }
+     ],
+     "storeySource": "GDI 3D height; storey count from the city flat lists",
+     "heightBasis": "estimated: GDI 3D height 29.5 m over ground floor + 8 storeys",
+     "conflicts": [],
+     "heightM": 29.5,
+     "surveyHeightM": 29.5
+    },
+    "sources": [
+     {
+      "url": "https://www.zagreb.hr/odabir-javno-najamnih-stanova-na-lokaciji-podbrezj/127723",
+      "label": "Grad Zagreb — javni najam, naselje Podbrežje (katalog stanova)"
+     },
+     {
+      "url": "https://www.tehnika.hr/en/realized-projects/stambeno-poslovne-gradjevine-podbrezje/",
+      "label": "Tehnika — stambeno-poslovne građevine Podbrežje (A4 i A6 su identične)"
+     }
+    ],
+    "archiveEvidence": null,
+    "location": {
+     "lng": 15.97222794736842,
+     "lat": 45.76652581052631,
+     "status": "located"
+    },
+    "footprint": null
+   },
+   "buildingRefs": [
+    {
+     "city": "zagreb",
+     "source": "dgu-building",
+     "ownerId": "",
+     "buildingId": "12288048"
+    },
+    {
+     "city": "zagreb",
+     "source": "zagreb-3d",
+     "ownerId": "",
+     "buildingId": "148972"
+    }
+   ],
+   "registration": {
+    "corners": [
+     [
+      15.972257,
+      45.7664689
+     ],
+     [
+      15.9722553,
+      45.7665266
+     ],
+     [
+      15.9723573,
+      45.766528
+     ],
+     [
+      15.9723589,
+      45.7664703
+     ]
+    ],
+    "basis": "Key-plan cell of the catalogue sheet, scaled into the GDI footprint (approximate)",
+    "accuracyM": 2
+   },
+   "id": "25e44fdf7c3cb98434ba1343673f86877554366ae3da77a5a7e9327a31ed8cad",
+   "buildingId": "13072388dadb63aa",
+   "updatedAt": "2026-11-05T16:08:39.237Z"
+  },
+  {
+   "externalId": "podbrezje-a4-c-23",
+   "label": "Stan A4-C-23 · 6. kat · Holjevca 38b",
+   "floor": 6,
+   "marketedAreaM2": 42.42,
+   "physicalNetAreaM2": null,
+   "orientation": [],
+   "placement": {
+    "planId": "2116c6b382742b3eba8ab450f9c7c20698c345a38f1ab66732338ac5c04617f8",
+    "kind": "key-plan",
+    "sourceSha256": "9fd6061a48788ec0fb438e2af2e5c348bd4dc1b6db2ee50b18b79bf4b5b616be",
+    "listingUrl": "https://www.zgh.hr/aktualnosti-10/novosti-170/javni-poziv-za-kupnju-stanova-u-naselju-podbrezje/8431",
+    "unitId": "A4-C-23",
+    "scope": "unit",
+    "floor": 6,
+    "status": "placed",
+    "reason": "Key-plan cell mirrored from the symmetric entrance",
+    "margin": null,
+    "alternatives": 0,
+    "priors": {
+     "rotationDeg": 91.13054898959163,
+     "rotationBasis": "GDI footprint long axis; entrance A at the north end (city house-number map)",
+     "keyPlan": [
+      0.619,
+      0.25
+     ],
+     "scaleBasis": "printed 1:100 dimensions"
+    },
+    "best": {
+     "scale": 1,
+     "rotationDeg": 91.13054898959163,
+     "tx": -7.113836755143723,
+     "ty": -43.551901565101126,
+     "iou": 0.024403993160589187,
+     "containment": 1,
+     "coincidence": 0.971,
+     "positionDistance": null,
+     "score": 0.971,
+     "outline": [
+      [
+       -7.113836755143723,
+       -43.551901565101126
+      ],
+      [
+       -7.237919814706044,
+       -37.26423690712836
+      ],
+      [
+       0.5383438965676953,
+       -37.11077729282867
+      ],
+      [
+       0.6624269561300158,
+       -43.39844195080144
+      ],
+      [
+       -7.113836755143723,
+       -43.551901565101126
+      ]
+     ]
+    }
+   },
+   "scope": "unit",
+   "unitId": "A4-C-23",
+   "levels": [],
+   "areaM2": 42.42,
+   "rooms": 1,
+   "architecture": {
+    "schema": "consensus-builder.floor-architecture.v1",
+    "dimensionsM": [
+     6.288888888888889,
+     7.777777777777778
+    ],
+    "wallHeightM": 2.7,
+    "slabThicknessM": 0.2,
+    "walls": [
+     [
+      [
+       [
+        0.0176678445229682,
+        0.014285714285714285
+       ],
+       [
+        0.2791519434628975,
+        0.014285714285714285
+       ],
+       [
+        0.2791519434628975,
+        0
+       ],
+       [
+        0.0176678445229682,
+        0
+       ]
+      ]
+     ],
+     [
+      [
+       [
+        0.02120141342756184,
+        0.03428571428571429
+       ],
+       [
+        0.35335689045936397,
+        0.03428571428571429
+       ],
+       [
+        0.35335689045936397,
+        0.008571428571428572
+       ],
+       [
+        0.02120141342756184,
+        0.008571428571428572
+       ]
+      ]
+     ],
+     [
+      [
+       [
+        0.2968197879858657,
+        0.67
+       ],
+       [
+        0.5618374558303887,
+        0.67
+       ],
+       [
+        0.5618374558303887,
+        0.6571428571428571
+       ],
+       [
+        0.2968197879858657,
+        0.6571428571428571
+       ]
+      ]
+     ],
+     [
+      [
+       [
+        0.2968197879858657,
+        1
+       ],
+       [
+        0.5618374558303887,
+        1
+       ],
+       [
+        0.5618374558303887,
+        0.96
+       ],
+       [
+        0.2968197879858657,
+        0.96
+       ]
+      ]
+     ],
+     [
+      [
+       [
+        0.46996466431095407,
+        1
+       ],
+       [
+        0.7561837455830389,
+        1
+       ],
+       [
+        0.7561837455830389,
+        0.9714285714285714
+       ],
+       [
+        0.46996466431095407,
+        0.9714285714285714
+       ]
+      ]
+     ],
+     [
+      [
+       [
+        0.9575971731448764,
+        0.02857142857142857
+       ],
+       [
+        0.9575971731448764,
+        0.2714285714285714
+       ],
+       [
+        0.9964664310954063,
+        0.2714285714285714
+       ],
+       [
+        0.9964664310954063,
+        0.02857142857142857
+       ]
+      ]
+     ],
+     [
+      [
+       [
+        0.9681978798586572,
+        0.2571428571428571
+       ],
+       [
+        0.9681978798586572,
+        0.41714285714285715
+       ],
+       [
+        1,
+        0.41714285714285715
+       ],
+       [
+        1,
+        0.2571428571428571
+       ]
+      ]
+     ],
+     [
+      [
+       [
+        0,
+        0.03142857142857143
+       ],
+       [
+        0,
+        0.9685714285714285
+       ],
+       [
+        0.030035335689045935,
+        0.9685714285714285
+       ],
+       [
+        0.030035335689045935,
+        0.03142857142857143
+       ]
+      ]
+     ]
+    ],
+    "slabs": [
+     [
+      [
+       [
+        0,
+        0
+       ],
+       [
+        0.9964664310954063,
+        0
+       ],
+       [
+        0.9964664310954063,
+        1
+       ],
+       [
+        0,
+        1
+       ]
+      ]
+     ]
+    ],
+    "landings": [],
+    "openings": [
+     {
+      "a": [
+       0.3674911660777385,
+       0.008571428571428572
+      ],
+      "b": [
+       0.657243816254417,
+       0.008571428571428572
+      ],
+      "kind": "window",
+      "depthM": 0.08888888888888889,
+      "sillM": 0.9,
+      "heightM": 1.4
+     },
+     {
+      "a": [
+       0.29328621908127206,
+       0.6635714285714286
+      ],
+      "b": [
+       0.29328621908127206,
+       0.7857142857142857
+      ],
+      "kind": "door",
+      "depthM": 0.1,
+      "sillM": 0,
+      "heightM": 2.1,
+      "hinge": [
+       0.29328621908127206,
+       0.6635714285714286
+      ],
+      "openTip": [
+       0.44434628975265017,
+       0.6635714285714286
+      ]
+     }
+    ],
+    "stairs": [],
+    "railings": []
+   },
+   "location": null,
+   "source": {
+    "sha256": "9fd6061a48788ec0fb438e2af2e5c348bd4dc1b6db2ee50b18b79bf4b5b616be",
+    "page": 1,
+    "crop": [
+     0.45,
+     0.269,
+     0.446,
+     0.365
+    ],
+    "urls": [
+     "https://www.zagreb.hr/userdocsimages/arhiva/stanovi/1Natje%C4%8Daj%20javni%20najam%20naselje%20Podbre%C5%BEje/Zgrada%20A%204/stan%20A4_C_11.pdf",
+     "https://www.zagreb.hr/userdocsimages/arhiva/stanovi/1Natje%C4%8Daj%20javni%20najam%20naselje%20Podbre%C5%BEje/Zgrada%20A%204/stan%20A4_C_23.pdf"
+    ],
+    "listingUrl": "https://www.zgh.hr/aktualnosti-10/novosti-170/javni-poziv-za-kupnju-stanova-u-naselju-podbrezje/8431",
+    "mediaType": "application/pdf",
+    "url": "https://www.zagreb.hr/userdocsimages/arhiva/stanovi/1Natje%C4%8Daj%20javni%20najam%20naselje%20Podbre%C5%BEje/Zgrada%20A%204/stan%20A4_C_11.pdf",
+    "label": "Stan A4-C-23 · 6. kat · Holjevca 38b",
+    "attribution": "zagreb.hr",
+    "retained": false,
+    "assetUrl": "/api/floor-plans/sources/9fd6061a48788ec0fb438e2af2e5c348bd4dc1b6db2ee50b18b79bf4b5b616be"
+   },
+   "quality": {
+    "status": "needs_review",
+    "issues": [
+     "Geometry from the sheet of A4-C-11, the same layout in the same entrance on another floor; this flat’s own sheet is linked.",
+     "S1 is a detection on the printed 640 dimension, not a scale bar, and its endpoints do not span that dimension. Calibration uses the complete dimension in full-source coordinates; 640 is read as centimetres."
+    ]
+   },
+   "building": {
+    "id": "13072388dadb63aa",
+    "label": "Podbrežje A4 — Avenija Većeslava Holjevca 38–38e",
+    "name": "Podbrežje A4",
+    "address": "Avenija Većeslava Holjevca 38b",
+    "city": "Zagreb",
+    "country": "HR",
+    "kind": "existing",
+    "constructionYear": 2018,
+    "completionYear": 2018,
+    "envelope": {
+     "schema": "building-envelope.v1",
+     "footprint": {
+      "type": "MultiPolygon",
+      "coordinates": [
+       [
+        [
+         [
+          15.9722063,
+          45.7668612
+         ],
+         [
+          15.9722073,
+          45.7668256
+         ],
+         [
+          15.9722433,
+          45.7668261
+         ],
+         [
+          15.9722424,
+          45.7668563
+         ],
+         [
+          15.9723479,
+          45.7668578
+         ],
+         [
+          15.9724186,
+          45.7668588
+         ],
+         [
+          15.9724232,
+          45.7666951
+         ],
+         [
+          15.9723525,
+          45.7666941
+         ],
+         [
+          15.9723749,
+          45.7659077
+         ],
+         [
+          15.9722695,
+          45.7659063
+         ],
+         [
+          15.9722681,
+          45.7659547
+         ],
+         [
+          15.9722321,
+          45.7659542
+         ],
+         [
+          15.972233,
+          45.765923
+         ],
+         [
+          15.9721302,
+          45.7659215
+         ],
+         [
+          15.9721083,
+          45.7666907
+         ],
+         [
+          15.9720355,
+          45.7666897
+         ],
+         [
+          15.9720308,
+          45.7668534
+         ],
+         [
+          15.9721036,
+          45.7668544
+         ],
+         [
+          15.9721035,
+          45.7668598
+         ],
+         [
+          15.9722063,
+          45.7668612
+         ]
+        ],
+        [
+         [
+          15.9724292,
+          45.7663932
+         ],
+         [
+          15.9723714,
+          45.7663924
+         ],
+         [
+          15.9723682,
+          45.7665038
+         ],
+         [
+          15.9724252,
+          45.7665336
+         ],
+         [
+          15.9724292,
+          45.7663932
+         ]
+        ],
+        [
+         [
+          15.9723971,
+          45.7665352
+         ],
+         [
+          15.9723678,
+          45.7665199
+         ],
+         [
+          15.9723653,
+          45.766607
+         ],
+         [
+          15.9723632,
+          45.7666802
+         ],
+         [
+          15.9723807,
+          45.7666804
+         ],
+         [
+          15.9723921,
+          45.7666806
+         ],
+         [
+          15.9724211,
+          45.766681
+         ],
+         [
+          15.9724228,
+          45.766621
+         ],
+         [
+          15.9724248,
+          45.7665497
+         ],
+         [
+          15.9724076,
+          45.7665407
+         ],
+         [
+          15.9723971,
+          45.7665352
+         ]
+        ]
+       ]
+      ]
+     },
+     "footprintSource": "GDI Zagreb building footprint 148972",
+     "storeys": [
+      {
+       "level": 0,
+       "label": "Pr",
+       "heightM": 4.1,
+       "elevationM": 0,
+       "outline": "footprint",
+       "heightBasis": "estimated: GDI 3D height 29.5 m over ground floor + 8 storeys"
+      },
+      {
+       "level": 1,
+       "label": "1. kat",
+       "heightM": 3.17,
+       "elevationM": 4.1,
+       "outline": "footprint",
+       "heightBasis": "estimated: GDI 3D height 29.5 m over ground floor + 8 storeys"
+      },
+      {
+       "level": 2,
+       "label": "2. kat",
+       "heightM": 3.17,
+       "elevationM": 7.27,
+       "outline": "footprint",
+       "heightBasis": "estimated: GDI 3D height 29.5 m over ground floor + 8 storeys"
+      },
+      {
+       "level": 3,
+       "label": "3. kat",
+       "heightM": 3.17,
+       "elevationM": 10.45,
+       "outline": "footprint",
+       "heightBasis": "estimated: GDI 3D height 29.5 m over ground floor + 8 storeys"
+      },
+      {
+       "level": 4,
+       "label": "4. kat",
+       "heightM": 3.17,
+       "elevationM": 13.62,
+       "outline": "footprint",
+       "heightBasis": "estimated: GDI 3D height 29.5 m over ground floor + 8 storeys"
+      },
+      {
+       "level": 5,
+       "label": "5. kat",
+       "heightM": 3.17,
+       "elevationM": 16.8,
+       "outline": "footprint",
+       "heightBasis": "estimated: GDI 3D height 29.5 m over ground floor + 8 storeys"
+      },
+      {
+       "level": 6,
+       "label": "6. kat",
+       "heightM": 3.17,
+       "elevationM": 19.98,
+       "outline": "footprint",
+       "heightBasis": "estimated: GDI 3D height 29.5 m over ground floor + 8 storeys"
+      },
+      {
+       "level": 7,
+       "label": "7. kat",
+       "heightM": 3.17,
+       "elevationM": 23.15,
+       "outline": "footprint",
+       "heightBasis": "estimated: GDI 3D height 29.5 m over ground floor + 8 storeys"
+      },
+      {
+       "level": 8,
+       "label": "8. kat",
+       "heightM": 3.17,
+       "elevationM": 26.32,
+       "outline": "footprint",
+       "heightBasis": "estimated: GDI 3D height 29.5 m over ground floor + 8 storeys"
+      }
+     ],
+     "storeySource": "GDI 3D height; storey count from the city flat lists",
+     "heightBasis": "estimated: GDI 3D height 29.5 m over ground floor + 8 storeys",
+     "conflicts": [],
+     "heightM": 29.5,
+     "surveyHeightM": 29.5
+    },
+    "sources": [
+     {
+      "url": "https://www.zagreb.hr/odabir-javno-najamnih-stanova-na-lokaciji-podbrezj/127723",
+      "label": "Grad Zagreb — javni najam, naselje Podbrežje (katalog stanova)"
+     },
+     {
+      "url": "https://www.tehnika.hr/en/realized-projects/stambeno-poslovne-gradjevine-podbrezje/",
+      "label": "Tehnika — stambeno-poslovne građevine Podbrežje (A4 i A6 su identične)"
+     }
+    ],
+    "archiveEvidence": null,
+    "location": {
+     "lng": 15.97222794736842,
+     "lat": 45.76652581052631,
+     "status": "located"
+    },
+    "footprint": null
+   },
+   "buildingRefs": [
+    {
+     "city": "zagreb",
+     "source": "dgu-building",
+     "ownerId": "",
+     "buildingId": "12288048"
+    },
+    {
+     "city": "zagreb",
+     "source": "zagreb-3d",
+     "ownerId": "",
+     "buildingId": "148972"
+    }
+   ],
+   "registration": {
+    "corners": [
+     [
+      15.9721147,
+      45.7664673
+     ],
+     [
+      15.9721131,
+      45.7665242
+     ],
+     [
+      15.9722132,
+      45.7665256
+     ],
+     [
+      15.9722148,
+      45.7664687
+     ]
+    ],
+    "basis": "Key-plan cell of the catalogue sheet, scaled into the GDI footprint (approximate)",
+    "accuracyM": 2
+   },
+   "id": "2116c6b382742b3eba8ab450f9c7c20698c345a38f1ab66732338ac5c04617f8",
+   "buildingId": "13072388dadb63aa",
+   "updatedAt": "2026-11-05T16:08:39.243Z"
+  },
+  {
+   "externalId": "podbrezje-a4-c-21",
+   "label": "Stan A4-C-21 · 6. kat · Holjevca 38b",
+   "floor": 6,
+   "marketedAreaM2": 60.05,
+   "physicalNetAreaM2": null,
+   "orientation": [],
+   "placement": {
+    "planId": "2f65015a6d6d311752993961be0bd1a5f3066f2e407103527c8296182e37d806",
+    "kind": "key-plan",
+    "sourceSha256": "686d3cdb9d144ddfc372e90675793e2a8d63a267f1408ac81a319df752599b78",
+    "listingUrl": "https://www.zgh.hr/aktualnosti-10/novosti-170/javni-poziv-za-kupnju-stanova-u-naselju-podbrezje/8431",
+    "unitId": "A4-C-21",
+    "scope": "unit",
+    "floor": 6,
+    "status": "placed",
+    "reason": "Key-plan cell mirrored from the symmetric entrance",
+    "margin": null,
+    "alternatives": 0,
+    "priors": {
+     "rotationDeg": 91.13054898959163,
+     "rotationBasis": "GDI footprint long axis; entrance A at the north end (city house-number map)",
+     "keyPlan": [
+      0.54925,
+      0.75
+     ],
+     "scaleBasis": "printed 1:100 dimensions"
+    },
+    "best": {
+     "scale": 1,
+     "rotationDeg": 91.13054898959163,
+     "tx": 4.027523684240982,
+     "ty": -52.036315906700025,
+     "iou": 0.03571338273756684,
+     "containment": 1,
+     "coincidence": 0.964,
+     "positionDistance": null,
+     "score": 0.964,
+     "outline": [
+      [
+       4.027523684240982,
+       -52.036315906700025
+      ],
+      [
+       3.850882188051426,
+       -43.08535598807654
+      ],
+      [
+       11.844821234872402,
+       -42.927600689592786
+      ],
+      [
+       12.021462731061957,
+       -51.87856060821627
+      ],
+      [
+       4.027523684240982,
+       -52.036315906700025
+      ]
+     ]
+    }
+   },
+   "scope": "unit",
+   "unitId": "A4-C-21",
+   "levels": [],
+   "areaM2": 60.05,
+   "rooms": 1.5,
+   "architecture": {
+    "schema": "consensus-builder.floor-architecture.v1",
+    "dimensionsM": [
+     8.952702702702702,
+     7.995495495495495
+    ],
+    "wallHeightM": 2.7,
+    "slabThicknessM": 0.2,
+    "walls": [
+     [
+      [
+       [
+        0.969811320754717,
+        0.04788732394366197
+       ],
+       [
+        0.969811320754717,
+        0.30422535211267604
+       ],
+       [
+        0.9773584905660377,
+        0.30422535211267604
+       ],
+       [
+        0.9773584905660377,
+        0.04788732394366197
+       ]
+      ]
+     ],
+     [
+      [
+       [
+        0.1761006289308176,
+        0.014084507042253521
+       ],
+       [
+        0.3320754716981132,
+        0.014084507042253521
+       ],
+       [
+        0.3320754716981132,
+        0
+       ],
+       [
+        0.1761006289308176,
+        0
+       ]
+      ]
+     ],
+     [
+      [
+       [
+        0.3723270440251572,
+        0.014084507042253521
+       ],
+       [
+        0.810062893081761,
+        0.014084507042253521
+       ],
+       [
+        0.810062893081761,
+        0
+       ],
+       [
+        0.3723270440251572,
+        0
+       ]
+      ]
+     ],
+     [
+      [
+       [
+        0.37735849056603776,
+        0.04507042253521127
+       ],
+       [
+        0.6389937106918239,
+        0.04507042253521127
+       ],
+       [
+        0.6389937106918239,
+        0.008450704225352112
+       ],
+       [
+        0.37735849056603776,
+        0.008450704225352112
+       ]
+      ]
+     ],
+     [
+      [
+       [
+        0.5408805031446541,
+        0.05070422535211268
+       ],
+       [
+        0.810062893081761,
+        0.05070422535211268
+       ],
+       [
+        0.810062893081761,
+        0.008450704225352112
+       ],
+       [
+        0.5408805031446541,
+        0.008450704225352112
+       ]
+      ]
+     ],
+     [
+      [
+       [
+        0.379874213836478,
+        0.9830985915492958
+       ],
+       [
+        0.5358490566037736,
+        0.9830985915492958
+       ],
+       [
+        0.5358490566037736,
+        0.9661971830985916
+       ],
+       [
+        0.379874213836478,
+        0.9661971830985916
+       ]
+      ]
+     ],
+     [
+      [
+       [
+        0.379874213836478,
+        0.9971830985915493
+       ],
+       [
+        0.5358490566037736,
+        0.9971830985915493
+       ],
+       [
+        0.5358490566037736,
+        0.9830985915492958
+       ],
+       [
+        0.379874213836478,
+        0.9830985915492958
+       ]
+      ]
+     ],
+     [
+      [
+       [
+        0,
+        0.04507042253521127
+       ],
+       [
+        0,
+        0.971830985915493
+       ],
+       [
+        0.022641509433962263,
+        0.971830985915493
+       ],
+       [
+        0.022641509433962263,
+        0.04507042253521127
+       ]
+      ]
+     ]
+    ],
+    "slabs": [
+     [
+      [
+       [
+        0,
+        0
+       ],
+       [
+        1,
+        0
+       ],
+       [
+        1,
+        1
+       ],
+       [
+        0,
+        1
+       ]
+      ]
+     ]
+    ],
+    "landings": [],
+    "openings": [
+     {
+      "a": [
+       0.3320754716981132,
+       0.007042253521126761
+      ],
+      "b": [
+       0.3723270440251572,
+       0.007042253521126761
+      ],
+      "kind": "window",
+      "depthM": 0.1126126126126126,
+      "sillM": 0.9,
+      "heightM": 1.4
+     },
+     {
+      "a": [
+       0.13836477987421383,
+       0.973943661971831
+      ],
+      "b": [
+       0.28679245283018867,
+       0.973943661971831
+      ],
+      "kind": "window",
+      "depthM": 0.12387387387387387,
+      "sillM": 0.9,
+      "heightM": 1.4
+     }
+    ],
+    "stairs": [],
+    "railings": []
+   },
+   "location": null,
+   "source": {
+    "sha256": "686d3cdb9d144ddfc372e90675793e2a8d63a267f1408ac81a319df752599b78",
+    "page": 1,
+    "crop": [
+     0.326,
+     0.254,
+     0.562,
+     0.379
+    ],
+    "urls": [
+     "https://www.zagreb.hr/userdocsimages/arhiva/stanovi/1Natje%C4%8Daj%20javni%20najam%20naselje%20Podbre%C5%BEje/Zgrada%20A%204/stan%20A4_C_13.pdf",
+     "https://www.zagreb.hr/userdocsimages/arhiva/stanovi/1Natje%C4%8Daj%20javni%20najam%20naselje%20Podbre%C5%BEje/Zgrada%20A%204/stan%20A4_C_21.pdf"
+    ],
+    "listingUrl": "https://www.zgh.hr/aktualnosti-10/novosti-170/javni-poziv-za-kupnju-stanova-u-naselju-podbrezje/8431",
+    "mediaType": "application/pdf",
+    "url": "https://www.zagreb.hr/userdocsimages/arhiva/stanovi/1Natje%C4%8Daj%20javni%20najam%20naselje%20Podbre%C5%BEje/Zgrada%20A%204/stan%20A4_C_13.pdf",
+    "label": "Stan A4-C-21 · 6. kat · Holjevca 38b",
+    "attribution": "zagreb.hr",
+    "retained": false,
+    "assetUrl": "/api/floor-plans/sources/686d3cdb9d144ddfc372e90675793e2a8d63a267f1408ac81a319df752599b78"
+   },
+   "quality": {
+    "status": "needs_review",
+    "issues": [
+     "Geometry from the sheet of A4-C-13, the same layout in the same entrance on another floor; this flat’s own sheet is linked.",
+     "The printed classification 'jednoipolsobni stan' denotes a fractional room count, which cannot be represented by the integer roomCount field."
+    ]
+   },
+   "building": {
+    "id": "13072388dadb63aa",
+    "label": "Podbrežje A4 — Avenija Većeslava Holjevca 38–38e",
+    "name": "Podbrežje A4",
+    "address": "Avenija Većeslava Holjevca 38b",
+    "city": "Zagreb",
+    "country": "HR",
+    "kind": "existing",
+    "constructionYear": 2018,
+    "completionYear": 2018,
+    "envelope": {
+     "schema": "building-envelope.v1",
+     "footprint": {
+      "type": "MultiPolygon",
+      "coordinates": [
+       [
+        [
+         [
+          15.9722063,
+          45.7668612
+         ],
+         [
+          15.9722073,
+          45.7668256
+         ],
+         [
+          15.9722433,
+          45.7668261
+         ],
+         [
+          15.9722424,
+          45.7668563
+         ],
+         [
+          15.9723479,
+          45.7668578
+         ],
+         [
+          15.9724186,
+          45.7668588
+         ],
+         [
+          15.9724232,
+          45.7666951
+         ],
+         [
+          15.9723525,
+          45.7666941
+         ],
+         [
+          15.9723749,
+          45.7659077
+         ],
+         [
+          15.9722695,
+          45.7659063
+         ],
+         [
+          15.9722681,
+          45.7659547
+         ],
+         [
+          15.9722321,
+          45.7659542
+         ],
+         [
+          15.972233,
+          45.765923
+         ],
+         [
+          15.9721302,
+          45.7659215
+         ],
+         [
+          15.9721083,
+          45.7666907
+         ],
+         [
+          15.9720355,
+          45.7666897
+         ],
+         [
+          15.9720308,
+          45.7668534
+         ],
+         [
+          15.9721036,
+          45.7668544
+         ],
+         [
+          15.9721035,
+          45.7668598
+         ],
+         [
+          15.9722063,
+          45.7668612
+         ]
+        ],
+        [
+         [
+          15.9724292,
+          45.7663932
+         ],
+         [
+          15.9723714,
+          45.7663924
+         ],
+         [
+          15.9723682,
+          45.7665038
+         ],
+         [
+          15.9724252,
+          45.7665336
+         ],
+         [
+          15.9724292,
+          45.7663932
+         ]
+        ],
+        [
+         [
+          15.9723971,
+          45.7665352
+         ],
+         [
+          15.9723678,
+          45.7665199
+         ],
+         [
+          15.9723653,
+          45.766607
+         ],
+         [
+          15.9723632,
+          45.7666802
+         ],
+         [
+          15.9723807,
+          45.7666804
+         ],
+         [
+          15.9723921,
+          45.7666806
+         ],
+         [
+          15.9724211,
+          45.766681
+         ],
+         [
+          15.9724228,
+          45.766621
+         ],
+         [
+          15.9724248,
+          45.7665497
+         ],
+         [
+          15.9724076,
+          45.7665407
+         ],
+         [
+          15.9723971,
+          45.7665352
+         ]
+        ]
+       ]
+      ]
+     },
+     "footprintSource": "GDI Zagreb building footprint 148972",
+     "storeys": [
+      {
+       "level": 0,
+       "label": "Pr",
+       "heightM": 4.1,
+       "elevationM": 0,
+       "outline": "footprint",
+       "heightBasis": "estimated: GDI 3D height 29.5 m over ground floor + 8 storeys"
+      },
+      {
+       "level": 1,
+       "label": "1. kat",
+       "heightM": 3.17,
+       "elevationM": 4.1,
+       "outline": "footprint",
+       "heightBasis": "estimated: GDI 3D height 29.5 m over ground floor + 8 storeys"
+      },
+      {
+       "level": 2,
+       "label": "2. kat",
+       "heightM": 3.17,
+       "elevationM": 7.27,
+       "outline": "footprint",
+       "heightBasis": "estimated: GDI 3D height 29.5 m over ground floor + 8 storeys"
+      },
+      {
+       "level": 3,
+       "label": "3. kat",
+       "heightM": 3.17,
+       "elevationM": 10.45,
+       "outline": "footprint",
+       "heightBasis": "estimated: GDI 3D height 29.5 m over ground floor + 8 storeys"
+      },
+      {
+       "level": 4,
+       "label": "4. kat",
+       "heightM": 3.17,
+       "elevationM": 13.62,
+       "outline": "footprint",
+       "heightBasis": "estimated: GDI 3D height 29.5 m over ground floor + 8 storeys"
+      },
+      {
+       "level": 5,
+       "label": "5. kat",
+       "heightM": 3.17,
+       "elevationM": 16.8,
+       "outline": "footprint",
+       "heightBasis": "estimated: GDI 3D height 29.5 m over ground floor + 8 storeys"
+      },
+      {
+       "level": 6,
+       "label": "6. kat",
+       "heightM": 3.17,
+       "elevationM": 19.98,
+       "outline": "footprint",
+       "heightBasis": "estimated: GDI 3D height 29.5 m over ground floor + 8 storeys"
+      },
+      {
+       "level": 7,
+       "label": "7. kat",
+       "heightM": 3.17,
+       "elevationM": 23.15,
+       "outline": "footprint",
+       "heightBasis": "estimated: GDI 3D height 29.5 m over ground floor + 8 storeys"
+      },
+      {
+       "level": 8,
+       "label": "8. kat",
+       "heightM": 3.17,
+       "elevationM": 26.32,
+       "outline": "footprint",
+       "heightBasis": "estimated: GDI 3D height 29.5 m over ground floor + 8 storeys"
+      }
+     ],
+     "storeySource": "GDI 3D height; storey count from the city flat lists",
+     "heightBasis": "estimated: GDI 3D height 29.5 m over ground floor + 8 storeys",
+     "conflicts": [],
+     "heightM": 29.5,
+     "surveyHeightM": 29.5
+    },
+    "sources": [
+     {
+      "url": "https://www.zagreb.hr/odabir-javno-najamnih-stanova-na-lokaciji-podbrezj/127723",
+      "label": "Grad Zagreb — javni najam, naselje Podbrežje (katalog stanova)"
+     },
+     {
+      "url": "https://www.tehnika.hr/en/realized-projects/stambeno-poslovne-gradjevine-podbrezje/",
+      "label": "Tehnika — stambeno-poslovne građevine Podbrežje (A4 i A6 su identične)"
+     }
+    ],
+    "archiveEvidence": null,
+    "location": {
+     "lng": 15.97222794736842,
+     "lat": 45.76652581052631,
+     "status": "located"
+    },
+    "footprint": null
+   },
+   "buildingRefs": [
+    {
+     "city": "zagreb",
+     "source": "dgu-building",
+     "ownerId": "",
+     "buildingId": "12288048"
+    },
+    {
+     "city": "zagreb",
+     "source": "zagreb-3d",
+     "ownerId": "",
+     "buildingId": "148972"
+    }
+   ],
+   "registration": {
+    "corners": [
+     [
+      15.9722582,
+      45.7663906
+     ],
+     [
+      15.9722559,
+      45.7664715
+     ],
+     [
+      15.9723588,
+      45.766473
+     ],
+     [
+      15.9723611,
+      45.766392
+     ]
+    ],
+    "basis": "Key-plan cell of the catalogue sheet, scaled into the GDI footprint (approximate)",
+    "accuracyM": 2
+   },
+   "id": "2f65015a6d6d311752993961be0bd1a5f3066f2e407103527c8296182e37d806",
+   "buildingId": "13072388dadb63aa",
+   "updatedAt": "2026-11-05T16:08:39.241Z"
+  }
+ ]
+}

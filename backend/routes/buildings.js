@@ -19,9 +19,11 @@ function parseProposalIds(value) {
     return raw.map(id => String(id).trim()).filter(Boolean).slice(0, 100);
 }
 
-export function setupBuildingsRoute(app, pool) {
+// `publishedFloorModels` (floor-models.js createPublishedFloorModels) is injected in tests.
+export function setupBuildingsRoute(app, pool, { publishedFloorModels } = {}) {
     // Named dataset services, selected explicitly by the caller.
     const buildingProviders = createBuildingProviders(pool);
+    const floorModelOptions = (report = {}) => ({ ...(publishedFloorModels ? { published: publishedFloorModels } : {}), report });
 
     // GET /buildings?bbox=minX,minY,maxX,maxY[&source=gdi|dgu]  (HTRS96/TM EPSG:3765)
     // GET /buildings?cestica_id=ID - buildings mostly contained within a parcel
@@ -114,7 +116,7 @@ export function setupBuildingsRoute(app, pool) {
             // The upstream failed outright: the browser tells the person instead of drawing nothing.
             if (result.unavailable) Object.assign(extra, { unavailable: true, retryAfter: result.retryAfter ?? null });
             if (!proposalIds.length) {
-                const buildings = await attachNearbyFloorModels(pool, floorModelCity, floorModelSource, result.buildings);
+                const buildings = await attachNearbyFloorModels(pool, floorModelCity, floorModelSource, result.buildings, floorModelOptions());
                 return res.json({ buildings, count: result.count, source: result.source, ...extra });
             }
 
@@ -125,7 +127,7 @@ export function setupBuildingsRoute(app, pool) {
             // objects (carveBuildings deliberately preserves those object references).
             const originals = new Set(result.buildings);
             const modeled = await attachNearbyFloorModels(pool, floorModelCity, floorModelSource,
-                buildings.filter(building => originals.has(building)));
+                buildings.filter(building => originals.has(building)), floorModelOptions());
             const byId = new Map(modeled.map(building => [building.object_id, building]));
             const enriched = buildings.map(building => originals.has(building) ? byId.get(building.object_id) : building);
             res.json({ buildings: enriched, count: enriched.length, source: result.source, ...extra });
@@ -334,7 +336,9 @@ export function setupBuildingsRoute(app, pool) {
     // A cell the source caps is read in quarters (split-read.js), so
     // `complete` is false only when splitting ran out. A failed source answers `unavailable` for the
     // whole cell, never part of it, so the browser can answer it whole from a fallback source.
-    // Complete answers are cached per source, kind and cell.
+    // Complete answers are cached per source, kind, floor-model namespace and cell. With a namespace,
+    // `near` items carry their floor models: authored registry models, else the published plans the
+    // namespace's city declares (floor-models.js), which only that namespace selects.
     const cellCache = new Map();
     const CELL_CACHE_TTL_MS = 15 * 60 * 1000;
     const CELL_CACHE_MAX = 2000;
@@ -378,13 +382,15 @@ export function setupBuildingsRoute(app, pool) {
                 return res.json({ supported: true, kind, bbox, items: [], complete: false, source, unavailable: true, retryAfter: read.retryAfter });
             }
             let items = read.items;
+            const floorModelReport = {};
             if (kind === 'near') {
                 floorModelSource = nativeFloorModelSource(body.source, source);
-                items = await attachNearbyFloorModels(pool, floorModelCity, floorModelSource, items);
+                items = await attachNearbyFloorModels(pool, floorModelCity, floorModelSource, items, floorModelOptions(floorModelReport));
             }
             const answer = { supported: true, kind, bbox, items, count: items.length, complete: read.complete, source,
                 ...(kind === 'near' ? { floorModelSource } : {}) };
-            if (read.complete) {
+            // A cell whose floor-plan publication did not answer is served, not cached: the next read retries it.
+            if (read.complete && !floorModelReport.publishedUnavailable) {
                 if (cellCache.size >= CELL_CACHE_MAX) cellCache.delete(cellCache.keys().next().value);
                 cellCache.set(key, { expires: Date.now() + CELL_CACHE_TTL_MS, answer });
             }

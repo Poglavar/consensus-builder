@@ -2,8 +2,13 @@
 import { createHash } from 'node:crypto';
 import { createRequire } from 'node:module';
 
+import { readFileSync } from 'node:fs';
+import vm from 'node:vm';
+import { createFloorPlanPublicationReader, validatePublicationConfig } from './floor-plan-publication.js';
+
 const require = createRequire(import.meta.url);
 const SourceRuntime = require('../../frontend/js/source-runtime.js');
+const CityLightConfig = require('../../frontend/js/city-light-config.js');
 const { validateFloorPlans, buildingSourceId } = require('../../frontend/js/building-floor-plans.js');
 export { buildingSourceId };
 
@@ -115,13 +120,16 @@ async function readStoredFloorModels(pool, identities) {
     return new Map(result.rows.map(row => [canonicalJson([row.city, row.source, row.owner_id, row.building_id]), row]));
 }
 
-// Versioned model storage is the current detail provider. The SQL repository retains ownership
+// Versioned model storage is the authored detail provider. The SQL repository retains ownership
 // of identity, current-version selection and persistence; dispatch only selects the reader.
+// `floor-plan-publication` reads plans a city's configuration declares (floorModels.published).
 export const buildingDetailSourceRegistry = SourceRuntime.createRegistry({
     abstraction: 'building-details',
     adapters: { 'floor-model-storage': { custom: false, create: (_config, { pool }) => ({
         fetchFloorModels: identities => readStoredFloorModels(pool, identities)
-    }) } },
+    }) },
+    'floor-plan-publication': { custom: false, validateConfig: validatePublicationConfig,
+        create: (config, context) => createFloorPlanPublicationReader(config, context) } },
     sources: [SourceRuntime.source('building-details', 'floor-model-storage', {
         id: 'building-floor-models', storage: 'consensus.building_floor_model'
     })],
@@ -156,15 +164,93 @@ export async function attachProposalFloorModels(pool, proposals) {
     return proposals;
 }
 
-export async function attachNearbyFloorModels(pool, city, source, buildings) {
+// The publication API every `floor-plan-publication` source reads. Server configuration only: a city
+// configuration (shipped to browsers) names the namespace inside it, never a URL.
+export const DEFAULT_FLOOR_PLAN_PUBLICATION_API = 'https://zagreb.lol/api';
+
+// Every city's light configuration, read the way the browser reads it (data/city-index.js expanded by
+// js/city-light-config.js), which carries floorModels.
+export function readCityConfigs() {
+    const context = vm.createContext({});
+    vm.runInContext(readFileSync(new URL('../../frontend/data/city-index.js', import.meta.url), 'utf8'), context);
+    const index = context.__cityIndex;
+    return index.rows.map(row => CityLightConfig.expand(index, row));
+}
+
+// floorModels.published of each city, as registered building-details sources per namespace. Order is
+// priority: for one building the first source with a model wins.
+function declarePublishedSources(cityConfigs, baseUrl) {
+    const byNamespace = new Map();
+    for (const config of cityConfigs) {
+        const { namespace, published } = config?.floorModels || {};
+        if (published === undefined) continue;
+        if (typeof namespace !== 'string' || !namespace || !Array.isArray(published)) {
+            throw new Error(`city ${config.id}: floorModels.published needs a namespace and an array of sources.`);
+        }
+        const sources = published.map(({ adapter, ...settings }, index) => {
+            if (Object.hasOwn(settings, 'baseUrl')) throw new Error(`city ${config.id}: a floor-plan source's baseUrl is server configuration.`);
+            const id = `floor-plans.${namespace}.${index}`;
+            return buildingDetailSourceRegistry.register(SourceRuntime.source('building-details', adapter, { ...settings, baseUrl, id }, { id }), { replace: true });
+        });
+        if (byNamespace.has(namespace)) throw new Error(`floorModels namespace ${namespace} is declared by two cities.`);
+        byNamespace.set(namespace, sources);
+    }
+    return byNamespace;
+}
+
+// The published floor plans of native buildings, per city namespace. `fetch`, `cache` and `cityConfigs`
+// are injected in tests; FLOOR_PLAN_PUBLICATION_API_URL points the server at another publication API.
+export function createPublishedFloorModels({ env = process.env, fetch = globalThis.fetch, cityConfigs, cache, log } = {}) {
+    const baseUrl = env.FLOOR_PLAN_PUBLICATION_API_URL || DEFAULT_FLOOR_PLAN_PUBLICATION_API;
+    let byNamespace = null;
+    const context = { fetch, ...(cache ? { cache } : {}), ...(log ? { log } : {}) };
+    return {
+        sources(namespace) {
+            byNamespace ??= declarePublishedSources(cityConfigs ?? readCityConfigs(), baseUrl);
+            return byNamespace.get(namespace) || [];
+        },
+        // identities: native { city: namespace, source: floorModelSource, ownerId: '', buildingId } → Map(buildingId → row)
+        async fetchFloorModels(namespace, identities, report = {}) {
+            const rows = new Map();
+            for (const source of this.sources(namespace)) {
+                const remaining = identities.filter(identity => !rows.has(String(identity.buildingId)));
+                if (!remaining.length) break;
+                const found = await buildingDetailSourceRegistry.open(source.id, context).fetchFloorModels(remaining, report);
+                for (const [id, row] of found) if (!rows.has(id)) rows.set(id, row);
+            }
+            return rows;
+        }
+    };
+}
+let defaultPublished = null;
+const publishedFloorModels = () => (defaultPublished ??= createPublishedFloorModels());
+
+// An authored registry model wins; a building without one shows the plans its city publishes.
+// `report.publishedUnavailable` says the publication did not answer (the caller should not cache).
+export async function attachNearbyFloorModels(pool, city, source, buildings, { published = publishedFloorModels(), report = {} } = {}) {
     if (!buildings.length || !city) return buildings;
     const identities = buildings.map(building => ({ city, source, ownerId: '', buildingId: String(building.object_id) }));
     const models = await fetchFloorModels(pool, identities);
+    let publications = new Map();
+    const unmodelled = identities.filter(identity => !models.has(canonicalJson(identityValues(identity))));
+    if (published && unmodelled.length) {
+        try { publications = await published.fetchFloorModels(city, unmodelled, report); } catch (error) {
+            report.publishedUnavailable = true;
+            console.error(`[${new Date().toISOString()}] [floor-models] published floor plans for ${city}/${source} failed:`, error);
+        }
+    }
     return buildings.map((building, index) => {
-        const row = models.get(canonicalJson(identityValues(identities[index])));
-        if (!row) return building;
+        const identity = identities[index];
+        const row = models.get(canonicalJson(identityValues(identity)));
+        const publication = row ? null : publications.get(identity.buildingId);
+        if (!row && !publication) return building;
         const result = { ...building };
-        attachModel(result, row);
+        if (row) attachModel(result, row);
+        else {
+            result.floorPlans = publication.floorPlans;
+            result.floorModel = { city, source, ownerId: '', buildingId: identity.buildingId, version: null,
+                updatedAt: publication.updatedAt, footprint: publication.footprint, origin: 'publication', publication: publication.publication };
+        }
         return result;
     });
 }
