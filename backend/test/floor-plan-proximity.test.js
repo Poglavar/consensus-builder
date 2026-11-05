@@ -1,9 +1,10 @@
 // X-ray floor-model loading by proximity: nothing while X-ray is off or far away, nearest first, a
-// bounded number in flight, and drops only well beyond the load radius (hysteresis).
+// bounded number in flight, and drops only well beyond the load radius (hysteresis); and which
+// buildings' floor-plan groups to add or remove, building by building.
 import { describe, expect, it } from 'vitest';
 import { createRequire } from 'node:module';
 
-const { planFloorPlanLoads, DEFAULTS } = createRequire(import.meta.url)('../../frontend/js/floor-plan-proximity.js');
+const { planFloorPlanLoads, reconcileFloorPlanGroups, DEFAULTS } = createRequire(import.meta.url)('../../frontend/js/floor-plan-proximity.js');
 const at = (key, x, y = 0) => ({ key, x, y });
 const ground = [0, 0, 30];
 const plan = (extra = {}) => planFloorPlanLoads({ enabled: true, camera: ground, candidates: [], loaded: new Map(), pending: new Map(), ...extra });
@@ -36,5 +37,25 @@ describe('which floor models X-ray loads', () => {
         expect(result.cancel).toEqual(['left']);
         // 'kept' is not re-requested; one slot is busy with 'waiting'.
         expect(result.load).toEqual([]);
+    });
+});
+
+describe('which floor-plan groups the scene adds or removes', () => {
+    const shells = new Map([['a', {}], ['b', {}], ['c', {}]]);
+    it("adds only the building whose model arrived, and removes only the one that left", () => {
+        const shown = new Map([['a', 'group-a']]);
+        expect(reconcileFloorPlanGroups({ enabled: true, shells, shown, models: new Map([['a', {}], ['b', {}], ['c', null]]) }))
+            .toEqual({ add: ['b'], remove: [] });
+        expect(reconcileFloorPlanGroups({ enabled: true, shells, shown: new Map([['a', 1], ['b', 1]]), models: new Map([['a', {}]]) }))
+            .toEqual({ add: [], remove: ['b'] });
+    });
+    it('needs the building\'s untouched shell in the scene', () => {
+        expect(reconcileFloorPlanGroups({ enabled: true, shells: new Map(), shown: new Map([['a', 1]]), models: new Map([['a', {}], ['b', {}]]) }))
+            .toEqual({ add: [], remove: ['a'] });
+    });
+    it('removes every shown group and adds none while X-ray is off; turning it on adds only buildings with models', () => {
+        const models = new Map([['a', {}], ['b', {}]]);
+        expect(reconcileFloorPlanGroups({ enabled: false, shells, models, shown: new Map([['a', 1], ['b', 1]]) })).toEqual({ add: [], remove: ['a', 'b'] });
+        expect(reconcileFloorPlanGroups({ enabled: true, shells, models, shown: new Map() })).toEqual({ add: ['a', 'b'], remove: [] });
     });
 });

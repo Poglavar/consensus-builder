@@ -1,4 +1,5 @@
-// Which existing buildings' floor models X-ray should load or drop, given the camera. Pure: no DOM,
+// Which existing buildings' floor models X-ray should load or drop, given the camera, and which
+// buildings' floor-plan groups the scene should add or remove. Pure: no DOM,
 // no Three.js, no network. Floor plans are never bulk-loaded: only marked buildings near the viewer
 // while X-ray is on, nearest first, a few at a time; a building is dropped only once it is well
 // beyond the load radius (hysteresis), so orbiting at the edge does not reload it.
@@ -39,7 +40,21 @@
         return { load, cancel, unload };
     }
 
-    const api = { DEFAULTS, planFloorPlanLoads };
+    /**
+     * Which buildings' floor-plan groups the scene should add or remove, building by building: one
+     * per building with a loaded model whose untouched shell is in the scene, none while X-ray is off.
+     * Nothing else in the scene is involved.
+     * @param state { enabled, models: Map(key → model|null), shells: Map|Set keys of shells in the
+     *   scene, shown: Map(key → group) }
+     * @returns { add: keys, remove: keys }
+     */
+    function reconcileFloorPlanGroups({ enabled, models, shells, shown }) {
+        const remove = [...shown.keys()].filter(key => !enabled || !models.get(key) || !shells.has(key));
+        const add = enabled ? [...models.keys()].filter(key => models.get(key) && shells.has(key) && !shown.has(key)) : [];
+        return { add, remove };
+    }
+
+    const api = { DEFAULTS, planFloorPlanLoads, reconcileFloorPlanGroups };
     global.__floorPlanProximity = api;
     if (typeof module !== 'undefined' && module.exports) module.exports = api;
 })(typeof window !== 'undefined' ? window : globalThis);

@@ -5987,6 +5987,7 @@
 
     async function buildNearbyProposalBuildings3D(targetGroup, buildingMaterial, visibility = {}, isCurrent = () => true) {
         let failures = 0;
+        const shells = new Map();
         // Existing buildings in the 3D view are drawn entirely from the `gdi_building_3d` city
         // model fetched via POST /buildings/near — the SAME GDI objects, under the SAME object_id,
         // that the 2D map serves and that cut/tunnel/demolish detection scans. So a demolished or
@@ -6034,14 +6035,14 @@
                         const renderParts = buildingDisplayPolicy.resolveBuildingRenderParts(carve, visibility);
                         if (!carve) {
                             if (!renderParts.detailed) return;
-                            // A model is here only when X-ray asked for it (floor-plan-proximity.js).
-                            const floorModel = floorModelLoads.models.get(threeBuildingKey(bld));
-                            if (floorModel && appendBuildingFloorPlans({ type: 'Feature', geometry: floorModel.footprint, properties: {
-                                ...bld.properties, floorPlans: floorModel.floorPlans
-                            } }, buildingMaterial, building3DHeightMeters(bld), inspectionFeature)) return;
                             const mesh = buildMeshFromBuilding3D(bld, buildingMaterial, meshDedupeState);
                             if (mesh) {
                                 addObserved(mesh);
+                                // An untouched shell can give way to its floor model in X-ray, building by
+                                // building (reconcileExistingFloorPlans), without rebuilding the others.
+                                const key = threeBuildingKey(bld);
+                                if (shells.has(key)) shells.get(key).meshes.push(mesh);
+                                else shells.set(key, { meshes: [mesh], building: bld, material: buildingMaterial, inspectionFeature });
                             }
                             return;
                         }
@@ -6080,7 +6081,7 @@
             console.warn('Failed to build existing 3D buildings:', error);
         }
         ensureNearbyProposalBuildings();
-        return { failures };
+        return { failures, shells };
     }
 
     // Height of a { z_min, z_max, faces[] } building in metres; falls back to scanning face
@@ -8645,6 +8646,16 @@
     // it at once deleted those programs and relinked them on the next frame (50–130 ms frames on
     // every rebuild, e.g. each build-out month step).
     const retiredGroups = [];
+    // Resolves once the next frame has been drawn (or the scene has gone).
+    const drawnFrameWaiters = [];
+    function nextDrawnFrame() {
+        if (!isActive) return Promise.resolve();
+        return new Promise(resolve => { drawnFrameWaiters.push(resolve); invalidateThreeView(); });
+    }
+    function releaseDrawnFrameWaiters() {
+        drawnFrameWaiters.splice(0).forEach(resolve => resolve());
+    }
+
     function retireGroupAfterFrame(group) {
         retiredGroups.push(group);
         invalidateThreeView();
@@ -8869,16 +8880,24 @@
         return result;
     }
 
-    function disposeFloorPlans() {
+    // A build replaces the suggested existing layouts every time, and the designs' plans when it rebuilds
+    // the planned family. Existing buildings' floor models belong to reconcileExistingFloorPlans and go
+    // only with the scene (`models`).
+    function disposeFloorPlans({ planned = true, models = false } = {}) {
         if (floorPlanGroup) {
             [...floorPlanGroup.children].forEach(group => {
+                const family = group.userData.floorPlanFamily;
+                if ((family === 'existing-model' && !models) || (family === 'planned' && !planned)) return;
                 floorPlanRenderer.disposeGroup(group);
                 floorPlanGroup.remove(group);
+                renderedFloorPlanKeys.delete(group.userData.floorPlanKey);
             });
         }
-        renderedFloorPlanKeys.clear();
+        if (models) existingFloorPlanGroups.clear();
+        Object.assign(suggestedPlanTotals, { existing: 0, existingCapped: false });
+        if (!planned) return;
         floorPlanErrors = 0;
-        Object.assign(suggestedPlanTotals, { buildings: 0, slices: 0, flagged: 0, apartments: 0, cores: 0, pendingStreets: false, existing: 0, existingCapped: false });
+        Object.assign(suggestedPlanTotals, { buildings: 0, slices: 0, flagged: 0, apartments: 0, cores: 0, pendingStreets: false });
         suggestedPlanByParcel.clear();
         suggestedPlanByProposal.clear();
     }
@@ -9152,7 +9171,7 @@
             for (const slice of planned.slices) {
                 if (!slice.result.floorPlans) continue;
                 const modelled = { type: 'Feature', geometry: slice.footprint.geometry, properties: { ...props, floorPlans: slice.result.floorPlans } };
-                if (appendBuildingFloorPlans(modelled, buildingMaterial, Math.max(0.1, slice.result.summary.heightM - 0.002), feature)) suggestedPlanTotals.existing++;
+                if (appendBuildingFloorPlans(modelled, buildingMaterial, Math.max(0.1, slice.result.summary.heightM - 0.002), feature, 'existing-suggested')) suggestedPlanTotals.existing++;
             }
         }
     }
@@ -9160,8 +9179,8 @@
     // ── Floor models of existing buildings: loaded one by one, near the camera, while X-ray is on ──
     // Cells only mark the buildings that have plans (`floorPlansAvailable`); floor-plan-proximity.js
     // decides which models to request (nearest first, two at a time) and which to drop (well beyond the
-    // radius, or X-ray off). An arrival or a drop rebuilds the existing buildings, the path X-ray's
-    // toggle takes, coalesced by the refresh queue; floor plan groups are created and disposed there.
+    // radius, or X-ray off). An arrival adds, and a drop removes, only that building's floor-plan group
+    // (reconcileExistingFloorPlans); no building is rebuilt.
     const floorModelLoads = { models: new Map(), pending: new Map(), camera: null, revision: -1 };
     const floorModelCentres = new WeakMap();
     const FLOOR_MODEL_RECHECK_M = 20;
@@ -9194,7 +9213,7 @@
             // No model (or a failure) is an answer too, so it is not asked again until the building
             // leaves the radius and comes back.
             floorModelLoads.models.set(key, model);
-            if (model && xrayEnabled) rebuild3DBuildingsOnly({ family: 'existing' });
+            if (model) reconcileExistingFloorPlans();
             updateFloorModelLoads(true);
         };
         fetch(`${base}/buildings/floor-model?${params}`, { signal: controller.signal, headers: { Accept: 'application/json' } })
@@ -9210,7 +9229,8 @@
         if (!floorPlanProximity || !origin3857) return;
         if (!xrayEnabled && !floorModelLoads.models.size && !floorModelLoads.pending.size) return;
         const k = lifeMercatorK();
-        const position = camera ? [camera.position.x / k, camera.position.y / k, camera.position.z] : null;
+        // The scene is in Web Mercator units, heights included (applyGeoCameraView): k turns them into metres.
+        const position = camera ? [camera.position.x / k, camera.position.y / k, camera.position.z / k] : null;
         const last = floorModelLoads.camera;
         if (!force && xrayEnabled && position && last && floorModelLoads.revision === nearbyBuildingsRevision
             && Math.hypot(position[0] - last[0], position[1] - last[1], position[2] - last[2]) < FLOOR_MODEL_RECHECK_M) return;
@@ -9232,11 +9252,13 @@
         let dropped = false;
         plan.unload.forEach(key => { if (floorModelLoads.models.get(key)) dropped = true; floorModelLoads.models.delete(key); });
         plan.load.forEach(key => requestFloorModel(key, buildings.get(key)));
-        // With X-ray off its own toggle already rebuilt the buildings without interiors.
-        if (dropped && xrayEnabled) rebuild3DBuildingsOnly({ family: 'existing' });
+        if (dropped) reconcileExistingFloorPlans();
     }
 
-    function appendBuildingFloorPlans(feature, proxyMaterial, proxyHeightM, inspectionFeature = null) {
+    // `family`: 'planned' (a design's model or suggested layout) or 'existing-suggested'; existing
+    // buildings' models are added by addExistingFloorPlanGroup (disposeFloorPlans). Returns the group,
+    // true when the drawing is already shown.
+    function appendBuildingFloorPlans(feature, proxyMaterial, proxyHeightM, inspectionFeature = null, family = 'planned') {
         const plans = feature?.properties?.floorPlans;
         if (!xrayEnabled || !floorPlanGroup || !plans) return false;
         // A building can have several parcel slices or appear in both data families. Its
@@ -9248,16 +9270,90 @@
                 (lng, lat) => latLngToXY(lat, lng), floorPlanGeometry, { proxyMaterial, proxyHeightM });
             if (group) {
                 if (inspectionFeature) group.userData.planningBuiltFeature = inspectionFeature;
+                group.userData.floorPlanFamily = family;
+                group.userData.floorPlanKey = key;
                 floorPlanRenderer.setCutaway(group, floorCutawayLevel);
                 floorPlanGroup.add(group);
                 renderedFloorPlanKeys.add(key);
-                return true;
+                return group;
             }
         } catch (error) {
             floorPlanErrors++;
             console.error('[3D] Invalid floor plans for building', feature.properties?.name, error);
         }
         return false;
+    }
+
+    // Existing buildings' floor models, building by building: a loaded model's group replaces its
+    // untouched shell (hidden, not rebuilt); a dropped one is disposed and its shell shown again.
+    // No other building is touched. During a build its commit reconciles instead.
+    // A group is built a few milliseconds at a time (createBuildingGroupCooperative); until it is
+    // in the scene its entry is a placeholder and the shell stays as it is.
+    let existingFloorPlanShells = new Map();
+    const existingFloorPlanGroups = new Map();
+    function removeExistingFloorPlanGroup(key) {
+        const group = existingFloorPlanGroups.get(key);
+        existingFloorPlanGroups.delete(key);
+        if (group?.isObject3D) {
+            floorPlanRenderer.disposeGroup(group);
+            floorPlanGroup?.remove(group);
+        }
+        existingFloorPlanShells.get(key)?.meshes.forEach(mesh => { mesh.visible = true; });
+    }
+    // One building at a time, each after the previous one has been drawn, so that several arrivals
+    // (X-ray turned on near cached models) do not upload all their geometry in the same frame.
+    let existingFloorPlanQueue = Promise.resolve();
+    function queueExistingFloorPlanGroup(key) {
+        const placeholder = { building: true };
+        existingFloorPlanGroups.set(key, placeholder);
+        existingFloorPlanQueue = existingFloorPlanQueue.then(() => addExistingFloorPlanGroup(key, placeholder));
+    }
+    async function addExistingFloorPlanGroup(key, placeholder) {
+        const current = () => existingFloorPlanGroups.get(key) === placeholder && !!floorPlanGroup;
+        if (!current()) return;
+        const shell = existingFloorPlanShells.get(key), model = floorModelLoads.models.get(key);
+        let group = null;
+        try {
+            group = await floorPlanRenderer.createBuildingGroupCooperative(THREE, { type: 'Feature', geometry: model.footprint,
+                properties: { ...shell.building.properties, floorPlans: model.floorPlans } }, (lng, lat) => latLngToXY(lat, lng), floorPlanGeometry,
+            { proxyMaterial: shell.material, proxyHeightM: building3DHeightMeters(shell.building) }, { forEach: sceneWork.forEach, isCurrent: current });
+        } catch (error) {
+            floorPlanErrors++;
+            console.error(`[${new Date().toISOString()}] [3D] Invalid floor plans for building ${key}`, error);
+        }
+        if (!current()) { if (group) floorPlanRenderer.disposeGroup(group); return; }
+        if (!group) {
+            // Not drawable: answered as "no model", so it is not rebuilt on every reconcile.
+            existingFloorPlanGroups.delete(key);
+            floorModelLoads.models.set(key, null);
+            updateXrayControls();
+            return;
+        }
+        Object.assign(group.userData, { floorPlanFamily: 'existing-model', floorModelKey: key, proxySource: shell.material,
+            ...(shell.inspectionFeature ? { planningBuiltFeature: shell.inspectionFeature } : {}) });
+        floorPlanRenderer.setCutaway(group, floorCutawayLevel);
+        floorPlanGroup.add(group);
+        existingFloorPlanGroups.set(key, group);
+        existingFloorPlanShells.get(key)?.meshes.forEach(mesh => { mesh.visible = false; });
+        updateXrayControls();
+        await nextDrawnFrame();
+    }
+    function reconcileExistingFloorPlans() {
+        if (!floorPlanGroup || !floorPlanProximity || buildingBuildPending) return;
+        // A rebuild may have given a building another material: its proxy bands follow.
+        for (const [key, group] of existingFloorPlanGroups) {
+            if (group.isObject3D && group.userData.proxySource !== existingFloorPlanShells.get(key)?.material) removeExistingFloorPlanGroup(key);
+        }
+        const enabled = xrayEnabled && isActive && existingBuildingsGroup?.visible !== false;
+        const { add, remove } = floorPlanProximity.reconcileFloorPlanGroups({ enabled, models: floorModelLoads.models,
+            shells: existingFloorPlanShells, shown: existingFloorPlanGroups });
+        remove.forEach(removeExistingFloorPlanGroup);
+        add.forEach(queueExistingFloorPlanGroup);
+        // A shown building's shell stays hidden, also when a rebuild gave it new meshes.
+        for (const [key, group] of existingFloorPlanGroups) {
+            if (group.isObject3D) existingFloorPlanShells.get(key)?.meshes.forEach(mesh => { mesh.visible = false; });
+        }
+        if (remove.length) { updateXrayControls(); invalidateThreeView(); }
     }
 
     function renderScene(fullFrame = true, { shadowsPerPass = false } = {}) {
@@ -9539,11 +9635,19 @@
         xrayNote.textContent = lines.join(' ');
     }
 
+    // X-ray changes only what depends on it: existing buildings' interiors are added and removed per
+    // building; designs are rebuilt only when X-ray replaces some of their solids (an authored model or
+    // a suggested layout, which also brings the suggested existing layouts).
+    function xrayRebuildsDesigns() {
+        return suggestedPlansEnabled || (Array.isArray(window.proposedBuildings) && window.proposedBuildings.some(feature => feature?.properties?.floorPlans));
+    }
     function setXrayEnabled(enabled) {
         xrayEnabled = enabled === true;
-        rebuild3DBuildingsOnly();
+        if (xrayRebuildsDesigns()) rebuild3DBuildingsOnly({ family: 'planned' });
         updateFloorModelLoads(true);
+        reconcileExistingFloorPlans();
         updateXrayControls();
+        invalidateThreeView();
     }
 
     function applyRetainedBuildingDisplay() {
@@ -9817,7 +9921,7 @@
 
     async function build3DBuildingFamilies(requestedFamily) {
         if (!isActive || !buildingGroup) return;
-        const family = xrayEnabled ? 'all' : requestedFamily;
+        const family = requestedFamily;
         const rebuildExisting = family !== 'planned';
         const rebuildProposed = family !== 'existing';
         const previous = buildingDisplaySnapshot;
@@ -9836,7 +9940,7 @@
             buildingsRenderGeneration++;
             pendingModelLoads = 0;
         }
-        disposeFloorPlans();
+        disposeFloorPlans({ planned: rebuildProposed });
         const generation = ++buildingsWorkGeneration;
         const signal = sceneAbort?.signal;
         const isCurrent = () => isActive && !signal?.aborted && generation === buildingsWorkGeneration;
@@ -9845,6 +9949,7 @@
         const showProposed = realisticLayerActive || plannedDisplay !== 'off';
         const existingDataRevision = nearbyBuildingsRevision;
         let existingBuildFailures = rebuildExisting ? 0 : (previous?.existingBuildFailures || 0);
+        let nextShells = rebuildExisting ? new Map() : existingFloorPlanShells;
         nextExisting.visible = showExisting;
         nextProposed.visible = showProposed;
         if (existingTransitAlignmentGroup) existingTransitAlignmentGroup.visible = builtPolicy.showExistingRail && !realisticLayerActive;
@@ -9857,6 +9962,7 @@
                     showDemolished: builtPolicy.showDemolished
                 }, isCurrent);
                 existingBuildFailures = result?.failures || 0;
+                nextShells = result?.shells || new Map();
                 if (!isCurrent()) return;
             }
             if (showProposed && rebuildProposed) await buildProposedBuildings3D(nextProposed, proposedMaterial, isCurrent);
@@ -9873,6 +9979,7 @@
             replace(proposedBuildingsGroup, nextProposed);
             existingBuildingsGroup = nextExisting;
             proposedBuildingsGroup = nextProposed;
+            existingFloorPlanShells = nextShells;
             committed = true;
             applyUseHighlight3D();
             if (showExisting) appendSuggestedExistingFloorPlans(existingMaterial);
@@ -9899,7 +10006,11 @@
                 if (rebuildExisting) clearGroupChildren(nextExisting);
                 if (rebuildProposed) clearGroupChildren(nextProposed);
             }
-            if (generation === buildingsWorkGeneration) buildingBuildPending = false;
+            if (generation === buildingsWorkGeneration) {
+                buildingBuildPending = false;
+                // Interiors that arrived or left during the build, and the new shells' visibility.
+                if (committed) reconcileExistingFloorPlans();
+            }
         }
     }
 
@@ -10587,6 +10698,7 @@
         drawFrame(wasInvalidated || renderInvalidated || moving || !!controls?.autoRotate
             || manualAutoRotateActive || liveHooks === 0);
         if (retiredGroups.length) releaseRetiredGroups();
+        if (drawnFrameWaiters.length) releaseDrawnFrameWaiters();
         if (perfReadout) recordPerfFrame(now, perfT0, perfT1, performance.now());
         const hooksOnly = !renderInvalidated && !moving && !controls?.autoRotate && !manualAutoRotateActive && liveHooks > 0;
         if (renderInvalidated || moving || controls?.autoRotate || manualAutoRotateActive || liveHooks) {
@@ -10678,7 +10790,8 @@
         resizeObserver?.disconnect();
         resizeObserver = null;
         cancelLoop();
-        disposeFloorPlans();
+        disposeFloorPlans({ planned: true, models: true });
+        existingFloorPlanShells = new Map();
         // Full scene eviction releases every attached resource. Source caches release separately.
         threeResources.disposeSharedSubtree(scene);
         window.__threeModeDisposeBuildingGeometryCache?.();
@@ -11003,6 +11116,7 @@
         cancelViewAngleHint(); // never let it land on the 2D map after the user has left
         if (!isActive) return;
         resetFloorModelLoads();
+        releaseDrawnFrameWaiters();
         // Capture this before disposing the local scene frame. The Leaflet map intentionally stays
         // motionless while 3D is active (so it cannot stream tiles or parcels), then jumps once to
         // the current 3D focus when the user explicitly returns to 2D.

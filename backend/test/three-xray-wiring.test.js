@@ -71,7 +71,7 @@ describe('three-mode Xray wiring', () => {
             buildingDisplayPolicy: { resolveBuiltDisplayPolicy: mode => ({ visible: mode !== 'off', material: mode, showSurviving: true, showDemolished: false }) },
             buildingMaterials: { xray: 'xray-material', solid: 'solid-material', ghost: 'ghost-material' },
             buildNearbyProposalBuildings3D: vi.fn(async () => {}), buildProposedBuildings3D: vi.fn(async () => {}), appendSuggestedExistingFloorPlans: vi.fn(),
-            applyUseHighlight3D: vi.fn(),
+            applyUseHighlight3D: vi.fn(), reconcileExistingFloorPlans: vi.fn(),
             buildIneligibleParcels3D: vi.fn(), ensureNearbyProposalBuildings: vi.fn(),
             ensureNearbyTrees: vi.fn(), rebuildTreesOnly: vi.fn(), ensureNearbyWater: vi.fn(), rebuildWaterOnly: vi.fn(),
             applyParcelIsolation: vi.fn(), isolateProposal: vi.fn(), updateXrayControls: vi.fn(), refreshClickStackFigures: vi.fn(),
@@ -92,6 +92,7 @@ describe('three-mode Xray wiring', () => {
             let xrayEnabled=this.enabled, builtDisplay=this.built, plannedDisplay=this.planned;
             let realisticLayerActive=false, existingTransitAlignmentGroup={ visible: true }, showIneligibleParcels=false;
             let isolatedParcelId=this.isolated, isolatedProposalId=null;
+            let existingFloorPlanShells=new Map();
         `, stubs, ['build3DBuildingFamilies', 'sharedPlanReconcile']);
         return [rebuild, context];
     }
@@ -126,12 +127,71 @@ describe('three-mode Xray wiring', () => {
         expect(c.rebuildTreesOnly).not.toHaveBeenCalled();
         expect(c.rebuildWaterOnly).not.toHaveBeenCalled();
     });
+    it('rebuilds only the asked family with X-ray on, keeps the designs\' floor plans, and reconciles interiors after the commit', async () => {
+        const [rebuild, c] = rebuildHarness(true);
+        await rebuild({ family: 'existing' });
+        expect(c.buildNearbyProposalBuildings3D).toHaveBeenCalledOnce();
+        expect(c.buildProposedBuildings3D).not.toHaveBeenCalled();
+        expect(c.proposedGroup.children).toEqual([{ id: 'proposal-survives' }]);
+        expect(c.disposeFloorPlans).toHaveBeenCalledExactlyOnceWith({ planned: false });
+        expect(c.reconcileExistingFloorPlans).toHaveBeenCalledOnce();
+    });
 
-    it('setXrayEnabled changes state and rebuilds', () => {
-        const [set, context] = extracted('setXrayEnabled', 'let xrayEnabled=false;', { rebuild3DBuildingsOnly: () => context.calls.push('rebuild'),
-            updateFloorModelLoads: force => context.calls.push(`floor models ${force}`), updateXrayControls: () => context.calls.push('update') });
-        set(true);
-        expect(context.calls).toEqual(['rebuild', 'floor models true', 'update']);
+    it('setXrayEnabled rebuilds nothing when only existing interiors depend on it, and only the designs otherwise', () => {
+        const toggle = (suggested, proposedBuildings) => {
+            const [set, context] = extracted('setXrayEnabled', `let xrayEnabled=false; let suggestedPlansEnabled=${suggested};`, {
+                window: { proposedBuildings }, rebuild3DBuildingsOnly: options => context.calls.push(`rebuild ${options.family}`),
+                updateFloorModelLoads: force => context.calls.push(`floor models ${force}`), reconcileExistingFloorPlans: () => context.calls.push('reconcile'),
+                updateXrayControls: () => context.calls.push('update'), invalidateThreeView: () => context.calls.push('invalidate') }, ['xrayRebuildsDesigns']);
+            set(true);
+            return context.calls;
+        };
+        expect(toggle(false, [{ properties: {} }])).toEqual(['floor models true', 'reconcile', 'update', 'invalidate']);
+        expect(toggle(false, [{ properties: { floorPlans: {} } }])).toEqual(['rebuild planned', 'floor models true', 'reconcile', 'update', 'invalidate']);
+        expect(toggle(true, [])).toEqual(['rebuild planned', 'floor models true', 'reconcile', 'update', 'invalidate']);
+    });
+    it("an arriving floor model adds only its building's group, rebuilds nothing, and its drop restores only that shell", async () => {
+        const proximity = require('../../frontend/js/floor-plan-proximity.js');
+        const meshA = { id: 'a', visible: true }, meshB = { id: 'b', visible: true };
+        const existing = { visible: true, children: [meshA, meshB] };
+        const added = [], removed = [], disposed = [];
+        const modelB = { floorPlans: { storeys: [] }, footprint: null };
+        const variables = `let xrayEnabled = true, isActive = true, buildingBuildPending = false, floorCutawayLevel = null, floorPlanErrors = 0;
+            let existingBuildingsGroup = this.existing;
+            let floorPlanGroup = { add: group => this.added.push(group), remove: group => this.removed.push(group) };
+            const renderedFloorPlanKeys = new Set();
+            const floorModelLoads = { models: new Map([['s:a', null]]), pending: new Map(), camera: null, revision: -1 };
+            let existingFloorPlanShells = new Map([['s:a', { meshes: [this.existing.children[0]], building: { properties: {} }, material: 'ghost' }],
+                ['s:b', { meshes: [this.existing.children[1]], building: { properties: {} }, material: 'ghost' }]]);
+            const existingFloorPlanGroups = new Map(); let existingFloorPlanQueue = Promise.resolve();
+            this.loads = floorModelLoads; this.groups = existingFloorPlanGroups;
+            this.reconcile = () => reconcileExistingFloorPlans();`;
+        const [request, c] = extracted('requestFloorModel', variables, {
+            existing, added, removed, floorPlanProximity: proximity, URLSearchParams, AbortController,
+            window: { getBackendBase: () => 'http://api.test' },
+            fetch: vi.fn(async () => ({ ok: true, json: async () => ({ model: modelB }) })),
+            rebuild3DBuildingsOnly: vi.fn(), updateFloorModelLoads: vi.fn(), updateXrayControls: vi.fn(), invalidateThreeView: vi.fn(),
+            building3DHeightMeters: () => 29.5, THREE: {}, floorPlanGeometry: {}, latLngToXY: () => [0, 0], sceneWork, nextDrawnFrame: async () => {},
+            floorPlanRenderer: { disposeGroup: group => disposed.push(group), setCutaway: vi.fn(),
+                createBuildingGroupCooperative: vi.fn(async () => ({ isObject3D: true, userData: {} })) }
+        }, ['reconcileExistingFloorPlans', 'removeExistingFloorPlanGroup', 'queueExistingFloorPlanGroup', 'addExistingFloorPlanGroup']);
+        request('s:b', { object_id: 'b', floorPlansAvailable: { city: 'c', source: 's' } });
+        await vi.waitFor(() => expect(added).toHaveLength(1));
+        expect(c.fetch.mock.calls[0][0]).toBe('http://api.test/buildings/floor-model?city=c&source=s&buildingId=b');
+        expect(c.rebuild3DBuildingsOnly).not.toHaveBeenCalled();
+        expect(c.floorPlanRenderer.createBuildingGroupCooperative).toHaveBeenCalledOnce();
+        expect(c.floorPlanRenderer.createBuildingGroupCooperative.mock.calls[0][1].properties.floorPlans).toBe(modelB.floorPlans);
+        expect(c.groups.get('s:b')).toBe(added[0]);
+        expect(added[0].userData).toMatchObject({ floorPlanFamily: 'existing-model', floorModelKey: 's:b', proxySource: 'ghost' });
+        expect(existing.children[0]).toBe(meshA); expect(existing.children[1]).toBe(meshB);
+        expect([meshA.visible, meshB.visible]).toEqual([true, false]);
+        // The drop: only B's group goes, and B's own shell comes back.
+        c.loads.models.delete('s:b');
+        c.reconcile();
+        expect(disposed).toEqual([added[0]]);
+        expect(c.groups.size).toBe(0);
+        expect([meshA.visible, meshB.visible]).toEqual([true, true]);
+        expect(c.rebuild3DBuildingsOnly).not.toHaveBeenCalled();
     });
     it('requests floor models of marked buildings near the camera only while X-ray is on, and abandons them when it goes off', () => {
         const proximity = require('../../frontend/js/floor-plan-proximity.js');
@@ -159,13 +219,36 @@ describe('three-mode Xray wiring', () => {
         expect(requested).toEqual(['s:1']);
         expect(context.rebuild3DBuildingsOnly).not.toHaveBeenCalled();
     });
+    it('builds arriving interiors one at a time, the next after the previous one has been drawn', async () => {
+        const proximity = require('../../frontend/js/floor-plan-proximity.js');
+        const order = [], frames = [];
+        const shell = { meshes: [{ visible: true }], building: { properties: {} }, material: 'ghost' };
+        const variables = `let xrayEnabled = true, isActive = true, buildingBuildPending = false, floorCutawayLevel = null, floorPlanErrors = 0;
+            let existingBuildingsGroup = { visible: true };
+            let floorPlanGroup = { add() {}, remove() {} };
+            const floorModelLoads = { models: new Map([['a', { floorPlans: {} }], ['b', { floorPlans: {} }]]), pending: new Map() };
+            let existingFloorPlanShells = new Map([['a', this.shell], ['b', { ...this.shell, meshes: [{ visible: true }] }]]);
+            const existingFloorPlanGroups = new Map(); let existingFloorPlanQueue = Promise.resolve();`;
+        const [reconcile] = extracted('reconcileExistingFloorPlans', variables, { shell, floorPlanProximity: proximity, THREE: {}, floorPlanGeometry: {},
+            latLngToXY: () => [0, 0], sceneWork, building3DHeightMeters: () => 10, updateXrayControls: vi.fn(), invalidateThreeView: vi.fn(),
+            nextDrawnFrame: () => new Promise(resolve => frames.push(resolve)),
+            floorPlanRenderer: { disposeGroup: vi.fn(), setCutaway: vi.fn(), createBuildingGroupCooperative: async (_three, feature) => {
+                order.push(feature); return { isObject3D: true, userData: {} }; } }
+        }, ['removeExistingFloorPlanGroup', 'queueExistingFloorPlanGroup', 'addExistingFloorPlanGroup']);
+        reconcile();
+        await vi.waitFor(() => expect(frames).toHaveLength(1));
+        expect(order).toHaveLength(1);
+        frames[0]();
+        await vi.waitFor(() => expect(order).toHaveLength(2));
+    });
     it('appendBuildingFloorPlans does no work while disabled and deduplicates registered geometry', () => {
         const add = vi.fn(), create = vi.fn(() => ({ userData: { cbFloorPlan: true } }));
         const feature = { properties: { floorPlans: { registration: { corners: [[1, 2]] }, storeys: [{ id: 'f1' }] } } };
         const [append] = extracted('appendBuildingFloorPlans', 'let xrayEnabled=false; let floorPlanGroup={add:this.add}; let renderedFloorPlanKeys=new Set(); let floorPlanErrors=0;', { add, THREE: {}, floorPlanRenderer: { createBuildingGroup: create, setCutaway: vi.fn() }, floorPlanGeometry: {}, latLngToXY: () => [0, 0] });
         append(feature); expect(create).not.toHaveBeenCalled(); expect(add).not.toHaveBeenCalled();
         const [enabledAppend] = extracted('appendBuildingFloorPlans', 'let xrayEnabled=true; let floorCutawayLevel=1; let floorPlanGroup={add:this.add}; let renderedFloorPlanKeys=new Set(); let floorPlanErrors=0;', { add, THREE: {}, floorPlanRenderer: { createBuildingGroup: create, setCutaway: vi.fn() }, floorPlanGeometry: {}, latLngToXY: () => [0, 0] });
-        expect(enabledAppend(feature)).toBe(true); expect(enabledAppend(feature)).toBe(true); expect(create).toHaveBeenCalledTimes(1); expect(add).toHaveBeenCalledTimes(1);
+        expect(enabledAppend(feature)).toMatchObject({ userData: { cbFloorPlan: true, floorPlanFamily: 'planned' } });
+        expect(enabledAppend(feature)).toBe(true); expect(create).toHaveBeenCalledTimes(1); expect(add).toHaveBeenCalledTimes(1);
     });
     it('appendBuildingFloorPlans reports renderer failures without throwing', () => {
         const error = vi.spyOn(console, 'error').mockImplementation(() => {});
@@ -195,10 +278,18 @@ describe('three-mode Xray wiring', () => {
         await build(group,'solid');
         expect(draw).toHaveBeenCalledExactlyOnceWith(ordinary,9,'solid',group,ordinary,null);
     });
-    it('disposeFloorPlans disposes every owned child, removes them, and resets bookkeeping', () => {
-        const children = [{}, {}], remove = vi.fn(), dispose = vi.fn(), keys = new Set(['a']);
-        const [disposePlans] = extracted('disposeFloorPlans', 'let floorPlanGroup={children:this.children,remove:this.remove}; let renderedFloorPlanKeys=this.keys; let floorPlanErrors=3; const suggestedPlanTotals={buildings:2,slices:3,flagged:1,apartments:4,cores:2,pendingStreets:true}; const suggestedPlanByParcel=new Map([["a",1]]); const suggestedPlanByProposal=new Map([["p",1]]);', { children, remove, keys, floorPlanRenderer: { disposeGroup: dispose } });
-        disposePlans(); expect(dispose).toHaveBeenCalledTimes(2); expect(remove).toHaveBeenCalledTimes(2); expect(keys.size).toBe(0);
+    it('disposeFloorPlans disposes the families a build replaces and keeps existing buildings\' interiors to the scene', () => {
+        const group = (family, key) => ({ userData: { floorPlanFamily: family, floorPlanKey: key } });
+        const planned = group('planned', 'p'), suggested = group('existing-suggested', 's'), model = group('existing-model', 'm');
+        const children = [planned, suggested, model], dispose = vi.fn(), keys = new Set(['p', 's', 'm']);
+        const remove = item => children.splice(children.indexOf(item), 1);
+        const [disposePlans] = extracted('disposeFloorPlans', 'let floorPlanGroup={children:this.children,remove:this.remove}; let renderedFloorPlanKeys=this.keys; let floorPlanErrors=3; const existingFloorPlanGroups=new Map([["m",1]]); const suggestedPlanTotals={buildings:2,slices:3,flagged:1,apartments:4,cores:2,pendingStreets:true}; const suggestedPlanByParcel=new Map([["a",1]]); const suggestedPlanByProposal=new Map([["p",1]]);', { children, remove, keys, floorPlanRenderer: { disposeGroup: dispose } });
+        disposePlans({ planned: false });
+        expect(children).toEqual([planned, model]); expect([...keys]).toEqual(['p', 'm']);
+        disposePlans();
+        expect(children).toEqual([model]);
+        disposePlans({ planned: true, models: true });
+        expect(children).toEqual([]); expect(keys.size).toBe(0); expect(dispose).toHaveBeenCalledTimes(3);
     });
     it('applyIsolationVisibility filters floor-plan wrappers by parcel identity', () => {
         const [apply, context] = extracted('applyIsolationVisibility', `let flatGroup=null; let buildingGroup=null; let existingBuildingsGroup={children:[]}; let proposedBuildingsGroup={children:[]}; let ineligibleBuildingsGroup={children:[]}; let floorPlanGroup=this.fpGroup; let plannedFlatGroup=null; let parkGroup=null; let squareGroup=null; let lakeGroup=null; let stationGroup=null; let existingTransitAlignmentGroup=null; let treesGroup=null; let lifeGroup=null; let planningSourcesGroup=null; let isolationHidden=[];`, { fpGroup: { children: [{ userData: { parcelId: 'keep' }, visible: true }, { userData: { parcelId: 'hide' }, visible: true }] }, turf: { point: () => ({}), booleanPointInPolygon: () => false }, updateXrayControls: vi.fn(), invalidateThreeView: vi.fn(), window: { __threeSceneIsolation: require('../../frontend/js/three-scene-isolation.js') } });

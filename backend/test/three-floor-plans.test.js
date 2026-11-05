@@ -57,6 +57,22 @@ const rendererApi=renderer;
 const create=()=>renderer.createBuildingGroup(THREE,feature,()=>[0,0],api);
 
 describe('three-floor-plans volumetric adapter',()=>{
+    it('builds the same group cooperatively, one budgeted step per part list, and gives up when it is no longer wanted',async()=>{
+        const sceneWork=require('../../frontend/js/three-scene-work.js');
+        const shape=group=>group.children.map(floor=>[floor.name,floor.position.z,floor.children.map(mesh=>[mesh.name,mesh.geometry.attributes.position.count])]);
+        let steps=0;
+        const work={forEach:(items,visit,options)=>{steps++;return sceneWork.forEach(items,visit,{...options,yieldTask:()=>Promise.resolve()});}};
+        const cooperative=await renderer.createBuildingGroupCooperative(THREE,feature,()=>[0,0],api,{},work);
+        expect(shape(cooperative)).toEqual(shape(create()));
+        expect(cooperative.userData).toMatchObject({floorCount:2,cbFloorPlan:true});
+        // One layout shared by both storeys: wall, slab and glass parts, each built once.
+        expect(steps).toBe(3);
+        Extrusion.sources=[];
+        let wanted=true;
+        const dropped=await renderer.createBuildingGroupCooperative(THREE,feature,()=>[0,0],api,{},{isCurrent:()=>wanted,
+            forEach:(items,visit,options)=>{wanted=false;return sceneWork.forEach(items,visit,options);}});
+        expect(dropped).toBeNull();
+    });
     it('batches by material, forwards holes, retains prism heights, and shares repeated layouts',()=>{
         Extrusion.sources=[];
         const group=create(),first=group.children[0],second=group.children[1];

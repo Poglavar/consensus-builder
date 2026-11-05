@@ -14,30 +14,50 @@
         });
     }
 
-    function geometryFor(THREE, parts) {
-        const positions = [], normals = [];
-        for (const part of parts) {
-            const shape = new THREE.Shape(part.rings[0].map(p => new THREE.Vector2(p[0], p[1])));
-            for (const ring of part.rings.slice(1)) {
-                shape.holes.push(new THREE.Path(ring.map(p => new THREE.Vector2(p[0], p[1]))));
-            }
-            // ExtrudeGeometry emits nonindexed triangles, so merging attributes preserves
-            // its hole triangulation and normals without one draw call per wall or stair.
-            const source = new THREE.ExtrudeGeometry(shape, { depth: part.heightM, bevelEnabled: false, steps: 1 });
-            source.translate(0, 0, part.baseM);
-            for (const value of source.attributes.position.array) positions.push(value);
-            for (const value of source.attributes.normal.array) normals.push(value);
-            source.dispose();
+    function extrudeInto(THREE, part, positions, normals) {
+        const shape = new THREE.Shape(part.rings[0].map(p => new THREE.Vector2(p[0], p[1])));
+        for (const ring of part.rings.slice(1)) {
+            shape.holes.push(new THREE.Path(ring.map(p => new THREE.Vector2(p[0], p[1]))));
         }
+        // ExtrudeGeometry emits nonindexed triangles, so merging attributes preserves
+        // its hole triangulation and normals without one draw call per wall or stair.
+        const source = new THREE.ExtrudeGeometry(shape, { depth: part.heightM, bevelEnabled: false, steps: 1 });
+        source.translate(0, 0, part.baseM);
+        for (const value of source.attributes.position.array) positions.push(value);
+        for (const value of source.attributes.normal.array) normals.push(value);
+        source.dispose();
+    }
+    function mergedGeometry(THREE, positions, normals) {
         const geometry = new THREE.BufferGeometry();
         geometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
         geometry.setAttribute('normal', new THREE.Float32BufferAttribute(normals, 3));
         return geometry;
     }
+    function geometryFor(THREE, parts) {
+        const positions = [], normals = [];
+        for (const part of parts) extrudeInto(THREE, part, positions, normals);
+        return mergedGeometry(THREE, positions, normals);
+    }
+    // Parts of each layout and kind, the unit a building group shares between storeys.
+    function layoutParts(floors) {
+        const byLayout = new Map();
+        for (const floor of floors) {
+            if (byLayout.has(floor.layoutId)) continue;
+            const byKind = new Map();
+            for (const part of floor.parts) {
+                if (!byKind.has(part.kind)) byKind.set(part.kind, []);
+                byKind.get(part.kind).push(part);
+            }
+            byLayout.set(floor.layoutId, byKind);
+        }
+        return byLayout;
+    }
 
-    function createBuildingGroup(THREE, feature, project, geometryApi, options = {}) {
+    // `prepared` ({ floors, geometries: Map(layoutId → Map(kind → geometry)) }) comes from
+    // createBuildingGroupCooperative, which builds the same geometry a few milliseconds at a time.
+    function createBuildingGroup(THREE, feature, project, geometryApi, options = {}, prepared = null) {
         const api = geometryApi || global.__buildingFloorPlans;
-        const floors = api.buildFloorPlanGeometry(feature, project);
+        const floors = prepared?.floors || api.buildFloorPlanGeometry(feature, project);
         if (!floors.length) return null;
         const props = feature.properties, registration = props.floorPlans.registration, corners = registration.corners;
         const suggested = props.floorPlans.suggested === true;
@@ -56,16 +76,10 @@
         for (const floor of floors) {
             let layout = layouts.get(floor.layoutId);
             if (!layout) {
-                const byKind = new Map();
-                for (const part of floor.parts) {
-                    if (!byKind.has(part.kind)) byKind.set(part.kind, []);
-                    byKind.get(part.kind).push(part);
-                }
-                layout = new Map();
-                for (const [kind, parts] of byKind) {
-                    layout.set(kind, geometryFor(THREE, parts));
-                    if (!materials.has(kind)) materials.set(kind, materialFor(THREE, kind, colors));
-                }
+                const byKind = prepared ? null : layoutParts([floor]).get(floor.layoutId);
+                layout = prepared ? prepared.geometries.get(floor.layoutId)
+                    : new Map([...byKind].map(([kind, parts]) => [kind, geometryFor(THREE, parts)]));
+                for (const kind of layout.keys()) if (!materials.has(kind)) materials.set(kind, materialFor(THREE, kind, colors));
                 layouts.set(floor.layoutId, layout);
             }
             const floorGroup = new THREE.Group();
@@ -168,7 +182,32 @@
         }
         return group;
     }
-    const api = { createLocalUnitGroup, createBuildingGroup, setCutaway, disposeGroup, summarize, renderCutaway };
+    // The same group as createBuildingGroup, with its extrusions spread over tasks by `work.forEach`
+    // (three-scene-work.js: a time budget per task), so adding one building does not hold a frame.
+    // Resolves null when `work.isCurrent()` turns false; the geometry built so far is disposed.
+    async function createBuildingGroupCooperative(THREE, feature, project, geometryApi, options, work) {
+        const api = geometryApi || global.__buildingFloorPlans;
+        const floors = api.buildFloorPlanGeometry(feature, project);
+        if (!floors.length) return null;
+        const isCurrent = work.isCurrent || (() => true);
+        const geometries = new Map(), built = [];
+        for (const [layoutId, byKind] of layoutParts(floors)) {
+            const layout = new Map();
+            for (const [kind, parts] of byKind) {
+                const positions = [], normals = [];
+                if (!await work.forEach(parts, part => extrudeInto(THREE, part, positions, normals), { isCurrent })) {
+                    built.forEach(geometry => geometry.dispose());
+                    return null;
+                }
+                const geometry = mergedGeometry(THREE, positions, normals);
+                built.push(geometry);
+                layout.set(kind, geometry);
+            }
+            geometries.set(layoutId, layout);
+        }
+        return createBuildingGroup(THREE, feature, project, api, options, { floors, geometries });
+    }
+    const api = { createLocalUnitGroup, createBuildingGroup, createBuildingGroupCooperative, setCutaway, disposeGroup, summarize, renderCutaway };
     global.__threeFloorPlans = api;
     if (typeof module !== 'undefined' && module.exports) module.exports = api;
 })(typeof window !== 'undefined' ? window : globalThis);
