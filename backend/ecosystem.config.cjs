@@ -26,6 +26,9 @@ module.exports = {
       // origin as that proposal's screenshot_url. It is a public URL, not a secret, so it lives
       // here (versioned, deployed) rather than in a hand-edited .env.
       PUBLIC_API_BASE_URL: 'https://api.urbangametheory.xyz',
+      // Planning funnel: browsers upload fixed-vocabulary step/error observations to the private
+      // consensus.planning_diagnostic store (docs/planning-usage-and-diagnostics.md).
+      UGT_DIAGNOSTICS_INGEST: 'true',
       // Upload provider and read gateway are independent. Retain Pinata credentials in .env
       // and select it explicitly when needed; failed uploads do not silently switch providers.
       IPFS_PINNING_PROVIDER: process.env.IPFS_PINNING_PROVIDER || 'filebase',

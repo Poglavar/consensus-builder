@@ -1,4 +1,5 @@
-// First-party diagnostics: memory only, closed vocabulary, no automatic transmission.
+// First-party diagnostics and planning funnel: closed vocabulary, memory only on the device. Each
+// distinct observation is uploaded once per tab session (js/app-funnel.js); plan content never is.
 (function (root, factory) {
     const api = factory();
     if (typeof module === 'object' && module.exports) module.exports = api;
@@ -30,9 +31,12 @@
     });
     const ALIASES = Object.freeze({ 'network-failed': 'network-unavailable', 'cid-mismatch': 'publication-identity-mismatch',
         'too-large': 'publication-too-large', 'pinning-quota-exhausted': 'publication-unavailable', 'pinning-unconfigured': 'publication-unavailable' });
-    const OPERATIONS = ['create', 'edit', 'save', 'share', 'publish', 'import', 'export', 'open'];
-    const ENTITIES = ['plan', 'design', 'workspace', 'file', 'artifact'];
-    const SURFACES = ['draft-editor', 'plan-file', 'named-plan', 'design-index', 'workspace', 'runtime', 'share-panel', 'api', 'mcp'];
+    // Funnel steps: open workspace → inspect (a map click) → start design → create/edit/save → publish/share.
+    const OPERATIONS = ['create', 'edit', 'save', 'share', 'publish', 'import', 'export', 'open', 'inspect', 'start'];
+    const ENTITIES = ['plan', 'design', 'workspace', 'file', 'artifact', 'parcel', 'building'];
+    const SURFACES = ['draft-editor', 'plan-file', 'named-plan', 'design-index', 'workspace', 'runtime', 'share-panel', 'api', 'mcp', 'click-stack'];
+    // The app route a session entered on (js/app-routes.js), never the path itself.
+    const ROUTES = ['map', 'proposals', 'designs', 'agreements', 'plans', 'parcel', 'bets'];
     const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
     const MAX_ENTRIES = 100, MAX_AGE_MS = 24 * 60 * 60 * 1000;
     function get(object, field) { try { return object?.[field]; } catch { return undefined; } }
@@ -40,6 +44,7 @@
         const out = {};
         if (SURFACES.includes(get(input, 'surface'))) out.surface = get(input, 'surface');
         if (['json', 'geojson'].includes(get(input, 'format'))) out.format = get(input, 'format');
+        if (ROUTES.includes(get(input, 'route'))) out.route = get(input, 'route');
         const status = get(input, 'httpStatus');
         if (Number.isInteger(status) && status >= 100 && status <= 599) out.httpStatus = status;
         return out;
@@ -71,7 +76,13 @@
         const show = entry => display(entry, text);
         const id = () => { const value = uuid(); if (!UUID.test(value)) throw new Error('A random UUID is required'); return value; };
         let sessionId = null, lastActivity = 0, entries = [], sending = null, lastSendAt = -Infinity;
+        let uploading = null, uploadDisabled = false;
         const handles = new Map();
+        const listeners = new Set();
+        // Upload carries each distinct observation once per session: the funnel needs reach, and
+        // a coalesced edit stream would otherwise exhaust the bounded server store.
+        const uploaded = new Set(), uploadKeys = new Set();
+        const uploadKey = entry => [entry.sessionId, entry.kind, entry.operation, entry.entity, entry.outcome, entry.code, entry.context.surface].join('|');
         let seenErrors = new WeakMap();
         let dedupe = new Map();
         const prune = () => {
@@ -83,7 +94,11 @@
             if (!sessionId || now() - lastActivity >= 30 * 60 * 1000) { sessionId = id(); handles.clear(); }
             lastActivity = now();
             const entry = { ...wire({ ...row, id: id(), correlationId: row.correlationId || id(), sessionId }), at: now() };
-            entries.push(entry); entries = entries.slice(-MAX_ENTRIES); return show(entry);
+            const key = uploadKey(entry);
+            entry.first = !uploadKeys.has(key); uploadKeys.add(key);
+            entries.push(entry); entries = entries.slice(-MAX_ENTRIES);
+            for (const listener of listeners) { try { listener(wire(entry), { first: entry.first }); } catch { /* observers never interrupt planning */ } }
+            return show(entry);
         }
         function planHandle(key) {
             if (key == null) return null;
@@ -134,37 +149,66 @@
         function snapshot() { prune(); return { version: 1, entries: entries.map(show) }; }
         function exportText() { return JSON.stringify(snapshot(), null, 2) + '\n'; }
         function clear() { entries = []; dedupe = new Map(); seenErrors = new WeakMap(); handles.clear(); sessionId = null; }
+        function subscribe(listener) { listeners.add(listener); return () => listeners.delete(listener); }
+        async function post(fetchImpl, target, batch, timeoutMs, keepalive = false) {
+            const controller = new AbortController(); let timer;
+            try {
+                const response = await Promise.race([
+                    fetchImpl(target.href, { method: 'POST', headers: { 'Content-Type': 'application/json' },
+                        credentials: 'omit', referrerPolicy: 'no-referrer', signal: controller.signal, keepalive,
+                        body: JSON.stringify({ version: 1, entries: batch }) }),
+                    new Promise((_, reject) => { timer = setTimeout(() => { controller.abort(); reject(new Error('timeout')); }, timeoutMs); })
+                ]);
+                // Bound response waiting as well as connection waiting.
+                const acknowledgement = await Promise.race([response.json(), new Promise((_, reject) => {
+                    clearTimeout(timer); timer = setTimeout(() => { controller.abort(); reject(new Error('timeout')); }, timeoutMs);
+                })]);
+                return { status: response.status, ok: response.ok && acknowledgement.accepted === batch.length };
+            } catch { return { status: 0, ok: false }; }
+            finally { clearTimeout(timer); }
+        }
+        function diagnosticsTarget(endpoint) {
+            let target;
+            try { target = new URL(endpoint); } catch { return null; }
+            if (!['http:', 'https:'].includes(target.protocol) || target.username || target.password || target.search || target.hash || target.pathname !== '/diagnostics/reports') return null;
+            return target;
+        }
+        // Automatic funnel upload: the first occurrence of each observation, oldest first. A
+        // disabled server (404) ends uploading for this tab; other failures retry on the next call.
+        async function upload({ fetch: fetchImpl, endpoint, timeoutMs = 5000, keepalive = false } = {}) {
+            if (uploadDisabled) return { ok: false, code: 'submission-disabled' };
+            if (uploading) return uploading;
+            const target = diagnosticsTarget(endpoint);
+            if (!target || typeof fetchImpl !== 'function') return { ok: false, code: 'submission-unavailable' };
+            uploading = (async () => {
+                let accepted = 0;
+                for (;;) {
+                    prune();
+                    const batch = entries.filter(row => row.first && !uploaded.has(row.id)).slice(0, 20);
+                    if (!batch.length) return { ok: true, accepted };
+                    const result = await post(fetchImpl, target, batch.map(wire), timeoutMs, keepalive);
+                    if (result.status === 404) { uploadDisabled = true; return { ok: false, code: 'submission-disabled' }; }
+                    if (!result.ok) return { ok: false, code: 'submission-unavailable', accepted };
+                    for (const row of batch) uploaded.add(row.id);
+                    accepted += batch.length;
+                }
+            })();
+            try { return await uploading; } finally { uploading = null; }
+        }
         async function send({ enabled = false, confirm = false, fetch, endpoint, timeoutMs = 5000 } = {}) {
             if (!enabled || confirm !== true) return { ok: false, code: 'submission-disabled' };
             if (sending) return sending;
             if (now() - lastSendAt < 60000) return { ok: false, code: 'submission-rate-limited' };
-            let target;
-            try { target = new URL(endpoint); } catch { return { ok: false, code: 'submission-unavailable' }; }
-            if (!['http:', 'https:'].includes(target.protocol) || target.username || target.password || target.search || target.hash || target.pathname !== '/diagnostics/reports') return { ok: false, code: 'submission-unavailable' };
+            const target = diagnosticsTarget(endpoint);
+            if (!target) return { ok: false, code: 'submission-unavailable' };
             prune(); const batch = entries.slice(-20).map(wire);
             if (!batch.length) return { ok: true, accepted: 0 };
             lastSendAt = now();
-            sending = (async () => {
-                const controller = new AbortController(); let timer;
-                try {
-                    const response = await Promise.race([
-                        fetch(target.href, { method: 'POST', headers: { 'Content-Type': 'application/json' },
-                            credentials: 'omit', referrerPolicy: 'no-referrer', signal: controller.signal,
-                            body: JSON.stringify({ version: 1, entries: batch }) }),
-                        new Promise((_, reject) => { timer = setTimeout(() => { controller.abort(); reject(new Error('timeout')); }, timeoutMs); })
-                    ]);
-                    // Bound response waiting as well as connection waiting.
-                    const acknowledgement = await Promise.race([response.json(), new Promise((_, reject) => {
-                        clearTimeout(timer); timer = setTimeout(() => { controller.abort(); reject(new Error('timeout')); }, timeoutMs);
-                    })]);
-                    if (!response.ok || acknowledgement.accepted !== batch.length) return { ok: false, code: 'submission-unavailable' };
-                    return { ok: true, accepted: batch.length };
-                } catch { return { ok: false, code: 'submission-unavailable' }; }
-                finally { clearTimeout(timer); }
-            })();
+            sending = post(fetch, target, batch, timeoutMs)
+                .then(result => result.ok ? { ok: true, accepted: batch.length } : { ok: false, code: 'submission-unavailable' });
             try { return await sending; } finally { sending = null; }
         }
-        return { event, report, run, snapshot, exportText, clear, send, text };
+        return { event, report, run, snapshot, exportText, clear, send, upload, subscribe, text };
     }
     function install(win, client) {
         // Neither event text, filename, URL, stack nor rejection reason leaves this handler.
@@ -185,7 +229,7 @@
                 node.textContent = client.text(`diagnostics.ui.${key}`, fallback);
             };
             const note = win.document.createElement('p');
-            label(note, 'notice', 'Diagnostics stay in this tab for up to 24 hours. Downloads contain fixed error codes and action outcomes, without plan content. Nothing is sent automatically.');
+            label(note, 'notice', 'Diagnostics stay in this tab for up to 24 hours. Fixed error codes and action outcomes, without plan content, are counted anonymously to find problems; downloads contain the same fields.');
             host.appendChild(note);
             const button = (key, fallback, attribute, action) => {
                 const node = win.document.createElement('button'); node.type = 'button'; node.className = 'btn';
@@ -213,5 +257,5 @@
         else controls();
         return () => { win.removeEventListener('error', unexpected); win.removeEventListener('unhandledrejection', unexpected); };
     }
-    return { CATALOG, OPERATIONS, ENTITIES, SURFACES, UUID, MAX_ENTRIES, MAX_AGE_MS, contextOf, codeOf, wire, create, install };
+    return { CATALOG, OPERATIONS, ENTITIES, SURFACES, ROUTES, UUID, MAX_ENTRIES, MAX_AGE_MS, contextOf, codeOf, wire, create, install };
 });

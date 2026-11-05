@@ -753,6 +753,7 @@
         if (stack.expanded) activate(stack.expanded);
         else highlightSection(stack.selectedKind, model.selectedInstance(stack, stack.selectedKind));
         syncMemberships(true); syncAgreements();
+        global.AppFunnel?.inspect(stack.selectedKind);
     }
 
     function close({ keepPanels = false, keepSelection = false } = {}) {

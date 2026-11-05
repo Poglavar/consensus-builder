@@ -7,6 +7,7 @@ Promise.all([
     window.i18n?.translationsReady
 ]).finally(() => {
     document.body.classList.remove('app-loading', 'i18n-loading');
+    window.AppFunnel?.ready();
 });
 
 // nginx answers every extensionless path with this app, so an address no router knows is marked

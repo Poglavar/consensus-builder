@@ -5,7 +5,7 @@ import { createServer } from 'node:http';
 import { randomUUID } from 'node:crypto';
 import { createRequire } from 'node:module';
 import express from 'express';
-import { setupPlanningDiagnostics } from '../routes/planning-diagnostics.js';
+import { setupPlanningDiagnostics, INGEST_REQUESTS_PER_MINUTE } from '../routes/planning-diagnostics.js';
 const D = createRequire(import.meta.url)('../../frontend/js/app-diagnostics.js');
 async function server(t, env = {}, result = { accepted: 1 }) {
     const inserts = [], app = express();
@@ -39,8 +39,8 @@ test('global request budget and storage conflict/busy/outage responses remain bo
         assert.equal((await s.post(report())).status, status);
     }
     const s = await server(t, { UGT_DIAGNOSTICS_INGEST: 'true' });
-    for (let i = 0; i < 60; i++) assert.equal((await s.post(report())).status, 202);
-    assert.equal((await s.post(report())).status, 429); assert.equal(s.inserts.length, 61);
+    for (let i = 0; i < INGEST_REQUESTS_PER_MINUTE; i++) assert.equal((await s.post(report())).status, 202);
+    assert.equal((await s.post(report())).status, 429); assert.equal(s.inserts.length, INGEST_REQUESTS_PER_MINUTE + 1);
 });
 test('API observer requires its independent gate and never changes the planning response', async t => {
     const off = await server(t, { UGT_DIAGNOSTICS_INGEST: 'true' });

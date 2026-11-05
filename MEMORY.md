@@ -1053,3 +1053,4 @@ Postpone refresh/server-to-local synchronization. For empty parcels, display onl
 - Chat prepares private agreements for an exact plan revision and records explicitly requested feedback through the shared maintainer inbox; these actions remain separate from publication and wallet decisions.
 
 - Block detection treats any parcel touched by an eligible ground-level OSM road/street or track as border ground: no representative-point membership and no seed exception. Excluded enclosing parcels also exclude their nested parcels. Road/track in Layers exposes those OSM borders using the same classification.
+- 2026-11-05, user decision: build a planning funnel in both Clarity and first-party storage. It reuses the AppDiagnostics → /diagnostics/reports → consensus.planning_diagnostic pipeline (memory-only sessions, private CLI report), not the betting event tables, which have persistent browser IDs and a public metrics route.

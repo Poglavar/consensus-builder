@@ -8977,7 +8977,7 @@
             "planning-action-failed": "The planning action could not finish. Your previous saved state remains available; retry the action."
         },
         "ui": {
-            "notice": "Diagnostics stay in this tab for up to 24 hours. Downloads contain fixed error codes and action outcomes, without plan content. Nothing is sent automatically.",
+            "notice": "Diagnostics stay in this tab for up to 24 hours. Fixed error codes and action outcomes, without plan content, are counted anonymously to find problems; downloads contain the same fields.",
             "download": "Download diagnostics",
             "clear": "Clear diagnostics",
             "send": "Send diagnostic report",

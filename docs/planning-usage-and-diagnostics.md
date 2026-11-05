@@ -22,7 +22,7 @@ count of true people.
 | `frontend/js/ui-helpers.js` | Session status log, bounded to 2,000 entries, with copy action. | Human-readable messages can contain titles, parcel IDs and free text. This legacy copy is not a redacted diagnostic export. Many independent alerts/catches remain. |
 | `/feedback`, private `consensus.feedback`, `scripts/feedback-inbox.mjs` | Explicit bug/feedback reports with receipts; existing private database inbox and optional Telegram notification. | Free text and optional page URL; validation strips fragments but retains query strings. This is a different disclosure/retention path. New diagnostics do not feed it or Telegram. |
 | `/bets/events`, `/bets/metrics`, `bets/bets-telemetry.js` | Betting journey events with browser/session identifiers, outcomes and declared simulations. | Betting, not planning. Source creates persistent browser IDs and automatic flushing. The checked API route and nginx configuration do not protect `/bets/metrics`. Do not reuse it for sensitive planning diagnostics. |
-| `frontend/index.html` | Existing Clarity bootstrap after page load for non-local hosts. | Already present before this work. This draft adds no Clarity, session replay or third-party analytics and does not alter or activate existing integrations. Live configuration and collected data were not inspected. |
+| `frontend/index.html`, `js/app-funnel.js` | Clarity bootstrap after page load for non-local hosts; funnel steps and failure codes as Clarity events and tags (see [Planning funnel](#planning-funnel)). | Clarity sets its own cookies and records sessions; its consent configuration and collected data were not inspected. |
 | `/hackathon/operations.json`, `operations/public-status.js` | Public, redacted scheduled-job health. | An operational status surface, not a private usage dashboard. |
 
 This is a source audit, not a production-data audit. No live database, private server logs,
@@ -42,9 +42,30 @@ the repository's current `AGENTS.md` was read from the verified base.
 | Optional first-party action outcomes | Can show successful/failed planning work and temporary pseudonymous sessions; aggregate privately. | Needs reviewed disclosure, deployment, retention and abuse policy. Client reports are forgeable and incomplete. Random sessions are not people. |
 | Third-party analytics/session replay | Can offer navigation/session tooling. | Unnecessary for this minimum scope and expressly excluded from implementation. Existing Clarity deserves a separate deployment/privacy decision. |
 
-Recommendation: run the private existing-record report first. Review the common local error
-experience and export next. Only then consider enabling server outcome collection and optional
-explicit report submission. Automatic browser usage upload is deliberately not implemented.
+## Planning funnel
+
+`frontend/js/app-funnel.js` turns AppDiagnostics observations into a funnel with two sinks. The
+steps are diagnostics operations: `open workspace` at boot (`context.route` is the entry route
+kind, never the path), `inspect` on a map click (2D and 3D click stacks; entity parcel, building,
+design, plan or artifact), `start design` when the parcel design dialog opens, then the existing
+create/edit/save/publish/share outcomes and every catalog error.
+
+- **Private store.** Each distinct observation (operation, entity, outcome, code, surface) is
+  uploaded once per tab session to `POST /diagnostics/reports`, batched after 10 s and sent at once
+  when the tab is hidden. A disabled server (404) stops uploading for that tab; other failures retry
+  with the same entry IDs. Nothing is written to device storage, so a reload starts a new session.
+- **Clarity.** The same first occurrences become events named `<operation>-<entity>-<outcome>`
+  (`inspect-parcel-success`) or `error-<code>`. Failures also set a tag (`error` or `failed`) and
+  call `upgrade`, so Clarity keeps that recording; boot tags `city` and `entry`. Filter recordings
+  by these tags and build Clarity funnels from these events.
+- **Local and automated browsers** (localhost, `navigator.webdriver`) send nothing to either sink.
+
+`node --env-file=.env scripts/planning-usage.mjs --diagnostics` adds `funnel`: sessions that
+reached each stage (opened app → inspected the map → started a design → created or edited a design
+→ saved a plan or exported → published or shared), each session's furthest stage, and sessions per
+failure with how many never published. Observations carry no client clock, so the furthest stage,
+not the last event, is where a session stopped. The ingest budget is 300 requests a minute for all
+visitors together; storage keeps 10,000 rows for seven days, so heavy traffic is sampled.
 
 ## What this draft implements
 
@@ -58,10 +79,9 @@ Croatian or Serbian locale, including after a language change. Machine codes and
 remain language-independent; English is the fallback while dictionaries load.
 
 The buffer is memory-only: at most 100 entries, expiring after 24 hours when accessed, and gone
-on refresh/tab close. A random session rotates after 30 minutes idle. Plan handles are random,
+on refresh/tab close. The funnel upload above sends first occurrences from it. A random session rotates after 30 minutes idle. Plan handles are random,
 bounded, tab/session-local mappings; raw CIDs, draft IDs and workspace IDs are never exported.
 There is no fingerprinting, persistent visitor identity, IP collection or bot/person inference.
-These local observations are support diagnostics, not an automatic analytics upload.
 
 The status-log dialog gains a separate **Download diagnostics** button, **Clear diagnostics**
 and a short disclosure. Its JSON export contains only the fixed schema. It does not export the
@@ -153,10 +173,9 @@ when collection is disabled. No new HTTP metrics/dashboard endpoint is provided.
 
 ## Deployment and review decisions still open
 
-- This is a draft review change. Do not merge, deploy, set collection flags, apply the optional
-  SQL or connect a recorder as part of this task. The SQL is intentionally absent from deploy DDL.
-- Decide whether server-only completion counts are sufficient before enabling client submission.
-  Review the UI disclosure, data controller/access arrangements, applicable consent requirements,
+- `db/planning-diagnostics.sql` is in the deploy DDL and the API ecosystem sets
+  `UGT_DIAGNOSTICS_INGEST=true`, so the funnel collects from the next API and frontend deploy.
+- Review the UI disclosure, data controller/access arrangements, applicable consent requirements,
   deletion requests, retention, backups and infrastructure logging. This document makes no legal
   compliance claim.
 - Keep new dashboards private. Reuse verified existing access, or obtain separate approval for

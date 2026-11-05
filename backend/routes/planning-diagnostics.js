@@ -1,9 +1,13 @@
 import express from 'express';
 import { createBudget, createDiagnosticStore, createApiObservation, validateDiagnosticReport, MAX_BODY_BYTES } from '../operations/planning-diagnostics.js';
 
+// Every visitor tab uploads its funnel steps in batches (js/app-funnel.js), so the shared budget
+// is sized for concurrent visitors rather than one person pressing "Send".
+export const INGEST_REQUESTS_PER_MINUTE = 300;
+
 export function setupPlanningDiagnostics(app, pool, { env = process.env, store = createDiagnosticStore(pool), now = Date.now } = {}) {
     const enabled = env.UGT_DIAGNOSTICS_INGEST === 'true';
-    const allowRequest = createBudget({ now });
+    const allowRequest = createBudget({ now, limit: INGEST_REQUESTS_PER_MINUTE });
     const allowObservation = createBudget({ now, limit: 120 });
     if (enabled || env.UGT_PLANNING_SERVER_OBSERVATIONS === 'true') {
         // Prune even on an idle enabled service. No new schema is created implicitly.

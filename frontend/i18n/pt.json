@@ -8984,7 +8984,7 @@
             "planning-action-failed": "Não foi possível concluir a ação de planeamento. O estado guardado anteriormente continua disponível; tente novamente."
         },
         "ui": {
-            "notice": "Os diagnósticos permanecem neste separador durante até 24 horas. As transferências incluem códigos de erro fixos e resultados das ações, sem conteúdo do plano. Nada é enviado automaticamente.",
+            "notice": "Os diagnósticos permanecem neste separador durante até 24 horas. Os códigos de erro fixos e os resultados das ações, sem conteúdo do plano, são contados anonimamente para detetar problemas; as transferências incluem os mesmos campos.",
             "download": "Transferir diagnósticos",
             "clear": "Limpar diagnósticos",
             "send": "Enviar relatório de diagnóstico",

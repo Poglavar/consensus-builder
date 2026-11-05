@@ -8984,7 +8984,7 @@
             "planning-action-failed": "L’action de planification n’a pas pu aboutir. L’état enregistré précédent reste disponible ; réessayez."
         },
         "ui": {
-            "notice": "Les diagnostics restent dans cet onglet pendant 24 heures maximum. Les téléchargements contiennent des codes d’erreur fixes et les résultats des actions, sans contenu du plan. Rien n’est envoyé automatiquement.",
+            "notice": "Les diagnostics restent dans cet onglet pendant 24 heures maximum. Les codes d’erreur fixes et les résultats des actions, sans contenu du plan, sont comptés anonymement pour repérer les problèmes ; les téléchargements contiennent les mêmes champs.",
             "download": "Télécharger les diagnostics",
             "clear": "Effacer les diagnostics",
             "send": "Envoyer un rapport de diagnostic",

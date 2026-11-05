@@ -335,6 +335,7 @@
         doc.body.classList.add('three-click-stack-open');
         activate();
         syncMemberships(true); syncAgreements();
+        global.AppFunnel?.inspect(state.stack.selectedKind);
         return true;
     }
 

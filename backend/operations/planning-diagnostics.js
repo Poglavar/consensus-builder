@@ -22,7 +22,7 @@ export function validateDiagnosticReport(body) {
         ids.add(row.id.toLowerCase());
         if (row.planId !== null && (!uuid(row.planId) || row.entity !== 'plan')) return fail();
         if (!D.ENTITIES.includes(row.entity) || !['success', 'failure', 'cancelled'].includes(row.outcome)) return fail();
-        if (!plain(row.context) || !exactKeys(row.context, ['surface', 'format', 'httpStatus'])) return fail();
+        if (!plain(row.context) || !exactKeys(row.context, ['surface', 'format', 'httpStatus', 'route'])) return fail();
         const context = D.contextOf(row.context);
         if (JSON.stringify(Object.entries(context).sort()) !== JSON.stringify(Object.entries(row.context).sort())) return fail();
         if (row.kind === 'operation') {

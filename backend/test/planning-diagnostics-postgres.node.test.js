@@ -51,3 +51,32 @@ test('PostgreSQL enforces atomic dedupe/conflict, row/age bounds and aggregate s
         } finally { lock.release(); }
     } finally { await pool.end(); }
 });
+
+test('PostgreSQL funnel report counts reach, furthest stage and failures per browser session', { skip: !process.env.UGT_DIAGNOSTIC_TEST_DB }, async () => {
+    const { default: pg } = await import('pg');
+    const pool = new pg.Pool({ connectionString: process.env.UGT_DIAGNOSTIC_TEST_DB, max: 3, statement_timeout: 10000 });
+    try {
+        await pool.query('CREATE SCHEMA IF NOT EXISTS consensus');
+        await pool.query(readFileSync(new URL('../db/planning-diagnostics.sql', import.meta.url), 'utf8'));
+        await pool.query('TRUNCATE consensus.planning_diagnostic');
+        for (const name of ['plan', 'design', 'agreement']) {
+            await pool.query(`CREATE TABLE IF NOT EXISTS consensus.${name} (cid text PRIMARY KEY, created_at timestamptz NOT NULL DEFAULT now())`);
+        }
+        const session = steps => {
+            const d = D.create({ uuid: randomUUID });
+            for (const [operation, entity, outcome = 'success'] of steps) d.event(operation, outcome, { entity });
+            return d.snapshot().entries.map(D.wire);
+        };
+        const store = createDiagnosticStore(pool);
+        // One session gives up at the map, one after a failed publish, one publishes.
+        for (const rows of [session([['open', 'workspace'], ['inspect', 'parcel']]),
+            session([['open', 'workspace'], ['inspect', 'parcel'], ['start', 'design'], ['create', 'design'], ['publish', 'design', 'failure']]),
+            session([['open', 'workspace'], ['start', 'design'], ['create', 'design'], ['publish', 'design']])]) {
+            assert.equal((await store.insert(validateDiagnosticReport({ version: 1, entries: rows }).value)).accepted, rows.length);
+        }
+        const { funnel } = await readPlanningUsage(pool, { diagnostics: true });
+        assert.deepEqual(funnel.reached.map(row => [row.stage, row.sessions]), [[1, 3], [2, 3], [3, 2], [4, 2], [5, 1], [6, 1]]);
+        assert.deepEqual(funnel.stoppedAt.map(row => [row.name, row.sessions]), [['inspected the map', 1], ['created or edited a design', 1], ['published or shared', 1]]);
+        assert.deepEqual(funnel.failures, [{ failure: 'publish-design-failure', sessions: 1, sessions_not_published: 1 }]);
+    } finally { await pool.end(); }
+});
