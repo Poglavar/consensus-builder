@@ -8977,7 +8977,12 @@
             "planning-action-failed": "The planning action could not finish. Your previous saved state remains available; retry the action."
         },
         "ui": {
-            "notice": "Diagnostics stay in this tab for up to 24 hours. Fixed error codes and action outcomes, without plan content, are counted anonymously to find problems; downloads contain the same fields.",
+            "notice": "Diagnostics stay in this tab for up to 24 hours. Fixed error codes and action outcomes, without plan content, are sent only if you choose to share them; downloads contain the same fields.",
+            "share": "Share anonymous step and error counts",
+            "askTitle": "Help fix this problem?",
+            "askText": "Share anonymous counts of the steps taken and the error codes met in this tab, without plan content. The choice is remembered in this browser and can be changed in the Status log.",
+            "askYes": "Share",
+            "askNo": "No thanks",
             "download": "Download diagnostics",
             "clear": "Clear diagnostics",
             "send": "Send diagnostic report",

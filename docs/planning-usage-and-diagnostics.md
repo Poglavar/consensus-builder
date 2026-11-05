@@ -50,10 +50,17 @@ kind, never the path), `inspect` on a map click (2D and 3D click stacks; entity 
 design, plan or artifact), `start design` when the parcel design dialog opens, then the existing
 create/edit/save/publish/share outcomes and every catalog error.
 
+- **Opt-in.** Neither sink receives anything until the visitor chooses to share. The first error or
+  failed action in a tab shows the ask (Share / No thanks) as a section of the banner card; the
+  Status log footer has a checkbox to change the choice later. The choice is the only thing kept on
+  the device (`localStorage` key `ugt-diagnostics-sharing`, `yes` or `no`). A yes also sends the
+  steps already taken in that tab; a no, or no answer, sends nothing. Clarity's own recording is
+  not gated by this choice.
 - **Private store.** Each distinct observation (operation, entity, outcome, code, surface) is
   uploaded once per tab session to `POST /diagnostics/reports`, batched after 10 s and sent at once
   when the tab is hidden. A disabled server (404) stops uploading for that tab; other failures retry
-  with the same entry IDs. Nothing is written to device storage, so a reload starts a new session.
+  with the same entry IDs. The steps are not written to device storage, so a reload starts a new
+  session.
 - **Clarity.** The same first occurrences become events named `<operation>-<entity>-<outcome>`
   (`inspect-parcel-success`) or `error-<code>`. Failures also set a tag (`error` or `failed`) and
   call `upgrade`, so Clarity keeps that recording; boot tags `city` and `entry`. Filter recordings
@@ -64,7 +71,8 @@ create/edit/save/publish/share outcomes and every catalog error.
 reached each stage (opened app → inspected the map → started a design → created or edited a design
 → saved a plan or exported → published or shared), each session's furthest stage, and sessions per
 failure with how many never published. Observations carry no client clock, so the furthest stage,
-not the last event, is where a session stopped. The ingest budget is 300 requests a minute for all
+not the last event, is where a session stopped. Only opted-in sessions are counted, and the ask
+appears after a problem, so the totals over-represent sessions that met one. The ingest budget is 300 requests a minute for all
 visitors together; storage keeps 10,000 rows for seven days, so heavy traffic is sampled.
 
 ## What this draft implements

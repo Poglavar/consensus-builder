@@ -229,7 +229,7 @@
                 node.textContent = client.text(`diagnostics.ui.${key}`, fallback);
             };
             const note = win.document.createElement('p');
-            label(note, 'notice', 'Diagnostics stay in this tab for up to 24 hours. Fixed error codes and action outcomes, without plan content, are counted anonymously to find problems; downloads contain the same fields.');
+            label(note, 'notice', 'Diagnostics stay in this tab for up to 24 hours. Fixed error codes and action outcomes, without plan content, are sent only if you choose to share them; downloads contain the same fields.');
             host.appendChild(note);
             const button = (key, fallback, attribute, action) => {
                 const node = win.document.createElement('button'); node.type = 'button'; node.className = 'btn';

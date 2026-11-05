@@ -8984,7 +8984,12 @@
             "planning-action-failed": "Não foi possível concluir a ação de planeamento. O estado guardado anteriormente continua disponível; tente novamente."
         },
         "ui": {
-            "notice": "Os diagnósticos permanecem neste separador durante até 24 horas. Os códigos de erro fixos e os resultados das ações, sem conteúdo do plano, são contados anonimamente para detetar problemas; as transferências incluem os mesmos campos.",
+            "notice": "Os diagnósticos permanecem neste separador durante até 24 horas. Os códigos de erro fixos e os resultados das ações, sem conteúdo do plano, só são enviados se optar por partilhá-los; as transferências incluem os mesmos campos.",
+            "share": "Partilhar contagens anónimas de passos e erros",
+            "askTitle": "Ajudar a corrigir este problema?",
+            "askText": "Partilhe contagens anónimas dos passos dados e dos códigos de erro encontrados neste separador, sem conteúdo do plano. A escolha fica guardada neste navegador e pode ser alterada no Registo de estado.",
+            "askYes": "Partilhar",
+            "askNo": "Não, obrigado",
             "download": "Transferir diagnósticos",
             "clear": "Limpar diagnósticos",
             "send": "Enviar relatório de diagnóstico",

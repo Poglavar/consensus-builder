@@ -1,5 +1,6 @@
 // Planning funnel: steps flow through AppDiagnostics, upload once per session to the private
-// store, reach Clarity as closed-vocabulary events, and stay off local or automated browsers.
+// store, reach Clarity as closed-vocabulary events, wait for the visitor's opt-in, and stay off
+// local or automated browsers.
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { randomUUID } from 'node:crypto';
@@ -20,18 +21,51 @@ function server({ status = 202 } = {}) {
     return { batches, fetch };
 }
 
-function browser({ hostname = 'urbangametheory.xyz', webdriver = false, pathname = '/plans/abc' } = {}) {
-    const listeners = {}, clarity = [], timers = [];
-    const document = { visibilityState: 'visible', addEventListener: (name, fn) => { (listeners[name] ||= []).push(fn); } };
+// Just enough DOM for the banner section and the Status log checkbox.
+function element(tag) {
+    const node = {
+        tag, attrs: {}, children: [], listeners: {}, className: '', textContent: '', checked: false, parent: null,
+        setAttribute(name, value) { node.attrs[name] = value; },
+        append(...kids) { for (const kid of kids) { kid.parent = node; node.children.push(kid); } },
+        appendChild(kid) { node.append(kid); return kid; },
+        insertBefore(kid, ref) { kid.parent = node; const at = node.children.indexOf(ref); node.children.splice(at < 0 ? node.children.length : at, 0, kid); },
+        addEventListener(name, fn) { (node.listeners[name] ||= []).push(fn); },
+        fire(name) { (node.listeners[name] || []).forEach(fn => fn()); },
+        remove() { if (node.parent) node.parent.children.splice(node.parent.children.indexOf(node), 1); node.parent = null; },
+        all() { return node.children.flatMap(kid => [kid, ...kid.all()]); },
+        querySelector(selector) { const attr = selector.match(/^\[(.+)\]$/)?.[1]; return node.all().find(kid => attr in kid.attrs) || null; }
+    };
+    return node;
+}
+
+function browser({ hostname = 'urbangametheory.xyz', webdriver = false, pathname = '/plans/abc', consent = null } = {}) {
+    const listeners = {}, clarity = [], timers = [], stored = new Map(consent ? [[F.CONSENT_KEY, consent]] : []);
+    const footer = element('div'), stack = element('div'), body = element('body');
+    footer.append(Object.assign(element('button'), { attrs: { 'data-diagnostics-export': '' } }));
+    const document = {
+        visibilityState: 'visible', readyState: 'complete', body,
+        addEventListener: (name, fn) => { (listeners[name] ||= []).push(fn); },
+        createElement: element,
+        querySelector: selector => (selector === '#status-log-modal .cb-dialog__footer' ? footer : null)
+    };
     const win = {
         document, location: { hostname, pathname }, navigator: { webdriver },
         clarity: (...args) => clarity.push(args), getBackendBase: () => 'https://api.example.test/',
         resolveCurrentCityCode: () => 'zagreb',
+        localStorage: { getItem: key => stored.get(key) ?? null, setItem: (key, value) => stored.set(key, String(value)) },
+        __BannerStack: { mount: node => { stack.append(node); return stack; } },
         setTimeout: fn => { timers.push(fn); return timers.length; }, clearTimeout: () => {}
     };
     const fire = name => (listeners[name] || []).forEach(fn => fn());
-    return { win, clarity, timers, fire };
+    const banner = () => stack.children.find(node => 'data-diagnostics-ask' in node.attrs) || null;
+    const checkbox = () => footer.querySelector('[data-diagnostics-share]');
+    return { win, clarity, timers, fire, stored, banner, checkbox };
 }
+
+const hide = async b => {
+    b.win.document.visibilityState = 'hidden'; b.fire('visibilitychange');
+    await new Promise(resolve => setImmediate(resolve));
+};
 
 test('upload sends each distinct observation once per session and the server accepts it', async () => {
     const d = D.create({ uuid: randomUUID });
@@ -92,8 +126,8 @@ test('Clarity receives closed-vocabulary events, failure tags and recording upgr
     assert.equal(F.routeOf('/unknown'), null);
 });
 
-test('installed funnel records app open, map inspection and design start, batching the upload', async () => {
-    const b = browser(); const s = server(); b.win.fetch = s.fetch;
+test('an opted-in funnel records app open, map inspection and design start, batching the upload', async () => {
+    const b = browser({ consent: 'yes' }); const s = server(); b.win.fetch = s.fetch;
     const d = D.create({ uuid: randomUUID });
     const funnel = F.install(b.win, d);
     funnel.ready();
@@ -103,21 +137,81 @@ test('installed funnel records app open, map inspection and design start, batchi
         ['event', 'inspect-parcel-success'], ['event', 'inspect-building-success'], ['event', 'start-design-success']]);
     assert.equal(b.timers.length, 1);
     assert.equal(s.batches.length, 0);
-    b.win.document.visibilityState = 'hidden'; b.fire('visibilitychange');
-    await new Promise(resolve => setImmediate(resolve));
+    assert.equal(b.banner(), null);
+    assert.equal(b.checkbox().checked, true);
+    await hide(b);
     assert.equal(s.batches.length, 1);
     assert.equal(s.batches[0].keepalive, true);
     assert.deepEqual(s.batches[0].entries.map(row => `${row.operation}-${row.entity}`),
         ['open-workspace', 'inspect-parcel', 'inspect-building', 'start-design']);
 });
 
-test('local and automated browsers send nothing to Clarity or the store', async () => {
+test('without an answer nothing is sent; the first error asks, and Share sends the steps already taken', async () => {
+    const b = browser(); const s = server(); b.win.fetch = s.fetch;
+    const d = D.create({ uuid: randomUUID });
+    const funnel = F.install(b.win, d);
+    funnel.ready(); funnel.inspect('parcels');
+    await hide(b);
+    assert.deepEqual(b.clarity, []); assert.equal(b.timers.length, 0); assert.equal(s.batches.length, 0);
+    assert.equal(b.banner(), null, 'no ask before a problem');
+    d.report(new Error('x'), { code: 'plan-save-failed', context: { surface: 'named-plan' } });
+    assert.ok(b.banner(), 'the first error asks');
+    assert.deepEqual(b.clarity, []);
+    b.banner().querySelector('[data-diagnostics-yes]').fire('click');
+    assert.equal(b.banner(), null);
+    assert.equal(b.stored.get(F.CONSENT_KEY), 'yes');
+    assert.equal(b.checkbox().checked, true);
+    assert.deepEqual(b.clarity.map(command => command.slice(0, 2).join(':')),
+        ['set:city', 'event:open-workspace-success', 'set:entry', 'event:inspect-parcel-success', 'event:error-plan-save-failed', 'set:error', 'upgrade:plan-save-failed']);
+    await hide(b);
+    assert.deepEqual(s.batches.flatMap(batch => batch.entries).map(row => row.operation || row.code), ['open', 'inspect', 'plan-save-failed']);
+});
+
+test('No thanks is remembered: nothing is sent and the next tab does not ask again', async () => {
+    const b = browser(); const s = server(); b.win.fetch = s.fetch;
+    const d = D.create({ uuid: randomUUID });
+    F.install(b.win, d).ready();
+    d.event('publish', 'failure', { entity: 'design', context: { surface: 'design-index' } });
+    b.banner().querySelector('[data-diagnostics-no]').fire('click');
+    d.report(new Error('x'), { code: 'share-failed' });
+    await hide(b);
+    assert.equal(b.stored.get(F.CONSENT_KEY), 'no');
+    assert.deepEqual(b.clarity, []); assert.equal(s.batches.length, 0); assert.equal(b.banner(), null);
+    const next = browser({ consent: 'no' }); next.win.fetch = s.fetch;
+    const again = D.create({ uuid: randomUUID });
+    F.install(next.win, again).ready();
+    again.report(new Error('x'), { code: 'plan-save-failed' });
+    await hide(next);
+    assert.equal(next.banner(), null); assert.deepEqual(next.clarity, []); assert.equal(s.batches.length, 0);
+    assert.equal(next.checkbox().checked, false);
+});
+
+test('the Status log checkbox changes the choice either way', async () => {
+    const b = browser(); const s = server(); b.win.fetch = s.fetch;
+    const d = D.create({ uuid: randomUUID });
+    F.install(b.win, d).ready();
+    const box = b.checkbox();
+    assert.equal(b.win.document.querySelector('#status-log-modal .cb-dialog__footer').children.indexOf(box.parent), 0, 'before the download button');
+    box.checked = true; box.fire('change');
+    assert.equal(b.stored.get(F.CONSENT_KEY), 'yes');
+    await hide(b);
+    assert.deepEqual(s.batches.flatMap(batch => batch.entries).map(row => row.operation), ['open']);
+    box.checked = false; box.fire('change');
+    d.event('publish', 'success', { entity: 'design' });
+    await hide(b);
+    assert.equal(b.stored.get(F.CONSENT_KEY), 'no');
+    assert.equal(s.batches.length, 1);
+});
+
+test('local and automated browsers send nothing to Clarity or the store, even after opting in', async () => {
     for (const options of [{ hostname: 'localhost' }, { webdriver: true }]) {
-        const b = browser(options); const s = server(); b.win.fetch = s.fetch;
-        const funnel = F.install(b.win, D.create({ uuid: randomUUID }));
+        const b = browser({ ...options, consent: 'yes' }); const s = server(); b.win.fetch = s.fetch;
+        const d = D.create({ uuid: randomUUID });
+        const funnel = F.install(b.win, d);
         funnel.ready(); funnel.inspect('parcels');
-        b.win.document.visibilityState = 'hidden'; b.fire('visibilitychange');
-        await new Promise(resolve => setImmediate(resolve));
+        d.report(new Error('x'), { code: 'plan-save-failed' });
+        await hide(b);
         assert.deepEqual(b.clarity, []); assert.equal(b.timers.length, 0); assert.equal(s.batches.length, 0);
+        assert.equal(b.banner(), null);
     }
 });

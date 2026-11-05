@@ -8984,7 +8984,12 @@
             "planning-action-failed": "L’action de planification n’a pas pu aboutir. L’état enregistré précédent reste disponible ; réessayez."
         },
         "ui": {
-            "notice": "Les diagnostics restent dans cet onglet pendant 24 heures maximum. Les codes d’erreur fixes et les résultats des actions, sans contenu du plan, sont comptés anonymement pour repérer les problèmes ; les téléchargements contiennent les mêmes champs.",
+            "notice": "Les diagnostics restent dans cet onglet pendant 24 heures maximum. Les codes d’erreur fixes et les résultats des actions, sans contenu du plan, ne sont envoyés que si vous choisissez de les partager ; les téléchargements contiennent les mêmes champs.",
+            "share": "Partager des comptages anonymes d’étapes et d’erreurs",
+            "askTitle": "Aider à corriger ce problème ?",
+            "askText": "Partagez des comptages anonymes des étapes effectuées et des codes d’erreur rencontrés dans cet onglet, sans contenu du plan. Le choix est mémorisé dans ce navigateur et peut être modifié dans le Journal d’état.",
+            "askYes": "Partager",
+            "askNo": "Non merci",
             "download": "Télécharger les diagnostics",
             "clear": "Effacer les diagnostics",
             "send": "Envoyer un rapport de diagnostic",

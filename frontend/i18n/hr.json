@@ -9029,7 +9029,12 @@
             "planning-action-failed": "Plansku radnju nije moguće dovršiti. Prethodno spremljeno stanje i dalje je dostupno; pokušajte ponovno."
         },
         "ui": {
-            "notice": "Dijagnostika ostaje u ovoj kartici do 24 sata. Unaprijed zadani kodovi pogrešaka i ishodi radnji, bez sadržaja plana, anonimno se broje radi pronalaženja problema; preuzete datoteke sadrže ista polja.",
+            "notice": "Dijagnostika ostaje u ovoj kartici do 24 sata. Unaprijed zadani kodovi pogrešaka i ishodi radnji, bez sadržaja plana, šalju se samo ako ih odlučite podijeliti; preuzete datoteke sadrže ista polja.",
+            "share": "Dijeli anonimne brojeve koraka i pogrešaka",
+            "askTitle": "Pomozite ispraviti ovaj problem?",
+            "askText": "Podijelite anonimne brojeve koraka i kodova pogrešaka iz ove kartice, bez sadržaja plana. Izbor se pamti u ovom pregledniku i može se promijeniti u Zapisniku stanja.",
+            "askYes": "Podijeli",
+            "askNo": "Ne, hvala",
             "download": "Preuzmi dijagnostiku",
             "clear": "Izbriši dijagnostiku",
             "send": "Pošalji dijagnostičko izvješće",

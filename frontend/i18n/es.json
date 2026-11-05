@@ -9005,7 +9005,12 @@
             "planning-action-failed": "No se pudo completar la acción de planificación. El estado guardado anterior sigue disponible; vuelve a intentarlo."
         },
         "ui": {
-            "notice": "Los diagnósticos permanecen en esta pestaña hasta 24 horas. Los códigos de error predefinidos y los resultados de acciones, sin contenido del plan, se cuentan de forma anónima para detectar problemas; las descargas contienen los mismos campos.",
+            "notice": "Los diagnósticos permanecen en esta pestaña hasta 24 horas. Los códigos de error predefinidos y los resultados de acciones, sin contenido del plan, solo se envían si decides compartirlos; las descargas contienen los mismos campos.",
+            "share": "Compartir recuentos anónimos de pasos y errores",
+            "askTitle": "¿Ayudar a corregir este problema?",
+            "askText": "Comparte recuentos anónimos de los pasos realizados y los códigos de error de esta pestaña, sin contenido del plan. La elección se recuerda en este navegador y se puede cambiar en el Registro de estado.",
+            "askYes": "Compartir",
+            "askNo": "No, gracias",
             "download": "Descargar diagnósticos",
             "clear": "Borrar diagnósticos",
             "send": "Enviar informe de diagnóstico",
