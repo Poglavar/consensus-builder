@@ -1,13 +1,15 @@
 // Published floor plans in X-ray: the plans-to-model converter, the floor-plan-publication adapter
-// (batching, pagination, cache, failure), the authored-model-first merge and the /buildings/cell answer.
+// (summary markers and on-demand models: batching, pagination, cache, failure), the authored-model-first
+// rule, the marker-only /buildings/cell answer and the per-building GET /buildings/floor-model.
 import { describe, expect, it } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
 import request from 'supertest';
 import { publishedPlansToFloorModel } from '../buildings/published-floor-model.js';
 import { createFloorPlanPublicationReader } from '../buildings/floor-plan-publication.js';
-import { createPublishedFloorModels, attachNearbyFloorModels, readCityConfigs } from '../buildings/floor-models.js';
+import { createPublishedFloorModels, attachNearbyFloorModelMarkers, readNativeFloorModel, readCityConfigs } from '../buildings/floor-models.js';
 import { setupBuildingsRoute } from '../routes/buildings.js';
+import { setupBuildingFloorModelsRoute } from '../routes/building-floor-models.js';
 import { createRouteApp } from './helpers/create-route-app.js';
 import { createMockPool } from './helpers/mock-pool.js';
 
@@ -88,65 +90,80 @@ describe('published plans → one X-ray floor model', () => {
     });
 });
 
-// A fake publication API: plans per qualified native id, `limit` per page.
+// A fake publication API: full plans at /floor-plans, the proposed compact listing at
+// /floor-plans/summaries, per qualified native id, `limit` per page.
+const summaryOf = plan => ({ id: plan.id, scope: plan.scope, floor: plan.floor ?? null, levels: plan.levels || [], unitId: plan.unitId ?? null,
+    quality: plan.quality?.status ?? null, registered: Boolean(plan.registration), buildingRefs: plan.buildingRefs, updatedAt: plan.updatedAt ?? null });
 function fakePublication(plansById, { fail = () => false } = {}) {
     const calls = [];
     const fetch = async url => {
-        const query = new URL(url).searchParams;
-        calls.push(Object.fromEntries(query));
+        const parsed = new URL(url), query = parsed.searchParams;
+        calls.push({ path: parsed.pathname, ...Object.fromEntries(query) });
         const ids = (query.get('nativeBuildingIds') ?? query.get('nativeBuildingId')).split(',');
-        if (fail(ids)) throw new Error('connect ECONNREFUSED');
-        const all = ids.flatMap(id => plansById[id] || []);
+        if (fail(ids, parsed.pathname)) throw new Error('connect ECONNREFUSED');
+        const summaries = parsed.pathname.endsWith('/summaries');
+        const all = ids.flatMap(id => plansById[id] || []).map(plan => summaries ? summaryOf(plan) : plan);
         const offset = Number(query.get('offset')), limit = Number(query.get('limit'));
-        return { ok: true, json: async () => ({ plans: all.slice(offset, offset + limit), limit, offset, hasMore: all.length > offset + limit }) };
+        const body = { plans: all.slice(offset, offset + limit), limit, offset, hasMore: all.length > offset + limit };
+        return { ok: true, json: async () => body, bytes: JSON.stringify(body).length };
     };
     return { fetch, calls };
 }
 const config = { baseUrl: 'https://publication.test/api/', city: 'zagreb', source: 'zagreb-3d', buildingSource: 'zagreb-3d' };
 const identity = buildingId => ({ city: 'zagreb', source: 'zagreb-3d', ownerId: '', buildingId });
+const belongTo = (id, source = 'zagreb-3d') => fixture().map(plan => ({ ...plan, buildingRefs: [{ city: 'zagreb', source, ownerId: '', buildingId: id }] }));
 
 describe('floor-plan-publication adapter', () => {
-    it('asks for at most 200 buildings at a time, follows pages, and serves a repeat from its cache', async () => {
+    it('marks buildings from compact summaries, at most 200 at a time, and caches the marks', async () => {
+        const api = fakePublication({ [A4]: fixture() });
+        const reader = createFloorPlanPublicationReader(config, { fetch: api.fetch, cache: new Map(), log: silent });
+        const ids = [A4, ...Array.from({ length: 449 }, (_, i) => String(900000 + i))];
+        const marks = await reader.fetchFloorModelMarkers(ids.map(identity));
+        expect([...marks.entries()]).toEqual([[A4, { storeys: [2, 6], units: 4 }]]);
+        expect(api.calls.every(call => call.path === '/api/floor-plans/summaries' && call.limit === '500')).toBe(true);
+        expect(api.calls.map(call => call.nativeBuildingIds.split(',').length)).toEqual([200, 200, 50]);
+        const before = api.calls.length;
+        expect((await reader.fetchFloorModelMarkers([identity(A4), identity('900001')])).get(A4)).toEqual({ storeys: [2, 6], units: 4 });
+        expect(api.calls.length).toBe(before);
+        // Unregistered plans cannot be drawn and do not mark a building.
+        const unregistered = fakePublication({ [A4]: fixture().map(plan => ({ ...plan, registration: null })) });
+        const other = createFloorPlanPublicationReader(config, { fetch: unregistered.fetch, cache: new Map(), log: silent });
+        expect((await other.fetchFloorModelMarkers([identity(A4)])).size).toBe(0);
+    });
+
+    it("reads one building's full plans on demand, following pages, and caches the model", async () => {
         // 230 copies of A4's plans under one id: three pages of 100.
         const many = Array.from({ length: 230 }, (_, i) => ({ ...fixture()[i % 5], id: `plan-${String(i).padStart(3, '0')}` }));
         const api = fakePublication({ [A4]: many });
         const reader = createFloorPlanPublicationReader(config, { fetch: api.fetch, cache: new Map(), log: silent });
-        const ids = [A4, ...Array.from({ length: 449 }, (_, i) => String(900000 + i))];
-        const rows = await reader.fetchFloorModels(ids.map(identity));
-        expect([...rows.keys()]).toEqual([A4]);
+        const rows = await reader.fetchFloorModels([identity(A4)]);
         expect(rows.get(A4).floorPlans.storeys.map(storey => storey.level)).toEqual([2, 6]);
         expect(rows.get(A4).publication).toMatchObject({ baseUrl: 'https://publication.test/api', city: 'zagreb', source: 'zagreb-3d', buildingId: A4 });
-        const batches = api.calls.filter(call => call.offset === '0');
-        expect(batches.map(call => call.nativeBuildingIds.split(',').length)).toEqual([200, 200, 50]);
-        expect(batches.every(call => call.city === 'zagreb' && call.source === 'zagreb-3d' && call.limit === '100')).toBe(true);
-        // A4's batch read three pages.
-        expect(api.calls.filter(call => call.nativeBuildingIds.split(',').includes(A4)).map(call => call.offset)).toEqual(['0', '100', '200']);
-        const before = api.calls.length;
-        expect((await reader.fetchFloorModels([identity(A4), identity('900001')])).get(A4)).toBe(rows.get(A4));
-        expect(api.calls.length).toBe(before);
+        expect(api.calls.map(call => [call.path, call.nativeBuildingId, call.offset, call.limit])).toEqual([
+            ['/api/floor-plans', A4, '0', '100'], ['/api/floor-plans', A4, '100', '100'], ['/api/floor-plans', A4, '200', '100']]);
+        expect((await reader.fetchFloorModels([identity(A4)])).get(A4)).toBe(rows.get(A4));
+        expect(api.calls).toHaveLength(3);
     });
 
-    it('degrades a failed batch to no published plans, logs it, and does not cache it', async () => {
+    it('degrades a failed read to no published plans, logs it, and does not cache it', async () => {
         const logs = [];
-        const api = fakePublication({ [A4]: fixture(), '1': fixture() }, { fail: ids => ids.includes(A4) });
+        const api = fakePublication({ [A4]: fixture() }, { fail: ids => ids.includes(A4) });
         const reader = createFloorPlanPublicationReader(config, { fetch: api.fetch, cache: new Map(), log: line => logs.push(line) });
         const report = {};
-        const rows = await reader.fetchFloorModels([identity(A4)], report);
-        expect(rows.size).toBe(0);
+        expect((await reader.fetchFloorModelMarkers([identity(A4)], report)).size).toBe(0);
         expect(report.publishedUnavailable).toBe(true);
         expect(logs.join('\n')).toMatch(/1 buildings without published plans: connect ECONNREFUSED/);
-        await reader.fetchFloorModels([identity(A4)]);
+        await reader.fetchFloorModelMarkers([identity(A4)]);
         expect(api.calls).toHaveLength(2);
     });
 
     it("translates the app's native ids into the publication's and answers under the native id", async () => {
-        const plans = fixture().map(plan => ({ ...plan, buildingRefs: [{ city: 'zagreb', source: 'osm', ownerId: '', buildingId: 'way/77' }] }));
-        const api = fakePublication({ 'way/77': plans });
+        const api = fakePublication({ 'way/77': belongTo('way/77', 'osm') });
         const reader = createFloorPlanPublicationReader({ ...config, source: 'osm', buildingSource: 'osm-3d',
             buildingIds: [{ match: '^w(\\d+)$', ref: 'way/$1' }] }, { fetch: api.fetch, cache: new Map(), log: silent });
         const osm = id => ({ city: 'zagreb', source: 'osm-3d', ownerId: '', buildingId: id });
-        const rows = await reader.fetchFloorModels([osm('w77'), osm('n5'), identity('w77')]);
-        expect([...rows.keys()]).toEqual(['w77']);
+        const marks = await reader.fetchFloorModelMarkers([osm('w77'), osm('n5'), identity('w77')]);
+        expect([...marks.keys()]).toEqual(['w77']);
         expect(api.calls.map(call => call.nativeBuildingId)).toEqual(['way/77']);
     });
 
@@ -156,7 +173,7 @@ describe('floor-plan-publication adapter', () => {
         for (const entry of [{ ...config, baseUrl: 'http://metadata.internal/' }, { city: 'a', source: 'b', buildingSource: 'c', idField: 'x' }]) {
             const report = {};
             const published = createPublishedFloorModels({ fetch: async () => { throw new Error('must not fetch'); }, cityConfigs: city(entry), env: {} });
-            const [building] = await attachNearbyFloorModels(pool, 'city_a', 'c', [{ object_id: '1' }], { published, report });
+            const [building] = await attachNearbyFloorModelMarkers(pool, 'city_a', 'c', [{ object_id: '1' }], { published, report });
             expect(building).toEqual({ object_id: '1' });
             expect(report.publishedUnavailable).toBe(true);
         }
@@ -174,27 +191,34 @@ describe('authored models and published plans together', () => {
         expect(published.sources('new_york')).toEqual([]);
     });
 
-    it('keeps an authored registry model and shows published plans only on buildings without one', async () => {
+    it('marks an authored model as the registry, asks the publication only for the rest, and serves the authored model first', async () => {
         const authored = { schema: 'authored' };
-        const pool = { query: async () => ({ rows: [{ city: 'zagreb', source: 'zagreb-3d', owner_id: '', building_id: 'b1', version: 3, floor_plans: authored }] }) };
-        const belongTo = id => fixture().map(plan => ({ ...plan, buildingRefs: [{ city: 'zagreb', source: 'zagreb-3d', ownerId: '', buildingId: id }] }));
+        const pool = { query: async sql => ({ rows: [sql.includes('AS levels')
+            ? { city: 'zagreb', source: 'zagreb-3d', owner_id: '', building_id: 'b1', version: 3, levels: [0, 1], units: 2 }
+            : { city: 'zagreb', source: 'zagreb-3d', owner_id: '', building_id: 'b1', version: 3, floor_plans: authored, footprint: null }] }) };
         const api = fakePublication({ b1: belongTo('b1'), b2: belongTo('b2') });
         const published = createPublishedFloorModels({ fetch: api.fetch, cache: new Map(), cityConfigs: readCityConfigs(), env: { FLOOR_PLAN_PUBLICATION_API_URL: 'https://publication.test/api' } });
-        const [b1, b2, b3] = await attachNearbyFloorModels(pool, 'zagreb', 'zagreb-3d', [{ object_id: 'b1' }, { object_id: 'b2' }, { object_id: 'b3' }], { published });
-        expect(b1.floorPlans).toBe(authored);
-        expect(b1.floorModel).toMatchObject({ version: 3 });
-        expect(b2.floorModel).toMatchObject({ origin: 'publication', city: 'zagreb', source: 'zagreb-3d', buildingId: 'b2', version: null });
-        expect(b2.floorPlans.storeys).toHaveLength(2);
+        const [b1, b2, b3] = await attachNearbyFloorModelMarkers(pool, 'zagreb', 'zagreb-3d', [{ object_id: 'b1' }, { object_id: 'b2' }, { object_id: 'b3' }], { published });
+        expect(b1.floorPlansAvailable).toEqual({ origin: 'registry', city: 'zagreb', source: 'zagreb-3d', storeys: [0, 1], units: 2 });
+        expect(b2.floorPlansAvailable).toEqual({ origin: 'publication', city: 'zagreb', source: 'zagreb-3d', storeys: [2, 6], units: 4 });
         expect(b3).toEqual({ object_id: 'b3' });
-        expect(api.calls.map(call => call.nativeBuildingIds)).toEqual(['b2,b3']);
+        for (const building of [b1, b2]) expect(building.floorPlans).toBeUndefined();
+        expect(api.calls.map(call => [call.path, call.nativeBuildingIds])).toEqual([['/api/floor-plans/summaries', 'b2,b3']]);
+        expect(await readNativeFloorModel(pool, identity('b1'), { published })).toMatchObject({ origin: 'registry', version: 3, floorPlans: authored });
+        expect(api.calls).toHaveLength(1);
+        const empty = { query: async () => ({ rows: [] }) };
+        const b2Model = await readNativeFloorModel(empty, identity('b2'), { published });
+        expect(b2Model).toMatchObject({ origin: 'publication', buildingId: 'b2', version: null });
+        expect(validateFloorPlans(b2Model.floorPlans)).toEqual([]);
+        expect(await readNativeFloorModel(empty, identity('b3'), { published })).toBeNull();
     });
 });
 
-describe('POST /buildings/cell with published floor plans', () => {
+describe('cells mark buildings; one building is read on demand', () => {
     const cell = [15.968, 45.764, 15.977, 45.769];
     const mesh = id => ({ object_id: Number(id), z_min: 120, z_max: 149.5, faces: [] });
 
-    it('attaches the published model to the cell building it belongs to, and does not cache an unanswered publication', async () => {
+    it('answers a cell with a small marker and no plans, and does not cache an unanswered publication', async () => {
         const pool = createMockPool();
         let down = false;
         const api = fakePublication({ [A4]: fixture() }, { fail: () => down });
@@ -204,14 +228,16 @@ describe('POST /buildings/cell with published floor plans', () => {
         const res = await request(app).post('/buildings/cell').send({ kind: 'near', bbox: cell, source: 'gdi-3d', floorModelNamespace: 'zagreb' });
         expect(res.status).toBe(200);
         const [a4, a3] = res.body.items;
-        expect(a4.floorModel).toMatchObject({ origin: 'publication', source: 'zagreb-3d', buildingId: A4 });
-        expect(a4.floorModel.footprint.type).toBe('MultiPolygon');
-        expect(validateFloorPlans(a4.floorPlans)).toEqual([]);
-        expect(a4.floorPlans.storeys.map(storey => storey.level)).toEqual([2, 6]);
-        expect(a3.floorPlans).toBeUndefined();
-        expect(api.calls[0]).toMatchObject({ city: 'zagreb', source: 'zagreb-3d', nativeBuildingIds: `${A4},148971` });
+        expect(a4.floorPlansAvailable).toEqual({ origin: 'publication', city: 'zagreb', source: 'zagreb-3d', storeys: [2, 6], units: 4 });
+        expect(a4.floorPlans).toBeUndefined();
+        expect(a3).toEqual(mesh('148971'));
+        expect(JSON.stringify(a4.floorPlansAvailable).length).toBeLessThan(200);
+        const answer = JSON.stringify(res.body);
+        expect(answer).not.toMatch(/architecture|registration|walls/);
+        expect(answer.length).toBeLessThan(1000);
+        expect(api.calls).toEqual([expect.objectContaining({ path: '/api/floor-plans/summaries', city: 'zagreb', source: 'zagreb-3d', nativeBuildingIds: `${A4},148971` })]);
 
-        // Another cell while the publication is down: buildings answer without plans, and the answer is not kept.
+        // Another cell while the publication is down: buildings answer without marks, and the answer is not kept.
         down = true;
         const other = [15.978, 45.764, 15.987, 45.769];
         pool.setResults([{ rows: [mesh('5')] }, { rows: [] }]);
@@ -223,5 +249,21 @@ describe('POST /buildings/cell with published floor plans', () => {
         const queries = pool.getCalls().length;
         await request(app).post('/buildings/cell').send({ kind: 'near', bbox: other, source: 'gdi-3d', floorModelNamespace: 'zagreb' });
         expect(pool.getCalls().length).toBeGreaterThan(queries);
+    });
+
+    it('serves the marked building its model, absence as null, and an unanswered publication as 503', async () => {
+        let down = false;
+        const api = fakePublication({ [A4]: fixture() }, { fail: () => down });
+        const published = createPublishedFloorModels({ fetch: api.fetch, cache: new Map(), cityConfigs: readCityConfigs(), env: {}, log: silent });
+        const app = createRouteApp(setupBuildingFloorModelsRoute, { query: async () => ({ rows: [] }) }, { publishedFloorModels: published });
+        const found = await request(app).get(`/buildings/floor-model?city=zagreb&source=zagreb-3d&buildingId=${A4}`);
+        expect(found.status).toBe(200);
+        expect(found.body.model).toMatchObject({ origin: 'publication', city: 'zagreb', source: 'zagreb-3d', buildingId: A4, version: null });
+        expect(found.body.model.footprint.type).toBe('MultiPolygon');
+        expect(validateFloorPlans(found.body.model.floorPlans)).toEqual([]);
+        expect(found.body.model.floorPlans.storeys.map(storey => storey.level)).toEqual([2, 6]);
+        expect((await request(app).get('/buildings/floor-model?city=zagreb&source=zagreb-3d&buildingId=1')).body).toEqual({ model: null });
+        down = true;
+        expect((await request(app).get('/buildings/floor-model?city=zagreb&source=zagreb-3d&buildingId=2')).status).toBe(503);
     });
 });

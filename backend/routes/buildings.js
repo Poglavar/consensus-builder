@@ -3,7 +3,7 @@ export { PARCEL_BUILDINGS_SQL } from '../buildings/map-source.js';
 // GET /buildings/tables - Check what tables exist
 import { createBuildingProviders } from '../buildings/index.js';
 import { osmReferenceSourceRegistry } from '../buildings/map-source.js';
-import { attachNearbyFloorModels, nativeFloorModelSource } from '../buildings/floor-models.js';
+import { attachNearbyFloorModelMarkers, nativeFloorModelSource } from '../buildings/floor-models.js';
 import { splitRead, boxPolygon, boxSideMeters } from '../buildings/split-read.js';
 import {
     fetchProposalsForCarve,
@@ -116,7 +116,7 @@ export function setupBuildingsRoute(app, pool, { publishedFloorModels } = {}) {
             // The upstream failed outright: the browser tells the person instead of drawing nothing.
             if (result.unavailable) Object.assign(extra, { unavailable: true, retryAfter: result.retryAfter ?? null });
             if (!proposalIds.length) {
-                const buildings = await attachNearbyFloorModels(pool, floorModelCity, floorModelSource, result.buildings, floorModelOptions());
+                const buildings = await attachNearbyFloorModelMarkers(pool, floorModelCity, floorModelSource, result.buildings, floorModelOptions());
                 return res.json({ buildings, count: result.count, source: result.source, ...extra });
             }
 
@@ -126,7 +126,7 @@ export function setupBuildingsRoute(app, pool, { publishedFloorModels } = {}) {
             // A cut proxy no longer has the authored floor shape. Enrich only untouched
             // objects (carveBuildings deliberately preserves those object references).
             const originals = new Set(result.buildings);
-            const modeled = await attachNearbyFloorModels(pool, floorModelCity, floorModelSource,
+            const modeled = await attachNearbyFloorModelMarkers(pool, floorModelCity, floorModelSource,
                 buildings.filter(building => originals.has(building)), floorModelOptions());
             const byId = new Map(modeled.map(building => [building.object_id, building]));
             const enriched = buildings.map(building => originals.has(building) ? byId.get(building.object_id) : building);
@@ -337,8 +337,9 @@ export function setupBuildingsRoute(app, pool, { publishedFloorModels } = {}) {
     // `complete` is false only when splitting ran out. A failed source answers `unavailable` for the
     // whole cell, never part of it, so the browser can answer it whole from a fallback source.
     // Complete answers are cached per source, kind, floor-model namespace and cell. With a namespace,
-    // `near` items carry their floor models: authored registry models, else the published plans the
-    // namespace's city declares (floor-models.js), which only that namespace selects.
+    // `near` items with floor plans carry only a `floorPlansAvailable` marker (an authored registry
+    // model, else the published plans the namespace's city declares, floor-models.js); the model itself
+    // is read per building from GET /buildings/floor-model.
     const cellCache = new Map();
     const CELL_CACHE_TTL_MS = 15 * 60 * 1000;
     const CELL_CACHE_MAX = 2000;
@@ -385,7 +386,7 @@ export function setupBuildingsRoute(app, pool, { publishedFloorModels } = {}) {
             const floorModelReport = {};
             if (kind === 'near') {
                 floorModelSource = nativeFloorModelSource(body.source, source);
-                items = await attachNearbyFloorModels(pool, floorModelCity, floorModelSource, items, floorModelOptions(floorModelReport));
+                items = await attachNearbyFloorModelMarkers(pool, floorModelCity, floorModelSource, items, floorModelOptions(floorModelReport));
             }
             const answer = { supported: true, kind, bbox, items, count: items.length, complete: read.complete, source,
                 ...(kind === 'near' ? { floorModelSource } : {}) };

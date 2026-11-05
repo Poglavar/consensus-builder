@@ -5,7 +5,7 @@ import { parcelSourceCatalog, parcelSourceRegistry, createParcelSource } from '.
 import { buildingSourceRegistry, createBuildingProviders } from '../buildings/index.js';
 import { planningSourceRegistry, createPlanningSources } from '../planning/sources.js';
 import { createOwnershipRegistry } from '../ownership/registry.js';
-import { buildingDetailSourceRegistry, fetchFloorModels, attachNearbyFloorModels } from '../buildings/floor-models.js';
+import { buildingDetailSourceRegistry, fetchFloorModels, attachNearbyFloorModelMarkers } from '../buildings/floor-models.js';
 import { encodeCustomSource, decodeCustomBuildingSource } from '../parcels/custom-source-config.js';
 
 const SourceRuntime = createRequire(import.meta.url)('../../frontend/js/source-runtime.js');
@@ -92,10 +92,11 @@ describe('domain source registries', () => {
             version: 3, floor_plans: { layouts: [] }, footprint: polygon };
         const pool = { query: vi.fn(async () => ({ rows: [row] })) };
         expect((await fetchFloorModels(pool, [identity])).size).toBe(1);
-        const [building] = await attachNearbyFloorModels(pool, identity.city, identity.source, [{ object_id: 17 }]);
-        expect(building.floorModel).toMatchObject({ buildingId: '17', version: 3 });
+        const [building] = await attachNearbyFloorModelMarkers(pool, identity.city, identity.source, [{ object_id: 17 }], { published: null });
+        expect(building.floorPlansAvailable).toMatchObject({ origin: 'registry', city: 'fixture', source: 'survey' });
         expect(pool.query).toHaveBeenCalledTimes(2);
         expect(pool.query.mock.calls[0][0]).toContain('WHERE m.current');
+        expect(pool.query.mock.calls[1][0]).toContain('AS levels');
         expect(buildingDetailSourceRegistry.sources()[0].config).toEqual({
             id: 'building-floor-models', storage: 'consensus.building_floor_model'
         });

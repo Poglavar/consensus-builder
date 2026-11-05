@@ -8,7 +8,7 @@ import { setupBuildingFloorModelsRoute } from '../routes/building-floor-models.j
 import { stripLocalProposalState } from '../proposals/archive-state.js';
 import {
     canonicalJson, fingerprint, prepareFloorModel, saveFloorModel, buildingSourceId,
-    fetchFloorModels, attachProposalFloorModels, attachNearbyFloorModels, nativeFloorModelSource
+    fetchFloorModels, attachProposalFloorModels, attachNearbyFloorModelMarkers, nativeFloorModelSource
 } from '../buildings/floor-models.js';
 import { importFloorModels, parseArgs } from '../scripts/import-building-floor-plans.mjs';
 
@@ -50,7 +50,7 @@ describe('building floor model registry', () => {
         const row = { city: 'city_a', source: 'survey-3d', owner_id: '', building_id: 'b1', version: 1, floor_plans: plans() };
         const pool = { query: async () => ({ rows: [row] }) };
         for (const [city, source] of [['city_b', 'survey-3d'], ['city_a', 'another-survey']]) {
-            const [building] = await attachNearbyFloorModels(pool, city, source, [{ object_id: 'b1' }]);
+            const [building] = await attachNearbyFloorModelMarkers(pool, city, source, [{ object_id: 'b1' }], { published: null });
             expect(building).toEqual({ object_id: 'b1' });
         }
         const proposal = { city: 'city_a', proposalId: 'p1', geometry: { buildings: [
@@ -83,9 +83,12 @@ describe('building floor model registry', () => {
         const pool = { query: async () => ({ rows: [row] }) };
         const found = await fetchFloorModels(pool, [identity]);
         expect(found.size).toBe(1);
-        const buildings = await attachNearbyFloorModels(pool, 'city_a', 'survey-3d', [{ object_id: 'b1' }, { object_id: 'missing' }]);
-        expect(buildings[0].floorModel).toMatchObject({ buildingId: 'b1', version: 2 });
-        expect(buildings[1].floorPlans).toBeUndefined();
+        // A map cell carries only a marker; the model is read on demand (GET /buildings/floor-model).
+        const markerPool = { query: async () => ({ rows: [{ ...row, levels: [1], units: 0 }] }) };
+        const buildings = await attachNearbyFloorModelMarkers(markerPool, 'city_a', 'survey-3d', [{ object_id: 'b1' }, { object_id: 'missing' }], { published: null });
+        expect(buildings[0].floorPlansAvailable).toEqual({ origin: 'registry', city: 'city_a', source: 'survey-3d', storeys: [1], units: 0 });
+        expect(buildings[0].floorPlans).toBeUndefined();
+        expect(buildings[1]).toEqual({ object_id: 'missing' });
     });
 
     it('attaches proposal models only when the registered footprint still matches', async () => {

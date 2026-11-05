@@ -1,7 +1,10 @@
 // Public read access to optional floor models; ingestion remains a validated administrative job.
-import { canonicalJson, fetchFloorModels, validateModelIdentity } from '../buildings/floor-models.js';
+import { readNativeFloorModel, validateModelIdentity } from '../buildings/floor-models.js';
 
-export function setupBuildingFloorModelsRoute(app, pool) {
+// One building's model, read when the browser needs it (X-ray on, building near): the authored
+// registry model, else the plans the city publishes (`city` is the floor-model namespace, `source`
+// the building's floorModelSource). `publishedFloorModels` is injected in tests.
+export function setupBuildingFloorModelsRoute(app, pool, { publishedFloorModels } = {}) {
     app.get('/buildings/floor-model', async (req, res) => {
         let identity;
         try {
@@ -11,13 +14,14 @@ export function setupBuildingFloorModelsRoute(app, pool) {
             return res.status(400).json({ error: error.message });
         }
         try {
-            const models = await fetchFloorModels(pool, [identity]);
-            const row = models.get(canonicalJson([identity.city, identity.source, identity.ownerId, identity.buildingId]));
+            const report = {};
+            const model = await readNativeFloorModel(pool, identity, { ...(publishedFloorModels ? { published: publishedFloorModels } : {}), report });
+            // A publication that did not answer is not "no plans": the browser may ask again later.
+            if (!model && report.publishedUnavailable) return res.status(503).json({ error: 'Published floor plans are unavailable.' });
             // Absence is normal for most buildings, and does not mean their exterior is unavailable.
-            res.json({ model: row ? { ...identity, version: row.version, updatedAt: row.updated_at,
-                floorPlans: row.floor_plans } : null });
+            res.json({ model });
         } catch (error) {
-            console.error('GET /buildings/floor-model failed:', error);
+            console.error(`[${new Date().toISOString()}] GET /buildings/floor-model failed:`, error);
             res.status(500).json({ error: 'Unable to read building floor model.' });
         }
     });

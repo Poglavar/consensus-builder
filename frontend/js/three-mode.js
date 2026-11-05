@@ -64,6 +64,7 @@
     const atmosphereClouds = { glsl: atmosphere.CLOUD_GLSL, state: atmosphereState };
     const floorPlanGeometry = window.__buildingFloorPlans;
     const floorPlanRenderer = window.__threeFloorPlans;
+    const floorPlanProximity = window.__floorPlanProximity;
     if (!floorPlanGeometry || !floorPlanRenderer) {
         console.error('[3D] Floor-plan renderer is unavailable. Skipping 3D mode initialization.');
         return;
@@ -6033,8 +6034,10 @@
                         const renderParts = buildingDisplayPolicy.resolveBuildingRenderParts(carve, visibility);
                         if (!carve) {
                             if (!renderParts.detailed) return;
-                            if (appendBuildingFloorPlans({ type: 'Feature', geometry: bld.floorModel?.footprint, properties: {
-                                ...bld.properties, floorPlans: bld.floorPlans || bld.properties?.floorPlans
+                            // A model is here only when X-ray asked for it (floor-plan-proximity.js).
+                            const floorModel = floorModelLoads.models.get(threeBuildingKey(bld));
+                            if (floorModel && appendBuildingFloorPlans({ type: 'Feature', geometry: floorModel.footprint, properties: {
+                                ...bld.properties, floorPlans: floorModel.floorPlans
                             } }, buildingMaterial, building3DHeightMeters(bld), inspectionFeature)) return;
                             const mesh = buildMeshFromBuilding3D(bld, buildingMaterial, meshDedupeState);
                             if (mesh) {
@@ -9154,6 +9157,85 @@
         }
     }
 
+    // ── Floor models of existing buildings: loaded one by one, near the camera, while X-ray is on ──
+    // Cells only mark the buildings that have plans (`floorPlansAvailable`); floor-plan-proximity.js
+    // decides which models to request (nearest first, two at a time) and which to drop (well beyond the
+    // radius, or X-ray off). An arrival or a drop rebuilds the existing buildings, the path X-ray's
+    // toggle takes, coalesced by the refresh queue; floor plan groups are created and disposed there.
+    const floorModelLoads = { models: new Map(), pending: new Map(), camera: null, revision: -1 };
+    const floorModelCentres = new WeakMap();
+    const FLOOR_MODEL_RECHECK_M = 20;
+    function floorModelCentre(bld) {
+        if (floorModelCentres.has(bld)) return floorModelCentres.get(bld);
+        let minLng = Infinity, minLat = Infinity, maxLng = -Infinity, maxLat = -Infinity;
+        for (const face of bld.faces || []) for (const ring of face?.coordinates || []) for (const point of ring) {
+            minLng = Math.min(minLng, point[0]); maxLng = Math.max(maxLng, point[0]);
+            minLat = Math.min(minLat, point[1]); maxLat = Math.max(maxLat, point[1]);
+        }
+        const centre = Number.isFinite(minLng) ? [(minLng + maxLng) / 2, (minLat + maxLat) / 2] : null;
+        floorModelCentres.set(bld, centre);
+        return centre;
+    }
+    function resetFloorModelLoads() {
+        floorModelLoads.pending.forEach(controller => controller.abort());
+        floorModelLoads.pending.clear();
+        floorModelLoads.models.clear();
+        floorModelLoads.camera = null;
+    }
+    function requestFloorModel(key, bld) {
+        const marker = bld.floorPlansAvailable;
+        const controller = new AbortController();
+        floorModelLoads.pending.set(key, controller);
+        const base = typeof window.getBackendBase === 'function' ? window.getBackendBase() : '';
+        const params = new URLSearchParams({ city: marker.city, source: marker.source, buildingId: String(bld.object_id) });
+        const settle = model => {
+            if (floorModelLoads.pending.get(key) !== controller) return;
+            floorModelLoads.pending.delete(key);
+            // No model (or a failure) is an answer too, so it is not asked again until the building
+            // leaves the radius and comes back.
+            floorModelLoads.models.set(key, model);
+            if (model && xrayEnabled) rebuild3DBuildingsOnly({ family: 'existing' });
+            updateFloorModelLoads(true);
+        };
+        fetch(`${base}/buildings/floor-model?${params}`, { signal: controller.signal, headers: { Accept: 'application/json' } })
+            .then(response => { if (!response.ok) throw new Error(`HTTP ${response.status}`); return response.json(); })
+            .then(body => settle(body?.model?.floorPlans ? body.model : null))
+            .catch(error => {
+                if (controller.signal.aborted) return;
+                console.warn(`[${new Date().toISOString()}] [3D] floor model for ${key} not loaded:`, error);
+                settle(null);
+            });
+    }
+    function updateFloorModelLoads(force = false) {
+        if (!floorPlanProximity || !origin3857) return;
+        if (!xrayEnabled && !floorModelLoads.models.size && !floorModelLoads.pending.size) return;
+        const k = lifeMercatorK();
+        const position = camera ? [camera.position.x / k, camera.position.y / k, camera.position.z] : null;
+        const last = floorModelLoads.camera;
+        if (!force && xrayEnabled && position && last && floorModelLoads.revision === nearbyBuildingsRevision
+            && Math.hypot(position[0] - last[0], position[1] - last[1], position[2] - last[2]) < FLOOR_MODEL_RECHECK_M) return;
+        floorModelLoads.camera = position;
+        floorModelLoads.revision = nearbyBuildingsRevision;
+        const buildings = new Map();
+        const candidates = [];
+        for (const bld of nearbyProposalBuildings) {
+            const centre = bld?.floorPlansAvailable ? floorModelCentre(bld) : null;
+            if (!centre) continue;
+            const [x, y] = latLngToXY(centre[1], centre[0]);
+            const key = threeBuildingKey(bld);
+            buildings.set(key, bld);
+            candidates.push({ key, x: x / k, y: y / k });
+        }
+        const plan = floorPlanProximity.planFloorPlanLoads({ enabled: xrayEnabled && isActive, camera: position, candidates,
+            loaded: floorModelLoads.models, pending: floorModelLoads.pending });
+        plan.cancel.forEach(key => { floorModelLoads.pending.get(key)?.abort(); floorModelLoads.pending.delete(key); });
+        let dropped = false;
+        plan.unload.forEach(key => { if (floorModelLoads.models.get(key)) dropped = true; floorModelLoads.models.delete(key); });
+        plan.load.forEach(key => requestFloorModel(key, buildings.get(key)));
+        // With X-ray off its own toggle already rebuilt the buildings without interiors.
+        if (dropped && xrayEnabled) rebuild3DBuildingsOnly({ family: 'existing' });
+    }
+
     function appendBuildingFloorPlans(feature, proxyMaterial, proxyHeightM, inspectionFeature = null) {
         const plans = feature?.properties?.floorPlans;
         if (!xrayEnabled || !floorPlanGroup || !plans) return false;
@@ -9185,6 +9267,7 @@
         // or animates a hook keeps it.
         // Tree tiers follow the camera; their shadows come from fixed stand-ins, so no shadow redraw.
         retierTreesIfMoved();
+        updateFloorModelLoads();
         sunLayer?.beforeRender({ fullFrame, sceneChanged: renderedSceneVisualRevision !== sceneVisualRevision });
         // A comparison pass shows a different set of objects: its shadows are its own.
         if (shadowsPerPass && renderer.shadowMap.enabled) renderer.shadowMap.needsUpdate = true;
@@ -9459,6 +9542,7 @@
     function setXrayEnabled(enabled) {
         xrayEnabled = enabled === true;
         rebuild3DBuildingsOnly();
+        updateFloorModelLoads(true);
         updateXrayControls();
     }
 
@@ -10918,6 +11002,7 @@
         try { document.body.classList.remove('three-mode-active', 'three-scene-drawn'); } catch (_) { }
         cancelViewAngleHint(); // never let it land on the 2D map after the user has left
         if (!isActive) return;
+        resetFloorModelLoads();
         // Capture this before disposing the local scene frame. The Leaflet map intentionally stays
         // motionless while 3D is active (so it cannot stream tiles or parcels), then jumps once to
         // the current 3D focus when the user explicitly returns to 2D.

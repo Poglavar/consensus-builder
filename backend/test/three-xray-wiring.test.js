@@ -128,9 +128,36 @@ describe('three-mode Xray wiring', () => {
     });
 
     it('setXrayEnabled changes state and rebuilds', () => {
-        const [set, context] = extracted('setXrayEnabled', 'let xrayEnabled=false;', { rebuild3DBuildingsOnly: () => context.calls.push('rebuild'), updateXrayControls: () => context.calls.push('update') });
+        const [set, context] = extracted('setXrayEnabled', 'let xrayEnabled=false;', { rebuild3DBuildingsOnly: () => context.calls.push('rebuild'),
+            updateFloorModelLoads: force => context.calls.push(`floor models ${force}`), updateXrayControls: () => context.calls.push('update') });
         set(true);
-        expect(context.calls).toEqual(['rebuild', 'update']);
+        expect(context.calls).toEqual(['rebuild', 'floor models true', 'update']);
+    });
+    it('requests floor models of marked buildings near the camera only while X-ray is on, and abandons them when it goes off', () => {
+        const proximity = require('../../frontend/js/floor-plan-proximity.js');
+        const face = lng => ({ coordinates: [[[lng, 0, 0], [lng + 1e-4, 1e-4, 10]]] });
+        const buildings = [{ source: 's', object_id: 1, floorPlansAvailable: { city: 'c', source: 's' }, faces: [face(0)] },
+            { source: 's', object_id: 2, floorPlansAvailable: { city: 'c', source: 's' }, faces: [face(1)] },
+            { source: 's', object_id: 3, faces: [face(0)] }];
+        const requested = [], abort = vi.fn();
+        const variables = `let xrayEnabled = true; let isActive = true; let nearbyBuildingsRevision = 1; let origin3857 = {};
+            const floorModelLoads = { models: new Map(), pending: new Map(), camera: null, revision: -1 };
+            const floorModelCentres = new WeakMap(); const FLOOR_MODEL_RECHECK_M = 20;
+            this.setXray = value => { xrayEnabled = value; }; this.loads = floorModelLoads;`;
+        const [update, context] = extracted('updateFloorModelLoads', variables, { floorPlanProximity: proximity, nearbyProposalBuildings: buildings,
+            camera: { position: { x: 0, y: 0, z: 30 } }, lifeMercatorK: () => 1, latLngToXY: (lat, lng) => [lng * 111320, lat * 111320],
+            threeBuildingKey: b => `${b.source}:${b.object_id}`, rebuild3DBuildingsOnly: vi.fn(),
+            requestFloorModel: key => { requested.push(key); context.loads.pending.set(key, { abort }); } }, ['floorModelCentre']);
+        update(true);
+        // Building 2 is ~111 km away, building 3 has no marker.
+        expect(requested).toEqual(['s:1']);
+        context.setXray(false);
+        update(true);
+        expect(abort).toHaveBeenCalledTimes(1);
+        expect(context.loads.pending.size).toBe(0);
+        update(true);
+        expect(requested).toEqual(['s:1']);
+        expect(context.rebuild3DBuildingsOnly).not.toHaveBeenCalled();
     });
     it('appendBuildingFloorPlans does no work while disabled and deduplicates registered geometry', () => {
         const add = vi.fn(), create = vi.fn(() => ({ userData: { cbFloorPlan: true } }));

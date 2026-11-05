@@ -120,23 +120,46 @@ async function readStoredFloorModels(pool, identities) {
     return new Map(result.rows.map(row => [canonicalJson([row.city, row.source, row.owner_id, row.building_id]), row]));
 }
 
+const queryKeysOf = identities => JSON.stringify(identities.map(identity => {
+    const valid = validateModelIdentity(identity);
+    return { city: valid.city, source: valid.source, owner_id: valid.ownerId, building_id: valid.buildingId };
+}));
+// What a map cell needs to know about a stored model: its storeys and apartments, never the model.
+async function readStoredFloorModelMarkers(pool, identities) {
+    if (!identities.length) return new Map();
+    const result = await pool.query(`SELECT m.city, m.source, m.owner_id, m.building_id, m.version,
+            (SELECT COALESCE(jsonb_agg((s->>'level')::int ORDER BY (s->>'level')::int), '[]'::jsonb)
+               FROM jsonb_array_elements(m.floor_plans->'storeys') s) AS levels,
+            (SELECT count(*) FROM jsonb_array_elements(m.floor_plans->'storeys') s,
+                    jsonb_array_elements(COALESCE(s->'units', '[]'::jsonb)) u WHERE u->>'kind' = 'apartment')::int AS units
+        FROM consensus.building_floor_model m
+        JOIN jsonb_to_recordset($1::jsonb) AS q(city text, source text, owner_id text, building_id text)
+            USING (city, source, owner_id, building_id)
+        WHERE m.current`, [queryKeysOf(identities)]);
+    return new Map(result.rows.map(row => [canonicalJson([row.city, row.source, row.owner_id, row.building_id]), row]));
+}
+
 // Versioned model storage is the authored detail provider. The SQL repository retains ownership
 // of identity, current-version selection and persistence; dispatch only selects the reader.
 // `floor-plan-publication` reads plans a city's configuration declares (floorModels.published).
 export const buildingDetailSourceRegistry = SourceRuntime.createRegistry({
     abstraction: 'building-details',
     adapters: { 'floor-model-storage': { custom: false, create: (_config, { pool }) => ({
-        fetchFloorModels: identities => readStoredFloorModels(pool, identities)
+        fetchFloorModels: identities => readStoredFloorModels(pool, identities),
+        fetchFloorModelMarkers: identities => readStoredFloorModelMarkers(pool, identities)
     }) },
     'floor-plan-publication': { custom: false, validateConfig: validatePublicationConfig,
         create: (config, context) => createFloorPlanPublicationReader(config, context) } },
     sources: [SourceRuntime.source('building-details', 'floor-model-storage', {
         id: 'building-floor-models', storage: 'consensus.building_floor_model'
     })],
-    required: ['fetchFloorModels']
+    required: ['fetchFloorModels', 'fetchFloorModelMarkers']
 });
 export async function fetchFloorModels(pool, identities) {
     return buildingDetailSourceRegistry.open('building-floor-models', { pool }).fetchFloorModels(identities);
+}
+export async function fetchFloorModelMarkers(pool, identities) {
+    return buildingDetailSourceRegistry.open('building-floor-models', { pool }).fetchFloorModelMarkers(identities);
 }
 
 function attachModel(target, row) {
@@ -209,13 +232,15 @@ export function createPublishedFloorModels({ env = process.env, fetch = globalTh
             byNamespace ??= declarePublishedSources(cityConfigs ?? readCityConfigs(), baseUrl);
             return byNamespace.get(namespace) || [];
         },
-        // identities: native { city: namespace, source: floorModelSource, ownerId: '', buildingId } → Map(buildingId → row)
-        async fetchFloorModels(namespace, identities, report = {}) {
+        // identities: native { city: namespace, source: floorModelSource, ownerId: '', buildingId } → Map(buildingId → answer)
+        fetchFloorModelMarkers(namespace, identities, report = {}) { return this.read('fetchFloorModelMarkers', namespace, identities, report); },
+        fetchFloorModels(namespace, identities, report = {}) { return this.read('fetchFloorModels', namespace, identities, report); },
+        async read(method, namespace, identities, report) {
             const rows = new Map();
             for (const source of this.sources(namespace)) {
                 const remaining = identities.filter(identity => !rows.has(String(identity.buildingId)));
                 if (!remaining.length) break;
-                const found = await buildingDetailSourceRegistry.open(source.id, context).fetchFloorModels(remaining, report);
+                const found = await buildingDetailSourceRegistry.open(source.id, context)[method](remaining, report);
                 for (const [id, row] of found) if (!rows.has(id)) rows.set(id, row);
             }
             return rows;
@@ -225,32 +250,49 @@ export function createPublishedFloorModels({ env = process.env, fetch = globalTh
 let defaultPublished = null;
 const publishedFloorModels = () => (defaultPublished ??= createPublishedFloorModels());
 
-// An authored registry model wins; a building without one shows the plans its city publishes.
-// `report.publishedUnavailable` says the publication did not answer (the caller should not cache).
-export async function attachNearbyFloorModels(pool, city, source, buildings, { published = publishedFloorModels(), report = {} } = {}) {
+const logPublishedFailure = (city, source, error) =>
+    console.error(`[${new Date().toISOString()}] [floor-models] published floor plans for ${city}/${source} failed:`, error);
+
+// Floor plans are never bulk-loaded with buildings. A map cell's buildings carry only a marker,
+// `floorPlansAvailable: { origin, city, source, storeys, units }`, from a cheap read: the stored
+// model's storeys, or the publication's compact summaries. The browser asks for one building's model
+// (readNativeFloorModel, GET /buildings/floor-model) when X-ray is on and the building is near.
+// An authored registry model wins. `report.publishedUnavailable` says the publication did not answer
+// (the caller should not cache).
+export async function attachNearbyFloorModelMarkers(pool, city, source, buildings, { published = publishedFloorModels(), report = {} } = {}) {
     if (!buildings.length || !city) return buildings;
     const identities = buildings.map(building => ({ city, source, ownerId: '', buildingId: String(building.object_id) }));
-    const models = await fetchFloorModels(pool, identities);
+    const stored = await fetchFloorModelMarkers(pool, identities);
     let publications = new Map();
-    const unmodelled = identities.filter(identity => !models.has(canonicalJson(identityValues(identity))));
+    const unmodelled = identities.filter(identity => !stored.has(canonicalJson(identityValues(identity))));
     if (published && unmodelled.length) {
-        try { publications = await published.fetchFloorModels(city, unmodelled, report); } catch (error) {
+        try { publications = await published.fetchFloorModelMarkers(city, unmodelled, report); } catch (error) {
             report.publishedUnavailable = true;
-            console.error(`[${new Date().toISOString()}] [floor-models] published floor plans for ${city}/${source} failed:`, error);
+            logPublishedFailure(city, source, error);
         }
     }
     return buildings.map((building, index) => {
         const identity = identities[index];
-        const row = models.get(canonicalJson(identityValues(identity)));
-        const publication = row ? null : publications.get(identity.buildingId);
-        if (!row && !publication) return building;
-        const result = { ...building };
-        if (row) attachModel(result, row);
-        else {
-            result.floorPlans = publication.floorPlans;
-            result.floorModel = { city, source, ownerId: '', buildingId: identity.buildingId, version: null,
-                updatedAt: publication.updatedAt, footprint: publication.footprint, origin: 'publication', publication: publication.publication };
-        }
-        return result;
+        const row = stored.get(canonicalJson(identityValues(identity)));
+        const marker = row ? { origin: 'registry', storeys: row.levels, units: row.units } : publications.get(identity.buildingId);
+        if (!marker) return building;
+        return { ...building, floorPlansAvailable: { origin: marker.origin || 'publication', city, source, storeys: marker.storeys, units: marker.units } };
     });
+}
+
+// One native building's model on demand: the authored registry model, else the plans its city publishes.
+// → { city, source, ownerId, buildingId, version, updatedAt, origin, footprint, floorPlans, publication? } | null
+export async function readNativeFloorModel(pool, identity, { published = publishedFloorModels(), report = {} } = {}) {
+    const valid = validateModelIdentity(identity);
+    const row = (await fetchFloorModels(pool, [valid])).get(canonicalJson(identityValues(valid)));
+    if (row) return { ...valid, version: row.version, updatedAt: row.updated_at, origin: 'registry', footprint: row.footprint ?? null, floorPlans: row.floor_plans };
+    if (!published || valid.ownerId) return null;
+    let found;
+    try { found = (await published.fetchFloorModels(valid.city, [valid], report)).get(valid.buildingId); } catch (error) {
+        report.publishedUnavailable = true;
+        logPublishedFailure(valid.city, valid.source, error);
+        return null;
+    }
+    return found ? { ...valid, version: null, updatedAt: found.updatedAt, origin: 'publication', footprint: found.footprint,
+        floorPlans: found.floorPlans, publication: found.publication } : null;
 }
