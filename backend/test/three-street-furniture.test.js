@@ -12,6 +12,7 @@ const require = createRequire(import.meta.url);
 const turf = require('@turf/turf');
 const fountainsApi = require('../../frontend/js/three-fountains.js');
 const atmosphere = require('../../frontend/js/three-atmosphere.js');
+const siteGround = require('../../frontend/js/three-site-ground.js');
 const source = readFileSync(new URL('../../frontend/js/three-mode.js', import.meta.url), 'utf8');
 const declarations = new Map();
 (function collect(node) {
@@ -24,7 +25,7 @@ const declarations = new Map();
     }
 })(parse(source, { sourceType: 'script', plugins: ['optionalChaining', 'nullishCoalescingOperator'] }));
 
-function harness({ parks = [], squares = [], furniture }) {
+function harness({ parks = [], squares = [], furniture, photo = null, proposedBuildings = [] }) {
     const lampGlowObjects = new Set();
     const lampAssets = {
         pole: new THREE.BufferGeometry(), head: new THREE.BufferGeometry(), pool: new THREE.BufferGeometry(),
@@ -34,6 +35,7 @@ function harness({ parks = [], squares = [], furniture }) {
     const context = {
         THREE, turf, console, Object, Array, Float32Array,
         isActive: true,
+        realisticLayerActive: !!photo,
         furnitureGroup: new THREE.Group(),
         nearbyFurniture: furniture,
         fountainWaterMaterial: null, sky: null,
@@ -41,11 +43,12 @@ function harness({ parks = [], squares = [], furniture }) {
         FURNITURE_GROUND_Z: 0.06, LAMP_HEAD_Z: 4.12, LAMP_POOL_RADIUS_M: 5,
         lampGlowObjects,
         window: {
-            parks, squares,
+            parks, squares, proposedBuildings,
+            PhotorealMode: photo ? { carvedGround: () => photo.carved } : undefined,
             __threeFountains: fountainsApi,
             __threeWaterSheen: { apply: material => material },
             __threeSky: { SKY_COLOR_GLSL: '' },
-            __threeSiteGround: { contextTreesOutsideCorridors: points => points }
+            __threeSiteGround: { contextTreesOutsideCorridors: points => points, pointsOnDesignGround: siteGround.pointsOnDesignGround }
         },
         threeResources: { disposeOwnedSubtree: vi.fn(), markOwned: () => { } },
         ensureLampAssets: () => lampAssets,
@@ -96,6 +99,27 @@ describe('OSM street furniture in 3D', () => {
         const children = context.furnitureGroup.children;
         expect(children.find(child => child.material === lampAssets.poleMat).count).toBe(1);
         expect(children.find(child => child.name === 'Fountains')).toBeUndefined();
+    });
+
+    it('stands no lamp inside a proposed building', () => {
+        const { context, lampAssets } = harness({
+            proposedBuildings: [squareAround(15.971, 45.811, 0.0002)],
+            furniture: { fountains: [], lamps: [[15.971, 45.811], [15.972, 45.812]] }
+        });
+        context.rebuildFurnitureOnly();
+        expect(context.furnitureGroup.children.find(child => child.material === lampAssets.poleMat).count).toBe(1);
+    });
+
+    it('in photo view stands only the furniture on the ground cut from the mesh, which took the real one', () => {
+        const furniture = { fountains: [[15.98, 45.82, 3]], lamps: [[15.971, 45.811], [15.972, 45.812]] };
+        const cut = harness({ furniture, photo: { carved: [squareAround(15.971, 45.811, 0.0002).geometry] } });
+        cut.context.rebuildFurnitureOnly();
+        expect(cut.context.furnitureGroup.children.find(child => child.material === cut.lampAssets.poleMat).count).toBe(1);
+        expect(cut.context.furnitureGroup.children.find(child => child.name === 'Fountains')).toBeUndefined();
+        // Nothing cut: the mesh shows every real lamp and fountain, so none is drawn.
+        const none = harness({ furniture, photo: { carved: [] } });
+        none.context.rebuildFurnitureOnly();
+        expect(none.context.furnitureGroup.children).toHaveLength(0);
     });
 
     it('clears the last build before drawing the next', () => {

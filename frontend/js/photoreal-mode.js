@@ -28,6 +28,7 @@
     // connections the same 45-second completion budget as the other interactive map loaders.
     const NO_CONTENT_TIMEOUT_S = 45;
     const MAX_UNSEATED_WAIT_S = 60;
+    const COVER_MAX_WAIT_S = 12;          // the loading cover lifts to the model view after this
     const MAX_BOOTSTRAP_ATTEMPTS = 8;
     const ROAD_BOUNDARY_SAMPLE_SPACING_M = 4;
     const TERRAIN_REFRESH_QUIET_MS = 1400;
@@ -114,6 +115,7 @@
     let lockedGroundZ = null; // final pre-seat height chosen by the temporal stability gate
     let lastProbeSummary = null; // raw round distribution, exposed by ?seat for ground-vs-roof diagnosis
     let lockWaitS = 0;
+    let modeledMeanwhile = false; // a slow start showed the model view while the photo kept loading
     let lockAccumS = 0;
     let reportedProbeFamine = false; // missing-surface diagnostics fire once per entry
     let bootstrapAttempts = 0;
@@ -187,10 +189,13 @@
     }
 
     // A photo view that could not compose is an outcome: an error notice (design-language.md, Messages).
-    function setStatus(msg) {
+    function setStatus(msg, type) {
         if (!msg) return;
-        if (typeof window.showEphemeralMessage === 'function') window.showEphemeralMessage(msg, 8000, 'error');
+        if (typeof window.showEphemeralMessage === 'function') window.showEphemeralMessage(msg, 8000, type || 'error');
     }
+    // When photo view cannot start, the model view of the same place takes its place.
+    const PHOTO_SLOW_EN = 'Photo view is still loading. Here is the model view meanwhile.';
+    const PHOTO_FALLBACK_EN = 'Photo view did not load here, so this is the model view. Try photo view again in a moment.';
 
     // On a URL-driven rw entry, cover the abstract 3D while Google tiles stream, so the view goes
     // 2D -> loading -> composed rw instead of flashing the flat plan first. Removed at first-seat
@@ -307,7 +312,10 @@
     function bootstrapGround() {
         if (bootstrapAttempts >= MAX_BOOTSTRAP_ATTEMPTS || !seatNode || !tiles || !loadedTileScenes.size) return false;
         if (bootstrapRevision === tileContentRevision) return false;
-        const scenes = Array.from(loadedTileScenes).filter(function (scene) { return !scene.parent; });
+        // Every cached tile, the ones in view as well: after a wrong provisional seat the finer
+        // tiles the camera now sees are the best evidence. A detached tile has no parent, so its
+        // matrices are local to the tiles group; an attached one is already in world space.
+        const scenes = Array.from(loadedTileScenes);
         if (!scenes.length) return false;
         // Repeating misses against the same cached geometry cannot improve the estimate.
         bootstrapRevision = tileContentRevision;
@@ -316,13 +324,15 @@
         const inverse = tiles.group.matrixWorld.clone().invert();
         scenes.forEach(function (scene) { scene.updateMatrixWorld(true); });
         const probes = LOCK_PROBE_OFFSETS.slice(0, 5).map(function (xy) {
-            const raycaster = new THREE.Raycaster(new THREE.Vector3(xy[0], xy[1], 10000 + seatNode.position.z),
+            const worldRay = new THREE.Raycaster(new THREE.Vector3(xy[0], xy[1], 10000 + seatNode.position.z),
                 new THREE.Vector3(0, 0, -1), 0, 12000);
-            raycaster.ray.applyMatrix4(inverse);
+            const localRay = new THREE.Raycaster(worldRay.ray.origin.clone(), worldRay.ray.direction.clone(), 0, 12000);
+            localRay.ray.applyMatrix4(inverse);
             const hits = [];
             scenes.forEach(function (scene) {
-                const hit = raycaster.intersectObject(scene, true)[0];
-                if (hit) hits.push({ height: hit.point.clone().applyMatrix4(tiles.group.matrixWorld).z,
+                const attached = !!scene.parent;
+                const hit = (attached ? worldRay : localRay).intersectObject(scene, true)[0];
+                if (hit) hits.push({ height: attached ? hit.point.z : hit.point.clone().applyMatrix4(tiles.group.matrixWorld).z,
                     depth: loadedTileDepths.get(scene) || 0 });
             });
             return hits;
@@ -386,8 +396,10 @@
         } catch (_) { return; }
         // Missing ray hits do not imply a network failure: the initial camera can be below
         // downloaded terrain. Recover its elevation before reporting an unusable surface.
+        // Far from the content, or no surface at all: estimate the seat again on the finer tiles
+        // that have arrived instead of waiting for the stream to finish at the wrong height.
+        if (window.__photorealGround.needsProvisionalEstimate(groundZ) && bootstrapGround()) return;
         if (groundZ === null) {
-            if (bootstrapGround()) return;
             if (!reportedProbeFamine && lockWaitS > LOCK_MAX_WAIT_S) {
                 reportedProbeFamine = true;
                 const progress = Number(tiles.loadProgress);
@@ -865,7 +877,12 @@
         if (!grass) throw new Error('three-grass.js is not loaded');
         apronMaterialPark = grass.grassTexture(new THREE.MeshLambertMaterial({
             color: grass.COLORS.lawn, side: THREE.DoubleSide, ...groundPush }), 1, 'lawn');
-        apronMaterialSquare = new THREE.MeshBasicMaterial({ color: CARVE_APRON_SQUARE_COLOR, side: THREE.DoubleSide, ...groundPush });
+        // A square or paved plot cap is the model view's square paving (three-mode.js
+        // squareSurfaceMaterials): the same running-bond texture on the same scene-XY UVs.
+        const pavingTexture = window.__threeSquarePaving
+            ? window.__threeSquarePaving.createSquarePavingTexture(THREE, document, internals && internals.renderer) : null;
+        apronMaterialSquare = new THREE.MeshLambertMaterial({ color: pavingTexture ? 0xffffff : CARVE_APRON_SQUARE_COLOR,
+            map: pavingTexture, side: THREE.DoubleSide, ...groundPush });
         // One-sided on purpose (ringFacingCut): it faces the cut, and from outside its back is culled.
         canopySealMaterial = new THREE.MeshBasicMaterial({ color: CARVE_CANOPY_SEAL_COLOR, side: THREE.FrontSide, ...groundPush });
         roadFoundationMaterial = new THREE.MeshLambertMaterial({
@@ -2452,7 +2469,10 @@
         disposeMaskShapes();
         for (const material of new Set([maskMaterial, maskMaterialRoad, maskMaterialPark,
             maskMaterialProtect, apronMaterial, apronMaterialWater, apronMaterialPark,
-            apronMaterialSquare, canopySealMaterial, roadFoundationMaterial, roadCollarMaterial])) material?.dispose();
+            apronMaterialSquare, canopySealMaterial, roadFoundationMaterial, roadCollarMaterial])) {
+            material?.map?.dispose();
+            material?.dispose();
+        }
         if (maskRT) { try { maskRT.dispose(); } catch (_) { } }
         maskRT = null;
         maskScene = null;
@@ -2603,12 +2623,22 @@
                     cachedModels: loadedTileScenes.size, failedRequests: tiles.stats?.failed || 0,
                     bootstrapAttempts: bootstrapAttempts
                 });
-                setStatus(photorealI18n('threeMode.controls.loadFailed',
-                    'Photo view could not load. Try again or switch to 2D.'));
+                // Gentle: the model view of the same place stays up (it has been showing since the
+                // cover lifted), and a notice says why the photo did not replace it.
+                setStatus(photorealI18n('threeMode.controls.photoFallback', PHOTO_FALLBACK_EN), 'info');
                 deactivate({ keepStatus: true, destination: 'model' });
                 hardDisposeTiles(); // a retry must not reuse a failed or exhausted tile session
                 window.requestMapMode('model');
                 return;
+            }
+            // A slow start shows the model view of the place (three-mode awaitingPhotoReveal) instead
+            // of the 2D map or a spinner over nothing, once, with a notice; the photo still replaces
+            // it when the mesh seats.
+            if (!modeledMeanwhile && lockWaitS > COVER_MAX_WAIT_S) {
+                modeledMeanwhile = true;
+                hideCover();
+                setStatus(photorealI18n('threeMode.controls.photoSlow', PHOTO_SLOW_EN), 'info');
+                if (typeof window.invalidateThreeView === 'function') window.invalidateThreeView();
             }
             tryLockGround(dtS);
         } else if (maskScene && internals.controls && internals.controls.target) {
@@ -2722,6 +2752,7 @@
                 bootstrapAttempts = 0;
                 bootstrapRevision = -1;
                 undergroundRecoveries = 0;
+                modeledMeanwhile = false;
                 if (!grounded) lockSamples = [];
                 if (typeof window.registerThreeModeFrameHook === 'function') {
                     window.registerThreeModeFrameHook(onFrame);
@@ -2809,6 +2840,7 @@
             bootstrapAttempts = 0;
             bootstrapRevision = -1;
             undergroundRecoveries = 0;
+            modeledMeanwhile = false;
             lastFrameNow = 0;
             lastCameraWorld = null;
             settledFrames = 0;
@@ -2831,9 +2863,10 @@
         } catch (err) {
             if (!isCurrent()) return false;
             console.error('[photoreal] activation failed:', err);
-            setStatus(photorealI18n('threeMode.controls.loadFailed', 'Photo view could not load. Try again or switch to 2D.'));
-            deactivate({ keepStatus: true, destination: '2d' });
+            setStatus(photorealI18n('threeMode.controls.photoFallback', PHOTO_FALLBACK_EN), 'info');
+            deactivate({ keepStatus: true, destination: 'model' });
             hardDisposeTiles();
+            window.requestMapMode('model');
             return false;
         } finally {
             if (generation === activationGeneration) activating = false;
@@ -2960,6 +2993,8 @@
         toggle: toggle,
         isActive: function () { return active; },
         isLoading: function () { return loading; },
+        // A slow start: the model view stands in while the photo keeps loading.
+        showsModelMeanwhile: function () { return active && !grounded && modeledMeanwhile; },
         getViewer: function () { return tiles; },
         pickSurface: pickPhotoSurface,
         sourceParcelsAt: function (point) { return parcelOverlay?.at(point.x, point.y) || []; },

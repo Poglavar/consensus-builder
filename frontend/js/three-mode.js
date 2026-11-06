@@ -6663,7 +6663,7 @@
             });
         // A proposed building stands where its trees were. Photo view stands context trees only on
         // the ground its mesh was cut from: elsewhere the mesh shows the real trees.
-        const visibleTrees = window.__threeSiteGround.treesOnDesignGround(outsideCorridors, {
+        const visibleTrees = window.__threeSiteGround.pointsOnDesignGround(outsideCorridors, {
             clear: (Array.isArray(window.proposedBuildings) ? window.proposedBuildings : []).map(feature => feature?.geometry),
             within: realisticLayerActive ? (window.PhotorealMode?.carvedGround?.() || []) : null,
             turf
@@ -6855,9 +6855,17 @@
         if (!nearbyFurniture) return;
         // Like the trees, none stands on an applied corridor's land; nor inside a park or square
         // shown in the scene, whose design brings its own furniture.
-        const outside = points => outsideStructures(window.__threeSiteGround.contextTreesOutsideCorridors(points, displayedProposals(), {
-            isAppliedCorridor: isAppliedCorridorProposal, featureSets: collectProposalFeatureSets, turf
-        }));
+        // As the trees: none inside a proposed building, and photo view stands them only on the ground
+        // its mesh was cut from, since elsewhere the mesh shows the real ones.
+        const designGround = {
+            clear: (Array.isArray(window.proposedBuildings) ? window.proposedBuildings : []).map(feature => feature?.geometry),
+            within: realisticLayerActive ? (window.PhotorealMode?.carvedGround?.() || []) : null,
+            turf
+        };
+        const outside = points => window.__threeSiteGround.pointsOnDesignGround(outsideStructures(
+            window.__threeSiteGround.contextTreesOutsideCorridors(points, displayedProposals(), {
+                isAppliedCorridor: isAppliedCorridorProposal, featureSets: collectProposalFeatureSets, turf
+            })), designGround);
         const fountains = outside(nearbyFurniture.fountains).map(([lng, lat, radiusM]) => ({ lng, lat, radiusM }));
         addFountains3D(furnitureGroup, fountains, 0);
         addLamps3D(furnitureGroup, outside(nearbyFurniture.lamps).map(([lng, lat]) => ({ lng, lat, bearing: 0 })), 0);
@@ -7889,8 +7897,11 @@
             timed(`${family} buildings (queued)`, () => rebuild3DBuildingsOnly({ family }));
         }
         if (corridors) timed('corridors', rebuildCorridors3D);
-        if (corridors && diff.plannedChanged) timed('trees', rebuildTreesOnly);
-        if ((corridors && diff.plannedChanged) || ofKind(window.parks) || ofKind(window.squares)) timed('street furniture', rebuildFurnitureOnly);
+        // Context trees and street furniture stand off corridors, parks, squares and proposed
+        // buildings, and in photo view only on the ground those designs cut from the mesh.
+        const structureGround = ofKind(window.parks) || ofKind(window.squares) || grounds;
+        if ((corridors && diff.plannedChanged) || buildings || structureGround) timed('trees', rebuildTreesOnly);
+        if ((corridors && diff.plannedChanged) || buildings || structureGround) timed('street furniture', rebuildFurnitureOnly);
         const structures = [['parks', parkGroundGroup, parkGroup, () => record3DStructureBuild('parks', () => buildParks3D(parkGroundGroup, parkGroup))],
             ['squares', squareGroundGroup, squareGroup, () => record3DStructureBuild('squares', () => buildSquares3D(squareGroundGroup, squareGroup))],
             ['lakes', lakeGroundGroup, lakeGroup, () => record3DStructureBuild('lakes', () => buildLakes3D(lakeGroundGroup, lakeGroup))]];
@@ -9391,10 +9402,12 @@
     }
 
     // Whether photo was asked for and is still composing: the mode request is still running, or the
-    // photo layer is loading its tiles, and the mesh has not been revealed yet.
+    // photo layer is loading its tiles, and the mesh has not been revealed yet. A slow photo start
+    // shows the model scene meanwhile (PhotorealMode.showsModelMeanwhile).
     function awaitingPhotoReveal() {
         const state = window.__mapModeState;
         if (state?.desired !== 'photo' || realisticLayerActive) return false;
+        if (window.PhotorealMode?.showsModelMeanwhile?.()) return false;
         return !!state.pending || !!window.PhotorealMode?.isLoading?.();
     }
 
@@ -10176,7 +10189,6 @@
                 PersistentStorage.getItem(FACADE_STYLE_KEY), false);
         } catch (_) { }
         treesGroup.visible = treesEnabled;
-        furnitureGroup.visible = !realisticLayerActive;
         waterGroup.visible = waterEnabled && !realisticLayerActive;
         greenGroup.visible = greenEnabled && !realisticLayerActive;
         scene.add(flatGroup);
@@ -11816,14 +11828,15 @@
     // Expose globals for debugging/manual control
     // Realistic layer policy: while the photoreal mesh is the built world, the abstract built
     // representations (parcel/road slabs, existing buildings, existing rail) hide — proposals,
-    // corridor cross-sections and planned structures stay, standing on the mesh. Context trees stay
-    // only on the ground the mesh was cut from (buildTreesGroup), as model view shows them there.
+    // corridor cross-sections and planned structures stay, standing on the mesh. Context trees and
+    // street furniture stay only on the ground the mesh was cut from (buildTreesGroup,
+    // rebuildFurnitureOnly), as model view shows them there.
     window.setRealisticLayerActive = function (on, options = {}) {
         realisticLayerActive = !!on;
         rebuildPlanningSources3D();
         if (flatGroup) flatGroup.visible = !realisticLayerActive;
         rebuildTreesOnly(); // which context trees stand depends on the view (buildTreesGroup)
-        if (furnitureGroup) furnitureGroup.visible = !realisticLayerActive;
+        rebuildFurnitureOnly(); // street furniture follows the trees (rebuildFurnitureOnly)
         if (waterGroup) waterGroup.visible = waterEnabled && !realisticLayerActive;
         if (greenGroup) greenGroup.visible = greenEnabled && !realisticLayerActive;
         syncLifeVisibility();

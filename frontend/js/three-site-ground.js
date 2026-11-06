@@ -27,12 +27,13 @@
         });
     }
 
-    // The context trees a design's ground leaves standing: none inside `clear` (the proposed buildings,
-    // which stand where those trees were), and, when `within` is given, only those inside it. Photo view
-    // passes the ground its mesh was cut away from (parks, squares, plot surroundings): there the real
-    // trees are gone with the mesh, and everywhere else the mesh still shows them. Geometries are
-    // GeoJSON Polygon/MultiPolygon in [lng, lat]; trees are [lng, lat] points.
-    function treesOnDesignGround(trees, { clear = [], within = null, turf }) {
+    // The context points (trees, street furniture) a design's ground leaves standing: none inside
+    // `clear` (the proposed buildings, which stand where those trees were), and, when `within` is given,
+    // only those inside it. Photo view passes the ground its mesh was cut away from (parks, squares,
+    // plot surroundings): there the real objects are gone with the mesh, and everywhere else the mesh
+    // still shows them. Geometries are GeoJSON Polygon/MultiPolygon in [lng, lat]; points are
+    // [lng, lat, ...] arrays.
+    function pointsOnDesignGround(points, { clear = [], within = null, turf }) {
         const index = geometries => (geometries || []).filter(geometry => geometry
             && ['Polygon', 'MultiPolygon'].includes(geometry.type)).map(geometry => {
             const feature = { type: 'Feature', properties: {}, geometry };
@@ -43,7 +44,7 @@
             && turf.booleanPointInPolygon(point, feature));
         const cleared = index(clear);
         const kept = within ? index(within) : null;
-        return (trees || []).filter(point => Array.isArray(point) && Number.isFinite(point[0]) && Number.isFinite(point[1])
+        return (points || []).filter(point => Array.isArray(point) && Number.isFinite(point[0]) && Number.isFinite(point[1])
             && !inside(point, cleared) && (!kept || inside(point, kept)));
     }
 
@@ -140,5 +141,5 @@
         return features;
     }
 
-    return { contextTreesOutsideCorridors, treesOnDesignGround, sidewalkMaterial, fencePositions, buildFence, buildVacantPlots, standingBuildingFootprints };
+    return { contextTreesOutsideCorridors, pointsOnDesignGround, sidewalkMaterial, fencePositions, buildFence, buildVacantPlots, standingBuildingFootprints };
 });

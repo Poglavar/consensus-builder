@@ -35,22 +35,26 @@ it('does not raycast retained Google tiles after their active scene has been rel
     }
 });
 
-function bootstrapFixture({ hits = true, absoluteHeight = 120 } = {}) {
-    const scene = { parent: null, updateMatrixWorld: vi.fn() };
+function bootstrapFixture({ hits = true, absoluteHeight = 120, attached = false } = {}) {
+    // A tile in view hangs under the tiles group (world-space hits); a cached one has no parent.
+    const scene = { parent: attached ? {} : null, updateMatrixWorld: vi.fn() };
     const seatNode = { position: { z: 0 } };
     const camera = { position: { x: 8, y: 9, z: 10 } };
     const worldUpdates = vi.fn();
     const raycasts = vi.fn();
     class Vector3 {
         constructor(x, y, z) { Object.assign(this, { x, y, z }); }
+        clone() { return new Vector3(this.x, this.y, this.z); }
     }
     class Raycaster {
-        constructor() { this.ray = { applyMatrix4: vi.fn() }; }
-        intersectObject() {
+        constructor(origin, direction) { this.ray = { origin, direction, applyMatrix4: vi.fn() }; }
+        intersectObject(object) {
             raycasts();
             if (!hits) return [];
             const height = absoluteHeight + seatNode.position.z;
-            return [{ point: { clone: () => ({ applyMatrix4: () => ({ z: height }) }) } }];
+            // An attached tile answers in world space; a detached one in the tiles group's frame.
+            return object.parent ? [{ point: { z: height } }]
+                : [{ point: { clone: () => ({ applyMatrix4: () => ({ z: height }) }) } }];
         }
     }
     const matrixWorld = { clone: () => ({ invert() { return this; } }) };
@@ -258,6 +262,12 @@ describe('bootstrapGround integration characterization', () => {
         expect(fixture.raycasts).toHaveBeenCalledTimes(5);
     });
 
+    it('also reads the tiles in view, whose finer surface is the evidence after a wrong seat', () => {
+        const fixture = bootstrapFixture({ attached: true, absoluteHeight: 156 });
+        expect(fixture.bootstrapGround()).toBe(true);
+        expect(fixture.seatNode.position.z).toBe(-156);
+    });
+
     it('probes again only after tile content advances to a fresh revision', () => {
         const fixture = bootstrapFixture();
         expect(fixture.bootstrapGround()).toBe(true);
@@ -277,6 +287,17 @@ describe('bootstrapGround integration characterization', () => {
 });
 
 describe('tryLockGround final seating integration characterization', () => {
+    it('re-estimates the provisional seat instead of locking when the ground is far from the content', () => {
+        const fixture = lockFixture();
+        fixture.context.bootstrapGround = vi.fn(() => true);
+        fixture.context.lockAccumS = 1;
+        fixture.tryLockGround(0);
+        // The probes find the ground 42 m off: a new provisional estimate, no lock.
+        expect(fixture.context.bootstrapGround).toHaveBeenCalledTimes(1);
+        expect(fixture.context.grounded).toBe(false);
+        expect(fixture.lockSamples).toHaveLength(0);
+    });
+
     it('reveals the seated group and dirties Google attribution after three stable, quiet probes', () => {
         const fixture = lockFixture();
         for (let i = 0; i < 3; i++) fixture.tryLockGround(0.25);

@@ -1,7 +1,7 @@
 import { createRequire } from 'node:module';
 import { describe, expect, it, vi } from 'vitest';
 const require = createRequire(import.meta.url);
-const { contextTreesOutsideCorridors, treesOnDesignGround, sidewalkMaterial, fencePositions } = require('../../frontend/js/three-site-ground.js');
+const { contextTreesOutsideCorridors, pointsOnDesignGround, sidewalkMaterial, fencePositions } = require('../../frontend/js/three-site-ground.js');
 const turf = require('@turf/turf');
 
 describe('context trees on a design\'s ground', () => {
@@ -9,18 +9,23 @@ describe('context trees on a design\'s ground', () => {
     const trees = [[0.5, 0.5], [2.5, 2.5], [5.5, 5.5], [8, 8]];
 
     it('clears the trees standing where a proposed building now stands', () => {
-        expect(treesOnDesignGround(trees, { clear: [box(2, 2, 3, 3)], turf })).toEqual([trees[0], trees[2], trees[3]]);
+        expect(pointsOnDesignGround(trees, { clear: [box(2, 2, 3, 3)], turf })).toEqual([trees[0], trees[2], trees[3]]);
     });
 
     it('keeps only the trees on the given ground in photo view, still clearing the buildings on it', () => {
         const park = box(0, 0, 6, 6);
-        expect(treesOnDesignGround(trees, { clear: [box(2, 2, 3, 3)], within: [park], turf })).toEqual([trees[0], trees[2]]);
+        expect(pointsOnDesignGround(trees, { clear: [box(2, 2, 3, 3)], within: [park], turf })).toEqual([trees[0], trees[2]]);
         // No cut ground at all: photo view stands no context tree (the mesh shows the real ones).
-        expect(treesOnDesignGround(trees, { within: [], turf })).toEqual([]);
+        expect(pointsOnDesignGround(trees, { within: [], turf })).toEqual([]);
     });
 
     it('leaves every tree in model view without proposed buildings, and drops invalid points', () => {
-        expect(treesOnDesignGround([...trees, null, [NaN, 0]], { turf })).toEqual(trees);
+        expect(pointsOnDesignGround([...trees, null, [NaN, 0]], { turf })).toEqual(trees);
+    });
+
+    it('keeps street furniture points whole, with their extra fields', () => {
+        const fountains = [[0.5, 0.5, 4], [5.5, 5.5, 2]];
+        expect(pointsOnDesignGround(fountains, { within: [box(0, 0, 1, 1)], turf })).toEqual([[0.5, 0.5, 4]]);
     });
 });
 

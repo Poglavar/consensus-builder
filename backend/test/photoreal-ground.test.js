@@ -347,3 +347,21 @@ describe('photoreal underground recovery', () => {
         expect(undergroundRecoveryShift({ ...stuck, recoveries: UNDERGROUND_RECOVERY.maxRecoveries })).toBe(0);
     });
 });
+
+describe('photoreal provisional re-estimate', () => {
+    const { needsProvisionalEstimate, PROVISIONAL_REESTIMATE_M } = require('../../frontend/js/photoreal-ground.js');
+
+    it('re-estimates when the streamed ground lies far from the content, either way, or is not found', () => {
+        // The 2026-11-06 stall: a 500 m recovery left the ground 157 m below the content.
+        expect(needsProvisionalEstimate(-157)).toBe(true);
+        expect(needsProvisionalEstimate(342)).toBe(true);
+        expect(needsProvisionalEstimate(null)).toBe(true);
+        expect(needsProvisionalEstimate(NaN)).toBe(true);
+    });
+
+    it('leaves a seat near the content to the final lock', () => {
+        expect(needsProvisionalEstimate(-0.41)).toBe(false);
+        expect(needsProvisionalEstimate(PROVISIONAL_REESTIMATE_M - 0.1)).toBe(false);
+        expect(needsProvisionalEstimate(-(PROVISIONAL_REESTIMATE_M - 0.1))).toBe(false);
+    });
+});

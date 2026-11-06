@@ -79,6 +79,16 @@
         return UNDERGROUND_RECOVERY.firstShiftM * Math.pow(2, s.recoveries);
     }
 
+    // The seating rays find the streamed surface far from the content's z=0: the provisional seat
+    // came from coarse tiles (or an underground recovery overshot), and the camera now looks at the
+    // ground from the wrong height, where the view can take longer to load than the startup allows.
+    // Then the provisional estimate runs again on the finer tiles that have arrived, instead of
+    // waiting for the stream to finish at the wrong height. Also when no ray finds a surface.
+    const PROVISIONAL_REESTIMATE_M = 20;
+    function needsProvisionalEstimate(groundZ) {
+        return !finite(groundZ) || Math.abs(groundZ) >= PROVISIONAL_REESTIMATE_M;
+    }
+
     function canFinalizeSeating(progress, contentQuietMs) {
         return finite(progress) && progress >= 0.995 && finite(contentQuietMs) && contentQuietMs >= 1400;
     }
@@ -460,6 +470,8 @@
         advanceEmptyContentTimer: advanceEmptyContentTimer,
         undergroundRecoveryShift: undergroundRecoveryShift,
         UNDERGROUND_RECOVERY: UNDERGROUND_RECOVERY,
+        needsProvisionalEstimate: needsProvisionalEstimate,
+        PROVISIONAL_REESTIMATE_M: PROVISIONAL_REESTIMATE_M,
         canFinalizeSeating: canFinalizeSeating,
         selectRoadSurfaceHeight: selectRoadSurfaceHeight,
         roadFloorEncodingRange: roadFloorEncodingRange,
