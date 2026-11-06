@@ -7,7 +7,7 @@ import express from 'express';
 import request from 'supertest';
 import { describe, expect, it, vi } from 'vitest';
 import * as web3 from '@solana/web3.js';
-import { AGREEMENTS_BY_ACCOUNT_SQL, AGREEMENTS_SQL, DEVNET_USDC_MINT, agreementByAccount, rowToAgreement, setupMarketsRoute } from '../routes/markets.js';
+import { AGREEMENTS_BY_ACCOUNT_SQL, AGREEMENTS_SQL, DEVNET_USDC_MINT, agreementByAccount, hasCanonicalMarketTerms, rowToAgreement, setupMarketsRoute } from '../routes/markets.js';
 import { AGREEMENT_PROGRAM_ID, agreementAccountOf } from '../agreements/onchain.js';
 import { buildAgreementExecutionRecipe } from '../oracle/market-recipe.js';
 import { cidOfObject } from '../cid.js';
@@ -241,5 +241,26 @@ describe('GET /oracle/recipes/agreement-execution-v1', () => {
         const res = await request(failing).get(`/oracle/recipes/agreement-execution-v1?agreement=${ACCOUNT}`);
         errorSpy.mockRestore();
         expect(res.status).toBe(500);
+    });
+});
+
+// 2026-10-30 new markets opened with b = 5 USDC while this check still required b = 100, so every city
+// holding one such market answered /markets with 502 and its Bets sheet stayed empty.
+describe('hasCanonicalMarketTerms', () => {
+    const lmsr = require('../../frontend/js/bets/lmsr.js');
+    const subject = { authority: SPONSOR, deadline: 1794025830 };
+    const terms = (b, overrides = {}) => ({ kind: 0, proposal: ACCOUNT, stakeMint: DEVNET_USDC_MINT, creator: SPONSOR, b,
+        closesAt: 1794025830n, graceSeconds: 0, maxPosition: 0n, seed: lmsr.maxLoss(b), ...overrides });
+
+    it('accepts both canonical liquidities, b = 5 and b = 100 devnet USDC, each with its own seed', () => {
+        expect(hasCanonicalMarketTerms(terms(5_000_000n), ACCOUNT, subject)).toBe(true);
+        expect(hasCanonicalMarketTerms(terms(100_000_000n), ACCOUNT, subject)).toBe(true);
+    });
+
+    it('rejects any other liquidity, a seed of another b, or a foreign creator', () => {
+        expect(hasCanonicalMarketTerms(terms(7_000_000n), ACCOUNT, subject)).toBe(false);
+        expect(hasCanonicalMarketTerms(terms(5_000_000n, { seed: lmsr.maxLoss(100_000_000n) }), ACCOUNT, subject)).toBe(false);
+        expect(hasCanonicalMarketTerms(terms(5_000_000n, { creator: STRANGER }), ACCOUNT, subject)).toBe(false);
+        expect(hasCanonicalMarketTerms(terms(5_000_000n, { closesAt: 1n }), ACCOUNT, subject)).toBe(false);
     });
 });

@@ -3,6 +3,7 @@
 import { createRequire } from 'node:module';
 import { createAgreementChain, agreementAccountOf } from '../agreements/onchain.js';
 import { DEVNET_USDC_MINT } from '../solana/address-book.js';
+import { ACCEPTED_MARKET_LIQUIDITY } from '../markets/agreement-source.js';
 import { accountsPerRequest, getMultipleAccountsBatched } from '../solana/account-batching.js';
 
 const require = createRequire(import.meta.url);
@@ -23,7 +24,8 @@ function agreementChain(connection) {
 // New agreement markets open with b = 5 devnet USDC, a seed of b·ln 2 ≈ 3.47 USDC (2026-10-30: at b = 100
 // one 69 USDC seed outran the devnet faucet). Markets opened earlier keep b = 100 and stay readable/tradable.
 export const DEFAULT_B = 5_000_000n;
-const ACCEPTED_B = new Set([DEFAULT_B, 100_000_000n]);
+const ACCEPTED_B = new Set(ACCEPTED_MARKET_LIQUIDITY);
+if (!ACCEPTED_B.has(DEFAULT_B)) throw new Error('DEFAULT_B must be an accepted market liquidity.');
 export const GRACE_SECONDS = 0;
 export const MAX_POSITION = 0n;
 export const MARKET_SEED_ATOMIC = lmsr.maxLoss(DEFAULT_B);

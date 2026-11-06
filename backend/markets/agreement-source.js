@@ -6,6 +6,9 @@ import { CURRENT_AGREEMENTS_BY_ACCOUNT_SQL } from '../agreements/current-plan-sq
 
 export const MARKET_LIQUIDITY = '100000000';
 export const MARKET_GRACE_SECONDS = 0;
+// Every LMSR liquidity b a canonical agreement market may carry: b = 100 devnet USDC before 2026-10-30,
+// b = 5 for markets opened since (backend/agents/bettor.js DEFAULT_B, frontend/js/solana/market-bridge.js).
+export const ACCEPTED_MARKET_LIQUIDITY = Object.freeze([5_000_000n, 100_000_000n]);
 
 export function validateAgreementSource(row, observed) {
     if (!row || !observed?.account || observed.problem) throw Object.assign(new Error('Agreement chain evidence is unavailable'), { status: 503 });

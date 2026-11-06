@@ -11,7 +11,7 @@ import { createRequire } from 'node:module';
 import { Connection } from '@solana/web3.js';
 import { buildContests, buildOtherCityContests, subjectAccountOf } from '../markets/contests.js';
 import { AGREEMENT_PROGRAM_ID, AgreementClient, DEVNET_GENESIS_HASH, ONCHAIN_STATUSES } from '../agreements/onchain.js';
-import { MARKET_LIQUIDITY, MARKET_GRACE_SECONDS } from '../markets/agreement-source.js';
+import { ACCEPTED_MARKET_LIQUIDITY, MARKET_GRACE_SECONDS } from '../markets/agreement-source.js';
 import { AGREEMENT_EXECUTION_RECIPE_ID, buildAgreementExecutionRecipe, chainStatusOf } from '../oracle/market-recipe.js';
 import { normalizeCityCode } from '../utils/city-code.js';
 import { currentPlanAgreementSelect, CURRENT_AGREEMENTS_BY_ACCOUNT_SQL } from '../agreements/current-plan-sql.js';
@@ -82,6 +82,16 @@ export async function agreementByAccount(db, account) {
     return rows.map(rowToAgreement).find(agreement => agreement.account === account) || null;
 }
 
+/** Whether a decoded LMSR market account carries the canonical terms of this agreement's bet. */
+export function hasCanonicalMarketTerms(market, agreementAccount, subject) {
+    const b = typeof market?.b === 'bigint' ? market.b : null;
+    // The program names a market's subject account `proposal`.
+    return market?.kind === 0 && market.proposal === agreementAccount && market.stakeMint === DEVNET_USDC_MINT &&
+        market.creator === subject.authority && b !== null && ACCEPTED_MARKET_LIQUIDITY.includes(b) &&
+        Number(market.closesAt) === subject.deadline && market.graceSeconds === MARKET_GRACE_SECONDS &&
+        market.maxPosition === 0n && market.seed === lmsr.maxLoss(b);
+}
+
 // Market accounts for a list of agreement accounts (the markets' subjects), read in batches through
 // SOLANA_RPC_URL. Returns Map(agreementAccount → { address, market|null }).
 export function defaultMarketReader(env = process.env) {
@@ -112,11 +122,7 @@ export function defaultMarketReader(env = process.env) {
             if (info) {
                 if (info.owner?.toBase58() !== MARKET_PROGRAM_ID) throw new Error('Unexpected market account program.');
                 market = lmsrClient.readMarketAccount(info, entry.pda);
-                // The program names a market's subject account `proposal`.
-                if (market.kind !== 0 || market.proposal !== entry.account || market.stakeMint !== DEVNET_USDC_MINT ||
-                    market.creator !== subject.authority || String(market.b) !== MARKET_LIQUIDITY ||
-                    Number(market.closesAt) !== subject.deadline || market.graceSeconds !== MARKET_GRACE_SECONDS ||
-                    market.maxPosition !== 0n || market.seed !== lmsr.maxLoss(BigInt(MARKET_LIQUIDITY))) {
+                if (!hasCanonicalMarketTerms(market, entry.account, subject)) {
                     throw new Error('Market account terms differ from the canonical agreement bet.');
                 }
             }
