@@ -310,7 +310,8 @@ describe('default floor plans (a suggestion; degrades, reported)', () => {
 
 describe('structures.js 2D graphics (degrade, reported)', () => {
     const path = '../../frontend/js/structures.js';
-    const load = t => runFunctions(path, ['structuresReportClip', 'subtractCorridorsFromGeometry', 'computeLakeZones', 'ensureLakeGraphics', 'featureBbox'], {
+    const load = t => runFunctions(path, ['structuresReportClip', 'subtractCorridorsFromGeometry', 'computeLakeZones', 'ensureLakeGraphics', 'featureBbox',
+        'decorationRandom', 'randomPointsInBbox'], {
         turf: t,
         window: { __parcelArrangement: A },
         LAKE_SHORE_TARGET_RATIO: 0.2,

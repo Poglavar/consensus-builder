@@ -294,13 +294,38 @@
         return { type: 'Feature', properties: feature.properties, geometry };
     }
 
-    function randomPointsInside(feature, count) {
+    // Decorations a design does not carry (its ponds, paths, trees, stalls, a lake's fish) are derived
+    // from it, not drawn fresh: the same park, square or lake looks the same on every load, in 2D and
+    // 3D, on every device. The stream is keyed on the design and its ground; `salt` separates the
+    // uses within one feature. Seeded on the first draw, so a redraw that keeps its decorations
+    // never hashes the ground.
+    function decorationRandom(feature, salt) {
+        let next = null;
+        return function rand() {
+            if (!next) {
+                const props = (feature && feature.properties) || {};
+                next = window.UrbanRuleVariation.rngFor('structure-decorations', salt,
+                    props.proposalId ?? props.id ?? '', JSON.stringify(feature?.geometry?.coordinates || []));
+            }
+            return next();
+        };
+    }
+
+    // `count` uniform points in a [west, south, east, north] box, from the given stream.
+    function randomPointsInBbox(count, bbox, rand) {
+        const [west, south, east, north] = bbox;
+        const features = [];
+        for (let i = 0; i < count; i++) features.push(turf.point([west + rand() * (east - west), south + rand() * (north - south)]));
+        return turf.featureCollection(features);
+    }
+
+    function randomPointsInside(feature, count, rand) {
         const out = [];
         const bbox = featureBbox(feature) || [0, 0, 0, 0];
         let attempts = 0;
         while (out.length < count && attempts < count * 20) {
             attempts++;
-            const p = turf.randomPoint(1, { bbox }).features[0];
+            const p = randomPointsInBbox(1, bbox, rand).features[0];
             if (pointInFeature(p, feature)) out.push(p);
         }
         return out;
@@ -488,6 +513,7 @@
     }
 
     function ensureParkDecorations(parkFeature) {
+        const rand = decorationRandom(parkFeature, 'park');
         try {
             if (!parkFeature || !parkFeature.geometry) return;
             const props = parkFeature.properties = parkFeature.properties || {};
@@ -558,11 +584,11 @@
                     const randomBoundaryPointOnSide = (desiredSide) => {
                         if (!boundaryLines.length || totalLen <= 0) return null;
                         for (let attempt = 0; attempt < 60; attempt++) {
-                            let r = Math.random() * totalLen;
+                            let r = rand() * totalLen;
                             let idx = 0;
                             while (idx < boundaryLines.length - 1 && r > lineLens[idx]) { r -= lineLens[idx]; idx++; }
                             const chosen = boundaryLines[idx];
-                            const dKm = Math.random() * (lineLens[idx] || 0);
+                            const dKm = rand() * (lineLens[idx] || 0);
                             let pt = null; try { pt = turf.along(chosen, dKm, { units: 'kilometers' }); } catch (_) { pt = null; }
                             if (!pt || !pt.geometry) continue;
                             const [lng, lat] = pt.geometry.coordinates;
@@ -570,19 +596,19 @@
                             if (!desiredSide || side === desiredSide) return pt;
                         }
                         try {
-                            const i = Math.floor(Math.random() * boundaryLines.length);
-                            const dKm = Math.random() * (lineLens[i] || 0);
+                            const i = Math.floor(rand() * boundaryLines.length);
+                            const dKm = rand() * (lineLens[i] || 0);
                             return turf.along(boundaryLines[i], dKm, { units: 'kilometers' });
                         } catch (_) { return null; }
                     };
 
                     const sides = ['left', 'right', 'top', 'bottom'];
-                    const pathCount = 2 + Math.round(Math.random());
+                    const pathCount = 2 + Math.round(rand());
                     const newPaths = [];
                     for (let p = 0; p < pathCount; p++) {
-                        const s1 = sides[Math.floor(Math.random() * sides.length)];
-                        let s2 = sides[Math.floor(Math.random() * sides.length)];
-                        if (s2 === s1) s2 = sides[(sides.indexOf(s1) + 1 + Math.floor(Math.random() * 3)) % 4];
+                        const s1 = sides[Math.floor(rand() * sides.length)];
+                        let s2 = sides[Math.floor(rand() * sides.length)];
+                        if (s2 === s1) s2 = sides[(sides.indexOf(s1) + 1 + Math.floor(rand() * 3)) % 4];
                         const start = randomBoundaryPointOnSide(s1) || randomBoundaryPointOnSide(null);
                         const end = randomBoundaryPointOnSide(s2) || randomBoundaryPointOnSide(null);
                         if (!start || !end) continue;
@@ -590,9 +616,9 @@
                         const [ex, ey] = end.geometry.coordinates;
                         const vx = ex - sx, vy = ey - sy; const vLen = Math.hypot(vx, vy) || 1e-9;
                         const ux = -vy / vLen, uy = vx / vLen;
-                        const amp = minDim * (0.05 + Math.random() * 0.05);
-                        const freq = 0.5 + Math.random() * 1.5;
-                        const phase = Math.random() * Math.PI * 2;
+                        const amp = minDim * (0.05 + rand() * 0.05);
+                        const freq = 0.5 + rand() * 1.5;
+                        const phase = rand() * Math.PI * 2;
                         const steps = 90;
                         const pts = [];
                         for (let i = 0; i <= steps; i++) {
@@ -614,12 +640,12 @@
 
                     // Fallback interior wiggle paths if boundary-based failed
                     if (newPaths.length === 0 && b) {
-                        const extraCount = 2 + Math.round(Math.random());
+                        const extraCount = 2 + Math.round(rand());
                         for (let pi = 0; pi < extraCount; pi++) {
-                            const cy = minLat + (0.2 + 0.6 * Math.random()) * h;
-                            const amp = h * (0.08 + Math.random() * 0.06);
-                            const freq = 1 + Math.random();
-                            const phase = Math.random() * Math.PI * 2;
+                            const cy = minLat + (0.2 + 0.6 * rand()) * h;
+                            const amp = h * (0.08 + rand() * 0.06);
+                            const freq = 1 + rand();
+                            const phase = rand() * Math.PI * 2;
                             const steps = 96;
                             const pts = [];
                             for (let i = 0; i <= steps; i++) {
@@ -650,17 +676,17 @@
                 const [minLng, minLat, maxLng, maxLat] = bbox;
                 const w = Math.max(1e-8, Math.abs(maxLng - minLng));
                 const h = Math.max(1e-8, Math.abs(maxLat - minLat));
-                const pondCount = 1 + Math.floor(Math.random() * 3); // 1..3
+                const pondCount = 1 + Math.floor(rand() * 3); // 1..3
                 let safety = 0;
                 while (ponds.length < pondCount && safety < pondCount * 60) {
                     safety++;
                     const marginLng = w * 0.05;
                     const marginLat = h * 0.05;
-                    const cx = minLng + marginLng + Math.random() * Math.max(1e-8, (w - 2 * marginLng));
-                    const cy = minLat + marginLat + Math.random() * Math.max(1e-8, (h - 2 * marginLat));
-                    const rLng = (Math.min(w, h) * (0.03 + 0.06 * Math.random()));
-                    const rLat = rLng * (0.9 + Math.random() * 0.2);
-                    const rot = Math.random() * Math.PI * 2;
+                    const cx = minLng + marginLng + rand() * Math.max(1e-8, (w - 2 * marginLng));
+                    const cy = minLat + marginLat + rand() * Math.max(1e-8, (h - 2 * marginLat));
+                    const rLng = (Math.min(w, h) * (0.03 + 0.06 * rand()));
+                    const rLat = rLng * (0.9 + rand() * 0.2);
+                    const rot = rand() * Math.PI * 2;
                     const ring = createEllipse([cx, cy], rLng, rLat, 64, rot);
                     const ringClosed = ring[0][0] === ring[ring.length - 1][0] && ring[0][1] === ring[ring.length - 1][1]
                         ? ring
@@ -702,11 +728,11 @@
             const randomBoundaryPointOnSide = (desiredSide) => {
                 if (!boundaryLines.length || totalLen <= 0) return null;
                 for (let attempt = 0; attempt < 60; attempt++) {
-                    let r = Math.random() * totalLen;
+                    let r = rand() * totalLen;
                     let idx = 0;
                     while (idx < boundaryLines.length - 1 && r > lineLens[idx]) { r -= lineLens[idx]; idx++; }
                     const chosen = boundaryLines[idx];
-                    const dKm = Math.random() * (lineLens[idx] || 0);
+                    const dKm = rand() * (lineLens[idx] || 0);
                     let pt = null; try { pt = turf.along(chosen, dKm, { units: 'kilometers' }); } catch (_) { pt = null; }
                     if (!pt || !pt.geometry) continue;
                     const [lng, lat] = pt.geometry.coordinates;
@@ -714,19 +740,19 @@
                     if (!desiredSide || side === desiredSide) return pt;
                 }
                 try {
-                    const i = Math.floor(Math.random() * boundaryLines.length);
-                    const dKm = Math.random() * (lineLens[i] || 0);
+                    const i = Math.floor(rand() * boundaryLines.length);
+                    const dKm = rand() * (lineLens[i] || 0);
                     return turf.along(boundaryLines[i], dKm, { units: 'kilometers' });
                 } catch (_) { return null; }
             };
 
             const sides = ['left', 'right', 'top', 'bottom'];
-            const pathCount = 2 + Math.round(Math.random());
+            const pathCount = 2 + Math.round(rand());
             const paths = [];
             for (let p = 0; p < pathCount; p++) {
-                const s1 = sides[Math.floor(Math.random() * sides.length)];
-                let s2 = sides[Math.floor(Math.random() * sides.length)];
-                if (s2 === s1) s2 = sides[(sides.indexOf(s1) + 1 + Math.floor(Math.random() * 3)) % 4];
+                const s1 = sides[Math.floor(rand() * sides.length)];
+                let s2 = sides[Math.floor(rand() * sides.length)];
+                if (s2 === s1) s2 = sides[(sides.indexOf(s1) + 1 + Math.floor(rand() * 3)) % 4];
                 const start = randomBoundaryPointOnSide(s1) || randomBoundaryPointOnSide(null);
                 const end = randomBoundaryPointOnSide(s2) || randomBoundaryPointOnSide(null);
                 if (!start || !end) continue;
@@ -734,9 +760,9 @@
                 const [ex, ey] = end.geometry.coordinates;
                 const vx = ex - sx, vy = ey - sy; const vLen = Math.hypot(vx, vy) || 1e-9;
                 const ux = -vy / vLen, uy = vx / vLen;
-                const amp = minDim * (0.05 + Math.random() * 0.05);
-                const freq = 0.5 + Math.random() * 1.5;
-                const phase = Math.random() * Math.PI * 2;
+                const amp = minDim * (0.05 + rand() * 0.05);
+                const freq = 0.5 + rand() * 1.5;
+                const phase = rand() * Math.PI * 2;
                 const steps = 90;
                 let seg = [];
                 for (let i = 0; i <= steps; i++) {
@@ -765,7 +791,7 @@
             let areaM2 = 0; try { areaM2 = turf.area(parkFeature); } catch (_) { }
             const treeCount = Math.max(5, Math.min(40, Math.round(areaM2 / 1500)));
             const trees = [];
-            const candidates = randomPointsInside(parkFeature, treeCount * 2);
+            const candidates = randomPointsInside(parkFeature, treeCount * 2, rand);
             for (let i = 0; i < candidates.length && trees.length < treeCount; i++) {
                 const c = candidates[i];
                 let inPond = false;
@@ -777,12 +803,12 @@
 
             // Fallback: if no paths created (complex shapes), create 2-3 interior wiggle paths across bbox
             if (paths.length === 0 && b) {
-                const extraCount = 2 + Math.round(Math.random());
+                const extraCount = 2 + Math.round(rand());
                 for (let pi = 0; pi < extraCount; pi++) {
-                    const cy = minLat + (0.2 + 0.6 * Math.random()) * h; // random band inside height
-                    const amp = h * (0.08 + Math.random() * 0.06);
-                    const freq = 1 + Math.random();
-                    const phase = Math.random() * Math.PI * 2;
+                    const cy = minLat + (0.2 + 0.6 * rand()) * h; // random band inside height
+                    const amp = h * (0.08 + rand() * 0.06);
+                    const freq = 1 + rand();
+                    const phase = rand() * Math.PI * 2;
                     const steps = 96;
                     let seg = [];
                     for (let i = 0; i <= steps; i++) {
@@ -904,6 +930,7 @@
     }
 
     function drawSquareTexture(group, squareFeature) {
+        const rand = decorationRandom(squareFeature, 'square-texture');
         // Subtle cobblestone-like texture: small random dots sprinkled inside the polygon
         try {
             if (!squareTextureRenderer && typeof L !== 'undefined' && L.canvas) {
@@ -913,16 +940,16 @@
             // Base density, then 10x multiplier as requested; cap to keep performance reasonable
             const base = Math.max(80, Math.min(360, Math.round(areaM2 / 110)));
             const count = Math.min(3000, base * 10);
-            const pts = randomPointsInside(squareFeature, Math.floor(count * 1.5));
+            const pts = randomPointsInside(squareFeature, Math.floor(count * 1.5), rand);
             let placed = 0;
             for (let i = 0; i < pts.length && placed < count; i++) {
                 const c = pts[i] && pts[i].geometry && pts[i].geometry.coordinates;
                 if (!c) continue;
                 const [lng, lat] = c;
-                const r = 1.6 + Math.random() * 1.2; // 1.6–2.8 px
-                const opacity = 0.35 + Math.random() * 0.20; // 0.35–0.55
+                const r = 1.6 + rand() * 1.2; // 1.6–2.8 px
+                const opacity = 0.35 + rand() * 0.20; // 0.35–0.55
                 // Mixed stones: darker grey and very light grey
-                const useLight = Math.random() < 0.3; // 30% light stones
+                const useLight = rand() < 0.3; // 30% light stones
                 const fill = useLight ? '#d2d2d2' : '#8a8a8a';
                 L.circleMarker([lat, lng], {
                     radius: r,
@@ -1021,6 +1048,7 @@
     // One statue per square by default: offset from the centre toward a corner, first
     // candidate inside the polygon wins (fountain owns the centre).
     function autoStatuePoint(squareFeature) {
+        const rand = decorationRandom(squareFeature, 'statue');
         try {
             const bbox = featureBbox(squareFeature);
             if (!bbox) return null;
@@ -1038,7 +1066,7 @@
             for (const candidate of candidates) {
                 if (pointInFeature(turf.point(candidate), squareFeature)) return candidate;
             }
-            const random = randomPointsInside(squareFeature, 5);
+            const random = randomPointsInside(squareFeature, 5, rand);
             const randomCoordinate = random && random[0] && random[0].geometry && random[0].geometry.coordinates;
             return Array.isArray(randomCoordinate) ? randomCoordinate : null;
         } catch (_) {
@@ -1047,6 +1075,7 @@
     }
 
     function ensureSquareDecorations(squareFeature) {
+        const rand = decorationRandom(squareFeature, 'square');
         try {
             if (!squareFeature || !squareFeature.geometry) return;
             const props = squareFeature.properties = squareFeature.properties || {};
@@ -1069,21 +1098,21 @@
             if (ctr && ctr.geometry && pointInFeature(ctr, squareFeature)) {
                 fountain = ctr.geometry.coordinates; // [lng,lat]
             } else {
-                const pts = randomPointsInside(squareFeature, 10);
+                const pts = randomPointsInside(squareFeature, 10, rand);
                 fountain = pts && pts[0] && pts[0].geometry && pts[0].geometry.coordinates;
             }
             // A few stalls near periphery but inside
             const stalls = [];
-            const count = 2 + Math.round(Math.random() * 2); // 2..4
+            const count = 2 + Math.round(rand() * 2); // 2..4
             const bbox = featureBbox(squareFeature) || [0, 0, 0, 0];
             const [minLng, minLat, maxLng, maxLat] = bbox;
             const w = Math.max(1e-8, maxLng - minLng), h = Math.max(1e-8, maxLat - minLat);
             let tries = 0;
             while (stalls.length < count && tries < 100) {
                 tries++;
-                const edge = Math.floor(Math.random() * 4);
-                let lng = minLng + Math.random() * w;
-                let lat = minLat + Math.random() * h;
+                const edge = Math.floor(rand() * 4);
+                let lng = minLng + rand() * w;
+                let lat = minLat + rand() * h;
                 const margin = 0.06; // relative to minDim
                 if (edge === 0) lat = minLat + h * margin;
                 else if (edge === 1) lat = maxLat - h * margin;
@@ -1182,6 +1211,7 @@
     }
 
     function ensureLakeGraphics(lakeFeature) {
+        const rand = decorationRandom(lakeFeature, 'lake');
         try {
             if (!lakeFeature || !lakeFeature.geometry) return false;
             const props = lakeFeature.properties = lakeFeature.properties || {};
@@ -1225,7 +1255,7 @@
                 const bbox = featureBbox(fishArea) || [0, 0, 0, 0];
                 const area = turf.area(fishArea) || 0;
                 const desired = Math.max(4, Math.min(14, Math.round(area / 5000)));
-                const candidates = turf.randomPoint(desired * 4, { bbox });
+                const candidates = randomPointsInBbox(desired * 4, bbox, rand);
                 candidates.features.forEach(pt => {
                     try {
                         if (turf.booleanPointInPolygon(pt, fishArea) && fish.length < desired) {
