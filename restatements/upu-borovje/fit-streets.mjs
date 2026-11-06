@@ -31,6 +31,27 @@ export const REPAIR = 'borovje-streets-fit-v1';
 // A band piece the lanes leave goes to a plot only if it shares at least this much edge with it; smaller
 // pieces than MIN_PIECE_M2 are rounding between two clips and are dropped.
 const RULE = Object.freeze({ MIN_SHARED_EDGE_M: 1, MIN_PIECE_M2: 0.5 });
+// Stretches that are not streets of their own. The IS-1 cell at the north-east corner lies on the collector's
+// band where it bends north: its axis runs 8 m beside the collector's last stretch and ends on the same
+// vertex, so as a street its lanes covered the collector's own (overlapping road surfaces at that junction).
+// Its ground is the collector's.
+export const DUPLICATE_STRETCHES = Object.freeze(['upu-kolno-pjesacka-sjeveroistok']);
+
+// Version 2 without the duplicate stretches, which version 3 drops with the rest of its street changes.
+async function version2Streets() {
+    const state = await borovjeState(2);
+    for (const road of state.roads) {
+        const d = road.definition;
+        const keep = d.segmentIds.map(id => !DUPLICATE_STRETCHES.includes(id));
+        if (keep.every(Boolean)) continue;
+        road.definition = { ...d,
+            segments: d.segments.filter((_, i) => keep[i]), points: d.points.filter((_, i) => keep[i]),
+            segmentIds: d.segmentIds.filter((_, i) => keep[i]),
+            segmentProfiles: Object.fromEntries(Object.entries(d.segmentProfiles).filter(([id]) => !DUPLICATE_STRETCHES.includes(id))) };
+        road.droppedStretches = d.segmentIds.filter((_, i) => !keep[i]);
+    }
+    return state;
+}
 // How long the app may take to load its road builder.
 const APP_READY_MS = 5 * 60 * 1000;
 const WAIT_ERROR_MS = 5 * 1000;
@@ -56,7 +77,7 @@ const firstLine = error => String((error && error.message) || error).split('\n')
 // ---------------------------------------------------------------------------------------------------------
 async function capture() {
     if (!values.app) throw new Error('--capture needs --app <app url>');
-    const state = await borovjeState(2);
+    const state = await version2Streets();
     const definitions = {};
     for (const road of state.roads) {
         // The street as the app holds it; the footprint comes from the lanes alone.
@@ -109,7 +130,7 @@ async function capture() {
 // ---------------------------------------------------------------------------------------------------------
 async function compute() {
     const { footprints } = JSON.parse(await readFile(FOOTPRINT_FILE, 'utf8'));
-    const state = await borovjeState(2);
+    const state = await version2Streets();
     log(`version 2: ${state.layouts.length} parcel layouts, ${state.roads.length} streets, ${state.buildings.length} buildings, ${state.parks.length} parks`);
     require('dotenv').config({ path: new URL('../../backend/.env', import.meta.url).pathname, quiet: true });
     const { createPool } = require('./db/connection.cjs');
@@ -175,7 +196,11 @@ async function compute() {
             const { rows: [u] } = await q('SELECT ST_AsGeoJSON(ST_Union(ng), 15) AS g FROM piece WHERE member = $1', [layout.key]);
             members[layout.key] = { pool: JSON.parse(u.g), plots: Object.fromEntries(own.map(p => [p.owner, { geometry: JSON.parse(p.g), m2: Number(p.m2.toFixed(1)) }])) };
         }
-        for (const road of state.roads) members[road.key] = { polygon: footprints[road.key] };
+        for (const road of state.roads) {
+            const d = road.definition;
+            members[road.key] = { polygon: footprints[road.key], ...(road.droppedStretches ? {
+                segments: d.segments, segmentIds: d.segmentIds, segmentProfiles: d.segmentProfiles, droppedStretches: road.droppedStretches } : {}) };
+        }
         for (const park of state.parks) {
             const plot = pieces.find(p => p.owner === park.key);
             if (!plot.same) members[park.key] = { geometry: JSON.parse(plot.g) };

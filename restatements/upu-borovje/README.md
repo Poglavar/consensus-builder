@@ -62,7 +62,7 @@ them, keyed by the design keys of `borovje-designs.mjs`.
 The official plan, **UPU Borovje – zona jug**, is 22 designs (all dated 23 June 2026, the plan's public
 draft) and one agreement over them, in this order:
 
-- **2 street designs** (`ulice`, `ulice-zapad`) — 6 named centerlines extracted from **sheet 2a (Prometni i
+- **2 street designs** (`ulice`, `ulice-zapad`) — 6 named centerlines (5 streets: version 3 drops a duplicate) extracted from **sheet 2a (Prometni i
   komunikacijski sustav)**, which draws the roads explicitly: the collector is the red-hatched planned-road
   band (centerline smoothed to eleven vertices / ten edges while retaining its broad curve), the IS-1/IS-2
   crossings are clean colored cells (straight PCA axes). Crossing endpoints are junction vertices in the
@@ -79,7 +79,7 @@ draft) and one agreement over them, in this order:
   is where a building may stand; its above-ground floor area is capped at kisn × the plot (PP-1 1.5,
   PP-2 1.7, PP-3 1.6, PP-4 2.1). A slab filling its whole envelope at full height exceeds the cap on
   every plot, so each is shortened along its length about its centre (`flat-plan.mjs`
-  `fitToFloorAreaLimit`): the eleven hold 64,159 m² against a cap of 64,224 m². The rest of each plot is
+  `fitToFloorAreaLimit`): the eleven hold 64,076 m² against a cap of 64,141 m². The rest of each plot is
   green ground (`geometry.surroundings`, treatment `green`), so the old ground and trees on it go.
 - **6 park designs** (5× Z1 + the central R2 recreation zone — modeled as a park until a dedicated
   playground/sports-field structure kind exists), each exactly its plot.
@@ -87,8 +87,8 @@ draft) and one agreement over them, in this order:
 The agreement is a community vote with no lens, money, allocations or deadline; its inputs and outputs are
 the land the app derives when it applies the 22 designs (`ground/upu-borovje.json`).
 
-On production the plan is [`/plans/bafkreib4ajzktd5niv6dhooeulpincj6iuxteh2k3zbevxf5lvx6fqukxu`](https://urbangametheory.xyz/plans/bafkreib4ajzktd5niv6dhooeulpincj6iuxteh2k3zbevxf5lvx6fqukxu)
-and its agreement [`/agreements/bafkreih243fwautl6h5ybpz535ppdezqlcqw44f6is3n4skqw47vyes3fe`](https://urbangametheory.xyz/agreements/bafkreih243fwautl6h5ybpz535ppdezqlcqw44f6is3n4skqw47vyes3fe?city=zagreb).
+On production the plan is [`/plans/bafkreifdrje7diyrna7evykmaplsijaylafvngy6s3ayyfhldqd4f63roy`](https://urbangametheory.xyz/plans/bafkreifdrje7diyrna7evykmaplsijaylafvngy6s3ayyfhldqd4f63roy)
+and its agreement [`/agreements/bafkreignn4d55ao3l3gnyex5qd2onzwbsg3tc6agpnz5nhstyak7lj4mva`](https://urbangametheory.xyz/agreements/bafkreignn4d55ao3l3gnyex5qd2onzwbsg3tc6agpnz5nhstyak7lj4mva?city=zagreb).
 The designs are bound with the app's Croatian cadastre (`oss-wfs`), as the app binds a Zagreb design.
 
 **Borovje – urbani blokovi** (`build-urban-blocks.mjs`, authored by Urban Game Theory on 10 October 2026) is
@@ -164,8 +164,12 @@ node fit-streets.mjs --capture --app <app url> [--api <api>]   # version 2 stree
 node fit-streets.mjs --compute                                 # version 2 + footprints + local cadastre → data/streets-fit.json
 ```
 
-Result: street land 16,501 → 13,376 m²; eleven plots change (most by a sliver where lanes crossed them; M1-3,
-M1-5, M1-6, M1-9 and R2 grow by 110–860 m² to meet the street); 1,525 m² stays with its cadastral parcel. The
+Version 3 also drops one extracted stretch that is not a street of its own (`DUPLICATE_STRETCHES` in
+`fit-streets.mjs`): the north-east IS-1 cell lies on the collector's band where it bends north, its axis 8 m
+beside the collector's last stretch and ending on the same vertex, so its lanes covered the collector's own.
+
+Result: street land 16,501 → 13,492 m²; eleven plots change (most by a sliver where lanes crossed them; M1-3,
+M1-5, M1-6, M1-9 and R2 grow by 50–800 m² to meet the street); 1,463 m² stays with its cadastral parcel. The
 collector now also cuts the 23 m² of Letovanićka ulica (1823/8) its lanes run onto. It changes layouts 1
 and 2, both streets and parks R2, Z1-2 and Z1-3.
 

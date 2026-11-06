@@ -122,8 +122,12 @@ describe('borovjeState', () => {
         for (const road of v3.roads) {
             expect(road.definition.polygon, road.key).toEqual(footprints[road.key]);
             expect(road.definition.polygon, road.key).toEqual(fit.members[road.key].polygon);
-            // Only the land changes: the stretches are version 2's.
-            expect(road.definition.segments).toEqual(v2.roads.find(other => other.key === road.key).definition.segments);
+            // Besides the land, version 3 only drops the stretch that is not a street of its own: the north-east
+            // IS-1 cell lies on the collector's bend (fit-streets.mjs DUPLICATE_STRETCHES).
+            const before = v2.roads.find(other => other.key === road.key).definition;
+            const kept = before.segmentIds.map(id => id !== 'upu-kolno-pjesacka-sjeveroistok');
+            expect(road.definition.segments).toEqual(before.segments.filter((_, i) => kept[i]));
+            expect(road.definition.segmentIds).toEqual(before.segmentIds.filter((_, i) => kept[i]));
         }
         const land = v3.roads.map(road => feature(road.definition.polygon));
         for (const layout of v3.layouts) {
@@ -181,8 +185,8 @@ describe('officialPlan', () => {
             const outside = turf.difference(feature(footprint), feature(item.geometry));
             expect(outside ? area(outside.geometry) : 0, item.key).toBeLessThan(0.05);
         }
-        // Every envelope but M1-3's holds more than its limit; M1-3's is shortened by about 2 %.
-        expect(area(building.geometry.buildings[0].geometry) / area(traced.geometry)).toBeGreaterThan(0.97);
+        // Every envelope but M1-3's holds more than its limit; M1-3's is shortened by about 3.4 %.
+        expect(area(building.geometry.buildings[0].geometry) / area(traced.geometry)).toBeGreaterThan(0.96);
         expect(building.buildingProposal.parameters).toMatchObject({ floors: traced.floors, height: Math.round(traced.floors * 3.5 * 10) / 10, typology: 'single' });
         expect(building.title).toBe(`UPU Borovje – zgrada ${traced.name} [${traced.pp}]`);
         expect(byKey.get('r2-1').title).toContain('rekreacija');
@@ -237,11 +241,11 @@ describe('the scripts\' command lines (dry runs and usage only)', () => {
         const plan = await officialPlan();
         const objects = planObjects(plan);
         for (const object of objects) expect(result.stdout).toContain(` ${object.content.goal} ${object.cid} `);
-        // The committed ground file was captured over exactly these designs (published 2026-11-05).
+        // The committed ground file was captured over exactly these designs (published 2026-11-06).
         const ground = JSON.parse(fs.readFileSync(path.join(DIR, 'ground', 'upu-borovje.json'), 'utf8'));
         expect(ground.designCids).toEqual(objects.map(object => object.cid));
         const agreement = planAgreement(plan, objects, ground);
-        expect(result.stdout).toContain(`upu-borovje: agreement ${agreement.cid} "UPU Borovje – zona jug" over 22 designs, 30 input parcels, 55 outputs`);
+        expect(result.stdout).toContain(`upu-borovje: agreement ${agreement.cid} "UPU Borovje – zona jug" over 22 designs, 31 input parcels, 56 outputs`);
         expect(fs.existsSync(path.join(HOME, '.config'))).toBe(false);
     }, 120_000);
 

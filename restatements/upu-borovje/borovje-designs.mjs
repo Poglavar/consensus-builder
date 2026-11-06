@@ -139,6 +139,10 @@ function applyCorrection(state, correction, version) {
                 || definition.segmentIds.some(id => !definition.segmentProfiles[id])) {
                 throw new Error(`version ${version}: every stretch of ${road.key} needs an id and a cross-section`);
             }
+            // A stretch the correction drops (fit-streets.mjs DUPLICATE_STRETCHES) leaves the named streets too.
+            if (change.droppedStretches) {
+                road.streets = road.streets.filter(item => !change.droppedStretches.includes(`upu-${item.properties?.name}`));
+            }
         }
         road.definition = definition;
     }
