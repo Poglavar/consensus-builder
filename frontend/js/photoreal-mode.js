@@ -491,6 +491,9 @@
     // The wall that closes a cut through a Google tree crown stands where half a tree was: in the
     // canopy's shaded tone it reads as foliage in shadow, not as a grey slab in the garden.
     const CARVE_CANOPY_SEAL_COLOR = 0x34402f;
+    // Seal-wall probes meeting a crown are refined down to this spacing in true metres (scene XY
+    // is Mercator-stretched by mercatorK, so the scene spacing grows toward the poles).
+    const CURTAIN_REFINE_TRUE_M = 0.35;
     const CARVE_APRON_SQUARE_COLOR = 0xb8b0a2; // light concrete paving
     const CURTAIN_CONTENT_TOP_Z = 0.06;    // reach up to the park/plaza surface level
     const CURTAIN_TOP_MARGIN_M = 0.1;      // overlap the rim / content — no hairline seam
@@ -1811,7 +1814,7 @@
         jobs.push({
             ringXY: ringXY, supportAt: supportAt, visibleAt: visibleAt, name: name,
             options: { bottomOffsetM: bottomOffsetM, minimumClearanceM: 0.5, topMarginM: 0.1,
-                maximumHeightM: 30, refineM: 0.5 }
+                maximumHeightM: 30, refineM: CURTAIN_REFINE_TRUE_M * mercatorK }
         });
     }
 
@@ -1938,6 +1941,12 @@
     // Carve footprints (lat/lng GeoJSON) → the cut mask (drives the tile-discard shader) plus the
     // seal in the SCENE: a flat earth cap (top-down + razed pad) and a terrain-conforming curtain
     // around every ring (see the curtain comment above).
+    function capMaterialFor(entry) {
+        return entry.structureKind === 'lake' ? apronMaterialWater
+            : (entry.structureKind === 'square' ? apronMaterialSquare
+                : (entry.structureKind === 'park' ? apronMaterialPark : apronMaterial));
+    }
+
     function buildMaskShapes(options) {
         options = options || {};
         const THREE = window.THREE;
@@ -2060,20 +2069,19 @@
                     mask.renderOrder = road ? maskOrder().roadEntry
                         : (keepVeg ? maskOrder().keepVeg : maskOrder().full);
                     maskShapesGroup.add(mask);
-                    // A cut lying wholly inside another (a building in its plot) needs no cap of its
-                    // own: the plot's cap covers it, and two caps at one height fought where their
-                    // colours differed, around the foot of the building.
                     const insideOtherCut = function (x, y) { return !!(cutCoverage && cutCoverage(x, y, entryIndex)); };
-                    const capCovered = sr.rings.length > 0 && sr.rings[0].every(function (point) {
-                        return insideOtherCut(point[0], point[1]);
-                    });
-                    if (!entry.skipCap && !capCovered) {
+                    if (!entry.skipCap) {
                         // The cap IS the placed structure surface seen from above: colour it by kind
                         // (lake→water, square→paving, park→grass) so a cleared lake isn't bare earth.
-                        const capMaterial = entry.structureKind === 'lake' ? apronMaterialWater
-                            : (entry.structureKind === 'square' ? apronMaterialSquare
-                                : (entry.structureKind === 'park' ? apronMaterialPark
-                                    : apronMaterial));
+                        // Every cut keeps a cap: Google is gone inside it, and nothing else is sure to
+                        // be drawn there (a plot's lawn arrives later than the carve). A cut wholly
+                        // inside another capped cut (a building in its plot) takes that cut's colour,
+                        // so the two caps at one height cannot fight in different colours.
+                        const coverOwner = cutCoverage && typeof cutCoverage.ownersContainingAll === 'function'
+                            ? cutCoverage.ownersContainingAll(sr.rings[0] || [], entryIndex).find(function (owner) {
+                                return !entries[owner].skipCap && entries[owner].mode !== 'road';
+                            }) : undefined;
+                        const capMaterial = capMaterialFor(coverOwner !== undefined ? entries[coverOwner] : entry);
                         const cap = new THREE.Mesh(new THREE.ShapeGeometry(sr.shape), capMaterial);
                         cap.position.z = CARVE_APRON_TOP_Z;
                         cap.frustumCulled = false;

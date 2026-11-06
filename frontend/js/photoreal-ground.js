@@ -68,13 +68,15 @@
     // it lifts the world over the camera. The view is then empty, nothing new streams, and no later
     // estimate can improve: photo mode waited out its timeout. Answer how far to lower the world so
     // the camera looks down on the terrain again (and tiles stream), or 0 when not in that state.
-    const UNDERGROUND_RECOVERY = Object.freeze({ waitS: 2.5, shiftM: 500, maxRecoveries: 3 });
+    // Heights are relative to the current seat, so this holds at any city's elevation; the step
+    // doubles (500, 1000, 2000 m) because the coarsest tiles sag by kilometres.
+    const UNDERGROUND_RECOVERY = Object.freeze({ waitS: 2.5, firstShiftM: 500, maxRecoveries: 3 });
     function undergroundRecoveryShift(state) {
         const s = state || {};
         if (s.grounded || !(s.bootstrapAttempts > 0)) return 0;
         if (!(finite(s.emptyViewS) && s.emptyViewS >= UNDERGROUND_RECOVERY.waitS)) return 0;
-        if (!(finite(s.recoveries) && s.recoveries < UNDERGROUND_RECOVERY.maxRecoveries)) return 0;
-        return UNDERGROUND_RECOVERY.shiftM;
+        if (!(finite(s.recoveries) && s.recoveries >= 0 && s.recoveries < UNDERGROUND_RECOVERY.maxRecoveries)) return 0;
+        return UNDERGROUND_RECOVERY.firstShiftM * Math.pow(2, s.recoveries);
     }
 
     function canFinalizeSeating(progress, contentQuietMs) {

@@ -130,6 +130,22 @@ describe('photoreal seam intersection', () => {
     });
 });
 
+describe('photoreal cut coverage owners', () => {
+    it('names the cuts that contain every point, skipping the asking cut and holes', () => {
+        const square = (x0, y0, size) => [[x0, y0], [x0 + size, y0], [x0 + size, y0 + size], [x0, y0 + size], [x0, y0]];
+        const coverage = createCoverageTest([
+            { rings: [square(0, 0, 100), square(40, 40, 20)], owner: 0 }, // a park with a hole
+            { rings: [square(10, 10, 20)], owner: 1 },                    // a plot in the park
+            { rings: [square(12, 12, 5)], owner: 2 }                      // a building in the plot
+        ]);
+        const building = square(12, 12, 5);
+
+        expect(coverage.ownersContainingAll(building, 2)).toEqual([0, 1]);
+        expect(coverage.ownersContainingAll(square(45, 45, 5), undefined)).toEqual([]);
+        expect(coverage.ownersContainingAll([[5, 5], [150, 5]], undefined)).toEqual([]);
+    });
+});
+
 describe('photoreal road clearance curtain', () => {
     it('builds one anchored neutral wall beneath a high visible canopy', () => {
         const built = buildClearanceCurtainPositions(

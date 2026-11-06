@@ -329,9 +329,10 @@ describe('photoreal underground recovery', () => {
     const { undergroundRecoveryShift, UNDERGROUND_RECOVERY } = require('../../frontend/js/photoreal-ground.js');
     const stuck = { grounded: false, bootstrapAttempts: 2, emptyViewS: 3, recoveries: 0 };
 
-    it('lowers the world once a provisional alignment leaves the view empty', () => {
-        expect(undergroundRecoveryShift(stuck)).toBe(UNDERGROUND_RECOVERY.shiftM);
-        expect(UNDERGROUND_RECOVERY.shiftM).toBeGreaterThan(0);
+    it('lowers the world once a provisional alignment leaves the view empty, doubling each time', () => {
+        expect(undergroundRecoveryShift(stuck)).toBe(500);
+        expect(undergroundRecoveryShift({ ...stuck, recoveries: 1 })).toBe(1000);
+        expect(undergroundRecoveryShift({ ...stuck, recoveries: 2 })).toBe(2000);
     });
 
     it('leaves a seated world, a world still before its first estimate, and a brief gap alone', () => {

@@ -477,18 +477,29 @@
             }
             return inside;
         };
-        return function covered(x, y, exceptOwner) {
+        const contains = function (entry, x, y) {
+            if (x < entry.minX || x > entry.maxX || y < entry.minY || y > entry.maxY) return false;
+            if (!inRing(entry.rings[0], x, y)) return false;
+            for (let h = 1; h < entry.rings.length; h++) if (inRing(entry.rings[h], x, y)) return false;
+            return true;
+        };
+        const covered = function (x, y, exceptOwner) {
             for (let k = 0; k < entries.length; k++) {
                 const entry = entries[k];
                 if (exceptOwner !== undefined && entry.owner === exceptOwner) continue;
-                if (x < entry.minX || x > entry.maxX || y < entry.minY || y > entry.maxY) continue;
-                if (!inRing(entry.rings[0], x, y)) continue;
-                let inHole = false;
-                for (let h = 1; h < entry.rings.length && !inHole; h++) inHole = inRing(entry.rings[h], x, y);
-                if (!inHole) return true;
+                if (contains(entry, x, y)) return true;
             }
             return false;
         };
+        // Every owner (other than `exceptOwner`) whose polygon contains all the points, in input order.
+        covered.ownersContainingAll = function (points, exceptOwner) {
+            if (!Array.isArray(points) || !points.length) return [];
+            return entries.filter(function (entry) {
+                return (exceptOwner === undefined || entry.owner !== exceptOwner)
+                    && points.every(function (point) { return contains(entry, point[0], point[1]); });
+            }).map(function (entry) { return entry.owner; });
+        };
+        return covered;
     }
 
     return {
