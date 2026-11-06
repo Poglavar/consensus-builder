@@ -7,11 +7,24 @@ describe('UPU Podbrežje plans', () => {
     const full = fullPlan();
     const remainder = remainderPlan();
 
-    it('the whole plan has both streets, three parks and eighteen buildings', () => {
+    it('the whole plan has both streets, the parcel layout, three parks and eighteen buildings', () => {
         const goals = full.designs.map(design => design.record.goal);
         expect(goals.filter(goal => goal === 'road-track')).toHaveLength(2);
+        expect(goals.filter(goal => goal === 'parcel-layout')).toHaveLength(2);
         expect(goals.filter(goal => goal === 'park')).toHaveLength(3);
-        expect(goals.filter(goal => goal === 'single')).toHaveLength(18);
+        expect(goals.filter(goal => goal === 'buildings')).toHaveLength(18);
+    });
+
+    it('every building and park stands on its own kazeta plot', () => {
+        const layouts = full.designs.filter(design => design.record.goal === 'parcel-layout').map(design => design.record.parcelLayout);
+        const layout = { plots: layouts.flatMap(item => item.plots), totalArea: layouts.reduce((sum, item) => sum + item.totalArea, 0) };
+        const plotArea = layout.plots.reduce((sum, plot) => sum + plot.area, 0);
+        expect(Math.abs(plotArea - layout.totalArea)).toBeLessThan(1);
+        for (const design of full.designs.filter(item => item.record.goal === 'buildings')) {
+            expect(design.record.geometry.surroundings?.polygon?.type, design.key).toBe('Polygon');
+        }
+        const park = full.designs.find(design => design.key === 'park-g3').record.geometry;
+        expect(layout.plots.some(plot => JSON.stringify(plot.geometry) === JSON.stringify(park))).toBe(true);
     });
 
     it('the remainder is the whole plan without the built and the under-construction members, design for design', () => {

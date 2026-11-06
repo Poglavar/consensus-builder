@@ -6,8 +6,8 @@ The 19.4 ha Podbrežje neighbourhood plan (Log-urbis d.o.o. for the City of Zagr
 
 | Plan key | Title | Designs | What it is |
 |---|---|---:|---|
-| `upu-podbrezje` | UPU Podbrežje | 23 | the whole plan on an empty site |
-| `upu-podbrezje-preostalo` | UPU Podbrežje – preostali dio plana | 16 | what is still to be built |
+| `upu-podbrezje` | UPU Podbrežje | 25 | the whole plan on an empty site |
+| `upu-podbrezje-preostalo` | UPU Podbrežje – preostali dio plana | 18 | what is still to be built |
 
 The remainder leaves out the four built slabs A3–A6 (phase 1, 608 flats), the two buildings under construction (A11: 288 flats, finishing in the first half of 2027; kindergarten C1: 10 groups, building since November 2024) and the built north and east streets. Every design the two plans share has the same CID in both.
 
@@ -29,6 +29,18 @@ The kazete (plan plots) are the City's planned-land-use fields. Their labels mat
 
 A slab's above-ground GBP is its footprint × 9, and the designs refuse to exceed kisn × the tabled kazeta area. The plan's closed ground floor (at most 40 %) would lower it.
 
+## Building plots
+
+The plan sets one building plot per kazeta. Two parcel layouts (one per connected block) re-divide the 77 cadastral parcels the kazete reach into 12 plots: A1, A2, A7, A8, A10, B, C2, D, F1 and the park and greens G1–G3. They are shared by both plans. Nine kazete are already one cadastral parcel each and stay as they are: A3–A6, A9, A11, C1, E and F2. The built streets' parcels, and parcels lying mostly outside the kazete (the IS-2 strip), are not touched.
+
+Every building is content on its plot (green surroundings), and every park is its plot. `extract-data.mjs` builds the plots in WGS84 on the app's 1e-9° grid, from the kazete cut out of the parcels the south street leaves:
+
+- hairlines of a parcel move to that parcel's own plot;
+- slivers join the plot they border longest;
+- the plots are trimmed and filled to exactly the parcels they replace.
+
+As a result the layouts pass the app's tiling check, and the agreements' land balances.
+
 ## Sources
 
 - Odredbe za provođenje: [SGGZ 8/07](https://www1.zagreb.hr/slglasnik.nsf/10288f1421388ff8c1256f2d0049015b/8566af05cca9c283c125758200424e35) and the [2011 amendments](http://www1.zagreb.hr/slglasnik.nsf/10288f1421388ff8c1256f2d0049015b/4ee638b06fc6ba4cc12578cd004b185a).
@@ -39,9 +51,9 @@ A slab's above-ground GBP is its footprint × 9, and the designs refuse to excee
 ## Uncertainty
 
 - Sheet 3.d is a reduced landscape sheet. The masses are measured on its raster (`data/sheet-3d.json`), and its across scale is fitted to the built slabs (within 1 m). Along the kazete, positions are good to a few metres. Sheet 3.d draws the south row's north edges in one line, while the land-use layer staggers them.
-- Each building is a freeform design that takes its footprint as land. The plan's one building plot per kazeta is not drawn as a parcel layout.
 - Storeys of the public buildings and the B tower's proportions are choices within the plan's limits, not plan figures.
-- The IS-2 strip (land-use object 1518, north-west) is not restated.
+- The IS-2 strip (land-use object 1518, north-west) is not restated, and the north-west green G1 is its own layout.
+- A 0.02 m² sliver of k.č. 2460 at the south tip, touching A7's plot only at a point, stays out of the layout.
 
 ## Reproducing
 

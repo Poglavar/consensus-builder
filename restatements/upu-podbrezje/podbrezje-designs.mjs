@@ -69,6 +69,7 @@ const round = value => Math.round(value * 1e8) / 1e8;
 const toWgs = ([x, y]) => proj4('EPSG:3765', 'EPSG:4326', [x, y]).map(round);
 const ringToWgs = ring => ring.map(toWgs);
 const polygonToWgs = polygon => ({ type: 'Polygon', coordinates: polygon.coordinates.map(ringToWgs) });
+const polygonToGrid = polygon => ({ type: 'Polygon', coordinates: polygon.coordinates.map(ring => ring.map(point => proj4('EPSG:4326', 'EPSG:3765', point))) });
 const area = geometry => turf.area(turf.feature(geometry));
 // Area of an EPSG:3765 (Multi)Polygon in m², on the plane (turf's area and clipping take lon/lat; its
 // clipping is planar and serves the grid as well).
@@ -125,12 +126,15 @@ function rectangle(grid, { u0, u1, v0, v1 }) {
     return { type: 'Polygon', coordinates: [ring] };
 }
 
-function within(geometry, field, label) {
-    const inside = turf.intersect(turf.feature(geometry), turf.feature(field));
-    if (!inside) throw new Error(`${label}: the building is outside its kazeta`);
+// A building stands on its plot: what of its footprint the plot does not hold is cut off, and more than
+// drawing noise (MAX_OFF_PLOT_M2) is refused.
+const MAX_OFF_PLOT_M2 = 1;
+function onPlot(geometry, plot, label) {
+    const inside = turf.intersect(turf.feature(geometry), turf.feature(plot));
+    if (!inside || inside.geometry.type !== 'Polygon') throw new Error(`${label}: the building does not stand on its plot in one piece`);
     const lost = planarArea(geometry) - planarArea(inside.geometry);
-    if (lost > 0.5) throw new Error(`${label}: ${lost.toFixed(1)} m² of the building is outside its kazeta`);
-    return geometry;
+    if (lost > MAX_OFF_PLOT_M2) throw new Error(`${label}: ${lost.toFixed(1)} m² of the building is off its plot`);
+    return inside.geometry;
 }
 
 // ---- the plan's members ----------------------------------------------------------------------------------
@@ -138,12 +142,18 @@ function within(geometry, field, label) {
 function kazete() {
     const features = data('kazete.geojson').features;
     const grid = frameOf(features.find(feature => feature.properties.kazeta === 'A4').geometry.coordinates[0]);
+    // Each kazeta's building plot: a plot of the parcel layout, or the cadastral parcel that already is it.
+    // The layout is in WGS84 as the app keeps it (extract-data.mjs GRID_DEG): `plotsWgs` as published,
+    // `plots` the same on the grid for fitting the buildings.
+    const layout = data('plots.geojson').features;
+    const plotsWgs = new Map(layout.filter(feature => feature.properties.role !== 'pool').map(feature => [feature.properties.kazeta, feature.geometry]));
+    const plots = new Map([...plotsWgs].map(([key, geometry]) => [key, polygonToGrid(geometry)]));
     const fields = new Map();
     for (const feature of features) {
         const geometry = feature.geometry;
         fields.set(feature.properties.kazeta, { ...feature.properties, geometry, box: boxOn(grid, geometry.coordinates[0]) });
     }
-    return { grid, fields };
+    return { grid, fields, plots, plotsWgs, layout };
 }
 
 // Sheet 3.d on the grid: v = scale · x + offset, least squares over the built slabs' centres across.
@@ -215,27 +225,32 @@ function buildingFeature(geometry, { heightM, storeys, block }) {
     };
 }
 
-function buildingDesign({ key, title, description, createdAt, parts, storeys, heightM }) {
+// A building is content on its plot (goal 'buildings', as in UPU Borovje): a freeform 'single' would take
+// ground of its own and cut the plot a second time. The rest of the plot is green ground.
+function buildingDesign({ key, title, description, createdAt, parts, storeys, heightM, plot }) {
     const blockName = `UPU Podbrežje ${key}`;
     return {
         key: `zgrada-${key.toLowerCase()}`,
         kazeta: key,
         record: {
-            goal: 'single',
+            goal: 'buildings',
             title: `UPU Podbrežje – ${title}`,
             description: `${description} ${SOURCE}`,
             author: AUTHOR,
             city: CITY,
             createdAt,
             toleranceM: TOLERANCE_M,
-            geometry: { buildings: parts.map(part => buildingFeature(part.geometry, { ...part, block: blockName })) },
+            geometry: {
+                buildings: parts.map(part => buildingFeature(part.geometry, { ...part, block: blockName })),
+                surroundings: { treatment: 'green', polygon: structuredClone(plot) }
+            },
             buildingProposal: { typologyType: 'single', blockName, parameters: { typology: 'single', floors: storeys, height: heightM, rotation: 0 } }
         }
     };
 }
 
 function residentialDesigns(plan, sheet, built) {
-    const { fields } = plan;
+    const { fields, plots, plotsWgs } = plan;
     const permits = new Map(data('permits.geojson').features.map(feature => [feature.properties.kazeta, feature]));
     const keys = ['A1', 'A2', 'A3', 'A4', 'A5', 'A6', 'A7', 'A8', 'A9', 'A10', 'A11'];
     return keys.map(key => {
@@ -264,7 +279,7 @@ function residentialDesigns(plan, sheet, built) {
             basis = `${slab.basis}; širina ${dec(SLAB.widthM)} m kao izvedeni blokovi.`;
             state = 'Neizvedeno.';
         }
-        within(geometry, field.geometry, key);
+        geometry = onPlot(geometry, plots.get(key), key);
         const footprintM2 = area(polygonToWgs(geometry));
         const gbpM2 = footprintM2 * SLAB.storeys;
         if (gbpM2 > limitM2 * 1.005) throw new Error(`${key}: ${Math.round(gbpM2)} m² above ground exceeds kisn ${KISN[key]} × ${field.tableAreaM2} m²`);
@@ -277,17 +292,18 @@ function residentialDesigns(plan, sheet, built) {
             createdAt,
             parts: [{ geometry, heightM, storeys: SLAB.storeys }],
             storeys: SLAB.storeys,
-            heightM
+            heightM,
+            plot: plotsWgs.get(key)
         });
     });
 }
 
-function towerDesign({ grid, fields }, sheet) {
+function towerDesign({ grid, fields, plots, plotsWgs }, sheet) {
     const field = fields.get('B');
     const mass = sheetMass(sheet, field, 'B');
     const podium = { u0: Math.max(mass.u0, field.box.u0 + 1), u1: Math.min(mass.u1, field.box.u1 - 1), v0: Math.max(mass.v0, field.box.v0 + 1), v1: mass.v1 };
     // The kazeta's east side runs along the railway at an angle: the podium keeps to the kazeta.
-    const podiumBase = turf.intersect(turf.feature(rectangle(grid, podium)), turf.feature(field.geometry)).geometry;
+    const podiumBase = turf.intersect(turf.feature(rectangle(grid, podium)), turf.feature(plots.get('B'))).geometry;
     if (podiumBase.type !== 'Polygon') throw new Error('B: the podium falls apart in its kazeta');
     const podiumM2 = planarArea(podiumBase);
     const limitM2 = TOWER.kisn * field.tableAreaM2;
@@ -296,11 +312,10 @@ function towerDesign({ grid, fields }, sheet) {
     const side = Math.sqrt(towerM2);
     const centre = (podium.v0 + podium.v1) / 2;
     const tower = { u1: podium.u1, u0: podium.u1 - side, v0: centre - side / 2, v1: centre + side / 2 };
-    const towerGeometry = rectangle(grid, tower);
-    within(towerGeometry, field.geometry, 'B tower');
+    const towerGeometry = onPlot(rectangle(grid, tower), plots.get('B'), 'B tower');
     const podiumGeometry = turf.difference(turf.feature(podiumBase), turf.feature(towerGeometry)).geometry;
     if (podiumGeometry.type !== 'Polygon') throw new Error('B: the podium around the tower is not one polygon');
-    within(podiumGeometry, field.geometry, 'B podium');
+
     const towerHeightM = Math.round((TOWER.groundStoreyM + (TOWER.storeys - 1) * TOWER.storeyM) * 10) / 10;
     return buildingDesign({
         key: 'B',
@@ -315,11 +330,12 @@ function towerDesign({ grid, fields }, sheet) {
             { geometry: podiumGeometry, heightM: TOWER.podiumHeightM, storeys: TOWER.podiumStoreys }
         ],
         storeys: TOWER.storeys,
-        heightM: towerHeightM
+        heightM: towerHeightM,
+        plot: plotsWgs.get('B')
     });
 }
 
-function publicDesigns({ grid, fields }, sheet) {
+function publicDesigns({ grid, fields, plots, plotsWgs }, sheet) {
     const permits = new Map(data('permits.geojson').features.map(feature => [feature.properties.kazeta, feature]));
     return Object.entries(PUBLIC).map(([key, rule]) => {
         const field = fields.get(key);
@@ -335,12 +351,12 @@ function publicDesigns({ grid, fields }, sheet) {
             state = 'U gradnji od studenoga 2024. (oko 200 djece).';
         } else {
             const mass = sheetMass(sheet, field, key);
-            const clipped = turf.intersect(turf.feature(rectangle(grid, mass)), turf.feature(field.geometry));
+            const clipped = turf.intersect(turf.feature(rectangle(grid, mass)), turf.feature(plots.get(key)));
             geometry = clipped.geometry;
             if (geometry.type !== 'Polygon') throw new Error(`${key}: the sheet's mass leaves its kazeta in pieces`);
             basis = 'prema masi na kartografskom prikazu 3.d';
         }
-        within(geometry, field.geometry, key);
+        geometry = onPlot(geometry, plots.get(key), key);
         const footprintM2 = area(polygonToWgs(geometry));
         return buildingDesign({
             key,
@@ -350,19 +366,64 @@ function publicDesigns({ grid, fields }, sheet) {
             createdAt,
             parts: [{ geometry, heightM: rule.heightM, storeys: rule.storeys }],
             storeys: rule.storeys,
-            heightM: rule.heightM
+            heightM: rule.heightM,
+            plot: plotsWgs.get(key)
         });
     });
 }
 
-function parkDesigns({ fields }) {
+const round1 = value => Math.round(value * 10) / 10;
+
+// The plan's parcel layouts: each connected pool of parcels the kazete re-divide (extract-data.mjs plots)
+// cut into one plot per kazeta, as in UPU Borovje one layout per block the streets and kept parcels
+// separate. The plots' names travel in the description only, in plot order.
+function layoutDesigns({ layout }) {
+    const pools = layout.filter(feature => feature.properties.role === 'pool');
+    const plots = layout.filter(feature => feature.properties.role === 'plot');
+    const kept = layout.filter(feature => feature.properties.role === 'parcel').map(feature => `${feature.properties.kazeta} (k.č. ${feature.properties.parcel})`);
+    const parcels = pools[0].properties.parcels.length;
+    return pools.map((pool, index) => {
+        const own = plots.filter(plot => turf.booleanPointInPolygon(turf.pointOnFeature(turf.feature(plot.geometry)), turf.feature(pool.geometry)));
+        const site = structuredClone(pool.geometry);
+        return {
+            key: `parcelacija-${index + 1}`,
+            kazeta: `parcelacija-${index + 1}`,
+            record: {
+                goal: 'parcel-layout',
+                title: `UPU Podbrežje – građevne čestice kazeta (${index + 1}/${pools.length})`,
+                description: `Parcelacija prema planu: jedna građevna čestica površine kazete. Povezani dio ${index + 1} od ${pools.length}`
+                    + ` (${m2(pool.properties.areaM2)} m²) dijeli se na ${own.length} čestica, redom: ${own.map(feature => feature.properties.kazeta).join(', ')}.`
+                    + ` Ukupno se nanovo dijeli ${parcels} katastarskih čestica; kazete koje su već jedna katastarska čestica ostaju takve:`
+                    + ` ${kept.join(', ')}; čestice izvedenih ulica i ulica izvan kazeta se ne diraju. ${SOURCE}`,
+                author: AUTHOR,
+                city: CITY,
+                createdAt: PLAN_DATE,
+                toleranceM: TOLERANCE_M,
+                site,
+                parcelLayout: {
+                    algorithm: 'manual',
+                    generatedAt: PLAN_DATE,
+                    pool: structuredClone(site),
+                    totalArea: round1(area(site)),
+                    plots: own.map(feature => {
+                        const geometry = structuredClone(feature.geometry);
+                        return { geometry, area: round1(area(geometry)), source: 'geojson' };
+                    })
+                }
+            }
+        };
+    });
+}
+
+function parkDesigns({ plotsWgs }) {
     const parks = [
         { key: 'G3', title: 'javni park G3', text: 'Javni park Z1 u središtu naselja: najmanje 70 % prirodnog terena za sadnju stabala, rekreacijska staza; uređuje se prema cjelovitom projektu krajobraznog uređenja, moguće fazno.' },
         { key: 'G1', title: 'zaštitno zelenilo G1', text: 'Zaštitna zelena površina Z uz prugu na sjeverozapadu.' },
         { key: 'G2', title: 'zaštitno zelenilo G2', text: 'Zaštitna zelena površina Z na jugoistoku, uz istočnu ulicu.' }
     ];
     return parks.map(park => {
-        const geometry = polygonToWgs(fields.get(park.key).geometry);
+        // A park is its plot exactly.
+        const geometry = structuredClone(plotsWgs.get(park.key));
         return {
             key: `park-${park.key.toLowerCase()}`,
             kazeta: park.key,
@@ -511,6 +572,7 @@ export function podbrezjeDesigns() {
     const sheet = fitSheet(data('sheet-3d.json'), plan.grid, built);
     return [
         ...streetDesigns(),
+        ...layoutDesigns(plan),
         ...parkDesigns(plan),
         ...residentialDesigns(plan, sheet, built),
         towerDesign(plan, sheet),

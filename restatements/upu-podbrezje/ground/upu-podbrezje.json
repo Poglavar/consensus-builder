@@ -3,28 +3,30 @@
  "plan": "upu-podbrezje",
  "designCids": [
   "bafkreihor2ag2ixc7ilhpjvuww7aamwcfr25c2foye5oyty6cq75hojg3y",
-  "bafkreifgiv7a7aguhbnlr26urd55kvec47psz6ow35eemoebwail6uq2nu",
-  "bafkreicxuetdybgronpouvu42w44xij7t5zk4pbympgnwi63lrgnizsvpa",
-  "bafkreihc6uvekhr6vm2fvkvdch73pnqgmvhx4wnfugpydnbyyop2slxkxy",
-  "bafkreie2eemb2zxfffb6afelzlsaugiwr2itk2jweatn5ve3qvqpuecuym",
-  "bafkreif4jncxc755dwwbjnbdfmkvbxnygfx5uackvylgkesoadnzjzhffa",
-  "bafkreifznhkmcmna4nis6fsoandjvovzvijaaxox7ggkqpmsxjscz7uaeq",
-  "bafkreichnnekcqd7tmjbxb4yxirjlnoh4gnyxw6zfhcdt4cvda6pfpczf4",
-  "bafkreihn5v74ahvt675chuz5sqm6svge35dt5ckxdvxx2om37kygryazzm",
-  "bafkreideae3zuc6662hhutzhajh4wqz3hgsn4ejf54egfvbgz7f2fcewum",
-  "bafkreif2kerarnly6gofosc7lipc3ysv2dqmtj4tytjcuppmomlvm6l3fu",
-  "bafkreig6ci7alfpwgch7dvu6byh54p3pa6qhtw77wmo3xykbpfiuk24ofy",
-  "bafkreigzp6ft7gmhd23btwvw6vw2ufdd5csk2qtliwuyq6j6x6tiy54vky",
-  "bafkreieirbpuzfo62jocqgwbrkr3jv344bt2pipx53apgquflnrvcvfkgm",
-  "bafkreidwc4r2f6fgugwcn2uyqnrwvwaskcvjhtvn4nwn7dtc6dgsxppdtu",
-  "bafkreicjyrz4xfqotcccrugg3u5zvx7krfhsmntxz6gnihi3hdlb3yiojq",
-  "bafkreighlubrm3unr74qexcw5kheyc4y4ypwauz7iguvjm5cqzn3jwtrwy",
-  "bafkreihxkkzkocec4pdocc52pa6nagedfwebkmxeuljbsr66jxzxwppihe",
-  "bafkreibpyfxqu32jnf4rqwquyt4f6ikklnhg3di26fivatnfsw4ncvsydm",
-  "bafkreicsffljfoi66v4okimmjmtpc6aspajqlayhv43soiehgmdsbsqhgq",
-  "bafkreiasmpfsaail5qwmnvx7jz26xcgp5ykdg3uwf75k2mcbotkt24xoou",
-  "bafkreicsbbwbk2zanrzi36juiaksf6swemvppvtzxjws3sfs5ms4xcp4ku",
-  "bafkreihvadgrmc6mwh3wkvqvgcb7djmvnfdmu55epifaojdy2achl7bkxi"
+  "bafkreie3h7ss6ht6zppsdweotwtdmc4guizzgceunxqpb6cqpbvmbhpkl4",
+  "bafkreiezqwtnnq7ryvjzdbmgda2yaubxsbwjeruy2ioumbpq4ftcai3tpe",
+  "bafkreidg247ahhl4yetrqxtouroglq2x75z64rkxv2y3yqth6og63kzfdy",
+  "bafkreihrw6ydsxeyzgqtpicyokzkmqqx325eelklnzikj656n6mi6ev7pa",
+  "bafkreicxn7cvjnkxn3ozytheofb7qrht3brlz3uhhyh2vpr44qxjoowhmi",
+  "bafkreialataom2exb3hiqk4vwv3jr5gqk5u43xdwile6yelwwkeontsyye",
+  "bafkreigpxvyvp3bbo5yetygyhsuwvili6hfqtp6ufb35ovcddxo2t2tlqi",
+  "bafkreid5awaciznjmahp3biecvob5xw5vhagcb6s4c2jvucxnifrpfbj4a",
+  "bafkreicogpdga2kdstyowdwillcy5rcp3trvgufitbserrxyc37cctwpii",
+  "bafkreifwqykwglkld3sgr7kpo47o3yxi2wwi5ajqi3ldoprst4zdx6cqgq",
+  "bafkreiac2t6didsgh3zwmg5yzdjepgihc5vzcwqxecqfaqsevsqq2nr63m",
+  "bafkreie6ryvo32oszq7lhoy6wps4p657ioatu6wa2fjwxb7s7ymxyfni6q",
+  "bafkreidamfxlnjy5qsujequlpet2k4sgys5ksx63nk576fpwqvkrmr2pwm",
+  "bafkreieu6ickfylx4egdd7ylboa32vqovatpk3icpna6t42kbde6xj42ze",
+  "bafkreigieh7lm3j7ttxmkokznlz3wrvs7si23ylc53uaoigh6cezrvzoii",
+  "bafkreibj5xrlmcbsedizxurqkss4vtr2krnp7uuizrogea5mrraxf27om4",
+  "bafkreihm3qdhinotnsjpbdoxljivnd6ck35mskikyqhxqdryd7yjrstxmi",
+  "bafkreiec77i6odf63564jatoob3sth5jpimlzbd3kl4wkpt7uty4enkz3y",
+  "bafkreihnc4ylcriari66nl376uxcbjytyfua5g4w65lyvj3igzpiv5wdsq",
+  "bafkreibfrxh7oqdehnqszojkx2jtr7wvmvgedh4ucb75j2ctag2ob7gl4e",
+  "bafkreifggaphi267fxaem33med74h6mp46b6txeyzgs5rurl3zuzbmns7m",
+  "bafkreiewros2pj7qrygbchsikor7pdxkltqe5czavipnehrhf2tvswbfi4",
+  "bafkreiakmmzovd2odgqu75pmz2h7slkjegpuzx62fd6bc3jxc3fuv7xcfe",
+  "bafkreif37kqtkueowpy4uygvrrob5g5ev37tkd3hnobqlhkj57mkhahsgq"
  ],
  "inputs": [
   {
@@ -46,6 +48,10 @@
   {
    "areaM2": 542.47636,
    "parcelId": "HR-335495-1544/4"
+  },
+  {
+   "areaM2": 53.626772,
+   "parcelId": "HR-335495-1544/6"
   },
   {
    "areaM2": 594.220789,
@@ -104,6 +110,14 @@
    "parcelId": "HR-335495-1550/8"
   },
   {
+   "areaM2": 179.761306,
+   "parcelId": "HR-335495-1551/2"
+  },
+  {
+   "areaM2": 1284.608605,
+   "parcelId": "HR-335495-1552/2"
+  },
+  {
    "areaM2": 79.789013,
    "parcelId": "HR-335495-1552/3"
   },
@@ -116,12 +130,28 @@
    "parcelId": "HR-335495-1553/2"
   },
   {
+   "areaM2": 71.805179,
+   "parcelId": "HR-335495-1553/3"
+  },
+  {
+   "areaM2": 274.534215,
+   "parcelId": "HR-335495-1553/6"
+  },
+  {
    "areaM2": 53.066128,
    "parcelId": "HR-335495-1553/7"
   },
   {
    "areaM2": 1255.4641,
    "parcelId": "HR-335495-1554/1"
+  },
+  {
+   "areaM2": 162.979091,
+   "parcelId": "HR-335495-1554/2"
+  },
+  {
+   "areaM2": 27.446774,
+   "parcelId": "HR-335495-1554/3"
   },
   {
    "areaM2": 83.377282,
@@ -144,6 +174,10 @@
    "parcelId": "HR-335495-1555/5"
   },
   {
+   "areaM2": 416.824401,
+   "parcelId": "HR-335495-1555/8"
+  },
+  {
    "areaM2": 19136.292505,
    "parcelId": "HR-335495-1556/1"
   },
@@ -162,6 +196,10 @@
   {
    "areaM2": 5141.525138,
    "parcelId": "HR-335495-1556/5"
+  },
+  {
+   "areaM2": 71.244972,
+   "parcelId": "HR-335495-1556/8"
   },
   {
    "areaM2": 1456.195058,
@@ -332,6 +370,10 @@
    "parcelId": "HR-335495-2454"
   },
   {
+   "areaM2": 276.243155,
+   "parcelId": "HR-335495-2455"
+  },
+  {
    "areaM2": 335.146179,
    "parcelId": "HR-335495-2456"
   },
@@ -344,8 +386,20 @@
    "parcelId": "HR-335495-2458"
   },
   {
+   "areaM2": 8.115311,
+   "parcelId": "HR-335495-2459"
+  },
+  {
+   "areaM2": 350.115406,
+   "parcelId": "HR-335495-2460"
+  },
+  {
    "areaM2": 1855.161409,
    "parcelId": "HR-335495-2461"
+  },
+  {
+   "areaM2": 4.711786,
+   "parcelId": "HR-335495-2462"
   },
   {
    "areaM2": 121.444711,
@@ -376,12 +430,20 @@
    "parcelId": "HR-335495-2470"
   },
   {
+   "areaM2": 66.288975,
+   "parcelId": "HR-335495-2471"
+  },
+  {
    "areaM2": 57.896425,
    "parcelId": "HR-335495-2473"
   },
   {
    "areaM2": 53.536443,
    "parcelId": "HR-335495-2474"
+  },
+  {
+   "areaM2": 63.705947,
+   "parcelId": "HR-335495-2475"
   },
   {
    "areaM2": 40.827961,
@@ -396,6 +458,10 @@
    "parcelId": "HR-335495-2478"
   },
   {
+   "areaM2": 631.551278,
+   "parcelId": "HR-335495-2479"
+  },
+  {
    "areaM2": 189.307733,
    "parcelId": "HR-335495-2480"
   },
@@ -408,8 +474,20 @@
    "parcelId": "HR-335495-2482"
   },
   {
+   "areaM2": 278.287641,
+   "parcelId": "HR-335495-2483"
+  },
+  {
    "areaM2": 15.199816,
    "parcelId": "HR-335495-2484"
+  },
+  {
+   "areaM2": 59.99738,
+   "parcelId": "HR-335495-2485"
+  },
+  {
+   "areaM2": 82.4715,
+   "parcelId": "HR-340715-1687/9"
   },
   {
    "areaM2": 32.859373,
@@ -420,12 +498,12 @@
    "parcelId": "HR-340715-1688/6"
   },
   {
-   "areaM2": 1626.453776,
-   "parcelId": "HR-340715-1688/9"
-  },
-  {
    "areaM2": 369.770988,
    "parcelId": "HR-340715-1688/10"
+  },
+  {
+   "areaM2": 5.231716,
+   "parcelId": "HR-340715-1689/3"
   },
   {
    "areaM2": 3456.837538,
@@ -436,12 +514,16 @@
    "parcelId": "HR-340715-3419/14"
   },
   {
-   "areaM2": 334.639772,
-   "parcelId": "HR-340715-3419/15"
-  },
-  {
    "areaM2": 882.959933,
    "parcelId": "HR-340715-3419/16"
+  },
+  {
+   "areaM2": 422.519222,
+   "parcelId": "HR-340715-3429/5"
+  },
+  {
+   "areaM2": 2.828582,
+   "parcelId": "HR-340715-3462/10"
   }
  ],
  "openGroundM2": 0,
@@ -519,7 +601,7 @@
    "role": "parcel"
   },
   {
-   "areaM2": 1613.095085,
+   "areaM2": 1611.537915,
    "fromParcelIds": [
     "HR-335495-1544/4",
     "HR-335495-1545/4",
@@ -527,9 +609,25 @@
     "HR-335495-1559/9",
     "HR-335495-2407/4"
    ],
-   "hash": "piece1-sha256:51e6d55cb093903420dda18dba8f9ea604f5ecfe361ec515c3d9fed44a6761a8",
-   "producedBy": "bafkreie2eemb2zxfffb6afelzlsaugiwr2itk2jweatn5ve3qvqpuecuym",
+   "hash": "piece1-sha256:9a4bb8a6e08a9794c323c84b5a61f22d7ab63ff4c4b32a34a6a1a6ee1d1d1b7d",
+   "producedBy": "bafkreialataom2exb3hiqk4vwv3jr5gqk5u43xdwile6yelwwkeontsyye",
    "role": "parcel"
+  },
+  {
+   "areaM2": 4661.247243,
+   "fromParcelIds": [
+    "HR-335495-1544/6",
+    "HR-335495-1545/6",
+    "HR-335495-1555/8",
+    "HR-335495-1556/8",
+    "HR-335495-1557/22",
+    "HR-335495-1558/12",
+    "HR-335495-1559/10",
+    "HR-335495-2467"
+   ],
+   "hash": "piece1-sha256:c4f8f02dbd6f7956269cc1841d62e26e9b58de55cc8a40613d434ca194fb20cc",
+   "producedBy": "bafkreiezqwtnnq7ryvjzdbmgda2yaubxsbwjeruy2ioumbpq4ftcai3tpe",
+   "role": "plot"
   },
   {
    "areaM2": 565.641137,
@@ -559,13 +657,13 @@
    "role": "parcel"
   },
   {
-   "areaM2": 74.149323,
+   "areaM2": 0.075137,
    "fromParcelIds": [
-    "HR-335495-1545/6"
+    "HR-335495-1545/4"
    ],
-   "hash": "piece1-sha256:0342e6f4dca0ed3ed16cf30c414c40eb0a98227144322f31c97dd921d87bc21b",
-   "producedBy": null,
-   "role": "parcel"
+   "hash": "piece1-sha256:b57ec181f29813c917fcde0c82bee5abfba83635c1554f7bc6cf5166bf1a6b94",
+   "producedBy": "bafkreiezqwtnnq7ryvjzdbmgda2yaubxsbwjeruy2ioumbpq4ftcai3tpe",
+   "role": "remainder"
   },
   {
    "areaM2": 1.44101,
@@ -573,7 +671,7 @@
     "HR-335495-1545/6"
    ],
    "hash": "piece1-sha256:3e5030e30dc68952660a3f6ae655188630eac438b6be2cf2bf7857117491bbe7",
-   "producedBy": "bafkreifgiv7a7aguhbnlr26urd55kvec47psz6ow35eemoebwail6uq2nu",
+   "producedBy": "bafkreie3h7ss6ht6zppsdweotwtdmc4guizzgceunxqpb6cqpbvmbhpkl4",
    "role": "corridor"
   },
   {
@@ -582,7 +680,7 @@
     "HR-335495-1545/7"
    ],
    "hash": "piece1-sha256:cd5fa1c7d5e7cb651c2b614a40edd39ae8f61afe898b7aa555839e7f3e0c7164",
-   "producedBy": "bafkreifgiv7a7aguhbnlr26urd55kvec47psz6ow35eemoebwail6uq2nu",
+   "producedBy": "bafkreie3h7ss6ht6zppsdweotwtdmc4guizzgceunxqpb6cqpbvmbhpkl4",
    "role": "corridor"
   },
   {
@@ -613,35 +711,21 @@
    "role": "corridor"
   },
   {
-   "areaM2": 129.938086,
-   "fromParcelIds": [
-    "HR-335495-1549/1"
-   ],
-   "hash": "piece1-sha256:6c3fe3193d3fdf007bdd0fde8f04d933203494d02f465026aef36ca1dd2aea3d",
-   "producedBy": "bafkreif4jncxc755dwwbjnbdfmkvbxnygfx5uackvylgkesoadnzjzhffa",
-   "role": "parcel"
-  },
-  {
-   "areaM2": 31.176313,
-   "fromParcelIds": [
-    "HR-335495-1549/1"
-   ],
-   "hash": "piece1-sha256:44a08b454ee28f0d334b23deb1b3dcb330fb116748744f296ad2f1bb65d6cdc4",
-   "producedBy": "bafkreif4jncxc755dwwbjnbdfmkvbxnygfx5uackvylgkesoadnzjzhffa",
-   "role": "parcel"
-  },
-  {
-   "areaM2": 1353.580319,
+   "areaM2": 4343.173424,
    "fromParcelIds": [
     "HR-335495-1549/1",
     "HR-335495-1550/4",
     "HR-335495-1556/3",
+    "HR-335495-2455",
     "HR-335495-2456",
-    "HR-335495-2458"
+    "HR-335495-2458",
+    "HR-335495-2475",
+    "HR-335495-2479",
+    "HR-335495-2483"
    ],
-   "hash": "piece1-sha256:0e68062f54c33cca187bf0780ab57e7fe80290efd0da5916afc03cd4f3f0023a",
-   "producedBy": "bafkreif4jncxc755dwwbjnbdfmkvbxnygfx5uackvylgkesoadnzjzhffa",
-   "role": "parcel"
+   "hash": "piece1-sha256:034dcf97207feccd7c6f7752e14e1318f34fd45c76f26c1bc88571c90d249303",
+   "producedBy": "bafkreiezqwtnnq7ryvjzdbmgda2yaubxsbwjeruy2ioumbpq4ftcai3tpe",
+   "role": "plot"
   },
   {
    "areaM2": 288.942469,
@@ -680,54 +764,27 @@
    "role": "parcel"
   },
   {
-   "areaM2": 326.250724,
-   "fromParcelIds": [
-    "HR-335495-1550/4"
-   ],
-   "hash": "piece1-sha256:4192104d5314aef4b205d65d46811e7ddb5568272c8f02748a870911c080df20",
-   "producedBy": "bafkreif4jncxc755dwwbjnbdfmkvbxnygfx5uackvylgkesoadnzjzhffa",
-   "role": "parcel"
-  },
-  {
-   "areaM2": 2283.509666,
-   "fromParcelIds": [
-    "HR-335495-1550/5"
-   ],
-   "hash": "piece1-sha256:328f56dfbc87c48b0724d23110ff383fbe0980661dd9f2d94c6ec7d86997db36",
-   "producedBy": "bafkreicsbbwbk2zanrzi36juiaksf6swemvppvtzxjws3sfs5ms4xcp4ku",
-   "role": "parcel"
-  },
-  {
-   "areaM2": 1172.374092,
+   "areaM2": 5013.460384,
    "fromParcelIds": [
     "HR-335495-1550/5",
     "HR-335495-1556/4"
    ],
-   "hash": "piece1-sha256:1717ca8e806f9078e7d4327ced796b532297aa756c487bbda21ccebdfd242167",
-   "producedBy": "bafkreicsbbwbk2zanrzi36juiaksf6swemvppvtzxjws3sfs5ms4xcp4ku",
-   "role": "parcel"
+   "hash": "piece1-sha256:9eb27a24b83b9aa5d40177d81bb08972cc2da01d1530e55259b079f12e2e1f75",
+   "producedBy": "bafkreiezqwtnnq7ryvjzdbmgda2yaubxsbwjeruy2ioumbpq4ftcai3tpe",
+   "role": "plot"
   },
   {
-   "areaM2": 543.864059,
-   "fromParcelIds": [
-    "HR-335495-1550/7"
-   ],
-   "hash": "piece1-sha256:c60799c793b89a16819c0a13c840ba6dfd017153deec8a5d650a41d22d52babd",
-   "producedBy": "bafkreifznhkmcmna4nis6fsoandjvovzvijaaxox7ggkqpmsxjscz7uaeq",
-   "role": "parcel"
-  },
-  {
-   "areaM2": 1962.797916,
+   "areaM2": 5989.486065,
    "fromParcelIds": [
     "HR-335495-1550/7",
     "HR-335495-1556/5"
    ],
-   "hash": "piece1-sha256:0acaea90c84cd469b52803d70f7a4b6386c73eecbc420d9ec0576f2545e64df5",
-   "producedBy": "bafkreifznhkmcmna4nis6fsoandjvovzvijaaxox7ggkqpmsxjscz7uaeq",
-   "role": "parcel"
+   "hash": "piece1-sha256:85b48c76cac3c47bf19472dbcd7afdd8ff80e50f7ea0654e418a60ebd8cf7fe6",
+   "producedBy": "bafkreiezqwtnnq7ryvjzdbmgda2yaubxsbwjeruy2ioumbpq4ftcai3tpe",
+   "role": "plot"
   },
   {
-   "areaM2": 37260.988086,
+   "areaM2": 37239.443852,
    "fromParcelIds": [
     "HR-335495-1550/8",
     "HR-335495-1553/1",
@@ -735,18 +792,10 @@
     "HR-335495-1556/1",
     "HR-335495-1556/10",
     "HR-335495-1557/3",
-    "HR-335495-1557/4",
     "HR-335495-1557/5",
-    "HR-335495-1557/6",
-    "HR-335495-1557/7",
-    "HR-335495-1557/8",
-    "HR-335495-1557/9",
-    "HR-335495-1557/10",
     "HR-335495-1557/13",
     "HR-335495-1557/14",
-    "HR-335495-1557/16",
     "HR-335495-1558/2",
-    "HR-335495-1558/3",
     "HR-335495-1558/4",
     "HR-335495-1558/10",
     "HR-335495-2452",
@@ -760,97 +809,38 @@
     "HR-335495-2481",
     "HR-335495-2484"
    ],
-   "hash": "piece1-sha256:ede3cabe6ced35643f4fccd2e03af3891d2777bb81a2246dfce8b4c136da11e1",
-   "producedBy": "bafkreicxuetdybgronpouvu42w44xij7t5zk4pbympgnwi63lrgnizsvpa",
+   "hash": "piece1-sha256:a4c0720485a40fc32d8bb1b60a1530ceb37538550e35ff27f338d70dcb0ee0ad",
+   "producedBy": "bafkreihrw6ydsxeyzgqtpicyokzkmqqx325eelklnzikj656n6mi6ev7pa",
    "role": "parcel"
   },
   {
-   "areaM2": 2.609464,
+   "areaM2": 12329.608404,
    "fromParcelIds": [
-    "HR-335495-1550/8",
+    "HR-335495-1551/2",
+    "HR-335495-1552/2",
     "HR-335495-1553/1",
-    "HR-335495-1555/5",
+    "HR-335495-1553/3",
     "HR-335495-1556/1",
-    "HR-335495-1556/10",
-    "HR-335495-1557/3",
-    "HR-335495-1557/4",
-    "HR-335495-1557/5",
-    "HR-335495-1557/6",
-    "HR-335495-1557/7",
-    "HR-335495-1557/8",
-    "HR-335495-1557/9",
-    "HR-335495-1557/10",
-    "HR-335495-1557/13",
-    "HR-335495-1557/14",
-    "HR-335495-1557/16",
-    "HR-335495-1558/2",
-    "HR-335495-1558/3",
-    "HR-335495-1558/4",
-    "HR-335495-1558/10",
-    "HR-335495-2452",
-    "HR-335495-2453",
-    "HR-335495-2457",
-    "HR-335495-2463",
-    "HR-335495-2465",
-    "HR-335495-2476",
-    "HR-335495-2477",
-    "HR-335495-2480",
-    "HR-335495-2481",
-    "HR-335495-2484"
+    "HR-335495-1556/18",
+    "HR-335495-2459",
+    "HR-335495-2460",
+    "HR-335495-2485"
    ],
-   "hash": "piece1-sha256:013c1e5a57989414cea3734e7191d767b662b5dab917ffa81ce3563dedf7f5e1",
-   "producedBy": "bafkreicxuetdybgronpouvu42w44xij7t5zk4pbympgnwi63lrgnizsvpa",
-   "role": "parcel"
+   "hash": "piece1-sha256:25916d80bb1699731f0ff1759e09d7612dd7c23035ded79381b1c80996286302",
+   "producedBy": "bafkreiezqwtnnq7ryvjzdbmgda2yaubxsbwjeruy2ioumbpq4ftcai3tpe",
+   "role": "plot"
   },
   {
-   "areaM2": 1.29844,
-   "fromParcelIds": [
-    "HR-335495-1550/8",
-    "HR-335495-1553/1",
-    "HR-335495-1555/5",
-    "HR-335495-1556/1",
-    "HR-335495-1556/10",
-    "HR-335495-1557/3",
-    "HR-335495-1557/4",
-    "HR-335495-1557/5",
-    "HR-335495-1557/6",
-    "HR-335495-1557/7",
-    "HR-335495-1557/8",
-    "HR-335495-1557/9",
-    "HR-335495-1557/10",
-    "HR-335495-1557/13",
-    "HR-335495-1557/14",
-    "HR-335495-1557/16",
-    "HR-335495-1558/2",
-    "HR-335495-1558/3",
-    "HR-335495-1558/4",
-    "HR-335495-1558/10",
-    "HR-335495-2452",
-    "HR-335495-2453",
-    "HR-335495-2457",
-    "HR-335495-2463",
-    "HR-335495-2465",
-    "HR-335495-2476",
-    "HR-335495-2477",
-    "HR-335495-2480",
-    "HR-335495-2481",
-    "HR-335495-2484"
-   ],
-   "hash": "piece1-sha256:06b7d750d5db20a3fa59924318d9fd3e86518386e07a85bfc6e5fd78be7fbf22",
-   "producedBy": "bafkreicxuetdybgronpouvu42w44xij7t5zk4pbympgnwi63lrgnizsvpa",
-   "role": "parcel"
-  },
-  {
-   "areaM2": 79.502003,
+   "areaM2": 79.486866,
    "fromParcelIds": [
     "HR-335495-1552/3"
    ],
-   "hash": "piece1-sha256:f6ccaa7af81ee131ee8d9f89ee3f2abd6d93f9add16c7620882dbc75f3839e6f",
-   "producedBy": "bafkreifgiv7a7aguhbnlr26urd55kvec47psz6ow35eemoebwail6uq2nu",
+   "hash": "piece1-sha256:42bf8e40c7ae100a5bb32485905f7bd2000e3c268e5d31bf47f1a5ba85e5c312",
+   "producedBy": "bafkreie3h7ss6ht6zppsdweotwtdmc4guizzgceunxqpb6cqpbvmbhpkl4",
    "role": "corridor"
   },
   {
-   "areaM2": 0.28701,
+   "areaM2": 0.302147,
    "fromParcelIds": [
     "HR-335495-1552/3"
    ],
@@ -859,40 +849,53 @@
    "role": "parcel"
   },
   {
-   "areaM2": 1.56595,
+   "areaM2": 0.000765,
    "fromParcelIds": [
     "HR-335495-1553/1"
    ],
-   "hash": "piece1-sha256:8a98873b615d2d66a887f38e36892e5c8bc6acc149854086cdb290f8ebbc64f3",
-   "producedBy": "bafkreicxuetdybgronpouvu42w44xij7t5zk4pbympgnwi63lrgnizsvpa",
-   "role": "parcel"
+   "hash": "piece1-sha256:813cd26bd2bb7a07cd6d3ea333031caee88a8a985a9e02d03074ddda2db489a6",
+   "producedBy": "bafkreiezqwtnnq7ryvjzdbmgda2yaubxsbwjeruy2ioumbpq4ftcai3tpe",
+   "role": "remainder"
   },
   {
-   "areaM2": 48.17088,
+   "areaM2": 48.211928,
    "fromParcelIds": [
     "HR-335495-1553/2"
    ],
-   "hash": "piece1-sha256:409906c212217fa160b2be782016fac6cb3b86f9272e5cd67c36b018cd4211ad",
-   "producedBy": "bafkreifgiv7a7aguhbnlr26urd55kvec47psz6ow35eemoebwail6uq2nu",
+   "hash": "piece1-sha256:794b490e77d1aa5aecaf5d0da5e1edd47443058b9d5e4250744b4656dbd62dde",
+   "producedBy": "bafkreie3h7ss6ht6zppsdweotwtdmc4guizzgceunxqpb6cqpbvmbhpkl4",
    "role": "corridor"
   },
   {
-   "areaM2": 0.21132,
+   "areaM2": 0.194747,
    "fromParcelIds": [
     "HR-335495-1553/2"
    ],
-   "hash": "piece1-sha256:5662821f78cd812aa04bd24a7dc0887a203392abfcdaad3672fbe6d30470373a",
+   "hash": "piece1-sha256:32e7831d413b1888267f3c7e0f5fae28975d445c70a07acc6c29dd3794db5772",
    "producedBy": null,
    "role": "parcel"
   },
   {
-   "areaM2": 0.024475,
+   "areaM2": 0.099802,
    "fromParcelIds": [
-    "HR-335495-1553/2"
+    "HR-335495-1553/6"
    ],
-   "hash": "piece1-sha256:62cc7fc05b6836160cb3d8d589fcec8f43fa0738b92d848446f84f65c542fcac",
-   "producedBy": null,
-   "role": "parcel"
+   "hash": "piece1-sha256:e8848bb66d9d8f9b0f51aa2fbe2740a5e5e74af7217bd7ca1bdc736723d6c0e8",
+   "producedBy": "bafkreiezqwtnnq7ryvjzdbmgda2yaubxsbwjeruy2ioumbpq4ftcai3tpe",
+   "role": "remainder"
+  },
+  {
+   "areaM2": 6291.847989,
+   "fromParcelIds": [
+    "HR-335495-1553/6",
+    "HR-335495-1554/2",
+    "HR-335495-1554/3",
+    "HR-335495-1556/16",
+    "HR-335495-2462"
+   ],
+   "hash": "piece1-sha256:f297e9e8b50cebb834719462d0e8a727de305af956210aa0e63a97d24ad381a4",
+   "producedBy": "bafkreiezqwtnnq7ryvjzdbmgda2yaubxsbwjeruy2ioumbpq4ftcai3tpe",
+   "role": "plot"
   },
   {
    "areaM2": 51.220314,
@@ -900,7 +903,7 @@
     "HR-335495-1553/7"
    ],
    "hash": "piece1-sha256:c0ae07aa4d7e72cb3e9c3637ae5337bc0d3c082fe440ed1ea1be0c645ef4a480",
-   "producedBy": "bafkreifgiv7a7aguhbnlr26urd55kvec47psz6ow35eemoebwail6uq2nu",
+   "producedBy": "bafkreie3h7ss6ht6zppsdweotwtdmc4guizzgceunxqpb6cqpbvmbhpkl4",
    "role": "corridor"
   },
   {
@@ -922,12 +925,12 @@
    "role": "parcel"
   },
   {
-   "areaM2": 1252.126384,
+   "areaM2": 1252.126217,
    "fromParcelIds": [
     "HR-335495-1554/1"
    ],
-   "hash": "piece1-sha256:075e49e0a8d467b3f83aa84e729511edf9356fecfd851b3824cc91bfb1df5dd5",
-   "producedBy": "bafkreifgiv7a7aguhbnlr26urd55kvec47psz6ow35eemoebwail6uq2nu",
+   "hash": "piece1-sha256:ac1a01bd496b12223460507ada924d194b694e6634f36a55fdf4066fef629058",
+   "producedBy": "bafkreie3h7ss6ht6zppsdweotwtdmc4guizzgceunxqpb6cqpbvmbhpkl4",
    "role": "corridor"
   },
   {
@@ -958,20 +961,47 @@
    "role": "parcel"
   },
   {
-   "areaM2": 0.180741,
+   "areaM2": 0.180908,
    "fromParcelIds": [
     "HR-335495-1554/1"
    ],
-   "hash": "piece1-sha256:348d6a671cd26e96035155d91528dfeda72a22880cee0ffd7e7770e99c9605b5",
+   "hash": "piece1-sha256:2ded47c6f4be8c4aaf40d940ecc3d0030a0b2cad4761a3b48e8b17381dc1fcca",
    "producedBy": null,
    "role": "parcel"
   },
   {
-   "areaM2": 72.83715,
+   "areaM2": 0.048058,
+   "fromParcelIds": [
+    "HR-335495-1554/2"
+   ],
+   "hash": "piece1-sha256:37f34df55ecf384bd5d7b3bad0f2b3310a0ecc196d7bb86c9e7381e67b8de740",
+   "producedBy": "bafkreiezqwtnnq7ryvjzdbmgda2yaubxsbwjeruy2ioumbpq4ftcai3tpe",
+   "role": "remainder"
+  },
+  {
+   "areaM2": 0.023843,
+   "fromParcelIds": [
+    "HR-335495-1554/2"
+   ],
+   "hash": "piece1-sha256:baa29345d614a067a9e188edd2115181287dfc2727407a1bdf8c64dfc0d9355e",
+   "producedBy": "bafkreiezqwtnnq7ryvjzdbmgda2yaubxsbwjeruy2ioumbpq4ftcai3tpe",
+   "role": "remainder"
+  },
+  {
+   "areaM2": 0.010676,
+   "fromParcelIds": [
+    "HR-335495-1554/3"
+   ],
+   "hash": "piece1-sha256:ec37b6e0288e44a7bd6b745db14b75db333db00c5605a28d1f1b641a7c346b12",
+   "producedBy": "bafkreiezqwtnnq7ryvjzdbmgda2yaubxsbwjeruy2ioumbpq4ftcai3tpe",
+   "role": "remainder"
+  },
+  {
+   "areaM2": 72.854908,
    "fromParcelIds": [
     "HR-335495-1554/4"
    ],
-   "hash": "piece1-sha256:c27310219aaa5aab95f3da0fb3c677d242f09db242e491d3f2250349343fc03b",
+   "hash": "piece1-sha256:2ea9c62d48922820c6c282788240ea156df6ef3abed9891518b24e0c3c25489c",
    "producedBy": null,
    "role": "parcel"
   },
@@ -981,48 +1011,31 @@
     "HR-335495-1554/4"
    ],
    "hash": "piece1-sha256:8361f9c1be72f71358e50ba684dbdafb3be8c1a037a8fe13b7fbdf2a434acbb9",
-   "producedBy": "bafkreifgiv7a7aguhbnlr26urd55kvec47psz6ow35eemoebwail6uq2nu",
+   "producedBy": "bafkreie3h7ss6ht6zppsdweotwtdmc4guizzgceunxqpb6cqpbvmbhpkl4",
    "role": "corridor"
   },
   {
-   "areaM2": 4.298948,
+   "areaM2": 4.28119,
    "fromParcelIds": [
     "HR-335495-1554/4"
    ],
-   "hash": "piece1-sha256:5123a88c192328e9b9872edf1fdff16aa1522ce06d3b19b258b16a303df49b6f",
-   "producedBy": "bafkreifgiv7a7aguhbnlr26urd55kvec47psz6ow35eemoebwail6uq2nu",
+   "hash": "piece1-sha256:d0206d9c121dc68f65bf6564684e30e8c5cde0f9fb1e59b774486e510805de38",
+   "producedBy": "bafkreie3h7ss6ht6zppsdweotwtdmc4guizzgceunxqpb6cqpbvmbhpkl4",
    "role": "corridor"
   },
   {
-   "areaM2": 358.460947,
-   "fromParcelIds": [
-    "HR-335495-1555/1"
-   ],
-   "hash": "piece1-sha256:b0596c49fac8f8f31dfeb010f69e9667f234be4f0f2914a148027ddb52c569f0",
-   "producedBy": "bafkreidwc4r2f6fgugwcn2uyqnrwvwaskcvjhtvn4nwn7dtc6dgsxppdtu",
-   "role": "parcel"
-  },
-  {
-   "areaM2": 137.315723,
-   "fromParcelIds": [
-    "HR-335495-1555/1"
-   ],
-   "hash": "piece1-sha256:1ab1b8924769a2d1744d70b72c67d2ece6913e0f27d9d086d9ab6338c124a37c",
-   "producedBy": "bafkreidwc4r2f6fgugwcn2uyqnrwvwaskcvjhtvn4nwn7dtc6dgsxppdtu",
-   "role": "parcel"
-  },
-  {
-   "areaM2": 1250.039626,
+   "areaM2": 4017.317891,
    "fromParcelIds": [
     "HR-335495-1555/1",
     "HR-335495-1556/9",
     "HR-335495-1557/23",
     "HR-335495-1558/11",
-    "HR-335495-2466"
+    "HR-335495-2466",
+    "HR-335495-2471"
    ],
-   "hash": "piece1-sha256:dba88d706c04e16d1e88d8cd5f65675c9526b1f66a654d0a7a2cd86f35db6077",
-   "producedBy": "bafkreidwc4r2f6fgugwcn2uyqnrwvwaskcvjhtvn4nwn7dtc6dgsxppdtu",
-   "role": "parcel"
+   "hash": "piece1-sha256:ecd2f6ab6958e4f13a3b5f321c78dc218b2c6527b5ae99a7afcfc30c8b079ab7",
+   "producedBy": "bafkreiezqwtnnq7ryvjzdbmgda2yaubxsbwjeruy2ioumbpq4ftcai3tpe",
+   "role": "plot"
   },
   {
    "areaM2": 12.223639,
@@ -1039,7 +1052,7 @@
     "HR-335495-1555/3"
    ],
    "hash": "piece1-sha256:fe4bfccbbc8c5eaef747db84aee58b12f3c3bcc2c8c3b57f27efd429912b901b",
-   "producedBy": "bafkreifgiv7a7aguhbnlr26urd55kvec47psz6ow35eemoebwail6uq2nu",
+   "producedBy": "bafkreie3h7ss6ht6zppsdweotwtdmc4guizzgceunxqpb6cqpbvmbhpkl4",
    "role": "corridor"
   },
   {
@@ -1048,7 +1061,7 @@
     "HR-335495-1555/3"
    ],
    "hash": "piece1-sha256:0a55fb17dccd2cece3a1f91f257926c8fe0655a43db22277c45a551debe07ce3",
-   "producedBy": "bafkreifgiv7a7aguhbnlr26urd55kvec47psz6ow35eemoebwail6uq2nu",
+   "producedBy": "bafkreie3h7ss6ht6zppsdweotwtdmc4guizzgceunxqpb6cqpbvmbhpkl4",
    "role": "corridor"
   },
   {
@@ -1057,7 +1070,7 @@
     "HR-335495-1555/4"
    ],
    "hash": "piece1-sha256:b4c2ddf2deb2e39bf50aa2cdb5982f8a184a3c313c3c86d5dcb6b0b3de80258d",
-   "producedBy": "bafkreifgiv7a7aguhbnlr26urd55kvec47psz6ow35eemoebwail6uq2nu",
+   "producedBy": "bafkreie3h7ss6ht6zppsdweotwtdmc4guizzgceunxqpb6cqpbvmbhpkl4",
    "role": "corridor"
   },
   {
@@ -1070,157 +1083,49 @@
    "role": "parcel"
   },
   {
-   "areaM2": 14.141233,
+   "areaM2": 0.68205,
    "fromParcelIds": [
-    "HR-335495-1556/1"
+    "HR-335495-1555/5"
    ],
-   "hash": "piece1-sha256:93f4a334009e9fa98cdd29bcf6fa0664c456b609f0c04053b00480ba0ddc8ab6",
-   "producedBy": "bafkreicxuetdybgronpouvu42w44xij7t5zk4pbympgnwi63lrgnizsvpa",
-   "role": "parcel"
+   "hash": "piece1-sha256:8ffcaaf3a3da7dfbd491ca97942e1d4bf7d665e18560ce9faa8c820ae4ff6b16",
+   "producedBy": "bafkreiezqwtnnq7ryvjzdbmgda2yaubxsbwjeruy2ioumbpq4ftcai3tpe",
+   "role": "remainder"
   },
   {
-   "areaM2": 3.632441,
-   "fromParcelIds": [
-    "HR-335495-1556/1"
-   ],
-   "hash": "piece1-sha256:e5e0ae3fe58000327d96fc7c24b0d84e0367e229d8f3959fedf9f939100f9704",
-   "producedBy": "bafkreicxuetdybgronpouvu42w44xij7t5zk4pbympgnwi63lrgnizsvpa",
-   "role": "parcel"
-  },
-  {
-   "areaM2": 3.118064,
-   "fromParcelIds": [
-    "HR-335495-1556/1"
-   ],
-   "hash": "piece1-sha256:82c12686d2c515bd1339bfb4d2d512d7f2c33da096e0e8bd3188db26ecdf3cbf",
-   "producedBy": "bafkreicxuetdybgronpouvu42w44xij7t5zk4pbympgnwi63lrgnizsvpa",
-   "role": "parcel"
-  },
-  {
-   "areaM2": 1.904509,
-   "fromParcelIds": [
-    "HR-335495-1556/1"
-   ],
-   "hash": "piece1-sha256:5727cd01067e293d32887fec075536eaac69ecb6d68bc5de57f31a9964e5df16",
-   "producedBy": "bafkreicxuetdybgronpouvu42w44xij7t5zk4pbympgnwi63lrgnizsvpa",
-   "role": "parcel"
-  },
-  {
-   "areaM2": 0.380893,
-   "fromParcelIds": [
-    "HR-335495-1556/1"
-   ],
-   "hash": "piece1-sha256:c4ac0f369f5e942452ed4f35fc7136c8af805e15b83b3004f5bd4cdb0ea43624",
-   "producedBy": "bafkreicxuetdybgronpouvu42w44xij7t5zk4pbympgnwi63lrgnizsvpa",
-   "role": "parcel"
-  },
-  {
-   "areaM2": 0.20571,
-   "fromParcelIds": [
-    "HR-335495-1556/1"
-   ],
-   "hash": "piece1-sha256:78c5d37bf1f871cb53343244b6766369d534696f14b27fb18e6d981d42302d73",
-   "producedBy": "bafkreicxuetdybgronpouvu42w44xij7t5zk4pbympgnwi63lrgnizsvpa",
-   "role": "parcel"
-  },
-  {
-   "areaM2": 10217.464989,
-   "fromParcelIds": [
-    "HR-335495-1556/2"
-   ],
-   "hash": "piece1-sha256:d1b559a23d8c778d7c53c6f0a180d0a279f62a64d8f5666ac85583fd4641beb6",
-   "producedBy": "bafkreicsffljfoi66v4okimmjmtpc6aspajqlayhv43soiehgmdsbsqhgq",
-   "role": "parcel"
-  },
-  {
-   "areaM2": 4648.100952,
+   "areaM2": 16800.141844,
    "fromParcelIds": [
     "HR-335495-1556/2",
     "HR-335495-2478"
    ],
-   "hash": "piece1-sha256:f3ec772665dac177d647092a8d5d66081435790aa8ff16a67c9672e3f3c6930d",
-   "producedBy": "bafkreicsffljfoi66v4okimmjmtpc6aspajqlayhv43soiehgmdsbsqhgq",
-   "role": "parcel"
+   "hash": "piece1-sha256:4e83e950981d355515a84814636cd7f2f082e042317ba2332e3d888e4a683f14",
+   "producedBy": "bafkreiezqwtnnq7ryvjzdbmgda2yaubxsbwjeruy2ioumbpq4ftcai3tpe",
+   "role": "plot"
   },
   {
-   "areaM2": 168.098294,
+   "areaM2": 0.000928,
    "fromParcelIds": [
-    "HR-335495-1556/3"
+    "HR-335495-1556/10"
    ],
-   "hash": "piece1-sha256:1d85846b5f43399aed790c493cecb020272c985918c518f8d44820aeceb25e42",
-   "producedBy": "bafkreif4jncxc755dwwbjnbdfmkvbxnygfx5uackvylgkesoadnzjzhffa",
-   "role": "parcel"
+   "hash": "piece1-sha256:6817fc4d8f5fe406bcd0215040063d40e168d4b54bd088959a285139cd985aac",
+   "producedBy": "bafkreiezqwtnnq7ryvjzdbmgda2yaubxsbwjeruy2ioumbpq4ftcai3tpe",
+   "role": "remainder"
   },
   {
-   "areaM2": 1557.57619,
-   "fromParcelIds": [
-    "HR-335495-1556/4"
-   ],
-   "hash": "piece1-sha256:99a5dc17a821048e36751673af074a4aa3f432d227bbb356c82d0a841ac58c22",
-   "producedBy": "bafkreicsbbwbk2zanrzi36juiaksf6swemvppvtzxjws3sfs5ms4xcp4ku",
-   "role": "parcel"
-  },
-  {
-   "areaM2": 3482.822826,
-   "fromParcelIds": [
-    "HR-335495-1556/5"
-   ],
-   "hash": "piece1-sha256:e4a6ad393be2501d1650f1c56dcda818e485230cf7d8fd101ee68881e0bcee85",
-   "producedBy": "bafkreifznhkmcmna4nis6fsoandjvovzvijaaxox7ggkqpmsxjscz7uaeq",
-   "role": "parcel"
-  },
-  {
-   "areaM2": 900.250467,
-   "fromParcelIds": [
-    "HR-335495-1556/9"
-   ],
-   "hash": "piece1-sha256:308905f5c8250bbcaa274eac2e16ecce92704c3ff8798890446617769f5414c4",
-   "producedBy": "bafkreidwc4r2f6fgugwcn2uyqnrwvwaskcvjhtvn4nwn7dtc6dgsxppdtu",
-   "role": "parcel"
-  },
-  {
-   "areaM2": 142.061594,
-   "fromParcelIds": [
-    "HR-335495-1556/9"
-   ],
-   "hash": "piece1-sha256:3b4247e857aafa4f403628ab56f9b79c6e60f680aaf84eca2190b21741929ced",
-   "producedBy": "bafkreidwc4r2f6fgugwcn2uyqnrwvwaskcvjhtvn4nwn7dtc6dgsxppdtu",
-   "role": "parcel"
-  },
-  {
-   "areaM2": 3798.175086,
+   "areaM2": 5603.576458,
    "fromParcelIds": [
     "HR-335495-1556/12"
    ],
-   "hash": "piece1-sha256:12f456936d5ae5d3ca0b3a216babfdc4bdc828c143fe7861fd0ee218b5feefcd",
-   "producedBy": "bafkreieirbpuzfo62jocqgwbrkr3jv344bt2pipx53apgquflnrvcvfkgm",
+   "hash": "piece1-sha256:85842bd70e7b52ee562f12719457d24678f5959e0c3e4c2380d63c115e02fd87",
+   "producedBy": null,
    "role": "parcel"
   },
   {
-   "areaM2": 1805.401372,
-   "fromParcelIds": [
-    "HR-335495-1556/12"
-   ],
-   "hash": "piece1-sha256:c8dae8eb5caccde577054cd6f1ca8eb04a6c9bc9a87f7a7989c8c91ae0aed0f9",
-   "producedBy": "bafkreieirbpuzfo62jocqgwbrkr3jv344bt2pipx53apgquflnrvcvfkgm",
-   "role": "parcel"
-  },
-  {
-   "areaM2": 4370.531395,
+   "areaM2": 5710.59017,
    "fromParcelIds": [
     "HR-335495-1556/13"
    ],
-   "hash": "piece1-sha256:559f0701c84870c8736a95038dffb1e3928295064829fe84c8c605292e3d3796",
-   "producedBy": "bafkreihvadgrmc6mwh3wkvqvgcb7djmvnfdmu55epifaojdy2achl7bkxi",
-   "role": "parcel"
-  },
-  {
-   "areaM2": 1340.058775,
-   "fromParcelIds": [
-    "HR-335495-1556/13"
-   ],
-   "hash": "piece1-sha256:b7310a49c41cfdb8d8dab5c165f1d433537d724d275983679d145655dfd2edbd",
-   "producedBy": "bafkreihvadgrmc6mwh3wkvqvgcb7djmvnfdmu55epifaojdy2achl7bkxi",
+   "hash": "piece1-sha256:07eba4fa8cd3605625bcb39496513d79ec4d0691caec8360689bee7ba957cde0",
+   "producedBy": null,
    "role": "parcel"
   },
   {
@@ -1229,7 +1134,7 @@
     "HR-335495-1556/15"
    ],
    "hash": "piece1-sha256:4629856e6a3305ed3227e5295783286c1a70df4e83c96aa185b8bd43bf671ff5",
-   "producedBy": "bafkreifgiv7a7aguhbnlr26urd55kvec47psz6ow35eemoebwail6uq2nu",
+   "producedBy": "bafkreie3h7ss6ht6zppsdweotwtdmc4guizzgceunxqpb6cqpbvmbhpkl4",
    "role": "corridor"
   },
   {
@@ -1287,42 +1192,6 @@
    "role": "parcel"
   },
   {
-   "areaM2": 3943.497342,
-   "fromParcelIds": [
-    "HR-335495-1556/16"
-   ],
-   "hash": "piece1-sha256:a383192ffcca118e10eb2fe7ce672e58077a4e15333801e5f291ab85d687a0b3",
-   "producedBy": "bafkreigzp6ft7gmhd23btwvw6vw2ufdd5csk2qtliwuyq6j6x6tiy54vky",
-   "role": "parcel"
-  },
-  {
-   "areaM2": 1878.865714,
-   "fromParcelIds": [
-    "HR-335495-1556/16"
-   ],
-   "hash": "piece1-sha256:9e2441752faf83ebc914000bdaafc5660d9cad78e383ad6d4fcd233ccc74760b",
-   "producedBy": "bafkreigzp6ft7gmhd23btwvw6vw2ufdd5csk2qtliwuyq6j6x6tiy54vky",
-   "role": "parcel"
-  },
-  {
-   "areaM2": 6936.320765,
-   "fromParcelIds": [
-    "HR-335495-1556/18"
-   ],
-   "hash": "piece1-sha256:c2fe96a7f7a13ded2929d439941df10031bdc659c0680d13e4345d9f15d65162",
-   "producedBy": "bafkreig6ci7alfpwgch7dvu6byh54p3pa6qhtw77wmo3xykbpfiuk24ofy",
-   "role": "parcel"
-  },
-  {
-   "areaM2": 3423.552303,
-   "fromParcelIds": [
-    "HR-335495-1556/18"
-   ],
-   "hash": "piece1-sha256:5e095516211ebd66a0a0cef3d9fb953f57c2c073f4a62314916eea3eb83b0420",
-   "producedBy": "bafkreig6ci7alfpwgch7dvu6byh54p3pa6qhtw77wmo3xykbpfiuk24ofy",
-   "role": "parcel"
-  },
-  {
    "areaM2": 17244.404439,
    "fromParcelIds": [
     "HR-335495-1557/4"
@@ -1332,12 +1201,12 @@
    "role": "corridor"
   },
   {
-   "areaM2": 15.977993,
+   "areaM2": 32.283911,
    "fromParcelIds": [
     "HR-335495-1557/4"
    ],
-   "hash": "piece1-sha256:9f6dad3f9c7a5e228d8d7ef47991d4cfd03153617f8e67c20f33d365e581e782",
-   "producedBy": "bafkreicxuetdybgronpouvu42w44xij7t5zk4pbympgnwi63lrgnizsvpa",
+   "hash": "piece1-sha256:16ae9e6c07c77f52b6a409f92421117de22f2c2d21f3398949ed8d3daaab88a8",
+   "producedBy": null,
    "role": "parcel"
   },
   {
@@ -1350,15 +1219,6 @@
    "role": "parcel"
   },
   {
-   "areaM2": 11.046452,
-   "fromParcelIds": [
-    "HR-335495-1557/4"
-   ],
-   "hash": "piece1-sha256:8e40f95a983a3ddbdd779e384e21ff9c1ce2c32bdfffaed419b39383446e0492",
-   "producedBy": "bafkreicxuetdybgronpouvu42w44xij7t5zk4pbympgnwi63lrgnizsvpa",
-   "role": "parcel"
-  },
-  {
    "areaM2": 2.835821,
    "fromParcelIds": [
     "HR-335495-1557/4"
@@ -1368,129 +1228,66 @@
    "role": "parcel"
   },
   {
-   "areaM2": 2982.556846,
+   "areaM2": 4342.385818,
    "fromParcelIds": [
     "HR-335495-1557/6"
    ],
-   "hash": "piece1-sha256:a8a6e15ed56f9b10c1e251ef8a2457fc0008616b6fb32e4c4b0d68b26c0b314c",
-   "producedBy": "bafkreichnnekcqd7tmjbxb4yxirjlnoh4gnyxw6zfhcdt4cvda6pfpczf4",
+   "hash": "piece1-sha256:2c8189d7019139a85d1da83337e66cc0094220151f8df92b3a9d62dd92d9510c",
+   "producedBy": null,
    "role": "parcel"
   },
   {
-   "areaM2": 1353.576462,
-   "fromParcelIds": [
-    "HR-335495-1557/6"
-   ],
-   "hash": "piece1-sha256:bca63ccc31b6ae0760030e275d02ef9e2cf9c302829e6f29098161533f74e7ff",
-   "producedBy": "bafkreichnnekcqd7tmjbxb4yxirjlnoh4gnyxw6zfhcdt4cvda6pfpczf4",
-   "role": "parcel"
-  },
-  {
-   "areaM2": 3899.744263,
+   "areaM2": 5014.384828,
    "fromParcelIds": [
     "HR-335495-1557/7"
    ],
-   "hash": "piece1-sha256:f3f9270f5b8ef0b7fa788cf2f83d2e1a36e363cf0a15192d6c5334a11d9a4238",
-   "producedBy": "bafkreihxkkzkocec4pdocc52pa6nagedfwebkmxeuljbsr66jxzxwppihe",
+   "hash": "piece1-sha256:cd3936901478a98f192acfc17c215c0f02fda653988ac871e61401bd07ba20ed",
+   "producedBy": null,
    "role": "parcel"
   },
   {
-   "areaM2": 1108.110784,
-   "fromParcelIds": [
-    "HR-335495-1557/7"
-   ],
-   "hash": "piece1-sha256:071f0f2b4e77c2e4d8311ff19f5cd4b424ec48f6d6bf73cbd8f5e4b685043c0a",
-   "producedBy": "bafkreihxkkzkocec4pdocc52pa6nagedfwebkmxeuljbsr66jxzxwppihe",
-   "role": "parcel"
-  },
-  {
-   "areaM2": 4021.71189,
+   "areaM2": 5988.797739,
    "fromParcelIds": [
     "HR-335495-1557/8"
    ],
-   "hash": "piece1-sha256:64bc3ceb1a3847327cd2d40ebbf41f838ababcf49969f8f6c0a92024764ca2fe",
-   "producedBy": "bafkreihn5v74ahvt675chuz5sqm6svge35dt5ckxdvxx2om37kygryazzm",
+   "hash": "piece1-sha256:ba94e416f02f8ca35adf21cd713b6afc951cfdda6cff5dfe818c69c0d2bfe26c",
+   "producedBy": null,
    "role": "parcel"
   },
   {
-   "areaM2": 1962.796811,
-   "fromParcelIds": [
-    "HR-335495-1557/8"
-   ],
-   "hash": "piece1-sha256:d83a645a788063a39958cb97301d7a0fac4193041458b0ce41bd9935366fd49a",
-   "producedBy": "bafkreihn5v74ahvt675chuz5sqm6svge35dt5ckxdvxx2om37kygryazzm",
-   "role": "parcel"
-  },
-  {
-   "areaM2": 2986.857211,
+   "areaM2": 4343.46323,
    "fromParcelIds": [
     "HR-335495-1557/9"
    ],
-   "hash": "piece1-sha256:f5eb7293239fecd7deea095df9fdabb4b0385de84ee3e82b061232541dcc5b23",
-   "producedBy": "bafkreideae3zuc6662hhutzhajh4wqz3hgsn4ejf54egfvbgz7f2fcewum",
+   "hash": "piece1-sha256:eebcac5c6b7c664df466a56aa1d02afa60822e71d8c40d8ce82e7775ad151bf1",
+   "producedBy": null,
    "role": "parcel"
   },
   {
-   "areaM2": 1351.73645,
-   "fromParcelIds": [
-    "HR-335495-1557/9"
-   ],
-   "hash": "piece1-sha256:7e759ac952381ba2f64b01b321bc93279de0da69b3ef89cff51feb441d3955c0",
-   "producedBy": "bafkreideae3zuc6662hhutzhajh4wqz3hgsn4ejf54egfvbgz7f2fcewum",
-   "role": "parcel"
-  },
-  {
-   "areaM2": 4022.586528,
+   "areaM2": 5988.715031,
    "fromParcelIds": [
     "HR-335495-1557/10"
    ],
-   "hash": "piece1-sha256:f7e184620f637efb855444c4a3530bae999263c09a12a2f4066dca40e80a5a32",
-   "producedBy": "bafkreif2kerarnly6gofosc7lipc3ysv2dqmtj4tytjcuppmomlvm6l3fu",
+   "hash": "piece1-sha256:ee099328a3a4c2d49866e153a675f3056e5b185032f492757c6554512abc99ad",
+   "producedBy": null,
    "role": "parcel"
   },
   {
-   "areaM2": 1962.974921,
-   "fromParcelIds": [
-    "HR-335495-1557/10"
-   ],
-   "hash": "piece1-sha256:d580437179d4e8a2f76eac55de93dfcd9057eba57a86455185c8b9737659c7a4",
-   "producedBy": "bafkreif2kerarnly6gofosc7lipc3ysv2dqmtj4tytjcuppmomlvm6l3fu",
-   "role": "parcel"
-  },
-  {
-   "areaM2": 3869.023378,
+   "areaM2": 5011.913568,
    "fromParcelIds": [
     "HR-335495-1557/16"
    ],
-   "hash": "piece1-sha256:d4b16651b2d178771d4c4a9078351d000bfbf32564792235b82f4bdb31a883be",
-   "producedBy": "bafkreiasmpfsaail5qwmnvx7jz26xcgp5ykdg3uwf75k2mcbotkt24xoou",
+   "hash": "piece1-sha256:c80ef8b056ee5bc0286c06fd876afef886ef0804e60cb8134d672f770a7fe755",
+   "producedBy": null,
    "role": "parcel"
   },
   {
-   "areaM2": 1140.101941,
-   "fromParcelIds": [
-    "HR-335495-1557/16"
-   ],
-   "hash": "piece1-sha256:313f113ad193133eb7a86e4e00d13b040f651f315a4af91f145500f3638d85b5",
-   "producedBy": "bafkreiasmpfsaail5qwmnvx7jz26xcgp5ykdg3uwf75k2mcbotkt24xoou",
-   "role": "parcel"
-  },
-  {
-   "areaM2": 5820.870771,
+   "areaM2": 8947.815611,
    "fromParcelIds": [
     "HR-335495-1557/19"
    ],
-   "hash": "piece1-sha256:08a6d230095142b32cbdeac4a532de6971ae587e9d03859bc072145db3b90d0e",
-   "producedBy": "bafkreicjyrz4xfqotcccrugg3u5zvx7krfhsmntxz6gnihi3hdlb3yiojq",
-   "role": "parcel"
-  },
-  {
-   "areaM2": 3126.944602,
-   "fromParcelIds": [
-    "HR-335495-1557/19"
-   ],
-   "hash": "piece1-sha256:661d12f05979473ba22ce02650c7d970ed2d8313a2f59ddeb1c5b4cec27195fe",
-   "producedBy": "bafkreicjyrz4xfqotcccrugg3u5zvx7krfhsmntxz6gnihi3hdlb3yiojq",
+   "hash": "piece1-sha256:463a8ddbe0ba6b679deab0e10290afe2c2e6ee68608cdad7e35b815cdddc3d73",
+   "producedBy": null,
    "role": "parcel"
   },
   {
@@ -1521,41 +1318,13 @@
    "role": "parcel"
   },
   {
-   "areaM2": 1924.156129,
-   "fromParcelIds": [
-    "HR-335495-1557/22"
-   ],
-   "hash": "piece1-sha256:0faa5a5c5acf285f3531b3882cf7797345b490dc80b1d7fbe8b1d0db0bcc26b5",
-   "producedBy": "bafkreibpyfxqu32jnf4rqwquyt4f6ikklnhg3di26fivatnfsw4ncvsydm",
-   "role": "parcel"
-  },
-  {
    "areaM2": 0.039883,
    "fromParcelIds": [
     "HR-335495-1557/22"
    ],
    "hash": "piece1-sha256:6536cc4f2232c6d24513a96aae48ffdb898877e56738d7f4365ae9a981b89b87",
-   "producedBy": "bafkreifgiv7a7aguhbnlr26urd55kvec47psz6ow35eemoebwail6uq2nu",
+   "producedBy": "bafkreie3h7ss6ht6zppsdweotwtdmc4guizzgceunxqpb6cqpbvmbhpkl4",
    "role": "corridor"
-  },
-  {
-   "areaM2": 1071.17833,
-   "fromParcelIds": [
-    "HR-335495-1557/22",
-    "HR-335495-1558/12"
-   ],
-   "hash": "piece1-sha256:2df5a94e995d3d7c183f9893c06df2235d2cc85c8c1408248882d1fe45f290ec",
-   "producedBy": "bafkreibpyfxqu32jnf4rqwquyt4f6ikklnhg3di26fivatnfsw4ncvsydm",
-   "role": "parcel"
-  },
-  {
-   "areaM2": 474.078588,
-   "fromParcelIds": [
-    "HR-335495-1557/23"
-   ],
-   "hash": "piece1-sha256:a46350063dfa35b61d84bc3356ba3c4496309b1931ca1f6e05ad9eb27e750141",
-   "producedBy": "bafkreidwc4r2f6fgugwcn2uyqnrwvwaskcvjhtvn4nwn7dtc6dgsxppdtu",
-   "role": "parcel"
   },
   {
    "areaM2": 140.111078,
@@ -1567,6 +1336,15 @@
    "role": "corridor"
   },
   {
+   "areaM2": 0.858438,
+   "fromParcelIds": [
+    "HR-335495-1558/3"
+   ],
+   "hash": "piece1-sha256:5b969d974fe71d5d3c34f26ef4bad94825dc5aff774d1364a8cf55117073c443",
+   "producedBy": null,
+   "role": "parcel"
+  },
+  {
    "areaM2": 48.905852,
    "fromParcelIds": [
     "HR-335495-1558/6"
@@ -1576,39 +1354,12 @@
    "role": "corridor"
   },
   {
-   "areaM2": 109.631356,
-   "fromParcelIds": [
-    "HR-335495-1558/11"
-   ],
-   "hash": "piece1-sha256:404655e20f80e710ae4eb5a85844f0044ea3182a6090c0e6e8ebc5f6220bc622",
-   "producedBy": "bafkreidwc4r2f6fgugwcn2uyqnrwvwaskcvjhtvn4nwn7dtc6dgsxppdtu",
-   "role": "parcel"
-  },
-  {
-   "areaM2": 49.501468,
-   "fromParcelIds": [
-    "HR-335495-1558/11"
-   ],
-   "hash": "piece1-sha256:6bdbefaadbc8fdd227328388cc71cbb774574530f97f861e27194fa424b7be58",
-   "producedBy": "bafkreidwc4r2f6fgugwcn2uyqnrwvwaskcvjhtvn4nwn7dtc6dgsxppdtu",
-   "role": "parcel"
-  },
-  {
-   "areaM2": 314.191173,
-   "fromParcelIds": [
-    "HR-335495-1558/12"
-   ],
-   "hash": "piece1-sha256:a563dc88bd1cbe328326f8e878da1a1f222c0ba891ce6f6576e6e386053d440c",
-   "producedBy": "bafkreibpyfxqu32jnf4rqwquyt4f6ikklnhg3di26fivatnfsw4ncvsydm",
-   "role": "parcel"
-  },
-  {
    "areaM2": 0.092636,
    "fromParcelIds": [
     "HR-335495-1558/12"
    ],
    "hash": "piece1-sha256:1c9024fded50d77b9a0a44c570494c82eee892312575db0a9c86910173f33fe2",
-   "producedBy": "bafkreifgiv7a7aguhbnlr26urd55kvec47psz6ow35eemoebwail6uq2nu",
+   "producedBy": "bafkreie3h7ss6ht6zppsdweotwtdmc4guizzgceunxqpb6cqpbvmbhpkl4",
    "role": "corridor"
   },
   {
@@ -1666,21 +1417,12 @@
    "role": "parcel"
   },
   {
-   "areaM2": 89.932218,
-   "fromParcelIds": [
-    "HR-335495-1559/10"
-   ],
-   "hash": "piece1-sha256:77f84fcf1f4e0c1e6d1b9105afb04ff218e7283d48ff9ddf434b561c1bd7152a",
-   "producedBy": null,
-   "role": "parcel"
-  },
-  {
    "areaM2": 0.994762,
    "fromParcelIds": [
     "HR-335495-1559/10"
    ],
    "hash": "piece1-sha256:06e9ec6926a348b9eec4e9b4c534c08e8261bd0e8c1bc6e80243ac442e53372e",
-   "producedBy": "bafkreifgiv7a7aguhbnlr26urd55kvec47psz6ow35eemoebwail6uq2nu",
+   "producedBy": "bafkreie3h7ss6ht6zppsdweotwtdmc4guizzgceunxqpb6cqpbvmbhpkl4",
    "role": "corridor"
   },
   {
@@ -1689,20 +1431,20 @@
     "HR-335495-1559/11"
    ],
    "hash": "piece1-sha256:68253c2f0b40daed44aad8722387ab71fe62e663f94502546f15042f91252410",
-   "producedBy": "bafkreifgiv7a7aguhbnlr26urd55kvec47psz6ow35eemoebwail6uq2nu",
+   "producedBy": "bafkreie3h7ss6ht6zppsdweotwtdmc4guizzgceunxqpb6cqpbvmbhpkl4",
    "role": "corridor"
   },
   {
-   "areaM2": 1188.672361,
+   "areaM2": 1188.668971,
    "fromParcelIds": [
     "HR-335495-2407/2"
    ],
    "hash": "piece1-sha256:e78f695201ea496243cc3270871d234a4786b7efd813247b000186612696b4a2",
-   "producedBy": "bafkreifgiv7a7aguhbnlr26urd55kvec47psz6ow35eemoebwail6uq2nu",
+   "producedBy": "bafkreie3h7ss6ht6zppsdweotwtdmc4guizzgceunxqpb6cqpbvmbhpkl4",
    "role": "corridor"
   },
   {
-   "areaM2": 0.552371,
+   "areaM2": 0.555529,
    "fromParcelIds": [
     "HR-335495-2407/2"
    ],
@@ -1720,20 +1462,29 @@
    "role": "parcel"
   },
   {
-   "areaM2": 1048.177838,
+   "areaM2": 1.482048,
+   "fromParcelIds": [
+    "HR-335495-2407/4"
+   ],
+   "hash": "piece1-sha256:c5d3dce09f4bfcada90a6ca25eadb45268d604285cd42a5cb0ecb3a98ec02e93",
+   "producedBy": "bafkreiezqwtnnq7ryvjzdbmgda2yaubxsbwjeruy2ioumbpq4ftcai3tpe",
+   "role": "remainder"
+  },
+  {
+   "areaM2": 1048.124732,
    "fromParcelIds": [
     "HR-335495-2407/5"
    ],
    "hash": "piece1-sha256:1223c76d11f5b5ed3a0994352c4d849d1b83db62bcc0d910bae311f562193609",
-   "producedBy": "bafkreifgiv7a7aguhbnlr26urd55kvec47psz6ow35eemoebwail6uq2nu",
+   "producedBy": "bafkreie3h7ss6ht6zppsdweotwtdmc4guizzgceunxqpb6cqpbvmbhpkl4",
    "role": "corridor"
   },
   {
-   "areaM2": 1.747672,
+   "areaM2": 1.800777,
    "fromParcelIds": [
     "HR-335495-2407/5"
    ],
-   "hash": "piece1-sha256:73ff7e0bff703644c94ce3ef33252a5c67c7e4ad0cf5539328732f4a3a936d86",
+   "hash": "piece1-sha256:e883152494d824be48c3360b277f1a099b0ed5786a5f6d2526d9b896111b400b",
    "producedBy": null,
    "role": "parcel"
   },
@@ -1774,39 +1525,12 @@
    "role": "parcel"
   },
   {
-   "areaM2": 236.085511,
-   "fromParcelIds": [
-    "HR-335495-2456"
-   ],
-   "hash": "piece1-sha256:3babdfc4330a1a6138ab7507d4ebfd17e7dfd4e566a423432e0a0b3dedf30bd8",
-   "producedBy": "bafkreif4jncxc755dwwbjnbdfmkvbxnygfx5uackvylgkesoadnzjzhffa",
-   "role": "parcel"
-  },
-  {
-   "areaM2": 836.705878,
-   "fromParcelIds": [
-    "HR-335495-2458"
-   ],
-   "hash": "piece1-sha256:7c4e482366b28525edd5d92f3222b6f77284572bbd3813e3774d0125006b4b40",
-   "producedBy": "bafkreif4jncxc755dwwbjnbdfmkvbxnygfx5uackvylgkesoadnzjzhffa",
-   "role": "parcel"
-  },
-  {
-   "areaM2": 11.549725,
-   "fromParcelIds": [
-    "HR-335495-2458"
-   ],
-   "hash": "piece1-sha256:adedcce7783b65fb90c55f6c0894a3fba81f51c19d37618ab321c21565182e37",
-   "producedBy": "bafkreif4jncxc755dwwbjnbdfmkvbxnygfx5uackvylgkesoadnzjzhffa",
-   "role": "parcel"
-  },
-  {
-   "areaM2": 1854.310159,
+   "areaM2": 1854.520944,
    "fromParcelIds": [
     "HR-335495-2461"
    ],
-   "hash": "piece1-sha256:747bc7b1b2d74e4287acf1565c4499d543bc418df113dcac4ea8d29daeb00b80",
-   "producedBy": "bafkreifgiv7a7aguhbnlr26urd55kvec47psz6ow35eemoebwail6uq2nu",
+   "hash": "piece1-sha256:5da4dea446218f3cb4dc0efafef817d11125d5d64a76d16e5a18ea2942718223",
+   "producedBy": "bafkreie3h7ss6ht6zppsdweotwtdmc4guizzgceunxqpb6cqpbvmbhpkl4",
    "role": "corridor"
   },
   {
@@ -1828,7 +1552,7 @@
    "role": "parcel"
   },
   {
-   "areaM2": 0.132842,
+   "areaM2": 0.134345,
    "fromParcelIds": [
     "HR-335495-2461"
    ],
@@ -1837,58 +1561,76 @@
    "role": "parcel"
   },
   {
-   "areaM2": 0.059638,
+   "areaM2": 0.003104,
    "fromParcelIds": [
     "HR-335495-2461"
    ],
-   "hash": "piece1-sha256:d6cbde3ded29e2878e87120b8e1d87b305e068319e4d7db5cac0bb9c0cb6cfa6",
+   "hash": "piece1-sha256:2f1cdc9aa1c5d933517e3cf1c7e7c30fa0280f212a4b77f4f4fbd6261d804385",
    "producedBy": null,
    "role": "parcel"
   },
   {
-   "areaM2": 0.055569,
+   "areaM2": 0.002607,
    "fromParcelIds": [
     "HR-335495-2461"
    ],
-   "hash": "piece1-sha256:53fda082afcc589cf027bf49dc0353383e0077319dea890553ca48dd128597e3",
+   "hash": "piece1-sha256:ac2da4c6bede342526c7a7f7c8f69a37e83776a000214a427a773f1d45c51195",
    "producedBy": null,
    "role": "parcel"
   },
   {
-   "areaM2": 0.038752,
+   "areaM2": 0.000998,
    "fromParcelIds": [
     "HR-335495-2461"
    ],
-   "hash": "piece1-sha256:ddfad36bb7be222d6cec22e3a96c3547b830d673b5c023b49bc1e48c0d81507e",
+   "hash": "piece1-sha256:9d2828ea19de65051a137f175022e38e33ef1b6e7cac3129be53d5fcd84e409e",
    "producedBy": null,
    "role": "parcel"
   },
   {
-   "areaM2": 0.025808,
+   "areaM2": 0.000883,
    "fromParcelIds": [
     "HR-335495-2461"
    ],
-   "hash": "piece1-sha256:9f3bb65a48584d2beb09cabd1248189642e056603275fd6d4ad179bbc31fcac1",
+   "hash": "piece1-sha256:a432a5724052606f838a9f02f0a09d9b03d2dc5718aae6916463ef9c07d0dd94",
    "producedBy": null,
    "role": "parcel"
   },
   {
-   "areaM2": 0.024025,
+   "areaM2": 0.005411,
    "fromParcelIds": [
-    "HR-335495-2461"
+    "HR-335495-2462"
    ],
-   "hash": "piece1-sha256:9cf5ff4743bd249ff8c112994150ab3e11839bdd565110d2ae6a5e52a44d57b0",
-   "producedBy": null,
-   "role": "parcel"
+   "hash": "piece1-sha256:a14a28d442e656c92633941105207f4f149e778b65980771b33c45b86d2a5e8e",
+   "producedBy": "bafkreiezqwtnnq7ryvjzdbmgda2yaubxsbwjeruy2ioumbpq4ftcai3tpe",
+   "role": "remainder"
   },
   {
-   "areaM2": 0.01609,
+   "areaM2": 0.097227,
    "fromParcelIds": [
-    "HR-335495-2461"
+    "HR-335495-2463"
    ],
-   "hash": "piece1-sha256:18bc2ff9c4506783689c70d0ea5fed7e9c4248238f152e75f9aaf836025d2abf",
-   "producedBy": null,
-   "role": "parcel"
+   "hash": "piece1-sha256:114d4d682f14d32f7563d215ad9e086e9dfea6eba106eb594233c2f3d92b1b0a",
+   "producedBy": "bafkreiezqwtnnq7ryvjzdbmgda2yaubxsbwjeruy2ioumbpq4ftcai3tpe",
+   "role": "remainder"
+  },
+  {
+   "areaM2": 0.05872,
+   "fromParcelIds": [
+    "HR-335495-2463"
+   ],
+   "hash": "piece1-sha256:a962a862fb511510a5746cec13670470c1b8901551a347de8118d11c1d368c88",
+   "producedBy": "bafkreiezqwtnnq7ryvjzdbmgda2yaubxsbwjeruy2ioumbpq4ftcai3tpe",
+   "role": "remainder"
+  },
+  {
+   "areaM2": 0.023679,
+   "fromParcelIds": [
+    "HR-335495-2463"
+   ],
+   "hash": "piece1-sha256:688889c4bdf6d40dd759f06558d8806e38998b95518a4644c22fe64e11d9c3b1",
+   "producedBy": "bafkreiezqwtnnq7ryvjzdbmgda2yaubxsbwjeruy2ioumbpq4ftcai3tpe",
+   "role": "remainder"
   },
   {
    "areaM2": 344.310388,
@@ -1896,26 +1638,26 @@
     "HR-335495-2464"
    ],
    "hash": "piece1-sha256:9757d9cb157f63badf61cb82f48169b2edd67988b727f58b9c2893f653b12045",
-   "producedBy": "bafkreifgiv7a7aguhbnlr26urd55kvec47psz6ow35eemoebwail6uq2nu",
+   "producedBy": "bafkreie3h7ss6ht6zppsdweotwtdmc4guizzgceunxqpb6cqpbvmbhpkl4",
    "role": "corridor"
   },
   {
-   "areaM2": 531.140054,
+   "areaM2": 0.241484,
+   "fromParcelIds": [
+    "HR-335495-2465"
+   ],
+   "hash": "piece1-sha256:a09625ce4e051c55031e3a770ae7c2977d415059a7f7228949bffe5d1a57e117",
+   "producedBy": "bafkreiezqwtnnq7ryvjzdbmgda2yaubxsbwjeruy2ioumbpq4ftcai3tpe",
+   "role": "remainder"
+  },
+  {
+   "areaM2": 0.320102,
    "fromParcelIds": [
     "HR-335495-2466"
    ],
-   "hash": "piece1-sha256:7e3bd811ccd97a46e6ca927b7ee0661b5a25d1125bd8e1003460437e05b1a483",
-   "producedBy": "bafkreidwc4r2f6fgugwcn2uyqnrwvwaskcvjhtvn4nwn7dtc6dgsxppdtu",
-   "role": "parcel"
-  },
-  {
-   "areaM2": 645.958562,
-   "fromParcelIds": [
-    "HR-335495-2467"
-   ],
-   "hash": "piece1-sha256:20ff9f20a9211deff445e5cd76918b1d7db7e5f3ed2fc2a5131247ab14c61db3",
-   "producedBy": null,
-   "role": "parcel"
+   "hash": "piece1-sha256:78cc97afe18dd3fc649adbd2a9117b5bea87f9494bed0ea819e498e759b22d75",
+   "producedBy": "bafkreiezqwtnnq7ryvjzdbmgda2yaubxsbwjeruy2ioumbpq4ftcai3tpe",
+   "role": "remainder"
   },
   {
    "areaM2": 7.84431,
@@ -1923,88 +1665,88 @@
     "HR-335495-2467"
    ],
    "hash": "piece1-sha256:437c504d4289a43d733c72454801c00a2ee61532038ee24373f87f8c0c1581bb",
-   "producedBy": "bafkreifgiv7a7aguhbnlr26urd55kvec47psz6ow35eemoebwail6uq2nu",
+   "producedBy": "bafkreie3h7ss6ht6zppsdweotwtdmc4guizzgceunxqpb6cqpbvmbhpkl4",
    "role": "corridor"
   },
   {
-   "areaM2": 328.845263,
+   "areaM2": 328.890845,
    "fromParcelIds": [
     "HR-335495-2468"
    ],
-   "hash": "piece1-sha256:0830c9878373575ea1727d30993e1229da24a8257bee2e5f68352694c01e0493",
-   "producedBy": "bafkreifgiv7a7aguhbnlr26urd55kvec47psz6ow35eemoebwail6uq2nu",
+   "hash": "piece1-sha256:6faf342e6905a54f9928e7256646aaed85f3b1044ca2976b9c7ee4dac4944c0d",
+   "producedBy": "bafkreie3h7ss6ht6zppsdweotwtdmc4guizzgceunxqpb6cqpbvmbhpkl4",
    "role": "corridor"
   },
   {
-   "areaM2": 0.045803,
+   "areaM2": 0.000155,
    "fromParcelIds": [
     "HR-335495-2468"
    ],
-   "hash": "piece1-sha256:84b0fa52c5d50ea162a36c451836160848ed4e4bcc2e2702c11c9cd96412e309",
+   "hash": "piece1-sha256:e60ad08610cf6b2236eeaf2ff5efc01aaa1541151cce275153b4e9ce5eadf7fc",
    "producedBy": null,
    "role": "parcel"
   },
   {
-   "areaM2": 1267.805151,
+   "areaM2": 1267.709732,
    "fromParcelIds": [
     "HR-335495-2470"
    ],
-   "hash": "piece1-sha256:443619b41436b915231f4ac432cc78bb51f027e2b0869d54f5eaecf8051925fa",
-   "producedBy": "bafkreifgiv7a7aguhbnlr26urd55kvec47psz6ow35eemoebwail6uq2nu",
+   "hash": "piece1-sha256:727ed264344d3c948981b84306ec7c420f53d7546f8f4204c02acf726e6c2b09",
+   "producedBy": "bafkreie3h7ss6ht6zppsdweotwtdmc4guizzgceunxqpb6cqpbvmbhpkl4",
    "role": "corridor"
   },
   {
-   "areaM2": 3.197869,
+   "areaM2": 3.293288,
    "fromParcelIds": [
     "HR-335495-2470"
    ],
-   "hash": "piece1-sha256:71b5790921f8be7537c21a97c678ecca28a0f168daaed35b39105e625a599d48",
+   "hash": "piece1-sha256:73d00ee5ca47d6efbf224047643bf2e057707582367f56f9da3a9086de9031bf",
    "producedBy": null,
    "role": "parcel"
   },
   {
-   "areaM2": 57.442218,
+   "areaM2": 1.131075,
+   "fromParcelIds": [
+    "HR-335495-2471"
+   ],
+   "hash": "piece1-sha256:8a3f649c32fa677b6dbe663988cc22cf067fb1cbfb3f41208655c4f0a08852e0",
+   "producedBy": "bafkreiezqwtnnq7ryvjzdbmgda2yaubxsbwjeruy2ioumbpq4ftcai3tpe",
+   "role": "remainder"
+  },
+  {
+   "areaM2": 57.407954,
    "fromParcelIds": [
     "HR-335495-2473"
    ],
-   "hash": "piece1-sha256:fa167e7f77b52a0fe2ab306fd3d8b61db0fe92b82f199b6ec1773aa2acf87bd2",
-   "producedBy": "bafkreifgiv7a7aguhbnlr26urd55kvec47psz6ow35eemoebwail6uq2nu",
+   "hash": "piece1-sha256:30b3f1dac16c4657c62480e627022e7279c5ae54459e222d18d8ce0f939ee829",
+   "producedBy": "bafkreie3h7ss6ht6zppsdweotwtdmc4guizzgceunxqpb6cqpbvmbhpkl4",
    "role": "corridor"
   },
   {
-   "areaM2": 0.454207,
+   "areaM2": 0.48847,
    "fromParcelIds": [
     "HR-335495-2473"
    ],
-   "hash": "piece1-sha256:e5a3a22247afee52798ab9b8e01ea33eb3a2810c4722c9cac6bc858f78b718f5",
+   "hash": "piece1-sha256:da12ca8526b86652311b772caa55319ac36174955dfbd0c5c8246641b462e8ae",
    "producedBy": null,
    "role": "parcel"
   },
   {
-   "areaM2": 53.441418,
+   "areaM2": 53.536253,
    "fromParcelIds": [
     "HR-335495-2474"
    ],
-   "hash": "piece1-sha256:e2bd832377cec78477e78ba3d4a8afff6ea1108a4c517cde02e39a242a211139",
-   "producedBy": "bafkreifgiv7a7aguhbnlr26urd55kvec47psz6ow35eemoebwail6uq2nu",
+   "hash": "piece1-sha256:eeffa86cab52d51a5d88d700a92ecd0f5b6e9460a2752bcd233a155b2327c583",
+   "producedBy": "bafkreie3h7ss6ht6zppsdweotwtdmc4guizzgceunxqpb6cqpbvmbhpkl4",
    "role": "corridor"
   },
   {
-   "areaM2": 0.095025,
+   "areaM2": 0.000014,
    "fromParcelIds": [
     "HR-335495-2474"
    ],
-   "hash": "piece1-sha256:e23462afe55b46fff38aa2595eebcf54b00c0ec89edb34cffc97421acf606dda",
+   "hash": "piece1-sha256:e9a22539f24f76e13ec5e396c97660a0ae21120664563e9820aeeb30bd261452",
    "producedBy": null,
-   "role": "parcel"
-  },
-  {
-   "areaM2": 1934.575802,
-   "fromParcelIds": [
-    "HR-335495-2478"
-   ],
-   "hash": "piece1-sha256:5e18eb7b3360494ee30ce9ad68983917bbdabfdb029dcc5c4922586d692c731a",
-   "producedBy": "bafkreicsffljfoi66v4okimmjmtpc6aspajqlayhv43soiehgmdsbsqhgq",
    "role": "parcel"
   },
   {
@@ -2026,79 +1768,64 @@
    "role": "parcel"
   },
   {
-   "areaM2": 1289.761058,
+   "areaM2": 5802.413194,
+   "fromParcelIds": [
+    "HR-340715-1687/9",
+    "HR-340715-1688/6",
+    "HR-340715-1689/3",
+    "HR-340715-3419/14",
+    "HR-340715-3429/5",
+    "HR-340715-3462/10"
+   ],
+   "hash": "piece1-sha256:ac0e1715c57bea0c1649cba43f7ee4550762f9308558eb6d51cc2d7b956ed766",
+   "producedBy": "bafkreiezqwtnnq7ryvjzdbmgda2yaubxsbwjeruy2ioumbpq4ftcai3tpe",
+   "role": "plot"
+  },
+  {
+   "areaM2": 1285.589824,
    "fromParcelIds": [
     "HR-340715-1687/10",
-    "HR-340715-1688/9",
     "HR-340715-1688/10",
-    "HR-340715-3419/15",
     "HR-340715-3419/16"
    ],
-   "hash": "piece1-sha256:94452af186b5249637756eaabfc07fa46f197057b04c7c2083afa3e44ca6db3d",
-   "producedBy": "bafkreihc6uvekhr6vm2fvkvdch73pnqgmvhx4wnfugpydnbyyop2slxkxy",
+   "hash": "piece1-sha256:dbfc51cdcedce9f306b2ce513e2ea60422607ac64a599edfe4d45fb3c1048ca1",
+   "producedBy": "bafkreicxn7cvjnkxn3ozytheofb7qrht3brlz3uhhyh2vpr44qxjoowhmi",
    "role": "parcel"
   },
   {
-   "areaM2": 4950.154232,
+   "areaM2": 3411.472647,
    "fromParcelIds": [
-    "HR-340715-1688/6"
+    "HR-340715-2358/1"
    ],
-   "hash": "piece1-sha256:bdbba89476220c9735fb40452e1d583ce5421852bf61556e0d2fef23e8b2e8b1",
+   "hash": "piece1-sha256:aea1f7e0b3e4cd26ad46e239082e690de66efa084ea04122d2973d33b45534d4",
    "producedBy": null,
    "role": "parcel"
   },
   {
-   "areaM2": 1624.362642,
-   "fromParcelIds": [
-    "HR-340715-1688/9"
-   ],
-   "hash": "piece1-sha256:eb61fc7a2cd8ba15551f909c6e50cb95627bc355d644ef80f2f28a1c6b9629f8",
-   "producedBy": "bafkreihc6uvekhr6vm2fvkvdch73pnqgmvhx4wnfugpydnbyyop2slxkxy",
-   "role": "parcel"
-  },
-  {
-   "areaM2": 3411.533825,
+   "areaM2": 17.130669,
    "fromParcelIds": [
     "HR-340715-2358/1"
    ],
-   "hash": "piece1-sha256:b800aa40d81dd22944f6fc34480d201449e393c7553e4cfceabc68be3906c32e",
-   "producedBy": null,
-   "role": "parcel"
-  },
-  {
-   "areaM2": 8.61377,
-   "fromParcelIds": [
-    "HR-340715-2358/1"
-   ],
-   "hash": "piece1-sha256:38e71cbb41ef1150ef0d441f98080458df6f129fb2a5ae8167aceaf75d93c839",
-   "producedBy": "bafkreifgiv7a7aguhbnlr26urd55kvec47psz6ow35eemoebwail6uq2nu",
+   "hash": "piece1-sha256:5c797afe56621380fc7b37dd3b6e1ae1a313a9bf465d320e8ff3668583f4bab2",
+   "producedBy": "bafkreie3h7ss6ht6zppsdweotwtdmc4guizzgceunxqpb6cqpbvmbhpkl4",
    "role": "corridor"
   },
   {
-   "areaM2": 8.589665,
+   "areaM2": 8.54715,
    "fromParcelIds": [
     "HR-340715-2358/1"
    ],
-   "hash": "piece1-sha256:02cfe95fb89c48a5cb480bfe8d4a5455a43782f02115effd8eccac05f1fa9e99",
-   "producedBy": "bafkreifgiv7a7aguhbnlr26urd55kvec47psz6ow35eemoebwail6uq2nu",
+   "hash": "piece1-sha256:3bb1f1c286e83f553cc0ac6620d6dff94295aeb90320c33950f18d2bdb4d6bee",
+   "producedBy": "bafkreie3h7ss6ht6zppsdweotwtdmc4guizzgceunxqpb6cqpbvmbhpkl4",
    "role": "corridor"
   },
   {
-   "areaM2": 8.328074,
+   "areaM2": 8.23363,
    "fromParcelIds": [
     "HR-340715-2358/1"
    ],
-   "hash": "piece1-sha256:fb2e90afbfe8acba6199c79c16ba3f27156d61efb00f15e2cc126177dd9fbcc3",
-   "producedBy": "bafkreifgiv7a7aguhbnlr26urd55kvec47psz6ow35eemoebwail6uq2nu",
-   "role": "corridor"
-  },
-  {
-   "areaM2": 8.272333,
-   "fromParcelIds": [
-    "HR-340715-2358/1"
-   ],
-   "hash": "piece1-sha256:c1aac75541786b3edfb58b2c8393bc66404871d79712c4a933303c8ce65dcdf9",
-   "producedBy": "bafkreifgiv7a7aguhbnlr26urd55kvec47psz6ow35eemoebwail6uq2nu",
+   "hash": "piece1-sha256:0495d6de459afb4a8b1b244363f1eb2ead8aca793fe893a237a02bdf2660aebd",
+   "producedBy": "bafkreie3h7ss6ht6zppsdweotwtdmc4guizzgceunxqpb6cqpbvmbhpkl4",
    "role": "corridor"
   },
   {
@@ -2107,35 +1834,17 @@
     "HR-340715-2358/1"
    ],
    "hash": "piece1-sha256:edfb85d29b4190ae6b675877f1d170b51b220c9c349f05bcc1133d421b144958",
-   "producedBy": "bafkreifgiv7a7aguhbnlr26urd55kvec47psz6ow35eemoebwail6uq2nu",
+   "producedBy": "bafkreie3h7ss6ht6zppsdweotwtdmc4guizzgceunxqpb6cqpbvmbhpkl4",
    "role": "corridor"
   },
   {
-   "areaM2": 3.484897,
+   "areaM2": 3.438465,
    "fromParcelIds": [
     "HR-340715-2358/1"
    ],
-   "hash": "piece1-sha256:dc34c54bff1f5782de79b807a698fb3f9e6362b18e5648502b06f804fbeec1dc",
-   "producedBy": "bafkreifgiv7a7aguhbnlr26urd55kvec47psz6ow35eemoebwail6uq2nu",
+   "hash": "piece1-sha256:cc1d8d497ee7724605950fc5a75169c58febcf34da4865dedfffe6e85fd4fbf5",
+   "producedBy": "bafkreie3h7ss6ht6zppsdweotwtdmc4guizzgceunxqpb6cqpbvmbhpkl4",
    "role": "corridor"
-  },
-  {
-   "areaM2": 339.20798,
-   "fromParcelIds": [
-    "HR-340715-3419/14"
-   ],
-   "hash": "piece1-sha256:04674db908b4781d7d57d346815da61087f60d7e28fe58663340308da52266b0",
-   "producedBy": null,
-   "role": "parcel"
-  },
-  {
-   "areaM2": 332.560125,
-   "fromParcelIds": [
-    "HR-340715-3419/15"
-   ],
-   "hash": "piece1-sha256:b8d56e4cebc485f36fefb39b922d4b2156b604211887fa352f5defad60865c5f",
-   "producedBy": "bafkreihc6uvekhr6vm2fvkvdch73pnqgmvhx4wnfugpydnbyyop2slxkxy",
-   "role": "parcel"
   }
  ]
 }

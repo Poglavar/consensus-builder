@@ -441,7 +441,21 @@ async function stepCapture(plan, objects, ctx) {
         openGroundM2: result.openGroundM2,
         outputs: result.outputs
     };
-    const agreement = planAgreement(plan, objects, ground);
+    let agreement;
+    try {
+        agreement = planAgreement(plan, objects, ground);
+    } catch (error) {
+        // Say by how much the land fails to balance, and where: the outputs per producing design.
+        const inputM2 = ground.inputs.reduce((sum, parcel) => sum + (parcel.areaM2 || 0), ground.openGroundM2 || 0);
+        const byProducer = new Map();
+        ground.outputs.forEach(output => byProducer.set(output.producedBy, (byProducer.get(output.producedBy) || 0) + output.areaM2));
+        log(`${plan.key}: inputs ${inputM2.toFixed(3)} m², outputs ${ground.outputs.reduce((sum, output) => sum + output.areaM2, 0).toFixed(3)} m²; outputs by design: `
+            + [...byProducer].map(([cid, m2]) => `${objects.find(object => object.cid === cid)?.key || cid} ${m2.toFixed(3)}`).join(', '));
+        const dump = path.join(os.tmpdir(), `${slug(plan.key)}-unbalanced-ground.json`);
+        await writeJsonAtomic(dump, ground);
+        log(`${plan.key}: the unbalanced ground is in ${dump}`);
+        throw error;
+    }
     await writeJsonAtomic(plan.groundFile, ground);
     log(`${plan.key}: ${result.inputs.length} input parcels, ${result.outputs.length} outputs, open ground ${Math.round(result.openGroundM2)} m² → ${path.relative(process.cwd(), plan.groundFile)} · agreement ${agreement.cid}`);
 }
