@@ -51,7 +51,7 @@ describe('algorithmic agent schedule', () => {
     });
     it('uses the production provider account limit for the API and every actor', () => {
         const apiEnv = require('../ecosystem.config.cjs').apps.find(item => item.name === 'consensus-builder-api').env;
-        expect(apiEnv.SOLANA_RPC_MAX_ACCOUNTS).toBe('5');
+        expect(apiEnv.SOLANA_RPC_MAX_ACCOUNTS).toBe('100');
         const actors = apps.filter(item => /^agents\/(run|support-run|society-run|lens-member-run)\.mjs$/.test(item.script));
         for (const actor of actors) expect(actor.env.SOLANA_RPC_MAX_ACCOUNTS).toBe(apiEnv.SOLANA_RPC_MAX_ACCOUNTS);
     });

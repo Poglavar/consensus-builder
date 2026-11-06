@@ -34,8 +34,9 @@ module.exports = {
       IPFS_PINNING_PROVIDER: process.env.IPFS_PINNING_PROVIDER || 'filebase',
       FILEBASE_BUCKET: 'consensus-builder-publications',
       IPFS_READ_GATEWAY: process.env.IPFS_READ_GATEWAY || 'https://nursing-purple-dove.myfilebase.com/ipfs',
-      // The configured devnet RPC plan accepts five accounts per getMultipleAccounts request.
-      SOLANA_RPC_MAX_ACCOUNTS: '5',
+      // Accounts per getMultipleAccounts request. Public devnet (SOLANA_RPC_URL) takes the protocol's
+      // 100; a smaller batch multiplies requests into its per-IP rate limit (429s, ~40 s World bets reads).
+      SOLANA_RPC_MAX_ACCOUNTS: '100',
       // Basemap tiles for server-rendered proposal thumbnails (thumbnails/tile-stitch.js). Public
       // key — the browser basemap (frontend/js/basemap.js) ships the same one.
       MAPTILER_API_KEY: 'kps68PDVgfwEhLNACcHe',
