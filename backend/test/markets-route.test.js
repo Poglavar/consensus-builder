@@ -140,8 +140,8 @@ describe('GET /markets', () => {
         const app = appFor({ pool, readMarkets: async () => openPool() });
         const res = await request(app).get('/markets?city=zagreb&scope=other');
         expect(res.status).toBe(200);
-        expect(pool.query.mock.calls[0][0]).toMatch(/WHERE a\.city <> \$1/);
-        expect(pool.query.mock.calls[0][1]).toEqual(['zagreb', 2000]);
+        expect(pool.query.mock.calls[0][0]).toMatch(/WHERE a\.city IS NOT NULL/);
+        expect(pool.query.mock.calls[0][1]).toEqual([2000]);
         expect(res.body).toMatchObject({ city: 'zagreb', scope: 'other', summary: { contests: 2, agreements: 2 } });
         expect(res.body.contests.map(contest => contest.city).sort()).toEqual(['rijeka', 'split']);
         expect(res.body.contests.flatMap(contest => contest.agreements.map(entry => entry.cid)).sort()).toEqual([CID, otherCid].sort());
@@ -149,6 +149,24 @@ describe('GET /markets', () => {
         await request(app).get('/markets?city=zagreb');
         expect(pool.query).toHaveBeenCalledTimes(2);
         expect(pool.query.mock.calls[1][0]).toMatch(/WHERE a\.city = \$1/);
+        // Every city's World tab shares the one read, each leaving its own city out.
+        const fromSplit = await request(app).get('/markets?city=split&scope=other');
+        expect(pool.query).toHaveBeenCalledTimes(2);
+        expect(fromSplit.body.contests.map(contest => contest.city).sort()).toEqual(['rijeka', 'zagreb']);
+    });
+
+    it('warmWorld reads the World list ahead of the first visitor, so the first World tab is answered from it', async () => {
+        const pool = poolFor();
+        const readMarkets = vi.fn(async () => openPool());
+        const app = express();
+        const markets = setupMarketsRoute(app, pool, { env: {}, readMarkets, now: () => new Date('2026-10-09T07:00:00Z') });
+        expect(pool.query).not.toHaveBeenCalled();
+        await markets.warmWorld();
+        expect(readMarkets).toHaveBeenCalledTimes(1);
+        const res = await request(app).get('/markets?city=sibenik&scope=other');
+        expect(res.status).toBe(200);
+        expect(res.body.summary.agreements).toBeGreaterThan(0);
+        expect(pool.query).toHaveBeenCalledTimes(1);
     });
 
     it('answers 502 when the chain read fails instead of serving half a payload', async () => {

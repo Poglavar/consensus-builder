@@ -30,6 +30,7 @@ const MARKET_PROGRAM_ID = marketClient.constants.PROGRAM_ID;
 export { DEVNET_USDC_MINT };
 const CACHE_TTL_MS = 20_000;
 const MAX_AGREEMENTS = 2000;
+const WORLD_KEY = 'world';
 
 async function assertMarketNetwork(connection) {
     if (await connection.getGenesisHash() !== DEVNET_GENESIS_HASH) {
@@ -38,7 +39,8 @@ async function assertMarketNetwork(connection) {
 }
 
 export const AGREEMENTS_SQL = currentPlanAgreementSelect({ predicate: 'a.city = $1', orderBy: 'a.created_at DESC', limit: '$2' });
-export const OTHER_CITY_AGREEMENTS_SQL = currentPlanAgreementSelect({ predicate: 'a.city <> $1', orderBy: 'a.created_at DESC', limit: '$2' });
+// Every city's agreements, read once for all World bets tabs; each answer leaves out the asking city.
+export const ALL_CITY_AGREEMENTS_SQL = currentPlanAgreementSelect({ predicate: 'a.city IS NOT NULL', orderBy: 'a.created_at DESC', limit: '$1' });
 
 // The agreements whose index pointer names an account; rowToAgreement keeps the account only when it
 // is the one that row's CID and sponsor derive, so at most one row is it.
@@ -139,19 +141,27 @@ export function setupMarketsRoute(app, pool, options = {}) {
     const readMarkets = options.readMarkets || defaultMarketReader(env);
     const cacheTtlMs = Number.isFinite(options.cacheTtlMs) ? options.cacheTtlMs : CACHE_TTL_MS;
     const now = typeof options.now === 'function' ? options.now : () => new Date();
-    // Last good payload per key, and the build in flight. A cached payload is served at once even after
-    // its TTL (stale-while-revalidate): the chain read for every other city takes tens of seconds on a
-    // throttled devnet RPC, and a failed refresh must not blank a sheet that had an answer.
+    // Last good read (agreements + market accounts) per key, and the read in flight. A cached read is
+    // served at once even after its TTL (stale-while-revalidate): the chain read for every city takes
+    // tens of seconds on a throttled devnet RPC, and a failed refresh must not blank a sheet that had an
+    // answer. Key `city:<id>` per city; one key `world` holds every city for all World bets tabs.
     const cache = new Map();
     const building = new Map();
 
-    async function buildPayload(city, other) {
-        const { rows } = await pool.query(other ? OTHER_CITY_AGREEMENTS_SQL : AGREEMENTS_SQL, [city, MAX_AGREEMENTS]);
+    async function readData(key, city) {
+        const world = key === WORLD_KEY;
+        const { rows } = await pool.query(world ? ALL_CITY_AGREEMENTS_SQL : AGREEMENTS_SQL, world ? [MAX_AGREEMENTS] : [city, MAX_AGREEMENTS]);
         const agreements = rows.map(rowToAgreement);
         const accounts = Array.from(new Set(agreements.map(item => item.account).filter(Boolean)));
         const markets = accounts.length ? await readMarkets(accounts, agreements) : new Map();
+        return { agreements, markets };
+    }
+
+    // Statuses are judged at the current time; generatedAt stays the time the chain was read.
+    function payloadFor(city, other, { at, data: { agreements, markets } }) {
         return {
             ...(other ? buildOtherCityContests : buildContests)({ city, agreements, markets, now: now() }),
+            generatedAt: new Date(at).toISOString(),
             cluster: 'devnet',
             agreementProgram: AGREEMENT_PROGRAM_ID,
             marketProgram: MARKET_PROGRAM_ID,
@@ -161,11 +171,12 @@ export function setupMarketsRoute(app, pool, options = {}) {
     }
 
     // One build per key at a time, unless `force` (fresh=1 must read after the caller's transaction).
-    function refresh(key, city, other, { force = false } = {}) {
+    function refresh(key, city, { force = false } = {}) {
         if (!force && building.has(key)) return building.get(key);
-        const job = buildPayload(city, other).then(payload => {
-            cache.set(key, { at: now().getTime(), payload });
-            return payload;
+        const job = readData(key, city).then(data => {
+            const entry = { at: now().getTime(), data };
+            cache.set(key, entry);
+            return entry;
         }).finally(() => { if (building.get(key) === job) building.delete(key); });
         building.set(key, job);
         return job;
@@ -181,28 +192,29 @@ export function setupMarketsRoute(app, pool, options = {}) {
         // 20-second-old answer would show the pool it just opened as missing.
         const fresh = String(req.query.fresh || '') === '1';
         const other = req.query.scope === 'other';
-        const key = `${other ? 'other' : 'city'}:${city}`;
+        const key = other ? WORLD_KEY : `city:${city}`;
         const cached = cache.get(key);
         if (cached && !fresh) {
-            if (now().getTime() - cached.at >= cacheTtlMs) refresh(key, city, other).catch(error => logFailure(city, other, error));
+            if (now().getTime() - cached.at >= cacheTtlMs) refresh(key, city).catch(error => logFailure(city, other, error));
             res.set('Cache-Control', 'public, max-age=10');
-            return res.json(cached.payload);
+            return res.json(payloadFor(city, other, cached));
         }
         try {
-            const payload = await refresh(key, city, other, { force: fresh });
+            const entry = await refresh(key, city, { force: fresh });
             res.set('Cache-Control', 'public, max-age=10');
-            res.json(payload);
+            res.json(payloadFor(city, other, entry));
         } catch (error) {
             logFailure(city, other, error);
             if (cached) {
                 // The last good answer beats none; the header says it is older than asked for.
                 res.set('Cache-Control', 'no-store');
                 res.set('X-Markets-Stale', 'true');
-                return res.json(cached.payload);
+                return res.json(payloadFor(city, other, cached));
             }
             res.status(502).json({ error: 'Markets are unavailable right now' });
         }
     });
+
 
     // GET /oracle/recipes/agreement-execution-v1?agreement=<account>[&market=<market account>]: the recipe
     // a minted agreement's pool settles by, with the agreement's CID from the index. `market`, when given,
@@ -228,4 +240,8 @@ export function setupMarketsRoute(app, pool, options = {}) {
             return res.status(500).json({ error: 'Internal server error' });
         }
     });
+
+    // warmWorld(): read the World list now, so the first visitor after a deploy does not wait for it.
+    // The server calls it once it listens; tests and route setup alone read nothing.
+    return { warmWorld: () => refresh(WORLD_KEY, null).catch(error => logFailure('*', true, error)) };
 }

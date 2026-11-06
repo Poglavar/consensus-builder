@@ -491,7 +491,7 @@ export function createApp({
     setupHackathonCasesRoute(app, activePool, { env }); // one data-derived proposal → support/forecast/evidence graph
     setupHackathonOperationsRoute(app, activePool, { env }); // redacted scheduled-job outcomes and freshness
     setupTransactionsRoute(app, activePool); // devnet transaction explorer, derived from the chain
-    setupMarketsRoute(app, activePool, { env }); // contests per city with each proposal's prediction market (Bets sheet)
+    app.locals.markets = setupMarketsRoute(app, activePool, { env }); // contests per city with each proposal's prediction market (Bets sheet)
     setupBetsEventsRoute(app, activePool); // anonymous betting journey, with simulated activity kept separate
     setupBetsPointsRoutes(app, activePool, { readAgreement: createAgreementMarketSource(activePool, { env }) });
     setupLmsrRecipesRoute(app, activePool, { env });
@@ -550,6 +550,7 @@ export function startServer({ env = process.env, pool } = {}) {
     const server = app.listen(port, () => {
         console.log(`Backend listening on port ${port}`);
         feedbackNotifications.start();
+        app.locals.markets?.warmWorld();
     });
 
     // PM2's zero-downtime reload waits for the old worker to stop accepting new
