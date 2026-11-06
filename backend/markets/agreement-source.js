@@ -2,7 +2,7 @@
 // a trade or a points payout: the CID, sponsor, network, program and deadline must match the account.
 import { PublicKey, SYSVAR_CLOCK_PUBKEY } from '@solana/web3.js';
 import { AgreementClient, AGREEMENT_PROGRAM_ID, createAgreementChain, agreementAccountOf, isPublicKey, ONCHAIN_STATUSES } from '../agreements/onchain.js';
-import { CURRENT_AGREEMENTS_BY_ACCOUNT_SQL } from '../agreements/current-plan-sql.js';
+import { CURRENT_AGREEMENTS_BY_ACCOUNTS_SQL } from '../agreements/current-plan-sql.js';
 
 export const MARKET_LIQUIDITY = '100000000';
 export const MARKET_GRACE_SECONDS = 0;
@@ -34,24 +34,59 @@ export function validateAgreementSource(row, observed) {
     };
 }
 
+// getMultipleAccounts takes at most 100 accounts; one slot of each call is the clock sysvar.
+const AGREEMENTS_PER_SNAPSHOT = 99;
+
+// readAgreement(address) → the agreement's validated source, or throws. readAgreement.many(addresses)
+// → Map(address → source | Error): one index query and one RPC call per 99 agreements, where the
+// single reader would make one of each per agreement (the Bets world list reads ~250 of them).
 export function createAgreementMarketSource(pool, { env = process.env, chain = createAgreementChain({ env }) } = {}) {
-    return async function readAgreement(address) {
-        if (!isPublicKey(address)) throw Object.assign(new Error('A canonical agreement account is required'), { status: 400 });
-        const { rows } = await pool.query(CURRENT_AGREEMENTS_BY_ACCOUNT_SQL, [address]);
-        const row = rows.find(item => agreementAccountOf(item.cid, item.sponsor) === address);
-        if (!row) throw Object.assign(new Error('Published binding agreement not found'), { status: 404 });
-        const connection = await chain.connection();
-        // One bank snapshot: an old Active account plus the server's newer wall clock cannot
-        // establish absence by a deadline. The chain's own clock must also have crossed it.
-        const { context, value } = await connection.getMultipleAccountsInfoAndContext(
-            [new PublicKey(address), SYSVAR_CLOCK_PUBKEY], 'confirmed');
-        const [info, clock] = value || [];
-        if (!info || info.owner?.toBase58() !== AGREEMENT_PROGRAM_ID || !clock?.data || clock.data.length < 40) {
-            throw Object.assign(new Error('Agreement and chain clock evidence are unavailable'), { status: 503 });
+    async function readAgreements(addresses) {
+        const unique = [...new Set(addresses)];
+        if (unique.some(address => !isPublicKey(address))) {
+            throw Object.assign(new Error('A canonical agreement account is required'), { status: 400 });
         }
-        const chainTime = Number(Buffer.from(clock.data).readBigInt64LE(32));
-        if (!Number.isSafeInteger(chainTime) || chainTime <= 0) throw Object.assign(new Error('Chain clock is invalid'), { status: 503 });
-        const account = AgreementClient.readAgreement(info.data, address);
-        return validateAgreementSource(row, { account, address, slot: context.slot, chainTime });
-    };
+        const { rows } = await pool.query(CURRENT_AGREEMENTS_BY_ACCOUNTS_SQL, [unique]);
+        const result = new Map();
+        const indexed = [];
+        for (const address of unique) {
+            const row = rows.find(item => item.onchain?.account === address && agreementAccountOf(item.cid, item.sponsor) === address);
+            if (row) indexed.push({ address, row });
+            else result.set(address, Object.assign(new Error('Published binding agreement not found'), { status: 404 }));
+        }
+        if (!indexed.length) return result;
+        const connection = await chain.connection();
+        for (let start = 0; start < indexed.length; start += AGREEMENTS_PER_SNAPSHOT) {
+            const batch = indexed.slice(start, start + AGREEMENTS_PER_SNAPSHOT);
+            // One bank snapshot: an old Active account plus the server's newer wall clock cannot
+            // establish absence by a deadline. The chain's own clock must also have crossed it.
+            const { context, value } = await connection.getMultipleAccountsInfoAndContext(
+                [...batch.map(entry => new PublicKey(entry.address)), SYSVAR_CLOCK_PUBKEY], 'confirmed');
+            const clock = value?.[batch.length];
+            const chainTime = clock?.data && clock.data.length >= 40 ? Number(Buffer.from(clock.data).readBigInt64LE(32)) : null;
+            batch.forEach(({ address, row }, index) => {
+                try {
+                    const info = value?.[index];
+                    if (!info || info.owner?.toBase58() !== AGREEMENT_PROGRAM_ID || chainTime === null) {
+                        throw Object.assign(new Error('Agreement and chain clock evidence are unavailable'), { status: 503 });
+                    }
+                    if (!Number.isSafeInteger(chainTime) || chainTime <= 0) throw Object.assign(new Error('Chain clock is invalid'), { status: 503 });
+                    const account = AgreementClient.readAgreement(info.data, address);
+                    result.set(address, validateAgreementSource(row, { account, address, slot: context.slot, chainTime }));
+                } catch (error) {
+                    result.set(address, error);
+                }
+            });
+        }
+        return result;
+    }
+
+    async function readAgreement(address) {
+        if (!isPublicKey(address)) throw Object.assign(new Error('A canonical agreement account is required'), { status: 400 });
+        const source = (await readAgreements([address])).get(address);
+        if (source instanceof Error) throw source;
+        return source;
+    }
+    readAgreement.many = readAgreements;
+    return readAgreement;
 }

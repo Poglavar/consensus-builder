@@ -243,8 +243,23 @@ export function setupBetsPointsRoutes(app, pool, { readAgreement, now = () => Da
             if (accounts.length > 100) throw error('too many accounts');
             const markets = {};
             const subjects = {};
+            // One batched chain read for the list where the reader offers it; a single agreement whose
+            // evidence fails is left out (named in `unavailable`) instead of failing every other row.
+            const batch = typeof readAgreement.many === 'function' ? await readAgreement.many(accounts) : null;
+            const unavailable = {};
             for (const agreementAccount of accounts) {
-                const source = await sourceFor(agreementAccount);
+                let source;
+                if (batch) {
+                    const read = batch.get(agreementAccount);
+                    if (read instanceof Error) {
+                        if (read.status === 400) throw read;
+                        unavailable[agreementAccount] = read.message;
+                        continue;
+                    }
+                    source = parseSource(read);
+                } else {
+                    source = await sourceFor(agreementAccount);
+                }
                 subjects[agreementAccount] = {
                     account: source.account, cid: source.cid, city: source.city,
                     ...(source.sponsor ? { sponsor: source.sponsor } : {}),
@@ -265,7 +280,9 @@ export function setupBetsPointsRoutes(app, pool, { readAgreement, now = () => Da
                 });
                 if (market) markets[agreementAccount] = marketShape(market);
             }
-            res.json({ markets, subjects });
+            const skipped = Object.keys(unavailable).length;
+            if (skipped) console.warn(`[${new Date().toISOString()}] GET /bets/points/markets: ${skipped}/${accounts.length} agreement(s) without chain evidence:`, unavailable);
+            res.json({ markets, subjects, ...(skipped ? { unavailable } : {}) });
         } catch (cause) { sendError(res, cause); }
     });
 

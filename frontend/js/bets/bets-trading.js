@@ -118,10 +118,11 @@
         async function pointsMarkets(accounts) {
             const markets = {}, subjects = {};
             const unique = [...new Set(accounts.filter(Boolean))];
-            for (let start = 0; start < unique.length; start += 100) {
-                const result = await request(`markets?${params({ accounts: unique.slice(start, start + 100).join(',') })}`);
-                Object.assign(markets, result.markets); Object.assign(subjects, result.subjects);
-            }
+            const chunks = [];
+            for (let start = 0; start < unique.length; start += 100) chunks.push(unique.slice(start, start + 100));
+            // The chunks are independent reads; the world list needs about three.
+            const results = await Promise.all(chunks.map(chunk => request(`markets?${params({ accounts: chunk.join(',') })}`)));
+            for (const result of results) { Object.assign(markets, result.markets); Object.assign(subjects, result.subjects); }
             return { markets, subjects };
         }
         function entryFor(entry, market, subject) {

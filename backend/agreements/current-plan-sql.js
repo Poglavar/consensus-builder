@@ -32,3 +32,7 @@ export const currentPlanAgreementSelect = ({ predicate, orderBy, limit }) => `
 export const CURRENT_AGREEMENTS_BY_ACCOUNT_SQL = currentPlanAgreementSelect({
     predicate: "a.onchain->>'account' = $1", orderBy: 'a.created_at DESC', limit: '20'
 });
+// The same for a list of accounts ($1 text[]), as one query.
+export const CURRENT_AGREEMENTS_BY_ACCOUNTS_SQL = currentPlanAgreementSelect({
+    predicate: "a.onchain->>'account' = ANY($1::text[])", orderBy: 'a.created_at DESC', limit: '4000'
+});

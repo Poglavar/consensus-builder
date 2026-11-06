@@ -6,7 +6,7 @@ import request from 'supertest';
 import { LMSR, B, SEED, outcomeFor, parseSource, validateRealm, walletChallengeMessage, verifyWalletSignature } from '../markets/points-ledger.js';
 import { setupBetsPointsRoutes } from '../routes/bets-points.js';
 
-function harness(nowMs=1_800_000_000_000) {
+function harness(nowMs=1_800_000_000_000,{batch=false}={}) {
  const db={accounts:new Map(),markets:new Map(),positions:new Map(),transactions:new Map(),challenges:new Map()};
  let sourceFailure=false;
  const query=async(sql,p=[])=>{
@@ -47,7 +47,10 @@ function harness(nowMs=1_800_000_000_000) {
  };
  const pool={query,connect:async()=>({query,release(){}})};
  const sources=new Map([['11111111111111111111111111111111',{account:'11111111111111111111111111111111',cid:'cid-1',city:'Test',closesAt:1_900_000_000,chainTime:1_800_000_000,graceSeconds:0,chainStatus:'active',executedAt:null,insiders:[]}]]);
- const app=express();app.use(express.json());setupBetsPointsRoutes(app,pool,{readAgreement:async a=>{if(sourceFailure)throw new Error('test source unavailable');return sources.get(a);},now:()=>nowMs,rateLimiter:(req,res,next)=>next()});
+ const app=express();app.use(express.json());const readAgreement=async a=>{if(sourceFailure)throw new Error('test source unavailable');return sources.get(a);};
+ // The production reader's batch form: Map(account → source | Error).
+ if(batch)readAgreement.many=async list=>new Map(list.map(a=>[a,sources.get(a)||Object.assign(new Error('Published binding agreement not found'),{status:404})]));
+ setupBetsPointsRoutes(app,pool,{readAgreement,now:()=>nowMs,rateLimiter:(req,res,next)=>next()});
  return {app,db,sources,now:v=>{nowMs=v;},failSource:v=>{sourceFailure=v;}};
 }
 
@@ -61,4 +64,12 @@ describe('points ledger contract',()=>{
  it('refuses trades at close and future execution evidence',async()=>{const h=harness(),token='c'.repeat(64),auth={Authorization:`Bearer ${token}`};await request(h.app).post('/bets/points/account').set(auth).send({agentId:'profile'}).expect(200);const agreement='11111111111111111111111111111111';await request(h.app).get('/bets/points/markets').query({accounts:agreement}).expect(200);const close=h.sources.get(agreement).closesAt;h.now(close*1000);const trade={requestId:'e10e4d5b-cc5d-4a69-a150-77f16ba13428',agreementAccount:agreement,action:'buy',side:'yes',shares:'10',maxCost:'10'};await request(h.app).post('/bets/points/trade').set(auth).send(trade).expect(409);h.sources.get(agreement).chainStatus='executed';h.sources.get(agreement).executedAt=close+1;await request(h.app).post('/bets/points/resolve').set(auth).send({requestId:'f20e4d5b-cc5d-4a69-a150-77f16ba13428',agreementAccount:agreement}).expect(503);});
  it('ranks only traded accounts using LMSR liquidation value',async()=>{const h=harness(),auth={Authorization:`Bearer ${'f'.repeat(64)}`},agreement='11111111111111111111111111111111';await request(h.app).post('/bets/points/account').set(auth).send({agentId:'ranked'}).expect(200);await request(h.app).get('/bets/points/markets').query({accounts:agreement}).expect(200);const shares=10_000_000n,buy=LMSR.buyCost(B,0n,0n,'yes',shares);await request(h.app).post('/bets/points/trade').set(auth).send({requestId:'a40e4d5b-cc5d-4a69-a150-77f16ba13428',agreementAccount:agreement,action:'buy',side:'yes',shares:String(shares),maxCost:String(buy)}).expect(200);const ranking=await request(h.app).get('/bets/points/leaderboard').expect(200);expect(ranking.body.simulationRun).toBe('');expect(ranking.body.leaderboard).toHaveLength(1);const expected=1_000_000_000n-buy+LMSR.sellReturn(B,shares,0n,'yes',shares);expect(ranking.body.leaderboard[0]).toMatchObject({positionsCount:1});expect(ranking.body.leaderboard[0].equity).toBe(String(expected));});
  it('links only a one-use, unexpired Ed25519 wallet proof and blocks insiders',async()=>{const h=harness(),pair=Keypair.generate(),wallet=pair.publicKey.toBase58(),token='d'.repeat(64),auth={Authorization:`Bearer ${token}`};const account=await request(h.app).post('/bets/points/account').set(auth).send({agentId:'profile'}).expect(200);const challenge=(await request(h.app).post('/bets/points/wallet-challenge').set(auth).send({wallet}).expect(200)).body;const raw=Buffer.from(pair.secretKey.slice(0,32));const privateKey=createPrivateKey({key:Buffer.concat([Buffer.from('302e020100300506032b657004220420','hex'),raw]),format:'der',type:'pkcs8'});const signature=sign(null,Buffer.from(challenge.message),privateKey).toString('base64');await request(h.app).post('/bets/points/wallet-link').set(auth).send({wallet,nonce:challenge.nonce,signature}).expect(200);await request(h.app).post('/bets/points/wallet-link').set(auth).send({wallet,nonce:challenge.nonce,signature}).expect(409);const secondAuth={Authorization:`Bearer ${'e'.repeat(64)}`};await request(h.app).post('/bets/points/account').set(secondAuth).send({agentId:'other'}).expect(200);await request(h.app).post('/bets/points/wallet-challenge').set(secondAuth).send({wallet}).expect(409);const agreement='11111111111111111111111111111111';await request(h.app).get('/bets/points/markets').query({accounts:agreement}).expect(200);h.sources.get(agreement).insiders=[wallet];await request(h.app).post('/bets/points/trade').set(auth).send({requestId:'a20e4d5b-cc5d-4a69-a150-77f16ba13428',agreementAccount:agreement,action:'buy',side:'yes',shares:'1000000',maxCost:'100000000'}).expect(403);expect(account.body.account).toBeTruthy();});
+ it('lists a batch of agreements, leaving one without chain evidence out instead of failing the others',async()=>{
+  const h=harness(undefined,{batch:true}),known='11111111111111111111111111111111',missing='So11111111111111111111111111111111111111112';
+  const res=await request(h.app).get('/bets/points/markets').query({accounts:`${known},${missing}`});
+  expect(res.status,JSON.stringify(res.body)).toBe(200);
+  expect(Object.keys(res.body.subjects)).toEqual([known]);
+  expect(res.body.markets[known]).toBeTruthy();
+  expect(res.body.unavailable).toEqual({[missing]:'Published binding agreement not found'});
+ });
 });
