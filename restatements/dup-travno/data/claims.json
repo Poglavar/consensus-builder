@@ -1,0 +1,501 @@
+{
+ "crs": "EPSG:3765",
+ "note": "Hand-read claim boxes [minX,minY,maxX,maxY] around each building drawn on the DUP Travno sheet; the extractor takes the drawn masses inside each box. Rounds are claimed before the slabs whose boxes overlap them.",
+ "claims": [
+  {
+   "key": "okrugla-1",
+   "label": "14 m",
+   "kind": "public",
+   "storeys": 4,
+   "heightM": 14,
+   "box": [
+    461107.2,
+    5070390.6,
+    461165.4,
+    5070430.4
+   ],
+   "note": "okrugla dvojna građevina; broj etaža nije označen",
+   "name": "okrugla dvojna građevina uz blok 2"
+  },
+  {
+   "key": "okrugla-2",
+   "label": "14 m",
+   "kind": "public",
+   "storeys": 4,
+   "heightM": 14,
+   "box": [
+    460730.6,
+    5070157.9,
+    460788.8,
+    5070194.7
+   ],
+   "note": "okrugla dvojna građevina; broj etaža nije označen",
+   "name": "okrugla dvojna građevina uz blok 6"
+  },
+  {
+   "key": "okrugla-3",
+   "label": "14 m",
+   "kind": "public",
+   "storeys": 4,
+   "heightM": 14,
+   "box": [
+    461168.4,
+    5070015.3,
+    461226.6,
+    5070052.0
+   ],
+   "note": "okrugla dvojna građevina; broj etaža nije označen",
+   "name": "okrugla dvojna građevina uz blok 4"
+  },
+  {
+   "key": "1a",
+   "block": "1a",
+   "label": "P–20, 64 m",
+   "kind": "residential",
+   "storeys": 21,
+   "heightM": 64,
+   "lowHeightM": 4,
+   "flats": {
+    "garsonijera / 1-sobni": 80,
+    "2-sobni": 80
+   },
+   "netFlatAreaM2": 9360,
+   "box": [
+    460816.4,
+    5070399.8,
+    460856.2,
+    5070442.6
+   ]
+  },
+  {
+   "key": "1b",
+   "block": "1b",
+   "label": "P–20, 64 m",
+   "kind": "residential",
+   "storeys": 21,
+   "heightM": 64,
+   "lowHeightM": 4,
+   "flats": {
+    "garsonijera / 1-sobni": 80,
+    "2-sobni": 80
+   },
+   "netFlatAreaM2": 9360,
+   "box": [
+    460880.7,
+    5070399.8,
+    460920.5,
+    5070442.6
+   ]
+  },
+  {
+   "key": "1c",
+   "block": "1c",
+   "label": "P–20, 64 m",
+   "kind": "residential",
+   "storeys": 21,
+   "heightM": 64,
+   "lowHeightM": 4,
+   "flats": {
+    "garsonijera / 1-sobni": 80,
+    "2-sobni": 80
+   },
+   "netFlatAreaM2": 9360,
+   "box": [
+    460944.9,
+    5070402.8,
+    460984.7,
+    5070445.7
+   ]
+  },
+  {
+   "key": "1d",
+   "block": "1d",
+   "label": "P–20, 64 m",
+   "kind": "residential",
+   "storeys": 21,
+   "heightM": 64,
+   "lowHeightM": 4,
+   "flats": {
+    "garsonijera / 1-sobni": 80,
+    "2-sobni": 80
+   },
+   "netFlatAreaM2": 9360,
+   "box": [
+    461009.2,
+    5070405.9,
+    461049.0,
+    5070448.8
+   ]
+  },
+  {
+   "key": "1e",
+   "block": "1e",
+   "label": "P–20, 64 m",
+   "kind": "residential",
+   "storeys": 21,
+   "heightM": 64,
+   "lowHeightM": 4,
+   "flats": {
+    "garsonijera / 1-sobni": 80,
+    "2-sobni": 80
+   },
+   "netFlatAreaM2": 9360,
+   "box": [
+    461058.2,
+    5070087.5,
+    461098.0,
+    5070130.4
+   ]
+  },
+  {
+   "key": "1f",
+   "block": "1f",
+   "label": "P–20, 64 m",
+   "kind": "residential",
+   "storeys": 21,
+   "heightM": 64,
+   "lowHeightM": 4,
+   "flats": {
+    "garsonijera / 1-sobni": 80,
+    "2-sobni": 80
+   },
+   "netFlatAreaM2": 9360,
+   "box": [
+    461119.5,
+    5070069.1,
+    461159.3,
+    5070112.0
+   ]
+  },
+  {
+   "key": "1g",
+   "block": "1g",
+   "label": "P–20, 64 m",
+   "kind": "residential",
+   "storeys": 21,
+   "heightM": 64,
+   "lowHeightM": 4,
+   "flats": {
+    "garsonijera / 1-sobni": 80,
+    "2-sobni": 80
+   },
+   "netFlatAreaM2": 9360,
+   "box": [
+    461177.6,
+    5070105.9,
+    461217.4,
+    5070148.7
+   ]
+  },
+  {
+   "key": "1h",
+   "block": "1h",
+   "label": "P–20, 64 m",
+   "kind": "residential",
+   "storeys": 21,
+   "heightM": 64,
+   "lowHeightM": 4,
+   "flats": {
+    "garsonijera / 1-sobni": 80,
+    "2-sobni": 80
+   },
+   "netFlatAreaM2": 9360,
+   "box": [
+    461238.9,
+    5070047.7,
+    461275.6,
+    5070087.5
+   ]
+  },
+  {
+   "key": "1i",
+   "block": "1i",
+   "label": "P–20, 64 m",
+   "kind": "residential",
+   "storeys": 21,
+   "heightM": 64,
+   "lowHeightM": 4,
+   "flats": {
+    "garsonijera / 1-sobni": 80,
+    "2-sobni": 80
+   },
+   "netFlatAreaM2": 9360,
+   "box": [
+    461297.0,
+    5069989.5,
+    461336.8,
+    5070029.3
+   ]
+  },
+  {
+   "key": "2",
+   "block": "2",
+   "label": "PRIZ. + 8 KATOVA, 28 m",
+   "kind": "residential",
+   "storeys": 9,
+   "heightM": 28,
+   "lowHeightM": 4,
+   "flats": {
+    "2-sobni": 72,
+    "3-sobni": 104,
+    "4-sobni": 24,
+    "5+ sobni": 72
+   },
+   "netFlatAreaM2": 27584,
+   "box": [
+    460862.3,
+    5070314.1,
+    461159.3,
+    5070387.5
+   ]
+  },
+  {
+   "key": "3a",
+   "block": "3a",
+   "label": "PRIZ. + 8 KATOVA, 28 m",
+   "kind": "residential",
+   "storeys": 9,
+   "heightM": 28,
+   "lowHeightM": 4,
+   "flats": {
+    "2-sobni": 72,
+    "3-sobni": 132,
+    "4-sobni": 36,
+    "5+ sobni": 24
+   },
+   "netFlatAreaM2": 24984,
+   "box": [
+    461168.4,
+    5070148.7,
+    461263.3,
+    5070445.7
+   ]
+  },
+  {
+   "key": "3b",
+   "block": "3b",
+   "label": "PRIZ. + 8 KATOVA, 28 m",
+   "kind": "residential",
+   "storeys": 9,
+   "heightM": 28,
+   "lowHeightM": 4,
+   "flats": {
+    "2-sobni": 72,
+    "3-sobni": 132,
+    "4-sobni": 36,
+    "5+ sobni": 24
+   },
+   "netFlatAreaM2": 24984,
+   "box": [
+    461284.8,
+    5070148.7,
+    461379.7,
+    5070448.8
+   ]
+  },
+  {
+   "key": "4",
+   "block": "4",
+   "label": "PRIZ. + 8 KATOVA, 28 m",
+   "kind": "residential",
+   "storeys": 9,
+   "heightM": 28,
+   "lowHeightM": 4,
+   "flats": {
+    "2-sobni": 32,
+    "3-sobni": 58,
+    "4-sobni": 20
+   },
+   "netFlatAreaM2": 10028,
+   "box": [
+    461107.2,
+    5069971.2,
+    461281.7,
+    5070038.5
+   ]
+  },
+  {
+   "key": "5",
+   "block": "5",
+   "label": "PRIZ. + 8 KATOVA, 28 m",
+   "kind": "residential",
+   "storeys": 9,
+   "heightM": 28,
+   "lowHeightM": 4,
+   "flats": {
+    "2-sobni": 52,
+    "3-sobni": 42,
+    "4-sobni": 104
+   },
+   "netFlatAreaM2": 19392,
+   "box": [
+    460840.9,
+    5069958.9,
+    461049.0,
+    5070038.5
+   ]
+  },
+  {
+   "key": "6",
+   "block": "6",
+   "label": "PRIZ. + 20 KATOVA, 66 m",
+   "kind": "residential",
+   "storeys": 21,
+   "heightM": 66,
+   "lowHeightM": 4,
+   "flats": {
+    "garsonijera / 1-sobni": 230,
+    "2-sobni": 420,
+    "3-sobni": 632
+   },
+   "netFlatAreaM2": 100188,
+   "box": [
+    460666.4,
+    5070075.3,
+    460828.6,
+    5070424.3
+   ],
+   "toneHigh": 130
+  },
+  {
+   "key": "sz-niz",
+   "label": "P, 4 m",
+   "kind": "public",
+   "storeys": 1,
+   "heightM": 4,
+   "box": [
+    460522.5,
+    5070363.0,
+    460602.1,
+    5070402.8
+   ],
+   "name": "sjeverozapadni prizemni niz"
+  },
+  {
+   "key": "sz-dvorana",
+   "label": "P, 10 m",
+   "kind": "public",
+   "storeys": 1,
+   "heightM": 10,
+   "box": [
+    460537.8,
+    5070289.6,
+    460583.7,
+    5070363.0
+   ],
+   "name": "sjeverozapadna dvorana"
+  },
+  {
+   "key": "sz-krug",
+   "label": "P+I, 10 m",
+   "kind": "public",
+   "storeys": 2,
+   "heightM": 10,
+   "box": [
+    460608.2,
+    5070338.6,
+    460641.9,
+    5070390.6
+   ],
+   "name": "sjeverozapadna građevina s okruglim atrijem"
+  },
+  {
+   "key": "p-sjever",
+   "label": "P, 4 m",
+   "kind": "public",
+   "storeys": 1,
+   "heightM": 4,
+   "box": [
+    460770.4,
+    5070341.6,
+    460850.0,
+    5070378.4
+   ],
+   "name": "prizemna građevina uz blok 2"
+  },
+  {
+   "key": "p-sredina",
+   "label": "P, 4 m",
+   "kind": "public",
+   "storeys": 1,
+   "heightM": 4,
+   "box": [
+    461073.5,
+    5070188.5,
+    461150.1,
+    5070225.3
+   ],
+   "name": "prizemna građevina uz blok 3a"
+  },
+  {
+   "key": "p-jug",
+   "label": "P, 4 m",
+   "kind": "public",
+   "storeys": 1,
+   "heightM": 4,
+   "box": [
+    460730.6,
+    5069989.5,
+    460810.2,
+    5070029.3
+   ],
+   "name": "prizemna građevina uz blok 5"
+  },
+  {
+   "key": "centar",
+   "label": "P+I, 8 m",
+   "kind": "public",
+   "storeys": 2,
+   "heightM": 8,
+   "box": [
+    460840.9,
+    5070161.0,
+    461039.9,
+    5070228.3
+   ],
+   "name": "središnji kompleks uz sportske terene"
+  },
+  {
+   "key": "jz-u",
+   "label": "P+I, 7 m",
+   "kind": "public",
+   "storeys": 2,
+   "heightM": 7,
+   "box": [
+    460534.7,
+    5070001.8,
+    460666.4,
+    5070093.6
+   ],
+   "name": "jugozapadni kompleks s krilima"
+  },
+  {
+   "key": "istok-p",
+   "label": "P, 5 m",
+   "kind": "public",
+   "storeys": 1,
+   "heightM": 5,
+   "box": [
+    461385.8,
+    5070142.6,
+    461440.9,
+    5070225.3
+   ],
+   "name": "istočna prizemna dvorana"
+  },
+  {
+   "key": "istok-p4",
+   "label": "P–4, 16 m",
+   "kind": "public",
+   "storeys": 5,
+   "heightM": 16,
+   "box": [
+    461367.4,
+    5070029.3,
+    461465.4,
+    5070133.4
+   ],
+   "name": "istočni kompleks s atrijem"
+  }
+ ]
+}

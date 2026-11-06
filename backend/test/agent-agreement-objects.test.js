@@ -7,7 +7,7 @@ import { createRequire } from 'node:module';
 import { Keypair } from '@solana/web3.js';
 import {
     AGREEMENT_SCHEMA, DESIGN_SCHEMA, noMoney, REGISTRY_RIGHTS_PROVIDER, agreementObject, boundParcelIds, cidOfObject, communityRule,
-    deadlineAfterDays, designObject, mapViewFromGeometry, ownersRule, parcelOutputs, partyKey, personPositions, registryRights
+    deadlineAfterDays, designObject, mapViewFromGeometry, ownersRule, parcelOutputs, partyKey, personPositions, planForDesigns, registryRights
 } from '../agents/agreement-objects.js';
 import { buildDesignRecord } from '../agents/record-builder.js';
 import { validateDesignContent } from '../routes/designs.js';
@@ -33,6 +33,12 @@ describe('geometry-derived plan views', () => {
         const points = Array.from({ length: 200_000 }, (_, index) => [15 + index / 1_000_000, 45 + index / 1_000_000]);
         expect(mapViewFromGeometry(points, 'zagreb')).toEqual({ at: '45.099999,15.099999,17', mode: '2d', city: 'zagreb' });
         expect(() => mapViewFromGeometry([], 'zagreb')).toThrow(/real geometry/);
+    });
+
+    it('frames a plan of designs without a site on their own drawings', () => {
+        const footprint = { type: 'Polygon', coordinates: [[[15.98, 45.77], [15.99, 45.77], [15.99, 45.78], [15.98, 45.77]]] };
+        const content = { city: 'zagreb', site: null, geometry: { buildings: [{ type: 'Feature', properties: {}, geometry: footprint }] } };
+        expect(planForDesigns('Freeform', [{ content, cid: cidOfObject(content) }]).content.view).toMatchObject({ at: '45.775,15.985,17', mode: '2d', city: 'zagreb' });
     });
 });
 

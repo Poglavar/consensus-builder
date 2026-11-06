@@ -63,7 +63,8 @@ export function mapViewFromGeometry(values, city = null, message = 'A map view n
 export function planForDesigns(title, designs, view) {
     const rows = designs || [];
     const designCids = rows.map(row => row.cid || cidApi.cidOfObject(row.content));
-    if (!view) view = mapViewFromGeometry(rows.map(row => row.content?.site), rows[0]?.content?.city, 'A plan needs a map view derived from its designs.');
+    // A design without an authored site (a freeform building) stands on its own drawing.
+    if (!view) view = mapViewFromGeometry(rows.map(row => row.content?.site ?? row.content?.geometry), rows[0]?.content?.city, 'A plan needs a map view derived from its designs.');
     const plan = planRecord.create(String(title || 'Agreement plan').slice(0, 160).trim(), designCids, view);
     return { cid: cidApi.cidOfObject(plan), content: plan };
 }

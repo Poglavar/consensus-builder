@@ -57,6 +57,9 @@ frontend/rpc-config.js
 /restatements/avenue-v/**/*.jpeg
 /restatements/avenue-v/**/*.webp
 /restatements/avenue-v/**/*.html
+# DUP Travno: the geoportal sheet tiles, the stitched sheet and the review overlay are re-fetched/re-derived.
+/restatements/dup-travno/data/tiles/
+/restatements/dup-travno/data/*.png
 
 # Raw guide-video renders (the packaged clips live in frontend/videos/howto); too large for git.
 data/video/
