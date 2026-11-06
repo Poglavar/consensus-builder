@@ -1813,8 +1813,12 @@
     function queueClearanceCurtain(jobs, ringXY, supportAt, visibleAt, bottomOffsetM, name) {
         jobs.push({
             ringXY: ringXY, supportAt: supportAt, visibleAt: visibleAt, name: name,
+            // Only the one-sided, canopy-shaded structure seal follows a crown closely. The road
+            // curtain is two-sided earth colour: refined to the canopy top along a whole road edge it
+            // stood as a grey billboard in front of the trees beside the road.
             options: { bottomOffsetM: bottomOffsetM, minimumClearanceM: 0.5, topMarginM: 0.1,
-                maximumHeightM: 30, refineM: CURTAIN_REFINE_TRUE_M * mercatorK }
+                maximumHeightM: 30,
+                refineM: name === 'PhotorealStructureClearanceCurtain' ? CURTAIN_REFINE_TRUE_M * mercatorK : 0 }
         });
     }
 
