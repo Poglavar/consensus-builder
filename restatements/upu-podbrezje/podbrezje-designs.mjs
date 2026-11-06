@@ -520,7 +520,7 @@ export function podbrezjeDesigns() {
 
 const groundFile = key => fileURLToPath(new URL(`./ground/${key}.json`, import.meta.url));
 
-function planOf(key, title, designs) {
+function planOf(key, title, designs, viewSettings) {
     return {
         key,
         title,
@@ -529,17 +529,21 @@ function planOf(key, title, designs) {
         // The imported Croatian cadastre in the app database, as the app binds a Zagreb design.
         parcelSourceId: 'oss-wfs',
         groundFile: groundFile(key),
-        designs: designs.map(({ key: designKey, record }) => ({ key: designKey, record }))
+        designs: designs.map(({ key: designKey, record }) => ({ key: designKey, record })),
+        viewSettings
     };
 }
 
 /** The whole plan on an empty site: both streets, the parks and all eighteen buildings. */
 export function fullPlan() {
-    return planOf(PLAN_KEYS.full, 'UPU Podbrežje', podbrezjeDesigns());
+    // Built shown around the plan; on the site only what the plan keeps (its designs replace the rest).
+    return planOf(PLAN_KEYS.full, 'UPU Podbrežje', podbrezjeDesigns(), { existing: 'solid', existingScope: 'surviving' });
 }
 
 /** What is still to be built: the whole plan without A3–A6, A11, C1 and the built north and east streets. */
 export function remainderPlan() {
     return planOf(PLAN_KEYS.remainder, 'UPU Podbrežje – preostali dio plana',
-        podbrezjeDesigns().filter(design => !NOT_IN_REMAINDER.includes(design.kazeta)));
+        podbrezjeDesigns().filter(design => !NOT_IN_REMAINDER.includes(design.kazeta)),
+        // The remainder completes a built neighbourhood: the built slabs stay in view.
+        { existing: 'solid', existingScope: 'all' });
 }

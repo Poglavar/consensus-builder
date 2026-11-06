@@ -2,7 +2,9 @@
 // (plan-design-agreement.md, M3: a restated plan is its designs and one community-vote agreement over
 // them, with no lens, money, allocations or deadline): every restatement script hands its plans to
 // runRestatementCli. A plan is { key, title, author, city, parcelSourceId, groundFile,
-// designs: [{ key, record }] } with the local design records in authored (replay) order. The steps:
+// designs: [{ key, record }], viewSettings? } with the local design records in authored (replay) order;
+// viewSettings are the named plan's saved display settings (plan-record.js SETTINGS, e.g. Built shown
+// for a plan that completes a built neighbourhood), otherwise the app's defaults apply. The steps:
 //   --dry-run    build every design/v1 object (no network) and print it, and the agreement's CID when the
 //                plan's ground file is current;
 //   --designs    index every design (POST /designs);
@@ -24,7 +26,7 @@ import { createRequire } from 'node:module';
 import { parseArgs } from 'node:util';
 import { canonicalBytes } from '../../cid.js';
 import { MAX_PINNED_OBJECT_BYTES } from '../../storage/pinning.js';
-import { agreementObject, communityRule, designObject, noMoney, planForDesigns } from '../../agents/agreement-objects.js';
+import { agreementObject, communityRule, designObject, mapViewFromGeometry, noMoney, planForDesigns } from '../../agents/agreement-objects.js';
 import { cityMoney } from './frontend-city-money.mjs';
 import { cleanApiBase, createIndexClient } from '../../agents/publication-client.js';
 
@@ -136,7 +138,9 @@ export function planAgreement(plan, objects, ground) {
         sponsor: null,
         city: plan.city,
         createdAt: null,
-        plan: planForDesigns(plan.title, objects),
+        plan: planForDesigns(plan.title, objects, plan.viewSettings
+            ? { ...mapViewFromGeometry(objects.map(object => object.content?.site ?? object.content?.geometry), plan.city), settings: { ...plan.viewSettings } }
+            : undefined),
         designs: objects.map(object => ({ cid: object.cid, goal: object.content.goal, title: object.content.title })),
         parcels: ground.inputs.map(parcel => ({
             parcelId: parcel.parcelId,

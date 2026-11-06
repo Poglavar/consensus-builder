@@ -399,6 +399,11 @@
             const cid = idOf(rawCid);
             try {
                 const row = await fetchAgreement(cid);
+                // Its plan's saved view (display settings, place, mode) first, as a /plans link applies it.
+                if (win.NamedPlans?.restoreArrival?.(row.plan.content.view)) {
+                    log(`opening ${cid}: reloading at its plan's saved view`);
+                    return;
+                }
                 log(`opening ${cid}: plan ${row.plan.cid}, ${row.plan.content.designCids.length} design(s), status ${row.status}`);
                 const cityManager = win.CityConfigManager;
                 const designCids = row.plan.content.designCids;

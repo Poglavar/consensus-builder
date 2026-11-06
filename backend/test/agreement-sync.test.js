@@ -587,6 +587,18 @@ describe('opening an /agreements link', () => {
         expect(agreements.get(save.mock.results[0].value.id).designs.map(design => design.cid).sort()).toEqual(agreement().plan.content.designCids);
     });
 
+    it('reloads at its plan\'s saved view before applying anything when the view adds to the address', async () => {
+        const content = AgreementRecord.published(agreement());
+        const cid = Cid.cidOfObject(content);
+        const row = { cid, content, createdAt: '2026-10-21T12:00:05.000Z', city: content.city, status: 'active', onchain: null };
+        const { win, sync } = fakeWindow({ server: fakeServer({ rows: new Map([[cid, row]]) }) });
+        win.NamedPlans = { ...win.NamedPlans, restoreArrival: vi.fn(() => true) };
+        win.handleSharedDesignRoute = vi.fn();
+        await sync.handleAgreementRoute(cid);
+        expect(win.NamedPlans.restoreArrival).toHaveBeenCalledWith(agreement().plan.content.view);
+        expect(win.handleSharedDesignRoute).not.toHaveBeenCalled();
+    });
+
     it('keeps a mint this device made that the index has not recorded, and takes the index\'s once it has', async () => {
         const content = AgreementRecord.published({ ...agreement(), sponsor: SPONSOR });
         const cid = Cid.cidOfObject(content);

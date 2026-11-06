@@ -89,6 +89,16 @@
             link,
             fetchPlan,
             remember,
+            // An /agreements link arrives at its plan's saved view as a /plans link does: one reload when
+            // the view adds anything the arrival address does not state (agreement-sync.js). True while
+            // redirecting.
+            restoreArrival(view) {
+                if (new URL(arrivalHref).pathname !== win.location.pathname) return false;
+                const restored = restoreUrl(arrivalHref, view, win.MapShare);
+                if (restored === new URL(arrivalHref).href) return false;
+                win.location.replace(restored);
+                return true;
+            },
             list,
             remove(cid) {
                 win.PersistentStorage.removeItem(`plan:${cid}`);
