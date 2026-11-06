@@ -1,0 +1,25 @@
+{
+  "comment": "Building masses on UPU Podbrežje sheet 3.d 'Osnova krajobraznog uređenja naselja' (izmjene i dopune 2011., sažetak za javnost, page 2, rendered at 2911 × 1191 px over the plan's extent). px = [x0, x1, y0, y1] of each grey mass (pixels whose RGB channels differ by < 12 and lie in 160–215, opened twice, blobs over 1500 px); a slab broken by the drawn stairs is its largest piece. rowPx is the sheet row of the kazeta's north edge: 223 for the north row, 618 for the south row (the park's south edge), 598 for kazeta D, 115 for kazeta B. The across scale and offset are fitted in podbrezje-designs.mjs to the built slabs A3–A6.",
+  "source": "https://web.zagreb.hr/Sjednice/2017/Sjednice_Skupstine_2017.nsf/0/C12581370033D600C125869600382759/$FILE/upu_podbrezje_sazetak_javnost.pdf",
+  "fit": ["A3", "A4", "A5", "A6"],
+  "masses": {
+    "A1": { "px": [709, 762, 223, 291], "rowPx": 223 },
+    "A2": { "px": [1024, 1077, 223, 460], "rowPx": 223 },
+    "A3": { "px": [1358, 1386, 261, 421], "rowPx": 223 },
+    "A4": { "px": [1656, 1708, 223, 460], "rowPx": 223 },
+    "A5": { "px": [1973, 2022, 223, 300], "rowPx": 223 },
+    "A6": { "px": [2287, 2318, 223, 460], "rowPx": 223 },
+    "A7": { "px": [1263, 1320, 618, 1101], "rowPx": 618 },
+    "A8": { "px": [1582, 1630, 653, 929], "rowPx": 618 },
+    "A9": { "px": [1900, 1948, 618, 766], "rowPx": 618 },
+    "A10": { "px": [2218, 2263, 653, 831], "rowPx": 618 },
+    "A11": { "px": [2623, 2655, 223, 460], "rowPx": 223 },
+    "B": { "px": [398, 531, 115, 417], "rowPx": 115 },
+    "C1": { "px": [1459, 1580, 261, 336], "rowPx": 223 },
+    "C2": { "px": [2349, 2471, 654, 734], "rowPx": 618 },
+    "D": { "px": [819, 1199, 655, 770], "rowPx": 598 },
+    "E": { "px": [2096, 2202, 330, 428], "rowPx": 223 },
+    "F1": { "px": [822, 931, 330, 428], "rowPx": 223 },
+    "F2": { "px": [1705, 1815, 655, 766], "rowPx": 618 }
+  }
+}
