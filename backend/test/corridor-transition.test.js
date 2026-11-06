@@ -57,6 +57,24 @@ describe('planning', () => {
         expect(plans[0].to).toBe(local);
     });
 
+    it('ends a carriageway at the node where its street continues as a footway, without a taper', () => {
+        // UPU Borovje: an 18 m shared street (5 | 4 | 4 | 5) meets a 9 m footway. Tapered, the two
+        // driving lanes ran 57 m into the footway and closed to a point.
+        const street = normalizeCorridorProfile({ strips: [
+            { type: 'sidewalk', width: 5 }, { type: 'driving', width: 4, direction: 'backward' },
+            { type: 'driving', width: 4, direction: 'forward' }, { type: 'sidewalk', width: 5 }] });
+        const footway = normalizeCorridorProfile({ strips: [{ type: 'sidewalk', width: 9 }] });
+        expect(T.planTransitions([
+            { points: [[-43, 0], [0, 0]], profile: street, width: 18, corridorId: 'r', segmentId: 'street' },
+            { points: [[0, 0], [128, 0]], profile: footway, width: 9, corridorId: 'r', segmentId: 'footway' }
+        ])).toEqual([]);
+        // A narrowing that keeps a carriageway still tapers.
+        expect(T.planTransitions([
+            { points: [[-200, 0], [0, 0]], profile: street, width: 18, corridorId: 'r', segmentId: 'street' },
+            { points: [[0, 0], [150, 0]], profile: narrow, width: 7.5, corridorId: 'r', segmentId: 'narrow' }
+        ])).toHaveLength(1);
+    });
+
     it('never tapers between identical profiles, at a right-angle branch, or on a stub', () => {
         expect(T.planTransitions([
             { points: [[-50, 0], [0, 0]], profile: wide, width: 26, corridorId: 'r' },

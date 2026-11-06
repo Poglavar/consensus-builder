@@ -41,7 +41,9 @@ Update the status column as pieces land.
 3. **A width change is a transition zone on the wider stretch**: at every degree-2 boundary where
    the two stretches' profiles differ, the wider stretch's last `clamp(10, 60, 8 × Δwidth)` metres
    taper to the narrower profile. Strips, land, markings and 3D are all built from the same taper
-   pieces (`corridorRenderPieces`). A stretch can be split at any interior node from the node
+   pieces (`corridorRenderPieces`). Where only one side has a carriageway (driving, bus or rail
+   strips), as where a street continues as a footway, there is no zone: the carriageway ends at the
+   node. A stretch can be split at any interior node from the node
    editor ("Split the stretch here"), which is the minimum form of roads.md §9 stations.
 4. **Drawing connects to what exists**: nearest-first snapping with a vertex preference, existing
    streets (the `/osm-road` centre lines) as snap targets with the street named, roads and tracks

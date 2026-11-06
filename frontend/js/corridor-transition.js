@@ -45,6 +45,14 @@
         return JSON.stringify((profile && profile.strips) || []);
     }
 
+    // Strips vehicles run on. A stretch with them meeting one without (a street ending at a
+    // footway) is the carriageway ending at the node, not a narrowing: tapering it dragged the
+    // driving lanes into the footway as a long triangle.
+    const VEHICLE_STRIP_TYPES = new Set(['driving', 'bus', 'rail']);
+    function carriesVehicles(profile) {
+        return ((profile && profile.strips) || []).some(strip => strip && VEHICLE_STRIP_TYPES.has(strip.type));
+    }
+
     // ---- planning ----------------------------------------------------------------------------
 
     // Which stretches get a zone, at which end, from which profile. `entries` are one corridor's
@@ -110,6 +118,7 @@
                 const opposite = best.other;
                 if (opposite.width <= arm.width + 0.05) return;
                 if (profileKey(opposite.profile) === profileKey(arm.profile)) return;
+                if (carriesVehicles(opposite.profile) !== carriesVehicles(arm.profile)) return;
                 const length = Math.min(transitionLength(opposite.width, arm.width), arm.length * MAX_SHARE_OF_STRETCH);
                 if (length < MIN_ZONE_M) return;
                 plans.push({ entryIndex: arm.entryIndex, end: arm.end, length, from: opposite.profile, to: arm.profile, kind: list.length >= 3 ? 'junction' : 'bend' });
