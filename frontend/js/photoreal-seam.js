@@ -182,6 +182,10 @@
             ? Math.max(0, options.maximumHeightM) : 30;
         const epsilon = Number.isFinite(options.epsilon) && options.epsilon > 0
             ? options.epsilon : 1e-6;
+        // A crown rises faster than a straight top between two probes metres apart, and the
+        // triangle left above that line opens the hollow shell. Segments that meet clearance are
+        // halved until they are this short; open-ground segments keep the caller's spacing.
+        const refineM = Number.isFinite(options.refineM) && options.refineM > 0 ? options.refineM : 0;
         const sample = function (point) {
             if (!Array.isArray(point) || !Number.isFinite(point[0]) || !Number.isFinite(point[1])) {
                 return null;
@@ -196,15 +200,23 @@
         };
         const positions = [];
         let segmentCount = 0;
-        for (let index = 1; index < ringXY.length; index++) {
-            const a = sample(ringXY[index - 1]);
-            const b = sample(ringXY[index]);
-            if (!a || !b || (a.top <= a.bottom + epsilon && b.top <= b.bottom + epsilon)) continue;
+        const open = function (s) { return s.top > s.bottom + epsilon; };
+        const emit = function (a, b) {
+            if (refineM && (open(a) || open(b)) && Math.hypot(b.x - a.x, b.y - a.y) > refineM) {
+                const middle = sample([(a.x + b.x) / 2, (a.y + b.y) / 2]);
+                if (middle) { emit(a, middle); emit(middle, b); return; }
+            }
+            if (!open(a) && !open(b)) return;
             positions.push(
                 a.x, a.y, a.top, a.x, a.y, a.bottom, b.x, b.y, b.bottom,
                 a.x, a.y, a.top, b.x, b.y, b.bottom, b.x, b.y, b.top
             );
             segmentCount += 1;
+        };
+        for (let index = 1; index < ringXY.length; index++) {
+            const a = sample(ringXY[index - 1]);
+            const b = sample(ringXY[index]);
+            if (a && b) emit(a, b);
         }
         return { positions, segmentCount };
     }

@@ -1727,7 +1727,8 @@
             bottomOffsetM: bottomOffsetM,
             minimumClearanceM: 0.5,
             topMarginM: 0.1,
-            maximumHeightM: 30
+            maximumHeightM: 30,
+            refineM: 0.5
         });
         if (!built.positions.length) return 0;
         const geometry = new THREE.BufferGeometry();

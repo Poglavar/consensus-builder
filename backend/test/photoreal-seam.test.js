@@ -154,6 +154,25 @@ describe('photoreal road clearance curtain', () => {
         expect(built).toEqual({ positions: [], segmentCount: 0 });
     });
 
+    it('refines a segment that meets a crown so the wall top follows it, not a straight line', () => {
+        // Open ground up to x = 1, then a crown 8 m up: probes 4 m apart would ramp the top.
+        const visibleAt = x => (x >= 1 ? 8 : 1);
+        const topAt = (built, x) => {
+            let best = -Infinity;
+            for (let i = 0; i < built.positions.length; i += 3) {
+                if (Math.abs(built.positions[i] - x) < 1e-9) best = Math.max(best, built.positions[i + 2]);
+            }
+            return best;
+        };
+        const coarse = buildClearanceCurtainPositions([[0, 0], [4, 0]], () => 1, visibleAt);
+        const refined = buildClearanceCurtainPositions([[0, 0], [4, 0]], () => 1, visibleAt, { refineM: 0.5 });
+
+        expect(topAt(coarse, 1)).toBe(-Infinity);
+        expect(topAt(refined, 1)).toBeCloseTo(8.1, 12);
+        // Open ground before the crown stays without a wall.
+        expect(topAt(refined, 0.5)).toBeCloseTo(1.03, 12);
+    });
+
     it('fails closed instead of inventing a wall without formation support', () => {
         const built = buildClearanceCurtainPositions(
             [[0, 0], [4, 0]],
