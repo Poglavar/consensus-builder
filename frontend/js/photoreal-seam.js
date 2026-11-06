@@ -221,6 +221,27 @@
         return { positions, segmentCount };
     }
 
+    // Build many clearance curtains as cooperative work: each ring segment (with its crown
+    // refinement) is one item, so a caller-supplied `forEach` (js/three-scene-work.js) can yield
+    // between items and a newer rebuild can cancel through `isCurrent`. Resolves to one
+    // { positions, segmentCount } per job, in job order, or null when cancelled.
+    async function buildClearanceCurtainsSliced(jobs, work) {
+        const items = [];
+        const results = (jobs || []).map(function (job, jobIndex) {
+            const ring = Array.isArray(job && job.ringXY) ? job.ringXY : [];
+            for (let index = 1; index < ring.length; index++) items.push({ jobIndex, a: ring[index - 1], b: ring[index] });
+            return { positions: [], segmentCount: 0 };
+        });
+        const completed = await work.forEach(items, function (item) {
+            const job = jobs[item.jobIndex];
+            const built = buildClearanceCurtainPositions([item.a, item.b], job.supportAt, job.visibleAt, job.options);
+            const result = results[item.jobIndex];
+            for (let i = 0; i < built.positions.length; i++) result.positions.push(built.positions[i]);
+            result.segmentCount += built.segmentCount;
+        }, { isCurrent: work.isCurrent, budgetMs: work.budgetMs, now: work.now, yieldTask: work.yieldTask });
+        return completed ? results : null;
+    }
+
     function addUniqueIntersection(out, position, barycentric, epsilon) {
         const epsilonSq = epsilon * epsilon;
         for (let i = 0; i < out.length; i++) {
@@ -460,6 +481,7 @@
         intersectTriangleWithVerticalSegment,
         buildSeamFasciaQuads,
         buildClearanceCurtainPositions,
+        buildClearanceCurtainsSliced,
         triangleDoubleArea,
         densifyClosedRing,
         buildSegmentGrid,

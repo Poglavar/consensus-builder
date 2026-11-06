@@ -539,6 +539,7 @@
     let maskMaterialRoad = null; // blue + alpha mask = road class + encoded local formation height
     let maskMaterialProtect = null; // all channels cleared = "a building still stands here, do not cut"
     let apronGroup = null;
+    let clearanceCurtainGeneration = 0; // bumped per rebuild; abandons the previous wall build
     let apronMaterial = null;
     let apronMaterialWater = null;   // lake cap
     let apronMaterialPark = null;    // park cap
@@ -1718,27 +1719,63 @@
     // depth-occludes this neutral wall everywhere except an otherwise sky-blue void. Do not replace
     // this with source-textured per-triangle fascias: disconnected canopy hits become floating fins.
     // `bottomOffsetM` lifts the wall foot to the surface the cut is covered with.
-    function addClearanceCurtain(ringXY, group, supportAt, visibleAt, bottomOffsetM, name) {
-        const THREE = window.THREE;
-        const seam = window.__photorealSeam;
-        if (!THREE || !group || !apronMaterial || !seam
-            || typeof seam.buildClearanceCurtainPositions !== 'function') return 0;
-        const built = seam.buildClearanceCurtainPositions(ringXY, supportAt, visibleAt, {
-            bottomOffsetM: bottomOffsetM,
-            minimumClearanceM: 0.5,
-            topMarginM: 0.1,
-            maximumHeightM: 30,
-            refineM: 0.5
+    // Queued, not built: every wall probes the tile mesh (no BVH, about 1 ms a probe), which
+    // froze each rebuild for over a second, so startClearanceCurtains builds them in slices.
+    function queueClearanceCurtain(jobs, ringXY, supportAt, visibleAt, bottomOffsetM, name) {
+        jobs.push({
+            ringXY: ringXY, supportAt: supportAt, visibleAt: visibleAt, name: name,
+            options: { bottomOffsetM: bottomOffsetM, minimumClearanceM: 0.5, topMarginM: 0.1,
+                maximumHeightM: 30, refineM: 0.5 }
         });
-        if (!built.positions.length) return 0;
-        const geometry = new THREE.BufferGeometry();
-        geometry.setAttribute('position', new THREE.Float32BufferAttribute(built.positions, 3));
-        geometry.computeBoundingSphere();
-        const mesh = new THREE.Mesh(geometry, apronMaterial);
-        mesh.name = name;
-        mesh.frustumCulled = false;
-        group.add(mesh);
-        return built.segmentCount;
+    }
+
+    // Build the queued walls a few milliseconds per frame, one mesh per wall name, into the
+    // rebuild's own plinth group. A newer rebuild, or leaving photo mode, abandons the work.
+    // Until a wall lands, the old sky-coloured gap can show for a moment at a cut through a tree.
+    async function startClearanceCurtains(jobs, group) {
+        const generation = ++clearanceCurtainGeneration;
+        const seam = window.__photorealSeam;
+        const THREE = window.THREE;
+        const stillCurrent = function () {
+            return generation === clearanceCurtainGeneration && active && apronGroup === group;
+        };
+        if (!jobs.length || !THREE || !apronMaterial || !seam
+            || typeof seam.buildClearanceCurtainsSliced !== 'function' || !window.__threeSceneWork?.forEach) return;
+        const started = performance.now();
+        const results = await seam.buildClearanceCurtainsSliced(jobs, {
+            forEach: window.__threeSceneWork.forEach, isCurrent: stillCurrent, budgetMs: 6
+        });
+        if (!results || !stillCurrent()) return;
+        const byName = new Map();
+        results.forEach(function (result, index) {
+            const name = jobs[index].name;
+            const merged = byName.get(name) || { positions: [], segmentCount: 0 };
+            for (let i = 0; i < result.positions.length; i++) merged.positions.push(result.positions[i]);
+            merged.segmentCount += result.segmentCount;
+            byName.set(name, merged);
+        });
+        const counts = {};
+        byName.forEach(function (merged, name) {
+            counts[name] = merged.segmentCount;
+            if (!merged.positions.length) return;
+            const geometry = new THREE.BufferGeometry();
+            geometry.setAttribute('position', new THREE.Float32BufferAttribute(merged.positions, 3));
+            geometry.computeBoundingSphere();
+            const mesh = new THREE.Mesh(geometry, apronMaterial);
+            mesh.name = name;
+            mesh.frustumCulled = false;
+            group.add(mesh);
+        });
+        // The loop parks on a still camera; a wall that lands later must ask for its frame.
+        if (typeof window.invalidateThreeView === 'function') window.invalidateThreeView();
+        try {
+            const sampling = JSON.parse(document.body.dataset.photorealSampling || '{}');
+            sampling.roadClearanceCurtainSegments = counts.PhotorealRoadClearanceCurtain || 0;
+            sampling.structureClearanceCurtainSegments = counts.PhotorealStructureClearanceCurtain || 0;
+            sampling.clearanceCurtainsPending = false;
+            sampling.clearanceCurtainMs = Math.round(performance.now() - started);
+            document.body.dataset.photorealSampling = JSON.stringify(sampling);
+        } catch (_) { }
     }
 
     // lng/lat bbox of everything being carved, padded, so building protection only considers the
@@ -1891,7 +1928,7 @@
                     - (Number(roadEncoding.quantizationM) || 0) / 2);
         corridorUniforms.uRoadCutOffset.value = Number.isFinite(safeRoadCutOffset)
             ? safeRoadCutOffset : -ROAD_CUT_SAFETY_MARGIN_M;
-        let structureClearanceCurtainSegments = 0;
+        const clearanceCurtainJobs = [];
         // Every cut in scene coordinates, so a structure's clearance wall is built only where its ring
         // meets Google mesh that stays, not where it runs inside a neighbouring cut (a park beside a
         // building plot, a plot beside a street) and the wall would stand in the open.
@@ -1973,8 +2010,8 @@
                             const retainedSurfaceAt = function (x, y) {
                                 return cutCoverage && cutCoverage(x, y, entryIndex) ? null : sampleTileSurfaceZ(x, y);
                             };
-                            structureClearanceCurtainSegments += addClearanceCurtain(
-                                probedRing, apronGroup, supportAt, retainedSurfaceAt,
+                            queueClearanceCurtain(clearanceCurtainJobs,
+                                probedRing, supportAt, retainedSurfaceAt,
                                 CURTAIN_CONTENT_TOP_Z, 'PhotorealStructureClearanceCurtain');
                         });
                     }
@@ -1987,7 +2024,6 @@
         // depth-tested curtain around the exterior foundation union. Never copy source triangles:
         // high disconnected canopy intersections become floating textured fins.
         let roadSeamBoundarySegments = 0;
-        let roadClearanceCurtainSegments = 0;
         const roadBoundary = unionRoadFoundationGeometry(roadFoundationPatches);
         const supportAt = function (x, y) {
             if (typeof window.corridorTerrainHeightAt !== 'function') return null;
@@ -2015,8 +2051,8 @@
                         ? window.__photorealSeam.densifyClosedRing(
                             ring, ROAD_BOUNDARY_SAMPLE_SPACING_M * mercatorK)
                         : ring;
-                    roadClearanceCurtainSegments += addClearanceCurtain(
-                        sampledRing, apronGroup, supportAt, visibleAt,
+                    queueClearanceCurtain(clearanceCurtainJobs,
+                        sampledRing, supportAt, visibleAt,
                         ROAD_FOUNDATION_TOP_OFFSET_M - 0.01, 'PhotorealRoadClearanceCurtain');
                 });
             });
@@ -2038,8 +2074,9 @@
                 roadVectorCollars: roadVectorCollars,
                 buildingProtectShapes: buildingProtectShapes,
                 roadSeamBoundarySegments: roadSeamBoundarySegments,
-                roadClearanceCurtainSegments: roadClearanceCurtainSegments,
-                structureClearanceCurtainSegments: structureClearanceCurtainSegments,
+                roadClearanceCurtainSegments: 0,
+                structureClearanceCurtainSegments: 0,
+                clearanceCurtainsPending: clearanceCurtainJobs.length > 0,
                 exactRoadMasks: exactRoadProposalIds.size,
                 roadFloorMin: roadEncoding.min,
                 roadFloorRange: roadEncoding.range,
@@ -2051,6 +2088,7 @@
                 roadFoundationPaddingM: roadFoundationPaddingM
             });
         } catch (_) { }
+        void startClearanceCurtains(clearanceCurtainJobs, apronGroup);
     }
 
     function renderCarveMask(cx, cy) {

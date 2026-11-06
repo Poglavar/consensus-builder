@@ -10,11 +10,13 @@ const {
     intersectTriangleWithVerticalSegment,
     buildSeamFasciaQuads,
     buildClearanceCurtainPositions,
+    buildClearanceCurtainsSliced,
     triangleDoubleArea,
     densifyClosedRing,
     buildSegmentGrid,
     querySegmentGrid
 } = require('../../frontend/js/photoreal-seam.js');
+const { forEach } = require('../../frontend/js/three-scene-work.js');
 
 describe('photoreal mask edge ownership', () => {
     it('converts the complete nearest-texel uncertainty band into a true-metre buffer', () => {
@@ -171,6 +173,30 @@ describe('photoreal road clearance curtain', () => {
         expect(topAt(refined, 1)).toBeCloseTo(8.1, 12);
         // Open ground before the crown stays without a wall.
         expect(topAt(refined, 0.5)).toBeCloseTo(1.03, 12);
+    });
+
+    it('builds walls in slices that yield to the frame and match the one-shot build', async () => {
+        const ring = [[0, 0], [4, 0], [8, 0], [8, 4]];
+        const job = { ringXY: ring, supportAt: () => 1, visibleAt: x => (x >= 1 ? 8 : 1), options: { refineM: 0.5 } };
+        let clock = 0, yields = 0;
+        // Every probe costs 2 ms on this clock, so a 6 ms budget must yield between segments.
+        const timed = { ...job, visibleAt: (x, y) => { clock += 2; return job.visibleAt(x, y); } };
+        const results = await buildClearanceCurtainsSliced([timed], {
+            forEach, budgetMs: 6, now: () => clock, yieldTask: async () => { yields += 1; }
+        });
+
+        expect(yields).toBeGreaterThan(0);
+        expect(results[0]).toEqual(buildClearanceCurtainPositions(ring, job.supportAt, job.visibleAt, job.options));
+    });
+
+    it('abandons a sliced wall build that a newer rebuild has replaced', async () => {
+        let current = true;
+        const results = await buildClearanceCurtainsSliced(
+            [{ ringXY: [[0, 0], [4, 0], [8, 0]], supportAt: () => 1, visibleAt: () => 8 }],
+            { forEach, budgetMs: 1e-9, isCurrent: () => current, yieldTask: async () => { current = false; } }
+        );
+
+        expect(results).toBeNull();
     });
 
     it('fails closed instead of inventing a wall without formation support', () => {
