@@ -485,6 +485,41 @@ function _resolveProposalId(source) {
     return null;
 }
 
+// An applied record whose goal no longer has an apply path (a retired format, such as the
+// pre-2026-10-21 'reparcellization' layout a device still holds) cannot stand on the map. A replay
+// that met one counted it as a failure, which rolled back every plan touching its parcels and was
+// reported against the plan's own designs. It is unapplied instead (kept saved, so nothing is
+// lost) and named once by _announceRetiredRecords. Returns true when the record was retired.
+let _retiredRecordTitles = [];
+function _retireUnsupportedForReplay(record, options = {}) {
+    if (!record || !applyRoute || typeof applyRoute.classifyApplyRoute !== 'function') return false;
+    const { route, goalKey } = applyRoute.classifyApplyRoute(record);
+    // A named goal without a path is a retired format; a missing goal is a broken record, and a
+    // failed replay alone never turns a standing record off.
+    if (route !== 'unsupported' || !goalKey) return false;
+    setProposalApplied(record, false, { stamp: false });
+    _proposalStore(options)?._indexProposal?.(record);
+    const title = record.title || record.name || String(record.proposalId);
+    console.warn(`[${new Date().toISOString()}] [ProposalManager] unapplied ${record.proposalId} (${title}): its goal "${goalKey || 'missing'}" has no apply path any more`);
+    _retiredRecordTitles = _retiredRecordTitles.concat(title);
+    return true;
+}
+
+// Tell the person once which saved designs were unapplied as a retired format.
+function _announceRetiredRecords() {
+    const titles = _retiredRecordTitles;
+    _retiredRecordTitles = [];
+    if (!titles.length) return;
+    const root = typeof window !== 'undefined' ? window : globalThis;
+    if (typeof root.showEphemeralMessage !== 'function') return;
+    const fallback = '{{count}} design(s) saved on this device use a format this app no longer applies and were unapplied (still saved): {{titles}}';
+    const values = { count: titles.length, titles: titles.join('; ') };
+    const message = typeof getProposalI18nHelper === 'function'
+        ? getProposalI18nHelper()('proposals.retiredFormat.unapplied', fallback, values)
+        : fallback.replace('{{count}}', String(values.count)).replace('{{titles}}', values.titles);
+    root.showEphemeralMessage(message, 12000, 'warning');
+}
+
 function _getProposalRecord(proposalId, options = {}) {
     const store = _proposalStore(options);
     if (!proposalId || !store) return null;
@@ -1368,6 +1403,7 @@ const ProposalManager = {
                     }
                 } catch (_) { }
             }
+            _announceRetiredRecords();
             return summary;
         } finally {
             this._rebuildInProgress = false;
@@ -1768,6 +1804,9 @@ const ProposalManager = {
                 members: closure.records.length
             });
             const seedById = new Map();
+            // The records this edit applies or releases; the rest of the closure is ground that
+            // already stood, the only place a retired format is set aside instead of failing.
+            const editIds = new Set(seeds.map(seed => String(seed?.proposalId ?? '')).filter(Boolean));
             seeds.forEach(seed => {
                 const id = seed && seed.proposalId;
                 if (id === undefined || id === null || !String(id)) return;
@@ -1790,6 +1829,7 @@ const ProposalManager = {
                     ? applyRoute.normalizeGoalKey(live.goal)
                     : String(live.goal || '');
                 if (!appliedOf(live) || goalKey === 'road-track') return;
+                if (!editIds.has(id) && _retireUnsupportedForReplay(live, opts)) return;
                 replayStamps.set(id, {
                     hadAppliedAt: Object.prototype.hasOwnProperty.call(live, 'appliedAt'),
                     appliedAt: live.appliedAt,
@@ -1913,6 +1953,10 @@ const ProposalManager = {
                 _emitProposalProgress(opts.onProgress, { phase: 'save' });
                 try { _proposalStore(opts)?.save?.(); } catch (_) { }
             }
+            // Named once the edit stands; a rolled-back edit restores the records it unapplied.
+            if (typeof opts._parcelMutation?.afterCommit === 'function') {
+                opts._parcelMutation.afterCommit(() => _announceRetiredRecords());
+            } else _announceRetiredRecords();
             return {
                 ok: failed.length === 0,
                 applied: appliedCount,
@@ -2813,6 +2857,7 @@ const ProposalManager = {
                 }
                 continue;
             }
+            if (_retireUnsupportedForReplay(_getProposalRecord(String(proposal.proposalId), passOptions) || proposal, passOptions)) continue;
             replayDone += 1;
             _emitProposalProgress(passOptions.onProgress, {
                 phase: 'proposal-apply',

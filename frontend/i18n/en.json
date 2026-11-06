@@ -1091,6 +1091,9 @@
         "done": "Done"
     },
     "proposals": {
+        "retiredFormat": {
+            "unapplied": "{{count}} design(s) saved on this device use a format this app no longer applies and were unapplied (still saved): {{titles}}"
+        },
         "thumbnail": {
             "alt": "Design preview: {{label}}"
         },

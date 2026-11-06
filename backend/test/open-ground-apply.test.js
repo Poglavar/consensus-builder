@@ -828,6 +828,41 @@ describe('local shared-plan replacement', () => {
     });
 });
 
+describe('a retired format standing on the same ground', () => {
+    // A device can hold an applied record whose goal no longer has an apply path (the pre-21 Oct
+    // 'reparcellization' layouts). Replayed beside a plan on its parcel, it failed the whole plan,
+    // and the failure was reported against the plan's own designs.
+    const ground = { declared: ['HR-330264-1'], binding: { parcels: [{ parcelId: 'HR-330264-1' }], coverage: 'complete', source: 'server' } };
+
+    it('is unapplied, kept saved, and no longer blocks a plan applied on that parcel', async () => {
+        const retired = structureRecord('retired-layout', 'park', rect(2, 2, 8, 8), ground);
+        const incoming = structureRecord('new-square', 'square', rect(12, 2, 18, 8), ground);
+        const { manager, store, fabric } = await harness({ facts: [HR1], records: [retired, incoming] });
+        await expect(manager.applyProposal('retired-layout')).resolves.toBe(true);
+        store.getProposal('retired-layout').goal = 'reparcellization';
+
+        await expect(manager.applyProposalPlan(['new-square'])).resolves.toMatchObject({ ok: true });
+
+        expect(store.getProposal('new-square').applied).toBe(true);
+        expect(fabric.producedBy('new-square').length).toBeGreaterThan(0);
+        expect(store.getProposal('retired-layout')).toMatchObject({ applied: false, goal: 'reparcellization' });
+        expect(fabric.producedBy('retired-layout')).toHaveLength(0);
+    });
+
+    it('is unapplied by the boot replay instead of failing it on every load', async () => {
+        const retired = structureRecord('retired-boot', 'park', rect(2, 2, 8, 8), { ...ground, applied: true });
+        retired.goal = 'reparcellization';
+        const park = structureRecord('park-boot', 'park', rect(12, 2, 18, 8), { ...ground, applied: true });
+        const { manager, store } = await harness({ facts: [HR1], records: [retired, park] });
+
+        const result = await manager.rebuildAppliedFabric({ silent: true });
+
+        expect(result).toMatchObject({ ok: true, failed: [] });
+        expect(store.getProposal('retired-boot').applied).toBe(false);
+        expect(store.getProposal('park-boot').applied).toBe(true);
+    });
+});
+
 describe('boot replay of a plan on open ground only', () => {
     it('re-derives every applied record when there is no cadastre at all (explore)', async () => {
         const park = structureRecord('park-boot', 'park', rect(0, 0, 10, 10), { applied: true, binding: { parcels: [], coverage: 'none' } });

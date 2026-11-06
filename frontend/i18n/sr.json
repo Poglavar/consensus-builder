@@ -1092,6 +1092,9 @@
         "done": "Gotovo"
     },
     "proposals": {
+        "retiredFormat": {
+            "unapplied": "Dizajna sačuvanih na ovom uređaju koji koriste format koji aplikacija više ne primenjuje: {{count}}. Uklonjeni su sa mape (i dalje su sačuvani): {{titles}}"
+        },
         "thumbnail": {
             "alt": "Pregled dizajna: {{label}}"
         },

@@ -1091,6 +1091,9 @@
         "done": "Listo"
     },
     "proposals": {
+        "retiredFormat": {
+            "unapplied": "{{count}} diseño(s) guardados en este dispositivo usan un formato que la aplicación ya no aplica y se desaplicaron (siguen guardados): {{titles}}"
+        },
         "thumbnail": {
             "alt": "Vista previa del diseño: {{label}}"
         },

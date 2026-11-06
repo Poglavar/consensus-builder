@@ -4257,6 +4257,9 @@
         }
     },
     "proposals": {
+        "retiredFormat": {
+            "unapplied": "{{count}} من التصاميم المحفوظة على هذا الجهاز تستخدم تنسيقًا لم يعد التطبيق يطبّقه، فأُلغي تطبيقها (ما زالت محفوظة): {{titles}}"
+        },
         "roadDesignation": {
             "done": "تم",
             "closeLabel": "إغلاق",

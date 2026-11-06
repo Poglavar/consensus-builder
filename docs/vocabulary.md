@@ -395,6 +395,8 @@ Import retains a design definition independently of the currently viewed ground 
 
 Unapplying a design that later applied designs stand on (their footprints lie on its ground) names them first. The person unapplies them with it, in one change, or leaves them applied; a design left applied takes its ground again from what remains, as in any replay.
 
+A saved design whose goal the application no longer applies (a retired format) cannot stand. A replay that meets one applied, on load or beside a plan being applied, unapplies it, keeps it saved and names it once; it never fails the replay. A design being applied in that same change still fails it.
+
 ### Replay
 
 The reconstruction of a working composition by applying designs in their defined formation and dependency order. Display order, agreement membership order and construction windows do not themselves determine replay order.

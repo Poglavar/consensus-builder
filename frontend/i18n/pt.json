@@ -4117,6 +4117,9 @@
         }
     },
     "proposals": {
+        "retiredFormat": {
+            "unapplied": "{{count}} projeto(s) guardados neste dispositivo usam um formato que a aplicação já não aplica e foram removidos do mapa (continuam guardados): {{titles}}"
+        },
         "roadDesignation": {
             "done": "Concluído",
             "closeLabel": "Fechar",

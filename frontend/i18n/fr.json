@@ -4117,6 +4117,9 @@
         }
     },
     "proposals": {
+        "retiredFormat": {
+            "unapplied": "{{count}} projet(s) enregistré(s) sur cet appareil utilisent un format que l’application n’applique plus et ont été retirés de la carte (toujours enregistrés) : {{titles}}"
+        },
         "roadDesignation": {
             "done": "Terminé",
             "closeLabel": "Fermer",
