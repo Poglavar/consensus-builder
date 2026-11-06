@@ -80,15 +80,53 @@
     // Built volume: each existing building's footprint ∩ parcel × its z-extent height.
     // Proposed volume: each proposed feature ∩ parcel × its estimated height.
     // opts: { floorHeightM, turf, footprintOf(bld)->polygon|null, heightOf(feature)->metres }.
+    // The lng/lat box of every coordinate pair under `value` (a geometry, faces, any nesting), or
+    // null. Cached per geometry object: the same buildings are measured against parcel after parcel,
+    // and an edit that moves one replaces its geometry.
+    const roughBoundsCache = new WeakMap();
+    function roughBounds(value) {
+        if (!value || typeof value !== 'object') return null;
+        if (roughBoundsCache.has(value)) return roughBoundsCache.get(value);
+        const box = [Infinity, Infinity, -Infinity, -Infinity];
+        const walk = function (node) {
+            if (!Array.isArray(node)) {
+                if (node && typeof node === 'object') {
+                    if (node.geometry) walk(node.geometry);
+                    else if (node.coordinates) walk(node.coordinates);
+                    else if (node.faces) walk(node.faces);
+                    else if (node.geometries) walk(node.geometries);
+                }
+                return;
+            }
+            if (typeof node[0] === 'number' && typeof node[1] === 'number') {
+                if (node[0] < box[0]) box[0] = node[0]; if (node[0] > box[2]) box[2] = node[0];
+                if (node[1] < box[1]) box[1] = node[1]; if (node[1] > box[3]) box[3] = node[1];
+                return;
+            }
+            for (let i = 0; i < node.length; i++) walk(node[i]);
+        };
+        walk(value);
+        const bounds = box[0] <= box[2] && box[1] <= box[3] ? box : null;
+        roughBoundsCache.set(value, bounds);
+        return bounds;
+    }
+    // Boxes that do not touch cannot intersect; an unknown box is never ruled out.
+    function mayOverlap(a, b) {
+        return !a || !b || !(a[2] < b[0] || b[2] < a[0] || a[3] < b[1] || b[3] < a[1]);
+    }
+
     function computeParcelMetrics(parcelFeature, builtBuildings, proposedFeatures, opts = {}) {
         const { floorHeightM, turf, footprintOf, heightOf } = opts;
         if (!parcelFeature || !turf) return null;
+        // Most listed buildings are nowhere near the parcel: skip their footprint and clip.
+        const parcelBox = roughBounds(parcelFeature.geometry || parcelFeature);
 
         let builtVolume = 0;
         const builtList = Array.isArray(builtBuildings) ? builtBuildings : [];
         for (const bld of builtList) {
             const h = (Number.isFinite(bld.z_max) && Number.isFinite(bld.z_min)) ? (bld.z_max - bld.z_min) : 0;
             if (!(h > 0)) continue;
+            if (!mayOverlap(parcelBox, roughBounds(bld.faces || bld.geometry || bld))) continue;
             const fp = footprintOf ? footprintOf(bld) : null;
             if (!fp) continue;
             let inter = null;
@@ -109,6 +147,7 @@
             if (!feat || !feat.geometry) continue;
             const h = heightOf ? heightOf(feat) : 0;
             if (!(h > 0)) continue;
+            if (!mayOverlap(parcelBox, roughBounds(feat.geometry))) continue;
             let inter = null;
             try { inter = turf.intersect(feat, parcelFeature); } catch (error) {
                 // A panel figure: the proposed volume is left out of it, and the failure is reported.

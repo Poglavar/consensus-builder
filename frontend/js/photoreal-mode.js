@@ -168,6 +168,9 @@
     let tileSurfaceRaycaster = null;
     let tileSurfaceSampleCache = new Map();
     let tileSurfaceSamplingStats = null;
+    // Per tile mesh, its triangles binned for straight-down queries (photoreal-vertical-index.js),
+    // kept while the mesh, its geometry and its world matrix stay the same.
+    let tileVerticalIndexes = new WeakMap();
 
     const containerEl = () => document.getElementById('three-container');
     const toggleBtn = () => document.getElementById('mode-realistic-toggle');
@@ -460,7 +463,7 @@
     // edge trees stay whole and may lean over proposals like real trees do; (2) leave the tile
     // materials DOUBLE-SIDED (as Google ships them), so even where a cut does expose the shell
     // interior, a sightline hits mirrored terrain texture — never the background.
-    const CARVE_FLOOR_Z = -0.3;      // fragments above this, inside a footprint, are discarded
+    const CARVE_FLOOR_Z = -0.3;      // a park's ground height where the terrain grid has no sample
     const CARVE_CORE_BUFFER_M = 1.2; // dilation against mask-texel combs along cut facades
     // Road coverage is rasterised from the exact station quilt. A narrow solid collar owns the
     // complete nearest-cell uncertainty outside that quilt, so Google is cut right to the sidewalk
@@ -484,6 +487,9 @@
     // in photo mode; the flat coloured cap stands in for it.)
     const CARVE_APRON_WATER_COLOR = 0x3a8ad3;  // lake water (matches the 3D water material family)
     const CARVE_APRON_PARK_COLOR = 0x6f8f4f;   // mown grass
+    // The wall that closes a cut through a Google tree crown stands where half a tree was: in the
+    // canopy's shaded tone it reads as foliage in shadow, not as a grey slab in the garden.
+    const CARVE_CANOPY_SEAL_COLOR = 0x34402f;
     const CARVE_APRON_SQUARE_COLOR = 0xb8b0a2; // light concrete paving
     const CURTAIN_CONTENT_TOP_Z = 0.06;    // reach up to the park/plaza surface level
     const CURTAIN_TOP_MARGIN_M = 0.1;      // overlap the rim / content — no hairline seam
@@ -544,6 +550,7 @@
     let apronMaterialWater = null;   // lake cap
     let apronMaterialPark = null;    // park cap
     let apronMaterialSquare = null;  // square/plaza cap
+    let canopySealMaterial = null;   // structure clearance walls (CARVE_CANOPY_SEAL_COLOR)
     let roadFoundationMaterial = null;
     let roadCollarMaterial = null;
     let maskMaterialPark = null; // green mask = keep-vegetation (park) regions
@@ -836,11 +843,20 @@
         // walls, and either can face the camera from either side depending on ring winding — a
         // single-sided earth surface would be back-face culled for ~half of all footprints and the
         // camera would look straight through the seal into the hole. A solid earth wall has no back.
-        apronMaterial = new THREE.MeshBasicMaterial({ color: CARVE_APRON_COLOR, side: THREE.DoubleSide });
+        // The caps and walls replace the city's ground, so they take its depth push (three-ground.js
+        // OFFSET.ground): behind every building face and every design surface. Unpushed, a cap 2 cm
+        // under a wall's foot beat the pushed-back face at a slant and bit a band off its bottom,
+        // and it beat the plot's grass 8 cm above it in the same way.
+        const groundPush = { polygonOffset: true,
+            polygonOffsetFactor: window.__threeGround?.OFFSET?.ground ?? 8,
+            polygonOffsetUnits: window.__threeGround?.OFFSET?.ground ?? 8 };
+        apronMaterial = new THREE.MeshBasicMaterial({ color: CARVE_APRON_COLOR, side: THREE.DoubleSide, ...groundPush });
         // Per-structure cap surfaces (top cap only — curtain walls stay earth-coloured).
-        apronMaterialWater = new THREE.MeshBasicMaterial({ color: CARVE_APRON_WATER_COLOR, side: THREE.DoubleSide });
-        apronMaterialPark = new THREE.MeshBasicMaterial({ color: CARVE_APRON_PARK_COLOR, side: THREE.DoubleSide });
-        apronMaterialSquare = new THREE.MeshBasicMaterial({ color: CARVE_APRON_SQUARE_COLOR, side: THREE.DoubleSide });
+        apronMaterialWater = new THREE.MeshBasicMaterial({ color: CARVE_APRON_WATER_COLOR, side: THREE.DoubleSide, ...groundPush });
+        apronMaterialPark = new THREE.MeshBasicMaterial({ color: CARVE_APRON_PARK_COLOR, side: THREE.DoubleSide, ...groundPush });
+        apronMaterialSquare = new THREE.MeshBasicMaterial({ color: CARVE_APRON_SQUARE_COLOR, side: THREE.DoubleSide, ...groundPush });
+        // One-sided on purpose (ringFacingCut): it faces the cut, and from outside its back is culled.
+        canopySealMaterial = new THREE.MeshBasicMaterial({ color: CARVE_CANOPY_SEAL_COLOR, side: THREE.FrontSide, ...groundPush });
         roadFoundationMaterial = new THREE.MeshLambertMaterial({
             color: ROAD_FOUNDATION_COLOR,
             side: THREE.DoubleSide,
@@ -1444,12 +1460,36 @@
             if (internals && internals.scene) internals.scene.updateMatrixWorld(true);
             const visible = [];
             const loaded = [];
+            const corner = new THREE.Vector3();
             tiles.group.traverse(function (object) {
                 if (!object.isMesh) return;
                 const visibility = googleSourceHitVisibility({ object: object });
                 if (visibility === null) return;
-                loaded.push(object);
-                if (visibility) visible.push(object);
+                // The mesh's world XY box, from its geometry box: a probe outside every box
+                // cannot hit anything, which is most probes of a plan larger than the loaded view.
+                const geometry = object.geometry;
+                if (geometry && !geometry.boundingBox && typeof geometry.computeBoundingBox === 'function') {
+                    geometry.computeBoundingBox();
+                }
+                const box = geometry && geometry.boundingBox;
+                let minX = -Infinity, minY = -Infinity, maxX = Infinity, maxY = Infinity;
+                if (box && !box.isEmpty()) {
+                    minX = Infinity; minY = Infinity; maxX = -Infinity; maxY = -Infinity;
+                    for (let i = 0; i < 8; i++) {
+                        corner.set(i & 1 ? box.max.x : box.min.x, i & 2 ? box.max.y : box.min.y,
+                            i & 4 ? box.max.z : box.min.z).applyMatrix4(object.matrixWorld);
+                        minX = Math.min(minX, corner.x); maxX = Math.max(maxX, corner.x);
+                        minY = Math.min(minY, corner.y); maxY = Math.max(maxY, corner.y);
+                    }
+                }
+                const record = {
+                    mesh: object, minX: minX, minY: minY, maxX: maxX, maxY: maxY,
+                    matrixKey: object.matrixWorld.elements.join(','),
+                    // Instanced and batched content draws one geometry many times: raycast those.
+                    indexable: !object.isInstancedMesh && !object.isBatchedMesh
+                };
+                loaded.push(record);
+                if (visibility) visible.push(record);
             });
             tileSurfaceMeshes = { visible: visible, loaded: loaded };
             tileSurfaceSamplingStats.visibleMeshes = visible.length;
@@ -1486,18 +1526,39 @@
                     return hit && hit.point ? hit.point.z : NaN;
                 }), FAR_EARTH_LIMIT_M);
             };
+            let coveredUnindexed = false;
+            // Every surface above and below the point on these meshes, highest (nearest) first,
+            // within the same 4000 m down to -5000 m span the raycaster covers.
+            const heightsOn = function (records) {
+                const heights = [];
+                const raycast = [];
+                records.forEach(function (record) {
+                    if (x < record.minX || x > record.maxX || y < record.minY || y > record.maxY) return;
+                    const grid = record.indexable ? tileVerticalGrid(record) : null;
+                    if (grid) window.__photorealVerticalIndex.verticalHeightsAt(grid, x, y, heights);
+                    else { raycast.push(record.mesh); coveredUnindexed = true; }
+                });
+                if (raycast.length) {
+                    tileSurfaceRaycaster.intersectObjects(raycast, false).forEach(function (hit) {
+                        if (hit && hit.point) heights.push(hit.point.z);
+                    });
+                }
+                return heights.filter(function (z) { return z <= 4000 && z >= -5000; })
+                    .sort(function (a, b) { return b - a; });
+            };
             let source = 'visible';
-            let result = tileSurfaceMeshes.visible.length
-                ? plausibleHeight(tileSurfaceRaycaster.intersectObjects(tileSurfaceMeshes.visible, false))
-                : null;
+            let result = window.__photorealGround.selectTopSurfaceHeight(
+                heightsOn(tileSurfaceMeshes.visible), FAR_EARTH_LIMIT_M);
             if (result === null && tileSurfaceMeshes.loaded.length) {
                 source = 'loaded';
-                result = plausibleHeight(tileSurfaceRaycaster.intersectObjects(tileSurfaceMeshes.loaded, false));
+                result = window.__photorealGround.selectTopSurfaceHeight(
+                    heightsOn(tileSurfaceMeshes.loaded), FAR_EARTH_LIMIT_M);
             }
             // Some 3d-tiles-renderer content types only participate correctly when raycast through
             // their owning hierarchy. Keep that path as a cached compatibility fallback, with the
-            // same visible-LOD preference and generated-cap exclusion.
-            if (result === null) {
+            // same visible-LOD preference and generated-cap exclusion, where unindexed content covers
+            // the point: an indexed mesh already gave every triangle the walk (~1 ms) would find.
+            if (result === null && coveredUnindexed) {
                 const records = tileSurfaceRaycaster.intersectObject(tiles.group, true).map(function (hit) {
                     return { hit: hit, visible: googleSourceHitVisibility(hit) };
                 }).filter(function (record) { return record.visible !== null; });
@@ -1520,6 +1581,27 @@
             return result;
         } catch (_) { }
         return null;
+    }
+
+    // The vertical index of one sampled tile mesh, built on first use and kept while the mesh's
+    // geometry and world matrix are unchanged (the seat shift moves the whole mesh).
+    function tileVerticalGrid(record) {
+        const api = window.__photorealVerticalIndex;
+        const mesh = record.mesh;
+        const geometry = mesh.geometry;
+        const position = geometry && geometry.attributes && geometry.attributes.position;
+        if (!api || !position || !window.THREE) return null;
+        const cached = tileVerticalIndexes.get(mesh);
+        if (cached && cached.geometry === geometry && cached.matrixKey === record.matrixKey) return cached.grid;
+        const world = new Float32Array(position.count * 3);
+        const v = new window.THREE.Vector3();
+        for (let i = 0; i < position.count; i++) {
+            v.fromBufferAttribute(position, i).applyMatrix4(mesh.matrixWorld);
+            world[i * 3] = v.x; world[i * 3 + 1] = v.y; world[i * 3 + 2] = v.z;
+        }
+        const grid = api.buildVerticalIndex(world, geometry.index ? geometry.index.array : null);
+        tileVerticalIndexes.set(mesh, { geometry: geometry, matrixKey: record.matrixKey, grid: grid });
+        return grid;
     }
 
     function roadVisibleSurfaceZAt(x, y, context) {
@@ -1678,7 +1760,10 @@
     // A terrain-conforming earth wall around one ring: at each vertex the wall spans from the
     // content down/up to the local tile height, so it meets the Google rim whether the ground sits
     // above the plan (uphill: wall rises to it) or below it (downhill: wall drops to it).
-    function addCurtainRibbon(ringXY, group, supportAt, visibleSurfaceAt) {
+    // `insideOtherCut(x, y)` marks ring points that lie in a neighbouring cut (a building's ring in
+    // its plot): there is no Google rim there to meet, and a strip 1 cm over the plot's grass only
+    // drew a grey line around the building that flickered through the grass.
+    function addCurtainRibbon(ringXY, group, supportAt, visibleSurfaceAt, insideOtherCut) {
         const THREE = window.THREE;
         const n = ringXY.length;
         if (n < 2) return;
@@ -1701,8 +1786,8 @@
         for (let i = 0; i < n; i++) {
             const x = ringXY[i][0], y = ringXY[i][1];
             const tb = topBot(x, y);
-            const cur = { x: x, y: y, top: tb[0], bot: tb[1] };
-            if (prev) {
+            const cur = { x: x, y: y, top: tb[0], bot: tb[1], inside: !!(insideOtherCut && insideOtherCut(x, y)) };
+            if (prev && !(prev.inside && cur.inside)) {
                 pos.push(prev.x, prev.y, prev.top, prev.x, prev.y, prev.bot, cur.x, cur.y, cur.bot);
                 pos.push(prev.x, prev.y, prev.top, cur.x, cur.y, cur.bot, cur.x, cur.y, cur.top);
             }
@@ -1761,7 +1846,8 @@
             const geometry = new THREE.BufferGeometry();
             geometry.setAttribute('position', new THREE.Float32BufferAttribute(merged.positions, 3));
             geometry.computeBoundingSphere();
-            const mesh = new THREE.Mesh(geometry, apronMaterial);
+            const mesh = new THREE.Mesh(geometry,
+                name === 'PhotorealStructureClearanceCurtain' && canopySealMaterial ? canopySealMaterial : apronMaterial);
             mesh.name = name;
             mesh.frustumCulled = false;
             group.add(mesh);
@@ -1973,7 +2059,14 @@
                     mask.renderOrder = road ? maskOrder().roadEntry
                         : (keepVeg ? maskOrder().keepVeg : maskOrder().full);
                     maskShapesGroup.add(mask);
-                    if (!entry.skipCap) {
+                    // A cut lying wholly inside another (a building in its plot) needs no cap of its
+                    // own: the plot's cap covers it, and two caps at one height fought where their
+                    // colours differed, around the foot of the building.
+                    const insideOtherCut = function (x, y) { return !!(cutCoverage && cutCoverage(x, y, entryIndex)); };
+                    const capCovered = sr.rings.length > 0 && sr.rings[0].every(function (point) {
+                        return insideOtherCut(point[0], point[1]);
+                    });
+                    if (!entry.skipCap && !capCovered) {
                         // The cap IS the placed structure surface seen from above: colour it by kind
                         // (lake→water, square→paving, park→grass) so a cleared lake isn't bare earth.
                         const capMaterial = entry.structureKind === 'lake' ? apronMaterialWater
@@ -1990,23 +2083,24 @@
                     // cut deliberately shrunk 0.5 m inside it — has no void to seal, and the wall
                     // then stands up out of the pavement in apron green.
                     if (!entry.skipCurtain) {
-                        sr.rings.forEach(function (ring) {
+                        sr.rings.forEach(function (ring, ringIndex) {
                             const sampledRing = road && window.__photorealSeam
                                 && typeof window.__photorealSeam.densifyClosedRing === 'function'
                                 ? window.__photorealSeam.densifyClosedRing(
                                     ring, ROAD_BOUNDARY_SAMPLE_SPACING_M * mercatorK)
                                 : ring;
-                            addCurtainRibbon(sampledRing, apronGroup, supportAt, road ? sampleTileSurfaceZ : null);
+                            addCurtainRibbon(sampledRing, apronGroup, supportAt, road ? sampleTileSurfaceZ : null, insideOtherCut);
                             // The ribbon stops at the terrain. A cut through a Google tree crown or
                             // roof that straddles the ring opens its hollow shell, and the source has
                             // no ground under a crown: an oblique ray enters through the cut, leaves
                             // the shell beyond the ring and shows sky beside the park or building.
                             // Close that clearance up to the source surface on the ring, as roads do.
-                            const probedRing = window.__photorealSeam
-                                && typeof window.__photorealSeam.densifyClosedRing === 'function'
-                                ? window.__photorealSeam.densifyClosedRing(
-                                    ring, ROAD_BOUNDARY_SAMPLE_SPACING_M * mercatorK)
-                                : ring;
+                            const seam = window.__photorealSeam;
+                            const facingRing = seam && typeof seam.ringFacingCut === 'function'
+                                ? seam.ringFacingCut(ring, ringIndex > 0) : ring;
+                            const probedRing = seam && typeof seam.densifyClosedRing === 'function'
+                                ? seam.densifyClosedRing(facingRing, ROAD_BOUNDARY_SAMPLE_SPACING_M * mercatorK)
+                                : facingRing;
                             const retainedSurfaceAt = function (x, y) {
                                 return cutCoverage && cutCoverage(x, y, entryIndex) ? null : sampleTileSurfaceZ(x, y);
                             };
@@ -2197,9 +2291,11 @@
                     + '            float roadFloorEncoded = clamp(cmask.a / max(cmask.b, 0.0001), 0.0, 1.0);\n'
                     + '            float roadFloorZ = uRoadFloorMin + roadFloorEncoded * uRoadFloorRange + uRoadCutOffset;\n'
                     + '            if (vCorridorWorld.z > roadFloorZ) discard;\n'
-                    // RED = other full cuts: discard everything above the shared floor.
+                    // RED = other full cuts: discard every fragment. Our cap covers the whole cut, so
+                    // ground kept under it (once: below the shared floor) could only show through it,
+                    // which it did wherever the cap's depth push let a dip 0.3 m down win at a slant.
                     + '        } else if (cmask.r > 0.5) {\n'
-                    + '            if (vCorridorWorld.z > uFloorZ) discard;\n'
+                    + '            discard;\n'
                     // GREEN = keep-vegetation (parks): discard ONLY the tile ground layer — below the
                     // local ground height + band — so hedges and trees stand instead of being sliced.
                     + '        } else if (cmask.g > 0.5) {\n'
@@ -2324,7 +2420,7 @@
         disposeMaskShapes();
         for (const material of new Set([maskMaterial, maskMaterialRoad, maskMaterialPark,
             maskMaterialProtect, apronMaterial, apronMaterialWater, apronMaterialPark,
-            apronMaterialSquare, roadFoundationMaterial, roadCollarMaterial])) material?.dispose();
+            apronMaterialSquare, canopySealMaterial, roadFoundationMaterial, roadCollarMaterial])) material?.dispose();
         if (maskRT) { try { maskRT.dispose(); } catch (_) { } }
         maskRT = null;
         maskScene = null;
@@ -2337,6 +2433,7 @@
         apronMaterialWater = null;
         apronMaterialPark = null;
         apronMaterialSquare = null;
+        canopySealMaterial = null;
         roadFoundationMaterial = null;
         roadCollarMaterial = null;
         terrainGrid = null;
@@ -2344,6 +2441,7 @@
         tileSurfaceRaycaster = null;
         tileSurfaceSampleCache = new Map();
         tileSurfaceSamplingStats = null;
+        tileVerticalIndexes = new WeakMap();
         try { delete document.body.dataset.photorealSampling; } catch (_) { }
         if (terrainRefreshTimer) clearTimeout(terrainRefreshTimer);
         terrainRefreshTimer = null;

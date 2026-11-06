@@ -63,6 +63,17 @@ describe('computeParcelMetrics', () => {
         expect(m.proposedFloorArea).toBeCloseTo(m.proposedVolume / 3.5, 6);
     });
 
+    it('clips only buildings whose box touches the parcel, with the same totals', () => {
+        const near = meshBuilding(15.9005, 45.8005, 0, 10);
+        const far = Array.from({ length: 50 }, (_, i) => meshBuilding(15.95 + i * 0.001, 45.85, 0, 10));
+        let footprints = 0;
+        const counting = { ...opts, footprintOf: (bld) => { footprints += 1; return opts.footprintOf(bld); } };
+        const m = computeParcelMetrics(parcel, [near, ...far], [], counting);
+
+        expect(footprints).toBe(1);
+        expect(m.builtVolume).toBeCloseTo(computeParcelMetrics(parcel, [near], [], opts).builtVolume, 6);
+    });
+
     it('returns null without a parcel or turf', () => {
         expect(computeParcelMetrics(null, [], [], opts)).toBeNull();
         expect(computeParcelMetrics(parcel, [], [], { ...opts, turf: null })).toBeNull();

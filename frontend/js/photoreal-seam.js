@@ -221,6 +221,22 @@
         return { positions, segmentCount };
     }
 
+    // A ring ordered so the wall buildClearanceCurtainPositions builds along it faces the cut it
+    // bounds (the polygon interior: inside an outer ring, outside a hole). That wall seals the
+    // view out of the cut; from outside, its back is culled instead of standing as a slab beside
+    // what is left of a tree. The builder's front faces lie to the right of travel.
+    function ringFacingCut(ringXY, isHole) {
+        if (!Array.isArray(ringXY) || ringXY.length < 3) return ringXY;
+        let twiceArea = 0;
+        for (let i = 0; i < ringXY.length; i++) {
+            const a = ringXY[i], b = ringXY[(i + 1) % ringXY.length];
+            twiceArea += a[0] * b[1] - b[0] * a[1];
+        }
+        // Counter-clockwise puts an outer ring's interior on the left; a hole's cut side is outside it.
+        const cutOnLeft = isHole ? twiceArea < 0 : twiceArea > 0;
+        return cutOnLeft ? ringXY.slice().reverse() : ringXY;
+    }
+
     // Build many clearance curtains as cooperative work: each ring segment (with its crown
     // refinement) is one item, so a caller-supplied `forEach` (js/three-scene-work.js) can yield
     // between items and a newer rebuild can cancel through `isCurrent`. Resolves to one
@@ -482,6 +498,7 @@
         buildSeamFasciaQuads,
         buildClearanceCurtainPositions,
         buildClearanceCurtainsSliced,
+        ringFacingCut,
         triangleDoubleArea,
         densifyClosedRing,
         buildSegmentGrid,

@@ -25,7 +25,7 @@
             'js/buildout-parts.js', 'js/three-buildout.js',
             'js/three-mode.js?v=20261106-floor-plan-incremental'
         ],
-        photo: ['js/photoreal-frame.js', 'js/photoreal-ground.js', 'js/photoreal-seam.js',
+        photo: ['js/photoreal-frame.js', 'js/photoreal-ground.js', 'js/photoreal-seam.js', 'js/photoreal-vertical-index.js',
             'js/photoreal-protect.js', 'js/photoreal-attribution.js', 'js/photoreal-parcels.js', 'js/photoreal-mode.js'],
         ai: ['js/ai-scene-frustum.js', 'js/ai-scene.js']
     };

@@ -11,6 +11,7 @@ const {
     buildSeamFasciaQuads,
     buildClearanceCurtainPositions,
     buildClearanceCurtainsSliced,
+    ringFacingCut,
     triangleDoubleArea,
     densifyClosedRing,
     buildSegmentGrid,
@@ -197,6 +198,33 @@ describe('photoreal road clearance curtain', () => {
         );
 
         expect(results).toBeNull();
+    });
+
+    it('orders a ring so its wall faces the cut, for an outer ring and a hole, either winding', () => {
+        // Front faces follow three's counter-clockwise rule: normal = (v1 - v0) x (v2 - v0). Each
+        // segment emits two triangles (18 numbers); the first one's normal is compared with the
+        // direction from that segment's midpoint to the square's centre.
+        const towardsCentre = positions => {
+            const out = [];
+            for (let q = 0; q < positions.length; q += 18) {
+                const v = i => positions.slice(q + i * 3, q + i * 3 + 3);
+                const [a, b, c] = [v(0), v(1), v(2)];
+                const u = [b[0] - a[0], b[1] - a[1], b[2] - a[2]], w = [c[0] - a[0], c[1] - a[1], c[2] - a[2]];
+                const nx = u[1] * w[2] - u[2] * w[1], ny = u[2] * w[0] - u[0] * w[2];
+                const mx = (a[0] + c[0]) / 2, my = (a[1] + c[1]) / 2;
+                out.push(nx * (5 - mx) + ny * (5 - my) > 0);
+            }
+            return out;
+        };
+        const ccw = [[0, 0], [10, 0], [10, 10], [0, 10], [0, 0]];
+        const cw = ccw.slice().reverse();
+        const wall = ring => buildClearanceCurtainPositions(ring, () => 0, () => 8).positions;
+        for (const ring of [ccw, cw]) {
+            // Outer ring: the cut is inside it, so every wall faces the centre.
+            expect(towardsCentre(wall(ringFacingCut(ring, false)))).toEqual([true, true, true, true]);
+            // Hole: the cut is outside it, so every wall faces away from the centre.
+            expect(towardsCentre(wall(ringFacingCut(ring, true)))).toEqual([false, false, false, false]);
+        }
     });
 
     it('fails closed instead of inventing a wall without formation support', () => {
