@@ -27,6 +27,26 @@
         });
     }
 
+    // The context trees a design's ground leaves standing: none inside `clear` (the proposed buildings,
+    // which stand where those trees were), and, when `within` is given, only those inside it. Photo view
+    // passes the ground its mesh was cut away from (parks, squares, plot surroundings): there the real
+    // trees are gone with the mesh, and everywhere else the mesh still shows them. Geometries are
+    // GeoJSON Polygon/MultiPolygon in [lng, lat]; trees are [lng, lat] points.
+    function treesOnDesignGround(trees, { clear = [], within = null, turf }) {
+        const index = geometries => (geometries || []).filter(geometry => geometry
+            && ['Polygon', 'MultiPolygon'].includes(geometry.type)).map(geometry => {
+            const feature = { type: 'Feature', properties: {}, geometry };
+            return { feature, bbox: turf.bbox(feature) };
+        });
+        const inside = (point, list) => list.some(({ feature, bbox: [west, south, east, north] }) =>
+            point[0] >= west && point[0] <= east && point[1] >= south && point[1] <= north
+            && turf.booleanPointInPolygon(point, feature));
+        const cleared = index(clear);
+        const kept = within ? index(within) : null;
+        return (trees || []).filter(point => Array.isArray(point) && Number.isFinite(point[0]) && Number.isFinite(point[1])
+            && !inside(point, cleared) && (!kept || inside(point, kept)));
+    }
+
     function sidewalkMaterial(THREE, ground, metresPerUnit) {
         return ground.paveTexture(groundApi().designSurface(new THREE.MeshLambertMaterial({ color: 0xcdccc8 }), 2), metresPerUnit);
     }
@@ -120,5 +140,5 @@
         return features;
     }
 
-    return { contextTreesOutsideCorridors, sidewalkMaterial, fencePositions, buildFence, buildVacantPlots, standingBuildingFootprints };
+    return { contextTreesOutsideCorridors, treesOnDesignGround, sidewalkMaterial, fencePositions, buildFence, buildVacantPlots, standingBuildingFootprints };
 });

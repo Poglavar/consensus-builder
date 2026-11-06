@@ -6657,10 +6657,17 @@
 
     function buildTreesGroup() {
         if (!treesGroup || !Array.isArray(nearbyTrees) || nearbyTrees.length === 0 || !origin3857) return;
-        const visibleTrees = window.__threeSiteGround.contextTreesOutsideCorridors(nearbyTrees,
+        const outsideCorridors = window.__threeSiteGround.contextTreesOutsideCorridors(nearbyTrees,
             displayedProposals(), {
                 isAppliedCorridor: isAppliedCorridorProposal, featureSets: collectProposalFeatureSets, turf
             });
+        // A proposed building stands where its trees were. Photo view stands context trees only on
+        // the ground its mesh was cut from: elsewhere the mesh shows the real trees.
+        const visibleTrees = window.__threeSiteGround.treesOnDesignGround(outsideCorridors, {
+            clear: (Array.isArray(window.proposedBuildings) ? window.proposedBuildings : []).map(feature => feature?.geometry),
+            within: realisticLayerActive ? (window.PhotorealMode?.carvedGround?.() || []) : null,
+            turf
+        });
         if (!visibleTrees.length) return;
         ensureTreeAssets();
         const api = treeSpeciesApi();
@@ -6904,7 +6911,7 @@
     function setTreesEnabled(on) {
         treesEnabled = !!on;
         try { PersistentStorage.setItem(TREES_STORAGE_KEY, treesEnabled ? '1' : '0'); } catch (_) { }
-        if (treesGroup) treesGroup.visible = treesEnabled && !realisticLayerActive;
+        if (treesGroup) treesGroup.visible = treesEnabled;
         if (treesEnabled) {
             ensureNearbyTrees();
             rebuildTreesOnly();
@@ -10168,7 +10175,7 @@
             setFacadeAppearance(PersistentStorage.getItem(FACADE_PREF_KEY) === '1',
                 PersistentStorage.getItem(FACADE_STYLE_KEY), false);
         } catch (_) { }
-        treesGroup.visible = treesEnabled && !realisticLayerActive;
+        treesGroup.visible = treesEnabled;
         furnitureGroup.visible = !realisticLayerActive;
         waterGroup.visible = waterEnabled && !realisticLayerActive;
         greenGroup.visible = greenEnabled && !realisticLayerActive;
@@ -11808,13 +11815,14 @@
 
     // Expose globals for debugging/manual control
     // Realistic layer policy: while the photoreal mesh is the built world, the abstract built
-    // representations (parcel/road slabs, existing buildings, existing rail, OSM trees) hide —
-    // proposals, corridor cross-sections and planned structures stay, standing on the mesh.
+    // representations (parcel/road slabs, existing buildings, existing rail) hide — proposals,
+    // corridor cross-sections and planned structures stay, standing on the mesh. Context trees stay
+    // only on the ground the mesh was cut from (buildTreesGroup), as model view shows them there.
     window.setRealisticLayerActive = function (on, options = {}) {
         realisticLayerActive = !!on;
         rebuildPlanningSources3D();
         if (flatGroup) flatGroup.visible = !realisticLayerActive;
-        if (treesGroup) treesGroup.visible = treesEnabled && !realisticLayerActive;
+        rebuildTreesOnly(); // which context trees stand depends on the view (buildTreesGroup)
         if (furnitureGroup) furnitureGroup.visible = !realisticLayerActive;
         if (waterGroup) waterGroup.visible = waterEnabled && !realisticLayerActive;
         if (greenGroup) greenGroup.visible = greenEnabled && !realisticLayerActive;

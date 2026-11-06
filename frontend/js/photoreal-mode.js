@@ -2944,6 +2944,15 @@
         getViewer: function () { return tiles; },
         pickSurface: pickPhotoSurface,
         sourceParcelsAt: function (point) { return parcelOverlay?.at(point.x, point.y) || []; },
+        // The ground the mesh is cut from that a design covers with its own surface (parks, squares,
+        // plot surroundings), as GeoJSON geometries. The real trees there are gone with the mesh, so
+        // three-mode stands its context trees there, as model view does.
+        carvedGround: function () {
+            return collectCarveGeometries().filter(function (entry) {
+                return entry.kind === 'covered' && entry.mode === 'full'
+                    && (entry.structureKind === 'park' || entry.structureKind === 'square');
+            }).map(function (entry) { return entry.geometry; });
+        },
         selectionHeightAt: function (x, y, kind, id) {
             const authored = kind === 'designs' ? window.corridorTerrainHeightAtForProposal?.(id, x, y) : null;
             if (typeof authored === 'number' && Number.isFinite(authored)) return authored;

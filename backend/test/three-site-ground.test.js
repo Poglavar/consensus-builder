@@ -1,8 +1,28 @@
 import { createRequire } from 'node:module';
 import { describe, expect, it, vi } from 'vitest';
 const require = createRequire(import.meta.url);
-const { contextTreesOutsideCorridors, sidewalkMaterial, fencePositions } = require('../../frontend/js/three-site-ground.js');
+const { contextTreesOutsideCorridors, treesOnDesignGround, sidewalkMaterial, fencePositions } = require('../../frontend/js/three-site-ground.js');
 const turf = require('@turf/turf');
+
+describe('context trees on a design\'s ground', () => {
+    const box = (west, south, east, north) => turf.bboxPolygon([west, south, east, north]).geometry;
+    const trees = [[0.5, 0.5], [2.5, 2.5], [5.5, 5.5], [8, 8]];
+
+    it('clears the trees standing where a proposed building now stands', () => {
+        expect(treesOnDesignGround(trees, { clear: [box(2, 2, 3, 3)], turf })).toEqual([trees[0], trees[2], trees[3]]);
+    });
+
+    it('keeps only the trees on the given ground in photo view, still clearing the buildings on it', () => {
+        const park = box(0, 0, 6, 6);
+        expect(treesOnDesignGround(trees, { clear: [box(2, 2, 3, 3)], within: [park], turf })).toEqual([trees[0], trees[2]]);
+        // No cut ground at all: photo view stands no context tree (the mesh shows the real ones).
+        expect(treesOnDesignGround(trees, { within: [], turf })).toEqual([]);
+    });
+
+    it('leaves every tree in model view without proposed buildings, and drops invalid points', () => {
+        expect(treesOnDesignGround([...trees, null, [NaN, 0]], { turf })).toEqual(trees);
+    });
+});
 
 describe('context trees around applied corridors', () => {
     const road = (geometry, applied = true) => ({ applied, features: [turf.feature(geometry, { source: 'road-definition' })] });
