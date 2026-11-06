@@ -66,7 +66,13 @@
     const backendBase = () => (typeof root.getBackendBase === 'function'
         ? root.getBackendBase().replace(/\/$/, '')
         : 'https://api.urbangametheory.xyz');
-    const cityCode = () => (typeof root.resolveCurrentCityCode === 'function' ? root.resolveCurrentCityCode() : null);
+    // The city id the server stores agreements under ('zagreb'), never the short link code ('zg'):
+    // the API does not resolve app aliases, so ?city=zg reads an empty city.
+    const cityCode = () => {
+        const code = typeof root.resolveCurrentCityCode === 'function' ? root.resolveCurrentCityCode() : null;
+        if (!code) return null;
+        return typeof root.normalizeCityCodeForApi === 'function' ? root.normalizeCityCodeForApi(code) : code;
+    };
     const format = () => root.CbFormat || null;
     const question = () => root.MarketQuestion || null;
 

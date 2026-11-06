@@ -217,8 +217,11 @@ test.describe('Bets sheet @features', () => {
     await expect(sheet.locator('#bets-sheet-content')).toContainText('Connect a Solana wallet to see your bets.');
     await sheet.locator('.bets-filter__btn[data-filter="open"]').click();
     await expect(sheet.locator('.bets-row')).toHaveCount(1);
-    // The sheet read the city's markets from the index.
-    expect(pageIndex(page).requests.some(request => request.method === 'GET' && /^\/markets\?city=zg\b/.test(request.path))).toBe(true);
+    // The sheet read the city's markets from the index, by the city id agreements are stored under
+    // ('zagreb'), never the short link code ('zg'), which the API reads as an empty city.
+    const marketReads = pageIndex(page).requests.filter(request => request.method === 'GET' && request.path.startsWith('/markets?'));
+    expect(marketReads.some(request => /^\/markets\?city=zagreb\b/.test(request.path))).toBe(true);
+    expect(marketReads.some(request => /[?&]city=zg\b/.test(request.path))).toBe(false);
   });
 
   test('a city with no minted agreement explains that a dated agreement is needed', async ({ mockApi: page }) => {
