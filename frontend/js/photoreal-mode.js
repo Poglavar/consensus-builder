@@ -487,7 +487,7 @@
     // paving and a park as grass. (The abstract recessed lake basin sits below the cap and is hidden
     // in photo mode; the flat coloured cap stands in for it.)
     const CARVE_APRON_WATER_COLOR = 0x3a8ad3;  // lake water (matches the 3D water material family)
-    const CARVE_APRON_PARK_COLOR = 0x6f8f4f;   // mown grass
+    // A park's cap is the model view's lawn (three-grass.js), set up with the other cap materials.
     // The wall that closes a cut through a Google tree crown stands where half a tree was: in the
     // canopy's shaded tone it reads as foliage in shadow, not as a grey slab in the garden.
     const CARVE_CANOPY_SEAL_COLOR = 0x34402f;
@@ -857,7 +857,14 @@
         apronMaterial = new THREE.MeshBasicMaterial({ color: CARVE_APRON_COLOR, side: THREE.DoubleSide, ...groundPush });
         // Per-structure cap surfaces (top cap only — curtain walls stay earth-coloured).
         apronMaterialWater = new THREE.MeshBasicMaterial({ color: CARVE_APRON_WATER_COLOR, side: THREE.DoubleSide, ...groundPush });
-        apronMaterialPark = new THREE.MeshBasicMaterial({ color: CARVE_APRON_PARK_COLOR, side: THREE.DoubleSide, ...groundPush });
+        // A park or green plot cap is the lawn of model view (three-mode.js lawnMaterial): lit, with
+        // the same procedural grass in true metres, so where no design lawn lies over the cut (the
+        // model view's mapped green and parcel ground are hidden here) the ground still reads as
+        // turf, and meets the design lawns without a seam. Its scale is set per rebuild (mercatorK).
+        const grass = window.__threeGrass;
+        if (!grass) throw new Error('three-grass.js is not loaded');
+        apronMaterialPark = grass.grassTexture(new THREE.MeshLambertMaterial({
+            color: grass.COLORS.lawn, side: THREE.DoubleSide, ...groundPush }), 1, 'lawn');
         apronMaterialSquare = new THREE.MeshBasicMaterial({ color: CARVE_APRON_SQUARE_COLOR, side: THREE.DoubleSide, ...groundPush });
         // One-sided on purpose (ringFacingCut): it faces the cut, and from outside its back is culled.
         canopySealMaterial = new THREE.MeshBasicMaterial({ color: CARVE_CANOPY_SEAL_COLOR, side: THREE.FrontSide, ...groundPush });
@@ -1959,6 +1966,7 @@
         maskShapesGroup = new THREE.Group();
         apronGroup = new THREE.Group();
         apronGroup.name = 'PhotorealCarvePlinth';
+        if (apronMaterialPark && apronMaterialPark.userData.cbGrass) apronMaterialPark.userData.cbGrass.scale.value = 1 / mercatorK;
         resetTileSurfaceSampling();
         const toXY = internals.latLngToXY;
         const entries = collectCarveGeometries();
@@ -2034,6 +2042,17 @@
         // building plot, a plot beside a street) and the wall would stand in the open.
         const cutCoverage = window.__photorealSeam && typeof window.__photorealSeam.createCoverageTest === 'function'
             ? window.__photorealSeam.createCoverageTest(entries.flatMap(function (entry, index) {
+                try {
+                    return polygonShapesAndRings(entry.geometry, toXY).map(function (sr) { return { rings: sr.rings, owner: index }; });
+                } catch (_) { return []; }
+            }))
+            : null;
+        // The cuts that take every mesh triangle (parks, squares, plots, razed and proposed
+        // buildings). The vertical index still finds the Google crowns there, which the mask hides:
+        // a road wall raised to them stands grey in the park beside the path.
+        const fullCutCoverage = window.__photorealSeam && typeof window.__photorealSeam.createCoverageTest === 'function'
+            ? window.__photorealSeam.createCoverageTest(entries.flatMap(function (entry, index) {
+                if (entry.mode !== 'full') return [];
                 try {
                     return polygonShapesAndRings(entry.geometry, toXY).map(function (sr) { return { rings: sr.rings, owner: index }; });
                 } catch (_) { return []; }
@@ -2143,7 +2162,7 @@
             // A local tree/facade can cross the exterior boundary without contaminating the nearest
             // longitudinal station. Include the cached direct top hit so curtain-only closure reaches
             // that real rim; the solid wall remains hidden behind retained source geometry.
-            const boundaryZ = sampleTileSurfaceZ(x, y);
+            const boundaryZ = fullCutCoverage && fullCutCoverage(x, y) ? null : sampleTileSurfaceZ(x, y);
             if (Number.isFinite(profileZ) && Number.isFinite(boundaryZ)) {
                 return Math.max(profileZ, boundaryZ);
             }
