@@ -139,7 +139,40 @@ export function setupMarketsRoute(app, pool, options = {}) {
     const readMarkets = options.readMarkets || defaultMarketReader(env);
     const cacheTtlMs = Number.isFinite(options.cacheTtlMs) ? options.cacheTtlMs : CACHE_TTL_MS;
     const now = typeof options.now === 'function' ? options.now : () => new Date();
+    // Last good payload per key, and the build in flight. A cached payload is served at once even after
+    // its TTL (stale-while-revalidate): the chain read for every other city takes tens of seconds on a
+    // throttled devnet RPC, and a failed refresh must not blank a sheet that had an answer.
     const cache = new Map();
+    const building = new Map();
+
+    async function buildPayload(city, other) {
+        const { rows } = await pool.query(other ? OTHER_CITY_AGREEMENTS_SQL : AGREEMENTS_SQL, [city, MAX_AGREEMENTS]);
+        const agreements = rows.map(rowToAgreement);
+        const accounts = Array.from(new Set(agreements.map(item => item.account).filter(Boolean)));
+        const markets = accounts.length ? await readMarkets(accounts, agreements) : new Map();
+        return {
+            ...(other ? buildOtherCityContests : buildContests)({ city, agreements, markets, now: now() }),
+            cluster: 'devnet',
+            agreementProgram: AGREEMENT_PROGRAM_ID,
+            marketProgram: MARKET_PROGRAM_ID,
+            stakeMint: DEVNET_USDC_MINT,
+            stakeDecimals: 6
+        };
+    }
+
+    // One build per key at a time, unless `force` (fresh=1 must read after the caller's transaction).
+    function refresh(key, city, other, { force = false } = {}) {
+        if (!force && building.has(key)) return building.get(key);
+        const job = buildPayload(city, other).then(payload => {
+            cache.set(key, { at: now().getTime(), payload });
+            return payload;
+        }).finally(() => { if (building.get(key) === job) building.delete(key); });
+        building.set(key, job);
+        return job;
+    }
+
+    const logFailure = (city, other, error) =>
+        console.error(`[${new Date().toISOString()}] GET /markets?city=${city}${other ? '&scope=other' : ''} failed:`, error);
 
     app.get('/markets', async (req, res) => {
         const city = normalizeCityCode(req.query.city);
@@ -149,29 +182,24 @@ export function setupMarketsRoute(app, pool, options = {}) {
         const fresh = String(req.query.fresh || '') === '1';
         const other = req.query.scope === 'other';
         const key = `${other ? 'other' : 'city'}:${city}`;
-        const cached = fresh ? null : cache.get(key);
-        if (cached && now().getTime() - cached.at < cacheTtlMs) {
+        const cached = cache.get(key);
+        if (cached && !fresh) {
+            if (now().getTime() - cached.at >= cacheTtlMs) refresh(key, city, other).catch(error => logFailure(city, other, error));
             res.set('Cache-Control', 'public, max-age=10');
             return res.json(cached.payload);
         }
         try {
-            const { rows } = await pool.query(other ? OTHER_CITY_AGREEMENTS_SQL : AGREEMENTS_SQL, [city, MAX_AGREEMENTS]);
-            const agreements = rows.map(rowToAgreement);
-            const accounts = Array.from(new Set(agreements.map(item => item.account).filter(Boolean)));
-            const markets = accounts.length ? await readMarkets(accounts, agreements) : new Map();
-            const payload = {
-                ...(other ? buildOtherCityContests : buildContests)({ city, agreements, markets, now: now() }),
-                cluster: 'devnet',
-                agreementProgram: AGREEMENT_PROGRAM_ID,
-                marketProgram: MARKET_PROGRAM_ID,
-                stakeMint: DEVNET_USDC_MINT,
-                stakeDecimals: 6
-            };
-            cache.set(key, { at: now().getTime(), payload });
+            const payload = await refresh(key, city, other, { force: fresh });
             res.set('Cache-Control', 'public, max-age=10');
             res.json(payload);
         } catch (error) {
-            console.error(`[${new Date().toISOString()}] GET /markets?city=${city}${other ? '&scope=other' : ''} failed:`, error);
+            logFailure(city, other, error);
+            if (cached) {
+                // The last good answer beats none; the header says it is older than asked for.
+                res.set('Cache-Control', 'no-store');
+                res.set('X-Markets-Stale', 'true');
+                return res.json(cached.payload);
+            }
             res.status(502).json({ error: 'Markets are unavailable right now' });
         }
     });

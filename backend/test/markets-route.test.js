@@ -158,6 +158,43 @@ describe('GET /markets', () => {
         expect(res.status).toBe(502);
         expect(res.body.error).toMatch(/unavailable/);
     });
+
+    it('after its TTL serves the last good payload at once and refreshes behind it; a failed refresh keeps it', async () => {
+        const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+        let clock = Date.parse('2026-10-09T07:00:00Z');
+        let fail = false;
+        let release = null;
+        const readMarkets = vi.fn(async () => {
+            if (fail) throw new Error('rpc throttled');
+            if (release) await release;
+            return openPool();
+        });
+        const app = appFor({ readMarkets, now: () => new Date(clock) });
+        const first = await request(app).get('/markets?city=zagreb');
+        expect(first.status).toBe(200);
+
+        // Expired: answered from the cache while a slow refresh is still reading the chain.
+        clock += 20_000;
+        let finish;
+        release = new Promise(resolve => { finish = resolve; });
+        const stale = await request(app).get('/markets?city=zagreb');
+        expect(stale.status).toBe(200);
+        expect(stale.body).toEqual(first.body);
+        expect(readMarkets).toHaveBeenCalledTimes(2);
+        // A second request during that refresh starts no other read.
+        await request(app).get('/markets?city=zagreb');
+        expect(readMarkets).toHaveBeenCalledTimes(2);
+        finish();
+        release = null;
+
+        // fresh=1 while the chain read fails: the last good payload, marked stale, instead of 502.
+        fail = true;
+        const fallback = await request(app).get('/markets?city=zagreb&fresh=1');
+        errorSpy.mockRestore();
+        expect(fallback.status).toBe(200);
+        expect(fallback.headers['x-markets-stale']).toBe('true');
+        expect(fallback.body.contests).toEqual(first.body.contests);
+    });
 });
 
 describe('rowToAgreement and agreementByAccount', () => {
