@@ -324,3 +324,25 @@ describe('photoreal ground-grid sampling', () => {
         expect(coversBounds(grid, { minX: -10, minY: -20, maxX: 10.1, maxY: 20 })).toBe(false);
     });
 });
+
+describe('photoreal underground recovery', () => {
+    const { undergroundRecoveryShift, UNDERGROUND_RECOVERY } = require('../../frontend/js/photoreal-ground.js');
+    const stuck = { grounded: false, bootstrapAttempts: 2, emptyViewS: 3, recoveries: 0 };
+
+    it('lowers the world once a provisional alignment leaves the view empty', () => {
+        expect(undergroundRecoveryShift(stuck)).toBe(UNDERGROUND_RECOVERY.shiftM);
+        expect(UNDERGROUND_RECOVERY.shiftM).toBeGreaterThan(0);
+    });
+
+    it('leaves a seated world, a world still before its first estimate, and a brief gap alone', () => {
+        expect(undergroundRecoveryShift({ ...stuck, grounded: true })).toBe(0);
+        expect(undergroundRecoveryShift({ ...stuck, bootstrapAttempts: 0 })).toBe(0);
+        expect(undergroundRecoveryShift({ ...stuck, emptyViewS: 1 })).toBe(0);
+        expect(undergroundRecoveryShift({ ...stuck, emptyViewS: null })).toBe(0);
+    });
+
+    it('gives up after a bounded number of recoveries, leaving the startup timeout in charge', () => {
+        expect(undergroundRecoveryShift({ ...stuck, recoveries: UNDERGROUND_RECOVERY.maxRecoveries - 1 })).toBeGreaterThan(0);
+        expect(undergroundRecoveryShift({ ...stuck, recoveries: UNDERGROUND_RECOVERY.maxRecoveries })).toBe(0);
+    });
+});

@@ -63,6 +63,20 @@
             + Math.max(0, finite(deltaSeconds) ? deltaSeconds : 0) : 0;
     }
 
+    // A provisional alignment from coarse tiles can leave the camera under the terrain: a coarse
+    // tile's surface is a chord that sags hundreds of metres below the real ground, so seating on
+    // it lifts the world over the camera. The view is then empty, nothing new streams, and no later
+    // estimate can improve: photo mode waited out its timeout. Answer how far to lower the world so
+    // the camera looks down on the terrain again (and tiles stream), or 0 when not in that state.
+    const UNDERGROUND_RECOVERY = Object.freeze({ waitS: 2.5, shiftM: 500, maxRecoveries: 3 });
+    function undergroundRecoveryShift(state) {
+        const s = state || {};
+        if (s.grounded || !(s.bootstrapAttempts > 0)) return 0;
+        if (!(finite(s.emptyViewS) && s.emptyViewS >= UNDERGROUND_RECOVERY.waitS)) return 0;
+        if (!(finite(s.recoveries) && s.recoveries < UNDERGROUND_RECOVERY.maxRecoveries)) return 0;
+        return UNDERGROUND_RECOVERY.shiftM;
+    }
+
     function canFinalizeSeating(progress, contentQuietMs) {
         return finite(progress) && progress >= 0.995 && finite(contentQuietMs) && contentQuietMs >= 1400;
     }
@@ -442,6 +456,8 @@
         selectTopSurfaceHeight: selectTopSurfaceHeight,
         selectBootstrapHeight: selectBootstrapHeight,
         advanceEmptyContentTimer: advanceEmptyContentTimer,
+        undergroundRecoveryShift: undergroundRecoveryShift,
+        UNDERGROUND_RECOVERY: UNDERGROUND_RECOVERY,
         canFinalizeSeating: canFinalizeSeating,
         selectRoadSurfaceHeight: selectRoadSurfaceHeight,
         roadFloorEncodingRange: roadFloorEncodingRange,

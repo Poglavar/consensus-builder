@@ -118,6 +118,7 @@
     let reportedProbeFamine = false; // missing-surface diagnostics fire once per entry
     let bootstrapAttempts = 0;
     let bootstrapRevision = -1;
+    let undergroundRecoveries = 0;  // world lowerings after an empty view (undergroundRecoveryShift)
     let seatDebugAccumS = 0;
     let lastFrameNow = 0;
     let lastCameraWorld = null;   // the camera's world matrix at the last frame hook run
@@ -2550,6 +2551,22 @@
             const noContent = !Number.isFinite(prog) || prog === 0
                 || (prog >= 1 && tiles.group && tiles.group.children.length === 0);
             sinceAnyLoadS = window.__photorealGround.advanceEmptyContentTimer(sinceAnyLoadS, noContent, dtS);
+            const recoveryShift = window.__photorealGround.undergroundRecoveryShift({
+                grounded: grounded, bootstrapAttempts: bootstrapAttempts,
+                emptyViewS: sinceAnyLoadS, recoveries: undergroundRecoveries
+            });
+            if (recoveryShift > 0 && seatNode && scaleNode) {
+                seatNode.position.z -= recoveryShift;
+                scaleNode.updateMatrixWorld(true);
+                undergroundRecoveries++;
+                // The bootstrap revision stays: the same cached tiles would give the same sagging
+                // estimate and lift the world back. Tiles the camera now sees bump it.
+                lockSamples = [];
+                sinceAnyLoadS = 0;
+                console.info('[photoreal] empty view after a provisional alignment: lowered the world', {
+                    byM: recoveryShift, elevationM: -seatNode.position.z, recovery: undergroundRecoveries
+                });
+            }
             if (sinceAnyLoadS > NO_CONTENT_TIMEOUT_S || lockWaitS > MAX_UNSEATED_WAIT_S) {
                 console.warn('[photoreal] terrain alignment timed out', {
                     cachedModels: loadedTileScenes.size, failedRequests: tiles.stats?.failed || 0,
@@ -2673,6 +2690,7 @@
                 lockAccumS = 0;
                 bootstrapAttempts = 0;
                 bootstrapRevision = -1;
+                undergroundRecoveries = 0;
                 if (!grounded) lockSamples = [];
                 if (typeof window.registerThreeModeFrameHook === 'function') {
                     window.registerThreeModeFrameHook(onFrame);
@@ -2759,6 +2777,7 @@
             reportedProbeFamine = false;
             bootstrapAttempts = 0;
             bootstrapRevision = -1;
+            undergroundRecoveries = 0;
             lastFrameNow = 0;
             lastCameraWorld = null;
             settledFrames = 0;
