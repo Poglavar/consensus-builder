@@ -25,6 +25,14 @@ describe('counting a building', () => {
         expect(counted.apartments).toBeGreaterThan(0);
         expect(counted.apartments % 5).toBe(0);
     });
+    it('counts the access the building states: a deep slab with point cores yields its own count, not the corridor\'s', () => {
+        const slab = properties => rectangle(0, 0, 60, 18.7, { height: 15, use: 'residential', ...properties });
+        const count = properties => units.countBuilding(slab(properties), { ...deps, heightM: 15, floorHeightM: 3 }).apartments;
+        const corridor = count({}), point = count({ access: 'point' });
+        expect(count({ access: 'corridor' })).toBe(corridor);
+        expect(point).not.toBe(corridor);
+        expect(corridor).toBeGreaterThan(point);
+    });
     it('counts a building’s own floor plans, and leaves an uploaded model without them to the rule', () => {
         const apartment = { kind: 'apartment' };
         const floorPlans = { storeys: [{ units: [apartment, apartment, { kind: 'shop', areaM2: 80 }] }, { units: [apartment, apartment, apartment, { kind: 'office', areaM2: 120 }] }] };

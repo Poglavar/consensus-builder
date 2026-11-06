@@ -131,8 +131,11 @@
                 : d.turf.intersect(feature(site), d.turf.transformScale(feature(site), Math.sqrt(coverage)))?.geometry;
             if (!footprint || d.turf.area(feature(footprint)) < 1) fail('The requested building has no measurable footprint');
             const use = intent.use || 'residential';
+            // Point cores or a corridor for its suggested layout (building-use.js); automatic is unstored.
+            const access = intent.access == null ? 'auto' : load('BuildingUse', './building-use.js').normalizeAccess(String(intent.access));
+            if (!access) fail(`Access must be one of ${load('BuildingUse', './building-use.js').ACCESS.join(', ')}`);
             record = { goal: 'buildings', site, buildingProposal: { typologyType: 'single', parameters: { typology: 'single', floors, height, use, rotation: 0 } },
-                geometry: { buildings: [{ type: 'Feature', geometry: footprint, properties: { type: 'proposedBuildingSingle', floors, height, use, rotation: 0 } }] } };
+                geometry: { buildings: [{ type: 'Feature', geometry: footprint, properties: { type: 'proposedBuildingSingle', floors, height, use, ...(access !== 'auto' ? { access } : {}), rotation: 0 } }] } };
         } else if (intent.kind === 'parcel-layout') {
             const center = d.turf.centroid(feature(site)).geometry.coordinates;
             const plots = intent.algorithm === 'equal'
@@ -234,7 +237,7 @@
                 load('IntentEditing', './intent-editing.js').planting(record, change, d.turf);
             } else if (record.structureProposal && change.type === 'move') {
                 load('IntentEditing', './intent-editing.js').moveSpace(record, change, d.turf);
-            } else if (record.geometry?.buildings && ['set_floors', 'set_height', 'set_use', 'rotate', 'move', 'remove_building'].includes(change.type)) {
+            } else if (record.geometry?.buildings && ['set_floors', 'set_height', 'set_use', 'set_access', 'rotate', 'move', 'remove_building'].includes(change.type)) {
                 load('IntentEditing', './intent-editing.js').buildings(record, change, d.turf);
             } else fail('This typed change does not apply to this design');
         }

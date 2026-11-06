@@ -1,5 +1,6 @@
 // A building's Use (building-use.js): the presets, the words that name them, their storeys, the
-// city models' function codes, and the set_use intent the editor and MCP share.
+// city models' function codes, the set_use intent the editor and MCP share, and the building's Access
+// (point cores or a corridor for its suggested layout) with its set_access intent.
 import { describe, expect, it } from 'vitest';
 import { createRequire } from 'node:module';
 import * as turf from '@turf/turf';
@@ -70,6 +71,32 @@ describe("a rule design's use", () => {
         expect([variation.defaultRuleExtras('block'), variation.defaultRuleExtras('row'), variation.defaultRuleExtras('parcelBased')])
             .toEqual([{}, { use: 'residential' }, { use: 'residential' }]);
     });
+    it('carries a stated Access on the rule\'s extras and leaves automatic unwritten', () => {
+        expect(variation.normalizeRuleExtras({ use: 'housing', access: 'Corridor' })).toEqual({ use: 'residential', access: 'corridor' });
+        expect(variation.normalizeRuleExtras({ access: 'auto' })).toEqual({});
+        expect(variation.normalizeRuleExtras({ access: 'gallery' })).toEqual({});
+        expect(variation.normalizeBlockRule({ access: 'point' }).access).toBe('point');
+        expect(variation.normalizeParcelRule({ access: 'corridor' }).access).toBe('corridor');
+        expect(variation.normalizeBlockRule({}).access).toBeUndefined();
+    });
+});
+
+describe('building access', () => {
+    it('reads point, corridor or auto, and states only point or corridor', () => {
+        expect(['point', ' Corridor ', 'AUTO', 'gallery', '', null, 3].map(use.normalizeAccess)).toEqual(['point', 'corridor', 'auto', null, null, null, null]);
+        expect(use.statedAccess({ access: 'corridor' })).toBe('corridor');
+        expect(use.statedAccess({ access: 'auto' })).toBe(null);
+        // A rule building\'s Access is its rule\'s, as its use is.
+        expect(use.statedAccess({ access: 'corridor', urbanRule: { typology: 'row', access: 'point' } })).toBe('point');
+        expect(use.statedAccess({ access: 'corridor', urbanRule: { typology: 'row' } })).toBe(null);
+    });
+    it('lets the view override the building, and the building the depth rule', () => {
+        expect(use.layoutAccess('corridor', { access: 'point' })).toEqual({ access: 'corridor', basis: 'view' });
+        expect(use.layoutAccess('auto', { access: 'point' })).toEqual({ access: 'point', basis: 'design' });
+        expect(use.layoutAccess(undefined, { urbanRule: { access: 'corridor' } })).toEqual({ access: 'corridor', basis: 'design' });
+        expect(use.layoutAccess('auto', {})).toEqual({ access: 'auto', basis: 'depth' });
+        expect(use.layoutAccess('sideways', null)).toEqual({ access: 'auto', basis: 'depth' });
+    });
 });
 
 describe("OpenStreetMap's building tag", () => {
@@ -92,5 +119,19 @@ describe('the set_use intent', () => {
         intents.buildings(edited, { type: 'set_use', value: 'Offices' }, turf);
         expect(edited.geometry.buildings[0].properties.use).toBe('office');
         expect(() => intents.buildings(record(), { type: 'set_use', value: 'spaceport' }, turf)).toThrow(/residential, residential-shops, mixed, office, public, industrial/);
+    });
+});
+
+describe('the set_access intent', () => {
+    const record = () => ({ goal: 'single', buildingProposal: {}, geometry: { buildings: [{ type: 'Feature', properties: { height: 9 }, geometry: turf.polygon([[[16, 45.8], [16.0002, 45.8], [16.0002, 45.8002], [16, 45.8002], [16, 45.8]]]).geometry }] } });
+    it('stores point or corridor on a Freeform building, clears it with auto, and refuses anything else', () => {
+        const edited = record();
+        intents.buildings(edited, { type: 'set_access', value: 'corridor' }, turf);
+        expect(edited.geometry.buildings[0].properties.access).toBe('corridor');
+        expect(use.layoutAccess('auto', edited.geometry.buildings[0].properties)).toEqual({ access: 'corridor', basis: 'design' });
+        intents.buildings(edited, { type: 'set_access', value: 'auto' }, turf);
+        expect('access' in edited.geometry.buildings[0].properties).toBe(false);
+        expect(edited.geometry.buildings[0].properties.height).toBe(9);
+        expect(() => intents.buildings(record(), { type: 'set_access', value: 'gallery' }, turf)).toThrow(/auto, point, corridor/);
     });
 });

@@ -130,6 +130,9 @@
         // layout's own ground floor: shops from five storeys.
         const use = buildingUse().normalize(source.use);
         if (use) extras.use = use;
+        // How the suggested layout reaches the flats: point cores or a corridor; automatic is unwritten.
+        const access = buildingUse().normalizeAccess(source.access);
+        if (access && access !== 'auto') extras.access = access;
         return extras;
     }
 
@@ -928,6 +931,13 @@
         return options.join('');
     }
 
+    // The Access select (building-use.js ACCESS): automatic first, as the Freeform editor shows it.
+    const ACCESS_LABELS = { auto: ['urbanRule.accessAuto', 'Automatic: a corridor from 15 m deep'], point: ['urbanRule.accessPoint', 'Stair cores (point access)'],
+        corridor: ['urbanRule.accessCorridor', 'Corridor (flats on both sides)'] };
+    function accessOptionsMarkup() {
+        return buildingUse().ACCESS.map(access => `<option value="${access}" data-i18n-key="${ACCESS_LABELS[access][0]}">${ACCESS_LABELS[access][1]}</option>`).join('');
+    }
+
     // `automaticUse`: the Block editor, whose rule may leave the use to the suggested layout.
     function extrasControlsMarkup(prefix, { automaticUse = false } = {}) {
         return `
@@ -935,6 +945,10 @@
                 <label class="urban-rule-extras__use" for="${prefix}-use">
                     <span data-i18n-key="modal.singleBuilding.useLabel" data-i18n-attr="text">Building use</span>
                     <select id="${prefix}-use">${useOptionsMarkup(automaticUse)}</select>
+                </label>
+                <label class="urban-rule-extras__use" for="${prefix}-access">
+                    <span data-i18n-key="urbanRule.accessLabel" data-i18n-attr="text">Access to flats</span>
+                    <select id="${prefix}-access">${accessOptionsMarkup()}</select>
                 </label>
                 <label class="checkbox-label urban-rule-extras__toggle" for="${prefix}-balconies">
                     <input type="checkbox" id="${prefix}-balconies">
@@ -953,7 +967,7 @@
 
     function extrasControls(container, prefix) {
         const find = suffix => container && container.querySelector(`#${prefix}-${suffix}`);
-        return { use: find('use'), balconies: find('balconies'), depth: find('balcony-depth'), roof: find('slanted-roof') };
+        return { use: find('use'), access: find('access'), balconies: find('balconies'), depth: find('balcony-depth'), roof: find('slanted-roof') };
     }
 
     function syncExtrasControls(container, prefix, extras) {
@@ -965,6 +979,7 @@
         c.depth.closest('label').hidden = !(depth > 0);
         c.roof.checked = !!(extras && extras.roof === 'pitched');
         if (c.use) c.use.value = (extras && extras.use) || (c.use.querySelector('option[value=""]') ? '' : 'residential');
+        if (c.access) c.access.value = (extras && extras.access) || 'auto';
     }
 
     // `onChange(extras)` receives the normalized fields after every edit of the three controls.
@@ -974,7 +989,8 @@
         const read = () => normalizeRuleExtras({
             balconyDepthM: c.balconies.checked ? num(c.depth.value, DEFAULT_BALCONY_DEPTH_M) : 0,
             roof: c.roof.checked ? 'pitched' : 'flat',
-            use: c.use ? c.use.value : null
+            use: c.use ? c.use.value : null,
+            access: c.access ? c.access.value : null
         });
         const changed = () => {
             c.depth.closest('label').hidden = !c.balconies.checked;
@@ -984,6 +1000,7 @@
         c.roof.addEventListener('change', changed);
         c.depth.addEventListener('change', changed);
         if (c.use) c.use.addEventListener('change', changed);
+        if (c.access) c.access.addEventListener('change', changed);
     }
 
     const api = {

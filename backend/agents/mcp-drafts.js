@@ -16,7 +16,7 @@ const geometry = value => value?.type === 'Feature' ? value.geometry : value;
 function union(features) {
     return features.reduce((a, b) => a ? turf.union(a, b) : b, null)?.geometry;
 }
-const URBAN_RULE_COMMON_FIELDS = new Set(['typology', 'kind', 'floors', 'height', 'floorHeightM', 'minPlotAreaM2', 'use', 'roof', 'balconyDepthM', 'seed']);
+const URBAN_RULE_COMMON_FIELDS = new Set(['typology', 'kind', 'floors', 'height', 'floorHeightM', 'minPlotAreaM2', 'use', 'access', 'roof', 'balconyDepthM', 'seed']);
 const URBAN_RULE_FIELDS = {
     block: new Set(['minHeightM', 'minDepthM', 'setbackM', 'depthM', 'simplifyM', 'chamferM', 'gapPositions', 'gapWidthM', 'wingPositions', 'wingLengthM']),
     row: new Set(['minHeightM', 'minDepthM', 'depthM', 'lengthM', 'chamferM', 'rotationDegrees', 'offsetEastM', 'offsetNorthM']),

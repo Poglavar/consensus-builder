@@ -67,10 +67,10 @@
         const items = record.geometry?.buildings;
         if (!items?.length) fail('building-required', 'This design has no authored buildings to edit.');
         const index = change.buildingIndex;
-        const dimensional = ['set_floors', 'set_height', 'set_use'].includes(change.type);
+        const dimensional = ['set_floors', 'set_height', 'set_use', 'set_access'].includes(change.type);
         const wholeMassingMove = change.type === 'move' && !!record.geometry?.ruleMassing && index == null;
         // A Block's buildings are cut from one authored massing (geometry.ruleMassing). Their
-        // height, floors and use move together, as the editor's slider moves them, and the massing
+        // height, floors, use and access move together, as the editor's slider moves them, and the massing
         // is re-stamped below; a footprint, removal, rotation or single-building edit would part them from it.
         if (record.geometry.ruleMassing && (!dimensional && !wholeMassingMove || index != null)) fail('coupled-building-geometry', 'This design also has a separate block massing. Edit the height, floors or use of all its buildings together, or move the complete Block.');
         if (index != null && (!Number.isInteger(index) || index < 0 || index >= items.length)) fail('building-not-found', 'Inspect this design revision and choose an existing building index.');
@@ -93,6 +93,16 @@
                 if (use) next.use = use; else delete next.use;
                 return next;
             };
+            // How the suggested layout reaches the flats (building-use.js ACCESS): point cores, a corridor,
+            // or automatic (unstored). A rule design's access is its rule's, for all its buildings.
+            const access = change.type === 'set_access' ? load('BuildingUse', './building-use.js').normalizeAccess(change.value) : null;
+            if (change.type === 'set_access' && !access) fail('invalid-intent', `Supply an access: ${load('BuildingUse', './building-use.js').ACCESS.join(', ')}.`);
+            if (change.type === 'set_access' && ruled && index != null) fail('rule-access', 'A rule design\'s access belongs to its rule; set it without buildingIndex for all its buildings.');
+            const withAccess = target => {
+                const next = { ...target };
+                if (access && access !== 'auto') next.access = access; else delete next.access;
+                return next;
+            };
             for (const building of selected) {
                 const p = building.properties ||= {};
                 if (change.type === 'set_use' && p.urbanRule) {
@@ -100,6 +110,11 @@
                     delete p.use;
                     if (p.ruleProvenance) p.ruleProvenance.definition = structuredClone(p.urbanRule);
                 } else if (change.type === 'set_use') p.use = use;
+                else if (change.type === 'set_access' && p.urbanRule) {
+                    p.urbanRule = withAccess(p.urbanRule);
+                    delete p.access;
+                    if (p.ruleProvenance) p.ruleProvenance.definition = structuredClone(p.urbanRule);
+                } else if (change.type === 'set_access') building.properties = withAccess(p);
                 else {
                     const floorHeight = change.floorHeightM ?? p.urbanRule?.floorHeightM
                         ?? (finite(p.height) && finite(p.floors) && p.floors > 0 ? p.height / p.floors : 3);
@@ -122,6 +137,10 @@
                     massing.properties.urbanRule = withRuleUse(massing.properties.urbanRule);
                     delete massing.properties.use;
                 } else if (change.type === 'set_use') massing.properties.use = use;
+                else if (change.type === 'set_access' && massing.properties?.urbanRule) {
+                    massing.properties.urbanRule = withAccess(massing.properties.urbanRule);
+                    delete massing.properties.access;
+                } else if (change.type === 'set_access') massing.properties = withAccess(massing.properties || {});
                 else if (massing.properties?.urbanRule && lead.urbanRule) {
                     const rules = load('UrbanRuleVariation', './urban-rule-variation.js');
                     record.geometry.ruleMassing = rules.massingWithRule(massing, lead.urbanRule, massing.properties.variationSeed, { turf });

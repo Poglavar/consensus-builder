@@ -1,7 +1,8 @@
 // What a building is for, by storey: the Use of a design's building (`properties.use`), shared by
 // the Freeform editor, MCP intents, the suggested default layouts and Plan stats. A use is one of
 // six presets; free text from older designs or agents ('office', 'housing', 'school') reads as
-// the preset it names, and anything else as no stated use.
+// the preset it names, and anything else as no stated use. The building's Access (point cores or a
+// corridor for its suggested layout) is stored and read beside the use.
 (function (root, factory) {
     const api = factory();
     if (typeof module === 'object' && module.exports) module.exports = api;
@@ -137,6 +138,26 @@
         return osmLookup.get(value.trim().toLowerCase()) || null;
     }
 
-    return { USES, HOUSING_TYPOLOGIES, normalize, statedUse, effectiveUse, storeyUses, storeyUsesOf, autoGroundFloorUse, housingShare, housesPeople,
-        layoutRules, fromCityModel, fromOsmBuilding };
+    // How the suggested layout reaches the flats (default-floor-plans.js): 'point' (stair cores, a few
+    // flats each) or 'corridor' (a double-loaded corridor with flats on both sides); 'auto' leaves it
+    // to the floor plate's depth. Stored like the use: a Block, Row or Detached design's on its rule
+    // (`urbanRule.access`), any other building's as `properties.access`.
+    const ACCESS = Object.freeze(['auto', 'point', 'corridor']);
+    const normalizeAccess = value => (typeof value === 'string' && ACCESS.includes(value.trim().toLowerCase()) ? value.trim().toLowerCase() : null);
+    function statedAccess(properties) {
+        const props = properties || {};
+        const access = normalizeAccess(props.urbanRule ? props.urbanRule.access : props.access);
+        return access === 'auto' ? null : access;
+    }
+    // The access a layout uses and why: a view override other than auto wins, then the building's
+    // stated access, else the generator's depth rule ('auto').
+    function layoutAccess(viewOverride, properties) {
+        const view = normalizeAccess(viewOverride);
+        if (view && view !== 'auto') return { access: view, basis: 'view' };
+        const stated = statedAccess(properties);
+        return stated ? { access: stated, basis: 'design' } : { access: 'auto', basis: 'depth' };
+    }
+
+    return { USES, HOUSING_TYPOLOGIES, ACCESS, normalize, normalizeAccess, statedAccess, layoutAccess, statedUse, effectiveUse, storeyUses, storeyUsesOf,
+        autoGroundFloorUse, housingShare, housesPeople, layoutRules, fromCityModel, fromOsmBuilding };
 });

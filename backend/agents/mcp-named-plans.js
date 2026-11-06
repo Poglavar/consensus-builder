@@ -11,7 +11,7 @@ import { parcelSourceIdOf } from './mcp-read-tools.js';
 import { placeInPlan, inFormationOrder } from './mcp-plan-placement.js';
 const require = createRequire(import.meta.url);
 // A building's use, or its rule's (a Block, Row or Detached design's).
-const { statedUse } = require('../../frontend/js/building-use.js');
+const { statedUse, statedAccess } = require('../../frontend/js/building-use.js');
 const PlanRecord = require('../../frontend/js/plan-record.js');
 const PlanFile = require('../../frontend/js/plan-file.js');
 const CityJsonExport = require('../../frontend/js/city-json-export.js');
@@ -212,7 +212,7 @@ export function createMcpNamedPlanTools({ read, drafts, appOrigin, resolveDraftR
                 ref: `building:${cid}:${index}`, kind: 'building', designCid: cid, designRef: ref,
                 buildingIndex: index, path: `/geometry/buildings/${index}`, title: building.properties?.name || content.title,
                 goal: content.goal, floors: building.properties?.floors ?? null, heightM: building.properties?.height ?? null,
-                use: statedUse(building.properties), coupledMassing: Boolean(content.geometry.ruleMassing)
+                use: statedUse(building.properties), access: statedAccess(building.properties) || 'auto', coupledMassing: Boolean(content.geometry.ruleMassing)
             }, building.geometry));
         }
         return items;

@@ -6,7 +6,7 @@ import { trustedMetadata } from './mcp-results.js';
 import { createRequire } from 'node:module';
 const require = createRequire(import.meta.url);
 // A building's use, or its rule's (a Block, Row or Detached design's).
-const { statedUse } = require('../../frontend/js/building-use.js');
+const { statedUse, statedAccess } = require('../../frontend/js/building-use.js');
 const AgreementRecord = require('../../frontend/js/agreement-record.js');
 
 const fail = (code, message, next = { action: 'Inspect the current plan, choose explicit object references and retry.' }) => {
@@ -83,7 +83,7 @@ export function createMcpPlanTools({ read, drafts, agreements, appOrigin, resolv
                 ref: `building:${cid}:${index}`, kind: 'building', designCid: cid, designRef: ref, buildingIndex: index, path: `/geometry/buildings/${index}`,
                 title: building.properties?.name || content.title, goal: content.goal,
                 floors: building.properties?.floors ?? null, heightM: building.properties?.height ?? null,
-                use: statedUse(building.properties), coupledMassing: Boolean(content.geometry.ruleMassing)
+                use: statedUse(building.properties), access: statedAccess(building.properties) || 'auto', coupledMassing: Boolean(content.geometry.ruleMassing)
             }, building.geometry));
         }
         for (const piece of plan.ground?.outputs || []) if (piece.geometry) add({ ref: `piece:${piece.hash}`, kind: 'piece', role: piece.role,

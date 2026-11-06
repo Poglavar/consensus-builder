@@ -103,6 +103,16 @@ write into the proposal.
 
 ### What the default is
 
+- **Access: point cores or a corridor.** A floor plate at least 15 m deep inside its exterior walls
+  (two rows of about 6.5 m and a 1.5 m corridor) gets a double-loaded corridor; a shallower one
+  gets point-access cores. A building's **Access** (`point`, `corridor`, or unset for automatic)
+  overrides the depth: a Freeform building stores `properties.access`, a Block, Row or Detached
+  design its rule's `urbanRule.access` (building-use.js; edited beside the Use in each editor, and
+  through MCP with `set_access` or `access` on a draft). The X-ray **Access** select overrides both
+  for the view only (`?access=auto|point|corridor`). The plan's parameters and notes say which
+  access was used and why (`access`, `accessBasis`: `view`, `design` or `depth`). Where a corridor
+  cannot fit (rows under 5 m, a core deeper than a row, too short), the layout uses point access
+  with a notice.
 - **Point-access core.** A staircase wrapped around a lift (or an open stairwell for small
   buildings), entered through a glazed entrance door into a floor-level landing. Flight 1 rises
   along one side of the lift, a half landing turns at the back, flight 2 returns to the front at
@@ -130,7 +140,7 @@ write into the proposal.
   since many entrances open onto service drives rather than the street, and a road behind a facade
   never makes it a front. A near-square footprint takes the side facing the nearest road; without
   street data the longest free facade is used. Party walls never host an entrance.
-- **Two apartments per core**, one each side of the core's axis, both reaching the front and the
+- **Two apartments per point core**, one each side of the core's axis, both reaching the front and the
   back facade (double orientation). A dividing wall runs behind the core to the back facade.
 - **Blind walls.** Party walls stay blind: slices of the same building, neighbouring proposed
   buildings and touching existing footprints make them. A neighbour often covers only part of a
@@ -147,7 +157,23 @@ write into the proposal.
   bisectors of its inside corners and courtyard corners. Each wing is planned as its own building
   with the other wings as party walls, so a perimeter block gets entrances on every street side.
   Bars, jogged slabs and stair bump-outs stay whole.
-- **More cores for large floors.** Above 2 × 120 m² of usable floor per core the building gets
+- **Corridor access.** The corridor (1.5 m, HR NN 12/2023 čl. 19) runs along the long axis,
+  centred. Stair cores (with a lift by the same rules) stand on it, each taking a bay with a lobby
+  beside the core and, on the ground floor, an entrance through the facade into that lobby. The
+  cores take the north side when one long side faces within 45° of north, else the less sunny
+  side, else the street side. Their number keeps the corridor end within `maxDeadEndM` (15 m) of a
+  stair and stairs within `maxStairSpacingM` (40 m) of each other; a high-rise or a corridor over
+  40 m has at least two. Each free gable end takes a three-bed flat across the whole depth, its
+  rooms on the end facade and its corner rooms on both long sides, entered from the corridor end.
+  The rows are cut into flats by count from the rule's `corridorMix`: 25 % studios (~4.8 m along
+  the corridor), 40 % one-bed (~7 m), 30 % two-bed (~9 m), 5 % three-bed (the gable flats); a
+  shallower row widens them so the areas stay in range, and widths stretch so each stretch of row
+  fills exactly. Studios go to the north side first. Every flat touches a facade and the corridor:
+  its entrance door opens from the corridor into a service zone (hall, bathroom, kitchen), and the
+  living room and bedrooms take the facade. A flat whose only facade faces north (single aspect)
+  is flagged (`flag: 'north-single-aspect'` on its units) and painted red in X-ray on each of its
+  storeys. Units of corridor flats carry their `type` (studio, one-bed, two-bed, three-bed).
+- **More point cores for large floors.** Above 2 × 120 m² of usable floor per core the building gets
   another core, as many as the street-facing facades can take (each core needs its width plus a
   room on either side). Cores are spread evenly along the total length of every facade that faces
   the street side (a jogged facade or a stair bump-out counts), the building is partitioned at the
@@ -228,11 +254,13 @@ sequenceDiagram
 - `frontend/js/default-floor-plan-context.js` — parcel slicing, wing decomposition, storey
   derivation, the entrance-side decision (long axis from the smallest bounding rectangle, then road
   distance as the tie-break), blind facades from the parcel, neighbour collection, era presets for
-  existing buildings, region from the city locale, street cell keys and the per-wing cache.
+  existing buildings, region from the city locale, the access a layout uses (the view's override,
+  else the owner building's Access, into `rules.access`), street cell keys and the per-wing cache.
   Everything injected, so node tests drive it.
 - `frontend/js/three-mode.js` — the **Suggested layouts** button beside X-ray (visible only in
   X-ray; `?suggested=1` on the URL turns it on), the **Existing buildings too** checkbox
-  (`?suggestedExisting=1`), the render path, the `flagged` material and the note lines. Roads for
+  (`?suggestedExisting=1`), the **Access** select (`?access=`, passed to the context as
+  `accessOverride`), the red patches on north-only flats, the render path, the `flagged` material and the note lines. Roads for
   the entrance side are street centrelines from `GET /streets/near` once per ~500 m cell, the plan's
   own applied corridors, and road parcels of the fabric; each source is optional. Until streets
   arrive the entrance takes the longest facade and the note says so; their arrival drops the cache
@@ -261,8 +289,9 @@ sequenceDiagram
   inside a model flagged `suggested: true`.
 - `backend/buildings/floor-models.js` — `prepareFloorModel` **refuses** suggested models: the
   registry stores evidence, suggestions are derived at display time.
-- Tests: `backend/test/default-floor-plans.test.js`, `default-floor-plan-context.test.js`, new
-  cases in `three-xray-wiring.test.js`, `three-floor-plans.test.js`,
+- Tests: `backend/test/default-floor-plans.test.js` (corridor geometry on a slab the size of
+  Podbrežje A4 from `fixtures/podbrezje-a4-published-floor-plans.json`), `default-floor-plan-context.test.js`,
+  `building-use.test.js` (Access and `set_access`), new cases in `three-xray-wiring.test.js`, `three-floor-plans.test.js`,
   `building-floor-model-registry.test.js`.
 
 Nothing is persisted: the generated `floorPlans` exist in the scene and an in-memory cache keyed by
@@ -271,8 +300,11 @@ proposal, building index, slice geometry, storeys, storey height, front and neig
 ### Limitations
 
 - A user cannot yet pick the entrance side; the generator already takes a `front` edge for that.
-- Rooms follow one scheme (hall along the core, wet rooms beside it, living and bedrooms along the
-  back facade); a very deep floor plate gets deep rooms and a notice rather than a second row.
+- Point-access rooms follow one scheme (hall along the core, wet rooms beside it, living and
+  bedrooms along the back facade). Corridor rows deeper than 10 m (a plate over ~22 m) get deep
+  rooms and a notice; the corridor is always centred, so the sunnier side does not get a deeper row.
+- The published Podbrežje A4 floor has 13 flats; the default mix puts 26 smaller flats on a plate
+  of its size (6 studios, 10 one-bed, 8 two-bed, 2 three-bed).
 - Wings are cut along corner bisectors; a wing narrower than a core, or a sliver under 25 m², is
   dropped from the plan and reported.
 - No loggias or roof shapes; one garage level at most; the ramp always sits at a building end.

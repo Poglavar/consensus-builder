@@ -4,6 +4,7 @@
 import { describe, expect, it } from 'vitest';
 import { createRequire } from 'node:module';
 import * as turf from '@turf/turf';
+import { readFileSync } from 'node:fs';
 
 const require = createRequire(import.meta.url);
 const plans = require('../../frontend/js/building-floor-plans.js');
@@ -201,7 +202,8 @@ describe('default floor plan generator', () => {
         // A 60 × 20 m slab whose end bays protrude 7 m past the street facade on both sides.
         const slab = turf.polygon([[[-7, 2], [0, 2], [0, 0], [60, 0], [60, 2], [67, 2], [67, 20], [-7, 20], [-7, 2]].map(lngLat)]);
         // Tiny apartments would ask for twelve cores; the 74 m of street-facing facade holds six.
-        const result = plan({ footprint: slab, floors: 9, storeyHeightM: 3, front: { a: lngLat([0, 0]), b: lngLat([60, 0]), basis: 'street' } }, { maxApartmentM2: 60 });
+        // The slab is deep enough for a corridor; the design asks for point access.
+        const result = plan({ footprint: slab, floors: 9, storeyHeightM: 3, front: { a: lngLat([0, 0]), b: lngLat([60, 0]), basis: 'street' } }, { maxApartmentM2: 60, access: 'point' });
         expect(result.floorPlans).not.toBeNull();
         expect(result.warnings.map(w => w.code)).toContain('cores-limited-by-frontage');
         expect(result.warnings.map(w => w.code)).toContain('deep-floor-plate');
@@ -233,12 +235,12 @@ describe('default floor plan generator', () => {
     });
 
     it('treats a building whose top floor lies above 22 m as a high-rise with a fire lobby and a lift', () => {
-        const tower = plan({ footprint: rectangle(0, 0, 24, 18), floors: 10, storeyHeightM: 3, front: southEdge(0, 0, 24, 18) });
+        const tower = plan({ footprint: rectangle(0, 0, 24, 18), floors: 10, storeyHeightM: 3, front: southEdge(0, 0, 24, 18) }, { access: 'point' });
         expect(tower.summary.highRise).toBe(true);
         expect(tower.summary.lift).toBe(true);
         expect(tower.warnings.map(w => w.code)).toContain('high-rise');
         expect(tower.summary.coreM).toEqual([4.6, 7.37]); // 1.5 m lobby in front of the flights
-        const low = plan({ footprint: rectangle(0, 0, 24, 18), floors: 8, storeyHeightM: 3, front: southEdge(0, 0, 24, 18) });
+        const low = plan({ footprint: rectangle(0, 0, 24, 18), floors: 8, storeyHeightM: 3, front: southEdge(0, 0, 24, 18) }, { access: 'point' });
         expect(low.summary.highRise).toBe(false); // top floor at 21 m
         expect(generator.coreDimensions(3, generator.rulesFor({ region: 'HR' }), true, true).landingM).toBe(3);
     });
@@ -301,6 +303,189 @@ describe('default floor plan generator', () => {
         expect(result.floorPlans).not.toBeNull();
         expect(result.warnings.map(w => w.code)).toEqual(['multipolygon-largest-part']);
         expect(layoutOf(result, 0).dimensionsM).toEqual([23.4, 15.4]);
+    });
+});
+
+describe('double-loaded corridor access', () => {
+    const toM = ([lng, lat]) => [(lng - LNG) * MX, (lat - LAT) * M_PER_DEG];
+    // A w × h rectangle about the origin turned counter-clockwise by deg, in WGS84.
+    const turned = (w, h, deg) => {
+        const a = deg * Math.PI / 180, c = Math.cos(a), s = Math.sin(a);
+        const corners = [[-w / 2, -h / 2], [w / 2, -h / 2], [w / 2, h / 2], [-w / 2, h / 2]].map(([x, y]) => [x * c - y * s, x * s + y * c]);
+        return { footprint: turf.polygon([[...corners, corners[0]].map(lngLat)]), edge: (i, basis = 'street') => ({ a: lngLat(corners[i]), b: lngLat(corners[(i + 1) % 4]), basis }) };
+    };
+    const segmentDistance = (p, a, b) => {
+        const d = [b[0] - a[0], b[1] - a[1]], len2 = d[0] ** 2 + d[1] ** 2;
+        const k = Math.max(0, Math.min(1, ((p[0] - a[0]) * d[0] + (p[1] - a[1]) * d[1]) / len2));
+        return Math.hypot(p[0] - a[0] - k * d[0], p[1] - a[1] - k * d[1]);
+    };
+    // Points every quarter metre along a ring's edges, in metres.
+    const along = ring => ring.slice(1).flatMap((q, i) => {
+        const p = toM(ring[i]), r = toM(q), n = Math.max(1, Math.ceil(Math.hypot(r[0] - p[0], r[1] - p[1]) / 0.25));
+        return Array.from({ length: n + 1 }, (_, k) => [p[0] + (r[0] - p[0]) * k / n, p[1] + (r[1] - p[1]) * k / n]);
+    });
+    const typeOf = type => generator.CORRIDOR_MIX.find(m => m.type === type);
+
+    // Podbrežje A4 (backend/test/fixtures): the 2nd-floor plan's frame is 105.7 × 19.0 m, its long
+    // axis 91° from east; the building is P+8, and its published 2nd floor has 13 flats.
+    const a4Plan = JSON.parse(readFileSync(new URL('./fixtures/podbrezje-a4-published-floor-plans.json', import.meta.url), 'utf8')).plans.find(p => p.externalId === 'podbrezje-a4-floor-2');
+    const [a4Length, a4Depth] = a4Plan.architecture.dimensionsM;
+    const a4 = turned(a4Length, a4Depth, a4Plan.placement.priors.rotationDeg);
+    const podbrezjeA4 = () => plan({ footprint: a4.footprint, floors: 9, storeyHeightM: 2.9, front: a4.edge(0), buildingId: 'a4' });
+
+    it('chooses a corridor once the floor plate is 15 m deep inside its walls, point cores below', () => {
+        const deepSlab = depth => plan({ footprint: rectangle(0, 0, 60, depth), floors: 5, storeyHeightM: 3, front: southEdge(0, 0, 60, depth) });
+        expect(deepSlab(12).summary).toMatchObject({ access: 'point', accessBasis: 'depth', plateDepthM: 11.4 });
+        const deep = deepSlab(18.7);
+        expect(deep.summary).toMatchObject({ access: 'corridor', accessBasis: 'depth', plateDepthM: 18.1 });
+        expect(deepSlab(15.6).summary.access).toBe('corridor'); // 15.0 m inside the walls
+        expect(deepSlab(15.5).summary.access).toBe('point');
+        expect(deep.floorPlans.notes.join(' ')).toMatch(/Corridor access: the floor plate is 18\.1 m deep inside its walls \(at least 15 m\)/);
+        expect(deep.floorPlans.layouts[1].source.parameters).toMatchObject({ access: 'corridor', accessBasis: 'depth', plateDepthM: 18.1 });
+        expect(generator.decideAccess(generator.rulesFor({ rules: { corridorFromDepthM: 20 } }), 18.1)).toMatchObject({ access: 'point', basis: 'depth' });
+        // A very deep plate still gets its corridor, and is told its rows are deep.
+        expect(deep.warnings.map(w => w.code)).not.toContain('deep-corridor-rows');
+        const veryDeep = deepSlab(30);
+        expect(veryDeep.summary.access).toBe('corridor');
+        expect(veryDeep.warnings.map(w => w.code)).toContain('deep-corridor-rows');
+    });
+
+    it('takes the access a design or the view states over the depth rule, and falls back to point cores where a corridor cannot fit', () => {
+        const footprint = rectangle(0, 0, 60, 18.7), front = southEdge(0, 0, 60, 18.7);
+        const stated = plan({ footprint, floors: 5, storeyHeightM: 3, front }, { access: 'point', accessBasis: 'design' });
+        expect(stated.summary).toMatchObject({ access: 'point', accessBasis: 'design', cores: expect.any(Number) });
+        expect(stated.summary.corridor).toBeUndefined();
+        expect(stated.floorPlans.notes.join(' ')).toMatch(/Point access, as the design states/);
+        const viewed = plan({ footprint: rectangle(0, 0, 40, 16), floors: 4, storeyHeightM: 3, front: southEdge(0, 0, 40, 16) }, { access: 'corridor', accessBasis: 'view' });
+        expect(viewed.summary).toMatchObject({ access: 'corridor', accessBasis: 'view' });
+        const shallow = plan({ footprint: rectangle(0, 0, 40, 12), floors: 4, storeyHeightM: 3, front: southEdge(0, 0, 40, 12) }, { access: 'corridor' });
+        expect(shallow.summary).toMatchObject({ access: 'point', accessBasis: 'design', accessFallback: 'corridor-too-shallow' });
+        expect(shallow.warnings.map(w => w.code)).toContain('corridor-too-shallow');
+        expect(shallow.floorPlans).not.toBeNull();
+    });
+
+    it('serves a slab the size of Podbrežje A4 from a corridor, every flat on a facade and on the corridor, none overlapping', () => {
+        const result = podbrezjeA4();
+        const { summary } = result;
+        expect(summary).toMatchObject({ access: 'corridor', accessBasis: 'depth', lift: true });
+        expect(summary.plateDepthM).toBeCloseTo(a4Depth - 0.6, 1);
+        // The published floor has 13 flats in larger units; the default mix packs 26 into the same plate.
+        expect(summary.apartmentsPerFloor).toBeGreaterThanOrEqual(10);
+        expect(summary.apartmentsPerFloor).toBeLessThanOrEqual(30);
+        expect(summary.flats).toHaveLength(summary.apartmentsPerFloor);
+        const outline = turf.polygonToLine(a4.footprint);
+        const spine = summary.corridor.spine.map(toM);
+        const corridorReachM = summary.corridor.widthM / 2 + 0.2 + 0.05; // half the corridor, its wall, a tolerance
+        for (const flat of summary.flats) {
+            const ring = flat.rings[0];
+            const facadeM = Math.min(...ring.map(p => turf.pointToLineDistance(turf.point(p), outline, { units: 'meters' })));
+            expect(facadeM, `${flat.id} on a facade`).toBeLessThanOrEqual(0.3 + 0.05);
+            expect(Math.min(...along(ring).map(p => segmentDistance(p, spine[0], spine[1]))), `${flat.id} on the corridor`).toBeLessThanOrEqual(corridorReachM);
+        }
+        for (let i = 0; i < summary.flats.length; i++) {
+            for (let j = i + 1; j < summary.flats.length; j++) {
+                const overlap = turf.intersect(turf.polygon([summary.flats[i].rings[0]]), turf.polygon([summary.flats[j].rings[0]]));
+                expect(overlap ? turf.area(overlap) : 0, `${summary.flats[i].id} × ${summary.flats[j].id}`).toBeLessThan(0.05);
+            }
+        }
+        // One entrance door from the corridor per flat, and a unit with rooms per flat on every storey above the ground.
+        expect(openingsOf(result, 1, 'door', 'apartment')).toHaveLength(summary.flats.length);
+        result.floorPlans.storeys.filter(storey => storey.level > 0).forEach(storey => expect(storey.units.map(unit => unit.type)).toEqual(summary.flats.map(flat => flat.type)));
+    });
+
+    it('keeps the corridor free of walls from end to end, with every stair on it, no dead end past 15 m and stairs at most 40 m apart', () => {
+        const result = podbrezjeA4();
+        const { corridor } = result.summary;
+        const spine = corridor.spine.map(toM), stairs = corridor.stairCentres.map(toM);
+        const lengthM = Math.hypot(spine[1][0] - spine[0][0], spine[1][1] - spine[0][1]);
+        expect(lengthM).toBeCloseTo(corridor.lengthM, 1);
+        const ground = groundOf(result);
+        const walls = layoutOf(result, 1).walls.map(polygon => turf.polygon(polygon.map(ring => [...ring.map(p => ground(p)), ground(ring[0])])));
+        for (let s = 0.1; s <= lengthM - 0.1; s += 0.25) {
+            const p = [spine[0][0] + (spine[1][0] - spine[0][0]) * s / lengthM, spine[0][1] + (spine[1][1] - spine[0][1]) * s / lengthM];
+            expect(walls.some(wall => turf.booleanPointInPolygon(turf.point(lngLat(p)), wall)), `wall across the corridor ${s.toFixed(2)} m along`).toBe(false);
+        }
+        const flights = layoutOf(result, 1).stairs.flatMap(flight => [flight.a, flight.b]).map(p => toM(ground(p)));
+        expect(stairs.length).toBe(3); // 95 m of corridor: 2 × 15 m of dead end and one 40 m span leave a third stair
+        for (const stair of stairs) {
+            expect(segmentDistance(stair, spine[0], spine[1])).toBeLessThan(0.05);
+            // The flights start behind the core's landing (3 m with the high-rise fire lobby), off the corridor's middle.
+            expect(Math.min(...flights.map(p => Math.hypot(p[0] - stair[0], p[1] - stair[1])))).toBeLessThan(0.75 + 3.0 + 1.0);
+        }
+        const position = p => Math.hypot(p[0] - spine[0][0], p[1] - spine[0][1]);
+        const positions = stairs.map(position).sort((a, b) => a - b);
+        expect(positions[0]).toBeLessThanOrEqual(15 + 0.01);
+        expect(lengthM - positions[positions.length - 1]).toBeLessThanOrEqual(15 + 0.01);
+        positions.slice(1).forEach((p, i) => expect(p - positions[i]).toBeLessThanOrEqual(40));
+        expect(corridor.deadEndM).toBeLessThanOrEqual(15);
+        // Tighter egress limits ask for more stairs.
+        expect(plan({ footprint: a4.footprint, floors: 9, storeyHeightM: 2.9, front: a4.edge(0) }, { maxDeadEndM: 8, maxStairSpacingM: 25 }).summary.cores).toBeGreaterThan(3);
+    });
+
+    it('honours the flat mix by count, with three-bed flats only at the gable ends', () => {
+        const { summary } = podbrezjeA4();
+        const counts = summary.corridor.mix, total = summary.flats.length;
+        expect(counts['three-bed']).toBe(2);
+        expect(summary.corridor.gables).toBe(2);
+        for (const type of ['studio', 'one-bed', 'two-bed']) expect(Math.abs(counts[type] / total - typeOf(type).share), type).toBeLessThan(0.08);
+        // Each flat's area stays near its type's range.
+        for (const flat of summary.flats) {
+            const [lo, hi] = typeOf(flat.type).areaM2;
+            expect(flat.areaM2, `${flat.id} (${flat.type})`).toBeGreaterThan(0.85 * lo);
+            expect(flat.areaM2, `${flat.id} (${flat.type})`).toBeLessThan(1.2 * hi);
+        }
+        // fillRows on its own: the counts fill the segments exactly and follow the shares.
+        const rows = generator.fillRows([{ from: 0, to: 80 }, { from: 0, to: 80 }], generator.CORRIDOR_MIX.filter(m => !m.gable), 0.2);
+        rows.forEach(row => {
+            expect(row.flats[0].s0).toBe(0);
+            expect(row.flats[row.flats.length - 1].s1).toBe(80);
+            row.flats.slice(1).forEach((flat, i) => expect(flat.s0 - row.flats[i].s1).toBeCloseTo(0.2, 9));
+        });
+        const types = rows.flatMap(row => row.flats.map(flat => flat.entry.type));
+        expect(types.filter(type => type === 'one-bed').length).toBeGreaterThan(types.filter(type => type === 'studio').length);
+    });
+
+    it('furnishes corridor flats from the corridor out, and wraps the gable flats round the corner', () => {
+        const result = podbrezjeA4();
+        const units = result.floorPlans.storeys.find(storey => storey.level === 2).units;
+        const kinds = unit => unit.rooms.map(room => room.kind);
+        for (const unit of units) {
+            expect(kinds(unit), unit.id).toEqual(expect.arrayContaining(['hall', 'bathroom', 'living']));
+            const bedrooms = kinds(unit).filter(kind => kind === 'bedroom').length;
+            if (unit.type === 'studio') expect(bedrooms).toBe(0);
+            else if (unit.type === 'three-bed') expect(bedrooms).toBeGreaterThanOrEqual(2);
+            else expect(bedrooms, unit.id).toBeGreaterThanOrEqual(1);
+        }
+        // Every living room has daylight: a window or a balcony door of its own.
+        const lit = layoutOf(result, 1).openings.filter(o => o.room === 'living' && (o.kind === 'window' || o.kind === 'glazedDoor'));
+        expect(lit.length).toBeGreaterThanOrEqual(units.length);
+        // A gable flat reaches three facades: its end wall and both long sides.
+        const outline = turf.polygonToLine(a4.footprint);
+        const gable = result.summary.flats.find(flat => flat.type === 'three-bed');
+        const ring = gable.rings[0].slice(0, -1);
+        const onFacade = ring.filter(p => turf.pointToLineDistance(turf.point(p), outline, { units: 'meters' }) < 0.35);
+        expect(onFacade.length).toBeGreaterThanOrEqual(4);
+    });
+
+    it('puts the cores and studios on the north side of an east-west slab and flags the flats that face only north', () => {
+        const ew = plan({ footprint: rectangle(0, 0, 106, 18.8), floors: 9, storeyHeightM: 2.9, front: southEdge(0, 0, 106, 18.8) });
+        expect(ew.summary.corridor.coreSide).toBe('north');
+        const centroidY = flat => turf.centroid(turf.polygon(flat.rings)).geometry.coordinates[1] - LAT;
+        const ground = groundOf(ew);
+        layoutOf(ew, 1).stairs.forEach(flight => expect(ground(flight.a)[1]).toBeGreaterThan(LAT));
+        const studios = ew.summary.flats.filter(flat => flat.type === 'studio');
+        expect(studios.length).toBeGreaterThan(0);
+        expect(studios.filter(flat => centroidY(flat) > 0).length / studios.length).toBeGreaterThanOrEqual(0.8);
+        // Exactly the north row's flats are flagged; the gable flats see three ways.
+        const northRow = ew.summary.flats.filter(flat => flat.type !== 'three-bed' && centroidY(flat) > 0);
+        expect(ew.summary.flats.filter(flat => flat.flag).map(flat => flat.id).sort()).toEqual(northRow.map(flat => flat.id).sort());
+        expect(ew.summary.flaggedFlats).toBe(northRow.length);
+        expect(ew.floorPlans.storeys.find(storey => storey.level === 3).units.filter(unit => unit.flag === 'north-single-aspect')).toHaveLength(northRow.length);
+        expect(ew.floorPlans.notes.join(' ')).toMatch(new RegExp(`${northRow.length} flat\\(s\\) per storey face only north`));
+        // Turned north-south, both long sides see east or west: no flat is flagged and the cores face the street.
+        const ns = podbrezjeA4();
+        expect(ns.summary.corridor.coreSide).toBe('street');
+        expect(ns.summary.flaggedFlats).toBe(0);
     });
 });
 

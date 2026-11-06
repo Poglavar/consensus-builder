@@ -92,9 +92,15 @@
     let suggestedPlansButton = null;
     let suggestedExistingRow = null;
     let suggestedExistingCheckbox = null;
+    // How the suggested layouts reach the flats in this view (`?access=`): 'auto' follows each
+    // building's own Access (building-use.js), else point cores or a corridor for every building.
+    // A view setting: no design is changed.
+    let suggestedAccess = (value => (['auto', 'point', 'corridor'].includes(value) ? value : 'auto'))(new URLSearchParams(window.location.search).get('access'));
+    let suggestedAccessControl = null;
+    let suggestedAccessSelect = null;
     const suggestedPlanCache = new Map();
     const suggestedStreetCells = new Map(); // cell key → { features: Feature[] | null, pending }
-    const suggestedPlanTotals = { buildings: 0, slices: 0, flagged: 0, apartments: 0, cores: 0, pendingStreets: false, existing: 0, existingCapped: false };
+    const suggestedPlanTotals = { buildings: 0, slices: 0, flagged: 0, apartments: 0, cores: 0, northFlats: 0, pendingStreets: false, existing: 0, existingCapped: false };
     // What the panels say when a parcel or a proposal is clicked: per parcel the slice's result,
     // per proposal the totals over its buildings. Rebuilt with the scene.
     const suggestedPlanByParcel = new Map();
@@ -2099,7 +2105,7 @@
         suggestedPlansButton.className = 'btn three-mode-xray-button';
         suggestedPlansButton.textContent = threeI18n('threeMode.controls.suggestedLayouts', 'Suggested layouts');
         suggestedPlansButton.title = threeI18n('threeMode.controls.suggestedLayoutsTooltip',
-            'Generate a default layout for proposed buildings without a modelled interior: a stair and lift core entered from the street side, two apartments per core. A suggestion, not part of the proposal.');
+            'Generate a default layout for proposed buildings without a modelled interior: stair cores with two apartments each, or a corridor with flats on both sides where the floor plate is 15 m deep or more. A suggestion, not part of the proposal.');
         suggestedPlansButton.addEventListener('click', () => setSuggestedPlansEnabled(!suggestedPlansEnabled));
         xrayButtons.appendChild(suggestedPlansButton);
         xrayRow.appendChild(xrayButtons);
@@ -2122,6 +2128,29 @@
         suggestedExistingHost.setAttribute('data-map-modes', '3d');
         suggestedExistingHost.appendChild(suggestedExistingRow);
         xrayRow.appendChild(suggestedExistingHost);
+        // Point cores or a corridor for the suggested layouts in this view; Automatic keeps each building's own.
+        suggestedAccessControl = document.createElement('label');
+        suggestedAccessControl.className = 'three-mode-suggested-access';
+        suggestedAccessControl.setAttribute('data-map-modes', '3d');
+        const suggestedAccessText = document.createElement('span');
+        suggestedAccessText.textContent = threeI18n('threeMode.controls.accessView', 'Access');
+        suggestedAccessSelect = document.createElement('select');
+        suggestedAccessSelect.id = 'three-mode-suggested-access';
+        suggestedAccessSelect.className = 'three-mode-display-select';
+        [['auto', threeI18n('threeMode.controls.accessViewAuto', 'Each building\'s own')], ['point', threeI18n('threeMode.controls.accessViewPoint', 'Point access')],
+            ['corridor', threeI18n('threeMode.controls.accessViewCorridor', 'Corridor')]].forEach(([value, label]) => {
+            const option = document.createElement('option');
+            option.value = value;
+            option.textContent = label;
+            suggestedAccessSelect.appendChild(option);
+        });
+        suggestedAccessSelect.value = suggestedAccess;
+        suggestedAccessControl.title = threeI18n('threeMode.controls.accessViewTooltip',
+            'How suggested layouts reach the flats. Each building\'s own follows the Access its design states, else a corridor from 15 m deep; the other choices apply to every building in this view without changing the designs.');
+        suggestedAccessSelect.title = suggestedAccessControl.title;
+        suggestedAccessSelect.addEventListener('change', () => setSuggestedAccess(suggestedAccessSelect.value));
+        suggestedAccessControl.append(suggestedAccessText, suggestedAccessSelect);
+        xrayRow.appendChild(suggestedAccessControl);
         floorCutawayControl = document.createElement('label');
         floorCutawayControl.className = 'three-mode-floor-cutaway';
         const cutawayLabel = document.createElement('span');
@@ -6016,6 +6045,7 @@
                 xrayEnabled,
                 suggestedPlansEnabled,
                 suggestedExistingEnabled,
+                suggestedAccess,
                 origin: origin3857 ? { x: origin3857.x, y: origin3857.y } : null
             });
             if (Array.isArray(nearbyProposalBuildings) && nearbyProposalBuildings.length > 0) {
@@ -8915,7 +8945,7 @@
         Object.assign(suggestedPlanTotals, { existing: 0, existingCapped: false });
         if (!planned) return;
         floorPlanErrors = 0;
-        Object.assign(suggestedPlanTotals, { buildings: 0, slices: 0, flagged: 0, apartments: 0, cores: 0, pendingStreets: false });
+        Object.assign(suggestedPlanTotals, { buildings: 0, slices: 0, flagged: 0, apartments: 0, cores: 0, northFlats: 0, pendingStreets: false });
         suggestedPlanByParcel.clear();
         suggestedPlanByProposal.clear();
     }
@@ -9064,7 +9094,8 @@
                 owner: feature, parcels, turf, generator: suggestedFloorPlans, region: suggestedRegion(),
                 roads: suggestedRoadsFor(subject), heightM: height, storeyFallbackM: window.STOREY_HEIGHT_M || 3.3,
                 neighbours: suggestedPlanContext.neighbourPool(feature, window.proposedBuildings, window.buildingFeaturePool, turf),
-                cache: suggestedPlanCache, rules: facadeBayWidthM || use ? { ...(facadeBayWidthM ? { facadeBayWidthM } : {}), ...(use ? window.BuildingUse.layoutRules(use) : {}) } : undefined
+                cache: suggestedPlanCache, rules: facadeBayWidthM || use ? { ...(facadeBayWidthM ? { facadeBayWidthM } : {}), ...(use ? window.BuildingUse.layoutRules(use) : {}) } : undefined,
+                accessOverride: suggestedAccess
             });
         } catch (error) {
             floorPlanErrors++;
@@ -9080,9 +9111,12 @@
                 const modelled = { type: 'Feature', geometry: slice.footprint.geometry, properties: {
                     ...feature.properties, parcelId: slice.parcelId ?? feature.properties?.parcelId ?? null, floorPlans: result.floorPlans
                 } };
-                if (appendBuildingFloorPlans(modelled, buildingMaterial, result.summary.heightM)) {
+                const group = appendBuildingFloorPlans(modelled, buildingMaterial, result.summary.heightM);
+                if (group) {
                     suggestedPlanTotals.cores += result.summary.cores;
                     suggestedPlanTotals.apartments += result.summary.apartmentsPerFloor;
+                    suggestedPlanTotals.northFlats += result.summary.flaggedFlats || 0;
+                    appendFlaggedFlats(group, result);
                     continue;
                 }
             }
@@ -9111,6 +9145,32 @@
         suggestedExistingEnabled = enabled === true;
         rebuild3DBuildingsOnly();
         updateXrayControls();
+    }
+
+    function setSuggestedAccess(value) {
+        const next = ['auto', 'point', 'corridor'].includes(value) ? value : 'auto';
+        if (next === suggestedAccess) return;
+        suggestedAccess = next;
+        rebuild3DBuildingsOnly();
+        updateXrayControls();
+    }
+
+    // North-only single-aspect corridor flats (default-floor-plans.js flags them): a thin red patch
+    // on each storey they occupy, inside that storey's group so the cutaway hides it with the storey.
+    function appendFlaggedFlats(group, result) {
+        const flagged = (result?.summary?.flats || []).filter(flat => flat.flag && flat.rings?.length);
+        if (!flagged.length || !group?.isObject3D) return 0;
+        const material = buildingMaterials.flagged.clone();
+        let count = 0;
+        group.children.filter(floor => floor.userData?.cbFloorPlanFloor && floor.userData.level >= 0).forEach(floor => {
+            const storey = result.floorPlans.storeys.find(item => item.id === floor.userData.id);
+            const here = new Set((storey?.units || []).filter(unit => unit.flag).map(unit => unit.id.replace(/-\d+$/, '')));
+            flagged.filter(flat => here.has(flat.id)).forEach(flat => {
+                polygonFeatureToMeshes({ type: 'Feature', properties: {}, geometry: { type: 'MultiPolygon', coordinates: flat.rings.map(ring => [ring]) } }, material, 0.02, 0.05)
+                    .forEach(mesh => { mesh.userData.cbSuggestedFlag = flat.flag; floor.add(mesh); count++; });
+            });
+        });
+        return count;
     }
 
     // Typical layouts by era for the existing buildings in the loaded radius, drawn inside their
@@ -9178,7 +9238,8 @@
                 planned = suggestedPlanContext.planBuilding(feature, {
                     owner: feature, existing: true, parcels: [], turf, generator: suggestedFloorPlans, region: suggestedRegion(),
                     roads: suggestedRoadsFor(feature), heightM: height, storeyFallbackM: storeyM,
-                    neighbours: suggestedPlanContext.neighbourPool(feature, proposed, pool, turf), cache: suggestedPlanCache
+                    neighbours: suggestedPlanContext.neighbourPool(feature, proposed, pool, turf), cache: suggestedPlanCache,
+                    accessOverride: suggestedAccess
                 });
             } catch (error) {
                 floorPlanErrors++;
@@ -9599,6 +9660,10 @@
             suggestedExistingRow.hidden = !(xrayEnabled && suggestedPlansEnabled);
             if (suggestedExistingCheckbox) suggestedExistingCheckbox.checked = suggestedExistingEnabled;
         }
+        if (suggestedAccessControl) {
+            suggestedAccessControl.hidden = !(xrayEnabled && suggestedPlansEnabled);
+            if (suggestedAccessSelect) suggestedAccessSelect.value = suggestedAccess;
+        }
         if (floorCutawayControl) floorCutawayControl.hidden = !xrayEnabled;
         if (xraySolidNotice) xraySolidNotice.hidden = !(xrayEnabled && suggestedPlansEnabled && suggestedExistingEnabled && builtDisplay === 'solid');
         if (xrayEnabled && floorCutawaySelect) {
@@ -9647,6 +9712,8 @@
                 { buildings, apartments: suggestedPlanTotals.apartments }));
             if (suggestedPlanTotals.flagged) lines.push(threeI18n('threeMode.controls.suggestedFlagged',
                 `${suggestedPlanTotals.flagged} in red: too small for a minimum stair core.`, { count: suggestedPlanTotals.flagged }));
+            if (suggestedPlanTotals.northFlats) lines.push(threeI18n('threeMode.controls.suggestedNorthFlats',
+                `${suggestedPlanTotals.northFlats} flats per storey face only north (single aspect), shown in red.`, { count: suggestedPlanTotals.northFlats }));
             if (suggestedPlanTotals.pendingStreets) lines.push(threeI18n('threeMode.controls.suggestedPendingStreets',
                 'Street data is loading; entrances face the longest facade until it arrives.'));
             if (suggestedExistingEnabled && suggestedPlanTotals.existing) lines.push(threeI18n('threeMode.controls.suggestedExistingCount',

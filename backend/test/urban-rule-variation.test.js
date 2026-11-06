@@ -645,3 +645,33 @@ describe('detached rule limits', () => {
         expect(V.evaluateParcel(parcel(30, 40, LAT, LNG), { ...RULE, minFrontageM: 25 }, { turf, streets }).status).toBe('ok');
     });
 });
+
+describe('the shared Use, Access, balconies and roof controls', () => {
+    // A container answering querySelector('#<prefix>-<name>') with plain control objects.
+    function fakeControls(prefix) {
+        const listeners = [];
+        const control = props => ({ ...props, addEventListener: (type, fn) => listeners.push(fn), closest: () => ({ hidden: false }) });
+        const controls = { use: control({ value: 'residential', querySelector: () => null }), access: control({ value: 'auto' }),
+            balconies: control({ checked: false }), 'balcony-depth': control({ value: '1.5' }), 'slanted-roof': control({ checked: false }) };
+        const container = { querySelector: selector => controls[selector.replace(`#${prefix}-`, '')] || null };
+        return { container, controls, fire: () => listeners.forEach(fn => fn()) };
+    }
+    it('offers the Access select beside the Use and reports a stated access with the other extras', () => {
+        const markup = V.extrasControlsMarkup('rule');
+        expect(markup).toMatch(/<label class="urban-rule-extras__use" for="rule-access">/);
+        expect(markup).toMatch(/<select id="rule-access"><option value="auto"[^>]*>[^<]+<\/option><option value="point"[^>]*>[^<]+<\/option><option value="corridor"/);
+        const { container, controls, fire } = fakeControls('rule');
+        const seen = [];
+        V.bindExtrasControls(container, 'rule', extras => seen.push(extras));
+        controls.access.value = 'corridor';
+        fire();
+        expect(seen.at(-1)).toEqual({ use: 'residential', access: 'corridor' });
+        controls.access.value = 'auto';
+        fire();
+        expect(seen.at(-1)).toEqual({ use: 'residential' });
+        V.syncExtrasControls(container, 'rule', { use: 'office', access: 'point' });
+        expect(controls.access.value).toBe('point');
+        V.syncExtrasControls(container, 'rule', {});
+        expect(controls.access.value).toBe('auto');
+    });
+});

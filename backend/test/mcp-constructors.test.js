@@ -239,6 +239,31 @@ describe('MCP shared construction generators', () => {
         expect(edit({ ...rule, roof: 'pitched' })).not.toThrow();
         expect(edit({ ...rule, use: 'office' })).not.toThrow();
         expect(edit({ ...rule, use: 'spaceport' })).toThrow(/Rule field use/);
+        // A raw rule patch may state the Access too, as the editor's Access select does.
+        expect(edit({ ...rule, access: 'corridor' })).not.toThrow();
+        expect(edit({ ...rule, access: 'gallery' })).toThrow(/Rule field access/);
+    });
+    it('drafts and edits a building\'s Access as the editors do: on a rule for all its buildings, else on the building', () => {
+        const block = buildTypedDesign({ ...common, typology: 'block', access: 'corridor' }, options);
+        expect(block.geometry.buildings.every(b => b.properties.urbanRule.access === 'corridor' && !('access' in b.properties))).toBe(true);
+        expect(block.buildingProposal.parameters.rule.access).toBe('corridor');
+        expect(() => buildTypedDesign({ ...common, typology: 'block', access: 'gallery' }, options)).toThrow(/Choose an access/);
+        expect(buildTypedDesign({ ...common, typology: 'row' }, rowOptions).geometry.buildings.every(b => !('access' in b.properties.urbanRule))).toBe(true);
+        // set_access moves it on the rule, the Block massing with it; a building index is refused.
+        const edited = structuredClone(block);
+        intentEditing.buildings(edited, { type: 'set_access', value: 'point' }, turf);
+        expect(edited.geometry.buildings.every(b => b.properties.urbanRule.access === 'point')).toBe(true);
+        expect(edited.buildingProposal.parameters.rule.access).toBe('point');
+        expect(edited.geometry.ruleMassing.properties.urbanRule.access).toBe('point');
+        intentEditing.buildings(edited, { type: 'set_access', value: 'auto' }, turf);
+        expect(edited.buildingProposal.parameters.rule.access).toBeUndefined();
+        expect(() => intentEditing.buildings(structuredClone(block), { type: 'set_access', value: 'point', buildingIndex: 0 }, turf)).toThrow(/rule|massing/);
+        // A Freeform draft keeps it on its building, and the typed modify path reaches the same edit.
+        const freeform = buildTypedDesign({ ...common, typology: 'freeform', access: 'point' }, options);
+        expect(freeform.geometry.buildings[0].properties.access).toBe('point');
+        expect(buildTypedDesign({ ...common, typology: 'freeform' }, options).geometry.buildings[0].properties.access).toBeUndefined();
+        const modified = intentDesign.modify(freeform, [{ type: 'set_access', value: 'corridor' }], { turf });
+        expect(modified.geometry.buildings[0].properties.access).toBe('corridor');
     });
     it('uses exact source identities and keeps detached exclusions visible in errors', () => {
         expect(() => buildTypedDesign({ ...common, typology: 'detached' })).toThrow(/source parcels/);

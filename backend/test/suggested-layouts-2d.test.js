@@ -100,6 +100,14 @@ describe('collectLayouts', () => {
     it('refuses to run without its collaborators', () => {
         expect(() => layer.collectLayouts({ proposedBuildings: [row], generator, turf })).toThrow(/context, generator and turf/);
     });
+
+    it('draws a building with the access it states, as the X-ray and the unit totals do', () => {
+        const slab = properties => rectangle(0, 100, 60, 18.7, { proposalId: 'p5', buildingIndex: 0, height: 15, ...properties });
+        const accessOf = properties => collect([slab(properties)]).map(entry => entry.floorPlans.layouts[0].source.parameters.access);
+        expect(accessOf({})).toEqual(['corridor']);
+        expect(accessOf({ access: 'point' })).toEqual(['point']);
+        expect(accessOf({ urbanRule: { typology: 'block', access: 'point' } })).toEqual(['point']);
+    });
 });
 
 describe('heightOfBuilding', () => {

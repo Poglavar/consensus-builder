@@ -300,7 +300,9 @@ body.cadastre-view.on-map-editing:has(.on-map-reparcellization) .leaflet-map-pan
     line-height: var(--cb-leading);
 }
 
-#model-layer-controls .three-mode-floor-cutaway:not([hidden]) {
+/* Labelled selects in the X-ray row: the storey cutaway and the suggested layouts' Access. */
+#model-layer-controls .three-mode-floor-cutaway:not([hidden]),
+#model-layer-controls .three-mode-suggested-access:not([hidden]) {
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -308,7 +310,8 @@ body.cadastre-view.on-map-editing:has(.on-map-reparcellization) .leaflet-map-pan
     font-size: var(--cb-text-sm);
 }
 
-#model-layer-controls .three-mode-floor-cutaway select {
+#model-layer-controls .three-mode-floor-cutaway select,
+#model-layer-controls .three-mode-suggested-access select {
     flex: 1;
     min-width: 0;
     max-width: 145px;

@@ -222,4 +222,22 @@ describe('planBuilding', () => {
         expect(planned.slices.map(slice => [slice.parcelId, slice.result.floorPlans === null])).toEqual([['N', true], ['W', false]]);
         expect(planned.slices[0].result.warnings.map(w => w.code)).toContain('core-does-not-fit');
     });
+
+    it('plans with the view\'s Access over the building\'s own, and the building\'s own over the depth rule', () => {
+        // An 18.7 m deep slab: the depth rule alone gives it a corridor.
+        const slab = properties => rectangle(0, 0, 60, 18.7, { proposalId: 'p', buildingIndex: 0, ...properties });
+        const cache = new Map();
+        const access = (feature, accessOverride) => context.planBuilding(feature, { turf, generator, parcels: [], neighbours: [], roads: null, heightM: 15, storeyFallbackM: 3,
+            rules: { garage: 'never' }, cache, ...(accessOverride ? { accessOverride } : {}) }).slices.map(slice => [slice.result.summary.access, slice.result.summary.accessBasis]);
+        expect(access(slab({}))).toEqual([['corridor', 'depth']]);
+        expect(access(slab({ access: 'point' }))).toEqual([['point', 'design']]);
+        expect(access(slab({ access: 'point' }), 'auto')).toEqual([['point', 'design']]);
+        expect(access(slab({ access: 'point' }), 'corridor')).toEqual([['corridor', 'view']]);
+        expect(access(slab({}), 'point')).toEqual([['point', 'view']]);
+        // A Block, Row or Detached building states it on its rule; a stray properties.access is not its.
+        expect(access(slab({ urbanRule: { typology: 'block', access: 'point' } }))).toEqual([['point', 'design']]);
+        expect(access(slab({ urbanRule: { typology: 'block' }, access: 'point' }))).toEqual([['corridor', 'depth']]);
+        // Seven requests, six answers: an automatic view asks what the building's own Access asked.
+        expect(cache.size).toBe(6);
+    });
 });

@@ -217,8 +217,16 @@
             room('living', difference(t, cell(backU, env.backY, env.vb), hall));
         }
         out.rooms.push({ kind: 'hall', polygon: hall, areaM2: Math.round(area(hall) * 10) / 10 });
+        glaze(out, env);
+        return out;
+    }
 
-        // --- windows for every room on every free facade stretch, a balcony for the living room --
+    // Windows for every room on every free facade stretch, and a balcony for the living room on its
+    // sunniest facade. Point-access apartments keep the street (front) facade free of balconies;
+    // a corridor flat (env.balconyOnFront) may have one there, its only facade.
+    function glaze(out, env) {
+        const { t } = env;
+        const cutFor = (opening) => out.cuts.push(strip(t, opening.a, opening.b, opening.depthM + 0.06));
         const facades = env.facades.filter(f => !f.blind);
         let balconyDone = false;
         for (const entry of out.rooms) {
@@ -230,7 +238,7 @@
             });
             for (const { f, run } of runs) {
                 const [t0, t1] = run;
-                const wantsBalcony = env.balconies && !env.isGround && entry.kind === 'living' && !balconyDone && !f.isFront
+                const wantsBalcony = env.balconies && !env.isGround && entry.kind === 'living' && !balconyDone && (!f.isFront || env.balconyOnFront)
                     && runs.every(other => other.f === f || (other.f.sun || 0) <= (f.sun || 0));
                 if (wantsBalcony && t1 - t0 >= 2.6) {
                     const half = Math.min(BALCONY_MAX_WIDTH_M, t1 - t0 - 0.6) / 2, centre = (t0 + t1) / 2;
@@ -257,6 +265,123 @@
                 }
             }
         }
+        return out;
+    }
+
+    const CORRIDOR_HALL_M = 1.1;    // the hall along a corridor flat's service zone
+    const GABLE_HALL_M = 1.2;       // the hall along a gable flat's corridor wall
+    const LIVING_MIN_M = 3.2;       // a single-aspect living room keeps at least this along the facade
+    const BEDROOM_MIN_M = 2.6;
+    const BATH_WIDTH_M = 2.0;
+
+    /**
+     * Rooms for one corridor flat, in a local frame: x along its facade, y from the facade's inner
+     * face (0) to the corridor wall (env.depthM), entered at env.doorX on the corridor side.
+     *   'row':   a service zone on the corridor (hall, bathroom, kitchen) and a hall along it, with
+     *            the living room and env.bedrooms bedrooms on the facade; a studio's hall opens
+     *            straight into its living room.
+     *   'gable': the flat across a gable end; a hall along the corridor wall and every room on
+     *            the gable facade, the corner rooms also on the long facades; the living room takes
+     *            the sunnier corner (env.livingAtEnd: the far end of x).
+     * @param env { t, layout, origin, ex, ey, widthM, depthM, doorX, bedrooms, livingAtEnd, facades, wallM, wallHeightM, isGround, balconies, bayWidthM }
+     */
+    function furnishCorridorFlat(flat, env) {
+        const { t } = env;
+        const out = { rooms: [], partitions: [], openings: [], cuts: [], balconySlabs: [], railings: [] };
+        if (!flat) return out;
+        const Wx = env.widthM, Dy = env.depthM, P = PARTITION_M;
+        const at = (x, y) => [env.origin[0] + env.ex[0] * x + env.ey[0] * y, env.origin[1] + env.ex[1] * x + env.ey[1] * y];
+        const dirOf = (x, y) => [env.ex[0] * x + env.ey[0] * y, env.ex[1] * x + env.ey[1] * y];
+        const box = (x0, x1, y0, y1) => {
+            if (x1 - x0 < 1e-6 || y1 - y0 < 1e-6) return null;
+            const a = at(x0, y0), b = at(x1, y1);
+            return rect(t, Math.min(a[0], b[0]), Math.max(a[0], b[0]), Math.min(a[1], b[1]), Math.max(a[1], b[1]));
+        };
+        const cell = (x0, x1, y0, y1) => intersect(t, flat, box(x0, x1, y0, y1));
+        const partition = (x0, x1, y0, y1) => { const p = cell(x0, x1, y0, y1); if (p && area(p) > 0.005) out.partitions.push(p); };
+        const room = (kind, polygon) => { if (polygon && area(polygon) >= 1.5) { out.rooms.push({ kind, polygon, areaM2: Math.round(area(polygon) * 10) / 10 }); return true; } return false; };
+        const cutFor = opening => out.cuts.push(strip(t, opening.a, opening.b, opening.depthM + 0.06));
+        // A door through a partition running along x at y (swinging +y or -y), or along y at x.
+        const doorAlongX = (x0, x1, y, swing, kind) => {
+            if (x1 - x0 < INTERIOR_DOOR_M + 0.3) return;
+            const mid = (x0 + x1) / 2, door = doorOn(at(mid - 0.5, y), at(mid + 0.5, y), P, dirOf(0, swing));
+            out.openings.push({ ...door, room: kind }); cutFor(door);
+        };
+        const doorAlongY = (x, y0, y1, swing, kind) => {
+            if (y1 - y0 < INTERIOR_DOOR_M + 0.3) return;
+            const door = doorOn(at(x, y0 + 0.1), at(x, y0 + 0.1 + INTERIOR_DOOR_M + 0.2), P, dirOf(swing, 0));
+            out.openings.push({ ...door, room: kind }); cutFor(door);
+        };
+        const bayW = env.bayWidthM >= 2.8 && env.bayWidthM <= 4.5 ? env.bayWidthM : BEDROOM_WIDTH_M;
+        // Facade rooms side by side along x: [kind, width], the living room taking what is left.
+        const facadeRow = (kinds, x0, x1, y0, y1, doorY, swing) => {
+            let cursor = x0;
+            kinds.forEach(([kind, width], index) => {
+                const right = index === kinds.length - 1 ? x1 : cursor + width;
+                if (index > 0) partition(cursor - P, cursor, y0, y1);
+                if (room(kind, cell(cursor, right, y0, y1)) && doorY !== null) doorAlongX(cursor, right, doorY, swing, kind);
+                cursor = right + P;
+            });
+        };
+
+        if (env.layout === 'gable') {
+            const hallY0 = Dy - GABLE_HALL_M, roomsY1 = hallY0 - P;
+            const hall = cell(0, Wx, hallY0, Dy);
+            if (!hall || roomsY1 < 2.4) { room('room', flat); glaze(out, env); return out; }
+            partition(0, Wx, roomsY1, hallY0);
+            const usable = Wx - LIVING_MIN_M - 2 * P - KITCHEN_WIDTH_M - BATH_WIDTH_M;
+            const beds = Math.max(0, Math.min(env.bedrooms || 0, Math.floor((usable + 0.4) / (BEDROOM_MIN_M + P))));
+            const bedW = beds ? Math.min(bayW, (usable - beds * P) / beds) : 0;
+            const livingW = Wx - KITCHEN_WIDTH_M - BATH_WIDTH_M - beds * bedW - (beds + 2) * P;
+            const kinds = [['living', livingW], ['kitchen', KITCHEN_WIDTH_M], ['bathroom', BATH_WIDTH_M], ...Array.from({ length: beds }, () => ['bedroom', bedW])];
+            facadeRow(env.livingAtEnd ? kinds.slice().reverse() : kinds, 0, Wx, 0, roomsY1, roomsY1 + P / 2, -1);
+            out.rooms.push({ kind: 'hall', polygon: hall, areaM2: Math.round(area(hall) * 10) / 10 });
+            glaze(out, env);
+            return out;
+        }
+
+        // --- a row flat: the service zone on the corridor, the rooms on the facade -------------------
+        const innerD = Math.min(2.6, Math.max(2.0, Dy * 0.3));
+        const zoneY0 = Dy - innerD;
+        const hallW = Math.min(Wx - BATH_WIDTH_M - P, Math.max(1.3, (env.doorX ? env.doorX[1] : 1.4) + 0.2));
+        const wanted = Math.max(0, env.bedrooms || 0);
+        const fitBeds = Math.max(0, Math.floor((Wx - LIVING_MIN_M) / (BEDROOM_MIN_M + P)));
+        const backHall = wanted > 0 && fitBeds > 0 && zoneY0 - P - CORRIDOR_HALL_M - P >= 2.8;
+        const beds = backHall ? Math.min(wanted, fitBeds) : 0;
+        // The service zone: the entrance hall, then the bathroom, then the kitchen or a store.
+        const hallY0 = backHall ? zoneY0 - P - CORRIDOR_HALL_M : zoneY0;
+        const hall = unionAll(t, [cell(0, hallW, hallY0, Dy), backHall ? cell(0, Wx, hallY0, zoneY0 - P) : null].filter(Boolean));
+        if (!hall) { room('room', flat); glaze(out, env); return out; }
+        const service = [['bathroom', BATH_WIDTH_M]];
+        const restW = Wx - hallW - P - BATH_WIDTH_M - P;
+        if (restW >= KITCHEN_WIDTH_M - 0.4 && beds > 0) service.push(['kitchen', restW]);
+        else if (restW >= 1.0) service.push(['storage', restW]);
+        let cursor = hallW + P;
+        partition(hallW, hallW + P, zoneY0, Dy);
+        service.forEach(([kind, width], index) => {
+            const right = index === service.length - 1 ? Wx : cursor + width;
+            if (index > 0) partition(cursor - P, cursor, zoneY0, Dy);
+            if (room(kind, cell(cursor, right, zoneY0, Dy))) {
+                // From the hall along the zone, or (no hall along it) through the side partition.
+                if (backHall) doorAlongX(cursor, right, zoneY0 - P / 2, 1, kind);
+                else if (index === 0) doorAlongY(hallW + P / 2, zoneY0, Dy, 1, kind);
+                else doorAlongX(cursor, right, zoneY0 - P / 2, 1, kind);
+            }
+            cursor = right + P;
+        });
+        if (backHall) partition(hallW, Wx, zoneY0 - P, zoneY0);
+        const roomsY1 = hallY0 - P;
+        partition(backHall ? 0 : hallW, backHall ? Wx : hallW, roomsY1, hallY0); // between the halls and the rooms
+        if (!backHall) partition(hallW, Wx, roomsY1, zoneY0); // the studio's service zone against its living room
+        const bedW = beds ? Math.min(bayW, (Wx - LIVING_MIN_M - beds * P) / beds) : 0;
+        const kinds = [['living', Wx - beds * (bedW + P)], ...Array.from({ length: beds }, () => ['bedroom', bedW])];
+        if (backHall) facadeRow(kinds, 0, Wx, 0, roomsY1, roomsY1 + P / 2, -1);
+        else {
+            room('living', cell(0, Wx, 0, roomsY1));
+            doorAlongX(0, hallW, roomsY1 + P / 2, -1, 'living');
+        }
+        out.rooms.push({ kind: 'hall', polygon: hall, areaM2: Math.round(area(hall) * 10) / 10 });
+        glaze(out, env);
         return out;
     }
 
@@ -345,7 +470,7 @@
         return out;
     }
 
-    const api = { furnishApartment, furnishShop, garageLayout, facadeRun, freeRuns, WINDOW_SPECS, PARTITION_M,
+    const api = { furnishApartment, furnishCorridorFlat, furnishShop, garageLayout, facadeRun, freeRuns, WINDOW_SPECS, PARTITION_M,
         // The clip helpers, exported so their failure reporting is tested directly.
         _clip: { intersect, difference, unionAll } };
     global.__defaultFloorPlanRooms = api;

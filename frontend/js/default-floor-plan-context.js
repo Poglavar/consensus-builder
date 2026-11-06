@@ -18,7 +18,9 @@
         return error;
     }
 
-    const STREET_CELL_DEG = 0.005;        // about 550 × 390 m at Zagreb: one /streets/near call per cell
+    const buildingUse = () => (global && global.BuildingUse) || require('./building-use.js');
+
+    const STREET_CELL_DEG = 0.005;       // about 550 × 390 m at Zagreb: one /streets/near call per cell
     const STREET_CELL_MARGIN_DEG = 0.001; // about 100 m past the cell, so a street beside its edge answers too
     const COVERAGE_MIN = 0.95;            // slices covering less than this do not describe the building (createBuildingSlices rule)
     const NEIGHBOUR_PAD_DEG = 0.00002;    // about 2 m: a touching footprint's bbox overlaps within this
@@ -409,7 +411,8 @@
     /**
      * Plan every parcel slice and wing of one drawn building.
      * @param subject the feature being drawn (the realized build-out, or the massing)
-     * @param context { turf, generator, parcels, neighbours, roads|null, heightM, storeyFallbackM, region?, cache?, rules?, owner?, existing? }
+     * @param context { turf, generator, parcels, neighbours, roads|null, heightM, storeyFallbackM, region?, cache?, rules?, owner?, existing?,
+     *                  accessOverride? ('auto' | 'point' | 'corridor': the X-ray view's choice, above the building's own) }
      * @returns {{ floors, storeyHeightM, slices: [{ footprint, parcelFeature, parcelId, wing, key, result }], droppedWings }}
      */
     function planBuilding(subject, context) {
@@ -424,7 +427,11 @@
         const typology = ownerProps.urbanRule && ownerProps.urbanRule.typology ? String(ownerProps.urbanRule.typology) : (ownerProps.typology || undefined);
         const around = Array.isArray(neighbours) ? neighbours : [];
         const aroundHash = hashText(around.map(geometryHash).join(','));
-        const rules = { ...(context.region ? { region: context.region } : {}), ...(context.existing && floors ? eraRulesFor(subject, storeyHeightM, floors) : {}), ...(context.rules || {}) };
+        // Point cores or a corridor: the view's override, else what the building states, else the
+        // generator's depth rule (building-use.js layoutAccess). The rules hash keys the cache on it.
+        const access = buildingUse().layoutAccess(context.accessOverride, ownerProps);
+        const rules = { ...(context.region ? { region: context.region } : {}), ...(context.existing && floors ? eraRulesFor(subject, storeyHeightM, floors) : {}), ...(context.rules || {}),
+            ...(access.access !== 'auto' ? { access: access.access, accessBasis: access.basis } : {}) };
         const rulesHash = hashText(JSON.stringify(rules));
         // Wings of every slice are planned as separate buildings; the other wings are their party neighbours.
         const units = [];

@@ -107,8 +107,11 @@ export function buildTypedDesign(intent, { parcels = [] } = {}) {
     // ground floor from five storeys), a Row or Detached rule starts as housing.
     const ruleUse = intent.use == null ? null : runtime.use.normalize(String(intent.use));
     if (intent.use != null && !ruleUse) fail('invalid-use', `Choose a building use: ${runtime.use.USES.join(', ')}.`, 'use', { enum: runtime.use.USES });
+    // Point cores or a corridor for the suggested layout, on the rule like the use; automatic is unstored.
+    const ruleAccess = intent.access == null ? null : runtime.use.normalizeAccess(String(intent.access));
+    if (intent.access != null && !ruleAccess) fail('invalid-access', `Choose an access: ${runtime.use.ACCESS.join(', ')}.`, 'access', { enum: runtime.use.ACCESS });
     const extras = { balconyDepthM: number(intent.balconyDepthM, 0, 'balconyDepthM', 0, 5), roof: intent.roof,
-        use: ruleUse || (typology === 'block' ? null : 'residential') };
+        use: ruleUse || (typology === 'block' ? null : 'residential'), access: ruleAccess };
     if (typology === 'detached') {
         // The optional limits, each within the range the app's rule keeps (PARCEL_LIMITS); coverage is
         // the same (0, 1] fraction as a freeform design's.

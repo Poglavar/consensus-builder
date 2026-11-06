@@ -246,6 +246,8 @@
         if (hEl) { hEl.value = currentHeightM; const v = document.getElementById('single-height-value'); if (v) v.textContent = CbFormat.formatNumber(Number(currentHeightM), { maxFractionDigits: 0, minFractionDigits: 0 }); }
         const useEl = document.getElementById('single-building-use');
         if (useEl) useEl.value = window.BuildingUse.normalize(getActiveBuilding()?.feature?.properties?.use) || '';
+        const accessEl = document.getElementById('single-building-access');
+        if (accessEl) accessEl.value = window.BuildingUse.statedAccess(getActiveBuilding()?.feature?.properties) || 'auto';
     }
 
     // The Use select's options (building-use.js): no stated use first, for designs saved without one.
@@ -253,6 +255,13 @@
         const names = { '': ['useNotStated', 'Not stated'], residential: ['useResidential', 'Residential'], 'residential-shops': ['useResidentialShops', 'Residential, shops on the ground floor'],
             mixed: ['useMixed', 'Mixed: shops, offices on the first floor, flats above'], office: ['useOffice', 'Office'], public: ['usePublic', 'Public (school, clinic, civic)'], industrial: ['useIndustrial', 'Industrial'] };
         return ['', ...window.BuildingUse.USES].map(use => `<option value="${use}">${translateSingleBuildingText(`modal.singleBuilding.${names[use][0]}`, names[use][1])}</option>`).join('');
+    }
+
+    // The Access select (building-use.js): how the suggested layout reaches the flats; automatic is unstored.
+    function singleBuildingAccessOptions() {
+        const names = { auto: translateSingleBuildingText('urbanRule.accessAuto', 'Automatic: a corridor from 15 m deep'),
+            point: translateSingleBuildingText('urbanRule.accessPoint', 'Stair cores (point access)'), corridor: translateSingleBuildingText('urbanRule.accessCorridor', 'Corridor (flats on both sides)') };
+        return window.BuildingUse.ACCESS.map(access => `<option value="${access}">${names[access]}</option>`).join('');
     }
 
     function markAsEditablePolygon(feature, heightM, rotationDeg = 0) {
@@ -431,6 +440,8 @@
         // The use belongs to the building, not to this outline.
         const use = active?.feature?.properties?.use;
         if (use && !feature.properties.use) feature.properties.use = use;
+        const access = active?.feature?.properties?.access;
+        if (access && !feature.properties.access) feature.properties.access = access;
         singleRectFeature = feature;
         if (active) active.feature = feature;
         if (updateCenter) {
@@ -1366,6 +1377,10 @@
                                 <select id="single-building-use">${singleBuildingUseOptions()}</select>
                                 <p class="parameter-info-text">${translateSingleBuildingText('modal.singleBuilding.useInfo', 'Plan stats counts apartments only on housing storeys; a housing use gets a suggested layout in X-ray.')}</p>
                             </div>
+                            <div class="parameter-group">
+                                <label for="single-building-access">${translateSingleBuildingText('urbanRule.accessLabel', 'Access to flats')}</label>
+                                <select id="single-building-access">${singleBuildingAccessOptions()}</select>
+                            </div>
                             <section id="single-land-take" class="land-take-review" aria-label="${translateSingleBuildingText('landTake.title')}">
                                 <h3 class="cb-kicker">${translateSingleBuildingText('landTake.title')}</h3>
                                 <p data-land-intro>${translateSingleBuildingText('landTake.intro', '', { count: 0 })}</p>
@@ -1437,6 +1452,18 @@
                 // The active building's feature is singleRectFeature (setActiveBuilding).
                 const properties = { ...(active.feature.properties || {}) };
                 if (event.target.value) properties.use = event.target.value; else delete properties.use;
+                active.feature.properties = properties;
+                try { updateSingleBuildingPreview(); } catch (_) { }
+                autosaveSingleBuildingDraft();
+            });
+
+            document.getElementById('single-building-access').addEventListener('change', event => {
+                const active = getActiveBuilding();
+                if (!active?.feature) return;
+                ensureSingleBuildingHistory().record();
+                const properties = { ...(active.feature.properties || {}) };
+                const access = window.BuildingUse.normalizeAccess(event.target.value);
+                if (access && access !== 'auto') properties.access = access; else delete properties.access;
                 active.feature.properties = properties;
                 try { updateSingleBuildingPreview(); } catch (_) { }
                 autosaveSingleBuildingDraft();
