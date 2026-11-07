@@ -2,8 +2,7 @@
 import { build } from 'esbuild';
 import { fileURLToPath } from 'node:url';
 import { resolve, dirname } from 'node:path';
-import { readdir, unlink, mkdir, copyFile } from 'node:fs/promises';
-import { OSTN15_GRID_SHA256 } from '../parcels/osgb36-projection.js';
+import { readdir, unlink } from 'node:fs/promises';
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '../..');
 export async function buildBrowserParcels({ outdir = resolve(root, 'frontend/assets/parcel-adapters') } = {}) {
     const outputDir = resolve(root, outdir);
@@ -18,9 +17,6 @@ export async function buildBrowserParcels({ outdir = resolve(root, 'frontend/ass
             builder.onResolve({ filter: /disk-geojson-snapshot-source\.js$/ }, () => ({ path: resolve(root, 'backend/parcels/browser-disk-snapshot.js') }));
             builder.onResolve({ filter: /osgb36-grid-loader\.js$/ }, () => ({ path: resolve(root, 'backend/parcels/browser-osgb36-grid-loader.js') }));
         } }] });
-    await mkdir(resolve(outputDir, 'grids'), { recursive: true });
-    await copyFile(resolve(root, 'backend/parcels/grids/ostn15/OSTN15_NTv2_OSGBtoETRS.gsb'),
-        resolve(outputDir, 'grids', `${OSTN15_GRID_SHA256}.gsb`));
     const outputs = new Set(Object.keys(result.metafile.outputs).map(path => resolve(root, path)));
     // Only this builder's generated names are retired; unrelated output-directory files stay.
     for (const directory of [outputDir, resolve(outputDir, 'chunks')]) {

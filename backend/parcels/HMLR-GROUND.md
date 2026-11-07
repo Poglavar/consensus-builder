@@ -21,7 +21,8 @@ projection and GEOS WebAssembly overlays run in the worker.
 
 Public EPSG:27700-to-geographic conversion uses the official Ordnance Survey
 OSTN15 NTv2 grid, verified by SHA-256 before loading. The grid is fetched lazily
-as a separate static asset; it is not embedded in the worker bundle. Missing,
+from the `uk-cadastre` R2 bucket, `https://uk-cadastre.urbangametheory.xyz/grids/<sha256>.gsb`;
+it is not embedded in the worker bundle. Missing,
 corrupt or out-of-grid resources fail the read. No approximate Helmert output
 or fitted map offset is used. The OS's 40 published control points are tested
 in both directions, and `coordinateOperation` identifies the grid on derived

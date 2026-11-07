@@ -23,8 +23,7 @@ const browserGridLoader = { name: 'browser-osgb36-grid-loader', setup(builder) {
 } };
 
 async function browserGridResponse(url) {
-    const expectedUrl = `/assets/parcel-adapters/grids/${OSTN15_GRID_SHA256}.gsb`;
-    if (!String(url).includes(expectedUrl)) return null;
+    if (String(url) !== `https://uk-cadastre.urbangametheory.xyz/grids/${OSTN15_GRID_SHA256}.gsb`) return null;
     const bytes = await readFile(ostn15GridPath);
     const arrayBuffer = bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength);
     return { ok: true, status: 200, arrayBuffer: async () => arrayBuffer };
@@ -49,8 +48,8 @@ describe('static browser parcel adapters', () => {
             const build = await buildBrowserParcels({ outdir });
             const gridBytes = await readFile(ostn15GridPath);
             expect(createHash('sha256').update(gridBytes).digest('hex')).toBe(OSTN15_GRID_SHA256);
-            // Native byte equality avoids expanding this 16 MB binary into millions of keys.
-            expect((await readFile(join(outdir, 'grids', `${OSTN15_GRID_SHA256}.gsb`))).equals(gridBytes)).toBe(true);
+            // The grid is published to R2, not copied into the deployable assets.
+            await expect(readFile(join(outdir, 'grids', `${OSTN15_GRID_SHA256}.gsb`))).rejects.toThrow();
             expect(Object.keys(build.metafile.outputs).some(path => path.endsWith('.gsb'))).toBe(false);
             expect(Object.keys(build.metafile.inputs).some(input => input.endsWith('hmlr-browser-source.js'))).toBe(true);
             expect(Object.keys(build.metafile.inputs).some(input => input.endsWith('disk-geojson-snapshot-source.js'))).toBe(false);
