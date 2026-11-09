@@ -9365,7 +9365,12 @@
         "takesGround": "يشغل {{title}} أرض {{others}}، لذا لم يعد {{others}} محددًا.",
         "cannotStand": "لا يمكن أن يقوم {{title}} مع التصاميم المحددة مسبقًا، لذا لم يُضَف.",
         "loadMore": "تحميل المزيد",
-        "limited": "يتم عرض ما يصل إلى 1,000 تصميم منشور."
+        "limited": "يتم عرض ما يصل إلى 1,000 تصميم منشور.",
+        "source": "المصدر",
+        "sourceIndex": "فهرس الخادم",
+        "sourceChain": "على السلسلة (Solana {{cluster}})",
+        "chainAgreement": "اتفاق {{cid}}",
+        "chainLoading": "جارٍ قراءة الاتفاقات على السلسلة…"
     },
   "appUpdates": {
     "title": "تحديث التطبيق",

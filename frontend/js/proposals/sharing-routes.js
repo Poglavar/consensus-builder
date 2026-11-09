@@ -790,6 +790,18 @@ async function handleSharedDesignRoute(cids, options = {}) {
         fetched.missing.forEach(cid => {
             result.failed.push({ id: cid, label: cid, reason: t('proposals.share.errors.notFound', 'This design is not on the server.') });
         });
+        // Designs read from IPFS come without the index's binding: it is derived here, before the
+        // ground they need is chosen and loaded.
+        for (const [cid, row] of fetched.rows) {
+            if (row.binding || row.source !== 'ipfs') continue;
+            try {
+                fetched.rows.set(cid, await window.DesignSync.withDerivedBinding(row));
+            } catch (error) {
+                console.warn(`[${new Date().toISOString()}] [handleSharedDesignRoute] the binding of ${cid} could not be derived`, error);
+                fetched.rows.delete(cid);
+                result.failed.push({ id: cid, label: row.content?.title || cid, reason: (error && error.message) || String(error) });
+            }
+        }
 
         // A bound design may need another cadastral source at its geometry. City text is
         // descriptive metadata and cannot trigger a context switch or block a shared plan.

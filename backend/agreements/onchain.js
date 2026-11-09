@@ -27,7 +27,7 @@ export const AGREEMENT_CLUSTERS = Object.freeze({
 });
 
 // The program's status codes as the index spells them (lower case, by code).
-export const ONCHAIN_STATUSES = Object.freeze(['active', 'executed', 'cancelled', 'expired']);
+export const ONCHAIN_STATUSES = AgreementClient.ONCHAIN_STATUSES;
 export const TERMINAL_STATUSES = Object.freeze(['executed', 'cancelled', 'expired']);
 // The lens issues `satisfied` only; an unmet agreement expires (lens-schemas.js LENS_DECISIONS).
 const DECISION_SATISFIED = AgreementClient.constants.DECISION_SATISFIED;
@@ -38,7 +38,6 @@ if (!Number.isInteger(DECISION_SATISFIED)) throw new Error('agreement-client.js 
 // (oracle/agreement-lifecycle.js): a refresh keeps it as stored.
 export const MOVING_FIELDS = Object.freeze(['status', 'decision', 'escrowLamports', 'executedAt', 'observedAt', 'observedSlot']);
 
-const iso = seconds => new Date(seconds * 1000).toISOString();
 // A transaction signature: 64 bytes in base58.
 const SIGNATURE_PATTERN = /^[1-9A-HJ-NP-Za-km-z]{64,90}$/;
 
@@ -75,25 +74,8 @@ export function agreementAccountOf(cid, sponsor, programId = AGREEMENT_PROGRAM_I
  * deadline and executedAt are the account's own chain times.
  */
 export function onchainFromAccount(account, { cluster, programId = AGREEMENT_PROGRAM_ID, observedAt, observedSlot, signature = null }) {
-    const status = ONCHAIN_STATUSES[account.statusCode];
-    if (!status) throw new Error(`agreement ${account.address} has status ${account.statusCode}: an unknown code`);
-    return {
-        chain: 'solana',
-        cluster,
-        programId,
-        account: account.address,
-        sponsor: account.authority,
-        lens: account.lens,
-        status,
-        decision: decisionOf(account),
-        deadline: account.deadline ? iso(account.deadline) : null,
-        requiredLamports: String(account.requiredLamports),
-        escrowLamports: String(account.escrowLamports),
-        executedAt: account.executedAt ? iso(account.executedAt) : null,
-        observedAt,
-        observedSlot,
-        ...(signature ? { signature } : {})
-    };
+    // One spelling for the server and the browser's chain reader (agreement-client.js onchainOf).
+    return AgreementClient.onchainOf(account, { cluster, programId, observedAt, observedSlot, signature });
 }
 
 /** The stored `onchain` with only the fields the chain moves taken from a fresh observation. */

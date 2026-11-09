@@ -9135,7 +9135,12 @@
         "takesGround": "{{title}} zauzima zemljište dizajna {{others}}, pa {{others}} više nije označen.",
         "cannotStand": "{{title}} ne može da stoji uz već označene dizajne pa nije dodat.",
         "loadMore": "Učitaj još",
-        "limited": "Prikazuje se do 1.000 objavljenih dizajna."
+        "limited": "Prikazuje se do 1.000 objavljenih dizajna.",
+        "source": "Izvor",
+        "sourceIndex": "Indeks servera",
+        "sourceChain": "Na lancu (Solana {{cluster}})",
+        "chainAgreement": "Sporazum {{cid}}",
+        "chainLoading": "Čitanje sporazuma sa lanca…"
     },
   "appUpdates": {
     "title": "Ažuriranje aplikacije",

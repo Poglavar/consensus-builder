@@ -191,8 +191,15 @@
             return `${win.resolveFrontendBaseUrl()}${agreementPath(cid)}${query}`;
         }
 
-        // GET /agreements/:cid → the row, its content checked against the CID it is filed under.
+        // The agreement `cid` names with its plan: from the index, or, when the index cannot answer,
+        // from IPFS with its chain state read from its account (chain/chain-reader.js).
         async function fetchAgreement(cid) {
+            if (!win.ChainReader || !cidApi().isCid(cid)) return fetchIndexedAgreement(cid);
+            return win.ChainReader.withFallback(`agreement ${cid}`, () => fetchIndexedAgreement(cid), () => win.ChainReader.fetchAgreement(cid));
+        }
+
+        // GET /agreements/:cid → the row, its content checked against the CID it is filed under.
+        async function fetchIndexedAgreement(cid) {
             if (!cidApi().isCid(cid)) throw failure('invalid-cid', t('agreement.publish.errors.notACid', 'This is not an agreement link.'));
             const response = await request('GET', `/agreements/${encodeURIComponent(cid)}`, undefined, { deadline: true });
             if (response.status === 404) throw failure('agreement-not-found', t('agreement.publish.errors.notFound', 'This agreement is not on the server.'));

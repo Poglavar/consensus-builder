@@ -378,17 +378,46 @@
         }
 
         // GET /designs/:cid → the row; a missing design throws code 'design-not-found'.
+        // The design `cid` names: from the index, or from IPFS when the index cannot answer.
         async function fetchDesign(cid) {
             if (!cidApi().isCid(cid)) throw failure('invalid-cid', `Not a design CID: ${cid}`);
+            if (!win.ChainReader) return fetchIndexedDesign(cid);
+            return win.ChainReader.withFallback(`design ${cid}`, () => fetchIndexedDesign(cid), async () => {
+                const read = await win.ChainReader.fetchDesigns([cid]);
+                if (!read.rows.has(cid)) throw failure('design-not-found', t('proposals.share.errors.notFound', 'This design is not on the server.'), { cid });
+                return read.rows.get(cid);
+            });
+        }
+
+        async function fetchIndexedDesign(cid) {
             const response = await request('GET', `/designs/${encodeURIComponent(cid)}`, undefined, { deadline: true });
             if (response.status === 404) throw failure('design-not-found', t('proposals.share.errors.notFound', 'This design is not on the server.'), { cid });
             if (!response.ok || !response.body) throw failure((response.body && response.body.code) || `http-${response.status}`, refusalMessage(response.status, response.body));
             return response.body;
         }
 
-        // POST /designs/batch in chunks of the index's limit → { rows: Map(cid → row), missing: cid[] }.
+        // The designs `cids` name: from the index, and whatever it cannot give (all of them when it
+        // does not answer) from IPFS (chain/chain-reader.js). Rows read from IPFS carry no binding.
         async function fetchDesigns(cids) {
             const wanted = sortedCids(cids);
+            if (!win.ChainReader || !wanted.length) return fetchIndexedDesigns(wanted);
+            let indexed;
+            try {
+                indexed = await fetchIndexedDesigns(wanted);
+            } catch (error) {
+                log(`the index did not answer for ${wanted.length} design(s) (${error.message}); reading IPFS`);
+                const read = await win.ChainReader.fetchDesigns(wanted);
+                if (!read.rows.size) throw error;
+                return read;
+            }
+            if (!indexed.missing.length) return indexed;
+            const read = await win.ChainReader.fetchDesigns(indexed.missing);
+            read.rows.forEach((row, cid) => indexed.rows.set(cid, row));
+            return { rows: indexed.rows, missing: read.missing };
+        }
+
+        // POST /designs/batch in chunks of the index's limit → { rows: Map(cid → row), missing: cid[] }.
+        async function fetchIndexedDesigns(wanted) {
             const rows = new Map();
             for (let start = 0; start < wanted.length; start += 1000) {
                 const chunk = wanted.slice(start, start + 1000);
@@ -450,7 +479,9 @@
             const store = options._parcelMutation.proposals;
             const existing = localCopyOf(row && row.cid, { store });
             if (existing) return existing;
-            const record = localDesignFromRow(row, { apiBase: currentApiBase() });
+            // A design read from IPFS is published at its gateway, not at this server, so Share
+            // still offers to publish it here.
+            const record = localDesignFromRow(row, { apiBase: row && row.source === 'ipfs' && row.gateway ? row.gateway : currentApiBase() });
             const stored = store.importProposal(record, { overwrite: true, deferSave: true });
             if (!stored) throw new Error(`Design ${row.cid} could not be stored locally.`);
             let cid = null;
@@ -458,6 +489,36 @@
             if (cid !== row.cid) warn(`imported ${row.cid} hashes to ${cid} here: its local form differs from the published object`);
             log(`imported ${row.cid} as ${stored.proposalId}`);
             return stored;
+        }
+
+        /**
+         * The row with the binding the index would give it, derived here: a design read from IPFS
+         * comes without one. Its site meets the cadastral ground this browser loads under it
+         * (CadastralParcelRepository.ensureFootprint) through the same bindingFromParcels the server
+         * runs (backend/proposals/binding.js), so both bind a site alike. A row that has a binding is
+         * returned as it is.
+         */
+        async function withDerivedBinding(row) {
+            if (!isObject(row) || row.binding || !isObject(row.content)) return row;
+            const siting = win.__siteBinding;
+            const site = siting.siteOf(localDesignFromRow(row, { apiBase: row.gateway || currentApiBase() }));
+            if (!site) return row;
+            const toleranceM = row.content.toleranceM;
+            if (win.ParcelGroundFallback?.isWithoutParcels?.()) {
+                return { ...row, binding: siting.bindingFromParcels(site, [], { toleranceM, regionHasCadastre: false, source: 'client' }) };
+            }
+            const ground = await win.CadastralParcelRepository.ensureFootprint(site, { mutation: null });
+            const features = Array.isArray(ground?.result?.features) ? ground.result.features : [];
+            const parcels = features.map(feature => ({
+                id: String(feature.properties?.parcelId ?? feature.id ?? ''), geometry: feature.geometry,
+                ...(feature.properties?.parcelSource ? { parcelSource: feature.properties.parcelSource } : {})
+            })).filter(parcel => parcel.id && parcel.geometry);
+            const sources = parcels.map(parcel => siting.normalizeParcelSource(parcel.parcelSource));
+            const parcelSource = sources.length && sources.every(source => source
+                && source.sourceId === sources[0].sourceId && source.snapshotId === sources[0].snapshotId) ? sources[0] : null;
+            const binding = siting.bindingFromParcels(site, parcels, { toleranceM, parcelSource, source: 'client' });
+            log(`derived the binding of ${row.cid} here: ${binding.parcels.length} parcel(s), coverage ${binding.coverage}`);
+            return { ...row, binding };
         }
 
         // A private fragment preview becomes an ordinary local draft, with no publication mark.
@@ -688,7 +749,7 @@
         return {
             api: {
                 publishDesign: record => observe('publish', 'design-publish-failed', () => publishDesign(record)),
-                addressObject, markPublished, fetchDesign, fetchDesigns, importDesign, importDraft, localCopyOf,
+                addressObject, markPublished, fetchDesign, fetchDesigns, withDerivedBinding, importDesign, importDraft, localCopyOf,
                 designLink, copyLink, prepareMapPreview, parcelSourceIdOf, refusalMessage, clearPublicationProblem,
                 // A local record's exact CID at the current index, or an index summary's own.
                 publishedCid: record => (isObject(record) && record.indexed === true && cidApi().isCid(record.cid)

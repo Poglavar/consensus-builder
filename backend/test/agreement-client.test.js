@@ -394,3 +394,42 @@ describe('fetching through a connection', () => {
             .rejects.toThrow(/not a SAS attestation/);
     });
 });
+
+describe('listing agreements (blockchain-flows.md, Flow 1)', () => {
+    const programKey = new PublicKey(C.AGREEMENT_PROGRAM_ID);
+    const OTHER_CID = 'bafkreiexxjscqvxx53b3dts2uxslfuu7zlro7te4ztjyx5yi5xt4qwbkwi';
+    const pda = (cid, sponsor) => client.getAgreementPda(cid, sponsor)[0];
+    function programAccounts(rows) {
+        const asked = [];
+        return {
+            asked,
+            async getProgramAccounts(program, config) { asked.push([program.toBase58(), config]); return rows; }
+        };
+    }
+
+    it('lists the agreements stored at their own PDAs, newest first, and skips any other account', async () => {
+        const older = { pubkey: pda(CID, SPONSOR), account: { data: agreementBytes({ createdAt: NOW - 900 }) } };
+        const newer = { pubkey: pda(OTHER_CID, OTHER), account: { data: agreementBytes({ cid: OTHER_CID, authority: OTHER, createdAt: NOW }) } };
+        // A copy of an agreement at an address that is not its PDA, and an account of another kind.
+        const misplaced = { pubkey: new PublicKey(keyOf(71)), account: { data: agreementBytes() } };
+        const garbled = agreementBytes(); garbled[0] ^= 1;
+        const foreign = { pubkey: new PublicKey(keyOf(73)), account: { data: garbled } };
+        const chain = programAccounts([older, misplaced, newer, foreign]);
+        const listed = await client.listAgreements(chain);
+        expect(listed.map(row => [row.cid, row.address])).toEqual([[OTHER_CID, newer.pubkey.toBase58()], [CID, older.pubkey.toBase58()]]);
+        expect(chain.asked).toEqual([[programKey.toBase58(), { commitment: 'confirmed', filters: [{ dataSize: C.AGREEMENT_ACCOUNT_SPACE }] }]]);
+    });
+
+    it('spells an account as the index keeps it: lower-case status, decision, ISO chain times, lamports as strings', () => {
+        const executed = client.readAgreement(agreementBytes({ status: 1, decision: 1, deadline: NOW + 60, executedAt: NOW, decisionAttestation: keyOf(41) }), keyOf(77));
+        expect(client.onchainOf(executed, { cluster: 'devnet', observedAt: '2026-11-09T10:00:00.000Z' })).toEqual({
+            chain: 'solana', cluster: 'devnet', programId: C.AGREEMENT_PROGRAM_ID, account: keyOf(77), sponsor: SPONSOR, lens: LENS,
+            status: 'executed', decision: 'satisfied', deadline: new Date((NOW + 60) * 1000).toISOString(),
+            requiredLamports: '2000000000', escrowLamports: '500000000', executedAt: new Date(NOW * 1000).toISOString(),
+            observedAt: '2026-11-09T10:00:00.000Z', observedSlot: null
+        });
+        const active = client.onchainOf(client.readAgreement(agreementBytes(), keyOf(77)), { cluster: 'devnet', observedAt: 'x', signature: 'sig' });
+        expect(active).toMatchObject({ status: 'active', decision: 'pending', deadline: null, executedAt: null, signature: 'sig' });
+        expect(() => client.onchainOf(client.readAgreement(agreementBytes({ status: 7 }), keyOf(77)), { cluster: 'devnet' })).toThrow(/unknown code/);
+    });
+});

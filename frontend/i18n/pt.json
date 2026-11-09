@@ -9090,7 +9090,12 @@
         "takesGround": "{{title}} ocupa o terreno de {{others}}, por isso {{others}} deixou de estar marcado.",
         "cannotStand": "{{title}} não pode coexistir com os projetos já marcados, por isso não é adicionado.",
         "loadMore": "Carregar mais",
-        "limited": "São apresentados até 1.000 desenhos publicados."
+        "limited": "São apresentados até 1.000 desenhos publicados.",
+        "source": "Fonte",
+        "sourceIndex": "Índice do servidor",
+        "sourceChain": "Na cadeia (Solana {{cluster}})",
+        "chainAgreement": "Acordo {{cid}}",
+        "chainLoading": "A ler os acordos na cadeia…"
     },
   "appUpdates": {
     "title": "Atualização da aplicação",

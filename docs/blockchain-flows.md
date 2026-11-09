@@ -166,7 +166,7 @@ adapter, and the agreement can check anchors and records it owns without cross-p
   parcel names (`contracts/ens/`), reading this contract instead.
 - **`RecordRegistry`** (new): a non-transferable ERC-721 (`_update` reverts on transfer) with
   `tokenId = uint256(sha256(cid))`, `mint(kind, cid, tokenURI)` to the minter so wallets show it,
-  `ERC721Enumerable` for readers. (Open question 1 decides whether it is a token at all.)
+  `ERC721Enumerable` for readers.
 - **`Agreement`** (new): the Solana program's lifecycle in Solidity: `create(cid, lens, payout,
   deadline, required)` keyed by `keccak256(sponsor, cid)`, `fund` by the sponsor, `attest(uid)`
   checking an EAS `AgreementDecision` attestation by the named lens (the `IEAS` interface and
@@ -205,6 +205,17 @@ mock API and a local validator), then docs and the vocabulary entries it changes
 1. **R1, Solana reader.** From chain in Lists for agreements, their plans and designs, on devnet,
    with the verify step and chain state on the records. No server involved. Done when a devnet
    agreement opens from a browser whose `backend` is unreachable.
+   *Built:* `frontend/js/chain/ipfs-read.js` (gateways in order, `IPFS_READ_GATEWAYS` in
+   `rpc-config.js` overrides them, bytes hashed against the CID), `chain/chain-reader.js` (agreement
+   accounts listed through `AgreementClient.listAgreements`, `onchain` spelled by
+   `AgreementClient.onchainOf` for the browser and the server alike), and the Lists agreements tab's
+   **Source** filter (Server index / On chain). The agreement, plan and design loaders ask the index
+   first and read IPFS for what it cannot give; a design read from IPFS gets its binding derived in
+   the browser (`DesignSync.withDerivedBinding`, the server's own `bindingFromParcels`) and is marked
+   published at its gateway, not at the server. Still open: the Plans and Designs tabs list from the
+   chain once they have records (R2), and today's devnet agreements open only where their content is
+   retrievable — none of it is on public IPFS until Flow 2 pins what the chain references. The
+   program-accounts RPC (`SOLANA_PROGRAM_ACCOUNTS_RPC_URLS`) must accept the page's origin.
 2. **R2, Solana records and the checklist.** The one program on devnet, replacing `parcel_nft` and
    `agreement` (R1's reader moves to its layout; devnet agreements are re-created); Flow 2's courier
    order and gate; the mint checklist for designs, plans and agreements including parcel anchoring;
@@ -220,25 +231,24 @@ mock API and a local validator), then docs and the vocabulary entries it changes
 Sizes, as estimates to be revised when each starts: R1 about two days, R2 about a week, R3 three to
 four days, R4 about a week; R4 is the only new money-holding contract.
 
+## Decided 2026-11-09
+
+- **Design and plan records are wallet-visible tokens**: a Metaplex Core asset on Solana, the
+  soulbound ERC-721 above on EVM, each with a token metadata object (Flow 2). The record's meaning is
+  unchanged: it confers nothing.
+- **Plans get records**, the same mechanism as designs.
+- **Parcel anchors are ownerless on both chains.** EVM's transferable `ParcelNFT.sol` is replaced by
+  `ParcelAnchor`; ownership reaches the chain only as a lens attestation.
+- **Anchoring stays the browser's guard** (Flow 3); the program does not bind parcels.
+- **Work runs in milestone order** R1 → R4.
+
 ## Open questions
 
-1. **Wallet-visible NFTs or plain records?** A design or plan record as a plain program account /
-   registry entry is cheapest and simplest; as a token (Metaplex Core on Solana, the soulbound
-   ERC-721 above on EVM) it shows in wallets with its image, for a little more rent and gas and a
-   metadata object per mint. The record's meaning is the same either way.
-2. **Which EVM mainnet**, when the time comes; Base is the working assumption because the testnet
+1. **Which EVM mainnet**, when the time comes; Base is the working assumption because the testnet
    deployments are there.
-3. **The lens on EVM.** Lens members attest with Solana keys today (SAS). R4 needs each member to
+2. **The lens on EVM.** Lens members attest with Solana keys today (SAS). R4 needs each member to
    hold an EVM key and attest through EAS, or a cross-chain attestation; this is a lens-model change.
-4. **Plan records at all?** A plan is addressable by CID without a record. The record adds a
-   timestamp and a place to find plans on chain; if that is not wanted, plans are read through the
-   agreements that name them and R2 shrinks.
-5. **Anchors checked by the program?** Freedom to rewrite makes it possible: the agreement commits a
-   Merkle root of its input parcel ids, `bind_parcels` takes a batch of anchor accounts with proofs,
-   and `fund` / `execute` refuse until every input is bound. It makes "every party has an inbox" a
-   chain fact instead of a browser check, at the cost of more transactions per agreement and a
-   Merkle codec in both clients. The plan above keeps the browser guard until this is decided.
-6. **Anchors for input parcels of a non-binding agreement.** A community vote names parcels but
+3. **Anchors for input parcels of a non-binding agreement.** A community vote names parcels but
    moves nothing and is never minted today; it stays off chain unless a reason to mint it appears.
 
 ## Vocabulary entries this changes when implemented

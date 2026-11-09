@@ -64,9 +64,12 @@
             if (!response.ok) throw new Error(data.error || `HTTP ${response.status}`);
             return data;
         }
+        // The plan `cid` names: from the index, or from IPFS when the index cannot answer.
         async function fetchPlan(cid) {
             if (!win.Cid.isCid(cid)) throw new Error('Invalid plan link.');
-            return verify(await request('GET', `/plans/${cid}`), cid);
+            const indexed = async () => verify(await request('GET', `/plans/${cid}`), cid);
+            if (!win.ChainReader) return indexed();
+            return verify(await win.ChainReader.withFallback(`plan ${cid}`, indexed, () => win.ChainReader.fetchPlan(cid)), cid);
         }
         function link(cid) {
             const url = new URL(`/plans/${cid}`, win.resolveFrontendBaseUrl());

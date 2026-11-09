@@ -577,3 +577,51 @@ describe('links, parcel sources and refusals', () => {
         expect(described[0]).toMatchObject({ status: 503, message: 'DGU is down' });
     });
 });
+
+// docs/blockchain-flows.md, Flow 1: what the index cannot give is read from IPFS (ChainReader).
+describe('fetchDesigns falls back to IPFS', () => {
+    const GATEWAY = 'https://ipfs.example.test/ipfs/';
+    function withChainReader(fakeWin, rows) {
+        const asked = [];
+        fakeWin.ChainReader = { fetchDesigns: async cids => {
+            asked.push(cids);
+            const found = new Map(cids.filter(cid => rows.has(cid)).map(cid => [cid, { cid, content: rows.get(cid), source: 'ipfs', gateway: GATEWAY }]));
+            return { rows: found, missing: cids.filter(cid => !found.has(cid)) };
+        } };
+        return asked;
+    }
+
+    it('reads every design from IPFS when the index does not answer, and imports it as published at the gateway', async () => {
+        const row = rowOf(road());
+        const server = { fetch: async () => { throw new TypeError('Failed to fetch'); }, calls: [], designs: new Map() };
+        const { sync, win } = fakeWindow({ server });
+        const asked = withChainReader(win, new Map([[row.cid, row.content]]));
+        const log = vi.spyOn(console, 'log').mockImplementation(() => {});
+        const fetched = await sync.fetchDesigns([row.cid]);
+        expect(asked).toEqual([[row.cid]]);
+        expect(fetched.missing).toEqual([]);
+        const record = await sync.importDesign(fetched.rows.get(row.cid));
+        log.mockRestore();
+        expect(DesignRecord.cidOf(record)).toBe(row.cid);
+        // Published at the gateway, not at this server: Share still offers to publish it here.
+        expect(record.published.apiBase).toBe(GATEWAY.replace(/\/$/, ''));
+        expect(sync.publishedCid(record)).toBeNull();
+    });
+
+    it('asks IPFS only for the designs the index is missing, and still reports what neither has', async () => {
+        const indexed = rowOf(road());
+        const elsewhere = rowOf(road({ title: 'Only on IPFS' }));
+        const nowhere = rowOf(road({ title: 'Nowhere' }));
+        const server = fakeServer();
+        const plain = server.fetch;
+        server.fetch = async (url, init = {}) => (new URL(url).pathname === '/designs/batch'
+            ? json(200, { items: [{ cid: indexed.cid, design: indexed }] }) : plain(url, init));
+        const { sync, win } = fakeWindow({ server });
+        const asked = withChainReader(win, new Map([[elsewhere.cid, elsewhere.content]]));
+        const fetched = await sync.fetchDesigns([indexed.cid, elsewhere.cid, nowhere.cid]);
+        expect(asked).toEqual([[elsewhere.cid, nowhere.cid].sort()]);
+        expect([...fetched.rows.keys()].sort()).toEqual([indexed.cid, elsewhere.cid].sort());
+        expect(fetched.rows.get(indexed.cid)).toBe(indexed);
+        expect(fetched.missing).toEqual([nowhere.cid]);
+    });
+});

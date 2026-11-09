@@ -9083,7 +9083,12 @@
         "takesGround": "{{title}} takes the ground of {{others}}, so {{others}} is no longer ticked.",
         "cannotStand": "{{title}} cannot stand with the designs already ticked, so it is not added.",
         "loadMore": "Load more",
-        "limited": "Showing up to 1,000 published designs."
+        "limited": "Showing up to 1,000 published designs.",
+        "source": "Source",
+        "sourceIndex": "Server index",
+        "sourceChain": "On chain (Solana {{cluster}})",
+        "chainAgreement": "Agreement {{cid}}",
+        "chainLoading": "Reading the agreements on chain…"
     },
   "appUpdates": {
     "title": "Application update",

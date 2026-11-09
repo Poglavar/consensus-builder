@@ -523,6 +523,59 @@
         return value;
     }
 
+    // Every agreement account of the program, decoded, newest first (blockchain-flows.md, Flow 1). The
+    // RPC filters by the account's size; an account whose discriminator or address does not match an
+    // agreement stored at its own PDA is skipped with a warning, never listed.
+    async function listAgreements(connection, { programId = constants.AGREEMENT_PROGRAM_ID } = {}) {
+        const accounts = await connection.getProgramAccounts(toKey(programId, 'programId'), {
+            commitment: 'confirmed', filters: [{ dataSize: constants.AGREEMENT_ACCOUNT_SPACE }]
+        });
+        const agreements = [];
+        for (const { pubkey, account } of accounts) {
+            const address = toKey(pubkey, 'pubkey').toBase58();
+            const value = readAgreement(new Uint8Array(account.data), address);
+            const expected = value && getAgreementPda(value.cid, value.authority, programId)[0].toBase58();
+            if (!value || expected !== address) {
+                console.warn(`[${new Date().toISOString()}] [AgreementClient] skipped ${address}: ${value ? `not the PDA of ${value.cid}` : 'not an Agreement account'}`);
+                continue;
+            }
+            agreements.push(value);
+        }
+        return agreements.sort((a, b) => b.createdAt - a.createdAt || a.address.localeCompare(b.address));
+    }
+
+    // The status codes as the index's `onchain.status` spells them (lower case, by code).
+    const ONCHAIN_STATUSES = Object.freeze(['active', 'executed', 'cancelled', 'expired']);
+    const isoOf = seconds => new Date(seconds * 1000).toISOString();
+
+    /**
+     * A decoded account as the index's `onchain` JSON (backend agreements/onchain.js keeps it in
+     * consensus.agreement; the browser keeps it on a local record): observed at `observedAt`, the
+     * reader's clock when it read the account (an observation time, never an event time). Lamports
+     * are decimal strings; deadline and executedAt are the account's own chain times.
+     */
+    function onchainOf(account, { cluster, programId = constants.AGREEMENT_PROGRAM_ID, observedAt, observedSlot = null, signature = null }) {
+        const status = ONCHAIN_STATUSES[account.statusCode];
+        if (!status) throw new Error(`agreement ${account.address} has status ${account.statusCode}: an unknown code`);
+        return {
+            chain: 'solana',
+            cluster,
+            programId,
+            account: account.address,
+            sponsor: account.authority,
+            lens: account.lens,
+            status,
+            decision: account.decisionCode === constants.DECISION_SATISFIED ? 'satisfied' : 'pending',
+            deadline: account.deadline ? isoOf(account.deadline) : null,
+            requiredLamports: String(account.requiredLamports),
+            escrowLamports: String(account.escrowLamports),
+            executedAt: account.executedAt ? isoOf(account.executedAt) : null,
+            observedAt,
+            observedSlot,
+            ...(signature ? { signature } : {})
+        };
+    }
+
     // The lens's AgreementDecision-v1 attestation at `address`, checked to be a SAS account. null when
     // the account is absent.
     async function fetchDecisionAttestation(connection, address) {
@@ -565,6 +618,9 @@
         getDecisionSchemaPda,
         checkDecisionForAttest,
         fetchAgreement,
+        listAgreements,
+        ONCHAIN_STATUSES,
+        onchainOf,
         fetchDecisionAttestation
     };
 

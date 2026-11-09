@@ -9111,7 +9111,12 @@
         "takesGround": "{{title}} ocupa el terreno de {{others}}, así que {{others}} ya no está marcado.",
         "cannotStand": "{{title}} no puede estar junto a los diseños ya marcados, así que no se añade.",
         "loadMore": "Cargar más",
-        "limited": "Se muestran hasta 1.000 diseños publicados."
+        "limited": "Se muestran hasta 1.000 diseños publicados.",
+        "source": "Fuente",
+        "sourceIndex": "Índice del servidor",
+        "sourceChain": "En cadena (Solana {{cluster}})",
+        "chainAgreement": "Acuerdo {{cid}}",
+        "chainLoading": "Leyendo los acuerdos en cadena…"
     },
   "appUpdates": {
     "title": "Actualización de la aplicación",

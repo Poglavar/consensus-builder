@@ -42,7 +42,10 @@
     }
     function browser(win) {
         const doc = win.document;
-        const state = { tab: 'designs', search: '', publication: 'all', sort: 'title',
+        // source: where the agreements tab lists from, the server's index or the connected chain
+        // (blockchain-flows.md, Flow 1). Designs and plans list from the index until they have
+        // chain records of their own.
+        const state = { tab: 'designs', search: '', publication: 'all', sort: 'title', source: 'index',
             // selecting: the tab whose rows show checkboxes; purpose: what they are for ('compare', or
             // 'plan': the designs of a plan, ticked here with all of them shown on the map); planBase:
             // the plan whose revision they make, if any.
@@ -70,7 +73,11 @@
         }
         const city = () => win.normalizeCityCodeForApi(win.resolveCurrentCityCode());
         const area = () => state.tab === 'designs' ? win.getProposalCountAreaContext() : null;
-        const cacheKey = () => { const view = area(); return `${win.DesignSync.apiBase()}:${view?.explore ? view.key : city()}:${state.tab}`; };
+        const fromChain = () => state.tab === 'agreements' && state.source === 'chain';
+        const cacheKey = () => {
+            if (fromChain()) return `chain:${win.ChainReader.cluster()}:agreements`;
+            const view = area(); return `${win.DesignSync.apiBase()}:${view?.explore ? view.key : city()}:${state.tab}`;
+        };
         const host = () => doc.getElementById({ designs: 'proposal-list-host', plans: 'plan-list-host', agreements: 'agreement-list-host' }[state.tab]);
         const opened = () => win.MapShell?.isOpen('proposals-sheet');
         function localRows(kind) {
@@ -87,7 +94,9 @@
         }
         function remoteRows(rows, kind) {
             const plans = kind === 'plans' ? new Map(localRows('plans').map(row => [row.key, row.local])) : null;
-            return rows.map(record => ({ key: record.cid, cid: record.cid || null, title: record.title || record.content?.title || t(kind === 'designs' ? 'planDialog.untitledDesign' : 'agreement.panel.untitled'),
+            const untitled = record => record.source === 'chain' ? t('lists.chainAgreement', { cid: win.AgreementSync.shortCid(record.cid) })
+                : t(kind === 'designs' ? 'planDialog.untitledDesign' : 'agreement.panel.untitled');
+            return rows.map(record => ({ key: record.cid, cid: record.cid || null, title: record.title || record.content?.title || untitled(record),
                 author: record.author, createdAt: record.createdAt, published: true, onChain: !!record.onchain, record,
                 local: kind === 'designs' ? win.DesignSync.localCopyOf(record.cid)
                     : kind === 'plans' ? plans.get(record.cid) : win.AgreementSync.localCopyOf(record.cid) }));
@@ -99,6 +108,12 @@
             const page = { rows: more ? previous.rows : [], next: more ? previous.next : 0, loading: true, error: null };
             state.remote.set(key, page); renderRows();
             try {
+                if (fromChain()) {
+                    // Every account at once: the chain has no pages, and the rows carry no content.
+                    page.rows = await win.ChainReader.listAgreements();
+                    page.next = null;
+                    return;
+                }
                 const params = indexQuery(kind, { city: city(), area: area(), offset: page.next });
                 const response = await win.fetch(`${win.DesignSync.apiBase()}/${kind}?${params}`, { cache: 'no-store', signal: AbortSignal.timeout(30000) });
                 const result = await response.json();
@@ -129,7 +144,9 @@
         // An agreement's plan: its stored copy's, or the published one's fetched by CID. Null when a
         // stored agreement has no plan yet.
         async function agreementPlanOf(row) {
-            return row.local ? row.local.plan : win.NamedPlans.fetchPlan(row.record.content.planCid);
+            if (row.local) return row.local.plan;
+            // A row listed from the chain has only its CID: the agreement is read for its plan.
+            return row.record.content ? win.NamedPlans.fetchPlan(row.record.content.planCid) : (await win.AgreementSync.fetchAgreement(row.key)).plan;
         }
         // An agreement as Compare agreements reads it: its terms (a published one not held here is
         // fetched, not stored), its plan measured under the agreement's title, and its side on the
@@ -339,7 +356,7 @@
             const rows = mergeRows(localRows(kind), remoteRows(page?.rows || [], kind));
             const visible = filterRows(rows, state), list = host(); list.replaceChildren();
             const status = doc.getElementById('lists-status');
-            status.textContent = page?.loading ? t('lists.loading') : page?.error ? page.error
+            status.textContent = page?.loading ? t(fromChain() ? 'lists.chainLoading' : 'lists.loading') : page?.error ? page.error
                 : visible.length ? t('lists.count', { count: visible.length }) : '';
             status.hidden = !status.textContent;
             list.setAttribute('aria-busy', String(!!page?.loading));
@@ -466,6 +483,20 @@
                 state.filtersOpen = !state.filtersOpen; filters.hidden = !state.filtersOpen; toggle.setAttribute('aria-expanded', String(state.filtersOpen));
             });
             searchRow.append(search, toggle); box.append(searchRow);
+            // Agreements list from the server's index or from the connected chain.
+            if (state.tab === 'agreements' && win.ChainReader) {
+                const wrap = node('label', '', t('lists.source')), select = node('select');
+                for (const [value, text] of [['index', t('lists.sourceIndex')], ['chain', t('lists.sourceChain', { cluster: win.ChainReader.cluster() })]]) {
+                    const option = node('option', '', text); option.value = value; select.append(option);
+                }
+                select.dataset.listFilter = 'source';
+                select.value = state.source;
+                select.addEventListener('change', () => {
+                    state.source = select.value; renderRows();
+                    if (!state.remote.has(cacheKey())) load();
+                });
+                wrap.append(select); fields.append(wrap);
+            }
             for (const [key, label, options] of [
                 ['publication', 'modal.roadWidth.proposalList.filters.publication', stages],
                 ['sort', 'modal.roadWidth.proposalList.filters.sort', [['title', 'lists.byTitle'], ['newest', 'lists.newest']]]
@@ -479,7 +510,7 @@
             filters.append(fields);
             const actions = node('div', 'cb-actions');
             actions.append(button(t('modal.roadWidth.proposalList.filters.reset'), () => {
-                state.search = ''; state.publication = 'all'; state.sort = 'title'; controls(); renderRows();
+                state.search = ''; state.publication = 'all'; state.sort = 'title'; state.source = 'index'; controls(); renderRows();
             }, 'btn-quiet'));
             filters.append(actions); box.append(filters);
             box.append(button(t('agreement.minted.refresh'), () => load(), 'lists-refresh', 'arrows-rotate'));

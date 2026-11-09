@@ -9090,7 +9090,12 @@
         "takesGround": "{{title}} occupe le terrain de {{others}}, donc {{others}} n’est plus coché.",
         "cannotStand": "{{title}} ne peut pas coexister avec les projets déjà cochés ; il n’est pas ajouté.",
         "loadMore": "Charger plus",
-        "limited": "Affichage de 1 000 conceptions publiées au maximum."
+        "limited": "Affichage de 1 000 conceptions publiées au maximum.",
+        "source": "Source",
+        "sourceIndex": "Index du serveur",
+        "sourceChain": "Sur la chaîne (Solana {{cluster}})",
+        "chainAgreement": "Accord {{cid}}",
+        "chainLoading": "Lecture des accords sur la chaîne…"
     },
   "appUpdates": {
     "title": "Mise à jour de l’application",
