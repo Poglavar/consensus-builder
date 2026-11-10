@@ -386,6 +386,7 @@ describe('three-mode (3D display)', () => {
             window: { __parcelArrangement: A, LiveParcelFabric: { queryBounds: () => [RIGHT] } },
             THREE: { Color },
             stringToColor: () => '#888888',
+            buildingHue: () => new Color(),
             polygonFeatureToMeshes: () => [],
             prepareProceduralFacadeMeshes: meshes => meshes
         });

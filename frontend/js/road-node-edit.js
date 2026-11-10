@@ -693,6 +693,29 @@
         );
     }
 
+    // The structures the drop's new road land crosses and its old land did not, over every road the
+    // drop moves: each road's definition is moved on a copy and its land rebuilt as the edit will.
+    function structureCrossingsOfMove(order, grouped, latlng, released) {
+        if (typeof global.detectStructureCrossingsOfEdit !== 'function'
+            || typeof global.rebuildRoadDefinitionFootprint !== 'function') return [];
+        const found = new Map();
+        order.forEach(proposalKey => {
+            const definition = global.getProposalByIdOrHash?.(proposalKey)?.roadProposal?.definition;
+            if (!definition) return;
+            try {
+                const moved = JSON.parse(JSON.stringify(definition));
+                moveNodeTargets(moved, grouped.get(proposalKey), latlng);
+                if (released.has(proposalKey)) releaseParcelBound(moved);
+                global.rebuildRoadDefinitionFootprint(moved);
+                global.detectStructureCrossingsOfEdit(moved.polygon, definition.polygon)
+                    .forEach(entry => found.set(entry.id, entry));
+            } catch (error) {
+                console.warn(`[${new Date().toISOString()}] [roadNodeEdit] could not preview the structures this move crosses`, proposalKey, error);
+            }
+        });
+        return [...found.values()];
+    }
+
     function commitNodeMove(targets, latlng, origin, isTrack, preEditSnapshots, recorded) {
         if (typeof global.updateLocalCorridorGeometry !== 'function') return;
         // Snap at drop time (the snap targets are read from the map as it is now), then serialize the
@@ -739,6 +762,14 @@
                     return;
                 }
                 if (choice === 'ordinary') released = new Set(bounded);
+            }
+            // Parks, squares and lakes the moved legs newly cross: the road cuts through them and
+            // they stand on what is left (apply/structures.js), once the author says so.
+            const crossings = structureCrossingsOfMove(order, grouped, snapped, released);
+            if (crossings.length && typeof global.resolveStructureCrossings === 'function'
+                && !(await global.resolveStructureCrossings(crossings, isTrack ? 'track' : 'road'))) {
+                if (recorded) recorded.discardLast();
+                return;
             }
             // Two holds around the whole junction move: strip redraws (one at the end instead of one
             // per record) and network noding (nothing is noded while the junction is half-moved).

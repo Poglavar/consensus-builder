@@ -585,7 +585,10 @@ proposal-bridge.js/create.js and backend/agents/minter.js; decoders render the z
   regenerated. A road no longer counts as an applied alternative to a structure it crosses (buildings
   still do). An OLDER road carves a newer structure too, where it reaches past the structure's tolerance
   (`{ earlier: true }`, live apply and agreement read alike): the structure stands round the street, and a
-  road edited onto a square shrinks it. Plots of a parcel layout still refuse an older road. Plan stats count
+  road edited onto a square shrinks it. Dragging a road node asks the same "Build through" first for the
+  parks, squares and lakes the moved legs newly cross, judged by their authored bodies
+  (`road-node-edit.js structureCrossingsOfMove`, `corridor-structures.js detectStructureCrossingsOfEdit`).
+  Plots of a parcel layout still refuse an older road. Plan stats count
   open space as it stands (`plan-yield` `openSpaceAreaOf`, fed from the applied bodies).
 
 **Decisions**

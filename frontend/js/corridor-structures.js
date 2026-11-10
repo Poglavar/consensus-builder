@@ -46,13 +46,32 @@
     // Structures the given corridor ring meaningfully overlaps (ignoring already-approved ones).
     function detectStructureCrossings(corridorRing, minimumArea = 1) {
         if (typeof global.corridorFeatureFromLatLngRing !== 'function') return [];
-        const corridorFeature = global.corridorFeatureFromLatLngRing(corridorRing);
+        return structuresCrossedBy(global.corridorFeatureFromLatLngRing(corridorRing), minimumArea);
+    }
+
+    // Structures an edited road's new land crosses that its land before the edit did not: what a
+    // node drag or other road edit is about to cut (both GeoJSON Polygon/MultiPolygon or Features).
+    // Measured against each structure's authored body: the drawn one is already cut round the road,
+    // so a square the road crossed before would read as newly crossed.
+    function detectStructureCrossingsOfEdit(newLand, oldLand, minimumArea = 1) {
+        const asFeature = land => (land && land.type === 'Feature' ? land : (land ? { type: 'Feature', properties: {}, geometry: land } : null));
+        const authored = entry => {
+            const record = entry.proposalId && typeof global.getProposalByIdOrHash === 'function'
+                ? global.getProposalByIdOrHash(entry.proposalId) : null;
+            const geometry = record && record.structureProposal && record.structureProposal.geometry;
+            return geometry && geometry.type ? { type: 'Feature', properties: {}, geometry } : entry.feature;
+        };
+        const before = new Set(structuresCrossedBy(asFeature(oldLand), minimumArea, authored).map(entry => entry.id));
+        return structuresCrossedBy(asFeature(newLand), minimumArea, authored).filter(entry => !before.has(entry.id));
+    }
+
+    function structuresCrossedBy(corridorFeature, minimumArea, bodyOf = entry => entry.feature) {
         const api = global.turf;
         if (!corridorFeature || !api || typeof api.intersect !== 'function') return [];
         return collectAppliedStructureFeatures().filter(entry => {
             if (approvedStructureIds.has(entry.id)) return false;
             try {
-                const intersection = api.intersect(corridorFeature, entry.feature);
+                const intersection = api.intersect(corridorFeature, bodyOf(entry));
                 if (!intersection) return false;
                 const area = typeof api.area === 'function' ? Number(api.area(intersection)) : minimumArea;
                 return Number.isFinite(area) && area >= minimumArea;
@@ -62,7 +81,7 @@
                 const clips = global.__parcelArrangement
                     || (typeof require === 'function' ? require('./proposals/parcel-arrangement.js') : null);
                 if (!clips || typeof clips.clipFailure !== 'function') throw error;
-                throw clips.clipFailure('intersect', error, { site: 'corridor-structures.detectStructureCrossings', proposalId: entry.proposalId || null }, [corridorFeature, entry.feature]);
+                throw clips.clipFailure('intersect', error, { site: 'corridor-structures.detectStructureCrossings', proposalId: entry.proposalId || null }, [corridorFeature, bodyOf(entry)]);
             }
         });
     }
@@ -79,7 +98,7 @@
                 : structureText('modal.corridorTunnel.road', 'road');
             const message = structureText(
                 'modal.corridorStructure.offer',
-                'This {{kind}} would cross {{names}}. Build through it? The later {{kind}} takes the crossing ground during replay.',
+                'This {{kind}} would cross {{names}}. Build through it? The {{kind}} cuts through; the rest stays as it is.',
                 { kind, names }
             );
             let accepted = false;
@@ -179,6 +198,7 @@
 
     Object.assign(global, {
         detectStructureCrossings,
+        detectStructureCrossingsOfEdit,
         resolveStructureCrossings,
         detectPlotCrossings,
         resolvePlotCrossings,

@@ -145,7 +145,8 @@ describe('road tool glue (corridor-structures.js)', () => {
     const saved = {};
     const GLOBALS = ['turf', '__plotCrossings', 'LiveParcelFabric', 'proposalStorage', 'getProposalByIdOrHash',
         'isProposalApplied', 'corridorFeatureFromLatLngRing', 'showStyledChoice', 'i18n',
-        'detectPlotCrossings', 'resolvePlotCrossings', 'resetApprovedStructureCrossings', 'detectStructureCrossings', 'resolveStructureCrossings'];
+        'detectPlotCrossings', 'resolvePlotCrossings', 'resetApprovedStructureCrossings', 'detectStructureCrossings', 'resolveStructureCrossings',
+        'detectStructureCrossingsOfEdit', 'squares', 'parks', 'lakes'];
     let choice;
 
     beforeEach(() => {
@@ -181,6 +182,20 @@ describe('road tool glue (corridor-structures.js)', () => {
         expect(globalThis.showStyledChoice).toHaveBeenCalledTimes(1);
         globalThis.resetApprovedStructureCrossings();
         expect(globalThis.detectPlotCrossings(road, []).plots).toHaveLength(1);
+    });
+
+    it('names only the squares an edit newly crosses, judged by their authored bodies, not the bodies already cut round the road', () => {
+        const authored = rect(0, 0, 10, 10);
+        // Drawn as the road has already cut it: the parts either side of the road's old land.
+        const cut = { type: 'MultiPolygon', coordinates: [rect(0, 0, 5, 10).coordinates, rect(7, 0, 10, 10).coordinates] };
+        globalThis.squares = [{ type: 'Feature', properties: { proposalId: 'square-1' }, geometry: cut }];
+        globalThis.parks = [{ type: 'Feature', properties: { proposalId: 'park-1' }, geometry: rect(20, 0, 30, 10) }];
+        const records = { 'square-1': { title: 'Square', structureProposal: { geometry: authored } }, 'park-1': { title: 'Park', structureProposal: { geometry: rect(20, 0, 30, 10) } } };
+        globalThis.getProposalByIdOrHash = id => records[id] || null;
+        const before = rect(5, -5, 7, 15);
+        const after = rect(5, -5, 25, 15);
+        expect(globalThis.detectStructureCrossingsOfEdit(after, before).map(entry => entry.id)).toEqual(['park-1']);
+        expect(globalThis.detectStructureCrossingsOfEdit(before, null).map(entry => entry.id)).toEqual(['square-1']);
     });
 
     it('reroutes on cancel, and never builds through a house on a plot', async () => {
