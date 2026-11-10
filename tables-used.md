@@ -21,10 +21,11 @@ Rules that shape the list:
 - public.area_monitor
 - public.cadastral_municipality
 - public.parcel_build_envelope
+- public.parcel_build_envelope_typology (schema-only)
+- public.envelope_cache_error
 - public.dgu_building
 - public.dgu_gdi_building_match
 - public.dgu_road_usage
-- public.ens_plan
 - public.gdi_building
 - public.gdi_building_3d (schema-only)
 - public.gdi_building_footprint
@@ -46,12 +47,24 @@ Rules that shape the list:
 - public.planned_land_use
 - public.road_widening_segment
 - public.gup_street_line
-- consensus.proposal
 - consensus.design
 - consensus.plan
 - consensus.shared_plan_session (schema-only — private collaboration content and capability verifiers; backend/db/shared-plan-session-ddl.sql)
 - consensus.agreement
 - consensus.agreement_decision
+- consensus.land_event
+- consensus.solana_transaction
+- consensus.transaction_sync_run
+- consensus.lens_member
+- consensus.lens_attestation
+- consensus.lens_devnet_owner
+- consensus.agent_run
+- consensus.agent_cost
+- consensus.city_request
+- consensus.chat_conversation (schema-only — private conversations and client IPs; backend/db/chat-ddl.sql)
+- consensus.chat_turn (schema-only — client IPs and spend; backend/db/chat-ddl.sql)
+- consensus.feedback (schema-only — private user feedback; backend/routes/feedback-ddl.sql)
+- consensus.planning_diagnostic (schema-only — seven-day client diagnostics; backend/db/planning-diagnostics.sql)
 - consensus.bet_event (schema-only)
 - consensus.points_account (schema-only)
 - consensus.points_market (schema-only)
