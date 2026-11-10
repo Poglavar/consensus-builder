@@ -598,7 +598,7 @@ proposal-bridge.js/create.js and backend/agents/minter.js; decoders render the z
   design asks first, naming what comes off, what gives way and what keeps its ground
   (`ProposalManager.previewGroundTakes`, `confirmProposalGroundTakes`). An in-place edit keeps its
   place in the order, so a later park or square keeps the ground it reaches; a counterproposal forms last.
-  Plots of a parcel layout still refuse an older road. Plan stats count
+  Plots of a parcel layout stand round an older road the same way. Plan stats count
   open space as it stands (`plan-yield` `openSpaceAreaOf`, fed from the applied bodies).
 
 **Decisions**
@@ -650,9 +650,9 @@ proposal-bridge.js/create.js and backend/agents/minter.js; decoders render the z
   measures the carved plan; the record keeps its authored plots, so unapplying the road gives them back.
   This also fixes cadastral readjustments: a road across readjusted plots was refused before (the
   arrangement had cut the parcels under the road and the replay failed its coverage gate at 83 %).
-- **An earlier road still refuses a newer subdivision**: on open ground (no arrangement) the plots are
-  tested against standing roads like a park is (`_appliedRoadOverlappedByTaking`, code
-  `readjustment-over-road`); on cadastral ground the coverage gate already refuses it.
+- **An earlier road cuts a newer subdivision too**: its plots stand round every applied road, on open
+  and on cadastral ground (`_groundAfterLaterCorridors { earlier: true }`), as a park does; an explicit
+  Apply of the layout still takes the road off the map, as before.
 - **Buildings** behave as on cadastral ground: a road through a building standing on a plot is refused
   (rolled back, fabric unchanged); a road beside it across the same plot cuts the plot and the house keeps
   its parcel.

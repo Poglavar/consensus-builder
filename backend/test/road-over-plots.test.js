@@ -269,17 +269,23 @@ describe('a road built through subdivision plots on open ground', () => {
         expect(total(fabric.list())).toBeCloseTo(area(BARE_SITE), 0);
     });
 
-    it('keeps refusing a newer subdivision laid over an earlier road when nothing chose between them', async () => {
-        // A replay chooses no alternatives, so the earlier road keeps its ground.
+    it('forms a newer subdivision laid over an earlier road round the street when nothing chose between them', async () => {
+        // A replay chooses no alternatives: the earlier road keeps its ground and the plots stand on
+        // the rest, as a park or square does (a road edited onto a layout keeps its place in the order).
         const road = roadRecord('road-first', CROSS_ROAD, { createdAt: '2026-09-30T00:00:00.000Z' });
         const record = subdivisionRecord('sub-later', BARE_SITE, { binding: { parcels: [], coverage: 'none', source: 'server' } });
         const { manager, fabric } = await harness({ records: [road, record] });
         await expect(manager.applyProposal('road-first')).resolves.toBe(true);
-        await expect(manager.applyProposal('sub-later', { replay: true })).resolves.toBe(false);
-        const failure = manager.getLastApplyFailureInfo('sub-later');
-        expect(failure.code).toBe('readjustment-over-road');
-        expect(failure.message).toMatch(/stand on \d+ m² of the applied road "road-first"/);
-        expect(fabric.list()).toEqual([]);
+        await expect(manager.applyProposal('sub-later', { replay: true })).resolves.toBe(true);
+        expect(globalThis.proposalStorage.getProposal('road-first').applied).toBe(true);
+        const plots = fabric.list().filter(piece => piece.properties.producedByProposalId === 'sub-later');
+        expect(plots.length).toBeGreaterThan(0);
+        expectPartition(plots, CROSS_ROAD, BARE_SITE);
+        // The authored plan is untouched, and a full rebuild derives the same plots.
+        expect(globalThis.proposalStorage.getProposal('sub-later').parcelLayout.plots).toHaveLength(record.parcelLayout.plots.length);
+        const withRoad = snapshot(fabric);
+        await expect(manager.rebuildAppliedFabric({ silent: true })).resolves.toMatchObject({ ok: true, failed: [] });
+        expect(snapshot(fabric)).toEqual(withRoad);
     });
 
     it('an explicit Apply of a newer subdivision over an earlier road takes the road off the map', async () => {
@@ -380,6 +386,20 @@ describe('a road built through a parcel layout on parcels', () => {
 
         await expect(manager.unapplyProposal('road-cad')).resolves.toBe(true);
         expect(snapshot(fabric)).toEqual(before);
+    });
+
+    it('forms a newer layout on parcels round an earlier road instead of refusing it', async () => {
+        const HR2 = parcel('HR-330264-2', rect(6, 0, 12, 6));
+        const binding = { parcels: [{ parcelId: 'HR-330264-1' }, { parcelId: 'HR-330264-2' }], coverage: 'complete', source: 'server' };
+        const road = roadRecord('road-cad', CROSS_ROAD, { createdAt: '2026-09-30T00:00:00.000Z', cadastreParcelIds: ['HR-330264-2'], binding: { parcels: [{ parcelId: 'HR-330264-2' }], coverage: 'complete', source: 'server' } });
+        const record = subdivisionRecord('readjust', BARE_SITE, { declared: ['HR-330264-1', 'HR-330264-2'], binding });
+        const { manager, fabric } = await harness({ facts: [HR1, HR2], records: [road, record] });
+        await expect(manager.applyProposal('road-cad')).resolves.toBe(true);
+        await expect(manager.applyProposal('readjust', { replay: true })).resolves.toBe(true);
+        expect(manager.getLastApplyFailure('readjust')).toBeNull();
+        const pieces = fabric.list();
+        expectPartition(pieces.filter(piece => piece.properties.producedByProposalId === 'readjust'), CROSS_ROAD, BARE_SITE);
+        expect(total(pieces)).toBeCloseTo(area(BARE_SITE), 0);
     });
 
     // Unapplying the layout under the road (the user, 2026-10-29): the road is named, and either

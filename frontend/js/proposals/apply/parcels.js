@@ -108,14 +108,16 @@
         // Skip overlay rendering: add child parcels directly with existing parcel styling
         console.debug(`[${stamp()}] [_applyParcelLayoutProposal] ${idLabel}: forming ${layout.plots.length} plot(s) as parcels directly.`);
 
-        // Corridors applied AFTER this layout take their ribbon out of its plots — the same rule that
-        // carves a park (apply/road.js _groundAfterLaterCorridors): a plot the road crosses keeps the
-        // rest of its ground, split into parts where the road runs through it; a plot the road takes
-        // whole is not formed. The authored layout is untouched (this is the private copy), so
-        // unapplying the road gives the plots back. The resolver measures the carved layout.
+        // Every applied corridor takes its ribbon out of the plots, earlier ones where they reach past
+        // the layout's tolerance — the same rule that carves a park (apply/road.js
+        // _groundAfterLaterCorridors { earlier: true }): a plot the road crosses keeps the rest of its
+        // ground, split into parts where the road runs through it; a plot the road takes whole is not
+        // formed. So a road edited onto a layout, or a layout drawn over a standing road, leaves the
+        // plots round the street instead of refusing. The authored layout is untouched (this is the
+        // private copy), so unapplying the road gives the plots back. The resolver measures the carved layout.
         let groundRecord = proposalData;
         if (typeof this._groundAfterLaterCorridors === 'function') {
-            const carved = this._groundAfterLaterCorridors(proposalData, layout.plots.map(plot => plot.geometry), options);
+            const carved = this._groundAfterLaterCorridors(proposalData, layout.plots.map(plot => plot.geometry), options, { earlier: true });
             if (carved.corridorIds.length) {
                 layout.plots = layout.plots
                     .map((plot, index) => {
@@ -128,7 +130,7 @@
                     })
                     .filter(Boolean);
                 if (!layout.plots.length) {
-                    const message = 'Cannot apply the parcel layout: later roads take all of its plots.';
+                    const message = 'Cannot apply the parcel layout: roads take all of its plots.';
                     try { this._setLastApplyFailure(idLabel, { code: 'readjustment-taken-by-corridors', message, corridorIds: carved.corridorIds }); } catch (_) { }
                     if (typeof updateStatus === 'function') updateStatus(message);
                     return false;
@@ -140,34 +142,7 @@
             }
         }
 
-        // An EARLIER road is not carved: nothing is formed over a street. On cadastral ground the
-        // arrangement already enforces it (the road's ground is no host piece, so coverage fails);
-        // open ground has no arrangement, so the plots are tested against the standing roads here,
-        // exactly as a park or square on open ground is.
         const ground = openGroundApi();
-        if (ground && ground.hasOpenGround(proposalData) && typeof this._appliedRoadOverlappedByTaking === 'function') {
-            for (const plot of layout.plots) {
-                const geometry = plot.geometry;
-                if (!geometry || !/Polygon/.test(String(geometry.type || ''))) continue;
-                const roadHit = this._appliedRoadOverlappedByTaking(geometry, idLabel,
-                    { ...options, toleranceM: groundApi().designToleranceM(proposalData) });
-                if (!roadHit) continue;
-                const road = roadHit.proposal;
-                const roadName = road.title || road.name || road.proposalId;
-                const message = `Cannot apply the parcel layout: its plots would stand on ${Math.round(roadHit.overlapM2)} m² of the applied road "${roadName}". Nothing is formed over a street — move the outline clear, or unapply that road first.`;
-                if (typeof updateStatus === 'function') updateStatus(message);
-                try {
-                    this._setLastApplyFailure(idLabel, {
-                        code: 'readjustment-over-road',
-                        message,
-                        roadProposalId: String(road.proposalId || ''),
-                        overlapM2: roadHit.overlapM2
-                    });
-                } catch (_) { }
-                return false;
-            }
-        }
-
         const liveParents = this._resolveLiveFormationParents(groundRecord, idLabel, 'parcel layout', options);
         if (!liveParents.ok) return false;
         let parentIds = liveParents.ids;

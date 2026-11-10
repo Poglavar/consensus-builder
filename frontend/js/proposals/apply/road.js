@@ -66,12 +66,13 @@
     // and the formation would both cover the ribbon. Every replay asks this, so the result is a
     // function of the plan (records + order), never of apply timing: the record stays as authored,
     // only the applied pieces are carved, and unapplying the road gives the ground back. An EARLIER
-    // road is carved only with `{ earlier: true }`, which parks, squares and lakes pass: open land
+    // road is carved only with `{ earlier: true }`, which parks, squares, lakes and parcel layouts pass: open land
     // stands on what every road leaves it, so a road edited onto a square (its record keeps the
     // road's place in the order) shrinks the square instead of being refused, and so does a newer
     // square drawn over a standing road. Earlier roads carve only where they reach past the
-    // formation's own tolerance, the overlap the coverage gate used to refuse. Plots of a parcel
-    // layout still refuse a newer layout over an earlier road (road-over-plots.test.js).
+    // formation's own tolerance, the overlap the coverage gate used to refuse. The plots of a parcel
+    // layout do the same (apply/parcels.js): a newer layout over an earlier road forms round it
+    // (road-over-plots.test.js).
     //
     // Takes the same geometry the corridor cut consumes (plan-order footprintOf, as
     // _appliedCorridorTakes), clipped through the arrangement's snapped clipper; crumbs that are not
