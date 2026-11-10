@@ -812,9 +812,10 @@
                 [isInterior, 'panel.road.interiorNodeHint', 'Drag to move · click to split the stretch here or remove the node · ⌥-click to remove it'],
                 [true, 'panel.road.nodeHint', 'Drag to move · ⌥-click to remove this node']
             ].find(([applies]) => applies).slice(1);
-            marker.bindTooltip(editHint(hintKey, hintFallback)
-                + (otherRoads ? ` (${otherRoads} other ${otherRoads > 1 ? 'roads meet' : 'road meets'} here)` : ''),
-            { sticky: true, pane: 'road-node-handles' });
+            const hint = editHint(hintKey, hintFallback)
+                + (otherRoads ? ` (${otherRoads} other ${otherRoads > 1 ? 'roads meet' : 'road meets'} here)` : '');
+            const hintOptions = { sticky: true, pane: 'road-node-handles' };
+            marker.bindTooltip(hint, hintOptions);
             const origin = { lat: node.lat, lng: node.lng };
             let lastLiveUpdate = 0;
             // The TRUE pre-drag geometry of every record the drag will touch, frozen before
@@ -826,6 +827,9 @@
             // Cmd/Ctrl+Z puts the whole junction back.
             let dragHistory = null;
             marker.on('dragstart', () => {
+                // The hint describes the node where it was; a sticky tooltip riding along with the drag
+                // ("Loose end — …") reads as an error about the move itself, so it is put away until the drop.
+                marker.unbindTooltip();
                 dragStartSnapshots = new Map();
                 targetsByProposal(node.targets).forEach((_legs, proposalKey) => {
                     const proposal = global.getProposalByIdOrHash?.(proposalKey) || null;
@@ -846,6 +850,7 @@
                 liveMoveNode(node.targets, snap ? snap.latlng : cursor);
             });
             marker.on('dragend', () => {
+                marker.bindTooltip(hint, hintOptions);
                 commitNodeMove(node.targets, marker.getLatLng(), origin, isTrack, dragStartSnapshots, dragHistory);
                 dragStartSnapshots = null;
                 dragHistory = null;

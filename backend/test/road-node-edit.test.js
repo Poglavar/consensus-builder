@@ -32,6 +32,10 @@ function fakeLeaflet() {
             this.tooltip = text;
             return this;
         },
+        unbindTooltip() {
+            this.tooltip = null;
+            return this;
+        },
         on(name, handler) {
             this.handlers[name] = handler;
             return this;
@@ -310,6 +314,19 @@ describe('node editor honesty', () => {
         roads.forEach((road, index) => {
             expect(road.roadProposal.definition.junctions).toEqual(junctions[index]);
         });
+    });
+
+    it('puts the node hint away while the node is dragged and brings it back on the drop', async () => {
+        const editor = bootNodeEditor([corridorRecord('road-1', [[[0, 0], [0, 5], [0, 10]]])], 'road-1');
+        globalThis.updateLocalCorridorGeometry = async () => false;
+        const end = editor.handleAt(0, 10);
+        expect(end.tooltip).toMatch(/Loose end/);
+        end.handlers.dragstart();
+        expect(end.tooltip).toBeNull();
+        end.setLatLng({ lat: 1, lng: 10 });
+        end.handlers.dragend();
+        expect(end.tooltip).toMatch(/Loose end/);
+        await settle();
     });
 
     it('takes back the undo step of a drag that every record refused', async () => {
