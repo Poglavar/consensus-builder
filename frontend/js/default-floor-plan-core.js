@@ -2,8 +2,8 @@
 // core stands in the middle of the top floor plate (stairs, a row of lifts, toilets behind the lifts)
 // and runs down through every storey; four lifts or more stand in two rows facing each other across a
 // lift hall (a split core). Office storeys are open plan round the core, with a reception at the lift
-// lobby behind a glass screen; residential storeys are flats round a lobby ring, each entered from it
-// and reaching the facade. A storey's plate is the parts of the building that reach it, so the floor
+// lobby behind a glass screen; residential storeys are flats off a corridor along the lift face, each
+// entered from it and reaching the facade. A storey's plate is the parts of the building that reach it, so the floor
 // over a lower part's roof is a terrace. Pure: default-floor-plans.js dispatches here and lends its
 // geometry helpers; the output is the shared building-floor-plans.v3 contract. No DOM, no THREE.
 (function (global) {
@@ -21,7 +21,7 @@
         liftLobbyM: 2.4,            // in front of a single row of lifts
         receptionScreenM: 0.12,     // the glass screen round a reception
         receptionDoorM: 1.8,
-        ringM: 1.8,                 // the residential lobby round the core
+        corridorM: 1.8,             // the residential corridor along the lift face
         wcWidthM: 2.4,              // toilets beside the stair when the core has no lift
         minLeaseDepthM: 3.0,        // floor kept between the core (and its lobby) and every facade
         twoStairsAboveM2: 900,      // a floor plate this large has two stairs below the high-rise limit too
@@ -151,7 +151,6 @@
         const minLifts = highRise ? 2 : (rules.liftPolicy === 'never' ? 0 : (rules.liftPolicy === 'always' || floors >= rules.liftFromFloors ? 1 : 0));
         const wantedLifts = Math.min(rules.maxLifts, Math.max(minLifts, Math.ceil(gfaM2 / rules.liftM2) * (minLifts > 0 ? 1 : 0)));
         const stairs = highRise || g.polygonsArea(groundUV) > rules.twoStairsAboveM2 ? 2 : 1;
-        const anyResidential = uses.includes('residential');
         const anyWork = uses.some(use => use !== 'residential');
         // Most lifts first; a split core before a single one; a deep core, then a long one with its
         // toilets, then without them.
@@ -163,7 +162,7 @@
         const centroid = leaseInner ? centreOf(t, leaseInner) : centreOf(t, topInner);
         let core = null;
         for (const attempt of attempts) {
-            core = placeCore({ t, g, rules, attempt, stairs, sw, sd, cw, shaftW, shaftD, leaseInner, centroid, anyResidential });
+            core = placeCore({ t, g, rules, attempt, stairs, sw, sd, cw, shaftW, shaftD, leaseInner, centroid });
             if (core) break;
         }
         summary.coreM = core ? [g.round2(core.widthM), g.round2(core.depthM)] : null;
@@ -243,7 +242,7 @@
             scheme: 'core', storeyHeightM, floors, coreType: core.split ? 'split' : 'single', lifts: core.lifts, stairs, highRise, frontBasis, region: rules.region,
             plates: plateInputs.map(plate => plate.floors), storeyUses: uses,
             rules: { maxRiserM: rules.maxRiserM, minTreadM: rules.minTreadM, flightWidthM: rules.flightWidthM, liftShaftOuterM: rules.liftShaftOuterM,
-                exteriorWallM: rules.exteriorWallM, coreWallM: rules.coreWallM, liftM2: rules.liftM2, minLeaseDepthM: rules.minLeaseDepthM, ringM: rules.ringM }
+                exteriorWallM: rules.exteriorWallM, coreWallM: rules.coreWallM, liftM2: rules.liftM2, minLeaseDepthM: rules.minLeaseDepthM, corridorM: rules.corridorM }
         };
         const source = { kind: 'generated', generator: GENERATOR_ID, parameters };
         const buildingId = typeof input.buildingId === 'string' && input.buildingId ? input.buildingId : 'building';
@@ -302,7 +301,7 @@
                 `A suggested default layout, not part of the proposal: a central ${core.split ? 'split core (two rows of lifts across a lift hall)' : 'core'} with ${stairs} stair(s), ${core.lifts} lift(s) and toilets, through all ${floors} storeys.`,
                 officeStoreys ? `${officeStoreys} office storey(s): open plan round the core, a reception at the lift lobby.` : null,
                 shopStoreys ? `${shopStoreys} shop storey(s), open plan.` : null,
-                flatsPerStorey.some(Boolean) ? `Flats round a ${rules.ringM} m lobby ring: ${Math.min(...flatsPerStorey.filter(Boolean))}–${Math.max(...flatsPerStorey)} per residential storey; rooms are not laid out.` : null,
+                flatsPerStorey.some(Boolean) ? `Flats off a ${rules.corridorM} m corridor along the lifts: ${Math.min(...flatsPerStorey.filter(Boolean))}–${Math.max(...flatsPerStorey)} per residential storey; rooms are not laid out.` : null,
                 plateInputs.length > 1 ? `Stepped parts: each storey's floor plate is the parts that reach it, so the floor over a lower part's roof is a terrace.` : null,
                 `Stair: ${stairCore.stair.risers} risers of ${Math.round(stairCore.stair.riserM * 1000)} mm with ${Math.round(rules.minTreadM * 1000)} mm treads and ${Math.round(rules.flightWidthM * 100)} cm flights (${rules.regulationBasis}).`,
                 core.lifts ? `Lift shafts ${rules.liftShaftOuterM[0]} × ${rules.liftShaftOuterM[1]} m, one per ${rules.liftM2} m² of floor area.` : 'No lift: below the storey threshold for one.',
@@ -363,14 +362,14 @@
     const box = (t, u0, u1, v0, v1) => t.polygon([[[u0, v0], [u1, v0], [u1, v1], [u0, v1], [u0, v0]]]);
 
     /**
-     * The core and everything that depends only on it: its outline, its lift lobby and the residential
-     * lobby ring. Local frame: x along u, y away from the lift face. Single core: [stair | lifts |
+     * The core and everything that depends only on it: its outline and its lift lobby (on residential
+     * storeys the corridor runs along the same face). Local frame: x along u, y away from the lift face. Single core: [stair | lifts |
      * toilets | stair]; a split core is two halves [stair | lifts | toilets] facing each other across
      * the lift hall, their stairs at opposite ends. A 'deep' core runs its stair flights back from the
      * lift face, with the toilets behind the lifts; a 'long' one runs them along u, so the core is only
      * a stair's width deep (for slab-like plates), with the toilets beside the lifts when they fit.
      */
-    function placeCore({ t, g, rules, attempt, stairs, sw, sd, cw, shaftW, shaftD, leaseInner, centroid, anyResidential }) {
+    function placeCore({ t, g, rules, attempt, stairs, sw, sd, cw, shaftW, shaftD, leaseInner, centroid }) {
         const { split, lifts, orientation, toilets } = attempt;
         const perRow = split ? lifts / 2 : lifts;
         const stairAlongM = orientation === 'long' ? cw + sd : sw;   // a stair's length along u
@@ -380,9 +379,7 @@
         const widthM = (split ? 1 : stairs) * stairAlongM + liftsM + toiletM;
         const depthM = split ? 2 * halfDepthM + rules.liftHallM : halfDepthM;
         const lobbyM = split ? 0 : rules.liftLobbyM;
-        // What must fit with lease depth round it: the core and its lift lobby. The residential lobby
-        // ring lies inside that depth.
-        const ringM = anyResidential ? rules.ringM : 0;
+        // What must fit with lease depth round it: the core and its lift lobby.
         const needs = (uc, vc) => box(t, uc - widthM / 2, uc + widthM / 2, vc - depthM / 2 - lobbyM, vc + depthM / 2);
         if (!leaseInner) return null;
         const fits = feature => {
@@ -405,7 +402,6 @@
             widthM, depthM, halfDepthM, stairAlongM, liftsM, toiletM, centre: [uc, vc], front, outline,
             lobby: split ? box(t, uc - widthM / 2, uc + widthM / 2, vc - rules.liftHallM / 2, vc + rules.liftHallM / 2)
                 : box(t, uc - widthM / 2, uc + widthM / 2, front - lobbyM, front),
-            ring: anyResidential ? box(t, uc - widthM / 2 - ringM, uc + widthM / 2 + ringM, vc - depthM / 2 - Math.max(ringM, lobbyM), vc + depthM / 2 + ringM) : null,
             stairs, sw, sd, cw, shaftW, shaftD };
     }
 
@@ -584,98 +580,103 @@
     }
 
     /**
-     * Flats round the lobby ring: rays from the core's centre through the ring's corners and the
-     * middles of its sides cut the floor into eight sectors, each with one straight stretch of ring
-     * wall; neighbouring sectors join into 2, 4 or 8 flats by the floor's area. Every flat is entered
-     * from the ring through its longest stretch and reaches the facade. On the ground floor a hall runs
-     * from the street door to the ring.
+     * Flats off a straight corridor: the corridor runs along the lift face from gable to gable (in a
+     * split core, the lift hall carried on to the gables), and the floor on each side of it is cut
+     * across into flats of about the target size, each entered from the corridor and reaching the
+     * facade. On a side the core stands on, the flats at its two ends wrap round behind it, each to
+     * the core's middle. On the ground floor a hall runs from the street door to the corridor.
      */
-    function residentialFlats({ t, g, rules, core, innerUV, entrance, doorCentre, frontInward }) {
+    function residentialFlats({ t, g, rules, core, innerUV, entrance, doorCentre }) {
         const out = { walls: [], openings: [], cuts: [], flats: [] };
-        const ring = core.ring;
-        if (!ring) return out;
-        const wallM = rules.apartmentWallM;
-        const [r0, rv0, r1, rv1] = bboxOf(g, ring);
-        const ringWall = g.differenceOrNull(t, box(t, r0 - wallM, r1 + wallM, rv0 - wallM, rv1 + wallM), ring);
-        out.walls.push(ringWall);
-        let floor = g.differenceOrNull(t, innerUV, box(t, r0 - wallM, r1 + wallM, rv0 - wallM, rv1 + wallM));
-        // The ground floor's entrance hall, from the street door straight to the ring.
+        const wallM = rules.apartmentWallM, doorM = rules.apartmentDoorM;
+        const [c0, cv0, c1, cv1] = bboxOf(g, core.outline);
+        const [iu0, iv0, iu1, iv1] = bboxOf(g, innerUV);
+        const band = core.split ? [core.centre[1] - rules.liftHallM / 2, core.centre[1] + rules.liftHallM / 2] : [core.front - rules.corridorM, core.front];
+        const across = (v0, v1) => box(t, iu0 - 1, iu1 + 1, v0, v1);
+        // The corridor's two walls, where the core does not already stand.
+        for (const wall of [across(band[0] - wallM, band[0]), across(band[1], band[1] + wallM)]) {
+            const piece = g.differenceOrNull(t, g.intersectOrNull(t, wall, innerUV), core.outline);
+            if (piece) out.walls.push(piece);
+        }
+        const sides = [
+            { sign: -1, face: band[0] - wallM, region: g.intersectOrNull(t, innerUV, across(iv0 - 1, band[0] - wallM)), core: core.split || cv0 < band[0] },
+            { sign: 1, face: band[1] + wallM, region: g.intersectOrNull(t, innerUV, across(band[1] + wallM, iv1 + 1)), core: true }
+        ].map(side => ({ ...side, region: side.region && g.differenceOrNull(t, side.region, core.outline) }));
+        // The ground floor's hall from the street door to the corridor, walled on both sides.
         if (entrance) {
-            const target = [Math.min(r1, Math.max(r0, doorCentre[0])), Math.min(rv1, Math.max(rv0, doorCentre[1]))];
-            const start = g.add(doorCentre, frontInward, -0.05);
-            if (g.len(g.vec(start, target)) > 0.5) {
-                const hall = g.intersectOrNull(t, g.strip(t, start, target, rules.entranceHallM), innerUV);
-                const hallWalls = g.differenceOrNull(t, g.intersectOrNull(t, g.strip(t, start, target, rules.entranceHallM + 2 * wallM), floor), hall);
-                if (hall) floor = g.differenceOrNull(t, floor, g.strip(t, start, target, rules.entranceHallM + 2 * wallM));
-                if (hallWalls) out.walls.push(hallWalls);
-                // The hall opens into the ring.
-                const mouth = g.strip(t, g.add(target, g.unit(g.vec(start, target)), -wallM * 1.5), g.add(target, g.unit(g.vec(start, target)), wallM * 1.5), rules.entranceHallM);
-                out.cuts.push(mouth);
+            const target = [Math.min(iu1 - 1, Math.max(iu0 + 1, doorCentre[0])), Math.min(band[1], Math.max(band[0], doorCentre[1]))];
+            if (g.len(g.vec(doorCentre, target)) > 0.5) {
+                const hall = g.strip(t, doorCentre, target, rules.entranceHallM), walled = g.strip(t, doorCentre, target, rules.entranceHallM + 2 * wallM);
+                for (const side of sides) {
+                    if (!side.region) continue;
+                    const walls = g.differenceOrNull(t, g.intersectOrNull(t, walled, side.region), hall);
+                    if (walls && g.polygonsArea(walls) > 0.05) out.walls.push(walls);
+                    side.region = g.differenceOrNull(t, side.region, walled);
+                }
+                // The hall opens into the corridor through its wall.
+                const d = g.unit(g.vec(doorCentre, target));
+                out.cuts.push(g.strip(t, g.add(target, d, -1.0), g.add(target, d, 0.3), rules.entranceHallM));
             }
         }
-        if (!floor || g.polygonsArea(floor) < rules.minApartmentM2) return out;
-        const [uc, vc] = [(r0 + r1) / 2, (rv0 + rv1) / 2];
-        // Rays from the core's centre, counter-clockwise from +u, each with where it meets the ring:
-        // first through the ring's corners and the middles of its sides, so every sector between two
-        // rays has one straight stretch of ring wall; a sector far larger than a flat is halved by the
-        // ray between (its hits stay on the same stretch).
-        const centre = [uc, vc];
-        const far = p => g.add(centre, g.unit(g.vec(centre, p)), 400);
-        const sectorOf = (p, q) => ({ leg: [p, q], polygon: g.intersectOrNull(t, floor, t.polygon([[centre, far(p), far(q), centre]])) });
-        const areaOfPolygon = polygon => (polygon ? g.polygonsArea(polygon) : 0);
-        const hits = [[r1, vc], [r1, rv1], [uc, rv1], [r0, rv1], [r0, vc], [r0, rv0], [uc, rv0], [r1, rv0]];
-        let sectors = hits.map((p, i) => sectorOf(p, hits[(i + 1) % hits.length]));
-        for (let pass = 0; pass < 3; pass++) {
-            sectors = sectors.flatMap(sector => {
-                const [p, q] = sector.leg;
-                if (areaOfPolygon(sector.polygon) <= 1.5 * rules.targetFlatM2 || g.len(g.vec(p, q)) < 2 * (rules.apartmentDoorM + 0.6)) return [sector];
-                const m = g.midpoint(p, q);
-                return [sectorOf(p, m), sectorOf(m, q)];
-            });
-        }
-        // Neighbouring sectors join round the ring into flats of about the target size; a last flat
-        // too small to live in joins the one before it.
-        let groups = [];
-        let current = null;
-        for (const sector of sectors) {
-            if (!current) { current = { members: [], areaM2: 0 }; groups.push(current); }
-            current.members.push(sector);
-            current.areaM2 += areaOfPolygon(sector.polygon);
-            if (current.areaM2 >= 0.8 * rules.targetFlatM2) current = null;
-        }
-        while (groups.length > 1 && groups[groups.length - 1].areaM2 < Math.max(rules.minApartmentM2, 0.5 * rules.targetFlatM2)) {
-            const last = groups.pop();
-            groups[groups.length - 1].members.push(...last.members);
-            groups[groups.length - 1].areaM2 += last.areaM2;
-        }
-        // Party walls along the rays between flats.
-        if (groups.length > 1) {
-            for (const group of groups) {
-                const p = group.members[0].leg[0];
-                const wall = g.intersectOrNull(t, g.strip(t, p, far(p), wallM), floor);
+        const areaOf = polygon => (polygon ? g.polygonsArea(polygon) : 0);
+        const slice = (region, u0, u1) => g.intersectOrNull(t, region, box(t, u0, u1, iv0 - 1, iv1 + 1));
+        // A run of the side cut across into flats of about the target size, in order of u.
+        const cutAcross = (region, u0, u1) => {
+            if (!region || areaOf(region) < 1) return [];
+            const n = Math.max(1, Math.round(areaOf(region) / rules.targetFlatM2));
+            return Array.from({ length: n }, (_, k) => ({ u0: u0 + (u1 - u0) * k / n, u1: u0 + (u1 - u0) * (k + 1) / n }))
+                .map(span => ({ ...span, polygon: slice(region, span.u0, span.u1) }));
+        };
+        for (const side of sides) {
+            if (!side.region || areaOf(side.region) < rules.minApartmentM2) continue;
+            let flats;
+            if (side.core) {
+                // Each end of the core: flats across, the one beside the core taking half the floor behind it.
+                const uc = (c0 + c1) / 2;
+                const left = cutAcross(slice(side.region, iu0 - 1, c0), iu0 - 1, c0);
+                const right = cutAcross(slice(side.region, c1, iu1 + 1), c1, iu1 + 1);
+                const behindL = slice(side.region, c0, uc - wallM / 2), behindR = slice(side.region, uc + wallM / 2, c1);
+                if (left.length) { const last = left[left.length - 1]; last.polygon = g.unionAll(t, [last.polygon, behindL].filter(Boolean)); last.u1 = uc; }
+                if (right.length) { right[0].polygon = g.unionAll(t, [behindR, right[0].polygon].filter(Boolean)); right[0].u0 = uc; }
+                const between = g.intersectOrNull(t, box(t, uc - wallM / 2, uc + wallM / 2, iv0 - 1, iv1 + 1), side.region);
+                if (between && left.length && right.length) out.walls.push(between);
+                flats = [...left, ...right];
+            } else {
+                flats = cutAcross(side.region, iu0 - 1, iu1 + 1);
+            }
+            // A flat too small to live in, or one that does not reach the corridor, joins its neighbour.
+            const reachesCorridor = flat => {
+                const contact = g.intersectOrNull(t, flat.polygon, across(side.face - (side.sign < 0 ? 0.1 : 0), side.face + (side.sign > 0 ? 0.1 : 0)));
+                if (!contact || areaOf(contact) < 0.01) return null;
+                const [a0, , a1] = bboxOf(g, contact);
+                return a1 - a0 >= doorM + 0.4 ? [a0, a1] : null;
+            };
+            flats = flats.filter(flat => flat.polygon && areaOf(flat.polygon) > 0.5);
+            for (let i = 0; i < flats.length && flats.length > 1; i++) {
+                if (areaOf(flats[i].polygon) >= rules.minApartmentM2 && reachesCorridor(flats[i])) continue;
+                const j = i === flats.length - 1 ? i - 1 : i + 1;
+                flats[j] = { u0: Math.min(flats[i].u0, flats[j].u0), u1: Math.max(flats[i].u1, flats[j].u1), polygon: g.unionAll(t, [flats[i].polygon, flats[j].polygon]) };
+                flats.splice(i, 1);
+                i = -1;
+            }
+            // Party walls between neighbouring flats, then each flat's door from the corridor.
+            flats.slice(1).forEach((flat, k) => {
+                if (Math.abs(flat.u0 - flats[k].u1) > 0.01 || (side.core && flat.u0 > c0 && flat.u0 < c1)) return;
+                const wall = g.intersectOrNull(t, box(t, flat.u0 - wallM / 2, flat.u0 + wallM / 2, iv0 - 1, iv1 + 1), side.region);
                 if (wall) out.walls.push(wall);
+            });
+            for (const flat of flats) {
+                const areaM2 = areaOf(flat.polygon);
+                if (areaM2 < rules.minApartmentM2) continue;
+                out.flats.push({ polygon: flat.polygon, areaM2 });
+                const span = reachesCorridor(flat);
+                if (!span) continue;
+                const mid = (span[0] + span[1]) / 2, v = side.face - side.sign * wallM / 2;
+                const a = [mid - doorM / 2, v], b = [mid + doorM / 2, v];
+                const door = { kind: 'door', a, b, depthM: wallM, sillM: 0, heightM: rules.doorHeightM, hinge: b, openTip: [b[0], v + side.sign * doorM], room: 'apartment' };
+                out.openings.push(door);
+                out.cuts.push(g.strip(t, door.a, door.b, wallM + 0.06));
             }
-        }
-        const doorM = rules.apartmentDoorM;
-        for (const group of groups) {
-            const pieces = group.members.map(member => member.polygon).filter(Boolean);
-            const polygon = pieces.length ? g.unionAll(t, pieces) : null;
-            if (!polygon) continue;
-            const areaM2 = g.polygonsArea(polygon);
-            if (areaM2 < rules.minApartmentM2) continue;
-            // The door: in the middle of the longest stretch of ring wall the flat has.
-            const leg = group.members.map(member => member.leg).reduce((best, l) => (g.len(g.vec(l[0], l[1])) > g.len(g.vec(best[0], best[1])) ? l : best));
-            const legLength = g.len(g.vec(leg[0], leg[1]));
-            if (legLength < doorM + 0.4) { out.flats.push({ polygon, areaM2 }); continue; }
-            const d = g.unit(g.vec(leg[0], leg[1]));
-            const outward = g.leftNormal(d).map(x => -x); // away from the ring (the legs run counter-clockwise round it)
-            const mid = g.midpoint(leg[0], leg[1]);
-            const line = g.add(mid, outward, wallM / 2);
-            const door = { kind: 'door', a: g.add(line, d, -doorM / 2), b: g.add(line, d, doorM / 2), depthM: wallM, sillM: 0, heightM: rules.doorHeightM,
-                hinge: g.add(line, d, doorM / 2), openTip: g.add(g.add(line, d, doorM / 2), outward, doorM), room: 'apartment' };
-            out.openings.push(door);
-            out.cuts.push(g.strip(t, door.a, door.b, wallM + 0.06));
-            out.flats.push({ polygon, areaM2 });
         }
         return out;
     }

@@ -165,8 +165,9 @@ write into the proposal.
   Four lifts or more stand in two rows across a 3 m lift hall, a split core. The core keeps 3 m of
   floor to every facade; fewer lifts are tried before the plate is flagged. Office (and shop)
   storeys are open plan, with the lift lobby closed by a glass screen as the reception; residential
-  storeys have flats round a 1.8 m lobby ring, cut by rays from the core into flats of about 70 m²,
-  each entered from the ring and reaching the facade (rooms are not laid out). A storey's plate is
+  storeys have a 1.8 m corridor along the lift face from gable to gable, the floor on each side of
+  it cut across into flats of about 70 m², each entered from the corridor and reaching the facade;
+  on the core's side the two end flats wrap round behind the core (rooms are not laid out). A storey's plate is
   the parts that reach it and its use the lowest such part's, so a podium of offices carries flats,
   and the floor over a lower part's roof is a terrace. Parts drawn a hair apart are closed into one
   outline.

@@ -57,7 +57,7 @@ sources of `kind: 'generated'`; the validator accepts such sources only inside a
 renderer draws them in a cooler palette, and `prepareFloorModel` refuses to store them. A slice whose
 footprint cannot hold the minimum core is painted red instead. Office buildings, towers and buildings
 of stepped parts get a central core instead (stairs, lifts and toilets through every storey; open-plan
-offices with a reception at the lifts, flats round a lobby ring; `frontend/js/default-floor-plan-core.js`).
+offices with a reception at the lifts, flats off a corridor along the lifts; `frontend/js/default-floor-plan-core.js`).
 Design, parameters and their regulatory basis: [`floor-plans.md`](floor-plans.md).
 
 ## Read paths

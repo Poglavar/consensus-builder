@@ -45,7 +45,7 @@ describe('central-core layouts', () => {
         expect(result.floorPlans.notes.join(' ')).toMatch(/office storey/);
     });
 
-    it('plans a building of stepped parts as one: each storey on the parts that reach it, offices in the podium, flats round the core above', () => {
+    it('plans a building of stepped parts as one: each storey on the parts that reach it, offices in the podium, flats off a corridor along the lifts above', () => {
         // A 17-storey slab with a four-storey podium beside it, the vLAB tower's shape, drawn 2 cm apart.
         const shaft = rectangle(0, 0, 27, 14), podium = rectangle(0, -13.02, 27, 12);
         const footprint = turf.union(shaft, podium);
@@ -74,8 +74,19 @@ describe('central-core layouts', () => {
         const slabM2 = terraceFloor.slabs.reduce((sum, polygon) => sum + polygonArea(polygon), 0) * W * H;
         expect(slabM2).toBeGreaterThan(27 * 20);
         expect(layoutOfStorey(result, 5).slabs.reduce((sum, polygon) => sum + polygonArea(polygon), 0) * W * H).toBeLessThan(27 * 15);
-        // Every flat has its door from the lobby ring; the stairs and lifts are the same on every storey.
-        storeys.slice(4).forEach(storey => expect(openings(layoutOfStorey(result, storey.level), 'door', 'apartment')).toHaveLength(storey.units.length));
+        // Every flat has its door off one straight corridor along the lifts: the doors stand on its two
+        // walls only, flats on both sides of it.
+        storeys.slice(4).forEach(storey => {
+            const doors = openings(layoutOfStorey(result, storey.level), 'door', 'apartment');
+            expect(doors).toHaveLength(storey.units.length);
+            const architecture = layoutOfStorey(result, storey.level);
+            const lines = [...new Set(doors.map(door => Math.round(door.a[1] * 1e5)))].map(v => v / 1e5);
+            expect(lines).toHaveLength(2);
+            doors.forEach(door => expect(Math.abs(door.a[1] - door.b[1])).toBeLessThan(1e-6));
+            // The two walls stand one corridor apart (1.8 m plus a wall's thickness between their centres).
+            expect(Math.abs(lines[0] - lines[1]) * architecture.dimensionsM[1]).toBeCloseTo(2.0, 1);
+        });
+        // The stairs and lifts are the same on every storey.
         const liftDoors = level => openings(layoutOfStorey(result, level), 'slidingDoor', 'lift').map(o => o.a.join(','));
         expect(liftDoors(0)).toEqual(liftDoors(16));
     });
