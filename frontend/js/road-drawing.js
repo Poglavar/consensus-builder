@@ -1093,7 +1093,7 @@ async function runLocalCorridorGeometryUpdate(proposalIdOrHash, mutateDefinition
         );
         if (!derived || derived.ok !== true) {
             // The arrangement names what it could not place; that is the reason the author reads.
-            const reasons = [...new Set((derived?.failed || []).map(failure => failure?.message || failure?.code).filter(Boolean))];
+            const reasons = [...new Set((derived?.failed || []).map(roadEditBlockedReason).filter(Boolean))];
             throw Object.assign(new Error('The edited road scope could not be rematerialised from the cadastre.'
                 + (reasons.length ? ` ${reasons.join(' ')}` : '')), { userMessage: reasons.join(' ') || null });
         }
@@ -2166,6 +2166,22 @@ function formatRoadText(template, params = {}) {
     return String(template).replace(/\{\{\s*(\w+)\s*\}\}/g, (match, key) => {
         return Object.prototype.hasOwnProperty.call(params, key) ? params[key] : match;
     });
+}
+
+// What one design that could not be put back after a road edit says to the author. A design
+// rebuilt on its ground after the edit (a square, park or building beside the road) that no longer
+// finds that ground is the usual one: the road now runs over it. The bare code
+// ('formation-ground-unresolved') was all the author used to read.
+function roadEditBlockedReason(failure) {
+    if (!failure) return '';
+    const title = failure.title || failure.proposalId || '';
+    if (title && failure.proposalId && failure.code === 'formation-ground-unresolved') {
+        return translateRoadText('panel.road.editBlockedByDesign',
+            'The road would run over the ground of “{{title}}”, which cannot stand on what is left of it. Move the road off it, or change or unapply “{{title}}” first.',
+            { title });
+    }
+    const reason = failure.message || failure.reason || failure.code || '';
+    return title && failure.proposalId && reason ? `“${title}”: ${reason}` : reason;
 }
 
 // Why an edit of a road placed into a parcel was refused, in words for its author.

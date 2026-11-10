@@ -3519,6 +3519,7 @@
             "addNodeProtectedStatus": "Impossible d’ajouter un nœud sur une rampe, un tunnel ou un tronçon dénivelé.",
             "editRevertedStatus": "Impossible d’effectuer cette modification de la route — modification annulée.",
             "editRevertedReason": "Impossible d’effectuer cette modification de la route — modification annulée : {{reason}}",
+            "editBlockedByDesign": "La route passerait sur le terrain de « {{title}} », qui ne peut pas tenir sur ce qu’il en reste. Écartez la route, ou modifiez ou retirez d’abord « {{title}} ».",
             "boundedSplit": "Une rue dans une parcelle reste un seul réseau connecté : elle occupe toute la parcelle. Annulez, ou supprimez la rue et placez-la à nouveau.",
             "boundedTooWide": "Ces voies demandent {{required}} m et la parcelle laisse {{available}} m ici. Choisissez moins de voies ou des voies plus étroites.",
             "boundedOutside": "Une rue dans une parcelle reste dans cette parcelle. Ramenez le point dessus.",

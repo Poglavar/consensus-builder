@@ -970,6 +970,21 @@ describe('editing a saved road (updateLocalCorridorGeometry)', () => {
         expect(globalThis.ProposalSelection.clear.calls).toHaveLength(1);
     });
 
+    it('an edit whose neighbour cannot be put back names that design and what to do', async () => {
+        const world = open();
+        world.store.addProposal(withProfile(localRoad()));
+        globalThis.ProposalManager.rematerializeCorridorScope = async () => ({
+            ok: false,
+            failed: [{ proposalId: 'square-2', title: 'vLAB – trg (2/2)', code: 'formation-ground-unresolved', reason: 'The live fabric covers only 92% of this square\'s footprint; nothing was cut.' }]
+        });
+        const failures = [];
+        expect(await globalThis.updateLocalCorridorGeometry('road-1', definition => {
+            definition.points[0][1] = at(100, 20);
+        }, { onFailure: reason => failures.push(reason) })).toBe(false);
+        expect(failures).toEqual(['The road would run over the ground of “vLAB – trg (2/2)”, which cannot stand on what is left of it. Move the road off it, or change or unapply “vLAB – trg (2/2)” first.']);
+        expect(world.lastStatus()).not.toMatch(/formation-ground-unresolved/);
+    });
+
     it('a road not in this city is refused, rolled back and explained', async () => {
         const world = open();
         const failures = [];

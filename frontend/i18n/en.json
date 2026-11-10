@@ -2220,6 +2220,7 @@
             "addNodeProtectedStatus": "A node cannot be added on a ramp, tunnel, or grade-separated stretch.",
             "editRevertedStatus": "Could not complete that road change — reverted.",
             "editRevertedReason": "Could not complete that road change — reverted: {{reason}}",
+            "editBlockedByDesign": "The road would run over the ground of “{{title}}”, which cannot stand on what is left of it. Move the road off it, or change or unapply “{{title}}” first.",
             "boundedSplit": "A road in a parcel stays one connected network: it holds the whole parcel. Undo, or delete the road and place it again.",
             "boundedTooWide": "These lanes need {{required}} m, and the parcel leaves {{available}} m here. Choose fewer or narrower lanes.",
             "boundedOutside": "A road in a parcel stays inside that parcel. Move the point back onto it.",

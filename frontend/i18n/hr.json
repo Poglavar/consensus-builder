@@ -2233,6 +2233,7 @@
             "addNodeProtectedStatus": "Na rampi, tunelskoj ili deniveliranoj dionici nije moguće dodati čvor.",
             "editRevertedStatus": "Tu promjenu ceste nije bilo moguće dovršiti — vraćeno.",
             "editRevertedReason": "Tu promjenu ceste nije bilo moguće dovršiti — vraćeno: {{reason}}",
+            "editBlockedByDesign": "Cesta bi prešla preko tla „{{title}}”, koja ne može stajati na onome što od njega ostaje. Pomaknite cestu s njega ili najprije izmijenite ili poništite primjenu „{{title}}”.",
             "boundedSplit": "Cesta u čestici ostaje jedna povezana mreža jer drži cijelu česticu. Poništite promjenu ili izbrišite cestu i postavite je ponovno.",
             "boundedTooWide": "Ove trake trebaju {{required}} m, a čestica ovdje ostavlja {{available}} m. Odaberite manje ili uže trake.",
             "boundedOutside": "Cesta u čestici ostaje unutar te čestice. Vratite točku na nju.",
