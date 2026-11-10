@@ -93,9 +93,12 @@ describe('ensureBotSolFunding', () => {
         const loadFunder = vi.fn();
         const sendAndConfirm = vi.fn();
 
-        await expect(ensureBotSolFunding({
+        const refused = ensureBotSolFunding({
             connection, persona: { name: 'supporter-01', wallet: recipientWallet }, enabled: true, loadFunder, sendAndConfirm
-        })).rejects.toThrow(sourceWallet);
+        });
+        await expect(refused).rejects.toThrow(sourceWallet);
+        // Typed, so the runner records funding-short instead of failing the persona.
+        await expect(refused).rejects.toMatchObject({ code: 'FUNDING_SOURCE_SHORT', sourceWallet, asset: 'SOL' });
 
         expect(loadFunder).not.toHaveBeenCalled();
         expect(sendAndConfirm).not.toHaveBeenCalled();

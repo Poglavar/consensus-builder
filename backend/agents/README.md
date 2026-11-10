@@ -58,6 +58,10 @@ Funding: with `AGENT_SOL_FUNDING_ENABLED=1` a configured bot below 0.05 SOL is t
 from the main bot wallet before it signs; with `AGENT_USDC_FUNDING_ENABLED=1` an actor about to stake
 or donate is topped up to 0.5 test USDC (`funding.js`). The escrow lamports an agreement is funded with
 come from the proposer's own SOL and return to it when the agreement expires or is cancelled.
+When the main bot wallet (densifier-01) cannot cover a top-up or its own market seed, the run ends
+`done` with outcome `funding-short` and `summary.fundingShort` naming the wallet and asset, not
+`failed`: the personas are not at fault, and one funding check in alerts-server-telegram reports the
+wallet to refill. A rerun of the same slot resumes where it stopped.
 
 ## The proposer run (`run.mjs`)
 

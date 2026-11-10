@@ -16,6 +16,21 @@ const MAX_TRANSFER = 0.2 * LAMPORTS_PER_SOL;
 const SOURCE_RESERVE = 0.5 * LAMPORTS_PER_SOL;
 const FEE_ALLOWANCE = 0.005 * LAMPORTS_PER_SOL;
 
+// The shared top-up wallet cannot cover a bot's next action. That is not the bot's failure: its run
+// ends done with outcome 'funding-short', and one funding check (alerts-server-telegram) names the
+// wallet to refill, instead of every persona's outcome check going red for the same cause.
+export class FundingSourceShortError extends Error {
+    constructor(message, { sourceWallet, asset }) {
+        super(message);
+        this.name = 'FundingSourceShortError';
+        this.code = 'FUNDING_SOURCE_SHORT';
+        this.sourceWallet = sourceWallet;
+        this.asset = asset;
+    }
+}
+
+export const isFundingSourceShort = error => error?.code === 'FUNDING_SOURCE_SHORT';
+
 const personas = JSON.parse(fs.readFileSync(new URL('./personas.json', import.meta.url), 'utf8')).personas;
 const byName = new Map(personas.map((entry) => [entry.name, entry]));
 
@@ -92,7 +107,7 @@ export async function ensureBotSolFunding({
     const amount = Math.min(TARGET_BOT_SOL - currentBalance, MAX_TRANSFER);
     const sourceBalance = lamports(await connection.getBalance(sourceAddress, 'confirmed'));
     if (sourceBalance < amount + SOURCE_RESERVE + FEE_ALLOWANCE) {
-        throw new Error(`SOL top-up wallet ${source.wallet} has insufficient devnet SOL; fund this address before retrying`);
+        throw new FundingSourceShortError(`SOL top-up wallet ${source.wallet} has insufficient devnet SOL; fund this address before retrying`, { sourceWallet: source.wallet, asset: 'SOL' });
     }
 
     let funder;
@@ -199,7 +214,7 @@ export async function ensureBotUsdcFunding({
     if (recipient.wallet === source.wallet) {
         if (requiredAtomic > TARGET_BOT_USDC) {
             const balance = usdcBalance(await readBalance(connection, source.wallet));
-            if (balance - requiredAtomic < SOURCE_USDC_RESERVE) throw new Error(`USDC funding wallet ${source.wallet} cannot seed its market while retaining 1 test USDC; fund the source wallet before retrying`);
+            if (balance - requiredAtomic < SOURCE_USDC_RESERVE) throw new FundingSourceShortError(`USDC funding wallet ${source.wallet} cannot seed its market while retaining 1 test USDC; fund the source wallet before retrying`, { sourceWallet: source.wallet, asset: 'USDC' });
         }
         return { status: 'skipped', reason: 'source-wallet', wallet: recipient.wallet };
     }
@@ -215,10 +230,10 @@ export async function ensureBotUsdcFunding({
         const amount = targetBalance - current;
         const sourceBalance = usdcBalance(await readBalance(connection, source.wallet));
         if (sourceBalance - amount < SOURCE_USDC_RESERVE) {
-            throw new Error(`USDC funding wallet ${source.wallet} cannot top up ${recipient.wallet} while retaining 1 test USDC; fund the source wallet before retrying`);
+            throw new FundingSourceShortError(`USDC funding wallet ${source.wallet} cannot top up ${recipient.wallet} while retaining 1 test USDC; fund the source wallet before retrying`, { sourceWallet: source.wallet, asset: 'USDC' });
         }
         if (lamports(await connection.getBalance(new PublicKey(source.wallet), 'confirmed')) < SOURCE_RESERVE + FEE_ALLOWANCE) {
-            throw new Error(`USDC funding wallet ${source.wallet} needs devnet SOL for fees and token-account rent`);
+            throw new FundingSourceShortError(`USDC funding wallet ${source.wallet} needs devnet SOL for fees and token-account rent`, { sourceWallet: source.wallet, asset: 'SOL' });
         }
         const funder = await loadFunder(source);
         if (funder?.publicKey?.toBase58() !== source.wallet) throw new Error('Configured USDC funding signer does not match the source wallet');

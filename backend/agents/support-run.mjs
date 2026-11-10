@@ -20,9 +20,9 @@ import { ensurePledgeBookAndSet } from './pledger.js';
 import { ensureDonationEscrowAndDonate } from './donor.js';
 import { buyAgreementShares, usdcToAtomic } from './bettor.js';
 import { failStaleRuns, getRun, startRun, updateRun, STALE_RUN_HOURS } from './ledger.js';
-import { markAgentRunFailed, safeFailureDiagnostic } from './run-failure.js';
+import { markAgentRunFailed, markAgentRunFundingShort, safeFailureDiagnostic } from './run-failure.js';
 import { createRpcConnection } from '../solana/rpc.js';
-import { ensureBotSolFunding, fundBotAction } from './funding.js';
+import { ensureBotSolFunding, fundBotAction, isFundingSourceShort } from './funding.js';
 import { sendAndConfirmPolling } from './solana-send.js';
 import { sendTelegram } from './telegram.js';
 import { runKeyFor, slotLabel } from './area-plan.js';
@@ -218,6 +218,12 @@ async function main() {
                     ? `${persona.name}: ${selected.type} ${selected.amount} USDC on ${selected.agreementCid}`
                     : `${persona.name}: ${selected.agreementCid} was already supported; no new transaction`);
             } catch (error) {
+                // The shared funding wallet is short: the run ends done/funding-short, not failed.
+                if (runStarted && isFundingSourceShort(error)) {
+                    await markAgentRunFundingShort(pool, runId, error, { summaryPatch: { role: 'supporter', activities } });
+                    report.push(`${persona.name}: skipped, funding wallet ${error.sourceWallet} is short of ${error.asset}`);
+                    continue;
+                }
                 if (runStarted) {
                     try {
                         await markAgentRunFailed(pool, runId, error, { summaryPatch: { role: 'supporter', activities } });

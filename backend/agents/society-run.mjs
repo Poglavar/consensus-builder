@@ -27,11 +27,11 @@ import { ensurePledgeBookAndSet } from './pledger.js';
 import { buyAgreementShares, sellAgreementShares, readAgreementMarket, readAgreementMarkets, usdcToAtomic } from './bettor.js';
 import { claimAgreementMarket, resolveAgreementMarket, revokePledge } from './lifecycle-actions.js';
 import { assertUnderCap, dailyCapUsd, dailySpendUsd, failStaleRuns, getRun, listPersonaRuns, recordCosts, STALE_RUN_HOURS, startRun, updateRun } from './ledger.js';
-import { markAgentRunFailed, safeFailureDiagnostic } from './run-failure.js';
+import { markAgentRunFailed, markAgentRunFundingShort, safeFailureDiagnostic } from './run-failure.js';
 import { createAgentLlm, estimateBatchCostUsd, runPickBatch } from './llm-picker.js';
 import { buildChoiceRequest, optionId, parseChoice } from './society-llm.js';
 import { createRpcConnection } from '../solana/rpc.js';
-import { ensureBotSolFunding, fundBotAction } from './funding.js';
+import { ensureBotSolFunding, fundBotAction, isFundingSourceShort } from './funding.js';
 import { sendAndConfirmPolling } from './solana-send.js';
 import { sendTelegram } from './telegram.js';
 import { isEntrypoint } from './entrypoint.js';
@@ -452,6 +452,12 @@ async function main() {
                     ? `${label}: ${action.type}${action.side ? ` ${action.side.toUpperCase()}` : ''}${action.amount ? ` ${action.amount} USDC` : ''}${action.payout ? ` (${action.payout} USDC back)` : ''} on ${action.agreementCid}`
                     : `${label}: ${action.agreementCid} already in that state on-chain; no new transaction`);
             } catch (error) {
+                // The shared funding wallet is short: record it and go on (a later turn may need no USDC).
+                if (runStarted && isFundingSourceShort(error)) {
+                    await markAgentRunFundingShort(pool, turn.runId, error, { summaryPatch: { role: persona.role, activities } });
+                    report.push(`${label}: skipped, funding wallet ${error.sourceWallet} is short of ${error.asset}`);
+                    continue;
+                }
                 if (runStarted) {
                     try {
                         await markAgentRunFailed(pool, turn.runId, error, { summaryPatch: { role: persona.role, activities } });

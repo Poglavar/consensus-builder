@@ -152,13 +152,17 @@ describe('ensureBotUsdcFunding', () => {
     it('preserves USDC and fee SOL reserves before signing', async () => {
         for (const sourceBalance of [1_499_999n, 1_000_000n]) {
             const h = harness({ balances: { [recipient]: 0n, [source]: sourceBalance } });
-            await expect(ensureBotUsdcFunding(h.args)).rejects.toThrow(/retaining 1 test USDC/);
+            const refused = ensureBotUsdcFunding(h.args);
+            await expect(refused).rejects.toThrow(/retaining 1 test USDC/);
+            await expect(refused).rejects.toMatchObject({ code: 'FUNDING_SOURCE_SHORT', sourceWallet: source, asset: 'USDC' });
             expect(h.loadFunder).not.toHaveBeenCalled();
             expect(h.sendAndConfirm).not.toHaveBeenCalled();
             expectUnlocked(h);
         }
         const h = harness({ sol: 0.504 * LAMPORTS_PER_SOL });
-        await expect(ensureBotUsdcFunding(h.args)).rejects.toThrow(/SOL for fees and token-account rent/);
+        const refused = ensureBotUsdcFunding(h.args);
+        await expect(refused).rejects.toThrow(/SOL for fees and token-account rent/);
+        await expect(refused).rejects.toMatchObject({ code: 'FUNDING_SOURCE_SHORT', sourceWallet: source, asset: 'SOL' });
         expect(h.loadFunder).not.toHaveBeenCalled();
         expect(h.sendAndConfirm).not.toHaveBeenCalled();
         expectUnlocked(h);

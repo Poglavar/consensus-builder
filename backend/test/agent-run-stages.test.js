@@ -11,6 +11,7 @@ import { fileURLToPath } from 'node:url';
 import { Keypair } from '@solana/web3.js';
 import { STAGES, advancePick, formatCandidateQuantity, operatedLens, parcelLand, pickIdFor, rivalIndexStatuses, settlementMessage, stageIndex } from '../agents/run.mjs';
 import { agreementAccountOf } from '../agents/agreement-minter.js';
+import { FundingSourceShortError } from '../agents/funding.js';
 import { validateDesignContent } from '../routes/designs.js';
 import { validateAgreementContent } from '../routes/agreements.js';
 import { cidOf, canonicalBytes } from '../cid.js';
@@ -198,6 +199,25 @@ describe('the stages of one pick', () => {
         await advancePick(args);
         expect(openMarketImpl).toHaveBeenCalledTimes(1); expect(fundMarketSeed).toHaveBeenCalledTimes(1);
         expect(h.actions.map(a => a.type)).toContain('openMarket');
+    });
+
+    it('passes a short funding wallet out unwrapped, so the runner can record funding-short, and opens the market on a rerun', async () => {
+        const h = harness();
+        let short = true;
+        const fundMarketSeed = vi.fn(async () => {
+            if (short) throw new FundingSourceShortError('USDC funding wallet W cannot seed its market', { sourceWallet: 'W', asset: 'USDC' });
+            return { status: 'funded' };
+        });
+        const openMarketImpl = vi.fn(async options => {
+            await options.ensureSeed(69_314_720n);
+            return { address: 'market-fixture', seedAtomic: '69314720', signature: 'market-signature' };
+        });
+        const args = { ...h.args, marketSeedCapUsdc: 70, openMarketImpl, fundMarketSeed };
+        await expect(advancePick(args)).rejects.toMatchObject({ code: 'FUNDING_SOURCE_SHORT', sourceWallet: 'W' });
+        expect(h.state.markets[pick.candidateId]).toBeUndefined();
+        short = false;
+        await advancePick(args);
+        expect(h.state.markets[pick.candidateId].signature).toBe('market-signature');
     });
 
     it('keeps seed-funding receipts when market confirmation is interrupted, then resumes by chain state', async () => {

@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { createMockPool } from './helpers/mock-pool.js';
-import { markAgentRunFailed, safeFailureDiagnostic } from '../agents/run-failure.js';
+import { markAgentRunFailed, markAgentRunFundingShort, safeFailureDiagnostic } from '../agents/run-failure.js';
+import { FundingSourceShortError, isFundingSourceShort } from '../agents/funding.js';
 
 describe('agent run failure checkpoint', () => {
     it('redacts third-party paths, query strings and bearer tokens while retaining a bounded diagnostic', () => {
@@ -30,5 +31,19 @@ describe('agent run failure checkpoint', () => {
         expect(call.params[0]).toBe('2026-10-11-h09-supporter-01');
         expect(call.params[2]).toBe('failed');
         expect(JSON.parse(call.params[3])).toEqual({ role: 'supporter', outcome: 'failed', error: 'request to rpc.test timed out' });
+    });
+
+    it('ends a run whose shared funding wallet is short as done/funding-short, naming the wallet and asset', async () => {
+        const pool = createMockPool();
+        pool.setResult({ rows: [{ run_id: 'run-1' }], rowCount: 1 });
+        const error = new FundingSourceShortError('USDC funding wallet W cannot top up R while retaining 1 test USDC', { sourceWallet: 'W', asset: 'USDC' });
+        expect(isFundingSourceShort(error)).toBe(true);
+        expect(isFundingSourceShort(new Error('USDC funding wallet W cannot top up R'))).toBe(false);
+        await markAgentRunFundingShort(pool, 'run-1', error, { summaryPatch: { role: 'supporter' } });
+        const call = pool.getCalls().at(-1);
+        expect(call.params[2]).toBe('done');
+        // updateRun nulls `error` on a done run, so the message travels in fundingShort.
+        expect(JSON.parse(call.params[3])).toEqual({ role: 'supporter', outcome: 'funding-short', error: null,
+            fundingShort: { sourceWallet: 'W', asset: 'USDC', message: 'USDC funding wallet W cannot top up R while retaining 1 test USDC' } });
     });
 });

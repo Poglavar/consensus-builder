@@ -22,6 +22,21 @@ export function safeFailureDiagnostic(error) {
         .slice(0, 240);
 }
 
+// The shared funding wallet ran short (FundingSourceShortError): the run ends done, not failed, and
+// keeps which wallet and asset to refill for the single funding check.
+export async function markAgentRunFundingShort(pool, runId, error, { stage = null, summaryPatch = {} } = {}) {
+    return updateRun(pool, runId, {
+        ...(stage ? { stage } : {}),
+        status: 'done',
+        summaryPatch: {
+            ...summaryPatch,
+            outcome: 'funding-short',
+            // updateRun clears `error` on a done run, so the message lives here.
+            fundingShort: { sourceWallet: error.sourceWallet, asset: error.asset, message: safeFailureDiagnostic(error) }
+        }
+    });
+}
+
 export async function markAgentRunFailed(pool, runId, error, { stage = null, summaryPatch = {} } = {}) {
     return updateRun(pool, runId, {
         ...(stage ? { stage } : {}),

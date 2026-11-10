@@ -63,7 +63,7 @@ import { cityMoney } from '../scripts/lib/frontend-city-money.mjs';
 import { planHousingCandidates, housingOutreach } from './housing-policy.js';
 import { findHousingPlan } from './housing-area-search.js';
 import { fetchHousingScreen } from './housing-screen.js';
-import { markAgentRunFailed, safeFailureDiagnostic } from './run-failure.js';
+import { markAgentRunFailed, markAgentRunFundingShort, safeFailureDiagnostic } from './run-failure.js';
 import { fetchSourceParcels } from './source-fetch.js';
 import { bindingRejection, preflightCandidates, prioritizedPlannedCandidates } from './candidate-preflight.js';
 import { checkProposalBinding } from '../proposals/binding.js';
@@ -72,7 +72,7 @@ import { buildPickRequests, parsePicks, estimateBatchCostUsd, runPickBatch, pick
 import { usdcToAtomic, openAgreementMarket } from './bettor.js';
 import { getRun, startRun, updateRun, recordCosts, dailySpendUsd, assertUnderCap, dailyCapUsd, listRuns, failStaleRuns, STALE_RUN_HOURS } from './ledger.js';
 import { createRpcConnection } from '../solana/rpc.js';
-import { ensureBotSolFunding, ensureBotUsdcFunding } from './funding.js';
+import { ensureBotSolFunding, ensureBotUsdcFunding, isFundingSourceShort } from './funding.js';
 import { sendAndConfirmPolling } from './solana-send.js';
 import {
     assertExecutionPlan, decisionCompletion, executionPolicy, summarizeExecutionPlan,
@@ -848,8 +848,18 @@ async function main() {
         log(`execution policy: ${executionPlan.actionCount}/${policy.maxActions} signed actions · ≤ ${executionPlan.maxUsdc.toFixed(2)}/${policy.maxUsdc.toFixed(2)} USDC · ≤ ${executionPlan.maxMarketSeedUsdc.toFixed(5)}/${policy.maxMarketSeedUsdc.toFixed(5)} devnet USDC market seed`);
         const connection = createRpcConnection(rpcUrl, 'confirmed');
 
-        for (const entry of entries) {
-            const funding = await ensureBotSolFunding({ connection, persona: entry.persona });
+        // A persona the shared funding wallet cannot top up sits this run out (done, funding-short).
+        for (const entry of [...entries]) {
+            let funding;
+            try {
+                funding = await ensureBotSolFunding({ connection, persona: entry.persona });
+            } catch (error) {
+                if (!isFundingSourceShort(error)) throw error;
+                entry.run = await markAgentRunFundingShort(pool, entry.runId, error);
+                report.push(`${entry.persona.name}: skipped, funding wallet ${error.sourceWallet} is short of ${error.asset}`);
+                entries.splice(entries.indexOf(entry), 1);
+                continue;
+            }
             if (funding.status === 'funded') entry.run = await updateRun(pool, entry.runId, { summaryPatch: { funding } });
         }
 
@@ -893,6 +903,7 @@ async function main() {
             const stakeUsdc = String(persona.stakeUsdc ?? '0');
             const staking = usdcToAtomic(stakeUsdc) > 0n;
             let personaFailed = false;
+            let fundingShort = null;
             const run = actionRunner({ persona, controller: runController, wallet, activities });
             const save = async (stage, patch) => {
                 e.run = await updateRun(pool, e.runId, { ...(stage ? { stage } : {}), status: 'running', summaryPatch: { ...patch, activities } });
@@ -915,6 +926,8 @@ async function main() {
                         break;
                     }
                 } catch (err) {
+                    // The shared funding wallet cannot seed this market: stop this persona's picks without failing it.
+                    if (isFundingSourceShort(err)) { fundingShort = err; break; }
                     failures.push(`${tag}: ${safeFailureDiagnostic(err)}`);
                     personaFailed = true;
                     break;
@@ -945,14 +958,16 @@ async function main() {
                 : null;
             await updateRun(pool, e.runId, {
                 stage: done ? until : furthest,
-                status: personaFailed ? 'failed' : (done && until === 'staked' ? 'done' : 'running'),
+                status: personaFailed ? 'failed' : fundingShort || (done && until === 'staked') ? 'done' : 'running',
                 summaryPatch: {
                     designs, owners, agreements, mints, onchain, stakes, markets, marketFunding, bindingFailures, activities, lens: lens.key,
                     ...(outreach ? { outreach } : {}),
                     error: personaFailed ? failures.filter(value => value.startsWith(persona.name)).map(safeFailureDiagnostic).join('; ').slice(0, 500) : null,
-                    outcome: personaFailed ? 'failed' : (done && until === 'staked' ? 'completed' : 'partial')
+                    outcome: personaFailed ? 'failed' : fundingShort ? 'funding-short' : (done && until === 'staked' ? 'completed' : 'partial'),
+                    ...(fundingShort ? { fundingShort: { sourceWallet: fundingShort.sourceWallet, asset: fundingShort.asset, message: safeFailureDiagnostic(fundingShort) } } : {})
                 }
             });
+            if (fundingShort) report.push(`${persona.name}: stopped, funding wallet ${fundingShort.sourceWallet} is short of ${fundingShort.asset}`);
             const marketTrades = Object.values(stakes).filter(item => !item.skipped).length;
             const skippedOwnTrades = Object.values(stakes).filter(item => item.skipped).length;
             report.push(`${persona.name}: ${picks.length} picks · ${Object.keys(designs).length} designs · ${Object.keys(agreements).length} agreements · ${Object.keys(mints).length} minted · ${Object.keys(onchain).length} recorded · ${marketTrades} market trade(s) · ${skippedOwnTrades} own-market trade(s) skipped · $${(summary.pickCostUsd ?? 0).toFixed(4)}`);
