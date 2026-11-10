@@ -418,8 +418,8 @@
                             : `${owner.percentageShare}%`;
                     }
                     share = share || '100%';
-                    const safeName = typeof global.escapeHtml === 'function' ? global.escapeHtml(name) : name;
-                    const safeShare = typeof global.escapeHtml === 'function' ? global.escapeHtml(share) : share;
+                    const safeName = escapeHtml(name);
+                    const safeShare = escapeHtml(share);
                     return `
                         <div class="owner-row parcel-owner-row">
                             <span>${safeName}</span>
@@ -498,7 +498,7 @@
                 const proposalBody = `
                     <div class="proposal-item-body">
                         <div class="proposal-item-header">
-                            <h3 class="proposal-item-title">${global.ParcelSetProposals.pickButtonHtml(`${proposalTitle}${roadSuffix}`, recordLabel)}${proposalRecordBadgeHtml(recordId, recordIds)}</h3>
+                            <h3 class="proposal-item-title">${global.ParcelSetProposals.pickButtonHtml(escapeHtml(`${proposalTitle}${roadSuffix}`), recordLabel)}${proposalRecordBadgeHtml(recordId, recordIds)}</h3>
                             <div class="proposal-item-badges">
                                 <span class="cb-badge">${escapeHtml(proposalTypeLabel)}</span>
                                 ${producerPill}
@@ -507,7 +507,7 @@
                             ${global.ParcelSetProposals.openButtonHtml(recordLabel)}
                         </div>
                         <div class="proposal-item-details">
-                            <span class="proposal-item-label" data-i18n-key="panel.parcel.proposalsSection.details.author">${proposalAuthorLabel}</span> <span class="proposal-author-value">${authorValue}</span>
+                            <span class="proposal-item-label" data-i18n-key="panel.parcel.proposalsSection.details.author">${proposalAuthorLabel}</span> <span class="proposal-author-value">${escapeHtml(authorValue)}</span>
                         </div>
                     </div>
                 `;

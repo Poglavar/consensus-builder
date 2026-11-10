@@ -11,6 +11,11 @@ const source = readFileSync(
     new URL('../../frontend/js/parcels/ownership-ui.js', import.meta.url),
     'utf8'
 );
+// The page loads shared-utils.js (escapeHtml) before the parcel UI; owner names are escaped with it.
+const sharedUtilsSource = readFileSync(
+    new URL('../../frontend/js/shared-utils.js', import.meta.url),
+    'utf8'
+);
 
 function loadOwnershipUi({ ownership = false, gameRunning = false } = {}) {
     const target = { innerHTML: '' };
@@ -43,6 +48,7 @@ function loadOwnershipUi({ ownership = false, gameRunning = false } = {}) {
     };
     scope.window = scope;
     const context = createContext(scope);
+    runInContext(sharedUtilsSource, context);
     runInContext(ownershipTypeSource, context);
     runInContext(source, context);
     return { ui: scope.ParcelsOwnershipUi, target, count, typeLabel, typeClasses, scope };

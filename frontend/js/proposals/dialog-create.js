@@ -1258,8 +1258,8 @@ function showProposalDialog(overrides = null) {
             similarSection.style.display = '';
             const itemsHtml = similarProposals.map(p => {
                 const proposalId = p.proposalId || '';
-                const title = typeof escapeHtml === 'function' ? escapeHtml(p.title || similarUnknownTitle) : (p.title || similarUnknownTitle);
-                const author = typeof escapeHtml === 'function' ? escapeHtml(p.author || similarUnknownAuthor) : (p.author || similarUnknownAuthor);
+                const title = escapeHtml(p.title || similarUnknownTitle);
+                const author = escapeHtml(p.author || similarUnknownAuthor);
                 const goalKey = ProposalDesignGoals.keyOf(p) || 'other';
                 const typeLabel = typeof formatProposalTypeLabel === 'function'
                     ? formatProposalTypeLabel(goalKey)

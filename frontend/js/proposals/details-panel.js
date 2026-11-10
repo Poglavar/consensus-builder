@@ -4,7 +4,7 @@
 let proposalDetailsTab = 'overview';
 
 function safeAgentText(value) {
-    return typeof escapeHtml === 'function' ? escapeHtml(String(value ?? '')) : String(value ?? '');
+    return escapeHtml(String(value ?? ''));
 }
 
 async function focusProposalDetails(proposalIdOrHash, options = {}) {
@@ -361,9 +361,7 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
     const proposalType = window.ClickStackRelations.designType({ proposal: fullProposal || proposal }, window);
     const proposalTypePill = proposalType ? `<span class="cb-badge cb-badge--${proposalType.tone} proposal-type-badge" data-design-goal="${proposalType.goal}"><span aria-hidden="true">${safeAgentText(proposalType.icon)}</span><span>${safeAgentText(proposalType.label)}</span></span>` : '';
     const proposalDisplayDescription = displayText(getProposalDisplayDescription(fullProposal, proposal, proposalDisplayTitle));
-    const escapedProposalDisplayTitle = typeof escapeHtml === 'function'
-        ? escapeHtml(proposalDisplayTitle)
-        : proposalDisplayTitle;
+    const escapedProposalDisplayTitle = escapeHtml(proposalDisplayTitle);
 
     const formatAuthorForDisplay = (authorRaw) => {
         const author = authorRaw || '';
@@ -372,8 +370,8 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
         const truncated = (isHexAddress || isSolanaAddress)
             ? `${author.slice(0, 6)}...${author.slice(-4)}`
             : author;
-        const safeText = typeof escapeHtml === 'function' ? escapeHtml(truncated) : truncated;
-        const safeTitle = typeof escapeHtml === 'function' ? escapeHtml(author) : author;
+        const safeText = escapeHtml(truncated);
+        const safeTitle = escapeHtml(author);
         return `<span class="author-text proposal-author-text" title="${safeTitle}">${safeText}</span>`;
     };
 
@@ -597,7 +595,7 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
         </div>
         ${mapActionFailureHtml}
     `;
-    const escapedProposalDescription = proposalDisplayDescription && typeof escapeHtml === 'function'
+    const escapedProposalDescription = proposalDisplayDescription
         ? escapeHtml(proposalDisplayDescription)
         : proposalDisplayDescription;
 
@@ -612,7 +610,7 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
         } catch (_) { }
         const sourceLabel = sourceProposal?.title || sourceProposal?.name || origin.title
             || tProposal('panel.proposal.lineage.untitled', 'Untitled proposal');
-        const safeLabel = typeof escapeHtml === 'function' ? escapeHtml(String(sourceLabel)) : String(sourceLabel);
+        const safeLabel = escapeHtml(String(sourceLabel));
         const basedOnLabel = tProposal('panel.proposal.basedOn', 'Based on');
         const inner = sourceProposal
             ? `<button type="button" class="cb-link proposal-based-on-link" data-lineage-local-id="${safeAgentText(sourceProposal.proposalId)}">${safeLabel}</button>`
@@ -645,7 +643,7 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
 
     const proposalDisplayId = proposal.proposalId ? String(proposal.proposalId) : null;
 
-    const escapedProposalDisplayId = proposalDisplayId && typeof escapeHtml === 'function'
+    const escapedProposalDisplayId = proposalDisplayId
         ? escapeHtml(proposalDisplayId)
         : proposalDisplayId;
     const createdAtLabel = fullProposal.createdAt

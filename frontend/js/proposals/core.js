@@ -425,7 +425,7 @@ function addLocalBadgeToCard(card, t) {
     const mintBadge = card.querySelector('.proposal-mint-state');
     if (!mintBadge || typeof mintBadge.insertAdjacentHTML !== 'function') return;
     const label = t('modal.roadWidth.proposalList.labels.local', 'Local');
-    const safe = (typeof escapeHtml === 'function') ? escapeHtml(label) : label;
+    const safe = escapeHtml(label);
     mintBadge.insertAdjacentHTML('afterend',
         `<span class="cb-badge cb-badge--neutral proposal-mint-state proposal-mint-state--compact proposal-local-state">${safe}</span>`);
 }

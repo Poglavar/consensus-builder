@@ -471,12 +471,12 @@
             }
 
             const shareDetail = owner && owner.shareDetail ? owner.shareDetail.trim() : '';
-            const safeName = typeof global.escapeHtml === 'function' ? global.escapeHtml(name) : name;
+            const safeName = global.escapeHtml(name);
             const fallbackShare = owner && owner.placeholder ? '100%' : '';
             const safeShare = (share || fallbackShare)
-                ? (typeof global.escapeHtml === 'function' ? global.escapeHtml(share || fallbackShare) : (share || fallbackShare))
+                ? global.escapeHtml(share || fallbackShare)
                 : '';
-            const safeDetail = shareDetail ? (typeof global.escapeHtml === 'function' ? global.escapeHtml(shareDetail) : shareDetail) : '';
+            const safeDetail = shareDetail ? global.escapeHtml(shareDetail) : '';
             const shareHtml = safeShare
                 ? `<span class="parcel-owner-share"${safeDetail ? ` title="${safeDetail}"` : ''}>${safeShare}</span>`
                 : '';

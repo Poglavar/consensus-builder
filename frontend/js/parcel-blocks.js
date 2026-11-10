@@ -1618,7 +1618,7 @@ function buildBlockProposalListItem(proposal) {
 
     const proposalIdOrHash = proposal.proposalId;
     const color = (typeof getProposalColor === 'function') ? getProposalColor(proposalIdOrHash) : '#007bff';
-    const safeTitle = (typeof escapeHtml === 'function') ? escapeHtml(proposal.title || 'Untitled proposal') : (proposal.title || 'Untitled proposal');
+    const safeTitle = escapeHtml(proposal.title || 'Untitled proposal');
 
     const goalKey = (typeof window.normalizeProposalGoalKey === 'function') ? window.normalizeProposalGoalKey(proposal.goal) : (proposal.goal || '').toLowerCase();
     const isRoadProposal = goalKey === 'road-track' || (!!proposal.roadProposal && goalKey === '');
