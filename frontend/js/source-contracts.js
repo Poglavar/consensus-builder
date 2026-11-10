@@ -113,7 +113,9 @@
         ownership: { lookup: operation(obj({ parcelId: string('Stable parcel id.') }), { oneOf: [obj({}, [], true), { type: 'null' }] },
             'Bound reader method lookup(parcelId); null means no answer for registered source/parcel. Non-null answers are normalized by the ownership contract and retain source, attribution and licence.', ['parcelId']) },
         'building-details': { fetchFloorModels: operation(obj({ identities: array(obj({}, [], true)) }), null,
-            'Returns an in-process Map keyed by canonical identity JSON to raw database rows. No JSON projection is defined; generated/suggested layouts are not registry records.', ['identities'], 'Map') }
+            'Returns an in-process Map keyed by canonical identity JSON to raw database rows. No JSON projection is defined; generated/suggested layouts are not registry records.', ['identities'], 'Map'),
+            fetchFloorModelMarkers: operation(obj({ identities: array(obj({}, [], true)) }), null,
+                'Returns an in-process Map from building identity to a compact marker (storey levels, unit count) for buildings that have plans; never the plans themselves.', ['identities'], 'Map') }
     };
 
     operations['reality-mesh'] = { authentication: operation(obj({ accessToken: string('Private runtime access token; never persisted in source metadata.') }),
@@ -165,17 +167,17 @@
         'block-barriers': ['overpass-block-roads'], 'street-register': ['postgis-street-register'],
         'planned-roads': ['postgis-road-reservations'], 'road-classification': ['postgis-road-classification'],
         trees: ['osm-decor-trees'], water: ['openfreemap-water'], ownership: ['http', 'hr-oss', 'ar-caba', 'rs-bg', 'us-nyc', 'si-gurs', 'hr-oss-public-fallback'],
-        'building-details': ['floor-model-storage'], 'reality-mesh': ['cesium-ion-3dtiles']
+        'building-details': ['floor-model-storage', 'floor-plan-publication'], 'reality-mesh': ['cesium-ion-3dtiles']
     };
     const nativeOnly = new Set(['cesium-ion-3dtiles','oss-wfs', 'parcel-ba', 'parcel-bg', 'parcel-lj', 'parcel-nyc', 'dgu-live', 'gdi-map', 'dgu-map', 'osm-reference', 'hr-oss-public-fallback','wien-lod2','nl-3dbag','nrw-lod2','nyc-3d','berlin-lod2','hamburg-lod2','bw-lod2','sachsen-lod2','gdi-3d', 'dgu', 'nyc-arcgis', 'nyc-socrata', 'osm', 'gup', 'nyc-pilot', 'bogota-pot', 'uk-mhclg-2023', 'scenario-assumptions',
         'osm-road-network', 'osm-street-frontage', 'postgis-street-register', 'postgis-road-reservations', 'postgis-road-classification', 'osm-decor-trees',
-        'floor-model-storage', 'hr-oss', 'ar-caba', 'rs-bg', 'us-nyc', 'si-gurs']);
+        'floor-model-storage', 'floor-plan-publication', 'hr-oss', 'ar-caba', 'rs-bg', 'us-nyc', 'si-gurs']);
     const requiredMethods = {
         parcels: ['queryBounds', 'queryIds', 'queryGeometry'], buildings: ['near', 'footprints', 'footprintsUnder'],
         planning: ['query', 'record'], economics: ['rates'], imagery: ['tileUrl', 'basemap'], geocoding: ['search'],
         'transit-alignments': ['load'], 'terrain-profile': ['profile', 'url'], 'road-network': ['readNetwork', 'readLiveNetwork'], 'frontage-streets': ['near'],
         'block-barriers': ['readBarriers'], 'street-register': ['readStreets'], 'planned-roads': ['readReservations'],
-        'road-classification': ['readIds'], trees: ['near'], water: ['near'], ownership: ['lookup'], 'building-details': ['fetchFloorModels'], 'reality-mesh': ['authentication']
+        'road-classification': ['readIds'], trees: ['near'], water: ['near'], ownership: ['lookup'], 'building-details': ['fetchFloorModels', 'fetchFloorModelMarkers'], 'reality-mesh': ['authentication']
     };
 
     const standardOperations = clone(operations);
@@ -309,6 +311,7 @@
             configuration: family === 'parcels' || family === 'buildings' ? 'See backend/parcels/custom-source-config.js; this adapter id alone does not promise every native option.' :
                 family === 'economics' ? 'See frontend/js/economic-sources.js; rate-table v1 is portable and validates explicit units, currency, basis and date.' :
                     family === 'imagery' ? 'See frontend/js/imagery-source.js; XYZ and WMS configs are validated and proxied by the imagery gateway.' :
+                        family === 'building-details' && id === 'floor-plan-publication' ? 'A city configuration declares it (floorModels.published: baseUrl, city, source, buildingSource, buildingIds); see backend/buildings/floor-plan-publication.js. Custom registrations are disabled.' :
                         family === 'building-details' ? 'Repository-owned versioned evidence store; custom registrations are disabled.' :
                             native ? 'Provider-specific configured source; custom registration is disabled unless the runtime explicitly registers it.' :
                                 'Adapter-native public configuration; validate endpoint, coverage and output contract before registration.' };
