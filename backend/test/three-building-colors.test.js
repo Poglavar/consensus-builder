@@ -44,7 +44,7 @@ function viewer({ parcelFeatures = parcels, fabric = true, proposed = true, enve
         markOwnedMaterial() {}, markOwnedGeometry() {}, addBuildingFloorLines() {}, tagBuildingStoreys() {},
         prepareProceduralFacadeMeshes: meshes => meshes, console
     };
-    vm.runInNewContext(['stringToColor', 'createBuildingSlices'].map(name => declarations.get(name)).join('\n'), context);
+    vm.runInNewContext(['stringToColor', 'buildingHue', 'createBuildingSlices'].map(name => declarations.get(name)).join('\n'), context);
     return {
         material,
         render(feature) {

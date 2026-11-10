@@ -49,7 +49,7 @@ function viewer(parcelFeatures = parcels) {
         window: { LiveParcelFabric: { queryBounds: () => parcelFeatures }, CityConfigManager: { getCurrentCityId: () => 'zagreb' } },
         turf, THREE, buildingFacades: facades, facadeState: facades.createState(THREE),
         proposedBuildingsGroup: null, buildingMaterials: { massing: null },
-        cloneBuildingMaterial: material, stringToColor: () => '#abcdef', materials: { sliceEdges: {} },
+        cloneBuildingMaterial: material, stringToColor: () => '#abcdef', buildingHue: () => new Color('#abcdef'), materials: { sliceEdges: {} },
         addBuildingFloorLines: vi.fn(), console,
         tagBuildingStoreys() {},
         markOwnedGeometry: (_object, geometry) => geometry,

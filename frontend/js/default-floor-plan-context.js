@@ -436,7 +436,7 @@
         try {
             const closed = turf.buffer(turf.buffer(footprint, 0.05, { units: 'meters' }), -0.05, { units: 'meters' });
             if (closed && polygonsOf(closed.geometry).length) footprint = closed;
-        } catch (_) { }
+        } catch (error) { reportClip('buffer', error, 'default-floor-plan-context.steppedBuilding.close', [footprint]); }
         const byHeight = plates.slice().sort((a, b) => a.floors - b.floors);
         const storeyUses = Array.from({ length: tallest.floors }, (_, level) => {
             const part = byHeight.find(plate => plate.floors > level);
