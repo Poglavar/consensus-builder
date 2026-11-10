@@ -791,7 +791,8 @@ async function createProposal() {
                 return;
             }
             const updated = await ProposalManager.updateProposalInPlace(inPlaceSourceId, proposal, {
-                unapplyIds: dependents.map(record => String(record.proposalId))
+                unapplyIds: dependents.map(record => String(record.proposalId)),
+                reorder: groundTakes.reorder === true
             });
             if (updated) proposalId = inPlaceSourceId;
         } else {

@@ -1020,7 +1020,6 @@
             "title": "Ovaj dizajn uzima tlo drugima",
             "displaced": "Stoji ondje gdje i {{names}}, pa se uklanjaju s karte; ostaju na vašem popisu i mogu se ponovno primijeniti.",
             "yielding": "Uzima dio od {{names}}; ostaju na karti na tlu koje im ostavlja.",
-            "keeps": "{{names}} nastali su kasnije i zadržavaju tlo koje i ovaj dizajn pokriva; ovaj dizajn stoji oko njih.",
             "confirm": "Spremi",
             "notSaved": "Nije spremljeno. Dizajn je ponovno otvoren."
         },

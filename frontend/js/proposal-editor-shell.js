@@ -539,17 +539,17 @@
 
     // One question before a save that takes other designs' ground (ProposalManager.previewGroundTakes
     // and, for an in-place edit, findEditDependents): what comes off the map, and which parks,
-    // squares and lakes give way or keep theirs. True when there is nothing to ask or the user saves.
+    // squares and lakes give way. True when there is nothing to ask or the user saves.
     // Whether a save has anything for confirmGroundTakes to ask: checked first, so a save with
     // nothing to ask runs on without waiting for a dialog.
-    function hasGroundTakes({ dependents = [], displaced = [], yielding = [], keeps = [] } = {}) {
-        return dependents.length + displaced.length + yielding.length + keeps.length > 0;
+    function hasGroundTakes({ dependents = [], displaced = [], yielding = [] } = {}) {
+        return dependents.length + displaced.length + yielding.length > 0;
     }
 
-    async function confirmGroundTakes({ dependents = [], displaced = [], yielding = [], keeps = [] } = {}) {
+    async function confirmGroundTakes({ dependents = [], displaced = [], yielding = [] } = {}) {
         const dependentIds = new Set(dependents.map(record => String(record.proposalId)));
         const off = displaced.filter(record => !dependentIds.has(String(record.proposalId)));
-        if (!off.length && !yielding.length && !keeps.length) {
+        if (!off.length && !yielding.length) {
             return dependents.length ? confirmEditDependents(dependents) : true;
         }
         const names = list => list.map(record => `“${record.title || record.name || record.proposalId}”`).join(', ');
@@ -568,11 +568,6 @@
             parts.push(tDraft('proposalDrafts.groundTakes.yielding',
                 'It takes part of {{names}}; they stay on the map on the ground it leaves them.',
                 { count: yielding.length, names: names(yielding) }));
-        }
-        if (keeps.length) {
-            parts.push(tDraft('proposalDrafts.groundTakes.keeps',
-                '{{names}} came later and keep(s) the ground it also covers; this design stands round them.',
-                { count: keeps.length, names: names(keeps) }));
         }
         return global.CbDialog.confirm(parts.join('\n\n'), {
             title: tDraft('proposalDrafts.groundTakes.title', 'This design takes ground from others'),
@@ -2119,7 +2114,8 @@
             let updated = null;
             try {
                 updated = await global.ProposalManager?.updateProposalInPlace?.(sourceId, proposal, {
-                    unapplyIds: dependents.map(record => String(record.proposalId))
+                    unapplyIds: dependents.map(record => String(record.proposalId)),
+                    reorder: takes.reorder === true
                 });
             } catch (error) {
                 deriveFailure = error;

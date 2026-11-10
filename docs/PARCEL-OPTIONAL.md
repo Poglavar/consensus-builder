@@ -596,8 +596,9 @@ proposal-bridge.js/create.js and backend/agents/minter.js; decoders render the z
   takes the overlap and the other is drawn on what it keeps (`_reconcileStructurePresentation`); one
   covered entirely, or its own earlier version, still comes off (claims.js `appliedRivals`). Saving a
   design asks first, naming what comes off, what gives way and what keeps its ground
-  (`ProposalManager.previewGroundTakes`, `confirmProposalGroundTakes`). An in-place edit keeps its
-  place in the order, so a later park or square keeps the ground it reaches; a counterproposal forms last.
+  (`ProposalManager.previewGroundTakes`, `confirmProposalGroundTakes`). A counterproposal forms last;
+  an in-place edit keeps its place in the order unless it reaches into a park, square or lake formed
+  after it, and then it moves to now (`updateProposalInPlace { reorder }`) and takes that ground too.
   Plots of a parcel layout stand round an older road the same way. Plan stats count
   open space as it stands (`plan-yield` `openSpaceAreaOf`, fed from the applied bodies).
 

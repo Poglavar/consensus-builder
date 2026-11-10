@@ -2190,7 +2190,6 @@
             "title": "Ce projet prend du terrain à d'autres",
             "displaced": "Il se trouve là où se trouve {{names}}, qui sortent donc de la carte ; ils restent dans votre liste et peuvent être appliqués à nouveau.",
             "yielding": "Il prend une partie de {{names}} ; ils restent sur la carte, sur le terrain qu'il leur laisse.",
-            "keeps": "{{names}} sont venus après et gardent le terrain qu'il couvre aussi ; ce projet s'arrête autour d'eux.",
             "confirm": "Enregistrer",
             "notSaved": "Non enregistré. Le projet a été rouvert."
         },

@@ -2552,13 +2552,15 @@ const ProposalManager = {
 
     // What saving `proposal` does to the applied designs on its ground, named before the save so
     // nothing changes unannounced: `displaced` come off the map (claims.js appliedRivals: a building,
-    // or a park, square or lake it covers entirely), `yielding` are parks, squares and lakes it
-    // covers in part that formed before it and stay on what it leaves them, and `keeps` the ones it
-    // covers in part that formed after it, so it stands round them. `sourceId` is the record the save
-    // revises (`inPlace` when it is rewritten, keeping its place in the order): it is being replaced,
-    // and the ground it already reached is not news. Read-only.
+    // or a park, square or lake it covers entirely), `yielding` are the parks, squares and lakes it
+    // covers in part, which stay on what it leaves them. `sourceId` is the record the save revises
+    // (`inPlace` when it is rewritten): it is being replaced, and the ground it already reached is
+    // not news. A new record forms after everything standing; a rewritten one keeps its place in the
+    // order unless it reaches into open land formed after it, and then `reorder` says the save moves
+    // it to now (updateProposalInPlace { reorder }), so the edit takes that ground as a new design
+    // would. Read-only.
     previewGroundTakes(proposal, { sourceId = null, inPlace = false } = {}, options = {}) {
-        const none = { displaced: [], yielding: [], keeps: [] };
+        const none = { displaced: [], yielding: [], reorder: false };
         const store = _proposalStore(options);
         const runtime = typeof window !== 'undefined' ? window : globalThis;
         const planOrder = runtime.__planOrder || null;
@@ -2587,17 +2589,18 @@ const ProposalManager = {
             const reaches = (a, b) => !!a && !!b && rule.reachesInto(t, asFeature(a), asFeature(b), 0, context);
             const displacedIds = new Set(displaced.map(rival => String(rival.proposalId)));
             const yielding = [];
-            const keeps = [];
+            let reorder = false;
             if (footprint && proposalClaims.isOpenLand(candidate)) {
                 records.forEach(record => {
                     const id = String(record?.proposalId || '');
                     if (!id || skip.has(id) || displacedIds.has(id) || !appliedOf(record) || !proposalClaims.isOpenLand(record)) return;
                     const other = planOrder.footprintOf(record);
                     if (!reaches(footprint, other) || reaches(sourceFootprint, other)) return;
-                    (planOrder.compareFormationOrder(record, candidate) <= 0 ? yielding : keeps).push(record);
+                    if (planOrder.compareFormationOrder(record, candidate) > 0) reorder = true;
+                    yielding.push(record);
                 });
             }
-            return { displaced, yielding, keeps };
+            return { displaced, yielding, reorder: inPlace && reorder };
         } catch (error) {
             console.warn(`[${new Date().toISOString()}] [ProposalManager] could not preview the ground this save takes`, error);
             return none;
@@ -2641,6 +2644,9 @@ const ProposalManager = {
         const key = String(live.proposalId);
         const before = JSON.parse(JSON.stringify(live));
         const next = proposalLineageApi.inPlaceRecord(before, edited);
+        // An edit that reaches into open land formed after the record takes that ground as a new
+        // design would: it moves to now in the replay order (previewGroundTakes `reorder`).
+        if (options.reorder === true) next.createdAt = new Date().toISOString();
         Object.keys(live).forEach(field => { delete live[field]; });
         Object.assign(live, next);
         live.updatedAt = new Date().toISOString();

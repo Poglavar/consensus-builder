@@ -504,31 +504,42 @@ describe('geometric interaction on open ground', () => {
         expect(manager._openGroundInteractions([a], [a, b])).toBeNull();
     });
 
-    it('names before a save which parks and squares give way, keep their ground or come off the map', async () => {
+    it('names before a save which parks and squares give way or come off the map, and an in-place edit into a later one takes its ground', async () => {
         const none = { binding: { parcels: [], coverage: 'none' } };
         const park = structureRecord('park', 'park', rect(0, 0, 10, 10), none);
         const square = structureRecord('square', 'square', rect(20, 0, 30, 10), none);
         square.createdAt = '2026-10-03T00:00:00.000Z';
         const kiosk = structureRecord('kiosk', 'square', rect(12, 2, 14, 4), none);
         kiosk.createdAt = '2026-10-04T00:00:00.000Z';
-        const { manager } = await harness({ records: [park, square, kiosk] });
+        const { manager, fabric } = await harness({ records: [park, square, kiosk] });
         for (const id of ['park', 'square', 'kiosk']) await expect(manager.applyProposal(id)).resolves.toBe(true);
-        const ids = takes => Object.fromEntries(Object.entries(takes).map(([key, list]) => [key, list.map(record => record.proposalId).sort()]));
+        const ids = ({ displaced, yielding, reorder }) => ({ displaced: displaced.map(r => r.proposalId).sort(), yielding: yielding.map(r => r.proposalId).sort(), reorder });
         // A new lake over the park's east half, the whole kiosk and the square's west half: it forms last.
         const lake = structureRecord('lake', 'lake', rect(5, 0, 25, 10), none);
         delete lake.createdAt;
-        expect(ids(manager.previewGroundTakes(lake))).toEqual({ displaced: ['kiosk'], yielding: ['park', 'square'], keeps: [] });
-        // The park, edited in place to reach into the square, keeps its early place: the square keeps its ground.
+        expect(ids(manager.previewGroundTakes(lake))).toEqual({ displaced: ['kiosk'], yielding: ['park', 'square'], reorder: false });
+        // The park, edited in place to reach into the later square, moves to now and takes that ground.
         const reshaped = structureRecord('park', 'park', rect(0, 0, 25, 10), none);
-        expect(ids(manager.previewGroundTakes(reshaped, { sourceId: 'park', inPlace: true })))
-            .toEqual({ displaced: ['kiosk'], yielding: [], keeps: ['square'] });
-        // As a counterproposal it forms last and the square gives way; the park it revises is not named.
+        const takes = manager.previewGroundTakes(reshaped, { sourceId: 'park', inPlace: true });
+        expect(ids(takes)).toEqual({ displaced: ['kiosk'], yielding: ['square'], reorder: true });
+        // As a counterproposal it forms last anyway; the park it revises is not named.
         const counter = { ...reshaped, proposalId: 'park-revision' };
         delete counter.createdAt;
-        expect(ids(manager.previewGroundTakes(counter, { sourceId: 'park' })))
-            .toEqual({ displaced: ['kiosk'], yielding: ['square'], keeps: [] });
+        expect(ids(manager.previewGroundTakes(counter, { sourceId: 'park' }))).toEqual({ displaced: ['kiosk'], yielding: ['square'], reorder: false });
         // Nothing was changed by asking.
         expect(['park', 'square', 'kiosk'].map(id => globalThis.proposalStorage.getProposal(id).applied)).toEqual([true, true, true]);
+
+        // Saved with the answer: the park reaches x = 25, the square keeps x = 25..30, the kiosk is off.
+        await expect(manager.updateProposalInPlace('park', reshaped, { reorder: takes.reorder })).resolves.toMatchObject({ applied: true });
+        expect(Date.parse(globalThis.proposalStorage.getProposal('park').createdAt)).toBeGreaterThan(Date.parse(kiosk.createdAt));
+        expect(globalThis.proposalStorage.getProposal('kiosk').applied).toBe(false);
+        const drawn = id => [...globalThis.parks, ...globalThis.squares].find(feature => feature.properties.proposalId === id);
+        expect(turf.area(drawn('park'))).toBeCloseTo(turf.area(turf.feature(rect(0, 0, 25, 10))), 0);
+        expect(turf.area(drawn('square'))).toBeCloseTo(turf.area(turf.feature(rect(25, 0, 30, 10))), 0);
+        // A full rebuild from the records gives the same.
+        await expect(manager.rebuildAppliedFabric({ silent: true })).resolves.toMatchObject({ ok: true, failed: [] });
+        expect(turf.area(drawn('square'))).toBeCloseTo(turf.area(turf.feature(rect(25, 0, 30, 10))), 0);
+        expect(fabric.list().filter(piece => piece.properties.producedByProposalId === 'park').length).toBeGreaterThan(0);
     });
 
     it('lets a park give way to a square applied over part of it, and takes one it covers entirely off the map', async () => {

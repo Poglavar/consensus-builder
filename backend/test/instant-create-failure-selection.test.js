@@ -545,7 +545,7 @@ describe('saving an edit of an existing record', () => {
         expect(result).toBe('own-lake');
         expect(globalThis.proposalStorage.addProposal).not.toHaveBeenCalled();
         expect(ProposalManager.applyProposal).not.toHaveBeenCalled();
-        expect(ProposalManager.updateProposalInPlace).toHaveBeenCalledExactlyOnceWith('own-lake', proposal, { unapplyIds: [] });
+        expect(ProposalManager.updateProposalInPlace).toHaveBeenCalledExactlyOnceWith('own-lake', proposal, { unapplyIds: [], reorder: false });
         expect(globalThis.proposalDraftStore.consumeAfterPublish).toHaveBeenCalledWith('draft-park', 'own-lake');
     });
 
@@ -588,6 +588,6 @@ describe('saving an edit of an existing record', () => {
 
         await expect(globalThis.instantCreateProposalFromDraft('draft-park')).resolves.toBe('own-lake');
 
-        expect(ProposalManager.updateProposalInPlace).toHaveBeenCalledWith('own-lake', expect.anything(), { unapplyIds: ['block-1'] });
+        expect(ProposalManager.updateProposalInPlace).toHaveBeenCalledWith('own-lake', expect.anything(), { unapplyIds: ['block-1'], reorder: false });
     });
 });

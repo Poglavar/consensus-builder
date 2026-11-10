@@ -1019,7 +1019,6 @@
             "title": "Este diseño toma terreno de otros",
             "displaced": "Está donde está {{names}}, así que salen del mapa; siguen en tu lista y se pueden volver a aplicar.",
             "yielding": "Toma parte de {{names}}; siguen en el mapa sobre el terreno que les deja.",
-            "keeps": "{{names}} llegaron después y conservan el terreno que este también cubre; este diseño queda alrededor.",
             "confirm": "Guardar",
             "notSaved": "No se guardó. El diseño se ha vuelto a abrir."
         },
