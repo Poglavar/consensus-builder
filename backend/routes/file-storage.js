@@ -3,6 +3,7 @@ import path from 'path';
 import { createJsonBodyValidator, isPlainObject, validators } from '../utils/request-validation.js';
 import { publicFileUrl } from '../utils/public-base-url.js';
 import { sniffImageType, uniqueFileBase } from '../utils/image-store.js';
+import { createUploadRateLimiter, requireUploadDiskHeadroom } from '../utils/nft-asset-upload.js';
 
 const UPLOAD_ROOT = path.resolve('uploads');
 const IMAGE_DIR = path.join(UPLOAD_ROOT, 'images');
@@ -119,11 +120,15 @@ const modelUploadBodyValidator = createJsonBodyValidator({
     }
 });
 
-export function setupFileStorageRoutes(app) {
+// Each route has its own per-IP upload budget (on top of the global write limiter) and refuses
+// uploads once the disk is near full; `deps` lets tests substitute both.
+export function setupFileStorageRoutes(app, deps = {}) {
     ensureDirectories();
+    const limiter = () => deps.uploadRateLimiter || createUploadRateLimiter();
+    const headroom = deps.diskHeadroom || requireUploadDiskHeadroom(UPLOAD_ROOT);
 
     // Stores an uploaded 3D building model (glTF 2.0 .glb/.gltf) and returns its served URL.
-    app.post('/models', modelUploadBodyValidator, (req, res) => {
+    app.post('/models', limiter(), headroom, modelUploadBodyValidator, (req, res) => {
         try {
             const { modelData, fileName } = req.validatedBody;
 
@@ -157,7 +162,7 @@ export function setupFileStorageRoutes(app) {
         }
     });
 
-    app.post('/images', imageUploadBodyValidator, (req, res) => {
+    app.post('/images', limiter(), headroom, imageUploadBodyValidator, (req, res) => {
         try {
             const { imageData, fileName } = req.validatedBody;
 
@@ -193,7 +198,7 @@ export function setupFileStorageRoutes(app) {
         }
     });
 
-    app.post('/metadata', metadataUploadBodyValidator, (req, res) => {
+    app.post('/metadata', limiter(), headroom, metadataUploadBodyValidator, (req, res) => {
         try {
             const { metadata: metadataObject, fileName } = req.validatedBody;
             // Random suffix + `wx`: metadata that minted tokens point to can never be overwritten.

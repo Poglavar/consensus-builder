@@ -8,6 +8,7 @@ import {
     METADATA_DIR
 } from '../utils/image-store.js';
 import { publicFileUrl } from '../utils/public-base-url.js';
+import { createUploadRateLimiter, requireUploadDiskHeadroom } from '../utils/nft-asset-upload.js';
 
 const MAX_FILE_NAME_LENGTH = 255;
 
@@ -40,10 +41,14 @@ const assetsUploadBodyValidator = createJsonBodyValidator({
     }
 });
 
-export function setupAssetsRoute(app) {
+// A per-IP upload budget and the disk floor, like every other route that stores uploads on this
+// host; `deps` lets tests substitute both.
+export function setupAssetsRoute(app, deps = {}) {
     ensureImageDirectories();
+    const uploadRateLimiter = deps.uploadRateLimiter || createUploadRateLimiter();
+    const diskHeadroom = deps.diskHeadroom || requireUploadDiskHeadroom(METADATA_DIR);
 
-    app.post('/assets/upload', assetsUploadBodyValidator, async (req, res) => {
+    app.post('/assets/upload', uploadRateLimiter, diskHeadroom, assetsUploadBodyValidator, async (req, res) => {
         try {
             const { imageData, metadata, fileName } = req.validatedBody;
 

@@ -44,6 +44,9 @@ export default defineConfig({
             passWithNoTests: true,
         }),
         maxWorkers,
+        // The upload disk floor (utils/nft-asset-upload.js) protects the production host; route tests
+        // must not pass or fail with the free space on the machine running them.
+        env: { UPLOAD_MIN_FREE_BYTES: '0' },
         // supertest requests reach the server they started, not whatever else holds 127.0.0.1 on that port.
         setupFiles: ['test/helpers/supertest-bound-address.js'],
         coverage: {

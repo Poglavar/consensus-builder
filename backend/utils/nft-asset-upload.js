@@ -3,6 +3,7 @@
 // screenshot plus ERC-721-style NFT metadata (see frontend/js/proposals/create.js,
 // proposals/dialog-upload.js, parcels/ui/claim.js) — within tight size caps and a per-IP rate limit.
 
+import fs from 'fs';
 import rateLimit, { ipKeyGenerator } from 'express-rate-limit';
 import { decodeImageDataUrl } from './image-store.js';
 import { isPlainObject } from './request-validation.js';
@@ -111,6 +112,33 @@ export function decodeUploadImage(imageData) {
 function uploadClientKey(req) {
     const address = String(req.ip || '').trim();
     return address ? ipKeyGenerator(address) : 'unknown';
+}
+
+// Uploads that land on the API host's own disk are permanent, and that disk also holds Postgres and
+// the other sites on the host. Below this much free space they are refused, so a flood of uploads
+// fills at most the headroom above the floor, never the disk.
+export const UPLOAD_MIN_FREE_BYTES = Number(process.env.UPLOAD_MIN_FREE_BYTES || 10 * 1024 ** 3);
+
+/**
+ * Middleware refusing an upload (507) when the filesystem holding `dir` has less than `minFreeBytes`
+ * free. `statfs` is injectable for tests.
+ */
+export function requireUploadDiskHeadroom(dir, { minFreeBytes = UPLOAD_MIN_FREE_BYTES, statfs = fs.statfsSync } = {}) {
+    return (req, res, next) => {
+        let free;
+        try {
+            const stats = statfs(dir);
+            free = Number(stats.bavail) * Number(stats.bsize);
+        } catch (error) {
+            console.error(`[${new Date().toISOString()}] Upload disk check failed for ${dir}:`, error);
+            return res.status(503).json({ error: 'Uploads are unavailable right now.', code: 'upload-disk-check-failed' });
+        }
+        if (!(free >= minFreeBytes)) {
+            console.error(`[${new Date().toISOString()}] Upload refused: ${dir} has ${free} bytes free, below the ${minFreeBytes}-byte floor.`);
+            return res.status(507).json({ error: 'The server is out of upload space.', code: 'upload-disk-full' });
+        }
+        return next();
+    };
 }
 
 /**
