@@ -43,6 +43,42 @@ describe('building hue', () => {
     });
 });
 
+describe('uploaded model facade', () => {
+    it("moves a glTF model's meshes into the wrapper's upright frame, where night windows read their height", () => {
+        const THREE = require('three');
+        // glTF is y-up: the model's scene stands up inside the wrapper by a quarter turn about x.
+        const wrapper = new THREE.Group();
+        wrapper.position.set(100, 200, 0);
+        wrapper.scale.set(1.4, 1.4, 1);
+        const gltfScene = new THREE.Group();
+        gltfScene.rotation.x = Math.PI / 2;
+        wrapper.add(gltfScene);
+        const mesh = new THREE.Mesh(new THREE.BoxGeometry(10, 6, 4).translate(0, 3, 0), new THREE.MeshPhongMaterial());
+        gltfScene.add(mesh);
+        wrapper.updateMatrixWorld(true);
+        const worldBefore = new THREE.Box3().setFromObject(mesh);
+        const buildingFacades = {
+            buildingDesign: () => ({}), buildingKey: () => 'k', buildingIdentityKey: () => 'k',
+            configureMaterial: surface => surface, wallCoordinates: positions => new Float32Array(positions.length)
+        };
+        const [prepare] = extracted('prepareModelFacade', '', {
+            THREE, buildingFacades, facadeState: {}, window: {},
+            estimateBuildingHeightMeters: () => 6, cloneBuildingMaterial: material => material.clone(),
+            buildingHue: () => new THREE.Color(0x660099), markOwnedGeometry: (_, geometry) => geometry, markOwnedMaterial: () => {}
+        });
+        prepare(wrapper, [mesh], { properties: { floors: 2 } }, new THREE.MeshPhongMaterial());
+        expect(mesh.parent).toBe(wrapper);
+        mesh.geometry.computeBoundingBox();
+        // The object's own z is the height above the ground: 0 to 6 m.
+        expect(mesh.geometry.boundingBox.min.z).toBeCloseTo(0);
+        expect(mesh.geometry.boundingBox.max.z).toBeCloseTo(6);
+        const worldAfter = new THREE.Box3().setFromObject(mesh);
+        expect(worldAfter.min.distanceTo(worldBefore.min)).toBeCloseTo(0);
+        expect(worldAfter.max.distanceTo(worldBefore.max)).toBeCloseTo(0);
+        expect(mesh.geometry.attributes.cbFacadeCoord.count).toBe(mesh.geometry.attributes.position.count);
+    });
+});
+
 describe('three-mode Xray wiring', () => {
     it('keeps translucent envelopes behind coincident building surfaces in color and depth passes', () => {
         class Material {

@@ -8238,6 +8238,18 @@
                 normals[i * 3] = v.x; normals[i * 3 + 1] = v.y; normals[i * 3 + 2] = v.z;
             }
             geometry.setAttribute('cbFacadeCoord', new THREE.Float32BufferAttribute(buildingFacades.wallCoordinates(positions, normals, 1), 3));
+            // The mesh moves into the wrapper's upright frame, as an extruded building's walls are
+            // in theirs: the night windows of plain walls read their height from the object's own z.
+            geometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
+            geometry.setAttribute('normal', new THREE.Float32BufferAttribute(normals, 3));
+            geometry.computeBoundingBox();
+            geometry.computeBoundingSphere();
+            const previous = mesh.geometry;
+            mesh.children.forEach(child => { if (child.isMesh && child.geometry === previous) child.geometry = geometry; });
+            mesh.position.set(0, 0, 0);
+            mesh.quaternion.identity();
+            mesh.scale.set(1, 1, 1);
+            wrapper.add(mesh);
             mesh.geometry = markOwnedGeometry(mesh, geometry);
             mesh.userData.cbModelPlainMaterial = mesh.material;
             mesh.userData.cbModelFacadeMaterial = facadeMaterial;
@@ -8245,6 +8257,7 @@
             mesh.userData.cbFacadeOwned = true;
         }
         markOwnedMaterial(meshes[0], facadeMaterial);
+        wrapper.updateMatrixWorld(true);
     }
 
     // X-ray cuts an uploaded building model above the chosen storey's floor (model-section.js), so
