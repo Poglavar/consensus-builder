@@ -463,7 +463,8 @@ A road placed into ground already left for it (`definition.bound.site`): its lan
 what its lanes cut, and it declares only the parcels the site covers. Its lanes (the core) are
 fitted along the middle of each street to the street's narrowest part; pavements up to 3 m and verges
 fill the rest. Edits keep the site: one that moves the road off it or leaves its lanes too little
-room is refused. See [road in a parcel](road-in-parcel.md).
+room is refused. Removing the bound (the editor asks on a node drag) makes it an ordinary road,
+whose land is what its lanes cut. See [road in a parcel](road-in-parcel.md).
 
 ### Alignment
 
