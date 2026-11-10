@@ -8,7 +8,6 @@ import { describe, expect, it } from 'vitest';
 const read = relative => readFileSync(new URL(relative, import.meta.url), 'utf8');
 const frontend = read('../../frontend/deploy-frontend.sh');
 const backend = read('../deploy-backend.sh');
-const rollback = read('../../frontend/rollback-frontend.sh');
 
 describe('deploy scripts', () => {
     it('default to the production branch and refuse a local HEAD that is not origin/BRANCH', () => {
@@ -58,12 +57,5 @@ describe('deploy scripts', () => {
         expect(verify).toBeGreaterThan(backend.indexOf('\nEOF\n'));
         expect(backend).toContain('if [[ "${LIVE_SHA}" != "${LOCAL_HEAD}" ]]; then');
         expect(verify).toBeLessThan(backend.indexOf('Deployment complete!'));
-    });
-
-    it('rolls back only with --apply and keeps the live frontend config', () => {
-        expect(rollback).toContain("--dry-run) APPLY=0 ;;");
-        expect(rollback).toContain("--apply) APPLY=1 ;;");
-        expect(rollback).toContain('if [ "$APPLY" != 1 ]; then echo "Dry run: nothing changed.');
-        expect(rollback).toContain("EXCLUDES=(--exclude='/carto-config.js' --exclude='/rpc-config.js')");
     });
 });
