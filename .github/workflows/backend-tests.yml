@@ -1,0 +1,105 @@
+# Runs the backend Vitest suite, the PostgreSQL integration suites that need only repository DDL,
+# and the Solana programs' Rust unit tests on every push and pull request to the main branches.
+name: Backend tests
+on:
+  push:
+    branches: [colosseum-worlds-fair, main]
+  pull_request:
+    branches: [colosseum-worlds-fair, main]
+permissions:
+  contents: read
+concurrency:
+  group: backend-tests-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  vitest:
+    name: Backend Vitest (full suite)
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: backend/package-lock.json
+      - name: Install locked dependencies
+        run: npm ci
+        working-directory: backend
+      - name: Vitest
+        run: npx vitest run --maxWorkers=2
+        working-directory: backend
+
+  postgres:
+    name: PostgreSQL integration suites
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    # Suites that need real cadastral, road or planning-rule data (proposal-binding-db, osm-road-db,
+    # agent-parcel-source) are not run here: their source tables are not defined in this repository.
+    services:
+      postgres:
+        image: postgis/postgis:16-3.4
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: geodata
+        ports:
+          - '127.0.0.1:5432:5432'
+        options: >-
+          --health-cmd "pg_isready -U postgres -d geodata"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 20
+    env:
+      DATABASE_URL: postgres://postgres:postgres@127.0.0.1:5432/geodata
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: backend/package-lock.json
+      - name: Install locked dependencies
+        run: npm ci
+        working-directory: backend
+      - name: Create the geo_user role the DDL runs as
+        run: >-
+          psql "$DATABASE_URL" -v ON_ERROR_STOP=1
+          -c 'CREATE EXTENSION IF NOT EXISTS postgis'
+          -c 'CREATE ROLE geo_user NOLOGIN'
+          -c 'GRANT CREATE ON DATABASE geodata TO geo_user'
+          -c 'GRANT CREATE ON SCHEMA public TO geo_user'
+      - name: Market agreement selectors
+        run: npx vitest run test/markets-contract-db.test.js --maxWorkers=2
+        working-directory: backend
+        env:
+          RUN_DB_TESTS: '1'
+      - name: Publication immutability triggers
+        run: npx vitest run test/publication-immutability-postgres.test.js --maxWorkers=2
+        working-directory: backend
+        env:
+          RUN_PUBLICATION_POSTGRES_TESTS: '1'
+      - name: Shared plan sessions
+        run: npx vitest run test/shared-plan-postgres.test.js --maxWorkers=2
+        working-directory: backend
+        env:
+          SHARED_PLAN_PG_TESTS: '1'
+
+  solana-rust:
+    name: Solana programs (Rust unit tests)
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    # Host-side cargo tests only; the Anchor/ts-mocha suites need a local validator and are not run.
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            blockchain/solana/target
+          key: solana-rust-${{ runner.os }}-${{ hashFiles('blockchain/solana/Cargo.lock') }}
+      - name: cargo test
+        run: cargo test --workspace --locked
+        working-directory: blockchain/solana

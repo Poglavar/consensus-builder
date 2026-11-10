@@ -1,5 +1,12 @@
 name: Portable plan files
 on:
+  push:
+    branches: [colosseum-worlds-fair]
+    paths:
+      - '.github/workflows/portable-plan-files.yml'
+      - 'frontend/**'
+      - 'backend/**'
+      - 'e2e/**'
   pull_request:
     branches: [colosseum-worlds-fair]
     paths:

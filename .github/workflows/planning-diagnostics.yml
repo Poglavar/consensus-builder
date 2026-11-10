@@ -1,5 +1,12 @@
 name: First-party planning diagnostics
 on:
+  push:
+    branches: [colosseum-worlds-fair]
+    paths:
+      - '.github/workflows/planning-diagnostics.yml'
+      - 'frontend/**'
+      - 'backend/**'
+      - 'docs/planning-usage-and-diagnostics.md'
   pull_request:
     branches: [colosseum-worlds-fair]
     paths:
@@ -28,7 +35,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.pull_request.head.sha }}
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
