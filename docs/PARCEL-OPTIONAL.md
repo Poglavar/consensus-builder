@@ -1,8 +1,4 @@
-# Current status — 2026-10-02
-
-The phase notes below record their original development dates; “not committed/not deployed” labels in those historical sections are superseded by this release status. The implementation is integrated on `colosseum-worlds-fair`; its site-first/open-ground/subdivision workflows have headed coverage. Changed-land forks now retain their provenance source without superseding it and rebuild the selected site/cadastre/structure geometry. ParcelNFT v2, ProposalMarket v2 and ProposalNFT v3 are upgraded on devnet: fresh program dumps match the built binaries, with zero allocation padding excluded. Live wallet/attestation integration still needs separate production evidence. Refer to [test scope](development.md#verify-a-change), [docs/protocol.md](protocol.md), and [remaining product work](streamline.md#remaining-product-work) for the current verification and follow-up.
-
-# Proposals on a site; parcels as a derived binding (branch `parcel-optional`)
+# Proposals on a site; parcels as a derived binding
 
 A proposal is a geometric/material fact about a place. Its subject is its **site**: the ground it
 occupies. Cadastral parcels are attached to it by an adapter, as its **binding**, because execution
@@ -10,8 +6,7 @@ occupies. Cadastral parcels are attached to it by an adapter, as its **binding**
 must be complete and valid with an empty binding: on unsurveyed ground, in an explore city, anywhere the
 cadastre has nothing.
 
-Inputs: the dependency map in this file's history (agent report, 2026-10-01), `unsurveyed-ground.md`,
-`lens-model.md`, `MEMORY.md` decisions of 2026-10-01.
+Related: [unsurveyed ground](unsurveyed-ground.md), [lens model](lens-model.md).
 
 ## Vocabulary
 
@@ -102,7 +97,7 @@ Inputs: the dependency map in this file's history (agent report, 2026-10-01), `u
   by hand and assigned to public land. Proposed plots are proposal content; they
   become parcels only through the authority's own process (out of scope).
 
-### Chain (phase 5, program v3, not deployed in this branch)
+### Chain (phase 5, ProposalNFT v3)
 - `Proposal` gains `site_hash [u8;32]` and `open_ground: bool` (appended after existing fields so prefix
   readers in market/pledge keep working).
 - `mint_and_fund`: parcel list may be empty when `site_hash` is set; still non-empty for parcel acts
@@ -118,11 +113,9 @@ Inputs: the dependency map in this file's history (agent report, 2026-10-01), `u
 - Stats: site metrics always (area, floor area, buildings gained/lost from building sources); binding
   metrics when present (owners, ownership mix, compensation, grain score of resulting plots).
 
-## Status
+## Phases
 
-(filled in per phase)
-
-### Phase 1 — record and server (2026-10-01, built, not committed, not deployed)
+### Phase 1 — record and server
 
 **Built**
 - `frontend/js/proposals/site-binding.js` (UMD; `window.__siteBinding`, loaded after plan-order.js):
@@ -202,18 +195,6 @@ Inputs: the dependency map in this file's history (agent report, 2026-10-01), `u
   recomputed overlap/intrusion where measured), `source: 'migration:declaration'`, and
   `recomputedDiffers: { missing, extra }` where the tolerance-0 recomputation disagrees.
 
-**Tests** (backend vitest): site-binding 19 (pure rule, shared edge, 1 cm vs 5 cm, sliver width
-independent of length, L-shape, coverage cases, parcel acts, siteOf), proposal-binding 35 (validation,
-computeBinding, declared == binding missing/extra, parcel acts, unknown coverage, routes incl. paid
-precheck before x402, binding route, read-only list), migrate-proposal-sites 7, serializer +1, schema
-contract (rewritten + deploy-DDL test), well-known +1, existing tests moved to the new rule
-(proposals, agent-proposals, docs, recipe schema). DB parity (opt-in, `RUN_DB_TESTS=1`,
-proposal-binding-db.test.js, 4 tests): same sites through SQL and the pure rule on real parcels agree
-on bound ids and coverage; intrusion within 1 % (e.g. 0.3521 vs 0.3515 m), areas within 0.1 %.
-Mutation-checked: an area-based bound rule and a 3-step bisection both turn the pure tests red.
-Full suite: 5933 passed, 1 failing test belongs to the concurrent chain phase
-(`mcp-server.test.js` expects the old `ugt_mint_proposal` keys after that phase added site/binding).
-
 **Migration dry run, local DB (836 rows; the local table is an older snapshot)**: 832 migratable
 (coverage complete 817, unknown 11 = non-HR cities, partial 4), skipped 4 (3 no site: declared parcels
 not current/not HR and no geometry; 1 with no declaration). Recomputed binding at tolerance 0 differs
@@ -235,7 +216,7 @@ locally, re-run was a no-op, `--restore` returned them byte-identical; the local
   'client-preview'`) are on `window.__siteBinding`. The preview cannot tell a cadastral hole from the
   edge of loaded data; label it a preview and publish with the server answer.
 
-### Phase 2 — site-first creation (2026-10-01, built, not committed, not deployed)
+### Phase 2 — site-first creation
 
 **Built**
 - **Records and drafts.** Drafts carry `fields.site` (MultiPolygon), `fields.toleranceM`,
@@ -318,23 +299,6 @@ locally, re-run was a no-op, `--restore` returned them byte-identical; the local
 - Touched parcels are hidden at tolerance 0 (sub-millimetre: a snapped corner, a shared edge).
 - Open ground in the panel is the client preview geometry; the server reports only its area.
 
-**Tests** (backend vitest): site-draft 19, publish-binding 12, frontend-ground-menu 11 (model,
-commands, `isPointLoaded`), formation-depth +3, proposal-drafts +3, proposal-editor-adapters +4,
-generator-inside-site 17, site-plots 12; transit-stations and frontend-world-entry moved to the new
-rule (station placeable without parcels, explore keeps proposals/stations). Red-checked by reverting
-the declaration rule, the bare/not-loaded rule and each generator fix. Full suite: 6048 passed, 6
-skipped, 0 failed.
-
-**Verified in a headed browser** (local backend on the docker DB): Zagreb — drawn sites over parcels
-(31 bound, "Reaches 22 cm into HR-339164-2685", Trim and Include re-bound as expected), block,
-detached (4 plots) and row houses (8 plots) designed on drawn sites and applied, a park published
-(server binding of 5 parcels, small-intrusion confirmation, row 1345 read back), a forced mismatch
-refused with "HR-339164-2771 (24 cm)"; the create dialog on a site with tolerance 0.05 m. Šibenik
-hole — coverage partial, hatched open ground, a square with an empty declaration stored, refused
-apply with the message, published (row 1347: `[]`, partial, 372 m²). Explore Tokyo — ground menu,
-coverage none, park stored and listed after reload. Phone 375×740 — ground menu peek, drawing,
-panel as a bottom sheet. Not verified in the browser: a road drawn across bare ground, minting.
-
 **What phase 3 (apply) must handle**
 - Replace `siteGroundWithoutParcels` refusals: host open ground as `ground:<siteHash>` from the
   authoritative binding (`record.binding`, `unsurveyedM2`), not from gaps in loaded parcels.
@@ -346,7 +310,7 @@ panel as a bottom sheet. Not verified in the browser: a road drawn across bare g
 - Local records keep the preview binding as their declaration until published; re-binding on publish
   can change it (and drops acceptances outside it).
 
-### Phase 5 — chain (2026-10-01, built and tested on localnet, not committed, not deployed)
+### Phase 5 — chain
 
 **Program (proposal_nft v3)** — `blockchain/solana/programs/proposal_nft/src/lib.rs`
 - `Proposal` appends `site_hash [u8;32]`, `open_ground: bool`, `open_ground_cleared: bool`,
@@ -408,25 +372,6 @@ proposal-bridge.js/create.js and backend/agents/minter.js; decoders render the z
   site and its server binding), MCP `ugt_mint_proposal` zod (`site`, `binding`, `parcelIds` default []).
   `docs.js` documents the v3 mint/settle.
 
-**Tests**
-- Anchor localnet: 158 passing (parcel_nft 6, proposal_market 28, proposal_nft 54, proposal_pledge 70;
-  baseline 139). New: mint rules (empty + site ok, no site → NoParcels, not open ground →
-  EmptyBindingIsOpenGround, open ground without site), loophole regression (executed verdict on an
-  empty binding without verdict_may_execute refused, then expire + reclaim), empty binding executes
-  only by verdict + distribute to owner, no acceptance possible on an empty list, cancel refunds,
-  open ground with parcels consent-first and verdict-first, without verdict_may_execute (refused,
-  cancel refunds), expiry while waiting (reclaim), site hash on a fully bound proposal = v2 behaviour,
-  v2-layout account reads zero/false and behaves as before (executed verdict refused, acceptance
-  executes, distribute pays); market YES only via a verdict_may_execute verdict / NO on expiry;
-  pledge release only after that verdict / refund on expiry. Run per file on a fresh validator each
-  (temporary port overrides, reverted): a single full run on this machine hit random 30 s confirmation
-  timeouts while another local validator was busy; every test passed in at least one full run too.
-- Backend vitest: full suite 6046 passed, 6 skipped. New/updated: site-hash (canonical encoding pinned
-  byte for byte, invariances, chainSiteArgs), minter ↔ browser byte parity incl. empty binding + site,
-  acceptance-client v3 codec/decoder, chain-data-loader v3 fields, lifecycle-actions decode + clearance,
-  lifecycle oracle `readProposalSite`, VerdictSettled v2/v3 decoding, tx-decoder v3/v2/v1 picking,
-  market-layout tail, MCP mint schema, agent mint tool site rules, docs v3 args.
-
 **Deploy plan (not executed)**
 1. Deploy only after phase 1's record/DDL is live (records must carry `site`/`binding` for minters).
 2. `proposal_market` and `proposal_pledge`: no redeploy needed for v3 (prefix readers). If the lens v2
@@ -440,7 +385,7 @@ proposal-bridge.js/create.js and backend/agents/minter.js; decoders render the z
    `legacy/proposal_nft.v3.json` only when a v4 replaces it), and re-read one minted empty-binding
    proposal back from devnet.
 
-### Phase 3 — apply on open ground (2026-10-01, built, not committed, not deployed)
+### Phase 3 — apply on open ground
 
 **Built**
 - **Open-ground host** (`frontend/js/proposals/open-ground.js`, UMD, `window.__openGround`, loaded after
@@ -524,36 +469,6 @@ proposal-bridge.js/create.js and backend/agents/minter.js; decoders render the z
   road), exactly as on cadastral ground (checked: a cadastral park crossed by a road refuses too). The
   road tool's "Build through" prompt promises otherwise in both cases — pre-existing, not changed here.
 
-**Tests** (backend vitest; each fix red-checked by reverting it): open-ground-apply 16 (end to end through
-the real manager, live fabric, mutation coordinator and formation code: square half on a parcel/half on
-the Šibenik-like hole applies and unapply restores the fabric byte for byte; host from the binding — a
-complete binding over a local gap is refused, a missing bound parcel is `cadastral-ground-absent`; bare
-park rootless and undeclarable; block on a drawn site; freeform building over parcel + open ground;
-station with a partial preview binding; geometric closure through the index; cadastral-only plan skips
-it; road across a bare park refused; explicit apply parks the overlapping one; newer takes the older's
-ground piece without double cover and gives it back; boot replay of an explore plan; bare road applies and
-a later cadastral derivation does not trip; corridor with undeclared bound parcels still refused; partial
-parcel cut outside a replay), open-ground 14 (pure rules, width floor, index, menu, whole-parcel building
-beside open ground), formation-edit +1, stats-open-ground 26 + plan-stats-render +3, open-ground-audit 13 +
-hackathon-proof-audit +3. Full suite: 6130 passed, 6 skipped, 0 failed (one run hit a flaky
-`index.test.js` under host load 13; it passed 3/3 alone and in the rerun).
-
-**Verified in a headed browser** (local backend on the docker DB, session closed, servers stopped).
-Šibenik hole: drew a 426 m² square over HR-330264-488/2 and the hole (server binding: 1 bound parcel,
-partial, 227 m² open ground) → applied, body 426 m² with cadastre `HR-330264-488/2` + ground id, the
-parcel's 5233 m² rest stays its piece; Unapply → 312 pieces, `HR-330264-488/2` restored with geometry
-identical to the cadastral fact; re-apply via Apply to map; reload replays it. Explore Tokyo: park
-(rootless `p-…-1`, no cadastre) and a block on a drawn site applied and rendered in 2D and in 3D
-(`enterThreeMode`; explore hides the 2D/3D rail); a square drawn over the park: boot replay now gives
-park 1792 m² + square 4032 m² (no double cover; before the stacking fix both stood at full size); the
-ground piece's panel says "Open ground"; a road across bare ground (road tool via
-`requestRoadDrawTool`, roads are disabled in the explore/Šibenik menus) applied through the atomic
-corridor transaction and renders; a road across the park refused with "Cannot apply the park: it would
-stand on 414 m² of the applied road", rolled back; Plan Stats: "No parcels here", buildings/floor
-area/open space as numbers, open-ground note. Zagreb regression: a block on a parcel and a road across 5
-parcels (5 corridor pieces) applied as before. Page errors: only two from a build before the
-empty-scope fix (boot replay of an explore plan threw "Cadastral replacement scope cannot be empty").
-
 **What phase 4 (subdivision on bare ground) must know**
 - Readjustment refuses open ground by name (`readjustment-open-ground`) in
   `_applyProposalTransactionBody`; remove that when the slicer can form plots there.
@@ -568,7 +483,7 @@ empty-scope fix (boot replay of an explore plan threw "Cadastral replacement sco
 - `site-plots.js` synthetic plots (`site-plot:` ids) are design-time only; making them proposal content
   (phase 4) needs them in the record, not in the fabric.
 
-### Phase 4 — subdivision (2026-10-01, built, not committed, not deployed)
+### Phase 4 — subdivision
 
 **Built**
 - **Pure module** `frontend/js/proposals/subdivision.js` (UMD, `window.__subdivision`, loaded after
@@ -623,31 +538,6 @@ empty-scope fix (boot replay of an explore plan threw "Cadastral replacement sco
 - *A site wholly over parcels is still a selection readjustment*: Subdivide only appears when the site
   has open ground.
 
-**Tests** (backend vitest, each new rule red-checked by reverting it): subdivision 14 (pool split,
-zero-owner/empty/mixed/value shares never NaN, open-ground ledger, street layout tiles the site —
-middle, frontage, plots-only, rotated non-rectangular pool, turned frontage — and ground-majority
-owners), subdivision-apply 5 (bare: rootless plots + ground ids, street to the City, no agent for open
-ground, unapply empties, boot replay gives the same ids/geometry; plots covering half the site mint
-nothing for the rest; refusal over another proposal's park; mixed: cadastral/ground/both provenance,
-HR-1 remainder only, unapply byte-identical; ordinary readjustment unchanged), proposal-editor-adapters
-+3 (site tiling valid, parcel-half plan refused against the site, editor opens with the binding's
-parcels). Full suite: 6162 passed, 6 skipped, 0 failed.
-
-**Verified in a headed browser** (local backend on the docker DB; session closed, servers stopped).
-Explore Tokyo: drew a 7,208 m² site → palette "Subdivide" → Subdivision editor, 0 owners, Plots along a
-street (10 × 613 m² + street), Turn the street (6 × 1,090 m² + N–S street), Done → applied 11 rootless
-pieces `p-…-1..11`, `ground:<hash>`, total 7,208 m²; plot menu "Open ground · 613 m² · no cadastral
-parcel"; 3D shows the plot outlines; reload replays the same 11 ids; Unapply / Apply to map / Unapply
-from the details panel; fork → create dialog → Edit reopens the saved plots as Subdivision; published to
-the local backend (row 1348: `[]`, coverage none, 11 polygons, poolSource site). Šibenik hole edge: a
-1,864 m² site over HR-330264-488/2 (bound, 189 m² in the site, 3 owners) and 1,675 m² of open ground →
-3 owners + open ground in the ledger, street along the frontage, applied: plots on open ground rootless,
-the plot and street spanning the parcel edge carry `HR-330264-488/2` + ground id, the parcel's 5,244 m²
-outside part stays its piece; reload replays; Unapply restores 488/2 with coordinates identical to the
-cadastral fact. Zagreb regression: 2 parcels (HR-339270-325/326) → Land readjustment (Sweep line, 4
-owners, € basis, no street mode) → applied 4 cadastral plots, no ground ids → Unapply restored both.
-Phone 375×740: editor fits, no horizontal scroll. No page errors.
-
 **Open**
 - The plots' owner in a mixed pool is by ground majority; owners then show a cash shortfall for ground
   their parcels gave to open-ground plots. A redistribution rule (owners' entitlement first) is a
@@ -656,7 +546,7 @@ Phone 375×740: editor fits, no horizontal scroll. No page errors.
 - The details panel offer showed 345,000 USDT on the bare-ground subdivision (pre-existing offer
   default, not investigated).
 
-### Phase 6 — layout version, explore polish, Build through, end-to-end pass (2026-10-01, built, not committed, not deployed)
+### Phase 6 — layout version, explore polish, Build through, end-to-end pass
 
 **Built**
 - **`layout_version: u8`** appended to the v3 `Proposal` after `open_ground_cleared`
@@ -702,38 +592,6 @@ Phone 375×740: editor fits, no horizontal scroll. No page errors.
 - The order-aware guard I first added to `_appliedRoadOverlappedByTaking` was redundant once the carve
   existed (red-check: no test needed it) and was removed; one mechanism.
 
-**Tests** (backend vitest): open-ground-apply +4 (bare park split by a later road, area = park − road, no
-overlap, record unchanged, unapply restores one whole piece; cadastral park: road piece + 2 park pieces +
-remainder partition the parcel exactly, via the road tool's create path; an older road still refuses a
-newer park; `decorationsOnGround`), proposal-supersession +2, plan-yield +1, frontend-world-entry +1/
-changed (explore and Šibenik keep road drawing, Zagreb too); the old "refuses a road across a bare park"
-test is replaced. Red-checked: without the carve 2 fail; without the supersession exemption 2 fail;
-restoring the `roads → roadTools` mapping 2 fail. Chain/audit (sub-agent): open-ground-audit layout tests
-(ignoring the layout turns 4 red), decoders' `layoutVersion` in frontend-acceptance-client,
-frontend-lens-chain-parser, lifecycle-actions, proposal-lifecycle-oracle, proposal-market-layout,
-hackathon-proof-audit. Full backend suite: **6162 passed, 6 skipped, 0 failed** (442 files). Anchor
-localnet, each file on a fresh validator (temporary ports 18899/18001/19900, Anchor.toml restored and
-diffed): proposal_nft 54, parcel_nft 6, proposal_market 28, proposal_pledge 70 = 158 passing, including
-`layoutVersion === 3` on fresh mints and 0 on the v2 fixture before and after a v3 rewrite.
-
-**Verified in a headed browser** (local backend → docker DB; session closed, servers stopped; no page
-errors at any step). Globe → Tokyo: popup "Open the map here" → explore, status and placeholder as above.
-Ground menu (Draw a site, Road, Track, 4 stations) → drawn site → park; Road from the ground menu across
-the park → "Build through" → road built, park now a 2-part MultiPolygon (9,160 → 8,230 m²) with the road
-between, decorations off the road; block on a drawn triangle; detached (7 plots) on a drawn site; bus
-station beside the road ("Bus station placed"); 3D and photo modes render in explore; Plan stats: No
-parcels here, 8 buildings / 41,509 m² GFA, open space 8,230 m² (was 9,180 before the stats fix), open-
-ground note; published park and road (rows 1349/1350: `[]`, coverage none) → reload replays 5 applied,
-carved park identical. Subdivision (phase 4) in explore: drawn site → Subdivide → Plots along a street,
-12 plots + street, Open ground (no owner), applied 13 rootless pieces. Zagreb: park on HR-339270-4201;
-road across it through the road tool (surface-level prompt, then Build through) → park split into 2
-pieces (228 + 223 m²), 7 corridor pieces, no double cover; block on a parcel (1 building, 964 m²);
-park published (row 1351, `["HR-339270-4201"]`, complete); a parcel used as a site and dragged ~1 m into
-its neighbour → binding 2 parcels → square → publish (row 1352, HR-339270-4184 intrusion 0.78 m, so no
-small-intrusion confirmation). Šibenik (hr): ground menu offers Cesta/Pruga/stations (roads now on);
-mixed site over HR-330264-488/2 and the hole ("Katastar: djelomična", hatched open ground) → Trg applied
-(2,866 m²). Phone 375×740: explore banner, ground menu as a bottom sheet, mode strip clear.
-
 **Open (found in the walk, not fixed here)**
 - *Road across subdivision plots on open ground double-covers them*: the ribbon on open ground takes
   nothing from formed ground pieces (phase 3 corridor rule), so 12 plots + street keep their full area
@@ -764,7 +622,7 @@ mixed site over HR-330264-488/2 and the hole ("Katastar: djelomična", hatched o
    read it back (`layoutVersion` 3, `siteHash` = the record's site hash), run
    `hackathon-proof-audit.mjs --open-ground` once.
 
-### Phase 6b — road over open-ground plots (2026-10-01, built, not committed, not deployed)
+### Phase 6b — road over open-ground plots
 
 **Built**
 - **One carve for every formed piece a later road crosses.** `apply/road.js`
@@ -800,28 +658,11 @@ mixed site over HR-330264-488/2 and the hole ("Katastar: djelomična", hatched o
   applied to every formation that holds ground (structure bodies, readjustment plots), on cadastral and
   open ground alike.
 
-**Tests** (backend vitest): road-over-plots 5 (bare subdivision cut, partition = site, authored plan
-untouched, boot replay identical, unapply byte-identical; earlier road refuses a newer subdivision; road
-through a house refused / beside it cuts the plot; mixed site; cadastral readjustment), road-open-ground-
-stats 7 (real road-drawing functions lifted: 3 ownerless plots → 0 parcels, 0 owners, "3 · 3000 m²";
-mixed; hidden on cadastral; locales; `splitCrossedPieces`; hr "česticu" and no inflected "parcela"
-left), stats-open-ground +1. Red-checked: without the plot carve 4 of 5 fail, without the guard 1, without
-the road-tool split 2, without the overlap subtraction 1. Full suite: **6175 passed, 6 skipped, 0 failed**.
-
-**Verified in a headed browser** (local backend → docker DB; session closed, servers stopped; no page
-errors). Explore Tokyo: drew a 13,458 m² site → Subdivide → 12 plots + street (13 pieces) → road from the
-ground menu across it: road panel "Parcel count 0 · Individual owners — · Open ground 3 · 3,293 m²" →
-built: 16 pieces, 12,659 m² + 800 m² of road inside the site = the site, 0 m² of plot on the road; reload
-replays the same 16 ids/geometries; plan stats open ground 13,593 m² (was 14,393, double counted);
-Unapply the road → the 13 original pieces, ids and geometry identical; reload keeps them. Zagreb: park on
-HR-335266-3159/1 → road across it (surface level, Build through) → park in 2 pieces (2,064 + 3,087 m²),
-3 corridor pieces, no overlap; road panel showed parcels/owners and no open-ground metric.
-
 **Open**
 - Still no "Build through" prompt for subdivision plots (the road just builds through them, as now
   agreed); the prompt names only parks/squares/lakes.
 
-### Phase 7a — snapping to buildings, frontage from streets (2026-10-01, built, not committed, not deployed)
+### Phase 7a — snapping to buildings, frontage from streets
 
 **Built**
 - **Site corners snap to building outlines.** `site-draft.js` gained `snapToGround(coordinate,
@@ -852,33 +693,13 @@ HR-335266-3159/1 → road across it (surface level, Build through) → park in 2
   was removed.) i18n en/hr/es/sr (`siteTool.snap.*`,
   `siteTool.frontage.*`, updated `siteTool.hint.drawing/plots`).
 
-**Tests**: site-draft +7 (building corner/edge kind, corner-beats-edge across kinds, box entries, viewport
-filter and cap), site-plots +8 (street side vs longest, corner site, parallel beats perpendicular, too far /
-perpendicular / through the site → longest, clockwise ring, unnamed and register names, plots cut on the
-street edge), streets-near 9 (Overpass converter and query, osm_road vs Overpass by extent, extent cached,
-bbox refusals, route). Red-checked (kind forced to parcel → 4 fail; no inside check / no length factor →
-2 fail). Full suite: 6228 passed, 6 skipped, 5 failed — all 5 in `i18n-locale-coverage` for
-`panel.proposal.bindingDrift.*` keys of the concurrent re-binding work (`binding-drift-panel.js`), not this
-phase.
-
-**Verified in a headed browser** (local backend → docker DB; session closed, servers stopped; no page
-errors). Zagreb (Trešnjevka, GDI buildings on): cursor 4 px off a GDI corner 50 px from any parcel vertex
-→ marker "Building corner", the clicked vertex equals the building vertex exactly. A 36 × 40 m site 7 m
-north of Gotalovečka ulica → Detached: frontage on the 36 m street edge (longest is 40 m), "Frontage facing
-Gotalovečka ulica (7 m away)"; clicking another edge → "the edge you chose". (A 50 m deep site reaching
-Grebengradska picked Grebengradska at 2.5 m over Gotalovečka at 7 m — both face it.) Explore Tokyo:
-Overpass first throttled → "the longest edge (street data is unavailable here)"; after the cool-off a site on
-the Shibuya tracks → "no street within 30 m"; a 40 × 50 m site beside 宮益坂 → "Frontage facing 宮益坂 (8 m
-away)" on the 40 m edge; Subdivide on it → Plots along a street with "Frontage facing 宮益坂 (8 m away)."
-in the status, Cancel closed without an unsaved-changes prompt.
-
 **Open**
 - Public Overpass is slow/throttled at times; the explore frontage then honestly falls back to the longest
   edge. An `OVERPASS_URL` mirror (already read by the proxy) would help.
 - The subdivision's inner street runs parallel to the frontage edge (phase 4 layout); facing the real
   street does not yet mean plots front it directly when the street goes through the middle.
 
-### Phase 7b — re-binding on cadastre drift, Build through for plots (2026-10-01, built, not committed, not deployed)
+### Phase 7b — re-binding on cadastre drift, Build through for plots
 
 **Built**
 - **Drift (rule 5).** Shared pure module `frontend/js/proposals/binding-drift.js` (UMD,
@@ -918,30 +739,6 @@ in the status, Cancel closed without an unsaved-changes prompt.
   building prompt's surface/tunnel choice is not reached for that edge). Houses not on any plot keep the
   building prompt. Plots count is per piece crossed (a subdivision's street piece counts as a plot).
 
-**Tests** (backend vitest): binding-drift 17 (pure drift/notice/derive/findRebound; server recompute at
-the stored tolerance with the stored site, proposal_data fallback, parcel act, uncheckable cases; route
-200/404/500, writes nothing), plot-crossings 10 (detection per proposal, readjustment vs subdivision,
-kerf and approvals, house on/off plot, prompt choices, translator, corridor-structures glue incl.
-"build" never passing a refusal, i18n keys in 4 locales), i18n-locale-coverage allowlists
-`panel.proposal.bindingDrift.coverageKinds.`. Red-checked: dropping the on-plot test, the blocked-only
-choices, the glue's refusal guard, the stored tolerance, or the open-ground drift each turn a test red.
-Full suite: **6246 passed, 6 skipped, 0 failed**.
-
-**Verified in a headed browser** (local backend → docker DB; session closed, job stopped, no page
-errors). Zagreb: park on HR-339164-2972 → Share → Upload (row 1353). Cadastre change simulated in the
-LOCAL db only: parcel `cestica_id 41085223` set `current=false` and two halves inserted
-(`HR-339164-2972/901`, `/902`, `cestica_id -990001/-990002`, `data_source 'po9-drift-test'`). Reload →
-details: "The cadastre changed since this was published: +2 parcels, −1" with both lists → Re-bind →
-confirm → "Re-bound: published as record 1354"; row 1354 declares `/901,/902` with a fresh server
-binding, same site (`ST_Equals`), `sourceProposalId` and `rebind.sourceServerId = 1353`; row 1353
-unchanged (binding, `computedAt`, `updated_at`); its notice now says "Re-bound as …". Restored: test rows
-deleted, `current=true` back; the parcel row's md5 equals the pre-test value, table count and min id
-unchanged, drift of 1353 back to none. Rows 1353/1354 stay in the local DB as test records. Explore
-Tokyo: 16,000 m² site → Subdivide (plots along a street) → road across: prompt "“Subdivide …”: 5 plots,
-727 m²" → Build through → built, 18 pieces; Detached houses on one plot → road through a house: prompt
-lists 3 plots and "“Detached-houses …” on “Subdivide …”", "it would be refused", only "Choose another
-route" → nothing added.
-
 **Open**
 - After the cadastre change (and a reload) the source record still showed as applied locally on the
   retired parcel id; nothing tells a locally applied record that its parcel was retired (not investigated).
@@ -949,7 +746,7 @@ route" → nothing added.
   proposals off plots, although such a road is refused at apply (`building-over-road`).
 - No docs-agents.md / OpenAPI entry for `GET /proposals/:id/binding-drift` yet.
 
-### Phase 7c — street and plot widths in the subdivision editor (2026-10-01, REMOVED with the street layout)
+### Phase 7c — street and plot widths in the subdivision editor (removed with the street layout)
 
 Superseded: the whole "plots along a street" mode, with these width controls, was removed (see "Street
 layout removed" below). Kept as the record of what was built.
@@ -984,23 +781,6 @@ layout removed" below). Kept as the record of what was built.
   streetWidthTitle, plotWidthTitle}`, `…modal.relayConfirm{,Ok,Cancel}`,
   `…modal.status.{noWholePlot, streetWidthInvalid, plotWidthInvalid, streetDropped}`. CSS in modals.css.
 
-**Tests** (backend vitest, subdivision +6): chosen widths respected (street area / frontage ≈ 16 m,
-18 plots of 108 m / 12 m) and tiling exact; remainder spread evenly; a 25 m street on a 33 m deep site
-drops the street and still tiles; out-of-range / NaN / zero widths and a 50 m plot on a 40 m frontage
-refused with their codes; input-string parsing; plan-field round trip incl. old plans and identical
-re-layout from saved settings. Red-checked: disabling the range check, the no-whole-plot refusal or the
-street width pass-through fails 4 tests. Full suite: **6266 passed, 6 skipped, 0 failed**.
-
-**Verified in a headed browser** (explore Tokyo, local backend; session closed, job stopped, no page
-errors): 7,691 m² site → Subdivide → controls show 10 / 20; street 16 → 16 m street through the middle;
-plot 12 → 6 plots per side on the 70 m frontage; street 3 and plot 61 → field marked, range message,
-layout kept; back to a valid value clears it. A plot reassigned to Public land, then plot 15 → confirm;
-Keep my plots reverted the input to 12 with the reassignment intact; again → Re-lay plots → 5 per side,
-reassignment gone; Undo restored 12 and the reassignment. Done → stored plan `streetWidthM 16,
-plotWidthM 15, streetFrontageIndex 3`, 11 polygons; reload replays the same plots; Unapply → Fork → Edit
-reopens with 16 / 15 and the saved plots; plot 20 then re-lays without asking (untouched). 375 px:
-the two fields wrap under each other, no horizontal scroll.
-
 **Open**
 - "Turn the street" still re-lays without asking even after hand edits (7a behaviour, left as is).
 - Fork → Edit of a still-applied subdivision refuses with `siteGroundTaken` (its own ground); unapply first
@@ -1008,7 +788,7 @@ the two fields wrap under each other, no horizontal scroll.
 - Saving the fork logged `[captureViaTileStitch] Final bbox looks invalid` (lng/lat swapped in the bbox) —
   thumbnail capture on explore, pre-existing, not investigated.
 
-### Phase 7d — publish author, site-only subdivision forks, explore chip (2026-10-01, built, not committed, not deployed)
+### Phase 7d — publish author, site-only subdivision forks, explore chip
 
 **Fixed**
 - **Stale author on publish.** A record created as a guest went out under its guest alias after the profile
@@ -1047,27 +827,7 @@ the two fields wrap under each other, no horizontal scroll.
   payload). Records created before this change carry no `authorAgentId` and keep their author (no
   name-guessing fallback).
 
-**Tests**: guest-author-stamp 12 (pure claim/outgoing rules; the real store + `stampCurrentAuthor`: guest
-park → name → publish restamps record and local draft, published / AI-agent records untouched, a fork made
-as a guest; wiring incl. the stamp before the agent id is dropped), subdivision-fork-create 6 (fixture
-`test/fixtures/subdivision-site-only-1348.json` through the reparcellization adapter's fork draft → verdict
-ok; bound-parcel subdivision ok; site missing/moved; readjustment selection; create.js wiring),
-frontend-world-coverage +5 (`nameAt`: Tokyo, Zagreb, Yokohama → Japan, open sea, world zoom, wiring).
-Red-checked: dropping the claim or the upload stamp (3 fail), ignoring poolSource (3 fail), the 40 km
-radius (1 fail). Full suite: **6330 passed, 6 skipped, 0 failed**.
-
-**Verified in a headed browser** (local backend → docker DB; session closed, job stopped, no page errors).
-Explore `?at=35.68,139.76,14`: chip "Explore · Tokyo" on first load; pan to Yokohama → "Explore · Japan";
-open sea → "Explore"; back → "Explore · Tokyo"; `?city=explore` with nothing stored → world view at 30N 15E,
-chip "Explore" (was "Libya"). Guest 3737 drew a park → Share as guest showed the name dialog → name
-"Tester Po14b" → Share → Upload: row 1357 author "Tester Po14b", no `authorAgentId` in `proposal_data`; the
-local draft shows the new name. (Row 1356 "Guest 5983" is the same flow before the projection stamp —
-left in the local DB as a test record.) Subdivision on a 15,811 m² Tokyo site → Unapply → Fork → Edit (plot
-25 m) → Create replacement → 11 plots, applied; then Unapply → Fork with no edit (pending plan without
-`parcelIds`, the failing shape) → created → Share → Upload: row 1358, `poolSource site`, 11 plots, author
-"Tester Po14b".
-
-### Street layout removed (2026-10-01, not committed, not deployed)
+### Street layout removed
 
 A subdivision takes land as input and outputs only plots. The "plots along a street" mode (phase 4,
 widths in 7c) was never asked for and is gone; a public road strip is one freeform plot assigned to public

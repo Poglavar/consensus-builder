@@ -1,8 +1,5 @@
 # 3D ground: streets and pavement in model mode
 
-Built on branch `3d-ground` (2026-10-21) and merged into `colosseum-worlds-fair` and deployed on
-2026-10-22. The status marks below record what shipped; P7 is still open.
-
 ## Goal
 
 The simplified 3D ("model") view had no ground between buildings: in a city without cadastral
@@ -11,7 +8,7 @@ cadastral road parcels were uniform light slabs. Draw the streets so the schemat
 asphalt roadbed to drive on and the people a pavement to walk on, from OSM, with nothing fancy:
 no Station3D world, no textures, no per-frame work, so loading and frame time stay where they are.
 
-## Design (built 2026-10-21)
+## Design
 
 The rule the user set: the OSM centreline anchors the roadbed; lanes and widths make the car part;
 everything else is pavement up to the buildings.
@@ -30,8 +27,7 @@ everything else is pavement up to the buildings.
   (k, k, 1) in true metres like the life group. The pavement (+3 polygon offset) is coplanar with
   the parcel slabs and stays under them; park, square and proposal grounds (−2 and beyond), water
   (0.04) and corridor strips (z 0.05) stay on top of everything.
-- Sunk roads (2026-10-21, user asked for raised sidewalks or sunk roads, "whichever is easier"):
-  an OSM carriageway is sunk `KERB_M` = 0.15 m (life-graph.js; the corridor sidewalk height)
+- Sunk roads: an OSM carriageway is sunk `KERB_M` = 0.15 m (life-graph.js; the corridor sidewalk height)
   below the pavement, so the parcel slabs and the pavement plane at z 0 need holes over it. No
   polygon booleans: the roadbed's *lid* (the same triangles at pavement level) is drawn first
   into the stencil buffer only (bit 0x02; the ghost-building pass owns ref 1 but runs in the
@@ -44,30 +40,28 @@ everything else is pavement up to the buildings.
   1 m against an index of all asphalt (segment strips, join discs, junction discs); runs outside
   all other asphalt become walls and each run end is bisected onto the asphalt boundary (±3 cm),
   so a side street opens the main street's kerb exactly across its own width and its own kerb
-  starts at the main street's edge. Sharp bends (mitre > 2 × half-width) now split the ribbon
-  and round the join with a disc instead of capping the mitre, which pinched hairpins to their
-  centreline. Corridor carriageways keep drop 0 (their strips draw their own kerbs) and get no
+  starts at the main street's edge. Sharp bends (mitre > 2 × half-width) split the ribbon
+  and round the join with a disc instead of capping the mitre. Corridor carriageways keep drop 0 (their strips draw their own kerbs) and get no
   walls; a junction disc takes the deepest drop of the ways meeting there.
 - Life follows: OSM drive lanes get `zLift` −0.15 so the vehicles sit on the asphalt, and the
   walkable grid paints OSM carriageways with `ZCODE.ROAD` (`Z_LEVELS` −0.15) so people step
   down to cross. The kerb colour is darker than asphalt and pavement: a sunlit vertical face
   renders brighter than a flat one and a light kerb read as a white line.
-- Lane lines (2026-10-22, user: "can we draw lane lines on the road?"): the carriageway entry now
-  carries the life graph's lane layout (`lanes: [{offset, dir}]`, left-positive of the carriageway
+- Lane lines: the carriageway entry carries the life graph's lane layout (`lanes: [{offset, dir}]`, left-positive of the carriageway
   centre), and every boundary between two adjacent lanes gets a 12 cm line 1 cm above the
   asphalt: solid between opposing directions (the centre line), dashed 3 m on / 6 m off between
   lanes of one direction. The same run-finder that clips the kerb clips the lines, skipping the
   way's own asphalt, so lines stop at every junction disc and under every other street. A single
   lane paints nothing. Pulled forward by polygon offset so they never sink into the asphalt at
   distance. Fifth draw call.
-- Darker asphalt (0x5b5d61, was 0x7d8085) and a paving pattern on the sidewalks: no texture
+- Asphalt 0x5b5d61 and a paving pattern on the sidewalks: no texture
   image, a shader patch (`paveTexture`) on the pavement material and on the cadastral road-parcel
   material (scaled back from scene units to metres by 1/k) draws 1.5 m slabs with a thin darker
   joint and a faint per-slab tint from the mesh's local XY. The joint is anti-aliased over one
   pixel and its weight shrinks once a pixel outgrows it, so distant pavement settles to a flat
-  tone instead of moiré (checked at z18 over Lower Manhattan).
+  tone instead of moiré.
 - three-mode.js: the ground rebuilds whenever the life layer rebuilds (same graph, one build), and
-  builds its own graph when the life layer is off; the `/osm-road` fetch now runs when either layer
+  builds its own graph when the life layer is off; the `/osm-road` fetch runs when either layer
   is on. Toggle "Streets and pavement" in the model-mode layer panel (`cb_3d_ground_enabled`,
   default on, `?ground=0|1` override), hidden in photo mode, disposed with the scene.
   `getThreeModeInternals().groundStats()` reports draw calls, ways, junctions, triangles, asphalt m².
@@ -83,23 +77,10 @@ everything else is pavement up to the buildings.
 | Lane lines (Lower Manhattan z20, 305 carriageways) | 7.4 km, 3,536 triangles |
 | Lane lines (Zagreb station z19) | 3.5 km, 1,618 triangles |
 
-## Phases
+## Open
 
-- [x] P1 Pure geometry module + renderer with tests (14 tests).
-- [x] P2 Wired into model mode with the toggle, i18n (en/hr/sr/es) and the OSM fetch gate.
-- [x] P3 Browser check in a launched Chrome: New York (streets between the PLUTO blocks) and Zagreb
-      (asphalt inside the cadastral road parcels); no page errors.
-- [x] P4 User review: "works"; asked for raised sidewalks or sunk roads, whichever is easier.
-- [x] P5 Sunk roads: stencil lid holes, kerb walls with junction openings, life heights; 100 headless
-      unit tests across ground-geometry, three-ground, life-graph, life-surface, three-life and
-      life-agents; checked in a launched Chrome at street level in New York and Zagreb (far kerb
-      face visible, near edge hides the trench, kerbs stop at junctions, no page errors).
-- [x] P6 Lane lines, darker asphalt, procedural paving on pavement and road parcels; 118 headless unit
-      tests across the eight files above plus the static-build and home-path guards; checked in a
-      launched Chrome at street level, oblique and overview in New York and Zagreb (lines stop at
-      junctions, no moiré at z18, slabs on a Zagreb road parcel, no page or shader errors).
-- [ ] P7 User review of the kerb (0.15 m, colour), the line style (white only, dashed separators,
-      solid centre line) and the slab size (1.5 m).
+- User review of the kerb (0.15 m, colour), the line style (white only, dashed separators, solid
+  centre line) and the slab size (1.5 m).
 
 ## Deferred
 
@@ -107,7 +88,7 @@ everything else is pavement up to the buildings.
   half-width, so another way's kerb crossing a mitre wedge beyond that radius keeps a stub;
   junction discs are as wide as the widest way, so a wide side street on a narrow main street
   bulges past the far kerb (the roadbed already did). Where OSM and the cadastre disagree the
-  trench now cuts visibly through a plot slab's edge where a flat overlap hid it before.
+  trench cuts visibly through a plot slab's edge.
 - The Zagreb WFS road-use polygons (z 0.3) share the road-parcel material, so they get the same
   stencil holes where OSM asphalt runs under them.
 - Stencil holes are screen-space: a pavement sheet seen exactly edge-on has no thickness.

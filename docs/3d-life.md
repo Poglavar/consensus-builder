@@ -1,9 +1,5 @@
 # 3D life: schematic people and vehicles in model mode
 
-Living plan for branch `3d-life` (worktree `consensus-builder-3d-life`, off `colosseum-worlds-fair`
-344ee8fe, 2026-10-15). Merged back into `colosseum-worlds-fair` on 2026-10-15 (85892322, after
-merging that branch in first; no conflicts). Update the status marks as steps land.
-
 ## Goal
 
 Bring life into the simplified 3D ("model") view: to-scale, schematic people walking on sidewalks,
@@ -11,16 +7,15 @@ footways and plazas, and cars, buses and motorcycles driving along roads, moving
 behaviour logic beyond "stay on your path and don't drive into the vehicle ahead". No big performance
 cost, nothing of Station3D recreated.
 
-## What existed before (2026-10-15 research)
+## Context
 
-- CB's 3D model mode had nothing moving. The render loop is on-demand and keeps running only while a
-  frame hook is registered (`registerThreeModeFrameHook`, three-mode.js); only photo mode used it.
-  Static figures only: the statue and the stick-figure sidewalk textures.
+- The model-mode render loop is on-demand and keeps running only while a frame hook is registered
+  (`registerThreeModeFrameHook`, three-mode.js).
 - The "people in the 3D sim" memory is Station3D (`~/Code/station3d`): 32 ambient pedestrians, six
   meshes each, off by default in walk mode (H toggles them); road vehicles are a GTA-mode capability.
   The yellow-man button in CB only opens zagreb.lol/prijevoz?st3d=walk in a new tab.
-- The traffic simulator built on `main` 2026-10-14/15 is a 2D Leaflet-canvas page (zagreb.lol/promet/
-  simulator), extracted to `~/Code/zagreb-promet-simulacija` by 670a98d5. No pedestrians, not 3D.
+- The traffic simulator is a separate 2D Leaflet-canvas page (zagreb.lol/promet/simulator, repository
+  `zagreb-promet-simulacija`). No pedestrians, not 3D.
 - Station3D's layers are not portable as code (`world/pedestrians.js` 1,665 lines / 35 imports,
   `world/cars.js` 4,899 lines / 42 imports, one Group per agent). Its constants and the instanced-crowd
   pattern (`world/campaign-crowd.js`: 240 people in five InstancedMesh draws) are what we reuse.
@@ -70,14 +65,14 @@ Four classic scripts, three of them pure and node-tested:
      as blocked lines with a 3 m opening at each gate (wider than the gate drawn, so the 1 m walking
      grid keeps it passable); buildings, water and lakes as blocked.
    Tracks connect through node ids, so a driver reaching the end of one picks another outgoing
-   track. Turns (2026-10-17): `junctionCurve` trims both lanes back by the tangent length of the
+   track. Turns: `junctionCurve` trims both lanes back by the tangent length of the
    vehicle's turn radius (car 7 m, bus 11 m, moto 6 m; hairpins and U-turns turn at the node) and
    joins them with a tangent cubic Bézier; drivers brake to √(2.5 m/s² · R) for it. Vehicles steer
    like a bicycle model: the front axle rides the path, the rear axle trails it at the wheelbase (a
    tractrix, so a bus's rear wheels cut inside the corner and never slide sideways), and the front
    wheels show the steering angle. A corridor's loose end
    within 8 m of an OSM node is merged into it so traffic flows between proposal and street.
-2. `frontend/js/life/life-surface.js` (pure). The user's rule, 2026-10-15: **walkable = everything
+2. `frontend/js/life/life-surface.js` (pure). The user's rule: **walkable = everything
    that is not a car lane and not a building, structure or water footprint.** A grid (1 m cells,
    coarser for big scenes, at most 1.5M cells) classifies each cell as blocked, open, preferred
    (sidewalk bands, footways, plazas, lawns) or carriageway. Paint order: preferred, then
@@ -154,38 +149,14 @@ ms and render ms, worst frame per second window) so the cost is measured, not as
 | Draw calls added | 7 (9 at dusk and night), 3 more with dogs |
 | Target CPU per frame | under 1 ms on a quiet laptop |
 
-## Phases
+## Battery and colour
 
-- [x] P1 Plan recorded, pure graph + surface + agents modules with tests (2026-10-15).
-- [x] P2 Renderer + frame hook; vehicles on applied corridors and OSM lanes.
-- [x] P3 OSM streets via `/osm-road` with the Overpass fallback; people on the walkable surface.
-- [x] P4 Motorcycles with riders, buses; toggle, i18n (en/hr/sr/es), reduced-motion and `?life=` gates.
-- [x] P5 `?fps=1` readout in model mode.
-- [x] P6 Browser verification in a launched headed Chrome; tests green; committed on `3d-life`.
-
-## Measured 2026-10-15 (laptop, host load 26–35 from other sessions' browsers, so timings are upper bounds)
-
-Zagreb main station, 300 m building radius, 523 OSM ways, 425 context buildings:
-
-| Item | Value |
-|---|---|
-| Population | 100 vehicles, 64 people |
-| Life layer per frame | 0.1–0.8 ms (simulation + matrix writes) |
-| Draw calls added | 7 |
-| Surface paint (1 m cells, 87k blocked cells from 11k roof faces) | 55–65 ms, once per scene and once per footprint arrival |
-| Graph + surface build | 18–22 ms |
-| Frame rate with the layer on | 120 fps, worst frame 2–12 ms depending on the view |
-
-Battery: with the layer on, the view renders continuously instead of on demand. The toggle turns
+With the layer on, the view renders continuously instead of on demand. The toggle turns
 that off entirely (the hook is unregistered: the readout stops updating, the group is hidden and
 emptied; toggle on rebuilds), the loop pauses while the tab is hidden, and when only hooks keep the
 loop alive with nothing moving, frames are paced at 30 fps rather than the display's rate; any
 interaction or invalidation returns to full rate at once. Car colours avoid grey and near-white so
-vehicles never blend into the grey buildings or the pale ground. Belgrade (no ingested roads) exercises the Overpass path: Tracestrack answered the
-scene's cells in 5.4 s with 2,324 ways (399 inside the scene; 100 vehicles on 31 km of lanes, 64
-people, 271 buildings blocked), while from the browser the public overpass-api.de took 37 s for a
-3 km box under load and both public mirrors returned 500 that afternoon, which is why the browser
-path is the last resort only.
+vehicles never blend into the grey buildings or the pale ground.
 
 ## Deferred
 
