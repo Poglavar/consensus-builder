@@ -7696,12 +7696,12 @@
             "openAgreement": "Abrir el acuerdo",
             "noBets": "No tienes apuestas en este acuerdo.",
             "settledMessage": "Liquidado según el estado del acuerdo en la cadena.",
-            "rule": "SÍ gana si el acuerdo se ejecuta antes del plazo. NO gana si vence o no se ejecuta a tiempo. La cancelación es VOID y paga la mitad por participación.",
+            "rule": "SÍ gana si el acuerdo se ejecuta antes del plazo. NO gana si vence, se cancela o no se ejecuta a tiempo.",
             "next": {
                 "open": "Se puede apostar mientras el acuerdo esté Activo y antes del plazo; puedes vender participaciones antes del cierre.",
                 "needsPool": "El patrocinador del acuerdo puede abrir un mercado con participaciones SÍ y NO.",
                 "settleYes": "Cualquiera puede liquidarlo; la ejecución antes del plazo resuelve SÍ.",
-                "settleNo": "Cualquiera puede liquidarlo; el vencimiento o no ejecutarse a tiempo resuelve NO. La cancelación resuelve VOID.",
+                "settleNo": "Cualquiera puede liquidarlo; el vencimiento, la cancelación o no ejecutarse a tiempo resuelve NO.",
                 "settledSplit": "Cada participación ganadora paga 1 y las perdedoras 0. Un mercado VOID paga la mitad por participación en ambos lados.",
                 "settledRefund": "El lado ganador no tenía participaciones, así que no hay una posición ganadora que cobrar.",
                 "closed": "El acuerdo debe estar Activo y tener una fecha límite futura para abrir el mercado o aceptar operaciones."
@@ -7731,7 +7731,7 @@
             "yes": "Sí",
             "no": "No",
             "yesExecutes": "Apuesta a que el acuerdo se ejecute en la cadena antes de su fecha límite.",
-            "noExecutes": "Apuesta a que el acuerdo no se ejecute antes del plazo. La cancelación es VOID.",
+            "noExecutes": "Apuesta a que el acuerdo no se ejecute antes del plazo (vencimiento o cancelación).",
             "openMarket": "Aportar liquidez al mercado USDC",
             "opened": "Mercado abierto",
             "settle": "Liquidar el mercado",
@@ -7781,7 +7781,7 @@
             "receipt": "Recibo",
             "refreshQuote": "Revisar una cotización nueva",
             "returned": "Devuelto",
-            "rule": "SÍ si este acuerdo se ejecuta en cadena antes de {{deadline}}. NO si vence o no se ejecuta a tiempo. La cancelación anula la apuesta y paga 0,5 por participación. La ejecución no significa que se haya construido.",
+            "rule": "SÍ si este acuerdo se ejecuta en cadena antes de {{deadline}}. NO si vence, se cancela o no se ejecuta a tiempo. La ejecución no significa que se haya construido.",
             "sell": "Vender participaciones",
             "sellQuote": "Vende {{shares}} por al menos {{amount}}",
             "sellSide": "Vender participaciones de {{side}}",
@@ -7822,7 +7822,7 @@
         "how": {
             "title": "Cómo funcionan las apuestas",
             "pools": "Cada acuerdo con fecha límite tiene su propio mercado de participaciones SÍ y NO. Los acuerdos sobre el mismo terreno pueden ejecutarse ambos, solo uno o ninguno.",
-            "settle": "SÍ si este acuerdo se ejecuta en cadena antes de {{deadline}}. NO si vence o no se ejecuta a tiempo. La cancelación anula la apuesta y paga 0,5 por participación. La ejecución no significa que se haya construido.",
+            "settle": "SÍ si este acuerdo se ejecuta en cadena antes de {{deadline}}. NO si vence, se cancela o no se ejecuta a tiempo. La ejecución no significa que se haya construido.",
             "devnet": "Los puntos y el USDC de devnet son dinero de juego sin valor en efectivo. Los precios y las posiciones en USDC son independientes de los puntos.",
             "faucetSol": "Grifo de Solana",
             "faucetUsdc": "Grifo de USDC de Circle"

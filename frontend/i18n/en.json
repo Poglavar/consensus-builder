@@ -7669,12 +7669,12 @@
             "openAgreement": "Open the agreement",
             "noBets": "You have no bets on this agreement.",
             "settledMessage": "Settled from the agreement's on-chain status.",
-            "rule": "YES wins if the agreement executes by its deadline. NO wins if it expires or misses the deadline. Cancellation is VOID and pays half per share.",
+            "rule": "YES wins if the agreement executes by its deadline. NO wins if it expires, is cancelled, or misses the deadline.",
             "next": {
                 "open": "Betting stays open while the agreement is Active and before its deadline; you can sell shares before trading closes.",
                 "needsPool": "The agreement sponsor can open one market with YES and NO shares.",
                 "settleYes": "Anyone can settle it; execution by the deadline resolves YES.",
-                "settleNo": "Anyone can settle it; expiry or no execution by the deadline resolves NO. Cancellation resolves VOID.",
+                "settleNo": "Anyone can settle it; expiry, cancellation or no execution by the deadline resolves NO.",
                 "settledSplit": "Each winning share pays 1; losing shares pay 0. A VOID market pays half per share on both sides.",
                 "settledRefund": "The winning side had no shares, so there is no winning position to claim.",
                 "closed": "The agreement must be Active and have a future deadline for its market to open or accept trades."
@@ -7704,7 +7704,7 @@
             "yes": "Yes",
             "no": "No",
             "yesExecutes": "Bet that the agreement executes on-chain by its deadline.",
-            "noExecutes": "Bet that the agreement does not execute by its deadline. Cancellation is VOID.",
+            "noExecutes": "Bet that the agreement does not execute by its deadline (expiry or cancellation).",
             "openMarket": "Seed USDC market",
             "opened": "Market opened",
             "settle": "Settle market",
@@ -7754,7 +7754,7 @@
             "receipt": "Receipt",
             "refreshQuote": "Review a fresh quote",
             "returned": "Returned",
-            "rule": "YES if this agreement executes on-chain by {{deadline}}. NO if it expires or misses that deadline. Cancellation voids the bet and pays 0.5 per share. Execution does not mean construction.",
+            "rule": "YES if this agreement executes on-chain by {{deadline}}. NO if it expires, is cancelled or misses that deadline. Execution does not mean construction.",
             "sell": "Sell shares",
             "sellQuote": "Sell {{shares}} for at least {{amount}}",
             "sellSide": "Sell {{side}} shares",
@@ -7795,7 +7795,7 @@
         "how": {
             "title": "How bets work",
             "pools": "Each agreement with a deadline has its own market with YES and NO shares. Agreements over shared land may both execute, only one may execute, or neither may execute.",
-            "settle": "YES if this agreement executes on-chain by {{deadline}}. NO if it expires or misses that deadline. Cancellation voids the bet and pays 0.5 per share. Execution does not mean construction.",
+            "settle": "YES if this agreement executes on-chain by {{deadline}}. NO if it expires, is cancelled or misses that deadline. Execution does not mean construction.",
             "devnet": "Points and devnet USDC are play money and have no cash value. Devnet USDC prices and positions are separate from points.",
             "faucetSol": "Solana faucet",
             "faucetUsdc": "Circle USDC faucet"

@@ -325,7 +325,7 @@
         return {
             state: chanceLabel(row),
             next: t('bets.trade.sharePayout', 'Each winning share pays 1. You can sell before trading closes.'),
-            rule: t('bets.trade.rule', 'YES if this agreement executes on-chain by {{deadline}}. NO if it expires or misses that deadline. Cancellation voids the bet and pays 0.5 per share. Execution does not mean construction.', { deadline: root.BetsUI.deadline(row.closesAt) })
+            rule: t('bets.trade.rule', 'YES if this agreement executes on-chain by {{deadline}}. NO if it expires, is cancelled or misses that deadline. Execution does not mean construction.', { deadline: root.BetsUI.deadline(row.closesAt) })
         };
     }
 

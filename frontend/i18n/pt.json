@@ -4940,7 +4940,7 @@
             "pool": "Fundo {{amount}}",
             "pays": "Paga {{multiple}}×",
             "yesExecutes": "Aposte que o acordo será executado on-chain até à sua data-limite.",
-            "noExecutes": "Aposte que o acordo não será executado até à sua data-limite. O cancelamento resulta em ANULADO.",
+            "noExecutes": "Aposte que o acordo não será executado até à sua data-limite (expiração ou cancelamento).",
             "openMarket": "Financiar mercado em USDC",
             "settle": "Liquidar mercado",
             "settled": "Mercado liquidado",
@@ -4988,7 +4988,7 @@
             "receipt": "Comprovativo",
             "refreshQuote": "Rever uma nova cotação",
             "returned": "Devolvido",
-            "rule": "SIM se este acordo for executado na blockchain até {{deadline}}. NÃO se caducar ou ultrapassar esse prazo. O cancelamento anula a aposta e paga 0.5 por participação. A execução não significa construção.",
+            "rule": "SIM se este acordo for executado na blockchain até {{deadline}}. NÃO se caducar, for cancelado ou ultrapassar esse prazo. A execução não significa construção.",
             "sell": "Vender participações",
             "sellQuote": "Vender {{shares}} por um mínimo de {{amount}}",
             "sellSide": "Vender participações {{side}}",
@@ -5044,12 +5044,12 @@
             "openAgreement": "Abrir o acordo",
             "noBets": "Não tem apostas neste acordo.",
             "settledMessage": "Liquidado com base no estado on-chain do acordo.",
-            "rule": "SIM vence se o acordo for executado até à data-limite. NÃO vence se expirar ou ultrapassar a data-limite. O cancelamento resulta em ANULADO e paga metade por participação.",
+            "rule": "SIM vence se o acordo for executado até à data-limite. NÃO vence se expirar, for cancelado ou ultrapassar a data-limite.",
             "next": {
                 "open": "As apostas permanecem abertas enquanto o acordo estiver Ativo e antes da sua data-limite; pode vender participações antes de a negociação encerrar.",
                 "needsPool": "O promotor do acordo pode abrir um mercado com participações SIM e NÃO.",
                 "settleYes": "Qualquer pessoa pode liquidá-lo; a execução até à data-limite determina SIM.",
-                "settleNo": "Qualquer pessoa pode liquidá-lo; a expiração ou a ausência de execução até à data-limite determina NÃO. O cancelamento determina ANULADO.",
+                "settleNo": "Qualquer pessoa pode liquidá-lo; a expiração, o cancelamento ou a ausência de execução até à data-limite determina NÃO.",
                 "settledSplit": "Cada participação vencedora paga 1; as participações perdedoras pagam 0. Um mercado ANULADO paga metade por participação em ambos os lados.",
                 "settledRefund": "O lado vencedor não tinha participações, pelo que não há nenhuma posição vencedora a resgatar.",
                 "closed": "O acordo tem de estar Ativo e ter uma data-limite futura para que o seu mercado possa abrir ou aceitar negociações."
@@ -5094,7 +5094,7 @@
             "openAgreement": "Não foi possível abrir o acordo."
         },
         "how": {
-            "settle": "SIM se este acordo for executado na blockchain até {{deadline}}. NÃO se caducar ou ultrapassar esse prazo. O cancelamento anula a aposta e paga 0.5 por participação. A execução não significa construção.",
+            "settle": "SIM se este acordo for executado na blockchain até {{deadline}}. NÃO se caducar, for cancelado ou ultrapassar esse prazo. A execução não significa construção.",
             "title": "Como funcionam as apostas",
             "pools": "Cada acordo com prazo tem o seu próprio mercado com participações SIM e NÃO. Os acordos sobre terrenos partilhados podem ser ambos executados, apenas um pode ser executado ou nenhum pode ser executado.",
             "devnet": "Os pontos e o USDC da devnet são dinheiro fictício e não têm valor monetário. Os preços e as posições em USDC da devnet são separados dos pontos.",

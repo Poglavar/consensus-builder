@@ -7709,12 +7709,12 @@
             "openAgreement": "Otvori sporazum",
             "noBets": "Nemate oklada na ovaj sporazum.",
             "settledMessage": "Namireno prema statusu sporazuma na lancu.",
-            "rule": "DA pobjeđuje ako se sporazum izvrši do roka. NE pobjeđuje ako istekne ili se ne izvrši na vrijeme. Otkazivanje je VOID i isplaćuje polovicu po udjelu.",
+            "rule": "DA pobjeđuje ako se sporazum izvrši do roka. NE pobjeđuje ako istekne, bude otkazan ili se ne izvrši na vrijeme.",
             "next": {
                 "open": "Ulagati se može dok je sporazum aktivan i prije roka; udjele možete prodati prije zatvaranja trgovanja.",
                 "needsPool": "Sponzor sporazuma može otvoriti jedno tržište s udjelima DA i NE.",
                 "settleYes": "Svatko ga može namiriti; izvršenje do roka namiruje se kao DA.",
-                "settleNo": "Svatko ga može namiriti; istek ili neizvršenje do roka namiruje se kao NE. Otkazivanje je VOID.",
+                "settleNo": "Svatko ga može namiriti; istek, otkazivanje ili neizvršenje do roka namiruje se kao NE.",
                 "settledSplit": "Svaki pobjednički udio isplaćuje 1, a gubitnički 0. Tržište VOID isplaćuje polovicu po udjelu na obje strane.",
                 "settledRefund": "Pobjednička strana nije imala udjele pa nema pobjedničkog položaja za naplatu.",
                 "closed": "Sporazum mora biti aktivan i imati budući rok kako bi se tržište otvorilo ili prihvaćalo trgovanja."
@@ -7745,7 +7745,7 @@
             "yes": "Da",
             "no": "Ne",
             "yesExecutes": "Uložite na to da se sporazum izvrši na lancu do zadanog roka.",
-            "noExecutes": "Uložite na to da se sporazum ne izvrši do roka. Otkazivanje je VOID.",
+            "noExecutes": "Uložite na to da se sporazum ne izvrši do roka (istek ili otkazivanje).",
             "openMarket": "Osiguraj likvidnost za USDC tržište",
             "opened": "Tržište je otvoreno",
             "settle": "Namiri tržište",
@@ -7795,7 +7795,7 @@
             "receipt": "Potvrda",
             "refreshQuote": "Pregledajte novu ponudu",
             "returned": "Vraćeno",
-            "rule": "DA ako se ovaj sporazum izvrši na lancu do {{deadline}}. NE ako istekne ili se ne izvrši do roka. Otkazivanje poništava okladu i isplaćuje 0,5 po udjelu. Izvršenje ne znači da je gradnja dovršena.",
+            "rule": "DA ako se ovaj sporazum izvrši na lancu do {{deadline}}. NE ako istekne, bude otkazan ili se ne izvrši do roka. Izvršenje ne znači da je gradnja dovršena.",
             "sell": "Prodajte udjele",
             "sellQuote": "Prodajte {{shares}} za najmanje {{amount}}",
             "sellSide": "Prodajte udjele {{side}}",
@@ -7836,7 +7836,7 @@
         "how": {
             "title": "Kako oklade rade",
             "pools": "Svaki sporazum s rokom ima svoje tržište udjela DA i NE. Sporazumi na zajedničkom zemljištu mogu se izvršiti oba, samo jedan ili nijedan.",
-            "settle": "DA ako se ovaj sporazum izvrši na lancu do {{deadline}}. NE ako istekne ili se ne izvrši do roka. Otkazivanje poništava okladu i isplaćuje 0,5 po udjelu. Izvršenje ne znači da je gradnja dovršena.",
+            "settle": "DA ako se ovaj sporazum izvrši na lancu do {{deadline}}. NE ako istekne, bude otkazan ili se ne izvrši do roka. Izvršenje ne znači da je gradnja dovršena.",
             "devnet": "Bodovi i devnet USDC igraći su novac bez novčane vrijednosti. Cijene i udjeli u devnet USDC-u odvojeni su od bodova.",
             "faucetSol": "Solana slavina",
             "faucetUsdc": "Circle USDC slavina"

@@ -4940,7 +4940,7 @@
             "pool": "Cagnotte {{amount}}",
             "pays": "Rapporte {{multiple}}×",
             "yesExecutes": "Pariez sur l’exécution de l’accord sur la blockchain avant son échéance.",
-            "noExecutes": "Pariez sur l’absence d’exécution de l’accord avant son échéance. Une annulation donne le résultat NUL.",
+            "noExecutes": "Pariez sur l’absence d’exécution de l’accord avant son échéance (expiration ou annulation).",
             "openMarket": "Alimenter le marché USDC",
             "settle": "Régler le marché",
             "settled": "Marché réglé",
@@ -4988,7 +4988,7 @@
             "receipt": "Reçu",
             "refreshQuote": "Consulter une nouvelle estimation",
             "returned": "Restitué",
-            "rule": "OUI si cet accord est exécuté sur la blockchain d’ici le {{deadline}}. NON s’il expire ou dépasse cette date limite. Son annulation invalide le pari et rapporte 0.5 par part. L’exécution ne signifie pas la construction.",
+            "rule": "OUI si cet accord est exécuté sur la blockchain d’ici le {{deadline}}. NON s’il expire, est annulé ou dépasse cette date limite. L’exécution ne signifie pas la construction.",
             "sell": "Vendre des parts",
             "sellQuote": "Vendre {{shares}} pour au moins {{amount}}",
             "sellSide": "Vendre des parts {{side}}",
@@ -5044,12 +5044,12 @@
             "openAgreement": "Ouvrir l’accord",
             "noBets": "Vous n’avez aucun pari sur cet accord.",
             "settledMessage": "Réglé à partir du statut de l’accord sur la blockchain.",
-            "rule": "OUI gagne si l’accord est exécuté avant son échéance. NON gagne s’il expire ou dépasse l’échéance. Une annulation donne un résultat NUL et rapporte la moitié par part.",
+            "rule": "OUI gagne si l’accord est exécuté avant son échéance. NON gagne s’il expire, est annulé ou dépasse l’échéance.",
             "next": {
                 "open": "Les paris restent ouverts tant que l’accord est actif et que son échéance n’est pas atteinte ; vous pouvez vendre des parts avant la clôture des échanges.",
                 "needsPool": "Le porteur de l’accord peut ouvrir un marché avec des parts OUI et NON.",
                 "settleYes": "Tout le monde peut régler le marché ; une exécution avant l’échéance donne le résultat OUI.",
-                "settleNo": "Tout le monde peut régler le marché ; une expiration ou une absence d’exécution avant l’échéance donne le résultat NON. Une annulation donne le résultat NUL.",
+                "settleNo": "Tout le monde peut régler le marché ; une expiration, une annulation ou une absence d’exécution avant l’échéance donne le résultat NON.",
                 "settledSplit": "Chaque part gagnante rapporte 1 ; les parts perdantes rapportent 0. Un marché NUL rapporte la moitié par part pour les deux camps.",
                 "settledRefund": "Le camp gagnant ne détenait aucune part ; il n’y a donc aucune position gagnante à réclamer.",
                 "closed": "L’accord doit être actif et avoir une échéance future pour que son marché puisse ouvrir ou accepter des échanges."
@@ -5094,7 +5094,7 @@
             "openAgreement": "L’accord n’a pas pu être ouvert."
         },
         "how": {
-            "settle": "OUI si cet accord est exécuté sur la blockchain d’ici le {{deadline}}. NON s’il expire ou dépasse cette date limite. Son annulation invalide le pari et rapporte 0.5 par part. L’exécution ne signifie pas la construction.",
+            "settle": "OUI si cet accord est exécuté sur la blockchain d’ici le {{deadline}}. NON s’il expire, est annulé ou dépasse cette date limite. L’exécution ne signifie pas la construction.",
             "title": "Fonctionnement des paris",
             "pools": "Chaque accord assorti d’une date limite possède son propre marché avec des parts OUI et NON. Les accords portant sur des terrains communs peuvent tous deux être exécutés, un seul peut l’être, ou aucun.",
             "devnet": "Les points et les USDC du devnet sont des monnaies fictives sans valeur monétaire. Les prix et les positions en USDC du devnet sont distincts de ceux des points.",
