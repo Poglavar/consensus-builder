@@ -561,12 +561,12 @@
         }
         if (off.length) {
             parts.push(tDraft('proposalDrafts.groundTakes.displaced',
-                'It stands where {{names}} stand(s), so they come off the map; they stay in your list and can be applied again.',
+                'Taken off the map, because this design stands on the same ground: {{names}}. Anything taken off stays in your list and can be applied again.',
                 { count: off.length, names: names(off) }));
         }
         if (yielding.length) {
             parts.push(tDraft('proposalDrafts.groundTakes.yielding',
-                'It takes part of {{names}}; they stay on the map on the ground it leaves them.',
+                'Kept on the map on the ground this design leaves: {{names}}.',
                 { count: yielding.length, names: names(yielding) }));
         }
         return global.CbDialog.confirm(parts.join('\n\n'), {

@@ -1017,8 +1017,8 @@
         },
         "groundTakes": {
             "title": "Este diseño toma terreno de otros",
-            "displaced": "Está donde está {{names}}, así que salen del mapa; siguen en tu lista y se pueden volver a aplicar.",
-            "yielding": "Toma parte de {{names}}; siguen en el mapa sobre el terreno que les deja.",
+            "displaced": "Sale del mapa porque este diseño ocupa el mismo terreno: {{names}}. Lo que sale sigue en tu lista y se puede volver a aplicar.",
+            "yielding": "Sigue en el mapa, sobre el terreno que este diseño deja: {{names}}.",
             "confirm": "Guardar",
             "notSaved": "No se guardó. El diseño se ha vuelto a abrir."
         },

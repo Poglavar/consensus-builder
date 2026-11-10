@@ -1018,8 +1018,8 @@
         },
         "groundTakes": {
             "title": "Ovaj dizajn uzima tlo drugima",
-            "displaced": "Stoji ondje gdje i {{names}}, pa se uklanjaju s karte; ostaju na vašem popisu i mogu se ponovno primijeniti.",
-            "yielding": "Uzima dio od {{names}}; ostaju na karti na tlu koje im ostavlja.",
+            "displaced": "Uklanja se s karte jer ovaj dizajn stoji na istom tlu: {{names}}. Sve uklonjeno ostaje na vašem popisu i može se ponovno primijeniti.",
+            "yielding": "Ostaje na karti na tlu koje ovaj dizajn ostavlja: {{names}}.",
             "confirm": "Spremi",
             "notSaved": "Nije spremljeno. Dizajn je ponovno otvoren."
         },

@@ -856,6 +856,13 @@ test.describe('Building-family placement @features', () => {
       await dialog.getByRole('button', { name: 'Convert to Freeform and keep it here' }).click();
       await expect(page.locator('#parcelbased')).toHaveCount(0, { timeout: 30_000 });
       await proceedIfAsked(page);
+      // Saving names the applied block the building now stands on and asks before taking it off.
+      const takes = page.locator('.cb-dialog-overlay--confirm').filter({ hasText: 'Taken off the map' });
+      await expect(takes).toBeVisible({ timeout: 20_000 });
+      await expect(takes).toContainText('Block');
+      expect((await proposalState(page, blockId)).applied).toBe(true);
+      await takes.getByRole('button', { name: 'Save', exact: true }).click();
+      await proceedIfAsked(page);
 
       const freeformId = saved ? detachedId! : (await newFreeforms(page, recordsBefore, 1))[0].proposalId;
       await expect.poll(async () => (await proposalState(page, freeformId))?.goal, { timeout: 30_000 }).toBe('single');

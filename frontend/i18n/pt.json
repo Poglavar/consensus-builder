@@ -2188,8 +2188,8 @@
         },
         "groundTakes": {
             "title": "Este projeto ocupa terreno de outros",
-            "displaced": "Fica onde está {{names}}, por isso saem do mapa; continuam na sua lista e podem ser aplicados novamente.",
-            "yielding": "Ocupa parte de {{names}}; continuam no mapa, no terreno que lhes deixa.",
+            "displaced": "Sai do mapa, porque este projeto ocupa o mesmo terreno: {{names}}. O que sai continua na sua lista e pode ser aplicado novamente.",
+            "yielding": "Continua no mapa, no terreno que este projeto deixa: {{names}}.",
             "confirm": "Guardar",
             "notSaved": "Não foi guardado. O projeto foi reaberto."
         },

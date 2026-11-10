@@ -246,6 +246,14 @@ test.describe('Whole-site placement editing @features', () => {
       await dragMapPoint(page, from, to);
       await editor.locator('[data-action="save"]').click();
       await expect(editor).toHaveCount(0);
+      // The square of the second pass is moved over the whole park of the first: saving names the
+      // park it takes off the map and asks first.
+      if (kind === 'square') {
+        const takes = page.locator('.cb-dialog-overlay--confirm').filter({ hasText: 'Taken off the map' });
+        await expect(takes).toBeVisible();
+        await expect(takes).toContainText('Placement fixture park');
+        await takes.getByRole('button', { name: 'Save', exact: true }).click();
+      }
       // The unpublished record is saved in place (c7ef3630): its own tree moves.
       await expect.poll(() => page.evaluate(id => (window as any).proposalStorage.getProposal(id)
         ?.structureProposal?.decorationDesign?.trees?.[0]?.coordinate?.[0] ?? null, id)).toBeGreaterThan(before.decorations.trees[0][0]);
