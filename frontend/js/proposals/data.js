@@ -172,6 +172,18 @@ function stripProposalCadastreAliases(record) {
 // cadastre on boot. Keeping them in the durable blob is how dead generations became prerequisites.
 // Import stores an authored definition independently of the map's current source context.
 // Ground/source eligibility is checked when deriving its effect, never from a city label.
+// A failed proposal save leaves the map showing changes that the next reload will drop; say so.
+function reportProposalSaveFailure(error) {
+    const root = typeof window !== 'undefined' ? window : globalThis;
+    if (!root || typeof root.showEphemeralMessage !== 'function') return;
+    const reason = (error && (error.name || error.message)) || 'unknown error';
+    const key = 'ephemeral.messages.local_save_failed';
+    const translated = root.i18n && typeof root.i18n.t === 'function' ? root.i18n.t(key, { error: reason }) : '';
+    root.showEphemeralMessage(translated && translated !== key
+        ? translated
+        : `Could not save to this browser (${reason}). Changes since then will be lost when the page reloads. Free some browser storage and try again.`, 10000, 'error');
+}
+
 function proposalRecordForPersistence(record) {
     if (!record || typeof record !== 'object') return record;
     const root = typeof window !== 'undefined' ? window : globalThis;
@@ -527,10 +539,12 @@ const proposalStorage = {
             // promise, so its saving phase cannot finish before the durable write does.
             write.catch(error => {
                 console.error('proposalStorage.save: Failed to persist proposals', error);
+                reportProposalSaveFailure(error);
             });
             return write;
         } catch (error) {
             console.error('proposalStorage.save: Failed to persist proposals', error);
+            reportProposalSaveFailure(error);
             throw error;
         }
     },

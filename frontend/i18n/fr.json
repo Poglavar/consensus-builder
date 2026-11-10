@@ -1533,6 +1533,7 @@
             "proposal_conflict_close": "Fermer",
             "proposal_conflict_unapplying": "Retrait de la carte…",
             "unknown_path": "Aucune page à cette adresse. La carte s’affiche à la place.",
+            "local_save_failed": "Impossible d’enregistrer dans ce navigateur ({{error}}). Les modifications faites depuis seront perdues au rechargement de la page. Libérez de l’espace de stockage du navigateur et réessayez.",
             "agent_location_unavailable": "Impossible d’accéder à l’action {{action}} de {{agent}} : les données des parcelles ne sont pas encore chargées.",
             "minted_parcels_failed": "Impossible de charger les parcelles créées sur la blockchain : {{error}}",
             "cannot_apply_building_proposal_missing_parents": "Impossible d’appliquer le projet de bâtiment : des parcelles préalables sont manquantes : {{missing}}",

@@ -6353,6 +6353,7 @@
     "ephemeral": {
         "messages": {
             "unknown_path": "Na ovoj adresi nema stranice. Prikazuje se mapa.",
+            "local_save_failed": "Čuvanje u ovom pregledaču nije uspelo ({{error}}). Promene od tada biće izgubljene kada se stranica ponovo učita. Oslobodite prostor za skladištenje u pregledaču i pokušajte ponovo.",
             "agent_location_unavailable": "Nije moguće otići na {{action}} agenta {{agent}}: podaci o parcelama još nisu učitani.",
             "minted_parcels_failed": "Iskovane parcele nisu mogle da se učitaju: {{error}}",
             "cannot_apply_building_proposal_missing_parents": "Nije moguće primeniti dizajn zgrade, nedostaju pretci: {{missing}}",

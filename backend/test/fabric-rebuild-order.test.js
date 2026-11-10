@@ -137,7 +137,7 @@ describe('ProposalManager._rebuildPass — stable authored state', () => {
 
         const result = await manager._rebuildPass(proposals, { silent: true });
 
-        expect(result).toEqual({ ok: true, applied: 3, failed: [], invalidated: [] });
+        expect(result).toEqual({ ok: true, applied: 3, failed: [], invalidated: [], saved: true, saveError: null });
         expect(manager._reconcileStructurePresentation).toHaveBeenCalledWith(proposals, { silent: true });
         expect(manager._reconcileStructurePresentation.mock.invocationCallOrder[0])
             .toBeGreaterThan(manager.applyProposal.mock.invocationCallOrder.at(-1));
@@ -151,6 +151,31 @@ describe('ProposalManager._rebuildPass — stable authored state', () => {
             expect(proposal.appliedAt).toBe(originalStamps.get(proposal.proposalId).appliedAt);
             expect(proposal.updatedAt).toBe(originalStamps.get(proposal.proposalId).updatedAt);
         });
+    });
+
+    it('awaits the final save and reports a rejected one instead of swallowing it', async () => {
+        const proposal = { proposalId: 'a', goal: 'road-track', applied: true, cadastreParcelIds: [] };
+        const quota = Object.assign(new Error('quota'), { name: 'QuotaExceededError' });
+        installGlobal('window', { __formationEdit: null, __planOrder: null });
+        installGlobal('proposalStorage', { save: vi.fn(async () => { throw quota; }) });
+        installGlobal('setProposalApplied', setProposalApplied);
+        installGlobal('isProposalCurrentlyApplied', record => isApplied(record));
+        installGlobal('getProposalKey', record => record.proposalId);
+        const manager = {
+            _resetDerivedFabricSliced: vi.fn(async () => ({ parcels: 0 })),
+            _reconcileStructurePresentation: vi.fn(),
+            applyProposal: vi.fn(async () => true),
+            _loadReplayGround: vi.fn(async () => 0),
+            _prefetchDemolitionBuildings: vi.fn(async () => new Map()),
+            _appliedCorridorTakes: ProposalManager._appliedCorridorTakes,
+            _deriveCorridorFabric: vi.fn(async () => ({ added: 0, removed: 0, unchanged: 0, parcels: 0, failed: [] })),
+            _rebuildPass: ProposalManager._rebuildPass
+        };
+
+        const result = await manager._rebuildPass([proposal], { silent: true });
+
+        expect(result.saved).toBe(false);
+        expect(result.saveError).toBe(quota);
     });
 
     it('does not turn a standing record off merely because one replay attempt fails', async () => {

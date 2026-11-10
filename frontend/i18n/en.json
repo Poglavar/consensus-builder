@@ -6319,6 +6319,7 @@
     "ephemeral": {
         "messages": {
             "unknown_path": "There is no page at this address. Showing the map instead.",
+            "local_save_failed": "Could not save to this browser ({{error}}). Changes since then will be lost when the page reloads. Free some browser storage and try again.",
             "agent_location_unavailable": "Cannot go to {{agent}}'s {{action}}: the parcel data is not loaded yet.",
             "minted_parcels_failed": "Minted parcels could not be loaded: {{error}}",
             "cannot_apply_building_proposal_missing_parents": "Can't apply building design, prerequisite parcels are missing: {{missing}}",

@@ -1949,9 +1949,12 @@ const ProposalManager = {
                 };
                 opts._parcelMutation.afterCommit(publishPresentation);
             }
+            // The save is awaited so the result says whether the map change reached the browser's
+            // storage; proposalStorage.save shows the failure notice itself.
+            let saveError = null;
             if (opts.deferSave !== true) {
                 _emitProposalProgress(opts.onProgress, { phase: 'save' });
-                try { _proposalStore(opts)?.save?.(); } catch (_) { }
+                try { await _proposalStore(opts)?.save?.(); } catch (error) { saveError = error; }
             }
             // Named once the edit stands; a rolled-back edit restores the records it unapplied.
             if (typeof opts._parcelMutation?.afterCommit === 'function') {
@@ -1963,7 +1966,9 @@ const ProposalManager = {
                 failed,
                 fabric,
                 cadastreParcelIds,
-                proposalIds: orderedReplay.map(record => String(record.proposalId))
+                proposalIds: orderedReplay.map(record => String(record.proposalId)),
+                saved: !saveError,
+                saveError
             };
         } finally {
             this._rebuildInProgress = false;
@@ -2935,8 +2940,9 @@ const ProposalManager = {
         };
 
         _emitProposalProgress(passOptions.onProgress, { phase: 'save' });
-        try { _proposalStore(passOptions)?.save?.(); } catch (_) { }
-        return { ok: failed.length === 0, applied: appliedCount, failed, invalidated: [] };
+        let saveError = null;
+        try { await _proposalStore(passOptions)?.save?.(); } catch (error) { saveError = error; }
+        return { ok: failed.length === 0, applied: appliedCount, failed, invalidated: [], saved: !saveError, saveError };
     },
 
     _clearDerivedRecordState(proposal) {

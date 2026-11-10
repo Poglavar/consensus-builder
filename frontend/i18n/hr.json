@@ -6353,6 +6353,7 @@
     "ephemeral": {
         "messages": {
             "unknown_path": "Na ovoj adresi nema stranice. Prikazuje se karta.",
+            "local_save_failed": "Spremanje u ovaj preglednik nije uspjelo ({{error}}). Promjene od tada izgubit će se kad se stranica ponovno učita. Oslobodite prostor za pohranu u pregledniku i pokušajte ponovno.",
             "agent_location_unavailable": "Nije moguće otići na {{action}} agenta {{agent}}: podaci o česticama još nisu učitani.",
             "minted_parcels_failed": "Iskovane čestice nisu se mogle učitati: {{error}}",
             "cannot_apply_building_proposal_missing_parents": "Nije moguće primijeniti dizajn zgrade, nedostaju prethodnici: {{missing}}",

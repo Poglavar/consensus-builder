@@ -1608,6 +1608,7 @@
             "proposal_conflict_close": "إغلاق",
             "proposal_conflict_unapplying": "جار إلغاء التطبيق…",
             "unknown_path": "لا توجد صفحة بهذا العنوان. تعرض الخريطة بدلا منها.",
+            "local_save_failed": "تعذر الحفظ في هذا المتصفح ({{error}}). ستضيع التغييرات التي أجريت منذ ذلك الحين عند إعادة تحميل الصفحة. أفرغ بعض مساحة تخزين المتصفح وحاول مرة أخرى.",
             "agent_location_unavailable": "يتعذر الانتقال إلى موقع الإجراء {{action}} الخاص بالوكيل {{agent}}: لم تحمل بيانات قطعة الأرض بعد.",
             "minted_parcels_failed": "تعذر تحميل قطع الأراضي المسكوكة: {{error}}",
             "cannot_apply_building_proposal_missing_parents": "لا يمكن تطبيق تصميم المبنى، لأن قطع الأراضي المطلوبة مسبقا مفقودة: {{missing}}",

@@ -1533,6 +1533,7 @@
             "proposal_conflict_close": "Fechar",
             "proposal_conflict_unapplying": "A remover do mapa…",
             "unknown_path": "Não existe nenhuma página neste endereço. Será mostrado o mapa.",
+            "local_save_failed": "Não foi possível guardar neste navegador ({{error}}). As alterações feitas desde então perder-se-ão quando a página for recarregada. Liberte espaço de armazenamento do navegador e tente novamente.",
             "agent_location_unavailable": "Não é possível ir para a ação {{action}} de {{agent}}: os dados das parcelas ainda não estão carregados.",
             "minted_parcels_failed": "Não foi possível carregar as parcelas emitidas: {{error}}",
             "cannot_apply_building_proposal_missing_parents": "Não é possível aplicar o projeto de edifícios, faltam parcelas necessárias: {{missing}}",

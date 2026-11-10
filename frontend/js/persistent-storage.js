@@ -360,19 +360,43 @@
         });
     }
 
+    // setItem/removeItem/clear write in the background: the cache already holds the new value, so a
+    // write that fails (a quota abort arrives as a transaction abort, not as a rejected promise) must
+    // be reported, or the app looks saved until the next reload silently drops the change.
+    function reportWriteFailure(action, key, error) {
+        const reason = (error && (error.name || error.message)) || 'unknown error';
+        console.error(`[${new Date().toISOString()}] PersistentStorage: ${action} failed`, key ?? '', error);
+        if (typeof globalScope.showEphemeralMessage !== 'function') return;
+        const fallback = `Could not save to this browser (${reason}). Changes since then will be lost when the page reloads. Free some browser storage and try again.`;
+        const translated = globalScope.i18n && typeof globalScope.i18n.t === 'function'
+            ? globalScope.i18n.t('ephemeral.messages.local_save_failed', { error: reason })
+            : '';
+        const message = translated && translated !== 'ephemeral.messages.local_save_failed' ? translated : fallback;
+        globalScope.showEphemeralMessage(message, 10000, 'error');
+    }
+
+    function backgroundWrite(action, key, apply) {
+        openDb().then(db => {
+            assertWorkspaceWritable();
+            const transaction = db.transaction(STORE_NAME, 'readwrite');
+            let reported = false;
+            const fail = error => {
+                if (reported) return;
+                reported = true;
+                reportWriteFailure(action, key, error);
+            };
+            transaction.onabort = () => fail(transaction.error || new Error('IndexedDB transaction aborted'));
+            transaction.onerror = () => fail(transaction.error || new Error('IndexedDB transaction failed'));
+            apply(transaction.objectStore(STORE_NAME));
+        }).catch(err => reportWriteFailure(action, key, err));
+    }
+
     function persistPair(key, value) {
         if (!hasIndexedDB) {
             return;
         }
         if (!dbName || !loadStarted) { pendingWrites.push({ type: 'put', key, value }); return; }
-        openDb().then(db => {
-            assertWorkspaceWritable();
-            const transaction = db.transaction(STORE_NAME, 'readwrite');
-            const store = transaction.objectStore(STORE_NAME);
-            store.put({ key, value });
-        }).catch(err => {
-            console.warn('Failed to persist value to IndexedDB', key, err);
-        });
+        backgroundWrite('save', key, store => store.put({ key, value }));
     }
 
     function removePair(key) {
@@ -380,14 +404,7 @@
             return;
         }
         if (!dbName || !loadStarted) { pendingWrites.push({ type: 'delete', key }); return; }
-        openDb().then(db => {
-            assertWorkspaceWritable();
-            const transaction = db.transaction(STORE_NAME, 'readwrite');
-            const store = transaction.objectStore(STORE_NAME);
-            store.delete(key);
-        }).catch(err => {
-            console.warn('Failed to remove value from IndexedDB', key, err);
-        });
+        backgroundWrite('remove', key, store => store.delete(key));
     }
 
     function clearStore() {
@@ -395,14 +412,9 @@
             return;
         }
         if (!dbName || !loadStarted) { pendingWrites.push({ type: 'clear' }); return; }
-        openDb().then(db => {
-            assertWorkspaceWritable();
-            const transaction = db.transaction(STORE_NAME, 'readwrite');
-            const store = transaction.objectStore(STORE_NAME);
+        backgroundWrite('clear', null, store => {
             store.clear();
             if (workspace) store.put({ key: WORKSPACE_INITIALIZED_KEY, value: '1' });
-        }).catch(err => {
-            console.warn('Failed to clear IndexedDB store', err);
         });
     }
 

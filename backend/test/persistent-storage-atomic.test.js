@@ -40,7 +40,13 @@ function fakeIndexedDb() {
                     const request = kind => key => {
                         operations.push([kind, key]);
                         const result = {};
-                        if (state.failNextWrite) {
+                        if (state.quotaAbortNextWrite) {
+                            // A quota failure surfaces as a transaction abort, with no request error.
+                            state.quotaAbortNextWrite = false;
+                            aborted = true;
+                            tx.error = Object.assign(new Error('quota'), { name: 'QuotaExceededError' });
+                            setTimeout(() => tx.onabort?.(), 0);
+                        } else if (state.failNextWrite) {
                             state.failNextWrite = false;
                             setTimeout(() => {
                                 result.error = new Error('request failed');
@@ -85,9 +91,10 @@ function fakeIndexedDb() {
     return state;
 }
 
-async function environment(fake) {
+async function environment(fake, extra = {}) {
     let domReady;
     const context = {
+        ...extra,
         console: { ...console, warn: vi.fn(), error: vi.fn(), info: vi.fn() },
         indexedDB: fake.api,
         localStorage: { setItem: vi.fn() },
@@ -110,6 +117,30 @@ async function environment(fake) {
     await context.PersistentStorage.ready;
     return context.PersistentStorage;
 }
+
+describe('PersistentStorage background writes', () => {
+    it('reports a setItem whose transaction aborts on quota instead of losing it silently', async () => {
+        const fake = fakeIndexedDb();
+        const showEphemeralMessage = vi.fn();
+        const storage = await environment(fake, { showEphemeralMessage });
+        fake.quotaAbortNextWrite = true;
+        storage.setItem('agreements', 'big');
+        await vi.waitFor(() => expect(showEphemeralMessage).toHaveBeenCalledOnce());
+        const [message, , type] = showEphemeralMessage.mock.calls[0];
+        expect(type).toBe('error');
+        expect(message).toContain('QuotaExceededError');
+    });
+
+    it('stays quiet when a background write completes', async () => {
+        const fake = fakeIndexedDb();
+        const showEphemeralMessage = vi.fn();
+        const storage = await environment(fake, { showEphemeralMessage });
+        storage.setItem('agreements', 'ok');
+        await vi.waitFor(() => expect(fake.writeTransactions.at(-1)).toEqual([['put', 'agreements']]));
+        await new Promise(resolve => setTimeout(resolve, 20));
+        expect(showEphemeralMessage).not.toHaveBeenCalled();
+    });
+});
 
 describe('PersistentStorage.atomicWrite', () => {
     it('uses one transaction and publishes its cache only after transaction completion', async () => {
