@@ -1281,7 +1281,7 @@ button.cb-link {
 }
 
 .block-detection-preview {
-    fill-opacity: 0.32 !important;
+    fill-opacity: 0.32; /* Leaflet writes fill-opacity as an SVG attribute; any class rule outranks it */
     pointer-events: none;
 }
 

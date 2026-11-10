@@ -54,6 +54,7 @@
     --cb-parcel-preview-boundary: #7c8aa5;
     --cb-photo-parcel-boundary: #fff3a6;
     --cb-photo-parcel-halo: #282418;
+    --cb-map-road-track-line: #000000; /* saved Road/track layer: thick black reference lines over light map tiles */
     /* Map-object interaction keeps the model view's yellow in both themes and renderers. */
     --cb-map-highlight: #ffdd00;
     --cb-map-highlight-halo: #292000;
@@ -235,6 +236,7 @@
     /* The page ladder. */
     --cb-z-map-pane-estimate-imagery: 350; /* estimate satellite crop: above tiles, below parcel vectors */
     --cb-z-map-pane-parcel-preview: 390;   /* parcels previewed while a council imports: above tiles, below the real parcel vectors (400) */
+    --cb-z-map-pane-road-track: 420;       /* the Road/track layer (js/road-track-layer.js): over the parcel vectors (400), takes no clicks */
     --cb-z-map-pane-plan: 620;      /* the Schelling plan layer: over parcels and blocks, under the site tool (640) */
     --cb-z-map-pane-buildout: 659;  /* build-out veils, hatching and cranes: over every design pane, road strips (655-658) included; takes no clicks */
     --cb-z-map-pane-compare: 645;   /* the Compare tab's two map halves (js/compare-on-map.js): where the designs' buildings draw, under road strips (655) */
