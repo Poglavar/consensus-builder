@@ -6447,6 +6447,7 @@
             "floorCutawayTooltip": "Elige qué plantas permanecen visibles en la vista de rayos X",
             "xrayCount": "Plantas: {{floors}} · Edificios: {{buildings}}",
             "xrayEmpty": "No hay planos disponibles para los edificios visibles.",
+            "xrayModels": "Modelos de edificios cortados en la planta elegida: {{count}}.",
             "xrayEstimated": "Las alturas y los tipos de aberturas son inferidos.",
             "xrayAlignment": "La alineación de los planos es aproximada.",
             "floorCutaway": "Cortar sobre",

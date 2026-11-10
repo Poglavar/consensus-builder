@@ -94,13 +94,14 @@ const authorship = (title, description) => ({ title, description: `${description
  * A Freeform building of stepped parts (each its own footprint and height, never stacked), taking only
  * its footprint, as the MCP's Freeform constructor does for one footprint.
  */
-function steppedBuilding({ title, description, blockName, facade, parts: steps }) {
+function steppedBuilding({ title, description, blockName, facade, parts: steps, model = null }) {
     const footprint = union(steps.map(step => step.geometry));
     const tallest = steps.reduce((top, step) => (step.heightM > top.heightM ? step : top), steps[0]);
     const content = intentDesign.build({ kind: 'building', site: footprint, footprint, floors: tallest.floors, height: tallest.heightM,
         use: tallest.use, ...authorship(title, description) }, { turf });
     const buildings = steps.map(step => ({ type: 'Feature', geometry: step.geometry,
-        properties: { type: 'proposedBuildingSingle', floors: step.floors, height: step.heightM, use: step.use, rotation: 0, footprintMode: 'polygon', block: blockName, facade } }));
+        properties: { type: 'proposedBuildingSingle', floors: step.floors, height: step.heightM, use: step.use, rotation: 0, footprintMode: 'polygon', block: blockName,
+            ...(facade ? { facade } : {}), ...(model || {}) } }));
     const land = FreeformLandTake.plan({ buildings, parcels: [], whole: new Set(), turf });
     const record = localRecord(content);
     record.goal = 'single';
@@ -170,8 +171,12 @@ function linkPoints(model) {
     return coordinates.map((coordinate, index) => ({ ...lngLat(coordinate), level: index === 0 ? 0 : 1 }));
 }
 
-/** Every design in claim order, each with the ground it takes after the earlier ones. */
-export function vlabDesigns() {
+/**
+ * Every design in claim order, each with the ground it takes after the earlier ones. With `authorModel`
+ * ({ modelUrl, modelOrigin, rotation }, prepare-model.mjs) the vLAB building is the author's own model,
+ * with its interiors, standing georeferenced on the building's whole footprint.
+ */
+export function vlabDesigns({ authorModel = null } = {}) {
     const model = vlabModel();
     const keptGround = turf.buffer(feature(union(model.kept.map(item => item.geometry))), KEPT_MARGIN_M, { units: 'meters' }).geometry;
     const museum = union(model.kept.filter(item => item.properties.keptBy === 'kul_inn_tech_muzej').map(item => item.geometry));
@@ -199,7 +204,15 @@ export function vlabDesigns() {
 
     const vlabParts = model.vlab.map(item => ({ geometry: item.geometry, heightM: item.properties.heightM, floors: Math.max(1, item.properties.storeys), use: 'public' }));
     const footprintM2 = Math.round(area(union(vlabParts.map(step => step.geometry))));
-    claimExact('zgrada-vlab', steppedBuilding({
+    if (authorModel) {
+        claimExact('zgrada-vlab-model', steppedBuilding({
+            title: 'vLAB – zgrada (autorov model)',
+            description: `Zgrada vLAB kao autorov 3D model s interijerom svih etaža (−2 do +6); tlocrt ${footprintM2} m², do 32 m.`,
+            blockName: 'vLAB',
+            model: { source: 'upload', modelUrl: authorModel.modelUrl, modelName: 'vLAB (Ivan Gavran Vlahović)', modelOrigin: authorModel.modelOrigin, rotation: authorModel.rotation },
+            parts: [{ geometry: union(vlabParts.map(step => step.geometry)), heightM: 32, floors: 7, use: 'public' }]
+        }));
+    } else claimExact('zgrada-vlab', steppedBuilding({
         title: 'vLAB – zgrada',
         description: `Višenamjenska zgrada vLAB, ispostava Zagrebačkoga velesajma: dvorane i auditoriji, galerije, trgovine, ugostiteljstvo, wellness, uredi i institucionalni partneri;`
             + ` tlocrt ${footprintM2} m², stepenasti volumen do ${Math.max(...vlabParts.map(step => step.heightM))} m (P+6),`
@@ -243,6 +256,19 @@ export function vlabDesigns() {
         title: pieceTitle('vLAB – trg', index, count), description: `Javni trg kao vanjski nastavak zgrade vLAB: priredbe, sajmovi, okupljanja i instalacije;`
             + ` ostatak lokacije (k.č. ${plots}, k.o. Centar) izvan zgrade, tornja i parka (${Math.round(area(ground))} m²).` }));
     return designs;
+}
+
+/** The local variant with the author's model (prepare-model.mjs output in the gitignored cache/). */
+export function vlabModelPlan(authorModel) {
+    return {
+        key: `${PLAN_KEY}-autorov-model`,
+        title: 'vLAB – transformacija prostora između Cibone i Westina (autorov model)',
+        author: AUTHOR,
+        city: CITY,
+        parcelSourceId: 'oss-wfs',
+        groundFile: fileURLToPath(new URL(`./cache/ground-${PLAN_KEY}-autorov-model.json`, import.meta.url)),
+        designs: vlabDesigns({ authorModel })
+    };
 }
 
 /** The plan as restatement-publish.mjs takes it. */

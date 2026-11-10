@@ -528,6 +528,14 @@ A building design with one connected authored footprint, including any courtyard
 
 The connected horizontal projection of a GLB model's visible mesh triangles, including concavities and courtyard holes. It is the model's silhouette, which can include overhangs and canopies; it does not infer a foundation boundary.
 
+### Georeferenced building model
+
+An uploaded building model (`properties.modelUrl`) whose building also states `modelOrigin` (`[lng, lat]`): the model is in true metres, its glTF origin stands on the ground at that point, turned by `rotation` (degrees counter-clockwise from east), and glTF y = 0 is ground level, so storeys below it stand underground. Without `modelOrigin` an uploaded model is stretched onto its footprint's bounding box and its lowest point sits on the ground. The building's footprint stays the design's ground either way.
+
+### Model section
+
+How X-ray shows the interior of an uploaded building model: a horizontal cut 1.2 m above the floor of the storey chosen in the floor cutaway, or of the highest storey when none is chosen (`frontend/js/model-section.js`). The storeys are found in the model's own horizontal surfaces: a floor is a height holding at least 3 % of the fullest height's area and 25 m², a slab's top and bottom are one floor, and the highest surface is the roof. A model's storeys below ground show only when a basement is chosen, with everything else hidden. The cut is display only and changes no design.
+
 ### Urban-rule design
 
 An authored rule governing possible building form on land, such as Block, Row or Detached. The design's permitted envelopes express that rule; an example build-out illustrates one realization.

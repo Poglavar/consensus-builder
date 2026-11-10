@@ -4800,6 +4800,7 @@
             "floorCutawayTooltip": "Escolher os pisos que permanecem visíveis na vista de raios X",
             "xrayCount": "Pisos: {{floors}} · edifícios: {{buildings}}",
             "xrayEmpty": "Não há plantas dos pisos disponíveis para os edifícios visíveis.",
+            "xrayModels": "Modelos de edifícios cortados no piso escolhido: {{count}}.",
             "xrayEstimated": "As alturas e os tipos de vãos são inferidos.",
             "xrayAlignment": "O alinhamento das plantas é aproximado.",
             "floorCutaway": "Cortar acima de",

@@ -4,7 +4,7 @@
 import { describe, expect, it } from 'vitest';
 import fs from 'node:fs';
 import * as turf from '@turf/turf';
-import { AUTHOR, PLAN_DATE, vlabModel, vlabPlan } from '../../restatements/vlab/vlab-designs.mjs';
+import { AUTHOR, PLAN_DATE, vlabModel, vlabModelPlan, vlabPlan } from '../../restatements/vlab/vlab-designs.mjs';
 import { planObjects } from '../scripts/lib/restatement-publish.mjs';
 
 const georeference = JSON.parse(fs.readFileSync(new URL('../../restatements/vlab/data/georeference.json', import.meta.url), 'utf8'));
@@ -77,6 +77,18 @@ describe('vlabPlan', () => {
         const link = byKey['veza-cibona'].roadProposal.definition.points[0];
         expect(link[0].level ?? 0).toBe(0);
         expect(link.slice(1).every(point => point.level === 1)).toBe(true);
+    });
+
+    it("stands the author's model georeferenced on the vLAB footprint in the local variant, leaving the other designs as they are", () => {
+        const authorModel = { modelUrl: '/uploads/models/vlab-building.glb', modelOrigin: [15.96588918, 45.804626982], rotation: 100.3163 };
+        const variant = vlabModelPlan(authorModel);
+        const building = variant.designs.find(design => design.key === 'zgrada-vlab-model').record.geometry.buildings;
+        expect(building).toHaveLength(1);
+        expect(building[0].properties).toMatchObject({ source: 'upload', modelUrl: authorModel.modelUrl, modelOrigin: authorModel.modelOrigin, rotation: authorModel.rotation, height: 32, floors: 7 });
+        const footprint = turf.area(building[0].geometry), parts = byKey['zgrada-vlab'].geometry.buildings.reduce((sum, part) => sum + turf.area(part.geometry), 0);
+        expect(Math.abs(footprint - parts)).toBeLessThan(1);
+        expect(variant.designs.map(design => design.key)).toEqual(plan.designs.map(design => (design.key === 'zgrada-vlab' ? 'zgrada-vlab-model' : design.key)));
+        expect(planObjects(variant)).toHaveLength(plan.designs.length);
     });
 
     it('builds valid design/v1 objects under the publication limit', () => {

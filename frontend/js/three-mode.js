@@ -78,6 +78,10 @@
     let floorCutawayControl = null;
     let floorCutawaySelect = null;
     let floorCutawayLevel = null;
+    // Uploaded building models X-ray opens with a horizontal section (model-section.js): each placed
+    // model's wrapper, carrying the storeys found in its geometry (userData.cbModelStoreys).
+    const modelSection = window.__modelSection || null;
+    const sectionedModels = new Set();
     let floorPlanGroup = null;
     let floorPlanErrors = 0;
     const renderedFloorPlanKeys = new Set();
@@ -8177,6 +8181,68 @@
 
     // Loads an uploaded building model and places it at the footprint centroid, grounded and
     // oriented (glTF Y-up → scene Z-up). Async: meshes pop in when the file finishes loading.
+    // The horizontal triangles of a placed model's meshes, as [{ z, areaM2 }] in the wrapper's frame
+    // (z in metres above the ground; plan area divided by the wrapper's horizontal scale).
+    function horizontalFacesOf(meshes, planScale) {
+        const faces = [];
+        const a = new THREE.Vector3(), b = new THREE.Vector3(), c = new THREE.Vector3(), n = new THREE.Vector3();
+        const ab = new THREE.Vector3(), ac = new THREE.Vector3();
+        for (const mesh of meshes) {
+            const position = mesh.geometry?.attributes?.position;
+            if (!position) continue;
+            const index = mesh.geometry.index;
+            const count = index ? index.count : position.count;
+            for (let i = 0; i + 2 < count; i += 3) {
+                const ia = index ? index.getX(i) : i, ib = index ? index.getX(i + 1) : i + 1, ic = index ? index.getX(i + 2) : i + 2;
+                a.fromBufferAttribute(position, ia).applyMatrix4(mesh.matrixWorld);
+                b.fromBufferAttribute(position, ib).applyMatrix4(mesh.matrixWorld);
+                c.fromBufferAttribute(position, ic).applyMatrix4(mesh.matrixWorld);
+                n.crossVectors(ab.subVectors(b, a), ac.subVectors(c, a));
+                const length = n.length();
+                if (!(length > 0) || Math.abs(n.z) / length < 0.95) continue;
+                faces.push({ z: (a.z + b.z + c.z) / 3, areaM2: Math.abs(n.z) / 2 / planScale });
+            }
+        }
+        return faces;
+    }
+
+    // X-ray cuts an uploaded building model above the chosen storey's floor (model-section.js), so
+    // its rooms show from above; outside X-ray the model is whole. Its storeys below ground show only
+    // when X-ray's cutaway is a basement, where everything else is hidden too (renderCutaway): the
+    // ground surfaces do not cover them otherwise. The clip is a material setting, so no geometry is
+    // rebuilt.
+    function applyModelSection(wrapper) {
+        const storeys = wrapper?.userData?.cbModelStoreys;
+        if (!storeys || !modelSection) return;
+        const heightM = xrayEnabled ? modelSection.sectionHeightM(storeys, floorCutawayLevel) : null;
+        const basementShown = xrayEnabled && floorCutawayLevel !== null && floorCutawayLevel < 0;
+        const planes = [];
+        if (heightM !== null) planes.push(new THREE.Plane(new THREE.Vector3(0, 0, -1), heightM));
+        if (!basementShown && storeys.some(storey => storey.level < 0)) planes.push(new THREE.Plane(new THREE.Vector3(0, 0, 1), 0.05));
+        const signature = planes.map(plane => `${plane.normal.z}`).join(',');
+        wrapper.traverse(node => {
+            if (!node.isMesh || !node.material) return;
+            (Array.isArray(node.material) ? node.material : [node.material]).forEach(material => {
+                if (!material) return;
+                if (material.userData.cbModelSectionSide === undefined) material.userData.cbModelSectionSide = material.side;
+                // The shader is compiled for a number of planes: a changed set recompiles it.
+                const changed = material.userData.cbModelSectionPlanes !== signature;
+                material.userData.cbModelSectionPlanes = signature;
+                material.clippingPlanes = planes.length ? planes : null;
+                // The cut opens the walls: their inner faces show through it.
+                material.side = heightM !== null ? THREE.DoubleSide : material.userData.cbModelSectionSide;
+                if (changed) material.needsUpdate = true;
+            });
+        });
+    }
+
+    function applyModelSections() {
+        for (const wrapper of [...sectionedModels]) {
+            if (!wrapper.parent) { sectionedModels.delete(wrapper); continue; }
+            applyModelSection(wrapper);
+        }
+    }
+
     function placeUploadedModel(feat, targetGroup, buildingMaterial, options = {}) {
         let cx = 0, cy = 0, lat = 0;
         try {
@@ -8218,14 +8284,23 @@
             box.getCenter(center);
             const size = new THREE.Vector3();
             box.getSize(size);
-            // Center the footprint on the origin and sit the base on the ground (z=0).
-            inner.position.set(-center.x, -center.y, -box.min.z);
+            // A georeferenced model (properties.modelOrigin = [lng, lat]) is in true metres with its
+            // glTF origin on the ground at that point, so it keeps its own origin and any storeys
+            // below ground. Any other model is centred on its footprint and sits its base on z=0.
+            const origin = feat.properties?.modelOrigin;
+            const georeferenced = Array.isArray(origin) && origin.length === 2 && origin.every(value => Number.isFinite(value));
+            if (georeferenced) inner.position.set(0, 0, 0);
+            else inner.position.set(-center.x, -center.y, -box.min.z);
 
             const wrapper = new THREE.Group();
             wrapper.add(inner);
             let fit = null;
             let placementX = cx, placementY = cy;
-            if (options.fitToFootprint !== false) {
+            if (georeferenced) {
+                const xy = latLngToXY(origin[1], origin[0]);
+                const horizScale = 1 / Math.max(0.1, Math.cos(origin[1] * Math.PI / 180));
+                fit = { scale: [horizScale, horizScale, 1], rotation: (Number(feat.properties.rotation) || 0) * Math.PI / 180, offset: [xy[0] - cx, xy[1] - cy] };
+            } else if (options.fitToFootprint !== false) {
                 const nativeSize = { x: size.x, y: size.y, z: size.z };
                 const xyFit = uploadedModelFit(feat, [cx, cy], nativeSize);
                 if (xyFit) fit = xyFit;
@@ -8269,7 +8344,19 @@
                 markOwnedMaterial(node, node.material);
                 attachBuildingDepthPrepass(node);
             });
+            // A building model with storeys inside can be opened by X-ray's section.
+            if (isProposedBuilding && modelSection) {
+                try {
+                    wrapper.updateMatrixWorld(true);
+                    wrapper.userData.cbModelStoreys = modelSection.storeysOf(horizontalFacesOf(modelMeshes, wrapper.scale.x * wrapper.scale.y));
+                    if (wrapper.userData.cbModelStoreys.length) sectionedModels.add(wrapper);
+                } catch (error) {
+                    console.error(`[${new Date().toISOString()}] [3D] Storeys of model ${url} could not be read; X-ray will not open it`, error);
+                }
+            }
             targetGroup.add(wrapper);
+            applyModelSection(wrapper);
+            if (sectionedModels.has(wrapper)) updateXrayControls();
             invalidateThreeView();
         }).catch((err) => {
             if (stale()) return;
@@ -9449,7 +9536,8 @@
         updateLampGlow();
         updateSkyAndWindows();
         updateAtmosphere(renderedSceneVisualRevision !== sceneVisualRevision);
-        floorPlanRenderer.renderCutaway(renderer, scene, camera, floorPlanGroup,
+        floorPlanRenderer.renderCutaway(renderer, scene, camera,
+            sectionedModels.size ? [floorPlanGroup, ...[...sectionedModels].filter(wrapper => wrapper.parent)] : floorPlanGroup,
             xrayEnabled && floorCutawayLevel !== null && floorCutawayLevel < 0);
         renderedBuildingDisplaySnapshot = buildingDisplaySnapshot;
         renderedSceneVisualRevision = sceneVisualRevision;
@@ -9646,6 +9734,7 @@
         if (level !== null && !Number.isInteger(level)) return;
         floorCutawayLevel = level;
         (floorPlanGroup?.children || []).forEach(group => floorPlanRenderer.setCutaway(group, level));
+        applyModelSections();
         updateXrayControls();
         invalidateThreeView();
     }
@@ -9667,8 +9756,10 @@
         if (floorCutawayControl) floorCutawayControl.hidden = !xrayEnabled;
         if (xraySolidNotice) xraySolidNotice.hidden = !(xrayEnabled && suggestedPlansEnabled && suggestedExistingEnabled && builtDisplay === 'solid');
         if (xrayEnabled && floorCutawaySelect) {
-            const levels = [...new Set((floorPlanGroup?.children || []).filter(group => group.visible !== false)
-                .flatMap(group => group.userData.availableLevels || []))].sort((a,b) => a-b);
+            const levels = [...new Set([...(floorPlanGroup?.children || []).filter(group => group.visible !== false)
+                .flatMap(group => group.userData.availableLevels || []),
+                ...[...sectionedModels].filter(wrapper => wrapper.parent).flatMap(wrapper => wrapper.userData.cbModelStoreys.map(storey => storey.level))])]
+                .sort((a,b) => a-b);
             const signature = levels.join(',');
             if (floorCutawaySelect.dataset.levels !== signature) {
                 floorCutawaySelect.replaceChildren();
@@ -9694,9 +9785,12 @@
             Object.keys(total).forEach(key => { total[key] += counts[key]; });
             return total;
         }, { floors: 0, buildings: 0, estimatedFloors: 0, apartments: 0 });
-        const lines = [totals.floors
-            ? threeI18n('threeMode.controls.xrayCount', `Storeys: ${totals.floors} · Buildings: ${totals.buildings}`, totals)
-            : threeI18n('threeMode.controls.xrayEmpty', 'No floor plans available for the visible buildings.')];
+        const openedModels = [...sectionedModels].filter(wrapper => wrapper.parent && wrapper.visible !== false).length;
+        const lines = totals.floors
+            ? [threeI18n('threeMode.controls.xrayCount', `Storeys: ${totals.floors} · Buildings: ${totals.buildings}`, totals)]
+            : openedModels ? [] : [threeI18n('threeMode.controls.xrayEmpty', 'No floor plans available for the visible buildings.')];
+        if (openedModels) lines.push(threeI18n('threeMode.controls.xrayModels',
+            `Building models cut open at the chosen storey: ${openedModels}.`, { count: openedModels }));
         if (totals.estimatedFloors) lines.push(threeI18n('threeMode.controls.xrayEstimated',
             'Heights and opening types are inferred.'));
         if (floorPlanGroup?.children.some(group => group.visible && group.userData.registrationAccuracy === 'approximate')) {
@@ -9733,6 +9827,7 @@
         if (xrayRebuildsDesigns()) rebuild3DBuildingsOnly({ family: 'planned' });
         updateFloorModelLoads(true);
         reconcileExistingFloorPlans();
+        applyModelSections();
         updateXrayControls();
         invalidateThreeView();
     }
@@ -10175,6 +10270,8 @@
         // uncovered while the drawing buffer catches up; only the buffer is sized here.
         renderer.setSize(width, height, false);
         renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+        // X-ray's section of uploaded models clips their materials (applyModelSection).
+        renderer.localClippingEnabled = true;
         sky = window.__threeSky.createSky(THREE, { pixelRatio: renderer.getPixelRatio(), clouds: atmosphereState });
         scene.add(sky.group);
         // Haze (updateAtmosphere sets its colour and range every frame); from the start, so no

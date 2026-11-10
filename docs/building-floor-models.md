@@ -43,6 +43,10 @@ The server reads every city's light configuration (`frontend/data/city-index.js`
 - `backend/buildings/published-floor-model.js`, the converter: one building's plans become one `building-floor-plans.v3` model. A storey with a whole-floor plan shows it (it already composes the flats and the corridor); a storey with only unit plans shows them merged into one layout; unit plans list the storey's apartments either way. All plans are expressed in one frame: the reference plan's quad when the others lie inside it, else the rectangle bounding them all, so each point stays where its own registration put it. Elevations come from the plan's `building.envelope.storeys` (estimated unless documented); walls are fitted to the storey height. Plans without a registration, valid architecture or envelope storey are skipped and counted in `floorPlans.publication.skipped`. Review status is not a gate: approximate plans are shown, and the X-ray note says alignment is approximate.
 - Merge rule: an authored registry model for a building wins; only buildings without one ask the publication. Published attachments say `floorModel.origin: 'publication'` with the plan ids and `version: null`.
 
+## Uploaded building models
+
+A proposed building drawn from an uploaded glTF model (`properties.modelUrl`) needs no floor model: when the model has interiors, X-ray opens it with a horizontal [model section](vocabulary.md#model-section) at the chosen storey, found in the model's own horizontal surfaces (`frontend/js/model-section.js`). The cut is a clipping plane on the model's materials (`applyModelSection` in `three-mode.js`), so toggling X-ray or the floor cutaway rebuilds nothing; the model's levels join the floor cutaway's list. A [georeferenced model](vocabulary.md#georeferenced-building-model) keeps its storeys below ground, which show only at a basement cutaway (`renderCutaway` keeps the cut models and hides the rest).
+
 ## Suggested default layouts
 
 A proposed building without a registered model can show a generated default interior in X-ray when

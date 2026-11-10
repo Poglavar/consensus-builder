@@ -4800,6 +4800,7 @@
             "floorCutawayTooltip": "Choisissez les niveaux qui restent visibles dans la vue en transparence",
             "xrayCount": "Niveaux : {{floors}} · bâtiments : {{buildings}}",
             "xrayEmpty": "Aucun plan de niveau disponible pour les bâtiments visibles.",
+            "xrayModels": "Maquettes de bâtiments coupées au niveau choisi : {{count}}.",
             "xrayEstimated": "Les hauteurs et les types d’ouvertures sont estimés.",
             "xrayAlignment": "L’alignement des plans est approximatif.",
             "floorCutaway": "Couper au-dessus",

@@ -62,6 +62,26 @@ The squares and the vLAB building's land take clear the existing buildings insid
 
 The agreement is a community vote over the nine designs, *vLAB – transformacija prostora između Cibone i Westina*: 20 input parcels and 48 output pieces (`ground/vlab.json`). It is published only to a local API so far.
 
+## The author's model (local only)
+
+`build-author-model.mjs` publishes a variant, *vLAB – transformacija prostora između Cibone i Westina (autorov model)*. In it the vLAB building is the author's own `building.glb`, with the interiors of all nine storeys (−2 to +6), standing on the same 6040 m² footprint as a [georeferenced model](../../docs/vocabulary.md#georeferenced-building-model). X-ray opens it storey by storey (a [model section](../../docs/vocabulary.md#model-section)). The other eight designs are the same as in the plan above.
+
+`prepare-model.mjs --build` rewrites the model so the app takes it:
+
+- no vertex normals (flat shading) and only each mesh's own vertices, 4.7 MB against the 10 MB upload limit;
+- the landmark fit's scale;
+- the ground at model 28.2 m, above the basement's tops and below the ground-floor slab;
+- the ground-floor slab only under the building, because the author's slab also paves the whole site where the park and the squares are.
+
+`--upload` posts it to an API's `/models` and reads it back. The model, its placement, the upload record and this variant's ground file all stay in the gitignored `cache/`. The model is the author's work: it is uploaded only to a local API, and publishing this variant needs his permission.
+
+```sh
+cd backend
+node ../restatements/vlab/prepare-model.mjs --build
+node ../restatements/vlab/prepare-model.mjs --upload --api <local api> --apply
+node ../restatements/vlab/build-author-model.mjs --designs --api <local api> --apply   # then --capture and --agreement as above
+```
+
 ## Not restated
 
 - **The embankment and the railway.** Consensus Builder already draws existing heavy rail as a viaduct in 3D and does not model the embankment. Removing it therefore shows as the land the park and the building take from the railway parcel (k.č. 6801). A track design over the existing line would draw the railway twice. The lowered-line scenario and its station have no alignment in the source.

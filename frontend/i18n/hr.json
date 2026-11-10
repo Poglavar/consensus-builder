@@ -6454,6 +6454,7 @@
             "floorCutawayTooltip": "Odaberite koje etaže ostaju vidljive u rendgenskom prikazu",
             "xrayCount": "Etaže: {{floors}} · Zgrade: {{buildings}}",
             "xrayEmpty": "Za vidljive zgrade nema dostupnih tlocrta etaža.",
+            "xrayModels": "Modeli zgrada presječeni na odabranoj etaži: {{count}}.",
             "xrayEstimated": "Visine i vrste otvora su pretpostavljene.",
             "xrayAlignment": "Položaj tlocrta je približan.",
             "floorCutaway": "Presjek iznad",

@@ -142,13 +142,15 @@ describe('three-mode Xray wiring', () => {
             const [set, context] = extracted('setXrayEnabled', `let xrayEnabled=false; let suggestedPlansEnabled=${suggested};`, {
                 window: { proposedBuildings }, rebuild3DBuildingsOnly: options => context.calls.push(`rebuild ${options.family}`),
                 updateFloorModelLoads: force => context.calls.push(`floor models ${force}`), reconcileExistingFloorPlans: () => context.calls.push('reconcile'),
+                applyModelSections: () => context.calls.push('sections'),
                 updateXrayControls: () => context.calls.push('update'), invalidateThreeView: () => context.calls.push('invalidate') }, ['xrayRebuildsDesigns']);
             set(true);
             return context.calls;
         };
-        expect(toggle(false, [{ properties: {} }])).toEqual(['floor models true', 'reconcile', 'update', 'invalidate']);
-        expect(toggle(false, [{ properties: { floorPlans: {} } }])).toEqual(['rebuild planned', 'floor models true', 'reconcile', 'update', 'invalidate']);
-        expect(toggle(true, [])).toEqual(['rebuild planned', 'floor models true', 'reconcile', 'update', 'invalidate']);
+        // Uploaded models are cut by their materials (applyModelSections), never rebuilt.
+        expect(toggle(false, [{ properties: {} }])).toEqual(['floor models true', 'reconcile', 'sections', 'update', 'invalidate']);
+        expect(toggle(false, [{ properties: { floorPlans: {} } }])).toEqual(['rebuild planned', 'floor models true', 'reconcile', 'sections', 'update', 'invalidate']);
+        expect(toggle(true, [])).toEqual(['rebuild planned', 'floor models true', 'reconcile', 'sections', 'update', 'invalidate']);
     });
     it("an arriving floor model adds only its building's group, rebuilds nothing, and its drop restores only that shell", async () => {
         const proximity = require('../../frontend/js/floor-plan-proximity.js');
@@ -257,14 +259,14 @@ describe('three-mode Xray wiring', () => {
         expect(error).toHaveBeenCalled(); error.mockRestore();
     });
     it('cutaway changes visibility without rebuilding mesh geometry', () => {
-        const groups = [{ id: 'a' }, { id: 'b' }], setCutaway = vi.fn(), update = vi.fn();
+        const groups = [{ id: 'a' }, { id: 'b' }], setCutaway = vi.fn(), update = vi.fn(), sections = vi.fn();
         const [cut] = extracted('setFloorCutaway', 'let floorCutawayLevel=null; let floorPlanGroup={children:this.groups};',
-            { groups, floorPlanRenderer: { setCutaway }, updateXrayControls: update, invalidateThreeView: vi.fn() });
+            { groups, floorPlanRenderer: { setCutaway }, applyModelSections: sections, updateXrayControls: update, invalidateThreeView: vi.fn() });
         cut(2);
         expect(setCutaway.mock.calls).toEqual([[groups[0],2],[groups[1],2]]);
         cut(null);
         expect(setCutaway.mock.calls.slice(2)).toEqual([[groups[0],null],[groups[1],null]]);
-        cut(NaN); expect(setCutaway).toHaveBeenCalledTimes(4); expect(update).toHaveBeenCalledTimes(2);
+        cut(NaN); expect(setCutaway).toHaveBeenCalledTimes(4); expect(update).toHaveBeenCalledTimes(2); expect(sections).toHaveBeenCalledTimes(2);
     });
     it('a rendered architectural model replaces its opaque proxy and leaves other buildings intact', async () => {
         const model={properties:{name:'model'},geometry:{}}, ordinary={properties:{name:'ordinary'},geometry:{}};

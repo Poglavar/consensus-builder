@@ -130,6 +130,15 @@ describe('three-floor-plans volumetric adapter',()=>{
         rendererApi.renderCutaway(renderer,scene,{},floorGroup,false);
         expect(calls.at(-1)).toEqual([true,false,true]);
     });
+    it('keeps nested objects through a below-ground cutaway, hiding everything beside them and their ancestors',()=>{
+        const floorGroup=create(), buildings=new Object3D(), model=new Object3D(), otherBuilding=new Object3D(), ground=new Object3D(), light=new Object3D();
+        light.isLight=true; buildings.add(model); buildings.add(otherBuilding); model.parent=buildings; otherBuilding.parent=buildings;
+        const scene={children:[floorGroup,buildings,ground,light]}; buildings.parent=scene;
+        const seen=[]; const renderer={render:()=>seen.push({floor:floorGroup.visible,buildings:buildings.visible,model:model.visible,other:otherBuilding.visible,ground:ground.visible,light:light.visible})};
+        rendererApi.renderCutaway(renderer,scene,{},[floorGroup,model],true);
+        expect(seen[0]).toEqual({floor:true,buildings:true,model:true,other:false,ground:false,light:true});
+        expect([otherBuilding.visible,ground.visible]).toEqual([true,true]);
+    });
     it('creates only uncovered proxy bands and owns its cloned material',()=>{
         const proxyMaterial=new Material({color:1});
         const feature={geometry:{type:'Polygon',coordinates:[[[0,0],[1,0],[1,1],[0,0]]]},properties:{floorPlans:{registration:{corners:[[0,0],[1,0],[1,1],[0,1]]}}}};

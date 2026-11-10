@@ -159,9 +159,21 @@
     }
     // A below-ground cut removes the context for this draw only. Restoring visibility
     // immediately preserves every layer toggle, isolation and asynchronously arriving group.
-    function renderCutaway(renderer, scene, camera, floorGroup, belowGround) {
+    // `kept` is the floor-plan group, or a list of objects anywhere in the scene (an X-ray-cut
+    // building model inside the buildings group): they stay, and everything beside them and their
+    // ancestors is hidden.
+    function renderCutaway(renderer, scene, camera, kept, belowGround) {
         if (!belowGround) { renderer.render(scene, camera); return; }
-        const hidden = scene.children.filter(child => child !== floorGroup && !child.isLight && child.visible);
+        const keep = new Set((Array.isArray(kept) ? kept : [kept]).filter(Boolean));
+        const ancestors = new Set();
+        keep.forEach(object => { for (let node = object.parent; node && node !== scene; node = node.parent) ancestors.add(node); });
+        const hidden = [];
+        const hideBeside = node => node.children.forEach(child => {
+            if (keep.has(child)) return;
+            if (ancestors.has(child)) { hideBeside(child); return; }
+            if (!child.isLight && child.visible) hidden.push(child);
+        });
+        hideBeside(scene);
         try {
             hidden.forEach(child => { child.visible = false; });
             renderer.render(scene, camera);
