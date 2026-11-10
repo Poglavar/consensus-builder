@@ -27,6 +27,22 @@ function extracted(name, variables = '', stubs = {}, helpers = []) {
     return [context.fn, context];
 }
 
+describe('building hue', () => {
+    it("gives a building's stepped parts one hue through their buildingId, and any other building its outline's", () => {
+        const THREE = { Color: class { constructor(value) { this.value = value; } } };
+        const [hue] = extracted('buildingHue', '', { THREE }, ['stringToColor']);
+        const [colorOf] = extracted('stringToColor');
+        const part = (coordinates, properties) => ({ geometry: { type: 'Polygon', coordinates: [coordinates] }, properties });
+        const lower = part([[15, 45], [15.001, 45], [15.001, 45.001], [15, 45]], { proposalId: 'p1', buildingId: 'tower' });
+        const upper = part([[15.0004, 45.0004], [15.0006, 45.0004], [15.0006, 45.0006], [15.0004, 45.0004]], { proposalId: 'p1', buildingId: 'tower' });
+        expect(hue(lower).value).toBe(hue(upper).value);
+        expect(hue(lower).value).not.toBe(hue({ ...upper, properties: { proposalId: 'p1', buildingId: 'hall' } }).value);
+        const plain = part(upper.geometry.coordinates[0], { proposalId: 'p1' });
+        expect(hue(plain).value).toBe(colorOf(JSON.stringify(plain.geometry.coordinates[0][0])));
+        expect(hue(plain).value).not.toBe(hue(lower).value);
+    });
+});
+
 describe('three-mode Xray wiring', () => {
     it('keeps translucent envelopes behind coincident building surfaces in color and depth passes', () => {
         class Material {

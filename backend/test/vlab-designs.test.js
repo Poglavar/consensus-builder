@@ -42,6 +42,9 @@ describe('vlabPlan', () => {
         expect(Math.max(...heights)).toBe(32);
         expect(byKey.toranj.geometry.buildings.map(building => building.properties.use)).toEqual(['office', 'residential', 'residential']);
         expect(byKey.toranj.geometry.buildings.map(building => building.properties.floors)).toEqual([4, 7, 17]);
+        // Each building's parts are one building: one buildingId, so one hue and one glass tint.
+        expect(new Set(byKey['zgrada-vlab'].geometry.buildings.map(building => building.properties.buildingId))).toEqual(new Set(['vlab']));
+        expect(new Set(byKey.toranj.geometry.buildings.map(building => building.properties.buildingId))).toEqual(new Set(['vlab-toranj']));
     });
 
     it('glazes both buildings, each with its own curtain wall', () => {

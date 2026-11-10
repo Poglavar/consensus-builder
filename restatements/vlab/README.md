@@ -56,7 +56,7 @@ From the placed model:
 | vLAB – plaza Tehničkog muzeja | Square | 2976 m² |
 | vLAB – trg (1/2), (2/2) | Square: the rest of the site outside the building, the tower and the park | 9194 m² |
 
-Both buildings state their facade (`properties.facade`): the author's renders show them glazed. It shows when the viewer turns Facades on with the Mixed style.
+Each building's parts state one `buildingId`, so they share one [building hue](../../docs/vocabulary.md#building-hue). Both buildings state their facade (`properties.facade`): the author's renders show them glazed. It shows when the viewer turns Facades on with the Mixed style.
 
 The squares and the vLAB building's land take clear the existing buildings inside the embankment that the model does not keep, as the author's model does.
 
@@ -68,10 +68,11 @@ The agreement is a community vote over the nine designs, *vLAB – transformacij
 
 `prepare-model.mjs --build` rewrites the model so the app takes it:
 
-- no vertex normals (flat shading) and only each mesh's own vertices, 4.7 MB against the 10 MB upload limit;
+- no vertex normals (flat shading) and only each mesh's own vertices, 4.6 MB against the 10 MB upload limit;
 - the landmark fit's scale;
 - the ground at model 28.2 m, above the basement's tops and below the ground-floor slab;
-- the ground-floor slab only under the building, because the author's slab also paves the whole site where the park and the squares are.
+- the ground-floor slab only under the building, because the author's slab also paves the whole site where the park and the squares are;
+- without the author's programme zones (`lvl_*_prog_*`), coloured boxes filling each zone whose sides lie in the walls' planes and z-fight with them.
 
 `--upload` posts it to an API's `/models` and reads it back. The model, its placement, the upload record and this variant's ground file all stay in the gitignored `cache/`. The model is the author's work: it is uploaded only to a local API, and publishing this variant needs his permission.
 

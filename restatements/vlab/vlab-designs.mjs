@@ -94,13 +94,14 @@ const authorship = (title, description) => ({ title, description: `${description
  * A Freeform building of stepped parts (each its own footprint and height, never stacked), taking only
  * its footprint, as the MCP's Freeform constructor does for one footprint.
  */
-function steppedBuilding({ title, description, blockName, facade, parts: steps, model = null }) {
+// Its parts state one `buildingId`: they are one building, with one hue and one glass tint.
+function steppedBuilding({ title, description, blockName, buildingId, facade, parts: steps, model = null }) {
     const footprint = union(steps.map(step => step.geometry));
     const tallest = steps.reduce((top, step) => (step.heightM > top.heightM ? step : top), steps[0]);
     const content = intentDesign.build({ kind: 'building', site: footprint, footprint, floors: tallest.floors, height: tallest.heightM,
         use: tallest.use, ...authorship(title, description) }, { turf });
     const buildings = steps.map(step => ({ type: 'Feature', geometry: step.geometry,
-        properties: { type: 'proposedBuildingSingle', floors: step.floors, height: step.heightM, use: step.use, rotation: 0, footprintMode: 'polygon', block: blockName,
+        properties: { type: 'proposedBuildingSingle', floors: step.floors, height: step.heightM, use: step.use, rotation: 0, footprintMode: 'polygon', block: blockName, buildingId,
             ...(facade ? { facade } : {}), ...(model || {}) } }));
     const land = FreeformLandTake.plan({ buildings, parcels: [], whole: new Set(), turf });
     const record = localRecord(content);
@@ -208,7 +209,7 @@ export function vlabDesigns({ authorModel = null } = {}) {
         claimExact('zgrada-vlab-model', steppedBuilding({
             title: 'vLAB – zgrada (autorov model)',
             description: `Zgrada vLAB kao autorov 3D model s interijerom svih etaža (−2 do +6); tlocrt ${footprintM2} m², do 32 m.`,
-            blockName: 'vLAB',
+            blockName: 'vLAB', buildingId: 'vlab',
             model: { source: 'upload', modelUrl: authorModel.modelUrl, modelName: 'vLAB (Ivan Gavran Vlahović)', modelOrigin: authorModel.modelOrigin, rotation: authorModel.rotation },
             parts: [{ geometry: union(vlabParts.map(step => step.geometry)), heightM: 32, floors: 7, use: 'public' }]
         }));
@@ -218,7 +219,7 @@ export function vlabDesigns({ authorModel = null } = {}) {
             + ` tlocrt ${footprintM2} m², stepenasti volumen do ${Math.max(...vlabParts.map(step => step.heightM))} m (P+6),`
             + ` dvije podzemne etaže s 374 parkirna mjesta (−2: 281, −1: 93) koje ovaj prikaz ne modelira.`,
         // The author's renders show a glazed building, its park front a liftable glass facade.
-        blockName: 'vLAB', facade: 'glass-large', parts: vlabParts
+        blockName: 'vLAB', buildingId: 'vlab', facade: 'glass-large', parts: vlabParts
     }));
 
     // The author's tower: three stepped volumes, 1535 / 697 / 377 m² and 18 / 12 / 36 m, with 4 / 3 / 10 floors.
@@ -228,7 +229,7 @@ export function vlabDesigns({ authorModel = null } = {}) {
         title: 'vLAB – toranj',
         description: 'Mješoviti toranj od 66 m u tri stepenasta volumena s javnim terasama na prijelazima, oko 12 000 m² ukupne površine, 17 etaža:'
             + ' donji volumen (1535 m², 18 m, 4 etaže) poslovni, srednji (697 m², 12 m, 3 etaže) i gornji (377 m², 36 m, 10 etaža) pretežno stambeni, oko 50 stanova.',
-        blockName: 'vLAB toranj', facade: 'glass-medium',
+        blockName: 'vLAB toranj', buildingId: 'vlab-toranj', facade: 'glass-medium',
         parts: model.tower.map((item, index) => ({ geometry: item.geometry, heightM: item.properties.heightM, floors: towerFloors[index], use: towerUses[index] }))
     }));
 

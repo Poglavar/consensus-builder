@@ -8322,6 +8322,7 @@
             wrapper.traverse((node) => {
                 if (node.isMesh && node.material) modelMeshes.push(node);
             });
+            const planningHue = isProposedBuilding && buildingMaterial !== buildingMaterials.massing ? buildingHue(feat) : null;
             modelMeshes.forEach((node) => {
                 if (isProposedBuilding && feat.properties?.proposalId) {
                     node.userData.proposalId = String(feat.properties.proposalId);
@@ -8338,6 +8339,9 @@
                     if (!sourceMaterial) return sourceMaterial;
                     const cloned = sourceMaterial.clone();
                     cloned.userData.cbBuildingMaterialRole = buildingMaterial.userData.cbBuildingMaterialRole;
+                    // A planned building is one hue, as an extruded one is: the model's own colours
+                    // tint to it (a texture keeps its detail under the tint).
+                    if (planningHue && cloned.color) cloned.color.copy(planningHue);
                     return configureBuildingMaterial(cloned, buildingOpacity);
                 });
                 node.material = Array.isArray(node.material) ? configuredMaterials : configuredMaterials[0];
@@ -8403,6 +8407,16 @@
         }
         placeUploadedModel(model, decoTarget, buildingMaterials.solid, { isCurrent, onLoadError: buildGround });
         return true;
+    }
+
+    // One hue per building. The stepped parts of one building (several features of a design) state
+    // the same `buildingId` and share it; any other building's hue comes from its own outline.
+    function buildingHue(feature) {
+        const p = feature?.properties || {};
+        const key = p.buildingId != null && p.buildingId !== ''
+            ? JSON.stringify([p.proposalId ?? null, p.buildingId])
+            : JSON.stringify(feature.geometry.coordinates[0][0]);
+        return new THREE.Color(stringToColor(key));
     }
 
     function stringToColor(str) {
@@ -8523,7 +8537,7 @@
             return prepareProceduralFacadeMeshes(meshes, owner, height, floorHeight, metresPerUnit, city, ownsMaterial, buildingFeature);
         };
         // A building keeps its own hue; parcel slices vary its shade rather than its planning role.
-        const baseColor = new THREE.Color(stringToColor(JSON.stringify(buildingFeature.geometry.coordinates[0][0])));
+        const baseColor = buildingHue(buildingFeature);
         const drawUnsliced = () => {
             const tint = (targetGroup === proposedBuildingsGroup || targetGroup.userData?.buildingFamily === 'planned')
                 && material !== buildingMaterials.massing;

@@ -97,6 +97,7 @@ function rewriteGlb(buffer, { scale }, keepTriangle = () => true) {
                 if (keepTriangle(nodeName, [source[i], source[i + 1], source[i + 2]].map(planAt))) kept.push(source[i], source[i + 1], source[i + 2]);
             }
             source = kept;
+            if (!source.length) { primitive.cbEmpty = true; continue; }
             const used = new Map();
             const remapped = source.map(vertex => { if (!used.has(vertex)) used.set(vertex, used.size); return used.get(vertex); });
             const out = Buffer.alloc(used.size * 12);
@@ -118,6 +119,20 @@ function rewriteGlb(buffer, { scale }, keepTriangle = () => true) {
             rewritten.set(key, { attributes, indices });
         }
     }
+    // A mesh left without triangles goes, and its node keeps no mesh: glTF has no empty primitive.
+    const meshIndex = new Map();
+    const meshes = [];
+    gltf.meshes.forEach((mesh, index) => {
+        const primitives = mesh.primitives.filter(primitive => !primitive.cbEmpty);
+        if (!primitives.length) return;
+        meshIndex.set(index, meshes.length);
+        meshes.push({ ...mesh, primitives });
+    });
+    gltf.nodes.forEach(node => {
+        if (node.mesh == null) return;
+        if (meshIndex.has(node.mesh)) node.mesh = meshIndex.get(node.mesh); else delete node.mesh;
+    });
+    gltf.meshes = meshes;
     const body = Buffer.concat(chunks);
     const out = { ...gltf, accessors, bufferViews, buffers: [{ byteLength: body.length }] };
     let json = Buffer.from(JSON.stringify(out), 'utf8');
@@ -133,13 +148,16 @@ if (values.build) {
     const place = await placement();
     const underBuilding = await footprintTest(place.fit);
     const centroid = points => [(points[0][0] + points[1][0] + points[2][0]) / 3, (points[0][1] + points[1][1] + points[2][1]) / 3];
-    const keep = (name, points) => name !== 'lvl_pp_flo' || underBuilding(centroid(points));
+    // The author's programme zones (lvl_*_prog_*) are coloured boxes filling each zone, not
+    // architecture: their sides lie in the walls' and the glazing's planes and z-fight with them.
+    const isProgramme = name => /^lvl_[a-z0-9]+_prog_/.test(name);
+    const keep = (name, points) => !isProgramme(name) && (name !== 'lvl_pp_flo' || underBuilding(centroid(points)));
     const glb = rewriteGlb(await readFile(here('./cache/building.glb')), place, keep);
     // A check that the rewrite reads back: every node keeps every triangle, the ground-floor slab only
-    // those under the building.
+    // those under the building, the programme zones none.
     const before = glbTriangles(await readFile(here('./cache/building.glb'))), after = glbTriangles(glb);
     for (const name of Object.keys(before)) {
-        const expected = name === 'lvl_pp_flo' ? before[name].filter(triangle => underBuilding(centroid(triangle.map(planOf)))).length : before[name].length;
+        const expected = before[name].filter(triangle => keep(name, triangle.map(planOf))).length;
         if (expected !== (after[name] || []).length) throw new Error(`${name}: ${(after[name] || []).length} triangles after the rewrite, expected ${expected}`);
     }
     log(`lvl_pp_flo: ${after.lvl_pp_flo.length} of ${before.lvl_pp_flo.length} triangles kept under the building`);
