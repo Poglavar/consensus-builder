@@ -3,8 +3,8 @@
 // checkpoint; the proposers rotate through cities worldwide, see agents/area-plan.js), land-event materializer, the live
 // prospective-market resolver, the society personas (preservationist-01, speculator-01; opt-in until
 // their keys exist) and the opt-in notary-01 and lifecycle-01 lens member services. Secrets stay in backend/.env
-// or protected key files; deploy-backend.sh deliberately restarts only the API app, so operators
-// activate these jobs separately.
+// or protected key files; deploy-backend.sh deliberately reloads only the apps in ../ecosystem.config.cjs
+// (the API and ugt-mcp), so operators activate these jobs separately.
 // A live proposer run operates the lifecycle-01 lens member (its approval facts and its
 // AgreementDecision-v1) and refuses to start without AGENT_LIFECYCLE_LENS_OPERATOR_TOKEN, which it reads
 // from backend/.env on the host (agents/README.md, "Lens").

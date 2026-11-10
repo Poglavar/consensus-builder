@@ -1,16 +1,18 @@
 #!/usr/bin/env bash
-# Deploy the consensus-builder backend to the `do` server: the server syncs the
-# selected branch (main by default), reinstalls deps, and reloads the PM2 process, then
-# a public smoke test confirms the API is healthy. (Migrated from the old
-# rsync-based flow to Git sync; the repo is cloned at $DEPLOY_DIR on the server.)
+# Deploy the consensus-builder backend to the `prod-de` server: the server syncs the
+# selected branch (colosseum-worlds-fair, the production branch, by default), reinstalls
+# deps, and reloads the API and ugt-mcp PM2 processes, then a public smoke test confirms the
+# API is healthy and the public proof manifest must report the deployed commit. (Migrated
+# from the old rsync-based flow to Git sync; the repo is cloned at $DEPLOY_DIR on the server.)
 
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 SSH_HOST="${SSH_HOST:-prod-de}"
-DEPLOY_DIR="${DEPLOY_DIR:-/root/code/consensus-builder/backend}"
+DEPLOY_DIR="${DEPLOY_DIR:-/root/code/consensus-builder/backend}"   # server-side path; override per host
 PM2_APP="${PM2_APP:-consensus-builder-api}"
-BRANCH="${BRANCH:-main}"
+BRANCH="${BRANCH:-colosseum-worlds-fair}"   # production runs this branch, not main
+PUBLIC_API_BASE="${PUBLIC_API_BASE:-https://api.urbangametheory.xyz}"   # where the release check reads
 DEPLOY_SMOKE_RETRIES="${DEPLOY_SMOKE_RETRIES:-5}"
 DEPLOY_SMOKE_RETRY_DELAY_SECONDS="${DEPLOY_SMOKE_RETRY_DELAY_SECONDS:-5}"
 
@@ -149,6 +151,10 @@ else
     # registered cluster-mode app.
     pm2 startOrReload ecosystem.config.cjs --only "${PM2_APP}" --update-env
 fi
+# ugt-mcp (the public MCP at urbangametheory.xyz/mcp) runs from this same checkout and ecosystem
+# file. Without this step it kept serving whatever code it last started with while the API moved
+# on. Same pattern as the API: re-read the file, apply its env. Fork mode, so a brief restart.
+pm2 startOrReload ecosystem.config.cjs --only ugt-mcp --update-env
 pm2 save
 pm2 status
 
@@ -176,5 +182,31 @@ fi
 
 echo "Production smoke test passed."
 EOF
+
+# Release verification: the running API must report the commit we deployed. RELEASE_SHA reaches
+# the process only through ecosystem.config.cjs, and a cluster reload can briefly leave the old
+# worker answering, so retry before failing. The manifest is no-store; the query busts any cache.
+PROOF_URL="${PUBLIC_API_BASE}/hackathon/proof.json"
+echo "Verifying the running release at ${PROOF_URL}..."
+verify_attempt=1
+LIVE_SHA=""
+while [ "${verify_attempt}" -le "${DEPLOY_SMOKE_RETRIES}" ]; do
+    LIVE_SHA="$(curl -fsS --max-time 30 "${PROOF_URL}?verify=${LOCAL_HEAD:0:9}-${verify_attempt}-$(date +%s)" \
+        | python3 -c 'import sys,json; print(((json.load(sys.stdin).get("releaseArtifacts") or {}).get("backend") or {}).get("commit") or "")' \
+        2>/dev/null || true)"
+    if [[ "${LIVE_SHA}" == "${LOCAL_HEAD}" ]]; then
+        break
+    fi
+    if [ "${verify_attempt}" -lt "${DEPLOY_SMOKE_RETRIES}" ]; then
+        echo "Release check ${verify_attempt}/${DEPLOY_SMOKE_RETRIES}: API reports '${LIVE_SHA:-<unreadable>}'; retrying in ${DEPLOY_SMOKE_RETRY_DELAY_SECONDS}s..."
+        sleep "${DEPLOY_SMOKE_RETRY_DELAY_SECONDS}"
+    fi
+    verify_attempt=$((verify_attempt + 1))
+done
+if [[ "${LIVE_SHA}" != "${LOCAL_HEAD}" ]]; then
+    echo "❌ The running API reports commit '${LIVE_SHA:-<unreadable>}', expected ${LOCAL_HEAD} — deploy NOT verified." >&2
+    exit 1
+fi
+echo "✅ The running API reports ${LIVE_SHA:0:9}."
 
 echo "Deployment complete!"

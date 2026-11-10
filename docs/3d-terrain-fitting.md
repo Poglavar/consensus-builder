@@ -306,8 +306,8 @@ unconditional vertical datum.
 - **Testing the worktree on mobile is hard** (tunnel + backend + SPA + CORS). Laptop localhost +
   prod backend works (CORS reflects origin). For mobile verification, prefer a **flag-gated change on
   `main`** (inert by default, testable on real prod) over the worktree.
-- **Deploys:** `frontend/deploy-frontend.sh` server-side `git pull origin/main` → commit + push
-  before deploying. Verify from the served artifact, not the deploy log.
+- **Deploys:** `frontend/deploy-frontend.sh` server-side sync of `origin/colosseum-worlds-fair` (the
+  production branch; `BRANCH=` overrides) → commit + push before deploying. Verify from the served artifact, not the deploy log.
 - Frame math is pinned by `backend/test/photoreal-frame.test.js`. The seat/carve constants live at
   the top of `photoreal-mode.js`.
 
