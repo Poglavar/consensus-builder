@@ -48,6 +48,8 @@
 
     // Whether the suggested default layout (a housing layout) applies: only to housing uses.
     const housesPeople = use => ['residential', 'residential-shops', 'mixed'].includes(normalize(use));
+    // Whether a building of this stated use has a suggested layout: housing, and offices (a central core).
+    const hasSuggestedLayout = use => housesPeople(use) || normalize(use) === 'office';
 
     // The generator's rules for a housing use: shops on the ground floor where the use has them.
     function layoutRules(use) {
@@ -159,5 +161,5 @@
     }
 
     return { USES, HOUSING_TYPOLOGIES, ACCESS, normalize, normalizeAccess, statedAccess, layoutAccess, statedUse, effectiveUse, storeyUses, storeyUsesOf,
-        autoGroundFloorUse, housingShare, housesPeople, layoutRules, fromCityModel, fromOsmBuilding };
+        autoGroundFloorUse, housingShare, housesPeople, hasSuggestedLayout, layoutRules, fromCityModel, fromOsmBuilding };
 });

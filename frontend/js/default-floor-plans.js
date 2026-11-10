@@ -117,6 +117,11 @@
         if (global && global.turf) return global.turf;
         try { return typeof require === 'function' ? require('@turf/turf') : null; } catch (_) { return null; }
     }
+    function coreModule(options) {
+        if (options && options.core) return options.core;
+        if (global && global.__defaultFloorPlanCore) return global.__defaultFloorPlanCore;
+        return typeof require === 'function' ? require('./default-floor-plan-core.js') : null;
+    }
     function roomsModule(options) {
         if (options && options.rooms) return options.rooms;
         if (global && global.__defaultFloorPlanRooms) return global.__defaultFloorPlanRooms;
@@ -270,6 +275,9 @@
 
     // One warning summary that callers can show without re-deriving the geometry.
     function describe(result) {
+        if (result.floorPlans && result.summary.scheme === 'core') {
+            return `a central core with ${result.summary.lifts} lift(s)${result.summary.officeStoreys ? `, ${result.summary.officeStoreys} office storeys` : ''}, up to ${result.summary.apartmentsPerFloor} apartments per storey`;
+        }
         if (result.floorPlans) return `${result.summary.cores} core(s), ${result.summary.apartmentsPerFloor} apartments per storey`;
         return result.warnings.filter(w => w.severity === 'error').map(w => w.message).join(' ') || 'No layout generated.';
     }
@@ -595,6 +603,9 @@
         if (!t) throw new Error('default-floor-plans: turf is not available');
         const rooms = roomsModule(options);
         const rules = rulesFor(options);
+        // Towers, office buildings and buildings of stepped parts take a central core (default-floor-plan-core.js).
+        const central = coreModule(options);
+        if (central && central.wantsCentralCore(input, rules)) return central.planCoreFloorPlans(input, options);
         const warnings = [];
         const summary = { cores: 0, apartmentsPerFloor: 0, apartmentAreasM2: [], lift: false, highRise: false, coreM: null,
             frontBasis: null, frontEdge: null, region: rules.region, groundFloorUse: 'residential', garageLevels: 0, rooms: 0 };
@@ -1067,9 +1078,12 @@
     }
 
     const api = { GENERATOR_ID, DEFAULT_RULES, COMMON_RULES, REGULATION_PRESETS, CORRIDOR_MIX, rulesFor, planDefaultFloorPlans, stairRun, coreDimensions, wantsLift,
-        decideAccess, fillRows, describe,
+        decideAccess, fillRows, describe, PLANS_SCHEMA, ARCHITECTURE_SCHEMA,
         // The clip helpers, exported so their failure reporting is tested directly.
-        _clip: { unionAll, differenceOrNull, intersectOrNull } };
+        _clip: { unionAll, differenceOrNull, intersectOrNull },
+        // Shared with the central-core scheme (default-floor-plan-core.js).
+        _geometry: { T, finite, warn, round2, round6, makeFrame, polygonsOf, ringArea, polygonsArea, cleanRing, rect, strip, vec, add, len, unit, leftNormal, midpoint,
+            unionAll, differenceOrNull, intersectOrNull, partyRunsOf, matchEdge, coreParts } };
     global.__defaultFloorPlans = api;
     if (typeof module !== 'undefined' && module.exports) module.exports = api;
 })(typeof window !== 'undefined' ? window : globalThis);

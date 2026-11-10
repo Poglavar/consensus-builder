@@ -1,5 +1,6 @@
-// Context for suggested default floor plans in the 3D view: cuts a proposed building into its parcel
-// slices (one parcel, one building) and compound slices into wings, collects the footprints it shares
+// Context for suggested default floor plans in the 3D view: cuts a rule building into its parcel
+// slices (one parcel, one building; a single-building design and the stepped parts of one building
+// stay whole) and compound slices into wings, collects the footprints it shares
 // walls with, picks the entrance side (the longer side, the one nearer a road), finds the facades that
 // must stay blind near the parcel boundary, derives storeys from the drawn height, chooses rule presets
 // by region and era, and runs default-floor-plans.js once per wing behind a key cache. Pure: turf, the
@@ -339,10 +340,12 @@
         }).map(edge => ({ a: edge.a, b: edge.b }));
     }
 
+    // One building of a design: the same feature index, or parts sharing a buildingId (stepped parts).
     const sameBuilding = (a, b) => {
         const pa = (a && a.properties) || {}, pb = (b && b.properties) || {};
-        return pa.proposalId !== undefined && pa.proposalId !== null && String(pa.proposalId) === String(pb.proposalId)
-            && pa.buildingIndex !== undefined && pa.buildingIndex === pb.buildingIndex;
+        if (pa.proposalId === undefined || pa.proposalId === null || String(pa.proposalId) !== String(pb.proposalId)) return false;
+        if (pa.buildingId && pa.buildingId === pb.buildingId) return true;
+        return pa.buildingIndex !== undefined && pa.buildingIndex === pb.buildingIndex;
     };
 
     /**
@@ -415,13 +418,46 @@
      *                  accessOverride? ('auto' | 'point' | 'corridor': the X-ray view's choice, above the building's own) }
      * @returns {{ floors, storeyHeightM, slices: [{ footprint, parcelFeature, parcelId, wing, key, result }], droppedWings }}
      */
+    /**
+     * The building's stepped parts as plates: [{ feature, heightM }] → { footprint, floors, storeyHeightM,
+     * plates, storeyUses }. The storey height is the tallest part's; a storey's use is the use of the
+     * lowest part that reaches it (a podium of offices under flats).
+     */
+    function steppedBuilding(parts, turf, storeyFallbackM) {
+        const plates = parts.map(({ feature, heightM }) => ({ feature, ...storeysOf(feature, heightM, storeyFallbackM) }))
+            .filter(plate => plate.floors && polygonsOf(plate.feature.geometry).length);
+        if (plates.length < 2) return null;
+        const tallest = plates.reduce((top, plate) => (plate.floors > top.floors ? plate : top), plates[0]);
+        let footprint = asFeature(plates[0].feature.geometry);
+        for (const plate of plates.slice(1)) {
+            try { footprint = turf.union(footprint, asFeature(plate.feature.geometry)) || footprint; } catch (error) { reportClip('union', error, 'default-floor-plan-context.steppedBuilding', [footprint, plate.feature]); }
+        }
+        // Parts drawn side by side leave hair-thin gaps; 5 cm of closing makes them one outline.
+        try {
+            const closed = turf.buffer(turf.buffer(footprint, 0.05, { units: 'meters' }), -0.05, { units: 'meters' });
+            if (closed && polygonsOf(closed.geometry).length) footprint = closed;
+        } catch (_) { }
+        const byHeight = plates.slice().sort((a, b) => a.floors - b.floors);
+        const storeyUses = Array.from({ length: tallest.floors }, (_, level) => {
+            const part = byHeight.find(plate => plate.floors > level);
+            const uses = buildingUse().storeyUsesOf(part.feature.properties, part.floors);
+            return uses[level] || 'residential';
+        });
+        return { footprint: asFeature(footprint.geometry), floors: tallest.floors, storeyHeightM: tallest.storeyHeightM,
+            plates: plates.map(plate => ({ footprint: asFeature(plate.feature.geometry), floors: plate.floors })), storeyUses };
+    }
+
     function planBuilding(subject, context) {
         const { turf, generator, parcels, neighbours, roads, heightM, storeyFallbackM, cache, owner } = context;
         if (!turf || !generator) throw new Error('default-floor-plan-context: turf and the generator are required');
-        const slices = context.existing ? [{ footprint: asFeature(subject.geometry), parcelFeature: null, parcelId: null, unsliced: true }]
-            : sliceBuildingByParcels(subject, parcels, turf);
-        const { floors, storeyHeightM } = storeysOf(subject, heightM, storeyFallbackM);
         const ownerProps = ((owner || subject).properties) || {};
+        const stepped = Array.isArray(context.parts) && context.parts.length > 1 ? steppedBuilding(context.parts, turf, storeyFallbackM) : null;
+        // One parcel, one building is an urban rule's: a single-building design is one building on
+        // whatever parcels lie under it (its land take forms them), and so is an existing building.
+        const whole = { footprint: stepped ? stepped.footprint : asFeature(subject.geometry), parcelFeature: null, parcelId: null, unsliced: true };
+        const slices = context.existing || stepped || !ownerProps.urbanRule ? [whole] : sliceBuildingByParcels(subject, parcels, turf);
+        const { floors, storeyHeightM } = stepped || storeysOf(subject, heightM, storeyFallbackM);
+        const storeyUses = stepped ? stepped.storeyUses : (floors ? buildingUse().storeyUsesOf(ownerProps, floors) : []);
         const baseId = context.existing ? `existing/${ownerProps.object_id ?? ownerProps.id ?? ownerProps.osm_id ?? geometryHash(subject)}`
             : `${ownerProps.proposalId ?? 'local'}/${ownerProps.buildingIndex ?? 0}`;
         const typology = ownerProps.urbanRule && ownerProps.urbanRule.typology ? String(ownerProps.urbanRule.typology) : (ownerProps.typology || undefined);
@@ -437,7 +473,8 @@
         const units = [];
         let droppedWings = 0;
         slices.forEach((slice, index) => {
-            const { wings, dropped } = decomposeIntoWings(slice.footprint, turf);
+            // Stepped parts are one building round one core, never wings.
+            const { wings, dropped } = stepped ? { wings: [slice.footprint], dropped: 0 } : decomposeIntoWings(slice.footprint, turf);
             droppedWings += dropped;
             wings.forEach((wing, wingIndex) => units.push({ ...slice, footprint: wing, sliceIndex: index, wing: wings.length > 1 ? wingIndex : null }));
         });
@@ -449,10 +486,12 @@
             const setbackM = (rules.blindFacadeSetbackM) || (generator.DEFAULT_RULES && generator.DEFAULT_RULES.blindFacadeSetbackM) || 3;
             const blindEdges = blindEdgesFor(unit.footprint, unit.parcelFeature, roads, front, { turf, setbackM });
             const key = [baseId, unit.sliceIndex, unit.wing ?? '-', geometryHash(unit.footprint), floors, Math.round(storeyHeightM * 1000),
-                front ? `${front.basis}:${front.a.join(',')}:${front.b.join(',')}` : 'nofront', blindEdges.length, aroundHash, rulesHash, typology || ''].join('|');
+                front ? `${front.basis}:${front.a.join(',')}:${front.b.join(',')}` : 'nofront', blindEdges.length, aroundHash, rulesHash, typology || '',
+                storeyUses.join(','), stepped ? hashText(stepped.plates.map(plate => `${plate.floors}:${geometryHash(plate.footprint)}`).join(';')) : '-'].join('|');
             let result = cache ? cache.get(key) : null;
             if (!result) {
                 result = generator.planDefaultFloorPlans({ footprint: unit.footprint, floors, storeyHeightM, neighbours: nearby, front, blindEdges, typology,
+                    storeyUses, ...(stepped ? { plates: stepped.plates } : {}),
                     buildingId: `${baseId}/${unit.sliceIndex}${unit.wing !== null && unit.wing !== undefined ? `/w${unit.wing}` : ''}` }, { turf, rules });
                 if (cache) {
                     if (cache.size >= CACHE_MAX) cache.clear();
@@ -464,7 +503,7 @@
         return { floors, storeyHeightM, slices: results, droppedWings };
     }
 
-    const api = { STREET_CELL_DEG, hashText, sliceBuildingByParcels, decomposeIntoWings, storeysOf, resolveFront, blindEdgesFor, neighbourPool,
+    const api = { STREET_CELL_DEG, hashText, sliceBuildingByParcels, decomposeIntoWings, storeysOf, steppedBuilding, resolveFront, blindEdgesFor, neighbourPool,
         streetCellKey, streetCellBbox, regionOf, eraRulesFor, planBuilding };
     global.__defaultFloorPlanContext = api;
     if (typeof module !== 'undefined' && module.exports) module.exports = api;

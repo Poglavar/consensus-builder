@@ -56,12 +56,20 @@
 
     // A building that already shows an interior of its own keeps it: an evidence model (floorPlans) or
     // an uploaded glTF (modelUrl). The same rule as the 3D view.
-    // A building stated for another use than housing has no housing layout to suggest either.
+    // A building stated for another use than housing or offices has no layout to suggest either.
     const buildingUse = () => global.BuildingUse || (typeof require === 'function' ? require('./building-use.js') : null);
     function needsSuggestion(feature) {
         const p = (feature && feature.properties) || {};
         const use = buildingUse().statedUse(p);
-        return !!(feature && feature.geometry) && !p.floorPlans && !p.modelUrl && (!use || buildingUse().housesPeople(use));
+        return !!(feature && feature.geometry) && !p.floorPlans && !p.modelUrl && (!use || buildingUse().hasSuggestedLayout(use));
+    }
+    // The stepped parts of the building a feature belongs to (its design's buildings sharing its buildingId).
+    function partsOf(building, all) {
+        const p = building.properties || {};
+        if (!p.buildingId || p.proposalId === undefined || p.proposalId === null) return [building];
+        const parts = all.filter(other => other && other.geometry && other.properties && needsSuggestion(other)
+            && String(other.properties.proposalId) === String(p.proposalId) && other.properties.buildingId === p.buildingId);
+        return parts.length > 1 ? parts : [building];
     }
 
     /**
@@ -75,15 +83,24 @@
         const { proposedBuildings, parcelsFor, neighbourPool, context, generator, turf, heightOf, storeyFallbackM, cache, rules, region } = deps || {};
         if (!context || !generator || !turf) throw new Error('suggested-layouts-2d: context, generator and turf are required');
         const out = [];
-        for (const building of Array.isArray(proposedBuildings) ? proposedBuildings : []) {
+        const all = Array.isArray(proposedBuildings) ? proposedBuildings : [];
+        const steppedDone = new Set();
+        const heightFor = building => (typeof heightOf === 'function' ? heightOf(building) : heightOfBuilding(building));
+        for (const building of all) {
             if (!needsSuggestion(building)) continue;
+            // A stepped building is laid out once, as a whole, at its first part.
+            const parts = partsOf(building, all);
+            const steppedKey = parts.length > 1 ? `${building.properties.proposalId}|${building.properties.buildingId}` : null;
+            if (steppedKey && steppedDone.has(steppedKey)) continue;
+            if (steppedKey) steppedDone.add(steppedKey);
             try {
                 const use = buildingUse().statedUse(building.properties);
                 const planned = context.planBuilding(building, {
-                    turf, generator, rules: use ? { ...(rules || {}), ...buildingUse().layoutRules(use) } : rules, cache, owner: building, roads: null, storeyFallbackM, ...(region ? { region } : {}),
+                    turf, generator, rules: use ? { ...(rules || {}), ...(buildingUse().layoutRules(use) || {}) } : rules, cache, owner: building, roads: null, storeyFallbackM, ...(region ? { region } : {}),
+                    ...(parts.length > 1 ? { parts: parts.map(part => ({ feature: part, heightM: heightFor(part) })) } : {}),
                     parcels: (typeof parcelsFor === 'function' && parcelsFor(building)) || [],
                     neighbours: (typeof neighbourPool === 'function' && neighbourPool(building)) || [],
-                    heightM: typeof heightOf === 'function' ? heightOf(building) : heightOfBuilding(building)
+                    heightM: heightFor(building)
                 });
                 for (const slice of planned.slices) {
                     out.push({ building, parcelId: slice.parcelId, footprint: slice.footprint,

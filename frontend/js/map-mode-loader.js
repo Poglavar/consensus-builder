@@ -4,7 +4,7 @@
     // The floor-plan contract, generator and context: the model view's X-ray and the 2D "Suggested
     // layouts" layer (suggested-layouts-2d.js) read them; they are not in the boot list.
     const floorPlans = ['js/building-floor-plans.js', 'js/default-floor-plan-rooms.js',
-        'js/default-floor-plans.js', 'js/default-floor-plan-context.js'];
+        'js/default-floor-plans.js', 'js/default-floor-plan-core.js', 'js/default-floor-plan-context.js'];
     const groups = {
         floorPlans,
         // Photo always enters through the model view (map-mode-transition.js), so the terrain-following

@@ -171,7 +171,8 @@ describe('wings, blind facades, regions and eras', () => {
 });
 
 describe('planBuilding', () => {
-    const building = rectangle(0, 0, 30, 12, { proposalId: 'p1', buildingIndex: 3, storeys: 4 });
+    // A rule building: one parcel, one building (a single-building design stays whole, below).
+    const building = rectangle(0, 0, 30, 12, { proposalId: 'p1', buildingIndex: 3, storeys: 4, urbanRule: { typology: 'block' } });
     const streets = [{ type: 'Feature', geometry: { type: 'LineString', coordinates: [lngLat([-20, -10]), lngLat([20, -10])] }, properties: { name: 'South street' } }];
 
     it('plans every parcel slice once, with sibling slices as party-wall neighbours and the street as the front', () => {
@@ -221,6 +222,36 @@ describe('planBuilding', () => {
         const planned = context.planBuilding(building, { turf, generator, parcels: [narrowParcel, wideParcel], neighbours: [], streets: null, heightM: 14, storeyFallbackM: 3.3 });
         expect(planned.slices.map(slice => [slice.parcelId, slice.result.floorPlans === null])).toEqual([['N', true], ['W', false]]);
         expect(planned.slices[0].result.warnings.map(w => w.code)).toContain('core-does-not-fit');
+    });
+
+    it('plans a single-building design whole, whatever parcels lie under it', () => {
+        const single = rectangle(0, 0, 30, 12, { proposalId: 'p9', buildingIndex: 0, storeys: 4, type: 'proposedBuildingSingle' });
+        const planned = context.planBuilding(single, { turf, generator, parcels: [parcelA, parcelB], neighbours: [], heightM: 13, storeyFallbackM: 3.3 });
+        expect(planned.slices).toHaveLength(1);
+        expect(planned.slices[0]).toMatchObject({ parcelId: null, unsliced: true });
+        expect(turf.area(planned.slices[0].footprint)).toBeCloseTo(turf.area(single), 0);
+    });
+
+    it('plans the stepped parts of one building together: their union, the tallest part\'s storeys, each storey used as the lowest part reaching it', () => {
+        const podium = rectangle(0, -13, 27, 12, { proposalId: 'p7', buildingId: 'tower', buildingIndex: 0, floors: 4, use: 'office' });
+        const shaft = rectangle(0, 0, 27, 14, { proposalId: 'p7', buildingId: 'tower', buildingIndex: 1, floors: 17, use: 'residential' });
+        const stepped = context.steppedBuilding([{ feature: podium, heightM: 17.5 }, { feature: shaft, heightM: 65.5 }], turf, 3.3);
+        expect(stepped).toMatchObject({ floors: 17, plates: [{ floors: 4 }, { floors: 17 }] });
+        expect(stepped.storeyHeightM).toBeCloseTo(65.5 / 17);
+        expect(stepped.storeyUses).toEqual([...Array(4).fill('office'), ...Array(13).fill('residential')]);
+        expect(turf.area(stepped.footprint)).toBeCloseTo(turf.area(podium) + turf.area(shaft), -1);
+        const calls = [];
+        const spy = { ...generator, planDefaultFloorPlans: (input, options) => { calls.push(input); return generator.planDefaultFloorPlans(input, options); } };
+        const planned = context.planBuilding(podium, { turf, generator: spy, parcels: [parcelA, parcelB], neighbours: [shaft], heightM: 17.5, storeyFallbackM: 3.3, region: 'HR',
+            parts: [{ feature: podium, heightM: 17.5 }, { feature: shaft, heightM: 65.5 }] });
+        expect(planned.slices).toHaveLength(1);
+        expect(planned.floors).toBe(17);
+        expect(calls).toHaveLength(1);
+        expect(calls[0].plates).toHaveLength(2);
+        expect(calls[0].storeyUses).toEqual(stepped.storeyUses);
+        expect(planned.slices[0].result.summary).toMatchObject({ scheme: 'core', officeStoreys: 4 });
+        // The parts are one building, never each other's party wall.
+        expect(context.neighbourPool(podium, [podium, shaft], [], turf)).toEqual([]);
     });
 
     it('plans with the view\'s Access over the building\'s own, and the building\'s own over the depth rule', () => {

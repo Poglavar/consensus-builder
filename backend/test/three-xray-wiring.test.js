@@ -337,7 +337,7 @@ describe('three-mode Xray wiring', () => {
         const planned = group('planned', 'p'), suggested = group('existing-suggested', 's'), model = group('existing-model', 'm');
         const children = [planned, suggested, model], dispose = vi.fn(), keys = new Set(['p', 's', 'm']);
         const remove = item => children.splice(children.indexOf(item), 1);
-        const [disposePlans] = extracted('disposeFloorPlans', 'let floorPlanGroup={children:this.children,remove:this.remove}; let renderedFloorPlanKeys=this.keys; let floorPlanErrors=3; const existingFloorPlanGroups=new Map([["m",1]]); const suggestedPlanTotals={buildings:2,slices:3,flagged:1,apartments:4,cores:2,pendingStreets:true}; const suggestedPlanByParcel=new Map([["a",1]]); const suggestedPlanByProposal=new Map([["p",1]]);', { children, remove, keys, floorPlanRenderer: { disposeGroup: dispose } });
+        const [disposePlans] = extracted('disposeFloorPlans', 'let floorPlanGroup={children:this.children,remove:this.remove}; let renderedFloorPlanKeys=this.keys; let floorPlanErrors=3; const existingFloorPlanGroups=new Map([["m",1]]); const suggestedPlanTotals={buildings:2,slices:3,flagged:1,apartments:4,cores:2,pendingStreets:true}; const suggestedPlanByParcel=new Map([["a",1]]); const suggestedPlanByProposal=new Map([["p",1]]); const suggestedSteppedDone=new Map([["p|t",true]]);', { children, remove, keys, floorPlanRenderer: { disposeGroup: dispose } });
         disposePlans({ planned: false });
         expect(children).toEqual([planned, model]); expect([...keys]).toEqual(['p', 'm']);
         disposePlans();
@@ -372,11 +372,11 @@ describe('three-mode Xray wiring', () => {
         const [append, c] = extracted('appendSuggestedFloorPlans', `
             let xrayEnabled=${overrides.xray !== false}, suggestedPlansEnabled=${overrides.suggested !== false}, floorPlanGroup={}, floorPlanErrors=0;
             let plannedRepresentation='both', buildOutDisplaySalt=0, suggestedAccess='${overrides.access || 'auto'}';
-            const suggestedPlanCache=new Map();
+            const suggestedPlanCache=new Map(), suggestedSteppedDone=new Map();
             const suggestedPlanTotals={buildings:0,slices:0,flagged:0,apartments:0,cores:0,northFlats:0,pendingStreets:false};
             const buildingMaterials={flagged:'flagged-material',massing:'massing-material'};
             this.totals=suggestedPlanTotals;
-        `, stubs);
+        `, stubs, ['suggestedSteppedParts']);
         return { append, c, slices };
     }
     it('appendSuggestedFloorPlans stays out of the way while X-ray or the toggle is off, and never second-guesses evidence', () => {
@@ -415,6 +415,30 @@ describe('three-mode Xray wiring', () => {
         const corridor = suggestedHarness({ access: 'corridor' });
         corridor.append(feature, 'm', { add: vi.fn() }, {});
         expect(corridor.c.suggestedPlanContext.planBuilding.mock.calls[0][1].accessOverride).toBe('corridor');
+    });
+    it('appendSuggestedFloorPlans lays out the stepped parts of one building once, as a whole, and paints each part red at its own height when nothing fits', () => {
+        const podium = { geometry: {}, properties: { proposalId: 'p1', buildingId: 'tower', buildingIndex: 0, floors: 4, use: 'office' } };
+        const shaft = { geometry: {}, properties: { proposalId: 'p1', buildingId: 'tower', buildingIndex: 1, floors: 17, use: 'residential' } };
+        const other = { geometry: {}, properties: { proposalId: 'p1', buildingId: 'hall', buildingIndex: 2 } };
+        const heights = new Map([[podium, 17.5], [shaft, 65.5], [other, 9]]);
+        const flagged = [{ parcelId: null, footprint: { type: 'Feature', geometry: {} }, result: { floorPlans: null, warnings: [{ code: 'core-does-not-fit', severity: 'error' }], summary: {} } }];
+        const window = { UrbanRuleVariation: { plannedDrawPlan: feature => ({ buildOut: feature, massing: null }) }, LiveParcelFabric: { queryBounds: () => [] },
+            proposedBuildings: [podium, shaft, other], buildingFeaturePool: [], STOREY_HEIGHT_M: 3.3, BuildingUse: require('../../frontend/js/building-use.js') };
+        const { append, c } = suggestedHarness({ stubs: { window, estimateBuildingHeightMeters: feature => heights.get(feature) ?? 12,
+            suggestedPlanContext: { planBuilding: vi.fn(() => ({ slices: flagged, floors: 17 })), neighbourPool: vi.fn(() => []) } } });
+        const group = { add: vi.fn() };
+        expect(append(podium, 'm', group, {})).toBe(true);
+        expect(c.suggestedPlanContext.planBuilding).toHaveBeenCalledOnce();
+        expect(c.suggestedPlanContext.planBuilding.mock.calls[0][1].parts).toEqual([{ feature: podium, heightM: 17.5 }, { feature: shaft, heightM: 65.5 }]);
+        expect(c.polygonFeatureToMeshes.mock.calls.map(call => [call[0], call[3]])).toEqual([[podium, 17.5], [shaft, 65.5]]);
+        // The other part draws nothing of its own; another building of the design is its own.
+        expect(append(shaft, 'm', group, {})).toBe(true);
+        expect(c.suggestedPlanContext.planBuilding).toHaveBeenCalledOnce();
+        append(other, 'm', group, {});
+        expect(c.suggestedPlanContext.planBuilding).toHaveBeenCalledTimes(2);
+        expect(c.suggestedPlanContext.planBuilding.mock.calls[1][1].parts).toBeUndefined();
+        // Offices have a layout; a building of another use has none.
+        expect(append({ geometry: {}, properties: { use: 'industrial' } }, 'm', group, {})).toBe(false);
     });
     it('appendSuggestedFloorPlans keeps the translucent envelope when the plan draws an example inside it', () => {
         const massing = { geometry: {}, properties: {} };

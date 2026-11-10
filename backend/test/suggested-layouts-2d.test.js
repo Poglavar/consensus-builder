@@ -17,8 +17,9 @@ const rectangle = (cx, cy, w, h, properties = {}) => turf.polygon([[[cx - w / 2,
 
 // Two 12 m parcels side by side with one 24 × 12 m building across both, and a 6 × 5 m building alone on a third.
 const parcels = [rectangle(-6, 0, 12, 30, { parcelId: 'A' }), rectangle(6, 0, 12, 30, { parcelId: 'B' }), rectangle(60, 0, 20, 20, { parcelId: 'C' })];
-const row = rectangle(0, 0, 24, 12, { proposalId: 'p1', buildingIndex: 0, height: 13.2 });
-const tiny = rectangle(60, 0, 6, 5, { proposalId: 'p2', buildingIndex: 0, height: 6.6 });
+// Rule buildings, cut into one building per parcel.
+const row = rectangle(0, 0, 24, 12, { proposalId: 'p1', buildingIndex: 0, height: 13.2, urbanRule: { typology: 'row' } });
+const tiny = rectangle(60, 0, 6, 5, { proposalId: 'p2', buildingIndex: 0, height: 6.6, urbanRule: { typology: 'row' } });
 const withEvidence = rectangle(120, 0, 20, 12, { proposalId: 'p3', buildingIndex: 0, floorPlans: { schema: 'evidence' } });
 const withModel = rectangle(160, 0, 20, 12, { proposalId: 'p4', buildingIndex: 0, modelUrl: 'https://example.org/building.glb' });
 const parcelsFor = feature => parcels.filter(parcel => turf.booleanIntersects(parcel, feature));

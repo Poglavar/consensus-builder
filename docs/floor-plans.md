@@ -149,10 +149,27 @@ write into the proposal.
   and never that stretch. A facade more than half covered counts as a party wall for choosing the
   front. Facades whose outside, at the boundary setback (3 m), already lies beyond the parcel and
   not on a road are blind too. The entrance facade is never blind. Without a parcel nothing is blind.
-- **One parcel, one building.** The building drawn by the tool is cut into its parcel slices (the
-  same intersection the 3D view already uses for exterior slices), and each slice gets its own
-  core, entrance and apartments. A block rule over many parcels therefore produces one building per
-  parcel with blind walls between them.
+- **One parcel, one building, for urban rules.** A rule building (Block, Row, Detached) is cut into
+  its parcel slices (the same intersection the 3D view already uses for exterior slices), and each
+  slice gets its own core, entrance and apartments. A block rule over many parcels therefore produces
+  one building per parcel with blind walls between them. A single-building design is one building
+  on whatever parcels lie under it, and so are the stepped parts of one building (its features
+  sharing a `buildingId`): they are laid out together, never as each other's party walls.
+- **Central core.** An office building (most storeys of office use), a building of stepped parts,
+  or a compact tower (10 storeys or more, its plate no more than 1.5 times as long as wide, unless
+  its Access states point cores or a corridor) gets one core in the middle of its top floor plate,
+  carried down through every storey (`default-floor-plan-core.js`): stairs (two for a high-rise or a
+  plate over 900 m²), lifts (one per 3500 m² of floor, two at least in a high-rise) and toilets. A
+  core runs its flights back from the lift face, or along the long side where the plate is too
+  shallow for that (the toilets then stand beside the lifts, or are left out when they do not fit).
+  Four lifts or more stand in two rows across a 3 m lift hall, a split core. The core keeps 3 m of
+  floor to every facade; fewer lifts are tried before the plate is flagged. Office (and shop)
+  storeys are open plan, with the lift lobby closed by a glass screen as the reception; residential
+  storeys have flats round a 1.8 m lobby ring, cut by rays from the core into flats of about 70 m²,
+  each entered from the ring and reaching the facade (rooms are not laid out). A storey's plate is
+  the parts that reach it and its use the lowest such part's, so a podium of offices carries flats,
+  and the floor over a lower part's roof is a terrace. Parts drawn a hair apart are closed into one
+  outline.
 - **Wings.** A compound slice (L, U, a courtyard ring) is split into bar-like wings along the
   bisectors of its inside corners and courtyard corners. Each wing is planned as its own building
   with the other wings as party walls, so a perimeter block gets entrances on every street side.
@@ -289,7 +306,11 @@ sequenceDiagram
   inside a model flagged `suggested: true`.
 - `backend/buildings/floor-models.js` — `prepareFloorModel` **refuses** suggested models: the
   registry stores evidence, suggestions are derived at display time.
-- Tests: `backend/test/default-floor-plans.test.js` (corridor geometry on a slab the size of
+- `frontend/js/default-floor-plan-core.js` — the central-core scheme; `planDefaultFloorPlans`
+  hands it the buildings it takes (`wantsCentralCore`), with the plates and the storey uses
+  `default-floor-plan-context.js` derives from a building's parts (`steppedBuilding`).
+- Tests: `backend/test/default-floor-plan-core.test.js` (office core, the vLAB tower's stepped shape,
+  split core, flagging), `backend/test/default-floor-plans.test.js` (corridor geometry on a slab the size of
   Podbrežje A4 from `fixtures/podbrezje-a4-published-floor-plans.json`), `default-floor-plan-context.test.js`,
   `building-use.test.js` (Access and `set_access`), new cases in `three-xray-wiring.test.js`, `three-floor-plans.test.js`,
   `building-floor-model-registry.test.js`.

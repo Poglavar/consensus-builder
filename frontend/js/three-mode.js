@@ -109,6 +109,9 @@
     // per proposal the totals over its buildings. Rebuilt with the scene.
     const suggestedPlanByParcel = new Map();
     const suggestedPlanByProposal = new Map();
+    // Buildings of stepped parts already laid out in this build, by proposal and buildingId: the first
+    // part lays out the whole building, the others draw nothing of their own.
+    const suggestedSteppedDone = new Map();
     const SUGGESTED_EXISTING_CAP = 400;
     const FACADE_PREF_KEY = 'cb_3d_facades';
     const FACADE_STYLE_KEY = 'cb_3d_facade_style';
@@ -9112,6 +9115,7 @@
         Object.assign(suggestedPlanTotals, { buildings: 0, slices: 0, flagged: 0, apartments: 0, cores: 0, northFlats: 0, pendingStreets: false });
         suggestedPlanByParcel.clear();
         suggestedPlanByProposal.clear();
+        suggestedSteppedDone.clear();
     }
 
     // The regulation region of the current city, read from the locale its configuration carries.
@@ -9154,8 +9158,10 @@
     // Record one planned slice for the panels: by parcel (the clicked building) and by proposal.
     function recordSuggestedSlice(owner, slice, floors) {
         const result = slice.result;
-        if (slice.parcelId != null) {
-            const key = String(slice.parcelId);
+        // A building laid out whole is reported on its own parcel.
+        const parcelId = slice.parcelId ?? owner?.properties?.parcelId ?? null;
+        if (parcelId != null) {
+            const key = String(parcelId);
             const entry = suggestedPlanByParcel.get(key) || { slices: [] };
             entry.slices.push({ result, floors, wing: slice.wing });
             suggestedPlanByParcel.set(key, entry);
@@ -9228,16 +9234,21 @@
         return null;
     }
 
-    // One generated default layout per parcel slice of a proposed building (one parcel, one
-    // building), or a red volume where the minimum core does not fit. The floorPlans object exists
-    // only in the scene and the cache; the proposal's own record is never touched.
+    // One generated default layout per proposed building (per parcel slice for a rule building: one
+    // parcel, one building; the stepped parts of one building together), or a red volume where the
+    // minimum core does not fit. The floorPlans object exists only in the scene and the cache; the
+    // proposal's own record is never touched.
     function appendSuggestedFloorPlans(feature, buildingMaterial, targetGroup, variationDeps) {
         if (!xrayEnabled || !suggestedPlansEnabled || !floorPlanGroup || !suggestedFloorPlans || !suggestedPlanContext) return false;
         if (!feature?.geometry || feature.properties?.modelUrl || feature.properties?.floorPlans) return false;
-        // The suggested layout is a housing layout: a building stated for another use gets none, and
+        // Housing and offices have suggested layouts: a building stated for another use gets none, and
         // a stated housing use sets its ground floor (building-use.js).
-        const use = window.BuildingUse.statedUse(feature.properties);
-        if (use && !window.BuildingUse.housesPeople(use)) return false;
+        const parts = suggestedSteppedParts(feature);
+        const uses = parts.map(part => window.BuildingUse.statedUse(part.properties));
+        if (uses.some(stated => stated && !window.BuildingUse.hasSuggestedLayout(stated))) return false;
+        const use = uses[0];
+        const steppedKey = parts.length > 1 ? `${feature.properties.proposalId}|${feature.properties.buildingId}` : null;
+        if (steppedKey && suggestedSteppedDone.has(steppedKey)) return suggestedSteppedDone.get(steppedKey);
         let plan;
         try { plan = window.UrbanRuleVariation.plannedDrawPlan(feature, plannedRepresentation, variationDeps, buildOutDisplaySalt); } catch (_) { return false; }
         const subject = plan.buildOut || plan.massing;
@@ -9258,8 +9269,9 @@
                 owner: feature, parcels, turf, generator: suggestedFloorPlans, region: suggestedRegion(),
                 roads: suggestedRoadsFor(subject), heightM: height, storeyFallbackM: window.STOREY_HEIGHT_M || 3.3,
                 neighbours: suggestedPlanContext.neighbourPool(feature, window.proposedBuildings, window.buildingFeaturePool, turf),
-                cache: suggestedPlanCache, rules: facadeBayWidthM || use ? { ...(facadeBayWidthM ? { facadeBayWidthM } : {}), ...(use ? window.BuildingUse.layoutRules(use) : {}) } : undefined,
-                accessOverride: suggestedAccess
+                cache: suggestedPlanCache, rules: facadeBayWidthM || use ? { ...(facadeBayWidthM ? { facadeBayWidthM } : {}), ...(use ? window.BuildingUse.layoutRules(use) || {} : {}) } : undefined,
+                accessOverride: suggestedAccess,
+                ...(parts.length > 1 ? { parts: parts.map(part => ({ feature: part, heightM: estimateBuildingHeightMeters(part) })) } : {})
             });
         } catch (error) {
             floorPlanErrors++;
@@ -9285,18 +9297,32 @@
                 }
             }
             suggestedPlanTotals.flagged++;
+            // Red where nothing fits: each stepped part at its own height.
+            const volumes = parts.length > 1 ? parts.map(part => [part, estimateBuildingHeightMeters(part)]) : [[slice.footprint, height]];
             try {
-                polygonFeatureToMeshes(slice.footprint, buildingMaterials.flagged, 0, height).forEach(mesh => {
+                volumes.forEach(([volume, volumeHeight]) => polygonFeatureToMeshes(volume, buildingMaterials.flagged, 0, volumeHeight).forEach(mesh => {
                     if (slice.parcelId != null) mesh.userData.parcelId = String(slice.parcelId);
                     mesh.userData.cbSuggestedLayoutWarnings = result.warnings;
                     targetGroup.add(mesh);
-                });
+                }));
             } catch (_) { }
         }
         if (plan.massing && plan.massingStyle === 'envelope') {
             try { createBuildingSlices(plan.massing, estimateBuildingHeightMeters(plan.massing), buildingMaterials.massing, targetGroup, null); } catch (_) { }
         }
+        if (steppedKey) suggestedSteppedDone.set(steppedKey, true);
         return true;
+    }
+
+    // The parts of the feature's building: the proposed buildings of its design sharing its
+    // buildingId (a stepped building), else the feature alone.
+    function suggestedSteppedParts(feature) {
+        const props = feature.properties || {};
+        if (!props.buildingId || props.proposalId === undefined || props.proposalId === null) return [feature];
+        const parts = (window.proposedBuildings || []).filter(other => other?.geometry && other.properties
+            && String(other.properties.proposalId) === String(props.proposalId) && other.properties.buildingId === props.buildingId
+            && !other.properties.modelUrl && !other.properties.floorPlans);
+        return parts.length > 1 && parts.includes(feature) ? parts : [feature];
     }
 
     function setSuggestedPlansEnabled(enabled) {
