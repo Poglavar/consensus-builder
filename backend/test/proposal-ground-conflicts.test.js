@@ -52,6 +52,43 @@ describe('rivals overlap by ground, not by an area floor', () => {
     });
 });
 
+// A park, square or lake over part of another does not take it off the map: the later one takes
+// the overlap and the other stays on what is left. One covered entirely, or its own earlier version,
+// still comes off.
+describe('open land gives way instead of coming off the map', () => {
+    const box = (west, east) => turf.polygon([[[west, 45.8], [east, 45.8], [east, 45.801], [west, 45.801], [west, 45.8]]]).geometry;
+    const land = (proposalId, kind, west, east, extra = {}) => ({
+        proposalId, applied: true, goal: kind, createdAt: '2026-10-01T00:00:00.000Z',
+        structureProposal: { kind, geometry: box(west, east) }, ...extra
+    });
+    const rivals = (proposal, records) => collectAppliedProposalAlternatives(proposal, records, { planOrder }).map(r => r.proposalId);
+
+    it('a park drawn over part of a square leaves the square standing', () => {
+        const square = land('square', 'square', 15.9, 15.902);
+        const park = land('park', 'park', 15.901, 15.903, { applied: false, createdAt: '2026-10-02T00:00:00.000Z' });
+        expect(rivals(park, [square, park])).toEqual([]);
+    });
+
+    it('one it covers entirely comes off, and so does its own published version however little they overlap', () => {
+        const square = land('square', 'square', 15.9, 15.902);
+        const lake = land('lake', 'lake', 15.899, 15.903, { applied: false });
+        expect(rivals(lake, [square, lake])).toEqual(['square']);
+        const published = land('published', 'park', 15.9, 15.902, { published: { cid: 'bafy-park' } });
+        const revision = land('revision', 'park', 15.901, 15.903, { applied: false, origin: { cid: 'bafy-park' } });
+        expect(rivals(revision, [published, revision])).toEqual(['published']);
+        const localRevision = land('local-revision', 'park', 15.901, 15.903, {
+            applied: false, proposalOrigin: { relation: 'revision', source: { kind: 'local', localProposalId: 'published' } }
+        });
+        expect(rivals(localRevision, [published, localRevision])).toEqual(['published']);
+    });
+
+    it('a building under a park still comes off', () => {
+        const house = building('house', 15.9005, true);
+        const park = land('park', 'park', 15.9, 15.903, { applied: false });
+        expect(rivals(park, [house, park])).toEqual(['house']);
+    });
+});
+
 describe('lineage is not a ground conflict', () => {
     it('a published source and its moved, non-overlapping fork both stay applied; real overlap still counts', () => {
         const source = {

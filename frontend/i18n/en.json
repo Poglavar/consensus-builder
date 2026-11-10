@@ -1015,6 +1015,14 @@
             "cancel": "Keep editing",
             "notSaved": "The edit was not saved. The design has been reopened."
         },
+        "groundTakes": {
+            "title": "This design takes ground from others",
+            "displaced": "It stands where {{names}} stand(s), so they come off the map; they stay in your list and can be applied again.",
+            "yielding": "It takes part of {{names}}; they stay on the map on the ground it leaves them.",
+            "keeps": "{{names}} came later and keep(s) the ground it also covers; this design stands round them.",
+            "confirm": "Save",
+            "notSaved": "Not saved. The design has been reopened."
+        },
         "builtButParked": "The object was created but could not be placed on the map (a conflict blocked it). It is parked in your designs list — select it there to see and apply it.",
         "builtButParkedBecause": "The object was created but could not be placed on the map: {{reason}} It is parked in your designs list — select it there to see and apply it.",
         "freeform": {

@@ -504,14 +504,51 @@ describe('geometric interaction on open ground', () => {
         expect(manager._openGroundInteractions([a], [a, b])).toBeNull();
     });
 
-    it('takes an overlapping bare-ground proposal off the map when another is applied on the same spot', async () => {
+    it('names before a save which parks and squares give way, keep their ground or come off the map', async () => {
+        const none = { binding: { parcels: [], coverage: 'none' } };
+        const park = structureRecord('park', 'park', rect(0, 0, 10, 10), none);
+        const square = structureRecord('square', 'square', rect(20, 0, 30, 10), none);
+        square.createdAt = '2026-10-03T00:00:00.000Z';
+        const kiosk = structureRecord('kiosk', 'square', rect(12, 2, 14, 4), none);
+        kiosk.createdAt = '2026-10-04T00:00:00.000Z';
+        const { manager } = await harness({ records: [park, square, kiosk] });
+        for (const id of ['park', 'square', 'kiosk']) await expect(manager.applyProposal(id)).resolves.toBe(true);
+        const ids = takes => Object.fromEntries(Object.entries(takes).map(([key, list]) => [key, list.map(record => record.proposalId).sort()]));
+        // A new lake over the park's east half, the whole kiosk and the square's west half: it forms last.
+        const lake = structureRecord('lake', 'lake', rect(5, 0, 25, 10), none);
+        delete lake.createdAt;
+        expect(ids(manager.previewGroundTakes(lake))).toEqual({ displaced: ['kiosk'], yielding: ['park', 'square'], keeps: [] });
+        // The park, edited in place to reach into the square, keeps its early place: the square keeps its ground.
+        const reshaped = structureRecord('park', 'park', rect(0, 0, 25, 10), none);
+        expect(ids(manager.previewGroundTakes(reshaped, { sourceId: 'park', inPlace: true })))
+            .toEqual({ displaced: ['kiosk'], yielding: [], keeps: ['square'] });
+        // As a counterproposal it forms last and the square gives way; the park it revises is not named.
+        const counter = { ...reshaped, proposalId: 'park-revision' };
+        delete counter.createdAt;
+        expect(ids(manager.previewGroundTakes(counter, { sourceId: 'park' })))
+            .toEqual({ displaced: ['kiosk'], yielding: ['square'], keeps: [] });
+        // Nothing was changed by asking.
+        expect(['park', 'square', 'kiosk'].map(id => globalThis.proposalStorage.getProposal(id).applied)).toEqual([true, true, true]);
+    });
+
+    it('lets a park give way to a square applied over part of it, and takes one it covers entirely off the map', async () => {
         const first = structureRecord('first', 'park', rect(0, 0, 10, 10), { binding: { parcels: [], coverage: 'none' } });
         const second = structureRecord('second', 'square', rect(5, 0, 15, 10), { binding: { parcels: [], coverage: 'none' } });
-        const { manager, fabric } = await harness({ records: [first, second] });
+        second.createdAt = '2026-10-03T00:00:00.000Z';
+        const third = structureRecord('third', 'lake', rect(-1, -1, 16, 11), { binding: { parcels: [], coverage: 'none' } });
+        third.createdAt = '2026-10-04T00:00:00.000Z';
+        const { manager, fabric } = await harness({ records: [first, second, third] });
         await expect(manager.applyProposal('first')).resolves.toBe(true);
         await expect(manager.applyProposal('second')).resolves.toBe(true);
-        expect(globalThis.proposalStorage.getProposal('first').applied).toBe(false);
-        expect(fabric.list().map(feature => feature.properties.producedByProposalId)).toEqual(['second']);
+        // The park stays, on the half the square leaves it.
+        expect(globalThis.proposalStorage.getProposal('first').applied).toBe(true);
+        expect(fabric.list().map(feature => feature.properties.producedByProposalId).sort()).toEqual(['first', 'second']);
+        const park = globalThis.parks.find(feature => feature.properties.proposalId === 'first');
+        expect(turf.area(park)).toBeCloseTo(turf.area(turf.feature(rect(0, 0, 5, 10))), 0);
+        // A lake over both leaves neither any ground: they come off the map.
+        await expect(manager.applyProposal('third')).resolves.toBe(true);
+        expect(['first', 'second'].map(id => globalThis.proposalStorage.getProposal(id).applied)).toEqual([false, false]);
+        expect(fabric.list().map(feature => feature.properties.producedByProposalId)).toEqual(['third']);
     });
 
     it.each(proposalFamilies.flatMap(([oldKind]) => proposalFamilies.map(([newKind]) => [oldKind, newKind])))
@@ -766,12 +803,13 @@ describe('local shared-plan replacement', () => {
         const { manager, store, fabric } = await harness({ facts: [parcel(parcelId, rect(0, -10, 30, 30))], records: [old, park, road] });
         await expect(manager.applyProposal('old-park')).resolves.toBe(true);
 
-        await expect(manager.applyProposalPlan(['new-road', 'new-park'])).resolves.toMatchObject({ ok: true, releasedIds: ['old-park'] });
+        await expect(manager.applyProposalPlan(['new-road', 'new-park'])).resolves.toMatchObject({ ok: true, releasedIds: [] });
 
-        expect(store.getProposal('old-park').applied).toBe(false);
+        // The old park gives the new one its western part and the road its ribbon, and stays on the rest.
+        expect(store.getProposal('old-park').applied).toBe(true);
         expect(store.getProposal('new-park').applied).toBe(true);
         expect(store.getProposal('new-road').applied).toBe(true);
-        expect(fabric.producedBy('old-park')).toHaveLength(0);
+        expect(fabric.producedBy('old-park').length).toBeGreaterThan(0);
         expect(fabric.producedBy('new-park').length).toBeGreaterThan(0);
         expect(fabric.producedBy('new-road').length).toBeGreaterThan(0);
     });

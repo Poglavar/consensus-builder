@@ -2184,6 +2184,14 @@
             "confirm": "Guardar e retirá-los",
             "notSaved": "A edição não foi guardada. O projeto foi reaberto."
         },
+        "groundTakes": {
+            "title": "Este projeto ocupa terreno de outros",
+            "displaced": "Fica onde está {{names}}, por isso saem do mapa; continuam na sua lista e podem ser aplicados novamente.",
+            "yielding": "Ocupa parte de {{names}}; continuam no mapa, no terreno que lhes deixa.",
+            "keeps": "{{names}} vieram depois e mantêm o terreno que este também cobre; este projeto fica à volta deles.",
+            "confirm": "Guardar",
+            "notSaved": "Não foi guardado. O projeto foi reaberto."
+        },
         "review": {
             "parcels": "Parcelas",
             "details": "Detalhes",

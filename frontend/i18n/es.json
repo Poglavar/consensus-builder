@@ -1015,6 +1015,14 @@
             "cancel": "Seguir editando",
             "notSaved": "El cambio no se guardó. El diseño se ha reabierto."
         },
+        "groundTakes": {
+            "title": "Este diseño toma terreno de otros",
+            "displaced": "Está donde está {{names}}, así que salen del mapa; siguen en tu lista y se pueden volver a aplicar.",
+            "yielding": "Toma parte de {{names}}; siguen en el mapa sobre el terreno que les deja.",
+            "keeps": "{{names}} llegaron después y conservan el terreno que este también cubre; este diseño queda alrededor.",
+            "confirm": "Guardar",
+            "notSaved": "No se guardó. El diseño se ha vuelto a abrir."
+        },
         "builtButParked": "El objeto se creó pero no se pudo colocar en el mapa (un conflicto lo bloqueó). Está aparcado en tu lista de diseños — selecciónalo allí para verlo y aplicarlo.",
         "builtButParkedBecause": "El objeto se creó pero no se pudo colocar en el mapa: {{reason}} Está aparcado en tu lista de diseños — selecciónalo allí para verlo y aplicarlo.",
         "freeform": {

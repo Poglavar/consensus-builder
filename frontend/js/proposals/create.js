@@ -220,6 +220,8 @@ async function createProposal() {
         : null;
     // Set below when this save edits one's own local record in place (proposals/lineage.js).
     let inPlaceSourceId = null;
+    // The record this save revises (in place or as a counterproposal).
+    let revisedSourceId = null;
     const markDraftPublishFailed = (error) => {
         if (!publishingDraftId || !window.proposalDraftStore?.getDraft?.(publishingDraftId)) return;
         window.proposalDraftStore.markPublishFailed(publishingDraftId, error);
@@ -379,6 +381,7 @@ async function createProposal() {
             const draft = window.proposalDraftStore?.getDraft?.(publishingDraftId);
             const immutableSourceId = draft?.sourceLocalProposalId || source.proposalId || proposalCopySource?.proposalId || null;
             if (immutableSourceId) {
+                revisedSourceId = String(immutableSourceId);
                 // One's own local record is saved in place; a published one, or an explicit Fork,
                 // makes a new record that links back (proposals/lineage.js editsInPlace).
                 const editSource = proposalStorage.getProposal(String(immutableSourceId));
@@ -773,9 +776,14 @@ async function createProposal() {
         // An edit of one's own local record rewrites it in place, and takes what stands on ground
         // the edit changes off the map once the user agrees; every other save adds a new record.
         let proposalId = null;
+        // What the save takes from other designs is named first (ProposalManager.previewGroundTakes).
+        const groundTakes = ProposalManager.previewGroundTakes?.(proposal, {
+            sourceId: inPlaceSourceId || revisedSourceId,
+            inPlace: !!inPlaceSourceId
+        }) || {};
         if (inPlaceSourceId) {
             const dependents = ProposalManager.findEditDependents(inPlaceSourceId, proposal);
-            if (dependents.length && !(await window.confirmProposalEditDependents(dependents))) {
+            if (!(await window.confirmProposalGroundTakes({ ...groundTakes, dependents }))) {
                 hideWaitingPopupSafe();
                 updateStatus(t('proposalDrafts.dependents.notSaved', 'The edit was not saved. The design has been reopened.'));
                 setProposalModalInteractivity(true);
@@ -787,6 +795,13 @@ async function createProposal() {
             });
             if (updated) proposalId = inPlaceSourceId;
         } else {
+            if (!(await window.confirmProposalGroundTakes(groundTakes))) {
+                hideWaitingPopupSafe();
+                updateStatus(t('proposalDrafts.groundTakes.notSaved', 'Not saved. The design has been reopened.'));
+                setProposalModalInteractivity(true);
+                setProposalCreateButtonState(false);
+                return;
+            }
             proposalId = proposalStorage.addProposal(proposal);
         }
         console.debug('[createProposal] Proposal save took:', (performance.now() - saveStartTime).toFixed(2), 'ms');

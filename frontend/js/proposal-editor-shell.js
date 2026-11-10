@@ -537,6 +537,50 @@
         });
     }
 
+    // One question before a save that takes other designs' ground (ProposalManager.previewGroundTakes
+    // and, for an in-place edit, findEditDependents): what comes off the map, and which parks,
+    // squares and lakes give way or keep theirs. True when there is nothing to ask or the user saves.
+    // Whether a save has anything for confirmGroundTakes to ask: checked first, so a save with
+    // nothing to ask runs on without waiting for a dialog.
+    function hasGroundTakes({ dependents = [], displaced = [], yielding = [], keeps = [] } = {}) {
+        return dependents.length + displaced.length + yielding.length + keeps.length > 0;
+    }
+
+    async function confirmGroundTakes({ dependents = [], displaced = [], yielding = [], keeps = [] } = {}) {
+        const dependentIds = new Set(dependents.map(record => String(record.proposalId)));
+        const off = displaced.filter(record => !dependentIds.has(String(record.proposalId)));
+        if (!off.length && !yielding.length && !keeps.length) {
+            return dependents.length ? confirmEditDependents(dependents) : true;
+        }
+        const names = list => list.map(record => `“${record.title || record.name || record.proposalId}”`).join(', ');
+        const parts = [];
+        if (dependents.length) {
+            parts.push(tDraft('proposalDrafts.dependents.message',
+                'Saving this edit changes the ground {{count}} proposal(s) stand on: {{names}}. They will be taken off the map.',
+                { count: dependents.length, names: names(dependents) }));
+        }
+        if (off.length) {
+            parts.push(tDraft('proposalDrafts.groundTakes.displaced',
+                'It stands where {{names}} stand(s), so they come off the map; they stay in your list and can be applied again.',
+                { count: off.length, names: names(off) }));
+        }
+        if (yielding.length) {
+            parts.push(tDraft('proposalDrafts.groundTakes.yielding',
+                'It takes part of {{names}}; they stay on the map on the ground it leaves them.',
+                { count: yielding.length, names: names(yielding) }));
+        }
+        if (keeps.length) {
+            parts.push(tDraft('proposalDrafts.groundTakes.keeps',
+                '{{names}} came later and keep(s) the ground it also covers; this design stands round them.',
+                { count: keeps.length, names: names(keeps) }));
+        }
+        return global.CbDialog.confirm(parts.join('\n\n'), {
+            title: tDraft('proposalDrafts.groundTakes.title', 'This design takes ground from others'),
+            okText: tDraft('proposalDrafts.groundTakes.confirm', 'Save'),
+            cancelText: tDraft('proposalDrafts.dependents.cancel', 'Keep editing')
+        });
+    }
+
     async function handleShellClick(event) {
         const button = event.target?.closest?.('[data-editor-action]');
         if (!button || button.disabled) return;
@@ -2067,7 +2111,8 @@
             // once the user has seen it named and agreed.
             const sourceId = String(inPlaceSource.proposalId);
             const dependents = global.ProposalManager?.findEditDependents?.(sourceId, proposal) || [];
-            if (dependents.length && !(await confirmEditDependents(dependents))) {
+            const takes = global.ProposalManager?.previewGroundTakes?.(proposal, { sourceId, inPlace: true }) || {};
+            if (hasGroundTakes({ ...takes, dependents }) && !(await confirmGroundTakes({ ...takes, dependents }))) {
                 return keepEditing(tDraft('proposalDrafts.dependents.notSaved', 'The edit was not saved. The design has been reopened.'));
             }
             profile.mark('record');
@@ -2095,6 +2140,12 @@
             });
             profile.mark('ui');
         } else {
+            // A new record (a counterproposal of `editSource` included) is applied as it saves:
+            // what it takes from other designs is named first.
+            const takes = global.ProposalManager?.previewGroundTakes?.(proposal, { sourceId: editSource?.proposalId || null }) || {};
+            if (hasGroundTakes(takes) && !(await confirmGroundTakes(takes))) {
+                return keepEditing(tDraft('proposalDrafts.groundTakes.notSaved', 'Not saved. The design has been reopened.'));
+            }
             proposalId = global.proposalStorage?.addProposal?.(proposal);
             if (!proposalId) {
                 if (typeof global.showStyledAlert === 'function') {
@@ -2369,6 +2420,7 @@
     global.editProposal = editProposal;
     global.editProposalAsReplacement = editProposal;
     global.confirmProposalEditDependents = confirmEditDependents;
+    global.confirmProposalGroundTakes = confirmGroundTakes;
     global.editProposalGeometry = editProposalGeometry;
     global.convertProposalToFreeform = convertProposalToFreeform;
     global.convertActiveDesignToFreeform = convertActiveDesignToFreeform;

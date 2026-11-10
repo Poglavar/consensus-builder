@@ -163,6 +163,31 @@
         ));
     }
 
+    // Parks, squares and lakes: open land that gives way where a later one is drawn over it.
+    const OPEN_LAND_KINDS = new Set(['park', 'square', 'lake']);
+    function isOpenLand(proposal) {
+        return !!(proposal && proposal.structureProposal && OPEN_LAND_KINDS.has(proposal.structureProposal.kind)
+            && !isBuildingContentProposal(proposal));
+    }
+
+    // Whether one record is a version of the other: a published design and a revision of it, or two
+    // revisions of the same design, or a counterproposal and the local record it was made from.
+    function isRevisionPair(a, b) {
+        const cidOf = record => record?.published?.cid || null;
+        const sourceOf = record => record?.proposalOrigin?.relation === 'revision' ? record.proposalOrigin.source : null;
+        const namesOther = (record, other) => {
+            const source = sourceOf(record);
+            if (!source) return false;
+            return source.kind === 'local'
+                ? source.localProposalId === recordIdOf(other)
+                : !!source.cid && (source.cid === cidOf(other) || source.cid === other?.origin?.cid);
+        };
+        return !!((a?.origin?.cid && a.origin.cid === cidOf(b))
+            || (b?.origin?.cid && b.origin.cid === cidOf(a))
+            || (a?.origin?.cid && a.origin.cid === b?.origin?.cid)
+            || namesOther(a, b) || namesOther(b, a));
+    }
+
     // These are the apply paths that clear proposed buildings under their authored footprint.
     // A parcel layout is intentionally absent: reshaping parcel fabric is not, by itself, choosing
     // a different building design.
@@ -230,10 +255,8 @@
             // road are alternatives, however: keeping both would leave the old traffic profile
             // standing beside its replacement. Lineage only makes this pair eligible for the
             // ordinary geometric test below; a moved copy with no overlap still coexists.
-            const roadRevision = proposal.roadProposal && candidate.roadProposal && (
-                (proposal.origin?.cid && proposal.origin.cid === candidate.published?.cid)
-                || (candidate.origin?.cid && candidate.origin.cid === proposal.published?.cid)
-                || (proposal.origin?.cid && proposal.origin.cid === candidate.origin?.cid));
+            const revision = isRevisionPair(proposal, candidate);
+            const roadRevision = proposal.roadProposal && candidate.roadProposal && revision;
             const occupiedGroundRival = (replacesLayoutGround && candidate.parcelLayout)
                 || (replacesCorridorGround && candidate.roadProposal);
             if (!isBuildingContentProposal(candidate) && !candidate.structureProposal && !roadRevision && !occupiedGroundRival) return false;
@@ -241,15 +264,24 @@
             // and the rest of the structure stays (the road tool's "Build through"; the carve is
             // apply/road.js _groundAfterLaterCorridors). Buildings it covers still go.
             if (proposal.roadProposal && candidate.structureProposal && !isBuildingContentProposal(candidate)) return false;
+            // Likewise a park, square or lake over part of another: the one formed later in the
+            // order takes the overlap from the other's formed ground, and the other is drawn on what
+            // it keeps (apply/structures.js _reconcileStructurePresentation). Only its own earlier
+            // version, or one left with no ground at all, comes off the map.
+            const openLandPair = isOpenLand(proposal) && isOpenLand(candidate) && !revision;
             // No measurable footprint on either side means no demonstrable overlap, and ground that
             // cannot be shown to be taken is left free: refusing here would block on a suspicion.
             const t = turfOf(options);
             if (!planOrder || typeof planOrder.footprintOf !== 'function' || !t || !targetFootprintOf()) return false;
             const candidateFootprint = planOrder.footprintOf(candidate);
-            return candidateFootprint
-                ? groundRule().reachesInto(t, asFeature(targetFootprintOf()), asFeature(candidateFootprint), 0,
-                    { site: 'claims.appliedRivals', proposalId: targetId, rivalId: candidateId })
-                : false;
+            if (!candidateFootprint) return false;
+            const context = { site: 'claims.appliedRivals', proposalId: targetId, rivalId: candidateId };
+            const overlaps = groundRule().reachesInto(t, asFeature(targetFootprintOf()), asFeature(candidateFootprint), 0, context);
+            if (!overlaps || !openLandPair) return overlaps;
+            // Partly covered, the earlier of the two gives way and stays; one this covers entirely
+            // has nothing to stand on and comes off.
+            return !groundRule().isGround(t,
+                groundRule().uncoveredBy(t, asFeature(candidateFootprint), [asFeature(targetFootprintOf())], context));
         });
     }
 
@@ -333,6 +365,8 @@
         isBuildingContentProposal,
         displacesBuildingContent,
         appliedRivals,
+        isOpenLand,
+        isRevisionPair,
         editDependents,
         unapplyDependents,
         shortParcelLabel

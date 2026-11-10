@@ -592,6 +592,12 @@ proposal-bridge.js/create.js and backend/agents/minter.js; decoders render the z
   The same question names the proposed buildings the edit takes off the map, found by the rule the edit
   applies (`ProposalManager._collectAppliedAlternativesForExplicitApply`, claims.js appliedRivals: a road
   displaces a building it covers); they stay in the list, unapplied. Buildings are never cut.
+  A park, square or lake over part of another no longer takes it off the map: the one formed later
+  takes the overlap and the other is drawn on what it keeps (`_reconcileStructurePresentation`); one
+  covered entirely, or its own earlier version, still comes off (claims.js `appliedRivals`). Saving a
+  design asks first, naming what comes off, what gives way and what keeps its ground
+  (`ProposalManager.previewGroundTakes`, `confirmProposalGroundTakes`). An in-place edit keeps its
+  place in the order, so a later park or square keeps the ground it reaches; a counterproposal forms last.
   Plots of a parcel layout still refuse an older road. Plan stats count
   open space as it stands (`plan-yield` `openSpaceAreaOf`, fed from the applied bodies).
 

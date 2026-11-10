@@ -1016,6 +1016,14 @@
             "cancel": "Nastavi uređivanje",
             "notSaved": "Izmena nije sačuvana. Dizajn je ponovo otvoren."
         },
+        "groundTakes": {
+            "title": "Ovaj dizajn uzima tlo drugima",
+            "displaced": "Stoji tamo gde i {{names}}, pa se uklanjaju sa mape; ostaju na vašem spisku i mogu se ponovo primeniti.",
+            "yielding": "Uzima deo od {{names}}; ostaju na mapi na tlu koje im ostavlja.",
+            "keeps": "{{names}} nastali su kasnije i zadržavaju tlo koje i ovaj dizajn pokriva; ovaj dizajn stoji oko njih.",
+            "confirm": "Sačuvaj",
+            "notSaved": "Nije sačuvano. Dizajn je ponovo otvoren."
+        },
         "builtButParked": "Objekat je napravljen, ali ga nije bilo moguće postaviti na mapu (blokirao ga je sukob). Parkiran je u vašoj listi dizajna — izaberite ga tamo da ga vidite i primenite.",
         "builtButParkedBecause": "Objekat je napravljen, ali ga nije bilo moguće postaviti na mapu: {{reason}} Parkiran je u vašoj listi dizajna — izaberite ga tamo da ga vidite i primenite.",
         "freeform": {
@@ -2784,7 +2792,7 @@
         "corridorStructure": {
             "offer": "Ovaj {{kind}} bi presekao {{names}}. Izgraditi kroz? {{kind}} prolazi kroz sredinu; ostatak ostaje kakav jeste.",
             "buildThrough": "Izgradi kroz",
-            "buildingsOff": "Ova promena prolazi tamo gde stoji {{names}}, pa taj projekat zgrade silazi s mape; ostaje na vašem spisku i može ponovo da se primeni kada mu se oslobodi mesto.",
+            "buildingsOff": "Trasa ({{kind}}) bi prolazila tamo gde stoji {{names}}, pa taj projekat zgrade silazi s mape; ostaje na vašem spisku i može ponovo da se primeni kada se trasa pomeri.",
             "kinds": {
                 "park": "park",
                 "square": "trg",
