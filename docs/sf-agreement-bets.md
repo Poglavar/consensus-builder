@@ -12,7 +12,7 @@ share. Execution does not establish a planning approval, building permit or comp
 Both agreements and their plans are published and indexed. Each agreement has an active on-chain
 account, and each market is open and funded with 69.314720 devnet USDC. The pair record lists the
 published CIDs, account addresses and market addresses. Both remain unresolved: no execution or
-claim proof has been recorded. A small operator-controlled USDC buy and partial sell, plus isolated points buy/sell and reload checks, passed. The simulated rights snapshot is a demonstration input and does not
+claim proof has been recorded. The simulated rights snapshot is a demonstration input and does not
 represent real owner rights, consent or acceptance.
 
 The [reviewable records](sf-agreement-bets.json) preserve each source design's existing expiry as the
@@ -33,10 +33,3 @@ ownership. Each site was unioned with its imported building footprints to contai
 
 The simulated rights snapshot assigns each input parcel to one demonstration wallet. The labels and
 names describe design provenance only.
-
-The initial Pinata upload attempt on 26 October 2026 returned HTTP 403 `pinning-quota-exhausted`;
-Filebase's default endpoint returned HTTP 403 `AccountProblem`. A Pinata reserve path later succeeded.
-Both plans and agreements were published, indexed and read back byte-for-byte through the verified
-gateway. The initial funding observation also recorded a 79.905502 USDC shortfall; 138.629440 USDC
-was later deposited and split equally between the two markets. See the dated [preparation and
-validation record](sf-demo-validation-2026-10-26.md).
