@@ -49,11 +49,11 @@ One account type for both resolution paths; `kind` selects the path at resolutio
 | `q_yes`, `q_no` | u64 | outstanding shares per side |
 | `seed` | u64 | the deposit, `max_loss(b)` or more |
 | `closes_at` | i64 | last trade; also the question's deadline |
-| `grace_seconds` | u32 | after `closes_at + grace`, absence of evidence settles NO |
+| `grace_seconds` | u32 | strictly after `closes_at + grace`, absence of evidence settles NO |
 | `max_position` | u64 | per wallet per side, 0 for none |
 | `recipe_hash`, `subject_hash`, `yes_value_hash`, `no_value_hash` | [u8; 32] | kind 1 commitments, as in `ExternalMarket` |
 | `credential`, `schema`, `trusted_attester` | Pubkey | kind 1, as in `ExternalMarket` |
-| `resolved`, `outcome`, `resolved_at`, `evidence`, `evidence_hash` | | `outcome`: 0 NO, 1 YES, 2 VOID |
+| `resolved`, `outcome`, `resolved_at`, `evidence`, `evidence_hash` | | `outcome`: 0 NO, 1 YES, 2 VOID. Kind 1 only: `resolved` false with `resolved_at` nonzero is a proposed outcome under challenge (`outcome` holds the proposal, `resolved_at` the start of its window); finalization sets `resolved` and `resolved_at` |
 | `paid_out` | u64 | claims paid so far, for the creator's reclaim |
 | `bump` | u8 | |
 
@@ -85,15 +85,22 @@ not read by this codec.
   shares to the side and the position, enforces `max_position`.
 - `sell(side, shares, min_return)`. Same checks; requires the position holds the shares; computes
   the sell quote, requires it `≥ min_return`, transfers it from the vault, removes the shares.
-- `resolve_lmsr()` kind 0: Executed with valid positive `executed_at ≤ closes_at` → YES; execution after
-  `closes_at` → NO; Expired → NO; Cancelled → VOID; else, once
-  `now ≥ closes_at + grace`, NO. Kind 1: a qualifying attestation whose event time is on or before
-  `closes_at` → the committed outcome; else, once `now ≥ closes_at + grace`, NO. Conflicting
-  qualifying attestations for both outcomes → VOID (streamline B5).
-- `claim()`. YES or NO: shares on the winning side pay one unit each. VOID: every share on either
-  side pays one half, floored. Adds to `paid_out`.
-- `reclaim_seed()`. Creator only, after resolution: transfers `vault − (obligation − paid_out)`,
-  where `obligation` is the winning side's shares, or half of both sides for VOID.
+- `resolve_lmsr()` kind 0, final at once: Executed with valid positive `executed_at ≤ closes_at` →
+  YES; execution after `closes_at` → NO; Expired → NO; Cancelled → NO; else, once
+  `now > closes_at + grace`, NO. The comparison is strict because the agreement's `execute` is
+  allowed through its deadline second (`deadline_passed` is `now > deadline`), and the canonical
+  market closes at that deadline with zero grace. Kind 1 records a proposed outcome (see
+  "Challenge window"): a qualifying attestation whose event time is on or before `closes_at` → the
+  committed outcome; else, once `now > closes_at + grace`, NO. Conflicting qualifying attestations
+  for both outcomes → VOID (streamline B5).
+- `challenge_lmsr()` kind 1, while the window is open: one qualifying attestation as remaining
+  account 0.
+- `finalize_lmsr()` kind 1, after the window: the proposed outcome becomes final.
+- `claim()`. After the outcome is final. YES or NO: shares on the winning side pay one unit each.
+  VOID: every share on either side pays one half, floored. Adds to `paid_out`.
+- `reclaim_seed()`. Creator only, after the outcome is final: transfers
+  `vault − (obligation − paid_out)`, where `obligation` is the winning side's shares, or half of
+  both sides for VOID.
 
 The client computes shares for a budget off-chain with `sharesForBudget` and sends `shares` plus
 `max_cost`; the program never searches. Each trade costs two evaluations of `C`. Measured on
@@ -106,7 +113,8 @@ for kind 1) rather than one with a kind argument; the seed is exactly `max_loss(
 require the proposal to still be Active, so nobody buys a known outcome at a stale price between
 the terminal state and resolution; the attestation's `recipeHash` must match the market's
 `recipe_hash`; VOID's obligation is `floor(q_yes / 2) + floor(q_no / 2)`; the first attestation is
-stored on the account and a second only in the `LmsrMarketResolved` event; errors 6028 to 6044 are
+stored on the account and a second only in the `LmsrOutcomeProposed` or `LmsrOutcomeChallenged`
+event; errors 6028 to 6044, then the challenge and external-timeout errors 6045 to 6052, are
 appended so the deployed codes keep their numbers. New instruction and account discriminators are
 in the checked-in IDL, `blockchain/solana/idl/proposal_market.json`, which the backend client and
 layout tests pin.
@@ -129,14 +137,36 @@ schema, `MarketEvidence-v1`, issued by a lens member whose adapter did the sourc
 `resolve_lmsr` for kind 1 requires: credential, schema and authority match the market's
 commitments; the attestation is unexpired; `subject` hashes to `subject_hash`; `value` hashes to
 `yes_value_hash` or `no_value_hash`; `eventTime ≤ closes_at` (the event happened by the deadline);
-`eventTime ≤ sourceObservedAt ≤ now`. A YES attestation resolves YES at any time after it exists,
-so a permit issued in October settles an end-of-year market in October. With no qualifying
-attestation, `now ≥ closes_at + grace` resolves NO. The grace must cover the source's publication
-lag: the permits dataset refreshes about weekly, so permit markets use at least fourteen days.
-An "any new-construction permit" recipe also carries a not-before bound (the market's conception),
-and a record dated on or before it is not evidence. Two qualifying attestations with different
-values, submitted together, resolve VOID. The court market's chronology rule (evidence must
-postdate close) belongs to its own question shape and stays with the legacy `ExternalMarket`.
+`eventTime ≤ sourceObservedAt ≤ now`. A YES attestation proposes YES at any time after it exists,
+so a permit issued in October settles an end-of-year market in October, two days later. With no
+qualifying attestation, `now > closes_at + grace` proposes NO. The grace must cover the source's
+publication lag: the permits dataset refreshes about weekly, so permit markets use at least
+fourteen days. An "any new-construction permit" recipe also carries a not-before bound (the
+market's conception), and a record dated on or before it is not evidence. Two qualifying
+attestations with different values, submitted together, propose VOID. The court market's
+chronology rule (evidence must postdate close) belongs to its own question shape and stays with
+the legacy `ExternalMarket`.
+
+### Challenge window
+
+The resolver chooses which attestations to pass, so a kind 1 resolution is only a proposal. It
+stops trading at once and stays open to challenge for `CHALLENGE_SECONDS` (48 hours, a program
+constant) from the proposal. During the window anyone may call `challenge_lmsr` with one
+qualifying attestation (the same checks as above):
+
+| Proposed | Challenge attests | Result |
+|---|---|---|
+| NO by absence (no evidence) | YES or NO | the attestation's outcome, recorded as the market's evidence |
+| YES or NO backed by evidence | the other outcome | VOID, the first evidence kept |
+| YES or NO backed by evidence | the same outcome | refused (`ChallengeChangesNothing`) |
+| VOID | anything | refused: VOID is final |
+
+A challenge that changes the proposal restarts the window, so the other side can answer it; each
+market changes at most twice. After the window anyone calls `finalize_lmsr`; claims and the
+creator's reclaim wait for it. Forty-eight hours lets a holder of the losing side notice a
+proposal that ignored evidence and submit it; the attester's service can watch for proposals the
+same way it watches for deadlines. Kind 0 has no window: the agreement account is the only
+evidence and anyone reads the same status.
 
 ## Invariants the tests pin
 
@@ -148,8 +178,9 @@ postdate close) belongs to its own question shape and stays with the legacy `Ext
 5. The JavaScript module and the Rust port agree on every vector in `lmsr-vectors.json`.
 
 NO-by-absence for kind 1 sees only the
-attestations passed in, so the attester's service must resolve within the grace window, ideally in
-the same transaction as its attestation. Kind 0 reads the agreement account's existing `executed_at`
+attestations passed in; an attestation left out can still be submitted during the challenge window,
+and the attester's service should resolve within the grace window, ideally in the same
+transaction as its attestation. Kind 0 reads the agreement account's existing `executed_at`
 field. A missing, nonpositive or future execution time, or an unrecognized lifecycle status, is
 invalid evidence and fails settlement. The grace period delays the absence decision; it does not
 extend the event cutoff. The account reader's test serializes a real agreement, independently of
@@ -162,34 +193,38 @@ and bound kind 1 markets those come from the proposal account at trade time (`Pr
 an unbound kind 1 market bars the attester only. The check is best effort by construction: a
 colluding second wallet is not detectable on-chain, which is why cancellation has its own rule.
 
-## Cancellation resolves VOID
+## Cancellation resolves NO
 
-The current rule is Cancelled → VOID. Every unclaimed position on either side is eligible for half
-its shares, rounded down per position. VOID is distinct from a NO forecast: it returns half a share
-unit to either side rather than rewarding only NO holders. The aggregate obligation is
-`floor(q_yes / 2) + floor(q_no / 2)` and is covered by the maker reserve invariant.
+A Cancelled agreement settles its kind 0 market NO. The sponsor can already force NO by not
+executing, so cancelling gives it no outcome it did not have; NO holders, whose forecast was right,
+receive one unit per share. A VOID on cancel would instead hand the sponsor's second wallet a free
+option: buy the cheap side, cancel, and collect half per share. A sponsor-controlled wallet can
+still profit from buying NO and then not executing (by cancel or by letting the deadline pass);
+that is the insider risk every agreement market carries, which direct insider restrictions bound
+only for the wallets the program can see. VOID remains for conflicting evidence on kind 1.
 
-VOID has two known costs. An honest cancellation usually means the truthful answer was NO, yet NO
-holders receive half rather than one. A colluder can still buy NO cheaply before the author cancels
-and collect half per share, which caps the extraction near a quarter of `b` (resolving NO on
-cancel would leave it open-ended). The unimplemented alternative is NO with notice: a proposal with
-an open market could only be cancelled after a fixed notice period recorded as
-`cancel_requested_at`, while trading continues with the pending cancellation visible, and VOID
-would remain for conflicting evidence. Adopting it is a one-line policy change in `resolve_lmsr`
-plus the notice field. Direct insider restrictions do not detect a second wallet controlled by an
-insider.
+An agreement may name its own sponsor as its lens. Readers and bettors judge the lens; the program
+does not restrict it.
 
 ## Deployment boundary
 
 The parimutuel accounts created before the LMSR release remain historical chain state. The current
 source retains their old instructions and readers, but new frontend and points markets use the LMSR
-model. The devnet program runs the instructions and account layout described here; a completed
-public trade with them is not yet recorded.
+model. The devnet program has the account layout described here but not yet the rules above for
+cancellation, the grace boundary, the challenge window or the external-market timeout: they take
+effect when `proposal_market` and `agreement` are redeployed (the binary is about 570 KB, so a
+devnet upgrade may need `solana program extend` first). A completed public trade is not yet
+recorded.
 
 ## Test contract (streamline K7)
 
 Rust unit tests reproduce `lmsr-vectors.json`. Localnet tests cover: create with and without the
 seed, buy under and over `max_cost`, sell under `min_return` and over the position, late trade,
-insider trade, `max_position`, both resolution paths, VOID on conflicting evidence, claim on each
-outcome, double claim, reclaim before and after resolution, and the vault invariant replayed over a
-scripted trade sequence. The compute units of `buy` and `sell` are measured and recorded here.
+insider trade, `max_position`, both resolution paths, Cancelled → NO, a kind 1 proposal and what
+it holds back (claims, reclaim, trades, finalization during the window), a challenge replacing NO
+by absence, a conflicting challenge turning a proposal VOID, VOID on conflicting evidence, claim on
+each kind 0 outcome, double claim, reclaim before and after resolution, and the vault invariant
+replayed over a scripted trade sequence. The localnet clock follows the host, so the 48-hour
+window never elapses there: finalization after it, the exact grace boundary second and VOID
+payouts are pinned by the Rust unit tests. The compute units of `buy` and `sell` are measured and
+recorded here.

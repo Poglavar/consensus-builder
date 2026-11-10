@@ -142,11 +142,11 @@ describe('collect step: claims a persona is owed', () => {
         expect(societyHistory({ simulated: [{ type: 'claim', side: 'yes', agreementCid: 'cid-won' }] }).claimedPositions).toEqual(['cid-won:yes']);
     });
 
-    it('resolves an executed agreement by its timestamp, cancelled VOID and expired NO, and waits for an open deadline', () => {
+    it('resolves an executed agreement by its timestamp, cancelled and expired NO, and waits for an open deadline', () => {
         expect(settlement(markets['account-open'], settled[4], Math.floor(NOW / 1000))).toBeNull();
         expect(settlement(markets['account-open'], null, Math.floor(NOW / 1000))).toBeNull();
         expect(settlement(markets['account-open'], agreement('exec', { chainStatus: 'executed', executedAt: Math.floor(NOW / 1000) - 10 }), Math.floor(NOW / 1000))).toEqual({ outcome: 'yes', resolveFirst: true });
-        expect(settlement(markets['account-open'], agreement('cancel', { chainStatus: 'cancelled' }), Math.floor(NOW / 1000))).toEqual({ outcome: 'void', resolveFirst: true });
+        expect(settlement(markets['account-open'], agreement('cancel', { chainStatus: 'cancelled' }), Math.floor(NOW / 1000))).toEqual({ outcome: 'no', resolveFirst: true });
         expect(settlement(markets['account-open'], agreement('expire', { chainStatus: 'expired' }), Math.floor(NOW / 1000))).toEqual({ outcome: 'no', resolveFirst: true });
         expect(settlement(markets['account-won'], settled[0], Math.floor(NOW / 1000))).toEqual({ outcome: 'yes', resolveFirst: false });
         expect(settlement(null, settled[0], Math.floor(NOW / 1000))).toBeNull();
@@ -167,7 +167,9 @@ describe('collect step: claims a persona is owed', () => {
             .toMatchObject({ step: 'role', action: null, owedClaims: 0 });
         expect(role).toHaveBeenCalledOnce();
 
-        expect(settlement(decoded, open, closesAt)).toEqual({ outcome: 'no', resolveFirst: true });
+        // Execution is still allowed in the deadline second, so absence settles NO only after it.
+        expect(settlement(decoded, open, closesAt)).toBeNull();
+        expect(settlement(decoded, open, closesAt + 1)).toEqual({ outcome: 'no', resolveFirst: true });
         expect(settlement(decoded, agreement('exec', { chainStatus: 'executed', executedAt: closesAt }), closesAt + 1))
             .toEqual({ outcome: 'yes', resolveFirst: true });
         expect(settlement(decoded, agreement('late', { chainStatus: 'executed', executedAt: closesAt + 1 }), closesAt + 1))

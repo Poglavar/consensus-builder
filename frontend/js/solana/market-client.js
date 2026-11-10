@@ -22,6 +22,7 @@
         stake_external: Object.freeze([79, 123, 254, 250, 71, 224, 209, 221]),
         resolve: Object.freeze([246, 150, 236, 206, 108, 63, 58, 10]),
         resolve_external: Object.freeze([249, 185, 122, 59, 58, 200, 8, 245]),
+        void_external: Object.freeze([75, 225, 245, 95, 219, 55, 174, 62]),
         claim: Object.freeze([62, 198, 214, 193, 213, 159, 108, 210]),
         claim_external: Object.freeze([135, 245, 206, 49, 254, 63, 81, 125])
     });
@@ -35,6 +36,11 @@
     const constants = Object.freeze({
         SIDE_NO: 0,
         SIDE_YES: 1,
+        // ExternalMarket.outcome after void_external: every stake is refunded.
+        OUTCOME_VOID: 2,
+        // proposal_market::EXTERNAL_RESOLUTION_TIMEOUT_SECONDS: an ExternalMarket unresolved this long
+        // after its close can only be voided.
+        EXTERNAL_RESOLUTION_TIMEOUT_SECONDS: 90 * 86_400,
         PROGRAM_ID: 'GDYnzduynKhKgxDhvvKVarn2s23DtzA26s6hycuUYDRB',
         SAS_PROGRAM_ID: '22zoJMtdu4tQc2PzL74ZUT7FrwgB1Udec8DdW4yw4BdG',
         TOKEN_PROGRAM_ID: 'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA',
@@ -412,6 +418,13 @@
         ], discriminatorBytes(IX_DISCRIMINATORS, 'resolve_external'));
     }
 
+    // Permissionless: settles an ExternalMarket VOID once it is unresolved past its resolution timeout.
+    function buildVoidExternalIx(options) {
+        const opts = options || {};
+        const [market] = getExternalMarketPda(opts.recipeHash, opts.programId);
+        return instruction(opts.programId, [meta(market, false, true)], discriminatorBytes(IX_DISCRIMINATORS, 'void_external'));
+    }
+
     function buildClaimIx(options) {
         const opts = options || {};
         const subject = toPublicKey(opts.proposal, 'proposal');
@@ -558,12 +571,14 @@
         return value;
     }
 
-    // BigInt mirror of proposal_market::payout_amount. Empty winning pool refunds every position,
-    // a loser gets nothing, a winner gets floor(amount * (yes + no) / winning).
+    // BigInt mirror of proposal_market::payout_amount. VOID (a timed-out ExternalMarket) and an empty
+    // winning pool refund every position, a loser gets nothing, a winner gets
+    // floor(amount * (yes + no) / winning).
     function payoutAmount(side, amount, yesPool, noPool, outcome) {
         const sideValue = normalizeSide(side);
-        const outcomeValue = normalizeSide(outcome);
         const stake = toU64(amount, 'amount');
+        if (Number(outcome) === constants.OUTCOME_VOID) return stake;
+        const outcomeValue = normalizeSide(outcome);
         const yes = toU64(yesPool, 'yesPool');
         const no = toU64(noPool, 'noPool');
         const winning = outcomeValue === constants.SIDE_YES ? yes : no;
@@ -615,6 +630,7 @@
         buildStakeExternalIx,
         buildResolveIx,
         buildResolveExternalIx,
+        buildVoidExternalIx,
         buildClaimIx,
         buildClaimExternalIx,
         decodeMarket,

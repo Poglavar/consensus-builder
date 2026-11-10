@@ -40,9 +40,11 @@
             if (!executedAt || executedAt > now) return fail('Agreement execution time is invalid');
             return executedAt <= closesAt ? 'yes' : 'no';
         }
-        if (source.chainStatus === 'cancelled') return 'void';
-        if (source.chainStatus === 'expired') return 'no';
-        return now >= closesAt + graceSeconds ? 'no' : null;
+        // A cancellation settles NO: the sponsor could force NO by not executing anyway.
+        if (source.chainStatus === 'cancelled' || source.chainStatus === 'expired') return 'no';
+        // Absence settles NO only after the last second of grace: an agreement still executes in
+        // its deadline second.
+        return now > closesAt + graceSeconds ? 'no' : null;
     }
     function canTrade(source, market, nowSeconds) {
         const { closesAt } = terms(market);

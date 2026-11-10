@@ -22,6 +22,8 @@
         buy: [102, 6, 61, 18, 1, 218, 235, 234],
         sell: [51, 230, 133, 164, 1, 127, 131, 173],
         resolve_lmsr: [206, 85, 180, 136, 108, 221, 51, 137],
+        challenge_lmsr: [14, 98, 235, 161, 182, 108, 240, 108],
+        finalize_lmsr: [194, 229, 212, 61, 58, 64, 180, 78],
         claim_lmsr: [9, 189, 203, 138, 25, 243, 194, 56],
         reclaim_seed: [200, 42, 222, 46, 108, 131, 168, 149]
     });
@@ -31,8 +33,10 @@
     });
     const MARKET_SIZE = 496;
     const POSITION_SIZE = 83;
+    // lmsr_market.rs CHALLENGE_SECONDS: a kind 1 proposed outcome stays open to challenge this long.
+    const CHALLENGE_SECONDS = 48 * 3600;
     const constants = Object.freeze({ PROGRAM_ID, TOKEN_PROGRAM_ID, ASSOCIATED_TOKEN_PROGRAM_ID, SYSTEM_PROGRAM_ID,
-        SIDE_NO, SIDE_YES, OUTCOME_VOID, KIND_PROPOSAL: 0, KIND_RECIPE: 1 });
+        SIDE_NO, SIDE_YES, OUTCOME_VOID, KIND_PROPOSAL: 0, KIND_RECIPE: 1, CHALLENGE_SECONDS });
     const encoder = new TextEncoder();
     let injectedWeb3 = null;
     let programIdOverride = null;
@@ -217,6 +221,17 @@
         for (const account of (o.evidence || [])) keys.push(meta(key(account, 'evidence')));
         return ix('resolve_lmsr', keys, disc('resolve_lmsr'), o.programId);
     }
+    // Kind 1, while a proposed outcome's window is open: one MarketEvidence-v1 attestation against it.
+    function buildChallengeLmsrIx(options) {
+        const o = options || {}; const market = key(o.market, 'market');
+        return ix('challenge_lmsr', [meta(market, false, true), meta(key(o.schema, 'schema')), meta(key(o.evidence, 'evidence'))],
+            disc('challenge_lmsr'), o.programId);
+    }
+    // Kind 1, after the window: the proposed outcome becomes final (permissionless).
+    function buildFinalizeLmsrIx(options) {
+        const o = options || {};
+        return ix('finalize_lmsr', [meta(key(o.market, 'market'), false, true)], disc('finalize_lmsr'), o.programId);
+    }
     function buildClaimLmsrIx(options) {
         const o = options || {}; const market = key(o.market, 'market'); const owner = key(o.owner, 'owner'); const mint = key(o.stakeMint, 'stakeMint');
         const s = side(o.side); const [position] = getPositionPda(market, owner, s, o.programId);
@@ -252,9 +267,13 @@
         if (kind !== 0 && kind !== 1) throw new Error('LmsrMarket kind is invalid');
         if (outcome > OUTCOME_VOID) throw new Error('LmsrMarket outcome is invalid');
         if (b === 0n || b > MAX_LIQUIDITY) throw new Error('LmsrMarket liquidity is out of bounds');
+        // A kind 1 outcome proposed and not yet final: unresolved with a proposal time. `outcome` is
+        // then the proposal, and claims wait until finalize_lmsr after challengeEndsAt.
+        const proposed = !resolved && resolvedAt !== 0n;
+        const challengeEndsAt = proposed ? resolvedAt + BigInt(CHALLENGE_SECONDS) : null;
         return { kind, proposal, creator, stakeMint, vault, b, qYes, qNo, seed, closesAt, graceSeconds, maxPosition,
             recipeHash, subjectHash, yesValueHash, noValueHash, credential, schema, trustedAttester, resolved, outcome,
-            resolvedAt, evidence, evidenceHash, paidOut, bump };
+            resolvedAt, evidence, evidenceHash, paidOut, bump, proposed, challengeEndsAt };
     }
     function decodePosition(input) {
         const data = input instanceof Uint8Array ? input : new Uint8Array(input);
@@ -300,6 +319,6 @@
     const api = { constants, IX_DISCRIMINATORS, ACCOUNT_DISCRIMINATORS, MARKET_SIZE, POSITION_SIZE, configure,
         getMarketPda, getExternalMarketPda, getPositionPda, getAssociatedTokenAddress, getVaultAddress,
         buildCreateLmsrMarketIx, buildCreateLmsrExternalMarketIx, buildBuyIx, buildSellIx, buildResolveLmsrIx,
-        buildClaimLmsrIx, buildReclaimSeedIx, decodeMarket, decodePosition, readMarket, readMarketAccount, readPosition, readPositionAccount };
+        buildChallengeLmsrIx, buildFinalizeLmsrIx, buildClaimLmsrIx, buildReclaimSeedIx, decodeMarket, decodePosition, readMarket, readMarketAccount, readPosition, readPositionAccount };
     return api;
 });

@@ -131,7 +131,7 @@
             return { ...entry, ...(subject ? { chainStatus, deadline: subject.deadline, sponsor: subject.sponsor } : {}), market,
                 canOpenMarket: false,
                 bettable: Boolean(market && !market.resolved && chainStatus === 'active' && now < market.closesAt),
-                canSettle: Boolean(market && !market.resolved && (['executed', 'cancelled', 'expired'].includes(chainStatus) || chainStatus === 'active' && now >= market.closesAt + market.graceSeconds)) };
+                canSettle: Boolean(market && !market.resolved && (['executed', 'cancelled', 'expired'].includes(chainStatus) || chainStatus === 'active' && now > market.closesAt + market.graceSeconds)) };
         }
         // scope 'other': every city but `city`, each contest naming its own city.
         async function loadCity(city, { fresh = false, scope = null } = {}) {

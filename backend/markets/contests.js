@@ -168,7 +168,7 @@ function agreementEntry(agreement, markets, nowMs) {
         parcelRefs: parcelRefsOf(agreement),
         market,
         bettable: Boolean(market && !market.resolved && live && nowMs < market.closesAt * 1000),
-        canSettle: Boolean(market && !market.resolved && (terminalStatus(chainStatus) || chainStatus === 'active' && nowMs >= (market.closesAt + market.graceSeconds) * 1000)),
+        canSettle: Boolean(market && !market.resolved && (terminalStatus(chainStatus) || chainStatus === 'active' && Math.floor(nowMs / 1000) > market.closesAt + market.graceSeconds)),
         canOpenMarket: Boolean(account && !market && live)
     };
 }

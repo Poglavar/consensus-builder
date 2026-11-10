@@ -40,8 +40,8 @@
     const POINTS_STAKES = ['10', '50', '100'];
 
     // Terminal status identifies a settlement opportunity. The dated oracle checks executedAt
-    // before choosing YES or NO; cancellation is VOID. This helper never pays a position.
-    const SETTLEMENT = Object.freeze({ executed: 'yes', cancelled: 'void', expired: 'no' });
+    // before choosing YES or NO; cancellation is NO. This helper never pays a position.
+    const SETTLEMENT = Object.freeze({ executed: 'yes', cancelled: 'no', expired: 'no' });
     const settlementOf = status => (Object.prototype.hasOwnProperty.call(SETTLEMENT, status) ? SETTLEMENT[status] : null);
 
     // One word for where an agreement's bet stands. The server says whether a bet is open (the
@@ -131,7 +131,7 @@
         return { account, chainStatus, deadline, sponsor: summary?.sponsor || null,
             bettable: Boolean(market && !market.resolved && live && nowMs < market.closesAt * 1000),
             canOpenMarket: Boolean(account && !market && live),
-            canSettle: Boolean(market && !market.resolved && (settlementOf(chainStatus) || chainStatus === 'active' && nowMs >= (market.closesAt + market.graceSeconds) * 1000)),
+            canSettle: Boolean(market && !market.resolved && (settlementOf(chainStatus) || chainStatus === 'active' && Math.floor(nowMs / 1000) > market.closesAt + market.graceSeconds)),
             market };
     }
 
@@ -195,7 +195,7 @@
         return (timeOf(b.latestCreatedAt) || 0) - (timeOf(a.latestCreatedAt) || 0);
     }
 
-    // Claimable fixed shares: the winning side, or both sides for a cancellation's half payout.
+    // Claimable fixed shares: the winning side, or both sides for a VOID's half payout.
     function claimSides(row, positions) {
         if (!row || row.outcome === null || row.outcome === undefined || !positions) return [];
         return ['yes', 'no'].filter(side => {

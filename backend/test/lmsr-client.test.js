@@ -119,6 +119,12 @@ describe('Solana LMSR client codec', () => {
             ['resolve_lmsr', lmsr.buildResolveLmsrIx({ market: market0, proposal, schema: web3.SystemProgram.programId, evidence: [other] }),
                 ['market', 'proposal', 'schema', 'evidence'],
                 [meta(market0, false, true), meta(proposal), meta(web3.SystemProgram.programId), meta(other)]],
+            ['challenge_lmsr', lmsr.buildChallengeLmsrIx({ market: market1, schema, evidence: other }),
+                ['market', 'schema', 'evidence'],
+                [meta(market1, false, true), meta(schema), meta(other)]],
+            ['finalize_lmsr', lmsr.buildFinalizeLmsrIx({ market: market1 }),
+                ['market'],
+                [meta(market1, false, true)]],
             ['claim_lmsr', lmsr.buildClaimLmsrIx({ market: market0, owner, stakeMint: mint, side: 1 }),
                 ['market', 'position', 'vault', 'claimer_token_account', 'claimer', 'token_program'],
                 [meta(market0, false, true), meta(position, false, true), meta(vault0, false, true), meta(ownerAta, false, true), meta(owner, true), meta(new web3.PublicKey(lmsr.constants.TOKEN_PROGRAM_ID))]],
@@ -131,7 +137,8 @@ describe('Solana LMSR client codec', () => {
             expectedData('create_lmsr_external_market', Buffer.from(recipeHash), Buffer.from(subjectHash), Buffer.from(yesValueHash), Buffer.from(noValueHash), trustedAttester.toBuffer(), u64Buffer(1000), i64Buffer(1900000000), u32Buffer(20), u64Buffer(90)),
             expectedData('buy', Buffer.from([1]), u64Buffer(7), u64Buffer(8)),
             expectedData('sell', Buffer.from([1]), u64Buffer(7), u64Buffer(4)),
-            expectedData('resolve_lmsr'), expectedData('claim_lmsr'), expectedData('reclaim_seed')
+            expectedData('resolve_lmsr'), expectedData('challenge_lmsr'), expectedData('finalize_lmsr'),
+            expectedData('claim_lmsr'), expectedData('reclaim_seed')
         ];
         for (const [name, ix, names, expected] of instructions) {
             expect(ix.programId.toBase58(), name).toBe(program.toBase58());
@@ -182,6 +189,15 @@ describe('Solana LMSR client codec', () => {
         expect(() => lmsr.decodeMarket(invalidBool)).toThrow(/bool/);
         const invalidOutcome = Buffer.from(out); invalidOutcome[414] = 3;
         expect(() => lmsr.decodeMarket(invalidOutcome)).toThrow(/outcome/);
+
+        // A kind 1 proposed outcome: unresolved with a proposal time; pending until finalized.
+        expect(lmsr.decodeMarket(external.out)).toMatchObject({ resolved: false, proposed: false, challengeEndsAt: null });
+        const proposed = Buffer.from(external.out); proposed[414] = 1; proposed.writeBigInt64LE(1900000100n, 415);
+        expect(lmsr.decodeMarket(proposed)).toMatchObject({ resolved: false, outcome: 1, resolvedAt: 1900000100n,
+            proposed: true, challengeEndsAt: 1900000100n + BigInt(lmsr.constants.CHALLENGE_SECONDS) });
+        const finalized = Buffer.from(proposed); finalized[413] = 1;
+        expect(lmsr.decodeMarket(finalized)).toMatchObject({ resolved: true, proposed: false, challengeEndsAt: null });
+        expect(lmsr.constants.CHALLENGE_SECONDS).toBe(48 * 3600);
 
         const position = positionData(market);
         expect(lmsr.decodePosition(position)).toMatchObject({ market: market.toBase58(), owner: owner.toBase58(), side: 1, amount: 9007199254740993n, claimed: false, bump: 252 });

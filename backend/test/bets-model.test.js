@@ -49,7 +49,7 @@ describe('row states and lifecycle', () => {
         for (const chainStatus of [null, undefined, 'unknown', 'active']) {
             expect(BetsModel.rowState({ ...base, chainStatus, canSettle: false })).toBe('closed');
         }
-        expect(BetsModel.settlementOf('cancelled')).toBe('void');
+        expect(BetsModel.settlementOf('cancelled')).toBe('no');
         expect(BetsModel.settlementOf('expired')).toBe('no');
         expect(BetsModel.settlementOf('executed')).toBe('yes');
         expect(BetsModel.settlementOf('unknown')).toBeNull();
@@ -60,7 +60,10 @@ describe('row states and lifecycle', () => {
         const m = market({ closesAt: 1_800_000_000, graceSeconds: 10 });
         expect(BetsModel.chainEntry('acct', { chainStatus: 'active', deadline: '2027-01-16T00:00:00Z', market: m }, now - 1))
             .toMatchObject({ bettable: true, canSettle: false });
-        expect(BetsModel.chainEntry('acct', { chainStatus: 'active', deadline: '2027-01-16T00:00:00Z', market: m }, now + 10_000))
+        // The last second of grace still belongs to the agreement's execute: settlement waits past it.
+        expect(BetsModel.chainEntry('acct', { chainStatus: 'active', deadline: '2027-01-16T00:00:00Z', market: m }, now + 10_999))
+            .toMatchObject({ bettable: false, canSettle: false });
+        expect(BetsModel.chainEntry('acct', { chainStatus: 'active', deadline: '2027-01-16T00:00:00Z', market: m }, now + 11_000))
             .toMatchObject({ bettable: false, canSettle: true });
         expect(BetsModel.chainEntry('acct', { chainStatus: null, deadline: '2027-01-16T00:00:00Z', market: m }, now + 10_000))
             .toMatchObject({ bettable: false, canSettle: false });

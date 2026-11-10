@@ -24,15 +24,19 @@ describe('dated agreement-market contract', () => {
     expect(() => Contract.executionOutcome(source, market(), 101)).toThrow(message);
   });
 
-  it('cannot settle an active agreement before cutoff, then settles NO at the grace cutoff', () => {
+  it('cannot settle an active agreement through the last second of grace, then settles NO after it', () => {
     expect(Contract.executionOutcome({ chainStatus: 'active' }, market({ graceSeconds: 5 }), 104)).toBeNull();
-    expect(Contract.executionOutcome({ chainStatus: 'active' }, market({ graceSeconds: 5 }), 105)).toBe('no');
+    // The agreement still executes in its deadline second, so absence must wait one more second.
+    expect(Contract.executionOutcome({ chainStatus: 'active' }, market({ graceSeconds: 5 }), 105)).toBeNull();
+    expect(Contract.executionOutcome({ chainStatus: 'active' }, market({ graceSeconds: 5 }), 106)).toBe('no');
+    expect(Contract.executionOutcome({ chainStatus: 'active' }, market(), 100)).toBeNull();
+    expect(Contract.executionOutcome({ chainStatus: 'active' }, market(), 101)).toBe('no');
     expect(Contract.canTrade({ chainStatus: 'active' }, market(), 99)).toBe(true);
     expect(Contract.canTrade({ chainStatus: 'active' }, market(), 100)).toBe(false);
   });
 
-  it('maps cancellation to VOID and expiry to NO; floors per-side void payout', () => {
-    expect(Contract.executionOutcome({ chainStatus: 'cancelled' }, market(), 99)).toBe('void');
+  it('maps cancellation and expiry to NO; floors per-side void payout', () => {
+    expect(Contract.executionOutcome({ chainStatus: 'cancelled' }, market(), 99)).toBe('no');
     expect(Contract.executionOutcome({ chainStatus: 'expired' }, market(), 99)).toBe('no');
     expect(Contract.payout('yes', 1n, 'void')).toBe(0n);
     expect(Contract.payout('no', 3n, 'void')).toBe(1n);

@@ -835,7 +835,7 @@ The transfer specified by a chain agreement's settlement terms. A configured rec
 
 ### Deadline
 
-The time limiting the agreement's decision or settlement process. It is distinct from a plan member's construction window.
+The time limiting the agreement's decision or settlement process. Every new chain account has one in the future: an agreement without a stated deadline is minted with one 90 days ahead. The agreement can execute through its deadline second and can be expired by anyone after it. Accounts created before the deadline became mandatory may hold none (0) and never expire. It is distinct from a plan member's construction window.
 
 ## Money, value and markets
 
@@ -905,7 +905,7 @@ A modeled value of an agent's assigned land, expressed in a stated currency and 
 
 ### Market
 
-A dated LMSR betting instrument about whether a qualified binding agreement executes by its own recorded deadline. YES means a valid on-chain execution timestamp is at or before that deadline. NO means execution after the deadline, expiry, or an active agreement still unresolved after the market's grace interval. Cancellation resolves VOID, paying half of each share on either side, floored per position. Points and devnet-USDC markets are independent books with the same quote and settlement rules. The market PDA, agreement account, network and asset are distinct identities.
+A dated LMSR betting instrument about whether a qualified binding agreement executes by its own recorded deadline. YES means a valid on-chain execution timestamp is at or before that deadline. NO means execution after the deadline, expiry, cancellation, or an active agreement still unresolved after the last second of the market's grace interval. VOID, paying half of each share on either side, floored per position, comes only from conflicting evidence on a recipe-bound market. Points and devnet-USDC markets are independent books with the same quote and settlement rules. The market PDA, agreement account, network and asset are distinct identities.
 
 ### Contest
 
@@ -913,7 +913,11 @@ A group of published agreements connected transitively by shared source-qualifie
 
 ### Market deadline
 
-The market's last-trading timestamp, copied from the agreement's execution deadline. An execution after it does not satisfy YES, even if observed before settlement. Grace delays a NO-by-absence settlement; it never extends the event deadline.
+The market's last-trading timestamp, copied from the agreement's execution deadline. An execution after it does not satisfy YES, even if observed before settlement. Grace delays a NO-by-absence settlement, which is possible only strictly after the deadline plus grace; it never extends the event deadline.
+
+### Proposed outcome
+
+A recipe-bound (kind 1) LMSR market's resolution before it is final: the outcome its resolver derived from the attestations it passed, or NO by absence. For 48 hours from the proposal, or from the last challenge that changed it, anyone may submit a qualifying attestation the resolver left out: it replaces a NO by absence, or turns a proposal backed by the other outcome's evidence into VOID. After that window anyone finalizes it, and only then can positions claim. On chain it is an unresolved market with a nonzero `resolved_at`.
 
 ### LMSR liquidity
 
@@ -921,7 +925,7 @@ The positive parameter `b` in the logarithmic market scoring rule. It controls h
 
 ### Share
 
-A quantity in an LMSR market position on YES or NO, with six decimal places. One whole winning share pays one unit of the selected asset; one atomic share pays one atomic asset unit. VOID pays half that amount, rounded down per position.
+A quantity in an LMSR market position on YES or NO, with six decimal places. One whole winning share pays one unit of the selected asset; one atomic share pays one atomic asset unit. VOID (conflicting evidence on a recipe-bound market) pays half that amount, rounded down per position.
 
 ### Betting journey event
 

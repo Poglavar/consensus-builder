@@ -137,9 +137,9 @@ describe('the checked-in proposal_market IDL matches the program source', () => 
 
     it('exposes the parimutuel, external-evidence and LMSR instructions with Anchor-formula discriminators', () => {
         expect(marketIdl.instructions.map(i => i.name).sort()).toEqual([
-            'buy', 'claim', 'claim_external', 'claim_lmsr', 'create_external_market', 'create_lmsr_external_market',
-            'create_lmsr_market', 'create_market', 'reclaim_seed', 'resolve', 'resolve_external', 'resolve_lmsr',
-            'sell', 'stake', 'stake_external'
+            'buy', 'challenge_lmsr', 'claim', 'claim_external', 'claim_lmsr', 'create_external_market',
+            'create_lmsr_external_market', 'create_lmsr_market', 'create_market', 'finalize_lmsr', 'reclaim_seed',
+            'resolve', 'resolve_external', 'resolve_lmsr', 'sell', 'stake', 'stake_external', 'void_external'
         ]);
         for (const ix of marketIdl.instructions) {
             expect(ix.discriminator).toEqual(anchorDiscriminator('global', ix.name));

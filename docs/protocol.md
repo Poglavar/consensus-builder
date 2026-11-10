@@ -314,13 +314,25 @@ ProposalVerdict-v1:  string proposalAccount, string verdict, string evidenceRef,
   market's exact schema is accepted. Existing V1 markets accept the four-string court payload. V2
   adds `sourceObservedAt`; the upgraded source enforces that it is not earlier than market close or
   later than resolution. The program records the evidence address and full-account SHA-256.
+- An `ExternalMarket` still unresolved 90 days after its close (`EXTERNAL_RESOLUTION_TIMEOUT_SECONDS`)
+  can no longer resolve from evidence: anyone calls `void_external`, it settles VOID (outcome 2) and
+  every position claims its whole stake back. Agreement-bound parimutuel markets need no timeout of
+  their own: `create` requires the agreement's deadline, and anyone may expire it after that, which
+  resolves the market NO.
+- LMSR markets: a cancelled agreement settles its market NO, and absence settles NO only strictly
+  after `closes_at + grace` because the agreement executes through its deadline second. A
+  recipe-bound (kind 1) resolution is a proposal open to challenge for 48 hours before anyone
+  finalizes it ([LMSR markets](lmsr-market.md#challenge-window)).
 - Legacy v1 proposal state has no on-chain Expired transition. In the deployed v2/v3 code, a lens
   member's `expired` verdict makes Expired terminal, and the deployed market v2 resolves it NO.
 - Donations move devnet USDC into program escrow immediately; cancellation or expiry lets each
   donor refund their receipts. Soft pledges hold no funds and remain revocable until fulfilled after
   execution.
 - The programs have not received an independent audit. Their devnet addresses do not prove
-  immutability, safe upgrade authority, or suitability for assets with real value.
+  immutability, safe upgrade authority, or suitability for assets with real value. Devnet programs
+  keep a development upgrade authority on purpose; `blockchain/solana/scripts/finalize-programs.sh`
+  shows each program's authority on a named cluster and, for a non-devnet cluster after a typed
+  confirmation, makes them immutable.
 
 ### x402 and identity
 

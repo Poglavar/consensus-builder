@@ -6,8 +6,7 @@ on-chain by its deadline?** and **Will the FivePoint Candlestick agreement execu
 deadline?** Both can execute, or neither can. Their prices need not add to 100% across agreements.
 
 YES requires recorded execution, after the required approvals, verification and funding, by the
-deadline. Expiry or missing the deadline settles NO. Cancellation settles VOID and pays half per
-share. Execution does not establish a planning approval, building permit or completed construction.
+deadline. Expiry, cancellation or missing the deadline settles NO. Execution does not establish a planning approval, building permit or completed construction.
 
 Both agreements and their plans are published and indexed. Each agreement has an active on-chain
 account, and each market is open and funded with 69.314720 devnet USDC. The pair record lists the

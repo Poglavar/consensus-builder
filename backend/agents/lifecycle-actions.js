@@ -302,7 +302,6 @@ export async function inspectSettlement({ connection, owner, agreement, lensKey 
     } else {
         label = state.status.toLowerCase();
         if (state.status === AGREEMENT_STATUS.executed) outcome = state.executedAt <= state.deadline ? 'YES' : 'NO';
-        else if (state.status === AGREEMENT_STATUS.cancelled) outcome = 'VOID';
         else outcome = 'NO';
     }
     const [market, position] = await Promise.all([

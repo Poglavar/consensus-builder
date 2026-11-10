@@ -92,7 +92,8 @@ describe('discriminators', () => {
 
     // The program also hosts the LMSR market (lmsr-market.md), whose instructions and account this
     // client does not encode; anything else the IDL lists, it must.
-    const LMSR_INSTRUCTIONS = ['buy', 'claim_lmsr', 'create_lmsr_external_market', 'create_lmsr_market', 'reclaim_seed', 'resolve_lmsr', 'sell'];
+    const LMSR_INSTRUCTIONS = ['buy', 'challenge_lmsr', 'claim_lmsr', 'create_lmsr_external_market', 'create_lmsr_market',
+        'finalize_lmsr', 'reclaim_seed', 'resolve_lmsr', 'sell'];
     const LMSR_ACCOUNTS = ['LmsrMarket'];
 
     it('matches the generated IDL file', () => {
@@ -344,6 +345,11 @@ describe('external market instruction builders', () => {
         const resolve = market.buildResolveExternalIx({ recipeHash: RECIPE_HASH, attestation: ATTESTATION, schema: SCHEMA });
         expect(actualFlags(resolve, idlFlags('resolve_external').map(a => a.name))).toEqual(idlFlags('resolve_external'));
         expect(resolve.keys.map(key => key.pubkey.toBase58())).toEqual([marketPda.toBase58(), ATTESTATION, SCHEMA]);
+
+        const voided = market.buildVoidExternalIx({ recipeHash: RECIPE_HASH });
+        expect(actualFlags(voided, idlFlags('void_external').map(a => a.name))).toEqual(idlFlags('void_external'));
+        expect(voided.keys.map(key => key.pubkey.toBase58())).toEqual([marketPda.toBase58()]);
+        expect(bytesOf(voided.data)).toEqual(bytesOf(market.IX_DISCRIMINATORS.void_external));
 
         const claim = market.buildClaimExternalIx({
             recipeHash: RECIPE_HASH, stakeMint: STAKE_MINT, claimer: WALLET, side: SIDE_YES
@@ -651,6 +657,11 @@ describe('payoutAmount', () => {
     it('refunds every position when the winning pool is empty', () => {
         expect(market.payoutAmount(SIDE_YES, 70n, 70n, 0n, SIDE_NO)).toBe(70n);
         expect(market.payoutAmount(SIDE_NO, 40n, 0n, 40n, SIDE_YES)).toBe(40n);
+    });
+
+    it('refunds every position in full on a VOID (a timed-out external market)', () => {
+        expect(market.payoutAmount(SIDE_YES, 70n, 70n, 30n, market.constants.OUTCOME_VOID)).toBe(70n);
+        expect(market.payoutAmount(SIDE_NO, 30n, 70n, 30n, market.constants.OUTCOME_VOID)).toBe(30n);
     });
 
     it('floors so the payouts never exceed the vault', () => {

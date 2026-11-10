@@ -49,7 +49,7 @@ describe('GET /bets/:account', () => {
         expect(pool.query.mock.calls[0][0]).toMatch(/WHERE a\.onchain->>'account' = \$1/);
         expect(pool.query.mock.calls[0][1]).toEqual([ACCOUNT]);
         expect(meta(res.text, 'og:title')).toBe('Will Plan-led infill in <Rudeš> & "more" execute on-chain by 2026-12-31T00:00:00.000Z? · Bet on cities');
-        expect(meta(res.text, 'og:description')).toBe('Bet with points: YES if this agreement executes on-chain by its deadline; NO if it expires or misses the deadline. Cancellation pays 0.5 per share. Both agreements can succeed, or neither. Execution does not mean construction.');
+        expect(meta(res.text, 'og:description')).toBe('Bet with points: YES if this agreement executes on-chain by its deadline; NO if it expires, is cancelled or misses the deadline. Both agreements can succeed, or neither. Execution does not mean construction.');
         expect(meta(res.text, 'og:image')).toBe('https://urbangametheory.xyz/images/og-globe-20261019.jpg');
         expect(meta(res.text, 'og:url')).toBe(`https://urbangametheory.xyz/bets/${ACCOUNT}?city=zg&asset=points`);
         expect(meta(res.text, 'twitter:card')).toBe('summary_large_image');
@@ -141,7 +141,7 @@ describe('GET /bets/:account', () => {
 
 describe('describeRow and escapeHtml', () => {
     it('describes cutoff semantics without quoting live book prices', () => {
-        expect(describeRow({ asset: 'points' })).toBe('Bet with points: YES if this agreement executes on-chain by its deadline; NO if it expires or misses the deadline. Cancellation pays 0.5 per share. Both agreements can succeed, or neither. Execution does not mean construction.');
+        expect(describeRow({ asset: 'points' })).toBe('Bet with points: YES if this agreement executes on-chain by its deadline; NO if it expires, is cancelled or misses the deadline. Both agreements can succeed, or neither. Execution does not mean construction.');
         expect(describeRow({ asset: 'devnet-usdc' })).toContain('Bet with devnet USDC:');
         expect(describeRow(null)).toContain('Bet with points:');
     });

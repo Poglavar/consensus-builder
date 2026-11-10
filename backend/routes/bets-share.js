@@ -33,7 +33,7 @@ export function escapeHtml(value) {
 // Preview terms are independent of the two live price books and remain accurate when cached.
 export function describeRow(row) {
     const unit = row?.asset === 'devnet-usdc' ? 'devnet USDC' : 'points';
-    return `Bet with ${unit}: YES if this agreement executes on-chain by its deadline; NO if it expires or misses the deadline. Cancellation pays 0.5 per share. Both agreements can succeed, or neither. Execution does not mean construction.`;
+    return `Bet with ${unit}: YES if this agreement executes on-chain by its deadline; NO if it expires, is cancelled or misses the deadline. Both agreements can succeed, or neither. Execution does not mean construction.`;
 }
 
 function absoluteImage(screenshotUrl, publicBaseUrl, apiBaseUrl) {
