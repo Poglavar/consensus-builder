@@ -86,21 +86,36 @@
         });
     }
 
-    // Returns true when drawing may continue, false to reroute.
-    async function resolveStructureCrossings(hits, corridorKind = 'road') {
-        if (!Array.isArray(hits) || !hits.length) return true;
+    // Returns true when drawing may continue, false to reroute. `buildings` are the titles of
+    // proposed buildings the change takes off the map (claims.js appliedRivals: a road displaces a
+    // building it covers); they are named so nothing leaves the map unannounced.
+    async function resolveStructureCrossings(hits, corridorKind = 'road', { buildings = [] } = {}) {
+        const structures = Array.isArray(hits) ? hits : [];
+        const displaced = Array.isArray(buildings) ? buildings.filter(Boolean) : [];
+        if (!structures.length && !displaced.length) return true;
         if (promptActive) return false;
         promptActive = true;
         try {
-            const names = hits.map(structureDisplayName).map(name => `“${name}”`).join(', ');
             const kind = corridorKind === 'track'
                 ? structureText('modal.corridorTunnel.track', 'track')
                 : structureText('modal.corridorTunnel.road', 'road');
-            const message = structureText(
-                'modal.corridorStructure.offer',
-                'This {{kind}} would cross {{names}}. Build through it? The {{kind}} cuts through; the rest stays as it is.',
-                { kind, names }
-            );
+            const quoted = list => list.map(name => `“${name}”`).join(', ');
+            const parts = [];
+            if (structures.length) {
+                parts.push(structureText(
+                    'modal.corridorStructure.offer',
+                    'This {{kind}} would cross {{names}}. Build through it? The {{kind}} cuts through; the rest stays as it is.',
+                    { kind, names: quoted(structures.map(structureDisplayName)) }
+                ));
+            }
+            if (displaced.length) {
+                parts.push(structureText(
+                    'modal.corridorStructure.buildingsOff',
+                    'The {{kind}} would stand where {{names}} stands, so that building design comes off the map; it stays in your list and can be applied again once the {{kind}} moves.',
+                    { kind, names: quoted(displaced) }
+                ));
+            }
+            const message = parts.join('\n\n');
             let accepted = false;
             if (typeof global.showStyledChoice === 'function') {
                 accepted = (await global.showStyledChoice(message, [
@@ -113,7 +128,7 @@
                     cancelText: structureText('modal.corridorTunnel.cancel', 'Choose another route')
                 });
             }
-            if (accepted) hits.forEach(entry => approvedStructureIds.add(entry.id));
+            if (accepted) structures.forEach(entry => approvedStructureIds.add(entry.id));
             return accepted;
         } finally {
             promptActive = false;

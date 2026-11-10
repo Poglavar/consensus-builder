@@ -402,6 +402,28 @@ describe('node editor honesty', () => {
         }
     });
 
+    it('names the proposed buildings a drag would take off the map, and moves nothing when the author declines', async () => {
+        for (const [accepted, moved] of [[true, 1], [false, 0]]) {
+            const editor = bootNodeEditor([corridorRecord('road-1', [[[0, 0], [0, 5], [0, 10]]])], 'road-1');
+            const asked = [];
+            installGlobal('rebuildRoadDefinitionFootprint', definition => { definition.polygon = { end: definition.points[0][2] }; });
+            installGlobal('detectStructureCrossingsOfEdit', () => []);
+            // The tower stands where the end is dragged to: a rival only of the moved road.
+            installGlobal('ProposalManager', {
+                _collectAppliedAlternativesForExplicitApply: record => (record.roadProposal.definition.polygon?.end?.lat === 3
+                    ? [{ proposalId: 'tower', title: 'Tower', buildingProposal: {} }, { proposalId: 'square', structureProposal: {} }] : [])
+            });
+            installGlobal('resolveStructureCrossings', async (hits, kind, extra) => { asked.push({ hits: hits.length, buildings: extra.buildings }); return accepted; });
+            const end = editor.handleAt(0, 10);
+            end.handlers.dragstart();
+            end.setLatLng({ lat: 3, lng: 10 });
+            end.handlers.dragend();
+            await settle();
+            expect(asked).toEqual([{ hits: 0, buildings: ['Tower'] }]);
+            expect(editor.calls.updates).toHaveLength(moved);
+        }
+    });
+
     it('takes back the undo step of a drag that every record refused', async () => {
         const editor = bootNodeEditor([corridorRecord('road-1', [[[0, 0], [0, 5], [0, 10]]])], 'road-1');
         globalThis.updateLocalCorridorGeometry = async () => false;

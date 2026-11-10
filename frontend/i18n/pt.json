@@ -1410,6 +1410,7 @@
         "corridorStructure": {
             "offer": "Este elemento ({{kind}}) atravessaria {{names}}. Construir através dessa área? O elemento ({{kind}}) corta a área; o restante mantém-se como está.",
             "buildThrough": "Construir através da área",
+            "buildingsOff": "A {{kind}} ficaria onde está {{names}}, por isso esse projeto de edifício sai do mapa; continua na sua lista e pode voltar a ser aplicado quando a {{kind}} se mover.",
             "kinds": {
                 "park": "parque",
                 "square": "praça",

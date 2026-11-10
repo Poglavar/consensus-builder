@@ -1410,6 +1410,7 @@
         "corridorStructure": {
             "offer": "Ce tracé de {{kind}} traverserait {{names}}. Aménager à travers cet espace ? Le tracé de {{kind}} le découpe ; le reste demeure en l’état.",
             "buildThrough": "Aménager à travers",
+            "buildingsOff": "La {{kind}} se trouverait là où se trouve {{names}} : ce projet de bâtiment quitte donc la carte ; il reste dans votre liste et pourra être réappliqué quand la {{kind}} sera déplacée.",
             "kinds": {
                 "park": "parc",
                 "square": "place",

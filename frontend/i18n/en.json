@@ -2756,6 +2756,7 @@
         "corridorStructure": {
             "offer": "This {{kind}} would cross {{names}}. Build through it? The {{kind}} cuts through; the rest stays as it is.",
             "buildThrough": "Build through",
+            "buildingsOff": "The {{kind}} would stand where {{names}} stands, so that building design comes off the map; it stays in your list and can be applied again once the {{kind}} moves.",
             "kinds": {
                 "park": "park",
                 "square": "square",

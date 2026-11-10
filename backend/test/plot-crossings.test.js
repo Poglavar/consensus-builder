@@ -198,6 +198,15 @@ describe('road tool glue (corridor-structures.js)', () => {
         expect(globalThis.detectStructureCrossingsOfEdit(before, null).map(entry => entry.id)).toEqual(['square-1']);
     });
 
+    it('asks before a road edit takes proposed buildings off the map, even with no park or square crossed', async () => {
+        choice = 'build';
+        await expect(globalThis.resolveStructureCrossings([], 'road', { buildings: ['vLAB – toranj'] })).resolves.toBe(true);
+        expect(globalThis.showStyledChoice.mock.calls.at(-1)[0]).toMatch(/“vLAB – toranj” stands, so that building design comes off the map/);
+        choice = 'cancel';
+        await expect(globalThis.resolveStructureCrossings([], 'road', { buildings: ['vLAB – toranj'] })).resolves.toBe(false);
+        await expect(globalThis.resolveStructureCrossings([], 'road', { buildings: [] })).resolves.toBe(true);
+    });
+
     it('reroutes on cancel, and never builds through a house on a plot', async () => {
         const road = rect(8, -3, 9, 9);
         choice = 'cancel';

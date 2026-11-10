@@ -2784,6 +2784,7 @@
         "corridorStructure": {
             "offer": "Ovaj {{kind}} bi presekao {{names}}. Izgraditi kroz? {{kind}} prolazi kroz sredinu; ostatak ostaje kakav jeste.",
             "buildThrough": "Izgradi kroz",
+            "buildingsOff": "Ova promena prolazi tamo gde stoji {{names}}, pa taj projekat zgrade silazi s mape; ostaje na vašem spisku i može ponovo da se primeni kada mu se oslobodi mesto.",
             "kinds": {
                 "park": "park",
                 "square": "trg",

@@ -588,6 +588,9 @@ proposal-bridge.js/create.js and backend/agents/minter.js; decoders render the z
   road edited onto a square shrinks it. Dragging a road node asks the same "Build through" first for the
   parks, squares and lakes the moved legs newly cross, judged by their authored bodies
   (`road-node-edit.js structureCrossingsOfMove`, `corridor-structures.js detectStructureCrossingsOfEdit`).
+  The same question names the proposed buildings the move takes off the map, found by the rule the edit
+  applies (`ProposalManager._collectAppliedAlternativesForExplicitApply`, claims.js appliedRivals: a road
+  displaces a building it covers); they stay in the list, unapplied.
   Plots of a parcel layout still refuse an older road. Plan stats count
   open space as it stands (`plan-yield` `openSpaceAreaOf`, fed from the applied bodies).
 

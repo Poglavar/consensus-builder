@@ -2783,6 +2783,7 @@
         "corridorStructure": {
             "offer": "Este {{kind}} cruzaría {{names}}. ¿Construir a través? El {{kind}} lo atraviesa; el resto queda como está.",
             "buildThrough": "Construir a través",
+            "buildingsOff": "La {{kind}} quedaría donde está {{names}}, así que ese diseño de edificio sale del mapa; sigue en tu lista y puede aplicarse de nuevo cuando la {{kind}} se mueva.",
             "kinds": {
                 "park": "parque",
                 "square": "plaza",
