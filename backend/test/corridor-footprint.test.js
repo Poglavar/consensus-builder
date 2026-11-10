@@ -273,33 +273,40 @@ describe('junctions with other records', () => {
 });
 
 describe('reproduces what the browser built', () => {
-    // The Borovje v3 collector: the browser's own footprint of this definition was captured on
-    // 2026-10-10 (restatements/upu-borovje/data/street-footprints.json, built in HTRS96).
-    const snap = JSON.parse(readFileSync(new URL('../../restatements/upu-borovje/data/cadastral-snap.json', import.meta.url), 'utf8'));
-    const captured = JSON.parse(readFileSync(new URL('../../restatements/upu-borovje/data/street-footprints.json', import.meta.url), 'utf8')).footprints;
+    // The Borovje collector: the app's own footprint of the version-2 street (data/cadastral-snap.json)
+    // without the stretches version 3 drops, captured from the running app by `fit-streets.mjs --capture`
+    // (restatements/upu-borovje/data/street-footprints.json).
+    const borovje = name => readFileSync(new URL(`../../restatements/upu-borovje/${name}`, import.meta.url), 'utf8');
+    const snap = JSON.parse(borovje('data/cadastral-snap.json'));
+    const captured = JSON.parse(borovje('data/street-footprints.json')).footprints;
+    // The dropped stretches are named once, in the script that captures (importing it would run it).
+    const dropped = JSON.parse(`[${borovje('fit-streets.mjs').match(/DUPLICATE_STRETCHES = Object\.freeze\(\[(.*?)\]\)/)[1].replace(/'/g, '"')}]`);
 
     it('rebuilds the Borovje collector within millimetres of the browser\'s footprint', () => {
         const street = snap.members.ulice;
-        const definition = { width: 19, kind: 'road', points: street.segments, segments: street.segments, segmentIds: street.segmentIds, segmentProfiles: street.segmentProfiles, tunnels: [] };
-        // The capture was built with corridor-footprint/2. Recipe /3 adds the land every junction
-        // corner needs (and the bend wedges between stretches) and tapers the land at every change
-        // of width (transition zones). Built WITHOUT the zones, the new land must CONTAIN what the
-        // browser built — losing a sliver would re-cut parcels under a standing plan — and may add
-        // only the corners: well under one per cent of a 19 m collector network.
-        const stepped = footprint.materialize(definition, { transitions: false });
-        const ours = turf.feature(stepped.polygon);
+        const keep = street.segmentIds.map(id => !dropped.includes(id));
+        // The capture leaves a stretch of this street out; a list that no longer names one is a stale test.
+        expect(keep.filter(kept => !kept)).toHaveLength(1);
+        const segments = street.segments.filter((_, index) => keep[index]);
+        const definition = { width: 19, kind: 'road', points: segments, segments,
+            segmentIds: street.segmentIds.filter((_, index) => keep[index]),
+            segmentProfiles: Object.fromEntries(Object.entries(street.segmentProfiles).filter(([id]) => !dropped.includes(id))),
+            tunnels: [] };
+        // The capture is the app's current recipe (corridor-footprint/3: junction corners, bend wedges
+        // and the transition zones where the width changes). The module must give the same land: a
+        // millimetre along ~2.6 km of boundary is under 3 m², and losing more would re-cut parcels
+        // under a standing plan.
+        const tapered = turf.feature(footprint.materialize(definition).polygon);
         const theirs = turf.feature(captured.ulice);
+        const lost = turf.difference(theirs, tapered);
+        const added = turf.difference(tapered, theirs);
+        expect(lost ? turf.area(lost) : 0).toBeLessThan(3);
+        expect(added ? turf.area(added) : 0).toBeLessThan(3);
+        // Built WITHOUT the zones the land is the stepped one, which the zones only add to.
+        const ours = turf.feature(footprint.materialize(definition, { transitions: false }).polygon);
         const area = turf.area(ours);
-        const lost = turf.difference(theirs, ours);
-        const added = turf.difference(ours, theirs);
-        // ~2.6 km of boundary; HTRS96 differs from the local frame by ≈ 1.6 mm per 19 m, so a few
-        // square metres of the old polygon fall outside the new one by projection alone.
-        expect(lost ? turf.area(lost) : 0).toBeLessThan(5);
-        expect((added ? turf.area(added) : 0) / area).toBeLessThan(0.01);
-        expect(Math.abs(area - turf.area(theirs)) / area).toBeLessThan(0.01);
         // With the zones the land CONTAINS the stepped land: every narrower stretch widens back
         // to its wider neighbour at the node, and nothing is given up.
-        const tapered = turf.feature(footprint.materialize(definition).polygon);
         const givenUp = turf.difference(ours, tapered);
         expect(givenUp ? turf.area(givenUp) : 0).toBeLessThan(5);
         expect((turf.area(tapered) - area) / area).toBeLessThan(0.03);
