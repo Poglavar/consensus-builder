@@ -332,6 +332,10 @@
         const multi = global.multiParcelSelection;
         const targetIds = parcelBuildSelectionIds();
         const missing = targetIds.filter(id => !global.LiveParcelFabric?.get?.(id));
+        // The parcel chooser (Manual, Detect block) starts a design from this parcel: an original parcel
+        // that applied designs replaced, or one whose data is not loaded, offers its recovery instead.
+        const chooser = global.document?.querySelector?.('#propose-tab .multi-select-group');
+        if (chooser) chooser.hidden = missing.length > 0;
         if (missing.length) {
             const replacements = targetIds.length === 1
                 ? global.LiveParcelFabric?.entriesForCadastre?.(targetIds) || [] : [];

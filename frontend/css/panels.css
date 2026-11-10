@@ -1314,6 +1314,10 @@ a phone it is the bottom sheet, up to half the screen (the phone block at the en
     min-width: 0;
 }
 
+#parcel-info-panel .parcel-context-actions .multi-select-group[hidden] {
+    display: none;
+}
+
 #parcel-info-panel .parcel-context-actions .multi-select-title {
     font-weight: 400;
     font-size: var(--cb-text-sm);

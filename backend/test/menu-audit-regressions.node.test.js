@@ -182,7 +182,7 @@ test('facet text generation preserves authored fields and updates explicitly gen
 
 test('a replaced cadastral source selects its exact current parcels and opens their design palette', () => {
     const document = makeDocument();
-    document.body.innerHTML = '<div id="parcel-proposal-primary-actions"></div>';
+    document.body.innerHTML = '<div id="propose-tab"><div class="multi-select-group">Select a parcel to start designing.</div></div><div id="parcel-proposal-primary-actions"></div>';
     const sourceId = 'consumed-source';
     const replacementIds = ['formed-piece'];
     const features = replacementIds.map(id => ({ id }));
@@ -211,6 +211,9 @@ test('a replaced cadastral source selects its exact current parcels and opens th
     assert.equal(container.querySelector('[data-parcel-build-state="replaced"]')?.getAttribute('data-parcel-build-state'), 'replaced');
     assert.match(container.textContent, /This is the original cadastral parcel\. Applied designs have replaced it in the working map\. Select the current parcels to add a design\./);
     assert.equal(container.querySelector('[data-parcel-source-only]'), null);
+    // The original parcel cannot start a design: its parcel chooser gives way to the recovery.
+    const chooser = document.querySelector('#propose-tab .multi-select-group');
+    assert.equal(chooser.hidden, true);
     const select = container.querySelector('[data-parcel-build-recovery="select-current"]');
     assert.ok(select);
     assert.equal(select.textContent, 'Select current parcels');
@@ -219,6 +222,7 @@ test('a replaced cadastral source selects its exact current parcels and opens th
     assert.equal(multi.isActive, false);
     assert.equal(openedPanel, true);
     assert.ok(container.querySelector('.parcel-build-btn--park'));
+    assert.equal(chooser.hidden, false);
 });
 
 test('an exact live cadastral source remains buildable in its explicit Propose context', async () => {
