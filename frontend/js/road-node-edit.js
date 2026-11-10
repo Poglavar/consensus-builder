@@ -702,8 +702,12 @@
             await withNetworkHeld(run);
             // Every leg was reverted: the step taken at dragstart would undo nothing.
             if (!anyMoved && recorded) recorded.discardLast();
-            // After the noding pass has had its turn, so the answer is the settled one.
-            try { reportJunctionOutcome(snapped); } catch (_) { }
+            // After the noding pass has had its turn, so the answer is the settled one. Only for a
+            // drop that moved something: a refused one already said why (updateLocalCorridorGeometry's
+            // "reverted: …"), and a "Loose end" line over it hid the refusal and read as its reason.
+            if (anyMoved) {
+                try { reportJunctionOutcome(snapped); } catch (_) { }
+            }
         });
     }
 

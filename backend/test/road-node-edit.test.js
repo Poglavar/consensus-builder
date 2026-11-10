@@ -329,6 +329,22 @@ describe('node editor honesty', () => {
         await settle();
     });
 
+    it('leaves a refused drop\'s reason on the status line instead of reporting a loose end over it', async () => {
+        const editor = bootNodeEditor([corridorRecord('road-1', [[[0, 0], [0, 5], [0, 10]]])], 'road-1');
+        installGlobal('CbFormat', { formatLength: metres => `${metres.toFixed(1)} m` });
+        globalThis.updateLocalCorridorGeometry = async () => {
+            globalThis.updateStatus('Could not complete that road change — reverted: A road in a parcel stays inside that parcel.');
+            return false;
+        };
+        const end = editor.handleAt(0, 10);
+        end.handlers.dragstart();
+        end.setLatLng({ lat: 1, lng: 10 });
+        end.handlers.dragend();
+        await settle();
+        expect(editor.calls.statuses.at(-1)).toMatch(/stays inside that parcel/);
+        expect(editor.calls.statuses.join(' ')).not.toMatch(/Loose end/);
+    });
+
     it('takes back the undo step of a drag that every record refused', async () => {
         const editor = bootNodeEditor([corridorRecord('road-1', [[[0, 0], [0, 5], [0, 10]]])], 'road-1');
         globalThis.updateLocalCorridorGeometry = async () => false;
