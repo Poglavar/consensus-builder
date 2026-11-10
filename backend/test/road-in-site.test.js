@@ -245,4 +245,16 @@ describe('MCP: a road drafted into a parcel', async () => {
         regrounded.roadProposal.definition.bound.site = polygon([[0, 0], [200, 0], [200, 12], [0, 12]]);
         expect(() => intentEditing.reconcile(regrounded, original, [{ op: 'replace', path: '/roadProposal/definition/bound' }], appTurf)).toThrow(/keeps its parcel/);
     });
+
+    it('makes it an ordinary road when the bound is removed, which can then leave the parcel', () => {
+        const original = draft();
+        const released = JSON.parse(JSON.stringify(original));
+        delete released.roadProposal.definition.bound;
+        const node = released.roadProposal.definition.osm.elements.find(e => e.type === 'node');
+        const [lng, lat] = at(60, 80);
+        Object.assign(node, { lon: lng, lat });
+        const record = intentEditing.reconcile(released, original, [{ op: 'remove', path: '/roadProposal/definition/bound' }, { op: 'replace', path: '/roadProposal/definition/osm' }], appTurf) || released;
+        expect(record.roadProposal.definition.bound).toBeUndefined();
+        expect(record.roadProposal.definition.polygon).toBeTruthy();
+    });
 });

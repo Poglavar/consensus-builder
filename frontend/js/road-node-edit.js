@@ -663,6 +663,36 @@
     //
     // `recorded` is the undo stack holding the step taken at dragstart; a drop that moves nothing
     // takes that step back, so Cmd/Ctrl+Z never spends a press on a drag that changed nothing.
+    // A road placed into a parcel takes that parcel as its land and stays inside it
+    // (docs/road-in-parcel.md). That fits placing a street into ground left for it, not dragging it
+    // about, so a drag on one asks first whether it should go on as an ordinary road: land from its
+    // lanes and pavements, free to leave the parcel.
+    function isParcelBound(proposalKey) {
+        const definition = global.getProposalByIdOrHash?.(proposalKey)?.roadProposal?.definition;
+        return !!(definition && global.__corridorSiteFit?.isBounded?.(definition));
+    }
+
+    function releaseParcelBound(definition) {
+        delete definition.bound;
+        if (definition.metadata && definition.metadata.mode === 'bounded') {
+            definition.metadata = { ...definition.metadata };
+            delete definition.metadata.mode;
+        }
+    }
+
+    async function askReleaseParcelBound() {
+        if (typeof global.showStyledChoice !== 'function') return 'keep';
+        return global.showStyledChoice(
+            editHint('panel.road.boundDragPrompt',
+                'This road was placed into a parcel: the parcel is its land, its pavements and verges fill it, and it cannot leave it. Should it become an ordinary road, with land from its own lanes and pavements, that can be dragged anywhere?'),
+            [
+                { value: 'ordinary', label: editHint('panel.road.boundDragOrdinary', 'Make it an ordinary road and move the node'), primary: true },
+                { value: 'keep', label: editHint('panel.road.boundDragKeep', 'Keep it in its parcel and move the node') },
+                { value: 'cancel', label: editHint('common.cancel', 'Cancel') }
+            ]
+        );
+    }
+
     function commitNodeMove(targets, latlng, origin, isTrack, preEditSnapshots, recorded) {
         if (typeof global.updateLocalCorridorGeometry !== 'function') return;
         // Snap at drop time (the snap targets are read from the map as it is now), then serialize the
@@ -681,12 +711,16 @@
         // meets follow.
         const order = [...grouped.keys()].sort((a, b) => (a === activeKey ? -1 : b === activeKey ? 1 : 0));
         let anyMoved = false;
+        // Roads placed into a parcel ("Road in parcel") whose land is that parcel, among the roads
+        // this drop moves; the author chooses below whether they become ordinary roads.
+        let released = new Set();
         const run = async () => {
             for (const proposalKey of order) {
                 const legs = grouped.get(proposalKey);
                 try {
                     const updated = await global.updateLocalCorridorGeometry(proposalKey, definition => {
                         moveNodeTargets(definition, legs, snapped);
+                        if (released.has(proposalKey)) releaseParcelBound(definition);
                     }, { preEditSnapshot: (preEditSnapshots && preEditSnapshots.get(proposalKey)) || null });
                     if (updated) anyMoved = true;
                 } catch (error) {
@@ -697,6 +731,15 @@
             }
         };
         runExclusiveEdit(async () => {
+            const bounded = order.filter(proposalKey => isParcelBound(proposalKey));
+            if (bounded.length) {
+                const choice = await askReleaseParcelBound();
+                if (choice !== 'ordinary' && choice !== 'keep') {
+                    if (recorded) recorded.discardLast();
+                    return;
+                }
+                if (choice === 'ordinary') released = new Set(bounded);
+            }
             // Two holds around the whole junction move: strip redraws (one at the end instead of one
             // per record) and network noding (nothing is noded while the junction is half-moved).
             await withNetworkHeld(run);

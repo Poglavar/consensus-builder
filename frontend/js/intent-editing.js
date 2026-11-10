@@ -300,8 +300,9 @@
             if (same(definition.osm, original.roadProposal?.definition?.osm)
                 && ['polygon','constructionFrame'].some(key => !same(definition[key], original.roadProposal?.definition?.[key]))) fail('derived-road-footprint', 'The road footprint and construction frame are derived. Edit canonical OSM nodes and profiles to change the road shape.');
             // A road placed into a parcel holds that parcel (docs/road-in-parcel.md): its ground is
-            // not edited, it is chosen by placing a new road.
-            if (!same(definition.bound, original.roadProposal?.definition?.bound)) fail('bounded-road-site', 'A road in a parcel keeps its parcel. Draft a new road with that ground to change it.');
+            // not edited, it is chosen by placing a new road. Removing the bound makes it an ordinary
+            // road, as the editor's drag offers.
+            if (definition.bound !== undefined && !same(definition.bound, original.roadProposal?.definition?.bound)) fail('bounded-road-site', 'A road in a parcel keeps its parcel. Draft a new road with that ground to change it, or remove /roadProposal/definition/bound to make it an ordinary road.');
             if (!Array.isArray(elements) || !elements.length) fail('invalid-road', 'A canonical road needs OSM elements.');
             const keys = new Set(elements.map(e => `${e.type}:${e.id}`));
             if (keys.size !== elements.length) fail('invalid-road', 'OSM element identities must be unique within their type.');
@@ -324,7 +325,7 @@
                     const issue = fit.boundedRoadIssues(view, undefined, { before })[0];
                     if (issue) fail('bounded-road-refused', issue.code === 'core-too-wide'
                         ? `These lanes need ${issue.requiredM} m and the parcel leaves ${issue.availableM} m there. Choose fewer or narrower lanes.`
-                        : 'A road in a parcel stays inside that parcel. Move the node back onto it.');
+                        : 'A road in a parcel stays inside that parcel. Move the node back onto it, or remove /roadProposal/definition/bound to make it an ordinary road.');
                 }
                 const material = load('__corridorFootprint', './corridor-footprint.js').materialize(view);
                 record.roadProposal.definition = osm.toRecord({ ...view, polygon: material.polygon, constructionFrame: material.constructionFrame });

@@ -345,6 +345,44 @@ describe('node editor honesty', () => {
         expect(editor.calls.statuses.join(' ')).not.toMatch(/Loose end/);
     });
 
+    it('asks before dragging a road placed into a parcel, and an ordinary road it becomes leaves the parcel behind', async () => {
+        const site = { type: 'Polygon', coordinates: [[[0, 0], [1, 0], [1, 10], [0, 10], [0, 0]]] };
+        const bounded = corridorRecord('road-1', [[[0, 0], [0, 5], [0, 10]]]);
+        bounded.roadProposal.definition.bound = { site };
+        bounded.roadProposal.definition.metadata = { mode: 'bounded', type: 'road' };
+        const editor = bootNodeEditor([bounded], 'road-1', { choice: 'ordinary' });
+        installGlobal('__corridorSiteFit', { isBounded: definition => !!definition.bound });
+        const end = editor.handleAt(0, 10);
+        end.handlers.dragstart();
+        end.setLatLng({ lat: 3, lng: 10 });
+        end.handlers.dragend();
+        await settle();
+        expect(editor.calls.prompts).toHaveLength(1);
+        expect(editor.calls.prompts[0].message).toMatch(/placed into a parcel/);
+        expect(editor.calls.prompts[0].choices.map(choice => choice.value)).toEqual(['ordinary', 'keep', 'cancel']);
+        const definition = bounded.roadProposal.definition;
+        expect(definition.bound).toBeUndefined();
+        expect(definition.metadata).toEqual({ type: 'road' });
+        expect(editor.pointsOf('road-1')).toEqual([[[0, 0], [0, 5], [3, 10]]]);
+    });
+
+    it('keeps a parcel road in its parcel when asked, and moves nothing on cancel', async () => {
+        const site = { type: 'Polygon', coordinates: [[[0, 0], [1, 0], [1, 10], [0, 10], [0, 0]]] };
+        for (const [choice, moved] of [['keep', true], ['cancel', false]]) {
+            const bounded = corridorRecord('road-1', [[[0, 0], [0, 5], [0, 10]]]);
+            bounded.roadProposal.definition.bound = { site };
+            const editor = bootNodeEditor([bounded], 'road-1', { choice });
+            installGlobal('__corridorSiteFit', { isBounded: definition => !!definition.bound });
+            const end = editor.handleAt(0, 10);
+            end.handlers.dragstart();
+            end.setLatLng({ lat: 0.5, lng: 10 });
+            end.handlers.dragend();
+            await settle();
+            expect(bounded.roadProposal.definition.bound).toEqual({ site });
+            expect(editor.calls.updates).toHaveLength(moved ? 1 : 0);
+        }
+    });
+
     it('takes back the undo step of a drag that every record refused', async () => {
         const editor = bootNodeEditor([corridorRecord('road-1', [[[0, 0], [0, 5], [0, 10]]])], 'road-1');
         globalThis.updateLocalCorridorGeometry = async () => false;
