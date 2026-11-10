@@ -208,6 +208,20 @@ anchor deploy
 # Call proposal_nft::initialize with program authority
 ```
 
+## Finalizing programs (immutable upgrade authority)
+
+`scripts/finalize-programs.sh <cluster> [--apply]` reads the program ids of the cluster's section in
+`Anchor.toml` (`[programs.devnet]`, or `[programs.mainnet]` for `mainnet-beta`; it refuses a cluster
+with no section) and prints each program's current upgrade authority from `solana program show`.
+Without `--apply` it is a dry run that also prints the `solana program set-upgrade-authority <id>
+--final` commands it would run. With `--apply` it asks you to type the cluster name exactly, then
+finalizes every program that still has an authority and re-reads each one to confirm it shows `none`.
+`--help` or no arguments prints the usage and does nothing.
+
+Finalizing is **irreversible**: a final program can never be upgraded, so no bug fix can ever reach
+it. `--apply` is refused for devnet and localnet: devnet keeps its dev upgrade authority on purpose,
+so the programs there can still be fixed and redeployed.
+
 ## Devnet program IDs
 
 | Program | Address | IDL |
