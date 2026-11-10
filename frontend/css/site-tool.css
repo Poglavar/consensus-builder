@@ -63,6 +63,12 @@ body.site-tool-drawing .leaflet-interactive:not(.site-tool-pane .leaflet-interac
     fill: var(--cb-warning-soft-ink);
 }
 
+/* Snapped to a design standing on the map (a park, square, lake, proposed building or road). */
+.site-snap-marker--design {
+    stroke: var(--cb-success);
+    fill: var(--cb-success);
+}
+
 /* What the snap marker landed on ("Building corner", "Parcel edge"): a small label beside it. */
 .leaflet-tooltip.site-snap-label {
     padding: 1px 6px;
@@ -76,6 +82,11 @@ body.site-tool-drawing .leaflet-interactive:not(.site-tool-pane .leaflet-interac
 .leaflet-tooltip.site-snap-label--building {
     color: var(--cb-warning-soft-ink);
     border-color: var(--cb-warning-soft-ink);
+}
+
+.leaflet-tooltip.site-snap-label--design {
+    color: var(--cb-success);
+    border-color: var(--cb-success);
 }
 
 .site-binding-parcel {

@@ -175,6 +175,23 @@
 
     function invalidateBuildingTargets() {
         state.buildingTargets = null;
+        state.designTargets = null;
+    }
+
+    // The outlines of the designs on the map in view (parks, squares, lakes, proposed buildings,
+    // road land; on-map-placement.js designOutlines), rebuilt lazily like the building targets.
+    function designSnapTargets() {
+        if (state.designTargets) return state.designTargets;
+        const bounds = map().getBounds();
+        const box = [bounds.getWest(), bounds.getSouth(), bounds.getEast(), bounds.getNorth()];
+        state.designTargets = win.OnMapPlacement?.designOutlines?.(win, box) || [];
+        return state.designTargets;
+    }
+
+    // The corners of a neighbouring design's outline between two drawn corners on it (Alt: none).
+    function outlinePath(a, b, event) {
+        if (event && event.originalEvent && event.originalEvent.altKey) return null;
+        return draftApi().outlinePathBetween(a, b, designSnapTargets());
     }
 
     // A building layer shown, hidden or replaced (DGU/OSM refetches swap the whole GeoJSON group);
@@ -186,16 +203,19 @@
         invalidateBuildingTargets();
     }
 
-    // Snap a coordinate to the nearest parcel or building corner, else edge, within SNAP_RADIUS_PX
-    // (Alt disables). The result's `kind` says which outline it landed on.
+    // Snap a coordinate to the nearest parcel, building or design corner, else edge, within
+    // SNAP_RADIUS_PX (Alt disables). The result's `kind` says which outline it landed on.
     function snap(coordinate, event) {
         if (event && event.originalEvent && event.originalEvent.altKey) return { coordinate, snapped: false };
         const radiusM = draftApi().SNAP_RADIUS_PX * metresPerPixel(coordinate[1]);
         const parcels = liveParcelsNear(boxAround(coordinate, radiusM)).map(feature => feature.geometry);
-        return draftApi().snapToGround(coordinate, { parcels, buildings: buildingSnapTargets() }, { radiusM });
+        return draftApi().snapToGround(coordinate, { parcels, buildings: buildingSnapTargets(), designs: designSnapTargets() }, { radiusM });
     }
 
     function snapLabel(snapped) {
+        if (snapped.kind === 'design') {
+            return snapped.snapped === 'vertex' ? t('siteTool.snap.designCorner', 'Design corner') : t('siteTool.snap.designEdge', 'Design edge');
+        }
         const building = snapped.kind === 'building';
         if (snapped.snapped === 'vertex') {
             return building ? t('siteTool.snap.buildingCorner', 'Building corner') : t('siteTool.snap.parcelCorner', 'Parcel corner');
@@ -452,6 +472,9 @@
             const herePoint = map().latLngToContainerPoint([snapped.coordinate[1], snapped.coordinate[0]]);
             if (lastPoint.distanceTo(herePoint) < 3) return; // a double click, not a new corner
         }
+        // Two corners in a row on a neighbouring design: the edge follows its outline between them.
+        const along = last ? outlinePath(last, snapped.coordinate, event) : null;
+        if (along) state.ring.push(...along);
         state.ring.push(snapped.coordinate);
         renderLayers();
         renderPanel();
@@ -550,7 +573,9 @@
             vertexTitle: t('siteTool.editor.vertexTitle', 'Drag to move · click an edge to add a corner'),
             deleteTitle: t('siteTool.editor.deleteVertex', 'Delete this corner'),
             undoTitle: t('siteTool.editor.undo', 'Undo (Cmd/Ctrl+Z)'),
-            snapCoordinate: coordinate => snap(coordinate, null).coordinate,
+            snapCoordinate: (coordinate, event) => snap(coordinate, event).coordinate,
+            traceRing: (ring, index, event) => (event && event.originalEvent && event.originalEvent.altKey)
+                ? null : draftApi().traceRingEdges(ring, index, designSnapTargets()),
             onCommit: ({ ring: next }) => {
                 state.ring = next;
                 siteChanged();

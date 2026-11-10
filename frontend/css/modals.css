@@ -2220,6 +2220,10 @@ body.site-intro-open { overflow: hidden; }
     border-color: var(--cb-primary);
     box-shadow: 0 0 0 3px color-mix(in srgb, var(--cb-primary) 22%, transparent), var(--cb-shadow-md);
 }
+.polygon-geometry-editor__vertex.is-snapped span {
+    /* Dragged onto a corner or edge it will snap to: a ring says so before the drop. */
+    box-shadow: 0 0 0 4px color-mix(in srgb, var(--cb-success) 45%, transparent);
+}
 .polygon-geometry-editor__delete-marker {
     z-index: var(--cb-z-geometry-handle-delete) !important;
     background: transparent;

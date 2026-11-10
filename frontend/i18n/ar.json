@@ -1762,7 +1762,9 @@
             "parcelCorner": "زاوية قطعة أرض",
             "parcelEdge": "حافة قطعة أرض",
             "buildingCorner": "زاوية مبنى",
-            "buildingEdge": "حافة مبنى"
+            "buildingEdge": "حافة مبنى",
+            "designCorner": "زاوية تصميم",
+            "designEdge": "حافة تصميم"
         },
         "frontage": {
             "pending": "جار البحث عن الشارع الذي يواجهه هذا الموقع…",

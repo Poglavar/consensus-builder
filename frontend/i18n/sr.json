@@ -7337,7 +7337,9 @@
             "parcelCorner": "Ugao parcele",
             "parcelEdge": "Ivica parcele",
             "buildingCorner": "Ugao zgrade",
-            "buildingEdge": "Ivica zgrade"
+            "buildingEdge": "Ivica zgrade",
+            "designCorner": "Ugao dizajna",
+            "designEdge": "Ivica dizajna"
         },
         "frontage": {
             "pending": "Tražim ulicu ka kojoj je lokacija okrenuta…",

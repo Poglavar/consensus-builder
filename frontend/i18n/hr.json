@@ -7337,7 +7337,9 @@
             "parcelCorner": "Kut čestice",
             "parcelEdge": "Rub čestice",
             "buildingCorner": "Kut zgrade",
-            "buildingEdge": "Rub zgrade"
+            "buildingEdge": "Rub zgrade",
+            "designCorner": "Kut dizajna",
+            "designEdge": "Rub dizajna"
         },
         "frontage": {
             "pending": "Tražim ulicu prema kojoj je lokacija okrenuta…",

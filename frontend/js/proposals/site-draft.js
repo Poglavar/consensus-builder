@@ -290,12 +290,13 @@
     }
 
     /**
-     * Snap a drawn coordinate to the ground around it: parcel and building outlines. Any corner
-     * (parcel or building) within the radius wins over any edge, the nearest of each kind first;
-     * the result says which kind of outline it landed on.
-     * @param {{ parcels?: object[], buildings?: object[] }} targets geometries/features, or
+     * Snap a drawn coordinate to the ground around it: parcel and building outlines, and the
+     * outlines of the designs standing on the map (parks, squares, lakes, proposed buildings, roads).
+     * Any corner within the radius wins over any edge, the nearest of each kind first; the result
+     * says which kind of outline it landed on.
+     * @param {{ parcels?: object[], buildings?: object[], designs?: object[] }} targets geometries/features, or
      *   snapTargetsInBox entries ({ geometry, box }: filtered here by the radius box first).
-     * @returns {{ coordinate, snapped: false } | { coordinate, snapped: 'vertex'|'edge', kind: 'parcel'|'building', distanceM }}
+     * @returns {{ coordinate, snapped: false } | { coordinate, snapped: 'vertex'|'edge', kind: 'parcel'|'building'|'design', distanceM }}
      */
     function snapToGround(coordinate, targets, options) {
         const opts = options || {};
@@ -306,8 +307,10 @@
         const near = [coordinate[0] - dLng, coordinate[1] - dLat, coordinate[0] + dLng, coordinate[1] + dLat];
         const kinds = [];
         const geometries = [];
-        ['parcel', 'building'].forEach(kind => {
-            const list = targets && targets[kind === 'parcel' ? 'parcels' : 'buildings'];
+        // A design first: its outline is often a parcel's too (the ground it formed), and on such a
+        // tie the label names the design.
+        ['design', 'parcel', 'building'].forEach(kind => {
+            const list = targets && targets[`${kind}s`];
             (Array.isArray(list) ? list : []).forEach(entry => {
                 if (entry && Array.isArray(entry.box) && entry.geometry) {
                     if (!boxesOverlap(entry.box, near)) return;
@@ -319,6 +322,102 @@
         const hit = snapCoordinate(coordinate, geometries, { radiusM });
         if (!hit.snapped) return hit;
         return { coordinate: hit.coordinate, snapped: hit.snapped, kind: kinds[hit.targetIndex], distanceM: hit.distanceM };
+    }
+
+    // Where `point` lies on `ring` (closed, [lng, lat]) within `toleranceM`: the segment index plus
+    // the share of the way along it, or null.
+    function positionOnRing(ring, point, toleranceM) {
+        const my = 111320;
+        const mx = 111320 * Math.cos(point[1] * Math.PI / 180);
+        let best = null;
+        for (let i = 0; i < ring.length - 1; i++) {
+            const a = ring[i];
+            const b = ring[i + 1];
+            if (!validCoordinate(a) || !validCoordinate(b)) continue;
+            const hit = nearestOnSegment(point, a, b, mx, my);
+            if (hit.distanceM > toleranceM || (best && hit.distanceM >= best.distanceM)) continue;
+            const length = Math.hypot((b[0] - a[0]) * mx, (b[1] - a[1]) * my);
+            const along = length > 0 ? Math.hypot((hit.coordinate[0] - a[0]) * mx, (hit.coordinate[1] - a[1]) * my) / length : 0;
+            best = { position: i + Math.min(1, along), distanceM: hit.distanceM };
+        }
+        return best;
+    }
+
+    function pathLengthM(points) {
+        let total = 0;
+        for (let i = 0; i < points.length - 1; i++) {
+            const mx = 111320 * Math.cos(points[i][1] * Math.PI / 180);
+            total += Math.hypot((points[i + 1][0] - points[i][0]) * mx, (points[i + 1][1] - points[i][1]) * 111320);
+        }
+        return total;
+    }
+
+    /**
+     * The corners of a neighbouring outline between two points that both lie on it, so the edge
+     * from `a` to `b` follows that outline (the shorter way round) instead of cutting across it:
+     * a park drawn against a square then touches it exactly, neither falling short nor overlapping.
+     * `outlines` are geometries/features or snapTargetsInBox entries. Returns the corners strictly
+     * between a and b, or null when no outline holds both or it runs straight between them.
+     */
+    function outlinePathBetween(a, b, outlines, options) {
+        const opts = options || {};
+        if (!validCoordinate(a) || !validCoordinate(b)) return null;
+        const toleranceM = finite(opts.toleranceM) && opts.toleranceM > 0 ? opts.toleranceM : 0.01;
+        const maxCorners = finite(opts.maxCorners) && opts.maxCorners > 0 ? opts.maxCorners : MAX_SITE_VERTICES;
+        if (pathLengthM([a, b]) <= toleranceM) return null;
+        const box = [Math.min(a[0], b[0]), Math.min(a[1], b[1]), Math.max(a[0], b[0]), Math.max(a[1], b[1])];
+        let best = null;
+        (Array.isArray(outlines) ? outlines : []).forEach(entry => {
+            if (entry && Array.isArray(entry.box) && !boxesOverlap(entry.box, box)) return;
+            ringsOf(entry && entry.geometry && entry.box ? entry.geometry : entry).forEach(ring => {
+                if (!Array.isArray(ring) || ring.length < 4) return;
+                const pa = positionOnRing(ring, a, toleranceM);
+                const pb = pa && positionOnRing(ring, b, toleranceM);
+                if (!pb) return;
+                const n = ring.length - 1;
+                // The corners met walking the ring forward from a to b, and backward.
+                const walk = (from, to, step) => {
+                    const corners = [];
+                    let index = step > 0 ? Math.floor(from) + 1 : Math.ceil(from) - 1;
+                    for (let guard = 0; guard <= n; guard++) {
+                        const wrapped = ((index % n) + n) % n;
+                        const travelled = step > 0 ? ((index - from) % n + n) % n : ((from - index) % n + n) % n;
+                        const total = step > 0 ? ((to - from) % n + n) % n : ((from - to) % n + n) % n;
+                        if (travelled >= total - 1e-9) break;
+                        corners.push(ring[wrapped]);
+                        index += step;
+                    }
+                    return corners;
+                };
+                // A corner that is a or b itself (a point read as the end of the segment before it).
+                const own = c => pathLengthM([c, a]) <= toleranceM || pathLengthM([c, b]) <= toleranceM;
+                [walk(pa.position, pb.position, 1), walk(pa.position, pb.position, -1)].map(list => list.filter(c => !own(c))).forEach(corners => {
+                    const length = pathLengthM([a, ...corners, b]);
+                    if (!best || length < best.length) best = { corners, length };
+                });
+            });
+        });
+        if (!best || !best.corners.length || best.corners.length > maxCorners) return null;
+        return best.corners.map(c => [c[0], c[1]]);
+    }
+
+    /**
+     * An open ring with the edges either side of corner `index` made to follow the outlines both
+     * their ends lie on (outlinePathBetween). Returns { ring, index } (the corner's new index), or
+     * null when neither edge changes.
+     */
+    function traceRingEdges(ring, index, outlines, options) {
+        if (!Array.isArray(ring) || ring.length < 3 || !Number.isInteger(index) || !ring[index]) return null;
+        const n = ring.length;
+        const next = (index + 1) % n;
+        const prev = (index - 1 + n) % n;
+        const after = outlinePathBetween(ring[index], ring[next], outlines, options);
+        const before = outlinePathBetween(ring[prev], ring[index], outlines, options);
+        if (!after && !before) return null;
+        const out = ring.slice(0, index + 1).concat(after || [], ring.slice(index + 1));
+        const at = index + (before ? before.length : 0);
+        if (before) out.splice(index, 0, ...before);
+        return { ring: out, index: at };
     }
 
     /**
@@ -482,6 +581,8 @@
         boxOf,
         snapTargetsInBox,
         snapToGround,
+        outlinePathBetween,
+        traceRingEdges,
         openGroundOf,
         formatWidth,
         bindingSummary,

@@ -72,6 +72,28 @@ describe('physical proposal placement', () => {
         expect(controller.moveTarget(building.geometry, center, target)).toEqual(target);
         expect(env.LiveParcelFabric.queryBounds).not.toHaveBeenCalled();
     });
+    it('snaps to and follows the designs on the map, but not the design being edited', () => {
+        const { controller, env } = runtime();
+        const D = 1e-4, at = (x, y) => [center.lng + x * D, center.lat + y * D];
+        // A square with a bent west side, a park being edited, and an applied road.
+        const square = turf.polygon([[at(0, 0), at(4, 0), at(4, 4), at(0, 4), at(-0.5, 2), at(0, 0)]]);
+        square.properties = { proposalId: 'square' };
+        const ownPark = turf.polygon([[at(-3, 0), at(-0.1, 0), at(-0.1, 4), at(-3, 4), at(-3, 0)]]);
+        ownPark.properties = { proposalId: 'park' };
+        Object.assign(env, {
+            squares: [square], parks: [ownPark], structureGeometryEditorEditingProposalId: 'park',
+            proposalStorage: { getAllProposals: () => [{ proposalId: 'road', applied: true, roadProposal: { definition: { polygon: turf.polygon([[at(10, 0), at(11, 0), at(11, 4), at(10, 4), at(10, 0)]]).geometry } } }] }
+        });
+        controller.invalidateTargets();
+        expect(controller.snapCoordinate(at(-0.48, 2.01), null)).toEqual(at(-0.5, 2));
+        expect(controller.snapCoordinate(at(10.02, 3.99), null)).toEqual(at(10, 4));
+        // The park's own old corner does not pull: there is nothing else near it.
+        expect(controller.snapCoordinate(at(-3.01, 4.01), null)).toEqual(at(-3.01, 4.01));
+        // Its east corners dropped on the square's west corners: the edge follows the bend.
+        const traced = controller.traceRing([at(-3, 0), at(0, 0), at(0, 4), at(-3, 4)], 2, null);
+        expect(traced.ring).toEqual([at(-3, 0), at(0, 0), at(-0.5, 2), at(0, 4), at(-3, 4)]);
+        expect(controller.traceRing([at(-3, 0), at(0, 0), at(0, 4), at(-3, 4)], 2, { originalEvent: { altKey: true } })).toBeNull();
+    });
     it('cleans up its controls and listeners with the editor', () => {
         const { controller, content, body, map } = runtime(); controller.destroy();
         expect(body.children).toHaveLength(0); expect(content.children).toEqual([body]);

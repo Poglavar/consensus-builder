@@ -1674,7 +1674,9 @@
             "parcelCorner": "Sommet de parcelle",
             "parcelEdge": "Limite de parcelle",
             "buildingCorner": "Angle de bâtiment",
-            "buildingEdge": "Bord de bâtiment"
+            "buildingEdge": "Bord de bâtiment",
+            "designCorner": "Coin d'un projet",
+            "designEdge": "Bord d'un projet"
         },
         "frontage": {
             "pending": "Recherche de la rue sur laquelle donne ce site…",

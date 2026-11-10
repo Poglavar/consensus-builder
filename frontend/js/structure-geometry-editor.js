@@ -1105,6 +1105,7 @@
             boundary: () => state.session?.placement?.locked ? state.initialSite : null,
             snapCoordinate: (coordinate, event) =>
                 state.session?.placement?.snapCoordinate?.(coordinate, event) || coordinate,
+            traceRing: (ring, index, event) => state.session?.placement?.traceRing?.(ring, index, event) || null,
             undo: false,
             showUndoButton: false,
             onDragStart: () => recordHistory(),

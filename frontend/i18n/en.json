@@ -7301,7 +7301,9 @@
             "parcelCorner": "Parcel corner",
             "parcelEdge": "Parcel edge",
             "buildingCorner": "Building corner",
-            "buildingEdge": "Building edge"
+            "buildingEdge": "Building edge",
+            "designCorner": "Design corner",
+            "designEdge": "Design edge"
         },
         "frontage": {
             "pending": "Looking for the street this site faces…",

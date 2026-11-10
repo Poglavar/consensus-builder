@@ -310,6 +310,47 @@ describe('shared Leaflet interaction model', () => {
         editor.destroy();
     });
 
+    it('shows a caller snap during the drag, lets Alt held while dragging skip it at the drop, and traces the edges after', () => {
+        const corner = [2, 0.5];
+        const snapCoordinate = (coordinate, event) => (event?.originalEvent?.altKey
+            || Math.hypot(coordinate[0] - corner[0], coordinate[1] - corner[1]) > 0.2 ? coordinate : corner);
+        const traced = [];
+        const commits = [];
+        const editor = create({
+            map: fakeMap(), leaflet: fakeLeaflet(), turf, ring: square, showDeleteAction: false,
+            snapCoordinate,
+            // The neighbour's outline runs through (1.5, 0.2) between the corner before and this one.
+            traceRing: (ring, index) => { traced.push(index); return { ring: [...ring.slice(0, index), [1.5, 0.2], ...ring.slice(index)], index: index + 1 }; },
+            onCommit: payload => commits.push(payload)
+        });
+        const marker = editor.vertexMarkers[1];
+        marker.handlers.dragstart({ target: marker });
+        marker.latLng = { lng: 2.1, lat: 0.45 };
+        marker.handlers.drag({ target: marker, originalEvent: {} });
+        // The handle sits on the corner it will land on before the drop.
+        expect(marker.latLng).toEqual({ lat: 0.5, lng: 2 });
+        marker.handlers.dragend({ target: marker });
+        expect(traced).toEqual([1]);
+        expect(openRing(commits[0].ring)).toEqual([[0, 0], [1.5, 0.2], [2, 0.5], [1, 1], [0, 1]]);
+
+        // Alt held through the drag: the drop hands the snap and the trace that drag event (the
+        // drop's own carries no keys), so both let go and the corner lands at the pointer.
+        const seen = [];
+        const free = create({ map: fakeMap(), leaflet: fakeLeaflet(), turf, ring: square, showDeleteAction: false,
+            snapCoordinate, traceRing: (_ring, _index, event) => { seen.push(event?.originalEvent?.altKey); return null; },
+            onCommit: payload => commits.push(payload) });
+        const handle = free.vertexMarkers[1];
+        handle.handlers.dragstart({ target: handle });
+        handle.latLng = { lng: 2.1, lat: 0.45 };
+        handle.handlers.drag({ target: handle, originalEvent: { altKey: true } });
+        expect(handle.latLng).toEqual({ lng: 2.1, lat: 0.45 });
+        handle.handlers.dragend({ target: handle });
+        expect(seen).toEqual([true]);
+        expect(openRing(commits.at(-1).ring)[1]).toEqual([2.1, 0.45]);
+        editor.destroy();
+        free.destroy();
+    });
+
     it('undoes the complete vertex drag and does not create an undo step for a no-op drag', () => {
         const document = fakeDocument();
         const commits = [];

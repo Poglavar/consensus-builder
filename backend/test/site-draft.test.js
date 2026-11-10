@@ -281,3 +281,48 @@ describe('panToClear', () => {
         expect(plan).toMatchObject({ fits: true, dx: 0, dy: 0 });
     });
 });
+
+// A design drawn against a neighbour follows the neighbour's outline between two points on it, so
+// the two touch exactly instead of leaving a sliver or overlapping it.
+describe('outlinePathBetween / traceRingEdges', () => {
+    const LNG = 15.96, LAT = 45.8, D = 1e-4; // about 7.8 m east, 11.1 m north
+    const at = (x, y) => [LNG + x * D, LAT + y * D];
+    // A square whose west side bulges out in two corners between (0,0) and (0,4).
+    const square = { type: 'Polygon', coordinates: [[at(0, 0), at(4, 0), at(4, 4), at(0, 4), at(-0.5, 3), at(-0.5, 1), at(0, 0)]] };
+
+    it('walks the shorter way round between two points on the outline, corners only', () => {
+        expect(siteDraft.outlinePathBetween(at(0, 0), at(0, 4), [square])).toEqual([at(-0.5, 1), at(-0.5, 3)]);
+        expect(siteDraft.outlinePathBetween(at(0, 4), at(0, 0), [square])).toEqual([at(-0.5, 3), at(-0.5, 1)]);
+        // Two points on one straight side: nothing to add.
+        expect(siteDraft.outlinePathBetween(at(1, 0), at(3, 0), [square])).toBeNull();
+        // A point off every outline: nothing to follow.
+        expect(siteDraft.outlinePathBetween(at(0, 0), at(-2, 2), [square])).toBeNull();
+    });
+
+    it('starts mid-edge and accepts snap entries', () => {
+        const entries = siteDraft.snapTargetsInBox([square], null);
+        expect(siteDraft.outlinePathBetween(at(2, 0), at(-0.5, 2), entries)).toEqual([at(0, 0), at(-0.5, 1)]);
+    });
+
+    it('makes a park edge dragged onto the square follow its outline exactly', () => {
+        // A park west of the square; its east corners are dropped onto the square's two west corners.
+        const park = [at(-3, 0), at(0, 0), at(0, 4), at(-3, 4)];
+        const traced = siteDraft.traceRingEdges(park, 2, [square]);
+        expect(traced.ring).toEqual([at(-3, 0), at(0, 0), at(-0.5, 1), at(-0.5, 3), at(0, 4), at(-3, 4)]);
+        expect(traced.index).toBe(4);
+        const parkPolygon = turf.polygon([[...traced.ring, traced.ring[0]]]);
+        const overlap = turf.intersect(parkPolygon, turf.feature(square));
+        expect(overlap ? turf.area(overlap) : 0).toBeLessThan(0.01);
+        // And the park reaches the square everywhere along its west side.
+        expect(turf.area(parkPolygon)).toBeCloseTo(turf.area(turf.polygon([[at(-3, 0), at(0, 0), at(0, 4), at(-3, 4), at(-3, 0)]]))
+            - turf.area(turf.polygon([[at(0, 0), at(0, 4), at(-0.5, 3), at(-0.5, 1), at(0, 0)]])), 0);
+        expect(siteDraft.traceRingEdges(park, 0, [square])).toBeNull();
+    });
+
+    it('snaps to a design outline as its own kind', () => {
+        const hit = siteDraft.snapToGround(at(-0.49, 1.01), { designs: [square] }, { radiusM: 2 });
+        expect(hit).toMatchObject({ snapped: 'vertex', kind: 'design', coordinate: at(-0.5, 1) });
+        // The same corner as a parcel's (the ground the design formed): named as the design.
+        expect(siteDraft.snapToGround(at(-0.49, 1.01), { parcels: [square], designs: [square] }, { radiusM: 2 }).kind).toBe('design');
+    });
+});

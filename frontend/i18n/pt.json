@@ -1674,7 +1674,9 @@
             "parcelCorner": "Vértice da parcela",
             "parcelEdge": "Aresta da parcela",
             "buildingCorner": "Vértice do edifício",
-            "buildingEdge": "Aresta do edifício"
+            "buildingEdge": "Aresta do edifício",
+            "designCorner": "Canto de um projeto",
+            "designEdge": "Borda de um projeto"
         },
         "frontage": {
             "pending": "A procurar a rua para a qual esta área de intervenção está virada…",

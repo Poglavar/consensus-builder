@@ -7328,7 +7328,9 @@
             "parcelCorner": "Esquina de parcela",
             "parcelEdge": "Borde de parcela",
             "buildingCorner": "Esquina de edificio",
-            "buildingEdge": "Borde de edificio"
+            "buildingEdge": "Borde de edificio",
+            "designCorner": "Esquina de un diseño",
+            "designEdge": "Borde de un diseño"
         },
         "frontage": {
             "pending": "Buscando la calle a la que da este sitio…",

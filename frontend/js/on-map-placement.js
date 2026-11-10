@@ -40,6 +40,29 @@
         return { lat, lng };
     }
 
+    // The outlines of the designs standing on the map, as snap targets: parks, squares and lakes as
+    // drawn, proposed buildings, and the land of applied roads. A drawn or edited design snaps to
+    // them and follows them (traceRing), so it can be made to touch one exactly. `excludeIds` are
+    // the designs being edited, whose old outline is not a neighbour.
+    function designOutlines(env, box, { excludeIds = [] } = {}) {
+        const siteApi = env.__siteDraft;
+        if (!siteApi) return [];
+        const skip = new Set(excludeIds.filter(Boolean).map(String));
+        const own = id => id !== undefined && id !== null && skip.has(String(id));
+        const geometries = [];
+        ['parks', 'squares', 'lakes', 'proposedBuildings'].forEach(name => {
+            (Array.isArray(env[name]) ? env[name] : []).forEach(feature => {
+                if (feature?.geometry && !own(feature.properties?.proposalId)) geometries.push(feature.geometry);
+            });
+        });
+        const applied = typeof env.isProposalApplied === 'function' ? env.isProposalApplied : record => record?.applied === true;
+        (env.proposalStorage?.getAllProposals?.() || []).forEach(record => {
+            const land = record?.roadProposal?.definition?.polygon;
+            if (land && applied(record) && !own(record.proposalId)) geometries.push(land);
+        });
+        return siteApi.snapTargetsInBox(geometries, box, { cap: 500 });
+    }
+
     function create(options, env = window) {
         const { session } = options;
         const doc = env.document;
@@ -52,7 +75,9 @@
         let snapping = true;
         let current = site;
         let buildingTargets = null;
+        let designTargets = null;
         let closed = false;
+        const ownIds = () => [options.ownProposalId, env.structureGeometryEditorEditingProposalId];
 
         function text(key, fallback) {
             const translated = env.i18n?.t?.(`onMapEditor.placement.${key}`);
@@ -125,6 +150,15 @@
                 if (!groups.some(layer => layer === event.layer || layer.hasLayer?.(event.layer))) return;
             }
             buildingTargets = null;
+            designTargets = null;
+        }
+        function viewBox() {
+            const bounds = map.getBounds();
+            return [bounds.getWest(), bounds.getSouth(), bounds.getEast(), bounds.getNorth()];
+        }
+        function shownDesigns() {
+            if (!designTargets) designTargets = designOutlines(env, viewBox(), { excludeIds: ownIds() });
+            return designTargets;
         }
         function shownBuildings() {
             if (buildingTargets) return buildingTargets;
@@ -150,7 +184,8 @@
             const nearby = env.LiveParcelFabric?.queryBounds?.(expanded, { includeCorridors: true }) || [];
             return {
                 parcels: siteApi.snapTargetsInBox([...(site ? [site] : []), ...nearby], expanded, { cap: 200 }),
-                buildings: shownBuildings()
+                buildings: shownBuildings(),
+                designs: shownDesigns()
             };
         }
         const bypassSnap = event => !snapping || event?.altKey || event?.originalEvent?.altKey;
@@ -166,6 +201,13 @@
             const radiusM = radiusAt(point);
             return siteApi.snapToGround(coordinate, targetsNear(null, point, radiusM), { radiusM }).coordinate;
         }
+        // The edges either side of corner `index` of an open ring, made to follow a neighbouring
+        // design's outline where both their ends lie on it (site-draft.js traceRingEdges); null when
+        // nothing changes. Off with snapping (and with Alt).
+        function traceRing(ring, index, event) {
+            if (bypassSnap(event)) return null;
+            return siteApi.traceRingEdges(ring, index, shownDesigns());
+        }
         map.on('moveend zoomend layeradd layerremove', invalidateBuildings);
         return {
             get locked() { return locked; },
@@ -177,6 +219,8 @@
             moveTarget,
             moveGeometry: (geometry, from, to, event) => geometryApi.moveGeometry(geometry, from, moveTarget(geometry, from, to, event)),
             snapCoordinate,
+            traceRing,
+            invalidateTargets: invalidateBuildings,
             destroy() {
                 closed = true;
                 map.off('moveend zoomend layeradd layerremove', invalidateBuildings);
@@ -186,5 +230,5 @@
         };
     }
 
-    return { create, snapMoveTarget, featureOf };
+    return { create, snapMoveTarget, featureOf, designOutlines };
 });

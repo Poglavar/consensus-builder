@@ -641,7 +641,20 @@
             if (this.destroyed || !event || !event.target || typeof event.target.getLatLng !== 'function') return;
             const latLng = event.target.getLatLng();
             if (!latLng || !Number.isFinite(latLng.lng) || !Number.isFinite(latLng.lat)) return;
-            this.ring[vertexIndex] = [latLng.lng, latLng.lat];
+            let coordinate = [latLng.lng, latLng.lat];
+            // The drop snaps; the drag shows where to: the handle clicks onto the corner or edge it
+            // will land on (Alt, read here because the drop event does not carry it, lets go).
+            this.lastDragEvent = event;
+            if (typeof this.options.snapCoordinate === 'function') {
+                const snapped = this.options.snapCoordinate(coordinate, event);
+                const moved = Array.isArray(snapped) && (snapped[0] !== coordinate[0] || snapped[1] !== coordinate[1]);
+                if (moved) {
+                    coordinate = [snapped[0], snapped[1]];
+                    event.target.setLatLng([coordinate[1], coordinate[0]]);
+                }
+                event.target.getElement?.()?.classList.toggle('is-snapped', moved);
+            }
+            this.ring[vertexIndex] = coordinate;
             this.drawLiveOutline();
             this.emit('onLiveChange', 'move', vertexIndex);
         }
@@ -654,7 +667,10 @@
             const rawCoordinate = latLng
                 ? [latLng.lng, latLng.lat]
                 : this.ring[vertexIndex];
-            return this.completeVertexMove(vertexIndex, rawCoordinate, event);
+            event?.target?.getElement?.()?.classList.remove('is-snapped');
+            const snapEvent = event?.originalEvent ? event : (this.lastDragEvent || event);
+            this.lastDragEvent = null;
+            return this.completeVertexMove(vertexIndex, rawCoordinate, event, { snapEvent });
         }
 
         moveVertex(vertexIndex, coordinate) {
@@ -667,12 +683,18 @@
             return this.completeVertexMove(vertexIndex, coordinate, null, { snap: false });
         }
 
-        completeVertexMove(vertexIndex, rawCoordinate, event, { snap = true } = {}) {
+        completeVertexMove(vertexIndex, rawCoordinate, event, { snap = true, snapEvent = event } = {}) {
             // A caller-supplied snap (the site tool snaps to parcel edges) replaces the boundary one.
             const coordinate = !snap ? rawCoordinate : typeof this.options.snapCoordinate === 'function'
-                ? (this.options.snapCoordinate(rawCoordinate, event) || rawCoordinate)
+                ? (this.options.snapCoordinate(rawCoordinate, snapEvent) || rawCoordinate)
                 : snapCoordinateToBoundary(rawCoordinate, this.options.boundary, this.turf);
             if (coordinate) this.ring[vertexIndex] = coordinate;
+            // A corner dropped on a neighbouring design's outline, next to one already on it: the edge
+            // between them follows that outline (the caller's traceRing), so the two touch exactly.
+            if (snap && coordinate && typeof this.options.traceRing === 'function') {
+                const traced = this.options.traceRing(openRing(this.ring), vertexIndex, snapEvent);
+                if (traced && Array.isArray(traced.ring)) this.ring = traced.ring;
+            }
             const constrainedRing = constrainRingToBoundary(this.ring, this.options.boundary, this.turf);
             if (constrainedRing) this.ring = constrainedRing;
             if (coordinate && event && event.target && typeof event.target.setLatLng === 'function') {

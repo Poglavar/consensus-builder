@@ -846,6 +846,7 @@
                     { number: polygonIndex + 1, hole: ringIndex }),
                 boundary: () => singleSession?.placement?.locked ? singleBlockFeature : null,
                 snapCoordinate: (coordinate, event) => singleSession.placement.snapCoordinate(coordinate, event),
+                traceRing: (ring, index, event) => singleSession.placement.traceRing?.(ring, index, event) || null,
                 undo: false,
                 initialSelectedVertexIndex: selected ? selection.vertexIndex : null,
                 showInitialDeleteAction: selected,

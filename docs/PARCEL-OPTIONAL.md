@@ -689,6 +689,14 @@ proposal-bridge.js/create.js and backend/agents/minter.js; decoders render the z
   5,000, rebuilt lazily after `moveend`, `buildingsLayerUpdated` or a GeoJSON layer being added/removed.
   Same 12 px radius, Alt still disables. The snap marker is pink on a building, blue on a parcel, with a
   label ("Building corner", "Parcel edge", …).
+- **Designs snap to each other.** The designs on the map are a third snap kind, `designs`
+  (`on-map-placement.js designOutlines`: parks, squares and lakes as drawn, proposed buildings, applied
+  road land; the design being edited excluded), in the site tool and in every editor with "Snap to
+  edges" (green marker, "Design corner" / "Design edge"; a design wins a tie with the parcel it formed).
+  An edge whose two ends lie on one design's outline follows that outline, the shorter way round
+  (`site-draft.js outlinePathBetween` / `traceRingEdges`), so a park drawn or reshaped against a square
+  touches it exactly. A dragged corner shows its snap before the drop (`is-snapped`), and Alt held
+  during the drag skips both snap and tracing at the drop.
 - **Frontage faces a street.** Pure `site-plots.js frontageScores` / `frontageFromStreets(site, streets)`:
   for each edge, the best street segment within 30 m of the edge midpoint, within 30° of parallel and not
   inside the site (> 2 m inward); score = parallel × (1 − d/30) × (edge / longest edge); none → the longest
