@@ -45,7 +45,7 @@ The server reads every city's light configuration (`frontend/data/city-index.js`
 
 ## Uploaded building models
 
-A proposed building drawn from an uploaded glTF model (`properties.modelUrl`) needs no floor model: when the model has interiors, X-ray opens it with a horizontal [model section](vocabulary.md#model-section) at the chosen storey, found in the model's own horizontal surfaces (`frontend/js/model-section.js`). The cut is a clipping plane on the model's materials (`applyModelSection` in `three-mode.js`), so toggling X-ray or the floor cutaway rebuilds nothing; the model's levels join the floor cutaway's list. A [georeferenced model](vocabulary.md#georeferenced-building-model) keeps its storeys below ground, which show only at a basement cutaway (`renderCutaway` keeps the cut models and hides the rest).
+A proposed building drawn from an uploaded glTF model (`properties.modelUrl`) needs no floor model: when the model has interiors, X-ray opens it with a horizontal [model section](vocabulary.md#model-section) at the chosen storey, found in the model's own horizontal surfaces (`frontend/js/model-section.js`). With no storey chosen the cut opens the ground storey. The cut is a clipping plane on the model's materials (`applyModelSection` in `three-mode.js`), which also swap the facade skin for the model's own tinted materials, so toggling X-ray or the floor cutaway rebuilds nothing; the model's levels join the floor cutaway's list. A [georeferenced model](vocabulary.md#georeferenced-building-model) keeps its storeys below ground, which show only at a basement cutaway (`renderCutaway` keeps the cut models and hides the rest).
 
 ## Suggested default layouts
 

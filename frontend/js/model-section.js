@@ -56,18 +56,16 @@
 
     /**
      * The height at which X-ray cuts the model: CUT_ABOVE_FLOOR_M above the chosen storey's floor.
-     * With no level chosen it shows the highest storey. A level the model lacks takes its nearest
-     * storey below, or the lowest. null for a model without storeys.
+     * With no level chosen it shows the ground storey (level 0): a model's storeys cannot all be open
+     * at once, and a cut above the top one would leave the building closed. A level the model lacks
+     * takes its nearest storey below, or the lowest. null for a model without storeys.
      */
     function sectionHeightM(storeys, level) {
         const list = Array.isArray(storeys) ? storeys : [];
         if (!list.length) return null;
-        let storey;
-        if (level === null || level === undefined) storey = list[list.length - 1];
-        else {
-            const below = list.filter(item => item.level <= level);
-            storey = below.length ? below[below.length - 1] : list[0];
-        }
+        const chosen = level === null || level === undefined ? 0 : level;
+        const below = list.filter(item => item.level <= chosen);
+        const storey = below.length ? below[below.length - 1] : list[0];
         return storey.elevationM + CUT_ABOVE_FLOOR_M;
     }
 

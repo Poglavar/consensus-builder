@@ -209,7 +209,7 @@ export function vlabDesigns({ authorModel = null } = {}) {
         claimExact('zgrada-vlab-model', steppedBuilding({
             title: 'vLAB – zgrada (autorov model)',
             description: `Zgrada vLAB kao autorov 3D model s interijerom svih etaža (−2 do +6); tlocrt ${footprintM2} m², do 32 m.`,
-            blockName: 'vLAB', buildingId: 'vlab',
+            blockName: 'vLAB', buildingId: 'vlab', facade: 'glass-large',
             model: { source: 'upload', modelUrl: authorModel.modelUrl, modelName: 'vLAB (Ivan Gavran Vlahović)', modelOrigin: authorModel.modelOrigin, rotation: authorModel.rotation },
             parts: [{ geometry: union(vlabParts.map(step => step.geometry)), heightM: 32, floors: 7, use: 'public' }]
         }));

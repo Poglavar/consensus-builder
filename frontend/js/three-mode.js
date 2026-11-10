@@ -8206,6 +8206,47 @@
         return faces;
     }
 
+    // A planned building model takes the facade skin an extruded building does (Facades in the view,
+    // the style its building states, else Mixed's), on every wall of the model: the walls are found
+    // in the model's own upright frame (metres, z up, ground at 0). Each mesh keeps its own tinted
+    // material for X-ray, whose cut shows the interior without the skin (applyModelSection).
+    function prepareModelFacade(wrapper, meshes, feat, buildingMaterial) {
+        if (!meshes.length) return;
+        const city = window.CityConfigManager?.getCurrentCityId?.() || '';
+        const props = feat.properties || {};
+        const height = estimateBuildingHeightMeters(feat);
+        const floorHeight = Number.isInteger(props.floors) && props.floors > 0 ? height / props.floors : (window.STOREY_HEIGHT_M || 3.3);
+        const design = buildingFacades.buildingDesign(buildingFacades.buildingKey(feat, city), height, floorHeight,
+            buildingFacades.buildingIdentityKey(feat, city), props.facade);
+        const surface = cloneBuildingMaterial(buildingMaterial);
+        surface.color.copy(buildingHue(feat));
+        const facadeMaterial = buildingFacades.configureMaterial(surface, design, facadeState, THREE);
+        wrapper.updateMatrixWorld(true);
+        const toModel = new THREE.Matrix4().copy(wrapper.matrixWorld).invert();
+        const local = new THREE.Matrix4(), normalMatrix = new THREE.Matrix3(), v = new THREE.Vector3();
+        for (const mesh of meshes) {
+            const geometry = mesh.geometry.index ? mesh.geometry.toNonIndexed() : mesh.geometry.clone();
+            geometry.computeVertexNormals();
+            local.multiplyMatrices(toModel, mesh.matrixWorld);
+            normalMatrix.getNormalMatrix(local);
+            const position = geometry.attributes.position, normal = geometry.attributes.normal;
+            const positions = new Float32Array(position.count * 3), normals = new Float32Array(position.count * 3);
+            for (let i = 0; i < position.count; i++) {
+                v.fromBufferAttribute(position, i).applyMatrix4(local);
+                positions[i * 3] = v.x; positions[i * 3 + 1] = v.y; positions[i * 3 + 2] = v.z;
+                v.fromBufferAttribute(normal, i).applyMatrix3(normalMatrix).normalize();
+                normals[i * 3] = v.x; normals[i * 3 + 1] = v.y; normals[i * 3 + 2] = v.z;
+            }
+            geometry.setAttribute('cbFacadeCoord', new THREE.Float32BufferAttribute(buildingFacades.wallCoordinates(positions, normals, 1), 3));
+            mesh.geometry = markOwnedGeometry(mesh, geometry);
+            mesh.userData.cbModelPlainMaterial = mesh.material;
+            mesh.userData.cbModelFacadeMaterial = facadeMaterial;
+            mesh.material = facadeMaterial;
+            mesh.userData.cbFacadeOwned = true;
+        }
+        markOwnedMaterial(meshes[0], facadeMaterial);
+    }
+
     // X-ray cuts an uploaded building model above the chosen storey's floor (model-section.js), so
     // its rooms show from above; outside X-ray the model is whole. Its storeys below ground show only
     // when X-ray's cutaway is a basement, where everything else is hidden too (renderCutaway): the
@@ -8222,6 +8263,10 @@
         const signature = planes.map(plane => `${plane.normal.z}`).join(',');
         wrapper.traverse(node => {
             if (!node.isMesh || !node.material) return;
+            // The facade skin outside the cut, the model's own materials inside it.
+            if (node.userData.cbModelFacadeMaterial) {
+                node.material = heightM !== null ? node.userData.cbModelPlainMaterial : node.userData.cbModelFacadeMaterial;
+            }
             (Array.isArray(node.material) ? node.material : [node.material]).forEach(material => {
                 if (!material) return;
                 if (material.userData.cbModelSectionSide === undefined) material.userData.cbModelSectionSide = material.side;
@@ -8348,6 +8393,11 @@
                 markOwnedMaterial(node, node.material);
                 attachBuildingDepthPrepass(node);
             });
+            if (planningHue) {
+                try { prepareModelFacade(wrapper, modelMeshes, feat, buildingMaterial); } catch (error) {
+                    console.error(`[${new Date().toISOString()}] [3D] Facade of model ${url} could not be prepared; it keeps its tinted materials`, error);
+                }
+            }
             // A building model with storeys inside can be opened by X-ray's section.
             if (isProposedBuilding && modelSection) {
                 try {

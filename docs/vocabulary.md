@@ -534,11 +534,11 @@ An uploaded building model (`properties.modelUrl`) whose building also states `m
 
 ### Building hue
 
-The one colour a planned building has in the model view; parcel slices vary only its shade. A building of several features (stepped parts, each its own footprint and height) states one `buildingId` on every part, and its parts share the hue and the glass tint; any other building's hue comes from its own outline. An uploaded building model takes the same hue: its own material colours are tinted to it.
+The one colour a planned building has in the model view; parcel slices vary only its shade. A building of several features (stepped parts, each its own footprint and height) states one `buildingId` on every part, and its parts share the hue and the glass tint; any other building's hue comes from its own outline. An uploaded building model takes the same hue: its own material colours are tinted to it. It also takes the [illustrative facade](#illustrative-facade) on its walls, the style its building states or Mixed's; inside an X-ray [model section](#model-section) its own tinted materials show instead.
 
 ### Model section
 
-How X-ray shows the interior of an uploaded building model: a horizontal cut 1.2 m above the floor of the storey chosen in the floor cutaway, or of the highest storey when none is chosen (`frontend/js/model-section.js`). The storeys are found in the model's own horizontal surfaces: a floor is a height holding at least 3 % of the fullest height's area and 25 m², a slab's top and bottom are one floor, and the highest surface is the roof. A model's storeys below ground show only when a basement is chosen, with everything else hidden. The cut is display only and changes no design.
+How X-ray shows the interior of an uploaded building model: a horizontal cut 1.2 m above the floor of the storey chosen in the floor cutaway, or of the ground storey when none is chosen (a model's storeys cannot all be open at once) (`frontend/js/model-section.js`). The storeys are found in the model's own horizontal surfaces: a floor is a height holding at least 3 % of the fullest height's area and 25 m², a slab's top and bottom are one floor, and the highest surface is the roof. A model's storeys below ground show only when a basement is chosen, with everything else hidden. The cut is display only and changes no design.
 
 ### Urban-rule design
 

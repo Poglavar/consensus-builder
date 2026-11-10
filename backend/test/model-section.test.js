@@ -28,9 +28,9 @@ describe('model storeys', () => {
         expect(section.storeysOf([{ z: Number.NaN, areaM2: 10 }, { z: 1, areaM2: -4 }])).toEqual([]);
     });
 
-    it('cuts 1.2 m above the chosen storey, the highest when none is chosen', () => {
+    it('cuts 1.2 m above the chosen storey, the ground storey when none is chosen', () => {
         const storeys = section.storeysOf(faces);
-        expect(section.sectionHeightM(storeys, null)).toBeCloseTo(8.2);
+        expect(section.sectionHeightM(storeys, null)).toBeCloseTo(1.2);
         expect(section.sectionHeightM(storeys, 0)).toBeCloseTo(1.2);
         expect(section.sectionHeightM(storeys, -1)).toBeCloseTo(-2.3);
         // a level the model lacks: the nearest storey below, or the lowest
