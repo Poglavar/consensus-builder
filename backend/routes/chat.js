@@ -51,6 +51,8 @@ export function setupChatRoute(app, pool, { env = process.env, store: suppliedSt
     const model = env.CHAT_MODEL || modelForProvider(provider);
     const apiKey = provider === 'openai' ? env.OPENAI_API_KEY : provider === 'anthropic' ? env.ANTHROPIC_API_KEY : null;
     const cap = Number(env.CHAT_DAILY_CAP_USD ?? 5), maxTurns = Number(env.CHAT_MAX_TURNS ?? 25), ipDailyTurns = Number(env.CHAT_IP_DAILY_TURNS ?? 100);
+    // One client's share of the daily cap (default a fifth), so a single IP cannot exhaust it for everyone.
+    const ipDailyCap = Number(env.CHAT_IP_DAILY_CAP_USD ?? cap / 5);
     const debugCosts = /^(1|true)$/i.test(String(env.CHAT_DEBUG_COSTS || ''));
     app.get('/chat/cost', (req, res) => {
         res.set('Cache-Control', 'no-store');
@@ -175,7 +177,7 @@ export function setupChatRoute(app, pool, { env = process.env, store: suppliedSt
                 const mcpTools = mcp ? await mcp.listTools() : await suppliedTool.listTools?.();
                 const estUsd = estimateTurnUsd(prices, limits);
                 try { reservation = await budget.reserveTurn(pool, { conversationId: conversation.id, n: conversation.turns + 1, turnKey,
-                    clientIp: clientIp(req), model, estUsd, dailyCapUsd: cap, ipDailyTurns }); }
+                    clientIp: clientIp(req), model, estUsd, dailyCapUsd: cap, ipDailyTurns, ipDailyCapUsd: ipDailyCap }); }
                 catch (error) { throw fail(error.code === 'turn_in_progress' || error.code === 'rate_limited_quota' ? error.code : 'budget_check_failed', statusOf(error)); }
                 if (!reservation) throw fail('budget_exhausted', 402);
                 stream = openSse(res);

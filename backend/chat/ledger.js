@@ -1,16 +1,19 @@
 // Reserve spend under a database lock; retain uncertain charges so retries cannot evade the cap.
 export const CHAT_LOCK_KEY = 0x43484154;
 const fail = code => Object.assign(new Error(code), { code });
-export async function reserveTurn(pool, { conversationId, n, turnKey, model, estUsd, clientIp, dailyCapUsd, ipDailyTurns = 100 }) {
-    if (![estUsd, dailyCapUsd].every(value => Number.isFinite(value) && value > 0)) throw fail('budget_check_failed');
+// The per-IP quota counts every turn that kept a charge (aborted, refused and failed ones too: they
+// still charge the daily cap) and caps the IP's own spend, so one client cannot drain the shared cap.
+export async function reserveTurn(pool, { conversationId, n, turnKey, model, estUsd, clientIp, dailyCapUsd, ipDailyTurns = 100, ipDailyCapUsd = dailyCapUsd }) {
+    if (![estUsd, dailyCapUsd, ipDailyCapUsd].every(value => Number.isFinite(value) && value > 0)) throw fail('budget_check_failed');
     const client = await pool.connect();
     try {
         await client.query('BEGIN');
         await client.query('SELECT pg_advisory_xact_lock($1)', [CHAT_LOCK_KEY]);
-        const quota = await client.query(`SELECT count(*)::int AS count FROM consensus.chat_turn WHERE client_ip=$1
-            AND created_at >= date_trunc('day', now() AT TIME ZONE 'UTC') AT TIME ZONE 'UTC'
-            AND status IN ('running','reply','question')`, [clientIp]);
+        const quota = await client.query(`SELECT count(*)::int AS count, COALESCE(SUM(COALESCE(cost_usd,est_usd)),0)::float8 AS spent
+            FROM consensus.chat_turn WHERE client_ip=$1
+            AND created_at >= date_trunc('day', now() AT TIME ZONE 'UTC') AT TIME ZONE 'UTC'`, [clientIp]);
         if (quota.rows[0]?.count >= ipDailyTurns) throw fail('rate_limited_quota');
+        if (Number(quota.rows[0]?.spent || 0) + estUsd > ipDailyCapUsd) throw fail('rate_limited_quota');
         const locked = await client.query(`UPDATE consensus.chat_conversation SET turn_in_progress_since=now(), updated_at=now()
             WHERE id=$1 AND turn_in_progress_since IS NULL RETURNING id`, [conversationId]);
         if (!locked.rows.length) throw fail('turn_in_progress');

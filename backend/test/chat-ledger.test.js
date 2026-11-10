@@ -9,7 +9,10 @@ function createPool() {
     const sum = () => rows.reduce((total, row) => total + (row.costUsd ?? row.estUsd), 0);
     async function sql(text, values = []) {
         const normalized = text.replace(/\s+/g, ' ').trim();
-        if (/^SELECT count\(\*\)::int AS count FROM consensus\.chat_turn/.test(normalized)) return { rows: [{ count: 0 }] };
+        if (/^SELECT count\(\*\)::int AS count, COALESCE\(SUM\(COALESCE\(cost_usd,est_usd\)\),0\)::float8 AS spent FROM consensus\.chat_turn WHERE client_ip=\$1/.test(normalized)) {
+            const mine = rows.filter(row => row.clientIp === values[0]);
+            return { rows: [{ count: mine.length, spent: mine.reduce((total, row) => total + (row.costUsd ?? row.estUsd), 0) }] };
+        }
         if (/^UPDATE consensus\.chat_conversation SET turn_in_progress_since=now\(\), updated_at=now\(\)/.test(normalized)) {
             if (!conversations.has(values[0])) return { rows: [] };
             return { rows: [{ id: values[0] }] };
@@ -47,7 +50,31 @@ function createPool() {
     };
 }
 
-const reservation = (conversationId, turnKey, estUsd) => ({ conversationId, n: 1, turnKey, model: 'test', estUsd, clientIp: '198.51.100.1', dailyCapUsd: 0.10 });
+// The per-IP allowance is set above the shared cap here so these tests exercise the shared cap.
+const reservation = (conversationId, turnKey, estUsd) => ({ conversationId, n: 1, turnKey, model: 'test', estUsd, clientIp: '198.51.100.1', dailyCapUsd: 0.10, ipDailyCapUsd: 1 });
+
+describe('chat per-IP quota', () => {
+    const turnKey = i => `00000000-0000-4000-8000-0000000001${String(i).padStart(2, '0')}`;
+    it('counts aborted turns, which still charge the daily cap', async () => {
+        const pool = createPool();
+        for (let i = 0; i < 4; i++) pool.conversations.set(`a${i}`, true);
+        const reserve = i => reserveTurn(pool, { ...reservation(`a${i}`, turnKey(i), 0.01), dailyCapUsd: 5, ipDailyTurns: 3 });
+        for (let i = 0; i < 3; i++) {
+            const row = await reserve(i);
+            await settleTurn(pool, row.id, { costUsd: null, status: 'aborted' });
+        }
+        await expect(reserve(3)).rejects.toMatchObject({ code: 'rate_limited_quota' });
+    });
+    it("caps one IP's spend below the shared daily cap", async () => {
+        const pool = createPool();
+        const base = { ...reservation('c1', turnKey(10), 0.13), dailyCapUsd: 5, ipDailyCapUsd: 0.2 };
+        expect(await reserveTurn(pool, base)).toBeTruthy();
+        await expect(reserveTurn(pool, { ...base, conversationId: 'c2', turnKey: turnKey(11) }))
+            .rejects.toMatchObject({ code: 'rate_limited_quota' });
+        const other = await reserveTurn(pool, { ...base, conversationId: 'c2', turnKey: turnKey(12), clientIp: '203.0.113.9' });
+        expect(other).toBeTruthy();
+    });
+});
 
 describe('chat spend ledger', () => {
     it('serializes concurrent reservations at the daily cap', async () => {
