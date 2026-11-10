@@ -224,7 +224,7 @@ describe('shared building and proposal representations', () => {
             proposalStorage: { getAllProposals: () => [] }, displayedProposals: () => [], demolishedMaterialFor: () => ({}),
             nearbyBuildingGeometryCache: { beginPass: () => ({}) }, nearbyProposalBuildings: [{ object_id: 12, source: 'gdi-3d' }],
             threeBuildingKey: building => `${building.source}:${building.object_id}`, buildingFootprintPolygon: () => null,
-            xrayEnabled: false, suggestedPlansEnabled: false, suggestedExistingEnabled: false, origin3857: null,
+            xrayEnabled: false, suggestedPlansEnabled: false, suggestedExistingEnabled: false, suggestedAccess: 'auto', origin3857: null,
             sceneWork: { forEach: async (items, fn) => items.forEach(fn) },
             buildingDisplayPolicy: { resolveBuildingRenderParts: () => ({ detailed: true, remainder: true, demolished: true }) },
             appendBuildingFloorPlans: () => false, building3DHeightMeters: () => 8, buildMeshFromBuilding3D: mesh,

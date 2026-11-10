@@ -40,7 +40,7 @@ describe('headless app formation host', () => {
             const park = fixture.designs.find(d => d.content.title?.includes('park Z1-5'));
             expect(ground.outputs.some(o => o.producedBy === park.cid && o.fromParcelIds.includes('HR-335550-4302/4'))).toBe(true);
         }
-    });
+    }, 30000); // Whole restated plans: ~2 s on an idle laptop, past the 5 s default under load or on a 2-core runner.
     for (const design of [make('space', { spaceKind: 'park' }), make('building', { floors: 4 }), make('parcel-layout', { algorithm: 'equal', count: 4 })]) {
         it(`derives ${design.content.goal} from the same app handlers without losing ground`, async () => {
             const derived = await deriveAgreementGround({ designs: [design], parcels });
