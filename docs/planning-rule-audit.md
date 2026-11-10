@@ -74,7 +74,7 @@ Every inventory field maps to exactly one row below. D/S are counts in the Distr
 | `accessory_size` / 2–4 | An accessory shape can be drawn/measured. | Need maximum area and percent-of-primary limits with the correct denominator, use and unit-count relationship. Z01/Z02. |
 | `mobile_home` / 1–1 | A typology/label can illustrate a manufactured/mobile home. | No standardized use eligibility within planned residential developments; a visual object type is insufficient. Z07. |
 
-Code evidence: [parcel/block rule normalization, evaluation and variation](../frontend/js/urban-rule-variation.js), [agent planner and scalar capping](../backend/agents/planner.js), [source rule reduction](../backend/agents/parcel-source.js), [proposal decision kinds](../frontend/js/proposals/proposal-kind.js), [building/floor geometry](../frontend/js/building-extrusion.js), [floor model vocabulary](vocabulary.md), [source geometry collection](../frontend/js/proposals/geometry.js). V references are the existing vocabulary audit findings.
+Code evidence: [parcel/block rule normalization, evaluation and variation](../frontend/js/urban-rule-variation.js), [agent planner and scalar capping](../backend/agents/planner.js), [source rule reduction](../backend/agents/parcel-source.js), [building/floor geometry](../frontend/js/building-extrusion.js), [floor model vocabulary](vocabulary.md), [source geometry collection](../frontend/js/proposals/geometry.js). V references are the existing vocabulary audit findings.
 
 ## Comparison with the requested Zagreb session
 
@@ -127,7 +127,7 @@ flowchart LR
 
 The map and model share representation IDs, source references, selection and revision invalidation. A 2D footprint projects the same geometry used by 3D; separate city-specific rendering paths would reintroduce divergence. Selecting an obligatory source proposal shows its rule evidence and applicable limits; unsupported non-geometric rules remain visible in the inspector. Switching views preserves selection.
 
-Viewing source constraints must not mutate `CadastralParcelRepository`, create a live-fabric land change, mark a proposal executed, or invent owner consent. The current `ProposalKind` enum cannot simply receive `obligatory` without updating its validation and consumers: legal authority is a separate axis from deal/vote kind and browser application. [Ground model](../frontend/js/parcels/ground-service.js), [kind validation](../frontend/js/proposals/proposal-kind.js).
+Viewing source constraints must not mutate `CadastralParcelRepository`, create a live-fabric land change, mark a proposal executed, or invent owner consent. Legal authority is a separate axis from deal/vote kind and browser application. [Ground model](../frontend/js/parcels/ground-service.js).
 
 Implementation order:
 

@@ -59,8 +59,7 @@ The live agent schema and current payment terms are served together at
 
 A recipe declares the rule before it is relied on. The hash is SHA-256 over canonical JSON of every
 field except `hash`: object keys are sorted recursively, arrays retain order, and JSON scalar
-encoding is unchanged. The current implementation is
-[`buildProposalLifecycleRecipe`](../backend/oracle/proposal-lifecycle.js).
+encoding is unchanged.
 
 ```json
 {

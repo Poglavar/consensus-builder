@@ -72,7 +72,7 @@ implemented (§17). See §13 for the earlier integration scope and verification.
 | Requirement | Current status | Evidence and limitation |
 |---|---|---|
 | LR as an ordinary proposal | **Present, with gaps** | Goal `reparcellization`, specialist designer, shared draft adapter, persistence, apply/unapply, counterproposal and lifecycle paths. See [launcher](../frontend/js/proposals/reparcel.js), [adapter](../frontend/js/proposal-editor-adapters.js), [apply](../frontend/js/proposals/apply/parcels.js). |
-| Draw new boundaries manually | **Present** | [Designer](../frontend/js/reparcellization.js), toolbar around line 481: draw a plot, line cut, erase boundary, edit nodes, undo, shuffle. Automatic layouts also exist. |
+| Draw new boundaries manually | **Present** | [Designer](../frontend/js/parcel-layout.js): draw a plot, line cut, erase boundary, edit nodes, undo, shuffle. Automatic layouts also exist. |
 | Import a recognized geometry format | **Present, geometry only** | GeoJSON FeatureCollection, Feature, Polygon and MultiPolygon accepted around lines 2150–2226. The import replaces the working arrangement, clips to the pool and resolves overlap by subtraction. Imported owner attributes are ignored; assignment currently follows feature order modulo the owner list. This is not a faithful ownership round trip. |
 | Before/after vertical divider moving horizontally | **Present inside LR, accessible controller extracted** | [MapCompareControl](../frontend/js/ui/map-compare-control.js) handles pointer/touch, arrows, Home/End, PageUp/PageDown, percentage-preserving resize and listener disposal. Headed desktop/390px/touch/keyboard checks pass. The map renderer remains LR-specific. |
 | General proposal comparison | **Reusable control available; other types not wired** | The shared editor still has source/draft/overlay buttons. Other proposal types can reuse the new divider controller, but need their own before/after rendering adapters. |
@@ -92,20 +92,18 @@ implemented (§17). See §13 for the earlier integration scope and verification.
 
 ### Authoritative entry points
 
-- Authoring and accounting: [reparcellization.js](../frontend/js/reparcellization.js),
+- Authoring and accounting: [parcel-layout.js](../frontend/js/parcel-layout.js),
   [slice helpers](../frontend/js/reparcellization-slice.js),
   [input shares](../frontend/js/reparcellization-shares.js),
   [UI state](../frontend/js/reparcellization-ui-state.js),
   [shared validation](../frontend/js/reparcellization-validation.js),
   [allocation arithmetic](../frontend/js/reparcellization-allocation.js).
-- Server normalization: [reparcellization route](../backend/routes/reparcellization.js),
-  called by [proposal creation](../backend/routes/proposals.js), around lines 798–807.
 - Ground: [apply/parcels.js](../frontend/js/proposals/apply/parcels.js),
   [mutation boundary](../frontend/js/proposals/apply/transaction.js),
   [ground service](../frontend/js/parcels/ground-service.js).
 - Consent and identity: [execution.js](../frontend/js/proposals/execution.js),
   [ownership-flow.js](../frontend/js/proposals/ownership-flow.js),
-  [proposal contracts](../frontend/js/proposal-contracts.js), [lens model](lens-model.md).
+  [lens model](lens-model.md).
 - Composition: [ground conflicts](../frontend/js/proposals/claims.js) (`appliedRivals`, `editDependents`),
   [edit in place or fork](../frontend/js/proposals/lineage.js) (`editsInPlace`),
   named plans (removed 2026-10-21; see [plan-design-agreement.md](plan-design-agreement.md)).
@@ -745,10 +743,9 @@ counts. The old worktree/branch are no longer available and are not prerequisite
 | Exact parcel title | Validate owner keys, positive finite shares, unique members and sum-to-one before forming children. Preserve all recipients and give a sole recipient 100%, independent of plot size. Reject localized Unassigned labels. | [Ownership shaping](../frontend/js/reparcellization-ownership.js), [apply](../frontend/js/proposals/apply/parcels.js). |
 | Joint custody | Deterministic pool agent with exact members/shares; agent and storage writes use the existing parcel transaction. Apply/reload retains ownership and custody. Generated untouched remainders are not reassigned. | [Agents](../frontend/js/agents.js), joint ownership and real-apply tests. |
 | Ownerless sites | The current editor's exact `open-ground` sentinel is normalized to ownerless output, without a phantom owner. Mixed real/sentinel or fractional sentinel allocations are rejected. | Ownership helper; all existing subdivision apply/unapply/replay cases pass. |
-| Common editor | Automatic / Draw freely / Keep existing parcels. Preserve original input geometry and owners; manually carve a courtyard or derive it from a stored building footprint's closed holes. No-hole input is refused without changing the layout. | [Plan geometry](../frontend/js/reparcellization-plan-utils.js), [designer](../frontend/js/reparcellization.js). |
+| Common editor | Automatic / Draw freely / Keep existing parcels. Preserve original input geometry and owners; manually carve a courtyard or derive it from a stored building footprint's closed holes. No-hole input is refused without changing the layout. | [Plan geometry](../frontend/js/reparcellization-plan-utils.js), [designer](../frontend/js/parcel-layout.js). |
 | Joint share rule | Shares follow remaining private allocation value (private area at the uniform pool value). The UI explains that basis and shows each percentage. Public/no-owner entries are excluded from the joint recipient pool. | Pure pro-rata helper plus editor refresh. |
 | Derivation provenance | Each derived plot retains the building proposal ID, title and exact cloned source-footprint geometry. Carving, save, fork hydration and reload preserve it. It is a design reference, not a building approval or contractual dependency. | `polygons[].derivation`; geometry and headed reload tests. |
-| Separate agreements | Terms offer one agreement or one per original input. Separate mode requires a courtyard, full coverage, a private remainder and unchanged private recipients. Children get their own site/anchors and discard the combined binding snapshot. | [Agreement helpers](../frontend/js/reparcellization-agreements.js), draft/dialog/create wiring, disjoint sibling supersession. |
 | Save/apply recovery | Persist immutable batch instructions and receipts; recover saves by group/index; save every child before starting apply; retry remaining work; verify final applied state. Saved-pool geometry validates a fork after original live pieces were replaced. | Batch unit tests, publish-handoff tests, [site verdict](../frontend/js/proposals/subdivision.js). |
 | Cash consistency | Each owner's EUR offer is rounded to cents. Child amounts use largest-remainder allocation by that owner's contribution to each input, exactly conserving their total. Reject generic-offer/ledger mismatch. Local save and terms both derive from this ledger; total/currency are read-only in terms. Zero cash is valid for a land-only exchange. | Agreement helper, serializer and create path. This does not implement chain payout obligations. |
 | Cash editing and mobile review | Cent inputs, retained edits when reopening a saved plan, discard confirmation for cash-only edits, exact-cent totals, labelled inputs and compact owner cards without nested ledger scrolling on phones. | Designer/UI state/CSS, four locale dictionaries. |
@@ -1377,13 +1374,13 @@ the browser both use them:
 
 ### Server
 
-[`backend/proposals/owner-decisions.js`](../backend/proposals/owner-decisions.js) answers `GET` and
-`POST /proposals/:id/owner-decisions`. It loads the published record exactly as `GET /proposals/:id`
-serves it, judges each decision under a per-proposal advisory lock (namespace 480403), and stores
-only the fields the signatures cover. Rows are append-only in `consensus.proposal_owner_decision`
-([DDL](../backend/db/proposal-owner-decision-ddl.sql), added to `deploy-backend.sh`). `decided_at` is
-the signed `acceptedAt`, never the time the relay received it; a unique `signature` makes storing
-idempotent. `GET` answers with `Cache-Control: no-store`.
+[`backend/agreements/decisions.js`](../backend/agreements/decisions.js) answers `GET` and
+`POST /agreements/:cid/decisions`. It re-verifies each decision's signatures, admits it under the
+rules the browser applies, one at a time per agreement under an advisory lock (namespace 480404),
+and stores it append-only in `consensus.agreement_decision`
+([DDL](../backend/db/agreement-decision-ddl.sql)). `decided_at` is the signed decision time, never
+the time the relay received it; a unique `signature` makes storing idempotent. `GET` answers with
+`Cache-Control: no-store`.
 
 ### Browser
 
@@ -1469,8 +1466,8 @@ Using that contract would execute a different deal from the one the owners signe
 
 ### What changed
 
-- **The record commits the setup.** `approvalConfig` joined the portable chain record's `FIELDS`
-  ([chain-record.js](../frontend/js/proposals/chain-record.js)). It is normalized when the record is
+- **The record commits the setup.** `approvalConfig` joined the portable chain record's `FIELDS`.
+  It is normalized when the record is
   built and again when it is read, and an invalid setup fails as `chain-record-invalid`. The
   approval context (parcels, rights, policy, lens) can therefore be rebuilt from metadata, and the
   lens already has to match the chain account.
