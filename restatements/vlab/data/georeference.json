@@ -1,0 +1,47 @@
+{
+ "method": "similarity fit of model plan (x, -z) bounding-box centres onto OSM centres in EPSG:3765",
+ "scale": 0.995425,
+ "rotationDeg": 99.9662,
+ "rmsM": 7.6,
+ "residualsM": {
+  "kul_inn_tech_muzej": 6.3,
+  "smj_inn_westin": 0.7,
+  "kon_inn_hoto": 8.6,
+  "kon_inn_hnk2": 12.3,
+  "kon_out_eurotower": 11.6,
+  "lok_out_glavni": 6.8,
+  "kul_inn_etnografski": 2.3,
+  "bas_inn_franc_pav": 2.5
+ },
+ "groundM": 28,
+ "slabs": [
+  {
+   "level": "pp",
+   "topM": 27.8
+  },
+  {
+   "level": "p1",
+   "topM": 34.5
+  },
+  {
+   "level": "p2",
+   "topM": 38.9
+  },
+  {
+   "level": "p3",
+   "topM": 43.3
+  },
+  {
+   "level": "p4",
+   "topM": 47.7
+  },
+  {
+   "level": "p5",
+   "topM": 52.1
+  },
+  {
+   "level": "p6",
+   "topM": 56.5
+  }
+ ]
+}

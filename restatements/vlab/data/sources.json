@@ -1,0 +1,35 @@
+{
+ "fetchedAt": "2026-11-10T09:44:45.189Z",
+ "files": {
+  "site.glb": {
+   "url": "https://vlab.igv.hr/ASSETS/site.glb",
+   "bytes": 21423896,
+   "sha256": "8c6c45cbfeba897b86a01a856bf0c7dc057e053be42d7bd7a0fe3e5aff24b329",
+   "lastModified": null
+  },
+  "building.glb": {
+   "url": "https://vlab.igv.hr/ASSETS/building.glb",
+   "bytes": 10574912,
+   "sha256": "f318cf919fe8e8f9887f53c9e3640bc65e6168e24732a40d47a72db7d943237a",
+   "lastModified": null
+  },
+  "vlab_config.json": {
+   "url": "https://vlab.igv.hr/ASSETS/vlab_config.json",
+   "bytes": 25277,
+   "sha256": "eaa8c223d955610adc8cdae6dafb337ac19fc19c4c059cf2bc27d73136bf9bc4",
+   "lastModified": null
+  },
+  "content_hr.json": {
+   "url": "https://vlab.igv.hr/CONTENT/vlab_content_42.json",
+   "bytes": 139060,
+   "sha256": "31ad3afca9a80e464227d20972d63ee7403d1c1224efc5cc4d4c1b34d1300e66",
+   "lastModified": null
+  },
+  "content_en.json": {
+   "url": "https://vlab.igv.hr/CONTENT/vlab_content_42_en.json",
+   "bytes": 145923,
+   "sha256": "826c31acca97132ac422c70cd8632e5e51946deb278f11e5925f33f2090dc162",
+   "lastModified": null
+  }
+ }
+}

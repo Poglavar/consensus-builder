@@ -1,0 +1,13 @@
+{
+  "about": "Landmarks that place the vLAB site model (site.glb) on the map: each model component's plan bounding-box centre is matched to the centre of the same OpenStreetMap building (way id, Overpass `out center`, read 2026-11-10). The fit is a similarity with the model mirrored (glTF -Z is north).",
+  "landmarks": [
+    { "node": "kul_inn_tech_muzej", "name": "Tehnički muzej Nikola Tesla", "osmWay": 29233452, "lat": 45.8039979, "lon": 15.9643255 },
+    { "node": "smj_inn_westin", "name": "Hotel Westin", "osmWay": 29351814, "lat": 45.8066399, "lon": 15.9660723 },
+    { "node": "kon_inn_hoto", "name": "HOTO business tower", "osmWay": 137107434, "lat": 45.8017713, "lon": 15.9633459 },
+    { "node": "kon_inn_hnk2", "name": "HNK2", "osmWay": 302026929, "lat": 45.8058201, "lon": 15.9607796 },
+    { "node": "kon_out_eurotower", "name": "Eurotower", "osmWay": 35848589, "lat": 45.7988687, "lon": 15.9699592 },
+    { "node": "lok_out_glavni", "name": "Zagreb Glavni kolodvor", "osmWay": 392439337, "lat": 45.8046705, "lon": 15.9787815 },
+    { "node": "kul_inn_etnografski", "name": "Etnografski muzej", "osmWay": 248806370, "lat": 45.8083539, "lon": 15.9689767 },
+    { "node": "bas_inn_franc_pav", "name": "Francuski paviljon", "osmWay": 75805187, "lat": 45.8035647, "lon": 15.9676173 }
+  ]
+}
