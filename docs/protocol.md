@@ -281,12 +281,11 @@ ProposalVerdict-v1:  string proposalAccount, string verdict, string evidenceRef,
 - **Removed in v2:** v1 certificate-holder acceptance (`accept_proposal`, `withdraw_acceptance` and
   the certificate-owner check). In v1 anyone could mint the certificates first and accept their own
   proposal; v2 has no path from holding an anchor to accepting anything.
-- **Legacy proposals whose lens is their creator remain self-decidable on devnet.** The lens was
-  required at mint in v1 but never read, and defaulted to the proposer's own key. After the upgrade
-  those proposals keep their layout and status, and their creator can still execute them by
-  attesting its own ownership under a credential it controls. This is disclosed rather than patched:
-  the lens is immutable by design. The public audit's `no_self_lens` check watches that no new agent
-  proposal is minted that way.
+- **A sponsor may name itself as the lens.** The sponsor chooses the lens at mint and it is
+  immutable afterwards; nothing forbids listing only the sponsor's own key, in which case the sponsor
+  can execute by attesting its own ownership. This is acceptable by design: readers and bettors judge
+  the lens, and a lens made only of the sponsor proves nothing to them. v1 proposals, whose lens
+  defaulted to the proposer's own key, keep their layout and status under the same rule.
 - **Unchanged:** program ids, the Proposal account prefix every other reader decodes, the market's
   Executed → YES and Cancelled → NO mapping (v2 adds Expired → NO), and the court oracle's own V2
   schema; the court is simply a lens member whose verdicts keep resolving external markets.
@@ -306,8 +305,8 @@ ProposalVerdict-v1:  string proposalAccount, string verdict, string evidenceRef,
 - **Deployed v2/v3 code:** `Executed` means every attested owner signed, each under an
   ownership attestation from a member of the proposal's own lens. The trust therefore moves to the
   lens the proposer chose: a reader must judge the listed members, not the program. A lens made of
-  the proposer's own key proves nothing, which is why the directory, the picker and the audit
-  surface who is in each lens. The deployed program bytes are verified, but schema registration and
+  the proposer's own key proves nothing, which is why the directory and the picker show who is in
+  each lens. The deployed program bytes are verified, but schema registration and
   a real attested-owner journey remain unverified.
 - The new `ExternalMarket` code trusts Solana consensus, the SAS program, one committed credential,
   schema and issuer, plus the exact parcel/operation mapping in the hashed recipe. Any caller can
@@ -387,8 +386,9 @@ attestations cannot resolve it; only a matching record officially published afte
 v3 are live at their existing IDs, and their deployed binary hashes are recorded above. The
 `ParcelOwnership-v1` and `ProposalVerdict-v1` lens schemas' devnet registration has not been
 independently verified. No real human-owner attestation → signed acceptance → economic distribution
-journey has been demonstrated end to end. The attested canonical case and audit checks
-(`attested_execution`, `no_self_lens`, `attester_diversity`) remain outstanding. The reference member
+journey has been demonstrated end to end. The attested canonical case remains outstanding; the
+public audit's advisory `attester_diversity` check reports whether at least two distinct lens
+members have issued ownership attestations. The reference member
 service, lens picker, member console, and MCP lens tools are implemented; they are not evidence that
 the service is active in production or that a live owner flow has completed.
 

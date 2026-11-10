@@ -43,7 +43,7 @@ From the current build (`HACKATHON.md`, `proposal_market`):
 | Need | Why |
 |---|---|
 | Binary (later scalar/conditional) markets on niche, local, long-horizon land events | "Will proposal 763 be executed?", "will a matching court record appear after close?" |
-| Resolution from our own precommitted evidence recipe, permissionless, with chronology | The core "verifiable hyperstition" claim: a future can't declare itself true |
+| Resolution from our own precommitted evidence recipe, permissionless, with chronology | The core "verifiable hyperstition" claim: public records under the sponsor's chosen lens, which bettors judge, decide whether a future became real |
 | Programmatic creation by agents | Agents open and stake markets via x402-paid APIs |
 | USDC collateral, devnet for development | Everything currently runs on devnet |
 | Composability | Our programs (proposal NFTs, pledges) should read or settle the market |

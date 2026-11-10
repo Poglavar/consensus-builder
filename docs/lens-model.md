@@ -60,7 +60,8 @@ used (`backend/oracle/court-parcel-operation.js:17`).
 1. **Parcels are identities.** Anchors exist so proposals, attestations and events have a stable
    subject. Nothing on chain owns a parcel.
 2. **The lens is the proposer's choice of authority.** Chosen at mint, immutable afterwards (fork to
-   change it). The contract trusts nobody outside the list.
+   change it). The contract trusts nobody outside the list. The proposer may name itself; readers
+   and bettors judge the lens, and the attester directory only informs that judgment.
 3. **Member facts enter only as attestations; owners act by signing.** Programs verify bytes and
    signers, never trust a wallet on its own say-so.
 4. **No person on chain.** Attestations carry wallets, hashes and opaque references. Identity proof
@@ -314,12 +315,12 @@ receives an equal share of its parcel's share.
 
 ## Proof and audit (WS-F)
 
-- Audit checks: `attested_execution` (a case executed only through attestations, with acceptance
-  records and their hashes), `no_self_lens` (no agent proposal minted in the window lists only its
-  own key), `attester_diversity` (ownership attestations from at least two distinct members).
-- `docs/protocol.md`: rewrite the trust boundary around the vocabulary and principles above; state
-  plainly that anchors carry no ownership and that legacy proposals whose lens is their own creator
-  remain self-decidable on devnet.
+- Audit check: `attester_diversity` (advisory; ownership attestations from at least two distinct
+  members). The audit does not police self-lenses: a sponsor may name itself, and readers and bettors
+  judge the lens. The attester directory is informational.
+- `docs/protocol.md`: the trust boundary is written around the vocabulary and principles above; it
+  states that anchors carry no ownership and that a sponsor naming itself as the lens is acceptable
+  by design.
 - `HACKATHON.md`: the lens model becomes the headline of the "evidence and resolution" row.
 
 ## Migration

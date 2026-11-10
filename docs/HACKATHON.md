@@ -22,8 +22,9 @@ parcel, ownership, proposal-rendering, and Lens foundations.
 > decide which possible futures became real.
 
 The hackathon framing is **verifiable hyperstition**: a proposed future can mobilize attention,
-capital and action, but it cannot declare itself true. A precommitted evidence recipe and independent
-public records determine whether it was realized.
+capital and action, and a precommitted evidence recipe and public records determine whether it was
+realized. Each agreement's sponsor chooses the lens whose members attest those records and may name
+itself; readers and bettors judge whether that lens is credible.
 
 ## Review boundary
 
@@ -239,8 +240,9 @@ git diff 3ee1855...colosseum-worlds-fair
     (`ugt_list_attesters`, `ugt_mint_proposal` with a lens, `ugt_request_ownership`). Program ids are
     unchanged: ParcelNFT v2, ProposalMarket v2 and parcel-optional ProposalNFT v3 were upgraded in place.
     On 2026-10-02, fresh devnet dumps matched the local binaries (ignoring zero account padding).
-    This is program-version evidence, not proof of a complete attested owner action; the audit reports `attested_execution`, `no_self_lens` and
-    `attester_diversity` as advisory.
+    This is program-version evidence, not proof of a complete attested owner action. The audit's
+    advisory `attester_diversity` check reports whether at least two distinct lens members have
+    issued ownership attestations.
 
 ### Live external-market integration proof
 
