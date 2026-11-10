@@ -1,11 +1,12 @@
-// Option A contract naming: dedicated, fully on-chain names for the two NFT
-// contracts, using the ENS public resolver (no gateway). Creates
-//   parcels-nft.urbangametheory.eth   -> ParcelNFT   (Base Sepolia)
-//   proposals-nft.urbangametheory.eth -> ProposalNFT (Base Sepolia)
-// Signed by the owner of urbangametheory.eth. addr() is coinType 60 (an
-// identifier; the contracts live on Base Sepolia).
+// Option A contract naming: a dedicated, fully on-chain name for the parcel
+// anchor contract, using the ENS public resolver (no gateway). Points
+//   parcels-nft.urbangametheory.eth   -> ParcelAnchor (Base Sepolia)
+// (the existing label; ParcelAnchor replaced the retired ParcelNFT, and the
+// retired ProposalNFT gets no name). Signed by the owner of urbangametheory.eth.
+// addr() is coinType 60 (an identifier; the contract lives on Base Sepolia).
 //
 //   ENS_OWNER_PRIVATE_KEY   owner of urbangametheory.eth (required)
+//   PARCEL_ANCHOR_ADDR      default: the Base Sepolia ParcelAnchor
 //   ENS_PUBLIC_RESOLVER     default 0xF29100983E058B709F3D539b0c765937B804AC15
 //   MAINNET_RPC_URL         optional RPC override
 import { JsonRpcProvider, Wallet, Contract, namehash, keccak256, toUtf8Bytes, getAddress, isAddress } from 'ethers';
@@ -16,8 +17,7 @@ const ENS_REGISTRY = '0x00000000000C2E074eC69A0dFb2997BA6C7d2e1e';
 const PUBLIC_RESOLVER = process.env.ENS_PUBLIC_RESOLVER || '0xF29100983E058B709F3D539b0c765937B804AC15';
 const PARENT = 'urbangametheory.eth';
 const NAMES = [
-    { label: 'parcels-nft', addr: process.env.PARCEL_NFT_ADDR || '0x191Bb541E185f8C4fBF1eF4CE12a28acCFA6b35d' },
-    { label: 'proposals-nft', addr: process.env.PROPOSAL_NFT_ADDR || '0x6c3AdE19a8947bC4CC75B2AE3F2E25F4cBb23709' },
+    { label: 'parcels-nft', addr: process.env.PARCEL_ANCHOR_ADDR || '0x6785a94694af9455C42F49849027736ABdd1aE2D' },
 ];
 
 const rpc = process.env.MAINNET_RPC_URL || 'https://ethereum-rpc.publicnode.com';

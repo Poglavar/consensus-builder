@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import "../../contracts/ProposalNFT.sol";
+import "../../contracts/IEAS.sol";
 
 contract MockEAS is IEAS {
     mapping(bytes32 => Attestation) private _attestations;
