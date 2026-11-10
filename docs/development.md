@@ -5,7 +5,7 @@
 
 ## Choose the code you need
 
-Use `main` for its maintained application line. The [colosseum-worlds-fair branch](https://github.com/Poglavar/consensus-builder/tree/colosseum-worlds-fair) contains the protocol, prediction-market and agent build. Check your branch before reproducing a live UI issue; public guides describe the deployed app.
+Production runs the [colosseum-worlds-fair branch](https://github.com/Poglavar/consensus-builder/tree/colosseum-worlds-fair), which contains the protocol, prediction-market and agent build. `main` stays frozen at its pre-hackathon state, for judging comparisons, until judging ends. Check your branch before reproducing a live UI issue; public guides describe the deployed app.
 
 ## Run the map and API
 
@@ -455,7 +455,7 @@ and their validation are unchanged.
 
 English `frontend/how-to-use*.html` and Croatian `frontend/kako-koristiti*.html` share `frontend/css/howto.css`. Keep the language pairs, navigation anchors and procedures aligned. The hub links to each relevant walkthrough. Keep domain wording aligned with the [code-grounded vocabulary](vocabulary.md): distinguish source parcels, formed ground and authored plots; local application from named-plan membership; and observed evidence from legal or physical completion. State units, currencies and valuation bases wherever a money amount appears.
 
-The deployed guide sources and [current packaged media](https://github.com/Poglavar/consensus-builder/tree/colosseum-worlds-fair/frontend/videos/howto/2026-10-19) are maintained on the protocol branch. That media directory contains MP4, poster, WebVTT/SRT captions, transcript and a manifest. Players load on demand, expose fullscreen controls and include a readable transcript. Raw captures and browser state remain outside the public frontend. Videos are demonstrations of a recorded UI version; re-record them when that workflow materially changes.
+The deployed guide sources and [current packaged media](https://github.com/Poglavar/consensus-builder/tree/colosseum-worlds-fair/frontend/videos/howto/2026-10-26) are maintained on the protocol branch. That media directory contains MP4, poster, WebVTT/SRT captions, transcript and a manifest. Players load on demand, expose fullscreen controls and include a readable transcript. Raw captures and browser state remain outside the public frontend. Videos are demonstrations of a recorded UI version; re-record them when that workflow materially changes.
 
 ## Deployment
 

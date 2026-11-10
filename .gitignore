@@ -63,3 +63,7 @@ frontend/rpc-config.js
 
 # Raw guide-video renders (the packaged clips live in frontend/videos/howto); too large for git.
 data/video/
+# Superseded guide-video package; the guide pages load frontend/videos/howto/2026-10-26.
+/frontend/videos/howto/2026-10-19/
+# Per-frame captures the shorts' scene clips were encoded from; compose.py reads only assets/ and audio/.
+/video/**/capture-frames/
