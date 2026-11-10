@@ -6412,7 +6412,7 @@
             "facades": "Facades",
             "facadeStyle": "Facade style",
             "facadesTooltip": "Illustrative windows and materials on proposed buildings. Each building keeps its design.",
-            "facadeStyleTooltip": "Mixed assigns a style independently to each building; glass is used only at 10+ storeys. Other presets apply to every building.",
+            "facadeStyleTooltip": "Mixed uses a building's own facade when its design states one, otherwise assigns a style independently to each building, with glass only at 10+ storeys. Other presets apply to every building.",
             "facadesNote": "Illustrative designs for proposed buildings.",
             "xray": "X-ray",
             "xrayTooltip": "Show modelled storeys, walls, doors and windows.",

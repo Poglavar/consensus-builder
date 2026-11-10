@@ -4792,7 +4792,7 @@
             "facades": "Façades",
             "facadeStyle": "Style des façades",
             "facadesTooltip": "Fenêtres et matériaux illustratifs sur les bâtiments proposés. Chaque bâtiment conserve son projet.",
-            "facadeStyleTooltip": "Le mode mixte attribue un style à chaque bâtiment indépendamment ; le verre est utilisé uniquement à partir de 10 niveaux. Les autres préréglages s’appliquent à tous les bâtiments.",
+            "facadeStyleTooltip": "Le mode mixte utilise la façade indiquée par le projet de chaque bâtiment ; sinon, il attribue un style indépendamment, le verre uniquement à partir de 10 niveaux. Les autres préréglages s’appliquent à tous les bâtiments.",
             "facadesNote": "Représentations illustratives des bâtiments proposés.",
             "xray": "Vue en transparence",
             "xrayTooltip": "Afficher les niveaux, murs, portes et fenêtres modélisés.",

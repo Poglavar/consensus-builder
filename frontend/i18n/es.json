@@ -6439,7 +6439,7 @@
             "facades": "Fachadas",
             "facadeStyle": "Estilo de fachada",
             "facadesTooltip": "Ejemplos de ventanas y materiales en los edificios propuestos. Cada edificio conserva su diseño.",
-            "facadeStyleTooltip": "Mixto asigna un estilo independiente a cada edificio; el vidrio solo se usa en edificios de 10 plantas o más. Los demás estilos se aplican a todos.",
+            "facadeStyleTooltip": "Mixto usa la fachada que indica el diseño de cada edificio; si no indica ninguna, asigna un estilo independiente, con vidrio solo en edificios de 10 plantas o más. Los demás estilos se aplican a todos.",
             "facadesNote": "Diseños ilustrativos para los edificios propuestos.",
             "xray": "X-ray",
             "xrayTooltip": "Mostrar plantas, paredes, puertas y ventanas modeladas.",

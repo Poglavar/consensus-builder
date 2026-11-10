@@ -44,6 +44,11 @@ describe('vlabPlan', () => {
         expect(byKey.toranj.geometry.buildings.map(building => building.properties.floors)).toEqual([4, 7, 17]);
     });
 
+    it('glazes both buildings, each with its own curtain wall', () => {
+        expect(new Set(byKey['zgrada-vlab'].geometry.buildings.map(building => building.properties.facade))).toEqual(new Set(['glass-large']));
+        expect(new Set(byKey.toranj.geometry.buildings.map(building => building.properties.facade))).toEqual(new Set(['glass-medium']));
+    });
+
     it('lets no two designs take the same ground', () => {
         const grounds = plan.designs.map(design => turf.feature(groundOf(design.record)));
         for (let i = 0; i < grounds.length; i += 1) {

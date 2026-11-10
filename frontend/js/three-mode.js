@@ -2068,7 +2068,7 @@
         facadeStyleSelect.id = 'three-mode-facade-style';
         facadeStyleSelect.className = 'three-mode-display-select';
         facadeStyleSelect.setAttribute('aria-label', threeI18n('threeMode.controls.facadeStyle', 'Facade style'));
-        facadeStyleSelect.title = threeI18n('threeMode.controls.facadeStyleTooltip', 'Mixed assigns a style independently to each building; glass is used only at 10+ storeys. Other presets apply to every building.');
+        facadeStyleSelect.title = threeI18n('threeMode.controls.facadeStyleTooltip', 'Mixed uses a building\'s own facade when its design states one, otherwise assigns a style independently to each building, with glass only at 10+ storeys. Other presets apply to every building.');
         ['mixed', ...buildingFacades.STYLES.map(style => style.id)].forEach(id => {
             const option = document.createElement('option');
             option.value = id;
@@ -8391,7 +8391,7 @@
     function prepareProceduralFacadeMeshes(meshes, owner, height, floorHeight, metresPerUnit, city, ownsMaterial = false, building = owner) {
         if (!owner || !meshes.length) return meshes;
         const design = buildingFacades.buildingDesign(buildingFacades.buildingKey(owner, city), height, floorHeight,
-            buildingFacades.buildingIdentityKey(building, city));
+            buildingFacades.buildingIdentityKey(building, city), building.properties?.facade ?? owner.properties?.facade);
         const facadeMaterial = buildingFacades.configureMaterial(
             ownsMaterial ? meshes[0].material : cloneBuildingMaterial(meshes[0].material), design, facadeState, THREE);
         meshes.forEach(mesh => {

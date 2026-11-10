@@ -4792,7 +4792,7 @@
             "facades": "Fachadas",
             "facadeStyle": "Estilo de fachada",
             "facadesTooltip": "Janelas e materiais ilustrativos nos edifícios propostos. Cada edifício mantém o seu projeto.",
-            "facadeStyleTooltip": "O modo misto atribui um estilo a cada edifício de forma independente; o vidro só é usado em edifícios com 10+ pisos. As outras opções aplicam-se a todos os edifícios.",
+            "facadeStyleTooltip": "O modo misto usa a fachada indicada no projeto de cada edifício; se não houver, atribui um estilo de forma independente, com vidro só em edifícios com 10+ pisos. As outras opções aplicam-se a todos os edifícios.",
             "facadesNote": "Representações ilustrativas dos edifícios propostos.",
             "xray": "Raios X",
             "xrayTooltip": "Mostrar pisos, paredes, portas e janelas modelados.",

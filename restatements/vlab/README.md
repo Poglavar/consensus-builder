@@ -48,13 +48,15 @@ From the placed model:
 
 | Design | Kind | Ground |
 |---|---|---|
-| vLAB – zgrada | Freeform building, 4 stepped parts, public use, footprint-only land take | 6040 m² |
-| vLAB – toranj | Freeform building, 3 stepped parts: office 4 floors, housing 7 and 17 floors | 1522 m² |
+| vLAB – zgrada | Freeform building, 4 stepped parts, public use, large-panel glass facade, footprint-only land take | 6040 m² |
+| vLAB – toranj | Freeform building, 3 stepped parts: office 4 floors, housing 7 and 17 floors; medium-panel glass facade | 1522 m² |
 | vLAB – prolaz kroz Tehnički muzej | 4 m footway; the edge inside the museum is a building tunnel, so the museum stands | 239 m² |
 | vLAB – pješački most prema Ciboni | 4 m footway over Tratinska ulica: level 0 at the ramp foot, +1 on the bridge and the Cibona terrace | 285 m² |
 | vLAB – park (1/2), (2/2) | Park, 16 trees shared by area (the author's ground-floor render shows about sixteen) | 5141 m² |
 | vLAB – plaza Tehničkog muzeja | Square | 2976 m² |
 | vLAB – trg (1/2), (2/2) | Square: the rest of the site outside the building, the tower and the park | 9194 m² |
+
+Both buildings state their facade (`properties.facade`): the author's renders show them glazed. It shows when the viewer turns Facades on with the Mixed style.
 
 The squares and the vLAB building's land take clear the existing buildings inside the embankment that the model does not keep, as the author's model does.
 

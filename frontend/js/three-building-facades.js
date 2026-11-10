@@ -61,7 +61,18 @@
         return JSON.stringify([city, p.proposalId, p.parcelId, [...new Set(points)].sort()]);
     }
 
-    function buildingDesign(key, height, storeyHeight = 3.3, identityKey = key) {
+    // A building's authored facade (`properties.facade`, a STYLES id) → its style index, or -1 when it
+    // states none. An unknown id is reported and the building falls back to the Mixed assignment.
+    function authoredStyle(facade) {
+        if (facade == null || facade === '') return -1;
+        const index = STYLES.findIndex(style => style.id === facade);
+        if (index < 0) console.warn(`[${new Date().toISOString()}] [facades] unknown authored facade "${facade}"; expected one of ${STYLES.map(style => style.id).join(', ')}`);
+        return index;
+    }
+
+    // `facade` is the building's authored style id: it replaces the Mixed assignment (glass included
+    // below ten storeys); a view-wide preset still overrides it in the shader.
+    function buildingDesign(key, height, storeyHeight = 3.3, identityKey = key, facade = null) {
         if (!(typeof height === 'number' && Number.isFinite(height) && height > 0)) {
             throw new TypeError('Facade height must be a positive number.');
         }
@@ -70,9 +81,10 @@
         const glassSeed = hashKey(identityKey + ':glass');
         const storeys = Math.max(1, Math.round(height / storeyHeight));
         const eligibleStyles = STYLES.filter(style => !style.panelWidth || storeys >= 10);
+        const authored = authoredStyle(facade);
         return {
             seed,
-            style: STYLES.indexOf(eligibleStyles[appearanceSeed % eligibleStyles.length]),
+            style: authored >= 0 ? authored : STYLES.indexOf(eligibleStyles[appearanceSeed % eligibleStyles.length]),
             bayWidth: 2.8 + ((seed >>> 8) % 9) * 0.1,
             tone: 0.94 + ((seed >>> 16) % 13) * 0.01,
             windowStyle: hashKey(key + ':windows') % WINDOW_STYLES.length,

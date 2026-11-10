@@ -6446,7 +6446,7 @@
             "facades": "Fasade",
             "facadeStyle": "Stil fasade",
             "facadesTooltip": "Primeri prozora i materijala na planiranim zgradama. Svaka zgrada zadržava isti izgled.",
-            "facadeStyleTooltip": "Mešovito dodeljuje stil svakoj zgradi zasebno; staklo se koristi samo za zgrade sa 10 ili više spratova. Ostali stilovi se primenjuju na sve zgrade.",
+            "facadeStyleTooltip": "Mešovito koristi fasadu koju navodi projekat zgrade, a inače dodeljuje stil svakoj zgradi zasebno, sa staklom samo za zgrade sa 10 ili više spratova. Ostali stilovi se primenjuju na sve zgrade.",
             "facadesNote": "Ilustrativni prikaz fasada planiranih zgrada.",
             "xray": "X-ray",
             "xrayTooltip": "Prikaži modelovane etaže, zidove, vrata i prozore.",

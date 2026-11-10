@@ -89,6 +89,20 @@ describe('procedural building facades', () => {
         }
     });
 
+    it("uses a building's authored facade instead of the Mixed assignment, glass included at any height", () => {
+        const styleOf = (key, height, facade) => facades.STYLES[facades.buildingDesign(key, height, 3.3, key, facade).style].id;
+        for (let i = 0; i < 50; i += 1) {
+            expect(styleOf('low-' + i, 6.5, 'glass-large')).toBe('glass-large');
+            expect(styleOf('tall-' + i, 66, 'glass-medium')).toBe('glass-medium');
+            expect(styleOf('tall-' + i, 66, 'brick')).toBe('brick');
+        }
+        // An unknown id is reported and the building keeps its Mixed style.
+        const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+        expect(styleOf('low-1', 6.5, 'marble')).toBe(styleOf('low-1', 6.5, null));
+        expect(warn).toHaveBeenCalledWith(expect.stringContaining('unknown authored facade "marble"'));
+        warn.mockRestore();
+    });
+
     it('varies window families and shutter palettes without changing a building when its neighbours change', () => {
         const keys = Array.from({ length: 60 }, (_, i) => 'window-building-' + i);
         const designs = keys.map(key => facades.buildingDesign(key, 16.5));

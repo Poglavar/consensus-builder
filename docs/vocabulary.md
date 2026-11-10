@@ -675,7 +675,7 @@ The three planning display roles: observed buildings; source-derived permitted m
 
 ### Illustrative facade
 
-A display-only architectural skin on a proposed building. The view-wide facade setting defaults to Mixed, which assigns a deterministic style independently to each building; glass styles are eligible only from ten modelled storeys. Named masonry and small-, medium- or large-panel glass presets override the style for all proposed buildings. Building identity controls the mixed style and glass tint; parcel ownership can vary its shade. Panel sizes are measured in metres and storeys. Glass panels follow each wall and storey; soft sky sheen and specular highlights depend on the viewing angle. These skins are illustrative appearance, not surveyed materials or authored construction specifications.
+A display-only architectural skin on a proposed building. The view-wide facade setting defaults to Mixed. A building whose design states its facade (`properties.facade`: `brick`, `stone`, `plaster`, `glass-small`, `glass-medium` or `glass-large`) shows that style at any height. Mixed assigns every other building a deterministic style independently; glass styles are eligible only from ten modelled storeys. Named masonry and small-, medium- or large-panel glass presets override the style for all proposed buildings. Building identity controls the mixed style and glass tint; parcel ownership can vary its shade. Panel sizes are measured in metres and storeys. Glass panels follow each wall and storey; soft sky sheen and specular highlights depend on the viewing angle. These skins are illustrative appearance, not surveyed materials or authored construction specifications.
 
 ### Reconstructed building envelope
 
