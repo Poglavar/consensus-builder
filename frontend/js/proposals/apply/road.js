@@ -66,14 +66,19 @@
     // and the formation would both cover the ribbon. Every replay asks this, so the result is a
     // function of the plan (records + order), never of apply timing: the record stays as authored,
     // only the applied pieces are carved, and unapplying the road gives the ground back. An EARLIER
-    // road is not carved here — a newer formation over it is still refused.
+    // road is carved only with `{ earlier: true }`, which parks, squares and lakes pass: open land
+    // stands on what every road leaves it, so a road edited onto a square (its record keeps the
+    // road's place in the order) shrinks the square instead of being refused, and so does a newer
+    // square drawn over a standing road. Earlier roads carve only where they reach past the
+    // formation's own tolerance, the overlap the coverage gate used to refuse. Plots of a parcel
+    // layout still refuse a newer layout over an earlier road (road-over-plots.test.js).
     //
     // Takes the same geometry the corridor cut consumes (plan-order footprintOf, as
     // _appliedCorridorTakes), clipped through the arrangement's snapped clipper; crumbs that are not
     // ground (geometry-tolerances.js isGround) are dropped. `geometries` is a list (one per piece); returns
     // { geometries, corridorIds } — each entry the carved geometry, or null when the corridors take
     // all of it; the input list unchanged and [] when no later corridor crosses any of them.
-    _groundAfterLaterCorridors(record, geometries, options = {}) {
+    _groundAfterLaterCorridors(record, geometries, options = {}, { earlier = false } = {}) {
         const list = Array.isArray(geometries) ? geometries : [];
         const unchanged = { geometries: list, corridorIds: [] };
         const turfRef = (typeof turf !== 'undefined') ? turf : null;
@@ -91,11 +96,13 @@
             : (store && typeof store.getAllProposals === 'function' ? store.getAllProposals() : []);
         const selfKey = String(record.proposalId ?? '');
         const claims = [];
+        const earlierToleranceM = earlier ? groundApi().designToleranceM(record) : 0;
         for (const p of all) {
             if (!p || String(p.proposalId) === selfKey) continue;
             if (!(p.roadProposal && p.roadProposal.definition)) continue;
             if (typeof isProposalCurrentlyApplied === 'function' && !isProposalCurrentlyApplied(p)) continue;
-            if (order.compareFormationOrder(p, record) <= 0) continue;
+            const isEarlier = order.compareFormationOrder(p, record) <= 0;
+            if (isEarlier && !earlier) continue;
             let claim = null;
             try {
                 const footprint = typeof order.footprintOf === 'function' ? order.footprintOf(p) : null;
@@ -104,7 +111,7 @@
             if (!claim) continue;
             let box = null;
             try { box = turfRef.bbox(claim); } catch (_) { box = null; }
-            claims.push({ id: String(p.proposalId), feature: { type: 'Feature', properties: {}, geometry: claim }, box });
+            claims.push({ id: String(p.proposalId), feature: { type: 'Feature', properties: {}, geometry: claim }, box, toleranceM: isEarlier ? earlierToleranceM : 0 });
         }
         if (!claims.length) return unchanged;
         // Import order and formation replay order can differ. Use the same geometric clip order
@@ -123,7 +130,7 @@
                 if (disjoint(box, claim.box)) continue;
                 // A clip that fails throws a typed ClipFailure: zero would leave the later
                 // corridor's ribbon inside this formation, two proposals owning the same ground.
-                if (!ground.reachesInto(turfRef, body, claim.feature, 0, {
+                if (!ground.reachesInto(turfRef, body, claim.feature, claim.toleranceM, {
                     site: 'apply-road.groundAfterLaterCorridors',
                     proposalId: record.proposalId,
                     takeId: claim.id

@@ -583,7 +583,9 @@ proposal-bridge.js/create.js and backend/agents/minter.js; decoders render the z
   one piece per part through the contiguity funnel; the record keeps its authored geometry; stored
   decorations are filtered to the carved ground for display only (`decorationsOnGround`), lake graphics
   regenerated. A road no longer counts as an applied alternative to a structure it crosses (buildings
-  still do). An OLDER road still refuses a newer structure over it (unchanged rule). Plan stats count
+  still do). An OLDER road carves a newer structure too, where it reaches past the structure's tolerance
+  (`{ earlier: true }`, live apply and agreement read alike): the structure stands round the street, and a
+  road edited onto a square shrinks it. Plots of a parcel layout still refuse an older road. Plan stats count
   open space as it stands (`plan-yield` `openSpaceAreaOf`, fed from the applied bodies).
 
 **Decisions**

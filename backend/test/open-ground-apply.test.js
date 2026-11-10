@@ -974,8 +974,8 @@ describe('the site rule for parcels a structure covers in part', () => {
 
 // The road tool offers "Build through" when a road crosses an applied park/square/lake ("the road
 // cuts through; the rest stays as it is"). Apply must agree: a corridor later in the formation order
-// takes its ground out of the structure, on open ground and on cadastral ground alike, and an older
-// road still refuses a newer structure over it (nothing is built over a street).
+// takes its ground out of the structure, on open ground and on cadastral ground alike; so does an
+// older road under a newer structure, which stands round the street instead of being refused.
 describe('a road built through an applied park', () => {
     const PARK = rect(0, 0, 20, 10);
     const ROAD = rect(-5, 4, 40, 6);
@@ -1039,15 +1039,37 @@ describe('a road built through an applied park', () => {
         expect(pieces.reduce((sum, feature) => sum + turf.area(feature), 0)).toBeCloseTo(turf.area(P), -1);
     });
 
-    it('still refuses a newer park laid over an applied road when nothing chose between them', async () => {
-        // A replay chooses no alternatives, so the earlier road keeps its ground and the park is refused.
+    it('forms a newer park laid over an applied road around the road when nothing chose between them', async () => {
+        // A replay chooses no alternatives, so the earlier road keeps its ground and the park stands on
+        // what the road leaves it, exactly as it would round a later road.
         const older = road('road-first', { createdAt: '2026-09-30T00:00:00.000Z' });
         const park = structureRecord('park-later', 'park', PARK, { binding: { parcels: [], coverage: 'none' } });
         const { manager, fabric } = await harness({ records: [older, park] });
         await expect(manager.applyProposal('road-first')).resolves.toBe(true);
-        await expect(manager.applyProposal('park-later', { replay: true })).resolves.toBe(false);
-        expect(manager.getLastApplyFailure('park-later')).toMatch(/stand on .* of the applied road/);
-        expect(fabric.list().some(feature => feature.properties.structureType === 'park')).toBe(false);
+        await expect(manager.applyProposal('park-later', { replay: true })).resolves.toBe(true);
+        const parkPieces = fabric.list().filter(feature => feature.properties.structureType === 'park');
+        expect(parkPieces).toHaveLength(2);
+        parkPieces.forEach(piece => expect(overlap(piece.geometry, ROAD)).toBeLessThan(0.25));
+        expect(parkPieces.reduce((sum, piece) => sum + turf.area(piece), 0)).toBeCloseTo(areaOf(PARK) - overlap(PARK, ROAD), -1);
+        // The record keeps its authored body.
+        expect(globalThis.proposalStorage.getProposal('park-later').structureProposal.geometry).toEqual(PARK);
+    });
+
+    it('forms a newer park over an earlier road on a cadastral parcel round the road, with no double cover', async () => {
+        const P = parcel('HR-330264-8', rect(-10, -5, 50, 15));
+        const declared = { declared: ['HR-330264-8'], binding: { parcels: [{ parcelId: 'HR-330264-8' }], coverage: 'complete', source: 'server' } };
+        const older = road('road-cad-first', { createdAt: '2026-09-30T00:00:00.000Z', cadastreParcelIds: ['HR-330264-8'], binding: declared.binding });
+        const park = structureRecord('park-cad-later', 'park', PARK, declared);
+        const { manager, fabric } = await harness({ facts: [P], records: [older, park] });
+        await expect(manager.deriveForNewProposal(globalThis.proposalStorage.getProposal('road-cad-first'))).resolves.toMatchObject({ ok: true });
+        await expect(manager.applyProposal('park-cad-later', { replay: true })).resolves.toBe(true);
+        const pieces = fabric.list();
+        const parkPieces = pieces.filter(feature => feature.properties.structureType === 'park');
+        const roadPieces = pieces.filter(feature => feature.properties.producedByProposalId === 'road-cad-first');
+        expect(parkPieces).toHaveLength(2);
+        expect(roadPieces).toHaveLength(1);
+        parkPieces.forEach(feature => expect(overlap(feature.geometry, roadPieces[0].geometry)).toBeLessThan(0.25));
+        expect(pieces.reduce((sum, feature) => sum + turf.area(feature), 0)).toBeCloseTo(turf.area(P), -1);
     });
 
     it('an explicit Apply of a newer park over an applied road takes the road off the map', async () => {

@@ -258,19 +258,19 @@
                 try { if (typeof updateStatus === 'function') updateStatus(message); } catch (_) { }
                 return false;
             }
-            // "Build through": corridors applied after this structure in the formation order take
-            // their ground out of it; the body that forms (and is drawn) is what is left. The
+            // "Build through": every applied corridor takes its ground out of it, earlier ones
+            // where they reach past its tolerance; the body that forms (and is drawn) is what is left. The
             // authored geometry (sp.geometry, persisted below) is untouched. A road across the
             // middle leaves two parts — the road's doing, so the authored-contiguity rule above
             // still judges the authored body.
             let carvedByCorridors = false;
             let authoredGeometry = geometry;
             if (structureNeedsGroundFormation(kind) && typeof this._groundAfterLaterCorridors === 'function') {
-                const carvedList = this._groundAfterLaterCorridors(proposalData, [geometry], options);
+                const carvedList = this._groundAfterLaterCorridors(proposalData, [geometry], options, { earlier: true });
                 const carved = { geometry: carvedList.geometries[0], corridorIds: carvedList.corridorIds };
                 if (carved.corridorIds.length) {
                     if (!carved.geometry) {
-                        const message = `Cannot apply the ${kind}: later roads take all of its ground.`;
+                        const message = `Cannot apply the ${kind}: roads take all of its ground.`;
                         try { this._setLastApplyFailure(idLabel, { code: 'structure-taken-by-corridors', message, corridorIds: carved.corridorIds }); } catch (_) { }
                         try { if (typeof updateStatus === 'function') updateStatus(message); } catch (_) { }
                         return false;

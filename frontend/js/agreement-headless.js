@@ -41,8 +41,8 @@
                 const kind = row.structureProposal.kind;
                 // Stations are content on their corridor; the app does not form new ground.
                 if (!root.ProposalApplyStructures.structureNeedsGroundFormation(kind)) continue;
-                const carved = manager._groundAfterLaterCorridors(row, [row.structureProposal.geometry], options);
-                if (!carved.geometries[0]) throw new Error('A later corridor takes the entire structure');
+                const carved = manager._groundAfterLaterCorridors(row, [row.structureProposal.geometry], options, { earlier: true });
+                if (!carved.geometries[0]) throw new Error('The corridors take the entire structure');
                 const record = { ...row, structureProposal: { ...row.structureProposal, geometry: carved.geometries[0] } };
                 const parents = manager._resolveLiveFormationParents(record, row.proposalId, kind, options);
                 if (!parents.ok) throw Object.assign(new Error(parents.message), lastFailure);
