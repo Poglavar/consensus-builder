@@ -112,6 +112,22 @@ describe('one parcel recovery dialog after the introduction', () => {
         expect(choices()).toEqual(['retry', 'without-parcels', 'url', 'ocr', 'schelling']);
     });
 
+    it('offers to continue without parcels when a design cannot be applied for want of them, even after the map offer was dismissed, once a session', () => {
+        const { window, document } = boot();
+        window.closeSiteIntro();
+        window.ParcelGroundFallback.onGroundUnavailable({ city: 'sample', error: Object.assign(new Error('Timeout'), { status: 504 }) });
+        document.body.querySelector('.ground-fallback-close').listeners.click();
+        expect(window.ParcelGroundFallback.onGroundUnavailable({ city: 'sample', error: new Error('again') })).toBe(false);
+        const message = 'Cadastral parcel data could not be loaded. Try again, or continue without parcels and apply the design from its own geometry.';
+        expect(window.ParcelGroundFallback.onDesignGroundUnavailable({ message })).toBe(true);
+        expect(document.body.querySelector('.ground-fallback-status').textContent).toBe(message);
+        const options = document.body.querySelectorAll('button').filter(node => node.dataset.option).map(node => node.dataset.option);
+        expect(options).toContain('without-parcels');
+        document.body.querySelector('.ground-fallback-close').listeners.click();
+        // Asked once: the next failing design does not open it again.
+        expect(window.ParcelGroundFallback.onDesignGroundUnavailable({ message })).toBe(false);
+    });
+
     it('continues without parcels only after the choice and keeps the plan route on reload', () => {
         const { window, document } = boot();
         window.closeSiteIntro();

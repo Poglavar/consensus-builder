@@ -27,6 +27,8 @@
     const WITHOUT_PARCELS_KEY_PREFIX = 'cb_without_parcels:';
     const withoutParcels = new Set();
     const DISMISSED_KEY_PREFIX = 'cb_ground_fallback_dismissed:';
+    // The offer made when a design cannot be applied for want of its parcels, once per city per session.
+    const DESIGN_OFFERED_KEY_PREFIX = 'cb_ground_fallback_design_offered:';
     const SAMPLE_FEATURE_LIMIT = 2000;
 
     const sources = new Map();          // cityId -> source
@@ -454,6 +456,20 @@
         return true;
     }
 
+    // Called when applying or editing a design fails because its parcels cannot be loaded: the same
+    // choices (Continue without parcels among them), so missing ground never stops the plan. Made
+    // once per city per session, apart from the map-load offer: a visitor who dismissed that one has
+    // not yet been offered it for a design they are working on.
+    function onDesignGroundUnavailable(detail = {}) {
+        const city = String(detail.city || currentCityId());
+        if (!city || isWithoutParcels(city) || sources.has(city) || openDialog) return false;
+        if (readSession(DESIGN_OFFERED_KEY_PREFIX + city) === '1') return false;
+        writeSession(DESIGN_OFFERED_KEY_PREFIX + city, '1');
+        const context = { ...failures.get(city), ...detail, city, explicit: true };
+        context.verdict = classify(detail.error || null, { parcelSettings: cityParcelSettings(city) });
+        return !!presentDialog(context);
+    }
+
     function mapCenter() {
         try {
             const center = global.map && typeof global.map.getCenter === 'function' ? global.map.getCenter() : null;
@@ -764,6 +780,7 @@
         probeCustomUrl,
         restoreFromSession,
         onGroundUnavailable,
+        onDesignGroundUnavailable,
         openOptions,
         resetDismissal,
         isOpen: () => Boolean(openDialog)

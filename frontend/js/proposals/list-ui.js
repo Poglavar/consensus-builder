@@ -137,14 +137,24 @@ function formatParcelSelectionLabel(parcelIds = []) {
     return `${parcelIds.length} Parcels`;
 }
 
+// The create dialog's drawn site (proposals/dialog-create.js siteContext) when it was started from a
+// site rather than from parcels: the building tools open on it instead of asking for parcels, so a
+// design needs no cadastral ground. A Feature, or null.
+function pendingProposalSiteFeature() {
+    const site = (typeof window !== 'undefined') ? window.pendingProposalSiteContext?.site : null;
+    const geometry = site?.type === 'Feature' ? site.geometry : site;
+    return geometry && /Polygon$/.test(String(geometry.type || '')) ? { type: 'Feature', properties: {}, geometry } : null;
+}
+
 async function launchSingleBuildingToolForSelection() {
     const selection = getCurrentParcelSelectionContext();
-    if (!selection.ids.length) {
+    const site = selection.ids.length ? null : pendingProposalSiteFeature();
+    if (!selection.ids.length && !site) {
         const t = getProposalI18nHelper();
         updateStatus(t('status.messages.select_parcels_before_launching_the_single_building_tool', 'Select parcels before launching the single building tool.'));
         return false;
     }
-    if (await shouldStopFreshProposalForWholeBlock('single', selection)) return false;
+    if (!site && await shouldStopFreshProposalForWholeBlock('single', selection)) return false;
     if (typeof openSingleBuildingForParcels !== 'function') {
         const t = getProposalI18nHelper();
         updateStatus(t('status.messages.single_building_tool_is_unavailable', 'Single building tool is unavailable.'));
@@ -156,6 +166,7 @@ async function launchSingleBuildingToolForSelection() {
     const opened = await openSingleBuildingForParcels({
         blockName: formatParcelSelectionLabel(selection.ids),
         parcelIds: selection.ids,
+        site,
         initialBuildings: seed ? pendingBuildingSeedFeatures(seed) : null,
         initialGroundTreatment: seed?.surroundings?.treatment || null, initialDecorationDesign: seed?.surroundings?.decorationDesign || null
     });
@@ -164,16 +175,17 @@ async function launchSingleBuildingToolForSelection() {
 
 async function launchRowHouseToolForSelection() {
     const selection = getCurrentParcelSelectionContext();
-    if (!selection.ids.length) {
+    const site = selection.ids.length ? null : pendingProposalSiteFeature();
+    if (!selection.ids.length && !site) {
         updateStatus('Select parcels before launching the row house tool.');
         return false;
     }
-    if (selection.ids.length < 2) {
+    if (!site && selection.ids.length < 2) {
         const t = getProposalI18nHelper();
         updateStatus(t('panel.parcel.build.rowSelectionHint', 'Row houses need at least two parcels. Select another parcel or use Detect block.'));
         return false;
     }
-    if (await shouldStopFreshProposalForWholeBlock('row', selection)) return false;
+    if (!site && await shouldStopFreshProposalForWholeBlock('row', selection)) return false;
     if (typeof openRowHouseForParcels !== 'function') {
         updateStatus('Row house tool is unavailable.');
         return false;
@@ -182,6 +194,7 @@ async function launchRowHouseToolForSelection() {
     const opened = await openRowHouseForParcels({
         blockName: formatParcelSelectionLabel(selection.ids),
         parcelIds: selection.ids,
+        site,
         initialParameters: seed ? seed.parameters : null,
         initialGroundTreatment: seed?.surroundings?.treatment || null, initialDecorationDesign: seed?.surroundings?.decorationDesign || null
     });

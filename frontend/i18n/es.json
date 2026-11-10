@@ -698,8 +698,8 @@
     "proposalApplyFailures": {
         "outsideCadastre": "La geometría del diseño se extiende más allá de las parcelas catastrales seleccionadas. Mantenla dentro del terreno seleccionado o crea un diseño que incluya las parcelas adicionales.",
         "outsideSite": "La geometría del diseño supera el límite de terreno guardado. Actualiza el límite o mueve la geometría dentro de él antes de aplicarlo.",
-        "groundUnavailable": "No se pudieron cargar los datos de las parcelas catastrales. Comprueba tu conexión e inténtalo de nuevo.",
-        "groundMissing": "No hay datos catastrales disponibles para: {{parcels}}. No se puede aplicar este diseño hasta que se carguen esas parcelas.",
+        "groundUnavailable": "No se pudieron cargar los datos de las parcelas catastrales. Inténtalo de nuevo o continúa sin parcelas y aplica el diseño a partir de su propia geometría.",
+        "groundMissing": "No hay datos catastrales disponibles para: {{parcels}}. Carga esas parcelas o continúa sin parcelas y aplica el diseño a partir de su propia geometría.",
         "needsParcels": "Este diseño actúa sobre parcelas catastrales o no tiene geometría propia. Carga sus parcelas antes de aplicarla.",
         "undeclared": "Este diseño no tiene parcelas catastrales ni un emplazamiento de terreno libre. Define su emplazamiento antes de aplicarla.",
         "invalidGeometry": "La geometría del diseño falta o no es válida. Edítala antes de aplicarla.",

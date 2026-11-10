@@ -4675,8 +4675,8 @@
     "proposalApplyFailures": {
         "outsideCadastre": "La géométrie du projet dépasse les parcelles cadastrales sélectionnées. Maintenez-la à l’intérieur des terrains sélectionnés ou créez un projet incluant les parcelles supplémentaires.",
         "outsideSite": "La géométrie du projet dépasse sa limite foncière enregistrée. Mettez cette limite à jour ou déplacez la géométrie à l’intérieur avant d’appliquer le projet.",
-        "groundUnavailable": "Les données des parcelles cadastrales n’ont pas pu être chargées. Vérifiez votre connexion et réessayez d’appliquer le projet.",
-        "groundMissing": "Les données des parcelles cadastrales ne sont pas disponibles pour : {{parcels}}. Ce projet ne peut pas être appliqué tant que ces parcelles ne peuvent pas être chargées.",
+        "groundUnavailable": "Les données des parcelles cadastrales n’ont pas pu être chargées. Réessayez, ou continuez sans parcelles et appliquez le projet d’après sa propre géométrie.",
+        "groundMissing": "Les données des parcelles cadastrales ne sont pas disponibles pour : {{parcels}}. Chargez ces parcelles, ou continuez sans parcelles et appliquez le projet d’après sa propre géométrie.",
         "needsParcels": "Ce projet agit sur des parcelles cadastrales ou ne possède pas de géométrie propre. Chargez ses parcelles avant de l’appliquer.",
         "undeclared": "Ce projet ne dispose ni de parcelles cadastrales ni d’un site en terrain libre. Définissez son site avant de l’appliquer.",
         "invalidGeometry": "La géométrie du projet est manquante ou invalide. Modifiez-la avant d’appliquer le projet.",

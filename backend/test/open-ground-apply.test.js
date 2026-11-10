@@ -1218,12 +1218,16 @@ describe('proposal ground refusal diagnostics', () => {
             binding: { parcels: [{ parcelId: 'HR-330264-9' }], coverage: 'complete' }
         });
         const { manager } = await harness({ records: [lake] });
+        const offered = vi.fn(() => true);
+        install('ParcelGroundFallback', { isWithoutParcels: () => false, onDesignGroundUnavailable: offered });
         await expect(manager.applyProposal(lake.proposalId)).rejects.toMatchObject({ code: 'cadastral-ground-absent' });
         expect(manager.getLastApplyFailureInfo(lake.proposalId)).toMatchObject({
             code: 'cadastral-ground-absent', missingIds: ['HR-330264-9'],
             message: expect.stringContaining('HR-330264-9')
         });
         expect(lake.applied).toBe(false);
+        // Missing ground never stops the plan: continuing without parcels is offered.
+        expect(offered).toHaveBeenCalledWith(expect.objectContaining({ message: expect.stringContaining('HR-330264-9') }));
     });
 
     it('explains an open-ground footprint leaving its authored site', async () => {

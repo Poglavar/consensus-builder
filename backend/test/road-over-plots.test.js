@@ -473,3 +473,23 @@ describe('a road through a block standing on a cadastral parcel (HR-339318-5848/
         expect(derived.failed[0].reason).not.toMatch(/could not be materialized locally/);
     });
 });
+
+// Continue without parcels (ground-fallback.js): a layout of declared parcels is applied from its
+// own plots on open ground, as a park is, instead of asking for parcels that cannot be loaded.
+describe('a parcel layout without parcels', () => {
+    it('forms its plots on open ground and keeps the authored record', async () => {
+        const binding = { parcels: [{ parcelId: 'HR-330264-1' }, { parcelId: 'HR-330264-2' }], coverage: 'complete', source: 'server' };
+        const record = subdivisionRecord('readjust-offline', BARE_SITE, { declared: ['HR-330264-1', 'HR-330264-2'], binding });
+        const original = structuredClone(record);
+        const { manager, fabric } = await harness({ records: [record] });
+        install('CityConfigManager', { getCurrentCityId: () => 'offline-city' });
+        install('ParcelGroundFallback', { isWithoutParcels: city => city === 'offline-city' });
+        await expect(manager.applyProposal('readjust-offline')).resolves.toBe(true);
+        const plots = fabric.list().filter(piece => piece.properties.producedByProposalId === 'readjust-offline');
+        expect(plots).toHaveLength(record.parcelLayout.plots.length);
+        plots.forEach(piece => expect(piece.properties.cadastreParcelIds).toEqual([]));
+        expect(total(plots)).toBeCloseTo(area(BARE_SITE), 0);
+        const stored = globalThis.proposalStorage.getProposal('readjust-offline');
+        expect({ ...stored, applied: original.applied, appliedAt: undefined }).toMatchObject({ cadastreParcelIds: original.cadastreParcelIds, binding: original.binding });
+    });
+});

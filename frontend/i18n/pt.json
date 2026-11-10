@@ -4675,8 +4675,8 @@
     "proposalApplyFailures": {
         "outsideCadastre": "A geometria do projeto ultrapassa as parcelas cadastrais selecionadas. Mantenha-a dentro dos terrenos selecionados ou crie um projeto que inclua as parcelas adicionais.",
         "outsideSite": "A geometria do projeto ultrapassa o limite do terreno guardado. Atualize o limite do terreno ou mova a geometria para dentro dele antes de aplicar.",
-        "groundUnavailable": "Não foi possível carregar os dados das parcelas cadastrais. Verifique a sua ligação e tente aplicar novamente.",
-        "groundMissing": "Os dados das parcelas cadastrais estão indisponíveis para: {{parcels}}. Este projeto não pode ser aplicado enquanto não for possível carregar essas parcelas.",
+        "groundUnavailable": "Não foi possível carregar os dados das parcelas cadastrais. Tente novamente, ou continue sem parcelas e aplique o projeto a partir da sua própria geometria.",
+        "groundMissing": "Os dados das parcelas cadastrais estão indisponíveis para: {{parcels}}. Carregue essas parcelas, ou continue sem parcelas e aplique o projeto a partir da sua própria geometria.",
         "needsParcels": "Este projeto atua sobre parcelas cadastrais ou não tem geometria própria. Carregue as suas parcelas antes de aplicar.",
         "undeclared": "Este projeto não tem parcelas cadastrais nem um terreno em espaço livre definido. Defina o seu terreno antes de aplicar.",
         "invalidGeometry": "A geometria do projeto está em falta ou é inválida. Edite a sua geometria antes de aplicar.",

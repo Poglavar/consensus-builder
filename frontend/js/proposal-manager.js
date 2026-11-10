@@ -791,8 +791,8 @@ function _flatGroundCoverageIsComplete(footprint, parcels, turfApi, toleranceM =
 const _PROPOSAL_APPLY_FAILURE_TEXT = {
     'proposal-footprint-outside-cadastre': ['outsideCadastre', 'The proposal geometry extends beyond its selected cadastral parcels. Keep it within the selected land, or create a proposal that includes the additional parcels.'],
     'proposal-footprint-outside-site': ['outsideSite', 'The design geometry extends beyond its saved land boundary. Update the land boundary or move the geometry inside it before applying.'],
-    'cadastral-ground-unavailable': ['groundUnavailable', 'Cadastral parcel data could not be loaded. Check your connection and try applying again.'],
-    'cadastral-ground-absent': ['groundMissing', 'Cadastral parcel data is unavailable for: {{parcels}}. This proposal cannot be applied until those parcels can be loaded.'],
+    'cadastral-ground-unavailable': ['groundUnavailable', 'Cadastral parcel data could not be loaded. Try again, or continue without parcels and apply the design from its own geometry.'],
+    'cadastral-ground-absent': ['groundMissing', 'Cadastral parcel data is unavailable for: {{parcels}}. Load those parcels, or continue without parcels and apply the design from its own geometry.'],
     'proposal-needs-parcels': ['needsParcels', 'This proposal acts on cadastral parcels or has no geometry of its own. Load its parcels before applying.'],
     'proposal-ground-undeclared': ['undeclared', 'This proposal has no cadastral parcels or open-ground site. Define its site before applying.'],
     'proposal-footprint-invalid': ['invalidGeometry', 'The proposal geometry is missing or invalid. Edit its geometry before applying.'],
@@ -877,6 +877,11 @@ const ProposalManager = {
                 missingIds,
                 at: Date.now()
             });
+            // Missing ground never stops the plan: offer to continue without parcels.
+            if (code === 'cadastral-ground-unavailable' || code === 'cadastral-ground-absent') {
+                const runtime = typeof window !== 'undefined' ? window : globalThis;
+                runtime.ParcelGroundFallback?.onDesignGroundUnavailable?.({ message, error: failure && failure.error });
+            }
         } catch (_) { /* best-effort */ }
     },
 
@@ -3371,9 +3376,10 @@ const ProposalManager = {
         // Route decision lives in the pure proposals/apply/route.js (unit-tested); this method keeps
         // only the I/O around it.
         const { route, goalKey } = applyRoute.classifyApplyRoute(proposalData);
+        // Without parcels, a design stands on its own geometry as open ground (a parcel layout on
+        // its plots too); only a record with no geometry of its own has nothing to stand on.
         const groundRecord = _groundRecord(proposalData);
-        if (_withoutParcelsSelected() && (!groundRecord
-            || (route === 'parcel-layout' && proposalClaims.cadastreParcelIdsOf(proposalData).length))) {
+        if (_withoutParcelsSelected() && !groundRecord) {
             this._setLastApplyFailure(safeId, _proposalApplyFailure('proposal-needs-parcels'));
             return false;
         }

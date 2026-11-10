@@ -698,8 +698,8 @@
     "proposalApplyFailures": {
         "outsideCadastre": "Geometrija dizajna prelazi granice odabranih katastarskih čestica. Zadržite je unutar odabranog zemljišta ili izradite dizajn koji uključuje dodatne čestice.",
         "outsideSite": "Geometrija dizajna prelazi spremljenu granicu zemljišta. Ažurirajte granicu ili pomaknite geometriju unutar nje prije primjene.",
-        "groundUnavailable": "Podaci katastarskih čestica nisu se mogli učitati. Provjerite vezu i pokušajte ponovno.",
-        "groundMissing": "Katastarski podaci nisu dostupni za: {{parcels}}. Prijedlog se ne može primijeniti dok se te čestice ne učitaju.",
+        "groundUnavailable": "Podaci katastarskih čestica nisu se mogli učitati. Pokušajte ponovno ili nastavite bez čestica i primijenite dizajn prema njegovoj geometriji.",
+        "groundMissing": "Katastarski podaci nisu dostupni za: {{parcels}}. Učitajte te čestice ili nastavite bez čestica i primijenite dizajn prema njegovoj geometriji.",
         "needsParcels": "Ovaj dizajn djeluje na katastarske čestice ili nema vlastitu geometriju. Učitajte njegove čestice prije primjene.",
         "undeclared": "Prijedlog nema katastarske čestice ni lokaciju na slobodnom zemljištu. Odredite lokaciju prije primjene.",
         "invalidGeometry": "Geometrija dizajna nedostaje ili nije valjana. Uredite je prije primjene.",

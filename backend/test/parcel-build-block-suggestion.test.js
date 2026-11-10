@@ -315,6 +315,34 @@ describe('whole-block fresh-proposal suggestion', () => {
         expect(openRowHouseForParcels).not.toHaveBeenCalled();
     });
 
+    it('opens Freeform and Row on the dialog\'s drawn site when no parcels are selected, instead of asking for parcels', async () => {
+        const site = { type: 'Polygon', coordinates: [[[16, 45.8], [16.001, 45.8], [16.001, 45.801], [16, 45.8]]] };
+        const openSingleBuildingForParcels = vi.fn(async () => true);
+        const openRowHouseForParcels = vi.fn(async () => true);
+        const maybeSuggestWholeBlockForFreshProposal = vi.fn(async () => true);
+        const context = {
+            console, window: null, document: { addEventListener() { } },
+            selectedParcelId: null, currentParcel: null,
+            maybeSuggestWholeBlockForFreshProposal, openSingleBuildingForParcels, openRowHouseForParcels,
+            updateStatus: vi.fn(), pendingProposalSiteContext: { site }
+        };
+        context.window = context;
+        vm.runInNewContext(listUiSource, context);
+        context.getProposalI18nHelper = () => (_key, fallback) => fallback;
+        await expect(context.launchSingleBuildingToolForSelection()).resolves.toBe(true);
+        await expect(context.launchRowHouseToolForSelection()).resolves.toBe(true);
+        const siteFeature = { type: 'Feature', properties: {}, geometry: site };
+        expect(openSingleBuildingForParcels.mock.calls[0][0]).toMatchObject({ parcelIds: [], site: siteFeature });
+        expect(openRowHouseForParcels.mock.calls[0][0]).toMatchObject({ parcelIds: [], site: siteFeature });
+        // No parcels to offer a whole block for.
+        expect(maybeSuggestWholeBlockForFreshProposal).not.toHaveBeenCalled();
+        expect(context.updateStatus).not.toHaveBeenCalled();
+        // With neither parcels nor a site, they still say what is missing.
+        context.pendingProposalSiteContext = null;
+        await expect(context.launchSingleBuildingToolForSelection()).resolves.toBe(false);
+        expect(context.updateStatus).toHaveBeenCalledWith(expect.stringContaining('Select parcels'));
+    });
+
     it('covers the classic Block editor and no-editor public-space choice', async () => {
         const shouldStopFreshProposalForWholeBlock = vi.fn(async () => true);
         const openUrbanRuleForParcels = vi.fn();

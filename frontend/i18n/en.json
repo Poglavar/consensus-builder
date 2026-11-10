@@ -698,8 +698,8 @@
     "proposalApplyFailures": {
         "outsideCadastre": "The design geometry extends beyond its selected cadastral parcels. Keep it within the selected land, or create a design that includes the additional parcels.",
         "outsideSite": "The design geometry extends beyond its saved land boundary. Update the land boundary or move the geometry inside it before applying.",
-        "groundUnavailable": "Cadastral parcel data could not be loaded. Check your connection and try applying again.",
-        "groundMissing": "Cadastral parcel data is unavailable for: {{parcels}}. This design cannot be applied until those parcels can be loaded.",
+        "groundUnavailable": "Cadastral parcel data could not be loaded. Try again, or continue without parcels and apply the design from its own geometry.",
+        "groundMissing": "Cadastral parcel data is unavailable for: {{parcels}}. Load those parcels, or continue without parcels and apply the design from its own geometry.",
         "needsParcels": "This design acts on cadastral parcels or has no geometry of its own. Load its parcels before applying.",
         "undeclared": "This design has no cadastral parcels or open-ground site. Define its site before applying.",
         "invalidGeometry": "The design geometry is missing or invalid. Edit its geometry before applying.",

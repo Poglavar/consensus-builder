@@ -453,11 +453,13 @@ function setProposalMainType(type) {
 
 async function launchUrbanRuleToolForSelection() {
     const selection = getCurrentParcelSelectionContext();
-    if (!selection.ids.length) {
+    // A dialog started from a drawn site opens the tool on that site (proposals/list-ui.js).
+    const site = selection.ids.length || typeof pendingProposalSiteFeature !== 'function' ? null : pendingProposalSiteFeature();
+    if (!selection.ids.length && !site) {
         updateStatus('Select parcels before launching the urban rule tool.');
         return false;
     }
-    if (typeof shouldStopFreshProposalForWholeBlock === 'function'
+    if (!site && typeof shouldStopFreshProposalForWholeBlock === 'function'
         && await shouldStopFreshProposalForWholeBlock('urban-rule', selection)) return false;
     if (typeof openUrbanRuleForParcels !== 'function') {
         updateStatus('Urban rule generator is unavailable.');
@@ -469,6 +471,7 @@ async function launchUrbanRuleToolForSelection() {
     openUrbanRuleForParcels({
         blockName: formatParcelSelectionLabel(selection.ids),
         parcelIds: selection.ids,
+        site,
         initialState: (seed && typeof buildBlockifySeed === 'function') ? buildBlockifySeed(seed) : null,
         initialGroundTreatment: seed?.surroundings?.treatment || null, initialDecorationDesign: seed?.surroundings?.decorationDesign || null
     });
