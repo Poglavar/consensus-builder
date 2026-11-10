@@ -146,7 +146,8 @@ describe('road tool glue (corridor-structures.js)', () => {
     const GLOBALS = ['turf', '__plotCrossings', 'LiveParcelFabric', 'proposalStorage', 'getProposalByIdOrHash',
         'isProposalApplied', 'corridorFeatureFromLatLngRing', 'showStyledChoice', 'i18n',
         'detectPlotCrossings', 'resolvePlotCrossings', 'resetApprovedStructureCrossings', 'detectStructureCrossings', 'resolveStructureCrossings',
-        'detectStructureCrossingsOfEdit', 'squares', 'parks', 'lakes'];
+        'detectStructureCrossingsOfEdit', 'previewRoadEditTakes', 'rebuildRoadDefinitionFootprint', 'ProposalManager',
+        'squares', 'parks', 'lakes'];
     let choice;
 
     beforeEach(() => {
@@ -196,6 +197,31 @@ describe('road tool glue (corridor-structures.js)', () => {
         const after = rect(5, -5, 25, 15);
         expect(globalThis.detectStructureCrossingsOfEdit(after, before).map(entry => entry.id)).toEqual(['park-1']);
         expect(globalThis.detectStructureCrossingsOfEdit(before, null).map(entry => entry.id)).toEqual(['square-1']);
+    });
+
+    it('previews a road edit on a copy: the parks it newly crosses and the proposed buildings it newly displaces', () => {
+        globalThis.parks = [{ type: 'Feature', properties: { proposalId: 'park-1' }, geometry: rect(20, 0, 30, 10) }];
+        globalThis.squares = [];
+        const records = { 'park-1': { title: 'Park', structureProposal: { geometry: rect(20, 0, 30, 10) } } };
+        globalThis.getProposalByIdOrHash = id => records[id] || null;
+        // The land is rebuilt from the edited width: 2 m wide before, 20 m after.
+        globalThis.rebuildRoadDefinitionFootprint = definition => { definition.polygon = rect(5, -5, 5 + definition.width, 15); };
+        globalThis.ProposalManager = {
+            _collectAppliedAlternativesForExplicitApply(record) {
+                // The tower stands 10 m or more east of the road's west edge.
+                return [
+                    { proposalId: 'kiosk', title: 'Kiosk', buildingProposal: {} }, // displaced already, before the edit
+                    ...(record.roadProposal.definition.width >= 10 ? [{ proposalId: 'tower', title: 'Tower', buildingProposal: {} }, { proposalId: 'park-1', structureProposal: {} }] : [])
+                ];
+            }
+        };
+        const road = { proposalId: 'road-1', roadProposal: { definition: { width: 2, polygon: rect(5, -5, 7, 15) } } };
+        const takes = globalThis.previewRoadEditTakes([{ record: road, mutate: definition => { definition.width = 20; } }]);
+        expect(takes.crossings.map(entry => entry.id)).toEqual(['park-1']);
+        expect(takes.buildings).toEqual(['Tower']);
+        // The record itself is untouched.
+        expect(road.roadProposal.definition.width).toBe(2);
+        expect(globalThis.previewRoadEditTakes([{ record: road, mutate: () => {} }])).toEqual({ crossings: [], buildings: [] });
     });
 
     it('asks before a road edit takes proposed buildings off the map, even with no park or square crossed', async () => {

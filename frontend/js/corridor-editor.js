@@ -2535,10 +2535,27 @@ async function corridorEditorSave() {
         if (saveButton) saveButton.disabled = true;
         let confirmed = false;
         try {
-            confirmed = await window.showStyledConfirm(corridorEditorTakeMessage(take), {
-                okText: corridorEditorI18n('modal.corridor.takeApply', 'Apply'),
-                cancelText: corridorEditorI18n('modal.corridor.keepEditing', 'Keep editing')
-            });
+            // Wider land takes ground as a moved node does: the parks, squares and lakes it newly
+            // crosses and the proposed buildings it takes off the map go in the same Build through
+            // question as a drag's (corridor-structures.js), with the parcels it takes.
+            const record = (typeof getProposalByIdOrHash === 'function' ? getProposalByIdOrHash(sourceKey) : null) || source;
+            const takes = (typeof window.previewRoadEditTakes === 'function' && record?.roadProposal?.definition)
+                ? window.previewRoadEditTakes([{ record, mutate: mutator }])
+                : { crossings: [], buildings: [] };
+            const keepEditing = corridorEditorI18n('modal.corridor.keepEditing', 'Keep editing');
+            if (takes.crossings.length || takes.buildings.length) {
+                const kind = (typeof corridorIsTrack === 'function' && corridorIsTrack(record.roadProposal.definition)) ? 'track' : 'road';
+                confirmed = await window.resolveStructureCrossings(takes.crossings, kind, {
+                    buildings: takes.buildings,
+                    details: corridorEditorTakeMessage(take),
+                    cancelText: keepEditing
+                });
+            } else {
+                confirmed = await window.showStyledConfirm(corridorEditorTakeMessage(take), {
+                    okText: corridorEditorI18n('modal.corridor.takeApply', 'Apply'),
+                    cancelText: keepEditing
+                });
+            }
         } finally {
             state.saving = false;
         }

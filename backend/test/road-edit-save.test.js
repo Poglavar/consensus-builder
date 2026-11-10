@@ -174,4 +174,50 @@ describe('corridorEditorSave: the cross-section is saved from the open editor, n
         );
         expect(h.context.updateStatus).not.toHaveBeenCalledWith('Cross-section updated.');
     });
+
+    it('asks the Build through question of a widening that takes a square and a proposed building, with its parcels, and saves only on yes', async () => {
+        for (const [accepted, saved] of [[true, 1], [false, 0]]) {
+            const h = harness(async () => 'road-1');
+            const record = { proposalId: 'road-1', roadProposal: { definition: { width: 6 } } };
+            Object.assign(h.context, {
+                corridorEditorTakeDisclosure: () => ({ widthBefore: 6, widthAfter: 9 }),
+                corridorEditorTakeMessage: () => 'Width 6 m → 9 m.',
+                getProposalByIdOrHash: () => record
+            });
+            const asked = [];
+            Object.assign(h.context.window, {
+                previewRoadEditTakes: vi.fn(edits => {
+                    // The edit the save will write, handed over to be previewed on a copy.
+                    const edited = { ...edits[0].record.roadProposal.definition };
+                    edits[0].mutate(edited);
+                    return { crossings: [{ id: 'square-1' }], buildings: ['Tower'] };
+                }),
+                resolveStructureCrossings: vi.fn(async (hits, kind, extra) => { asked.push({ ids: hits.map(hit => hit.id), kind, ...extra }); return accepted; })
+            });
+            await h.save();
+            expect(asked).toEqual([{ ids: ['square-1'], kind: 'road', buildings: ['Tower'], details: 'Width 6 m → 9 m.', cancelText: 'Keep editing' }]);
+            expect(h.context.window.previewRoadEditTakes.mock.calls[0][0][0].record).toBe(record);
+            expect(h.context.window.showStyledConfirm).not.toHaveBeenCalled();
+            expect(h.context.window.updateLocalCorridorGeometry).toHaveBeenCalledTimes(saved);
+            expect(h.context.__closeSpy).toHaveBeenCalledTimes(saved);
+        }
+    });
+
+    it('asks only about the parcels when the wider road takes no park, square, lake or building', async () => {
+        const h = harness(async () => 'road-1');
+        Object.assign(h.context, {
+            corridorEditorTakeDisclosure: () => ({ widthBefore: 6, widthAfter: 9 }),
+            corridorEditorTakeMessage: () => 'Width 6 m → 9 m.',
+            getProposalByIdOrHash: () => ({ proposalId: 'road-1', roadProposal: { definition: {} } })
+        });
+        Object.assign(h.context.window, {
+            previewRoadEditTakes: () => ({ crossings: [], buildings: [] }),
+            resolveStructureCrossings: vi.fn(),
+            showStyledConfirm: vi.fn(async () => true)
+        });
+        await h.save();
+        expect(h.context.window.resolveStructureCrossings).not.toHaveBeenCalled();
+        expect(h.context.window.showStyledConfirm).toHaveBeenCalledWith('Width 6 m → 9 m.', { okText: 'Apply', cancelText: 'Keep editing' });
+        expect(h.context.window.updateLocalCorridorGeometry).toHaveBeenCalledOnce();
+    });
 });

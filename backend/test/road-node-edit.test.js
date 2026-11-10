@@ -383,14 +383,23 @@ describe('node editor honesty', () => {
         }
     });
 
+    // Whether the edits the drag hands the preview move the road's end to latitude `lat`: the
+    // preview is given the change itself, applied here to a copy as previewRoadEditTakes does.
+    const endMovedTo = (edits, lat) => edits.some(({ record, mutate }) => {
+        const moved = JSON.parse(JSON.stringify(record.roadProposal.definition));
+        mutate(moved);
+        return moved.points[0][2].lat === lat && record.roadProposal.definition.points[0][2].lat !== lat;
+    });
+
     it('asks before a drag that newly crosses a square, and moves nothing when the author chooses another route', async () => {
         for (const [accepted, moved] of [[true, 1], [false, 0]]) {
             const editor = bootNodeEditor([corridorRecord('road-1', [[[0, 0], [0, 5], [0, 10]]])], 'road-1');
             const asked = [];
-            installGlobal('rebuildRoadDefinitionFootprint', definition => { definition.polygon = { moved: definition.points[0][2] }; });
-            // The square lies where the end is dragged to; the road's land before the drag missed it.
-            installGlobal('detectStructureCrossingsOfEdit', (newLand, oldLand) => (newLand && newLand.moved.lat === 3 && !oldLand
-                ? [{ id: 'square-2', proposalId: 'square-2', kind: 'square' }] : []));
+            // The square lies where the end is dragged to: the preview sees it only on the moved copy.
+            installGlobal('previewRoadEditTakes', edits => ({
+                crossings: endMovedTo(edits, 3) ? [{ id: 'square-2', proposalId: 'square-2', kind: 'square' }] : [],
+                buildings: []
+            }));
             installGlobal('resolveStructureCrossings', async (hits, kind) => { asked.push({ ids: hits.map(hit => hit.id), kind }); return accepted; });
             const end = editor.handleAt(0, 10);
             end.handlers.dragstart();
@@ -406,13 +415,8 @@ describe('node editor honesty', () => {
         for (const [accepted, moved] of [[true, 1], [false, 0]]) {
             const editor = bootNodeEditor([corridorRecord('road-1', [[[0, 0], [0, 5], [0, 10]]])], 'road-1');
             const asked = [];
-            installGlobal('rebuildRoadDefinitionFootprint', definition => { definition.polygon = { end: definition.points[0][2] }; });
-            installGlobal('detectStructureCrossingsOfEdit', () => []);
-            // The tower stands where the end is dragged to: a rival only of the moved road.
-            installGlobal('ProposalManager', {
-                _collectAppliedAlternativesForExplicitApply: record => (record.roadProposal.definition.polygon?.end?.lat === 3
-                    ? [{ proposalId: 'tower', title: 'Tower', buildingProposal: {} }, { proposalId: 'square', structureProposal: {} }] : [])
-            });
+            // The tower stands where the end is dragged to.
+            installGlobal('previewRoadEditTakes', edits => ({ crossings: [], buildings: endMovedTo(edits, 3) ? ['Tower'] : [] }));
             installGlobal('resolveStructureCrossings', async (hits, kind, extra) => { asked.push({ hits: hits.length, buildings: extra.buildings }); return accepted; });
             const end = editor.handleAt(0, 10);
             end.handlers.dragstart();

@@ -65,6 +65,42 @@
         return structuresCrossedBy(asFeature(newLand), minimumArea, authored).filter(entry => !before.has(entry.id));
     }
 
+    // What road edits take that the roads before them did not: the parks, squares and lakes their
+    // new land newly crosses, and the titles of the proposed buildings they take off the map (the
+    // rule the edit itself applies: ProposalManager's applied rivals). `edits` lists
+    // { record, mutate }; each road's definition is changed by `mutate` on a copy and its land
+    // rebuilt as the edit will. Used by node drags and cross-section width changes alike.
+    function previewRoadEditTakes(edits) {
+        const none = { crossings: [], buildings: [] };
+        if (typeof global.rebuildRoadDefinitionFootprint !== 'function') return none;
+        const list = (Array.isArray(edits) ? edits : []).filter(edit => edit && edit.record?.roadProposal?.definition);
+        const editing = new Set(list.map(edit => String(edit.record.proposalId)));
+        const found = new Map();
+        const displaced = new Map();
+        const buildingRivals = record => {
+            const collect = global.ProposalManager?._collectAppliedAlternativesForExplicitApply;
+            if (typeof collect !== 'function') return [];
+            return collect.call(global.ProposalManager, record)
+                .filter(rival => rival && rival.buildingProposal && !editing.has(String(rival.proposalId)));
+        };
+        list.forEach(({ record, mutate }) => {
+            const definition = record.roadProposal.definition;
+            try {
+                const edited = JSON.parse(JSON.stringify(definition));
+                mutate(edited);
+                global.rebuildRoadDefinitionFootprint(edited);
+                detectStructureCrossingsOfEdit(edited.polygon, definition.polygon).forEach(entry => found.set(entry.id, entry));
+                const before = new Set(buildingRivals(record).map(rival => String(rival.proposalId)));
+                buildingRivals({ ...record, roadProposal: { ...record.roadProposal, definition: edited } }).forEach(rival => {
+                    if (!before.has(String(rival.proposalId))) displaced.set(String(rival.proposalId), rival.title || rival.name || String(rival.proposalId));
+                });
+            } catch (error) {
+                console.warn(`[${new Date().toISOString()}] [corridor-structures] could not preview what this road edit takes`, record.proposalId, error);
+            }
+        });
+        return { crossings: [...found.values()], buildings: [...displaced.values()] };
+    }
+
     function structuresCrossedBy(corridorFeature, minimumArea, bodyOf = entry => entry.feature) {
         const api = global.turf;
         if (!corridorFeature || !api || typeof api.intersect !== 'function') return [];
@@ -88,8 +124,9 @@
 
     // Returns true when drawing may continue, false to reroute. `buildings` are the titles of
     // proposed buildings the change takes off the map (claims.js appliedRivals: a road displaces a
-    // building it covers); they are named so nothing leaves the map unannounced.
-    async function resolveStructureCrossings(hits, corridorKind = 'road', { buildings = [] } = {}) {
+    // building it covers); they are named so nothing leaves the map unannounced. `details` is more
+    // of the same question (a width change's parcel take), `cancelText` the label of the way back.
+    async function resolveStructureCrossings(hits, corridorKind = 'road', { buildings = [], details = '', cancelText = null } = {}) {
         const structures = Array.isArray(hits) ? hits : [];
         const displaced = Array.isArray(buildings) ? buildings.filter(Boolean) : [];
         if (!structures.length && !displaced.length) return true;
@@ -115,17 +152,19 @@
                     { kind, names: quoted(displaced) }
                 ));
             }
+            if (details) parts.push(details);
             const message = parts.join('\n\n');
+            const back = cancelText || structureText('modal.corridorTunnel.cancel', 'Choose another route');
             let accepted = false;
             if (typeof global.showStyledChoice === 'function') {
                 accepted = (await global.showStyledChoice(message, [
                     { value: 'build', label: structureText('modal.corridorStructure.buildThrough', 'Build through'), primary: true },
-                    { value: 'cancel', label: structureText('modal.corridorTunnel.cancel', 'Choose another route') }
+                    { value: 'cancel', label: back }
                 ])) === 'build';
             } else if (typeof global.showStyledConfirm === 'function') {
                 accepted = await global.showStyledConfirm(message, {
                     okText: structureText('modal.corridorStructure.buildThrough', 'Build through'),
-                    cancelText: structureText('modal.corridorTunnel.cancel', 'Choose another route')
+                    cancelText: back
                 });
             }
             if (accepted) structures.forEach(entry => approvedStructureIds.add(entry.id));
@@ -214,6 +253,7 @@
     Object.assign(global, {
         detectStructureCrossings,
         detectStructureCrossingsOfEdit,
+        previewRoadEditTakes,
         resolveStructureCrossings,
         detectPlotCrossings,
         resolvePlotCrossings,

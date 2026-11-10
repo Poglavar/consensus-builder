@@ -694,44 +694,17 @@
     }
 
     // What the drop's new road land reaches that its old land did not, over every road the drop
-    // moves: the parks, squares and lakes it newly crosses, and the titles of the proposed buildings
-    // it will take off the map (the same rule the edit applies: ProposalManager's applied rivals).
-    // Each road's definition is moved on a copy and its land rebuilt as the edit will.
+    // moves (corridor-structures.js previewRoadEditTakes): the parks, squares and lakes it newly
+    // crosses, and the titles of the proposed buildings it will take off the map.
     function structureCrossingsOfMove(order, grouped, latlng, released) {
-        const none = { crossings: [], buildings: [] };
-        if (typeof global.rebuildRoadDefinitionFootprint !== 'function') return none;
-        const found = new Map();
-        const displaced = new Map();
-        const moving = new Set(order.map(String));
-        const buildingRivals = record => {
-            const collect = global.ProposalManager?._collectAppliedAlternativesForExplicitApply;
-            if (typeof collect !== 'function') return [];
-            return collect.call(global.ProposalManager, record)
-                .filter(rival => rival && rival.buildingProposal && !moving.has(String(rival.proposalId)));
-        };
-        order.forEach(proposalKey => {
-            const record = global.getProposalByIdOrHash?.(proposalKey);
-            const definition = record?.roadProposal?.definition;
-            if (!definition) return;
-            try {
-                const moved = JSON.parse(JSON.stringify(definition));
+        if (typeof global.previewRoadEditTakes !== 'function') return { crossings: [], buildings: [] };
+        return global.previewRoadEditTakes(order.map(proposalKey => ({
+            record: global.getProposalByIdOrHash?.(proposalKey),
+            mutate: moved => {
                 moveNodeTargets(moved, grouped.get(proposalKey), latlng);
                 if (released.has(proposalKey)) releaseParcelBound(moved);
-                global.rebuildRoadDefinitionFootprint(moved);
-                if (typeof global.detectStructureCrossingsOfEdit === 'function') {
-                    global.detectStructureCrossingsOfEdit(moved.polygon, definition.polygon)
-                        .forEach(entry => found.set(entry.id, entry));
-                }
-                const before = new Set(buildingRivals(record).map(rival => String(rival.proposalId)));
-                const after = { ...record, roadProposal: { ...record.roadProposal, definition: moved } };
-                buildingRivals(after).forEach(rival => {
-                    if (!before.has(String(rival.proposalId))) displaced.set(String(rival.proposalId), rival.title || rival.name || String(rival.proposalId));
-                });
-            } catch (error) {
-                console.warn(`[${new Date().toISOString()}] [roadNodeEdit] could not preview what this move crosses`, proposalKey, error);
             }
-        });
-        return { crossings: [...found.values()], buildings: [...displaced.values()] };
+        })));
     }
 
     function commitNodeMove(targets, latlng, origin, isTrack, preEditSnapshots, recorded) {
