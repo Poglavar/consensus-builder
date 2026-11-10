@@ -981,10 +981,12 @@ async function showAgentDialog(agentId, options = {}) {
     const portfolioBasisLabel = translateText('agentDialog.portfolioBasis',
         'Area-based land model: USD {{pricePerSqmUsd}}/m², converted at USD {{usdPerEth}}/ETH. Portfolio estimate and total are modeled ETH amounts.', portfolioBasis);
     const labelProposalsCreated = translateText('agentDialog.proposalsCreated', 'Designs created ({{count}})', { count: createdProposals.length });
-    const labelOwnedParcels = translateText('agentDialog.ownedParcels', 'Linked parcels ({{count}})', { count: initialParcels.length });
+    // The connected wallet's profile also lists the parcels that wallet anchored on chain.
+    const parcelsHeadingKey = isUserAgent ? 'agentDialog.walletParcels' : 'agentDialog.ownedParcels';
+    const labelOwnedParcels = translateText(parcelsHeadingKey, isUserAgent ? 'Assigned and anchored parcels ({{count}})' : 'Linked parcels ({{count}})', { count: initialParcels.length });
     const parcelBasisKey = isUserAgent ? 'agentDialog.walletParcelsBasis' : 'agentDialog.localParcelsBasis';
     const parcelBasisLabel = translateText(parcelBasisKey, isUserAgent
-        ? 'Local model assignments and parcel NFTs observed in the connected wallet; these do not establish registered land ownership.'
+        ? 'Local model assignments and parcels the connected wallet anchored on chain; an anchor has no owner, and neither establishes registered land ownership.'
         : 'Parcels assigned to this agent in the local model.');
     const labelAgentLog = translateText('agentDialog.agentLog', 'Agent Log');
     const labelUser = translateText('agentDialog.userLabel', 'You');
@@ -1064,7 +1066,7 @@ async function showAgentDialog(agentId, options = {}) {
                     <div class="parcels-list" data-list-type="created"></div>
                 </div>
                 <div class="info-section">
-                        <h4 data-i18n-key="agentDialog.ownedParcels" data-i18n-params='${JSON.stringify({ count: initialParcels.length })}'>${labelOwnedParcels}</h4>
+                        <h4 data-i18n-key="${parcelsHeadingKey}" data-i18n-params='${JSON.stringify({ count: initialParcels.length })}'>${labelOwnedParcels}</h4>
                     <p class="stat-label" data-agent-parcels-basis data-i18n-key="${parcelBasisKey}">${parcelBasisLabel}</p>
                     <div class="parcels-list" data-list-type="parcels"></div>
                 </div>
@@ -1466,9 +1468,10 @@ function setSectionCount(sectionType, count, fallbackLabel = '') {
 }
 
 /**
- * Load the connected wallet's parcel NFTs into the dialog's Linked parcels list: the ParcelNFT
- * program on Solana, else the EVM ParcelNFT contract of the wallet's chain (ChainDataLoader). Designs
- * are not minted, so the chain names no proposals here (plan-design-agreement.md, M3).
+ * Load the parcels the connected wallet anchored into the dialog's parcels list: the ParcelNFT
+ * program on Solana, else the EVM ParcelAnchor contract of the wallet's chain (ChainDataLoader).
+ * Anchors are ownerless; the wallet only paid for them. Designs are not minted, so the chain names
+ * no proposals here (plan-design-agreement.md, M3).
  */
 async function loadAgentChainData(agent, isUserAgent) {
     // The loaders below observe the connected wallet, never another agent's wallet.
@@ -1518,7 +1521,7 @@ async function loadAgentChainData(agent, isUserAgent) {
         return;
     }
 
-    // The ParcelNFT program (Solana) or contract (EVM) of the wallet's chain.
+    // The ParcelNFT program (Solana) or ParcelAnchor contract (EVM) of the wallet's chain.
     let parcelAddress = null;
     try {
         if (useSolana) {
@@ -1527,17 +1530,17 @@ async function loadAgentChainData(agent, isUserAgent) {
                 parcelAddress = await window.SolanaChainDataLoader.resolveProgramAddress('solana', 'ParcelNFT');
             }
         } else {
-            parcelAddress = await window.ChainDataLoader.resolveContractAddress(chainId, 'ParcelNFT');
+            parcelAddress = await window.ChainDataLoader.resolveContractAddress(chainId, 'ParcelAnchor');
         }
     } catch (err) {
-        console.warn('Failed to resolve the ParcelNFT address', err);
+        console.warn('Failed to resolve the parcel anchor address', err);
     }
     if (!isCurrentProfile()) return;
     if (!parcelAddress) {
-        console.warn('Missing the ParcelNFT address for chain', chainId);
+        console.warn('Missing the parcel anchor address for chain', chainId);
         return;
     }
-    console.log('[AgentDialog] Resolved the ParcelNFT address', { parcelAddress, useSolana });
+    console.log('[AgentDialog] Resolved the parcel anchor address', { parcelAddress, useSolana });
 
     // Only show the loader when there is nothing to show yet.
     if (!agentDialogListData.parcels || !agentDialogListData.parcels.data.length) {
@@ -1563,7 +1566,7 @@ async function loadAgentChainData(agent, isUserAgent) {
             };
 
             renderFirstPageForList('parcels');
-            setSectionCount('parcels', agentDialogListData.parcels.data.length, 'Linked parcels');
+            setSectionCount('parcels', agentDialogListData.parcels.data.length, 'Assigned and anchored parcels');
 
             // Recompute portfolio value now that on-chain parcels are known
             if (typeof calculatePortfolioValue === 'function') {

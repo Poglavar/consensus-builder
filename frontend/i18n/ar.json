@@ -4331,6 +4331,11 @@
             "publishedAs": "نشر باسم:",
             "linkCopied": "نشر التصميم. تم نسخ رابطه.",
             "publishedTitle": "نشر التصميم",
+            "where": {
+                "title": "أين تنشر؟",
+                "server": "النشر عبر الخادم",
+                "chainHint": "على السلسلة، يذهب المحتوى إلى IPFS وتسكّ محفظتك سجله؛ ويعكسه الخادم عندما يستجيب."
+            },
             "copyByHand": "تعذر نسخ الرابط تلقائيا. انسخه من هنا:",
             "linkLabel": "رابط التصميم المنشور",
             "errors": {
@@ -5628,11 +5633,12 @@
         "totalWealth": "الإجمالي وفق النموذج",
         "portfolioBasis": "نموذج الأراضي: USD {{pricePerSqmUsd}}/m²، محولة بسعر USD {{usdPerEth}} لكل ETH.",
         "ownedParcels": "قطع الأراضي المرتبطة ({{count}})",
+        "walletParcels": "قطع الأراضي المسندة والمرساة ({{count}})",
         "proposalsCreated": "التصاميم المنشأة ({{count}})",
         "localProposalUnavailable": "سجل التصميم المحلي غير متاح",
         "localProposalKey": "المعرف المحلي {{id}}",
         "localParcelsBasis": "قطع الأراضي المسندة إلى هذا الوكيل في النموذج المحلي.",
-        "walletParcelsBasis": "إسنادات النموذج المحلي ورموز NFT لقطع الأراضي المرصودة في المحفظة المتصلة؛ لا تثبت هذه ملكية أرض مسجلة.",
+        "walletParcelsBasis": "إسنادات النموذج المحلي وقطع الأراضي التي أرستها المحفظة المتصلة على السلسلة؛ لا مالك للمرساة، ولا يثبت أي من ذلك ملكية أرض مسجلة.",
         "agentLog": "سجل الوكيل",
         "parcelLabel": "قطعة الأرض {{number}}",
         "proposalCount": {
@@ -9344,6 +9350,36 @@
         "castShare": "نسبة الأصوات المسجلة",
         "refreshResults": "حدّث النتائج"
     },
+    "mint": {
+        "intro": "تُنفَّذ الخطوات بالترتيب. يمكن إعادة محاولة توقيع مرفوض أو بوابة بطيئة؛ وما أُنجز يبقى منجزًا.",
+        "steps": {
+            "retrievable": "المحتوى قابل للاسترجاع من IPFS: {{label}}",
+            "anchors": "القطع المدخلة مرسّاة",
+            "record": "سجل ({{kind}}) مسكوك على {{chain}}"
+        },
+        "status": {
+            "checking": "جارٍ فحص البوابات العامة…",
+            "pinningServer": "جارٍ التثبيت عبر الخادم…",
+            "pinningPinata": "جارٍ التثبيت بمفتاحك الخاص…",
+            "waiting": "ثُبّت عبر {{courier}}؛ بانتظار بوابة عامة ({{attempt}}/{{total}})…",
+            "retrievable": "يقدّمه {{gateway}}",
+            "noCourier": "تعذّر تثبيته: لم يقبله الخادم ولا يوجد مفتاح تثبيت. نزّل البايتات وثبّتها في أي مكان، أو أضف مفتاح Pinata، ثم أعد المحاولة.",
+            "notRetrievable": "ثُبّت، لكن لا تقدّمه أي بوابة عامة بعد. أعد المحاولة بعد لحظة.",
+            "anchorsAll": "جميع القطع ({{count}}) مرسّاة.",
+            "anchorsMissing": "{{missing}} من {{count}} غير مرسّاة؛ جارٍ الإرساء في {{batches}} معاملة…",
+            "anchorsProgress": "{{done}}/{{total}} مرسّاة",
+            "alreadyMinted": "سكّه {{minter}} مسبقًا.",
+            "minting": "بانتظار توقيع المحفظة…",
+            "minted": "سكّه {{minter}}."
+        },
+        "actions": {
+            "start": "النشر على {{chain}}",
+            "download": "تنزيل البايتات",
+            "pinataKey": "استخدام مفتاح التثبيت الخاص بك"
+        },
+        "pinataPrompt": "الصق رمز JWT من Pinata مقتصرًا على التثبيت. يبقى في هذا المتصفح فقط.",
+        "done": "نُشر على {{chain}}."
+    },
     "lists": {
         "title": "القوائم",
         "plans": "الخطط",
@@ -9370,7 +9406,10 @@
         "sourceIndex": "فهرس الخادم",
         "sourceChain": "على السلسلة (Solana {{cluster}})",
         "chainAgreement": "اتفاق {{cid}}",
-        "chainLoading": "جارٍ قراءة الاتفاقات على السلسلة…"
+        "chainLoading": "جارٍ قراءة الاتفاقات على السلسلة…",
+        "sourceChainEvm": "على السلسلة ({{chain}})",
+        "chainRecord": "سجل {{cid}}",
+        "mintedOn": "مسكوك على {{chain}} بواسطة {{minter}}"
     },
   "appUpdates": {
     "title": "تحديث التطبيق",

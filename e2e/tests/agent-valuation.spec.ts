@@ -48,7 +48,7 @@ test('agent profiles keep connected-wallet observations out of other agents', as
     w.ContractsLoader = {};
     w.ethers ||= {};
     w.ChainDataLoader = {
-      resolveContractAddress: async (_chain: string, name: string) => name === 'ParcelNFT' ? 'parcel-contract' : null,
+      resolveContractAddress: async (_chain: string, name: string) => name === 'ParcelAnchor' ? 'parcel-contract' : null,
       getParcelsFromChain: () => {
         w.__profileWalletCalls += 1;
         return new Promise(resolve => { w.__resolveProfileParcels = resolve; });
@@ -77,7 +77,8 @@ test('agent profiles keep connected-wallet observations out of other agents', as
   await dialog.locator('.agent-dialog-modal-close').click();
   await page.evaluate(id => (window as any).showAgentDialog(id), ids.user);
   await expect.poll(() => page.evaluate(() => (window as any).__profileWalletCalls)).toBe(1);
-  await expect(dialog.locator('[data-agent-parcels-basis]')).toContainText('parcel NFTs observed in the connected wallet');
+  await expect(dialog.locator('[data-agent-parcels-basis]')).toContainText('parcels the connected wallet anchored on chain');
+  await expect(dialog).toContainText('Assigned and anchored parcels');
   await dialog.locator('.agent-dialog-modal-close').click();
   await page.evaluate(id => (window as any).showAgentDialog(id), ids.other);
   await page.evaluate(async () => {
@@ -106,7 +107,7 @@ test('wallet profile replaces observations across accounts, networks and disconn
     w.solanaWalletManager = { getState: () => ({ status: 'disconnected', accounts: [] }) };
     w.ContractsLoader = {}; w.ethers ||= {};
     w.ChainDataLoader = {
-      resolveContractAddress: async (_chain: string, name: string) => name === 'ParcelNFT' ? 'parcel-contract' : null,
+      resolveContractAddress: async (_chain: string, name: string) => name === 'ParcelAnchor' ? 'parcel-contract' : null,
       getParcelsFromChain: (wallet: string, chain: string) => new Promise(resolve => w.__walletProfileRequests.push({ wallet, chain, resolve }))
     };
     w.refreshUserEthBalanceDisplay = () => {};

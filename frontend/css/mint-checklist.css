@@ -1,0 +1,67 @@
+/* The mint checklist dialog (js/chain/mint-checklist.js): an ordered list of steps, each with a state
+   mark (pending, running, done, failed), a note and its actions. Theme values come from the shared
+   tokens; the running mark's ring stops under reduced motion. */
+
+.mint-checklist .sheet-note { margin-top: 0; }
+
+.mint-steps {
+    list-style: none;
+    margin: var(--cb-space-2) 0 0;
+    padding: 0;
+    display: grid;
+    gap: var(--cb-space-2);
+}
+
+.mint-step {
+    display: grid;
+    grid-template-columns: 1.25rem 1fr;
+    column-gap: var(--cb-space-2);
+    row-gap: 2px;
+    align-items: start;
+    padding: var(--cb-space-2);
+    border: 1px solid var(--cb-line);
+    border-radius: var(--cb-radius-md);
+    background: var(--cb-surface);
+}
+
+.mint-step__icon {
+    grid-row: 1 / span 3;
+    width: 1.1rem;
+    height: 1.1rem;
+    margin-top: 2px;
+    border-radius: 50%;
+    border: 2px solid var(--cb-line);
+    box-sizing: border-box;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    line-height: 1;
+    color: var(--cb-surface);
+}
+
+.mint-step[data-state="running"] .mint-step__icon {
+    border-color: var(--cb-primary);
+    border-top-color: transparent;
+    animation: mint-step-spin 0.9s linear infinite;
+}
+
+.mint-step[data-state="done"] .mint-step__icon { border-color: var(--cb-success); background: var(--cb-success); }
+.mint-step[data-state="done"] .mint-step__icon::before { content: "✓"; }
+.mint-step[data-state="failed"] .mint-step__icon { border-color: var(--cb-warning); background: var(--cb-warning); }
+.mint-step[data-state="failed"] .mint-step__icon::before { content: "!"; }
+
+.mint-step__label { font-weight: 600; }
+.mint-step__note { color: var(--cb-text-muted); font-size: 0.9em; overflow-wrap: anywhere; }
+.mint-step[data-state="failed"] .mint-step__note { color: inherit; }
+.mint-step__note:empty, .mint-step__actions:empty { display: none; }
+.mint-step__actions { grid-column: 2; flex-wrap: wrap; gap: var(--cb-space-2); }
+
+.mint-checklist__outcome { margin: var(--cb-space-3) 0 0; font-weight: 600; }
+.mint-checklist__outcome:empty { display: none; }
+
+@keyframes mint-step-spin { to { transform: rotate(360deg); } }
+
+@media (prefers-reduced-motion: reduce) {
+    .mint-step[data-state="running"] .mint-step__icon { animation: none; border-top-color: var(--cb-primary); }
+}

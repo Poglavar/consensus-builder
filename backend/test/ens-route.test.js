@@ -36,9 +36,8 @@ beforeEach(() => {
     process.env.ENS_PARENT_NAME = 'parcels.urbangametheory.eth';
     process.env.ENS_PROPOSALS_PARENT_NAME = 'proposals.urbangametheory.eth';
     process.env.ENS_PUBLIC_BASE_URL = 'https://urbangametheory.xyz';
-    delete process.env.ENS_ADDR_RPC_URL;
+    delete process.env.ENS_PARCEL_ANCHOR_ADDRESS;
     delete process.env.ENS_PARCEL_NFT_ADDRESS;
-    delete process.env.ENS_PROPOSAL_NFT_ADDRESS;
     pool = createMockPool();
     app = createRouteApp(setupEnsRoute, pool);
 });
@@ -167,16 +166,25 @@ describe('GET /ens/:sender/:data', () => {
         expect(pool.getCalls()).toEqual([]);
     });
 
-    it('gives the proposals namespace no apex address, while the parcels apex keeps its contract', async () => {
-        // A stale NFT address in the environment no longer names the apex: agreements and designs are not NFTs.
-        process.env.ENS_PROPOSAL_NFT_ADDRESS = '0x2222222222222222222222222222222222222222';
+    it('gives the proposals namespace no apex address, while the parcels apex is the ParcelAnchor contract', async () => {
+        // The retired ParcelNFT address is ignored; only ENS_PARCEL_ANCHOR_ADDRESS names the apex.
         process.env.ENS_PARCEL_NFT_ADDRESS = '0x3333333333333333333333333333333333333333';
+        process.env.ENS_PARCEL_ANCHOR_ADDRESS = '0x4444444444444444444444444444444444444444';
         const configured = createRouteApp(setupEnsRoute, pool);
         const proposalsApex = await request(configured).get(`/ens/${SENDER}/${addrCallData('proposals.urbangametheory.eth')}.json`);
         expect(proposalsApex.status).toBe(200);
         expect(addrOf(proposalsApex)).toBe('0x0000000000000000000000000000000000000000');
         const parcelsApex = await request(configured).get(`/ens/${SENDER}/${addrCallData('parcels.urbangametheory.eth')}.json`);
-        expect(addrOf(parcelsApex)).toBe('0x3333333333333333333333333333333333333333');
+        expect(addrOf(parcelsApex)).toBe('0x4444444444444444444444444444444444444444');
+        // A parcel name answers the zero address even with its anchor key stored: an anchor has no owner.
+        pool.setResult({
+            rows: [{ slug: 'us-ny-1234', parcel_id: 'US-NY-1234', city_code: 'ny', lat: null, lon: null, area_m2: null, token_id: '5', image_url: null }],
+            rowCount: 1,
+        });
+        const parcel = await request(configured).get(`/ens/${SENDER}/${addrCallData('us-ny-1234.parcels.urbangametheory.eth')}.json`);
+        expect(parcel.status).toBe(200);
+        expect(addrOf(parcel)).toBe('0x0000000000000000000000000000000000000000');
+        pool.reset();
         // A named agreement has no owner address either.
         pool.setResult({ rows: [{ cid: AGREEMENT_CID, title: 'Riverside deal', screenshot_url: null }] });
         const agreement = await request(configured).get(`/ens/${SENDER}/${addrCallData(`${AGREEMENT_CID}.proposals.urbangametheory.eth`)}.json`);

@@ -73,9 +73,12 @@
         }
         const city = () => win.normalizeCityCodeForApi(win.resolveCurrentCityCode());
         const area = () => state.tab === 'designs' ? win.getProposalCountAreaContext() : null;
-        const fromChain = () => state.tab === 'agreements' && state.source === 'chain';
+        // Agreements are listed from the Solana cluster, designs and plans from the EVM chain (their
+        // records live there until R2 of blockchain-flows.md); the index is the other source.
+        const fromChain = () => state.source === 'chain' && !!win.ChainReader;
+        const chainName = () => (state.tab === 'agreements' ? t('lists.sourceChain', { cluster: win.ChainReader.cluster() }) : t('lists.sourceChainEvm', { chain: win.ChainReader.evmChainName() }));
         const cacheKey = () => {
-            if (fromChain()) return `chain:${win.ChainReader.cluster()}:agreements`;
+            if (fromChain()) return `chain:${state.tab === 'agreements' ? win.ChainReader.cluster() : win.ChainReader.evmChainId()}:${state.tab}`;
             const view = area(); return `${win.DesignSync.apiBase()}:${view?.explore ? view.key : city()}:${state.tab}`;
         };
         const host = () => doc.getElementById({ designs: 'proposal-list-host', plans: 'plan-list-host', agreements: 'agreement-list-host' }[state.tab]);
@@ -94,7 +97,7 @@
         }
         function remoteRows(rows, kind) {
             const plans = kind === 'plans' ? new Map(localRows('plans').map(row => [row.key, row.local])) : null;
-            const untitled = record => record.source === 'chain' ? t('lists.chainAgreement', { cid: win.AgreementSync.shortCid(record.cid) })
+            const untitled = record => record.source === 'chain' ? t(kind === 'agreements' ? 'lists.chainAgreement' : 'lists.chainRecord', { cid: win.AgreementSync.shortCid(record.cid) })
                 : t(kind === 'designs' ? 'planDialog.untitledDesign' : 'agreement.panel.untitled');
             return rows.map(record => ({ key: record.cid, cid: record.cid || null, title: record.title || record.content?.title || untitled(record),
                 author: record.author, createdAt: record.createdAt, published: true, onChain: !!record.onchain, record,
@@ -109,8 +112,10 @@
             state.remote.set(key, page); renderRows();
             try {
                 if (fromChain()) {
-                    // Every account at once: the chain has no pages, and the rows carry no content.
-                    page.rows = await win.ChainReader.listAgreements();
+                    // Everything at once: the chain has no pages. Agreement rows carry no content;
+                    // record rows carry what IPFS served.
+                    page.rows = kind === 'agreements' ? await win.ChainReader.listAgreements()
+                        : await win.ChainReader.listRecords(kind === 'designs' ? 'design' : 'plan');
                     page.next = null;
                     return;
                 }
@@ -416,6 +421,10 @@
                 if (kind === 'agreements' && (row.record.onchain || row.record.status)) {
                     const status = row.record.onchain?.status || row.record.status;
                     badges.append(node('span', 'cb-badge', win.AgreementPanel.chainStatusText(status)));
+                } else if (row.record.onchain?.family === 'evm') {
+                    const minted = node('span', 'cb-badge', t('agreement.chain.heading'));
+                    minted.title = t('lists.mintedOn', { chain: row.record.onchain.chain, minter: row.record.onchain.minter });
+                    badges.append(minted);
                 }
                 item.append(badges);
                 if (kind === 'plans') item.append(node('p', 'sheet-note', t('agreement.list.designs', { count: row.record.content?.designCids.length ?? row.record.designCount })));
@@ -483,10 +492,10 @@
                 state.filtersOpen = !state.filtersOpen; filters.hidden = !state.filtersOpen; toggle.setAttribute('aria-expanded', String(state.filtersOpen));
             });
             searchRow.append(search, toggle); box.append(searchRow);
-            // Agreements list from the server's index or from the connected chain.
-            if (state.tab === 'agreements' && win.ChainReader) {
+            // Each list from the server's index or from the chain its records live on.
+            if (win.ChainReader) {
                 const wrap = node('label', '', t('lists.source')), select = node('select');
-                for (const [value, text] of [['index', t('lists.sourceIndex')], ['chain', t('lists.sourceChain', { cluster: win.ChainReader.cluster() })]]) {
+                for (const [value, text] of [['index', t('lists.sourceIndex')], ['chain', chainName()]]) {
                     const option = node('option', '', text); option.value = value; select.append(option);
                 }
                 select.dataset.listFilter = 'source';

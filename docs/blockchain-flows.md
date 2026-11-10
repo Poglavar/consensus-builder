@@ -224,6 +224,27 @@ mock API and a local validator), then docs and the vocabulary entries it changes
 3. **R3, EVM anchors, registry and reader.** `ParcelAnchor`, `RecordRegistry`, the EVM adapter and
    From chain on Base Sepolia; the ENS resolver repointed. Done when R1 and R2's checks pass with an
    EVM wallet for designs and plans.
+   *Built (before R2, by the user's choice of 2026-11-10):* `blockchain/contracts/ParcelAnchor.sol`
+   (ownerless anchors keyed by `keccak256(parcelId)`, `anchorBatch` skipping what exists, paged
+   readers and a per-creator listing) and `RecordRegistry.sol` (soulbound ERC-721, token id
+   `uint256(sha256(cid))`, `records(offset, limit, kind)` for readers), with Forge tests; deployed on
+   Base Sepolia, Sepolia and local 31337 by `blockchain/scripts/deploy-anchors-registry.sh` (forge,
+   addresses merged into `frontend/contracts/addresses.json`). `ParcelNFT.sol`, `ProposalNFT.sol`,
+   their deploy scripts, hardhat-era mint/accept scripts and tests are retired; `IEAS` is its own
+   file for R4. The browser pieces, all chain-agnostic except the adapter: `frontend/js/chain/evm-adapter.js`
+   (the adapter interface over ethers), `ipfs-courier.js` (Flow 2: server `POST /pins`, own Pinata
+   key kept in the browser, self-pinned download; the gate polls the public gateways with a visible
+   count), `mint-checklist.js` (Flow 3, resumable steps; the agreement's parcel step is built and
+   waits for an agreement adapter), `chain-publish.js` (Flow 4: Share offers "Publish on <chain>"
+   first with an EVM wallet connected, mirrors to the index as a courtesy; a design minted on a chain
+   counts as published wherever it is read). Token metadata is a `data:` URI, so a mint needs one
+   pin, not two. Lists' Source filter now covers every tab (designs and plans from the EVM chain,
+   agreements from the Solana cluster). The parcel claim UI anchors instead of minting to a wallet,
+   the minted-parcels layer and the agent profile read anchors, and the ENS gateway answers a parcel
+   name's `addr` with zero (an anchor has no owner; apex from `ENS_PARCEL_ANCHOR_ADDRESS`). Still
+   open from R3: the server chain watcher and the MCP tools (agents have no EVM key yet), the UI's
+   "NFT" wording family shared with Solana, the live ENS records (the scripts are repointed, not run),
+   and explorer source verification (needs an Etherscan v2 API key).
 4. **R4, EVM agreements.** The `Agreement` contract, EAS attestation by the lens, escrow, the
    agreement panel's actions on EVM. Done when an agreement proposed with an EVM wallet executes on
    Base Sepolia from a lens attestation.

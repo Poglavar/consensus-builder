@@ -41,7 +41,7 @@
     /**
      * Gets the contract address for a given chainId and contract name
      * @param {string|number|bigint} chainId - The chain ID
-     * @param {string} contractName - The contract name (e.g., 'ProposalNFT', 'ParcelNFT', 'CityMemeToken')
+     * @param {string} contractName - The contract name (e.g., 'ParcelAnchor', 'CityMemeToken')
      * @returns {Promise<string|null>} The contract address or null if not found
      */
     async function getContractAddress(chainId, contractName) {

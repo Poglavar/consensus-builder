@@ -62,8 +62,13 @@
     function publishedCid(record, apiBase) {
         const published = isObject(record) ? record.published : null;
         if (!isObject(published) || !cidApi().isCid(published.cid)) return null;
-        const base = apiBaseOf(apiBase);
-        if (!base || apiBaseOf(published.apiBase) !== base) return null;
+        // A design minted on a chain is published wherever it is read: its content is on IPFS and its
+        // record on chain (blockchain-flows.md, Flow 4). One published through an index only is
+        // published at that index.
+        if (!isObject(published.chain)) {
+            const base = apiBaseOf(apiBase);
+            if (!base || apiBaseOf(published.apiBase) !== base) return null;
+        }
         const cid = contentCid(record);
         return cid && cid === published.cid ? cid : null;
     }
@@ -347,12 +352,13 @@
          * index's refusals ('cid-mismatch', 'too-large', 'network-failed', …).
          * @returns {Promise<{ cid: string, row: object | null, alreadyPublished: boolean }>}
          */
-        async function publishDesign(localDesign) {
-            if (!isObject(localDesign)) throw new TypeError('publishDesign needs a local design record.');
-            const apiBase = currentApiBase();
-            if (!apiBase) throw new Error('The design index has no API base.');
-            const already = publishedCid(localDesign, apiBase);
-            if (already) return { cid: already, row: null, alreadyPublished: true };
+        /**
+         * The design/v1 object a local design publishes as, after the checks every publication makes
+         * (through the index or on a chain): the local refusal, the guest's name, the author stamp.
+         * Returns { content, cid, bytes }; throws as publishDesign does.
+         */
+        function prepareForPublication(localDesign) {
+            if (!isObject(localDesign)) throw new TypeError('prepareForPublication needs a local design record.');
             const refusal = win.ProposalPublishTerms.publishRefusal(localDesign);
             if (refusal) throw failure(refusal.code, refusal.message);
             // Publishing leaves the device and the design carries its author (GuestPolicy 'publish').
@@ -361,8 +367,18 @@
             // The author is content: it is stamped before the CID is taken.
             win.stampCurrentAuthor(localDesign);
             const content = designRecord().published(localDesign);
+            const { cid, bytes } = addressObject(content);
+            return { content, cid, bytes };
+        }
+
+        async function publishDesign(localDesign) {
+            if (!isObject(localDesign)) throw new TypeError('publishDesign needs a local design record.');
+            const apiBase = currentApiBase();
+            if (!apiBase) throw new Error('The design index has no API base.');
+            const already = publishedCid(localDesign, apiBase);
+            if (already) return { cid: already, row: null, alreadyPublished: true };
+            const { content, cid } = prepareForPublication(localDesign);
             clearPublicationProblem();
-            const { cid } = addressObject(content);
             const response = await request('POST', '/designs', { cid, content, parcelSourceId: parcelSourceIdOf(content.city, groundOf(content)) });
             if (!response.ok && response.status !== 409) {
                 throw publicationFailure(localDesign, response.status, response.body);
@@ -375,6 +391,17 @@
             markPublished(localDesign, { cid, publishedAt: row.createdAt || new Date().toISOString(), apiBase });
             log(`published ${localDesign.proposalId} as ${cid}${response.status === 409 ? ' (already indexed)' : ''}`);
             return { cid, row, alreadyPublished: false };
+        }
+
+        // Indexes a published design/v1 object here: the mirror of a chain mint (blockchain-flows.md,
+        // Flow 4). Resolves the index row (an object already indexed answers 409 with its row).
+        async function indexDesign({ cid, content }) {
+            const response = await request('POST', '/designs', { cid, content, parcelSourceId: parcelSourceIdOf(content.city, groundOf(content)) });
+            if (!response.ok && response.status !== 409) {
+                throw failure((response.body && response.body.code) || `http-${response.status}`, (response.body && response.body.error) || `POST /designs: HTTP ${response.status}`);
+            }
+            if (!response.body || response.body.cid !== cid) throw failure('cid-mismatch', `The index answered ${response.body && response.body.cid}, not ${cid}.`);
+            return response.body;
         }
 
         // GET /designs/:cid → the row; a missing design throws code 'design-not-found'.
@@ -749,6 +776,7 @@
         return {
             api: {
                 publishDesign: record => observe('publish', 'design-publish-failed', () => publishDesign(record)),
+                prepareForPublication, indexDesign,
                 addressObject, markPublished, fetchDesign, fetchDesigns, withDerivedBinding, importDesign, importDraft, localCopyOf,
                 designLink, copyLink, prepareMapPreview, parcelSourceIdOf, refusalMessage, clearPublicationProblem,
                 // A local record's exact CID at the current index, or an index summary's own.

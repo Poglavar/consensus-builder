@@ -235,7 +235,7 @@
                 return;
             }
 
-            // EVM path
+            // EVM path: the ParcelAnchor contract's anchors (ChainDataLoader pages them 200 at a time).
             // First, get and display the total count
             if (global.ChainDataLoader && typeof global.ChainDataLoader.getTotalMintedParcels === 'function') {
                 try {
@@ -256,7 +256,6 @@
                     context.chainId,
                     context.contractAddress,
                     {
-                        batchSize: 20,
                         onProgress: (current, total) => {
                             console.log(`Loaded ${current}/${total} minted parcels`);
                         }

@@ -1161,6 +1161,11 @@
             "publishedAs": "Objavljeno kao:",
             "linkCopied": "Dizajn je objavljen. Njegov link je kopiran.",
             "publishedTitle": "Dizajn je objavljen",
+            "where": {
+                "title": "Gde objaviti?",
+                "server": "Objavi preko servera",
+                "chainHint": "Na lancu sadržaj ide na IPFS, a vaš novčanik kuje njegov zapis; server ga preslikava kad odgovori."
+            },
             "copyByHand": "Link nije mogao automatski da se kopira. Kopirajte ga odavde:",
             "linkLabel": "Link ka objavljenom dizajnu",
             "errors": {
@@ -1663,11 +1668,12 @@
         "totalWealth": "Modelovani ukupni iznos",
         "portfolioBasis": "Model zemljišta: USD {{pricePerSqmUsd}}/m², preračunato po kursu USD {{usdPerEth}} za 1 ETH.",
         "ownedParcels": "Povezane parcele ({{count}})",
+        "walletParcels": "Dodeljene i usidrene parcele ({{count}})",
         "proposalsCreated": "Kreirani dizajni ({{count}})",
         "localProposalUnavailable": "Lokalni zapis dizajna nije dostupan",
         "localProposalKey": "Lokalni ID {{id}}",
         "localParcelsBasis": "Parcele dodeljene ovom agentu u lokalnom modelu.",
-        "walletParcelsBasis": "Lokalne dodele u modelu i NFT-ovi parcela zabeleženi u povezanom novčaniku; to ne potvrđuje upisano vlasništvo nad zemljištem.",
+        "walletParcelsBasis": "Lokalne dodele u modelu i parcele koje je povezani novčanik usidrio na lancu; sidro nema vlasnika, a ništa od toga ne potvrđuje upisano vlasništvo nad zemljištem.",
         "agentLog": "Dnevnik agenta",
         "parcelLabel": "Parcela {{number}}",
         "proposalCount": {
@@ -9114,6 +9120,36 @@
         "castShare": "Udeo predatih glasova",
         "refreshResults": "Osveži rezultate"
     },
+    "mint": {
+        "intro": "Koraci se izvode redom. Odbijeni potpis ili spor gateway mogu se ponoviti; šta je gotovo, ostaje gotovo.",
+        "steps": {
+            "retrievable": "Sadržaj dostupan sa IPFS-a: {{label}}",
+            "anchors": "Ulazne parcele usidrene",
+            "record": "Zapis ({{kind}}) iskovan na {{chain}}"
+        },
+        "status": {
+            "checking": "Provera javnih gateway-a…",
+            "pinningServer": "Pinovanje preko servera…",
+            "pinningPinata": "Pinovanje sopstvenim ključem…",
+            "waiting": "Pinovano preko {{courier}}; čekanje javnog gateway-a ({{attempt}}/{{total}})…",
+            "retrievable": "Služi {{gateway}}",
+            "noCourier": "Ništa nije moglo da pinuje: server nije prihvatio, a ključ za pinovanje nije postavljen. Preuzmite bajtove i pinujte ih bilo gde, ili dodajte Pinata ključ, pa pokušajte ponovo.",
+            "notRetrievable": "Pinovano, ali nijedan javni gateway još ne služi. Pokušajte ponovo za trenutak.",
+            "anchorsAll": "Sve parcele ({{count}}) su usidrene.",
+            "anchorsMissing": "{{missing}} od {{count}} nije usidreno; sidrenje u {{batches}} transakcija…",
+            "anchorsProgress": "{{done}}/{{total}} usidreno",
+            "alreadyMinted": "Već iskovao {{minter}}.",
+            "minting": "Čekanje potpisa novčanika…",
+            "minted": "Iskovao {{minter}}."
+        },
+        "actions": {
+            "start": "Objavi na {{chain}}",
+            "download": "Preuzmi bajtove",
+            "pinataKey": "Koristi sopstveni ključ za pinovanje"
+        },
+        "pinataPrompt": "Nalepite Pinata JWT ograničen na pinovanje. Ostaje samo u ovom pregledaču.",
+        "done": "Objavljeno na {{chain}}."
+    },
     "lists": {
         "title": "Liste",
         "plans": "Planovi",
@@ -9140,7 +9176,10 @@
         "sourceIndex": "Indeks servera",
         "sourceChain": "Na lancu (Solana {{cluster}})",
         "chainAgreement": "Sporazum {{cid}}",
-        "chainLoading": "Čitanje sporazuma sa lanca…"
+        "chainLoading": "Čitanje sporazuma sa lanca…",
+        "sourceChainEvm": "Na lancu ({{chain}})",
+        "chainRecord": "Zapis {{cid}}",
+        "mintedOn": "Iskovano na {{chain}}, kovač {{minter}}"
     },
   "appUpdates": {
     "title": "Ažuriranje aplikacije",

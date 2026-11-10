@@ -63,8 +63,7 @@ const validate = ajv.compile(schema);
 
 ## Blockchain Integration
 
-- **ParcelNFT**: ERC721 NFT for land parcels
-- **ProposalNFT**: ERC721 NFT for urban proposals
+- **ParcelAnchor**: ownerless EVM parcel anchors, one per cadastral parcel id (no NFT, nothing held)
 - **City Token**: ERC20 token for governance
 - **Ownership Tracking**: Blockchain-based ownership verification
 

@@ -1159,6 +1159,11 @@
             "publishedAs": "Published as:",
             "linkCopied": "Design published. Its link is copied.",
             "publishedTitle": "Design published",
+            "where": {
+                "title": "Publish where?",
+                "server": "Publish through the server",
+                "chainHint": "On chain, the content goes to IPFS and your wallet mints its record; the server mirrors it when it answers."
+            },
             "copyByHand": "The link could not be copied automatically. Copy it from here:",
             "linkLabel": "Link to the published design",
             "errors": {
@@ -1653,11 +1658,12 @@
         "totalWealth": "Modeled total",
         "portfolioBasis": "Land model: USD {{pricePerSqmUsd}}/m², converted at USD {{usdPerEth}} per ETH.",
         "ownedParcels": "Linked parcels ({{count}})",
+        "walletParcels": "Assigned and anchored parcels ({{count}})",
         "proposalsCreated": "Designs created ({{count}})",
         "localProposalUnavailable": "Local design record unavailable",
         "localProposalKey": "Local ID {{id}}",
         "localParcelsBasis": "Parcels assigned to this agent in the local model.",
-        "walletParcelsBasis": "Local model assignments and parcel NFTs observed in the connected wallet; these do not establish registered land ownership.",
+        "walletParcelsBasis": "Local model assignments and parcels the connected wallet anchored on chain; an anchor has no owner, and neither establishes registered land ownership.",
         "agentLog": "Agent log",
         "parcelLabel": "Parcel {{number}}",
         "proposalCount": {
@@ -9062,6 +9068,36 @@
         "castShare": "Share of votes cast",
         "refreshResults": "Refresh results"
     },
+    "mint": {
+        "intro": "Each step runs in order. A refused signature or a slow gateway can be retried; what is done stays done.",
+        "steps": {
+            "retrievable": "Content retrievable from IPFS: {{label}}",
+            "anchors": "Input parcels anchored",
+            "record": "{{kind}} record minted on {{chain}}"
+        },
+        "status": {
+            "checking": "Checking public gateways…",
+            "pinningServer": "Pinning through the server…",
+            "pinningPinata": "Pinning with your own key…",
+            "waiting": "Pinned through {{courier}}; waiting for a public gateway ({{attempt}}/{{total}})…",
+            "retrievable": "Served by {{gateway}}",
+            "noCourier": "Nothing could pin it: the server did not take it and no pinning key is set. Download the bytes and pin them anywhere, or add a Pinata key, then retry.",
+            "notRetrievable": "Pinned, but no public gateway serves it yet. Retry in a moment.",
+            "anchorsAll": "All {{count}} parcels are anchored.",
+            "anchorsMissing": "{{missing}} of {{count}} not anchored; anchoring in {{batches}} transaction(s)…",
+            "anchorsProgress": "{{done}}/{{total}} anchored",
+            "alreadyMinted": "Already minted by {{minter}}.",
+            "minting": "Waiting for the wallet to sign…",
+            "minted": "Minted by {{minter}}."
+        },
+        "actions": {
+            "start": "Publish on {{chain}}",
+            "download": "Download bytes",
+            "pinataKey": "Use your own pinning key"
+        },
+        "pinataPrompt": "Paste a Pinata JWT scoped to pinning. It stays in this browser only.",
+        "done": "Published on {{chain}}."
+    },
     "lists": {
         "title": "Lists",
         "plans": "Plans",
@@ -9088,7 +9124,10 @@
         "sourceIndex": "Server index",
         "sourceChain": "On chain (Solana {{cluster}})",
         "chainAgreement": "Agreement {{cid}}",
-        "chainLoading": "Reading the agreements on chain…"
+        "chainLoading": "Reading the agreements on chain…",
+        "sourceChainEvm": "On chain ({{chain}})",
+        "chainRecord": "Record {{cid}}",
+        "mintedOn": "Minted on {{chain}} by {{minter}}"
     },
   "appUpdates": {
     "title": "Application update",

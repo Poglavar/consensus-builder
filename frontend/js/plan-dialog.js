@@ -144,9 +144,18 @@
         const link=node('input','design-link__input');link.type='text';link.readOnly=true;link.setAttribute('aria-label',t('planLink'));link.hidden=!published;link.value=published?.link||'';
         const status=node('p','plan-dialog__status');status.setAttribute('role','status');
         const publish=button(t(published?'copyLink':'publishAndCopy'),async()=>{
-            status.textContent=link.value?'':t('publishing');
+            status.textContent='';
             try {
-                if(!link.value){const result=await win.PlanWorkspace.publish(row);link.value=result.link;link.hidden=false;}
+                if(!link.value){
+                    // The chain first with a wallet on a chain this app has contracts on (blockchain-flows.md, Flow 4).
+                    const chain=await win.ChainPublish.adapter();
+                    const where=chain?await win.ChainPublish.choose(chain):'server';
+                    if(!where)return;
+                    status.textContent=t('publishing');
+                    const result=where==='chain'?await win.ChainPublish.plan(row,chain):await win.PlanWorkspace.publish(row);
+                    if(!result){status.textContent='';return;}
+                    link.value=result.link;link.hidden=false;
+                }
                 status.textContent=await win.DesignSync.copyLink(link.value)?t('copied'):t('copyLinkManually');
                 publish.textContent=t('copyLink');
             }catch(error){status.textContent=error.message;}

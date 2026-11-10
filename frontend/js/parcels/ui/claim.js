@@ -22,9 +22,12 @@
         production: 'https://attestify.network/'
     });
 
-    const PARCEL_NFT_ABI_FRAGMENT = [
-        'function tokenIdForParcelId(string parcelId) view returns (uint256)'
-    ];
+    // The EVM ParcelAnchor ABI, shared with chain-data-loader.js (loaded before this file).
+    function parcelAnchorAbi() {
+        const abi = global.ChainDataLoader && global.ChainDataLoader.PARCEL_ANCHOR_ABI;
+        if (!abi) throw new Error('ParcelAnchor ABI is not available (chain-data-loader.js).');
+        return abi;
+    }
 
     const MINT_DECLARE_DEFAULT_RIGHTS_TYPE = 'Ownership';
     const MINT_DECLARE_DEFAULT_ASSET_TYPE = 'Real Estate';
@@ -99,7 +102,8 @@
         return null;
     }
 
-    function buildParcelNftExplorerUrl({ chainId, chainSlug, contractAddress, tokenId } = {}) {
+    // Solana: the parcel's account page. EVM: the ParcelAnchor contract's page (an anchor is no token).
+    function buildParcelAnchorExplorerUrl({ chainId, chainSlug, contractAddress, tokenId } = {}) {
         if (!contractAddress || tokenId === undefined || tokenId === null) return null;
         const base = getParcelExplorerBaseUrl(chainId, chainSlug);
         if (!base) return null;
@@ -113,9 +117,7 @@
             const suffix = cluster !== 'mainnet-beta' ? `?cluster=${cluster}` : '';
             return `${base}/address/${encodeURIComponent(tokenValue)}${suffix}`;
         }
-        const encodedAddress = encodeURIComponent(address);
-        const encodedToken = encodeURIComponent(tokenValue);
-        return `${base}/nft/${encodedAddress}/${encodedToken}`;
+        return `${base}/address/${encodeURIComponent(address)}`;
     }
 
     function setButtonEnabledState(button, enabled) {
@@ -369,7 +371,7 @@
                 { chain: chainText },
                 `NFT status: Minted${chainText}`
             );
-            const explorerUrl = buildParcelNftExplorerUrl({
+            const explorerUrl = buildParcelAnchorExplorerUrl({
                 chainId: result.chainId,
                 chainSlug: result.chainSlug,
                 contractAddress: result.contractAddress,
@@ -434,7 +436,7 @@
         }
         const contract = new ethersLib.Contract(
             claimContext.contractAddress,
-            PARCEL_NFT_ABI_FRAGMENT,
+            parcelAnchorAbi(),
             claimContext.provider
         );
         try {
@@ -1044,21 +1046,16 @@
         return String(value);
     }
 
+    // The parcel's anchor key, uint256(keccak256(parcelId)) — the token id the claim portal takes —
+    // when ParcelAnchor.isAnchored says it exists, else TOKEN_NOT_MINTED. A failed read (network,
+    // timeout, revert) is rethrown: the check did not run, which never means "not anchored".
     async function fetchParcelTokenId(contract, parcelId) {
-        try {
-            return await contract.tokenIdForParcelId(parcelId);
-        } catch (error) {
-            const isExpectedMissing = isParcelTokenMissingError(error)
-                || (error && typeof error.message === 'string' && /ParcelNFT:\s*Parcel does not exist/i.test(error.message));
-            // Only the contract's own "Parcel does not exist" revert proves absence. A network error,
-            // timeout or unrelated revert means the check did not run — surface it as an error.
-            if (!isExpectedMissing) {
-                throw error;
-            }
-            const sentinel = new Error('TOKEN_NOT_MINTED');
-            sentinel.cause = error;
-            throw sentinel;
+        const anchored = await contract.isAnchored(parcelId);
+        if (anchored !== true) {
+            throw new Error('TOKEN_NOT_MINTED');
         }
+        const { keccak256, toUtf8Bytes } = global.ethers;
+        return BigInt(keccak256(toUtf8Bytes(parcelId)));
     }
 
     function buildParcelBuilderUrl() {
@@ -1211,7 +1208,7 @@
 
             const contract = new ethersLib.Contract(
                 claimContext.contractAddress,
-                PARCEL_NFT_ABI_FRAGMENT,
+                parcelAnchorAbi(),
                 claimContext.provider
             );
 
@@ -1261,7 +1258,7 @@
                 currentParcelMintStatusParcelId = parcelId;
                 applyParcelMintStatusResult(notMintedResult);
                 if (typeof global.updateStatus === 'function') {
-                    global.updateStatus("Can't claim, the parcel token has not been minted yet.");
+                    global.updateStatus("Can't claim, the parcel has not been anchored on chain yet.");
                 }
                 return;
             }
@@ -1332,13 +1329,13 @@
 
             const contract = new ethersLib.Contract(
                 claimContext.contractAddress,
-                PARCEL_NFT_ABI_FRAGMENT,
+                parcelAnchorAbi(),
                 claimContext.provider
             );
 
             let tokenId;
             try {
-                console.info('ParcelNFT lookup', {
+                console.info('ParcelAnchor lookup', {
                     chainId: claimContext.chainId,
                     chainSlug: claimContext.chainSlug,
                     contractAddress: claimContext.contractAddress,
@@ -1622,7 +1619,7 @@
 
         const subtitle = global.document.createElement('p');
         subtitle.className = 'parcel-mint-subtitle';
-        subtitle.textContent = 'Choose which parcels to mint on the ParcelNFT contract. If feasible (not too many), the parcels will all be minted in one transaction.';
+        subtitle.textContent = 'Choose which parcels to anchor on chain. An anchor has no owner: your wallet only pays for it and holds nothing. If feasible (not too many), the parcels will all be anchored in one transaction.';
 
         const meta = global.document.createElement('div');
         meta.className = 'parcel-mint-meta';
@@ -1630,7 +1627,7 @@
         const metaList = [
             { label: 'Chain', value: displayChain },
             { label: 'Minting contract', value: contractAddress || 'n/a', monospace: true, url: buildExplorerAddressUrl({ chainId, chainSlug, address: contractAddress }) },
-            { label: 'Owner address', value: ownerAddress || 'n/a', monospace: true, url: buildExplorerAddressUrl({ chainId, chainSlug, address: ownerAddress }) }
+            { label: 'Paying wallet', value: ownerAddress || 'n/a', monospace: true, url: buildExplorerAddressUrl({ chainId, chainSlug, address: ownerAddress }) }
         ];
         metaList.forEach((item) => {
             const row = global.document.createElement('div');
@@ -1720,7 +1717,7 @@
         // The dialog has no automatic dismissals: while a mint transaction is in flight (is-busy)
         // neither the close button, the backdrop nor Escape may close it, so it owns all three.
         const dialogApi = global.CbDialog.open({
-            title: 'Mint parcel representations as NFTs',
+            title: 'Anchor parcels on chain',
             size: 'md',
             top: true,
             className: 'parcel-mint-modal',
@@ -2038,19 +2035,18 @@
         return prepared;
     }
 
-    async function executeParcelBatchMint({ parcels, signer, ownerAddress, contractAddress, chainSlug, statusEl }) {
+    // One ParcelAnchor.anchorBatch transaction; the connected wallet only pays (anchors have no owner)
+    // and the contract skips parcels anchored already.
+    async function executeParcelBatchMint({ parcels, signer, contractAddress, chainSlug, statusEl }) {
         const ethersLib = global.ethers;
         if (!ethersLib) {
             throw new Error('Blockchain library is not available.');
         }
-        const abi = [
-            'function mintBatch(address to, string[] parcelIds, string[] metadataURIs) public returns (uint256[])'
-        ];
-        const contract = new ethersLib.Contract(contractAddress, abi, signer);
+        const contract = new ethersLib.Contract(contractAddress, parcelAnchorAbi(), signer);
         const parcelIds = parcels.map(p => p.parcelId);
         const metadataUris = parcels.map(p => requireParcelMetadataUri(p.metadataUri, p.parcelId));
         if (statusEl) statusEl.textContent = 'Submitting mint transaction...';
-        const tx = await contract.mintBatch(ownerAddress, parcelIds, metadataUris);
+        const tx = await contract.anchorBatch(parcelIds, metadataUris);
         if (statusEl) statusEl.textContent = `Waiting for confirmation on ${chainSlug || 'chain'}...`;
         const receipt = typeof tx.wait === 'function' ? await tx.wait() : null;
         return { txHash: tx.hash, receipt };
@@ -2137,16 +2133,16 @@
             const network = await browserProvider.getNetwork();
             const chainId = normalizeChainIdValue(network?.chainId);
             const chainSlug = resolveChainSlug(chainId);
-            const contractAddress = await resolveParcelNftAddress(chainId);
+            const contractAddress = await resolveParcelAnchorAddress(chainId);
             if (!contractAddress) {
-                throw new Error('ParcelNFT address is not configured for this chain.');
+                throw new Error('ParcelAnchor address is not configured for this chain.');
             }
 
             if (isMultiActive) {
                 const ethersLib = global.ethers;
                 const contract = new ethersLib.Contract(
                     contractAddress,
-                    PARCEL_NFT_ABI_FRAGMENT,
+                    parcelAnchorAbi(),
                     browserProvider
                 );
 
@@ -2188,7 +2184,7 @@
                 onExit: typeof options.onExit === 'function' ? options.onExit : null,
                 onConfirm: async ({ parcels: selectedParcels, setBusy, statusEl, neighboursByParcelId }) => {
                     const prepared = await prepareParcelMintAssets(selectedParcels, ownerAddress, neighboursByParcelId, statusEl);
-                    const result = await executeParcelBatchMint({ parcels: prepared, signer, ownerAddress, contractAddress, chainSlug, statusEl });
+                    const result = await executeParcelBatchMint({ parcels: prepared, signer, contractAddress, chainSlug, statusEl });
                     const mintedParcelIds = prepared.map(p => p.parcelId).filter(Boolean);
                     const txHash = result?.txHash || null;
                     const transactions = txHash ? [{ txHash }] : [];
@@ -2214,10 +2210,9 @@
     const deriveParcelIdentifier = global.Parcels?.blockchain?.deriveParcelIdentifier || global.deriveParcelIdentifier;
     const resolveParcelClaimContext = global.Parcels?.blockchain?.resolveParcelClaimContext || global.resolveParcelClaimContext;
     const buildClaimUrl = global.Parcels?.blockchain?.buildClaimUrl || global.buildClaimUrl;
-    const isParcelTokenMissingError = global.Parcels?.blockchain?.isParcelTokenMissingError || global.isParcelTokenMissingError || (() => false);
     const resolveChainSlug = global.Parcels?.blockchain?.resolveChainSlug || global.resolveChainSlug;
     const normalizeChainIdValue = global.Parcels?.blockchain?.normalizeChainIdValue || global.normalizeChainIdValue;
-    const resolveParcelNftAddress = global.Parcels?.blockchain?.resolveParcelNftAddress || global.resolveParcelNftAddress;
+    const resolveParcelAnchorAddress = global.Parcels?.blockchain?.resolveParcelAnchorAddress || global.resolveParcelAnchorAddress;
     const openExternalUrl = global.openExternalUrl || ((targetUrl) => {
         if (!targetUrl || !global.window) return;
         const opened = global.window.open(targetUrl, '_blank', 'noopener,noreferrer');
@@ -2282,7 +2277,7 @@
         getParcelMintStatusElement,
         normalizeMintStatusState,
         getParcelExplorerBaseUrl,
-        buildParcelNftExplorerUrl,
+        buildParcelAnchorExplorerUrl,
         setButtonEnabledState,
         setParcelClaimButtonsState,
         setParcelMintStatusIndicator,

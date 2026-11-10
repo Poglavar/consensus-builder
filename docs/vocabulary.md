@@ -130,15 +130,15 @@ Removal of a browser-local agreement copy. Its designs retain their map applicat
 
 ### Publication
 
-The retention of canonical record bytes and their inclusion in the publication index. Publishing a design, named plan or agreement is server-only: the server checks the client's CID and indexes the object, and nothing is pinned on IPFS. A locally computed CID, preview, saved draft or local map application does not by itself constitute publication.
+The retention of canonical record bytes where a reader can fetch them by CID. A design, named plan or agreement is published either through the publication index (the server checks the client's CID and indexes the object) or on a chain: its bytes are delivered to IPFS through the courier (`POST /pins`, the person's own pinning key, or self-pinning), a public gateway serves them, and a record is minted by the publishing wallet; the index then mirrors it when it answers. The share link is the same either way, because it names content. A locally computed CID, preview, saved draft or local map application does not by itself constitute publication.
 
 ### Pinning provider
 
-The configured service retaining the content the application pins on IPFS: owner-decision bundles, community reports and parcel NFT images and metadata ([ipfs-storage.md](ipfs-storage.md)). Filebase is the current upload provider; Pinata remains selectable in reserve through `IPFS_PINNING_PROVIDER`. Provider adapters retain the application's CID scheme and verify the service's returned CID. An upload failure does not automatically publish through another provider.
+The configured service retaining the content the application pins on IPFS: owner-decision bundles, community reports, parcel metadata and, through the courier (`POST /pins`), the designs, plans and agreements being published on a chain ([ipfs-storage.md](ipfs-storage.md)). Filebase is the current upload provider; Pinata remains selectable in reserve through `IPFS_PINNING_PROVIDER`. Provider adapters retain the application's CID scheme and verify the service's returned CID. An upload failure does not automatically publish through another provider.
 
 ### Read gateway
 
-The HTTP service resolving an IPFS CID for a reader. `IPFS_READ_GATEWAY` selects generated asset URLs independently of the upload provider. Changing storage or gateway configuration does not change published content identifiers or rewrite existing URLs.
+The HTTP service resolving an IPFS CID for a reader. `IPFS_READ_GATEWAY` selects the server's generated asset URLs independently of the upload provider; the browser reads chain-referenced content from the public gateways `IPFS_READ_GATEWAYS` lists (never our backend), in order, and accepts only bytes hashing to the CID. Changing storage or gateway configuration does not change published content identifiers or rewrite existing URLs.
 
 ### CID
 
@@ -805,9 +805,13 @@ The provenance of a lifecycle claim: an observed matching chain state or event, 
 
 The agreement program account identified by network, program, sponsor and agreement CID. On Solana its address is derived from the sponsor and the hash of the CID; the account is separate from the published agreement content.
 
+### Parcel anchor
+
+An ownerless chain entry per cadastral parcel id, created once by anyone and never transferred or removed: the parcel's public address on that chain, where agreements, decisions and execution history attach. On EVM it is an entry of the `ParcelAnchor` contract keyed by `keccak256(parcelId)` (the same number the retired parcel token used as its id), with a fixed metadata URI, the chain time and the paying wallet; a wallet can list the anchors it paid for, but holds nothing. Ownership of land never reaches the anchor; it reaches the chain only as a lens attestation. Every input parcel of a binding agreement must be anchored before the agreement is minted; that check is the browser's, not the program's.
+
 ### Minting
 
-The creation of a binding agreement's chain account. Publishing a design, creating a local fabric piece and computing a CID are separate operations. The account commits to an agreement CID whose content, with its plan and designs, only the publication index holds; none of it is pinned on IPFS.
+The creation of a chain record: a binding agreement's chain account, or a design's or plan's record (on EVM a non-transferable ERC-721 in `RecordRegistry`, token id `uint256(sha256(cid))`, minted to whoever published it). A record says that the content exists, since that chain time, minted by that key; holding one confers nothing, and the first minter of a CID wins. Minting runs through the mint checklist: the content, and a plan's member designs, retrievable from a public IPFS gateway first; an agreement's input parcels anchored; then the record. Creating a local fabric piece and computing a CID are separate operations.
 
 ### Settlement
 

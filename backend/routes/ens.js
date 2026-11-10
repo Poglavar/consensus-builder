@@ -2,8 +2,8 @@
 // OffchainResolver and returns signed records, for two namespaces:
 //   <slug>.parcels.urbangametheory.eth     -> parcel_ens mapping
 //   <cid>.proposals.urbangametheory.eth    -> a published agreement or design (its CID)
-// ownerOf (addr record) is best-effort and parcel-only.
-import { JsonRpcProvider, Contract } from 'ethers';
+// A parcel's anchor has no owner, so a parcel name's addr is the zero address; the parcels
+// apex addr is the ParcelAnchor contract (ENS_PARCEL_ANCHOR_ADDRESS).
 import { resolveQuery, buildTextValue } from '../ens/gateway.js';
 import { parcelIdToCity } from '../ens/slug.js';
 import { isCid } from '../cid.js';
@@ -54,29 +54,8 @@ function recordTextValue(key, { record, config, isApex }) {
     }
 }
 
-// Lazily build a read-only parcel ownerOf resolver (only when RPC + contract set).
-function buildOwnerResolver(env) {
-    const rpcUrl = env.ENS_ADDR_RPC_URL;
-    const contractAddr = env.ENS_PARCEL_NFT_ADDRESS;
-    if (!rpcUrl || !contractAddr) return null;
-    let contract;
-    return async (record) => {
-        if (!record || record.token_id == null) return null; // proposals have no token_id → no addr
-        try {
-            if (!contract) {
-                const provider = new JsonRpcProvider(rpcUrl);
-                contract = new Contract(contractAddr, ['function ownerOf(uint256) view returns (address)'], provider);
-            }
-            return await contract.ownerOf(BigInt(record.token_id));
-        } catch (_) {
-            return null;
-        }
-    };
-}
-
 export function setupEnsRoute(app, pool) {
     const config = buildConfig(process.env);
-    const resolveOwner = buildOwnerResolver(process.env);
 
     async function lookupParcel(slug) {
         const { rows } = await pool.query(
@@ -116,13 +95,13 @@ export function setupEnsRoute(app, pool) {
             parentLabels: (process.env.ENS_PARENT_NAME || DEFAULT_PARCELS_PARENT).split('.'),
             lookup: lookupParcel,
             buildText: buildTextValue,
-            apexAddress: process.env.ENS_PARCEL_NFT_ADDRESS || null,
+            apexAddress: process.env.ENS_PARCEL_ANCHOR_ADDRESS || null,
         },
         {
             parentLabels: (process.env.ENS_PROPOSALS_PARENT_NAME || DEFAULT_PROPOSALS_PARENT).split('.'),
             lookup: lookupRecord,
             buildText: recordTextValue,
-            // No apex contract: an agreement or design name resolves to its record, not to an NFT.
+            // No apex contract: an agreement or design name resolves to its record, not to a contract.
             apexAddress: null,
         },
     ];
@@ -140,7 +119,7 @@ export function setupEnsRoute(app, pool) {
             if (!/^0x[0-9a-fA-F]{40}$/.test(sender) || !/^0x[0-9a-fA-F]+$/.test(callData)) {
                 return res.status(400).json({ message: 'Invalid sender or data' });
             }
-            const data = await resolveQuery({ sender, callData, namespaces, resolveOwner, config });
+            const data = await resolveQuery({ sender, callData, namespaces, config });
             return res.json({ data });
         } catch (error) {
             // 400 → client surfaces the error (vs 5xx which triggers url retry).

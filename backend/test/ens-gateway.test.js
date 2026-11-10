@@ -20,14 +20,13 @@ function addrQuery(name) {
 
 const wallet = new Wallet('0x59c6995e998f97a5a0044966f0945389dc9e86dae88c7a8412f4603b6b78690d');
 const SENDER = getAddress('0x1111111111111111111111111111111111111111');
-const OWNER = getAddress('0x2222222222222222222222222222222222222222');
+const ANCHOR_CONTRACT = getAddress('0x2222222222222222222222222222222222222222');
 
 const record = {
     parcel_id: 'US-NY-1234', city_code: 'ny', city_name: 'New York',
     lat: 40.7, lon: -74.0, area_m2: 123.4, token_id: '5', image_url: 'https://img/x.png',
 };
 const lookupSlug = async (slug) => (slug === 'us-ny-1234' ? record : null);
-const resolveOwner = async () => OWNER;
 
 const config = {
     parentLabels: ['parcels', 'urbangametheory', 'eth'],
@@ -55,7 +54,7 @@ describe('resolveQuery — text(url)', () => {
     it('returns the deep-link url and a signature recoverable to the signer', async () => {
         const name = 'us-ny-1234.parcels.urbangametheory.eth';
         const callData = makeCallData(name, textQuery(name, 'url'));
-        const data = await resolveQuery({ sender: SENDER, callData, lookupSlug, resolveOwner, config });
+        const data = await resolveQuery({ sender: SENDER, callData, lookupSlug, config });
 
         const { result, expires, signature } = decodeResp(data);
         expect(recoverSigner(expires, callData, result, signature)).toBe(wallet.address);
@@ -69,7 +68,7 @@ describe('resolveQuery — text(url)', () => {
         const lookup = async () => zagreb;
         const name = 'hr-335258-4341-2.parcels.urbangametheory.eth';
         const callData = makeCallData(name, textQuery(name, 'url'));
-        const data = await resolveQuery({ sender: SENDER, callData, lookupSlug: lookup, resolveOwner, config });
+        const data = await resolveQuery({ sender: SENDER, callData, lookupSlug: lookup, config });
         const [url] = abi.decode(['string'], decodeResp(data).result);
         expect(url).toBe('https://urbangametheory.xyz/parcel/HR-335258-4341/2');
     });
@@ -80,7 +79,7 @@ describe('resolveQuery — other records', () => {
 
     it('text(description) includes id, city and area', async () => {
         const callData = makeCallData(name, textQuery(name, 'description'));
-        const data = await resolveQuery({ sender: SENDER, callData, lookupSlug, resolveOwner, config });
+        const data = await resolveQuery({ sender: SENDER, callData, lookupSlug, config });
         const [desc] = abi.decode(['string'], decodeResp(data).result);
         expect(desc).toContain('US-NY-1234');
         expect(desc).toContain('New York');
@@ -89,16 +88,16 @@ describe('resolveQuery — other records', () => {
 
     it('text(geo) returns lat,lon', async () => {
         const callData = makeCallData(name, textQuery(name, 'geo'));
-        const data = await resolveQuery({ sender: SENDER, callData, lookupSlug, resolveOwner, config });
+        const data = await resolveQuery({ sender: SENDER, callData, lookupSlug, config });
         const [geo] = abi.decode(['string'], decodeResp(data).result);
         expect(geo).toBe('40.7,-74');
     });
 
-    it('addr(node) returns the owner', async () => {
+    it('addr(node) of a parcel is the zero address (an anchor has no owner)', async () => {
         const callData = makeCallData(name, addrQuery(name));
-        const data = await resolveQuery({ sender: SENDER, callData, lookupSlug, resolveOwner, config });
+        const data = await resolveQuery({ sender: SENDER, callData, lookupSlug, config: { ...config, apexAddress: ANCHOR_CONTRACT } });
         const [addr] = abi.decode(['address'], decodeResp(data).result);
-        expect(addr).toBe(OWNER);
+        expect(addr).toBe('0x0000000000000000000000000000000000000000');
     });
 });
 
@@ -106,7 +105,7 @@ describe('resolveQuery — edge cases', () => {
     it('unknown slug → empty record, still signed', async () => {
         const name = 'zz-does-not-exist.parcels.urbangametheory.eth';
         const callData = makeCallData(name, textQuery(name, 'url'));
-        const data = await resolveQuery({ sender: SENDER, callData, lookupSlug, resolveOwner, config });
+        const data = await resolveQuery({ sender: SENDER, callData, lookupSlug, config });
         const { result, expires, signature } = decodeResp(data);
         expect(recoverSigner(expires, callData, result, signature)).toBe(wallet.address);
         const [url] = abi.decode(['string'], result);
@@ -114,15 +113,15 @@ describe('resolveQuery — edge cases', () => {
     });
 
     it('apex name resolves the contract address + base url', async () => {
-        const apexConfig = { ...config, apexAddress: OWNER };
+        const apexConfig = { ...config, apexAddress: ANCHOR_CONTRACT };
         const name = 'parcels.urbangametheory.eth';
         const addrCall = makeCallData(name, addrQuery(name));
-        const addrData = await resolveQuery({ sender: SENDER, callData: addrCall, lookupSlug, resolveOwner, config: apexConfig });
+        const addrData = await resolveQuery({ sender: SENDER, callData: addrCall, lookupSlug, config: apexConfig });
         const [addr] = abi.decode(['address'], decodeResp(addrData).result);
-        expect(addr).toBe(OWNER);
+        expect(addr).toBe(ANCHOR_CONTRACT);
 
         const urlCall = makeCallData(name, textQuery(name, 'url'));
-        const urlData = await resolveQuery({ sender: SENDER, callData: urlCall, lookupSlug, resolveOwner, config: apexConfig });
+        const urlData = await resolveQuery({ sender: SENDER, callData: urlCall, lookupSlug, config: apexConfig });
         const [url] = abi.decode(['string'], decodeResp(urlData).result);
         expect(url).toBe('https://urbangametheory.xyz');
     });
@@ -130,7 +129,7 @@ describe('resolveQuery — edge cases', () => {
     it('rejects a name not under the parent', async () => {
         const name = 'foo.bar.eth';
         const callData = makeCallData(name, textQuery(name, 'url'));
-        await expect(resolveQuery({ sender: SENDER, callData, lookupSlug, resolveOwner, config }))
+        await expect(resolveQuery({ sender: SENDER, callData, lookupSlug, config }))
             .rejects.toThrow(/not under any configured parent/);
     });
 });
@@ -152,7 +151,7 @@ describe('resolveQuery — multiple namespaces (parcels + proposals)', () => {
     it('routes a proposals name to the proposals namespace and signs', async () => {
         const name = '123.proposals.urbangametheory.eth';
         const callData = makeCallData(name, textQuery(name, 'url'));
-        const data = await resolveQuery({ sender: SENDER, callData, namespaces, resolveOwner, config });
+        const data = await resolveQuery({ sender: SENDER, callData, namespaces, config });
         const { result, expires, signature } = decodeResp(data);
         expect(recoverSigner(expires, callData, result, signature)).toBe(wallet.address);
         expect(abi.decode(['string'], result)[0]).toBe('https://urbangametheory.xyz/proposals/123');
@@ -161,14 +160,14 @@ describe('resolveQuery — multiple namespaces (parcels + proposals)', () => {
     it('routes a parcels name to the parcels namespace', async () => {
         const name = 'us-ny-1234.parcels.urbangametheory.eth';
         const callData = makeCallData(name, textQuery(name, 'url'));
-        const data = await resolveQuery({ sender: SENDER, callData, namespaces, resolveOwner, config });
+        const data = await resolveQuery({ sender: SENDER, callData, namespaces, config });
         expect(abi.decode(['string'], decodeResp(data).result)[0]).toBe('PARCEL_URL');
     });
 
     it('non-numeric proposal label resolves to empty', async () => {
         const name = 'p-abc.proposals.urbangametheory.eth';
         const callData = makeCallData(name, textQuery(name, 'url'));
-        const data = await resolveQuery({ sender: SENDER, callData, namespaces, resolveOwner, config });
+        const data = await resolveQuery({ sender: SENDER, callData, namespaces, config });
         expect(abi.decode(['string'], decodeResp(data).result)[0]).toBe('');
     });
 });

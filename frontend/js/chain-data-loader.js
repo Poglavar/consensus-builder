@@ -1,8 +1,8 @@
-// The EVM ParcelNFT reader (ChainDataLoader): the parcels a wallet holds, the minted parcel count and
-// ids, and the contract address resolution and provider every EVM read shares. The parcel NFT paths
-// read through it: the minted-parcels layer (parcels/ui/minted-layer.js), the agent profile's wallet
-// parcels (agents.js) and the city token's address (user-management.js). There is no EVM proposal
-// reader: designs are not minted, and EVM returns later on agreements (plan-design-agreement.md, M3).
+// The EVM ParcelAnchor reader (ChainDataLoader): the parcels a wallet anchored, the anchored parcel
+// count and ids, and the contract address resolution and provider every EVM read shares. An anchor is
+// ownerless (docs/blockchain-flows.md): a wallet only pays for creating it and holds nothing. The
+// parcel anchor paths read through it: the anchored-parcels layer (parcels/ui/minted-layer.js), the
+// agent profile's wallet parcels (agents.js) and the city token's address (user-management.js).
 
 (function () {
     const globalScope = typeof window !== 'undefined' ? window : (typeof self !== 'undefined' ? self : null);
@@ -10,16 +10,38 @@
         return;
     }
 
-    // The ParcelNFT functions the reads below call.
-    const PARCEL_NFT_ABI = [
-        'function getTokensByOwner(address owner) public view returns (uint256[] memory)',
-        'function parcelIdForTokenId(uint256 tokenId) public view returns (string memory)',
-        'function getParcelByToken(uint256 tokenId) public view returns (tuple(string parcelId, string metadataURI))',
-        'function ownerOf(uint256 tokenId) public view returns (address)',
-        'function balanceOf(address owner) public view returns (uint256)',
-        'function totalSupply() public view returns (uint256)',
-        'function tokenByIndex(uint256 index) public view returns (uint256)'
+    // The ParcelAnchor contract (blockchain/contracts/ParcelAnchor.sol); claim.js reuses it.
+    const ANCHOR_TUPLE = '(string parcelId, string metadataURI, uint64 anchoredAt, address anchoredBy)';
+    const PARCEL_ANCHOR_ABI = [
+        'function anchor(string parcelId, string metadataURI) returns (bytes32)',
+        'function anchorBatch(string[] parcelIds, string[] metadataURIs) returns (uint256)',
+        'function isAnchored(string parcelId) view returns (bool)',
+        'function missing(string[] parcelIds) view returns (bool[])',
+        `function anchorOf(string parcelId) view returns (${ANCHOR_TUPLE})`,
+        'function count() view returns (uint256)',
+        `function anchors(uint256 offset, uint256 limit) view returns (${ANCHOR_TUPLE}[])`,
+        'function countBy(address creator) view returns (uint256)',
+        `function anchoredBy(address creator, uint256 offset, uint256 limit) view returns (${ANCHOR_TUPLE}[])`,
+        'function keyOf(string parcelId) pure returns (bytes32)'
     ];
+    const ANCHOR_PAGE_SIZE = 200;
+
+    /** The parcel's anchor key as a number, uint256(keccak256(parcelId)) (the claim portal's token id). */
+    function anchorKeyOf(parcelId) {
+        const { keccak256, toUtf8Bytes } = globalScope.ethers;
+        return BigInt(keccak256(toUtf8Bytes(parcelId))).toString();
+    }
+
+    /** Reads every page of `readPage(offset, limit)` up to `total` anchors. */
+    async function readAnchorPages(total, readPage, onProgress) {
+        const rows = [];
+        for (let offset = 0; offset < total; offset += ANCHOR_PAGE_SIZE) {
+            const page = await readPage(offset, ANCHOR_PAGE_SIZE);
+            rows.push(...page);
+            if (typeof onProgress === 'function') onProgress(Math.min(offset + ANCHOR_PAGE_SIZE, total), total);
+        }
+        return rows;
+    }
 
     /**
      * Check if an RPC URL is localhost
@@ -180,12 +202,17 @@
         return null;
     }
 
+    function anchorContract(provider, parcelContractAddress) {
+        const { Contract, getAddress } = globalScope.ethers;
+        return new Contract(getAddress(parcelContractAddress), PARCEL_ANCHOR_ABI, provider);
+    }
+
     /**
-     * Get all parcels owned by a wallet address from chain
+     * The parcels a wallet anchored (paid for; an anchor has no owner), in creation order.
      * @param {string} walletAddress - The wallet address
      * @param {string|number|bigint} chainId - The chain ID
-     * @param {string} parcelContractAddress - The ParcelNFT contract address
-     * @returns {Promise<Array>} Array of parcel objects with { tokenId, parcelId, metadataURI }
+     * @param {string} parcelContractAddress - The ParcelAnchor contract address
+     * @returns {Promise<Array>} Array of { tokenId, parcelId, metadataURI }; tokenId is the anchor key
      */
     async function getParcelsFromChain(walletAddress, chainId, parcelContractAddress) {
         if (!globalScope.ethers) {
@@ -196,98 +223,33 @@
             throw new Error('Missing required parameters: walletAddress, chainId, or parcelContractAddress');
         }
 
-        const provider = await getProviderForChain(chainId);
-        const { Contract, getAddress } = globalScope.ethers;
-        const normalizedAddress = getAddress(parcelContractAddress);
-        const contract = new Contract(normalizedAddress, PARCEL_NFT_ABI, provider);
-
-        try {
-            // Get all token IDs owned by the address
-            const tokenIds = await contract.getTokensByOwner(walletAddress);
-
-            if (!tokenIds || tokenIds.length === 0) {
-                return [];
-            }
-
-            // Fetch parcel details for each token
-            const parcels = await Promise.all(
-                tokenIds.map(async (tokenId) => {
-                    try {
-                        const parcel = await contract.getParcelByToken(tokenId);
-                        return {
-                            tokenId: tokenId.toString(),
-                            parcelId: parcel.parcelId,
-                            metadataURI: parcel.metadataURI
-                        };
-                    } catch (error) {
-                        console.warn(`Failed to fetch parcel details for token ${tokenId}:`, error);
-                        // Fallback: try to get parcelId directly
-                        try {
-                            const parcelId = await contract.parcelIdForTokenId(tokenId);
-                            return {
-                                tokenId: tokenId.toString(),
-                                parcelId: parcelId,
-                                metadataURI: null
-                            };
-                        } catch (err) {
-                            return {
-                                tokenId: tokenId.toString(),
-                                parcelId: null,
-                                metadataURI: null,
-                                error: err.message
-                            };
-                        }
-                    }
-                })
-            );
-
-            return parcels.filter(p => p.parcelId); // Filter out any that failed
-        } catch (error) {
-            console.error('Error fetching parcels from chain:', error);
-            throw error;
-        }
+        const contract = anchorContract(await getProviderForChain(chainId), parcelContractAddress);
+        const total = Number(await contract.countBy(walletAddress));
+        const anchors = await readAnchorPages(total, (offset, limit) => contract.anchoredBy(walletAddress, offset, limit));
+        return anchors.map(anchor => ({
+            tokenId: anchorKeyOf(anchor.parcelId),
+            parcelId: anchor.parcelId,
+            metadataURI: anchor.metadataURI || null
+        }));
     }
 
     async function getTotalMintedParcels(chainId, parcelContractAddress) {
         if (!globalScope.ethers) throw new Error('Ethers library not available');
-        const provider = await getProviderForChain(chainId);
-        const { Contract, getAddress } = globalScope.ethers;
-        const contract = new Contract(getAddress(parcelContractAddress), PARCEL_NFT_ABI, provider);
-        const total = await contract.totalSupply();
-        return Number(total);
+        const contract = anchorContract(await getProviderForChain(chainId), parcelContractAddress);
+        return Number(await contract.count());
     }
 
     async function getAllMintedParcelIds(chainId, parcelContractAddress, options = {}) {
         if (!globalScope.ethers) throw new Error('Ethers library not available');
-        const provider = await getProviderForChain(chainId);
-        const { Contract, getAddress } = globalScope.ethers;
-        const contract = new Contract(getAddress(parcelContractAddress), PARCEL_NFT_ABI, provider);
-        const total = Number(await contract.totalSupply());
-        if (total === 0) return [];
-
-        const batchSize = options.batchSize || 20;
-        const parcelIds = [];
-        for (let i = 0; i < total; i += batchSize) {
-            const end = Math.min(i + batchSize, total);
-            const batch = [];
-            for (let j = i; j < end; j++) {
-                batch.push(
-                    contract.tokenByIndex(j)
-                        .then(tokenId => contract.parcelIdForTokenId(tokenId))
-                        .catch(() => null)
-                );
-            }
-            const results = await Promise.all(batch);
-            results.forEach(id => { if (id) parcelIds.push(id); });
-            if (typeof options.onProgress === 'function') {
-                options.onProgress(Math.min(end, total), total);
-            }
-        }
-        return parcelIds;
+        const contract = anchorContract(await getProviderForChain(chainId), parcelContractAddress);
+        const total = Number(await contract.count());
+        const anchors = await readAnchorPages(total, (offset, limit) => contract.anchors(offset, limit), options.onProgress);
+        return anchors.map(anchor => anchor.parcelId).filter(Boolean);
     }
 
     // Export functions
     globalScope.ChainDataLoader = {
+        PARCEL_ANCHOR_ABI,
         getParcelsFromChain,
         getTotalMintedParcels,
         getAllMintedParcelIds,

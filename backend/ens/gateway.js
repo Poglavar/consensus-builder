@@ -2,7 +2,9 @@
 // Decodes an offchain-resolver query for <slug>.parcels.urbangametheory.eth,
 // builds the requested record (addr / text) from a parcel_ens row, and returns
 // a signed response that the L1 OffchainResolver verifies against a trusted
-// signer. Pure logic only — DB lookup and ownerOf live in routes/ens.js.
+// signer. Pure logic only — the DB lookup lives in routes/ens.js. A parcel's anchor
+// (ParcelAnchor) has no owner, so a parcel name's addr is the zero address; only the
+// apex resolves to an address, the ParcelAnchor contract.
 
 import {
     AbiCoder,
@@ -96,12 +98,12 @@ function buildTextValue(key, { record, config, isApex }) {
 }
 
 // Compute the ABI-encoded answer for the inner resolver query.
-// `owner` is the address the addr() records resolve to (parcel owner, the
-// ParcelNFT contract for the apex, or the zero address when unknown).
-function buildResult(innerData, { record, label, owner, config, isApex, buildText = buildTextValue }) {
+// `address` is what the addr() records resolve to: the ParcelAnchor contract
+// for the apex, else the zero address.
+function buildResult(innerData, { record, label, address, config, isApex, buildText = buildTextValue }) {
     const selector = innerData.slice(0, 10).toLowerCase();
     const body = '0x' + innerData.slice(10);
-    const addr = owner ? getAddress(owner) : ZeroAddress;
+    const addr = address ? getAddress(address) : ZeroAddress;
 
     if (selector === SELECTOR.TEXT) {
         const [, key] = abi.decode(['bytes32', 'string'], body);
@@ -136,8 +138,7 @@ function makeSignatureHash(sender, expires, request, result) {
 //                 (optional; falls back to a single parcels namespace from config
 //                 + lookupSlug for backward compatibility)
 //   lookupSlug  — async (slug) => parcel_ens row | null   (default-namespace lookup)
-//   resolveOwner— async (record, namespace) => 0x-address | null   (best-effort ownerOf)
-async function resolveQuery({ sender, callData, namespaces, lookupSlug, resolveOwner, config }) {
+async function resolveQuery({ sender, callData, namespaces, lookupSlug, config }) {
     const selector = callData.slice(0, 10).toLowerCase();
     if (selector !== SELECTOR.RESOLVE) {
         throw new Error(`Unexpected wrapper selector ${selector}`);
@@ -163,14 +164,10 @@ async function resolveQuery({ sender, callData, namespaces, lookupSlug, resolveO
     }
 
     const isApex = slug === null;
-    let record = null;
-    let owner = isApex ? (matched.apexAddress || null) : null; // apex → contract address
-    if (slug) {
-        record = matched.lookup ? await matched.lookup(slug) : null;
-        owner = (record && typeof resolveOwner === 'function') ? await resolveOwner(record, matched) : null;
-    }
+    const record = slug && matched.lookup ? await matched.lookup(slug) : null;
+    const address = isApex ? (matched.apexAddress || null) : null; // apex → contract address
 
-    const result = buildResult(innerData, { record, label: slug, owner, config, isApex, buildText: matched.buildText });
+    const result = buildResult(innerData, { record, label: slug, address, config, isApex, buildText: matched.buildText });
     const expires = BigInt(config.now()) + BigInt(config.ttlSeconds);
     const hash = makeSignatureHash(sender, expires, callData, result);
     const signature = new SigningKey(config.signingKey).sign(hash).serialized;

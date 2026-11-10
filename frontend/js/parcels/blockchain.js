@@ -1,7 +1,7 @@
 (function (global) {
     'use strict';
 
-    // Public, keyless RPC defaults so read-only checks (parcel NFT status, lens) work without any
+    // Public, keyless RPC defaults so read-only checks (parcel anchor status, lens) work without any
     // configuration. Same endpoints as chain-data-loader.js; a provider set in .env as
     // EVM_BROWSER_RPC_URL_<chainId> reaches the page as EVM_RPC_URLS (generated rpc-config.js) and wins.
     const PARCEL_CLAIM_RPC_FALLBACKS = {
@@ -216,7 +216,7 @@
             try {
                 return ethersLib.getAddress(trimmed);
             } catch (error) {
-                console.warn('Invalid ParcelNFT address encountered:', trimmed, error);
+                console.warn('Invalid ParcelAnchor address encountered:', trimmed, error);
                 return null;
             }
         }
@@ -301,7 +301,8 @@
         return null;
     }
 
-    async function resolveParcelNftAddress(chainIdInput) {
+    // The EVM ParcelAnchor contract of a chain (ownerless parcel anchors, docs/blockchain-flows.md).
+    async function resolveParcelAnchorAddress(chainIdInput) {
         const normalized = normalizeChainIdValue(chainIdInput);
         if (!normalized) return null;
         const globalScope = typeof window !== 'undefined' ? window : (typeof self !== 'undefined' ? self : null);
@@ -310,39 +311,32 @@
             const resp = await fetch('/contracts/addresses.json');
             if (resp && resp.ok) {
                 const data = await resp.json();
-                const address = data && data[normalized] && data[normalized].ParcelNFT;
+                const address = data && data[normalized] && data[normalized].ParcelAnchor;
                 if (typeof address === 'string' && address.trim()) {
                     return address.trim();
                 }
             }
         } catch (err) {
-            console.warn('Failed to resolve ParcelNFT from addresses.json:', err);
+            console.warn('Failed to resolve ParcelAnchor from addresses.json:', err);
         }
         if (globalScope.ContractsLoader && typeof globalScope.ContractsLoader.getContractAddress === 'function') {
             try {
-                const loaderAddress = await globalScope.ContractsLoader.getContractAddress(normalized, 'ParcelNFT');
+                const loaderAddress = await globalScope.ContractsLoader.getContractAddress(normalized, 'ParcelAnchor');
                 if (loaderAddress) {
                     return loaderAddress;
                 }
             } catch (error) {
-                console.warn('Failed to load ParcelNFT address from ContractsLoader:', error);
+                console.warn('Failed to load ParcelAnchor address from ContractsLoader:', error);
             }
         }
-        const directSources = [
-            globalScope.PARCEL_NFT_ADDRESS,
-            globalScope.parcelNftAddress,
-            globalScope.envParcelNftAddress,
-            globalScope.CONSENSUS_PARCEL_NFT_ADDRESS
-        ];
-        for (const source of directSources) {
-            if (typeof source === 'string' && source.trim()) {
-                return source.trim();
-            }
+        const direct = globalScope.PARCEL_ANCHOR_ADDRESS;
+        if (typeof direct === 'string' && direct.trim()) {
+            return direct.trim();
         }
         const variants = chainKeyVariants(normalized);
         const objectSources = [
-            globalScope.CONSENSUS_CONTRACTS && globalScope.CONSENSUS_CONTRACTS.parcelNFT,
-            globalScope.consensusContracts && globalScope.consensusContracts.parcelNFT
+            globalScope.CONSENSUS_CONTRACTS && globalScope.CONSENSUS_CONTRACTS.parcelAnchor,
+            globalScope.consensusContracts && globalScope.consensusContracts.parcelAnchor
         ];
         for (const candidate of objectSources) {
             if (!candidate) continue;
@@ -360,16 +354,13 @@
         }
         try {
             if (globalScope.PersistentStorage && typeof globalScope.PersistentStorage.getItem === 'function') {
-                const storageKeys = ['parcel_nft_address', 'parcelNFTAddress', 'parcelNftAddress'];
-                for (const key of storageKeys) {
-                    const stored = globalScope.PersistentStorage.getItem(key);
-                    if (typeof stored === 'string' && stored.trim()) {
-                        return stored.trim();
-                    }
+                const stored = globalScope.PersistentStorage.getItem('parcel_anchor_address');
+                if (typeof stored === 'string' && stored.trim()) {
+                    return stored.trim();
                 }
             }
         } catch (error) {
-            console.warn('Failed to load ParcelNFT address from persistent storage', error);
+            console.warn('Failed to load ParcelAnchor address from persistent storage', error);
         }
         return null;
     }
@@ -439,7 +430,7 @@
         }
 
         for (const candidate of candidates) {
-            const resolvedAddress = await resolveParcelNftAddress(candidate.chainId);
+            const resolvedAddress = await resolveParcelAnchorAddress(candidate.chainId);
             if (!resolvedAddress) {
                 continue;
             }
@@ -449,7 +440,7 @@
                     const browserProvider = new globalScope.ethers.BrowserProvider(candidate.provider);
                     const network = await browserProvider.getNetwork();
                     const networkChainId = network && network.chainId ? normalizeChainIdValue(network.chainId) : candidate.chainId;
-                    const addressForNetwork = await resolveParcelNftAddress(networkChainId);
+                    const addressForNetwork = await resolveParcelAnchorAddress(networkChainId);
                     const normalizedAddress = normalizeContractAddress(addressForNetwork || resolvedAddress, globalScope.ethers);
                     if (!normalizedAddress) {
                         continue;
@@ -519,28 +510,7 @@
             };
         }
 
-        throw new Error('ParcelNFT contract configuration or RPC connectivity is unavailable for parcel claims.');
-    }
-
-    function isParcelTokenMissingError(error) {
-        if (!error) return false;
-        const candidates = [
-            typeof error.shortMessage === 'string' ? error.shortMessage : null,
-            typeof error.message === 'string' ? error.message : null,
-            typeof error.reason === 'string' ? error.reason : null,
-            typeof error.data === 'string' ? error.data : null,
-            typeof error.data?.message === 'string' ? error.data.message : null,
-            typeof error?.info?.error?.message === 'string' ? error.info.error.message : null,
-            typeof error?.info?.error?.data?.message === 'string' ? error.info.error.data.message : null,
-            typeof error?.error?.message === 'string' ? error.error.message : null,
-            typeof error?.error?.data?.message === 'string' ? error.error.data.message : null,
-            typeof error?.data?.originalError?.message === 'string' ? error.data.originalError.message : null,
-            typeof error?.error?.data?.originalError?.message === 'string' ? error.error.data.originalError.message : null,
-            typeof error?.data?.originalError?.data === 'string' ? error.data.originalError.data : null,
-            typeof error?.error?.data?.originalError?.data === 'string' ? error.error.data.originalError.data : null
-        ].filter(Boolean);
-        if (candidates.length === 0) return false;
-        return candidates.some(msg => msg.toLowerCase().includes('parcel does not exist'));
+        throw new Error('ParcelAnchor contract configuration or RPC connectivity is unavailable for parcel claims.');
     }
 
     function buildClaimUrl({ baseUrl, chainSlug, contractAddress, tokenId, parcelName }) {
@@ -569,8 +539,7 @@
     global.normalizeContractAddress = normalizeContractAddress;
     global.deriveParcelIdentifier = deriveParcelIdentifier;
     global.deriveParcelDisplayName = deriveParcelDisplayName;
-    global.resolveParcelNftAddress = resolveParcelNftAddress;
+    global.resolveParcelAnchorAddress = resolveParcelAnchorAddress;
     global.resolveParcelClaimContext = resolveParcelClaimContext;
-    global.isParcelTokenMissingError = isParcelTokenMissingError;
     global.buildClaimUrl = buildClaimUrl;
 })(typeof window !== 'undefined' ? window : globalThis);

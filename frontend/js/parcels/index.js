@@ -81,9 +81,8 @@
             normalizeContractAddress: global.normalizeContractAddress,
             deriveParcelIdentifier: global.deriveParcelIdentifier,
             deriveParcelDisplayName: global.deriveParcelDisplayName,
-            resolveParcelNftAddress: global.resolveParcelNftAddress,
+            resolveParcelAnchorAddress: global.resolveParcelAnchorAddress,
             resolveParcelClaimContext: global.resolveParcelClaimContext,
-            isParcelTokenMissingError: global.isParcelTokenMissingError,
             buildClaimUrl: global.buildClaimUrl
         },
         ownership: {

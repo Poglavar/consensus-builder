@@ -32,7 +32,7 @@ function harness() {
             AgentWalletScope: walletScope,
             walletManager: { getState: () => walletState, getProvider: () => ({}) },
             ChainDataLoader: {
-                resolveContractAddress: async (_chain, name) => name === 'ParcelNFT' ? 'parcel-contract' : null,
+                resolveContractAddress: async (_chain, name) => name === 'ParcelAnchor' ? 'parcel-contract' : null,
                 getParcelsFromChain: fetchParcels
             },
             ethers: {}

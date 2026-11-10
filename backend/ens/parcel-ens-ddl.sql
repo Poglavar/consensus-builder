@@ -13,7 +13,7 @@ CREATE TABLE IF NOT EXISTS parcel_ens (
     lat         DOUBLE PRECISION,         -- parcel centroid latitude (WGS84)
     lon         DOUBLE PRECISION,         -- parcel centroid longitude (WGS84)
     area_m2     DOUBLE PRECISION,         -- parcel area in square metres
-    token_id    NUMERIC,                  -- ParcelNFT tokenId = uint256(keccak256(parcelId))
+    token_id    NUMERIC,                  -- uint256(keccak256(parcelId)): the ParcelAnchor key (keyOf)
     image_url   TEXT,                     -- parcel image (avatar record)
 
     created_at  TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,

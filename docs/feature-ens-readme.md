@@ -24,8 +24,7 @@ flowchart LR
     root["urbangametheory.eth<br/>(owned on mainnet)"]:::root
     root --> P["parcels.urbangametheory.eth<br/>wildcard → gateway"]:::wild
     root --> Q["proposals.urbangametheory.eth<br/>wildcard → gateway"]:::wild
-    root --> PN["parcels-nft.urbangametheory.eth<br/>on-chain → ParcelNFT"]:::onchain
-    root --> QN["proposals-nft.urbangametheory.eth<br/>on-chain → ProposalNFT"]:::onchain
+    root --> PN["parcels-nft.urbangametheory.eth<br/>on-chain → ParcelAnchor"]:::onchain
     P --> p1["us-ny-1234.parcels…<br/>→ /parcel/US-NY-1234"]:::leaf
     Q --> q1["bafkrei….proposals…<br/>→ /agreements/… or /designs/…"]:::leaf
 
@@ -41,16 +40,16 @@ flowchart LR
 |---|---|---|
 | `<slug>.parcels.urbangametheory.eth` | `/parcel/<parcelId>`, which opens and zooms the parcel | wildcard gateway |
 | `<cid>.proposals.urbangametheory.eth` | `/agreements/<cid>` for a published agreement, else `/designs/<cid>` | wildcard gateway |
-| `parcels.urbangametheory.eth` | the ParcelNFT contract address and a description | on-chain apex record |
-| `proposals.urbangametheory.eth` | the ProposalNFT contract address and a description | on-chain apex record |
-| `parcels-nft.urbangametheory.eth` | the ParcelNFT contract address | ENS public resolver |
-| `proposals-nft.urbangametheory.eth` | the ProposalNFT contract address | ENS public resolver |
+| `parcels.urbangametheory.eth` | the ParcelAnchor contract address and a description | on-chain apex record |
+| `proposals.urbangametheory.eth` | a url; no contract address | on-chain apex record |
+| `parcels-nft.urbangametheory.eth` | the ParcelAnchor contract address | ENS public resolver |
 
 A parcel name also carries `text` records `url` (the deep link), `description` (for example
 "Parcel US-NY-1234 in New York") and, where available, `geo` and `avatar`. A CID name carries
 `url`, `description` (the record's title) and `avatar` (its screenshot). Any other proposals label,
-such as a numeric id or a local draft, names nothing. `addr` records are optional and parcel-only
-(see Open work).
+such as a numeric id or a local draft, names nothing. A parcel name's `addr` is the zero address:
+its anchor on `ParcelAnchor` has no owner, and ownership reaches the chain only as a lens
+attestation ([blockchain-flows.md](blockchain-flows.md)). CID names have no `addr` either.
 
 ## Key concepts
 
@@ -160,14 +159,17 @@ The resolver's `url()` is the gateway, `https://api.urbangametheory.xyz/ens/{sen
 (`blockchain/scripts/ens-set-subname-resolvers.mjs`, signed by the name owner), so one contract and
 one gateway serve both namespaces. For the apex names the resolver returns records stored on-chain
 (`blockchain/scripts/ens-set-apex-records.mjs`, signed by the resolver owner):
-`parcels.urbangametheory.eth` → ParcelNFT `0x191Bb541…35d` and `proposals.urbangametheory.eth` →
-ProposalNFT `0x6c3AdE19…3709`, each with a description. The apex `addr` records are set under both
-the ETH coinType (60) and the ENSIP-11 coinType for Base Sepolia (`0x80014A34`), where the contracts
-live. Children with no on-chain record fall through to the gateway.
+`parcels.urbangametheory.eth` → ParcelAnchor on Base Sepolia
+`0x6785a94694af9455C42F49849027736ABdd1aE2D`, with a description (the Sepolia deployment is
+`0xADBd81f91A661a9313e1bcb278e8bf4CD68c6C99`). The apex `addr` records are set under both the ETH
+coinType (60) and the ENSIP-11 coinType for Base Sepolia (`0x80014A34`), where the contract lives.
+`proposals.urbangametheory.eth` names no contract. Children with no on-chain record fall through to
+the gateway.
 
-`parcels-nft.urbangametheory.eth` and `proposals-nft.urbangametheory.eth` are plain names on the
-ENS public resolver (`blockchain/scripts/ens-set-contract-names.mjs`, coinType 60 only); the apex
-records make them redundant. The superseded gateway-only resolver `0x874a520C…572F` is unused.
+`parcels-nft.urbangametheory.eth` is a plain name on the ENS public resolver
+(`blockchain/scripts/ens-set-contract-names.mjs`, coinType 60 only) pointing at the same
+ParcelAnchor; the apex record makes it redundant. The superseded gateway-only resolver
+`0x874a520C…572F` is unused.
 
 The resolver is deployed with `npm run deploy -- --network mainnet --tags OffchainResolver` from
 `blockchain/` (`deploy/05-deploy-offchain-resolver.ts`). hardhat-deploy's ethers v5 internals fail
@@ -185,14 +187,13 @@ ENS_PARENT_NAME=parcels.urbangametheory.eth            # default
 ENS_PROPOSALS_PARENT_NAME=proposals.urbangametheory.eth # default
 ENS_PUBLIC_BASE_URL=https://urbangametheory.xyz        # default; http://localhost:8080 in local dev. Builds the url records.
 # ENS_TTL_SECONDS=300
-# Optional parcel addr (ownerOf); leave unset until the ParcelNFT chain is confirmed:
-# ENS_ADDR_RPC_URL=...
-# ENS_PARCEL_NFT_ADDRESS=0x...
+# The parcels apex addr (the ParcelAnchor contract); parcel names answer the zero address:
+# ENS_PARCEL_ANCHOR_ADDRESS=0x...
 ```
 
 The resolver deploy reads `ENS_GATEWAY_URL` and `ENS_SIGNER_ADDRESS` from `blockchain/.env`; the
 name scripts read `ENS_OWNER_PRIVATE_KEY`, `ENS_RESOLVER_ADDRESS`, `ENS_SUBNAME_LABELS`,
-`ENS_PUBLIC_RESOLVER` and `MAINNET_RPC_URL`.
+`ENS_PUBLIC_RESOLVER`, `PARCEL_ANCHOR_ADDR` and `MAINNET_RPC_URL`.
 
 `parcel_ens` is applied by hand with psql, like the other `*-ddl.sql` files; there is no
 auto-apply step. Locally the host's port 5432 may tunnel to prod, so go through the container:
@@ -217,8 +218,6 @@ reachable, and `ENS_PARENT_NAME` must match the on-chain parent.
 
 ## Open work
 
-- `addr` (ownerOf) records on parcel names: set `ENS_ADDR_RPC_URL` and `ENS_PARCEL_NFT_ADDRESS` once
-  the ParcelNFT chain is confirmed. Records have no token, so CID names never get one.
 - `parcel_ens` for cities other than New York: add an entry to `CITY_SOURCES` in
   `backend/ens/populate-parcel-ens.js` (Zagreb and the other prefixes are listed there as to do).
 - Optional Durin L2 subname NFTs, only if claimable or tradeable parcel names become a product goal.

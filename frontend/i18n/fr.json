@@ -4187,6 +4187,11 @@
             "publishedAs": "Publié sous :",
             "linkCopied": "Projet publié. Son lien a été copié.",
             "publishedTitle": "Projet publié",
+            "where": {
+                "title": "Publier où ?",
+                "server": "Publier via le serveur",
+                "chainHint": "Sur la chaîne, le contenu va sur IPFS et votre portefeuille frappe son enregistrement ; le serveur le reflète quand il répond."
+            },
             "copyByHand": "Le lien n’a pas pu être copié automatiquement. Copiez-le ici :",
             "linkLabel": "Lien vers le projet publié",
             "errors": {
@@ -5443,11 +5448,12 @@
         "totalWealth": "Total modélisé",
         "portfolioBasis": "Modèle foncier : USD {{pricePerSqmUsd}}/m², convertis au taux de USD {{usdPerEth}} par ETH.",
         "ownedParcels": "Parcelles associées ({{count}})",
+        "walletParcels": "Parcelles attribuées et ancrées ({{count}})",
         "proposalsCreated": "Projets créés ({{count}})",
         "localProposalUnavailable": "Enregistrement local du projet indisponible",
         "localProposalKey": "Identifiant local {{id}}",
         "localParcelsBasis": "Parcelles attribuées à cet agent dans le modèle local.",
-        "walletParcelsBasis": "Attributions du modèle local et NFT parcellaires observés dans le portefeuille connecté ; ils n’établissent pas de titre de propriété foncière enregistré.",
+        "walletParcelsBasis": "Attributions du modèle local et parcelles que le portefeuille connecté a ancrées sur la chaîne ; un ancrage n’a pas de propriétaire, et rien de cela n’établit de titre de propriété foncière enregistré.",
         "agentLog": "Journal de l’agent",
         "parcelLabel": "Parcelle {{number}}",
         "proposalCount": {
@@ -9069,6 +9075,36 @@
         "castShare": "Répartition des votes exprimés",
         "refreshResults": "Actualiser les résultats"
     },
+    "mint": {
+        "intro": "Les étapes s’exécutent dans l’ordre. Une signature refusée ou une passerelle lente peuvent être retentées ; ce qui est fait reste fait.",
+        "steps": {
+            "retrievable": "Contenu récupérable depuis IPFS : {{label}}",
+            "anchors": "Parcelles d’entrée ancrées",
+            "record": "Enregistrement ({{kind}}) frappé sur {{chain}}"
+        },
+        "status": {
+            "checking": "Vérification des passerelles publiques…",
+            "pinningServer": "Épinglage via le serveur…",
+            "pinningPinata": "Épinglage avec votre propre clé…",
+            "waiting": "Épinglé via {{courier}} ; en attente d’une passerelle publique ({{attempt}}/{{total}})…",
+            "retrievable": "Servi par {{gateway}}",
+            "noCourier": "Rien n’a pu l’épingler : le serveur ne l’a pas accepté et aucune clé d’épinglage n’est définie. Téléchargez les octets et épinglez-les où vous voulez, ou ajoutez une clé Pinata, puis réessayez.",
+            "notRetrievable": "Épinglé, mais aucune passerelle publique ne le sert encore. Réessayez dans un instant.",
+            "anchorsAll": "Les {{count}} parcelles sont ancrées.",
+            "anchorsMissing": "{{missing}} sur {{count}} non ancrées ; ancrage en {{batches}} transaction(s)…",
+            "anchorsProgress": "{{done}}/{{total}} ancrées",
+            "alreadyMinted": "Déjà frappé par {{minter}}.",
+            "minting": "En attente de la signature du portefeuille…",
+            "minted": "Frappé par {{minter}}."
+        },
+        "actions": {
+            "start": "Publier sur {{chain}}",
+            "download": "Télécharger les octets",
+            "pinataKey": "Utiliser votre propre clé d’épinglage"
+        },
+        "pinataPrompt": "Collez un JWT Pinata limité à l’épinglage. Il reste dans ce navigateur uniquement.",
+        "done": "Publié sur {{chain}}."
+    },
     "lists": {
         "title": "Listes",
         "plans": "Plans",
@@ -9095,7 +9131,10 @@
         "sourceIndex": "Index du serveur",
         "sourceChain": "Sur la chaîne (Solana {{cluster}})",
         "chainAgreement": "Accord {{cid}}",
-        "chainLoading": "Lecture des accords sur la chaîne…"
+        "chainLoading": "Lecture des accords sur la chaîne…",
+        "sourceChainEvm": "Sur la chaîne ({{chain}})",
+        "chainRecord": "Enregistrement {{cid}}",
+        "mintedOn": "Frappé sur {{chain}} par {{minter}}"
     },
   "appUpdates": {
     "title": "Mise à jour de l’application",

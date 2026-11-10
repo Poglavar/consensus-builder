@@ -1,5 +1,6 @@
-// The chain loaders' reads of parcel NFTs: the Solana program address per cluster and the parcels a
-// wallet holds on EVM and on Solana. Designs are not minted (plan-design-agreement.md, M3).
+// The chain loaders' parcel reads: the Solana program address per cluster, the parcels a wallet
+// anchored on EVM (ParcelAnchor, ownerless) and the parcel accounts it holds on Solana. Designs are
+// not minted (plan-design-agreement.md, M3).
 import { test, expect } from '../helpers/fixtures';
 import { waitForMapReady } from '../helpers/app';
 import {
@@ -56,7 +57,7 @@ test.describe('Chain data loaders @features', () => {
     expect(addresses.mainnetAliasParcel).toBeNull();
   });
 
-  test('ChainDataLoader.getParcelsFromChain returns parcel data and fallback parcel ids', async ({ mockApi: page }) => {
+  test('ChainDataLoader reads the parcels a wallet anchored and pages every anchor', async ({ mockApi: page }) => {
     await injectMockEvmWallet(page, {
       account: '0x1234567890abcdef1234567890abcdef12345678',
       chainIdHex: '0x7a69',
@@ -69,34 +70,45 @@ test.describe('Chain data loaders @features', () => {
     await waitForBlockchainRuntime(page, ['ChainDataLoader', 'ethers']);
     await stubEvmChainDataReads(page);
 
-    const parcels = await page.evaluate(async () => {
-      const loader = (window as typeof window & {
-        ChainDataLoader?: { getParcelsFromChain?: (walletAddress: string, chainId: string, contractAddress: string) => Promise<unknown> };
-      }).ChainDataLoader;
-
+    const reads = await page.evaluate(async () => {
+      const contract = '0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512';
+      const w = window as typeof window & {
+        __anchorPageCalls?: unknown[];
+        ChainDataLoader?: {
+          getParcelsFromChain?: (walletAddress: string, chainId: string, contractAddress: string) => Promise<unknown>;
+          getTotalMintedParcels?: (chainId: string, contractAddress: string) => Promise<number>;
+          getAllMintedParcelIds?: (chainId: string, contractAddress: string) => Promise<string[]>;
+        };
+      };
+      const loader = w.ChainDataLoader;
       if (!loader || typeof loader.getParcelsFromChain !== 'function') {
         throw new Error('ChainDataLoader.getParcelsFromChain is not available');
       }
 
-      return loader.getParcelsFromChain(
-        '0x1234567890abcdef1234567890abcdef12345678',
-        '31337',
-        '0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512'
-      );
+      const parcels = await loader.getParcelsFromChain('0x1234567890abcdef1234567890abcdef12345678', '31337', contract);
+      const total = await loader.getTotalMintedParcels!('31337', contract);
+      const allIds = await loader.getAllMintedParcelIds!('31337', contract);
+      return { parcels, total, allIds, pageCalls: w.__anchorPageCalls };
     });
 
-    expect(parcels).toEqual([
+    // tokenId is the anchor key, uint256(keccak256(parcelId)).
+    expect(reads.parcels).toEqual([
       {
-        tokenId: '1',
+        tokenId: '19350770297095790550223906069705959789076232857012598002208937639658530522144',
         parcelId: 'HR-335754-1234',
         metadataURI: 'ipfs://parcel-1234',
       },
       {
-        tokenId: '2',
+        tokenId: '103363224167337974859022471245194697249406235042456520813990736398944233172257',
         parcelId: 'HR-335754-1235',
         metadataURI: null,
       },
     ]);
+    expect(reads.total).toBe(201);
+    expect(reads.allIds).toHaveLength(201);
+    expect(reads.allIds.slice(0, 3)).toEqual(['HR-335754-1234', 'HR-335754-1235', 'HR-1-0']);
+    expect(reads.allIds[200]).toBe('HR-1-198');
+    expect(reads.pageCalls).toEqual([['anchoredBy', 0, 200], ['anchors', 0, 200], ['anchors', 200, 200]]);
   });
 
   test('SolanaChainDataLoader.getParcelsFromChain parses owned parcel accounts', async ({ mockApi: page }) => {

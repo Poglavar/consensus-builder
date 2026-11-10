@@ -1,5 +1,5 @@
 // Wallet and chain boundaries for the specs: injected EVM and Solana wallets, the connector modal,
-// the wallet vendors, Solana RPC reads, the Solana parcel-anchor mint and the EVM ParcelNFT reads.
+// the wallet vendors, Solana RPC reads, the Solana parcel-anchor mint and the EVM ParcelAnchor reads.
 // Designs are not minted (plan-design-agreement.md, M3), so nothing here stubs a proposal contract.
 import { expect, Page, Route } from '@playwright/test';
 import { selectors } from './selectors';
@@ -283,7 +283,11 @@ export async function stubSolanaParcelMint(page: Page, options: MockSolanaParcel
   }, options);
 }
 
-/** The EVM ParcelNFT reads (ChainDataLoader.getParcelsFromChain): token 1 reads whole, token 2 only by its parcel id. */
+/**
+ * The EVM ParcelAnchor reads (ChainDataLoader): the stub wallet anchored two parcels (the second
+ * without a metadata URI), and the contract holds 201 anchors in all, so `anchors` pages twice.
+ * Each page read is recorded in `window.__anchorPageCalls` as [method, offset, limit].
+ */
 export async function stubEvmChainDataReads(page: Page, options: MockEvmLoaderOptions = {}): Promise<void> {
   await walletVendorsLoaded(page);
   await page.evaluate((stubOptions: MockEvmLoaderOptions) => {
@@ -309,6 +313,17 @@ export async function stubEvmChainDataReads(page: Page, options: MockEvmLoaderOp
       }
     }
 
+    const walletAnchors = [
+      { parcelId: 'HR-335754-1234', metadataURI: 'ipfs://parcel-1234', anchoredAt: 1n, anchoredBy: 'wallet' },
+      { parcelId: 'HR-335754-1235', metadataURI: '', anchoredAt: 2n, anchoredBy: 'wallet' },
+    ];
+    const allAnchors = [
+      ...walletAnchors,
+      ...Array.from({ length: 199 }, (_, i) => ({ parcelId: `HR-1-${i}`, metadataURI: '', anchoredAt: 3n, anchoredBy: 'other' })),
+    ];
+    const pageCalls: Array<[string, number, number]> = [];
+    (globalWindow as typeof globalWindow & { __anchorPageCalls?: unknown }).__anchorPageCalls = pageCalls;
+
     class MockContract {
       address: string;
 
@@ -316,22 +331,26 @@ export async function stubEvmChainDataReads(page: Page, options: MockEvmLoaderOp
         this.address = address;
       }
 
-      async getTokensByOwner() {
-        return this.address.toLowerCase() === parcelContractAddress.toLowerCase() ? [1n, 2n] : [];
+      private known() {
+        return this.address.toLowerCase() === parcelContractAddress.toLowerCase();
       }
 
-      async getParcelByToken(tokenId: bigint) {
-        if (tokenId === 2n) {
-          throw new Error('missing parcel details');
-        }
-        return {
-          parcelId: 'HR-335754-1234',
-          metadataURI: 'ipfs://parcel-1234',
-        };
+      async countBy() {
+        return this.known() ? BigInt(walletAnchors.length) : 0n;
       }
 
-      async parcelIdForTokenId(tokenId: bigint) {
-        return tokenId === 2n ? 'HR-335754-1235' : 'HR-335754-1234';
+      async anchoredBy(_creator: string, offset: number, limit: number) {
+        pageCalls.push(['anchoredBy', Number(offset), Number(limit)]);
+        return this.known() ? walletAnchors.slice(Number(offset), Number(offset) + Number(limit)) : [];
+      }
+
+      async count() {
+        return this.known() ? BigInt(allAnchors.length) : 0n;
+      }
+
+      async anchors(offset: number, limit: number) {
+        pageCalls.push(['anchors', Number(offset), Number(limit)]);
+        return this.known() ? allAnchors.slice(Number(offset), Number(offset) + Number(limit)) : [];
       }
     }
 

@@ -4187,6 +4187,11 @@
             "publishedAs": "Publicado como:",
             "linkCopied": "Projeto publicado. A ligação foi copiada.",
             "publishedTitle": "Projeto publicado",
+            "where": {
+                "title": "Publicar onde?",
+                "server": "Publicar através do servidor",
+                "chainHint": "Na cadeia, o conteúdo vai para o IPFS e a sua carteira cunha o registo; o servidor espelha-o quando responde."
+            },
             "copyByHand": "Não foi possível copiar a ligação automaticamente. Copie-a aqui:",
             "linkLabel": "Ligação para o projeto publicado",
             "errors": {
@@ -5443,11 +5448,12 @@
         "totalWealth": "Total estimado pelo modelo",
         "portfolioBasis": "Modelo do terreno: USD {{pricePerSqmUsd}}/m², convertido à taxa de USD {{usdPerEth}} por ETH.",
         "ownedParcels": "Parcelas associadas ({{count}})",
+        "walletParcels": "Parcelas atribuídas e ancoradas ({{count}})",
         "proposalsCreated": "Projetos criados ({{count}})",
         "localProposalUnavailable": "Registo local do projeto indisponível",
         "localProposalKey": "ID local {{id}}",
         "localParcelsBasis": "Parcelas atribuídas a este agente no modelo local.",
-        "walletParcelsBasis": "Atribuições do modelo local e NFTs de parcelas observados na carteira ligada; estes não comprovam a propriedade registada do terreno.",
+        "walletParcelsBasis": "Atribuições do modelo local e parcelas que a carteira ligada ancorou na cadeia; uma âncora não tem proprietário, e nada disto comprova a propriedade registada do terreno.",
         "agentLog": "Registo do agente",
         "parcelLabel": "Parcela {{number}}",
         "proposalCount": {
@@ -9069,6 +9075,36 @@
         "castShare": "Proporção dos votos registrados",
         "refreshResults": "Atualizar resultados"
     },
+    "mint": {
+        "intro": "Os passos correm por ordem. Uma assinatura recusada ou um gateway lento podem ser repetidos; o que está feito fica feito.",
+        "steps": {
+            "retrievable": "Conteúdo recuperável do IPFS: {{label}}",
+            "anchors": "Parcelas de entrada ancoradas",
+            "record": "Registo ({{kind}}) cunhado em {{chain}}"
+        },
+        "status": {
+            "checking": "A verificar gateways públicos…",
+            "pinningServer": "A fixar através do servidor…",
+            "pinningPinata": "A fixar com a sua própria chave…",
+            "waiting": "Fixado via {{courier}}; à espera de um gateway público ({{attempt}}/{{total}})…",
+            "retrievable": "Servido por {{gateway}}",
+            "noCourier": "Nada conseguiu fixá-lo: o servidor não o aceitou e não há chave de fixação. Descarregue os bytes e fixe-os onde quiser, ou adicione uma chave Pinata, e tente de novo.",
+            "notRetrievable": "Fixado, mas nenhum gateway público o serve ainda. Tente de novo daqui a pouco.",
+            "anchorsAll": "As {{count}} parcelas estão ancoradas.",
+            "anchorsMissing": "{{missing}} de {{count}} por ancorar; a ancorar em {{batches}} transação(ões)…",
+            "anchorsProgress": "{{done}}/{{total}} ancoradas",
+            "alreadyMinted": "Já cunhado por {{minter}}.",
+            "minting": "À espera da assinatura da carteira…",
+            "minted": "Cunhado por {{minter}}."
+        },
+        "actions": {
+            "start": "Publicar em {{chain}}",
+            "download": "Descarregar bytes",
+            "pinataKey": "Usar a sua própria chave de fixação"
+        },
+        "pinataPrompt": "Cole um JWT Pinata limitado a fixação. Fica apenas neste navegador.",
+        "done": "Publicado em {{chain}}."
+    },
     "lists": {
         "title": "Listas",
         "plans": "Planos",
@@ -9095,7 +9131,10 @@
         "sourceIndex": "Índice do servidor",
         "sourceChain": "Na cadeia (Solana {{cluster}})",
         "chainAgreement": "Acordo {{cid}}",
-        "chainLoading": "A ler os acordos na cadeia…"
+        "chainLoading": "A ler os acordos na cadeia…",
+        "sourceChainEvm": "Na cadeia ({{chain}})",
+        "chainRecord": "Registo {{cid}}",
+        "mintedOn": "Cunhado em {{chain}} por {{minter}}"
     },
   "appUpdates": {
     "title": "Atualização da aplicação",

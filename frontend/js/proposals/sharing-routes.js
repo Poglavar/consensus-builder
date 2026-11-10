@@ -168,7 +168,23 @@ async function shareSingleProposal(proposalIdOrProposal) {
         return null;
     }
     try {
-        const { cid } = await window.DesignSync.publishDesign(proposal);
+        // With a wallet on a chain this app has contracts on, the chain is offered first
+        // (blockchain-flows.md, Flow 4); a design minted there is published, mirrored or not.
+        let cid = window.DesignSync.publishedCid(proposal);
+        if (!cid) {
+            // The name gate first (it shows its own explanation), then where to publish.
+            if (window.guestPolicyBlocks('publish')) return null;
+            const chain = await window.ChainPublish.adapter();
+            const where = chain ? await window.ChainPublish.choose(chain) : 'server';
+            if (!where) return null;
+            if (where === 'chain') {
+                const minted = await window.ChainPublish.design(proposal, chain);
+                if (!minted) return null;
+                cid = minted.cid;
+            } else {
+                cid = (await window.DesignSync.publishDesign(proposal)).cid;
+            }
+        }
         const link = window.DesignSync.designLink([cid], { city: proposal.city });
         console.info(`[${new Date().toISOString()}] [share] ${proposal.proposalId} → ${link}`);
         if (await window.DesignSync.copyLink(link)) {

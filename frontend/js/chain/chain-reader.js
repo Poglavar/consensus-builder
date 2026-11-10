@@ -111,7 +111,35 @@
             return { rows: designs, missing: missing.map(entry => entry.cid) };
         }
 
-        return { cluster, listAgreements, agreementOnchain, fetchAgreement, fetchPlan, fetchDesigns };
+        // The EVM chain records are listed from: the connected wallet's, else Base Sepolia.
+        const evm = () => win.EvmAdapter;
+        const evmChainId = () => (evm() ? evm().walletChainId() || evm().DEFAULT_CHAIN_ID : null);
+        const evmChainName = () => (evm() ? evm().chainName(evmChainId()) : null);
+
+        /**
+         * Every design or plan record on the EVM chain, newest first, as list rows: the CID, the
+         * chain time, `onchain` ({ family, chainId, minter, tokenUri, explorer }) and, when IPFS
+         * serves it, the content. Rows whose content no gateway serves keep content null.
+         */
+        async function listRecords(kind) {
+            const adapter = await evm().forChain(evmChainId());
+            if (!adapter) throw Object.assign(new Error(`${evmChainName()} has no record registry.`), { code: 'no-contracts' });
+            const records = await adapter.listRecords(kind);
+            const schema = kind === 'plan' ? win.PlanRecord.SCHEMA : win.DesignRecord.SCHEMA;
+            const { rows: contents, missing } = await ipfs().fetchObjects(records.map(record => record.cid), { schema });
+            if (missing.length) log(`${missing.length} of ${records.length} ${kind} record(s) have no retrievable content`);
+            return records.map(record => ({
+                cid: record.cid,
+                createdAt: record.createdAt,
+                content: contents.has(record.cid) ? contents.get(record.cid).content : null,
+                gateway: contents.has(record.cid) ? contents.get(record.cid).gateway : null,
+                onchain: { family: 'evm', chainId: record.chainId, chain: adapter.name, minter: record.minter, tokenUri: record.tokenUri,
+                    explorer: adapter.explorerUrl({ address: adapter.addresses.RecordRegistry }) },
+                source: 'chain'
+            }));
+        }
+
+        return { cluster, listAgreements, agreementOnchain, fetchAgreement, fetchPlan, fetchDesigns, evmChainId, evmChainName, listRecords };
     }
 
     return { withFallback, browser };
