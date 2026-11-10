@@ -78,11 +78,14 @@ describe('agreement execution by deadline LMSR recipe', () => {
         const route = routeFor(source, 200_000);
         const path = `/oracle/recipes/agreement-execution-by-deadline-v1?agreement=${source.account}`;
         expect((await request(route).get(path).expect(200)).body.observation.outcome).toBeNull();
+        // At exactly the deadline an execution still counts, so absence is not yet NO (strict grace).
         source.chainTime = 100; source.observedSlot++;
+        expect((await request(route).get(path).expect(200)).body.observation.outcome).toBeNull();
+        source.chainTime = 101; source.observedSlot++;
         expect((await request(route).get(path).expect(200)).body.observation.outcome).toBe('no');
     });
 
-    it('resolves timely execution YES, late execution NO, expiry NO, and cancellation VOID', async () => {
+    it('resolves timely execution YES, late execution NO, expiry NO, and cancellation NO', async () => {
         const source = fixture({ closesAt: 100, chainTime: 100, chainStatus: 'executed', executedAt: 100 });
         let currentTime = 100_000;
         const route = routeFor(source, () => currentTime);
@@ -93,7 +96,7 @@ describe('agreement execution by deadline LMSR recipe', () => {
         source.chainStatus = 'expired'; source.executedAt = null;
         expect((await request(route).get(path).expect(200)).body.observation.outcome).toBe('no');
         source.chainStatus = 'cancelled';
-        expect((await request(route).get(path).expect(200)).body.observation.outcome).toBe('void');
+        expect((await request(route).get(path).expect(200)).body.observation.outcome).toBe('no');
     });
 
     it('rejects unknown status, absent or invalid execution timestamps, and bad source identity', async () => {

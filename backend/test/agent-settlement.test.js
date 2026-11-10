@@ -117,7 +117,8 @@ describe('inspecting an agreement', () => {
         book.positions.set(executed.account, { amount: 1n, claimed: true });
         expect(await inspect(executed, { readers: book.readers })).toMatchObject({ state: 'closed', steps: [] });
         const cancelled = { ...placeAgreement('cancelled', { status: 'Cancelled' }), soleOwner: true };
-        expect(await inspect(cancelled)).toMatchObject({ state: 'closed', outcome: 'VOID', steps: [] });
+        // A sponsor's cancel settles its market NO, as expiry does.
+        expect(await inspect(cancelled)).toMatchObject({ state: 'closed', outcome: 'NO', steps: [] });
         expect(await inspect({ ...placeAgreement('strangers', { authority: Keypair.generate().publicKey.toBase58() }), soleOwner: true })).toMatchObject({ state: 'foreign', steps: [] });
         expect(await inspect({ cid: 'x', account: Keypair.generate().publicKey.toBase58() })).toMatchObject({ state: 'missing', steps: [] });
     });
