@@ -264,6 +264,15 @@ describe('minting and funding', () => {
         expect(result).toMatchObject({ account: agreementAccountOf(agreement.cid, AGENT), created: true, onchain: { account: agreementAccountOf(agreement.cid, AGENT) } });
     });
 
+    it('passes an agreement without a deadline on as null, for the minter to default to 90 days', async () => {
+        const agreement = agreementOf({ deadline: null });
+        const api = fakeApi({ agreements: [agreement] });
+        const mintAgreement = vi.fn(async ({ cid }) => mintResult(cid));
+        const tools = createUrbanGameTheoryTools({ env: LIVE, fetchImpl: api.fetchImpl, createConnection: () => ({}), dependencies: { mintAgreement, sendAndConfirmPolling: vi.fn() } });
+        await tools.mintAgreement({ agreementCid: agreement.cid, lamports: '0', confirm: true });
+        expect(mintAgreement.mock.calls[0][0].deadline).toBeNull();
+    });
+
     it('refuses to mint a poll, another sponsor\'s agreement, an own or plural lens, and a fractional amount', async () => {
         const rights = registryRights([{ parcelId: PARCEL, owners: [{ owner: AGENT, ownerCount: 1 }] }]);
         const cases = [

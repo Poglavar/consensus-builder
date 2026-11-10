@@ -315,7 +315,7 @@
         },
         "deadline": {
           "oneOf": [{ "type": "null" }, { "$ref": "#/$defs/instant" }],
-          "description": "Must lie ahead when the agreement is indexed. The decision must be recorded before it; after it, anyone may expire the account. null: no deadline."
+          "description": "Must lie ahead when the agreement is indexed. The decision must be recorded before it; after it, anyone may expire the account. null: none in the index; the account minted from it gets a deadline 90 days after the mint."
         }
       },
       "allOf": [{

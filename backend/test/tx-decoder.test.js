@@ -410,8 +410,11 @@ describe('decodeParsedTransaction: agreement instructions (built with the codec)
         expect(decoded.summary).toBe('agent densifier-01 called create on agreement');
     });
 
-    it('decodes a create with no deadline and no escrow as zeros', () => {
-        const { instruction } = AgreementClient.buildCreateIx({ authority: SPONSOR, cid: AGREEMENT_CID, lens: LENS, payout: SPONSOR });
+    it('decodes a legacy create with no deadline and no escrow as zeros', () => {
+        const { instruction } = AgreementClient.buildCreateIx({ authority: SPONSOR, cid: AGREEMENT_CID, lens: LENS, payout: SPONSOR, deadline: 1795000000 });
+        // The codec no longer builds deadline 0 (create requires one), but creates sent before still decode:
+        // zero the i64 after the discriminator (8), the cid (u32 length + bytes) and the lens (32).
+        instruction.data.fill(0, 8 + 4 + AGREEMENT_CID.length + 32, 8 + 4 + AGREEMENT_CID.length + 32 + 8);
         expect(decode(agreementTx(instruction)).instructions[0].args)
             .toMatchObject({ deadline: '0', open_ground: false, required_lamports: '0', payout: SPONSOR });
     });
@@ -453,7 +456,7 @@ describe('decodeParsedTransaction: agreement instructions (built with the codec)
     });
 
     it('reports a create cut short as undecodable args, never half of them', () => {
-        const { instruction } = AgreementClient.buildCreateIx({ authority: SPONSOR, cid: AGREEMENT_CID, lens: LENS, payout: TREASURY });
+        const { instruction } = AgreementClient.buildCreateIx({ authority: SPONSOR, cid: AGREEMENT_CID, lens: LENS, payout: TREASURY, deadline: 1795000000 });
         const tx = agreementTx(instruction);
         tx.transaction.message.instructions[0].data = encodeBase58(Buffer.from(instruction.data).subarray(0, 30));
         const ix = decode(tx).instructions[0];
@@ -733,7 +736,7 @@ describe('decodeParsedTransaction: hydrated @solana/web3.js shape', () => {
     });
 
     it('still matches our anchor IDLs when the program id is a PublicKey', () => {
-        const { instruction } = AgreementClient.buildCreateIx({ authority: SPONSOR, cid: AGREEMENT_CID, lens: LENS, payout: TREASURY });
+        const { instruction } = AgreementClient.buildCreateIx({ authority: SPONSOR, cid: AGREEMENT_CID, lens: LENS, payout: TREASURY, deadline: 1795000000 });
         const raw = decode(agreementTx(instruction));
         const hydrated = decode(hydrate(agreementTx(instruction)));
 

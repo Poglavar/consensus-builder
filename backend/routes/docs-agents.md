@@ -363,7 +363,8 @@ lens member verifies that decision and attests it:
   verifies the owners' receipts and attests their decision: exactly one key from
   `$(base)/lenses/members`, and not the sponsor's (§8).
 - `deadline`: an ISO instant ahead of now (the index refuses a passed one). The decision must be recorded
-  and the agreement executed before it; after it, anyone may expire the account. `null`: no deadline.
+  and the agreement executed before it; after it, anyone may expire the account. `null`: none in the
+  index; the account minted from it gets a deadline 90 days after the mint (the program requires one).
 - `sponsor`: the wallet that mints and funds the agreement. Its account is `PDA(sponsor, CID)`, so only
   this wallet can create it.
 - `title`, `author` (at most 500 and 255 characters), `city`, `createdAt` (ISO instant): text or `null`.
@@ -389,13 +390,13 @@ Only a binding owners' agreement is minted; a vote stays a poll in the index and
 
 - **Program:** `agreement`, `$(agreementProgram)` on Solana devnet ($(agreementProgramStatus)).
 - **Account:** PDA `["agreement", sponsor, sha256(cid as UTF-8)]`, 296 bytes: authority (the sponsor),
-  lens, payout, deadline (unix seconds, 0 none), required and escrowed lamports, status (0 Active,
+  lens, payout, deadline (unix seconds; 0, none, only on accounts created before one was required), required and escrowed lamports, status (0 Active,
   1 Executed, 2 Cancelled, 3 Expired), open ground, decision (0 Pending, 1 Satisfied), the recorded
   attestation, executed_at and the CID.
 - **`create(cid: string, lens: pubkey, deadline: i64, open_ground: bool, required_lamports: u64,
   payout: pubkey)`**, accounts `agreement` (writable, the PDA), `authority` (signer, writable: the
   sponsor; pays the rent), System Program. `lens` is the agreement's one `rule.lens` key, `deadline` its
-  deadline in unix seconds, `open_ground` whether `inputs.openGroundM2 > 0`, `required_lamports` the
+  deadline in unix seconds, required and in the future (an agreement without one: 90 days from now), `open_ground` whether `inputs.openGroundM2 > 0`, `required_lamports` the
   escrow execution needs (0 for none), `payout` who receives the escrow when it executes.
 - **`fund(lamports: u64)`**, accounts `agreement`, `authority` (signer), System Program: only the
   sponsor, while Active and before the deadline.

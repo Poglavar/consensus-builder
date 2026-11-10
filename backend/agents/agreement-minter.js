@@ -71,17 +71,22 @@ export async function creationSignature(connection, account) {
 /**
  * Create the agreement account (if missing) and fund its escrow up to `lamports`, in one transaction.
  * `create(cid, lens, deadline, open_ground, required_lamports = lamports, payout)`; `fund` brings the
- * escrow to `lamports` (nothing when it already holds that much, nothing at all for 0). An existing
- * account must carry the same lens, deadline and required lamports, or nothing is signed.
+ * escrow to `lamports` (nothing when it already holds that much, nothing at all for 0). The program
+ * requires a deadline in the future: a missing one becomes nowSeconds + DEFAULT_DEADLINE_SECONDS (90 days),
+ * and a create with a deadline at or before nowSeconds is refused before anything is signed. An existing
+ * account must carry the same lens and required lamports, and the same deadline when the caller named one
+ * (a defaulted deadline moves with the clock, so a rerun could never match it), or nothing is signed.
  * @param {{ connection, sponsorKeypair, cid: string, lens: string, deadline: string|null, lamports?: bigint|string|number,
- *           payout?: string|null, openGround?: boolean, programId?: string, sendAndConfirm?: Function }} options
- *   payout defaults to the sponsor (the escrow returns to it at execution)
+ *           payout?: string|null, openGround?: boolean, programId?: string, nowSeconds?: number,
+ *           sendAndConfirm?: Function }} options
+ *   payout defaults to the sponsor (the escrow returns to it at execution); nowSeconds defaults to the
+ *   local clock
  * @returns {Promise<{ account, programId, signature: string|null, createSignature: string, created: boolean,
  *   fundedLamports: string, requiredLamports: string, escrowLamports: string, status: string }>}
  */
 export async function mintAgreement({
     connection, sponsorKeypair, cid, lens, deadline = null, lamports = 0n, payout = null, openGround = false,
-    programId = AGREEMENT_PROGRAM_ID, sendAndConfirm = web3.sendAndConfirmTransaction
+    programId = AGREEMENT_PROGRAM_ID, nowSeconds = Math.floor(Date.now() / 1000), sendAndConfirm = web3.sendAndConfirmTransaction
 } = {}) {
     if (!connection?.getAccountInfo) throw new Error('a solana connection is required');
     if (!sponsorKeypair?.publicKey) throw new Error('sponsorKeypair is required');
@@ -90,20 +95,24 @@ export async function mintAgreement({
     const lensKey = keyText(lens);
     if (lensKey === sponsor.toBase58()) throw new Error(`the lens is the sponsor's own key ${lensKey}: a sponsor cannot attest its own agreement`);
     const required = toLamports(lamports);
-    const deadlineSeconds = agreementClient.toDeadlineSeconds(deadline);
+    const explicitDeadline = deadline !== null && deadline !== undefined && deadline !== '';
+    const deadlineSeconds = agreementClient.toDeadlineSeconds(deadline, nowSeconds);
     const account = agreementAccountOf(cid, sponsor, programId);
 
     const existing = await readAgreementAccount(connection, { cid, sponsor: sponsor.toBase58(), programId });
     if (existing) {
         const differs = [
             existing.lens !== lensKey ? `lens ${existing.lens}` : null,
-            existing.deadline !== deadlineSeconds ? `deadline ${existing.deadline}` : null,
+            explicitDeadline && existing.deadline !== deadlineSeconds ? `deadline ${existing.deadline}` : null,
             existing.requiredLamports !== required ? `required lamports ${existing.requiredLamports}` : null
         ].filter(Boolean);
         if (differs.length) throw new Error(`agreement account ${account} exists with other terms (${differs.join(', ')}); nothing signed`);
     }
     const instructions = [];
     if (!existing) {
+        if (deadlineSeconds <= nowSeconds) {
+            throw new Error(`agreement ${cid} has a deadline (${new Date(deadlineSeconds * 1000).toISOString()}) that is not in the future; nothing signed`);
+        }
         instructions.push(agreementClient.buildCreateIx({
             authority: sponsor, programId, cid, lens: lensKey, deadline: deadlineSeconds, openGround: Boolean(openGround),
             requiredLamports: required, payout: payout ? keyText(payout) : sponsor

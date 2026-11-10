@@ -213,7 +213,8 @@ export function createAgreementChain({ now = systemNow } = {}) {
             const [pda, bump] = agreementClient.getAgreementPda(cid, authority, AGREEMENT_PROGRAM_ID);
             if (pda.toBase58() !== address) throw programError('ConstraintSeeds', 'the agreement is not PDA(authority, cid)');
             if (accounts.has(address)) throw programError('AccountAlreadyInUse', address);
-            if (deadline !== 0 && deadline <= time) throw programError('DeadlineInPast');
+            // create requires a deadline in the future (0, the old "none", is refused too).
+            if (deadline <= time) throw programError('DeadlinePassed');
             write(address, {
                 authority, lens, payout, deadline, createdAt: time, requiredLamports, escrowLamports: 0n, statusCode: 0, openGround,
                 decisionCode: 0, decisionAttestedAt: 0, decisionObservedAt: 0, executedAt: 0, bump, cid

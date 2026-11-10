@@ -195,18 +195,23 @@ describe('instructions', () => {
             cid: CID, lens: LENS, deadline: BigInt(NOW + 86400), open_ground: true, required_lamports: 2_500_000_000n, payout: PAYOUT
         });
         expect(metas('create', instruction)).toEqual({ agreement: agreement.toBase58(), authority: SPONSOR, system_program: C.SYSTEM_PROGRAM_ID });
-        // Defaults: no deadline, closed land, no escrow needed.
-        expect(decodeArgs('create', client.encodeCreateData({ cid: CID, lens: LENS, payout: PAYOUT })))
-            .toMatchObject({ deadline: 0n, open_ground: false, required_lamports: 0n });
+        // Defaults: closed land, no escrow needed (the deadline has no default).
+        expect(decodeArgs('create', client.encodeCreateData({ cid: CID, lens: LENS, payout: PAYOUT, deadline: NOW + 60 })))
+            .toMatchObject({ deadline: BigInt(NOW + 60), open_ground: false, required_lamports: 0n });
     });
 
     it('create refuses what the program refuses for its arguments, before any wallet signs', () => {
-        const args = { authority: SPONSOR, cid: CID, lens: LENS, payout: PAYOUT };
+        const args = { authority: SPONSOR, cid: CID, lens: LENS, payout: PAYOUT, deadline: NOW + 86400 };
         expect(() => client.buildCreateIx({ ...args, lens: C.DEFAULT_PUBKEY })).toThrow(/lens must not be the default key/);
         expect(() => client.buildCreateIx({ ...args, payout: C.DEFAULT_PUBKEY })).toThrow(/payout must not be the default key/);
         expect(() => client.buildCreateIx({ ...args, payout: client.getAgreementPda(CID, SPONSOR)[0] })).toThrow(/payout must not be the agreement itself/);
         expect(() => client.buildCreateIx({ ...args, deadline: -1 })).toThrow(/deadline/);
         expect(() => client.buildCreateIx({ ...args, deadline: 1.5 })).toThrow(/deadline/);
+        // The program requires a deadline: NO_DEADLINE, a missing one and 0n are refused.
+        for (const deadline of [C.NO_DEADLINE, undefined, null, 0n, -5n]) {
+            expect(() => client.buildCreateIx({ ...args, deadline }), String(deadline)).toThrow(/deadline must be unix seconds in the future/);
+            expect(() => client.encodeCreateData({ cid: CID, lens: LENS, payout: PAYOUT, deadline }), String(deadline)).toThrow(/deadline must be unix seconds in the future/);
+        }
         expect(() => client.buildCreateIx({ ...args, requiredLamports: -1n })).toThrow(/u64/);
         expect(() => client.buildCreateIx({ ...args, openGround: 'yes' })).toThrow(/boolean/);
     });
@@ -239,11 +244,16 @@ describe('instructions', () => {
         expect(() => client.buildExecuteIx({ payout: PAYOUT })).toThrow(/agreement \(address\), or cid and authority, is required/);
     });
 
-    it('turns an agreement/v1 deadline into create\'s unix seconds, none being 0', () => {
-        expect(client.toDeadlineSeconds(null)).toBe(0);
-        expect(client.toDeadlineSeconds(undefined)).toBe(0);
-        expect(client.toDeadlineSeconds('')).toBe(0);
+    it('turns an agreement/v1 deadline into create\'s unix seconds, none defaulting to 90 days from now', () => {
+        expect(C.DEFAULT_DEADLINE_SECONDS).toBe(90 * 86_400);
+        expect(client.toDeadlineSeconds(null, NOW)).toBe(NOW + 90 * 86_400);
+        expect(client.toDeadlineSeconds(undefined, NOW)).toBe(NOW + 90 * 86_400);
+        expect(client.toDeadlineSeconds('', NOW)).toBe(NOW + 90 * 86_400);
+        // Defaulting needs the clock; a named deadline does not.
+        expect(() => client.toDeadlineSeconds(null)).toThrow(/nowSeconds .* is required to default a missing deadline/);
+        expect(() => client.toDeadlineSeconds(null, 0)).toThrow(/nowSeconds/);
         expect(client.toDeadlineSeconds('2026-12-31T23:59:59.999Z')).toBe(Math.floor(Date.parse('2026-12-31T23:59:59.999Z') / 1000));
+        expect(client.toDeadlineSeconds('2026-12-31T23:59:59.999Z', NOW)).toBe(Math.floor(Date.parse('2026-12-31T23:59:59.999Z') / 1000));
         expect(() => client.toDeadlineSeconds('end of year')).toThrow(/not a date/);
     });
 });

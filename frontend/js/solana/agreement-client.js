@@ -35,7 +35,11 @@
         DEFAULT_PUBKEY: '11111111111111111111111111111111',
         AGREEMENT_SEED: 'agreement',
         MAX_CID_BYTES: 64,
+        // Accounts created before create required a deadline may still carry 0 (no deadline); it is
+        // only ever read, never sent.
         NO_DEADLINE: 0,
+        // The deadline a new agreement gets when its agreement/v1 object names none: 90 days.
+        DEFAULT_DEADLINE_SECONDS: 90 * 86_400,
         DECISION_SCHEMA_NAME: 'AgreementDecision',
         DECISION_SCHEMA_VERSION: 1,
         SAS_ATTESTATION_DISCRIMINATOR: 2,
@@ -203,10 +207,16 @@
         );
     }
 
-    // The agreement/v1 object's `deadline` (ISO string or null) as create's argument: unix seconds, or
-    // NO_DEADLINE (0) for none.
-    function toDeadlineSeconds(deadline) {
-        if (deadline === null || deadline === undefined || deadline === '') return constants.NO_DEADLINE;
+    // The agreement/v1 object's `deadline` (ISO string or null) as create's argument, in unix seconds.
+    // The program requires a deadline in the future, so a missing one becomes nowSeconds +
+    // DEFAULT_DEADLINE_SECONDS (90 days); nowSeconds is required for that case.
+    function toDeadlineSeconds(deadline, nowSeconds) {
+        if (deadline === null || deadline === undefined || deadline === '') {
+            if (!Number.isSafeInteger(nowSeconds) || nowSeconds <= 0) {
+                throw new Error('nowSeconds (unix seconds) is required to default a missing deadline');
+            }
+            return nowSeconds + constants.DEFAULT_DEADLINE_SECONDS;
+        }
         const ms = Date.parse(deadline);
         if (!Number.isFinite(ms)) throw new Error(`deadline ${JSON.stringify(deadline)} is not a date`);
         return Math.floor(ms / 1000);
@@ -216,13 +226,15 @@
 
     // create(cid: String, lens: Pubkey, deadline: i64, open_ground: bool, required_lamports: u64, payout: Pubkey).
     // Mirrors the program's argument checks that need no clock, so a wallet never signs a create the
-    // program refuses for its arguments (a deadline in the past is still the program's call).
-    function encodeCreateData({ cid, lens, deadline = constants.NO_DEADLINE, openGround = false, requiredLamports = 0n, payout } = {}) {
+    // program refuses for its arguments. The deadline is required and positive (NO_DEADLINE is refused);
+    // whether it is still in the future is checked by the callers against their clock and finally by the
+    // program against the chain's.
+    function encodeCreateData({ cid, lens, deadline, openGround = false, requiredLamports = 0n, payout } = {}) {
         requireCid(cid);
         if (toKey(lens, 'lens').toBase58() === constants.DEFAULT_PUBKEY) throw new Error('lens must not be the default key');
         if (toKey(payout, 'payout').toBase58() === constants.DEFAULT_PUBKEY) throw new Error('payout must not be the default key');
-        if (!(typeof deadline === 'bigint' ? deadline >= 0n : Number.isSafeInteger(deadline) && deadline >= 0)) {
-            throw new Error('deadline must be unix seconds, or 0 for none');
+        if (!(typeof deadline === 'bigint' ? deadline > 0n : Number.isSafeInteger(deadline) && deadline > 0)) {
+            throw new Error('deadline must be unix seconds in the future');
         }
         return concat([
             disc('create'),
@@ -467,7 +479,8 @@
         return { address, nonce, credential, schema, signer, expiry, fields };
     }
 
-    // The program's Agreement::deadline_passed: a deadline is set and the chain time is after it.
+    // The program's Agreement::deadline_passed: a deadline is set and the chain time is after it (a
+    // legacy account's NO_DEADLINE never passes).
     function deadlinePassed(agreement, nowSeconds) {
         return !!agreement && agreement.deadline !== constants.NO_DEADLINE && nowSeconds > agreement.deadline;
     }

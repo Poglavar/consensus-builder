@@ -267,7 +267,9 @@
         /**
          * Mints a proposed agreement: create(cid, lens, deadline, open_ground, required_lamports, payout)
          * signed by the connected wallet, which must be the sponsor the agreement was proposed with.
-         * `deadline` defaults to the agreement's own (ISO or null); `requiredLamports` is the escrow
+         * `deadline` defaults to the agreement's own (ISO or null); with neither, the agreement gets
+         * now + DEFAULT_DEADLINE_SECONDS (90 days). A deadline that is not in the future is refused, as
+         * the program refuses it. `requiredLamports` is the escrow
          * execution needs (0: none); `payout` receives the whole escrow at execution. An account
          * already at the address is this agreement minted before and is returned with signature null.
          * @returns {Promise<{ signature, account, cluster, explorerUrl }>}
@@ -284,8 +286,9 @@
                 throw codedError(t('agreement.chain.errors.notSponsor', 'Only the sponsor’s wallet ({{sponsor}}) can mint this agreement.', { sponsor: short(sponsor) }), 'not-sponsor');
             }
             if (!idOf(lens)) throw codedError(t('agreement.chain.errors.noLens', 'No lens member is named to attest this agreement’s decision.'), 'no-lens');
-            const deadlineSeconds = api.toDeadlineSeconds(deadline === undefined ? agreement.deadline : deadline);
-            if (deadlineSeconds !== api.constants.NO_DEADLINE && deadlineSeconds <= Math.floor(Date.now() / 1000)) {
+            const now = Math.floor(Date.now() / 1000);
+            const deadlineSeconds = api.toDeadlineSeconds(deadline ?? agreement.deadline, now);
+            if (deadlineSeconds <= now) {
                 throw codedError(t('agreement.chain.errors.deadlinePassed', 'The agreement’s deadline has passed.'), 'deadline-passed');
             }
             const connection = win.SolanaChainDataLoader.getConnection(clusterName);

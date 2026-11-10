@@ -43,7 +43,7 @@ const ROWS = [agreementRow(AGREEMENT), agreementRow(RECORDED, { onchain: { accou
 
 const agreementIx = (name, account, extra = {}) => {
     const data = name === 'fund' ? AgreementClient.encodeFundData(5000n)
-        : name === 'create' ? AgreementClient.encodeCreateData({ cid: AGREEMENT, lens: HUMAN, payout: SPONSOR, requiredLamports: 5000n })
+        : name === 'create' ? AgreementClient.encodeCreateData({ cid: AGREEMENT, lens: HUMAN, payout: SPONSOR, requiredLamports: 5000n, deadline: 1795000000 })
             : AgreementClient[`encode${name[0].toUpperCase()}${name.slice(1)}Data`]();
     return { index: 0, inner: false, program: { address: AGREEMENT_PROGRAM_ID, name: null }, data: encodeBase58(Buffer.from(data)), accounts: [{ address: account }, { address: SPONSOR, signer: true }], ...extra };
 };

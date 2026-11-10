@@ -230,6 +230,17 @@ describe('minting', () => {
         expect(connection.sent[0].feePayer.toBase58()).toBe(SPONSOR);
     });
 
+    it('gives an agreement without a deadline one 90 days from now, as the program requires one', async () => {
+        const { bridge, connection } = fakeWindow();
+        const before = Math.floor(Date.now() / 1000);
+        await bridge.mint({ agreement: proposed({ deadline: null }), lens: LENS, payout: PAYOUT });
+        const after = Math.floor(Date.now() / 1000);
+        // create data: discriminator (8), cid (u32 length + bytes), lens (32), then the i64 deadline.
+        const sent = Number(Buffer.from(sentInstruction(connection).data).readBigInt64LE(8 + 4 + CID.length + 32));
+        expect(sent).toBeGreaterThanOrEqual(before + C.DEFAULT_DEADLINE_SECONDS);
+        expect(sent).toBeLessThanOrEqual(after + C.DEFAULT_DEADLINE_SECONDS);
+    });
+
     it('returns the account without sending when the agreement is already on chain at its address', async () => {
         const connection = mintedOn(agreementData());
         const { bridge, provider } = fakeWindow({ connection });
@@ -250,6 +261,8 @@ describe('minting', () => {
             ['no-lens', fakeWindow(), { lens: ' ' }],
             ['deadline-passed', fakeWindow(), { agreement: proposed({ deadline: past }) }],
             ['deadline-passed', fakeWindow(), { deadline: past }],
+            // The epoch (what NO_DEADLINE meant) is a passed deadline now, not "none".
+            ['deadline-passed', fakeWindow(), { deadline: new Date(0).toISOString() }],
             ['program-not-deployed', fakeWindow({ connection: fakeConnection({ deployed: false }) }), {}],
             ['web3-unavailable', fakeWindow({ web3Loaded: false }), {}]
         ];

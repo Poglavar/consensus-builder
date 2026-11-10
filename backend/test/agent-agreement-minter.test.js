@@ -84,10 +84,29 @@ describe('mintAgreement', () => {
     });
 
     it('creates without a fund instruction when the agreement needs no escrow', async () => {
-        const minted = await mint({ lamports: 0n, deadline: null });
+        const minted = await mint({ lamports: 0n });
         expect(minted).toMatchObject({ created: true, fundedLamports: '0', requiredLamports: '0', escrowLamports: '0' });
         expect(chain.signed()[0].steps).toEqual(['create']);
-        expect(chain.agreement(minted.account).deadline).toBe(0);
+    });
+
+    it('gives an agreement without a deadline one 90 days from now, and a rerun without one still signs nothing', async () => {
+        const minted = await mint({ deadline: null, nowSeconds: T0 });
+        expect(chain.agreement(minted.account).deadline).toBe(T0 + agreementClient.constants.DEFAULT_DEADLINE_SECONDS);
+        expect(T0 + agreementClient.constants.DEFAULT_DEADLINE_SECONDS).toBe(T0 + 90 * 86400);
+        // A day later the default would be another instant; with no deadline named, it is not compared.
+        clock = T0 + 86400;
+        const again = await mint({ deadline: null, nowSeconds: T0 + 86400 });
+        expect(again).toMatchObject({ created: false, signature: null, fundedLamports: '0' });
+        // A named deadline is still compared.
+        await expect(mint({ deadline: iso(T0 + 8 * 86400) })).rejects.toThrow(/other terms \(deadline/);
+        expect(chain.signed()).toHaveLength(1);
+    });
+
+    it('refuses to create with a deadline that is not in the future, before signing', async () => {
+        for (const deadline of [iso(T0), iso(T0 - 60), iso(0)]) {
+            await expect(mint({ deadline, nowSeconds: T0 }), deadline).rejects.toThrow(/deadline .* is not in the future; nothing signed/);
+        }
+        expect(chain.transactions).toHaveLength(0);
     });
 
     it('pays out to another account when one is named', async () => {
