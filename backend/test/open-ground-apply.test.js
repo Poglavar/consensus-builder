@@ -542,6 +542,39 @@ describe('geometric interaction on open ground', () => {
         expect(fabric.list().filter(piece => piece.properties.producedByProposalId === 'park').length).toBeGreaterThan(0);
     });
 
+    it('names every design whose ground a save takes when it ends up last, the ones it already overlapped included', async () => {
+        const none = { binding: { parcels: [], coverage: 'none' } };
+        // A park, then a lake over its west edge and a square over its east edge: the later two hold the shared strips.
+        const park = structureRecord('park', 'park', rect(0, 0, 10, 10), none);
+        const lake = structureRecord('lake', 'lake', rect(-5, 0, 2, 10), none);
+        lake.createdAt = '2026-10-03T00:00:00.000Z';
+        const square = structureRecord('square', 'square', rect(8, 0, 18, 10), none);
+        square.createdAt = '2026-10-04T00:00:00.000Z';
+        const { manager } = await harness({ records: [park, lake, square] });
+        for (const id of ['park', 'lake', 'square']) await expect(manager.applyProposal(id)).resolves.toBe(true);
+        const drawn = id => [...globalThis.parks, ...globalThis.squares, ...globalThis.lakes].find(feature => feature.properties.proposalId === id);
+        const m2 = geometry => turf.area(turf.feature(geometry));
+        expect(turf.area(drawn('park'))).toBeCloseTo(m2(rect(2, 0, 8, 10)), 0);
+        const ids = ({ displaced, yielding, reorder }) => ({ displaced: displaced.map(r => r.proposalId).sort(), yielding: yielding.map(r => r.proposalId).sort(), reorder });
+
+        // Grown north, where nothing stands: the park keeps its place, and the lake and square keep theirs.
+        const north = structureRecord('park', 'park', rect(0, 0, 10, 14), none);
+        expect(ids(manager.previewGroundTakes(north, { sourceId: 'park', inPlace: true }))).toEqual({ displaced: [], yielding: [], reorder: false });
+        // Grown east into the square: the park moves to now, so the lake loses its strip too and is named.
+        const east = structureRecord('park', 'park', rect(0, 0, 12, 10), none);
+        const takes = manager.previewGroundTakes(east, { sourceId: 'park', inPlace: true });
+        expect(ids(takes)).toEqual({ displaced: [], yielding: ['lake', 'square'], reorder: true });
+        // A counterproposal forms last whatever its shape: both give up the strips they held.
+        const same = { ...structureRecord('park-copy', 'park', rect(0, 0, 10, 10), none) };
+        delete same.createdAt;
+        expect(ids(manager.previewGroundTakes(same, { sourceId: 'park' }))).toEqual({ displaced: [], yielding: ['lake', 'square'], reorder: false });
+
+        await expect(manager.updateProposalInPlace('park', east, { reorder: takes.reorder })).resolves.toMatchObject({ applied: true });
+        expect(turf.area(drawn('park'))).toBeCloseTo(m2(rect(0, 0, 12, 10)), 0);
+        expect(turf.area(drawn('lake'))).toBeCloseTo(m2(rect(-5, 0, 0, 10)), 0);
+        expect(turf.area(drawn('square'))).toBeCloseTo(m2(rect(12, 0, 18, 10)), 0);
+    });
+
     it('lets a park give way to a square applied over part of it, and takes one it covers entirely off the map', async () => {
         const first = structureRecord('first', 'park', rect(0, 0, 10, 10), { binding: { parcels: [], coverage: 'none' } });
         const second = structureRecord('second', 'square', rect(5, 0, 15, 10), { binding: { parcels: [], coverage: 'none' } });

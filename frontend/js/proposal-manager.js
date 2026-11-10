@@ -2558,12 +2558,17 @@ const ProposalManager = {
     // What saving `proposal` does to the applied designs on its ground, named before the save so
     // nothing changes unannounced: `displaced` come off the map (claims.js appliedRivals: a building,
     // or a park, square or lake it covers entirely), `yielding` are the parks, squares and lakes it
-    // covers in part, which stay on what it leaves them. `sourceId` is the record the save revises
-    // (`inPlace` when it is rewritten): it is being replaced, and the ground it already reached is
-    // not news. A new record forms after everything standing; a rewritten one keeps its place in the
-    // order unless it reaches into open land formed after it, and then `reorder` says the save moves
-    // it to now (updateProposalInPlace { reorder }), so the edit takes that ground as a new design
-    // would. Read-only.
+    // covers in part that lose ground to it and stay on what it leaves them. `sourceId` is the record
+    // the save revises (`inPlace` when it is rewritten): it is being replaced, and the ground it
+    // already holds is not news.
+    //
+    // Who holds shared ground is the formation order: the later of two. A new record (a
+    // counterproposal included) forms after everything standing. A rewritten one keeps its place
+    // unless the edit gains ground inside open land formed after it; then `reorder` says the save
+    // moves it to now (updateProposalInPlace { reorder }), so the edit takes that ground as a new
+    // design would. Either way a record that ends up last also takes the ground that designs formed
+    // after the revised record held against it until now, so those are named too, not only the ones
+    // the edit newly reaches. Read-only.
     previewGroundTakes(proposal, { sourceId = null, inPlace = false } = {}, options = {}) {
         const none = { displaced: [], yielding: [], reorder: false };
         const store = _proposalStore(options);
@@ -2596,16 +2601,28 @@ const ProposalManager = {
             const yielding = [];
             let reorder = false;
             if (footprint && proposalClaims.isOpenLand(candidate)) {
-                records.forEach(record => {
+                // The ground the save adds to what the revised record stands on (all of it for a new design).
+                const gained = sourceFootprint
+                    ? rule.uncoveredBy(t, asFeature(footprint), [asFeature(sourceFootprint)], context)
+                    : footprint;
+                const shared = records.filter(record => {
                     const id = String(record?.proposalId || '');
-                    if (!id || skip.has(id) || displacedIds.has(id) || !appliedOf(record) || !proposalClaims.isOpenLand(record)) return;
+                    return id && !skip.has(id) && !displacedIds.has(id) && appliedOf(record) && proposalClaims.isOpenLand(record);
+                }).map(record => {
                     const other = planOrder.footprintOf(record);
-                    if (!reaches(footprint, other) || reaches(sourceFootprint, other)) return;
-                    if (planOrder.compareFormationOrder(record, candidate) > 0) reorder = true;
-                    yielding.push(record);
+                    // Formed after the revised record: it holds the ground the two share until now.
+                    const holdsShared = !!sourceFootprint && planOrder.compareFormationOrder(record, source) > 0;
+                    return { record, other, holdsShared, gains: reaches(gained, other) };
+                }).filter(entry => reaches(footprint, entry.other));
+                reorder = inPlace && shared.some(entry => entry.holdsShared && entry.gains);
+                const formsLast = !inPlace || reorder;
+                shared.forEach(entry => {
+                    // One that held the shared ground gives it up when this design ends up last; any
+                    // other gives up only what the save adds.
+                    if (entry.holdsShared ? formsLast : entry.gains) yielding.push(entry.record);
                 });
             }
-            return { displaced, yielding, reorder: inPlace && reorder };
+            return { displaced, yielding, reorder };
         } catch (error) {
             console.warn(`[${new Date().toISOString()}] [ProposalManager] could not preview the ground this save takes`, error);
             return none;

@@ -597,8 +597,10 @@ proposal-bridge.js/create.js and backend/agents/minter.js; decoders render the z
   covered entirely, or its own earlier version, still comes off (claims.js `appliedRivals`). Saving a
   design asks first, naming what comes off, what gives way and what keeps its ground
   (`ProposalManager.previewGroundTakes`, `confirmProposalGroundTakes`). A counterproposal forms last;
-  an in-place edit keeps its place in the order unless it reaches into a park, square or lake formed
-  after it, and then it moves to now (`updateProposalInPlace { reorder }`) and takes that ground too.
+  an in-place edit keeps its place in the order unless it gains ground inside a park, square or lake
+  formed after it, and then it moves to now (`updateProposalInPlace { reorder }`) and takes that ground
+  too. A design that ends up last also takes the ground that later ones held against the record it
+  revises, so the question names those as well, not only the ones the edit newly reaches.
   Plots of a parcel layout stand round an older road the same way. Plan stats count
   open space as it stands (`plan-yield` `openSpaceAreaOf`, fed from the applied bodies).
 
