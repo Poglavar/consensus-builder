@@ -60,7 +60,8 @@ declare_id!("GtdgeRH89f2qLj4j4v6NcecWSr6RDPP9y4TMfPCGA5jQ");
 pub const AGREEMENT_SEED: &[u8] = b"agreement";
 /// Longest CID an agreement can store (a raw sha2-256 CIDv1 in base32 is 59 bytes).
 pub const MAX_CID_LEN: usize = 64;
-/// `deadline` value meaning "no deadline": the agreement never expires.
+/// `deadline` value meaning "no deadline": such an agreement never expires. `create` refuses it, so
+/// only accounts created before the deadline became mandatory carry it; readers still honour it.
 pub const NO_DEADLINE: i64 = 0;
 
 /// SAS schema the lens decision is issued under. Each lens member issues under its own credential,
@@ -75,7 +76,8 @@ pub mod agreement {
 
     /// Commit an agreement to the chain at PDA ["agreement", authority, sha256(cid)], the signing
     /// authority being its sponsor. `lens` is the lens member key whose AgreementDecision
-    /// attestation settles it; `deadline` is unix seconds in the future, or NO_DEADLINE (0);
+    /// attestation settles it; `deadline` is unix seconds in the future (mandatory: an agreement
+    /// that can never expire would lock its escrow and any market on it once a decision is recorded);
     /// `open_ground` records that the agreement's land includes open ground (read by indexers, no
     /// effect here); `required_lamports` is the escrow execution needs (0: none); `payout` receives
     /// the whole escrow at execution (the agreement's settlement account).
@@ -98,7 +100,7 @@ pub mod agreement {
             payout != Pubkey::default() && payout != agreement_key,
             AgreementError::InvalidPayout
         );
-        require!(deadline == NO_DEADLINE || deadline > now, AgreementError::DeadlinePassed);
+        require!(deadline > now, AgreementError::DeadlinePassed);
 
         let authority = ctx.accounts.authority.key();
         let agreement = &mut ctx.accounts.agreement;
@@ -291,7 +293,7 @@ pub mod agreement {
         Ok(())
     }
 
-    /// Anyone expires an Active agreement whose deadline has passed (an agreement without a
+    /// Anyone expires an Active agreement whose deadline has passed (a legacy account without a
     /// deadline never expires); the escrow returns to the authority.
     pub fn expire(ctx: Context<Expire>) -> Result<()> {
         let now = Clock::get()?.unix_timestamp;
@@ -433,7 +435,8 @@ pub struct Agreement {
     pub lens: Pubkey,
     /// Receives the whole escrow at execution.
     pub payout: Pubkey,
-    /// Unix seconds; NO_DEADLINE (0) for none.
+    /// Unix seconds; always in the future at create. NO_DEADLINE (0) only on accounts created
+    /// before the deadline became mandatory.
     pub deadline: i64,
     pub created_at: i64,
     /// Escrow execution needs (0: none).

@@ -77,6 +77,37 @@
       ]
     },
     {
+      "name": "challenge_lmsr",
+      "docs": [
+        "Permissionless, kind 1, while a proposed outcome's challenge window is open: one qualifying",
+        "attestation (remaining account 0) replaces a proposal of NO by absence, or voids a proposal",
+        "backed by evidence for the other outcome. A change restarts the window."
+      ],
+      "discriminator": [
+        14,
+        98,
+        235,
+        161,
+        182,
+        108,
+        240,
+        108
+      ],
+      "accounts": [
+        {
+          "name": "market",
+          "writable": true
+        },
+        {
+          "name": "schema",
+          "docs": [
+            "checked in the handler."
+          ]
+        }
+      ],
+      "args": []
+    },
+    {
       "name": "claim",
       "docs": [
         "Pay out one position: `amount * (yes_pool + no_pool) / winning_pool` to a winner, the",
@@ -144,6 +175,9 @@
     },
     {
       "name": "claim_external",
+      "docs": [
+        "Pay out one position: the parimutuel share on YES or NO, the whole stake on VOID."
+      ],
       "discriminator": [
         135,
         245,
@@ -508,12 +542,23 @@
                   108,
                   109,
                   115,
-                  114
+                  114,
+                  95,
+                  114,
+                  101,
+                  99,
+                  105,
+                  112,
+                  101
                 ]
               },
               {
                 "kind": "arg",
                 "path": "recipe_hash"
+              },
+              {
+                "kind": "account",
+                "path": "creator"
               }
             ]
           }
@@ -735,6 +780,10 @@
               {
                 "kind": "account",
                 "path": "proposal"
+              },
+              {
+                "kind": "account",
+                "path": "creator"
               }
             ]
           }
@@ -1040,6 +1089,30 @@
       "args": []
     },
     {
+      "name": "finalize_lmsr",
+      "docs": [
+        "Permissionless, kind 1, after the challenge window: the proposed outcome becomes final and",
+        "claims open."
+      ],
+      "discriminator": [
+        194,
+        229,
+        212,
+        61,
+        58,
+        64,
+        180,
+        78
+      ],
+      "accounts": [
+        {
+          "name": "market",
+          "writable": true
+        }
+      ],
+      "args": []
+    },
+    {
       "name": "reclaim_seed",
       "docs": [
         "Creator only, after resolution: everything in the vault beyond what unclaimed positions are",
@@ -1085,8 +1158,8 @@
       "name": "resolve",
       "docs": [
         "Permissionless. Reads the agreement's on-chain status: Executed → YES, Cancelled or Expired",
-        "→ NO, anything else → NotTerminal. There is no clock: an Active agreement keeps the market",
-        "open."
+        "→ NO, anything else → NotTerminal. There is no clock here: an Active agreement keeps the",
+        "market open until it executes, is cancelled, or is expired by anyone after its deadline."
       ],
       "discriminator": [
         246,
@@ -1133,7 +1206,8 @@
       "name": "resolve_external",
       "docs": [
         "Permissionless resolution from a real SAS account. The outcome is derived from the",
-        "attestation payload rather than accepted as a caller argument."
+        "attestation payload rather than accepted as a caller argument. Possible from close through",
+        "the last second of EXTERNAL_RESOLUTION_TIMEOUT_SECONDS after it; later only void_external."
       ],
       "discriminator": [
         249,
@@ -1191,9 +1265,11 @@
     {
       "name": "resolve_lmsr",
       "docs": [
-        "Permissionless. Kind 0 settles from the agreement's status; kind 1 from the MarketEvidence-v1",
-        "attestations passed as remaining accounts (one settles, two that disagree void). Without a",
-        "settling state or evidence, NO once `closes_at + grace_seconds` has passed."
+        "Permissionless. Kind 0 settles from the agreement's status (Cancelled settles NO). Kind 1",
+        "proposes an outcome from the MarketEvidence-v1 attestations passed as remaining accounts (one",
+        "proposes its outcome, two that disagree propose VOID); it becomes final through",
+        "finalize_lmsr after a CHALLENGE_SECONDS window. Without a settling state or evidence, NO once",
+        "`closes_at + grace_seconds` has passed (strictly after that second)."
       ],
       "discriminator": [
         206,
@@ -1457,6 +1533,59 @@
           "type": "u64"
         }
       ]
+    },
+    {
+      "name": "void_external",
+      "docs": [
+        "Permissionless: an ExternalMarket still unresolved after its resolution timeout settles",
+        "VOID (outcome 2) and every position claims its stake back through claim_external."
+      ],
+      "discriminator": [
+        75,
+        225,
+        245,
+        95,
+        219,
+        55,
+        174,
+        62
+      ],
+      "accounts": [
+        {
+          "name": "market",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  101,
+                  120,
+                  116,
+                  101,
+                  114,
+                  110,
+                  97,
+                  108,
+                  95,
+                  109,
+                  97,
+                  114,
+                  107,
+                  101,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "market.recipe_hash",
+                "account": "ExternalMarket"
+              }
+            ]
+          }
+        }
+      ],
+      "args": []
     }
   ],
   "accounts": [
@@ -1537,6 +1666,32 @@
         16,
         6,
         230,
+        254
+      ]
+    },
+    {
+      "name": "LmsrOutcomeChallenged",
+      "discriminator": [
+        249,
+        29,
+        173,
+        16,
+        8,
+        47,
+        239,
+        226
+      ]
+    },
+    {
+      "name": "LmsrOutcomeProposed",
+      "discriminator": [
+        151,
+        45,
+        53,
+        177,
+        97,
+        36,
+        174,
         254
       ]
     }
@@ -1766,6 +1921,46 @@
       "code": 6044,
       "name": "NothingToReclaim",
       "msg": "The vault holds nothing beyond what open positions are owed"
+    },
+    {
+      "code": 6045,
+      "name": "OutcomeProposed",
+      "msg": "An outcome is already proposed for this market: challenge or finalize it"
+    },
+    {
+      "code": 6046,
+      "name": "NoProposedOutcome",
+      "msg": "The market has no proposed outcome"
+    },
+    {
+      "code": 6047,
+      "name": "ChallengeWindowClosed",
+      "msg": "The proposed outcome's challenge window has closed"
+    },
+    {
+      "code": 6048,
+      "name": "ChallengeWindowOpen",
+      "msg": "The proposed outcome's challenge window has not closed yet"
+    },
+    {
+      "code": 6049,
+      "name": "ChallengeNeedsOneAttestation",
+      "msg": "A challenge passes exactly one evidence attestation"
+    },
+    {
+      "code": 6050,
+      "name": "ChallengeChangesNothing",
+      "msg": "The attestation does not change the proposed outcome"
+    },
+    {
+      "code": 6051,
+      "name": "ResolutionTimeoutNotPassed",
+      "msg": "The external market's resolution timeout has not passed"
+    },
+    {
+      "code": 6052,
+      "name": "ResolutionTimedOut",
+      "msg": "The external market's resolution timeout has passed: it can only be voided"
     }
   ],
   "types": [
@@ -1848,6 +2043,9 @@
           },
           {
             "name": "outcome",
+            "docs": [
+              "SIDE_NO, SIDE_YES, or OUTCOME_VOID after void_external (every stake refunded)."
+            ],
             "type": "u8"
           },
           {
@@ -2049,24 +2247,32 @@
           },
           {
             "name": "resolved",
+            "docs": [
+              "True once the outcome is final and claims are open. A kind 1 market with `resolved` false",
+              "and `resolved_at` nonzero holds a proposed outcome under challenge."
+            ],
             "type": "bool"
           },
           {
             "name": "outcome",
             "docs": [
-              "SIDE_NO, SIDE_YES or OUTCOME_VOID once resolved."
+              "SIDE_NO, SIDE_YES or OUTCOME_VOID once resolved; the proposed outcome while proposed."
             ],
             "type": "u8"
           },
           {
             "name": "resolved_at",
+            "docs": [
+              "When the outcome was resolved (finalized, for kind 1); while proposed, when the proposal was",
+              "made or last changed by a challenge, which starts its challenge window. 0 while open."
+            ],
             "type": "i64"
           },
           {
             "name": "evidence",
             "docs": [
               "The (first) attestation a kind 1 market settled on and the sha256 of its account bytes;",
-              "default and zero for kind 0 and for NO by absence. A second attestation is in the event."
+              "default and zero for kind 0 and for NO by absence. A second attestation is in the events."
             ],
             "type": "pubkey"
           },
@@ -2129,7 +2335,8 @@
           {
             "name": "second_evidence",
             "docs": [
-              "A second attestation passed with the first: conflicting for a VOID, else concurring."
+              "A second attestation passed with the first: conflicting for a VOID, else concurring",
+              "(default at a kind 1 finalization: the proposal and challenge events carry them)."
             ],
             "type": "pubkey"
           },
@@ -2144,6 +2351,105 @@
           },
           {
             "name": "resolved_at",
+            "type": "i64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "LmsrOutcomeChallenged",
+      "docs": [
+        "A challenge changed a proposed kind 1 outcome to `outcome` and restarted its window."
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "market",
+            "type": "pubkey"
+          },
+          {
+            "name": "outcome",
+            "type": "u8"
+          },
+          {
+            "name": "attestation",
+            "type": "pubkey"
+          },
+          {
+            "name": "attestation_hash",
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "challenged_at",
+            "type": "i64"
+          },
+          {
+            "name": "challenge_ends_at",
+            "type": "i64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "LmsrOutcomeProposed",
+      "docs": [
+        "A kind 1 outcome proposed by resolve_lmsr, open to challenge until `challenge_ends_at`."
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "market",
+            "type": "pubkey"
+          },
+          {
+            "name": "outcome",
+            "type": "u8"
+          },
+          {
+            "name": "evidence",
+            "docs": [
+              "The attestation behind the proposal (default for NO by absence)."
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "evidence_hash",
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "second_evidence",
+            "docs": [
+              "A second attestation passed with the first: conflicting for a VOID, else concurring."
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "second_evidence_hash",
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "proposed_at",
+            "type": "i64"
+          },
+          {
+            "name": "challenge_ends_at",
             "type": "i64"
           }
         ]

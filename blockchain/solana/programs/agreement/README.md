@@ -22,8 +22,10 @@ not deployed, not tested** (M3 rule: all code first, then every test in one pass
 (the authority, while no decision is recorded) or `expire` (anyone, after the deadline). Statuses
 use proposal_nft's codes: 0 Active, 1 Executed, 2 Cancelled, 3 Expired. Decisions: 0 Pending,
 1 Satisfied. The lens never refuses: it attests only a satisfied decision, so an agreement whose
-rule is not satisfied by its deadline simply expires, and one without a deadline stays Active until
-its authority cancels it (while no decision is recorded) or it executes. Every terminal state moves
+rule is not satisfied by its deadline simply expires. `create` requires a deadline in the future, so
+every agreement can end: one decided but never funded or executed expires after its deadline. An
+account created before the deadline became mandatory may hold none (0); it stays Active until its
+authority cancels it (while no decision is recorded) or it executes. Every terminal state moves
 the whole escrow exactly once: to `payout` when Executed, back to the authority when Cancelled or
 Expired.
 
@@ -59,7 +61,7 @@ account (memcmp filters on `authority`, `lens` or `status` work):
 | 8 | `authority` | Pubkey | creator; paid the rent; the only key that may fund or cancel; receives refunds |
 | 40 | `lens` | Pubkey | lens member key whose AgreementDecision attestation settles it |
 | 72 | `payout` | Pubkey | receives the whole escrow at execution (the settlement account) |
-| 104 | `deadline` | i64 | unix seconds; 0 = no deadline (never expires) |
+| 104 | `deadline` | i64 | unix seconds, in the future at create; 0 (no deadline, never expires) only on accounts created before it became mandatory |
 | 112 | `created_at` | i64 | chain time of create |
 | 120 | `required_lamports` | u64 | escrow execution needs (0: none) |
 | 128 | `escrow_lamports` | u64 | lamports `fund` brought in, not yet paid out or refunded |
@@ -82,7 +84,7 @@ The account is never closed: it stays as the agreement's chain record.
 
 | Instruction | Accounts (in order) | Requires | Effect |
 |---|---|---|---|
-| `create(cid: String, lens: Pubkey, deadline: i64, open_ground: bool, required_lamports: u64, payout: Pubkey)` | `agreement` (mut, init, PDA of `authority` and `cid`), `authority` (signer, mut: the sponsor), `system_program` | `cid` 1-64 ASCII alphanumerics; `lens` not the default key; `payout` neither the default key nor the agreement; `deadline` 0 or in the future | Active account; emits `AgreementCreated` |
+| `create(cid: String, lens: Pubkey, deadline: i64, open_ground: bool, required_lamports: u64, payout: Pubkey)` | `agreement` (mut, init, PDA of `authority` and `cid`), `authority` (signer, mut: the sponsor), `system_program` | `cid` 1-64 ASCII alphanumerics; `lens` not the default key; `payout` neither the default key nor the agreement; `deadline` in the future (0 is refused) | Active account; emits `AgreementCreated` |
 | `fund(lamports: u64)` | `agreement` (mut), `authority` (signer, mut), `system_program` | the agreement's authority; `lamports` > 0; Active; deadline not passed (also after the decision) | system transfer into the agreement, `escrow_lamports += lamports`; emits `AgreementFunded` |
 | `attest()` | `agreement` (mut), `attestation` (SAS AgreementDecision-v1), `credential` (its SAS credential) | Active; decision Pending; deadline not passed; the attestation checks below | records the satisfied decision, times, attestation key and hash; emits `AgreementAttested`. Permissionless |
 | `execute()` | `agreement` (mut), `payout` (mut, = `agreement.payout`) | Active; decision Satisfied; deadline not passed; `escrow_lamports >= required_lamports` | whole escrow to `payout`; Executed, `executed_at`; emits `AgreementExecuted`. Permissionless |

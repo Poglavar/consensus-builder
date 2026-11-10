@@ -101,7 +101,7 @@ describe("proposal_market", () => {
     }
 
     /** An Active agreement sponsored by the provider wallet with the notary as its lens. */
-    function openAgreement(deadline = 0): Promise<CreatedAgreement> {
+    function openAgreement(deadline?: number): Promise<CreatedAgreement> {
         return createAgreement(agreementProgram, { lens: notary.publicKey, deadline });
     }
 
@@ -563,7 +563,8 @@ describe("proposal_market", () => {
                 })
                 .remainingAccounts(subject ? [{ pubkey: subject, isSigner: false, isWritable: false }] : [])
                 .rpc();
-            return program.account.externalMarket.fetch(market);
+            const account = await program.account.externalMarket.fetch(market);
+            return Object.assign(account, { address: market });
         }
 
         it("rejects a trusted attester that is not the agreement's lens", async () => {
@@ -587,6 +588,18 @@ describe("proposal_market", () => {
             const attester = Keypair.generate().publicKey;
             const market = await createExternal("unbound", attester);
             expect(market.trustedAttester.toBase58()).to.equal(attester.toBase58());
+        });
+
+        // An unresolved market voids 90 days after close (EXTERNAL_RESOLUTION_TIMEOUT_SECONDS), which
+        // localnet's clock cannot reach; the boundary and the full refund are pinned by Rust unit tests.
+        it("refuses to void a market before its resolution timeout", async () => {
+            const market = await createExternal("timeout", notary.publicKey);
+            await expectFailure(
+                () => program.methods.voidExternal().accountsStrict({ market: market.address }).rpc(),
+                "ResolutionTimeoutNotPassed"
+            );
+            const after = await program.account.externalMarket.fetch(market.address);
+            expect(after.resolved).to.be.false;
         });
     });
 

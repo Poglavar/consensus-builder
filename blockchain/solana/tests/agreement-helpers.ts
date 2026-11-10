@@ -67,7 +67,7 @@ export type AgreementTerms = {
     sponsor?: Keypair;
     cid?: string;
     lens: PublicKey;
-    /** Unix seconds (chain time); 0 for no deadline. */
+    /** Unix seconds (chain time), in the future: create refuses 0. Default: DEFAULT_DEADLINE_SECONDS ahead. */
     deadline?: number;
     openGround?: boolean;
     requiredLamports?: number | bigint;
@@ -79,6 +79,14 @@ export type AgreementTerms = {
 
 export type CreatedAgreement = { agreement: PublicKey; cid: string; sponsor: Keypair; signature: string };
 
+/** How far ahead an agreement's deadline lies when a test names none: past every suite's run time. */
+export const DEFAULT_DEADLINE_SECONDS = 30 * 86_400;
+
+/** A deadline `seconds` after the validator's clock (which drifts from the host's). */
+async function deadlineAhead(program: Program, seconds: number): Promise<number> {
+    return (await chainNow((program.provider as anchor.AnchorProvider).connection)) + seconds;
+}
+
 /** create(cid, lens, deadline, open_ground, required_lamports, payout) from the sponsor, then an optional fund. */
 export async function createAgreement(program: Program, terms: AgreementTerms): Promise<CreatedAgreement> {
     const sponsor = terms.sponsor ?? providerPayer(program);
@@ -88,7 +96,7 @@ export async function createAgreement(program: Program, terms: AgreementTerms): 
         .create(
             cid,
             terms.lens,
-            new anchor.BN(terms.deadline ?? 0),
+            new anchor.BN(terms.deadline ?? (await deadlineAhead(program, DEFAULT_DEADLINE_SECONDS))),
             terms.openGround ?? false,
             new anchor.BN((terms.requiredLamports ?? 0).toString()),
             terms.payout ?? sponsor.publicKey

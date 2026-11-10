@@ -1,9 +1,10 @@
 // Localnet suite for proposal_market's LMSR market (lmsr-market.md, "Test contract"): creation and
 // its seed, buy and sell with their slippage guards, late and insider trades (the agreement's sponsor
 // and lens), the position cap, both resolution paths (the agreement account's status since M3:
-// Executed → YES, Cancelled → VOID, Expired → NO; and MarketEvidence-v1 attestations including VOID
-// on conflicting evidence), claims on every outcome, the creator's reclaim, the vault invariant over
-// a scripted trade sequence, and the compute units of a buy and a sell.
+// Executed → YES, Cancelled → NO, Expired → NO; and MarketEvidence-v1 attestations proposing an
+// outcome, VOID on conflicting evidence, and challenges during the proposal's window), claims,
+// the creator's reclaim, the vault invariant over a scripted trade sequence, and the compute units
+// of a buy and a sell.
 
 import * as anchor from "@coral-xyz/anchor";
 import { Program } from "@coral-xyz/anchor";
@@ -124,7 +125,7 @@ describe("proposal_market LMSR", () => {
     }
 
     /** An Active agreement sponsored by the provider wallet (every market's creator), the notary its lens. */
-    async function openAgreement(deadline = 0): Promise<PublicKey> {
+    async function openAgreement(deadline?: number): Promise<PublicKey> {
         const created = await createAgreement(agreementProgram, { lens: notary.publicKey, deadline });
         opened.set(created.agreement.toBase58(), created);
         return created.agreement;
@@ -335,6 +336,21 @@ describe("proposal_market LMSR", () => {
             .rpc();
     }
 
+    /** Kind 1: one attestation against the proposed outcome, while its window is open. */
+    async function challenge(market: PublicKey, attestations: PublicKey[]): Promise<string> {
+        const m = await fetchMarket(market);
+        return program.methods
+            .challengeLmsr()
+            .accountsStrict({ market, schema: m.schema })
+            .remainingAccounts(attestations.map(pubkey => ({ pubkey, isSigner: false, isWritable: false })))
+            .rpc();
+    }
+
+    /** Kind 1: the proposed outcome becomes final once its window has closed. */
+    function finalize(market: PublicKey): Promise<string> {
+        return program.methods.finalizeLmsr().accountsStrict({ market }).rpc();
+    }
+
     async function claim(market: PublicKey, claimer: Wallet, side: number): Promise<bigint> {
         const before = await balance(claimer.tokenAccount);
         await program.methods
@@ -383,16 +399,36 @@ describe("proposal_market LMSR", () => {
         }
     }
 
-    async function resolvedEvent(signature: string): Promise<any> {
+    /** The data of the named event (camelCase name) a transaction emitted. */
+    async function eventOf(signature: string, name: string): Promise<any> {
+        const pascal = name[0].toUpperCase() + name.slice(1);
         for (;;) {
             const tx = await provider.connection.getTransaction(signature, { commitment: "confirmed", maxSupportedTransactionVersion: 0 });
             if (tx?.meta?.logMessages) {
                 const parser = new anchor.EventParser(program.programId, new anchor.BorshCoder(program.idl));
                 const events = [...parser.parseLogs(tx.meta.logMessages)];
-                return events.find(event => event.name === "lmsrMarketResolved" || event.name === "LmsrMarketResolved")?.data;
+                return events.find(event => event.name === name || event.name === pascal)?.data;
             }
             await new Promise(resolve => setTimeout(resolve, 400));
         }
+    }
+
+    const resolvedEvent = (signature: string) => eventOf(signature, "lmsrMarketResolved");
+    const proposedEvent = (signature: string) => eventOf(signature, "lmsrOutcomeProposed");
+    const challengedEvent = (signature: string) => eventOf(signature, "lmsrOutcomeChallenged");
+
+    /** Kind 1's challenge window (CHALLENGE_SECONDS in lmsr_market.rs): 48 hours. */
+    const CHALLENGE_SECONDS = 48 * 3600;
+
+    /** A proposed kind 1 outcome holds: claims, reclaim, trades, another proposal and finalization wait. */
+    async function expectPending(market: PublicKey, holders: [Wallet, number][]) {
+        const m = await fetchMarket(market);
+        expect(m.resolved).to.be.false;
+        expect(m.resolvedAt).to.be.greaterThan(0);
+        for (const [wallet, side] of holders) await expectFailure(() => claim(market, wallet, side), "MarketNotResolved");
+        await expectFailure(() => reclaim(market), "MarketNotResolved");
+        await expectFailure(() => resolve(market), "OutcomeProposed");
+        await expectFailure(() => finalize(market), "ChallengeWindowOpen");
     }
 
     /** Anchor puts the code on err.error.errorCode.code; a raw runtime failure only has logs. */
@@ -696,10 +732,13 @@ describe("proposal_market LMSR", () => {
         });
 
         it("resolves YES once the agreement is executed, and trading stays closed", async () => {
-            await resolve(market);
+            const signature = await resolve(market);
             const m = await fetchMarket(market);
             expect([m.resolved, m.outcome]).to.deep.equal([true, YES]);
             expect(m.resolvedAt).to.be.greaterThan(0);
+            expect((await resolvedEvent(signature)).outcome).to.equal(YES);
+            // A kind 0 market is final at once: nothing to challenge or finalize.
+            await expectFailure(() => finalize(market), "MarketResolved");
             await expectFailure(() => resolve(market), "MarketResolved");
             await expectFailure(() => sendBuy(market, alice, YES, 1n * USDC, 1n * USDC), "MarketResolved");
         });
@@ -721,7 +760,7 @@ describe("proposal_market LMSR", () => {
         });
     });
 
-    describe("kind 0: Cancelled → VOID", () => {
+    describe("kind 0: Cancelled → NO", () => {
         let market: PublicKey;
 
         before(async () => {
@@ -732,20 +771,17 @@ describe("proposal_market LMSR", () => {
             await cancelSubject(agreement);
         });
 
-        it("voids the market when the agreement is cancelled", async () => {
+        it("settles NO when the agreement is cancelled, before its close", async () => {
             await resolve(market);
             const m = await fetchMarket(market);
-            expect([m.resolved, m.outcome]).to.deep.equal([true, VOID]);
+            expect([m.resolved, m.outcome]).to.deep.equal([true, NO]);
         });
 
-        it("reclaims down to the VOID obligation, then pays each share one half, floored", async () => {
-            const owed = (21n * USDC + 1n) / 2n + (10n * USDC) / 2n;
+        it("reclaims down to the NO obligation, then pays each NO share one unit and YES nothing", async () => {
             const vault = await balance(vaultOf(market));
-            expect(await reclaim(market)).to.equal(vault - owed);
-            expect(await balance(vaultOf(market))).to.equal(owed);
-
-            expect(await claim(market, alice, YES)).to.equal((21n * USDC + 1n) / 2n);
-            expect(await claim(market, bob, NO)).to.equal(5n * USDC);
+            expect(await reclaim(market)).to.equal(vault - 10n * USDC);
+            expect(await claim(market, bob, NO)).to.equal(10n * USDC);
+            await expectFailure(() => claim(market, alice, YES), "PositionPaysNothing");
             expect(await balance(vaultOf(market))).to.equal(0n);
             await expectFailure(() => claim(market, bob, NO), "AlreadyClaimed");
         });
@@ -801,12 +837,13 @@ describe("proposal_market LMSR", () => {
             await expectFailure(() => sendSell(market, alice, NO, 1n * USDC, 0n), "MarketClosed");
         });
 
-        it("settles NO for an Active agreement only after the deadline plus grace", async () => {
-            // Only while the grace end is safely ahead, so the transaction cannot land after it.
+        it("settles NO for an Active agreement only after the last second of grace", async () => {
+            // Only while the grace end is safely ahead, so the transaction cannot land after it. The
+            // exact boundary second is pinned by the Rust unit tests (proposal_outcome).
             if ((await chainNow(provider.connection)) + 2 < closesAt + grace) {
                 await expectFailure(() => resolve(market), "GraceNotElapsed");
             }
-            await waitForChainTime(closesAt + grace);
+            await waitForChainTime(closesAt + grace + 1);
             await resolve(market);
             const m = await fetchMarket(market);
             expect([m.resolved, m.outcome]).to.deep.equal([true, NO]);
@@ -882,22 +919,84 @@ describe("proposal_market LMSR", () => {
             expect((await fetchMarket(market)).resolved).to.be.false;
         });
 
-        it("resolves YES before the close from a qualifying attestation", async () => {
+        it("refuses to challenge or finalize a market with no proposed outcome", async () => {
+            const evidence = await attestEvidence(r, { value: r.yesText, eventTime: now - 100 });
+            await expectFailure(() => challenge(market, [evidence]), "NoProposedOutcome");
+            await expectFailure(() => finalize(market), "NoProposedOutcome");
+        });
+
+        it("proposes YES before the close from a qualifying attestation, open to challenge for 48 hours", async () => {
             const evidence = await attestEvidence(r, { value: r.yesText, eventTime: now - 100 });
             const signature = await resolve(market, [evidence]);
             const m = await fetchMarket(market);
-            expect([m.resolved, m.outcome]).to.deep.equal([true, YES]);
+            expect([m.resolved, m.outcome]).to.deep.equal([false, YES]);
             expect(m.evidence.toBase58()).to.equal(evidence.toBase58());
             const data = (await provider.connection.getAccountInfo(evidence))!.data;
             expect(Buffer.from(m.evidenceHash).equals(sha256(data))).to.be.true;
-            const event = await resolvedEvent(signature);
+            const event = await proposedEvent(signature);
             expect(event.outcome).to.equal(YES);
             expect(event.evidence.toBase58()).to.equal(evidence.toBase58());
+            expect(Number(event.proposedAt)).to.equal(m.resolvedAt);
+            expect(Number(event.challengeEndsAt)).to.equal(m.resolvedAt + CHALLENGE_SECONDS);
         });
 
-        it("pays the YES side", async () => {
-            expect(await claim(market, alice, YES)).to.equal(10n * USDC);
-            await expectFailure(() => claim(market, bob, NO), "PositionPaysNothing");
+        it("holds claims, reclaim, trading and finalization while the proposal is open", async () => {
+            await expectPending(market, [[alice, YES], [bob, NO]]);
+            await expectFailure(() => sendBuy(market, alice, YES, 1n * USDC, 1n * USDC), "OutcomeProposed");
+            await expectFailure(() => sendSell(market, bob, NO, 1n * USDC, 0n), "OutcomeProposed");
+        });
+
+        it("refuses a challenge with agreeing evidence, or with no attestation", async () => {
+            const agreeing = await attestEvidence(r, { value: r.yesText, eventTime: now - 50 });
+            await expectFailure(() => challenge(market, [agreeing]), "ChallengeChangesNothing");
+            await expectFailure(() => challenge(market, []), "ChallengeNeedsOneAttestation");
+            expect((await fetchMarket(market)).outcome).to.equal(YES);
+        });
+
+        it("voids the proposal on a conflicting attestation the resolver left out, and restarts the window", async () => {
+            const before = await fetchMarket(market);
+            const conflicting = await attestEvidence(r, { value: r.noText, eventTime: now - 40 });
+            const signature = await challenge(market, [conflicting]);
+            const m = await fetchMarket(market);
+            expect([m.resolved, m.outcome]).to.deep.equal([false, VOID]);
+            // The first attestation stays the market's evidence; the challenger is in the event.
+            expect(m.evidence.toBase58()).to.equal(before.evidence.toBase58());
+            expect(m.resolvedAt).to.be.at.least(before.resolvedAt);
+            const event = await challengedEvent(signature);
+            expect(event.outcome).to.equal(VOID);
+            expect(event.attestation.toBase58()).to.equal(conflicting.toBase58());
+            expect(Number(event.challengeEndsAt)).to.equal(m.resolvedAt + CHALLENGE_SECONDS);
+            // VOID is final: no attestation changes it.
+            const yes = await attestEvidence(r, { value: r.yesText, eventTime: now - 30 });
+            await expectFailure(() => challenge(market, [yes]), "ChallengeChangesNothing");
+            await expectPending(market, [[alice, YES], [bob, NO]]);
+        });
+    });
+
+    describe("kind 1: challenging NO by absence", () => {
+        const r = recipe("absence-challenged");
+        let market: PublicKey;
+        let closesAt: number;
+        const grace = 4;
+
+        before(async () => {
+            closesAt = (await chainNow(provider.connection)) + 8;
+            market = await createRecipeMarket(r, { closesAt, grace });
+            await buy(market, alice, YES, 2n * USDC);
+            await buy(market, bob, NO, 4n * USDC);
+            await waitForChainTime(closesAt + grace + 1);
+        });
+
+        it("replaces a proposal of NO by absence with the YES evidence it ignored", async () => {
+            await resolve(market);
+            expect((await fetchMarket(market)).outcome).to.equal(NO);
+            const yes = await attestEvidence(r, { value: r.yesText, eventTime: closesAt - 2, sourceObservedAt: closesAt + 1 });
+            const signature = await challenge(market, [yes]);
+            const m = await fetchMarket(market);
+            expect([m.resolved, m.outcome]).to.deep.equal([false, YES]);
+            expect(m.evidence.toBase58()).to.equal(yes.toBase58());
+            expect((await challengedEvent(signature)).outcome).to.equal(YES);
+            await expectPending(market, [[alice, YES], [bob, NO]]);
         });
     });
 
@@ -921,19 +1020,19 @@ describe("proposal_market LMSR", () => {
             await expectFailure(() => resolve(market, [late]), "EventAfterDeadline");
         });
 
-        it("settles NO without evidence only after the deadline plus grace", async () => {
-            // Only while the grace end is safely ahead, so the transaction cannot land after it.
+        it("proposes NO without evidence only after the last second of grace", async () => {
+            // Only while the grace end is safely ahead, so the transaction cannot land after it. The
+            // exact boundary second is pinned by the Rust unit tests.
             if ((await chainNow(provider.connection)) + 2 < closesAt + grace) {
                 await expectFailure(() => resolve(market), "GraceNotElapsed");
             }
-            await waitForChainTime(closesAt + grace);
+            await waitForChainTime(closesAt + grace + 1);
             const signature = await resolve(market);
             const m = await fetchMarket(market);
-            expect([m.resolved, m.outcome]).to.deep.equal([true, NO]);
+            expect([m.resolved, m.outcome]).to.deep.equal([false, NO]);
             expect(m.evidence.toBase58()).to.equal(PublicKey.default.toBase58());
-            expect((await resolvedEvent(signature)).outcome).to.equal(NO);
-            expect(await claim(market, bob, NO)).to.equal(4n * USDC);
-            await expectFailure(() => claim(market, alice, YES), "PositionPaysNothing");
+            expect((await proposedEvent(signature)).outcome).to.equal(NO);
+            await expectPending(market, [[alice, YES], [bob, NO]]);
         });
     });
 
@@ -953,25 +1052,25 @@ describe("proposal_market LMSR", () => {
             await expectFailure(() => resolve(market, [one, one, one]), "TooMuchEvidence");
         });
 
-        it("voids the market when two qualifying attestations disagree", async () => {
+        it("proposes VOID when two qualifying attestations disagree", async () => {
             const now = await chainNow(provider.connection);
             const yes = await attestEvidence(r, { value: r.yesText, eventTime: now - 200 });
             const no = await attestEvidence(r, { value: r.noText, eventTime: now - 100 });
             const signature = await resolve(market, [yes, no]);
             const m = await fetchMarket(market);
-            expect([m.resolved, m.outcome]).to.deep.equal([true, VOID]);
+            expect([m.resolved, m.outcome]).to.deep.equal([false, VOID]);
             expect(m.evidence.toBase58()).to.equal(yes.toBase58());
-            const event = await resolvedEvent(signature);
+            const event = await proposedEvent(signature);
             expect(event.outcome).to.equal(VOID);
             expect(event.evidence.toBase58()).to.equal(yes.toBase58());
             expect(event.secondEvidence.toBase58()).to.equal(no.toBase58());
-        });
-
-        it("pays every share one half, floored, on either side", async () => {
-            expect(await claim(market, alice, YES)).to.equal(3n * USDC);
-            expect(await claim(market, bob, NO)).to.equal(3n * USDC);
-            const vault = await balance(vaultOf(market));
-            expect(await reclaim(market)).to.equal(vault);
+            await expectFailure(() => challenge(market, [yes]), "ChallengeChangesNothing");
+            await expectPending(market, [[alice, YES], [bob, NO]]);
         });
     });
+
+    // The window itself (CHALLENGE_SECONDS) cannot elapse on localnet, whose clock follows the host:
+    // finalization after it and the claims it opens are pinned by the Rust unit tests
+    // (is_proposed, challenge_ends_at, lmsr_payout, lmsr_obligation) and by the kind 0 claims above,
+    // which run the same claim and reclaim handlers.
 });

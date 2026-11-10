@@ -1,8 +1,9 @@
 // The LMSR market of proposal_market (design of record: lmsr-market.md at the repository root):
 // dated yes/no markets priced by the fixed-point maker in lmsr.rs, seeded by their creator with the
 // maker's worst-case loss, settled from an agreement's on-chain state (kind 0) or from
-// MarketEvidence-v1 attestations against committed recipe hashes (kind 1). The instructions are
-// declared in lib.rs's #[program] module and delegate to the handlers here.
+// MarketEvidence-v1 attestations against committed recipe hashes (kind 1). A kind 1 resolution is a
+// proposal that stays open to challenge for CHALLENGE_SECONDS before anyone finalizes it. The
+// instructions are declared in lib.rs's #[program] module and delegate to the handlers here.
 
 use anchor_lang::prelude::*;
 use anchor_lang::solana_program::hash::hash;
@@ -36,6 +37,11 @@ pub const OUTCOME_VOID: u8 = 2;
 /// One qualifying attestation settles a kind 1 market; two with different values void it.
 pub const MAX_EVIDENCE: usize = 2;
 
+/// Kind 1: how long a proposed outcome stays open to challenge, counted from the proposal or from
+/// the last challenge that changed it (48 hours). Long enough for a holder of the losing side to
+/// notice and submit an attestation the resolver left out; claims wait for finalization.
+pub const CHALLENGE_SECONDS: i64 = 48 * 60 * 60;
+
 #[account]
 #[derive(InitSpace)]
 pub struct LmsrMarket {
@@ -68,12 +74,16 @@ pub struct LmsrMarket {
     pub credential: Pubkey,
     pub schema: Pubkey,
     pub trusted_attester: Pubkey,
+    /// True once the outcome is final and claims are open. A kind 1 market with `resolved` false
+    /// and `resolved_at` nonzero holds a proposed outcome under challenge.
     pub resolved: bool,
-    /// SIDE_NO, SIDE_YES or OUTCOME_VOID once resolved.
+    /// SIDE_NO, SIDE_YES or OUTCOME_VOID once resolved; the proposed outcome while proposed.
     pub outcome: u8,
+    /// When the outcome was resolved (finalized, for kind 1); while proposed, when the proposal was
+    /// made or last changed by a challenge, which starts its challenge window. 0 while open.
     pub resolved_at: i64,
     /// The (first) attestation a kind 1 market settled on and the sha256 of its account bytes;
-    /// default and zero for kind 0 and for NO by absence. A second attestation is in the event.
+    /// default and zero for kind 0 and for NO by absence. A second attestation is in the events.
     pub evidence: Pubkey,
     pub evidence_hash: [u8; 32],
     /// Claims paid so far, for the creator's reclaim.
@@ -91,9 +101,37 @@ impl LmsrMarket {
         }
     }
 
-    /// From this instant absence of evidence settles NO (creation rejects an overflowing sum).
+    /// The last second of grace: absence of evidence settles NO only after it, as an agreement's
+    /// `execute` is allowed through its deadline second (creation rejects an overflowing sum).
     pub fn grace_ends_at(&self) -> i64 {
         self.closes_at.saturating_add(i64::from(self.grace_seconds))
+    }
+
+    /// A kind 1 outcome has been proposed and is not final yet.
+    pub fn is_proposed(&self) -> bool {
+        !self.resolved && self.resolved_at != 0
+    }
+
+    /// The last second a proposed outcome can be challenged; it can be finalized after it.
+    pub fn challenge_ends_at(&self) -> i64 {
+        self.resolved_at.saturating_add(CHALLENGE_SECONDS)
+    }
+}
+
+/// What one more qualifying attestation, for `attested`, does to a proposed kind 1 outcome; None
+/// when it changes nothing. A proposal of NO by absence (no evidence behind it) is replaced by the
+/// attestation's outcome and evidence (`true`: record this attestation as the market's evidence). A
+/// proposal backed by evidence for the other outcome becomes VOID, as two conflicting attestations
+/// submitted together do. VOID is final, and agreeing evidence adds nothing.
+pub fn challenge_outcome(proposed: u8, has_evidence: bool, attested: u8) -> Option<(u8, bool)> {
+    if proposed == OUTCOME_VOID {
+        None
+    } else if !has_evidence {
+        Some((attested, true))
+    } else if attested != proposed {
+        Some((OUTCOME_VOID, false))
+    } else {
+        None
     }
 }
 
@@ -119,11 +157,11 @@ pub fn lmsr_obligation(q_yes: u64, q_no: u64, outcome: u8) -> u64 {
     }
 }
 
-/// Kind 0 settlement policy (lmsr-market.md "Cancellation: decided VOID, with a refinement to
-/// confirm"): Executed → YES only when its valid on-chain time is no later than close, otherwise
-/// NO; Expired → NO; Cancelled → VOID per the 2026-10-12 decision (streamline B2). The doc's open
-/// alternative, NO with a cancellation notice period, is a change to the Cancelled arm only.
-/// Active settles NO after the deadline plus grace.
+/// Kind 0 settlement policy (lmsr-market.md "Cancellation resolves NO"): Executed → YES only when
+/// its valid on-chain time is no later than close, otherwise NO; Expired → NO; Cancelled → NO (the
+/// sponsor can force NO anyway by not executing, so cancelling must not open a better payout than
+/// that). Active settles NO only after the last second of grace, since `execute` is still allowed
+/// at the agreement's deadline second.
 pub fn proposal_outcome(status: u8, executed_at: i64, closes_at: i64, grace_ends_at: i64, now: i64) -> Result<Option<u8>> {
     match status {
         STATUS_EXECUTED => {
@@ -131,8 +169,8 @@ pub fn proposal_outcome(status: u8, executed_at: i64, closes_at: i64, grace_ends
             Ok(Some(if executed_at <= closes_at { SIDE_YES } else { SIDE_NO }))
         }
         STATUS_EXPIRED => Ok(Some(SIDE_NO)),
-        STATUS_CANCELLED => Ok(Some(OUTCOME_VOID)),
-        STATUS_ACTIVE if now >= grace_ends_at => Ok(Some(SIDE_NO)),
+        STATUS_CANCELLED => Ok(Some(SIDE_NO)),
+        STATUS_ACTIVE if now > grace_ends_at => Ok(Some(SIDE_NO)),
         STATUS_ACTIVE => Ok(None),
         _ => err!(MarketError::InvalidProposalAccount),
     }
@@ -208,14 +246,16 @@ fn pay_from_vault<'info>(
     )
 }
 
-/// The checks buy and sell share: the market is unresolved and before closes_at, `subject` is the
-/// market's own agreement (the System Program id for an unbound kind 1 market), and the trader is
+/// The checks buy and sell share: the market is unresolved, has no proposed outcome (a kind 1
+/// proposal can come before closes_at, and its evidence is then public) and is before closes_at,
+/// `subject` is the market's own agreement (the System Program id for an unbound kind 1 market), and the trader is
 /// not an insider (streamline B3): the trusted attester of any kind 1 market, and the agreement's
 /// sponsor and lens, read at trade time, for kind 0 and bound kind 1. Kind 0 also needs the
 /// agreement still Active: once it is terminal the outcome is known and a trade would only take the
 /// seed.
 fn check_trade(market: &LmsrMarket, subject: &AccountInfo, trader: &Pubkey) -> Result<()> {
     require!(!market.resolved, MarketError::MarketResolved);
+    require!(!market.is_proposed(), MarketError::OutcomeProposed);
     require!(Clock::get()?.unix_timestamp < market.closes_at, MarketError::MarketClosed);
     require_keys_eq!(subject.key(), market.proposal, MarketError::InvalidProposalAccount);
     if market.kind == KIND_RECIPE {
@@ -448,11 +488,14 @@ impl Settlement {
     }
 }
 
+/// Kind 0 settles at once from the agreement's status. Kind 1 records a proposed outcome from the
+/// evidence passed (none, one or two attestations), open to challenge for CHALLENGE_SECONDS.
 pub(crate) fn handle_resolve_lmsr(ctx: Context<ResolveLmsr>) -> Result<()> {
     let now = Clock::get()?.unix_timestamp;
     let settlement = {
         let market = &ctx.accounts.market;
         require!(!market.resolved, MarketError::MarketResolved);
+        require!(!market.is_proposed(), MarketError::OutcomeProposed);
         require_keys_eq!(ctx.accounts.proposal.key(), market.proposal, MarketError::InvalidProposalAccount);
         require_keys_eq!(ctx.accounts.schema.key(), market.schema, MarketError::WrongEvidenceSchema);
         if market.kind == KIND_PROPOSAL {
@@ -467,32 +510,107 @@ pub(crate) fn handle_resolve_lmsr(ctx: Context<ResolveLmsr>) -> Result<()> {
     };
 
     let market = &mut ctx.accounts.market;
-    market.resolved = true;
+    market.resolved = market.kind == KIND_PROPOSAL;
     market.outcome = settlement.outcome;
     market.resolved_at = now;
     market.evidence = settlement.evidence;
     market.evidence_hash = settlement.evidence_hash;
 
+    if market.kind == KIND_PROPOSAL {
+        emit!(LmsrMarketResolved {
+            market: market.key(),
+            kind: market.kind,
+            outcome: settlement.outcome,
+            evidence: settlement.evidence,
+            evidence_hash: settlement.evidence_hash,
+            second_evidence: settlement.second_evidence,
+            second_evidence_hash: settlement.second_evidence_hash,
+            resolved_at: now,
+        });
+    } else {
+        emit!(LmsrOutcomeProposed {
+            market: market.key(),
+            outcome: settlement.outcome,
+            evidence: settlement.evidence,
+            evidence_hash: settlement.evidence_hash,
+            second_evidence: settlement.second_evidence,
+            second_evidence_hash: settlement.second_evidence_hash,
+            proposed_at: now,
+            challenge_ends_at: market.challenge_ends_at(),
+        });
+    }
+    Ok(())
+}
+
+/// Kind 1, while the proposal's challenge window is open: one qualifying attestation (remaining
+/// account 0) that changes the proposed outcome per `challenge_outcome`. A change restarts the
+/// window, so the other side can still answer it.
+pub(crate) fn handle_challenge_lmsr(ctx: Context<ChallengeLmsr>) -> Result<()> {
+    let now = Clock::get()?.unix_timestamp;
+    let (outcome, record, evidence) = {
+        let market = &ctx.accounts.market;
+        require!(!market.resolved, MarketError::MarketResolved);
+        require!(market.is_proposed(), MarketError::NoProposedOutcome);
+        require!(now <= market.challenge_ends_at(), MarketError::ChallengeWindowClosed);
+        require_keys_eq!(ctx.accounts.schema.key(), market.schema, MarketError::WrongEvidenceSchema);
+        require!(ctx.remaining_accounts.len() == 1, MarketError::ChallengeNeedsOneAttestation);
+        validate_sas_schema_data(&ctx.accounts.schema, &market.credential)?;
+        let evidence = qualify_evidence(market, &ctx.remaining_accounts[0], now)?;
+        let has_evidence = market.evidence != Pubkey::default();
+        let Some((outcome, record)) = challenge_outcome(market.outcome, has_evidence, evidence.outcome) else {
+            return err!(MarketError::ChallengeChangesNothing);
+        };
+        (outcome, record, evidence)
+    };
+
+    let market = &mut ctx.accounts.market;
+    market.outcome = outcome;
+    market.resolved_at = now;
+    if record {
+        market.evidence = evidence.attestation;
+        market.evidence_hash = evidence.account_hash;
+    }
+    emit!(LmsrOutcomeChallenged {
+        market: market.key(),
+        outcome,
+        attestation: evidence.attestation,
+        attestation_hash: evidence.account_hash,
+        challenged_at: now,
+        challenge_ends_at: market.challenge_ends_at(),
+    });
+    Ok(())
+}
+
+/// Kind 1, permissionless, once the challenge window has closed: the proposed outcome becomes final
+/// and claims open.
+pub(crate) fn handle_finalize_lmsr(ctx: Context<FinalizeLmsr>) -> Result<()> {
+    let now = Clock::get()?.unix_timestamp;
+    let market = &mut ctx.accounts.market;
+    require!(!market.resolved, MarketError::MarketResolved);
+    require!(market.is_proposed(), MarketError::NoProposedOutcome);
+    require!(now > market.challenge_ends_at(), MarketError::ChallengeWindowOpen);
+    market.resolved = true;
+    market.resolved_at = now;
     emit!(LmsrMarketResolved {
         market: market.key(),
         kind: market.kind,
-        outcome: settlement.outcome,
-        evidence: settlement.evidence,
-        evidence_hash: settlement.evidence_hash,
-        second_evidence: settlement.second_evidence,
-        second_evidence_hash: settlement.second_evidence_hash,
+        outcome: market.outcome,
+        evidence: market.evidence,
+        evidence_hash: market.evidence_hash,
+        second_evidence: Pubkey::default(),
+        second_evidence_hash: [0; 32],
         resolved_at: now,
     });
     Ok(())
 }
 
 /// Kind 1 (lmsr-market.md "Evidence for kind 1"): every attestation passed must qualify; one
-/// settles on its committed outcome at any time, two with different values void the market, and
-/// none settles NO once the deadline plus grace has passed.
+/// proposes its committed outcome at any time, two with different values propose VOID, and none
+/// proposes NO once the last second of grace has passed.
 fn settle_from_evidence(market: &LmsrMarket, schema: &AccountInfo, attestations: &[AccountInfo], now: i64) -> Result<Settlement> {
     require!(attestations.len() <= MAX_EVIDENCE, MarketError::TooMuchEvidence);
     let Some(first) = attestations.first() else {
-        require!(now >= market.grace_ends_at(), MarketError::GraceNotElapsed);
+        require!(now > market.grace_ends_at(), MarketError::GraceNotElapsed);
         return Ok(Settlement::without_evidence(SIDE_NO));
     };
     validate_sas_schema_data(schema, &market.credential)?;
@@ -789,6 +907,22 @@ pub struct ResolveLmsr<'info> {
     pub schema: UncheckedAccount<'info>,
 }
 
+/// The challenging attestation follows as remaining account 0.
+#[derive(Accounts)]
+pub struct ChallengeLmsr<'info> {
+    #[account(mut)]
+    pub market: Box<Account<'info, LmsrMarket>>,
+    /// CHECK: must equal market.schema; SAS owner, credential relation, layout and paused state are
+    /// checked in the handler.
+    pub schema: UncheckedAccount<'info>,
+}
+
+#[derive(Accounts)]
+pub struct FinalizeLmsr<'info> {
+    #[account(mut)]
+    pub market: Box<Account<'info, LmsrMarket>>,
+}
+
 #[derive(Accounts)]
 pub struct ClaimLmsr<'info> {
     #[account(mut)]
@@ -829,10 +963,37 @@ pub struct LmsrMarketResolved {
     /// The attestation the market settled on (default for kind 0 and for NO by absence).
     pub evidence: Pubkey,
     pub evidence_hash: [u8; 32],
-    /// A second attestation passed with the first: conflicting for a VOID, else concurring.
+    /// A second attestation passed with the first: conflicting for a VOID, else concurring
+    /// (default at a kind 1 finalization: the proposal and challenge events carry them).
     pub second_evidence: Pubkey,
     pub second_evidence_hash: [u8; 32],
     pub resolved_at: i64,
+}
+
+/// A kind 1 outcome proposed by resolve_lmsr, open to challenge until `challenge_ends_at`.
+#[event]
+pub struct LmsrOutcomeProposed {
+    pub market: Pubkey,
+    pub outcome: u8,
+    /// The attestation behind the proposal (default for NO by absence).
+    pub evidence: Pubkey,
+    pub evidence_hash: [u8; 32],
+    /// A second attestation passed with the first: conflicting for a VOID, else concurring.
+    pub second_evidence: Pubkey,
+    pub second_evidence_hash: [u8; 32],
+    pub proposed_at: i64,
+    pub challenge_ends_at: i64,
+}
+
+/// A challenge changed a proposed kind 1 outcome to `outcome` and restarted its window.
+#[event]
+pub struct LmsrOutcomeChallenged {
+    pub market: Pubkey,
+    pub outcome: u8,
+    pub attestation: Pubkey,
+    pub attestation_hash: [u8; 32],
+    pub challenged_at: i64,
+    pub challenge_ends_at: i64,
 }
 
 #[cfg(test)]
@@ -966,9 +1127,80 @@ mod tests {
     fn kind_0_terminal_and_active_statuses_keep_their_outcomes() {
         let grace_ends_at = CLOSES_AT + 100;
         assert_eq!(proposal_outcome(STATUS_EXPIRED, 0, CLOSES_AT, grace_ends_at, grace_ends_at).unwrap(), Some(SIDE_NO));
-        assert_eq!(proposal_outcome(STATUS_CANCELLED, 0, CLOSES_AT, grace_ends_at, grace_ends_at).unwrap(), Some(OUTCOME_VOID));
         assert_eq!(proposal_outcome(STATUS_ACTIVE, 0, CLOSES_AT, grace_ends_at, grace_ends_at - 1).unwrap(), None);
-        assert_eq!(proposal_outcome(STATUS_ACTIVE, 0, CLOSES_AT, grace_ends_at, grace_ends_at).unwrap(), Some(SIDE_NO));
+        assert_eq!(proposal_outcome(STATUS_ACTIVE, 0, CLOSES_AT, grace_ends_at, grace_ends_at + 1).unwrap(), Some(SIDE_NO));
         assert!(proposal_outcome(255, 0, CLOSES_AT, grace_ends_at, grace_ends_at).is_err());
+    }
+
+    #[test]
+    fn kind_0_cancellation_settles_no() {
+        let grace_ends_at = CLOSES_AT + 100;
+        for now in [CLOSES_AT - 50, grace_ends_at, grace_ends_at + 1] {
+            assert_eq!(proposal_outcome(STATUS_CANCELLED, 0, CLOSES_AT, grace_ends_at, now).unwrap(), Some(SIDE_NO));
+        }
+    }
+
+    #[test]
+    fn kind_0_absence_waits_out_the_last_second_of_grace() {
+        // With grace 0 the last second of grace is the agreement's deadline, when `execute` still
+        // succeeds: absence must not settle NO in that second.
+        assert_eq!(proposal_outcome(STATUS_ACTIVE, 0, CLOSES_AT, CLOSES_AT, CLOSES_AT).unwrap(), None);
+        assert_eq!(proposal_outcome(STATUS_ACTIVE, 0, CLOSES_AT, CLOSES_AT, CLOSES_AT + 1).unwrap(), Some(SIDE_NO));
+    }
+
+    fn proposed_market(outcome: u8, evidence: Pubkey, resolved_at: i64) -> LmsrMarket {
+        LmsrMarket {
+            kind: KIND_RECIPE,
+            proposal: Pubkey::default(),
+            creator: Pubkey::new_unique(),
+            stake_mint: Pubkey::new_unique(),
+            vault: Pubkey::new_unique(),
+            b: 1,
+            q_yes: 0,
+            q_no: 0,
+            seed: 2,
+            closes_at: CLOSES_AT,
+            grace_seconds: 0,
+            max_position: 0,
+            recipe_hash: [1; 32],
+            subject_hash: [2; 32],
+            yes_value_hash: [3; 32],
+            no_value_hash: [4; 32],
+            credential: Pubkey::new_unique(),
+            schema: Pubkey::new_unique(),
+            trusted_attester: Pubkey::new_unique(),
+            resolved: false,
+            outcome,
+            resolved_at,
+            evidence,
+            evidence_hash: [0; 32],
+            paid_out: 0,
+            bump: 255,
+        }
+    }
+
+    #[test]
+    fn a_proposal_is_unresolved_with_a_proposal_time_and_closes_its_window_after_48_hours() {
+        let open = proposed_market(SIDE_NO, Pubkey::default(), 0);
+        assert!(!open.is_proposed());
+        let proposed = proposed_market(SIDE_NO, Pubkey::default(), CLOSES_AT + 10);
+        assert!(proposed.is_proposed());
+        assert_eq!(proposed.challenge_ends_at(), CLOSES_AT + 10 + 48 * 3600);
+        let finalized = LmsrMarket { resolved: true, ..proposed };
+        assert!(!finalized.is_proposed());
+    }
+
+    #[test]
+    fn a_challenge_replaces_no_by_absence_and_voids_conflicting_evidence() {
+        // NO by absence: any qualifying attestation replaces it, and is recorded.
+        assert_eq!(challenge_outcome(SIDE_NO, false, SIDE_YES), Some((SIDE_YES, true)));
+        assert_eq!(challenge_outcome(SIDE_NO, false, SIDE_NO), Some((SIDE_NO, true)));
+        // Evidence for the other outcome voids; agreeing evidence changes nothing.
+        assert_eq!(challenge_outcome(SIDE_YES, true, SIDE_NO), Some((OUTCOME_VOID, false)));
+        assert_eq!(challenge_outcome(SIDE_NO, true, SIDE_YES), Some((OUTCOME_VOID, false)));
+        assert_eq!(challenge_outcome(SIDE_YES, true, SIDE_YES), None);
+        // VOID is final.
+        assert_eq!(challenge_outcome(OUTCOME_VOID, true, SIDE_YES), None);
+        assert_eq!(challenge_outcome(OUTCOME_VOID, true, SIDE_NO), None);
     }
 }

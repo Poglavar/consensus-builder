@@ -1,7 +1,9 @@
 // proposal_market: a parimutuel prediction market per agreement (an Agreement account of the
-// agreement program), staked in one SPL token (devnet USDC for the hackathon), with NO deadline. A
-// market resolves only when its agreement reaches a terminal on-chain state: Executed → YES,
-// Cancelled or Expired → NO. Anyone may create the market, stake, resolve and claim. The agreement
+// agreement program), staked in one SPL token (devnet USDC for the hackathon), with no deadline of
+// its own. A market resolves only when its agreement reaches a terminal on-chain state: Executed →
+// YES, Cancelled or Expired → NO. The agreement program requires a deadline at create and anyone may
+// expire an agreement after it, so every such market can resolve. Anyone may create the market,
+// stake, resolve and claim. The agreement
 // is read directly from its account by agreement::read_agreement_view (owner, discriminator, status
 // at offset 136), never through CPI; proposal_nft is not read at all. The program keeps its name and
 // id, and its accounts and fields keep the word `proposal` (the IDL interface is unchanged), which
@@ -40,6 +42,21 @@ pub const STATUS_EXPIRED: u8 = agreement::AgreementStatus::Expired as u8;
 
 pub const SIDE_NO: u8 = 0;
 pub const SIDE_YES: u8 = 1;
+
+/// An ExternalMarket nobody resolved from evidence within this long after its close (90 days)
+/// settles VOID through `void_external`, refunding every stake: the court question then reads
+/// "published and resolved within 90 days of close", and no stake stays locked for ever.
+pub const EXTERNAL_RESOLUTION_TIMEOUT_SECONDS: i64 = 90 * 86_400;
+
+/// The last second an ExternalMarket can still resolve from evidence.
+pub fn external_resolution_ends_at(closes_at: i64) -> i64 {
+    closes_at.saturating_add(EXTERNAL_RESOLUTION_TIMEOUT_SECONDS)
+}
+
+/// After the last second of resolution, only `void_external` settles the market.
+pub fn external_resolution_timed_out(closes_at: i64, now: i64) -> bool {
+    now > external_resolution_ends_at(closes_at)
+}
 
 pub const MARKET_SEED: &[u8] = b"market";
 pub const EXTERNAL_MARKET_SEED: &[u8] = b"external_market";
@@ -118,8 +135,8 @@ pub mod proposal_market {
     }
 
     /// Permissionless. Reads the agreement's on-chain status: Executed → YES, Cancelled or Expired
-    /// → NO, anything else → NotTerminal. There is no clock: an Active agreement keeps the market
-    /// open.
+    /// → NO, anything else → NotTerminal. There is no clock here: an Active agreement keeps the
+    /// market open until it executes, is cancelled, or is expired by anyone after its deadline.
     pub fn resolve(ctx: Context<Resolve>) -> Result<()> {
         require!(!ctx.accounts.market.resolved, MarketError::MarketResolved);
         let status = read_subject(&ctx.accounts.proposal, Some(&ctx.accounts.market.proposal))?.status;
@@ -254,12 +271,14 @@ pub mod proposal_market {
     }
 
     /// Permissionless resolution from a real SAS account. The outcome is derived from the
-    /// attestation payload rather than accepted as a caller argument.
+    /// attestation payload rather than accepted as a caller argument. Possible from close through
+    /// the last second of EXTERNAL_RESOLUTION_TIMEOUT_SECONDS after it; later only void_external.
     pub fn resolve_external(ctx: Context<ResolveExternal>) -> Result<()> {
         let market = &mut ctx.accounts.market;
         require!(!market.resolved, MarketError::MarketResolved);
         let now = Clock::get()?.unix_timestamp;
         require!(now >= market.closes_at, MarketError::MarketStillOpen);
+        require!(!external_resolution_timed_out(market.closes_at, now), MarketError::ResolutionTimedOut);
 
         require_keys_eq!(ctx.accounts.schema.key(), market.schema, MarketError::WrongEvidenceSchema);
         validate_sas_schema_data(&ctx.accounts.schema, &market.credential)?;
@@ -296,6 +315,32 @@ pub mod proposal_market {
         Ok(())
     }
 
+    /// Permissionless: an ExternalMarket still unresolved after its resolution timeout settles
+    /// VOID (outcome 2) and every position claims its stake back through claim_external.
+    pub fn void_external(ctx: Context<VoidExternal>) -> Result<()> {
+        let market = &mut ctx.accounts.market;
+        require!(!market.resolved, MarketError::MarketResolved);
+        let now = Clock::get()?.unix_timestamp;
+        require!(external_resolution_timed_out(market.closes_at, now), MarketError::ResolutionTimeoutNotPassed);
+
+        market.resolved = true;
+        market.outcome = OUTCOME_VOID;
+        market.evidence = Pubkey::default();
+        market.evidence_hash = [0; 32];
+        market.resolved_at = now;
+
+        emit!(ExternalMarketResolved {
+            market: market.key(),
+            recipe_hash: market.recipe_hash,
+            evidence: market.evidence,
+            evidence_hash: market.evidence_hash,
+            outcome: OUTCOME_VOID,
+            resolved_at: now,
+        });
+        Ok(())
+    }
+
+    /// Pay out one position: the parimutuel share on YES or NO, the whole stake on VOID.
     pub fn claim_external(ctx: Context<ClaimExternal>) -> Result<()> {
         let market = &ctx.accounts.market;
         require!(market.resolved, MarketError::MarketNotResolved);
@@ -385,11 +430,26 @@ pub mod proposal_market {
         lmsr_market::handle_sell(ctx, side, shares, min_return)
     }
 
-    /// Permissionless. Kind 0 settles from the agreement's status; kind 1 from the MarketEvidence-v1
-    /// attestations passed as remaining accounts (one settles, two that disagree void). Without a
-    /// settling state or evidence, NO once `closes_at + grace_seconds` has passed.
+    /// Permissionless. Kind 0 settles from the agreement's status (Cancelled settles NO). Kind 1
+    /// proposes an outcome from the MarketEvidence-v1 attestations passed as remaining accounts (one
+    /// proposes its outcome, two that disagree propose VOID); it becomes final through
+    /// finalize_lmsr after a CHALLENGE_SECONDS window. Without a settling state or evidence, NO once
+    /// `closes_at + grace_seconds` has passed (strictly after that second).
     pub fn resolve_lmsr(ctx: Context<ResolveLmsr>) -> Result<()> {
         lmsr_market::handle_resolve_lmsr(ctx)
+    }
+
+    /// Permissionless, kind 1, while a proposed outcome's challenge window is open: one qualifying
+    /// attestation (remaining account 0) replaces a proposal of NO by absence, or voids a proposal
+    /// backed by evidence for the other outcome. A change restarts the window.
+    pub fn challenge_lmsr(ctx: Context<ChallengeLmsr>) -> Result<()> {
+        lmsr_market::handle_challenge_lmsr(ctx)
+    }
+
+    /// Permissionless, kind 1, after the challenge window: the proposed outcome becomes final and
+    /// claims open.
+    pub fn finalize_lmsr(ctx: Context<FinalizeLmsr>) -> Result<()> {
+        lmsr_market::handle_finalize_lmsr(ctx)
     }
 
     /// Pay a resolved position: one unit per winning share, or one half per share, floored, on VOID.
@@ -407,6 +467,10 @@ pub mod proposal_market {
 /// Parimutuel payout, in u128 so `amount * total` cannot overflow. Floors, so the sum of all
 /// payouts never exceeds the vault; rounding dust stays behind.
 pub fn payout_amount(side: u8, amount: u64, yes_pool: u64, no_pool: u64, outcome: u8) -> Result<u64> {
+    if outcome == OUTCOME_VOID {
+        // A voided external market: every position is refunded in full.
+        return Ok(amount);
+    }
     let (winning_pool, losing_pool) = if outcome == SIDE_YES { (yes_pool, no_pool) } else { (no_pool, yes_pool) };
     if winning_pool == 0 {
         // Nobody backed the outcome: every position is refunded in full.
@@ -549,6 +613,7 @@ pub struct ExternalMarket {
     pub no_pool: u64,
     pub closes_at: i64,
     pub resolved: bool,
+    /// SIDE_NO, SIDE_YES, or OUTCOME_VOID after void_external (every stake refunded).
     pub outcome: u8,
     pub evidence: Pubkey,
     pub evidence_hash: [u8; 32],
@@ -716,6 +781,12 @@ pub struct ResolveExternal<'info> {
 }
 
 #[derive(Accounts)]
+pub struct VoidExternal<'info> {
+    #[account(mut, seeds = [EXTERNAL_MARKET_SEED, market.recipe_hash.as_ref()], bump = market.bump)]
+    pub market: Box<Account<'info, ExternalMarket>>,
+}
+
+#[derive(Accounts)]
 pub struct ClaimExternal<'info> {
     #[account(seeds = [EXTERNAL_MARKET_SEED, market.recipe_hash.as_ref()], bump = market.bump)]
     pub market: Box<Account<'info, ExternalMarket>>,
@@ -838,6 +909,22 @@ pub enum MarketError {
     NotCreator,
     #[msg("The vault holds nothing beyond what open positions are owed")]
     NothingToReclaim,
+    #[msg("An outcome is already proposed for this market: challenge or finalize it")]
+    OutcomeProposed,
+    #[msg("The market has no proposed outcome")]
+    NoProposedOutcome,
+    #[msg("The proposed outcome's challenge window has closed")]
+    ChallengeWindowClosed,
+    #[msg("The proposed outcome's challenge window has not closed yet")]
+    ChallengeWindowOpen,
+    #[msg("A challenge passes exactly one evidence attestation")]
+    ChallengeNeedsOneAttestation,
+    #[msg("The attestation does not change the proposed outcome")]
+    ChallengeChangesNothing,
+    #[msg("The external market's resolution timeout has not passed")]
+    ResolutionTimeoutNotPassed,
+    #[msg("The external market's resolution timeout has passed: it can only be voided")]
+    ResolutionTimedOut,
 }
 
 #[cfg(test)]
@@ -967,6 +1054,21 @@ mod tests {
         let b = payout_amount(SIDE_YES, 2, 3, 1, SIDE_YES).unwrap();
         assert_eq!((a, b), (1, 2));
         assert!(a + b <= 4);
+    }
+
+    #[test]
+    fn a_void_refunds_every_position_in_full() {
+        assert_eq!(payout_amount(SIDE_YES, 70, 70, 30, OUTCOME_VOID).unwrap(), 70);
+        assert_eq!(payout_amount(SIDE_NO, 30, 70, 30, OUTCOME_VOID).unwrap(), 30);
+    }
+
+    #[test]
+    fn an_external_market_resolves_through_its_timeout_second_and_voids_only_after_it() {
+        let closes_at = 1_900_000_000;
+        let timeout_at = external_resolution_ends_at(closes_at);
+        assert_eq!(timeout_at, closes_at + 90 * 86_400);
+        assert!(!external_resolution_timed_out(closes_at, timeout_at));
+        assert!(external_resolution_timed_out(closes_at, timeout_at + 1));
     }
 
     #[test]

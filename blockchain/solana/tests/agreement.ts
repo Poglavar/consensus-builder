@@ -60,6 +60,8 @@ describe("agreement", () => {
     let deadline: number;
     let lapsing: CreatedAgreement;
     let satisfiedLate: CreatedAgreement;
+    // The deadline sendCreate gives an agreement when a test names none: a month ahead.
+    let farDeadline: number;
 
     before(async () => {
         await waitForProgramsVisible(connection);
@@ -67,6 +69,7 @@ describe("agreement", () => {
         lens = await createLensMember(provider);
         otherLens = await createLensMember(provider);
         rent = await connection.getMinimumBalanceForRentExemption(AGREEMENT_ACCOUNT_SIZE);
+        farDeadline = (await chainNow(connection)) + 30 * 86_400;
 
         deadline = (await chainNow(connection)) + 30;
         lapsing = await createAgreement(program, { sponsor, lens: lens.publicKey, deadline, fund: SOL / 2 });
@@ -132,7 +135,7 @@ describe("agreement", () => {
     function sendCreate(a: { cid: string; signer?: Keypair; agreement?: PublicKey; lens?: PublicKey; deadline?: number; payout?: PublicKey }) {
         const signer = a.signer ?? sponsor;
         return program.methods
-            .create(a.cid, a.lens ?? lens.publicKey, new anchor.BN(a.deadline ?? 0), false, new anchor.BN(0), a.payout ?? signer.publicKey)
+            .create(a.cid, a.lens ?? lens.publicKey, new anchor.BN(a.deadline ?? farDeadline), false, new anchor.BN(0), a.payout ?? signer.publicKey)
             .accountsStrict({
                 agreement: a.agreement ?? findAgreementPda(program.programId, signer.publicKey, a.cid),
                 authority: signer.publicKey,
@@ -259,10 +262,12 @@ describe("agreement", () => {
             await expectFailure(() => sendCreate({ cid, payout: self }), "InvalidPayout");
             const past = (await chainNow(connection)) - 5;
             await expectFailure(() => sendCreate({ cid, deadline: past }), "DeadlinePassed");
+            // NO_DEADLINE (0) is refused: an agreement that can never expire would lock its escrow and
+            // the markets on it once a decision is recorded.
+            await expectFailure(() => sendCreate({ cid, deadline: 0 }), "DeadlinePassed");
             expect(await connection.getAccountInfo(self)).to.be.null;
-            // Deadline 0 means none.
             await sendCreate({ cid });
-            expect(num((await fetchAgreement(self)).deadline)).to.equal(0);
+            expect(num((await fetchAgreement(self)).deadline)).to.equal(farDeadline);
         });
     });
 
@@ -517,11 +522,9 @@ describe("agreement", () => {
     // ========================
 
     describe("expire and the deadline", () => {
-        it("refuses to expire before the deadline, and an agreement without one", async () => {
+        it("refuses to expire before the deadline", async () => {
             const dated = await createAgreement(program, { sponsor, lens: lens.publicKey, deadline: (await chainNow(connection)) + 3600 });
             await expectFailure(() => expireAgreement(program, dated.agreement, sponsor.publicKey), "DeadlineNotPassed");
-            const undated = await createAgreement(program, { sponsor, lens: lens.publicKey });
-            await expectFailure(() => expireAgreement(program, undated.agreement, sponsor.publicKey), "DeadlineNotPassed");
         });
 
         it("closes funding and decisions once the deadline has passed", async () => {

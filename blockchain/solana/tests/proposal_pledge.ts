@@ -123,7 +123,7 @@ describe("proposal_pledge", () => {
     const donationId = (label: string) => createHash("sha256").update(`plg-${label}`).digest();
 
     /** An Active agreement sponsored by `creator`, the lens deciding it, payout the creator. */
-    async function newAgreement(tag: string, agreementDeadline = 0): Promise<Subject> {
+    async function newAgreement(tag: string, agreementDeadline?: number): Promise<Subject> {
         const created = await createAgreement(agreementProgram, {
             sponsor: creator, cid: testCid(`plg-${tag}`), lens: lens.publicKey, deadline: agreementDeadline,
         });
