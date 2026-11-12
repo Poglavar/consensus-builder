@@ -6073,6 +6073,7 @@
             "unable_to_check_parcel_nft_status": "Impossible de vérifier le statut du NFT.",
             "parcel_selection_tools_are_unavailable_cannot_prepare_proposal": "Les outils de sélection des parcelles sont indisponibles ; impossible de préparer le projet.",
             "parcels_disabled_at_this_zoom": "Parcelles désactivées à ce niveau de zoom",
+            "loading_parcels": "Chargement des parcelles…",
             "please_select_at_least_one_parcel_to_create_a_proposal": "Veuillez sélectionner au moins une parcelle pour créer un projet.",
             "please_use_the_main_create_proposal_button_when_multiple_parcels_are_selected": "Veuillez utiliser le bouton principal « Créer un projet » lorsque plusieurs parcelles sont sélectionnées.",
             "proposal_not_found": "Projet introuvable.",

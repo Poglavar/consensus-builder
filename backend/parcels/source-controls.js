@@ -1,8 +1,10 @@
 // Browser-safe shared query controls for parcel source adapters.
 const COOLDOWN_CODES = new Set(['parcel-source-blocked', 'parcel-source-rate-limited', 'parcel-source-unavailable']);
-const wrappedMethods = (adapter, invoke) => Object.freeze({
+const wrappedMethods = (adapter, invoke, extra = {}) => Object.freeze({
     queryBounds: invoke('queryBounds'), queryIds: invoke('queryIds'), queryGeometry: invoke('queryGeometry'),
-    ...(typeof adapter.queryPoint === 'function' ? { queryPoint: invoke('queryPoint') } : {})
+    ...(typeof adapter.queryPoint === 'function' ? { queryPoint: invoke('queryPoint') } : {}),
+    ...(typeof adapter.resetCooldown === 'function' ? { resetCooldown: adapter.resetCooldown } : {}),
+    ...extra
 });
 
 export function withSourceCooldown(adapter, { now = Date.now } = {}) {
@@ -24,7 +26,9 @@ export function withSourceCooldown(adapter, { now = Date.now } = {}) {
             throw error;
         }
     };
-    return wrappedMethods(adapter, invoke);
+    // A visitor's explicit Retry asks the provider again at once instead of replaying the
+    // failure the cooldown holds for automatic map reads.
+    return wrappedMethods(adapter, invoke, { resetCooldown: () => { failure = null; until = 0; } });
 }
 
 // One FIFO budget is shared by all query methods for this provider.

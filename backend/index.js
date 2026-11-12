@@ -415,6 +415,9 @@ export function createApp({
             // Code voting has its own HTTP limit and persistent authentication budget.
             if (req.path === '/shared-plan-sessions' || req.path.startsWith('/shared-plan-sessions/')) return next();
             if (req.path === '/chat/conversations' || req.path.startsWith('/chat/conversations/')) return next();
+            // The parcel relay is a read transport (POST only to carry the request); a map view
+            // reads dozens of cells, so it must not spend the visitor's write budget.
+            if (req.method === 'POST' && req.path.startsWith('/parcel-provider-relay/')) return next();
             if (req.method === 'POST' && /^\/agreements\/[^/]+\/voting\/(access|ballot)$/.test(req.path)) return next();
             if (req.method === 'POST' && (READ_ONLY_POST_PATHS.has(req.path) || isAgentPath(req.path) || req.path === '/bets/events' || req.path.startsWith('/bets/points/'))) {
                 return next();

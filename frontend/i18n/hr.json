@@ -3945,6 +3945,7 @@
             "unable_to_check_parcel_nft_status": "Nije moguće provjeriti NFT status.",
             "parcel_selection_tools_are_unavailable_cannot_prepare_proposal": "Alati za odabir čestica nisu dostupni, nije moguće pripremiti dizajn.",
             "parcels_disabled_at_this_zoom": "Čestice su onemogućene na ovoj razini zuma",
+            "loading_parcels": "Učitavanje čestica…",
             "please_select_at_least_one_parcel_to_create_a_proposal": "Odaberi barem jednu česticu za kreiranje dizajna.",
             "please_use_the_main_create_proposal_button_when_multiple_parcels_are_selected": "Koristi glavni gumb \"Kreiraj dizajn\" kada je odabrano više čestica.",
             "proposal_not_found": "Prijedlog nije pronađen",

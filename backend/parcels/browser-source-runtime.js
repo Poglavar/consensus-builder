@@ -339,6 +339,12 @@ export function createBrowserParcelRuntime(options = {}) {
                 if (!listeners?.size) progressListeners.delete(sourceId);
             }
         },
+        // Clears every cached adapter's failure cooldown; adapters and their downloads are kept.
+        async resetCooldowns() {
+            const instances = await Promise.allSettled([...adapters.values()]);
+            for (const entry of instances) if (entry.status === 'fulfilled') entry.value.resetCooldown?.();
+            return true;
+        },
         sources: catalog.sources.filter(source => browserParcelFactories[source.adapter]),
         clear() { adapters.clear(); }
     });

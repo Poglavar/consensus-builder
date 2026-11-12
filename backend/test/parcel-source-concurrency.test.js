@@ -105,6 +105,19 @@ describe('withSourceConcurrency', () => {
         expect(upstream.queryBounds).toHaveBeenCalledTimes(2);
     });
 
+    it('lets an explicit retry ask the provider again during a failure cooldown', async () => {
+        const timedOut = Object.assign(new Error('Kazakhstan PKK request timed out.'), { status: 504, code: 'parcel-source-unavailable' });
+        const upstream = adapterWith({ queryBounds: vi.fn().mockRejectedValueOnce(timedOut).mockResolvedValueOnce('parcels') });
+        const wrapped = withSourceConcurrency(withSourceCooldown(upstream, { now: () => 0 }), { limit: 2 });
+        await expect(wrapped.queryBounds([0, 0, 1, 1])).rejects.toMatchObject({ status: 504 });
+        // Within the cooldown the stored failure answers at once, without asking the provider.
+        await expect(wrapped.queryBounds([0, 0, 1, 1])).rejects.toMatchObject({ status: 504, retryAfterSeconds: 30 });
+        expect(upstream.queryBounds).toHaveBeenCalledTimes(1);
+        wrapped.resetCooldown();
+        await expect(wrapped.queryBounds([0, 0, 1, 1])).resolves.toBe('parcels');
+        expect(upstream.queryBounds).toHaveBeenCalledTimes(2);
+    });
+
     it.each([0, -1, 1.5, 17, '2', null])('rejects invalid limit %j', limit => {
         expect(() => withSourceConcurrency(adapterWith(), { limit })).toThrow(/integer from 1 to 16/);
     });

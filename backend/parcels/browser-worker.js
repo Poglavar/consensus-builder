@@ -16,6 +16,7 @@ self.addEventListener('message', async ({ data }) => {
             runtime = createBrowserParcelRuntime({ relayBase });
         }
         if (method === 'describe') { self.postMessage({ id, result: runtime.describe(sourceId, customDescriptor) }); return; }
+        if (method === 'resetCooldowns') { self.postMessage({ id, result: await runtime.resetCooldowns() }); return; }
         // One building cell of a URL building source, read from its service directly (no relay).
         if (method === 'buildingCell') {
             buildingCells ||= createBrowserBuildingCells();

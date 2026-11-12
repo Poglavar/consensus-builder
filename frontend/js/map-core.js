@@ -970,6 +970,15 @@ function setupMapEventHandlers() {
             if (layerRef && !map.hasLayer(layerRef)) {
                 try { layerRef.addTo(map); } catch (_) { }
             }
+            // The zoomed-out notice would otherwise stay up until the first cell of a slow
+            // register answers, telling a visitor who already zoomed in to zoom in.
+            const floating = document.getElementById('floating-status-text');
+            const disabledText = window.i18n?.t?.('status.messages.parcels_disabled_at_this_zoom');
+            if (typeof updateStatus === 'function' && floating
+                && [disabledText, 'Parcels disabled at this zoom'].includes(floating.textContent)) {
+                const key = 'status.messages.loading_parcels', text = window.i18n?.t?.(key);
+                updateStatus(text && text !== key ? text : 'Loading parcels…', { transient: true });
+            }
         }
         if (typeof updateVisibleParcelsCount === 'function') {
             updateVisibleParcelsCount();

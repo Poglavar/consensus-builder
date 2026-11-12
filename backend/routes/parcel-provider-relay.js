@@ -1,5 +1,4 @@
 import express from 'express';
-import rateLimit from 'express-rate-limit';
 import { parcelSourceCatalog } from '../parcels/sources.js';
 import { fetchParcelProviderRelay, validateParcelProviderRelayRequest, validatedManualRedirect, relayError } from '../parcels/provider-relay.js';
 
@@ -8,7 +7,7 @@ import { fetchParcelProviderRelay, validateParcelProviderRelayRequest, validated
 const RELAY_PATH = '/:sourceId';
 const RESPONSE_HEADERS = new Set(['content-type', 'content-disposition', 'content-encoding', 'etag', 'last-modified',
     'retry-after', 'x-parcel-upstream-cookies']);
-const EXPOSED_HEADERS = 'Content-Length, Content-Encoding, ETag, Last-Modified, Location, Retry-After, X-Parcel-Upstream-Cookies, X-Parcel-Upstream-Status, X-Parcel-Upstream-Location, RateLimit-Limit, RateLimit-Remaining, RateLimit-Reset';
+const EXPOSED_HEADERS = 'Content-Length, Content-Encoding, ETag, Last-Modified, Location, Retry-After, X-Parcel-Upstream-Cookies, X-Parcel-Upstream-Status, X-Parcel-Upstream-Location';
 
 function sendError(res, error) {
     const status = Number.isInteger(error?.status) && error.status >= 400 && error.status <= 599 ? error.status : 502;
@@ -70,9 +69,9 @@ async function streamResponse(upstream, res, maxBytes, controller, { manualRedir
 }
 
 export function createParcelProviderRelayRouter({ sources = parcelSourceCatalog.sources, relayFetch = fetchParcelProviderRelay,
-    maxConcurrent = 6, maxQueued = 24, queueTimeoutMs = 5000,
-    limiter = rateLimit({ windowMs: 60_000, limit: 60, standardHeaders: true, legacyHeaders: false,
-        message: { error: 'Parcel provider relay rate limit exceeded.', code: 'parcel-provider-rate-limited' } }) } = {}) {
+    // The relay only forwards to catalog sources and has no per-visitor request limit: one map view
+    // reads dozens of cells. The in-flight cap only bounds open sockets on this host.
+    maxConcurrent = 64, maxQueued = 512, queueTimeoutMs = 30000 } = {}) {
     if (!Number.isSafeInteger(maxConcurrent) || maxConcurrent < 1 || !Number.isSafeInteger(maxQueued) || maxQueued < 0
         || !Number.isSafeInteger(queueTimeoutMs) || queueTimeoutMs < 1) throw new TypeError('Invalid parcel provider relay concurrency limits.');
     let active = 0;
@@ -100,7 +99,7 @@ export function createParcelProviderRelayRouter({ sources = parcelSourceCatalog.
         entry.resolve(releaseSlot);
     }
     const router = express.Router();
-    router.post(RELAY_PATH, limiter, express.json({ limit: '32kb', strict: true }), async (req, res) => {
+    router.post(RELAY_PATH, express.json({ limit: '32kb', strict: true }), async (req, res) => {
         let validated;
         const declaredRequestBytes = Number(req.get?.('content-length'));
         if (Number.isFinite(declaredRequestBytes) && declaredRequestBytes > 32 * 1024) return sendError(res, relayError(413));

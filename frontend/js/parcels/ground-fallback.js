@@ -512,6 +512,8 @@
     async function refetchViewport() {
         if (typeof global.fetchParcelData !== 'function') return;
         try {
+            // Without this the source's failure cooldown answers Retry at once with the old error.
+            await global.BrowserParcelSources?.resetCooldowns?.();
             const bounds = global.map && typeof global.map.getBounds === 'function' ? global.map.getBounds() : undefined;
             await global.fetchParcelData(bounds);
             try { global.ParcelPresenter && global.ParcelPresenter.restoreSelectionStyles && global.ParcelPresenter.restoreSelectionStyles(); } catch (_) { }

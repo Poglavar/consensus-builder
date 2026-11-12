@@ -3932,6 +3932,7 @@
             "unable_to_check_parcel_nft_status": "No se pudo comprobar el estado NFT.",
             "parcel_selection_tools_are_unavailable_cannot_prepare_proposal": "Las herramientas de selección de parcelas no están disponibles, no se puede preparar el diseño.",
             "parcels_disabled_at_this_zoom": "Las parcelas están deshabilitadas en este zoom",
+            "loading_parcels": "Cargando parcelas…",
             "please_select_at_least_one_parcel_to_create_a_proposal": "Selecciona al menos una parcela para crear un diseño.",
             "please_use_the_main_create_proposal_button_when_multiple_parcels_are_selected": "Usa el botón principal \"Crear diseño\" cuando haya varias parcelas seleccionadas.",
             "proposal_not_found": "Diseño no encontrada",

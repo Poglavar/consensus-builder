@@ -3945,6 +3945,7 @@
             "unable_to_check_parcel_nft_status": "Nije moguće proveriti NFT status.",
             "parcel_selection_tools_are_unavailable_cannot_prepare_proposal": "Alati za izbor parcela nisu dostupni, nije moguće pripremiti dizajn.",
             "parcels_disabled_at_this_zoom": "Parcele isključene na ovom nivou zuma",
+            "loading_parcels": "Učitavanje parcela…",
             "please_select_at_least_one_parcel_to_create_a_proposal": "Izaberi bar jednu parcelu da kreiraš dizajn.",
             "please_use_the_main_create_proposal_button_when_multiple_parcels_are_selected": "Koristi glavno dugme \"Kreiraj dizajn\" kada je izabrano više parcela.",
             "proposal_not_found": "Predlog nije pronađen",

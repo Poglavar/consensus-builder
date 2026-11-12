@@ -67,7 +67,9 @@
         queryGeometry: (sourceId, geometry, options) => query(sourceId, 'queryGeometry', [geometry], options),
         queryPoint: (sourceId, point, options) => query(sourceId, 'queryPoint', [point], options),
         // The source's catalog wording and links, read from the bundled catalog (no server request).
-        describe: (sourceId, options) => query(sourceId, 'describe', [], options) });
+        describe: (sourceId, options) => query(sourceId, 'describe', [], options),
+        // Forget every source's failure cooldown, so an explicit Retry reads the provider again.
+        resetCooldowns: () => query('', 'resetCooldowns', []) });
     // One cell of a URL building source (`building.<base64url>`), read by the same worker straight from
     // the source's service: { kind: 'near' | 'footprints', bbox } → the answer POST /buildings/cell gives.
     global.BrowserBuildingSources = Object.freeze({

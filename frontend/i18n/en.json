@@ -3913,6 +3913,7 @@
             "unable_to_check_parcel_nft_status": "Unable to check NFT status.",
             "parcel_selection_tools_are_unavailable_cannot_prepare_proposal": "Parcel selection tools are unavailable, cannot prepare design.",
             "parcels_disabled_at_this_zoom": "Parcels disabled at this zoom",
+            "loading_parcels": "Loading parcels…",
             "please_select_at_least_one_parcel_to_create_a_proposal": "Please select at least one parcel to create a design.",
             "please_use_the_main_create_proposal_button_when_multiple_parcels_are_selected": "Please use the main \"Create Design\" button when multiple parcels are selected.",
             "proposal_not_found": "Design not found.",

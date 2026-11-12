@@ -6302,6 +6302,7 @@
             "unable_to_check_parcel_nft_status": "تعذر التحقق من حالة NFT.",
             "parcel_selection_tools_are_unavailable_cannot_prepare_proposal": "أدوات تحديد قطع الأراضي غير متاحة، ولا يمكن إعداد التصميم.",
             "parcels_disabled_at_this_zoom": "قطع الأراضي معطلة عند مستوى التكبير هذا",
+            "loading_parcels": "جارٍ تحميل قطع الأراضي…",
             "please_select_at_least_one_parcel_to_create_a_proposal": "يرجى تحديد قطعة أرض واحدة على الأقل لإنشاء تصميم.",
             "please_use_the_main_create_proposal_button_when_multiple_parcels_are_selected": "يرجى استخدام زر \"إنشاء تصميم\" الرئيسي عند تحديد قطع أراض متعددة.",
             "proposal_not_found": "لم يتم العثور على التصميم.",
