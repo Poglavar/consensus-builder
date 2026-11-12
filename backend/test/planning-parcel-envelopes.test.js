@@ -191,6 +191,15 @@ describe('viewport parcel envelopes', () => {
         await expect(loadParcelEnvelopes(query,options([],provider(),false))).rejects.toMatchObject({code:'study-parcel-incomplete'});
         await expect(loadParcelEnvelopes(query,options(Array.from({length:1001},(_,i)=>parcel(String(i)))))).rejects.toMatchObject({code:'envelope-area-too-large'});
     });
+    it('draws a lot the source serves as a one-part MultiPolygon from its Polygon outline', async () => {
+        // The Kazakhstan cadastre serves every lot so; the map reads derivation.parcel.coordinates[0]
+        // as the outer ring when it draws the front edge, which threw on the MultiPolygon.
+        const lot = parcel();
+        const multi = { ...lot, geometry: { type: 'MultiPolygon', coordinates: [lot.geometry.coordinates] } };
+        const [item] = (await loadParcelEnvelopes(query, options([multi]))).items;
+        expect(item.derivation.parcel).toEqual(lot.geometry);
+        expect(item.derivation.parcel.coordinates[0][0]).toHaveLength(2);
+    });
     it('lists a lot over the study limit as unavailable without widening the zoning read to it', async () => {
         // A field about 2 km across: no envelope, and its outline must not pull in the zones around it.
         const field = parcel('field', [-105.03, 39.99, -105.001, 40.008]);

@@ -3,7 +3,7 @@
 import * as turf from '@turf/turf';
 import { createRequire } from 'node:module';
 import { sourcesFor } from './sources.js';
-import { STUDY_MAX_PARCEL_M2, assembleParcelStudy, parcelRecords, parcelZones, readStudyZoning, studyParcelSource, withScenarioSource } from './parcel-study.js';
+import { STUDY_MAX_PARCEL_M2, asPolygonParcel, assembleParcelStudy, parcelRecords, parcelZones, readStudyZoning, studyParcelSource, withScenarioSource } from './parcel-study.js';
 import { runtimeParcelSource } from '../parcels/sources.js';
 import { validateBounds } from '../parcels/source-contract.js';
 import { configurationTreatments } from './providers/atlas.js';
@@ -202,8 +202,10 @@ export async function loadParcelEnvelopes(query, { sources, parcelProvider = des
     const descriptor = studyParcelSource(provider, query.city);
     const parcels = await parcelProvider(descriptor).queryBounds(expand(query.bbox, OBSTACLE_MARGIN_M));
     if (parcels.complete !== true) fail('study-parcel-incomplete', 503);
-    const obstacles = parcels.features.map(parcel => ({ id: parcel.id, geometry: parcel.geometry, bbox: turf.bbox(parcel) }));
-    const inView = parcels.features.filter((parcel, index) => intersects(obstacles[index].bbox, query.bbox));
+    // Every outline below (frontage edge indices, derivation.parcel) is a Polygon's outer ring.
+    const lots = parcels.features.map(asPolygonParcel);
+    const obstacles = lots.map(parcel => ({ id: parcel.id, geometry: parcel.geometry, bbox: turf.bbox(parcel) }));
+    const inView = lots.filter((parcel, index) => intersects(obstacles[index].bbox, query.bbox));
     // A work bound, not a secret: a dense zoom-18 view holds about 1,000 lots, which cost a few
     // seconds, most of it the upstream parcel read.
     if (inView.length > 1000) fail('envelope-area-too-large', 400);
