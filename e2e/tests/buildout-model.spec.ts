@@ -12,7 +12,9 @@ import { mockBuildingScene } from '../helpers/mocks/building-data';
 // Rebuilds are cooperative and frame-driven; a loaded host needs longer than the default 5 s.
 const slow = expect.configure({ timeout: 15_000 });
 
-const TREES = [[15.9822, 45.80025], [15.9827, 45.8003]]; // the first stands in the road
+// The first stands in the road; the second on open ground north of the parcels, since a tree inside a
+// proposed building is cleared (ab93c6eb9) and parcel 1235 gets one.
+const TREES = [[15.9822, 45.80025], [15.9827, 45.8007]];
 
 async function createBuildingOn(page: Page, parcelId: string): Promise<string> {
   await openParcel(page, 'proposals', parcelId);

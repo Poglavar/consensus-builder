@@ -8,6 +8,7 @@ import { mockBuildingScene } from '../helpers/mocks/building-data';
 import { mockPhotoTiles } from '../helpers/mocks/photo-data';
 
 const plans = require('../../frontend/js/plan-record.js');
+const ENTRY_MS = 20_000;
 
 test('planet follows local creation, exact plan membership, edits, application and deletion', async ({ mockApi: page }) => {
   await stubBasemapTiles(page);
@@ -68,7 +69,9 @@ for (const mode of ['model', 'photo'] as const) {
     await expect(planet).toHaveAttribute('data-share-state', 'shared');
     await expect(planet.locator('.map-search__planet')).toBeVisible();
     await page.locator(mode === 'model' ? '#mode-3d-toggle' : '#mode-realistic-toggle').click();
-    await expect.poll(() => page.evaluate(() => (window as any).__mapModeState)).toEqual({ desired: mode, pending: false });
+    // Entering a 3D view loads its script stack; photo entry took 6 s on a loaded host, so it gets the
+    // 20 s the other mode-entry specs give it (share-camera.spec.ts), not the default 5 s.
+    await expect.poll(() => page.evaluate(() => (window as any).__mapModeState), { timeout: ENTRY_MS }).toEqual({ desired: mode, pending: false });
     await expect(planet).toBeVisible();
     await expect(planet.locator('.map-search__planet')).toBeVisible();
     await expect(planet.locator('.map-search__chip-label').first()).toBeHidden();
@@ -83,7 +86,7 @@ for (const mode of ['model', 'photo'] as const) {
     await expect(planet.locator('.map-search__chip-label').first()).toBeVisible();
     await expect(page.locator('.map-search__field')).toBeVisible();
     await page.locator(mode === 'model' ? '#mode-3d-toggle' : '#mode-realistic-toggle').click();
-    await expect.poll(() => page.evaluate(() => (window as any).__mapModeState)).toEqual({ desired: mode, pending: false });
+    await expect.poll(() => page.evaluate(() => (window as any).__mapModeState), { timeout: ENTRY_MS }).toEqual({ desired: mode, pending: false });
     await planet.click();
     await expect(page.locator('#world-view')).toBeVisible({ timeout: 15_000 });
   });

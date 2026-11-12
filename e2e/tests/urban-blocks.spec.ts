@@ -38,9 +38,11 @@ async function serveRoads(page: Page, shapes: Ring[]): Promise<string[]> {
   return requests;
 }
 
+// The blocks drawn, not the outline a hovered or focused row of the blocks list adds to the same pane
+// (the Object lists rule, a94fd891c): the pointer left over the list after the toggle click outlines one.
 const drawnBlocks = (page: Page) => page.evaluate(() => {
   const pane = (window as any).map.getPane('urbanBlocksPane');
-  return pane ? pane.querySelectorAll('path').length : 0;
+  return pane ? pane.querySelectorAll('path:not(.urban-block-preview)').length : 0;
 });
 
 test.describe('Urban blocks @features', () => {
