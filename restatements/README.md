@@ -13,7 +13,7 @@ Each restatement should keep, where available:
 - reproducible extraction, conversion and publishing scripts;
 - the committed ground file of each plan's agreement (`--capture`, below).
 
-Standalone plans live directly below this directory, such as [`upu-borovje/`](upu-borovje/). Collections organized around one developer or research series may have an intermediate folder, such as [`pionir-paron/`](pionir-paron/). The [`nova-naselja/`](nova-naselja/) collection restates whole recently planned neighbourhoods, including their buildings and the public-space/circulation framework where the source data supports it. The Candlestick Point imports (San Francisco) keep their inputs in [`backend/scripts/data/candlestick/`](../backend/scripts/data/candlestick/README.md).
+Standalone plans live directly below this directory, such as [`upu-borovje/`](upu-borovje/) and [`upu-podbrezje/`](upu-podbrezje/) (the whole plan and the part still to be built, two agreements over shared designs). Collections organized around one developer or research series may have an intermediate folder, such as [`pionir-paron/`](pionir-paron/). The [`nova-naselja/`](nova-naselja/) collection restates whole recently planned neighbourhoods, including their buildings and the public-space/circulation framework where the source data supports it. The Candlestick Point imports (San Francisco) keep their inputs in [`backend/scripts/data/candlestick/`](../backend/scripts/data/candlestick/README.md).
 
 ## Designs and agreements
 
@@ -39,5 +39,7 @@ To recreate all demo content on an API, run the four steps for each of:
 2. `restatements/upu-borovje/build-urban-blocks.mjs` (Borovje – urbani blokovi; shares the streets, layouts and parks of 1);
 3. `backend/scripts/import-candlestick-fivepoint.mjs` and `backend/scripts/import-candlestick-courtyard.mjs --source <model>`;
 4. `backend/scripts/publish-restatement-archives.mjs` (the twelve Pionir/Paron projects and the three Nova naselja neighbourhoods).
+5. `restatements/upu-podbrezje/build-and-upload.mjs` (UPU Podbrežje, whole and remainder).
+6. `restatements/dup-travno/build-and-upload.mjs` (DUP Travno, 1971: a historical plan read off the City's scanned PUP/DUP sheets; [README](dup-travno/README.md)).
 
 The stored GeoJSON archive schemas keep their existing names. Source-derived geometry, dates and provenance stay attached to each restatement.
