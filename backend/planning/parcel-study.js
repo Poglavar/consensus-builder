@@ -23,11 +23,25 @@ function zoningNearParcel(geometry, bounds) {
     return coordinates.length ? { type: 'MultiPolygon', coordinates } : null;
 }
 
+// A plan of small zones (Alatau's) holds more than one page under a block of lots; the read follows
+// the source's pages up to this many before calling the zoning incomplete.
+const STUDY_ZONING_PAGES = 10;
 export async function readStudyZoning(provider, query, bbox) {
-    const answer = await provider.query(null, { ...query, bbox, limit: 200 });
-    if (answer.nextAfter != null || answer.omitted) fail('study-zoning-incomplete');
+    const items = [];
+    let after = null;
+    for (let page = 0; ; page++) {
+        if (page === STUDY_ZONING_PAGES) fail('study-zoning-incomplete');
+        const limit = provider.descriptor?.zoningPageLimit ?? 200;
+        const answer = await provider.query(null, { ...query, bbox, limit, ...(after === null ? {} : { after }) });
+        if (answer.omitted) fail('study-zoning-incomplete');
+        items.push(...answer.items);
+        if (answer.nextAfter == null) break;
+        after = answer.nextAfter;
+    }
+    // A record on two pages is one zone, never two stacked over the same ground.
+    const unique = [...new Map(items.map(item => [item.source.recordId, item])).values()];
     // Viewport clipping is a display projection, never the geometry used to prove parcel coverage.
-    return (await Promise.all(answer.items.map(item => provider.record(null,
+    return (await Promise.all(unique.map(item => provider.record(null,
         { recordId: item.source.recordId, scenario: query.scenario, city: query.city })))).flat();
 }
 
@@ -69,6 +83,9 @@ export async function parcelRecords(provider, parcel, records, context = {}) {
     return provider.parcelRecords ? provider.parcelRecords(parcel, records, context) : records;
 }
 
+// The largest lot a study accepts (1 km²); a larger one is a field or a district, not a building lot.
+export const STUDY_MAX_PARCEL_M2 = 1000000;
+
 // A zone under less than this share of the lot is boundary digitising noise: evidence, not a part.
 export const MINOR_ZONE_SHARE = 0.02;
 // The zoning areas under a parcel, largest first. Major zones are parts when they partition the
@@ -104,7 +121,7 @@ export function assembleParcelStudy(parcel, descriptor, records, { zone = null, 
     if (parcel?.geometry?.type === 'MultiPolygon' && parcel.geometry.coordinates.length === 1) {
         parcel = { ...parcel, geometry: { type: 'Polygon', coordinates: parcel.geometry.coordinates[0] } };
     }
-    if (turf.area(parcel) > 1000000 || parcel.geometry.type !== 'Polygon') fail('unsupported-parcel-shape');
+    if (turf.area(parcel) > STUDY_MAX_PARCEL_M2 || parcel.geometry.type !== 'Polygon') fail('unsupported-parcel-shape');
     if (zones.stacked) fail('study-multiple-zoning-areas');
     let entry;
     if (zone !== null) entry = zones.major.find(item => item.source.source.recordId === zone);

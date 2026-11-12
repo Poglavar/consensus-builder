@@ -14,7 +14,7 @@ the parcel source `kz-alatau-pkk` (the national public cadastral map, district v
 | --- | --- |
 | Service | `https://map.gov4c.kz/ggkgs/ows`, OGC WFS 2.0.0, layer `kz:gpzone` (the public cadastral map's urban-planning cadastre proxy) |
 | Plan | Генеральный план г. Алатау, корректировка; Постановление Правительства РК № 727 от 09.09.2025 ([text](https://primeminister.kz/assets/media/prilozenie-1-rus-727.pdf), [main drawing](https://primeminister.kz/assets/media/prilozenie-2-rus-727.pdf)). The companion red-line layer `kz:gpreg` carries `number_post` № 727 and `approved_date` 2025-09-09 for the same territory |
-| Territory | `admterr_id` 191810000 (KATO code of Alatau). The layer is national, so zones of other territories are dropped and counted as omitted |
+| Territory | `admterr_id` 191810000 (KATO code of Alatau). The layer is national, so a viewport read asks for this territory's zones only (one FES filter: `admterr_id` and a BBOX on `shape`). A neighbour's zone on the Almaty border is therefore never returned, and never counted as an omission that would mark the zoning incomplete |
 | Size | 6,659 zones in Alatau on 2026-11-12; `implementation` marks 847 existing, 5,702 planned and 110 unrecorded |
 | Fields read | `object_id_i32` (record identity and paging order), `functional` (zone use and storey class), `gpzone` (zone group), `implementation` |
 | Spatial reference | EPSG:4326; WFS 2.0 bounds are sent latitude first (`urn:ogc:def:crs:EPSG::4326`) and features return longitude first |
@@ -23,6 +23,12 @@ the parcel source `kz-alatau-pkk` (the national public cadastral map, district v
 
 The provider reads one viewport page per request (cursor = service row index, ordered by
 `object_id_i32`, 15 min in-memory cache) and re-reads a record by an `object_id_i32` filter.
+The plan's zones are small, so a block of lots lies under several hundred of them. The source sets
+`zoningPageLimit: 1000`, and a study or envelope zoning read follows further pages (up to 10)
+instead of failing at the first.
+
+Envelopes are drawn only for lots of 1 km² or less, the study limit. Larger lots (fields, common
+in Alatau) are listed as `unsupported-parcel-shape` and do not widen the zoning read.
 
 ## Interpretation
 

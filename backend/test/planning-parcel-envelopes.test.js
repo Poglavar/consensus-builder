@@ -6,7 +6,7 @@ import * as turf from '@turf/turf';
 import { loadParcelEnvelopes, parcelOverlapProblems, parcelConfigurations, outerBound, lotAreaTest, tieredBound, floorAreaM2 } from '../planning/parcel-envelopes.js';
 import { streetWidthAcross } from '../planning/street-width.js';
 import { createAtlasProvider } from '../planning/providers/atlas.js';
-import { assembleParcelStudy } from '../planning/parcel-study.js';
+import { assembleParcelStudy, readStudyZoning } from '../planning/parcel-study.js';
 import { setupPlanningRoutes } from '../routes/planning.js';
 const require = createRequire(import.meta.url);
 const core = require('../../frontend/js/planning/parcel-assessment.js');
@@ -190,6 +190,30 @@ describe('viewport parcel envelopes', () => {
     it('refuses incomplete or oversized parcel reads instead of displaying a convenient subset', async () => {
         await expect(loadParcelEnvelopes(query,options([],provider(),false))).rejects.toMatchObject({code:'study-parcel-incomplete'});
         await expect(loadParcelEnvelopes(query,options(Array.from({length:1001},(_,i)=>parcel(String(i)))))).rejects.toMatchObject({code:'envelope-area-too-large'});
+    });
+    it('lists a lot over the study limit as unavailable without widening the zoning read to it', async () => {
+        // A field about 2 km across: no envelope, and its outline must not pull in the zones around it.
+        const field = parcel('field', [-105.03, 39.99, -105.001, 40.008]);
+        const source = provider();
+        const query_ = vi.spyOn(source, 'query');
+        const result = await loadParcelEnvelopes(query, options([parcel(), field], source));
+        expect(result.items.map(item => item.id)).toEqual(['envelope:atlas-envelope-test:parcel-one']);
+        expect(result.unavailable).toEqual([{ parcelId: 'field', reason: 'unsupported-parcel-shape' }]);
+        expect(query_.mock.calls.every(([, request]) => request.bbox[0] >= bbox[0] && request.bbox[2] <= bbox[2])).toBe(true);
+    });
+    it('reads zoning across the source\'s pages, and stays incomplete on an omission or past the page cap', async () => {
+        const zone = id => ({ id, source: { recordId: id } });
+        const paged = pages => ({ descriptor: { zoningPageLimit: 1 },
+            query: vi.fn(async (_pool, { after = null }) => pages[after === null ? 0 : Number(after)]),
+            record: vi.fn(async (_pool, { recordId }) => [{ recordId }]) });
+        const two = paged([{ items: [zone('a')], nextAfter: '1', omitted: 0 }, { items: [zone('b'), zone('a')], nextAfter: null, omitted: 0 }]);
+        expect(await readStudyZoning(two, query, bbox)).toEqual([{ recordId: 'a' }, { recordId: 'b' }]);
+        expect(two.query.mock.calls.map(([, request]) => request.limit)).toEqual([1, 1]);
+        const omitted = paged([{ items: [zone('a')], nextAfter: null, omitted: 1 }]);
+        await expect(readStudyZoning(omitted, query, bbox)).rejects.toMatchObject({ code: 'study-zoning-incomplete' });
+        const endless = paged(Array.from({ length: 11 }, (_, index) => ({ items: [zone(String(index))], nextAfter: String(index + 1), omitted: 0 })));
+        await expect(readStudyZoning(endless, query, bbox)).rejects.toMatchObject({ code: 'study-zoning-incomplete' });
+        expect(endless.query).toHaveBeenCalledTimes(10);
     });
     it('requires an explicitly pinned parcel source instead of inferring one from the requesting city', async () => {
         const source = createAtlasProvider({type:'FeatureCollection',features:[{...turf.bboxPolygon([-105.002,39.999,-105,40.001]),properties}]},

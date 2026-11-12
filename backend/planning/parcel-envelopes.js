@@ -3,7 +3,7 @@
 import * as turf from '@turf/turf';
 import { createRequire } from 'node:module';
 import { sourcesFor } from './sources.js';
-import { assembleParcelStudy, parcelRecords, parcelZones, readStudyZoning, studyParcelSource, withScenarioSource } from './parcel-study.js';
+import { STUDY_MAX_PARCEL_M2, assembleParcelStudy, parcelRecords, parcelZones, readStudyZoning, studyParcelSource, withScenarioSource } from './parcel-study.js';
 import { runtimeParcelSource } from '../parcels/sources.js';
 import { validateBounds } from '../parcels/source-contract.js';
 import { configurationTreatments } from './providers/atlas.js';
@@ -207,7 +207,12 @@ export async function loadParcelEnvelopes(query, { sources, parcelProvider = des
     // A work bound, not a secret: a dense zoom-18 view holds about 1,000 lots, which cost a few
     // seconds, most of it the upstream parcel read.
     if (inView.length > 1000) fail('envelope-area-too-large', 400);
-    const records = inView.map(parcel => ({ parcel, bbox: turf.bbox(parcel) }));
+    const all = inView.map(parcel => ({ parcel, bbox: turf.bbox(parcel) }));
+    // A lot over the study limit gets no envelope, so it must not widen the zoning read either: one
+    // field kilometres across (common in Alatau) pulled hundreds of zones into every area, which
+    // failed as study-zoning-incomplete for the whole view.
+    const records = all.filter(record => turf.area(record.parcel) <= STUDY_MAX_PARCEL_M2);
+    const tooLarge = all.filter(record => !records.includes(record)).map(record => ({ parcelId: record.parcel.id, reason: 'unsupported-parcel-shape' }));
     // Query zoning across full parcel outlines, not just the viewport (a corner can cross a zone).
     const fullBounds = records.length ? [Math.min(...records.map(r => r.bbox[0])), Math.min(...records.map(r => r.bbox[1])),
         Math.max(...records.map(r => r.bbox[2])), Math.max(...records.map(r => r.bbox[3]))] : query.bbox;
@@ -218,8 +223,9 @@ export async function loadParcelEnvelopes(query, { sources, parcelProvider = des
     ]);
     const zonesByScenario = Object.fromEntries(zoneEntries);
     const streetsNearby = streetIndex(streets);
-    const overlapProblems = parcelOverlapProblems(records);
-    const items = [], unavailable = [];
+    // Overlaps are checked against every lot in view, the large ones too.
+    const overlapProblems = parcelOverlapProblems(all);
+    const items = [], unavailable = [...tooLarge];
     for (const { parcel } of records) {
         try {
             if (overlapProblems.has(parcel.id)) fail(overlapProblems.get(parcel.id));
@@ -283,6 +289,6 @@ export async function loadParcelEnvelopes(query, { sources, parcelProvider = des
     }
     return { schemaVersion: 'planning-representations.v1', city: query.city, sources: [provider.descriptor], items,
         coverage: 'source-results', nextCursor: null, truncated: false, omitted: 0,
-        summaries: [{ sourceId: provider.descriptor.id, cachedResults: records.length, withGeometry: items.length,
+        summaries: [{ sourceId: provider.descriptor.id, cachedResults: all.length, withGeometry: items.length,
             withoutGeometry: unavailable.length, statuses: {} }], unavailable };
 }

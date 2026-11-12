@@ -17,9 +17,11 @@ const HOUSES = 'Территория усадебной застройки с з
 function service(features) {
     const fetchImpl = vi.fn(async href => {
         const url = new URL(href);
-        const filter = url.searchParams.get('FILTER');
+        const filter = url.searchParams.get('FILTER') || '';
         const start = Number(url.searchParams.get('startIndex') || 0), count = Number(url.searchParams.get('count'));
-        const pool = filter ? features.filter(f => filter.includes(`<fes:Literal>${f.properties.object_id_i32}</fes:Literal>`)) : features;
+        // A record read filters by object id; a viewport read filters by territory (and bounds), as the service does.
+        const pool = filter.includes('object_id_i32') ? features.filter(f => filter.includes(`<fes:Literal>${f.properties.object_id_i32}</fes:Literal>`))
+            : features.filter(f => filter.includes(`<fes:Literal>${f.properties.admterr_id}</fes:Literal>`));
         const page = pool.slice(start, start + count);
         return { ok: true, json: async () => ({ type: 'FeatureCollection', features: page, numberMatched: pool.length, numberReturned: page.length }) };
     });
@@ -47,7 +49,7 @@ describe('Alatau general plan zones', () => {
 });
 
 describe('Alatau general plan provider', () => {
-    it('reads a viewport latitude-first, keeps only Alatau zones and pages by service row', async () => {
+    it('asks the service for Alatau zones in a latitude-first box and pages by service row', async () => {
         const features = [zone(481223, HOUSES), zone(481224, 'Территория учреждений образования'), zone(900001, HOUSES, { admterr_id: '751210000' })];
         const { provider, fetchImpl } = service(features);
         const first = await provider.query(null, { bbox, limit: 2 });
@@ -57,11 +59,15 @@ describe('Alatau general plan provider', () => {
         expect(first.items[0].constraints.map(item => item.quantity)).toEqual(['storeys', 'height']);
         expect(first.nextAfter).toBe('2');
         const second = await provider.query(null, { bbox, limit: 2, after: first.nextAfter });
-        expect(second).toMatchObject({ items: [], omitted: 1, nextAfter: null });
+        // The neighbour's zone is never returned, so it is not an omission that would mark a read incomplete.
+        expect(second).toMatchObject({ items: [], omitted: 0, nextAfter: null });
         const url = new URL(fetchImpl.mock.calls[0][0]);
         expect(url.origin + url.pathname).toBe('https://map.gov4c.kz/ggkgs/ows');
         expect(url.searchParams.get('typeNames')).toBe('kz:gpzone');
-        expect(url.searchParams.get('bbox')).toBe('43.405,76.965,43.42,76.975,urn:ogc:def:crs:EPSG::4326');
+        expect(url.searchParams.has('bbox')).toBe(false);
+        const viewportFilter = url.searchParams.get('FILTER');
+        expect(viewportFilter).toContain('<fes:ValueReference>admterr_id</fes:ValueReference><fes:Literal>191810000</fes:Literal>');
+        expect(viewportFilter).toContain('<gml:lowerCorner>43.405 76.965</gml:lowerCorner><gml:upperCorner>43.42 76.975</gml:upperCorner>');
         expect(url.searchParams.get('sortBy')).toBe('object_id_i32');
         expect(fetchImpl.mock.calls[0][1].headers.Referer).toBe('https://map.gov4c.kz/egkn/');
     });

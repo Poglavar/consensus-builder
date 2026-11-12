@@ -22,6 +22,8 @@ export const alatauGenplanSource = Object.freeze({
     attribution: 'Генеральный план города Алатау, Постановление Правительства РК № 727 от 9 сентября 2025 г. · зоны из государственного градостроительного кадастра (map.gov4c.kz)',
     capabilities: { volumes: false, areas: true, parcelEvidence: false, constraintEvaluation: false },
     parcelSourceId: 'kz-alatau-pkk', parcelStudy: 'direct-dimensions.v1',
+    // The plan's zones are small; a block of lots lies under several hundred, read in one request.
+    zoningPageLimit: 1000,
     scenarios: ['general'], scenario: 'general'
 });
 
@@ -144,13 +146,20 @@ export function createAlatauGenplanProvider(descriptor = alatauGenplanSource, { 
         }
         return { features: kept, omitted, returned: payload.features.length };
     }
-    // A viewport page: WFS 2.0 reads EPSG:4326 bounds latitude first. `after` is the index of the
-    // next feature in the service's object_id order.
+    // A viewport page of this territory's zones only: the layer is national, and a neighbour's zones
+    // dropped here would read as an incomplete answer. WFS 2.0 reads EPSG:4326 bounds latitude
+    // first. `after` is the index of the next feature in the service's object_id order.
+    if (!/^\d{1,12}$/.test(admterrId)) throw new Error('Invalid Alatau territory id.');
     function readBounds(bbox, { after = 0, count }) {
         const key = JSON.stringify([bbox, after, count]);
         const cached = reads.get(key);
         if (cached && now() - cached.at < TTL_MS) return cached.promise;
-        const promise = getFeatures({ bbox: `${bbox[1]},${bbox[0]},${bbox[3]},${bbox[2]},urn:ogc:def:crs:EPSG::4326`, count, startIndex: after })
+        if (!bbox.every(Number.isFinite)) throw Object.assign(new Error('Invalid bounds'), { status: 400 });
+        const filter = `<fes:Filter xmlns:fes="http://www.opengis.net/fes/2.0" xmlns:gml="http://www.opengis.net/gml/3.2"><fes:And>`
+            + `<fes:PropertyIsEqualTo><fes:ValueReference>admterr_id</fes:ValueReference><fes:Literal>${admterrId}</fes:Literal></fes:PropertyIsEqualTo>`
+            + `<fes:BBOX><fes:ValueReference>shape</fes:ValueReference><gml:Envelope srsName="urn:ogc:def:crs:EPSG::4326">`
+            + `<gml:lowerCorner>${bbox[1]} ${bbox[0]}</gml:lowerCorner><gml:upperCorner>${bbox[3]} ${bbox[2]}</gml:upperCorner></gml:Envelope></fes:BBOX></fes:And></fes:Filter>`;
+        const promise = getFeatures({ FILTER: filter, count, startIndex: after })
             .catch(error => { reads.delete(key); throw error; });
         if (reads.size >= READ_CAP) reads.delete(reads.keys().next().value);
         reads.set(key, { at: now(), promise });
