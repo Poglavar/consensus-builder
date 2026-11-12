@@ -119,15 +119,22 @@
         }
     }
     global.WorldProposalEntry = { href, open, openAgreement, openBet, isOpening: () => opening };
+    // The address the page was opened with. The route runs at window `load`, which waits for the
+    // basemap tiles: by then the reader may already have selected a design, and the selection
+    // address (selection-address.js) has written that ?design= into the live address. Read live,
+    // it would reopen the reader's own pick as a link arrival and reset what they were doing.
+    const openedWith = global.location.search;
     async function fromUrl() {
-        const params = new URLSearchParams(global.location.search);
+        const params = new URLSearchParams(openedWith);
         const id = params.get('design');
         if (!id) return;
         const arrive = params.get('arrive');
         if (arrive) {
             // Consumed once: a reload of this URL reopens the design without diving again.
             params.delete('arrive');
-            global.history.replaceState(global.history.state, '', global.location.pathname + '?' + params);
+            const live = new URLSearchParams(global.location.search);
+            live.delete('arrive');
+            global.history.replaceState(global.history.state, '', global.location.pathname + '?' + live);
         }
         try {
             await global.whenAppBooted();

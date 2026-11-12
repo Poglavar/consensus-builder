@@ -383,3 +383,32 @@ it('does not publish or select shared-source ground when its city cannot be reso
         error.mockRestore();
     }
 });
+
+// The route runs once the app has booted, after window `load`. By then the selection address may
+// have written the reader's own pick into the live address; only the address the page was opened
+// with names a link arrival.
+describe('the parcel route reads the address the page was opened with', () => {
+    const source = require('node:fs').readFileSync(require.resolve('../../frontend/js/parcels/route.js'), 'utf8');
+    async function boot(openedSearch, laterSearch) {
+        let booted;
+        const window = {
+            location: { pathname: '/', search: openedSearch },
+            whenAppBooted: () => new Promise(resolve => { booted = resolve; }),
+            updateStatus: vi.fn(), console: { ...console, error: () => {}, warn: () => {}, log: () => {} }
+        };
+        require('node:vm').runInNewContext(source, { window, console: window.console, URLSearchParams, decodeURIComponent });
+        window.location.search = laterSearch;   // the reader picks a parcel before the page has loaded
+        booted();
+        await new Promise(resolve => setImmediate(resolve));
+        return window.updateStatus;
+    }
+    it('does not reopen a parcel the reader picked after opening the page', async () => {
+        expect(await boot('?city=zagreb', '?city=zagreb&parcel=HR-1-PICKED')).not.toHaveBeenCalled();
+    });
+    it('opens the parcel the link named, whatever is picked meanwhile', async () => {
+        const status = await boot('?parcel=HR-1-LINKED', '?parcel=HR-1-PICKED');
+        // No city configuration in this bare page: the route reports which parcel it tried to open.
+        expect(status).toHaveBeenCalledOnce();
+        expect(status.mock.calls[0][0]).toContain('HR-1-LINKED');
+    });
+});

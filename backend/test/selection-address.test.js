@@ -49,3 +49,36 @@ describe('the address with a selection', () => {
         expect(withSelection('http://x/bets/acct', null)).toBeNull();
     });
 });
+
+// restore() runs at window `load`, after the basemap tiles. By then the reader may have opened a
+// plan, and write() has put it into the live address; only the opening address names a reload.
+describe('reopening a selection on load', () => {
+    const source = createRequire(import.meta.url)('node:fs').readFileSync(new URL('../../frontend/js/selection-address.js', import.meta.url), 'utf8');
+    function page(openedSearch) {
+        let onLoad;
+        const shown = [];
+        const window = {
+            document: { readyState: 'loading' }, location: { search: openedSearch }, console,
+            addEventListener: (name, handler) => { if (name === 'load') onLoad = handler; },
+            whenAppBooted: async () => {},
+            ClickStack: { keepNextView() {}, showPlan: async plan => { shown.push(plan.cid); } },
+            NamedPlans: { list: () => [{ cid: 'bafyopened', published: true }, { cid: 'bafypicked', published: true }] },
+            PlanWorkspace: { resolve: async plan => plan },
+            PlanComposition: { localRecords: () => [] }, DesignSync: { apiBase: () => '' }
+        };
+        createRequire(import.meta.url)('node:vm').runInNewContext(source, { window, console, URL, URLSearchParams });
+        return { window, load: () => onLoad(), shown };
+    }
+    it('does not reopen a plan the reader opened after the page was opened', async () => {
+        const { window, load, shown } = page('?at=45.8,15.9,17');
+        window.location.search = '?at=45.8,15.9,17&plan=bafypicked';
+        await load();
+        expect(shown).toEqual([]);
+    });
+    it('reopens the plan the opening address named, whatever is selected meanwhile', async () => {
+        const { window, load, shown } = page('?at=45.8,15.9,17&plan=bafyopened');
+        window.location.search = '?at=45.8,15.9,17&plan=bafypicked';
+        await load();
+        expect(shown).toEqual(['bafyopened']);
+    });
+});

@@ -73,7 +73,9 @@ is selected (`selection-address.js`):
 | a plan | `?plan=<cid>` |
 | an agreement | `?agreement=<local id>`, or its CID when it is read from the index |
 
-A reload reopens the selection without applying anything. With a view in the address (`?at=`, and
+A reload reopens the selection without applying anything. What is reopened is the selection in the
+address the page was opened with: the page finishes loading after its map tiles, and a selection
+made before that is written to the address but is not opened a second time. With a view in the address (`?at=`, and
 `camera` in the model and photo views) the camera stays where it was; without one the selection is framed, as a link is. A share
 link that opened a record (`/designs/<cid>`, `/plans/<cid>`, `/agreements/<cid>`, `/parcel/<id>`)
 gives way to the selection parameter as soon as the stack shows it, so a reload does not import and

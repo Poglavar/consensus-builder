@@ -5,9 +5,9 @@ import { describe, it, expect, vi } from 'vitest';
 import { readFileSync } from 'node:fs';
 import vm from 'node:vm';
 const source = readFileSync(new URL('../../frontend/js/world/proposal-entry.js', import.meta.url), 'utf8');
-function setup(proposal, { keepsView = false } = {}) {
+function setup(proposal, { keepsView = false, search = '' } = {}) {
     const win = {
-        location: { origin: 'http://localhost:8107', href: 'http://localhost:8107/?world=1&lang=hr&backend=http%3A%2F%2Flocalhost%3A3037', search: '' },
+        location: { origin: 'http://localhost:8107', href: 'http://localhost:8107/?world=1&lang=hr&backend=http%3A%2F%2Flocalhost%3A3037', pathname: '/', search },
         document: { readyState: 'loading', getElementById: () => 'details-panel' }, addEventListener: vi.fn(), history: { pushState: vi.fn(), replaceState: vi.fn() },
         CityConfigManager: { getCityConfig: id => ['zagreb','new_york','explore'].includes(id) ? {} : null, getCurrentCityId: () => 'zagreb', switchCity: vi.fn(async () => true) },
         getProposalByIdOrHash: vi.fn(() => proposal), getProposalKey: p => p.proposalId,
@@ -103,6 +103,31 @@ describe('opening a globe design on the map', () => {
         await framed.WorldProposalEntry.open(event);
         expect(framed.ClickStack.keepNextView).not.toHaveBeenCalled();
         expect(framed.openProposalFromList.mock.calls[0][1].centerOnProposal).toBe(true);
+    });
+});
+
+describe('the ?design= route at window load', () => {
+    // The route waits for `load` (after the basemap tiles); the selection address may have
+    // written the reader's own pick into the live address by then.
+    const atLoad = win => win.addEventListener.mock.calls.find(([type]) => type === 'load')[1];
+    const translated = win => Object.assign(win, { i18n: { t: () => 'Activity' }, updateStatus: vi.fn() });
+    it("does not reopen the reader's own pick that the address gained after the page opened", async () => {
+        const proposal = { proposalId: 'p-own', applied: true };
+        const win = translated(setup(proposal));
+        win.location.search = '?at=45.8,15.98,18&design=p-own';
+        await atLoad(win)();
+        expect(win.openProposalFromList).not.toHaveBeenCalled();
+        expect(win.WorldHandoff.proposalReady).not.toHaveBeenCalled();
+    });
+    it('opens the design the page was opened with, and drops ?arrive= from the live address only', async () => {
+        const proposal = { proposalId: `design-${DESIGN}`, applied: false };
+        const win = translated(setup(proposal, { search: `?design=${DESIGN}&arrive=latest` }));
+        win.WorldArrival = { enter3D: vi.fn(async () => {}) };
+        win.location.search = `?design=${DESIGN}&arrive=latest&at=45.8,15.98,18`;
+        await atLoad(win)();
+        expect(win.openProposalFromList).toHaveBeenCalledWith(`design-${DESIGN}`, expect.objectContaining({ proposal }));
+        expect(win.history.replaceState.mock.calls[0][2]).toBe(`/?design=${DESIGN}&at=45.8%2C15.98%2C18`);
+        expect(win.WorldArrival.enter3D).toHaveBeenCalledWith(proposal);
     });
 });
 

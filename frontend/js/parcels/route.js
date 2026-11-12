@@ -186,8 +186,7 @@
         global.updateStatus?.(`Could not open parcel ${parcelId}: ${message}`);
     }
 
-    async function handleParcelRouteFromUrl() {
-        const parcelId = parseParcelIdFromUrl();
+    async function handleParcelRouteFromUrl(parcelId = parseParcelIdFromUrl()) {
         if (!parcelId) return;
 
         const cityManager = global.CityConfigManager;
@@ -270,7 +269,12 @@
     // Guarded so a node `require` of this file (for the unit tests) doesn't blow up on a global with
     // no addEventListener — the browser path is unchanged.
     if (typeof global.whenAppBooted === 'function') {
-        global.whenAppBooted().then(() => handleParcelRouteFromUrl());
+        // The parcel named by the address the page was opened with. The app has booted only after
+        // window `load`, which waits for the basemap tiles: by then the reader may have picked a
+        // parcel, and the selection address (selection-address.js) has written that ?parcel= into the
+        // live address. Read live, it would reopen the reader's own pick as a link arrival.
+        const openedParcelId = parseParcelIdFromUrl();
+        global.whenAppBooted().then(() => handleParcelRouteFromUrl(openedParcelId));
     } else if (typeof global.addEventListener === 'function') {
         console.error(`[${new Date().toISOString()}] [parcels/route] whenAppBooted is missing (map-core.js not loaded); /parcel/ route not handled.`);
     }

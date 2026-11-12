@@ -83,9 +83,12 @@
     const keepsView = () => global.CityConfigManager?.getBootEntry?.()?.source === 'at';
 
     // A reload reopens a plan or an agreement (a parcel: parcels/route.js; a design:
-    // world/proposal-entry.js).
+    // world/proposal-entry.js). It reads the address the page was opened with: restore runs at
+    // window `load`, after the basemap tiles, and by then write() may have put the reader's own
+    // pick into the live address, which must not be reopened over what they are doing.
+    const openedWith = global.location.search;
     async function restore() {
-        const selection = read(global.location.search);
+        const selection = read(openedWith);
         if (!selection || (selection.kind !== 'plans' && selection.kind !== 'agreements')) return;
         await global.whenAppBooted();
         try {
