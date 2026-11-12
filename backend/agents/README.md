@@ -152,11 +152,15 @@ reads the account, market and YES position), so every market stays open for at l
   `claim` the YES refund (a full refund when nobody staked NO; otherwise the stake is lost);
 - **executed / cancelled / expired**: `resolve` → `claim` when still open; **awaiting-owners** (a contest
   answer on land the persona does not own), **lens-not-operated** and **awaiting-funds** wait.
+- after any of these, on a market the persona opened: `reclaim` (`reclaim_seed`) takes back what the
+  payouts leave of its b·ln2 seed, so a market costs cents instead of ~3.47 USDC (since 2026-11-12;
+  `reclaim-seeds.mjs --dry-run|--apply` did it once for the markets settled before, and sweeps persona
+  USDC above the 0.5 top-up target back to densifier-01).
 
 Each step goes through the action engine and is checkpointed under `summary.settlements[account]`; the
 index is then refreshed (`POST /agreements/:cid/onchain`), and an account that reached its end is marked
 `settled: true` so later runs skip it. At most `AGENT_SETTLE_MAX_PER_RUN` (default 3) agreements a run;
-their transactions (attest, execute, expire, resolve, claim: at most 4 each) share
+their transactions (attest, execute, expire, resolve, claim, reclaim: at most 5 each) share
 `AGENT_DAILY_ACTION_CAP` with the picks. `--dry-run` lists what would be settled.
 
 **Contest mode.** An area `{ mode: 'contest', floorCap, withinDays }` answers other proposers'
