@@ -5,12 +5,12 @@
     "asOf": "2026-10-08",
     "demographicSnapshotDate": "2026-10-12",
     "statisticsYear": 2025,
-    "cityCount": 3257,
+    "cityCount": 3258,
     "countryCount": 255,
     "statisticalJurisdictions": 237,
     "checkedCityCount": 2616,
-    "uncheckedCityCount": 641,
-    "cityRegistryFoundCount": 2028,
+    "uncheckedCityCount": 642,
+    "cityRegistryFoundCount": 2029,
     "verifiedCitySampleCount": 1983,
     "nationalCadastreCount": 72,
     "countryTwoRegionCount": 50,
@@ -18,7 +18,7 @@
     "growthMatchedCount": 1619,
     "checkedCitiesMissingDate": 2616,
     "wikiCityCount": 275,
-    "configuredAppCityCount": 2029,
+    "configuredAppCityCount": 2030,
     "unmatchedStatisticalAmounts": {
       "landAreaKm2": 0,
       "builtUpAreaKm2": 0.003000000026077032,
@@ -4279,6 +4279,53 @@
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=8.86722&mlon=77.49987#map=12/8.86722/77.49987",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=8.86722%2C77.49987",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
+      "id": "app:KZ:alatau",
+      "name": "Alatau",
+      "country": "Kazakhstan",
+      "countryCode": "KZ",
+      "latitude": 43.412,
+      "longitude": 76.97,
+      "registryCityIds": [
+        "app:KZ:alatau"
+      ],
+      "appCityIds": [
+        "alatau"
+      ],
+      "cohorts": [
+        "registry"
+      ],
+      "wupCityCode": null,
+      "wupName": null,
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": null,
+      "population2025": null,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "checked": false,
+      "checkedDate": null,
+      "checkedDateEvidence": null,
+      "registryFound": true,
+      "registryFindingBasis": "configured_source",
+      "registryBasis": null,
+      "verifiedSample": false,
+      "impliedParcelsTried": null,
+      "integrationAttempts": [],
+      "sourceIds": [
+        "kz-alatau-pkk"
+      ],
+      "evidenceUrls": [
+        "https://map.gov4c.kz/geoserver/wfs"
+      ],
+      "evidenceFiles": [],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=43.41200&mlon=76.97000#map=12/43.41200/76.97000",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=43.41200%2C76.97000",
       "wikipediaUrl": null,
       "wikipediaEvidence": null
     },
@@ -179114,7 +179161,7 @@
       "statisticsYear": 2025,
       "missingStatisticsReason": null,
       "citiesChecked": 3,
-      "citiesWithRegistry": 4,
+      "citiesWithRegistry": 5,
       "checked": true,
       "checkedDate": "2026-09-29",
       "nationalCadastreFound": null,

@@ -1,12 +1,13 @@
 // Checks the Astana public view's native projection, identity, paging and bounded reads.
 import { describe, expect, it, vi } from 'vitest';
 import proj4 from 'proj4';
-import { createKazakhstanPkkSource } from '../parcels/kazakhstan-pkk-source.js';
+import { createKazakhstanPkkSource, kazakhstanPkkProjection } from '../parcels/kazakhstan-pkk-source.js';
+import { validateParcelProviderRelayRequest } from '../parcels/provider-relay.js';
 
 const ENDPOINT = 'https://map.gov4c.kz/geoserver/wfs';
 const PREFIX = 'KZ-ASTANA-PKK-';
-const SOURCE_CRS = 'EPSG:32642';
-const SOURCE_CRS_URN = 'urn:ogc:def:crs:EPSG::32642';
+const SOURCE_CRS = kazakhstanPkkProjection(12).definition;
+const SOURCE_CRS_URN = 'urn:ogc:def:crs:EPSG::404000';
 const CENTER = [71.4304, 51.1282];
 const CENTER_METRIC = proj4('EPSG:4326', SOURCE_CRS, CENTER);
 const BOUNDS = [71.4302, 51.1280, 71.4306, 51.1284];
@@ -37,7 +38,14 @@ function makeSource(pages, override = {}) {
 }
 
 describe('Astana official PKK parcel source', () => {
-    it('projects a bounded WGS84 bbox to UTM and projects returned geometry back', async () => {
+    it('places the provider grid on the ground: zone 12 Gauss–Krüger with a zone-prefixed easting', () => {
+        // Parcel 21320072529 holds this point; its native corner was read from the provider on 2026-11-12.
+        const [lon, lat] = proj4(SOURCE_CRS, 'EPSG:4326', [12670136.1684, 5669142.3848]);
+        expect(lon).toBeCloseTo(71.43052, 4);
+        expect(lat).toBeCloseTo(51.12806, 4);
+    });
+
+    it('projects a bounded WGS84 bbox to the native grid and projects returned geometry back', async () => {
         const { source, fetchImpl } = makeSource([response([row(5884914, '21320072529')])]);
         const result = await source.queryBounds(BOUNDS);
         expect(result).toMatchObject({ sourceId: 'astana-egkn-pkk', complete: true, returnsWGS84: true });
@@ -53,17 +61,17 @@ describe('Astana official PKK parcel source', () => {
         expect(params.get('version')).toBe('2.0.0');
         expect(params.get('typename')).toBe('egkn:u_view');
         expect(params.get('viewparams')).toBe('district_id:254');
-        expect(params.get('srsname')).toBe(SOURCE_CRS);
+        expect(params.has('srsname')).toBe(false);
         expect(params.get('propertyname')).toBe('gid,kad_nomer,geom');
         expect(params.get('sortBy')).toBe('gid');
         expect(params.get('count')).toBe('2');
         expect(params.get('startIndex')).toBe('0');
-        expect(params.get('bbox')).toMatch(/,EPSG:32642$/);
         const expectedCorners = [[BOUNDS[0], BOUNDS[1]], [BOUNDS[0], BOUNDS[3]], [BOUNDS[2], BOUNDS[1]], [BOUNDS[2], BOUNDS[3]]]
             .map(point => proj4('EPSG:4326', SOURCE_CRS, point));
         const expectedBbox = [Math.min(...expectedCorners.map(p => p[0])), Math.min(...expectedCorners.map(p => p[1])),
             Math.max(...expectedCorners.map(p => p[0])), Math.max(...expectedCorners.map(p => p[1]))];
-        expect(params.get('bbox')).toBe(`${expectedBbox.join(',')},${SOURCE_CRS}`);
+        expect(params.get('bbox')).toBe(expectedBbox.join(','));
+        expect(expectedBbox[0]).toBeGreaterThan(12000000);
         const [lon, lat] = result.features[0].geometry.coordinates[0][0][0];
         const expectedPoint = proj4(SOURCE_CRS, 'EPSG:4326', [CENTER_METRIC[0] - 5, CENTER_METRIC[1] - 5]);
         expect(lon).toBeCloseTo(expectedPoint[0], 8);
@@ -137,6 +145,10 @@ describe('Astana official PKK parcel source', () => {
         await expect(wrongReturnCount.source.queryBounds(BOUNDS)).rejects.toMatchObject({ status: 502 });
         const wrongCrs = makeSource([response([], 0, { crs: { type: 'name', properties: { name: 'EPSG:4326' } } })]);
         await expect(wrongCrs.source.queryBounds(BOUNDS)).rejects.toMatchObject({ status: 502 });
+        const formerUtm = makeSource([response([], 0, { crs: { type: 'name', properties: { name: 'urn:ogc:def:crs:EPSG::32642' } } })]);
+        await expect(formerUtm.source.queryBounds(BOUNDS)).rejects.toMatchObject({ status: 502 });
+        const utmGeometry = makeSource([response([row(5884914, '21320072529', geometryAt(proj4('EPSG:4326', 'EPSG:32642', CENTER)))])]);
+        await expect(utmGeometry.source.queryBounds(BOUNDS)).rejects.toMatchObject({ status: 502 });
         const conflict = makeSource([response([row(5884914, '21320072529'), row(5884915, '21320072529', geometryAt(CENTER_METRIC, 6))], 2)]);
         await expect(conflict.source.queryBounds(BOUNDS)).rejects.toMatchObject({ status: 502 });
     });
@@ -151,7 +163,7 @@ describe('Astana official PKK parcel source', () => {
         await expect(nonempty.source.queryBounds(BOUNDS)).rejects.toMatchObject({ status: 502 });
     });
 
-    it('keeps rotated-UTM envelope hits whose returned WGS84 envelope extends beyond the input bbox', async () => {
+    it('keeps rotated-grid envelope hits whose returned WGS84 envelope extends beyond the input bbox', async () => {
         const bounds = [71.43, 51.128, 71.431, 51.129];
         const projectedCorners = [[bounds[0], bounds[1]], [bounds[0], bounds[3]], [bounds[2], bounds[1]], [bounds[2], bounds[3]]]
             .map(point => proj4('EPSG:4326', SOURCE_CRS, point));
@@ -222,12 +234,12 @@ describe('Astana official PKK parcel source', () => {
 
 describe('Almaty official PKK district projection', () => {
     const almatyPrefix = 'KZ-ALMATY-PKK-';
-    const almatyCrs = 'EPSG:32643';
+    const almatyCrs = kazakhstanPkkProjection(13).definition;
     const center = [76.909491597618, 43.2612968331175];
     const metric = proj4('EPSG:4326', almatyCrs, center);
     const almatyBounds = [center[0] - 0.0002, center[1] - 0.0002, center[0] + 0.0002, center[1] + 0.0002];
-    const override = { id: 'almaty-egkn-pkk', districtId: 244, idPrefix: almatyPrefix, projection: almatyCrs };
-    const crs = { type: 'name', properties: { name: 'urn:ogc:def:crs:EPSG::32643' } };
+    const override = { id: 'almaty-egkn-pkk', districtId: 244, idPrefix: almatyPrefix, projection: 'KZ-GK-13' };
+    const crs = { type: 'name', properties: { name: SOURCE_CRS_URN } };
 
     it('uses the published Almaty district SRS for bounds and fresh exact reference reads', async () => {
         const native = row(7236597, '20311024010', geometryAt(metric));
@@ -240,8 +252,8 @@ describe('Almaty official PKK district projection', () => {
         expect(actual[1]).toBeCloseTo(expected[1], 8);
         const params = new URL(fetchImpl.mock.calls[0][0]).searchParams;
         expect(params.get('viewparams')).toBe('district_id:244');
-        expect(params.get('srsname')).toBe(almatyCrs);
-        expect(params.get('bbox')).toMatch(/,EPSG:32643$/);
+        expect(params.has('srsname')).toBe(false);
+        expect(Number(params.get('bbox').split(',')[0])).toBeGreaterThan(13000000);
         expect(JSON.stringify(viewport)).not.toContain('address_ru');
         const reread = await source.queryIds([almatyPrefix + '20311024010']);
         expect(reread.features).toEqual(viewport.features);
@@ -251,13 +263,15 @@ describe('Almaty official PKK district projection', () => {
         expect(referenceParams.has('bbox')).toBe(false);
     });
 
-    it('rejects Astana CRS metadata in an Almaty response instead of silently reprojecting it', async () => {
-        const { source } = makeSource([response([row(7236597, '20311024010', geometryAt(metric))])], override);
+    it('rejects zone 12 geometry in an Almaty response instead of silently reprojecting it', async () => {
+        const astanaZone = geometryAt(proj4('EPSG:4326', SOURCE_CRS, CENTER));
+        const { source } = makeSource([response([row(7236597, '20311024010', astanaZone)], 1, { crs })], override);
         await expect(source.queryBounds(almatyBounds)).rejects.toMatchObject({ status: 502 });
     });
 
     it('requires a verified district/projection/namespace combination before network access', () => {
-        expect(() => makeSource([], { ...override, projection: SOURCE_CRS })).toThrow(/descriptor/);
+        expect(() => makeSource([], { ...override, projection: 'KZ-GK-12' })).toThrow(/descriptor/);
+        expect(() => makeSource([], { ...override, projection: 'EPSG:32643' })).toThrow(/descriptor/);
         expect(() => makeSource([], { ...override, idPrefix: PREFIX })).toThrow(/descriptor/);
         expect(() => makeSource([], { ...override, districtId: 999 })).toThrow(/descriptor/);
     });
@@ -266,5 +280,37 @@ describe('Almaty official PKK district projection', () => {
         const { source, fetchImpl } = makeSource([], override);
         await expect(source.queryIds([PREFIX + '21320072529'])).rejects.toMatchObject({ status: 400 });
         expect(fetchImpl).not.toHaveBeenCalled();
+    });
+});
+
+describe('Alatau official PKK district view', () => {
+    const alatauPrefix = 'KZ-ALATAU-PKK-';
+    const override = { id: 'kz-alatau-pkk', districtId: 364, idPrefix: alatauPrefix, projection: 'KZ-GK-13' };
+    const crs = { type: 'name', properties: { name: SOURCE_CRS_URN } };
+    const center = [76.970, 43.412];
+
+    it('reads district 364 in zone 13 under its own namespace', async () => {
+        const metric = proj4('EPSG:4326', kazakhstanPkkProjection(13).definition, center);
+        const { source, fetchImpl } = makeSource([response([row(8060469, '030461441804', geometryAt(metric))], 1, { crs })], override);
+        const result = await source.queryBounds([center[0] - 0.0002, center[1] - 0.0002, center[0] + 0.0002, center[1] + 0.0002]);
+        expect(result.features.map(feature => feature.id)).toEqual([alatauPrefix + '030461441804']);
+        const [lon, lat] = result.features[0].geometry.coordinates[0][0][0];
+        expect(lon).toBeCloseTo(center[0], 3);
+        expect(lat).toBeCloseTo(center[1], 3);
+        expect(new URL(fetchImpl.mock.calls[0][0]).searchParams.get('viewparams')).toBe('district_id:364');
+        expect(() => makeSource([], { ...override, idPrefix: 'KZ-ALMATY-PKK-' })).toThrow(/descriptor/);
+    });
+
+    it('passes the browser relay with the adapter\'s own request headers, and only the viewer referrer', async () => {
+        // Browsers cannot reach the provider directly, so every browser read goes through the relay.
+        const metric = proj4('EPSG:4326', kazakhstanPkkProjection(13).definition, center);
+        const { source, fetchImpl } = makeSource([response([row(8060469, '030461441804', geometryAt(metric))], 1, { crs })], override);
+        await source.queryBounds([center[0] - 0.0002, center[1] - 0.0002, center[0] + 0.0002, center[1] + 0.0002]);
+        const [url, options] = fetchImpl.mock.calls[0];
+        const headers = Object.fromEntries(Object.entries(options.headers).filter(([name]) => name !== 'User-Agent'));
+        const descriptor = { ...override, adapter: 'kazakhstan-pkk', endpoint: ENDPOINT, featureType: 'egkn:u_view' };
+        expect(() => validateParcelProviderRelayRequest(descriptor.id, { url, method: 'GET', headers }, { sources: [descriptor] })).not.toThrow();
+        expect(() => validateParcelProviderRelayRequest(descriptor.id, { url, method: 'GET', headers: { ...headers, Referer: 'https://example.com/' } },
+            { sources: [descriptor] })).toThrow();
     });
 });

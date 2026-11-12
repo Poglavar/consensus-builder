@@ -4574,7 +4574,7 @@
       "endpoint": "https://map.gov4c.kz/geoserver/wfs",
       "featureType": "egkn:u_view",
       "districtId": 254,
-      "projection": "EPSG:32642",
+      "projection": "KZ-GK-12",
       "idField": "kad_nomer",
       "idType": "string",
       "objectIdField": "gid",
@@ -4603,10 +4603,51 @@
       "caveats": [
         "The public viewer’s district_id parameter is required. The configured scope is one published district view, not Kazakhstan-wide or citywide coverage.",
         "Native cadastral identity is kad_nomer. The gid property orders pagination; generated GeoServer feature IDs change between otherwise identical responses and are never used as parcel identity.",
-        "The service requires native EPSG:32642 queries and returns native coordinates. Four-corner projected envelopes are queried and complete source geometry is transformed to WGS84. Direct CRS:84 requests returned no features and are not evidence of parcel absence.",
+        "Since the provider's QazTRF migration (about 25–26 October 2026) the view stores 6-degree Gauss–Krüger zone 12 coordinates on GRS80 with the zone number prefixed to the easting, reports EPSG:404000 and ignores srsName. Four-corner native envelopes are queried and complete source geometry is transformed to WGS84; OSM building vertices fit the transformed parcels best within 4 m of zero offset. UTM bounds now return no features and are not evidence of parcel absence.",
         "The server omits its published Sectigo intermediate. Source-scoped CA supplementation preserves ordinary certificate and hostname verification.",
         "Up to 80 requested IDs are read in filters of at most 20 terms under a single 15-second deadline and shared response-byte budget; an unchunked 80-term filter returned HTTP 414.",
         "All 154 locally sampled parcels were valid. Five source-boundary overlaps were retained unchanged; the two largest measure 0.451 m² and 0.382 m², with minimum oriented widths about 9.8 mm and 12.1 mm. No global geometry repair or tolerance is applied."
+      ]
+    },
+    {
+      "id": "kz-alatau-pkk",
+      "name": "Kazakhstan EGKN PKK — Alatau city",
+      "adapter": "kazakhstan-pkk",
+      "endpoint": "https://map.gov4c.kz/geoserver/wfs",
+      "featureType": "egkn:u_view",
+      "districtId": 364,
+      "projection": "KZ-GK-13",
+      "idField": "kad_nomer",
+      "idType": "string",
+      "objectIdField": "gid",
+      "idPrefix": "KZ-ALATAU-PKK-",
+      "parcelNumberField": "kad_nomer",
+      "outFields": [
+        "gid",
+        "kad_nomer"
+      ],
+      "pageSize": 1000,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 1,
+      "maxConcurrentQueries": 2,
+      "maxResponseBytes": 4194304,
+      "maxTotalResponseBytes": 25165824,
+      "caCertificate": "./certificates/sectigo-public-server-authentication-ca-dv-r36.pem",
+      "countryCode": "KZ",
+      "metricSrid": 32643,
+      "cityIds": [
+        "alatau"
+      ],
+      "scope": "Official national public cadastral map, the provider's Alatau city district view (district_id:364, KATO 191810000, about 880 km²). The view reported 34,458 parcels on 2026-11-12. Native cadastral numbers are supplied. Currentness, ownership and completeness are not established.",
+      "attribution": "Government for Citizens — EGKN public cadastral map. Alatau city district 364; native cadastral numbers, adapted to WGS84. Ownership and currentness unestablished.",
+      "catalogueUrl": "https://map.gov4c.kz/egkn/",
+      "licenceNote": "Source conditions are informational. No named reuse licence was identified on the inspected public map.",
+      "caveats": [
+        "The public viewer's district_id parameter is required; 364 is the Alatau feature of egkn:districts. The city was formed in 2024 from parts of Ili and Talgar districts and Konaev, so some addresses still name the former district.",
+        "Native cadastral identity is kad_nomer. The gid property orders pagination; generated GeoServer feature IDs are never used as parcel identity.",
+        "The view stores 6-degree Gauss–Krüger zone 13 coordinates on GRS80 with the zone number prefixed to the easting, reports EPSG:404000 and ignores srsName. Native envelopes are queried and geometry is transformed to WGS84.",
+        "The server omits its published Sectigo intermediate. Source-scoped CA supplementation preserves ordinary certificate and hostname verification.",
+        "Topology (overlaps between parcels) has not been audited for Alatau; Almaty's district view is held for material overlaps."
       ]
     },
     {

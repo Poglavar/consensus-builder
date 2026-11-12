@@ -358,7 +358,7 @@ function relayRequestHeaders(input, descriptor, target, method) {
     if (isGeosaParcelSource(descriptor)) permitted.add('referer');
     if (isMakkahPublicSource(descriptor)) permitted.add('referer');
     if (isHmlr(descriptor) && target.origin === HMLR) permitted.add('if-match');
-    if (special === 'dlrs-sheet' || special === 'bd-bhumi-naksha') permitted.add('referer');
+    if (special === 'dlrs-sheet' || special === 'bd-bhumi-naksha' || special === 'kazakhstan-pkk') permitted.add('referer');
     if (special === 'bd-bhumi-naksha') permitted.add('cookie');
     if (['dda-public-plots', 'pulse-public', 'shenzhen-land-certain', 'kerala-entebhoomi'].includes(special)) {
         permitted.add('referer'); permitted.add('origin');
@@ -383,6 +383,7 @@ function relayRequestHeaders(input, descriptor, target, method) {
                 : special === 'shenzhen-land-certain' ? value === SHENZHEN_VIEWER
                 : special === 'dlrs-sheet' ? value === 'https://settlement.gov.bd/'
                 : special === 'bd-bhumi-naksha' ? value === 'https://map.land.gov.bd/'
+                : special === 'kazakhstan-pkk' ? value === 'https://map.gov4c.kz/egkn/'
                 : special === 'kerala-entebhoomi' ? keralaReferrers.has(value) : false;
             if (!valid || referrer.protocol !== 'https:') throw relayError(400);
         }

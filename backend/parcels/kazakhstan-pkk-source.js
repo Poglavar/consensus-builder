@@ -1,4 +1,8 @@
 // Official public EGKN PKK parcel views in their published district projections.
+// Since the provider's QazTRF migration (late October 2026) the views store 6-degree
+// Gauss–Krüger coordinates on GRS80 with the zone number prefixed to the easting, and
+// report the CRS as GeoServer's unknown-CRS code EPSG:404000. They ignore srsName, so
+// bounds are sent and geometry is read in that native grid.
 import proj4 from 'proj4';
 import { concatBytes } from './byte-utils.js';
 import { bbox as geometryBbox, booleanIntersects, feature as geoFeature } from '@turf/turf';
@@ -9,11 +13,23 @@ const ENDPOINT = 'https://map.gov4c.kz/geoserver/wfs';
 const VIEWER = 'https://map.gov4c.kz/egkn/';
 const FEATURE_TYPE = 'egkn:u_view';
 const DISTRICT_ID = 254;
-// These view/projection pairs were verified against the current official viewer.
+const NATIVE_CRS_URN = 'urn:ogc:def:crs:EPSG::404000';
+// District view ids are the feature numbers of egkn:districts (Astana Esil 254,
+// Almaty Almaly 244, Alatau city 364); each lies in one Gauss–Krüger zone.
 const DISTRICTS = new Map([
-    [254, { projection: 'EPSG:32642', idPrefix: 'KZ-ASTANA-PKK-' }],
-    [244, { projection: 'EPSG:32643', idPrefix: 'KZ-ALMATY-PKK-' }]
+    [254, { zone: 12, idPrefix: 'KZ-ASTANA-PKK-' }],
+    [244, { zone: 13, idPrefix: 'KZ-ALMATY-PKK-' }],
+    [364, { zone: 13, idPrefix: 'KZ-ALATAU-PKK-' }]
 ]);
+
+export function kazakhstanPkkProjection(zone) {
+    return {
+        name: `KZ-GK-${zone}`,
+        definition: `+proj=tmerc +lat_0=0 +lon_0=${zone * 6 - 3} +k=1 +x_0=${zone * 1000000 + 500000} +y_0=0 +ellps=GRS80 +towgs84=0,0,0 +units=m +no_defs`,
+        minEasting: zone * 1000000 + 100000,
+        maxEasting: zone * 1000000 + 900000
+    };
+}
 const NATIVE_PATTERN = /^[0-9]{1,32}$/;
 const MAX_ID_FILTER_TERMS = 20;
 const OUT_FIELDS = ['gid', 'kad_nomer'];
@@ -52,18 +68,18 @@ function transformCoordinates(value, transform, depth, coordinateDepth) {
     return value.map(item => transformCoordinates(item, transform, depth + 1, coordinateDepth));
 }
 
-function validProjectedGeometry(geometry) {
+function validProjectedGeometry(geometry, projection) {
     if (!geometry || !['Polygon', 'MultiPolygon'].includes(geometry.type) || !Array.isArray(geometry.coordinates)) return false;
     const polygons = geometry.type === 'Polygon' ? [geometry.coordinates] : geometry.coordinates;
     return polygons.length > 0 && polygons.every(polygon => Array.isArray(polygon) && polygon.length > 0 && polygon.every(ring =>
         Array.isArray(ring) && ring.length >= 4 && ring.every(point => Array.isArray(point) && point.length >= 2
             && Number.isFinite(point[0]) && Number.isFinite(point[1])
-            && point[0] >= 100000 && point[0] <= 900000 && point[1] >= 0 && point[1] <= 10000000)
+            && point[0] >= projection.minEasting && point[0] <= projection.maxEasting && point[1] >= 0 && point[1] <= 10000000)
         && ring[0][0] === ring.at(-1)[0] && ring[0][1] === ring.at(-1)[1]));
 }
 
-function projectGeometry(geometry, toWgs84) {
-    if (!validProjectedGeometry(geometry)) throw upstreamError('Kazakhstan PKK returned geometry outside its native UTM projection.');
+function projectGeometry(geometry, toWgs84, projection) {
+    if (!validProjectedGeometry(geometry, projection)) throw upstreamError('Kazakhstan PKK returned geometry outside its native Gauss–Krüger zone.');
     const coordinateDepth = geometry.type === 'Polygon' ? 2 : 3;
     const projected = { type: geometry.type, coordinates: transformCoordinates(geometry.coordinates, toWgs84, 0, coordinateDepth) };
     if (!validateGeometry(projected)) throw upstreamError('Kazakhstan PKK returned invalid projected parcel geometry.');
@@ -82,7 +98,8 @@ export function createKazakhstanPkkSource(descriptor, { fetchImpl = globalThis.f
     const { id, idPrefix } = descriptor || {};
     const districtId = descriptor?.districtId ?? DISTRICT_ID;
     const district = DISTRICTS.get(districtId);
-    const sourceCrs = district?.projection;
+    const projection = district ? kazakhstanPkkProjection(district.zone) : undefined;
+    const sourceCrs = projection?.name;
     const pageSize = descriptor?.pageSize ?? 1000;
     const maxFeatures = descriptor?.maxFeatures ?? 10000;
     const maxResponseBytes = descriptor?.maxResponseBytes ?? 4 * 1024 * 1024;
@@ -108,9 +125,8 @@ export function createKazakhstanPkkSource(descriptor, { fetchImpl = globalThis.f
         throw new Error('Invalid Kazakhstan PKK parcel source descriptor.');
     }
 
-    const sourceCrsUrn = `urn:ogc:def:crs:EPSG::${sourceCrs.split(':')[1]}`;
-    const toMetric = proj4('EPSG:4326', sourceCrs);
-    const toWgs84 = proj4(sourceCrs, 'EPSG:4326');
+    const toMetric = proj4('EPSG:4326', projection.definition);
+    const toWgs84 = proj4(projection.definition, 'EPSG:4326');
 
     const outputDescriptor = { ...descriptor, outFields: OUT_FIELDS, idField: 'kad_nomer', parcelNumberField: 'kad_nomer' };
 
@@ -145,10 +161,10 @@ export function createKazakhstanPkkSource(descriptor, { fetchImpl = globalThis.f
     function makeUrl({ bbox, filter, startIndex }) {
         const params = new URLSearchParams({
             service: 'WFS', version: '2.0.0', request: 'GetFeature', typename: FEATURE_TYPE,
-            outputFormat: 'application/json', srsname: sourceCrs, propertyname: 'gid,kad_nomer,geom',
+            outputFormat: 'application/json', propertyname: 'gid,kad_nomer,geom',
             count: String(pageSize), startIndex: String(startIndex), sortBy: 'gid',
             viewparams: `district_id:${districtId}`,
-            ...(bbox ? { bbox: `${bbox.join(',')},${sourceCrs}` } : {}),
+            ...(bbox ? { bbox: bbox.join(',') } : {}),
             ...(filter ? { filter } : {})
         });
         return `${ENDPOINT}?${params}`;
@@ -185,7 +201,7 @@ export function createKazakhstanPkkSource(descriptor, { fetchImpl = globalThis.f
                 && Array.isArray(page) && page.length === 0 && pageMatched === 0
                 && payload?.numberReturned === 0;
             const validCrs = (payload?.crs?.type === 'name'
-                && [sourceCrsUrn, sourceCrs].includes(payload.crs.properties?.name)) || emptyWithoutCrs;
+                && payload.crs.properties?.name === NATIVE_CRS_URN) || emptyWithoutCrs;
             if (payload?.type !== 'FeatureCollection' || !Array.isArray(page) || page.length > pageSize
                 || !counts.length || counts.some(value => !Number.isSafeInteger(value) || value < 0 || value !== pageMatched)
                 || payload.numberReturned !== page.length || (matched !== undefined && pageMatched !== matched)
@@ -205,13 +221,13 @@ export function createKazakhstanPkkSource(descriptor, { fetchImpl = globalThis.f
                 seenGids.add(gid);
                 if (typeof nativeId !== 'string' || !NATIVE_PATTERN.test(nativeId)) throw upstreamError('Kazakhstan PKK returned an invalid native cadastre key.');
                 if (codes && !codes.includes(nativeId)) throw upstreamError('Kazakhstan PKK returned an unrequested native cadastre key.');
-                if (!validProjectedGeometry(feature.geometry)) throw upstreamError('Kazakhstan PKK returned geometry outside its native UTM projection.');
+                if (!validProjectedGeometry(feature.geometry, projection)) throw upstreamError('Kazakhstan PKK returned geometry outside its native Gauss–Krüger zone.');
                 const sourceExtent = geometryBbox(feature.geometry);
                 // The public view can overfetch beyond its BBOX. Validate and count every row,
                 // then remove envelope misses locally without changing any parcel boundary.
                 const intersectsBounds = !metricBounds || !(sourceExtent[2] < metricBounds[0] || sourceExtent[0] > metricBounds[2]
                     || sourceExtent[3] < metricBounds[1] || sourceExtent[1] > metricBounds[3]);
-                const geometry = projectGeometry(feature.geometry, toWgs84);
+                const geometry = projectGeometry(feature.geometry, toWgs84, projection);
                 const safeFeature = { geometry, properties: { gid, kad_nomer: nativeId } };
                 const canonical = canonicalParcelFeature(outputDescriptor, safeFeature, nativeId);
                 const signature = stableJson({ geometry: canonical.geometry, properties: canonical.properties.sourceProperties });

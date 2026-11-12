@@ -18689,6 +18689,29 @@
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
+        alatau: {
+            id: 'alatau',
+            label: translateCityText('city.labels.alatau', 'Alatau, Kazakhstan'),
+            currency: { locale: 'ru-KZ', code: 'KZT' },
+            map: {
+                initialView: { type: 'center', zoom: 18 },
+                defaultCenter: [43.412, 76.970], defaultZoom: 18,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [43.412, 76.970], fallbackDataset: [76.970, 43.412]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.0025, source: 'parcel-source',
+                sourceId: 'kz-alatau-pkk', idPrefix: 'KZ-ALATAU-PKK-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 50,
+                attribution: '<a href="https://map.gov4c.kz/egkn/">Kazakhstan EGKN public cadastral map</a> · Alatau city district · native cadastral numbers; ownership and boundary update dates unestablished'
+            },
+            buildings: { sources: [{ id: 'osm' }] },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
+            parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
         dubai: {
             id: 'dubai',
             label: translateCityText('city.labels.dubai', 'Dubai, United Arab Emirates'),

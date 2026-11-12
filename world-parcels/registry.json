@@ -10979,9 +10979,9 @@
       "countryCode": "KZ",
       "scope": "Partial verified sample in Astana Esil district (district_id 254) around the chosen central-city query point. Nine bounded cells yielded 154 native cadastral keys; citywide completeness is not established.",
       "endpoint": "https://map.gov4c.kz/geoserver/wfs",
-      "method": "OGC WFS 2.0.0 GeoJSON with viewer u_view district_id viewparams; bounded EPSG:32642 BBOX and kad_nomer exact filters",
+      "method": "OGC WFS 2.0.0 GeoJSON with viewer u_view district_id viewparams; bounded native-grid BBOX and kad_nomer exact filters",
       "responseFormat": "GeoJSON",
-      "crs": "EPSG:32642 query/output for selected Astana district; app dataset EPSG:4326",
+      "crs": "Provider grid since about 2026-10-25: 6-degree Gauss–Krüger zone 12 on GRS80, zone-prefixed easting (reported as EPSG:404000); app dataset EPSG:4326",
       "verificationStatus": "verified_sample_partial_coverage",
       "reuseStatus": "Public viewer response; reuse licence not separately established.",
       "identityKind": "Native public cadastral number kad_nomer; app references use KZ-ASTANA-PKK- prefix. Global permanence semantics undocumented.",
@@ -10999,7 +10999,8 @@
           "Esil district_id 254 sample only; other Astana districts and citywide completeness are unestablished.",
           "kad_nomer is an official public cadastral number, but permanence/global uniqueness is not documented.",
           "Five measured positive-area overlap pairs were accepted unchanged; maximum overlap is 0.074380% of the smaller parcel, with the two largest slivers about 9.8 mm and 12.1 mm wide.",
-          "Cadastral numbers and parcel geometry do not establish ownership or current title."
+          "Cadastral numbers and parcel geometry do not establish ownership or current title.",
+          "2026-11-12: the provider moved the view from UTM 42N to its zone-prefixed Gauss–Krüger grid; the adapter reads the new grid and OSM building vertices fit it within 4 m."
         ],
         "termsAreInformational": true,
         "cityIds": [
@@ -11007,6 +11008,42 @@
         ]
       },
       "identityPolicy": "Use public native kad_nomer with city/source prefix KZ-ASTANA-PKK- for application references. Do not infer ownership/current title or unverified citywide coverage."
+    },
+    {
+      "sourceId": "kz-alatau-pkk",
+      "name": "Kazakhstan National Public Cadastral Map (PKK/EGKN), Alatau city land parcels",
+      "operator": "Government for Citizens / national EGKN public cadastral map",
+      "countryCode": "KZ",
+      "scope": "Alatau city district view (district_id 364). Live adapter reads, exact-ID re-reads and a point-in-parcel check passed on 2026-11-12; citywide completeness is not established.",
+      "endpoint": "https://map.gov4c.kz/geoserver/wfs",
+      "method": "OGC WFS 2.0.0 GeoJSON with viewer u_view district_id viewparams; bounded native-grid BBOX and kad_nomer exact filters",
+      "responseFormat": "GeoJSON",
+      "crs": "6-degree Gauss–Krüger zone 13 on GRS80, zone-prefixed easting (reported as EPSG:404000); app dataset EPSG:4326",
+      "verificationStatus": "verified_sample_partial_coverage",
+      "reuseStatus": "Public viewer response; reuse licence not separately established.",
+      "identityKind": "Native public cadastral number kad_nomer; app references use KZ-ALATAU-PKK- prefix.",
+      "latestResearchFiles": [],
+      "verifiedCityIds": [
+        "app:KZ:alatau"
+      ],
+      "liveIntegration": {
+        "status": "enabled",
+        "checkedAt": "2026-11-12",
+        "sourceId": "kz-alatau-pkk",
+        "appCityId": "alatau",
+        "technicalBlockers": [],
+        "limitations": [
+          "District view 364 (Alatau city, KATO 191810000) reported 34,458 parcels on 2026-11-12; completeness and currentness are unestablished.",
+          "kad_nomer is an official public cadastral number, but permanence/global uniqueness is not documented.",
+          "Parcel topology (overlaps) has not been audited for Alatau.",
+          "Cadastral numbers and parcel geometry do not establish ownership or current title."
+        ],
+        "termsAreInformational": true,
+        "cityIds": [
+          "alatau"
+        ]
+      },
+      "identityPolicy": "Use public native kad_nomer with city/source prefix KZ-ALATAU-PKK- for application references. Do not infer ownership/current title or completeness."
     },
     {
       "sourceId": "kg-bishkek-cadastre-eni-area",
@@ -111666,6 +111703,58 @@
           "Esil district_id 254 sample only; other Astana districts and citywide completeness are unestablished.",
           "kad_nomer is an official public cadastral number, but permanence/global uniqueness is not documented.",
           "Five measured positive-area overlap pairs were accepted unchanged; maximum overlap is 0.074380% of the smaller parcel, with the two largest slivers about 9.8 mm and 12.1 mm wide.",
+          "Cadastral numbers and parcel geometry do not establish ownership or current title."
+        ]
+      }
+    },
+    {
+      "cityId": "app:KZ:alatau",
+      "name": "Alatau",
+      "country": "Kazakhstan",
+      "countryCode": "KZ",
+      "centerLatLon": [
+        43.412,
+        76.97
+      ],
+      "citySource": "Alatau city (formed 2024, Almaty region); map point in Yntymak, Gate district; not a WUP centroid or official boundary",
+      "sourceIds": [
+        "kz-alatau-pkk"
+      ],
+      "aliases": [
+        "app:KZ:alatau",
+        "Alatau",
+        "alatau",
+        "Алатау"
+      ],
+      "parcelStatus": "verified_sample_partial_coverage",
+      "appCityId": "alatau",
+      "runtimeReadiness": "enabled",
+      "dataFindings": {
+        "registryFound": true,
+        "registryBasis": "The official Kazakhstan public cadastral map publishes Alatau as district view 364 with native cadastral numbers.",
+        "reason": "Official public cadastral parcel geometry and native cadastral numbers obtained; completeness and ownership are not established.",
+        "registryEvidenceUrls": [
+          "https://map.gov4c.kz/egkn/"
+        ],
+        "officialRegistryOrPortalFound": true,
+        "publicEndpointVerified": true,
+        "publicParcelGeometryFound": true,
+        "verifiedSample": true,
+        "nativeSampleVerified": true,
+        "nativeIdField": "kad_nomer",
+        "identityKind": "native cadastral number; app prefix KZ-ALATAU-PKK-",
+        "runtimeReadiness": "enabled"
+      },
+      "liveIntegration": {
+        "status": "enabled",
+        "checkedAt": "2026-11-12",
+        "sourceId": "kz-alatau-pkk",
+        "appCityId": "alatau",
+        "technicalBlockers": [],
+        "limitations": [
+          "District view 364 (Alatau city, KATO 191810000) reported 34,458 parcels on 2026-11-12; completeness and currentness are unestablished.",
+          "kad_nomer is an official public cadastral number, but permanence/global uniqueness is not documented.",
+          "Parcel topology (overlaps) has not been audited for Alatau.",
           "Cadastral numbers and parcel geometry do not establish ownership or current title."
         ]
       }
