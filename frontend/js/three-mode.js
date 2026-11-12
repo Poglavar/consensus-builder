@@ -11483,6 +11483,9 @@
             controls && controls.target,
             xyToLatLng
         );
+        // The 2D map returns at the zoom the camera stands for (load-view.js), the zoom every
+        // layer gate read in 3D, so what the 3D view showed stays shown in 2D.
+        const exitZoom = window.LoadView?.ofCamera?.(getGeoCameraView(), getViewport())?.zoom;
         isActive = false;
         window.ThreeCompare?.detach?.();
         compareSplit = null;
@@ -11515,7 +11518,9 @@
         if (!retain) disposeScene();
         if (exitMapCenter && typeof map !== 'undefined' && map && typeof map.setView === 'function') {
             try {
-                const zoom = (typeof map.getZoom === 'function') ? map.getZoom() : undefined;
+                const zoom = Number.isFinite(exitZoom) && typeof map.getMinZoom === 'function'
+                    ? Math.min(map.getMaxZoom(), Math.max(map.getMinZoom(), exitZoom))
+                    : (typeof map.getZoom === 'function') ? map.getZoom() : undefined;
                 map.setView([exitMapCenter.lat, exitMapCenter.lng], zoom, { animate: false });
             } catch (_) { }
         }
@@ -12341,6 +12346,12 @@
     window.showThreeModeBuilding = showThreeModeBuilding;
     window.showThreeModePlan = showThreeModePlan;
     window.getThree3DGeoView = getGeoCameraView;
+    // The viewport LoadView needs to turn the camera into the 2D view it stands for (load-view.js ofCamera).
+    function getViewport() {
+        if (!isActive || !camera || !threeContainer) return null;
+        return { widthPx: threeContainer.clientWidth, heightPx: threeContainer.clientHeight, fovDeg: camera.fov };
+    }
+    window.getThree3DViewport = getViewport;
     window.setThreeXrayEnabled = setXrayEnabled;
     window.setThreeFloorCutaway = setFloorCutaway;
     window.setThreeSuggestedLayoutsEnabled = setSuggestedPlansEnabled;

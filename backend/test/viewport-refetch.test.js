@@ -136,19 +136,40 @@ describe('planning cells', () => {
 
 describe('load view', () => {
     const LoadView = require('../../frontend/js/load-view.js');
-    it('reads a 3D camera as the 2D zoom showing the same width, around the given centre', () => {
-        // The reported Bogotá camera: 267 m from its target, a 1080 px window.
-        const view = LoadView.ofCamera({ targetLat: 4.62, targetLng: -74.07, range: 267 }, [4.6135, -74.0838], 1080);
-        expect(view.mode).toBe('3d');
-        expect(view.zoom).toBeCloseTo(18.25, 1);
-        expect(view.centre).toEqual([4.6135, -74.0838]);
-        expect((view.bbox[0] + view.bbox[2]) / 2).toBeCloseTo(-74.0838, 9);
-        expect((view.bbox[3] - view.bbox[1]) * 110570).toBeCloseTo(534, 0);
-        // Farther out the zoom falls, under the permitted layer's zoom-in line of 16 by about 1.2 km.
-        expect(LoadView.ofCamera({ range: 1500 }, [4.6135, -74.0838], 1080).zoom).toBeLessThan(16);
-        // Up close it still loads a street's width.
-        expect((LoadView.ofCamera({ range: 5 }, [45.8, 16], 1080).bbox[3] - LoadView.ofCamera({ range: 5 }, [45.8, 16], 1080).bbox[1]) * 110570).toBeCloseTo(150, 0);
-        expect(LoadView.ofCamera(null, [45.8, 16], 1080)).toBe(null);
+    // Entering 3D frames the 2D view (three-mode.js initScene): a 45° vertical field of view, the
+    // camera at the top-down distance of the 2D bounds' height, tilted 35° from vertical.
+    const entryCamera = (lat, lng, zoom, heightPx) => {
+        const mpp = 156543.03392804097 * Math.cos(lat * Math.PI / 180) / 2 ** zoom;
+        const topDown = (heightPx * mpp / 2) / Math.tan(22.5 * Math.PI / 180);
+        return { targetLat: lat, targetLng: lng, pitchRad: -55 * Math.PI / 180, range: topDown / Math.cos(35 * Math.PI / 180) };
+    };
+    const viewport = { widthPx: 1280, heightPx: 900, fovDeg: 45 };
+    it('reads the camera entering 3D from a 2D view as that view: same zoom, same bounds', () => {
+        for (const zoom of [15, 16, 17, 18.4]) {
+            const view = LoadView.ofCamera(entryCamera(43.4126, 76.9702, zoom, 900), viewport);
+            expect(view.mode).toBe('3d');
+            expect(view.zoom).toBe(zoom);
+            const mpp = 156543.03392804097 * Math.cos(43.4126 * Math.PI / 180) / 2 ** zoom;
+            expect((view.bbox[3] - view.bbox[1]) * 110570).toBeCloseTo(Math.max(900 * mpp, 150), 3);
+            expect(view.centre).toEqual([43.4126, 76.9702]);
+        }
+    });
+    it('keeps a reported 3D view at the zoom of the 2D view it came from', () => {
+        // The reported Alatau link: 1,153 m from the target at the entry tilt. The former reading
+        // (range as half the width) put it at 15.95, under permitted massing's line of 16.
+        const view = LoadView.ofCamera({ targetLat: 43.4126, targetLng: 76.9702, pitchRad: -0.9599310885968813, range: 1153.19 }, viewport);
+        expect(view.zoom).toBeGreaterThan(16.99);
+        expect(view.zoom).toBeLessThan(17.01);
+    });
+    it('raises the zoom as the camera moves closer or tilts lower, and floors the area at a street', () => {
+        const base = entryCamera(45.8, 16, 17, 900);
+        expect(LoadView.ofCamera({ ...base, range: base.range / 2 }, viewport).zoom).toBeCloseTo(18, 3);
+        expect(LoadView.ofCamera({ ...base, pitchRad: -20 * Math.PI / 180 }, viewport).zoom).toBeGreaterThan(17);
+        const close = LoadView.ofCamera({ ...base, range: 5 }, viewport);
+        expect((close.bbox[3] - close.bbox[1]) * 110570).toBeCloseTo(150, 0);
+        expect(LoadView.ofCamera(null, viewport)).toBe(null);
+        expect(LoadView.ofCamera(base, null)).toBe(null);
+        expect(LoadView.ofCamera(base, { widthPx: 0, heightPx: 900, fovDeg: 45 })).toBe(null);
     });
 });
 

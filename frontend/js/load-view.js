@@ -1,6 +1,7 @@
-// The area the map's data layers load for: the 2D map's view in 2D; in 3D, the 3D camera's zoom
-// around where the scene was entered (the 2D map stays there; the 3D scene does not stream as the
-// camera pans). Layers that load by viewport (permitted massing, Explore's designs) read
+// The area the map's data layers load for, and the one zoom their gates read in both modes: the
+// 2D map's view in 2D; in 3D, the 2D view the camera stands for (ofCamera), around the camera's
+// target. At a mode switch both give the same zoom and area, so a layer shown in one mode stays
+// shown in the other. Layers that load by viewport (permitted massing, Explore's designs) read
 // `LoadView.current()` and reload on the map's moveend and on `loadviewchange`, which fires when
 // the 3D camera settles and when the map changes mode.
 (function (root, factory) {
@@ -18,16 +19,27 @@
     // The camera fires a change every frame while it moves; the view counts as settled after this.
     const SETTLE_MS = 400;
     const finite = value => typeof value === 'number' && Number.isFinite(value);
-    // The ground a 3D camera `range` metres from its target shows, as a square around `centre`
-    // ([lat, lng]) `range` metres to each side, and the 2D zoom at which a map `widthPx` wide shows
-    // that width.
-    function ofCamera(view, centre, widthPx) {
-        if (!view || !finite(view.range) || !Array.isArray(centre) || !finite(centre[0]) || !finite(centre[1]) || !(widthPx > 0)) return null;
-        const [lat, lng] = centre, cos = Math.cos(lat * Math.PI / 180);
-        const half = Math.max(view.range, MIN_HALF_SIDE_M);
-        const dLat = half / METRES_PER_DEG_LAT, dLng = half / (METRES_PER_DEG_LNG * cos);
+    // The 2D view a 3D camera stands for: the zoom whose straight-down view, in a viewport as tall
+    // as the 3D one, shows the ground a camera at this height above its target shows with its
+    // vertical field of view. Entering 3D frames the 2D view by exactly this rule (three-mode.js
+    // initScene puts the camera at the top-down distance of the 2D bounds), so at the switch both
+    // modes report the same zoom. Tilting at a fixed distance lowers the camera and raises the
+    // zoom, as moving closer does. The area is that view's rectangle around the camera target,
+    // which at the switch is the 2D map's bounds. `view` is getThree3DGeoView()'s (range in true
+    // metres, pitchRad 0 = horizon, -π/2 = straight down); `viewport` is getThree3DViewport()'s.
+    // The zoom is rounded to 1/1000 so a switch never lands a hair under a gate it was on.
+    function ofCamera(view, viewport) {
+        if (!view || ![view.range, view.targetLat, view.targetLng].every(finite) || !viewport
+            || !(viewport.widthPx > 0) || !(viewport.heightPx > 0) || !(viewport.fovDeg > 0 && viewport.fovDeg < 180)) return null;
+        const lat = view.targetLat, lng = view.targetLng, cos = Math.cos(lat * Math.PI / 180);
+        const elevation = finite(view.pitchRad) ? Math.min(Math.PI / 2, Math.max(0, -view.pitchRad)) : Math.PI / 2;
+        const heightM = Math.max(view.range * Math.sin(elevation), 1);
+        const metresPerPixel = 2 * heightM * Math.tan(viewport.fovDeg * Math.PI / 360) / viewport.heightPx;
+        const halfW = Math.max(viewport.widthPx * metresPerPixel / 2, MIN_HALF_SIDE_M);
+        const halfH = Math.max(viewport.heightPx * metresPerPixel / 2, MIN_HALF_SIDE_M);
+        const dLat = halfH / METRES_PER_DEG_LAT, dLng = halfW / (METRES_PER_DEG_LNG * cos);
         return { mode: '3d', bbox: [lng - dLng, lat - dLat, lng + dLng, lat + dLat], centre: [lat, lng],
-            zoom: Math.log2(METRES_PER_PIXEL_Z0 * cos * widthPx / (2 * half)) };
+            zoom: Math.round(Math.log2(METRES_PER_PIXEL_Z0 * cos / metresPerPixel) * 1000) / 1000 };
     }
     function browser(win) {
         function current() {
@@ -35,7 +47,7 @@
             if (!map || typeof map.getBounds !== 'function') return null;
             const centre = map.getCenter();
             const three = typeof win.isThreeModeActive === 'function' && win.isThreeModeActive();
-            const camera = three ? ofCamera(win.getThree3DGeoView?.(), [centre.lat, centre.lng], map.getSize().x) : null;
+            const camera = three ? ofCamera(win.getThree3DGeoView?.(), win.getThree3DViewport?.()) : null;
             if (camera) return camera;
             const bounds = map.getBounds();
             return { mode: '2d', bbox: [bounds.getWest(), bounds.getSouth(), bounds.getEast(), bounds.getNorth()],

@@ -75,6 +75,14 @@ describe('current-map sharing', () => {
         expect(context.at).toBe('45,16,18');
         expect(readCamera(new URL(address('https://app.example.test/map', context)).searchParams.get('camera'))).toEqual(camera);
     });
+    it('writes the zoom the 3D camera stands for, the one the 2D map takes on leaving 3D', () => {
+        const context = capture({
+            map: { getCenter: () => ({ lat: 10, lng: 20 }), getZoom: () => 18 },
+            __mapModeState: { desired: 'model' }, getThree3DGeoView: () => camera,
+            LoadView: { current: () => ({ mode: '3d', zoom: 16.4567 }) }
+        });
+        expect(context.at).toBe('45,16,16.46');
+    });
     it('falls back to the Leaflet center when no geographic 3D camera is available', () => {
         expect(capture({ map: { getCenter: () => ({ lat: 10, lng: 20 }), getZoom: () => 18 },
             __mapModeState: { desired: 'model' }, getThree3DGeoView: () => null }).at).toBe('10,20,18');

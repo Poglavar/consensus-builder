@@ -623,7 +623,7 @@
     function invalidate() { assembled = ''; failedCells = 0; }
     async function refresh({ force = false } = {}) {
         if (!ready || !catalogReady || policy().permitted === 'off' && store.get().zoningAreas === 'off') return;
-        // The 2D map's view in 2D; in 3D, the camera's zoom around where the scene was entered (load-view.js).
+        // The 2D map's view in 2D; in 3D, the 2D view the camera stands for, around its target (load-view.js).
         const view = root.LoadView.current();
         if (!view || view.zoom < 16) {
             viewCache.abortExcept([]); request++; invalidate(); items = []; status = 'zoom'; payload = null;

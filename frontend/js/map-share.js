@@ -26,7 +26,9 @@
         if (settings) for (const key of ['planningSource', 'planningScenario']) {
             if (source.has(key)) settings[key] = source.get(key);
         }
-        return { mode, at: [camera?.targetLat ?? center.lat, camera?.targetLng ?? center.lng, Math.round(win.map.getZoom() * 100) / 100].join(','),
+        // In 3D the zoom is the one the camera stands for (load-view.js), which the 2D map takes on leaving 3D.
+        const zoom = (camera ? win.LoadView?.current?.()?.zoom : null) ?? win.map.getZoom();
+        return { mode, at: [camera?.targetLat ?? center.lat, camera?.targetLng ?? center.lng, Math.round(zoom * 100) / 100].join(','),
             camera,
             rotate: mode !== '2d' && source.get('rotate') === '1',
             language: win.i18n?.getLanguage?.(),
