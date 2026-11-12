@@ -167,6 +167,8 @@ export const browserParcelSourceRegistry = createBrowserSourceRegistry(browserPa
 // A provider that ignores some networks can leave the direct connection hanging rather than
 // failing it, which would spend the adapter's whole timeout and never reach the relay.
 const DIRECT_HEADERS_BUDGET_MS = 6000;
+// Request headers a GET relay read can carry as query parameters (backend/routes/parcel-provider-relay.js).
+const RELAY_GET_HEADERS = ['referer', 'accept', 'accept-language'];
 
 export function createBrowserProviderFetch(descriptor, { fetchImpl = globalThis.fetch, relayBase, now = Date.now,
     directBudgetMs = DIRECT_HEADERS_BUDGET_MS } = {}) {
@@ -184,12 +186,27 @@ export function createBrowserProviderFetch(descriptor, { fetchImpl = globalThis.
     async function relay(url, options) {
         if (!relayBase) throw upstreamError('Provider requires a transport relay; none is configured.');
         const headers = Object.fromEntries([...new Headers(options.headers)].filter(([name]) => !['user-agent', 'accept-encoding', 'host', 'content-length'].includes(name)));
-        let response = await fetchImpl(`${relayBase.replace(/\/$/, '')}/parcel-provider-relay/${encodeURIComponent(descriptor.id)}`, {
-            method: 'POST', signal: options.signal, credentials: 'omit',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ url: String(url), method: options.method || 'GET', headers,
-                ...(options.body === undefined ? {} : { body: String(options.body) }), redirect: options.redirect })
-        });
+        const endpoint = `${relayBase.replace(/\/$/, '')}/parcel-provider-relay/${encodeURIComponent(descriptor.id)}`;
+        // A plain read of a catalog source goes by GET with everything in the URL, in a fixed order,
+        // so the browser and Cloudflare can cache the answer. Bodies, session cookies, tokens and
+        // manual redirects keep the POST envelope.
+        const plainRead = (options.method || 'GET') === 'GET' && options.body === undefined && options.redirect !== 'manual'
+            && !descriptor.id.startsWith('custom.') && descriptor.id !== 'gb-hmlr-browser-v1'
+            && Object.keys(headers).every(name => RELAY_GET_HEADERS.includes(name));
+        let response;
+        if (plainRead) {
+            const query = new URLSearchParams({ url: String(url) });
+            for (const name of RELAY_GET_HEADERS) if (headers[name] !== undefined) query.set(name, headers[name]);
+            if (options.redirect) query.set('redirect', options.redirect);
+            response = await fetchImpl(`${endpoint}?${query}`, { method: 'GET', signal: options.signal, credentials: 'omit' });
+        } else {
+            response = await fetchImpl(endpoint, {
+                method: 'POST', signal: options.signal, credentials: 'omit',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ url: String(url), method: options.method || 'GET', headers,
+                    ...(options.body === undefined ? {} : { body: String(options.body) }), redirect: options.redirect })
+            });
+        }
         const upstreamStatus = response.headers.get('x-parcel-upstream-status');
         if (upstreamStatus !== null) {
             if (response.status !== 200 || !/^3[0-9]{2}$/.test(upstreamStatus)) throw upstreamError('Provider relay returned invalid HTTP metadata.');

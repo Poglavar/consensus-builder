@@ -307,6 +307,73 @@ describe('parcel provider relay route', () => {
     });
 });
 
+describe('parcel provider relay GET reads', () => {
+    const pkk = parcelSourceCatalog.sources.find(source => source.id === 'kz-alatau-pkk');
+    const pkkUrl = `${pkk.endpoint}?service=WFS&version=2.0.0&request=GetFeature&typename=egkn%3Au_view&viewparams=district_id%3A364`;
+    async function invokeGet(router, sourceId, query) {
+        const layer = router.stack.find(entry => entry.route?.methods?.get);
+        const req = Object.assign(new EventEmitter(), { params: { sourceId }, query, originalUrl: `/parcel-provider-relay/${sourceId}?${new URLSearchParams(query)}` });
+        const res = Object.assign(new EventEmitter(), { headers: {}, statusCode: 200, headersSent: false, writableEnded: false,
+            status(code) { this.statusCode = code; return this; },
+            json(value) { this.body = value; this.headersSent = true; this.writableEnded = true; return this; },
+            setHeader(name, value) { this.headers[name.toLowerCase()] = value; },
+            write(value) { this.chunks ||= []; this.chunks.push(Buffer.from(value)); this.headersSent = true; return true; },
+            end() { this.writableEnded = true; this.headersSent = true; },
+            destroy() { this.destroyed = true; } });
+        await layer.route.stack.at(-1).handle(req, res);
+        return res;
+    }
+
+    it('relays a catalog read from its query string and lets browsers and Cloudflare cache a success', async () => {
+        const relayFetch = vi.fn(async () => new Response('{"type":"FeatureCollection"}', { status: 200, headers: { 'content-type': 'application/json' } }));
+        const router = createParcelProviderRelayRouter({ sources: [pkk], relayFetch });
+        const response = await invokeGet(router, pkk.id, { url: pkkUrl, referer: 'https://map.gov4c.kz/egkn/', accept: 'application/json' });
+        expect(response.statusCode).toBe(200);
+        expect(response.headers['cache-control']).toBe('public, max-age=3600, s-maxage=86400');
+        expect(response.headers['access-control-allow-origin']).toBe('*');
+        const [validated] = relayFetch.mock.calls[0];
+        expect(validated.target.href).toBe(pkkUrl);
+        expect(validated.headers.get('referer')).toBe('https://map.gov4c.kz/egkn/');
+    });
+
+    it('never shares a failure or a response that carries session state', async () => {
+        const failing = createParcelProviderRelayRouter({ sources: [pkk], relayFetch: async () => new Response('busy', { status: 503 }) });
+        const failed = await invokeGet(failing, pkk.id, { url: pkkUrl, referer: 'https://map.gov4c.kz/egkn/' });
+        expect(failed.statusCode).toBe(503);
+        expect(failed.headers['cache-control']).toBe('no-store');
+        const session = createParcelProviderRelayRouter({ sources: [pkk], relayFetch: async () => new Response('{}', { status: 200,
+            headers: { 'x-parcel-upstream-cookies': '["session=private"]' } }) });
+        const withCookies = await invokeGet(session, pkk.id, { url: pkkUrl, referer: 'https://map.gov4c.kz/egkn/' });
+        expect(withCookies.headers['cache-control']).toBe('no-store');
+        expect(withCookies.headers['access-control-allow-origin']).toBeUndefined();
+    });
+
+    it('refuses visitor sources, unknown parameters, manual redirects and foreign referrers', async () => {
+        const relayFetch = vi.fn();
+        const router = createParcelProviderRelayRouter({ sources: [pkk], relayFetch });
+        expect((await invokeGet(router, 'custom.eyJ4IjoxfQ', { url: 'https://example.org/' })).statusCode).toBe(404);
+        expect((await invokeGet(router, pkk.id, { url: pkkUrl, cookie: 'a=1' })).statusCode).toBe(400);
+        expect((await invokeGet(router, pkk.id, { url: pkkUrl, redirect: 'manual' })).statusCode).toBe(400);
+        expect((await invokeGet(router, pkk.id, { url: pkkUrl, referer: 'https://evil.example/' })).statusCode).toBe(400);
+        expect((await invokeGet(router, pkk.id, { url: 'https://example.org/wfs' })).statusCode).toBeGreaterThanOrEqual(400);
+        expect(relayFetch).not.toHaveBeenCalled();
+    });
+
+    it('is what the browser uses for a plain read, with the query in a fixed order; a body keeps POST', async () => {
+        const calls = [];
+        const fetchImpl = vi.fn(async (url, init) => { calls.push({ url, init }); return new Response('{}', { status: 200 }); });
+        const providerFetch = createBrowserProviderFetch(pkk, { fetchImpl, relayBase: 'https://api.example.test/' });
+        await providerFetch(pkkUrl, { headers: { Accept: 'application/json', Referer: 'https://map.gov4c.kz/egkn/', 'User-Agent': 'x' }, redirect: 'error' });
+        expect(calls[0].init.method).toBe('GET');
+        expect(calls[0].init.body).toBeUndefined();
+        expect(calls[0].url).toBe(`https://api.example.test/parcel-provider-relay/kz-alatau-pkk?${new URLSearchParams({ url: pkkUrl,
+            referer: 'https://map.gov4c.kz/egkn/', accept: 'application/json', redirect: 'error' })}`);
+        await providerFetch(pkkUrl, { method: 'POST', body: '<xml/>', headers: { 'Content-Type': 'text/xml' } });
+        expect(calls[1].init.method).toBe('POST');
+        expect(JSON.parse(calls[1].init.body)).toMatchObject({ url: pkkUrl, method: 'POST', body: '<xml/>' });
+    });
+});
+
 it('allows the official RGZ proxy only when its nested URL names the fixed cadastral endpoint', () => {
     const descriptor=parcelSourceCatalog.sources.find(source=>source.id==='rs-rgz-dkp-parcels');
     const url=descriptor.proxyEndpoint+'?'+new URLSearchParams({url:descriptor.endpoint+'?service=WFS&request=GetFeature'});
