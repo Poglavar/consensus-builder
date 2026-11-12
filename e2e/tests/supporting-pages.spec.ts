@@ -210,6 +210,25 @@ test.describe('Supporting pages @core', () => {
     await expect(page.locator('#lc-attestations')).toContainText(AGREEMENT_CID);
   });
 
+  test('pitch deck stays as it is when the browser refuses fullscreen', async ({ mockApi: page }) => {
+    // Every browser may refuse (an embedded page, a policy, headless Chrome); the refusal is forced
+    // here so a headed run takes the same path. An uncaught refusal fails the test as a page error.
+    await page.addInitScript(() => {
+      Element.prototype.requestFullscreen = () => Promise.reject(new TypeError('not granted'));
+    });
+    const warnings: string[] = [];
+    page.on('console', message => { if (message.type() === 'warning') warnings.push(message.text()); });
+    await page.goto('/deck.html');
+    await page.locator('#deck-fullscreen').click();
+    await expect.poll(() => warnings.some(text => text.includes('the browser refused fullscreen'))).toBe(true);
+    await expect(page.locator('#deck-fullscreen')).toHaveText('Present');
+    expect(await page.evaluate(() => Boolean(document.fullscreenElement))).toBe(false);
+    // The deck still works.
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    await page.locator('#deck-next').click();
+    await expect(page.locator('#deck-current')).toHaveText('2');
+  });
+
   test('pitch deck advances through its real slide controls and roadmap links reach each horizon', async ({ mockApi: page, headless }) => {
     // Headless Chrome (157) refuses every fullscreen request with "not granted", and neither
     // Playwright's grantPermissions nor CDP Browser.setPermission can grant it there. Headless runs

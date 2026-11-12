@@ -66,9 +66,15 @@
 
     prev.addEventListener('click', () => goTo(active - 1));
     next.addEventListener('click', () => goTo(active + 1));
+    // A browser may refuse fullscreen (an embedded page, a policy, a headless window): the deck
+    // stays as it is and the button keeps reading Present.
     fullscreen.addEventListener('click', async () => {
-        if (document.fullscreenElement) await document.exitFullscreen();
-        else await document.documentElement.requestFullscreen();
+        try {
+            if (document.fullscreenElement) await document.exitFullscreen();
+            else await document.documentElement.requestFullscreen();
+        } catch (error) {
+            console.warn(`[${new Date().toISOString()}] [deck] the browser refused fullscreen`, error);
+        }
     });
     document.addEventListener('fullscreenchange', () => {
         fullscreen.textContent = document.fullscreenElement ? 'Exit' : 'Present';
