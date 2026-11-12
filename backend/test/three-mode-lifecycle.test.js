@@ -372,6 +372,8 @@ function warmEnterFixture() {
         updateModeButtonStates() {},
         getWalkUrlBase: () => null,
         showRenderingOverlay() {},
+        // The view's parcels are loaded: entry does not wait for ground.
+        viewGroundMissing: () => false,
         disableLeafletInteractions() {},
         closeAllPanelsAndModalsFor3D() {},
         handleResize() {},

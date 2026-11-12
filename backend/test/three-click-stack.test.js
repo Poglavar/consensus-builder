@@ -1,6 +1,6 @@
 import { testI18n } from './helpers/i18n.js';
 // The 3D model view's click stack (frontend/js/three-click-stack.js): which sections a click in the
-// scene shows, in what order (Built → Design → Permitted → Formed parcel → Parcel), which one opens,
+// scene shows, in what order (the 2D stack's: Design → Built → Permitted → Formed parcel → Parcel), which one opens,
 // which instance a strip shows first, and how a repeat pick and the selected object's neighbours shape it.
 import { describe, expect, it, vi } from 'vitest';
 import { createRequire } from 'node:module';
@@ -19,8 +19,8 @@ const feature = { type: 'Feature', properties: {}, geometry: null };
 it('places scoped agreements immediately above Plans in the model view', () => {
     const value = stack.buildThreeStack({ built: [{ id: 'b1' }], plans: [{ id: 'p1', cid: 'p1' }],
         agreements: [{ id: 'a1', planCid: 'p1' }, { id: 'wrong', planCid: 'p2' }] }, { focus: 'plans' });
-    expect(value.sections.map(row => row.kind)).toEqual(['built', 'agreements', 'plans']);
-    expect(value.sections[1].count).toBe(1); expect(value.expanded).toBe('plans');
+    expect(value.sections.map(row => row.kind)).toEqual(['agreements', 'plans', 'built']);
+    expect(value.sections[0].count).toBe(1); expect(value.expanded).toBe('plans');
 });
 
 describe('3D click stack contextual selection', () => {
@@ -305,7 +305,8 @@ describe('3D click stack rules', () => {
         expect(stack.sameClick(click, { ...click, key: 'parcel-2', parcelId: 'p2' })).toBe(false);
         expect(stack.sameClick(null, click)).toBe(false);
     });
-    it('orders Built, Plans, Design, Permitted, Formed parcel, Parcel and ignores agreement memberships', () => {
+    it('orders sections as the 2D stack does (Plans, Design, Built, Permitted, Formed parcel, Parcel) and ignores agreement memberships', () => {
+        expect(stack.ORDER).toEqual(model.ORDER.filter(kind => kind !== 'ground'));
         const built = stack.buildThreeStack({
             parcels: [{ id: 'HR-1-2', label: '2' }],
             designs: [{ id: 'd1', label: 'Park' }],
@@ -313,7 +314,7 @@ describe('3D click stack rules', () => {
             plans: [{ id: 'pl1', label: 'Plan' }],
             agreements: [{ id: 'ag1', label: 'Agreement' }]
         }, { focus: 'designs' });
-        expect(built.sections.map(section => section.kind)).toEqual(['built', 'plans', 'designs', 'parcels']);
+        expect(built.sections.map(section => section.kind)).toEqual(['plans', 'designs', 'built', 'parcels']);
         expect(built.expanded).toBe('designs');
         const ground = stack.buildThreeStack({
             parcels: [{ id: 'HR-1-2' }], formed: [{ id: 'HR-1-2#piece' }], permitted: [{ id: 'm1' }], designs: [{ id: 'd1' }]

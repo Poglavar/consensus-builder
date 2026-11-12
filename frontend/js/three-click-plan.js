@@ -39,9 +39,13 @@
     // (`planningSeeThrough`) gives way to a building or design standing inside it, and a condemned
     // building volume (`condemned`) to the design that takes its place. With nothing of that kind
     // behind it along the ray, the hull or the condemned building itself is the pick.
+    // Only a surface is picked: a building's edge and floor lines are drawn detail, and the ray
+    // takes a line from a metre away, so a line near the click named its parcel instead of the
+    // building it outlines.
     function subjectHit(hits) {
         let yielding = null;
         for (const hit of hits) {
+            if (hit.object.isLine || hit.object.isPoints) continue;
             let proposalId = null, parcelId = null, planningId = null, builtFeature = null, visible = true;
             let seeThrough = false, condemned = false;
             for (let object = hit.object; object; object = object.parent) {

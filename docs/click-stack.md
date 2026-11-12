@@ -177,6 +177,9 @@ replace one with its own (the model view reads buildings from its scene).
   includes each design's authored type and available exact-revision plan membership alongside
   its title. The selector replaces the repeated title in the expanded card; a singleton keeps
   its ordinary title. Membership updates refresh menu labels without replacing the control.
+  A design that is on the map says **Applied**: in its menu label, as a badge on the closed face,
+  and as a badge on its item in every related list of designs, in both stacks. The state is read
+  from this browser's copy of the design; one it holds no copy of carries no mark.
   Its count is the number of separate designs overlapping the location or using its parcel;
   selecting one changes the inspected design.
 - The expanded section is the **action view**:
@@ -259,10 +262,11 @@ over the scene; mobile uses the shared object tabs, content tabs and sizing cont
 closes on Escape, a click on nothing, another selection, or the mobile close button. It replaced the floating top-left parcel /
 "Proposal info" panel.
 
-- Sections, top to bottom: **Built** (the clicked building, and the existing buildings standing on
-  the parcel), **Agreements**, **Plans**, **Design** (the clicked proposal, or the proposals on the
-  parcel), **Permitted** (the clicked massing, or the parcel's cached massing), **Formed parcel**
-  (live ground a design formed or a road cut from a parcel), **Parcel** (the one parcel).
+- Sections, top to bottom, in the 2D stack's order: **Agreements**, **Plans**, **Design** (the
+  clicked proposal, or the proposals on the parcel), **Built** (the clicked building, and the
+  existing buildings standing on the parcel), **Permitted** (the clicked massing, or the parcel's
+  cached massing), **Formed parcel** (live ground a design formed or a road cut from a parcel),
+  **Parcel** (the one parcel).
 - The clicked thing's section opens; one section is open at a time. Ground under a click is a
   formed parcel when a design produced it or it is a piece cut from another parcel, else a
   cadastral parcel.
@@ -272,6 +276,15 @@ closes on Escape, a click on nothing, another selection, or the mobile close but
   that takes its place; with nothing of that kind behind it, the hull or the condemned building is
   the pick. A solid massing hides what is inside it, and a standing building in front of a design
   is its own object: differences from 2D that the third dimension makes.
+- Only surfaces are picked. A building's edge and floor lines never are (the ray would take a line
+  from a metre away and name its parcel). A design's unseen pick surface is a volume for its
+  buildings and flat for its ground (a road, plots, a park, or the parcels of a design that draws
+  nothing). A road's raised or sunk span is picked on the span itself, not on the ground the ray
+  reaches past it. In the single-parcel view the pick volume of a building the view hides is left
+  out, so a click where it stood selects the ground shown there.
+- The scene's parcels are those loaded when it is entered. Entering a view whose place has no
+  parcels loaded yet (a reload straight into the model view) waits for them first, so the
+  ground is there to click.
 - The parcel shown with a clicked building, massing or design is the one straight under the point
   the ray met it at (the formed plot under a drawn building, as in 2D), never the ground the ray
   would reach behind it. Its designs, buildings and massing fill the other sections: here every
@@ -317,15 +330,14 @@ closes on Escape, a click on nothing, another selection, or the mobile close but
   boundary for parcels and ground-only designs. Ground designs additionally carry a transparent
   yellow hatch; formed and cadastral parcel selections remain unfilled, even where their geometry
   is identical to the design. No parcel material changes; reduced motion keeps the outline steady. The shared contextual
-  relationship rules connect designs, agreements and parcels; the model view keeps its own section order.
+  relationship rules connect designs, agreements and parcels, in the 2D stack's section order.
 - Plans and agreements use the same lazy exact-revision membership lookup and read-only geometry
   inspection as 2D; explicit links open their full records. Inspecting parent records never imports
   or applies member designs.
 - The pure rules (order, focus, relationships, labels) are in the module's first half and unit tested
   (`backend/test/three-click-stack.test.js`); what a ray picks is `subjectHit` in
-  `three-click-plan.js`. The section order is the model view's own (Built first, where 2D puts
-  Design above Built); the neighbouring-section window and the contextual relationships are the
-  2D model's (`click-stack-model.js` `visibleSections`, `contextFor`).
+  `three-click-plan.js`. The section order, the neighbouring-section window and the contextual
+  relationships are the 2D model's (`click-stack-model.js` `ORDER`, `visibleSections`, `contextFor`).
 
 ## Google 3D view
 
@@ -338,10 +350,13 @@ inspectors and permitted representation choices are available in Google view too
 The photo renderer supplies the visible surface hit and source cadastral geometry. Authored
 geometry in front of that surface selects its design; a raw Google triangle removed by an
 applied design's visual carve does not block that design. A Google surface point resolves
-building identity from known source footprints rather than hidden model meshes. The stack
-also offers formed and source parcels, the parcel's designs and permitted source records.
-Overlapping parcels use the ordinary section selector. A source object without a known
-footprint cannot be identified from Google's unlabelled visual mesh alone.
+building identity from our source records, never by casting the camera ray at hidden model
+meshes: the building whose loaded 2D footprint holds the point, or whose own survey model
+stands straight over it (so a link that opens in this view, before any footprint is loaded,
+still names the building). The stack also offers formed and source parcels, the parcel's
+designs and permitted source records. Overlapping parcels use the ordinary section selector.
+A source object with neither a footprint nor a model cannot be identified from Google's
+unlabelled visual mesh alone.
 
 Yellow selection boundaries follow the loaded photo surface. Authored drawn volumes retain
 volume outlines; Google buildings without an addressable authored mesh use their source

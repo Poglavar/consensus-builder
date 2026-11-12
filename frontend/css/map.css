@@ -1243,6 +1243,12 @@ body.three-mode-active #agent-bubbles-container {
     white-space: nowrap;
 }
 
+/* The Applied badge on a design keeps its size; the name gives way first. */
+.click-stack__chip > .cb-badge,
+.click-stack__selector-value > .cb-badge {
+    flex: 0 0 auto;
+}
+
 .click-stack__selector-wrap {
     display: flex;
     flex-direction: column;

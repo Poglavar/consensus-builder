@@ -1,6 +1,7 @@
 // The shared model and Google 3D click stack (click-stack.md): what one click in the scene
-// stands on, as section cards floating over the scene down the right side: Built, Plans, Design,
-// Permitted, Parcel; no panel or header around them. It closes the way the 2D stack does:
+// stands on, as section cards floating over the scene down the right side, in the 2D stack's
+// order: Agreements, Plan, Design, Built, Permitted, Formed parcel, Parcel; no panel or header
+// around them. It closes the way the 2D stack does:
 // Escape or a click on nothing. The 2D stack's look (its
 // frame and .click-stack__* classes) with the 3D view's own contents: the
 // Design section holds the whole proposal's figures across all its parcels, the Parcel section the
@@ -15,7 +16,8 @@
     'use strict';
 
     const model = typeof module === 'object' && module.exports ? require('./click-stack/click-stack-model.js') : global.__clickStackModel;
-    const ORDER = Object.freeze(['built', 'agreements', 'plans', 'designs', 'permitted', 'formed', 'parcels']);
+    // The 2D stack's section order (click-stack-model.js); the scene has no bare-ground section.
+    const ORDER = Object.freeze(model.ORDER.filter(kind => kind !== 'ground'));
     const ICONS = Object.freeze({ agreements: 'fas cb-icon-agreement', plans: 'fas cb-icon-plan', built: 'fas fa-building', designs: 'fas cb-icon-design', permitted: 'fas fa-cube', formed: 'fas fa-vector-square', parcels: 'fas fa-border-all' });
 
     // ── pure rules ────────────────────────────────────────────────────────────────────────────

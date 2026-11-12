@@ -19,13 +19,37 @@
     function instanceLabel(instance, kind, win, peers = []) {
         return recordLabels(win).label(instance?.label || instance?.id || '', recordId(instance, kind, win), peers);
     }
+    // A design is on the map when its own record's root flag says so (proposals/status.js isApplied).
+    // A design this browser holds no record of is not applied; nothing else is consulted.
+    function designApplied(instance, win) {
+        // This browser's own copy says whether it is on the map; a record read from elsewhere
+        // (a plan's published member) carries no such state.
+        const record = (instance?.id != null ? win?.proposalStorage?.getProposal?.(instance.id) : null) || instance?.proposal;
+        return record?.applied === true;
+    }
+    function appliedLabel(win) {
+        const key = 'common.lifecycle.applied';
+        const text = win?.i18n?.t?.(key);
+        return text && text !== key ? text : 'Applied';
+    }
+    // The lifecycle badge the design lists already use (proposals/list-ui.js proposalLadderBadgesHtml).
+    function appliedBadge(doc, win) {
+        const badge = doc.createElement('span');
+        badge.className = 'cb-badge cb-badge--applied';
+        const icon = doc.createElement('i');
+        icon.className = 'fas fa-check';
+        icon.setAttribute('aria-hidden', 'true');
+        badge.append(icon, ` ${appliedLabel(win)}`);
+        return badge;
+    }
     function selectedLabel(value, instance, kind, win, peers) {
         const doc = value.ownerDocument;
         const name = doc.createElement('span');
         name.className = 'click-stack__selector-name';
         name.textContent = instance?.label || instance?.id || '';
         const id = recordId(instance, kind, win);
-        value.replaceChildren(name, ...(id ? [recordLabels(win).badge(doc, id, peers)] : []));
+        value.replaceChildren(name, ...(id ? [recordLabels(win).badge(doc, id, peers)] : []),
+            ...(kind === 'designs' && designApplied(instance, win) ? [appliedBadge(doc, win)] : []));
     }
     const keys = Object.freeze({
         memberPlans: 'memberPlans', includedDesigns: 'includedDesigns',
@@ -139,13 +163,17 @@
             chip.appendChild(chipLabel);
             const id = recordId(instance, group.kind, win);
             if (id) chip.appendChild(recordLabels(win).badge(doc, id, peers));
-            chip.title = id ? `${name} · ${id}` : name;
-            chip.setAttribute('aria-label', instanceLabel(instance, group.kind, win, peers));
+            // An applied design says so in the chip and in its accessible names.
+            const applied = group.kind === 'designs' && designApplied(instance, win) ? appliedLabel(win) : '';
+            if (applied) chip.appendChild(appliedBadge(doc, win));
+            chip.title = [name, applied, id].filter(Boolean).join(' · ');
+            const itemLabel = [instanceLabel(instance, group.kind, win, peers), applied].filter(Boolean).join(' · ');
+            chip.setAttribute('aria-label', itemLabel);
             chip.dataset.action = 'preview';
             chip.dataset.kind = group.kind || '';
             chip.dataset.id = instance.id ?? '';
             chip.setAttribute('aria-pressed', 'false');
-            const open = objectList().openButton(doc, instanceLabel(instance, group.kind, win, peers), win, { className: 'click-stack__open' });
+            const open = objectList().openButton(doc, itemLabel, win, { className: 'click-stack__open' });
             open.dataset.action = 'related';
             open.dataset.kind = group.kind || '';
             open.dataset.id = instance.id ?? '';
@@ -191,6 +219,7 @@
         const planIds = memberships.map(plan => plan.cid || plan.id);
         const names = [...new Set(memberships.map(plan => recordLabels(win).label(plan.label || plan.title, plan.cid || plan.id, planIds)).filter(Boolean))];
         return [type && type.label !== name ? type.label : '', instanceLabel(instance, 'designs', win, peers),
+            designApplied(instance, win) ? appliedLabel(win) : '',
             names.length ? `${translate('memberPlans', win)} ${names.join(', ')}` : ''].filter(Boolean).join(' · ');
     }
 

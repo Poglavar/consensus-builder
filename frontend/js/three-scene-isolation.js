@@ -31,11 +31,23 @@
         return hidden;
     }
 
+    // A design's unseen pick volume (three-mode.js rebuildProposalInteraction3D) stands for its
+    // building, tagged with the centre of that building's footprint (`pickVolumeCentre`, [lng, lat]).
+    // In a parcel view it counts only while `contains` puts that centre on the parcel; anything
+    // without the tag is shown as it is.
+    function pickVolumeShown(object, contains) {
+        for (let node = object; node; node = node.parent) {
+            const centre = node.userData && node.userData.pickVolumeCentre;
+            if (centre) return !!contains(centre);
+        }
+        return true;
+    }
+
     // Shows what hideChildren hid; returns the empty list to keep for the next view.
     function showAgain(hidden) {
         for (const object of hidden || []) object.visible = true;
         return [];
     }
 
-    return { standsOn, hideChildren, showAgain };
+    return { standsOn, hideChildren, showAgain, pickVolumeShown };
 });

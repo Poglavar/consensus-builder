@@ -142,6 +142,58 @@ describe('click stack relationship rendering', () => {
         expect(wrapper.querySelector('.click-stack__selector-name').textContent).toBe('Tower A');
     });
 
+    it('marks applied designs in the menu, the closed selector and the chips, by this browser\'s copy first', () => {
+        const doc = makeDocument();
+        const stored = { 'held-on': { applied: true }, 'held-off': { applied: false }, published: { applied: true } };
+        const getProposal = vi.fn(id => stored[id] || null);
+        const win = { i18n: testI18n('hr'), proposalStorage: { getProposal } };
+        const applied = dictionary('hr').common.lifecycle.applied;
+        const instances = [
+            { id: 'on', label: 'Tower', proposal: { applied: true } },
+            { id: 'off', label: 'Garden', proposal: { applied: false } },
+            { id: 'held-on', label: 'Square' },
+            { id: 'held-off', label: 'Lake' },
+            { id: 'unknown', label: 'Road' },
+            // a plan's published member carries no state; this browser's copy of it is on the map
+            { id: 'published', label: 'Park', proposal: { title: 'Park' } }
+        ];
+        const wrapper = relations.renderSelector({ kind: 'designs', multi: true, selectedIndex: 0, instances }, doc, win);
+        expect(wrapper.querySelector('select').children.map(option => option.textContent)).toEqual([
+            `Tower · on · ${applied}`, 'Garden · off', `Square · held-on · ${applied}`, 'Lake · held-off', 'Road · unknown',
+            `Park · published · ${applied}`]);
+        expect(getProposal).toHaveBeenCalledWith('held-on');
+        const value = wrapper.querySelector('.click-stack__selector-value');
+        expect(value.querySelector('.cb-badge--applied').textContent.trim()).toBe(applied);
+        expect(value.getAttribute('aria-hidden')).toBe('true');
+        relations.updateSelector({ kind: 'designs', multi: true, selectedIndex: 1, instances }, wrapper, win);
+        expect(value.querySelector('.cb-badge--applied')).toBeNull();
+
+        const group = relations.renderGroup({ relation: 'designsOnParcel', kind: 'designs', instances }, doc, win);
+        const chips = group.querySelectorAll('.click-stack__chip');
+        const opens = group.querySelectorAll('.click-stack__open');
+        expect(chips.map(chip => Boolean(chip.querySelector('.cb-badge--applied')))).toEqual([true, false, true, false, false, true]);
+        expect(chips[0].querySelector('.cb-badge--applied i').getAttribute('aria-hidden')).toBe('true');
+        expect(chips[0].getAttribute('aria-label')).toBe(`Tower · on · ${applied}`);
+        expect(chips[0].title).toBe(`Tower · ${applied} · on`);
+        expect(opens[0].getAttribute('aria-label')).toContain(`Tower · on · ${applied}`);
+        expect(chips[1].getAttribute('aria-label')).toBe('Garden · off');
+        expect(chips[1].title).toBe('Garden · off');
+        expect(opens[1].getAttribute('aria-label')).not.toContain(applied);
+        expect(chips[2].getAttribute('aria-label')).toBe(`Square · held-on · ${applied}`);
+        expect(chips[4].getAttribute('aria-label')).toBe('Road · unknown');
+
+        // other kinds never carry the mark, even when an item's record says applied
+        const plans = relations.renderGroup({ relation: 'memberPlans', kind: 'plans', instances: [instances[0]] }, doc, win);
+        expect(plans.querySelector('.cb-badge--applied')).toBeNull();
+        expect(plans.querySelector('.click-stack__chip').getAttribute('aria-label')).not.toContain(applied);
+    });
+
+    it('falls back to the English Applied label when the key is untranslated', () => {
+        const win = { i18n: { t: key => key } };
+        const label = relations.designOptionLabel({ id: 'd', label: 'Tower', proposal: { applied: true } }, win);
+        expect(label).toBe('Tower · d · Applied');
+    });
+
     it.each(goals.keys)('keeps the authored %s type independent of a misleading design title', goal => {
         const type = relations.designType({ proposal: { goal, title: 'Park' } }, { ProposalDesignGoals: goals });
         expect(type).toMatchObject({ goal, label: goals.get(goal).label });

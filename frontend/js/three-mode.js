@@ -1465,6 +1465,25 @@
         } catch (error) { console.warn(`[${new Date().toISOString()}] [3D] parcels around ${ids.join(',')} did not load`, error); }
     }
 
+    // The scene's parcel ground is a snapshot taken once on entry (initScene). A view restored from
+    // the address after a reload can arrive before the parcels of its place have loaded; entering
+    // then left the scene without parcels for good, so no click reached one. True while the 2D
+    // map's view holds no parcel yet.
+    function viewGroundMissing() {
+        const fabric = window.LiveParcelFabric;
+        if (typeof map === 'undefined' || !map || typeof map.getBounds !== 'function'
+            || typeof fabric?.countBounds !== 'function' || typeof window.fetchParcelData !== 'function') return false;
+        try {
+            const view = map.getBounds();
+            return fabric.countBounds([view.getWest(), view.getSouth(), view.getEast(), view.getNorth()]) === 0;
+        } catch (_) { return false; }
+    }
+
+    async function settleGroundForView() {
+        try { await window.fetchParcelData(map.getBounds()); }
+        catch (error) { console.warn(`[${new Date().toISOString()}] [3D] parcels of the view did not load`, error); }
+    }
+
     // Entry for the 2D selection path and the share routes (window.focusThreeModeOnProposals):
     // frames in place, or asks the mode controller to rebuild the scene around the proposals,
     // which lands in enter3D with the ids as its focus. One rebuild per set of ids at a time.
@@ -1804,6 +1823,24 @@
             if (['Polygon', 'MultiPolygon'].includes(feature?.geometry?.type)) observed.set(clickedBuildingId(feature), feature);
         }
         return [...observed.values()].filter(feature => ['Polygon', 'MultiPolygon'].includes(feature?.geometry?.type));
+    }
+
+    // The existing buildings standing over a ground point, by their own models: straight down
+    // through the meshes built from the survey. The photo view hides those meshes and never picks
+    // them along the camera ray (Google's city has another shape); here they only say whose
+    // footprint a Google surface point is in, also where no 2D footprint was loaded for it.
+    function observedBuildingsOver(point) {
+        const groups = [existingBuildingsGroup, ineligibleBuildingsGroup].filter(Boolean);
+        if (!point || !groups.length) return [];
+        const raycaster = new THREE.Raycaster(new THREE.Vector3(point.x, point.y, 100000), new THREE.Vector3(0, 0, -1));
+        const found = new Map();
+        for (const hit of raycaster.intersectObjects(groups, true)) {
+            if (!hit.object.isMesh) continue;
+            let feature = null;
+            for (let object = hit.object; object && !feature; object = object.parent) feature = object.userData?.planningBuiltFeature || null;
+            if (feature && !found.has(clickedBuildingId(feature))) found.set(clickedBuildingId(feature), feature);
+        }
+        return [...found].map(([id, feature]) => ({ id, feature }));
     }
 
     // The existing buildings standing on a parcel, by footprint centre (as isolation decides what
@@ -2602,22 +2639,33 @@
         return features;
     }
 
-    function collectSourcePreviewFeatures(proposal) {
-        const features = [];
-        const push = value => {
+    // What a design draws, each part with whether it is a building (a volume) or ground (a road,
+    // plots, a park): only a building has a height.
+    function collectSourcePreviewParts(proposal) {
+        const parts = [];
+        const push = (value, building) => {
             if (!value) return;
-            if (value.type === 'Feature' && value.geometry) { features.push(value); return; }
-            if (value.type === 'FeatureCollection') { (value.features || []).forEach(push); return; }
-            if (value.type && Array.isArray(value.coordinates)) features.push({ type: 'Feature', properties: {}, geometry: value });
+            if (value.type === 'Feature' && value.geometry) { parts.push({ feature: value, building }); return; }
+            if (value.type === 'FeatureCollection') { (value.features || []).forEach(item => push(item, building)); return; }
+            if (value.type && Array.isArray(value.coordinates)) parts.push({ feature: { type: 'Feature', properties: {}, geometry: value }, building });
         };
         const definition = proposal?.roadProposal?.definition;
-        push(definition?.polygon);
-        (proposal?.buildingProposal?.buildings || proposal?.geometry?.buildings || []).forEach(push);
-        push(proposal?.buildingProposal?.buildingFeature);
-        if (!features.length && proposal?.buildingGeometry) push({ type: 'Feature', properties: proposal.buildingProperties || {}, geometry: proposal.buildingGeometry });
-        (proposal?.parcelLayout?.plots || []).forEach(plot => push(plot && plot.geometry));
-        push(proposal?.structureProposal?.geometry);
-        return features;
+        push(definition?.polygon, false);
+        (proposal?.buildingProposal?.buildings || proposal?.geometry?.buildings || []).forEach(item => push(item, true));
+        push(proposal?.buildingProposal?.buildingFeature, true);
+        if (!parts.length && proposal?.buildingGeometry) push({ type: 'Feature', properties: proposal.buildingProperties || {}, geometry: proposal.buildingGeometry }, true);
+        (proposal?.parcelLayout?.plots || []).forEach(plot => push(plot && plot.geometry, false));
+        push(proposal?.structureProposal?.geometry, false);
+        return parts;
+    }
+
+    function collectSourcePreviewFeatures(proposal) {
+        return collectSourcePreviewParts(proposal).map(part => part.feature);
+    }
+
+    // Where a footprint stands, as [lng, lat]: the point buildingsOnParcel places a building by.
+    function footprintCentreLngLat(feature) {
+        try { return turf.centroid(feature).geometry.coordinates; } catch (_) { return null; }
     }
 
     function disposeDraftPreviewChildren(group) {
@@ -2823,17 +2871,21 @@
             // selected, as a preview of where they would land when applied.
             const applied = proposalApplied3D(proposal);
             if (!applied && proposalId !== selectedKey) return;
-            let features = collectSourcePreviewFeatures(proposal);
-            if (!features.length) features = proposalParcelFeatures3D(proposal);
-            if (!features.length) return;
+            // A building is picked as its volume; the design's ground (a road, plots, a park) and
+            // the parcels of a design that draws nothing lie flat. Extruding those too put an
+            // unseen block over the ground that took the clicks meant for what stands on it.
+            let parts = collectSourcePreviewParts(proposal);
+            if (!parts.length) parts = proposalParcelFeatures3D(proposal).map(feature => ({ feature, building: false }));
+            if (!parts.length) return;
             const wrapper = new THREE.Group();
             wrapper.userData.proposalId = proposalId;
             wrapper.userData.isProposalSurface = true;
             proposalInteractionGroup.add(wrapper);
-            const isBuilding = !!(proposal.buildingProposal || proposal.buildingGeometry || proposal.geometry?.buildings);
-            features.forEach(feature => {
+            parts.forEach(({ feature, building }) => {
                 const before = new Set(wrapper.children);
-                addDraftPreviewFeature3D(feature, wrapper, applied ? 'source' : 'draft', isBuilding ? 'buildings' : 'proposal');
+                addDraftPreviewFeature3D(feature, wrapper, applied ? 'source' : 'draft', building ? 'buildings' : 'proposal');
+                // Where the building stands, for the parcel view (three-scene-isolation.js pickVolumeShown).
+                const centre = building ? footprintCentreLngLat(feature) : null;
                 const parcelId = feature?.properties?.parcelId || feature?.properties?.parcel_id || feature?.properties?.id
                     || proposal.cadastreParcelIds?.[0] || null;
                 wrapper.children.filter(child => !before.has(child)).forEach(child => {
@@ -2841,6 +2893,7 @@
                         object.userData = object.userData || {};
                         object.userData.proposalId = proposalId;
                         object.userData.isProposalSurface = true;
+                        if (centre) object.userData.pickVolumeCentre = centre;
                         if (parcelId !== null && parcelId !== undefined) object.userData.parcelId = String(parcelId);
                         // Applied proposals already render their real geometry (buildings,
                         // corridors, parks); this copy is a pick target only. A visible copy
@@ -5527,9 +5580,12 @@
         }
     }
 
-    function addGradeSeparatedCorridors3D(targetGroup, definition, entries, fallbackProfile, terrainHeightAt) {
+    // `proposalId` names the road on its raised and sunk spans: a deck stands clear of the road's
+    // flat pick surface, so a click on it is resolved on the deck itself (pickMapSubjectFromEvent).
+    function addGradeSeparatedCorridors3D(targetGroup, definition, entries, fallbackProfile, terrainHeightAt, proposalId = null) {
         const records = Array.isArray(definition?.gradeSeparations) ? definition.gradeSeparations : [];
         const frame = records.length ? window.__corridorFootprint.frameForDefinition(definition) : null;
+        const added = new Set(targetGroup.children);
         records.forEach(record => {
             if (!record?.from || !record?.crossing || !record?.to
                 || (record.mode !== 'underpass' && record.mode !== 'overpass')) return;
@@ -5557,6 +5613,10 @@
                 });
             });
             addGradeSeparationEdges3D(targetGroup, record, terrainHeightAt);
+        });
+        if (proposalId) targetGroup.children.filter(child => !added.has(child)).forEach(child => {
+            child.userData.gradeSeparationPick = true;
+            child.userData.proposalId = String(proposalId);
         });
     }
 
@@ -5987,7 +6047,7 @@
                     }
             });
             addGradeSeparatedCorridors3D(
-                targetGroup, definition, renderEntries, fallbackProfile, proposalTerrainHeightAt);
+                targetGroup, definition, renderEntries, fallbackProfile, proposalTerrainHeightAt, proposalKey3D(proposal));
             } catch (error) {
                 // One corrupt road must not strip the asphalt off EVERY road in 3D (the 2D renderer
                 // already isolates per-proposal failures the same way).
@@ -11320,6 +11380,12 @@
             await settleGroundForProposals(focus);
             if (isActive) return sceneReadyPromise || sceneReady;
         }
+        // Ground first when the view has none yet (a reload straight into this view).
+        if (viewGroundMissing()) {
+            showRenderingOverlay();
+            await settleGroundForView();
+            if (isActive) return sceneReadyPromise || sceneReady;
+        }
         clearTimeout(warmSceneTimer);
         warmSceneTimer = null;
         const reuse = sceneReady && scene && warmSceneKey === currentSceneKey()
@@ -11660,7 +11726,18 @@
         if (flatGroup) targets.push(flatGroup);
         if (plannedFlatGroup) targets.push(plannedFlatGroup);
         if (stationGroup) targets.push(stationGroup);
-        const subject = window.__threeClickPlan.subjectHit(raycaster.intersectObjects(targets, true));
+        // A road's raised span is picked where it is drawn, not on the ground the ray reaches past it.
+        for (const group of [corridorGroup, terrainCorridorGroup]) {
+            if (group) targets.push(...group.children.filter(child => child.userData?.gradeSeparationPick));
+        }
+        let hits = raycaster.intersectObjects(targets, true);
+        // The parcel view hides the buildings of other parcels; their unseen pick volumes go with them.
+        if (isolatedParcelId !== null) {
+            const parcel = getParcelFeatureById(isolatedParcelId);
+            const onParcel = centre => { try { return !!parcel && turf.booleanPointInPolygon(turf.point(centre), parcel); } catch (_) { return false; } };
+            hits = hits.filter(hit => window.__threeSceneIsolation.pickVolumeShown(hit.object, onParcel));
+        }
+        const subject = window.__threeClickPlan.subjectHit(hits);
         return subject ? { ...subject, direction: raycaster.ray.direction.clone() } : null;
     }
 
@@ -11678,6 +11755,8 @@
             const location = turf.point([latlng.lng, latlng.lat]);
             const built = observedBuildingFeatures().filter(feature => turf.booleanPointInPolygon(location, feature))
                 .map(feature => ({ id: clickedBuildingId(feature), feature }));
+            const known = new Set(built.map(item => item.id));
+            built.push(...observedBuildingsOver(point).filter(item => !known.has(item.id)));
             hits.built = [...built, ...hits.built];
             const source = photo.sourceParcelsAt(point).map(parcel => ({ id: parcel.id,
                 feature: parcel.feature, label: window.ThreeClickStack.parcelLabel(parcel.id), live: false }));

@@ -19,6 +19,13 @@ describe('shared scene hit resolution', () => {
         ])).toEqual({ picked: { proposalId: 'design', parcelId: 'parcel' }, distance: 2, point });
         expect(subjectHit([{ object: { parent: hidden } }])).toBeNull();
     });
+    it('picks surfaces only: a building\'s edge line near the click does not name its parcel instead of the design', () => {
+        const edge = { object: { isLine: true, visible: true, userData: { parcelId: 'plot' } }, distance: 1 };
+        const dots = { object: { isPoints: true, visible: true, userData: { parcelId: 'plot' } }, distance: 1.5 };
+        const wall = { object: { visible: true, userData: { proposalId: 'tower', parcelId: 'plot' } }, distance: 2, point: { x: 0, y: 0, z: 9 } };
+        expect(subjectHit([edge, dots, wall]).picked).toEqual({ proposalId: 'tower', parcelId: 'plot' });
+        expect(subjectHit([edge, dots])).toBeNull();
+    });
     it('gives a click through a see-through massing or a condemned building to what stands behind it, as the 2D order does', () => {
         const feature = { type: 'Feature', id: 'house' };
         const hit = (userData, distance) => ({ object: { visible: true, userData }, distance, point: { x: distance, y: 0, z: 0 } });

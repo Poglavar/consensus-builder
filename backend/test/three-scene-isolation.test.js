@@ -75,6 +75,18 @@ describe('three-scene-isolation.js', () => {
         expect(isolation.standsOn({ isNearbyBuilding3D: true, footprintLatLng: 'in' }, ids, contains)).toBe(true);
         expect(isolation.standsOn({ road: true }, ids, contains)).toBe(false);
     });
+
+    it('counts a design\'s unseen pick volume only while its building stands on the viewed parcel', () => {
+        const contains = centre => centre === 'on-parcel';
+        const wrapper = { userData: { proposalId: 'd1' }, parent: null };
+        // The tag sits on the pick mesh or on any ancestor (an uploaded model's group).
+        expect(isolation.pickVolumeShown({ userData: { pickVolumeCentre: 'on-parcel' }, parent: wrapper }, contains)).toBe(true);
+        expect(isolation.pickVolumeShown({ userData: { pickVolumeCentre: 'next-door' }, parent: wrapper }, contains)).toBe(false);
+        expect(isolation.pickVolumeShown({ userData: {}, parent: { userData: { pickVolumeCentre: 'next-door' }, parent: wrapper } }, contains)).toBe(false);
+        // Flat pick surfaces (a road, plots, a park), buildings and parcels carry no tag and stay.
+        expect(isolation.pickVolumeShown({ userData: { proposalId: 'road' }, parent: wrapper }, contains)).toBe(true);
+        expect(isolation.pickVolumeShown({ userData: { isParcel: true, parcelId: 'A' }, parent: null }, contains)).toBe(true);
+    });
 });
 
 describe('the parcel view (three-mode.js)', () => {
