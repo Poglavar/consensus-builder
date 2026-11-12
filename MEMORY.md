@@ -74,6 +74,8 @@ in commits.
 
 ## Designs, plans and agreements
 
+- 2026-11-12: Designs come off the map several at a time (a plan from its card, everything from Lists), each unapply names what came off and offers Undo, and a replay never changes which designs are applied; among same-time designs a parcel layout forms first (docs/vocabulary.md, Replay).
+- 2026-11-12: This browser's copy of a published design, plan or agreement can be removed in Lists ("Remove from this device"); New game deletes designs through the manager and says so.
 - 2026-10-30: Shared plan collaboration: immediate authenticated state, one undo of the latest agent change; prioritize MCP/conversational human–AI editing; simultaneous human editing deferred.
 - 2026-10-31: Access and ordinary publication stay anonymous (no mandatory sign-in); shared-plan publication uses browser-owner approval of an exact saved revision; optional accounts later.
 - 2026-10-30: An immutable published record (plan) is checked against its CID, never rebuilt in today's normalized form.
