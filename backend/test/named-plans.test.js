@@ -160,15 +160,24 @@ describe('named plan browser transport', () => {
         location.replace = vi.fn();
         const api = NamedPlans.browser({ location, PlanRecord, Cid, MapShare });
         const saved = { ...view, settings: { existing: 'solid', existingScope: 'surviving' } };
-        expect(api.restoreArrival(saved)).toBe(true);
+        expect(api.restoreArrival(saved, `/agreements/${cid}`)).toBe(true);
         const restored = new URL(location.replace.mock.calls[0][0]);
         expect(restored.pathname).toBe(`/agreements/${cid}`);
         expect(restored.searchParams.get('existing')).toBe('ghost');
         expect(restored.searchParams.get('existingScope')).toBe('surviving');
         const settled = new URL(restored.href);
         settled.replace = vi.fn();
-        expect(NamedPlans.browser({ location: settled, PlanRecord, Cid, MapShare }).restoreArrival(saved)).toBe(false);
+        expect(NamedPlans.browser({ location: settled, PlanRecord, Cid, MapShare }).restoreArrival(saved, `/agreements/${cid}`)).toBe(false);
         expect(settled.replace).not.toHaveBeenCalled();
+    });
+    it('leaves the page alone when an agreement is opened from inside the app, not from its link', () => {
+        const saved = { ...view, settings: { existing: 'solid' } };
+        for (const href of ['https://app.example/?city=zagreb', 'https://app.example/agreements/bafyother']) {
+            const location = new URL(href);
+            location.replace = vi.fn();
+            expect(NamedPlans.browser({ location, PlanRecord, Cid, MapShare }).restoreArrival(saved, `/agreements/${cid}`)).toBe(false);
+            expect(location.replace).not.toHaveBeenCalled();
+        }
     });
     const client = fetch => NamedPlans.browser({ location: new URL('https://app.example/?backend=https%3A%2F%2Fapi.example'),
         PlanRecord, Cid, MapShare, fetch, PersistentStorage: { setItem: vi.fn(), forEach() {} }, resolveBackendBaseUrl: () => 'https://api.example', resolveFrontendBaseUrl: () => 'https://app.example' });

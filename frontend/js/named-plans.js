@@ -91,9 +91,11 @@
             remember,
             // An /agreements link arrives at its plan's saved view as a /plans link does: one reload when
             // the view adds anything the arrival address does not state (agreement-sync.js). True while
-            // redirecting.
-            restoreArrival(view) {
-                if (new URL(arrivalHref).pathname !== win.location.pathname) return false;
+            // redirecting. Only while the page still stands at that arrival address (`path`): an
+            // agreement opened from inside the app (Bets, a read-only panel's Apply) must not reload
+            // the address the page arrived at, which would drop what the visitor asked for.
+            restoreArrival(view, path) {
+                if (new URL(arrivalHref).pathname !== path || win.location.pathname !== path) return false;
                 const restored = restoreUrl(arrivalHref, view, win.MapShare);
                 if (restored === new URL(arrivalHref).href) return false;
                 win.location.replace(restored);

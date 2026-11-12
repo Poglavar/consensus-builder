@@ -595,7 +595,7 @@ describe('opening an /agreements link', () => {
         win.NamedPlans = { ...win.NamedPlans, restoreArrival: vi.fn(() => true) };
         win.handleSharedDesignRoute = vi.fn();
         await sync.handleAgreementRoute(cid);
-        expect(win.NamedPlans.restoreArrival).toHaveBeenCalledWith(agreement().plan.content.view);
+        expect(win.NamedPlans.restoreArrival).toHaveBeenCalledWith(agreement().plan.content.view, `/agreements/${cid}`);
         expect(win.handleSharedDesignRoute).not.toHaveBeenCalled();
     });
 
