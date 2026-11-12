@@ -18695,19 +18695,22 @@
             currency: { locale: 'ru-KZ', code: 'KZT' },
             map: {
                 initialView: { type: 'center', zoom: 18 },
-                defaultCenter: [43.412, 76.970], defaultZoom: 18,
+                defaultCenter: [43.612, 77.022], defaultZoom: 18,
                 parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
             },
             projection: {
                 datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
-                fallbackLatLng: [43.412, 76.970], fallbackDataset: [76.970, 43.412]
+                fallbackLatLng: [43.612, 77.022], fallbackDataset: [77.022, 43.612]
             },
             parcels: {
                 strategy: 'grid', gridSize: 0.0025, source: 'parcel-source',
                 sourceId: 'kz-alatau-pkk', idPrefix: 'KZ-ALATAU-PKK-',
-                requiresBackend: true, ownership: false, liveRadiusKm: 50,
+                // Centred mid-city with 25 km so the circle holds Gate but not central Almaty (42 km).
+                requiresBackend: true, ownership: false, liveRadiusKm: 25,
                 attribution: '<a href="https://map.gov4c.kz/egkn/">Kazakhstan EGKN public cadastral map</a> · Alatau city district · native cadastral numbers; ownership and boundary update dates unestablished'
             },
+            // Permitted zones from the Decree 727 general plan (backend/planning/providers/alatau-genplan.js).
+            planning: { sourceIds: ['alatau-genplan-727'] },
             buildings: { sources: [{ id: 'osm' }] },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }

@@ -636,6 +636,10 @@ The comparison controls label this **Illustration**. A source's one calculated o
 
 The geographic area to which supplied zoning evidence refers. It is distinct from a cadastral parcel, a permitted building volume and a completed compliance assessment.
 
+### Functional zone (Alatau)
+
+A zoning area of Alatau's general plan (Decree No. 727, 2025) from the state urban-planning cadastre: one polygon with a use and, for housing, a storey class (detached houses, 2–3, 4–6, 6–12, above 12), marked existing or planned. A residential class's upper storey count is a maximum; other uses hand the building parameters to the detailed plan (ПДП), and open land carries no building. See [Alatau general plan source](alatau-genplan-source.md).
+
 ### Treatment area (Bogotá)
 
 A zoning area of Bogotá's POT treatment map (Decreto 555/2021): one polygon with a treatment (consolidación, renovación, desarrollo, mejoramiento integral, conservación), an optional typology (`TA`, detached) and a height code. A storey count on the map is the base height; a range's upper number, development ranges and instrument codes are evidence, not geometry. A blank Consolidación polygon is an equipamiento whose storeys Decreto 253/2026 assigns by polygon; a blank Renovación polygon has a resulting height. Storeys become metres through the decree's clear height plus an assumed slab ([Bogotá POT source](bogota-pot-source.md)).

@@ -100,6 +100,10 @@ export function parcelZones(parcel, records) {
 // `zone` names the part to study on a lot that several zones partition; without it the dominant
 // zone is studied, and two parts without a clear majority stay ambiguous for a single study.
 export function assembleParcelStudy(parcel, descriptor, records, { zone = null, zones = parcelZones(parcel, records) } = {}) {
+    // A one-part MultiPolygon (the Kazakhstan cadastre returns every lot so) is that lot's Polygon.
+    if (parcel?.geometry?.type === 'MultiPolygon' && parcel.geometry.coordinates.length === 1) {
+        parcel = { ...parcel, geometry: { type: 'Polygon', coordinates: parcel.geometry.coordinates[0] } };
+    }
     if (turf.area(parcel) > 1000000 || parcel.geometry.type !== 'Polygon') fail('unsupported-parcel-shape');
     if (zones.stacked) fail('study-multiple-zoning-areas');
     let entry;

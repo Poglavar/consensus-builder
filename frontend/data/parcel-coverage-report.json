@@ -4287,8 +4287,8 @@
       "name": "Alatau",
       "country": "Kazakhstan",
       "countryCode": "KZ",
-      "latitude": 43.412,
-      "longitude": 76.97,
+      "latitude": 43.612,
+      "longitude": 77.022,
       "registryCityIds": [
         "app:KZ:alatau"
       ],
@@ -4324,8 +4324,8 @@
         "https://map.gov4c.kz/geoserver/wfs"
       ],
       "evidenceFiles": [],
-      "osmUrl": "https://www.openstreetmap.org/?mlat=43.41200&mlon=76.97000#map=12/43.41200/76.97000",
-      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=43.41200%2C76.97000",
+      "osmUrl": "https://www.openstreetmap.org/?mlat=43.61200&mlon=77.02200#map=12/43.61200/77.02200",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=43.61200%2C77.02200",
       "wikipediaUrl": null,
       "wikipediaEvidence": null
     },

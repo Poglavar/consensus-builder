@@ -111713,10 +111713,10 @@
       "country": "Kazakhstan",
       "countryCode": "KZ",
       "centerLatLon": [
-        43.412,
-        76.97
+        43.612,
+        77.022
       ],
-      "citySource": "Alatau city (formed 2024, Almaty region); map point in Yntymak, Gate district; not a WUP centroid or official boundary",
+      "citySource": "Alatau city (formed 2024, Almaty region); map point near the middle of the city; not a WUP centroid or official boundary",
       "sourceIds": [
         "kz-alatau-pkk"
       ],
