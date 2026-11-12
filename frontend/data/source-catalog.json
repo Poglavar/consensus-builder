@@ -4572,6 +4572,7 @@
       "name": "Kazakhstan EGKN PKK — Astana, Esil district",
       "adapter": "kazakhstan-pkk",
       "endpoint": "https://map.gov4c.kz/geoserver/wfs",
+      "browserTransport": "relay",
       "featureType": "egkn:u_view",
       "districtId": 254,
       "projection": "KZ-GK-12",
@@ -4605,6 +4606,7 @@
         "Native cadastral identity is kad_nomer. The gid property orders pagination; generated GeoServer feature IDs change between otherwise identical responses and are never used as parcel identity.",
         "Since the provider's QazTRF migration (about 25–26 October 2026) the view stores 6-degree Gauss–Krüger zone 12 coordinates on GRS80 with the zone number prefixed to the easting, reports EPSG:404000 and ignores srsName. Four-corner native envelopes are queried and complete source geometry is transformed to WGS84; OSM building vertices fit the transformed parcels best within 4 m of zero offset. UTM bounds now return no features and are not evidence of parcel absence.",
         "The server omits its published Sectigo intermediate. Source-scoped CA supplementation preserves ordinary certificate and hostname verification.",
+        "No CORS Access-Control-Allow-Origin header: browsers read it through the production provider relay. A direct attempt took about 5 s to fail and pushed first loads past the 15-second deadline.",
         "Up to 80 requested IDs are read in filters of at most 20 terms under a single 15-second deadline and shared response-byte budget; an unchunked 80-term filter returned HTTP 414.",
         "All 154 locally sampled parcels were valid. Five source-boundary overlaps were retained unchanged; the two largest measure 0.451 m² and 0.382 m², with minimum oriented widths about 9.8 mm and 12.1 mm. No global geometry repair or tolerance is applied."
       ]
@@ -4614,6 +4616,7 @@
       "name": "Kazakhstan EGKN PKK — Alatau city",
       "adapter": "kazakhstan-pkk",
       "endpoint": "https://map.gov4c.kz/geoserver/wfs",
+      "browserTransport": "relay",
       "featureType": "egkn:u_view",
       "districtId": 364,
       "projection": "KZ-GK-13",
@@ -4647,6 +4650,7 @@
         "Native cadastral identity is kad_nomer. The gid property orders pagination; generated GeoServer feature IDs are never used as parcel identity.",
         "The view stores 6-degree Gauss–Krüger zone 13 coordinates on GRS80 with the zone number prefixed to the easting, reports EPSG:404000 and ignores srsName. Native envelopes are queried and geometry is transformed to WGS84.",
         "The server omits its published Sectigo intermediate. Source-scoped CA supplementation preserves ordinary certificate and hostname verification.",
+        "No CORS Access-Control-Allow-Origin header: browsers read it through the production provider relay. A direct attempt took about 5 s to fail and pushed first loads past the 15-second deadline.",
         "Topology (overlaps between parcels) has not been audited for Alatau; Almaty's district view is held for material overlaps."
       ]
     },
