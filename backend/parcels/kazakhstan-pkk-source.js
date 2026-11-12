@@ -31,6 +31,11 @@ export function kazakhstanPkkProjection(zone) {
     };
 }
 const NATIVE_PATTERN = /^[0-9]{1,32}$/;
+// The register repeats some cadastral numbers on different plots (030461431789 names two lots
+// about 600 m apart in Alatau), so a parcel is its number plus its row gid: `<kad_nomer>-g<gid>`.
+// The number alone stays the displayed parcel number.
+const PARCEL_KEY_PATTERN = /^([0-9]{1,32})-g([0-9]{1,15})$/;
+const parcelKey = (nativeId, gid) => `${nativeId}-g${gid}`;
 const MAX_ID_FILTER_TERMS = 20;
 const OUT_FIELDS = ['gid', 'kad_nomer'];
 const FES_NS = 'http://www.opengis.net/fes/2.0';
@@ -170,12 +175,12 @@ export function createKazakhstanPkkSource(descriptor, { fetchImpl = globalThis.f
         return `${ENDPOINT}?${params}`;
     }
 
-    async function query({ bbox, codes, operationSignal, operationState }) {
+    async function query({ bbox, codes, keys, operationSignal, operationState }) {
         const metricBounds = bbox ? projectBounds(bbox, toMetric) : undefined;
         const filter = codes ? idFilter(codes) : undefined;
         const state = operationState ?? { totalBytes: 0 };
         const signal = operationSignal ?? AbortSignal.timeout(timeoutMs);
-        const byNativeId = new Map();
+        const byKey = new Map();
         const seenGids = new Set();
         let startIndex = 0;
         let matched;
@@ -221,6 +226,9 @@ export function createKazakhstanPkkSource(descriptor, { fetchImpl = globalThis.f
                 seenGids.add(gid);
                 if (typeof nativeId !== 'string' || !NATIVE_PATTERN.test(nativeId)) throw upstreamError('Kazakhstan PKK returned an invalid native cadastre key.');
                 if (codes && !codes.includes(nativeId)) throw upstreamError('Kazakhstan PKK returned an unrequested native cadastre key.');
+                const key = parcelKey(nativeId, gid);
+                // A number read by id can also name another plot; only the requested rows answer.
+                if (keys && !keys.has(key)) continue;
                 if (!validProjectedGeometry(feature.geometry, projection)) throw upstreamError('Kazakhstan PKK returned geometry outside its native Gauss–Krüger zone.');
                 const sourceExtent = geometryBbox(feature.geometry);
                 // The public view can overfetch beyond its BBOX. Validate and count every row,
@@ -229,17 +237,13 @@ export function createKazakhstanPkkSource(descriptor, { fetchImpl = globalThis.f
                     || sourceExtent[3] < metricBounds[1] || sourceExtent[1] > metricBounds[3]);
                 const geometry = projectGeometry(feature.geometry, toWgs84, projection);
                 const safeFeature = { geometry, properties: { gid, kad_nomer: nativeId } };
-                const canonical = canonicalParcelFeature(outputDescriptor, safeFeature, nativeId);
-                const signature = stableJson({ geometry: canonical.geometry, properties: canonical.properties.sourceProperties });
-                const previous = byNativeId.get(nativeId);
-                if (previous && previous.signature !== signature) throw upstreamError('Kazakhstan PKK returned conflicting rows for one native cadastre key.');
-                if (!previous) byNativeId.set(nativeId, { canonical, signature, intersectsBounds });
+                byKey.set(key, { canonical: canonicalParcelFeature(outputDescriptor, safeFeature, key), intersectsBounds });
             }
             startIndex += page.length;
             if (startIndex === matched) break;
             if (page.length === 0) throw upstreamError('Kazakhstan PKK returned an empty page before completion.');
         }
-        return [...byNativeId.values()].filter(item => item.intersectsBounds).map(item => item.canonical);
+        return [...byKey.values()].filter(item => item.intersectsBounds).map(item => item.canonical);
     }
 
     const result = (features, extra = {}) => ({ type: 'FeatureCollection', features,
@@ -253,17 +257,18 @@ export function createKazakhstanPkkSource(descriptor, { fetchImpl = globalThis.f
     async function queryIds(ids) {
         if (!Array.isArray(ids) || !ids.length || ids.length > 80) throw new HttpError(400, 'Provide between 1 and 80 PKK parcel IDs.');
         const unique = [...new Set(ids)];
-        const codes = unique.map(value => {
+        const keys = new Set(unique.map(value => {
             if (typeof value !== 'string' || !value.startsWith(idPrefix)) throw new HttpError(400, 'Parcel ID belongs to a different source.');
-            const code = value.slice(idPrefix.length);
-            if (!NATIVE_PATTERN.test(code)) throw new HttpError(400, 'Invalid PKK cadastral ID.');
-            return code;
-        });
+            const key = value.slice(idPrefix.length);
+            if (!PARCEL_KEY_PATTERN.test(key)) throw new HttpError(400, 'Invalid PKK cadastral ID.');
+            return key;
+        }));
+        const codes = [...new Set([...keys].map(key => key.match(PARCEL_KEY_PATTERN)[1]))];
         const state = { totalBytes: 0 };
         const signal = AbortSignal.timeout(timeoutMs);
         const byId = new Map();
         for (let offset = 0; offset < codes.length; offset += MAX_ID_FILTER_TERMS) {
-            const batch = await query({ codes: codes.slice(offset, offset + MAX_ID_FILTER_TERMS), operationSignal: signal, operationState: state });
+            const batch = await query({ codes: codes.slice(offset, offset + MAX_ID_FILTER_TERMS), keys, operationSignal: signal, operationState: state });
             for (const feature of batch) byId.set(feature.id, feature);
             if (byId.size > maxFeatures) throw upstreamError('Kazakhstan PKK query exceeds its parcel limit.');
         }

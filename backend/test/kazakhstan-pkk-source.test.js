@@ -50,9 +50,9 @@ describe('Astana official PKK parcel source', () => {
         const result = await source.queryBounds(BOUNDS);
         expect(result).toMatchObject({ sourceId: 'astana-egkn-pkk', complete: true, returnsWGS84: true });
         expect(result.features).toHaveLength(1);
-        expect(result.features[0].id).toBe(`${PREFIX}21320072529`);
+        expect(result.features[0].id).toBe(`${PREFIX}21320072529-g5884914`);
         expect(result.features[0].properties).toMatchObject({
-            sourceParcelId: '21320072529', parcelNumber: '21320072529',
+            sourceParcelId: '21320072529-g5884914', parcelNumber: '21320072529',
             sourceProperties: { gid: 5884914, kad_nomer: '21320072529' }
         });
         expect(JSON.stringify(result)).not.toContain('address_ru');
@@ -88,7 +88,7 @@ describe('Astana official PKK parcel source', () => {
         ]);
         const result = await source.queryBounds(BOUNDS);
         expect(result.features.map(feature => feature.id)).toEqual([
-            `${PREFIX}21320072529`, `${PREFIX}21320072530`, `${PREFIX}21320072531`
+            `${PREFIX}21320072529-g5884914`, `${PREFIX}21320072530-g5884915`, `${PREFIX}21320072531-g5884916`
         ]);
         const urls = fetchImpl.mock.calls.map(([url]) => new URL(url));
         expect(urls.map(url => url.searchParams.get('startIndex'))).toEqual(['0', '2']);
@@ -98,9 +98,9 @@ describe('Astana official PKK parcel source', () => {
 
     it('uses exact no-bbox kad_nomer filters and returns absence only after a complete read', async () => {
         const { source, fetchImpl } = makeSource([response([row(5884914, '21320072529')])]);
-        const result = await source.queryIds([`${PREFIX}21320072529`, `${PREFIX}21320072599`]);
-        expect(result.features.map(feature => feature.id)).toEqual([`${PREFIX}21320072529`]);
-        expect(result.absentIds).toEqual([`${PREFIX}21320072599`]);
+        const result = await source.queryIds([`${PREFIX}21320072529-g5884914`, `${PREFIX}21320072599-g1`]);
+        expect(result.features.map(feature => feature.id)).toEqual([`${PREFIX}21320072529-g5884914`]);
+        expect(result.absentIds).toEqual([`${PREFIX}21320072599-g1`]);
         const params = new URL(fetchImpl.mock.calls[0][0]).searchParams;
         expect(params.has('bbox')).toBe(false);
         expect(params.get('viewparams')).toBe('district_id:254');
@@ -110,10 +110,10 @@ describe('Astana official PKK parcel source', () => {
     });
 
     it('splits 80-ID lookups into URI-safe filters under one operation deadline', async () => {
-        const ids = Array.from({ length: 80 }, (_, index) => `${PREFIX}${String(900000000 + index)}`);
+        const ids = Array.from({ length: 80 }, (_, index) => `${PREFIX}${String(900000000 + index)}-g${5900000 + index}`);
         const pages = [];
         for (let offset = 0; offset < ids.length; offset += 20) {
-            pages.push(response(ids.slice(offset, offset + 20).map((id, index) => row(5900000 + offset + index, id.slice(PREFIX.length))), 20));
+            pages.push(response(Array.from({ length: 20 }, (_, index) => row(5900000 + offset + index, String(900000000 + offset + index))), 20));
         }
         const { source, fetchImpl } = makeSource(pages, { pageSize: 1000, maxFeatures: 1000 });
         const result = await source.queryIds(ids);
@@ -138,7 +138,7 @@ describe('Astana official PKK parcel source', () => {
         await expect(source.queryBounds(BOUNDS)).rejects.toMatchObject({ status: 502, code: 'parcel-source-unavailable' });
     });
 
-    it('rejects changing counts, malformed return counts, wrong CRS, and conflicting native keys', async () => {
+    it('rejects changing counts, malformed return counts and wrong CRS', async () => {
         const changing = makeSource([response([row(5884914, '21320072529')], 2), response([row(5884915, '21320072530')], 3)]);
         await expect(changing.source.queryBounds(BOUNDS)).rejects.toMatchObject({ status: 502 });
         const wrongReturnCount = makeSource([response([], 0, { numberReturned: 1 })]);
@@ -149,8 +149,20 @@ describe('Astana official PKK parcel source', () => {
         await expect(formerUtm.source.queryBounds(BOUNDS)).rejects.toMatchObject({ status: 502 });
         const utmGeometry = makeSource([response([row(5884914, '21320072529', geometryAt(proj4('EPSG:4326', 'EPSG:32642', CENTER)))])]);
         await expect(utmGeometry.source.queryBounds(BOUNDS)).rejects.toMatchObject({ status: 502 });
-        const conflict = makeSource([response([row(5884914, '21320072529'), row(5884915, '21320072529', geometryAt(CENTER_METRIC, 6))], 2)]);
-        await expect(conflict.source.queryBounds(BOUNDS)).rejects.toMatchObject({ status: 502 });
+    });
+
+    it('keeps two plots the register files under one cadastral number as two parcels', async () => {
+        // 030461431789 names two lots about 600 m apart in Alatau (gids 7195300 and 7192121, 2026-11-12).
+        const twin = [row(5884914, '21320072529'), row(5884915, '21320072529', geometryAt(CENTER_METRIC, 6))];
+        const viewport = makeSource([response(twin, 2)]);
+        const result = await viewport.source.queryBounds(BOUNDS);
+        expect(result.features.map(feature => feature.id)).toEqual([`${PREFIX}21320072529-g5884914`, `${PREFIX}21320072529-g5884915`]);
+        expect(result.features.map(feature => feature.properties.parcelNumber)).toEqual(['21320072529', '21320072529']);
+        // Reading one by id asks for the number and answers only the requested row.
+        const byId = makeSource([response(twin, 2)]);
+        const reread = await byId.source.queryIds([`${PREFIX}21320072529-g5884915`]);
+        expect(reread.features.map(feature => feature.id)).toEqual([`${PREFIX}21320072529-g5884915`]);
+        expect(reread.absentIds).toEqual([]);
     });
 
     it('allows null or omitted CRS only for complete empty responses with zero counts', async () => {
@@ -185,7 +197,7 @@ describe('Astana official PKK parcel source', () => {
         ]);
         const result = await source.queryBounds(BOUNDS);
         expect(result.complete).toBe(true);
-        expect(result.features.map(feature => feature.id)).toEqual([`${PREFIX}21320072530`, `${PREFIX}21320072531`]);
+        expect(result.features.map(feature => feature.id)).toEqual([`${PREFIX}21320072530-g5884915`, `${PREFIX}21320072531-g5884916`]);
         expect(fetchImpl.mock.calls.map(([url]) => new URL(url).searchParams.get('startIndex'))).toEqual(['0', '2']);
 
         const invalidOutside = makeSource([response([row(5884914, '', outside)])]);
@@ -209,13 +221,15 @@ describe('Astana official PKK parcel source', () => {
         const incomplete = makeSource([response([row(5884914, '21320072529'), row(5884915, '21320072530')], 3)]);
         incomplete.fetchImpl.mockRejectedValueOnce(Object.assign(new Error('interrupted'), { code: 'ECONNRESET' }));
         await expect(incomplete.source.queryIds([
-            `${PREFIX}21320072529`, `${PREFIX}21320072530`, `${PREFIX}21320072599`
+            `${PREFIX}21320072529-g5884914`, `${PREFIX}21320072530-g5884915`, `${PREFIX}21320072599-g1`
         ])).rejects.toMatchObject({ status: 502 });
     });
 
     it('rejects unsafe caller IDs before network I/O and maps timeout errors', async () => {
         const invalid = makeSource([]);
         await expect(invalid.source.queryIds([`${PREFIX}21320072' OR 1=1`])).rejects.toMatchObject({ status: 400 });
+        // A bare number no longer names one plot.
+        await expect(invalid.source.queryIds([`${PREFIX}21320072529`])).rejects.toMatchObject({ status: 400 });
         expect(invalid.fetchImpl).not.toHaveBeenCalled();
         const descriptor = { id: 'astana-timeout', endpoint: ENDPOINT, featureType: 'egkn:u_view', districtId: 254,
             idPrefix: PREFIX, pageSize: 2, maxFeatures: 10 };
@@ -245,7 +259,7 @@ describe('Almaty official PKK district projection', () => {
         const native = row(7236597, '20311024010', geometryAt(metric));
         const { source, fetchImpl } = makeSource([response([native], 1, { crs }), response([native], 1, { crs })], override);
         const viewport = await source.queryBounds(almatyBounds);
-        expect(viewport.features[0].id).toBe(almatyPrefix + '20311024010');
+        expect(viewport.features[0].id).toBe(almatyPrefix + '20311024010-g7236597');
         const expected = proj4(almatyCrs, 'EPSG:4326', [metric[0] - 5, metric[1] - 5]);
         const actual = viewport.features[0].geometry.coordinates[0][0][0];
         expect(actual[0]).toBeCloseTo(expected[0], 8);
@@ -255,7 +269,7 @@ describe('Almaty official PKK district projection', () => {
         expect(params.has('srsname')).toBe(false);
         expect(Number(params.get('bbox').split(',')[0])).toBeGreaterThan(13000000);
         expect(JSON.stringify(viewport)).not.toContain('address_ru');
-        const reread = await source.queryIds([almatyPrefix + '20311024010']);
+        const reread = await source.queryIds([almatyPrefix + '20311024010-g7236597']);
         expect(reread.features).toEqual(viewport.features);
         expect(reread.absentIds).toEqual([]);
         const referenceParams = new URL(fetchImpl.mock.calls[1][0]).searchParams;
@@ -278,7 +292,7 @@ describe('Almaty official PKK district projection', () => {
 
     it('rejects references belonging to the other configured city before network access', async () => {
         const { source, fetchImpl } = makeSource([], override);
-        await expect(source.queryIds([PREFIX + '21320072529'])).rejects.toMatchObject({ status: 400 });
+        await expect(source.queryIds([PREFIX + '21320072529-g5884914'])).rejects.toMatchObject({ status: 400 });
         expect(fetchImpl).not.toHaveBeenCalled();
     });
 });
@@ -293,7 +307,7 @@ describe('Alatau official PKK district view', () => {
         const metric = proj4('EPSG:4326', kazakhstanPkkProjection(13).definition, center);
         const { source, fetchImpl } = makeSource([response([row(8060469, '030461441804', geometryAt(metric))], 1, { crs })], override);
         const result = await source.queryBounds([center[0] - 0.0002, center[1] - 0.0002, center[0] + 0.0002, center[1] + 0.0002]);
-        expect(result.features.map(feature => feature.id)).toEqual([alatauPrefix + '030461441804']);
+        expect(result.features.map(feature => feature.id)).toEqual([alatauPrefix + '030461441804-g8060469']);
         const [lon, lat] = result.features[0].geometry.coordinates[0][0][0];
         expect(lon).toBeCloseTo(center[0], 3);
         expect(lat).toBeCloseTo(center[1], 3);
