@@ -259,10 +259,22 @@
         return Date.parse(record && (record.authoredAt || record.createdAt)) || 0;
     }
 
+    // A parcel layout authors the plots other designs stand on.
+    function authorsGround(record) {
+        return !!record && (!!record.parcelLayout || String(record.goal ?? '').trim() === 'parcel-layout');
+    }
+
+    // Designs with the same authoring time (an imported plan dates every member with the plan's
+    // own date) form ground first: the layout, then the designs on its plots. Left to the id
+    // order, a building formed before the layout of its own block, stood on the whole unformed
+    // parcel, and the layout was named as a design standing on that building.
     function compareFormationOrder(a, b) {
         const at = formationTime(a);
         const bt = formationTime(b);
         if (at !== bt) return at - bt;
+        const ag = authorsGround(a) ? 0 : 1;
+        const bg = authorsGround(b) ? 0 : 1;
+        if (ag !== bg) return ag - bg;
         const ai = numericRecordId(a);
         const bi = numericRecordId(b);
         if (ai !== null && bi !== null && ai !== bi) return ai - bi;

@@ -201,6 +201,24 @@ describe('apply order', () => {
         ];
         expect(planOrder.orderFormations(records).map(p => p.id)).toEqual([663, 670]);
     });
+
+    it('forms a parcel layout before the designs of the same time that stand on its plots', () => {
+        // An imported plan dates every member with the plan's own date; the ids alone put the
+        // building of a block before the block's layout.
+        const sameTime = '2026-06-23T00:00:00.000Z';
+        const building = { proposalId: 'design-aaa', goal: 'buildings', createdAt: sameTime };
+        const park = { proposalId: 'design-bbb', goal: 'park', createdAt: sameTime };
+        const layout = { proposalId: 'design-zzz', goal: 'parcel-layout', parcelLayout: {}, createdAt: sameTime };
+        expect(planOrder.orderFormations([building, park, layout]).map(p => p.proposalId)).toEqual(['design-zzz', 'design-aaa', 'design-bbb']);
+        expect(planOrder.compareFormationOrder(layout, building)).toBeLessThan(0);
+        expect(planOrder.compareFormationOrder(building, layout)).toBeGreaterThan(0);
+        // Time still decides first: a layout drawn later stays later.
+        const later = { ...layout, createdAt: '2026-07-01T00:00:00.000Z' };
+        expect(planOrder.orderFormations([later, building]).map(p => p.proposalId)).toEqual(['design-aaa', 'design-zzz']);
+        // A numeric server id does not put a design ahead of the layout it stands on.
+        expect(planOrder.orderFormations([{ id: 5, proposalId: 'c-a', goal: 'buildings', createdAt: sameTime }, { id: 9, proposalId: 'c-b', goal: 'parcel-layout', createdAt: sameTime }])
+            .map(p => p.id)).toEqual([9, 5]);
+    });
 });
 
 describe('diagnostic cadastre coverage', () => {

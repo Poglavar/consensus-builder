@@ -1893,6 +1893,11 @@ const ProposalManager = {
                         if (opts.statusMode === 'apply' || opts.statusMode === 'rederive') {
                             replayOptions.statusMode = opts.statusMode;
                         }
+                        // Only a record this edit applies chooses its ground. Every other member
+                        // already stood and is put back as it was: its replay never takes another
+                        // design off the map (corridor-tunnel.js parkProposedBuildingsUnder). One
+                        // unapplied building left two others off the map this way.
+                        if (opts.statusMode === 'rederive' || !editIds.has(id)) replayOptions.preserveAppliedSet = true;
                         stood = await this.applyProposal(id, replayOptions);
                     } catch (error) {
                         const failure = this.getLastApplyFailureInfo?.(id);

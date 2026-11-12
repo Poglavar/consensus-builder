@@ -401,6 +401,10 @@ A saved design whose goal the application no longer applies (a retired format) c
 
 The reconstruction of a working composition by applying designs in their defined formation and dependency order. Display order, agreement membership order and construction windows do not themselves determine replay order.
 
+Formation order is authoring time. Among designs of the same time, a parcel layout forms before the designs that stand on its plots; identifiers decide only what remains tied.
+
+A replay puts back what already stood: it never changes which designs are applied. Only a design being applied or edited in that change can take another off the map, and every design taken off is named.
+
 ### Construction window
 
 A plan member's start and end month (`YYYY-MM`, both inclusive), stored in the plan's `schedule` under the member's design CID. Dates belong to the plan, not the design: the same design can be built at different times in different plans. Members without a window are unscheduled and count as built at every date. The time control only displays a plan's windows; it does not set them. A window is distinct from replay precedence, and Plan stats counts a member in the year its window ends.
