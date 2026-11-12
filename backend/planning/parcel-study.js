@@ -11,15 +11,21 @@ const fail = (code, status = 422) => { throw Object.assign(new Error(code), { co
 const componentBounds = new WeakMap();
 
 // Citywide districts can contain thousands of disconnected polygons. Whole components whose
-// boxes miss the full parcel cannot affect its coverage; retain every vertex of the others.
+// boxes miss the full parcel cannot affect its coverage; the others are clipped to a box just
+// outside the parcel. Clipping to a box that contains the parcel leaves zone ∩ parcel and
+// parcel − zone exactly as they were, and spares the polygon operations every vertex of a long
+// zone outline (Alatau's curved zones made a block's envelopes cost ~11 s of CPU).
 // This is only a calculation input. The study still exposes the complete source record.
+const CLIP_MARGIN_DEG = 1e-5;
 function zoningNearParcel(geometry, bounds) {
-    if (geometry.type !== 'MultiPolygon') return geometry;
-    if (!componentBounds.has(geometry)) componentBounds.set(geometry, geometry.coordinates.map(coordinates =>
-        ({ coordinates, bbox: turf.bbox(turf.polygon(coordinates)) })));
+    if (!componentBounds.has(geometry)) componentBounds.set(geometry, (geometry.type === 'MultiPolygon' ? geometry.coordinates : [geometry.coordinates])
+        .map(coordinates => ({ coordinates, bbox: turf.bbox(turf.polygon(coordinates)) })));
+    const box = [bounds[0] - CLIP_MARGIN_DEG, bounds[1] - CLIP_MARGIN_DEG, bounds[2] + CLIP_MARGIN_DEG, bounds[3] + CLIP_MARGIN_DEG];
     const coordinates = componentBounds.get(geometry).filter(({ bbox }) =>
-        bbox[0] <= bounds[2] && bbox[2] >= bounds[0] && bbox[1] <= bounds[3] && bbox[3] >= bounds[1])
-        .map(component => component.coordinates);
+        bbox[0] <= box[2] && bbox[2] >= box[0] && bbox[1] <= box[3] && bbox[3] >= box[1])
+        .map(({ coordinates: rings, bbox }) => bbox[0] >= box[0] && bbox[2] <= box[2] && bbox[1] >= box[1] && bbox[3] <= box[3]
+            ? rings : turf.bboxClip(turf.polygon(rings), box).geometry.coordinates.filter(ring => ring.length >= 4))
+        .filter(rings => rings.length);
     return coordinates.length ? { type: 'MultiPolygon', coordinates } : null;
 }
 

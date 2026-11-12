@@ -4,7 +4,7 @@ import { describe, it, expect, vi } from 'vitest';
 import * as turf from '@turf/turf';
 import { createAlatauGenplanProvider, alatauGenplanSource, interpretZone, ALATAU_ADMTERR_ID } from '../planning/providers/alatau-genplan.js';
 import { planningRepresentations, getPlanningSources } from '../planning/sources.js';
-import { assembleParcelStudy } from '../planning/parcel-study.js';
+import { assembleParcelStudy, parcelZones } from '../planning/parcel-study.js';
 
 // A real zone in Yntymak (object 481223, existing detached housing), coordinates as served.
 const yntymakRing = [[76.97164927, 43.41549894], [76.97021284, 43.41102108], [76.9691655, 43.41136301], [76.97055485, 43.41571063], [76.97164927, 43.41549894]];
@@ -103,5 +103,18 @@ describe('Alatau general plan provider', () => {
         expect(study.parcel.geometry.type).toBe('Polygon');
         const twoParts = { ...multi, geometry: { type: 'MultiPolygon', coordinates: [lot.geometry.coordinates, turf.bboxPolygon([76.9703, 43.4125, 76.9704, 43.4126]).geometry.coordinates] } };
         expect(() => assembleParcelStudy(twoParts, { id: 'kz-alatau-pkk' }, [record])).toThrow('unsupported-parcel-shape');
+    });
+
+    it('measures a lot against a long curved zone exactly as against its full outline', () => {
+        // Zones are clipped to a box around the lot before the polygon operations; the overlap and
+        // the uncovered part must come out as with the whole 4,000-vertex outline.
+        const zoneGeometry = turf.circle([76.97, 43.41], 2, { steps: 4000, units: 'kilometers' }).geometry;
+        const zone = { site: { type: 'MultiPolygon', coordinates: [zoneGeometry.coordinates] }, source: { recordId: 'curved' } };
+        const lot = turf.bboxPolygon([76.9930, 43.4080, 76.9960, 43.4110]); // straddles the zone's eastern edge
+        const [overlap] = parcelZones(lot, [zone]).overlaps;
+        const full = turf.intersect(lot, turf.feature(zoneGeometry));
+        expect(overlap.areaM2).toBeGreaterThan(1000);
+        expect(Math.abs(overlap.areaM2 - turf.area(full)) / turf.area(full)).toBeLessThan(1e-9);
+        expect(overlap.geometry.coordinates.flat(2).length).toBeLessThan(400);
     });
 });

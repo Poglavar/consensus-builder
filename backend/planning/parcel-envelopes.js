@@ -227,6 +227,9 @@ export async function loadParcelEnvelopes(query, { sources, parcelProvider = des
     const overlapProblems = parcelOverlapProblems(all);
     const items = [], unavailable = [...tooLarge];
     for (const { parcel } of records) {
+        // Each lot is CPU work on the API's one thread; yielding between lots lets other requests
+        // (the parcel relay among them) answer while a large block is being drawn.
+        await new Promise(resolve => setImmediate(resolve));
         try {
             if (overlapProblems.has(parcel.id)) fail(overlapProblems.get(parcel.id));
             const frontage = parcelFrontage(parcel, streets, streetsNearby);
