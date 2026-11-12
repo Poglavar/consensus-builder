@@ -974,7 +974,10 @@ function announceUnappliedDesigns(cameOff, requestedIds, t) {
     try {
         if (typeof showEphemeralMessage === 'function') showEphemeralMessage(parts.join(' '), 10000, others.length ? 'warning' : 'info', undo);
         else if (typeof updateStatus === 'function') updateStatus(parts.join(' '), ids.length === 1 ? { proposalId: ids[0] } : {});
-    } catch (_) { }
+    } catch (error) {
+        // The designs are off the map either way; only the notice is missing.
+        console.error(`[${new Date().toISOString()}] [unapply] the notice could not be shown`, error);
+    }
 }
 
 // The way back from an unapply (the notice's Undo): the designs that came off stand again, in one change.
@@ -986,8 +989,10 @@ async function reapplyDesignsToMap(rows, t) {
     try {
         const result = await ProposalManager.applyProposalPlan(ids);
         if (result && result.ok === true) {
-            try { ProposalManager._refreshUIAfterProposalChange?.(null); } catch (_) { }
-            ids.forEach(id => { try { reconcileProposalMapActionButton(id); } catch (_) { } });
+            // The designs stand again either way; a panel that failed to redraw is reported, not hidden.
+            const report = error => console.error(`[${new Date().toISOString()}] [reapply] a panel did not refresh`, error);
+            try { ProposalManager._refreshUIAfterProposalChange?.(null); } catch (error) { report(error); }
+            ids.forEach(id => { try { reconcileProposalMapActionButton(id); } catch (error) { report(error); } });
             const message = ids.length === 1
                 ? say('panel.proposal.actions.reappliedStatus', 'The design “{{name}}” is applied again.', { name: rows[0].title })
                 : say('panel.proposal.actions.reappliedManyStatus', '{{count}} designs are applied again.', { count: ids.length });
@@ -1026,7 +1031,7 @@ async function unapplyDesignsFromMap(proposalIds, options = {}) {
             onProgress: event => {
                 const phaseLabel = proposalUnapplyPhaseLabel(event, t);
                 if (!phaseLabel) return;
-                try { if (typeof updateStatus === 'function') updateStatus(`${label} — ${phaseLabel}`, { transient: true }); } catch (_) { }
+                if (typeof updateStatus === 'function') updateStatus(`${label} — ${phaseLabel}`, { transient: true });
             }
         });
         if (unapplied !== false) {
