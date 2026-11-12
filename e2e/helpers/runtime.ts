@@ -231,8 +231,19 @@ export async function openBlockEditor(page: Page): Promise<void> {
   const prompt = page.getByRole('alertdialog');
   const ruleType = page.locator('#blockify-ruletype-select');
   await expect(prompt.or(ruleType)).toBeVisible();
-  if (await prompt.isVisible()) await prompt.getByRole('button', { name: 'No, just this parcel' }).click();
+  if (await prompt.isVisible()) await answerBlockScope(page);
   await expect(ruleType).toBeVisible();
+}
+
+// Every fresh design launched from exactly ONE selected parcel (park, square, lake, Freeform,
+// Detached, parcel layout, block, urban rule) first asks whether to take the whole block
+// (js/parcels/ui/proposal-actions.js maybeSuggestWholeBlockForFreshProposal). Answers it: No keeps
+// the one parcel and the launch goes on; Yes selects the block and stops the launch there.
+export async function answerBlockScope(page: Page, wholeBlock = false): Promise<void> {
+  const prompt = page.getByRole('alertdialog').filter({ hasText: 'Only one parcel is selected' });
+  await expect(prompt).toBeVisible();
+  await prompt.getByRole('button', { name: wholeBlock ? 'Yes, select the block' : 'No, just this parcel', exact: true }).click();
+  await expect(prompt).toBeHidden();
 }
 
 // Clicks the parcel's centre and brings up its section in the click stack, with the parcel panel on
@@ -302,6 +313,7 @@ export async function chooseProfileName(page: Page, name: string): Promise<void>
 export async function createSpace(page: Page, kind: 'park'|'square'|'lake', parcelId = PARCEL_ID): Promise<string> {
   await openParcel(page, 'proposals', parcelId);
   await page.locator(`.parcel-build-btn--${kind}`).click();
+  await answerBlockScope(page);
   await expect.poll(() => page.evaluate(kind => (window as any).proposalStorage.getAllProposals().some((p: any) => p.structureProposal?.kind === kind && p.applied), kind)).toBe(true);
   return page.evaluate(kind => (window as any).proposalStorage.getAllProposals().find((p: any) => p.structureProposal?.kind === kind).proposalId, kind);
 }

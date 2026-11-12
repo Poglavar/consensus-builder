@@ -4,7 +4,7 @@
 // freezes the rule's stored massing at its maximum height. Geometry is inspected read-only from the
 // rendered Leaflet outline, the active design draft and the stored proposals.
 import { test, expect } from '../helpers/fixtures';
-import { openCity, openParcel, showProposal, proposalState, clickMapPoint, createBuilding, closeParcel, showSelectionDesignTab, openBlockEditor } from '../helpers/runtime';
+import { openCity, openParcel, showProposal, proposalState, clickMapPoint, createBuilding, closeParcel, showSelectionDesignTab, openBlockEditor, answerBlockScope } from '../helpers/runtime';
 import { installLayerDatasets } from '../helpers/mocks/layer-datasets';
 import type { Page } from '@playwright/test';
 
@@ -257,7 +257,8 @@ async function openRuleOnFirstPlot(page: Page, rule: 'buildings' | 'row' | 'parc
   await page.evaluate(async ids => { await (window as any).CadastralParcelRepository.ensureIds(ids); }, [NEXT_PLOT, THIRD_PLOT]);
   await openParcel(page, 'proposals');
   await page.locator(`.parcel-build-btn--${rule}`).click();
-  if (rule === 'buildings') await page.getByRole('alertdialog').getByRole('button', { name: 'No, just this parcel' }).click();
+  // One plot is selected: a Block or Detached launched there asks about the whole block first.
+  if (rule !== 'row') await answerBlockScope(page);
   const done = rule === 'buildings' ? '#btn-blockify-done' : rule === 'row' ? '#btn-rowhouse-done' : '#btn-parcelbased-done';
   await expect(page.locator(done)).toBeEnabled({ timeout: 20_000 });
 }
@@ -841,6 +842,7 @@ test.describe('Building-family placement @features', () => {
       await page.evaluate(async ids => { await (window as any).CadastralParcelRepository.ensureIds(ids); }, [NEXT_PLOT]);
       await openParcel(page, 'proposals', NEXT_PLOT);
       await page.locator('.parcel-build-btn--parcelBased').click();
+      await answerBlockScope(page);
       await expect(page.locator('#btn-parcelbased-done')).toBeEnabled({ timeout: 20_000 });
       let detachedId: string | null = null;
       if (saved) {

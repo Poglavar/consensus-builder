@@ -2,7 +2,7 @@
 // uploaded through the Block editor's footprint import, opens as an editable Freeform footprint with
 // its measured height, read through the browser's DOMParser; an unknown coordinate system is named.
 import { test, expect } from '../helpers/fixtures';
-import { openCity, openParcel, openBlockEditor, placeFreeformBuilding, stubBasemapTiles } from '../helpers/runtime';
+import { openCity, openParcel, openBlockEditor, placeFreeformBuilding, stubBasemapTiles, answerBlockScope } from '../helpers/runtime';
 import { mockFootprintCells } from '../helpers/mocks/building-data';
 
 // The same 4-corner outline as the Upload GeoJSON test, as EPSG:3765 metres, 12 m high.
@@ -62,6 +62,7 @@ test('Upload model takes a CityGML building as a GLB that stands where the file 
   await openCity(page);
   await openParcel(page, 'proposals');
   await page.locator('#parcel-info-panel .parcel-build-btn--single').click();
+  await answerBlockScope(page);
   await placeFreeformBuilding(page);
   await expect(page.locator('#single-building-glb-upload')).toHaveAttribute('title', 'glTF, CityGML or CityJSON');
   await page.locator('#single-building-glb-upload').click();

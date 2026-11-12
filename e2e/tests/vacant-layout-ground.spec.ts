@@ -1,5 +1,5 @@
 import { test, expect } from '../helpers/fixtures';
-import { openCity, openParcel, stubBasemapTiles, clickMapPoint, expandStackSection } from '../helpers/runtime';
+import { openCity, openParcel, stubBasemapTiles, clickMapPoint, expandStackSection, answerBlockScope } from '../helpers/runtime';
 
 test('empty layout plots have wild ground and fences, replaced when a park occupies a plot', async ({ mockApi: page }) => {
   test.setTimeout(60_000);
@@ -7,6 +7,7 @@ test('empty layout plots have wild ground and fences, replaced when a park occup
   await openCity(page);
   await openParcel(page, 'proposals');
   await page.locator('.parcel-build-btn--parcel-layout').click();
+  await answerBlockScope(page);
   const editor = page.locator('.on-map-reparcellization');
   await expect(editor.locator('[data-reparcel-commit]')).toBeEnabled();
   await editor.locator('[data-reparcel-commit]').click();
@@ -39,9 +40,10 @@ test('empty layout plots have wild ground and fences, replaced when a park occup
   await expect(page.locator('#three-container canvas')).toBeHidden();
   await clickMapPoint(page, point[0], point[1]);
   await expandStackSection(page, 'formed');
-  // No block prompt: for a park it appears only after Detect block has run on this plot
-  // (detectBlockParcelIdsForParcel reads the cached detection since da9c23f54).
+  // One plot is selected, so the block question is asked, as for every one-parcel launch; the
+  // park takes this plot only.
   await page.locator('.parcel-build-btn--park').click();
+  await answerBlockScope(page);
   await expect.poll(() => page.evaluate(() => (window as any).proposalStorage.getAllProposals().some((p: any) => p.applied && p.structureProposal?.kind === 'park')), { timeout: 20_000 }).toBe(true);
   await expect(page.locator('.vacant-layout-plot')).toHaveCount(1);
   await page.keyboard.press('Escape');
@@ -59,6 +61,7 @@ test('plots outside the 2D view but inside the 3D band stay painted across 2D/3D
   await openCity(page);
   await openParcel(page, 'proposals');
   await page.locator('.parcel-build-btn--parcel-layout').click();
+  await answerBlockScope(page);
   const editor = page.locator('.on-map-reparcellization');
   await expect(editor.locator('[data-reparcel-commit]')).toBeEnabled();
   await editor.locator('[data-reparcel-commit]').click();

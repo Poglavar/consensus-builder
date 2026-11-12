@@ -5,7 +5,7 @@
 // (docs/buildout-timeline.md, three-mode.js build-out, buildout-parts.js).
 import { test, expect } from '../helpers/fixtures';
 import type { Page } from '@playwright/test';
-import { closeParcel, drawCorridor, openBlockEditor, openCity, openParcel, showSelectionDesignTab, stubBasemapTiles } from '../helpers/runtime';
+import { closeParcel, drawCorridor, openBlockEditor, openCity, openParcel, showSelectionDesignTab, stubBasemapTiles, answerBlockScope } from '../helpers/runtime';
 import { installLayerDatasets } from '../helpers/mocks/layer-datasets';
 import { mockBuildingScene } from '../helpers/mocks/building-data';
 
@@ -85,6 +85,7 @@ test.describe('Build-out in the model view @features', () => {
     const road = String(await drawCorridor(page, 'road'));
     await openParcel(page, 'proposals', 'HR-335754-1236');
     await page.locator('.parcel-build-btn--park').click();
+    await answerBlockScope(page);
     await slow.poll(() => page.evaluate(() => (window as any).proposalStorage.getAllProposals().some((p: any) => p.structureProposal?.kind === 'park' && p.applied))).toBe(true);
     const park = await page.evaluate(() => String((window as any).proposalStorage.getAllProposals().find((p: any) => p.structureProposal?.kind === 'park').proposalId));
     const building = await createBuildingOn(page, 'HR-335754-1235');

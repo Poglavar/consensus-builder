@@ -2,7 +2,7 @@
 // Buildings colours a design's building of that use and fades the others, a view pill at the top centre
 // names it, and its × turns it off. Highlight by ownership type gets the same pill.
 import { test, expect } from '../helpers/fixtures';
-import { openCity, openParcel, placeFreeformBuilding, stubBasemapTiles } from '../helpers/runtime';
+import { openCity, openParcel, placeFreeformBuilding, stubBasemapTiles, answerBlockScope } from '../helpers/runtime';
 
 test('Highlight by use colours a design by its storeys and the view pill turns it off', async ({ mockApi: page }) => {
   test.setTimeout(120_000);
@@ -10,6 +10,7 @@ test('Highlight by use colours a design by its storeys and the view pill turns i
   await openCity(page);
   await openParcel(page, 'proposals');
   await page.locator('#parcel-info-panel .parcel-build-btn--single').click();
+  await answerBlockScope(page);
   await placeFreeformBuilding(page);
   await expect(page.locator('#single-land-take [data-land-status]')).toContainText('m²', { timeout: 20_000 });
   await page.locator('#single-building-confirm').click();

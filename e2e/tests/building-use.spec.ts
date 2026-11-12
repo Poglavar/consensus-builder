@@ -1,7 +1,7 @@
 // The Building use of a Freeform building (js/building-use.js): chosen in the editor, saved on the
 // building, shown again on reopening, and read by Plan stats (no apartments in an office building).
 import { test, expect } from '../helpers/fixtures';
-import { placeFreeformBuilding, openCity, openParcel, stubBasemapTiles, showProposal } from '../helpers/runtime';
+import { placeFreeformBuilding, openCity, openParcel, stubBasemapTiles, showProposal, answerBlockScope } from '../helpers/runtime';
 import { selectNativeOption } from '../helpers/controls';
 
 test('a Freeform building saves its use, reopens with it, and an office counts no apartments', async ({ mockApi: page }) => {
@@ -9,6 +9,7 @@ test('a Freeform building saves its use, reopens with it, and an office counts n
   await openCity(page);
   await openParcel(page, 'proposals');
   await page.locator('#parcel-info-panel .parcel-build-btn--single').click();
+  await answerBlockScope(page);
   await placeFreeformBuilding(page);
   const use = page.locator('#single-building-use');
   // A drawn building starts as housing.

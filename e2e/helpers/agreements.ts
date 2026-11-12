@@ -5,7 +5,7 @@
 // agreements other specs start from: one filed in the index as another device proposed it (minted,
 // with its pool, when asked), and one proposed from this device over a park applied here.
 import { expect, Locator, Page } from '@playwright/test';
-import { createSpace, expandStackSection, openCity, openParcel, PARCEL_ID } from './runtime';
+import { answerBlockScope, createSpace, expandStackSection, openCity, openParcel, PARCEL_ID } from './runtime';
 import { fileAgreement, fileDesign, filePlan, pageIndex, MarketFixture, SharedIndex } from './mocks/shared-server';
 
 export const OWNER = 'Ana Owner';
@@ -170,6 +170,7 @@ export async function layOutParcel(page: Page, parcelId: string): Promise<string
   await expect.poll(() => page.evaluate(id => !!(window as any).ParcelPresenter.getLayer(id), parcelId), { timeout: 30_000 }).toBe(true);
   await openParcel(page, 'proposals', parcelId);
   await page.locator('.parcel-build-btn--parcel-layout').click();
+  await answerBlockScope(page);
   const editor = page.locator('.on-map-reparcellization');
   const done = editor.locator('[data-reparcel-commit]');
   await expect(done).toBeEnabled({ timeout: 15_000 });

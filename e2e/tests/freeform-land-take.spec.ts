@@ -1,5 +1,5 @@
 import { test, expect } from '../helpers/fixtures';
-import { placeFreeformBuilding, openCity, openParcel, openParcelAt, stubBasemapTiles, showProposal } from '../helpers/runtime';
+import { placeFreeformBuilding, openCity, openParcel, openParcelAt, stubBasemapTiles, showProposal, answerBlockScope } from '../helpers/runtime';
 import { selectNativeOption } from '../helpers/controls';
 import { mockFootprintCells } from '../helpers/mocks/building-data';
 const editor = '#single-building-editor';
@@ -9,6 +9,7 @@ async function open(page: any) {
   await openCity(page);
   await openParcel(page, 'proposals');
   await page.locator('#parcel-info-panel .parcel-build-btn--single').click();
+  await answerBlockScope(page);
   await placeFreeformBuilding(page);
   await expect(page.locator(`${editor} .on-map-editor__panel`)).toBeVisible();
   await expect(page.locator('[data-land-status]')).toContainText('m²');
@@ -105,6 +106,7 @@ test('reopening a building across two layout plots offers each plot whole, with 
   await openCity(page);
   await openParcel(page, 'proposals');
   await page.locator('.parcel-build-btn--parcel-layout').click();
+  await answerBlockScope(page);
   const layout = page.locator('.on-map-reparcellization');
   await expect(layout.locator('[data-reparcel-commit]')).toBeEnabled({ timeout: 15_000 });
   await layout.locator('[data-reparcel-upload]').setInputFiles({ name: 'halves.geojson', mimeType: 'application/geo+json', buffer: Buffer.from(JSON.stringify(halves)) });
@@ -115,8 +117,9 @@ test('reopening a building across two layout plots offers each plot whole, with 
 
   await openParcelAt(page, 15.98205, 45.80025);
   await page.locator('#parcel-info-panel .parcel-build-btn--single').click();
-  // One plot is selected and the tower starts on it. No block prompt: for a single building it
-  // appears only after Detect block has run on this plot (cached detection since da9c23f54).
+  // One plot is selected, so the block question is asked, as for every one-parcel launch; the
+  // tower starts on this plot.
+  await answerBlockScope(page);
   await placeFreeformBuilding(page);
   await page.locator('#single-building-geojson-input').setInputFiles({ name: 'tower.geojson', mimeType: 'application/geo+json', buffer: Buffer.from(JSON.stringify(straddling)) });
   const choices = page.locator('[data-land-rows] select');

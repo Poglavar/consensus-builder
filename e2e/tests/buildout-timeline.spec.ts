@@ -4,7 +4,7 @@
 import { test, expect } from '../helpers/fixtures';
 import { fillNativeDateTime } from '../helpers/controls';
 import type { Page } from '@playwright/test';
-import { drawCorridor, openCity, openParcel, stubBasemapTiles } from '../helpers/runtime';
+import { drawCorridor, openCity, openParcel, stubBasemapTiles, answerBlockScope } from '../helpers/runtime';
 
 async function scheduledPlan(page: Page): Promise<{ plan: string; park: string; road: string }> {
   await stubBasemapTiles(page);
@@ -13,6 +13,7 @@ async function scheduledPlan(page: Page): Promise<{ plan: string; park: string; 
   // The park stands on another parcel than the one the road crosses.
   await openParcel(page, 'proposals', 'HR-335754-1236');
   await page.locator('.parcel-build-btn--park').click();
+  await answerBlockScope(page);
   await expect.poll(() => page.evaluate(() => (window as any).proposalStorage.getAllProposals().some((p: any) => p.structureProposal?.kind === 'park' && p.applied))).toBe(true);
   const park = await page.evaluate(() => (window as any).proposalStorage.getAllProposals().find((p: any) => p.structureProposal?.kind === 'park').proposalId);
   // Designs without a dated plan in view give the time control nothing to show: no hourglass.

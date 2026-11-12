@@ -1,6 +1,6 @@
 // The surroundings choice stays with each building design through editing, saving and publication.
 import { test, expect } from '../helpers/fixtures';
-import { placeFreeformBuilding, openCity, openParcel, showProposal, proposalState, closeParcel, showSelectionDesignTab } from '../helpers/runtime';
+import { placeFreeformBuilding, openCity, openParcel, showProposal, proposalState, closeParcel, showSelectionDesignTab, answerBlockScope } from '../helpers/runtime';
 import { selectNativeOption } from '../helpers/controls';
 import { installLayerDatasets } from '../helpers/mocks/layer-datasets';
 
@@ -30,10 +30,10 @@ async function openBuildingEditor(page: any, tool: string, typology: string, don
       await showSelectionDesignTab(page);
     } else await openParcel(page, 'proposals');
     await page.locator(`.parcel-build-btn--${tool}`).click();
+    // Every tool launched from one selected parcel asks about the whole block first; a row starts
+    // from several parcels and is not asked.
+    if (typology !== 'row') await answerBlockScope(page);
     if (typology === 'single') await placeFreeformBuilding(page);
-    const scope = page.getByRole('alertdialog');
-    await expect.poll(async () => await scope.isVisible() || await page.locator(done).isVisible(), { timeout: 45_000 }).toBe(true);
-    if (await scope.isVisible()) await scope.getByRole('button', { name: 'No, just this parcel' }).click();
     await expect(page.locator(done)).toBeEnabled({ timeout: 45_000 });
     if (typology === 'single') {
       await expect(page.locator('[data-land-status]')).toContainText('m²');

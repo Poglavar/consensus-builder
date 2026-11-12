@@ -193,6 +193,24 @@ describe('whole-block fresh-proposal suggestion', () => {
         expect(showStyledConfirm.mock.calls[0][0]).toContain('detect the whole block');
     });
 
+    // A park or a single building asks as a block does; the block is unknown until Detect block ran.
+    it.each(['park', 'square', 'lake', 'single', 'parcelBased', 'parcel-layout'])('asks for a one-parcel %s whose block is not known yet', async goal => {
+        const showStyledConfirm = vi.fn(async () => false);
+        const window = loadActions({ detectBlockParcelIdsForParcel: () => null, showStyledConfirm });
+        await expect(window.maybeSuggestWholeBlockForFreshProposal(goal, ['parcel-1'])).resolves.toBe(false);
+        expect(showStyledConfirm).toHaveBeenCalledOnce();
+        expect(showStyledConfirm.mock.calls[0][0]).toContain('detect the whole block');
+        expect(showStyledConfirm.mock.calls[0][1]).toMatchObject({ okText: 'Yes, select the block', cancelText: 'No, just this parcel' });
+    });
+
+    it('asks nothing when several parcels are selected or the goal targets exact parcels', async () => {
+        const showStyledConfirm = vi.fn(async () => false);
+        const window = loadActions({ detectBlockParcelIdsForParcel: () => null, showStyledConfirm });
+        await expect(window.maybeSuggestWholeBlockForFreshProposal('park', ['parcel-1', 'parcel-2'])).resolves.toBe(false);
+        await expect(window.maybeSuggestWholeBlockForFreshProposal('road-track', ['parcel-1'])).resolves.toBe(false);
+        expect(showStyledConfirm).not.toHaveBeenCalled();
+    });
+
     it('stops the one-parcel launch after accepting and selecting the block', async () => {
         const animateFloodfillFromSelected = vi.fn(async () => true);
         const window = loadActions({

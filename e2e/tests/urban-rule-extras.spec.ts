@@ -3,7 +3,7 @@
 // and the model view draws the roof, attic and balconies in addition to the building's massing. The
 // Use select beside them sets the rule's use: a Block starts automatic.
 import { test, expect } from '../helpers/fixtures';
-import { openCity, openParcel, openBlockEditor, showProposal, PARCEL_ID } from '../helpers/runtime';
+import { openCity, openParcel, openBlockEditor, showProposal, PARCEL_ID, answerBlockScope } from '../helpers/runtime';
 import { mockBuildingScene } from '../helpers/mocks/building-data';
 import { selectNativeOption } from '../helpers/controls';
 import { Page } from '@playwright/test';
@@ -108,6 +108,7 @@ test('A Detached rule starts as housing, its Use is saved on the rule, and it ha
   await openCity(page);
   await openParcel(page, 'proposals');
   await page.locator('.parcel-build-btn--parcelBased').click();
+  await answerBlockScope(page);
   await expect(page.locator('#btn-parcelbased-done')).toBeEnabled({ timeout: 20_000 });
   const use = page.locator('#parcelbased-use');
   await expect(use).toHaveValue('residential');

@@ -1,6 +1,6 @@
 import { selectNativeOption } from '../helpers/controls';
 import { test, expect } from '../helpers/fixtures';
-import { placeFreeformBuilding, openCity, openParcel, clickMapPoint, closeParcel, showSelectionDesignTab, parcelTab } from '../helpers/runtime';
+import { placeFreeformBuilding, openCity, openParcel, clickMapPoint, closeParcel, showSelectionDesignTab, parcelTab, answerBlockScope } from '../helpers/runtime';
 import { installLayerDatasets } from '../helpers/mocks/layer-datasets';
 import { mockBuildingScene } from '../helpers/mocks/building-data';
 
@@ -64,6 +64,7 @@ test.describe('Designer controls persist their edits @features', () => {
     await openCity(page);
     await openParcel(page, 'proposals');
     await page.locator('.parcel-build-btn--parcelBased').click();
+    await answerBlockScope(page);
     const modal = page.locator('#parcelbased');
     await expect(modal.locator('.on-map-editor__panel')).toBeVisible();
     await expect(page.locator('#btn-parcelbased-done')).toBeEnabled({ timeout: 20_000 });
@@ -332,11 +333,8 @@ test.describe('Designer controls persist their edits @features', () => {
     await openCity(page);
     await openParcel(page, 'proposals');
     await page.locator('.parcel-build-btn--single').click();
+    await answerBlockScope(page);
     await placeFreeformBuilding(page);
-    const wholeBlockPrompt = page.getByRole('alertdialog');
-    if (await wholeBlockPrompt.isVisible().catch(() => false)) {
-      await wholeBlockPrompt.getByRole('button', { name: 'No, just this parcel' }).click();
-    }
     await expect(page.locator('#single-building-editor').locator('.on-map-editor__panel')).toBeVisible();
     const height = page.locator('#single-height-slider');
     const oldHeight = Number(await height.inputValue());
@@ -489,14 +487,12 @@ test.describe('Designer controls persist their edits @features', () => {
     await openParcel(page, 'proposals', BLOCK_PARCEL_IDS[0]);
     await page.locator('.parcel-build-btn--parcel-layout').click();
     const modal = page.locator('.on-map-reparcellization');
-    const scopePrompt = page.getByRole('alertdialog');
-    await expect.poll(async () => (await modal.locator('.on-map-editor__panel').isVisible()) || (await scopePrompt.isVisible())).toBe(true);
-    if (await scopePrompt.isVisible()) {
-      await scopePrompt.getByRole('button', { name: 'Yes, select the block' }).click();
-      await expect(parcelTab(page, 'propose-tab')).toBeVisible();
-      await showSelectionDesignTab(page);
-      await page.locator('.parcel-build-btn--parcel-layout').click();
-    }
+    // One parcel is selected, so the layout first asks about the whole block; Yes selects it and
+    // stops, and the tile then opens the layout on the block.
+    await answerBlockScope(page, true);
+    await expect(parcelTab(page, 'propose-tab')).toBeVisible();
+    await showSelectionDesignTab(page);
+    await page.locator('.parcel-build-btn--parcel-layout').click();
     await expect(modal.locator('.on-map-editor__panel')).toBeVisible();
     await expect(modal.locator('[data-reparcel-commit]')).toBeEnabled({ timeout: 15_000 });
     await modal.locator('[data-reparcel-plots-tab="old"]').click();
@@ -532,6 +528,7 @@ test.describe('Designer controls persist their edits @features', () => {
     await openCity(page);
     await openParcel(page, 'proposals');
     await page.locator('.parcel-build-btn--parcel-layout').click();
+    await answerBlockScope(page);
     const modal = page.locator('.on-map-reparcellization');
     await expect(modal.locator('[data-reparcel-commit]')).toBeEnabled({ timeout: 15_000 });
     await modal.locator('label.reparcel-alg-option:has(input[value="manual"])').click();

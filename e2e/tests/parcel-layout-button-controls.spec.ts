@@ -2,7 +2,7 @@
 // the map and the saved layout: starting layouts and plot count, the plot tabs, the drawing tools,
 // edit history, GeoJSON import, Before / after, the courtyard tool, Done, Cancel and Close.
 import { test, expect } from '../helpers/fixtures';
-import { openCity, openParcel, PARCEL_ID } from '../helpers/runtime';
+import { openCity, openParcel, PARCEL_ID, answerBlockScope } from '../helpers/runtime';
 import type { Locator, Page } from '@playwright/test';
 
 test.beforeEach(async ({ mockApi: page }) => {
@@ -31,6 +31,7 @@ async function editorReady(page: Page): Promise<Locator> {
 async function launchFromPalette(page: Page): Promise<Locator> {
   await openParcel(page, 'proposals', PARCEL_ID);
   await page.locator('.parcel-build-btn--parcel-layout').click();
+  await answerBlockScope(page);
   return editorReady(page);
 }
 

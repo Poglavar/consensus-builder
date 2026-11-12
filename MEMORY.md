@@ -33,6 +33,7 @@ in commits.
 ## Product, branding and UI
 
 - 2026-11-12: A map click selects the object drawn on top (drawn design, existing building, permitted massing, formed parcel, cadastral parcel; a parcel layout after the parcels it formed); the remembered expanded kind of 2026-10-22 is removed because it made a building click open a parcel (docs/click-stack.md).
+- 2026-11-12: Every design tool launched from one selected parcel asks "this parcel, or the whole block?" (park, square, lake, Freeform, Detached and parcel layout as Block does): the question had silently stopped for them when block detection moved to server streets on 2026-11-02.
 - 2026-11-12: The 3D click stack uses the 2D section order (Design above Built), ending the separate 3D order of 2026-10-23: no reason for it was remembered. Applied designs are marked in every design list (docs/click-stack.md).
 - 2026-10-31: Phone sheets about a map object cover the nav bar and rest at half or full height; inspection uses object-icon tabs with Actions first and open (docs/click-stack.md).
 - 2026-10-31: Decorative 3D animation and city sound pause when the page loses focus, not after idle time.

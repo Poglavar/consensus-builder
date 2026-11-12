@@ -1,5 +1,5 @@
 import { test, expect } from '../helpers/fixtures';
-import { placeFreeformBuilding, openCity, openParcel, createSpace, proposalState, showProposal, clickMapPoint, drawCorridor, PARCEL_ID, openParcelTabAt, closeParcel, showSelectionDesignTab } from '../helpers/runtime';
+import { placeFreeformBuilding, openCity, openParcel, createSpace, proposalState, showProposal, clickMapPoint, drawCorridor, PARCEL_ID, openParcelTabAt, closeParcel, showSelectionDesignTab, answerBlockScope } from '../helpers/runtime';
 
 test.describe('Proposal creation and map lifecycle @features', () => {
   for (const kind of ['park', 'square', 'lake'] as const) {
@@ -53,13 +53,9 @@ test.describe('Proposal creation and map lifecycle @features', () => {
         await showSelectionDesignTab(page);
       }
       await page.locator(`.parcel-build-btn--${type}`).click();
+      // Every tool but Row starts from one selected parcel, so it asks about the whole block first.
+      if (type !== 'row') await answerBlockScope(page);
       if (type === 'single') await placeFreeformBuilding(page);
-      if (type === 'buildings') {
-        const prompt = page.getByRole('alertdialog');
-        if (await prompt.isVisible().catch(() => false)) {
-          await prompt.getByRole('button', { name: 'No, just this parcel' }).click();
-        }
-      }
       if (type === 'single') {
         await expect(page.locator('#single-land-take [data-land-status]')).toContainText('m²', { timeout: 15_000 });
       }
@@ -81,6 +77,7 @@ test.describe('Proposal creation and map lifecycle @features', () => {
     await page.evaluate(() => (window as any).i18n.setLanguage('en'));
     await openParcel(page, 'proposals');
     await page.locator('.parcel-build-btn--parcel-layout').click();
+    await answerBlockScope(page);
     const modal = page.locator('.on-map-reparcellization');
     await expect(modal.locator('.on-map-editor__panel')).toBeVisible();
     await expect(modal.locator('[data-reparcel-newplots-table] .reparcel-newplot-row')).toHaveCount(2);

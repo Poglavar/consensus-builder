@@ -1,6 +1,6 @@
 // Chat help must preserve the open parcel editor through replies, failures and returning to save.
 import { test, expect } from '../helpers/fixtures';
-import { openCity, openParcel, PARCEL_ID, stubBasemapTiles } from '../helpers/runtime';
+import { openCity, openParcel, PARCEL_ID, stubBasemapTiles, answerBlockScope } from '../helpers/runtime';
 import { selectors } from '../helpers/selectors';
 
 const editorTip = 'Explain the tool I have open and how to use its options.';
@@ -11,6 +11,7 @@ async function openEditedParcelLayout(page: any) {
   await openCity(page, PARCEL_ID);
   await openParcel(page, 'proposals');
   await page.locator('.parcel-build-btn--parcel-layout').click();
+  await answerBlockScope(page);
   const modal = page.locator('.on-map-reparcellization');
   await expect(modal.locator('[data-reparcel-plots-tab="editing"]')).toHaveAttribute('aria-selected', 'true');
 

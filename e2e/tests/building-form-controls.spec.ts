@@ -1,6 +1,6 @@
 // Behavioral coverage for building-rule sliders, boundary handles and the existing-footprint rule.
 import { test, expect } from '../helpers/fixtures';
-import { openCity, openParcel, closeParcel, showSelectionDesignTab } from '../helpers/runtime';
+import { openCity, openParcel, closeParcel, showSelectionDesignTab, answerBlockScope } from '../helpers/runtime';
 import { installLayerDatasets } from '../helpers/mocks/layer-datasets';
 import { selectNativeOption } from '../helpers/controls';
 
@@ -13,10 +13,7 @@ async function openBlockEditor(page: any) {
   await openCity(page);
   await openParcel(page, 'proposals', BLOCK_PARCEL_IDS[3]);
   await page.locator('.parcel-build-btn--buildings').click();
-  const prompt = page.getByRole('alertdialog');
-  if (await prompt.isVisible().catch(() => false)) {
-    await prompt.getByRole('button', { name: 'No, just this parcel' }).click();
-  }
+  await answerBlockScope(page);
   await expect(page.locator('#btn-blockify-done')).toBeEnabled({ timeout: 20_000 });
 }
 
@@ -150,10 +147,7 @@ test.describe('Building editor complete form controls @features', () => {
     await page.evaluate(id => (window as any).CadastralParcelRepository.ensureIds([id]), BLOCK_PARCEL_IDS[3]);
     await openParcel(page, 'proposals', BLOCK_PARCEL_IDS[3]);
     await page.locator('.parcel-build-btn--buildings').click();
-    const prompt = page.getByRole('alertdialog');
-    if (await prompt.isVisible().catch(() => false)) {
-      await prompt.getByRole('button', { name: 'No, just this parcel' }).click();
-    }
+    await answerBlockScope(page);
     await expect(page.locator('#btn-blockify-done')).toBeEnabled({ timeout: 20_000 });
     await page.locator('#blockify-existing-toggle').check();
     await page.locator('#blockify-rule-additional').check();

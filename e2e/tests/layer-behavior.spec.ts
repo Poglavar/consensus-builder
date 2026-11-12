@@ -1,6 +1,6 @@
 import { openLayerSection } from '../helpers/layers';
 import { test, expect } from '../helpers/fixtures';
-import { openCity, openParcel, createBuilding, proposalState, parcelTab, PARCEL_ID, expectStatusLogged } from '../helpers/runtime';
+import { openCity, openParcel, createBuilding, proposalState, parcelTab, PARCEL_ID, expectStatusLogged, answerBlockScope } from '../helpers/runtime';
 import { installLayerDatasets } from '../helpers/mocks/layer-datasets';
 import { openAndClosePopup, selectNativeOption } from '../helpers/controls';
 
@@ -9,10 +9,7 @@ const PARCEL_IDS = ['HR-335754-1234', 'HR-335754-1235', 'HR-335754-1236', 'HR-33
 async function createGroundProposal(page: any, kind: 'park' | 'square'): Promise<string> {
   await openParcel(page, 'proposals');
   await page.locator(`.parcel-build-btn--${kind}`).click();
-  const prompt = page.getByRole('alertdialog');
-  if (await prompt.isVisible().catch(() => false)) {
-    await prompt.getByRole('button', { name: 'No, just this parcel' }).click();
-  }
+  await answerBlockScope(page);
   await expect.poll(() => page.evaluate(kind => (window as any).proposalStorage.getAllProposals().some((proposal: any) => proposal.structureProposal?.kind === kind && proposal.applied), kind)).toBe(true);
   return page.evaluate(kind => (window as any).proposalStorage.getAllProposals().find((proposal: any) => proposal.structureProposal?.kind === kind).proposalId, kind);
 }

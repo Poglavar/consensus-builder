@@ -4,7 +4,7 @@
 import { Page } from '@playwright/test';
 import { test, expect } from '../helpers/fixtures';
 import { waitForMapReady } from '../helpers/app';
-import { clickMapPoint } from '../helpers/runtime';
+import { clickMapPoint, answerBlockScope } from '../helpers/runtime';
 
 async function addEditableSquare(page: Page, suffix: string): Promise<{ proposalId: string; parcelId: string }> {
   await page.waitForFunction(() => !!(window as any).proposalStorage && !!(window as any).CadastralParcelRepository);
@@ -154,6 +154,7 @@ test.describe('SimCity proposal lifecycle @core', () => {
     await expect(page.locator('#createProposalFromParcelButton')).toHaveCount(0);
 
     await palette.locator('.parcel-build-btn--park').click();
+    await answerBlockScope(page);
     await expect.poll(() => page.evaluate((sourceId) => {
       return (window as any).proposalStorage.getAllProposals().some((proposal: any) =>
         proposal.proposalId !== sourceId && proposal.structureProposal?.kind === 'park' && proposal.applied);

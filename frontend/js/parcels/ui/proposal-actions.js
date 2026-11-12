@@ -110,15 +110,15 @@
         return WHOLE_BLOCK_FRESH_PROPOSAL_GOALS.has(key);
     }
 
-    // Single parcel selected but it sits in a multi-parcel block: the user may simply have
-    // forgotten to select the block first. Offer to do it for them — Yes selects the whole
-    // block (and lands on the Proposals tab, tool NOT auto-launched); No proceeds one-parcel.
+    // Single parcel selected: the user may simply have forgotten to select the block first. Offer
+    // to do it for them — Yes selects the whole block (and lands on the Proposals tab, tool NOT
+    // auto-launched); No proceeds one-parcel. Every goal of the policy above asks, a park or a
+    // single building as a block does: the block is known only once Detect block has run on the
+    // parcel, so a question that waited for a known block was never asked.
     // Returns true when the tool launch should stop here.
     async function maybeSuggestWholeBlockForFreshProposal(goal, ids = []) {
         if (!shouldSuggestWholeBlockForFreshProposal(goal) || ids.length !== 1) return false;
         const block = global.detectBlockParcelIdsForParcel?.(ids[0]);
-        const isBlock = ['block', 'buildings', 'urban-rule'].includes(String(goal).trim().toLowerCase());
-        if ((!block || block.count <= 1) && !isBlock) return false;
         // The count belongs in the question, not in a hidden policy gate. A large block is still
         // a block, and silently skipping the question made Detached behave differently depending
         // on where in the city it was launched.

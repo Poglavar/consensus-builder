@@ -1,6 +1,6 @@
 // Purpose: verify runtime Leaflet controls by their user-visible map effect, including controls whose DOM is created by Leaflet rather than authored with source IDs.
 import { test, expect } from '../helpers/fixtures';
-import { openCity, openParcel, clickMapPoint, createSpace, showProposal, drawCorridor, openParcelTabAt, openBlockEditor } from '../helpers/runtime';
+import { openCity, openParcel, clickMapPoint, createSpace, showProposal, drawCorridor, openParcelTabAt, openBlockEditor, answerBlockScope } from '../helpers/runtime';
 import type { Page } from '@playwright/test';
 
 async function clickEditorMapPoint(page: Page, xRatio: number, yRatio: number) {
@@ -84,6 +84,7 @@ test.describe('Leaflet runtime control effects @features', () => {
     await openCity(page);
     await openParcel(page, 'proposals');
     await page.locator('.parcel-build-btn--parcel-layout').click();
+    await answerBlockScope(page);
     const modal = page.locator('.on-map-reparcellization');
     await expect(modal.locator('.on-map-editor__panel')).toBeVisible();
     await expect(modal.locator('[data-reparcel-commit]')).toBeEnabled({ timeout: 15_000 });

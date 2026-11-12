@@ -2,7 +2,7 @@ import { selectNativeOption } from '../helpers/controls';
 // Real-pointer coverage for whole-building free placement, its starting-parcel guide, snapping,
 // persistence, and the published-source replacement boundary. Geometry reads are observational.
 import { test, expect } from '../helpers/fixtures';
-import { placeFreeformBuilding, openCity, openParcel, PARCEL_ID, PARCEL_GEOMETRY, proposalState, showProposal, stubBasemapTiles } from '../helpers/runtime';
+import { placeFreeformBuilding, openCity, openParcel, PARCEL_ID, PARCEL_GEOMETRY, proposalState, showProposal, stubBasemapTiles, answerBlockScope } from '../helpers/runtime';
 import { sampleParcels } from '../helpers/mocks/parcel-data';
 import type { Page } from '@playwright/test';
 
@@ -20,6 +20,7 @@ async function openSingleEditor(page: Page, cityReady = false, parcelId = PARCEL
   await expect.poll(() => page.evaluate(id => !!(window as any).LiveParcelFabric.get(id), parcelId)).toBe(true);
   await openParcel(page, 'proposals', parcelId);
   await page.locator('#parcel-info-panel .parcel-build-btn--single').click();
+  await answerBlockScope(page);
   await placeFreeformBuilding(page);
   await expect(page.locator(`${EDITOR} .on-map-editor__panel`)).toBeVisible();
   await expect(page.locator('#single-building-confirm')).toBeEnabled();

@@ -2,7 +2,7 @@
 // layouts and hand edits shape the plots, and Done applies them as a parcel layout whose live pieces
 // keep their plot references and are held by the owners of the ground under them.
 import { test, expect } from '../helpers/fixtures';
-import { clickMapPoint, openCity, openParcel, showProposal, PARCEL_ID, closeParcel, showSelectionDesignTab, stackSection, parcelTab } from '../helpers/runtime';
+import { clickMapPoint, openCity, openParcel, showProposal, PARCEL_ID, closeParcel, showSelectionDesignTab, stackSection, parcelTab, answerBlockScope } from '../helpers/runtime';
 import { sampleParcels } from '../helpers/mocks/parcel-data';
 import { createFromPlan, editorClosed, editorCancel } from '../helpers/agreements';
 import type { Locator, Page } from '@playwright/test';
@@ -36,6 +36,7 @@ async function openLayoutEditor(page: Page): Promise<Locator> {
   await page.evaluate(() => (window as any).i18n.setLanguage('en'));
   await openParcel(page, 'proposals');
   await page.locator('.parcel-build-btn--parcel-layout').click();
+  await answerBlockScope(page);
   return editorReady(page);
 }
 

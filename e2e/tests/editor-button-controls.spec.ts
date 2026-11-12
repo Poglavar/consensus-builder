@@ -3,7 +3,7 @@ import { selectNativeOption } from '../helpers/controls';
 // Purpose: cover real editor buttons whose effects are not asserted by the broad workflow specs.
 import { test, expect } from '../helpers/fixtures';
 import { waitForMapReady } from '../helpers/app';
-import { placeFreeformBuilding, openCity, openParcel, drawCorridor, showProposal, proposalState, clickMapPoint, createSpace, runParcelCommand, openParcelTabAt, closeParcel, showSelectionDesignTab, openBlockEditor } from '../helpers/runtime';
+import { placeFreeformBuilding, openCity, openParcel, drawCorridor, showProposal, proposalState, clickMapPoint, createSpace, runParcelCommand, openParcelTabAt, closeParcel, showSelectionDesignTab, openBlockEditor, answerBlockScope } from '../helpers/runtime';
 import { installLayerDatasets } from '../helpers/mocks/layer-datasets';
 import { mockFootprintCells } from '../helpers/mocks/building-data';
 import { surveyResponse } from '../helpers/mocks/survey-data';
@@ -66,6 +66,7 @@ test.describe('Editor button effects @features', () => {
     await openCity(page);
     await openParcel(page, 'proposals');
     await page.locator('.parcel-build-btn--single').click();
+    await answerBlockScope(page);
     await placeFreeformBuilding(page);
     const placement = page.locator('#single-building-editor');
     await expect(placement.locator('.on-map-editor__panel')).toBeVisible();
@@ -116,6 +117,7 @@ test.describe('Editor button effects @features', () => {
     await openCity(page);
     await openParcel(page, 'proposals');
     await page.locator('.parcel-build-btn--single').click();
+    await answerBlockScope(page);
     await placeFreeformBuilding(page);
     const editor = page.locator('#single-building-editor');
     await expect(editor.locator('.on-map-editor__panel')).toBeVisible();
@@ -141,6 +143,7 @@ test.describe('Editor button effects @features', () => {
     await openCity(page);
     await openParcel(page, 'proposals');
     await page.locator('.parcel-build-btn--single').click();
+    await answerBlockScope(page);
     await placeFreeformBuilding(page);
     const modal = page.locator('#single-building-editor');
     await expect(modal.locator('.on-map-editor__panel')).toBeVisible();
@@ -151,6 +154,7 @@ test.describe('Editor button effects @features', () => {
 
     await openParcel(page, 'proposals');
     await page.locator('.parcel-build-btn--single').click();
+    await answerBlockScope(page);
     await placeFreeformBuilding(page);
     await expect(modal.locator('.on-map-editor__panel')).toBeVisible();
     await expect(page.locator('#single-building-add, #single-building-selector, #single-building-rename')).toHaveCount(0);
@@ -256,6 +260,7 @@ test.describe('Editor button effects @features', () => {
 
     await openParcel(page, 'proposals');
     await page.locator('.parcel-build-btn--parcelBased').click();
+    await answerBlockScope(page);
     const parcelBased = page.locator('#parcelbased');
     await expect(parcelBased.locator('.on-map-editor__panel')).toBeVisible();
     await expect(page.locator('#btn-parcelbased-done')).toBeEnabled({ timeout: 20_000 });
@@ -269,6 +274,7 @@ test.describe('Editor button effects @features', () => {
 
     await openParcel(page, 'proposals');
     await page.locator('.parcel-build-btn--parcelBased').click();
+    await answerBlockScope(page);
     await expect(parcelBased.locator('.on-map-editor__panel')).toBeVisible();
     await expect(page.locator('#btn-parcelbased-done')).toBeEnabled({ timeout: 20_000 });
     await selectNativeOption(page.locator('#parcelbased-ruletype-select'), 'range');

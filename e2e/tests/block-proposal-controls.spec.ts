@@ -3,7 +3,7 @@ import { selectNativeOption } from '../helpers/controls';
 // Exercise all proposal kinds in the block inspector against one consistent cadastral fixture.
 import { Page } from '@playwright/test';
 import { test, expect } from '../helpers/fixtures';
-import { openCity, openParcel, drawCorridor, proposalState } from '../helpers/runtime';
+import { openCity, openParcel, drawCorridor, proposalState, answerBlockScope } from '../helpers/runtime';
 import { sampleParcels } from '../helpers/mocks/parcel-data';
 
 // Keep the authored proposal and block on the same cadastral ground throughout the test.
@@ -44,11 +44,10 @@ async function createBlockFixture(page: Page, kind: 'road' | 'building' | 'park'
   if (kind === 'road') return drawCorridor(page, 'road');
   await openParcel(page, 'proposals');
   await page.locator(`.parcel-build-btn--${kind === 'building' ? 'buildings' : kind}`).click();
-  // A building always asks which extent to author. A park asks only when Detect block already
-  // found this parcel's block (detectBlockParcelIdsForParcel reads that cached result since
-  // da9c23f54), and nothing has run it here, so the park is applied to this parcel directly.
+  // Every design launched from one selected parcel, a building or a park, first asks which extent
+  // to author; both are authored on this parcel only.
+  await answerBlockScope(page);
   if (kind === 'building') {
-    await page.getByRole('alertdialog').getByRole('button', { name: 'No, just this parcel', exact: true }).click();
     await selectNativeOption(page.locator('#blockify-ruletype-select'), 'exact');
     await expect(page.locator('#btn-blockify-done')).toBeEnabled();
     await page.locator('#btn-blockify-done').click();

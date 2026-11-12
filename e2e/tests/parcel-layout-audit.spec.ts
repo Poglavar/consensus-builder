@@ -2,7 +2,7 @@
 // cleanup on close and reopen at desktop and phone widths) and its GeoJSON import, where a file the
 // layout cannot use changes nothing.
 import { test, expect } from '../helpers/fixtures';
-import { openCity, openParcel } from '../helpers/runtime';
+import { openCity, openParcel, answerBlockScope } from '../helpers/runtime';
 import type { Locator, Page, TestInfo } from '@playwright/test';
 
 test.beforeEach(async ({ mockApi: page }) => {
@@ -26,6 +26,7 @@ async function openLayoutEditor(page: Page): Promise<Locator> {
   await page.evaluate(() => (window as any).i18n.setLanguage('en'));
   await openParcel(page, 'proposals');
   await page.locator('.parcel-build-btn--parcel-layout').click();
+  await answerBlockScope(page);
   const editor = page.locator('.on-map-reparcellization');
   await expect(editor.locator('.on-map-editor__panel')).toBeVisible();
   await expect(editor.locator('[data-reparcel-commit]')).toBeEnabled({ timeout: 15_000 });
@@ -86,6 +87,7 @@ for (const size of [{ name: 'desktop', width: 1440, height: 1000 }, { name: '390
     // Reopen through the parcel action so the cleanup assertion covers the editor lifecycle too.
     await openParcel(page, 'proposals');
     await page.locator('.parcel-build-btn--parcel-layout').click();
+    await answerBlockScope(page);
     const reopened = page.locator('.on-map-reparcellization');
     await expect(reopened.locator('.on-map-editor__panel')).toBeVisible();
     await expect(reopened.locator('.map-compare__before, .map-compare__handle, .map-compare__label')).toHaveCount(0);

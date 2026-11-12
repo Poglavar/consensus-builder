@@ -1,6 +1,6 @@
 import { test, expect } from '../helpers/fixtures';
 import { OWNER } from '../helpers/agreements';
-import { openCity, openParcel, PARCEL_ID } from '../helpers/runtime';
+import { openCity, openParcel, PARCEL_ID, answerBlockScope } from '../helpers/runtime';
 
 async function applyFourPlotLayout(page: import('@playwright/test').Page): Promise<string> {
   await openCity(page);
@@ -15,6 +15,7 @@ async function applyFourPlotLayout(page: import('@playwright/test').Page): Promi
   await expect.poll(() => page.evaluate(id => !!(window as any).ParcelPresenter.getLayer(id), PARCEL_ID), { timeout: 30_000 }).toBe(true);
   await openParcel(page, 'proposals', PARCEL_ID);
   await page.locator('.parcel-build-btn--parcel-layout').click();
+  await answerBlockScope(page);
   const editor = page.locator('.on-map-reparcellization');
   const plotCount = editor.locator('[data-parcel-layout-count]');
   await expect(plotCount).toBeVisible();

@@ -4,7 +4,7 @@
 // editor's own divider is covered by parcel-layout-audit.spec.ts and designer-controls.spec.ts.
 import { test, expect } from '../helpers/fixtures';
 import type { Page } from '@playwright/test';
-import { openCity, openParcel, createSpace, showProposal, drawCorridor, clickMapPoint, PARCEL_ID, PARCEL_GEOMETRY, showProposalTab, unfoldStack } from '../helpers/runtime';
+import { openCity, openParcel, createSpace, showProposal, drawCorridor, clickMapPoint, PARCEL_ID, PARCEL_GEOMETRY, showProposalTab, unfoldStack, answerBlockScope } from '../helpers/runtime';
 import { pageIndex } from '../helpers/mocks/shared-server';
 import { fileIndexedAgreement, MINTED_ACCOUNT as AGREEMENT_ACCOUNT, OPEN_POOL, selectDevnetUsdc } from '../helpers/agreements';
 // A 1×1 PNG stands in for a rendered picture; the dialog accepts data URLs like any other image.
@@ -150,6 +150,7 @@ test.describe('Before / after on the main map @features', () => {
     await openCity(page);
     await openParcel(page, 'proposals');
     await page.locator('.parcel-build-btn--parcel-layout').click();
+    await answerBlockScope(page);
     const modal = page.locator('.on-map-reparcellization');
     await expect(modal.locator('.on-map-editor__panel')).toBeVisible();
     await expect(modal.locator('[data-reparcel-commit]')).toBeEnabled({ timeout: 15_000 });

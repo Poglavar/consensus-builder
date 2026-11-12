@@ -1,6 +1,6 @@
 // Starting placement and choosing another city must leave view control with the visitor.
 import { test, expect } from '../helpers/fixtures';
-import { openCity, openParcel, PARCEL_GEOMETRY, stubBasemapTiles, placeFreeformBuilding } from '../helpers/runtime';
+import { openCity, openParcel, PARCEL_GEOMETRY, stubBasemapTiles, placeFreeformBuilding, answerBlockScope } from '../helpers/runtime';
 import { waitForMapReady } from '../helpers/app';
 import { fileDesign, filePlan, pageIndex } from '../helpers/mocks/shared-server';
 import { mockBuildingScene } from '../helpers/mocks/building-data';
@@ -21,6 +21,7 @@ test('opening Freeform placement preserves the map center and zoom', async ({ mo
   const before = await view();
 
   await page.locator('#parcel-info-panel .parcel-build-btn--single').click();
+  await answerBlockScope(page);
   await expect(page.locator('#single-building-editor .on-map-editor__panel')).toBeVisible();
   await expect(page.locator('#single-building-editor')).toHaveAttribute('data-placing', 'true');
   await expect(page.locator('.single-building-fill--active')).toHaveCount(0);
@@ -56,6 +57,7 @@ test('Escape before placing a Freeform leaves no building or saved design', asyn
   await openParcel(page, 'proposals');
   const before = await page.evaluate(() => (window as any).proposalStorage.getAllProposals());
   await page.locator('.parcel-build-btn--single').click();
+  await answerBlockScope(page);
   await expect(page.locator('#single-building-editor')).toHaveAttribute('data-placing', 'true');
   await page.keyboard.press('Escape');
   await expect(page.locator('#single-building-editor')).toHaveCount(0);
@@ -71,6 +73,7 @@ test.describe('touch Freeform placement', () => {
     await openCity(page);
     await openParcel(page, 'proposals');
     await page.locator('.parcel-build-btn--single').tap();
+    await answerBlockScope(page);
     await expect(page.locator('#single-building-editor')).toHaveAttribute('data-placing', 'true');
     const at = { x: 250, y: 260 };
     await page.touchscreen.tap(at.x, at.y);
@@ -95,6 +98,7 @@ test('Freeform placement works in model view without switching back to the map',
   await openCity(page);
   await openParcel(page, 'proposals');
   await page.locator('.parcel-build-btn--single').click();
+  await answerBlockScope(page);
   await page.locator('#mode-3d-toggle').click();
   // The 3D toggle remains pressed while its scene is loading.  Do not send the placement click
   // into that transition: it belongs to the Leaflet map until the model canvas takes ownership.
