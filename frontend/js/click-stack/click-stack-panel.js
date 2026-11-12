@@ -8,7 +8,6 @@
     const doc = global.document;
     const model = global.__clickStackModel;
     const PANEL_ID = 'click-stack';
-    const MEMORY_KEY = 'cb.clickStack.expanded';
     // The existing panels a section shows when expanded, first visible wins.
     const HOSTS = Object.freeze({
         designs: ['proposal-details-panel'],
@@ -41,13 +40,6 @@
         return String(fallback).replace(/\{\{\s*(\w+)\s*\}\}/g, (match, name) => (name in params ? String(params[name]) : match));
     }
     const log = (...args) => console.info(`[${new Date().toISOString()}] [ClickStack]`, ...args);
-
-    function remembered() {
-        try { return global.localStorage.getItem(MEMORY_KEY) || null; } catch (_) { return null; }
-    }
-    function remember(kind) {
-        try { if (kind) global.localStorage.setItem(MEMORY_KEY, kind); } catch (_) { /* memory is a convenience */ }
-    }
 
     function blocked(options) {
         try { return global.__mapEditLock ? global.__mapEditLock.blocksSelection(options) : false; } catch (_) { return false; }
@@ -653,7 +645,6 @@
         if (state.hosted && state.stack.expanded !== kind) unhost();
         absorbNeighbours(kind);
         state.stack = model.expand(state.stack, kind);
-        if (kind !== 'selection') remember(state.stack.expanded);
         render();
         activate(state.stack.expanded);
         if (kind === 'designs' || kind === 'built') syncMemberships();
@@ -1052,7 +1043,7 @@
         // An ordinary map click replaces the retained selection with the new point context.
         if (global.multiParcelSelection?.selectedParcels?.size) global.multiParcelSelection.clearSelection();
         const hits = global.ClickStackHits.hitsAt(latlng, { onPublished: () => refreshSpot(latlng) });
-        const stack = model.buildClickStack(hits, { remembered: remembered() });
+        const stack = model.buildClickStack(hits);
         const previous = isOpen() ? model.selectedInstance(state.stack, state.stack.selectedKind)?.ref : null;
         const next = model.selectedInstance(stack, stack.selectedKind)?.ref;
         const action = model.clickAction(previous || null, { ...stack, topRef: next || stack.topRef });

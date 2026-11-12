@@ -1,5 +1,5 @@
 // Pure rules of the click stack (click-stack.md): which sections a map click shows and in what
-// order, how many instances each holds and which is selected, which section is expanded, and
+// order, how many instances each holds and which is selected, which section a click selects, and
 // whether a click closes the panel or shows a new spot. No DOM; the panel renders the result.
 (function (root, factory) {
     const api = factory();
@@ -54,9 +54,11 @@
             seen.add(id);
             out.push({ ...item, id, ref: refOf(kind, id) });
         }
-        // What is under the point comes before what only stands on its parcel (onParcel).
+        // What is under the point comes before what only stands on its parcel (onParcel); a design
+        // drawn as a body comes before one that only authors the ground (`ground`).
         const near = item => (item.onParcel ? 1 : 0);
-        out.sort((a, b) => near(a) - near(b) || (NEWEST_FIRST.has(kind)
+        const below = item => (item.ground ? 1 : 0);
+        out.sort((a, b) => near(a) - near(b) || below(a) - below(b) || (NEWEST_FIRST.has(kind)
             ? time(b.createdAt) - time(a.createdAt) || (a.id < b.id ? -1 : a.id > b.id ? 1 : 0) : 0));
         return out;
     }
@@ -68,14 +70,30 @@
         return sections.filter(section => section.atPoint);
     }
 
+    // What a click selects: the object drawn on top at the point. A design's body (a building, a
+    // park, a road) is above the buildings and massing there, and those are above the ground. A
+    // design that only authors ground (a parcel layout) lies under the parcels it formed, so its
+    // section is picked after Formed. Nothing kept from an earlier click changes the pick.
+    const GROUND_DESIGN_RANK = ORDER.indexOf('formed') + 0.5;
+    function pickRank(section) {
+        if (section.kind === 'designs' && !section.instances.some(item => !item.onParcel && !item.ground)) return GROUND_DESIGN_RANK;
+        return ORDER.indexOf(section.kind);
+    }
+
+    function topSection(sections) {
+        const byRank = list => list.slice().sort((a, b) => pickRank(a) - pickRank(b))[0] || null;
+        return byRank(pointSections(sections).filter(section => section.expandable))
+            || sections.find(section => section.expandable) || null;
+    }
+
     function topRefOf(sections) {
-        const top = pointSections(sections)[0] || sections[0];
+        const top = topSection(sections) || sections[0];
         return top ? top.instances[top.selectedIndex].ref : null;
     }
 
     // hits: { plans, designs, built, permitted, formed, parcels } arrays of { id, label, ... }.
-    // options.remembered: the kind last expanded; options.selected: { [kind]: id } to keep a
-    // chosen instance (a strip click) when the same spot is rebuilt.
+    // options.selected: { [kind]: id } to keep a chosen instance (a strip click) when the same
+    // spot is rebuilt.
     function buildClickStack(hits = {}, options = {}) {
         const plans = instancesOf('plans', hits.plans);
         const plan = plans.find(item => item.id === options.selected?.plans) || plans[0];
@@ -90,10 +108,7 @@
                 expandable: EXPANDABLE.has(kind), selectedIndex: chosen >= 0 ? chosen : 0,
                 atPoint: instances.some(item => !item.onParcel) });
         }
-        const remembered = options.remembered;
-        const candidates = pointSections(sections).filter(section => section.expandable);
-        const expandedSection = candidates.find(section => section.kind === remembered) || candidates[0]
-            || sections.find(section => section.expandable) || null;
+        const expandedSection = topSection(sections);
         return { sections, expanded: expandedSection ? expandedSection.kind : null, selectedKind: expandedSection ? expandedSection.kind : null, topRef: topRefOf(sections) };
     }
 
@@ -112,7 +127,7 @@
         return 'open';
     }
 
-    // Expanding a section collapses the others; the expanded kind becomes the remembered one.
+    // Expanding a section collapses the others.
     function expand(stack, kind) {
         const section = stack.sections.find(item => item.kind === kind);
         if (!section || !section.expandable) return stack;

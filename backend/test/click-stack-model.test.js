@@ -1,4 +1,4 @@
-// The click stack's ordering, counts, default instance, remembered section and close-or-switch rule.
+// The click stack's ordering, counts, default instance, the section a click selects and the close-or-switch rule.
 import { describe, expect, it } from 'vitest';
 import { createRequire } from 'node:module';
 
@@ -140,17 +140,50 @@ describe('click stack model', () => {
         expect(stack.topRef).toBe('designs:new');
     });
 
-    it('expands the remembered kind when present, else the topmost expandable section; a formed parcel expands like any parcel', () => {
+    it('selects the topmost section at the point; a formed parcel expands like any parcel', () => {
         const hits = { designs: [{ id: 'd' }], built: [{ id: 'b' }], formed: [{ id: 'f' }], parcels: [{ id: 'p' }] };
         expect(model.buildClickStack(hits).expanded).toBe('designs');
-        expect(model.buildClickStack(hits, { remembered: 'parcels' }).expanded).toBe('parcels');
-        expect(model.buildClickStack(hits, { remembered: 'permitted' }).expanded).toBe('designs');
         // A road's leftover piece: no design under the click, the formed piece is the ground to build on.
         expect(model.buildClickStack({ formed: [{ id: 'f' }], parcels: [{ id: 'p' }] }).expanded).toBe('formed');
-        expect(model.buildClickStack({ formed: [{ id: 'f' }], parcels: [{ id: 'p' }] }, { remembered: 'parcels' }).expanded).toBe('parcels');
         const stack = model.buildClickStack(hits);
         expect(model.expand(stack, 'formed').expanded).toBe('formed');
         expect(model.expand(stack, 'built').expanded).toBe('built');
+    });
+
+    it('selects the clicked building on formed ground, whatever section was expanded before', () => {
+        // The reported click: an existing building on a formed parcel whose designs are only on the parcel.
+        const hits = {
+            designs: [{ id: 'layout', onParcel: true }, { id: 'other', onParcel: true }],
+            built: [{ id: 'garage' }, { id: 'shed', onParcel: true }],
+            formed: [{ id: 'f' }], parcels: [{ id: 'p' }]
+        };
+        const stack = model.buildClickStack(hits);
+        expect(stack.expanded).toBe('built');
+        expect(stack.selectedKind).toBe('built');
+        expect(stack.topRef).toBe('built:garage');
+        // Expanding the formed parcel leaves no trace: the same click picks the building again.
+        expect(model.expand(stack, 'formed').expanded).toBe('formed');
+        expect(model.buildClickStack(hits).expanded).toBe('built');
+        expect(model.buildClickStack(hits, { remembered: 'formed' }).expanded).toBe('built');
+    });
+
+    it('picks a design that only authors ground after the building and the formed parcel on it', () => {
+        const layout = { id: 'layout', ground: true, createdAt: 9 };
+        // Formed ground inside a parcel layout: the formed parcel, not the layout under it.
+        const open = model.buildClickStack({ designs: [layout], formed: [{ id: 'f' }], parcels: [{ id: 'p' }] });
+        expect(kinds(open)).toEqual(['designs', 'formed', 'parcels']);
+        expect(open.expanded).toBe('formed');
+        expect(open.topRef).toBe('formed:f');
+        // An existing building standing there is above both.
+        const house = model.buildClickStack({ designs: [layout], built: [{ id: 'house' }], formed: [{ id: 'f' }], parcels: [{ id: 'p' }] });
+        expect(house.expanded).toBe('built');
+        // A drawn building is above everything, and is the Design section's instance although the layout is newer.
+        const drawn = model.buildClickStack({ designs: [layout, { id: 'tower', createdAt: 1 }], built: [{ id: 'house' }], formed: [{ id: 'f' }], parcels: [{ id: 'p' }] });
+        expect(drawn.expanded).toBe('designs');
+        expect(drawn.sections[0].instances.map(item => item.id)).toEqual(['tower', 'layout']);
+        expect(drawn.topRef).toBe('designs:tower');
+        // The layout still comes before the cadastral parcel it stands on.
+        expect(model.buildClickStack({ designs: [layout], parcels: [{ id: 'p' }] }).expanded).toBe('designs');
     });
 
     it('puts the point\'s own hits before what only stands on its parcel, and opens and closes on the point', () => {
@@ -168,8 +201,6 @@ describe('click stack model', () => {
         // The building under the point opens and is the top; the parcel's proposals wait for their row.
         expect(stack.expanded).toBe('built');
         expect(stack.topRef).toBe('built:house');
-        expect(model.buildClickStack(hits, { remembered: 'designs' }).expanded).toBe('built');
-        expect(model.buildClickStack(hits, { remembered: 'parcels' }).expanded).toBe('parcels');
         // Open ground: the parcel opens; a second click on the same parcel closes.
         const ground = model.buildClickStack({ designs: [{ id: 'd', onParcel: true }], parcels: [{ id: 'p' }] });
         expect(ground.expanded).toBe('parcels');

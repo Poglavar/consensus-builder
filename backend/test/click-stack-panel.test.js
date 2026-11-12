@@ -30,7 +30,7 @@ const HITS_BUILT = { built: [{ id: 'building-1', feature: BUILT_FEATURE, label: 
 // A design opens its actions panel in the section directly, not the planning inspector's summary.
 const DESIGN_PANEL = { hosted: true, presentation: 'details' };
 
-function loadPanel({ memory = null, withEditLock = false } = {}) {
+function loadPanel({ withEditLock = false } = {}) {
     const doc = makeDocument();
     const mapContainer = doc.createElement('div');
     mapContainer.id = 'map-container';
@@ -59,7 +59,7 @@ function loadPanel({ memory = null, withEditLock = false } = {}) {
         constructor(callback) { this.callback = callback; this.targets = []; observers.push(this); }
         observe(target) { this.targets.push(target); }
     }
-    const storage = new Map(memory ? [['cb.clickStack.expanded', memory]] : []);
+    const storage = new Map();
     const clock = { now: 1_000_000 };
     class ClockDate extends Date { static now() { return clock.now; } }
     const hitsBySpot = new Map([[SPOT_A.lat, HITS_A], [SPOT_B.lat, HITS_B], [SPOT_A.lat + 1, HITS_BUILT]]);
@@ -459,7 +459,7 @@ describe('click stack panel: a click opens, the same click closes', () => {
         expect(h.stackEl().classList.contains('visible')).toBe(true);
         expect(h.doc.body.classList.contains('click-stack-open')).toBe(true);
         expect(h.kinds()).toEqual(['designs', 'parcels']);
-        // No remembered kind: the topmost expandable section, its newest design.
+        // The topmost section at the point, its newest design.
         expect(h.api.current().expanded).toBe('designs');
         expect(h.context.selectAndHighlightProposal).toHaveBeenCalledWith('d1', null, false, true, false, DESIGN_PANEL);
         expect(h.proposalPanel.parentNode).toBe(h.section('designs').querySelector('.click-stack__body'));
@@ -488,7 +488,7 @@ describe('click stack panel: a click opens, the same click closes', () => {
     });
 
     it('opens a placed design at a point inside it, its Design section expanded on it', () => {
-        const h = loadPanel({ memory: 'parcels' });
+        const h = loadPanel();
         const placed = { proposalId: 'd9', title: 'New park', createdAt: '2026-10-23' };
         Object.assign(h.context, {
             getProposalByIdOrHash: id => (id === 'd9' ? placed : null),
@@ -641,29 +641,37 @@ describe('click stack panel: a click opens, the same click closes', () => {
     });
 });
 
-describe('click stack panel: the remembered section', () => {
-    it('expands the remembered kind when the spot has it', () => {
-        const h = loadPanel({ memory: 'parcels' });
+describe('click stack panel: the section a click selects', () => {
+    it('selects the top object of the next spot, not the kind a row click expanded before', () => {
+        const h = loadPanel();
+        const formed = { id: 'f1', label: '12 #2', feature: parcelFeature };
+        const onParcel = { id: 'd7', label: 'Layout', proposal: { proposalId: 'd7', goal: 'parcel-layout' }, onParcel: true };
+        h.context.ClickStackHits.hitsAt.mockImplementation(latlng => (latlng === SPOT_B
+            ? { designs: [onParcel], ...HITS_BUILT, formed: [formed], parcels: HITS_B.parcels }
+            : { formed: [formed], parcels: HITS_A.parcels }));
+        // Open ground on a formed parcel: the formed parcel, with its panel.
         h.click(SPOT_A);
+        expect(h.api.current().expanded).toBe('formed');
+        // A building on that ground: the building, although Formed was the last kind expanded.
+        h.click(SPOT_B);
+        expect(h.api.current().expanded).toBe('built');
+        expect(h.api.current().selectedKind).toBe('built');
+        expect(h.section('built').classList.contains('is-selected')).toBe(true);
+        expect(h.inspector.parentNode).toBe(h.section('built').querySelector('.click-stack__body'));
+        expect(h.context.PlanningViews.inspectBuilding).toHaveBeenCalledWith(BUILT_FEATURE, 'building-1', { hosted: true });
+        // Expanding the cadastral parcel by its row and clicking the building again opens the building.
+        h.section('parcels').querySelector('.click-stack__row').click();
         expect(h.api.current().expanded).toBe('parcels');
-        expect(h.context.ParcelsUISelection.selectParcelFromStack).toHaveBeenCalledWith('p1');
-        expect(h.context.selectAndHighlightProposal).not.toHaveBeenCalled();
-        expect(h.parcelPanel.parentNode).toBe(h.section('parcels').querySelector('.click-stack__body'));
-        expect(h.section('parcels').classList.contains('is-expanded')).toBe(true);
-        expect(h.section('designs').classList.contains('is-expanded')).toBe(false);
+        h.click(SPOT_B);
+        expect(h.api.current().expanded).toBe('built');
+        // Nothing about the expanded kind is kept between clicks or reloads.
+        expect(h.storage.size).toBe(0);
     });
 
-    it('falls back to the topmost section when the remembered kind is absent', () => {
-        const h = loadPanel({ memory: 'built' });
-        h.click(SPOT_A);
-        expect(h.api.current().expanded).toBe('designs');
-    });
-
-    it('remembers the section a row click expands, and moves the hosted panel with it', () => {
+    it('moves the hosted panel with the section a row click expands', () => {
         const h = loadPanel();
         h.click(SPOT_A);
         h.section('parcels').querySelector('.click-stack__row').click();
-        expect(h.storage.get('cb.clickStack.expanded')).toBe('parcels');
         expect(h.api.current().expanded).toBe('parcels');
         expect(h.parcelPanel.parentNode).toBe(h.section('parcels').querySelector('.click-stack__body'));
         // The design's card went home and does not count as hosted any more.
@@ -697,8 +705,9 @@ describe('click stack panel: other surfaces and the dock', () => {
     });
 
     it('steps aside, without closing it, when the panel another surface opens has closed ours', () => {
-        const h = loadPanel({ memory: 'parcels' });
+        const h = loadPanel();
         h.click(SPOT_A);
+        h.section('parcels').querySelector('.click-stack__row').click();
         expect(h.api.current().expanded).toBe('parcels');
         // Showing a design from elsewhere hides the hosted parcel panel and opens the inspector.
         h.parcelPanel.classList.remove('visible');

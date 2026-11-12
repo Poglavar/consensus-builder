@@ -19,6 +19,7 @@ function loadHits({ stack = [], buildings = [], planning = null, bareGround = fa
     registry = {}, proposals = {}, parcelProposals = [], parcelBuildings = [] } = {}) {
     const context = {
         __formationDepth: formation,
+        __drillStack: require('../../frontend/js/proposals/drill-stack.js'),
         ClickStackNeighbours: neighbours,
         _parcelIdLabel,
         console,
@@ -193,6 +194,19 @@ describe('click stack hits', () => {
         expect(context.ParcelSetProposals.lookup).not.toHaveBeenCalled();
         expect(hits.designs.map(d => d.id)).toEqual(['d1']);
         expect(hits.built).toEqual([]);
+    });
+
+    it('marks a design that only authors ground, so the model picks what stands on that ground first', () => {
+        const { hits } = loadHits({ stack: [proposalEntry('tower', { goal: 'buildings' }), formedEntry('f1', 'layout'),
+            proposalEntry('layout', { goal: 'parcel-layout', createdAt: '2026-11-01' })], buildings: [{ id: 'b1', feature: { properties: {} } }] });
+        expect(hits.designs.map(d => [d.id, d.ground === true])).toEqual([['tower', false], ['layout', true]]);
+        const model = require('../../frontend/js/click-stack/click-stack-model.js');
+        // The drawn building is the Design section's instance, although the layout is newer.
+        const stack = model.buildClickStack(hits);
+        expect(stack.topRef).toBe('designs:tower');
+        // Without the drawn building, the existing building there; without that, the formed parcel.
+        expect(model.buildClickStack({ ...hits, designs: hits.designs.slice(1) }).topRef).toBe('built:b1');
+        expect(model.buildClickStack({ ...hits, designs: hits.designs.slice(1), built: [] }).topRef).toBe('formed:f1');
     });
 
     it('splits the drill stack into designs, formed parcels and cadastral parcels by kind and depth', () => {

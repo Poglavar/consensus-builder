@@ -81,8 +81,11 @@
         const designs = [], formed = [], parcels = [];
         for (const entry of stack) {
             if (entry.kind === 'proposal') {
+                // A design that only authors ground (a parcel layout) lies under the parcels it
+                // formed: a click picks what stands on that ground first (click-stack-model.js).
+                const ground = global.__drillStack.isGroundAuthoring(entry.proposal);
                 designs.push({ id: entry.key, label: designLabel(entry.proposal, entry.key), createdAt: entry.proposal.createdAt,
-                    proposal: entry.proposal, goal: entry.proposal.goal || '', entry });
+                    proposal: entry.proposal, goal: entry.proposal.goal || '', entry, ...(ground ? { ground: true } : {}) });
             } else if (entry.depth > 0 || isFragment(entry)) {
                 const producer = entry.producerId;
                 const proposal = producer ? global.proposalStorage?.getProposal?.(producer) : null;

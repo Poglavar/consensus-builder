@@ -1,7 +1,7 @@
 // The click stack (click-stack.md): a 2D map click shows everything under the point in one
 // right-docked panel of sections, plans above designs above formed and cadastral parcels.
-// Clicking the same spot again retains it, another spot switches it, Escape closes it, and the kind
-// of the expanded section is remembered for the next click. Peer objects share a section with
+// Clicking the same spot again retains it, another spot switches it, Escape closes it, and every
+// click selects the object drawn on top, whatever was expanded before. Peer objects share a section with
 // a selector; each plan links to its agreements in a separate dialog.
 import { Page } from '@playwright/test';
 import { test, expect } from '../helpers/fixtures';
@@ -14,6 +14,29 @@ const SECOND_PARCEL_ID = 'HR-335754-1235';
 async function loadSecondParcel(page: Page): Promise<void> {
   await page.evaluate(async id => (window as any).CadastralParcelRepository.ensureIds([id]), SECOND_PARCEL_ID);
   await expect.poll(() => page.evaluate(id => !!(window as any).LiveParcelFabric.get(id), SECOND_PARCEL_ID)).toBe(true);
+}
+
+// The open stack's card can cover part of the second parcel (its Info page grows as it loads), and a
+// click on the card never reaches the map: click a point of the parcel the map still shows,
+// looking from its southern edge, away from the card.
+async function clickSecondParcel(page: Page): Promise<void> {
+  const point = await page.evaluate(id => {
+    const w = window as any;
+    const feature = w.LiveParcelFabric.get(id);
+    const [west, south, east, north] = w.turf.bbox(feature);
+    const box = w.map.getContainer().getBoundingClientRect();
+    for (let row = 1; row < 20; row++) {
+      for (let column = 1; column < 20; column++) {
+        const lng = west + (east - west) * column / 20, lat = south + (north - south) * row / 20;
+        if (!w.turf.booleanPointInPolygon(w.turf.point([lng, lat]), feature)) continue;
+        const at = w.map.latLngToContainerPoint([lat, lng]);
+        if (document.elementFromPoint(box.left + at.x, box.top + at.y)?.closest('#map')) return { lng, lat };
+      }
+    }
+    return null;
+  }, SECOND_PARCEL_ID);
+  expect(point, 'a point of the second parcel that the map shows').not.toBeNull();
+  await clickMapPoint(page, point!.lng, point!.lat);
 }
 
 const sectionKinds = (page: Page) => clickStack(page).locator('.click-stack__section')
@@ -39,7 +62,6 @@ async function twoAgreementsOnPark(page: Page, titles = ['First agreement', 'Sec
   return first.parkId;
 }
 
-const remembered = (page: Page) => page.evaluate(() => localStorage.getItem('cb.clickStack.expanded'));
 const agreementId = (page: Page, title: string) => page.evaluate(title => {
   const agreement = (window as any).AgreementStore.list().find((item: any) => item.title === title);
   if (!agreement) throw new Error(`Missing fixture agreement ${title}`);
@@ -324,7 +346,7 @@ test.describe('Click stack @core', () => {
     // Another parcel while the stack is open: it shows that parcel instead.
     await clickMapPoint(page, 15.9822, 45.80025);
     await expect(stack).toBeVisible();
-    await clickMapPoint(page, 15.9829, 45.80025);
+    await clickSecondParcel(page);
     await expect(stack).toBeVisible();
     await expect(page.locator('#parcel-info-title')).toContainText(SECOND_PARCEL_ID);
     await expect(parcelTab(page, 'propose-tab')).toHaveAttribute('aria-selected', 'true');
@@ -399,7 +421,7 @@ test.describe('Click stack @core', () => {
     }
   });
 
-  test('a design orders above its formed and cadastral parcels, and the expanded kind is remembered', async ({ mockApi: page }) => {
+  test('a design orders above its formed and cadastral parcels, and a click selects it whatever was expanded before', async ({ mockApi: page }) => {
     await openCity(page);
     const parkId = await createSpace(page, 'park');
     await page.keyboard.press('Escape');
@@ -456,27 +478,27 @@ test.describe('Click stack @core', () => {
     await expect(formed.locator('#parcel-info-panel')).toBeVisible();
     await expect(formed.locator('[data-command="parcel.useAsSite"]')).toHaveCount(0);
 
-    // Expanding the cadastral parcel collapses the others; the choice is remembered. The original
-    // was consumed by the park: it shows its record, with no actions that build on it.
+    // Expanding the cadastral parcel collapses the others. The original was consumed by the park:
+    // it shows its record, with no actions that build on it.
     await expandStackSection(page, 'parcels');
     await expect(designs).toHaveCount(0);
     await expect(designs.locator('.click-stack__body')).toHaveCount(0);
     await expect(formed.locator('.click-stack__body')).toHaveCount(0);
     await expect(stackSection(page, 'parcels').locator('#parcel-info-panel')).toBeVisible();
     await expect(stackSection(page, 'parcels').locator('[data-command="parcel.useAsSite"]')).toHaveCount(0);
-    expect(await remembered(page)).toBe('parcels');
 
-    // The next click on the spot opens with the remembered kind, also after a reload.
+    // The next click on the park selects the park again, not the kind expanded last, also after a reload.
     await page.keyboard.press('Escape');
     await expect(clickStack(page)).toBeHidden();
     await clickDesignOnMap(page, parkId);
-    await expect(stackSection(page, 'parcels').locator('.click-stack__row')).toHaveAttribute('aria-expanded', 'true');
-    await expect(designs).toHaveCount(0);
+    await expect(designs.locator('.click-stack__row')).toHaveAttribute('aria-expanded', 'true');
+    await expandStackSection(page, 'formed');
     await page.reload({ waitUntil: 'domcontentloaded' });
     await page.waitForFunction(() => (window as any).ProposalManager?._initialReapplyDone === true);
-    expect(await remembered(page)).toBe('parcels');
+    await page.keyboard.press('Escape');
+    await expect(clickStack(page)).toBeHidden();
     await clickDesignOnMap(page, parkId);
-    await expect(stackSection(page, 'parcels').locator('.click-stack__row')).toHaveAttribute('aria-expanded', 'true');
+    await expect(designs.locator('.click-stack__row')).toHaveAttribute('aria-expanded', 'true');
   });
 
   test('agreements above Plans stay readable without horizontal overflow on mobile', async ({ mockApi: page }, testInfo) => {

@@ -24,8 +24,12 @@ right-side panels that clicks used to open one at a time.
   background, heading, or close button; each section owns the shared translucent surface.
 - One section is always **selected** while the stack is open. Expansion only controls its
   details. Collapsing keeps its header selected and its object highlighted on the map.
-- A click always selects the **topmost object** under it: designs above parcels. Plans and
-  agreements are never spatial picks; they arrive through lists, links and panels.
+- A click always selects the **object drawn on top** at the point, whatever was selected or
+  expanded before: a design's body (a building, a park, a road), else the existing building
+  there, else the permitted massing, else the formed parcel, else the cadastral parcel. A design
+  that only authors ground (a parcel layout) lies under the parcels it formed, so it is picked
+  after them and is otherwise reached through its row. Plans and agreements are never spatial
+  picks; they arrive through lists, links and panels.
 - A repeat click on the same object keeps the stack and re-opens that object's section, also when
   another section had been expanded or everything was collapsed. A different object replaces the
   selection. Escape or a click on nothing closes the stack; another surface taking the map can
@@ -224,13 +228,11 @@ replace one with its own (the model view reads buildings from its scene).
 - The selected object has a pulsing map outline, retained while collapsed and protected from hover.
   Reduced motion uses a steady border. Desktop highlights the selected card and circular icon
   node, with short connectors behind the cards. Mobile highlights the selected object tab.
-- **Memory:** the kind of the expanded section is remembered (also across reloads). The next
-  click expands that kind if it exists there, otherwise the topmost section.
 
 ## Code
 
 - `frontend/js/click-stack/click-stack-model.js`: pure ordering, counts, default instance,
-  remembered kind, close-or-switch decision (unit tested, no DOM).
+  the section a click selects, close-or-switch decision (unit tested, no DOM).
 - `frontend/js/click-stack/click-stack-hits.js`: collects the hits at a point from the live
   layers (drill stack for designs and parcels, building layers, planning items, agreements), and
   supplies the neighbour lookups.
