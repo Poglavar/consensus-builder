@@ -39,8 +39,9 @@ test('empty layout plots have wild ground and fences, replaced when a park occup
   await expect(page.locator('#three-container canvas')).toBeHidden();
   await clickMapPoint(page, point[0], point[1]);
   await expandStackSection(page, 'formed');
+  // No block prompt: for a park it appears only after Detect block has run on this plot
+  // (detectBlockParcelIdsForParcel reads the cached detection since da9c23f54).
   await page.locator('.parcel-build-btn--park').click();
-  await page.getByRole('alertdialog').getByRole('button', { name: 'No, just this parcel' }).click();
   await expect.poll(() => page.evaluate(() => (window as any).proposalStorage.getAllProposals().some((p: any) => p.applied && p.structureProposal?.kind === 'park')), { timeout: 20_000 }).toBe(true);
   await expect(page.locator('.vacant-layout-plot')).toHaveCount(1);
   await page.keyboard.press('Escape');

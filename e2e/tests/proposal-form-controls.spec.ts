@@ -57,6 +57,12 @@ test('ownership and parcel tolerance persist from the draft review form', async 
   await form.locator('#proposalToleranceM').fill('0.12');
   await form.locator('#proposalToleranceM').press('Tab');
   await form.locator('#createProposalSubmitButton').click();
+  // The new park stands on the applied park it was reviewed from: saving names that park and asks
+  // before taking it off the map.
+  const takes = page.locator('.cb-dialog-overlay--confirm').filter({ hasText: 'Taken off the map' });
+  await expect(takes).toBeVisible({ timeout: 20_000 });
+  await expect(takes).toContainText('Spanish apply label control');
+  await takes.getByRole('button', { name: 'Save', exact: true }).click();
   await expect(form).toBeHidden();
   const saved = await page.evaluate(() => (window as any).proposalStorage.getAllProposals()
     .find((proposal: any) => proposal.title === 'A park for 2035'));

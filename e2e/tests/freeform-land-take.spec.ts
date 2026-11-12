@@ -115,8 +115,8 @@ test('reopening a building across two layout plots offers each plot whole, with 
 
   await openParcelAt(page, 15.98205, 45.80025);
   await page.locator('#parcel-info-panel .parcel-build-btn--single').click();
-  // One plot is selected; the block prompt offers both, and the tower starts on this one.
-  await page.getByRole('alertdialog').getByRole('button', { name: 'No, just this parcel' }).click();
+  // One plot is selected and the tower starts on it. No block prompt: for a single building it
+  // appears only after Detect block has run on this plot (cached detection since da9c23f54).
   await placeFreeformBuilding(page);
   await page.locator('#single-building-geojson-input').setInputFiles({ name: 'tower.geojson', mimeType: 'application/geo+json', buffer: Buffer.from(JSON.stringify(straddling)) });
   const choices = page.locator('[data-land-rows] select');

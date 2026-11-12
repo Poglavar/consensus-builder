@@ -44,9 +44,11 @@ async function createBlockFixture(page: Page, kind: 'road' | 'building' | 'park'
   if (kind === 'road') return drawCorridor(page, 'road');
   await openParcel(page, 'proposals');
   await page.locator(`.parcel-build-btn--${kind === 'building' ? 'buildings' : kind}`).click();
-  // This fixture has an adjacent parcel, so the app correctly asks which extent to author.
-  await page.getByRole('alertdialog').getByRole('button', { name: 'No, just this parcel', exact: true }).click();
+  // A building always asks which extent to author. A park asks only when Detect block already
+  // found this parcel's block (detectBlockParcelIdsForParcel reads that cached result since
+  // da9c23f54), and nothing has run it here, so the park is applied to this parcel directly.
   if (kind === 'building') {
+    await page.getByRole('alertdialog').getByRole('button', { name: 'No, just this parcel', exact: true }).click();
     await selectNativeOption(page.locator('#blockify-ruletype-select'), 'exact');
     await expect(page.locator('#btn-blockify-done')).toBeEnabled();
     await page.locator('#btn-blockify-done').click();

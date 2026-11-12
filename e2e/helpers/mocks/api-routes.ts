@@ -79,6 +79,7 @@ export async function mockAllApiRoutes(page: Page): Promise<void> {
     if (!isApiDataRequest(route.request().url(), route.request().resourceType(), 'road-parcels')) return route.continue();
     return route.fulfill({ json: { ids: [], truncated: false } });
   });
+  await mockBlockRoadsRoute(page);
   // Our server's OpenStreetMap parks and squares (present-state.js asks it before public Overpass).
   await page.route('**/osm-public-spaces**', route => {
     if (!isApiDataRequest(route.request().url(), route.request().resourceType(), 'osm-public-spaces')) return route.continue();
@@ -91,6 +92,22 @@ export async function mockAllApiRoutes(page: Page): Promise<void> {
   // Last, so it answers before '**/buildings**' (newest route first): the archive URL ends in
   // buildings.pmtiles. Cities on Overture's tiles read an empty archive instead of the real CDN.
   await mockOvertureTiles(page);
+}
+
+// Detect block and the urban-blocks layer read OSM enclosures from GET /blocks/roads?bbox=
+// (frontend/js/parcels/block-detection.js). By default one complete road ring runs just inside the
+// requested bbox, so every fixture parcel near the seed lies in one enclosure. Specs that need
+// particular blocks register their own route afterwards, which Playwright consults first.
+export async function mockBlockRoadsRoute(page: Page): Promise<void> {
+  await page.route('**/blocks/roads?**', route => {
+    const bbox = new URL(route.request().url()).searchParams.get('bbox')?.split(',').map(Number) ?? [];
+    if (bbox.length !== 4 || !bbox.every(Number.isFinite)) return route.fulfill({ status: 400, json: { error: 'bbox required' } });
+    const inset = 0.0001;
+    const [w, s, e, n] = [bbox[0] + inset, bbox[1] + inset, bbox[2] - inset, bbox[3] - inset];
+    return route.fulfill({ json: { type: 'FeatureCollection', complete: true, features: [{ type: 'Feature',
+      properties: { highway: 'residential' },
+      geometry: { type: 'LineString', coordinates: [[w, s], [e, s], [e, n], [w, n], [w, s]] } }] } });
+  });
 }
 
 export async function mockHealthRoute(page: Page): Promise<void> {
