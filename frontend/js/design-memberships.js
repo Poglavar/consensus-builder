@@ -285,15 +285,51 @@
             // A plan opened from a copied address is only previewed; applying it is one click here.
             const planRow = () => win.NamedPlans.list().find(row => row.cid === instance.cid)
                 || { cid: instance.cid, content: instance.content, published: !instance.draft };
-            if (kind === 'plans' && instance.content && !win.PlanWorkspace.appliedMembers(planRow())) {
-                const applyPlan = action(win.i18n.t('panel.proposal.actions.apply'), async () => {
-                    try {
-                        const result = await win.BusyControl.track(applyPlan, () => win.PlanWorkspace.apply(planRow()));
-                        if (!result.blocked) { applyPlan.remove(); onFocus(instance); }
-                    } catch (error) { win.showStyledAlert(error.message); }
-                });
-                applyPlan.className = 'btn click-stack__apply-plan';
-                actions.appendChild(applyPlan);
+            // Set for a plan below; run once the card's other actions are in place.
+            let syncMapActions = null;
+            if (kind === 'plans' && instance.content) {
+                // Apply while a member is off the map, Unapply while one is on it: each is there
+                // only when it has something to do, also after the other one (or a notice's Undo) ran.
+                // Apply sits beside Share, where a previewed plan needs it; Unapply closes the row
+                // of actions, so Share and Create agreement stay a pair.
+                let applyPlan = null, unapplyPlan = null, shown = null;
+                syncMapActions = () => {
+                    // A button doing its work stays as it is; it syncs when the work has landed.
+                    if (win.BusyControl.isBusy(applyPlan) || win.BusyControl.isBusy(unapplyPlan)) return;
+                    const needsApply = !win.PlanWorkspace.appliedMembers(planRow());
+                    const standingCount = win.PlanWorkspace.standingMembers(planRow()).length;
+                    if (shown === `${needsApply}:${standingCount > 0}`) return;
+                    shown = `${needsApply}:${standingCount > 0}`;
+                    if (applyPlan) applyPlan.remove();
+                    if (unapplyPlan) unapplyPlan.remove();
+                    applyPlan = unapplyPlan = null;
+                    if (needsApply) {
+                        applyPlan = action(win.i18n.t('panel.proposal.actions.apply'), async () => {
+                            try {
+                                const result = await win.BusyControl.track(applyPlan, () => win.PlanWorkspace.apply(planRow()));
+                                syncMapActions();
+                                if (!result.blocked) onFocus(instance);
+                            } catch (error) { win.showStyledAlert(error.message); }
+                        });
+                        applyPlan.className = 'btn click-stack__apply-plan';
+                        share.after(applyPlan);
+                    }
+                    if (standingCount) {
+                        // All the plan's designs come off the map in one change, after one question;
+                        // the notice names what came off and offers Undo (layer-render.js).
+                        unapplyPlan = action(win.i18n.t('panel.proposal.actions.remove'), async () => {
+                            const ids = win.PlanWorkspace.standingMembers(planRow()).map(record => String(record.proposalId));
+                            const title = instance.content.title || instance.label || '';
+                            if (!await win.CbDialog.confirm(win.i18n.t('designMemberships.unapplyPlanConfirm', { count: ids.length, title }), {
+                                okText: win.i18n.t('panel.proposal.actions.remove'), cancelText: win.i18n.t('common.cancel') })) return;
+                            try { await win.BusyControl.track(unapplyPlan, () => win.unapplyDesignsFromMap(ids, { label: title })); }
+                            catch (error) { win.showStyledAlert(error.message); }
+                            syncMapActions();
+                        });
+                        unapplyPlan.className = 'btn click-stack__unapply-plan';
+                        actions.appendChild(unapplyPlan);
+                    }
+                };
             }
             const createAgreement = action(t('createAgreement'), async () => {
                 try {
@@ -333,6 +369,14 @@
                 .catch(error => win.showStyledAlert(error.message)));
             download.className = 'btn click-stack__download-plan';
             actions.appendChild(download);
+            if (syncMapActions) {
+                syncMapActions();
+                // The applied set changes elsewhere too (a design unapplied in its own card, Undo).
+                const unsubscribe = win.LiveParcelFabric?.subscribe?.(() => {
+                    if (!host.isConnected) { if (typeof unsubscribe === 'function') unsubscribe(); return; }
+                    syncMapActions();
+                });
+            }
             host.appendChild(actions);
             const strip = node('div', 'click-stack__schedule');
             strip.appendChild(scheduleButton);

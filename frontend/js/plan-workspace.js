@@ -96,6 +96,11 @@
         return win.PlanComposition.appliedMembers(plan.content.designCids, win.proposalStorage.getAllProposals(),
             { cidOf: record => win.DesignRecord.cidOf(record), isApplied: record => win.isApplied(record) });
     }
+    // The plan's members standing on the map here, any number of them (PlanComposition.standingMembers).
+    function standingMembers(plan) {
+        return win.PlanComposition.standingMembers(plan.content.designCids, win.proposalStorage.getAllProposals(),
+            { cidOf: record => win.DesignRecord.cidOf(record), isApplied: record => win.isApplied(record) });
+    }
     // Applies the plan's exact revisions. A published plan's come from the design index; a private
     // one's from the revisions it carries, which the index does not hold. Returns { blocked: true }
     // when the visitor declined a conflict with designs already applied; throws when a member fails.
@@ -157,5 +162,5 @@
             title: win.i18n.t('planDialog.applyTitle', { title }), okText: win.i18n.t('planDialog.applyAndContinue') });
         return confirmed && !(await apply(plan)).blocked;
     }
-    win.PlanWorkspace = Object.freeze({ save, list, resolve, publish, publication, appliedMembers, apply, ensureApplied, trial });
+    win.PlanWorkspace = Object.freeze({ save, list, resolve, publish, publication, appliedMembers, standingMembers, apply, ensureApplied, trial });
 })(window);

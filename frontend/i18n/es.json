@@ -1935,10 +1935,19 @@
                 "applying": "Aplicando…",
                 "checkingGround": "Comprobando el terreno catastral…",
                 "unapplying": "Retirando del mapa…",
-                "restoringGround": "Restaurando el terreno local…",
+                "restoringGround": "Restaurando las parcelas…",
                 "saving": "Guardando…",
-                "unappliedStatus": "El diseño «{{name}}» se retiró del mapa y permanece en la lista.",
+                "unappliedManyStatus": "Se retiraron del mapa {{count}} diseños y permanecen en Listas.",
+                "alsoUnapplied": "También se retiraron del mapa: {{names}}.",
+                "reappliedStatus": "El diseño «{{name}}» vuelve a estar aplicado al mapa.",
+                "reappliedManyStatus": "{{count}} diseños vuelven a estar aplicados al mapa.",
+                "reapplyFailed": "No se pudieron volver a aplicar los diseños: {{reason}}",
+                "unapplyingMany": "Retirando diseños del mapa ({{count}})",
+                "unapplyManyFailed": "No se pudieron retirar los diseños del mapa. {{reason}}",
+                "unappliedStatus": "El diseño «{{name}}» se retiró del mapa y permanece en Listas.",
                 "dependents": {
+                    "titleMany": "Diseños construidos sobre estos",
+                    "messageMany": "Sobre los diseños que se retiran se apoyan: {{names}}. ¿Retirarlos también del mapa o dejarlos? Si se quedan, cada uno vuelve a ocupar su terreno por sí mismo.",
                     "title": "Diseños construidos sobre este",
                     "message": "Sobre «{{name}}» se apoyan: {{names}}. ¿Retirarlos también del mapa o dejarlos? Si se quedan, cada uno vuelve a ocupar su terreno por sí mismo.",
                     "all": "Retirar todos",
@@ -2172,13 +2181,12 @@
                 "parcelsSelected": "{{count}} parcelas seleccionadas para el diseño",
                 "noProposals": "No hay diseños para este bloque todavía.",
                 "applyButton": "Aplicar al mapa",
-                "removeButton": "Quitar del mapa",
                 "roadApplyTooltip": "Aplicar este diseño de carretera",
-                "roadRemoveTooltip": "Quitar este diseño de carretera del mapa",
+                "roadRemoveTooltip": "Retirar este diseño de carretera del mapa",
                 "buildingApplyTooltip": "Aplicar este diseño de edificio",
-                "buildingRemoveTooltip": "Quitar este diseño de edificio del mapa",
+                "buildingRemoveTooltip": "Retirar este diseño de edificio del mapa",
                 "structureApplyTooltip": "Aplicar este diseño de estructura",
-                "structureRemoveTooltip": "Quitar este diseño de estructura del mapa"
+                "structureRemoveTooltip": "Retirar este diseño de estructura del mapa"
             }
         },
         "road": {
@@ -6352,8 +6360,8 @@
             "proposalsApplied": "Diseños aplicadas",
             "you": "(Tú)"
         },
-        "newGameConfirm": "¿Seguro que quieres empezar una partida NUEVA? Se borrarán todos los agentes, el progreso de la partida y los datos de propiedad de las parcelas.",
-        "resetConfirm": "¿Seguro que quieres restablecer el estado de la partida? Se borrarán todos los agentes, el progreso de la partida y los datos de propiedad de las parcelas."
+        "newGameConfirm": "¿Seguro que quieres empezar una partida NUEVA? Se borrarán todos los agentes, el progreso de la partida, los datos de propiedad de las parcelas y todos los diseños guardados en este navegador. Los diseños publicados siguen disponibles a través de sus enlaces.",
+        "resetConfirm": "¿Seguro que quieres restablecer el estado de la partida? Se borrarán todos los agentes, el progreso de la partida, los datos de propiedad de las parcelas y todos los diseños guardados en este navegador. Los diseños publicados siguen disponibles a través de sus enlaces."
     },
     "ephemeral": {
         "messages": {
@@ -8068,7 +8076,6 @@
             "actions": {
                 "bet": "Apostar",
                 "edit": "Editar",
-                "removeLocal": "Quitar de este dispositivo",
                 "schemes": "Comparar con un esquema…",
                 "counter": "Contrapropuesta"
             },
@@ -8661,6 +8668,7 @@
         "contactLink": "Contactar con el mantenedor / solicitar revisión de datos"
     },
     "designMemberships": {
+        "unapplyPlanConfirm": "¿Retirar del mapa los diseños de «{{title}}» ({{count}})? Permanecen en Listas y se pueden volver a aplicar.",
         "title": "Incluido en",
         "plans": "Planes",
         "agreements": "Acuerdos",
@@ -9114,6 +9122,13 @@
         "newest": "Más recientes primero",
         "remove": "Eliminar borrador",
         "removeConfirm": "¿Eliminar el borrador «{{title}}»? Solo está guardado en este navegador, así que no se podrá recuperar.",
+        "removeDesignConfirm": "¿Eliminar el borrador «{{title}}»? Solo está guardado en este navegador, así que no se podrá recuperar. Si está en el mapa, se retira del mapa.",
+        "removeLocal": "Quitar de este dispositivo",
+        "removeLocalConfirm": "¿Quitar la copia de «{{title}}» de este navegador? El diseño publicado sigue disponible a través de su enlace. Si está en el mapa aquí, se retira del mapa.",
+        "removeLocalPlanConfirm": "¿Quitar la copia del plan «{{title}}» de este navegador? El plan publicado sigue disponible a través de su enlace y sus diseños se quedan en este navegador.",
+        "unapplyAll": "Retirar todos del mapa ({{count}})",
+        "unapplyAllConfirm": "¿Retirar del mapa todos los diseños ({{count}})? Permanecen en Listas y se pueden volver a aplicar.",
+        "onMap": "En el mapa ({{count}})",
         "select": "Seleccionar {{title}}",
         "open": "Abrir",
         "openNamed": "Abrir {{title}}",

@@ -212,7 +212,7 @@ async function applyProposalToMap(proposalIdOrHash, options = {}) {
     console.debug(`[applyProposalToMap] Step 5: Cleared preview layers (${(performance.now() - step5Time).toFixed(2)}ms)`);
 
     // Immediately restore button state to prevent it from being stuck in loading state
-    // The button will be updated to "Remove from map" by showProposalInfo below
+    // The button will be updated to "Unapply" by showProposalInfo below
     const currentButton = document.getElementById(buttonId);
     if (currentButton) {
         const t = typeof getProposalI18nHelper === 'function' ? getProposalI18nHelper() : null;

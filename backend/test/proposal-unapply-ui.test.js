@@ -111,7 +111,7 @@ describe('proposal action after unapply', () => {
 });
 
 describe('unapply failure feedback', () => {
-    function loadRemove({ result = false, throws = null, existingError = '' } = {}) {
+    function loadRemove({ result = false, throws = null, existingError = '', effects = null, records = null, dependents = [], answer = 'leave' } = {}) {
         const buttonNode = button();
         const panelError = existingError ? { dataset: { proposalMapActionError: 'park' }, remove: vi.fn() } : null;
         const document = {
@@ -120,19 +120,31 @@ describe('unapply failure feedback', () => {
         };
         const messages = vi.fn();
         const proposal = { proposalId: 'park', title: 'Park', applied: true };
+        const byId = new Map((records || [proposal]).map(record => [record.proposalId, record]));
+        const settle = async options => {
+            if (throws) throw throws;
+            if (result !== false && effects) options.onMutationEffects?.(effects);
+            return result;
+        };
         const manager = {
             applyProposal() {},
-            unapplyProposal: vi.fn(async () => { if (throws) throw throws; return result; }),
+            unapplyProposal: vi.fn(async (_id, options) => settle(options)),
+            unapplyProposals: vi.fn(async (_ids, options) => settle(options)),
+            applyProposalPlan: vi.fn(async () => ({ ok: true })),
+            findUnapplyDependents: vi.fn(() => dependents),
+            _refreshUIAfterProposalChange: vi.fn(),
             _getProposalChildParcels: () => []
         };
         const globals = {
             document,
-            window: { __proposalMapActionFailures: existingError ? { park: existingError } : Object.create(null) },
+            window: { __proposalMapActionFailures: existingError ? { park: existingError } : Object.create(null),
+                CbDialog: { choice: vi.fn(async () => answer) } },
             console: { log: vi.fn(), error: vi.fn(), warn: vi.fn() },
             ProposalManager: manager,
-            proposalStorage: { getProposal: () => proposal },
+            proposalStorage: { getProposal: id => (records ? byId.get(String(id)) || null : proposal) },
             getLifecycleStatus: () => 'Active',
             isApplied: value => value.applied === true,
+            isProposalApplied: value => value.applied === true,
             reconcileProposalMapActionButton: vi.fn(() => { buttonNode.disabled = false; }),
             getProposalI18nHelper: () => (key, fallback, params = {}) => String(fallback)
                 .replace(/\{\{\s*(\w+)\s*\}\}/g, (match, name) => params[name] ?? match),
@@ -146,8 +158,8 @@ describe('unapply failure feedback', () => {
         const removeEnd = source.indexOf('\nfunction focusOnRemovedParcelLocation(', removeStart);
         expect(removeStart, 'chooseUnapplyDependents not found').toBeGreaterThanOrEqual(0);
         expect(source.indexOf('async function removeProposalFromMap(', removeStart), 'removeProposalFromMap not after its helper').toBeGreaterThan(removeStart);
-        runInNewContext(`${executionSource.slice(helpersStart, helpersEnd)}\n${source.slice(removeStart, removeEnd)}\nthis.remove = removeProposalFromMap;`, globals);
-        return { remove: globals.remove, globals, manager, messages, panelError, button: buttonNode };
+        runInNewContext(`${executionSource.slice(helpersStart, helpersEnd)}\n${source.slice(removeStart, removeEnd)}\nthis.remove = removeProposalFromMap; this.unapplyMany = unapplyDesignsFromMap;`, globals);
+        return { remove: globals.remove, unapplyMany: globals.unapplyMany, globals, manager, messages, panelError, button: buttonNode };
     }
 
     it('reports a false manager result with an explicit unapply fallback', async () => {
@@ -168,6 +180,79 @@ describe('unapply failure feedback', () => {
         const success = loadRemove({ result: true, existingError: 'old apply error' });
         await expect(success.remove('park')).resolves.toBe(true);
         expect(success.globals.window.__proposalMapActionFailures).not.toHaveProperty('park');
-        expect(success.messages).not.toHaveBeenCalled();
+        // The outcome is a notice with the way back.
+        expect(success.messages).toHaveBeenCalledOnce();
+        const [text, duration, type, action] = success.messages.mock.calls[0];
+        expect(text).toBe('The design “Park” was unapplied and remains in Lists.');
+        expect([duration, type, action.label]).toEqual([10000, 'info', 'Undo']);
+    });
+
+    describe('what an unapply took off the map', () => {
+    const tower = { proposalId: 'tower', title: 'Tower', applied: true };
+    const park = { proposalId: 'park', title: 'Park', applied: true };
+    const school = { proposalId: 'school', title: 'School', applied: true };
+    const flush = () => new Promise(resolve => setImmediate(resolve));
+
+    it('names a design the change took off beside the one asked for, and Undo applies them all again', async () => {
+        const { remove, manager, messages } = loadRemove({ result: true,
+            effects: { unapplied: [{ proposalId: 'park', title: 'Park' }, { proposalId: 'tower', title: 'Tower' }], applied: [] } });
+        await expect(remove('park')).resolves.toBe(true);
+        expect(manager.unapplyProposal.mock.calls[0][1].onMutationEffects).toEqual(expect.any(Function));
+        const [text, , type, action] = messages.mock.calls[0];
+        expect(text).toBe('The design “Park” was unapplied and remains in Lists. Also taken off the map: “Tower”.');
+        expect(type).toBe('warning');
+        action.run();
+        await flush();
+        expect(manager.applyProposalPlan).toHaveBeenCalledWith(['park', 'tower']);
+        expect(manager._refreshUIAfterProposalChange).toHaveBeenCalledWith(null);
+        expect(messages).toHaveBeenLastCalledWith('2 designs are applied again.', 5000, 'success');
+    });
+
+    it('says why when Undo cannot apply the designs again', async () => {
+        const { remove, manager, messages } = loadRemove({ result: true });
+        manager.applyProposalPlan.mockResolvedValue(false);
+        manager._lastFailedPlanApplySummary = { failed: [{ reason: 'ground is taken' }] };
+        await remove('park');
+        messages.mock.calls[0][3].run();
+        await flush();
+        expect(messages).toHaveBeenLastCalledWith('The designs could not be applied again: ground is taken', 8000, 'error');
+    });
+
+    it('takes several designs off in one change and reports how many', async () => {
+        const { unapplyMany, manager, messages } = loadRemove({ result: true, records: [park, tower, { ...school, applied: false }],
+            effects: { unapplied: [{ proposalId: 'park', title: 'Park' }, { proposalId: 'tower', title: 'Tower' }], applied: [] } });
+        const cameOff = await unapplyMany(['park', 'tower', 'school', 'park', 'missing']);
+        // Only what stands on the map is asked for, once each, in one manager call.
+        expect(manager.unapplyProposals).toHaveBeenCalledOnce();
+        expect(manager.unapplyProposals.mock.calls[0][0]).toEqual(['park', 'tower']);
+        expect(manager.unapplyProposals.mock.calls[0][1].alsoUnapplyIds).toEqual([]);
+        expect(cameOff.map(row => row.proposalId)).toEqual(['park', 'tower']);
+        const [text, , type, action] = messages.mock.calls[0];
+        expect(text).toBe('2 designs were unapplied and remain in Lists.');
+        expect([type, action.label]).toEqual(['info', 'Undo']);
+    });
+
+    it('asks about the designs standing on a set, and unapplies them too or stops', async () => {
+        const options = { result: true, records: [park, tower, school], dependents: [school] };
+        const all = loadRemove({ ...options, answer: 'all',
+            effects: { unapplied: [park, tower, school].map(({ proposalId, title }) => ({ proposalId, title })), applied: [] } });
+        await all.unapplyMany(['park', 'tower']);
+        expect(all.manager.findUnapplyDependents).toHaveBeenCalledWith(['park', 'tower']);
+        expect(all.globals.window.CbDialog.choice.mock.calls[0][0]).toContain('These designs stand on the ones being unapplied: “School”.');
+        expect(all.manager.unapplyProposals.mock.calls[0][1].alsoUnapplyIds).toEqual(['school']);
+        // The chosen dependent was asked for too: nothing is reported as taken off beside the request.
+        expect(all.messages.mock.calls[0][0]).toBe('3 designs were unapplied and remain in Lists.');
+
+        const cancelled = loadRemove({ ...options, answer: 'cancel' });
+        await expect(cancelled.unapplyMany(['park', 'tower'])).resolves.toBeNull();
+        expect(cancelled.manager.unapplyProposals).not.toHaveBeenCalled();
+        expect(cancelled.messages).not.toHaveBeenCalled();
+    });
+
+    it('reports a refused change and takes nothing as done', async () => {
+        const { unapplyMany, messages } = loadRemove({ result: false, records: [park, tower] });
+        await expect(unapplyMany(['park', 'tower'])).resolves.toBeNull();
+        expect(messages).toHaveBeenCalledWith('The designs could not be unapplied.', 8000, 'error');
+    });
     });
 });

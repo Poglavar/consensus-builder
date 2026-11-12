@@ -1629,7 +1629,7 @@ function buildBlockProposalListItem(proposal) {
     const buildingApplied = isBuildingProposal && isApplied(proposal, proposal.buildingProposal);
     const structureApplied = isStructureProposal && isApplied(proposal, proposal.structureProposal);
 
-    // The row's map action: Apply to map, or Remove from map once applied (btn btn-sm; the card's
+    // The row's map action: Apply to map, or Unapply once applied (btn btn-sm; the card's
     // details hold the rest). proposal-action-btn stays as the hook the specs find it by.
     const appliedOnMap = isRoadProposal ? roadApplied : isBuildingProposal ? buildingApplied : structureApplied;
     const actionTitle = isRoadProposal
@@ -1644,7 +1644,7 @@ function buildBlockProposalListItem(proposal) {
     if (mapAction && typeof ProposalManager !== 'undefined' && (isRoadProposal || isBuildingProposal || isStructureProposal)) {
         actionButtons = mapAction === 'unapply'
             ? `<button type="button" id="proposal-action-btn-${proposalIdOrHash}" class="btn btn-sm proposal-action-btn" onclick="event.stopPropagation(); removeProposalFromMap('${proposalIdOrHash}')" title="${actionTitle}">
-                    <i class="fas fa-eye-slash" aria-hidden="true"></i> ${tBlock('panel.block.proposals.removeButton', {}, 'Remove from map')}
+                    <i class="fas fa-box-archive" aria-hidden="true"></i> ${tBlock('panel.proposal.actions.remove', {}, 'Unapply')}
                 </button>`
             : `<button type="button" class="btn btn-sm proposal-action-btn" onclick="event.stopPropagation(); applyProposalToMap('${proposalIdOrHash}')" title="${actionTitle}">
                     <i class="fas fa-check" aria-hidden="true"></i> ${tBlock('panel.block.proposals.applyButton', {}, 'Apply to map')}

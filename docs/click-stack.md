@@ -72,7 +72,9 @@ this bar, retaining their editors, controls, loading behavior and state:
   and tabs for related Plans and parcels where present. The model view keeps its figures
   and sliders together in Stats, with metadata and the record in Info; Actions opens the
   same design's Actions tab in 2D.
-- Plans: Actions, Info, Designs and Agreements. Info shows publication state and revision;
+- Plans: Actions, Info, Designs and Agreements. Actions offers **Apply to map** while a member is
+  off the map and **Unapply** while one is on it; Unapply takes the plan's designs off in one
+  change, after one question, and its notice offers Undo. Info shows publication state and revision;
   schedule editing sits beside the timeline. Agreements always has a tab, including
   an empty state when no agreement references the exact Plan revision.
 - Cadastral/formed parcels: Actions, Info, Designs, applicable parcel relationships and Tools.

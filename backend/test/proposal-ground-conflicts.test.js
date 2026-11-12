@@ -479,6 +479,43 @@ describe('unapplyDependents: who stands on a record that comes off the map', () 
         expect(unapplyDependents(layout, records, options).map(record => record.proposalId)).toEqual(['road-in-strip', 'later-road']);
         expect(unapplyDependents(inStrip, records, options).map(record => record.proposalId)).toEqual([]);
     });
+
+    // An imported plan dates every member with the plan's own date. The building's id sorts
+    // before the layout's, and the layout was named as a design standing on the building.
+    const sameTime = '2026-06-23T00:00:00.000Z';
+    const block = { ...layout, proposalId: 'design-zzz-layout', createdAt: sameTime };
+    const onPlot = (proposalId, west, east) => ({ proposalId, goal: 'buildings', applied: true, createdAt: sameTime,
+        geometry: { buildings: [{ type: 'Feature', properties: {}, geometry: box(west, east) }] }, buildingProposal: { typologyType: 'single' } });
+
+    it('names the buildings of the same time on a layout\'s plots, never the layout as standing on its building', () => {
+        const first = onPlot('design-aaa-building', 15.9002, 15.9006);
+        const second = onPlot('design-bbb-building', 15.9012, 15.9016);
+        const records = [first, block, second];
+        expect(unapplyDependents(block, records, options).map(record => record.proposalId)).toEqual(['design-aaa-building', 'design-bbb-building']);
+        expect(unapplyDependents(first, records, options)).toEqual([]);
+        expect(unapplyDependents(second, records, options)).toEqual([]);
+    });
+
+    it('answers for a set: who stands on any of the designs coming off and is not one of them', () => {
+        const { ProposalManager } = require('../../frontend/js/proposal-manager.js');
+        const first = onPlot('design-aaa-building', 15.9002, 15.9006);
+        const second = onPlot('design-bbb-building', 15.9012, 15.9016);
+        const records = [first, block, second];
+        const store = { getProposal: id => records.find(record => record.proposalId === String(id)) || null, peekAllProposals: () => records, getAllProposals: () => records };
+        const asked = ids => ProposalManager.findUnapplyDependents(ids, { _parcelMutation: { proposals: store } }).map(record => record.proposalId);
+        const previous = globalThis.__planOrder;
+        globalThis.__planOrder = planOrder;
+        try {
+            expect(asked('design-zzz-layout')).toEqual(['design-aaa-building', 'design-bbb-building']);
+            // One of its buildings comes off with the layout: only the other is still standing on it.
+            expect(asked(['design-zzz-layout', 'design-aaa-building'])).toEqual(['design-bbb-building']);
+            // Everything applied comes off: no one is left to ask about.
+            expect(asked(records.map(record => record.proposalId))).toEqual([]);
+            expect(asked(['design-aaa-building', 'design-bbb-building'])).toEqual([]);
+        } finally {
+            if (previous === undefined) delete globalThis.__planOrder; else globalThis.__planOrder = previous;
+        }
+    });
 });
 
 describe('lineage: what saving an edit does to its source', () => {

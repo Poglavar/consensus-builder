@@ -233,6 +233,10 @@ class FakeElement {
         return node;
     }
     append(...nodes) { nodes.forEach(node => this.appendChild(typeof node === 'string' ? new FakeText(node) : node)); }
+    prepend(...nodes) {
+        const first = this.childNodes[0] || null;
+        nodes.forEach(node => this.insertBefore(typeof node === 'string' ? new FakeText(node) : node, first));
+    }
     removeChild(node) {
         const index = this.childNodes.indexOf(node);
         if (index >= 0) this.childNodes.splice(index, 1);

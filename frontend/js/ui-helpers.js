@@ -487,6 +487,23 @@ function presentNotice(entry) {
     messageEl.setAttribute('role', variant === 'error' ? 'alert' : 'status');
     messageEl.textContent = entry.message;
     makeMessageCopyable(messageEl, () => entry.message);
+    // An outcome with a way back (Undo): one native button after the text. Its click is the
+    // action's, not a copy, and it takes the notice away.
+    if (entry.action && entry.action.label && typeof entry.action.run === 'function') {
+        const actionButton = document.createElement('button');
+        actionButton.type = 'button';
+        actionButton.className = 'btn btn-sm cb-toast__action';
+        actionButton.textContent = entry.action.label;
+        actionButton.addEventListener('click', event => {
+            event.stopPropagation();
+            actionButton.disabled = true;
+            if (noticeQueue) noticeQueue.dismiss();
+            else retireNotice(messageEl);
+            entry.action.run();
+        });
+        messageEl.appendChild(document.createTextNode(' '));
+        messageEl.appendChild(actionButton);
+    }
     messageEl.addEventListener('mouseenter', () => noticeQueue?.hold());
     messageEl.addEventListener('mouseleave', () => noticeQueue?.release());
     noticeContainer().appendChild(messageEl);
@@ -501,9 +518,10 @@ function retireNotice(messageEl) {
     setTimeout(() => { if (messageEl.parentNode) messageEl.remove(); }, NOTICE_EXIT_MS);
 }
 
-function showEphemeralMessage(message, duration = 5000, type = 'info') {
+// `action` ({ label, run }) adds one button to the notice: the way back from what it announces.
+function showEphemeralMessage(message, duration = 5000, type = 'info', action = null) {
     try { if (typeof updateStatus === 'function') updateStatus(message, { floating: false }); } catch (_) { }
-    const entry = { message, duration, type };
+    const entry = { message, duration, type, ...(action ? { action } : {}) };
     if (!noticeQueue && typeof __NoticeQueue !== 'undefined' && typeof __NoticeQueue.createNoticeQueue === 'function') {
         noticeQueue = __NoticeQueue.createNoticeQueue({ show: presentNotice, hide: retireNotice });
     }

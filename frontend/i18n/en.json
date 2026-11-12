@@ -1912,10 +1912,19 @@
                 "applying": "Applying…",
                 "checkingGround": "Checking cadastral ground…",
                 "unapplying": "Unapplying…",
-                "restoringGround": "Restoring local terrain…",
+                "restoringGround": "Restoring parcels…",
                 "saving": "Saving…",
-                "unappliedStatus": "The design “{{name}}” was unapplied and remains in your designs list.",
+                "unappliedManyStatus": "{{count}} designs were unapplied and remain in Lists.",
+                "alsoUnapplied": "Also taken off the map: {{names}}.",
+                "reappliedStatus": "The design “{{name}}” is applied again.",
+                "reappliedManyStatus": "{{count}} designs are applied again.",
+                "reapplyFailed": "The designs could not be applied again: {{reason}}",
+                "unapplyingMany": "Unapplying designs ({{count}})",
+                "unapplyManyFailed": "The designs could not be unapplied. {{reason}}",
+                "unappliedStatus": "The design “{{name}}” was unapplied and remains in Lists.",
                 "dependents": {
+                    "titleMany": "Designs built on these",
+                    "messageMany": "These designs stand on the ones being unapplied: {{names}}. Unapply them too, or leave them on the map? Left in place, each takes its ground again on its own.",
                     "title": "Designs built on this one",
                     "message": "These designs stand on “{{name}}”: {{names}}. Unapply them too, or leave them on the map? Left in place, each takes its ground again on its own.",
                     "all": "Unapply all",
@@ -2149,7 +2158,6 @@
                 "parcelsSelected": "{{count}} parcels selected for design",
                 "noProposals": "No designs for this block yet.",
                 "applyButton": "Apply to map",
-                "removeButton": "Remove from map",
                 "roadApplyTooltip": "Apply this road design",
                 "roadRemoveTooltip": "Unapply this road design",
                 "buildingApplyTooltip": "Apply this building design",
@@ -6325,8 +6333,8 @@
             "proposalsApplied": "Designs applied",
             "you": "(You)"
         },
-        "newGameConfirm": "Are you sure you want to start a NEW game? This will delete all agents, game progress, and parcel ownership data.",
-        "resetConfirm": "Are you sure you want to reset the game state? This will delete all agents, game progress, and parcel ownership data."
+        "newGameConfirm": "Are you sure you want to start a NEW game? This will delete all agents, game progress, parcel ownership data and every design saved in this browser. Published designs stay available through their links.",
+        "resetConfirm": "Are you sure you want to reset the game state? This will delete all agents, game progress, parcel ownership data and every design saved in this browser. Published designs stay available through their links."
     },
     "ephemeral": {
         "messages": {
@@ -8041,7 +8049,6 @@
             "actions": {
                 "bet": "Bet",
                 "edit": "Edit",
-                "removeLocal": "Remove from this device",
                 "schemes": "Compare with a scheme…",
                 "counter": "Counter-agreement"
             },
@@ -8633,6 +8640,7 @@
         "contactLink": "Contact the maintainer / request data review"
     },
     "designMemberships": {
+        "unapplyPlanConfirm": "Unapply the designs of “{{title}}” that are on the map ({{count}})? They stay in Lists and can be applied again.",
         "title": "Included in",
         "plans": "Plans",
         "agreements": "Agreements",
@@ -9086,6 +9094,13 @@
         "newest": "Newest first",
         "remove": "Delete draft",
         "removeConfirm": "Delete the draft “{{title}}”? It is saved only in this browser, so it cannot be recovered.",
+        "removeDesignConfirm": "Delete the draft “{{title}}”? It is saved only in this browser, so it cannot be recovered. If it is on the map, it comes off the map.",
+        "removeLocal": "Remove from this device",
+        "removeLocalConfirm": "Remove this browser’s copy of “{{title}}”? The published design stays available through its link. If it is on the map here, it comes off the map.",
+        "removeLocalPlanConfirm": "Remove this browser’s copy of the plan “{{title}}”? The published plan stays available through its link, and its designs stay in this browser.",
+        "unapplyAll": "Unapply all ({{count}})",
+        "unapplyAllConfirm": "Unapply every design on the map ({{count}})? They stay in Lists and can be applied again.",
+        "onMap": "On the map ({{count}})",
         "select": "Select {{title}}",
         "open": "Open",
         "openNamed": "Open {{title}}",

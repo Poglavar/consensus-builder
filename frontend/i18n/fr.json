@@ -1925,7 +1925,6 @@
             "actions": {
                 "edit": "Modifier",
                 "bet": "Pari",
-                "removeLocal": "Retirer de cet appareil",
                 "schemes": "Comparer avec un schéma…",
                 "counter": "Contre-proposition"
             },
@@ -3226,10 +3225,19 @@
                 "apply": "Appliquer à la carte",
                 "checkingGround": "Vérification du terrain cadastral…",
                 "unapplying": "Retrait de la carte…",
-                "restoringGround": "Restauration du terrain local…",
+                "restoringGround": "Restauration des parcelles…",
                 "saving": "Enregistrement…",
-                "unappliedStatus": "Le projet « {{name}} » a été retiré de la carte et reste dans votre liste de projets.",
+                "unappliedManyStatus": "{{count}} projets ont été retirés de la carte et restent dans Listes.",
+                "alsoUnapplied": "Également retirés de la carte : {{names}}.",
+                "reappliedStatus": "Le projet « {{name}} » est de nouveau appliqué à la carte.",
+                "reappliedManyStatus": "{{count}} projets sont de nouveau appliqués à la carte.",
+                "reapplyFailed": "Les projets n’ont pas pu être appliqués de nouveau : {{reason}}",
+                "unapplyingMany": "Retrait des projets de la carte ({{count}})",
+                "unapplyManyFailed": "Les projets n’ont pas pu être retirés de la carte. {{reason}}",
+                "unappliedStatus": "Le projet « {{name}} » a été retiré de la carte et reste dans Listes.",
                 "dependents": {
+                    "titleMany": "Projets construits sur ceux-ci",
+                    "messageMany": "Sur les projets retirés reposent : {{names}}. Les retirer aussi de la carte ou les laisser ? S’ils restent, chacun reprend son terrain de lui-même.",
                     "title": "Projets construits sur celui-ci",
                     "message": "Sur « {{name}} » reposent : {{names}}. Les retirer aussi de la carte ou les laisser ? S’ils restent, chacun reprend son terrain de lui-même.",
                     "all": "Tout retirer",
@@ -3426,7 +3434,6 @@
                 "multiSelectUnavailable": "La sélection de plusieurs parcelles n’est pas disponible",
                 "parcelsSelected": "{{count}} parcelles sélectionnées pour le projet",
                 "noProposals": "Aucun projet pour cet îlot pour le moment.",
-                "removeButton": "Retirer de la carte",
                 "roadApplyTooltip": "Appliquer ce projet de route",
                 "roadRemoveTooltip": "Retirer ce projet de route de la carte",
                 "buildingApplyTooltip": "Appliquer ce projet de bâtiment",
@@ -4658,8 +4665,8 @@
             "proposalsApplied": "Projets appliqués",
             "you": "(Vous)"
         },
-        "newGameConfirm": "Voulez-vous vraiment commencer une NOUVELLE partie ? Tous les agents, la progression de la partie et les données de propriété des parcelles seront supprimés.",
-        "resetConfirm": "Voulez-vous vraiment réinitialiser la partie ? Tous les agents, la progression de la partie et les données de propriété des parcelles seront supprimés."
+        "newGameConfirm": "Voulez-vous vraiment commencer une NOUVELLE partie ? Tous les agents, la progression de la partie, les données de propriété des parcelles et tous les projets enregistrés dans ce navigateur seront supprimés. Les projets publiés restent accessibles via leurs liens.",
+        "resetConfirm": "Voulez-vous vraiment réinitialiser la partie ? Tous les agents, la progression de la partie, les données de propriété des parcelles et tous les projets enregistrés dans ce navigateur seront supprimés. Les projets publiés restent accessibles via leurs liens."
     },
     "proposalGroundRebase": {
         "fork": "Nouveau projet avec la même géométrie",
@@ -5424,6 +5431,7 @@
         "portuguese": "Portugais"
     },
     "designMemberships": {
+        "unapplyPlanConfirm": "Retirer de la carte les projets de « {{title}} » ({{count}}) ? Ils restent dans Listes et peuvent être appliqués de nouveau.",
         "draft": "Brouillon",
         "loading": "Chargement…",
         "agreements": "Accords",
@@ -9093,6 +9101,13 @@
         "newest": "Les plus récents",
         "remove": "Supprimer le brouillon",
         "removeConfirm": "Supprimer le brouillon « {{title}} » ? Il n’est enregistré que dans ce navigateur et ne pourra pas être récupéré.",
+        "removeDesignConfirm": "Supprimer le brouillon « {{title}} » ? Il n’est enregistré que dans ce navigateur et ne pourra pas être récupéré. S’il est sur la carte, il en est retiré.",
+        "removeLocal": "Retirer de cet appareil",
+        "removeLocalConfirm": "Retirer la copie de « {{title}} » de ce navigateur ? Le projet publié reste accessible via son lien. S’il est sur la carte ici, il en est retiré.",
+        "removeLocalPlanConfirm": "Retirer la copie du plan « {{title}} » de ce navigateur ? Le plan publié reste accessible via son lien, et ses projets restent dans ce navigateur.",
+        "unapplyAll": "Tout retirer de la carte ({{count}})",
+        "unapplyAllConfirm": "Retirer de la carte tous les projets ({{count}}) ? Ils restent dans Listes et peuvent être appliqués de nouveau.",
+        "onMap": "Sur la carte ({{count}})",
         "select": "Sélectionner {{title}}",
         "open": "Ouvrir",
         "openNamed": "Ouvrir {{title}}",

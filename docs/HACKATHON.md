@@ -336,4 +336,6 @@ published and attested after close. Conflicting outcome evidence fails closed. O
 submit the resolution and claim transactions.
 
 If a live dependency is slow, use the Demo Center's retry button. The resettable fallback is the
-map's **Game → Enable game mode → New Game** flow; it clears browser-local simulation state only.
+map's **Game → Enable game mode → New Game** flow; it clears browser-local simulation state and
+deletes every design saved in this browser (applied ones come off the map first; published ones stay
+available through their links).

@@ -13,6 +13,7 @@ if (typeof window !== 'undefined') {
     window.focusProposalDetails = focusProposalDetails;
     window.applyProposalToMap = applyProposalToMap;
     window.removeProposalFromMap = removeProposalFromMap;
+    window.unapplyDesignsFromMap = unapplyDesignsFromMap;
     window.returnToParcelInfo = returnToParcelInfo;
     window.hideProposalDetailsPanel = hideProposalDetailsPanel;
     window.toggleProposalDetailsPanelMinimized = toggleProposalDetailsPanelMinimized;

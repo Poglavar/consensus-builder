@@ -5,8 +5,9 @@
 // timers; the DOM work (make the pill, remove it) is the host's `show` and `hide`.
 //
 //   createNoticeQueue({ minDisplayMs, now, setTimer, clearTimer, show, hide }) ->
-//     { push(entry), current(), pending(), clear(), hold(), release() }
-//   entry: { message, duration, type }; show(entry) returns a handle that hide(handle, entry) gets back.
+//     { push(entry), current(), pending(), clear(), dismiss(), hold(), release() }
+//   entry: { message, duration, type, action? }; show(entry) returns a handle that hide(handle, entry)
+//   gets back. `action` ({ label, run }) is the host's: a way back the notice offers (Undo).
 (function (root, factory) {
     const api = factory();
     if (typeof module === 'object' && module.exports) module.exports = api;
@@ -82,7 +83,7 @@
             const message = input && input.message != null ? String(input.message).trim() : '';
             if (!message) return false;
             const duration = Number.isFinite(Number(input.duration)) && Number(input.duration) > 0 ? Number(input.duration) : DEFAULT_DURATION_MS;
-            const entry = { message, duration, type: input.type || 'info' };
+            const entry = { message, duration, type: input.type || 'info', ...(input.action ? { action: input.action } : {}) };
             if ((current && sameNotice(current.entry, entry)) || waiting.some(w => sameNotice(w, entry))) return false;
             waiting.push(entry);
             pump();
@@ -95,9 +96,16 @@
             dismissCurrent();
         }
 
+        // The notice on screen is done with (its action was taken): the next one may show.
+        function dismiss() {
+            dismissCurrent();
+            pump();
+        }
+
         return {
             push,
             clear,
+            dismiss,
             hold,
             release,
             current: () => (current ? current.entry : null),

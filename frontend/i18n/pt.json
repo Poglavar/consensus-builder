@@ -1925,7 +1925,6 @@
             "actions": {
                 "edit": "Editar",
                 "bet": "Apostou",
-                "removeLocal": "Remover deste dispositivo",
                 "schemes": "Comparar com um esquema…",
                 "counter": "Contraproposta"
             },
@@ -3226,10 +3225,19 @@
                 "apply": "Aplicar ao mapa",
                 "checkingGround": "A verificar o terreno cadastral…",
                 "unapplying": "A remover do mapa…",
-                "restoringGround": "A repor o terreno local…",
+                "restoringGround": "A repor as parcelas…",
                 "saving": "A guardar…",
-                "unappliedStatus": "O projeto «{{name}}» foi removido do mapa e permanece na sua lista de projetos.",
+                "unappliedManyStatus": "{{count}} projetos foram removidos do mapa e permanecem em Listas.",
+                "alsoUnapplied": "Também removidos do mapa: {{names}}.",
+                "reappliedStatus": "O projeto «{{name}}» está novamente aplicado ao mapa.",
+                "reappliedManyStatus": "{{count}} projetos estão novamente aplicados ao mapa.",
+                "reapplyFailed": "Não foi possível voltar a aplicar os projetos: {{reason}}",
+                "unapplyingMany": "A remover projetos do mapa ({{count}})",
+                "unapplyManyFailed": "Não foi possível remover os projetos do mapa. {{reason}}",
+                "unappliedStatus": "O projeto «{{name}}» foi removido do mapa e permanece em Listas.",
                 "dependents": {
+                    "titleMany": "Projetos construídos sobre estes",
+                    "messageMany": "Sobre os projetos a remover assentam: {{names}}. Retirá-los também do mapa ou deixá-los? Se ficarem, cada um volta a ocupar o seu terreno por si.",
                     "title": "Projetos construídos sobre este",
                     "message": "Sobre «{{name}}» assentam: {{names}}. Retirá-los também do mapa ou deixá-los? Se ficarem, cada um volta a ocupar o seu terreno por si.",
                     "all": "Retirar todos",
@@ -3426,7 +3434,6 @@
                 "multiSelectUnavailable": "A seleção de várias parcelas não está disponível",
                 "parcelsSelected": "{{count}} parcelas selecionadas para o projeto",
                 "noProposals": "Ainda não existem projetos para este quarteirão.",
-                "removeButton": "Remover do mapa",
                 "roadApplyTooltip": "Aplicar este projeto de estrada",
                 "roadRemoveTooltip": "Remover este projeto de estrada do mapa",
                 "buildingApplyTooltip": "Aplicar este projeto de edifício",
@@ -4658,8 +4665,8 @@
             "proposalsApplied": "Projetos aplicados",
             "you": "(Você)"
         },
-        "newGameConfirm": "Tem a certeza de que pretende iniciar um NOVO jogo? Isto irá eliminar todos os agentes, o progresso do jogo e os dados de propriedade das parcelas.",
-        "resetConfirm": "Tem a certeza de que pretende repor o estado do jogo? Isto irá eliminar todos os agentes, o progresso do jogo e os dados de propriedade das parcelas."
+        "newGameConfirm": "Tem a certeza de que pretende iniciar um NOVO jogo? Isto irá eliminar todos os agentes, o progresso do jogo, os dados de propriedade das parcelas e todos os projetos guardados neste navegador. Os projetos publicados continuam disponíveis através das suas ligações.",
+        "resetConfirm": "Tem a certeza de que pretende repor o estado do jogo? Isto irá eliminar todos os agentes, o progresso do jogo, os dados de propriedade das parcelas e todos os projetos guardados neste navegador. Os projetos publicados continuam disponíveis através das suas ligações."
     },
     "proposalGroundRebase": {
         "fork": "Novo projeto com a mesma geometria",
@@ -5424,6 +5431,7 @@
         "portuguese": "Português"
     },
     "designMemberships": {
+        "unapplyPlanConfirm": "Remover do mapa os projetos de «{{title}}» ({{count}})? Permanecem em Listas e podem ser aplicados novamente.",
         "draft": "Rascunho",
         "loading": "A carregar…",
         "agreements": "Acordos",
@@ -9093,6 +9101,13 @@
         "newest": "Mais recentes primeiro",
         "remove": "Eliminar rascunho",
         "removeConfirm": "Eliminar o rascunho “{{title}}”? Está guardado apenas neste navegador, por isso não poderá ser recuperado.",
+        "removeDesignConfirm": "Eliminar o rascunho “{{title}}”? Está guardado apenas neste navegador, por isso não poderá ser recuperado. Se estiver no mapa, é retirado do mapa.",
+        "removeLocal": "Remover deste dispositivo",
+        "removeLocalConfirm": "Remover a cópia de “{{title}}” deste navegador? O projeto publicado continua disponível através da sua ligação. Se estiver no mapa aqui, é retirado do mapa.",
+        "removeLocalPlanConfirm": "Remover a cópia do plano “{{title}}” deste navegador? O plano publicado continua disponível através da sua ligação, e os seus projetos permanecem neste navegador.",
+        "unapplyAll": "Remover todos do mapa ({{count}})",
+        "unapplyAllConfirm": "Remover do mapa todos os projetos ({{count}})? Permanecem em Listas e podem ser aplicados novamente.",
+        "onMap": "No mapa ({{count}})",
         "select": "Selecionar {{title}}",
         "open": "Abrir",
         "openNamed": "Abrir {{title}}",

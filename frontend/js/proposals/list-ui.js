@@ -461,7 +461,7 @@ function getProposalLadder(proposal) {
     const t = getProposalI18nHelper();
     const state = window.__proposalDisplayState.of(proposal, { applied: false });
     const modifier = state.modifier
-        ? { className: state.modifierTone, label: getProposalLifecycleLabel(state.modifier) }
+        ? { key: state.modifier, className: state.modifierTone, label: getProposalLifecycleLabel(state.modifier) }
         : null;
     return { rung: state.rung, label: window.__proposalDisplayState.rungLabel(state.rung, t),
         hint: window.__proposalDisplayState.rungHint(state.rung, t), modifier };
@@ -469,16 +469,18 @@ function getProposalLadder(proposal) {
 
 // The ladder as badges: the rung, "Applied" when the proposal is on this map
 // (options.applied, else read from the proposal; never for a cancelled one) and the modifier.
+// options.unknownStatus false leaves out the "Status unknown" modifier (the Lists sheet).
 function proposalLadderBadgesHtml(proposal, options = {}) {
     const t = getProposalI18nHelper();
     const ladder = getProposalLadder(proposal);
     const { applied } = window.__proposalDisplayState.of(proposal, typeof options.applied === 'boolean'
         ? { applied: options.applied }
         : {});
+    const modifier = ladder.modifier && !(options.unknownStatus === false && ladder.modifier.key === 'unknown') ? ladder.modifier : null;
     return [
         `<span class="cb-badge cb-badge--${ladder.rung}" title="${escapeHtml(ladder.hint)}">${escapeHtml(ladder.label)}</span>`,
         applied ? `<span class="cb-badge cb-badge--applied"><i class="fas fa-check" aria-hidden="true"></i> ${escapeHtml(t('common.lifecycle.applied', 'Applied'))}</span>` : '',
-        ladder.modifier ? `<span class="cb-badge ${ladder.modifier.className}">${escapeHtml(ladder.modifier.label)}</span>` : ''
+        modifier ? `<span class="cb-badge ${modifier.className}">${escapeHtml(modifier.label)}</span>` : ''
     ].join('');
 }
 

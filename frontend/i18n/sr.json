@@ -1925,10 +1925,19 @@
                 "applying": "Primenjivanje…",
                 "checkingGround": "Proveravam katastarsko zemljište…",
                 "unapplying": "Uklanjam sa mape…",
-                "restoringGround": "Vraćam lokalni teren…",
+                "restoringGround": "Vraćam parcele…",
                 "saving": "Čuvam…",
-                "unappliedStatus": "Predlog „{{name}}” uklonjen je sa mape i ostaje na listi dizajna.",
+                "unappliedManyStatus": "Uklonjeno sa mape: {{count}} predloga. Ostaju u Listama.",
+                "alsoUnapplied": "Sa mape su uklonjeni i: {{names}}.",
+                "reappliedStatus": "Predlog „{{name}}” ponovo je primenjen na mapu.",
+                "reappliedManyStatus": "Ponovo primenjeno na mapu: {{count}} predloga.",
+                "reapplyFailed": "Predloge nije bilo moguće ponovo primeniti: {{reason}}",
+                "unapplyingMany": "Uklanjam predloge sa mape ({{count}})",
+                "unapplyManyFailed": "Predloge nije bilo moguće ukloniti sa mape. {{reason}}",
+                "unappliedStatus": "Predlog „{{name}}” uklonjen je sa mape i ostaje u Listama.",
                 "dependents": {
+                    "titleMany": "Predlozi izgrađeni na ovima",
+                    "messageMany": "Na predlozima koji se uklanjaju stoje: {{names}}. Ukloniti i njih sa mape ili ih ostaviti? Ako ostanu, svaki ponovo zauzima svoje tlo.",
                     "title": "Predlozi izgrađeni na ovom",
                     "message": "Na predlogu „{{name}}” stoje: {{names}}. Ukloniti i njih sa mape ili ih ostaviti? Ako ostanu, svaki ponovo zauzima svoje tlo.",
                     "all": "Ukloni sve",
@@ -2162,13 +2171,12 @@
                 "parcelsSelected": "{{count}} parcela izabrano za dizajn",
                 "noProposals": "Nema dizajna za ovaj blok.",
                 "applyButton": "Primeni na mapu",
-                "removeButton": "Ukloni sa mape",
                 "roadApplyTooltip": "Primeni ovaj dizajn puta",
-                "roadRemoveTooltip": "Poništi ovaj dizajn puta",
+                "roadRemoveTooltip": "Ukloni ovaj dizajn puta sa mape",
                 "buildingApplyTooltip": "Primeni dizajn zgrade",
-                "buildingRemoveTooltip": "Poništi dizajn zgrade",
+                "buildingRemoveTooltip": "Ukloni dizajn zgrade sa mape",
                 "structureApplyTooltip": "Primeni dizajn strukture",
-                "structureRemoveTooltip": "Poništi dizajn strukture"
+                "structureRemoveTooltip": "Ukloni dizajn strukture sa mape"
             }
         },
         "road": {
@@ -6359,8 +6367,8 @@
             "proposalsApplied": "Primenjeni dizajni",
             "you": "(Ti)"
         },
-        "newGameConfirm": "Da li sigurno želite da započnete NOVU igru? Time se brišu svi agenti, napredak igre i podaci o vlasništvu parcela.",
-        "resetConfirm": "Da li sigurno želite da poništite stanje igre? Time se brišu svi agenti, napredak igre i podaci o vlasništvu parcela."
+        "newGameConfirm": "Da li sigurno želite da započnete NOVU igru? Time se brišu svi agenti, napredak igre, podaci o vlasništvu parcela i svi dizajni sačuvani u ovom pregledaču. Objavljeni dizajni ostaju dostupni putem svojih veza.",
+        "resetConfirm": "Da li sigurno želite da poništite stanje igre? Time se brišu svi agenti, napredak igre, podaci o vlasništvu parcela i svi dizajni sačuvani u ovom pregledaču. Objavljeni dizajni ostaju dostupni putem svojih veza."
     },
     "ephemeral": {
         "messages": {
@@ -8082,12 +8090,11 @@
             "actions": {
                 "bet": "Kladi se",
                 "edit": "Uredi",
-                "removeLocal": "Ukloni sa ovog uređaja",
                 "schemes": "Uporedi sa modelom…",
                 "counter": "Protivpredlog"
             },
             "collapse": "Zatvori sporazum",
-            "removeLocalConfirm": "Ukloniti ovaj sporazum sa ovog uređaja? Njegova dizajni ostaju na mapi. Objavljeni sporazum ostaje dostupan putem veze.",
+            "removeLocalConfirm": "Ukloniti ovaj sporazum sa ovog uređaja? Njegovi dizajni ostaju na mapi. Objavljeni sporazum ostaje dostupan putem veze.",
             "designs": "Dizajni u planu",
             "tabs": {
                 "info": "Info",
@@ -8685,6 +8692,7 @@
         "contactLink": "Kontaktirajte održavaoca / zatražite pregled podataka"
     },
     "designMemberships": {
+        "unapplyPlanConfirm": "Ukloniti sa mape predloge plana „{{title}}” ({{count}})? Ostaju u Listama i mogu se ponovo primeniti.",
         "title": "Deo je",
         "plans": "Planovi",
         "agreements": "Sporazumi",
@@ -9138,6 +9146,13 @@
         "newest": "Najnovije prvo",
         "remove": "Izbriši nacrt",
         "removeConfirm": "Izbrisati nacrt „{{title}}”? Sačuvan je samo u ovom pregledaču pa se ne može vratiti.",
+        "removeDesignConfirm": "Izbrisati nacrt „{{title}}”? Sačuvan je samo u ovom pregledaču pa se ne može vratiti. Ako je na mapi, uklanja se sa mape.",
+        "removeLocal": "Ukloni sa ovog uređaja",
+        "removeLocalConfirm": "Ukloniti kopiju dizajna „{{title}}” iz ovog pregledača? Objavljeni dizajn ostaje dostupan putem veze. Ako je ovde na mapi, uklanja se sa mape.",
+        "removeLocalPlanConfirm": "Ukloniti kopiju plana „{{title}}” iz ovog pregledača? Objavljeni plan ostaje dostupan putem veze, a njegovi dizajni ostaju u ovom pregledaču.",
+        "unapplyAll": "Ukloni sve sa mape ({{count}})",
+        "unapplyAllConfirm": "Ukloniti sa mape sve predloge ({{count}})? Ostaju u Listama i mogu se ponovo primeniti.",
+        "onMap": "Na mapi ({{count}})",
         "select": "Izaberi {{title}}",
         "open": "Otvori",
         "openNamed": "Otvori {{title}}",

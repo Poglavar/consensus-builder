@@ -28,7 +28,7 @@ Every non-map page carries the same header: logo, "Back to the map", language. N
 | The official plan | **official road plan** (with a GUP source tag) | government plan, city plan, GUP alone |
 | Datasets | plain name + source tag: "Official cadastre (DGU)", "3D buildings (GDI)", "Map buildings (OSM)" | the acronym alone |
 | Consent | **Accept** records an owner decision; summaries distinguish unsigned local records from verified signed receipts. **Vote** = non-binding support; **Support** = money, as **Pledge** or **Donate** | imply verified signing authority or legal ownership from a local acceptance; attest (reserve for lens attestations) |
-| Publication and lifecycle display | **Draft / Published / Minted** describe record publication; **Execution recorded** requires matching observed execution evidence, otherwise **Execution reported; verification unavailable** qualifies the `Executed` lifecycle claim. **Expired / Withdrawn / Status unknown** qualify lifecycle. | imply payment, title registration or physical construction from either execution badge |
+| Publication and lifecycle display | **Draft / Published / Minted** describe record publication; **Execution recorded** requires matching observed execution evidence, otherwise **Execution reported; verification unavailable** qualifies the `Executed` lifecycle claim. **Expired / Withdrawn / Status unknown** qualify lifecycle; Lists rows leave Status unknown out. | imply payment, title registration or physical construction from either execution badge |
 | Map state | **Applied** means this browser has applied the proposal to its map model; **Apply / Unapply** changes that state independently of publication and execution. | treat Applied as a step toward verified execution or construction |
 | Lifecycle verbs | **Apply / Unapply** (the map), **Publish** (the server), **Mint** (the chain), **Execute** | un-apply, remove from map, upload, save to server |
 | Views | **2D (map) · 3D (models) · 3D (aerial imagery)**; **Walk** and **AI render** are tools | a globe icon for aerial imagery, realistic, photoreal, abstract 3D |
@@ -206,6 +206,9 @@ palette is the legend beside each tick.
   `warning` / `error` colours, `aria-live` polite. `js/ui/notice-queue.js` keeps one on screen: a new
   notice replaces the current one after at least 1.2 s, and a repeat of the notice showing or
   waiting is dropped. A notice is written to the Activity log, never to the status line.
+  A notice may carry one action, the way back from what it announces (**Undo** after an unapply):
+  a fourth argument `{ label, run }`, drawn as a small shared button after the text. Its click
+  runs the action and takes the notice down.
 - The **status line** (`#floating-status`, `updateStatus`) says what the app is doing now: above the
   dock, a light pill (`cb-toast--status`), replaced and never stacked; a click copies it. Holders of
   `beginStatusActivity` are counted; while any is open the line is `is-busy` with a spinner, and

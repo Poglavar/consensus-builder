@@ -47,4 +47,17 @@ describe('plan composition',()=>{
   expect(locals[0].planFileSource).toEqual(source);
   expect(Composition.create('Revised',locals,view).designSources).toEqual(row.designSources);
  });
+ it('lists the members standing on the map, in plan order, whether or not the whole plan is applied',()=>{
+  const record=(id,cid,applied)=>({proposalId:id,cid,applied});
+  const records=[record('c','cid-c',true),record('a','cid-a',true),record('b','cid-b',false),record('other','cid-x',true),{proposalId:'draft',applied:true}];
+  const options={cidOf:r=>{if(!r.cid)throw new Error('no cid');return r.cid;},isApplied:r=>r.applied===true};
+  const cids=['cid-a','cid-b','cid-c'];
+  // Two of three members are on the map: unapplying the plan takes off those two, in plan order.
+  expect(Composition.standingMembers(cids,records,options).map(r=>r.proposalId)).toEqual(['a','c']);
+  // The whole-plan reading says the plan is not applied; the two readings differ on purpose.
+  expect(Composition.appliedMembers(cids,records,options)).toBeNull();
+  // An older import beside the original: both applied copies of one member come off.
+  expect(Composition.standingMembers(['cid-a'],[record('a','cid-a',true),record('a2','cid-a',true)],options).map(r=>r.proposalId)).toEqual(['a','a2']);
+  expect(Composition.standingMembers(cids,[record('b','cid-b',false)],options)).toEqual([]);
+ });
 });

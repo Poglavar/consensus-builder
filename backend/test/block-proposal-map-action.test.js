@@ -4,10 +4,12 @@
 import { describe, expect, it } from 'vitest';
 import { readFileSync } from 'node:fs';
 import vm from 'node:vm';
+import { testI18n } from './helpers/i18n.js';
 
 function blockPanelContext() {
     const context = {
         console,
+        i18n: testI18n('en'),
         setTimeout: () => 1,
         clearTimeout() {},
         document: { getElementById: () => null, querySelectorAll: () => [] },
@@ -37,12 +39,14 @@ const road = (overrides = {}) => ({
 });
 
 describe('a block proposal row’s map action', () => {
-    it('offers Apply to an active proposal and Remove from map once it is applied', () => {
+    it('offers Apply to an active proposal and Unapply once it is applied', () => {
         const context = blockPanelContext();
         expect(context.buildBlockProposalListItem(road())).toContain('applyProposalToMap(');
         const applied = context.buildBlockProposalListItem(road({ applied: true }));
         expect(applied).toContain('removeProposalFromMap(');
         expect(applied).not.toContain('applyProposalToMap(');
+        // One word per action: the design panel's Unapply, not "Remove from map".
+        expect(applied).toMatch(/<\/i> Unapply\s*<\/button>/);
     });
 
     it('offers neither to a cancelled proposal, applied in this browser or not', () => {

@@ -895,16 +895,16 @@ function proposalUnapplyPhaseLabel(event, t) {
     }
     if (phase.startsWith('ground-')) {
         return t
-            ? t('panel.proposal.actions.restoringGround', 'Restoring local terrain…')
-            : 'Restoring local terrain…';
+            ? t('panel.proposal.actions.restoringGround', 'Restoring parcels…')
+            : 'Restoring parcels…';
     }
     if (phase === 'unapply-remove-output') {
         return t ? t('panel.proposal.actions.unapplying', 'Unapplying…') : 'Unapplying…';
     }
     if (phase === 'unapply-restore-ground' || phase.startsWith('fabric-')) {
         return t
-            ? t('panel.proposal.actions.restoringGround', 'Restoring local terrain…')
-            : 'Restoring local terrain…';
+            ? t('panel.proposal.actions.restoringGround', 'Restoring parcels…')
+            : 'Restoring parcels…';
     }
     if (phase === 'save') {
         return t ? t('panel.proposal.actions.saving', 'Saving…') : 'Saving…';
@@ -914,24 +914,133 @@ function proposalUnapplyPhaseLabel(event, t) {
 
 // Designs standing on the one being unapplied (ProposalManager.findUnapplyDependents) are named, and
 // the user chooses: unapply them too, or leave them, each then cutting its ground again on its own.
-// Resolves to the ids to unapply alongside ([] to leave them), or null when the user cancels.
+// `proposalId` may be a list (a plan's members): the question is then about whoever stands on any
+// of them. Resolves to the ids to unapply alongside ([] to leave them), or null when the user cancels.
 async function chooseUnapplyDependents(proposalId, proposalLabel, t) {
-    const dependents = ProposalManager.findUnapplyDependents?.(proposalId) || [];
+    const several = Array.isArray(proposalId) && proposalId.length > 1;
+    const dependents = ProposalManager.findUnapplyDependents?.(Array.isArray(proposalId) && !several ? proposalId[0] : proposalId) || [];
     if (!dependents.length || !window.CbDialog?.choice) return [];
     const say = (key, fallback, params) => (t ? t(key, fallback, params) : fallback);
     const names = dependents.map(record => `“${record.title || record.name || record.proposalId}”`).join(', ');
     const answer = await window.CbDialog.choice(
-        say('panel.proposal.actions.dependents.message',
-            'These designs stand on “{{name}}”: {{names}}. Unapply them too, or leave them on the map? Left in place, each takes its ground again on its own.',
-            { name: proposalLabel, names }),
+        several
+            ? say('panel.proposal.actions.dependents.messageMany',
+                'These designs stand on the ones being unapplied: {{names}}. Unapply them too, or leave them on the map? Left in place, each takes its ground again on its own.',
+                { names })
+            : say('panel.proposal.actions.dependents.message',
+                'These designs stand on “{{name}}”: {{names}}. Unapply them too, or leave them on the map? Left in place, each takes its ground again on its own.',
+                { name: proposalLabel, names }),
         [
             { value: 'all', label: say('panel.proposal.actions.dependents.all', 'Unapply all'), role: 'danger' },
             { value: 'leave', label: say('panel.proposal.actions.dependents.leave', 'Leave them on the map'), primary: true },
             { value: 'cancel', label: say('common.cancel', 'Cancel') }
         ],
-        { title: say('panel.proposal.actions.dependents.title', 'Designs built on this one') });
+        { title: several
+            ? say('panel.proposal.actions.dependents.titleMany', 'Designs built on these')
+            : say('panel.proposal.actions.dependents.title', 'Designs built on this one') });
     if (answer === 'all') return dependents.map(record => String(record.proposalId));
     return answer === 'leave' ? [] : null;
+}
+
+// A string of the unapply flow: the page's i18n helper when there is one, else the fallback filled in.
+function unapplyFlowText(t, key, fallback, params = {}) {
+    if (t) return t(key, fallback, params);
+    return fallback.replace(/\{\{\s*(\w+)\s*\}\}/g, (match, name) => (name in params ? String(params[name]) : match));
+}
+
+// Says what a change took off the map and offers the way back. `cameOff` is the change's own
+// outcome ([{ proposalId, title }], ProposalManager onMutationEffects); `requestedIds` are the
+// designs the person asked to unapply, the dependents they chose included. A design that came off
+// beside those is named, so nothing leaves the map unannounced. Undo applies them all again.
+function announceUnappliedDesigns(cameOff, requestedIds, t) {
+    const rows = (Array.isArray(cameOff) ? cameOff : []).filter(row => row && row.proposalId);
+    if (!rows.length) return;
+    const say = (key, fallback, params) => unapplyFlowText(t, key, fallback, params);
+    const asked = new Set((requestedIds || []).map(String));
+    const requested = rows.filter(row => asked.has(String(row.proposalId)));
+    const others = rows.filter(row => !asked.has(String(row.proposalId)));
+    const parts = [];
+    if (requested.length === 1) {
+        parts.push(say('panel.proposal.actions.unappliedStatus', 'The design “{{name}}” was unapplied and remains in Lists.', { name: requested[0].title }));
+    } else if (requested.length > 1) {
+        parts.push(say('panel.proposal.actions.unappliedManyStatus', '{{count}} designs were unapplied and remain in Lists.', { count: requested.length }));
+    }
+    if (others.length) {
+        parts.push(say('panel.proposal.actions.alsoUnapplied', 'Also taken off the map: {{names}}.',
+            { names: others.map(row => `“${row.title}”`).join(', ') }));
+    }
+    const ids = rows.map(row => String(row.proposalId));
+    const undo = { label: say('proposalDrafts.actions.undo', 'Undo'), run: () => reapplyDesignsToMap(rows, t) };
+    try {
+        if (typeof showEphemeralMessage === 'function') showEphemeralMessage(parts.join(' '), 10000, others.length ? 'warning' : 'info', undo);
+        else if (typeof updateStatus === 'function') updateStatus(parts.join(' '), ids.length === 1 ? { proposalId: ids[0] } : {});
+    } catch (_) { }
+}
+
+// The way back from an unapply (the notice's Undo): the designs that came off stand again, in one change.
+async function reapplyDesignsToMap(rows, t) {
+    const say = (key, fallback, params) => unapplyFlowText(t, key, fallback, params);
+    const ids = (Array.isArray(rows) ? rows : []).map(row => String(row.proposalId));
+    if (!ids.length) return false;
+    let reason = '';
+    try {
+        const result = await ProposalManager.applyProposalPlan(ids);
+        if (result && result.ok === true) {
+            try { ProposalManager._refreshUIAfterProposalChange?.(null); } catch (_) { }
+            ids.forEach(id => { try { reconcileProposalMapActionButton(id); } catch (_) { } });
+            const message = ids.length === 1
+                ? say('panel.proposal.actions.reappliedStatus', 'The design “{{name}}” is applied again.', { name: rows[0].title })
+                : say('panel.proposal.actions.reappliedManyStatus', '{{count}} designs are applied again.', { count: ids.length });
+            if (typeof showEphemeralMessage === 'function') showEphemeralMessage(message, 5000, 'success');
+            return true;
+        }
+        reason = (ProposalManager._lastFailedPlanApplySummary?.failed || [])
+            .map(failure => failure.reason || failure.message).filter(Boolean).join('; ');
+    } catch (error) {
+        reason = String(error?.message || error || '');
+    }
+    const failed = say('panel.proposal.actions.reapplyFailed', 'The designs could not be applied again: {{reason}}', { reason: reason || '?' });
+    if (typeof showEphemeralMessage === 'function') showEphemeralMessage(failed, 8000, 'error');
+    return false;
+}
+
+// Several designs off the map in one change (a plan's members, everything applied): asks about
+// the designs standing on them, shows progress on the status line, then says what came off and
+// offers Undo. `label` names the set in progress lines. Resolves to the designs that came off,
+// or null when the person cancelled or the change was refused (which is reported here).
+async function unapplyDesignsFromMap(proposalIds, options = {}) {
+    const t = typeof getProposalI18nHelper === 'function' ? getProposalI18nHelper() : null;
+    const say = (key, fallback, params) => unapplyFlowText(t, key, fallback, params);
+    const ids = Array.from(new Set((Array.isArray(proposalIds) ? proposalIds : []).map(String).filter(Boolean)))
+        .filter(id => { const record = proposalStorage.getProposal(id); return !!record && isProposalApplied(record); });
+    if (!ids.length) return [];
+    const label = options.label || say('panel.proposal.actions.unapplyingMany', 'Unapplying designs ({{count}})', { count: ids.length });
+    const alsoUnapplyIds = await chooseUnapplyDependents(ids, label, t);
+    if (alsoUnapplyIds === null) return null;
+    let appliedSetChange = null;
+    let reason = '';
+    try {
+        const unapplied = await ProposalManager.unapplyProposals(ids, {
+            alsoUnapplyIds,
+            onMutationEffects: change => { appliedSetChange = change; },
+            onProgress: event => {
+                const phaseLabel = proposalUnapplyPhaseLabel(event, t);
+                if (!phaseLabel) return;
+                try { if (typeof updateStatus === 'function') updateStatus(`${label} — ${phaseLabel}`, { transient: true }); } catch (_) { }
+            }
+        });
+        if (unapplied !== false) {
+            const cameOff = appliedSetChange ? appliedSetChange.unapplied
+                : ids.map(id => ({ proposalId: id, title: proposalStorage.getProposal(id)?.title || id }));
+            announceUnappliedDesigns(cameOff, [...ids, ...alsoUnapplyIds], t);
+            return cameOff;
+        }
+    } catch (error) {
+        reason = String(error?.message || error || '');
+    }
+    const failed = say('panel.proposal.actions.unapplyManyFailed', 'The designs could not be unapplied. {{reason}}', { reason }).trim();
+    if (typeof showEphemeralMessage === 'function') showEphemeralMessage(failed, 8000, 'error');
+    return null;
 }
 
 async function removeProposalFromMap(proposalId, options = {}) {
@@ -965,6 +1074,8 @@ async function removeProposalFromMap(proposalId, options = {}) {
     const t = typeof getProposalI18nHelper === 'function' ? getProposalI18nHelper() : null;
     const proposalLabel = proposalSnapshot?.title || proposalSnapshot?.name || String(proposalId);
     let succeeded = false;
+    // What the change itself took off the map (the manager's own account of it).
+    let appliedSetChange = null;
     const alsoUnapplyIds = await chooseUnapplyDependents(proposalId, proposalLabel, t);
     if (alsoUnapplyIds === null) return false;
 
@@ -989,6 +1100,7 @@ async function removeProposalFromMap(proposalId, options = {}) {
         // flat cadastral scope without making map geometry a precondition for the state change.
         const unapplied = await ProposalManager.unapplyProposal(proposalId, {
             alsoUnapplyIds,
+            onMutationEffects: change => { appliedSetChange = change; },
             onProgress: event => {
                 const phaseLabel = proposalUnapplyPhaseLabel(event, t);
                 if (!phaseLabel) return;
@@ -1025,10 +1137,8 @@ async function removeProposalFromMap(proposalId, options = {}) {
         // action look like a second unapply even though the proposal was already parked.
         reconcileProposalMapActionButton(proposalId, original || '');
         if (succeeded) {
-            const message = t
-                ? t('panel.proposal.actions.unappliedStatus', 'Unapplied “{{name}}”. The design remains in your designs list.', { name: proposalLabel })
-                : `Unapplied “${proposalLabel}”. The design remains in your designs list.`;
-            try { if (typeof updateStatus === 'function') updateStatus(message, { proposalId: String(proposalId) }); } catch (_) { }
+            const cameOff = appliedSetChange ? appliedSetChange.unapplied : [{ proposalId: String(proposalId), title: proposalLabel }];
+            announceUnappliedDesigns(cameOff, [String(proposalId), ...alsoUnapplyIds], t);
         }
     }
 }

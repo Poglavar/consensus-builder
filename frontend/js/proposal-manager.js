@@ -289,11 +289,30 @@ function _announceWaitingForReplay(manager, kind) {
     return true;
 }
 
+// The designs standing on the map in a store, id → title.
+function _appliedDesignTitles(store) {
+    const titles = new Map();
+    _peekProposals(store).forEach(record => {
+        if (record && appliedOf(record)) titles.set(String(record.proposalId), record.title || record.name || String(record.proposalId));
+    });
+    return titles;
+}
+
+// What a change did to the applied set, read from its own draft before and after (the outcome,
+// not what each step meant to do): the caller names every design that came off and can put them back.
+function _appliedSetChange(before, after) {
+    const rows = (from, other) => Array.from(from).filter(([id]) => !other.has(id)).map(([id, title]) => ({ proposalId: id, title }));
+    return Object.freeze({ unapplied: rows(before, after), applied: rows(after, before) });
+}
+
 async function _runProposalMutationBoundary(manager, kind, proposalId, options, operation) {
     const supplied = options && options._parcelMutation;
     if (supplied) {
         return operation(supplied, { ...(options || {}), _parcelMutation: supplied });
     }
+    // `onMutationEffects(change)`: told once the change is committed, never for one rolled back.
+    const reportEffects = options && typeof options.onMutationEffects === 'function' ? options.onMutationEffects : null;
+    let appliedSetChange = null;
     _announceWaitingForReplay(manager, kind);
     const browserRoot = typeof window !== 'undefined' ? window : globalThis;
     const mutatesMap = !options || options._mapMutation !== false;
@@ -307,10 +326,12 @@ async function _runProposalMutationBoundary(manager, kind, proposalId, options, 
             kind,
             proposalId: _normalizeProposalId(proposalId)
         }, async context => {
+            const appliedBefore = reportEffects ? _appliedDesignTitles(context.proposals) : null;
             const result = await operation(context, {
                 ...(options || {}),
                 _parcelMutation: context
             });
+            if (reportEffects) appliedSetChange = _appliedSetChange(appliedBefore, _appliedDesignTitles(context.proposals));
             // Entry-point guards cannot see indirect effects such as an apply-plan releasing a
             // connected rival. Check the completed private draft before ParcelMutation prepares
             // or publishes anything.
@@ -333,6 +354,9 @@ async function _runProposalMutationBoundary(manager, kind, proposalId, options, 
             else if (!manager.getLastApplyFailure?.(proposalId)) {
                 manager._setLastApplyFailure?.(proposalId, _proposalApplyFailure('proposal-apply-failed'));
             }
+        }
+        if (reportEffects && appliedSetChange && result !== false) {
+            try { reportEffects(appliedSetChange); } catch (error) { console.error(`[${new Date().toISOString()}] [ProposalManager] onMutationEffects failed`, error); }
         }
         return result;
     } catch (error) {
@@ -2637,16 +2661,30 @@ const ProposalManager = {
     // Which applied records stand on the ground of `proposalId` and would have to cut the ground
     // again on their own once it comes off the map (proposals/claims.js unapplyDependents), oldest
     // first. Read-only: the unapply action names them and asks whether they come off too.
+    // `proposalId` may be a list (a plan's members): the answer is then who stands on any of them
+    // and is not itself coming off.
     findUnapplyDependents(proposalId, options = {}) {
         const store = _proposalStore(options);
-        const record = _getProposalRecord(proposalId, options);
-        if (!store || !record || !appliedOf(record)) return [];
+        if (!store) return [];
         const runtime = typeof window !== 'undefined' ? window : globalThis;
-        return proposalClaims.unapplyDependents(record, _peekProposals(store), {
-            planOrder: runtime.__planOrder || null,
-            turf: runtime.turf || null,
-            isApplied: appliedOf
+        const planOrder = runtime.__planOrder || null;
+        const leaving = (Array.isArray(proposalId) ? proposalId : [proposalId])
+            .map(id => _getProposalRecord(id, options)).filter(record => record && appliedOf(record));
+        const leavingIds = new Set(leaving.map(record => String(record.proposalId)));
+        const records = _peekProposals(store);
+        // Nothing else stands on the map: no one is left to stand on them.
+        if (!records.some(record => record && appliedOf(record) && !leavingIds.has(String(record.proposalId)))) return [];
+        const found = new Map();
+        leaving.forEach(record => {
+            proposalClaims.unapplyDependents(record, records, { planOrder, turf: runtime.turf || null, isApplied: appliedOf })
+                .forEach(dependent => {
+                    const id = String(dependent.proposalId);
+                    if (!leavingIds.has(id) && !found.has(id)) found.set(id, dependent);
+                });
         });
+        const dependents = Array.from(found.values());
+        return planOrder && typeof planOrder.compareFormationOrder === 'function'
+            ? dependents.sort(planOrder.compareFormationOrder) : dependents;
     },
 
     // Save an edit of one's own local record IN PLACE (proposals/lineage.js editsInPlace): the
@@ -3548,6 +3586,19 @@ const ProposalManager = {
         // Single source of truth in proposals/apply/route.js — this stays as a thin delegator so the
         // ~40 internal callers keep working.
         return applyRoute.normalizeGoalKey(rawGoal);
+    },
+
+    // Several designs off the map in one change (a plan's members, everything applied): the first
+    // is the seed, the rest come off alongside it, and the ground under all of them is re-derived
+    // once. True when none of them is applied any more.
+    async unapplyProposals(proposalIds, options = {}) {
+        const ids = Array.from(new Set((Array.isArray(proposalIds) ? proposalIds : []).map(String).filter(Boolean)))
+            .filter(id => { const record = _getProposalRecord(id, options); return !!record && appliedOf(record); });
+        if (!ids.length) return true;
+        return this.unapplyProposal(ids[0], {
+            ...options,
+            alsoUnapplyIds: [...(Array.isArray(options.alsoUnapplyIds) ? options.alsoUnapplyIds : []), ...ids.slice(1)]
+        });
     },
 
     async unapplyProposal(proposalId, options = {}) {

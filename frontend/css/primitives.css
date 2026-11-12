@@ -530,6 +530,12 @@ textarea {
     color: var(--cb-text);
 }
 
+/* The one action a notice may offer (Undo): a small shared button after the text. Placement only;
+   its look is .btn's. */
+.cb-toast__action {
+    margin-left: var(--cb-space-2);
+}
+
 /* A message a click copies (js/ui-helpers.js makeMessageCopyable). */
 .cb-toast.is-copyable {
     cursor: copy;

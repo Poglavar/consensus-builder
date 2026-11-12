@@ -9041,6 +9041,13 @@
       "controlType": "button"
     },
     {
+      "id": "control-3e1394d5221246-2",
+      "source": "js/ui-helpers.js",
+      "markup": "document.createElement('button')",
+      "interaction": "click",
+      "controlType": "button"
+    },
+    {
       "id": "control-b07eedb6fb7b98-1",
       "source": "js/ui-helpers.js",
       "markup": "document.createElement('textarea')",

@@ -121,4 +121,20 @@ describe('notice queue', () => {
         vi.advanceTimersByTime(1);
         expect(hidden).toEqual(['Default']);
     });
+
+    it('hands a notice\'s action to the host, and dismiss takes the notice down for the next one', () => {
+        const entries = [];
+        const { queue, shown, hidden } = harness({ show: entry => { entries.push(entry); return entry.message; } });
+        const undo = { label: 'Undo', run: vi.fn() };
+        queue.push({ message: 'Unapplied', duration: 12000, action: undo });
+        queue.push({ message: 'Saved' });
+        expect(entries[0].action).toBe(undo);
+        expect(entries.map(entry => entry.message)).toEqual(['Unapplied']);
+        // The action was taken: the notice goes at once, without waiting out its minimum time.
+        queue.dismiss();
+        expect(hidden).toEqual(['Unapplied']);
+        expect(entries.map(entry => entry.message)).toEqual(['Unapplied', 'Saved']);
+        expect(entries[1]).not.toHaveProperty('action');
+        expect(shown).toEqual([]);
+    });
 });

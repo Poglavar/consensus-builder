@@ -1069,11 +1069,11 @@ window.updateGameSectionTitle = updateGameSectionTitle;
  */
 async function resetGameState(autoReinit = false) {
     const message = autoReinit
-        ? translateGameText('gameDialogs.newGameConfirm', 'Are you sure you want to start a NEW game? This will delete all agents, game progress, and parcel ownership data.')
-        : translateGameText('gameDialogs.resetConfirm', 'Are you sure you want to reset the game state? This will delete all agents, game progress, and parcel ownership data.');
+        ? translateGameText('gameDialogs.newGameConfirm', 'Are you sure you want to start a NEW game? This will delete all agents, game progress, parcel ownership data and every design saved in this browser. Published designs stay available through their links.')
+        : translateGameText('gameDialogs.resetConfirm', 'Are you sure you want to reset the game state? This will delete all agents, game progress, parcel ownership data and every design saved in this browser. Published designs stay available through their links.');
 
     // The app's own dialog (js/ui/dialogs.js), never the browser's.
-    const confirmed = await window.CbDialog.confirm(message);
+    const confirmed = await window.CbDialog.confirm(message, { destructive: true });
     if (!confirmed) return;
 
     // Preserve the current user-controlled agent (if any) so the player keeps their identity.
@@ -1090,6 +1090,20 @@ async function resetGameState(autoReinit = false) {
     // Stop any running loops first.
     if (typeof stopGameLoop === 'function') {
         stopGameLoop();
+    }
+
+    // Delete every design as one change: applied ones come off the map first, so no generated
+    // parcels or restored ground are stranded without a record (ProposalManager.clearAllProposals,
+    // never a raw storage clear). If that fails, nothing else is reset.
+    let cleared = null;
+    try {
+        cleared = await ProposalManager.clearAllProposals();
+    } catch (error) {
+        console.error('New game: designs could not be deleted', error);
+    }
+    if (!cleared || cleared.ok !== true) {
+        await window.CbDialog.alert(translateGameText('status.messages.error_clearing_proposal_data_please_try_again', 'Error clearing design data. Please try again.'));
+        return;
     }
 
     // Reset everything (the gameState.reset implementation now supports autoReinit).
@@ -1115,20 +1129,6 @@ async function resetGameState(autoReinit = false) {
 
         agentStorage.addAgent(newUserAgent);
         console.log('User agent preserved and reset with fresh data');
-    }
-
-    // Clear all proposal data
-    if (typeof proposalStorage !== 'undefined' && proposalStorage.clear) {
-        proposalStorage.clear();
-    }
-    if (typeof clearProposalHighlights === 'function') {
-        clearProposalHighlights();
-    }
-    if (typeof updateProposalLayer === 'function') {
-        updateProposalLayer();
-    }
-    if (typeof updateShowProposalsButton === 'function') {
-        updateShowProposalsButton();
     }
 
     // Clear all agent bubbles

@@ -25,7 +25,9 @@ for (const width of [1280, 390]) {
     await expect(sheet.getByRole('button', { name: 'Import plan file', exact: true })).toBeHidden();
     await expect(sheet.locator('#proposal-list-host .fa-tree')).toBeVisible();
     await expect(sheet.locator('#proposal-list-host .fa-share-nodes')).toBeVisible();
-    await expect(sheet.locator('#proposal-list-host .fa-trash-can')).toHaveCount(0); // a published design has no delete
+    // A published design has no delete; this browser's copy of it is removed from this device.
+    await expect(sheet.locator('#proposal-list-host').getByRole('button', { name: 'Delete draft', exact: true })).toHaveCount(0);
+    await expect(sheet.locator('#proposal-list-host').getByRole('button', { name: 'Remove from this device', exact: true })).toHaveCount(1);
     const expectInsets = async () => {
       const insets = await sheet.evaluate(el => {
         const body = el.querySelector('.lists-body')!.getBoundingClientRect();
@@ -185,9 +187,10 @@ for (const width of [1280, 390]) {
     const agreementChunks: Buffer[] = [];
     for await (const chunk of (await agreementFile.createReadStream())!) agreementChunks.push(Buffer.from(chunk));
     await agreementRow.getByRole('button', { name: 'Share', exact: true }).click();
-    // A published agreement has no delete: this browser's copy is its cache.
+    // A published agreement has no delete: this browser's copy is its cache, removed from this device.
     await expect(agreementRow).toContainText('Published');
     await expect(agreementRow.getByRole('button', { name: 'Delete draft', exact: true })).toHaveCount(0);
+    await expect(agreementRow.getByRole('button', { name: 'Remove from this device', exact: true })).toBeVisible();
     // Import agreement file adds a local draft under a new id beside the published one.
     await expect(sheet.locator('#lists-actions .lists-actions__grid > button')).toHaveText(['Create agreement', 'Compare agreements', 'Import agreement file', 'Imported agreements']);
     const agreementPicker = page.waitForEvent('filechooser');
@@ -256,10 +259,11 @@ for (const width of [1280, 390]) {
     expect(importedDesignBox.x + importedDesignBox.width).toBeLessThanOrEqual(width);
     expect(await importedDesigns.evaluate(el => el.scrollWidth <= el.clientWidth)).toBe(true);
     await page.keyboard.press('Escape'); await expect(importedDesigns).toBeHidden();
-    // The design is published, so it has no delete either.
+    // The design is published, so it has no delete either, only Remove from this device.
     const originalDesign = sheet.locator(`#proposal-list-host .lists-item[data-list-id="${agreement.parkId}"]`);
     await expect(originalDesign).toContainText('Published');
     await expect(originalDesign.getByRole('button', { name: 'Delete draft', exact: true })).toHaveCount(0);
+    await expect(originalDesign.getByRole('button', { name: 'Remove from this device', exact: true })).toBeVisible();
     const importedDesign = sheet.locator('#proposal-list-host .lists-item').filter({ hasText: 'Residents design import' });
     await expect(importedDesign).toContainText('Draft');
     await expect(importedDesign.getByRole('button', { name: 'Delete draft', exact: true })).toBeVisible();

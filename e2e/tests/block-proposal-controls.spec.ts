@@ -101,7 +101,7 @@ for (const kind of ['road', 'building', 'park'] as const) {
     await row.getByRole('button', { name: /Apply to map$/ }).click();
     await expect.poll(async () => (await proposalState(page, id)).applied).toBe(true);
     // The inspector refreshes its own row after applying; the inverse action must be usable here.
-    await expect(row.getByRole('button', { name: /Remove from map$/ })).toBeVisible();
+    await expect(row.getByRole('button', { name: /Unapply$/ })).toBeVisible();
     await row.locator('button[onclick*="removeProposalFromMap"]').click();
     await expect.poll(async () => (await proposalState(page, id)).applied).toBe(false);
     await expect(row.locator('button[onclick*="applyProposalToMap"]')).toBeVisible();

@@ -359,7 +359,11 @@ No authored contract changes or new MCP editing operations are needed; MCP groun
 exact-member/source resolution and unchanged map state while inspecting an unapplied plan member.
 
 Record removal belongs only to Lists. **Delete draft** confirms and deletes an unpublished record,
-which lives only in this browser; a published one has no delete (it is the server's, cached here). Removing a plan deletes its library entry, not its members or any
+which lives only in this browser; a published one has no delete (it is the server's, cached here),
+but this browser's copy of it is removed with **Remove from this device**, and the published object
+stays available through its link. A row only on the server has neither. Both confirmations are
+destructive, and a design on the map comes off it first (`deleteProposal` unapplies before it
+deletes). Removing a plan deletes its library entry, not its members or any
 agreement's embedded plan reference. Membership inspection can still follow that reference.
 The stored-plan list deliberately excludes plans inferred only from an agreement. The Share plan
 dialog publishes or copies one saved revision and never edits membership.

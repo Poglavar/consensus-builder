@@ -24,10 +24,12 @@
         });
         return [...rows, ...local.filter(row => !joined.has(row))];
     }
-    function filterRows(rows, { search = '', publication = 'all', sort = 'title' } = {}) {
+    // onMap keeps only the rows applied to this browser's map (row.applied, Designs only).
+    function filterRows(rows, { search = '', publication = 'all', sort = 'title', onMap = false } = {}) {
         const query = search.trim().toLocaleLowerCase();
         return rows.filter(row => (!query || `${row.title} ${row.author || ''} ${row.cid || ''} ${row.key || ''}`.toLocaleLowerCase().includes(query))
-            && (publication === 'all' || stageOf(row) === publication))
+            && (publication === 'all' || stageOf(row) === publication)
+            && (!onMap || row.applied === true))
             .sort((a, b) => sort === 'title' ? a.title.localeCompare(b.title)
                 : String(b.createdAt || '').localeCompare(String(a.createdAt || '')) || a.title.localeCompare(b.title));
     }
@@ -40,9 +42,18 @@
         if (kind !== 'designs') params.set('offset', String(offset));
         return params;
     }
+    // A row's trash: Delete draft for an unpublished object, which lives only in this browser;
+    // Remove from this device for this browser's copy of a published one, which stays available
+    // through its link. A design on the map comes off it (deleteProposal unapplies it first).
+    // → { label, confirm } as i18n keys.
+    function removal(row, kind) {
+        if (!row.published) return { label: 'lists.remove', confirm: kind === 'designs' ? 'lists.removeDesignConfirm' : 'lists.removeConfirm' };
+        return { label: 'lists.removeLocal',
+            confirm: { designs: 'lists.removeLocalConfirm', plans: 'lists.removeLocalPlanConfirm', agreements: 'agreement.panel.removeLocalConfirm' }[kind] };
+    }
     function browser(win) {
         const doc = win.document;
-        const state = { tab: 'designs', search: '', publication: 'all', sort: 'title',
+        const state = { tab: 'designs', search: '', publication: 'all', sort: 'title', onMap: false,
             // selecting: the tab whose rows show checkboxes; purpose: what they are for ('compare', or
             // 'plan': the designs of a plan, ticked here with all of them shown on the map); planBase:
             // the plan whose revision they make, if any.
@@ -73,6 +84,26 @@
         const cacheKey = () => { const view = area(); return `${win.DesignSync.apiBase()}:${view?.explore ? view.key : city()}:${state.tab}`; };
         const host = () => doc.getElementById({ designs: 'proposal-list-host', plans: 'plan-list-host', agreements: 'agreement-list-host' }[state.tab]);
         const opened = () => win.MapShell?.isOpen('proposals-sheet');
+        // Applied to this browser's map, as its "Applied" badge says (proposals/display-state.js).
+        const appliedHere = record => !!record && win.__proposalDisplayState.of(record).applied;
+        const labelOnMap = (el, count) => el.replaceChildren(icon('check'), t('lists.onMap', { count }));
+        const labelUnapplyAll = (el, count) => { el.replaceChildren(icon('box-archive'), t('lists.unapplyAll', { count })); el.hidden = count === 0; };
+        // Every design applied here comes off the map in one change, after one question. They stay
+        // in the list, and the notice names what came off and offers Undo
+        // (proposals/layer-render.js unapplyDesignsFromMap).
+        async function unapplyApplied() {
+            const ids = localRows('designs').filter(row => appliedHere(row.local)).map(row => String(row.local.proposalId));
+            if (!ids.length) return;
+            if (!await win.CbDialog.confirm(t('lists.unapplyAllConfirm', { count: ids.length }), {
+                okText: t('panel.proposal.actions.remove'), cancelText: t('common.cancel') })) return;
+            const cameOff = await win.unapplyDesignsFromMap(ids);
+            // Nothing is left on the map: a pressed "On the map" would only show an empty list.
+            if (cameOff && state.onMap) {
+                state.onMap = false;
+                doc.querySelector('[data-lists-on-map]')?.setAttribute('aria-pressed', 'false');
+            }
+            renderRows();
+        }
         function localRows(kind) {
             if (kind === 'designs') return win.proposalStorage.getAllProposals().map(record => ({
                 key: record.proposalId, title: record.title || t('planDialog.untitledDesign'), author: record.author,
@@ -213,8 +244,9 @@
         }
         async function remove(row, kind) {
             if (!row.local) return;
-            if (!await win.CbDialog.confirm(t('lists.removeConfirm', { title: row.title }), {
-                okText: t('lists.remove'), cancelText: t('common.cancel') })) return;
+            const keys = removal(row, kind);
+            if (!await win.CbDialog.confirm(t(keys.confirm, { title: row.title }), {
+                okText: t(keys.label), cancelText: t('common.cancel'), destructive: true })) return;
             if (kind === 'designs') await win.deleteProposal(row.local.proposalId);
             else if (kind === 'plans') win.NamedPlans.remove(row.key);
             else win.AgreementStore.remove(row.local.id);
@@ -336,8 +368,13 @@
         function renderRows() {
             if (!ready || !opened()) return;
             const kind = state.tab, page = state.remote.get(cacheKey());
-            const rows = mergeRows(localRows(kind), remoteRows(page?.rows || [], kind));
-            const visible = filterRows(rows, state), list = host(); list.replaceChildren();
+            const rows = mergeRows(localRows(kind), remoteRows(page?.rows || [], kind))
+                .map(row => ({ ...row, applied: kind === 'designs' && appliedHere(row.local) }));
+            const visible = filterRows(rows, { ...state, onMap: kind === 'designs' && state.onMap }), list = host(); list.replaceChildren();
+            const onMap = doc.querySelector('[data-lists-on-map]');
+            if (onMap) labelOnMap(onMap, rows.filter(row => row.applied).length);
+            const unapplyAll = doc.querySelector('[data-lists-unapply-all]');
+            if (unapplyAll) labelUnapplyAll(unapplyAll, rows.filter(row => row.applied).length);
             const status = doc.getElementById('lists-status');
             status.textContent = page?.loading ? t('lists.loading') : page?.error ? page.error
                 : visible.length ? t('lists.count', { count: visible.length }) : '';
@@ -394,7 +431,9 @@
                 if (recordId) heading.append(win.RecordLabel.badge(doc, recordId, recordIds));
                 item.append(heading);
                 const badges = node('div', 'lists-item__badges');
-                if (kind === 'designs' && row.local) badges.innerHTML = win.proposalLadderBadgesHtml(row.local);
+                // No "Status unknown" here: a record without a lifecycle (every design of an imported
+                // plan) would carry it on every row while saying nothing about the design.
+                if (kind === 'designs' && row.local) badges.innerHTML = win.proposalLadderBadgesHtml(row.local, { unknownStatus: false });
                 else badges.append(node('span', `cb-badge cb-badge--${row.published ? 'published' : 'draft'}`, t(row.published ? 'common.lifecycle.published' : 'common.lifecycle.draft')));
                 if (kind === 'agreements' && (row.record.onchain || row.record.status)) {
                     const status = row.record.onchain?.status || row.record.status;
@@ -437,10 +476,12 @@
                         win.MapShell.closeSheets(); return win.PlanDialog.schedule(plan);
                     }, '', 'hourglass-half'));
                 }
-                // Only a draft can be deleted: a published object is the server's, this browser only caches it.
-                if (row.local && !row.published) {
+                // Only what this browser holds can be removed: a draft is deleted, the copy of a published
+                // object is removed from this device (the server keeps it). A row only on the server has none.
+                if (row.local) {
+                    const label = t(removal(row, kind).label);
                     const trash = button('', () => remove(row, kind), 'btn-danger btn-icon lists-item__remove', 'trash-can');
-                    trash.setAttribute('aria-label', t('lists.remove')); trash.title = t('lists.remove'); actions.append(trash);
+                    trash.setAttribute('aria-label', label); trash.title = label; actions.append(trash);
                 }
                 item.append(actions); list.append(item);
             }
@@ -466,6 +507,22 @@
                 state.filtersOpen = !state.filtersOpen; filters.hidden = !state.filtersOpen; toggle.setAttribute('aria-expanded', String(state.filtersOpen));
             });
             searchRow.append(search, toggle); box.append(searchRow);
+            // Designs: a pressed toggle keeps only the designs applied to this browser's map, with
+            // their count; the button beside it takes all of them off the map.
+            if (state.tab === 'designs') {
+                const applied = localRows('designs').filter(row => appliedHere(row.local)).length;
+                const onMap = node('button', 'btn btn-sm lists-on-map'); onMap.type = 'button';
+                onMap.dataset.listsOnMap = ''; onMap.setAttribute('aria-pressed', String(state.onMap));
+                labelOnMap(onMap, applied);
+                onMap.addEventListener('click', () => {
+                    state.onMap = !state.onMap; onMap.setAttribute('aria-pressed', String(state.onMap)); renderRows();
+                });
+                const unapplyAll = button('', unapplyApplied, 'lists-unapply-all');
+                unapplyAll.dataset.listsUnapplyAll = '';
+                labelUnapplyAll(unapplyAll, applied);
+                const mapRow = node('div', 'lists-map-row');
+                mapRow.append(onMap, unapplyAll); box.append(mapRow);
+            }
             for (const [key, label, options] of [
                 ['publication', 'modal.roadWidth.proposalList.filters.publication', stages],
                 ['sort', 'modal.roadWidth.proposalList.filters.sort', [['title', 'lists.byTitle'], ['newest', 'lists.newest']]]
@@ -479,7 +536,7 @@
             filters.append(fields);
             const actions = node('div', 'cb-actions');
             actions.append(button(t('modal.roadWidth.proposalList.filters.reset'), () => {
-                state.search = ''; state.publication = 'all'; state.sort = 'title'; controls(); renderRows();
+                state.search = ''; state.publication = 'all'; state.sort = 'title'; state.onMap = false; controls(); renderRows();
             }, 'btn-quiet'));
             filters.append(actions); box.append(filters);
             box.append(button(t('agreement.minted.refresh'), () => load(), 'lists-refresh', 'arrows-rotate'));
@@ -509,6 +566,9 @@
             });
             win.AgreementStore.subscribe(refresh);
             win.addEventListener('planschange', refresh);
+            // What is on the map changes outside the sheet too (a notice's Undo, a card's Unapply):
+            // the Applied badges, the On the map count and Unapply all follow every map commit.
+            win.LiveParcelFabric?.subscribe?.(() => { if (ready && opened()) renderRows(); });
             win.addEventListener('i18n:translationsLoaded', () => { if (opened()) { controls(); refresh(); } });
             controls();
         }

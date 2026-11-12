@@ -231,6 +231,63 @@ describe('atomic local unapply', () => {
         const mutation = fabric.beginMutation.mock.results[0].value;
         expect(mutation.rollback).toHaveBeenCalledOnce();
     });
+
+    const park = () => ({ proposalId: 'park', title: 'Park', goal: 'park', applied: true, cadastreParcelIds: ['HR-A'], structureProposal: { kind: 'park' } });
+    const square = () => ({ proposalId: 'square', title: 'Square', goal: 'square', applied: true, cadastreParcelIds: ['HR-C'], structureProposal: { kind: 'square' } });
+    const idle = () => ({ proposalId: 'idle', title: 'Idle', goal: 'park', applied: false, cadastreParcelIds: ['HR-D'], structureProposal: { kind: 'park' } });
+
+    it('takes several designs off in one change and tells the caller what came off', async () => {
+        const first = park(), second = square(), third = idle();
+        const { manager, fabric, storage, restore } = managerFor(first, { unapplyProposals: ProposalManager.unapplyProposals });
+        storage.proposals.set('square', second);
+        storage.proposals.set('idle', third);
+        const effects = vi.fn();
+
+        await expect(manager.unapplyProposals(['park', 'square', 'idle', 'park', 'missing'], { onMutationEffects: effects })).resolves.toBe(true);
+
+        expect([first.applied, second.applied, third.applied]).toEqual([false, false, false]);
+        // One transaction and one re-derivation for both, over the ground of both.
+        expect(fabric.beginMutation).toHaveBeenCalledOnce();
+        expect(restore).toHaveBeenCalledOnce();
+        expect(restore.mock.calls[0][0].map(record => record.proposalId)).toEqual(['park', 'square']);
+        expect(restore.mock.calls[0][1].cadastreParcelIds.slice().sort()).toEqual(['HR-A', 'HR-C']);
+        expect(effects).toHaveBeenCalledOnce();
+        expect(effects.mock.calls[0][0]).toEqual({
+            unapplied: [{ proposalId: 'park', title: 'Park' }, { proposalId: 'square', title: 'Square' }],
+            applied: []
+        });
+    });
+
+    it('reports a design the change took off beside the one asked for', async () => {
+        const first = park(), second = square();
+        const { manager, storage, restore } = managerFor(first);
+        storage.proposals.set('square', second);
+        // The re-derivation turns another design off (what a replay must never do, and what the
+        // caller has to be able to name if any path still does).
+        restore.mockImplementation(async (_seeds, _scope, options) => {
+            options._parcelMutation.proposals.getProposal('square').applied = false;
+            return { ok: true, applied: 0, failed: [], cadastreParcelIds: ['HR-A'], proposalIds: [], fabric: { parcels: 1 } };
+        });
+        const effects = vi.fn();
+        await expect(manager.unapplyProposal('park', { onMutationEffects: effects })).resolves.toBe(true);
+        expect(effects.mock.calls[0][0].unapplied.map(row => row.title)).toEqual(['Park', 'Square']);
+    });
+
+    it('tells the caller nothing about a change that was rolled back, and nothing happens for designs already off', async () => {
+        const first = park();
+        const failing = managerFor(first, { unapplyProposals: ProposalManager.unapplyProposals });
+        failing.restore.mockResolvedValue({ ok: false, failed: [{ reason: 'clip failed' }] });
+        const effects = vi.fn();
+        await expect(failing.manager.unapplyProposals(['park'], { onMutationEffects: effects })).resolves.toBe(false);
+        expect(first.applied).toBe(true);
+        expect(effects).not.toHaveBeenCalled();
+
+        const off = idle();
+        const idleManager = managerFor(off, { unapplyProposals: ProposalManager.unapplyProposals });
+        await expect(idleManager.manager.unapplyProposals(['idle'], { onMutationEffects: effects })).resolves.toBe(true);
+        expect(idleManager.fabric.beginMutation).not.toHaveBeenCalled();
+        expect(effects).not.toHaveBeenCalled();
+    });
 });
 
 describe('generated parcel provenance', () => {

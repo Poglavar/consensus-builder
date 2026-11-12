@@ -110,5 +110,18 @@
         const members = (designCids || []).map(cid => byCid.get(String(cid)));
         return members.length && members.every(record => record && isApplied(record)) ? members : null;
     }
-    return Object.freeze({ create, bind, ofDesign, validate, withSchedule, localRecords, appliedMembers });
+    // The plan's members that stand on the map here, however many of them, in plan order: what
+    // unapplying the plan takes off. Every applied local record of a member counts.
+    function standingMembers(designCids, records, { cidOf, isApplied }) {
+        const wanted = new Map((designCids || []).map((cid, index) => [String(cid), index]));
+        const standing = [];
+        for (const record of Array.isArray(records) ? records : []) {
+            if (!isApplied(record)) continue;
+            let cid;
+            try { cid = String(cidOf(record)); } catch (_) { continue; /* an incomplete draft */ }
+            if (wanted.has(cid)) standing.push({ record, order: wanted.get(cid) });
+        }
+        return standing.sort((a, b) => a.order - b.order).map(entry => entry.record);
+    }
+    return Object.freeze({ create, bind, ofDesign, validate, withSchedule, localRecords, appliedMembers, standingMembers });
 });
