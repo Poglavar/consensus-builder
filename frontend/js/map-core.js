@@ -172,6 +172,9 @@ L.control.scale({
     position: 'bottomright'
 }).addTo(map);
 
+// The zoom range 2D shows parcels in (and buildings, from 17), for code outside this script.
+window.parcelZoomRange = () => ({ min: parcelFetchZoomMin, max: parcelFetchZoomMax });
+
 function isZoomWithinParcelRange() {
     if (parcelFetchZoomMin === null) return true;
     const z = map.getZoom();

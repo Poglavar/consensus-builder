@@ -41,6 +41,16 @@
         return { mode: '3d', bbox: [lng - dLng, lat - dLat, lng + dLng, lat + dLat], centre: [lat, lng],
             zoom: Math.round(Math.log2(METRES_PER_PIXEL_Z0 * cos / metresPerPixel) * 1000) / 1000 };
     }
+    // The 2D zoom on leaving 3D: the camera's, but never outside the 2D parcel zoom range when
+    // parcels were showing as 3D was entered. Below that range 2D switches parcels and buildings
+    // off for performance, so the ground the 3D view showed would vanish on the switch; a camera
+    // farther out returns to 2D at the range's edge, a narrower view of the same place.
+    function returnZoom(cameraZoom, { parcelRange = null, parcelsShown = false } = {}) {
+        if (!finite(cameraZoom)) return null;
+        if (!parcelsShown || !parcelRange) return cameraZoom;
+        const min = finite(parcelRange.min) ? parcelRange.min : -Infinity, max = finite(parcelRange.max) ? parcelRange.max : Infinity;
+        return Math.min(max, Math.max(min, cameraZoom));
+    }
     function browser(win) {
         function current() {
             const map = win.map;
@@ -64,5 +74,5 @@
         });
         return { current };
     }
-    return { ofCamera, browser, MIN_HALF_SIDE_M };
+    return { ofCamera, returnZoom, browser, MIN_HALF_SIDE_M };
 });

@@ -11484,8 +11484,12 @@
             xyToLatLng
         );
         // The 2D map returns at the zoom the camera stands for (load-view.js), the zoom every
-        // layer gate read in 3D, so what the 3D view showed stays shown in 2D.
-        const exitZoom = window.LoadView?.ofCamera?.(getGeoCameraView(), getViewport())?.zoom;
+        // layer gate read in 3D, kept inside the 2D parcel range when parcels were showing (the
+        // 2D map has not moved since entry), so what the 3D view showed stays shown in 2D.
+        const exitZoom = window.LoadView?.returnZoom?.(window.LoadView.ofCamera(getGeoCameraView(), getViewport())?.zoom, {
+            parcelRange: window.parcelZoomRange?.(),
+            parcelsShown: typeof isZoomWithinParcelRange === 'function' && isZoomWithinParcelRange()
+        });
         isActive = false;
         window.ThreeCompare?.detach?.();
         compareSplit = null;

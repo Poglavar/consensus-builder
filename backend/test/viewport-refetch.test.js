@@ -161,6 +161,17 @@ describe('load view', () => {
         expect(view.zoom).toBeGreaterThan(16.99);
         expect(view.zoom).toBeLessThan(17.01);
     });
+    it('returns to 2D at the camera zoom, kept inside the parcel range when parcels were showing', () => {
+        const parcelRange = { min: 17, max: Infinity };
+        // Zoomed out in 3D: 2D would switch parcels and buildings off at 16.3, so it lands at 17.
+        expect(LoadView.returnZoom(16.322, { parcelRange, parcelsShown: true })).toBe(17);
+        expect(LoadView.returnZoom(18.25, { parcelRange, parcelsShown: true })).toBe(18.25);
+        // Entered from a view without parcels: nothing to keep, the camera's zoom stands.
+        expect(LoadView.returnZoom(15.4, { parcelRange, parcelsShown: false })).toBe(15.4);
+        // A city whose register answers only from 19 to 20 (Hong Kong's minimum is 19).
+        expect(LoadView.returnZoom(21, { parcelRange: { min: 19, max: 20 }, parcelsShown: true })).toBe(20);
+        expect(LoadView.returnZoom(NaN, { parcelRange, parcelsShown: true })).toBe(null);
+    });
     it('raises the zoom as the camera moves closer or tilts lower, and floors the area at a street', () => {
         const base = entryCamera(45.8, 16, 17, 900);
         expect(LoadView.ofCamera({ ...base, range: base.range / 2 }, viewport).zoom).toBeCloseTo(18, 3);
