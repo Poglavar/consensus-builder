@@ -266,11 +266,25 @@ closes on Escape, a click on nothing, another selection, or the mobile close but
 - The clicked thing's section opens; one section is open at a time. Ground under a click is a
   formed parcel when a design produced it or it is a piece cut from another parcel, else a
   cadastral parcel.
+- What a click picks follows the 2D rule, read along the ray: the nearest visible object, with the
+  two cases the 2D order decides. A see-through permitted hull or tier gives the click to a
+  building or a design standing inside it, and a condemned building volume gives it to the design
+  that takes its place; with nothing of that kind behind it, the hull or the condemned building is
+  the pick. A solid massing hides what is inside it, and a standing building in front of a design
+  is its own object: differences from 2D that the third dimension makes.
+- The parcel shown with a clicked building, massing or design is the one straight under the point
+  the ray met it at (the formed plot under a drawn building, as in 2D), never the ground the ray
+  would reach behind it. Its designs, buildings and massing fill the other sections: here every
+  click is also a parcel click, so the Design section lists the parcel's designs, where the 2D
+  stack lists only those under the point.
+- In the Design section a drawn design comes before one that only authors the ground (a parcel
+  layout), as in 2D; the clicked design is the selected one wherever it sorts.
 - The neighbours rule applies here too: the selected object's own references add the sections
   above and below it, whether the stack was opened by a scene click, a list, a link or a plan.
 - A repeat scene click on the same object or map spot keeps the stack and re-opens that object's
   own section when another one had been expanded; it never steps through sections. This works
-  independently of double-click speed. A different object starts with its own section; a click
+  independently of double-click speed. A building or a massing hit at that spot is another object,
+  and so is anything whose section the open stack does not hold. A different object starts with its own section; a click
   on nothing or Escape closes the stack. Header clicks select a section directly. Scene clicks,
   header switches and refreshes preserve the camera and keep the scene in context. A stack opened
   from a list or link (Lists, a relationship link, a plan or agreement panel, an editor
@@ -308,8 +322,10 @@ closes on Escape, a click on nothing, another selection, or the mobile close but
   inspection as 2D; explicit links open their full records. Inspecting parent records never imports
   or applies member designs.
 - The pure rules (order, focus, relationships, labels) are in the module's first half and unit tested
-  (`backend/test/three-click-stack.test.js`); the 2D model (`click-stack-model.js`) is not shared,
-  for section ordering, because 2D puts Design above Built; contextual relationships are shared.
+  (`backend/test/three-click-stack.test.js`); what a ray picks is `subjectHit` in
+  `three-click-plan.js`. The section order is the model view's own (Built first, where 2D puts
+  Design above Built); the neighbouring-section window and the contextual relationships are the
+  2D model's (`click-stack-model.js` `visibleSections`, `contextFor`).
 
 ## Google 3D view
 

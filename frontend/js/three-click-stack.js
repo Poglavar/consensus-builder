@@ -57,6 +57,9 @@
                 return true;
             }).map(item => ({ ...item, id: String(item.id) }));
             if (!instances.length) continue;
+            // As in 2D: a drawn design comes before one that only authors the ground (a parcel
+            // layout, `ground`). The clicked design stays the selected one wherever it sorts.
+            if (kind === 'designs') instances.sort((a, b) => (a.ground ? 1 : 0) - (b.ground ? 1 : 0));
             const wanted = selected[kind] !== undefined ? instances.findIndex(item => item.id === String(selected[kind])) : -1;
             sections.push({ kind, instances, count: instances.length, multi: instances.length > 1, selectedIndex: Math.max(0, wanted) });
         }
@@ -73,7 +76,9 @@
         if (!previous?.key || !next?.key) return false;
         if (previous.key === next.key) return true;
         // Selecting a design can expose its pick surface over the original parcel. A repeat at
-        // that spot continues the stack, without mistaking a nearby object's click for a repeat.
+        // that spot continues the stack, without mistaking a nearby object's click for a repeat:
+        // a building or a massing hit there is another object, however close.
+        if (next.focus === 'built' || next.focus === 'permitted') return false;
         return previous.parcelId === next.parcelId && previous.point && next.point
             && Math.hypot(previous.point.x - next.point.x, previous.point.y - next.point.y) <= 6;
     }
@@ -392,7 +397,9 @@
     function retainClick(click) {
         if (!isOpen() || !sameClick(state.click, click)) return false;
         const kind = click.focus && state.stack.sections.some(section => section.kind === click.focus) ? click.focus : null;
-        if (kind && state.stack.expanded !== kind) {
+        // What was clicked has no section in this stack: a new click, not a repeat to swallow.
+        if (!kind) return false;
+        if (state.stack.expanded !== kind) {
             state.stack = expand(state.stack, kind);
             absorbNeighbours(kind);
             render();

@@ -19,6 +19,34 @@ describe('shared scene hit resolution', () => {
         ])).toEqual({ picked: { proposalId: 'design', parcelId: 'parcel' }, distance: 2, point });
         expect(subjectHit([{ object: { parent: hidden } }])).toBeNull();
     });
+    it('gives a click through a see-through massing or a condemned building to what stands behind it, as the 2D order does', () => {
+        const feature = { type: 'Feature', id: 'house' };
+        const hit = (userData, distance) => ({ object: { visible: true, userData }, distance, point: { x: distance, y: 0, z: 0 } });
+        const hull = d => hit({ planningRepresentationId: 'massing', planningSeeThrough: true }, d);
+        const solid = d => hit({ planningRepresentationId: 'massing' }, d);
+        const house = d => hit({ planningBuiltFeature: feature, parcelId: 'p1' }, d);
+        const condemned = d => hit({ planningBuiltFeature: feature, condemned: true, parcelId: 'p1' }, d);
+        const design = d => hit({ proposalId: 'tower', parcelId: 'p1' }, d);
+        const ground = d => hit({ parcelId: 'p1', isParcel: true }, d);
+        const pickedOf = hits => subjectHit(hits).picked;
+        // A faint hull or tier around a building or a design: theirs.
+        expect(pickedOf([hull(1), house(2), ground(3)])).toEqual({ builtFeature: feature, parcelId: 'p1' });
+        expect(pickedOf([hull(1), design(2)])).toEqual({ proposalId: 'tower', parcelId: 'p1' });
+        // With only ground behind it, or nothing, the hull is what was clicked, at its own point.
+        expect(subjectHit([hull(1), ground(3)])).toMatchObject({ picked: { planningId: 'massing' }, distance: 1 });
+        expect(pickedOf([hull(1)])).toEqual({ planningId: 'massing' });
+        // A solid massing hides what is inside it.
+        expect(pickedOf([solid(1), house(2)])).toEqual({ planningId: 'massing' });
+        // A condemned building gives way to the design behind it, and to nothing else.
+        expect(pickedOf([condemned(1), design(2)])).toEqual({ proposalId: 'tower', parcelId: 'p1' });
+        expect(pickedOf([condemned(1), ground(2)])).toEqual({ builtFeature: feature, parcelId: 'p1' });
+        expect(pickedOf([condemned(1), solid(2)])).toEqual({ builtFeature: feature, parcelId: 'p1' });
+        // Hull, then a condemned building, then the design: the design; without it, the building.
+        expect(pickedOf([hull(1), condemned(2), design(3)])).toEqual({ proposalId: 'tower', parcelId: 'p1' });
+        expect(pickedOf([hull(1), condemned(2), ground(3)])).toEqual({ builtFeature: feature, parcelId: 'p1' });
+        // A standing building in front of a design is its own object.
+        expect(pickedOf([house(1), design(2)])).toEqual({ builtFeature: feature, parcelId: 'p1' });
+    });
     it('chooses visible authored geometry ahead of Google tiles and source buildings ahead of occluded designs', () => {
         const authored = { picked: { proposalId: 'design' }, distance: 20, point: { x: 1 } };
         const surface = { distance: 25, point: { x: 2 } };
@@ -80,6 +108,16 @@ describe('planThreeClick', () => {
             .toEqual({ id: 'HR-3', action: 'view' });
         // An unknown proposal id is just ground.
         expect(planThreeClick({ ...idle, picked: { proposalId: 'gone', parcelId: 'HR-3' }, groundParcelId: 'HR-3', proposalKnown: false }).parcel).toEqual({ id: 'HR-3', action: 'view' });
+    });
+
+    it('views the live parcel under the point a design was hit at, else the design\'s own slice', () => {
+        const picked = { proposalId: 'tower', parcelId: 'HR-1' };
+        const base = { ...idle, picked, groundParcelId: 'behind', proposalKnown: true };
+        // A drawn building on a layout's plot: the formed plot under it, as the 2D stack shows.
+        expect(planThreeClick({ ...base, pointParcelId: 'HR-1#layout-8' }).parcel).toEqual({ id: 'HR-1#layout-8', action: 'view' });
+        // No live parcel under the point: the design's own slice, never the slab behind it.
+        expect(planThreeClick({ ...base, pointParcelId: null }).parcel).toEqual({ id: 'HR-1', action: 'view' });
+        expect(planThreeClick(base).parcel).toEqual({ id: 'HR-1', action: 'view' });
     });
 
     it('retains selection on repeated ground clicks on the same parcel', () => {

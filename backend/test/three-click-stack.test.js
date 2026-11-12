@@ -92,6 +92,8 @@ describe('3D click stack contextual selection', () => {
         api.show(input, { focus: 'built', click }, adapter);
         expect(activated).toEqual([['built', {}]]);
         expect(api.retainClick({ key: 'building-2', focus: 'built' })).toBe(false);
+        // A click at the same spot whose object has no section in this stack is a new click.
+        expect(api.retainClick({ key: 'massing-1', focus: 'permitted', parcelId: 'p1', point: { x: 1, y: 1 } })).toBe(false);
         // Already on the object's own section: kept as it is.
         expect(api.retainClick(click)).toBe(true);
         expect(api.expanded()).toBe('built');
@@ -295,6 +297,10 @@ describe('3D click stack rules', () => {
     it('continues at the same spot when selection changes the ray hit, but resets on another parcel or object elsewhere', () => {
         const click = { key: 'parcel-1', parcelId: 'p1', point: { x: 100, y: 100 } };
         expect(stack.sameClick(click, { ...click, key: 'new-design-surface' })).toBe(true);
+        expect(stack.sameClick(click, { ...click, key: 'new-design-surface', focus: 'designs' })).toBe(true);
+        // A building or a massing hit at that very spot is another object, not a repeat.
+        expect(stack.sameClick(click, { ...click, key: 'building-2', focus: 'built' })).toBe(false);
+        expect(stack.sameClick(click, { ...click, key: 'massing-2', focus: 'permitted' })).toBe(false);
         expect(stack.sameClick(click, { ...click, key: 'building-2', point: { x: 140, y: 100 } })).toBe(false);
         expect(stack.sameClick(click, { ...click, key: 'parcel-2', parcelId: 'p2' })).toBe(false);
         expect(stack.sameClick(null, click)).toBe(false);
@@ -327,6 +333,18 @@ describe('3D click stack rules', () => {
         expect(stack.focusOf(null)).toBe('parcels');
         // A focus with no section of its own falls to the bottom section, the parcel.
         expect(stack.buildThreeStack({ parcels: [{ id: 'HR-1' }] }, { focus: 'designs' }).expanded).toBe('parcels');
+    });
+
+    it('lists a drawn design before one that only authors the ground, keeping the clicked one selected', () => {
+        const input = { designs: [{ id: 'layout', label: 'Layout', ground: true }, { id: 'tower', label: 'Tower' }, { id: 'park', label: 'Park' }], built: [{ id: 'b1', feature }] };
+        // A building was clicked: the Design section opens on a drawn design, not on the layout.
+        const onBuilding = stack.buildThreeStack(input, { focus: 'built' });
+        const designsOf = built => built.sections.find(section => section.kind === 'designs');
+        expect(designsOf(onBuilding).instances.map(item => item.id)).toEqual(['tower', 'park', 'layout']);
+        expect(stack.selectedInstance(onBuilding, 'designs').id).toBe('tower');
+        // The clicked design stays selected wherever it sorts.
+        const onLayout = stack.buildThreeStack(input, { focus: 'designs', selected: { designs: 'layout' } });
+        expect(stack.selectedInstance(onLayout, 'designs').id).toBe('layout');
     });
 
     it('lists several proposals or buildings as a strip, the clicked one first selected, each once', () => {

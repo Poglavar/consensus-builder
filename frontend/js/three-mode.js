@@ -699,6 +699,9 @@
                 for (const mesh of meshes) {
                     markOwnedMaterial(mesh, material);
                     mesh.userData.planningRepresentationId = item.id;
+                    // A faint hull or tier does not hide what stands inside it: a click on a
+                    // building or a design seen through it is theirs (three-click-plan.js subjectHit).
+                    if (hull || conditional) mesh.userData.planningSeeThrough = true;
                     mesh.renderOrder = 3;
                     planningSourcesGroup.add(mesh);
                     const geometry = new THREE.EdgesGeometry(mesh.geometry);
@@ -1875,7 +1878,9 @@
         const input = {
             built: builtList.map(builtInstance),
             designs: designs.map(p => ({ id: String(proposalIdOf(p)), label: proposalDisplayTitle(p), proposal: p,
-                preserveView: plan.preserveView === true })),
+                preserveView: plan.preserveView === true,
+                // A design that only authors ground sorts after the drawn ones (three-click-stack.js).
+                ...(window.__drillStack?.isGroundAuthoring?.(p) ? { ground: true } : {}) })),
             permitted: massingIds.map(id => ({ id, label: items.find(item => item.id === id)?.title || '' })),
             formed: [...(ground?.kind === 'formed' ? [ground.instance] : []), ...(hits?.formed || [])],
             parcels: [...(ground?.kind === 'parcels' ? [ground.instance] : []), ...(hits?.parcels || [])]
@@ -6100,13 +6105,15 @@
                             }
                             if (renderParts.demolished && demolished) {
                                 polygonFeatureToMeshes(demolished, demolishedMaterial, 0, height)
-                                    .forEach(mesh => { mesh.userData.demolitionPart = 'demolished'; addObserved(mesh); });
+                                    .forEach(mesh => { mesh.userData.demolitionPart = 'demolished'; mesh.userData.condemned = true; addObserved(mesh); });
                             }
                             return;
                         }
                         if (!renderParts.detailed) return;
                         const mesh = buildMeshFromBuilding3D(bld, demolishedMaterial, meshDedupeState);
-                        if (mesh) addObserved(mesh);
+                        // A condemned volume gives a click to the design that takes its place
+                        // (three-click-plan.js subjectHit), as the 2D map and the photo view do.
+                        if (mesh) { mesh.userData.condemned = true; addObserved(mesh); }
                     } catch (e) {
                         failures++;
                         console.warn('Failed to build 3D mesh for building', bld && bld.object_id, e);
@@ -11634,8 +11641,9 @@
         return xyToLatLng(hit.x, hit.y);
     }
 
-    // Raycast a click against proposal surfaces, parcels, and buildings. Proposal geometry is
-    // checked first so an editable overlay wins over the cadastral parcel beneath it.
+    // Raycast a click against proposal surfaces, parcels, and buildings: the nearest visible
+    // subject along the ray, by the rule in three-click-plan.js subjectHit. Returns it with the
+    // ray's direction, so the caller can find the ground under the point it met.
     // Skips invisible objects so an isolated scene only "hits" what's actually shown.
     function pickMapSubjectFromEvent(evt) {
         if (!renderer || !camera) return null;
@@ -11652,7 +11660,8 @@
         if (flatGroup) targets.push(flatGroup);
         if (plannedFlatGroup) targets.push(plannedFlatGroup);
         if (stationGroup) targets.push(stationGroup);
-        return window.__threeClickPlan.subjectHit(raycaster.intersectObjects(targets, true));
+        const subject = window.__threeClickPlan.subjectHit(raycaster.intersectObjects(targets, true));
+        return subject ? { ...subject, direction: raycaster.ray.direction.clone() } : null;
     }
 
     // Google tiles identify a visible surface point; source footprints give that point a building
@@ -11695,8 +11704,14 @@
             clickDownXY = null;
             if (moved > 6) return;
         }
+        const subject = realisticLayerActive ? null : pickMapSubjectFromEvent(evt);
+        // A building, a massing or a design stands on the parcel under the point the ray met it
+        // at. The slab the ray would go on to reach behind a tall one can be another parcel.
+        const standing = subject?.picked?.builtFeature || subject?.picked?.planningId || subject?.picked?.proposalId;
+        const pointParcelId = standing ? parcelUnderPoint(subject.point, subject.direction) : null;
         const resolved = realisticLayerActive ? photoScenePick(evt)
-            : { picked: pickMapSubjectFromEvent(evt)?.picked || null, groundParcelId: parcelUnderClick(evt) };
+            : { picked: subject?.picked || null,
+                groundParcelId: (!subject?.picked?.proposalId && pointParcelId) || parcelUnderClick(evt) };
         const { picked, groundParcelId } = resolved;
         if (window.multiParcelSelection?.isActive) {
             const layer = groundParcelId && window.LiveParcelFabric?.get(groundParcelId) && window.ParcelPresenter?.getLayer(groundParcelId);
@@ -11715,7 +11730,8 @@
         // Every click is also a parcel click (three-click-plan.js): the parcel under the point comes
         // into view, and what the ray hit keeps its own meaning on top.
         const plan = window.__threeClickPlan.planThreeClick({
-            picked, groundParcelId, viewedParcelId, isolatedParcelId, isolatedProposalId, proposalKnown: !!proposal
+            picked, groundParcelId, viewedParcelId, isolatedParcelId, isolatedProposalId, proposalKnown: !!proposal,
+            pointParcelId: proposal ? pointParcelId : null
         });
         if (plan.clearSelection) window.PlanningViews?.select(null);
         if (plan.proposal) {
@@ -11732,6 +11748,17 @@
             return;
         }
         showClickStack(picked, plan, click, resolved.hits);
+    }
+
+    // The parcel a hit volume stands on: straight down from the hit point, taken half a metre
+    // further along the ray so a wall on a parcel boundary resolves to the building's side of it.
+    function parcelUnderPoint(point, direction) {
+        if (!point || !flatGroup) return null;
+        const inside = direction ? point.clone().addScaledVector(direction, 0.5) : point;
+        const raycaster = new THREE.Raycaster(new THREE.Vector3(inside.x, inside.y, 100000), new THREE.Vector3(0, 0, -1));
+        const slabs = flatGroup.children.filter(o => o && o.isMesh && o.visible && o.userData?.isParcel && o.userData.parcelId);
+        const hit = raycaster.intersectObjects(slabs, false)[0];
+        return hit ? String(hit.object.userData.parcelId) : null;
     }
 
     // The parcel under a click, through whatever stands on it: the ray against the parcel slabs alone.
