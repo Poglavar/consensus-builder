@@ -181,6 +181,46 @@ export async function claimAgreementMarket({
     return { replayed: false, signature, claimed: true };
 }
 
+// What reclaim_seed would pay the creator now (lmsr_market.rs handle_reclaim_seed): the vault less what
+// the unclaimed winning positions are still owed. 0n for an open market.
+export function reclaimableSeed(market, vaultAtomic) {
+    if (!market?.resolved || typeof vaultAtomic !== 'bigint') return 0n;
+    const qYes = BigInt(market.qYes), qNo = BigInt(market.qNo), paidOut = BigInt(market.paidOut ?? 0n);
+    const outcome = Number(market.outcome);
+    const obligation = outcome === lmsrClient.constants.SIDE_YES ? qYes
+        : outcome === lmsrClient.constants.SIDE_NO ? qNo : qYes / 2n + qNo / 2n;
+    const owed = obligation > paidOut ? obligation - paidOut : 0n;
+    return vaultAtomic > owed ? vaultAtomic - owed : 0n;
+}
+
+async function vaultAtomic(connection, market) {
+    const balance = await connection.getTokenAccountBalance(new web3.PublicKey(market.vault), 'confirmed');
+    return BigInt(balance.value.amount);
+}
+
+/** The market's creator takes back what its resolved market's payouts leave of the LMSR seed. */
+export async function reclaimAgreementMarketSeed({
+    connection, creatorKeypair, subject,
+    sendAndConfirm = web3.sendAndConfirmTransaction
+} = {}) {
+    if (!creatorKeypair?.publicKey) throw new Error('creatorKeypair is required');
+    const context = await readAgreementMarket(connection, subject);
+    const market = context.market;
+    if (!market?.resolved) throw new Error('agreement market is not resolved');
+    if (market.creator !== creatorKeypair.publicKey.toBase58()) throw new Error('signer is not the market creator');
+    const amount = reclaimableSeed(market, await vaultAtomic(context.connection, market));
+    if (amount <= 0n) return { replayed: true, signature: null, amount: '0' };
+    const ata = lmsrClient.getAssociatedTokenAddress(creatorKeypair.publicKey, market.stakeMint);
+    const instructions = [];
+    if (!await context.connection.getAccountInfo(ata, 'confirmed')) {
+        instructions.push(splToken.createAssociatedTokenAccountIdempotentInstruction(
+            creatorKeypair.publicKey, ata, creatorKeypair.publicKey, new web3.PublicKey(market.stakeMint)));
+    }
+    instructions.push(lmsrClient.buildReclaimSeedIx({ market: context.address, creator: creatorKeypair.publicKey, stakeMint: market.stakeMint }));
+    const signature = await sendInstruction(context.connection, instructions, creatorKeypair, sendAndConfirm);
+    return { replayed: false, signature, amount: String(amount) };
+}
+
 export async function resolveExternalMarket({
     connection, resolverKeypair, recipeHash, attestation,
     sendAndConfirm = web3.sendAndConfirmTransaction
@@ -238,7 +278,7 @@ export async function claimExternalMarket({
 
 // Steps that sign a chain transaction; decide (a signed message, relayed) and lens (the member's own
 // transaction) cost the proposer none.
-export const SIGNED_SETTLEMENT_STEPS = Object.freeze(['attest', 'execute', 'expire', 'resolve', 'claim']);
+export const SIGNED_SETTLEMENT_STEPS = Object.freeze(['attest', 'execute', 'expire', 'resolve', 'claim', 'reclaim']);
 
 const SETTLEMENT_READERS = {
     readAgreement: (connection, account) => readAgreementAccount(connection, { account }),
@@ -246,7 +286,8 @@ const SETTLEMENT_READERS = {
     readPosition: async (connection, account, owner) => {
         const context = await readAgreementMarket(connection, account);
         return context.market ? lmsrClient.readPosition(context.connection, context.address, owner, lmsrClient.constants.SIDE_YES) : null;
-    }
+    },
+    readVault: (connection, market) => vaultAtomic(connection, market)
 };
 
 const OUTCOME_OF = Object.freeze({ 0: 'no', 1: 'yes', 2: 'void' });
@@ -311,6 +352,10 @@ export async function inspectSettlement({ connection, owner, agreement, lensKey 
     const payout = yesPayout(market, position, outcome);
     if (market && !market.resolved) steps.push('resolve');
     if (payout > 0n) steps.push('claim');
+    // The proposer opened this market (it is the agreement's authority): once resolved, it takes back
+    // what the payouts leave of its seed, so a market costs cents rather than b·ln2 (2026-11-12).
+    if (market && market.creator === ownerKey.toBase58()
+        && (!market.resolved || reclaimableSeed(market, await read.readVault(connection, market)) > 0n)) steps.push('reclaim');
     return {
         ...base,
         state: steps.length ? label : 'closed',
@@ -336,7 +381,7 @@ export async function executeSettlement({
     if (!ownerKeypair?.publicKey) throw new Error('ownerKeypair is required');
     if (typeof perform !== 'function' || typeof checkpoint !== 'function') throw new Error('perform and checkpoint are required');
     const read = { ...SETTLEMENT_READERS, ...readers };
-    const act = { recordAgreementDecision, executeAgreement, expireAgreement, resolveAgreementMarket, claimAgreementMarket, ...adapters };
+    const act = { recordAgreementDecision, executeAgreement, expireAgreement, resolveAgreementMarket, claimAgreementMarket, reclaimAgreementMarketSeed, ...adapters };
     const subject = item.account;
     const current = { ...record, cid: item.cid, account: subject, pickId: item.pickId ?? null, sourceRunId: item.sourceRunId ?? null, sourceDay: item.sourceDay ?? null };
     const has = step => item.steps.includes(step);
@@ -391,6 +436,12 @@ export async function executeSettlement({
         } else {
             current.claim = { skipped: true, reason: position?.claimed ? 'already-claimed' : 'nothing-to-claim', signature: null };
         }
+        await checkpoint({ ...current });
+    }
+    if (has('reclaim')) {
+        current.reclaim = await perform({ type: 'reclaim-seed', agreementCid: item.cid }, () => act.reclaimAgreementMarketSeed({
+            connection, creatorKeypair: ownerKeypair, subject, sendAndConfirm
+        }));
         await checkpoint({ ...current });
     }
     return current;

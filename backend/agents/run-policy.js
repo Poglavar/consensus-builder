@@ -70,7 +70,7 @@ export function decisionCompletion(picks) {
 // refund). These are pure limits and selection; the chain reads and signing live in
 // lifecycle-actions.js (inspectSettlement / executeSettlement).
 
-const SIGNED_STEPS = new Set(['attest', 'execute', 'expire', 'resolve', 'claim']);
+const SIGNED_STEPS = new Set(['attest', 'execute', 'expire', 'resolve', 'claim', 'reclaim']);
 const signedCount = steps => (steps || []).filter(step => SIGNED_STEPS.has(step)).length;
 
 export function settlementPolicy(env = {}) {
@@ -134,7 +134,7 @@ export function settlementsSpent(settlements = {}) {
     let actions = 0;
     let count = 0;
     for (const record of Object.values(settlements || {})) {
-        const signed = [record?.attest, record?.execution, record?.expiry, record?.resolution, record?.claim].filter(step => step?.signature).length;
+        const signed = [record?.attest, record?.execution, record?.expiry, record?.resolution, record?.claim, record?.reclaim].filter(step => step?.signature).length;
         actions += signed;
         if (signed || record?.approval) count += 1;
     }

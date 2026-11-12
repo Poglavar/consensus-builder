@@ -7,7 +7,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import express from 'express';
 import { createRequire } from 'node:module';
 import { Keypair } from '@solana/web3.js';
-import { executeSettlement, inspectSettlement } from '../agents/lifecycle-actions.js';
+import { executeSettlement, inspectSettlement, reclaimableSeed } from '../agents/lifecycle-actions.js';
 import { agreementAccountOf, mintAgreement } from '../agents/agreement-minter.js';
 import { agreementObject, deadlineAfterDays, designObject, mapViewFromGeometry, noMoney, ownersRule, parcelOutputs, planForDesigns, registryRights } from '../agents/agreement-objects.js';
 import { createIndexClient } from '../agents/publication-client.js';
@@ -121,6 +121,60 @@ describe('inspecting an agreement', () => {
         expect(await inspect(cancelled)).toMatchObject({ state: 'closed', outcome: 'NO', steps: [] });
         expect(await inspect({ ...placeAgreement('strangers', { authority: Keypair.generate().publicKey.toBase58() }), soleOwner: true })).toMatchObject({ state: 'foreign', steps: [] });
         expect(await inspect({ cid: 'x', account: Keypair.generate().publicKey.toBase58() })).toMatchObject({ state: 'missing', steps: [] });
+    });
+});
+
+describe('reclaiming the proposer\'s market seed (2026-11-12)', () => {
+    const inspect = (agreement, overrides = {}) => inspectSettlement({ connection: chain.connection, owner: OWNER, agreement, lensKey: LENS, nowSeconds: NOW, ...overrides });
+    // A market the proposer opened itself: it is the creator, and the vault holds `vault` atomic USDC.
+    const ownMarket = (item, terms, vault) => ({ ...market(item, terms), creator: OWNER, vault: Keypair.generate().publicKey.toBase58(), paidOut: 0n, vaultAtomic: vault });
+    const readersWithVault = book => ({ ...book.readers, readVault: async (_connection, m) => m.vaultAtomic });
+
+    it('keeps back what unclaimed winners are owed and pays the creator the rest', () => {
+        const resolved = { resolved: true, qYes: 300_000n, qNo: 100_000n, paidOut: 0n };
+        expect(reclaimableSeed({ ...resolved, outcome: YES }, 3_466_000n)).toBe(3_166_000n);
+        expect(reclaimableSeed({ ...resolved, outcome: NO }, 3_466_000n)).toBe(3_366_000n);
+        expect(reclaimableSeed({ ...resolved, outcome: marketClient.constants.OUTCOME_VOID }, 3_466_000n)).toBe(3_266_000n);
+        // Winners already paid: nothing of theirs is still owed.
+        expect(reclaimableSeed({ ...resolved, outcome: YES, paidOut: 300_000n }, 3_166_000n)).toBe(3_166_000n);
+        expect(reclaimableSeed({ ...resolved, outcome: YES }, 300_000n)).toBe(0n);
+        expect(reclaimableSeed({ ...resolved, resolved: false, outcome: YES }, 3_466_000n)).toBe(0n);
+    });
+
+    it('adds a reclaim after resolving its own market, and for an already-resolved one with seed left', async () => {
+        const book = marketBook();
+        const late = { ...placeAgreement('own late', { deadline: NOW - 60 }), soleOwner: true };
+        book.markets.set(late.account, ownMarket(late, { qYes: 10n }, 3_466_010n));
+        expect(await inspect(late, { readers: readersWithVault(book) })).toMatchObject({ steps: ['expire', 'resolve', 'reclaim'] });
+
+        const done = { ...placeAgreement('own done', { status: 'Executed', decision: 1 }), soleOwner: true };
+        book.markets.set(done.account, ownMarket(done, { resolved: true, outcome: YES, qYes: 10n }, 3_466_010n));
+        book.positions.set(done.account, { amount: 10n, claimed: true });
+        expect(await inspect(done, { readers: readersWithVault(book) })).toMatchObject({ state: 'executed', steps: ['reclaim'] });
+        // Once taken (only the winners' 10 left), the agreement closes.
+        book.markets.set(done.account, ownMarket(done, { resolved: true, outcome: YES, qYes: 10n }, 10n));
+        expect(await inspect(done, { readers: readersWithVault(book) })).toMatchObject({ state: 'closed', steps: [] });
+    });
+
+    it('takes the reclaim last, through the action engine, with a checkpoint', async () => {
+        const item = { ...placeAgreement('reclaim'), outcome: 'NO', steps: ['resolve', 'reclaim'] };
+        const book = marketBook();
+        book.markets.set(item.account, market(item));
+        const reclaim = vi.fn(async ({ creatorKeypair, subject }) => ({ replayed: false, signature: `reclaim-${subject === item.account}-${creatorKeypair === owner}`, amount: '3466000' }));
+        const actions = [];
+        const checkpoints = [];
+        const result = await executeSettlement({
+            connection: chain.connection, ownerKeypair: owner, item, readers: book.readers, sendAndConfirm: chain.sendAndConfirm,
+            perform: async (action, execute) => { actions.push(action.type); return execute(); },
+            checkpoint: async record => { checkpoints.push(record); },
+            adapters: {
+                resolveAgreementMarket: async () => ({ signature: 'r', outcome: 'NO' }),
+                reclaimAgreementMarketSeed: reclaim
+            }
+        });
+        expect(actions).toEqual(['resolve', 'reclaim-seed']);
+        expect(checkpoints).toHaveLength(2);
+        expect(result.reclaim).toEqual({ replayed: false, signature: 'reclaim-true-true', amount: '3466000' });
     });
 });
 

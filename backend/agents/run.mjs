@@ -245,6 +245,7 @@ export function settlementMessage(persona, lens, item, type) {
     case 'execute': return `${persona.name} executed its agreement ${cid}; the escrow went to its payout.`;
     case 'expire': return `${persona.name} expired its agreement ${cid} after its deadline; the escrow returned to it.`;
     case 'resolve': return `${persona.name} resolved the market of agreement ${cid} ${item.outcome}.`;
+    case 'reclaim-seed': return `${persona.name} took back what the payouts left of its market seed on agreement ${cid}.`;
     default: return `${persona.name} claimed its YES ${item.outcome === 'YES' ? 'winnings' : 'refund'} on agreement ${cid}.`;
     }
 }
@@ -336,7 +337,8 @@ export async function settleStage({
                     done.execution ? `execute ${done.execution.signature ?? done.execution.status}` : null,
                     done.expiry ? `expire ${done.expiry.signature ?? done.expiry.status}` : null,
                     done.resolution ? `resolve ${done.resolution.signature ?? '-'} (${done.resolution.outcome})` : null,
-                    done.claim ? `claim ${done.claim.signature ?? done.claim.reason ?? '-'}` : null
+                    done.claim ? `claim ${done.claim.signature ?? done.claim.reason ?? '-'}` : null,
+                    done.reclaim ? `reclaim ${done.reclaim.signature ? `${done.reclaim.amount} atomic USDC ${done.reclaim.signature}` : 'nothing left'}` : null
                 ].filter(Boolean).join(' · ')}`);
             } catch (err) {
                 if (err?.status === 410 && err?.code === 'retired-agreement-format') {
