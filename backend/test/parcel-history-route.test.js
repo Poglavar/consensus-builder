@@ -1,7 +1,8 @@
 // The permanent per-parcel log (oracle/parcel-history.js, GET /parcels/:parcelUid/history): the published
 // agreements that take the parcel, lens members' ownership attestations and the parcel's agreement_executed
-// entries, merged by each source's own time (ties in causal order, untimed last, no time invented), the
-// parcel anchor observation, and the ?parcelUid= filter of GET /oracle/events.
+// entries (from the Solana agreement program or an EVM chain's Agreement contract), merged by each
+// source's own time (ties in causal order, untimed last, no time invented), the parcel anchor
+// observation, and the ?parcelUid= filter of GET /oracle/events.
 import express from 'express';
 import request from 'supertest';
 import { afterEach, describe, expect, it, vi } from 'vitest';
@@ -13,6 +14,7 @@ import {
     agreementEvent, deriveParcelAnchor, landEventHistoryEvent, loadParcelHistory, sortHistory
 } from '../oracle/parcel-history.js';
 import { AGREEMENT_PROGRAM_ID, RETIRED_AGREEMENT_PROGRAM_ID } from '../agreements/onchain.js';
+import { loadAddressBook } from '../chain/evm.js';
 import { cidOf } from './helpers/content-fixtures.js';
 
 const PARCEL = 'HR-335347-1208/3';
@@ -107,8 +109,33 @@ describe('GET /parcels/:parcelUid/history', () => {
         expect(landCall.params).toEqual([PARCEL, 'agreement_executed']);
         expect(landCall.sql).toMatch(/WHERE event_type = \$2 AND/);
         expect(landCall.sql).toContain(`attester IN ('${AGREEMENT_PROGRAM_ID}', '${RETIRED_AGREEMENT_PROGRAM_ID}')`);
+        // Each EVM chain's Agreement contract, only for the events written about that chain.
+        for (const chainId of ['84532', '11155111']) {
+            expect(landCall.sql).toContain(`OR (attester = '${loadAddressBook()[chainId].Agreement}' AND evidence->'source'->>'chain' = 'eip155:${chainId}')`);
+        }
         expect(landCall.sql).toMatch(/subject_type = 'parcel' AND subject_id = \$1::text/);
         expect(pool.calls).toHaveLength(3);
+    });
+
+    it('shows an agreement executed on an EVM chain at its block time, linking the transaction on the explorer', async () => {
+        const contract = loadAddressBook()['84532'].Agreement;
+        const key = `0x${'5a'.repeat(32)}`;
+        const tx = `0x${'ab'.repeat(32)}`;
+        const evmRow = {
+            event_id: `eip155:84532:${contract}:agreement_executed:${key}:${PARCEL}`, event_type: 'agreement_executed', subject_id: PARCEL,
+            outcome: 'executed', source_url: `https://sepolia.basescan.org/tx/${tx}`, source_hash: `sha256:${'cd'.repeat(32)}`,
+            source_observed_at: new Date('2026-11-13T07:30:00Z'), transaction_signature: tx, attester: contract,
+            evidence: {
+                source: { chain: 'eip155:84532', contract, transactionUrl: `https://sepolia.basescan.org/tx/${tx}`, block: 39700 },
+                agreementCid: CID, account: key, lens: '0x2B5AD5c4795c026514f8317c7a215E218DcCD6cF', decision: 'satisfied', attestation: `0x${'ee'.repeat(32)}`
+            }
+        };
+        const res = await request(appFor(stubPool({ landEvents: [evmRow] }))).get(`/parcels/${encodeURIComponent(PARCEL)}/history`);
+        expect(res.body.events).toEqual([{
+            type: 'agreement_executed', at: '2026-11-13T07:30:00.000Z', outcome: 'executed', agreementCid: CID, account: key,
+            lens: evmRow.evidence.lens, attestation: evmRow.evidence.attestation, transaction: tx, hash: evmRow.source_hash,
+            link: `https://sepolia.basescan.org/tx/${tx}`
+        }]);
     });
 
     it('returns an empty history and a non-existent anchor for an unknown parcel', async () => {

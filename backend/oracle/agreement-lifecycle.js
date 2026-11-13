@@ -12,9 +12,19 @@
 // the account's newest signatures. Idempotent: event ids are deterministic, events are inserted once,
 // and an `onchain` write never replaces a later observation. Driven by land-event-job.js behind the
 // CLI agreement-lifecycle-job.mjs.
+//
+// An agreement on an EVM chain (blockchain/contracts/Agreement.sol, read through
+// agreements/onchain-evm.js) gets the same events: the transaction is the one whose AgreementExecuted,
+// AgreementCancelled or AgreementExpired log names the agreement's key, found with queryFilter in a
+// bounded block range (from the block the agreement was created, or the deadline passed, to the block it
+// was read at; only the block of executed_at for an execution), paged because public RPCs limit log
+// ranges. Every event time is that log's block timestamp, which the event's own time and, on execution,
+// the record's executed_at must equal. Event ids start `eip155:<chainId>:<contract>:`, so they never
+// meet a Solana id (`solana:<cluster>:`) or another chain's.
 
 import { createHash } from 'node:crypto';
 import { createRequire } from 'node:module';
+import { ethers } from 'ethers';
 import {
     ONCHAIN_STATUSES,
     TERMINAL_STATUSES,
@@ -24,11 +34,19 @@ import {
     refreshOnchain,
     writeOnchain
 } from '../agreements/onchain.js';
-import { EVM_MOVING_FIELDS, evmOnchainMoved, onchainFromEvmRecord } from '../agreements/onchain-evm.js';
+import {
+    AGREEMENT_TERMINAL_EVENTS as EVM_TERMINAL_EVENTS,
+    EVM_MOVING_FIELDS,
+    evmChainLabel,
+    evmOnchainMoved,
+    onchainFromEvmRecord
+} from '../agreements/onchain-evm.js';
 import { sameKey } from '../chain/keys.js';
 
 const require = createRequire(import.meta.url);
 const web3 = require('@solana/web3.js');
+// The shared EVM agreement codec: its explorer links (Basescan, Etherscan; none on a local chain).
+const EvmAgreement = require('../../frontend/js/chain/evm-agreement.js');
 
 export const AGREEMENT_LIFECYCLE_EVENT_TYPE = 'agreement_lifecycle';
 export const AGREEMENT_EXECUTED_EVENT_TYPE = 'agreement_executed';
@@ -47,6 +65,9 @@ const TERMINAL_EVENTS = Object.freeze({
 export const TERMINAL_SEARCH_LIMIT = 50;
 // A progress line every this many agreements (and one per agreement that moved, failed or got events).
 const PROGRESS_EVERY = 25;
+// Blocks per eth_getLogs request when searching an EVM agreement's terminal log; halved (down to one
+// block) each time the RPC refuses a range, and kept that small for the rest of the pass.
+export const EVM_LOG_PAGE_BLOCKS = 10_000;
 
 const sha256Hex = bytes => createHash('sha256').update(bytes).digest('hex');
 
@@ -223,6 +244,159 @@ export function buildAgreementEvents({ agreement, account, accountData, cluster,
     }))];
 }
 
+// ---- EVM agreements ----------------------------------------------------------------------------------
+
+/**
+ * The first block in lo..hi whose timestamp is at least `seconds` (binary search over `timeOf(block)`),
+ * or hi + 1 when none is.
+ */
+export async function firstBlockAtOrAfter(timeOf, seconds, lo, hi) {
+    let low = lo;
+    let high = hi + 1;
+    while (low < high) {
+        const middle = Math.floor((low + high) / 2);
+        if (await timeOf(middle) >= seconds) high = middle;
+        else low = middle + 1;
+    }
+    return low;
+}
+
+/**
+ * The log that left EVM agreement `account` (evmAccountOf) in `outcome`, found with the chain's
+ * terminalLogs (queryFilter on the agreement's key) between the block where its end could first happen
+ * and `toBlock`, the block it was read at: from the block of createdAt (cancelled), of the later of
+ * createdAt and the deadline (expired), or only the blocks timed executed_at (executed). Pages newest
+ * first, `paging.blocks` blocks a request; a refused range is halved and retried, and only a refused
+ * single block throws. Returns the log (onchain-evm.js evmTerminalLogOf) with `blockTime`, its block's
+ * timestamp, or null when no such log is in range.
+ */
+export async function findEvmTerminalLog(chain, { account, outcome, toBlock, paging = { blocks: EVM_LOG_PAGE_BLOCKS }, log = () => {} }) {
+    const times = new Map();
+    const timeOf = async block => {
+        if (!times.has(block)) {
+            const seconds = await chain.blockTime(block);
+            if (!Number.isSafeInteger(seconds) || seconds < 0) throw new Error(`block ${block} has no timestamp`);
+            times.set(block, seconds);
+        }
+        return times.get(block);
+    };
+    const since = outcome === 'executed' ? account.executedAt
+        : outcome === 'expired' ? Math.max(account.createdAt, account.deadline) : account.createdAt;
+    if (!Number.isSafeInteger(since) || since <= 0 || !Number.isSafeInteger(toBlock) || toBlock < 0) return null;
+    const fromBlock = await firstBlockAtOrAfter(timeOf, since, 0, toBlock);
+    const lastBlock = outcome === 'executed' ? await firstBlockAtOrAfter(timeOf, since + 1, fromBlock, toBlock) - 1 : toBlock;
+    const key = account.address.toLowerCase();
+    let high = lastBlock;
+    while (high >= fromBlock) {
+        const low = Math.max(fromBlock, high - paging.blocks + 1);
+        let logs;
+        try {
+            logs = await chain.terminalLogs({ key: account.address, outcome, fromBlock: low, toBlock: high });
+        } catch (error) {
+            const span = high - low + 1;
+            if (span <= 1) throw error;
+            paging.blocks = Math.floor(span / 2);
+            log(`the RPC refused the logs of blocks ${low}-${high} (${error.shortMessage || error.message}); asking ${paging.blocks} block(s) at a time`);
+            continue;
+        }
+        const match = logs.filter(entry => !entry.removed && entry.outcome === outcome && entry.key === key && entry.cid === account.cid).at(-1);
+        if (match) return { ...match, blockTime: await timeOf(match.block) };
+        high = low - 1;
+    }
+    return null;
+}
+
+// sha256 of a log's topics and data bytes, in that order: what an EVM land event's source hash covers.
+function evmLogHash({ topics, data }) {
+    return sha256Hex(Buffer.concat([...topics, data].map(hex => Buffer.from(ethers.getBytes(hex)))));
+}
+
+/**
+ * The land events of one terminal EVM agreement, as buildAgreementEvents writes a Solana one:
+ * `agreement` the index row's { cid, inputParcelIds, parcelSourceId }, `account` the record as read
+ * (evmAccountOf, its address the agreement key), `source` findEvmTerminalLog's answer. The time is the
+ * log's block timestamp; the event's own time, and on execution the record's executed_at, must equal it.
+ */
+export function buildEvmAgreementEvents({ agreement, account, chainId, contract, source }) {
+    const outcome = ONCHAIN_STATUSES[account.statusCode];
+    if (!TERMINAL_STATUSES.includes(outcome)) throw new Error(`agreement ${account.address} is ${outcome}, not terminal`);
+    const contractAddress = ethers.getAddress(contract);
+    const name = EVM_TERMINAL_EVENTS[outcome];
+    if (source.outcome !== outcome || source.key !== account.address.toLowerCase() || source.cid !== account.cid || source.address !== contractAddress) {
+        throw new Error(`log ${source.transaction}#${source.logIndex} does not record ${outcome} for ${account.address}`);
+    }
+    if (source.at !== source.blockTime) {
+        throw new Error(`${name} of ${account.address} says ${source.at} but its block ${source.block} is timed ${source.blockTime}`);
+    }
+    if (outcome === 'executed' && source.at !== account.executedAt) {
+        throw new Error(`AgreementExecuted says ${source.at} but agreement ${account.address} stores executed_at ${account.executedAt}`);
+    }
+    const observedAt = chainTime(source.blockTime, `${name} of ${account.address}`);
+    const chain = evmChainLabel(chainId);
+    const prefix = `${chain}:${contractAddress}`;
+    const attester = { kind: 'evm_contract', address: contractAddress };
+    const transactionUrl = EvmAgreement.explorerUrl({ signature: source.transaction, chainId });
+    const sourceRef = {
+        chain,
+        contract: contractAddress,
+        // The land_event source_url: the explorer's transaction page, or the CAIP-style name of the
+        // transaction on a chain without an explorer (a local node).
+        url: transactionUrl ?? `${chain}:tx:${source.transaction}`,
+        contractUrl: EvmAgreement.explorerUrl({ chainId, contract: contractAddress }),
+        transactionUrl,
+        transaction: source.transaction,
+        block: source.block,
+        logIndex: source.logIndex,
+        hash: `sha256:${evmLogHash(source)}`
+    };
+    const satisfied = account.decisionCode === 1;
+    const decision = {
+        lens: account.lens,
+        decision: satisfied ? 'satisfied' : 'pending',
+        attestation: satisfied ? account.decisionAttestation : null,
+        attestationHash: null
+    };
+    const lifecycle = {
+        id: `${prefix}:${AGREEMENT_LIFECYCLE_EVENT_TYPE}:${account.address}:${outcome}`,
+        eventType: AGREEMENT_LIFECYCLE_EVENT_TYPE,
+        subjectType: 'agreement',
+        subjectId: account.address,
+        outcome,
+        observedAt,
+        attester,
+        source: sourceRef,
+        evidence: {
+            agreementCid: account.cid,
+            account: account.address,
+            sponsor: account.sponsor,
+            ...decision,
+            statusCode: account.statusCode,
+            ...(outcome === 'executed' ? { payout: source.payout, paidWei: source.wei } : { refundedWei: source.refundedWei }),
+            inputParcelIds: agreement.inputParcelIds,
+            parcelSourceId: agreement.parcelSourceId ?? null,
+            // The hashed log itself, so a reader re-checks the source hash and decodes the event.
+            log: { topics: source.topics, data: source.data }
+        }
+    };
+    if (outcome !== 'executed') return [lifecycle];
+    return [lifecycle, ...agreement.inputParcelIds.map(parcelId => ({
+        id: `${prefix}:${AGREEMENT_EXECUTED_EVENT_TYPE}:${account.address}:${parcelId}`,
+        eventType: AGREEMENT_EXECUTED_EVENT_TYPE,
+        subjectType: 'parcel',
+        subjectId: parcelId,
+        outcome,
+        observedAt,
+        attester,
+        source: sourceRef,
+        evidence: {
+            agreementCid: account.cid,
+            account: account.address,
+            ...decision,
+            parcelSourceId: agreement.parcelSourceId ?? null
+        }
+    }))];
+}
+
 // consensus.land_event column values of one event, in insert order ($1..$11), written the one
 // idempotent way (ON CONFLICT (event_id) DO NOTHING).
 export const LAND_EVENT_COLUMNS = `(event_id, event_type, subject_type, subject_id, outcome, source_url, source_hash,
@@ -231,7 +405,7 @@ export const LAND_EVENT_COLUMNS = `(event_id, event_type, subject_type, subject_
 export function landEventParams(event) {
     return [
         event.id, event.eventType, event.subjectType, event.subjectId, event.outcome,
-        event.source.accountUrl ?? event.source.transactionUrl, event.source.hash, event.observedAt, event.attester.address,
+        event.source.url ?? event.source.accountUrl ?? event.source.transactionUrl, event.source.hash, event.observedAt, event.attester.address,
         event.source.transaction, JSON.stringify({ source: event.source, ...event.evidence })
     ];
 }
@@ -260,17 +434,18 @@ async function insertEvents(pool, events) {
     }
 }
 
-// How many lifecycle and per-parcel events each account already has (an account whose events are
-// complete needs no transaction search) and, once it has its lifecycle event, when it ended: that
+// How many lifecycle and per-parcel events each account already has from `attester` (the program or
+// contract the pass watches: an EVM key is the same on every chain) — an account whose events are
+// complete needs no transaction search — and, once it has its lifecycle event, when it ended: that
 // event's chain time.
-async function storedEventCounts(pool, accounts) {
+async function storedEventCounts(pool, accounts, attester) {
     const counts = new Map(accounts.map(account => [account, { lifecycle: 0, parcels: 0, endedAt: null }]));
     if (!accounts.length) return counts;
     const { rows } = await pool.query(`
         SELECT evidence->>'account' AS account, event_type, count(*)::int AS events, max(source_observed_at) AS ended_at
         FROM consensus.land_event
-        WHERE event_type = ANY($1::text[]) AND evidence->>'account' = ANY($2::text[])
-        GROUP BY 1, 2`, [AGREEMENT_EVENT_TYPES, accounts]);
+        WHERE event_type = ANY($1::text[]) AND evidence->>'account' = ANY($2::text[]) AND attester = $3
+        GROUP BY 1, 2`, [AGREEMENT_EVENT_TYPES, accounts, attester]);
     for (const row of rows) {
         const entry = counts.get(row.account);
         if (!entry) continue;
@@ -286,9 +461,9 @@ async function storedEventCounts(pool, accounts) {
 
 /**
  * One pass over the minted agreements of `chain.cluster` (agreements/onchain.js createAgreementChain),
- * or of `chain.chainId` for an EVM chain (agreements/onchain-evm.js evmAgreementChain: `onchain` only).
- * Dry run unless `apply`: then nothing is written, and the result says what would be. One agreement's
- * failure (an RPC or database error) is recorded and the pass goes on with the next.
+ * or of `chain.chainId` for an EVM chain (agreements/onchain-evm.js evmAgreementChain). Dry run unless
+ * `apply`: then nothing is written, and the result says what would be. One agreement's failure (an RPC
+ * or database error) is recorded and the pass goes on with the next.
  * @returns {Promise<{ scanned: number, reconciled: number, moved: number, terminal: number, events: object[],
  *   inserted: number, invalidAccounts: object[], missingEvidence: string[], failed: object[], dryRun: boolean }>}
  *   reconciled: `onchain` rows written; invalidAccounts: agreements whose account is missing or is not
@@ -298,8 +473,11 @@ async function storedEventCounts(pool, accounts) {
 export async function syncAgreementLifecycle({ pool, chain, apply = false, now = () => Date.now(), log = () => {} } = {}) {
     if (!pool || !chain) throw new Error('pool and chain are required');
     // An EVM chain (agreements/onchain-evm.js evmAgreementChain, family 'evm') takes the rows recorded on
-    // its chain id; its pass refreshes `onchain` only (land events of EVM agreements are not written yet).
+    // its chain id, and its events are attested by its Agreement contract.
     const evm = chain.family === 'evm';
+    const attester = evm ? ethers.getAddress(chain.contract) : chain.programId;
+    // The log page size, shrunk for the rest of the pass once the RPC refuses a range.
+    const paging = { blocks: EVM_LOG_PAGE_BLOCKS };
     const where = evm ? `EVM chain ${chain.chainId}` : chain.cluster;
     // A Solana pass reads the rows minted under the program it watches; rows of the retired agreement
     // program keep the state last observed (agreements/onchain.js RETIRED_AGREEMENT_PROGRAM_ID).
@@ -314,7 +492,7 @@ export async function syncAgreementLifecycle({ pool, chain, apply = false, now =
     if (!total) return result;
 
     const reads = await chain.readAccounts(rows.map(row => row.onchain.account));
-    const counts = await storedEventCounts(pool, rows.map(row => row.onchain.account));
+    const counts = await storedEventCounts(pool, rows.map(row => row.onchain.account), attester);
     const observedAt = new Date(now()).toISOString();
     for (let index = 0; index < total; index += 1) {
         const row = rows[index];
@@ -362,25 +540,24 @@ export async function syncAgreementLifecycle({ pool, chain, apply = false, now =
 
         if (!terminal) return;
         result.terminal += 1;
-        // The terminal transaction search and the land events read Solana program logs; an EVM agreement
-        // ends with its `onchain` refreshed.
-        if (evm) return;
         const parcelIds = row.input_parcel_ids || [];
         if (stored.lifecycle > 0 && (fresh.status !== 'executed' || stored.parcels >= parcelIds.length)) return;
-        const source = await findTerminalTransaction(await chain.connection(), {
-            account: account.address, outcome: fresh.status, programId: chain.programId
-        });
+        const source = evm
+            ? await findEvmTerminalLog(chain, { account, outcome: fresh.status, toBlock: read.slot, paging, log: line => log(`${step}: ${line}`) })
+            : await findTerminalTransaction(await chain.connection(), { account: account.address, outcome: fresh.status, programId: chain.programId });
         if (!source) {
             result.missingEvidence.push(account.address);
-            log(`${step}: ${fresh.status}, but no ${TERMINAL_EVENTS[fresh.status].name} among the account's newest ${TERMINAL_SEARCH_LIMIT} transactions`);
+            log(`${step}: ${fresh.status}, but ${evm
+                ? `no ${EVM_TERMINAL_EVENTS[fresh.status]} log of this key up to block ${read.slot}`
+                : `no ${TERMINAL_EVENTS[fresh.status].name} among the account's newest ${TERMINAL_SEARCH_LIMIT} transactions`}`);
             return;
         }
+        const agreement = { cid: row.cid, inputParcelIds: parcelIds, parcelSourceId: row.parcel_source_id };
         let events;
         try {
-            events = buildAgreementEvents({
-                agreement: { cid: row.cid, inputParcelIds: parcelIds, parcelSourceId: row.parcel_source_id },
-                account, accountData: read.data, cluster: chain.cluster, programId: chain.programId, source
-            });
+            events = evm
+                ? buildEvmAgreementEvents({ agreement, account, chainId: chain.chainId, contract: chain.contract, source })
+                : buildAgreementEvents({ agreement, account, accountData: read.data, cluster: chain.cluster, programId: chain.programId, source });
         } catch (error) {
             result.missingEvidence.push(account.address);
             log(`${step}: ${error.message}`);
@@ -390,6 +567,6 @@ export async function syncAgreementLifecycle({ pool, chain, apply = false, now =
         result.events.push(...events);
         const inserted = apply ? await insertEvents(pool, events) : 0;
         result.inserted += inserted;
-        log(`${step}: ${fresh.status} in ${source.signature}; ${events.length} event(s)${apply ? `, ${inserted} new` : ''}`);
+        log(`${step}: ${fresh.status} in ${evm ? `${source.transaction} (block ${source.block})` : source.signature}; ${events.length} event(s)${apply ? `, ${inserted} new` : ''}`);
     }
 }

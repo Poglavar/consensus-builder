@@ -8,6 +8,7 @@ import { HTTPFacilitatorClient } from '@x402/core/server';
 import { createCdpFacilitatorClient } from '@coinbase/cdp-sdk/x402';
 import { declareDiscoveryExtension } from '@x402/extensions/bazaar';
 import { ExactSvmScheme } from '@x402/svm/exact/server';
+import { AGREEMENT_PROGRAM_ID } from '../agreements/onchain.js';
 import { buildVerifiedAgreementFact } from '../oracle/verified-fact.js';
 import { AGREEMENT_LIFECYCLE_EVENT_TYPE } from '../oracle/agreement-lifecycle.js';
 import { AGREEMENT_EXECUTION_RECIPE_ID } from '../oracle/market-recipe.js';
@@ -77,6 +78,8 @@ function parseFactQuery(req, res, next) {
     next();
 }
 
+// The fact sold is a Solana agreement account's (buildVerifiedAgreementFact re-checks its account bytes):
+// the agreement program's events only, never an EVM Agreement contract's.
 function loadVerifiedFact(pool) {
     return async (req, res, next) => {
         try {
@@ -87,9 +90,10 @@ function loadVerifiedFact(pool) {
                 FROM consensus.land_event
                 WHERE event_type = $1
                   AND ($2::text IS NULL OR subject_id = $2)
+                  AND attester = $3
                 ORDER BY source_observed_at DESC
                 LIMIT 1
-            `, [AGREEMENT_LIFECYCLE_EVENT_TYPE, req.oracleFactQuery.agreementAccount]);
+            `, [AGREEMENT_LIFECYCLE_EVENT_TYPE, req.oracleFactQuery.agreementAccount, AGREEMENT_PROGRAM_ID]);
             if (!rows[0]) return res.status(404).json({ error: 'No verified terminal fact exists for this agreement.' });
             const agreementAccount = req.oracleFactQuery.agreementAccount || rows[0].subject_id;
             req.oracleFactBundle = buildVerifiedAgreementFact({

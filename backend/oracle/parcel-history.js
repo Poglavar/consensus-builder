@@ -3,13 +3,18 @@
 // by each event's own time. Sources: the published agreements that take the parcel as an input
 // (consensus.agreement), lens members' ownership attestations (consensus.lens_attestation) and the
 // parcel's `agreement_executed` land events (consensus.land_event, written by agreement-lifecycle.js:
-// one per input parcel of an executed agreement, pointing at it). Every `at` is the source's own time;
+// one per input parcel of an agreement executed on Solana or an EVM chain, pointing at it). Every `at`
+// is the source's own time;
 // an event whose source carries no time keeps `at: null` and sorts last, it is never given the time of
 // this read.
 
 import { createRequire } from 'node:module';
+import { ethers } from 'ethers';
 import { PublicKey } from '@solana/web3.js';
 import { AGREEMENT_PROGRAM_ID, RETIRED_AGREEMENT_PROGRAM_ID } from '../agreements/onchain.js';
+import { evmChainLabel } from '../agreements/onchain-evm.js';
+import { loadAddressBook } from '../chain/evm.js';
+import { isEvmAddress } from '../chain/keys.js';
 import { AGREEMENT_EXECUTED_EVENT_TYPE, explorer } from './agreement-lifecycle.js';
 
 const require = createRequire(import.meta.url);
@@ -49,14 +54,29 @@ export function parcelAnchorAccountMatches(info, parcelUid) {
 }
 
 /**
+ * The EVM Agreement contracts whose land events count, one per chain id in
+ * frontend/contracts/addresses.json: { chain: 'eip155:<chainId>', address } (checksummed, as the
+ * lifecycle oracle writes the attester).
+ */
+export function evmAgreementAttesters(addressBook = loadAddressBook()) {
+    return Object.entries(addressBook)
+        .filter(([chainId, entry]) => /^\d+$/.test(chainId) && isEvmAddress(entry?.Agreement))
+        .map(([chainId, entry]) => ({ chain: evmChainLabel(chainId), address: ethers.getAddress(entry.Agreement) }));
+}
+
+/**
  * SQL condition selecting consensus.land_event rows about parcel `$n`, attested by the agreement
- * program (the ugt program, or the retired agreement program for the events it attested): an `agreement_executed` event is the parcel's own (its subject); an `agreement_lifecycle`
- * event names an agreement, so it matches when the agreement's input parcels list the parcel. Shared by
- * GET /oracle/events?parcelUid= (routes/land-events.js).
+ * program (the ugt program, or the retired agreement program for the events it attested) or by an EVM
+ * chain's Agreement contract on that chain: an `agreement_executed` event is the parcel's own (its
+ * subject); an `agreement_lifecycle` event names an agreement, so it matches when the agreement's input
+ * parcels list the parcel. Shared by GET /oracle/events?parcelUid= (routes/land-events.js).
  */
 export function landEventParcelCondition(paramIndex) {
     const p = `$${paramIndex}`;
-    return `(attester IN ('${AGREEMENT_PROGRAM_ID}', '${RETIRED_AGREEMENT_PROGRAM_ID}')
+    // Interpolated only after evmAgreementAttesters' checks (a checksummed address, a numeric chain id).
+    const evm = evmAgreementAttesters().map(({ chain, address }) => `
+        OR (attester = '${address}' AND evidence->'source'->>'chain' = '${chain}')`).join('');
+    return `((attester IN ('${AGREEMENT_PROGRAM_ID}', '${RETIRED_AGREEMENT_PROGRAM_ID}')${evm})
         AND CASE WHEN event_type = '${AGREEMENT_EXECUTED_EVENT_TYPE}'
             THEN subject_type = 'parcel' AND subject_id = ${p}::text
             ELSE evidence->'inputParcelIds' @> jsonb_build_array(${p}::text)

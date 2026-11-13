@@ -6,6 +6,7 @@
 import { PublicKey } from '@solana/web3.js';
 import fs from 'node:fs';
 import { isCid } from '../cid.js';
+import { isEvmAddress } from '../chain/keys.js';
 import { AGREEMENT_EVENT_TYPES, AGREEMENT_LIFECYCLE_EVENT_TYPE } from '../oracle/agreement-lifecycle.js';
 import { landEventParcelCondition, validParcelUid } from '../oracle/parcel-history.js';
 import {
@@ -31,6 +32,12 @@ function validAddress(value) {
     try { return new PublicKey(String(value)).toBase58(); } catch { return null; }
 }
 
+// An agreement event's subject: a Solana agreement account, or an EVM agreement key (bytes32, lower case).
+function validSubject(value) {
+    const text = String(value);
+    return /^0x[0-9a-fA-F]{64}$/.test(text) ? text.toLowerCase() : validAddress(text);
+}
+
 function eventFromRow(row) {
     return {
         id: row.event_id,
@@ -39,7 +46,8 @@ function eventFromRow(row) {
         outcome: row.outcome,
         observedAt: row.source_observed_at,
         recordedAt: row.created_at,
-        attester: { kind: 'solana_program', address: row.attester },
+        // The lifecycle oracle's attesters: the Solana agreement program, or an EVM chain's Agreement contract.
+        attester: { kind: isEvmAddress(row.attester) ? 'evm_contract' : 'solana_program', address: row.attester },
         source: {
             url: row.source_url,
             hash: row.source_hash,
@@ -111,14 +119,14 @@ export function setupLandEventsRoute(app, pool) {
         }
     });
 
-    // ?type= (agreement_lifecycle by default, or agreement_executed), ?subject=<agreement account> (the
-    // subject of agreement_lifecycle events), ?agreement=<cid>, ?parcelUid= (agreement_executed: the
-    // parcel's own; agreement_lifecycle: agreements whose inputs list it), ?limit=.
+    // ?type= (agreement_lifecycle by default, or agreement_executed), ?subject=<agreement account or EVM
+    // agreement key> (the subject of agreement_lifecycle events), ?agreement=<cid>, ?parcelUid=
+    // (agreement_executed: the parcel's own; agreement_lifecycle: agreements whose inputs list it), ?limit=.
     app.get('/oracle/events', async (req, res) => {
         try {
             const limit = limitOf(req.query.limit);
-            const subject = req.query.subject ? validAddress(req.query.subject) : null;
-            if (req.query.subject && !subject) return res.status(400).json({ error: 'subject must be a Solana address' });
+            const subject = req.query.subject ? validSubject(req.query.subject) : null;
+            if (req.query.subject && !subject) return res.status(400).json({ error: 'subject must be a Solana address or an EVM agreement key' });
             const eventType = req.query.type ? String(req.query.type) : AGREEMENT_LIFECYCLE_EVENT_TYPE;
             if (!EVENT_TYPES.includes(eventType)) return res.status(400).json({ error: `type must be one of ${EVENT_TYPES.join(', ')}` });
             const params = [eventType];
@@ -178,4 +186,4 @@ export function setupLandEventsRoute(app, pool) {
     });
 }
 
-export { eventFromRow, limitOf, validAddress };
+export { eventFromRow, limitOf, validAddress, validSubject };

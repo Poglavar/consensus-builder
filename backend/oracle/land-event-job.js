@@ -1,5 +1,5 @@
 // The land-event oracle's job body behind oracle/agreement-lifecycle-job.mjs: checks that the RPC is
-// the cluster the index records agreements on, runs one agreement lifecycle pass
+// the cluster (or EVM chain) the index records agreements on, runs one agreement lifecycle pass
 // (agreement-lifecycle.js: `onchain` refreshes, `agreement_lifecycle` and per-parcel
 // `agreement_executed` land events) and turns its result into the run verdict. Every step is
 // injectable, so the ordering and the verdict are testable without RPC or PostgreSQL.

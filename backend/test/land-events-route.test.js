@@ -150,6 +150,20 @@ describe('GET /oracle/events', () => {
         expect(sql).toMatch(/WHERE event_type = \$1 AND subject_id = \$2\s+ORDER BY source_observed_at DESC\s+LIMIT \$3/);
     });
 
+    it('serves an EVM agreement\'s event as its Agreement contract\'s, read by the agreement key in any case', async () => {
+        const contract = '0xe9bd361f00CDE963659a81c8e4F6b21d696f9302';
+        const key = `0x${'5a'.repeat(32)}`;
+        const evmRow = { ...lifecycleRow, event_id: `eip155:84532:${contract}:agreement_lifecycle:${key}:executed`, subject_id: key, attester: contract,
+            evidence: { source: { chain: 'eip155:84532', contract }, agreementCid: CID, account: key } };
+        const pool = recording([evmRow]);
+        const res = await request(appFor(pool)).get(`/oracle/events?subject=${key.toUpperCase().replace('0X', '0x')}`);
+        expect(res.status).toBe(200);
+        expect(res.body.events[0]).toMatchObject({ subject: { type: 'agreement', id: key }, attester: { kind: 'evm_contract', address: contract } });
+        expect(pool.query.mock.calls[0][1]).toEqual(['agreement_lifecycle', key, 25]);
+        expect((await request(appFor(pool)).get(`/oracle/events?subject=0x${'5a'.repeat(31)}`)).status).toBe(400);
+        expect(pool.query).toHaveBeenCalledTimes(1);
+    });
+
     it('serves the per-parcel execution entries and refuses any other type, the proposal ones included', async () => {
         const pool = recording([]);
         const res = await request(appFor(pool)).get('/oracle/events?type=agreement_executed');

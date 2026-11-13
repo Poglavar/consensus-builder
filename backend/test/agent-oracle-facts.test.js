@@ -162,8 +162,9 @@ describe(`GET ${AGENT_ORACLE_FACTS_PATH}`, () => {
         const { app } = appFor(pool);
         const res = await request(app).get(AGENT_ORACLE_FACTS_PATH);
         expect(res.status).toBe(402);
-        expect(pool.query).toHaveBeenCalledWith(expect.stringContaining('($2::text IS NULL OR subject_id = $2)'), [
-            'agreement_lifecycle', null
+        // The Solana agreement program's events only: an EVM Agreement contract's are never sold as this fact.
+        expect(pool.query).toHaveBeenCalledWith(expect.stringMatching(/\(\$2::text IS NULL OR subject_id = \$2\)\s+AND attester = \$3/), [
+            'agreement_lifecycle', null, AGREEMENT_PROGRAM_ID
         ]);
         const required = decodePaymentRequiredHeader(res.headers['payment-required']);
         expect(required.accepts[0]).toMatchObject({
@@ -213,7 +214,7 @@ describe(`GET ${AGENT_ORACLE_FACTS_PATH}`, () => {
             recipe: { id: 'agreement-execution-v1', subject: { agreementAccount: AGREEMENT, marketAccount: EXAMPLE_SUBJECT } },
             verification: { status: 'verified', recipeId: 'agreement-execution-v1', lens: { decision: 'NO' }, checks: { subjectMatches: true } }
         });
-        expect(pool.query.mock.calls.at(-1)[1]).toEqual(['agreement_lifecycle', AGREEMENT]);
+        expect(pool.query.mock.calls.at(-1)[1]).toEqual(['agreement_lifecycle', AGREEMENT, AGREEMENT_PROGRAM_ID]);
     });
 
     it('fails closed when the oracle price is not configured', async () => {
