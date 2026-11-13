@@ -259,7 +259,14 @@
             const roadRevision = proposal.roadProposal && candidate.roadProposal && revision;
             const occupiedGroundRival = (replacesLayoutGround && candidate.parcelLayout)
                 || (replacesCorridorGround && candidate.roadProposal);
-            if (!isBuildingContentProposal(candidate) && !candidate.structureProposal && !roadRevision && !occupiedGroundRival) return false;
+            // Two roads (or two tracks) with no lineage between them: they stay together where they
+            // meet or cross, and the standing one comes off only when this one lies over nearly
+            // all of it (coversRoad below). A track along a road is a different kind and stays.
+            const sameRoadCandidate = !!proposal.roadProposal && !!candidate.roadProposal && !revision
+                && !isBuildingContentProposal(candidate) && !candidate.structureProposal
+                && isTrackRecord(proposal, options) === isTrackRecord(candidate, options);
+            if (!isBuildingContentProposal(candidate) && !candidate.structureProposal && !roadRevision && !occupiedGroundRival
+                && !sameRoadCandidate) return false;
             // A road or track does not displace a park, square or lake it crosses: it cuts through
             // and the rest of the structure stays (the road tool's "Build through"; the carve is
             // apply/road.js _groundAfterLaterCorridors). Buildings it covers still go.
@@ -277,6 +284,7 @@
             if (!candidateFootprint) return false;
             const context = { site: 'claims.appliedRivals', proposalId: targetId, rivalId: candidateId };
             const overlaps = groundRule().reachesInto(t, asFeature(targetFootprintOf()), asFeature(candidateFootprint), 0, context);
+            if (overlaps && sameRoadCandidate) return coversRoad(t, targetFootprintOf(), candidateFootprint, context);
             if (!overlaps || !openLandPair) return overlaps;
             // Partly covered, the earlier of the two gives way and stays; one this covers entirely
             // has nothing to stand on and comes off.
@@ -287,6 +295,30 @@
 
     function asFeature(geometry) {
         return (geometry && geometry.type === 'Feature') ? geometry : { type: 'Feature', properties: {}, geometry };
+    }
+
+    // The share of a road's ground another road must lie over to be the same road drawn again (an
+    // earlier publication of a plan's street, say) and not a road that joins or crosses it. Two
+    // publications of one street network differ by a percent or two of their ground; a joining
+    // road keeps most of its ground to itself.
+    const SAME_ROAD_COVERAGE = 0.9;
+
+    // Whether `cover` lies over nearly all of `road`: what `road` keeps outside it is no ground at
+    // all, or at most a tenth of its own.
+    function coversRoad(t, cover, road, context) {
+        const rule = groundRule();
+        const kept = rule.uncoveredBy(t, asFeature(road), [asFeature(cover)], context);
+        if (!rule.isGround(t, kept)) return true;
+        const whole = t.area(asFeature(road));
+        return whole > 0 && t.area(kept) <= (1 - SAME_ROAD_COVERAGE) * whole;
+    }
+
+    // Whether a road record is a track (corridor-profile.js corridorIsTrack: rail in its profile).
+    function isTrackRecord(record, options) {
+        const isTrack = (options && typeof options.isTrack === 'function' && options.isTrack)
+            || (global && typeof global.corridorIsTrack === 'function' && global.corridorIsTrack)
+            || (typeof require === 'function' ? require('../corridor-profile.js').corridorIsTrack : null);
+        return !!(isTrack && isTrack(record && record.roadProposal && record.roadProposal.definition));
     }
 
     // What counts as ground, whether a shape reaches into another and what of a shape another leaves

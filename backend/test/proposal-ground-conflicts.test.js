@@ -297,7 +297,8 @@ describe('confirmed plan replacement includes occupied ground', () => {
 
     it('retains a host layout for a building-only share and retains road crossings', () => {
         expect(collectAppliedProposalAlternatives(building('new-building', 16), [layout('host-layout', 16, true)], options)).toEqual([]);
-        expect(collectAppliedProposalAlternatives(road('new-road', 16, false), [road('crossing', 16)], options)).toEqual([]);
+        // The crossing road shares only the east half of the new road's ground.
+        expect(collectAppliedProposalAlternatives(road('new-road', 16, false), [road('crossing', 16.0005)], options)).toEqual([]);
     });
 });
 
@@ -334,8 +335,57 @@ describe('overlapping published road revisions', () => {
     it('retains moved copies and ordinary crossing roads', () => {
         const moved={...revision,roadProposal:{definition:{polygon:box(16.1)}}};
         expect(collectAppliedProposalAlternatives(moved,[source],{planOrder})).toEqual([]);
-        const crossing={...revision,origin:null};
+        // A road with no lineage that crosses the source: a north-south strip over its west end.
+        const across = turf.polygon([[[16.0005,45.7995],[16.0007,45.7995],[16.0007,45.8006],[16.0005,45.8006],[16.0005,45.7995]]]).geometry;
+        const crossing={...revision,origin:null,roadProposal:{definition:{polygon:across}}};
         expect(collectAppliedProposalAlternatives(crossing,[source],{planOrder})).toEqual([]);
+        expect(collectAppliedProposalAlternatives(source,[crossing],{planOrder})).toEqual([]);
+    });
+});
+
+// Two publications of one plan carry the same street as two designs with no lineage between them.
+// Opening the newer over the older left both on the map (Borovje, 2026-11-13: 23 designs applied
+// for a plan of 22, and unapply then named the road as standing on itself). A road lying over
+// nearly all of another road replaces it; roads that join or cross stay together.
+describe('a road drawn again over another road', () => {
+    // An east-west street, `lengthDeg` long from `west`, about 11 m wide.
+    const street = (west, lengthDeg = 0.002, south = 45.8) => turf.polygon([[[west, south], [west + lengthDeg, south],
+        [west + lengthDeg, south + 0.0001], [west, south + 0.0001], [west, south]]]).geometry;
+    const road = (proposalId, polygon, extra = {}) => ({ proposalId, goal: 'road-track', applied: true,
+        roadProposal: { definition: { polygon, ...extra } } });
+    const rivalIds = (target, records) => collectAppliedProposalAlternatives(target, records, { planOrder }).map(r => r.proposalId);
+
+    it('takes the standing road off when the new one lies on the same ground, in either direction', () => {
+        const older = road('older', street(16));
+        const newer = road('newer', street(16));
+        expect(rivalIds(newer, [older])).toEqual(['older']);
+        expect(rivalIds(older, [newer])).toEqual(['newer']);
+        expect(rivalIds(newer, [{ ...older, applied: false }])).toEqual([]);
+    });
+
+    it('takes it off when it keeps a few percent of its ground, and leaves it when it keeps a fifth', () => {
+        // 2% and 20% of the standing road reach west of the new one.
+        expect(rivalIds(road('newer', street(16)), [road('older', street(16 - 0.00004))])).toEqual(['older']);
+        expect(rivalIds(road('newer', street(16)), [road('older', street(16 - 0.0004))])).toEqual([]);
+    });
+
+    it('leaves a short road inside a long one standing when the short one is applied, and takes it off under the long one', () => {
+        const long = road('long', street(16));
+        const short = road('short', street(16.0005, 0.0004));
+        expect(rivalIds(short, [long])).toEqual([]);
+        expect(rivalIds(long, [short])).toEqual(['short']);
+    });
+
+    it('leaves a road that joins it and a track along it', () => {
+        // A side street from the middle of the main street northwards: a tenth of it lies on the main street.
+        const side = turf.polygon([[[16.001, 45.8], [16.0011, 45.8], [16.0011, 45.801], [16.001, 45.801], [16.001, 45.8]]]).geometry;
+        const main = road('main', street(16));
+        expect(rivalIds(main, [road('side', side)])).toEqual([]);
+        expect(rivalIds(road('side', side), [main])).toEqual([]);
+        const track = road('track', street(16), { metadata: { isTrack: true } });
+        expect(rivalIds(main, [track])).toEqual([]);
+        expect(rivalIds(track, [main])).toEqual([]);
+        expect(rivalIds(road('second-track', street(16), { metadata: { isTrack: true } }), [track])).toEqual(['track']);
     });
 });
 

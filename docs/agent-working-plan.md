@@ -57,7 +57,10 @@ still names the corridors it attaches to.
    edit). Neighbours whose junctions change are replaced in the plan by their revisions.
 3. `appliedRivals(incoming, members, { replaceOccupiedGround: true })` lists the members in the way:
    buildings and structures under a building, structure or road; roads under a building or surface
-   space; layouts under a layout; overlapping revisions of the same road or structure. A road
+   space; layouts under a layout; overlapping revisions of the same road or structure; a road (or
+   track) that the incoming road (or track) lies over nearly all of, at least nine tenths of its
+   ground, which is the same road drawn again. Roads that join or cross stay together, and so does
+   a track along a road. A road
    crossing a park, square or lake is not a rival: it cuts through. Nor is a park, square or lake
    that another covers only in part: the later one takes the overlap and the other stays on the
    rest; one covered entirely is a rival.
