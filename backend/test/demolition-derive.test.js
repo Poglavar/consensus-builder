@@ -51,12 +51,6 @@ describe('demolition derive', () => {
         ] }, turf);
         expect([...result.tunnelled.keys()]).toEqual(['gdi-3d:above']);
         expect([...result.records.keys()]).toEqual(['gdi-3d:surface']);
-        // The passage the 3D view opens through the building is the tunnel's own rectangle.
-        expect(result.tunnelled.get('gdi-3d:above').passages).toEqual([tunnelled.tunnels[0]]);
-        // ...and it is lined only on the ground the building stands over.
-        const [under] = result.tunnelled.get('gdi-3d:above').under;
-        expect(turf.area(under)).toBeGreaterThan(2);
-        expect(turf.area(under)).toBeLessThan(turf.area(tunnelled.tunnels[0]));
     });
 
     it('keeps buildings of two sources apart even when their ids are equal', () => {

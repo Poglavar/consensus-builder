@@ -183,39 +183,26 @@
     // shows fewer): { records: Map<key, record>, carveOf(key, footprint) }. `carveOf` answers like
     // corridor-carve.js carveBuildingByObjectId — null untouched, { remainder: null, demolished } razed,
     // { remainder, demolished } cut — and measures a building the stock does not hold (a 3D mesh
-    // with no footprint of its own) by `footprint()`, its outline as drawn. `passagesOf` gives the
-    // tunnel rectangles that pass under a building no design razes or cuts (null when none), so the
-    // 3D view opens the passage through its mesh, and `passageGround` the ground of every passage
-    // that lies under a building.
+    // with no footprint of its own) by `footprint()`, its outline as drawn.
     function carveRecords(proposals = null) {
         const takers = takersOf(proposals || allProposals());
-        const derived = idsOf(takers) === state.takerIds ? state
-            : (takers.length ? root.DemolitionDerive.derive({ takers, buildings: [...state.stock.values()] }, root.turf)
-                : { records: new Map(), tunnelled: new Map() });
-        const { records, tunnelled } = derived;
+        const records = idsOf(takers) === state.takerIds ? state.records
+            : (takers.length ? root.DemolitionDerive.derive({ takers, buildings: [...state.stock.values()] }, root.turf).records : new Map());
         const late = new Map();
-        const lateOf = (key, footprint) => {
-            if (state.stock.has(String(key)) || !takers.length || typeof footprint !== 'function') return null;
-            if (!late.has(key)) {
-                const geometry = footprint();
-                const result = geometry ? root.DemolitionDerive.derive({ takers, buildings: [{ key, geometry }] }, root.turf) : null;
-                late.set(key, { record: result?.records.get(key) || null, tunnel: result?.tunnelled.get(key) || null });
-            }
-            return late.get(key);
-        };
         const carveOf = (key, footprint) => {
-            const record = records.get(String(key)) || lateOf(key, footprint)?.record || null;
+            let record = records.get(String(key)) || null;
+            if (!record && !state.stock.has(String(key)) && takers.length && typeof footprint === 'function') {
+                if (!late.has(key)) {
+                    const geometry = footprint();
+                    late.set(key, geometry ? root.DemolitionDerive.derive({ takers, buildings: [{ key, geometry }] }, root.turf).records.get(key) || null : null);
+                }
+                record = late.get(key);
+            }
             if (!record) return null;
             return record.remainder ? { remainder: record.remainder, demolished: record.demolishedPart || null }
                 : { remainder: null, demolished: record.geometry || null };
         };
-        const passagesOf = (key, footprint) => {
-            const entry = tunnelled.get(String(key)) || lateOf(key, footprint)?.tunnel || null;
-            return entry?.passages?.length ? entry.passages : null;
-        };
-        // The ground of every passage under a building, where the 3D view lines the passage.
-        const passageGround = () => [...tunnelled.values()].flatMap(entry => entry.under || []);
-        return { records, carveOf, passagesOf, passageGround };
+        return { records, carveOf };
     }
 
     // The existing buildings under some land as pool features (properties.id and .source), for a

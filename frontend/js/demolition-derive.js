@@ -97,10 +97,7 @@
      *           applied design takes; a road's building tunnels take nothing.
      * buildings: [{ key, geometry }] — the buildings shown (key = `<source>:<id>`).
      * → { records: Map<key, { id, geometry, demolishedPart?, remainder?, proposalId, proposalIds }>,
-     *     tunnelled: Map<key, { proposalIds, passages, under }>, failures: [{ key, error }] }
-     * `passages` are the tunnel regions that pass under the building (whole rectangles, convex), so
-     * the 3D view can open the passage through the building's mesh; `under` is the ground of each
-     * passage that lies under the building, where the 3D view lines it.
+     *     tunnelled: Map<key, { proposalIds }>, failures: [{ key, error }] }
      * A record without `remainder` is a raze; with one, a cut. Order of the takers does not matter:
      * a building is cut against the union of what every taker clips from it.
      */
@@ -122,7 +119,7 @@
             try {
                 const outcome = deriveOne(building, box, candidates, turf);
                 if (outcome?.record) records.set(building.key, outcome.record);
-                else if (outcome?.tunnelledBy) tunnelled.set(building.key, { proposalIds: outcome.tunnelledBy, passages: outcome.passages, under: outcome.under });
+                else if (outcome?.tunnelledBy) tunnelled.set(building.key, { proposalIds: outcome.tunnelledBy });
             } catch (error) {
                 failures.push({ key: building.key, error });
             }
@@ -136,8 +133,6 @@
         let taken = null;
         const takenBy = [];
         const tunnelledBy = [];
-        const passages = [];
-        const passageGround = [];
         for (const taker of takers) {
             let clip = null;
             for (const part of taker.parts) {
@@ -152,15 +147,13 @@
                 const under = turf.intersect(clip, feature(tunnel.geometry));
                 if (!under || area(turf, under) < MIN_TAKEN_M2) continue;
                 if (!tunnelledBy.includes(taker.proposalId)) tunnelledBy.push(taker.proposalId);
-                passages.push(tunnel.geometry);
-                passageGround.push(under.geometry);
                 clip = turf.difference(clip, feature(tunnel.geometry));
             }
             if (!clip || area(turf, clip) < MIN_TAKEN_M2) continue;
             takenBy.push(taker.proposalId);
             taken = taken ? turf.union(clean(turf, taken), clean(turf, clip)) : clip;
         }
-        if (!taken) return tunnelledBy.length ? { tunnelledBy, passages, under: passageGround } : null;
+        if (!taken) return tunnelledBy.length ? { tunnelledBy } : null;
         const remainder = turf.difference(footprint, clean(turf, taken));
         const proposalIds = takenBy.filter(id => id !== null);
         const base = { id: building.key, geometry: building.geometry, proposalId: proposalIds[proposalIds.length - 1] ?? null, proposalIds };

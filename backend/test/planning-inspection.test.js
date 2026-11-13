@@ -219,9 +219,10 @@ describe('shared building and proposal representations', () => {
         const group = { add: vi.fn() };
         let carved = false;
         const context = vm.createContext({
-            window: { DemolitionIndex: { carveRecords: () => ({ records: new Map(), carveOf: () => (carved ? { remainder: geometry, demolished: geometry } : null), passagesOf: () => null }) },
+            window: { DemolitionIndex: { carveRecords: () => ({ records: new Map(), carveOf: () => (carved ? { remainder: geometry, demolished: geometry } : null) }) },
                 buildingFeaturePool: [feature], buildingPoolFeatureKey: f => `${f.properties.source}:${f.properties.object_id}`, PlanningRepresentations: representations },
             proposalStorage: { getAllProposals: () => [] }, displayedProposals: () => [], demolishedMaterialFor: () => ({}),
+            displayedPassages3D: () => [], openBuildingPassages: () => {}, addBuildingTunnelLiners3D: () => {},
             nearbyBuildingGeometryCache: { beginPass: () => ({}) }, nearbyProposalBuildings: [{ object_id: 12, source: 'gdi-3d' }],
             threeBuildingKey: building => `${building.source}:${building.object_id}`, buildingFootprintPolygon: () => null,
             xrayEnabled: false, suggestedPlansEnabled: false, suggestedExistingEnabled: false, suggestedAccess: 'auto', origin3857: null,

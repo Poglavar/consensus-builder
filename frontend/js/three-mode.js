@@ -5414,42 +5414,54 @@
         }
     }
 
-    // The passage ground the corridors' liners were last drawn for (passageGroundSignature).
-    let linedPassageSignature = null;
+    // Every passage of the displayed corridors through buildings (their building tunnels), in scene
+    // x/y: the axis (from → to), the ground rectangle, its width in scene units and its clear height.
+    function displayedPassages3D() {
+        const passages = [];
+        displayedProposals().forEach(proposal => {
+            const definition = corridorProposalDefinition(proposal);
+            if (!definition || !Array.isArray(definition.tunnels) || !definition.tunnels.length) return;
+            if (!isApplied(proposal, proposal.roadProposal)) return;
+            window.DemolitionDerive.tunnelSpansOf(definition).forEach(({ record, widthM, clearanceM, geometry }) => {
+                const ring = geometry.coordinates[0].map(([lng, lat]) => latLngToXY(lat, lng));
+                const xs = ring.map(point => point[0]);
+                const ys = ring.map(point => point[1]);
+                passages.push({
+                    id: record.id || record.edgeKey, geometry, ring, clearanceM,
+                    // Scene x/y are Web Mercator units, so a width in metres is scaled; heights stay metres.
+                    width: widthM * lifeMercatorK(),
+                    from: latLngToXY(Number(record.from.lat), Number(record.from.lng)),
+                    to: latLngToXY(Number(record.to.lat), Number(record.to.lng)),
+                    box: [Math.min(...xs), Math.min(...ys), Math.max(...xs), Math.max(...ys)]
+                });
+            });
+        });
+        return passages;
+    }
 
-    // The liner of each passage through a building: walls and a ceiling on the faces of the hole the
-    // passage opens in the building (openBuildingPassage), at the corridor's own width and the same
-    // clear height, with a portal frame at each end. It stands only where the passage is under a
-    // building (`passageGround`, rings in scene x/y), so the passage opens into the air outside.
-    function addBuildingTunnelLiners3D(targetGroup, definition, terrainHeightAt, passageGround) {
-        const spans = window.DemolitionDerive.tunnelSpansOf(definition);
-        if (!spans.length) return;
+    // The liner of each passage through buildings: walls and a ceiling on the faces of the hole the
+    // passage opens in their meshes (openBuildingPassages), at the corridor's width and clear height,
+    // with a portal frame at each end. It stands only where the passage is under a building
+    // (`ground`: passage id → { pieces: rings of the passage ground under a mesh, baseZ }), so the
+    // passage opens into the air outside.
+    function addBuildingTunnelLiners3D(targetGroup, passages, ground) {
         const thickness = 0.25;
         // Opaque: the liner is the passage's wall, and the building's inside must not show through it.
         const linerMaterial = new THREE.MeshLambertMaterial({ color: 0x8d8f94, side: THREE.DoubleSide });
         const portalMaterial = new THREE.MeshBasicMaterial({ color: 0x8b5cf6 });
 
-        spans.forEach(({ record: tunnel, widthM, clearanceM }) => {
-            const clearHeight = clearanceM;
-            // Scene x/y are Web Mercator units, so a width in metres is scaled; heights stay metres.
-            const clearWidth = widthM * lifeMercatorK();
-            const from = latLngToXY(Number(tunnel.from.lat), Number(tunnel.from.lng));
-            const to = latLngToXY(Number(tunnel.to.lat), Number(tunnel.to.lng));
-            const intervals = buildingDisplayPolicy.passageIntervals(from, to, clearWidth / 2, passageGround);
-            intervals.forEach(([t0, t1]) => {
+        passages.forEach(passage => {
+            const under = ground.get(passage.id);
+            if (!under) return;
+            const { from, to, width: clearWidth, clearanceM: clearHeight } = passage;
+            buildingDisplayPolicy.passageIntervals(from, to, clearWidth / 2, under.pieces).forEach(([t0, t1]) => {
                 const x1 = from[0] + (to[0] - from[0]) * t0, y1 = from[1] + (to[1] - from[1]) * t0;
                 const x2 = from[0] + (to[0] - from[0]) * t1, y2 = from[1] + (to[1] - from[1]) * t1;
                 const length = Math.hypot(x2 - x1, y2 - y1);
                 if (!Number.isFinite(length) || length < 0.5) return;
-                const z1 = terrainHeightOrZero(terrainHeightAt, x1, y1);
-                const z2 = terrainHeightOrZero(terrainHeightAt, x2, y2);
-                const dz = z2 - z1;
-                const slopedLength = Math.hypot(length, dz);
                 const assembly = new THREE.Group();
-                assembly.position.set((x1 + x2) / 2, (y1 + y2) / 2,
-                    (z1 + z2) / 2 + CORRIDOR_STRIP_Z + 0.05);
+                assembly.position.set((x1 + x2) / 2, (y1 + y2) / 2, under.baseZ + CORRIDOR_STRIP_Z + 0.05);
                 assembly.rotation.z = Math.atan2(y2 - y1, x2 - x1);
-                assembly.rotation.y = -Math.atan2(dz, length);
 
                 const addBox = (geometry, material, x, y, z) => {
                     const mesh = new THREE.Mesh(geometry, material);
@@ -5457,18 +5469,18 @@
                     markOwnedMaterial(mesh, material);
                     mesh.position.set(x, y, z);
                     mesh.userData.isBuildingTunnel = true;
-                    mesh.userData.tunnelId = tunnel.id || tunnel.edgeKey;
+                    mesh.userData.tunnelId = passage.id;
                     assembly.add(mesh);
                 };
 
-                addBox(new THREE.BoxGeometry(slopedLength, thickness, clearHeight), linerMaterial,
+                addBox(new THREE.BoxGeometry(length, thickness, clearHeight), linerMaterial,
                     0, -clearWidth / 2, clearHeight / 2);
-                addBox(new THREE.BoxGeometry(slopedLength, thickness, clearHeight), linerMaterial,
+                addBox(new THREE.BoxGeometry(length, thickness, clearHeight), linerMaterial,
                     0, clearWidth / 2, clearHeight / 2);
-                addBox(new THREE.BoxGeometry(slopedLength, clearWidth, thickness), linerMaterial,
+                addBox(new THREE.BoxGeometry(length, clearWidth, thickness), linerMaterial,
                     0, 0, clearHeight);
 
-                [-slopedLength / 2, slopedLength / 2].forEach(x => {
+                [-length / 2, length / 2].forEach(x => {
                     addBox(new THREE.BoxGeometry(thickness * 1.5, thickness * 1.5, clearHeight), portalMaterial,
                         x, -clearWidth / 2, clearHeight / 2);
                     addBox(new THREE.BoxGeometry(thickness * 1.5, thickness * 1.5, clearHeight), portalMaterial,
@@ -5479,18 +5491,6 @@
                 targetGroup.add(assembly);
             });
         });
-    }
-
-    // The ground of every displayed passage under a building, as rings in scene x/y.
-    function passageGroundXY() {
-        const ground = window.DemolitionIndex.carveRecords(displayedProposals()).passageGround();
-        return ground.flatMap(geometry => (geometry?.type === 'MultiPolygon' ? geometry.coordinates : [geometry?.coordinates || []]))
-            .map(polygon => (polygon[0] || []).map(([lng, lat]) => latLngToXY(lat, lng)));
-    }
-
-    // Which passages are lined: the corridors are redrawn when the demolitions change this.
-    function passageGroundSignature() {
-        return JSON.stringify(window.DemolitionIndex.carveRecords(displayedProposals()).passageGround());
     }
 
     function gradeRecordPointXY(point) {
@@ -6090,19 +6090,6 @@
             }
         }
 
-        // Track surfaces use a different renderer, but building-tunnel metadata is common to both
-        // corridor kinds, so liners are added in a second pass over every applied corridor proposal.
-        const passageGround = passageGroundXY();
-        linedPassageSignature = passageGroundSignature();
-        displayedProposals().forEach(proposal => {
-            const definition = corridorProposalDefinition(proposal);
-            if (!definition || !Array.isArray(definition.tunnels) || !definition.tunnels.length) return;
-            if (!isApplied(proposal, proposal.roadProposal)) return;
-            const terrainHeightAt = terrainProfilesOut.length
-                ? function (x, y) { return terrainHeightFromProfiles(terrainProfilesOut, x, y); }
-                : null;
-            addBuildingTunnelLiners3D(targetGroup, definition, terrainHeightAt, passageGround);
-        });
     }
 
     const nearbyBuildingGeometryCache = threeResources.createBuildingGeometryCache({
@@ -6125,6 +6112,10 @@
             // is measured by its own outline against the same designs. A TUNNELLED building has no
             // record, so it comes back untouched.
             const carving = window.DemolitionIndex.carveRecords(displayedProposals());
+            // The passages of roads and tracks through buildings, and the ground of each under the
+            // meshes it opens, where its liner stands.
+            const passages = displayedPassages3D();
+            const passageGround = new Map();
             const carveRecords = carving.records;
             // One response can contain the same source surface twice: within one object (usually
             // opposite winding) or across adjacent/duplicate object_ids. Share these sets across the
@@ -6137,8 +6128,8 @@
                 buildings: nearbyProposalBuildings,
                 // Which buildings are razed or cut, and how: a changed carve rebuilds the pass.
                 carveRecords: [...carveRecords.entries()].map(([key, record]) => [key, record.remainder ? JSON.stringify(record.remainder).length : 0]).sort(),
-                // Which buildings a passage opens, and where.
-                passages: window.DemolitionIndex.tunnelledKeys ? [...window.DemolitionIndex.tunnelledKeys()].sort() : [],
+                // Where passages open the buildings.
+                passages: passages.map(passage => [passage.id, passage.ring]),
                 visibility,
                 xrayEnabled,
                 suggestedPlansEnabled,
@@ -6167,8 +6158,7 @@
                             if (mesh) {
                                 // A road or track passing under the building opens its passage
                                 // through the mesh, so the way through shows.
-                                const passages = carving.passagesOf(threeBuildingKey(bld), () => buildingFootprintPolygon(bld)?.geometry || null);
-                                if (passages) openBuildingPassage(mesh, passages, threeBuildingKey(bld));
+                                openBuildingPassages(mesh, bld, passages, passageGround);
                                 addObserved(mesh);
                                 // An untouched shell can give way to its floor model in X-ray, building by
                                 // building (reconcileExistingFloorPlans), without rebuilding the others.
@@ -6191,7 +6181,7 @@
                             // the demolition.
                             if (renderParts.remainder && remainder) {
                                 polygonFeatureToMeshes(remainder, buildingMaterial, 0, height)
-                                    .forEach(mesh => { mesh.userData.demolitionPart = 'remainder'; addObserved(mesh); });
+                                    .forEach(mesh => { mesh.userData.demolitionPart = 'remainder'; openBuildingPassages(mesh, null, passages, passageGround, remainder); addObserved(mesh); });
                             }
                             if (renderParts.demolished && demolished) {
                                 polygonFeatureToMeshes(demolished, demolishedMaterial, 0, height)
@@ -6209,6 +6199,7 @@
                         console.warn('Failed to build 3D mesh for building', bld && bld.object_id, e);
                     }
                 }, { isCurrent });
+                addBuildingTunnelLiners3D(targetGroup, passages, passageGround);
             }
         } catch (error) {
             failures++;
@@ -6218,34 +6209,61 @@
         return { failures, shells };
     }
 
-    // Opens a passage (a tunnel rectangle under the building, with its clear height) through a
-    // building's real mesh by clipping: its materials drop every fragment inside the passage's box,
-    // so the facade keeps its detail and the liner (addBuildingTunnelLiners3D) lines the hole. A
-    // material clips one convex box, so a second passage under the same building is not opened.
-    function openBuildingPassage(mesh, passages, key) {
-        if (passages.length > 1) console.warn(`[three-mode] building ${key} has ${passages.length} passages under it; only the first is opened`);
-        const passage = passages[0];
+    // Opens the passages that cross a building mesh by clipping: its materials drop every fragment
+    // inside a passage's box (ground rectangle up to its clear height), so the facade keeps its detail
+    // and the liner (addBuildingTunnelLiners3D) lines the hole. The mesh decides, not the footprint
+    // stock: the city model's meshes and the 2D footprints of the same buildings do not always agree,
+    // and clipping removes only what stands inside the passage. The ground of each passage under the
+    // mesh's own outline (`footprint`, or the outline of `bld`'s faces) is added to `ground` for the
+    // liner. A material clips one convex box, so a mesh crossed by two passages opens the first.
+    function openBuildingPassages(mesh, bld, passages, ground, footprint = null) {
+        if (!passages.length || !mesh?.geometry) return;
         const geometry = mesh.geometry;
         if (!geometry.boundingBox) geometry.computeBoundingBox();
-        const baseZ = geometry.boundingBox.min.z + mesh.position.z;
-        const clearance = Number(passage.clearanceM) || window.DemolitionDerive.TUNNEL_CLEARANCE_M.road;
-        const ring = (passage.coordinates?.[0] || []).map(([lng, lat]) => latLngToXY(lat, lng));
-        const specs = buildingDisplayPolicy.passageClipPlanes(ring, baseZ + clearance);
+        const { min, max } = geometry.boundingBox;
+        const crossing = passages.filter(({ box }) => box[0] <= max.x + mesh.position.x && min.x + mesh.position.x <= box[2]
+            && box[1] <= max.y + mesh.position.y && min.y + mesh.position.y <= box[3]);
+        if (!crossing.length) return;
+        const baseZ = min.z + mesh.position.z;
+        const outline = footprint || buildingFootprintPolygon(bld);
+        const opened = crossing.filter(passage => {
+            let under = null;
+            try { under = outline ? turf.intersect(outline, turf.feature(passage.geometry)) : null; } catch (error) {
+                console.warn(`[three-mode] the passage ${passage.id} could not be measured against a building outline; it is opened anyway`, error);
+                return true;
+            }
+            if (!under) return !outline;
+            const entry = ground.get(passage.id) || { pieces: [], baseZ };
+            entry.baseZ = Math.min(entry.baseZ, baseZ);
+            const polygons = under.geometry.type === 'MultiPolygon' ? under.geometry.coordinates : [under.geometry.coordinates];
+            polygons.forEach(polygon => entry.pieces.push(polygon[0].map(([lng, lat]) => latLngToXY(lat, lng))));
+            ground.set(passage.id, entry);
+            return true;
+        });
+        if (!opened.length) return;
+        if (opened.length > 1) console.warn(`[three-mode] ${opened.length} passages cross one building mesh; only ${opened[0].id} is opened`);
+        const passage = opened[0];
+        const specs = buildingDisplayPolicy.passageClipPlanes(passage.ring, baseZ + passage.clearanceM);
         if (!specs) {
-            console.warn(`[three-mode] the passage under building ${key} is not a convex outline; it is drawn closed`);
+            console.warn(`[three-mode] the passage ${passage.id} is not a convex outline; the building is drawn closed`);
             return;
         }
         const planes = specs.map(spec => new THREE.Plane(new THREE.Vector3(...spec.normal), spec.constant));
+        // Its own copies: a remainder prism shares the scene's building material, and the clip must
+        // not reach other buildings or be overwritten by another passage.
+        const clipped = material => {
+            const copy = material.clone();
+            copy.clippingPlanes = planes;
+            copy.clipIntersection = true;
+            copy.clipShadows = true;
+            return copy;
+        };
         mesh.traverse(node => {
             if (!node.isMesh || !node.material) return;
-            (Array.isArray(node.material) ? node.material : [node.material]).forEach(material => {
-                material.clippingPlanes = planes;
-                material.clipIntersection = true;
-                material.clipShadows = true;
-                material.needsUpdate = true;
-            });
+            node.material = Array.isArray(node.material) ? node.material.map(clipped) : clipped(node.material);
+            (Array.isArray(node.material) ? node.material : [node.material]).forEach(material => markOwnedMaterial(node, material));
         });
-        mesh.userData.passageOpened = true;
+        mesh.userData.passageOpened = passage.id;
     }
 
     // Height of a { z_min, z_max, faces[] } building in metres; falls back to scanning face
@@ -11625,8 +11643,6 @@
         if (!isActive) return;
         rebuild3DBuildingsOnly({ family: 'existing' });
         rebuildProposalGrounds3D();
-        // A passage's liner stands where it is under a building, which the demolitions measure.
-        if (passageGroundSignature() !== linedPassageSignature) rebuildCorridors3D();
     });
 
     // A new building source list: the scene's buildings are the new sources' (their cells are keyed by
