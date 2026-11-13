@@ -2,7 +2,10 @@
 // with its own key, and the directory lists it once the signature, its SAS credential and schemas on
 // chain, and its own /lens/status all agree. Nobody approves a member; they only have to be real.
 // A member is one identity with an address per chain family: `key`, its Solana address, signs the
-// registration, and an EVM address it also publishes signs its own statement (EIP-191).
+// registration, and an EVM address it also publishes signs its own statement (EIP-191). A member with
+// only an EVM key registers with that checksummed address as `key` (no base58 key starts with 0x, so
+// the two id spaces cannot meet) and signs the same message with it (EIP-191); it has no SAS
+// credential, and the directory offers it only on EVM.
 
 import { createPrivateKey, sign } from 'node:crypto';
 import { PublicKey } from '@solana/web3.js';
@@ -56,14 +59,25 @@ export function normalizeServiceUrl(value, { allowHttp = false } = {}) {
     return url.toString().replace(/\/+$/, '');
 }
 
+// Whether a registration is an EVM-only member's: its key is an EVM address.
+export const isEvmOnlyRegistration = registration => isEvmAddress(registration?.key);
+
 export function normalizeRegistration(input = {}, options = {}) {
     let key;
-    try {
-        key = new PublicKey(input.key).toBase58();
-    } catch {
-        refuse(400, 'bad_request', 'key must be a base58 public key');
+    if (isEvmAddress(input.key)) {
+        // An EVM-only member: its checksummed address is its key, and its only address.
+        key = ethers.getAddress(input.key);
+        if (key !== input.key) refuse(400, 'bad_request', 'an EVM key must be checksummed (EIP-55)');
+        if (input.evmAddress && input.evmAddress !== key) refuse(400, 'bad_request', 'an EVM-only member\'s evmAddress is its key');
+        input = { ...input, evmAddress: key };
+    } else {
+        try {
+            key = new PublicKey(input.key).toBase58();
+        } catch {
+            refuse(400, 'bad_request', 'key must be a base58 public key or a checksummed EVM address');
+        }
+        if (key !== input.key) refuse(400, 'bad_request', 'key must be a base58 public key or a checksummed EVM address');
     }
-    if (key !== input.key) refuse(400, 'bad_request', 'key must be a base58 public key');
     const kind = text(input.kind, 'kind', { max: 32 });
     if (!LENS_MEMBER_KINDS.includes(kind)) refuse(400, 'bad_request', `kind must be one of ${LENS_MEMBER_KINDS.join(', ')}`);
     if (!Number.isSafeInteger(input.signedAt) || input.signedAt <= 0) refuse(400, 'bad_request', 'signedAt must be Unix seconds');
@@ -71,7 +85,9 @@ export function normalizeRegistration(input = {}, options = {}) {
     if (evmAddress && !isEvmAddress(evmAddress)) refuse(400, 'bad_request', 'evmAddress must be an EVM address');
     return {
         key,
-        credentialName: text(input.credentialName, 'credentialName', { max: 32 }),
+        // A SAS credential exists only on Solana: an EVM-only member names none.
+        credentialName: isEvmAddress(key) ? (input.credentialName ? refuse(400, 'bad_request', 'an EVM-only member has no SAS credential; leave credentialName empty') : '')
+            : text(input.credentialName, 'credentialName', { max: 32 }),
         kind,
         name: text(input.name, 'name', { max: 64 }),
         description: text(input.description, 'description', { max: 280, required: false }),
@@ -95,8 +111,14 @@ export function evmAddressStatement({ key, evmAddress, signedAt }) {
 }
 
 // The member side: sign a registration with a web3.js Keypair (base58 signature) and, when the member
-// holds an EVM key, its EVM address statement with that ethers wallet (`evmSignature`).
+// holds an EVM key, its EVM address statement with that ethers wallet (`evmSignature`). Without a
+// keypair, an EVM-only member signs the registration itself with the wallet (EIP-191, 0x hex).
 export async function signRegistration(fields, keypair, { evmWallet = null } = {}) {
+    if (!keypair) {
+        if (!evmWallet) throw new Error('signRegistration: a Solana keypair or an EVM wallet is required');
+        const registration = normalizeRegistration({ ...fields, credentialName: '', key: ethers.getAddress(evmWallet.address), evmAddress: '' }, { allowHttp: true });
+        return { ...registration, signature: await evmWallet.signMessage(registrationMessage(registration)) };
+    }
     const registration = normalizeRegistration({ ...fields, key: keypair.publicKey.toBase58(), evmAddress: evmWallet ? evmWallet.address : '' }, { allowHttp: true });
     const privateKey = createPrivateKey({ key: Buffer.concat([ED25519_PKCS8_PREFIX, Buffer.from(keypair.secretKey.slice(0, 32))]), format: 'der', type: 'pkcs8' });
     const signature = getBase58Decoder().decode(sign(null, Buffer.from(registrationMessage(registration), 'utf8'), privateKey));
@@ -138,9 +160,12 @@ export async function verifyRegistration(input, { nowSeconds, readAccounts, fetc
     if (Math.abs(nowSeconds - registration.signedAt) > REGISTRATION_MAX_SKEW_SECONDS) {
         refuse(400, 'stale_registration', `signedAt must be within ${REGISTRATION_MAX_SKEW_SECONDS} s of now; sign a fresh registration`);
     }
-    if (!verifyWalletSignature({ owner: registration.key, message: registrationMessage(registration), signature: input.signature })) {
-        refuse(401, 'bad_signature', 'signature does not verify for this key and registration');
-    }
+    const evmOnly = isEvmOnlyRegistration(registration);
+    const signed = evmOnly
+        ? evmMessageSigner(registrationMessage(registration), input.signature) === registration.key
+        : verifyWalletSignature({ owner: registration.key, message: registrationMessage(registration), signature: input.signature });
+    if (!signed) refuse(401, 'bad_signature', 'signature does not verify for this key and registration');
+    if (evmOnly) return { ...registration, credential: null, ...(await probeStatus(registration, { credential: null, fetchStatus })) };
     if (registration.evmAddress && !evmSignatureValid(registration, input.evmSignature)) {
         refuse(401, 'bad_evm_signature', 'evmSignature is not the EVM address\'s EIP-191 signature of its statement (member, evmAddress, signedAt)');
     }
@@ -159,6 +184,23 @@ export async function verifyRegistration(input, { nowSeconds, readAccounts, fetc
         }
     });
 
+    await probeStatus(registration, { credential, fetchStatus });
+    return { ...registration, credential };
+}
+
+// The signer of an EIP-191 message, checksummed, or null; never throws.
+function evmMessageSigner(message, signature) {
+    if (typeof signature !== 'string' || !signature) return null;
+    try {
+        return ethers.verifyMessage(message, signature);
+    } catch {
+        return null;
+    }
+}
+
+// The member's own GET /lens/status must answer live as this registration: key, credential (null for an
+// EVM-only member), kind and, when published, the EVM address it attests EVM decisions with.
+async function probeStatus(registration, { credential, fetchStatus }) {
     let status;
     try {
         status = await fetchStatus(registration.serviceUrl);
@@ -167,7 +209,7 @@ export async function verifyRegistration(input, { nowSeconds, readAccounts, fetc
     }
     const mismatch = [
         ['key', status?.key, registration.key],
-        ['credential', status?.credential, credential],
+        ['credential', status?.credential ?? null, credential],
         ['kind', status?.kind, registration.kind]
     ].find(([, actual, expected]) => actual !== expected);
     if (mismatch) refuse(422, 'service_mismatch', `${registration.serviceUrl}/lens/status reports ${mismatch[0]} ${mismatch[1] ?? 'nothing'}, expected ${mismatch[2]}`);
@@ -176,8 +218,7 @@ export async function verifyRegistration(input, { nowSeconds, readAccounts, fetc
         refuse(422, 'service_mismatch', `${registration.serviceUrl}/lens/status reports evmAddress ${status.evmAddress ?? 'nothing'}, expected ${registration.evmAddress}`);
     }
     if (status.dryRun || status.ephemeralKey) refuse(422, 'service_mismatch', `${registration.serviceUrl} is a dry-run member; only live members are listed`);
-
-    return { ...registration, credential };
+    return {};
 }
 
 // Server side probe: GET <serviceUrl>/lens/status, no redirects, 5 s, JSON only, small bodies.
@@ -201,7 +242,7 @@ export function connectionAccountReader(connection) {
 // wallet). Returns the listed member; throws with the directory's refusal otherwise.
 export async function announceLensMember({ directoryUrl, publicUrl, keypair, evmWallet = null, status, name, description = '', nowSeconds, fetchImpl = fetch }) {
     const signed = await signRegistration({
-        credentialName: status.credentialName,
+        credentialName: status.credentialName ?? '',
         kind: status.kind,
         name,
         description,

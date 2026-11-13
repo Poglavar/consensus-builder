@@ -411,7 +411,7 @@
         const members = directory.members || [];
         return keys.map(key => {
             const entry = root.LensCore.findMember(members, key);
-            return { key, label: root.LensCore.memberLabel(key, members), serviceUrl: entry?.serviceUrl || null };
+            return { key, label: root.LensCore.memberLabel(key, members), serviceUrl: entry?.serviceUrl || null, addresses: entry?.addresses || null };
         });
     }
 
@@ -462,7 +462,7 @@
             try {
                 await root.ProposalApprovalLensAuthority.connectWallet();
                 const result = await root.ProposalApprovalLensAuthority.instance.verifyOwner(subjectFor(agreementId) || subject,
-                    { memberKey: member.key, serviceUrl: member.serviceUrl });
+                    { memberKey: member.key, serviceUrl: member.serviceUrl, addresses: member.addresses });
                 const label = labels(subject);
                 status.textContent = t('proposalApproval.walletActsFor', 'Your wallet {{wallet}} can act for {{owners}}.', {
                     wallet: root.LensCore.shortKey(result.wallet), owners: list(result.ownerIds.map(label))

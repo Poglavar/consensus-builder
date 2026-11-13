@@ -214,6 +214,100 @@ describe('POST /agent/lenses/members', () => {
     });
 });
 
+describe('a member with only an EVM address', () => {
+    // A fixed test key, never a real one.
+    const evmOnly = new ethers.Wallet(`0x${'77'.repeat(32)}`);
+    const ADDRESS = evmOnly.address;
+    const signedEvm = (extra = {}, wallet = evmOnly) => signRegistration({
+        credentialName: '', kind: 'lifecycle', name: 'EVM notary', description: '', serviceUrl: 'https://evm.example.test', signedAt: NOW, ...extra
+    }, null, { evmWallet: wallet });
+    const evmStatus = (extra = {}) => ({ key: ADDRESS, evmAddress: ADDRESS, kind: 'lifecycle', credential: null, credentialName: null, dryRun: false, ephemeralKey: false, ...extra });
+
+    it('registers with its EVM key alone: its address is its key and nothing on Solana is read', async () => {
+        const body = await signedEvm();
+        expect(body).toMatchObject({ key: ADDRESS, evmAddress: ADDRESS, credentialName: '' });
+        expect(registrationMessage(body).split('\n')).toEqual(['Urban Game Theory lens member registration v2', `key: ${ADDRESS}`, 'credentialName: ',
+            'kind: lifecycle', 'name: EVM notary', 'description: ', 'serviceUrl: https://evm.example.test', `evmAddress: ${ADDRESS}`, `signedAt: ${NOW}`]);
+        expect(ethers.verifyMessage(registrationMessage(body), body.signature)).toBe(ADDRESS);
+        const readAccounts = chain();
+        await expect(verify(body, { readAccounts, fetchStatus: async () => evmStatus() })).resolves.toMatchObject({ key: ADDRESS, evmAddress: ADDRESS, credential: null });
+        expect(readAccounts).not.toHaveBeenCalled();
+    });
+
+    it('refuses another key\'s signature, a tampered field, an unchecksummed key, a credential and a service that answers otherwise', async () => {
+        const body = await signedEvm();
+        const fetchStatus = async () => evmStatus();
+        const other = new ethers.Wallet(`0x${'88'.repeat(32)}`);
+        await expect(verify({ ...body, signature: await other.signMessage(registrationMessage(body)) }, { fetchStatus })).rejects.toMatchObject({ status: 401, code: 'bad_signature' });
+        await expect(verify({ ...body, name: 'Someone else' }, { fetchStatus })).rejects.toMatchObject({ code: 'bad_signature' });
+        // A Solana key's ed25519 signature is not an EVM key's.
+        await expect(verify({ ...body, signature: (await signed()).signature }, { fetchStatus })).rejects.toMatchObject({ code: 'bad_signature' });
+        await expect(verify({ ...body, key: ADDRESS.toLowerCase() }, { fetchStatus })).rejects.toMatchObject({ code: 'bad_request', message: /checksummed/ });
+        await expect(verify({ ...body, credentialName: 'LensMember' }, { fetchStatus })).rejects.toMatchObject({ code: 'bad_request', message: /no SAS credential/ });
+        await expect(verify({ ...body, evmAddress: other.address }, { fetchStatus })).rejects.toMatchObject({ code: 'bad_request', message: /evmAddress is its key/ });
+        await expect(verify(body, { fetchStatus: async () => evmStatus({ key: KEY }) })).rejects.toMatchObject({ code: 'service_mismatch', message: /key/ });
+        await expect(verify(body, { fetchStatus: async () => evmStatus({ credential }) })).rejects.toMatchObject({ code: 'service_mismatch', message: /credential/ });
+        await expect(verify(body, { fetchStatus: async () => evmStatus({ evmAddress: other.address }) })).rejects.toMatchObject({ code: 'service_mismatch', message: /evmAddress/ });
+        await expect(verify(body, { fetchStatus: async () => evmStatus({ dryRun: true }) })).rejects.toMatchObject({ code: 'service_mismatch', message: /dry-run/ });
+    });
+
+    it('is listed under its address, available on EVM only, and its address names one member', async () => {
+        const row = { key: ADDRESS, evm_address: ADDRESS, kind: 'lifecycle', name: 'EVM notary', description: null, service_url: 'https://evm.example.test', registered_at: new Date(NOW * 1000), coverage: {} };
+        const pool = { query: vi.fn(async () => ({ rows: [row] })) };
+        const app = express();
+        app.use(express.json());
+        setupLensesRoute(app, pool, { readAccounts: chain(), fetchStatus: async () => evmStatus(), nowSeconds: () => NOW });
+        const res = await request(app).post('/agent/lenses/members').send(await signedEvm());
+        expect(res.status).toBe(201);
+        expect(res.body.member).toMatchObject({ key: ADDRESS, addresses: { solana: null, evm: ADDRESS } });
+        const params = pool.query.mock.calls[0][1];
+        expect([params[0], params[5], params[7]]).toEqual([ADDRESS, null, ADDRESS]);
+        // lens_member_evm_address_key: an address another member already publishes is refused.
+        const taken = { query: vi.fn(async () => { throw Object.assign(new Error('duplicate key value violates unique constraint'), { code: '23505' }); }) };
+        const refusedApp = express();
+        refusedApp.use(express.json());
+        setupLensesRoute(refusedApp, taken, { readAccounts: chain(), fetchStatus: async () => evmStatus(), nowSeconds: () => NOW });
+        const refused = await request(refusedApp).post('/agent/lenses/members').send(await signedEvm());
+        expect([refused.status, refused.body.error]).toEqual([409, 'evm_address_taken']);
+    });
+
+    it('a running EVM-only member announces itself and the directory probes its real /lens/status', async () => {
+        const clock = { nowSeconds: () => NOW };
+        const lens = createLensMember({
+            evmOnly: true,
+            evmIssuer: createFakeEvmIssuer({ clock, address: ADDRESS }),
+            kind: 'lifecycle',
+            store: createMemoryStore(),
+            identity: createDevnetRegistryIdentity({ rows: [], clock, authority: ADDRESS }),
+            clock
+        });
+        const status = await lens.status();
+        expect(status).toMatchObject({ key: ADDRESS, evmAddress: ADDRESS, credential: null, credentialName: null, schemas: null, ephemeralKey: false });
+        // It attests nothing on Solana.
+        await expect(lens.attestOwnership({ parcelUid: 'HR-1', owner: KEY })).rejects.toMatchObject({ status: 503, code: 'solana_not_configured' });
+        await expect(lens.attestDecision({ agreementCid: 'bafkreigh2akiscaildcqabsyg3dfr6chu3fgpregiymsck7e7aqa4s52zy', sponsor: KEY, decision: 'satisfied', evidenceRef: 'r', sourceObservedAt: NOW - 10 }))
+            .rejects.toMatchObject({ code: 'solana_not_configured' });
+        const memberServer = createLensMemberApp({ member: lens, pricing: createLensPricing({ dryRun: true, env: {} }) }).listen(0);
+        await new Promise(resolve => memberServer.once('listening', resolve));
+        const publicUrl = `http://127.0.0.1:${memberServer.address().port}`;
+        const pool = { query: vi.fn(async (_sql, params) => ({ rows: [{ key: params[0], kind: params[1], name: params[2], description: params[3], service_url: params[4], registered_at: new Date(params[6] * 1000), evm_address: params[7], coverage: {} }] })) };
+        const directory = express();
+        directory.use(express.json());
+        const readAccounts = chain();
+        setupLensesRoute(directory, pool, { readAccounts, nowSeconds: () => NOW, allowHttp: true });
+        const directoryServer = directory.listen(0);
+        await new Promise(resolve => directoryServer.once('listening', resolve));
+        try {
+            const listed = await announceLensMember({ directoryUrl: `http://127.0.0.1:${directoryServer.address().port}`, publicUrl, keypair: null, evmWallet: evmOnly, status, name: 'EVM notary', nowSeconds: NOW });
+            expect(listed).toMatchObject({ key: ADDRESS, addresses: { solana: null, evm: ADDRESS }, kind: 'lifecycle', serviceUrl: publicUrl });
+            expect(readAccounts).not.toHaveBeenCalled();
+        } finally {
+            memberServer.close();
+            directoryServer.close();
+        }
+    });
+});
+
 describe('file attestation store', () => {
     it('persists every record and reloads them', async () => {
         const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'lens-store-'));

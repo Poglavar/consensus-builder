@@ -765,11 +765,11 @@ A person's editable, chain-specific default trust set, persisted in the browser 
 
 ### Lens member
 
-An attester belonging to a lens: one identity, a notary or an organisation, with an address per chain family it publishes, a Solana key, an EVM address or both, each proven by a signature from that key. It is available only on the chains whose address it published, and an agreement names it by its address on the agreement's chain. Its service and coverage information belong to the identity, not to an address. Directory membership is not an owner's vote.
+An attester belonging to a lens: one identity, a notary or an organisation, with an address per chain family it publishes, a Solana key, an EVM address or both, each proven by a signature from that key. It is available only on the chains whose address it published, and an agreement names it by its address on the agreement's chain; it signs that agreement's approval facts with that address's key (Ed25519 for a Solana key, EIP-191 for an EVM address), so its evidence counts only where its lens names that address. Its service and coverage information belong to the identity, not to an address. Directory membership is not an owner's vote.
 
 ### Lens directory
 
-The attester directory (`GET /lenses/members`, `consensus.lens_member`): the lens members that listed themselves, each with `key` (its Solana key, the identity's id) and `addresses` (`solana`, and `evm` or null). A member lists itself with a registration its Solana key signs; an EVM address in it is listed only with that address's EIP-191 signature of a statement naming the member and the registration time, and only when the member's service attests EVM decisions as that address. A newer registration replaces the entry, an EVM address included. Listing is informational; no program reads it.
+The attester directory (`GET /lenses/members`, `consensus.lens_member`): the lens members that listed themselves, each with `key` (the identity's id: its Solana key, or for a member with only an EVM address that checksummed address; no base58 key starts with 0x) and `addresses` (`solana` or null, `evm` or null). A member lists itself with a registration its Solana key signs; an EVM address in it is listed only with that address's EIP-191 signature of a statement naming the member and the registration time, and only when the member's service attests EVM decisions as that address. A member with only an EVM address signs the same registration with its EVM key (EIP-191), names no SAS credential and is offered on EVM only. An EVM address names one member. A newer registration replaces the entry, an EVM address included. Listing is informational; no program reads it.
 
 ### Attestation
 

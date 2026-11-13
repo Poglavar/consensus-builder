@@ -114,14 +114,15 @@
     function normalizeMember(raw) {
         if (!raw || typeof raw !== 'object') return null;
         const key = cleanText(raw.key);
-        if (!key || !isBase58Pubkey(key)) return null;
+        // The member's id: its Solana key, or the EVM address of a member that has only that.
+        if (!key || !isChainKey(key)) return null;
         const coverage = raw.coverage && typeof raw.coverage === 'object' ? raw.coverage : {};
-        const evm = cleanText(raw.addresses && typeof raw.addresses === 'object' ? raw.addresses.evm : null);
+        const evm = isEvmAddress(key) ? key : cleanText(raw.addresses && typeof raw.addresses === 'object' ? raw.addresses.evm : null);
         return {
             key,
-            // One identity, an address per chain family: `key` on Solana, and an EVM address only when
-            // the member published (and proved) one. A member is available only where it has an address.
-            addresses: { solana: key, evm: isEvmAddress(evm) ? evm : null },
+            // One identity, an address per chain family: its Solana key, and an EVM address only when the
+            // member published (and proved) one. A member is available only where it has an address.
+            addresses: { solana: isBase58Pubkey(key) ? key : null, evm: isEvmAddress(evm) ? evm : null },
             kind: cleanText(raw.kind),
             name: cleanText(raw.name),
             description: cleanText(raw.description),

@@ -3,7 +3,8 @@
 // with an EVM issuer (evm-issuer.js), AgreementDecision-v1 through EAS for agreements minted on EVM.
 // Identity proof, the SAS issuer, the attestation store and the clock are injected, so every rule here
 // runs headless. Which decision an agreement gets is decided before this (agreement-decision.js); the
-// member only issues it, at most one decision per agreement.
+// member only issues it, at most one decision per agreement. A member with only an EVM key (`evmOnly`)
+// has no Solana key, credential or SAS issuer: it attests agreement decisions on EVM and nothing on Solana.
 
 import { createHash } from 'node:crypto';
 import { Keypair, PublicKey } from '@solana/web3.js';
@@ -102,9 +103,12 @@ export function createLensMember({
     clock = systemClock,
     expirySeconds = DEFAULT_EXPIRY_SECONDS,
     dryRun = false,
-    evmIssuer = null
+    evmIssuer = null,
+    evmOnly = false
 }) {
-    if (!issuer || typeof issuer.createAttestation !== 'function') throw new Error('createLensMember: issuer.createAttestation is required');
+    if (evmOnly && (keypair || authorityOverride || issuer)) throw new Error('createLensMember: an EVM-only member has no Solana keypair, authority or SAS issuer');
+    if (evmOnly && !evmIssuer) throw new Error('createLensMember: an EVM-only member needs an evmIssuer');
+    if (!evmOnly && (!issuer || typeof issuer.createAttestation !== 'function')) throw new Error('createLensMember: issuer.createAttestation is required');
     if (evmIssuer && (!isEvmAddress(evmIssuer.address) || typeof evmIssuer.attest !== 'function')) {
         throw new Error('createLensMember: evmIssuer needs an EVM address and attest()');
     }
@@ -115,19 +119,21 @@ export function createLensMember({
     if (!LENS_MEMBER_KINDS.includes(kind)) throw new Error(`createLensMember: unknown kind "${kind}" (one of ${LENS_MEMBER_KINDS.join(', ')})`);
     // No key file (dry run): the authority is an ephemeral or borrowed public key that signs nothing,
     // reported as such by status().
-    const ephemeral = !keypair;
-    const authority = keypair ? keypair.publicKey.toBase58()
+    const ephemeral = !keypair && !evmOnly;
+    const authority = evmOnly ? null : keypair ? keypair.publicKey.toBase58()
         : authorityOverride ? new PublicKey(authorityOverride).toBase58()
             : Keypair.generate().publicKey.toBase58();
-    if (issuer.authority && issuer.authority !== authority) {
+    if (issuer?.authority && issuer.authority !== authority) {
         throw new Error(`issuer signs as ${issuer.authority} but the member key is ${authority}`);
     }
-    const credential = deriveCredentialPda({ authority, name: credentialName });
-    const schemas = schemaAddresses(credential);
+    const credential = evmOnly ? null : deriveCredentialPda({ authority, name: credentialName });
+    const schemas = evmOnly ? null : schemaAddresses(credential);
+    const solanaOnlyRefusal = () => new LensError(503, 'solana_not_configured', 'this lens member has no Solana key; it attests only agreement decisions on EVM');
 
     // Issue, then verify the artifact the issuer returned: address, authority, credential, schema and
     // payload bytes must be the ones we asked for before anything is recorded.
     async function issue(schemaKind, fields, nonce, extra) {
+        if (evmOnly) throw solanaOnlyRefusal();
         const schema = schemas[schemaKind];
         const address = deriveAttestationPda({ credential, schema, nonce });
         const existing = await store.get(address);
@@ -171,6 +177,7 @@ export function createLensMember({
     // evidenceRef and sourceObservedAt are optional cross-checks: the source time must equal the
     // identity adapter's, and a caller evidenceRef replaces the default opaque owner-set hash.
     async function planOwnership({ parcelUid, owner, evidenceRef, sourceObservedAt }) {
+        if (evmOnly) throw solanaOnlyRefusal();
         const rows = await identity.ownerSet(parcelUid);
         const derived = ownershipFromOwnerSet(rows, { parcelUid, owner });
         if (sourceObservedAt !== undefined && sourceObservedAt !== derived.sourceObservedAt) {
@@ -195,6 +202,7 @@ export function createLensMember({
     // stored attestation. A recipe has one subject: the same key stated for another subject is a
     // conflicting request, not a retry.
     async function planMarketEvidence({ recipe, fact } = {}) {
+        if (evmOnly) throw solanaOnlyRefusal();
         const fields = {
             recipeHash: recipe?.recipeHash,
             subject: recipe?.subject,
@@ -284,13 +292,14 @@ export function createLensMember({
         kind,
         identity,
         async status() {
+            // An EVM-only member's key (its directory id) is its EVM address.
             return {
-                key: authority,
+                key: authority ?? evmAddress,
                 ...(evmAddress ? { evmAddress } : {}),
                 kind,
                 credential,
-                credentialName,
-                schemas: { ...schemas },
+                credentialName: evmOnly ? null : credentialName,
+                schemas: schemas ? { ...schemas } : null,
                 identity: identity.kind,
                 dryRun,
                 ephemeralKey: ephemeral,

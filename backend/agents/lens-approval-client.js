@@ -75,7 +75,8 @@ export async function signOwnerApproval({ serviceUrl, lensKey, cid, content, key
     const wallet = keypair.publicKey.toBase58();
     const signText = message => LensCore.base58Encode(new Uint8Array(signMessageBytes({ secretKey: keypair.secretKey, message })));
 
-    const challenge = await postJson(fetchImpl, `${base}/lens/approval/challenge`, { wallet, contextHash });
+    // The member answers, and signs its facts, as the address the lens names it by (`lensKey`).
+    const challenge = await postJson(fetchImpl, `${base}/lens/approval/challenge`, { wallet, contextHash, member: lensKey });
     if (challenge.status !== 201 || !challenge.body?.challenge || !challenge.body?.message) throw refusal(`${base}/lens/approval/challenge`, challenge);
     // Sign only the text the protocol says this member asks of this wallet in this context.
     const expected = proof.approvalChallengeMessage({

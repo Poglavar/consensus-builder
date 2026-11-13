@@ -84,12 +84,14 @@ export const agreement = (overrides = {}) => JSON.parse(JSON.stringify({
     cadastreParcelIds: PARCEL_IDS, approvalConfig, lens: [MEMBER], ...overrides
 }));
 
-export function attesterFor(keypair = memberKeypair) {
-    return createApprovalAttester({ keypair, registry, clock: { nowSeconds: () => NOW } });
+export function attesterFor(keypair = memberKeypair, { evmWallet = null } = {}) {
+    return createApprovalAttester({ keypair, evmWallet, registry, clock: { nowSeconds: () => NOW } });
 }
 export async function evidenceFor(who, ownerId, item = agreement(), attester = attesterFor()) {
     const contextHash = approval.contextHash(item);
-    const challenged = attester.issueChallenge({ wallet: who.address, contextHash });
+    // The member answers as the address the lens names it by (its Solana key or its EVM address).
+    const member = item.lens.find(entry => Object.values(attester.addresses).some(own => own && own.toLowerCase() === String(entry).toLowerCase()));
+    const challenged = attester.issueChallenge({ wallet: who.address, contextHash, member });
     const facts = await attester.attestAuthority({ wallet: who.address, challenge: challenged.challenge, signature: who.signText(challenged.message),
         cadastreParcelIds: item.cadastreParcelIds, approvalConfig: item.approvalConfig, lens: item.lens });
     return { rights: facts.rights, authority: facts.authority.find(fact => fact.ownerId === ownerId) };

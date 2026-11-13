@@ -1,5 +1,6 @@
 // Signed lens evidence and owner decisions for abstract approval: the canonical statements, the exact
-// text each key signs and their Ed25519 verification. A decision is taken on an agreement and signs its
+// text each key signs and their verification: Ed25519 for Solana keys, and EIP-191 for a lens fact
+// signed by a member's EVM address (the address an EVM agreement's lens names). A decision is taken on an agreement and signs its
 // CID (ProposalApproval.decisionContent). Shared by the browser, the lens member and Node tests, so all
 // three accept exactly the same signatures.
 (function (root, factory) {
@@ -20,6 +21,8 @@
     });
     const ed25519 = () => root.__consentEd25519
         || (typeof require === 'function' ? require('../../vendor/noble-curves-1.2.0/ed25519.js') : null);
+    const eip191 = () => root.__consentEip191
+        || (typeof require === 'function' ? require('../../vendor/noble-curves-1.2.0/eip191.js') : null);
     const lensCore = () => root.LensCore || (typeof require === 'function' ? require('../lens-core.js') : null);
     const approval = () => root.ProposalApproval || (typeof require === 'function' ? require('./approval.js') : null);
 
@@ -29,6 +32,8 @@
         throw error;
     }
     const isKey = value => lensCore().isBase58Pubkey(value);
+    // A lens member signs a fact with the address the agreement's lens names: a Solana key or an EVM address.
+    const isMemberKey = value => lensCore().isChainKey(value);
     function isInstant(value) {
         if (typeof value !== 'string') return false;
         const ms = Date.parse(value);
@@ -44,7 +49,7 @@
         if (!fields) fail('Unknown lens attestation schema.');
         const statement = {};
         fields.forEach(field => { statement[field] = fact[field]; });
-        if (!isKey(statement.member)) fail('The attesting lens member must be a public key.');
+        if (!isMemberKey(statement.member)) fail('The attesting lens member must be a public key or an EVM address.');
         reference(statement.contextHash, 'contextHash');
         reference(statement.evidenceRef, 'evidenceRef');
         if (!isInstant(statement.issuedAt) || !isInstant(statement.expiresAt)
@@ -114,11 +119,22 @@
         return valid;
     }
 
+    // Whether `signature` (0x, 65 bytes) is the EIP-191 personal_sign of `message` by EVM `address`.
+    // Never throws.
+    function verifyEvmSignature(address, message, signature) {
+        if (!lensCore().isEvmAddress(address) || typeof message !== 'string' || typeof signature !== 'string') return false;
+        const signer = eip191().recoverAddress(message, signature);
+        return !!signer && signer === address.toLowerCase();
+    }
+
     function verifyAttestation(fact, schema) {
         try {
             if (!fact || fact.schema !== schema) return false;
             const statement = statementOf(fact);
-            return verifySignature(statement.member, attestationMessage(statement), fact.signature);
+            const message = attestationMessage(statement);
+            return lensCore().isEvmAddress(statement.member)
+                ? verifyEvmSignature(statement.member, message, fact.signature)
+                : verifySignature(statement.member, message, fact.signature);
         } catch (_) {
             return false;
         }
@@ -153,6 +169,6 @@
     return {
         RIGHTS_SCHEMA, AUTHORITY_SCHEMA, DECISION_SCHEME, CLOCK_SKEW_MS,
         statementOf, attestationMessage, decisionMessage, approvalChallengeMessage,
-        verifySignature, verifyAttestation, validAt, verifyReceipt
+        verifySignature, verifyEvmSignature, verifyAttestation, validAt, verifyReceipt
     };
 });

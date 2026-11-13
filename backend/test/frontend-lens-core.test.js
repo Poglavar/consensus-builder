@@ -103,6 +103,15 @@ describe('directory normalisation', () => {
         expect(core.parsePastedKeys(`${evm} ${NOTARY} ${evm.toLowerCase()}`, 'evm')).toEqual({ keys: [evm], invalid: [NOTARY] });
     });
 
+    it('keeps a member with only an EVM address, its address its key, and offers it on EVM only', () => {
+        const evm = '0xfCF94DD41B2B5d6C887a30273F995d01bacA1A45';
+        const members = core.normalizeDirectory({ members: [{ key: evm, addresses: { solana: null, evm }, name: 'EVM notary' }, { key: NOTARY, addresses: { solana: NOTARY, evm: null } }] });
+        expect(members.map(member => [member.key, member.addresses])).toEqual([[evm, { solana: null, evm }], [NOTARY, { solana: NOTARY, evm: null }]]);
+        expect(core.chainLens({ members, family: 'evm' }).addresses).toEqual([evm]);
+        expect(core.chainLens({ members, family: 'solana' }).addresses).toEqual([NOTARY]);
+        expect(core.memberLabel(evm, members)).toBe('EVM notary');
+    });
+
     it('passes a listed EAS attestation through with its uid, chain and chain id', () => {
         const uid = `0x${'5e'.repeat(32)}`;
         const [evm, solana] = core.normalizeAttestations({ attestations: [

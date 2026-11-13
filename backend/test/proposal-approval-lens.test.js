@@ -10,9 +10,11 @@ import { createContext, runInContext } from 'node:vm';
 import { createHash, generateKeyPairSync, sign } from 'node:crypto';
 import request from 'supertest';
 import { Keypair } from '@solana/web3.js';
+import { ethers } from 'ethers';
 import { createLensMember } from '../lens/member.js';
 import { createDevnetRegistryIdentity } from '../lens/identity/devnet-registry.js';
 import { createFakeIssuer } from '../lens/issuers.js';
+import { createFakeEvmIssuer } from '../lens/evm-issuer.js';
 import { createMemoryStore } from '../lens/store.js';
 import { createLensPricing } from '../lens/pricing.js';
 import { createLensMemberApp } from '../lens/server.js';
@@ -263,6 +265,34 @@ describe('four owners across three parcels approve only for themselves', () => {
     }
     const actor = { id: 'profile-1' }; // One local profile; the connected wallet is the signer.
 
+    it('on an EVM agreement finds the member by its EVM address and counts its EIP-191 evidence there only', async () => {
+        // One member identity: a Solana key and an EVM address (a fixed test key, never a real one).
+        const evmWallet = new ethers.Wallet(`0x${'66'.repeat(32)}`);
+        const identity = createDevnetRegistryIdentity({ rows: [], clock, authority: MEMBER });
+        const member = createLensMember({ authority: MEMBER, issuer: createFakeIssuer({ authority: MEMBER, clock }), evmIssuer: createFakeEvmIssuer({ clock, address: evmWallet.address }),
+            store: createMemoryStore(), identity, clock, dryRun: true });
+        const approvalAttester = createApprovalAttester({ keypair: memberKeypair, evmWallet, registry: fileRegistry(registryJson()), clock });
+        const evmServer = serve(createLensMemberApp({ member, pricing: createLensPricing({ dryRun: true }), approvalAttester }));
+        await new Promise(resolve => (evmServer.listening ? resolve() : evmServer.once('listening', resolve)));
+        const evmUrl = `http://127.0.0.1:${evmServer.address().port}`;
+        const { context, authority, use } = runtime();
+        const item = agreement({ lens: [evmWallet.address] });
+        const addresses = { solana: MEMBER, evm: evmWallet.address };
+        use(wallets.a);
+        // Named by its Solana key alone it is not in an EVM lens; with its directory addresses it is.
+        await expect(authority.verifyOwner(item, { memberKey: MEMBER, serviceUrl: evmUrl })).rejects.toMatchObject({ code: 'member-not-in-lens' });
+        expect(authority.lensAddressOf(item, MEMBER, addresses)).toBe(evmWallet.address);
+        await expect(authority.verifyOwner(item, { memberKey: MEMBER, serviceUrl: evmUrl, addresses })).resolves.toEqual({ wallet: wallets.a.address, ownerIds: ['owner-a'] });
+        expect(await context.ProposalApprovalRuntime.decide(item, 'parcel-a', 'owner-a', actor)).toMatchObject({ acceptedOwners: 1, acceptedParcelIds: ['parcel-a'] });
+        const receipt = item.ownerApprovals['owner-a'];
+        expect(receipt.evidence.rights.member).toBe(evmWallet.address);
+        expect(receipt.evidence.rights.signature).toMatch(/^0x[0-9a-f]{130}$/);
+        // The same receipt does not count for a Solana lens naming the same member's Solana key.
+        const stored = JSON.parse(JSON.stringify(item));
+        expect(runtime().context.ProposalApprovalRuntime.summary(stored).acceptedOwners).toBe(1);
+        expect(runtime().context.ProposalApprovalRuntime.summary({ ...stored, lens: [MEMBER] }).acceptedOwners).toBe(0);
+    });
+
     it('verifies each wallet, counts co-owners whole, survives reload and rejects tampering', async () => {
         const { context, authority, use } = runtime();
         const item = agreement();
@@ -392,9 +422,13 @@ describe('four owners across three parcels approve only for themselves', () => {
         const forged = Keypair.generate();
         const forger = serve(memberApp({ keypair: forged }));
         const item = agreement({ lens: [MEMBER, forged.publicKey.toBase58()] });
-        // A member that signs with its own key cannot pass its facts off as another lens member's.
+        // A member asked to answer as another member's address refuses; one that ignores the request and
+        // signs with its own key cannot pass its facts off as another lens member's.
+        const asked = await request(forger).post('/lens/approval/challenge').send({ wallet: wallets.c.address, contextHash: approval.contextHash(item), member: MEMBER });
+        expect([asked.status, asked.body.error]).toEqual([400, 'not_this_member']);
         const fetchImpl = async (url, init) => {
-            const response = await request(forger)[init.method.toLowerCase()](new URL(url).pathname).set(init.headers).send(init.body ? JSON.parse(init.body) : undefined);
+            const { member: _ignored, ...body } = init.body ? JSON.parse(init.body) : {};
+            const response = await request(forger)[init.method.toLowerCase()](new URL(url).pathname).set(init.headers).send(init.body ? body : undefined);
             return { status: response.status, json: async () => response.body };
         };
         let current = wallets.c;

@@ -88,3 +88,42 @@ export function verify(signature, message, publicKey) {
 }
 `
 });
+
+// EIP-191 (personal_sign) signer recovery, so a lens member that attests with its EVM address signs
+// approval facts the browser, the member and Node tests verify synchronously and alike. Low-s only, so
+// every signature has one encoding, as with Ed25519 above.
+await bundle({
+    name: '@noble/curves',
+    version: '1.2.0',
+    packageDir: await pinnedPackage('@noble/curves/secp256k1', '@noble/curves', '1.2.0'),
+    globalName: '__consentEip191',
+    purpose: 'synchronous EIP-191 signer recovery for lens attestations signed by an EVM address.',
+    entryName: 'consent-eip191-entry.js',
+    outputDir: 'frontend/vendor/noble-curves-1.2.0',
+    fileName: 'eip191.js',
+    source: `import { secp256k1 } from '@noble/curves/secp256k1';
+import { keccak_256 } from '@noble/hashes/sha3.js';
+
+const hex = bytes => Array.from(bytes, byte => byte.toString(16).padStart(2, '0')).join('');
+
+// The lower-case 0x address whose key signed \`message\` (a string) as EIP-191 personal_sign, or null.
+export function recoverAddress(message, signature) {
+    try {
+        if (typeof message !== 'string' || typeof signature !== 'string' || !/^0x[0-9a-fA-F]{130}$/.test(signature)) return null;
+        const body = new TextEncoder().encode(message);
+        const prefix = new TextEncoder().encode('\\x19Ethereum Signed Message:\\n' + body.length);
+        const digest = keccak_256(new Uint8Array([...prefix, ...body]));
+        const bytes = Uint8Array.from(signature.slice(2).match(/../g), pair => parseInt(pair, 16));
+        const v = bytes[64];
+        const recovery = v === 27 || v === 28 ? v - 27 : v === 0 || v === 1 ? v : -1;
+        if (recovery < 0) return null;
+        const parsed = secp256k1.Signature.fromCompact(bytes.slice(0, 64));
+        if (parsed.hasHighS()) return null;
+        const point = parsed.addRecoveryBit(recovery).recoverPublicKey(digest);
+        return '0x' + hex(keccak_256(point.toRawBytes(false).slice(1)).slice(-20));
+    } catch (_) {
+        return null;
+    }
+}
+`
+});

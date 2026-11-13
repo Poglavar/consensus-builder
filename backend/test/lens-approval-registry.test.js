@@ -7,6 +7,7 @@ import { createRequire } from 'node:module';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import request from 'supertest';
 import { Keypair } from '@solana/web3.js';
+import { ethers } from 'ethers';
 import { createApprovalAttester, devnetOwnerRegistry, fileRegistry } from '../lens/approval.js';
 import { createLensMember } from '../lens/member.js';
 import { createDevnetRegistryIdentity } from '../lens/identity/devnet-registry.js';
@@ -24,6 +25,8 @@ const NOW = 1790000000;
 const clock = { nowSeconds: () => NOW };
 const memberKeypair = Keypair.generate();
 const MEMBER = memberKeypair.publicKey.toBase58();
+// The member's EVM key (a fixed test key, never a real one).
+const evmWallet = new ethers.Wallet(`0x${'55'.repeat(32)}`);
 
 function wallet() {
     const { publicKey, privateKey } = generateKeyPairSync('ed25519');
@@ -129,19 +132,64 @@ describe('devnetOwnerRegistry', () => {
             .rejects.toMatchObject({ status: 409, code: 'not_in_lens' });
     });
 
-    it('is in the lens of an EVM agreement that names its EVM address instead of its Solana key', async () => {
+    it('on an EVM agreement answers and signs as the EVM address its lens names, and its evidence counts there only', async () => {
         const rows = [{ parcelUid: 'HR-1', owner: ana.address, ownerCount: 1, establishedAt: '2026-06-01T00:00:00Z' }];
         const identity = createDevnetRegistryIdentity({ rows, clock, authority: MEMBER });
-        const evmAddress = '0xfCF94DD41B2B5d6C887a30273F995d01bacA1A45';
-        const attester = createApprovalAttester({ keypair: memberKeypair, evmAddress, registry: devnetOwnerRegistry(identity), clock });
-        // The address compares case-insensitively, as EVM addresses do.
-        const rights = await attester.attestRights(context([devnetParcel('HR-1', [ana])], [evmAddress.toLowerCase()]));
+        const attester = createApprovalAttester({ keypair: memberKeypair, evmWallet, registry: devnetOwnerRegistry(identity), clock });
+        expect(attester.addresses).toEqual({ solana: MEMBER, evm: evmWallet.address });
+        // The lens names the member by its EVM address (in any letter case): the facts name that spelling
+        // and carry its EIP-191 signature.
+        const evmLens = evmWallet.address.toLowerCase();
+        const item = context([devnetParcel('HR-1', [ana])], [evmLens]);
+        const challenged = attester.issueChallenge({ wallet: ana.address, contextHash: approval.contextHash(item), member: evmLens });
+        expect(challenged.message.split('\n')[0]).toBe(`Urban Game Theory lens member ${evmLens}`);
+        const { rights, authority } = await attester.attestAuthority({ wallet: ana.address, challenge: challenged.challenge, signature: ana.signText(challenged.message), ...item });
+        expect(rights.member).toBe(evmLens);
+        expect(rights.signature).toMatch(/^0x[0-9a-f]{130}$/);
         expect(proof.verifyAttestation(rights, proof.RIGHTS_SCHEMA)).toBe(true);
-        const other = createApprovalAttester({ keypair: memberKeypair, registry: devnetOwnerRegistry(identity), clock });
-        await expect(other.attestRights(context([devnetParcel('HR-1', [ana])], [evmAddress])))
-            .rejects.toMatchObject({ status: 409, code: 'not_in_lens' });
-        expect(() => createApprovalAttester({ keypair: memberKeypair, evmAddress: 'not-an-address', registry: devnetOwnerRegistry(identity), clock }))
-            .toThrow(/evmAddress/);
+        expect(proof.verifyAttestation(authority[0], proof.AUTHORITY_SCHEMA)).toBe(true);
+        expect(approval.evidenceAllows(item, ana.address, ana.address, { rights, authority: authority[0] })).toBe(true);
+        // A tampered EVM-signed fact does not verify.
+        expect(proof.verifyAttestation({ ...rights, expiresAt: '2099-01-01T00:00:00.000Z' }, proof.RIGHTS_SCHEMA)).toBe(false);
+
+        // The same member's facts signed by its Solana key, for the same context, never count on the EVM agreement.
+        const solanaSigned = statement => {
+            const fact = proof.statementOf(statement);
+            return { ...fact, signature: LensCore.base58Encode(memberKeypair.secretKey && sign(null, Buffer.from(proof.attestationMessage(fact), 'utf8'),
+                { key: Buffer.concat([Buffer.from('302e020100300506032b657004220420', 'hex'), Buffer.from(memberKeypair.secretKey.subarray(0, 32))]), format: 'der', type: 'pkcs8' })) };
+        };
+        const crossRights = solanaSigned({ ...rights, member: MEMBER });
+        const crossAuthority = solanaSigned({ ...authority[0], member: MEMBER });
+        expect(proof.verifyAttestation(crossRights, proof.RIGHTS_SCHEMA)).toBe(true);
+        expect(approval.evidenceAllows(item, ana.address, ana.address, { rights: crossRights, authority: crossAuthority })).toBe(false);
+
+        // On a Solana agreement it answers as its Solana key, Ed25519 as before.
+        const solanaFacts = await authorityOf(attester, ana, context([devnetParcel('HR-1', [ana])]));
+        expect(solanaFacts.rights.member).toBe(MEMBER);
+        expect(proof.verifyAttestation(solanaFacts.rights, proof.RIGHTS_SCHEMA)).toBe(true);
+        // A challenge naming one address cannot be spent on an agreement whose lens names the other.
+        const wrong = attester.issueChallenge({ wallet: ana.address, contextHash: approval.contextHash(item), member: MEMBER });
+        await expect(attester.attestAuthority({ wallet: ana.address, challenge: wrong.challenge, signature: ana.signText(wrong.message), ...item }))
+            .rejects.toMatchObject({ status: 409, code: 'member_mismatch' });
+        expect(() => attester.issueChallenge({ wallet: ana.address, contextHash: 'x', member: Keypair.generate().publicKey.toBase58() })).toThrow(/not an address of this lens member/);
+        // A lens mixing chains is refused, and a member without the lens's address is not in it.
+        await expect(attester.attestRights(context([devnetParcel('HR-1', [ana])], [MEMBER, evmLens]))).rejects.toMatchObject({ status: 409, code: 'mixed_lens' });
+        const solanaOnly = createApprovalAttester({ keypair: memberKeypair, registry: devnetOwnerRegistry(identity), clock });
+        await expect(solanaOnly.attestRights(item)).rejects.toMatchObject({ status: 409, code: 'not_in_lens' });
+        expect(() => createApprovalAttester({ keypair: memberKeypair, evmWallet: { address: 'not-an-address' }, registry: devnetOwnerRegistry(identity), clock }))
+            .toThrow(/evmWallet/);
+    });
+
+    it('signs with its EVM key alone when it has no Solana key, and is in EVM lenses only', async () => {
+        const rows = [{ parcelUid: 'HR-1', owner: ana.address, ownerCount: 1, establishedAt: '2026-06-01T00:00:00Z' }];
+        const identity = createDevnetRegistryIdentity({ rows, clock, authority: evmWallet.address });
+        const attester = createApprovalAttester({ evmWallet, registry: devnetOwnerRegistry(identity), clock });
+        expect(attester.member).toBe(evmWallet.address);
+        const item = context([devnetParcel('HR-1', [ana])], [evmWallet.address]);
+        const { rights, authority } = await authorityOf(attester, ana, item);
+        expect(approval.evidenceAllows(item, ana.address, ana.address, { rights, authority: authority[0] })).toBe(true);
+        await expect(attester.attestRights(context([devnetParcel('HR-1', [ana])]))).rejects.toMatchObject({ code: 'not_in_lens' });
+        expect(() => createApprovalAttester({ registry: devnetOwnerRegistry(identity), clock })).toThrow(/Solana keypair or an EVM wallet/);
     });
 });
 

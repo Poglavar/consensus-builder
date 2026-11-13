@@ -134,7 +134,7 @@ describe('directory and the operator\'s agreement decision', () => {
             return { status: 200, json: async () => ({ members: [{ key: AUTHORITY, name: 'Notary 01', coverage: { ownership: 2 } }, { key: 'bad' }] }) };
         };
         const result = await client.fetchDirectory({ base: 'http://backend.test/', fetchImpl });
-        expect(result.members).toEqual([{ key: AUTHORITY, kind: null, name: 'Notary 01', description: null, coverage: { ownership: 2, parcels: 0, executed: 0 }, serviceUrl: null }]);
+        expect(result.members).toEqual([{ key: AUTHORITY, addresses: { solana: AUTHORITY, evm: null }, kind: null, name: 'Notary 01', description: null, coverage: { ownership: 2, parcels: 0, executed: 0 }, serviceUrl: null }]);
     });
 
     it('asks for an agreement decision only with the operator token, and reads the member\'s answer', async () => {

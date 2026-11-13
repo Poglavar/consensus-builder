@@ -90,8 +90,10 @@
         return request(joinUrl(serviceUrl, '/lens/approval/rights'), { method: 'POST', body: context, fetchImpl });
     }
 
-    async function requestApprovalChallenge({ serviceUrl, wallet, contextHash, fetchImpl } = {}) {
-        return request(joinUrl(serviceUrl, '/lens/approval/challenge'), { method: 'POST', body: { wallet, contextHash }, fetchImpl });
+    // `member` is the address the agreement's lens names the member by (its Solana key or its EVM
+    // address); the member answers, and signs its facts, as that address.
+    async function requestApprovalChallenge({ serviceUrl, wallet, contextHash, member, fetchImpl } = {}) {
+        return request(joinUrl(serviceUrl, '/lens/approval/challenge'), { method: 'POST', body: { wallet, contextHash, ...(member ? { member } : {}) }, fetchImpl });
     }
 
     async function submitApprovalAuthority({ serviceUrl, wallet, challenge, signature, context, fetchImpl } = {}) {

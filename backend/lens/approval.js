@@ -1,6 +1,7 @@
 // Lens-member side of abstract agreement approval: compares an agreement's pinned parcel-rights
 // snapshot (and any authority its rules require) with this member's own registry, then signs two
-// separate facts with the member key: "these rights are correct" and "this wallet, which proved
+// separate facts with the member key the agreement's lens names (its Solana key, Ed25519, or its EVM
+// address, EIP-191; a lens holds only its chain's addresses): "these rights are correct" and "this wallet, which proved
 // control, may act for party X" (an owner, a leaseholder or an authority). The registry is read per
 // request from a source: by default the member's devnet owner registry (consensus.lens_devnet_owner,
 // through its identity adapter and database pool: each recorded wallet owns its parcel in equal shares
@@ -11,6 +12,7 @@
 import { createHash, createPrivateKey, randomBytes, sign } from 'node:crypto';
 import { createRequire } from 'node:module';
 import { PublicKey } from '@solana/web3.js';
+import { ethers } from 'ethers';
 import { LensError, lensLog } from './errors.js';
 import { verifyWalletSignature } from './identity/devnet-registry.js';
 import { isEvmAddress, sameKey } from '../chain/keys.js';
@@ -125,22 +127,30 @@ export function devnetOwnerRegistry(identity) {
 }
 
 /**
- * @param {{ keypair: import('@solana/web3.js').Keypair, registry: ReturnType<typeof fileRegistry> | ReturnType<typeof devnetOwnerRegistry>,
+ * @param {{ keypair?: import('@solana/web3.js').Keypair|null, evmWallet?: import('ethers').Wallet|null,
+ *   registry: ReturnType<typeof fileRegistry> | ReturnType<typeof devnetOwnerRegistry>,
  *   clock: { nowSeconds(): number }, validitySeconds?: number, ttlSeconds?: number }} options
+ * The member's keys: its Solana keypair, its EVM wallet, or both (one identity, an address per chain).
+ * It signs each agreement's facts with the key whose address that agreement's lens names.
  */
-export function createApprovalAttester({ keypair, evmAddress = null, registry, clock, validitySeconds = DEFAULT_VALIDITY_SECONDS, ttlSeconds = CHALLENGE_TTL_SECONDS }) {
-    if (!keypair?.secretKey || keypair.secretKey.length !== 64) throw new Error('createApprovalAttester: a signing keypair is required');
-    if (evmAddress !== null && !isEvmAddress(evmAddress)) throw new Error('createApprovalAttester: evmAddress must be an EVM address or null');
+export function createApprovalAttester({ keypair = null, evmWallet = null, registry, clock, validitySeconds = DEFAULT_VALIDITY_SECONDS, ttlSeconds = CHALLENGE_TTL_SECONDS }) {
+    if (keypair && (!keypair.secretKey || keypair.secretKey.length !== 64)) throw new Error('createApprovalAttester: the Solana keypair is malformed');
+    if (evmWallet && (typeof evmWallet.signingKey?.sign !== 'function' || !isEvmAddress(evmWallet.address))) throw new Error('createApprovalAttester: evmWallet must be an ethers wallet');
+    if (!keypair && !evmWallet) throw new Error('createApprovalAttester: a Solana keypair or an EVM wallet is required');
+    const evmAddress = evmWallet ? ethers.getAddress(evmWallet.address) : null;
     if (typeof registry?.load !== 'function' || typeof registry?.status !== 'function') {
         throw new Error('createApprovalAttester: a registry source (fileRegistry or devnetOwnerRegistry) is required');
     }
     const registrySource = registry;
     if (!clock) throw new Error('createApprovalAttester: clock is required');
     if (!(validitySeconds > 0)) throw new Error('createApprovalAttester: validitySeconds must be positive');
-    const member = keypair.publicKey.toBase58();
-    const privateKey = createPrivateKey({
+    const solanaKey = keypair ? keypair.publicKey.toBase58() : null;
+    // The member's id: its Solana key, or its EVM address when it has no Solana key (lens-directory.js).
+    const member = solanaKey ?? evmAddress;
+    const privateKey = keypair ? createPrivateKey({
         key: Buffer.concat([PKCS8_ED25519_PREFIX, Buffer.from(keypair.secretKey.subarray(0, 32))]), format: 'der', type: 'pkcs8'
-    });
+    }) : null;
+    const isOwnAddress = value => (solanaKey && sameKey(value, solanaKey)) || (evmAddress && sameKey(value, evmAddress));
     const challenges = new Map();
 
     // The agreement's own approval context, recomputed here, and the member's verdict on its rights
@@ -156,11 +166,17 @@ export function createApprovalAttester({ keypair, evmAddress = null, registry, c
         } catch (error) {
             throw new LensError(400, 'bad_request', error.message);
         }
-        // An agreement names this member by its Solana key, or, when minted on an EVM chain, by its EVM
-        // address (lens/member.js attests its decision with that key); either names the same member.
-        if (!content.lens.some(entry => sameKey(entry, member) || (evmAddress && sameKey(entry, evmAddress)))) {
+        // An agreement names this member by its address on the agreement's chain: its Solana key, or its
+        // EVM address (lens/member.js attests its decision with that key). The facts are signed by that
+        // key and name that address, so they count only where the lens names it; a lens mixing chains is
+        // no agreement's lens.
+        const families = new Set(content.lens.map(entry => (isEvmAddress(entry) ? 'evm' : 'solana')));
+        if (families.size > 1) throw new LensError(409, 'mixed_lens', 'the agreement\'s lens mixes Solana keys and EVM addresses; a lens names only its agreement\'s chain');
+        const named = content.lens.find(entry => isOwnAddress(entry));
+        if (!named) {
             throw new LensError(409, 'not_in_lens', 'this lens member is not in the agreement\'s lens, so its attestations would not count');
         }
+        const signer = named;
         if (!state.ready) throw new LensError(422, 'rights_incomplete', `the approval context cannot be attested: ${state.reason}`);
         const registry = await registrySource.load(content.cadastreParcelIds);
         for (const parcel of state.parcels) {
@@ -186,12 +202,18 @@ export function createApprovalAttester({ keypair, evmAddress = null, registry, c
             const outside = state.parcels.find(parcel => !scope.has(parcel.parcelId));
             if (outside) throw new LensError(409, 'authority_out_of_scope', `authority ${id} is not competent for parcel ${outside.parcelId} in this member's registry`);
         }
-        return { content, contextHash, state, registry };
+        return { content, contextHash, state, registry, signer };
     }
 
+    // Signs a fact as `fields.member`: Ed25519 by the Solana key, or EIP-191 (personal_sign, 0x hex) by
+    // the EVM key, whichever address it is.
     function signFact(fields) {
         const statement = proof.statementOf(fields);
-        const signature = sign(null, Buffer.from(proof.attestationMessage(statement), 'utf8'), privateKey);
+        const message = proof.attestationMessage(statement);
+        if (isEvmAddress(statement.member)) {
+            return { ...statement, signature: evmWallet.signingKey.sign(ethers.hashMessage(message)).serialized };
+        }
+        const signature = sign(null, Buffer.from(message, 'utf8'), privateKey);
         return { ...statement, signature: LensCore.base58Encode(new Uint8Array(signature)) };
     }
 
@@ -201,6 +223,7 @@ export function createApprovalAttester({ keypair, evmAddress = null, registry, c
     }
 
     function rightsFact(context) {
+        const member = context.signer;
         return signFact({
             schema: proof.RIGHTS_SCHEMA, member, contextHash: context.contextHash,
             parcelIds: context.content.cadastreParcelIds,
@@ -215,6 +238,7 @@ export function createApprovalAttester({ keypair, evmAddress = null, registry, c
 
     return {
         member,
+        addresses: { solana: solanaKey, evm: evmAddress },
 
         async status() {
             return { enabled: true, ...(await registrySource.status()), validitySeconds };
@@ -228,8 +252,11 @@ export function createApprovalAttester({ keypair, evmAddress = null, registry, c
             return fact;
         },
 
-        issueChallenge({ wallet, contextHash }) {
+        // `as`: the address the agreement's lens names this member by (its Solana key or its EVM address);
+        // the challenge names it, and the facts are later signed as it. Its Solana key, else its EVM address, by default.
+        issueChallenge({ wallet, contextHash, member: as = null }) {
             if (!isPubkey(wallet)) throw new LensError(400, 'bad_request', 'wallet must be a base58 public key');
+            if (as !== null && as !== undefined && !isOwnAddress(as)) throw new LensError(400, 'not_this_member', `${as} is not an address of this lens member`);
             if (typeof contextHash !== 'string' || !contextHash.trim() || contextHash.length > 256) {
                 throw new LensError(400, 'bad_request', 'contextHash is required');
             }
@@ -237,8 +264,9 @@ export function createApprovalAttester({ keypair, evmAddress = null, registry, c
             prune(now);
             const challenge = randomBytes(24).toString('base64url');
             const expiresAt = now + ttlSeconds;
-            const message = proof.approvalChallengeMessage({ member, wallet, contextHash, challenge, expiresAt: iso(expiresAt) });
-            challenges.set(challenge, { wallet, contextHash, message, expiresAt });
+            const named = as || member;
+            const message = proof.approvalChallengeMessage({ member: named, wallet, contextHash, challenge, expiresAt: iso(expiresAt) });
+            challenges.set(challenge, { wallet, contextHash, member: named, message, expiresAt });
             return { challenge, message, expiresAt: iso(expiresAt) };
         },
 
@@ -262,6 +290,9 @@ export function createApprovalAttester({ keypair, evmAddress = null, registry, c
                 if (context.contextHash !== entry.contextHash) {
                     throw new LensError(409, 'context_mismatch', 'the challenge was issued for another approval context');
                 }
+                if (!sameKey(entry.member, context.signer)) {
+                    throw new LensError(409, 'member_mismatch', `the challenge names ${entry.member}, but the agreement's lens names this member as ${context.signer}`);
+                }
                 // Any party of this context: an owner, a leaseholder or an authority the rules require.
                 ownerIds = context.state.partyIds.filter(ownerId => context.registry.signers.get(wallet)?.has(ownerId));
                 if (!ownerIds.length) {
@@ -272,6 +303,7 @@ export function createApprovalAttester({ keypair, evmAddress = null, registry, c
                 throw error;
             }
             const rights = rightsFact(context);
+            const member = context.signer;
             const authority = ownerIds.map(ownerId => signFact({
                 schema: proof.AUTHORITY_SCHEMA, member, contextHash: context.contextHash, ownerId, actorId: wallet,
                 evidenceRef: sha256({ kind: 'lens-authority', member, contextHash: context.contextHash, ownerId, wallet }),

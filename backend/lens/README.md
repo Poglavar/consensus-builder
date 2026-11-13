@@ -181,7 +181,9 @@ schema your `--kind` issues exist on chain, and that `--public-url/lens/status` 
 same key, credential and kind; then the proposal picker lists you. With an EVM key (`LENS_EVM_PRIVATE_KEY`,
 else `UGT_AGENT_EVM_PRIVATE_KEY`) the registration also publishes that EVM address, signed by it, and
 the directory lists you for agreements sponsored from EVM wallets too; without one you are listed for
-Solana only. The public URL must be https (put
+Solana only. Started `--live` without `--keypair`, the member is EVM-only: its EVM key is its only key,
+its EVM address its directory id, it registers with that key alone and attests agreement decisions on EVM
+only (ownership and Solana decisions answer 503 `solana_not_configured`). The public URL must be https (put
 the process behind any TLS proxy). A refusal is printed with its reason and the member keeps serving,
 so proposers can still paste your key by hand. Re-announcing with new text replaces your entry.
 

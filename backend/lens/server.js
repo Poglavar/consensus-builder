@@ -78,9 +78,9 @@ const wrap = handler => (req, res, next) => Promise.resolve(handler(req, res, ne
 export function createLensMemberApp({ member, pricing, operatorToken = null, corsOrigin = '*', approvalAttester = null, agreements = null, clock = systemClock }) {
     if (!member) throw new Error('createLensMemberApp: member is required');
     if (!pricing) throw new Error('createLensMemberApp: pricing is required');
-    // One member, one key: approval facts must be signed by the key agreements list in their lens.
-    if (approvalAttester && approvalAttester.member !== member.authority) {
-        throw new Error(`createLensMemberApp: approval attester signs as ${approvalAttester.member} but the member key is ${member.authority}`);
+    // One member, one key per chain: approval facts must be signed by the keys agreements list in their lens.
+    if (approvalAttester && (approvalAttester.addresses.solana !== (member.authority ?? null) || approvalAttester.addresses.evm !== (member.evmAddress ?? null))) {
+        throw new Error(`createLensMemberApp: approval attester signs as ${JSON.stringify(approvalAttester.addresses)} but the member's keys are ${JSON.stringify({ solana: member.authority ?? null, evm: member.evmAddress ?? null })}`);
     }
     const identity = member.identity;
     const app = express();
@@ -173,6 +173,7 @@ export function createLensMemberApp({ member, pricing, operatorToken = null, cor
             throw new LensError(409, 'not_minted', 'the agreement has an EVM sponsor and is not recorded on an EVM chain yet; its decision is attested on that chain', { tally: count.tally });
         }
         if (evm && !member.evmAddress) throw new LensError(503, 'evm_not_configured', 'this lens member has no EVM key (LENS_EVM_PRIVATE_KEY)');
+        if (!evm && !member.authority) throw new LensError(503, 'solana_not_configured', 'this lens member has no Solana key; it attests only agreements on EVM');
         const plan = planAgreementDecision({ agreement, count, lensKey: evm ? member.evmAddress : member.authority, nowSeconds: clock.nowSeconds() });
         const record = await member.attestDecision(plan.fields, { chain: evm ? { family: 'evm', chainId: agreement.onchain.chainId } : null });
         res.status(record.reused ? 200 : 201).json({ ...publicRecord(record), reused: record.reused, tally: plan.tally, counted: plan.counted });
@@ -203,7 +204,7 @@ export function createLensMemberApp({ member, pricing, operatorToken = null, cor
         res.status(201).json({ rights: await attester().attestRights(req.body) });
     }));
     app.post(`${APPROVAL_PATH_PREFIX}challenge`, wrap(async (req, res) => {
-        res.status(201).json(await attester().issueChallenge({ wallet: req.body?.wallet, contextHash: req.body?.contextHash }));
+        res.status(201).json(await attester().issueChallenge({ wallet: req.body?.wallet, contextHash: req.body?.contextHash, member: req.body?.member ?? null }));
     }));
     app.post(`${APPROVAL_PATH_PREFIX}authority`, wrap(async (req, res) => {
         res.status(201).json(await attester().attestAuthority(req.body || {}));

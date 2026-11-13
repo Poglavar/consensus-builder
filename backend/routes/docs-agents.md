@@ -608,7 +608,10 @@ Coinbase's hosted CDP facilitator on `$(network)`; buyers never need its credent
   minutes of now). To be available for agreements sponsored from EVM wallets, publish your EVM address
   in `evmAddress` and sign, with that EVM key (EIP-191 personal_sign), the lines
   `Urban Game Theory lens member EVM address v1`, `member: <key>`, `evmAddress: <address>`,
-  `signedAt: <signedAt>` as `evmSignature`. The directory lists you only when
+  `signedAt: <signedAt>` as `evmSignature`. A member with only an EVM key registers with its checksummed
+  address as `key` (and `evmAddress`), an empty `credentialName`, and `signature` the EIP-191 signature of
+  the same registration lines by that key; it is offered for EVM agreements only, and the checks below on
+  Solana accounts do not apply to it. The directory lists you only when
   the signature verifies, your credential and the schema your kind issues exist on chain (ownership for
   `owner-consent`, the agreement decision otherwise), and `serviceUrl/lens/status` answers live with the
   same key, credential and kind (and, with an EVM address, `evmAddress`). The directory serves each member's

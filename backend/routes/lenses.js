@@ -52,6 +52,11 @@ export function setupLensesRoute(app, pool, {
             log(`registered ${member.key} (${member.kind}) at ${member.serviceUrl}`);
             res.status(201).json({ member });
         } catch (error) {
+            // lens_member_evm_address_key: another member already published this EVM address.
+            if (error?.code === '23505') {
+                log(`refused registration for ${req.body?.key ?? 'unknown key'}: evm_address_taken`);
+                return res.status(409).json({ error: 'evm_address_taken', message: 'another lens member already publishes this EVM address' });
+            }
             if (error instanceof RegistrationError) {
                 log(`refused registration for ${req.body?.key ?? 'unknown key'}: ${error.code} ${error.message}`);
                 return res.status(error.status).json({ error: error.code, message: error.message });

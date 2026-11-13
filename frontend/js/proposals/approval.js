@@ -396,13 +396,21 @@
             acceptedAreaM2: ownership?.known ? ownership.support : null
         };
     }
+    // Whether `member`, the address a lens fact is signed by, is one the lens names: a Solana key exactly,
+    // an EVM address in any letter case. A member counts only by the address of the agreement's chain
+    // that its lens names, so evidence signed by its key on another chain never counts.
+    function inLens(lens, member) {
+        if (typeof member !== 'string' || !member) return false;
+        const evm = /^0x[0-9a-fA-F]{40}$/.test(member);
+        return lens.some(entry => (evm ? typeof entry === 'string' && entry.toLowerCase() === member.toLowerCase() : entry === member));
+    }
     function evidenceAllows(proposal, owner, actorId, evidence) {
         const state = inspect(proposal);
         if (!state.ready || !state.partyIds.includes(owner) || !actorId || !evidence) return false;
         const expected = contextHash(proposal);
         return ['rights', 'authority'].every(kind => {
             const fact = evidence[kind];
-            return fact && fact.contextHash === expected && state.context.lens.includes(fact.member)
+            return fact && fact.contextHash === expected && inLens(state.context.lens, fact.member)
                 && typeof fact.evidenceRef === 'string' && !!fact.evidenceRef
                 && (kind === 'rights' || (fact.ownerId === owner && fact.actorId === actorId));
         });

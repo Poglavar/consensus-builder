@@ -3,8 +3,12 @@
 // verifies it first). The coverage counts were derived from proposal_nft acceptance records, which M3
 // removed with per-proposal consent (owner decisions are off-chain documents now); they are served as
 // stored and nothing refreshes them. A member is one identity with an address per chain family:
-// `key` is its Solana address, `addresses` maps each family to the address it published there (null
-// where it published none), and it is available only on the families it has an address for.
+// `key` is its id, its Solana address, or its checksummed EVM address for a member with no Solana key
+// (no base58 key starts with 0x); `addresses` maps each family to the address it published there (null
+// where it published none), and it is available only on the families it has an address for. An EVM
+// address belongs to one member only (lens_member_evm_address_key).
+
+const isEvmKey = key => /^0x[0-9a-fA-F]{40}$/.test(key);
 
 const COVERAGE_KEYS = ['ownership', 'parcels', 'executed'];
 
@@ -17,7 +21,7 @@ export function memberFromRow(row) {
     const coverage = row.coverage || {};
     return {
         key: row.key,
-        addresses: { solana: row.key, evm: row.evm_address ?? null },
+        addresses: { solana: isEvmKey(row.key) ? null : row.key, evm: row.evm_address ?? null },
         kind: row.kind ?? null,
         name: row.name ?? null,
         description: row.description ?? null,
@@ -60,7 +64,7 @@ export async function registerLensMember(pool, registration) {
         registration.name,
         registration.description || null,
         registration.serviceUrl,
-        registration.credentialName,
+        registration.credentialName || null,
         registration.signedAt,
         registration.evmAddress || null
     ]);

@@ -18,7 +18,7 @@ import { planAgreementDecision, countAgreementDecisions } from '../lens/agreemen
 import { serializeAgreementRow } from '../routes/agreements.js';
 import { loadAddressBook } from '../chain/evm.js';
 import { agreementRow } from './helpers/content-fixtures.js';
-import { MEMBER, NOW, agreement, agreementContent, approvalConfig, at, decision, wallets } from './helpers/approval-decisions.js';
+import { MEMBER, NOW, agreement, agreementContent, approvalConfig, at, attesterFor, decision, evidenceFor, memberKeypair, wallets } from './helpers/approval-decisions.js';
 
 const EVM_LENS = new ethers.Wallet(`0x${'5a'.repeat(32)}`).address;
 const SPONSOR = new ethers.Wallet(`0x${'11'.repeat(32)}`).address;
@@ -28,17 +28,22 @@ const TOKEN = 'operator-secret';
 const LENS_NOW = NOW + 30;
 const EXPIRY = 3600;
 const clock = { nowSeconds: () => LENS_NOW };
-const LENS_KEYS = [MEMBER, EVM_LENS];
+const LENS_KEYS = [EVM_LENS];
+// The member's EVM key: it signs the approval facts of an agreement whose lens names its EVM address.
+const evmAttester = attesterFor(memberKeypair, { evmWallet: new ethers.Wallet(`0x${'5a'.repeat(32)}`) });
 
-// An owner deal sponsored by an EVM wallet: its lens names the member's Solana key (which signs the
-// approval facts) and its EVM address (which attests the decision on chain).
+// An owner deal sponsored by an EVM wallet: its lens names only the member's EVM address, which signs the
+// approval facts (EIP-191) and attests the decision on chain; a lens never mixes chains.
 const rule = { electorate: 'owners', binding: true, approvalConfig, lens: LENS_KEYS };
 const content = (overrides = {}) => agreementContent({ sponsor: SPONSOR, deadline: at(7 * 86400), rule, ...overrides });
 const CID = cidOfObject(content());
 const indexed = (overrides = {}) => serializeAgreementRow(agreementRow(content(), overrides));
 const evmOnchain = (overrides = {}) => ({ chain: 'evm', chainId: CHAIN_ID, account: `0x${'0a'.repeat(32)}`, sponsor: SPONSOR, lens: EVM_LENS,
     status: 'active', decision: 'pending', observedSlot: 1, ...overrides });
-const signed = (who, ownerId, offset) => decision(who, ownerId, { item: agreement({ agreementCid: CID, lens: LENS_KEYS }), offset });
+const signed = async (who, ownerId, offset) => {
+    const item = agreement({ agreementCid: CID, lens: LENS_KEYS });
+    return decision(who, ownerId, { item, offset, evidence: await evidenceFor(who, ownerId, item, evmAttester) });
+};
 const unanimous = async () => [await signed(wallets.a, 'owner-a', 1), await signed(wallets.b, 'owner-b', 2),
     await signed(wallets.c, 'owner-c', 3), await signed(wallets.d, 'owner-d', 4)];
 const FIELDS = { agreementCid: CID, sponsor: SPONSOR, decision: 'satisfied', evidenceRef: `sha256:${'ab'.repeat(32)}`, sourceObservedAt: NOW + 4 };
@@ -138,11 +143,11 @@ describe('the member attests on EVM', () => {
 });
 
 describe('planAgreementDecision for an EVM agreement', () => {
-    it('takes the member\'s EVM address as the lens key, in any case, and refuses its Solana key once the contract names the EVM one', async () => {
+    it('takes the member\'s EVM address as the lens key, in any case, and refuses its Solana key, which an EVM lens does not name', async () => {
         const item = indexed({ onchain: evmOnchain({ lens: EVM_LENS.toLowerCase() }) });
         const count = countAgreementDecisions(item, await unanimous());
         expect(planAgreementDecision({ agreement: item, count, lensKey: EVM_LENS, nowSeconds: LENS_NOW }).fields).toMatchObject({ sponsor: SPONSOR, decision: 'satisfied' });
-        expect(() => planAgreementDecision({ agreement: item, count, lensKey: MEMBER, nowSeconds: LENS_NOW })).toThrowError(expect.objectContaining({ code: 'not_agreement_lens' }));
+        expect(() => planAgreementDecision({ agreement: item, count, lensKey: MEMBER, nowSeconds: LENS_NOW })).toThrowError(expect.objectContaining({ code: 'not_in_lens' }));
         const outside = new ethers.Wallet(`0x${'77'.repeat(32)}`).address;
         expect(() => planAgreementDecision({ agreement: item, count, lensKey: outside, nowSeconds: LENS_NOW })).toThrowError(expect.objectContaining({ code: 'not_in_lens' }));
     });

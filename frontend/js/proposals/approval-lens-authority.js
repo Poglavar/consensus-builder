@@ -15,6 +15,9 @@
     const approval = () => root.ProposalApproval || (typeof require === 'function' ? require('./approval.js') : null);
     const proof = () => root.ProposalApprovalProof || (typeof require === 'function' ? require('./approval-proof.js') : null);
     const lensClient = () => root.LensServiceClient || (typeof require === 'function' ? require('../lens-service-client.js') : null);
+    // Two addresses name one key: EVM addresses in any letter case, Solana keys exactly.
+    const sameAddress = (a, b) => typeof a === 'string' && typeof b === 'string'
+        && (/^0x[0-9a-fA-F]{40}$/.test(a) && /^0x[0-9a-fA-F]{40}$/.test(b) ? a.toLowerCase() === b.toLowerCase() : a === b);
 
     function failure(code, message, outcome = null) {
         const error = new Error(message || code);
@@ -50,14 +53,14 @@
             const parcelIds = A.contextContent(agreement).cadastreParcelIds;
             const electorate = A.inspect(agreement).partyIds;
             const { rights, authority } = body || {};
-            if (!P.verifyAttestation(rights, P.RIGHTS_SCHEMA) || rights.member !== memberKey || rights.contextHash !== contextHash
+            if (!P.verifyAttestation(rights, P.RIGHTS_SCHEMA) || !sameAddress(rights.member, memberKey) || rights.contextHash !== contextHash
                 || A.stableStringify(rights.parcelIds) !== A.stableStringify(parcelIds) || !live(rights)) {
                 throw failure('bad-evidence', 'The lens member returned rights evidence that does not verify for this agreement.');
             }
             if (!Array.isArray(authority) || !authority.length) throw failure('bad-evidence', 'The lens member named no owner.');
             const facts = new Map();
             authority.forEach(fact => {
-                if (!P.verifyAttestation(fact, P.AUTHORITY_SCHEMA) || fact.member !== memberKey || fact.contextHash !== contextHash
+                if (!P.verifyAttestation(fact, P.AUTHORITY_SCHEMA) || !sameAddress(fact.member, memberKey) || fact.contextHash !== contextHash
                     || fact.actorId !== address || !electorate.includes(fact.ownerId) || !live(fact)) {
                     throw failure('bad-evidence', 'The lens member returned authority evidence that does not verify for this wallet.');
                 }
@@ -67,18 +70,30 @@
             return [...facts.keys()].sort();
         }
 
+        // The address by which the agreement's lens names the member: of the member's published
+        // addresses (`memberKey` and `addresses`, its directory entry's `{ solana, evm }`), the one the
+        // lens holds. A lens holds only its agreement's chain's addresses, so this is the member's address
+        // on that chain; a member without one there is not in the lens. Null when none is named.
+        function lensAddressOf(agreement, memberKey, addresses = null) {
+            const candidates = [memberKey, ...Object.values(addresses || {})].filter(value => typeof value === 'string' && value);
+            return approval().lensKeys(agreement).find(entry => candidates.some(candidate => sameAddress(entry, candidate))) || null;
+        }
+
         // One wallet signature proves control to one lens member, which answers with its verdict on
-        // the rights and the owners this wallet may act for in this agreement's approval context.
+        // the rights and the owners this wallet may act for in this agreement's approval context. The
+        // member answers, and signs its facts, as the address the lens names it by.
         // M2: the browser flow (the agreement panel) passes the agreement-like object it decides on.
-        async function verifyOwner(agreement, { memberKey, serviceUrl }) {
+        async function verifyOwner(agreement, { memberKey, serviceUrl, addresses = null }) {
             const current = wallet();
             if (!current) throw failure('wallet-required', 'Connect a wallet first.');
             const A = approval();
             if (!A.inspect(agreement).ready) throw failure('ownership-unresolved', 'The agreement has no complete rights snapshot.');
-            if (!A.lensKeys(agreement).includes(memberKey)) throw failure('member-not-in-lens', 'That member is not in this agreement\'s lens.');
+            const lensAddress = lensAddressOf(agreement, memberKey, addresses);
+            if (!lensAddress) throw failure('member-not-in-lens', 'That member is not in this agreement\'s lens.');
+            memberKey = lensAddress;
             const contextHash = A.contextHash(agreement);
             const client = lensClient();
-            const challenged = await client.requestApprovalChallenge({ serviceUrl, wallet: current.address, contextHash, fetchImpl });
+            const challenged = await client.requestApprovalChallenge({ serviceUrl, wallet: current.address, contextHash, member: lensAddress, fetchImpl });
             if (challenged.outcome.kind !== 'ok') throw refusal(challenged.outcome);
             const { challenge, message, expiresAt } = challenged.body || {};
             const expected = proof().approvalChallengeMessage({ member: memberKey, wallet: current.address, contextHash, challenge, expiresAt });
@@ -123,7 +138,7 @@
                 return proof().verifyReceipt({ receipt, statement, parcelIds: approval().contextContent(agreement).cadastreParcelIds });
             }
         };
-        return { provider, verifyOwner, ownerIds, clear: () => evidence.clear() };
+        return { provider, verifyOwner, ownerIds, lensAddressOf, clear: () => evidence.clear() };
     }
 
     // The connected Solana wallet as a message signer, or null when none is connected.

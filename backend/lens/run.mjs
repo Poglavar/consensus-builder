@@ -15,6 +15,7 @@ import { parseArgs } from 'node:util';
 import dotenv from 'dotenv';
 import { createPool } from '../db/connection.cjs';
 import { Keypair } from '@solana/web3.js';
+import { ethers } from 'ethers';
 import { loadAgreement } from '../routes/agreements.js';
 import { createAgreementDecisionStore } from '../agreements/decisions.js';
 import { createLensMember, DEFAULT_CREDENTIAL_NAME, LENS_MEMBER_KINDS, systemClock } from './member.js';
@@ -42,11 +43,13 @@ const STARTUP_RETRY = { giveUpAfterMs: 30 * 60 * 1000 };
 
 function usage(code = 0) {
     console.log([
-        'Usage: node lens/run.mjs (--dry-run | --live --keypair <path>) [options]',
+        'Usage: node lens/run.mjs (--dry-run | --live [--keypair <path>]) [options]',
         '',
         '  --dry-run                 Fake SAS issuer, in-memory attestation store, ephemeral key, no x402.',
         '  --live                    Issue real SAS attestations (needs sas-lib installed in backend/).',
         '  --keypair <path>          Solana keypair JSON of the member (the SAS credential authority). --live only.',
+        '                            Without it a live member is EVM-only: its EVM key (below) is its only key, its',
+        '                            EVM address its directory id; it attests agreement decisions on EVM only.',
         '  --port <n>                HTTP port (default 3095); binds 127.0.0.1 unless --host is given.',
         '  --host <addr>             Bind address (default 127.0.0.1).',
         `  --credential-name <name>  SAS credential name (default ${DEFAULT_CREDENTIAL_NAME}); register it first with`,
@@ -126,7 +129,6 @@ async function main() {
     }
     if (values.help) usage(0);
     if (!!values['dry-run'] === !!values.live) throw new Error('pass exactly one of --dry-run or --live');
-    if (values.live && !values.keypair) throw new Error('--live needs --keypair');
     if (values['dry-run'] && values.keypair) throw new Error('--dry-run never loads a key; drop --keypair');
     if (!LENS_MEMBER_KINDS.includes(values.kind)) throw new Error(`unknown --kind ${values.kind} (one of ${LENS_MEMBER_KINDS.join(', ')})`);
     if (!CLUSTERS[values.cluster]) throw new Error(`unknown --cluster ${values.cluster}`);
@@ -147,14 +149,22 @@ async function main() {
     const pool = needsPg ? createPool() : null;
     pool?.on('error', error => console.error(`[${new Date().toISOString()}] [lens-member] idle pg client error:`, error.message));
 
-    const keypair = dryRun ? null : Keypair.fromSecretKey(Uint8Array.from(JSON.parse(fs.readFileSync(values.keypair, 'utf8'))));
-    // A dry run still signs approval facts, with an ephemeral key that lives as long as the process.
-    const signingKeypair = keypair ?? Keypair.generate();
-    const authority = signingKeypair.publicKey.toBase58();
+    // A dry run never loads a key, the EVM one included.
+    const evmKey = dryRun ? null : lensEvmKeyOf(process.env);
+    // A live member without --keypair is EVM-only: its EVM key is its only key and its EVM address its id.
+    const evmOnly = !dryRun && !values.keypair;
+    if (evmOnly && !evmKey) throw new Error('--live needs --keypair, or an EVM key (LENS_EVM_PRIVATE_KEY, else UGT_AGENT_EVM_PRIVATE_KEY) for a member with only an EVM address');
+    const keypair = dryRun || evmOnly ? null : Keypair.fromSecretKey(Uint8Array.from(JSON.parse(fs.readFileSync(values.keypair, 'utf8'))));
+    // A dry run still signs approval facts, with ephemeral keys that live as long as the process.
+    const signingKeypair = evmOnly ? null : keypair ?? Keypair.generate();
+    const evmWallet = dryRun ? ethers.Wallet.createRandom() : evmKey ? walletOf(evmKey) : null;
+    // The name the devnet registry's ownership challenges carry: the member's id.
+    const authority = signingKeypair ? signingKeypair.publicKey.toBase58() : evmWallet.address;
     const issuer = dryRun
         ? createFakeIssuer({ authority, clock })
-        : await retryWithBackoff('loading the SAS issuer failed',
-            () => loadSasIssuer({ keypair, rpcUrl: values.rpc || process.env.SOLANA_RPC_URL || CLUSTERS[values.cluster] }), STARTUP_RETRY);
+        : evmOnly ? null
+            : await retryWithBackoff('loading the SAS issuer failed',
+                () => loadSasIssuer({ keypair, rpcUrl: values.rpc || process.env.SOLANA_RPC_URL || CLUSTERS[values.cluster] }), STARTUP_RETRY);
 
     let identity;
     if (values.identity === 'certilia') {
@@ -168,13 +178,12 @@ async function main() {
         throw new Error(`unknown --identity ${values.identity}`);
     }
 
-    // A dry run never loads a key, the EVM one included.
-    const evmKey = dryRun ? null : lensEvmKeyOf(process.env);
-    const evmIssuer = dryRun ? createFakeEvmIssuer({ clock }) : evmKey ? createEvmIssuer({ privateKey: evmKey, env: process.env, log: lensLog }) : null;
+    const evmIssuer = dryRun ? createFakeEvmIssuer({ clock, address: evmWallet.address }) : evmKey ? createEvmIssuer({ privateKey: evmKey, env: process.env, log: lensLog }) : null;
     const member = createLensMember({
         evmIssuer,
+        evmOnly,
         keypair,
-        authority: keypair ? null : authority,
+        authority: keypair || evmOnly ? null : authority,
         credentialName: values['credential-name'],
         kind: values.kind,
         issuer,
@@ -194,7 +203,7 @@ async function main() {
     const approvalAttester = approvalRegistry
         ? createApprovalAttester({
             keypair: signingKeypair,
-            evmAddress: evmIssuer ? evmIssuer.address : null,
+            evmWallet,
             registry: approvalRegistry,
             clock,
             validitySeconds: Math.round(approvalValidityDays * 86400)
@@ -208,9 +217,10 @@ async function main() {
 
     const status = await retryWithBackoff('reading the member status failed', () => member.status(), STARTUP_RETRY);
     lensLog(`${dryRun ? 'DRY RUN' : 'LIVE'} lens member ${status.key}${status.ephemeralKey ? ' (ephemeral key)' : ''}, kind ${status.kind}`);
-    lensLog(`credential ${status.credential} (${status.credentialName}); schemas ownership ${status.schemas.ownership}, decision ${status.schemas.decision}`);
+    lensLog(evmOnly ? 'EVM-only member: no Solana key, SAS credential or schemas; it attests agreement decisions on EVM only'
+        : `credential ${status.credential} (${status.credentialName}); schemas ownership ${status.schemas.ownership}, decision ${status.schemas.decision}`);
     lensLog(`EVM decisions: ${status.evmAddress ? `as ${status.evmAddress} through ${evmIssuer.kind}` : 'disabled (LENS_EVM_PRIVATE_KEY and UGT_AGENT_EVM_PRIVATE_KEY unset)'}`);
-    lensLog(`identity ${identity.kind}${values.owners ? ` from ${values.owners}` : ''}; issuer ${issuer.kind}; store ${dryRun ? 'memory' : values.store ? `file ${values.store}` : 'postgres'}`);
+    lensLog(`identity ${identity.kind}${values.owners ? ` from ${values.owners}` : ''}; issuer ${issuer ? issuer.kind : "none (EVM-only)"}; store ${dryRun ? 'memory' : values.store ? `file ${values.store}` : 'postgres'}`);
     lensLog(`ownership pricing: ${JSON.stringify(describePricing(pricing))}`);
     lensLog(`agreement decisions: ${!operatorToken ? 'disabled (LENS_OPERATOR_TOKEN unset)'
         : agreements ? 'enabled (operator token set; agreement index over DATABASE_URL)' : 'disabled (no database for the agreement index)'}`);
@@ -226,9 +236,9 @@ async function main() {
         // (the consensus-builder API) may not be up yet, e.g. right after a reboot: keep retrying while serving,
         // signing each attempt afresh.
         // With an EVM key the member publishes its EVM address too, proven by that key's signature; the
-        // directory then lists it for EVM agreements as well. Without one it is listed for Solana only.
-        const evmWallet = evmKey ? walletOf(evmKey) : null;
-        lensLog(`announcing to ${values.announce} with ${evmWallet ? `EVM address ${evmWallet.address}` : 'no EVM address (no EVM key)'}`);
+        // directory then lists it for EVM agreements as well. Without one it is listed for Solana only;
+        // an EVM-only member registers with its EVM key alone and is listed for EVM only.
+        lensLog(`announcing to ${values.announce} ${evmOnly ? `as the EVM-only member ${evmWallet.address}` : evmWallet ? `with EVM address ${evmWallet.address}` : 'with no EVM address (no EVM key)'}`);
         retryWithBackoff('ANNOUNCE FAILED, still serving but not listed', () => announceLensMember({
             directoryUrl: values.announce,
             publicUrl: values['public-url'],

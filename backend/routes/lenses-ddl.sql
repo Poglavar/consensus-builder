@@ -4,7 +4,7 @@
 CREATE SCHEMA IF NOT EXISTS consensus;
 
 CREATE TABLE IF NOT EXISTS consensus.lens_member (
-    key           text PRIMARY KEY,           -- base58 SAS authority public key: the member's Solana address
+    key           text PRIMARY KEY,           -- the member's id: its Solana address (base58 SAS authority), else its checksummed EVM address
     kind          text,                       -- what the member attests: owner-consent | court | permit | imagery | osm | lifecycle
     name          text,
     description   text,
@@ -25,6 +25,9 @@ ALTER TABLE consensus.lens_member ADD COLUMN IF NOT EXISTS registered_at timesta
 -- The member's address on EVM chains, proven at registration by an EIP-191 signature of that address
 -- (oracle/lens-registration.js); null for a member that publishes none. `key` is its Solana address.
 ALTER TABLE consensus.lens_member ADD COLUMN IF NOT EXISTS evm_address text;
+-- A member with only an EVM address has that checksummed address as its key (and as evm_address); no
+-- base58 key starts with 0x, so the two id spaces never meet. One EVM address names one member.
+CREATE UNIQUE INDEX IF NOT EXISTS lens_member_evm_address_key ON consensus.lens_member (lower(evm_address)) WHERE evm_address IS NOT NULL;
 
 DO $$
 BEGIN
