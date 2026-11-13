@@ -28,10 +28,7 @@ Purge and unify the idea list / roadmap / TODO
 - Find a way to incorporate prediction markets, betting on proposal outcomes
 - Find a way for sellers to choose between a set of auction/raffle algorithms
 
-Incorporate the Meme Token
-
-- First without smart contract
-- Airdrop each turn
+City meme token: see [citymemetoken.md](citymemetoken.md).
 
 PERCEPCIJA STVARNOSTI OBLIKUJE STVARNOST
 
@@ -84,7 +81,6 @@ Gamification
   - Get rich off land speculation
   - Get rich triggering higher destinies
     - Interesting concept of triggering/unlocking phases, explore further
-- Earn city tokens by retweeting (KAITO, or tie into Schellinglayer)
 - Bots with auto lowball offers
   - Buy low sell high strategy
   - But they provide liquidity and exit
@@ -209,10 +205,6 @@ We need to improve the UI the ux of the application to show the actions and the 
 So maybe we should have two types of people in the system one would be people that just have stats and that these stats and preferences are being used by simple algorithms non AI so this would be like the general population and what it will be doing is no actions just reactions just reacting to you know changes in the world for example there happiness being increased or there happiness being decreased and so on and why they would be diff different is because they will have different characteristics right so not everybody is being made happy by the same things
 
 The second version of the actor would be the intelligent or acting actor and this would be AI and these acting actors could undertake proposals so they could create proposals they could vote on proposals by others. They could buy and sell land.
-
-We need another set of agents to work with the shelling layer City meme coin well all agents should be able to work with this right use it but maybe some sort of randomness or speculation or minting or I don't really know.
-
-The user be just a player in the system or should we user be the mayor of the city if the letter then the user would be printing the meme coin sitting in coin with some other actions if not if the player is the player is just to player in the system then we need to set of other players; but this time in maybe politicians or you know the mayor or the City council or some other entity that also interacts with a system and with the proposals.
 
 I deal if proposal is proposed by ai agent also be a convincing explanation right so the agent to explain the agent to explain bot what the expect the effects to be and what to their own profit or benefit would be.
 

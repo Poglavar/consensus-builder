@@ -211,7 +211,7 @@ UNFINISHED
 - Conceptual: do we mint derived parcels? I guess? But they are virtual... or do we always "normalize" proposals onto a geography, and then deduce dependance like that? We should probably mint only base parcels... and normalize proposals onto a geography, but if ownership of geography changes (if parcel shapes change) we need to trace it in the system, through attestations...
 - Conceptual: when minting, for every proposal we should add a geography
 and then for acceptance have a geographyResolution() function that will find the geographically valid parcels, and then legalResolution() to find which of the geographically valid (overlapping) parcels is legally valid?
-- We should integrate attestations for city token ownership (only authorized address can take ownershp of the treasury?)
+- City token ideas live in docs/citymemetoken.md
 - Legal: do research on Kleros ERC proposals for legal resolution
 
 
