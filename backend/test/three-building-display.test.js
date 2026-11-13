@@ -6,6 +6,8 @@ const require = createRequire(import.meta.url);
 const {
     resolveBuiltDisplayPolicy,
     resolveBuildingRenderParts,
+    passageClipPlanes,
+    passageIntervals,
     updateRetainedBuildingMaterials
 } = require('../../frontend/js/three-building-display.js');
 import { mapModeModelScripts, readFrontendIndex } from './helpers/map-mode-loader.mjs';
@@ -212,5 +214,44 @@ describe('updateRetainedBuildingMaterials', () => {
         expect(options.configureMaterial).not.toHaveBeenCalled();
         expect(options.attachDepthPrepass).not.toHaveBeenCalled();
         expect(meshes.map(mesh => mesh.material)).toEqual([massing, flagged]);
+    });
+});
+
+describe('passageClipPlanes', () => {
+    // A point is cut when it lies on the negative side of every plane (clipIntersection).
+    const cut = (planes, [x, y, z]) => planes.every(({ normal, constant }) => normal[0] * x + normal[1] * y + normal[2] * z + constant < 0);
+    const passage = [[0, 0], [10, 0], [10, 4], [0, 4], [0, 0]];
+
+    it('cuts inside the passage below its ceiling and nothing else, whatever the ring winding', () => {
+        for (const ring of [passage, passage.slice().reverse()]) {
+            const planes = passageClipPlanes(ring, 4.5);
+            expect(planes).toHaveLength(5);
+            expect(cut(planes, [5, 2, 1])).toBe(true);
+            expect(cut(planes, [5, 2, 6])).toBe(false);
+            expect(cut(planes, [5, 5, 1])).toBe(false);
+            expect(cut(planes, [-1, 2, 1])).toBe(false);
+            expect(cut(planes, [11, 2, 1])).toBe(false);
+        }
+    });
+
+    it('refuses an outline the planes cannot hold: not convex, or degenerate', () => {
+        expect(passageClipPlanes([[0, 0], [10, 0], [10, 10], [5, 2], [0, 10]], 4.5)).toBeNull();
+        expect(passageClipPlanes([[0, 0], [10, 0], [20, 0]], 4.5)).toBeNull();
+        expect(passageClipPlanes(passage, NaN)).toBeNull();
+    });
+});
+
+describe('passageIntervals', () => {
+    // A 40 m passage along x, 4 m wide; buildings stand over 10–18 m and 18–25 m (touching) and 30–34 m.
+    const rect = (x0, x1, half = 2) => [[x0, -half], [x1, -half], [x1, half], [x0, half], [x0, -half]];
+
+    it('lines the passage only under buildings, merging stretches that touch', () => {
+        const intervals = passageIntervals([0, 0], [40, 0], 2, [rect(30, 34), rect(10, 18), rect(18, 25)]);
+        expect(intervals.map(([a, b]) => [a * 40, b * 40].map(v => Math.round(v * 10) / 10))).toEqual([[10, 25], [30, 34]]);
+    });
+
+    it('ignores the ground of another passage and lines nothing when no building stands over it', () => {
+        expect(passageIntervals([0, 0], [40, 0], 2, [rect(10, 20).map(([x, y]) => [x, y + 20])])).toEqual([]);
+        expect(passageIntervals([0, 0], [40, 0], 2, [])).toEqual([]);
     });
 });

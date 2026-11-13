@@ -49,23 +49,36 @@
         return [];
     }
 
-    // The ground under a building tunnel: the corridor's width along the tunnel span (from → to) of
-    // its segment, built in the definition's own metric frame (corridor-footprint.js).
-    function tunnelRegionsOf(definition) {
+    // Clear height of a passage through a building, the same for its hole and its liner in 3D.
+    const TUNNEL_CLEARANCE_M = { road: 4.5, track: 6 };
+
+    // Each building tunnel of a corridor as a span: its record, the corridor's width along the tunnel
+    // (from → to) of its segment, its clear height, and the ground under it as a rectangle built in the
+    // definition's own metric frame (corridor-footprint.js).
+    function tunnelSpansOf(definition) {
         const tunnels = Array.isArray(definition?.tunnels) ? definition.tunnels.filter(record => record?.kind === 'building' && record.from && record.to) : [];
         if (!tunnels.length) return [];
         const footprint = typeof global.__corridorFootprint === 'object' ? global.__corridorFootprint : require('./corridor-footprint.js');
         const entries = fromGlobalOrRequire('corridorSegmentEntries', './corridor-profile.js')(definition);
+        const isTrack = fromGlobalOrRequire('corridorIsTrack', './corridor-profile.js')(definition);
         const frame = footprint.frameForDefinition(definition);
         const lngLat = point => Array.isArray(point) ? point : [Number(point.lng), Number(point.lat)];
         return tunnels.map(record => {
             const entry = entries.find(item => item.segmentId !== null && String(item.segmentId) === String(record.segmentId));
-            const width = Number(entry?.width) || Math.max(...entries.map(item => Number(item.width) || 0));
-            if (!(width > 0)) return null;
-            const ring = footprint.rectangle(frame.toMetric(lngLat(record.from)), frame.toMetric(lngLat(record.to)), width)
+            const widthM = Number(entry?.width) || Math.max(...entries.map(item => Number(item.width) || 0));
+            if (!(widthM > 0)) return null;
+            const ring = footprint.rectangle(frame.toMetric(lngLat(record.from)), frame.toMetric(lngLat(record.to)), widthM)
                 .map(xy => frame.toLngLat(xy));
-            return { type: 'Polygon', coordinates: [ring] };
+            const clearanceM = isTrack ? TUNNEL_CLEARANCE_M.track : TUNNEL_CLEARANCE_M.road;
+            // The clear height rides on the polygon (a GeoJSON foreign member), so the building it
+            // passes under opens to the same height as the liner.
+            return { record, widthM, clearanceM, geometry: { type: 'Polygon', coordinates: [ring], clearanceM } };
         }).filter(Boolean);
+    }
+
+    // The ground under each building tunnel of a corridor.
+    function tunnelRegionsOf(definition) {
+        return tunnelSpansOf(definition).map(span => span.geometry);
     }
 
     function area(turf, value) { return value ? (Number(turf.area(value)) || 0) : 0; }
@@ -84,7 +97,10 @@
      *           applied design takes; a road's building tunnels take nothing.
      * buildings: [{ key, geometry }] — the buildings shown (key = `<source>:<id>`).
      * → { records: Map<key, { id, geometry, demolishedPart?, remainder?, proposalId, proposalIds }>,
-     *     tunnelled: Map<key, { proposalIds }>, failures: [{ key, error }] }
+     *     tunnelled: Map<key, { proposalIds, passages, under }>, failures: [{ key, error }] }
+     * `passages` are the tunnel regions that pass under the building (whole rectangles, convex), so
+     * the 3D view can open the passage through the building's mesh; `under` is the ground of each
+     * passage that lies under the building, where the 3D view lines it.
      * A record without `remainder` is a raze; with one, a cut. Order of the takers does not matter:
      * a building is cut against the union of what every taker clips from it.
      */
@@ -106,7 +122,7 @@
             try {
                 const outcome = deriveOne(building, box, candidates, turf);
                 if (outcome?.record) records.set(building.key, outcome.record);
-                else if (outcome?.tunnelledBy) tunnelled.set(building.key, { proposalIds: outcome.tunnelledBy });
+                else if (outcome?.tunnelledBy) tunnelled.set(building.key, { proposalIds: outcome.tunnelledBy, passages: outcome.passages, under: outcome.under });
             } catch (error) {
                 failures.push({ key: building.key, error });
             }
@@ -120,6 +136,8 @@
         let taken = null;
         const takenBy = [];
         const tunnelledBy = [];
+        const passages = [];
+        const passageGround = [];
         for (const taker of takers) {
             let clip = null;
             for (const part of taker.parts) {
@@ -134,13 +152,15 @@
                 const under = turf.intersect(clip, feature(tunnel.geometry));
                 if (!under || area(turf, under) < MIN_TAKEN_M2) continue;
                 if (!tunnelledBy.includes(taker.proposalId)) tunnelledBy.push(taker.proposalId);
+                passages.push(tunnel.geometry);
+                passageGround.push(under.geometry);
                 clip = turf.difference(clip, feature(tunnel.geometry));
             }
             if (!clip || area(turf, clip) < MIN_TAKEN_M2) continue;
             takenBy.push(taker.proposalId);
             taken = taken ? turf.union(clean(turf, taken), clean(turf, clip)) : clip;
         }
-        if (!taken) return tunnelledBy.length ? { tunnelledBy } : null;
+        if (!taken) return tunnelledBy.length ? { tunnelledBy, passages, under: passageGround } : null;
         const remainder = turf.difference(footprint, clean(turf, taken));
         const proposalIds = takenBy.filter(id => id !== null);
         const base = { id: building.key, geometry: building.geometry, proposalId: proposalIds[proposalIds.length - 1] ?? null, proposalIds };
@@ -148,5 +168,5 @@
         return { record: { ...base, demolishedPart: taken.geometry, remainder: remainder.geometry } };
     }
 
-    return { MIN_TAKEN_M2, MIN_REMAINDER_M2, MIN_REMAINDER_FRACTION, derive, tunnelRegionsOf, bboxOf };
+    return { MIN_TAKEN_M2, MIN_REMAINDER_M2, MIN_REMAINDER_FRACTION, TUNNEL_CLEARANCE_M, derive, tunnelSpansOf, tunnelRegionsOf, bboxOf };
 });
