@@ -7,13 +7,12 @@ import { PublicKey } from '@solana/web3.js';
 import { AGREEMENT_PROGRAM_ID } from '../agreements/onchain.js';
 
 // Our Anchor programs on devnet. Kept here (not read from the IDLs) so the book stands alone — the
-// decoder matches instruction data against the IDLs, the book only names things. The agreement
-// program's id comes from its codec (agreements/onchain.js), so a redeploy changes it in one place.
+// decoder matches instruction data against the IDLs, the book only names things. The ugt program's id
+// comes from the agreement codec (agreements/onchain.js), so a redeploy changes it in one place.
 export const OUR_PROGRAMS = Object.freeze([
-    { address: '4zadC1FgWPQLv6qv66mjEBthBqTvrmxL5oDcHQzNtkV1', name: 'parcel_nft', label: 'parcel_nft program' },
+    { address: AGREEMENT_PROGRAM_ID, name: 'ugt', label: 'ugt program' },
     { address: 'GDYnzduynKhKgxDhvvKVarn2s23DtzA26s6hycuUYDRB', name: 'proposal_market', label: 'proposal_market program' },
-    { address: '1jESRS3mJiPUJTtmQ5ncyBhGNmGeXTpUqPyJcTYrp6g', name: 'proposal_pledge', label: 'proposal_pledge program' },
-    { address: AGREEMENT_PROGRAM_ID, name: 'agreement', label: 'agreement program' }
+    { address: '1jESRS3mJiPUJTtmQ5ncyBhGNmGeXTpUqPyJcTYrp6g', name: 'proposal_pledge', label: 'proposal_pledge program' }
 ]);
 
 // Solana's own programs. These are never watched (every transaction on the cluster touches them);

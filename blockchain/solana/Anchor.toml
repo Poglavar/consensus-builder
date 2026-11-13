@@ -5,19 +5,15 @@ resolution = true
 skip-lint = false
 
 [programs.devnet]
-# agreement: deployed to devnet 2026-10-23 (programs/agreement/README.md).
-agreement = "GtdgeRH89f2qLj4j4v6NcecWSr6RDPP9y4TMfPCGA5jQ"
-parcel_nft = "4zadC1FgWPQLv6qv66mjEBthBqTvrmxL5oDcHQzNtkV1"
+# ugt: parcel anchors, design/plan records and agreements (programs/ugt/README.md); its keypair is
+# outside the repo (~/.config/solana/program-keys/ugt.json).
+ugt = "95sjeTXUYG721iZK29s3kr7Dq4eFqv6PFoEmPYJDtkp9"
 proposal_market = "GDYnzduynKhKgxDhvvKVarn2s23DtzA26s6hycuUYDRB"
-proposal_nft = "3WsVS6LkLo4ySLaLvxKdwuD37fcCjE2Yu9fVh1nMfxbg"
 proposal_pledge = "1jESRS3mJiPUJTtmQ5ncyBhGNmGeXTpUqPyJcTYrp6g"
 
 [programs.localnet]
-# agreement: deployed to devnet 2026-10-23 (programs/agreement/README.md).
-agreement = "GtdgeRH89f2qLj4j4v6NcecWSr6RDPP9y4TMfPCGA5jQ"
-parcel_nft = "4zadC1FgWPQLv6qv66mjEBthBqTvrmxL5oDcHQzNtkV1"
+ugt = "95sjeTXUYG721iZK29s3kr7Dq4eFqv6PFoEmPYJDtkp9"
 proposal_market = "GDYnzduynKhKgxDhvvKVarn2s23DtzA26s6hycuUYDRB"
-proposal_nft = "3WsVS6LkLo4ySLaLvxKdwuD37fcCjE2Yu9fVh1nMfxbg"
 proposal_pledge = "1jESRS3mJiPUJTtmQ5ncyBhGNmGeXTpUqPyJcTYrp6g"
 
 [registry]
@@ -43,15 +39,14 @@ bind_address = "127.0.0.1"
 address = "4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU"
 filename = "tests/fixtures/devnet-usdc-mint.json"
 
-# A proposal_nft Proposal in the v2 layout (no site_hash/open_ground), so tests/proposal_nft.ts can
-# prove v3 reads and drives accounts v2 minted. Regenerate with:
-# node tests/fixtures/generate-v2-proposal-fixture.mjs
-[[test.validator.account]]
-address = "3Tr3MTsfVySFCUkgZyWK2B52yMY1sUH7wvRSegzAiFgC"
-filename = "tests/fixtures/v2-proposal.json"
-
 # Localnet-only mock of the Solana Attestation Service at its real program id (source in
 # tests/mock_sas): the lens-model suites write SAS credential/schema/attestation bytes through it.
 [[test.genesis]]
 address = "22zoJMtdu4tQc2PzL74ZUT7FrwgB1Udec8DdW4yw4BdG"
 program = "tests/fixtures/mock_sas.so"
+
+# Metaplex Core at its real program id, for ugt's record assets: the devnet build, dumped by
+# tests/fixtures/fetch-mpl-core.sh (gitignored, 836 KiB).
+[[test.genesis]]
+address = "CoREENxT6tW1HoK8ypY1SxRMZTcVPm7R94rH4PZNhX7d"
+program = "tests/fixtures/mpl_core.so"

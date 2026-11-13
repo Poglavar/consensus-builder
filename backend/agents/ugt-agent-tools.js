@@ -20,7 +20,7 @@ import { createMcpComparison } from './mcp-compare.js';
 import { createMcpValidationTools } from './mcp-validation.js';
 import { createMcpVotingTools } from './mcp-voting.js';
 import { createMcpEvmRecordTools } from './mcp-evm-records.js';
-import { readAdapter as evmReadAdapter, signingAdapter as evmSigningAdapter } from '../chain/evm.js';
+import { readAdapter as chainReadAdapter, signingAdapter as chainSigningAdapter } from '../chain/adapters.js';
 import { ensureRetrievable } from '../chain/courier.js';
 import os from 'node:os';
 import path from 'node:path';
@@ -251,9 +251,9 @@ export function createUrbanGameTheoryTools({
         mintAgreement,
         fundAgreement,
         readAgreementAccount,
-        // EVM records and anchors (mcp-evm-records.js).
-        readAdapter: evmReadAdapter,
-        signingAdapter: evmSigningAdapter,
+        // Records and anchors on Solana or an EVM chain (mcp-evm-records.js).
+        readAdapter: chainReadAdapter,
+        signingAdapter: chainSigningAdapter,
         ensureRetrievable,
         ...dependencies
     };
@@ -550,7 +550,8 @@ export function createUrbanGameTheoryTools({
             if (lens.length !== 1) throw new Error(`the agreement program takes one lens key, but rule.lens holds ${lens.length}`);
             if (lens[0] === self) throw new Error(`rule.lens names only this agent's own key ${self}: a sponsor cannot attest its own agreement`);
             const minted = await impl.mintAgreement({
-                connection, sponsorKeypair: keypair, cid: agreementCid, lens: lens[0], deadline: content.deadline ?? null,
+                connection, sponsorKeypair: keypair, cid: agreementCid, planCid: content.planCid, inputCount: (content.inputs?.parcels || []).length,
+                lens: lens[0], deadline: content.deadline ?? null,
                 lamports: required, openGround: Number(content.inputs?.openGroundM2) > 0,
                 sendAndConfirm: impl.sendAndConfirmPolling
             });

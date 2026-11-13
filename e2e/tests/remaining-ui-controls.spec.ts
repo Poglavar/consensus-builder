@@ -347,7 +347,7 @@ test.describe('Remaining UI controls @features', () => {
     await page.evaluate(() => {
       const w = window as any;
       w.solanaWalletManager = { getState: () => ({ status: 'connected', accounts: ['e2e-owner'], cluster: 'devnet' }) };
-      w.resolveParcelNftAddressSolana = async () => '4zadC1FgWPQLv6qv66mjEBthBqTvrmxL5oDcHQzNtkV1';
+      w.resolveParcelAnchorProgramSolana = async () => '95sjeTXUYG721iZK29s3kr7Dq4eFqv6PFoEmPYJDtkp9';
       w.__mintedParcelIds = [];
       w.mintParcelSolana = async (parcelId: string) => {
         w.__mintedParcelIds.push(parcelId);

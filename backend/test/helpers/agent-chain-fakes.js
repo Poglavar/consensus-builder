@@ -1,4 +1,4 @@
-// In-memory stand-ins for the agent pipeline tests: the agreement program as an emulator (accounts by
+// In-memory stand-ins for the agent pipeline tests: the ugt program's agreements as an emulator (accounts by
 // address; create, fund, attest, execute, cancel and expire applied with the program's checks, decoded
 // with the browser codec), a connection over it, the market and pledge accounts on an agreement, the
 // lens's AgreementDecision-v1 attestation account, a mock pool that keeps consensus.agent_run and
@@ -35,19 +35,24 @@ const key = value => new web3.PublicKey(value).toBuffer();
 function str(text) { const bytes = Buffer.from(text, 'utf8'); const length = Buffer.alloc(4); length.writeUInt32LE(bytes.length); return Buffer.concat([length, bytes]); }
 
 /**
- * The Agreement account bytes (programs/agreement/README.md, "Agreement account"): 296 bytes, the CID
- * last and zero-padded to the account's fixed space. Read back with agreement-client readAgreement.
+ * The Agreement account bytes (blockchain/solana/programs/ugt/src/agreement.rs, `Agreement`): 330 bytes,
+ * the CID last and zero-padded to the account's fixed space. Read back with agreement-client readAgreement.
+ * `planCidHash` is 32 bytes or their hex (readAgreement's spelling).
  */
 export function encodeAgreementAccount({
     authority, lens, payout, deadline = 0, createdAt = 0, requiredLamports = 0n, escrowLamports = 0n, status = 0,
     openGround = false, decision = 0, decisionAttestedAt = 0, decisionObservedAt = 0,
-    decisionAttestation = web3.PublicKey.default.toBase58(), decisionHash = Buffer.alloc(32), executedAt = 0, bump = 255, cid
+    decisionAttestation = web3.PublicKey.default.toBase58(), decisionHash = Buffer.alloc(32), executedAt = 0,
+    planCidHash = Buffer.alloc(32), inputCount = 0, bump = 255, cid
 }) {
+    const planHash = typeof planCidHash === 'string' ? Buffer.from(planCidHash, 'hex') : Buffer.from(planCidHash);
+    const count = Buffer.alloc(2);
+    count.writeUInt16LE(inputCount);
     const data = Buffer.concat([
         Buffer.from(ACCOUNT_DISCRIMINATORS.Agreement), key(authority), key(lens), key(payout), i64(deadline), i64(createdAt),
         u64(requiredLamports), u64(escrowLamports), Buffer.from([status, openGround ? 1 : 0, decision]),
         i64(decisionAttestedAt), i64(decisionObservedAt), key(decisionAttestation), Buffer.from(decisionHash),
-        i64(executedAt), Buffer.from([bump]), str(cid)
+        i64(executedAt), planHash, count, Buffer.from([bump]), str(cid)
     ]);
     const out = Buffer.alloc(constants.AGREEMENT_ACCOUNT_SPACE);
     data.copy(out);
@@ -204,6 +209,9 @@ export function createAgreementChain({ now = systemNow } = {}) {
             let offset = 8;
             const cidLength = data.readUInt32LE(offset); offset += 4;
             const cid = data.subarray(offset, offset + cidLength).toString('utf8'); offset += cidLength;
+            const planCidLength = data.readUInt32LE(offset); offset += 4;
+            const planCid = data.subarray(offset, offset + planCidLength).toString('utf8'); offset += planCidLength;
+            const inputCount = data.readUInt16LE(offset); offset += 2;
             const lens = new web3.PublicKey(data.subarray(offset, offset + 32)).toBase58(); offset += 32;
             const deadline = Number(data.readBigInt64LE(offset)); offset += 8;
             const openGround = data[offset] === 1; offset += 1;
@@ -216,7 +224,8 @@ export function createAgreementChain({ now = systemNow } = {}) {
             if (deadline !== 0 && deadline <= time) throw programError('DeadlineInPast');
             write(address, {
                 authority, lens, payout, deadline, createdAt: time, requiredLamports, escrowLamports: 0n, statusCode: 0, openGround,
-                decisionCode: 0, decisionAttestedAt: 0, decisionObservedAt: 0, executedAt: 0, bump, cid
+                decisionCode: 0, decisionAttestedAt: 0, decisionObservedAt: 0, executedAt: 0,
+                planCidHash: createHash('sha256').update(planCid, 'utf8').digest(), inputCount, bump, cid
             });
             return { name, account: address };
         }

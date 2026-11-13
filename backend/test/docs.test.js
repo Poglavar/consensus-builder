@@ -313,7 +313,10 @@ describe('GET /docs/database', () => {
 describe('agent quickstart docs', () => {
     const repoFile = (relative) => new URL(`../../${relative}`, import.meta.url);
     const PROGRAMS = JSON.parse(fs.readFileSync(repoFile('frontend/contracts/addresses.json'), 'utf8'))['solana-devnet'];
-    const AGREEMENT_IDL = JSON.parse(fs.readFileSync(repoFile('blockchain/solana/idl/agreement.json'), 'utf8'));
+    // The ugt program's IDL, narrowed to its agreement instructions (it also anchors parcels and records designs and plans).
+    const UGT_IDL = JSON.parse(fs.readFileSync(repoFile('blockchain/solana/idl/ugt.json'), 'utf8'));
+    const AGREEMENT_INSTRUCTIONS = ['create', 'fund', 'attest', 'execute', 'cancel', 'expire'];
+    const AGREEMENT_IDL = { ...UGT_IDL, instructions: UGT_IDL.instructions.filter(ix => AGREEMENT_INSTRUCTIONS.includes(ix.name)) };
     // The program ids the page fills in come from the program codecs.
     const require = createRequire(import.meta.url);
     const PROGRAM_IDS = {
@@ -358,12 +361,19 @@ describe('agent quickstart docs', () => {
         expect(res.text).toContain(PROGRAM_IDS.agreement);
         expect(res.text).toContain(PROGRAM_IDS.market);
         expect(res.text).toContain(PROGRAM_IDS.pledge);
-        expect(res.text).toContain(PROGRAMS.ParcelNFT);
+        expect(res.text).toContain(PROGRAMS.Ugt);
+        expect(PROGRAMS.Ugt).toBe(UGT_IDL.address);
+        // The retired programs are not sent to agents.
+        for (const retired of ['GtdgeRH89f2qLj4j4v6NcecWSr6RDPP9y4TMfPCGA5jQ', '4zadC1FgWPQLv6qv66mjEBthBqTvrmxL5oDcHQzNtkV1']) {
+            expect(res.text, retired).not.toContain(retired);
+        }
         // The agreement program is not deployed while its id is the readable placeholder, and the page says so.
         expect(res.text.includes('pending its devnet deployment')).toBe(/^Agreement1+$/.test(PROGRAM_IDS.agreement));
         // create's documented signature is the checked-in IDL's.
         const create = AGREEMENT_IDL.instructions.find(ix => ix.name === 'create');
-        expect(res.text).toContain(`create(${create.args.map(arg => `${arg.name}: ${typeName(arg.type)}`).join(', ')})`);
+        // (The markdown wraps the signature; compare with whitespace collapsed.)
+        expect(res.text.replace(/\s+/g, ' ')).toContain(`create(${create.args.map(arg => `${arg.name}: ${typeName(arg.type)}`).join(', ')})`);
+        expect(create.args.map(arg => arg.name).slice(0, 3)).toEqual(['cid', 'plan_cid', 'input_count']);
         expect(res.text).toContain('/agreements/&lt;cid&gt;/onchain');
         expect(res.text).toContain('AgreementDecision-v1');
         expect(res.text).toContain('agreement-execution-v1');
@@ -488,14 +498,18 @@ describe('agent quickstart docs', () => {
         expect(program).toMatchObject({
             programId: AGREEMENT_IDL.address,
             cluster: 'devnet',
-            idl: 'blockchain/solana/idl/agreement.json',
+            idl: 'blockchain/solana/idl/ugt.json',
             client: 'frontend/js/solana/agreement-client.js',
-            readme: 'blockchain/solana/programs/agreement/README.md'
+            readme: 'blockchain/solana/programs/ugt/README.md'
         });
         for (const file of [program.idl, program.client, program.readme]) expect(fs.existsSync(repoFile(file)), file).toBe(true);
         expect(program.deployed).toBe(!/^Agreement1+$/.test(program.programId));
         expect(program.status).toMatch(program.deployed ? /^deployed on devnet$/ : /placeholder/);
-        expect(program.account).toMatchObject({ space: 296, offsets: { authority: 8, lens: 40, payout: 72, deadline: 104, status: 136, decision: 138, cid: 228 } });
+        expect(program.account).toMatchObject({
+            space: 330,
+            offsets: { authority: 8, lens: 40, payout: 72, deadline: 104, status: 136, decision: 138, planCidHash: 227, inputCount: 259, cid: 262 }
+        });
+        expect(program.account.fields).toMatch(/executed_at, plan_cid_hash\b[^,]*, input_count, bump, cid$/);
         // Every instruction is documented with the IDL's own argument list and account order.
         expect(Object.keys(program.instructions).sort()).toEqual(AGREEMENT_IDL.instructions.map(ix => ix.name).sort());
         for (const ix of AGREEMENT_IDL.instructions) {

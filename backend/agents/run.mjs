@@ -537,7 +537,8 @@ export async function advancePick({
         const agreement = agreements[key];
         const minted = await run({ type: 'mint', agreementCid: agreement.cid, lamports: agreement.lamports, lens: agreement.content.rule.lens, pickId: pick.pickId },
             () => mintImpl({
-                connection, sponsorKeypair: keypair, cid: agreement.cid, lens: agreement.content.rule.lens[0],
+                connection, sponsorKeypair: keypair, cid: agreement.cid, planCid: agreement.content.planCid,
+                inputCount: (agreement.content.inputs?.parcels || []).length, lens: agreement.content.rule.lens[0],
                 deadline: agreement.deadline, lamports: agreement.lamports, openGround: false,
                 sendAndConfirm
             }),

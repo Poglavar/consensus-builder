@@ -351,12 +351,14 @@ describe('EVM record and anchor tools', () => {
         expect(Object.keys(byName.ugt_mint_design.inputSchema.properties)).toEqual(['designCid', 'chainId', 'confirm']);
         expect(Object.keys(byName.ugt_mint_plan.inputSchema.properties)).toEqual(['planCid', 'chainId', 'confirm']);
         expect(Object.keys(byName.ugt_anchor_parcels.inputSchema.properties)).toEqual(['parcelIds', 'chainId', 'confirm']);
-        expect(byName.ugt_mint_design.inputSchema.properties.chainId.enum).toEqual(expect.arrayContaining(['84532', '11155111']));
+        for (const name of ['ugt_chain_records', 'ugt_mint_design', 'ugt_mint_plan', 'ugt_anchor_parcels']) {
+            expect([...byName[name].inputSchema.properties.chainId.enum].sort(), name).toEqual(['11155111', '31337', '84532', 'solana-devnet']);
+        }
     });
 
     it('refuses a write without confirm, with a malformed CID or an unknown chain, before it reaches the tools', async () => {
         const tools = stubTools();
-        tools.listChainRecords = vi.fn(async ({ kind, chainId }) => ({ chainId, chain: 'Base Sepolia', kind, count: 0, truncated: false, records: [] }));
+        tools.listChainRecords = vi.fn(async ({ kind, chainId }) => ({ chainId, chain: 'Solana devnet', kind, count: 0, truncated: false, records: [] }));
         await connect(tools);
         const call = (name, args) => client.callTool({ name, arguments: args });
         expect((await call('ugt_mint_design', { designCid: DESIGN_CID })).isError).toBe(true);
@@ -368,7 +370,10 @@ describe('EVM record and anchor tools', () => {
         expect(tools.mintPlan).not.toHaveBeenCalled();
         expect(tools.anchorParcels).not.toHaveBeenCalled();
         expect((await call('ugt_chain_records', { kind: 'design' })).isError).not.toBe(true);
-        expect(tools.listChainRecords).toHaveBeenCalledWith({ kind: 'design', chainId: '84532', limit: 50 });
+        // Without a chainId the records come from Solana devnet; an EVM chain is named explicitly.
+        expect(tools.listChainRecords).toHaveBeenCalledWith({ kind: 'design', chainId: 'solana-devnet', limit: 50 });
+        expect((await call('ugt_chain_records', { kind: 'plan', chainId: '84532' })).isError).not.toBe(true);
+        expect(tools.listChainRecords).toHaveBeenLastCalledWith({ kind: 'plan', chainId: '84532', limit: 50 });
     });
 
     it('refuses signing without UGT_MCP_LIVE in the real tool surface', async () => {

@@ -76,9 +76,9 @@
         // Agreements are listed from the Solana cluster, designs and plans from the EVM chain (their
         // records live there until R2 of blockchain-flows.md); the index is the other source.
         const fromChain = () => state.source === 'chain' && !!win.ChainReader;
-        const chainName = () => (state.tab === 'agreements' ? t('lists.sourceChain', { cluster: win.ChainReader.cluster() }) : t('lists.sourceChainEvm', { chain: win.ChainReader.evmChainName() }));
+        const chainName = () => (state.tab === 'agreements' ? t('lists.sourceChain', { cluster: win.ChainReader.cluster() }) : t('lists.sourceChainEvm', { chain: win.ChainReader.recordChainName() }));
         const cacheKey = () => {
-            if (fromChain()) return `chain:${state.tab === 'agreements' ? win.ChainReader.cluster() : win.ChainReader.evmChainId()}:${state.tab}`;
+            if (fromChain()) return `chain:${state.tab === 'agreements' ? win.ChainReader.cluster() : win.ChainReader.recordChainKey()}:${state.tab}`;
             const view = area(); return `${win.DesignSync.apiBase()}:${view?.explore ? view.key : city()}:${state.tab}`;
         };
         const host = () => doc.getElementById({ designs: 'proposal-list-host', plans: 'plan-list-host', agreements: 'agreement-list-host' }[state.tab]);

@@ -1,20 +1,61 @@
 {
-  "address": "GtdgeRH89f2qLj4j4v6NcecWSr6RDPP9y4TMfPCGA5jQ",
+  "address": "95sjeTXUYG721iZK29s3kr7Dq4eFqv6PFoEmPYJDtkp9",
   "metadata": {
-    "name": "agreement",
+    "name": "ugt",
     "version": "0.1.0",
     "spec": "0.1.0",
-    "description": "Urban Game Theory Agreement - escrow settled by a lens attestation (Solana)"
+    "description": "Urban Game Theory - parcel anchors, design and plan records, agreements (Solana)"
   },
   "instructions": [
     {
+      "name": "anchor_parcels",
+      "docs": [
+        "Create the anchors of `parcel_ids` (each with its fixed metadata URI) that do not exist yet,",
+        "one remaining account per id: the PDA [\"parcel\", parcel_id], writable. Anyone pays; nobody owns."
+      ],
+      "discriminator": [
+        116,
+        67,
+        109,
+        222,
+        96,
+        86,
+        119,
+        197
+      ],
+      "accounts": [
+        {
+          "name": "payer",
+          "docs": [
+            "Pays the rent of every anchor this call creates."
+          ],
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "parcel_ids",
+          "type": {
+            "vec": "string"
+          }
+        },
+        {
+          "name": "metadata_uris",
+          "type": {
+            "vec": "string"
+          }
+        }
+      ]
+    },
+    {
       "name": "attest",
       "docs": [
-        "Record the lens's satisfied decision from its AgreementDecision-v1 SAS attestation (checks in",
-        "the module docs). Permissionless: the outcome comes from the attestation, never from the",
-        "caller. Only one decision is ever recorded, while Active and before the deadline. Keeps the",
-        "attestation's key and the sha256 of its whole account bytes, so the evidence outlives the SAS",
-        "account."
+        "Record the lens's satisfied decision from its AgreementDecision-v1 attestation."
       ],
       "discriminator": [
         83,
@@ -49,9 +90,7 @@
     {
       "name": "cancel",
       "docs": [
-        "The authority withdraws an Active agreement while no decision is recorded, and the escrow",
-        "returns to it. Once the lens's satisfied decision is recorded the parties rely on the escrow:",
-        "the agreement then executes, or expires after its deadline."
+        "The authority withdraws an agreement whose decision is not recorded; the escrow returns to it."
       ],
       "discriminator": [
         232,
@@ -85,12 +124,7 @@
     {
       "name": "create",
       "docs": [
-        "Commit an agreement to the chain at PDA [\"agreement\", authority, sha256(cid)], the signing",
-        "authority being its sponsor. `lens` is the lens member key whose AgreementDecision",
-        "attestation settles it; `deadline` is unix seconds in the future, or NO_DEADLINE (0);",
-        "`open_ground` records that the agreement's land includes open ground (read by indexers, no",
-        "effect here); `required_lamports` is the escrow execution needs (0: none); `payout` receives",
-        "the whole escrow at execution (the agreement's settlement account)."
+        "Commit an agreement to the chain (agreement.rs: `create`)."
       ],
       "discriminator": [
         24,
@@ -127,6 +161,14 @@
           "type": "string"
         },
         {
+          "name": "plan_cid",
+          "type": "string"
+        },
+        {
+          "name": "input_count",
+          "type": "u16"
+        },
+        {
           "name": "lens",
           "type": "pubkey"
         },
@@ -149,11 +191,73 @@
       ]
     },
     {
+      "name": "create_record",
+      "docs": [
+        "Record `cid` as a design (kind 1) or plan (kind 2) published by the signer, and mint its",
+        "Metaplex Core asset (`name`, `uri`) to the signer. Refused when the record exists."
+      ],
+      "discriminator": [
+        116,
+        124,
+        63,
+        58,
+        126,
+        204,
+        178,
+        10
+      ],
+      "accounts": [
+        {
+          "name": "record",
+          "writable": true
+        },
+        {
+          "name": "asset",
+          "docs": [
+            "the CPI (this program signs for the PDA), so it must not exist yet."
+          ],
+          "writable": true
+        },
+        {
+          "name": "minter",
+          "docs": [
+            "The publisher: pays the rent of the record and the asset, receives the asset."
+          ],
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "mpl_core_program",
+          "address": "CoREENxT6tW1HoK8ypY1SxRMZTcVPm7R94rH4PZNhX7d"
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "kind",
+          "type": "u8"
+        },
+        {
+          "name": "cid",
+          "type": "string"
+        },
+        {
+          "name": "name",
+          "type": "string"
+        },
+        {
+          "name": "uri",
+          "type": "string"
+        }
+      ]
+    },
+    {
       "name": "execute",
       "docs": [
-        "Execute a satisfied agreement before its deadline: the escrow must hold `required_lamports`,",
-        "and all of it goes to `payout`. Permissionless: the payout is fixed at create. Its",
-        "AgreementExecuted is the one event the backend writes parcel history from."
+        "Pay the escrow of a satisfied, funded agreement to its payout."
       ],
       "discriminator": [
         130,
@@ -180,8 +284,7 @@
     {
       "name": "expire",
       "docs": [
-        "Anyone expires an Active agreement whose deadline has passed (an agreement without a",
-        "deadline never expires); the escrow returns to the authority."
+        "Anyone expires an agreement past its deadline; the escrow returns to the authority."
       ],
       "discriminator": [
         243,
@@ -211,8 +314,7 @@
     {
       "name": "fund",
       "docs": [
-        "The authority moves `lamports` into the escrow, while the agreement is Active and before its",
-        "deadline (also after the decision, to reach `required_lamports`)."
+        "The authority moves `lamports` into the escrow."
       ],
       "discriminator": [
         218,
@@ -265,6 +367,19 @@
         249,
         197,
         84
+      ]
+    },
+    {
+      "name": "Record",
+      "discriminator": [
+        254,
+        233,
+        117,
+        252,
+        76,
+        166,
+        146,
+        139
       ]
     }
   ],
@@ -345,6 +460,32 @@
         93,
         176,
         91
+      ]
+    },
+    {
+      "name": "ParcelAnchored",
+      "discriminator": [
+        123,
+        151,
+        156,
+        109,
+        25,
+        62,
+        237,
+        109
+      ]
+    },
+    {
+      "name": "RecordCreated",
+      "discriminator": [
+        7,
+        2,
+        32,
+        66,
+        135,
+        168,
+        104,
+        225
       ]
     }
   ],
@@ -478,6 +619,51 @@
       "code": 6025,
       "name": "WrongSponsor",
       "msg": "The attestation names a different sponsor than the agreement's authority"
+    },
+    {
+      "code": 6026,
+      "name": "InvalidParcelId",
+      "msg": "A parcel id must be 1-32 bytes"
+    },
+    {
+      "code": 6027,
+      "name": "InvalidMetadataUri",
+      "msg": "A metadata URI must be 1-200 bytes"
+    },
+    {
+      "code": 6028,
+      "name": "InvalidAnchorBatch",
+      "msg": "anchor_parcels takes 1-16 parcel ids, as many metadata URIs, and one writable remaining account per id"
+    },
+    {
+      "code": 6029,
+      "name": "WrongParcelAccount",
+      "msg": "A remaining account is not the writable anchor PDA of its parcel id"
+    },
+    {
+      "code": 6030,
+      "name": "InvalidKind",
+      "msg": "A record kind is 1 (design) or 2 (plan)"
+    },
+    {
+      "code": 6031,
+      "name": "InvalidName",
+      "msg": "An asset name must be 1-100 bytes"
+    },
+    {
+      "code": 6032,
+      "name": "InvalidUri",
+      "msg": "An asset URI must be 1-1000 bytes"
+    },
+    {
+      "code": 6033,
+      "name": "AssetExists",
+      "msg": "The record's asset account already exists"
+    },
+    {
+      "code": 6034,
+      "name": "WrongProgram",
+      "msg": "The account is not the Metaplex Core program"
     }
   ],
   "types": [
@@ -486,7 +672,7 @@
       "docs": [
         "One agreement: PDA [\"agreement\", authority, sha256(cid)]. Every fixed-size field comes before",
         "`cid`, so their offsets are the same in every account (README, \"Agreement account\") and memcmp",
-        "filters on authority, lens or status work."
+        "filters on authority, lens, status or plan_cid_hash work."
       ],
       "type": {
         "kind": "struct",
@@ -600,6 +786,26 @@
               "Chain time of execution (0 unless Executed)."
             ],
             "type": "i64"
+          },
+          {
+            "name": "plan_cid_hash",
+            "docs": [
+              "sha256 of the plan CID the agreement names (agreement/v1 `planCid`): the memcmp that lists a",
+              "plan's agreements."
+            ],
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "input_count",
+            "docs": [
+              "The agreement's number of input parcels (agreement/v1 `inputs.parcels`), for readers."
+            ],
+            "type": "u16"
           },
           {
             "name": "bump",
@@ -728,6 +934,14 @@
             "type": "bool"
           },
           {
+            "name": "plan_cid",
+            "type": "string"
+          },
+          {
+            "name": "input_count",
+            "type": "u16"
+          },
+          {
             "name": "created_at",
             "type": "i64"
           }
@@ -834,7 +1048,7 @@
     {
       "name": "AgreementStatus",
       "docs": [
-        "Same codes as proposal_nft's ProposalStatus."
+        "Same codes as the retired proposal_nft's ProposalStatus."
       ],
       "type": {
         "kind": "enum",
@@ -868,6 +1082,113 @@
           },
           {
             "name": "Satisfied"
+          }
+        ]
+      }
+    },
+    {
+      "name": "ParcelAnchored",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "parcel",
+            "type": "pubkey"
+          },
+          {
+            "name": "parcel_id",
+            "type": "string"
+          },
+          {
+            "name": "anchored_by",
+            "type": "pubkey"
+          },
+          {
+            "name": "anchored_at",
+            "type": "i64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Record",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "kind",
+            "docs": [
+              "KIND_DESIGN (1) or KIND_PLAN (2); byte 8 of the account."
+            ],
+            "type": "u8"
+          },
+          {
+            "name": "minter",
+            "docs": [
+              "The publisher: signed the create, paid the rent, owns the asset."
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "created_at",
+            "docs": [
+              "Chain time of the create."
+            ],
+            "type": "i64"
+          },
+          {
+            "name": "asset",
+            "docs": [
+              "The Metaplex Core asset minted for this record."
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          },
+          {
+            "name": "asset_bump",
+            "type": "u8"
+          },
+          {
+            "name": "cid",
+            "docs": [
+              "The CIDv1 (`bafkrei…`) of the design/v1 or plan/v1 object this record commits to."
+            ],
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "name": "RecordCreated",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "record",
+            "type": "pubkey"
+          },
+          {
+            "name": "asset",
+            "type": "pubkey"
+          },
+          {
+            "name": "kind",
+            "type": "u8"
+          },
+          {
+            "name": "cid",
+            "type": "string"
+          },
+          {
+            "name": "minter",
+            "type": "pubkey"
+          },
+          {
+            "name": "created_at",
+            "type": "i64"
           }
         ]
       }

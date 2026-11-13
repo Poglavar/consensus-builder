@@ -8,7 +8,7 @@ import { OUR_PROGRAMS } from '../solana/address-book.js';
 import { createRpcConnection } from '../solana/rpc.js';
 
 const LOADER = 'BPFLoaderUpgradeab1e11111111111111111111111';
-const NAMES = { agreement: 'Agreement', proposal_market: 'ProposalMarket', proposal_pledge: 'ProposalPledge', parcel_nft: 'ParcelNFT' };
+const NAMES = { ugt: 'Ugt', proposal_market: 'ProposalMarket', proposal_pledge: 'ProposalPledge' };
 export const PROOF_PROGRAMS = OUR_PROGRAMS.map(program => ({ name: NAMES[program.name], address: program.address }));
 export const PROGRAM_EVIDENCE_TTL_MS = 15 * 60 * 1000;
 

@@ -1,7 +1,7 @@
 /**
  * Solana Chain Data Loader
  * The shared Solana connections (per cluster, through rpc-routing.js), the deployed program addresses
- * (contracts/addresses.json) and the ParcelNFT anchors: mint status per parcel and the parcels a
+ * (contracts/addresses.json) and the ugt program's parcel anchors: anchor status per parcel and the parcels a
  * wallet anchored. Agreements are read through agreement-bridge.js.
  */
 (function () {
@@ -104,28 +104,13 @@
         return pda;
     }
 
+    // A ugt ParcelAnchor account (UgtClient.readParcelAnchor: discriminator checked) as
+    // { parcelId, metadataUri, anchoredBy }, or null for any other account of the program.
     function parseParcelAccount(data) {
-        if (!data || data.length < 8) return null;
+        if (!data || data.length < 8 || !globalScope.UgtClient) return null;
         try {
-            const body = new Uint8Array(data);
-            let offset = 8;
-
-            const readString = () => {
-                if (offset + 4 > body.length) return '';
-                const len = new DataView(body.buffer, body.byteOffset + offset, 4).getUint32(0, true);
-                offset += 4;
-                const str = new TextDecoder().decode(body.slice(offset, offset + len));
-                offset += len;
-                return str;
-            };
-
-            const parcelId = readString();
-            const metadataUri = readString();
-            const ownerBytes = body.slice(offset, offset + 32);
-            offset += 32;
-            const owner = ownerBytes.length >= 32 ? new globalScope.solanaWeb3.PublicKey(ownerBytes).toString() : null;
-
-            return { parcelId, metadataUri, owner };
+            const anchor = globalScope.UgtClient.readParcelAnchor(new Uint8Array(data));
+            return anchor ? { parcelId: anchor.parcelId, metadataUri: anchor.metadataUri, anchoredBy: anchor.anchoredBy } : null;
         } catch (_) {
             return null;
         }
@@ -172,7 +157,7 @@
                         value = {
                             minted: true,
                             tokenId: entry.pda.toString(),
-                            owner: parsed.owner,
+                            anchoredBy: parsed.anchoredBy,
                             metadataURI: parsed.metadataUri
                         };
                     }
@@ -192,16 +177,24 @@
         return Array.isArray(statuses) && statuses[0] ? statuses[0] : { minted: false };
     }
 
+    // The program's ParcelAnchor accounts (by discriminator), optionally only those `anchoredBy` paid for.
+    function anchorFilters(anchoredBy = null) {
+        const client = globalScope.UgtClient;
+        const filters = [{ memcmp: { offset: 0, bytes: client.base58Of(Uint8Array.from(client.ACCOUNT_DISCRIMINATORS.ParcelAnchor)) } }];
+        if (anchoredBy) filters.push({ memcmp: { offset: client.ANCHOR_OFFSETS.anchoredBy, bytes: anchoredBy } });
+        return filters;
+    }
+
+    // The anchors the wallet paid for (an anchor has no owner; anchoring confers nothing).
     async function getParcelsFromChain(walletAddress, cluster, parcelProgramId) {
         const connection = getConnection(cluster);
         const programId = new globalScope.solanaWeb3.PublicKey(parcelProgramId);
-        const accounts = await connection.getProgramAccounts(programId);
+        const accounts = await connection.getProgramAccounts(programId, { filters: anchorFilters(walletAddress) });
 
         const parcels = [];
-        const walletLower = walletAddress.toLowerCase();
         for (const { pubkey, account } of accounts) {
             const parsed = parseParcelAccount(account.data);
-            if (parsed && parsed.parcelId && parsed.owner && parsed.owner.toLowerCase() === walletLower) {
+            if (parsed && parsed.parcelId && parsed.anchoredBy === walletAddress) {
                 parcels.push({
                     tokenId: pubkey.toString(),
                     parcelId: parsed.parcelId,
@@ -242,7 +235,7 @@
     async function getAllMintedParcelIds(cluster, parcelProgramId) {
         const connection = getConnection(cluster);
         const programId = new globalScope.solanaWeb3.PublicKey(parcelProgramId);
-        const accounts = await connection.getProgramAccounts(programId);
+        const accounts = await connection.getProgramAccounts(programId, { filters: anchorFilters() });
         const parcelIds = [];
         for (const { account } of accounts) {
             const parsed = parseParcelAccount(account.data);

@@ -8,7 +8,7 @@ import path from 'path';
 import { formatAtomicAmount } from '../utils/x402-payment.js';
 import { shortAddress } from './address-book.js';
 
-const IDL_FILES = ['parcel_nft.json', 'agreement.json', 'proposal_market.json', 'proposal_pledge.json'];
+const IDL_FILES = ['ugt.json', 'proposal_market.json', 'proposal_pledge.json'];
 
 const LAMPORTS_DECIMALS = 9;
 
@@ -590,12 +590,14 @@ function buildSummary(primary, ctx) {
         if (action === 'void_pledge') return `a pledge was voided${onAgreement}`;
     }
 
-    if (name === 'parcel_nft') {
-        const owner = label(actorAddress(primary, 'owner'));
-        if (action === 'mint_parcel') return `${owner} minted parcel ${args.parcel_id ?? '?'}`;
-        if (action === 'set_parcel_metadata_uri') {
-            const parcel = accountAddress(primary, 'parcel');
-            return `${owner} updated the metadata uri of parcel ${parcel ? label(parcel) : 'account'}`;
+    if (name === 'ugt') {
+        if (action === 'anchor_parcels') {
+            const ids = Array.isArray(args.parcel_ids) ? args.parcel_ids : [];
+            return `${label(actorAddress(primary, 'payer'))} anchored ${ids.length === 1 ? `parcel ${ids[0]}` : `${ids.length} parcels`}`;
+        }
+        if (action === 'create_record') {
+            const kind = args.kind === 2 ? 'plan' : 'design';
+            return `${label(actorAddress(primary, 'minter'))} recorded ${kind} ${args.cid ?? '?'}`;
         }
     }
 

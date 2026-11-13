@@ -1,11 +1,9 @@
 [workspace]
 members = [
     "crates/sas_attestation",
-    "programs/parcel_nft",
-    "programs/proposal_nft",
+    "programs/ugt",
     "programs/proposal_market",
     "programs/proposal_pledge",
-    "programs/agreement",
 ]
 resolver = "2"
 

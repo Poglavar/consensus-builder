@@ -70,17 +70,17 @@ export async function creationSignature(connection, account) {
 
 /**
  * Create the agreement account (if missing) and fund its escrow up to `lamports`, in one transaction.
- * `create(cid, lens, deadline, open_ground, required_lamports = lamports, payout)`; `fund` brings the
+ * `create(cid, plan_cid, input_count, lens, deadline, open_ground, required_lamports = lamports, payout)`; `fund` brings the
  * escrow to `lamports` (nothing when it already holds that much, nothing at all for 0). An existing
  * account must carry the same lens, deadline and required lamports, or nothing is signed.
- * @param {{ connection, sponsorKeypair, cid: string, lens: string, deadline: string|null, lamports?: bigint|string|number,
+ * @param {{ connection, sponsorKeypair, cid: string, planCid: string, inputCount: number, lens: string, deadline: string|null, lamports?: bigint|string|number,
  *           payout?: string|null, openGround?: boolean, programId?: string, sendAndConfirm?: Function }} options
  *   payout defaults to the sponsor (the escrow returns to it at execution)
  * @returns {Promise<{ account, programId, signature: string|null, createSignature: string, created: boolean,
  *   fundedLamports: string, requiredLamports: string, escrowLamports: string, status: string }>}
  */
 export async function mintAgreement({
-    connection, sponsorKeypair, cid, lens, deadline = null, lamports = 0n, payout = null, openGround = false,
+    connection, sponsorKeypair, cid, planCid, inputCount = 0, lens, deadline = null, lamports = 0n, payout = null, openGround = false,
     programId = AGREEMENT_PROGRAM_ID, sendAndConfirm = web3.sendAndConfirmTransaction
 } = {}) {
     if (!connection?.getAccountInfo) throw new Error('a solana connection is required');
@@ -105,7 +105,7 @@ export async function mintAgreement({
     const instructions = [];
     if (!existing) {
         instructions.push(agreementClient.buildCreateIx({
-            authority: sponsor, programId, cid, lens: lensKey, deadline: deadlineSeconds, openGround: Boolean(openGround),
+            authority: sponsor, programId, cid, planCid, inputCount, lens: lensKey, deadline: deadlineSeconds, openGround: Boolean(openGround),
             requiredLamports: required, payout: payout ? keyText(payout) : sponsor
         }).instruction);
     }

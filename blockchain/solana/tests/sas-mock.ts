@@ -1,19 +1,18 @@
 // Localnet helpers for the lens model: lay out Solana Attestation Service credential, schema and
 // attestation accounts byte-identical to sas-lib 1.0.10's codecs, write them through the mock SAS
-// program (tests/mock_sas, loaded at the real SAS id by Anchor.toml), and drive proposal_nft's
-// accept_with_attestations / settle_with_verdict and the agreement program's attest
-// (AgreementDecision-v1, tests/agreement-helpers.ts) with them.
+// program (tests/mock_sas, loaded at the real SAS id by Anchor.toml), and drive the ugt program's
+// attest (AgreementDecision-v1, tests/agreement-helpers.ts) and proposal_market's evidence-settled
+// markets with them.
 
 import * as anchor from "@coral-xyz/anchor";
 import { Connection, Keypair, PublicKey, SYSVAR_CLOCK_PUBKEY, SystemProgram, Transaction, TransactionInstruction } from "@solana/web3.js";
 import { createHash } from "crypto";
 
 export const SAS_PROGRAM_ID = new PublicKey("22zoJMtdu4tQc2PzL74ZUT7FrwgB1Udec8DdW4yw4BdG");
-export const PARCEL_NFT_PROGRAM_ID = new PublicKey("4zadC1FgWPQLv6qv66mjEBthBqTvrmxL5oDcHQzNtkV1");
 
-export const OWNERSHIP_SCHEMA = "ParcelOwnership";
+/** Another schema name: a decision issued under it is WrongSchema. */
 export const VERDICT_SCHEMA = "ProposalVerdict";
-/** The lens decision the agreement program's `attest` consumes (programs/agreement/README.md). */
+/** The lens decision the ugt program's `attest` consumes (programs/ugt/README.md). */
 export const DECISION_SCHEMA = "AgreementDecision";
 /** The one schema every LMSR recipe-bound market settles from (lmsr-market.md). */
 export const MARKET_EVIDENCE_SCHEMA = "MarketEvidence";
@@ -87,22 +86,6 @@ export function attestationBytes(a: {
     ]);
 }
 
-/** ParcelOwnership-v1: string parcelUid, string owner, uint8 ownerCount, string evidenceRef, int64 sourceObservedAt. */
-export function ownershipPayload(p: { parcelUid: string; owner: PublicKey | string; ownerCount?: number; evidenceRef?: string; sourceObservedAt: number }): Buffer {
-    return Buffer.concat([
-        borshBytes(p.parcelUid), borshBytes(p.owner.toString()), Buffer.from([p.ownerCount ?? 1]),
-        borshBytes(p.evidenceRef ?? "case-ref"), i64(p.sourceObservedAt),
-    ]);
-}
-
-/** ProposalVerdict-v1: string proposalAccount, string verdict, string evidenceRef, int64 sourceObservedAt. */
-export function verdictPayload(p: { proposalAccount: PublicKey | string; verdict: string; evidenceRef?: string; sourceObservedAt: number }): Buffer {
-    return Buffer.concat([
-        borshBytes(p.proposalAccount.toString()), borshBytes(p.verdict),
-        borshBytes(p.evidenceRef ?? "case-ref"), i64(p.sourceObservedAt),
-    ]);
-}
-
 /** AgreementDecision-v1: string agreementCid, string sponsor, string decision, string evidenceRef, int64 sourceObservedAt. */
 export function decisionPayload(p: { agreementCid: string; sponsor: PublicKey | string; decision?: string; evidenceRef?: string; sourceObservedAt: number }): Buffer {
     return Buffer.concat([
@@ -153,40 +136,6 @@ export async function createLensMember(provider: anchor.AnchorProvider, keypair:
     return { keypair, publicKey: keypair.publicKey, credential };
 }
 
-export async function attestOwnership(
-    provider: anchor.AnchorProvider,
-    member: LensMember,
-    p: Omit<Parameters<typeof ownershipPayload>[0], "sourceObservedAt"> & {
-        sourceObservedAt?: number; expiry?: number; schema?: PublicKey; authority?: PublicKey; credential?: PublicKey;
-    }
-): Promise<{ address: PublicKey; bytes: Buffer }> {
-    const credential = p.credential ?? member.credential;
-    const sourceObservedAt = p.sourceObservedAt ?? (await chainNow(provider.connection)) - 60;
-    const bytes = attestationBytes({
-        credential,
-        schema: p.schema ?? schemaPda(credential, OWNERSHIP_SCHEMA),
-        payload: ownershipPayload({ ...p, sourceObservedAt }),
-        authority: p.authority ?? member.publicKey,
-        expiry: p.expiry,
-    });
-    return { address: await writeSasAccount(provider, bytes), bytes };
-}
-
-export async function attestVerdict(
-    provider: anchor.AnchorProvider,
-    member: LensMember,
-    p: Omit<Parameters<typeof verdictPayload>[0], "sourceObservedAt"> & { sourceObservedAt?: number; expiry?: number }
-): Promise<PublicKey> {
-    const sourceObservedAt = p.sourceObservedAt ?? (await chainNow(provider.connection)) - 60;
-    return writeSasAccount(provider, attestationBytes({
-        credential: member.credential,
-        schema: schemaPda(member.credential, VERDICT_SCHEMA),
-        payload: verdictPayload({ ...p, sourceObservedAt }),
-        authority: member.publicKey,
-        expiry: p.expiry,
-    }));
-}
-
 /**
  * An AgreementDecision-v1 attestation by `member` under its credential's AgreementDecision v1 schema,
  * as the lens member issues it (backend/lens/member.js). Every field can be overridden to forge the
@@ -210,95 +159,4 @@ export async function attestDecision(
         expiry: p.expiry,
     });
     return { address: await writeSasAccount(provider, bytes), bytes };
-}
-
-export function findParcelAnchor(parcelId: string): PublicKey {
-    return PublicKey.findProgramAddressSync([Buffer.from("parcel"), Buffer.from(parcelId)], PARCEL_NFT_PROGRAM_ID)[0];
-}
-
-export function findTally(programId: PublicKey, proposal: PublicKey, parcelId: string): PublicKey {
-    return PublicKey.findProgramAddressSync([Buffer.from("consent"), proposal.toBuffer(), Buffer.from(parcelId)], programId)[0];
-}
-
-export function findRecord(programId: PublicKey, proposal: PublicKey, parcelId: string, owner: PublicKey): PublicKey {
-    return PublicKey.findProgramAddressSync(
-        [Buffer.from("acceptance"), proposal.toBuffer(), Buffer.from(parcelId), owner.toBuffer()],
-        programId
-    )[0];
-}
-
-/** Submit accept_with_attestations; the owner signs, the provider wallet pays unless `payer` is given. */
-export async function acceptWithAttestation(
-    proposalProgram: anchor.Program,
-    a: { proposal: PublicKey; parcelId: string; owner: Keypair; ownership: PublicKey; credential: PublicKey; payout?: PublicKey | null; payer?: Keypair; recordOwner?: PublicKey }
-): Promise<string> {
-    const provider = proposalProgram.provider as anchor.AnchorProvider;
-    const payer = a.payer?.publicKey ?? provider.wallet.publicKey;
-    const signers = [a.owner, ...(a.payer ? [a.payer] : [])].filter(k => !k.publicKey.equals(provider.wallet.publicKey));
-    return proposalProgram.methods
-        .acceptWithAttestations(a.parcelId, a.payout ?? null)
-        .accountsStrict({
-            proposal: a.proposal,
-            parcel: findParcelAnchor(a.parcelId),
-            ownership: a.ownership,
-            ownershipCredential: a.credential,
-            tally: findTally(proposalProgram.programId, a.proposal, a.parcelId),
-            record: findRecord(proposalProgram.programId, a.proposal, a.parcelId, a.recordOwner ?? a.owner.publicKey),
-            owner: a.owner.publicKey,
-            payer,
-            systemProgram: SystemProgram.programId,
-        })
-        .signers(signers)
-        .rpc();
-}
-
-/** A lens member attests `owner` for a single-owner parcel and the owner accepts. */
-export async function attestAndAccept(
-    proposalProgram: anchor.Program,
-    member: LensMember,
-    a: { proposal: PublicKey; parcelId: string; owner: Keypair; ownerCount?: number; payout?: PublicKey | null }
-): Promise<{ ownership: PublicKey; bytes: Buffer }> {
-    const provider = proposalProgram.provider as anchor.AnchorProvider;
-    const { address, bytes } = await attestOwnership(provider, member, {
-        parcelUid: a.parcelId, owner: a.owner.publicKey, ownerCount: a.ownerCount ?? 1,
-    });
-    await acceptWithAttestation(proposalProgram, {
-        proposal: a.proposal, parcelId: a.parcelId, owner: a.owner, ownership: address,
-        credential: member.credential, payout: a.payout,
-    });
-    return { ownership: address, bytes };
-}
-
-export async function settleWithVerdict(
-    proposalProgram: anchor.Program,
-    a: { proposal: PublicKey; verdict: PublicKey; credential: PublicKey }
-): Promise<string> {
-    const provider = proposalProgram.provider as anchor.AnchorProvider;
-    const verdictRecord = PublicKey.findProgramAddressSync(
-        [Buffer.from("verdict"), a.proposal.toBuffer(), a.verdict.toBuffer()],
-        proposalProgram.programId
-    )[0];
-    return proposalProgram.methods
-        .settleWithVerdict()
-        .accountsStrict({
-            proposal: a.proposal,
-            verdict: a.verdict,
-            verdictCredential: a.credential,
-            verdictRecord,
-            submitter: provider.wallet.publicKey,
-            systemProgram: anchor.web3.SystemProgram.programId,
-        })
-        .rpc();
-}
-
-/** Mint the parcel anchor if nobody has yet (anchors are ownerless and shared across suites). */
-export async function ensureParcelAnchor(parcelProgram: anchor.Program, parcelId: string): Promise<PublicKey> {
-    const provider = parcelProgram.provider as anchor.AnchorProvider;
-    const anchorAddress = findParcelAnchor(parcelId);
-    if (await provider.connection.getAccountInfo(anchorAddress)) return anchorAddress;
-    await parcelProgram.methods
-        .mintParcel(parcelId, `https://api.urbangametheory.xyz/parcels/parcelIds?ids=${parcelId}`)
-        .accountsStrict({ parcel: anchorAddress, payer: provider.wallet.publicKey, systemProgram: SystemProgram.programId })
-        .rpc();
-    return anchorAddress;
 }

@@ -9,9 +9,9 @@ import { describe, expect, it } from 'vitest';
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 const read = relative => fs.readFileSync(path.join(root, relative), 'utf8');
 
+// ugt replaced parcel_nft, proposal_nft and agreement (blockchain-flows.md, R2).
 const PROGRAMS = [
-    '4zadC1FgWPQLv6qv66mjEBthBqTvrmxL5oDcHQzNtkV1',
-    '3WsVS6LkLo4ySLaLvxKdwuD37fcCjE2Yu9fVh1nMfxbg',
+    '95sjeTXUYG721iZK29s3kr7Dq4eFqv6PFoEmPYJDtkp9',
     'GDYnzduynKhKgxDhvvKVarn2s23DtzA26s6hycuUYDRB',
     '1jESRS3mJiPUJTtmQ5ncyBhGNmGeXTpUqPyJcTYrp6g'
 ];

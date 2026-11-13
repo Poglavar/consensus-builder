@@ -117,7 +117,7 @@ describe('wallet bridges preflight through real web3 simulateTransaction', () =>
                 solanaWalletManager: { getCluster: () => 'devnet', getProvider: () => signer }
             });
             const agreement = {
-                deadline: null, inputs: { openGroundM2: 0 }, onchain: null,
+                deadline: null, plan: { cid: 'bafkreiexxjscqvxx53b3dts2uxslfuu7zlro7te4ztjyx5yi5xt4qwbkwi' }, inputs: { parcels: [{ parcelId: 'HR-1/1' }], openGroundM2: 0 }, onchain: null,
                 published: { cid: CID, publishedAt: '2026-10-22T08:00:00.000Z', apiBase: 'https://api.example.test', sponsor: WALLET.toBase58() }
             };
             const statuses = [];

@@ -301,11 +301,13 @@ export async function syncAgreementLifecycle({ pool, chain, apply = false, now =
     // its chain id; its pass refreshes `onchain` only (land events of EVM agreements are not written yet).
     const evm = chain.family === 'evm';
     const where = evm ? `EVM chain ${chain.chainId}` : chain.cluster;
+    // A Solana pass reads the rows minted under the program it watches; rows of the retired agreement
+    // program keep the state last observed (agreements/onchain.js RETIRED_AGREEMENT_PROGRAM_ID).
     const { rows } = await pool.query(`
         SELECT cid, content->>'sponsor' AS sponsor, input_parcel_ids, parcel_source_id, onchain
         FROM consensus.agreement
-        WHERE ${evm ? `onchain->>'chain' = 'evm' AND onchain->>'chainId' = $1` : `onchain->>'chain' = 'solana' AND onchain->>'cluster' = $1`}
-        ORDER BY created_at, cid`, [evm ? chain.chainId : chain.cluster]);
+        WHERE ${evm ? `onchain->>'chain' = 'evm' AND onchain->>'chainId' = $1` : `onchain->>'chain' = 'solana' AND onchain->>'cluster' = $1 AND onchain->>'programId' = $2`}
+        ORDER BY created_at, cid`, evm ? [chain.chainId] : [chain.cluster, chain.programId]);
     const total = rows.length;
     log(`${total} minted agreement(s) on ${where}${apply ? '' : ' (dry run: nothing is written)'}`);
     const result = { scanned: total, reconciled: 0, moved: 0, terminal: 0, events: [], inserted: 0, invalidAccounts: [], missingEvidence: [], failed: [], dryRun: !apply };

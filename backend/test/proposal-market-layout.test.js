@@ -1,7 +1,7 @@
 // Source-of-truth cross-checks of what proposal_market reads. Since M3 its subject (the IDL's
-// `proposal` account) is an Agreement account of the agreement program, read with
-// agreement::read_agreement_view: the agreement crate's own offsets, with no layout mirrored in this
-// program. The agreement struct in Rust, the reader's offsets, the agreement IDL, the JS codec
+// `proposal` account) is an Agreement account of the ugt program, read with
+// ugt::read_agreement_view: the ugt crate's own offsets, with no layout mirrored in this
+// program. The agreement struct in Rust, the reader's offsets, the ugt IDL, the JS codec
 // (frontend/js/solana/agreement-client.js) and the test encoder (fixtures/agreement-account.js) are
 // pinned to each other here, so a field moved in one of them and not the others fails. The market's
 // own IDL is pinned to its source below.
@@ -20,7 +20,7 @@ const agreementClient = require('../../frontend/js/solana/agreement-client.js');
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const layout = agreementRustLayout();
-const agreementIdl = JSON.parse(readSolana('idl/agreement.json'));
+const agreementIdl = JSON.parse(readSolana('idl/ugt.json'));
 const marketRs = readSolana('programs/proposal_market/src/lib.rs');
 const lmsrRs = readSolana('programs/proposal_market/src/lmsr_market.rs');
 const marketCargo = readSolana('programs/proposal_market/Cargo.toml');
@@ -45,9 +45,10 @@ describe('the Agreement account the market and pledge programs read', () => {
     it('declares its fields in the order the IDL and the JS codec decode, status at byte 136', () => {
         const idlFields = agreementIdl.types.find(type => type.name === 'Agreement').type.fields.map(field => field.name);
         expect(layout.fields.map(field => field.name)).toEqual(idlFields);
-        const { authority, lens, payout, deadline, status, decision, cid } = layout.offsets;
-        expect({ authority, lens, payout, deadline, status, decision, cid }).toEqual(agreementClient.AGREEMENT_OFFSETS);
+        const { authority, lens, payout, deadline, status, decision, plan_cid_hash: planCidHash, input_count: inputCount, cid } = layout.offsets;
+        expect({ authority, lens, payout, deadline, status, decision, planCidHash, inputCount, cid }).toEqual(agreementClient.AGREEMENT_OFFSETS);
         expect(status).toBe(136);
+        expect([planCidHash, inputCount, cid]).toEqual([227, 259, 262]);
     });
 
     it('reads authority, lens, status and execution time at offsets its own constants derive from the struct', () => {
@@ -98,27 +99,28 @@ describe('the Agreement account the market and pledge programs read', () => {
         expect(agreementIdl.address).toBe(layout.programId);
         expect(agreementClient.constants.AGREEMENT_PROGRAM_ID).toBe(layout.programId);
         expect(AGREEMENT_PROGRAM_ID).toBe(layout.programId);
-        const tomlIds = [...readSolana('Anchor.toml').matchAll(/^agreement = "([^"]+)"/gm)].map(match => match[1]);
+        const tomlIds = [...readSolana('Anchor.toml').matchAll(/^ugt = "([^"]+)"/gm)].map(match => match[1]);
         expect(tomlIds).toEqual([layout.programId, layout.programId]);
+        expect(readSolana('Anchor.toml')).not.toMatch(/^(agreement|parcel_nft|proposal_nft) = /m);
     });
 });
 
-describe('proposal_market reads its subject only through agreement::read_agreement_view', () => {
-    it('takes its status codes from the agreement crate', () => {
+describe('proposal_market reads its subject only through ugt::read_agreement_view', () => {
+    it('takes its status codes from the ugt crate', () => {
         for (const name of ['Active', 'Executed', 'Cancelled', 'Expired']) {
-            expect(marketRs).toContain(`pub const STATUS_${name.toUpperCase()}: u8 = agreement::AgreementStatus::${name} as u8;`);
+            expect(marketRs).toContain(`pub const STATUS_${name.toUpperCase()}: u8 = ugt::AgreementStatus::${name} as u8;`);
         }
     });
 
     it('reads every subject with the shared reader and mirrors no layout of its own', () => {
-        expect(rustFnBody(marketRs, 'read_subject')).toContain('agreement::read_agreement_view(subject)');
+        expect(rustFnBody(marketRs, 'read_subject')).toContain('ugt::read_agreement_view(subject)');
         expect(lmsrRs).toContain('read_subject(');
         for (const source of [marketRs, lmsrRs]) {
-            expect(source).not.toMatch(/ProposalHead|ProposalLensView|PROPOSAL_NFT_PROGRAM_ID|PROPOSAL_DISCRIMINATOR|proposal_nft::/);
+            expect(source).not.toMatch(/ProposalHead|ProposalLensView|PROPOSAL_NFT_PROGRAM_ID|PROPOSAL_DISCRIMINATOR|proposal_nft::|agreement::/);
             expect(source).not.toMatch(/read_agreement_view\(.*\)\s*\.\s*data|STATUS_OFFSET|LENS_OFFSET/);
         }
-        expect(marketCargo).toContain('agreement = { path = "../agreement", features = ["no-entrypoint"] }');
-        expect(marketCargo).not.toMatch(/^proposal_nft\s*=/m);
+        expect(marketCargo).toContain('ugt = { path = "../ugt", features = ["no-entrypoint"] }');
+        expect(marketCargo).not.toMatch(/^(proposal_nft|agreement)\s*=/m);
         // The source says where the status byte is; it says the reader's offset.
         expect(Number(marketRs.match(/status\s+(?:\/\/\s+)?at offset (\d+)/)[1])).toBe(layout.STATUS_OFFSET);
     });

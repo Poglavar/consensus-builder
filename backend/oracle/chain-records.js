@@ -1,5 +1,6 @@
 // The chain watcher (docs/blockchain-flows.md, "Browser and server pieces"): design and plan records
-// minted on EVM chains (RecordRegistry, read through frontend/js/chain/evm-adapter.js) are imported
+// minted on Solana (the ugt program) or EVM chains (RecordRegistry), read through the browser's chain
+// adapters (chain/adapters.js), are imported
 // into the index once their content is fetched from public IPFS and verified against the CID.
 // Designs first, then plans, so a plan whose member designs are on a chain finds them indexed; a
 // plan whose members are still missing is left for a later pass. Pure apart from its injected

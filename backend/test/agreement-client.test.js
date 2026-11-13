@@ -1,15 +1,17 @@
-// Unit tests for frontend/js/solana/agreement-client.js, the pure codec of the `agreement` program
-// (blockchain/solana/programs/agreement, README "Agreement account", "Instructions" and
-// "AgreementDecision-v1"): discriminators re-derived from sha256 and checked against the generated
-// IDL, the PDA from the sponsor and the CID, instruction data decoded back by the IDL's argument
-// types and account metas against the IDL's flags, the Agreement account decoded from bytes written
-// at the README's offsets, the lens's SAS attestation, and the program's attest checks.
+// Unit tests for frontend/js/solana/agreement-client.js, the pure codec of the agreements of the `ugt`
+// program (blockchain/solana/programs/ugt/src/agreement.rs: the Agreement account, its instructions
+// and AgreementDecision-v1): discriminators re-derived from sha256 and checked against the generated
+// IDL (idl/ugt.json, its agreement instructions), the PDA from the sponsor and the CID, instruction
+// data decoded back by the IDL's argument types and account metas against the IDL's flags, the
+// Agreement account decoded from bytes written at the Rust struct's offsets, the lens's SAS
+// attestation, and the program's attest checks.
 import { afterAll, describe, expect, it } from 'vitest';
 import { createRequire } from 'node:module';
 import { createHash } from 'node:crypto';
 import { readFileSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { agreementRustLayout, readSolana } from './helpers/agreement-layout.js';
 
 const require = createRequire(import.meta.url);
 const web3 = require('@solana/web3.js');
@@ -17,8 +19,11 @@ const client = require('../../frontend/js/solana/agreement-client.js');
 
 const { PublicKey } = web3;
 const REPO = path.resolve(fileURLToPath(new URL('.', import.meta.url)), '../..');
-const IDL = JSON.parse(readFileSync(path.join(REPO, 'blockchain/solana/idl/agreement.json'), 'utf8'));
-const README = readFileSync(path.join(REPO, 'blockchain/solana/programs/agreement/README.md'), 'utf8');
+const IDL = JSON.parse(readFileSync(path.join(REPO, 'blockchain/solana/idl/ugt.json'), 'utf8'));
+// The ugt program also anchors parcels and records designs and plans (ugt-client.js); these are its
+// agreement instructions.
+const AGREEMENT_INSTRUCTIONS = ['attest', 'cancel', 'create', 'execute', 'expire', 'fund'];
+const LAYOUT = agreementRustLayout();
 const C = client.constants;
 
 // The module resolves web3 relative to frontend/js/solana, where @solana/web3.js is not installed:
@@ -34,25 +39,27 @@ const LENS = keyOf(11);
 const PAYOUT = keyOf(13);
 const CREDENTIAL = keyOf(17);
 const CID = 'bafkreibm6jg3ux5qumhcn2b3flc3tyu6dmlb4xa7u5bf44yegnrjhc4yeq';
+const PLAN_CID = 'bafkreiexxjscqvxx53b3dts2uxslfuu7zlro7te4ztjyx5yi5xt4qwbkwi';
 const NOW = 1_790_000_000;
 const sha256 = text => createHash('sha256').update(text).digest();
 const anchor = (prefix, name) => Array.from(sha256(`${prefix}:${name}`).subarray(0, 8));
 const idlInstruction = name => IDL.instructions.find(ix => ix.name === name);
 const idlType = name => IDL.types.find(type => type.name === name);
 
-// ---- byte builders, by the README's layout ------------------------------------------------------
+// ---- byte builders, by the Rust struct's layout ------------------------------------------------------
 
 const u32 = value => { const out = Buffer.alloc(4); out.writeUInt32LE(value); return out; };
 const i64 = value => { const out = Buffer.alloc(8); out.writeBigInt64LE(BigInt(value)); return out; };
 const str = text => Buffer.concat([u32(Buffer.byteLength(text)), Buffer.from(text, 'utf8')]);
 const keyBytes = key => new PublicKey(key).toBuffer();
 
-// An Agreement account: every fixed field written at its README offset, padded to the 296-byte account.
+// An Agreement account: every fixed field written at its offset in the struct, padded to the 330-byte account.
 function agreementBytes(fields = {}) {
     const f = {
         authority: SPONSOR, lens: LENS, payout: PAYOUT, deadline: 0, createdAt: NOW - 600, requiredLamports: 2_000_000_000n,
         escrowLamports: 500_000_000n, status: 0, openGround: 0, decision: 0, decisionAttestedAt: 0, decisionObservedAt: 0,
-        decisionAttestation: keyOf(0), decisionHash: Buffer.alloc(32), executedAt: 0, bump: 253, cid: CID, ...fields
+        decisionAttestation: keyOf(0), decisionHash: Buffer.alloc(32), executedAt: 0, planCidHash: sha256(PLAN_CID), inputCount: 3,
+        bump: 253, cid: CID, ...fields
     };
     const bytes = Buffer.alloc(C.AGREEMENT_ACCOUNT_SPACE);
     Buffer.from(client.ACCOUNT_DISCRIMINATORS.Agreement).copy(bytes, 0);
@@ -71,8 +78,10 @@ function agreementBytes(fields = {}) {
     keyBytes(f.decisionAttestation).copy(bytes, 155);
     Buffer.from(f.decisionHash).copy(bytes, 187);
     bytes.writeBigInt64LE(BigInt(f.executedAt), 219);
-    bytes[227] = f.bump;
-    str(f.cid).copy(bytes, 228);
+    Buffer.from(f.planCidHash).copy(bytes, 227);
+    bytes.writeUInt16LE(f.inputCount, 259);
+    bytes[261] = f.bump;
+    str(f.cid).copy(bytes, 262);
     return bytes;
 }
 
@@ -98,6 +107,7 @@ function decodeArgs(name, data) {
         else if (arg.type === 'i64') { out[arg.name] = bytes.readBigInt64LE(offset); offset += 8; }
         else if (arg.type === 'u64') { out[arg.name] = bytes.readBigUInt64LE(offset); offset += 8; }
         else if (arg.type === 'bool') { out[arg.name] = bytes[offset] === 1; offset += 1; }
+        else if (arg.type === 'u16') { out[arg.name] = bytes.readUInt16LE(offset); offset += 2; }
         else throw new Error(`unhandled IDL type ${JSON.stringify(arg.type)}`);
     }
     expect(offset, `${name} data has trailing bytes`).toBe(bytes.length);
@@ -113,14 +123,14 @@ function metas(name, instruction) {
 
 describe('discriminators and names', () => {
     it('are sha256("global:<instruction>") and sha256("account:Agreement"), as the generated IDL lists them', () => {
-        expect(Object.keys(client.IX_DISCRIMINATORS).sort()).toEqual(IDL.instructions.map(ix => ix.name).sort());
-        for (const ix of IDL.instructions) {
+        expect(Object.keys(client.IX_DISCRIMINATORS).sort()).toEqual(AGREEMENT_INSTRUCTIONS);
+        for (const ix of IDL.instructions.filter(ix => AGREEMENT_INSTRUCTIONS.includes(ix.name))) {
             expect(Array.from(client.IX_DISCRIMINATORS[ix.name]), ix.name).toEqual(anchor('global', ix.name));
             expect(Array.from(client.IX_DISCRIMINATORS[ix.name]), ix.name).toEqual(ix.discriminator);
         }
-        expect(IDL.accounts.map(account => account.name)).toEqual(['Agreement']);
+        expect(IDL.accounts.map(account => account.name)).toContain('Agreement');
         expect(Array.from(client.ACCOUNT_DISCRIMINATORS.Agreement)).toEqual(anchor('account', 'Agreement'));
-        expect(Array.from(client.ACCOUNT_DISCRIMINATORS.Agreement)).toEqual(IDL.accounts[0].discriminator);
+        expect(Array.from(client.ACCOUNT_DISCRIMINATORS.Agreement)).toEqual(IDL.accounts.find(account => account.name === 'Agreement').discriminator);
     });
 
     it('name the program, the statuses and the decisions as the IDL does: a decision is Pending until Satisfied', () => {
@@ -136,9 +146,9 @@ describe('discriminators and names', () => {
 });
 
 describe('the Agreement account layout', () => {
-    it('puts every fixed field at the README\'s offset, which the IDL\'s field sizes add up to', () => {
-        const readme = Object.fromEntries([...README.matchAll(/^\| (\d+) \| `(\w+)` \|/gm)].map(match => [match[2], Number(match[1])]));
-        const sizes = { pubkey: 32, i64: 8, u64: 8, bool: 1, u8: 1 };
+    it('puts every fixed field at the Rust struct\'s offset, which the IDL\'s field sizes add up to', () => {
+        const rust = LAYOUT.offsets;
+        const sizes = { pubkey: 32, i64: 8, u64: 8, bool: 1, u8: 1, u16: 2 };
         let offset = 8;
         const fromIdl = {};
         for (const field of idlType('Agreement').type.fields) {
@@ -146,14 +156,16 @@ describe('the Agreement account layout', () => {
             if (field.type === 'string') break;
             offset += field.type.defined ? 1 : field.type.array ? field.type.array[1] : sizes[field.type];
         }
-        expect(fromIdl).toEqual(readme);
+        expect(fromIdl).toEqual(rust);
         expect(client.AGREEMENT_OFFSETS).toEqual({
-            authority: readme.authority, lens: readme.lens, payout: readme.payout, deadline: readme.deadline,
-            status: readme.status, decision: readme.decision, cid: readme.cid
+            authority: rust.authority, lens: rust.lens, payout: rust.payout, deadline: rust.deadline,
+            status: rust.status, decision: rust.decision, planCidHash: rust.plan_cid_hash, inputCount: rust.input_count, cid: rust.cid
         });
+        expect([rust.executed_at, rust.plan_cid_hash, rust.input_count, rust.bump, rust.cid]).toEqual([219, 227, 259, 261, 262]);
         // 8 + Agreement::INIT_SPACE, with the cid at most 64 bytes behind its u32 length.
-        expect(C.AGREEMENT_ACCOUNT_SPACE).toBe(readme.cid + 4 + C.MAX_CID_BYTES);
-        expect(README).toContain(`8-byte discriminator + ${C.AGREEMENT_ACCOUNT_SPACE - 8} bytes = ${C.AGREEMENT_ACCOUNT_SPACE}`);
+        expect(C.AGREEMENT_ACCOUNT_SPACE).toBe(rust.cid + 4 + C.MAX_CID_BYTES);
+        expect(C.AGREEMENT_ACCOUNT_SPACE).toBe(330);
+        expect(readSolana('programs/ugt/src/lib.rs')).toContain(`pub const MAX_CID_LEN: usize = ${C.MAX_CID_BYTES};`);
     });
 });
 
@@ -185,23 +197,30 @@ describe('the agreement address', () => {
 });
 
 describe('instructions', () => {
-    it('create carries cid, lens, deadline, open ground, required lamports and payout in the IDL\'s order', () => {
+    it('create carries cid, plan cid, input count, lens, deadline, open ground, required lamports and payout in the IDL\'s order', () => {
         const { agreement, instruction } = client.buildCreateIx({
-            authority: SPONSOR, cid: CID, lens: LENS, deadline: NOW + 86400, openGround: true, requiredLamports: 2_500_000_000n, payout: PAYOUT
+            authority: SPONSOR, cid: CID, planCid: PLAN_CID, inputCount: 3, lens: LENS, deadline: NOW + 86400, openGround: true,
+            requiredLamports: 2_500_000_000n, payout: PAYOUT
         });
         expect(agreement.toBase58()).toBe(client.getAgreementPda(CID, SPONSOR)[0].toBase58());
         expect(instruction.programId.toBase58()).toBe(IDL.address);
         expect(decodeArgs('create', instruction.data)).toEqual({
-            cid: CID, lens: LENS, deadline: BigInt(NOW + 86400), open_ground: true, required_lamports: 2_500_000_000n, payout: PAYOUT
+            cid: CID, plan_cid: PLAN_CID, input_count: 3, lens: LENS, deadline: BigInt(NOW + 86400), open_ground: true,
+            required_lamports: 2_500_000_000n, payout: PAYOUT
         });
         expect(metas('create', instruction)).toEqual({ agreement: agreement.toBase58(), authority: SPONSOR, system_program: C.SYSTEM_PROGRAM_ID });
-        // Defaults: no deadline, closed land, no escrow needed.
-        expect(decodeArgs('create', client.encodeCreateData({ cid: CID, lens: LENS, payout: PAYOUT })))
-            .toMatchObject({ deadline: 0n, open_ground: false, required_lamports: 0n });
+        // Defaults: no input parcels, no deadline, closed land, no escrow needed.
+        expect(decodeArgs('create', client.encodeCreateData({ cid: CID, planCid: PLAN_CID, lens: LENS, payout: PAYOUT })))
+            .toMatchObject({ input_count: 0, deadline: 0n, open_ground: false, required_lamports: 0n });
     });
 
     it('create refuses what the program refuses for its arguments, before any wallet signs', () => {
-        const args = { authority: SPONSOR, cid: CID, lens: LENS, payout: PAYOUT };
+        const args = { authority: SPONSOR, cid: CID, planCid: PLAN_CID, lens: LENS, payout: PAYOUT };
+        expect(() => client.buildCreateIx({ ...args, planCid: undefined })).toThrow(/cid must be 1-64 ASCII letters and digits/);
+        expect(() => client.buildCreateIx({ ...args, planCid: 'plan-1' })).toThrow(/cid must be 1-64 ASCII letters and digits/);
+        expect(() => client.buildCreateIx({ ...args, inputCount: -1 })).toThrow(/inputCount must be 0-65535/);
+        expect(() => client.buildCreateIx({ ...args, inputCount: 65536 })).toThrow(/inputCount must be 0-65535/);
+        expect(() => client.buildCreateIx({ ...args, inputCount: 1.5 })).toThrow(/inputCount must be 0-65535/);
         expect(() => client.buildCreateIx({ ...args, lens: C.DEFAULT_PUBKEY })).toThrow(/lens must not be the default key/);
         expect(() => client.buildCreateIx({ ...args, payout: C.DEFAULT_PUBKEY })).toThrow(/payout must not be the default key/);
         expect(() => client.buildCreateIx({ ...args, payout: client.getAgreementPda(CID, SPONSOR)[0] })).toThrow(/payout must not be the agreement itself/);
@@ -259,7 +278,8 @@ describe('reading an Agreement account', () => {
             address: 'Account1', cid: CID, authority: SPONSOR, lens: LENS, payout: PAYOUT, deadline: NOW + 86400, createdAt: NOW - 600,
             requiredLamports: 2_000_000_000n, escrowLamports: 500_000_000n, statusCode: 0, status: 'Active', openGround: true,
             decisionCode: 1, decision: 'Satisfied', decisionAttestedAt: NOW - 30, decisionObservedAt: NOW - 90,
-            decisionAttestation: keyOf(41), decisionHash: 'ab'.repeat(32), executedAt: 0, bump: 253
+            decisionAttestation: keyOf(41), decisionHash: 'ab'.repeat(32), executedAt: 0,
+            planCidHash: sha256(PLAN_CID).toString('hex'), inputCount: 3, bump: 253
         });
     });
 
@@ -272,7 +292,7 @@ describe('reading an Agreement account', () => {
     });
 
     it('reads an account without its padding, and refuses another account or a truncated one', () => {
-        const exact = agreementBytes().subarray(0, 228 + 4 + CID.length);
+        const exact = agreementBytes().subarray(0, 262 + 4 + CID.length);
         expect(client.readAgreement(exact).cid).toBe(CID);
         const other = agreementBytes();
         other[0] ^= 0xff;
@@ -418,6 +438,16 @@ describe('listing agreements (blockchain-flows.md, Flow 1)', () => {
         const listed = await client.listAgreements(chain);
         expect(listed.map(row => [row.cid, row.address])).toEqual([[OTHER_CID, newer.pubkey.toBase58()], [CID, older.pubkey.toBase58()]]);
         expect(chain.asked).toEqual([[programKey.toBase58(), { commitment: 'confirmed', filters: [{ dataSize: C.AGREEMENT_ACCOUNT_SPACE }] }]]);
+    });
+
+    it('lists the agreements of one plan by a memcmp on the sha256 of its CID', async () => {
+        const chain = programAccounts([{ pubkey: pda(CID, SPONSOR), account: { data: agreementBytes() } }]);
+        const listed = await client.listAgreements(chain, { planCid: PLAN_CID });
+        expect(listed.map(row => [row.cid, row.planCidHash, row.inputCount])).toEqual([[CID, sha256(PLAN_CID).toString('hex'), 3]]);
+        expect(chain.asked).toEqual([[programKey.toBase58(), { commitment: 'confirmed', filters: [
+            { dataSize: C.AGREEMENT_ACCOUNT_SPACE },
+            { memcmp: { offset: 227, bytes: new PublicKey(sha256(PLAN_CID)).toBase58() } }
+        ] }]]);
     });
 
     it('spells an account as the index keeps it: lower-case status, decision, ISO chain times, lamports as strings', () => {

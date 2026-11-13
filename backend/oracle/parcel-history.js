@@ -7,12 +7,15 @@
 // an event whose source carries no time keeps `at: null` and sorts last, it is never given the time of
 // this read.
 
+import { createRequire } from 'node:module';
 import { PublicKey } from '@solana/web3.js';
-import { createHash } from 'node:crypto';
-import { AGREEMENT_PROGRAM_ID } from '../agreements/onchain.js';
+import { AGREEMENT_PROGRAM_ID, RETIRED_AGREEMENT_PROGRAM_ID } from '../agreements/onchain.js';
 import { AGREEMENT_EXECUTED_EVENT_TYPE, explorer } from './agreement-lifecycle.js';
 
-export const PARCEL_PROGRAM_ID = '4zadC1FgWPQLv6qv66mjEBthBqTvrmxL5oDcHQzNtkV1';
+const require = createRequire(import.meta.url);
+// The ugt program's parcel anchors (frontend/js/solana/ugt-client.js decodes them).
+const UgtClient = require('../../frontend/js/solana/ugt-client.js').configure({ web3: require('@solana/web3.js') });
+export const PARCEL_PROGRAM_ID = UgtClient.constants.UGT_PROGRAM_ID;
 export const OWNERSHIP_EVENT_TYPE = 'parcel_ownership';
 export const AGREEMENT_PUBLISHED_EVENT_TYPE = 'agreement_published';
 
@@ -27,7 +30,7 @@ export function validParcelUid(value) {
     return text;
 }
 
-/** The parcel anchor PDA ["parcel", parcel_id] under parcel_nft, or null when the id cannot seed one (>32 bytes). */
+/** The parcel anchor PDA ["parcel", parcel_id] under the ugt program, or null when the id cannot seed one (>32 bytes). */
 export function deriveParcelAnchor(parcelUid) {
     if (Buffer.byteLength(String(parcelUid), 'utf8') > 32) return null;
     return PublicKey.findProgramAddressSync(
@@ -35,39 +38,25 @@ export function deriveParcelAnchor(parcelUid) {
     )[0].toBase58();
 }
 
-/** Validate the Parcel account layout and its exact parcel identity, without inferring title. */
+/** Validate the ParcelAnchor account (ugt program, discriminator and layout) and its exact parcel identity, without inferring title. */
 export function parcelAnchorAccountMatches(info, parcelUid) {
     if (info?.owner?.toBase58?.() !== PARCEL_PROGRAM_ID || info.executable) return false;
-    const data = Buffer.from(info.data || []);
-    const discriminator = createHash('sha256').update('account:Parcel').digest().subarray(0, 8);
-    if (data.length < 12 || !data.subarray(0, 8).equals(discriminator)) return false;
-    let offset = 8;
-    const string = () => {
-        if (offset + 4 > data.length) throw new Error('Truncated Parcel string length.');
-        const length = data.readUInt32LE(offset); offset += 4;
-        if (offset + length > data.length) throw new Error('Truncated Parcel string.');
-        const bytes = data.subarray(offset, offset + length); offset += length;
-        const value = bytes.toString('utf8');
-        if (!Buffer.from(value, 'utf8').equals(bytes)) throw new Error('Invalid Parcel UTF-8.');
-        return value;
-    };
     try {
-        const id = string();
-        const metadataUri = string();
-        // owner (32 bytes) is a historical payload field, not evidence of real ownership.
-        return id === parcelUid && metadataUri.length > 0 && offset + 33 <= data.length;
+        const anchor = UgtClient.readParcelAnchor(new Uint8Array(info.data || []));
+        // anchoredBy paid the rent; it is not evidence of ownership.
+        return Boolean(anchor) && anchor.parcelId === parcelUid && anchor.metadataUri.length > 0;
     } catch { return false; }
 }
 
 /**
  * SQL condition selecting consensus.land_event rows about parcel `$n`, attested by the agreement
- * program: an `agreement_executed` event is the parcel's own (its subject); an `agreement_lifecycle`
+ * program (the ugt program, or the retired agreement program for the events it attested): an `agreement_executed` event is the parcel's own (its subject); an `agreement_lifecycle`
  * event names an agreement, so it matches when the agreement's input parcels list the parcel. Shared by
  * GET /oracle/events?parcelUid= (routes/land-events.js).
  */
 export function landEventParcelCondition(paramIndex) {
     const p = `$${paramIndex}`;
-    return `(attester = '${AGREEMENT_PROGRAM_ID}'
+    return `(attester IN ('${AGREEMENT_PROGRAM_ID}', '${RETIRED_AGREEMENT_PROGRAM_ID}')
         AND CASE WHEN event_type = '${AGREEMENT_EXECUTED_EVENT_TYPE}'
             THEN subject_type = 'parcel' AND subject_id = ${p}::text
             ELSE evidence->'inputParcelIds' @> jsonb_build_array(${p}::text)

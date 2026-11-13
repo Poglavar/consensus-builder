@@ -9,7 +9,7 @@ import {
     DEVNET_USDC_MINT,
     DEFAULT_X402_FEE_PAYER
 } from '../solana/address-book.js';
-import { AGREEMENT_PROGRAM_ID } from '../agreements/onchain.js';
+import { AGREEMENT_PROGRAM_ID, RETIRED_AGREEMENT_PROGRAM_ID } from '../agreements/onchain.js';
 
 const TREASURY = 'AMbsiP9F8YY2y8n9uFdqtw7yNZZHvTWFEWSQGHKtmkoQ';
 // Derived from the treasury / persona wallets on devnet — these exact accounts appear in the
@@ -44,21 +44,23 @@ describe('deriveAssociatedTokenAddress', () => {
 });
 
 describe('buildAddressBook', () => {
-    it('labels our four programs, the agreement program by the id its codec carries', () => {
+    it('labels our three programs, the ugt program by the id its codec carries', () => {
         const book = makeBook();
 
-        expect(book.labelFor('4zadC1FgWPQLv6qv66mjEBthBqTvrmxL5oDcHQzNtkV1')).toEqual({
-            address: '4zadC1FgWPQLv6qv66mjEBthBqTvrmxL5oDcHQzNtkV1',
-            label: 'parcel_nft program',
+        expect(book.labelFor(AGREEMENT_PROGRAM_ID)).toEqual({
+            address: '95sjeTXUYG721iZK29s3kr7Dq4eFqv6PFoEmPYJDtkp9',
+            label: 'ugt program',
             kind: 'program',
-            short: '4zad…tkV1'
+            short: '95sj…tkp9'
         });
-        // The app no longer uses proposal_nft (M3): the book neither names nor watches it.
-        expect(book.entryFor('3WsVS6LkLo4ySLaLvxKdwuD37fcCjE2Yu9fVh1nMfxbg')).toBeNull();
+        // The retired programs (proposal_nft since M3; agreement and parcel_nft since R2): the book
+        // neither names nor watches them.
+        for (const retired of ['3WsVS6LkLo4ySLaLvxKdwuD37fcCjE2Yu9fVh1nMfxbg', '4zadC1FgWPQLv6qv66mjEBthBqTvrmxL5oDcHQzNtkV1', RETIRED_AGREEMENT_PROGRAM_ID]) {
+            expect(book.entryFor(retired), retired).toBeNull();
+        }
         expect(book.labelFor('GDYnzduynKhKgxDhvvKVarn2s23DtzA26s6hycuUYDRB').label).toBe('proposal_market program');
         expect(book.labelFor('1jESRS3mJiPUJTtmQ5ncyBhGNmGeXTpUqPyJcTYrp6g').label).toBe('proposal_pledge program');
-        expect(AGREEMENT_PROGRAM_ID).toBe('GtdgeRH89f2qLj4j4v6NcecWSr6RDPP9y4TMfPCGA5jQ');
-        expect(book.labelFor(AGREEMENT_PROGRAM_ID)).toMatchObject({ label: 'agreement program', kind: 'program' });
+        expect(RETIRED_AGREEMENT_PROGRAM_ID).toBe('GtdgeRH89f2qLj4j4v6NcecWSr6RDPP9y4TMfPCGA5jQ');
     });
 
     it('labels the solana system programs', () => {
@@ -172,10 +174,9 @@ describe('watchedAddresses', () => {
         // The fee payer signs every x402 payment on devnet by anyone; scanning it would pull
         // strangers' payments into our history. It stays a label (see legendAddresses).
         expect(watchedAddresses(book)).toEqual([
-            '4zadC1FgWPQLv6qv66mjEBthBqTvrmxL5oDcHQzNtkV1',
+            AGREEMENT_PROGRAM_ID,
             'GDYnzduynKhKgxDhvvKVarn2s23DtzA26s6hycuUYDRB',
             '1jESRS3mJiPUJTtmQ5ncyBhGNmGeXTpUqPyJcTYrp6g',
-            AGREEMENT_PROGRAM_ID,
             TREASURY,
             TREASURY_USDC,
             PERSONA_WALLET,

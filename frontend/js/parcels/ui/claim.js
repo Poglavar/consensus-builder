@@ -2072,9 +2072,9 @@
 
             if (isSolanaConnected && global.mintParcelSolana) {
                 const cluster = solanaState.cluster || 'devnet';
-                const contractAddress = await resolveParcelNftAddressSolana(cluster);
+                const contractAddress = await resolveParcelAnchorProgramSolana(cluster);
                 if (!contractAddress) {
-                    throw new Error('ParcelNFT program not configured for Solana.');
+                    throw new Error('The parcel anchor program is not configured for Solana.');
                 }
                 const ownerAddress = solanaState.accounts[0];
                 const chainSlug = `solana-${cluster}`;

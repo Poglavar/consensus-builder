@@ -1,5 +1,5 @@
-// Pure client codec for the agreement program (blockchain/solana/programs/agreement, README there):
-// the Agreement PDA from its sponsor and CID, byte-exact Anchor/borsh instruction builders for
+// Pure client codec for the agreements of the ugt program (blockchain/solana/programs/ugt, README
+// there; its anchors and records are ugt-client.js): the Agreement PDA from its sponsor and CID, byte-exact Anchor/borsh instruction builders for
 // create, fund, attest, execute, cancel and expire, the Agreement account decoder and the reader of
 // the lens's AgreementDecision-v1 SAS attestation. No DOM and no wallet: @solana/web3.js and sha256
 // are injected (configure), the browser's vendored builds, or the node packages; fetchAgreement only
@@ -13,7 +13,7 @@
     'use strict';
 
     // COPIED from the program, never computed at runtime: sha256("global:<instruction>")[..8] and
-    // sha256("account:Agreement")[..8], the values the generated IDL lists (idl/agreement.json).
+    // sha256("account:Agreement")[..8], the values the generated IDL lists (idl/ugt.json).
     const IX_DISCRIMINATORS = Object.freeze({
         create: Object.freeze([24, 30, 200, 40, 5, 28, 7, 119]),
         fund: Object.freeze([218, 188, 111, 221, 152, 113, 174, 7]),
@@ -28,8 +28,8 @@
     });
 
     const constants = Object.freeze({
-        // Placeholder, not deployed: replace with the deployed id (programs/agreement/README.md, "Program id").
-        AGREEMENT_PROGRAM_ID: 'GtdgeRH89f2qLj4j4v6NcecWSr6RDPP9y4TMfPCGA5jQ',
+        // The ugt program on devnet, which keeps the agreements (programs/ugt/README.md, "Program id").
+        AGREEMENT_PROGRAM_ID: '95sjeTXUYG721iZK29s3kr7Dq4eFqv6PFoEmPYJDtkp9',
         SAS_PROGRAM_ID: '22zoJMtdu4tQc2PzL74ZUT7FrwgB1Udec8DdW4yw4BdG',
         SYSTEM_PROGRAM_ID: '11111111111111111111111111111111',
         DEFAULT_PUBKEY: '11111111111111111111111111111111',
@@ -39,8 +39,8 @@
         DECISION_SCHEMA_NAME: 'AgreementDecision',
         DECISION_SCHEMA_VERSION: 1,
         SAS_ATTESTATION_DISCRIMINATOR: 2,
-        // 8-byte discriminator + Agreement::INIT_SPACE (288).
-        AGREEMENT_ACCOUNT_SPACE: 296,
+        // 8-byte discriminator + Agreement::INIT_SPACE (322).
+        AGREEMENT_ACCOUNT_SPACE: 330,
         STATUS_ACTIVE: 0,
         STATUS_EXECUTED: 1,
         STATUS_CANCELLED: 2,
@@ -54,7 +54,8 @@
     const DECISION_NAMES = Object.freeze(['Pending', 'Satisfied']);
 
     // Offsets of the fixed fields, which all precede the trailing cid: memcmp filters for
-    // getProgramAccounts (e.g. every agreement a lens settles: { offset: AGREEMENT_OFFSETS.lens, bytes }).
+    // getProgramAccounts (e.g. every agreement a lens settles: { offset: AGREEMENT_OFFSETS.lens, bytes },
+    // every agreement of a plan: { offset: AGREEMENT_OFFSETS.planCidHash, bytes: sha256(planCid) }).
     const AGREEMENT_OFFSETS = Object.freeze({
         authority: 8,
         lens: 40,
@@ -62,7 +63,9 @@
         deadline: 104,
         status: 136,
         decision: 138,
-        cid: 228
+        planCidHash: 227,
+        inputCount: 259,
+        cid: 262
     });
 
     let injectedWeb3 = null;
@@ -191,7 +194,7 @@
         return hexToBytes(resolveSha256Hex()(requireCid(cid)));
     }
 
-    // ["agreement", authority, sha256(cid)] under the agreement program. `authority` is the sponsor that
+    // ["agreement", authority, sha256(cid)] under the ugt program. `authority` is the sponsor that
     // creates the account: agreement/v1 carries its wallet as `sponsor` (base58), so the address follows
     // from the agreement object alone. Another wallet's account for the same CID is not the agreement's
     // and can never record its decision (AgreementDecision-v1 names the sponsor).
@@ -214,11 +217,14 @@
 
     // ---- instruction data -----------------------------------------------------------------------------
 
-    // create(cid: String, lens: Pubkey, deadline: i64, open_ground: bool, required_lamports: u64, payout: Pubkey).
-    // Mirrors the program's argument checks that need no clock, so a wallet never signs a create the
-    // program refuses for its arguments (a deadline in the past is still the program's call).
-    function encodeCreateData({ cid, lens, deadline = constants.NO_DEADLINE, openGround = false, requiredLamports = 0n, payout } = {}) {
+    // create(cid: String, plan_cid: String, input_count: u16, lens: Pubkey, deadline: i64, open_ground: bool,
+    // required_lamports: u64, payout: Pubkey). Mirrors the program's argument checks that need no clock,
+    // so a wallet never signs a create the program refuses for its arguments (a deadline in the past is
+    // still the program's call). `planCid` is agreement/v1's `planCid`, `inputCount` its input parcels.
+    function encodeCreateData({ cid, planCid, inputCount = 0, lens, deadline = constants.NO_DEADLINE, openGround = false, requiredLamports = 0n, payout } = {}) {
         requireCid(cid);
+        requireCid(planCid);
+        if (!Number.isInteger(inputCount) || inputCount < 0 || inputCount > 0xffff) throw new Error('inputCount must be 0-65535');
         if (toKey(lens, 'lens').toBase58() === constants.DEFAULT_PUBKEY) throw new Error('lens must not be the default key');
         if (toKey(payout, 'payout').toBase58() === constants.DEFAULT_PUBKEY) throw new Error('payout must not be the default key');
         if (!(typeof deadline === 'bigint' ? deadline >= 0n : Number.isSafeInteger(deadline) && deadline >= 0)) {
@@ -227,6 +233,8 @@
         return concat([
             disc('create'),
             encodeString(cid),
+            encodeString(planCid),
+            Uint8Array.of(inputCount & 0xff, inputCount >> 8),
             encodePubkey(lens, 'lens'),
             i64(deadline, 'deadline'),
             encodeBool(openGround, 'openGround'),
@@ -351,6 +359,7 @@
         };
         return {
             u8(label) { need(1, label); return bytes[offset++]; },
+            u16(label) { need(2, label); const value = view.getUint16(offset, true); offset += 2; return value; },
             u32(label) { need(4, label); const value = view.getUint32(offset, true); offset += 4; return value; },
             position() { return offset; },
             bool(label) {
@@ -391,7 +400,7 @@
 
     const toHex = bytes => Array.from(bytes, byte => byte.toString(16).padStart(2, '0')).join('');
 
-    // The whole Agreement account, in field order (programs/agreement/README.md, "Agreement account").
+    // The whole Agreement account, in field order (programs/ugt/README.md, "Agreement account").
     // Lamport amounts are BigInt; times are unix seconds (0 = not yet / no deadline).
     function readAgreement(data, address = null) {
         const bytes = data instanceof Uint8Array ? data : Uint8Array.from(data || []);
@@ -412,6 +421,8 @@
         const decisionAttestation = r.pubkey('decision_attestation');
         const decisionHash = r.bytes(32, 'decision_hash');
         const executedAt = r.i64('executed_at');
+        const planCidHash = toHex(r.bytes(32, 'plan_cid_hash'));
+        const inputCount = r.u16('input_count');
         const bump = r.u8('bump');
         const cid = r.string('cid');
         const pending = decisionCode === constants.DECISION_PENDING;
@@ -435,6 +446,8 @@
             decisionAttestation: pending ? null : decisionAttestation,
             decisionHash: pending ? null : toHex(decisionHash),
             executedAt,
+            planCidHash,
+            inputCount,
             bump
         };
     }
@@ -523,13 +536,15 @@
         return value;
     }
 
-    // Every agreement account of the program, decoded, newest first (blockchain-flows.md, Flow 1). The
-    // RPC filters by the account's size; an account whose discriminator or address does not match an
-    // agreement stored at its own PDA is skipped with a warning, never listed.
-    async function listAgreements(connection, { programId = constants.AGREEMENT_PROGRAM_ID } = {}) {
-        const accounts = await connection.getProgramAccounts(toKey(programId, 'programId'), {
-            commitment: 'confirmed', filters: [{ dataSize: constants.AGREEMENT_ACCOUNT_SPACE }]
-        });
+    // Every agreement account of the program, decoded, newest first (blockchain-flows.md, Flow 1); with
+    // `planCid`, only the agreements of that plan (a memcmp on its sha256). The RPC filters by the
+    // account's size; an account whose discriminator or address does not match an agreement stored at
+    // its own PDA is skipped with a warning, never listed.
+    async function listAgreements(connection, { programId = constants.AGREEMENT_PROGRAM_ID, planCid = null } = {}) {
+        const { PublicKey } = resolveWeb3();
+        const filters = [{ dataSize: constants.AGREEMENT_ACCOUNT_SPACE }];
+        if (planCid) filters.push({ memcmp: { offset: AGREEMENT_OFFSETS.planCidHash, bytes: new PublicKey(cidSeed(planCid)).toBase58() } });
+        const accounts = await connection.getProgramAccounts(toKey(programId, 'programId'), { commitment: 'confirmed', filters });
         const agreements = [];
         for (const { pubkey, account } of accounts) {
             const address = toKey(pubkey, 'pubkey').toBase58();

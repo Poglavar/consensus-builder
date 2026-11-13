@@ -1,4 +1,4 @@
-// Unit tests for frontend/js/solana/agreement-bridge.js, the wallet side of the agreement program:
+// Unit tests for frontend/js/solana/agreement-bridge.js, the wallet side of the ugt program's agreements:
 // the pure helpers (SOL amounts, explorer links, the minted record's account, the lens a mint names,
 // what the program would accept now, the lens decision an account can record, Anchor errors), and
 // mint / fund / attest / execute / cancel / expire over a fake wallet and connection with the real
@@ -25,6 +25,7 @@ const PAYOUT = keyOf(13);
 const CREDENTIAL = keyOf(17);
 const ATTESTATION = keyOf(19);
 const CID = 'bafkreibm6jg3ux5qumhcn2b3flc3tyu6dmlb4xa7u5bf44yegnrjhc4yeq';
+const PLAN_CID = 'bafkreiexxjscqvxx53b3dts2uxslfuu7zlro7te4ztjyx5yi5xt4qwbkwi';
 const ACCOUNT = client.getAgreementPda(CID, SPONSOR)[0].toBase58();
 const BLOCKHASH = 'EkSnNWid2cvwEVnVx9aBqpiCpY1QoUW63D2Hp31e4gwJ';
 const nowSeconds = () => Math.floor(Date.now() / 1000);
@@ -36,7 +37,7 @@ const u32 = value => { const out = Buffer.alloc(4); out.writeUInt32LE(value); re
 const i64 = value => { const out = Buffer.alloc(8); out.writeBigInt64LE(BigInt(value)); return out; };
 const str = text => Buffer.concat([u32(Buffer.byteLength(text)), Buffer.from(text, 'utf8')]);
 
-// An Agreement account (README offsets): status/decision as codes, lamports as BigInt.
+// An Agreement account (the ugt struct's offsets): status/decision as codes, lamports as BigInt.
 function agreementData({ authority = SPONSOR, lens = LENS, payout = PAYOUT, deadline = 0, required = 1_000_000_000n, escrow = 0n, status = 0, decision = 0 } = {}) {
     const bytes = Buffer.alloc(C.AGREEMENT_ACCOUNT_SPACE);
     Buffer.from(client.ACCOUNT_DISCRIMINATORS.Agreement).copy(bytes, 0);
@@ -48,7 +49,8 @@ function agreementData({ authority = SPONSOR, lens = LENS, payout = PAYOUT, dead
     bytes.writeBigUInt64LE(escrow, 128);
     bytes[136] = status;
     bytes[138] = decision;
-    str(CID).copy(bytes, 228);
+    client.cidSeed(PLAN_CID).forEach((byte, index) => { bytes[227 + index] = byte; });
+    str(CID).copy(bytes, 262);
     return bytes;
 }
 
@@ -106,7 +108,7 @@ function fakeWindow({ wallet = SPONSOR, connection = fakeConnection(), web3Loade
 
 // A proposed agreement as the store keeps it.
 const proposed = (extra = {}) => ({
-    id: 'ag-1', deadline: null, inputs: { parcels: [], openGroundM2: 0 },
+    id: 'ag-1', deadline: null, plan: { cid: PLAN_CID }, inputs: { parcels: [], openGroundM2: 0 },
     rule: { electorate: 'owners', binding: true, lens: [LENS] },
     published: { cid: CID, publishedAt: '2026-10-21T12:00:00.000Z', apiBase: 'https://api.example.test', sponsor: SPONSOR },
     onchain: null, ...extra
@@ -215,15 +217,16 @@ describe('minting', () => {
         const deadline = new Date(Date.now() + 7 * 86400 * 1000).toISOString();
         const { bridge, provider, connection } = fakeWindow();
         const states = [];
-        const result = await bridge.mint({ agreement: proposed({ deadline, inputs: { parcels: [], openGroundM2: 12 } }), lens: LENS,
+        const parcels = [{ parcelId: 'HR-1/1' }, { parcelId: 'HR-1/2' }];
+        const result = await bridge.mint({ agreement: proposed({ deadline, inputs: { parcels, openGroundM2: 12 } }), lens: LENS,
             requiredLamports: 2_000_000_000n, payout: PAYOUT, onStatus: status => states.push(status.state) });
         expect(result).toEqual({ signature: 'sig-1', account: ACCOUNT, cluster: 'devnet', explorerUrl: 'https://explorer.solana.com/tx/sig-1?cluster=devnet' });
         expect(states).toEqual(['preparing', 'awaiting_signature', 'submitted', 'confirmed']);
         expect(connection.calls).toEqual(['getLatestBlockhash', 'simulateTransaction/0', 'sendRawTransaction', 'confirmTransaction']);
         expect(provider.signTransaction).toHaveBeenCalledTimes(1);
         const instruction = sentInstruction(connection);
-        const expected = client.buildCreateIx({ authority: SPONSOR, cid: CID, lens: LENS, deadline: client.toDeadlineSeconds(deadline),
-            openGround: true, requiredLamports: 2_000_000_000n, payout: PAYOUT }).instruction;
+        const expected = client.buildCreateIx({ authority: SPONSOR, cid: CID, planCid: PLAN_CID, inputCount: 2, lens: LENS,
+            deadline: client.toDeadlineSeconds(deadline), openGround: true, requiredLamports: 2_000_000_000n, payout: PAYOUT }).instruction;
         expect(instruction.programId.toBase58()).toBe(C.AGREEMENT_PROGRAM_ID);
         expect(Buffer.from(instruction.data)).toEqual(Buffer.from(expected.data));
         expect(instruction.keys.map(key => key.pubkey.toBase58())).toEqual([ACCOUNT, SPONSOR, C.SYSTEM_PROGRAM_ID]);
@@ -243,6 +246,8 @@ describe('minting', () => {
         const past = new Date(Date.now() - 60_000).toISOString();
         const cases = [
             ['not-proposed', fakeWindow(), { agreement: proposed({ published: null }) }],
+            ['no-plan', fakeWindow(), { agreement: proposed({ plan: null }) }],
+            ['no-plan', fakeWindow(), { agreement: proposed({ plan: { cid: ' ' } }) }],
             ['already-minted', fakeWindow(), { agreement: minted() }],
             ['no-sponsor', fakeWindow(), { agreement: proposed({ published: { ...proposed().published, sponsor: null } }) }],
             ['wallet-required', fakeWindow({ wallet: null }), {}],

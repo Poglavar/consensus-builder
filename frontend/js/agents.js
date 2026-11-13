@@ -1453,7 +1453,7 @@ function setSectionCount(sectionType, count, fallbackLabel = '') {
 }
 
 /**
- * Load the parcels the connected wallet anchored into the dialog's parcels list: the ParcelNFT
+ * Load the parcels the connected wallet anchored into the dialog's parcels list: the ugt
  * program on Solana, else the EVM ParcelAnchor contract of the wallet's chain (ChainDataLoader).
  * Anchors are ownerless; the wallet only paid for them. Designs are not minted, so the chain names
  * no proposals here (plan-design-agreement.md, M3).
@@ -1506,13 +1506,13 @@ async function loadAgentChainData(agent, isUserAgent) {
         return;
     }
 
-    // The ParcelNFT program (Solana) or ParcelAnchor contract (EVM) of the wallet's chain.
+    // The ugt program (Solana) or ParcelAnchor contract (EVM) of the wallet's chain.
     let parcelAddress = null;
     try {
         if (useSolana) {
-            parcelAddress = await window.SolanaChainDataLoader.resolveProgramAddress(chainId, 'ParcelNFT');
+            parcelAddress = await window.SolanaChainDataLoader.resolveProgramAddress(chainId, 'Ugt');
             if (!parcelAddress && solanaCluster === 'devnet') {
-                parcelAddress = await window.SolanaChainDataLoader.resolveProgramAddress('solana', 'ParcelNFT');
+                parcelAddress = await window.SolanaChainDataLoader.resolveProgramAddress('solana', 'Ugt');
             }
         } else {
             parcelAddress = await window.ChainDataLoader.resolveContractAddress(chainId, 'ParcelAnchor');

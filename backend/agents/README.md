@@ -7,9 +7,9 @@ Solana devnet (the `agreement` program, `blockchain/solana/programs/agreement`),
 the index and stakes on its market; on its next run it approves the agreement as the owner, has the lens
 member it operates attest the decision, records it on chain and executes it. A vote (community or
 owners, not binding) is a poll in the index: never minted, no market. Supporters and society personas
-bet and pledge on agreement markets. Written, not yet run: the agreement program is not deployed (its id
-in `frontend/js/solana/agreement-client.js` is a placeholder), and the lens member's approval facts must
-read the devnet owner registry (today they read only a `--rights` file).
+bet and pledge on agreement markets. Agreements live in the ugt program (devnet); the market and
+pledge programs read them once their devnet deployments are upgraded with this branch. The lens
+member's approval facts must read the devnet owner registry (today they read only a `--rights` file).
 
 ## Data flow
 
@@ -371,9 +371,11 @@ Local signed/paid tools still require an operator-controlled devnet `UGT_AGENT_K
 `UGT_MCP_LIVE=1` and `confirm: true`. `UGT_MCP_MAX_USDC_PER_ACTION` (default 0.25) caps every USDC
 action and x402 price. `ugt_chain_agreements`, `ugt_chain_agreement`, `ugt_bet_on_account` and the
 account-based settlement tools use RPC directly, so that flow needs no UGT API.
-The EVM tools (`mcp-evm-records.js`) sign with `UGT_AGENT_EVM_PRIVATE_KEY` (an operator-controlled
-testnet key) and read each chain over `EVM_RPC_URL_<chainId>` (public defaults for 84532 and 11155111);
-`ugt_chain_records` needs no key.
+The record tools (`mcp-evm-records.js`: `ugt_chain_records`, `ugt_mint_design`, `ugt_mint_plan`,
+`ugt_anchor_parcels`) take `chainId` `solana-devnet` (the default: the ugt program, signed with
+`UGT_AGENT_KEYPAIR`, read over `SOLANA_RPC_URL`) or an EVM chain id (signed with
+`UGT_AGENT_EVM_PRIVATE_KEY`, an operator-controlled testnet key, read over `EVM_RPC_URL_<chainId>`,
+public defaults for 84532 and 11155111); `ugt_chain_records` needs no key.
 
 To stage a local package (provisional name, no publication):
 

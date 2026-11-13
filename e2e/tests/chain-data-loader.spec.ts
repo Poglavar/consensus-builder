@@ -1,5 +1,5 @@
 // The chain loaders' parcel reads: the Solana program address per cluster, the parcels a wallet
-// anchored on EVM (ParcelAnchor, ownerless) and the parcel accounts it holds on Solana. Designs are
+// anchored on EVM and on Solana (ParcelAnchor, ownerless, in the ugt program). Designs are
 // not minted (plan-design-agreement.md, M3).
 import { test, expect } from '../helpers/fixtures';
 import { waitForMapReady } from '../helpers/app';
@@ -12,8 +12,8 @@ import {
 } from '../helpers/blockchain';
 
 test.describe('Chain data loaders @features', () => {
-  // The loader resolves the ParcelNFT program, the one program it reads (agreements are read through
-  // agreement-bridge.js): a cluster without an address of its own resolves none, never devnet's.
+  // The loader resolves the ugt program, whose ParcelAnchor accounts it reads (agreements are read
+  // through agreement-bridge.js): a cluster without an address of its own resolves none, never devnet's.
   test('SolanaChainDataLoader does not fall back to devnet program IDs on mainnet', async ({ mockApi: page }) => {
     await page.route('**/contracts/addresses.json', (route) => {
       route.fulfill({
@@ -21,10 +21,10 @@ test.describe('Chain data loaders @features', () => {
         contentType: 'application/json',
         body: JSON.stringify({
           solana: {
-            ParcelNFT: '4zadC1FgWPQLv6qv66mjEBthBqTvrmxL5oDcHQzNtkV1',
+            Ugt: '95sjeTXUYG721iZK29s3kr7Dq4eFqv6PFoEmPYJDtkp9',
           },
           'solana-devnet': {
-            ParcelNFT: '4zadC1FgWPQLv6qv66mjEBthBqTvrmxL5oDcHQzNtkV1',
+            Ugt: '95sjeTXUYG721iZK29s3kr7Dq4eFqv6PFoEmPYJDtkp9',
           },
           'solana-mainnet-beta': {},
         }),
@@ -46,13 +46,13 @@ test.describe('Chain data loaders @features', () => {
       }
 
       return {
-        devnetParcel: await loader.resolveProgramAddress('solana-devnet', 'ParcelNFT'),
-        mainnetParcel: await loader.resolveProgramAddress('solana-mainnet-beta', 'ParcelNFT'),
-        mainnetAliasParcel: await loader.resolveProgramAddress('mainnet', 'ParcelNFT'),
+        devnetParcel: await loader.resolveProgramAddress('solana-devnet', 'Ugt'),
+        mainnetParcel: await loader.resolveProgramAddress('solana-mainnet-beta', 'Ugt'),
+        mainnetAliasParcel: await loader.resolveProgramAddress('mainnet', 'Ugt'),
       };
     });
 
-    expect(addresses.devnetParcel).toBe('4zadC1FgWPQLv6qv66mjEBthBqTvrmxL5oDcHQzNtkV1');
+    expect(addresses.devnetParcel).toBe('95sjeTXUYG721iZK29s3kr7Dq4eFqv6PFoEmPYJDtkp9');
     expect(addresses.mainnetParcel).toBeNull();
     expect(addresses.mainnetAliasParcel).toBeNull();
   });
@@ -111,7 +111,7 @@ test.describe('Chain data loaders @features', () => {
     expect(reads.pageCalls).toEqual([['anchoredBy', 0, 200], ['anchors', 0, 200], ['anchors', 200, 200]]);
   });
 
-  test('SolanaChainDataLoader.getParcelsFromChain parses owned parcel accounts', async ({ mockApi: page }) => {
+  test('SolanaChainDataLoader.getParcelsFromChain reads the ugt ParcelAnchor accounts a wallet anchored', async ({ mockApi: page }) => {
     await injectMockSolanaWallet(page, {
       publicKey: '7xKXtg2CWYcy6EH8d9xvPht4JyhV46Lxgq6vN6hS9wZT',
       providerName: 'phantom',
@@ -119,28 +119,28 @@ test.describe('Chain data loaders @features', () => {
 
     await page.goto('/');
     await waitForMapReady(page);
-    await waitForBlockchainRuntime(page, ['SolanaChainDataLoader', 'solanaWeb3']);
+    await waitForBlockchainRuntime(page, ['SolanaChainDataLoader', 'UgtClient', 'solanaWeb3']);
 
-    const parcels = await page.evaluate(async () => {
+    const reads = await page.evaluate(async () => {
       const globalWindow = window as typeof window & {
         solanaWeb3?: {
-          Connection?: { prototype: { getProgramAccounts?: (programId: unknown) => Promise<unknown> } };
-          PublicKey?: new (value: string | Uint8Array) => { toBytes: () => Uint8Array; toString: () => string } & {
-            constructor: { findProgramAddressSync?: (seeds: Uint8Array[], programId: unknown) => [unknown] };
-          };
+          Connection?: { prototype: { getProgramAccounts?: (programId: unknown, config?: unknown) => Promise<unknown> } };
+          PublicKey?: new (value: string | Uint8Array) => { toBytes: () => Uint8Array; toString: () => string };
         };
+        UgtClient?: { base58Of: (bytes: Uint8Array) => string };
         SolanaChainDataLoader?: {
           getParcelsFromChain?: (walletAddress: string, cluster: string, programId: string) => Promise<unknown>;
         };
       };
 
-      if (!globalWindow.solanaWeb3 || !globalWindow.solanaWeb3.Connection || !globalWindow.solanaWeb3.PublicKey || !globalWindow.SolanaChainDataLoader || !globalWindow.SolanaChainDataLoader.getParcelsFromChain) {
+      if (!globalWindow.solanaWeb3 || !globalWindow.solanaWeb3.Connection || !globalWindow.solanaWeb3.PublicKey || !globalWindow.UgtClient || !globalWindow.SolanaChainDataLoader || !globalWindow.SolanaChainDataLoader.getParcelsFromChain) {
         throw new Error('Solana loader dependencies are not available');
       }
 
-      const owner = new globalWindow.solanaWeb3.PublicKey('7xKXtg2CWYcy6EH8d9xvPht4JyhV46Lxgq6vN6hS9wZT');
-      const otherOwner = new globalWindow.solanaWeb3.PublicKey('3WsVS6LkLo4ySLaLvxKdwuD37fcCjE2Yu9fVh1nMfxbg');
+      const wallet = new globalWindow.solanaWeb3.PublicKey('7xKXtg2CWYcy6EH8d9xvPht4JyhV46Lxgq6vN6hS9wZT');
+      const otherWallet = new globalWindow.solanaWeb3.PublicKey('3WsVS6LkLo4ySLaLvxKdwuD37fcCjE2Yu9fVh1nMfxbg');
       const encoder = new TextEncoder();
+      const discriminator = [21, 240, 237, 186, 245, 40, 164, 227];
 
       const encodeString = (value: string) => {
         const bytes = encoder.encode(value);
@@ -149,35 +149,44 @@ test.describe('Chain data loaders @features', () => {
         return Array.from(len).concat(Array.from(bytes));
       };
 
-      const buildParcelData = (parcelId: string, metadataUri: string, ownerKey: { toBytes: () => Uint8Array }) => {
-        const payload = new Uint8Array(8 + encodeString(parcelId).length + encodeString(metadataUri).length + 32);
-        let offset = 8;
-        payload.set(encodeString(parcelId), offset);
-        offset += encodeString(parcelId).length;
-        payload.set(encodeString(metadataUri), offset);
-        offset += encodeString(metadataUri).length;
-        payload.set(ownerKey.toBytes(), offset);
-        return payload;
+      // ugt ParcelAnchor: discriminator, anchored_by (32), anchored_at i64, bump u8, parcel_id, metadata_uri.
+      const buildAnchorData = (parcelId: string, metadataUri: string, anchoredBy: { toBytes: () => Uint8Array }) => {
+        const anchoredAt = new Uint8Array(8);
+        new DataView(anchoredAt.buffer).setUint32(0, 1767225600, true);
+        return Uint8Array.from([
+          ...discriminator,
+          ...Array.from(anchoredBy.toBytes()),
+          ...Array.from(anchoredAt),
+          254,
+          ...encodeString(parcelId),
+          ...encodeString(metadataUri),
+        ]);
       };
 
+      const calls: Array<{ programId: string; config: unknown }> = [];
       const original = globalWindow.solanaWeb3.Connection.prototype.getProgramAccounts;
-      globalWindow.solanaWeb3.Connection.prototype.getProgramAccounts = async () => ([
-        {
-          pubkey: new globalWindow.solanaWeb3.PublicKey('4zadC1FgWPQLv6qv66mjEBthBqTvrmxL5oDcHQzNtkV1'),
-          account: { data: buildParcelData('HR-335754-1234', 'ipfs://parcel-1234', owner) },
-        },
-        {
-          pubkey: new globalWindow.solanaWeb3.PublicKey('3WsVS6LkLo4ySLaLvxKdwuD37fcCjE2Yu9fVh1nMfxbg'),
-          account: { data: buildParcelData('HR-335754-9999', 'ipfs://parcel-9999', otherOwner) },
-        },
-      ]);
+      // The stub ignores the filters, so the loader's own anchoredBy check must drop the other wallet's anchor.
+      globalWindow.solanaWeb3.Connection.prototype.getProgramAccounts = async (programId: unknown, config?: unknown) => {
+        calls.push({ programId: String(programId), config });
+        return [
+          {
+            pubkey: new globalWindow.solanaWeb3!.PublicKey!('95sjeTXUYG721iZK29s3kr7Dq4eFqv6PFoEmPYJDtkp9'),
+            account: { data: buildAnchorData('HR-335754-1234', 'ipfs://parcel-1234', wallet) },
+          },
+          {
+            pubkey: new globalWindow.solanaWeb3!.PublicKey!('3WsVS6LkLo4ySLaLvxKdwuD37fcCjE2Yu9fVh1nMfxbg'),
+            account: { data: buildAnchorData('HR-335754-9999', 'ipfs://parcel-9999', otherWallet) },
+          },
+        ];
+      };
 
       try {
-        return await globalWindow.SolanaChainDataLoader.getParcelsFromChain(
+        const parcels = await globalWindow.SolanaChainDataLoader.getParcelsFromChain(
           '7xKXtg2CWYcy6EH8d9xvPht4JyhV46Lxgq6vN6hS9wZT',
           'devnet',
-          '4zadC1FgWPQLv6qv66mjEBthBqTvrmxL5oDcHQzNtkV1'
+          '95sjeTXUYG721iZK29s3kr7Dq4eFqv6PFoEmPYJDtkp9'
         );
+        return { parcels, calls, discriminatorBase58: globalWindow.UgtClient.base58Of(Uint8Array.from(discriminator)) };
       } finally {
         if (original) {
           globalWindow.solanaWeb3.Connection.prototype.getProgramAccounts = original;
@@ -185,9 +194,20 @@ test.describe('Chain data loaders @features', () => {
       }
     });
 
-    expect(parcels).toEqual([
+    expect(reads.calls).toEqual([
       {
-        tokenId: '4zadC1FgWPQLv6qv66mjEBthBqTvrmxL5oDcHQzNtkV1',
+        programId: '95sjeTXUYG721iZK29s3kr7Dq4eFqv6PFoEmPYJDtkp9',
+        config: {
+          filters: [
+            { memcmp: { offset: 0, bytes: reads.discriminatorBase58 } },
+            { memcmp: { offset: 8, bytes: '7xKXtg2CWYcy6EH8d9xvPht4JyhV46Lxgq6vN6hS9wZT' } },
+          ],
+        },
+      },
+    ]);
+    expect(reads.parcels).toEqual([
+      {
+        tokenId: '95sjeTXUYG721iZK29s3kr7Dq4eFqv6PFoEmPYJDtkp9',
         parcelId: 'HR-335754-1234',
         metadataURI: 'ipfs://parcel-1234',
       },

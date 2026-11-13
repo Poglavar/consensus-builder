@@ -52,7 +52,7 @@ describe("proposal_pledge", () => {
     anchor.setProvider(provider);
 
     const program = anchor.workspace.ProposalPledge as Program;
-    const agreementProgram = anchor.workspace.Agreement as Program;
+    const agreementProgram = anchor.workspace.Ugt as Program;
     const connection = provider.connection;
     const payer = (provider.wallet as any).payer as Keypair;
 

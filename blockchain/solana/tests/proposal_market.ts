@@ -1,5 +1,5 @@
 // Localnet suite for the proposal_market program's parimutuel market on an agreement (an Agreement
-// account of the agreement program, plan-design-agreement.md M3): creation on an Active agreement
+// account of the ugt program, plan-design-agreement.md M3): creation on an Active agreement
 // only, staking, resolution (Executed → YES, Cancelled or Expired → NO; a recorded decision or a
 // passed deadline alone resolves nothing) and payout, plus the agreement-lens binding of external
 // markets.
@@ -19,13 +19,12 @@ import {
 } from "@solana/spl-token";
 import { expect } from "chai";
 import { createHash } from "crypto";
-import { airdrop, findProposalCounterPDA, findProposalPDA, initializeProposalCounter, NO_SITE } from "./helpers.ts";
+import { airdrop } from "./helpers.ts";
 import {
     LensMember,
     chainNow,
     createLensMember,
     credentialBytes,
-    ensureParcelAnchor,
     schemaBytes,
     waitForProgramsVisible,
     writeSasAccount,
@@ -55,10 +54,7 @@ describe("proposal_market", () => {
     anchor.setProvider(provider);
 
     const program = anchor.workspace.ProposalMarket as Program;
-    const agreementProgram = anchor.workspace.Agreement as Program;
-    // Only to prove a proposal_nft Proposal is no longer a market subject.
-    const proposalProgram = anchor.workspace.ProposalNft as Program;
-    const parcelProgram = anchor.workspace.ParcelNft as Program;
+    const agreementProgram = anchor.workspace.Ugt as Program;
 
     const payer = (provider.wallet as any).payer as Keypair;
 
@@ -117,20 +113,15 @@ describe("proposal_market", () => {
         expect(await statusByte(provider.connection, created.agreement)).to.equal(STATUS.cancelled);
     }
 
-    /** A proposal_nft Proposal, the subject markets read before M3. */
-    async function mintLegacyProposal(parcelId: string): Promise<PublicKey> {
-        await ensureParcelAnchor(parcelProgram, parcelId);
-        const [counter] = findProposalCounterPDA(proposalProgram.programId);
-        if (!(await proposalProgram.account.proposalCounter.fetchNullable(counter))) {
-            await initializeProposalCounter(proposalProgram, payer);
-        }
-        const count = ((await proposalProgram.account.proposalCounter.fetch(counter)).count as any).toNumber();
-        const [proposal] = findProposalPDA(proposalProgram.programId, count);
-        await proposalProgram.methods
-            .mintAndFund([parcelId], false, "ipfs://test-image", new anchor.BN(0), [notary.publicKey], false, NO_SITE, false)
-            .accounts({ proposal, proposalCounter: counter, owner: provider.wallet.publicKey, systemProgram: SystemProgram.programId } as any)
+    /** A parcel anchor of the ugt program: owned by the agreements' program, but not an Agreement. */
+    async function anchorParcel(parcelId: string): Promise<PublicKey> {
+        const [parcel] = PublicKey.findProgramAddressSync([Buffer.from("parcel"), Buffer.from(parcelId)], agreementProgram.programId);
+        await agreementProgram.methods
+            .anchorParcels([parcelId], [`https://urbangametheory.xyz/parcel/${parcelId}`])
+            .accountsStrict({ payer: provider.wallet.publicKey, systemProgram: SystemProgram.programId })
+            .remainingAccounts([{ pubkey: parcel, isSigner: false, isWritable: true }])
             .rpc();
-        return proposal;
+        return parcel;
     }
 
     function findMarketPDA(subject: PublicKey): PublicKey {
@@ -263,10 +254,10 @@ describe("proposal_market", () => {
             expect(vault.amount).to.equal(0n);
         });
 
-        it("rejects a subject that is not an agreement: a mint, a look-alike another program owns, a proposal_nft Proposal", async () => {
+        it("rejects a subject that is not an agreement: a mint, a look-alike another program owns, a ugt parcel anchor", async () => {
             const lookalike = await writeAgreementLookalike(provider, { authority: payer.publicKey, lens: notary.publicKey });
-            const legacy = await mintLegacyProposal("HR-mkt-legacy");
-            for (const subject of [stakeMint, lookalike, legacy]) {
+            const anchorAccount = await anchorParcel("HR-mkt-anchor");
+            for (const subject of [stakeMint, lookalike, anchorAccount]) {
                 await expectFailure(() => createMarket(subject), "InvalidProposalAccount");
                 expect(await program.account.market.fetchNullable(findMarketPDA(subject))).to.be.null;
             }

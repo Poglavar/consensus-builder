@@ -1,6 +1,6 @@
 #!/usr/bin/env node
-// CLI of the chain watcher (chain-records.js): lists the design and plan records minted on the EVM
-// chains' RecordRegistry, fetches each record's content from public IPFS, verifies it against its
+// CLI of the chain watcher (chain-records.js): lists the design and plan records minted on the watched
+// chains (the Solana ugt program, EVM RecordRegistry contracts), fetches each record's content from public IPFS, verifies it against its
 // CID and imports what the index does not hold (designs bound with their city's parcel source,
 // chain/design-parcel-source.js; then plans whose member designs are indexed). Dry run unless
 // --apply. --once runs one pass and exits; without it a pass runs every --interval seconds.
@@ -14,7 +14,7 @@ import { fileURLToPath } from 'node:url';
 import { parseArgs } from 'node:util';
 import dotenv from 'dotenv';
 import { createPool } from '../db/connection.cjs';
-import { readAdapter, normalizeChainId, CHAINS } from '../chain/evm.js';
+import { readAdapter, normalizeChainKey, knownChainKeys } from '../chain/adapters.js';
 import { designParcelSourceId } from '../chain/design-parcel-source.js';
 import { indexDesign } from '../routes/designs.js';
 import { indexPlan } from '../routes/plans.js';
@@ -27,7 +27,7 @@ const IpfsRead = require('../../frontend/js/chain/ipfs-read.js');
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const DEFAULT_INTERVAL_SECONDS = 600;
-const DEFAULT_CHAINS = '84532';
+const DEFAULT_CHAINS = 'solana-devnet,84532';
 const log = message => console.log(`[${new Date().toISOString()}] [chain-records] ${message}`);
 
 function usage(code = 0) {
@@ -38,14 +38,14 @@ function usage(code = 0) {
         '  --apply             Write: import the retrievable records into consensus.design and consensus.plan.',
         '                      Without it the pass is a dry run that reads the chains and IPFS and writes nothing.',
         `  --interval <s>      Seconds between passes when not --once (default ${DEFAULT_INTERVAL_SECONDS}).`,
-        `  --chains <ids>      Comma-separated chain ids (default EVM_WATCH_CHAIN_IDS, else ${DEFAULT_CHAINS}); known: ${Object.keys(CHAINS).join(', ')}.`,
+        `  --chains <keys>     Comma-separated chain keys (default CHAIN_WATCH_KEYS, else ${DEFAULT_CHAINS}); known: ${knownChainKeys().join(', ')}.`,
         '  --help              This text.',
         '',
         'Examples:',
         '  node oracle/chain-records-job.mjs --once                          # dry run on Base Sepolia',
         '  node oracle/chain-records-job.mjs --once --apply --chains 84532,11155111',
         '',
-        'Env (backend/.env): DATABASE_URL, EVM_WATCH_CHAIN_IDS, EVM_RPC_URL_<chainId> (a public RPC by default),',
+        'Env (backend/.env): DATABASE_URL, CHAIN_WATCH_KEYS, SOLANA_RPC_URL and EVM_RPC_URL_<chainId> (public RPCs by default),',
         'CHAIN_RECORDS_RUN_STATS (run-stats file, default logs/chain-records-stats.json; written by --apply passes).'
     ].join('\n'));
     process.exit(code);
@@ -80,8 +80,8 @@ function options() {
 
 function chainIds(raw) {
     const ids = String(raw).split(',').map(value => value.trim()).filter(Boolean).map(value => {
-        const id = normalizeChainId(value);
-        if (!id || !CHAINS[id]) throw new Error(`unknown chain id ${value} (known: ${Object.keys(CHAINS).join(', ')})`);
+        const id = normalizeChainKey(value);
+        if (!id) throw new Error(`unknown chain ${value} (known: ${knownChainKeys().join(', ')})`);
         return id;
     });
     if (!ids.length) throw new Error('no chain ids to watch');
@@ -91,7 +91,7 @@ function chainIds(raw) {
 async function main() {
     const opts = options();
     dotenv.config({ path: path.join(HERE, '..', '.env'), quiet: true });
-    const ids = chainIds(opts.chains || process.env.EVM_WATCH_CHAIN_IDS || DEFAULT_CHAINS);
+    const ids = chainIds(opts.chains || process.env.CHAIN_WATCH_KEYS || DEFAULT_CHAINS);
     const chains = ids.map(id => readAdapter(id, { env: process.env, log: line => console.log(line) }));
     const statsPath = process.env.CHAIN_RECORDS_RUN_STATS || path.resolve(process.cwd(), 'logs/chain-records-stats.json');
     const pool = createPool();

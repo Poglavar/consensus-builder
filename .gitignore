@@ -63,3 +63,5 @@ frontend/rpc-config.js
 
 # Raw guide-video renders (the packaged clips live in frontend/videos/howto); too large for git.
 data/video/
+# Metaplex Core, dumped from devnet for the ugt record tests (tests/fixtures/fetch-mpl-core.sh)
+blockchain/solana/tests/fixtures/mpl_core.so

@@ -8,8 +8,7 @@ and which parties or systems must be trusted.
 
 | Program | Address | Role | Schema |
 |---|---|---|---|
-| ParcelNFT | [`4zad…kV1`](https://explorer.solana.com/address/4zadC1FgWPQLv6qv66mjEBthBqTvrmxL5oDcHQzNtkV1?cluster=devnet) | v2 deployed 2026-10-01 UTC: ownerless parcel anchors | [`parcel_nft.json`](../blockchain/solana/idl/parcel_nft.json) |
-| ProposalNFT | [`3WsV…xbg`](https://explorer.solana.com/address/3WsVS6LkLo4ySLaLvxKdwuD37fcCjE2Yu9fVh1nMfxbg?cluster=devnet) | v3 deployed 2026-10-01 UTC: attested owner acceptance, verdict settlement, and parcel-optional site proposals | [`proposal_nft.json`](../blockchain/solana/idl/proposal_nft.json) |
+| Ugt | [`95sj…tkp9`](https://explorer.solana.com/address/95sjeTXUYG721iZK29s3kr7Dq4eFqv6PFoEmPYJDtkp9?cluster=devnet) | deployed 2026-11-13 UTC: ownerless parcel anchors, design and plan records, agreements (replaces ParcelNFT, ProposalNFT and Agreement) | [`ugt.json`](../blockchain/solana/idl/ugt.json) |
 | ProposalMarket | [`GDYn…YDRB`](https://explorer.solana.com/address/GDYnzduynKhKgxDhvvKVarn2s23DtzA26s6hycuUYDRB?cluster=devnet) | v2 deployed 2026-10-01 UTC: Expired resolves NO; proposal-scoped lens check for external markets | [`proposal_market.json`](../blockchain/solana/idl/proposal_market.json) |
 | ProposalPledge | [`1jES…rp6g`](https://explorer.solana.com/address/1jESRS3mJiPUJTtmQ5ncyBhGNmGeXTpUqPyJcTYrp6g?cluster=devnet) | Escrowed donations and revocable soft pledges | [`proposal_pledge.json`](../blockchain/solana/idl/proposal_pledge.json) |
 

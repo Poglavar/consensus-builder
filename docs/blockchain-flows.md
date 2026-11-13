@@ -20,10 +20,10 @@ are proposed; [vocabulary.md](vocabulary.md) changes when a milestone lands, not
 
 | Object | Identity | On chain | Needs first | Who mints | Chains |
 |---|---|---|---|---|---|
-| **Parcel anchor** | cadastral parcel id | an ownerless account per parcel: id, fixed metadata URI. Created once, never transferred, never closed. The parcel's public address and inbox. | nothing | anyone (pays rent only) | Solana (`parcel_nft` v2 today; moves into the one program, see Chain contracts); EVM (to build: `ParcelNFT.sol` is a transferable ERC-721 minted to an address, which contradicts this row) |
-| **Design record** | design CID | the CID, the minter, the chain time | the content retrievable from IPFS | anyone | both, to build |
-| **Plan record** | plan CID | the CID, the minter, the chain time | the plan and every member design retrievable from IPFS. Member designs need no record of their own: the plan's CID commits to their CIDs. | anyone | both, to build |
-| **Agreement** | agreement CID + sponsor | the account the agreement program keeps: escrow, lens, deadline, decision, status ([program README](../blockchain/solana/programs/agreement/README.md)) | the content retrievable; **every input parcel anchored**; the plan it names retrievable | the sponsor's wallet | Solana (built, devnet); EVM (to build) |
+| **Parcel anchor** | cadastral parcel id | an ownerless account per parcel: id, fixed metadata URI. Created once, never transferred, never closed. The parcel's public address and inbox. | nothing | anyone (pays rent only) | Solana (`ugt`, devnet); EVM (`ParcelAnchor`, Base Sepolia and Sepolia) |
+| **Design record** | design CID | the CID, the minter, the chain time | the content retrievable from IPFS | anyone | Solana (`ugt`, a Metaplex Core asset); EVM (`RecordRegistry`) |
+| **Plan record** | plan CID | the CID, the minter, the chain time | the plan and every member design retrievable from IPFS. Member designs need no record of their own: the plan's CID commits to their CIDs. | anyone | Solana and EVM, as design records |
+| **Agreement** | agreement CID + sponsor | the agreement account: escrow, lens, deadline, decision, status, the plan's CID hash ([program README](../blockchain/solana/programs/ugt/README.md)) | the content retrievable; **every input parcel anchored**; the plan it names retrievable | the sponsor's wallet | Solana (`ugt`, devnet); EVM (`Agreement`) |
 
 Rules behind the table:
 
@@ -56,8 +56,8 @@ flowchart LR
 Lists gets a **From chain** source beside Browser and Published. It needs the wallet's chain and an
 RPC, not our server.
 
-1. **Enumerate.** Solana: `getProgramAccounts` on the record and agreement programs with a memcmp on
-   the kind or status (the method-capable RPC routing in `solana/rpc-routing.js` already exists).
+1. **Enumerate.** Solana: `getProgramAccounts` on the ugt program with a memcmp on the record kind,
+   the account discriminator or the agreement status (the method-capable RPC routing in `solana/rpc-routing.js` already exists).
    EVM: the registry and agreement contracts keep enumerable ids (`count()` / `at(i)`); event-log
    scans are not used because public RPCs cap them.
 2. **Fetch content** by CID from public IPFS gateways (two configured, tried in order; the
@@ -140,22 +140,24 @@ the link today. With a wallet connected to a chain this app has programs on:
 
 **Solana** (`blockchain/solana/programs/`):
 
-Since the programs may be rewritten, the anchors, records and agreements become **one program**
-(working name `ugt`): one deploy and one rent instead of three, one IDL and one client for the
+Since the programs may be rewritten, the anchors, records and agreements are **one program**,
+`ugt` ([README](../blockchain/solana/programs/ugt/README.md)): one deploy and one rent instead of three, one IDL and one client for the
 adapter, and the agreement can check anchors and records it owns without cross-program reads.
 
-- **`ParcelAnchor`** at `PDA(["parcel", parcelId])`: `parcel_nft` v2's account, moved here unchanged
-  in meaning (ownerless, fixed metadata URI, never closed). `anchor_parcels(ids[])` creates several per
+- **`ParcelAnchor`** at `PDA(["parcel", parcelId])`: ownerless, fixed metadata URI, never closed; it
+  records who paid (`anchored_by`, not an owner) and when. `anchor_parcels(ids[])` creates several per
   transaction and skips ones that exist, so a resumed batch never fails on its own earlier work.
-- **`Record`** at `PDA([kind, sha256(cid)])` for `kind` design or plan: `kind u8`, `cid string`,
-  `minter Pubkey`, `created_at i64`, `bump u8`, fixed fields first so memcmp on `kind` works.
-  `create_record(kind, cid)` is refused when the account exists.
+- **`Record`** at `PDA(["record", kind, sha256(cid)])` for `kind` design or plan: `kind u8`, `minter`,
+  `created_at`, `asset`, then `cid`, fixed fields first so memcmp on `kind` works.
+  `create_record(kind, cid, name, uri)` is refused when the account exists, and mints the record's
+  Metaplex Core asset at `PDA(["asset", kind, sha256(cid)])` to the publisher, permanently frozen.
 - **`Agreement`**: the current program's account and lifecycle, plus `plan_cid` stored at a fixed
   offset (as its sha256, so memcmp finds the agreements of a plan without fetching every agreement).
   Anchoring stays the browser's guard, as in Flow 3; the account records `input_count` from the
   content for readers.
 - `proposal_nft`, the separate `parcel_nft` and the separate `agreement` program are retired.
-  `proposal_market` and `proposal_pledge` are repointed at the new agreement account layout; they
+  `proposal_market` and `proposal_pledge` are repointed at the new agreement account layout (in
+  source; their devnet deployments are upgraded in place when this branch is deployed, see R2); they
   may be merged into the same program later if their deploy cost argues for it.
 
 **EVM** (`blockchain/contracts/`, Foundry):
@@ -221,6 +223,25 @@ mock API and a local validator), then docs and the vocabulary entries it changes
    order and gate; the mint checklist for designs, plans and agreements including parcel anchoring;
    Flow 4 in the Share dialog; the server chain watcher; the MCP tools. Done when a design drawn in
    a browser with no `backend` is minted and later listed by the index.
+   *Built (after R3 and R4, user 2026-11-13):* `blockchain/solana/programs/ugt` (anchors, records with a
+   frozen Metaplex Core asset by a hand-encoded `CreateV2` CPI, agreements with `plan_cid_hash` and
+   `input_count`), Anchor suites for it and for the market and pledge programs rebuilt against it,
+   deployed on devnet as `95sjeTXUYG721iZK29s3kr7Dq4eFqv6PFoEmPYJDtkp9`. Browser:
+   `frontend/js/solana/ugt-client.js` (codec), `frontend/js/chain/solana-adapter.js` (the adapter
+   interface of `evm-adapter.js`, anchors packed by transaction size), Share offers every connected
+   wallet's chain, Lists reads design and plan records from the Solana cluster unless an EVM wallet is
+   connected, and the parcel claim and agent profile read ugt anchors. Server:
+   `backend/chain/adapters.js` dispatches by chain key (`solana-devnet` or an EVM chain id) for the
+   watcher (`CHAIN_WATCH_KEYS`, default `solana-devnet,84532`) and the MCP record tools (Solana by
+   default, signing with `UGT_AGENT_KEYPAIR`). The devnet accounts of the retired `agreement` program
+   are not migrated: they and the index rows that name them stay as last observed (the lifecycle
+   oracle refreshes only rows of the program it watches) and parcel history keeps the land events that
+   program attested. Still open: the devnet `proposal_market` and `proposal_pledge` still read the
+   retired program, so markets and pledges on ugt agreements wait for their in-place upgrade at this
+   branch's deploy; at that point the retired program's open agreements and markets are closed first
+   (user, 2026-11-13); Share and the mint checklist with a Solana wallet are verified in the browser
+   with an injected wallet on a local validator, not yet with Phantom on devnet; content of the London
+   test records is not on public IPFS.
 3. **R3, EVM anchors, registry and reader.** `ParcelAnchor`, `RecordRegistry`, the EVM adapter and
    From chain on Base Sepolia; the ENS resolver repointed. Done when R1 and R2's checks pass with an
    EVM wallet for designs and plans.
@@ -250,7 +271,7 @@ mock API and a local validator), then docs and the vocabulary entries it changes
    `ugt_chain_records`, `ugt_mint_design`, `ugt_mint_plan` (members retrievable, then the plan, then
    its record) and `ugt_anchor_parcels` (metadata URI = the parcel's app page). The chain watcher
    `backend/oracle/chain-records-job.mjs` (PM2 `consensus-builder-chain-records`, every 15 min,
-   `EVM_WATCH_CHAIN_IDS`) imports retrievable, CID-verified records into the index, designs before
+   `CHAIN_WATCH_KEYS`) imports retrievable, CID-verified records into the index, designs before
    plans, binding a design with its city's configured parcel source; plans wait for their members.
    Still open from R3: the live ENS records (the scripts are repointed, not run), explorer source
    verification (needs an Etherscan v2 API key), and an outcome check for the watcher in the alerts

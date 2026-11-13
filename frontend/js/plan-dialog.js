@@ -148,11 +148,11 @@
             try {
                 if(!link.value){
                     // The chain first with a wallet on a chain this app has contracts on (blockchain-flows.md, Flow 4).
-                    const chain=await win.ChainPublish.adapter();
-                    const where=chain?await win.ChainPublish.choose(chain):'server';
+                    const chains=await win.ChainPublish.adapters();
+                    const where=chains.length?await win.ChainPublish.choose(chains):'server';
                     if(!where)return;
                     status.textContent=t('publishing');
-                    const result=where==='chain'?await win.ChainPublish.plan(row,chain):await win.PlanWorkspace.publish(row);
+                    const result=where!=='server'?await win.ChainPublish.plan(row,where):await win.PlanWorkspace.publish(row);
                     if(!result){status.textContent='';return;}
                     link.value=result.link;link.hidden=false;
                 }

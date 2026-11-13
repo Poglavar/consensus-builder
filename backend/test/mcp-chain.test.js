@@ -20,7 +20,7 @@ describe('local MCP without the API', () => {
             const bytes = Buffer.alloc(codec.constants.AGREEMENT_ACCOUNT_SPACE);
             Buffer.from(codec.ACCOUNT_DISCRIMINATORS.Agreement).copy(bytes);
             for (const offset of [8, 40, 72]) keypair.publicKey.toBuffer().copy(bytes, offset);
-            bytes.writeUInt32LE(cid.length, 228); bytes.write(cid, 232);
+            bytes.writeUInt32LE(cid.length, codec.AGREEMENT_OFFSETS.cid); bytes.write(cid, codec.AGREEMENT_OFFSETS.cid + 4);
             const connection = { getProgramAccounts: vi.fn(async () => [{ pubkey: new PublicKey(address), account: { data: bytes } }]) };
             const fetchImpl = vi.fn(() => { throw new Error('UGT API is offline'); });
             const buyAgreementShares = vi.fn(async () => ({ signature: 'stake-fixture' }));

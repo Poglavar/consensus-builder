@@ -83,11 +83,12 @@ assign(['ugt_import_model'], mcpResultSchema.extend({ cid: cid.optional(), asset
 assign(['ugt_render_preview'], mcpResultSchema.extend({ ready: z.literal(true), publication: z.literal('private'), provenance: z.object({ renderer: z.enum(['app-map-preview-2d', 'app-scene-3d']), designCids: z.array(cid).min(1), persisted: z.literal(false) }), metrics: z.object({ width: z.number().int().positive(), height: z.number().int().positive(), designCount: count }).passthrough() }));
 assign(['ugt_compare'], mcpResultSchema.extend({ alternatives: z.array(z.object({ cid, areaBasis: z.literal('authored-geometry'), measurementErrors: z.array(object) }).passthrough()).min(2), warnings: z.array(z.union([z.string(), object])) }));
 
-// EVM records and anchors (mcp-evm-records.js): the chain, the transaction and its explorer page
-// (null on a chain without an explorer), and the record as the chain now holds it.
-const evmChain = { chainId: z.string().regex(/^\d+$/), chain: z.string() };
-const evmRecord = z.object({ cid, kind: z.enum(['design', 'plan']), minter: z.string(), createdAt: z.string(), tokenUri: z.string(), chainId: z.string() }).passthrough();
-const txHash = z.string().regex(/^0x[0-9a-f]{64}$/i);
+// Records and anchors on a chain (mcp-evm-records.js): the chain (an EVM chain id or 'solana-devnet'),
+// the transaction (an EVM hash or a Solana signature) and its explorer page (null on a chain without
+// an explorer), and the record as the chain now holds it (a Solana record has no token URI field).
+const evmChain = { chainId: z.string().regex(/^(\d+|solana-[a-z-]+)$/), chain: z.string() };
+const evmRecord = z.object({ cid, kind: z.enum(['design', 'plan']), minter: z.string(), createdAt: z.string(), tokenUri: z.string().nullable(), chainId: z.string() }).passthrough();
+const txHash = z.union([z.string().regex(/^0x[0-9a-f]{64}$/i), z.string().regex(/^[1-9A-HJ-NP-Za-km-z]{64,90}$/)]);
 assign(['ugt_chain_records'], mcpResultSchema.extend({ ...evmChain, kind: z.enum(['design', 'plan']), count, truncated: z.boolean(), records: z.array(evmRecord) }));
 assign(['ugt_mint_design', 'ugt_mint_plan'], mcpResultSchema.extend({ ...evmChain, cid, txHash, explorerUrl: z.string().url().nullable(), record: evmRecord, url: z.string().url(),
     retrievable: z.array(z.object({ cid, via: z.enum(['already', 'pinned']), gateway: z.string() })).min(1) }));

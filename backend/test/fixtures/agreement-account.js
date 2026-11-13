@@ -1,7 +1,7 @@
-// Test helper: the bytes of an `agreement` program Agreement account, field by field in the order of
-// blockchain/solana/programs/agreement/README.md ("Agreement account": discriminator, authority, lens,
+// Test helper: the bytes of a ugt program Agreement account, field by field in the order of
+// blockchain/solana/programs/ugt/README.md ("Agreement account": discriminator, authority, lens,
 // payout, deadline, created_at, required/escrow lamports, status, open_ground, decision, decision times,
-// attestation, hash, executed_at, bump, cid), padded to the 296-byte account, so tests decode exactly
+// attestation, hash, executed_at, plan_cid_hash, input_count, bump, cid), padded to the 330-byte account, so tests decode exactly
 // what the program writes with frontend/js/solana/agreement-client.js readAgreement.
 import { createRequire } from 'node:module';
 import { PublicKey } from '@solana/web3.js';
@@ -40,6 +40,8 @@ export function agreementAccountBytes({
     decisionAttestation = DEFAULT_KEY,
     decisionHash = Buffer.alloc(32),
     executedAt = 0,
+    planCidHash = Buffer.alloc(32),
+    inputCount = 0,
     bump = 255,
     padTo = AGREEMENT_ACCOUNT_SPACE
 } = {}) {
@@ -50,7 +52,7 @@ export function agreementAccountBytes({
         i64(deadline), i64(createdAt), u64(requiredLamports), u64(escrowLamports),
         Buffer.from([status, openGround ? 1 : 0, decision]),
         i64(decisionAttestedAt), i64(decisionObservedAt), key(decisionAttestation), Buffer.from(decisionHash),
-        i64(executedAt), Buffer.from([bump]), str(cid)
+        i64(executedAt), Buffer.from(planCidHash), Buffer.from([inputCount & 0xff, inputCount >> 8]), Buffer.from([bump]), str(cid)
     ]);
     return Buffer.concat([content, Buffer.alloc(Math.max(0, padTo - content.length))]);
 }

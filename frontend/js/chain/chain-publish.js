@@ -1,5 +1,6 @@
 // chain-publish.js — Flow 4 (blockchain-flows.md): with a wallet connected to a chain this app has
-// contracts on, Share offers "Publish on <chain>" before "Publish through the server". The chain
+// contracts or programs on (an EVM wallet, a Solana wallet, or both), Share offers "Publish on
+// <chain>" for each before "Publish through the server". The chain
 // path runs the mint checklist (content to IPFS, record minted by the wallet) and then mirrors the
 // object to the index as a courtesy; a server that does not answer never fails the publication,
 // because the share link names content, not where it was published. window.ChainPublish.
@@ -9,25 +10,32 @@
     const t = (key, vars) => win.i18n.t(key, vars);
     const log = message => console.info(`[${new Date().toISOString()}] [ChainPublish] ${message}`);
 
-    // The signing adapter of the connected wallet's chain, or null when there is none to offer.
-    async function adapter() {
-        if (!win.EvmAdapter) return null;
-        try {
-            return await win.EvmAdapter.connected();
-        } catch (error) {
-            console.warn(`[${new Date().toISOString()}] [ChainPublish] no chain adapter`, error);
-            return null;
+    // The signing adapters of the connected wallets (chain/evm-adapter.js, chain/solana-adapter.js),
+    // EVM first; empty when no wallet is on a chain this app can publish on.
+    async function adapters() {
+        const found = [];
+        for (const source of [win.EvmAdapter, win.SolanaAdapter]) {
+            if (!source) continue;
+            try {
+                const chain = await source.connected();
+                if (chain) found.push(chain);
+            } catch (error) {
+                console.warn(`[${new Date().toISOString()}] [ChainPublish] a chain adapter is unavailable`, error);
+            }
         }
+        return found;
     }
 
-    // Where to publish: 'chain', 'server' or null (cancelled).
-    async function choose(chain) {
+    // Where to publish: one of `chains` (an adapter), 'server', or null (cancelled).
+    async function choose(chains) {
         const choice = await win.CbDialog.choice(t('proposals.share.where.chainHint'), [
-            { value: 'chain', label: t('mint.actions.start', { chain: chain.name }), primary: true },
+            ...chains.map((chain, index) => ({ value: `chain:${index}`, label: t('mint.actions.start', { chain: chain.name }), primary: index === 0 })),
             { value: 'server', label: t('proposals.share.where.server') },
             { value: 'cancel', label: t('modal.common.cancel') }
         ], { title: t('proposals.share.where.title') });
-        return choice === 'chain' || choice === 'server' ? choice : null;
+        if (choice === 'server') return 'server';
+        const match = /^chain:(\d+)$/.exec(String(choice || ''));
+        return match ? chains[Number(match[1])] : null;
     }
 
     const chainRef = (chain, result) => ({ family: chain.family, chainId: chain.chainId, minter: result.record.minter, createdAt: result.record.createdAt, txHash: result.txHash });
@@ -85,5 +93,5 @@
         return { cid: row.cid, link, chain: chainRef(chain, result), mirrored };
     }
 
-    win.ChainPublish = Object.freeze({ adapter, choose, design, plan });
+    win.ChainPublish = Object.freeze({ adapters, choose, design, plan });
 })(window);

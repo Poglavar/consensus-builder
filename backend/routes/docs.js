@@ -188,8 +188,8 @@ export function setupDocsRoute(app, pool, { env = process.env } = {}) {
     const agreementProgramId = AgreementClient.constants.AGREEMENT_PROGRAM_ID;
     const marketProgramId = MarketClient.constants.PROGRAM_ID;
     const pledgeProgramId = PledgeClient.constants.PROGRAM_ID;
-    // The agreement program's id is a readable placeholder until its first devnet deploy
-    // (programs/agreement/README.md, "Program id"); the docs say so instead of sending agents to it.
+    // The ugt program's id would be a readable placeholder before a devnet deploy
+    // (programs/ugt/README.md, "Program id"); the docs say so instead of sending agents to it.
     const agreementProgramDeployed = !/^Agreement1+$/.test(agreementProgramId);
     const agreementProgramStatus = agreementProgramDeployed
         ? 'deployed on devnet'
@@ -344,22 +344,22 @@ export function setupDocsRoute(app, pool, { env = process.env } = {}) {
                     deployed: agreementProgramDeployed,
                     status: agreementProgramStatus,
                     cluster: 'devnet',
-                    idl: 'blockchain/solana/idl/agreement.json',
+                    idl: 'blockchain/solana/idl/ugt.json',
                     client: 'frontend/js/solana/agreement-client.js',
-                    readme: 'blockchain/solana/programs/agreement/README.md',
+                    readme: 'blockchain/solana/programs/ugt/README.md',
                     pda: 'seeds ["agreement", sponsor (authority), sha256(cid as UTF-8)]: only the sponsor can create its agreement\'s account',
                     account: {
                         space: AgreementClient.constants.AGREEMENT_ACCOUNT_SPACE,
                         offsets: AgreementClient.AGREEMENT_OFFSETS,
-                        fields: 'authority, lens, payout, deadline (unix s, 0 none), created_at, required_lamports, escrow_lamports, status, open_ground, decision, decision_attested_at, decision_observed_at, decision_attestation, decision_hash, executed_at, bump, cid',
+                        fields: 'authority, lens, payout, deadline (unix s, 0 none), created_at, required_lamports, escrow_lamports, status, open_ground, decision, decision_attested_at, decision_observed_at, decision_attestation, decision_hash, executed_at, plan_cid_hash (sha256 of the plan CID), input_count, bump, cid',
                         statuses: ['Active', 'Executed', 'Cancelled', 'Expired'],
                         decisions: ['Pending', 'Satisfied']
                     },
                     instructions: {
                         create: {
-                            args: ['cid: string', 'lens: pubkey', 'deadline: i64', 'open_ground: bool', 'required_lamports: u64', 'payout: pubkey'],
+                            args: ['cid: string', 'plan_cid: string', 'input_count: u16', 'lens: pubkey', 'deadline: i64', 'open_ground: bool', 'required_lamports: u64', 'payout: pubkey'],
                             accounts: ['agreement (mut, init: the PDA)', 'authority (signer, mut: the sponsor; pays the rent)', 'system_program'],
-                            requires: 'cid 1-64 ASCII letters and digits; lens and payout not the default key; deadline 0 or in the future'
+                            requires: 'cid and plan_cid 1-64 ASCII letters and digits; lens and payout not the default key; deadline 0 or in the future'
                         },
                         fund: { args: ['lamports: u64'], accounts: ['agreement (mut)', 'authority (signer, mut)', 'system_program'], requires: 'the sponsor; Active; before the deadline' },
                         attest: { args: [], accounts: ['agreement (mut)', 'attestation (the lens\'s AgreementDecision-v1)', 'credential (its SAS credential)'], requires: 'Active; decision Pending; before the deadline; permissionless' },
@@ -429,7 +429,7 @@ export function setupDocsRoute(app, pool, { env = process.env } = {}) {
                         url: `${base}/parcels/{parcelUid}/history`,
                         response: '{ parcelUid, anchor: { account, exists (true | false | null), source (chain | unavailable | unseedable) }, events: [{ type, at, agreementCid?, title?, account?, lens?, attestation?, member?, owner?, ownerCount?, outcome?, transaction?, hash?, link }] }',
                         eventTypes: [AGREEMENT_PUBLISHED_EVENT_TYPE, OWNERSHIP_EVENT_TYPE, AGREEMENT_EXECUTED_EVENT_TYPE],
-                        anchor: `parcel_nft (${PARCEL_PROGRAM_ID}) PDA ["parcel", parcelUid]; an identity only, it carries no ownership. Existence requires a validated devnet account read; unavailable evidence stays null. No mint time is inferred from touched transactions.`,
+                        anchor: `ugt (${PARCEL_PROGRAM_ID}) PDA ["parcel", parcelUid]; an identity only, it carries no ownership. Existence requires a validated devnet account read; unavailable evidence stays null. No mint time is inferred from touched transactions.`,
                         privacy: 'ownership attestations expose member, owner wallet, ownerCount and the account hash; never the evidence reference',
                         caching: 'no-store'
                     },

@@ -1,6 +1,6 @@
 // The chain side of the agreement index (plan-design-agreement.md, M3): the clusters this server reads
 // agreements on, the account an agreement's sponsor and CID derive (PDA ["agreement", sponsor,
-// sha256(cid)], programs/agreement/README.md), reading and decoding those accounts over RPC with the
+// sha256(cid)] under the ugt program, programs/ugt/README.md), reading and decoding those accounts over RPC with the
 // shared codec (frontend/js/solana/agreement-client.js), and the `onchain` JSON consensus.agreement
 // keeps. POST /agreements/:cid/onchain writes it once (routes/agreements.js); the lifecycle oracle
 // refreshes the fields the chain moves and discovers accounts nobody reported (oracle/agreement-lifecycle.js).
@@ -15,6 +15,10 @@ const web3 = require('@solana/web3.js');
 export const AgreementClient = require('../../frontend/js/solana/agreement-client.js').configure({ web3 });
 
 export const AGREEMENT_PROGRAM_ID = AgreementClient.constants.AGREEMENT_PROGRAM_ID;
+// The agreement program the ugt program replaced (blockchain-flows.md, R2). Its accounts and the land
+// events it attested stay as they are; parcel history keeps showing them (user, 2026-11-13: the
+// activity so far is not lost). Nothing writes under it any more.
+export const RETIRED_AGREEMENT_PROGRAM_ID = 'GtdgeRH89f2qLj4j4v6NcecWSr6RDPP9y4TMfPCGA5jQ';
 export const DEVNET_GENESIS_HASH = 'EtWTRABZaYq6iMfeYKouRu166VU2xqa1wcaWoxPkrZBG';
 
 // The clusters the index reads agreements on, by the name `onchain.cluster` records: devnet only, over

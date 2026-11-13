@@ -1,23 +1,29 @@
-// The agent's EVM record and anchor actions (docs/blockchain-flows.md, R3 "MCP parity"): list the
-// design and plan records of a chain's RecordRegistry, mint a design or plan record as the agent's
-// EVM wallet (UGT_AGENT_EVM_PRIVATE_KEY) after the IPFS courier made its content retrievable, and
-// anchor parcels in ParcelAnchor. The same adapter (frontend/js/chain/evm-adapter.js) and the same
+// The agent's record and anchor actions on a chain (docs/blockchain-flows.md, R2/R3 "MCP parity"):
+// list the design and plan records of a chain, mint a design or plan record as the agent's wallet on
+// it (UGT_AGENT_KEYPAIR on Solana, UGT_AGENT_EVM_PRIVATE_KEY on EVM) after the IPFS courier made its
+// content retrievable, and anchor parcels. The browser's adapters (frontend/js/chain/solana-adapter.js,
+// evm-adapter.js, bound by chain/adapters.js) and the same
 // courier order as the browser's mint checklist: every member design retrievable, then the plan,
 // then its record. The record's token metadata is the browser's: title, a short description, the
 // app link as external_url.
 import { canonicalBytes, cidOf } from '../cid.js';
-import { DEFAULT_CHAIN_ID, normalizeChainId, tokenMetadataOf, tokenUriOf } from '../chain/evm.js';
+import { tokenMetadataOf, tokenUriOf } from '../chain/evm.js';
+import { SOLANA_CHAIN_KEYS, normalizeChainKey } from '../chain/adapters.js';
 
 const failure = (code, message, extra = {}) => Object.assign(new Error(message), { code }, extra);
 
 /**
  * `requireLive(confirm)` gates every signed action; `index()` is the index client
  * (publication-client.js); `impl` supplies readAdapter, signingAdapter and ensureRetrievable
- * (chain/evm.js, chain/courier.js) and is where tests inject fakes.
+ * (chain/adapters.js, chain/courier.js) and is where tests inject fakes.
  */
 export function createMcpEvmRecordTools({ env, appOrigin, requireLive, index, impl, log }) {
     const adapterLog = line => process.stderr.write(`${line}\n`);
-    const chainOf = chainId => normalizeChainId(chainId || DEFAULT_CHAIN_ID);
+    const chainOf = chainId => {
+        const key = normalizeChainKey(chainId || SOLANA_CHAIN_KEYS[0]);
+        if (!key) throw failure('unknown-chain', `Not a supported chain: ${chainId}.`);
+        return key;
+    };
     const linkOf = (kind, cid) => `${appOrigin}/${kind}s/${cid}`;
 
     // The index row of `cid` with its content checked against the CID.

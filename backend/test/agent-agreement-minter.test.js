@@ -17,6 +17,7 @@ const Cid = require('../../frontend/js/cid.js');
 
 const CID = Cid.cidOfObject({ schema: 'agreement/v1', title: 'Six storeys on the corner lot' });
 const OTHER_CID = Cid.cidOfObject({ schema: 'agreement/v1', title: 'A counter-agreement' });
+const PLAN_CID = Cid.cidOfObject({ schema: 'plan/v1', title: 'The corner lot' });
 const T0 = Math.floor(Date.now() / 1000);
 const iso = seconds => new Date(seconds * 1000).toISOString();
 
@@ -25,7 +26,7 @@ let chain;
 let sponsor;
 let lens;
 const mint = (overrides = {}) => mintAgreement({
-    connection: chain.connection, sponsorKeypair: sponsor, cid: CID, lens: lens.publicKey.toBase58(),
+    connection: chain.connection, sponsorKeypair: sponsor, cid: CID, planCid: PLAN_CID, inputCount: 2, lens: lens.publicKey.toBase58(),
     deadline: iso(T0 + 7 * 86400), lamports: '5000000', sendAndConfirm: chain.sendAndConfirm, ...overrides
 });
 
@@ -60,7 +61,8 @@ describe('mintAgreement', () => {
         const state = await readAgreementAccount(chain.connection, { cid: CID, sponsor: sponsor.publicKey.toBase58() });
         expect(state).toMatchObject({
             cid: CID, authority: sponsor.publicKey.toBase58(), lens: lens.publicKey.toBase58(), payout: sponsor.publicKey.toBase58(),
-            deadline: T0 + 7 * 86400, requiredLamports: 5000000n, escrowLamports: 5000000n, status: 'Active', decision: 'Pending', openGround: false
+            deadline: T0 + 7 * 86400, requiredLamports: 5000000n, escrowLamports: 5000000n, status: 'Active', decision: 'Pending', openGround: false,
+            planCidHash: agreementClient.cidSeed(PLAN_CID).reduce((hex, byte) => hex + byte.toString(16).padStart(2, '0'), ''), inputCount: 2
         });
     });
 
@@ -110,6 +112,11 @@ describe('mintAgreement', () => {
         });
         await expect(mint({ cid: OTHER_CID })).rejects.toThrow(/is Cancelled; its escrow can no longer be funded/);
         expect(chain.signed()).toHaveLength(1);
+    });
+
+    it('refuses to create without the plan\'s CID, signing nothing', async () => {
+        await expect(mint({ planCid: undefined })).rejects.toThrow(/cid must be 1-64 ASCII letters and digits/);
+        expect(chain.transactions).toHaveLength(0);
     });
 
     it('refuses a sponsor that names itself as the lens', async () => {

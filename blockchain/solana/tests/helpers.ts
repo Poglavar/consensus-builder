@@ -1,37 +1,6 @@
+// Localnet helpers shared by the program suites.
 import * as anchor from "@coral-xyz/anchor";
-import { PublicKey, SystemProgram } from "@solana/web3.js";
-import { createHash } from "crypto";
-
-/** proposal_nft v3 `site_hash` for a proposal without a site (every v1/v2-style mint). */
-export const NO_SITE: number[] = Array(32).fill(0);
-
-/** A stand-in v3 `site_hash`: any non-zero 32 bytes; the program never interprets them. */
-export function testSiteHash(label: string): number[] {
-    return Array.from(createHash("sha256").update(`site:${label}`).digest());
-}
-
-export function findProposalCounterPDA(programId: PublicKey): [PublicKey, number] {
-    return PublicKey.findProgramAddressSync(
-        [Buffer.from("proposal_counter")],
-        programId
-    );
-}
-
-export function findProposalPDA(programId: PublicKey, count: number): [PublicKey, number] {
-    const buf = Buffer.alloc(8);
-    buf.writeBigUInt64LE(BigInt(count));
-    return PublicKey.findProgramAddressSync(
-        [Buffer.from("proposal"), buf],
-        programId
-    );
-}
-
-export function findParcelPDA(programId: PublicKey, parcelId: string): [PublicKey, number] {
-    return PublicKey.findProgramAddressSync(
-        [Buffer.from("parcel"), Buffer.from(parcelId)],
-        programId
-    );
-}
+import { PublicKey } from "@solana/web3.js";
 
 export async function airdrop(
     connection: anchor.web3.Connection,
@@ -41,23 +10,4 @@ export async function airdrop(
     const sig = await connection.requestAirdrop(pubkey, lamports);
     const latestBlockhash = await connection.getLatestBlockhash();
     await connection.confirmTransaction({ signature: sig, ...latestBlockhash });
-}
-
-export async function initializeProposalCounter(
-    program: anchor.Program,
-    authority: anchor.web3.Keypair
-): Promise<PublicKey> {
-    const [counterPDA] = findProposalCounterPDA(program.programId);
-
-    await program.methods
-        .initialize()
-        .accounts({
-            proposalCounter: counterPDA,
-            authority: authority.publicKey,
-            systemProgram: SystemProgram.programId,
-        } as any)
-        .signers([authority])
-        .rpc();
-
-    return counterPDA;
 }

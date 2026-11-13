@@ -1,6 +1,6 @@
 // mint-checklist.js — the one mint dialog for designs, plans and agreements (blockchain-flows.md,
-// Flow 3): each step shown with its state, run in order on one chain adapter (chain/evm-adapter.js,
-// the Solana one when it lands): the content retrievable from IPFS (chain/ipfs-courier.js), every
+// Flow 3): each step shown with its state, run in order on one chain adapter (chain/evm-adapter.js or
+// chain/solana-adapter.js): the content retrievable from IPFS (chain/ipfs-courier.js), every
 // input parcel anchored, the record minted. A failed step stops the run and Retry resumes at it;
 // what is done stays done, so a refused signature costs nothing. window.MintChecklist.
 (function (root, factory) {
@@ -71,7 +71,7 @@
                     return minted;
                 }
                 const existing = await adapter.recordOf(subject);
-                if (existing) { report(t('mint.status.alreadyMinted', { minter: shortKey(existing.minter) }), { address: adapter.addresses.RecordRegistry }); return { record: existing, txHash: null }; }
+                if (existing) { report(t('mint.status.alreadyMinted', { minter: shortKey(existing.minter) }), { address: existing.address || adapter.addresses.RecordRegistry }); return { record: existing, txHash: null }; }
                 report(t('mint.status.minting'));
                 const minted = await adapter.mintRecord(kind, subject, spec.tokenUri);
                 report(t('mint.status.minted', { minter: shortKey(minted.record.minter) }), { tx: minted.txHash });

@@ -1,5 +1,5 @@
 // proposal_pledge: funded refundable donations plus revocable, unfunded commitments for agreements
-// (Agreement accounts of the agreement program, read by agreement::read_agreement_view: owner,
+// (Agreement accounts of the agreement program, read by ugt::read_agreement_view: owner,
 // discriminator, status at offset 136; proposal_nft is not read at all). The agreement's lifecycle
 // is authoritative and its authority (the sponsor) is captured as the beneficiary, so callers
 // cannot redirect settlement. The program keeps its name and id, and its accounts and fields keep
@@ -13,11 +13,11 @@ use anchor_spl::token::{self, Mint, Token, TokenAccount, Transfer};
 declare_id!("1jESRS3mJiPUJTtmQ5ncyBhGNmGeXTpUqPyJcTYrp6g");
 
 pub const DEVNET_USDC_MINT: Pubkey = pubkey!("4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU");
-/// agreement::AgreementStatus codes, the status byte donations and pledges read.
-pub const STATUS_ACTIVE: u8 = agreement::AgreementStatus::Active as u8;
-pub const STATUS_EXECUTED: u8 = agreement::AgreementStatus::Executed as u8;
-pub const STATUS_CANCELLED: u8 = agreement::AgreementStatus::Cancelled as u8;
-pub const STATUS_EXPIRED: u8 = agreement::AgreementStatus::Expired as u8;
+/// ugt::AgreementStatus codes, the status byte donations and pledges read.
+pub const STATUS_ACTIVE: u8 = ugt::AgreementStatus::Active as u8;
+pub const STATUS_EXECUTED: u8 = ugt::AgreementStatus::Executed as u8;
+pub const STATUS_CANCELLED: u8 = ugt::AgreementStatus::Cancelled as u8;
+pub const STATUS_EXPIRED: u8 = ugt::AgreementStatus::Expired as u8;
 pub const COMMITMENT_ACTIVE: u8 = 0;
 pub const COMMITMENT_FULFILLED: u8 = 1;
 pub const COMMITMENT_REVOKED: u8 = 2;
@@ -238,14 +238,14 @@ fn sub(left: u64, right: u64) -> Result<u64> {
     left.checked_sub(right).ok_or_else(|| error!(SupportError::MathOverflow))
 }
 
-/// Read `subject` as an Agreement of the agreement program (agreement::read_agreement_view checks
+/// Read `subject` as an Agreement of the agreement program (ugt::read_agreement_view checks
 /// owner, discriminator and layout) and, when `expected` is given, require it to be the escrow's or
 /// book's own. Returns the beneficiary (the agreement's authority, the sponsor) and the status byte.
 fn read_subject(subject: &AccountInfo, expected: Option<&Pubkey>) -> Result<(Pubkey, u8)> {
     if let Some(expected_key) = expected {
         require_keys_eq!(subject.key(), *expected_key, SupportError::InvalidProposalAccount);
     }
-    let view = agreement::read_agreement_view(subject).ok_or_else(|| error!(SupportError::InvalidProposalAccount))?;
+    let view = ugt::read_agreement_view(subject).ok_or_else(|| error!(SupportError::InvalidProposalAccount))?;
     Ok((view.authority, view.status))
 }
 

@@ -1,6 +1,6 @@
-// The agreement program's Agreement account as its Rust source declares it
-// (blockchain/solana/programs/agreement/src/lib.rs): the struct's fields in order, their borsh byte
-// offsets after the 8-byte discriminator, the constants agreement::read_agreement_view reads with, the
+// The ugt program's Agreement account as its Rust source declares it
+// (blockchain/solana/programs/ugt/src/agreement.rs; the program id from src/lib.rs): the struct's fields in order, their borsh byte
+// offsets after the 8-byte discriminator, the constants ugt::read_agreement_view reads with, the
 // status codes and the program id. The proposal_market and proposal_pledge layout tests pin those
 // programs' reads, the IDL, the JS codec and the test encoder to it, so a field moved in one place and
 // not the others fails.
@@ -50,6 +50,7 @@ function fieldSize(type, unitEnums) {
     if (type === 'Pubkey') return 32;
     if (type === 'i64' || type === 'u64') return 8;
     if (type === 'bool' || type === 'u8' || unitEnums.includes(type)) return 1;
+    if (type === 'u16') return 2;
     const array = type.match(/^\[u8; (\d+)\]$/);
     if (array) return Number(array[1]);
     if (type === 'String') return null;
@@ -58,7 +59,7 @@ function fieldSize(type, unitEnums) {
 
 /** The Agreement account per the agreement program's source. */
 export function agreementRustLayout() {
-    const source = readSolana('programs/agreement/src/lib.rs');
+    const source = readSolana('programs/ugt/src/agreement.rs');
     const fields = rustStructFields(source, 'pub struct Agreement {');
     // Unit enums are one borsh byte (their variant index).
     const unitEnums = ['AgreementStatus', 'Decision'];
@@ -78,6 +79,6 @@ export function agreementRustLayout() {
         STATUS_OFFSET: rustUsizeConst(source, 'STATUS_OFFSET'),
         statusCodes: rustEnumCodes(source, 'AgreementStatus'),
         decisionCodes: rustEnumCodes(source, 'Decision'),
-        programId: source.match(/declare_id!\("([1-9A-HJ-NP-Za-km-z]+)"\)/)[1]
+        programId: readSolana('programs/ugt/src/lib.rs').match(/declare_id!\("([1-9A-HJ-NP-Za-km-z]+)"\)/)[1]
     };
 }

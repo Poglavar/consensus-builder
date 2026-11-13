@@ -1,5 +1,6 @@
-// Localnet suite for the agreement program (programs/agreement/README.md): create with its argument
-// checks, the README's account offsets and the sponsor-in-seeds address; fund; attest with the lens's
+// Localnet suite for the ugt program's agreements (programs/ugt/README.md): create with its argument
+// checks, the README's account offsets (plan CID hash and input count included) and the
+// sponsor-in-seeds address; the agreements of one plan found by a memcmp; fund; attest with the lens's
 // AgreementDecision-v1 SAS attestation and every attestation it must refuse (WrongSponsor,
 // InvalidDecision, WrongLens, WrongAgreement, credential, schema, expiry, payload); execute; cancel;
 // expire; and the escrow moved exactly once by each terminal step.
@@ -40,11 +41,11 @@ import {
 const SOL = anchor.web3.LAMPORTS_PER_SOL;
 const ZERO_KEY = PublicKey.default.toBase58();
 
-describe("agreement", () => {
+describe("ugt: agreements", () => {
     const provider = anchor.AnchorProvider.env();
     anchor.setProvider(provider);
 
-    const program = anchor.workspace.Agreement as Program;
+    const program = anchor.workspace.Ugt as Program;
     const connection = provider.connection;
 
     // sponsor: publishes and mints the agreements below (their authority); stranger: any other wallet.
@@ -129,10 +130,10 @@ describe("agreement", () => {
     }
 
     /** create() sent directly, for the argument checks: `agreement` defaults to PDA(signer, cid). */
-    function sendCreate(a: { cid: string; signer?: Keypair; agreement?: PublicKey; lens?: PublicKey; deadline?: number; payout?: PublicKey }) {
+    function sendCreate(a: { cid: string; planCid?: string; signer?: Keypair; agreement?: PublicKey; lens?: PublicKey; deadline?: number; payout?: PublicKey }) {
         const signer = a.signer ?? sponsor;
         return program.methods
-            .create(a.cid, a.lens ?? lens.publicKey, new anchor.BN(a.deadline ?? 0), false, new anchor.BN(0), a.payout ?? signer.publicKey)
+            .create(a.cid, a.planCid ?? testCid("plan"), 0, a.lens ?? lens.publicKey, new anchor.BN(a.deadline ?? 0), false, new anchor.BN(0), a.payout ?? signer.publicKey)
             .accountsStrict({
                 agreement: a.agreement ?? findAgreementPda(program.programId, signer.publicKey, a.cid),
                 authority: signer.publicKey,
@@ -155,7 +156,7 @@ describe("agreement", () => {
             const before = await balance(sponsor.publicKey);
             createdDeadline = (await chainNow(connection)) + 3600;
             created = await createAgreement(program, {
-                sponsor, lens: lens.publicKey, deadline: createdDeadline, openGround: true, requiredLamports: SOL / 2, payout,
+                sponsor, lens: lens.publicKey, deadline: createdDeadline, openGround: true, requiredLamports: SOL / 2, payout, inputCount: 3,
             });
 
             // The address, derived here independently of the helper.
@@ -182,6 +183,8 @@ describe("agreement", () => {
             expect([num(account.decisionAttestedAt), num(account.decisionObservedAt), num(account.executedAt)]).to.deep.equal([0, 0, 0]);
             expect(account.decisionAttestation.toBase58()).to.equal(ZERO_KEY);
             expect(Buffer.from(account.decisionHash).equals(Buffer.alloc(32))).to.be.true;
+            expect(Buffer.from(account.planCidHash).equals(createHash("sha256").update(created.planCid, "utf8").digest())).to.be.true;
+            expect(account.inputCount).to.equal(3);
             expect(account.bump).to.equal(bump);
             expect(account.cid).to.equal(created.cid);
 
@@ -196,6 +199,8 @@ describe("agreement", () => {
             expect(data[OFFSET.status]).to.equal(STATUS.active);
             expect(data[OFFSET.openGround]).to.equal(1);
             expect(data[OFFSET.decision]).to.equal(0);
+            expect(data.subarray(OFFSET.planCidHash, OFFSET.planCidHash + 32).equals(createHash("sha256").update(created.planCid, "utf8").digest())).to.be.true;
+            expect(data.readUInt16LE(OFFSET.inputCount)).to.equal(3);
             expect(data[OFFSET.bump]).to.equal(bump);
             expect(data.readUInt32LE(OFFSET.cid)).to.equal(created.cid.length);
             expect(data.subarray(OFFSET.cid + 4, OFFSET.cid + 4 + created.cid.length).toString("utf8")).to.equal(created.cid);
@@ -209,6 +214,29 @@ describe("agreement", () => {
             expect([num(event.deadline), num(event.requiredLamports), num(event.createdAt)])
                 .to.deep.equal([createdDeadline, SOL / 2, num(account.createdAt)]);
             expect(event.openGround).to.be.true;
+            expect(event.planCid).to.equal(created.planCid);
+            expect(event.inputCount).to.equal(3);
+        });
+
+        it("finds the agreements of one plan with a memcmp on the plan CID hash", async () => {
+            const planCid = testCid("shared-plan");
+            const first = await createAgreement(program, { sponsor, lens: lens.publicKey, planCid });
+            const second = await createAgreement(program, { sponsor: stranger, lens: lens.publicKey, planCid });
+            const found = await connection.getProgramAccounts(program.programId, {
+                filters: [
+                    { dataSize: AGREEMENT_ACCOUNT_SIZE },
+                    { memcmp: { offset: OFFSET.planCidHash, bytes: anchor.utils.bytes.bs58.encode(createHash("sha256").update(planCid, "utf8").digest()) } },
+                ],
+            });
+            expect(found.map(row => row.pubkey.toBase58()).sort()).to.deep.equal([first.agreement.toBase58(), second.agreement.toBase58()].sort());
+        });
+
+        it("refuses a plan CID that is not 1-64 ASCII letters and digits", async () => {
+            const cid = testCid("bad-plan");
+            await expectFailure(() => sendCreate({ cid, planCid: "" }), "InvalidCid");
+            await expectFailure(() => sendCreate({ cid, planCid: "bafk-rei" }), "InvalidCid");
+            await expectFailure(() => sendCreate({ cid, planCid: "a".repeat(65) }), "CidTooLong");
+            expect(await connection.getAccountInfo(findAgreementPda(program.programId, sponsor.publicKey, cid))).to.be.null;
         });
 
         it("refuses a second create of the same sponsor and CID", async () => {

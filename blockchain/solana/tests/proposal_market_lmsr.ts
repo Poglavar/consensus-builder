@@ -67,7 +67,7 @@ describe("proposal_market LMSR", () => {
     anchor.setProvider(provider);
 
     const program = anchor.workspace.ProposalMarket as Program;
-    const agreementProgram = anchor.workspace.Agreement as Program;
+    const agreementProgram = anchor.workspace.Ugt as Program;
 
     const payer = (provider.wallet as any).payer as Keypair;
 

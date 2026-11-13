@@ -14,14 +14,14 @@ import { Keypair, PublicKey } from '@solana/web3.js';
 import { createMockPool } from './helpers/mock-pool.js';
 import { cidOf } from './helpers/content-fixtures.js';
 import { agreementAccountBytes, agreementAccountInfo } from './fixtures/agreement-account.js';
-import { AGREEMENT_PROGRAM_ID, AgreementClient, DEVNET_GENESIS_HASH, agreementAccountOf, createAgreementChain } from '../agreements/onchain.js';
+import { AGREEMENT_PROGRAM_ID, AgreementClient, DEVNET_GENESIS_HASH, RETIRED_AGREEMENT_PROGRAM_ID, agreementAccountOf, createAgreementChain } from '../agreements/onchain.js';
 import {
     AGREEMENT_EXECUTED_EVENT_TYPE, AGREEMENT_LIFECYCLE_EVENT_TYPE, LAND_EVENT_COLUMNS, TERMINAL_SEARCH_LIMIT,
     buildAgreementEvents, decodeTerminalEvent, findTerminalTransaction, landEventParams, programDataLogs, syncAgreementLifecycle
 } from '../oracle/agreement-lifecycle.js';
 
 const BACKEND = fileURLToPath(new URL('..', import.meta.url));
-const IDL = JSON.parse(fs.readFileSync(new URL('../../blockchain/solana/idl/agreement.json', import.meta.url), 'utf8'));
+const IDL = JSON.parse(fs.readFileSync(new URL('../../blockchain/solana/idl/ugt.json', import.meta.url), 'utf8'));
 
 const keyFrom = seed => Keypair.fromSeed(Uint8Array.from({ length: 32 }, (_, index) => (index * 11 + seed) % 256)).publicKey.toBase58();
 const SPONSOR = keyFrom(1);
@@ -236,8 +236,8 @@ function indexFake(agreements) {
     const pool = createMockPool();
     const rows = new Map(agreements.map(agreement => [agreement.cid, structuredClone(agreement)]));
     const events = new Map();
-    pool.answer(/FROM consensus\.agreement\s+WHERE onchain->>'chain' = 'solana' AND onchain->>'cluster' = \$1/, (sql, params) => ({
-        rows: [...rows.values()].filter(row => row.onchain?.cluster === params[0]).map(row => ({
+    pool.answer(/FROM consensus\.agreement\s+WHERE onchain->>'chain' = 'solana' AND onchain->>'cluster' = \$1 AND onchain->>'programId' = \$2/, (sql, params) => ({
+        rows: [...rows.values()].filter(row => row.onchain?.cluster === params[0] && row.onchain?.programId === params[1]).map(row => ({
             cid: row.cid, sponsor: row.sponsor, input_parcel_ids: row.inputParcelIds, parcel_source_id: row.parcelSourceId ?? null, onchain: structuredClone(row.onchain)
         }))
     }));
@@ -304,7 +304,9 @@ function threeAgreements() {
         { cid: CID_A, sponsor: SPONSOR, inputParcelIds: ['HR-1/1', 'HR-1/2'], parcelSourceId: 'hr-cadastre', onchain: storedOnchain(ACC_A) },
         { cid: CID_B, sponsor: SPONSOR, inputParcelIds: ['HR-3/1'], onchain: storedOnchain(ACC_B) },
         { cid: CID_C, sponsor: SPONSOR, inputParcelIds: ['HR-2/1'], onchain: storedOnchain(ACC_C) },
-        { cid: agreementCid('unminted'), sponsor: SPONSOR, inputParcelIds: ['HR-9/1'], onchain: null }
+        { cid: agreementCid('unminted'), sponsor: SPONSOR, inputParcelIds: ['HR-9/1'], onchain: null },
+        // Minted under the retired agreement program: it keeps the state last observed, never read.
+        { cid: agreementCid('retired'), sponsor: SPONSOR, inputParcelIds: ['HR-8/1'], onchain: storedOnchain(keyFrom(9), { programId: RETIRED_AGREEMENT_PROGRAM_ID }) }
     ]);
     const forged = executedEvent({ agreement: ACC_A, cid: CID_A });
     const fake = chainFake({
@@ -343,6 +345,8 @@ describe('syncAgreementLifecycle', () => {
         ]);
         expect(result.events.every(event => event.source.transaction === (event.subjectId === ACC_C ? 'C-cancel' : 'A-exec'))).toBe(true);
         expect(index.writes()).toEqual([]);
+        const [select] = index.pool.getCalls().filter(call => /FROM consensus\.agreement/.test(call.sql));
+        expect(select.params).toEqual(['devnet', AGREEMENT_PROGRAM_ID]);
         expect(lines[0]).toMatch(/3 minted agreement\(s\) on devnet \(dry run: nothing is written\)/);
         expect(lines.some(line => line.startsWith('progress 3/3'))).toBe(true);
     });

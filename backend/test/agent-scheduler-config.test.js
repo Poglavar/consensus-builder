@@ -195,7 +195,7 @@ describe('algorithmic agent schedule', () => {
             autorestart: false,
             cron_restart: '*/15 * * * *',
             merge_logs: true,
-            env: { CHAIN_RECORDS_RUN_STATS: path.join(backendLogs, 'chain-records-stats.json') }
+            env: { CHAIN_RECORDS_RUN_STATS: path.join(backendLogs, 'chain-records-stats.json'), SOLANA_RPC_MIN_INTERVAL_MS: '1000' }
         });
         expect(fs.existsSync(new URL(`../${watcher.script}`, import.meta.url))).toBe(true);
         const source = fs.readFileSync(new URL('../oracle/chain-records-job.mjs', import.meta.url), 'utf8');
@@ -259,8 +259,8 @@ describe('algorithmic agent schedule', () => {
 
 describe('scheduled agent RPC pacing', () => {
     it('paces every scheduled agent job to one RPC request per second and leaves the lens services unpaced', () => {
-        // The chain watcher and the oracle's EVM pass read EVM chains only, so they have no Solana RPC to pace.
-        const evmOnly = ['consensus-builder-chain-records', 'consensus-builder-land-oracle-evm'];
+        // The oracle's EVM pass reads an EVM chain only, so it has no Solana RPC to pace.
+        const evmOnly = ['consensus-builder-land-oracle-evm'];
         const scheduled = apps.filter(app => app.cron_restart && !evmOnly.includes(app.name));
         expect(scheduled.length).toBeGreaterThanOrEqual(12);
         for (const name of evmOnly) expect(apps.find(app => app.name === name).env, name).not.toHaveProperty('SOLANA_RPC_MIN_INTERVAL_MS');

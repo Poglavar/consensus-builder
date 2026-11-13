@@ -251,8 +251,8 @@ module.exports = {
     time: true
   }, {
     // The chain watcher (docs/blockchain-flows.md): every 15 minutes one applied pass of
-    // oracle/chain-records-job.mjs imports the design and plan records minted on the watched EVM
-    // chains (EVM_WATCH_CHAIN_IDS, default 84532) once their content is fetched from public IPFS and
+    // oracle/chain-records-job.mjs imports the design and plan records minted on the watched chains
+    // (CHAIN_WATCH_KEYS, default solana-devnet,84532) once their content is fetched from public IPFS and
     // verified. Idempotent: an indexed CID is never written again.
     name: 'consensus-builder-chain-records',
     script: 'oracle/chain-records-job.mjs',
@@ -266,8 +266,10 @@ module.exports = {
     env: {
       NODE_ENV: 'production',
       // The run-stats artifact of every applied pass.
-      CHAIN_RECORDS_RUN_STATS: path.join(BACKEND_ROOT, 'logs', 'chain-records-stats.json')
-      // Chain reads use EVM_RPC_URL_<chainId> from backend/.env, else the public RPC.
+      CHAIN_RECORDS_RUN_STATS: path.join(BACKEND_ROOT, 'logs', 'chain-records-stats.json'),
+      // Solana reads are paced like every scheduled job's; chain reads use SOLANA_RPC_URL and
+      // EVM_RPC_URL_<chainId> from backend/.env, else the public RPCs.
+      SOLANA_RPC_MIN_INTERVAL_MS: jobEnv.SOLANA_RPC_MIN_INTERVAL_MS
     },
     error_file: path.join(BACKEND_ROOT, 'logs', 'chain-records-error.log'),
     out_file: path.join(BACKEND_ROOT, 'logs', 'chain-records.log'),

@@ -222,7 +222,7 @@ async function walletVendorsLoaded(page: Page): Promise<void> {
 /**
  * The Solana parcel-anchor mint (solana/parcel-mint.js) against a local RPC boundary: the
  * connection answers the blockhash, send and confirmation, the wallet signs, the loader resolves the
- * ParcelNFT program and reports the anchor's mint status (minted already when `alreadyMinted`).
+ * ugt program ('Ugt') and reports the anchor's mint status (minted already when `alreadyMinted`).
  * Instruction building and the mint flow itself stay on their production paths.
  */
 export async function stubSolanaParcelMint(page: Page, options: MockSolanaParcelMintOptions = {}): Promise<void> {
@@ -243,7 +243,7 @@ export async function stubSolanaParcelMint(page: Page, options: MockSolanaParcel
     };
 
     const signature = stubOptions.signature || '5N2o4X1mockSignature';
-    const parcelProgramId = stubOptions.parcelProgramId || '4zadC1FgWPQLv6qv66mjEBthBqTvrmxL5oDcHQzNtkV1';
+    const parcelProgramId = stubOptions.parcelProgramId || '95sjeTXUYG721iZK29s3kr7Dq4eFqv6PFoEmPYJDtkp9';
     const connection = {
       getLatestBlockhash: async () => ({
         blockhash: 'EkSnNWid2cvwEVnVx9aBqpiCpY1QoUW63D2Hp31e4gwJ',
@@ -273,7 +273,7 @@ export async function stubSolanaParcelMint(page: Page, options: MockSolanaParcel
 
     globalWindow.SolanaChainDataLoader.getConnection = () => connection;
     globalWindow.SolanaChainDataLoader.resolveProgramAddress = async (_chainKey: string, contractName: string) => (
-      contractName === 'ParcelNFT' ? parcelProgramId : null
+      contractName === 'Ugt' ? parcelProgramId : null
     );
     globalWindow.SolanaChainDataLoader.getParcelMintStatus = async () => ({
       minted: Boolean(stubOptions.alreadyMinted),

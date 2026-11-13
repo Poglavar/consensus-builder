@@ -5,7 +5,8 @@ import { describe, expect, it } from 'vitest';
 import { PublicKey } from '@solana/web3.js';
 import { buildAddressBook } from '../solana/address-book.js';
 import { loadIdls, decodeParsedTransaction, decodeBase58, encodeBase58 } from '../solana/tx-decoder.js';
-import { AGREEMENT_PROGRAM_ID, AgreementClient } from '../agreements/onchain.js';
+import { createRequire } from 'module';
+import { AGREEMENT_PROGRAM_ID, AgreementClient, RETIRED_AGREEMENT_PROGRAM_ID } from '../agreements/onchain.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -45,7 +46,7 @@ function decode(rpcTx) {
     return decodeParsedTransaction(rpcTx, { book, idls });
 }
 
-// `name` is a current IDL (`agreement`) or a legacy one under idl/legacy (`legacy/proposal_market.v1`).
+// `name` is a current IDL (`ugt`) or a legacy one under idl/legacy (`legacy/proposal_market.v1`).
 function rawIdl(name) {
     return JSON.parse(fs.readFileSync(path.join(IDL_DIR, `${name}.json`), 'utf8'));
 }
@@ -196,13 +197,14 @@ describe('base58 helpers', () => {
 });
 
 describe('loadIdls', () => {
-    it('indexes the app programs by address and by name: the agreement program, not proposal_nft (M3)', () => {
-        expect([...idls.byName.keys()].sort()).toEqual(['agreement', 'parcel_nft', 'proposal_market', 'proposal_pledge']);
-        expect(idls.byAddress.get(AGREEMENT_PROGRAM_ID).name).toBe('agreement');
+    it('indexes the app programs by address and by name: the ugt program, not the programs it replaced (R2)', () => {
+        expect([...idls.byName.keys()].sort()).toEqual(['proposal_market', 'proposal_pledge', 'ugt']);
+        expect(idls.byAddress.get(AGREEMENT_PROGRAM_ID).name).toBe('ugt');
         expect(idls.byAddress.get(MARKET_PROGRAM).name).toBe('proposal_market');
-        expect(idls.byAddress.get('4zadC1FgWPQLv6qv66mjEBthBqTvrmxL5oDcHQzNtkV1').name).toBe('parcel_nft');
-        // Designs are not minted: the proposal program's instructions are no longer decoded.
-        expect(idls.byAddress.has(PROPOSAL_PROGRAM)).toBe(false);
+        // proposal_nft (M3), parcel_nft and the agreement program (R2) are retired: no IDL decodes them.
+        for (const retired of [PROPOSAL_PROGRAM, '4zadC1FgWPQLv6qv66mjEBthBqTvrmxL5oDcHQzNtkV1', RETIRED_AGREEMENT_PROGRAM_ID]) {
+            expect(idls.byAddress.has(retired), retired).toBe(false);
+        }
     });
 
     it('indexes instructions by their discriminator hex with account names in order', () => {
@@ -352,9 +354,10 @@ describe('decodeParsedTransaction: a proposal_nft transaction from devnet histor
     });
 });
 
-// --- agreement program (not deployed yet, so built with the codec the browser and agents sign with) --
+// --- the ugt program's agreements (built with the codec the browser and agents sign with) ----------
 
 const AGREEMENT_CID = 'bafkreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku';
+const PLAN_CID = 'bafkreiexxjscqvxx53b3dts2uxslfuu7zlro7te4ztjyx5yi5xt4qwbkwi';
 const SPONSOR = PERSONA_WALLET;
 const keyOf = (byte) => new PublicKey(Uint8Array.from({ length: 32 }, () => byte)).toBase58();
 const LENS = keyOf(19);
@@ -386,17 +389,18 @@ describe('decodeParsedTransaction: agreement instructions (built with the codec)
 
     it('decodes create with every argument and the PDA of its sponsor and CID', () => {
         const { agreement, instruction } = AgreementClient.buildCreateIx({
-            authority: SPONSOR, cid: AGREEMENT_CID, lens: LENS, deadline: 1795000000, openGround: true,
+            authority: SPONSOR, cid: AGREEMENT_CID, planCid: PLAN_CID, inputCount: 3, lens: LENS, deadline: 1795000000, openGround: true,
             requiredLamports: 50_000_000n, payout: TREASURY
         });
         expect(agreement.toBase58()).toBe(AGREEMENT_ACCOUNT);
         const decoded = decode(agreementTx(instruction));
         const ix = decoded.instructions[0];
-        expect(ix.program).toMatchObject({ address: AGREEMENT_PROGRAM_ID, label: 'agreement program', name: 'agreement' });
-        expect(ix.discriminator).toBe(idlDiscriminatorHex('agreement', 'create'));
+        expect(ix.program).toMatchObject({ address: AGREEMENT_PROGRAM_ID, label: 'ugt program', name: 'ugt' });
+        expect(ix.discriminator).toBe(idlDiscriminatorHex('ugt', 'create'));
         expect(ix).toMatchObject({ action: 'create', idlVersion: 'v1' });
         expect(ix.args).toEqual({
-            cid: AGREEMENT_CID, lens: LENS, deadline: '1795000000', open_ground: true, required_lamports: '50000000', payout: TREASURY
+            cid: AGREEMENT_CID, plan_cid: PLAN_CID, input_count: 3, lens: LENS, deadline: '1795000000', open_ground: true,
+            required_lamports: '50000000', payout: TREASURY
         });
         expect(ix.argsError).toBeUndefined();
         expect(ix.accountsWarning).toBeUndefined();
@@ -405,15 +409,15 @@ describe('decodeParsedTransaction: agreement instructions (built with the codec)
             ['authority', SPONSOR, true, true],
             ['system_program', SYSTEM_PROGRAM, false, false]
         ]);
-        expect(decoded.programs).toEqual(['agreement']);
+        expect(decoded.programs).toEqual(['ugt']);
         expect(decoded.actions).toEqual(['create']);
-        expect(decoded.summary).toBe('agent densifier-01 called create on agreement');
+        expect(decoded.summary).toBe('agent densifier-01 called create on ugt');
     });
 
     it('decodes a create with no deadline and no escrow as zeros', () => {
-        const { instruction } = AgreementClient.buildCreateIx({ authority: SPONSOR, cid: AGREEMENT_CID, lens: LENS, payout: SPONSOR });
+        const { instruction } = AgreementClient.buildCreateIx({ authority: SPONSOR, cid: AGREEMENT_CID, planCid: PLAN_CID, lens: LENS, payout: SPONSOR });
         expect(decode(agreementTx(instruction)).instructions[0].args)
-            .toMatchObject({ deadline: '0', open_ground: false, required_lamports: '0', payout: SPONSOR });
+            .toMatchObject({ input_count: 0, deadline: '0', open_ground: false, required_lamports: '0', payout: SPONSOR });
     });
 
     it('decodes fund with its lamports, signed by the sponsor', () => {
@@ -434,7 +438,7 @@ describe('decodeParsedTransaction: agreement instructions (built with the codec)
             ['attestation', ATTESTATION, false, false],
             ['credential', CREDENTIAL, false, false]
         ]);
-        expect(attest.summary).toBe('treasury wallet called attest on agreement');
+        expect(attest.summary).toBe('treasury wallet called attest on ugt');
 
         const execute = decode(agreementTx(AgreementClient.buildExecuteIx({ agreement: AGREEMENT_ACCOUNT, payout: SPONSOR }), TREASURY));
         expect(execute.instructions[0]).toMatchObject({ action: 'execute', args: {} });
@@ -449,11 +453,11 @@ describe('decodeParsedTransaction: agreement instructions (built with the codec)
         const expire = decode(agreementTx(AgreementClient.buildExpireIx({ cid: AGREEMENT_CID, authority: SPONSOR }), TREASURY));
         expect(expire.instructions[0].action).toBe('expire');
         expect(roles(expire)).toEqual([['agreement', AGREEMENT_ACCOUNT, false, true], ['authority', SPONSOR, false, true]]);
-        expect(expire.summary).toBe('treasury wallet called expire on agreement');
+        expect(expire.summary).toBe('treasury wallet called expire on ugt');
     });
 
     it('reports a create cut short as undecodable args, never half of them', () => {
-        const { instruction } = AgreementClient.buildCreateIx({ authority: SPONSOR, cid: AGREEMENT_CID, lens: LENS, payout: TREASURY });
+        const { instruction } = AgreementClient.buildCreateIx({ authority: SPONSOR, cid: AGREEMENT_CID, planCid: PLAN_CID, lens: LENS, payout: TREASURY });
         const tx = agreementTx(instruction);
         tx.transaction.message.instructions[0].data = encodeBase58(Buffer.from(instruction.data).subarray(0, 30));
         const ix = decode(tx).instructions[0];
@@ -463,12 +467,44 @@ describe('decodeParsedTransaction: agreement instructions (built with the codec)
     });
 });
 
+// --- the ugt program's parcel anchors and records (built with its codec) ---------------------------
+
+const requireCjs = createRequire(import.meta.url);
+// The codec resolves web3 relative to frontend/js/solana, where the package is not installed.
+const UgtClient = requireCjs('../../frontend/js/solana/ugt-client.js').configure({ web3: requireCjs('@solana/web3.js') });
+
+describe('decodeParsedTransaction: ugt parcel anchors and records (built with the codec)', () => {
+    it('decodes anchor_parcels and says which parcels were anchored, by whom', () => {
+        const one = UgtClient.buildAnchorParcelsIx({ parcelIds: ['HR-1/1'], metadataUris: ['https://app.example.test/parcels/HR-1/1'], payer: SPONSOR });
+        const decoded = decode(agreementTx(one.instruction));
+        const ix = decoded.instructions[0];
+        expect(ix.program).toMatchObject({ address: AGREEMENT_PROGRAM_ID, label: 'ugt program', name: 'ugt' });
+        expect(ix.discriminator).toBe(idlDiscriminatorHex('ugt', 'anchor_parcels'));
+        expect(ix.args).toEqual({ parcel_ids: ['HR-1/1'], metadata_uris: ['https://app.example.test/parcels/HR-1/1'] });
+        expect(ix.accounts.slice(0, 2).map((account) => [account.role, account.address])).toEqual([['payer', SPONSOR], ['system_program', SYSTEM_PROGRAM]]);
+        expect(ix.accounts[2].address).toBe(one.parcels[0].toBase58());
+        expect(decoded.summary).toBe('agent densifier-01 anchored parcel HR-1/1');
+
+        const two = UgtClient.buildAnchorParcelsIx({ parcelIds: ['HR-1/1', 'HR-1/2'], metadataUris: ['https://a.test/1', 'https://a.test/2'], payer: TREASURY });
+        expect(decode(agreementTx(two.instruction, TREASURY)).summary).toBe('treasury wallet anchored 2 parcels');
+    });
+
+    it('decodes create_record and names the design or plan recorded', () => {
+        const design = UgtClient.buildCreateRecordIx({ kind: 'design', cid: AGREEMENT_CID, name: 'A design', uri: 'https://app.example.test/designs/x', minter: SPONSOR });
+        const decoded = decode(agreementTx(design.instruction));
+        expect(decoded.instructions[0]).toMatchObject({ action: 'create_record', args: { kind: 1, cid: AGREEMENT_CID } });
+        expect(decoded.instructions[0].discriminator).toBe(idlDiscriminatorHex('ugt', 'create_record'));
+        expect(decoded.summary).toBe(`agent densifier-01 recorded design ${AGREEMENT_CID}`);
+        const plan = UgtClient.buildCreateRecordIx({ kind: 'plan', cid: PLAN_CID, name: 'A plan', uri: 'https://app.example.test/plans/x', minter: SPONSOR });
+        expect(decode(agreementTx(plan.instruction)).summary).toBe(`agent densifier-01 recorded plan ${PLAN_CID}`);
+    });
+});
+
 describe('loadIdls: legacy interfaces', () => {
     it('lists each current IDL first, then the legacy interfaces of the same program', () => {
         const versions = (name) => idls.byName.get(name).versions.map((version) => version.idlVersion);
         expect(versions('proposal_market')).toEqual(['v2', 'v1']);
-        expect(versions('parcel_nft')).toEqual(['v2', 'v1']);
-        expect(versions('agreement')).toEqual(['v1']);
+        expect(versions('ugt')).toEqual(['v1']);
         expect(versions('proposal_pledge')).toEqual(['v1']);
     });
 });
@@ -733,14 +769,14 @@ describe('decodeParsedTransaction: hydrated @solana/web3.js shape', () => {
     });
 
     it('still matches our anchor IDLs when the program id is a PublicKey', () => {
-        const { instruction } = AgreementClient.buildCreateIx({ authority: SPONSOR, cid: AGREEMENT_CID, lens: LENS, payout: TREASURY });
+        const { instruction } = AgreementClient.buildCreateIx({ authority: SPONSOR, cid: AGREEMENT_CID, planCid: PLAN_CID, lens: LENS, payout: TREASURY });
         const raw = decode(agreementTx(instruction));
         const hydrated = decode(hydrate(agreementTx(instruction)));
 
         expect(hydrated.instructions[0].action).toBe('create');
         expect(hydrated.instructions[0].accounts.map((account) => account.role)).toEqual(['agreement', 'authority', 'system_program']);
         expect(hydrated.instructions).toEqual(raw.instructions);
-        expect(hydrated.summary).toBe('agent densifier-01 called create on agreement');
+        expect(hydrated.summary).toBe('agent densifier-01 called create on ugt');
     });
 });
 

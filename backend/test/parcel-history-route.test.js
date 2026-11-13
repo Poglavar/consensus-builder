@@ -12,7 +12,7 @@ import {
     AGREEMENT_PUBLISHED_EVENT_TYPE, OWNERSHIP_EVENT_TYPE, PARCEL_PROGRAM_ID,
     agreementEvent, deriveParcelAnchor, landEventHistoryEvent, loadParcelHistory, sortHistory
 } from '../oracle/parcel-history.js';
-import { AGREEMENT_PROGRAM_ID } from '../agreements/onchain.js';
+import { AGREEMENT_PROGRAM_ID, RETIRED_AGREEMENT_PROGRAM_ID } from '../agreements/onchain.js';
 import { cidOf } from './helpers/content-fixtures.js';
 
 const PARCEL = 'HR-335347-1208/3';
@@ -106,7 +106,7 @@ describe('GET /parcels/:parcelUid/history', () => {
         const landCall = pool.calls.find(call => /FROM consensus\.land_event/.test(call.sql));
         expect(landCall.params).toEqual([PARCEL, 'agreement_executed']);
         expect(landCall.sql).toMatch(/WHERE event_type = \$2 AND/);
-        expect(landCall.sql).toContain(`attester = '${AGREEMENT_PROGRAM_ID}'`);
+        expect(landCall.sql).toContain(`attester IN ('${AGREEMENT_PROGRAM_ID}', '${RETIRED_AGREEMENT_PROGRAM_ID}')`);
         expect(landCall.sql).toMatch(/subject_type = 'parcel' AND subject_id = \$1::text/);
         expect(pool.calls).toHaveLength(3);
     });

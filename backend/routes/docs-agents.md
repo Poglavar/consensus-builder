@@ -124,9 +124,9 @@ EVM_RPC_URL_84532=https://sepolia.base.org
 | `ugt_publish_design` | write | Index a `design/v1` object. |
 | `ugt_propose_agreement` | write | Index an `agreement/v1` object, with any linked designs the index does not hold yet. |
 | `ugt_mint_agreement` | signed | As the sponsor of a binding owners' agreement: create the account and fund its escrow, then record it in the index. |
-| `ugt_chain_records` | read | Design or plan records of an EVM chain's `RecordRegistry` (Base Sepolia by default), read over RPC. |
-| `ugt_mint_design`, `ugt_mint_plan` | signed (EVM) | Mint an indexed design's or plan's record with the agent's EVM key, after its content (and a plan's member designs) is retrievable from public IPFS; content no public gateway serves yet is pinned with the process's own `IPFS_PINNING_PROVIDER` account. |
-| `ugt_anchor_parcels` | signed (EVM) | Anchor parcel ids in an EVM chain's `ParcelAnchor`; anchored parcels are skipped. |
+| `ugt_chain_records` | read | Design or plan records of a chain (`solana-devnet`, the default: the ugt program; or an EVM chain's `RecordRegistry`), read over RPC. |
+| `ugt_mint_design`, `ugt_mint_plan` | signed | Mint an indexed design's or plan's record on a chain (a frozen Metaplex Core asset on Solana, a `RecordRegistry` token on EVM) with the agent's key for that chain, after its content (and a plan's member designs) is retrievable from public IPFS; content no public gateway serves yet is pinned with the process's own `IPFS_PINNING_PROVIDER` account. |
+| `ugt_anchor_parcels` | signed | Anchor parcel ids on a chain (the ugt program on Solana, or an EVM chain's `ParcelAnchor`); anchored parcels are skipped. |
 | `ugt_fund_agreement` | signed | As the sponsor: top the escrow up to a target. |
 | `ugt_bet_on_agreement` | signed, USDC | Open the agreement's market if needed and stake YES or NO. |
 | `ugt_pledge`, `ugt_donate` | signed, USDC | Back an agreement account with a revocable pledge or a funded donation. |
@@ -394,19 +394,22 @@ from the deadline before. Read it back at `GET $(base)/agreements/<cid>`; list w
 
 Only a binding owners' agreement is minted; a vote stays a poll in the index and ends with §5.
 
-- **Program:** `agreement`, `$(agreementProgram)` on Solana devnet ($(agreementProgramStatus)).
-- **Account:** PDA `["agreement", sponsor, sha256(cid as UTF-8)]`, 296 bytes: authority (the sponsor),
+- **Program:** `ugt` (parcel anchors, design and plan records, agreements), `$(agreementProgram)` on
+  Solana devnet ($(agreementProgramStatus)).
+- **Account:** PDA `["agreement", sponsor, sha256(cid as UTF-8)]`, 330 bytes: authority (the sponsor),
   lens, payout, deadline (unix seconds, 0 none), required and escrowed lamports, status (0 Active,
   1 Executed, 2 Cancelled, 3 Expired), open ground, decision (0 Pending, 1 Satisfied), the recorded
-  attestation, executed_at and the CID.
-- **`create(cid: string, lens: pubkey, deadline: i64, open_ground: bool, required_lamports: u64,
-  payout: pubkey)`**, accounts `agreement` (writable, the PDA), `authority` (signer, writable: the
-  sponsor; pays the rent), System Program. `lens` is the agreement's one `rule.lens` key, `deadline` its
+  attestation, executed_at, the sha256 of the plan CID (byte 227, so a memcmp lists a plan's
+  agreements), the input parcel count and the CID.
+- **`create(cid: string, plan_cid: string, input_count: u16, lens: pubkey, deadline: i64, open_ground: bool,
+  required_lamports: u64, payout: pubkey)`**, accounts `agreement` (writable, the PDA), `authority`
+  (signer, writable: the sponsor; pays the rent), System Program. `plan_cid` is the agreement's
+  `planCid`, `input_count` the length of `inputs.parcels`, `lens` the agreement's one `rule.lens` key, `deadline` its
   deadline in unix seconds, `open_ground` whether `inputs.openGroundM2 > 0`, `required_lamports` the
   escrow execution needs (0 for none), `payout` who receives the escrow when it executes.
 - **`fund(lamports: u64)`**, accounts `agreement`, `authority` (signer), System Program: only the
   sponsor, while Active and before the deadline.
-- IDL `blockchain/solana/idl/agreement.json`; codec `frontend/js/solana/agreement-client.js` (UMD; in
+- IDL `blockchain/solana/idl/ugt.json`; codec `frontend/js/solana/agreement-client.js` (UMD; in
   Node, `require` it and `configure({ web3 })`); reference minter `backend/agents/agreement-minter.js`
   (`mintAgreement`: create and fund in one transaction, reading the chain first so a retry signs nothing
   twice).
@@ -558,7 +561,7 @@ answers on) expires after its deadline, and its market resolves NO.
   (`null`, sorted last, when a source has none): `agreement_published` (the index received an agreement
   that takes the parcel), `parcel_ownership` (a lens member's ownership attestation: member, owner,
   ownerCount, account hash; never the evidence reference) and `agreement_executed`. `anchor.account` is
-  the parcel_nft (`$(parcelProgram)`) PDA `["parcel", parcelUid]`, an identity that carries no ownership;
+  the ugt (`$(parcelProgram)`) PDA `["parcel", parcelUid]`, an identity that carries no ownership;
   `exists` is `null` when the chain could not be read. Never cached.
 
 ## 10. Buy a verified land fact

@@ -1,4 +1,4 @@
-// Localnet helpers for the agreement program (programs/agreement): test CIDs, the agreement PDA
+// Localnet helpers for the ugt program's agreements (programs/ugt/README.md): test CIDs, the agreement PDA
 // ["agreement", sponsor, sha256(cid)], one call per instruction, the lens's AgreementDecision-v1
 // attestation through the mock SAS program, and an Agreement look-alike owned by another program.
 // Shared by tests/agreement.ts and the market and pledge suites, whose subject is an agreement.
@@ -9,16 +9,16 @@ import { Keypair, PublicKey, SystemProgram } from "@solana/web3.js";
 import { createHash, randomBytes } from "crypto";
 import { LensMember, attestDecision, chainNow, writeSasAccount } from "./sas-mock.ts";
 
-/** agreement::AgreementStatus codes, the byte at STATUS_OFFSET that markets and pledges read. */
+/** ugt::AgreementStatus codes, the byte at STATUS_OFFSET that markets and pledges read. */
 export const STATUS = { active: 0, executed: 1, cancelled: 2, expired: 3 } as const;
-/** Byte offsets of the Agreement account (programs/agreement/README.md, "Agreement account"). */
+/** Byte offsets of the Agreement account (programs/ugt/README.md, "Agreement account"). */
 export const OFFSET = {
     authority: 8, lens: 40, payout: 72, deadline: 104, createdAt: 112, requiredLamports: 120, escrowLamports: 128,
     status: 136, openGround: 137, decision: 138, decisionAttestedAt: 139, decisionObservedAt: 147,
-    decisionAttestation: 155, decisionHash: 187, executedAt: 219, bump: 227, cid: 228,
+    decisionAttestation: 155, decisionHash: 187, executedAt: 219, planCidHash: 227, inputCount: 259, bump: 261, cid: 262,
 } as const;
-/** 8-byte discriminator + 288 bytes. */
-export const AGREEMENT_ACCOUNT_SIZE = 296;
+/** 8-byte discriminator + 322 bytes. */
+export const AGREEMENT_ACCOUNT_SIZE = 330;
 
 export const sha256 = (value: Buffer | string) => createHash("sha256").update(value).digest();
 
@@ -66,6 +66,9 @@ export type AgreementTerms = {
     /** The sponsor: signs create, pays the rent, funds, cancels, receives refunds. Default: the provider wallet. */
     sponsor?: Keypair;
     cid?: string;
+    /** The plan the agreement names (default: a fresh test CID) and its input parcel count (default 0). */
+    planCid?: string;
+    inputCount?: number;
     lens: PublicKey;
     /** Unix seconds (chain time); 0 for no deadline. */
     deadline?: number;
@@ -77,16 +80,19 @@ export type AgreementTerms = {
     fund?: number | bigint;
 };
 
-export type CreatedAgreement = { agreement: PublicKey; cid: string; sponsor: Keypair; signature: string };
+export type CreatedAgreement = { agreement: PublicKey; cid: string; planCid: string; sponsor: Keypair; signature: string };
 
-/** create(cid, lens, deadline, open_ground, required_lamports, payout) from the sponsor, then an optional fund. */
+/** create(cid, plan_cid, input_count, lens, deadline, open_ground, required_lamports, payout) from the sponsor, then an optional fund. */
 export async function createAgreement(program: Program, terms: AgreementTerms): Promise<CreatedAgreement> {
     const sponsor = terms.sponsor ?? providerPayer(program);
     const cid = terms.cid ?? testCid();
+    const planCid = terms.planCid ?? testCid("plan");
     const agreement = findAgreementPda(program.programId, sponsor.publicKey, cid);
     const signature = await program.methods
         .create(
             cid,
+            planCid,
+            terms.inputCount ?? 0,
             terms.lens,
             new anchor.BN(terms.deadline ?? 0),
             terms.openGround ?? false,
@@ -97,7 +103,7 @@ export async function createAgreement(program: Program, terms: AgreementTerms): 
         .signers(signersOf(program, [sponsor]))
         .rpc();
     if (terms.fund && BigInt(terms.fund) > 0n) await fundAgreement(program, agreement, sponsor, terms.fund);
-    return { agreement, cid, sponsor, signature };
+    return { agreement, cid, planCid, sponsor, signature };
 }
 
 export function fundAgreement(program: Program, agreement: PublicKey, authority: Keypair, lamports: number | bigint): Promise<string> {

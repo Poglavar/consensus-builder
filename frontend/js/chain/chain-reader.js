@@ -1,5 +1,6 @@
 // chain-reader.js — the From chain source (blockchain-flows.md, Flow 1): agreements listed from the
-// connected Solana cluster, their agreement, plan and design objects read from IPFS and checked
+// connected Solana cluster, design and plan records from the connected wallet's chain (the EVM chain
+// with an EVM wallet, else the Solana cluster), their agreement, plan and design objects read from IPFS and checked
 // against their CIDs (ipfs-read.js), and the chain state of each agreement from its account. Nothing
 // here asks our server, so a published agreement opens while the backend is down. The loaders that
 // ask the server first (AgreementSync, NamedPlans, DesignSync) fall back to these reads.
@@ -111,19 +112,21 @@
             return { rows: designs, missing: missing.map(entry => entry.cid) };
         }
 
-        // The EVM chain records are listed from: the connected wallet's, else Base Sepolia.
+        // The chain design and plan records are listed from: an EVM wallet's chain, else the Solana
+        // cluster (devnet without a wallet).
         const evm = () => win.EvmAdapter;
-        const evmChainId = () => (evm() ? evm().walletChainId() || evm().DEFAULT_CHAIN_ID : null);
-        const evmChainName = () => (evm() ? evm().chainName(evmChainId()) : null);
+        const recordsOnEvm = () => !!(evm() && evm().walletChainId());
+        const recordChainKey = () => (recordsOnEvm() ? evm().walletChainId() : win.SolanaAdapter.chainKeyOf(cluster()));
+        const recordChainName = () => (recordsOnEvm() ? evm().chainName(evm().walletChainId()) : win.SolanaAdapter.chainName(cluster()));
 
         /**
-         * Every design or plan record on the EVM chain, newest first, as list rows: the CID, the
-         * chain time, `onchain` ({ family, chainId, minter, tokenUri, explorer }) and, when IPFS
+         * Every design or plan record on that chain, newest first, as list rows: the CID, the chain
+         * time, `onchain` ({ family, chainId, chain, minter, tokenUri, explorer }) and, when IPFS
          * serves it, the content. Rows whose content no gateway serves keep content null.
          */
         async function listRecords(kind) {
-            const adapter = await evm().forChain(evmChainId());
-            if (!adapter) throw Object.assign(new Error(`${evmChainName()} has no record registry.`), { code: 'no-contracts' });
+            const adapter = recordsOnEvm() ? await evm().forChain(evm().walletChainId()) : await win.SolanaAdapter.forCluster(cluster());
+            if (!adapter) throw Object.assign(new Error(`${recordChainName()} has no record registry.`), { code: 'no-contracts' });
             const records = await adapter.listRecords(kind);
             const schema = kind === 'plan' ? win.PlanRecord.SCHEMA : win.DesignRecord.SCHEMA;
             const { rows: contents, missing } = await ipfs().fetchObjects(records.map(record => record.cid), { schema });
@@ -133,13 +136,13 @@
                 createdAt: record.createdAt,
                 content: contents.has(record.cid) ? contents.get(record.cid).content : null,
                 gateway: contents.has(record.cid) ? contents.get(record.cid).gateway : null,
-                onchain: { family: 'evm', chainId: record.chainId, chain: adapter.name, minter: record.minter, tokenUri: record.tokenUri,
-                    explorer: adapter.explorerUrl({ address: adapter.addresses.RecordRegistry }) },
+                onchain: { family: adapter.family, chainId: record.chainId, chain: adapter.name, minter: record.minter, tokenUri: record.tokenUri,
+                    explorer: adapter.explorerUrl({ address: record.address || adapter.addresses.RecordRegistry }) },
                 source: 'chain'
             }));
         }
 
-        return { cluster, listAgreements, agreementOnchain, fetchAgreement, fetchPlan, fetchDesigns, evmChainId, evmChainName, listRecords };
+        return { cluster, listAgreements, agreementOnchain, fetchAgreement, fetchPlan, fetchDesigns, recordChainKey, recordChainName, listRecords };
     }
 
     return { withFallback, browser };

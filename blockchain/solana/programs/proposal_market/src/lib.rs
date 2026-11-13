@@ -2,7 +2,7 @@
 // agreement program), staked in one SPL token (devnet USDC for the hackathon), with NO deadline. A
 // market resolves only when its agreement reaches a terminal on-chain state: Executed → YES,
 // Cancelled or Expired → NO. Anyone may create the market, stake, resolve and claim. The agreement
-// is read directly from its account by agreement::read_agreement_view (owner, discriminator, status
+// is read directly from its account by ugt::read_agreement_view (owner, discriminator, status
 // at offset 136), never through CPI; proposal_nft is not read at all. The program keeps its name and
 // id, and its accounts and fields keep the word `proposal` (the IDL interface is unchanged), which
 // now names the agreement account: renaming is a deploy-time matter.
@@ -31,12 +31,12 @@ declare_id!("GDYnzduynKhKgxDhvvKVarn2s23DtzA26s6hycuUYDRB");
 /// schema, issuer, parcel and outcome value against commitments made before staking starts.
 pub const SAS_PROGRAM_ID: Pubkey = sas_attestation::SAS_PROGRAM_ID;
 
-/// agreement::AgreementStatus codes, the status byte a market reads (the codes proposal_nft used).
-pub const STATUS_ACTIVE: u8 = agreement::AgreementStatus::Active as u8;
-pub const STATUS_EXECUTED: u8 = agreement::AgreementStatus::Executed as u8;
-pub const STATUS_CANCELLED: u8 = agreement::AgreementStatus::Cancelled as u8;
+/// ugt::AgreementStatus codes, the status byte a market reads (the codes proposal_nft used).
+pub const STATUS_ACTIVE: u8 = ugt::AgreementStatus::Active as u8;
+pub const STATUS_EXECUTED: u8 = ugt::AgreementStatus::Executed as u8;
+pub const STATUS_CANCELLED: u8 = ugt::AgreementStatus::Cancelled as u8;
 /// Set by the agreement program's `expire` once the agreement's deadline has passed.
-pub const STATUS_EXPIRED: u8 = agreement::AgreementStatus::Expired as u8;
+pub const STATUS_EXPIRED: u8 = ugt::AgreementStatus::Expired as u8;
 
 pub const SIDE_NO: u8 = 0;
 pub const SIDE_YES: u8 = 1;
@@ -424,14 +424,14 @@ pub fn payout_amount(side: u8, amount: u64, yes_pool: u64, no_pool: u64, outcome
 }
 
 /// Read `subject` as an Agreement of the agreement program (owner, discriminator and layout are
-/// agreement::read_agreement_view's checks) and, when `expected` is given, require it to be the
+/// ugt::read_agreement_view's checks) and, when `expected` is given, require it to be the
 /// market's own. Returns the sponsor, lens, status and execution time that resolution, kind 0
 /// trading and the LMSR insider rule read.
-pub(crate) fn read_subject(subject: &AccountInfo, expected: Option<&Pubkey>) -> Result<agreement::AgreementView> {
+pub(crate) fn read_subject(subject: &AccountInfo, expected: Option<&Pubkey>) -> Result<ugt::AgreementView> {
     if let Some(expected_key) = expected {
         require_keys_eq!(subject.key(), *expected_key, MarketError::InvalidProposalAccount);
     }
-    agreement::read_agreement_view(subject).ok_or_else(|| error!(MarketError::InvalidProposalAccount))
+    ugt::read_agreement_view(subject).ok_or_else(|| error!(MarketError::InvalidProposalAccount))
 }
 
 /// Map a shared SAS parser error onto this program's error codes.

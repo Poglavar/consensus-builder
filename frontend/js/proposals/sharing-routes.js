@@ -174,11 +174,11 @@ async function shareSingleProposal(proposalIdOrProposal) {
         if (!cid) {
             // The name gate first (it shows its own explanation), then where to publish.
             if (window.guestPolicyBlocks('publish')) return null;
-            const chain = await window.ChainPublish.adapter();
-            const where = chain ? await window.ChainPublish.choose(chain) : 'server';
+            const chains = await window.ChainPublish.adapters();
+            const where = chains.length ? await window.ChainPublish.choose(chains) : 'server';
             if (!where) return null;
-            if (where === 'chain') {
-                const minted = await window.ChainPublish.design(proposal, chain);
+            if (where !== 'server') {
+                const minted = await window.ChainPublish.design(proposal, where);
                 if (!minted) return null;
                 cid = minted.cid;
             } else {

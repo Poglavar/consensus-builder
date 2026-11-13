@@ -290,9 +290,13 @@
             }
             const connection = win.SolanaChainDataLoader.getConnection(clusterName);
             await ensureDeployed(connection, clusterName);
+            const planCid = idOf(agreement.plan && agreement.plan.cid);
+            if (!planCid) throw codedError(t('agreement.chain.errors.notProposed', 'Propose the agreement before minting it.'), 'no-plan');
             const built = api.buildCreateIx({
                 authority: wallet,
                 cid,
+                planCid,
+                inputCount: ((agreement.inputs && agreement.inputs.parcels) || []).length,
                 lens: idOf(lens),
                 deadline: deadlineSeconds,
                 openGround: !!(agreement.inputs && agreement.inputs.openGroundM2 > 0),

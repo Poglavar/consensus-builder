@@ -7,7 +7,7 @@ import { openCity, openParcel, showProposal, PARCEL_ID, showProposalTab } from '
 import { connectWalletByConnectorId, injectMockSolanaWallet, stubSolanaParcelMint, waitForBlockchainRuntime } from '../helpers/blockchain';
 
 const SOLANA_WALLET = '7xKXtg2CWYcy6EH8d9xvPht4JyhV46Lxgq6vN6hS9wZT';
-const PARCEL_PROGRAM = '4zadC1FgWPQLv6qv66mjEBthBqTvrmxL5oDcHQzNtkV1';
+const PARCEL_PROGRAM = '95sjeTXUYG721iZK29s3kr7Dq4eFqv6PFoEmPYJDtkp9';
 
 async function expandProposalDetails(page: import('@playwright/test').Page): Promise<void> {
   const expand = page.locator('#proposal-details-panel').getByRole('button', { name: 'Expand', exact: true });
@@ -91,7 +91,7 @@ test.describe('Proposal actions @features', () => {
     await injectMockSolanaWallet(page, { publicKey: SOLANA_WALLET, providerName: 'phantom' });
     await openCity(page);
     await connectWalletByConnectorId(page, 'solana-phantom');
-    await waitForBlockchainRuntime(page, ['SolanaChainDataLoader', 'SolanaParcelClient', 'solanaWeb3']);
+    await waitForBlockchainRuntime(page, ['SolanaChainDataLoader', 'UgtClient', 'solanaWeb3']);
     await stubSolanaParcelMint(page, { parcelProgramId: PARCEL_PROGRAM });
     await page.evaluate(() => {
       const w = window as any;
@@ -119,7 +119,7 @@ test.describe('Proposal actions @features', () => {
     await injectMockSolanaWallet(page, { publicKey: SOLANA_WALLET, providerName: 'phantom' });
     await openCity(page);
     await connectWalletByConnectorId(page, 'solana-phantom');
-    await waitForBlockchainRuntime(page, ['SolanaChainDataLoader', 'SolanaParcelClient', 'solanaWeb3']);
+    await waitForBlockchainRuntime(page, ['SolanaChainDataLoader', 'UgtClient', 'solanaWeb3']);
     await stubSolanaParcelMint(page, { parcelProgramId: PARCEL_PROGRAM });
 
     // The metadata service is the app's external asset boundary. RPC instruction creation,
@@ -157,7 +157,7 @@ test.describe('Proposal actions @features', () => {
     await page.goto('/');
     await waitForMapReady(page);
     await connectWalletByConnectorId(page, 'solana-phantom');
-    await waitForBlockchainRuntime(page, ['SolanaChainDataLoader', 'SolanaParcelClient', 'solanaWeb3']);
+    await waitForBlockchainRuntime(page, ['SolanaChainDataLoader', 'UgtClient', 'solanaWeb3']);
     await stubSolanaParcelMint(page, { alreadyMinted: true, parcelProgramId: PARCEL_PROGRAM, tokenId: PARCEL_PROGRAM });
 
     const result = await page.evaluate(async programId => {

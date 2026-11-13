@@ -269,36 +269,16 @@
         return fallbackName;
     }
 
-    async function resolveParcelNftAddressSolana(cluster) {
+    // The ugt program (parcel anchors, records, agreements) on the Solana cluster, from addresses.json.
+    async function resolveParcelAnchorProgramSolana(cluster) {
         const globalScope = typeof window !== 'undefined' ? window : (typeof self !== 'undefined' ? self : null);
-        if (!globalScope) return null;
-        const normalizeSolanaChainKey = value => {
-            const raw = typeof value === 'string' ? value.trim().toLowerCase() : '';
-            if (!raw || raw === 'solana' || raw === 'devnet') return 'solana-devnet';
-            if (raw === 'mainnet' || raw === 'mainnet-beta' || raw === 'solana-mainnet') return 'solana-mainnet-beta';
-            return raw.startsWith('solana-') ? raw : `solana-${raw}`;
-        };
-        const normalized = normalizeSolanaChainKey(cluster);
+        if (!globalScope || !globalScope.SolanaChainDataLoader || typeof globalScope.SolanaChainDataLoader.resolveProgramAddress !== 'function') return null;
         try {
-            const resp = await fetch('/contracts/addresses.json');
-            if (resp && resp.ok) {
-                const data = await resp.json();
-                const exactAddress = data && data[normalized] && data[normalized].ParcelNFT;
-                if (exactAddress) return exactAddress;
-                if (normalized === 'solana-devnet') {
-                    const devnet = data.solana || data['solana-devnet'];
-                    if (devnet && devnet.ParcelNFT) return devnet.ParcelNFT;
-                }
-            }
+            return await globalScope.SolanaChainDataLoader.resolveProgramAddress(cluster || 'devnet', 'Ugt');
         } catch (err) {
-            console.warn('Failed to resolve Solana ParcelNFT from addresses.json:', err);
+            console.warn(`[${new Date().toISOString()}] [parcels] the Solana ugt program could not be resolved`, err);
+            return null;
         }
-        if (globalScope.SolanaChainDataLoader && typeof globalScope.SolanaChainDataLoader.resolveProgramAddress === 'function') {
-            try {
-                return await globalScope.SolanaChainDataLoader.resolveProgramAddress(cluster, 'ParcelNFT');
-            } catch (_) {}
-        }
-        return null;
     }
 
     // The EVM ParcelAnchor contract of a chain (ownerless parcel anchors, docs/blockchain-flows.md).
@@ -376,7 +356,7 @@
         const solanaWalletManager = globalScope.solanaWalletManager;
         const solanaState = solanaWalletManager && typeof solanaWalletManager.getState === 'function' ? solanaWalletManager.getState() : null;
         if (solanaState && solanaState.status === 'connected' && Array.isArray(solanaState.accounts) && solanaState.accounts.length > 0) {
-            const parcelProgramId = await resolveParcelNftAddressSolana(solanaState.cluster || 'devnet');
+            const parcelProgramId = await resolveParcelAnchorProgramSolana(solanaState.cluster || 'devnet');
             if (parcelProgramId && globalScope.SolanaChainDataLoader) {
                 const connection = globalScope.SolanaChainDataLoader.getConnection(solanaState.cluster || 'devnet');
                 return {
@@ -531,7 +511,7 @@
         return url.toString();
     }
 
-    global.resolveParcelNftAddressSolana = resolveParcelNftAddressSolana;
+    global.resolveParcelAnchorProgramSolana = resolveParcelAnchorProgramSolana;
     global.normalizeChainIdValue = normalizeChainIdValue;
     global.chainKeyVariants = chainKeyVariants;
     global.resolveChainSlug = resolveChainSlug;

@@ -1,8 +1,8 @@
 // Pins the ProposalPledge source, IDL, address-book, and discriminator contracts together, and what
-// the program reads of its subject: since M3 an Agreement account of the agreement program, read with
-// agreement::read_agreement_view (the agreement crate's offsets; proposal-market-layout.test.js pins
+// the program reads of its subject: an Agreement account of the ugt program, read with
+// ugt::read_agreement_view (the ugt crate's offsets; proposal-market-layout.test.js pins
 // that reader to the agreement struct, its IDL, the JS codec and the test encoder). The beneficiary is
-// the agreement's authority, the sponsor, and the status codes are the agreement program's.
+// the agreement's authority, the sponsor, and the status codes are the ugt program's.
 import { afterAll, describe, expect, it } from 'vitest';
 import { createHash } from 'node:crypto';
 import { readFileSync } from 'node:fs';
@@ -32,16 +32,16 @@ function disc(prefix, name) {
 }
 
 describe('proposal_pledge source/IDL contract', () => {
-    it('reads its subject through agreement::read_agreement_view: the sponsor as beneficiary, the status byte', () => {
+    it('reads its subject through ugt::read_agreement_view: the sponsor as beneficiary, the status byte', () => {
         const reader = rustFnBody(pledgeSource, 'read_subject');
-        expect(reader).toContain('agreement::read_agreement_view(subject)');
+        expect(reader).toContain('ugt::read_agreement_view(subject)');
         expect(reader).toContain('Ok((view.authority, view.status))');
         for (const name of ['Active', 'Executed', 'Cancelled', 'Expired']) {
-            expect(pledgeSource).toContain(`pub const STATUS_${name.toUpperCase()}: u8 = agreement::AgreementStatus::${name} as u8;`);
+            expect(pledgeSource).toContain(`pub const STATUS_${name.toUpperCase()}: u8 = ugt::AgreementStatus::${name} as u8;`);
         }
-        expect(pledgeSource).not.toMatch(/ProposalHead|PROPOSAL_NFT_PROGRAM_ID|PROPOSAL_DISCRIMINATOR|proposal_nft::|STATUS_OFFSET/);
-        expect(pledgeCargo).toContain('agreement = { path = "../agreement", features = ["no-entrypoint"] }');
-        expect(pledgeCargo).not.toMatch(/^proposal_nft\s*=/m);
+        expect(pledgeSource).not.toMatch(/ProposalHead|PROPOSAL_NFT_PROGRAM_ID|PROPOSAL_DISCRIMINATOR|proposal_nft::|agreement::|STATUS_OFFSET/);
+        expect(pledgeCargo).toContain('ugt = { path = "../ugt", features = ["no-entrypoint"] }');
+        expect(pledgeCargo).not.toMatch(/^(proposal_nft|agreement)\s*=/m);
         // The source says where the status byte is; it says the reader's offset.
         expect(Number(pledgeSource.match(/status at offset (\d+)/)[1])).toBe(layout.STATUS_OFFSET);
         // What the reader takes as the beneficiary is where the encoder writes the sponsor, and the
