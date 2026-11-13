@@ -6,4 +6,7 @@ libs = ["lib", "node_modules"]
 remappings = ["@openzeppelin/=node_modules/@openzeppelin/"]
 cache_path = "forge-cache"
 via_ir = true
+# The agreement market tests deploy Gnosis's published solc 0.5.10 builds of Conditional Tokens and
+# the LMSR market maker from the npm packages in solidity-deps/ (contracts/README-agreement-markets.md).
+fs_permissions = [{ access = "read", path = "./solidity-deps/node_modules" }]
 

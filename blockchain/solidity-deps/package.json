@@ -1,0 +1,20 @@
+{
+  "name": "ugt-solidity-deps",
+  "private": true,
+  "description": "Solidity-only npm dependencies of the agreement prediction market (contracts/README-agreement-markets.md): Gnosis Conditional Tokens and the LMSR market maker, solc 0.5. Kept apart from blockchain/package.json so their truffle-era JS tooling never enters the app's node_modules; the overrides drop it and pin util-contracts to the release that still ships Fixed192x64Math.",
+  "dependencies": {
+    "@gnosis.pm/conditional-tokens-contracts": "1.0.3",
+    "@gnosis.pm/conditional-tokens-market-makers": "1.8.1",
+    "@gnosis.pm/util-contracts": "3.0.0-alpha.3",
+    "openzeppelin-solidity": "2.3.0"
+  },
+  "pnpm": {
+    "overrides": {
+      "@gnosis.pm/conditional-tokens-market-makers>@truffle/hdwallet-provider": "-",
+      "@gnosis.pm/conditional-tokens-market-makers>canonical-weth": "-",
+      "@gnosis.pm/conditional-tokens-market-makers>truffle-flattener": "-",
+      "@gnosis.pm/util-contracts>@truffle/hdwallet-provider": "-",
+      "@gnosis.pm/conditional-tokens-market-makers>@gnosis.pm/util-contracts": "3.0.0-alpha.3"
+    }
+  }
+}

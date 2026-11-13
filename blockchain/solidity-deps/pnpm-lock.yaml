@@ -1,0 +1,59 @@
+lockfileVersion: '9.0'
+
+settings:
+  autoInstallPeers: true
+  excludeLinksFromLockfile: false
+
+overrides:
+  '@gnosis.pm/conditional-tokens-market-makers>@truffle/hdwallet-provider': '-'
+  '@gnosis.pm/conditional-tokens-market-makers>canonical-weth': '-'
+  '@gnosis.pm/conditional-tokens-market-makers>truffle-flattener': '-'
+  '@gnosis.pm/util-contracts>@truffle/hdwallet-provider': '-'
+  '@gnosis.pm/conditional-tokens-market-makers>@gnosis.pm/util-contracts': 3.0.0-alpha.3
+
+importers:
+
+  .:
+    dependencies:
+      '@gnosis.pm/conditional-tokens-contracts':
+        specifier: 1.0.3
+        version: 1.0.3
+      '@gnosis.pm/conditional-tokens-market-makers':
+        specifier: 1.8.1
+        version: 1.8.1
+      '@gnosis.pm/util-contracts':
+        specifier: 3.0.0-alpha.3
+        version: 3.0.0-alpha.3
+      openzeppelin-solidity:
+        specifier: 2.3.0
+        version: 2.3.0
+
+packages:
+
+  '@gnosis.pm/conditional-tokens-contracts@1.0.3':
+    resolution: {integrity: sha512-tsGh+tiCb06UCUg3F8N5Gpo/MTsdMLQ7Wbu2AiWGaj9bga9rWgnu2/QVtLY3hneFdrSAjzlu/eFmhQt+5b7kSA==}
+
+  '@gnosis.pm/conditional-tokens-market-makers@1.8.1':
+    resolution: {integrity: sha512-PJdFbqjlXz29JdxDNKcrdMMfGnZLLepvI0yyhRX2A1jwgYgNa8vwT2yixiHH2Oeyu5gza1KAxpoLw9r9yDCqrg==}
+
+  '@gnosis.pm/util-contracts@3.0.0-alpha.3':
+    resolution: {integrity: sha512-9rvTRON3UWDVlSzP0+JmZtKNImMitDrRBfynHCbAlLT5iiy9omk9RbGSY3Zw3XxSvZPLRTI7+mhzv+L+DGjuyA==}
+
+  openzeppelin-solidity@2.3.0:
+    resolution: {integrity: sha512-QYeiPLvB1oSbDt6lDQvvpx7k8ODczvE474hb2kLXZBPKMsxKT1WxTCHBYrCU7kS7hfAku4DcJ0jqOyL+jvjwQw==}
+
+snapshots:
+
+  '@gnosis.pm/conditional-tokens-contracts@1.0.3':
+    dependencies:
+      openzeppelin-solidity: 2.3.0
+
+  '@gnosis.pm/conditional-tokens-market-makers@1.8.1':
+    dependencies:
+      '@gnosis.pm/conditional-tokens-contracts': 1.0.3
+      '@gnosis.pm/util-contracts': 3.0.0-alpha.3
+      openzeppelin-solidity: 2.3.0
+
+  '@gnosis.pm/util-contracts@3.0.0-alpha.3': {}
+
+  openzeppelin-solidity@2.3.0: {}

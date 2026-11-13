@@ -5,7 +5,12 @@
     "RecordRegistry": "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512",
     "Agreement": "0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9",
     "EAS": "0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0",
-    "AgreementDecisionSchema": "0x80fc8baf828449e1511232d19e9d50ad353df0e42fcd4d875d56f0b733cc3b79"
+    "AgreementDecisionSchema": "0x80fc8baf828449e1511232d19e9d50ad353df0e42fcd4d875d56f0b733cc3b79",
+    "ConditionalTokens": "0x0DCd1Bf9A1b36cE34237eEaFef220932846BCD82",
+    "LMSRMarketMakerFactory": "0x0B306BF915C4d645ff596e518fAf3F9669b97016",
+    "AgreementOutcomeReporter": "0x959922bE3CAee4b8Cd9a407cc3ac1C251C2007B1",
+    "AgreementMarkets": "0x9A9f2CCfdE556A7E9Ff0848998Aa4a0CFD8863AE",
+    "MarketCollateral": "0xA51c1fc2f0D1a1b8494Ed1FE312d7C3a78Ed91C0"
   },
   "84532": {
     "CityMemeToken": "0x3F7FF9fC46F32b462f4Cc2d02D07Ac3b6c0c2AeE",
