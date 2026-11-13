@@ -2,17 +2,26 @@
   "31337": {
     "CityMemeToken": "0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0",
     "ParcelAnchor": "0x5FbDB2315678afecb367f032d93F642f64180aa3",
-    "RecordRegistry": "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512"
+    "RecordRegistry": "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512",
+    "Agreement": "0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9",
+    "EAS": "0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0",
+    "AgreementDecisionSchema": "0x80fc8baf828449e1511232d19e9d50ad353df0e42fcd4d875d56f0b733cc3b79"
   },
   "84532": {
     "CityMemeToken": "0x3F7FF9fC46F32b462f4Cc2d02D07Ac3b6c0c2AeE",
     "ParcelAnchor": "0x6785a94694af9455C42F49849027736ABdd1aE2D",
-    "RecordRegistry": "0xf3dAA5ea198B11E462bB7Cf0A23d89B4896eeBbF"
+    "RecordRegistry": "0xf3dAA5ea198B11E462bB7Cf0A23d89B4896eeBbF",
+    "Agreement": "0xe9bd361f00CDE963659a81c8e4F6b21d696f9302",
+    "EAS": "0x4200000000000000000000000000000000000021",
+    "AgreementDecisionSchema": "0x80fc8baf828449e1511232d19e9d50ad353df0e42fcd4d875d56f0b733cc3b79"
   },
   "11155111": {
     "CityMemeToken": "0xa65E0Eb5E1A0C238A531CB6Fb6325eECa70Ff6A9",
     "ParcelAnchor": "0xADBd81f91A661a9313e1bcb278e8bf4CD68c6C99",
-    "RecordRegistry": "0xEc2449eB938C48b8e2c9b549ba496DA8e488dE23"
+    "RecordRegistry": "0xEc2449eB938C48b8e2c9b549ba496DA8e488dE23",
+    "Agreement": "0xadf5abE13b3aC7822383788D0F10A320D3EB4099",
+    "EAS": "0xC2679fBD37d54388Ce493F1DB75320D236e1815e",
+    "AgreementDecisionSchema": "0x80fc8baf828449e1511232d19e9d50ad353df0e42fcd4d875d56f0b733cc3b79"
   },
   "solana": {
     "ParcelNFT": "4zadC1FgWPQLv6qv66mjEBthBqTvrmxL5oDcHQzNtkV1",
