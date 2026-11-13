@@ -240,8 +240,8 @@ mock API and a local validator), then docs and the vocabulary entries it changes
    retired program, so markets and pledges on ugt agreements wait for their in-place upgrade at this
    branch's deploy; at that point the retired program's open agreements and markets are closed first
    (user, 2026-11-13); Share and the mint checklist with a Solana wallet are verified in the browser
-   with an injected wallet on a local validator, not yet with Phantom on devnet; content of the London
-   test records is not on public IPFS.
+   with an injected wallet on a local validator, not yet with Phantom on devnet. The London test design
+   and plan are pinned to public IPFS (Filebase), so the watcher imports them.
 3. **R3, EVM anchors, registry and reader.** `ParcelAnchor`, `RecordRegistry`, the EVM adapter and
    From chain on Base Sepolia; the ENS resolver repointed. Done when R1 and R2's checks pass with an
    EVM wallet for designs and plans.
