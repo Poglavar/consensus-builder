@@ -776,6 +776,16 @@ async function createProposal() {
         // An edit of one's own local record rewrites it in place, and takes what stands on ground
         // the edit changes off the map once the user agrees; every other save adds a new record.
         let proposalId = null;
+        // A single-building design is one building on one connected piece of ground
+        // (design-record.js authoringIssues): separate buildings are separate designs.
+        if ((window.DesignRecord?.authoringIssues?.(proposal) || []).length) {
+            hideWaitingPopupSafe();
+            updateStatus(t('proposalDrafts.errors.singleBuildingSplit',
+                'A single-building design is one building on one connected piece of ground. Save each separate building as its own design.'));
+            setProposalModalInteractivity(true);
+            setProposalCreateButtonState(false);
+            return;
+        }
         // What the save takes from other designs is named first (ProposalManager.previewGroundTakes).
         const groundTakes = ProposalManager.previewGroundTakes?.(proposal, {
             sourceId: inPlaceSourceId || revisedSourceId,

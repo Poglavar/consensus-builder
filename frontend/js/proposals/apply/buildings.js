@@ -32,12 +32,26 @@
             || (typeof require === 'function' ? require('../../geometry-tolerances.js') : null);
     }
 
-    function shouldFormOwnBuildingParcel(_proposalData, goalKey, featureCount) {
-        return goalKey === 'single' && featureCount === 1;
+    // Every single building forms its own parcel, a stepped one of several parts included: the
+    // building's land is one parcel even where it takes a whole cadastral parcel (docs/vocabulary.md,
+    // Freeform building).
+    function shouldFormOwnBuildingParcel(_proposalData, goalKey) {
+        return goalKey === 'single';
+    }
+
+    // The building's material on the ground: its one footprint, or the union of its stepped parts.
+    function buildingMaterialGeometry(features, turfRef) {
+        const geometries = (features || []).map(feature => feature?.geometry).filter(Boolean);
+        if (geometries.length <= 1) return geometries[0] || null;
+        const united = geometries.slice(1).reduce((sum, geometry) => turfRef.union(sum, { type: 'Feature', properties: {}, geometry }),
+            { type: 'Feature', properties: {}, geometry: geometries[0] });
+        if (!united?.geometry) throw new Error('The parts of the building could not be joined into one footprint.');
+        return united.geometry;
     }
 
     return {
     shouldFormOwnBuildingParcel,
+    buildingMaterialGeometry,
     async _applyBuildingProposal(proposalId, proposalData, options = {}) {
         const startTime = performance.now();
         const idLabel = _normalizeProposalId(proposalId) || 'unknown-proposal';
@@ -155,8 +169,8 @@
         }
         traceApply(`Step 4: Prepared ${preparedFeatures.length} building feature(s) (${(performance.now() - step4Time).toFixed(2)}ms)`);
 
-        // §15a building formation: a FREEFORM building (goal 'single', one footprint) forms its
-        // own parcel from its exact authored land take (the footprint by default).
+        // §15a building formation: a FREEFORM building (goal 'single', one footprint or stepped
+        // parts) forms its own parcel from its exact authored land take (the footprint by default).
         // Refusals abort before anything renders.
         // Blocks/row/parcel-based buildings stay content on existing parcels (§9 table).
         let workingParentIds = uniqueParentIds;
@@ -164,9 +178,10 @@
             const goalKey = (typeof window !== 'undefined' && window.__applyRoute && typeof window.__applyRoute.normalizeGoalKey === 'function')
                 ? window.__applyRoute.normalizeGoalKey(proposalData.goal)
                 : String(proposalData.goal || '');
-            if (shouldFormOwnBuildingParcel(proposalData, goalKey, preparedFeatures.length)) {
+            if (shouldFormOwnBuildingParcel(proposalData, goalKey)) {
+                const turfRef = (typeof turf !== 'undefined') ? turf : null;
                 const formation = await this._formBuildingParcel(
-                    proposalId, proposalData, buildingProposal, preparedFeatures[0].geometry,
+                    proposalId, proposalData, buildingProposal, buildingMaterialGeometry(preparedFeatures, turfRef),
                     uniqueParentIds, idLabel, liveParents.features, options);
                 if (!formation.ok) return false;
                 workingParentIds = formation.parentIds;

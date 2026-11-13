@@ -983,6 +983,7 @@
         "errors": {
             "draftFailed": "Could not open this design for editing.",
             "instantCreateFailed": "Could not save the new object.",
+            "singleBuildingSplit": "A single-building design is one building on one connected piece of ground. Save each separate building as its own design.",
             "designSaveFailed": "Your changes could not be saved. Try again.",
             "designSaveFailedReason": "Your changes could not be saved ({{reason}}). Try again.",
             "structureGeometryFailed": "Geometry could not be built from the selected parcels.",

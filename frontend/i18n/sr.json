@@ -984,6 +984,7 @@
         "errors": {
             "draftFailed": "Nije moguće otvoriti ovaj dizajn za uređivanje.",
             "instantCreateFailed": "Novi objekat nije bilo moguće sačuvati.",
+            "singleBuildingSplit": "Dizajn jedne zgrade je jedna zgrada na jednom povezanom komadu zemljišta. Svaku zasebnu zgradu sačuvajte kao zaseban dizajn.",
             "designSaveFailed": "Izmene nije moguće sačuvati. Pokušajte ponovo.",
             "designSaveFailedReason": "Nije moguće sačuvati ovaj dizajn: {{reason}}. Nacrt je i dalje dostupan; rešite problem i pokušajte ponovo.",
             "structureGeometryFailed": "Nije moguće napraviti geometriju od izabranih parcela.",

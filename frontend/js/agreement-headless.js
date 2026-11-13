@@ -51,14 +51,15 @@
             } else if (row.buildingProposal) {
                 const buildings = row.geometry?.buildings || [];
                 const goal = root.__applyRoute.normalizeGoalKey(row.goal);
-                if (root.ProposalApplyBuildings.shouldFormOwnBuildingParcel(row, goal, buildings.length)) {
+                if (root.ProposalApplyBuildings.shouldFormOwnBuildingParcel(row, goal)) {
                     // Roads already partition the private live fabric. Resolve the surviving
                     // material and reviewed take against those pieces, just as structure replay
                     // does, while keeping the immutable authored row in the agreement unchanged.
                     const landTake = row.geometry?.landTake;
                     const takeGeometry = landTake?.geometry || landTake;
+                    const material = root.ProposalApplyBuildings.buildingMaterialGeometry(buildings, root.turf);
                     const carved = manager._groundAfterLaterCorridors(row,
-                        [buildings[0].geometry, ...(takeGeometry ? [takeGeometry] : [])], options);
+                        [material, ...(takeGeometry ? [takeGeometry] : [])], options);
                     if (!carved.geometries[0]) throw new Error('A later corridor takes the entire building');
                     const record = { ...row, geometry: { ...row.geometry,
                         buildings: [{ ...buildings[0], geometry: carved.geometries[0] }],

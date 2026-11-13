@@ -82,14 +82,21 @@ export async function loadDesigns(db, cids) {
 }
 
 /**
- * The design/v1 checks that need no database: the shared shape (design-record.js validate), then
- * what binding needs on top of it (a measurable site, a tolerance within range).
+ * The design/v1 checks that need no database: the shared shape (design-record.js validate), the
+ * rules a newly written design follows (authoringIssues), then what binding needs on top of it (a
+ * measurable site, a tolerance within range).
  * @returns {{ ok: true, site: object|null, toleranceM: number } | { ok: false, status, code, error, errors? }}
  */
 export function validateDesignContent(content) {
     const checked = designRecord.validate(content);
     if (!checked.valid) {
         return { ok: false, status: 400, code: 'invalid-design', error: checked.errors[0].message, errors: checked.errors };
+    }
+    // What a design written now must also be (a single building is one connected building); a
+    // published design is read without it (design-record.js authoringIssues).
+    const authoring = designRecord.authoringIssues(content);
+    if (authoring.length) {
+        return { ok: false, status: 400, code: authoring[0].code, error: authoring[0].message, field: authoring[0].field, errors: authoring };
     }
     const siteError = content.site ? validateSiteGeometry(content.site) : null;
     if (siteError) return { ok: false, status: 400, code: BINDING_CODES.invalidSite, error: siteError };

@@ -2421,6 +2421,7 @@
         "errors": {
             "draftFailed": "Impossible d’ouvrir ce projet pour le modifier.",
             "instantCreateFailed": "Impossible d’enregistrer le nouvel objet.",
+            "singleBuildingSplit": "Un projet de bâtiment unique est un seul bâtiment sur un seul terrain d’un seul tenant. Enregistrez chaque bâtiment séparé comme son propre projet.",
             "designSaveFailed": "Vos modifications n’ont pas pu être enregistrées. Réessayez.",
             "designSaveFailedReason": "Vos modifications n’ont pas pu être enregistrées ({{reason}}). Réessayez.",
             "structureGeometryFailed": "La géométrie n’a pas pu être construite à partir des parcelles sélectionnées.",

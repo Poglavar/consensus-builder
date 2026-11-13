@@ -6,6 +6,9 @@ import fs from 'node:fs';
 import * as turf from '@turf/turf';
 import { AUTHOR, PLAN_DATE, vlabModel, vlabModelPlan, vlabPlan } from '../../restatements/vlab/vlab-designs.mjs';
 import { planObjects } from '../scripts/lib/restatement-publish.mjs';
+import { createRequire } from 'node:module';
+
+const DesignRecord = createRequire(import.meta.url)('../../frontend/js/design-record.js');
 
 const georeference = JSON.parse(fs.readFileSync(new URL('../../restatements/vlab/data/georeference.json', import.meta.url), 'utf8'));
 const plan = vlabPlan();
@@ -35,6 +38,12 @@ describe('vlabPlan', () => {
             expect(record.author).toBe(AUTHOR);
             expect(record.createdAt).toBe(PLAN_DATE);
         });
+    });
+
+    it('makes every design a writable one: the tower is one building on one connected piece of land', () => {
+        plan.designs.forEach(({ key, record }) => expect([key, DesignRecord.authoringIssues(record)]).toEqual([key, []]));
+        expect(byKey.toranj.geometry.landTake.type).toBe('Polygon');
+        expect(new Set(byKey.toranj.geometry.buildings.map(building => building.properties.buildingId))).toEqual(new Set(['vlab-toranj']));
     });
 
     it('steps the vLAB building up to 32 m and gives the tower office below and housing above', () => {

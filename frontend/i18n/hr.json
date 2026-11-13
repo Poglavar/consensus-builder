@@ -984,6 +984,7 @@
         "errors": {
             "draftFailed": "Nije moguće otvoriti ovaj dizajn za uređivanje.",
             "instantCreateFailed": "Novi objekt nije bilo moguće spremiti.",
+            "singleBuildingSplit": "Dizajn jedne zgrade je jedna zgrada na jednom povezanom komadu zemljišta. Svaku zasebnu zgradu spremite kao zaseban dizajn.",
             "designSaveFailed": "Izmjene nije bilo moguće spremiti. Pokušajte ponovno.",
             "designSaveFailedReason": "Izmjene nije bilo moguće spremiti ({{reason}}). Pokušajte ponovno.",
             "structureGeometryFailed": "Nije moguće izraditi geometriju iz odabranih čestica.",

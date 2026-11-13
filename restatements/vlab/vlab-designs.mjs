@@ -95,7 +95,38 @@ const authorship = (title, description) => ({ title, description: `${description
  * its footprint, as the MCP's Freeform constructor does for one footprint.
  */
 // Its parts state one `buildingId`: they are one building, with one hue and one glass tint.
-function steppedBuilding({ title, description, blockName, buildingId, facade, parts: steps, model = null }) {
+// The author's volumes meet along shared walls, but the model's outlines miss each other by a
+// millimetre or two there, so their union came apart into separate pieces and one building read as
+// several (a single building stands on one connected piece of ground). A part's wall that passes
+// within SEAM_M of another part's corner takes that corner as a vertex of its own, so the two parts
+// share the wall's end points exactly, also after their coordinates are rounded.
+const SEAM_M = 0.01;
+function closeSeams(geometries) {
+    const ringsOf = geometry => (geometry.type === 'Polygon' ? [geometry.coordinates] : geometry.coordinates).flat();
+    const latitude = ringsOf(geometries[0])[0][0][1];
+    const kx = 111320 * Math.cos(latitude * Math.PI / 180), ky = 110540;
+    const corners = geometries.map(geometry => ringsOf(geometry).flat());
+    return geometries.map((geometry, index) => {
+        const others = corners.filter((_, other) => other !== index).flat();
+        const ring = points => points.slice(1).reduce((out, b, i) => {
+            const a = points[i];
+            const dx = (b[0] - a[0]) * kx, dy = (b[1] - a[1]) * ky, length2 = dx * dx + dy * dy;
+            const inner = others.map(corner => {
+                const t = length2 ? (((corner[0] - a[0]) * kx) * dx + ((corner[1] - a[1]) * ky) * dy) / length2 : 0;
+                const off = Math.hypot((corner[0] - a[0]) * kx - t * dx, (corner[1] - a[1]) * ky - t * dy);
+                return { corner, t, off };
+            }).filter(({ t, off }) => t > 1e-9 && t < 1 - 1e-9 && off <= SEAM_M).sort((p, q) => p.t - q.t);
+            return out.concat(inner.map(item => item.corner), [b]);
+        }, [points[0]]);
+        const polygon = rings => rings.map(ring);
+        return geometry.type === 'Polygon' ? { type: 'Polygon', coordinates: polygon(geometry.coordinates) }
+            : { type: 'MultiPolygon', coordinates: geometry.coordinates.map(polygon) };
+    });
+}
+
+function steppedBuilding({ title, description, blockName, buildingId, facade, parts: rawSteps, model = null }) {
+    const closed = closeSeams(rawSteps.map(step => step.geometry));
+    const steps = rawSteps.map((step, index) => ({ ...step, geometry: closed[index] }));
     const footprint = union(steps.map(step => step.geometry));
     const tallest = steps.reduce((top, step) => (step.heightM > top.heightM ? step : top), steps[0]);
     const content = intentDesign.build({ kind: 'building', site: footprint, footprint, floors: tallest.floors, height: tallest.heightM,

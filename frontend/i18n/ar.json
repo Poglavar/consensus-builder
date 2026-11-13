@@ -2527,6 +2527,7 @@
         "errors": {
             "draftFailed": "تعذر فتح هذا التصميم للتحرير.",
             "instantCreateFailed": "تعذر حفظ العنصر الجديد.",
+            "singleBuildingSplit": "تصميم المبنى الواحد هو مبنى واحد على قطعة أرض واحدة متصلة. احفظ كل مبنى منفصل كتصميم مستقل.",
             "designSaveFailed": "تعذر حفظ تغييراتك. حاول مجددا.",
             "designSaveFailedReason": "تعذر حفظ تغييراتك ({{reason}}). حاول مجددا.",
             "structureGeometryFailed": "تعذر إنشاء الهندسة من القطع العقارية المحددة.",

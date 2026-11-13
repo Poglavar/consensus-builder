@@ -173,7 +173,34 @@
         return { valid: !errors.length, errors };
     }
 
+    // A single-building design is one building on one connected piece of ground (docs/vocabulary.md,
+    // Freeform building): a design is not a plan of its own, so separate buildings are separate
+    // designs. A building of stepped parts states one buildingId on every part. Checked where a design
+    // is written (saved, drafted, published), never where a published one is read: a record published
+    // before this rule still opens. → [{ code: 'design-single-building', message, field }]
+    function authoringIssues(object) {
+        if (textOf(object.goal) !== 'single') return [];
+        const issues = [];
+        const connected = geometry => !isObject(geometry) || geometry.type === 'Polygon'
+            || (geometry.type === 'MultiPolygon' && Array.isArray(geometry.coordinates) && geometry.coordinates.length === 1);
+        if (!connected(object.site)) {
+            issues.push(['A single building stands on one connected site. Save each separate building as its own design.', 'site']);
+        }
+        const take = isObject(object.geometry) ? object.geometry.landTake : null;
+        if (!connected(take?.geometry || take)) {
+            issues.push(['A single building takes one connected piece of land. Save each separate building as its own design.', 'geometry.landTake']);
+        }
+        const buildings = isObject(object.geometry) && Array.isArray(object.geometry.buildings) ? object.geometry.buildings : [];
+        if (buildings.length > 1) {
+            const ids = new Set(buildings.map(feature => feature?.properties?.buildingId ?? null));
+            if (ids.size !== 1 || ids.has(null) || ids.has('')) {
+                issues.push(['A single-building design draws one building: its stepped parts state one buildingId.', 'geometry.buildings']);
+            }
+        }
+        return issues.map(([message, field]) => ({ code: 'design-single-building', message, field }));
+    }
+
     const publicationSize = localDesign => cid().canonicalBytes(published(localDesign)).byteLength;
 
-    return { SCHEMA, PAYLOAD_KEYS, MAX_PUBLISHED_OBJECT_BYTES, publicationSize, published, cidOf, validate };
+    return { SCHEMA, PAYLOAD_KEYS, MAX_PUBLISHED_OBJECT_BYTES, publicationSize, published, cidOf, validate, authoringIssues };
 });

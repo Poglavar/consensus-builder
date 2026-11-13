@@ -8,7 +8,8 @@ const require = createRequire(import.meta.url);
 const turf = require('@turf/turf');
 const {
     _formBuildingParcel,
-    shouldFormOwnBuildingParcel
+    shouldFormOwnBuildingParcel,
+    buildingMaterialGeometry
 } = require('../../frontend/js/proposals/apply/buildings.js');
 const { ProposalManager } = require('../../frontend/js/proposal-manager.js');
 require('../../frontend/js/proposal-parcel-identity.js'); // installs _getParcelIdFromFeature etc.
@@ -83,16 +84,25 @@ function makeManager(parcels) {
 
 describe('building parcel formation routing', () => {
     it('forms an ordinary one-footprint freeform building parcel', () => {
-        expect(shouldFormOwnBuildingParcel({ goal: 'single' }, 'single', 1)).toBe(true);
+        expect(shouldFormOwnBuildingParcel({ goal: 'single' }, 'single')).toBe(true);
     });
 
     it('does not let legacy plan metadata change ordinary single-building parcel formation', () => {
-        expect(shouldFormOwnBuildingParcel({ coordinatedPlanId: 'upu-borovje' }, 'single', 1)).toBe(true);
+        expect(shouldFormOwnBuildingParcel({ coordinatedPlanId: 'upu-borovje' }, 'single')).toBe(true);
     });
 
-    it('does not form parcels for multi-footprint or non-single building proposals', () => {
-        expect(shouldFormOwnBuildingParcel({}, 'single', 2)).toBe(false);
-        expect(shouldFormOwnBuildingParcel({}, 'buildings', 1)).toBe(false);
+    it('takes a stepped building\'s material as the union of its parts', () => {
+        const part = (w, e) => ({ type: 'Feature', properties: { buildingId: 'tower' },
+            geometry: { type: 'Polygon', coordinates: [[[w, 45.8], [e, 45.8], [e, 45.8001], [w, 45.8001], [w, 45.8]]] } });
+        const material = buildingMaterialGeometry([part(15.96, 15.9601), part(15.9601, 15.9602)], turf);
+        expect(material.type).toBe('Polygon');
+        expect(turf.area(material)).toBeCloseTo(turf.area(part(15.96, 15.9602)), 0);
+        expect(buildingMaterialGeometry([part(15.96, 15.9601)], turf)).toEqual(part(15.96, 15.9601).geometry);
+    });
+
+    it('forms the parcel of a stepped single building too, and none for other building goals', () => {
+        expect(shouldFormOwnBuildingParcel({}, 'single')).toBe(true);
+        expect(shouldFormOwnBuildingParcel({}, 'buildings')).toBe(false);
     });
 });
 

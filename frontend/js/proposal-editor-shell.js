@@ -2069,6 +2069,12 @@
             reopenFailedProposalDraftOnce(draftId, store, { commitOnFinish: true });
             return null;
         };
+        // A single-building design is one building on one connected piece of ground
+        // (design-record.js authoringIssues): separate buildings are separate designs.
+        if ((global.DesignRecord?.authoringIssues?.(proposal) || []).length) {
+            return keepEditing(tDraft('proposalDrafts.errors.singleBuildingSplit',
+                'A single-building design is one building on one connected piece of ground. Save each separate building as its own design.'));
+        }
 
         // Every corridor draft uses the same atomic authoring boundary, whichever UI committed it.
         // The drawing tool passes atomicCorridorAuthoring explicitly as a source-level contract;

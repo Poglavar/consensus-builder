@@ -2421,6 +2421,7 @@
         "errors": {
             "draftFailed": "Não foi possível abrir este projeto para edição.",
             "instantCreateFailed": "Não foi possível guardar o novo objeto.",
+            "singleBuildingSplit": "Um projeto de edifício único é um edifício num só terreno contínuo. Guarde cada edifício separado como um projeto próprio.",
             "designSaveFailed": "Não foi possível guardar as suas alterações. Tente novamente.",
             "designSaveFailedReason": "Não foi possível guardar as suas alterações ({{reason}}). Tente novamente.",
             "structureGeometryFailed": "Não foi possível criar a geometria a partir das parcelas selecionadas.",

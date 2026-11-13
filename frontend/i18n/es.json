@@ -983,6 +983,7 @@
         "errors": {
             "draftFailed": "No se pudo abrir este diseño para editarla.",
             "instantCreateFailed": "No se pudo guardar el nuevo objeto.",
+            "singleBuildingSplit": "Un diseño de edificio único es un edificio en un solo terreno continuo. Guarda cada edificio separado como su propio diseño.",
             "designSaveFailed": "No se pudieron guardar tus cambios. Inténtalo de nuevo.",
             "designSaveFailedReason": "No se pudo guardar este diseño: {{reason}}. El borrador sigue disponible; resuelve el problema e inténtalo de nuevo.",
             "structureGeometryFailed": "No se pudo generar la geometría de las parcelas seleccionadas.",

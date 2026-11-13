@@ -69,6 +69,11 @@ describe('buildDesignRecord: a building on its parcel', () => {
         expect(content.authoredAt).toBe(AUTHORED_AT);
         expect(validateDesignContent(content)).toEqual({ ok: true, site: null, toleranceM: 0 });
         expect(cid).toBe(Cid.cidOfObject(content));
+        // A single-building design of two separate buildings is refused where it is written.
+        const square = west => ({ type: 'Polygon', coordinates: [[[west, 45.8], [west + 0.0001, 45.8], [west + 0.0001, 45.8001], [west, 45.8001], [west, 45.8]]] });
+        const twoBuildings = { ...content, goal: 'single', geometry: { ...content.geometry,
+            buildings: [square(15.96), square(15.97)].map(geometry => ({ type: 'Feature', properties: {}, geometry })) } };
+        expect(validateDesignContent(twoBuildings)).toMatchObject({ ok: false, status: 400, code: 'design-single-building', field: 'geometry.buildings' });
         expect(cid).toBe(cidOf(canonicalBytes(content)));
         // The same pick at the same build time is the same CID; another build time is another design,
         // which is why the runner checkpoints the build time with the CID.

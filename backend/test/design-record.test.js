@@ -266,3 +266,25 @@ describe('validate', () => {
         expect(codes({ ...valid(), structureProposal: [1] })).toEqual(['design-payload']);
     });
 });
+
+describe('authoringIssues', () => {
+    const square = (w, s0, size = 0.0001) => ({ type: 'Polygon', coordinates: [[[w, s0], [w + size, s0], [w + size, s0 + size], [w, s0 + size], [w, s0]]] });
+    const part = (geometry, buildingId) => ({ type: 'Feature', properties: buildingId === undefined ? {} : { buildingId }, geometry });
+    const single = (overrides = {}) => ({ goal: 'single', site: square(15.96, 45.8), geometry: { buildings: [part(square(15.96, 45.8))], landTake: square(15.96, 45.8) }, ...overrides });
+    const codes = design => DesignRecord.authoringIssues(design).map(issue => issue.field);
+
+    it('accepts one building, and a stepped building whose parts state one buildingId', () => {
+        expect(codes(single())).toEqual([]);
+        expect(codes(single({ geometry: { buildings: [part(square(15.96, 45.8), 'b'), part(square(15.9601, 45.8), 'b')], landTake: square(15.96, 45.8, 0.0002) } }))).toEqual([]);
+    });
+
+    it('refuses separate buildings, a disconnected site or land take, and leaves other goals alone', () => {
+        const apart = { type: 'MultiPolygon', coordinates: [square(15.96, 45.8).coordinates, square(15.97, 45.8).coordinates] };
+        expect(codes(single({ geometry: { buildings: [part(square(15.96, 45.8)), part(square(15.97, 45.8))], landTake: square(15.96, 45.8) } }))).toEqual(['geometry.buildings']);
+        expect(codes(single({ geometry: { buildings: [part(square(15.96, 45.8), 'a'), part(square(15.9601, 45.8), 'b')], landTake: square(15.96, 45.8) } }))).toEqual(['geometry.buildings']);
+        expect(codes(single({ site: apart, geometry: { buildings: [part(square(15.96, 45.8))], landTake: apart } }))).toEqual(['site', 'geometry.landTake']);
+        expect(DesignRecord.authoringIssues({ ...single({ site: apart }), goal: 'buildings' })).toEqual([]);
+        expect(DesignRecord.authoringIssues(single({ site: apart }))[0].code).toBe('design-single-building');
+    });
+});
+
