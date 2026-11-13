@@ -4,7 +4,7 @@
 // copied /designs/<cid> link imports and applies the design on another device, and a second Share
 // sends nothing again.
 import { test, expect } from '../helpers/fixtures';
-import { openCity, createSpace, showProposal, showProposalTab, proposalState, chooseProfileName, stubBasemapTiles, openOnAnotherDevice } from '../helpers/runtime';
+import { openCity, closeShareBox, createSpace, showProposal, showProposalTab, proposalState, chooseProfileName, stubBasemapTiles, openOnAnotherDevice } from '../helpers/runtime';
 import { canonicalJson, cidOfBytes, cidOfObject, pageIndex, SharedIndex } from '../helpers/mocks/shared-server';
 
 test.beforeEach(async ({ mockApi: page }) => {
@@ -38,6 +38,7 @@ test('Share on an applied park publishes its design object under the CID the bro
   await showProposal(page, proposalId);
   await details.locator('.btn-share-proposal').click();
   await expect(page.getByRole('alertdialog', { name: 'Share design or plan?', exact: true })).toHaveCount(0);
+  await closeShareBox(page);
   await showProposalTab(page, 'overview');
   await expect(details.locator('.cb-badge--published')).toBeVisible({ timeout: 30_000 });
 
@@ -76,6 +77,7 @@ test('Share on an applied park publishes its design object under the CID the bro
   await details.locator('.btn-share-proposal').click();
   await expect(page.getByRole('alertdialog', { name: 'Share design or plan?', exact: true })).toHaveCount(0);
   await expect.poll(() => page.evaluate(() => navigator.clipboard.readText())).toBe(link);
+  expect(await closeShareBox(page)).toBe(link);
   expect(postsOf(index)).toHaveLength(1);
 
   // Another device opens the link (in 2D here): the design is read from the index by CID, stored as

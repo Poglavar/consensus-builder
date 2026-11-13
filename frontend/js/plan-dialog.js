@@ -141,17 +141,19 @@
         const published=await win.PlanWorkspace.publication(row);
         const body=node('div','plan-share');body.append(node('h3','',row.content.title),memberList(row));
         body.append(node('p','sheet-note',t('shareFixed')));
-        const link=node('input','design-link__input');link.type='text';link.readOnly=true;link.setAttribute('aria-label',t('planLink'));link.hidden=!published;link.value=published?.link||'';
+        // A published plan shows its link and the ways to share it (ShareDialog.render: Copy link,
+        // Post on X, the device's Share…); an unpublished one is published first, which copies it.
+        const showLink=async(link)=>body.append(win.ShareDialog.render({kind:'plan',title:row.content.title,link,copied:await win.DesignSync.copyLink(link)}));
+        if(published){const dialog=openDialog(t('sharePlan'),body);await showLink(published.link);return dialog;}
         const status=node('p','plan-dialog__status');status.setAttribute('role','status');
-        const publish=button(t(published?'copyLink':'publishAndCopy'),async()=>{
-            status.textContent=link.value?'':t('publishing');
+        const publish=button(t('publishAndCopy'),async()=>{
+            status.textContent=t('publishing');
             try {
-                if(!link.value){const result=await win.PlanWorkspace.publish(row);link.value=result.link;link.hidden=false;}
-                status.textContent=await win.DesignSync.copyLink(link.value)?t('copied'):t('copyLinkManually');
-                publish.textContent=t('copyLink');
+                const result=await win.PlanWorkspace.publish(row);
+                status.remove();publish.remove();await showLink(result.link);
             }catch(error){status.textContent=error.message;}
         },true);
-        body.append(link,status,publish);return openDialog(t('sharePlan'),body);
+        body.append(status,publish);return openDialog(t('sharePlan'),body);
     }
     // The construction windows of a plan's members on one month axis. Each bar opens its row.
     function scheduleStrip(content, { titles = new Map(), onPick = null } = {}) {

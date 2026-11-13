@@ -5,7 +5,7 @@
 import { Browser, BrowserContext, Page } from '@playwright/test';
 import { test, expect } from '../helpers/fixtures';
 import { waitForMapReady, panMap } from '../helpers/app';
-import { openCity, createSpace, showProposal } from '../helpers/runtime';
+import { closeShareBox, openCity, createSpace, showProposal } from '../helpers/runtime';
 import { mockAllApiRoutes } from '../helpers/mocks/api-routes';
 import { attachSharedIndex, fileAgreement, filePlan, pageIndex, SharedIndex } from '../helpers/mocks/shared-server';
 
@@ -30,6 +30,7 @@ async function publishPark(page: Page): Promise<string> {
   await page.locator('#proposal-details-panel .btn-share-proposal').click();
   const index = pageIndex(page);
   await expect.poll(() => index.designs.size, { timeout: 30_000 }).toBe(1);
+  await closeShareBox(page);
   return [...index.designs.keys()][0];
 }
 
@@ -150,12 +151,10 @@ test.describe('Worldwide publication and city routing @core', () => {
       await expect.poll(() => new URL(device.page.url()).searchParams.get('agreement')).toBeTruthy();
       const arrivedUrl = new URL(device.page.url());
       expect(arrivedUrl.pathname).toBe('/');
-      const selectedAgreementId = arrivedUrl.searchParams.get('agreement');
-      expect(selectedAgreementId).toBeTruthy();
-      expect(await device.page.evaluate(({ agreementId, cid }) => {
-        const agreement = agreementId ? (window as any).AgreementStore.get(agreementId) : null;
-        return agreement?.published?.cid === cid;
-      }, { agreementId: selectedAgreementId, cid })).toBe(true);
+      // The address names the proposed agreement by its CID, so it opens on any device; this device
+      // keeps its local copy of it.
+      expect(arrivedUrl.searchParams.get('agreement')).toBe(cid);
+      expect(await device.page.evaluate(cid => (window as any).AgreementSync.localCopyOf(cid)?.published?.cid === cid, cid)).toBe(true);
       const panel = device.page.locator('section#agreement-panel');
       await expect(panel).toBeVisible({ timeout: 60_000 });
       await expect(device.page.locator('#agreement-panel-title')).toHaveText(title);

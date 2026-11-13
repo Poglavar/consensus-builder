@@ -2,7 +2,7 @@
 import { Page } from '@playwright/test';
 import { test, expect } from '../helpers/fixtures';
 import { waitForMapReady } from '../helpers/app';
-import { clickDesignOnMap, expandStackSection, stackSection, stubBasemapTiles } from '../helpers/runtime';
+import { clickDesignOnMap, closeShareBox, expandStackSection, stackSection, stubBasemapTiles } from '../helpers/runtime';
 import { fileDesign, filePlan, pageIndex } from '../helpers/mocks/shared-server';
 import { sampleParcels } from '../helpers/mocks/parcel-data';
 
@@ -60,6 +60,7 @@ test('design Share copies only that design; saved-plan Share opens its exact mem
   await expect(page.getByRole('alertdialog', { name: 'Share design or plan?', exact: true })).toHaveCount(0);
   await expect.poll(() => page.evaluate(() => navigator.clipboard.readText()))
     .toContain(`/designs/${cids[0]}`);
+  expect(await closeShareBox(page)).toContain(`/designs/${cids[0]}`);
   expect(index.requests.filter(row => row.method === 'POST' && ['/pins', '/designs', '/plans'].includes(row.path))).toHaveLength(0);
 
   await expandStackSection(page, 'plans');
@@ -108,5 +109,6 @@ test('design Share stays on the selected design when it belongs to several plans
   await expect(page.locator('.share-plan-panel')).toHaveCount(0);
   await expect.poll(() => page.evaluate(() => navigator.clipboard.readText()))
     .toContain(`/designs/${cids[0]}`);
+  await closeShareBox(page);
   expect(index.requests.filter(row => row.method === 'POST' && ['/pins', '/designs', '/plans'].includes(row.path))).toHaveLength(0);
 });

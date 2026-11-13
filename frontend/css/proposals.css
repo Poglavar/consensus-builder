@@ -1492,12 +1492,6 @@ body.map-pick-highlighting .leaflet-pick-highlight-pane {
 }
 
 /* The published design's link when the clipboard refused it: shown selected, to copy by hand. */
-.design-link {
-    display: flex;
-    flex-direction: column;
-    gap: var(--cb-space-2);
-}
-
 .design-link__input {
     flex: 1;
     min-width: 0;

@@ -12,14 +12,15 @@
     const PARAMS = Object.freeze({ parcels: 'parcel', designs: 'design', plans: 'plan', agreements: 'agreement' });
 
     // A published design is named by its CID (publishedCid: DesignSync.publishedCid), so the address
-    // also opens on another device; an unpublished one by its local key. A plan by its CID; an
-    // agreement by its local id, or its CID when it is read from the index.
+    // also opens on another device; an unpublished one by its local key. A plan by its CID. A
+    // proposed agreement by its CID (restore finds this device's copy of it first); a draft by its
+    // local id.
     function idOf(kind, instance, publishedCid = () => null) {
         if (!instance) return null;
         const record = instance.proposal;
         const id = kind === 'designs' ? (record ? publishedCid(record) || instance.id : instance.serverId || instance.cid || instance.id)
             : kind === 'plans' ? instance.cid || instance.id
-            : kind === 'agreements' ? instance.localId || instance.cid || instance.id
+            : kind === 'agreements' ? instance.cid || instance.localId || instance.id
             : instance.id;
         return id == null || id === '' ? null : String(id);
     }
@@ -64,7 +65,15 @@
         return url.toString().replace(/([?&]at=)([^&#]*)/, (match, key, value) => key + value.replace(/%2C/gi, ','));
     }
 
-    const pure = { PARAMS, idOf, selectionOf, read, withSelection };
+    // The address once the selected record was published under a new id (a draft's local key → its
+    // CID), or null when it names something else.
+    function renamed(href, kind, from, to) {
+        const current = read(new URL(href).search);
+        if (!current || current.kind !== kind || current.id !== String(from) || !to || String(to) === current.id) return null;
+        return withSelection(href, { kind, id: String(to) });
+    }
+
+    const pure = { PARAMS, idOf, selectionOf, read, withSelection, renamed };
     if (!global || !global.document) return Object.freeze(pure);
 
     function write(selection) {
@@ -73,6 +82,15 @@
             if (next) global.history.replaceState(global.history.state, '', next);
         } catch (error) {
             console.warn(`[${new Date().toISOString()}] [SelectionAddress] could not keep the selection in the address`, error);
+        }
+    }
+
+    function rename(kind, from, to) {
+        try {
+            const next = renamed(global.location.href, kind, from, to);
+            if (next) global.history.replaceState(global.history.state, '', next);
+        } catch (error) {
+            console.warn(`[${new Date().toISOString()}] [SelectionAddress] could not rename ${kind} ${from} in the address`, error);
         }
     }
 
@@ -113,6 +131,6 @@
     if (global.document.readyState === 'complete') restore();
     else global.addEventListener('load', restore, { once: true });
 
-    return Object.freeze({ ...pure, write, restore, keepsView,
+    return Object.freeze({ ...pure, write, rename, restore, keepsView,
         selectionOf: (stack, selectedInstance) => selectionOf(stack, selectedInstance, record => global.DesignSync?.publishedCid?.(record) || null) });
 });

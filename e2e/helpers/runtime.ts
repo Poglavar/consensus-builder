@@ -310,6 +310,17 @@ export async function chooseProfileName(page: Page, name: string): Promise<void>
   await expect(page.locator('#username-text')).toHaveText(name);
 }
 
+// Share on a design (and on a plan or agreement) ends in the Share box (js/ui/share-dialog.js): the
+// link with Copy link, Post on X and the device's Share…. Close dismisses it; resolves the link shown.
+export async function closeShareBox(page: Page): Promise<string> {
+  const box = page.locator('.share-dialog-box');
+  await expect(box).toBeVisible({ timeout: 30_000 });
+  const link = await box.locator('.share-panel__link').inputValue();
+  await box.locator('.cb-dialog__footer').getByRole('button', { name: 'Close', exact: true }).click();
+  await expect(box).toBeHidden();
+  return link;
+}
+
 export async function createSpace(page: Page, kind: 'park'|'square'|'lake', parcelId = PARCEL_ID): Promise<string> {
   await openParcel(page, 'proposals', parcelId);
   await page.locator(`.parcel-build-btn--${kind}`).click();

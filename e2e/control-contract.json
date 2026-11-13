@@ -2946,9 +2946,9 @@
       ]
     },
     {
-      "id": "control-337599a557e733-1",
+      "id": "control-fd5d7448624e8f-1",
       "source": "js/agreement-panel.js",
-      "markup": "<button type=\"button\" class=\"btn btn-sm\" data-agreement-action=\"link\">",
+      "markup": "<button type=\"button\" class=\"btn btn-sm\" data-agreement-action=\"share\">",
       "interaction": "click",
       "controlType": "button"
     },
@@ -5440,13 +5440,6 @@
       "controlType": "button"
     },
     {
-      "id": "control-6543e34ca63291-1",
-      "source": "js/parcel-layout.js",
-      "markup": "<button type=\"button\" class=\"btn\" data-reparcel-courtyard-building>",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
       "id": "control-2fab90234fe0bf-1",
       "source": "js/parcel-layout.js",
       "markup": "<input type=\"file\" accept=\".geojson,.json,application/geo+json,application/json\" data-reparcel-upload aria-label=\"${uploadLabel}\" hidden>",
@@ -5457,6 +5450,13 @@
       "id": "control-06c6adb0a8f73c-1",
       "source": "js/parcel-layout.js",
       "markup": "<button type=\"button\" class=\"btn btn-icon\" data-reparcel-download title=\"${downloadLabel}\" aria-label=\"${downloadLabel}\">"
+    },
+    {
+      "id": "control-6543e34ca63291-1",
+      "source": "js/parcel-layout.js",
+      "markup": "<button type=\"button\" class=\"btn\" data-reparcel-courtyard-building>",
+      "interaction": "click",
+      "controlType": "button"
     },
     {
       "id": "control-80345f9f7641d2-1",
@@ -8027,21 +8027,6 @@
       "controlType": "dynamic"
     },
     {
-      "id": "control-b8c93f4d8db5cb-1",
-      "source": "js/proposals/sharing-routes.js",
-      "markup": "document.createElement('input')",
-      "interaction": "change",
-      "controlType": "input",
-      "exempt": "The design link shown when the clipboard refuses it is a read-only output for copying by hand.",
-      "mustRemainInactive": true,
-      "guards": [
-        {
-          "source": "js/proposals/sharing-routes.js",
-          "includes": "input.readOnly = true;"
-        }
-      ]
-    },
-    {
       "id": "control-64e2e66db84232-1",
       "source": "js/road-drawing.js",
       "markup": "document.createElement('button')",
@@ -9260,6 +9245,11 @@
       "id": "control-66575a114a315a-1",
       "source": "js/ui/object-list.js",
       "markup": "doc.createElement('button')"
+    },
+    {
+      "id": "control-5f1bce66084fdf-1",
+      "source": "js/ui/share-dialog.js",
+      "markup": "root.document.createElement(tag)"
     },
     {
       "id": "control-c7e3c78927698d-1",

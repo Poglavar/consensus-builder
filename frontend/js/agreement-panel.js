@@ -523,7 +523,7 @@
         return { tone: 'success', label: tr('agreement.publish.statusActive', 'Active') };
     }
 
-    // A proposed agreement: its CID (shortened; the whole one in the title), Copy link, the index's
+    // A proposed agreement: its CID (shortened; the whole one in the title), Share, the index's
     // status, and where its parties decide: the owners' card, or the community note.
     function publishedHtml({ published, remote = null, electorate = 'owners', readOnly = false, consultation = null } = {}, tr = t) {
         if (!published) return '';
@@ -538,7 +538,7 @@
         return sectionHtml(tr('threeMode.parcelPanel.proposed', 'Proposed'),
             '<div class="agreement-panel-published">'
             + `<code class="agreement-panel-cid" title="${esc(cid)}">${esc(short)}</code>`
-            + `<button type="button" class="btn btn-sm" data-agreement-action="link"><i class="fas fa-link" aria-hidden="true"></i> ${esc(tr('agreement.publish.copyLink', 'Copy link'))}</button>`
+            + `<button type="button" class="btn btn-sm" data-agreement-action="share"><i class="fas fa-share-alt" aria-hidden="true"></i> ${esc(tr('panel.proposal.actions.share', 'Share'))}</button>`
             + `<span class="cb-badge cb-badge--${status.tone}" data-agreement-remote-status="${esc((remote && remote.status) || '')}">${esc(status.label)}</span>`
             + '</div>'
             + decide);
@@ -1193,6 +1193,7 @@
         }
 
         // Propose (agreement-sync.js): publishes the designs and the agreement, then copies the link.
+        // Mint and fund follow in this panel, so no box opens over it: Share sits beside the CID.
         async function propose() {
             const id = state.id;
             let proposed = false;
@@ -1201,6 +1202,8 @@
                 log(`${id} proposed as ${cid}`);
                 proposed = true;
                 state.remote = null;
+                // The address named the draft by its local id: now it names the proposed agreement.
+                win.SelectionAddress?.rename('agreements', id, cid);
                 if (await win.DesignSync.copyLink(link)) {
                     win.showEphemeralMessage(t('agreement.publish.linkCopied', 'Agreement proposed. Its link is copied.'), 5000, 'success');
                 } else {
@@ -1216,12 +1219,12 @@
             else if (proposed && !isOpen()) await open(id).catch(error => report(`opening ${id} after proposing failed`, error));
         }
 
-        async function copyLink() {
+        // Share: the agreement's link, copied, in the Share box (Post on X, the device's Share…).
+        async function share() {
             const agreement = state.agreement;
             if (!agreement || !agreement.published) return;
             const link = win.AgreementSync.agreementLink(agreement.published.cid, { city: agreement.city });
-            if (await win.DesignSync.copyLink(link)) win.showEphemeralMessage(t('agreement.publish.linkCopiedShort', 'Agreement link copied.'), 3000, 'success');
-            else win.showEphemeralMessage(link, 9000, 'info');
+            await win.ShareDialog.open({ kind: 'agreement', title: agreement.title, link });
         }
 
         // ---- chain actions -----------------------------------------------------------------------
@@ -1532,7 +1535,7 @@
                 // The agreement's own link route: applies its designs, keeps it here and opens it in full.
                 case 'apply-agreement': win.BusyControl.track(action, () => win.AgreementSync.handleAgreementRoute(state.readOnlyAgreement.published.cid)).catch(error => win.showStyledAlert(error.message)); break;
                 case 'propose': win.BusyControl.track(action, () => propose()); break;
-                case 'link': copyLink(); break;
+                case 'share': share(); break;
                 // The agreement with the plan file of its plan (agreement-file.js); Import agreement file reads it back.
                 case 'download': win.BusyControl.track(action, () => win.PlanFileUI.downloadAgreement(state.agreement,
                     state.readOnlyDesigns ? [...state.readOnlyDesigns.values()] : [])).catch(error => win.showStyledAlert(error.message)); break;

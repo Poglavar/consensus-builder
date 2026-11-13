@@ -448,7 +448,7 @@ describe('panel HTML', () => {
         expect(panel.publishedHtml({ published: null })).toBe('');
         const owners = panel.publishedHtml({ published, remote: { cid, status: 'active' }, electorate: 'owners' });
         expect(owners).toContain(`<code class="agreement-panel-cid" title="${cid}">${cid.slice(0, 12)}…${cid.slice(-6)}</code>`);
-        expect(owners).toContain('data-agreement-action="link"');
+        expect(owners).toContain('data-agreement-action="share"');
         expect(owners).toContain('data-agreement-remote-status="active"');
         expect(owners).toContain('cb-badge--success');
         expect(owners).toContain('data-approval-card-slot');

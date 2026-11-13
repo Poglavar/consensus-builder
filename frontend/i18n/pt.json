@@ -1880,7 +1880,6 @@
             "propose": "Propor",
             "statusActive": "Ativo",
             "statusExpired": "Expirado",
-            "copyLink": "Copiar ligação",
             "route": {
                 "failed": "Não foi possível abrir o acordo.",
                 "designsFailed": {
@@ -1896,7 +1895,6 @@
             "readOnlyPieces": "As suas porções estão disponíveis apenas por hash nesta vista só de leitura.",
             "linkCopied": "Acordo proposto. A ligação foi copiada.",
             "proposedAt": "Acordo proposto: {{link}}",
-            "linkCopiedShort": "Ligação do acordo copiada.",
             "decisionKept": "Ainda não foi partilhada: o servidor não recebeu a decisão. Esta será enviada novamente na próxima leitura das decisões deste acordo nesta sessão.",
             "decisionClosed": "Este acordo já não aceita decisões.",
             "actForOwnerHint": "Um membro da lente deste acordo confirma em nome de que proprietários a sua carteira pode atuar. Nada é aceite até rever e assinar.",
@@ -4207,10 +4205,6 @@
             },
             "shareHint": "Publicar este projeto e copiar a respetiva ligação",
             "publishedAs": "Publicado como:",
-            "linkCopied": "Projeto publicado. A ligação foi copiada.",
-            "publishedTitle": "Projeto publicado",
-            "copyByHand": "Não foi possível copiar a ligação automaticamente. Copie-a aqui:",
-            "linkLabel": "Ligação para o projeto publicado",
             "errors": {
                 "cidMismatch": "O servidor calculou uma identidade diferente para este projeto, pelo que nada foi publicado.",
                 "displaced": "Outro projeto deste plano ocupa o mesmo terreno, por isso os dois não podem coexistir.",
@@ -4949,6 +4943,44 @@
         "inAgreements": "Acordos que incluem este projeto ({{count}})",
         "copyCoordinates": "Copiar coordenadas",
         "copied": "Coordenadas copiadas"
+    },
+    "share": {
+        "title": {
+            "design": "Partilhar design",
+            "plan": "Partilhar plano",
+            "agreement": "Partilhar acordo",
+            "bet": "Partilhar aposta"
+        },
+        "linkLabel": {
+            "design": "Link do design",
+            "plan": "Link do plano",
+            "agreement": "Link do acordo",
+            "bet": "Link da aposta"
+        },
+        "copy": "Copiar link",
+        "copied": "Link copiado.",
+        "copyByHand": "Copie o link acima.",
+        "postOnX": "Publicar no X",
+        "native": "Partilhar…",
+        "nativeFailed": "Não foi possível abrir o menu de partilha. Copie o link.",
+        "postsAbout": "Publicações sobre isto no X",
+        "postText": {
+            "design": "Design: {{title}}",
+            "plan": "Plano: {{title}}",
+            "agreement": "Acordo proposto: {{title}}",
+            "bet": "{{title}}"
+        },
+        "untitled": {
+            "design": "Um design",
+            "plan": "Um plano",
+            "agreement": "Um acordo",
+            "bet": "Uma aposta"
+        },
+        "published": {
+            "design": "Design publicado.",
+            "plan": "Plano publicado.",
+            "agreement": "Acordo proposto."
+        }
     },
     "bets": {
         "row": {
@@ -8751,12 +8783,8 @@
         "addToPlan": "Adicionar ao plano",
         "sharePlan": "Partilhar plano",
         "shareFixed": "Partilha este plano guardado e as respetivas propostas exatas. Para alterar as propostas, edita primeiro o plano.",
-        "planLink": "Ligação do plano",
         "publishAndCopy": "Publicar e copiar ligação",
         "publishing": "A publicar o plano…",
-        "copied": "Ligação copiada.",
-        "copyLinkManually": "Copia a ligação acima.",
-        "copyLink": "Copiar ligação",
         "createAgreement": "Criar acordo",
         "openPlan": "Abrir plano",
         "noPlans": "Ainda não há planos guardados.",

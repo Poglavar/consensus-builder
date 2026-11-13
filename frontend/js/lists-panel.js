@@ -239,8 +239,7 @@
             }
             const cid = row.local?.published?.cid || row.record.cid;
             const link = win.AgreementSync.agreementLink(cid, { city: row.record.city });
-            const copied = await win.DesignSync.copyLink(link);
-            win.showEphemeralMessage(copied ? t('planDialog.copied') : link, 6000, 'info');
+            return win.ShareDialog.open({ kind: 'agreement', title: row.title, link });
         }
         async function remove(row, kind) {
             if (!row.local) return;

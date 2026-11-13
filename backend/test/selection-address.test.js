@@ -20,6 +20,8 @@ describe('the selection a stack names', () => {
         expect(selectionOf(stack('plans', { plans: [{ id: 'x', cid: 'bafyp' }] }), selectedInstance)).toEqual({ kind: 'plans', id: 'bafyp' });
         expect(selectionOf(stack('agreements', { agreements: [{ id: 'bafya', localId: 'agreement-3' }] }), selectedInstance)).toEqual({ kind: 'agreements', id: 'agreement-3' });
         expect(selectionOf(stack('agreements', { agreements: [{ id: 'bafya', cid: 'bafya' }] }), selectedInstance)).toEqual({ kind: 'agreements', id: 'bafya' });
+        // A proposed agreement this device holds is named by its CID, which opens on any device.
+        expect(selectionOf(stack('agreements', { agreements: [{ id: 'agreement-3', localId: 'agreement-3', cid: 'bafya' }] }), selectedInstance)).toEqual({ kind: 'agreements', id: 'bafya' });
     });
     it('names the parcel of the spot for a formed piece, and leaves buildings to the planning inspector', () => {
         const spot = { built: [{ id: 'b-1' }], formed: [{ id: 'piece-1' }], parcels: [{ id: 'HR-335258-4341/2' }] };
@@ -42,6 +44,14 @@ describe('the address with a selection', () => {
         expect(withSelection('http://x/?at=45.8,15.9,17&agreement=z', null)).toBe('http://x/?at=45.8,15.9,17');
         expect(withSelection('http://x/?at=45.8,15.9,17', null)).toBeNull();
         expect(withSelection('http://x/?at=45.8,15.9,17&design=a', { kind: 'designs', id: 'a' })).toBeNull();
+    });
+    it('renames a draft to its CID once it is published, and only that draft', () => {
+        const { renamed } = SelectionAddress;
+        expect(renamed('http://x/?at=45.8,15.9,17&design=local-7', 'designs', 'local-7', 'bafyd')).toBe('http://x/?at=45.8,15.9,17&design=bafyd');
+        expect(renamed('http://x/?agreement=agreement-3', 'agreements', 'agreement-3', 'bafya')).toBe('http://x/?agreement=bafya');
+        expect(renamed('http://x/?design=other', 'designs', 'local-7', 'bafyd')).toBeNull();
+        expect(renamed('http://x/?plan=local-7', 'designs', 'local-7', 'bafyd')).toBeNull();
+        expect(renamed('http://x/?design=bafyd', 'designs', 'bafyd', 'bafyd')).toBeNull();
     });
     it('replaces a link that opened a record, so a reload does not apply its designs again', () => {
         expect(withSelection('http://x/plans/bafyp?at=45.8,15.9,17', { kind: 'plans', id: 'bafyp' })).toBe('http://x/?at=45.8,15.9,17&plan=bafyp');

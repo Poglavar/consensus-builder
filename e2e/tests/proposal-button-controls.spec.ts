@@ -2,7 +2,7 @@ import { openPlanActions } from '../helpers/plan-actions';
 // Exercise proposal action buttons and assert the resulting UI and stored state:
 // the grain-score Repeat control and Share publishing a design (POST /designs).
 import { test, expect } from '../helpers/fixtures';
-import { openCity, createSpace, showProposal } from '../helpers/runtime';
+import { closeShareBox, openCity, createSpace, showProposal } from '../helpers/runtime';
 import { pageIndex } from '../helpers/mocks/shared-server';
 
 async function showExpandedProposal(page: import('@playwright/test').Page, proposalId: string): Promise<void> {
@@ -54,6 +54,11 @@ test.describe('proposal detail button controls @features', () => {
     const [cid] = [...index.designs.keys()];
     const link = `${new URL(page.url()).origin}/designs/${cid}?city=zg&3d&lang=en`;
     await expect.poll(() => page.evaluate(() => navigator.clipboard.readText())).toBe(link);
+    const post = new URL(String(await page.locator('.share-dialog-box').getByRole('link', { name: 'Post on X', exact: true }).getAttribute('href')));
+    expect([post.host, post.pathname, post.searchParams.get('url')]).toEqual(['x.com', '/intent/post', link]);
+    expect(await closeShareBox(page)).toBe(link);
+    // The address names the published design by its CID, so a copied address opens it elsewhere.
+    expect(new URL(page.url()).searchParams.get('design')).toBe(cid);
     const individualLink = new URL(link);
     expect(individualLink.pathname).toBe('/designs/' + cid);
     expect(index.requests.filter(request => request.method === 'POST').map(request => request.path)).toEqual(['/designs']);
@@ -98,6 +103,8 @@ test.describe('proposal detail button controls @features', () => {
     const planUrl = new URL(await planLink.inputValue());
     expect(planUrl.pathname).toMatch(/^\/plans\//);
     await expect.poll(() => page.evaluate(() => navigator.clipboard.readText())).toBe(planUrl.toString());
+    const planPost = new URL(String(await planShare.getByRole('link', { name: 'Post on X', exact: true }).getAttribute('href')));
+    expect(planPost.searchParams.get('url')).toBe(planUrl.toString());
     const planPosts = index.requests.filter(request => request.method === 'POST').slice(beforePlanShare);
     expect(planPosts.map(request => request.path)).toContain('/plans');
     expect(planPosts.some(request => request.path === '/designs')).toBe(false);

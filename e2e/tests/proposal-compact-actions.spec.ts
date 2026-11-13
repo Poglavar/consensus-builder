@@ -2,7 +2,7 @@
 // They cover compact-card actions and the narrow mobile footer, where a visible button must remain
 // reachable and complete its real UI transition rather than merely exist in the rendered markup.
 import { test, expect } from '../helpers/fixtures';
-import { openCity, proposalState, showProposal, PARCEL_GEOMETRY, PARCEL_ID, showProposalTab } from '../helpers/runtime';
+import { closeShareBox, openCity, proposalState, showProposal, PARCEL_GEOMETRY, PARCEL_ID, showProposalTab } from '../helpers/runtime';
 import { pageIndex } from '../helpers/mocks/shared-server';
 
 async function addLocalEditableProposal(page: import('@playwright/test').Page, key: string): Promise<string> {
@@ -39,6 +39,7 @@ async function expectSharedAsDesign(page: import('@playwright/test').Page, propo
   const [cid] = [...pageIndex(page).designs.keys()];
   expect(await page.evaluate(id => (window as any).DesignSync.publishedCid((window as any).proposalStorage.getProposal(id)), proposalId)).toBe(cid);
   await expect.poll(() => page.evaluate(() => navigator.clipboard.readText())).toContain(`/designs/${cid}?`);
+  await closeShareBox(page);
 }
 
 async function openCompactFromProposalList(page: import('@playwright/test').Page, proposalId: string): Promise<void> {

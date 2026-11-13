@@ -1880,7 +1880,6 @@
             "propose": "Proposer",
             "statusActive": "Actif",
             "statusExpired": "Expiré",
-            "copyLink": "Copier le lien",
             "route": {
                 "failed": "L’accord n’a pas pu être ouvert.",
                 "designsFailed": {
@@ -1896,7 +1895,6 @@
             "readOnlyPieces": "Dans cette vue en lecture seule, ses portions ne sont accessibles que par leur empreinte.",
             "linkCopied": "Accord proposé. Son lien a été copié.",
             "proposedAt": "Accord proposé : {{link}}",
-            "linkCopiedShort": "Lien de l’accord copié.",
             "decisionKept": "Pas encore partagée : le serveur n’a pas enregistré la décision. Elle sera renvoyée lors de la prochaine lecture des décisions de cet accord dans cette session.",
             "decisionClosed": "Cet accord n’accepte plus de décisions.",
             "actForOwnerHint": "Un membre de l’instance de vérification de cet accord confirme pour quels propriétaires votre portefeuille peut agir. Rien n’est accepté avant votre vérification et votre signature.",
@@ -4207,10 +4205,6 @@
             },
             "shareHint": "Publier ce projet et copier son lien",
             "publishedAs": "Publié sous :",
-            "linkCopied": "Projet publié. Son lien a été copié.",
-            "publishedTitle": "Projet publié",
-            "copyByHand": "Le lien n’a pas pu être copié automatiquement. Copiez-le ici :",
-            "linkLabel": "Lien vers le projet publié",
             "errors": {
                 "cidMismatch": "Le serveur a calculé une identité différente pour ce projet ; rien n’a donc été publié.",
                 "displaced": "Un autre projet de ce plan occupe le même terrain : les deux ne peuvent pas coexister.",
@@ -4949,6 +4943,44 @@
         "inAgreements": "Accords incluant ce projet ({{count}})",
         "copyCoordinates": "Copier les coordonnées",
         "copied": "Coordonnées copiées"
+    },
+    "share": {
+        "title": {
+            "design": "Partager le design",
+            "plan": "Partager le plan",
+            "agreement": "Partager l’accord",
+            "bet": "Partager le pari"
+        },
+        "linkLabel": {
+            "design": "Lien du design",
+            "plan": "Lien du plan",
+            "agreement": "Lien de l’accord",
+            "bet": "Lien du pari"
+        },
+        "copy": "Copier le lien",
+        "copied": "Lien copié.",
+        "copyByHand": "Copiez le lien ci-dessus.",
+        "postOnX": "Publier sur X",
+        "native": "Partager…",
+        "nativeFailed": "Le menu de partage n’a pas pu s’ouvrir. Copiez le lien.",
+        "postsAbout": "Publications à ce sujet sur X",
+        "postText": {
+            "design": "Design : {{title}}",
+            "plan": "Plan : {{title}}",
+            "agreement": "Accord proposé : {{title}}",
+            "bet": "{{title}}"
+        },
+        "untitled": {
+            "design": "Un design",
+            "plan": "Un plan",
+            "agreement": "Un accord",
+            "bet": "Un pari"
+        },
+        "published": {
+            "design": "Design publié.",
+            "plan": "Plan publié.",
+            "agreement": "Accord proposé."
+        }
     },
     "bets": {
         "row": {
@@ -8751,12 +8783,8 @@
         "addToPlan": "Ajouter au plan",
         "sharePlan": "Partager le plan",
         "shareFixed": "Partage ce plan enregistré et ses conceptions exactes. Pour modifier les conceptions, modifiez d’abord le plan.",
-        "planLink": "Lien du plan",
         "publishAndCopy": "Publier et copier le lien",
         "publishing": "Publication du plan…",
-        "copied": "Lien copié.",
-        "copyLinkManually": "Copiez le lien ci-dessus.",
-        "copyLink": "Copier le lien",
         "createAgreement": "Créer un accord",
         "openPlan": "Ouvrir le plan",
         "noPlans": "Aucun plan enregistré pour le moment.",

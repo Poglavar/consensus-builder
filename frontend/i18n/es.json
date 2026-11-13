@@ -1164,10 +1164,6 @@
             },
             "shareHint": "Publica este diseño y copia su enlace",
             "publishedAs": "Publicado como:",
-            "linkCopied": "Diseño publicado. Se ha copiado su enlace.",
-            "publishedTitle": "Diseño publicado",
-            "copyByHand": "No se pudo copiar el enlace automáticamente. Cópialo desde aquí:",
-            "linkLabel": "Enlace al diseño publicado",
             "errors": {
                 "cidMismatch": "El servidor calculó una identidad distinta para este diseño, así que no se publicó nada.",
                 "displaced": "Otro diseño de este plan ocupa el mismo terreno, así que los dos no pueden estar a la vez.",
@@ -7681,6 +7677,44 @@
             "farAway": "La respuesta tiene {count} polígono(s), pero ninguno está cerca de esta vista del mapa."
         }
     },
+    "share": {
+        "title": {
+            "design": "Compartir diseño",
+            "plan": "Compartir plan",
+            "agreement": "Compartir acuerdo",
+            "bet": "Compartir apuesta"
+        },
+        "linkLabel": {
+            "design": "Enlace del diseño",
+            "plan": "Enlace del plan",
+            "agreement": "Enlace del acuerdo",
+            "bet": "Enlace de la apuesta"
+        },
+        "copy": "Copiar enlace",
+        "copied": "Enlace copiado.",
+        "copyByHand": "Copia el enlace de arriba.",
+        "postOnX": "Publicar en X",
+        "native": "Compartir…",
+        "nativeFailed": "No se pudo abrir el menú para compartir. Copia el enlace.",
+        "postsAbout": "Publicaciones sobre esto en X",
+        "postText": {
+            "design": "Diseño: {{title}}",
+            "plan": "Plan: {{title}}",
+            "agreement": "Acuerdo propuesto: {{title}}",
+            "bet": "{{title}}"
+        },
+        "untitled": {
+            "design": "Un diseño",
+            "plan": "Un plan",
+            "agreement": "Un acuerdo",
+            "bet": "Una apuesta"
+        },
+        "published": {
+            "design": "Diseño publicado.",
+            "plan": "Plan publicado.",
+            "agreement": "Acuerdo propuesto."
+        }
+    },
     "bets": {
         "tagline": "Apuesta por las ciudades",
         "pitchLink": "Lee la presentación de Hyperstition",
@@ -8106,14 +8140,12 @@
             "statusExpired": "Expirado",
             "statusActive": "Activo",
             "communityNote": "Los votos de la comunidad se cuentan sin una transacción en la cadena de bloques.",
-            "copyLink": "Copiar enlace",
             "rederive": "Aquí sus porciones solo se conocen por sus hashes: aplica sus diseños sobre el mismo terreno para volver a derivarlas y comparar.",
             "readOnly": "Acuerdo publicado de solo lectura",
             "readOnlyStatus": "Vista de solo lectura. No se evalúa el estado del mapa local.",
             "readOnlyPieces": "En esta vista de solo lectura, las piezas solo están disponibles por su hash.",
             "linkCopied": "Acuerdo propuesto. Se ha copiado su enlace.",
             "proposedAt": "Acuerdo propuesto: {{link}}",
-            "linkCopiedShort": "Enlace al acuerdo copiado.",
             "decisionKept": "Aún no compartido: el servidor no aceptó la decisión. Se vuelve a enviar la próxima vez que se lean las decisiones de este acuerdo en esta sesión.",
             "decisionClosed": "Este acuerdo ya no admite decisiones.",
             "actForOwnerHint": "Un miembro de la lente de este acuerdo confirma por qué propietarios puede actuar tu billetera. No se acepta nada hasta que revises y firmes.",
@@ -8957,12 +8989,8 @@
         "addToPlan": "Añadir al plan",
         "sharePlan": "Compartir plan",
         "shareFixed": "Comparte este plan guardado y sus diseños exactos. Para cambiar los diseños, edita primero el plan.",
-        "planLink": "Enlace del plan",
         "publishAndCopy": "Publicar y copiar enlace",
         "publishing": "Publicando el plan…",
-        "copied": "Enlace copiado.",
-        "copyLinkManually": "Copia el enlace de arriba.",
-        "copyLink": "Copiar enlace",
         "createAgreement": "Crear acuerdo",
         "openPlan": "Abrir plan",
         "noPlans": "Aún no hay planes guardados.",

@@ -183,7 +183,7 @@ test.describe('proposal button controls sixth pass @features', () => {
     const modal = page.locator('.share-modal-overlay');
     await expect(modal).toBeVisible({ timeout: 30000 });
     await expect(modal).toContainText('Design published');
-    await expect(modal).toContainText('The link could not be copied automatically. Copy it from here:');
+    await expect(modal).toContainText('Copy the link above.');
     const [cid] = [...index.designs.keys()];
     const link = `${new URL(page.url()).origin}/designs/${cid}?city=zg&3d&lang=en`;
     const input = modal.locator('.design-link__input');
@@ -198,7 +198,7 @@ test.describe('proposal button controls sixth pass @features', () => {
     await page.locator('#proposal-details-footer .btn-share-proposal').click();
     await expect(modal).toBeVisible();
     await expect(modal.locator('.design-link__input')).toHaveValue(link);
-    await modal.locator('.share-modal .cb-dialog__footer .btn-primary').click();
+    await modal.locator('.share-modal .cb-dialog__footer').getByRole('button', { name: 'Close', exact: true }).click();
     await expect(modal).toBeHidden();
     expect(index.requests.filter(request => request.method === 'POST').map(request => request.path)).toEqual(['/designs']);
   });

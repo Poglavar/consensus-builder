@@ -2,7 +2,7 @@
 // land-use, summary and road-designation controls, the share panel's selection, Publish and Copy URL,
 // and the design index's Refresh.
 import { test, expect } from '../helpers/fixtures';
-import { openCity, openParcel, createSpace, showProposal } from '../helpers/runtime';
+import { closeShareBox, openCity, openParcel, createSpace, showProposal } from '../helpers/runtime';
 import { pageIndex } from '../helpers/mocks/shared-server';
 import { sampleParcels } from '../helpers/mocks/parcel-data';
 
@@ -103,6 +103,7 @@ test.describe('proposal button controls: modal and alternate states @features', 
     await page.context().grantPermissions(['clipboard-read', 'clipboard-write'], { origin: new URL(page.url()).origin });
     await showProposal(page, id);
     await page.locator('#proposal-details-panel .btn-share-proposal').click();
+    await closeShareBox(page);
     await expect(page.locator('#proposal-details-panel .cb-badge--published')).toBeAttached({ timeout: 30000 });
     await openProposalList(page);
     const sheet = page.locator('#proposals-sheet');

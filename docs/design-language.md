@@ -125,7 +125,13 @@ Every non-map page carries the same header: logo, "Back to the map", language. N
 - Everything worth passing on has a link to exactly itself, and the link opens on that thing: a bet
   is `/bets/<agreement account>?city=…` (`js/bets/bets-link.js`), which opens the bet's own dialog
   and unfurls with the agreement's question, chance and pool. "Copy link" sits on the row, in the dialog
-  and on the receipt; the copy feedback is the shared "Copied".
+  and on the receipt; the copy feedback is the shared "Copied". The bet dialog also has Post on X.
+- Share on a design, a plan or an agreement ends in the Share box (`js/ui/share-dialog.js`): the
+  link, already copied, with Copy link, Post on X (X's prefilled compose page, posted as the person,
+  "via @urbangametheory"), the device's own Share… where it has one, and "Posts about this on X", an
+  X search for posts carrying the link. The plan dialog shows the same panel once the plan is
+  published. Proposing an agreement only copies its link: mint and fund follow in the panel, and its
+  Share button sits beside the CID.
 - A bet is a thing of its own, the way a market is on Polymarket or Kalshi: the Bets list is for
   finding one, the bet dialog (`js/bets/bets-dialog.js`) is where it is read, placed and collected.
   The dialog carries the chance, pool, payouts, deadline, rule, the wallet's bets, the links and the

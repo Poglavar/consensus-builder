@@ -237,7 +237,7 @@
             if (!resp.ok) throw new Error(data.error || ('HTTP ' + resp.status));
 
             currentShareUrl = buildShareUrl(data.slug, cap.appliedCids || []);
-            tweetBtn.href = `https://twitter.com/intent/tweet?text=${encodeURIComponent(t('threeMode.ai.tweetText', 'Photorealistic view of my urban design'))}&url=${encodeURIComponent(currentShareUrl)}`;
+            tweetBtn.href = window.ShareDialog.postOnXUrl({ text: t('threeMode.ai.tweetText', 'Photorealistic view of my urban design'), url: currentShareUrl });
             copyBtn.hidden = tweetBtn.hidden = false;
             shareBtn.hidden = !navigator.share; // native share only where supported
             setShareStatus('');

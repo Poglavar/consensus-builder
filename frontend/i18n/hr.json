@@ -1166,10 +1166,6 @@
             },
             "shareHint": "Objavite ovaj dizajn i kopirajte njegov link",
             "publishedAs": "Objavljeno kao:",
-            "linkCopied": "Dizajn je objavljen. Njegov link je kopiran.",
-            "publishedTitle": "Dizajn je objavljen",
-            "copyByHand": "Link nije bilo moguće automatski kopirati. Kopirajte ga odavde:",
-            "linkLabel": "Link na objavljeni dizajn",
             "errors": {
                 "cidMismatch": "Poslužitelj je izračunao drugačiji identitet ovog dizajna pa ništa nije objavljeno.",
                 "displaced": "Drugi dizajn ovog plana zauzima isto zemljište pa ne mogu stajati zajedno.",
@@ -7694,6 +7690,44 @@
             "farAway": "Odgovor ima {count} poligona, ali nijedan nije blizu ovog prikaza karte."
         }
     },
+    "share": {
+        "title": {
+            "design": "Podijeli dizajn",
+            "plan": "Podijeli plan",
+            "agreement": "Podijeli sporazum",
+            "bet": "Podijeli okladu"
+        },
+        "linkLabel": {
+            "design": "Poveznica dizajna",
+            "plan": "Poveznica plana",
+            "agreement": "Poveznica sporazuma",
+            "bet": "Poveznica oklade"
+        },
+        "copy": "Kopiraj poveznicu",
+        "copied": "Poveznica je kopirana.",
+        "copyByHand": "Kopirajte poveznicu iznad.",
+        "postOnX": "Objavi na X-u",
+        "native": "Podijeli…",
+        "nativeFailed": "Izbornik za dijeljenje nije se otvorio. Kopirajte poveznicu.",
+        "postsAbout": "Objave o ovome na X-u",
+        "postText": {
+            "design": "Dizajn: {{title}}",
+            "plan": "Plan: {{title}}",
+            "agreement": "Predloženi sporazum: {{title}}",
+            "bet": "{{title}}"
+        },
+        "untitled": {
+            "design": "Dizajn",
+            "plan": "Plan",
+            "agreement": "Sporazum",
+            "bet": "Oklada"
+        },
+        "published": {
+            "design": "Dizajn je objavljen.",
+            "plan": "Plan je objavljen.",
+            "agreement": "Sporazum je predložen."
+        }
+    },
     "bets": {
         "tagline": "Kladi se na gradove",
         "pitchLink": "Pročitaj prezentaciju Hyperstition",
@@ -8121,14 +8155,12 @@
             "statusExpired": "Istekao",
             "statusActive": "Aktivan",
             "communityNote": "Glasovi zajednice broje se bez transakcije na blockchainu.",
-            "copyLink": "Kopiraj link",
             "rederive": "Ovdje su njegovi dijelovi poznati samo po hashevima: primijenite njegove dizajne na istom tlu kako biste ih ponovno izveli i usporedili.",
             "readOnly": "Objavljeni sporazum samo za čitanje",
             "readOnlyStatus": "Prikaz samo za čitanje. Stanje lokalne karte ne provjerava se.",
             "readOnlyPieces": "Dijelovi su u ovom prikazu samo za čitanje dostupni samo po sažecima.",
             "linkCopied": "Sporazum je predložen. Njegov link je kopiran.",
             "proposedAt": "Sporazum je predložen: {{link}}",
-            "linkCopiedShort": "Poveznica na sporazum je kopirana.",
             "decisionKept": "Još nije podijeljeno: poslužitelj nije prihvatio odluku. Ponovno se šalje sljedeći put kad se u ovoj sesiji pročitaju odluke ovog sporazuma.",
             "decisionClosed": "Ovaj sporazum više ne prima odluke.",
             "actForOwnerHint": "Član leće ovog sporazuma potvrđuje u ime kojih vlasnika vaš novčanik smije djelovati. Ništa nije prihvaćeno dok ne pregledate i potpišete.",
@@ -8981,12 +9013,8 @@
         "addToPlan": "Dodaj u plan",
         "sharePlan": "Podijeli plan",
         "shareFixed": "Dijeli ovaj spremljeni plan i njegove točne projekte. Za promjenu projekata prvo uredi plan.",
-        "planLink": "Poveznica plana",
         "publishAndCopy": "Objavi i kopiraj poveznicu",
         "publishing": "Objavljivanje plana…",
-        "copied": "Poveznica je kopirana.",
-        "copyLinkManually": "Kopiraj poveznicu iznad.",
-        "copyLink": "Kopiraj poveznicu",
         "createAgreement": "Izradi sporazum",
         "openPlan": "Otvori plan",
         "noPlans": "Još nema spremljenih planova.",

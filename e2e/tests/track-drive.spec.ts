@@ -1,5 +1,5 @@
 import { test, expect } from '../helpers/fixtures';
-import { openCity, drawCorridor, showProposal } from '../helpers/runtime';
+import { closeShareBox, openCity, drawCorridor, showProposal } from '../helpers/runtime';
 import { pageIndex } from '../helpers/mocks/shared-server';
 
 test('a published track opens the configured cab simulator with its design CID', async ({ mockApi: page }) => {
@@ -18,6 +18,7 @@ test('a published track opens the configured cab simulator with its design CID',
   await details.locator('.btn-share-proposal').click();
   const index = pageIndex(page);
   await expect.poll(() => index.designs.size, { timeout: 30_000 }).toBe(1);
+  await closeShareBox(page);
   const [cid] = [...index.designs.keys()];
   await expect.poll(() => page.evaluate(id => {
     const w = window as any;

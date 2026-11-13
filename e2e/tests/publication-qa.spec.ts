@@ -1,5 +1,5 @@
 import { test, expect } from '../helpers/fixtures';
-import { createSpace, drawCorridor, openCity, chooseProfileName, showProposal, showProposalTab, stubBasemapTiles } from '../helpers/runtime';
+import { closeShareBox, createSpace, drawCorridor, openCity, chooseProfileName, showProposal, showProposalTab, stubBasemapTiles } from '../helpers/runtime';
 import { canonicalJson, cidOfBytes, cidOfObject, pageIndex } from '../helpers/mocks/shared-server';
 
 test.beforeEach(async ({ mockApi: page }) => {
@@ -73,6 +73,7 @@ async function publishBuildingCollection(page: import('@playwright/test').Page, 
 
   await showProposal(page, proposalId);
   await details.locator('.btn-share-proposal').click();
+  await closeShareBox(page);
   await showProposalTab(page, 'overview');
   await expect(details.locator('.cb-badge--published')).toBeVisible({ timeout: 30_000 });
 
@@ -127,6 +128,7 @@ for (const kind of ['road', 'track'] as const) {
 
     await showProposal(page, proposalId);
     await details.locator('#proposal-details-footer .btn-share-proposal').click();
+    await closeShareBox(page);
     await showProposalTab(page, 'overview');
     await expect(details.locator('.cb-badge--published')).toBeVisible({ timeout: 30_000 });
 

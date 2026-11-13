@@ -71,7 +71,9 @@ is selected (`selection-address.js`):
 | a building or a permitted volume | `?planningSelection=<record id>` (`planning/views.js`) |
 | a design | `?design=<cid>` when published, else its local key |
 | a plan | `?plan=<cid>` |
-| an agreement | `?agreement=<local id>`, or its CID when it is read from the index |
+| an agreement | `?agreement=<cid>` once proposed, else its local id |
+
+Publishing the selected draft (Share on a design, Propose on an agreement) renames it in the address to its CID, so a copied address opens it on another device.
 
 A reload reopens the selection without applying anything. What is reopened is the selection in the
 address the page was opened with: the page finishes loading after its map tiles, and a selection

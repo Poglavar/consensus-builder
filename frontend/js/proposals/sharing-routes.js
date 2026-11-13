@@ -131,30 +131,10 @@ function resolveDesignToShare(proposalIdOrProposal) {
     return requested && typeof proposalStorage !== 'undefined' ? proposalStorage.getProposal(requested) : null;
 }
 
-// A link that could not be copied is shown, selected, for copying by hand.
-function showDesignLinkDialog(link, title) {
-    const t = getProposalI18nHelper();
-    const body = document.createElement('div');
-    body.className = 'design-link';
-    const intro = document.createElement('p');
-    intro.textContent = t('proposals.share.copyByHand', 'The link could not be copied automatically. Copy it from here:');
-    const input = document.createElement('input');
-    input.type = 'text';
-    input.readOnly = true;
-    input.className = 'design-link__input';
-    input.value = link;
-    input.setAttribute('aria-label', t('proposals.share.linkLabel', 'Link to the published design'));
-    body.append(intro, input);
-    // The dialog's own focus lands a frame later: it must land on the link, selected, so Ctrl+C
-    // copies it, not on the Close button.
-    showSimpleShareModal({ title, body, initialFocus: input, actions: [{ label: t('modal.common.close', 'Close'), primary: true }] });
-    input.focus();
-    input.select();
-}
-
-// Share on a design: publish it (indexed once; DesignSync.publishDesign) and copy its
-// /designs/<cid> link. A design that cannot be published (ProposalPublishTerms.publishRefusal: invalid
-// or too large) is refused. Resolves { cid, link } or null.
+// Share on a design: publish it (indexed once; DesignSync.publishDesign), copy its /designs/<cid>
+// link and open the Share box (js/ui/share-dialog.js: Post on X, the device's Share…). A design that
+// cannot be published (ProposalPublishTerms.publishRefusal: invalid or too large) is refused.
+// Resolves { cid, link } or null.
 async function shareSingleProposal(proposalIdOrProposal) {
     const t = getProposalI18nHelper();
     const proposal = resolveDesignToShare(proposalIdOrProposal);
@@ -168,19 +148,18 @@ async function shareSingleProposal(proposalIdOrProposal) {
         return null;
     }
     try {
+        const wasPublished = !!window.DesignSync.publishedCid(proposal);
         const { cid } = await window.DesignSync.publishDesign(proposal);
         const link = window.DesignSync.designLink([cid], { city: proposal.city });
         console.info(`[${new Date().toISOString()}] [share] ${proposal.proposalId} → ${link}`);
-        if (await window.DesignSync.copyLink(link)) {
-            showEphemeralMessage(t('proposals.share.linkCopied', 'Design published. Its link is copied.'), 5000, 'success');
-        } else {
-            showDesignLinkDialog(link, t('proposals.share.publishedTitle', 'Design published'));
-        }
-        // The panel says Published now.
+        // The address named the draft by its local key: now it names the published design.
+        window.SelectionAddress?.rename('designs', proposal.proposalId, cid);
+        // The panel says Published now; it redraws before the box opens over it, which keeps the focus.
         if (currentProposalDetailsContext && String(getProposalKey(currentProposalDetailsContext)) === String(proposal.proposalId)
             && typeof showProposalInfo === 'function') {
             showProposalInfo(proposalStorage.getProposal(proposal.proposalId) || proposal);
         }
+        await window.ShareDialog.open({ kind: 'design', title: proposal.title, link, published: !wasPublished });
         return { cid, link };
     } catch (error) {
         if (error && error.cancelled) return null;

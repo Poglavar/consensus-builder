@@ -1548,6 +1548,47 @@ body.site-intro-open { overflow: hidden; }
     margin-bottom: 16px;
 }
 
+/* The Share box and panel (js/ui/share-dialog.js): the link with Copy link, then Post on X, the
+   device's Share… and the X search for posts carrying the link. */
+.share-panel {
+    display: grid;
+    gap: var(--cb-space-2);
+    min-width: 0;
+}
+
+.share-panel__field {
+    display: flex;
+    gap: var(--cb-space-2);
+    min-width: 0;
+}
+
+.share-panel__copy {
+    flex: none;
+}
+
+.share-panel__status {
+    margin: 0;
+    color: var(--cb-text-muted);
+}
+
+.share-panel__status:empty {
+    display: none;
+}
+
+.share-panel__actions {
+    flex-wrap: wrap;
+}
+
+.share-panel__posts {
+    justify-self: start;
+}
+
+@media (max-width: 400px) {
+    .share-panel__field {
+        flex-direction: column;
+    }
+}
+
 .proposal-list-header {
     display: flex;
     align-items: center;

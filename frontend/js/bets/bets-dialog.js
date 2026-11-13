@@ -471,6 +471,11 @@
         // Footer: pass it on, go to the agreement, and the bet itself.
         if (linkFor(row.account)) {
             p.footer.append(button('btn btn-quiet', t('bets.copyLink', 'Copy link'), () => sheet().copyLink(row.account, { entryPoint: 'dialog' })));
+            // Post on X: X's compose page with the bet's question and link (ShareDialog.postOnXUrl).
+            const post = el('a', 'btn btn-quiet', t('share.postOnX', 'Post on X'));
+            post.href = root.ShareDialog.postOnXUrl({ text: root.ShareDialog.postText('bet', questionOf(row)), url: linkFor(row.account) });
+            post.target = '_blank'; post.rel = 'noopener noreferrer'; post.dataset.shareAction = 'post-x';
+            p.footer.append(post);
             if (typeof root.navigator.share === 'function') {
                 p.footer.append(button('btn btn-quiet', t('panel.proposal.actions.share', 'Share'), async () => {
                     try {

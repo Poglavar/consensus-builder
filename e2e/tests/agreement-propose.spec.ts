@@ -5,7 +5,7 @@
 import { test, expect } from '../helpers/fixtures';
 import { waitForMapReady } from '../helpers/app';
 import { fillNativeDateTime } from '../helpers/controls';
-import { chooseProfileName, openOnAnotherDevice, stubBasemapTiles, PARCEL_ID } from '../helpers/runtime';
+import { chooseProfileName, closeShareBox, openOnAnotherDevice, stubBasemapTiles, PARCEL_ID } from '../helpers/runtime';
 import {
   applyLayout, agreementPanel, storedAgreements, createFromPlan, openStackAgreement, openAgreementsList, openListedAgreement, closeAgreementPanel, panelStatus, editorSave, editorClosed, openAgreementDecision,
 } from '../helpers/agreements';
@@ -94,7 +94,8 @@ test('Propose publishes a community agreement with its parcel layout, and its li
   content.outputs.forEach((output: any) => expect(output).not.toHaveProperty('geometry'));
   expect(Date.parse(content.deadline)).toBe(Date.parse(saved.deadline));
 
-  // The device keeps both as published, and the link is on the clipboard (Copy link copies it again).
+  // The device keeps both as published, the link is on the clipboard and the address names the agreement
+  // by its CID; Share copies the link again and offers Post on X.
   expect(saved.published).toMatchObject({ cid });
   expect(saved.designs).toEqual([expect.objectContaining({ proposalId: layoutId, cid: layoutCid })]);
   expect(await page.evaluate(id => (window as any).DesignSync.publishedCid((window as any).proposalStorage.getProposal(id)), layoutId)).toBe(layoutCid);
@@ -102,9 +103,13 @@ test('Propose publishes a community agreement with its parcel layout, and its li
   expect([...index.agreements.keys()]).toEqual([cid]);
   const link = `${new URL(page.url()).origin}/agreements/${cid}?city=zg&lang=en`;
   expect(await page.evaluate(() => navigator.clipboard.readText())).toBe(link);
+  expect(new URL(page.url()).searchParams.get('agreement')).toBe(cid);
   await page.evaluate(() => navigator.clipboard.writeText(''));
-  await panel.locator('[data-agreement-action="link"]').click();
+  await panel.locator('[data-agreement-action="share"]').click();
   await expect.poll(() => page.evaluate(() => navigator.clipboard.readText())).toBe(link);
+  const post = new URL(String(await page.locator('.share-dialog-box').getByRole('link', { name: 'Post on X', exact: true }).getAttribute('href')));
+  expect([post.host, post.searchParams.get('url'), post.searchParams.get('text')]).toEqual(['x.com', link, `Proposed agreement: ${TITLE}`]);
+  expect(await closeShareBox(page)).toBe(link);
   expect(postsOf(index)).toHaveLength(2);
 
   // Another device opens the link: the agreement and its layout come from the index, the layout is
