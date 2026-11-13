@@ -7078,6 +7078,8 @@
         },
         "viewFailed": "Ovaj prikaz se nije mogao pokrenuti. Vraćeni ste na 2D kartu.",
         "modeLocked": "Nedostupno dok uređujete — prvo završite ili odustanite",
+        "zoomLevel": "Zum {zoom}",
+        "zoomLevelTitle": "Razina zumiranja karte. U 3D prikazu, 2D zum koji prikazuje isto tlo.",
         "layers": "Slojevi",
         "settings": "Postavke",
         "proposals": "Dizajni",

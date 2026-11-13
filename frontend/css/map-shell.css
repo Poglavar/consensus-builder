@@ -543,6 +543,13 @@ body.three-mode-active .leaflet-control-attribution { visibility: hidden; }
     line-height: 1.3;
 }
 
+/* The view's zoom beside a sheet title (Layers); the close button stays at the far end. */
+.map-sheet-zoom {
+    margin-inline-end: auto;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+}
+
 .map-sheet-body {
     overflow-y: auto;
     overflow-x: hidden;

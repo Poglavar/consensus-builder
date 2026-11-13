@@ -7078,6 +7078,8 @@
         },
         "viewFailed": "Ovaj prikaz nije mogao da se pokrene. Vraćeni ste na 2D mapu.",
         "modeLocked": "Nedostupno dok uređujete — prvo završite ili odustanite",
+        "zoomLevel": "Zum {zoom}",
+        "zoomLevelTitle": "Nivo zumiranja mape. U 3D prikazu, 2D zum koji prikazuje isto tlo.",
         "layers": "Slojevi",
         "settings": "Podešavanja",
         "proposals": "Dizajni",

@@ -645,6 +645,7 @@
         <section id="layers-sheet" class="right-screen-panel map-sheet" role="dialog" aria-labelledby="layers-sheet-title" hidden>
             <div class="map-sheet-header">
                 <h2 id="layers-sheet-title" class="map-sheet-title" data-i18n-key="mapShell.layers">Layers</h2>
+                <span id="layers-sheet-zoom" class="cb-badge map-sheet-zoom" title="Map zoom level. In 3D, the 2D zoom that shows the same ground." hidden></span>
                 <button type="button" class="map-sheet-close close-circle-btn close-circle-btn--lg" data-sheet-close
                     aria-label="Close" title="Close" data-i18n-key="common.close" data-i18n-attr="aria-label,title">×</button>
             </div>
@@ -2069,6 +2070,7 @@
             'js/ui/map-shell.js',
             'js/ui/dock-clearance.js',
             'js/load-view.js',
+            'js/ui/view-zoom.js',
             'js/planning/scene.js?v=20261029-loading-ring',
             'js/planning/envelopes.js?v=20261021-envelopes',
             'js/planning/representations.js?v=20261030-built-title',

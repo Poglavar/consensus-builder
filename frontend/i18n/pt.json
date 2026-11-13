@@ -5808,6 +5808,8 @@
         },
         "viewFailed": "Não foi possível iniciar esta vista. Regressou ao mapa 2D.",
         "modeLocked": "Indisponível durante a edição — conclua ou cancele primeiro",
+        "zoomLevel": "Zoom {zoom}",
+        "zoomLevelTitle": "Nível de zoom do mapa. Em 3D, o zoom 2D que mostra o mesmo terreno.",
         "layers": "Camadas",
         "settings": "Definições",
         "maintenance": {

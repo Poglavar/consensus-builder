@@ -5808,6 +5808,8 @@
         },
         "viewFailed": "Cette vue n’a pas pu démarrer. Vous êtes de retour sur la carte 2D.",
         "modeLocked": "Indisponible pendant la modification — terminez ou annulez d’abord",
+        "zoomLevel": "Zoom {zoom}",
+        "zoomLevelTitle": "Niveau de zoom de la carte. En 3D, le zoom 2D qui montre le même terrain.",
         "layers": "Couches",
         "settings": "Paramètres",
         "maintenance": {
