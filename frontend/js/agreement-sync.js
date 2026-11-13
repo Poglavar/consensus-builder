@@ -172,15 +172,24 @@
             }
         }
 
-        // The name the agreement is proposed under, and the Solana wallet that sponsors it (M3 makes
-        // it part of the agreement's chain address); null when no wallet is connected.
+        // The name the agreement is proposed under, and the wallet that sponsors it (M3 makes it part
+        // of the agreement's chain address): the connected Solana wallet, else the connected EVM
+        // wallet (checksummed, R4); null when no wallet is connected.
         function authorName() {
             const agent = typeof win.getCurrentUserAgent === 'function' ? win.getCurrentUserAgent() : null;
             return agent && typeof agent.name === 'string' && agent.name.trim() ? agent.name.trim() : null;
         }
-        function sponsorKey() {
-            const state = win.solanaWalletManager && typeof win.solanaWalletManager.getState === 'function' ? win.solanaWalletManager.getState() : null;
+        const connectedAccount = manager => {
+            const state = manager && typeof manager.getState === 'function' ? manager.getState() : null;
             return state && state.status === 'connected' && Array.isArray(state.accounts) && state.accounts.length ? String(state.accounts[0]) : null;
+        };
+        async function sponsorKey() {
+            const solana = connectedAccount(win.solanaWalletManager);
+            if (solana) return solana;
+            const evm = connectedAccount(win.walletManager);
+            if (!evm) return null;
+            const ethers = win.EvmAdapter ? await win.EvmAdapter.ensureEthers() : win.ethers;
+            return ethers ? ethers.getAddress(evm.toLowerCase()) : evm;
         }
 
         // The link a published agreement opens at, in its city and the current language.
@@ -213,6 +222,42 @@
             }
             const plan = await win.NamedPlans.fetchPlan(row.content.planCid);
             return { ...row, plan, designCids: plan.content.designCids };
+        }
+
+        // The agreement/v1 object Propose publishes: the record with its author and sponsor, each input
+        // parcel naming the city's parcel source.
+        function contentOf(agreement, { author, sponsor }, designCidOf = null) {
+            const parcelSourceId = win.DesignSync.parcelSourceIdOf(agreement.city);
+            return win.AgreementRecord.published({
+                ...agreement,
+                author,
+                sponsor,
+                inputs: {
+                    ...agreement.inputs,
+                    parcels: agreement.inputs.parcels.map(parcel => (parcelSourceId ? { ...parcel, parcelSourceId } : parcel))
+                }
+            }, designCidOf);
+        }
+
+        /**
+         * A proposed agreement's published object and its plan, { cid, content, plan }, for a chain
+         * mint to make retrievable (chain/mint-checklist.js): rebuilt here when that gives back its
+         * CID (the author is the profile's name now, as at Propose), else read from the index.
+         */
+        async function publishedObject(agreementId) {
+            const agreement = store().get(agreementId);
+            if (!agreement) throw failure('agreement-missing', t('agreement.publish.errors.missing', 'The agreement is no longer on this device.'));
+            if (!agreement.published) throw failure('not-proposed', t('agreement.chain.errors.notProposed', 'Propose the agreement before minting it.'));
+            const cid = agreement.published.cid;
+            try {
+                const content = contentOf(agreement, { author: authorName(), sponsor: agreement.published.sponsor || null });
+                if (cidApi().cidOfObject(content) === cid && agreement.plan && agreement.plan.cid === content.planCid) return { cid, content, plan: agreement.plan };
+                log(`${agreementId}: rebuilt here it is not ${cid}; reading it from the index`);
+            } catch (error) {
+                log(`${agreementId}: could not be rebuilt here (${error.message}); reading ${cid} from the index`);
+            }
+            const row = await fetchAgreement(cid);
+            return { cid, content: row.content, plan: row.plan };
         }
 
         /**
@@ -256,16 +301,7 @@
             }
             agreement = store().save({ ...agreement, plan });
 
-            const parcelSourceId = win.DesignSync.parcelSourceIdOf(agreement.city);
-            const content = win.AgreementRecord.published({
-                ...agreement,
-                author: authorName(),
-                sponsor: sponsorKey(),
-                inputs: {
-                    ...agreement.inputs,
-                    parcels: agreement.inputs.parcels.map(parcel => (parcelSourceId ? { ...parcel, parcelSourceId } : parcel))
-                }
-            }, proposalId => (cids.has(proposalId) ? cids.get(proposalId) : null));
+            const content = contentOf(agreement, { author: authorName(), sponsor: await sponsorKey() }, proposalId => (cids.has(proposalId) ? cids.get(proposalId) : null));
             const { cid } = win.DesignSync.addressObject(content);
             const response = await request('POST', '/agreements', { cid, content, plan });
             if (!response.ok && response.status !== 409) {
@@ -282,7 +318,7 @@
         }
 
         /**
-         * Proposes the agreement again as a new one sponsored by the connected Solana wallet: a copy of
+         * Proposes the agreement again as a new one sponsored by the connected wallet: a copy of
          * the local record without its publication (a new local id and creation time), proposed as
          * Propose does. The sponsor is part of the published object, so this is a new CID; decisions
          * signed on the old one do not carry over, and the old record stays as it was.
@@ -291,7 +327,8 @@
         async function proposeAgain(agreementId) {
             const agreement = store().get(agreementId);
             if (!agreement) throw failure('agreement-missing', t('agreement.publish.errors.missing', 'The agreement is no longer on this device.'));
-            if (!sponsorKey()) throw failure('wallet-required', t('agreement.chain.errors.walletRequired', 'Connect a Solana wallet first.'));
+            const sponsor = await sponsorKey();
+            if (!sponsor) throw failure('wallet-required', t('wallet.modal.title', 'Connect a wallet'));
             const copy = store().save({
                 ...agreement,
                 id: win.AgreementRecord.newId(),
@@ -299,7 +336,7 @@
                 published: null,
                 onchain: null
             });
-            log(`proposing ${agreementId} again as ${copy.id} with sponsor ${sponsorKey()}`);
+            log(`proposing ${agreementId} again as ${copy.id} with sponsor ${sponsor}`);
             const { cid, link } = await publishAgreement(copy.id);
             return { id: copy.id, cid, link };
         }
@@ -334,19 +371,24 @@
 
         /**
          * Mirrors a minted agreement's chain account into the index: POST /agreements/<cid>/onchain with
-         * { chain, cluster, account, signature? }; the index answers the agreement row with `onchain`.
+         * { chain: 'solana', cluster, account, signature? } or, minted on EVM (R4), { chain: 'evm',
+         * chainId, account (the contract key), signature? (the create transaction) }; the index
+         * answers the agreement row with `onchain`.
          * The local record keeps the index's `onchain` (ours when the index refused or could not be
          * reached), then a refusal throws with `code` ('onchain-account-mismatch',
          * 'onchain-cid-mismatch', …), a translated `message` and `kept: true`.
          * @returns {Promise<{ onchain, row }>}
          */
-        async function recordOnchain(agreementId, { chain, cluster, account, signature = null } = {}) {
+        async function recordOnchain(agreementId, { chain, cluster, chainId, account, signature = null } = {}) {
             const agreement = store().get(agreementId);
             if (!agreement) throw failure('agreement-missing', t('agreement.publish.errors.missing', 'The agreement is no longer on this device.'));
             if (!agreement.published) throw failure('not-proposed', t('agreement.chain.errors.notProposed', 'Propose the agreement before minting it.'));
-            if (chain !== 'solana' || !idOf(cluster) || !idOf(account)) throw new TypeError('recordOnchain needs { chain: \'solana\', cluster, account }.');
+            const where = chain === 'evm' ? { chain, chainId: idOf(chainId) } : { chain, cluster: idOf(cluster) };
+            if (!['solana', 'evm'].includes(chain) || !(where.cluster || where.chainId) || !idOf(account)) {
+                throw new TypeError('recordOnchain needs { chain: \'solana\', cluster, account } or { chain: \'evm\', chainId, account }.');
+            }
             const cid = agreement.published.cid;
-            const pointer = signature ? { chain, cluster, account, signature } : { chain, cluster, account };
+            const pointer = signature ? { ...where, account, signature } : { ...where, account };
             const post = async body => {
                 const response = await request('POST', `/agreements/${encodeURIComponent(cid)}/onchain`, body);
                 if (response.ok && response.body && isObject(response.body.onchain)) return { row: response.body, refusal: null };
@@ -360,7 +402,7 @@
                 // The server's RPC may not see a just-confirmed transaction yet; the account alone is enough.
                 if (refusal && refusal.code === 'onchain-signature-not-found') {
                     log(`the index does not see ${signature} yet; recording ${account} without it`);
-                    ({ row, refusal } = await post({ chain, cluster, account }));
+                    ({ row, refusal } = await post({ ...where, account }));
                 }
             } catch (error) {
                 refusal = error;
@@ -370,7 +412,7 @@
                 console.warn(`[${new Date().toISOString()}] [AgreementSync] the index did not record the mint of ${cid} at ${account}`, refusal);
                 throw Object.assign(refusal, { kept: true });
             }
-            log(`recorded the mint of ${cid} at ${account} (${cluster}) in the index`);
+            log(`recorded the mint of ${cid} at ${account} (${where.cluster || `chain ${where.chainId}`}) in the index`);
             return { onchain: saved.onchain, row };
         }
 
@@ -486,7 +528,7 @@
 
         return {
             publishAgreement, proposeAgain, fetchAgreement, fetchMinted, handleAgreementRoute, agreementLink, localCopyOf,
-            refusalMessage, recordOnchain, adoptOnchain, openDetails, resolveDetails
+            refusalMessage, recordOnchain, adoptOnchain, publishedObject, openDetails, resolveDetails
         };
     }
 

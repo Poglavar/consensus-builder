@@ -271,7 +271,7 @@
         control('showProposalCounts', { id: 'layers.proposalCounts', group: 'layers', kind: 'toggle', surfaces: ['layers'],
             labelKey: 'sidebar.parcels.showProposalCounts', fallbackLabel: 'Show designs count (P)', icon: 'fas fa-comment-dots' }),
         control('markMintedCheckbox', { id: 'layers.markMinted', group: 'layers', kind: 'toggle', surfaces: ['layers'],
-            labelKey: 'sidebar.parcels.markMinted', fallbackLabel: 'Mark minted', icon: 'fas fa-certificate' }),
+            labelKey: 'sidebar.parcels.markMinted', fallbackLabel: 'Anchored parcels', icon: 'fas fa-certificate' }),
         control('highlightOwnershipGovernment', { id: 'layers.ownership.government', group: 'layers', kind: 'toggle', surfaces: ['layers'],
             labelKey: 'mapShell.commands.highlightGovernment', fallbackLabel: 'Highlight government parcels', icon: 'fas fa-landmark' }),
         control('highlightOwnershipInstitution', { id: 'layers.ownership.institution', group: 'layers', kind: 'toggle', surfaces: ['layers'],

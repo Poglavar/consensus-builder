@@ -159,7 +159,7 @@ test.describe('Agreements on chain @core', () => {
     await expect(terms.locator('[data-agreement-mint-payout]')).toHaveValue(SPONSOR);
     await terms.locator('[data-agreement-mint-payout]').fill('not-a-solana-address');
     await terms.locator('[data-action-id="mint"]').click();
-    await expect(terms.locator('[data-agreement-mint-error]')).toHaveText('The payout account must be a Solana address.');
+    await expect(terms.locator('[data-agreement-mint-error]')).toHaveText('The payout account must be an address on Solana devnet.');
     await terms.locator('[data-agreement-mint-payout]').fill(SPONSOR);
     await terms.locator('[data-agreement-mint-required]').fill('0.5');
     await terms.locator('[data-action-id="mint"]').click();
@@ -182,7 +182,7 @@ test.describe('Agreements on chain @core', () => {
       await openAgreementDecision(receiver.page);
       await expect(remote.locator('code.agreement-panel-cid')).toHaveAttribute('title', secondCid);
       await expect(remote.locator('[data-agreement-chain="unminted"] [data-agreement-action="mint"]')).toBeDisabled();
-      await expect(remote.locator('[data-agreement-chain="unminted"]')).toContainText(`Connect the sponsor’s Solana wallet (${short(SPONSOR)}) to mint it.`);
+      await expect(remote.locator('[data-agreement-chain="unminted"]')).toContainText(`Connect the sponsor’s wallet (${short(SPONSOR)}) to mint it.`);
       await expect(remote.locator('[data-agreement-action="bet"]')).toHaveCount(0);
     } finally {
       await receiver.context.close();
@@ -329,7 +329,7 @@ test.describe('Agreements on chain @core', () => {
       await expect(remote.locator('[data-agreement-action="attest"]')).toBeDisabled({ timeout: 30_000 });
       await expect(remote.locator('[data-agreement-action="execute"]')).toBeDisabled();
       await expect(remote.locator('[data-agreement-action="fund"], [data-agreement-action="cancel"]')).toHaveCount(0);
-      await expect(remote).toContainText('Connect a Solana wallet to act on it.');
+      await expect(remote).toContainText('Connect a wallet to act on it.');
     } finally {
       await receiver.context.close();
     }

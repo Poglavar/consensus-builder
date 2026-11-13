@@ -19,7 +19,10 @@
     /**
      * The steps of one mint, each { id, label, run(report) } where run resolves when the step is done
      * and `report(note, extra)` narrates it. Pure: the dialog renders what this says.
-     * spec: { kind, objects: [{ cid, bytes, label }], parcelIds?, metadataUriOf?, tokenUri, adapter, courier, apiBase, pinataJwt() }
+     * spec: { kind, objects: [{ cid, bytes, label, kind? }], parcelIds?, metadataUriOf?, tokenUri, adapter, courier, apiBase, pinataJwt(),
+     *   mintRecord? }. An object's own `kind` (a plan's member design) is what the courier pins it as.
+     * An agreement's record is its account in the Agreement contract, not a registry token:
+     * `mintRecord({ report })` creates it and resolves { txHash (null when it existed), record: { minter, … }, address? }.
      */
     function steps(spec) {
         const { kind, adapter, courier } = spec;
@@ -32,7 +35,7 @@
                     else if (status.phase === 'pinning') report(t(status.courier === 'server' ? 'mint.status.pinningServer' : 'mint.status.pinningPinata'));
                     else if (status.phase === 'waiting') report(t('mint.status.waiting', { courier: status.courier, attempt: status.attempt, total: status.total }));
                 };
-                const delivered = await courier.deliver({ kind, cid: object.cid, bytes: object.bytes, apiBase: spec.apiBase, pinataJwt: spec.pinataJwt ? spec.pinataJwt() : null, onStatus: narrate });
+                const delivered = await courier.deliver({ kind: object.kind || kind, cid: object.cid, bytes: object.bytes, apiBase: spec.apiBase, pinataJwt: spec.pinataJwt ? spec.pinataJwt() : null, onStatus: narrate });
                 report(t('mint.status.retrievable', { gateway: delivered.gateway.replace(/^https?:\/\//, '').replace(/\/ipfs\/?$/, '') }));
                 return delivered;
             }
@@ -59,6 +62,14 @@
         list.push({
             id: 'record', label: t('mint.steps.record', { kind: t(KIND_KEYS[kind] || KIND_KEYS.design), chain: adapter.name }),
             async run(report) {
+                if (typeof spec.mintRecord === 'function') {
+                    report(t('mint.status.minting'));
+                    const minted = await spec.mintRecord({ report });
+                    const minter = shortKey(minted.record && minted.record.minter);
+                    if (minted.txHash) report(t('mint.status.minted', { minter }), { tx: minted.txHash });
+                    else report(t('mint.status.alreadyMinted', { minter }), minted.address ? { address: minted.address } : null);
+                    return minted;
+                }
                 const existing = await adapter.recordOf(subject);
                 if (existing) { report(t('mint.status.alreadyMinted', { minter: shortKey(existing.minter) }), { address: adapter.addresses.RecordRegistry }); return { record: existing, txHash: null }; }
                 report(t('mint.status.minting'));

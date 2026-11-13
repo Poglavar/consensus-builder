@@ -1898,16 +1898,16 @@
       "controlType": "button"
     },
     {
-      "id": "control-3c526decb3664e-1",
+      "id": "control-d448f483314f54-1",
       "source": "index.html",
-      "markup": "<button id=\"mintAndClaimButton\" class=\"btn btn-primary\" type=\"button\" onclick=\"(window.Parcels?.uiClaim?.openParcelMintModal || window.openParcelMintModal || function(){})()\" title=\"Mint the parcel NFT\" disabled>",
+      "markup": "<button id=\"mintAndClaimButton\" class=\"btn btn-primary\" type=\"button\" onclick=\"(window.Parcels?.uiClaim?.openParcelMintModal || window.openParcelMintModal || function(){})()\" title=\"Anchor this parcel on chain\" disabled>",
       "interaction": "click",
       "controlType": "button"
     },
     {
-      "id": "control-983329113addb5-1",
+      "id": "control-816c84d314f211-1",
       "source": "index.html",
-      "markup": "<button id=\"claimButton\" class=\"btn\" type=\"button\" onclick=\"(window.Parcels?.uiClaim?.openClaimOnly || window.openClaimOnly || function(){})()\" title=\"Claim existing parcel NFT\" disabled>",
+      "markup": "<button id=\"claimButton\" class=\"btn\" type=\"button\" onclick=\"(window.Parcels?.uiClaim?.openClaimOnly || window.openClaimOnly || function(){})()\" title=\"Claim the anchored parcel\" disabled>",
       "interaction": "click",
       "controlType": "button"
     },
@@ -5068,6 +5068,33 @@
           "label": "Download",
           "classes": [
             "btn"
+          ],
+          "interaction": "click"
+        }
+      ]
+    },
+    {
+      "id": "control-19618de0732b3b-1",
+      "source": "js/chain/mint-checklist.js",
+      "markup": "doc.createElement(tag)",
+      "interaction": "auto",
+      "controlType": "dynamic",
+      "exhaustiveVariants": true,
+      "variants": [
+        {
+          "name": "Download the object bytes to pin them elsewhere",
+          "label": "Download bytes",
+          "interaction": "click"
+        },
+        {
+          "name": "Use your own pinning key",
+          "label": "Use your own pinning key",
+          "interaction": "click"
+        },
+        {
+          "name": "Open the record or transaction on the explorer",
+          "classes": [
+            "cb-link--external"
           ],
           "interaction": "click"
         }

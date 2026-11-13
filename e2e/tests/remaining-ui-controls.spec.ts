@@ -367,8 +367,8 @@ test.describe('Remaining UI controls @features', () => {
     await expect(second).toBeChecked();
     await first.uncheck();
     await expect(first).not.toBeChecked();
-    await dialog.getByRole('button', { name: 'Mint', exact: true }).click();
-    await expect(dialog.getByRole('status')).toContainText('Mint successful');
+    await dialog.getByRole('button', { name: 'Anchor', exact: true }).click();
+    await expect(dialog.getByRole('status')).toContainText('Anchoring done');
     await expect.poll(() => page.evaluate(() => (window as any).__mintedParcelIds)).toEqual(['TEST-PARCEL-2']);
   });
 

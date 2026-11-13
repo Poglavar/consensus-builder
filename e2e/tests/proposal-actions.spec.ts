@@ -87,7 +87,7 @@ test.describe('Proposal actions @features', () => {
     await expect(claim).toBeDisabled();
   });
 
-  test('parcel NFT status retries a failed read and restores its control', async ({ mockApi: page }) => {
+  test('parcel anchor status retries a failed read and restores its control', async ({ mockApi: page }) => {
     await injectMockSolanaWallet(page, { publicKey: SOLANA_WALLET, providerName: 'phantom' });
     await openCity(page);
     await connectWalletByConnectorId(page, 'solana-phantom');
@@ -104,15 +104,15 @@ test.describe('Proposal actions @features', () => {
       };
     });
     await openParcel(page, 'tools');
-    const retry = page.getByRole('button', { name: /Couldn't check NFT status/ });
+    const retry = page.getByRole('button', { name: /Couldn't check the anchor/ });
     await expect(retry).toBeVisible();
     await retry.click();
     await expect.poll(() => page.evaluate(() => (window as any).__nftReadCalls)).toBe(2);
-    const busy = page.getByRole('button', { name: /Checking NFT status/ });
+    const busy = page.getByRole('button', { name: /Checking the parcel’s anchor/ });
     await expect(busy).toHaveAttribute('aria-busy', 'true');
     await expect(busy).toHaveClass(/cb-busy/);
     await page.evaluate(() => (window as any).__completeNftRead());
-    await expect(page.getByRole('button', { name: /NFT not found/ })).toBeEnabled();
+    await expect(page.getByRole('button', { name: /Not anchored on/ })).toBeEnabled();
   });
 
   test('connected parcel owner mints from the parcel tools dialog and receives a confirmed transaction', async ({ mockApi: page }) => {
@@ -140,11 +140,11 @@ test.describe('Proposal actions @features', () => {
     await expect(mint).toBeEnabled();
     await mint.click();
     await expect(mintDialog).toBeVisible();
-    await mintDialog.getByRole('button', { name: 'Mint', exact: true }).click();
+    await mintDialog.getByRole('button', { name: 'Anchor', exact: true }).click();
 
     const success = page.locator('#parcel-mint-success-modal');
     await expect(success).toBeVisible({ timeout: 15000 });
-    await expect(success).toContainText('Parcel has been minted');
+    await expect(success).toContainText('Parcels anchored: 1');
     await expect(success.locator('a[href*="explorer.solana.com/tx/"]')).toBeVisible();
     await success.getByRole('button', { name: 'OK', exact: true }).click();
     await expect(success).toBeHidden();

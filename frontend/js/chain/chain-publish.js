@@ -66,7 +66,8 @@
         const blocked = win.guestPolicyBlocks('publish');
         if (blocked) throw new Error(blocked);
         const objects = [
-            ...row.designs.map(member => ({ cid: member.cid, bytes: win.Cid.canonicalBytes(member.content), label: member.content.title || member.cid })),
+            // The server pins an object only as its own kind (routes/pins.js): members are designs.
+            ...row.designs.map(member => ({ kind: 'design', cid: member.cid, bytes: win.Cid.canonicalBytes(member.content), label: member.content.title || member.cid })),
             { cid: row.cid, bytes: win.Cid.canonicalBytes(row.content), label: row.content.title }
         ];
         const link = win.NamedPlans.link(row.cid);

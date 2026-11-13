@@ -348,6 +348,27 @@ describe('publishAgreement', () => {
         expect(agreements.get('ag-1').published.sponsor).toBeNull();
     });
 
+    it('takes the connected EVM wallet, checksummed, as the sponsor when no Solana wallet is connected (R4)', async () => {
+        const evm = '0x8ba1f109551bD432803012645Ac136ddd64DBA72';
+        const { sync, win, server, agreements } = fakeWindow({ wallet: null });
+        win.ethers = await import('ethers');
+        win.walletManager = { getState: () => ({ status: 'connected', accounts: [evm.toLowerCase()], chainId: '0x14a34' }) };
+        const result = await sync.publishAgreement('ag-1');
+        expect(server.calls.at(-1).body.content.sponsor).toBe(evm);
+        expect(agreements.get('ag-1').published.sponsor).toBe(evm);
+        // The object a chain mint pins is the one proposed: rebuilt here, the same CID.
+        const object = await sync.publishedObject('ag-1');
+        expect(object.cid).toBe(result.cid);
+        expect(NodeCid.cidOfObject(object.content)).toBe(result.cid);
+        expect(object.plan).toEqual(agreements.get('ag-1').plan);
+        expect(server.calls).toHaveLength(3);
+        // A Solana wallet still comes first.
+        win.solanaWalletManager = { getState: () => ({ status: 'connected', accounts: [SPONSOR] }) };
+        agreements.set('ag-1', { ...agreements.get('ag-1'), published: null });
+        await sync.publishAgreement('ag-1');
+        expect(server.calls.at(-1).body.content.sponsor).toBe(SPONSOR);
+    });
+
     it('refuses an invalid agreement and a guest without a name before anything leaves the device', async () => {
         const unapplied = fakeWindow({ applied: false });
         expect(await thrown(() => unapplied.sync.publishAgreement('ag-1')))
@@ -464,6 +485,19 @@ describe('recordOnchain', () => {
         const { sync, agreements } = fakeWindow({ saved: [proposed()], server: offline });
         expect(await thrown(() => sync.recordOnchain('ag-1', MINT))).toMatchObject({ code: 'network-failed', kept: true });
         expect(agreements.get('ag-1').onchain).toEqual(MINT);
+    });
+
+    it('mirrors a mint on EVM as its chain id and contract key (R4)', async () => {
+        const evmMint = { chain: 'evm', chainId: '84532', account: `0x${'ab'.repeat(32)}`, signature: '0xcreatetx' };
+        const server = fakeServer({ onchain: (body, cid) => ({ status: 200, body: { cid, onchain: { ...body, status: 'active' } } }) });
+        const { sync, agreements } = fakeWindow({ saved: [proposed()], server });
+        await sync.recordOnchain('ag-1', { ...evmMint, cluster: 'ignored' });
+        expect(server.calls[0].body).toEqual(evmMint);
+        expect(agreements.get('ag-1').onchain).toEqual({ ...evmMint, status: 'active' });
+        const refusing = fakeWindow({ saved: [proposed()], server: fakeServer({ onchain: () => ({ status: 400, body: { code: 'unsupported-chain', error: 'EVM agreements are not indexed yet' } }) }) });
+        expect(await thrown(() => refusing.sync.recordOnchain('ag-1', evmMint))).toMatchObject({ code: 'unsupported-chain', kept: true, message: 'The server did not record the mint: EVM agreements are not indexed yet' });
+        expect(refusing.agreements.get('ag-1').onchain).toEqual(evmMint);
+        expect(await thrown(() => refusing.sync.recordOnchain('ag-1', { chain: 'evm', account: evmMint.account }))).toBeInstanceOf(TypeError);
     });
 
     it('refuses an agreement not proposed or not here, and a pointer that names no Solana account, sending nothing', async () => {

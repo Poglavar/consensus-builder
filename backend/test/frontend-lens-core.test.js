@@ -40,6 +40,16 @@ describe('base58 and key validation', () => {
         expect(core.isBase58Pubkey('')).toBe(false);
         expect(core.isBase58Pubkey(null)).toBe(false);
     });
+
+    it('takes an EVM address as a sponsor or lens key beside a Solana key (R4)', () => {
+        const evm = '0xfCF94DD41B2B5d6C887a30273F995d01bacA1A45';
+        expect(core.isEvmAddress(evm)).toBe(true);
+        expect(core.isEvmAddress(evm.toLowerCase())).toBe(true);
+        expect(core.isEvmAddress(` ${evm} `)).toBe(true);
+        for (const bad of [NOTARY, '0xabc', `${evm}0`, 'fCF94DD41B2B5d6C887a30273F995d01bacA1A45', null, 42]) expect(core.isEvmAddress(bad), String(bad)).toBe(false);
+        expect([NOTARY, evm].map(core.isChainKey)).toEqual([true, true]);
+        expect(['0xabc', 'not-a-key', ''].map(core.isChainKey)).toEqual([false, false, false]);
+    });
 });
 
 describe('directory normalisation', () => {
@@ -58,6 +68,25 @@ describe('directory normalisation', () => {
         ]);
         expect(core.normalizeDirectory({ members: [] })).toEqual([]);
         expect(core.normalizeDirectory(null)).toEqual([]);
+    });
+
+    it('keeps the EVM address a member attests with, only when it is one', () => {
+        const evm = '0xfCF94DD41B2B5d6C887a30273F995d01bacA1A45';
+        const [withEvm, snake, without] = core.normalizeDirectory({ members: [{ key: NOTARY, evmAddress: ` ${evm} ` }, { key: COURT, evm_address: evm }, { key: REGISTER, evmAddress: '0xabc' }] });
+        expect(withEvm.evmAddress).toBe(evm);
+        expect(snake.evmAddress).toBe(evm);
+        expect(without).not.toHaveProperty('evmAddress');
+    });
+
+    it('passes a listed EAS attestation through with its uid, chain and chain id', () => {
+        const uid = `0x${'5e'.repeat(32)}`;
+        const [evm, solana] = core.normalizeAttestations({ attestations: [
+            { kind: 'decision', chain: 'evm', chainId: 84532, uid, authority: '0xfCF94DD41B2B5d6C887a30273F995d01bacA1A45', payload: { agreementCid: 'bafy' } },
+            { kind: 'decision', address: NOTARY, authority: COURT },
+            { kind: 'decision' }
+        ] });
+        expect(evm).toMatchObject({ address: uid, uid, chain: 'evm', chainId: '84532', authority: '0xfCF94DD41B2B5d6C887a30273F995d01bacA1A45' });
+        expect(solana).toMatchObject({ address: NOTARY, uid: null, chain: null, chainId: null, authority: COURT });
     });
 
     it('labels a key by directory name, else by a shortened key', () => {

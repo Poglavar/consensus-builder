@@ -4,7 +4,8 @@
 // deadline, with Before / after (over its input parcels) and Edit. Removal belongs to Lists. Propose puts a current
 // agreement to its parties (M2, agreement-sync.js); a proposed one shows its CID with its link, the
 // index's status and the owners' decisions (proposals/approval-panel.js), and is no longer edited.
-// On chain (M3, solana/agreement-bridge.js): its sponsor mints a proposed binding agreement; a minted
+// On chain (M3, solana/agreement-bridge.js; on EVM, R4, chain/evm-agreement.js through bridgeFor):
+// its sponsor mints a proposed binding agreement; a minted
 // one shows its account, escrow, status and the lens's decision, read from the chain on open and
 // after every action, with Fund and Cancel for the sponsor, Record decision, Execute and Expire for
 // anyone, and Bet when the markets offer one (window.AgreementBets). A non-binding agreement (a
@@ -26,6 +27,7 @@
     const recordApi = () => root.AgreementRecord || (typeof require === 'function' ? require('./agreement-record.js') : null);
     const personsApi = () => root.AgreementPersons || (typeof require === 'function' ? require('./agreement-persons.js') : null);
     const bridgeApi = () => root.AgreementBridge || (typeof require === 'function' ? require('./solana/agreement-bridge.js') : null);
+    const evmBridgeApi = () => root.EvmAgreementBridge || (typeof require === 'function' ? require('./chain/evm-agreement.js') : null);
     const recordLabel = () => root.RecordLabel || (typeof require === 'function' ? require('./ui/record-label.js') : null);
 
     function t(key, fallback, params = {}) {
@@ -347,7 +349,21 @@
         return text.length > 12 ? `${text.slice(0, 4)}…${text.slice(-4)}` : text;
     }
 
-    const solText = lamports => format().formatMoney(bridgeApi().solOf(lamports), 'SOL', { maxFractionDigits: 9, minFractionDigits: 0 });
+    // An amount in the chain's smallest unit (lamports, wei) as money in its currency (SOL, ETH), as
+    // the bridge of that chain counts it (AgreementBridge, EvmAgreementBridge).
+    const chainMoneyText = (units, bridge = bridgeApi()) => format().formatMoney(bridge.amountOf(units), bridge.currency, { maxFractionDigits: bridge.decimals, minFractionDigits: 0 });
+
+    const isEvmBridge = bridge => !!bridge && bridge.family === 'evm';
+
+    // The chain a minted agreement lives on, in words: "Solana devnet" or the EVM chain's name.
+    const chainLabel = (ref, tr = t) => (ref && ref.chainId ? evmBridgeApi().chainName(ref.chainId) : tr('agreement.chain.cluster', 'Solana {{cluster}}', { cluster: ref ? ref.cluster : '' }));
+
+    // Two wallet keys are one: EVM addresses in any letter case, Solana keys exactly.
+    const sameKey = (a, b) => {
+        const left = idOf(a);
+        const right = idOf(b);
+        return /^0x/i.test(left) ? left.toLowerCase() === right.toLowerCase() : left === right;
+    };
 
     // One literal key per chain status and decision (AgreementClient.STATUS_NAMES, DECISION_NAMES),
     // so the locale coverage test sees them; the badge tone follows the shared badge vocabulary.
@@ -390,20 +406,21 @@
 
     /**
      * Whether a proposed, unminted agreement can be minted from here and, when not, why. `sponsor` is
-     * the wallet it was proposed with (published.sponsor), `wallet` the connected Solana wallet, `lens`
-     * the member its mint would name (AgreementBridge.mintLens). An agreement proposed without a
-     * sponsor can only be proposed again (`repropose`), which needs a connected wallet.
+     * the wallet it was proposed with (published.sponsor), `wallet` the connected wallet of the chain
+     * it would be minted on, `lens` the member its mint would name (the bridge's mintLens). An
+     * agreement proposed without a sponsor can only be proposed again (`repropose`), which needs a
+     * connected wallet.
      */
     function mintReadiness({ sponsor = null, wallet = null, lens = null, electorate = 'owners', deadlinePassed = false } = {}, tr = t) {
         if (!sponsor) {
             return {
                 canMint: false, repropose: true, canRepropose: !!wallet,
-                hints: [tr('agreement.chain.hints.noSponsor', 'It was proposed without a sponsor wallet, so it cannot be minted. Propose it again with a Solana wallet connected: that is a new agreement, with its own link and decisions.')]
+                hints: [tr('agreement.chain.hints.noSponsor', 'It was proposed without a sponsor wallet, so it cannot be minted. Propose it again with a wallet connected: that is a new agreement, with its own link and decisions.')]
             };
         }
         const hints = [];
-        if (!wallet) hints.push(tr('agreement.chain.hints.connectSponsor', 'Connect the sponsor’s Solana wallet ({{sponsor}}) to mint it.', { sponsor: shortKey(sponsor) }));
-        else if (wallet !== sponsor) hints.push(tr('agreement.chain.hints.notSponsor', 'Only the sponsor’s wallet ({{sponsor}}) can mint it; the connected wallet is {{wallet}}.', { sponsor: shortKey(sponsor), wallet: shortKey(wallet) }));
+        if (!wallet) hints.push(tr('agreement.chain.hints.connectSponsor', 'Connect the sponsor’s wallet ({{sponsor}}) to mint it.', { sponsor: shortKey(sponsor) }));
+        else if (!sameKey(wallet, sponsor)) hints.push(tr('agreement.chain.hints.notSponsor', 'Only the sponsor’s wallet ({{sponsor}}) can mint it; the connected wallet is {{wallet}}.', { sponsor: shortKey(sponsor), wallet: shortKey(wallet) }));
         if (!lens) {
             hints.push(electorate === 'owners'
                 ? tr('agreement.chain.hints.noRuleLens', 'Its decision rule names no lens member, so no lens can attest its decision.')
@@ -425,13 +442,18 @@
     }
 
     /**
-     * The "On chain" section of a proposed agreement. view: { published, ref ({ cluster, account } or
-     * null), wallet, lens, electorate, deadlinePassed, chain ({ loading, error, value, lensError } of
-     * the account read back), actions (AgreementBridge.chainActions), attestation (the address of the
-     * lens's decision its member lists, or null), busy ({ action, phase } of a running action, or null) }.
+     * The "On chain" section of a proposed agreement. view: { published, ref ({ cluster, account } on
+     * Solana, { chainId, account, contract } on EVM, or null), wallet, lens, electorate, deadlinePassed,
+     * chain ({ loading, error, value, lensError } of the account read back), actions (the bridge's
+     * chainActions), attestation (the address or uid of the lens's decision its member lists, or
+     * null), busy ({ action, phase } of a running action, or null), bridge (AgreementBridge when
+     * absent, or EvmAgreementBridge), network (the chain an unminted agreement would be minted on,
+     * in words; Solana when absent) }.
      */
     function chainHtml(view, tr = t) {
         if (!view || !view.published) return '';
+        const bridge = view.bridge || bridgeApi();
+        const money = units => chainMoneyText(units, bridge);
         const busy = view.busy ? `<p class="agreement-panel-hint" role="status" data-agreement-chain-busy="${esc(view.busy.action)}">${esc((CHAIN_PHASE[view.busy.phase] || CHAIN_PHASE.preparing)(tr))}</p>` : '';
         const locked = !!view.busy;
         const title = tr('agreement.chain.heading', 'On chain');
@@ -443,14 +465,18 @@
                 : chainButton('mint', 'fas fa-cube', tr('agreement.chain.actions.mint', 'Mint'), { tone: 'primary', disabled: locked || !ready.canMint });
             return sectionHtml(title, '<div class="agreement-chain" data-agreement-chain="unminted">'
                 + executionNote
-                + `<p class="agreement-panel-meta">${esc(tr('agreement.chain.notMinted', 'Not minted. Minting commits this agreement to Solana at its sponsor’s address; its lens then attests the decision, and executing it releases the escrow.'))}</p>`
+                + `<p class="agreement-panel-meta">${esc(tr('agreement.chain.notMinted', 'Not minted. Minting commits this agreement to {{chain}} at its sponsor’s address; its lens then attests the decision, and executing it releases the escrow.', { chain: view.network || 'Solana' }))}</p>`
                 + (button ? `<div class="agreement-panel-actions">${button}</div>` : '') + `${view.readOnly ? '' : hintsHtml(ready.hints)}${busy}</div>`);
         }
         const ref = view.ref;
-        const link = bridgeApi().explorerUrl({ account: ref.account, cluster: ref.cluster });
+        // An EVM agreement's account is its key in the Agreement contract: the link opens the contract.
+        const link = bridge.explorerUrl(ref);
+        const network = chainLabel(ref, tr);
         const head = '<div class="agreement-chain-head">'
-            + `<a class="cb-link cb-link--external agreement-chain-account" href="${esc(link)}" target="_blank" rel="noopener noreferrer" title="${esc(ref.account)}">${esc(shortKey(ref.account))}</a>`
-            + `<span class="agreement-panel-meta">${esc(tr('agreement.chain.cluster', 'Solana {{cluster}}', { cluster: ref.cluster }))}</span></div>`;
+            + (link
+                ? `<a class="cb-link cb-link--external agreement-chain-account" href="${esc(link)}" target="_blank" rel="noopener noreferrer" title="${esc(ref.account)}">${esc(shortKey(ref.account))}</a>`
+                : `<code class="agreement-chain-account" title="${esc(ref.account)}">${esc(shortKey(ref.account))}</code>`)
+            + `<span class="agreement-panel-meta">${esc(network)}</span></div>`;
         const chain = view.chain || { loading: true };
         if (chain.loading) return sectionHtml(title, `<div class="agreement-chain" data-agreement-chain="loading">${head}${executionNote}<p class="agreement-panel-hint" role="status">${esc(tr('agreement.chain.reading', 'Reading the chain…'))}</p>${busy}</div>`);
         if (chain.error) {
@@ -460,14 +486,14 @@
         const value = chain.value;
         if (!value) {
             return sectionHtml(title, `<div class="agreement-chain" data-agreement-chain="missing">${head}${executionNote}`
-                + `<p class="agreement-panel-note agreement-panel-note--danger" role="alert">${esc(tr('agreement.chain.missing', 'The account is not on Solana {{cluster}}.', { cluster: ref.cluster }))}</p>${busy}</div>`);
+                + `<p class="agreement-panel-note agreement-panel-note--danger" role="alert">${esc(tr('agreement.chain.missing', 'The account is not on {{chain}}.', { chain: network }))}</p>${busy}</div>`);
         }
         const status = CHAIN_STATUS[value.status];
         const decision = CHAIN_DECISION[value.decision];
         const required = value.requiredLamports > 0n;
         const escrow = required
-            ? tr('agreement.chain.escrowOf', '{{escrow}} of {{required}}', { escrow: solText(value.escrowLamports), required: solText(value.requiredLamports) })
-            : tr('agreement.chain.escrowNoneRequired', '{{escrow}} (none required)', { escrow: solText(value.escrowLamports) });
+            ? tr('agreement.chain.escrowOf', '{{escrow}} of {{required}}', { escrow: money(value.escrowLamports), required: money(value.requiredLamports) })
+            : tr('agreement.chain.escrowNoneRequired', '{{escrow}} (none required)', { escrow: money(value.escrowLamports) });
         const facts = [
             [tr('agreement.chain.facts.status', 'Status'), badgeHtml(status, status ? status.text(tr) : value.status, `data-agreement-chain-status="${esc(value.status)}"`)],
             [tr('agreement.chain.facts.decision', 'Decision'), badgeHtml(decision, decision ? decision.text(tr) : value.decision, `data-agreement-chain-decision="${esc(value.decision)}"`)],
@@ -493,11 +519,11 @@
                 buttons.push(chainButton('cancel', 'fas fa-ban', tr('agreement.chain.actions.cancel', 'Cancel'), { tone: 'danger', disabled: locked || !actions.cancel }));
             }
             if (actions.deadlinePassed) buttons.push(chainButton('expire', 'fas fa-hourglass-end', tr('agreement.chain.actions.expire', 'Expire'), { disabled: locked || !actions.expire }));
-            if (!view.wallet) hints.push(tr('agreement.chain.hints.connectWallet', 'Connect a Solana wallet to act on it.'));
+            if (!view.wallet) hints.push(tr('agreement.chain.hints.connectWallet', 'Connect a wallet to act on it.'));
             if (value.decision === 'Pending' && chain.lensError) hints.push(chain.lensError);
             else if (value.decision === 'Pending' && !view.attestation && !actions.deadlinePassed) hints.push(tr('agreement.chain.hints.awaitingLens', 'Waiting for its lens to attest the decision.'));
             if (value.decision === 'Pending' && view.attestation) hints.push(tr('agreement.chain.hints.attested', 'Its lens has attested the decision: record it on chain.'));
-            if (value.decision === 'Satisfied' && !actions.funded) hints.push(tr('agreement.chain.hints.awaitingFunds', 'Execution waits until the escrow holds {{required}}.', { required: solText(value.requiredLamports) }));
+            if (value.decision === 'Satisfied' && !actions.funded) hints.push(tr('agreement.chain.hints.awaitingFunds', 'Execution waits until the escrow holds {{required}}.', { required: money(value.requiredLamports) }));
             if (actions.deadlinePassed) hints.push(tr('agreement.chain.hints.expired', 'Its deadline has passed: anyone can expire it, which returns the escrow to the sponsor.'));
         }
         return sectionHtml(title, `<div class="agreement-chain" data-agreement-chain="minted">${head}${executionNote}${factsHtml}`
@@ -929,18 +955,54 @@
             }
         }
 
-        // The lens member a mint of this agreement names (AgreementBridge.mintLens): the rule's, or for
-        // a community rule the first one configured in the lens settings (LensPicker).
-        function mintLensOf(agreement) {
+        // The chain seam (R4): the bridge an agreement's chain actions go through. A minted agreement
+        // stays on its chain; an unminted one goes where its sponsor's key lives (a 0x sponsor on EVM,
+        // a base58 one on Solana); without a sponsor, to EVM only when an EVM wallet is connected and
+        // no Solana wallet is. AgreementBridge otherwise, so the Solana path is as it was.
+        function bridgeFor(agreement) {
+            const solana = win.AgreementBridge || null;
+            const evm = win.EvmAgreementBridge || null;
+            if (!evm || !agreement) return solana;
+            if (evm.onchainRef(agreement)) return evm;
+            if (solana && solana.onchainRef(agreement)) return solana;
+            const sponsor = agreement.published ? agreement.published.sponsor : null;
+            if (win.LensCore && win.LensCore.isEvmAddress(sponsor)) return evm;
+            if (sponsor) return solana;
+            return evm.connectedWallet() && !(solana && solana.connectedWallet()) ? evm : solana;
+        }
+
+        // The chain account a record names on either chain, or null.
+        const onchainRefOf = agreement => (win.EvmAgreementBridge && win.EvmAgreementBridge.onchainRef(agreement))
+            || (win.AgreementBridge && win.AgreementBridge.onchainRef(agreement)) || null;
+
+        // What the index is told a mint is (AgreementSync.recordOnchain).
+        const onchainPointer = (ref, signature) => (ref.chainId
+            ? { chain: 'evm', chainId: ref.chainId, account: ref.account, signature }
+            : { chain: 'solana', cluster: ref.cluster, account: ref.account, signature });
+
+        // The chain an unminted agreement would be minted on, in words.
+        function networkOf(bridge) {
+            if (isEvmBridge(bridge)) {
+                const chainId = bridge.chainId();
+                return chainId ? bridge.chainName(chainId) : 'EVM';
+            }
+            return bridge && typeof bridge.cluster === 'function' ? t('agreement.chain.cluster', 'Solana {{cluster}}', { cluster: bridge.cluster() }) : 'Solana';
+        }
+
+        // The lens member a mint of this agreement names (the bridge's mintLens): the rule's, or for
+        // a community rule the first one configured in the lens settings (LensPicker on Solana; the
+        // active lens list, window.getLensEntries, on EVM).
+        function mintLensOf(agreement, bridge = bridgeFor(agreement)) {
             const configured = win.LensPicker && typeof win.LensPicker.getEntries === 'function' ? win.LensPicker.getEntries() : [];
-            return win.AgreementBridge.mintLens(agreement, configured);
+            if (isEvmBridge(bridge)) return bridge.mintLens(agreement, [...(typeof win.getLensEntries === 'function' ? win.getLensEntries() : []), ...configured]);
+            return bridge.mintLens(agreement, configured);
         }
 
         // Everything the "On chain" section shows (chainHtml), from the record, the connected wallet,
         // the account read back and the index's row.
         function chainView(agreement) {
-            if (!agreement || !agreement.published || !win.AgreementBridge) return null;
-            const bridge = win.AgreementBridge;
+            const bridge = agreement && agreement.published ? bridgeFor(agreement) : null;
+            if (!bridge) return null;
             const wallet = bridge.connectedWallet();
             const ref = bridge.onchainRef(agreement);
             const deadlineMs = agreement.deadline ? Date.parse(agreement.deadline) : NaN;
@@ -959,20 +1021,23 @@
                 sponsor: agreement.published.sponsor || null,
                 ref,
                 wallet,
-                lens: ref ? null : mintLensOf(agreement),
+                lens: ref ? null : mintLensOf(agreement, bridge),
                 electorate: agreement.rule && agreement.rule.electorate,
                 deadlinePassed: Number.isFinite(deadlineMs) && deadlineMs <= Date.now(),
                 chain,
                 actions,
                 attestation,
-                busy: state.chainBusy
+                busy: state.chainBusy,
+                bridge,
+                network: ref ? null : networkOf(bridge)
             };
         }
 
         // Reads the minted account again (the chain is the truth), and while its decision is pending
-        // asks its lens member for the decision (AgreementBridge.findAttestation); a newer read wins.
+        // asks its lens member for the decision (the bridge's findAttestation); a newer read wins.
         async function readChain(agreement) {
-            const ref = agreement && win.AgreementBridge ? win.AgreementBridge.onchainRef(agreement) : null;
+            const bridge = agreement ? bridgeFor(agreement) : null;
+            const ref = bridge ? bridge.onchainRef(agreement) : null;
             if (!ref) {
                 state.chain = null;
                 return;
@@ -986,11 +1051,11 @@
             if (isOpen() && state.id === id) renderPanel();
             let value = null;
             try {
-                value = await win.AgreementBridge.read(agreement);
+                value = await bridge.read(agreement);
                 if (!current()) return;
                 if (terminal) value = terminal;
                 state.chain = { account: ref.account, loading: false, value, error: null, attestation: null, lensError: null };
-                log(`${id}: ${ref.account} on ${ref.cluster} is ${value ? `${value.status}, decision ${value.decision}, escrow ${value.escrowLamports}/${value.requiredLamports} lamports` : 'not on chain'}`);
+                log(`${id}: ${ref.account} on ${chainLabel(ref)} is ${value ? `${value.status}, decision ${value.decision}, escrow ${value.escrowLamports}/${value.requiredLamports} ${isEvmBridge(bridge) ? 'wei' : 'lamports'}` : 'not on chain'}`);
             } catch (error) {
                 if (!current()) return;
                 console.warn(`[${new Date().toISOString()}] [AgreementPanel] ${ref.account} could not be read`, error);
@@ -999,7 +1064,7 @@
             if (isOpen() && state.id === id) renderPanel();
             if (!value || value.status !== 'Active' || value.decision !== 'Pending') return;
             try {
-                const found = await win.AgreementBridge.findAttestation(agreement, value);
+                const found = await bridge.findAttestation(agreement, value);
                 if (!current()) return;
                 state.chain = { ...state.chain, attestation: found ? found.address : null };
             } catch (error) {
@@ -1013,7 +1078,7 @@
         // Reads the account when it is not the one read already: on open, after a mint, after the
         // index's record of a mint made elsewhere is adopted. A non-binding agreement has none.
         function syncChain(agreement) {
-            const ref = isBinding(agreement) && win.AgreementBridge ? win.AgreementBridge.onchainRef(agreement) : null;
+            const ref = isBinding(agreement) ? onchainRefOf(agreement) : null;
             if (!ref) {
                 state.chain = null;
                 return;
@@ -1027,15 +1092,15 @@
         function reconcileOnchain(id, indexed) {
             const agreement = store().get(id);
             if (!agreement || !agreement.published || !isBinding(agreement) || !win.AgreementBridge) return;
-            const local = win.AgreementBridge.onchainRef(agreement);
-            const remote = indexed ? win.AgreementBridge.onchainRef({ onchain: indexed }) : null;
+            const local = onchainRefOf(agreement);
+            const remote = indexed ? onchainRefOf({ onchain: indexed }) : null;
             try {
                 if (remote && !local) {
-                    log(`${id}: the index records its mint at ${remote.account} (${remote.cluster}); keeping it here`);
+                    log(`${id}: the index records its mint at ${remote.account} (${chainLabel(remote)}); keeping it here`);
                     win.AgreementSync.adoptOnchain(id, indexed);
                 } else if (local && !remote) {
                     log(`${id}: the index lacks its mint at ${local.account}; sending it again`);
-                    win.AgreementSync.recordOnchain(id, { chain: 'solana', cluster: local.cluster, account: local.account, signature: agreement.onchain.signature || null })
+                    win.AgreementSync.recordOnchain(id, onchainPointer(local, agreement.onchain.signature || null))
                         .catch(error => console.warn(`[${new Date().toISOString()}] [AgreementPanel] the index still lacks the mint of ${id}`, error));
                 }
             } catch (error) {
@@ -1266,18 +1331,20 @@
 
         // What the program fixes at create beyond the agreement itself: the escrow execution needs and
         // the account the escrow is released to (the sponsor's wallet unless another is given).
-        // Resolves { requiredLamports, payout } or null when cancelled.
-        function askMintTerms(agreement, lens) {
+        // Amounts are in the bridge's currency (SOL, ETH) and units (lamports, wei).
+        // Resolves { requiredLamports (the units, either chain), payout } or null when cancelled.
+        function askMintTerms(agreement, lens, bridge) {
             return new Promise(resolve => {
                 const sponsor = agreement.published.sponsor;
+                const network = networkOf(bridge);
                 const body = doc.createElement('div');
                 body.className = 'agreement-mint';
-                body.innerHTML = `<p class="agreement-panel-meta">${esc(t('agreement.chain.mint.intro', 'Minting commits this agreement’s CID to Solana at its sponsor’s address. Its lens attests the decision; executing it then releases the escrow to the payout account.'))}</p>`
+                body.innerHTML = `<p class="agreement-panel-meta">${esc(t('agreement.chain.mint.intro', 'Minting commits this agreement’s CID to {{chain}} at its sponsor’s address. Its lens attests the decision; executing it then releases the escrow to the payout account.', { chain: network }))}</p>`
                     + '<dl class="agreement-panel-facts">'
                     + `<div><dt>${esc(t('agreement.chain.facts.lens', 'Lens'))}</dt><dd><code title="${esc(lens)}">${esc(shortKey(lens))}</code></dd></div>`
                     + `<div><dt>${esc(t('agreement.chain.facts.deadline', 'Deadline'))}</dt><dd>${esc(agreement.deadline ? format().formatDateTime(agreement.deadline) : t('agreement.chain.noDeadline', 'None'))}</dd></div>`
                     + '</dl>'
-                    + `<label class="agreement-mint__field"><span>${esc(t('agreement.chain.mint.required', 'Escrow needed to execute (SOL)'))}</span>`
+                    + `<label class="agreement-mint__field"><span>${esc(t('agreement.chain.mint.required', 'Escrow needed to execute ({{currency}})', { currency: bridge.currency }))}</span>`
                     + '<input type="text" inputmode="decimal" autocomplete="off" data-agreement-mint-required value="0"></label>'
                     + `<p class="agreement-panel-hint">${esc(t('agreement.chain.mint.requiredHint', 'Execution waits until the escrow holds this much; 0 needs none. The sponsor funds the escrow after minting.'))}</p>`
                     + `<label class="agreement-mint__field"><span>${esc(t('agreement.chain.mint.payout', 'Payout account'))}</span>`
@@ -1303,11 +1370,12 @@
                             onClick: api => {
                                 const error = body.querySelector('[data-agreement-mint-error]');
                                 const typed = format().parseDecimal(body.querySelector('[data-agreement-mint-required]').value);
-                                const requiredLamports = typed === null ? 0n : bridgeApi().lamportsFromSol(typed, { allowZero: true });
+                                const requiredLamports = typed === null ? 0n : bridge.unitsFrom(typed, { allowZero: true });
                                 const payout = body.querySelector('[data-agreement-mint-payout]').value.trim();
+                                const payoutValid = isEvmBridge(bridge) ? win.LensCore.isEvmAddress(payout) : win.LensCore.isBase58Pubkey(payout);
                                 const problem = requiredLamports === null
-                                    ? t('agreement.chain.errors.amount', 'Enter an amount of SOL, such as 0.5.')
-                                    : (!win.LensCore.isBase58Pubkey(payout) ? t('agreement.chain.errors.payout', 'The payout account must be a Solana address.') : null);
+                                    ? t('agreement.chain.errors.amount', 'Enter an amount of {{currency}}, such as 0.5.', { currency: bridge.currency })
+                                    : (!payoutValid ? t('agreement.chain.errors.payout', 'The payout account must be an address on {{chain}}.', { chain: network }) : null);
                                 if (problem) {
                                     error.textContent = problem;
                                     error.hidden = false;
@@ -1323,19 +1391,57 @@
             });
         }
 
+        // On EVM a mint runs the mint checklist (chain/mint-checklist.js, Flow 3): the agreement and its
+        // plan retrievable from IPFS, every input parcel anchored, then the agreement created by the
+        // bridge as the checklist's record step. Resolves the bridge's mint, or null when the
+        // checklist was closed first.
+        async function mintOnEvm(id, agreement, bridge, { lens, terms, onStatus }) {
+            const adapter = await win.EvmAdapter.connected();
+            if (!adapter) throw new Error(t('wallet.connectTitle', 'Connect an Ethereum wallet'));
+            const { cid, content, plan } = await win.AgreementSync.publishedObject(id);
+            const parcelIds = Array.from(new Set(((content.inputs && content.inputs.parcels) || []).map(parcel => idOf(parcel && parcel.parcelId)).filter(Boolean)));
+            // Every member design must be retrievable before the plan and the agreement (Flow 2).
+            const members = await win.DesignSync.fetchDesigns(plan.content.designCids);
+            if (members.missing.length) log(`${id}: ${members.missing.length} member design(s) are not retrievable anywhere; the checklist will stop at them`);
+            // An anchor's metadata URI is fixed for good: the parcel's own page in this app.
+            const metadataUriOf = parcelId => new URL(`/parcel/${encodeURIComponent(parcelId)}`, win.resolveFrontendBaseUrl()).toString();
+            let minted = null;
+            const done = await win.MintChecklist.open({
+                kind: 'agreement', subject: cid, adapter, apiBase: win.DesignSync.apiBase(), parcelIds, metadataUriOf,
+                objects: [
+                    ...plan.content.designCids.map(memberCid => {
+                        const row = members.rows.get(memberCid);
+                        return { kind: 'design', cid: memberCid, bytes: row ? win.Cid.canonicalBytes(row.content) : new Uint8Array(), label: (row && row.content.title) || memberCid };
+                    }),
+                    { kind: 'plan', cid: plan.cid, bytes: win.Cid.canonicalBytes(plan.content), label: plan.content.title || plan.cid },
+                    { cid, bytes: win.Cid.canonicalBytes(content), label: content.title || cid }
+                ],
+                mintRecord: async () => {
+                    minted = await bridge.mint({ agreement, lens, required: terms.requiredLamports, payout: terms.payout, onStatus });
+                    return { txHash: minted.signature, address: minted.contract, record: { minter: agreement.published.sponsor, account: minted.account } };
+                }
+            });
+            log(`${id}: the mint checklist ${done ? `created ${cid} at ${minted && minted.account} on ${chainLabel(minted)}` : 'was closed before it finished'}`);
+            return done ? minted : null;
+        }
+
         // Mint (the sponsor): create the account, then mirror it into the index and keep it here.
         async function mint() {
             const id = state.id;
             const agreement = state.agreement;
             if (!agreement || !agreement.published) return;
-            const lens = mintLensOf(agreement);
-            const terms = await askMintTerms(agreement, lens);
+            const bridge = bridgeFor(agreement);
+            const lens = mintLensOf(agreement, bridge);
+            const terms = await askMintTerms(agreement, lens, bridge);
             if (!terms || state.id !== id) return;
             await runChain('mint', async (onStatus, phase) => {
-                const minted = await win.AgreementBridge.mint({ agreement, lens, requiredLamports: terms.requiredLamports, payout: terms.payout, onStatus });
+                const minted = isEvmBridge(bridge)
+                    ? await mintOnEvm(id, agreement, bridge, { lens, terms, onStatus })
+                    : await bridge.mint({ agreement, lens, requiredLamports: terms.requiredLamports, payout: terms.payout, onStatus });
+                if (!minted) return;
                 phase('indexing');
                 try {
-                    await win.AgreementSync.recordOnchain(id, { chain: 'solana', cluster: minted.cluster, account: minted.account, signature: minted.signature });
+                    await win.AgreementSync.recordOnchain(id, onchainPointer(minted, minted.signature));
                     notice(t('agreement.chain.minted', 'Agreement minted.'));
                 } catch (error) {
                     if (!error || !error.kept) throw error;
@@ -1365,25 +1471,27 @@
             const agreement = state.agreement;
             const value = state.chain && state.chain.value;
             if (!agreement || !value) return;
+            const bridge = bridgeFor(agreement);
             const intent = win.ApprovalLink?.parse(win.location);
             const requestedAmount = intent?.target === agreement.published?.cid ? intent.params.amount : null;
             const lacking = value.requiredLamports > value.escrowLamports ? value.requiredLamports - value.escrowLamports : 0n;
-            const readLamports = text => {
+            const readUnits = text => {
                 const typed = format().parseDecimal(text);
-                return typed === null ? null : bridgeApi().lamportsFromSol(typed);
+                return typed === null ? null : bridge.unitsFrom(typed);
             };
-            const answer = await win.CbDialog.prompt(t('agreement.chain.fundPrompt', 'How much SOL should the escrow receive from the sponsor’s wallet?'), {
+            const answer = await win.CbDialog.prompt(t('agreement.chain.fundPrompt', 'How much {{currency}} should the escrow receive from the sponsor’s wallet?', { currency: bridge.currency }), {
                 title: t('agreement.chain.actions.fund', 'Fund'),
-                defaultValue: requestedAmount || (lacking > 0n ? format().formatNumber(bridgeApi().solOf(lacking), { maxFractionDigits: 9 }) : ''),
+                defaultValue: requestedAmount || (lacking > 0n ? format().formatNumber(bridge.amountOf(lacking), { maxFractionDigits: bridge.decimals }) : ''),
                 placeholder: format().formatNumber(0.5, { maxFractionDigits: 1 }),
                 okText: t('agreement.chain.actions.fund', 'Fund'),
-                validate: text => readLamports(text) !== null
+                validate: text => readUnits(text) !== null
             });
             if (answer === null || state.id !== id) return;
-            const lamports = readLamports(answer);
+            const units = readUnits(answer);
             await runChain('fund', async onStatus => {
-                await win.AgreementBridge.fund({ agreement, lamports, onStatus });
-                notice(t('agreement.chain.funded', 'The escrow received {{amount}}.', { amount: solText(lamports) }));
+                // Each bridge reads its own name for the units: lamports on Solana, amount (wei) on EVM.
+                await bridge.fund({ agreement, lamports: units, amount: units, onStatus });
+                notice(t('agreement.chain.funded', 'The escrow received {{amount}}.', { amount: chainMoneyText(units, bridge) }));
             });
         }
 
@@ -1393,7 +1501,7 @@
             const attestation = state.chain && state.chain.attestation;
             if (!agreement || !attestation) return;
             await runChain('attest', async onStatus => {
-                await win.AgreementBridge.attest({ agreement, attestation, onStatus });
+                await bridgeFor(agreement).attest({ agreement, attestation, onStatus });
                 notice(t('agreement.chain.attested', 'Decision recorded: the rule is satisfied.'));
             });
         }
@@ -1403,7 +1511,7 @@
             const agreement = state.agreement;
             if (!agreement) return;
             await runChain('execute', async onStatus => {
-                await win.AgreementBridge.execute({ agreement, onStatus });
+                await bridgeFor(agreement).execute({ agreement, onStatus });
                 notice(t('agreement.chain.executed', 'Agreement executed: the escrow went to its payout account.'));
             });
         }
@@ -1420,7 +1528,7 @@
             });
             if (!confirmed || state.id !== id) return;
             await runChain('cancel', async onStatus => {
-                await win.AgreementBridge.cancel({ agreement, onStatus });
+                await bridgeFor(agreement).cancel({ agreement, onStatus });
                 notice(t('agreement.chain.cancelled', 'Agreement cancelled; the escrow returned to the sponsor.'));
             });
         }
@@ -1430,7 +1538,7 @@
             const agreement = state.agreement;
             if (!agreement) return;
             await runChain('expire', async onStatus => {
-                await win.AgreementBridge.expire({ agreement, onStatus });
+                await bridgeFor(agreement).expire({ agreement, onStatus });
                 notice(t('agreement.chain.expired', 'Agreement expired; the escrow returned to the sponsor.'));
             });
         }
@@ -1573,7 +1681,7 @@
             refresh();
         }
 
-        // Connecting, switching or disconnecting the Solana wallet changes who may act on chain.
+        // Connecting, switching or disconnecting a wallet (Solana or EVM) changes who may act on chain.
         function onWalletChange() {
             if (!isOpen() || !state.agreement || !state.agreement.published) return;
             renderPanel();
@@ -1585,6 +1693,7 @@
             store().subscribe(onStoreChange);
             if (win.LiveParcelFabric && typeof win.LiveParcelFabric.subscribe === 'function') win.LiveParcelFabric.subscribe(onFabricChange);
             if (win.solanaWalletManager && typeof win.solanaWalletManager.on === 'function') win.solanaWalletManager.on('stateChanged', onWalletChange);
+            if (win.walletManager && typeof win.walletManager.on === 'function') win.walletManager.on('stateChanged', onWalletChange);
             state.wired = true;
         }
 

@@ -382,5 +382,8 @@
         return { mint, fund, attest, execute, cancel, expire, read, findAttestation, connectedWallet, cluster, programId };
     }
 
-    return { LAMPORTS_PER_SOL, lamportsFromSol, solOf, explorerUrl, onchainRef, mintLens, chainActions, decisionAttestationOf, anchorError, browser };
+    // The chain-neutral names the agreement panel formats and parses amounts with (the EVM bridge,
+    // chain/evm-agreement.js, has the same four).
+    return { LAMPORTS_PER_SOL, lamportsFromSol, solOf, explorerUrl, onchainRef, mintLens, chainActions, decisionAttestationOf, anchorError,
+        currency: 'SOL', decimals: 9, amountOf: solOf, unitsFrom: lamportsFromSol, browser };
 });

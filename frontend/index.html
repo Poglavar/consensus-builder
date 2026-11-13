@@ -701,7 +701,7 @@
                                 </label>
                                 <label>
                                     <input type="checkbox" id="markMintedCheckbox">
-                                    <span data-i18n-key="sidebar.parcels.markMinted">Mark minted</span>
+                                    <span data-i18n-key="sidebar.parcels.markMinted">Anchored parcels</span>
                                 </label>
                             </div>
                         </div>
@@ -1574,25 +1574,25 @@
                     <div id="selected-parcels-content"></div>
                 </div>
 
-                <!-- Tools Tab: the parcel NFT first (Mint is the tab's one primary action; claim.js
-                     enables Mint or Claim from the chain status and, while several parcels are
-                     selected, hides every .button-row but the claim rows), then the inspection tools
-                     in two columns. Neighbors and Vertices are toggles (aria-pressed). Mint is the
-                     primary while the parcel can be minted, Claim once it is (claim.js swaps it). -->
+                <!-- Tools Tab: the parcel's chain anchor first (Anchor is the tab's one primary action;
+                     claim.js enables Anchor or Claim from the chain status and, while several parcels
+                     are selected, hides every .button-row but the claim rows), then the inspection tools
+                     in two columns. Neighbors and Vertices are toggles (aria-pressed). Anchor is the
+                     primary while the parcel is not anchored, Claim once it is (claim.js swaps it). -->
                 <div id="tools-tab" class="parcel-tab-content" role="tabpanel" aria-labelledby="parcel-tools-tab-button" hidden>
                     <div class="parcel-info-buttons">
                         <div class="button-row button-row-5">
                             <div id="parcelMintStatus" class="claim-status-indicator"
-                                data-i18n-key="panel.parcel.nftStatusDefault">NFT status: Not checked yet.</div>
+                                data-i18n-key="panel.parcel.nftStatusDefault">Anchor status: not checked yet.</div>
                         </div>
                         <div class="button-row button-row-claim cb-actions">
                             <button id="mintAndClaimButton" class="btn btn-primary" type="button"
                                 onclick="(window.Parcels?.uiClaim?.openParcelMintModal || window.openParcelMintModal || function(){})()"
-                                title="Mint the parcel NFT" disabled><i class="fas fa-stamp" aria-hidden="true"></i><span
-                                    data-i18n-key="panel.parcel.mintAndClaimButton">Mint</span></button>
+                                title="Anchor this parcel on chain" disabled><i class="fas fa-stamp" aria-hidden="true"></i><span
+                                    data-i18n-key="panel.parcel.mintAndClaimButton">Anchor</span></button>
                             <button id="claimButton" class="btn" type="button"
                                 onclick="(window.Parcels?.uiClaim?.openClaimOnly || window.openClaimOnly || function(){})()"
-                                title="Claim existing parcel NFT" disabled><i class="fas fa-hand-holding" aria-hidden="true"></i><span
+                                title="Claim the anchored parcel" disabled><i class="fas fa-hand-holding" aria-hidden="true"></i><span
                                     data-i18n-key="panel.parcel.claimButton">Claim</span></button>
                         </div>
                         <div class="button-row button-row-1 cb-actions">
@@ -2003,12 +2003,12 @@
             // bundle:start chain-clients
             'js/wallet-connection.js',
             'js/solana/wallet-adapter.js',
-            'js/lens-core.js',
+            'js/lens-core.js?v=20261113-evm-agreement',
             'js/lens-service-client.js',
             'js/solana/chain-data-loader.js?v=20261022-agreement-chain',
             'js/solana/parcel-client.js?v=20261022-agreement-chain',
             'js/solana/agreement-client.js?v=20261109-chain-reader',
-            'js/solana/agreement-bridge.js?v=20261022-agreement-chain',
+            'js/solana/agreement-bridge.js?v=20261113-evm-agreement',
             'js/proposals/site-hash.js',
             'js/solana/market-client.js?v=20261020-verified-funding',
             'js/solana/lmsr-client.js?v=20261025',
@@ -2066,7 +2066,7 @@
             'js/release-updates.js',
             'js/ui/app-updates.js',
             'js/ui/settings-panel.js',
-            'js/ui/commands.js?v=20261030-source-lists',
+            'js/ui/commands.js?v=20261113-anchor-wording',
             'js/ui/map-shell.js',
             'js/ui/dock-clearance.js',
             'js/load-view.js',
@@ -2123,7 +2123,7 @@
             'js/parcels/ui/labels.js',
             'js/parcels/ui/owner-counts.js',
             'js/parcels/ui/proposal-counts.js',
-            'js/parcels/ui/minted-layer.js?v=20261110-anchors',
+            'js/parcels/ui/minted-layer.js?v=20261113-anchor-wording',
             'js/parcels/ui/proposal-actions.js?v=20261027-station-inspection',
             'js/parcels/ui/ad-parcels.js',
             'js/parcels/ui/map-refresh.js',
@@ -2157,7 +2157,7 @@
             'js/browser-ownership-source.js',
             'js/parcels/ownership-ui.js?v=20261027-stack-semantics',
             'js/parcels/ui/visibility.js',
-            'js/parcels/ui/claim.js?v=20261110-anchors',
+            'js/parcels/ui/claim.js?v=20261113-anchor-wording',
             'js/parcels/index.js?v=20261110-anchors',
             'js/parcels/route.js',
             'js/proposals/selection.js',
@@ -2324,15 +2324,16 @@
             'js/agreement-ground.js?v=20261028-abstract-parties',
             'js/agreement-store.js',
             'js/agreement-dialog.js?v=20261030-plan-preview-apply',
-            'js/agreement-panel.js?v=20261031-inspector-organization',
+            'js/agreement-panel.js?v=20261113-evm-agreement',
             'js/agreement-list.js?v=20261027-agreement-tabs',
-            'js/agreement-sync.js?v=20261109-chain-reader',
+            'js/agreement-sync.js?v=20261113-evm-agreement',
             'js/chain/ipfs-read.js?v=20261109-chain-reader',
             'js/chain/chain-reader.js?v=20261110-evm-records',
-            'js/chain/evm-adapter.js?v=20261110-evm-records',
+            'js/chain/evm-adapter.js?v=20261113-evm-agreement',
             'js/chain/ipfs-courier.js?v=20261110-evm-records',
-            'js/chain/mint-checklist.js?v=20261110-evm-records',
-            'js/chain/chain-publish.js?v=20261110-evm-records',
+            'js/chain/mint-checklist.js?v=20261113-evm-agreement',
+            'js/chain/chain-publish.js?v=20261113-evm-agreement',
+            'js/chain/evm-agreement.js?v=20261113-evm-agreement',
             'js/suggested-layouts-2d.js?v=20261029-building-use',
             'js/proposals/replay-status.js',
             // bundle:end plans-agreements
@@ -2400,7 +2401,7 @@
             'js/agent-wallet-scope.js?v=20261020-wallet-observations',
             'js/agent-proposal-links.js?v=20261020-qualified-profile-links',
             // bundle:end agent-tools
-            'js/agents.js?v=20261110-anchors',
+            'js/agents.js?v=20261113-anchor-wording',
             'js/agent-bubbles.js',
             'js/game.js',
             // bundle:start activity-structures-transit

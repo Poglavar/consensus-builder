@@ -14,6 +14,7 @@ const list = require('../../frontend/js/agreement-list.js');
 const record = require('../../frontend/js/agreement-record.js');
 const format = require('../../frontend/js/format.js');
 const bridge = require('../../frontend/js/solana/agreement-bridge.js');
+const evmBridge = require('../../frontend/js/chain/evm-agreement.js');
 const client = require('../../frontend/js/solana/agreement-client.js');
 const PlanRecord = require('../../frontend/js/plan-record.js');
 const Cid = require('../../frontend/js/cid.js');
@@ -609,6 +610,7 @@ describe('On chain: a minted agreement', () => {
         const missing = panel.chainHtml(minted(null));
         expect(missing).toContain('data-agreement-chain="missing"');
         expect(missing).toContain('The account is not on Solana devnet.');
+        expect(panel.chainHtml(view())).toContain('Minting commits this agreement to Solana at its sponsor’s address');
     });
 
     it('shows the status, decision, escrow, lens and payout the account holds', () => {
@@ -638,7 +640,7 @@ describe('On chain: a minted agreement', () => {
         expect(stranger).toContain('Waiting for its lens to attest the decision.');
         const disconnected = panel.chainHtml(minted(account(), { wallet: null }));
         expect(buttons(disconnected)).toEqual(['execute:disabled']);
-        expect(disconnected).toContain('Connect a Solana wallet to act on it.');
+        expect(disconnected).toContain('Connect a wallet to act on it.');
     });
 
     it('offers Record decision once the lens has attested, and Execute once it is recorded and funded', () => {
@@ -661,6 +663,35 @@ describe('On chain: a minted agreement', () => {
         expect(buttons(html)).toEqual(['execute:disabled', 'expire']);
         expect(html).toContain('Its deadline has passed: anyone can expire it');
         expect(buttons(panel.chainHtml(minted(passed)))).toEqual(['execute:disabled', 'fund:disabled', 'cancel:disabled', 'expire']);
+    });
+
+    it('on EVM (R4) shows the agreement in ETH on its chain, links its contract, and compares addresses in any case', () => {
+        const SPONSOR_EVM = '0x8ba1f109551bD432803012645Ac136ddd64DBA72';
+        const KEY = `0x${'ab'.repeat(32)}`;
+        const CONTRACT = '0xe9bd361f00CDE963659a81c8e4F6b21d696f9302';
+        const WEI = 10n ** 18n;
+        const value = { ...account({ authority: SPONSOR_EVM, lens: SPONSOR_EVM, payout: SPONSOR_EVM, requiredLamports: WEI, escrowLamports: WEI / 4n }), currency: 'ETH', decimals: 18 };
+        const lower = SPONSOR_EVM.toLowerCase();
+        const html = panel.chainHtml(view({
+            published: { ...PUBLISHED, sponsor: SPONSOR_EVM }, sponsor: SPONSOR_EVM, wallet: lower, bridge: evmBridge,
+            ref: { chainId: '84532', account: KEY, contract: CONTRACT },
+            chain: { loading: false, value, error: null },
+            actions: evmBridge.chainActions(value, { wallet: lower, nowSeconds: NOW })
+        }));
+        const eth = amount => format.formatMoney(amount, 'ETH', { maxFractionDigits: 18, minFractionDigits: 0 });
+        expect(html).toContain(`${eth(0.25)} of ${eth(1)}`);
+        expect(html).toContain('<span class="agreement-panel-meta">Base Sepolia</span>');
+        expect(html).toContain(`href="https://sepolia.basescan.org/address/${CONTRACT}"`);
+        expect(buttons(html)).toEqual(['execute:disabled', 'fund', 'cancel']);
+        // A local chain has no explorer: the key is shown, not linked.
+        const local = panel.chainHtml(view({ bridge: evmBridge, ref: { chainId: '31337', account: KEY, contract: CONTRACT }, chain: { loading: true } }));
+        expect(local).toContain(`<code class="agreement-chain-account" title="${KEY}">`);
+        expect(local).toContain('Local Hardhat');
+        expect(panel.chainHtml(view({ bridge: evmBridge, ref: { chainId: '84532', account: KEY, contract: CONTRACT }, chain: { loading: false, value: null, error: null } })))
+            .toContain('The account is not on Base Sepolia.');
+        // Unminted: the hint and the sentence name the chain it would be minted on.
+        expect(panel.chainHtml(view({ bridge: evmBridge, network: 'Base Sepolia' }))).toContain('Minting commits this agreement to Base Sepolia');
+        expect(panel.mintReadiness({ sponsor: SPONSOR_EVM, wallet: lower, lens: SPONSOR_EVM })).toMatchObject({ canMint: true, hints: [] });
     });
 
     it('words a chain status however it is spelled', () => {

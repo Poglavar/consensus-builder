@@ -241,10 +241,20 @@ mock API and a local validator), then docs and the vocabulary entries it changes
    pin, not two. Lists' Source filter now covers every tab (designs and plans from the EVM chain,
    agreements from the Solana cluster). The parcel claim UI anchors instead of minting to a wallet,
    the minted-parcels layer and the agent profile read anchors, and the ENS gateway answers a parcel
-   name's `addr` with zero (an anchor has no owner; apex from `ENS_PARCEL_ANCHOR_ADDRESS`). Still
-   open from R3: the server chain watcher and the MCP tools (agents have no EVM key yet), the UI's
-   "NFT" wording family shared with Solana, the live ENS records (the scripts are repointed, not run),
-   and explorer source verification (needs an Etherscan v2 API key).
+   name's `addr` with zero (an anchor has no owner; apex from `ENS_PARCEL_ANCHOR_ADDRESS`).
+   *Server side:* `backend/chain/evm.js` binds the browser's EVM adapter to a JSON-RPC provider
+   (`EVM_RPC_URL_<chainId>`, public defaults) and, for agents, to `UGT_AGENT_EVM_PRIVATE_KEY` (the
+   project's own deployer key; `DEPLOYER_PRIVATE_KEY` in `backend/.env` is a public dev key).
+   `backend/chain/courier.js` is Flow 2 for the server: the public-gateway gate, pinning through
+   `storage/pinning.js` only when no public gateway serves the object. MCP, local mode only:
+   `ugt_chain_records`, `ugt_mint_design`, `ugt_mint_plan` (members retrievable, then the plan, then
+   its record) and `ugt_anchor_parcels` (metadata URI = the parcel's app page). The chain watcher
+   `backend/oracle/chain-records-job.mjs` (PM2 `consensus-builder-chain-records`, every 15 min,
+   `EVM_WATCH_CHAIN_IDS`) imports retrievable, CID-verified records into the index, designs before
+   plans, binding a design with its city's configured parcel source; plans wait for their members.
+   Still open from R3: the live ENS records (the scripts are repointed, not run), explorer source
+   verification (needs an Etherscan v2 API key), and an outcome check for the watcher in the alerts
+   repo.
 4. **R4, EVM agreements.** The `Agreement` contract, EAS attestation by the lens, escrow, the
    agreement panel's actions on EVM. Done when an agreement proposed with an EVM wallet executes on
    Base Sepolia from a lens attestation.

@@ -111,7 +111,8 @@ test('wallet profile replaces observations across accounts, networks and disconn
       getParcelsFromChain: (wallet: string, chain: string) => new Promise(resolve => w.__walletProfileRequests.push({ wallet, chain, resolve }))
     };
     w.refreshUserEthBalanceDisplay = () => {};
-    w.calculatePortfolioValue = async () => 3;
+    w.__valuedParcels = [];
+    w.calculatePortfolioValue = async (parcelIds: string[]) => { w.__valuedParcels.push([...parcelIds]); return 3; };
     const user = w.createAgent(); user.name = 'Scoped wallet profile'; user.userControlled = true;
     w.agentStorage.addAgent(user);
     w.PersistentStorage.setItem(`parcel_${parcelId}_owner`, user.id);
@@ -132,6 +133,11 @@ test('wallet profile replaces observations across accounts, networks and disconn
   await resolveRequest(0, ['wallet-a-parcel']);
   await expect(parcelItems).toHaveCount(2);
   expect(await page.evaluate(id => (window as any).agentWalletObservations[id].parcelIds, id)).toEqual(['wallet-a-parcel']);
+  // An anchor has no owner: the wallet's anchored parcel is listed, never owned or valued.
+  expect(await page.evaluate(id => (window as any).getAgentOwnedParcels(id), id)).toEqual([PARCEL_ID]);
+  expect(await page.evaluate(id => (window as any).buildAgentOwnedParcelIndex().get(id), id)).toEqual([PARCEL_ID]);
+  expect(await page.evaluate(() => (window as any).__valuedParcels)).toEqual([[PARCEL_ID]]);
+  await expect(dialog.locator('[data-agent-portfolio-value]')).toContainText('3');
   const fetchedAt = await page.evaluate(id => (window as any).agentDialogCache[id].lastFetchedAt, id);
   await dialog.locator('.agent-dialog-modal-close').click();
   await page.evaluate(id => (window as any).showAgentDialog(id), id);

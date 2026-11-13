@@ -68,6 +68,12 @@
         return !!bytes && bytes.length === 32 && base58Encode(bytes) === text;
     }
 
+    // An EVM address: 0x and 40 hex digits, in any letter case (the checksum is not judged here).
+    const isEvmAddress = value => typeof value === 'string' && /^0x[0-9a-fA-F]{40}$/.test(value.trim());
+
+    // A key an agreement may name as its sponsor or a lens member: a Solana key or an EVM address.
+    const isChainKey = value => isBase58Pubkey(value) || isEvmAddress(value);
+
     function shortKey(key) {
         const text = String(key || '');
         return text.length > 12 ? `${text.slice(0, 4)}…${text.slice(-4)}` : text;
@@ -101,13 +107,16 @@
         const key = cleanText(raw.key);
         if (!key || !isBase58Pubkey(key)) return null;
         const coverage = raw.coverage && typeof raw.coverage === 'object' ? raw.coverage : {};
+        const evmAddress = cleanText(raw.evmAddress ?? raw.evm_address);
         return {
             key,
             kind: cleanText(raw.kind),
             name: cleanText(raw.name),
             description: cleanText(raw.description),
             coverage: Object.fromEntries(COVERAGE_KEYS.map(name => [name, count(coverage[name])])),
-            serviceUrl: normalizeServiceUrl(raw.serviceUrl ?? raw.service_url)
+            serviceUrl: normalizeServiceUrl(raw.serviceUrl ?? raw.service_url),
+            // The address the member attests with on EVM (EAS), only when it publishes one.
+            ...(isEvmAddress(evmAddress) ? { evmAddress } : {})
         };
     }
 
@@ -281,10 +290,15 @@
         return cleanText(pricing.price);
     }
 
+    // A member's listed attestations. A Solana entry is named by its account `address`; an EVM (EAS)
+    // entry by its `uid`, with `chain: 'evm'` and its `chainId`, and its address is that uid.
     function normalizeAttestations(body) {
         const list = body && Array.isArray(body.attestations) ? body.attestations : [];
-        return list.filter(att => att && typeof att.address === 'string').map(att => ({
-            address: att.address,
+        return list.filter(att => att && (typeof att.address === 'string' || typeof att.uid === 'string')).map(att => ({
+            address: typeof att.address === 'string' ? att.address : att.uid,
+            uid: cleanText(att.uid),
+            chain: cleanText(att.chain),
+            chainId: att.chainId === undefined || att.chainId === null || att.chainId === '' ? null : String(att.chainId),
             kind: cleanText(att.kind),
             authority: cleanText(att.authority),
             parcelUid: cleanText(att.parcelUid),
@@ -337,6 +351,8 @@
         base58Encode,
         base58Decode,
         isBase58Pubkey,
+        isEvmAddress,
+        isChainKey,
         shortKey,
         normalizeServiceUrl,
         normalizeMember,

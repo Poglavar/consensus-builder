@@ -61,6 +61,34 @@ describe('MintChecklist', () => {
         expect(state2.get('record').result.record.minter).toBe('0xotherminterminter');
     });
 
+    it('pins each object as its own kind and creates an agreement through its own record step (R4)', async () => {
+        const { calls, courier, adapter } = fakes();
+        const mintRecord = vi.fn(async ({ report }) => {
+            report('creating');
+            return { txHash: '0xcreate', address: '0xagreement', record: { minter: '0x8ba1f109551bD432803012645Ac136ddd64DBA72', account: '0xkey' } };
+        });
+        const list = MintChecklist.steps(spec({ courier, adapter, parcelIds: ['HR-1'], mintRecord }, {
+            kind: 'agreement', subject: 'bafyagreement',
+            objects: [{ kind: 'plan', cid: 'bafyplan', bytes: new Uint8Array([2]), label: 'Plan' }, { cid: 'bafyagreement', bytes: new Uint8Array([3]), label: 'Agreement' }]
+        }));
+        expect(list.map(step => step.id)).toEqual(['content:bafyplan', 'content:bafyagreement', 'anchors', 'record']);
+        const state = new Map();
+        expect(await MintChecklist.run(list, state, () => {})).toBe(true);
+        expect(courier.deliver.mock.calls.map(([call]) => [call.kind, call.cid])).toEqual([['plan', 'bafyplan'], ['agreement', 'bafyagreement']]);
+        expect(calls.filter(call => call[0] === 'anchor')).toEqual([['anchor', ['HR-1']]]);
+        // The registry is not asked: an agreement is its account in the Agreement contract.
+        expect(adapter.recordOf).not.toHaveBeenCalled();
+        expect(adapter.mintRecord).not.toHaveBeenCalled();
+        expect(mintRecord).toHaveBeenCalledTimes(1);
+        expect(state.get('record')).toMatchObject({ status: 'done', note: 'mint.status.minted', extra: { tx: '0xcreate' } });
+        expect(state.get('record').result.record.account).toBe('0xkey');
+        // Created before: no transaction, the contract linked instead.
+        mintRecord.mockResolvedValueOnce({ txHash: null, address: '0xagreement', record: { minter: '0x8ba1f109551bD432803012645Ac136ddd64DBA72' } });
+        const again = new Map();
+        expect(await MintChecklist.run(MintChecklist.steps(spec({ courier, adapter, mintRecord }, { kind: 'agreement', subject: 'bafyagreement' })), again, () => {})).toBe(true);
+        expect(again.get('record')).toMatchObject({ note: 'mint.status.alreadyMinted', extra: { address: '0xagreement' } });
+    });
+
     it('names the courier failure a person can act on', async () => {
         const { courier, adapter } = fakes();
         courier.deliver.mockRejectedValueOnce(Object.assign(new Error('nothing'), { code: 'no-courier' }));

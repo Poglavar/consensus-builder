@@ -474,6 +474,20 @@ describe('normalize (published records)', () => {
         }
     });
 
+    it('takes an EVM sponsor and EVM lens members as it takes Solana keys (R4)', () => {
+        const EVM = '0x8ba1f109551bD432803012645Ac136ddd64DBA72';
+        const LENS_EVM = '0x71C7656EC7ab88b098defB751B7401B5f6d8976F';
+        const raw = { ...fixture(), published: { ...PUBLISHED, sponsor: EVM } };
+        raw.rule = { ...raw.rule, lens: [LENS_EVM, '9xQeWvG816bUx9EPjHmaT23yvVM2ZWbrrpZb9PusVFin'] };
+        const normalized = record.normalize(raw);
+        expect(normalized.published.sponsor).toBe(EVM);
+        expect(normalized.rule.lens).toEqual([LENS_EVM, '9xQeWvG816bUx9EPjHmaT23yvVM2ZWbrrpZb9PusVFin']);
+        const object = record.published({ ...raw, author: 'Ana', sponsor: EVM });
+        expect(object.sponsor).toBe(EVM);
+        expect(object.rule.lens).toEqual([LENS_EVM, '9xQeWvG816bUx9EPjHmaT23yvVM2ZWbrrpZb9PusVFin']);
+        expect(record.validate(raw).errors).toEqual([]);
+    });
+
     it('keeps the chain account of a minted agreement as given, a copy, and refuses one that is not an object', () => {
         expect(record.normalize(fixture()).onchain).toBeNull();
         expect(record.normalize({ ...fixture(), onchain: null }).onchain).toBeNull();

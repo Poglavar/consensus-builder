@@ -261,9 +261,9 @@
 
         const cachedChain = formatChainLabel(chainSlug || currentParcelMintStatusCache?.result?.chainSlug || null);
         if (!cachedChain && (state === 'not-minted' || state === 'error')) {
-            // Chain should always be available when checking NFT status
+            // Chain should always be available when checking the parcel's anchor
             // If we don't have it, this is an unexpected state - we attempted to check on a chain
-            console.error('Chain information not available for NFT status indicator - this should not happen as we attempted to check on a specific chain');
+            console.error('Chain information not available for the anchor status indicator - this should not happen as we attempted to check on a specific chain');
         }
         // Always use the chain if we have it - we attempted to check on this chain
         const chainParam = cachedChain ? { chain: cachedChain } : {};
@@ -272,15 +272,15 @@
         let retryMessage;
         if (state === 'error') {
             retryMessage = cachedChain
-                ? tParcel('panel.parcel.nft.checkFailedRetry', chainParam, `Couldn't check NFT status on ${cachedChain}. Click to try again.`)
-                : tParcel('panel.parcel.nft.checkFailedRetryNoChain', {}, "Couldn't check NFT status. Click to try again.");
+                ? tParcel('panel.parcel.nft.checkFailedRetry', chainParam, `Couldn't check the anchor on ${cachedChain}. Click to try again.`)
+                : tParcel('panel.parcel.nft.checkFailedRetryNoChain', {}, "Couldn't check the anchor. Click to try again.");
         } else {
             retryMessage = cachedChain
-                ? tParcel('panel.parcel.nft.notFoundRetry', chainParam, 'NFT not found. Click to check again.')
-                : tParcel('panel.parcel.nft.statusUnknown', {}, 'NFT status: Not checked yet.');
+                ? tParcel('panel.parcel.nft.notFoundRetry', chainParam, `Not anchored on ${cachedChain}. Click to check again.`)
+                : tParcel('panel.parcel.nft.statusUnknown', {}, 'Anchor status: not checked yet.');
         }
-        const retryTooltip = tParcel('panel.parcel.nft.retryTooltip', {}, 'Click to check NFT status again');
-        const resolvedMessage = message || tParcel('panel.parcel.nft.statusUnknown', {}, 'NFT status: Not checked yet.');
+        const retryTooltip = tParcel('panel.parcel.nft.retryTooltip', {}, 'Check the parcel’s anchor again');
+        const resolvedMessage = message || tParcel('panel.parcel.nft.statusUnknown', {}, 'Anchor status: not checked yet.');
 
         const setIndicatorContent = (content) => {
             indicator.innerHTML = '';
@@ -302,7 +302,7 @@
             retryButton.addEventListener('click', event => {
                 activeMintStatusRetry = retryButton;
                 global.BusyControl.track(retryButton, () => recheckParcelMintStatus(event))
-                    .catch(error => console.error('Parcel NFT status retry failed:', error))
+                    .catch(error => console.error('Parcel anchor status retry failed:', error))
                     .finally(() => { if (activeMintStatusRetry === retryButton) activeMintStatusRetry = null; });
             });
             indicator.replaceChildren(retryButton);
@@ -339,7 +339,7 @@
         currentParcelMintStatusParcelId = null;
         currentParcelMintStatusPromise = null;
         setParcelMintStatusIndicator(
-            tParcel('panel.parcel.nft.statusUnknown', {}, 'NFT status: Not checked yet.'),
+            tParcel('panel.parcel.nft.statusUnknown', {}, 'Anchor status: not checked yet.'),
             'neutral'
         );
     }
@@ -347,7 +347,7 @@
     function applyParcelMintStatusResult(result) {
         if (!result) {
             setParcelMintStatusIndicator(
-                tParcel('panel.parcel.nft.statusUnknown', {}, 'NFT status: Not checked yet.'),
+                tParcel('panel.parcel.nft.statusUnknown', {}, 'Anchor status: not checked yet.'),
                 'neutral'
             );
             return;
@@ -369,7 +369,7 @@
             const messageText = tParcel(
                 'panel.parcel.nft.statusMinted',
                 { chain: chainText },
-                `NFT status: Minted${chainText}`
+                `Anchored on chain${chainText}`
             );
             const explorerUrl = buildParcelAnchorExplorerUrl({
                 chainId: result.chainId,
@@ -468,7 +468,7 @@
         const isMultiActive = global.multiParcelSelection && (global.multiParcelSelection.isActive || global.multiParcelSelection.selectedParcels?.size > 0);
         if (isMultiActive) {
             setParcelMintStatusIndicator(
-                tParcel('panel.parcel.nft.multiReady', {}, 'Ready to mint selected parcels. Mint will check on press.'),
+                tParcel('panel.parcel.nft.multiReady', {}, 'Selected parcels are ready to anchor. Anchor checks them on press.'),
                 'neutral'
             );
             return null;
@@ -477,7 +477,7 @@
         const parcelFeature = getCurrentLiveParcelFeature();
         if (!parcelFeature) {
             setParcelMintStatusIndicator(
-                tParcel('panel.parcel.nft.statusPrompt', {}, 'Select a parcel to check NFT status.'),
+                tParcel('panel.parcel.nft.statusPrompt', {}, 'Select a parcel to check its anchor.'),
                 'neutral'
             );
             currentParcelMintStatusCache = null;
@@ -510,7 +510,7 @@
 
         if (currentParcelMintStatusPromise && currentParcelMintStatusParcelId === parcelId && !forceRecheck) {
             setParcelMintStatusIndicator(
-                tParcel('panel.parcel.nft.checking', {}, 'Checking NFT status...'),
+                tParcel('panel.parcel.nft.checking', {}, 'Checking the parcel’s anchor…'),
                 'loading'
             );
             return currentParcelMintStatusPromise;
@@ -518,7 +518,7 @@
 
         currentParcelMintStatusParcelId = parcelId;
         setParcelMintStatusIndicator(
-            tParcel('panel.parcel.nft.checking', {}, 'Checking NFT status...'),
+            tParcel('panel.parcel.nft.checking', {}, 'Checking the parcel’s anchor…'),
             'loading'
         );
 
@@ -571,7 +571,7 @@
             } catch (error) {
                 if (currentParcelMintStatusParcelId === parcelId) {
                     if (typeof console !== 'undefined' && typeof console.warn === 'function') {
-                        console.warn('Parcel NFT status check failed:', error);
+                        console.warn('Parcel anchor status check failed:', error);
                     }
                     // Use chain from cache, or from claim context we captured, or from attempted chain ID
                     let chainSlug = currentParcelMintStatusCache?.result?.chainSlug || claimContextChainSlug || null;
@@ -1031,11 +1031,11 @@
         });
         if (mintDeclareUrl) {
             if (typeof global.updateStatus === 'function') {
-                global.updateStatus(tParcel('status.messages.parcel_not_minted_yet_opening_mint_attest_flow', {}, 'Parcel not minted yet. Opening Mint & Attest flow...'));
+                global.updateStatus(tParcel('status.messages.parcel_not_minted_yet_opening_mint_attest_flow', {}, 'Parcel not anchored yet. Opening the anchoring flow…'));
             }
             openExternalUrl(mintDeclareUrl);
         } else if (typeof global.updateStatus === 'function') {
-            global.updateStatus(tParcel('status.messages.parcel_not_minted_yet_and_the_mint_attest_flow_couldn_t_be_prepared', {}, "Parcel not minted yet and the Mint & Attest flow couldn't be prepared."));
+            global.updateStatus(tParcel('status.messages.parcel_not_minted_yet_and_the_mint_attest_flow_couldn_t_be_prepared', {}, "Parcel not anchored yet, and the anchoring flow couldn't be prepared."));
         }
     }
 
@@ -1190,7 +1190,7 @@
             }
             currentParcelMintStatusParcelId = parcelId;
             currentParcelMintStatusPromise = null;
-            setParcelMintStatusIndicator('Checking NFT status...', 'loading');
+            setParcelMintStatusIndicator(tParcel('panel.parcel.nft.checking', {}, 'Checking the parcel’s anchor…'), 'loading');
 
             try {
                 claimContext = await resolveParcelClaimContext();
@@ -1301,7 +1301,7 @@
             currentParcelMintStatusCache = null;
             currentParcelMintStatusParcelId = parcelId;
             currentParcelMintStatusPromise = null;
-            setParcelMintStatusIndicator('Checking NFT status...', 'loading');
+            setParcelMintStatusIndicator(tParcel('panel.parcel.nft.checking', {}, 'Checking the parcel’s anchor…'), 'loading');
             let claimContext = null;
             try {
                 claimContext = await resolveParcelClaimContext();
@@ -1411,14 +1411,11 @@
             const doc = global.document;
 
             const body = doc.createElement('p');
-            body.textContent = parcelCount === 1
-                ? 'Parcel has been minted!'
-                : `${parcelCount} parcels have been minted!`;
+            body.textContent = tParcel('panel.parcel.anchorDialog.successBody', { count: parcelCount }, `Parcels anchored: ${parcelCount}`);
             const content = [body];
 
-            const isSolana = typeof chainId === 'string' && chainId.startsWith('solana');
             const txList = Array.isArray(transactions) ? transactions.filter(t => t && t.txHash) : [];
-            const explorerTitle = isSolana ? 'View on Solana Explorer' : 'View on Explorer';
+            const explorerTitle = tParcel('panel.parcel.nft.viewOnExplorer', {}, 'View on explorer');
             const explorerLink = (url, text) => {
                 const link = doc.createElement('a');
                 link.href = url;
@@ -1443,7 +1440,7 @@
                 txList.forEach((tx, idx) => {
                     const url = buildExplorerTxUrl({ chainId, chainSlug: chainId, txHash: tx.txHash });
                     if (!url) return;
-                    const link = explorerLink(url, tx.parcelId ? tx.parcelId : `Transaction ${idx + 1}`);
+                    const link = explorerLink(url, tx.parcelId ? tx.parcelId : tParcel('gameDialogs.log.actors.transaction', { id: idx + 1 }, `Transaction ${idx + 1}`));
                     link.title = explorerTitle;
                     list.appendChild(link);
                 });
@@ -1451,12 +1448,12 @@
             }
 
             const dialogApi = global.CbDialog.open({
-                title: 'Success!',
+                title: tParcel('panel.parcel.anchorDialog.successTitle', {}, 'Anchoring complete'),
                 size: 'sm',
                 top: true,
                 className: 'parcel-mint-success',
                 body: content,
-                actions: [{ id: 'ok', label: 'OK', role: 'primary' }],
+                actions: [{ id: 'ok', label: tParcel('common.ok', {}, 'OK'), role: 'primary' }],
                 onClose: () => {
                     if (parcelMintSuccessDialog === dialogApi) parcelMintSuccessDialog = null;
                     if (typeof onClose === 'function') {
@@ -1619,15 +1616,15 @@
 
         const subtitle = global.document.createElement('p');
         subtitle.className = 'parcel-mint-subtitle';
-        subtitle.textContent = 'Choose which parcels to anchor on chain. An anchor has no owner: your wallet only pays for it and holds nothing. If feasible (not too many), the parcels will all be anchored in one transaction.';
+        subtitle.textContent = tParcel('panel.parcel.anchorDialog.intro', {}, 'Choose which parcels to anchor on chain. An anchor has no owner: your wallet only pays for it and holds nothing. If feasible (not too many), the parcels will all be anchored in one transaction.');
 
         const meta = global.document.createElement('div');
         meta.className = 'parcel-mint-meta';
         const displayChain = chainSlug ? `${String(chainSlug).charAt(0).toUpperCase()}${String(chainSlug).slice(1)}` : 'unknown';
         const metaList = [
-            { label: 'Chain', value: displayChain },
-            { label: 'Minting contract', value: contractAddress || 'n/a', monospace: true, url: buildExplorerAddressUrl({ chainId, chainSlug, address: contractAddress }) },
-            { label: 'Paying wallet', value: ownerAddress || 'n/a', monospace: true, url: buildExplorerAddressUrl({ chainId, chainSlug, address: ownerAddress }) }
+            { label: tParcel('panel.parcel.anchorDialog.chain', {}, 'Chain'), value: displayChain },
+            { label: tParcel('panel.parcel.anchorDialog.contract', {}, 'Anchor contract'), value: contractAddress || 'n/a', monospace: true, url: buildExplorerAddressUrl({ chainId, chainSlug, address: contractAddress }) },
+            { label: tParcel('panel.proposal.agent.payer', {}, 'Paying wallet'), value: ownerAddress || 'n/a', monospace: true, url: buildExplorerAddressUrl({ chainId, chainSlug, address: ownerAddress }) }
         ];
         metaList.forEach((item) => {
             const row = global.document.createElement('div');
@@ -1717,7 +1714,7 @@
         // The dialog has no automatic dismissals: while a mint transaction is in flight (is-busy)
         // neither the close button, the backdrop nor Escape may close it, so it owns all three.
         const dialogApi = global.CbDialog.open({
-            title: 'Anchor parcels on chain',
+            title: tParcel('panel.parcel.anchorDialog.title', {}, 'Anchor parcels on chain'),
             size: 'md',
             top: true,
             className: 'parcel-mint-modal',
@@ -1727,7 +1724,7 @@
             closeOnBackdrop: false,
             closeOnEscape: false,
             body: [subtitle, meta, list, status],
-            actions: [{ id: 'mint', label: 'Mint', role: 'primary', keepOpen: true, onClick: () => mint() }]
+            actions: [{ id: 'mint', label: tParcel('panel.parcel.mintAndClaimButton', {}, 'Anchor'), role: 'primary', keepOpen: true, onClick: () => mint() }]
         });
         if (!dialogApi) return;
         parcelMintDialog = dialogApi;
@@ -1737,7 +1734,7 @@
         const closeBtn = global.document.createElement('button');
         closeBtn.type = 'button';
         closeBtn.className = 'close-circle-btn parcel-mint-close';
-        closeBtn.setAttribute('aria-label', 'Close');
+        closeBtn.setAttribute('aria-label', tParcel('common.close', {}, 'Close'));
         closeBtn.textContent = '×';
         closeBtn.addEventListener('click', () => {
             if (!isBusy()) removeParcelMintModal('close');
@@ -1763,11 +1760,11 @@
                 .filter(entry => entry.checkbox.checked)
                 .map(entry => entry.parcel);
             if (!selected.length) {
-                status.textContent = 'Select at least one parcel to mint.';
+                status.textContent = tParcel('panel.parcel.anchorDialog.selectOne', {}, 'Select at least one parcel to anchor.');
                 return;
             }
             try {
-                setBusy(true, 'Preparing mint transaction...');
+                setBusy(true, tParcel('panel.parcel.anchorDialog.preparing', {}, 'Preparing the anchor transaction…'));
                 const result = await onConfirm({ parcels: selected, setBusy, statusEl: status, neighboursByParcelId: neighbourMap });
                 const mintedIds = Array.isArray(result?.mintedParcelIds)
                     ? result.mintedParcelIds.filter(Boolean)
@@ -1790,11 +1787,11 @@
                 overlay.classList.remove('is-busy');
                 const hasStatusContent = Boolean(status.innerHTML && status.innerHTML.trim());
                 if (!hasStatusContent) {
-                    status.textContent = result?.statusMessage || 'Mint successful. You can mint remaining parcels.';
+                    status.textContent = result?.statusMessage || tParcel('panel.parcel.anchorDialog.partial', {}, 'Anchoring done. You can anchor the remaining parcels.');
                 }
             } catch (error) {
                 console.error('Parcel mint failed', error);
-                setBusy(false, error?.message || 'Mint failed. Please try again.');
+                setBusy(false, error?.message || tParcel('panel.parcel.anchorDialog.failed', {}, 'Anchoring failed. Please try again.'));
             }
         };
     }
@@ -1854,7 +1851,7 @@
         if (value) {
             return value;
         }
-        throw new Error(`Failed to create metadata URI for parcel ${parcelId}. Parcel was not minted.`);
+        throw new Error(`Failed to create metadata URI for parcel ${parcelId}. Parcel was not anchored.`);
     }
 
     // Bounding boxes of immutable feature snapshots returned by the committed fabric.
@@ -1983,7 +1980,9 @@
 
             try {
                 if (statusEl) {
-                    const label = parcels.length > 1 ? `Uploading parcel ${idx + 1}/${parcels.length} to IPFS...` : 'Uploading parcel metadata to IPFS...';
+                    const label = parcels.length > 1
+                        ? tParcel('panel.parcel.anchorDialog.uploadingMany', { index: idx + 1, total: parcels.length }, `Uploading parcel ${idx + 1}/${parcels.length} to IPFS…`)
+                        : tParcel('panel.parcel.anchorDialog.uploadingOne', {}, 'Uploading the parcel metadata to IPFS…');
                     statusEl.textContent = label;
                 }
                 if (global.MapScreenshot && typeof global.MapScreenshot.capturePolygonImage === 'function' && global.AssetService && typeof global.AssetService.uploadProposalAssets === 'function') {
@@ -2045,9 +2044,10 @@
         const contract = new ethersLib.Contract(contractAddress, parcelAnchorAbi(), signer);
         const parcelIds = parcels.map(p => p.parcelId);
         const metadataUris = parcels.map(p => requireParcelMetadataUri(p.metadataUri, p.parcelId));
-        if (statusEl) statusEl.textContent = 'Submitting mint transaction...';
+        if (statusEl) statusEl.textContent = tParcel('panel.parcel.anchorDialog.submitting', {}, 'Submitting the anchor transaction…');
         const tx = await contract.anchorBatch(parcelIds, metadataUris);
-        if (statusEl) statusEl.textContent = `Waiting for confirmation on ${chainSlug || 'chain'}...`;
+        const chainLabel = chainSlug || tParcel('panel.parcel.anchorDialog.chain', {}, 'Chain');
+        if (statusEl) statusEl.textContent = tParcel('panel.parcel.anchorDialog.waiting', { chain: chainLabel }, `Waiting for confirmation on ${chainLabel}…`);
         const receipt = typeof tx.wait === 'function' ? await tx.wait() : null;
         return { txHash: tx.hash, receipt };
     }
@@ -2061,7 +2061,7 @@
                 : (isMultiActive ? collectMultiSelectedParcelsForMint() : collectCurrentParcelForMint());
             if (!parcels.length) {
                 if (typeof global.updateStatus === 'function') {
-                    global.updateStatus('Select a parcel before minting.');
+                    global.updateStatus(tParcel('panel.parcel.anchorDialog.selectParcel', {}, 'Select a parcel before anchoring.'));
                 }
                 return;
             }
@@ -2091,7 +2091,7 @@
                         const transactions = [];
                         for (let i = 0; i < prepared.length; i++) {
                             const p = prepared[i];
-                            if (statusEl) statusEl.textContent = `Minting parcel ${i + 1}/${prepared.length}...`;
+                            if (statusEl) statusEl.textContent = tParcel('panel.parcel.anchorDialog.anchoring', { index: i + 1, total: prepared.length }, `Anchoring parcel ${i + 1}/${prepared.length}…`);
                             try {
                                 const result = await global.mintParcelSolana(
                                     p.parcelId,
@@ -2103,11 +2103,11 @@
                                 if (result?.txHash) {
                                     transactions.push({ parcelId: p.parcelId, txHash: result.txHash });
                                 } else if (result?.alreadyMinted && statusEl) {
-                                    statusEl.textContent = `Parcel ${i + 1}/${prepared.length} already minted.`;
+                                    statusEl.textContent = tParcel('panel.parcel.anchorDialog.alreadyAnchored', { index: i + 1, total: prepared.length }, `Parcel ${i + 1}/${prepared.length} is already anchored.`);
                                 }
                             } catch (err) {
                                 console.error('Solana parcel mint failed', err);
-                                setBusy(false, err?.message || 'Mint failed.');
+                                setBusy(false, err?.message || tParcel('panel.parcel.anchorDialog.failed', {}, 'Anchoring failed. Please try again.'));
                                 return { mintedParcelIds, statusMessage: err?.message };
                             }
                         }
@@ -2121,7 +2121,7 @@
             const walletManager = global.walletManager;
             const walletProvider = walletManager && typeof walletManager.getProvider === 'function' ? walletManager.getProvider() : null;
             if (!walletProvider) {
-                throw new Error('Connect your wallet to mint parcels.');
+                throw new Error(tParcel('panel.parcel.anchorDialog.connectWallet', {}, 'Connect your wallet to anchor parcels.'));
             }
             const ethersLib = global.ethers;
             if (!ethersLib) {
@@ -2161,7 +2161,7 @@
 
                 if (mintedParcels.length > 0) {
                     setParcelMintStatusIndicator(
-                        'some of the selected parcels have already been minted. deselect them to proceed to mint.',
+                        tParcel('panel.parcel.anchorDialog.someAnchored', {}, 'Some selected parcels are already anchored. Deselect them to anchor the rest.'),
                         'error',
                         chainSlug
                     );
@@ -2172,7 +2172,7 @@
                     return;
                 }
 
-                setParcelMintStatusIndicator('Selected parcels are ready to mint.', 'not-minted', chainSlug);
+                setParcelMintStatusIndicator(tParcel('panel.parcel.anchorDialog.ready', {}, 'Selected parcels are ready to anchor.'), 'not-minted', chainSlug);
             }
 
             await buildParcelMintModal({
@@ -2202,7 +2202,7 @@
         } catch (error) {
             console.error('Unable to open parcel mint modal', error);
             if (typeof global.updateStatus === 'function') {
-                global.updateStatus(error?.message || 'Unable to open mint modal.');
+                global.updateStatus(error?.message || tParcel('panel.parcel.anchorDialog.openFailed', {}, 'Unable to open the anchoring dialog.'));
             }
         }
     }
@@ -2238,8 +2238,8 @@
         const doc = global.document;
         if (!doc) return;
         const titles = [
-            ['mintAndClaimButton', 'panel.parcel.mintTooltip', 'Mint the parcel NFT'],
-            ['claimButton', 'panel.parcel.claimExistingTooltip', 'Claim existing parcel NFT']
+            ['mintAndClaimButton', 'panel.parcel.mintTooltip', 'Anchor this parcel on chain'],
+            ['claimButton', 'panel.parcel.claimExistingTooltip', 'Claim the anchored parcel']
         ];
         titles.forEach(([id, key, fallback]) => {
             const el = doc.getElementById(id);

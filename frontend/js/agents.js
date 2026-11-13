@@ -290,22 +290,18 @@ function forEachPersistentParcelOwnership(iterator, options = {}) {
     }
 }
 
-function getAgentOwnedParcels(agentId, { includePersistent = true, includeTransient = true, storage = null } = {}) {
+// Ownership is the local model's owner rows only. A parcel the connected wallet anchored on chain is
+// not owned: an anchor has no owner (ParcelAnchor / the Solana parcel program), so it is listed in
+// the wallet profile (getAgentParcelDetails includeAnchored) but never counted or valued as a holding.
+function getAgentOwnedParcels(agentId, { storage = null } = {}) {
     const parcels = [];
-
-    if (includePersistent) {
-        forEachPersistentParcelOwnership((ownerId, parcelId) => {
-            if (ownerId === agentId) parcels.push(parcelId);
-        }, { storage: storage || PersistentStorage });
-    }
-
-    // Merge only observations belonging to the current connected wallet scope.
-    if (includeTransient) parcels.push(...getAgentObservedWalletParcels(agentId));
-
+    forEachPersistentParcelOwnership((ownerId, parcelId) => {
+        if (ownerId === agentId) parcels.push(parcelId);
+    }, { storage: storage || PersistentStorage });
     return Array.from(new Set(parcels));
 }
 
-function buildAgentOwnedParcelIndex({ includePersistent = true, includeTransient = true, storage = null } = {}) {
+function buildAgentOwnedParcelIndex({ storage = null } = {}) {
     const ownerToParcels = new Map();
 
     const addOwnership = (ownerId, parcelId) => {
@@ -318,15 +314,7 @@ function buildAgentOwnedParcelIndex({ includePersistent = true, includeTransient
         ownerToParcels.get(ownerKey).push(parcelKey);
     };
 
-    if (includePersistent) {
-        forEachPersistentParcelOwnership(addOwnership, { storage: storage || PersistentStorage });
-    }
-
-    if (includeTransient) {
-        Object.keys(agentWalletObservations).forEach(agentId => {
-            getAgentObservedWalletParcels(agentId).forEach(parcelId => addOwnership(agentId, parcelId));
-        });
-    }
+    forEachPersistentParcelOwnership(addOwnership, { storage: storage || PersistentStorage });
 
     ownerToParcels.forEach((parcelIds, ownerId) => {
         ownerToParcels.set(ownerId, Array.from(new Set(parcelIds)));
@@ -950,10 +938,10 @@ async function showAgentDialog(agentId, options = {}) {
     const walletState = window.walletManager ? window.walletManager.getState() : null;
     const walletConnected = walletState && walletState.status === 'connected' && walletState.accounts && walletState.accounts.length > 0;
     const walletAccounts = walletConnected ? (walletState.accounts || []) : [];
-    const parcelScope = { includeTransient: isUserAgent };
-    const ownedParcels = getAgentOwnedParcels(agentId, parcelScope);
+    // The land estimate values owned (assigned) parcels only; the wallet's anchors are listed, unvalued.
+    const ownedParcels = getAgentOwnedParcels(agentId);
     const portfolioBasis = getPortfolioValuationBasis();
-    const parcelDetails = getAgentParcelDetails(agentId, parcelScope);
+    const parcelDetails = getAgentParcelDetails(agentId, { includeAnchored: isUserAgent });
     const cachedLists = getAgentDialogCache(agentId);
     let portfolioValue = null;
     const createdProposals = window.AgentProposalLinks.locals(agent.proposalsCreated || []);
@@ -1165,13 +1153,10 @@ async function showAgentDialog(agentId, options = {}) {
                     setSectionCount(type, agentDialogListData[type].data.length);
                     renderFirstPageForList(type);
                 }
-                const valueNode = modal.querySelector('[data-agent-portfolio-value]');
+                // The land estimate covers owned parcels only, so it does not follow the wallet; the
+                // total waits for the new wallet's balance (refreshUserEthBalanceDisplay).
                 const totalNode = modal.querySelector('[data-agent-total-wealth]');
-                if (valueNode) valueNode.textContent = '-';
-                if (totalNode) {
-                    totalNode.textContent = '-';
-                    totalNode.setAttribute('data-portfolio-value', '');
-                }
+                if (totalNode) totalNode.textContent = '-';
             }
             loadAgentChainData(agent, isUserAgent);
         } catch (err) {
@@ -1554,7 +1539,7 @@ async function loadAgentChainData(agent, isUserAgent) {
                 : await window.ChainDataLoader.getParcelsFromChain(walletAddress, chainId, parcelAddress);
             if (!isCurrentProfile()) return;
 
-            const existingParcels = getAgentParcelDetails(agent.id, { includeTransient: false });
+            const existingParcels = getAgentParcelDetails(agent.id);
             replaceAgentDialogListData('parcels', Array.from(new Set([
                 ...existingParcels.map(p => (p.id || p)), ...parcels.map(p => p.parcelId)
             ])));
@@ -1567,33 +1552,7 @@ async function loadAgentChainData(agent, isUserAgent) {
 
             renderFirstPageForList('parcels');
             setSectionCount('parcels', agentDialogListData.parcels.data.length, 'Assigned and anchored parcels');
-
-            // Recompute portfolio value now that on-chain parcels are known
-            if (typeof calculatePortfolioValue === 'function') {
-                try {
-                    const ownedNow = getAgentOwnedParcels(agent.id);
-                    const displayedBasis = document.querySelector('.agent-dialog-modal')?.dataset.portfolioUsdPerEth;
-                    const value = await calculatePortfolioValue(ownedNow, { forceRefresh: true, usdPerEth: Number(displayedBasis) });
-                    if (!isCurrentProfile()) return;
-                    const portfolioNode = targetModal.querySelector('[data-agent-portfolio-value]');
-                    const totalWealthNode = targetModal.querySelector('[data-agent-total-wealth]');
-                    const portfolioValue = Number.isFinite(value) ? value : NaN;
-                    if (portfolioNode) {
-                        portfolioNode.textContent = Number.isFinite(portfolioValue) ? CbFormat.formatMoney(portfolioValue, 'ETH') : '-';
-                    }
-                    if (totalWealthNode) {
-                        totalWealthNode.setAttribute('data-portfolio-value', Number.isFinite(portfolioValue) ? portfolioValue : '');
-                        // The wallet refresh below supplies the actual balance. Until then,
-                        // do not combine this estimate with a simulated/stale agent balance.
-                        totalWealthNode.textContent = '-';
-                    }
-                    if (typeof refreshUserEthBalanceDisplay === 'function') {
-                        refreshUserEthBalanceDisplay();
-                    }
-                } catch (err) {
-                    console.warn('Failed to recompute portfolio after chain load', err);
-                }
-            }
+            // Anchors are not holdings, so the land estimate (owned parcels only) is not recomputed.
 
             // Persist the wallet's parcels for reuse while the dialog reopens.
             setAgentDialogCache(agent.id, {
@@ -1992,10 +1951,14 @@ function getParcelProposalCount(parcelId) {
  * @param {string} agentId - The agent ID
  * @returns {Array} - Array of parcel objects with proposal counts
  */
-function getAgentParcelDetails(agentId, options = {}) {
-    const ownedParcels = getAgentOwnedParcels(agentId, options);
+function getAgentParcelDetails(agentId, { includeAnchored = false } = {}) {
+    // includeAnchored adds the parcels the connected wallet anchored (current wallet scope only).
+    const listedParcels = Array.from(new Set([
+        ...getAgentOwnedParcels(agentId),
+        ...(includeAnchored ? getAgentObservedWalletParcels(agentId) : [])
+    ]));
 
-    const parcelDetails = ownedParcels.map(parcelId => {
+    const parcelDetails = listedParcels.map(parcelId => {
         const proposalCount = getParcelProposalCount(parcelId);
 
         // Read parcel metadata from the committed fabric.

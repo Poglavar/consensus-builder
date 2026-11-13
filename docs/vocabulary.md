@@ -803,7 +803,7 @@ The provenance of a lifecycle claim: an observed matching chain state or event, 
 
 ### Chain agreement account
 
-The agreement program account identified by network, program, sponsor and agreement CID. On Solana its address is derived from the sponsor and the hash of the CID; the account is separate from the published agreement content.
+The agreement program account identified by network, program, sponsor and agreement CID. On Solana its address is derived from the sponsor and the hash of the CID; on EVM it is the entry of the `Agreement` contract keyed by `keccak256(abi.encode(sponsor, cid))`, with its escrow in the chain's native token. The sponsor's key decides the chain: a base58 key on Solana, a 0x address on EVM. The account is separate from the published agreement content.
 
 ### Parcel anchor
 
