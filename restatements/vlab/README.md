@@ -60,7 +60,7 @@ Each building's parts state one `buildingId`, so they share one [building hue](.
 
 The squares and the vLAB building's land take clear the existing buildings inside the embankment that the model does not keep, as the author's model does.
 
-The agreement is a community vote over the nine designs, *vLAB – transformacija prostora između Cibone i Westina*: 20 input parcels and 48 output pieces (`ground/vlab.json`). It is published only to a local API so far.
+The agreement is a community vote over the nine designs, *vLAB – transformacija prostora između Cibone i Westina*: 20 input parcels and 44 output pieces (`ground/vlab.json`). It is published only to a local API so far.
 
 ## The author's model (local only)
 
