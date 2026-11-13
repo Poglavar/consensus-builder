@@ -257,8 +257,9 @@ test.describe('Data sources @features', () => {
   test('source warnings identify each layer and clear independently', async ({ mockApi: page }) => {
     await openCity(page);
     // A parcel load that succeeds clears the parcel warning (as it should), so the startup read
-    // settles before the warnings are injected.
-    await page.evaluate(() => (window as any).fetchParcelData());
+    // settles before the warnings are injected. openCity's setView left a debounced map-move read
+    // pending; it runs here instead, or on a slow machine it lands after the warnings and clears one.
+    await page.evaluate(() => { const w = window as any; clearTimeout(w.parcelsTimeout); return w.fetchParcelData(); });
     await page.evaluate(() => {
       const settings = (window as any).ParcelSourceSettings;
       for (const kind of ['parcel', 'building', 'imagery']) settings.clearFailure(window, kind);

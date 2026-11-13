@@ -12329,7 +12329,9 @@
             latLngToXY: latLngToXY, xyToLatLng: xyToLatLng,
             pickGroundLatLng: pickGroundLatLngFromEvent,
             originLatLng: function () { const ll = xyToLatLng(0, 0); return { lat: ll.lat, lng: ll.lng }; },
-            groundStats: function () { return groundLayer ? groundLayer.stats() : null; }
+            groundStats: function () { return groundLayer ? groundLayer.stats() : null; },
+            // Figures are numbered pedestrians first, then motorbike riders (three-life.js).
+            lifeStats: function () { return lifeLayer ? lifeLayer.stats() : null; }
         };
     };
     window.__threeModeDriver = { enter: enter3D, exit: exit3D };

@@ -148,9 +148,12 @@ test.describe('3D people and traffic layer @features', () => {
       const torsos = group.children.filter((o: any) => o.isInstancedMesh && o.userData?.isLife)[4];
       const proposals = w.proposedBuildings || [];
       if (!torsos || !proposals.length) return { figures: 0, footprints: proposals.length, inside: -1 };
+      // Pedestrians come first; the riders after them sit on motorbikes, which follow the fixture's
+      // road through this building like every vehicle, so they are not walkers to check.
+      const people = w.getThreeModeInternals().lifeStats().people;
       const points: Array<[number, number]> = [];
       const matrix = new w.THREE.Matrix4();
-      for (let i = 0; i < torsos.count; i++) {
+      for (let i = 0; i < Math.min(people, torsos.count); i++) {
         torsos.getMatrixAt(i, matrix);
         if (matrix.elements[15] === 0) continue; // Empty instance slots use a zero matrix.
         const p = new w.THREE.Vector3().setFromMatrixPosition(matrix);

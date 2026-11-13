@@ -2,6 +2,7 @@ import { test as base, BrowserContext, Page } from '@playwright/test';
 import { clearStorage } from './app';
 import { mockAllApiRoutes } from './mocks/api-routes';
 import { recordControlCoverage, ObserveContexts } from './control-coverage';
+import { serveCdnFromCache } from './cdn-cache';
 
 /**
  * Extended test fixtures for consensus-builder E2E tests.
@@ -20,6 +21,7 @@ export const test = base.extend<{
   cleanPage: Page;
   uncaughtPageErrors: void;
   controlCoverage: void;
+  cdnCache: void;
   observeContexts: ObserveContexts;
 }>({
   seedCity: ['new_york', { option: true }],
@@ -46,6 +48,12 @@ export const test = base.extend<{
       if (browser.newContext === newContext) browser.newContext = originalNewContext;
     }
   },
+
+  // three.js and the other pinned CDN modules come from a disk cache (cdn-cache.ts), in every context.
+  cdnCache: [async ({ observeContexts }, use) => {
+    await observeContexts(serveCdnFromCache);
+    await use();
+  }, { auto: true }],
 
   controlCoverage: [async ({ observeContexts }, use, testInfo) => {
     await recordControlCoverage(observeContexts, testInfo, use);

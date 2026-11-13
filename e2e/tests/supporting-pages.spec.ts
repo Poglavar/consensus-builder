@@ -229,19 +229,18 @@ test.describe('Supporting pages @core', () => {
     await expect(page.locator('#deck-current')).toHaveText('2');
   });
 
-  test('pitch deck advances through its real slide controls and roadmap links reach each horizon', async ({ mockApi: page, headless }) => {
-    // Headless Chrome (157) refuses every fullscreen request with "not granted", and neither
-    // Playwright's grantPermissions nor CDP Browser.setPermission can grant it there. Headless runs
-    // therefore answer the Fullscreen API at the browser boundary; headed runs use the real one.
-    if (headless) {
-      await page.addInitScript(() => {
-        let element: Element | null = null;
-        const change = (next: Element | null) => { element = next; document.dispatchEvent(new Event('fullscreenchange')); };
-        Object.defineProperty(Document.prototype, 'fullscreenElement', { configurable: true, get: () => element });
-        Element.prototype.requestFullscreen = async function () { change(this); };
-        Document.prototype.exitFullscreen = async function () { change(null); };
-      });
-    }
+  test('pitch deck advances through its real slide controls and roadmap links reach each horizon', async ({ mockApi: page }) => {
+    // Chrome (157) refuses every fullscreen request with "not granted" in headless runs and in headed
+    // runs whose window opens behind the active app (helpers/background-chromium.cjs), and neither
+    // Playwright's grantPermissions nor CDP Browser.setPermission can grant it. The test therefore
+    // answers the Fullscreen API at the browser boundary; the refusal has its own test below.
+    await page.addInitScript(() => {
+      let element: Element | null = null;
+      const change = (next: Element | null) => { element = next; document.dispatchEvent(new Event('fullscreenchange')); };
+      Object.defineProperty(Document.prototype, 'fullscreenElement', { configurable: true, get: () => element });
+      Element.prototype.requestFullscreen = async function () { change(this); };
+      Document.prototype.exitFullscreen = async function () { change(null); };
+    });
     await page.route('**/docs/agents.json', route => json(route, { x402: { priceOracleFact: '0.05 USDC' } }));
     await page.route('**/oracle/public-records/summary', route => json(route, { attestations: 3, v2: { attestations: 2 } }));
     await page.route('**/hackathon/proof.json', route => json(route, { hackathonPrograms: ['program-1'] }));
