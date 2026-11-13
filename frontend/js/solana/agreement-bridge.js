@@ -382,7 +382,68 @@
             return result(sent, ref);
         }
 
-        return { mint, fund, attest, execute, cancel, expire, read, findAttestation, connectedWallet, cluster, programId };
+        // ---- Boost: devnet-USDC donations to the agreement (proposal_pledge, SolanaPledgeClient) ----
+        // Anyone can donate while the agreement is active; executing it lets anyone release the escrow
+        // to the sponsor; a cancelled or expired agreement lets each donor take back their donations.
+        function pledge() {
+            if (!win.SolanaPledgeClient) throw codedError(t('agreement.boost.errors.unavailable', 'The boost program client could not be loaded.'), 'pledge-unavailable');
+            return win.SolanaPledgeClient;
+        }
+
+        // The escrow (totals, or null before the first boost) and, with a wallet, its own donations.
+        async function donations(agreement) {
+            await dependencies();
+            const ref = mintedRef(agreement);
+            const connection = win.SolanaChainDataLoader.getConnection(ref.cluster);
+            const escrow = await pledge().readDonationEscrow(connection, ref.account);
+            const wallet = connectedWallet();
+            const mine = escrow && wallet ? await pledge().listDonationPositions(connection, ref.account, wallet) : [];
+            return { escrow, mine };
+        }
+
+        async function donate({ agreement, amountAtomic, onStatus } = {}) {
+            const api = await dependencies();
+            const { provider, wallet } = walletContext();
+            const { ref, connection, value } = await current(api, agreement);
+            if (value.status !== 'Active') throw codedError(t('agreement.boost.errors.notActive', 'Only an active agreement can be boosted.'), 'not-active');
+            const client = pledge();
+            const donationId = await client.hashOperationId(win.crypto.randomUUID());
+            const instructions = [];
+            if (!(await client.readDonationEscrow(connection, ref.account))) instructions.push(client.buildCreateDonationEscrowIx({ proposal: ref.account, creator: wallet }));
+            instructions.push(client.buildDonateIx({ proposal: ref.account, donor: wallet, donationId, amount: BigInt(amountAtomic) }));
+            const sent = await send(connection, provider, wallet, ref.cluster, instructions, { onStatus });
+            log(`boosted ${ref.account} with ${client.formatUsdc(BigInt(amountAtomic))} USDC`, { signature: sent.signature });
+            return result(sent, ref);
+        }
+
+        async function refundDonations({ agreement, onStatus } = {}) {
+            await dependencies();
+            const { provider, wallet } = walletContext();
+            const ref = mintedRef(agreement);
+            const connection = win.SolanaChainDataLoader.getConnection(ref.cluster);
+            const open = (await pledge().listDonationPositions(connection, ref.account, wallet.toBase58())).filter(row => !row.refunded);
+            if (!open.length) throw codedError(t('agreement.boost.errors.nothingToRefund', 'This wallet has no boost to take back.'), 'nothing-to-refund');
+            const sent = await send(connection, provider, wallet, ref.cluster,
+                open.map(row => pledge().buildRefundDonationIx({ proposal: ref.account, donor: wallet, donationId: row.donationId })), { onStatus });
+            log(`refunded ${open.length} boost(s) on ${ref.account}`, { signature: sent.signature });
+            return result(sent, ref);
+        }
+
+        async function releaseDonations({ agreement, onStatus } = {}) {
+            await dependencies();
+            const { provider, wallet } = walletContext();
+            const ref = mintedRef(agreement);
+            const connection = win.SolanaChainDataLoader.getConnection(ref.cluster);
+            const escrow = await pledge().readDonationEscrow(connection, ref.account);
+            if (!escrow || escrow.released) throw codedError(t('agreement.boost.errors.nothingToRelease', 'There are no boosts to release.'), 'nothing-to-release');
+            const sent = await send(connection, provider, wallet, ref.cluster,
+                [pledge().buildReleaseDonationsIx({ proposal: ref.account, releaser: wallet, beneficiary: escrow.beneficiary })], { onStatus });
+            log(`released boosts of ${ref.account} to ${escrow.beneficiary}`, { signature: sent.signature });
+            return result(sent, ref);
+        }
+
+        return { mint, fund, attest, execute, cancel, expire, read, findAttestation, connectedWallet, cluster, programId,
+            donations, donate, refundDonations, releaseDonations };
     }
 
     return { LAMPORTS_PER_SOL, lamportsFromSol, solOf, explorerUrl, onchainRef, mintLens, chainActions, decisionAttestationOf, anchorError, browser };

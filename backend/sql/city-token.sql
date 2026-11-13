@@ -27,3 +27,31 @@ CREATE TABLE IF NOT EXISTS consensus.city_token_award (
 CREATE INDEX IF NOT EXISTS city_token_award_recipient ON consensus.city_token_award(recipient, simulation_run);
 CREATE INDEX IF NOT EXISTS city_token_award_wallet ON consensus.city_token_award(wallet) WHERE wallet IS NOT NULL;
 CREATE INDEX IF NOT EXISTS city_token_award_token ON consensus.city_token_award(token, simulation_run);
+-- City-token boosts of an agreement: spent from a points account's balance, held while the agreement
+-- is active, paid out when it executes (30% sponsor, 70% parcel owners by the committed rights
+-- snapshot) and refunded when it is cancelled or expires.
+CREATE TABLE IF NOT EXISTS consensus.city_token_boost (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  booster varchar(64) NOT NULL,             -- points_account.id that spent it
+  request_id uuid NOT NULL,
+  simulation_run varchar(40) NOT NULL DEFAULT '',
+  agreement_account varchar(64) NOT NULL, agreement_cid varchar(120) NOT NULL, city varchar(80) NOT NULL,
+  token varchar(80) NOT NULL, amount numeric(30,0) NOT NULL CHECK(amount > 0),
+  status varchar(12) NOT NULL DEFAULT 'active' CHECK(status IN ('active','paid','refunded')),
+  settled_at timestamptz,
+  created_at timestamptz NOT NULL DEFAULT now(), updated_at timestamptz NOT NULL DEFAULT now(),
+  UNIQUE(booster, request_id)
+);
+CREATE INDEX IF NOT EXISTS city_token_boost_agreement ON consensus.city_token_boost(agreement_account, status);
+CREATE TABLE IF NOT EXISTS consensus.city_token_boost_payout (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  boost_id uuid NOT NULL REFERENCES consensus.city_token_boost(id),
+  simulation_run varchar(40) NOT NULL DEFAULT '',
+  recipient varchar(120) NOT NULL,          -- the sponsor's wallet, or a rights holder's ownerId
+  role varchar(8) NOT NULL CHECK(role IN ('sponsor','owner')),
+  token varchar(80) NOT NULL, amount numeric(30,0) NOT NULL CHECK(amount > 0),
+  agreement_account varchar(64) NOT NULL,
+  created_at timestamptz NOT NULL DEFAULT now(), updated_at timestamptz NOT NULL DEFAULT now(),
+  UNIQUE(boost_id, recipient)
+);
+CREATE INDEX IF NOT EXISTS city_token_boost_payout_recipient ON consensus.city_token_boost_payout(recipient, simulation_run);

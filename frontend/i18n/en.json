@@ -7923,6 +7923,30 @@
         }
     },
     "agreement": {
+        "boost": {
+            "title": "Boost",
+            "currencyUsdc": "Devnet USDC · wallet",
+            "currencyToken": "{{symbol}} · you hold {{amount}}",
+            "chooseCurrency": "Boost with what? USDC goes to the sponsor when the agreement executes; city tokens go 30% to the sponsor and 70% to the parcel owners. Either comes back if it is cancelled or expires.",
+            "amountPrompt": "How much {{unit}}?",
+            "done": "Boosted with {{amount}} {{unit}}.",
+            "reading": "Reading boosts…",
+            "readFailed": "Boosts could not be read: {{reason}}",
+            "usdcTotal": "{{amount}} from {{count}} supporter(s){{released}}",
+            "releasedSuffix": ", released to the sponsor",
+            "none": "None yet",
+            "tokenTotal": "{{amount}} from {{count}} supporter(s)",
+            "release": "Release USDC boosts to the sponsor",
+            "refund": "Take back my {{amount}} USDC",
+            "rule": "City-token boosts settle when the agreement ends: 30% to the sponsor and 70% to the parcel owners if it executes, back to you if not.",
+            "unavailable": "Boost is unavailable: {{reason}}",
+            "errors": {
+                "unavailable": "The boost program client could not be loaded.",
+                "notActive": "Only an active agreement can be boosted.",
+                "nothingToRefund": "This wallet has no boost to take back.",
+                "nothingToRelease": "There are no boosts to release."
+            }
+        },
         "compare": {
             "approval": "Approval",
             "settlement": "Settlement",

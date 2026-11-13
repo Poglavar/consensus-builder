@@ -912,7 +912,7 @@ An internal, non-transferable unit in the points betting book. Each points accou
 
 ### City token
 
-A city's meme token (its slug, e.g. `zagreb`, shown as `ZAGREB`), beside one platform token, `UGT`. Today it is an off-chain ledger balance with 6 decimals: the sum of a recipient's awards in `consensus.city_token_award`, not a chain asset. A correct bet earns an award from the market's edge: the winning shares held at resolution minus their average cost. A points market splits a fixed pool by edge; a devnet-USDC market pays a rate per unit of edge. Each award adds UGT worth a tenth of it. The recipient of a points award is a points account, and of a USDC award a wallet; a wallet's balance includes its linked points accounts. See [citymemetoken.md](citymemetoken.md).
+A city's meme token (its slug, e.g. `zagreb`, shown as `ZAGREB`), beside one platform token, `UGT`. Today it is an off-chain ledger balance with 6 decimals: the sum of a recipient's awards in `consensus.city_token_award`, not a chain asset. A correct bet earns an award from the market's edge: the winning shares held at resolution minus their average cost. A points market splits a fixed pool by edge; a devnet-USDC market pays a rate per unit of edge. Each award adds UGT worth a tenth of it. The recipient of a points award is a points account, and of a USDC award a wallet; a wallet's balance includes its linked points accounts. A boost spends city token or UGT on an active agreement: it is held until the agreement ends, then paid 30% to the sponsor and 70% to the parcel owners (by the committed rights snapshot) if it executes, and refunded otherwise. A devnet-USDC boost is an on-chain donation to the agreement instead. See [citymemetoken.md](citymemetoken.md).
 
 ### Funding readiness
 

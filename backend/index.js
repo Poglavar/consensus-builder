@@ -498,7 +498,7 @@ export function createApp({
     app.locals.markets = setupMarketsRoute(app, activePool, { env }); // contests per city with each proposal's prediction market (Bets sheet)
     setupBetsEventsRoute(app, activePool); // anonymous betting journey, with simulated activity kept separate
     setupBetsPointsRoutes(app, activePool, { readAgreement: createAgreementMarketSource(activePool, { env }) });
-    setupCityTokenRoutes(app, activePool);
+    setupCityTokenRoutes(app, activePool, { readAgreement: createAgreementMarketSource(activePool, { env }) });
     setupLmsrRecipesRoute(app, activePool, { env });
     setupBetsShareRoute(app, activePool, { env }); // /bets/<account> must follow the named /bets/metrics route
     setupRoadCorridorRoute(app, activePool);

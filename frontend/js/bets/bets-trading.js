@@ -200,6 +200,14 @@
             buy: options => trade('buy', options), sell: options => trade('sell', options),
             resolve: options => lifecycle('resolve', options), claim: options => lifecycle('claim', options),
             createMarket: options => chain().createMarket(options), linkWallet, cityTokens,
+            // Boost an agreement with the city token or UGT from this points account (docs/citymemetoken.md).
+            boostCityToken: options => mutate('boost', { agreementAccount: options.agreementAccount, token: options.token, amount: String(options.amount) }, options),
+            agreementBoosts: async agreementAccount => {
+                const response = await fetch(`${baseUrl()}/bets/city-token/boosts?${params({ agreementAccount })}`, { cache: 'no-store' });
+                const result = await response.json();
+                if (!response.ok) throw error(result.message || 'Boosts are unavailable.', String(result.error || 'boosts_unavailable').toUpperCase(), response.status);
+                return result.boosts;
+            },
             leaderboard: () => request(`leaderboard?${params()}`),
             publicPositions: account => request(`positions?${params({ account })}`), simulationRun };
     }

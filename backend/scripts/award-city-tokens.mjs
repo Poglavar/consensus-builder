@@ -1,12 +1,14 @@
 // Awards the city meme token for resolved agreement markets (docs/citymemetoken.md): points
 // markets resolved before awards existed, and devnet-USDC markets from the transaction mirror.
-// Idempotent: a market with a consensus.city_token_market row is done and skipped.
+// Then settles city-token boosts of agreements whose chain status is final (paid or refunded).
+// Idempotent: a market with a consensus.city_token_market row is done; a settled boost is not active.
 import { resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import dotenv from 'dotenv';
 import database from '../db/connection.cjs';
 import { transaction } from '../markets/points-ledger.js';
-import { awardMarket, awardPointsMarket } from '../markets/city-token-ledger.js';
+import { awardMarket, awardPointsMarket, settleBoosts } from '../markets/city-token-ledger.js';
+import { createAgreementMarketSource } from '../markets/agreement-source.js';
 import { netShares } from '../markets/city-token-rewards.js';
 import { readAgreementMarkets } from '../agents/bettor.js';
 import { createAgreementChain } from '../agreements/onchain.js';
@@ -19,7 +21,8 @@ const log = (...args) => console.log(`[${new Date().toISOString()}]`, ...args);
 
 const USAGE = `Usage: node scripts/award-city-tokens.mjs (--dry-run | --apply) [--book points|devnet-usdc|all]
 
-Awards the city meme token to correct bettors of resolved agreement markets.
+Awards the city meme token to correct bettors of resolved agreement markets, then settles
+boosts of executed (paid out), cancelled or expired (refunded) agreements.
   --dry-run   compute and print awards, write nothing
   --apply     write awards (each market once; reruns skip awarded markets)
   --book      which book to award (default all)`;
@@ -97,6 +100,28 @@ async function awardUsdc(pool, apply) {
     if (incomplete) throw new Error(`${incomplete} devnet-usdc market(s) not awarded: transaction mirror incomplete`);
 }
 
+async function settle(pool, apply) {
+    const { rows } = await pool.query(`SELECT agreement_account, agreement_cid, count(*)::int AS boosts
+        FROM consensus.city_token_boost WHERE status = 'active' GROUP BY 1, 2 ORDER BY 1`);
+    log(`boosts: ${rows.length} agreement(s) with active boosts`);
+    if (!rows.length) return;
+    const readAgreement = createAgreementMarketSource(pool, { env: process.env });
+    const sources = await readAgreement.many(rows.map(row => row.agreement_account));
+    let done = 0, failed = 0;
+    for (const row of rows) {
+        const label = `boosts ${++done}/${rows.length} ${row.agreement_account.slice(0, 8)}`;
+        const source = sources.get(row.agreement_account);
+        if (!source || source instanceof Error) { failed++; log(`${label}: chain evidence unavailable (${source?.message || 'missing'})`); continue; }
+        if (source.chainStatus === 'active') { log(`${label}: still active, ${row.boosts} boost(s) held`); continue; }
+        const { rows: [agreement] } = await pool.query('SELECT content FROM consensus.agreement WHERE cid = $1', [row.agreement_cid]);
+        const rights = agreement?.content?.rule?.approvalConfig?.rights || null;
+        const result = await inTransaction(pool, apply, db => settleBoosts(db, {
+            agreementAccount: row.agreement_account, chainStatus: source.chainStatus, sponsor: source.sponsor, rights }));
+        log(`${label}: ${source.chainStatus}, ${result.settled} boost(s) ${result.outcome}${rights ? '' : ' (no rights snapshot: owners\' share to the sponsor)'}`);
+    }
+    if (failed) throw new Error(`${failed} agreement(s) with boosts could not be read from the chain`);
+}
+
 async function main() {
     const options = args(process.argv.slice(2));
     if (!options) { console.log(USAGE); return; }
@@ -106,6 +131,7 @@ async function main() {
     try {
         if (options.book !== 'devnet-usdc') await awardPoints(pool, options.apply);
         if (options.book !== 'points') await awardUsdc(pool, options.apply);
+        await settle(pool, options.apply);
         log('done');
     } finally { await pool.end(); }
 }

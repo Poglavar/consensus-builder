@@ -7950,6 +7950,30 @@
         }
     },
     "agreement": {
+        "boost": {
+            "title": "Impulsar",
+            "currencyUsdc": "USDC de devnet · billetera",
+            "currencyToken": "{{symbol}} · tienes {{amount}}",
+            "chooseCurrency": "¿Con qué impulsar? Los USDC van al patrocinador cuando el acuerdo se ejecuta; los tokens de ciudad van un 30 % al patrocinador y un 70 % a los propietarios de las parcelas. Ambos se devuelven si se cancela o vence.",
+            "amountPrompt": "¿Cuánto {{unit}}?",
+            "done": "Impulsado con {{amount}} {{unit}}.",
+            "reading": "Leyendo impulsos…",
+            "readFailed": "No se pudieron leer los impulsos: {{reason}}",
+            "usdcTotal": "{{amount}} de {{count}} partidario(s){{released}}",
+            "releasedSuffix": ", entregado al patrocinador",
+            "none": "Ninguno aún",
+            "tokenTotal": "{{amount}} de {{count}} partidario(s)",
+            "release": "Entregar los impulsos en USDC al patrocinador",
+            "refund": "Recuperar mis {{amount}} USDC",
+            "rule": "Los impulsos en tokens de ciudad se liquidan al terminar el acuerdo: 30 % al patrocinador y 70 % a los propietarios si se ejecuta; si no, vuelven a ti.",
+            "unavailable": "Impulsar no está disponible: {{reason}}",
+            "errors": {
+                "unavailable": "No se pudo cargar el cliente del programa de impulsos.",
+                "notActive": "Solo se puede impulsar un acuerdo activo.",
+                "nothingToRefund": "Esta billetera no tiene impulsos que recuperar.",
+                "nothingToRelease": "No hay impulsos que entregar."
+            }
+        },
         "compare": {
             "approval": "Aprobación",
             "settlement": "Liquidación",

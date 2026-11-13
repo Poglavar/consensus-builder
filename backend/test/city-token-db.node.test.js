@@ -13,10 +13,14 @@ import { LMSR, B } from '../markets/points-ledger.js';
 import { setupBetsPointsRoutes } from '../routes/bets-points.js';
 import { setupCityTokenRoutes } from '../routes/city-token.js';
 import { POINTS_POOL, UGT_DIVISOR } from '../markets/city-token-rewards.js';
+import { settleBoosts } from '../markets/city-token-ledger.js';
+import { transaction } from '../markets/points-ledger.js';
 
 const enabled = process.env.POINTS_DB_TEST === '1';
 const BACKEND_DIR = resolve(fileURLToPath(new URL('..', import.meta.url)));
 const AGREEMENT = '11111111111111111111111111111115';
+const BOOSTED = '11111111111111111111111111111116';
+const SPONSOR = 'SysvarRent111111111111111111111111111111111';
 
 test('city token awards on points resolve', { skip: !enabled, timeout: 60_000 }, async () => {
     dotenv.config({ path: resolve(BACKEND_DIR, '.env'), quiet: true });
@@ -26,6 +30,9 @@ test('city token awards on points resolve', { skip: !enabled, timeout: 60_000 },
     const pool = database.createPool({ max: 4, connectionTimeoutMillis: 5000 });
     const run = `city-token-${randomBytes(6).toString('hex')}`;
     let clock = Date.now();
+    const boosted = { account: BOOSTED, cid: `city-token-boost-${randomUUID()}`, city: 'zagreb', sponsor: SPONSOR,
+        closesAt: Math.floor(clock / 1000) + 7200, chainTime: Math.floor(clock / 1000), graceSeconds: 0,
+        chainStatus: 'active', executedAt: null, insiders: [] };
     const source = { account: AGREEMENT, cid: `city-token-test-${randomUUID()}`, city: 'zagreb',
         closesAt: Math.floor(clock / 1000) + 3600, chainTime: Math.floor(clock / 1000), graceSeconds: 0,
         chainStatus: 'active', executedAt: null, insiders: [] };
@@ -33,7 +40,7 @@ test('city token awards on points resolve', { skip: !enabled, timeout: 60_000 },
     app.use(express.json());
     const noLimit = (_req, _res, next) => next();
     setupBetsPointsRoutes(app, pool, { now: () => clock, readAgreement: async () => ({ ...source }), rateLimiter: noLimit });
-    setupCityTokenRoutes(app, pool, { rateLimiter: noLimit });
+    setupCityTokenRoutes(app, pool, { now: () => clock, readAgreement: async account => ({ ...(account === BOOSTED ? boosted : source) }), rateLimiter: noLimit });
     const account = async label => {
         const auth = { Authorization: `Bearer ${randomBytes(32).toString('hex')}` };
         const res = await request(app).post('/bets/points/account').set(auth).send({ agentId: label, simulationRun: run }).expect(200);
@@ -85,9 +92,32 @@ test('city token awards on points resolve', { skip: !enabled, timeout: 60_000 },
         const standings = await request(app).get('/bets/city-token/standings').query({ token: 'zagreb', simulationRun: run }).expect(200);
         assert.equal(standings.body.standings[0].holder, early.id);
         assert.equal(standings.body.standings.length, 2);
+
+        // Boost: spend from the balance, refuse overspending and a closed agreement, settle on execution.
+        const held = amountOf(early.id);
+        const boost = body => request(app).post('/bets/points/boost').set(early.auth)
+            .send({ requestId: randomUUID(), agreementAccount: BOOSTED, simulationRun: run, token: 'zagreb', ...body });
+        await boost({ amount: String(held + 1n) }).expect(409);
+        await boost({ token: 'bogota', amount: '1' }).expect(400);
+        const spend = 400_000_000n; // 400 ZAGREB of a ~500 award
+        const spent = (await boost({ amount: String(spend) }).expect(200)).body.receipt;
+        assert.equal(spent.status, 'active');
+        const after = await request(app).get('/bets/city-token/balances').query({ account: early.id, simulationRun: run }).expect(200);
+        assert.equal(after.body.balances.find(b => b.token === 'zagreb').amount, String(held - spend));
+        const totals = await request(app).get('/bets/city-token/boosts').query({ agreementAccount: BOOSTED, simulationRun: run }).expect(200);
+        assert.deepEqual(totals.body.boosts.map(b => [b.token, b.status, b.amount, b.boosters]), [['zagreb', 'active', String(spend), 1]]);
+        const rights = { parcels: [{ parcelId: 'p1', complete: true, owners: [{ ownerId: late.id, share: '1/1' }] }] };
+        Object.assign(boosted, { chainStatus: 'executed', executedAt: boosted.chainTime });
+        await boost({ amount: '1' }).expect(409);
+        await transaction(pool, db => settleBoosts(db, { agreementAccount: BOOSTED, chainStatus: 'executed', sponsor: SPONSOR, rights }));
+        await transaction(pool, db => settleBoosts(db, { agreementAccount: BOOSTED, chainStatus: 'executed', sponsor: SPONSOR, rights }));
+        const sponsorBalance = await request(app).get('/bets/city-token/balances').query({ wallet: SPONSOR, simulationRun: run }).expect(200);
+        assert.equal(sponsorBalance.body.balances[0].amount, String(spend * 3n / 10n), 'the sponsor gets 30%, once');
+        const ownerBalance = await request(app).get('/bets/city-token/balances').query({ account: late.id, simulationRun: run }).expect(200);
+        assert.equal(ownerBalance.body.balances.find(b => b.token === 'zagreb').amount, String(amountOf(late.id) + spend * 7n / 10n));
     } finally {
-        await pool.query('DELETE FROM consensus.city_token_award WHERE simulation_run = $1', [run]);
-        await pool.query('DELETE FROM consensus.city_token_market WHERE simulation_run = $1', [run]);
+        // Rows stay in their own simulation realm, as in bets-points-db.node.test.js; deleting the awards
+        // would leave resolved markets for the award job to award again.
         await pool.end();
     }
 });

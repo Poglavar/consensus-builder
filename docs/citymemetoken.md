@@ -112,35 +112,44 @@ San Francisco preview, "San Francisco (simulated preview)") gets no award; this 
 2. Run the job on prod (DDL ships with the backend deploy).
 3. Add a city-token column or tab to the standings.
 4. Later: an SPL mint per city plus UGT, and a claim of the ledger balance to a wallet.
+5. City-token boosts for MCP agents (wallet-signed).
 
-## Boost: funding agreements with crypto and the city token
+## Boost: supporting an agreement
 
-The old Boost button (ProposalNFT on EVM: fund a proposal in ETH or the city token, paid to owners
-on execution) is gone. It was removed with the proposal write path in `fd91542e8` (2026-10-22,
-M2); only its i18n strings (`boost.*`, `proposal_boost_failed`) remain.
+Agreements took over the role proposals had: an agreement is the record that is minted, executes
+and has a beneficiary. So Boost lives on the agreement panel, in the "On chain" section of a minted
+agreement, read-only views included (`frontend/js/agreement-boost.js`, loaded on first use by
+`agreement-panel.js`). The old ProposalNFT Boost was removed in `fd91542e8` (2026-10-22, M2).
 
-The agreement took over the proposal's role: it is the record that is minted, executes and has a
-beneficiary (its sponsor). Designs and plans only describe; agreements carry money. Support for an
-agreement exists on chain, but nothing in the browser calls it:
+| Currency | Where it lives | While active | Executed | Cancelled or expired |
+| --- | --- | --- | --- | --- |
+| Devnet USDC | on chain, `proposal_pledge` donation escrow | held in escrow | anyone releases it to the sponsor | each donor takes theirs back |
+| City token / UGT | off-chain ledger, `consensus.city_token_boost` | taken from the booster's balance | 30% to the sponsor, 70% to the parcel owners | refunded to the booster |
 
-- `agreement.fund(lamports)`: escrows SOL in the agreement.
-- `proposal_pledge.donate`: a donation escrow per agreement, refundable if the agreement does not
-  execute and released to the sponsor if it does. Its mint is pinned to devnet USDC, and the
-  escrow PDA is `['donation_escrow', agreement]`, so there is one escrow and one currency per
-  agreement. Soft pledges (`set_pledge`, `fulfill_pledge`) have the same limit.
-- MCP has `ugt_fund_agreement`, `ugt_donate` and `ugt_pledge`, so today agents can boost and
-  people cannot.
+- The parcel owners' 70% is split into equal slices per input parcel, and within a parcel by the
+  ownership shares in the agreement's committed rights snapshot
+  (`content.rule.approvalConfig.rights`). A parcel without a complete holder list whose shares sum
+  to one cannot be paid, so its slice goes to the sponsor. With no snapshot, the sponsor gets
+  everything. The rules are `boostPayouts` and `BOOST_SPONSOR_BPS` in
+  `backend/markets/city-token-rewards.js`.
+- An agreement can be boosted with its own city's token or with UGT, through
+  `POST /bets/points/boost` (the points bearer credential, idempotent by `requestId`). The spend
+  locks the account and checks the net balance: awards + payouts received − boosts not refunded.
+  `GET /bets/city-token/boosts?agreementAccount=` returns the totals.
+- Settlement runs in `scripts/award-city-tokens.mjs` (`settleBoosts`), once the chain status is
+  executed, cancelled or expired. Payouts land in `consensus.city_token_boost_payout`, and a
+  recipient's balance includes them.
+- SOL is not a Boost currency: `agreement.fund` accepts only the sponsor's wallet.
 
-Bringing Boost back:
+Limits and gaps:
 
-1. Add a Boost button to the agreement panel that donates devnet USDC through the existing
-   `proposal_pledge.donate` (client: `frontend/js/solana/pledge-client.js`) and SOL through
-   `agreement.fund`. No program change is needed.
-2. Other SPL tokens need the escrow seeded per (agreement, mint) and the USDC pin dropped. That is
-   a program change, so it must land before the immutable mainnet deploy.
-3. Boosting with the city token works off-chain first: spend from the ledger into a boost row
-   for the agreement, paid to the sponsor or to parcel owners on execution and refunded otherwise.
-   This needs a debit side in the ledger, since today it only has awards.
+- Other SPL tokens need the donation escrow seeded per (agreement, mint) and the devnet-USDC pin
+  dropped. That is a program change, so it must land before the immutable mainnet deploy.
+- MCP parity: agents can boost and refund with USDC (`ugt_donate`, `ugt_refund_donation`,
+  `ugt_release_donations`), but not with the city token. That needs a points account, which MCP
+  agents do not have; wallet-signed city-token boosts would close the gap.
+- The USDC Boost from the browser is untested against a funded wallet. The browser builds the same
+  instructions as the agents' `ensureDonationEscrowAndDonate`.
 
 ## Ideas collected
 
@@ -178,7 +187,7 @@ From the betting work (2026-11-13):
 ## Open questions
 
 - Are the pool size (1,000), the rate (100 per USDC cent of edge) and the UGT fraction (1/10) right?
-- Who receives a city-token boost on execution: the sponsor, or the parcel owners as in ProposalNFT?
+- Is the 30% sponsor / 70% parcel owners split of a city-token boost right?
 - What does the token buy? Options include boosting or funding proposals (the old ProposalNFT
   path), a weight in community votes, and access to agent actions.
 - Does the 1-token-per-hour citizen accrual of the EVM contract carry over?

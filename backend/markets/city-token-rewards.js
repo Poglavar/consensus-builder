@@ -105,3 +105,65 @@ export function marketAwards({ book, city, edges }) {
     }
     return awards;
 }
+
+// A city-token boost of an executed agreement pays its sponsor this share; the parcel owners split
+// the rest (docs/citymemetoken.md).
+export const BOOST_SPONSOR_BPS = 3_000n;
+
+// Floors `total` over weights (BigInt fractions n/d) and hands the leftover units one each to the
+// largest remainders, ties by key; the parts sum to `total` exactly.
+function largestRemainder(total, parts) {
+    const rows = parts.map(part => {
+        const exact = total * part.n;
+        return { key: part.key, floor: exact / part.d, remainder: (exact % part.d) * 1_000_000_000_000n / part.d };
+    });
+    let left = total - rows.reduce((sum, row) => sum + row.floor, 0n);
+    [...rows].sort((a, b) => (b.remainder > a.remainder ? 1 : b.remainder < a.remainder ? -1 : a.key < b.key ? -1 : 1))
+        .forEach(row => { if (left > 0n) { row.floor += 1n; left -= 1n; } });
+    return rows;
+}
+
+function ownerShare(text) {
+    const match = /^(\d+)\/(\d+)$/.exec(String(text || ''));
+    if (!match || BigInt(match[2]) === 0n) return null;
+    return { n: BigInt(match[1]), d: BigInt(match[2]) };
+}
+
+/**
+ * Who receives a boost of `amount` when its agreement executes: BOOST_SPONSOR_BPS to the sponsor,
+ * the rest in equal slices per input parcel of the committed rights snapshot, each slice split by the
+ * holders' ownership shares. A parcel without a complete holder list cannot be paid, so its slice
+ * goes to the sponsor. Returns [{ recipient, role: 'sponsor'|'owner', amount }], amounts summing to `amount`.
+ */
+export function boostPayouts({ amount, sponsor, rights }) {
+    const total = BigInt(amount);
+    if (total <= 0n) throw new Error('boost amount must be positive');
+    if (typeof sponsor !== 'string' || !sponsor) throw new Error('boost payout needs the sponsor');
+    const parcels = Array.isArray(rights?.parcels) ? rights.parcels : [];
+    let sponsorAmount = total * BOOST_SPONSOR_BPS / 10_000n;
+    const ownersAmount = total - sponsorAmount;
+    const paid = new Map();
+    if (parcels.length) {
+        const slices = largestRemainder(ownersAmount, parcels.map((parcel, index) => ({ key: String(index).padStart(6, '0'), n: 1n, d: BigInt(parcels.length) })));
+        parcels.forEach((parcel, index) => {
+            const slice = slices[index].floor;
+            const owners = (Array.isArray(parcel?.owners) ? parcel.owners : []).map(owner => ({ ownerId: owner?.ownerId, share: ownerShare(owner?.share) }));
+            const named = parcel?.complete === true && owners.length > 0
+                && owners.every(owner => typeof owner.ownerId === 'string' && owner.ownerId && owner.share);
+            const sum = named ? owners.reduce((acc, owner) => ({ n: acc.n * owner.share.d + owner.share.n * acc.d, d: acc.d * owner.share.d }), { n: 0n, d: 1n }) : null;
+            // Only a complete holder list whose shares sum to one can be paid; the slice stays with the sponsor otherwise.
+            if (!named || sum.n !== sum.d) { sponsorAmount += slice; return; }
+            for (const row of largestRemainder(slice, owners.map(owner => ({ key: owner.ownerId, ...owner.share })))) {
+                paid.set(row.key, (paid.get(row.key) || 0n) + row.floor);
+            }
+        });
+    } else {
+        sponsorAmount = total;
+    }
+    const out = [{ recipient: sponsor, role: 'sponsor', amount: sponsorAmount }];
+    for (const [recipient, value] of paid) {
+        if (recipient === sponsor) out[0].amount += value;
+        else out.push({ recipient, role: 'owner', amount: value });
+    }
+    return out.filter(row => row.amount > 0n);
+}

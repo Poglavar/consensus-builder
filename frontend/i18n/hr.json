@@ -7964,6 +7964,30 @@
         }
     },
     "agreement": {
+        "boost": {
+            "title": "Podrži",
+            "currencyUsdc": "Devnet USDC · novčanik",
+            "currencyToken": "{{symbol}} · imaš {{amount}}",
+            "chooseCurrency": "Čime podržati? USDC ide sponzoru kad se sporazum izvrši; gradski tokeni idu 30 % sponzoru i 70 % vlasnicima čestica. Oboje se vraća ako se sporazum otkaže ili istekne.",
+            "amountPrompt": "Koliko {{unit}}?",
+            "done": "Podržano s {{amount}} {{unit}}.",
+            "reading": "Čitam podrške…",
+            "readFailed": "Podrške se ne mogu pročitati: {{reason}}",
+            "usdcTotal": "{{amount}} od {{count}} podržavatelja{{released}}",
+            "releasedSuffix": ", isplaćeno sponzoru",
+            "none": "Još nema",
+            "tokenTotal": "{{amount}} od {{count}} podržavatelja",
+            "release": "Isplati USDC podrške sponzoru",
+            "refund": "Vrati mojih {{amount}} USDC",
+            "rule": "Podrške u gradskim tokenima namiruju se kad sporazum završi: 30 % sponzoru i 70 % vlasnicima čestica ako se izvrši, inače se vraćaju tebi.",
+            "unavailable": "Podrška nije dostupna: {{reason}}",
+            "errors": {
+                "unavailable": "Klijent programa za podršku nije se mogao učitati.",
+                "notActive": "Podržati se može samo aktivan sporazum.",
+                "nothingToRefund": "Ovaj novčanik nema podršku za povrat.",
+                "nothingToRelease": "Nema podrški za isplatu."
+            }
+        },
         "compare": {
             "approval": "Odobrenje",
             "settlement": "Namirenje",

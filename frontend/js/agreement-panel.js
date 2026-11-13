@@ -500,9 +500,12 @@
             if (value.decision === 'Satisfied' && !actions.funded) hints.push(tr('agreement.chain.hints.awaitingFunds', 'Execution waits until the escrow holds {{required}}.', { required: solText(value.requiredLamports) }));
             if (actions.deadlinePassed) hints.push(tr('agreement.chain.hints.expired', 'Its deadline has passed: anyone can expire it, which returns the escrow to the sponsor.'));
         }
+        // Boost (js/agreement-boost.js) draws into this slot after each render; a read-only view (a
+        // shared address) can boost too, since boosting needs no local copy of the designs.
+        const boost = '<div data-agreement-boost-slot></div>';
         return sectionHtml(title, `<div class="agreement-chain" data-agreement-chain="minted">${head}${executionNote}${factsHtml}`
             + (buttons.length ? `<div class="agreement-panel-actions">${buttons.join('')}</div>` : '')
-            + `${hintsHtml(hints)}${busy}</div>`);
+            + `${hintsHtml(hints)}${busy}${boost}</div>`);
     }
 
     // A terminal account read takes precedence over the index's cached active/deadline status.
@@ -909,8 +912,36 @@
                 win.ProposalApprovalPanel.setStatus(state.id, observedRemote(state.remote, chainView(state.agreement)?.chain)?.status);
                 win.ProposalApprovalPanel.render(slot, state.id);
             }
+            mountBoost(panel);
             panel.classList.add('visible');
             doc.body.classList.add('agreement-panel-open');
+        }
+
+        // Boost loads on first use: its program client and module are not in the page's script list.
+        let boostScripts = null;
+        function ensureBoostScripts() {
+            boostScripts ??= Promise.all(['js/solana/pledge-client.js', 'js/agreement-boost.js'].map(path => new Promise((resolve, reject) => {
+                const tag = doc.createElement('script');
+                tag.src = typeof win.appendBuildToken === 'function' ? win.appendBuildToken(path) : path;
+                tag.async = false;
+                tag.onload = resolve;
+                tag.onerror = () => reject(new Error(`${path} could not be loaded`));
+                doc.head.appendChild(tag);
+            }))).catch(error => { boostScripts = null; throw error; });
+            return boostScripts;
+        }
+
+        function mountBoost(panel) {
+            const slot = panel.querySelector('[data-agreement-boost-slot]');
+            const value = state.chain && state.chain.value;
+            const agreement = state.readOnlyAgreement || state.agreement;
+            if (!slot || !value || !agreement) return;
+            ensureBoostScripts().then(() => {
+                if (slot.isConnected && (state.readOnlyAgreement || state.agreement) === agreement) win.AgreementBoost.mount(slot, { agreement, chainStatus: value.status });
+            }).catch(error => {
+                console.error(`[${new Date().toISOString()}] [AgreementPanel] Boost could not be loaded`, error);
+                if (slot.isConnected) slot.textContent = t('agreement.boost.unavailable', 'Boost is unavailable: {{reason}}', { reason: error.message });
+            });
         }
 
         // ---- the chain (M3) ----------------------------------------------------------------------

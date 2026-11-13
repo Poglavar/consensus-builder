@@ -2,7 +2,7 @@
 import { describe, expect, it } from 'vitest';
 import {
     holderEdge, edgesByHolder, marketAwards, netShares, cityToken, tokenSymbol, formatTokenAmount,
-    POINTS_POOL, USDC_RATE, UGT
+    POINTS_POOL, USDC_RATE, UGT, boostPayouts
 } from '../markets/city-token-rewards.js';
 
 const buy = (side, shares, amount, holder = 'a') => ({ holder, action: 'buy', side, shares, amount });
@@ -81,5 +81,31 @@ describe('display', () => {
         expect(tokenSymbol(UGT)).toBe('UGT');
         expect(formatTokenAmount(1_500_000n)).toBe('1.5');
         expect(formatTokenAmount(0n)).toBe('0');
+    });
+});
+
+describe('boostPayouts', () => {
+    const rights = { parcels: [
+        { parcelId: 'p1', complete: true, owners: [{ ownerId: 'alice', share: '1/2' }, { ownerId: 'bob', share: '1/2' }] },
+        { parcelId: 'p2', complete: true, owners: [{ ownerId: 'carol', share: '1/1' }] }
+    ] };
+    it('pays the sponsor 30% and the owners 70%, equal per parcel and by share within it', () => {
+        expect(boostPayouts({ amount: 1000n, sponsor: 'S', rights })).toEqual([
+            { recipient: 'S', role: 'sponsor', amount: 300n },
+            { recipient: 'alice', role: 'owner', amount: 175n },
+            { recipient: 'bob', role: 'owner', amount: 175n },
+            { recipient: 'carol', role: 'owner', amount: 350n }
+        ]);
+    });
+    it('sends an unresolved parcel slice and missing rights to the sponsor, and always sums exactly', () => {
+        const partial = { parcels: [rights.parcels[0], { parcelId: 'p3', complete: false, owners: [] }] };
+        const rows = boostPayouts({ amount: 1001n, sponsor: 'S', rights: partial });
+        expect(rows.reduce((s, r) => s + r.amount, 0n)).toBe(1001n);
+        expect(rows[0]).toEqual({ recipient: 'S', role: 'sponsor', amount: 300n + 350n });
+        expect(boostPayouts({ amount: 7n, sponsor: 'S', rights: null })).toEqual([{ recipient: 'S', role: 'sponsor', amount: 7n }]);
+    });
+    it('treats shares that do not sum to one as unresolved', () => {
+        const bad = { parcels: [{ parcelId: 'p', complete: true, owners: [{ ownerId: 'a', share: '1/3' }] }] };
+        expect(boostPayouts({ amount: 10n, sponsor: 'S', rights: bad })).toEqual([{ recipient: 'S', role: 'sponsor', amount: 10n }]);
     });
 });
