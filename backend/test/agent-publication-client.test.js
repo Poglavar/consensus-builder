@@ -195,6 +195,17 @@ describe('the chain account', () => {
         await expect(client.recordOnchain(cid, { account: ACCOUNT })).rejects.toThrow(/needs cluster and account/);
     });
 
+    it('records an EVM mint as { chain: "evm", chainId, account, signature }, without a cluster', async () => {
+        const index = fakeIndex();
+        const client = clientOver(index);
+        const { cid } = await client.publishAgreement(agreement);
+        const key = `0x${'1f'.repeat(32)}`;
+        const tx = `0x${'cd'.repeat(32)}`;
+        await expect(client.recordOnchain(cid, { chain: 'evm', account: key })).rejects.toThrow(/needs chainId and account/);
+        expect((await client.recordOnchain(cid, { chain: 'evm', chainId: 84532, account: key, signature: tx })).onchain.account).toBe(key);
+        expect(index.calls.at(-1).body).toEqual({ chain: 'evm', chainId: '84532', account: key, signature: tx });
+    });
+
     it('asks again after a pause while the index cannot see a fresh mint yet, and gives up after four tries', async () => {
         const pauses = [];
         const wait = async ms => { pauses.push(ms); };

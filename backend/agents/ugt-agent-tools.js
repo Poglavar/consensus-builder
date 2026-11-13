@@ -1,7 +1,7 @@
 // Shared action surface for external agents (plan-design-agreement.md, M3). The stdio MCP server
 // (mcp-server.mjs) is one caller; tests or another controller can call the same functions. Designs and
 // agreements are pinned and indexed through publication-client.js, agreements minted and funded through
-// agreement-minter.js, and markets, pledges and donations take the agreement's chain account as their
+// agreement-minter.js (Solana) or evm-agreement-minter.js (an EVM chain, mcp-evm-records.js), and markets, pledges and donations take the agreement's chain account as their
 // subject (bettor.js, pledger.js, donor.js, lifecycle-actions.js): the adapters the deterministic
 // runners use, never a second execution path.
 import fs from 'node:fs';
@@ -19,8 +19,14 @@ import { createMcpAssetTools } from './mcp-assets.js';
 import { createMcpComparison } from './mcp-compare.js';
 import { createMcpValidationTools } from './mcp-validation.js';
 import { createMcpVotingTools } from './mcp-voting.js';
-import { createMcpEvmRecordTools } from './mcp-evm-records.js';
-import { readAdapter as chainReadAdapter, signingAdapter as chainSigningAdapter } from '../chain/adapters.js';
+import { createEvmAgreementMint, createMcpEvmRecordTools } from './mcp-evm-records.js';
+import { mintEvmAgreement } from './evm-agreement-minter.js';
+import {
+    SOLANA_CHAIN_KEYS, isSolanaKey, knownChainKeys, normalizeChainKey, readAdapter as chainReadAdapter, signingAdapter as chainSigningAdapter
+} from '../chain/adapters.js';
+import { agreementSigner } from '../chain/evm.js';
+import { isEvmAddress } from '../chain/keys.js';
+import { evmAgreementKeyOf } from '../agreements/onchain-evm.js';
 import { ensureRetrievable } from '../chain/courier.js';
 import os from 'node:os';
 import path from 'node:path';
@@ -124,10 +130,10 @@ function assertChallengeUnderCap(challenge, maximum, label) {
     }
 }
 
-// A whole number of lamports as a decimal string (agreement-minter.js reads it as u64).
-function wholeLamports(value, label) {
+// A whole number of lamports (or of `unit`, wei on EVM) as a decimal string (the minters read it as an integer).
+function wholeLamports(value, label, unit = 'lamports') {
     const text = typeof value === 'bigint' ? String(value) : typeof value === 'string' ? value.trim() : '';
-    if (!/^\d+$/.test(text)) throw new Error(`${label} must be a whole number of lamports as a decimal string, for example "0"`);
+    if (!/^\d+$/.test(text)) throw new Error(`${label} must be a whole number of ${unit} as a decimal string, for example "0"`);
     return text;
 }
 
@@ -180,8 +186,8 @@ function publishedDesign(content, label = 'design') {
  */
 function publishedAgreement(content, plan) {
     if (!isPlainObject(content) || content.schema !== AGREEMENT_SCHEMA) throw new Error(`agreement must be an ${AGREEMENT_SCHEMA} object`);
-    if (content.sponsor != null && !walletOf(content.sponsor)) {
-        throw new Error('agreement.sponsor must be the base58 wallet that will mint it, or null');
+    if (content.sponsor != null && !walletOf(content.sponsor) && !isEvmAddress(content.sponsor)) {
+        throw new Error('agreement.sponsor must be the base58 wallet (Solana) or the 0x address (EVM) that will mint it, or null');
     }
     const inputs = isPlainObject(content.inputs) ? content.inputs : {};
     const rebuilt = agreementObject({
@@ -255,6 +261,9 @@ export function createUrbanGameTheoryTools({
         readAdapter: chainReadAdapter,
         signingAdapter: chainSigningAdapter,
         ensureRetrievable,
+        // Agreements on an EVM chain (evm-agreement-minter.js, through mcp-evm-records.js).
+        agreementSigner,
+        mintEvmAgreement,
         ...dependencies
     };
     let connection = null;
@@ -286,6 +295,8 @@ export function createUrbanGameTheoryTools({
         indexClient ??= impl.createIndexClient({ apiBase, origin: appOrigin, fetchImpl, log });
         return indexClient;
     }
+
+    const mintAgreementOnEvm = createEvmAgreementMint({ env, appOrigin, index, impl, log });
 
     async function indexedAgreement(agreementCid) {
         const agreement = await index().getAgreement(agreementCid);
@@ -525,7 +536,7 @@ export function createUrbanGameTheoryTools({
                 }
                 const sponsor = content.sponsor ?? null;
                 return { cid, created, carried: carried.map(entry => entry.cid), sponsor,
-                    account: sponsor ? agreementAccountOf(cid, sponsor) : null, row, publication: 'published',
+                    account: !sponsor ? null : isEvmAddress(sponsor) ? evmAgreementKeyOf(sponsor, cid) : agreementAccountOf(cid, sponsor), row, publication: 'published',
                     url: `${appOrigin}/agreements/${cid}`, previewUrl: `${appOrigin}/agreements/${cid}`,
                     approvalUrl: content.rule.binding && sponsor ? `${appOrigin}/agreements/${cid}?act=mint` : null };
             } catch (error) { throw publicationError(error, state, 'ugt_propose_agreement', args); }
@@ -534,13 +545,21 @@ export function createUrbanGameTheoryTools({
         // Create the agreement's account as its sponsor and fund the escrow to `lamports` (also the escrow
         // execution requires), then record the account in the index. Repeating it creates nothing twice.
         // Only a binding owners' agreement is minted: a community or owner vote is a poll in the index.
-        async mintAgreement({ agreementCid, lamports, confirm } = {}) {
+        // `chainId` is solana-devnet (the default; `lamports`) or an EVM chain id (`wei`), where the
+        // browser's mint checklist runs first (mcp-evm-records.js createEvmAgreementMint).
+        async mintAgreement({ agreementCid, lamports, wei, chainId, confirm } = {}) {
             requireLive(confirm);
-            const required = wholeLamports(lamports, 'lamports');
+            const chainKey = normalizeChainKey(chainId ?? SOLANA_CHAIN_KEYS[0]);
+            if (!chainKey) throw new Error(`Not a supported chain: ${chainId} (supported: ${knownChainKeys().join(', ')})`);
+            const evm = !isSolanaKey(chainKey);
+            if (evm && lamports !== undefined) throw new Error(`lamports are the Solana amount; on EVM chain ${chainKey} give the escrow in wei`);
+            if (!evm && wei !== undefined) throw new Error('wei is the EVM amount; on Solana give the escrow in lamports');
+            const required = evm ? wholeLamports(wei, 'wei', 'wei') : wholeLamports(lamports, 'lamports');
             const { content } = await indexedAgreement(agreementCid);
             if (content.rule?.electorate !== 'owners' || content.rule?.binding !== true) {
                 throw new Error(`agreement ${agreementCid} is a non-binding ${content.rule?.electorate ?? 'unknown'} vote: it is a poll in the index and is never minted`);
             }
+            if (evm) return mintAgreementOnEvm({ agreementCid, content, chainKey, wei: required });
             const { keypair, connection } = signer();
             const self = keypair.publicKey.toBase58();
             if (content.sponsor !== self) {

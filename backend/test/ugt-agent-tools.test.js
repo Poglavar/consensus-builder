@@ -1,7 +1,8 @@
 // The shared tool surface for external agents (agents/ugt-agent-tools.js) on designs and agreements:
 // free reads through the index and the public API, the live gate (UGT_MCP_LIVE + confirm) on every
 // write, paid or signed tool, publishing only objects exactly in their published form, minting only a
-// binding owners' agreement as its own sponsor with one foreign lens key, and every market, pledge and
+// binding owners' agreement as its own sponsor with one foreign lens key (on Solana, or on an EVM chain
+// after the mint checklist: content retrievable, parcels anchored), and every market, pledge and
 // donation keyed by the agreement's chain account. The index is driven over a fake fetch, chain steps
 // through injected adapters; the agent key is a throwaway generated per test file.
 import fs from 'node:fs';
@@ -14,6 +15,9 @@ import {
     agreementObject, communityRule, designObject, noMoney, ownersRule, parcelOutputs, planForDesigns, registryRights
 } from '../agents/agreement-objects.js';
 import { agreementAccountOf, AGREEMENT_PROGRAM_ID } from '../agents/agreement-minter.js';
+import { evmAgreementKeyOf } from '../agreements/onchain-evm.js';
+import { loadAddressBook } from '../chain/evm.js';
+import { ethers } from 'ethers';
 import { cidOfObject } from '../cid.js';
 import { layoutContent } from './helpers/content-fixtures.js';
 
@@ -56,10 +60,10 @@ const rowOf = ({ cid, content }) => ({ cid, city: 'zagreb', title: content.title
 
 // The public API over a fake fetch: the index's designs and agreements, and plain JSON reads. There is
 // no /pins: publication pins nothing, and the tests assert every POST.
-function fakeApi({ agreements = [], plans = [] } = {}) {
+function fakeApi({ agreements = [], plans = [], designs = [] } = {}) {
     const rows = new Map(agreements.map(item => [item.cid, rowOf(item)]));
     const planRows = new Map(plans.map(plan => [plan.cid, plan]));
-    const designRows = new Map();
+    const designRows = new Map(designs.map(item => [item.cid, { cid: item.cid, content: item.content }]));
     const calls = [];
     const fetchImpl = vi.fn(async (url, init = {}) => {
         const target = new URL(String(url));
@@ -84,7 +88,8 @@ function fakeApi({ agreements = [], plans = [] } = {}) {
             return json(rows.get(body.cid), 201);
         }
         if (method === 'POST' && onchain) {
-            const row = { ...rows.get(decodeURIComponent(onchain[1])), onchain: { chain: 'solana', cluster: body.cluster, account: body.account, status: 'active' } };
+            const onchainOf = body.chain === 'evm' ? { chain: 'evm', chainId: body.chainId } : { chain: 'solana', cluster: body.cluster };
+            const row = { ...rows.get(decodeURIComponent(onchain[1])), onchain: { ...onchainOf, account: body.account, status: 'active' } };
             return json(row, 201);
         }
         if (method === 'GET' && target.pathname === '/agreements') return json({ agreements: [...rows.values()], count: rows.size });
@@ -290,6 +295,96 @@ describe('minting and funding', () => {
         expect(await tools.fundAgreement({ agreementCid: agreementOf().cid, targetLamports: '9000', confirm: true })).toMatchObject({ signature: 'fund-tx' });
         expect(fundAgreement).toHaveBeenCalledWith(expect.objectContaining({ cid: agreementOf().cid, targetLamports: '9000' }));
         expect(fundAgreement.mock.calls[0][0].sponsorKeypair.publicKey.toBase58()).toBe(AGENT);
+    });
+});
+
+describe('minting on an EVM chain', () => {
+    const evmAgent = ethers.Wallet.createRandom();
+    const EVM_AGENT = evmAgent.address;
+    const EVM_LENS = ethers.Wallet.createRandom().address;
+    const CREATE_TX = `0x${'cd'.repeat(32)}`;
+    const ANCHOR_TX = `0x${'ab'.repeat(32)}`;
+    const EVM_LIVE = { ...LIVE, UGT_AGENT_EVM_PRIVATE_KEY: evmAgent.privateKey };
+    const rights = registryRights([{ parcelId: PARCEL, owners: [{ owner: EVM_AGENT, ownerCount: 1 }] }]);
+    const evmAgreementOf = ({ sponsor = EVM_AGENT, lens = EVM_LENS, rule = null, title } = {}) => agreementOf({ sponsor, title, rule: rule || ownersRule({ lens, rights }) });
+
+    // The chain steps over fakes; the Agreement signer is the real one (chain/evm.js) on the agent's key.
+    function setup(agreements) {
+        const api = fakeApi({ agreements, plans: agreements.map(item => item.plan), designs: [design] });
+        const adapter = { name: 'Base Sepolia', anchorsMissing: vi.fn(async ids => ids), mintAnchors: vi.fn(async () => ({ txHashes: [ANCHOR_TX] })) };
+        const dependencies = {
+            ensureRetrievable: vi.fn(async ({ cid }) => ({ cid, via: 'already', gateway: 'https://gateway.example.test' })),
+            signingAdapter: vi.fn(() => adapter),
+            mintEvmAgreement: vi.fn(async ({ signer, cid }) => ({ chainId: signer.chainId, contract: signer.address, account: evmAgreementKeyOf(signer.wallet, cid),
+                signature: CREATE_TX, createSignature: CREATE_TX, created: true, fundedWei: '1000', requiredWei: '1000', escrowWei: '1000', status: 'Active' }))
+        };
+        const tools = createUrbanGameTheoryTools({ env: EVM_LIVE, fetchImpl: api.fetchImpl, dependencies });
+        return { api, adapter, dependencies, tools };
+    }
+
+    it('runs the mint checklist, creates the agreement with the escrow in wei and records it in the index', async () => {
+        const agreement = evmAgreementOf();
+        const { api, adapter, dependencies, tools } = setup([agreement]);
+        const account = evmAgreementKeyOf(EVM_AGENT, agreement.cid);
+
+        const result = await tools.mintAgreement({ agreementCid: agreement.cid, chainId: '84532', wei: '1000', confirm: true });
+
+        // Every member design, then the plan, then the agreement, retrievable before anything is signed.
+        expect(dependencies.ensureRetrievable.mock.calls.map(([call]) => [call.kind, call.cid]))
+            .toEqual([['design', design.cid], ['plan', agreement.plan.cid], ['agreement', agreement.cid]]);
+        expect(dependencies.signingAdapter).toHaveBeenCalledWith('84532', expect.anything());
+        expect(adapter.anchorsMissing).toHaveBeenCalledWith([PARCEL]);
+        const [anchored, { metadataUriOf }] = adapter.mintAnchors.mock.calls[0];
+        expect(anchored).toEqual([PARCEL]);
+        expect(metadataUriOf(PARCEL)).toBe(`https://urbangametheory.xyz/parcel/${PARCEL}`);
+        const [options] = dependencies.mintEvmAgreement.mock.calls[0];
+        expect(options).toMatchObject({ cid: agreement.cid, lens: EVM_LENS, wei: '1000', payout: EVM_AGENT, deadline: '2099-01-01T00:00:00.000Z', openGround: false });
+        expect(options.signer).toMatchObject({ chainId: '84532', wallet: EVM_AGENT, address: loadAddressBook()['84532'].Agreement });
+        expect(api.posts()).toEqual([{
+            method: 'POST', path: `/agreements/${agreement.cid}/onchain`, origin: 'https://urbangametheory.xyz',
+            body: { chain: 'evm', chainId: '84532', account, signature: CREATE_TX }
+        }]);
+        expect(result).toMatchObject({ account, created: true, chain: 'Base Sepolia', anchored: [PARCEL], alreadyAnchored: [], anchorTxHashes: [ANCHOR_TX],
+            onchain: { chain: 'evm', chainId: '84532', account } });
+        expect(result.retrievable).toHaveLength(3);
+    });
+
+    it('anchors nothing already anchored', async () => {
+        const agreement = evmAgreementOf();
+        const { adapter, tools } = setup([agreement]);
+        adapter.anchorsMissing.mockResolvedValueOnce([]);
+        const result = await tools.mintAgreement({ agreementCid: agreement.cid, chainId: '84532', wei: '0', confirm: true });
+        expect(adapter.mintAnchors).not.toHaveBeenCalled();
+        expect(result).toMatchObject({ anchored: [], alreadyAnchored: [PARCEL], anchorTxHashes: [] });
+    });
+
+    it('refuses a poll, another sponsor, a lens that is not one foreign 0x address, the other chain\'s amount and an unknown chain', async () => {
+        const cases = [
+            [evmAgreementOf({ rule: communityRule([EVM_LENS]), title: 'A poll' }), { wei: '0' }, /is a non-binding community vote: it is a poll in the index and is never minted/],
+            [evmAgreementOf({ sponsor: '0x5aAeb6053F3E94C9b9A09f33669435E7Ef1BeAed', title: 'Theirs' }), { wei: '0' }, /names sponsor 0x5aAeb6053F3E94C9b9A09f33669435E7Ef1BeAed, not this agent's EVM wallet/],
+            [evmAgreementOf({ lens: LENS, title: 'Solana lens' }), { wei: '0' }, new RegExp(`rule.lens holds ${LENS}, not an EVM address`)],
+            [evmAgreementOf({ rule: { ...ownersRule({ lens: EVM_LENS, rights }), lens: [EVM_LENS, ethers.Wallet.createRandom().address] }, title: 'Two lenses' }), { wei: '0' }, /takes one lens address, but rule.lens holds 2 entries/],
+            [evmAgreementOf({ lens: EVM_AGENT.toLowerCase(), title: 'Own lens' }), { wei: '0' }, /rule.lens names only this agent's own address/],
+            [evmAgreementOf({ title: 'Lamports' }), { lamports: '0' }, /lamports are the Solana amount; on EVM chain 84532 give the escrow in wei/],
+            [evmAgreementOf({ title: 'Fraction' }), { wei: '1.5' }, /wei must be a whole number of wei/]
+        ];
+        const { api, adapter, dependencies, tools } = setup(cases.map(([agreement]) => agreement));
+        for (const [agreement, amount, message] of cases) {
+            await expect(tools.mintAgreement({ agreementCid: agreement.cid, chainId: '84532', ...amount, confirm: true })).rejects.toThrow(message);
+        }
+        await expect(tools.mintAgreement({ agreementCid: cases[0][0].cid, wei: '0', confirm: true })).rejects.toThrow(/wei is the EVM amount; on Solana give the escrow in lamports/);
+        await expect(tools.mintAgreement({ agreementCid: cases[0][0].cid, chainId: '1', wei: '0', confirm: true })).rejects.toThrow(/Not a supported chain: 1/);
+        expect(dependencies.ensureRetrievable).not.toHaveBeenCalled();
+        expect(adapter.anchorsMissing).not.toHaveBeenCalled();
+        expect(dependencies.mintEvmAgreement).not.toHaveBeenCalled();
+        expect(api.posts()).toEqual([]);
+    });
+
+    it('proposes an agreement with an EVM sponsor and answers its Agreement key', async () => {
+        const agreement = evmAgreementOf();
+        const tools = createUrbanGameTheoryTools({ env: EVM_LIVE, fetchImpl: fakeApi({ plans: [agreement.plan] }).fetchImpl });
+        const result = await tools.proposeAgreement({ agreement: agreement.content, designs: [{ content: design.content }], confirm: true });
+        expect(result).toMatchObject({ cid: agreement.cid, sponsor: EVM_AGENT, account: evmAgreementKeyOf(EVM_AGENT, agreement.cid) });
     });
 });
 

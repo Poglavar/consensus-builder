@@ -98,7 +98,8 @@ UGT_AGENT_KEYPAIR=/absolute/path/to/devnet-agent.json
 UGT_MCP_LIVE=1
 UGT_MCP_MAX_USDC_PER_ACTION=0.25
 SOLANA_RPC_URL=https://api.devnet.solana.com
-# EVM records and anchors (ugt_mint_design, ugt_mint_plan, ugt_anchor_parcels): a low-value testnet key
+# EVM records, anchors and agreements (ugt_mint_design, ugt_mint_plan, ugt_anchor_parcels,
+# ugt_mint_agreement with an EVM chainId): a low-value testnet key
 UGT_AGENT_EVM_PRIVATE_KEY=0x<64 hex digits>
 # Optional per-chain RPC (public defaults for 84532 Base Sepolia and 11155111 Sepolia)
 EVM_RPC_URL_84532=https://sepolia.base.org
@@ -123,7 +124,7 @@ EVM_RPC_URL_84532=https://sepolia.base.org
 | `ugt_inspect_verified_fact` | read | The x402 challenge of an agreement's verified fact, without paying. |
 | `ugt_publish_design` | write | Index a `design/v1` object. |
 | `ugt_propose_agreement` | write | Index an `agreement/v1` object, with any linked designs the index does not hold yet. |
-| `ugt_mint_agreement` | signed | As the sponsor of a binding owners' agreement: create the account and fund its escrow, then record it in the index. |
+| `ugt_mint_agreement` | signed | As the sponsor of a binding owners' agreement: create it on a chain (`solana-devnet`, the default, with `lamports`; or an EVM chain id with `wei`, after its designs, plan and agreement are retrievable from public IPFS and its input parcels anchored there) and fund its escrow, then record it in the index. |
 | `ugt_chain_records` | read | Design or plan records of a chain (`solana-devnet`, the default: the ugt program; or an EVM chain's `RecordRegistry`), read over RPC. |
 | `ugt_mint_design`, `ugt_mint_plan` | signed | Mint an indexed design's or plan's record on a chain (a frozen Metaplex Core asset on Solana, a `RecordRegistry` token on EVM) with the agent's key for that chain, after its content (and a plan's member designs) is retrievable from public IPFS; content no public gateway serves yet is pinned with the process's own `IPFS_PINNING_PROVIDER` account. |
 | `ugt_anchor_parcels` | signed | Anchor parcel ids on a chain (the ugt program on Solana, or an EVM chain's `ParcelAnchor`); anchored parcels are skipped. |
@@ -141,7 +142,8 @@ The USDC cap is enforced before anything is signed, including against each x402 
 `ugt_donate` needs a stable `operationId`. `ugt_publish_design` and `ugt_propose_agreement` compute the
 CIDs locally and refuse an object that is not exactly its published form, naming the fields that
 differ. `ugt_mint_agreement` refuses a vote (a poll is never minted), and refuses unless the agent's
-wallet is the agreement's `sponsor` and `rule.lens` holds exactly one key that is not the agent's own. Leave `UGT_MCP_LIVE` unset for a
+wallet on that chain is the agreement's `sponsor` and `rule.lens` holds exactly one key of that chain
+(a base58 key on Solana, a 0x address on EVM) that is not the agent's own. Leave `UGT_MCP_LIVE` unset for a
 session without signing.
 
 ## 1. What you need
@@ -433,7 +435,11 @@ recorded on one chain is never re-recorded on another (409 `onchain-recorded-els
 member attests such an agreement's decision through EAS on that chain with its EVM address, which the
 agreement's `rule.lens` must name.
 
-With the MCP: `ugt_mint_agreement { agreementCid, lamports }` and `ugt_fund_agreement { agreementCid, targetLamports }`.
+With the MCP: `ugt_mint_agreement { agreementCid, lamports }` and `ugt_fund_agreement { agreementCid, targetLamports }` on
+Solana; `ugt_mint_agreement { agreementCid, chainId: "84532", wei }` on an EVM chain, which first makes
+every member design, the plan and the agreement retrievable from a public IPFS gateway and anchors every
+input parcel there, as the browser's mint checklist does, then creates the agreement with `wei` as its
+escrow and records it with `{ chain: "evm", chainId, account, signature }`. A rerun signs nothing already done.
 
 ## 7. Bet, pledge and donate on it
 

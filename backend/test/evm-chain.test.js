@@ -2,7 +2,7 @@
 // browser's adapter bound to a provider, and the agent's signing wallet, with no network.
 import { describe, expect, it, vi } from 'vitest';
 import { ethers } from 'ethers';
-import { DEFAULT_RPC_URLS, chainConfig, loadAddressBook, readAdapter, signingAdapter } from '../chain/evm.js';
+import { DEFAULT_RPC_URLS, agreementSigner, chainConfig, loadAddressBook, readAdapter, signingAdapter } from '../chain/evm.js';
 
 const BOOK = {
     '84532': { ParcelAnchor: '0x6785a94694af9455C42F49849027736ABdd1aE2D', RecordRegistry: '0xf3dAA5ea198B11E462bB7Cf0A23d89B4896eeBbF' },
@@ -58,5 +58,17 @@ describe('EVM adapters', () => {
         try { signingAdapter('84532', { env: { UGT_AGENT_EVM_PRIVATE_KEY: bad }, log: quiet, addressBook: BOOK }); } catch (error) { refusal = error; }
         expect(refusal).toMatchObject({ code: 'invalid-evm-key' });
         expect(refusal.message).not.toContain(bad);
+    });
+
+    it('binds the Agreement contract to the agent\'s key, and refuses a chain without one or without a key', () => {
+        const wallet = ethers.Wallet.createRandom();
+        const book = { '84532': { ...BOOK['84532'], Agreement: '0xe9bd361f00CDE963659a81c8e4F6b21d696f9302', EAS: '0x4200000000000000000000000000000000000021', AgreementDecisionSchema: `0x${'80'.repeat(32)}` } };
+        const signer = agreementSigner('84532', { env: { UGT_AGENT_EVM_PRIVATE_KEY: wallet.privateKey }, addressBook: book });
+        expect(signer).toMatchObject({ chainId: '84532', name: 'Base Sepolia', address: book['84532'].Agreement, wallet: wallet.address });
+        expect(signer.contract.target).toBe(book['84532'].Agreement);
+        expect(signer.contract.runner.address).toBe(wallet.address);
+        expect(typeof signer.contract.create.staticCall).toBe('function');
+        expect(() => agreementSigner('84532', { env: { UGT_AGENT_EVM_PRIVATE_KEY: wallet.privateKey }, addressBook: BOOK })).toThrowError(expect.objectContaining({ code: 'no-agreement' }));
+        expect(() => agreementSigner('84532', { env: {}, addressBook: book })).toThrowError(expect.objectContaining({ code: 'no-evm-key' }));
     });
 });

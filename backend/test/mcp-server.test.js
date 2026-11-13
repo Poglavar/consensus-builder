@@ -231,8 +231,10 @@ describe('Urban Game Theory MCP server', () => {
         await connect(stubTools());
         const byName = await toolsByName();
         const mint = byName.ugt_mint_agreement.inputSchema;
-        expect(Object.keys(mint.properties)).toEqual(['agreementCid', 'lamports', 'confirm']);
-        expect([...mint.required].sort()).toEqual(['agreementCid', 'confirm', 'lamports']);
+        expect(Object.keys(mint.properties)).toEqual(['agreementCid', 'chainId', 'lamports', 'wei', 'confirm']);
+        expect([...mint.required].sort()).toEqual(['agreementCid', 'confirm']);
+        expect(mint.properties.chainId.enum).toEqual(expect.arrayContaining(['solana-devnet', '84532']));
+        expect(byName.ugt_mint_agreement.description).toContain('create(cid, plan_cid, input_count, lens, deadline, open_ground, required_lamports, payout)');
         expect(Object.keys(byName.ugt_bet_on_agreement.inputSchema.properties)).toEqual(['agreementCid', 'side', 'amountUsdc', 'confirm']);
         expect(byName.ugt_bet_on_agreement.inputSchema.properties.side.enum).toEqual(['yes', 'no']);
         expect(Object.keys(byName.ugt_propose_agreement.inputSchema.properties)).toEqual(['agreement', 'expectedCid', 'designs', 'confirm']);
@@ -271,7 +273,10 @@ describe('Urban Game Theory MCP server', () => {
         expect(tools.publishDesign).not.toHaveBeenCalled();
         const ok = await call({ agreementCid: CID, lamports: '1000', confirm: true });
         expect(ok.isError).not.toBe(true);
-        expect(tools.mintAgreement).toHaveBeenCalledWith({ agreementCid: CID, lamports: '1000', confirm: true });
+        expect(tools.mintAgreement).toHaveBeenCalledWith({ agreementCid: CID, chainId: 'solana-devnet', lamports: '1000', confirm: true });
+        expect((await call({ agreementCid: CID, chainId: '84532', wei: '0.5', confirm: true })).isError).toBe(true);
+        expect((await call({ agreementCid: CID, chainId: '84532', wei: '1000000000000000', confirm: true })).isError).not.toBe(true);
+        expect(tools.mintAgreement).toHaveBeenLastCalledWith({ agreementCid: CID, chainId: '84532', wei: '1000000000000000', confirm: true });
     });
 
     it('answers a tool\'s refusal as a tool error and serialises bigint results', async () => {

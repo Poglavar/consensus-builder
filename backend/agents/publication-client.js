@@ -180,15 +180,18 @@ export function createIndexClient({
     }
 
     /**
-     * POST /agreements/:cid/onchain { chain, cluster, account, signature }: the account the agreement was
-     * minted as (201 recorded, 200 refreshed). The server reads the account and the transaction on its own
-     * RPC, which can lag the sender's: a signature it cannot see yet is asked again after a pause.
+     * POST /agreements/:cid/onchain { chain, cluster, account, signature } (an EVM mint: { chain: 'evm',
+     * chainId, account, signature }): the account the agreement was minted as (201 recorded, 200
+     * refreshed). The server reads the account and the transaction on its own RPC, which can lag the
+     * sender's: a signature it cannot see yet is asked again after a pause.
      */
-    async function recordOnchain(cid, { chain = 'solana', cluster, account, signature = null } = {}) {
+    async function recordOnchain(cid, { chain = 'solana', cluster, chainId, account, signature = null } = {}) {
         requireCid(cid);
-        if (!cluster || !account) throw new Error('recordOnchain needs cluster and account');
+        const evm = chain === 'evm';
+        if (evm ? !chainId || !account : !cluster || !account) throw new Error(`recordOnchain needs ${evm ? 'chainId' : 'cluster'} and account`);
+        const body = evm ? { chain, chainId: String(chainId), account, signature } : { chain, cluster, account, signature };
         for (let attempt = 1; ; attempt += 1) {
-            const result = await call('POST', `/agreements/${encodeURIComponent(cid)}/onchain`, { chain, cluster, account, signature });
+            const result = await call('POST', `/agreements/${encodeURIComponent(cid)}/onchain`, body);
             if (result.ok) {
                 if (!onchainNames(result.body, account)) throw mismatch('record the chain account', account, result.body?.onchain?.account);
                 return result.body;

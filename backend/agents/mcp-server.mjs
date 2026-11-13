@@ -208,8 +208,14 @@ export function createUrbanGameTheoryMcpServer({ mode = 'local', env = process.e
     server.registerTool('ugt_sell_agreement_shares', { description: 'Sell a fixed share quantity from your position on an active canonical agreement market. The quote sets the minimum return; local signing applies.', inputSchema: z.object({ agreementCid, side: z.enum(['yes', 'no']), shares, confirm: confirmation }), annotations: PAID_NON_IDEMPOTENT }, handler(args => actions.sellAgreementSharesOnAgreement(args)));
     server.registerTool('ugt_mint_agreement', {
         title: 'Mint a binding owners\' agreement as its sponsor',
-        description: 'Create the agreement\'s account on devnet with UGT_AGENT_KEYPAIR, which must be the agreement\'s sponsor: create(cid, lens, deadline, open_ground, required_lamports, payout) plus fund in one transaction, with the lens (rule.lens must hold exactly one key, not this agent\'s), the deadline and open ground from the agreement, lamports as both the escrow funded now and the escrow execution requires, payout the sponsor. Only a binding owners\' agreement is minted: a community or owner vote is refused, it is a poll in the index. Then records the account in the index (POST /agreements/:cid/onchain). Repeating it signs nothing new.',
-        inputSchema: z.object({ agreementCid, lamports, confirm: confirmation }),
+        description: 'Create the agreement on a chain as its sponsor, fund its escrow, then record it in the index (POST /agreements/:cid/onchain). On Solana (chainId solana-devnet, the default) with UGT_AGENT_KEYPAIR, which must be the sponsor: the ugt program\'s create(cid, plan_cid, input_count, lens, deadline, open_ground, required_lamports, payout) plus fund in one transaction; rule.lens must hold exactly one base58 key, not this agent\'s; give lamports. On an EVM chain id with UGT_AGENT_EVM_PRIVATE_KEY, whose address must be the sponsor: the browser\'s mint checklist (every member design, the plan and the agreement retrievable from a public IPFS gateway, pinned when none serves them yet; every input parcel anchored on that chain), then the Agreement contract\'s create(cid, lens, deadline, openGround, requiredWei, payout) with the escrow as its value; rule.lens must hold exactly one 0x address, the lens member\'s, not this agent\'s; give wei. Either way the deadline and open ground come from the agreement, the amount is both the escrow funded now and the escrow execution requires, and the payout is the sponsor. Only a binding owners\' agreement is minted: a community or owner vote is refused, it is a poll in the index. Repeating it signs nothing new.',
+        inputSchema: z.object({
+            agreementCid,
+            chainId: recordChain,
+            lamports: lamports.optional().describe('Solana only: whole lamports as a decimal string, for example "10000000" (0.01 SOL)'),
+            wei: z.string().regex(/^\d+$/).optional().describe('EVM only: whole wei as a decimal string, for example "1000000000000000" (0.001 ETH)'),
+            confirm: confirmation
+        }),
         annotations: PAID_IDEMPOTENT
     }, handler(args => actions.mintAgreement(args)));
 

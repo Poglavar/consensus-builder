@@ -273,9 +273,10 @@ mock API and a local validator), then docs and the vocabulary entries it changes
    `backend/oracle/chain-records-job.mjs` (PM2 `consensus-builder-chain-records`, every 15 min,
    `CHAIN_WATCH_KEYS`) imports retrievable, CID-verified records into the index, designs before
    plans, binding a design with its city's configured parcel source; plans wait for their members.
-   Still open from R3: the live ENS records (the scripts are repointed, not run), explorer source
-   verification (needs an Etherscan v2 API key), and an outcome check for the watcher in the alerts
-   repo.
+   `ParcelAnchor`, `RecordRegistry` and `Agreement` are source-verified on Basescan (Base Sepolia) and
+   Etherscan (Sepolia). Still open from R3: the live ENS records (the scripts are repointed, not run;
+   they change mainnet ENS names the deployed site uses, so they run at this branch's deploy), and an
+   outcome check for the watcher in the alerts repo (once the watcher runs on prod).
 4. **R4, EVM agreements.** The `Agreement` contract, EAS attestation by the lens, escrow, the
    agreement panel's actions on EVM. Done when an agreement proposed with an EVM wallet executes on
    Base Sepolia from a lens attestation.
@@ -297,8 +298,9 @@ mock API and a local validator), then docs and the vocabulary entries it changes
    (mint, fund, attest from a seeded EAS decision, execute, cancel refused); the agreement panel's
    EVM path and the lens's live EAS issuing are not yet exercised against Base Sepolia. Still open:
    land events for EVM agreements (the oracle refreshes `onchain` only), the lens directory
-   publishing each member's `evmAddress`, `ugt_mint_agreement` on EVM, and the
-   `lens_attestation` DDL change (`chain`, `chain_id`) to apply at deploy.
+   publishing each member's `evmAddress`, and the `lens_attestation` DDL change (`chain`,
+   `chain_id`) to apply at deploy. `ugt_mint_agreement` mints on EVM too (`chainId`, escrow in `wei`),
+   the agent being the sponsor and naming the lens by the EVM address in the agreement's `rule.lens`.
 
 Sizes, as estimates to be revised when each starts: R1 about two days, R2 about a week, R3 three to
 four days, R4 about a week; R4 is the only new money-holding contract.
@@ -316,14 +318,13 @@ four days, R4 about a week; R4 is the only new money-holding contract.
 
 ## Open questions
 
-1. **Which EVM mainnet**, when the time comes; Base is the working assumption because the testnet
-   deployments are there.
+1. **Which EVM mainnet**: Base (decided 2026-11-13; the testnet deployments are on Base Sepolia).
 2. **The lens on EVM** (decided 2026-11-13, "use one of our existing EVM keys"): a lens member holds
    an EVM key beside its Solana keypair (`LENS_EVM_PRIVATE_KEY`, the project's deployer key for the
    testnets) and attests EVM agreements through EAS; a member's EVM address must still reach the lens
    directory so a browser can name it in `rule.lens` and find its decisions.
-3. **Anchors for input parcels of a non-binding agreement.** A community vote names parcels but
-   moves nothing and is never minted today; it stays off chain unless a reason to mint it appears.
+3. **Non-binding agreements are never minted** (decided 2026-11-13): a community or owner vote names
+   parcels but moves nothing, stays a poll in the index, and its parcels are not anchored for it.
 
 ## Vocabulary entries this changes when implemented
 

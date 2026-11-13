@@ -3,7 +3,8 @@
 // UGT_AGENT_EVM_PRIVATE_KEY. Contract addresses come from frontend/contracts/addresses.json, the RPC
 // of each chain from EVM_RPC_URL_<chainId> or the public default below. Used by the MCP chain tools
 // and the chain watcher (oracle/chain-records-job.mjs); the Agreement reader (R4) by the agreement
-// index and its lifecycle oracle (agreements/onchain-evm.js) and the lens's EAS issuer (lens/evm-issuer.js).
+// index and its lifecycle oracle (agreements/onchain-evm.js) and the lens's EAS issuer (lens/evm-issuer.js),
+// the agent's Agreement signer by the MCP agreement mint (agents/evm-agreement-minter.js).
 import { readFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
 import { ethers } from 'ethers';
@@ -120,12 +121,30 @@ export function readAdapter(chainId = DEFAULT_CHAIN_ID, { env = process.env, log
  */
 export function signingAdapter(chainId = DEFAULT_CHAIN_ID, { env = process.env, log = stderrLog, provider = null, addressBook } = {}) {
     const config = chainConfig(chainId, env, addressBook ? { addressBook } : {});
-    const key = env.UGT_AGENT_EVM_PRIVATE_KEY;
-    if (!key) throw failure('no-evm-key', `UGT_AGENT_EVM_PRIVATE_KEY is not set: there is no EVM wallet to sign on ${config.name} with.`);
     const connected = provider || providerFor(config);
-    let signer;
-    try { signer = new ethers.Wallet(key, connected); } catch (_) {
+    const signer = agentWallet(env, connected, config.name);
+    return EvmAdapter.createAdapter({ ethers, chainId: config.chainId, provider: connected, signer, addresses: config.addresses, log });
+}
+
+// The agent's wallet (UGT_AGENT_EVM_PRIVATE_KEY) on `provider`; the key never appears in a message.
+function agentWallet(env, provider, chainName) {
+    const key = env.UGT_AGENT_EVM_PRIVATE_KEY;
+    if (!key) throw failure('no-evm-key', `UGT_AGENT_EVM_PRIVATE_KEY is not set: there is no EVM wallet to sign on ${chainName} with.`);
+    try { return new ethers.Wallet(key, provider); } catch (_) {
         throw failure('invalid-evm-key', 'UGT_AGENT_EVM_PRIVATE_KEY is not a valid EVM private key.');
     }
-    return EvmAdapter.createAdapter({ ethers, chainId: config.chainId, provider: connected, signer, addresses: config.addresses, log });
+}
+
+/**
+ * The chain's Agreement contract signed by the agent's wallet (UGT_AGENT_EVM_PRIVATE_KEY), over the
+ * browser's ABI (frontend/js/chain/evm-agreement.js AGREEMENT_ABI): { chainId, name, address (the
+ * contract), wallet (the agent's checksummed address), contract }. Throws 'unknown-chain' /
+ * 'no-agreement' / 'no-rpc' / 'no-evm-key' / 'invalid-evm-key'. `provider` and `addressBook` are injectable.
+ */
+export function agreementSigner(chainId, { env = process.env, provider = null, addressBook } = {}) {
+    const config = agreementConfig(chainId, env, addressBook ? { addressBook } : {});
+    const wallet = agentWallet(env, provider || providerFor(config), config.name);
+    const { AGREEMENT_ABI } = require('../../frontend/js/chain/evm-agreement.js');
+    return { chainId: config.chainId, name: config.name, address: config.addresses.Agreement, wallet: wallet.address,
+        contract: new ethers.Contract(config.addresses.Agreement, AGREEMENT_ABI, wallet) };
 }
