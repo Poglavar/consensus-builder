@@ -191,7 +191,7 @@ so every account layout above is final at that deploy; devnet and testnet carry 
 - The Share dialog (its own plan) hosts Flow 4.
 - Lists: the From chain source, with the chain and cluster named in the source picker.
 - Server: a chain watcher in `backend/oracle/` importing records and agreements from both chains
-  into the index after fetching and verifying their content; the lifecycle oracle already observes
+  into the index after fetching and verifying their content; the lifecycle indexer already observes
   agreement status and is extended rather than duplicated.
 - MCP parity: agents mint through the same adapters with the agent keypair. `ugt_mint_agreement`
   exists; `ugt_mint_design`, `ugt_mint_plan`, `ugt_anchor_parcels` and `ugt_chain_records` are added
@@ -235,7 +235,7 @@ mock API and a local validator), then docs and the vocabulary entries it changes
    watcher (`CHAIN_WATCH_KEYS`, default `solana-devnet,84532`) and the MCP record tools (Solana by
    default, signing with `UGT_AGENT_KEYPAIR`). The devnet accounts of the retired `agreement` program
    are not migrated: they and the index rows that name them stay as last observed (the lifecycle
-   oracle refreshes only rows of the program it watches) and parcel history keeps the land events that
+   indexer refreshes only rows of the program it watches) and parcel history keeps the land events that
    program attested. Still open: the devnet `proposal_market` and `proposal_pledge` still read the
    retired program, so markets and pledges on ugt agreements wait for their in-place upgrade at this
    branch's deploy; at that point the retired program's open agreements and markets are closed first
@@ -290,20 +290,43 @@ mock API and a local validator), then docs and the vocabulary entries it changes
    first (members, plan and agreement retrievable; every input parcel anchored, metadata URI = the
    parcel's page), then `POST /agreements/:cid/onchain { chain: 'evm', chainId, account, signature }`
    mirrors it. Server: the index verifies an EVM mint against the contract (`agreements/onchain-evm.js`),
-   the lifecycle oracle refreshes EVM rows (`--evm-chain 84532`, PM2 `consensus-builder-land-oracle-evm`),
+   the lifecycle indexer refreshes EVM rows (`--evm-chain 84532`, PM2 `consensus-builder-land-oracle-evm`),
    and the lens member attests EVM agreements through EAS with `LENS_EVM_PRIVATE_KEY` (else
    `UGT_AGENT_EVM_PRIVATE_KEY`): the sponsor's key family decides the chain, an EVM agreement's
    `rule.lens` names the member's EVM address, and the member's approval attester accepts either of
    its keys there. Verified: the whole lifecycle through the browser bridge against a local chain
    (mint, fund, attest from a seeded EAS decision, execute, cancel refused); the agreement panel's
-   EVM path and the lens's live EAS issuing are not yet exercised against Base Sepolia. Still open:
-   land events for EVM agreements (the oracle refreshes `onchain` only), the lens directory
-   publishing each member's `evmAddress`, and the `lens_attestation` DDL change (`chain`,
-   `chain_id`) to apply at deploy. `ugt_mint_agreement` mints on EVM too (`chainId`, escrow in `wei`),
+   EVM path and the lens's live EAS issuing are not yet exercised against Base Sepolia. The lifecycle
+   indexer writes land events for terminal EVM agreements too (the terminal log found by a paged
+   `queryFilter`, event times from its block, ids scoped `eip155:<chainId>:<contract>`), so parcel
+   history shows them. The lens directory serves each member's addresses per chain family
+   (`addresses { solana, evm }`, `lens_member.evm_address`); the agreement dialog, the lens picker and
+   the agent tools offer only members on the sponsor's chain. EVM agreement markets
+   (`AgreementOutcomeReporter`, `AgreementMarkets` over Gnosis Conditional Tokens and its LMSR market
+   maker, [`README-agreement-markets.md`](../blockchain/contracts/README-agreement-markets.md)) are
+   built and tested on a local chain, not deployed, with no browser or bettor adapter yet. Still open:
+   the `lens_attestation` DDL change (`chain`, `chain_id`) and `lens_member.evm_address` to apply at
+   deploy; the land events' unique index on an agreement's lifecycle ignores the chain, so one
+   sponsor's same CID minted on two EVM chains fails on the second (reported, not lost). `ugt_mint_agreement` mints on EVM too (`chainId`, escrow in `wei`),
    the agent being the sponsor and naming the lens by the EVM address in the agreement's `rule.lens`.
 
 Sizes, as estimates to be revised when each starts: R1 about two days, R2 about a week, R3 three to
 four days, R4 about a week; R4 is the only new money-holding contract.
+
+## Decided 2026-11-13
+
+- **Settlement reads the chain, never our server.** A market settles by reading the agreement on its
+  own chain (Solana `proposal_market.resolve`; on EVM a permissionless reporter reading `Agreement`).
+  The agreement lifecycle job (`backend/oracle/agreement-lifecycle.js`, PM2 `*-land-oracle*`) is an
+  indexer: it mirrors terminal states into the index for parcel history, the market pages and the
+  verified-fact API, and nothing on chain depends on it. Only a market on another chain than its
+  agreement would need an attested outcome.
+- **A lens member is one identity with an address per chain.** It publishes a Solana key, an EVM
+  address or both, each proven by a signature from that key, and is available only on the chains it
+  published an address for. An agreement's `rule.lens` holds addresses of its own chain only.
+- **EVM agreement markets reuse Gnosis Conditional Tokens and its LMSR market maker** (the contracts
+  Polymarket and Omen run on) rather than a port of `proposal_market`; LMSR keeps the Solana market's
+  pricing. Built and tested; whether to deploy it is not decided.
 
 ## Decided 2026-11-09
 

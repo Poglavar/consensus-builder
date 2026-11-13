@@ -1,5 +1,5 @@
 // A minted agreement's chain account as the agreement program stores it (frontend/js/solana/
-// agreement-client.js readAgreement; blockchain/solana/programs/agreement/README.md), served to the
+// agreement-client.js readAgreement; blockchain/solana/programs/ugt/README.md), served to the
 // page's Solana RPC reads so the agreement panel reads it as it would read devnet. Wallet transactions
 // are out of scope: every other account reads as absent, so the program itself reads as not deployed.
 import { Page, Route } from '@playwright/test';
@@ -14,7 +14,7 @@ const { PublicKey } = backendRequire('@solana/web3.js');
 
 // sha256("account:Agreement")[..8] and the account's size (8 + Agreement::INIT_SPACE), as the client copies them.
 const AGREEMENT_DISCRIMINATOR = [83, 212, 5, 110, 225, 249, 197, 84];
-const AGREEMENT_ACCOUNT_SPACE = 296;
+const AGREEMENT_ACCOUNT_SPACE = 330;
 const DEFAULT_PUBKEY = '11111111111111111111111111111111';
 
 export const STATUS = { active: 0, executed: 1, cancelled: 2, expired: 3 } as const;
@@ -32,6 +32,8 @@ export interface AgreementAccount {
   deadline?: number;
   requiredLamports?: bigint; escrowLamports?: bigint;
   status?: number; decision?: number;
+  /** The plan CID the agreement names (its sha256 is stored); absent = 32 zero bytes. */
+  planCid?: string; inputCount?: number;
 }
 
 /** The account's bytes, field by field in the program's order, zero-padded to the account's size. */
@@ -53,7 +55,9 @@ export function encodeAgreementAccount(account: AgreementAccount): Buffer {
     // decision_attested_at, decision_observed_at, decision_attestation, decision_hash
     i64(satisfied ? Math.floor(Date.now() / 1000) - 60 : 0), i64(satisfied ? Math.floor(Date.now() / 1000) - 120 : 0),
     key(DEFAULT_PUBKEY), Buffer.alloc(32, satisfied ? 7 : 0),
-    i64(0), u8(254), length, cid,
+    // executed_at, plan_cid_hash, input_count, bump, cid
+    i64(0), account.planCid ? createHash('sha256').update(account.planCid, 'utf8').digest() : Buffer.alloc(32),
+    Buffer.from(Uint16Array.of(account.inputCount ?? 0).buffer), u8(254), length, cid,
   ]);
   return Buffer.concat([bytes, Buffer.alloc(Math.max(0, AGREEMENT_ACCOUNT_SPACE - bytes.length))]);
 }

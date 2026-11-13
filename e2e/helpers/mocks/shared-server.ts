@@ -55,7 +55,8 @@ export interface SharedIndex {
 export const E2E_LENS_MEMBER_KEY = 'GmaDrppBC7P5ARKV8g3djiwP89vz1jLK23V2GBjuAEGB';
 export const E2E_LENS_SERVICE_URL = 'https://lens-member.e2e.invalid';
 // The program ids GET /markets names (agreement-client.js, market-client.js; devnet USDC).
-export const AGREEMENT_PROGRAM_ID = 'GtdgeRH89f2qLj4j4v6NcecWSr6RDPP9y4TMfPCGA5jQ';
+// The ugt program (blockchain/solana/programs/ugt), which holds agreements since R2.
+export const AGREEMENT_PROGRAM_ID = '95sjeTXUYG721iZK29s3kr7Dq4eFqv6PFoEmPYJDtkp9';
 const MARKET_PROGRAM_ID = 'GDYnzduynKhKgxDhvvKVarn2s23DtzA26s6hycuUYDRB';
 const DEVNET_USDC_MINT = '4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU';
 
