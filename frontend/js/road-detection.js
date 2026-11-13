@@ -412,10 +412,8 @@ window.toggleWFSPolygons = toggleWFSPolygons;
 // Road and railway data from OpenStreetMap, through our backend (/osm-road: the ingested table, else
 // its Tracestrack-first Overpass chain; js/osm-roads-source.js). Public Overpass is asked directly
 // only when our server itself does not answer.
-// `quiet` keeps the progress lines out of the status bar (a block re-form runs unasked); errors still show.
-async function fetchOSMRoads({ quiet = false } = {}) {
-    const progress = quiet ? () => {} : updateStatus;
-    progress('Fetching road data from OpenStreetMap...');
+async function fetchOSMRoads() {
+    updateStatus('Fetching road data from OpenStreetMap...');
 
     try {
         const bounds = map.getBounds();
@@ -427,7 +425,7 @@ async function fetchOSMRoads({ quiet = false } = {}) {
         // Check cache first
         const cachedData = checkOSMCache(south, west, north, east);
         if (cachedData) {
-            progress('Using cached OSM road data');
+            updateStatus('Using cached OSM road data');
             return cachedData;
         }
 
@@ -452,7 +450,7 @@ async function fetchOSMRoads({ quiet = false } = {}) {
             cacheOSMData(data, south, west, north, east);
         }
 
-        progress(`Fetched ${data.elements.length} roads from OpenStreetMap`);
+        updateStatus(`Fetched ${data.elements.length} roads from OpenStreetMap`);
         return data;
     } catch (error) {
         console.error('Error fetching OSM data:', error);
@@ -1129,14 +1127,41 @@ async function markParcelsCoveredByRoadLines(parcels, roadGeoJSON, { quiet = fal
     return marked.size;
 }
 
-// The street parcels among `parcels` (default: every parcel in view), marked from OSM road lines
-// without drawing the lines. Block formation (parcel-blocks.js) runs this before forming blocks in
-// a city whose backend has no curated road classification. Returns the newly marked count, or
-// null when the OSM roads could not be fetched.
+// The street parcels among `parcels` (default: every parcel in view), marked from the OSM roads and
+// tracks that bound blocks, without drawing them: /blocks/roads (OpenStreetMap live through our
+// Overpass chain, worldwide, no ingested table) and the Road/track classifier, the same lines
+// block detection and the Road/track layer use. Block formation (parcel-blocks.js) runs this
+// before forming blocks in a city whose backend has no curated road classification. Returns the
+// newly marked count, or null when the roads could not be loaded completely (said in the status).
 async function markRoadParcelsFromOsm({ parcels = null, quiet = false } = {}) {
-    const osmData = await fetchOSMRoads({ quiet });
-    if (!osmData) return null;
-    return markParcelsCoveredByRoadLines(parcels || roadDetectionFeaturesInView(), osmToGeoJSON(osmData), { quiet });
+    const checked = parcels || roadDetectionFeaturesInView();
+    if (!checked.length) return 0;
+    // The checked parcels' extent, kept within the view grown by a quarter on each side so a sea
+    // or forest parcel reaching far out does not ask for a region.
+    const view = map.getBounds();
+    const dx = (view.getEast() - view.getWest()) / 4, dy = (view.getNorth() - view.getSouth()) / 4;
+    const [w, s, e, n] = turf.bbox({ type: 'FeatureCollection', features: checked });
+    const bbox = [Math.max(w, view.getWest() - dx), Math.max(s, view.getSouth() - dy),
+        Math.min(e, view.getEast() + dx), Math.min(n, view.getNorth() + dy)];
+    const failed = reason => {
+        console.error(`[${new Date().toISOString()}] [road-detection] OSM roads for blocks: ${reason}`);
+        const key = 'roadTrackLayer.error';
+        const text = window.i18n && typeof window.i18n.t === 'function' ? window.i18n.t(key) : null;
+        updateStatus(typeof text === 'string' && text && text !== key ? text : 'Could not load roads and tracks. Please retry.');
+        return null;
+    };
+    let source;
+    try {
+        source = await window.ParcelBlockDetection.fetchBoundaries(window, bbox);
+    } catch (error) {
+        return failed(error.message);
+    }
+    // Missing streets would let blocks run across them, so partial coverage marks nothing.
+    if (source?.complete !== true || source.partial || source.truncated || !Array.isArray(source.features)) {
+        return failed('coverage incomplete');
+    }
+    const roads = source.features.filter(feature => window.UrbanBlocksModel.isRoadTrackBoundary(feature.properties || {}));
+    return markParcelsCoveredByRoadLines(checked, { type: 'FeatureCollection', features: roads }, { quiet });
 }
 
 // Function to clear all detected roads

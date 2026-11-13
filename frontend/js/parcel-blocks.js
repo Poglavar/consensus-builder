@@ -733,13 +733,14 @@ async function countBlocks({ addedIds = null } = {}) {
     const run = async () => {
         try {
             // Roads bound blocks. Where the backend classifies road parcels, road-parcels.js marks
-            // them as parcels load; anywhere else the street parcels are marked from OSM road lines
-            // first: every parcel in view on a full count, only the newly loaded ones on a re-form.
+            // them as parcels load; anywhere else the street parcels are marked first from the OSM
+            // roads and tracks that bound detected blocks (/blocks/roads, our Overpass chain): every
+            // parcel in view on a full count, only the newly loaded ones on a re-form.
             if (!curatedRoadsAvailable()) {
                 await window.ensureOptionalTool('roadDetection');
                 const parcels = reforming ? addedIds.map(id => liveBlockPeek(id)).filter(Boolean) : null;
                 if (!parcels || parcels.length) {
-                    // null: the OSM roads could not be fetched, and fetchOSMRoads has said so.
+                    // null: the roads could not be loaded completely, and the status says so.
                     if (await window.markRoadParcelsFromOsm({ parcels, quiet: reforming }) === null) return;
                 }
             }

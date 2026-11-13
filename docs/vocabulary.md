@@ -208,7 +208,7 @@ A temporary selection derived from one seed parcel and one complete surface encl
 
 ### Road parcel
 
-A cadastral parcel marked as road ground, kept in the browser's road-parcel registry. Road parcels bound formed parcel blocks and never join one. Where the backend has a road classification for the city (`curatedRoads`, Zagreb), its road parcels are marked as parcels load. Anywhere else, "(Re)form blocks" first marks road parcels from OSM road and railway lines: a parcel is a road when 3 m corridors either side of the lines, measured against the parcel grown by 2 m, together cover more than half of it. The full count checks every parcel in view; the re-form after loading checks only the newly loaded parcels. The Roads section's OSM and GUP detectors apply the same rule.
+A cadastral parcel marked as road ground, kept in the browser's road-parcel registry. Road parcels bound formed parcel blocks and never join one. Where the backend has a road classification for the city (`curatedRoads`, Zagreb), its road parcels are marked as parcels load. Anywhere else, "(Re)form blocks" first marks road parcels from the OSM roads and tracks that bound a detected parcel block (the Road/track classification over `/blocks/roads`, read live through the backend's Overpass chain, never the `osm_road` table): a parcel is a road when 3 m corridors either side of the lines, measured against the parcel grown by 2 m, together cover more than half of it. Incomplete OSM coverage marks nothing. The full count checks every parcel in view; the re-form after loading checks only the newly loaded parcels. The Roads section's OSM and GUP detectors apply the same coverage rule to their own lines.
 
 ### Cadastre frame
 
