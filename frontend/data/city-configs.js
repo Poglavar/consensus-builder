@@ -13141,9 +13141,10 @@
                 sources: [{ id: 'osm' }]
             },
             sidebar: {
-                // Zagreb-only datasets (city blocks, GUP roads, area monitor) stay off until
-                // ingested for Split; its Buildings section lists OpenStreetMap footprints.
-                disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
+                // Zagreb-only datasets (GUP roads, area monitor) stay off until ingested for Split;
+                // its Buildings section lists OpenStreetMap footprints. Blocks form from the
+                // cadastre with street parcels marked from OSM road lines (parcel-blocks.js).
+                disabledSections: ['roads', 'areaMonitor']
             },
             parcelBuilder: {
                 url: 'https://urbangametheory.xyz/codechecker/'

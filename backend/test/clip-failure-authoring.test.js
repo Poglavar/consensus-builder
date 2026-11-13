@@ -486,17 +486,17 @@ describe('road detection (a heuristic; skips the pair, reported)', () => {
         expect(health().recent.at(-1)).toMatchObject({ site: 'road-detection.parcelRoadOverlap', parcelId: 'P1' });
     });
 
-    it('the OSM-lines-first pass reports the parcel it could not check', async () => {
+    it('the road-line coverage pass reports the parcel it could not check', async () => {
         quiet();
         const road = turf.lineString([[15.9695, 45.8105], [15.9715, 45.8105]]);
-        const fns = runFunctions(path, [...common, 'detectRoadsByOSMLinesFirst'], {
+        const fns = runFunctions(path, [...common, 'markParcelsCoveredByRoadLines'], {
             turf: failingTurf('intersect'),
-            window: { __parcelArrangement: A },
+            window: { __parcelArrangement: A, __osmRoadCoverage: require('../../frontend/js/osm-road-coverage.js') },
             document: { getElementById: () => null },
             markRoadFeature: () => true
         });
         const before = siteCount('road-detection.osmRoadOverlap');
-        await fns.detectRoadsByOSMLinesFirst([WEST], { features: [road] });
+        await fns.markParcelsCoveredByRoadLines([WEST], { features: [road] });
         expect(siteCount('road-detection.osmRoadOverlap')).toBe(before + 1);
     });
 });

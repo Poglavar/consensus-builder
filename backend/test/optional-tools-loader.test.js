@@ -67,7 +67,7 @@ describe('optional tools loader', () => {
             expect(initial.get(name), `${name} must defer its implementation until load`).toBeInstanceOf(Promise);
         }
 
-        // Road detection reads OSM roads through its source module, which loads first.
+        // Road detection reads OSM roads through its source module, which loads first, then the coverage rule.
         expect(h.scripts.map(script => script.src)).toEqual([
             'js/osm-roads-source.js?build=test-token',
             'js/road-analysis.js?build=test-token'
@@ -78,8 +78,11 @@ describe('optional tools loader', () => {
         });
         h.succeed(h.scripts[0], () => {});
         await flushMicrotasks();
-        expect(h.scripts[2].src).toBe('js/road-detection.js?build=test-token');
-        h.succeed(h.scripts[2], installGroup(INLINE_OPTIONAL_FUNCTIONS.filter(name =>
+        expect(h.scripts[2].src).toBe('js/osm-road-coverage.js?build=test-token');
+        h.succeed(h.scripts[2], () => {});
+        await flushMicrotasks();
+        expect(h.scripts[3].src).toBe('js/road-detection.js?build=test-token');
+        h.succeed(h.scripts[3], installGroup(INLINE_OPTIONAL_FUNCTIONS.filter(name =>
             !NO_LOAD_CLEANUPS.has(name) && !['analyzeAllOSMRoadSegmentsInView', 'toggleRoadAnalysisVisibility',
                 'showRoadAnalysisPanel', 'focusOnRoadAnalysis'].includes(name))));
         h.succeed(h.scripts[1], installGroup(['analyzeAllOSMRoadSegmentsInView', 'toggleRoadAnalysisVisibility',

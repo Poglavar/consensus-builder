@@ -412,8 +412,10 @@ window.toggleWFSPolygons = toggleWFSPolygons;
 // Road and railway data from OpenStreetMap, through our backend (/osm-road: the ingested table, else
 // its Tracestrack-first Overpass chain; js/osm-roads-source.js). Public Overpass is asked directly
 // only when our server itself does not answer.
-async function fetchOSMRoads() {
-    updateStatus('Fetching road data from OpenStreetMap...');
+// `quiet` keeps the progress lines out of the status bar (a block re-form runs unasked); errors still show.
+async function fetchOSMRoads({ quiet = false } = {}) {
+    const progress = quiet ? () => {} : updateStatus;
+    progress('Fetching road data from OpenStreetMap...');
 
     try {
         const bounds = map.getBounds();
@@ -425,7 +427,7 @@ async function fetchOSMRoads() {
         // Check cache first
         const cachedData = checkOSMCache(south, west, north, east);
         if (cachedData) {
-            updateStatus('Using cached OSM road data');
+            progress('Using cached OSM road data');
             return cachedData;
         }
 
@@ -450,7 +452,7 @@ async function fetchOSMRoads() {
             cacheOSMData(data, south, west, north, east);
         }
 
-        updateStatus(`Fetched ${data.elements.length} roads from OpenStreetMap`);
+        progress(`Fetched ${data.elements.length} roads from OpenStreetMap`);
         return data;
     } catch (error) {
         console.error('Error fetching OSM data:', error);
@@ -808,7 +810,7 @@ async function detectRoadsFromGUP() {
             if (progressText) progressText.textContent = 'Matching parcels to GUP streets...';
             if (progressFill) progressFill.style.width = '10%';
 
-            const marked = await detectRoadsByOSMLinesFirst(parcelsInView, roads);
+            const marked = await markParcelsCoveredByRoadLines(parcelsInView, roads);
             updateParcelStyles();
             updateStatus(`GUP detection complete. Marked ${marked} parcels as roads.`);
         } catch (error) {
@@ -902,7 +904,7 @@ async function detectRoadsFromOSM() {
 
             updateStatus(`Analyzing ${totalParcels} parcels...`);
 
-            const foundRoads = await detectRoadsByOSMLinesFirst(parcels, osmGeoJSON);
+            const foundRoads = await markParcelsCoveredByRoadLines(parcels, osmGeoJSON);
             updateStatus(`Road detection complete. Found ${foundRoads} road parcels and assigned names.`);
             updateParcelStyles();
         } catch (error) {
@@ -1092,75 +1094,49 @@ function updateParcelStyles() {
     });
 }
 
-// New: Iterate OSM lines first and mark intersecting parcels
-async function detectRoadsByOSMLinesFirst(parcels, osmGeoJSON) {
-    const progressFill = document.getElementById('progressFill');
-    const progressText = document.getElementById('progressText');
-
-    // Build the prefilter from authoritative features, never from Leaflet's projection.
-    const parcelEntries = parcels.map(feature => ({
-        feature,
-        bounds: roadDetectionFeatureBounds(feature)
-    })).filter(entry => entry.bounds);
+// Mark the parcels that road lines (OSM ways, GUP streets) cover as roads. The rule, that the lines'
+// corridors TOGETHER cover more than half of the parcel, lives in osm-road-coverage.js.
+async function markParcelsCoveredByRoadLines(parcels, roadGeoJSON, { quiet = false } = {}) {
+    const progressFill = quiet ? null : document.getElementById('progressFill');
+    const progressText = quiet ? null : document.getElementById('progressText');
+    const coverage = window.__osmRoadCoverage;
+    const corridors = coverage.roadCorridors(roadGeoJSON.features, turf);
 
     const marked = new Set();
-    let processed = 0;
-    const total = (osmGeoJSON.features || []).length;
-
-    for (const roadFeature of (osmGeoJSON.features || [])) {
-        processed++;
-        try {
-            if (!roadFeature || !roadFeature.geometry || !roadFeature.geometry.coordinates) continue;
-
-            // Buffer OSM line to a narrow corridor (3m) to intersect with parcels
-            let bufferedRoad;
+    const total = parcels.length;
+    const CHUNK = 50;
+    for (let index = 0; index < total; index++) {
+        const feature = parcels[index];
+        const parcelId = resolveParcelId(feature);
+        if (parcelId) {
             try {
-                bufferedRoad = turf.buffer(roadFeature, 3, { units: 'meters' });
-                if (!bufferedRoad || !bufferedRoad.geometry) continue;
-            } catch (_) { continue; }
-
-            // Rough prefilter: compute bbox of buffered road
-            const roadBounds = roadDetectionFeatureBounds(bufferedRoad);
-            if (!roadBounds) continue;
-
-            // Check only parcels whose bounds intersect this bbox
-            const candidates = parcelEntries.filter(entry => roadDetectionBoundsIntersect(roadBounds, entry.bounds));
-
-            for (const pe of candidates) {
-                const parcelGeoJSON = pe.feature;
-                let parcelBuffer;
-                try {
-                    parcelBuffer = turf.buffer(parcelGeoJSON, 2, { units: 'meters' });
-                } catch (_) { continue; }
-
-                let intersection = null;
-                try {
-                    intersection = turf.intersect(parcelBuffer, bufferedRoad);
-                } catch (error) {
-                    // Detection heuristic: the parcel is not marked from this road, reported.
-                    roadDetectionReportClip('intersect', error, 'road-detection.osmRoadOverlap', [parcelBuffer, bufferedRoad], resolveParcelId(parcelGeoJSON));
-                }
-                if (!intersection) continue;
-
-                const intersectionArea = turf.area(intersection);
-                const parcelArea = turf.area(parcelGeoJSON);
-                const overlapRatio = intersectionArea / parcelArea;
-                if (overlapRatio > 0.5) {
-                    const parcelId = resolveParcelId(pe.feature);
-                    if (!parcelId) continue;
-                    if (markRoadFeature(pe.feature)) marked.add(parcelId);
-                }
+                // Detection heuristic: a piece turf cannot clip counts as uncovered, reported.
+                const isRoad = coverage.coversAsRoad(feature, corridors, turf, (operation, error, operands) =>
+                    roadDetectionReportClip(operation, error, 'road-detection.osmRoadOverlap', operands, parcelId));
+                if (isRoad && markRoadFeature(feature)) marked.add(parcelId);
+            } catch (error) {
+                console.error(`[${new Date().toISOString()}] [road-detection] parcel ${parcelId} could not be checked against road lines`, error);
             }
-        } catch (_) { }
-
-        // Progress UI
-        const pct = Math.round((processed / total) * 100);
-        if (progressFill) progressFill.style.width = `${pct}%`;
-        if (progressText) progressText.textContent = `Analyzing OSM lines: ${processed}/${total} (${pct}%)`;
-        await new Promise(r => setTimeout(r, 0));
+        }
+        if ((index + 1) % CHUNK === 0 || index + 1 === total) {
+            const pct = Math.round(((index + 1) / total) * 100);
+            if (progressFill) progressFill.style.width = `${pct}%`;
+            if (progressText) progressText.textContent = `Analyzing parcels: ${index + 1}/${total} (${pct}%)`;
+            await new Promise(r => setTimeout(r, 0));
+        }
     }
 
     return marked.size;
+}
+
+// The street parcels among `parcels` (default: every parcel in view), marked from OSM road lines
+// without drawing the lines. Block formation (parcel-blocks.js) runs this before forming blocks in
+// a city whose backend has no curated road classification. Returns the newly marked count, or
+// null when the OSM roads could not be fetched.
+async function markRoadParcelsFromOsm({ parcels = null, quiet = false } = {}) {
+    const osmData = await fetchOSMRoads({ quiet });
+    if (!osmData) return null;
+    return markParcelsCoveredByRoadLines(parcels || roadDetectionFeaturesInView(), osmToGeoJSON(osmData), { quiet });
 }
 
 // Function to clear all detected roads
@@ -1303,6 +1279,7 @@ window.detectExistingRoads = detectExistingRoads;
 window.drawGUPRoads = drawGUPRoads;
 window.detectRoadsFromGUP = detectRoadsFromGUP;
 window.toggleGUPRoadLines = toggleGUPRoadLines;
+window.markRoadParcelsFromOsm = markRoadParcelsFromOsm;
 
 // Function to draw OSM roads without parcel analysis
 async function drawOSMRoads() {

@@ -104,7 +104,7 @@
   "proposals/urban-rules.js": 1,
   "publish-gap-debug.js": 4,
   "road-analysis.js": 10,
-  "road-detection.js": 5,
+  "road-detection.js": 4,
   "road-drawing.js": 42,
   "road-node-edit.js": 13,
   "road-track-layer.js": 2,
