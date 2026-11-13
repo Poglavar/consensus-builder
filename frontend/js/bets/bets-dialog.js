@@ -554,7 +554,8 @@
             finish(result?.replayed ? 'succeeded' : result?.receipt || result?.transactionHash || result?.transactionHashes?.length ? 'confirmed' : 'unknown');
             if (visible()) setStatus(t('bets.trade.confirmed', 'Confirmed'), result.explorerUrl);
             const wallet = walletAddress();
-            const message = action === 'claim' ? t('panel.proposal.market.collectedMessage', 'Collected {{side}} winnings.', { side: sideWord(side) })
+            const message = action === 'claim' ? [t('panel.proposal.market.collectedMessage', 'Collected {{side}} winnings.', { side: sideWord(side) }),
+                root.BetsUI?.cityTokenAward(result?.receipt)].filter(Boolean).join(' ')
                 : action === 'createMarket' ? t('panel.proposal.market.historyOpened', 'Seeded USDC market')
                     : t('bets.dialog.settledMessage', "Settled from the agreement's on-chain status.");
             if (selected === 'devnet-usdc' && !root.BetsTelemetry?.simulationRun) await recordSupport({ wallet, action, proposalId: account, result, message: `${actorName(wallet)}: ${message}` });

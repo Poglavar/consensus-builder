@@ -7689,6 +7689,11 @@
         }
     },
     "bets": {
+        "cityToken": {
+            "balance": "City tokens: {{amounts}}",
+            "none": "Correct calls earn city tokens: the earlier and cheaper, the more.",
+            "awarded": "Earned {{amounts}}."
+        },
         "tagline": "Bet on cities",
         "pitchLink": "Read the Hyperstition pitch",
         "scope": {

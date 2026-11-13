@@ -65,6 +65,24 @@ describe('betting asset trading client', () => {
         expect(tokenKeys[0]).toContain('https://api.example::agent-a');
     });
 
+    it('reads city token balances by points account, by connected wallet in USDC, and never sends the credential', async () => {
+        const calls = [];
+        const fetch = vi.fn(async (url, options = {}) => {
+            calls.push({ url: String(url), options });
+            if (String(url).includes('/bets/points/account')) return response({ id: 'account-1', positions: {}, balance: '100' });
+            return response({ balances: [{ token: 'zagreb', symbol: 'ZAGREB', amount: '5000000', display: '5' }] });
+        });
+        const { api } = harness({ fetch, run: 'sim-a' });
+        expect((await api.cityTokens()).balances[0].symbol).toBe('ZAGREB');
+        const read = calls.find(call => call.url.includes('/bets/city-token/balances'));
+        expect(read.url).toBe('https://api.example/bets/city-token/balances?account=account-1&simulationRun=sim-a');
+        expect(read.options.headers?.Authorization).toBeUndefined();
+        const usdc = Trading.create({ storage: makeStorage(), initialAsset: 'devnet-usdc', fetch, baseUrl: () => 'https://api.example', wallet: () => null });
+        expect(await usdc.cityTokens()).toBeNull();
+        const linked = Trading.create({ storage: makeStorage(), initialAsset: 'devnet-usdc', fetch, baseUrl: () => 'https://api.example', wallet: () => 'Wa11et' });
+        await linked.cityTokens();
+        expect(calls.at(-1).url).toBe('https://api.example/bets/city-token/balances?wallet=Wa11et');
+    });
     it('asks for every other city with scope=other, and only then', async () => {
         const urls = [];
         const fetch = vi.fn(async url => {

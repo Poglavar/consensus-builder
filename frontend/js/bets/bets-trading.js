@@ -17,6 +17,7 @@
         },
         simulationRun: () => root.BetsTelemetry?.simulationRun || '',
         chain: () => root.SolanaMarketBridge,
+        wallet: () => root.solanaWalletManager?.getState?.()?.accounts?.[0] || null,
         onAsset: asset => {
             const url = new URL(root.location.href); url.searchParams.set('asset', asset);
             root.history.replaceState(root.history.state, '', url);
@@ -25,7 +26,7 @@
     });
 })(typeof window !== 'undefined' ? window : null, function () {
     'use strict';
-    function create({ storage, crypto, fetch, baseUrl, profile, simulationRun = () => '', chain, onAsset = () => {}, initialAsset }) {
+    function create({ storage, crypto, fetch, baseUrl, profile, simulationRun = () => '', chain, wallet = () => null, onAsset = () => {}, initialAsset }) {
         let selected = ['points', 'devnet-usdc'].includes(initialAsset) ? initialAsset : storage.getItem('bets-asset-v1') || 'points';
         if (!['points', 'devnet-usdc'].includes(selected)) selected = 'points';
         const identities = new Map();
@@ -174,6 +175,17 @@
             return mutate(action, { agreementAccount: options.proposal,
                 ...(action === 'claim' ? { side: Number(options.side) === 1 || options.side === 'yes' ? 'yes' : 'no' } : {}) }, options);
         }
+        // City meme token balances (docs/citymemetoken.md): the points account's, or the connected wallet's.
+        async function cityTokens() {
+            let query;
+            if (selected === 'points') query = { account: (await identity()).account.id };
+            else if (wallet()) query = { wallet: wallet() };
+            else return null;
+            const response = await fetch(`${baseUrl()}/bets/city-token/balances?${params(query)}`, { cache: 'no-store' });
+            const result = await response.json();
+            if (!response.ok) throw error(result.error || 'City token balances are unavailable.', 'CITY_TOKEN_UNAVAILABLE', response.status);
+            return result;
+        }
         async function linkWallet(provider) {
             if (!provider?.publicKey || !provider.signMessage) throw error('Connect a wallet that can sign messages.', 'WALLET_NOT_CONNECTED');
             const { token } = await identity();
@@ -187,7 +199,7 @@
         return { asset, setAsset, needsWallet, readAccount, pending, retryPending, loadCity, readPositions, readSummary, readStakeBalance,
             buy: options => trade('buy', options), sell: options => trade('sell', options),
             resolve: options => lifecycle('resolve', options), claim: options => lifecycle('claim', options),
-            createMarket: options => chain().createMarket(options), linkWallet,
+            createMarket: options => chain().createMarket(options), linkWallet, cityTokens,
             leaderboard: () => request(`leaderboard?${params()}`),
             publicPositions: account => request(`positions?${params({ account })}`), simulationRun };
     }

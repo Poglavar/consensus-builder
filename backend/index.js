@@ -67,6 +67,7 @@ import { setupBetsShareRoute } from './routes/bets-share.js';
 import { setupBetsEventsRoute } from './routes/bets-events.js';
 import { setupPlanningDiagnostics } from './routes/planning-diagnostics.js';
 import { setupBetsPointsRoutes } from './routes/bets-points.js';
+import { setupCityTokenRoutes } from './routes/city-token.js';
 import { createAgreementMarketSource } from './markets/agreement-source.js';
 import { setupLmsrRecipesRoute } from './routes/lmsr-recipes.js';
 import { isAgentPath } from './utils/x402-payment.js';
@@ -497,6 +498,7 @@ export function createApp({
     app.locals.markets = setupMarketsRoute(app, activePool, { env }); // contests per city with each proposal's prediction market (Bets sheet)
     setupBetsEventsRoute(app, activePool); // anonymous betting journey, with simulated activity kept separate
     setupBetsPointsRoutes(app, activePool, { readAgreement: createAgreementMarketSource(activePool, { env }) });
+    setupCityTokenRoutes(app, activePool);
     setupLmsrRecipesRoute(app, activePool, { env });
     setupBetsShareRoute(app, activePool, { env }); // /bets/<account> must follow the named /bets/metrics route
     setupRoadCorridorRoute(app, activePool);

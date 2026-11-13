@@ -364,7 +364,8 @@
             });
             finish(result?.replayed ? 'succeeded' : result?.receipt || result?.transactionHash || result?.transactionHashes?.length ? 'confirmed' : 'unknown');
             const done = action === 'createMarket' ? t('bets.row.opened', 'Market opened')
-                : action === 'claim' ? t('panel.proposal.market.collectedMessage', 'Collected {{side}} winnings.', { side: sideWord(side === 1 ? 'yes' : 'no') })
+                : action === 'claim' ? [t('panel.proposal.market.collectedMessage', 'Collected {{side}} winnings.', { side: sideWord(side === 1 ? 'yes' : 'no') }),
+                    root.BetsUI?.cityTokenAward(result?.receipt)].filter(Boolean).join(' ')
                     : t('bets.row.settled', 'Market settled');
             setNote(li, done);
             if (root.BetsTrading.needsWallet() && !root.BetsTelemetry?.simulationRun && typeof root.recordHumanProposalSupport === 'function') {

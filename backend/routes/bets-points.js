@@ -6,6 +6,7 @@ import {
     parseSource, payout, randomUUID, STARTING_BALANCE, transaction, validateRealm,
     UUID, LMSR, WALLET_CHALLENGE_TTL_MS, walletChallengeMessage, verifyWalletSignature
 } from '../markets/points-ledger.js';
+import { awardPointsMarket, awardsFor } from '../markets/city-token-ledger.js';
 
 const MAX_QUANTITY = LMSR.MAX_QUANTITY;
 const error = (message, status = 400) => Object.assign(new Error(message), { status });
@@ -461,6 +462,9 @@ export function setupBetsPointsRoutes(app, pool, { readAgreement, now = () => Da
                             WHERE id = $1`, [market.id, outcome]);
                         market.resolved = true; market.outcome = outcome;
                         side = outcome;
+                        // Correct bettors earn the city meme token as the market resolves (docs/citymemetoken.md).
+                        const award = await awardPointsMarket(db, market);
+                        if (!award.awarded) console.warn(`[${new Date().toISOString()}] city token: points market ${market.id} not awarded: ${award.reason}`);
                     } else { outcome = market.outcome; side = market.outcome; }
                 } else {
                     if (!market.resolved) throw error('market unresolved', 409);
@@ -492,6 +496,7 @@ export function setupBetsPointsRoutes(app, pool, { readAgreement, now = () => Da
                     id: randomUUID(), requestId: body.requestId, action, side, shares: String(shares), amount: String(delta),
                     ...(kind === 'claim' ? { awardedAmount: String(delta) } : {}),
                     ...(kind === 'resolve' || kind === 'claim' ? { outcome } : {}),
+                    ...(kind === 'claim' ? { cityToken: await awardsFor(db, account.id, market.id) } : {}),
                     balance: String(currentBalance), agreementAccount: body.agreementAccount,
                     createdAt: new Date(now()).toISOString()
                 };

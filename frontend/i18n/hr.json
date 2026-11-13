@@ -7729,6 +7729,11 @@
         }
     },
     "bets": {
+        "cityToken": {
+            "balance": "Gradski tokeni: {{amounts}}",
+            "none": "Točne prognoze donose gradske tokene: što ranije i jeftinije, to više.",
+            "awarded": "Zarađeno {{amounts}}."
+        },
         "tagline": "Kladi se na gradove",
         "pitchLink": "Pročitaj prezentaciju Hyperstition",
         "scope": {

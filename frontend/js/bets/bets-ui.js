@@ -53,6 +53,13 @@
         }[item?.state];
         return words ? t(`bets.trade.${words[0]}`, words[1]) : '';
     }
+    // "120 ZAGREB · 12 UGT" from [{ display, symbol }].
+    const tokenAmounts = list => list.map(item => `${item.display} ${item.symbol}`).join(' · ');
+    // The award line for a claim receipt, or '' when it carried none.
+    function cityTokenAward(receipt) {
+        const awarded = (receipt?.cityToken || []).filter(item => item.amount !== '0');
+        return awarded.length ? t('bets.cityToken.awarded', 'Earned {{amounts}}.', { amounts: awarded.map(item => `+${item.display} ${item.symbol}`).join(' · ') }) : '';
+    }
     function assetControl() {
         const trading = root.BetsTrading;
         const selected = trading.asset();
@@ -79,6 +86,14 @@
             balance.textContent = value === null ? t('bets.trade.connectWallet', 'Connect a wallet to use devnet USDC.')
                 : t('bets.trade.balance', 'Available: {{amount}}', { amount: money(root.BetsModel.formatAtomic(value), selected) });
         }).catch(() => { if (balance.isConnected) balance.textContent = t('bets.trade.balanceUnavailable', 'Balance unavailable. Try again before trading.'); });
+        const tokens = el('p', 'bets-account__tokens');
+        tokens.setAttribute('aria-live', 'polite'); section.append(tokens);
+        trading.cityTokens().then(result => {
+            if (!section.isConnected || selected !== trading.asset() || !result) return;
+            tokens.textContent = result.balances.length
+                ? t('bets.cityToken.balance', 'City tokens: {{amounts}}', { amounts: tokenAmounts(result.balances) })
+                : t('bets.cityToken.none', 'Correct calls earn city tokens: the earlier and cheaper, the more.');
+        }).catch(error => { console.error(`[${new Date().toISOString()}] [bets] city token balances failed`, error); });
         if (selected === 'points') {
             const link = el('button', 'btn btn-quiet', t('bets.trade.linkWallet', 'Link wallet to points history'));
             link.type = 'button';
@@ -135,5 +150,5 @@
         }
         return section;
     }
-    root.BetsUI = { t, money, shares, deadline, price, errorText, statusText, assetControl };
+    root.BetsUI = { t, money, shares, deadline, price, errorText, statusText, assetControl, cityTokenAward };
 })(typeof window !== 'undefined' ? window : null);

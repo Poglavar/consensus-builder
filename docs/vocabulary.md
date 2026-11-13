@@ -910,6 +910,10 @@ An amount in the atomic units of an identified chain asset. SOL lamports, devnet
 
 An internal, non-transferable unit in the points betting book. Each points account receives 1,000 points; a point is not cash, a token, or a claim on an on-chain asset. Ordinary points positions and trades share the ordinary points book. Each named simulation run has its own accounts, book and standings.
 
+### City token
+
+A city's meme token (its slug, e.g. `zagreb`, shown as `ZAGREB`), beside one platform token, `UGT`. Today it is an off-chain ledger balance with 6 decimals: the sum of a recipient's awards in `consensus.city_token_award`, not a chain asset. A correct bet earns an award from the market's edge: the winning shares held at resolution minus their average cost. A points market splits a fixed pool by edge; a devnet-USDC market pays a rate per unit of edge. Each award adds UGT worth a tenth of it. The recipient of a points award is a points account, and of a USDC award a wallet; a wallet's balance includes its linked points accounts. See [citymemetoken.md](citymemetoken.md).
+
 ### Funding readiness
 
 A local declaration that funding is considered ready. A boolean readiness flag neither measures money nor establishes sufficient escrow or a payment receipt.

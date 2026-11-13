@@ -4,7 +4,7 @@ import { fileURLToPath } from 'url';
 import { describe, expect, it } from 'vitest';
 import { PublicKey } from '@solana/web3.js';
 import { buildAddressBook } from '../solana/address-book.js';
-import { loadIdls, decodeParsedTransaction, decodeBase58, encodeBase58 } from '../solana/tx-decoder.js';
+import { loadIdls, decodeParsedTransaction, decodeBase58, encodeBase58, lmsrFills } from '../solana/tx-decoder.js';
 import { AGREEMENT_PROGRAM_ID, AgreementClient } from '../agreements/onchain.js';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -528,6 +528,21 @@ describe('decodeParsedTransaction: proposal_market instructions', () => {
         expect(decoded.summary).toBe('agent densifier-01 bought 250000 YES shares for 0.3 USDC in market LU6E…Aim9');
         expect(decoded.amounts).toHaveLength(1);
         expect(decoded.amounts[0].amount).toBe('0.3');
+    });
+
+    it('extracts an LMSR buy as a city-token fill with the USDC that moved', () => {
+        const tx = marketTx('buy', {
+            values: { side: 1, shares: '250000', max_cost: '300000' },
+            accounts: [MARKET, SUBJECT, POSITION, VAULT, PERSONA_USDC, PERSONA_WALLET, TOKEN_PROGRAM, SYSTEM_PROGRAM],
+            inner: [tokenTransferChecked({ source: PERSONA_USDC, destination: VAULT, authority: PERSONA_WALLET, atomic: '212345', ui: '0.212345' })]
+        });
+        expect(lmsrFills(tx, { idls })).toMatchObject([{ market: MARKET, trader: PERSONA_WALLET, action: 'buy',
+            side: 'yes', shares: 250000n, amount: 212345n }]);
+        const noTransfer = marketTx('sell', {
+            values: { side: 0, shares: '1', min_return: '1' },
+            accounts: [MARKET, SUBJECT, POSITION, VAULT, PERSONA_USDC, PERSONA_WALLET, TOKEN_PROGRAM, SYSTEM_PROGRAM]
+        });
+        expect(() => lmsrFills(noTransfer, { idls })).toThrow(/no token transfer/);
     });
 
     it('says NO for side 0 and falls back to max_cost without an inner transfer', () => {

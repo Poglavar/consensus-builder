@@ -7716,6 +7716,11 @@
         }
     },
     "bets": {
+        "cityToken": {
+            "balance": "Tokens de ciudad: {{amounts}}",
+            "none": "Los aciertos ganan tokens de ciudad: cuanto antes y más barato, más.",
+            "awarded": "Ganaste {{amounts}}."
+        },
         "tagline": "Apuesta por las ciudades",
         "pitchLink": "Lee la presentación de Hyperstition",
         "scope": {

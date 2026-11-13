@@ -72,32 +72,75 @@ same price. Larger bets earn more, and splitting a bet earns nothing extra.
   so a hundred throwaway accounts betting both ways guarantee winners who collect tokens. This book
   needs bounded emission.
 
-Proposal, pending the user's confirmation:
+The rules in force (constants in `backend/markets/city-token-rewards.js`):
 
-| Book | Who is eligible | Amount |
+| Book | Recipient | Amount |
 | --- | --- | --- |
-| Devnet USDC | every winning wallet | `edge × rate` (uncapped, proportional to bet size) |
-| Points | accounts with a linked wallet, ordinary realm only (no simulation runs) | a fixed pool per market, split pro rata by edge |
+| Devnet USDC | each winning wallet | `edge × 100`: one city token per 0.01 USDC of edge, uncapped |
+| Points | each winning points account (wallet optional) | a pool of 1,000 city tokens per market, split pro rata by edge |
 
-The UGT amount is the city amount × a fixed fraction (for example 1/10).
+Every award comes with UGT worth 1/10 of the city amount. Tokens have 6 decimals. Simulation runs
+get separate ledgers, as in the points book. A market whose city is not a slug (e.g. the simulated
+San Francisco preview, "San Francisco (simulated preview)") gets no award; this is logged.
 
-### Building blocks
+### What is built
 
-1. Pure module `backend/markets/city-token-rewards.js`: fills (side, shares, cost or return, in
-   order) plus the outcome give the edge; edges, the book rule and the pool or rate give the
-   awards. Unit-tested headlessly.
-2. Table `consensus.city_token_award`: one row per (book, market, recipient, token), with the edge,
-   amount and the source transaction IDs. Its unique key makes awarding idempotent. A balance is
-   the sum of a recipient's awards.
-3. Award job `backend/scripts/award-city-tokens.js`: finds resolved markets without awards,
-   computes them (points from `points_transaction`, USDC from the transaction mirror), and writes
-   them. It can be rerun safely, logs progress and has a `--dry-run` mode.
-4. API: balances per account or wallet and per token; a city-token leaderboard; the award shown
-   on the claim receipt.
-5. UI: the award on the claim result ("+120 ZAGREB · +12 UGT"), the balance in the Bets account
-   view, and a column in the standings.
-6. MCP parity: an agent can read balances and awards.
-7. Later: an SPL mint per city plus UGT, with claims of the ledger balance to a wallet.
+- `backend/markets/city-token-rewards.js`: the pure math (average-cost edge, pool and rate
+  awards, UGT). Tests are in `backend/test/city-token-rewards.test.js`.
+- `backend/sql/city-token.sql`: `consensus.city_token_market` holds one row per awarded market,
+  and that row is what makes awarding idempotent. `consensus.city_token_award` holds one row per
+  (book, market, recipient, token). A balance is the sum of a recipient's awards; a wallet's
+  balance also includes the points accounts linked to it.
+- `backend/markets/city-token-ledger.js`: writes the awards and reads balances and standings.
+- Points book: `POST /bets/points/resolve` awards the market in the same transaction, and the
+  claim receipt carries `cityToken: [{ token, symbol, amount, display }]`.
+- Devnet USDC book: `backend/scripts/award-city-tokens.mjs (--dry-run | --apply)` reads resolved
+  markets from the chain and fills from the transaction mirror (`lmsrFills` in
+  `backend/solana/tx-decoder.js`, which uses the USDC that actually moved). It refuses a market
+  whose mirrored net shares differ from the chain's `q_yes`/`q_no`. It also backfills points
+  markets resolved before awards existed. It is not scheduled yet.
+- API: `GET /bets/city-token/balances?account=|wallet=` and
+  `GET /bets/city-token/standings?token=` (`backend/routes/city-token.js`).
+- UI: a city-token line in the Bets account box (`.bets-account__tokens`), and "Earned +N ZAGREB ·
+  +M UGT." added to the collect message.
+- MCP: awards are automatic and balances are a public GET, so there is nothing for an agent to
+  edit and no MCP tool was added.
+
+### Next
+
+1. Schedule the award job after the transaction sync, and register an outcome check (bot-monitoring).
+2. Run the job on prod (DDL ships with the backend deploy).
+3. Add a city-token column or tab to the standings.
+4. Later: an SPL mint per city plus UGT, and a claim of the ledger balance to a wallet.
+
+## Boost: funding agreements with crypto and the city token
+
+The old Boost button (ProposalNFT on EVM: fund a proposal in ETH or the city token, paid to owners
+on execution) is gone. It was removed with the proposal write path in `fd91542e8` (2026-10-22,
+M2); only its i18n strings (`boost.*`, `proposal_boost_failed`) remain.
+
+The agreement took over the proposal's role: it is the record that is minted, executes and has a
+beneficiary (its sponsor). Designs and plans only describe; agreements carry money. Support for an
+agreement exists on chain, but nothing in the browser calls it:
+
+- `agreement.fund(lamports)`: escrows SOL in the agreement.
+- `proposal_pledge.donate`: a donation escrow per agreement, refundable if the agreement does not
+  execute and released to the sponsor if it does. Its mint is pinned to devnet USDC, and the
+  escrow PDA is `['donation_escrow', agreement]`, so there is one escrow and one currency per
+  agreement. Soft pledges (`set_pledge`, `fulfill_pledge`) have the same limit.
+- MCP has `ugt_fund_agreement`, `ugt_donate` and `ugt_pledge`, so today agents can boost and
+  people cannot.
+
+Bringing Boost back:
+
+1. Add a Boost button to the agreement panel that donates devnet USDC through the existing
+   `proposal_pledge.donate` (client: `frontend/js/solana/pledge-client.js`) and SOL through
+   `agreement.fund`. No program change is needed.
+2. Other SPL tokens need the escrow seeded per (agreement, mint) and the USDC pin dropped. That is
+   a program change, so it must land before the immutable mainnet deploy.
+3. Boosting with the city token works off-chain first: spend from the ledger into a boost row
+   for the agreement, paid to the sponsor or to parcel owners on execution and refunded otherwise.
+   This needs a debit side in the ledger, since today it only has awards.
 
 ## Ideas collected
 
@@ -134,8 +177,8 @@ From the betting work (2026-11-13):
 
 ## Open questions
 
-- Should Points and USDC eligibility follow the table above, or should both books use one rule?
-- What are the pool size, the rate and the UGT fraction?
+- Are the pool size (1,000), the rate (100 per USDC cent of edge) and the UGT fraction (1/10) right?
+- Who receives a city-token boost on execution: the sponsor, or the parcel owners as in ProposalNFT?
 - What does the token buy? Options include boosting or funding proposals (the old ProposalNFT
   path), a weight in community votes, and access to agent actions.
 - Does the 1-token-per-hour citizen accrual of the EVM contract carry over?

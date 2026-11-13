@@ -15,6 +15,8 @@ function harness(nowMs=1_800_000_000_000,{batch=false}={}) {
   if(sql.includes('SELECT * FROM consensus.points_account WHERE token_hash')){const a=[...db.accounts.values()].find(x=>x.token_hash===p[0]);return {rows:a?[{...a}]:[]};}
   if(sql.includes('SELECT * FROM consensus.points_account WHERE id'))return {rows:db.accounts.has(p[0])?[{...db.accounts.get(p[0])}]:[]};
   if(sql.includes('SELECT id, wallet FROM consensus.points_account WHERE id = $1')){const a=db.accounts.get(p[0]);return {rows:a?[{id:a.id,wallet:a.wallet}]:[]};}
+  // City token awards (city-token-db.node.test.js covers them against PostgreSQL): no rows here.
+  if(sql.includes('consensus.city_token_'))return {rows:[]};
   if(sql.includes('SELECT wallet FROM consensus.points_account WHERE id = $1')){const a=db.accounts.get(p[0]);return {rows:a?[{wallet:a.wallet}]:[]};}
   if(sql.includes('SELECT id FROM consensus.points_account WHERE wallet')||sql.includes('SELECT id FROM consensus.points_account WHERE wallet ='))return {rows:[...db.accounts.values()].filter(a=>a.wallet===p[0]&&a.simulation_run===p[1]).map(a=>({id:a.id}))};
   if(sql.includes('INSERT INTO consensus.points_account')){const a={id:p[0],token_hash:p[1],agent_id:p[2],simulation_run:p[3],alias:p[4],balance:p[5],wallet:null};db.accounts.set(a.id,a);return {rows:[{...a}]};}

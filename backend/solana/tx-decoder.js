@@ -690,3 +690,36 @@ export function decodeParsedTransaction(rpcTx, { book, idls } = {}) {
         instructions
     };
 }
+
+/**
+ * The LMSR trades in one transaction, for city-token edges: [{ signature, slot, index, market,
+ * trader, action: 'buy'|'sell', side: 'yes'|'no', shares, amount }] where amount is the USDC that
+ * actually moved (the inner token transfer), never the quoted max_cost/min_return. A failed
+ * transaction has no fills; a trade whose transfer is missing throws, since its cost is unknown.
+ */
+export function lmsrFills(rpcTx, { idls } = {}) {
+    const tx = unwrapRpcTransaction(rpcTx);
+    if (!tx?.transaction || tx.meta?.err) return [];
+    const idlsByAddress = idls?.byAddress instanceof Map ? idls.byAddress : (idls instanceof Map ? idls : new Map());
+    const accountMeta = buildAccountMeta(tx.transaction.message?.accountKeys || []);
+    const tokenAccounts = buildTokenAccountMap(tx);
+    const rawInner = tx.meta?.innerInstructions || [];
+    const signature = tx.transaction.signatures?.[0] ?? null;
+    const fills = [];
+    (tx.transaction.message?.instructions || []).forEach((ix, index) => {
+        const decoded = decodeInstruction(ix, { index, inner: false, parentIndex: null, idlsByAddress, accountMeta });
+        if (decoded.program.name !== 'proposal_market' || (decoded.action !== 'buy' && decoded.action !== 'sell')) return;
+        const transfer = innerTokenAmount(decoded, rawInner, { tokenAccounts });
+        if (!transfer?.amountAtomic) throw new Error(`LMSR ${decoded.action} in ${signature} has no token transfer`);
+        fills.push({
+            signature, slot: tx.slot ?? null, index,
+            market: accountAddress(decoded, 'market'),
+            trader: actorAddress(decoded, 'trader'),
+            action: decoded.action,
+            side: Number(decoded.args?.side) === 1 ? 'yes' : 'no',
+            shares: BigInt(decoded.args.shares),
+            amount: BigInt(transfer.amountAtomic)
+        });
+    });
+    return fills;
+}

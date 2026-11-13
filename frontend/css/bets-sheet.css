@@ -84,6 +84,8 @@
     color: var(--cb-text-strong);
 }
 .bets-account__simulation { color: var(--cb-warning); }
+.bets-account__tokens { margin: 0; font-size: var(--cb-text-sm); color: var(--cb-text-strong); }
+.bets-account__tokens:empty { display: none; }
 .bets-standings__content { display: grid; gap: var(--cb-space-3); padding-block: var(--cb-space-3); }
 .bets-standings__table { width: 100%; border-collapse: collapse; font-size: var(--cb-text-sm); }
 .bets-standings__table th, .bets-standings__table td {

@@ -86,6 +86,7 @@ DDL_FILES=(
     routes/bets-events-ddl.sql
     db/planning-diagnostics.sql
     sql/points-ledger.sql
+    sql/city-token.sql
     routes/feedback-ddl.sql
     routes/parcels-ddl.sql
     routes/transactions-ddl.sql
