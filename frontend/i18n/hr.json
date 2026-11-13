@@ -7709,7 +7709,7 @@
         "postOnX": "Objavi na X-u",
         "native": "Podijeli…",
         "nativeFailed": "Izbornik za dijeljenje nije se otvorio. Kopirajte poveznicu.",
-        "postsAbout": "Objave o ovome na X-u",
+        "postsAbout": "Pogledaj objave s ovom poveznicom",
         "postText": {
             "design": "Dizajn: {{title}}",
             "plan": "Plan: {{title}}",

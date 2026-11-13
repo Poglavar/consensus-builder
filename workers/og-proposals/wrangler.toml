@@ -1,7 +1,8 @@
-# Cloudflare Worker that injects per-link og:image / twitter:card for shared design and agreement
-# links, /designs/* and /agreements/* (incl. shared AI renders via ?scene=<slug>). Deploy with
-# `wrangler deploy` from this directory. Runs on the free Workers plan. The routes put the Worker in
-# front of every /designs/* and /agreements/* request on the zone.
+# Cloudflare Worker that injects per-link og:image / twitter:card for shared design, plan and agreement
+# links, /designs/*, /plans/* and /agreements/* (incl. shared AI renders via ?scene=<slug>), and for a
+# copied address bar naming a published record (/?design=<cid> etc.). Deploy with `wrangler deploy`
+# from this directory. Runs on the free Workers plan. The routes put the Worker in front of those
+# paths and the site root on the zone.
 name = "og-proposals"
 main = "src/worker.js"
 compatibility_date = "2026-07-01"
@@ -12,7 +13,10 @@ compatibility_date = "2026-07-01"
 routes = [
   { pattern = "urbangametheory.xyz/designs/*", zone_name = "urbangametheory.xyz" },
   { pattern = "urbangametheory.xyz/plans/*", zone_name = "urbangametheory.xyz" },
-  { pattern = "urbangametheory.xyz/agreements/*", zone_name = "urbangametheory.xyz" }
+  { pattern = "urbangametheory.xyz/agreements/*", zone_name = "urbangametheory.xyz" },
+  # The site root: a copied address bar (/?design=<cid>, ?plan=, ?agreement=) gets the record's card;
+  # every other root request passes straight through.
+  { pattern = "urbangametheory.xyz/", zone_name = "urbangametheory.xyz" }
 ]
 
 # API_BASE  = where the Worker reads design/agreement/scene JSON from (server-to-server; not WAF-blocked).

@@ -1,7 +1,8 @@
 # og-proposals Worker
 
-Per-link social preview cards for shared design and agreement links, `/designs/*` and
-`/agreements/*`. Social/forum crawlers don't run JS, so the SPA's
+Per-link social preview cards for shared design, plan and agreement links, `/designs/*`,
+`/plans/*` and `/agreements/*`, and for a copied address bar that names a published record
+(`/?design=<cid>`, `?plan=<cid>`, `?agreement=<cid>`), which gets that record's card. Social/forum crawlers don't run JS, so the SPA's
 static `<head>` makes every share preview identical. This Worker injects per-link `og:*` /
 `twitter:card` meta **before the crawler sees the HTML**, so pasted links unfurl into the right
 image — including shared AI renders (`?scene=<slug>`), whose card is the AI image itself.
@@ -48,7 +49,8 @@ npx wrangler login          # once, if not already authenticated to the account 
 npx wrangler deploy
 ```
 
-`wrangler.toml` pins the routes `urbangametheory.xyz/designs/*` and `urbangametheory.xyz/agreements/*` and the `API_BASE` / `SITE_BASE`
+`wrangler.toml` pins the routes `urbangametheory.xyz/designs/*`, `/plans/*`, `/agreements/*` and the site root `/` (other
+root requests pass straight through) and the `API_BASE` / `SITE_BASE`
 vars.
 
 ## Verify after deploy

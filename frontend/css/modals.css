@@ -1581,6 +1581,9 @@ body.site-intro-open { overflow: hidden; }
 
 .share-panel__posts {
     justify-self: start;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--cb-space-1);
 }
 
 @media (max-width: 400px) {

@@ -73,7 +73,7 @@ is selected (`selection-address.js`):
 | a plan | `?plan=<cid>` |
 | an agreement | `?agreement=<cid>` once proposed, else its local id |
 
-Publishing the selected draft (Share on a design, Propose on an agreement) renames it in the address to its CID, so a copied address opens it on another device.
+Publishing the selected draft (Share on a design, Propose on an agreement) renames it in the address to its CID, so a copied address opens it on another device and unfurls with that record's card (the `og-proposals` Worker reads the CID from the root address).
 
 A reload reopens the selection without applying anything. What is reopened is the selection in the
 address the page was opened with: the page finishes loading after its map tiles, and a selection

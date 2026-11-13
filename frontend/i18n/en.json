@@ -7669,7 +7669,7 @@
         "postOnX": "Post on X",
         "native": "Share…",
         "nativeFailed": "The share sheet could not open. Copy the link instead.",
-        "postsAbout": "Posts about this on X",
+        "postsAbout": "See posts that link here",
         "postText": {
             "design": "Design: {{title}}",
             "plan": "Plan: {{title}}",

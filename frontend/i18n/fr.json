@@ -4963,7 +4963,7 @@
         "postOnX": "Publier sur X",
         "native": "Partager…",
         "nativeFailed": "Le menu de partage n’a pas pu s’ouvrir. Copiez le lien.",
-        "postsAbout": "Publications à ce sujet sur X",
+        "postsAbout": "Voir les publications avec ce lien",
         "postText": {
             "design": "Design : {{title}}",
             "plan": "Plan : {{title}}",

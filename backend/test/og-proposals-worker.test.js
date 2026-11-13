@@ -197,6 +197,27 @@ describe('the record image route', () => {
         expect(fetchImpl).not.toHaveBeenCalled();
     });
 
+    it('gives a copied address bar naming a published record that record\'s card, with the record link as canonical', async () => {
+        serve({ [`/plans/${AGREEMENT}`]: { cid: AGREEMENT, content: { title: 'Digbeth Green Quarter', designCids: [DESIGN] } },
+            [`/designs/${DESIGN}`]: { cid: DESIGN, content: { title: 'Pocket park' } } });
+        const plan = await (await get(`/?at=45.8,15.9,17&plan=${AGREEMENT}&lang=en`)).text();
+        expect(meta(plan, 'og:title')).toBe('Digbeth Green Quarter · Urban Game Theory');
+        expect(meta(plan, 'og:image')).toBe(`${env.SITE_BASE}/plans/${AGREEMENT}/og-image.png`);
+        expect(plan).toContain(`<link rel="canonical" href="https://site.example/plans/${AGREEMENT}">`);
+        const design = await (await get(`/?design=${DESIGN}&at=45.8,15.9,17`)).text();
+        expect(meta(design, 'og:title')).toBe('Pocket park · Urban Game Theory');
+        expect(meta(design, 'og:image')).toBe(`${env.SITE_BASE}/designs/${DESIGN}/og-image.png`);
+    });
+
+    it.each(['/?design=local-7&at=45.8,15.9,17', '/?at=45.8,15.9,17', '/?parcel=HR-1%2F2', `/about?design=${DESIGN}`])(
+        'leaves %s as it is: a draft, no selection, a parcel or another page', async path => {
+            const fetchImpl = serve({});
+            FakeRewriter.last = null;
+            expect(await (await get(path)).text()).toBe(SPA);
+            expect(fetchImpl).toHaveBeenCalledOnce();
+            expect(FakeRewriter.last).toBeNull();
+        });
+
     it('passes every other path through untouched', async () => {
         const fetchImpl = serve({});
         FakeRewriter.last = null;

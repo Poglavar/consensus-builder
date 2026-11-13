@@ -128,8 +128,8 @@ Every non-map page carries the same header: logo, "Back to the map", language. N
   and on the receipt; the copy feedback is the shared "Copied". The bet dialog also has Post on X.
 - Share on a design, a plan or an agreement ends in the Share box (`js/ui/share-dialog.js`): the
   link, already copied, with Copy link, Post on X (X's prefilled compose page, posted as the person,
-  "via @urbangametheory"), the device's own Share… where it has one, and "Posts about this on X", an
-  X search for posts carrying the link. The plan dialog shows the same panel once the plan is
+  "via @urbangametheory"), the device's own Share… where it has one, and "See posts that link here"
+  (search icon, a link apart from the buttons), an X search for posts carrying the link. The plan dialog shows the same panel once the plan is
   published. Proposing an agreement only copies its link: mint and fund follow in the panel, and its
   Share button sits beside the CID.
 - A bet is a thing of its own, the way a market is on Polymarket or Kalshi: the Bets list is for

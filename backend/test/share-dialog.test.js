@@ -26,7 +26,7 @@ describe('Post on X', () => {
     });
 });
 
-describe('Posts about this on X', () => {
+describe('See posts that link here', () => {
     it('searches the link\'s host and path, newest first, without its query', () => {
         const url = new URL(ShareDialog.postsAboutUrl(LINK));
         expect(url.origin + url.pathname).toBe('https://x.com/search');

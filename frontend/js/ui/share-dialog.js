@@ -152,7 +152,11 @@
             });
             actions.append(native);
         }
-        const posts = external('cb-link share-panel__posts', t('postsAbout', 'Posts about this on X'), postsAboutUrl(link));
+        // Reading, not posting: an X search for posts that already carry the link.
+        const posts = external('cb-link share-panel__posts', '', postsAboutUrl(link));
+        const searchIcon = node('i', 'fas fa-search');
+        searchIcon.setAttribute('aria-hidden', 'true');
+        posts.append(searchIcon, node('span', '', t('postsAbout', 'See posts that link here')));
         posts.dataset.shareAction = 'posts-x';
         wrap.append(field, status, actions, posts);
         return wrap;

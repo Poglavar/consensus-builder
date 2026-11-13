@@ -6,6 +6,8 @@
 //   /designs/<cid>[,<cid>…]               -> one preview framed around the whole plan
 //   /agreements/<cid>                     -> the agreement's own preview
 //   either, with ?scene=<slug>            -> a shared AI render: card = the AI image itself
+//   /?design=<cid> | ?plan=<cid> | ?agreement=<cid> (a copied address bar, selection-address.js)
+//                                         -> that record's card, canonical = its record link
 // Humans get the same HTML (SPA still boots); only <head> is augmented.
 
 // Fallback card, used when an upstream lookup fails. We strip the page's own static og tags before
@@ -94,6 +96,19 @@ const RECORD_KINDS = Object.freeze([
 // CIDv1 UnixFS files: raw single chunks or dag-pb roots, sha2-256, base32 (59 characters).
 const CID = /^baf(?:krei|ybei)[a-z2-7]{52}$/;
 
+// The address bar names the selected record (?design=, ?plan=, ?agreement=; frontend
+// selection-address.js). A published one is named by its CID and gets that record's card; a draft's
+// local key, or no selection, leaves the page as it is.
+const SELECTION_PARAMS = Object.freeze([['design', RECORD_KINDS[0]], ['agreement', RECORD_KINDS[1]], ['plan', RECORD_KINDS[2]]]);
+function selectionOf(url) {
+    if (url.pathname !== '/') return null;
+    for (const [param, kind] of SELECTION_PARAMS) {
+        const cid = url.searchParams.get(param);
+        if (cid) return CID.test(cid) ? { kind, cid } : null;
+    }
+    return null;
+}
+
 async function readRecord(kind, cid, env) {
     const resp = await fetch(`${env.API_BASE}/${kind.api}/${encodeURIComponent(cid)}`);
     return resp.ok ? resp.json() : null;
@@ -157,19 +172,21 @@ async function handleRecordImage(kind, cid, env) {
     return Response.redirect(DEFAULTS.image, 302);
 }
 
-async function handleHtml(kind, url, request, env) {
+// `selected`: the record an address-bar link names (selectionOf); its card is the record link's,
+// and so is its canonical.
+async function handleHtml(kind, url, request, env, selected = null) {
     const originResp = await fetch(request); // origin index.html (SPA fallback); unchanged for humans
     const ct = originResp.headers.get('content-type') || '';
     if (!ct.includes('text/html')) return originResp;
 
-    const cids = url.pathname.slice(kind.prefix.length).split(',');
+    const cids = selected ? [selected.cid] : url.pathname.slice(kind.prefix.length).split(',');
     const validDesignList = kind.api !== 'designs' || (cids.length > 0 && cids.every(cid => CID.test(cid)));
     // Canonical drops tracking and debug parameters; only ?scene= names a different page.
-    const canonical = new URL(url.origin + url.pathname);
-    if (url.searchParams.get('scene')) canonical.searchParams.set('scene', url.searchParams.get('scene'));
+    const canonical = new URL(url.origin + (selected ? kind.prefix + selected.cid : url.pathname));
+    if (!selected && url.searchParams.get('scene')) canonical.searchParams.set('scene', url.searchParams.get('scene'));
     let meta = { ...DEFAULTS, url: url.toString(), canonical: canonical.toString() };
     try {
-        const scene = url.searchParams.get('scene');
+        const scene = selected ? null : url.searchParams.get('scene');
         if (scene) meta = await sceneMeta(scene, url, env, meta);
         else if (kind.api === 'designs' && validDesignList) {
             const count = cids.length;
@@ -211,6 +228,8 @@ export default {
             if (image) return handleRecordImage(kind, image[1], env);
             return handleHtml(kind, url, request, env);
         }
+        const selected = selectionOf(url);
+        if (selected) return handleHtml(selected.kind, url, request, env, selected);
 
         return fetch(request); // not ours — pass through
     }

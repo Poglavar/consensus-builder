@@ -7696,7 +7696,7 @@
         "postOnX": "Publicar en X",
         "native": "Compartir…",
         "nativeFailed": "No se pudo abrir el menú para compartir. Copia el enlace.",
-        "postsAbout": "Publicaciones sobre esto en X",
+        "postsAbout": "Ver publicaciones con este enlace",
         "postText": {
             "design": "Diseño: {{title}}",
             "plan": "Plan: {{title}}",
