@@ -2,7 +2,9 @@
 // no program reads it. A member lists itself through registerLensMember (oracle/lens-registration.js
 // verifies it first). The coverage counts were derived from proposal_nft acceptance records, which M3
 // removed with per-proposal consent (owner decisions are off-chain documents now); they are served as
-// stored and nothing refreshes them.
+// stored and nothing refreshes them. A member is one identity with an address per chain family:
+// `key` is its Solana address, `addresses` maps each family to the address it published there (null
+// where it published none), and it is available only on the families it has an address for.
 
 const COVERAGE_KEYS = ['ownership', 'parcels', 'executed'];
 
@@ -15,6 +17,7 @@ export function memberFromRow(row) {
     const coverage = row.coverage || {};
     return {
         key: row.key,
+        addresses: { solana: row.key, evm: row.evm_address ?? null },
         kind: row.kind ?? null,
         name: row.name ?? null,
         description: row.description ?? null,
@@ -26,20 +29,20 @@ export function memberFromRow(row) {
 
 export async function listLensMembers(pool) {
     const { rows } = await pool.query(`
-        SELECT key, kind, name, description, service_url, registered_at, coverage
+        SELECT key, evm_address, kind, name, description, service_url, registered_at, coverage
         FROM consensus.lens_member
         ORDER BY COALESCE((coverage->>'ownership')::bigint, 0) DESC, key
     `);
     return rows.map(memberFromRow);
 }
 
-// A verified self-registration: the member's own statement replaces its name, kind, description and
-// service URL. registered_at is the member's signed time, and only a newer one may replace it, so a
+// A verified self-registration: the member's own statement replaces its name, kind, description,
+// service URL and EVM address (cleared when the newer registration publishes none). registered_at is the member's signed time, and only a newer one may replace it, so a
 // replayed registration changes nothing. Returns null for such a replay.
 export async function registerLensMember(pool, registration) {
     const { rows } = await pool.query(`
-        INSERT INTO consensus.lens_member (key, kind, name, description, service_url, credential_name, registered_at)
-        VALUES ($1, $2, $3, $4, $5, $6, to_timestamp($7))
+        INSERT INTO consensus.lens_member (key, kind, name, description, service_url, credential_name, registered_at, evm_address)
+        VALUES ($1, $2, $3, $4, $5, $6, to_timestamp($7), $8)
         ON CONFLICT (key) DO UPDATE SET
             kind = EXCLUDED.kind,
             name = EXCLUDED.name,
@@ -47,9 +50,10 @@ export async function registerLensMember(pool, registration) {
             service_url = EXCLUDED.service_url,
             credential_name = EXCLUDED.credential_name,
             registered_at = EXCLUDED.registered_at,
+            evm_address = EXCLUDED.evm_address,
             updated_at = now()
         WHERE lens_member.registered_at IS NULL OR lens_member.registered_at < EXCLUDED.registered_at
-        RETURNING key, kind, name, description, service_url, registered_at, coverage
+        RETURNING key, evm_address, kind, name, description, service_url, registered_at, coverage
     `, [
         registration.key,
         registration.kind,
@@ -57,7 +61,8 @@ export async function registerLensMember(pool, registration) {
         registration.description || null,
         registration.serviceUrl,
         registration.credentialName,
-        registration.signedAt
+        registration.signedAt,
+        registration.evmAddress || null
     ]);
     return rows[0] ? memberFromRow(rows[0]) : null;
 }

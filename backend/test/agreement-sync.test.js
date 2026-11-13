@@ -16,11 +16,15 @@ const DesignRecord = require('../../frontend/js/design-record.js');
 const Cid = require('../../frontend/js/cid.js');
 const PublishTerms = require('../../frontend/js/proposals/publish-terms.js');
 const PlanRecord = require('../../frontend/js/plan-record.js');
+const LensCore = require('../../frontend/js/lens-core.js');
 let NodeCid;
 beforeAll(async () => { NodeCid = await import('../cid.js'); });
 
 const API = 'https://api.example.test';
 const SPONSOR = '9xQeWvG816bUx9EPjHmaT23yvVM2ZWbrrpZb9PusVFin';
+// The lens member: one identity with a Solana key and an EVM address.
+const LENS = 'GmaDrppBC7P5ARKV8g3djiwP89vz1jLK23V2GBjuAEGB';
+const LENS_EVM = '0x71C7656EC7ab88b098defB751B7401B5f6d8976F';
 // The agreement account a mint creates (any base58 key: the index, not this module, derives it).
 const ACCOUNT = 'HrcX5vC2ws2sKiLwpTyYG6Dnc3dmHT6zvuUp2xDs2pEx';
 const clone = value => JSON.parse(JSON.stringify(value));
@@ -69,7 +73,7 @@ function agreement(extra = {}) {
             { output: outputs[2].hash, to: { kind: 'public' } }
         ],
         money: { currency: 'EUR', lines: [] },
-        rule: { electorate: 'owners', binding: true, lens: ['lens-member-1'],
+        rule: { electorate: 'owners', binding: true, lens: [LENS],
             approvalConfig: { schema: 'proposal-approval/v1', rights: AgreementRecord.rightsFromInputs(inputs, id => LOCAL_OWNERS[id] || []), policy: { type: 'unanimous' } } },
         deadline: null, published: null, ...extra
     };
@@ -260,6 +264,7 @@ function fakeWindow({ blocked = null, applied = true, records = [layout(), road(
         i18n: { getLanguage: () => 'hr' },
         ProposalPublishTerms: PublishTerms,
         AgreementRecord,
+        LensCore,
         guestPolicyBlocks: action => (action === 'publish' ? blocked : null),
         stampCurrentAuthor: record => { record.author = record.author || 'Ana'; return record; },
         getCurrentUserAgent: () => ({ id: 'agent-ana', name: ' Ana ' }),
@@ -353,6 +358,11 @@ describe('publishAgreement', () => {
         const { sync, win, server, agreements } = fakeWindow({ wallet: null });
         win.ethers = await import('ethers');
         win.walletManager = { getState: () => ({ status: 'connected', accounts: [evm.toLowerCase()], chainId: '0x14a34' }) };
+        expect(sync.sponsorFamily()).toBe('evm');
+        // A lens of Solana keys cannot be an EVM agreement's: refused before anything leaves the device.
+        expect(await thrown(() => sync.publishAgreement('ag-1'))).toMatchObject({ code: 'lens-chain-mismatch', message: expect.stringContaining(`names ${LENS}, which is not an address on EVM`) });
+        expect(server.calls).toEqual([]);
+        agreements.set('ag-1', { ...agreements.get('ag-1'), rule: { ...agreements.get('ag-1').rule, lens: [LENS_EVM] } });
         const result = await sync.publishAgreement('ag-1');
         expect(server.calls.at(-1).body.content.sponsor).toBe(evm);
         expect(agreements.get('ag-1').published.sponsor).toBe(evm);
@@ -362,9 +372,10 @@ describe('publishAgreement', () => {
         expect(NodeCid.cidOfObject(object.content)).toBe(result.cid);
         expect(object.plan).toEqual(agreements.get('ag-1').plan);
         expect(server.calls).toHaveLength(3);
-        // A Solana wallet still comes first.
+        // A Solana wallet still comes first, with a lens of Solana keys.
         win.solanaWalletManager = { getState: () => ({ status: 'connected', accounts: [SPONSOR] }) };
-        agreements.set('ag-1', { ...agreements.get('ag-1'), published: null });
+        expect(sync.sponsorFamily()).toBe('solana');
+        agreements.set('ag-1', { ...agreements.get('ag-1'), published: null, rule: { ...agreements.get('ag-1').rule, lens: [LENS] } });
         await sync.publishAgreement('ag-1');
         expect(server.calls.at(-1).body.content.sponsor).toBe(SPONSOR);
     });

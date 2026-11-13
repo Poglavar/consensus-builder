@@ -248,7 +248,8 @@ receives an equal share of its parcel's share.
 ## Backend (WS-B, WS-C)
 
 - **Attester directory.** `GET /lenses/members` and `GET /agent/lenses/members`: known attesters
-  from `consensus.lens_member` (key, name, kind, description, coverage counts: ownership
+  from `consensus.lens_member` (key, addresses per chain family `{ solana, evm }`, name, kind,
+  description, coverage counts: ownership
   attestations issued, parcels covered, proposals executed), refreshed by the land-event job from
   attestations seen on chain. Purely informational; the contract never reads it. Machine-readable in
   `agents.json` and OpenAPI.

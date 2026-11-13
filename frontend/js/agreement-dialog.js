@@ -648,7 +648,7 @@
     function bodyHtml(view) {
         const values = view.values || {};
         const panels = {
-            rules: ruleHtml(values) + '<div data-agreement-settlement></div><section class="agreement-lens" aria-labelledby="agreement-lens-title"><h4 id="agreement-lens-title" class="agreement-object-heading">' + esc(t('agreement.chain.facts.lens', 'Lens')) + '</h4><div class="agreement-lens__row"><button type="button" class="btn btn-icon btn-sm lens-pattern-button" data-lens-pattern data-agreement-action="lens" title="' + esc(t('modal.lens.triggerDescription', 'Lens for viewing the world')) + '" aria-label="' + esc(t('modal.lens.triggerDescription', 'Lens for viewing the world')) + '"><i class="fa-solid fa-glasses" aria-hidden="true"></i></button></div></section>'
+            rules: ruleHtml(values) + '<div data-agreement-settlement></div><section class="agreement-lens" aria-labelledby="agreement-lens-title"><h4 id="agreement-lens-title" class="agreement-object-heading">' + esc(t('agreement.chain.facts.lens', 'Lens')) + '</h4><div class="agreement-lens__row"><button type="button" class="btn btn-icon btn-sm lens-pattern-button" data-lens-pattern data-agreement-action="lens" title="' + esc(t('modal.lens.triggerDescription', 'Lens for viewing the world')) + '" aria-label="' + esc(t('modal.lens.triggerDescription', 'Lens for viewing the world')) + '"><i class="fa-solid fa-glasses" aria-hidden="true"></i></button></div><p class="agreement-hint" data-agreement-lens-status role="status"></p></section>'
                 + sectionHtml('consultation', t('agreement.sections.consultation', 'Nonbinding agreement'), consultationHtml(values), values.electorate !== 'community')
                 + detailsHtml({ title: values.title, deadline: values.deadline, today: view.today }),
             inputs: planSelectorHtml(view.plans || [], view.plan) + '<div class="cb-actions"><button type="button" class="btn" data-agreement-action="rights">' + esc(t('agreement.workflow.rights', 'Parcel ownership rights')) + '</button></div><div data-agreement-land></div><div data-agreement-plan-designs></div>',
@@ -720,6 +720,28 @@
         return panel;
     }
 
+    // The chain's name in the lens sentences: the sponsor's wallet decides it.
+    const chainName = family => (family === 'evm' ? 'EVM' : 'Solana');
+
+    /**
+     * What the Lens section says about the rule's lens on the sponsor's chain `family`: { alert, text }.
+     * `directory` is { status: 'loading' | 'ready' | 'error', error, candidates } (candidates: the members
+     * with an address on that chain, LensCore.chainLens), `lens` the rule's addresses. A lens naming another
+     * chain's address, or a chain without any member, is said plainly as an alert.
+     */
+    function lensStatus({ family, directory = {}, lens = [] }, offChain = []) {
+        const chain = chainName(family);
+        if (offChain.length) {
+            return { alert: true, text: t('agreement.lens.offChain', 'The lens names {{address}}, which is not an address on {{chain}}, where this agreement’s sponsor mints it. Choose its members again.', { address: offChain[0], chain }) };
+        }
+        if (directory.status === 'loading') return { alert: false, text: t('agreement.lens.loading', 'Loading the lens members on {{chain}}…', { chain }) };
+        if (directory.status === 'error') return { alert: true, text: t('agreement.lens.loadFailed', 'Could not load the lens members: {{error}}', { error: directory.error || '' }) };
+        if (!(directory.candidates || []).length) {
+            return { alert: true, text: t('agreement.lens.noneOnChain', 'No lens member publishes an address on {{chain}}, so this agreement cannot name a lens on {{chain}}.', { chain }) };
+        }
+        return { alert: false, text: t('agreement.lens.onChain', '{{count}} lens member(s) on {{chain}}, the chain of the sponsor’s wallet.', { count: lens.length, chain }) };
+    }
+
     // A plan is selected before ground is read. Designs are a read-only projection of that exact
     // revision; changing a plan's membership is a separate plan-authoring operation.
     // `from` (a stored id or an agreement record, published or not) starts a counter-agreement: a new
@@ -740,6 +762,7 @@
         if (initialPlan && !await root.PlanWorkspace.ensureApplied(initialPlan)) return null;
         if (initialPlan && !plans.some(row => row.cid === initialPlan.cid)) plans.push(initialPlan);
         const baseConfig = base?.rule.approvalConfig || null;
+        const lensFamily = root.AgreementSync.sponsorFamily() || 'solana';
         const state = {
             id: existing?.id || api.newId(), createdAt: existing?.createdAt || null,
             updatedAt: existing?.updatedAt || null, city: base?.city || root.resolveCurrentCityCode?.() || null,
@@ -747,7 +770,11 @@
             allocationMode: allocationMode(termsOf(base).allocations),
             currency: base?.money.currency || root.CityMoney.currentCurrency(),
             approvalConfig: scheme ? setup().withScheme(baseConfig, scheme) : baseConfig,
-            lens: base ? [...base.rule.lens] : setup().lensKeys(root.getLensEntries()),
+            // The sponsor's wallet decides the chain (a Solana wallet first, as Propose takes it; Solana when
+            // none is connected) and the lens names only that chain's addresses: until the directory
+            // answers, the person's lens setting on that chain; then its members there (lensFromDirectory).
+            lensFamily, lensDirectory: { status: 'loading', error: null, candidates: [] }, lensTouched: false,
+            lens: base ? [...base.rule.lens] : setup().lensKeys(root.getLensEntries()).filter(address => root.LensCore.keyFamily(address) === lensFamily),
             // A new agreement is a non-binding vote: binding the owners takes the author's explicit tick.
             values: { ...termsOf(base), electorate: base?.rule.electorate || electorate,
                 binding: base?.rule.binding === true,
@@ -858,8 +885,36 @@
             if (state.values.electorate === 'owners' && container.firstElementChild) state.approvalConfig = setup().withPolicyFromForm(container, state.approvalConfig);
         }
         function renderLens() {
-            part('[data-agreement-action="lens"]').dataset.lensEntries = JSON.stringify(state.lens.map(address => ({ address })));
+            const trigger = part('[data-agreement-action="lens"]');
+            trigger.dataset.lensEntries = JSON.stringify(state.lens.map(address => ({ address })));
             root.refreshLensPatternPreviews();
+            const offChain = root.LensCore.lensOffChain(state.lens, state.lensFamily);
+            const status = lensStatus({ family: state.lensFamily, directory: state.lensDirectory, lens: state.lens }, offChain);
+            const line = part('[data-agreement-lens-status]');
+            line.textContent = status.text;
+            line.className = status.alert ? 'agreement-alert' : 'agreement-hint';
+            // Nothing to choose from on this chain: no lens is offered rather than a mixed or empty one.
+            trigger.disabled = state.lensDirectory.status === 'ready' && !state.lensDirectory.candidates.length && !offChain.length;
+        }
+        // The directory's members on the sponsor's chain. A new agreement, or a draft whose lens names
+        // another chain's addresses, takes their addresses there: those its lens setting (or the lens of
+        // the agreement it starts from) names by any of their addresses, else all of them.
+        async function lensFromDirectory() {
+            const directory = await root.LensPicker.loadDirectory();
+            if (state.closed) return;
+            if (directory.status !== 'ready') {
+                state.lensDirectory = { status: 'error', error: directory.error || null, candidates: [] };
+                renderLens(); return;
+            }
+            const preferred = base ? base.rule.lens : setup().lensKeys(root.getLensEntries());
+            const chosen = root.LensCore.chainLens({ members: directory.members, family: state.lensFamily, preferred });
+            state.lensDirectory = { status: 'ready', error: null, candidates: chosen.candidates };
+            const offChain = root.LensCore.lensOffChain(state.lens, state.lensFamily).length > 0;
+            if (!state.lensTouched && (!existing || offChain)) {
+                state.lens = chosen.addresses;
+                log(`lens on ${state.lensFamily}: ${chosen.addresses.length} of ${chosen.candidates.length} member(s) there`);
+            }
+            renderLens(); issues();
         }
         // Which schemes the plan meets (every scheme, for the dropdown) and how the chosen one reads
         // against it (the card), from the record's own check; nothing when the draft cannot be built.
@@ -966,10 +1021,11 @@
             readRule();
             const container = doc.createElement('div');
             if (kind === 'lens') {
-                const names = new Map(root.getLensEntries().map(entry => [entry.address, entry.name]));
-                auxiliary = root.showLensModal({ parent: modal,
+                // Only the directory's members with an address on the sponsor's chain, by that address.
+                const names = new Map(state.lensDirectory.candidates.map(entry => [entry.address, entry.member.name || '']));
+                auxiliary = root.LensPicker.show({ parent: modal, family: state.lensFamily,
                     entries: state.lens.map(address => ({ address, name: names.get(address) || '' })),
-                    onChange: entries => { state.lens = setup().lensKeys(entries); renderLens(); issues(); }
+                    onChange: entries => { state.lens = setup().lensKeys(entries); state.lensTouched = true; renderLens(); issues(); }
                 });
                 return;
             }
@@ -1150,6 +1206,7 @@
         modal.addEventListener('keydown', event => event.stopPropagation(), { signal });
         panel.classList.add('visible'); doc.body.classList.add('agreement-editor-open');
         modal.showModal(); panel.querySelector('#agreement-editor-title').focus({ preventScroll: true });
+        lensFromDirectory().catch(report);
         try { renderRule(); await deriveLand(); }
         catch (error) { finish(null); throw error; }
         log(`opened ${state.id} for plan ${state.plan?.cid || '(choose plan)'}`);
@@ -1161,6 +1218,6 @@
         allocationSummaryHtml, tabLabel, tabCounts, cashCents, cashInputText, termsOf,
         keptTerms, sponsorLine, ruleConfigAfterDerive, deadlineFromDate, dateFromDeadline, recordFromForm,
         issueText, waitingText, ownersText, partyLabel, landHtml, allocationHtml, valuationHtml, valuationRows, ruleHtml, detailsHtml,
-        consultationHtml, bodyHtml, personsHtml, planSelectorHtml, inputDesignsHtml
+        consultationHtml, bodyHtml, personsHtml, planSelectorHtml, inputDesignsHtml, lensStatus
     };
 });

@@ -1,7 +1,9 @@
-// Solana lens picker (the Lens settings on the Solana path): choose lens members from the backend
-// attester directory (GET /lenses/members) or paste any base58 key, see which selected parcels each
-// member has attested, and keep the choice as the app's Solana lens; a community agreement's mint
-// names its first member (agreement-panel.js, M3).
+// Lens picker (the Lens settings on the Solana path, and the agreement dialog's lens on either chain):
+// choose lens members from the backend attester directory (GET /lenses/members) or paste a key, see
+// which selected parcels each member has attested, and keep the choice as the app's lens of that chain;
+// a community agreement's mint names its first member (agreement-panel.js, M3). `family` ('solana' by
+// default, or 'evm') is the chain the lens is for: only members with an address there are offered, and
+// the lens holds those addresses, never another chain's.
 // Logic lives in lens-core.js / lens-service-client.js; this file is DOM wiring only.
 (function () {
     const root = typeof window !== 'undefined' ? window : null;
@@ -128,32 +130,53 @@
         return `${counts} · ${t('modal.lens.picker.coverageSelected', 'Attests {{covered}} of {{total}} selected parcels', { covered: stats.covered, total: parcelCount })}`;
     }
 
-    function renderBody(container, entries) {
+    // The chain's name in the picker's sentences.
+    const chainName = family => (family === 'evm' ? 'EVM' : 'Solana');
+
+    // Entries ({ address, name }) whose address is on `family`, each address once.
+    function onFamily(list, family) {
+        const core = root.LensCore;
+        const kept = [];
+        (Array.isArray(list) ? list : []).forEach(entry => {
+            const address = typeof entry === 'string' ? entry.trim() : String((entry && entry.address) || '').trim();
+            if (core.keyFamily(address) !== family || kept.some(item => core.sameAddress(item.address, address))) return;
+            kept.push({ address, name: (entry && typeof entry === 'object' && entry.name) || '' });
+        });
+        return kept;
+    }
+
+    function renderBody(container, entries, family = 'solana') {
         const core = root.LensCore;
         const parcelIds = selectedParcelIds();
-        const chosen = new Set(entries.map(entry => entry.address));
+        const chosen = entries.map(entry => entry.address);
+        const isChosen = address => chosen.some(item => core.sameAddress(item, address));
         const coverage = coverageState.coverage;
-        const members = core.sortMembersByCoverage(directory.members, coverage);
-        const memberKeys = new Set(members.map(member => member.key));
-        const pasted = entries.filter(entry => !memberKeys.has(entry.address));
+        // Only the members with an address on this chain; the lens holds that address.
+        const members = core.sortMembersByCoverage(directory.members, coverage).filter(member => core.memberAddress(member, family));
+        const addressOf = member => core.memberAddress(member, family);
+        const pasted = entries.filter(entry => !members.some(member => core.sameAddress(addressOf(member), entry.address)));
+        // Coverage is counted per member identity (its key), whichever address the lens names.
+        const chosenKeys = new Set(members.filter(member => isChosen(addressOf(member))).map(member => member.key));
 
         let directoryHtml;
         if (directory.status === 'loading' || directory.status === 'idle') {
             directoryHtml = `<p class="lens-picker-note">${escapeText(t('modal.lens.picker.loading', 'Loading lens members…'))}</p>`;
         } else if (directory.status === 'error') {
             directoryHtml = `<p class="lens-picker-error">${escapeText(t('modal.lens.picker.loadFailed', 'Could not load the lens member directory: {{error}}', { error: directory.error }))}</p>`;
-        } else if (!members.length) {
+        } else if (!directory.members.length) {
             directoryHtml = `<p class="lens-picker-note">${escapeText(t('modal.lens.picker.emptyDirectory', 'No lens members are known yet. Paste a member key below.'))}</p>`;
+        } else if (!members.length) {
+            directoryHtml = `<p class="lens-picker-error" data-lens-none-on-chain>${escapeText(t('modal.lens.picker.noneOnChain', 'No lens member publishes an address on {{chain}}, so this lens cannot name one there.', { chain: chainName(family) }))}</p>`;
         } else {
             directoryHtml = `<ul class="lens-picker-members">${members.map(member => `
                 <li class="lens-picker-member">
                     <label>
-                        <input type="checkbox" data-lens-member="${escapeText(member.key)}" ${chosen.has(member.key) ? 'checked' : ''} />
+                        <input type="checkbox" data-lens-member="${escapeText(addressOf(member))}" ${isChosen(addressOf(member)) ? 'checked' : ''} />
                         <span class="lens-picker-member-text">
-                            <span class="lens-picker-member-name">${escapeText(member.name || core.shortKey(member.key))}</span>
+                            <span class="lens-picker-member-name">${escapeText(member.name || core.shortKey(addressOf(member)))}</span>
                             ${member.kind ? `<span class="cb-badge lens-picker-kind">${escapeText(member.kind)}</span>` : ''}
                             ${member.description ? `<span class="lens-picker-desc">${escapeText(member.description)}</span>` : ''}
-                            <span class="lens-picker-key">${escapeText(member.key)}</span>
+                            <span class="lens-picker-key">${escapeText(addressOf(member))}</span>
                             <span class="lens-picker-coverage">${escapeText(memberCoverageLine(member, coverage, parcelIds.length))}</span>
                         </span>
                     </label>
@@ -167,11 +190,10 @@
 
         let parcelsHtml = '';
         if (parcelIds.length) {
-            const chosenKeys = entries.map(entry => entry.address);
-            const shown = core.filterParcelsByLens(parcelIds, coverage, chosenKeys, onlyCovered);
+            const shown = core.filterParcelsByLens(parcelIds, coverage, [...chosenKeys], onlyCovered);
             const rows = shown.map(parcelUid => {
                 const slot = coverage && coverage.byParcel[parcelUid];
-                const coveredBy = slot ? slot.covered.filter(key => chosen.has(key)) : [];
+                const coveredBy = slot ? slot.covered.filter(key => chosenKeys.has(key)) : [];
                 const label = !coverage
                     ? t('modal.lens.picker.parcelUnknown', 'coverage unknown')
                     : coveredBy.length
@@ -194,7 +216,7 @@
             <div class="lens-picker-paste">
                 <label for="lens-picker-paste-input">${escapeText(t('modal.lens.picker.pasteLabel', 'Paste a key'))}</label>
                 <div class="lens-picker-paste-row">
-                    <input id="lens-picker-paste-input" class="lens-input" type="text" autocomplete="off" spellcheck="false" placeholder="${escapeText(t('modal.lens.picker.pastePlaceholder', 'Base58 public key'))}" />
+                    <input id="lens-picker-paste-input" class="lens-input" type="text" autocomplete="off" spellcheck="false" placeholder="${escapeText(family === 'evm' ? t('modal.lens.picker.pastePlaceholderEvm', '0x address') : t('modal.lens.picker.pastePlaceholder', 'Base58 public key'))}" />
                     <button type="button" class="btn lens-add-btn" data-lens-paste-add>${escapeText(t('modal.lens.picker.pasteAdd', 'Add'))}</button>
                 </div>
                 <p class="lens-picker-error" data-lens-paste-error hidden></p>
@@ -203,15 +225,18 @@
             ${parcelsHtml}
             <p class="${entries.length ? 'lens-picker-note' : 'lens-picker-error'}" data-lens-summary>${escapeText(entries.length
                 ? t('modal.lens.picker.chosenCount', '{{count}} lens member(s) chosen', { count: entries.length })
-                : t('modal.lens.picker.required', 'Choose at least one lens member; a Solana design cannot be published without one.'))}</p>`;
+                : family === 'evm'
+                    ? t('modal.lens.picker.requiredEvm', 'Choose at least one lens member with an EVM address.')
+                    : t('modal.lens.picker.required', 'Choose at least one lens member; a Solana design cannot be published without one.'))}</p>`;
     }
 
-    function wire(container, rerender, { getEntries, setEntries }) {
+    function wire(container, rerender, { getEntries, setEntries }, family = 'solana') {
+        const core = root.LensCore;
         container.querySelectorAll('[data-lens-member]').forEach(input => {
             input.addEventListener('change', () => {
                 const key = input.getAttribute('data-lens-member');
-                const member = directory.members.find(entry => entry.key === key);
-                const next = getEntries().filter(entry => entry.address !== key);
+                const member = core.findMember(directory.members, key);
+                const next = getEntries().filter(entry => !core.sameAddress(entry.address, key));
                 if (input.checked) next.push({ address: key, name: (member && member.name) || '' });
                 setEntries(next);
                 rerender();
@@ -230,14 +255,17 @@
         const addButton = container.querySelector('[data-lens-paste-add]');
         const errorNode = container.querySelector('[data-lens-paste-error]');
         const add = () => {
-            const { keys, invalid } = root.LensCore.parsePastedKeys(input.value);
+            const { keys, invalid } = core.parsePastedKeys(input.value, family);
             if (invalid.length || !keys.length) {
                 errorNode.hidden = false;
-                errorNode.textContent = t('modal.lens.picker.pasteInvalid', 'Not a Solana public key: {{value}}', { value: invalid.join(', ') || input.value });
+                const value = invalid.join(', ') || input.value;
+                errorNode.textContent = family === 'evm'
+                    ? t('modal.lens.picker.pasteInvalidEvm', 'Not an EVM address: {{value}}', { value })
+                    : t('modal.lens.picker.pasteInvalid', 'Not a Solana public key: {{value}}', { value });
                 return;
             }
             const next = getEntries();
-            keys.forEach(key => { if (!next.some(entry => entry.address === key)) next.push({ address: key, name: '' }); });
+            keys.forEach(key => { if (!next.some(entry => core.sameAddress(entry.address, key))) next.push({ address: key, name: '' }); });
             setEntries(next);
             rerender();
         };
@@ -250,14 +278,20 @@
     // stay as hooks for scripts and tests.
     let pickerDialog = null;
 
+    // options: entries (the lens to edit; the stored Solana lens by default), family ('solana' or
+    // 'evm', the chain the lens is for), parent, onChange(entries), onClose(entries). The choice also
+    // becomes that chain's default lens: the Solana one here, the EVM one in lens.js.
     function show(options = {}) {
         if (typeof root.closeLensModal === 'function') root.closeLensModal();
         if (pickerDialog) pickerDialog.close();
+        const family = options.family === 'evm' ? 'evm' : 'solana';
         const initial = Array.isArray(options.entries) ? options.entries : getEntries();
-        const keys = root.LensCore.validateSolanaLens(initial).keys;
-        let workingEntries = keys.map(address => ({ address, name: initial.find(entry => entry.address === address)?.name || '' }));
+        let workingEntries = onFamily(initial, family);
         const selection = { getEntries: () => workingEntries.map(entry => ({ ...entry })), setEntries: next => {
-            setEntries(next); workingEntries = getEntries(); options.onChange?.(selection.getEntries());
+            workingEntries = onFamily(next, family);
+            if (family === 'solana') setEntries(workingEntries);
+            else root.setEvmLensEntries(workingEntries);
+            options.onChange?.(selection.getEntries());
         } };
         const subtitle = document.createElement('p');
         subtitle.className = 'lens-modal-subtitle';
@@ -290,8 +324,8 @@
 
         const rerender = () => {
             if (!overlay.isConnected) return;
-            renderBody(body, selection.getEntries());
-            wire(body, rerender, selection);
+            renderBody(body, selection.getEntries(), family);
+            wire(body, rerender, selection, family);
         };
         rerender();
         loadDirectory().then(() => {

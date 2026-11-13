@@ -21,7 +21,7 @@ import { createLensMember, DEFAULT_CREDENTIAL_NAME, LENS_MEMBER_KINDS, systemClo
 import { createDevnetRegistryIdentity } from './identity/devnet-registry.js';
 import { createCertiliaIdentity } from './identity/certilia.js';
 import { createFakeIssuer, loadSasIssuer } from './issuers.js';
-import { createEvmIssuer, createFakeEvmIssuer, lensEvmKeyOf } from './evm-issuer.js';
+import { createEvmIssuer, createFakeEvmIssuer, lensEvmKeyOf, walletOf } from './evm-issuer.js';
 import { createFileStore, createMemoryStore, createPgStore } from './store.js';
 import { announceLensMember } from '../oracle/lens-registration.js';
 import { createLensPricing, describePricing } from './pricing.js';
@@ -69,6 +69,7 @@ function usage(code = 0) {
         '                            answers 503 on agreement decisions (they read the agreement index).',
         '  --announce <url>          After starting, list this member in the directory at <url>',
         '                            (e.g. https://api.urbangametheory.xyz). --live only; needs --public-url and --name.',
+        '                            With an EVM key (below) it publishes that EVM address too, signed by it.',
         '  --public-url <url>        The https URL where this member is reachable (what the directory probes).',
         '  --name <text>             Directory name, e.g. "Notary office, Borovje". --description <text> is optional.',
         '  --help                    This text.',
@@ -224,15 +225,20 @@ async function main() {
         // The directory probes --public-url/lens/status, so this runs only once the server listens. The directory
         // (the consensus-builder API) may not be up yet, e.g. right after a reboot: keep retrying while serving,
         // signing each attempt afresh.
+        // With an EVM key the member publishes its EVM address too, proven by that key's signature; the
+        // directory then lists it for EVM agreements as well. Without one it is listed for Solana only.
+        const evmWallet = evmKey ? walletOf(evmKey) : null;
+        lensLog(`announcing to ${values.announce} with ${evmWallet ? `EVM address ${evmWallet.address}` : 'no EVM address (no EVM key)'}`);
         retryWithBackoff('ANNOUNCE FAILED, still serving but not listed', () => announceLensMember({
             directoryUrl: values.announce,
             publicUrl: values['public-url'],
             keypair,
+            evmWallet,
             status,
             name: values.name,
             description: values.description,
             nowSeconds: clock.nowSeconds()
-        })).then(listed => lensLog(`listed in ${values.announce} as ${listed.key} (${listed.kind}) at ${listed.serviceUrl}`));
+        })).then(listed => lensLog(`listed in ${values.announce} as ${listed.key}${listed.addresses?.evm ? ` and ${listed.addresses.evm} on EVM` : ''} (${listed.kind}) at ${listed.serviceUrl}`));
     });
     const stop = signal => {
         lensLog(`${signal}: shutting down`);

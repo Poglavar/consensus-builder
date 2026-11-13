@@ -83,6 +83,18 @@ describe('agreement MCP editing surface', () => {
         expect(edit.safeParse({ plan, expectedCid, operations: [{ type: 'remove', ref: 'design:x' }] }).success).toBe(false);
     });
 
+    it('refuses to draft a lens of another chain than the sponsor\'s, before reading any ground', async () => {
+        const { tools, paths, namedPlan } = await runtime();
+        const before = paths.length;
+        const solanaLens = 'GmaDrppBC7P5ARKV8g3djiwP89vz1jLK23V2GBjuAEGB';
+        const evmSponsor = '0x2F4cE2B5ed2a1C1aF7D0eb0B33e3Fc5EC5a1FbD0';
+        const draft = (sponsor, lens = solanaLens) => tools.draftAgreement({ plan: namedPlan.draftArtifact, rulePreset: 'owner-deal', lens, sponsor });
+        await expect(draft(evmSponsor)).rejects.toMatchObject({ code: 'lens-chain-mismatch', message: expect.stringContaining('not an EVM address') });
+        expect(paths.length).toBe(before);
+        // The same lens with a Solana sponsor drafts.
+        await expect(draft(solanaLens)).resolves.toMatchObject({ agreement: { sponsor: solanaLens, rule: { lens: [solanaLens] } } });
+    });
+
     it('revises recipient and EUR/m² settlement on the same existing plan, deriving new cash', async () => {
         const { tools, paths, namedPlan } = await runtime();
         const original = await tools.draftAgreement({ plan: namedPlan.draftArtifact, rulePreset: 'owner-deal',

@@ -600,14 +600,20 @@ Coinbase's hosted CDP facilitator on `$(network)`; buyers never need its credent
 - **Becoming a lens member:** anyone can. Register the SAS credential and schemas under your own key
   (`backend/scripts/register-lens-schemas.mjs --live`), run the reference member (`backend/lens/`, see its
   README), and list it with `POST $(base)/agent/lenses/members`:
-  `{key, credentialName, kind, name, description, serviceUrl, signedAt, signature}`, where `signature` is
-  your key's ed25519 signature (base58) over the UTF-8 lines
-  `Urban Game Theory lens member registration v1`, then `key: …`, `credentialName: …`, `kind: …`,
-  `name: …`, `description: …`, `serviceUrl: …`, `signedAt: …` in that order (`serviceUrl` https with no
-  trailing slash, `signedAt` Unix seconds within 10 minutes of now). The directory lists you only when
+  `{key, credentialName, kind, name, description, serviceUrl, evmAddress, signedAt, signature, evmSignature}`,
+  where `signature` is your key's ed25519 signature (base58) over the UTF-8 lines
+  `Urban Game Theory lens member registration v2`, then `key: …`, `credentialName: …`, `kind: …`,
+  `name: …`, `description: …`, `serviceUrl: …`, `evmAddress: …`, `signedAt: …` in that order (`serviceUrl`
+  https with no trailing slash, `evmAddress` checksummed or empty, `signedAt` Unix seconds within 10
+  minutes of now). To be available for agreements sponsored from EVM wallets, publish your EVM address
+  in `evmAddress` and sign, with that EVM key (EIP-191 personal_sign), the lines
+  `Urban Game Theory lens member EVM address v1`, `member: <key>`, `evmAddress: <address>`,
+  `signedAt: <signedAt>` as `evmSignature`. The directory lists you only when
   the signature verifies, your credential and the schema your kind issues exist on chain (ownership for
   `owner-consent`, the agreement decision otherwise), and `serviceUrl/lens/status` answers live with the
-  same key, credential and kind. Re-register with a later `signedAt` to change your entry; an older or
+  same key, credential and kind (and, with an EVM address, `evmAddress`). The directory serves each member's
+  `addresses` per chain (`solana`, `evm`); an agreement's `rule.lens` names only addresses of its sponsor's
+  chain. Re-register with a later `signedAt` to change your entry; an older or
   equal one answers 409. `node lens/run.mjs --live … --announce $(base) --public-url <url> --name <text>`
   does all of this at startup. No one approves members: a sponsor choosing your key is the only
   endorsement that matters.

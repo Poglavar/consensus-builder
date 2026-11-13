@@ -2594,6 +2594,10 @@
                 "pastePlaceholder": "Clave pública base58",
                 "pasteAdd": "Añadir",
                 "pasteInvalid": "No es una clave pública de Solana: {{value}}",
+                "pasteInvalidEvm": "No es una dirección EVM: {{value}}",
+                "pastePlaceholderEvm": "Dirección 0x",
+                "requiredEvm": "Elige al menos un miembro de la lente con una dirección EVM.",
+                "noneOnChain": "Ningún miembro de la lente publica una dirección en {{chain}}, así que esta lente no puede nombrar ninguno allí.",
                 "chosenCount": {
                     "one": "{{count}} miembro de la lente elegido",
                     "other": "{{count}} miembros de la lente elegidos"
@@ -8136,6 +8140,7 @@
                 "notFound": "Este acuerdo no está en el servidor.",
                 "missing": "El acuerdo ya no está en este dispositivo.",
                 "designMissing": "Un diseño de este acuerdo ya no está en este dispositivo.",
+                "lensChain": "La lente nombra {{address}}, que no es una dirección en {{chain}}, pero la billetera conectada patrocina este acuerdo en {{chain}}. Edita la lente para nombrar miembros en {{chain}} o conecta una billetera de la cadena de la lente.",
                 "planRequired": "Este acuerdo no tiene una referencia válida a un plan. Créalo de nuevo con un plan."
             },
             "route": {
@@ -8151,6 +8156,13 @@
             "message": "Añade «{{title}}» a un acuerdo nuevo o a uno que aún no se haya propuesto.",
             "new": "Nuevo acuerdo",
             "alreadyIn": "«{{title}}» ya está en este acuerdo."
+        },
+        "lens": {
+            "onChain": "{{count}} miembro(s) de la lente en {{chain}}, la cadena de la billetera del patrocinador.",
+            "loading": "Cargando los miembros de la lente en {{chain}}…",
+            "loadFailed": "No se pudieron cargar los miembros de la lente: {{error}}",
+            "noneOnChain": "Ningún miembro de la lente publica una dirección en {{chain}}, así que este acuerdo no puede nombrar una lente en {{chain}}.",
+            "offChain": "La lente nombra {{address}}, que no es una dirección en {{chain}}, donde el patrocinador acuña este acuerdo. Vuelve a elegir sus miembros."
         },
         "chain": {
             "heading": "En la cadena",

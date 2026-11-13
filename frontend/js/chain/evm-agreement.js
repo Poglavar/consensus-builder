@@ -346,7 +346,7 @@
 
         /**
          * The lens's decision on a minted agreement, as its member's service lists it: the member is
-         * the one whose EVM address (or key) is the agreement's lens in the lens directory, asked
+         * the one that published the agreement's lens as its EVM address in the lens directory, asked
          * GET <service>/lens/attestations?kind=decision&agreementCid=<cid> (AgreementBridge does the
          * same on Solana). Resolves { uid, address (the uid), decision, member } or null; throws
          * code 'lens-unavailable' when the service cannot be read.
@@ -358,7 +358,7 @@
             const unavailable = reason => failure(t('agreement.chain.errors.lensUnavailable', 'The lens member could not be asked for its decision: {{reason}}', { reason }), 'lens-unavailable');
             if (!win.LensPicker || !win.LensServiceClient) throw unavailable('lens client not loaded');
             const directory = await win.LensPicker.loadDirectory();
-            const member = (directory.members || []).find(entry => sameAddress(entry.evmAddress, value.lens) || sameAddress(entry.key, value.lens)) || null;
+            const member = (directory.members || []).find(entry => sameAddress(win.LensCore.memberAddress(entry, 'evm'), value.lens)) || null;
             if (!member || !member.serviceUrl) {
                 log(`lens ${value.lens} of ${cid} publishes no service address in the directory; its decision cannot be looked up`);
                 return null;

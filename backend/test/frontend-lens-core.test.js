@@ -63,19 +63,44 @@ describe('directory normalisation', () => {
             ]
         });
         expect(members).toEqual([
-            { key: NOTARY, kind: 'notary', name: 'Notary 01', description: null, coverage: { ownership: 3, parcels: 2, executed: 0 }, serviceUrl: 'http://localhost:3095' },
-            { key: COURT, kind: null, name: null, description: null, coverage: { ownership: 0, parcels: 0, executed: 0 }, serviceUrl: null }
+            { key: NOTARY, addresses: { solana: NOTARY, evm: null }, kind: 'notary', name: 'Notary 01', description: null, coverage: { ownership: 3, parcels: 2, executed: 0 }, serviceUrl: 'http://localhost:3095' },
+            { key: COURT, addresses: { solana: COURT, evm: null }, kind: null, name: null, description: null, coverage: { ownership: 0, parcels: 0, executed: 0 }, serviceUrl: null }
         ]);
         expect(core.normalizeDirectory({ members: [] })).toEqual([]);
         expect(core.normalizeDirectory(null)).toEqual([]);
     });
 
-    it('keeps the EVM address a member attests with, only when it is one', () => {
+    it('keeps a member\'s address per chain, the EVM one only when it is one', () => {
         const evm = '0xfCF94DD41B2B5d6C887a30273F995d01bacA1A45';
-        const [withEvm, snake, without] = core.normalizeDirectory({ members: [{ key: NOTARY, evmAddress: ` ${evm} ` }, { key: COURT, evm_address: evm }, { key: REGISTER, evmAddress: '0xabc' }] });
-        expect(withEvm.evmAddress).toBe(evm);
-        expect(snake.evmAddress).toBe(evm);
-        expect(without).not.toHaveProperty('evmAddress');
+        const [withEvm, without, bad] = core.normalizeDirectory({ members: [
+            { key: NOTARY, addresses: { solana: NOTARY, evm: ` ${evm} ` } }, { key: COURT, addresses: { solana: COURT, evm: null } }, { key: REGISTER, addresses: { evm: '0xabc' } }] });
+        expect(withEvm.addresses).toEqual({ solana: NOTARY, evm });
+        expect(without.addresses).toEqual({ solana: COURT, evm: null });
+        expect(bad.addresses).toEqual({ solana: REGISTER, evm: null });
+        expect(core.memberAddress(withEvm, 'evm')).toBe(evm);
+        expect(core.memberAddress(without, 'evm')).toBeNull();
+        expect(core.findMember([without, withEvm], evm.toLowerCase())).toBe(withEvm);
+        expect(core.memberLabel(evm, [{ ...withEvm, name: 'Notary 01' }])).toBe('Notary 01');
+    });
+
+    it('offers an agreement only the members with an address on its sponsor\'s chain, never a mixed lens', () => {
+        const evm = '0xfCF94DD41B2B5d6C887a30273F995d01bacA1A45';
+        const members = core.normalizeDirectory({ members: [
+            { key: NOTARY, addresses: { solana: NOTARY, evm } }, { key: COURT, addresses: { solana: COURT, evm: null } }] });
+        // Every member on Solana; only the one with an EVM address on EVM.
+        expect(core.chainLens({ members, family: 'solana' }).addresses).toEqual([NOTARY, COURT]);
+        expect(core.chainLens({ members, family: 'evm' })).toEqual({ candidates: [{ member: members[0], address: evm }], addresses: [evm] });
+        // The person's lens setting picks among them by any of a member's addresses.
+        expect(core.chainLens({ members, family: 'evm', preferred: [{ address: NOTARY }] }).addresses).toEqual([evm]);
+        expect(core.chainLens({ members, family: 'solana', preferred: [COURT, evm] }).addresses).toEqual([NOTARY, COURT]);
+        expect(core.chainLens({ members, family: 'solana', preferred: [COURT] }).addresses).toEqual([COURT]);
+        // No member on the chain: nothing to offer.
+        expect(core.chainLens({ members: [members[1]], family: 'evm', preferred: [COURT] })).toEqual({ candidates: [], addresses: [] });
+        expect(core.lensOffChain([NOTARY, { address: evm }], 'evm')).toEqual([NOTARY]);
+        expect(core.lensOffChain([evm], 'evm')).toEqual([]);
+        expect(core.keyFamily(evm)).toBe('evm');
+        expect(core.keyFamily(NOTARY)).toBe('solana');
+        expect(core.parsePastedKeys(`${evm} ${NOTARY} ${evm.toLowerCase()}`, 'evm')).toEqual({ keys: [evm], invalid: [NOTARY] });
     });
 
     it('passes a listed EAS attestation through with its uid, chain and chain id', () => {

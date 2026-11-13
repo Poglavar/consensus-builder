@@ -6,6 +6,7 @@ import { deriveWithApp } from './mcp-ground-runtime.js';
 import { parcelSourceIdOf } from './mcp-read-tools.js';
 import { describeRoadCuts, roadCutWarning } from './mcp-ground-effects.js';
 import { cityMoney } from '../scripts/lib/frontend-city-money.mjs';
+import { lensChainProblem } from './lens-directory-client.js';
 const fail = (code, message) => Object.assign(new Error(message), { code, next: { action: 'Review these designs and their ground in the app before proposing an agreement.' } });
 export const deriveAgreementGround = deriveWithApp;
 
@@ -68,6 +69,9 @@ export function createMcpAgreementTools({ read, drafts, appOrigin }) {
             if (rule.electorate !== 'community' && !rule.settlement) rule.settlement = { method: 'area', rateCentsPerM2: 10000, contributionBasisPoints: 0 };
             if (settlement) rule.settlement = settlement;
             if (rule.electorate === 'community') rule.settlement = null;
+            // The sponsor's wallet decides the chain; the lens names only addresses of that chain.
+            const lensProblem = lensChainProblem({ sponsor, lens: rule.lens });
+            if (lensProblem) throw Object.assign(fail('lens-chain-mismatch', lensProblem), { next: { action: 'Name the lens member by its address on the sponsor\'s chain (ugt_list_attesters with chain).' } });
             const { land, source, ids } = await groundFor({ ...resolved, designs });
             const plan = { cid: selected.cid, content: selected.plan };
             // Each input parcel is its owners' abstract party; the rights snapshot stays in the rule.

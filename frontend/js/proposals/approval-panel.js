@@ -403,13 +403,14 @@
         return t('proposalApproval.verify.failed', 'Verification failed: {{message}}', { message: (error && error.message) || String(error) });
     }
 
-    // Lens members of this agreement with the directory's names and service addresses.
+    // Lens members of this agreement with the directory's names and service addresses; a lens entry is
+    // the member's address on the agreement's chain, either of the addresses it published.
     async function lensMembers(subject) {
         const keys = root.ProposalApproval.lensKeys(subject);
         const directory = await root.LensPicker.loadDirectory();
         const members = directory.members || [];
         return keys.map(key => {
-            const entry = members.find(member => member.key === key);
+            const entry = root.LensCore.findMember(members, key);
             return { key, label: root.LensCore.memberLabel(key, members), serviceUrl: entry?.serviceUrl || null };
         });
     }

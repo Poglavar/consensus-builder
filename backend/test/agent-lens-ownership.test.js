@@ -111,6 +111,20 @@ describe('ugt tools: attesters and ownership', () => {
         expect(fetchImpl).toHaveBeenCalledWith('https://api.example.test/agent/lenses/members', expect.anything());
     });
 
+    it('lists the attesters available on a chain, each with its address there', async () => {
+        const evm = '0x2F4cE2B5ed2a1C1aF7D0eb0B33e3Fc5EC5a1FbD0';
+        const members = [
+            { key: AUTHORITY, addresses: { solana: AUTHORITY, evm }, kind: 'owner-consent' },
+            { key: agent.publicKey.toBase58(), addresses: { solana: agent.publicKey.toBase58(), evm: null }, kind: 'court' }
+        ];
+        const fetchImpl = vi.fn(async () => new Response(JSON.stringify({ members }), { status: 200 }));
+        const tools = createUrbanGameTheoryTools({ env: { UGT_API_BASE: 'https://api.example.test' }, fetchImpl });
+        expect(await tools.listAttesters({ chain: 'evm' })).toEqual({ members: [{ ...members[0], address: evm }] });
+        expect((await tools.listAttesters({ chain: 'solana' })).members.map(member => member.address)).toEqual([AUTHORITY, agent.publicKey.toBase58()]);
+        expect(await tools.listAttesters({ chain: 'evm', kind: 'court' })).toEqual({ members: [] });
+        await expect(tools.listAttesters({ chain: 'bitcoin' })).rejects.toThrow(/chain must be solana or evm/);
+    });
+
     it('requests ownership without the live gate when the member is free', async () => {
         const tools = createUrbanGameTheoryTools({ env: { UGT_AGENT_KEYPAIR: keyFile }, fetchImpl: globalThis.fetch });
         const result = await tools.requestOwnership({ serviceUrl, parcelUid: PARCEL });

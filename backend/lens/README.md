@@ -178,7 +178,10 @@ node lens/run.mjs --live --keypair ~/lens-member.json --credential-name MyNotary
 `--announce` signs a registration with the member key once the server listens and posts it to the
 directory's `/agent/lenses/members`. The directory checks the signature, that the credential and the
 schema your `--kind` issues exist on chain, and that `--public-url/lens/status` answers live with the
-same key, credential and kind; then the proposal picker lists you. The public URL must be https (put
+same key, credential and kind; then the proposal picker lists you. With an EVM key (`LENS_EVM_PRIVATE_KEY`,
+else `UGT_AGENT_EVM_PRIVATE_KEY`) the registration also publishes that EVM address, signed by it, and
+the directory lists you for agreements sponsored from EVM wallets too; without one you are listed for
+Solana only. The public URL must be https (put
 the process behind any TLS proxy). A refusal is printed with its reason and the member keeps serving,
 so proposers can still paste your key by hand. Re-announcing with new text replaces your entry.
 

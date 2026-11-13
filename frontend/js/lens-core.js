@@ -1,7 +1,7 @@
-// Pure lens-model logic shared by the Solana lens picker, proposal Details, the agreement panel and the
-// member console: base58 keys, directory normalisation, per-parcel coverage, challenge/response
-// handling and the member's answer to an agreement decision. No DOM, no network; exposed as
-// window.LensCore and via CommonJS.
+// Pure lens-model logic shared by the lens picker, proposal Details, the agreement dialog and panel and
+// the member console: base58 keys, directory normalisation, a member's address per chain family and
+// an agreement's lens on its sponsor's chain, per-parcel coverage, challenge/response handling and the
+// member's answer to an agreement decision. No DOM, no network; exposed as window.LensCore and via CommonJS.
 (function (root, factory) {
     const api = factory();
     if (typeof module === 'object' && module.exports) module.exports = api;
@@ -74,6 +74,15 @@
     // A key an agreement may name as its sponsor or a lens member: a Solana key or an EVM address.
     const isChainKey = value => isBase58Pubkey(value) || isEvmAddress(value);
 
+    // 'solana', 'evm' or null: the chain family a key belongs to.
+    const keyFamily = value => (isBase58Pubkey(value) ? 'solana' : isEvmAddress(value) ? 'evm' : null);
+
+    // Two keys name one wallet: EVM addresses in any letter case, Solana keys exactly.
+    function sameAddress(a, b) {
+        if (typeof a !== 'string' || typeof b !== 'string' || !a.trim() || !b.trim()) return false;
+        return isEvmAddress(a) && isEvmAddress(b) ? a.trim().toLowerCase() === b.trim().toLowerCase() : a.trim() === b.trim();
+    }
+
     function shortKey(key) {
         const text = String(key || '');
         return text.length > 12 ? `${text.slice(0, 4)}…${text.slice(-4)}` : text;
@@ -107,16 +116,17 @@
         const key = cleanText(raw.key);
         if (!key || !isBase58Pubkey(key)) return null;
         const coverage = raw.coverage && typeof raw.coverage === 'object' ? raw.coverage : {};
-        const evmAddress = cleanText(raw.evmAddress ?? raw.evm_address);
+        const evm = cleanText(raw.addresses && typeof raw.addresses === 'object' ? raw.addresses.evm : null);
         return {
             key,
+            // One identity, an address per chain family: `key` on Solana, and an EVM address only when
+            // the member published (and proved) one. A member is available only where it has an address.
+            addresses: { solana: key, evm: isEvmAddress(evm) ? evm : null },
             kind: cleanText(raw.kind),
             name: cleanText(raw.name),
             description: cleanText(raw.description),
             coverage: Object.fromEntries(COVERAGE_KEYS.map(name => [name, count(coverage[name])])),
-            serviceUrl: normalizeServiceUrl(raw.serviceUrl ?? raw.service_url),
-            // The address the member attests with on EVM (EAS), only when it publishes one.
-            ...(isEvmAddress(evmAddress) ? { evmAddress } : {})
+            serviceUrl: normalizeServiceUrl(raw.serviceUrl ?? raw.service_url)
         };
     }
 
@@ -134,9 +144,45 @@
         return members;
     }
 
+    // The member's address on a chain family ('solana' | 'evm'), or null when it has none there.
+    function memberAddress(member, family) {
+        const address = member && member.addresses ? member.addresses[family] : null;
+        return address && keyFamily(address) === family ? address : null;
+    }
+
+    // The directory member that published `address` on any chain, or null.
+    function findMember(members, address) {
+        return (members || []).find(member => member && member.addresses
+            && Object.values(member.addresses).some(value => sameAddress(value, address))) || null;
+    }
+
     function memberLabel(key, members) {
-        const member = (members || []).find(entry => entry && entry.key === key);
+        const member = findMember(members, key);
         return (member && member.name) || shortKey(key);
+    }
+
+    // The addresses of `lens` (keys or { address } entries) that are not of `family`: what keeps a lens
+    // off that chain. An agreement lives on its sponsor's chain and its lens names only that chain's addresses.
+    function lensOffChain(lens, family) {
+        return (Array.isArray(lens) ? lens : [])
+            .map(entry => (typeof entry === 'string' ? entry : (entry && (entry.address || entry.key)) || ''))
+            .filter(address => address && keyFamily(address) !== family);
+    }
+
+    /**
+     * The lens an agreement on chain `family` can name from the directory: `candidates`, every member
+     * with an address there ({ member, address }), and `addresses`, those of the candidates `preferred`
+     * names by any of their addresses (the person's lens setting, or the lens of the agreement it
+     * starts from), or every candidate's when it names none of them. Empty when no member has an
+     * address on that chain: then no lens can be offered, never a mixed one.
+     */
+    function chainLens({ members = [], family, preferred = [] } = {}) {
+        const candidates = (members || []).map(member => ({ member, address: memberAddress(member, family) })).filter(entry => entry.address);
+        const wanted = (Array.isArray(preferred) ? preferred : [])
+            .map(entry => (typeof entry === 'string' ? entry : (entry && (entry.address || entry.key)) || ''))
+            .filter(Boolean);
+        const chosen = candidates.filter(entry => wanted.some(address => Object.values(entry.member.addresses || {}).some(value => sameAddress(value, address))));
+        return { candidates, addresses: (chosen.length ? chosen : candidates).map(entry => entry.address) };
     }
 
     // results: [{ memberKey, parcelUid, attestations: [...] | null }] where null means the member's
@@ -195,14 +241,14 @@
             || String(a.name || a.key).localeCompare(String(b.name || b.key)));
     }
 
-    // Splits pasted text on whitespace/commas/semicolons into valid keys and rejected tokens.
-    function parsePastedKeys(text) {
+    // Splits pasted text on whitespace/commas/semicolons into valid keys of `family` and rejected tokens.
+    function parsePastedKeys(text, family = 'solana') {
         const tokens = String(text || '').split(/[\s,;]+/).map(token => token.trim()).filter(Boolean);
         const keys = [];
         const invalid = [];
         for (const token of tokens) {
-            if (isBase58Pubkey(token)) {
-                if (!keys.includes(token)) keys.push(token);
+            if (keyFamily(token) === family) {
+                if (!keys.some(key => sameAddress(key, token))) keys.push(token);
             } else {
                 invalid.push(token);
             }
@@ -353,11 +399,17 @@
         isBase58Pubkey,
         isEvmAddress,
         isChainKey,
+        keyFamily,
+        sameAddress,
         shortKey,
         normalizeServiceUrl,
         normalizeMember,
         normalizeDirectory,
         memberLabel,
+        memberAddress,
+        findMember,
+        lensOffChain,
+        chainLens,
         computeParcelCoverage,
         isParcelCoveredBy,
         filterParcelsByLens,

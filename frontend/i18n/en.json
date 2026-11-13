@@ -2567,6 +2567,10 @@
                 "pastePlaceholder": "Base58 public key",
                 "pasteAdd": "Add",
                 "pasteInvalid": "Not a Solana public key: {{value}}",
+                "pasteInvalidEvm": "Not an EVM address: {{value}}",
+                "pastePlaceholderEvm": "0x address",
+                "requiredEvm": "Choose at least one lens member with an EVM address.",
+                "noneOnChain": "No lens member publishes an address on {{chain}}, so this lens cannot name one there.",
                 "chosenCount": {
                     "one": "{{count}} lens member chosen",
                     "other": "{{count}} lens members chosen"
@@ -8109,6 +8113,7 @@
                 "notFound": "This agreement is not on the server.",
                 "missing": "The agreement is no longer on this device.",
                 "designMissing": "A design of this agreement is no longer on this device.",
+                "lensChain": "The lens names {{address}}, which is not an address on {{chain}}, but the connected wallet sponsors this agreement on {{chain}}. Edit the lens to name members on {{chain}}, or connect a wallet of the lens’s chain.",
                 "planRequired": "This agreement has no valid plan reference. Recreate it with a plan."
             },
             "route": {
@@ -8123,6 +8128,13 @@
             "message": "Add “{{title}}” to a new agreement, or to one not proposed yet.",
             "new": "New agreement",
             "alreadyIn": "“{{title}}” is already in this agreement."
+        },
+        "lens": {
+            "onChain": "{{count}} lens member(s) on {{chain}}, the chain of the sponsor’s wallet.",
+            "loading": "Loading the lens members on {{chain}}…",
+            "loadFailed": "Could not load the lens members: {{error}}",
+            "noneOnChain": "No lens member publishes an address on {{chain}}, so this agreement cannot name a lens on {{chain}}.",
+            "offChain": "The lens names {{address}}, which is not an address on {{chain}}, where this agreement’s sponsor mints it. Choose its members again."
         },
         "chain": {
             "heading": "On chain",

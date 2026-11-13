@@ -18,7 +18,7 @@ describe('GET /lenses/members', () => {
     const pool = {
         query: vi.fn(async () => ({
             rows: [
-                { key: KEY, kind: 'owner-consent', name: 'notary-01', description: 'Devnet reference member', service_url: 'https://attester.example.test/requests', coverage: { ownership: 3, parcels: '2', executed: 1 }, metadata_uri: 'ignored' },
+                { key: KEY, evm_address: '0x2F4cE2B5ed2a1C1aF7D0eb0B33e3Fc5EC5a1FbD0', kind: 'owner-consent', name: 'notary-01', description: 'Devnet reference member', service_url: 'https://attester.example.test/requests', coverage: { ownership: 3, parcels: '2', executed: 1 }, metadata_uri: 'ignored' },
                 { key: 'G4R6RCCcQHN9fLoExvTBBfhbw8BgvTEqhJezG3A1HvEg', kind: null, name: null, description: null, coverage: {} }
             ]
         }))
@@ -30,12 +30,13 @@ describe('GET /lenses/members', () => {
         expect(res.headers['cache-control']).toBe('no-store');
         expect(res.body).toEqual({
             members: [
-                { key: KEY, kind: 'owner-consent', name: 'notary-01', description: 'Devnet reference member', serviceUrl: 'https://attester.example.test/requests', registeredAt: null, coverage: { ownership: 3, parcels: 2, executed: 1 } },
-                { key: 'G4R6RCCcQHN9fLoExvTBBfhbw8BgvTEqhJezG3A1HvEg', kind: null, name: null, description: null, serviceUrl: null, registeredAt: null, coverage: { ownership: 0, parcels: 0, executed: 0 } }
+                { key: KEY, addresses: { solana: KEY, evm: '0x2F4cE2B5ed2a1C1aF7D0eb0B33e3Fc5EC5a1FbD0' }, kind: 'owner-consent', name: 'notary-01', description: 'Devnet reference member', serviceUrl: 'https://attester.example.test/requests', registeredAt: null, coverage: { ownership: 3, parcels: 2, executed: 1 } },
+                { key: 'G4R6RCCcQHN9fLoExvTBBfhbw8BgvTEqhJezG3A1HvEg', addresses: { solana: 'G4R6RCCcQHN9fLoExvTBBfhbw8BgvTEqhJezG3A1HvEg', evm: null }, kind: null, name: null, description: null, serviceUrl: null, registeredAt: null, coverage: { ownership: 0, parcels: 0, executed: 0 } }
             ]
         });
         expect(pool.query.mock.calls.at(-1)[0]).toContain('FROM consensus.lens_member');
         expect(pool.query.mock.calls.at(-1)[0]).toContain('service_url');
+        expect(pool.query.mock.calls.at(-1)[0]).toContain('evm_address');
     });
 
     it('answers 500 when the table cannot be read', async () => {

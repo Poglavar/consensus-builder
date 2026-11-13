@@ -1236,6 +1236,10 @@
                 "pastePlaceholder": "Chave pública Base58",
                 "pasteAdd": "Adicionar",
                 "pasteInvalid": "Não é uma chave pública Solana: {{value}}",
+                "pasteInvalidEvm": "Não é um endereço EVM: {{value}}",
+                "pastePlaceholderEvm": "Endereço 0x",
+                "requiredEvm": "Escolha pelo menos um membro da lente com um endereço EVM.",
+                "noneOnChain": "Nenhum membro da lente publica um endereço em {{chain}}, pelo que esta lente não pode indicar nenhum aí.",
                 "chosenCount": {
                     "one": "{{count}} membro da lente escolhido",
                     "other": "{{count}} membros da lente escolhidos"
@@ -1734,6 +1738,13 @@
             "severalList": "Várias porções:",
             "heading": "Resultados de propriedade"
         },
+        "lens": {
+            "onChain": "{{count}} membro(s) da lente em {{chain}}, a cadeia da carteira do patrocinador.",
+            "loading": "A carregar os membros da lente em {{chain}}…",
+            "loadFailed": "Não foi possível carregar os membros da lente: {{error}}",
+            "noneOnChain": "Nenhum membro da lente publica um endereço em {{chain}}, pelo que este acordo não pode indicar uma lente em {{chain}}.",
+            "offChain": "A lente indica {{address}}, que não é um endereço em {{chain}}, onde o patrocinador emite este acordo. Escolha de novo os seus membros."
+        },
         "chain": {
             "actions": {
                 "cancel": "Cancelar",
@@ -1915,6 +1926,7 @@
                 "notFound": "Este acordo não está no servidor.",
                 "missing": "O acordo já não está neste dispositivo.",
                 "designMissing": "Um projeto deste acordo já não está neste dispositivo.",
+                "lensChain": "A lente indica {{address}}, que não é um endereço em {{chain}}, mas a carteira ligada patrocina este acordo em {{chain}}. Edite a lente para indicar membros em {{chain}}, ou ligue uma carteira da cadeia da lente.",
                 "planRequired": "Este acordo não tem uma referência de plano válida. Volte a criá-lo com um plano."
             }
         },

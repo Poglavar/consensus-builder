@@ -38,7 +38,7 @@ import { ensurePledgeBookAndSet } from './pledger.js';
 import { createRpcConnection } from '../solana/rpc.js';
 import { sendAndConfirmPolling } from './solana-send.js';
 import { createPaidClient } from './x402-client.js';
-import { fetchLensMembers, parseLensList } from './lens-directory-client.js';
+import { fetchLensMembers, lensChainProblem, membersOnChain, parseLensList } from './lens-directory-client.js';
 import { requestOwnershipAttestation } from './lens-ownership-client.js';
 import { createIndexClient } from './publication-client.js';
 import { AGREEMENT_SCHEMA, DESIGN_SCHEMA, agreementObject, cidOfObject, designObject, isCid } from './agreement-objects.js';
@@ -444,9 +444,12 @@ export function createUrbanGameTheoryTools({
             withQuery(apiBase, '/oracle/events', { subject: agreementAccount, limit })
         ),
 
-        async listAttesters({ kind } = {}) {
-            const members = await impl.fetchLensMembers({ apiBase, fetchImpl });
-            return { members: kind ? members.filter(member => member.kind === kind) : members };
+        // `chain` ('solana' | 'evm') keeps the members available on that chain, each with `address`, its
+        // address there: what an agreement whose sponsor mints on that chain names in rule.lens.
+        async listAttesters({ kind, chain } = {}) {
+            if (chain && chain !== 'solana' && chain !== 'evm') throw new Error(`chain must be solana or evm, not ${chain}`);
+            const members = (await impl.fetchLensMembers({ apiBase, fetchImpl })).filter(member => !kind || member.kind === kind);
+            return { members: chain ? membersOnChain(members, chain).map(({ member, address }) => ({ ...member, address })) : members };
         },
 
         // Challenge → sign with UGT_AGENT_KEYPAIR → POST /lens/ownership on the member's own service.
@@ -513,6 +516,11 @@ export function createUrbanGameTheoryTools({
                 state.cid = cid; checkRevision(cid, expectedCid, referenceInput(agreement));
                 const plan = source.plan;
                 if (!plan || cidOfObject(plan.content) !== plan.cid || plan.cid !== content.planCid) throw Object.assign(new Error('The agreement plan does not match its plan CID.'), { code: 'plan-cid-mismatch' });
+                // The sponsor's wallet decides the chain, and the lens holds only addresses of that chain.
+                if (lensChainProblem({ sponsor: content.sponsor, lens: content.rule?.lens })) {
+                    const members = await impl.fetchLensMembers({ apiBase, fetchImpl }).catch(() => null);
+                    throw Object.assign(new Error(lensChainProblem({ sponsor: content.sponsor, lens: content.rule?.lens, members })), { code: 'lens-chain-mismatch' });
+                }
                 const linked = new Set(plan.content.designCids);
                 const carried = [];
                 for (const input of [...source.designs, ...designs]) {

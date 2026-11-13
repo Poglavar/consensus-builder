@@ -464,3 +464,19 @@ describe('editing a proposed agreement', () => {
 
     });
 });
+
+describe('the lens on the sponsor\'s chain', () => {
+    const SOLANA = 'GmaDrppBC7P5ARKV8g3djiwP89vz1jLK23V2GBjuAEGB';
+    const candidate = { member: { key: SOLANA }, address: SOLANA };
+    it('says how many members the lens names on the sponsor\'s chain, and plainly when none can be named', () => {
+        expect(Dialog.lensStatus({ family: 'solana', directory: { status: 'ready', candidates: [candidate] }, lens: [SOLANA] }))
+            .toEqual({ alert: false, text: '1 lens member(s) on Solana, the chain of the sponsor’s wallet.' });
+        expect(Dialog.lensStatus({ family: 'evm', directory: { status: 'ready', candidates: [] }, lens: [] }))
+            .toEqual({ alert: true, text: 'No lens member publishes an address on EVM, so this agreement cannot name a lens on EVM.' });
+        expect(Dialog.lensStatus({ family: 'evm', directory: { status: 'loading' } }).text).toBe('Loading the lens members on EVM…');
+        expect(Dialog.lensStatus({ family: 'evm', directory: { status: 'error', error: 'HTTP 502' } })).toMatchObject({ alert: true, text: expect.stringContaining('HTTP 502') });
+        // A lens naming another chain's address is an alert whatever the directory says.
+        expect(Dialog.lensStatus({ family: 'evm', directory: { status: 'ready', candidates: [candidate] }, lens: [SOLANA] }, [SOLANA]))
+            .toMatchObject({ alert: true, text: expect.stringContaining(`names ${SOLANA}, which is not an address on EVM`) });
+    });
+});

@@ -1236,6 +1236,10 @@
                 "pastePlaceholder": "Clé publique Base58",
                 "pasteAdd": "Ajouter",
                 "pasteInvalid": "Ce n’est pas une clé publique Solana : {{value}}",
+                "pasteInvalidEvm": "Ce n’est pas une adresse EVM : {{value}}",
+                "pastePlaceholderEvm": "Adresse 0x",
+                "requiredEvm": "Choisissez au moins un membre du prisme ayant une adresse EVM.",
+                "noneOnChain": "Aucun membre du prisme ne publie d’adresse sur {{chain}} ; ce prisme ne peut donc en désigner aucun.",
                 "chosenCount": {
                     "one": "{{count}} membre du prisme choisi",
                     "other": "{{count}} membres du prisme choisis"
@@ -1734,6 +1738,13 @@
             "severalList": "Plusieurs portions :",
             "heading": "Résultats de propriété"
         },
+        "lens": {
+            "onChain": "{{count}} membre(s) du prisme sur {{chain}}, la chaîne du portefeuille du sponsor.",
+            "loading": "Chargement des membres du prisme sur {{chain}}…",
+            "loadFailed": "Impossible de charger les membres du prisme : {{error}}",
+            "noneOnChain": "Aucun membre du prisme ne publie d’adresse sur {{chain}} ; cet accord ne peut donc pas désigner de prisme sur {{chain}}.",
+            "offChain": "Le prisme désigne {{address}}, qui n’est pas une adresse sur {{chain}}, où le sponsor de cet accord l’inscrit. Choisissez de nouveau ses membres."
+        },
         "chain": {
             "actions": {
                 "cancel": "Annuler",
@@ -1915,6 +1926,7 @@
                 "notFound": "Cet accord ne se trouve pas sur le serveur.",
                 "missing": "L’accord ne se trouve plus sur cet appareil.",
                 "designMissing": "Un projet de cet accord ne se trouve plus sur cet appareil.",
+                "lensChain": "Le prisme désigne {{address}}, qui n’est pas une adresse sur {{chain}}, mais le portefeuille connecté parraine cet accord sur {{chain}}. Modifiez le prisme pour désigner des membres sur {{chain}}, ou connectez un portefeuille de la chaîne du prisme.",
                 "planRequired": "Cet accord ne comporte aucune référence de plan valide. Recréez-le avec un plan."
             }
         },

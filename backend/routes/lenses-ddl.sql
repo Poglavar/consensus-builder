@@ -4,7 +4,7 @@
 CREATE SCHEMA IF NOT EXISTS consensus;
 
 CREATE TABLE IF NOT EXISTS consensus.lens_member (
-    key           text PRIMARY KEY,           -- base58 SAS authority public key
+    key           text PRIMARY KEY,           -- base58 SAS authority public key: the member's Solana address
     kind          text,                       -- what the member attests: owner-consent | court | permit | imagery | osm | lifecycle
     name          text,
     description   text,
@@ -22,6 +22,9 @@ ALTER TABLE consensus.lens_member ADD COLUMN IF NOT EXISTS service_url text;
 -- Self-registration (POST /lenses/members): the member's SAS credential name and its own signed time.
 ALTER TABLE consensus.lens_member ADD COLUMN IF NOT EXISTS credential_name text;
 ALTER TABLE consensus.lens_member ADD COLUMN IF NOT EXISTS registered_at timestamptz;
+-- The member's address on EVM chains, proven at registration by an EIP-191 signature of that address
+-- (oracle/lens-registration.js); null for a member that publishes none. `key` is its Solana address.
+ALTER TABLE consensus.lens_member ADD COLUMN IF NOT EXISTS evm_address text;
 
 DO $$
 BEGIN

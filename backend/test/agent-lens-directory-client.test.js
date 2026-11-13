@@ -3,7 +3,7 @@
 // order). The proposer runner names the lens member it operates instead of choosing from the directory.
 import { describe, expect, it } from 'vitest';
 import { Keypair } from '@solana/web3.js';
-import { fetchLensMembers, normalizeLensKey, parseLensList } from '../agents/lens-directory-client.js';
+import { fetchLensMembers, lensChainProblem, memberAddress, memberOf, membersOnChain, normalizeLensKey, parseLensList } from '../agents/lens-directory-client.js';
 
 const key = () => Keypair.generate().publicKey.toBase58();
 const [A, B] = [key(), key()];
@@ -33,6 +33,35 @@ describe('fetchLensMembers', () => {
         await expect(fetchLensMembers({ apiBase: 'http://x', fetchImpl: directoryFetch('<html>').fetchImpl, retryOptions })).rejects.toThrow(/did not return JSON/);
         await expect(fetchLensMembers({ apiBase: 'http://x', fetchImpl: directoryFetch({ lenses: [] }).fetchImpl, retryOptions })).rejects.toThrow(/no members array/);
         await expect(fetchLensMembers({ fetchImpl: directoryFetch({ members: [] }).fetchImpl, retryOptions })).rejects.toThrow(/apiBase is required/);
+    });
+});
+
+describe('one member, an address per chain', () => {
+    const EVM = '0x2F4cE2B5ed2a1C1aF7D0eb0B33e3Fc5EC5a1FbD0';
+    const both = { ...member(A, 'owner-consent'), addresses: { solana: A, evm: EVM } };
+    const solanaOnly = { ...member(B, 'lifecycle'), addresses: { solana: B, evm: null } };
+
+    it('makes a member available only on the chains it published an address for', () => {
+        expect(memberAddress(both, 'evm')).toBe(EVM);
+        expect(memberAddress(solanaOnly, 'evm')).toBeNull();
+        // An address of the wrong family under a family's name is not an address there.
+        expect(memberAddress({ addresses: { evm: A } }, 'evm')).toBeNull();
+        expect(membersOnChain([both, solanaOnly], 'evm')).toEqual([{ member: both, address: EVM }]);
+        expect(membersOnChain([both, solanaOnly], 'solana').map(entry => entry.address)).toEqual([A, B]);
+        expect(memberOf([both, solanaOnly], EVM.toLowerCase())).toBe(both);
+        expect(memberOf([both, solanaOnly], B)).toBe(solanaOnly);
+        expect(memberOf([both], key())).toBeNull();
+    });
+
+    it('accepts a lens of the sponsor\'s chain only, naming the member\'s address there', () => {
+        expect(lensChainProblem({ sponsor: A, lens: [A, B] })).toBeNull();
+        expect(lensChainProblem({ sponsor: EVM, lens: [EVM.toLowerCase()] })).toBeNull();
+        // Without a sponsor nothing is minted.
+        expect(lensChainProblem({ sponsor: null, lens: [A, EVM] })).toBeNull();
+        expect(lensChainProblem({ sponsor: EVM, lens: [A] })).toMatch(new RegExp(`rule.lens names ${A}, which is not an EVM address`));
+        expect(lensChainProblem({ sponsor: EVM, lens: [A], members: [both] })).toMatch(new RegExp(`that member's EVM address is ${EVM}`));
+        expect(lensChainProblem({ sponsor: EVM, lens: [B], members: [both, solanaOnly] })).toMatch(/that member publishes no EVM address/);
+        expect(lensChainProblem({ sponsor: A, lens: [A, EVM] })).toMatch(/not a Solana address/);
     });
 });
 

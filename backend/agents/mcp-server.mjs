@@ -153,8 +153,11 @@ export function createUrbanGameTheoryMcpServer({ mode = 'local', env = process.e
 
     server.registerTool('ugt_list_attesters', {
         title: 'List lens members (attesters)',
-        description: 'Read the attester directory: lens members with kind and coverage. Pick a binding owners\' agreement\'s lens from it (rule.lens, one key): the member verifies the owners\' receipts and attests their decision, and the agreement program accepts the decision only from the lens key its account names.',
-        inputSchema: z.object({ kind: z.string().optional().describe('Only members of this kind, for example owner-consent') }),
+        description: 'Read the attester directory: lens members with kind, coverage and their address per chain (addresses.solana, addresses.evm; null where a member publishes none). Pick a binding owners\' agreement\'s lens from it (rule.lens, one address): the member verifies the owners\' receipts and attests their decision, and the agreement program accepts the decision only from the lens address its account names. The lens holds only addresses of the sponsor\'s chain: give chain (solana for a base58 sponsor, evm for a 0x sponsor) to list the members available there, each with `address`, the one to name.',
+        inputSchema: z.object({
+            kind: z.string().optional().describe('Only members of this kind, for example owner-consent'),
+            chain: z.enum(['solana', 'evm']).optional().describe('Only members with an address on this chain, each with `address`, its address there')
+        }),
         annotations: READ_ONLY
     }, handler(args => actions.listAttesters(args)));
 

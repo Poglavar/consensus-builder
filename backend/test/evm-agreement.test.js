@@ -253,7 +253,11 @@ describe('EvmAgreementBridge (browser)', () => {
         const info = vi.spyOn(console, 'info').mockImplementation(() => {});
         const listed = { kind: 'decision', chain: 'evm', chainId: '84532', uid: UID, address: UID, payload: { agreementCid: CID, sponsor: SPONSOR, decision: 'satisfied' } };
         const fetchAttestations = vi.fn(async () => ({ status: 200, attestations: [listed] }));
-        const win = { LensPicker: { loadDirectory: async () => ({ members: [{ key: 'GDYnzduynKhKgxDhvvKVarn2s23DtzA26s6hycuUYDRB', evmAddress: LENS.toLowerCase(), serviceUrl: 'https://lens.example' }] }) }, LensServiceClient: { fetchAttestations } };
+        // A member with no EVM address is not the lens of an EVM agreement, whatever else it lists.
+        const members = LensCore.normalizeDirectory({ members: [
+            { key: 'AMbsiP9F8YY2y8n9uFdqtw7yNZZHvTWFEWSQGHKtmkoQ', addresses: { solana: 'AMbsiP9F8YY2y8n9uFdqtw7yNZZHvTWFEWSQGHKtmkoQ', evm: null }, serviceUrl: 'https://other.example' },
+            { key: 'GDYnzduynKhKgxDhvvKVarn2s23DtzA26s6hycuUYDRB', addresses: { solana: 'GDYnzduynKhKgxDhvvKVarn2s23DtzA26s6hycuUYDRB', evm: LENS.toLowerCase() }, serviceUrl: 'https://lens.example' }] });
+        const win = { LensCore, LensPicker: { loadDirectory: async () => ({ members }) }, LensServiceClient: { fetchAttestations } };
         // The lookup needs no wallet or contract: the directory and the member's service are enough.
         const withLens = Bridge.browser(win);
         await expect(withLens.findAttestation(mintedOn(key), value)).resolves.toEqual({ uid: UID, address: UID, decision: 'satisfied', member: 'GDYnzduynKhKgxDhvvKVarn2s23DtzA26s6hycuUYDRB' });

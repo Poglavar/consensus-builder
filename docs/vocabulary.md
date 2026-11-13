@@ -757,15 +757,19 @@ The area-weighted support defined by an approval rule and rights shares. A parce
 
 ### Lens
 
-The selected verification trust set for an agreement or assertion. A lens identifies whose attestations the relevant rule accepts, independently of the owners' own decisions.
+The selected verification trust set for an agreement or assertion. A lens identifies whose attestations the relevant rule accepts, independently of the owners' own decisions. An agreement lives on one chain, the chain of its sponsor's wallet (a base58 sponsor on Solana, a 0x sponsor on EVM), and its `rule.lens` holds only addresses of that chain, never a mix: its members' Solana keys on Solana, their EVM addresses on EVM.
 
 ### Lens preference
 
-A person's editable, chain-specific default trust set, persisted in the browser and shared by agent details and agreement authoring. Editing either shared lens dialog updates this default for future use. A new agreement copies its keys; an existing agreement keeps its own lens snapshot. Merely opening an existing agreement's lens does not replace the default. Changing the default never rewrites saved agreements.
+A person's editable, chain-specific default trust set, persisted in the browser and shared by agent details and agreement authoring. Editing either shared lens dialog updates this default for future use. A new agreement takes the lens directory's members on its sponsor's chain that this default names (by any of their addresses), or all of them when it names none, by their addresses on that chain; an existing agreement keeps its own lens snapshot. Merely opening an existing agreement's lens does not replace the default. Changing the default never rewrites saved agreements.
 
 ### Lens member
 
-An attester belonging to a lens, identified by its chain-qualified authority key and associated service or coverage information. Directory membership is not an owner's vote.
+An attester belonging to a lens: one identity, a notary or an organisation, with an address per chain family it publishes, a Solana key, an EVM address or both, each proven by a signature from that key. It is available only on the chains whose address it published, and an agreement names it by its address on the agreement's chain. Its service and coverage information belong to the identity, not to an address. Directory membership is not an owner's vote.
+
+### Lens directory
+
+The attester directory (`GET /lenses/members`, `consensus.lens_member`): the lens members that listed themselves, each with `key` (its Solana key, the identity's id) and `addresses` (`solana`, and `evm` or null). A member lists itself with a registration its Solana key signs; an EVM address in it is listed only with that address's EIP-191 signature of a statement naming the member and the registration time, and only when the member's service attests EVM decisions as that address. A newer registration replaces the entry, an EVM address included. Listing is informational; no program reads it.
 
 ### Attestation
 

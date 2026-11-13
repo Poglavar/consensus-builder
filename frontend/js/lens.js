@@ -612,6 +612,9 @@
     window.showLensModal = showLensModal;
     window.closeLensModal = closeLensModal;
     window.getLensEntries = getLensEntriesForActivePath;
+    // The EVM default lens, which the lens picker writes when it edits a lens for EVM (an agreement
+    // sponsored from an EVM wallet).
+    window.setEvmLensEntries = updateLensEntries;
     window.isSolanaLensPath = isSolanaLensPath;
     window.getLensPatternDataUrl = getLensPatternDataUrl;
     window.refreshLensPatternPreviews = refreshLensPatternPreviews;

@@ -33,7 +33,7 @@ const SOL = 1_000_000_000n;
 // A new agreement over a saved plan of the applied layout: owners or a community vote, a title, and
 // for owners an explicit Binding tick (a new agreement is a non-binding vote, 58ede10da) and the lens
 // member the rule names (the member a mint names), saved; its panel current.
-async function saveAgreement(page: Page, layoutId: string, { community = false, walletConnected = false } = {}): Promise<Locator> {
+async function saveAgreement(page: Page, layoutId: string, { community = false } = {}): Promise<Locator> {
   const editor = await createFromPlan(page, layoutId);
   await editor.getByRole('tab', { name: 'Rules', exact: true }).click();
   await editor.locator('[data-agreement-title]').fill(TITLE);
@@ -42,21 +42,12 @@ async function saveAgreement(page: Page, layoutId: string, { community = false, 
     const binding = editor.locator('[data-agreement-binding]');
     await expect(binding).not.toBeChecked();
     await binding.check();
-    // The rule's lens is edited in the lens dialog; the agreement keeps its own snapshot of it. With
-    // a Solana wallet connected the dialog lists the lens directory's members to tick; without one
-    // it takes typed addresses.
+    // The rule's lens is edited in the lens dialog; the agreement keeps its own snapshot of it. The
+    // dialog lists the lens directory's members on the sponsor's chain (Solana, with a Solana wallet
+    // or none), and a new agreement starts with them: here the directory's one member.
     await editor.locator('[data-agreement-action="lens"]').click();
     const lens = page.locator('.lens-modal');
-    if (walletConnected) await lens.getByRole('checkbox', { name: new RegExp(E2E_LENS_MEMBER_KEY) }).check();
-    else {
-      // The member is the lens's only entry: the default entries go.
-      const addresses = lens.locator('.lens-address-input');
-      await addresses.first().fill(E2E_LENS_MEMBER_KEY);
-      for (let count = await addresses.count(); count > 1; count -= 1) {
-        await lens.locator('.lens-remove-btn').last().click();
-        await expect(addresses).toHaveCount(count - 1);
-      }
-    }
+    await expect(lens.getByRole('checkbox', { name: new RegExp(E2E_LENS_MEMBER_KEY) })).toBeChecked();
     await lens.locator('.lens-close-btn').click();
     await expect(lens).toHaveCount(0);
   }
@@ -213,7 +204,7 @@ test.describe('Agreements on chain @core', () => {
     await serveAgreementAccounts(page, accounts);
     const { layoutId } = await applyLayout(page);
     await connectWalletByConnectorId(page, 'solana-phantom');
-    const panel = await saveAgreement(page, layoutId, { walletConnected: true });
+    const panel = await saveAgreement(page, layoutId);
     await propose(page, panel);
     const index = pageIndex(page);
     const [cid] = [...index.agreements.keys()];

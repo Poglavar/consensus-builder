@@ -242,6 +242,16 @@ describe('publishing designs and agreements', () => {
             .rejects.toThrow(/agreement.sponsor must be the base58 wallet/);
         expect(api.posts()).toEqual([]);
     });
+
+    it('refuses an agreement whose lens names an address of another chain than its sponsor\'s', async () => {
+        const evmSponsor = new ethers.Wallet(`0x${'33'.repeat(32)}`).address;
+        const mixed = agreementOf({ sponsor: evmSponsor });
+        const api = fakeApi({ plans: [mixed.plan] });
+        const tools = createUrbanGameTheoryTools({ env: LIVE, fetchImpl: api.fetchImpl });
+        await expect(tools.proposeAgreement({ agreement: mixed.content, designs: [{ content: design.content }], confirm: true }))
+            .rejects.toMatchObject({ code: 'lens-chain-mismatch', message: expect.stringContaining(`rule.lens names ${LENS}, which is not an EVM address`) });
+        expect(api.posts()).toEqual([]);
+    });
 });
 
 describe('minting and funding', () => {

@@ -383,7 +383,9 @@ export function setupDocsRoute(app, pool, { env = process.env } = {}) {
                     ruleField: 'rule.lens',
                     programLens: 'the agreement program names exactly one lens key per account; it must not be the sponsor',
                     members: `${base}/agent/lenses/members`,
-                    memberFields: ['key', 'kind', 'name', 'description', 'serviceUrl', 'registeredAt', 'coverage'],
+                    memberFields: ['key', 'addresses', 'kind', 'name', 'description', 'serviceUrl', 'registeredAt', 'coverage'],
+                    // One identity per member, an address per chain family; the lens names the sponsor's chain's.
+                    memberAddresses: 'addresses.solana (the key) and addresses.evm (null when the member publishes none); an agreement\'s rule.lens holds only addresses of its sponsor\'s chain',
                     memberKinds: ['owner-consent', 'court', 'permit', 'imagery', 'osm', 'lifecycle'],
                     kindMeaning: 'what the member attests, not who it is',
                     schemas: `${base}/lenses/schemas`,

@@ -183,6 +183,13 @@
             const state = manager && typeof manager.getState === 'function' ? manager.getState() : null;
             return state && state.status === 'connected' && Array.isArray(state.accounts) && state.accounts.length ? String(state.accounts[0]) : null;
         };
+        // The chain family the agreement would be sponsored on now, by the same order: 'solana', 'evm'
+        // or null. The agreement dialog offers the lens members of this chain (an agreement's lens names
+        // only addresses of its sponsor's chain).
+        function sponsorFamily() {
+            if (connectedAccount(win.solanaWalletManager)) return 'solana';
+            return connectedAccount(win.walletManager) ? 'evm' : null;
+        }
         async function sponsorKey() {
             const solana = connectedAccount(win.solanaWalletManager);
             if (solana) return solana;
@@ -277,6 +284,16 @@
             if (!checked.valid) throw failure('invalid-agreement', checked.errors[0].message);
             const nameNeeded = win.guestPolicyBlocks('publish');
             if (nameNeeded) throw failure('name-needed', nameNeeded, { cancelled: true });
+            // The sponsor's wallet decides the chain, and the lens names only addresses of that chain.
+            const sponsor = await sponsorKey();
+            const family = sponsor ? win.LensCore.keyFamily(sponsor) : null;
+            const offChain = family ? win.LensCore.lensOffChain(agreement.rule.lens, family) : [];
+            if (offChain.length) {
+                const chain = family === 'evm' ? 'EVM' : 'Solana';
+                throw failure('lens-chain-mismatch', t('agreement.publish.errors.lensChain',
+                    'The lens names {{address}}, which is not an address on {{chain}}, but the connected wallet sponsors this agreement on {{chain}}. Edit the lens to name members on {{chain}}, or connect a wallet of the lens’s chain.',
+                    { address: offChain[0], chain }));
+            }
 
             // Each design as it is published (an own draft carries the current profile's name first).
             const cids = new Map();
@@ -301,7 +318,7 @@
             }
             agreement = store().save({ ...agreement, plan });
 
-            const content = contentOf(agreement, { author: authorName(), sponsor: await sponsorKey() }, proposalId => (cids.has(proposalId) ? cids.get(proposalId) : null));
+            const content = contentOf(agreement, { author: authorName(), sponsor }, proposalId => (cids.has(proposalId) ? cids.get(proposalId) : null));
             const { cid } = win.DesignSync.addressObject(content);
             const response = await request('POST', '/agreements', { cid, content, plan });
             if (!response.ok && response.status !== 409) {
@@ -527,7 +544,7 @@
         }
 
         return {
-            publishAgreement, proposeAgain, fetchAgreement, fetchMinted, handleAgreementRoute, agreementLink, localCopyOf,
+            publishAgreement, proposeAgain, sponsorFamily, fetchAgreement, fetchMinted, handleAgreementRoute, agreementLink, localCopyOf,
             refusalMessage, recordOnchain, adoptOnchain, publishedObject, openDetails, resolveDetails
         };
     }

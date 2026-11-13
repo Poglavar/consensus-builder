@@ -2589,6 +2589,10 @@
                 "pastePlaceholder": "Javni ključ (base58)",
                 "pasteAdd": "Dodaj",
                 "pasteInvalid": "Nije Solana javni ključ: {{value}}",
+                "pasteInvalidEvm": "Nije EVM adresa: {{value}}",
+                "pastePlaceholderEvm": "0x adresa",
+                "requiredEvm": "Izaberite bar jednog člana sočiva sa EVM adresom.",
+                "noneOnChain": "Nijedan član sočiva ne objavljuje adresu na mreži {{chain}}, pa ovo sočivo tamo ne može imenovati nijednog.",
                 "chosenCount": {
                     "one": "Izabran {{count}} član sočiva",
                     "few": "Izabrana {{count}} člana sočiva",
@@ -8153,6 +8157,7 @@
                 "notFound": "Ovaj sporazum nije na serveru.",
                 "missing": "Sporazum više nije na ovom uređaju.",
                 "designMissing": "Jedan od dizajna ovog sporazuma više nije na ovom uređaju.",
+                "lensChain": "Sočivo imenuje {{address}}, što nije adresa na mreži {{chain}}, a povezani novčanik sponzoriše ovaj sporazum na mreži {{chain}}. Uredite sočivo tako da imenuje članove na mreži {{chain}} ili povežite novčanik sa mreže sočiva.",
                 "planRequired": "Ovaj sporazum nema važeću vezu ka planu. Ponovo ga napravite sa planom."
             },
             "route": {
@@ -8169,6 +8174,13 @@
             "message": "Dodajte „{{title}}” u novi sporazum ili u neki koji još nije predložen.",
             "new": "Novi sporazum",
             "alreadyIn": "„{{title}}” je već u ovom sporazumu."
+        },
+        "lens": {
+            "onChain": "Članova sočiva na mreži {{chain}}, mreži novčanika sponzora: {{count}}.",
+            "loading": "Učitavanje članova sočiva na mreži {{chain}}…",
+            "loadFailed": "Članove sočiva nije moguće učitati: {{error}}",
+            "noneOnChain": "Nijedan član sočiva ne objavljuje adresu na mreži {{chain}}, pa ovaj sporazum ne može imenovati sočivo na mreži {{chain}}.",
+            "offChain": "Sočivo imenuje {{address}}, što nije adresa na mreži {{chain}}, gde sponzor ovog sporazuma kuje sporazum. Ponovo izaberite njegove članove."
         },
         "chain": {
             "heading": "Na lancu",

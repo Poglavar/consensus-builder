@@ -47,7 +47,7 @@ export function attestedUidOf(receipt, { eas, attester, schemaUid }) {
 }
 
 /** The EVM wallet of a private key; 'invalid-evm-key' without the key ever appearing in a message. */
-function walletOf(privateKey) {
+export function walletOf(privateKey) {
     try {
         return new ethers.Wallet(privateKey);
     } catch {

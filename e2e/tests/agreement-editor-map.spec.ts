@@ -128,9 +128,18 @@ test('agreement authoring blocks the map and page controls, contains focus and r
   expect(await page.evaluate(() => (window as any).agreementOutsideClicks.controls)).toBe(2);
 });
 
-test('shared striped lens edits persist as defaults while saved agreement lenses keep their own snapshot', async ({ mockApi: page }) => {
+// One lens member identity, an address per chain: A publishes a Solana key and an EVM address, B only a
+// Solana key. The dialog offers the members on the sponsor's chain and names them by that address.
+const MEMBER_A = 'GmaDrppBC7P5ARKV8g3djiwP89vz1jLK23V2GBjuAEGB';
+const MEMBER_A_EVM = '0x71C7656EC7ab88b098defB751B7401B5f6d8976F';
+const MEMBER_B = 'AMbsiP9F8YY2y8n9uFdqtw7yNZZHvTWFEWSQGHKtmkoQ';
+const directoryMember = (key: string, name: string, evm: string | null) => ({ key, addresses: { solana: key, evm }, kind: 'owner-consent', name, coverage: { ownership: 0, parcels: 0, executed: 0 } });
+
+test('the lens offers only the directory members on the sponsor\'s chain, by that address; saved agreements keep their own lens', async ({ mockApi: page }) => {
+  let members = [directoryMember(MEMBER_A, 'Notary A', MEMBER_A_EVM), directoryMember(MEMBER_B, 'Notary B', null)];
+  await page.route('**/lenses/members', route => route.fulfill({ json: { members } }));
   const { layoutId } = await applyLayout(page);
-  const initial = await page.evaluate(() => (window as any).getLensEntries().map((e: any) => e.address));
+  // No wallet connected: the agreement would be sponsored on Solana, where both members are.
   const editor = await create(page, layoutId);
   await editor.getByRole('tab', { name: 'Rules', exact: true }).click();
   const trigger = editor.locator('[data-agreement-action="lens"]');
@@ -139,28 +148,52 @@ test('shared striped lens edits persist as defaults while saved agreement lenses
   const row = await editor.locator('.agreement-lens__row').boundingBox(), button = await trigger.boundingBox();
   expect(Math.abs(button!.x + button!.width / 2 - row!.x - row!.width / 2)).toBeLessThan(1);
   expect(await trigger.evaluate(e => getComputedStyle(e).backgroundImage)).toContain('data:image/svg+xml');
+  const status = editor.locator('[data-agreement-lens-status]');
+  await expect(status).toHaveText('2 lens member(s) on Solana, the chain of the sponsor’s wallet.');
   await trigger.click();
   const lens = page.locator('.lens-modal');
-  await expect(lens.locator('.cb-dialog__title')).toHaveText('The lens through which I see the world');
-  await expect(lens.locator('.lens-address-input')).toHaveCount(initial.length);
-  const member = '0x1111111111111111111111111111111111111111';
-  await lens.locator('.lens-address-input').first().fill(member);
+  await expect(lens.getByRole('checkbox')).toHaveCount(2);
+  await expect(lens.getByRole('checkbox', { name: new RegExp(MEMBER_A) })).toBeChecked();
+  await lens.getByRole('checkbox', { name: new RegExp(MEMBER_B) }).uncheck();
   await lens.locator('.lens-close-btn').click();
+  await expect(status).toHaveText('1 lens member(s) on Solana, the chain of the sponsor’s wallet.');
   await editorSave(editor).click(); await expect(editor).toBeHidden();
-  const [saved] = await storedAgreements(page); expect(saved.rule.lens[0]).toBe(member);
-  await page.evaluate(() => { void (window as any).showLensModal(); });
-  await expect(lens.locator('.lens-address-input').first()).toHaveValue(member);
-  const other = '0x2222222222222222222222222222222222222222';
-  await lens.locator('.lens-address-input').first().fill(other); await lens.locator('.lens-close-btn').click();
+  const [saved] = await storedAgreements(page); expect(saved.rule.lens).toEqual([MEMBER_A]);
+  // The choice became the Solana default; the saved draft keeps its own lens when the default changes.
+  await page.evaluate(key => { (window as any).LensPicker.setEntries([{ address: key }]); }, MEMBER_B);
   await page.evaluate(id => { void (window as any).AgreementDialog.open({ agreementId: id }); }, saved.id);
   await editor.getByRole('tab', { name: 'Rules', exact: true }).click(); await trigger.click();
-  await expect(lens.locator('.lens-address-input').first()).toHaveValue(member);
-  expect(await page.evaluate(() => (window as any).getLensEntries()[0].address)).toBe(other);
+  await expect(lens.getByRole('checkbox', { name: new RegExp(MEMBER_A) })).toBeChecked();
+  await expect(lens.getByRole('checkbox', { name: new RegExp(MEMBER_B) })).not.toBeChecked();
   await lens.locator('.lens-close-btn').click();
   await editor.locator('.panel-footer [data-agreement-action="cancel"]').click();
-  await create(page, layoutId); await editorSave(editor).click();
-  const all = await storedAgreements(page); expect(all.find((r: any) => r.id !== saved.id).rule.lens[0]).toBe(other);
-  expect(all.find((r: any) => r.id === saved.id).rule.lens[0]).toBe(member);
+
+  // An EVM wallet sponsors: only member A has an EVM address, and the lens names that address.
+  await page.evaluate(address => {
+    const w = window as any;
+    w.solanaWalletManager.getState = () => ({ status: 'disconnected', accounts: [] });
+    w.walletManager.getState = () => ({ status: 'connected', accounts: [address], chainId: '0x14a34' });
+  }, MEMBER_A_EVM.toLowerCase());
+  await create(page, layoutId);
+  await editor.getByRole('tab', { name: 'Rules', exact: true }).click();
+  await expect(status).toHaveText('1 lens member(s) on EVM, the chain of the sponsor’s wallet.');
+  await trigger.click();
+  await expect(lens.getByRole('checkbox')).toHaveCount(1);
+  await expect(lens.getByRole('checkbox', { name: new RegExp(MEMBER_A_EVM) })).toBeChecked();
+  await lens.locator('.lens-close-btn').click();
+  await editorSave(editor).click(); await expect(editor).toBeHidden();
+  const evmDraft = (await storedAgreements(page)).find((r: any) => r.id !== saved.id);
+  expect(evmDraft.rule.lens).toEqual([MEMBER_A_EVM]);
+
+  // No member publishes an EVM address: the dialog says so and offers no lens.
+  members = [directoryMember(MEMBER_B, 'Notary B', null)];
+  await page.evaluate(() => (window as any).LensPicker.loadDirectory(true));
+  await create(page, layoutId);
+  await editor.getByRole('tab', { name: 'Rules', exact: true }).click();
+  await expect(status).toHaveText('No lens member publishes an address on EVM, so this agreement cannot name a lens on EVM.');
+  await expect(status).toHaveClass('agreement-alert');
+  await expect(trigger).toBeDisabled();
+  await editor.locator('.panel-footer [data-agreement-action="cancel"]').click();
 });
 
 test('public allocation updates compensation, rate and sponsor tally without editable person cash', async ({ mockApi: page }) => {
