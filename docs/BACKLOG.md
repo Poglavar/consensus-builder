@@ -1,6 +1,6 @@
 # Current priorities — 2026-10-02
 
-See [next-steps.md](next-steps.md) for the ordered release/hackathon plan and [TEST.md](TEST.md) for current evidence and limits. The historical ideas below remain a backlog, not release blockers.
+See [streamline.md](streamline.md) for the ordered release/hackathon plan and [Verify a change](development.md#verify-a-change) for current test scope and limits. The historical ideas below remain a backlog, not release blockers.
 
 Completed: broad headed coverage, 12 app regression fixes, circular simulation control, generic-owner localization, and crawlable planning/search entry points. Visible product copy must remain vendor-free.
 
