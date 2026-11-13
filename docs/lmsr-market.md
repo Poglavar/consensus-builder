@@ -210,11 +210,11 @@ does not restrict it.
 
 The parimutuel accounts created before the LMSR release remain historical chain state. The current
 source retains their old instructions and readers, but new frontend and points markets use the LMSR
-model. The devnet program has the account layout described here but not yet the rules above for
-cancellation, the grace boundary, the challenge window or the external-market timeout: they take
-effect when `proposal_market` and `agreement` are redeployed (the binary is about 570 KB, so a
-devnet upgrade may need `solana program extend` first). A completed public trade is not yet
-recorded.
+model. The devnet `proposal_market` and `agreement` programs run the rules above for cancellation,
+the grace boundary, the challenge window and the external-market timeout. Upgrading them left every
+existing account byte-identical, since the account layout did not change. A loader-v3 extend must
+add at least 10,240 bytes, so `proposal_market` was extended by that minimum. A completed public
+trade is not yet recorded.
 
 ## Test contract (streamline K7)
 
