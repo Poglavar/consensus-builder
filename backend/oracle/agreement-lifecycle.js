@@ -24,6 +24,8 @@ import {
     refreshOnchain,
     writeOnchain
 } from '../agreements/onchain.js';
+import { EVM_MOVING_FIELDS, evmOnchainMoved, onchainFromEvmRecord } from '../agreements/onchain-evm.js';
+import { sameKey } from '../chain/keys.js';
 
 const require = createRequire(import.meta.url);
 const web3 = require('@solana/web3.js');
@@ -283,7 +285,8 @@ async function storedEventCounts(pool, accounts) {
 }
 
 /**
- * One pass over the minted agreements of `chain.cluster` (agreements/onchain.js createAgreementChain).
+ * One pass over the minted agreements of `chain.cluster` (agreements/onchain.js createAgreementChain),
+ * or of `chain.chainId` for an EVM chain (agreements/onchain-evm.js evmAgreementChain: `onchain` only).
  * Dry run unless `apply`: then nothing is written, and the result says what would be. One agreement's
  * failure (an RPC or database error) is recorded and the pass goes on with the next.
  * @returns {Promise<{ scanned: number, reconciled: number, moved: number, terminal: number, events: object[],
@@ -294,13 +297,17 @@ async function storedEventCounts(pool, accounts) {
  */
 export async function syncAgreementLifecycle({ pool, chain, apply = false, now = () => Date.now(), log = () => {} } = {}) {
     if (!pool || !chain) throw new Error('pool and chain are required');
+    // An EVM chain (agreements/onchain-evm.js evmAgreementChain, family 'evm') takes the rows recorded on
+    // its chain id; its pass refreshes `onchain` only (land events of EVM agreements are not written yet).
+    const evm = chain.family === 'evm';
+    const where = evm ? `EVM chain ${chain.chainId}` : chain.cluster;
     const { rows } = await pool.query(`
         SELECT cid, content->>'sponsor' AS sponsor, input_parcel_ids, parcel_source_id, onchain
         FROM consensus.agreement
-        WHERE onchain->>'chain' = 'solana' AND onchain->>'cluster' = $1
-        ORDER BY created_at, cid`, [chain.cluster]);
+        WHERE ${evm ? `onchain->>'chain' = 'evm' AND onchain->>'chainId' = $1` : `onchain->>'chain' = 'solana' AND onchain->>'cluster' = $1`}
+        ORDER BY created_at, cid`, [evm ? chain.chainId : chain.cluster]);
     const total = rows.length;
-    log(`${total} minted agreement(s) on ${chain.cluster}${apply ? '' : ' (dry run: nothing is written)'}`);
+    log(`${total} minted agreement(s) on ${where}${apply ? '' : ' (dry run: nothing is written)'}`);
     const result = { scanned: total, reconciled: 0, moved: 0, terminal: 0, events: [], inserted: 0, invalidAccounts: [], missingEvidence: [], failed: [], dryRun: !apply };
     if (!total) return result;
 
@@ -332,23 +339,30 @@ export async function syncAgreementLifecycle({ pool, chain, apply = false, now =
         if (read.problem) return invalid(read.problem);
         const account = read.account;
         if (account.cid !== row.cid) return invalid(`stores CID ${account.cid}`);
-        if (account.authority !== row.sponsor) return invalid(`belongs to ${account.authority}, not the sponsor`);
+        if (evm ? !sameKey(account.sponsor, row.sponsor) : account.authority !== row.sponsor) {
+            return invalid(`belongs to ${evm ? account.sponsor : account.authority}, not the sponsor`);
+        }
 
-        const fresh = onchainFromAccount(account, { cluster: chain.cluster, programId: chain.programId, observedAt, observedSlot: read.slot });
-        const moved = onchainMoved(row.onchain, fresh);
+        const fresh = evm
+            ? onchainFromEvmRecord(account, { chainId: chain.chainId, contract: chain.contract, observedAt, observedSlot: read.slot })
+            : onchainFromAccount(account, { cluster: chain.cluster, programId: chain.programId, observedAt, observedSlot: read.slot });
+        const moved = evm ? evmOnchainMoved(row.onchain, fresh) : onchainMoved(row.onchain, fresh);
         if (moved) {
             result.moved += 1;
-            log(`${step}: ${row.onchain.status} → ${fresh.status}, decision ${row.onchain.decision} → ${fresh.decision}, escrow ${fresh.escrowLamports} lamports`);
+            log(`${step}: ${row.onchain.status} → ${fresh.status}, decision ${row.onchain.decision} → ${fresh.decision}, escrow ${evm ? `${fresh.escrowWei} wei` : `${fresh.escrowLamports} lamports`}`);
         }
         const terminal = TERMINAL_STATUSES.includes(fresh.status);
         // When it ended, the chain's own time: its stored lifecycle event's, else executed_at. A first
         // pass over a cancelled or expired account learns it from the terminal event below.
         const endedAt = terminal ? (stored.endedAt ?? (fresh.status === 'executed' ? fresh.executedAt : null)) : null;
-        const next = { ...refreshOnchain(row.onchain, fresh), ...(endedAt ? { endedAt } : {}) };
+        const next = { ...refreshOnchain(row.onchain, fresh, evm ? EVM_MOVING_FIELDS : undefined), ...(endedAt ? { endedAt } : {}) };
         if (apply && await writeOnchain(pool, row.cid, next)) result.reconciled += 1;
 
         if (!terminal) return;
         result.terminal += 1;
+        // The terminal transaction search and the land events read Solana program logs; an EVM agreement
+        // ends with its `onchain` refreshed.
+        if (evm) return;
         const parcelIds = row.input_parcel_ids || [];
         if (stored.lifecycle > 0 && (fresh.status !== 'executed' || stored.parcels >= parcelIds.length)) return;
         const source = await findTerminalTransaction(await chain.connection(), {

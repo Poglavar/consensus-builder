@@ -23,6 +23,9 @@ const KEY = 'AMbsiP9F8YY2y8n9uFdqtw7yNZZHvTWFEWSQGHKtmkoQ';
 const CID = 'bafkreihnfsdwy3dz4ywcukbiknoixg3acqt7jozxg532gbcj54ymys7ale';
 const OWNERSHIP = { parcelUid: 'HR-335550-1234/1', owner: KEY, ownerCount: 2, evidenceRef: 'ž-case', sourceObservedAt: 1790000000 };
 const DECISION = { agreementCid: CID, sponsor: KEY, decision: 'satisfied', evidenceRef: `sha256:${'ab'.repeat(32)}`, sourceObservedAt: 1790000001 };
+// An EIP-55 checksummed address, and the same address with one letter's case flipped (a broken checksum).
+const EVM_SPONSOR = '0x5aAeb6053F3E94C9b9A09f33669435E7Ef1BeAed';
+const BAD_CHECKSUM = '0x5aAeb6053F3E94C9b9A09f33669435E7Ef1BeAeD';
 
 // Hex produced by sas-lib serializeAttestationData for the same values and layouts.
 const SAS_LIB_HEX = {
@@ -112,6 +115,10 @@ describe('validators', () => {
     it('accept well-formed payloads', () => {
         expect(validateOwnership(OWNERSHIP)).toBe(OWNERSHIP);
         expect(validateDecision(DECISION, { nowSeconds: DECISION.sourceObservedAt })).toBe(DECISION);
+        // An agreement minted on EVM: its sponsor is an address, checksummed or all lower case.
+        for (const sponsor of [EVM_SPONSOR, EVM_SPONSOR.toLowerCase()]) {
+            expect(validateDecision({ ...DECISION, sponsor })).toEqual({ ...DECISION, sponsor });
+        }
     });
 
     it('decodes a decision attestation account and validates it in one step', () => {
@@ -142,6 +149,11 @@ describe('validators', () => {
         [() => validateDecision({ ...DECISION, agreementCid: CID.toUpperCase() }), /agreementCid/],
         [() => validateDecision({ ...DECISION, agreementCid: 'QmYwAPJzv5CZsnA625s3Xf2nemtYgPpHdWEz79ojWnPbdG' }), /agreementCid/],
         [() => validateDecision({ ...DECISION, sponsor: 'not-a-key' }), /sponsor/],
+        // An EVM sponsor (an agreement minted on EVM) is an address: 40 hex digits, a valid EIP-55 checksum when mixed case.
+        [() => validateDecision({ ...DECISION, sponsor: EVM_SPONSOR.replace('0x', '0x0') }), /sponsor/],
+        [() => validateDecision({ ...DECISION, sponsor: EVM_SPONSOR.slice(0, 41) }), /sponsor/],
+        [() => validateDecision({ ...DECISION, sponsor: BAD_CHECKSUM }), /sponsor/],
+        [() => validateDecision({ ...DECISION, sponsor: ` ${EVM_SPONSOR}` }), /sponsor/],
         [() => validateDecision({ ...DECISION, evidenceRef: ' ' }), /evidenceRef/],
         [() => validateDecision({ ...DECISION, sourceObservedAt: 0 }), /sourceObservedAt/],
         [() => validateDecision(DECISION, { nowSeconds: DECISION.sourceObservedAt - 1 }), /future/]

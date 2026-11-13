@@ -128,6 +128,21 @@ describe('devnetOwnerRegistry', () => {
         await expect(attester.attestRights(context([devnetParcel('HR-1', [ana])], [Keypair.generate().publicKey.toBase58()])))
             .rejects.toMatchObject({ status: 409, code: 'not_in_lens' });
     });
+
+    it('is in the lens of an EVM agreement that names its EVM address instead of its Solana key', async () => {
+        const rows = [{ parcelUid: 'HR-1', owner: ana.address, ownerCount: 1, establishedAt: '2026-06-01T00:00:00Z' }];
+        const identity = createDevnetRegistryIdentity({ rows, clock, authority: MEMBER });
+        const evmAddress = '0xfCF94DD41B2B5d6C887a30273F995d01bacA1A45';
+        const attester = createApprovalAttester({ keypair: memberKeypair, evmAddress, registry: devnetOwnerRegistry(identity), clock });
+        // The address compares case-insensitively, as EVM addresses do.
+        const rights = await attester.attestRights(context([devnetParcel('HR-1', [ana])], [evmAddress.toLowerCase()]));
+        expect(proof.verifyAttestation(rights, proof.RIGHTS_SCHEMA)).toBe(true);
+        const other = createApprovalAttester({ keypair: memberKeypair, registry: devnetOwnerRegistry(identity), clock });
+        await expect(other.attestRights(context([devnetParcel('HR-1', [ana])], [evmAddress])))
+            .rejects.toMatchObject({ status: 409, code: 'not_in_lens' });
+        expect(() => createApprovalAttester({ keypair: memberKeypair, evmAddress: 'not-an-address', registry: devnetOwnerRegistry(identity), clock }))
+            .toThrow(/evmAddress/);
+    });
 });
 
 describe('fileRegistry', () => {

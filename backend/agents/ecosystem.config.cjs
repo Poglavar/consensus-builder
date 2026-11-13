@@ -274,6 +274,28 @@ module.exports = {
     merge_logs: true,
     time: true
   }, {
+    // The lifecycle oracle's EVM pass (docs/blockchain-flows.md, R4): every 15 minutes the agreements
+    // minted on Base Sepolia are read back and their `onchain` refreshed. Its own run-stats file and
+    // logs, so the Solana pass and this one never overwrite each other's.
+    name: 'consensus-builder-land-oracle-evm',
+    script: 'oracle/agreement-lifecycle-job.mjs',
+    args: '--once --apply --evm-chain 84532',
+    cwd: BACKEND_ROOT,
+    exec_mode: 'fork',
+    instances: 1,
+    autorestart: false,
+    cron_restart: '7,22,37,52 * * * *',
+    kill_timeout: 600000,
+    env: {
+      NODE_ENV: 'production',
+      LAND_ORACLE_RUN_STATS: path.join(BACKEND_ROOT, 'logs', 'land-oracle-evm-stats.json')
+      // Chain reads use EVM_RPC_URL_84532 from backend/.env, else the public RPC.
+    },
+    error_file: path.join(BACKEND_ROOT, 'logs', 'land-oracle-evm-error.log'),
+    out_file: path.join(BACKEND_ROOT, 'logs', 'land-oracle-evm.log'),
+    merge_logs: true,
+    time: true
+  }, {
     name: 'consensus-builder-prospective-resolver',
     script: 'blockchain/solana/scripts/prospective-external-market.mjs',
     args: '--settle --live',

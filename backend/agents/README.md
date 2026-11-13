@@ -262,6 +262,7 @@ resubmitted. The model is the layer's default; the run header logs which one ran
 | `AGENT_LENS` | `run.mjs` | the lens member to operate (a lens-member persona's name or key) when `--lens` is not given |
 | `AGENT_LENS_SERVICE_URL` | `run.mjs` | overrides that persona's `service.url` |
 | `AGENT_LIFECYCLE_LENS_OPERATOR_TOKEN` (the persona's `operatorTokenEnv`) | `run.mjs`, the lens member | the operator token of agreement decisions; a live proposer run refuses to start without it |
+| the persona's `evmKeyEnv`, else `LENS_EVM_PRIVATE_KEY`, else `UGT_AGENT_EVM_PRIVATE_KEY` | the lens member (`lens-member-run.mjs` → `lens/run.mjs`) | the EVM key that attests the decisions of agreements minted on EVM through EAS (`lens/evm-issuer.js`); without one the member answers 503 `evm_not_configured` for them |
 | `AGENT_DAILY_ACTION_CAP` / `AGENT_DAILY_USDC_CAP` | `run-policy.js` | signed actions (default 4) and stake USDC (default 0.35) per proposer run |
 | `AGENT_SETTLE_MAX_PER_RUN` | `run-policy.js` | own agreements settled per run (default 3) |
 | `AGENT_SUPPORT_USDC_CAP` | `support-run.mjs` | the supporter's one action (default 0.25 USDC) |

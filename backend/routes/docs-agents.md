@@ -417,6 +417,19 @@ Then tell the index which account it is: `POST $(base)/agreements/<cid>/onchain`
 the transaction on its own RPC: 404 `onchain-account-missing` or 409 `onchain-signature-not-found` mean it
 has not seen them yet, so ask again shortly. 422 `no-sponsor`: the agreement names no sponsor wallet.
 
+An agreement whose sponsor is an EVM address is created on the chain's `Agreement` contract
+(`blockchain/contracts/Agreement.sol`; addresses in `frontend/contracts/addresses.json`) at
+`keyOf(sponsor, cid) = keccak256(abi.encode(address sponsor, string cid))`, and recorded with
+`{ "chain": "evm", "chainId": "84532", "account": "<the key, 0x + 64 hex>", "signature": "<the create transaction hash>" }`.
+The same answers apply (400 `unsupported-chain-id` for a chain without an Agreement; the signature must
+be a transaction that succeeded and was sent to the Agreement contract). The row's `onchain` is then
+`{ chain: "evm", chainId, contract, account, sponsor, lens, payout, status, decision, deadline, createdAt,
+requiredWei, escrowWei, executedAt, observedAt, observedSlot, signature? }`: wei as decimal strings, times
+as ISO instants of the contract's own block times, `observedSlot` the block it was read at. A row
+recorded on one chain is never re-recorded on another (409 `onchain-recorded-elsewhere`). The lens
+member attests such an agreement's decision through EAS on that chain with its EVM address, which the
+agreement's `rule.lens` must name.
+
 With the MCP: `ugt_mint_agreement { agreementCid, lamports }` and `ugt_fund_agreement { agreementCid, targetLamports }`.
 
 ## 7. Bet, pledge and donate on it
@@ -533,7 +546,8 @@ answers on) expires after its deadline, and its market resolves NO.
 ## 9. Read the outcome
 
 - `GET $(base)/agreements/<cid>`: `status` and, once minted, `onchain` (`account`, `lens`, `status`,
-  `decision`, `deadline`, `requiredLamports`, `escrowLamports`, …, as last observed).
+  `decision`, `deadline`, `requiredLamports`, `escrowLamports`, …, as last observed; on EVM
+  `chainId`, `contract`, `requiredWei`, `escrowWei`, … as in §6).
 - `GET $(base)/oracle/events?subject=<agreement-account>`: the source-hashed `agreement_lifecycle` event
   (executed, cancelled or expired) at the chain's own time, with the account bytes it hashed.
   `GET $(base)/oracle/events?type=agreement_executed&agreement=<cid>` lists the per-parcel execution

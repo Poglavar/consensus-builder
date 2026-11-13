@@ -773,7 +773,7 @@ An attributed statement under a defined schema, with its issuer and evidence ref
 
 ### Agreement decision
 
-The lens's attested statement that an agreement's approval rule is satisfied. `AgreementDecision-v1` commits to the counted evidence; it is separate from the owner receipts and the chain transaction recording the decision.
+The lens's attested statement that an agreement's approval rule is satisfied. `AgreementDecision-v1` commits to the counted evidence; it is separate from the owner receipts and the chain transaction recording the decision. It lives on the agreement's chain: a SAS attestation by the lens member's Solana key, or, for an agreement minted on EVM, an EAS attestation (identified by its uid) by the member's EVM address, which the agreement's lens must name.
 
 ### Devnet owner registry
 

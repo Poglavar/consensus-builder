@@ -258,6 +258,26 @@ mock API and a local validator), then docs and the vocabulary entries it changes
 4. **R4, EVM agreements.** The `Agreement` contract, EAS attestation by the lens, escrow, the
    agreement panel's actions on EVM. Done when an agreement proposed with an EVM wallet executes on
    Base Sepolia from a lens attestation.
+   *Built:* `blockchain/contracts/Agreement.sol` (one entry per `keccak256(sponsor, cid)`, escrow in
+   the native token, `attest(key, uid)` checking the lens's EAS AgreementDecision field by field;
+   deployed on Base Sepolia and Sepolia by `scripts/deploy-agreement.sh`, which also registers the
+   schema `string agreementCid, address sponsor, string decision, string evidenceRef, uint64
+   sourceObservedAt`). Browser: `frontend/js/chain/evm-agreement.js` is the EVM counterpart of the
+   Solana `AgreementBridge`; the agreement panel picks its bridge from the sponsor's key (a 0x
+   sponsor mints on EVM, a minted agreement stays on its chain), an EVM mint runs the mint checklist
+   first (members, plan and agreement retrievable; every input parcel anchored, metadata URI = the
+   parcel's page), then `POST /agreements/:cid/onchain { chain: 'evm', chainId, account, signature }`
+   mirrors it. Server: the index verifies an EVM mint against the contract (`agreements/onchain-evm.js`),
+   the lifecycle oracle refreshes EVM rows (`--evm-chain 84532`, PM2 `consensus-builder-land-oracle-evm`),
+   and the lens member attests EVM agreements through EAS with `LENS_EVM_PRIVATE_KEY` (else
+   `UGT_AGENT_EVM_PRIVATE_KEY`): the sponsor's key family decides the chain, an EVM agreement's
+   `rule.lens` names the member's EVM address, and the member's approval attester accepts either of
+   its keys there. Verified: the whole lifecycle through the browser bridge against a local chain
+   (mint, fund, attest from a seeded EAS decision, execute, cancel refused); the agreement panel's
+   EVM path and the lens's live EAS issuing are not yet exercised against Base Sepolia. Still open:
+   land events for EVM agreements (the oracle refreshes `onchain` only), the lens directory
+   publishing each member's `evmAddress`, `ugt_mint_agreement` on EVM, and the
+   `lens_attestation` DDL change (`chain`, `chain_id`) to apply at deploy.
 
 Sizes, as estimates to be revised when each starts: R1 about two days, R2 about a week, R3 three to
 four days, R4 about a week; R4 is the only new money-holding contract.
@@ -277,8 +297,10 @@ four days, R4 about a week; R4 is the only new money-holding contract.
 
 1. **Which EVM mainnet**, when the time comes; Base is the working assumption because the testnet
    deployments are there.
-2. **The lens on EVM.** Lens members attest with Solana keys today (SAS). R4 needs each member to
-   hold an EVM key and attest through EAS, or a cross-chain attestation; this is a lens-model change.
+2. **The lens on EVM** (decided 2026-11-13, "use one of our existing EVM keys"): a lens member holds
+   an EVM key beside its Solana keypair (`LENS_EVM_PRIVATE_KEY`, the project's deployer key for the
+   testnets) and attests EVM agreements through EAS; a member's EVM address must still reach the lens
+   directory so a browser can name it in `rule.lens` and find its decisions.
 3. **Anchors for input parcels of a non-binding agreement.** A community vote names parcels but
    moves nothing and is never minted today; it stays off chain unless a reason to mint it appears.
 

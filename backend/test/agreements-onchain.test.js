@@ -330,7 +330,9 @@ describe('POST /agreements/:cid/onchain', () => {
             [pointer(), '12', 400, 'invalid-cid'],
             [{ ...pointer(), extra: true }, CID, 400, 'bad-request'],
             [{ chain: 'solana', cluster: 'devnet' }, CID, 400, 'bad-request'],
-            [pointer({ chain: 'evm' }), CID, 400, 'unsupported-chain'],
+            // { chain: 'evm' } takes its own body (onchain-evm.test.js): a cluster is not part of it.
+            [pointer({ chain: 'evm' }), CID, 400, 'bad-request'],
+            [pointer({ chain: 'tron' }), CID, 400, 'unsupported-chain'],
             [pointer({ cluster: 'mainnet-beta' }), CID, 400, 'unsupported-cluster'],
             [pointer({ signature: 'not-a-signature' }), CID, 400, 'bad-request'],
             [pointer(), cidOf(park), 404, 'agreement-not-found'],

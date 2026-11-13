@@ -30,6 +30,9 @@ its devnet owner registry (or a `--rights` file).
   (or an in-memory list); the wallet proves control by signing a challenge (ed25519).
 - `identity/certilia.js`: production adapter stub (Certilia eOsobna OIDC); refuses with "not configured".
 - `issuers.js`: fake issuer (builds the exact SAS account bytes in memory) and the sas-lib issuer.
+- `evm-issuer.js`: the EVM issuer of AgreementDecision-v1 for agreements minted on EVM: EAS `attest` on
+  the chain's EAS contract with the member's EVM key, the uid from the `Attested` log, the attestation
+  read back and checked before it is recorded (`createFakeEvmIssuer` for dry runs).
 - `store.js`: issued attestations in `consensus.lens_attestation`, or in memory.
 - `pricing.js`: x402 gate for `POST /lens/ownership`, same pattern as the other paid agent routes.
 - `approval.js`: abstract agreement approval (`createApprovalAttester`): checks an agreement's pinned
@@ -84,6 +87,15 @@ then needs only the escrow. So the member takes nothing from the caller but the 
 - `evidenceRef` is `sha256:` over `approval.stableStringify` of the counted receipts (each party's current
   approval, in signing order), so anyone can recompute it from the relay.
 - One decision per agreement: asked again, the member answers the one it issued (200).
+- An agreement whose `sponsor` is an EVM address (minted on `blockchain/contracts/Agreement.sol`) is
+  attested through EAS on the chain the index records it on (`onchain.chainId`), with the schema uid of
+  `frontend/contracts/addresses.json` `AgreementDecisionSchema` and the data
+  `abi.encode(string agreementCid, address sponsor, string decision, string evidenceRef, uint64 sourceObservedAt)`.
+  The lens key is then the member's EVM address (`/lens/status` `evmAddress`), which `rule.lens` must
+  name. 409 `not_minted` before the index records the agreement on an EVM chain; 503
+  `evm_not_configured` without an EVM key. The record lists with `chain: "evm"`, `chainId` and `uid`
+  (also its `address`), `transactionSignature` the transaction hash, `issuedAt` the EAS time, and no
+  `credential` or `accountHash`.
 
 ## Ownership rules
 
@@ -101,10 +113,10 @@ then needs only the escrow. So the member takes nothing from the caller but the 
 
 | Route | Notes |
 |---|---|
-| `GET /lens/status` | key, kind, credential, schema PDAs, identity adapter, counts, pricing |
+| `GET /lens/status` | key, `evmAddress` (with an EVM key), kind, credential, schema PDAs, identity adapter, counts, pricing |
 | `POST /lens/challenge {parcelUid, owner}` | `{challenge, message, expiresAt}`; the wallet signs `message` (UTF-8). 404 unknown parcel, 403 wallet not recorded. Valid 5 minutes. |
 | `POST /lens/ownership {parcelUid, owner, signature, challenge}` | signature base58 or base64. Signature, registry and source-time checks run before the x402 gate, so refusals are free. 201 with `address`, `payload`, `accountHash` (sha256 over the account bytes), `issuedAt` (chain time), `payment`. |
-| `POST /lens/agreements/:cid/decision` | header `x-lens-operator-token: $LENS_OPERATOR_TOKEN`; no body. The member decides from the indexed agreement and its relayed decisions (rules below). 201 issued, 200 already issued (`reused`): the attestation record plus `tally` (the engine's) and `counted`. Refusals carry `tally`: 409 `rule_not_met`, `deadline_passed`, `not_in_lens`, `not_agreement_lens`, `agreement_closed`, `decision_recorded`, `source_time_in_future`; 422 `no_sponsor`, `source_time_missing`; 404 `agreement_not_found`; 503 without the token or the index. |
+| `POST /lens/agreements/:cid/decision` | header `x-lens-operator-token: $LENS_OPERATOR_TOKEN`; no body. The member decides from the indexed agreement and its relayed decisions (rules below). 201 issued, 200 already issued (`reused`): the attestation record plus `tally` (the engine's) and `counted`. Refusals carry `tally`: 409 `rule_not_met`, `deadline_passed`, `not_in_lens`, `not_agreement_lens`, `agreement_closed`, `decision_recorded`, `source_time_in_future`, `not_minted` (EVM sponsor, not yet recorded on an EVM chain); 422 `no_sponsor`, `source_time_missing`; 404 `agreement_not_found`; 503 without the token or the index, `evm_not_configured` (EVM sponsor, no EVM key). |
 | `POST /lens/market-evidence {recipeHash, subject, value, eventTime, sourceObservedAt, sourceRef}` | same operator header as agreement decisions. Times are Unix seconds (integers only). 201 issued, 200 already issued (`reused`), 409 same key with another subject, 422 invalid or too large. |
 | `GET /lens/attestations?parcelUid=&agreementCid=&owner=&recipeHash=&kind=` | issued attestations from the store; `kind` is `ownership`, `decision` or `evidence` |
 | `POST /lens/approval/rights {cadastreParcelIds, approvalConfig, lens}` | 503 only for an identity adapter without an owner registry and no `--rights`. The member recomputes the approval context hash, requires its own key in `lens`, and compares every in-scope parcel with its registry (complete owner list, exact shares, area). 201 `{rights}`: a signed `lens-rights-attestation/v1`. Free; names no wallet. 409 `rights_mismatch` / `area_mismatch` / `not_in_lens`, 404 `unknown_parcel`, 422 `rights_incomplete`. |
@@ -135,6 +147,9 @@ Without `--owners` the registry is read from `consensus.lens_devnet_owner` via `
 2. Run `npm ci` in `backend/`; `sas-lib` is a declared dependency, loaded by the live issuer.
 3. Set `X402_NETWORK`, `X402_FACILITATOR_URL`, `X402_PAY_TO` (and CDP credentials for the CDP
    facilitator), optionally `LENS_OWNERSHIP_PRICE_USDC` (default `0.01`) and `LENS_OPERATOR_TOKEN`.
+   For agreements minted on EVM, set `LENS_EVM_PRIVATE_KEY` (else `UGT_AGENT_EVM_PRIVATE_KEY` is used;
+   a lens-member persona can name its own variable as `service.evmKeyEnv`), funded with the chain's gas
+   token, and `EVM_RPC_URL_<chainId>` when the public RPC will not do.
    Without the x402 settings a live member answers 503 on `POST /lens/ownership` instead of issuing free.
 4. `npm run lens:member -- --live --keypair <member.json> --cluster devnet`.
 

@@ -1,11 +1,13 @@
 // The reference lens member (lens-model.md, "Reference lens member") as a library: one key, one SAS
-// credential, issuing ParcelOwnership-v1, AgreementDecision-v1 and MarketEvidence-v1 attestations.
+// credential, issuing ParcelOwnership-v1, AgreementDecision-v1 and MarketEvidence-v1 attestations, and,
+// with an EVM issuer (evm-issuer.js), AgreementDecision-v1 through EAS for agreements minted on EVM.
 // Identity proof, the SAS issuer, the attestation store and the clock are injected, so every rule here
 // runs headless. Which decision an agreement gets is decided before this (agreement-decision.js); the
 // member only issues it, at most one decision per agreement.
 
 import { createHash } from 'node:crypto';
 import { Keypair, PublicKey } from '@solana/web3.js';
+import { ethers } from 'ethers';
 import {
     LENS_SCHEMAS,
     SAS_PROGRAM_ID,
@@ -20,6 +22,9 @@ import {
     validateOwnership
 } from '../oracle/lens-schemas.js';
 import { LensError, lensLog } from './errors.js';
+import { agreementAddresses } from '../chain/evm.js';
+import { isEvmAddress, sameKey } from '../chain/keys.js';
+import { encodeDecisionData } from './evm-issuer.js';
 
 export const DEFAULT_CREDENTIAL_NAME = 'LensMember';
 export const DEFAULT_EXPIRY_SECONDS = 365 * 24 * 3600;
@@ -96,9 +101,15 @@ export function createLensMember({
     identity,
     clock = systemClock,
     expirySeconds = DEFAULT_EXPIRY_SECONDS,
-    dryRun = false
+    dryRun = false,
+    evmIssuer = null
 }) {
     if (!issuer || typeof issuer.createAttestation !== 'function') throw new Error('createLensMember: issuer.createAttestation is required');
+    if (evmIssuer && (!isEvmAddress(evmIssuer.address) || typeof evmIssuer.attest !== 'function')) {
+        throw new Error('createLensMember: evmIssuer needs an EVM address and attest()');
+    }
+    // The key this member attests with on EVM (Agreement.sol's `lens`), checksummed; null without an EVM issuer.
+    const evmAddress = evmIssuer ? ethers.getAddress(evmIssuer.address) : null;
     if (!store) throw new Error('createLensMember: store is required');
     if (!identity) throw new Error('createLensMember: identity adapter is required');
     if (!LENS_MEMBER_KINDS.includes(kind)) throw new Error(`createLensMember: unknown kind "${kind}" (one of ${LENS_MEMBER_KINDS.join(', ')})`);
@@ -207,8 +218,67 @@ export function createLensMember({
         return { fields, nonce, address, existing };
     }
 
+    // AgreementDecision-v1 through EAS on the EVM chain the agreement is minted on (`chain.chainId`): at
+    // most one per agreement, like the Solana path, since an EAS uid is not derived from the fact.
+    async function attestDecisionOnEvm(fields, chain) {
+        if (!evmIssuer) throw new LensError(503, 'evm_not_configured', 'this lens member has no EVM key (LENS_EVM_PRIVATE_KEY)');
+        let contracts;
+        try {
+            contracts = agreementAddresses(chain.chainId);
+        } catch (error) {
+            throw new LensError(422, 'unsupported_chain', error.message);
+        }
+        const existing = await findDecision({ agreementCid: fields.agreementCid, sponsor: fields.sponsor });
+        if (existing) {
+            lensLog(`decision ${existing.address} already issued for ${fields.agreementCid}, returning the stored record`);
+            return { ...existing, reused: true };
+        }
+        const schema = contracts.AgreementDecisionSchema;
+        const expiry = clock.nowSeconds() + expirySeconds;
+        const result = await evmIssuer.attest({ chainId: contracts.chainId, schemaUid: schema, data: encodeDecisionData(fields), expirationTime: expiry });
+        if (!/^0x[0-9a-fA-F]{64}$/.test(result?.uid || '') || !/^0x[0-9a-fA-F]{64}$/.test(result?.txHash || '')) {
+            throw new Error(`the EVM issuer returned no attestation uid and transaction hash on chain ${contracts.chainId}`);
+        }
+        const uid = result.uid.toLowerCase();
+        const record = {
+            address: uid,
+            kind: 'decision',
+            chain: 'evm',
+            chainId: contracts.chainId,
+            uid,
+            credential: null,
+            schema,
+            authority: evmAddress,
+            parcelUid: null,
+            owner: null,
+            payload: { ...fields },
+            accountHash: null,
+            expiry,
+            transactionSignature: result.txHash,
+            payment: null,
+            // The attestation's EAS time; null when the issuer could not learn it.
+            issuedAt: typeof result.issuedAt === 'number' && Number.isFinite(result.issuedAt)
+                ? new Date(result.issuedAt * 1000).toISOString() : null
+        };
+        await store.record(record);
+        lensLog(`issued decision ${uid} on EVM chain ${contracts.chainId} (${describeFact('decision', fields)})`);
+        return { ...record, reused: false };
+    }
+
+    // The AgreementDecision this member already issued for the agreement (agreementCid, sponsor),
+    // whatever its decision and source time, or null: signed by its Solana key, or by its EVM address
+    // for an EVM sponsor. The program and the contract record only the first decision an agreement
+    // receives, so the member issues at most one per agreement.
+    async function findDecision({ agreementCid, sponsor }) {
+        const signer = isEvmAddress(sponsor) ? evmAddress : authority;
+        if (!signer) return null;
+        const records = await store.list({ kind: 'decision', agreementCid, limit: 50 });
+        return records.find(record => record.authority === signer && sameKey(record.payload?.sponsor, sponsor)) ?? null;
+    }
+
     return {
         authority,
+        evmAddress,
         credential,
         schemas,
         kind,
@@ -216,6 +286,7 @@ export function createLensMember({
         async status() {
             return {
                 key: authority,
+                ...(evmAddress ? { evmAddress } : {}),
                 kind,
                 credential,
                 credentialName,
@@ -238,23 +309,26 @@ export function createLensMember({
             return issue('ownership', plan.fields, plan.nonce, { payment });
         },
 
-        // The AgreementDecision this member already issued for the agreement (agreementCid, sponsor),
-        // whatever its decision and source time, or null. The program records only the first decision
-        // an account receives, so the member issues at most one per agreement.
-        async findDecision({ agreementCid, sponsor }) {
-            const records = await store.list({ kind: 'decision', agreementCid, limit: 50 });
-            return records.find(record => record.authority === authority && record.payload?.sponsor === sponsor) ?? null;
-        },
+        findDecision,
 
-        // Issues AgreementDecision-v1 (programs/agreement/README.md). The nonce is deterministic per
-        // (agreement, sponsor, decision, source time), so a retry lands on the same attestation address.
-        async attestDecision({ agreementCid, sponsor, decision, evidenceRef, sourceObservedAt }) {
+        // Issues AgreementDecision-v1 (programs/agreement/README.md). An EVM sponsor's agreement is
+        // attested through EAS on the chain it is minted on, `chain` = { family: 'evm', chainId } (the
+        // index's onchain.chainId); 409 not_minted without it. Otherwise SAS: the nonce is deterministic
+        // per (agreement, sponsor, decision, source time), so a retry lands on the same attestation address.
+        async attestDecision({ agreementCid, sponsor, decision, evidenceRef, sourceObservedAt }, { chain = null } = {}) {
             const fields = { agreementCid, sponsor, decision, evidenceRef, sourceObservedAt };
             try {
                 validateDecision(fields, { nowSeconds: clock.nowSeconds() });
             } catch (error) {
                 throw new LensError(422, 'invalid_decision', error.message);
             }
+            if (isEvmAddress(sponsor)) {
+                if (chain?.family !== 'evm') {
+                    throw new LensError(409, 'not_minted', `agreement ${agreementCid} has an EVM sponsor; its decision is attested on the EVM chain it is minted on, and none is recorded yet`);
+                }
+                return attestDecisionOnEvm(fields, chain);
+            }
+            if (chain?.family === 'evm') throw new LensError(422, 'invalid_decision', 'an agreement minted on EVM has an EVM sponsor');
             const nonce = factNonce([LENS_SCHEMAS.decision.id, agreementCid, sponsor, decision, sourceObservedAt]);
             return issue('decision', fields, nonce, {});
         },

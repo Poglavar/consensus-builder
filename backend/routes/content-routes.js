@@ -15,12 +15,13 @@ import { pinBytes } from '../storage/pinning.js';
 /**
  * @param app express app
  * @param pool pg pool
- * @param overrides optional { thumbnailQueue, pinBytes, baseUrl, decisionStore, now, uploadRateLimiter, agreementChain }:
+ * @param overrides optional { thumbnailQueue, pinBytes, baseUrl, decisionStore, now, uploadRateLimiter, agreementChain, evmAgreementChain }:
  *   the thumbnail queue (thumbnails/thumbnail-queue.js), the pinning call (storage/pinning.js), the
  *   origin stored thumbnail URLs get (PUBLIC_API_BASE_URL by default), the decision store
  *   (agreements/decisions.js), the clock, the per-client limiter of the two pinning routes
  *   (one fresh utils/nft-asset-upload.js limiter per route by default), and the chain reader of
- *   POST /agreements/:cid/onchain (cluster → agreements/onchain.js createAgreementChain)
+ *   POST /agreements/:cid/onchain (cluster → agreements/onchain.js createAgreementChain; EVM chain id →
+ *   agreements/onchain-evm.js evmAgreementChain)
  */
 export function registerContentRoutes(app, pool, overrides = {}) {
     const deps = { pool, thumbnailQueue: defaultThumbnailQueue(), pinBytes, ...overrides };

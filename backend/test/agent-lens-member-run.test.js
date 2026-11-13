@@ -59,6 +59,15 @@ describe('lens-member persona runner', () => {
         expect(() => loadLensMemberPersona('nobody')).toThrow(/no persona named/);
     });
 
+    it('passes the EVM key the persona names as LENS_EVM_PRIVATE_KEY in live mode only', () => {
+        const persona = loadLensMemberPersona('lifecycle-01');
+        const evmPersona = { ...persona, service: { ...persona.service, evmKeyEnv: 'AGENT_LIFECYCLE_LENS_EVM_PRIVATE_KEY' } };
+        const sourceEnv = { AGENT_LIFECYCLE_LENS_EVM_PRIVATE_KEY: ' evm-key ', AGENT_LIFECYCLE_LENS_OPERATOR_TOKEN: 'token' };
+        expect(lensMemberCommand(evmPersona, { live: true, sourceEnv }).env.LENS_EVM_PRIVATE_KEY).toBe('evm-key');
+        expect(lensMemberCommand(evmPersona, { sourceEnv }).env).not.toHaveProperty('LENS_EVM_PRIVATE_KEY');
+        expect(lensMemberCommand(persona, { live: true, sourceEnv }).env).not.toHaveProperty('LENS_EVM_PRIVATE_KEY');
+    });
+
     it('passes the persona service kind, so a lifecycle member does not report owner-consent', () => {
         const { args } = lensMemberCommand(loadLensMemberPersona('lifecycle-01'));
         expect(args.slice(args.indexOf('--kind'), args.indexOf('--kind') + 2)).toEqual(['--kind', 'lifecycle']);

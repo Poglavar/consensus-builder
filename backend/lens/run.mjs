@@ -5,7 +5,8 @@
 // rights/authority facts of agreement approval (backend/lens/approval.js) are checked against the devnet
 // owner registry the identity adapter reads (consensus.lens_devnet_owner, or --owners), or against a
 // static --rights file instead. With Postgres (DATABASE_URL) the member reads the agreement index for its
-// AgreementDecision attestations.
+// AgreementDecision attestations; with an EVM key (LENS_EVM_PRIVATE_KEY, else UGT_AGENT_EVM_PRIVATE_KEY)
+// it attests the decisions of agreements minted on EVM through EAS (evm-issuer.js).
 
 import fs from 'node:fs';
 import path from 'node:path';
@@ -20,6 +21,7 @@ import { createLensMember, DEFAULT_CREDENTIAL_NAME, LENS_MEMBER_KINDS, systemClo
 import { createDevnetRegistryIdentity } from './identity/devnet-registry.js';
 import { createCertiliaIdentity } from './identity/certilia.js';
 import { createFakeIssuer, loadSasIssuer } from './issuers.js';
+import { createEvmIssuer, createFakeEvmIssuer, lensEvmKeyOf } from './evm-issuer.js';
 import { createFileStore, createMemoryStore, createPgStore } from './store.js';
 import { announceLensMember } from '../oracle/lens-registration.js';
 import { createLensPricing, describePricing } from './pricing.js';
@@ -73,7 +75,10 @@ function usage(code = 0) {
         '',
         'Env: DATABASE_URL (Postgres: the owner registry, the attestation store and the agreement index),',
         '     X402_NETWORK, X402_FACILITATOR_URL, X402_PAY_TO, LENS_OWNERSHIP_PRICE_USDC (0.01),',
-        '     LENS_OPERATOR_TOKEN (enables POST /lens/agreements/:cid/decision and POST /lens/market-evidence).'
+        '     LENS_OPERATOR_TOKEN (enables POST /lens/agreements/:cid/decision and POST /lens/market-evidence),',
+        '     LENS_EVM_PRIVATE_KEY (else UGT_AGENT_EVM_PRIVATE_KEY): the EVM key that attests the decisions of',
+        '     agreements minted on EVM through EAS (--live; a dry run uses an ephemeral address and sends nothing),',
+        '     EVM_RPC_URL_<chainId> (that chain\'s RPC; public default otherwise).'
     ].join('\n'));
     process.exit(code);
 }
@@ -162,7 +167,11 @@ async function main() {
         throw new Error(`unknown --identity ${values.identity}`);
     }
 
+    // A dry run never loads a key, the EVM one included.
+    const evmKey = dryRun ? null : lensEvmKeyOf(process.env);
+    const evmIssuer = dryRun ? createFakeEvmIssuer({ clock }) : evmKey ? createEvmIssuer({ privateKey: evmKey, env: process.env, log: lensLog }) : null;
     const member = createLensMember({
+        evmIssuer,
         keypair,
         authority: keypair ? null : authority,
         credentialName: values['credential-name'],
@@ -184,6 +193,7 @@ async function main() {
     const approvalAttester = approvalRegistry
         ? createApprovalAttester({
             keypair: signingKeypair,
+            evmAddress: evmIssuer ? evmIssuer.address : null,
             registry: approvalRegistry,
             clock,
             validitySeconds: Math.round(approvalValidityDays * 86400)
@@ -198,6 +208,7 @@ async function main() {
     const status = await retryWithBackoff('reading the member status failed', () => member.status(), STARTUP_RETRY);
     lensLog(`${dryRun ? 'DRY RUN' : 'LIVE'} lens member ${status.key}${status.ephemeralKey ? ' (ephemeral key)' : ''}, kind ${status.kind}`);
     lensLog(`credential ${status.credential} (${status.credentialName}); schemas ownership ${status.schemas.ownership}, decision ${status.schemas.decision}`);
+    lensLog(`EVM decisions: ${status.evmAddress ? `as ${status.evmAddress} through ${evmIssuer.kind}` : 'disabled (LENS_EVM_PRIVATE_KEY and UGT_AGENT_EVM_PRIVATE_KEY unset)'}`);
     lensLog(`identity ${identity.kind}${values.owners ? ` from ${values.owners}` : ''}; issuer ${issuer.kind}; store ${dryRun ? 'memory' : values.store ? `file ${values.store}` : 'postgres'}`);
     lensLog(`ownership pricing: ${JSON.stringify(describePricing(pricing))}`);
     lensLog(`agreement decisions: ${!operatorToken ? 'disabled (LENS_OPERATOR_TOKEN unset)'

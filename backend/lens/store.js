@@ -2,7 +2,9 @@
 // routes/lens-member-ddl.sql) for a live member, a JSON file for a member run without Postgres, and
 // an in-memory one for dry runs and tests. All hold the same record shape the member produces;
 // issued_at is chain time, never insert time. An AgreementDecision record names its agreement in the
-// payload (agreementCid, sponsor), the way MarketEvidence names its recipe.
+// payload (agreementCid, sponsor), the way MarketEvidence names its recipe. An EVM AgreementDecision
+// (EAS, lens/evm-issuer.js) carries chain 'evm', its chainId and uid (the uid is its address) and has no
+// SAS credential or account hash.
 
 import fs from 'node:fs';
 
@@ -82,12 +84,13 @@ function recordOf(row) {
         expiry: Number(row.expiry),
         transactionSignature: row.transaction_signature,
         payment: row.payment,
-        issuedAt: row.issued_at ? new Date(row.issued_at).toISOString() : null
+        issuedAt: row.issued_at ? new Date(row.issued_at).toISOString() : null,
+        ...(row.chain === 'evm' ? { chain: 'evm', chainId: row.chain_id, uid: row.address } : {})
     };
 }
 
 const COLUMNS = `address, kind, credential, schema, authority, parcel_uid, owner, payload,
-    account_hash, expiry, transaction_signature, payment, issued_at`;
+    account_hash, expiry, transaction_signature, payment, issued_at, chain, chain_id`;
 
 export function createPgStore(pool) {
     if (!pool || typeof pool.query !== 'function') throw new Error('createPgStore: a pg pool is required');
@@ -100,11 +103,11 @@ export function createPgStore(pool) {
         async record(r) {
             const { rowCount } = await pool.query(`
                 INSERT INTO consensus.lens_attestation (${COLUMNS})
-                VALUES ($1, $2, $3, $4, $5, $6, $7, $8::jsonb, $9, $10, $11, $12::jsonb, $13)
+                VALUES ($1, $2, $3, $4, $5, $6, $7, $8::jsonb, $9, $10, $11, $12::jsonb, $13, $14, $15)
                 ON CONFLICT (address) DO NOTHING
             `, [r.address, r.kind, r.credential, r.schema, r.authority, r.parcelUid, r.owner,
                 JSON.stringify(r.payload), r.accountHash, r.expiry, r.transactionSignature,
-                r.payment ? JSON.stringify(r.payment) : null, r.issuedAt]);
+                r.payment ? JSON.stringify(r.payment) : null, r.issuedAt, r.chain ?? 'solana', r.chainId ?? null]);
             if (rowCount !== 1) throw new Error(`attestation ${r.address} is already recorded`);
         },
         async list({ parcelUid = null, agreementCid = null, owner = null, recipeHash = null, kind = null, limit = 200 } = {}) {

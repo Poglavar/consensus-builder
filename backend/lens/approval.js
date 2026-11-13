@@ -13,6 +13,7 @@ import { createRequire } from 'node:module';
 import { PublicKey } from '@solana/web3.js';
 import { LensError, lensLog } from './errors.js';
 import { verifyWalletSignature } from './identity/devnet-registry.js';
+import { isEvmAddress, sameKey } from '../chain/keys.js';
 
 const require = createRequire(import.meta.url);
 const approval = require('../../frontend/js/proposals/approval.js');
@@ -127,8 +128,9 @@ export function devnetOwnerRegistry(identity) {
  * @param {{ keypair: import('@solana/web3.js').Keypair, registry: ReturnType<typeof fileRegistry> | ReturnType<typeof devnetOwnerRegistry>,
  *   clock: { nowSeconds(): number }, validitySeconds?: number, ttlSeconds?: number }} options
  */
-export function createApprovalAttester({ keypair, registry, clock, validitySeconds = DEFAULT_VALIDITY_SECONDS, ttlSeconds = CHALLENGE_TTL_SECONDS }) {
+export function createApprovalAttester({ keypair, evmAddress = null, registry, clock, validitySeconds = DEFAULT_VALIDITY_SECONDS, ttlSeconds = CHALLENGE_TTL_SECONDS }) {
     if (!keypair?.secretKey || keypair.secretKey.length !== 64) throw new Error('createApprovalAttester: a signing keypair is required');
+    if (evmAddress !== null && !isEvmAddress(evmAddress)) throw new Error('createApprovalAttester: evmAddress must be an EVM address or null');
     if (typeof registry?.load !== 'function' || typeof registry?.status !== 'function') {
         throw new Error('createApprovalAttester: a registry source (fileRegistry or devnetOwnerRegistry) is required');
     }
@@ -154,7 +156,9 @@ export function createApprovalAttester({ keypair, registry, clock, validitySecon
         } catch (error) {
             throw new LensError(400, 'bad_request', error.message);
         }
-        if (!content.lens.includes(member)) {
+        // An agreement names this member by its Solana key, or, when minted on an EVM chain, by its EVM
+        // address (lens/member.js attests its decision with that key); either names the same member.
+        if (!content.lens.some(entry => sameKey(entry, member) || (evmAddress && sameKey(entry, evmAddress)))) {
             throw new LensError(409, 'not_in_lens', 'this lens member is not in the agreement\'s lens, so its attestations would not count');
         }
         if (!state.ready) throw new LensError(422, 'rights_incomplete', `the approval context cannot be attested: ${state.reason}`);

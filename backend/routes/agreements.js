@@ -30,6 +30,11 @@ import { setupVotingRoutes } from '../agreements/voting.js';
 import {
     AGREEMENT_CLUSTERS, agreementAccountOf, createAgreementChain, isSignature, onchainFromAccount, refreshOnchain, writeOnchain
 } from '../agreements/onchain.js';
+import {
+    EVM_MOVING_FIELDS, evmAgreementChain, evmAgreementKeyOf, isEvmTransactionHash, onchainFromEvmRecord
+} from '../agreements/onchain-evm.js';
+import { agreementAddresses, normalizeChainId } from '../chain/evm.js';
+import { isEvmAddress, sameKey } from '../chain/keys.js';
 
 const require = createRequire(import.meta.url);
 const approval = require('../../frontend/js/proposals/approval.js');
@@ -332,8 +337,9 @@ const send = (res, status, body) => {
  * POST /agreements, GET /agreements/:cid, GET /agreements, the decision relay under
  * /agreements/:cid/decisions and the chain account at POST /agreements/:cid/onchain.
  * @param deps { pool, thumbnailQueue?, baseUrl?, pinBytes?, decisionStore?, now?, uploadRateLimiter?,
- *   agreementChain?, reportStore?, reportPinBytes? } (routes/content-routes.js); agreementChain(cluster) gives the account reader of a
- *   cluster (agreements/onchain.js createAgreementChain by default)
+ *   agreementChain?, evmAgreementChain?, reportStore?, reportPinBytes? } (routes/content-routes.js); agreementChain(cluster) gives the account reader of a
+ *   cluster (agreements/onchain.js createAgreementChain by default), evmAgreementChain(chainId) the
+ *   Agreement contract reader of an EVM chain (agreements/onchain-evm.js evmAgreementChain by default)
  */
 export function setupAgreementsRoute(app, deps) {
     const { pool } = deps;
@@ -342,6 +348,11 @@ export function setupAgreementsRoute(app, deps) {
     const agreementChain = deps.agreementChain || (cluster => {
         if (!chains.has(cluster)) chains.set(cluster, createAgreementChain({ cluster }));
         return chains.get(cluster);
+    });
+    const evmChains = new Map();
+    const evmChainOf = deps.evmAgreementChain || (chainId => {
+        if (!evmChains.has(chainId)) evmChains.set(chainId, evmAgreementChain(chainId));
+        return evmChains.get(chainId);
     });
 
     const readPlan = async cid => (await pool.query(`SELECT cid, content FROM ${PLAN_TABLE} WHERE cid = $1`, [cid])).rows[0] || null;
@@ -523,16 +534,18 @@ export function setupAgreementsRoute(app, deps) {
     // read and decoded, its CID and authority checked, and `onchain` written. Once written only what the
     // chain moves (status, decision, escrow, executedAt, the observation) changes; the signature, a
     // transaction that succeeded and names the account, is kept once it verifies.
+    // An EVM mint is { chain: 'evm', chainId, account, signature? } (recordEvmOnchain below).
     // → 201 the row (first record), 200 the row (refreshed).
     app.post('/agreements/:cid/onchain', async (req, res) => {
         const cid = String(req.params.cid || '');
         if (!isCid(cid)) return send(res, 400, { error: 'Not an agreement CID.', code: 'invalid-cid' });
         const body = req.body;
+        if (isPlainObject(body) && body.chain === 'evm') return recordEvmOnchain(req, res, cid, body);
         if (!isPlainObject(body) || Object.keys(body).some(key => !['chain', 'cluster', 'account', 'signature'].includes(key))
             || typeof body.account !== 'string') {
             return send(res, 400, { error: 'Body must be { chain, cluster, account, signature? }.', code: 'bad-request' });
         }
-        if (body.chain !== 'solana') return send(res, 400, { error: 'chain must be solana.', code: 'unsupported-chain' });
+        if (body.chain !== 'solana') return send(res, 400, { error: 'chain must be solana or evm.', code: 'unsupported-chain' });
         if (!Object.hasOwn(AGREEMENT_CLUSTERS, body.cluster)) {
             return send(res, 400, { error: `cluster must be one of ${Object.keys(AGREEMENT_CLUSTERS).join(', ')}.`, code: 'unsupported-cluster' });
         }
@@ -613,6 +626,99 @@ export function setupAgreementsRoute(app, deps) {
             return res.status(500).json({ error: 'Internal server error' });
         }
     });
+
+    // The EVM counterpart (docs/blockchain-flows.md, R4): { chain: 'evm', chainId, account, signature? }.
+    // The chain must have an Agreement contract, the sponsor must be an EVM address and `account` the key
+    // keyOf(sponsor, cid); the contract's Record there is read at one block, its CID and sponsor checked,
+    // and `onchain` written (agreements/onchain-evm.js). A signature is the hash of a transaction that
+    // succeeded and was sent to the Agreement contract.
+    async function recordEvmOnchain(req, res, cid, body) {
+        if (Object.keys(body).some(key => !['chain', 'chainId', 'account', 'signature'].includes(key)) || typeof body.account !== 'string') {
+            return send(res, 400, { error: 'Body must be { chain: "evm", chainId, account, signature? }.', code: 'bad-request' });
+        }
+        const chainId = normalizeChainId(body.chainId);
+        let contract;
+        try {
+            contract = agreementAddresses(chainId).Agreement;
+        } catch (error) {
+            if (!['unknown-chain', 'no-agreement'].includes(error?.code)) throw error;
+            return send(res, 400, { error: `chainId ${body.chainId} has no Agreement contract: ${error.message}`, code: 'unsupported-chain-id' });
+        }
+        const signature = body.signature ?? null;
+        if (signature !== null && !isEvmTransactionHash(signature)) {
+            return send(res, 400, { error: 'signature must be a transaction hash (0x and 64 hex digits), or null.', code: 'bad-request' });
+        }
+        const label = `EVM chain ${chainId}`;
+        try {
+            const row = await loadAgreement(pool, cid);
+            if (!row) return send(res, 404, { error: 'Agreement not found', code: 'agreement-not-found' });
+            if (row.content?.rule?.binding !== true) {
+                return send(res, 422, { error: 'Only a binding owners\' agreement is minted; this one does not bind.', code: 'not-binding' });
+            }
+            const sponsor = row.content?.sponsor ?? null;
+            if (!isEvmAddress(sponsor)) {
+                return send(res, 422, { error: 'The agreement names no EVM sponsor wallet, so it has no Agreement entry.', code: 'no-sponsor' });
+            }
+            const expected = evmAgreementKeyOf(sponsor, cid);
+            if (body.account.toLowerCase() !== expected) {
+                return send(res, 400, {
+                    error: `The agreement's key is ${expected} (keyOf its sponsor and CID), not ${body.account}.`,
+                    code: 'onchain-account-mismatch', expected
+                });
+            }
+            if (row.onchain && (row.onchain.chain !== 'evm' || row.onchain.chainId !== chainId || row.onchain.account !== expected)) {
+                const where = row.onchain.chain === 'evm' ? `EVM chain ${row.onchain.chainId}` : row.onchain.cluster ?? row.onchain.chain;
+                return send(res, 409, { error: `The agreement is recorded on ${where} as ${row.onchain.account}.`, code: 'onchain-recorded-elsewhere' });
+            }
+
+            const chain = evmChainOf(chainId);
+            let read;
+            let touch = null;
+            try {
+                read = await chain.readAccount(expected);
+                if (!read.problem && signature !== null && !row.onchain?.signature) touch = await chain.transactionTouches(signature);
+            } catch (error) {
+                console.error(`[${new Date().toISOString()}] POST /agreements/${cid}/onchain could not read ${label}:`, error);
+                return send(res, error?.code === 'rpc-wrong-chain' ? 503 : 502, { error: `The ${label} RPC could not be read.`, code: 'chain-unavailable' });
+            }
+            if (read.problem === 'missing') {
+                return send(res, 404, { error: `There is no agreement ${expected} on ${label} (yet).`, code: 'onchain-account-missing' });
+            }
+            if (read.problem) {
+                return send(res, 409, { error: `Agreement ${expected} could not be read (${read.problem}).`, code: 'onchain-not-agreement' });
+            }
+            if (read.account.cid !== cid) {
+                return send(res, 409, { error: `Agreement ${expected} stores CID ${read.account.cid}.`, code: 'onchain-cid-mismatch', storedCid: read.account.cid });
+            }
+            if (!sameKey(read.account.sponsor, sponsor)) {
+                return send(res, 409, { error: `Agreement ${expected} belongs to ${read.account.sponsor}, not the sponsor.`, code: 'onchain-sponsor-mismatch' });
+            }
+            if (touch === 'not-found') {
+                return send(res, 409, { error: `Transaction ${signature} is not visible on ${label} yet; send it again once confirmed, or leave it out.`, code: 'onchain-signature-not-found' });
+            }
+            if (touch && touch !== 'ok') {
+                return send(res, 400, { error: `Transaction ${signature} ${touch === 'failed' ? 'failed' : 'was not sent to the Agreement contract'}.`, code: 'onchain-signature-mismatch' });
+            }
+
+            const fresh = onchainFromEvmRecord(read.account, {
+                chainId,
+                contract: chain.contract ?? contract,
+                observedAt: new Date(now()).toISOString(),
+                observedSlot: read.slot,
+                signature: touch === 'ok' ? signature : null
+            });
+            const next = row.onchain
+                ? { ...refreshOnchain(row.onchain, fresh, EVM_MOVING_FIELDS), ...(touch === 'ok' ? { signature } : {}) }
+                : fresh;
+            const wrote = await writeOnchain(pool, cid, next);
+            log(`${row.onchain ? 'refreshed' : 'recorded'} ${cid} on ${label} as ${expected}: ${next.status}, ${next.decision}${wrote ? '' : ' (a later observation was already stored)'}`);
+            return res.status(row.onchain ? 200 : 201).json(await loadAgreement(pool, cid));
+        } catch (error) {
+            if (error?.code === 'retired-agreement-format') return res.status(410).json({ error: error.message, code: error.code });
+            console.error(`[${new Date().toISOString()}] Error in POST /agreements/${cid}/onchain:`, error);
+            return res.status(500).json({ error: 'Internal server error' });
+        }
+    }
 
     app.get('/agreements/:cid', async (req, res) => {
         const cid = String(req.params.cid || '');

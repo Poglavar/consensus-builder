@@ -226,9 +226,11 @@ describe('reference lens member', () => {
         expect(queries[0].sql).not.toMatch(/now\(\)/i);
         // A decision names its agreement in the payload; the table has no per-proposal column.
         expect(queries[0].sql).not.toMatch(/proposal_account/);
-        expect(queries[0].params).toHaveLength(13);
+        expect(queries[0].params).toHaveLength(15);
         expect(JSON.parse(queries[0].params[7])).toEqual(DECISION);
-        expect(queries[0].params.at(-1)).toBe('2026-09-21T00:00:00.000Z');
+        expect(queries[0].params[12]).toBe('2026-09-21T00:00:00.000Z');
+        // A SAS record is a Solana row; EVM decisions carry chain 'evm' and their chain id (lens-evm-decision.test.js).
+        expect(queries[0].params.slice(13)).toEqual(['solana', null]);
 
         await store.list({ agreementCid: AGREEMENT_CID, kind: 'decision' });
         expect(queries[1].sql).toMatch(/payload->>'agreementCid' = \$2/);

@@ -184,7 +184,7 @@ export function parcelOutputs(parcels) {
  *   parcels   [{ parcelId, parcelSourceId?, areaM2 (number | null) }] the input parcels, each its owners' abstract party
  *   outputs   [{ hash, areaM2, fromParcelIds, role, producedBy (a linked design CID | null), geometry? }]
  *   rule      { electorate, binding, approvalConfig, lens, settlement } (ownersRule() for a binding owners' agreement, communityRule() for a poll)
- *   title, author, sponsor (base58 wallet that mints and funds it, or null), city, createdAt (ISO | null),
+ *   title, author, sponsor (base58 or EVM wallet that mints and funds it, or null), city, createdAt (ISO | null),
  *   deadline (ISO | null), openGroundM2 (default 0), allocations (default: a piece on one input parcel goes to that parcel's party), money (settlement-derived),
  *   valuation ({ inputs: [{ parcelId, unitValueCents }], outputs: [{ output, unitValueCents }] } for settlement by value, else null)
  * @returns {{ content: object, cid: string }}

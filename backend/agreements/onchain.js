@@ -78,10 +78,13 @@ export function onchainFromAccount(account, { cluster, programId = AGREEMENT_PRO
     return AgreementClient.onchainOf(account, { cluster, programId, observedAt, observedSlot, signature });
 }
 
-/** The stored `onchain` with only the fields the chain moves taken from a fresh observation. */
-export function refreshOnchain(stored, fresh) {
+/**
+ * The stored `onchain` with only the fields the chain moves taken from a fresh observation. `fields`
+ * is the chain's moving list: MOVING_FIELDS here, EVM_MOVING_FIELDS for an EVM agreement (onchain-evm.js).
+ */
+export function refreshOnchain(stored, fresh, fields = MOVING_FIELDS) {
     const next = { ...stored };
-    for (const field of MOVING_FIELDS) next[field] = fresh[field];
+    for (const field of fields) next[field] = fresh[field];
     return next;
 }
 

@@ -11,6 +11,7 @@ import { PublicKey } from '@solana/web3.js';
 import { isCid } from '../cid.js';
 import { LENS_SCHEMA_KINDS } from '../oracle/lens-schemas.js';
 import { countAgreementDecisions, planAgreementDecision } from './agreement-decision.js';
+import { isEvmAddress } from '../chain/keys.js';
 import { LensError, lensLog } from './errors.js';
 import { systemClock } from './member.js';
 import { LENS_OWNERSHIP_PATH, describePricing } from './pricing.js';
@@ -152,7 +153,9 @@ export function createLensMemberApp({ member, pricing, operatorToken = null, cor
     // AgreementDecision-v1 `satisfied` for an indexed agreement (programs/agreement/README.md).
     // Operator-only, and the operator supplies nothing but the CID: whether the rule is met comes from
     // the agreement and its relayed owner decisions (agreement-decision.js). A decision already issued
-    // for the agreement is final here as on chain: asked again it is answered as stored.
+    // for the agreement is final here as on chain: asked again it is answered as stored. An agreement
+    // with an EVM sponsor is attested through EAS on the chain the index records it minted on
+    // (onchain.chainId), with the member's EVM address as its lens key; 409 not_minted before that.
     // → 201 issued, 200 already issued (`reused`), each with the tally.
     app.post('/lens/agreements/:cid/decision', wrap(async (req, res) => {
         requireOperator(req, operatorToken, 'agreement decisions require the operator token');
@@ -165,8 +168,13 @@ export function createLensMemberApp({ member, pricing, operatorToken = null, cor
         const sponsor = agreement.content?.sponsor;
         const existing = typeof sponsor === 'string' ? await member.findDecision({ agreementCid: cid, sponsor }) : null;
         if (existing) return res.status(200).json({ ...publicRecord(existing), reused: true, tally: count.tally, counted: count.counted.length });
-        const plan = planAgreementDecision({ agreement, count, lensKey: member.authority, nowSeconds: clock.nowSeconds() });
-        const record = await member.attestDecision(plan.fields);
+        const evm = isEvmAddress(sponsor);
+        if (evm && agreement.onchain?.chain !== 'evm') {
+            throw new LensError(409, 'not_minted', 'the agreement has an EVM sponsor and is not recorded on an EVM chain yet; its decision is attested on that chain', { tally: count.tally });
+        }
+        if (evm && !member.evmAddress) throw new LensError(503, 'evm_not_configured', 'this lens member has no EVM key (LENS_EVM_PRIVATE_KEY)');
+        const plan = planAgreementDecision({ agreement, count, lensKey: evm ? member.evmAddress : member.authority, nowSeconds: clock.nowSeconds() });
+        const record = await member.attestDecision(plan.fields, { chain: evm ? { family: 'evm', chainId: agreement.onchain.chainId } : null });
         res.status(record.reused ? 200 : 201).json({ ...publicRecord(record), reused: record.reused, tally: plan.tally, counted: plan.counted });
     }));
 

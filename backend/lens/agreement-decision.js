@@ -9,7 +9,7 @@
 import { createHash } from 'node:crypto';
 import { createRequire } from 'node:module';
 import { decisionSubject } from '../agreements/decisions.js';
-import { isPublicKey } from '../agreements/onchain.js';
+import { isChainKey, sameKey } from '../chain/keys.js';
 import { LensError } from './errors.js';
 
 const require = createRequire(import.meta.url);
@@ -44,7 +44,8 @@ export function decisionEvidenceRef(counted) {
  * The AgreementDecision fields this member may issue now, or a LensError (with the tally) saying why not.
  * @param {{ agreement: object, count: ReturnType<typeof countAgreementDecisions>, lensKey: string,
  *   nowSeconds: number }} input
- *   agreement as GET /agreements/:cid serves it (status from the chain once minted), lensKey the member's key
+ *   agreement as GET /agreements/:cid serves it (status from the chain once minted), lensKey the member's key:
+ *   its Solana key, or its EVM address for an agreement with an EVM sponsor (minted on EVM)
  * @returns {{ fields: { agreementCid, sponsor, decision: 'satisfied', evidenceRef, sourceObservedAt }, tally: object, counted: number }}
  */
 export function planAgreementDecision({ agreement, count, lensKey, nowSeconds }) {
@@ -53,14 +54,14 @@ export function planAgreementDecision({ agreement, count, lensKey, nowSeconds })
     const refusal = (status, code, message) => new LensError(status, code, message, { tally });
 
     const sponsor = content.sponsor;
-    if (!isPublicKey(sponsor)) {
+    if (!isChainKey(sponsor)) {
         throw refusal(422, 'no_sponsor', 'the agreement names no sponsor wallet, so no chain account can carry its decision');
     }
-    if (!approval.lensKeys({ lens: content.rule?.lens }).includes(lensKey)) {
+    if (!approval.lensKeys({ lens: content.rule?.lens }).some(key => sameKey(key, lensKey))) {
         throw refusal(409, 'not_in_lens', 'this lens member is not in the agreement\'s lens');
     }
     const onchain = agreement.onchain;
-    if (onchain && onchain.lens !== lensKey) {
+    if (onchain && !sameKey(onchain.lens, lensKey)) {
         throw refusal(409, 'not_agreement_lens', `the agreement's account names lens ${onchain.lens}; only its attestation settles it`);
     }
     if (agreement.status === 'executed' || agreement.status === 'cancelled') {

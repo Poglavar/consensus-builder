@@ -13,6 +13,7 @@ import { parseArgs } from 'node:util';
 import dotenv from 'dotenv';
 import { createPool } from '../db/connection.cjs';
 import { AGREEMENT_CLUSTERS, createAgreementChain } from '../agreements/onchain.js';
+import { evmAgreementChain } from '../agreements/onchain-evm.js';
 import { buildLandOracleRunStats, landOracleStatsPath, writeRunStatsAtomic } from '../operations/run-stats.js';
 import { runLandEventJob, timestampedLog } from './land-event-job.js';
 
@@ -28,6 +29,8 @@ function usage(code = 0) {
         '                      Without it the pass is a dry run that reads the chain and writes nothing.',
         `  --interval <s>      Seconds between passes when not --once (default ${DEFAULT_INTERVAL_SECONDS}).`,
         `  --cluster <name>    ${Object.keys(AGREEMENT_CLUSTERS).join(' | ')} (default devnet).`,
+        '  --evm-chain <id>    Refresh the agreements recorded on this EVM chain (e.g. 84532, Base Sepolia)',
+        '                      instead of a Solana cluster: `onchain` only, no land events yet.',
         '  --help              This text.',
         '',
         'Examples:',
@@ -35,6 +38,7 @@ function usage(code = 0) {
         '  node oracle/agreement-lifecycle-job.mjs --once --apply    # one written pass (the PM2 cron job)',
         '',
         'Env (backend/.env): DATABASE_URL, SOLANA_RPC_URL (the cluster\'s RPC), SOLANA_RPC_MAX_ACCOUNTS,',
+        'EVM_RPC_URL_<chainId> (an --evm-chain RPC; public default otherwise),',
         'LAND_ORACLE_RUN_STATS (run-stats file, default logs/land-oracle-stats.json; written by --apply passes).'
     ].join('\n'));
     process.exit(code);
@@ -52,6 +56,7 @@ function options() {
                 apply: { type: 'boolean' },
                 interval: { type: 'string' },
                 cluster: { type: 'string', default: 'devnet' },
+                'evm-chain': { type: 'string' },
                 help: { type: 'boolean' }
             }
         }));
@@ -65,7 +70,7 @@ function options() {
     if (values.once && values.interval !== undefined) throw new Error('--interval is for repeated passes; drop --once or --interval');
     const interval = values.interval === undefined ? DEFAULT_INTERVAL_SECONDS : Number(values.interval);
     if (!Number.isInteger(interval) || interval < 10) throw new Error(`--interval must be whole seconds, at least 10; got ${values.interval}`);
-    return { once: Boolean(values.once), apply: Boolean(values.apply), interval, cluster: values.cluster };
+    return { once: Boolean(values.once), apply: Boolean(values.apply), interval, cluster: values.cluster, evmChain: values['evm-chain'] ?? null };
 }
 
 async function main() {
@@ -73,8 +78,8 @@ async function main() {
     dotenv.config({ path: path.join(HERE, '..', '.env'), quiet: true });
     const pool = createPool();
     pool.on('error', error => timestampedLog(`idle pg client error: ${error.message}`));
-    const chain = createAgreementChain({ cluster: opts.cluster });
-    timestampedLog(`${opts.apply ? 'APPLY' : 'DRY RUN'} on ${opts.cluster}${opts.once ? ', one pass' : `, a pass every ${opts.interval}s`}`);
+    const chain = opts.evmChain ? evmAgreementChain(opts.evmChain) : createAgreementChain({ cluster: opts.cluster });
+    timestampedLog(`${opts.apply ? 'APPLY' : 'DRY RUN'} on ${opts.evmChain ? `EVM chain ${chain.chainId}` : opts.cluster}${opts.once ? ', one pass' : `, a pass every ${opts.interval}s`}`);
 
     async function pass() {
         const startedAt = new Date().toISOString();

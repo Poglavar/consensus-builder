@@ -259,10 +259,14 @@ describe('algorithmic agent schedule', () => {
 
 describe('scheduled agent RPC pacing', () => {
     it('paces every scheduled agent job to one RPC request per second and leaves the lens services unpaced', () => {
-        // The chain watcher reads EVM chains only, so it has no Solana RPC to pace.
-        const scheduled = apps.filter(app => app.cron_restart && app.name !== 'consensus-builder-chain-records');
+        // The chain watcher and the oracle's EVM pass read EVM chains only, so they have no Solana RPC to pace.
+        const evmOnly = ['consensus-builder-chain-records', 'consensus-builder-land-oracle-evm'];
+        const scheduled = apps.filter(app => app.cron_restart && !evmOnly.includes(app.name));
         expect(scheduled.length).toBeGreaterThanOrEqual(12);
-        expect(apps.find(app => app.name === 'consensus-builder-chain-records').env).not.toHaveProperty('SOLANA_RPC_MIN_INTERVAL_MS');
+        for (const name of evmOnly) expect(apps.find(app => app.name === name).env, name).not.toHaveProperty('SOLANA_RPC_MIN_INTERVAL_MS');
+        const evmPass = apps.find(app => app.name === 'consensus-builder-land-oracle-evm');
+        expect(evmPass).toMatchObject({ script: 'oracle/agreement-lifecycle-job.mjs', args: '--once --apply --evm-chain 84532', autorestart: false });
+        expect(evmPass.env.LAND_ORACLE_RUN_STATS).not.toBe(apps.find(app => app.name === 'consensus-builder-land-oracle').env.LAND_ORACLE_RUN_STATS);
         for (const app of scheduled) expect(app.env.SOLANA_RPC_MIN_INTERVAL_MS, app.name).toBe('1000');
         for (const app of apps.filter(item => !item.cron_restart)) expect(app.env.SOLANA_RPC_MIN_INTERVAL_MS, app.name).toBeUndefined();
     });

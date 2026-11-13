@@ -22,18 +22,23 @@ CREATE TABLE IF NOT EXISTS consensus.lens_devnet_owner (
 
 -- Attestations this member has issued. issued_at is the chain time of the issuing transaction
 -- (NULL when the RPC did not report a block time), never the insert time. An AgreementDecision
--- (kind 'decision') names its agreement in the payload (agreementCid, sponsor).
+-- (kind 'decision') names its agreement in the payload (agreementCid, sponsor). chain 'evm' rows are
+-- AgreementDecisions attested through EAS on chain_id (backend/lens/evm-issuer.js): address is the EAS
+-- uid, schema the EAS schema uid, transaction_signature the transaction hash, expiry the EAS
+-- expirationTime, issued_at the attestation's EAS time; they have no credential and no account hash.
 CREATE TABLE IF NOT EXISTS consensus.lens_attestation (
-    address            text PRIMARY KEY,         -- SAS attestation PDA
+    address            text PRIMARY KEY,         -- SAS attestation PDA, or the EAS uid (chain 'evm')
     kind               text        NOT NULL CHECK (kind IN ('ownership', 'decision', 'evidence', 'verdict')),
-    credential         text        NOT NULL,
+    chain              text        NOT NULL DEFAULT 'solana',
+    chain_id           text,                     -- the EVM chain id of a chain 'evm' row
+    credential         text,
     schema             text        NOT NULL,
     authority          text        NOT NULL,
     parcel_uid         text,
     proposal_account   text,                     -- ProposalVerdict rows only; unused since M3 (plan-design-agreement.md)
     owner              text,
     payload            jsonb       NOT NULL,     -- decoded schema fields
-    account_hash       text        NOT NULL,     -- sha256 hex over the whole attestation account bytes
+    account_hash       text,                     -- sha256 hex over the whole SAS attestation account bytes
     expiry             bigint      NOT NULL,     -- SAS expiry, Unix seconds
     transaction_signature text,
     payment            jsonb,                    -- x402 settlement receipt, when the request was paid
@@ -58,6 +63,25 @@ BEGIN
         ALTER TABLE consensus.lens_attestation DROP CONSTRAINT IF EXISTS lens_attestation_kind_check;
         ALTER TABLE consensus.lens_attestation ADD CONSTRAINT lens_attestation_kind_check
             CHECK (kind IN ('ownership', 'decision', 'evidence', 'verdict'));
+    END IF;
+END $$;
+
+-- EVM AgreementDecisions joined on 2026-11-13 (docs/blockchain-flows.md, R4): tables created before
+-- lack chain/chain_id and require a credential and an account hash. A no-op once applied.
+ALTER TABLE consensus.lens_attestation ADD COLUMN IF NOT EXISTS chain text NOT NULL DEFAULT 'solana';
+ALTER TABLE consensus.lens_attestation ADD COLUMN IF NOT EXISTS chain_id text;
+ALTER TABLE consensus.lens_attestation ALTER COLUMN credential DROP NOT NULL;
+ALTER TABLE consensus.lens_attestation ALTER COLUMN account_hash DROP NOT NULL;
+DO $$
+BEGIN
+    IF NOT EXISTS (
+        SELECT 1 FROM pg_constraint
+        WHERE conrelid = 'consensus.lens_attestation'::regclass AND conname = 'lens_attestation_chain_check'
+    ) THEN
+        ALTER TABLE consensus.lens_attestation ADD CONSTRAINT lens_attestation_chain_check CHECK (
+            (chain = 'solana' AND chain_id IS NULL AND credential IS NOT NULL AND account_hash IS NOT NULL)
+            OR (chain = 'evm' AND kind = 'decision' AND chain_id IS NOT NULL)
+        );
     END IF;
 END $$;
 

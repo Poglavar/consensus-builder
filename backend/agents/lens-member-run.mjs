@@ -82,6 +82,13 @@ export function lensMemberCommand(persona, { live = false, owners = null, rights
         if (token) env.LENS_OPERATOR_TOKEN = token;
         else if (live) throw new Error(`${persona.name} (kind ${service.kind}) attests agreement decisions; set ${service.operatorTokenEnv} before a live run`);
     }
+    // The EVM key that attests the decisions of agreements minted on EVM (lens/evm-issuer.js), read from
+    // the variable the service block names, e.g. AGENT_LIFECYCLE_LENS_EVM_PRIVATE_KEY; without one,
+    // lens/run.mjs falls back to LENS_EVM_PRIVATE_KEY / UGT_AGENT_EVM_PRIVATE_KEY in the env.
+    if (live && service.evmKeyEnv) {
+        const key = String(sourceEnv[service.evmKeyEnv] || '').trim();
+        if (key) env.LENS_EVM_PRIVATE_KEY = key;
+    }
     return { args, env, keypairPath, rightsPath };
 }
 
@@ -119,7 +126,7 @@ function main() {
         throw new Error(`${persona.name} rights registry ${command.rightsPath} does not exist; write a lens-rights-registry/v1 file there (backend/lens/README.md) or remove the persona's service.rights`);
     }
     const line = `node ${command.args.join(" ")}`;
-    console.log(`[${new Date().toISOString()}] [lens-member-run] ${persona.name} ${args.live ? 'LIVE' : 'dry run'}: ${line}${Object.keys(command.env).length ? ` (env ${Object.entries(command.env).map(([k, v]) => `${k}=${k === 'LENS_OPERATOR_TOKEN' ? '[set]' : v}`).join(' ')})` : ''}`);
+    console.log(`[${new Date().toISOString()}] [lens-member-run] ${persona.name} ${args.live ? 'LIVE' : 'dry run'}: ${line}${Object.keys(command.env).length ? ` (env ${Object.entries(command.env).map(([k, v]) => `${k}=${['LENS_OPERATOR_TOKEN', 'LENS_EVM_PRIVATE_KEY'].includes(k) ? '[set]' : v}`).join(' ')})` : ''}`);
     if (args.print) return;
     const child = spawn(process.execPath, command.args, { stdio: 'inherit', env: { ...process.env, ...command.env } });
     for (const signal of ['SIGINT', 'SIGTERM']) process.on(signal, () => child.kill(signal));
