@@ -356,3 +356,5 @@ in commits.
 - 2026-10-16: Schelling is a configurable map layer in every city (strict meridian/parallel grid with fixed arterial lattice; a free rotatable grid is a separate tool; interventions are painted blocks) (docs/schelling-parcels.md).
 - 2026-10-07: Urban-block subdivision stays a read-only playground; shared links carry the chosen split geometry.
 - 2026-11-13: A road (or track) lying over at least nine tenths of another applied road's ground replaces it on apply, lineage or not; roads that join or cross, and a track along a road, stay together. Two publications of one plan had left the same street on the map twice.
+- 2026-11-13: OSM road reads go local osm_road table first (free; only where it holds rows), then our Tracestrack instance, then public Overpass; every road tool must work in every city through that chain, so the table can be retired later without breaking one.
+- 2026-11-13: Footways, paths, steps and pedestrian ways count as block borders and as street lines for road parcels, even where they cross a park.
