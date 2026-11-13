@@ -38,6 +38,7 @@ Each document describes a current contract, an open plan or research. Verificati
 - [Lens model](lens-model.md), [community consultations](community-consultations.md), [ownership adapters](ownership-adapters.md).
 - [Land readjustment](land-readjustmend.md), [unsurveyed ground](unsurveyed-ground.md), [impact resolver](impact-resolver.md).
 - [Location first](location-first.md), [saved workspace](saved-workspace.md), [portable plan files](portable-plan-files.md), [IPFS storage](ipfs-storage.md).
+- [Short links](short-links.md): numbered `/p/342/3`-style links against CID prefixes and a short domain; an open plan.
 - [CityGML and CityJSON](citygml.md): CityGML/CityJSON imports wherever they exchange what we import and exports beside our own files (Vienna's building source built), and the mapping onto CityGML and LADM.
 
 **Editing and the map**
