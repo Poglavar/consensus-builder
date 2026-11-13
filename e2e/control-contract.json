@@ -745,9 +745,9 @@
       "controlType": "button"
     },
     {
-      "id": "control-104e3506a396c1-1",
+      "id": "control-4d10efc84282f4-1",
       "source": "index.html",
-      "markup": "<button type=\"button\" id=\"layers-button\" class=\"map-shell-button\" data-sheet-target=\"layers-sheet\" aria-controls=\"layers-sheet\" aria-expanded=\"false\" title=\"Layers\" aria-label=\"Layers\" data-i18n-key=\"mapShell.layers\" data-i18n-attr=\"title,aria-label\">",
+      "markup": "<button type=\"button\" id=\"layers-button\" class=\"map-shell-button\" data-sheet-target=\"layers-sheet\" aria-controls=\"layers-sheet\" aria-expanded=\"false\" title=\"Layers\" aria-label=\"Layers\" aria-describedby=\"layers-button-zoom-text\" data-i18n-key=\"mapShell.layers\" data-i18n-attr=\"title,aria-label\">",
       "interaction": "click",
       "controlType": "button"
     },

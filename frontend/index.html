@@ -472,8 +472,12 @@
             </button>
             <button type="button" id="layers-button" class="map-shell-button" data-sheet-target="layers-sheet"
                 aria-controls="layers-sheet" aria-expanded="false" title="Layers" aria-label="Layers"
+                aria-describedby="layers-button-zoom-text"
                 data-i18n-key="mapShell.layers" data-i18n-attr="title,aria-label">
                 <i class="fas fa-layer-group" aria-hidden="true"></i>
+                <span id="layers-button-zoom" class="cb-badge map-shell-button-zoom" aria-hidden="true"
+                    title="Map zoom level. In 3D, the 2D zoom that shows the same ground." hidden></span>
+                <span id="layers-button-zoom-text" hidden></span>
             </button>
             <button type="button" id="settings-button" class="map-shell-button" data-sheet-target="settings-sheet"
                 aria-controls="settings-sheet" aria-expanded="false" title="Settings" aria-label="Settings"
@@ -645,7 +649,6 @@
         <section id="layers-sheet" class="right-screen-panel map-sheet" role="dialog" aria-labelledby="layers-sheet-title" hidden>
             <div class="map-sheet-header">
                 <h2 id="layers-sheet-title" class="map-sheet-title" data-i18n-key="mapShell.layers">Layers</h2>
-                <span id="layers-sheet-zoom" class="cb-badge map-sheet-zoom" title="Map zoom level. In 3D, the 2D zoom that shows the same ground." hidden></span>
                 <button type="button" class="map-sheet-close close-circle-btn close-circle-btn--lg" data-sheet-close
                     aria-label="Close" title="Close" data-i18n-key="common.close" data-i18n-attr="aria-label,title">×</button>
             </div>

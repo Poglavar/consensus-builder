@@ -354,6 +354,29 @@ body.three-mode-active .leaflet-control-attribution { visibility: hidden; }
     color: var(--cb-text);
 }
 
+/* The view's zoom, a small bubble pinned to the Layers button's corner (js/ui/view-zoom.js). */
+.map-shell-button-zoom {
+    position: absolute;
+    right: -6px;
+    bottom: -6px;
+    height: 16px;
+    min-width: 16px;
+    justify-content: center;
+    padding: 0 4px;
+    border: 1px solid var(--cb-line-glass);
+    background: var(--cb-surface);
+    color: var(--cb-text);
+    font-size: 10px;
+    line-height: 14px;
+    letter-spacing: 0;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+}
+
+.map-shell-button-zoom[hidden] {
+    display: none;
+}
+
 .map-shell-button:hover {
     background: var(--cb-surface-2);
 }
@@ -541,13 +564,6 @@ body.three-mode-active .leaflet-control-attribution { visibility: hidden; }
     font-size: 16px;
     font-weight: 700;
     line-height: 1.3;
-}
-
-/* The view's zoom beside a sheet title (Layers); the close button stays at the far end. */
-.map-sheet-zoom {
-    margin-inline-end: auto;
-    font-variant-numeric: tabular-nums;
-    white-space: nowrap;
 }
 
 .map-sheet-body {
