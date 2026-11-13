@@ -112,7 +112,7 @@
      * The adapter for one chain. `provider` reads; `signer` (a wallet's, optional) writes.
      * `addresses` is { ParcelAnchor, RecordRegistry }.
      */
-    function createAdapter({ ethers, chainId, provider, signer = null, addresses }) {
+    function createAdapter({ ethers, chainId, provider, signer = null, addresses, log: logLine = null }) {
         const id = normalizeChainId(chainId);
         if (!id) throw failure('invalid-chain', `Not a chain id: ${chainId}`);
         if (!ethers || !ethers.Contract) throw failure('ethers-unavailable', 'The ethers library is not loaded.');
@@ -123,7 +123,8 @@
             if (!signer) throw failure('no-signer', `No wallet is connected to ${chainName(id)} to sign with.`);
             return contract.connect(signer);
         };
-        const log = message => console.info(`[${new Date().toISOString()}] [EvmAdapter ${id}] ${message}`);
+        // The server injects its own line writer (stderr under the MCP stdio transport); the page logs to the console.
+        const log = message => (logLine || (line => console.info(line)))(`[${new Date().toISOString()}] [EvmAdapter ${id}] ${message}`);
 
         // Every record of `kind` ('design' | 'plan', or null for both), newest first.
         async function listRecords(kind = null) {
@@ -198,13 +199,18 @@
 
     function browser(win) {
         let addressBook = null;
-        async function addressesFor(chainId) {
+        // Every contract addresses.json lists for `chainId` (the agreement bridge reads `Agreement`), or null.
+        async function contractAddresses(chainId) {
             if (!addressBook) {
                 const response = await win.fetch('/contracts/addresses.json', { cache: 'no-store' });
                 if (!response.ok) throw failure('no-contracts', `addresses.json: HTTP ${response.status}`);
                 addressBook = await response.json();
             }
             const entry = addressBook[normalizeChainId(chainId)];
+            return entry && typeof entry === 'object' ? { ...entry } : null;
+        }
+        async function addressesFor(chainId) {
+            const entry = await contractAddresses(chainId);
             return entry && entry.ParcelAnchor && entry.RecordRegistry ? { ParcelAnchor: entry.ParcelAnchor, RecordRegistry: entry.RecordRegistry } : null;
         }
 
@@ -241,7 +247,7 @@
             return createAdapter({ ethers, chainId, provider, signer: await provider.getSigner(), addresses });
         }
 
-        return { walletChainId, forChain, connected };
+        return { walletChainId, forChain, connected, contractAddresses, ensureEthers };
     }
 
     return { CHAINS, DEFAULT_CHAIN_ID, KIND_CODES, RECORD_REGISTRY_ABI, PARCEL_ANCHOR_ABI, PAGE, ANCHOR_BATCH,

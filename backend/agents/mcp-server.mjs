@@ -14,6 +14,7 @@ import { resultSchemaFor, argumentError } from './mcp-contracts.js';
 import { createMcpDiscoveryTools } from './mcp-discovery.js';
 import { createMcpObserver } from '../operations/planning-diagnostics.js';
 import { createSharedPlanMcpTools } from './mcp-shared-plan-tools.js';
+import { CHAINS as EVM_CHAINS, DEFAULT_CHAIN_ID as EVM_DEFAULT_CHAIN_ID } from '../chain/evm.js';
 
 const BASE58_KEY = /^[1-9A-HJ-NP-Za-km-z]{32,44}$/;
 // CIDv1, raw codec, sha2-256, base32 lower case (backend/cid.js).
@@ -23,6 +24,10 @@ const agreementAccount = z.string().regex(BASE58_KEY)
     .describe('Chain account of a minted (binding owners\') agreement: the PDA ["agreement", sponsor, sha256(cid)] under the agreement program (ugt_get_agreement answers it)');
 const agreementCid = z.string().regex(CID).describe('Agreement CID (bafkrei…), as ugt_propose_agreement or ugt_list_agreements answers it');
 const designCid = z.string().regex(CID).describe('Design CID (bafkrei…)');
+const planCid = z.string().regex(CID).describe('Plan CID (bafkrei…), as ugt_publish_plan answers it');
+const recordKind = z.enum(['design', 'plan']).describe('Which records to list');
+const evmChainId = z.enum(Object.keys(EVM_CHAINS)).default(EVM_DEFAULT_CHAIN_ID)
+    .describe(`EVM chain id: ${Object.entries(EVM_CHAINS).map(([id, chain]) => `${id} (${chain.name})`).join(', ')}`);
 const lamports = z.string().regex(/^\d+$/).describe('Whole lamports as a decimal string, for example "0" or "10000000" (0.01 SOL)');
 const amountUsdc = z.string().regex(/^\d+(\.\d{1,6})?$/).describe('Exact devnet USDC decimal string, for example "0.05"');
 const shares = z.string().regex(/^\d+(\.\d{1,6})?$/).describe('Share quantity with up to six decimal places, for example "0.05"');
@@ -98,6 +103,7 @@ class UrbanGameTheoryMcpServer extends McpServer {
 export function createUrbanGameTheoryMcpServer({ mode = 'local', env = process.env, fetchImpl, tools, decorateResult = value => value, resolveDraftReference, diagnosticRecorder = null, sharedPlans = null } = {}) {
     if (!['hosted', 'local'].includes(mode)) throw new Error('mode must be hosted or local');
     if (mode === 'hosted' && env.UGT_AGENT_KEYPAIR) throw new Error('Hosted MCP must have no UGT_AGENT_KEYPAIR');
+    if (mode === 'hosted' && env.UGT_AGENT_EVM_PRIVATE_KEY) throw new Error('Hosted MCP must have no UGT_AGENT_EVM_PRIVATE_KEY');
     const actions = tools || createUrbanGameTheoryTools({ mode, env, fetchImpl, resolveDraftReference });
     Object.assign(actions, createSharedPlanMcpTools({ actions, sharedPlans }));
     const handler = fn => toolHandler(async args => decorateResult(await fn(args)));
@@ -204,6 +210,34 @@ export function createUrbanGameTheoryMcpServer({ mode = 'local', env = process.e
         inputSchema: z.object({ agreementCid, lamports, confirm: confirmation }),
         annotations: PAID_IDEMPOTENT
     }, handler(args => actions.mintAgreement(args)));
+
+    server.registerTool('ugt_chain_records', {
+        title: 'List design and plan records on an EVM chain',
+        description: 'Read the design or plan records of the RecordRegistry contract on an EVM chain (Base Sepolia by default) directly over RPC, without the UGT API, newest first: CID, minter, mint time and token metadata. A record confers nothing; it says who published the CID on that chain and when.',
+        inputSchema: z.object({ kind: recordKind, chainId: evmChainId, limit: z.number().int().min(1).max(200).default(50) }),
+        annotations: READ_ONLY
+    }, handler(args => actions.listChainRecords(args)));
+
+    server.registerTool('ugt_mint_design', {
+        title: 'Mint a design record on an EVM chain',
+        description: 'Mint the soulbound record of an indexed design in the chain\'s RecordRegistry with UGT_AGENT_EVM_PRIVATE_KEY, the browser\'s Publish on chain. The design\'s canonical bytes are first made retrievable from a public IPFS gateway (pinned when none serves them yet; the wait can take minutes). Refused when the design is not in the index or already has a record on that chain.',
+        inputSchema: z.object({ designCid, chainId: evmChainId, confirm: confirmation }),
+        annotations: PAID_IDEMPOTENT
+    }, handler(args => actions.mintDesign(args)));
+
+    server.registerTool('ugt_mint_plan', {
+        title: 'Mint a plan record on an EVM chain',
+        description: 'Mint the soulbound record of an indexed plan in the chain\'s RecordRegistry with UGT_AGENT_EVM_PRIVATE_KEY: every member design retrievable from a public IPFS gateway first, then the plan, then its record (member designs are not minted). Refused when the plan or a member design is not in the index, or the plan already has a record on that chain.',
+        inputSchema: z.object({ planCid, chainId: evmChainId, confirm: confirmation }),
+        annotations: PAID_IDEMPOTENT
+    }, handler(args => actions.mintPlan(args)));
+
+    server.registerTool('ugt_anchor_parcels', {
+        title: 'Anchor parcels on an EVM chain',
+        description: 'Anchor parcel ids in the chain\'s ParcelAnchor contract with UGT_AGENT_EVM_PRIVATE_KEY, in batches of 25 per transaction. An anchor has no owner: the wallet only pays. Parcels anchored already are skipped and listed in alreadyAnchored; each new anchor\'s metadata URI is the parcel\'s app page.',
+        inputSchema: z.object({ parcelIds: z.array(z.string().min(1).max(256)).min(1).max(200).describe('Parcel ids as the app shows them, for example HR-335550-1813/6'), chainId: evmChainId, confirm: confirmation }),
+        annotations: PAID_IDEMPOTENT
+    }, handler(args => actions.anchorParcels(args)));
 
     server.registerTool('ugt_fund_agreement', {
         title: 'Fund a minted agreement',

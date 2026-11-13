@@ -41,7 +41,8 @@ const TOOL_METHODS = [
     'capabilities', 'getActivity', 'listAgreements', 'getAgreement', 'listAttesters', 'getSupport', 'getOracleEvents', 'chatCost',
     'inspectVerifiedFact', 'publishDesign', 'proposeAgreement', 'mintAgreement', 'fundAgreement', 'betOnAgreement',
     'buyVerifiedFact', 'requestOwnership', 'pledge', 'donate', 'refundDonation', 'voidPledge', 'revokePledge',
-    'releaseDonations', 'fulfillPledge', 'resolve', 'claim', 'resolveExternal', 'claimExternal'
+    'releaseDonations', 'fulfillPledge', 'resolve', 'claim', 'resolveExternal', 'claimExternal',
+    'listChainRecords', 'mintDesign', 'mintPlan', 'anchorParcels'
 ];
 
 function stubTools() {
@@ -304,5 +305,120 @@ describe('Urban Game Theory MCP server', () => {
         } finally {
             fs.rmSync(directory, { recursive: true, force: true });
         }
+    });
+});
+
+describe('EVM record and anchor tools', () => {
+    const API = 'https://api.example.test';
+    const TX = `0x${'ab'.repeat(32)}`;
+    const memberA = { schema: 'design/v1', title: 'Member A' };
+    const memberB = { schema: 'design/v1', title: 'Member B' };
+    const planContent = { schema: 'plan/v1', title: 'Two designs', designCids: [cidOfObject(memberA), cidOfObject(memberB)] };
+    const rows = new Map([[`/designs/${cidOfObject(memberA)}`, memberA], [`/designs/${cidOfObject(memberB)}`, memberB], [`/plans/${cidOfObject(planContent)}`, planContent]]
+        .map(([path, content]) => [path, { cid: cidOfObject(content), content }]));
+    const fetchImpl = vi.fn(async url => {
+        const row = rows.get(new URL(url).pathname);
+        return row ? Response.json(row) : Response.json({ error: 'not found' }, { status: 404 });
+    });
+
+    // The adapter's surface (frontend/js/chain/evm-adapter.js) without a chain.
+    function fakeAdapter({ minted = null } = {}) {
+        return {
+            chainId: '84532', name: 'Base Sepolia',
+            explorerUrl: ({ tx }) => `https://sepolia.basescan.org/tx/${tx}`,
+            recordOf: vi.fn(async () => minted),
+            listRecords: vi.fn(async kind => [{ cid: cidOfObject(memberA), kind, minter: '0x00000000000000000000000000000000000000aa', createdAt: '2026-11-13T00:00:00.000Z', tokenUri: '', chainId: '84532' }]),
+            mintRecord: vi.fn(async (kind, cid, tokenUri) => ({ txHash: TX, record: { cid, kind, minter: '0x00000000000000000000000000000000000000aa', createdAt: '2026-11-13T00:00:00.000Z', tokenUri, chainId: '84532' } })),
+            anchorsMissing: vi.fn(async ids => ids.filter(id => id !== 'HR-1-1')),
+            mintAnchors: vi.fn(async ids => ({ txHashes: [TX], anchored: ids.length }))
+        };
+    }
+    function realTools(adapter, env = { UGT_API_BASE: API, UGT_MCP_LIVE: '1' }) {
+        const ensureRetrievable = vi.fn(async ({ cid }) => ({ cid, via: 'pinned', gateway: 'https://gw.example.test/ipfs/' }));
+        const tools = createUrbanGameTheoryTools({ env, fetchImpl, dependencies: { readAdapter: vi.fn(() => adapter), signingAdapter: vi.fn(() => adapter), ensureRetrievable } });
+        return { tools, ensureRetrievable };
+    }
+
+    it('declares a read-only listing and three signed, idempotent writes with confirm: true', async () => {
+        await connect(stubTools());
+        const byName = await toolsByName();
+        expect(byName.ugt_chain_records.annotations).toMatchObject({ readOnlyHint: true, destructiveHint: false });
+        for (const name of ['ugt_mint_design', 'ugt_mint_plan', 'ugt_anchor_parcels']) {
+            expect(byName[name].annotations).toMatchObject({ readOnlyHint: false, destructiveHint: true, idempotentHint: true });
+            expect(byName[name].inputSchema.required).toContain('confirm');
+        }
+        expect(Object.keys(byName.ugt_chain_records.inputSchema.properties)).toEqual(['kind', 'chainId', 'limit']);
+        expect(Object.keys(byName.ugt_mint_design.inputSchema.properties)).toEqual(['designCid', 'chainId', 'confirm']);
+        expect(Object.keys(byName.ugt_mint_plan.inputSchema.properties)).toEqual(['planCid', 'chainId', 'confirm']);
+        expect(Object.keys(byName.ugt_anchor_parcels.inputSchema.properties)).toEqual(['parcelIds', 'chainId', 'confirm']);
+        expect(byName.ugt_mint_design.inputSchema.properties.chainId.enum).toEqual(expect.arrayContaining(['84532', '11155111']));
+    });
+
+    it('refuses a write without confirm, with a malformed CID or an unknown chain, before it reaches the tools', async () => {
+        const tools = stubTools();
+        tools.listChainRecords = vi.fn(async ({ kind, chainId }) => ({ chainId, chain: 'Base Sepolia', kind, count: 0, truncated: false, records: [] }));
+        await connect(tools);
+        const call = (name, args) => client.callTool({ name, arguments: args });
+        expect((await call('ugt_mint_design', { designCid: DESIGN_CID })).isError).toBe(true);
+        expect((await call('ugt_mint_design', { designCid: DESIGN_CID, confirm: false })).isError).toBe(true);
+        expect((await call('ugt_mint_plan', { planCid: 'plan-7', confirm: true })).isError).toBe(true);
+        expect((await call('ugt_anchor_parcels', { parcelIds: [], confirm: true })).isError).toBe(true);
+        expect((await call('ugt_mint_design', { designCid: DESIGN_CID, chainId: '1', confirm: true })).isError).toBe(true);
+        expect(tools.mintDesign).not.toHaveBeenCalled();
+        expect(tools.mintPlan).not.toHaveBeenCalled();
+        expect(tools.anchorParcels).not.toHaveBeenCalled();
+        expect((await call('ugt_chain_records', { kind: 'design' })).isError).not.toBe(true);
+        expect(tools.listChainRecords).toHaveBeenCalledWith({ kind: 'design', chainId: '84532', limit: 50 });
+    });
+
+    it('refuses signing without UGT_MCP_LIVE in the real tool surface', async () => {
+        const adapter = fakeAdapter();
+        await connect(realTools(adapter, { UGT_API_BASE: API }).tools);
+        const result = await client.callTool({ name: 'ugt_mint_design', arguments: { designCid: cidOfObject(memberA), confirm: true } });
+        expect(result.isError).toBe(true);
+        expect(result.content[0].text).toMatch(/UGT_MCP_LIVE=1/);
+        expect(adapter.mintRecord).not.toHaveBeenCalled();
+    });
+
+    it('mints a plan after its member designs and then the plan are retrievable, and returns the transaction', async () => {
+        const adapter = fakeAdapter();
+        const { tools, ensureRetrievable } = realTools(adapter);
+        await connect(tools);
+        const planCid = cidOfObject(planContent);
+        const result = await client.callTool({ name: 'ugt_mint_plan', arguments: { planCid, confirm: true } });
+        expect(result.isError, JSON.stringify(result.structuredContent)).not.toBe(true);
+        expect(ensureRetrievable.mock.calls.map(([args]) => [args.kind, args.cid])).toEqual([
+            ['design', planContent.designCids[0]], ['design', planContent.designCids[1]], ['plan', planCid]
+        ]);
+        expect(adapter.mintRecord).toHaveBeenCalledWith('plan', planCid, expect.stringMatching(/^data:application\/json;base64,/));
+        expect(result.structuredContent).toMatchObject({ chainId: '84532', chain: 'Base Sepolia', cid: planCid, txHash: TX,
+            explorerUrl: `https://sepolia.basescan.org/tx/${TX}`, record: { cid: planCid, kind: 'plan' }, url: `https://urbangametheory.xyz/plans/${planCid}` });
+        // The token metadata's title is untrusted prose.
+        expect(result.structuredContent.record.metadata).toMatchObject({ external_url: `https://urbangametheory.xyz/plans/${planCid}`, untrusted: { name: 'Two designs' } });
+    });
+
+    it('refuses to mint a design that has a record already, before pinning anything', async () => {
+        const adapter = fakeAdapter({ minted: { cid: cidOfObject(memberA), minter: '0x00000000000000000000000000000000000000bb' } });
+        const { tools, ensureRetrievable } = realTools(adapter);
+        await connect(tools);
+        const result = await client.callTool({ name: 'ugt_mint_design', arguments: { designCid: cidOfObject(memberA), confirm: true } });
+        expect(result).toMatchObject({ isError: true, structuredContent: { code: 'record-exists' } });
+        expect(ensureRetrievable).not.toHaveBeenCalled();
+        expect(adapter.mintRecord).not.toHaveBeenCalled();
+        const missing = await client.callTool({ name: 'ugt_mint_design', arguments: { designCid: DESIGN_CID, confirm: true } });
+        expect(missing).toMatchObject({ isError: true, structuredContent: { code: 'not-indexed' } });
+    });
+
+    it('anchors only the parcels without an anchor, with the parcel page as metadata, and lists records', async () => {
+        const adapter = fakeAdapter();
+        await connect(realTools(adapter).tools);
+        const result = await client.callTool({ name: 'ugt_anchor_parcels', arguments: { parcelIds: ['HR-1-1', 'HR-335550-1813/6', 'HR-335550-1813/6'], confirm: true } });
+        expect(result.isError, JSON.stringify(result.structuredContent)).not.toBe(true);
+        expect(result.structuredContent).toEqual({ chainId: '84532', chain: 'Base Sepolia', anchored: ['HR-335550-1813/6'], alreadyAnchored: ['HR-1-1'],
+            txHashes: [TX], explorerUrls: [`https://sepolia.basescan.org/tx/${TX}`] });
+        const { metadataUriOf } = adapter.mintAnchors.mock.calls[0][1];
+        expect(metadataUriOf('HR-335550-1813/6')).toBe('https://urbangametheory.xyz/parcel/HR-335550-1813/6');
+        const listed = await client.callTool({ name: 'ugt_chain_records', arguments: { kind: 'design', limit: 1 } });
+        expect(listed.structuredContent).toMatchObject({ chainId: '84532', kind: 'design', count: 1, truncated: false, records: [{ cid: cidOfObject(memberA) }] });
     });
 });

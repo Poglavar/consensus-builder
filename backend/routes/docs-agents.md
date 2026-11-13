@@ -98,6 +98,10 @@ UGT_AGENT_KEYPAIR=/absolute/path/to/devnet-agent.json
 UGT_MCP_LIVE=1
 UGT_MCP_MAX_USDC_PER_ACTION=0.25
 SOLANA_RPC_URL=https://api.devnet.solana.com
+# EVM records and anchors (ugt_mint_design, ugt_mint_plan, ugt_anchor_parcels): a low-value testnet key
+UGT_AGENT_EVM_PRIVATE_KEY=0x<64 hex digits>
+# Optional per-chain RPC (public defaults for 84532 Base Sepolia and 11155111 Sepolia)
+EVM_RPC_URL_84532=https://sepolia.base.org
 ```
 
 | Tool | Kind | What it does |
@@ -120,6 +124,9 @@ SOLANA_RPC_URL=https://api.devnet.solana.com
 | `ugt_publish_design` | write | Index a `design/v1` object. |
 | `ugt_propose_agreement` | write | Index an `agreement/v1` object, with any linked designs the index does not hold yet. |
 | `ugt_mint_agreement` | signed | As the sponsor of a binding owners' agreement: create the account and fund its escrow, then record it in the index. |
+| `ugt_chain_records` | read | Design or plan records of an EVM chain's `RecordRegistry` (Base Sepolia by default), read over RPC. |
+| `ugt_mint_design`, `ugt_mint_plan` | signed (EVM) | Mint an indexed design's or plan's record with the agent's EVM key, after its content (and a plan's member designs) is retrievable from public IPFS; content no public gateway serves yet is pinned with the process's own `IPFS_PINNING_PROVIDER` account. |
+| `ugt_anchor_parcels` | signed (EVM) | Anchor parcel ids in an EVM chain's `ParcelAnchor`; anchored parcels are skipped. |
 | `ugt_fund_agreement` | signed | As the sponsor: top the escrow up to a target. |
 | `ugt_bet_on_agreement` | signed, USDC | Open the agreement's market if needed and stake YES or NO. |
 | `ugt_pledge`, `ugt_donate` | signed, USDC | Back an agreement account with a revocable pledge or a funded donation. |

@@ -8,9 +8,31 @@ const PlanRecord = require('../../frontend/js/plan-record.js');
 
 export function validatePlanContent(content) { return PlanRecord.validate(content); }
 
+const readPlan = async (db, cid) => (await db.query('SELECT cid, content FROM consensus.plan WHERE cid = $1', [cid])).rows[0] || null;
+
+/**
+ * Indexes one plan/v1 object (POST /plans, and the chain watcher's imports): { refusal: { status, body } }
+ * or { status: 201 | 200, row } (200: the CID was indexed already). `cid`, when given, must be the
+ * content's CID. A plan whose member designs are not all indexed is refused (409, `missing`).
+ */
+export async function indexPlan(db, { cid = null, content } = {}) {
+    const error = PlanRecord.validate(content);
+    if (error) return { refusal: { status: 400, body: { error } } };
+    const computedCid = cidOf(canonicalBytes(content));
+    if (cid !== null && cid !== computedCid) return { refusal: { status: 400, body: { error: `The content is ${computedCid}, not ${cid}.`, code: 'cid-mismatch' } } };
+    const existing = await readPlan(db, computedCid);
+    if (existing) return { status: 200, row: existing };
+    const { rows } = await db.query('SELECT cid FROM consensus.design WHERE cid = ANY($1::text[])', [content.designCids]);
+    const present = new Set(rows.map(row => row.cid));
+    const missing = content.designCids.filter(id => !present.has(id));
+    if (missing.length) return { refusal: { status: 409, body: { error: 'Publish every selected design before saving the plan.', missing } } };
+    await db.query('INSERT INTO consensus.plan (cid, content) VALUES ($1, $2::jsonb) ON CONFLICT (cid) DO NOTHING', [computedCid, JSON.stringify(content)]);
+    return { status: 201, row: await readPlan(db, computedCid) };
+}
+
 // Saving a plan indexes it only; nothing is pinned to IPFS (docs/ipfs-storage.md).
 export function setupPlansRoute(app, { pool, uploadRateLimiter } = {}) {
-    const read = async cid => (await pool.query('SELECT cid, content FROM consensus.plan WHERE cid = $1', [cid])).rows[0] || null;
+    const read = cid => readPlan(pool, cid);
     const listLimit = raw => {
         if (raw === undefined) return 20;
         if (typeof raw !== 'string' || !/^[1-9]\d*$/.test(raw)) return null;
@@ -28,20 +50,10 @@ export function setupPlansRoute(app, { pool, uploadRateLimiter } = {}) {
         return res.status(503).json({ error: 'The plan could not be saved or loaded. Please retry.' });
     };
     app.post('/plans', uploadRateLimiter || createUploadRateLimiter(), async (req, res) => {
-        const content = req.body?.content;
-        const error = PlanRecord.validate(content);
-        if (error) return res.status(400).json({ error });
         try {
-            const bytes = canonicalBytes(content);
-            const cid = cidOf(bytes);
-            const existing = await read(cid);
-            if (existing) return res.json(existing);
-            const { rows } = await pool.query('SELECT cid FROM consensus.design WHERE cid = ANY($1::text[])', [content.designCids]);
-            const present = new Set(rows.map(row => row.cid));
-            const missing = content.designCids.filter(id => !present.has(id));
-            if (missing.length) return res.status(409).json({ error: 'Publish every selected design before saving the plan.', missing });
-            await pool.query('INSERT INTO consensus.plan (cid, content) VALUES ($1, $2::jsonb) ON CONFLICT (cid) DO NOTHING', [cid, JSON.stringify(content)]);
-            return res.status(201).json(await read(cid));
+            const outcome = await indexPlan(pool, { content: req.body?.content });
+            if (outcome.refusal) return res.status(outcome.refusal.status).json(outcome.refusal.body);
+            return res.status(outcome.status).json(outcome.row);
         } catch (error) { return fail(res, error); }
     });
     app.get('/plans', async (req, res) => {

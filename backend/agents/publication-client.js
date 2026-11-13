@@ -227,6 +227,15 @@ export function createIndexClient({
         return result.body;
     }
 
+    /** GET /plans/:cid → the row ({ cid, content }), or null when the index does not hold it. */
+    async function getPlan(cid) {
+        const result = await call('GET', `/plans/${encodeURIComponent(requireCid(cid))}`);
+        if (result.status === 404) return null;
+        if (!result.ok) throw refusal(`read plan ${cid}`, result);
+        if (result.body?.cid !== cid) throw mismatch('read plan', cid, result.body?.cid);
+        return result.body;
+    }
+
     /** GET /agreements?city=&design=&parcel=&limit= → { agreements, count }, newest first. */
     async function listAgreements({ city = null, design = null, parcel = null, limit = null } = {}) {
         const query = new URLSearchParams();
@@ -241,7 +250,7 @@ export function createIndexClient({
     }
 
     return {
-        apiBase: base, indexDesign, publishDesign, designBinding, getDesign, getDesigns,
+        apiBase: base, indexDesign, publishDesign, designBinding, getDesign, getDesigns, getPlan,
         indexAgreement, publishAgreement, listDecisions, relayDecision, recordOnchain, getAgreement, listAgreements
     };
 }

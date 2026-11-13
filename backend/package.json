@@ -18,6 +18,7 @@
         "demo:judge": "node scripts/judge-demo.mjs",
         "demo:cold-start": "node examples/independent-x402-client.mjs",
         "sync:land-events": "node oracle/agreement-lifecycle-job.mjs",
+        "sync:chain-records": "node oracle/chain-records-job.mjs",
         "lens:member": "node lens/run.mjs",
         "smoke:prod:parcels": "node scripts/smoke-production-bbox.mjs",
         "plan-yield": "node scripts/plan-yield.js",

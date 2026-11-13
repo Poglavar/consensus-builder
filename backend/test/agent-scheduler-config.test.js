@@ -186,6 +186,25 @@ describe('algorithmic agent schedule', () => {
         expect(source).toContain('writeRunStatsAtomic');
     });
 
+    it('imports chain-minted design and plan records with one applied watcher pass every 15 minutes', () => {
+        const watcher = apps.find(item => item.name === 'consensus-builder-chain-records');
+        expect(watcher).toMatchObject({
+            script: 'oracle/chain-records-job.mjs',
+            args: '--once --apply',
+            instances: 1,
+            autorestart: false,
+            cron_restart: '*/15 * * * *',
+            merge_logs: true,
+            env: { CHAIN_RECORDS_RUN_STATS: path.join(backendLogs, 'chain-records-stats.json') }
+        });
+        expect(fs.existsSync(new URL(`../${watcher.script}`, import.meta.url))).toBe(true);
+        const source = fs.readFileSync(new URL('../oracle/chain-records-job.mjs', import.meta.url), 'utf8');
+        expect(source).toContain('buildChainRecordsRunStats');
+        expect(source).toContain('writeRunStatsAtomic');
+        const scripts = JSON.parse(fs.readFileSync(new URL('../package.json', import.meta.url), 'utf8')).scripts;
+        expect(scripts['sync:chain-records']).toBe('node oracle/chain-records-job.mjs');
+    });
+
     it('checks the live prospective market hourly with its original two signers', () => {
         const resolver = apps.find(item => item.name === 'consensus-builder-prospective-resolver');
         expect(resolver).toMatchObject({
@@ -240,8 +259,10 @@ describe('algorithmic agent schedule', () => {
 
 describe('scheduled agent RPC pacing', () => {
     it('paces every scheduled agent job to one RPC request per second and leaves the lens services unpaced', () => {
-        const scheduled = apps.filter(app => app.cron_restart);
+        // The chain watcher reads EVM chains only, so it has no Solana RPC to pace.
+        const scheduled = apps.filter(app => app.cron_restart && app.name !== 'consensus-builder-chain-records');
         expect(scheduled.length).toBeGreaterThanOrEqual(12);
+        expect(apps.find(app => app.name === 'consensus-builder-chain-records').env).not.toHaveProperty('SOLANA_RPC_MIN_INTERVAL_MS');
         for (const app of scheduled) expect(app.env.SOLANA_RPC_MIN_INTERVAL_MS, app.name).toBe('1000');
         for (const app of apps.filter(item => !item.cron_restart)) expect(app.env.SOLANA_RPC_MIN_INTERVAL_MS, app.name).toBeUndefined();
     });

@@ -113,7 +113,7 @@ describe('hosted MCP HTTP', () => {
         expect((await client.readResource({ uri: 'ugt://editing' })).contents[0].text).toContain('JSON Pointer');
     });
     it('rejects credential-bearing environments before starting', () => {
-        for (const key of ['UGT_AGENT_KEYPAIR', 'DATABASE_URL', 'PINATA_JWT_TOKEN']) expect(() => createMcpHttpService({ env: { [key]: 'configured' } })).toThrow(/no credentials/);
+        for (const key of ['UGT_AGENT_KEYPAIR', 'UGT_AGENT_EVM_PRIVATE_KEY', 'DATABASE_URL', 'PINATA_JWT_TOKEN']) expect(() => createMcpHttpService({ env: { [key]: 'configured' } })).toThrow(/no credentials/);
         expect(hostedEnvironment({ PATH: '/bin', UGT_API_BASE: 'https://api.example', CHAT_DEBUG_COSTS: 'true', UGT_AGENT_KEYPAIR: 'configured', DATABASE_URL: 'configured', ANTHROPIC_API_KEY: 'configured' }))
             .toEqual({ PATH: '/bin', UGT_API_BASE: 'https://api.example', CHAT_DEBUG_COSTS: 'true' });
     });

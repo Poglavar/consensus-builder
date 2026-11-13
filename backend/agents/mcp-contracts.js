@@ -83,6 +83,16 @@ assign(['ugt_import_model'], mcpResultSchema.extend({ cid: cid.optional(), asset
 assign(['ugt_render_preview'], mcpResultSchema.extend({ ready: z.literal(true), publication: z.literal('private'), provenance: z.object({ renderer: z.enum(['app-map-preview-2d', 'app-scene-3d']), designCids: z.array(cid).min(1), persisted: z.literal(false) }), metrics: z.object({ width: z.number().int().positive(), height: z.number().int().positive(), designCount: count }).passthrough() }));
 assign(['ugt_compare'], mcpResultSchema.extend({ alternatives: z.array(z.object({ cid, areaBasis: z.literal('authored-geometry'), measurementErrors: z.array(object) }).passthrough()).min(2), warnings: z.array(z.union([z.string(), object])) }));
 
+// EVM records and anchors (mcp-evm-records.js): the chain, the transaction and its explorer page
+// (null on a chain without an explorer), and the record as the chain now holds it.
+const evmChain = { chainId: z.string().regex(/^\d+$/), chain: z.string() };
+const evmRecord = z.object({ cid, kind: z.enum(['design', 'plan']), minter: z.string(), createdAt: z.string(), tokenUri: z.string(), chainId: z.string() }).passthrough();
+const txHash = z.string().regex(/^0x[0-9a-f]{64}$/i);
+assign(['ugt_chain_records'], mcpResultSchema.extend({ ...evmChain, kind: z.enum(['design', 'plan']), count, truncated: z.boolean(), records: z.array(evmRecord) }));
+assign(['ugt_mint_design', 'ugt_mint_plan'], mcpResultSchema.extend({ ...evmChain, cid, txHash, explorerUrl: z.string().url().nullable(), record: evmRecord, url: z.string().url(),
+    retrievable: z.array(z.object({ cid, via: z.enum(['already', 'pinned']), gateway: z.string() })).min(1) }));
+assign(['ugt_anchor_parcels'], mcpResultSchema.extend({ ...evmChain, anchored: z.array(z.string()), alreadyAnchored: z.array(z.string()), txHashes: z.array(txHash), explorerUrls: z.array(z.string().url()) }));
+
 export function resultSchemaFor(name) { return shapes.get(name) || mcpResultSchema; }
 
 export function argumentError(tool, issues = [], message = 'The tool arguments do not match its schema.') {

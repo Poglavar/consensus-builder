@@ -19,6 +19,9 @@ import { createMcpAssetTools } from './mcp-assets.js';
 import { createMcpComparison } from './mcp-compare.js';
 import { createMcpValidationTools } from './mcp-validation.js';
 import { createMcpVotingTools } from './mcp-voting.js';
+import { createMcpEvmRecordTools } from './mcp-evm-records.js';
+import { readAdapter as evmReadAdapter, signingAdapter as evmSigningAdapter } from '../chain/evm.js';
+import { ensureRetrievable } from '../chain/courier.js';
 import os from 'node:os';
 import path from 'node:path';
 import { Keypair, PublicKey } from '@solana/web3.js';
@@ -248,6 +251,10 @@ export function createUrbanGameTheoryTools({
         mintAgreement,
         fundAgreement,
         readAgreementAccount,
+        // EVM records and anchors (mcp-evm-records.js).
+        readAdapter: evmReadAdapter,
+        signingAdapter: evmSigningAdapter,
+        ensureRetrievable,
         ...dependencies
     };
     let connection = null;
@@ -371,6 +378,7 @@ export function createUrbanGameTheoryTools({
             agreementProgram: AGREEMENT_PROGRAM_ID,
             liveActionsEnabled: live,
             keypairConfigured: Boolean(env.UGT_AGENT_KEYPAIR),
+            evmKeyConfigured: Boolean(env.UGT_AGENT_EVM_PRIVATE_KEY),
             maxUsdcPerAction,
             usdcMint: USDC_DEVNET
         },
@@ -729,6 +737,7 @@ export function createUrbanGameTheoryTools({
         publishDesign: args => actions.publishDesign(args) });
     agreements.setPlanResolver(namedPlanTools.resolvePlan);
     Object.assign(actions, namedPlanTools);
+    Object.assign(actions, createMcpEvmRecordTools({ env, appOrigin, requireLive, index, impl, log }));
     Object.assign(actions, createMcpAssetTools({ read: companion, drafts, plans: actions, appOrigin, apiBase, fetchImpl, resolveDraftReference }));
     // Every authored design is placed in the agent's working plan, its applied map (docs/agent-working-plan.md).
     // The result keeps the design's own fields and adds the plan revision, the placement and its consequences.

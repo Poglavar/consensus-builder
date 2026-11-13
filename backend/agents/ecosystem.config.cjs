@@ -250,6 +250,30 @@ module.exports = {
     merge_logs: true,
     time: true
   }, {
+    // The chain watcher (docs/blockchain-flows.md): every 15 minutes one applied pass of
+    // oracle/chain-records-job.mjs imports the design and plan records minted on the watched EVM
+    // chains (EVM_WATCH_CHAIN_IDS, default 84532) once their content is fetched from public IPFS and
+    // verified. Idempotent: an indexed CID is never written again.
+    name: 'consensus-builder-chain-records',
+    script: 'oracle/chain-records-job.mjs',
+    args: '--once --apply',
+    cwd: BACKEND_ROOT,
+    exec_mode: 'fork',
+    instances: 1,
+    autorestart: false,
+    cron_restart: '*/15 * * * *',
+    kill_timeout: 600000,
+    env: {
+      NODE_ENV: 'production',
+      // The run-stats artifact of every applied pass.
+      CHAIN_RECORDS_RUN_STATS: path.join(BACKEND_ROOT, 'logs', 'chain-records-stats.json')
+      // Chain reads use EVM_RPC_URL_<chainId> from backend/.env, else the public RPC.
+    },
+    error_file: path.join(BACKEND_ROOT, 'logs', 'chain-records-error.log'),
+    out_file: path.join(BACKEND_ROOT, 'logs', 'chain-records.log'),
+    merge_logs: true,
+    time: true
+  }, {
     name: 'consensus-builder-prospective-resolver',
     script: 'blockchain/solana/scripts/prospective-external-market.mjs',
     args: '--settle --live',

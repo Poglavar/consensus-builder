@@ -370,6 +370,9 @@ Local signed/paid tools still require an operator-controlled devnet `UGT_AGENT_K
 `UGT_MCP_LIVE=1` and `confirm: true`. `UGT_MCP_MAX_USDC_PER_ACTION` (default 0.25) caps every USDC
 action and x402 price. `ugt_chain_agreements`, `ugt_chain_agreement`, `ugt_bet_on_account` and the
 account-based settlement tools use RPC directly, so that flow needs no UGT API.
+The EVM tools (`mcp-evm-records.js`) sign with `UGT_AGENT_EVM_PRIVATE_KEY` (an operator-controlled
+testnet key) and read each chain over `EVM_RPC_URL_<chainId>` (public defaults for 84532 and 11155111);
+`ugt_chain_records` needs no key.
 
 To stage a local package (provisional name, no publication):
 

@@ -25,7 +25,7 @@ async function readJson(req, limit = MCP_MAX_REQUEST_BYTES) {
 const bearer = req => /^Bearer ([\w-]{32})$/.exec(String(req.headers.authorization || ''))?.[1] || null;
 
 export function assertHostedEnvironment(env) {
-    const names = Object.keys(env).filter(name => env[name] && /(?:KEYPAIR|SECRET|TOKEN|PASSWORD|API_KEY|DATABASE_URL)/i.test(name));
+    const names = Object.keys(env).filter(name => env[name] && /(?:KEYPAIR|PRIVATE_KEY|SECRET|TOKEN|PASSWORD|API_KEY|DATABASE_URL)/i.test(name));
     if (names.length) throw new Error(`Hosted MCP environment must contain no credentials: ${names.join(', ')}`);
 }
 
