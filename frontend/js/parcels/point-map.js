@@ -74,7 +74,7 @@
         };
         const visible = () => city() === sourceCity
             && root.document.getElementById('parcelsCheckbox')?.checked !== false
-            && map.getZoom() >= (config()?.map?.parcelZoomRange?.min ?? 17);
+            && map.getZoom() >= (config()?.map?.parcelZoomRange?.min ?? 15);
         const canIdentify = event => visible()
             && !event?.originalEvent?._stopped
             && !root.measureMode && !root.MapPick?.active() && !root.proposalListBrowseMode
@@ -88,7 +88,7 @@
             pane.style.zIndex = '390';
             pane.style.pointerEvents = 'none';
             const options = { pane: 'pointParcelMap', attribution: raster.attribution || settings.attribution,
-                minZoom: config()?.map?.parcelZoomRange?.min ?? 17, maxZoom: 22, ...raster.params };
+                minZoom: config()?.map?.parcelZoomRange?.min ?? 15, maxZoom: 22, ...raster.params };
             options.maxNativeZoom ??= options.maxZoom;
             options.maxZoom = Math.max(23, options.maxZoom);
             layer = raster.layers

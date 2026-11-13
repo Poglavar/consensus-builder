@@ -34,7 +34,10 @@ const MapCityConfigManager = window.CityConfigManager || null;
 const CURRENT_CITY_CONFIG = MapCityConfigManager ? MapCityConfigManager.getCurrentCityConfig() : null;
 const CITY_MAP_CONFIG = MapCityConfigManager ? MapCityConfigManager.getMapConfig() : {};
 const CITY_LATLNG_PADDING = MapCityConfigManager ? MapCityConfigManager.getLatLngPadding() : 0.12;
-const GLOBAL_PARCEL_ZOOM_RANGE = { min: 17, max: Infinity };
+const GLOBAL_PARCEL_ZOOM_RANGE = { min: 15, max: Infinity };
+// Buildings load and show from zoom 17, two steps closer than parcels (the city's parcelZoomRange,
+// 15 by default): a view at 15 holds 16 times the ground of one at 17.
+const BUILDING_MIN_ZOOM = 17;
 const DEFAULT_FALLBACK_LATLNG = CURRENT_CITY_CONFIG?.projection?.fallbackLatLng || [45.815, 15.982];
 const DEFAULT_FALLBACK_DATASET = CURRENT_CITY_CONFIG?.projection?.fallbackDataset || [458900, 5074000];
 
@@ -475,7 +478,7 @@ async function fetchBuildings(boundsOverride = null, options = {}) {
     if (!boundsOverride) {
         try {
             const z = map && typeof map.getZoom === 'function' ? map.getZoom() : null;
-            if (!isFinite(z) || z < 17) return;
+            if (!isFinite(z) || z < BUILDING_MIN_ZOOM) return;
         } catch (_) { /* noop */ }
     }
     let bounds = null;
@@ -494,7 +497,7 @@ async function fetchOutlineBuildings(boundsOverride = null) {
     if (!boundsOverride) {
         try {
             const z = map && typeof map.getZoom === 'function' ? map.getZoom() : null;
-            if (!isFinite(z) || z < 17) return;
+            if (!isFinite(z) || z < BUILDING_MIN_ZOOM) return;
         } catch (_) { return; }
     }
     if (!loader) return;
@@ -953,19 +956,25 @@ function setupMapEventHandlers() {
         if (typeof updateParcelsCheckboxByZoom === 'function') {
             try { updateParcelsCheckboxByZoom(within); } catch (_) { }
         }
+        // Hide the buildings and the outlined sources below their own zoom. This is DISPLAY only — the
+        // pool keeps its buildings, so a corridor still cuts what it crosses.
+        if (!(map.getZoom() >= BUILDING_MIN_ZOOM)) {
+            [window.buildingLayer, outlineBuildingLayer].forEach(layer => {
+                if (layer && map.hasLayer(layer)) {
+                    try { map.removeLayer(layer); } catch (_) { }
+                }
+            });
+        } else if (buildingLayer && !map.hasLayer(buildingLayer) && document.getElementById('showBuildings')?.checked) {
+            // Back at building zoom the layer returns by itself: cells already loaded answer from the
+            // cache without a rebuild, so nothing else would add it. (The outlines redraw on every move.)
+            buildingLayer.addTo(map);
+        }
         if (!within) {
             // Hide parcels if zoomed out beyond threshold
             const layerRef = resolveParcelLayer();
             if (layerRef && map.hasLayer(layerRef)) {
                 try { map.removeLayer(layerRef); } catch (_) { }
             }
-            // Hide the buildings and the outlined sources as well when below allowed zoom. This is
-            // DISPLAY only — the pool keeps its buildings, so a corridor still cuts what it crosses.
-            [window.buildingLayer, outlineBuildingLayer].forEach(layer => {
-                if (layer && map.hasLayer(layer)) {
-                    try { map.removeLayer(layer); } catch (_) { }
-                }
-            });
             if (typeof updateStatus === 'function') updateStatus('Parcels disabled at this zoom');
         } else {
             // If user zoomed back in and parcels are enabled, ensure layer is added

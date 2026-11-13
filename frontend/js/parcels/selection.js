@@ -360,7 +360,7 @@
                 // parcel grid stays visible; otherwise fit it normally.
                 const range = (global.CityConfigManager && typeof global.CityConfigManager.getParcelZoomRange === 'function')
                     ? global.CityConfigManager.getParcelZoomRange() : null;
-                const minParcelZoom = (range && range.min) ? range.min : 17;
+                const minParcelZoom = (range && range.min) ? range.min : 15;
                 if (bounds && bounds.isValid() && map.getBoundsZoom(bounds) < minParcelZoom) {
                     map.setView(bounds.getCenter(), Math.max(minParcelZoom, 18));
                 } else {

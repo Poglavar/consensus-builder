@@ -1,6 +1,7 @@
 import { openLayerSection } from '../helpers/layers';
 import { test, expect } from '../helpers/fixtures';
 import { openCity, PARCEL_ID, openParcel } from '../helpers/runtime';
+import { mockBuildingScene } from '../helpers/mocks/building-data';
 
 test.describe('Parcel loading and rendering @core', () => {
   test('API parcels reach the repository, live fabric and clickable map projection', async ({ mockApi: page }) => {
@@ -34,5 +35,24 @@ test.describe('Parcel loading and rendering @core', () => {
     await expect.poll(() => page.evaluate(() => (window as any).map.hasLayer((window as any).parcelLayer))).toBe(false);
     await page.evaluate(() => (window as any).map.setZoom(18, { animate: false }));
     await expect.poll(() => page.evaluate(() => (window as any).map.hasLayer((window as any).parcelLayer))).toBe(true);
+  });
+
+  test('parcels show from zoom 15 while buildings keep their zoom-17 floor', async ({ mockApi: page }) => {
+    await mockBuildingScene(page);
+    await openCity(page);
+    await openLayerSection(page, 'buildings');
+    await page.locator('#showBuildings').check();
+    const shown = () => page.evaluate(() => {
+      const w = window as any;
+      return { parcels: w.map.hasLayer(w.parcelLayer), buildings: !!w.buildingLayer && w.map.hasLayer(w.buildingLayer) };
+    });
+    const zoomTo = (zoom: number) => page.evaluate(z => (window as any).map.setZoom(z, { animate: false }), zoom);
+    await expect.poll(shown).toEqual({ parcels: true, buildings: true });
+    await zoomTo(15);
+    await expect.poll(shown).toEqual({ parcels: true, buildings: false });
+    await zoomTo(14.9);
+    await expect.poll(shown).toEqual({ parcels: false, buildings: false });
+    await zoomTo(17);
+    await expect.poll(shown).toEqual({ parcels: true, buildings: true });
   });
 });

@@ -5,7 +5,7 @@
         padding: 0.12,
         debounceMs: 500,
         gridRadius: 0,
-        zoomRange: { min: 17, max: Infinity }
+        zoomRange: { min: 15, max: Infinity }
     };
 
     function coerceNumber(value, fallback) {
@@ -53,11 +53,13 @@
         return DEFAULTS.gridRadius;
     }
 
+    // The city's parcel zoom range (its map.parcelZoomRange, through city-config.js): parcels load and
+    // show only inside it, and below it 2D hides them.
     function getZoomRange() {
-        var fromState = readFromParcelsState('getParcelFetchZoomRange');
-        var range = (fromState && typeof fromState === 'object') ? fromState : global.GLOBAL_PARCEL_ZOOM_RANGE;
-        var min = coerceNumber(range && range.min, DEFAULTS.zoomRange.min);
-        var max = Number.isFinite(range && range.max) ? range.max : DEFAULTS.zoomRange.max;
+        var manager = global.CityConfigManager;
+        var range = (manager && typeof manager.getParcelZoomRange === 'function') ? manager.getParcelZoomRange() : null;
+        var min = range && Number.isFinite(range.min) ? range.min : DEFAULTS.zoomRange.min;
+        var max = range && Number.isFinite(range.max) ? range.max : DEFAULTS.zoomRange.max;
         return { min: min, max: max };
     }
 

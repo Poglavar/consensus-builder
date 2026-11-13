@@ -344,7 +344,7 @@ class AgentBubbleManager {
             : null;
         const parcelMinZoom = (parcelZoomRange && Number.isFinite(parcelZoomRange.min))
             ? parcelZoomRange.min
-            : 17;
+            : 15;
         const targetZoom = Math.max(this.map.getZoom(), parcelMinZoom);
 
         // Switching focus: clear any other pinned bubble before pinning this one.

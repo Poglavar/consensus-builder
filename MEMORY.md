@@ -225,7 +225,8 @@ in commits.
 - 2026-10-12: Polish ULDK cities moved to GUGiK's EGiB WFS (same TERYT ids) via `admit-qualified-cities.mjs --switch`.
 - 2026-10-11: Parcel adapters fetch in the browser (Web Worker) wherever possible; Postgres imports only as demonstrated necessity; HMLR uses council ZIP/GML with GEOS WebAssembly.
 - 2026-10-11: HMLR overlaps resolve deterministically (larger area, then lower INSPIRE id) into a derived source; HMLR supersedes old UK city sources after qualification.
-- 2026-10-11: Keep the parcel visibility cutoff at zoom 17; fetch the padded viewport rectangle and reuse provider-expansion outcomes.
+- 2026-11-14: Parcels show two zoom steps further out, from 15 (every city's `parcelZoomRange`, Hong Kong 17), and the fetch gate reads the city's range; buildings keep zoom 17. Measured: Zagreb at 15 is ~28k parcels and ~0.5 GB of heap.
+- 2026-10-11: Keep the parcel visibility cutoff at zoom 17 (superseded 2026-11-14); fetch the padded viewport rectangle and reuse provider-expansion outcomes.
 - 2026-10-08: Certificate validation stays default; one adapter may use a narrowly scoped exception (an expired certificate alone does not make data unusable).
 - 2026-10-08: Globe land never depends on ISO joins; Tbilisi and Istanbul load parcels on click only; BEV parcels come from max-resolution vector tiles.
 - 2026-10-04: OSM is the default building source for any city without its own (estimated heights tagged `height_source`); people may plug in their own parcel and building sources; building load failures are always shown, never silent.
