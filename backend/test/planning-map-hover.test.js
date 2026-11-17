@@ -27,7 +27,7 @@ describe('planning 2D map hover behavior', () => {
             hitShapes: [], store: { get: () => state }, selected: () => null, sceneItems: () => [item],
             appearance: () => 'solid', envelopes: { mapFeatures: vi.fn(() => [feature]) }, realization: () => ({}),
             color: () => '#fff', select, t: key => key, lotNote: () => '', scenarioLabel: () => '',
-            rootMap: root.map, console, core: { roles: ['existing', 'permitted', 'proposed'] }, drawnItems: new Map(),
+            rootMap: root.map, console, core: { roles: ['existing', 'permitted', 'proposed'] }, drawnItems: new Map(), sourceBoundaryLayer: null, drawSourceBoundary() {},
             scenarioId: '', pins: {} });
 
         vm.runInContext(`${source.slice(drawItem.start, drawItem.end)}\n(${source.slice(drawMap.start, drawMap.end)})()`, context);

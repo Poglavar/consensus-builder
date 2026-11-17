@@ -652,6 +652,7 @@
         if (!window.PlanningViews) return false;
         const policy = window.PlanningViews.getPolicy();
         return window.PlanningViews.getItems().some(item => window.PlanningViews.getAppearance(item) !== 'off')
+            || policy.permitted !== 'off' && ['Polygon', 'MultiPolygon'].includes(window.PlanningViews.getSourceDescriptor?.()?.coverageGeometry?.type)
             || window.PlanningViews.getSelected()?.role === 'existing' && policy.existing !== 'off';
     }
     function rebuildPlanningSources3D() {
@@ -663,6 +664,13 @@
         planningSourcesGroup.visible = hasVisiblePlanningRepresentations();
         if (!planningSourcesGroup.visible) { invalidateThreeView(); return; }
         const selectedId = window.PlanningViews.getState()?.selectedId;
+        const sourceGeometry = window.PlanningViews.getSourceDescriptor?.()?.coverageGeometry;
+        if (view.permitted !== 'off' && ['Polygon', 'MultiPolygon'].includes(sourceGeometry?.type)) {
+            const line = new THREE.LineBasicMaterial({ color: window.PlanningViews.color('permitted'), depthWrite: false });
+            const borders = polygonFeatureToBorderLines({ geometry: sourceGeometry }, line, 0.04);
+            if (!borders.length) line.dispose();
+            for (const border of borders) { markOwnedMaterial(border, line); border.renderOrder = 2; planningSourcesGroup.add(border); }
+        }
         for (const item of window.PlanningViews.getItems()) {
             const appearance = window.PlanningViews.getAppearance(item);
             if (appearance === 'off') continue;

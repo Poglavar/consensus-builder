@@ -127,7 +127,7 @@
         // A source can establish a parcel-level warning before it can supply a buildable volume.
         // Keep its source geometry selectable and visible; it is not an envelope or a claim that
         // the whole parcel is permanently unbuildable.
-        if (['source-rule-warning', 'source-rule-precondition'].includes(item?.assessment?.meaning)
+        if (!item?.volumes?.length && ['source-rule-warning', 'source-rule-precondition'].includes(item?.assessment?.meaning)
             && ['Polygon', 'MultiPolygon'].includes(item.site?.type)) return [{ type: 'Feature', geometry: item.site,
             properties: { representationId: item.id, role: item.role,
                 geometryRole: item.assessment.reason === 'parcel-too-small' ? 'source-warning' : 'source-evidence',

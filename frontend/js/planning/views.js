@@ -16,6 +16,7 @@
     let hitShapes = [];
     // What drawMap last drew per item id: { item, signature, group, hits }.
     const drawnItems = new Map();
+    let sourceBoundaryLayer = null;
     let sourceOptions = [], sourceId = '', scenarioId = '', focusedRecord = null, sourceGeneration = 0, referenceStatus = null;
     let restoreId = new URLSearchParams(location.search).get('planningSelection'), restoring = false, catalogReady = false, parcelPanel = null;
     // Per-item configuration pins chosen in the inspector; cleared with the source, housing type or city.
@@ -68,6 +69,7 @@
         if (evidence.requiresPreparcellation) notes.push(t('sourceRequiresPreparcellation'));
         else if (item?.assessment?.requiresLandAssembly) notes.push(t('sourceRequiresLandAssembly'));
         if (evidence.requiresUrbanDesignCompetition) notes.push(t('sourceRequiresCompetition'));
+        if (evidence.plotFormationCondition) notes.push(t('sourceRequiresPlotFormation'));
         if (evidence.infrastructurePlotException?.condition === 'separate-infrastructure-plot') notes.push(t('sourceInfrastructureException'));
         return notes;
     }
@@ -198,6 +200,7 @@
     function drawMap() {
         if (!ready) return;
         selectionLayer.clearLayers();
+        drawSourceBoundary();
         const selection = selected();
         if (selection?.site && (selection.role !== 'permitted' || !selection.volumes.length)) {
             root.L.geoJSON(selection.site, { pane: 'planningSources', interactive: false,
@@ -232,6 +235,28 @@
             layer.removeLayer(entry.group);
             drawnItems.delete(id);
         }
+        sourceBoundaryLayer?.bringToFront?.();
+    }
+    // A plan unit is source evidence, not a selectable parcel result. It stays visible even when
+    // this viewport happens to contain no returned parcels.
+    function drawSourceBoundary() {
+        if (!sourceBoundaryLayer) sourceBoundaryLayer = root.L.featureGroup().addTo(layer);
+        sourceBoundaryLayer.clearLayers();
+        const descriptor = sourceOptions.find(source => source.id === sourceId);
+        const geometry = descriptor?.coverageGeometry;
+        if (policy().permitted === 'off' || !['Polygon', 'MultiPolygon'].includes(geometry?.type)) return;
+        const outline = root.L.geoJSON({ type: 'Feature', geometry }, { pane: 'planningSources', interactive: false,
+            style: { color: color('permitted'), weight: 3, dashArray: '8 5', fill: false, fillOpacity: 0, opacity: 0.95 } });
+        outline.addTo(sourceBoundaryLayer);
+        if (!descriptor.geometryLabel) return;
+        try {
+            const point = root.turf.pointOnFeature({ type: 'Feature', geometry });
+            const label = document.createElement('span');
+            label.textContent = descriptor.geometryLabel;
+            const icon = root.L.divIcon({ className: 'planning-source-boundary-label', html: label,
+                iconSize: [48, 24], iconAnchor: [24, 12] });
+            root.L.marker([point.geometry.coordinates[1], point.geometry.coordinates[0]], { pane: 'planningSources', interactive: false, icon }).addTo(sourceBoundaryLayer);
+        } catch (_) { /* The outline remains sufficient source evidence. */ }
     }
     // One item's massing shapes, added to `group`; returns its click-stack hit shapes.
     function drawItem(item, display, group) {
@@ -390,6 +415,14 @@
             `${root.CbFormat.formatLength(item.metrics.conditional.heightM, { maxFractionDigits: 1 })} · ${item.metrics.conditional.condition}`]);
         if (unitLimit != null) displayedMetrics.push([t('dwellingLimit'), number(unitLimit)]);
         if (item.metrics.footprintM2 != null) displayedMetrics.push([t('footprintArea'), area(item.metrics.footprintM2)]);
+        const candidatePlotAreaM2 = item.sourceEvidence?.candidateBuildingPlotAreaM2;
+        if (Number.isFinite(candidatePlotAreaM2)) {
+            if (!isParcelTooSmall(item)) displayedMetrics.push([t('parcelArea'), area(smallParcelFacts(item).areaM2)]);
+            displayedMetrics.push([t('candidateBuildingPlotArea', { block: item.sourceEvidence?.block || '' }), area(candidatePlotAreaM2)]);
+        }
+        if (item.volumes?.length && Number.isFinite(item.sourceEvidence?.assumedStoreyHeightM)) displayedMetrics.push([
+            t('assumedStoreyHeight'), root.CbFormat.formatLength(item.sourceEvidence.assumedStoreyHeightM, { maxFractionDigits: 1 })
+        ]);
         if (isParcelTooSmall(item)) {
             const { areaM2, minimumM2 } = smallParcelFacts(item);
             displayedMetrics.push([t('parcelArea'), area(areaM2)], [t('minimumBuildingPlotArea'), area(minimumM2)]);
@@ -1022,6 +1055,7 @@
         getSelected: selected, isReady: () => ready, isInspecting: () => ready && !inspector.hidden,
         select, selectRecord, inspectBuilding, inspectProposal, showParcelEvidence, color, warningColor, refresh,
         permittedFeatures, pinConfiguration, getScenario: () => scenarioId,
+        getSourceDescriptor: () => sourceOptions.find(source => source.id === sourceId) || null,
         // Drawn records covering a point, each once, in drawing order.
         itemsAt(latlng) {
             const point = root.turf.point([latlng.lng, latlng.lat]), seen = new Set();

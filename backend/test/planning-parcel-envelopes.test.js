@@ -349,6 +349,13 @@ describe('configuration display logic', () => {
             representationId: precondition.id, role: 'permitted', geometryRole: 'source-evidence', warning: null
         }]);
     });
+    it('renders a conditional source-rule massing when the provider supplies an actual volume', () => {
+        const conditional = { id: 'envelope:upu-b1:parcel-one', role: 'permitted', site: turf.bboxPolygon(bbox).geometry,
+            spatialReference: { horizontal: 'OGC:CRS84', vertical: 'relative-ground', unit: 'm' },
+            volumes: [{ geometry: turf.bboxPolygon(bbox).geometry, baseM: 0, topM: 15 }],
+            assessment: { meaning: 'source-rule-precondition', status: 'unresolved' } };
+        expect(envelopes.mapFeatures(conditional).map(feature => feature.properties.geometryRole)).toEqual(['body']);
+    });
     it('keeps source limits and frontage while sampling inside the selected configuration', async () => {
         const derived = (await loadParcelEnvelopes(query,{...options(),streetProvider:{near:async () => streetData()}})).items[0];
         const parcelGeometry = derived.derivation.parcel;

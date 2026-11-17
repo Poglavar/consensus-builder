@@ -64,6 +64,8 @@ body:is([data-planning-proposed="solid"], [data-planning-proposed="ghost"]) .pla
 .planning-parcel-evidence h3 { font-size: var(--cb-text-base); margin: 0; }
 .planning-cache-reason { white-space: pre-wrap; overflow-wrap: anywhere; font-size: var(--cb-text-sm); color: var(--cb-text-muted); }
 .planning-source-citations { margin: var(--cb-space-2) 0 0; padding-inline-start: var(--cb-space-5); }
+.planning-source-boundary-label { display: grid; place-items: center; width: 48px; height: 24px; pointer-events: none; }
+.planning-source-boundary-label > span { padding: 2px 6px; border: 1px solid var(--cb-planning-permitted); border-radius: var(--cb-radius-sm); background: var(--cb-surface); color: var(--cb-text-strong); font-size: var(--cb-text-xs); font-weight: var(--cb-weight-bold); box-shadow: var(--cb-shadow-sm); }
 .planning-inspector__description--warning { color: var(--cb-danger-soft-ink); }
 .planning-parcel-warning-icon {
     display: grid;
