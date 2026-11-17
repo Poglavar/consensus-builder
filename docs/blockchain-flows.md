@@ -304,7 +304,7 @@ mock API and a local validator), then docs and the vocabulary entries it changes
    the agent tools offer only members on the sponsor's chain. EVM agreement markets
    (`AgreementOutcomeReporter`, `AgreementMarkets` over Gnosis Conditional Tokens and its LMSR market
    maker, [`README-agreement-markets.md`](../blockchain/contracts/README-agreement-markets.md)) are
-   built and tested on a local chain, not deployed, with no browser or bettor adapter yet. Still open:
+   built with shared browser and agent trading adapters (quotes, trades, opening, resolution, claims and sponsor reclaim), not deployed to public testnets. The agreement panel exposes the EVM market; the general Bets sheet remains Solana-based. Still open:
    the `lens_attestation` DDL change (`chain`, `chain_id`) and `lens_member.evm_address` to apply at
    deploy; the land events' unique index on an agreement's lifecycle ignores the chain, so one
    sponsor's same CID minted on two EVM chains fails on the second (reported, not lost). `ugt_mint_agreement` mints on EVM too (`chainId`, escrow in `wei`),

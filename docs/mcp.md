@@ -121,6 +121,19 @@ Read the exact list and schemas from `ugt_capabilities` and `ugt_help`. The grou
   `ugt_buy_verified_fact` (x402; hosted returns the challenge through `ugt_inspect_verified_fact`).
   They need `UGT_MCP_LIVE=1`, `confirm: true` and the `UGT_MCP_MAX_USDC_PER_ACTION` cap.
 
+### EVM agreement markets (local)
+
+`ugt_agreement_market` reads the market and an optional wallet's positions; `ugt_quote_agreement_shares`
+quotes a fixed quantity. `chainId` plus the bytes32 `agreementAccount` identify the agreement.
+Use the existing `ugt_buy_agreement_shares_on_account`, `ugt_sell_agreement_shares`,
+`ugt_resolve_market` and `ugt_claim_market` with that identity for EVM. Omit `chainId` for their
+Solana path (the Solana sell tool uses `agreementCid`). Sponsor operations are
+`ugt_open_agreement_market` and `ugt_reclaim_market_seed`. Opening takes `liquidityUsdc` and
+`maxFundingUsdc`, bounded separately by `UGT_MCP_MAX_MARKET_SEED_USDC` (default 3.5).
+The shared [browser and bettor adapter](../blockchain/contracts/README-agreement-markets.md#browser-and-agent-adapters)
+requires configured testnet contracts and uses `UGT_AGENT_EVM_PRIVATE_KEY` for signed agent calls.
+Amounts in tool inputs are decimal USDC or shares; quotes and balances in outputs are atomic units.
+
 ### Approval links
 
 `ugt_approval_link { action, target, params }` (hosted, local) returns a URL into the app with the

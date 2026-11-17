@@ -16,6 +16,8 @@ import { createMcpObserver } from '../operations/planning-diagnostics.js';
 import { createSharedPlanMcpTools } from './mcp-shared-plan-tools.js';
 import { CHAINS as EVM_CHAINS } from '../chain/evm.js';
 import { SOLANA_CHAIN_KEYS } from '../chain/adapters.js';
+import { createEvmBettor } from './evm-bettor.js';
+import { evmMarketChain, evmAgreementKey, registerEvmMarketReadsAndFunding } from './mcp-evm-markets.js';
 
 const BASE58_KEY = /^[1-9A-HJ-NP-Za-km-z]{32,44}$/;
 // CIDv1, raw codec, sha2-256, base32 lower case (backend/cid.js).
@@ -102,7 +104,7 @@ class UrbanGameTheoryMcpServer extends McpServer {
     }
 }
 
-export function createUrbanGameTheoryMcpServer({ mode = 'local', env = process.env, fetchImpl, tools, decorateResult = value => value, resolveDraftReference, diagnosticRecorder = null, sharedPlans = null } = {}) {
+export function createUrbanGameTheoryMcpServer({ mode = 'local', env = process.env, fetchImpl, tools, decorateResult = value => value, resolveDraftReference, diagnosticRecorder = null, sharedPlans = null, evmMarketTools = null } = {}) {
     if (!['hosted', 'local'].includes(mode)) throw new Error('mode must be hosted or local');
     if (mode === 'hosted' && env.UGT_AGENT_KEYPAIR) throw new Error('Hosted MCP must have no UGT_AGENT_KEYPAIR');
     if (mode === 'hosted' && env.UGT_AGENT_EVM_PRIVATE_KEY) throw new Error('Hosted MCP must have no UGT_AGENT_EVM_PRIVATE_KEY');
@@ -205,10 +207,14 @@ export function createUrbanGameTheoryMcpServer({ mode = 'local', env = process.e
     }, handler(args => { server.ugtPublishGate?.(); return actions.proposeAgreement(args); }));
 
     if (mode === 'local') {
+    const evmBettor = evmMarketTools || createEvmBettor({ env });
+    const marketAccount = z.union([agreementAccount, evmAgreementKey]);
+    const marketIdentity = { agreementAccount: marketAccount, chainId: evmMarketChain.optional().describe('Required with an EVM agreement key; omit for Solana.') };
+    const marketInput = fields => z.object(fields).refine(args => !args.agreementAccount || (args.agreementAccount.startsWith('0x') === Boolean(args.chainId)), { message: 'EVM keys require chainId; Solana accounts must omit it.' });
     server.registerTool('ugt_chain_agreements', { description: 'Discover agreement program accounts directly from Solana devnet without the UGT API. Returns CIDs, status, escrow and lens. The RPC reads the bounded agreement program; output is capped.', inputSchema: z.object({ limit: z.number().int().min(1).max(100).default(20) }), annotations: READ_ONLY }, handler(args => actions.listChainAgreements(args)));
     server.registerTool('ugt_chain_agreement', { description: 'Read and validate an agreement account directly from Solana devnet, with the UGT API offline.', inputSchema: z.object({ agreementAccount }), annotations: READ_ONLY }, handler(args => actions.getChainAgreement(args)));
-    server.registerTool('ugt_buy_agreement_shares_on_account', { description: 'Buy LMSR shares on an already-open canonical sponsor-bound agreement market using a devnet USDC budget. This does not create the market. Local signing and spend cap apply.', inputSchema: z.object({ agreementAccount, side: z.enum(['yes', 'no']), amountUsdc, confirm: confirmation }), annotations: PAID_NON_IDEMPOTENT }, handler(args => actions.betOnAccount(args)));
-    server.registerTool('ugt_sell_agreement_shares', { description: 'Sell a fixed share quantity from your position on an active canonical agreement market. The quote sets the minimum return; local signing applies.', inputSchema: z.object({ agreementCid, side: z.enum(['yes', 'no']), shares, confirm: confirmation }), annotations: PAID_NON_IDEMPOTENT }, handler(args => actions.sellAgreementSharesOnAgreement(args)));
+    server.registerTool('ugt_buy_agreement_shares_on_account', { description: 'Buy LMSR shares on an already-open canonical agreement market with a test USDC budget. Omit chainId for Solana; use chainId + the bytes32 agreement key for EVM. This does not create a market. Local signing and spend caps apply.', inputSchema: marketInput({ ...marketIdentity, side: z.enum(['yes', 'no']), amountUsdc, confirm: confirmation }), annotations: PAID_NON_IDEMPOTENT }, handler(args => args.chainId ? evmBettor.buy(args) : actions.betOnAccount(args)));
+    server.registerTool('ugt_sell_agreement_shares', { description: 'Sell a fixed share quantity on an active agreement market. Use agreementCid for Solana, or chainId + agreementAccount for EVM. The quote sets the minimum return unless minReturnUsdc is given for EVM. Local signing applies.', inputSchema: marketInput({ agreementCid: agreementCid.optional(), agreementAccount: marketAccount.optional(), chainId: evmMarketChain.optional(), side: z.enum(['yes', 'no']), shares, minReturnUsdc: amountUsdc.optional(), confirm: confirmation }).refine(args => args.chainId ? Boolean(args.agreementAccount) && !args.agreementCid : Boolean(args.agreementCid) && !args.agreementAccount, { message: 'Use chainId + agreementAccount for EVM, or agreementCid for Solana.' }), annotations: PAID_NON_IDEMPOTENT }, handler(args => args.chainId ? evmBettor.sell(args) : actions.sellAgreementSharesOnAgreement(args)));
     server.registerTool('ugt_mint_agreement', {
         title: 'Mint a binding owners\' agreement as its sponsor',
         description: 'Create the agreement on a chain as its sponsor, fund its escrow, then record it in the index (POST /agreements/:cid/onchain). On Solana (chainId solana-devnet, the default) with UGT_AGENT_KEYPAIR, which must be the sponsor: the ugt program\'s create(cid, plan_cid, input_count, lens, deadline, open_ground, required_lamports, payout) plus fund in one transaction; rule.lens must hold exactly one base58 key, not this agent\'s; give lamports. On an EVM chain id with UGT_AGENT_EVM_PRIVATE_KEY, whose address must be the sponsor: the browser\'s mint checklist (every member design, the plan and the agreement retrievable from a public IPFS gateway, pinned when none serves them yet; every input parcel anchored on that chain), then the Agreement contract\'s create(cid, lens, deadline, openGround, requiredWei, payout) with the escrow as its value; rule.lens must hold exactly one 0x address, the lens member\'s, not this agent\'s; give wei. Either way the deadline and open ground come from the agreement, the amount is both the escrow funded now and the escrow execution requires, and the payout is the sponsor. Only a binding owners\' agreement is minted: a community or owner vote is refused, it is a poll in the index. Repeating it signs nothing new.',
@@ -335,15 +341,15 @@ export function createUrbanGameTheoryMcpServer({ mode = 'local', env = process.e
     server.registerTool('ugt_resolve_market', {
         title: 'Resolve an agreement market',
         description: 'Permissionlessly resolve an agreement\'s market from its account’s terminal state: Executed YES, Cancelled or Expired NO.',
-        inputSchema: z.object({ agreementAccount, confirm: confirmation }), annotations: PAID_IDEMPOTENT
-    }, handler(args => actions.resolve(args)));
+        inputSchema: marketInput({ ...marketIdentity, confirm: confirmation }), annotations: PAID_IDEMPOTENT
+    }, handler(args => args.chainId ? evmBettor.resolve(args) : actions.resolve(args)));
 
     server.registerTool('ugt_claim_market', {
         title: 'Claim market winnings',
         description: 'Claim this wallet’s winning position or empty-winning-pool refund on an agreement\'s market.',
-        inputSchema: z.object({ agreementAccount, side: z.enum(['yes', 'no']), confirm: confirmation }),
+        inputSchema: marketInput({ ...marketIdentity, side: z.enum(['yes', 'no']), confirm: confirmation }),
         annotations: PAID_IDEMPOTENT
-    }, handler(args => actions.claim(args)));
+    }, handler(args => args.chainId ? evmBettor.claim(args) : actions.claim(args)));
 
     server.registerTool('ugt_resolve_external_market', {
         title: 'Resolve an external-evidence market',
@@ -358,6 +364,7 @@ export function createUrbanGameTheoryMcpServer({ mode = 'local', env = process.e
         inputSchema: z.object({ recipeHash, side: z.enum(['yes', 'no']), confirm: confirmation }),
         annotations: PAID_IDEMPOTENT
     }, handler(args => actions.claimExternal(args)));
+    registerEvmMarketReadsAndFunding(server, { bettor: evmBettor, handler, readOnly: READ_ONLY, paid: PAID_IDEMPOTENT });
 
     }
     registerMcpCompanion(server, { actions, handler, readOnly: READ_ONLY, discovery, debugCosts });

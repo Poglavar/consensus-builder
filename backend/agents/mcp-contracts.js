@@ -94,6 +94,15 @@ assign(['ugt_mint_design', 'ugt_mint_plan'], mcpResultSchema.extend({ ...evmChai
     retrievable: z.array(z.object({ cid, via: z.enum(['already', 'pinned']), gateway: z.string() })).min(1) }));
 assign(['ugt_anchor_parcels'], mcpResultSchema.extend({ ...evmChain, anchored: z.array(z.string()), alreadyAnchored: z.array(z.string()), txHashes: z.array(txHash), explorerUrls: z.array(z.string().url()) }));
 
+const marketState = mcpResultSchema.extend({
+    chainId: z.string(), agreementAccount: z.string().regex(/^0x[0-9a-fA-F]{64}$/),
+    agreementStatus: z.enum(['active', 'executed', 'cancelled', 'expired']),
+    marketAddress: z.string().nullable(), resolved: z.boolean(), tradable: z.boolean(),
+    positions: z.object({ yes: z.string().regex(/^\d+$/), no: z.string().regex(/^\d+$/) })
+});
+assign(['ugt_agreement_market', 'ugt_open_agreement_market', 'ugt_reclaim_market_seed'], marketState);
+assign(['ugt_quote_agreement_shares'], mcpResultSchema.extend({ chainId: z.string(), key: z.string(), side: z.enum(['yes', 'no']), action: z.enum(['buy', 'sell']), shares: z.string(), amountAtomic: z.string() }));
+
 export function resultSchemaFor(name) { return shapes.get(name) || mcpResultSchema; }
 
 export function argumentError(tool, issues = [], message = 'The tool arguments do not match its schema.') {

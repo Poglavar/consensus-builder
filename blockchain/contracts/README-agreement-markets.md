@@ -94,6 +94,17 @@ be settled from chain state alone.
 cd blockchain && (cd solidity-deps && pnpm install) && forge test --match-path forge-test/AgreementMarkets.t.sol
 ```
 
+The JS adapter tests use an isolated Anvil and these compiled contracts:
+
+```sh
+cd blockchain && forge build --skip test --skip script
+cd ../backend && npx vitest run test/evm-markets.test.js test/evm-bettor.test.js
+cd ../e2e && npx playwright test --config playwright.evm-markets.config.ts
+```
+
+The one-spec Playwright configuration loads the real shared dialog, adapter and wallet RPC against
+Anvil. It does not need an app server or API, and does not exercise a wallet extension.
+
 ## Deploy
 
 ```
@@ -113,10 +124,47 @@ scripts/deploy-agreement-markets.sh <localhost|baseSepolia|sepolia>
   to be recorded when a frontend reads them.
 - Nothing has been deployed to a public network.
 
-## Not built yet
+## Browser and agent adapters
 
-- There is no JS adapter, frontend or bettor for EVM markets. The backend and agents still trade only
-  the Solana market.
+`frontend/js/chain/evm-markets.js` is the shared browser/Node adapter. It reads the configured chain,
+checks the registry's contract links and six-decimal collateral, quotes directly on the maker and
+simulates each transaction before asking for a signature. Outcome index 0 is NO, index 1 is YES.
+Buys approve only their maximum cost; sells approve the canonical maker for outcome tokens and
+pass a negative minimum return to `trade`. Quotes never change the signed limit. Every action waits
+for a successful receipt and reads the market and positions back.
+
+The agreement panel's **Bet** action opens `evm-market-dialog.js` for an EVM agreement, including a
+terminal agreement whose winnings or sponsor funding remain claimable. The dialog exposes quotes,
+buy/sell, opening, resolution, claims and sponsor reclaim. Its quote is invalidated when an input
+changes; confirming it never increases the displayed cost or reduces the return. Reads need no
+wallet; signing requires the agreement's chain. The general Bets sheet and points books remain
+Solana-based; EVM markets are reached through their agreement panel.
+
+`backend/agents/evm-bettor.js` binds the same adapter to the local agent's EVM wallet.
+`UGT_MCP_LIVE=1` and `confirm=true` gate signed calls. `UGT_MCP_MAX_USDC_PER_ACTION` caps a buy
+(default 0.25); `UGT_MCP_MAX_MARKET_SEED_USDC` caps opening separately (default 3.5). Budget buys
+find shares with a bounded integer search over actual maker quotes. Neither reading nor quoting
+loads a signing key. The caller must not blindly retry an uncertain transaction response: inspect
+the chain position and transaction first.
+
+Local MCP identifies the market by `chainId` and the agreement's bytes32 `agreementAccount`:
+
+- `ugt_agreement_market`: state, balance and positions for an optional wallet.
+- `ugt_quote_agreement_shares`: a buy/sell quote for a decimal share amount.
+- `ugt_open_agreement_market`: sponsor opens with liquidity and an explicit maximum seed.
+- `ugt_buy_agreement_shares_on_account`: buy within `amountUsdc`.
+- `ugt_sell_agreement_shares`: sell `shares`, optionally with `minReturnUsdc`.
+- `ugt_resolve_market`: expire an overdue active agreement, then report its terminal outcome.
+- `ugt_claim_market`: redeem the selected side.
+- `ugt_reclaim_market_seed`: sponsor reclaims the maker's residual after settlement.
+
+The existing Solana tools retain their Solana arguments when `chainId` is omitted. Hosted MCP
+never exposes these local signing tools. Testnet deployment requires `Agreement`, `AgreementMarkets`,
+`ConditionalTokens`, `AgreementOutcomeReporter` and `MarketCollateral` in the chain's
+`frontend/contracts/addresses.json` entry. Missing deployments fail explicitly; there is no fallback
+to another chain or the old Solana market.
+
+## Remaining work
 - No contracts have been verified on Basescan or Etherscan. The Gnosis artifacts carry their solc
   metadata, but verification is untested.
 - There is no fee and no per-wallet position cap. Solana has an optional `max_position`.

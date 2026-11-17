@@ -7,6 +7,7 @@ export const MCP_LOCAL_TOOLS = Object.freeze([
     'ugt_buy_verified_fact', 'ugt_request_ownership', 'ugt_pledge', 'ugt_donate', 'ugt_refund_donation', 'ugt_void_pledge',
     'ugt_revoke_pledge', 'ugt_release_donations', 'ugt_fulfill_pledge', 'ugt_resolve_market', 'ugt_claim_market',
     'ugt_resolve_external_market', 'ugt_claim_external_market',
+    'ugt_agreement_market', 'ugt_quote_agreement_shares', 'ugt_open_agreement_market', 'ugt_reclaim_market_seed',
     'ugt_voting_status', 'ugt_cast_community_vote', 'ugt_approval_link', 'ugt_find_place', 'ugt_map_view', 'ugt_select_parcels', 'ugt_parcel_context', 'ugt_list_designs', 'ugt_get_design', 'ugt_markets', 'ugt_explain',
     'ugt_draft_road', 'ugt_draft_building', 'ugt_draft_track', 'ugt_draft_station', 'ugt_draft_space', 'ugt_draft_parcel_layout', 'ugt_draft_urban_rule',
     'ugt_modify_design', 'ugt_inspect_design', 'ugt_edit_design', 'ugt_compare', 'ugt_draft_agreement', 'ugt_inspect_agreement', 'ugt_edit_agreement',

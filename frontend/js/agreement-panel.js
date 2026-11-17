@@ -943,6 +943,7 @@
 
         // The markets offer a bet on this agreement (window.AgreementBets, js/bets/).
         function betAvailable(agreement) {
+            if (win.EvmAgreementBridge?.onchainRef(agreement)) return !!win.EvmMarketDialog;
             const status = observedRemote(state.remote, chainView(agreement)?.chain)?.status;
             if (['executed', 'cancelled', 'expired'].includes(status)) return false;
             const bets = win.AgreementBets;
@@ -1545,7 +1546,9 @@
 
         function bet() {
             const id = state.id;
-            Promise.resolve().then(() => win.AgreementBets.open(id)).catch(error => report(`the bet on ${id} could not be opened`, error));
+            return Promise.resolve().then(() => win.EvmAgreementBridge?.onchainRef(state.agreement)
+                ? win.EvmMarketDialog.open(state.agreement) : win.AgreementBets.open(id))
+                .catch(error => report(`the bet on ${id} could not be opened`, error));
         }
 
         // A design's own details take the right dock, so this panel steps aside.
@@ -1651,7 +1654,7 @@
                 case 'execute': execute(); break;
                 case 'cancel': cancel(); break;
                 case 'expire': expire(); break;
-                case 'bet': bet(); break;
+                case 'bet': if (!win.BusyControl.isBusy(action)) win.BusyControl.track(action, bet); break;
                 case 'edit': edit(); break;
                 case 'scheme-guide': schemeGuide(); break;
                 case 'counter': win.BusyControl.track(action, () => counter()); break;

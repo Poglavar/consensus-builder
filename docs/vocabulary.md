@@ -913,7 +913,7 @@ A modeled value of an agent's assigned land, expressed in a stated currency and 
 
 ### Market
 
-A dated LMSR betting instrument about whether a qualified binding agreement executes by its own recorded deadline. YES means a valid on-chain execution timestamp is at or before that deadline. NO means execution after the deadline, expiry, or an active agreement still unresolved after the market's grace interval. Cancellation resolves VOID, paying half of each share on either side, floored per position. Points and devnet-USDC markets are independent books with the same quote and settlement rules. The market PDA, agreement account, network and asset are distinct identities.
+A dated LMSR betting instrument about whether a qualified binding agreement executes by its own recorded deadline. YES means a valid on-chain execution timestamp is at or before that deadline. NO means execution after the deadline, expiry, or an active agreement still unresolved after the market's grace interval. Cancellation resolves VOID, paying half of each share on either side, floored per position. Points and devnet-USDC markets are independent books with the same quote and settlement rules. The market PDA, agreement account, network and asset are distinct identities. EVM agreement markets use Gnosis Conditional Tokens and an LMSR maker, identified by chain, Agreement contract and agreement key; the maker address is separate. They settle Executed as YES and Cancelled or Expired as NO, with no VOID outcome. An overdue Active EVM agreement must first expire on chain. Its sponsor can reclaim only the maker’s residual collateral; traders redeem their own outcome tokens.
 
 ### Contest
 
@@ -930,6 +930,13 @@ The positive parameter `b` in the logarithmic market scoring rule. It controls h
 ### Share
 
 A quantity in an LMSR market position on YES or NO, with six decimal places. One whole winning share pays one unit of the selected asset; one atomic share pays one atomic asset unit. VOID pays half that amount, rounded down per position.
+
+### Conditional token
+
+An ERC-1155 position in a Gnosis condition backed by collateral. EVM agreement markets use outcome
+index 0 (index set 1) for NO and index 1 (index set 2) for YES. The condition identifies the reporter,
+agreement key and two outcome slots; the position also identifies the collateral token. Resolution
+fixes redemption payouts. A market maker trades these positions; it does not decide their outcome.
 
 ### Betting journey event
 

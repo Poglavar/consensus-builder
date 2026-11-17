@@ -45,6 +45,8 @@ const steps = [
     'Use agreement tools only for allocations and decision rules. An agreement uses its named plan exactly and revises no design.'
 ];
 export const MCP_FEATURES = Object.freeze([
+    { feature: 'evm-agreement-markets', read: 'ugt_agreement_market', quote: 'ugt_quote_agreement_shares',
+        contract: 'Local mode: chainId + bytes32 agreementAccount identify an EVM testnet market. Open with ugt_open_agreement_market; buy via ugt_buy_agreement_shares_on_account, sell via ugt_sell_agreement_shares, resolve via ugt_resolve_market, redeem via ugt_claim_market, and reclaim sponsor residual via ugt_reclaim_market_seed. Quotes and balances are atomic six-decimal USDC. Signing requires UGT_MCP_LIVE and confirm; trading and seeding have separate caps. Public deployments must be configured first.' },
     { feature: 'chat-cost', read: 'ugt_chat_cost', contract: 'Backend-configured model token prices, conservative maximum turn reservation and optional token-count estimate. Estimates are not actual charges; private conversation totals remain in the authenticated chat session.' },
     { feature: 'map-navigation', view: 'ugt_map_view', selection: 'ugt_select_parcels',
         contract: 'Stateless commands returning an absolute view or source-parcel selection. The chat applies them; other clients apply returned state. Show/hide parcel IDs with parcelIdsVisible and eligible Road/track borders with roadTracksVisible; select exact displayed parcelNumber within a complete live-label snapshot or bounded source area. Duplicate labels require clarification. Landmark near uses actual edge/end/corner/beside geometry and nearest parcel boundaries within 50 metres by default (200 maximum). Random selection offers one real starting parcel near a point, optionally on a compass side; it never substitutes for a failed landmark relation. Step accepts an adjacent direction or a distance in metres/feet. Manual selection separates the focused cursor from added parcels. Block selection requires complete road and parcel evidence.' },
@@ -95,7 +97,8 @@ export function createMcpDiscoveryTools({ read, contracts = new Map(), mode = 'h
     function capabilities() {
         return { version: '0.4.0', mode, endpoint: `${appOrigin}/mcp`, workflow: steps,
             features: MCP_FEATURES.filter(item => (item.feature !== 'shared-plan-session' || contracts.has('ugt_inspect_shared_plan')) &&
-                (item.feature !== 'chat-cost' || contracts.has('ugt_chat_cost'))), tools: (contracts.size ? [...contracts.values()] : (mode === 'hosted' ? MCP_HOSTED_TOOLS : MCP_LOCAL_TOOLS).map(name => ({ name })))
+                (item.feature !== 'chat-cost' || contracts.has('ugt_chat_cost')) &&
+                (item.feature !== 'evm-agreement-markets' || mode === 'local')), tools: (contracts.size ? [...contracts.values()] : (mode === 'hosted' ? MCP_HOSTED_TOOLS : MCP_LOCAL_TOOLS).map(name => ({ name })))
                 .map(({ name, title, annotations }) => trustedMetadata({ name, ...(title ? { title } : {}), ...(annotations ? { readOnly: annotations.readOnlyHint === true } : {}) })),
             coordinates: 'GeoJSON WGS84 [longitude, latitude]; distances metres; areas square metres. Missing measurements stay null.',
             publication: { public: true, permanent: true, confirmRequired: true, expectedCidRequiredForReferences: true, sharedSessionApproval: 'Browser-owner approval of the inspected session version and plan CID. Anonymous publication remains available; this does not prevent copying readable content.' },
