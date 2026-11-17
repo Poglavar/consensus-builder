@@ -29,7 +29,7 @@ Astana publishes a [municipal 3D scene](https://gis.esaulet.kz/portal/apps/scene
 
 For an Alatau extract the regional Digital Technologies Directorate lists digitaloffice@almobl.gov.kz. The separate city pilot is coordinated by Alatau City Authority, with an investment desk at info@alataucity.kz. Its announced first stage leaves the pilot footprint and assets to be selected. [Regional directory](https://www.gov.kz/org/almobl-tehnologiya) · [City Authority](https://alataucity.kz/)
 
-Google’s country table concerns its Maps 3D SDK and does not establish whether Photorealistic 3D Tiles cover a particular Alatau point; Google’s [surface coverage map](https://developers.google.com/maps/documentation/javascript/3d/coverage) shows the northern Alatau site (43.7984, 77.0911) and Yntymak (43.4126, 76.9702) outside the published building-and-tree coverage ([Maps 3D coverage](https://developers.google.com/maps/coverage), [Photorealistic 3D Tiles](https://developers.google.com/maps/documentation/tile/3d-tiles-overview)).
+UGT’s production photo view streams Google tiles at northern Alatau (43.7984, 77.0911) and Yntymak (43.4126, 76.9702). Both sites lie outside Google’s published coverage for detailed buildings and trees. An oblique view of Yntymak shows imagery draped over low relief, while the same view in central Zagreb resolves individual roofs and towers. The Alatau tiles supply terrain and imagery for the scene. [Google surface coverage](https://developers.google.com/maps/documentation/javascript/3d/coverage)
 
 ## A small official data request is more valuable than another backdrop
 
