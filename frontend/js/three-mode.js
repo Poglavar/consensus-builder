@@ -9521,7 +9521,10 @@
     function appendFlaggedFlats(group, result) {
         const flagged = (result?.summary?.flats || []).filter(flat => flat.flag && flat.rings?.length);
         if (!flagged.length || !group?.isObject3D) return 0;
-        const material = buildingMaterials.flagged.clone();
+        // These floor patches are opaque warnings, with ordinary depth occlusion. The building
+        // ghost material uses EqualDepth/stencil and needs a separate depth prepass; carrying that
+        // state into this single batched mesh rejects its pixels against the grey floor slabs.
+        const material = configureBuildingMaterial(buildingMaterials.flagged.clone(), 1);
         let count = 0;
         group.children.filter(floor => floor.userData?.cbFloorPlanFloor && floor.userData.level >= 0).forEach(floor => {
             const storey = result.floorPlans.storeys.find(item => item.id === floor.userData.id);
