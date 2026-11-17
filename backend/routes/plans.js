@@ -10,7 +10,7 @@ export function validatePlanContent(content) { return PlanRecord.validate(conten
 
 // Saving a plan indexes it only; nothing is pinned to IPFS (docs/ipfs-storage.md).
 export function setupPlansRoute(app, { pool, uploadRateLimiter } = {}) {
-    const read = async cid => (await pool.query('SELECT cid, content FROM consensus.plan WHERE cid = $1', [cid])).rows[0] || null;
+    const read = async cid => (await pool.query('SELECT cid, content, created_at AS "publishedAt" FROM consensus.plan WHERE cid = $1', [cid])).rows[0] || null;
     const listLimit = raw => {
         if (raw === undefined) return 20;
         if (typeof raw !== 'string' || !/^[1-9]\d*$/.test(raw)) return null;
@@ -53,7 +53,7 @@ export function setupPlansRoute(app, { pool, uploadRateLimiter } = {}) {
         try {
             if (design === undefined) {
                 const city = normalizeCityCode(rawCity);
-                const { rows } = await pool.query(`SELECT cid, content FROM consensus.plan
+                const { rows } = await pool.query(`SELECT cid, content, created_at AS "publishedAt" FROM consensus.plan
                     WHERE ($1::text IS NULL OR content->'view'->>'city' = $1)
                     ORDER BY cid LIMIT $2 OFFSET $3`, [city || null, limit + 1, offset]);
                 const hasMore = rows.length > limit;
@@ -62,13 +62,13 @@ export function setupPlansRoute(app, { pool, uploadRateLimiter } = {}) {
                 return res.json({ plans, count: plans.length, hasMore, nextOffset: hasMore ? offset + plans.length : null });
             }
             const { rows } = await pool.query(`
-                SELECT cid, content->>'title' AS title, jsonb_array_length(content->'designCids') AS design_count
+                SELECT cid, created_at AS "publishedAt", content->>'title' AS title, jsonb_array_length(content->'designCids') AS design_count
                 FROM consensus.plan
                 WHERE content->'designCids' @> jsonb_build_array($1::text)
                 ORDER BY cid
                 LIMIT $2 OFFSET $3`, [design, limit + 1, offset]);
             const hasMore = rows.length > limit;
-            const plans = rows.slice(0, limit).map(row => ({ cid: row.cid, title: row.title, designCount: Number(row.design_count) }));
+            const plans = rows.slice(0, limit).map(row => ({ cid: row.cid, title: row.title, designCount: Number(row.design_count), publishedAt: row.publishedAt }));
             const nextOffset = hasMore ? offset + plans.length : null;
             return res.json({ plans, count: plans.length, hasMore, nextOffset });
         } catch (error) { return fail(res, error); }

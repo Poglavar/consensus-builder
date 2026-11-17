@@ -8992,6 +8992,7 @@
         "addToPlan": "Add to plan",
         "sharePlan": "Share plan",
         "shareFixed": "Shares this saved plan and its exact designs. To change designs, edit the plan first.",
+        "shareUpdated": "{{count}} changed designs are ready to publish as a new plan revision.",
         "publishAndCopy": "Publish and copy link",
         "publishing": "Publishing plan…",
         "createAgreement": "Create agreement",
@@ -9195,7 +9196,18 @@
     "lastChecked": "Last checked: {{date}}",
     "reload": "Reload",
     "later": "Later",
-    "finishEditing": "Finish or cancel editing and wait for saving to finish before reloading."
+    "finishEditing": "Finish or cancel editing and wait for saving to finish before reloading.",
+    "review": "Review work before reloading",
+    "savedDrafts": "These unpublished records are saved on this device. Reloading keeps them; publication is optional and public.",
+    "reloadKeepDrafts": "Reload and keep drafts",
+    "backToWork": "Back to work",
+    "editingNamed": "Finish or cancel editing: {{name}}.",
+    "busyNamed": "Wait for this operation to finish: {{name}}.",
+    "dialogNamed": "Close this dialog before reloading: {{name}}.",
+    "unnamedEditor": "Current editor",
+    "unnamedOperation": "Work in progress",
+    "unnamedDialog": "Open dialog",
+    "reviewKind": "Review {{kind}}"
   },
   "settingsPanel": {
     "dataAssumptions": "Data & assumptions",

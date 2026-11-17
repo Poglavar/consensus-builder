@@ -1,5 +1,5 @@
 import { test, expect } from '../helpers/fixtures';
-import { openCity, createSpace, chooseProfileName, stubBasemapTiles } from '../helpers/runtime';
+import { openCity, createBuilding, createSpace, chooseProfileName, stubBasemapTiles } from '../helpers/runtime';
 import { pageIndex, cidOfObject } from '../helpers/mocks/shared-server';
 
 test.beforeEach(async ({ mockApi: page }) => { await stubBasemapTiles(page); });
@@ -73,7 +73,7 @@ test('desktop Designs library and saved plans start local with no public plan li
   expect(writes(page)).toHaveLength(0);
 });
 
-test('a local plan publishes its exact snapshot only on Share plan and copy repeat makes no writes', async ({ mockApi: page }) => {
+test('Share plan publishes a new snapshot when an applied member changed and copy repeat makes no writes', async ({ mockApi: page }) => {
   test.setTimeout(120_000);
   await openCity(page);
   await page.evaluate(()=>(window as any).guestPolicyBlocks('publish'));
@@ -86,22 +86,51 @@ test('a local plan publishes its exact snapshot only on Share plan and copy repe
   await page.context().grantPermissions(['clipboard-read','clipboard-write']);
   await planSection(page).getByRole('button',{name:'Share plan',exact:true}).click();
   const share=page.locator('.plan-share');await expect(share).toBeVisible();
+  await expect(share).toContainText('1 changed designs are ready to publish as a new plan revision.');
+  const revised=await page.evaluate(originalCid=>(window as any).PlanWorkspace.list().find((candidate:any)=>candidate.content.title==='Pocket park plan'&&candidate.cid!==originalCid),row.cid);
+  expect(revised).toBeTruthy();expect(revised.cid).not.toBe(row.cid);
   await expect(share.getByLabel('Plan link',{exact:true})).toBeHidden();expect(writes(page)).toHaveLength(0);
   await share.getByRole('button',{name:'Publish and copy link',exact:true}).click();
-  const link=share.getByLabel('Plan link',{exact:true});await expect(link).toHaveValue(new RegExp(`/plans/${row.cid}`));
+  const link=share.getByLabel('Plan link',{exact:true});await expect(link).toHaveValue(new RegExp(`/plans/${revised.cid}`));
   const sent=writes(page);
-  expect(sent.filter(r=>r.path==='/designs').map(r=>r.body.cid)).toEqual(row.content.designCids);
-  expect(sent.find(r=>r.path==='/designs')!.body.content).toEqual(row.designs[0].content);
-  expect(sent.find(r=>r.path==='/plans')!.body.content).toEqual(row.content);
-  expect(cidOfObject(sent.find(r=>r.path==='/plans')!.body.content)).toBe(row.cid);
+  expect(sent.filter(r=>r.path==='/designs').map(r=>r.body.cid)).toEqual(revised.content.designCids);
+  expect(sent.find(r=>r.path==='/designs')!.body.content).toEqual(revised.designs[0].content);
+  expect(sent.find(r=>r.path==='/plans')!.body.content).toEqual(revised.content);
+  expect(cidOfObject(sent.find(r=>r.path==='/plans')!.body.content)).toBe(revised.cid);
   expect(sent.filter(r=>r.path==='/agreements')).toHaveLength(0);
   const count=sent.length;await share.getByRole('button',{name:'Copy link',exact:true}).click();expect(writes(page)).toHaveLength(count);
   await page.keyboard.press('Escape');await expect(share).toBeHidden();
   await page.locator('#proposals-button').click();
   await page.locator('#shareAppliedProposalsButton').click();
-  await expect(page.locator('#designs-plans .lists-item').filter({hasText:'Pocket park plan'})).toContainText('Published');
+  await expect(page.locator(`#designs-plans .lists-item[data-list-id="${revised.cid}"]`)).toContainText('Published');
   await page.locator('#designs-browse-tab').click();await expect(page.locator('#designs-browse')).toBeVisible();
   await page.keyboard.press('Escape');await expect(page.locator('#proposals-sheet')).toBeHidden();
+});
+
+test('Share plan follows a building edit saved by the ordinary editor', async ({ mockApi: page }) => {
+  test.setTimeout(120_000);
+  await openCity(page); await page.evaluate(()=>(window as any).guestPolicyBlocks('publish'));
+  await chooseProfileName(page,'Building plan author');
+  const sourceId=await createBuilding(page); await openPlans(page);
+  const original=await createLocalPlan(page,'Edited building plan');
+  await page.evaluate(async id => { await (window as any).editProposal(id,{tab:'details'}); },sourceId);
+  const shell=page.locator('.proposal-editor-shell.is-open'); await expect(shell).toBeVisible();
+  await shell.locator('[data-draft-path="fields.description"]').fill('Building revision prepared in the ordinary editor.');
+  await shell.locator('[data-editor-action="review"]').click();
+  await shell.locator('[data-editor-action="publish"]').click();
+  await page.locator('#createProposalSubmitButton').click();
+  await expect.poll(() => page.evaluate(id=>(window as any).proposalStorage.getProposal(id)?.description,sourceId))
+    .toBe('Building revision prepared in the ordinary editor.');
+  await page.evaluate(plan => (window as any).PlanDialog.share(plan),original);
+  const share=page.locator('.plan-share'); await expect(share).toContainText('1 changed designs are ready to publish as a new plan revision.');
+  const revised=await page.evaluate(cid=>(window as any).PlanWorkspace.list().find((row:any)=>row.content.title==='Edited building plan'&&row.cid!==cid),original.cid);
+  expect(revised.cid).not.toBe(original.cid);
+  await share.getByRole('button',{name:'Publish and copy link',exact:true}).click();
+  await expect(share.getByLabel('Plan link',{exact:true})).toHaveValue(new RegExp(`/plans/${revised.cid}`));
+  const sent=writes(page); const planWrite=sent.find(row=>row.path==='/plans');
+  expect(planWrite?.body.content).toEqual(revised.content);
+  const savedBuilding=sent.find(row=>row.path==='/designs')?.body.content;
+  expect(savedBuilding.description).toBe('Building revision prepared in the ordinary editor.');
 });
 
 test('phone Designs and Plans use keyboard tabs in one resizable sheet', async ({ mockApi: page }) => {

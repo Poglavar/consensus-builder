@@ -1010,7 +1010,11 @@ async function handleSharedDesignRoute(cids, options = {}) {
         // A link that asks for 3D restores its captured camera when supplied.
         if (options.enter3D !== false && !url3DModeHandled && is3DModeRequestedFromUrl() && standing.length) {
             url3DModeHandled = true;
-            enterUrlDrivenViewWhenReady(standing, replacedPlan ? { restoreView: null } : {});
+            // `frame: false` and `openDetails: false` mean this is an exact whole-plan arrival:
+            // keep the saved camera rather than treating the first member as the selected design.
+            // The saved view above has already positioned Leaflet for the 3D scene's ground.
+            const focused = sharedView && !replacedPlan && options.frame === false && options.openDetails === false ? [] : standing;
+            enterUrlDrivenViewWhenReady(focused, replacedPlan ? { restoreView: null } : {});
         }
         return result;
     } catch (error) {

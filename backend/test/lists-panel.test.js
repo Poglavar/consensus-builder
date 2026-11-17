@@ -81,13 +81,13 @@ const ladderBadges = new Function('window', 'getProposalI18nHelper', 'getProposa
     { __proposalDisplayState: displayState }, () => (_key, fallback) => fallback, key => lifecycleLabels[key] || key,
     require('../../frontend/js/shared-utils.js').escapeHtml);
 
-function listsSheet({ designs = [], serverDesigns = [], plans = [] } = {}) {
+function listsSheet({ designs = [], serverDesigns = [], plans = [], serverPlans = [], agreements = [], offers = [], serverOffers = [] } = {}) {
     const doc = makeDocument();
     for (const id of ['lists-controls', 'lists-actions', 'lists-status', 'proposal-list-host', 'plan-list-host', 'agreement-list-host']) {
         const el = doc.createElement('div'); el.id = id; doc.body.append(el);
     }
     const i18n = testI18n('en');
-    const calls = { confirm: [], deleted: [], plansRemoved: [], unapplied: [] };
+    const calls = { confirm: [], deleted: [], plansRemoved: [], unapplied: [], offersOpened: [] };
     const win = {
         document: doc,
         i18n: { t: i18n.t, translationsReady: Promise.resolve() },
@@ -102,17 +102,21 @@ function listsSheet({ designs = [], serverDesigns = [], plans = [] } = {}) {
             return ids.map(id => ({ proposalId: id }));
         },
         showStyledAlert: message => { throw new Error(message); },
-        MapShell: { isOpen: () => true },
+        MapShell: { isOpen: () => true, closeSheets() {} },
+        clearProposalPreview() {},
         normalizeCityCodeForApi: code => code,
         resolveCurrentCityCode: () => 'london',
         getProposalCountAreaContext: () => null,
-        fetch: async url => ({ ok: true, json: async () => (String(url).includes('/designs?') ? { designs: serverDesigns } : { plans: [], agreements: [] }) }),
+        fetch: async url => ({ ok: true, json: async () => (String(url).includes('/designs?') ? { designs: serverDesigns } : String(url).includes('/property-offers?') ? { propertyOffers: serverOffers } : { plans: serverPlans, agreements: [] }) }),
         DesignSync: { apiBase: () => 'https://api.test', publishedCid: record => record.cid || null,
             localCopyOf: cid => designs.find(design => design.cid === cid) || null },
         proposalStorage: { getAllProposals: () => designs },
         NamedPlans: { list: () => plans, remove: cid => calls.plansRemoved.push(cid) },
-        AgreementStore: { list: () => [], subscribe() {} },
+        AgreementStore: { list: () => agreements, subscribe() {} },
         AgreementSync: { localCopyOf: () => null },
+        PropertyOfferStore: { list: () => offers, subscribe() {} },
+        PropertyOfferSync: { localCopyOf: cid => offers.find(offer => offer.published?.cid === cid) || null, openDetails: async cid => calls.offersOpened.push(cid) },
+        PropertyOfferPanel: { open: id => calls.offersOpened.push(id) },
         RecordLabel: { label: title => title, badge: d => d.createElement('span') },
         proposalLadderBadgesHtml: ladderBadges,
         __proposalDisplayState: displayState
@@ -123,6 +127,16 @@ function listsSheet({ designs = [], serverDesigns = [], plans = [] } = {}) {
 }
 
 describe('the Lists sheet', () => {
+    it('offers only unpublished saved records for update review', () => {
+        const { panel } = listsSheet({
+            designs: [{ proposalId: 'draft-design', title: 'Park' }, { proposalId: 'published-design', cid: 'shared' }],
+            plans: [{ cid: 'draft-plan', content: { title: 'Blocks', view: {} }, designs: [] },
+                { cid: 'published-plan', content: { title: 'Shared blocks', view: {} }, published: true }],
+            agreements: [{ id: 'draft-agreement', title: 'Terms' }, { id: 'published-agreement', published: { cid: 'shared' } }]
+        });
+        expect(panel.drafts().map(group => [group.kind, group.rows.map(row => row.key)]))
+            .toEqual([['designs', ['draft-design']], ['plans', ['draft-plan']], ['agreements', ['draft-agreement']]]);
+    });
     // A draft applied to the map, this browser's copy of a published design, and one only on the server.
     const fixture = () => listsSheet({
         designs: [
@@ -211,5 +225,38 @@ describe('the Lists sheet', () => {
         await vi.waitFor(() => expect(calls.plansRemoved).toEqual(['plan-cid']));
         expect(calls.confirm[0].message).toBe('Remove this browser’s copy of the plan “Residents plan”? The published plan stays available through its link, and its designs stay in this browser.');
         expect(calls.confirm[0].options.destructive).toBe(true);
+    });
+
+    it('retains remote plan publication dates alongside local and remote property offers', async () => {
+        const publishedAt = '2026-11-17T09:10:11.000Z';
+        const content = { schema: 'property-offer/v1', direction: 'buy', title: 'Purchase', proposer: 'buyer', createdAt: publishedAt };
+        const f = listsSheet({
+            serverPlans: [{ cid: 'remote-plan', publishedAt, content: { title: 'Published plan', view: {}, designCids: ['a'] } }],
+            offers: [{ id: 'draft-offer', content }],
+            serverOffers: [{ cid: 'remote-offer', content }]
+        });
+        await f.panel.select('plans');
+        await vi.waitFor(() => expect(f.item('remote-plan')?.querySelector('time.lists-item__timestamp')?.dateTime).toBe(publishedAt));
+        await f.panel.select('agreements');
+        await vi.waitFor(() => expect(f.shown('agreement-list-host').sort()).toEqual(['draft-offer', 'remote-offer']));
+        expect(f.item('draft-offer').textContent).toContain('Offer to buy');
+        expect(f.item('remote-offer').textContent).toContain('Offer to buy');
+        f.item('draft-offer').querySelector('.lists-item__open').click();
+        f.item('remote-offer').querySelector('.lists-item__open').click();
+        await vi.waitFor(() => expect(f.calls.offersOpened).toEqual(['draft-offer', 'remote-offer']));
+        expect(f.panel.drafts().find(group => group.kind === 'agreements').rows.map(row => row.key)).toEqual(['draft-offer']);
+    });
+
+    it('shows a published plan timestamp only when the server supplied one', async () => {
+        const publishedAt = '2026-11-17T09:10:11.000Z';
+        const dated = { cid: 'dated', published: true, publishedAt, content: { title: 'Same name', view: {}, designCids: ['a'] } };
+        const undated = { cid: 'undated', published: true, content: { title: 'Same name', view: {}, designCids: ['b'] } };
+        const { item, panel } = listsSheet({ plans: [dated, undated] });
+        await panel.select('plans');
+        await vi.waitFor(() => expect(item('dated')).not.toBeNull());
+        const timestamp = item('dated').querySelector('time.lists-item__timestamp');
+        expect(timestamp.dateTime).toBe(publishedAt);
+        expect(timestamp.textContent).not.toContain('1970');
+        expect(item('undated').querySelector('time.lists-item__timestamp')).toBeNull();
     });
 });

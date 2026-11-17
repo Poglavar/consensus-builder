@@ -9044,6 +9044,7 @@
         "addToPlan": "Додај у план",
         "sharePlan": "Подели план",
         "shareFixed": "Дели овај сачувани план и његове тачне пројекте. Да би променио пројекте, прво уреди план.",
+        "shareUpdated": "{{count}} измењених пројеката је спремно за објаву као нова ревизија плана.",
         "publishAndCopy": "Објави и копирај везу",
         "publishing": "Објављивање плана…",
         "createAgreement": "Направи споразум",
@@ -9247,7 +9248,18 @@
     "lastChecked": "Poslednja provera: {{date}}",
     "reload": "Ponovo učitaj",
     "later": "Kasnije",
-    "finishEditing": "Pre ponovnog učitavanja završite ili otkažite uređivanje i sačekajte završetak čuvanja."
+    "finishEditing": "Pre ponovnog učitavanja završite ili otkažite uređivanje i sačekajte završetak čuvanja.",
+    "review": "Review work before reloading",
+    "savedDrafts": "These unpublished records are saved on this device. Reloading keeps them; publication is optional and public.",
+    "reloadKeepDrafts": "Reload and keep drafts",
+    "backToWork": "Back to work",
+    "editingNamed": "Finish or cancel editing: {{name}}.",
+    "busyNamed": "Wait for this operation to finish: {{name}}.",
+    "dialogNamed": "Close this dialog before reloading: {{name}}.",
+    "unnamedEditor": "Current editor",
+    "unnamedOperation": "Work in progress",
+    "unnamedDialog": "Open dialog",
+    "reviewKind": "Review {{kind}}"
   },
   "settingsPanel": {
     "dataAssumptions": "Podaci i pretpostavke",

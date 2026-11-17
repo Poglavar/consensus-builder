@@ -43,36 +43,40 @@
     }
     // Follow the ordinary editor's applied revision chain. Copies are separate work, and two
     // applied forks need an explicit choice rather than an arbitrary latest-timestamp winner.
-    function currentMembers(row, records, runtime = root) {
+    function currentMembers(row, records, runtime = root, { fallbackMembers = [] } = {}) {
+        const cidOf = record => runtime.DesignRecord?.cidOf ? runtime.DesignRecord.cidOf(record) : record.cid;
         return row.memberIds.map((id, index) => {
             let current = records.find(record => String(record.proposalId) === String(id));
             let cid = row.designs[index].cid;
-            // The ordinary plan composer carries immutable members with temporary IDs.
-            // Recover their applied identity by exact content before following later forks.
             if (!current) {
-                const matches = records.filter(record => record.applied === true && runtime.DesignRecord.cidOf(record) === cid);
+                const matches = records.filter(record => record.applied === true && cidOf(record) === cid);
                 if (matches.length > 1) throw fail('More than one local instance is applied. Choose the intended design before saving the shared plan.', 'shared-plan-revision-ambiguous');
                 current = matches[0];
             }
-            const seen = new Set();
-            while (true) {
-                const localId = String(current?.proposalId || id);
-                if (seen.has(localId)) throw fail('The local revision chain contains a cycle.', 'shared-plan-revision-cycle');
-                seen.add(localId);
-                const forks = records.filter(record => {
-                    if (record.applied !== true || String(record.proposalId) === localId) return false;
-                    const origin = record.proposalOrigin;
+            const fallback = fallbackMembers[index] || null;
+            if (!current) current = fallback || { proposalId: id, cid };
+            const terminals = [], visiting = new Set();
+            const follow = (record, recordCid) => {
+                const localId = String(record.proposalId || id);
+                if (visiting.has(localId)) throw fail('The local revision chain contains a cycle.', 'shared-plan-revision-cycle');
+                visiting.add(localId);
+                const successors = records.filter(candidate => {
+                    if (String(candidate.proposalId) === localId) return false;
+                    const origin = candidate.proposalOrigin;
                     return ['revision', 'rebind'].includes(origin?.relation) &&
                         ((origin.source?.kind === 'local' && origin.source.localProposalId === localId)
-                        || (origin.source?.kind === 'design' && origin.source.cid === (current?.published?.cid || cid)));
+                        || (origin.source?.kind === 'design' && origin.source.cid === (record.published?.cid || recordCid)));
                 });
-                if (forks.length > 1) throw fail('More than one local revision is applied. Choose the intended design before saving the shared plan.', 'shared-plan-revision-ambiguous');
-                if (!forks.length) {
-                    if (!current) throw fail('A shared-plan member is missing locally.', 'shared-plan-member-missing');
-                    return current;
-                }
-                current = forks[0]; cid = runtime.DesignRecord.cidOf(current);
-            }
+                if (successors.length) {
+                    for (const successor of successors) follow(successor, cidOf(successor));
+                } else if (record.applied === true) terminals.push(record);
+                visiting.delete(localId);
+            };
+            follow(current, cid);
+            if (terminals.length > 1) throw fail('More than one local revision is applied. Choose the intended design before saving the shared plan.', 'shared-plan-revision-ambiguous');
+            if (terminals.length) return terminals[0];
+            if (fallback) return fallback;
+            throw fail('A shared-plan member is missing locally.', 'shared-plan-member-missing');
         });
     }
     function composeCurrentPlan(row, members, runtime) {
@@ -611,7 +615,9 @@
                 if (!active?.paused) ensureConnection();
             } catch (error) { pause(error); }
         };
-        return Object.freeze({ start, saveLocalRevision, captureLocalRevision, endpoint: () => endpoint(win), client, artifactOf, rowOf: (artifact, memberIds) => rowOf(artifact, memberIds, win), invitation, mount, resumeActive,
+        return Object.freeze({ start, saveLocalRevision, captureLocalRevision, endpoint: () => endpoint(win), client, artifactOf, rowOf: (artifact, memberIds) => rowOf(artifact, memberIds, win),
+            currentMembers: (row, records, options) => currentMembers(row, records, win, options),
+            composeCurrentPlan: (row, members) => composeCurrentPlan(row, members, win), invitation, mount, resumeActive,
             assertMutationAllowed(proposalStore, proposalDraft, options = {}) {
                 if (options.sharedPlanSessionRemote === true || !active || active.controller === 'owner') return;
                 const record = (store, id) => store?.getProposal?.(id) || null;
@@ -631,5 +637,5 @@
             },
             blockedMessage: () => t('agentControl', 'The agent has editing control. Take control before editing it here.') });
     }
-    return { artifactOf, rowOf, currentMembers, browser };
+    return { artifactOf, rowOf, currentMembers, composeCurrentPlan, browser };
 });

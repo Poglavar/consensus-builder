@@ -477,7 +477,11 @@ a redeployed rollback; an invalid or older response is a failed check and never 
 current. Deployed tabs check at startup, every five minutes while visible and on returning to the
 tab, and overlapping checks share one request. An update shows a notice in the feedback stack.
 Reloading is always explicit, uses the ordinary browser reload and is refused while an editor, road
-drawing, blocking dialog or busy control is active. Local development builds are labelled
+drawing, blocking dialog or busy control is active. The review dialog names these blockers and
+lists saved unpublished designs, plans and agreements from Lists. Its review buttons open the
+corresponding draft-filtered Lists tab, where existing publication and deletion controls apply.
+When there are no active blockers, Reload and keep drafts preserves these saved records without
+requiring public publication. Local development builds are labelled
 Development build and do not poll. `AppUpdates.check()` and `snapshot()` give browser agents the
 same read-only state; no authored record or MCP operation is involved.
 

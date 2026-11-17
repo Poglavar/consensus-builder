@@ -8,6 +8,16 @@
 .plan-dialog__field input { width: 100%; min-width: 0; }
 .plan-dialog__members { padding-inline-start: 20px; overflow-wrap: anywhere; }
 .plan-dialog__members small { display: block; color: var(--cb-text-muted); }
+.plan-share__members {
+    max-block-size: min(42dvh, 28rem);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-gutter: stable;
+}
+@media (max-width: 767.98px) {
+    .plan-dialog:has(.plan-share) { --mobile-sheet-initial-height: 90dvh; }
+    .plan-share__members { max-block-size: 20dvh; }
+}
 .plan-dialog__count, .plan-dialog__status { margin: 0; }
 .plan-dialog__view { display: grid; gap: var(--cb-space-2); }
 .plan-dialog__view label { display: flex; align-items: center; gap: var(--cb-space-2); }

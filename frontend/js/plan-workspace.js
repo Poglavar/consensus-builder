@@ -19,7 +19,7 @@
         const invalid=win.PlanRecord.validate(row.content);
         if(invalid)throw new Error(win.i18n.t('planDialog.planInvalid',{reason:invalid}));
         if(row.cid!==plan.cid||win.Cid.cidOfObject(row.content)!==plan.cid)throw new Error(win.i18n.t('planDialog.revisionChanged'));
-        if (Array.isArray(plan.designs) && !plan.published) save({ ...plan, published: true });
+        if (Array.isArray(plan.designs)) save({ ...plan, published: true, publishedAt: row.publishedAt });
         return {...row,link:win.NamedPlans.link(row.cid)};
     }
     async function resolve(plan, members = []) {
@@ -80,7 +80,7 @@
         }
         const published = await win.NamedPlans.save(row.content);
         // NamedPlans records public metadata; retain the exact carried revisions for local reuse.
-        save({ ...copy(row), published:true });
+        save({ ...copy(row), published:true, publishedAt: published.publishedAt });
         return published;
     }
     // Designs of the plan the map does not hold applied, by title, for a refusal that names them.

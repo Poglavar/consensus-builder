@@ -8,7 +8,7 @@
         const running = { ...win.__BUILD_INFO };
         const notice = doc.getElementById('app-update-notice');
         const reloadButtons = [...doc.querySelectorAll('[data-app-update-reload]')];
-        let dismissedBuild = null, blocked = false;
+        let dismissedBuild = null, blocked = false, reasons = [], reviewDialog = null;
         const t = (key, params) => win.i18n.t(key, params || {});
         const text = (id, value) => { const el = doc.getElementById(id); if (el.textContent !== value) el.textContent = value; };
         const formatTime = value => win.CbFormat.formatDateTime(new Date(value));
@@ -42,15 +42,63 @@
             checkButton.disabled = !checker.deployed;
             reloadButtons.forEach(button => { button.hidden = !snapshot.available; });
             notice.hidden = !snapshot.available || dismissedBuild === snapshot.latest?.buildId;
-            text('app-update-blocked', blocked ? t('appUpdates.finishEditing') : '');
-            text('app-update-reload-hint', blocked ? t('appUpdates.finishEditing') : '');
+            const explanation = blocked ? reasons.map(reason => t(`appUpdates.${reason.key}`, { name: reason.name || t(`appUpdates.${reason.fallback}`) })).join(' ') : '';
+            text('app-update-blocked', explanation);
+            text('app-update-reload-hint', explanation);
         }
-        function reload() {
-            // Existing map locks and modal ownership protect unsaved geometry and agreement forms.
-            if (win.__mapEditLock?.isHeld() || win.roadDrawingMode || win.OnMapEditor?.isActive()
-                || doc.getElementById('proposal-editor-shell')?.classList.contains('is-open')
-                || win.MapShell?.isBlockingDialogOpen() || doc.querySelector('[aria-busy="true"]')) {
-                blocked = true; render(); return false;
+        function reloadState() {
+            const visible = el => !el.closest('[hidden]') && el.getClientRects().length > 0;
+            const label = el => el.getAttribute('aria-label') || (el.getAttribute('aria-labelledby') || '').split(/\s+/)
+                .filter(Boolean).map(id => doc.getElementById(id)?.textContent || '').join(' ').trim()
+                || el.querySelector('h1, h2, h3, .cb-dialog__title')?.textContent || '';
+            const dialogs = [...doc.querySelectorAll('[aria-modal="true"], dialog[open]')]
+                .filter(el => visible(el) && !reviewDialog?.overlay.contains(el)).map(label);
+            if (!dialogs.length && !reviewDialog && win.MapShell?.isBlockingDialogOpen()) dialogs.push('');
+            const editor = doc.getElementById('proposal-editor-shell');
+            const editing = !!(win.__mapEditLock?.isHeld() || win.roadDrawingMode || win.OnMapEditor?.isActive() || editor?.classList.contains('is-open'));
+            const busy = [...doc.querySelectorAll('[aria-busy="true"]')].filter(el => !reviewDialog?.overlay.contains(el))
+                .map(el => label(el) || el.textContent.trim());
+            return win.ReleaseUpdates.reloadReasons({ editing, editorTitle: win.__mapEditLock?.label?.() || (editor?.classList.contains('is-open') ? label(editor) : ''), busy, dialogs });
+        }
+        function reviewWork(groups, blockers) {
+            if (reviewDialog || !win.CbDialog) return;
+            const body = doc.createElement('div'); body.className = 'app-update-review';
+            if (blockers.length) {
+                const list = doc.createElement('ul'); list.setAttribute('role', 'status');
+                for (const reason of blockers) {
+                    const item = doc.createElement('li'); item.textContent = t(`appUpdates.${reason.key}`, { name: reason.name || t(`appUpdates.${reason.fallback}`) }); list.append(item);
+                }
+                body.append(list);
+            }
+            const note = doc.createElement('p'); note.textContent = t('appUpdates.savedDrafts'); body.append(note);
+            const kindKeys = { designs: 'clickStackNavigation.designs', plans: 'clickStackNavigation.plans', agreements: 'clickStackNavigation.agreements' };
+            const actions = [];
+            for (const group of groups.filter(group => group.rows.length)) {
+                const kind = t(kindKeys[group.kind]);
+                const section = doc.createElement('details'); section.open = true;
+                const summary = doc.createElement('summary'); summary.textContent = `${kind} (${group.rows.length})`; section.append(summary);
+                const list = doc.createElement('ul'); list.className = 'app-update-review__records';
+                list.tabIndex = 0; list.setAttribute('aria-label', kind);
+                for (const row of group.rows) {
+                    const item = doc.createElement('li'); item.textContent = row.title;
+                    if (row.cid && win.RecordLabel) item.append(win.RecordLabel.badge(doc, row.cid, group.rows.map(row => row.cid).filter(Boolean)));
+                    list.append(item);
+                }
+                section.append(list); body.append(section);
+                actions.push({ id: group.kind, label: t('appUpdates.reviewKind', { kind }), disabled: blockers.length > 0,
+                    onClick: async () => { reviewDialog.close(); await win.ListsPanel.reviewDrafts(group.kind); } });
+            }
+            actions.push({ id: 'back', label: t('appUpdates.backToWork'), onClick: () => reviewDialog.close() });
+            actions.push({ id: 'reload', label: t('appUpdates.reloadKeepDrafts'), role: 'primary', disabled: blockers.length > 0,
+                onClick: () => { reviewDialog.close(); reload(true); } });
+            reviewDialog = win.CbDialog.open({ title: t('appUpdates.review'), confirm: true, body, actions, autoCloseActions: false,
+                className: 'app-update-review-dialog', onClose: () => { reviewDialog = null; } });
+        }
+        function reload(keepDrafts = false) {
+            reasons = reloadState(); blocked = reasons.length > 0; render();
+            const groups = win.ListsPanel?.drafts?.() || [];
+            if (blocked || (!keepDrafts && groups.some(group => group.rows.length))) {
+                reviewWork(groups, reasons); return false;
             }
             saveResume();
             win.location.reload(); // Native beforeunload handlers and draft flushes still run.
@@ -79,7 +127,7 @@
             dismissedBuild = null; blocked = false;
             win.BusyControl.track(checkButton, () => checker.check());
         });
-        reloadButtons.forEach(button => button.addEventListener('click', reload));
+        reloadButtons.forEach(button => button.addEventListener('click', () => reload()));
         doc.getElementById('app-update-later').addEventListener('click', () => {
             dismissedBuild = checker.snapshot().latest?.buildId; blocked = false; render();
         });

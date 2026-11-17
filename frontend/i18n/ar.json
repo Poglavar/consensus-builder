@@ -1809,6 +1809,30 @@
         }
     },
     "agreement": {
+        "boost": {
+            "title": "دعم",
+            "currencyUsdc": "USDC على devnet · المحفظة",
+            "currencyToken": "{{symbol}} · تملك {{amount}}",
+            "chooseCurrency": "بماذا تريد الدعم؟ تذهب عملات USDC إلى الراعي عند تنفيذ الاتفاق؛ وتذهب رموز المدينة بنسبة 30٪ إلى الراعي و70٪ إلى مالكي القطع. وفي الحالتين تعود إليك إذا ألغي الاتفاق أو انتهت صلاحيته.",
+            "amountPrompt": "كم من {{unit}}؟",
+            "done": "تم الدعم بـ {{amount}} {{unit}}.",
+            "reading": "جارٍ قراءة عمليات الدعم…",
+            "readFailed": "تعذرت قراءة عمليات الدعم: {{reason}}",
+            "usdcTotal": "{{amount}} من {{count}} داعم{{released}}",
+            "releasedSuffix": "، صُرفت للراعي",
+            "none": "لا شيء حتى الآن",
+            "tokenTotal": "{{amount}} من {{count}} داعم",
+            "release": "صرف دعم USDC للراعي",
+            "refund": "استرداد {{amount}} USDC الخاصة بي",
+            "rule": "تُسوّى عمليات الدعم برموز المدينة عند انتهاء الاتفاق: 30٪ للراعي و70٪ لمالكي القطع إذا نُفّذ، وتعود إليك إن لم يُنفّذ.",
+            "unavailable": "الدعم غير متاح: {{reason}}",
+            "errors": {
+                "unavailable": "تعذر تحميل عميل برنامج الدعم.",
+                "notActive": "لا يمكن دعم سوى اتفاق نشط.",
+                "nothingToRefund": "لا توجد عملية دعم يمكن لهذه المحفظة استردادها.",
+                "nothingToRelease": "لا توجد عمليات دعم لصرفها."
+            }
+        },
         "compare": {
             "approval": "الموافقة",
             "settlement": "التسوية",
@@ -5162,6 +5186,11 @@
         }
     },
     "bets": {
+        "cityToken": {
+            "balance": "رموز المدينة: {{amounts}}",
+            "none": "التوقعات الصحيحة تكسب رموز المدينة: كلما كانت أبكر وأقل تكلفة، زاد ما تكسبه.",
+            "awarded": "كسبت {{amounts}}."
+        },
         "row": {
             "yes": "نعم",
             "no": "لا",
@@ -9060,6 +9089,7 @@
         "addToPlan": "إضافة إلى الخطة",
         "sharePlan": "مشاركة الخطة",
         "shareFixed": "تشارك هذه الخطة المحفوظة وتصاميمها المحددة. لتغيير التصاميم، عدّل الخطة أولًا.",
+        "shareUpdated": "{{count}} تصاميم معدلة جاهزة للنشر كمراجعة جديدة للخطة.",
         "publishAndCopy": "نشر الرابط ونسخه",
         "publishing": "جارٍ نشر الخطة…",
         "createAgreement": "إنشاء اتفاق",
@@ -9448,7 +9478,18 @@
     "lastChecked": "آخر تحقق: {{date}}",
     "reload": "إعادة التحميل",
     "later": "لاحقًا",
-    "finishEditing": "أكمل التعديل أو ألغِه وانتظر انتهاء الحفظ قبل إعادة التحميل."
+    "finishEditing": "أكمل التعديل أو ألغِه وانتظر انتهاء الحفظ قبل إعادة التحميل.",
+    "review": "Review work before reloading",
+    "savedDrafts": "These unpublished records are saved on this device. Reloading keeps them; publication is optional and public.",
+    "reloadKeepDrafts": "Reload and keep drafts",
+    "backToWork": "Back to work",
+    "editingNamed": "Finish or cancel editing: {{name}}.",
+    "busyNamed": "Wait for this operation to finish: {{name}}.",
+    "dialogNamed": "Close this dialog before reloading: {{name}}.",
+    "unnamedEditor": "Current editor",
+    "unnamedOperation": "Work in progress",
+    "unnamedDialog": "Open dialog",
+    "reviewKind": "Review {{kind}}"
   },
   "settingsPanel": {
     "dataAssumptions": "البيانات والافتراضات",

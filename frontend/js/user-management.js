@@ -419,6 +419,9 @@ function autoStartGame() {
 // dialog chrome in index.html (#welcome-modal is its overlay); it is shown and hidden through [hidden].
 function showWelcomeModal() {
     const modal = document.getElementById('welcome-modal');
+    // This prerequisite can open over any editor or share dialog. Paint it last on the
+    // shared confirmation layer so the visual stack and ModalEscape's focus isolation agree.
+    document.body.appendChild(modal);
     modal.hidden = false;
     modal.__previousFocus = document.activeElement;
     modal.__unregisterEscape?.();

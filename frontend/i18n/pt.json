@@ -1721,6 +1721,30 @@
         }
     },
     "agreement": {
+        "boost": {
+            "title": "Apoiar",
+            "currencyUsdc": "USDC devnet · carteira",
+            "currencyToken": "{{symbol}} · tem {{amount}}",
+            "chooseCurrency": "Apoiar com quê? Os USDC vão para o patrocinador quando o acordo é executado; os tokens da cidade vão 30% para o patrocinador e 70% para os proprietários das parcelas. Ambos voltam para si se o acordo for cancelado ou expirar.",
+            "amountPrompt": "Quanto de {{unit}}?",
+            "done": "Apoiado com {{amount}} {{unit}}.",
+            "reading": "A ler apoios…",
+            "readFailed": "Não foi possível ler os apoios: {{reason}}",
+            "usdcTotal": "{{amount}} de {{count}} apoiante(s){{released}}",
+            "releasedSuffix": ", libertos para o patrocinador",
+            "none": "Ainda nenhum",
+            "tokenTotal": "{{amount}} de {{count}} apoiante(s)",
+            "release": "Libertar apoios USDC para o patrocinador",
+            "refund": "Recuperar os meus {{amount}} USDC",
+            "rule": "Os apoios em tokens da cidade são liquidados quando o acordo termina: 30% para o patrocinador e 70% para os proprietários das parcelas se for executado, ou voltam para si caso contrário.",
+            "unavailable": "O apoio não está disponível: {{reason}}",
+            "errors": {
+                "unavailable": "Não foi possível carregar o cliente do programa de apoios.",
+                "notActive": "Só um acordo ativo pode receber apoio.",
+                "nothingToRefund": "Esta carteira não tem nenhum apoio para recuperar.",
+                "nothingToRelease": "Não há apoios para libertar."
+            }
+        },
         "compare": {
             "approval": "Aprovação",
             "settlement": "Liquidação",
@@ -4985,6 +5009,11 @@
         }
     },
     "bets": {
+        "cityToken": {
+            "balance": "Tokens da cidade: {{amounts}}",
+            "none": "As previsões corretas rendem tokens da cidade: quanto mais cedo e mais baratas, mais rendem.",
+            "awarded": "Ganhou {{amounts}}."
+        },
         "row": {
             "yes": "Sim",
             "no": "Não",
@@ -8785,6 +8814,7 @@
         "addToPlan": "Adicionar ao plano",
         "sharePlan": "Partilhar plano",
         "shareFixed": "Partilha este plano guardado e as respetivas propostas exatas. Para alterar as propostas, edita primeiro o plano.",
+        "shareUpdated": "{{count}} propostas alteradas estão prontas para publicar como uma nova revisão do plano.",
         "publishAndCopy": "Publicar e copiar ligação",
         "publishing": "A publicar o plano…",
         "createAgreement": "Criar acordo",
@@ -9173,7 +9203,18 @@
     "lastChecked": "Última verificação: {{date}}",
     "reload": "Recarregar",
     "later": "Mais tarde",
-    "finishEditing": "Conclua ou cancele a edição e aguarde o fim da gravação antes de recarregar."
+    "finishEditing": "Conclua ou cancele a edição e aguarde o fim da gravação antes de recarregar.",
+    "review": "Review work before reloading",
+    "savedDrafts": "These unpublished records are saved on this device. Reloading keeps them; publication is optional and public.",
+    "reloadKeepDrafts": "Reload and keep drafts",
+    "backToWork": "Back to work",
+    "editingNamed": "Finish or cancel editing: {{name}}.",
+    "busyNamed": "Wait for this operation to finish: {{name}}.",
+    "dialogNamed": "Close this dialog before reloading: {{name}}.",
+    "unnamedEditor": "Current editor",
+    "unnamedOperation": "Work in progress",
+    "unnamedDialog": "Open dialog",
+    "reviewKind": "Review {{kind}}"
   },
   "settingsPanel": {
     "dataAssumptions": "Dados e pressupostos",

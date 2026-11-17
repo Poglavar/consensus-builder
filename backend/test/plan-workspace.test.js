@@ -139,9 +139,10 @@ describe('plan workspace',()=>{
   expect(h.store.has(`plan:${plan.cid}`)).toBe(true);
  });
  it('returns null for an unpublished public link and verifies a canonical published row',async()=>{
-  const row=snapshot(),h=harness();h.win.fetch=vi.fn().mockResolvedValueOnce({status:404}).mockResolvedValueOnce({status:200,ok:true,json:async()=>({cid:row.cid,content:row.content})});
+  const row=snapshot(),publishedAt='2026-11-17T09:10:11.000Z',h=harness();h.win.fetch=vi.fn().mockResolvedValueOnce({status:404}).mockResolvedValueOnce({status:200,ok:true,json:async()=>({cid:row.cid,content:row.content,publishedAt})});
   expect(await h.api.publication(row)).toBeNull();
-  const published=await h.api.publication(row);expect(published).toMatchObject({cid:row.cid,content:row.content,link:`https://app.test/plans/${row.cid}`});
+  const published=await h.api.publication(row);expect(published).toMatchObject({cid:row.cid,content:row.content,publishedAt,link:`https://app.test/plans/${row.cid}`});
+  expect(JSON.parse(h.store.get(`plan:${row.cid}`))).toMatchObject({published:true,publishedAt});
   const bad=harness();bad.win.fetch=vi.fn(async()=>({status:200,ok:true,json:async()=>({cid:row.cid,content:{...row.content,title:'Changed'}})}));
   await expect(bad.api.publication(row)).rejects.toThrow();
  });

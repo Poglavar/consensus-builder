@@ -6,6 +6,13 @@
 })(typeof window !== 'undefined' ? window : null, function () {
     'use strict';
     const INTERVAL_MS = 5 * 60 * 1000;
+    function reloadReasons({ editing = false, editorTitle = '', busy = [], dialogs = [] } = {}) {
+        const reasons = [];
+        if (editing) reasons.push({ key: 'editingNamed', name: editorTitle, fallback: 'unnamedEditor' });
+        for (const name of [...new Set(busy)]) reasons.push({ key: 'busyNamed', name, fallback: 'unnamedOperation' });
+        for (const name of [...new Set(dialogs)]) reasons.push({ key: 'dialogNamed', name, fallback: 'unnamedDialog' });
+        return reasons;
+    }
     function validBuild(value) {
         return !!value && typeof value.buildId === 'string' && /^deploy-\d+$/.test(value.buildId)
             && (typeof value.buildNumber === 'number' || (typeof value.buildNumber === 'string' && /^\d+$/.test(value.buildNumber)))
@@ -77,5 +84,5 @@
             selectedKind: RESUMABLE.has(value.selectedKind) ? value.selectedKind : null,
             expanded: RESUMABLE.has(value.expanded) ? value.expanded : null };
     }
-    return { INTERVAL_MS, RESUME_KEY, RESUME_MAX_AGE_MS, validBuild, readRelease, createChecker, resumeRecord, readResume };
+    return { INTERVAL_MS, RESUME_KEY, RESUME_MAX_AGE_MS, validBuild, readRelease, createChecker, resumeRecord, readResume, reloadReasons };
 });
