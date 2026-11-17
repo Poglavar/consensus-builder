@@ -591,6 +591,10 @@ A complete numeric value recorded in a source field with a known unit, without a
 
 An inspection or display projection of a source record, existing building or authored design. It retains the subject's identity and provenance without becoming a new design or an applied change.
 
+### Permitted calculation trace
+
+A provider-produced explanation of the calculation for one Permitted representation. Each row records the quantity, inputs with units, result or applied operation, limit where applicable, source citations and evaluation status. Passed and failed describe a particular checked comparison; applied describes an operation used to construct the geometry; assumed identifies a modelling choice; not-evaluated and pending preserve missing checks and outstanding procedures. A passed dimensional comparison does not establish overall compliance. The inspector and MCP read the same trace from source evidence.
+
 ### Conditional B-1 building plot
 
 The candidate building plot used by the Staro Trnje–Savica B-1 permitted source: the intersection of an observed cadastral parcel and the source B-1 boundary, with its own source-scoped identity, geometry and area and a reference to its cadastral parent. It is separate from the unchanged cadastral site and from the boundary-uncertainty core. Its full intersection area is used for the minimum-area warning and conditional configuration, including when the source boundary cuts the cadastral parcel. Warnings and candidate selection cover only this intersection. Required preparcelation and competition remain unresolved; no cadastral or authored parcel is created. A calculated detached massing uses the mapped building line, conservative half-height edge separation and cited coverage, above-ground FAR and storey limits. Model storey height is a stated assumption. The configuration does not establish plot formation or compliance with unevaluated rules.

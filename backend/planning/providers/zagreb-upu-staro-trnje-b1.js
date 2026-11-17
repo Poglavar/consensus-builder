@@ -19,6 +19,9 @@ const B1_BOUNDARY_UNCERTAINTY_M = b1SourceGeometry.geometry.boundaryUncertaintyM
 const MIN_BUILDING_PLOT_M2 = 2000;
 const BUILDING_LINE_M = 4;
 const ASSUMED_STOREY_HEIGHT_M = 3;
+const MAX_STOREYS = 5;
+const MAX_COVERAGE = 0.5;
+const MAX_FAR = 2.5;
 const B1_RING_3765 = b1SourceGeometry.geometry.coordinates[0];
 export const B1_WKT_3765 = `POLYGON((${B1_RING_3765.map(point => point.join(' ')).join(',')}))`;
 const finite = value => typeof value === 'number' && Number.isFinite(value);
@@ -36,14 +39,60 @@ const singleDetachedMassing = (massing, candidateBuildingPlotAreaM2) => {
     return { ...massing, massing: { ...massing.massing, geometry }, footprintM2,
         gfaM2: footprintM2 * massing.floors, coveragePct: footprintM2 / candidateBuildingPlotAreaM2 * 100 };
 };
-
-export function b1Constraints() {
+const cite = article => ({ kind: 'provision', article, url: PLAN_TEXT_URL });
+const trace = (area, candidatePlotAssessable, boundaryUncertain, massing) => {
+    const known = Boolean(candidatePlotAssessable) && !boundaryUncertain;
+    const input = (key, value, unit) => ({ key, value, unit });
+    const plot = input('candidateBuildingPlotAreaM2', area, 'm2');
+    const limit = (value, unit, bound) => ({ value, unit, bound });
+    const n = value => Number(value.toFixed(2));
+    const checked = (available, comparison) => !available ? 'not-evaluated' : comparison ? 'passed' : 'failed';
+    const coverage = massing ? massing.footprintM2 / area : null;
+    const far = massing ? massing.gfaM2 / area : null;
+    const modelHeight = massing ? massing.floors * ASSUMED_STOREY_HEIGHT_M : null;
+    const edgeHeight = MAX_STOREYS * ASSUMED_STOREY_HEIGHT_M;
     return [
-        { quantity: 'lotArea', subject: 'building-plot', value: MIN_BUILDING_PLOT_M2, unit: 'm2', bound: 'minimum', sourceArticle: 27, evaluation: 'not-evaluated' },
-        { quantity: 'siteCoverage', subject: 'building-plot', value: 0.5, unit: 'ratio', bound: 'maximum', sourceArticle: 27, evaluation: 'not-evaluated' },
-        { quantity: 'floorAreaRatioAboveGround', subject: 'building-plot', numerator: 'above-ground-GBP', value: 2.5, unit: 'ratio', bound: 'maximum', sourceArticle: 27, evaluation: 'not-evaluated' },
-        { quantity: 'storeys', subject: 'building', verticalScope: 'above-ground', sourceWording: 'podrum i 5 etaža', value: 5, unit: 'count', bound: 'maximum', sourceArticle: 27, evaluation: 'not-evaluated' },
-        { quantity: 'naturalTerrain', subject: 'building-plot', value: 0.2, unit: 'ratio', bound: 'minimum', sourceArticle: 27, evaluation: 'not-evaluated' }
+        { id: 'candidate-plot-area', quantity: 'lotArea', status: checked(known, area >= MIN_BUILDING_PLOT_M2),
+            inputs: [plot], ...(known ? { result: { value: area, unit: 'm2' }, expression: `${n(area)} ≥ ${MIN_BUILDING_PLOT_M2}` } : {}),
+            limit: limit(MIN_BUILDING_PLOT_M2, 'm2', 'minimum'), noteKey: 'b1.candidatePlotArea', citations: [cite(27)] },
+        { id: 'site-coverage', quantity: 'siteCoverage', status: checked(massing, coverage <= MAX_COVERAGE + 1e-9),
+            inputs: massing ? [input('footprintM2', massing.footprintM2, 'm2'), plot] : [plot],
+            ...(massing ? { result: { value: coverage, unit: 'ratio' }, expression: `${n(massing.footprintM2)} / ${n(area)}` } : {}),
+            limit: limit(MAX_COVERAGE, 'ratio', 'maximum'), noteKey: 'b1.siteCoverage', citations: [cite(27)] },
+        { id: 'above-ground-far', quantity: 'floorAreaRatioAboveGround', status: checked(massing, far <= MAX_FAR + 1e-9),
+            inputs: massing ? [input('floorAreaM2', massing.gfaM2, 'm2'), plot] : [plot],
+            ...(massing ? { result: { value: far, unit: 'ratio' }, expression: `${n(massing.gfaM2)} / ${n(area)}` } : {}),
+            limit: limit(MAX_FAR, 'ratio', 'maximum'), noteKey: 'b1.aboveGroundFar', citations: [cite(27)] },
+        { id: 'storeys', quantity: 'storeys', status: checked(massing, massing?.floors <= MAX_STOREYS),
+            inputs: massing ? [input('floors', massing.floors, 'count')] : [],
+            ...(massing ? { result: { value: massing.floors, unit: 'count' }, expression: `${massing.floors} ≤ ${MAX_STOREYS}` } : {}),
+            limit: limit(MAX_STOREYS, 'count', 'maximum'), noteKey: 'b1.storeys', citations: [cite(27)] },
+        { id: 'model-height', quantity: 'height', status: massing ? 'assumed' : 'not-evaluated',
+            inputs: [...(massing ? [input('floors', massing.floors, 'count')] : []), input('storeyHeightM', ASSUMED_STOREY_HEIGHT_M, 'm')],
+            ...(massing ? { result: { value: modelHeight, unit: 'm' }, expression: `${massing.floors} × ${ASSUMED_STOREY_HEIGHT_M} = ${n(modelHeight)}` } : {}),
+            noteKey: 'b1.modelHeight', citations: [] },
+        { id: 'building-line', quantity: 'buildingLine', status: massing ? 'applied' : 'not-evaluated',
+            inputs: [input('insetM', BUILDING_LINE_M, 'm')], noteKey: 'b1.buildingLine',
+            citations: [{ kind: 'drawing', sheet: b1SourceGeometry.constructionDrawing.sheet, url: b1SourceGeometry.constructionDrawing.url }] },
+        { id: 'detached-edge-mask', quantity: 'detachedBoundary', status: massing ? 'applied' : 'not-evaluated',
+            inputs: [input('heightM', edgeHeight, 'm'), input('divisor', 2, 'ratio')],
+            ...(massing ? { result: { value: edgeHeight / 2, unit: 'm' }, expression: `${edgeHeight} / 2 = ${edgeHeight / 2}` } : {}),
+            noteKey: 'b1.detachedEdgeMask', citations: [cite(25)] },
+        { id: 'natural-terrain', quantity: 'naturalTerrain', status: 'not-evaluated', inputs: [],
+            limit: limit(.2, 'ratio', 'minimum'), noteKey: 'b1.naturalTerrain', citations: [cite(27)] },
+        { id: 'preparcelation', quantity: 'procedure', status: 'pending', inputs: [], noteKey: 'b1.preparcelation', citations: [{ ...cite(76), kind: 'procedure' }] },
+        { id: 'competition', quantity: 'procedure', status: 'pending', inputs: [], noteKey: 'b1.competition', citations: [cite(27)] }
+    ];
+};
+
+export function b1Constraints(calculationTrace = []) {
+    const evaluation = quantity => calculationTrace.find(row => row.quantity === quantity)?.status || 'not-evaluated';
+    return [
+        { quantity: 'lotArea', subject: 'building-plot', value: MIN_BUILDING_PLOT_M2, unit: 'm2', bound: 'minimum', sourceArticle: 27, evaluation: evaluation('lotArea') },
+        { quantity: 'siteCoverage', subject: 'building-plot', value: MAX_COVERAGE, unit: 'ratio', bound: 'maximum', sourceArticle: 27, evaluation: evaluation('siteCoverage') },
+        { quantity: 'floorAreaRatioAboveGround', subject: 'building-plot', numerator: 'above-ground-GBP', value: MAX_FAR, unit: 'ratio', bound: 'maximum', sourceArticle: 27, evaluation: evaluation('floorAreaRatioAboveGround') },
+        { quantity: 'storeys', subject: 'building', verticalScope: 'above-ground', sourceWording: 'podrum i 5 etaža', value: MAX_STOREYS, unit: 'count', bound: 'maximum', sourceArticle: 27, evaluation: evaluation('storeys') },
+        { quantity: 'naturalTerrain', subject: 'building-plot', value: 0.2, unit: 'ratio', bound: 'minimum', sourceArticle: 27, evaluation: evaluation('naturalTerrain') }
     ];
 }
 
@@ -59,12 +108,12 @@ export function b1Representation(row) {
     const parcelTooSmall = coreOverlap && candidatePlotAssessable && candidateBuildingPlotAreaM2 < MIN_BUILDING_PLOT_M2;
     const boundaryRelation = boundaryUncertain ? 'boundary-uncertain' : (row.reference_inside_b1 === true ? 'inside' : 'crosses');
     const reason = boundaryUncertain ? 'plan-boundary-uncertain' : (parcelTooSmall ? 'parcel-too-small' : 'b1-reparcelation-and-competition-required');
-    const privateEdgeMask = candidateBuildingPlot ? turf.buffer(turf.feature(candidateBuildingPlot), -(ASSUMED_STOREY_HEIGHT_M * 5 / 2), { units: 'meters', steps: 4 }) : null;
+    const privateEdgeMask = candidateBuildingPlot ? turf.buffer(turf.feature(candidateBuildingPlot), -(ASSUMED_STOREY_HEIGHT_M * MAX_STOREYS / 2), { units: 'meters', steps: 4 }) : null;
     const detachedGround = privateEdgeMask && buildingLineMask ? largestPolygon(turf.intersect(privateEdgeMask, turf.feature(buildingLineMask))?.geometry) : null;
     const rawMassing = !boundaryUncertain && detachedGround && candidateBuildingPlotAreaM2 >= MIN_BUILDING_PLOT_M2
         ? massingFor({ geometry: detachedGround, areaM2: candidateBuildingPlotAreaM2 }, 'compact', {
-            floors: 5, setbackM: 0, coveragePct: 50,
-            maxGfaM2: candidateBuildingPlotAreaM2 * 2.5, minPlotM2: MIN_BUILDING_PLOT_M2
+            floors: MAX_STOREYS, setbackM: 0, coveragePct: MAX_COVERAGE * 100,
+            maxGfaM2: candidateBuildingPlotAreaM2 * MAX_FAR, minPlotM2: MIN_BUILDING_PLOT_M2
         }, turf) : null;
     const massing = rawMassing ? singleDetachedMassing(rawMassing, candidateBuildingPlotAreaM2) : null;
     const id = `${zagrebUpuStaroTrnjeB1Source.id}:${row.parcel_id}`;
@@ -79,7 +128,7 @@ export function b1Representation(row) {
         intersectionAreaM2: row.intersection_area_m2, coreIntersectionAreaM2: row.core_intersection_area_m2,
         candidateBuildingPlotAreaM2, candidateBuildingPlotGeometry: candidateBuildingPlot,
         plotFormationCondition: 'Candidate plot is the B-1 intersection; it requires preparcelation and the required competition.',
-        buildingLineInsetM: BUILDING_LINE_M, detachedBoundaryInsetM: ASSUMED_STOREY_HEIGHT_M * 5 / 2,
+        buildingLineInsetM: BUILDING_LINE_M, detachedBoundaryInsetM: ASSUMED_STOREY_HEIGHT_M * MAX_STOREYS / 2,
         boundaryTreatment: 'all-edges-conservative', footprintForm: 'compact', assumedStoreyHeightM: ASSUMED_STOREY_HEIGHT_M,
         boundaryRelation, boundaryUncertaintyM: B1_BOUNDARY_UNCERTAINTY_M,
         requiresPreparcellation: true, requiresUrbanDesignCompetition: true,
@@ -89,6 +138,8 @@ export function b1Representation(row) {
             { kind: 'drawing', sheet: b1SourceGeometry.constructionDrawing.sheet, url: b1SourceGeometry.constructionDrawing.url }],
         geometryRegistration: b1SourceGeometry.registration
     };
+    b1.calculationTrace = trace(candidateBuildingPlotAreaM2, candidatePlotAssessable, boundaryUncertain, massing);
+    const constraints = b1Constraints(b1.calculationTrace);
     return withSourceProposal({
         id, role: 'permitted', proposalId: null, title: 'UPU Staro Trnje-Savica · B-1', site: row.parcel_geometry,
         volumes: massing ? [{ id: `${id}:conditional-detached`, geometry: massing.massing.geometry, baseM: 0, topM: massing.floors * ASSUMED_STOREY_HEIGHT_M }] : [],
@@ -103,8 +154,8 @@ export function b1Representation(row) {
             heightM: massing ? massing.floors * ASSUMED_STOREY_HEIGHT_M : null }, configurations: massing ? [{
             id: 'conditional-formed-b1-plot-detached', title: 'Conditional formed B-1 plot · detached',
             condition: 'Requires preparcelation and urban design competition.', volumes: [{ id: 'detached', geometry: massing.massing.geometry, baseM: 0, topM: massing.floors * ASSUMED_STOREY_HEIGHT_M }],
-            metrics: { floorAreaM2: massing.gfaM2, footprintM2: massing.footprintM2, heightM: massing.floors * ASSUMED_STOREY_HEIGHT_M }, constraints: b1Constraints()
-        }] : [], constraints: b1Constraints(), sourceEvidence: {
+            metrics: { floorAreaM2: massing.gfaM2, footprintM2: massing.footprintM2, heightM: massing.floors * ASSUMED_STOREY_HEIGHT_M }, constraints
+        }] : [], constraints, sourceEvidence: {
             ...b1, parcelReference: { sourceId: 'cadastral', parcelId: row.parcel_id }, minLotAreaM2: MIN_BUILDING_PLOT_M2,
             sourceUrl: zagrebUpuStaroTrnjeB1Source.url
         }

@@ -33,6 +33,12 @@ The configuration uses five above-ground storeys, coverage at most 0.5 and above
 
 The shared representation contract is used by `GET /planning/parcel` and by selected planning evidence in `ugt_parcel_context`; both expose the source item and its `sourceEvidence`, rather than an MCP-only interpretation. That evidence includes the cited source and the limited implemented dimensions, so clients can render the warning without inferring omitted rules.
 
+### Inspecting the calculation
+
+The Rules page renders the provider’s `sourceEvidence.calculationTrace` as a readable breakdown. Rows show inputs and units, numeric calculation or applied operation, result, limit, status and article or drawing links. The minimum-area row uses the candidate plot, while coverage and FAR use the emitted footprint and above-ground floor area divided by that same candidate area. Storeys are checked against the source limit. Model height is labelled as an assumption, and the construction-line and conservative edge masks are labelled as applied operations rather than independently verified boundary compliance. Natural terrain stays not evaluated; preparcelation and competition stay pending. Without a generated massing, its dimensional checks are not evaluated. Boundary-only applicability and missing candidate data also leave the area check not evaluated.
+
+The trace is generated with the provider result and included in its source revision. API and MCP consumers receive the same rows as the browser; the inspector does not recompute or upgrade their status. Sources without a calculation trace retain their recorded-limit display. This adds read-only inspection, not a separate rule-editing workflow.
+
 ## Three spatial identities prevent cut-parcel mistakes
 
 The system must keep **cadastral parcel**, **plan unit** and **lawful building plot** separate. A cadastral parcel is a dated observed land record. A *kazeta* is an immutable spatial object in a particular UPU edition. A *građevna čestica* is the source-defined building plot on which many UPU limits are measured; it can be the entire cell, a named planned lot, a later formed parcel, or a subject that cannot yet be identified. Their intersection proves only that they overlap.

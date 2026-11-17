@@ -80,6 +80,56 @@
         if (citation.kind === 'drawing') return t('sourceCitationDrawing', { sheet: citation.sheet });
         return t('readSource');
     }
+    function sourceLink(citation) {
+        try { if (!['http:', 'https:'].includes(new URL(citation.url).protocol)) return null; } catch (_) { return null; }
+        const link = element('a', 'cb-link cb-link--external', citationLabel(citation));
+        link.href = citation.url; link.target = '_blank'; link.rel = 'noopener noreferrer';
+        return link;
+    }
+    function traceValue(value, quantity = '') {
+        if (!value || !Number.isFinite(value.value)) return '—';
+        if (value.unit === 'm2') return area(value.value);
+        if (value.unit === 'm') return root.CbFormat.formatLength(value.value, { maxFractionDigits: 1 });
+        if (value.unit === 'ratio') return ['siteCoverage', 'naturalTerrain'].includes(quantity)
+            ? `${root.CbFormat.formatNumber(value.value * 100, { maxFractionDigits: 1 })}%`
+            : root.CbFormat.formatNumber(value.value, { maxFractionDigits: 3 });
+        return value.unit === 'count' ? number(value.value) : `${number(value.value)}${value.unit ? ` ${value.unit}` : ''}`;
+    }
+    function traceLabel(row) {
+        const key = `traceRow.${row.id}`;
+        const label = t(key);
+        return label === `planningViews.${key}` ? t(`constraint.${row.quantity}`) : label;
+    }
+    function traceInputLabel(key) {
+        const label = t(`traceInput.${key}`);
+        return label === `planningViews.traceInput.${key}` ? key : label;
+    }
+    function renderCalculationTrace(item) {
+        const trace = item.sourceEvidence?.calculationTrace;
+        if (!Array.isArray(trace) || !trace.length) return null;
+        const section = element('section', 'planning-calculation-trace');
+        section.append(element('h3', '', t('calculationTraceTitle')), element('p', 'planning-source-note', t('calculationTraceNote')));
+        const list = element('ol', 'planning-calculation-trace__list');
+        for (const row of trace) {
+            const entry = element('li', 'planning-calculation-trace__row');
+            const details = element('details');
+            const summary = element('summary');
+            summary.append(element('span', '', traceLabel(row)), element('span', `cb-badge planning-calculation-trace__status planning-calculation-trace__status--${row.status}`, t(`traceStatus.${row.status}`)));
+            details.append(summary);
+            const facts = element('dl', 'planning-limits');
+            if (Array.isArray(row.inputs) && row.inputs.length) facts.append(element('dt', '', t('traceInputs')), element('dd', '', row.inputs.map(input => `${traceInputLabel(input.key)}: ${traceValue(input, row.quantity)}`).join(' · ')));
+            if (row.result) facts.append(element('dt', '', t('traceResult')), element('dd', '', traceValue(row.result, row.quantity)));
+            if (row.limit) facts.append(element('dt', '', t('traceLimit')), element('dd', '', `${t(`traceBound.${row.limit.bound || 'recorded'}`)} ${traceValue(row.limit, row.quantity)}`));
+            if (row.expression) facts.append(element('dt', '', t('traceExpression')), element('dd', 'planning-calculation-trace__expression', row.expression));
+            if (facts.childElementCount) details.append(facts);
+            if (row.noteKey) details.append(element('p', 'planning-source-note', t(`traceNote.${row.noteKey}`)));
+            const links = (row.citations || []).map(sourceLink).filter(Boolean);
+            if (links.length) { const citations = element('p', 'planning-calculation-trace__citations'); citations.append(...links); details.append(citations); }
+            entry.append(details); list.append(entry);
+        }
+        section.append(list);
+        return section;
+    }
     function element(tag, className, text) {
         const node = document.createElement(tag);
         if (className) node.className = className;
@@ -446,10 +496,12 @@
         const assessment = element('div', 'planning-assessment');
         assessment.append(element('strong', '', t('conditionsTitle')), element('p', '', t('conditionsNote')));
         if (sourceResult && item.volumes.length) (rules || info).append(assessment);
-        const constraints = shown ? shown.constraints : item.constraints;
+        const trace = renderCalculationTrace(item);
+        if (trace) (rules || info).append(trace);
+        const constraints = trace ? [] : (shown ? shown.constraints : item.constraints);
         if (constraints?.length) {
             const limits = element('dl', 'planning-limits');
-            if (shown) limits.append(element('dt', 'planning-limits__scope', scenarioLabel(shown.id)), element('dd', '', ''));
+            if (shown) limits.append(element('dt', 'planning-limits__scope', shown.title || scenarioLabel(shown.id)), element('dd', '', ''));
             for (const constraint of constraints) {
                 const digits = constraint.value === 0 ? 0 : Math.min(20, Math.max(6, 2 - Math.floor(Math.log10(Math.abs(constraint.value)))));
                 const measured = root.CbFormat.formatNumber(constraint.value, { maxFractionDigits: digits });
@@ -473,14 +525,10 @@
         if (item.sourceEvidence) {
             const terms = element('pre', 'planning-evidence__terms', JSON.stringify(item.sourceEvidence, null, 2));
             evidence.append(element('p', '', t('sourceTerms')), terms);
-            const citations = (item.sourceEvidence.citations || []).filter(citation => {
-                try { return ['http:', 'https:'].includes(new URL(citation.url).protocol); } catch (_) { return false; }
-            });
+            const citations = (item.sourceEvidence.citations || []).map(sourceLink).filter(Boolean);
             if (citations.length) {
                 const list = element('ul', 'planning-source-citations');
-                for (const citation of citations) {
-                    const link = element('a', '', citationLabel(citation));
-                    link.href = citation.url; link.target = '_blank'; link.rel = 'noopener noreferrer';
+                for (const link of citations) {
                     const row = element('li'); row.append(link); list.append(row);
                 }
                 evidence.append(list);
@@ -521,8 +569,9 @@
             const row = element('li'); row.dataset.configuration = configuration.id;
             const button = element('button', 'btn planning-configurations__pick'); button.type = 'button';
             button.setAttribute('aria-pressed', String(shown?.id === configuration.id));
-            button.setAttribute('aria-label', `${t('configurationShow')}: ${scenarioLabel(configuration.id)}`);
-            button.append(element('strong', '', scenarioLabel(configuration.id)), element('span', '', resultLabel(configuration.treatment)));
+            const label = configuration.title || scenarioLabel(configuration.id);
+            button.setAttribute('aria-label', `${t('configurationShow')}: ${label}`);
+            button.append(element('strong', '', label), element('span', '', resultLabel(configuration.treatment)));
             const measure = configuration.unavailableReason ? t(`envelopeUnavailable.${configuration.unavailableReason}`)
                 : `${root.CbFormat.formatLength(configuration.metrics.heightM, { maxFractionDigits: 1 })} · ${area(configuration.metrics.footprintM2)}`;
             button.append(element('span', 'planning-configurations__measure', measure));
