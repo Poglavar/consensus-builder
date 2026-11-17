@@ -171,6 +171,29 @@ describe('three-floor-plans volumetric adapter',()=>{
         const z=Array.from(overlay.geometry.attributes.position.array).filter((_,i)=>i%3===2);
         expect(Math.min(...z)).toBeCloseTo(.02);expect(Math.max(...z)).toBeCloseTo(.07);
     });
+    it('clips non-apartment surfaces once per layout, preserving holes, apartment islands and tread heights',async()=>{
+        const turf=require('../../frontend/vendor/turf-6.5.0/turf.min.js');
+        const ring=(a,b)=>[[a,0],[b,0],[b,4],[a,4]];
+        const sharedParts=[{kind:'slab',rings:[ring(0,10),ring(4,5)],baseM:-.2,heightM:.2},
+            {kind:'stair',rings:[ring(4,5)],baseM:1,heightM:.2}];
+        const apartmentRegions=[{id:'flat',polygons:[[ring(0,3),ring(1,2)]]}];
+        const floors=[0,1].map(level=>({id:`f${level}`,layoutId:'same',level,elevationM:level*3,parts:sharedParts,apartmentRegions}));
+        let clips=0;
+        const t={difference:(...args)=>{clips++;return turf.difference(...args);}};
+        const group=await renderer.createBuildingGroupCooperative(THREE,feature,()=>[0,0],
+            {buildFloorPlanGeometry:()=>floors},{turf:t},
+            {forEach:async(items,visit)=>{items.forEach(visit);return true;}});
+        const regions=group.children[0].userData.nonApartmentRegions;
+        expect(regions).toBe(group.children[1].userData.nonApartmentRegions);
+        expect(clips).toBe(1); // The common tread never overlaps an apartment; the second storey shares everything.
+        const contains=(region,x,y)=>region.polygons.some(rings=>turf.booleanPointInPolygon(turf.point([x,y]),turf.polygon(rings)));
+        expect(contains(regions[0],.5,2)).toBe(false); // Apartment interior.
+        expect(contains(regions[0],1.5,2)).toBe(true); // Non-apartment island inside its hole.
+        expect(contains(regions[0],4.5,2)).toBe(false); // Slab's stairwell hole.
+        expect(contains(regions[0],7,2)).toBe(true); // Corridor.
+        expect(regions[1].elevationM).toBeCloseTo(1.2);expect(contains(regions[1],4.5,2)).toBe(true);
+        renderer.disposeGroup(group);
+    });
     it('releases partial geometry when cooperative building fails',async()=>{
         const allocated=[];
         class Tracked extends Geometry {constructor(){super();allocated.push(this);}}

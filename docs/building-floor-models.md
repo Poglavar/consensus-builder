@@ -85,8 +85,13 @@ Street lookups are deduplicated, limited to two concurrent reads and 64 recent c
 to nearby visible buildings. A settled batch refreshes the planned family once, without clearing
 unrelated layouts or rebuilding exterior buildings. The frontage is already part of the layout key.
 
-Hover uses the existing batched geometry and a single temporary floor overlay. Hidden subtrees are
-excluded from picking, and unchanged camera/pointer states do no new picking work. Generated
+Hover uses the existing batched geometry and one temporary surface overlay. Apartments highlight
+blue; surfaces outside the retained apartment boundaries use neutral grey-and-white hatching.
+Slabs, landings and treads retain their own elevations, and apartment boundaries and slab holes
+clip the non-apartment regions. Regions are prepared once per reusable layout in the cooperative
+build queue and shared between storeys; pointer movement performs no polygon clipping. Hidden
+subtrees are excluded from picking, and unchanged camera/pointer states do no new picking work.
+The blue overlay sits above the red warning patches even in a straight-down view. Generated
 north-only apartments show **North orientation only** beside the pointer. Warning patches are
 batched once per storey, and clicking keeps the existing whole-building/design selection. These are
 presentation changes; no authored editing operation or MCP editing schema changes.

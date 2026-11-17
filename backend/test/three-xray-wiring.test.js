@@ -220,7 +220,7 @@ describe('three-mode Xray wiring', () => {
             const existingFloorPlanGroups = new Map(); let existingFloorPlanQueue = Promise.resolve();
             this.loads = floorModelLoads; this.groups = existingFloorPlanGroups;
             this.reconcile = () => reconcileExistingFloorPlans();`;
-        const [request, c] = extracted('requestFloorModel', variables, {
+        const [request, c] = extracted('requestFloorModel', variables, { turf: {},
             existing, added, removed, floorPlanProximity: proximity, URLSearchParams, AbortController,
             window: { getBackendBase: () => 'http://api.test' },
             fetch: vi.fn(async () => ({ ok: true, json: async () => ({ model: modelB }) })),
@@ -283,7 +283,7 @@ describe('three-mode Xray wiring', () => {
             const floorModelLoads = { models: new Map([['a', { floorPlans: {} }], ['b', { floorPlans: {} }]]), pending: new Map() };
             let existingFloorPlanShells = new Map([['a', this.shell], ['b', { ...this.shell, meshes: [{ visible: true }] }]]);
             const existingFloorPlanGroups = new Map(); let existingFloorPlanQueue = Promise.resolve();`;
-        const [reconcile] = extracted('reconcileExistingFloorPlans', variables, { shell, floorPlanProximity: proximity, THREE: {}, floorPlanGeometry: {},
+        const [reconcile] = extracted('reconcileExistingFloorPlans', variables, { shell, floorPlanProximity: proximity, THREE: {}, floorPlanGeometry: {}, turf: {},
             latLngToXY: () => [0, 0], sceneWork, building3DHeightMeters: () => 10, updateXrayControls: vi.fn(), invalidateThreeView: vi.fn(),
             nextDrawnFrame: () => new Promise(resolve => frames.push(resolve)),
             floorPlanRenderer: { disposeGroup: vi.fn(), setCutaway: vi.fn(), createBuildingGroupCooperative: async (_three, feature) => {

@@ -9735,7 +9735,7 @@
             const current = () => isActive && xrayEnabled && floorPlanGroup === target && generation === buildingsWorkGeneration;
             const group = await floorPlanRenderer.createBuildingGroupCooperative(THREE, feature,
                 (lng, lat) => latLngToXY(lat, lng), floorPlanGeometry,
-                { proxyMaterial, proxyHeightM, withDistantShell: family !== 'existing-suggested' },
+                { proxyMaterial, proxyHeightM, withDistantShell: family !== 'existing-suggested', turf },
                 { forEach: sceneWork.forEach, isCurrent: current });
             if (!current()) { if (group) floorPlanRenderer.disposeGroup(group); return false; }
             if (group) {
@@ -9791,7 +9791,7 @@
         try {
             group = await floorPlanRenderer.createBuildingGroupCooperative(THREE, { type: 'Feature', geometry: model.footprint,
                 properties: { ...shell.building.properties, floorPlans: model.floorPlans } }, (lng, lat) => latLngToXY(lat, lng), floorPlanGeometry,
-            { proxyMaterial: shell.material, proxyHeightM: building3DHeightMeters(shell.building) }, { forEach: sceneWork.forEach, isCurrent: current });
+            { proxyMaterial: shell.material, proxyHeightM: building3DHeightMeters(shell.building), turf }, { forEach: sceneWork.forEach, isCurrent: current });
         } catch (error) {
             floorPlanErrors++;
             console.error(`[${new Date().toISOString()}] [3D] Invalid floor plans for building ${key}`, error);

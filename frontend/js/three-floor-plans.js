@@ -53,6 +53,32 @@
         return byLayout;
     }
 
+    // Subtract apartment boundaries once per layout, before pointer picking. Keep each slab,
+    // landing and tread at its real height, including holes and disconnected common areas.
+    function nonApartmentRegionBuilder(floor, turf) {
+        const feature = polygons => ({ type: 'Feature', properties: {}, geometry: { type: 'MultiPolygon',
+            coordinates: polygons.map(polygon => polygon.map(ring => {
+                const first = ring[0], last = ring[ring.length - 1];
+                return first[0] === last[0] && first[1] === last[1] ? ring : [...ring, first];
+            })) } });
+        const bounds = polygon => polygon[0].reduce((b, p) => [Math.min(b[0], p[0]), Math.min(b[1], p[1]),
+            Math.max(b[2], p[0]), Math.max(b[3], p[1])], [Infinity, Infinity, -Infinity, -Infinity]);
+        const apartments = (floor.apartmentRegions || []).flatMap(region => region.polygons)
+            .map(polygon => ({ polygon, bounds: bounds(polygon) }));
+        return (part, index) => {
+            const box = bounds(part.rings);
+            // Most treads are wholly in the common core: avoid clipping them against distant
+            // apartment boundaries, and never repeat this work for another storey of the layout.
+            const candidates = apartments.filter(({ bounds: b }) => b[0] < box[2] && b[2] > box[0] && b[1] < box[3] && b[3] > box[1]);
+            const surface = feature([part.rings]);
+            const remaining = candidates.length ? turf.difference(surface, feature(candidates.map(item => item.polygon))) : surface;
+            if (!remaining) return null;
+            return { id: `non-apartment-${index}`, kind: 'non-apartment', elevationM: part.baseM + part.heightM,
+                polygons: remaining.geometry.type === 'Polygon' ? [remaining.geometry.coordinates] : remaining.geometry.coordinates };
+        };
+    }
+    const hoverSurfaces = floor => floor.parts.filter(part => part.kind === 'slab' || part.kind === 'stair');
+
     // `prepared` ({ floors, geometries: Map(layoutId → Map(kind → geometry)) }) comes from
     // createBuildingGroupCooperative, which builds the same geometry a few milliseconds at a time.
     function createBuildingGroup(THREE, feature, project, geometryApi, options = {}, prepared = null) {
@@ -63,6 +89,7 @@
         const suggested = props.floorPlans.suggested === true;
         const colors = suggested ? SUGGESTED_COLORS : COLORS;
         const wrapper = new THREE.Group(), layouts = new Map(), materials = new Map(), tops = new Map();
+        const nonApartmentRegions = prepared?.nonApartmentRegions || new Map();
         for (const floor of floors) if (!tops.has(floor.layoutId)) {
             tops.set(floor.layoutId, floor.parts.reduce((top, part) => Math.max(top, part.baseM + part.heightM), 0));
         }
@@ -84,6 +111,8 @@
                     : new Map([...byKind].map(([kind, parts]) => [kind, geometryFor(THREE, parts)]));
                 for (const kind of layout.keys()) if (!materials.has(kind)) materials.set(kind, materialFor(THREE, kind, colors));
                 layouts.set(floor.layoutId, layout);
+                if (!prepared && options.turf) nonApartmentRegions.set(floor.layoutId,
+                    hoverSurfaces(floor).map(nonApartmentRegionBuilder(floor, options.turf)).filter(Boolean));
             }
             const triangleCount = [...layout.values()].reduce((sum, geometry) => sum + geometry.attributes.position.count / 3, 0);
             const floorGroup = new THREE.Group();
@@ -93,7 +122,8 @@
                 cbFloorPlanFloor: true, id: floor.id, level: floor.level, heightM: tops.get(floor.layoutId), triangleCount,
                 elevationM: floor.elevationM, elevationBasis: floor.elevationBasis,
                 layoutId: floor.layoutId, sourceUrl: floor.sourceUrl, apartmentCount: floor.apartmentCount,
-                apartmentRegions: floor.apartmentRegions || []
+                apartmentRegions: floor.apartmentRegions || [],
+                nonApartmentRegions: nonApartmentRegions.get(floor.layoutId) || []
             };
             for (const [kind, geometry] of layout) {
                 const mesh = new THREE.Mesh(geometry, materials.get(kind));
@@ -278,7 +308,7 @@
         const floors = api.buildFloorPlanGeometry(feature, project);
         if (!floors.length) return null;
         const isCurrent = work.isCurrent || (() => true);
-        const geometries = new Map(), built = [];
+        const geometries = new Map(), nonApartmentRegions = new Map(), built = [];
         let completed = false;
         try {
             for (const [layoutId, byKind] of layoutParts(floors)) {
@@ -293,8 +323,17 @@
                     layout.set(kind, geometry);
                 }
                 geometries.set(layoutId, layout);
+                if (options.turf) {
+                    const floor = floors.find(floor => floor.layoutId === layoutId), regions = [];
+                    const regionFor = nonApartmentRegionBuilder(floor, options.turf);
+                    if (!await work.forEach(hoverSurfaces(floor), (part, index) => {
+                        const region = regionFor(part, index);
+                        if (region) regions.push(region);
+                    }, { isCurrent })) return null;
+                    nonApartmentRegions.set(layoutId, regions);
+                }
             }
-            const group = createBuildingGroup(THREE, feature, project, api, options, { floors, geometries });
+            const group = createBuildingGroup(THREE, feature, project, api, options, { floors, geometries, nonApartmentRegions });
             completed = true;
             return group;
         } finally {

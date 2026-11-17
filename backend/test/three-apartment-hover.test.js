@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { createRequire } from 'node:module';
 const require = createRequire(import.meta.url);
 const THREE = require('three');
-const { attach, apartmentAtHit } = require('../../frontend/js/three-apartment-hover.js');
+const { attach, apartmentAtHit, spaceAtHit } = require('../../frontend/js/three-apartment-hover.js');
 const polygon = (x0,x1) => [[[x0,-2],[x1,-2],[x1,2],[x0,2]]];
 function setup() {
     const listeners = new Map();
@@ -71,6 +71,35 @@ describe('apartment hover',()=>{
         const mesh=new THREE.Mesh(new THREE.PlaneGeometry(10,10),new THREE.MeshBasicMaterial());
         let calls=0;mesh.raycast=()=>{calls++};mesh.updateWorldMatrix=()=>{calls++};hidden.add(mesh);s.root.add(hidden);
         s.event('pointermove');s.hover.update(true);expect(s.highlight()).toBeDefined();expect(calls).toBe(0);s.hover.dispose();
+    });
+    it('places the blue overlay in front of the red patch for a straight-down camera',()=>{
+        const s=setup();
+        const red=new THREE.Mesh(new THREE.BoxGeometry(3,4,.05),new THREE.MeshBasicMaterial({color:0xd9453a}));
+        red.position.set(-2.5,0,.045);s.floor.add(red);
+        s.event('pointermove');s.hover.update(true);
+        const highlight=s.highlight();
+        expect(highlight.userData.apartmentId).toBe('west');
+        const redTop=new THREE.Box3().setFromObject(red).max.z;
+        expect(new THREE.Box3().setFromObject(highlight).min.z).toBeGreaterThan(redTop);
+        expect(highlight.material.depthTest).toBe(true);expect(highlight.material.depthWrite).toBe(false);
+        s.hover.dispose();
+    });
+    it('hatches common floors and elevated treads with one disposable overlay, then restores apartment blue',()=>{
+        const s=setup();
+        s.floor.userData.nonApartmentRegions=[{id:'hall',kind:'non-apartment',elevationM:0,polygons:[polygon(-1,1)]},
+            {id:'tread',kind:'non-apartment',elevationM:1,polygons:[polygon(-1,1)]}];
+        const hit=z=>({object:s.floor.children[0],point:new THREE.Vector3(0,0,z)});
+        expect(spaceAtHit(hit(0)).region.id).toBe('hall');expect(spaceAtHit(hit(1)).region.id).toBe('tread');
+        s.event('pointermove',50);s.hover.update(true);
+        const common=s.highlight();expect(common.userData).toMatchObject({apartmentId:null,regionKind:'non-apartment'});
+        expect(common.material.customProgramCacheKey()).toBe('non-apartment-hover-hatch');
+        s.event('pointermove',51);s.hover.update(true);expect(s.highlight()).toBe(common);
+        let disposed=false;common.geometry.addEventListener('dispose',()=>disposed=true);
+        s.event('pointermove',25);s.hover.update(true);
+        expect(disposed).toBe(true);expect(s.highlight().material).not.toBe(common.material);
+        expect(s.highlight().userData.regionKind).toBe('apartment');
+        expect(s.floor.children.filter(c=>c.userData.cbApartmentHover)).toHaveLength(1);
+        s.hover.dispose();
     });
     it('respects region holes and floor world transforms',()=>{
         const s=setup();s.floor.position.set(20,10,3);s.floor.updateMatrixWorld(true);
