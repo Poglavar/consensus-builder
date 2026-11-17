@@ -9019,6 +9019,7 @@
         "addToPlan": "Añadir al plan",
         "sharePlan": "Compartir plan",
         "shareFixed": "Comparte este plan guardado y sus diseños exactos. Para cambiar los diseños, edita primero el plan.",
+        "shareUpdated": "{{count}} diseños modificados están listos para publicarse como una nueva revisión del plan.",
         "publishAndCopy": "Publicar y copiar enlace",
         "publishing": "Publicando el plan…",
         "createAgreement": "Crear acuerdo",

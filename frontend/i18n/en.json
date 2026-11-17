@@ -8991,6 +8991,7 @@
         "addToPlan": "Add to plan",
         "sharePlan": "Share plan",
         "shareFixed": "Shares this saved plan and its exact designs. To change designs, edit the plan first.",
+        "shareUpdated": "{{count}} changed designs are ready to publish as a new plan revision.",
         "publishAndCopy": "Publish and copy link",
         "publishing": "Publishing plan…",
         "createAgreement": "Create agreement",

@@ -1721,6 +1721,30 @@
         }
     },
     "agreement": {
+        "boost": {
+            "title": "Soutenir",
+            "currencyUsdc": "USDC devnet · portefeuille",
+            "currencyToken": "{{symbol}} · vous détenez {{amount}}",
+            "chooseCurrency": "Soutenir avec quoi ? Les USDC vont au sponsor lorsque l’accord est exécuté ; les jetons de la ville vont à 30 % au sponsor et à 70 % aux propriétaires des parcelles. Dans les deux cas, ils vous reviennent si l’accord est annulé ou expire.",
+            "amountPrompt": "Combien de {{unit}} ?",
+            "done": "Soutenu avec {{amount}} {{unit}}.",
+            "reading": "Lecture des soutiens…",
+            "readFailed": "Les soutiens n’ont pas pu être lus : {{reason}}",
+            "usdcTotal": "{{amount}} de {{count}} soutien(s){{released}}",
+            "releasedSuffix": ", versés au sponsor",
+            "none": "Aucun pour le moment",
+            "tokenTotal": "{{amount}} de {{count}} soutien(s)",
+            "release": "Verser les soutiens USDC au sponsor",
+            "refund": "Récupérer mes {{amount}} USDC",
+            "rule": "Les soutiens en jetons de la ville sont réglés à la fin de l’accord : 30 % au sponsor et 70 % aux propriétaires des parcelles s’il est exécuté, sinon ils vous reviennent.",
+            "unavailable": "Le soutien n’est pas disponible : {{reason}}",
+            "errors": {
+                "unavailable": "Le client du programme de soutien n’a pas pu être chargé.",
+                "notActive": "Seul un accord actif peut être soutenu.",
+                "nothingToRefund": "Ce portefeuille n’a aucun soutien à récupérer.",
+                "nothingToRelease": "Il n’y a aucun soutien à verser."
+            }
+        },
         "compare": {
             "approval": "Approbation",
             "settlement": "Règlement",
@@ -4984,6 +5008,11 @@
         }
     },
     "bets": {
+        "cityToken": {
+            "balance": "Jetons de la ville : {{amounts}}",
+            "none": "Les bons pronostics rapportent des jetons de la ville : plus ils sont tôt et peu coûteux, plus ils rapportent.",
+            "awarded": "Vous avez gagné {{amounts}}."
+        },
         "row": {
             "yes": "Oui",
             "no": "Non",
@@ -8784,6 +8813,7 @@
         "addToPlan": "Ajouter au plan",
         "sharePlan": "Partager le plan",
         "shareFixed": "Partage ce plan enregistré et ses conceptions exactes. Pour modifier les conceptions, modifiez d’abord le plan.",
+        "shareUpdated": "{{count}} conceptions modifiées sont prêtes à être publiées comme nouvelle révision du plan.",
         "publishAndCopy": "Publier et copier le lien",
         "publishing": "Publication du plan…",
         "createAgreement": "Créer un accord",

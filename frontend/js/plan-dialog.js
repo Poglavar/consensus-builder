@@ -32,8 +32,12 @@
     function openDialog(title, body, actions = [], size = 'sm') {
         return win.CbDialog.open({ title, size, className:'plan-dialog', body, actions, autoCloseActions:false });
     }
-    function memberList(row) {
-        const list = node('ul', 'plan-dialog__members');
+    function memberList(row, { scrollable = false, labelledBy = '' } = {}) {
+        const list = node('ul', `plan-dialog__members${scrollable ? ' plan-share__members' : ''}`);
+        if (scrollable) {
+            list.tabIndex = 0;
+            if (labelledBy) list.setAttribute('aria-labelledby', labelledBy);
+        }
         const peerIds = row.designs.map(member => member.cid);
         row.designs.forEach(member => list.append(appendRecordLabel(node('li'), member.content.title, member.cid, peerIds)));
         return list;
@@ -137,10 +141,24 @@
         return create({base:chosen==='new'?null:plans.find(plan=>plan.cid===chosen),add:record});
     }
     async function share(plan, members=[]) {
-        const row=await win.PlanWorkspace.resolve(plan,members);closeContexts();
+        const exact=await win.PlanWorkspace.resolve(plan,members);closeContexts();
+        // A public link must never silently keep the older plan after its applied local designs
+        // have moved on. Recompose only through ordinary revision/rebind lineage; snapshot
+        // members that are absent here stay exactly as saved, and copies are not successors.
+        const carried=win.PlanComposition.localRecords(exact,{apiBase:win.DesignSync.apiBase()});
+        const current=win.SharedPlanSession.currentMembers(exact,win.proposalStorage.getAllProposals(),{fallbackMembers:carried});
+        const changed=current.filter((member,index)=>win.DesignRecord.cidOf(member)!==exact.designs[index].cid).length;
+        // Do not reserialize an unchanged immutable snapshot: old view fields and its CID stay exact.
+        const membersWithSources=current.map((member,index)=>member.planFileSource ? member : {
+            ...member,...(exact.designSources?.[exact.designs[index].cid] ? {planFileSource:exact.designSources[exact.designs[index].cid]} : {})
+        });
+        const row=changed?win.SharedPlanSession.composeCurrentPlan(exact,membersWithSources):exact;
+        if(changed)win.PlanWorkspace.save(row);
         const published=await win.PlanWorkspace.publication(row);
-        const body=node('div','plan-share');body.append(node('h3','',row.content.title),memberList(row));
-        body.append(node('p','sheet-note',t('shareFixed')));
+        const body=node('div','plan-share');
+        const heading=node('h3','',row.content.title);heading.id=`plan-share-members-${Date.now()}`;
+        body.append(heading,memberList(row,{scrollable:true,labelledBy:heading.id}));
+        body.append(node('p','sheet-note',changed?t('shareUpdated',{count:changed}):t('shareFixed')));
         // A published plan shows its link and the ways to share it (ShareDialog.render: Copy link,
         // Post on X, the device's Share…); an unpublished one is published first, which copies it.
         const showLink=async(link)=>body.append(win.ShareDialog.render({kind:'plan',title:row.content.title,link,copied:await win.DesignSync.copyLink(link)}));

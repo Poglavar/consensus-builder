@@ -9043,6 +9043,7 @@
         "addToPlan": "Dodaj u plan",
         "sharePlan": "Podijeli plan",
         "shareFixed": "Dijeli ovaj spremljeni plan i njegove točne projekte. Za promjenu projekata prvo uredi plan.",
+        "shareUpdated": "{{count}} promijenjenih projekata spremno je za objavu kao nova revizija plana.",
         "publishAndCopy": "Objavi i kopiraj poveznicu",
         "publishing": "Objavljivanje plana…",
         "createAgreement": "Izradi sporazum",

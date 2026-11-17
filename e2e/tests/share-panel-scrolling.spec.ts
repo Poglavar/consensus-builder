@@ -1,10 +1,14 @@
 import { test, expect } from '../helpers/fixtures';
-import { createSpace, openCity } from '../helpers/runtime';
+import { chooseProfileName, createSpace, openCity } from '../helpers/runtime';
 
 for (const width of [1280, 390]) {
   test(`plan composer stays usable with a long design list at ${width}px`, async ({ mockApi: page }) => {
     await page.setViewportSize({ width, height: 844 });
     await openCity(page);
+    if (width < 768) {
+      await page.evaluate(()=>(window as any).guestPolicyBlocks('publish'));
+      await chooseProfileName(page, 'Long plan author');
+    }
     const id = await createSpace(page, 'park');
     await page.evaluate(seedId => {
       const w:any=window, source=w.proposalStorage.getProposal(seedId);
@@ -30,5 +34,23 @@ for (const width of [1280, 390]) {
     await expect(composer.locator('.plan-dialog__members li')).toHaveCount(24);
     await composer.hover(); await page.mouse.wheel(0,2500);
     await expect(page.locator('.plan-dialog__footer')).toBeInViewport();
+    await composer.getByLabel('Plan name', { exact: true }).fill(`Long shared plan ${width}`);
+    await composer.getByRole('button', { name: 'Create plan', exact: true }).click();
+    await page.locator('#click-stack .click-stack__section[data-kind="plans"]')
+      .getByRole('button', { name: 'Share plan', exact: true }).click();
+    const share = page.locator('.plan-share');
+    const members = share.locator('.plan-share__members');
+    await expect(members.locator('li')).toHaveCount(24);
+    await expect.poll(() => members.evaluate(el => el.scrollHeight > el.clientHeight)).toBe(true);
+    await members.focus();
+    await page.keyboard.press('PageDown');
+    await expect.poll(() => members.evaluate(el => el.scrollTop)).toBeGreaterThan(0);
+    await expect(share.getByRole('button', { name: 'Publish and copy link', exact: true })).toBeInViewport();
+    if (width < 768) {
+      await share.getByRole('button', { name: 'Publish and copy link', exact: true }).click();
+      await expect(share.getByLabel('Plan link', { exact: true })).toBeInViewport();
+      await expect(share.getByRole('button', { name: 'Copy link', exact: true })).toBeInViewport();
+      await expect(share.locator('.share-panel__actions')).toBeInViewport();
+    }
   });
 }

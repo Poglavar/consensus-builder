@@ -902,6 +902,16 @@ describe('opening a /designs link', () => {
         expect(link.enterUrlDrivenView).toHaveBeenCalledOnce();
     });
 
+    it('keeps an exact saved plan view in 3D without selecting its first member', async () => {
+        const arrivalView = { lat: 52.50539, lon: -1.95889, zoom: 19 };
+        const link = designLink({ designs: [park, square], wants3D: true, arrivalView });
+
+        await link.open([park.cid, square.cid], { frame: false, openDetails: false });
+
+        expect(link.map.setView).toHaveBeenCalledExactlyOnceWith([arrivalView.lat, arrivalView.lon], arrivalView.zoom, { animate: false });
+        expect(link.enterUrlDrivenView).toHaveBeenCalledExactlyOnceWith(undefined, {});
+    });
+
     it('waits for the boot replay, and leaves the view alone when the visitor took over meanwhile', async () => {
         const link = designLink({ designs: [park], replayDone: false, tookOver: true });
 

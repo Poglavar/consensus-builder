@@ -271,6 +271,30 @@ describe('shared plan browser client', () => {
         expect(() => SharedPlanSession.currentMembers(composed, [], runtime)).toThrow(/missing locally/);
     });
 
+    it('recomposes sharing from applied successors while retaining an absent carried member and its schedule', () => {
+        const plan = {
+            ...row,
+            content: { ...row.content, designCids: ['design-cid', 'second-cid'], view: { mode: '2d', at: '45,16,17' },
+                schedule: { 'design-cid': { start: '2030-01', end: '2030-02' }, 'second-cid': { start: '2031-01', end: '2031-02' } } },
+            designs: [...row.designs, { cid: 'second-cid', content: { schema: 'design/v1', title: 'Square' } }],
+            memberIds: ['bench-local', 'plan-member-second-cid']
+        };
+        const first = { proposalId: 'bench-revision-1', cid: 'revision-1', applied: false,
+            proposalOrigin: { relation: 'revision', source: { kind: 'design', cid: 'design-cid' } } };
+        const latest = { proposalId: 'bench-revision-2', cid: 'revision-2', applied: true,
+            proposalOrigin: { relation: 'rebind', source: { kind: 'local', localProposalId: 'bench-revision-1' } } };
+        const carried = { proposalId: 'plan-member-second-cid', cid: 'second-cid', applied: false };
+        const runtime = { DesignRecord: { cidOf: record => record.cid }, PlanComposition: { create: vi.fn(() => ({ cid: 'new-plan' })) } };
+
+        const members = SharedPlanSession.currentMembers(plan, [first, latest], runtime, { fallbackMembers: [null, carried] });
+        expect(members).toEqual([latest, carried]);
+        expect(SharedPlanSession.composeCurrentPlan(plan, members, runtime)).toEqual({ cid: 'new-plan' });
+        expect(runtime.PlanComposition.create).toHaveBeenCalledWith('Park', members, plan.content.view, {
+            'revision-2': { start: '2030-01', end: '2030-02' },
+            'second-cid': { start: '2031-01', end: '2031-02' }
+        });
+    });
+
     it('keeps ordinary local plan revisions connected through a refresh until explicit shared save', async () => {
         const prefix = 'ugt.shared-plan-session/v1:https://urbangametheory.xyz:workspace-test:';
         const server = { id: 'session-a', version: 2, controller: 'owner', artifact: { plan: row.content, designs: row.designs } };
