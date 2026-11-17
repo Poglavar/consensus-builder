@@ -64,6 +64,18 @@ describe('property offer settlement trust boundaries',()=>{
         const bad={...f.row.content,hidden:true};
         expect((await request(app).post('/property-offers').send({cid:Cid.cidOfObject(bad),content:bad})).status).toBe(400);
     });
+    it('MCP relays only confirmed shared consent and supplies the configured app origin', async () => {
+        const f = fixture(), shared = { id: 'a'.repeat(64), candidate: f.candidate };
+        const fetchImpl = vi.fn(async url => ({ ok: true, json: async () => url.endsWith('/acceptances') ? shared : f.row }));
+        const tools = createPropertyOfferTools({ apiBase: 'http://localhost:4201', appOrigin: 'http://localhost:5201', fetchImpl });
+        const args = { operation: 'share', cid: f.row.cid, candidate: f.candidate, requester: buyer, signature: 'signed-message' };
+        await expect(tools.consent(args)).rejects.toThrow('confirm');
+        expect(fetchImpl).not.toHaveBeenCalled();
+        const result = await tools.consent({ ...args, confirm: true });
+        expect(new URL(result.url).searchParams.get('acceptance')).toBe(shared.id);
+        expect(fetchImpl.mock.calls[0][1].headers.Origin).toBe('http://localhost:5201');
+        expect(JSON.parse(fetchImpl.mock.calls[0][1].body)).toMatchObject({ candidate: f.candidate, signature: 'signed-message' });
+    });
     it('MCP drafts and edits the same immutable offer and requires reviewed publication',async()=>{
         const f=fixture(), fetchImpl=vi.fn();const tools=createPropertyOfferTools({apiBase:'http://localhost:4201',appOrigin:'http://localhost:5201',fetchImpl});
         expect(tools.draft({offer:f.row.content}).cid).toBe(f.row.cid);

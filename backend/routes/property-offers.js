@@ -7,6 +7,7 @@ import { isPlainObject } from '../utils/request-validation.js';
 import { normalizeCityCode } from '../utils/city-code.js';
 import { createOfferChain, mirrorOfferAccount, client } from '../property-offers/onchain.js';
 import rateLimit from 'express-rate-limit';
+import { setupPropertyOfferAcceptances } from './property-offer-acceptances.js';
 
 const require = createRequire(import.meta.url);
 const PropertyOfferRecord = require('../../frontend/js/property-offer-record.js');
@@ -36,6 +37,7 @@ export function validatePropertyOfferContent(content, { now = Date.now() } = {})
 
 export function setupPropertyOffersRoute(app, { pool, now = () => Date.now(), propertyOfferChain = createOfferChain } = {}) {
     const one = cid => loadPropertyOffer(pool, cid);
+    setupPropertyOfferAcceptances(app, { pool, load: one, now });
     const limiter = () => rateLimit({ windowMs: 60000, limit: 30, standardHeaders: 'draft-7', legacyHeaders: false });
     app.post('/property-offers', limiter(), async (req, res) => {
         const body = req.body;

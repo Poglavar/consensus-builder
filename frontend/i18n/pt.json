@@ -9303,6 +9303,14 @@
     "amountSol": "Montante em SOL",
     "payoutHint": "Os destinatários indicados recebem este montante total quando a venda for concluída.",
     "lensPlaceholder": "Endereço de membro Lens na Solana",
+    "locateParcel": "Localizar parcela {{id}}",
+    "parcelLocated": "Parcela {{id}} localizada.",
+    "notSet": "Não definido",
+    "localnetExplorerUnavailable": "As contas da rede local não estão disponíveis no explorador público da Solana.",
+    "shareAcceptance": "Partilhar ligação de aceitação",
+    "shareFirst": "Partilhe primeiro esta aceitação.",
+    "waitingFor": "A aguardar: {{owners}}",
+    "refreshConsents": "Atualizar assinaturas",
     "directions": {
       "buy": "Oferta de compra",
       "sell": "Oferta de venda"
@@ -9323,7 +9331,11 @@
       "status": "Estado",
       "proposer": "Proponente",
       "buyer": "Carteira do comprador",
-      "seller": "Carteira do representante do vendedor"
+      "seller": "Carteira do representante do vendedor",
+      "parcels": "Parcelas",
+      "parcelSource": "Origem",
+      "parcelSnapshot": "Instantâneo",
+      "solanaAccount": "Conta Solana"
     },
     "defaults": {
       "buyTitle": "Oferta para comprar {{count}} parcela(s)",
@@ -9345,7 +9357,9 @@
       "unavailable": "As ofertas de imóveis ainda não estão disponíveis.",
       "missing": "Esta oferta de imóvel não está guardada neste dispositivo.",
       "chainUnavailable": "As ações de ofertas de imóveis na Solana ainda não estão disponíveis.",
-      "import": "Não foi possível ler esse JSON de aceitação."
+      "import": "Não foi possível ler esse JSON de aceitação.",
+      "locateUnavailable": "A localização de parcelas não está disponível.",
+      "locateFailed": "Não foi possível localizar esta parcela."
     }
   }
 }

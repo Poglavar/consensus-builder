@@ -40,7 +40,7 @@ describe('standalone offer persistence and publication', () => {
         win.fetch.mockResolvedValue({ ok: true, status: 201, json: async () => ({ cid, content: draft.content, createdAt: content.createdAt }) });
         const mint = vi.fn().mockRejectedValueOnce(new Error('Signature declined'))
             .mockImplementationOnce(async record => ({ ...record, onchain: { account: 'offer-account' } }));
-        win.PropertyOfferSolanaBridge = { connectedWallet: () => maker, mint };
+        win.PropertyOfferSolanaBridge = { connectedWallet: () => maker, preflight: vi.fn(), mint };
         let failed;
         try { await sync.mint(draft); } catch (error) { failed = error; }
         expect(failed.message).toBe('Signature declined');
@@ -55,7 +55,7 @@ describe('standalone offer persistence and publication', () => {
     it('never publishes without the proposer wallet, or mints when publication fails', async () => {
         const { sync, win, content } = setup();
         const draft = sync.create(content), mint = vi.fn();
-        win.PropertyOfferSolanaBridge = { connectedWallet: () => null, mint };
+        win.PropertyOfferSolanaBridge = { connectedWallet: () => null, preflight: vi.fn(), mint };
         await expect(sync.mint(draft)).rejects.toMatchObject({ record: draft });
         expect(win.fetch).not.toHaveBeenCalled();
         win.PropertyOfferSolanaBridge.connectedWallet = () => maker;
@@ -63,11 +63,21 @@ describe('standalone offer persistence and publication', () => {
         await expect(sync.mint(draft)).rejects.toMatchObject({ message: 'Index unavailable', record: draft });
         expect(mint).not.toHaveBeenCalled();
     });
+    it('does not publish or mint when lens preflight fails', async () => {
+        const { sync, win, store, content } = setup();
+        const draft = sync.create(content), mint = vi.fn();
+        win.PropertyOfferSolanaBridge = { connectedWallet: () => maker,
+            preflight: vi.fn().mockRejectedValue(new Error('Ownership incomplete')), mint };
+        await expect(sync.mint(draft)).rejects.toMatchObject({ message: 'Ownership incomplete', record: draft });
+        expect(win.fetch).not.toHaveBeenCalled();
+        expect(mint).not.toHaveBeenCalled();
+        expect(store.list()[0].published).toBeFalsy();
+    });
     it('preserves a confirmed transaction when its index refresh fails', async () => {
         const { sync, win, content } = setup();
         const record = { ...sync.create(content), published: { cid: Record.cid(content) } };
         const confirmed = { ...record, onchain: { account: 'confirmed-offer' } };
-        win.PropertyOfferSolanaBridge = { connectedWallet: () => maker,
+        win.PropertyOfferSolanaBridge = { connectedWallet: () => maker, preflight: vi.fn(),
             mint: vi.fn().mockRejectedValue(Object.assign(new Error('Index unavailable'), { record: confirmed })) };
         await expect(sync.mint(record)).rejects.toMatchObject({ record: confirmed });
         expect(win.fetch).not.toHaveBeenCalled();

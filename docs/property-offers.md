@@ -11,16 +11,21 @@ apartments and leases are outside this record.
    or **Offer to sell**. Connect the proposer’s Solana wallet, enter total SOL price, deadline and
    the ownership lens. A sale includes an explicit payout schedule totaling the price.
 2. Select **Mint offer**. This publishes the exact terms and requests the Solana mint in one action.
-   The browser verifies the network and executable program before asking for a transaction signature.
-   If minting fails or the wallet declines, the offer remains available for retry without republishing
-   different terms. Publication alone does not create an on-chain offer or escrow.
+   Before publishing, the browser verifies the network/program, the live lens service, its registered
+   active SAS credential/schema and complete ownership coverage. A sale must name an owner as proposer
+   and pay the exact owner union. A preflight failure leaves the form editable. If a later mint fails
+   or the wallet declines, the published offer remains available for retry without changing its terms.
+   Publication alone does not create an on-chain offer or escrow.
 3. Find the offer in **Lists → Agreements**. Share opens `/property-offers/<cid>`; Download exports
    the canonical JSON and the Agreements import accepts it. An imported or unfinished offer uses
    the same **Mint offer** action to complete publication and minting.
 4. Open **Accept offer** to prepare the parties and payments. A buy offer obtains its payout schedule
    here; a sale retains its published schedule. Each payout recipient signs **Sign my seller consent**
-   with their own wallet. Download/import the same acceptance JSON to collect multiple signatures.
-   Changing the buyer or payment schedule invalidates those signatures.
+   with their own wallet. **Share acceptance link** creates one immutable shared candidate using a
+   participant-signed request; other sellers open that link, review and sign. **Refresh signatures**
+   collects their independently stored consents and shows which wallets are still needed. Acceptance
+   refreshes signatures before submitting to the lens. JSON download/import remains available.
+   Changing parties or the payment schedule starts a different candidate and clears prior consents.
 5. The accepting counterparty submits **Accept offer**: the buyer for a sale, or the seller
    representative for a buy. The lens independently reads the offer, its open chain account and the
    complete source-qualified owner sets. It verifies every owner signature and the counterparty’s
@@ -30,8 +35,13 @@ apartments and leases are outside this record.
    recipients atomically. An open offer can be cancelled by its proposer. After acceptance it can
    execute before the deadline or expire afterward; expiration refunds escrow to the bound buyer.
 
-The contract settles SOL under the selected lens’s ownership evidence. It does not update a land
-registry or itself convey cadastral title.
+The review panel lists exact parcel references with map navigation, full buyer/seller wallets,
+payout recipients and amounts, and the Solana account. Refresh can recover a confirmed account whose
+index update failed; changing the connected wallet updates the available actions.
+
+The contract settles SOL under the selected lens’s ownership evidence. It does not transfer parcel
+NFTs: parcel anchors remain ownerless and non-transferable. It does not update ownership attestations
+or a land registry, or itself convey cadastral title.
 
 ## Identity and persistence
 
@@ -42,7 +52,12 @@ amounts are positive u64 decimal strings and the payout sum must equal the price
 
 `consensus.property_offer` holds published terms separately from plan agreements. Local working
 copies use the `property-offer:` storage prefix. Accepted counterparties and chain state are separate
-from the immutable content. `/property-offers/:cid/onchain` independently reads the expected Solana
+from the immutable content. `consensus.property_offer_acceptance` stores up to 32 distinct shared
+candidates per offer, keyed by the SHA-256 of canonical terms including parties and payout schedule.
+Its seller signatures are verified and merged atomically per wallet. Sharing requires a signed
+request by a candidate party; a stored signature proves consent to those terms, while the lens
+independently establishes ownership at acceptance. Expired sessions remain readable but cannot
+collect new signatures. `/property-offers/:cid/onchain` independently reads the expected Solana
 PDA and checks its program, CID, terms hash, maker, lens, direction, price, deadline and sale payouts
 before mirroring state; browser status claims are never accepted as evidence.
 
@@ -58,11 +73,14 @@ The SAS schema is `PropertyOfferDecision` v1. It binds the offer CID/PDA, canoni
 ordered payout hash, buyer, seller representative, ownership result and evidence time. The
 [program contract](../blockchain/solana/programs/property_offer/README.md) defines its byte layout.
 
-The lens serves `POST /lens/property-offers/:cid/decision`, with a bounded request rate. Requests
+The lens serves `POST /lens/property-offers/check` for pre-mint ownership/schema configuration
+checks and `POST /lens/property-offers/:cid/decision` for approval, with bounded request rates. Requests
 supply proposed parties, payouts, seller signatures and the accepting wallet’s signed request.
 The server derives truth fields itself. `lens/run.mjs` supplies the database index and RPC readers.
-The reference identity adapter uses the explicitly configured devnet registry; a source-qualified
-registry key is the canonical JSON array `[sourceId, parcelId, snapshotIdOrNull]`. All rows of a
+The reference identity adapter uses the explicitly configured devnet registry. Current `oss-wfs`
+references with official `HR-*` IDs map to that registry’s existing raw cadastral IDs. Every other
+source or snapshot uses the canonical JSON array `[sourceId, parcelId, snapshotIdOrNull]`; there is
+no fallback to a bare ID. Returned owner sets are keyed by the offer’s canonical reference. All rows of a
 parcel must agree on the complete owner count, and every owner must be a payout recipient and sign.
 An identity adapter without complete owner-set reads cannot issue this decision. Registry
 `establishedAt` records source provenance, not a claim of a new live registry observation.
@@ -76,7 +94,10 @@ connections verify the devnet genesis hash. Localnet indexing is available only 
 ## MCP editing
 
 `ugt_draft_property_offer`, `ugt_edit_property_offer`, `ugt_list_property_offer`,
-`ugt_get_property_offer`, `ugt_prepare_property_offer` and `ugt_publish_property_offer` share the canonical record model.
+`ugt_get_property_offer`, `ugt_prepare_property_offer`, `ugt_consent_property_offer` and
+`ugt_publish_property_offer` share the canonical record model.
 Edits require the inspected `expectedCid`; publication requires the reviewed CID and `confirm=true`.
-Draft content and prepared acceptance packages are portable JSON for browser import. The preparation tool returns exact seller and accepting-wallet messages. These tools never sign wallet consents or send
-funds. The person completes those steps with their wallet in the browser.
+Draft content and prepared acceptance packages are portable JSON for browser import. Preparation
+returns exact seller, accepting-wallet and sharing messages. The consent tool reads shared sessions
+or relays supplied signatures with `confirm=true`. These tools never generate wallet signatures
+or send funds. The person completes those steps with their wallet in the browser.

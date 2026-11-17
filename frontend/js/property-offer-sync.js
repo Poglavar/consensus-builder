@@ -43,6 +43,7 @@
         let current = record;
         try {
             if (win.PropertyOfferSolanaBridge.connectedWallet() !== current.content.proposer) throw new Error('Connect the proposer’s Solana wallet first.');
+            await win.PropertyOfferSolanaBridge.preflight(current);
             if (!current.published) current = await publish(current);
             return await win.PropertyOfferSolanaBridge.mint(current);
         } catch (error) {
@@ -51,7 +52,18 @@
         }
     }
     async function importOffer(cid) { return store().save(localRecord(await fetchOffer(cid), localCopyOf(cid))); }
-    async function openDetails(cid) { const record = await importOffer(cid); return win.PropertyOfferPanel.open(record.id); }
+    async function openDetails(cid) {
+        const record = await importOffer(cid), sharedId = new URL(win.location.href).searchParams.get('acceptance');
+        return sharedId ? win.PropertyOfferDialog.accept(record, { sharedId }) : win.PropertyOfferPanel.open(record.id);
+    }
+    async function fetchAcceptance(record, id) {
+        if (!/^[a-f0-9]{64}$/.test(id)) throw new Error('Invalid acceptance ID.');
+        const shared = await request(`/${record.published.cid}/acceptances/${id}`);
+        const candidate = await win.PropertyOfferSolanaBridge.prepareAcceptance(record, shared.candidate);
+        if (shared.id !== id || win.PropertyOfferSolanaBridge.acceptanceId(candidate) !== id) throw new Error('Shared acceptance terms differ.');
+        return { ...shared, candidate };
+    }
+    function acceptanceLink(record, id) { const url = new URL(link(record.published.cid)); url.searchParams.set('acceptance', id); return url.href; }
     function link(cid, { city } = {}) {
         const record = localCopyOf(cid);
         const url = new URL(`/property-offers/${encodeURIComponent(cid)}`, win.resolveFrontendBaseUrl());
@@ -72,5 +84,5 @@
         a.href = url; a.download = `property-offer-${record.published?.cid || record.id}.json`; a.click();
         setTimeout(() => URL.revokeObjectURL(url), 0);
     }
-    return Object.freeze({ create, publish, mint, fetchOffer, importOffer, openDetails, link, localCopyOf, recordOnchain, download, request });
+    return Object.freeze({ create, publish, mint, fetchAcceptance, acceptanceLink, fetchOffer, importOffer, openDetails, link, localCopyOf, recordOnchain, download, request });
 });

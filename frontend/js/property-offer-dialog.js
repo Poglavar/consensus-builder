@@ -127,6 +127,7 @@
                 const minted = await root.PropertyOfferSync.mint(record);
                 dialog.close(); root.PropertyOfferPanel.open(minted);
             } catch (error) {
+                if (!error.record?.published) { root.PropertyOfferStore.remove(record.id); throw error; }
                 dialog.close(); root.PropertyOfferPanel.open(error.record || record, { error: error.message });
             }
         };
@@ -144,7 +145,7 @@
     }
     // Every owner signs this same candidate. It can safely travel as JSON between wallets: the
     // bridge recomputes its offer-bound hashes, while the lens verifies all seller signatures.
-    function accept(record) {
+    function accept(record, { sharedId = record.acceptanceSessionId || null } = {}) {
         const content = record?.content;
         if (!content) throw new Error(t('errors.missing', 'This property offer is not held on this device.'));
         const form = node('form', 'property-offer-form');
@@ -171,33 +172,69 @@
         let candidate = record.acceptanceDraft || null, dialog;
         const showConsents = () => {
             const owners = (candidate?.consents || []).map(row => shortKey(row.owner)).join(', ');
-            signers.textContent = owners
-                ? t('consentsBy', 'Seller consent(s): {{owners}}', { owners })
-                : t('noConsents', 'No seller consents attached yet.');
+            const waiting = (candidate?.payouts || []).filter(row => !(candidate?.consents || []).some(c => c.owner === row.recipient)).map(row => shortKey(row.recipient)).join(', ');
+            signers.textContent = (owners ? t('consentsBy', 'Seller consent(s): {{owners}}', { owners }) : t('noConsents', 'No seller consents attached yet.'))
+                + (waiting ? ` — ${t('waitingFor', 'Waiting for: {{owners}}', { owners: waiting })}` : '');
         };
         const makeCandidate = async () => {
             const payouts = [...rows.children].filter(row => row.classList.contains('property-offer-form__payout')).map(row => ({ recipient: row.children[0].value.trim(), lamports: lamports(row.children[1].value) || '0' }));
-            candidate = await root.PropertyOfferSolanaBridge.prepareAcceptance(record, { ...candidate, buyer: buyer.value.trim(), seller: seller.value.trim(), payouts });
+            const previous = candidate;
+            candidate = await root.PropertyOfferSolanaBridge.prepareAcceptance(record, { buyer: buyer.value.trim(), seller: seller.value.trim(), payouts });
+            if (previous && root.PropertyOfferSolanaBridge.acceptanceId(previous) === root.PropertyOfferSolanaBridge.acceptanceId(candidate)) candidate.consents = previous.consents;
 
-            record = root.PropertyOfferStore.save({ ...record, acceptanceDraft: candidate });
+            if (sharedId && root.PropertyOfferSolanaBridge.acceptanceId(candidate) !== sharedId) sharedId = null;
+            record = root.PropertyOfferStore.save({ ...record, acceptanceDraft: candidate, acceptanceSessionId: sharedId });
             showConsents();
             return candidate;
         };
+        const receive = shared => {
+            sharedId = shared.id; candidate = shared.candidate;
+            record = root.PropertyOfferStore.save({ ...record, acceptanceDraft: candidate, acceptanceSessionId: sharedId });
+            buyer.value = candidate.buyer; seller.value = candidate.seller;
+            rows.replaceChildren(); candidate.payouts.forEach(row => addRow(row.recipient, sol(row.lamports).replace(' SOL', '')));
+            showConsents();
+        };
+        const refreshShared = async () => {
+            if (!sharedId) throw new Error(t('shareFirst', 'Share this acceptance first.'));
+            receive(await root.PropertyOfferSync.fetchAcceptance(record, sharedId));
+        };
+        const share = async () => {
+            await makeCandidate();
+            receive(await root.PropertyOfferSolanaBridge.shareAcceptance(record, candidate));
+            const link = root.PropertyOfferSync.acceptanceLink(record, sharedId);
+            await root.ShareDialog.open({ kind: 'agreement', title: content.title || t('details', 'Property offer'), link });
+        };
         const download = () => { const blob = new Blob([JSON.stringify(candidate, null, 2)], { type: 'application/json' }); const url = URL.createObjectURL(blob); const link = document.createElement('a'); link.href = url; link.download = 'property-offer-acceptance.json'; link.click(); setTimeout(() => URL.revokeObjectURL(url), 0); };
         const importInput = node('input'); importInput.type = 'file'; importInput.accept = 'application/json'; importInput.hidden = true;
-        importInput.addEventListener('change', async () => { const file = importInput.files?.[0]; if (!file) return; try { if (file.size > 65536) throw new Error('Acceptance files must be at most 64 KiB.'); const imported = JSON.parse(await file.text()); if (imported.cid !== record.published.cid) throw new Error('This acceptance belongs to another offer.'); candidate = await root.PropertyOfferSolanaBridge.prepareAcceptance(record, imported); record = root.PropertyOfferStore.save({ ...record, acceptanceDraft: candidate }); buyer.value = candidate.buyer || buyer.value; seller.value = candidate.seller || seller.value; rows.replaceChildren(); (candidate.payouts || []).forEach(row => addRow(row.recipient, sol(row.lamports).replace(' SOL', ''))); showConsents(); } catch (error) { status.textContent = error.message || t('errors.import', 'That acceptance JSON could not be read.'); } }); form.append(importInput);
+        importInput.addEventListener('change', async () => { const file = importInput.files?.[0]; if (!file) return; try { if (file.size > 65536) throw new Error('Acceptance files must be at most 64 KiB.'); const imported = JSON.parse(await file.text()); if (imported.cid !== record.published.cid) throw new Error('This acceptance belongs to another offer.'); candidate = await root.PropertyOfferSolanaBridge.prepareAcceptance(record, imported); if (sharedId && root.PropertyOfferSolanaBridge.acceptanceId(candidate) !== sharedId) sharedId = null; record = root.PropertyOfferStore.save({ ...record, acceptanceDraft: candidate, acceptanceSessionId: sharedId }); buyer.value = candidate.buyer || buyer.value; seller.value = candidate.seller || seller.value; rows.replaceChildren(); (candidate.payouts || []).forEach(row => addRow(row.recipient, sol(row.lamports).replace(' SOL', ''))); showConsents(); } catch (error) { status.textContent = error.message || t('errors.import', 'That acceptance JSON could not be read.'); } }); form.append(importInput);
         dialog = root.CbDialog.open({ title: t('accept', 'Accept offer'), size: 'md', className: 'property-offer-dialog', body: form, actions: [] });
         const actions = node('div', 'cb-actions property-offer-form__actions');
         const button = (label, run, primary = false) => { const item = node('button', `btn${primary ? ' btn-primary' : ''}`, label); item.type = 'button'; item.addEventListener('click', () => root.BusyControl.track(item, run).catch(error => { status.textContent = error.message; })); return item; };
-        actions.append(button(t('signConsent', 'Sign my seller consent'), async () => { await makeCandidate(); candidate = await root.PropertyOfferSolanaBridge.signAcceptance(record, candidate); record = root.PropertyOfferStore.save({ ...record, acceptanceDraft: candidate }); showConsents(); }),
+        actions.append(button(t('shareAcceptance', 'Share acceptance link'), share),
+            button(t('refreshConsents', 'Refresh signatures'), async () => { await makeCandidate(); await refreshShared(); }),
+            button(t('signConsent', 'Sign my seller consent'), async () => {
+                await makeCandidate(); candidate = await root.PropertyOfferSolanaBridge.signAcceptance(record, candidate);
+                record = root.PropertyOfferStore.save({ ...record, acceptanceDraft: candidate });
+                if (sharedId) {
+                    const mine = root.PropertyOfferSolanaBridge.connectedWallet();
+                    receive(await root.PropertyOfferSync.request(`/${record.published.cid}/acceptances/${sharedId}/consents`, candidate.consents.find(c => c.owner === mine)));
+                }
+                showConsents();
+            }),
             button(t('downloadAcceptance', 'Download acceptance'), async () => { await makeCandidate(); download(); }),
             button(t('importAcceptance', 'Import acceptance JSON'), async () => importInput.click()),
-            button(t('accept', 'Accept offer'), async () => { await makeCandidate(); status.textContent = t('working', 'Working…'); record = await root.PropertyOfferSolanaBridge.accept(record, { candidate }); record = root.PropertyOfferStore.save({ ...record, acceptanceDraft: null }); dialog.close(); root.PropertyOfferPanel?.open?.(record); }, true));
-        dialog.body.append(actions);
+            button(t('accept', 'Accept offer'), async () => { await makeCandidate(); if (sharedId) await refreshShared(); status.textContent = t('working', 'Working…'); record = await root.PropertyOfferSolanaBridge.accept(record, { candidate }); record = root.PropertyOfferStore.save({ ...record, acceptanceDraft: null }); dialog.close(); root.PropertyOfferPanel?.open?.(record); }, true));
+        form.append(actions);
         if (candidate) {
             buyer.value = candidate.buyer; seller.value = candidate.seller;
             rows.replaceChildren(); candidate.payouts.forEach(row => addRow(row.recipient, sol(row.lamports).replace(' SOL', '')));
             showConsents();
+        }
+        if (sharedId) {
+            const controls = [...form.querySelectorAll('input,button')];
+            controls.forEach(control => { control.disabled = true; }); status.textContent = t('working', 'Working…');
+            refreshShared().then(() => { status.textContent = ''; }).catch(error => { status.textContent = error.message; })
+                .finally(() => controls.forEach(control => { control.disabled = false; }));
         }
         return dialog;
     }

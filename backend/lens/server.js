@@ -8,16 +8,18 @@ import { timingSafeEqual, createHash } from 'node:crypto';
 import cors from 'cors';
 import express from 'express';
 import { PublicKey } from '@solana/web3.js';
-import { isCid } from '../cid.js';
+import { isCid, canonicalBytes } from '../cid.js';
 import { LENS_SCHEMA_KINDS } from '../oracle/lens-schemas.js';
 import { countAgreementDecisions, planAgreementDecision } from './agreement-decision.js';
 import { LensError, lensLog } from './errors.js';
 import { systemClock } from './member.js';
-import { planPropertyOfferDecision, parcelUid as propertyOfferParcelUid } from './property-offer-decision.js';
+import { planPropertyOfferDecision } from './property-offer-decision.js';
+import { readOwnership } from '../property-offers/ownership.js';
 import rateLimit from 'express-rate-limit';
 import { createRequire } from 'node:module';
 import { verifyWalletSignature } from './identity/devnet-registry.js';
 const PropertyOfferConsent = createRequire(import.meta.url)('../../frontend/js/property-offer-consent.js');
+const PropertyOfferRecord = createRequire(import.meta.url)('../../frontend/js/property-offer-record.js');
 import { LENS_OWNERSHIP_PATH, describePricing } from './pricing.js';
 
 export const OPERATOR_TOKEN_HEADER = 'x-lens-operator-token';
@@ -111,6 +113,52 @@ export function createLensMemberApp({ member, pricing, operatorToken = null, cor
         });
     }));
 
+    // Pre-mint ownership check. The browser remains responsible for checking the on-chain
+    // credential/schema account with RPC before publishing or minting anything.
+    app.post('/lens/property-offers/check', rateLimit({ windowMs: 60000, limit: 10, standardHeaders: 'draft-7', legacyHeaders: false }), wrap(async (req, res) => {
+        if (!propertyOffers?.load || !propertyOffers?.account || !identity?.ownerSets) throw new LensError(503, 'property_offers_not_configured', 'this lens member has no property-offer index, chain reader or ownership registry');
+        const status = await member.status();
+        if (status?.dryRun === true) throw new LensError(503, 'dry_run_member', 'A dry-run lens member cannot preflight property offers.');
+        if (!member.credential || !member.schemas?.propertyOffer) throw new LensError(503, 'property_offer_schema_not_configured', 'This lens member has no property-offer credential or schema identifier.');
+        if (!req.body || Object.keys(req.body).length !== 1 || !Object.hasOwn(req.body, 'content')) throw new LensError(400, 'bad_request', 'Supply exactly one canonical content object.');
+        const content = req.body.content;
+        const invalid = (code, message, details) => { throw new LensError(422, code, message, details); };
+        const validation = PropertyOfferRecord.validate(content);
+        if (validation) invalid('invalid_offer', validation.message);
+        let canonical;
+        try { canonical = PropertyOfferRecord.published(content); }
+        catch (error) { invalid('invalid_offer', error.message); }
+        if (!Buffer.from(canonicalBytes(canonical)).equals(Buffer.from(canonicalBytes(content)))) invalid('noncanonical_offer', 'Offer content must exactly match property-offer/v1 canonical form.');
+        if (Date.parse(content.expiresAt) <= clock.nowSeconds() * 1000) invalid('expired_offer', 'Offer expiry must be in the future.');
+        if (content.lens !== member.authority) invalid('wrong_lens', 'The offer names another lens.');
+        const sets = await readOwnership(content.parcels, identity);
+        const observedOwners = new Set();
+        const parcels = [];
+        const missing = [], incomplete = [];
+        for (const ref of content.parcels) {
+            const rows = sets.get(PropertyOfferRecord.parcelUid(ref)) || [];
+            if (!rows.length) { missing.push(ref); parcels.push({ ref, owners: [] }); continue; }
+            const distinct = new Set(rows.map(row => row.owner));
+            const valid = rows.every(row => isPubkey(row.owner) && Number.isSafeInteger(row.ownerCount)
+                && row.ownerCount === rows.length && Number.isSafeInteger(row.establishedAt)
+                && row.establishedAt >= 0 && row.establishedAt <= clock.nowSeconds());
+            if (!valid || distinct.size !== rows.length) incomplete.push({ ref, rowCount: rows.length, declaredOwnerCounts: [...new Set(rows.map(row => row.ownerCount))] });
+            rows.forEach(row => observedOwners.add(row.owner));
+            parcels.push({ ref, owners: rows.map(({ owner, ownerCount, establishedAt }) => ({ owner, ownerCount, establishedAt })) });
+        }
+        if (missing.length) invalid('ownership_missing', 'No ownership evidence exists for one or more parcels.', { parcels: missing });
+        if (incomplete.length) invalid('ownership_incomplete', 'The registry does not contain a valid complete distinct owner set for every parcel.', { parcels: incomplete });
+        if (observedOwners.size > PropertyOfferRecord.MAX_PAYOUTS) invalid('too_many_owners', 'The offer exceeds the supported payout-recipient limit.', { ownerCount: observedOwners.size, limit: PropertyOfferRecord.MAX_PAYOUTS });
+        if (content.direction === 'sell') {
+            if (!observedOwners.has(content.proposer)) invalid('seller_not_owner', 'The sale proposer must be one of the current owners.');
+            const recipients = new Set(content.payouts.map(row => row.recipient));
+            if (recipients.size !== observedOwners.size || [...observedOwners].some(owner => !recipients.has(owner))) {
+                invalid('payout_ownership_mismatch', 'Sale payout recipients must exactly match the current owner set.', { owners: [...observedOwners], recipients: [...recipients] });
+            }
+        }
+        res.json({ key: member.authority, credential: member.credential, schema: member.schemas?.propertyOffer, parcels });
+    }));
+
     app.post('/lens/challenge', wrap(async (req, res) => {
         const parcelUid = requireString(req.body, 'parcelUid');
         const owner = requireString(req.body, 'owner');
@@ -186,7 +234,7 @@ export function createLensMemberApp({ member, pricing, operatorToken = null, cor
         if (offer.content.lens !== member.authority) throw new LensError(422, 'wrong_lens', 'The offer names another lens.');
         const account = await propertyOffers.account(offer);
         const refs = offer.content?.parcels || [];
-        const sets = await identity.ownerSets(refs.map(propertyOfferParcelUid));
+        const sets = await readOwnership(refs, identity);
         const fields = await planPropertyOfferDecision({ offer, account, candidate: req.body || {}, nowSeconds: clock.nowSeconds(), ownerSets: async () => sets });
         const requester = offer.content.direction === 'buy' ? fields.seller : fields.buyer;
         const message = PropertyOfferConsent.requestMessage({ ...fields, consents: req.body.consents });

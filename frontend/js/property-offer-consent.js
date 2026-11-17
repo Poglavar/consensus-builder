@@ -10,5 +10,6 @@
         'Urban Game Theory property-offer decision request', stable({ cid, offer, termsHash, payoutsHash, buyer, seller,
             consents: consents.map(row => ({ owner: row.owner, signature: row.signature })).sort((a, b) => a.owner.localeCompare(b.owner)) })
     ].join('\n');
-    return { sellerConsentMessage, requestMessage };
+    const sessionMessage = ({ cid, id }) => ['Urban Game Theory shared property-offer acceptance', `Offer CID: ${cid}`, `Acceptance SHA-256: ${id}`].join('\n');
+    return { sellerConsentMessage, requestMessage, sessionMessage };
 });

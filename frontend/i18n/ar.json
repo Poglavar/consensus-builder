@@ -9586,6 +9586,14 @@
     "amountSol": "مبلغ SOL",
     "payoutHint": "يتلقى المستلمون المذكورون هذا المبلغ الإجمالي عند إتمام البيع.",
     "lensPlaceholder": "عنوان عضو Lens على سولانا",
+    "locateParcel": "تحديد موقع القطعة {{id}}",
+    "parcelLocated": "تم تحديد موقع القطعة {{id}}.",
+    "notSet": "غير محدد",
+    "localnetExplorerUnavailable": "حسابات الشبكة المحلية غير متاحة في مستكشف سولانا العام.",
+    "shareAcceptance": "مشاركة رابط القبول",
+    "shareFirst": "شارك هذا القبول أولا.",
+    "waitingFor": "بانتظار: {{owners}}",
+    "refreshConsents": "تحديث التوقيعات",
     "directions": {
       "buy": "عرض شراء",
       "sell": "عرض بيع"
@@ -9606,7 +9614,11 @@
       "status": "الحالة",
       "proposer": "مقدّم العرض",
       "buyer": "محفظة المشتري",
-      "seller": "محفظة ممثل البائع"
+      "seller": "محفظة ممثل البائع",
+      "parcels": "القطع",
+      "parcelSource": "المصدر",
+      "parcelSnapshot": "اللقطة",
+      "solanaAccount": "حساب سولانا"
     },
     "defaults": {
       "buyTitle": "عرض لشراء {{count}} قطعة",
@@ -9628,7 +9640,9 @@
       "unavailable": "عروض العقارات غير متاحة بعد.",
       "missing": "عرض العقار هذا غير محفوظ على هذا الجهاز.",
       "chainUnavailable": "إجراءات عروض العقارات على سولانا غير متاحة بعد.",
-      "import": "تعذر قراءة JSON القبول هذا."
+      "import": "تعذر قراءة JSON القبول هذا.",
+      "locateUnavailable": "تحديد موقع القطع غير متاح.",
+      "locateFailed": "تعذر تحديد موقع هذه القطعة."
     }
   }
 }

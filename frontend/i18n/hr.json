@@ -9377,6 +9377,14 @@
     "amountSol": "Iznos u SOL-u",
     "payoutHint": "Navedeni primatelji dobivaju ovaj ukupan iznos kada se prodaja dovrši.",
     "lensPlaceholder": "Adresa člana Lensa na Solani",
+    "locateParcel": "Pronađi česticu {{id}}",
+    "parcelLocated": "Pronađena je čestica {{id}}.",
+    "notSet": "Nije postavljeno",
+    "localnetExplorerUnavailable": "Računi na lokalnoj mreži nisu dostupni u javnom istraživaču Solane.",
+    "shareAcceptance": "Podijeli poveznicu prihvata",
+    "shareFirst": "Najprije podijelite ovaj prihvat.",
+    "waitingFor": "Čeka se: {{owners}}",
+    "refreshConsents": "Osvježi potpise",
     "directions": {
       "buy": "Ponuda za kupnju",
       "sell": "Ponuda za prodaju"
@@ -9397,7 +9405,11 @@
       "status": "Status",
       "proposer": "Predlagatelj",
       "buyer": "Novčanik kupca",
-      "seller": "Novčanik predstavnika prodavatelja"
+      "seller": "Novčanik predstavnika prodavatelja",
+      "parcels": "Čestice",
+      "parcelSource": "Izvor",
+      "parcelSnapshot": "Snimka",
+      "solanaAccount": "Račun na Solani"
     },
     "defaults": {
       "buyTitle": "Ponuda za kupnju {{count}} čestica",
@@ -9419,7 +9431,9 @@
       "unavailable": "Ponude za nekretnine još nisu dostupne.",
       "missing": "Ova ponuda za nekretninu nije spremljena na ovom uređaju.",
       "chainUnavailable": "Radnje s ponudama za nekretnine na Solani još nisu dostupne.",
-      "import": "Taj JSON prihvata nije moguće pročitati."
+      "import": "Taj JSON prihvata nije moguće pročitati.",
+      "locateUnavailable": "Pronalaženje čestice nije dostupno.",
+      "locateFailed": "Ovu česticu nije moguće pronaći."
     }
   }
 }

@@ -43,6 +43,31 @@
         return chain;
     }
     async function read(record) { return readWith(record, await context(record)); }
+    async function lensService(record) {
+        const directory = await win.LensServiceClient.fetchDirectory({ base: win.resolveBackendBaseUrl(), fetchImpl: win.fetch.bind(win) });
+        const member = directory.members.find(member => member.key === record.content.lens);
+        if (!member?.serviceUrl) throw new Error('This lens has no registered decision service.');
+        return member.serviceUrl.replace(/\/$/, '');
+    }
+    async function preflight(record) {
+        const proposed = { ...record, published: { cid: win.PropertyOfferRecord.cid(record.content) } };
+        const ctx = await context(proposed, true);
+        if (ctx.wallet !== record.content.proposer) throw new Error('Connect the proposer’s Solana wallet first.');
+        const url = await lensService(record);
+        const response = await win.fetch(`${url}/lens/property-offers/check`, { method: 'POST', headers: { 'Content-Type': 'application/json' },
+            signal: AbortSignal.timeout(30000), body: JSON.stringify({ content: record.content }) });
+        const result = await response.json();
+        if (!response.ok) throw new Error(result.message || result.error || 'The lens cannot verify this offer.');
+        if (result.key !== record.content.lens || !result.credential || !result.schema) throw new Error('The lens returned another authority or no offer schema.');
+        const schema = api().getDecisionSchemaPda(result.credential)[0];
+        if (schema.toBase58() !== result.schema) throw new Error('The lens offer schema address differs from its credential.');
+        const [credentialInfo, schemaInfo] = await Promise.all([
+            ctx.connection.getAccountInfo(new win.solanaWeb3.PublicKey(result.credential), 'confirmed'),
+            ctx.connection.getAccountInfo(schema, 'confirmed')
+        ]);
+        api().validateDecisionSchema({ credential: result.credential, authority: record.content.lens, credentialInfo, schemaInfo });
+        return result;
+    }
     async function send(ctx, instructions, options = {}) {
         const status = (state, extra = {}) => options.onStatus?.({ state, ...extra });
         status('preparing');
@@ -103,6 +128,16 @@
         if (!(signature instanceof Uint8Array) || signature.length !== 64) throw new Error('The wallet did not return a valid message signature.');
         return win.LensCore.base58Encode(signature);
     }
+    function acceptanceId(candidate) { const { consents, ...terms } = candidate; return hex(hash(terms)); }
+    async function shareAcceptance(record, candidate) {
+        const prepared = await prepareAcceptance(record, candidate), id = acceptanceId(prepared), requester = connectedWallet();
+        if (![prepared.buyer, prepared.seller, ...prepared.payouts.map(p => p.recipient)].includes(requester)) throw new Error('Connect a party to this acceptance before sharing it.');
+        const signature = await signMessage(win.PropertyOfferConsent.sessionMessage({ cid: prepared.cid, id }));
+        let shared = await win.PropertyOfferSync.request(`/${prepared.cid}/acceptances`, { candidate: prepared, requester, signature });
+        if (shared.id !== id) throw new Error('Shared acceptance terms differ.');
+        for (const consent of prepared.consents) shared = await win.PropertyOfferSync.request(`/${prepared.cid}/acceptances/${id}/consents`, consent);
+        return shared;
+    }
     async function signAcceptance(record, candidate) {
         const prepared = await prepareAcceptance(record, candidate), owner = connectedWallet();
         if (!prepared.payouts.some(row => row.recipient === owner)) throw new Error('The connected wallet is not a seller in this payout schedule.');
@@ -115,10 +150,8 @@
         if (connectedWallet() !== requester) throw new Error('Connect the accepting counterparty’s wallet.');
         if (prepared.payouts.some(row => !prepared.consents.some(consent => consent.owner === row.recipient))) throw new Error('Every seller must sign the exact payment schedule before acceptance.');
         const signature = await signMessage(win.PropertyOfferConsent.requestMessage(prepared));
-        const directory = await win.LensServiceClient.fetchDirectory({ base: win.resolveBackendBaseUrl(), fetchImpl: win.fetch.bind(win) });
-        const member = directory.members.find(member => member.key === record.content.lens);
-        if (!member?.serviceUrl) throw new Error('This lens has no registered decision service.');
-        const response = await win.fetch(`${member.serviceUrl}/lens/property-offers/${encodeURIComponent(record.published.cid)}/decision`, {
+        const serviceUrl = await lensService(record);
+        const response = await win.fetch(`${serviceUrl}/lens/property-offers/${encodeURIComponent(record.published.cid)}/decision`, {
             method: 'POST', headers: { 'Content-Type': 'application/json' }, signal: AbortSignal.timeout(60000),
             body: JSON.stringify({ ...prepared, requester, signature })
         });
@@ -133,6 +166,6 @@
     }
     async function cancel(record, options) { return mutate(record, ctx => [api().buildCancelIx({ offer: ctx.address, authority: ctx.wallet })], options); }
     async function expire(record, options) { return mutate(record, (ctx, chain) => [api().buildExpireIx({ offer: ctx.address, buyer: chain.buyer === api().constants.DEFAULT_PUBKEY ? chain.maker : chain.buyer })], options); }
-    async function refresh(record) { const ctx = await context(record); return persist(record, ctx, record.onchain?.signature || null); }
-    return Object.freeze({ connectedWallet, mint, read, prepareAcceptance, signAcceptance, accept, fund, release, cancel, expire, refresh });
+    async function refresh(record) { const ctx = await context(record); if (!await readWith(record, ctx)) return record; return persist(record, ctx, record.onchain?.signature || null); }
+    return Object.freeze({ connectedWallet, preflight, mint, read, acceptanceId, shareAcceptance, prepareAcceptance, signAcceptance, accept, fund, release, cancel, expire, refresh });
 });

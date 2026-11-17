@@ -25,3 +25,12 @@ CREATE TABLE IF NOT EXISTS consensus.property_offer (
 CREATE INDEX IF NOT EXISTS idx_property_offer_city_created_at ON consensus.property_offer (city, created_at DESC);
 CREATE INDEX IF NOT EXISTS idx_property_offer_parcel_keys ON consensus.property_offer USING GIN (parcel_keys);
 CREATE INDEX IF NOT EXISTS idx_property_offer_expires_at ON consensus.property_offer (expires_at);
+CREATE TABLE IF NOT EXISTS consensus.property_offer_acceptance (
+    offer_cid text NOT NULL REFERENCES consensus.property_offer(cid),
+    id text NOT NULL CHECK (id ~ '^[a-f0-9]{64}$'),
+    candidate jsonb NOT NULL,
+    consents jsonb NOT NULL DEFAULT '{}'::jsonb,
+    created_at timestamptz NOT NULL DEFAULT now(),
+    updated_at timestamptz NOT NULL DEFAULT now(),
+    PRIMARY KEY (offer_cid,id)
+);
