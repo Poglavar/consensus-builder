@@ -124,6 +124,14 @@
     }
     // The joined ground projection has one boundary. Height-part boundaries are an explicit detail.
     function mapFeatures(item, { detail = 'footprint', form = 'both', selection = {}, deps = null } = {}) {
+        // A source can establish a parcel-level warning before it can supply a buildable volume.
+        // Keep its source geometry selectable and visible; it is not an envelope or a claim that
+        // the whole parcel is permanently unbuildable.
+        if (['source-rule-warning', 'source-rule-precondition'].includes(item?.assessment?.meaning)
+            && ['Polygon', 'MultiPolygon'].includes(item.site?.type)) return [{ type: 'Feature', geometry: item.site,
+            properties: { representationId: item.id, role: item.role,
+                geometryRole: item.assessment.reason === 'parcel-too-small' ? 'source-warning' : 'source-evidence',
+                warning: item.assessment.reason === 'parcel-too-small' ? 'parcel-too-small' : null } }];
         if (item.areas?.length) return item.areas.map(area => ({ type: 'Feature', geometry: area.geometry,
             properties: { representationId: item.id, role: item.role, geometryRole: 'zoning-area' } }));
         const { bound, body } = realize(item, { form, selection, deps });

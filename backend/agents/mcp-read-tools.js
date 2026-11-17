@@ -185,9 +185,15 @@ export function createMcpReadTools({ apiBase, appOrigin, fetchImpl }) {
             const urbanRules = result.parcelSourceId === 'oss-wfs'
                 ? await request('/urban-rules', { coordinates: turf.pointOnFeature(parcel).geometry.coordinates.join(',') }) : null;
             designs.designs = (designs.designs || []).filter(d => d.binding?.parcels?.some(p => String(p.parcelId) === id));
-            const studies = await Promise.all((planning.sources || []).filter(s => s.parcelStudy && args.planningSourceIds?.includes(s.id)).map(async source => ({ source: source.id,
+            // A source with a permitted representation but no direct-dimensions study still has
+            // parcel evidence. Only an explicitly selected source is read, so discovery cannot
+            // fan out into every planning provider.
+            const selectedPlanningSources = (planning.sources || []).filter(source => args.planningSourceIds?.includes(source.id));
+            const studies = await Promise.all(selectedPlanningSources.filter(source => source.parcelStudy).map(async source => ({ source: source.id,
                 study: await request('/planning/study', { city: args.city, source: source.id, parcel: id }) })));
-            return { parcel, parcelSourceId: result.parcelSourceId, areaM2: turf.area(parcel), designs, agreements, markets, buildings, history, planning, studies, urbanRules,
+            const planningEvidence = await Promise.all(selectedPlanningSources.filter(source => !source.parcelStudy).map(async source => ({ source: source.id,
+                representations: await request('/planning/parcel', { city: args.city, source: source.id, parcel: id }) })));
+            return { parcel, parcelSourceId: result.parcelSourceId, areaM2: turf.area(parcel), designs, agreements, markets, buildings, history, planning, studies, planningEvidence, urbanRules,
                 previewUrl: mapUrl(args.city, bbox) };
         },
         markets: ({ city }) => request('/markets', { city }),

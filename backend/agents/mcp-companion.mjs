@@ -64,7 +64,7 @@ export function registerMcpCompanion(server, { actions, handler, readOnly, disco
         inputTokens: z.number().int().min(0).max(1_000_000).optional(), outputTokens: z.number().int().min(0).max(1_000_000).optional(),
         cachedInputTokens: z.number().int().min(0).max(1_000_000).optional(), cacheWriteTokens: z.number().int().min(0).max(1_000_000).optional()
     }, 'chatCost');
-    add('ugt_parcel_context', 'Read one parcel or WGS84 point: source ground, area, planning sources and studies, buildings, nearby designs, agreements, markets and history. Provide parcelId or point.',
+    add('ugt_parcel_context', 'Read one parcel or WGS84 point: source ground, area, selected planning studies or permitted evidence, buildings, nearby designs, agreements, markets and history. Provide parcelId or point.',
         { city, parcelSourceId: z.string().max(3507).optional(), parcelId: z.string().min(1).max(250).optional(), point: point.optional(), buildingSourceId: z.string().max(3507).optional(), planningSourceIds: z.array(z.string().max(100)).max(20).optional() }, 'parcelContext');
     add('ugt_list_designs', 'List designs by city, WGS84 bbox or text. Rows are summaries without the design content; read one whole with ugt_get_design.',
         { city: city.optional(), bbox: bbox.optional(), q: z.string().max(200).optional(), limit: z.number().int().min(1).max(100).default(20) }, 'listDesigns');

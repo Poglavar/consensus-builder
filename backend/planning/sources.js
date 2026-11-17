@@ -1,5 +1,6 @@
 // Planning dataset services selected explicitly by consumers; one representation schema.
 import { queryZagrebGup, readZagrebParcel, zagrebGupSource, zagrebGup2016Source } from './providers/zagreb-gup.js';
+import { queryZagrebUpuStaroTrnjeB1, readZagrebUpuStaroTrnjeB1Parcel, zagrebUpuStaroTrnjeB1Source } from './providers/zagreb-upu-staro-trnje-b1.js';
 import { queryNycPilot, readNycPilotParcel, nycPilotSource } from './providers/nyc-pilot.js';
 import { createBogotaPotProvider, bogotaPotSource } from './providers/bogota-pot.js';
 import { createAlatauGenplanProvider, alatauGenplanSource } from './providers/alatau-genplan.js';
@@ -12,6 +13,7 @@ const SourceRuntime = createRequire(import.meta.url)('../../frontend/js/source-r
 
 const builtInDefinitions = [zagrebGupSource, zagrebGup2016Source].map(descriptor =>
     SourceRuntime.source('planning', 'gup', descriptor, { label: descriptor.label }));
+builtInDefinitions.push(SourceRuntime.source('planning', 'zagreb-upu-b1', zagrebUpuStaroTrnjeB1Source, { label: zagrebUpuStaroTrnjeB1Source.label }));
 builtInDefinitions.push(SourceRuntime.source('planning', 'nyc-pilot', nycPilotSource, { label: nycPilotSource.label }));
 builtInDefinitions.push(SourceRuntime.source('planning', 'bogota-pot', bogotaPotSource, { label: bogotaPotSource.label }));
 builtInDefinitions.push(SourceRuntime.source('planning', 'alatau-genplan', alatauGenplanSource, { label: alatauGenplanSource.label }));
@@ -23,6 +25,12 @@ export const planningSourceRegistry = SourceRuntime.createRegistry({
             query: (pool, query) => queryZagrebGup(pool, { ...query, edition: descriptor.edition }),
             parcel: (pool, query) => readZagrebParcel(pool, { ...query, edition: descriptor.edition }),
             record: (pool, query) => readZagrebParcel(pool, { ...query, parcel: query.recordId, edition: descriptor.edition })
+        }) },
+        'zagreb-upu-b1': { custom: false, required: ['parcel'], create: descriptor => ({
+            descriptor,
+            query: queryZagrebUpuStaroTrnjeB1,
+            parcel: readZagrebUpuStaroTrnjeB1Parcel,
+            record: (pool, query) => readZagrebUpuStaroTrnjeB1Parcel(pool, { parcel: query.recordId })
         }) },
         'nyc-pilot': { custom: false, required: ['parcel'], create: descriptor => ({
             descriptor, query: queryNycPilot, parcel: readNycPilotParcel,

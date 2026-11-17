@@ -8414,6 +8414,21 @@
         "envelopeNote": "La envolvente máxima combina los tipos de vivienda registrados. El frente se orienta hacia las calles cercanas cuando hay datos; de lo contrario, la envolvente incluye todas las orientaciones admitidas. Elige un tipo de vivienda y tira el dado para generar otro edificio de ejemplo dentro de sus límites. Siguen aplicándose los límites de superficie y las reglas pendientes.",
         "assumedSide": "Lado de calle supuesto: {{side}}.",
         "lotBelowMinimum": "Parcela por debajo del mínimo de {{minimum}}",
+        "parcelTooSmall": "Parcela demasiado pequeña",
+        "parcelTooSmallMapLabel": "Parcela demasiado pequeña: {{area}}; mínimo {{minimum}}",
+        "parcelTooSmallDescription": "Esta parcela catastral existente mide {{area}}. La regla registrada exige una parcela edificable individual de al menos {{minimum}}. Consulte las condiciones de la fuente antes de evaluar una nueva parcela edificable.",
+        "parcelArea": "Superficie de parcela catastral",
+        "minimumBuildingPlotArea": "Superficie mínima de parcela edificable",
+        "sourceBoundaryUncertainty": "El límite de la fuente está trazado con una incertidumbre de {{meters}} m.",
+        "sourceBoundaryCrosses": "Esta parcela catastral cruza el límite cartografiado de la fuente; las dimensiones de la fuente no se evalúan para una futura parcela edificable.",
+        "sourceBoundaryUncertain": "La parcela solo toca el borde incierto del límite fuente trazado, por lo que la aplicabilidad sigue sin resolverse.",
+        "sourceRequiresPreparcellation": "La fuente registra la reparcelación como requisito antes de evaluar una nueva parcela edificable.",
+        "sourceRequiresLandAssembly": "La evaluación de la fuente requiere ensamblar suelo antes de evaluar una nueva parcela edificable.",
+        "sourceRequiresCompetition": "La fuente registra como obligatorio un concurso de diseño urbano.",
+        "sourceInfrastructureException": "El mínimo citado tiene una excepción para una parcela de infraestructura separada; esta parcela catastral no se ha clasificado como esa excepción.",
+        "sourceCitationArticle": "Artículo {{article}}",
+        "sourceCitationProcedure": "Procedimiento · Artículo {{article}}",
+        "sourceCitationDrawing": "Plano · {{sheet}}",
         "sideOptions": {
             "one": "{{count}} lado utilizable; tira el dado para otro tipo de vivienda.",
             "other": "{{count}} lados utilizables; tira el dado para otro lado y tipo de vivienda."
@@ -8489,7 +8504,10 @@
             "rearSetback": "Retiro posterior mínimo",
             "height": "Altura máxima",
                 "storeys": "Máximo de plantas",
-            "lotArea": "Superficie mínima de parcela"
+            "lotArea": "Superficie mínima de parcela",
+            "siteCoverage": "Ocupación máxima del suelo",
+            "floorAreaRatioAboveGround": "Coeficiente máximo de edificabilidad sobre rasante",
+            "naturalTerrain": "Terreno natural mínimo"
         },
         "photoNote": "Explora los volúmenes permitidos en el mapa o en el modelo 3D.",
         "openModel": "Abrir el modelo 3D",

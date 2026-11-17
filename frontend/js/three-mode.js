@@ -683,6 +683,20 @@
                     for (const border of borders) { markOwnedMaterial(border, line); planningSourcesGroup.add(border); }
                 }
             }
+            // A source-rule item has site evidence but deliberately no massing. Lay it on the
+            // ground so unresolved preconditions remain discoverable in the model view too.
+            if (['source-rule-warning', 'source-rule-precondition'].includes(item.assessment?.meaning) && item.site?.type) {
+                const warning = item.assessment.reason === 'parcel-too-small';
+                const sourceColor = warning ? window.PlanningViews.warningColor() : color;
+                const material = new THREE.MeshBasicMaterial({ color: sourceColor, transparent: true,
+                    opacity: appearance === 'solid' ? (warning ? 0.32 : 0.16) : (warning ? 0.18 : 0.08), depthWrite: false, side: THREE.DoubleSide });
+                const meshes = polygonFeatureToMeshes({ type: 'Feature', geometry: item.site }, material, 0.03, 0);
+                if (!meshes.length) material.dispose();
+                for (const mesh of meshes) {
+                    markOwnedMaterial(mesh, material); mesh.userData.planningRepresentationId = item.id;
+                    mesh.userData.planningSeeThrough = true; mesh.renderOrder = 2; planningSourcesGroup.add(mesh);
+                }
+            }
             // The outer bound behind a shown configuration is a faint hull; alone, it is the body.
             const { bound, body } = window.PlanningViews.permittedFeatures(item);
             for (const feature of [...bound, ...body]) {

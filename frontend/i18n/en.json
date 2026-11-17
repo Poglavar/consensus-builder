@@ -8386,6 +8386,21 @@
         "envelopeNote": "The maximum envelope combines the recorded housing types. Frontage follows nearby streets when available; otherwise the bound includes all supported orientations. Choose a housing type, then roll the dice for another sample building within its limits. Area budgets and unresolved rules still apply.",
         "assumedSide": "Assumed street side: {{side}}.",
         "lotBelowMinimum": "Lot below the {{minimum}} minimum",
+        "parcelTooSmall": "Parcel too small",
+        "parcelTooSmallMapLabel": "Parcel too small: {{area}}; {{minimum}} minimum",
+        "parcelTooSmallDescription": "This existing cadastral parcel is {{area}}. The recorded rule requires an individual building plot of at least {{minimum}}. Read the source conditions before assessing a new building plot.",
+        "parcelArea": "Cadastral parcel area",
+        "minimumBuildingPlotArea": "Minimum building-plot area",
+        "sourceBoundaryUncertainty": "The source boundary is traced with {{meters}} m uncertainty.",
+        "sourceBoundaryCrosses": "This cadastral parcel crosses the mapped source boundary; the source dimensions are not assessed for a future building plot.",
+        "sourceBoundaryUncertain": "The parcel only meets the uncertain edge of the traced source boundary, so applicability remains unresolved.",
+        "sourceRequiresPreparcellation": "The source records preparcelation as required before a new building plot can be assessed.",
+        "sourceRequiresLandAssembly": "The source assessment requires land assembly before a new building plot can be assessed.",
+        "sourceRequiresCompetition": "The source records an urban-design competition as required.",
+        "sourceInfrastructureException": "The cited minimum has an exception for a separate infrastructure plot; this cadastral parcel has not been classified as that exception.",
+        "sourceCitationArticle": "Article {{article}}",
+        "sourceCitationProcedure": "Procedure · Article {{article}}",
+        "sourceCitationDrawing": "Drawing · {{sheet}}",
         "sideOptions": {
             "one": "{{count}} usable side; roll the dice for another housing type.",
             "other": "{{count}} usable sides; roll the dice for another side and housing type."
@@ -8461,7 +8476,10 @@
             "rearSetback": "Minimum rear setback",
             "height": "Maximum height",
                 "storeys": "Maximum storeys",
-            "lotArea": "Minimum lot area"
+            "lotArea": "Minimum lot area",
+            "siteCoverage": "Maximum site coverage",
+            "floorAreaRatioAboveGround": "Maximum above-ground floor-area ratio",
+            "naturalTerrain": "Minimum natural terrain"
         },
         "photoNote": "Explore permitted massing in the map or 3D model view.",
         "openModel": "Open 3D model view",

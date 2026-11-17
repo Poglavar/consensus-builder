@@ -63,6 +63,30 @@ body:is([data-planning-proposed="solid"], [data-planning-proposed="ghost"]) .pla
 .planning-inspector__parcel { margin: var(--cb-space-1) 0 0; font-size: var(--cb-text-sm); color: var(--cb-text-muted); overflow-wrap: anywhere; }
 .planning-parcel-evidence h3 { font-size: var(--cb-text-base); margin: 0; }
 .planning-cache-reason { white-space: pre-wrap; overflow-wrap: anywhere; font-size: var(--cb-text-sm); color: var(--cb-text-muted); }
+.planning-source-citations { margin: var(--cb-space-2) 0 0; padding-inline-start: var(--cb-space-5); }
+.planning-inspector__description--warning { color: var(--cb-danger-soft-ink); }
+.planning-parcel-warning-icon {
+    display: grid;
+    place-items: center;
+    width: 24px;
+    height: 24px;
+    border: 2px solid var(--cb-danger);
+    border-radius: 50%;
+    background: var(--cb-danger-soft);
+    color: var(--cb-danger-soft-ink);
+    font-size: 15px;
+    font-weight: var(--cb-weight-bold);
+    line-height: 1;
+    box-shadow: var(--cb-shadow-sm);
+    pointer-events: none;
+}
+.leaflet-tooltip.planning-parcel-warning-tooltip {
+    max-width: 20rem;
+    color: var(--cb-danger-soft-ink);
+    border-color: var(--cb-danger);
+    background: var(--cb-danger-soft);
+    font-weight: var(--cb-weight-semibold);
+}
 .planning-sources-pane { z-index: var(--cb-z-map-pane-site); }
 body[data-planning-proposed="ghost"] .leaflet-proposedBuildings-pane { opacity: 0.4; }
 body[data-planning-proposed="off"] .leaflet-proposedBuildings-pane { visibility: hidden; }

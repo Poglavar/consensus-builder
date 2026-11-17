@@ -174,8 +174,8 @@ describe('shared building and proposal representations', () => {
         const root = { i18n: { t: key => ({ 'clickStackNavigation.info': 'Info', 'planningViews.tabs.options': 'Options', 'proposalDrafts.approval.policyType': 'Rules' }[key] || key) },
             CbFormat: { formatLength: value => `${value} m`, formatNumber: value => String(value), formatArea: value => `${value} m²`, formatDate: value => String(value) } };
         const context = vm.createContext({ selected: () => item, inspector, root, element, t, parcelOf: () => null,
-            inspectorBadgeKey: () => 'sourceEvidenceBadge', area: value => `${value} m²`, number: value => String(value), resultLabel: value => String(value),
-            permittedFeatures: () => ({ configuration: null }), renderConfigurations: () => element('section', 'planning-configurations'), scenarioLabel: value => value,
+            inspectorBadgeKey: () => 'sourceEvidenceBadge', isParcelTooSmall: () => false, area: value => `${value} m²`, number: value => String(value), resultLabel: value => String(value),
+            permittedFeatures: () => ({ configuration: null }), renderConfigurations: () => element('section', 'planning-configurations'), scenarioLabel: value => value, sourceConditionNotes: () => [],
             sourceRecord: async () => [], selectRecord() {}, select() {}, referenceStatus: null, document });
         vm.runInContext(source.slice(declaration.start, declaration.end), context);
         context.renderInspector();

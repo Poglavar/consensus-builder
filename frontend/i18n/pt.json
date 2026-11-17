@@ -8525,6 +8525,21 @@
         "envelopeNote": "A envolvente máxima combina os tipos de habitação registados. A frente orienta-se pelas ruas próximas quando há dados disponíveis; caso contrário, a envolvente inclui todas as orientações suportadas. Escolha um tipo de habitação ou lance os dados para mudar a configuração apresentada. Os limites de área e as regras por resolver continuam a aplicar-se.",
         "assumedSide": "Lado da rua assumido: {{side}}.",
         "lotBelowMinimum": "Lote abaixo do mínimo de {{minimum}}",
+        "parcelTooSmall": "Lote pequeno demais",
+        "parcelTooSmallMapLabel": "Lote pequeno demais: {{area}}; mínimo de {{minimum}}",
+        "parcelTooSmallDescription": "Este lote cadastral existente tem {{area}}. A regra registrada exige um lote de construção individual de pelo menos {{minimum}}. Consulte as condições da fonte antes de avaliar um novo lote de construção.",
+        "parcelArea": "Área do lote cadastral",
+        "minimumBuildingPlotArea": "Área mínima do lote de construção",
+        "sourceBoundaryUncertainty": "O limite da fonte foi traçado com uma incerteza de {{meters}} m.",
+        "sourceBoundaryCrosses": "Este lote cadastral atravessa o limite mapeado da fonte; as dimensões da fonte não são avaliadas para um futuro lote de construção.",
+        "sourceBoundaryUncertain": "O lote apenas toca a margem incerta do limite da fonte traçado, pelo que a aplicabilidade permanece por resolver.",
+        "sourceRequiresPreparcellation": "A fonte regista o reparcelamento como necessário antes de avaliar um novo lote de construção.",
+        "sourceRequiresLandAssembly": "A avaliação da fonte exige agregação fundiária antes de avaliar um novo lote de construção.",
+        "sourceRequiresCompetition": "A fonte regista um concurso de desenho urbano como obrigatório.",
+        "sourceInfrastructureException": "O mínimo citado tem uma exceção para um lote de infraestrutura separado; este lote cadastral não foi classificado nessa exceção.",
+        "sourceCitationArticle": "Artigo {{article}}",
+        "sourceCitationProcedure": "Procedimento · Artigo {{article}}",
+        "sourceCitationDrawing": "Desenho · {{sheet}}",
         "sideOptions": {
             "one": "{{count}} lado utilizável; lance os dados para outro tipo de habitação.",
             "other": "{{count}} lados utilizáveis; lance os dados para outro lado e tipo de habitação."
@@ -8600,7 +8615,10 @@
             "rearSetback": "Afastamento posterior mínimo",
             "height": "Altura máxima",
                 "storeys": "Pisos máximos",
-            "lotArea": "Área mínima do lote"
+            "lotArea": "Área mínima do lote",
+            "siteCoverage": "Ocupação máxima do solo",
+            "floorAreaRatioAboveGround": "Índice máximo de construção acima do solo",
+            "naturalTerrain": "Terreno natural mínimo"
         },
         "photoNote": "Explore a volumetria permitida no mapa ou na vista do modelo 3D.",
         "openModel": "Abrir vista do modelo 3D",

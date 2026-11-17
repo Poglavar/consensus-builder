@@ -8525,6 +8525,21 @@
         "envelopeNote": "L’enveloppe maximale combine les types de logement enregistrés. Le côté avant est orienté vers les rues proches lorsque les données sont disponibles ; sinon, l’enveloppe inclut toutes les orientations prises en charge. Choisissez un type de logement ou lancez les dés pour changer la configuration affichée. Les plafonds de surface et les règles non résolues restent applicables.",
         "assumedSide": "Côté supposé donnant sur la rue : {{side}}.",
         "lotBelowMinimum": "Terrain inférieur au minimum de {{minimum}}",
+        "parcelTooSmall": "Parcelle trop petite",
+        "parcelTooSmallMapLabel": "Parcelle trop petite : {{area}} ; minimum {{minimum}}",
+        "parcelTooSmallDescription": "Cette parcelle cadastrale existante mesure {{area}}. La règle enregistrée exige une parcelle constructible individuelle d’au moins {{minimum}}. Consultez les conditions de la source avant d’évaluer une nouvelle parcelle constructible.",
+        "parcelArea": "Surface de la parcelle cadastrale",
+        "minimumBuildingPlotArea": "Surface minimale de la parcelle constructible",
+        "sourceBoundaryUncertainty": "La limite source est tracée avec une incertitude de {{meters}} m.",
+        "sourceBoundaryCrosses": "Cette parcelle cadastrale traverse la limite source cartographiée ; les dimensions source ne sont pas évaluées pour une future parcelle constructible.",
+        "sourceBoundaryUncertain": "La parcelle ne rencontre que le bord incertain de la limite source tracée ; son applicabilité reste donc non résolue.",
+        "sourceRequiresPreparcellation": "La source impose un remembrement préalable avant l’évaluation d’une nouvelle parcelle constructible.",
+        "sourceRequiresLandAssembly": "L’évaluation source exige un assemblage foncier avant l’évaluation d’une nouvelle parcelle constructible.",
+        "sourceRequiresCompetition": "La source impose un concours d’urbanisme.",
+        "sourceInfrastructureException": "Le minimum cité prévoit une exception pour une parcelle d’infrastructure séparée ; cette parcelle cadastrale n’a pas été classée dans cette exception.",
+        "sourceCitationArticle": "Article {{article}}",
+        "sourceCitationProcedure": "Procédure · Article {{article}}",
+        "sourceCitationDrawing": "Plan · {{sheet}}",
         "sideOptions": {
             "one": "{{count}} côté utilisable ; lancez les dés pour un autre type de logement.",
             "other": "{{count}} côtés utilisables ; lancez les dés pour un autre côté et un autre type de logement."
@@ -8600,7 +8615,10 @@
             "rearSetback": "Retrait arrière minimal",
             "height": "Hauteur maximale",
             "storeys": "Nombre maximal de niveaux",
-            "lotArea": "Surface minimale du terrain"
+            "lotArea": "Surface minimale du terrain",
+            "siteCoverage": "Emprise au sol maximale",
+            "floorAreaRatioAboveGround": "Coefficient de plancher hors sol maximal",
+            "naturalTerrain": "Surface minimale de pleine terre"
         },
         "photoNote": "Explorez la volumétrie autorisée sur la carte ou dans la vue du modèle 3D.",
         "openModel": "Ouvrir la vue du modèle 3D",

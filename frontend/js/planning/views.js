@@ -53,6 +53,30 @@
         ? root.CbFormat.formatNumber(value, { maxFractionDigits: 0 }) : '—';
     const area = value => typeof value === 'number' && Number.isFinite(value)
         ? root.CbFormat.formatArea(value, { maxFractionDigits: 0 }) : '—';
+    const isParcelTooSmall = item => item?.assessment?.reason === 'parcel-too-small';
+    const smallParcelFacts = item => ({ areaM2: item?.sourceEvidence?.assessedParcelAreaM2,
+        minimumM2: item?.sourceEvidence?.minBuildingPlotAreaM2 });
+    const smallParcelLabel = item => {
+        const { areaM2, minimumM2 } = smallParcelFacts(item);
+        return t('parcelTooSmallMapLabel', { area: area(areaM2), minimum: area(minimumM2) });
+    };
+    function sourceConditionNotes(item) {
+        const evidence = item?.sourceEvidence || {}, notes = [];
+        if (Number.isFinite(evidence.boundaryUncertaintyM)) notes.push(t('sourceBoundaryUncertainty', { meters: number(evidence.boundaryUncertaintyM) }));
+        if (evidence.boundaryRelation === 'crosses') notes.push(t('sourceBoundaryCrosses'));
+        if (evidence.boundaryRelation === 'boundary-uncertain') notes.push(t('sourceBoundaryUncertain'));
+        if (evidence.requiresPreparcellation) notes.push(t('sourceRequiresPreparcellation'));
+        else if (item?.assessment?.requiresLandAssembly) notes.push(t('sourceRequiresLandAssembly'));
+        if (evidence.requiresUrbanDesignCompetition) notes.push(t('sourceRequiresCompetition'));
+        if (evidence.infrastructurePlotException?.condition === 'separate-infrastructure-plot') notes.push(t('sourceInfrastructureException'));
+        return notes;
+    }
+    function citationLabel(citation) {
+        if (citation.kind === 'provision') return t('sourceCitationArticle', { article: citation.article });
+        if (citation.kind === 'procedure') return t('sourceCitationProcedure', { article: citation.article });
+        if (citation.kind === 'drawing') return t('sourceCitationDrawing', { sheet: citation.sheet });
+        return t('readSource');
+    }
     function element(tag, className, text) {
         const node = document.createElement(tag);
         if (className) node.className = className;
@@ -62,6 +86,7 @@
     function color(role) {
         return getComputedStyle(document.documentElement).getPropertyValue(`--cb-planning-${role}`).trim();
     }
+    function warningColor() { return getComputedStyle(document.documentElement).getPropertyValue('--cb-danger').trim(); }
     function policy() { return core.displayPolicy(store?.get()); }
     function sceneItems() { return items; }
     function appearance(item) { return core.itemAppearance(item, store?.get()); }
@@ -120,7 +145,7 @@
     }
     function inspectorBadgeKey(item) {
         if (item.role !== 'permitted') return item.role;
-        return ['public-screen', 'zoning-area', 'partial-envelope', 'outer-bound'].includes(item.assessment?.meaning) ? 'sourceEvidenceBadge' : 'obligatory';
+        return ['public-screen', 'zoning-area', 'partial-envelope', 'outer-bound', 'source-rule-warning', 'source-rule-precondition'].includes(item.assessment?.meaning) ? 'sourceEvidenceBadge' : 'obligatory';
     }
     async function parcelRecords(parcel, signal, context = {}) {
         if (!(context.source || sourceId)) return [];
@@ -218,13 +243,18 @@
         for (const feature of features) {
             const active = item.id === store.get().selectedId;
             // The outer bound behind a shown configuration is a hull: outline plus a faint fill.
+            const warningFeature = feature.properties.geometryRole === 'source-warning';
+            const evidenceFeature = feature.properties.geometryRole === 'source-evidence';
             const hull = feature.properties.geometryRole === 'bound' && hasBody;
             // A tier only an incentive's condition reaches is a fainter, sparser outline.
             const conditional = Boolean(feature.properties.condition);
             // The hull is not a second click target: the configuration inside carries the interaction.
-            const shape = root.L.geoJSON(feature, { pane: 'planningSources', className: hull ? 'planning-bound-outline' : undefined, interactive: !hull,
-                style: { color: active ? root.MapHighlight.color : color(item.role), weight: active ? 4 : hull || conditional ? 1 : 1.5, dashArray: conditional ? '2 6' : hull ? '4 4' : null,
-                    fillColor: color(item.role), fillOpacity: conditional ? 0.03 : hull ? 0.06 : display === 'solid' ? 1 : 0.18,
+            const shape = root.L.geoJSON(feature, { pane: 'planningSources', className: warningFeature ? 'planning-parcel-warning' : evidenceFeature ? 'planning-source-evidence' : hull ? 'planning-bound-outline' : undefined, interactive: !hull,
+                style: { color: active ? root.MapHighlight.color : warningFeature ? warningColor() : color(item.role),
+                    weight: active ? 4 : warningFeature || evidenceFeature ? 2 : hull || conditional ? 1 : 1.5,
+                    dashArray: warningFeature ? '5 4' : evidenceFeature ? '4 4' : conditional ? '2 6' : hull ? '4 4' : null,
+                    fillColor: warningFeature ? warningColor() : color(item.role),
+                    fillOpacity: warningFeature ? (display === 'solid' ? 0.35 : 0.2) : evidenceFeature ? (display === 'solid' ? 0.16 : 0.08) : conditional ? 0.03 : hull ? 0.06 : display === 'solid' ? 1 : 0.18,
                     opacity: conditional ? 0.6 : hull ? 0.8 : 1 } });
             const label = item.source.parcel || item.title;
             shape.addTo(group);
@@ -233,6 +263,14 @@
                 const ring = item.derivation.parcel.coordinates[0], edge = feature.properties.frontEdge;
                 root.L.polyline([ring[edge], ring[edge + 1]].map(p => [p[1], p[0]]), { pane: 'planningSources', interactive: false,
                     color: color(item.role), weight: 4, opacity: 0.9 }).addTo(group);
+            }
+            if (warningFeature) {
+                shape.bindTooltip(`⚠ ${smallParcelLabel(item)}`, { className: 'planning-parcel-warning-tooltip', direction: 'top', sticky: true });
+                try {
+                    const point = root.turf.pointOnFeature({ type: 'Feature', geometry: feature.geometry });
+                    const icon = root.L.divIcon({ className: 'planning-parcel-warning-icon', html: '<span aria-hidden="true">⚠</span>', iconSize: [24, 24], iconAnchor: [12, 12] });
+                    root.L.marker([point.geometry.coordinates[1], point.geometry.coordinates[0]], { pane: 'planningSources', interactive: false, icon }).addTo(group);
+                } catch (_) { /* The polygon remains the visible, inspectable warning. */ }
             }
             if (hull) continue;
             const inspect = () => { if (!root.__mapEditLock?.isHeld()) select(item.id); };
@@ -250,9 +288,21 @@
                 const node = part.getElement?.();
                 if (!node) return;
                 node.setAttribute('tabindex', '0'); node.setAttribute('role', 'button');
-                node.setAttribute('aria-label', t(item.areas?.length ? 'inspectArea' : 'inspectMassing', { parcel: label }));
+                node.setAttribute('aria-label', warningFeature ? `${smallParcelLabel(item)}. ${t('inspectResult')}`
+                    : evidenceFeature ? `${item.title}. ${t('inspectResult')}`
+                    : t(item.areas?.length ? 'inspectArea' : 'inspectMassing', { parcel: label }));
                 node.addEventListener('keydown', event => {
-                    if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); event.stopPropagation(); inspect(); }
+                    if (event.key === 'Enter' || event.key === ' ') {
+                        event.preventDefault(); event.stopPropagation();
+                        // Match pointer activation so a narrow-screen hosted inspector opens.
+                        let latlng = part.getBounds?.().getCenter?.();
+                        try {
+                            const point = root.turf.pointOnFeature(feature).geometry.coordinates;
+                            latlng = root.L.latLng(point[1], point[0]);
+                        } catch (_) { /* Bounds centre is the safe fallback. */ }
+                        if (latlng && root.ClickStack?.handleClick) root.ClickStack.handleClick(latlng, { allowUrbanBlocks: true });
+                        else inspect();
+                    }
                 });
             });
         }
@@ -305,20 +355,24 @@
         const options = sourceResult && item.configurations?.length ? page('options', root.i18n.t('planningViews.tabs.options')) : null;
         const rules = sourceResult ? page('rules', root.i18n.t('proposalDrafts.approval.policyType')) : null;
         const badges = element('div', 'planning-inspector__badges');
-        badges.append(element('span', 'cb-badge', t(inspectorBadgeKey(item))));
+        badges.append(element('span', `cb-badge${isParcelTooSmall(item) ? ' cb-badge--danger' : ''}`,
+            isParcelTooSmall(item) ? t('parcelTooSmall') : t(inspectorBadgeKey(item))));
         if (sourceResult && item.volumes.length) badges.append(element('span', 'cb-badge cb-badge--warning',
             t(item.assessment.meaning === 'existing-stock-estimate' ? 'stockBadge' : item.parcelEnvelope ? 'bound' : 'approximate')));
         if (item.assessment.refresh) badges.append(element('span', 'cb-badge cb-badge--warning', t('refreshPending')));
         info.append(badges);
-        info.append(element('p', 'planning-inspector__description',
-            t(item.assessment.meaning === 'existing-stock-estimate' ? 'stockEstimate'
+        info.append(element('p', `planning-inspector__description${isParcelTooSmall(item) ? ' planning-inspector__description--warning' : ''}`,
+            isParcelTooSmall(item) ? t('parcelTooSmallDescription', { area: area(smallParcelFacts(item).areaM2), minimum: area(smallParcelFacts(item).minimumM2) })
+                : t(item.assessment.meaning === 'existing-stock-estimate' ? 'stockEstimate'
                 : item.assessment.meaning === 'public-screen' ? 'evidenceOnly'
                     : item.assessment.meaning === 'zoning-area' ? 'zoningAreaNote'
                         : item.parcelEnvelope ? 'envelopeNote'
                         : sourceResult ? (item.volumes.length ? 'oneOption' : 'savedNoShape')
                         : 'observedNote')));
         if (item.assessment.status && !item.parcelEnvelope) info.append(element('p', 'planning-inspector__description', resultLabel(item.assessment.status)));
-        if (item.assessment.reason) info.append(element('p', 'planning-cache-reason', item.assessment.reason));
+        if (item.assessment.reason && !isParcelTooSmall(item)
+            && !['plan-boundary-uncertain', 'b1-reparcelation-and-competition-required'].includes(item.assessment.reason)) info.append(element('p', 'planning-cache-reason', item.assessment.reason));
+        for (const note of sourceConditionNotes(item)) info.append(element('p', 'planning-inspector__description', note));
         if (item.assessment.current === false) info.append(element('p', 'planning-inspector__description', t('savedWithdrawn')));
         if (referenceStatus && referenceStatus !== 'same') info.append(element('p', 'planning-assessment', t('referenceChanged')));
         if (item.assessment.refresh) {
@@ -336,6 +390,10 @@
             `${root.CbFormat.formatLength(item.metrics.conditional.heightM, { maxFractionDigits: 1 })} · ${item.metrics.conditional.condition}`]);
         if (unitLimit != null) displayedMetrics.push([t('dwellingLimit'), number(unitLimit)]);
         if (item.metrics.footprintM2 != null) displayedMetrics.push([t('footprintArea'), area(item.metrics.footprintM2)]);
+        if (isParcelTooSmall(item)) {
+            const { areaM2, minimumM2 } = smallParcelFacts(item);
+            displayedMetrics.push([t('parcelArea'), area(areaM2)], [t('minimumBuildingPlotArea'), area(minimumM2)]);
+        }
         for (const [label, value] of displayedMetrics) {
             const entry = element('div'); entry.append(element('dt', '', label), element('dd', '', value)); metrics.append(entry);
         }
@@ -379,6 +437,18 @@
         if (item.sourceEvidence) {
             const terms = element('pre', 'planning-evidence__terms', JSON.stringify(item.sourceEvidence, null, 2));
             evidence.append(element('p', '', t('sourceTerms')), terms);
+            const citations = (item.sourceEvidence.citations || []).filter(citation => {
+                try { return ['http:', 'https:'].includes(new URL(citation.url).protocol); } catch (_) { return false; }
+            });
+            if (citations.length) {
+                const list = element('ul', 'planning-source-citations');
+                for (const citation of citations) {
+                    const link = element('a', '', citationLabel(citation));
+                    link.href = citation.url; link.target = '_blank'; link.rel = 'noopener noreferrer';
+                    const row = element('li'); row.append(link); list.append(row);
+                }
+                evidence.append(list);
+            }
         }
         info.append(evidence);
         for (const reference of item.sourceEvidence?.sourceReferences || []) {
@@ -545,13 +615,16 @@
         panel.querySelector('.planning-coverage p').textContent = t(payload?.envelopes ? 'envelopeCoverage' : 'coverageNote');
         const summary = panel.querySelector('.planning-cache-summary');
         const summaries = payload?.summaries || [];
-        summary.hidden = !summaries.length || policy().permitted === 'off';
-        summary.textContent = t(payload?.envelopes ? 'envelopeSummary' : 'cacheSummary', { count: summaries.reduce((sum, entry) => sum + entry.cachedResults, 0),
-            shapes: summaries.reduce((sum, entry) => sum + entry.withGeometry, 0),
-            missing: summaries.reduce((sum, entry) => sum + entry.withoutGeometry, 0) });
+        // A source-evidence provider reports candidates, not cached envelope result statistics.
+        // Do not turn absent cache fields into a misleading “0 saved” summary.
+        const cacheSummaries = summaries.filter(entry => Number.isFinite(entry.cachedResults));
+        summary.hidden = !cacheSummaries.length || policy().permitted === 'off';
+        summary.textContent = t(payload?.envelopes ? 'envelopeSummary' : 'cacheSummary', { count: cacheSummaries.reduce((sum, entry) => sum + entry.cachedResults, 0),
+            shapes: cacheSummaries.reduce((sum, entry) => sum + (Number.isFinite(entry.withGeometry) ? entry.withGeometry : 0), 0),
+            missing: cacheSummaries.reduce((sum, entry) => sum + (Number.isFinite(entry.withoutGeometry) ? entry.withoutGeometry : 0), 0) });
         const counts = panel.querySelector('.planning-result-counts');
         counts.replaceChildren();
-        for (const entry of summaries) for (const [status, count] of Object.entries(entry.statuses)) {
+        for (const entry of summaries) for (const [status, count] of Object.entries(entry.statuses || {})) {
             const key = `planningViews.resultStatus.${status}`;
             const label = root.i18n.t(key);
             counts.append(element('dt', '', label === key ? t('otherResult') : label), element('dd', '', number(count)));
@@ -947,7 +1020,7 @@
     root.PlanningViews = { getState: () => store?.get() || { ...core.defaults, proposedVariation: '', permittedVariation: '' }, getPolicy: policy, getItems: sceneItems,
         getAppearance: appearance,
         getSelected: selected, isReady: () => ready, isInspecting: () => ready && !inspector.hidden,
-        select, selectRecord, inspectBuilding, inspectProposal, showParcelEvidence, color, refresh,
+        select, selectRecord, inspectBuilding, inspectProposal, showParcelEvidence, color, warningColor, refresh,
         permittedFeatures, pinConfiguration, getScenario: () => scenarioId,
         // Drawn records covering a point, each once, in drawing order.
         itemsAt(latlng) {

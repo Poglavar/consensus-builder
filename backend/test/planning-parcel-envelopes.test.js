@@ -334,6 +334,21 @@ describe('configuration display logic', () => {
         expect(map.map(f => f.properties.geometryRole)).toEqual(['bound','body']);
         expect(map[1].properties.topM).toBeCloseTo(13.716, 6);
     });
+    it('keeps an undersized source parcel visible and selectable without inventing an envelope', () => {
+        const warning = { id: 'envelope:upu-b1:parcel-one', role: 'permitted', site: turf.bboxPolygon(bbox).geometry,
+            volumes: [], assessment: { meaning: 'source-rule-warning', status: 'unresolved', reason: 'parcel-too-small' } };
+        expect(envelopes.realize(warning)).toEqual({ bound: [], body: [], configuration: null, frontEdge: null });
+        expect(envelopes.mapFeatures(warning).map(feature => [feature.geometry, feature.properties])).toEqual([[
+            warning.site, { representationId: warning.id, role: 'permitted', geometryRole: 'source-warning', warning: 'parcel-too-small' }
+        ]]);
+    });
+    it('keeps an unresolved source-rule site visible without mislabelling it as a parcel-size warning', () => {
+        const precondition = { id: 'envelope:upu-b1:parcel-one', role: 'permitted', site: turf.bboxPolygon(bbox).geometry,
+            volumes: [], assessment: { meaning: 'source-rule-precondition', status: 'unresolved', reason: 'requires-preparation' } };
+        expect(envelopes.mapFeatures(precondition).map(feature => feature.properties)).toEqual([{
+            representationId: precondition.id, role: 'permitted', geometryRole: 'source-evidence', warning: null
+        }]);
+    });
     it('keeps source limits and frontage while sampling inside the selected configuration', async () => {
         const derived = (await loadParcelEnvelopes(query,{...options(),streetProvider:{near:async () => streetData()}})).items[0];
         const parcelGeometry = derived.derivation.parcel;

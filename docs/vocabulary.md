@@ -591,6 +591,10 @@ A complete numeric value recorded in a source field with a known unit, without a
 
 An inspection or display projection of a source record, existing building or authored design. It retains the subject's identity and provenance without becoming a new design or an applied change.
 
+### Source warning
+
+A read-only Permitted planning representation with source-derived site geometry and no inferred building volume. It makes a cited condition of the observed cadastral parcel discoverable without creating a parcel, envelope, permission or compliance verdict. A `parcel-too-small` source warning compares the observed cadastral parcel area with a cited minimum individual building-plot area; its source evidence retains any exception, required procedure or land assembly, applicability limits and geometric uncertainty. A warning cannot generalize those conditions to another source or a future formed building plot.
+
 ### Obligatory source proposal
 
 A read-only representation of a provider record whose underlying instrument claims obligatory normative effect. Its authority, applicability and evidence quality remain separate attributes; representing it does not establish compliance or owner consent.
