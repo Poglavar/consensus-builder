@@ -52,16 +52,16 @@ export function b1Representation(row) {
         || !finite(row.intersection_area_m2) || row.intersection_area_m2 <= 0.0001) return null;
     const coreOverlap = finite(row.core_intersection_area_m2) && row.core_intersection_area_m2 > 0.0001;
     const boundaryUncertain = !coreOverlap;
-    const parcelTooSmall = coreOverlap && row.reference_inside_b1 === true && row.parcel_area_m2 < MIN_BUILDING_PLOT_M2;
-    const boundaryRelation = boundaryUncertain ? 'boundary-uncertain' : (row.reference_inside_b1 === true ? 'inside' : 'crosses');
-    const reason = boundaryUncertain ? 'plan-boundary-uncertain' : (parcelTooSmall ? 'parcel-too-small' : 'b1-reparcelation-and-competition-required');
     const candidateBuildingPlot = validateGeometry(row.candidate_building_plot_geometry) ? row.candidate_building_plot_geometry : null;
     const buildingLineMask = validateGeometry(row.building_line_geometry) ? row.building_line_geometry : null;
     const candidateBuildingPlotAreaM2 = finite(row.candidate_building_plot_area_m2) ? row.candidate_building_plot_area_m2 : null;
+    const candidatePlotAssessable = candidateBuildingPlot && candidateBuildingPlotAreaM2 !== null;
+    const parcelTooSmall = coreOverlap && candidatePlotAssessable && candidateBuildingPlotAreaM2 < MIN_BUILDING_PLOT_M2;
+    const boundaryRelation = boundaryUncertain ? 'boundary-uncertain' : (row.reference_inside_b1 === true ? 'inside' : 'crosses');
+    const reason = boundaryUncertain ? 'plan-boundary-uncertain' : (parcelTooSmall ? 'parcel-too-small' : 'b1-reparcelation-and-competition-required');
     const privateEdgeMask = candidateBuildingPlot ? turf.buffer(turf.feature(candidateBuildingPlot), -(ASSUMED_STOREY_HEIGHT_M * 5 / 2), { units: 'meters', steps: 4 }) : null;
     const detachedGround = privateEdgeMask && buildingLineMask ? largestPolygon(turf.intersect(privateEdgeMask, turf.feature(buildingLineMask))?.geometry) : null;
     const rawMassing = !boundaryUncertain && detachedGround && candidateBuildingPlotAreaM2 >= MIN_BUILDING_PLOT_M2
-        && row.parcel_area_m2 >= MIN_BUILDING_PLOT_M2
         ? massingFor({ geometry: detachedGround, areaM2: candidateBuildingPlotAreaM2 }, 'compact', {
             floors: 5, setbackM: 0, coveragePct: 50,
             maxGfaM2: candidateBuildingPlotAreaM2 * 2.5, minPlotM2: MIN_BUILDING_PLOT_M2
@@ -73,7 +73,9 @@ export function b1Representation(row) {
         block: 'B-1', article: 27, procedureArticle: 76, planEdition: 'SGGZ 6/12',
         indicativeBlockAreaM2: 10310, indicativeAboveGroundGfaM2: 25774,
         minBuildingPlotAreaM2: MIN_BUILDING_PLOT_M2, assessedParcelAreaM2: row.parcel_area_m2,
-        areaComparison: row.parcel_area_m2 < MIN_BUILDING_PLOT_M2 ? 'below-minimum' : 'meets-minimum',
+        candidateBuildingPlotId: `${zagrebUpuStaroTrnjeB1Source.id}:plot:${row.parcel_id}`,
+        assessedPlotAreaM2: candidateBuildingPlotAreaM2,
+        areaComparison: !candidatePlotAssessable ? 'unknown' : candidateBuildingPlotAreaM2 < MIN_BUILDING_PLOT_M2 ? 'below-minimum' : 'meets-minimum',
         intersectionAreaM2: row.intersection_area_m2, coreIntersectionAreaM2: row.core_intersection_area_m2,
         candidateBuildingPlotAreaM2, candidateBuildingPlotGeometry: candidateBuildingPlot,
         plotFormationCondition: 'Candidate plot is the B-1 intersection; it requires preparcelation and the required competition.',

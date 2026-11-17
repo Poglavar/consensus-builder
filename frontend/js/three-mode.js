@@ -698,7 +698,8 @@
                 const sourceColor = warning ? window.PlanningViews.warningColor() : color;
                 const material = new THREE.MeshBasicMaterial({ color: sourceColor, transparent: true,
                     opacity: appearance === 'solid' ? (warning ? 0.32 : 0.16) : (warning ? 0.18 : 0.08), depthWrite: false, side: THREE.DoubleSide });
-                const meshes = polygonFeatureToMeshes({ type: 'Feature', geometry: item.site }, material, 0.03, 0);
+                const sourceSite = window.PlanningEnvelopes.sourceSiteGeometry(item);
+                const meshes = polygonFeatureToMeshes({ type: 'Feature', geometry: sourceSite }, material, 0.03, 0);
                 if (!meshes.length) material.dispose();
                 for (const mesh of meshes) {
                     markOwnedMaterial(mesh, material); mesh.userData.planningRepresentationId = item.id;

@@ -335,12 +335,14 @@ describe('configuration display logic', () => {
         expect(map[1].properties.topM).toBeCloseTo(13.716, 6);
     });
     it('keeps an undersized source parcel visible and selectable without inventing an envelope', () => {
+        const candidate = turf.bboxPolygon([-105.001,40,-105.00075,40.0004]).geometry;
         const warning = { id: 'envelope:upu-b1:parcel-one', role: 'permitted', site: turf.bboxPolygon(bbox).geometry,
-            volumes: [], assessment: { meaning: 'source-rule-warning', status: 'unresolved', reason: 'parcel-too-small' } };
+            sourceEvidence: { candidateBuildingPlotGeometry: candidate }, volumes: [], assessment: { meaning: 'source-rule-warning', status: 'unresolved', reason: 'parcel-too-small' } };
         expect(envelopes.realize(warning)).toEqual({ bound: [], body: [], configuration: null, frontEdge: null });
         expect(envelopes.mapFeatures(warning).map(feature => [feature.geometry, feature.properties])).toEqual([[
-            warning.site, { representationId: warning.id, role: 'permitted', geometryRole: 'source-warning', warning: 'parcel-too-small' }
+            candidate, { representationId: warning.id, role: 'permitted', geometryRole: 'source-warning', warning: 'parcel-too-small' }
         ]]);
+        expect(turf.booleanPointInPolygon(turf.point([-105.0006, 40.0002]), turf.feature(envelopes.mapFeatures(warning)[0].geometry))).toBe(false);
     });
     it('keeps an unresolved source-rule site visible without mislabelling it as a parcel-size warning', () => {
         const precondition = { id: 'envelope:upu-b1:parcel-one', role: 'permitted', site: turf.bboxPolygon(bbox).geometry,

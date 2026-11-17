@@ -56,10 +56,11 @@
         ? root.CbFormat.formatArea(value, { maxFractionDigits: 0 }) : '—';
     const isParcelTooSmall = item => item?.assessment?.reason === 'parcel-too-small';
     const smallParcelFacts = item => ({ areaM2: item?.sourceEvidence?.assessedParcelAreaM2,
+        candidateAreaM2: item?.sourceEvidence?.assessedPlotAreaM2 ?? item?.sourceEvidence?.candidateBuildingPlotAreaM2,
         minimumM2: item?.sourceEvidence?.minBuildingPlotAreaM2 });
     const smallParcelLabel = item => {
-        const { areaM2, minimumM2 } = smallParcelFacts(item);
-        return t('parcelTooSmallMapLabel', { area: area(areaM2), minimum: area(minimumM2) });
+        const { candidateAreaM2, areaM2, minimumM2 } = smallParcelFacts(item);
+        return t('parcelTooSmallMapLabel', { area: area(candidateAreaM2 ?? areaM2), minimum: area(minimumM2) });
     };
     function sourceConditionNotes(item) {
         const evidence = item?.sourceEvidence || {}, notes = [];
@@ -202,8 +203,9 @@
         selectionLayer.clearLayers();
         drawSourceBoundary();
         const selection = selected();
-        if (selection?.site && (selection.role !== 'permitted' || !selection.volumes.length)) {
-            root.L.geoJSON(selection.site, { pane: 'planningSources', interactive: false,
+        const selectionSite = envelopes.sourceSiteGeometry(selection);
+        if (selectionSite && (selection.role !== 'permitted' || !selection.volumes.length)) {
+            root.L.geoJSON(selectionSite, { pane: 'planningSources', interactive: false,
                 style: root.MapHighlight.style({ fill: false, className: 'planning-site-selection' }) }).addTo(selectionLayer);
         }
         // Each item is drawn into its own group, remembered with what it was drawn from. A redraw
@@ -387,7 +389,8 @@
         if (item.assessment.refresh) badges.append(element('span', 'cb-badge cb-badge--warning', t('refreshPending')));
         info.append(badges);
         info.append(element('p', `planning-inspector__description${isParcelTooSmall(item) ? ' planning-inspector__description--warning' : ''}`,
-            isParcelTooSmall(item) ? t('parcelTooSmallDescription', { area: area(smallParcelFacts(item).areaM2), minimum: area(smallParcelFacts(item).minimumM2) })
+            isParcelTooSmall(item) ? t('parcelTooSmallDescription', { candidateArea: area(smallParcelFacts(item).candidateAreaM2 ?? smallParcelFacts(item).areaM2),
+                parcelArea: area(smallParcelFacts(item).areaM2), minimum: area(smallParcelFacts(item).minimumM2) })
                 : t(item.assessment.meaning === 'existing-stock-estimate' ? 'stockEstimate'
                 : item.assessment.meaning === 'public-screen' ? 'evidenceOnly'
                     : item.assessment.meaning === 'zoning-area' ? 'zoningAreaNote'
@@ -415,7 +418,7 @@
             `${root.CbFormat.formatLength(item.metrics.conditional.heightM, { maxFractionDigits: 1 })} · ${item.metrics.conditional.condition}`]);
         if (unitLimit != null) displayedMetrics.push([t('dwellingLimit'), number(unitLimit)]);
         if (item.metrics.footprintM2 != null) displayedMetrics.push([t('footprintArea'), area(item.metrics.footprintM2)]);
-        const candidatePlotAreaM2 = item.sourceEvidence?.candidateBuildingPlotAreaM2;
+        const candidatePlotAreaM2 = item.sourceEvidence?.assessedPlotAreaM2 ?? item.sourceEvidence?.candidateBuildingPlotAreaM2;
         if (Number.isFinite(candidatePlotAreaM2)) {
             if (!isParcelTooSmall(item)) displayedMetrics.push([t('parcelArea'), area(smallParcelFacts(item).areaM2)]);
             displayedMetrics.push([t('candidateBuildingPlotArea', { block: item.sourceEvidence?.block || '' }), area(candidatePlotAreaM2)]);

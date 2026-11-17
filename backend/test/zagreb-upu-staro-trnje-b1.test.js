@@ -1,4 +1,4 @@
-// B-1 keeps the adopted UPU's plot minimum and procedural gates visible without manufacturing massing.
+// B-1 keeps its adopted plot and procedural rules while exposing only conditional formed-plot massing.
 import { describe, expect, it, vi } from 'vitest';
 import * as turf from '@turf/turf';
 import { b1Constraints, b1Representation, queryZagrebUpuStaroTrnjeB1, readZagrebUpuStaroTrnjeB1Parcel } from '../planning/providers/zagreb-upu-staro-trnje-b1.js';
@@ -7,7 +7,8 @@ const geometry = { type: 'Polygon', coordinates: [[[15.98,45.79],[15.981,45.79],
 const formedPlot = { type: 'Polygon', coordinates: [[[15.98,45.79],[15.981,45.79],[15.981,45.791],[15.98,45.791],[15.98,45.79]]] };
 const buildingLinePlot = turf.buffer(turf.feature(formedPlot), -4, { units: 'meters' }).geometry;
 const row = (changes = {}) => ({ cestica_id: 10, parcel_id: 'HR-335649-3644', parcel_area_m2: 136.3,
-    intersection_area_m2: 136.3, core_intersection_area_m2: 136.3, reference_inside_b1: true, parcel_geometry: geometry, ...changes });
+    intersection_area_m2: 136.3, core_intersection_area_m2: 136.3, reference_inside_b1: true, parcel_geometry: geometry,
+    candidate_building_plot_area_m2: 136.3, candidate_building_plot_geometry: geometry, ...changes });
 
 describe('Staro Trnje-Savica B-1 permitted evidence', () => {
     it('marks a contained cadastral parcel below the individual plot minimum without calling it an envelope', () => {
@@ -21,7 +22,7 @@ describe('Staro Trnje-Savica B-1 permitted evidence', () => {
     });
 
     it('keeps a 2,000 m² parcel conditional instead of treating it as fully permitted', () => {
-        const item = b1Representation(row({ parcel_area_m2: 2000 }));
+        const item = b1Representation(row({ parcel_area_m2: 2000, candidate_building_plot_area_m2: 2000 }));
         expect(item.assessment).toMatchObject({ status: 'unresolved', reason: 'b1-reparcelation-and-competition-required' });
         expect(item.assessment.reason).not.toBe('parcel-too-small');
         expect(b1Constraints()).toEqual(expect.arrayContaining([
@@ -48,20 +49,30 @@ describe('Staro Trnje-Savica B-1 permitted evidence', () => {
         expect(turf.area(turf.feature(footprint))).toBeLessThanOrEqual(2469.56 * 0.5 + 0.1);
         expect(item.metrics.floorAreaM2).toBeLessThanOrEqual(2469.56 * 2.5 + 0.1);
         expect(item.configurations).toEqual([expect.objectContaining({ id: 'conditional-formed-b1-plot-detached', condition: expect.stringContaining('preparcelation') })]);
-        expect(b1Representation(row({ parcel_id: 'HR-335649-3602', parcel_area_m2: 2668.37,
-            candidate_building_plot_area_m2: 1999.99, candidate_building_plot_geometry: formedPlot, building_line_geometry: buildingLinePlot })).volumes).toEqual([]);
+        const undersizedCandidate = b1Representation(row({ parcel_id: 'HR-335649-3602', parcel_area_m2: 2668.37,
+            intersection_area_m2: 1999.99, core_intersection_area_m2: 1999.99, candidate_building_plot_area_m2: 1999.99,
+            candidate_building_plot_geometry: formedPlot, building_line_geometry: buildingLinePlot }));
+        expect(undersizedCandidate).toMatchObject({ assessment: { status: 'unavailable', reason: 'parcel-too-small' },
+            sourceEvidence: { areaComparison: 'below-minimum' } });
+        expect(undersizedCandidate.volumes).toEqual([]);
     });
 
-    it('retains a crossing parcel as source evidence and keeps a boundary-only contact neutral', () => {
-        expect(b1Representation(row({ reference_inside_b1: false, parcel_area_m2: 1999 }))).toMatchObject({
-            sourceEvidence: { boundaryRelation: 'crosses', areaComparison: 'below-minimum' },
-            assessment: { status: 'unresolved', reason: 'b1-reparcelation-and-competition-required' }
+    it('warns when a crossing parcel has a sub-minimum B-1 candidate plot and keeps boundary-only contact neutral', () => {
+        expect(b1Representation(row({ parcel_id: 'HR-335649-3639', reference_inside_b1: false, parcel_area_m2: 716.11,
+            intersection_area_m2: 714.79, core_intersection_area_m2: 654.23, candidate_building_plot_area_m2: 714.79, candidate_building_plot_geometry: formedPlot }))).toMatchObject({
+            sourceEvidence: { candidateBuildingPlotId: 'zagreb-upu-staro-trnje-b1:plot:HR-335649-3639', assessedPlotAreaM2: 714.79,
+                boundaryRelation: 'crosses', areaComparison: 'below-minimum' },
+            assessment: { status: 'unavailable', reason: 'parcel-too-small' }
         });
         expect(b1Representation(row({ core_intersection_area_m2: 0 }))).toMatchObject({
             assessment: { status: 'unresolved', reason: 'plan-boundary-uncertain' },
             sourceEvidence: { boundaryRelation: 'boundary-uncertain' }
         });
         expect(b1Representation(row({ intersection_area_m2: 0.0001 }))).toBeNull();
+        expect(b1Representation(row({ candidate_building_plot_geometry: null }))).toMatchObject({
+            assessment: { status: 'unresolved', reason: 'b1-reparcelation-and-competition-required' },
+            sourceEvidence: { assessedPlotAreaM2: 136.3, areaComparison: 'unknown' }
+        });
     });
 
     it('uses the same evidence for viewport and exact-parcel reads', async () => {
