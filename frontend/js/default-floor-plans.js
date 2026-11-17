@@ -998,13 +998,16 @@
                     stairRise: `${core.stair.risers} risers of ${Math.round(core.stair.riserM * 1000)} mm, treads ${Math.round(rules.minTreadM * 1000)} mm` },
                 quality: { floorAreaM2: round2(polygonsArea(fp)), usableAreaM2: round2(usableM2), cores, lift, highRise }
             });
+            const apartmentRegions = furnished => furnished.units.filter(unit => unit.kind === 'apartment').map(unit => ({
+                id: unit.apartment.unitId, polygons: polygonData(unit.apartment.polygon), basis: 'Generated apartment partition'
+            }));
             const source = { kind: 'generated', generator: GENERATOR_ID, parameters };
             const buildingId = typeof input.buildingId === 'string' && input.buildingId ? input.buildingId : 'building';
             const layouts = [{ id: `${buildingId}:default-ground`, source,
                 architecture: architecture(groundWalls, [slabGround, ...ground.balconySlabs], [...coreOpenings, ...apartmentDoors, ...ground.openings, ...entranceOpenings],
-                    [...coreRailings, ...ground.railings, ...(garage && garage.ramp ? garage.ramp.railings : [])]) }];
+                    [...coreRailings, ...ground.railings, ...(garage && garage.ramp ? garage.ramp.railings : [])], { apartmentRegions: apartmentRegions(ground) }) }];
             if (floors > 1) layouts.push({ id: `${buildingId}:default-typical`, source,
-                architecture: architecture(typicalWalls, [slabTypical, ...typical.balconySlabs], [...coreOpenings, ...apartmentDoors, ...typical.openings], [...coreRailings, ...typical.railings]) });
+                architecture: architecture(typicalWalls, [slabTypical, ...typical.balconySlabs], [...coreOpenings, ...apartmentDoors, ...typical.openings], [...coreRailings, ...typical.railings], { apartmentRegions: apartmentRegions(typical) }) });
             if (garage) {
                 const garageWalls = differenceOrNull(t, unionAll(t, [...structural, ...garage.columns]), unionAll(t, coreCuts));
                 layouts.push({ id: `${buildingId}:default-garage`, source,

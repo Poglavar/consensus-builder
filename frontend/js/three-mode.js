@@ -84,6 +84,7 @@
     const sectionedModels = new Set();
     let floorPlanGroup = null;
     let floorPlanErrors = 0;
+    let apartmentHover = null;
     const renderedFloorPlanKeys = new Set();
     // Suggested default layouts (default-floor-plans.js) for proposed buildings without a modelled
     // interior: a toggle inside X-ray, planned once per parcel slice and cached, with street
@@ -9244,6 +9245,7 @@
     // the planned family. Existing buildings' floor models belong to reconcileExistingFloorPlans and go
     // only with the scene (`models`).
     function disposeFloorPlans({ planned = true, models = false } = {}) {
+        apartmentHover?.clear();
         if (floorPlanGroup) {
             [...floorPlanGroup.children].forEach(group => {
                 const family = group.userData.floorPlanFamily;
@@ -9706,6 +9708,7 @@
     let existingFloorPlanShells = new Map();
     const existingFloorPlanGroups = new Map();
     function removeExistingFloorPlanGroup(key) {
+        apartmentHover?.clear();
         const group = existingFloorPlanGroups.get(key);
         existingFloorPlanGroups.delete(key);
         if (group?.isObject3D) {
@@ -9784,6 +9787,7 @@
         updateLampGlow();
         updateSkyAndWindows();
         updateAtmosphere(renderedSceneVisualRevision !== sceneVisualRevision);
+        apartmentHover?.update(xrayEnabled && !realisticLayerActive);
         floorPlanRenderer.renderCutaway(renderer, scene, camera,
             sectionedModels.size ? [floorPlanGroup, ...[...sectionedModels].filter(wrapper => wrapper.parent)] : floorPlanGroup,
             xrayEnabled && floorCutawayLevel !== null && floorCutawayLevel < 0);
@@ -9988,6 +9992,7 @@
     }
 
     function updateXrayControls() {
+        apartmentHover?.invalidate();
         if (xrayButton) xrayButton.setAttribute('aria-pressed', String(xrayEnabled));
         if (suggestedPlansButton) {
             suggestedPlansButton.hidden = !xrayEnabled;
@@ -10822,6 +10827,11 @@
         // pointerdown records the press position so a click that ends a drag is ignored.
         parcelPointerDownHandler = (e) => { noteInput(); if (e.button === 0) clickDownXY = { x: e.clientX, y: e.clientY }; };
         renderer.domElement.addEventListener('pointerdown', parcelPointerDownHandler);
+        apartmentHover = window.__threeApartmentHover.attach(THREE, {
+            canvas: renderer.domElement, camera, floorPlanGroup,
+            occluders: () => floorCutawayLevel !== null && floorCutawayLevel < 0 ? [] : [existingBuildingsGroup, proposedBuildingsGroup],
+            onPointerChange: queueThreeFrame
+        });
         parcelClickHandler = handleParcelClick;
         renderer.domElement.addEventListener('click', parcelClickHandler);
         if (!proposalSelectionUnsubscribe && window.ProposalSelection?.subscribe) {
@@ -11221,6 +11231,8 @@
         resizeObserver?.disconnect();
         resizeObserver = null;
         cancelLoop();
+        apartmentHover?.dispose();
+        apartmentHover = null;
         disposeFloorPlans({ planned: true, models: true });
         existingFloorPlanShells = new Map();
         // Full scene eviction releases every attached resource. Source caches release separately.

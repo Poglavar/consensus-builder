@@ -13,7 +13,7 @@ import math
 from pathlib import Path
 import sys
 from urllib.request import urlopen
-from pionir_floor_architecture import extract_architecture
+from pionir_floor_architecture import extract_architecture, extract_apartment_region
 
 PROJECT = Path(__file__).resolve().parents[2] / "restatements/pionir-paron/borongajska-caviceva"
 
@@ -204,6 +204,14 @@ def build_plans(feature, building, cache, fetch):
                        "elevationBasis": floor["elevationBasis"], "layoutId": layout_id,
                        "source": source, "units": units})
         print(f"{building['id']} {index + 1}/{len(building['storeys'])} storeys: level {floor['level']}, {len(segments)} segments", flush=True)
+    for regions in building.get('apartmentRegionSources', []):
+        storey = next(storey for storey in storeys if storey['level'] == regions['layoutFloorLevel'])
+        layout = next(layout for layout in layouts if layout['id'] == storey['layoutId'])
+        layout['architecture']['apartmentRegions'] = [{
+            'id': unit['id'], 'polygons': [extract_apartment_region(source_file(unit['source'], cache, fetch), unit['source'])],
+            'source': unit['source'],
+            'basis': 'Inner edge of the publisher apartment outline in the whole-floor inset; shared only by identical CAD layouts.'
+        } for unit in regions['units']]
     return {"schema": "consensus-builder.building-floor-plans.v3",
             "registration": placement, "layouts": layouts, "storeys": storeys,
             "notes": building.get("notes", ["Published catalogue layout, not an as-built survey.",

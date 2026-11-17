@@ -394,3 +394,37 @@ def extract_architecture(path, source, gray, scale, storey_height=3):
     if len(model['walls'])<3 or walls.area < outline.area*.01 or len(model['openings'])<3:
         raise ValueError('Insufficient architectural geometry; source review required')
     return model
+
+
+def extract_apartment_region(path, source):
+    """Recover the inner edge of the publisher's filled black unit outline, not room walls."""
+    crop = pdf.Rect(source['crop'])
+    region = crop + (-2, -2, 2, 2)
+    fills = []
+    with pdf.open(path) as document:
+        page = document[source['page'] - 1]
+        for drawing in page.get_drawings():
+            if not drawing['fill'] or max(drawing['fill']) > .01:
+                continue
+            if not (drawing['rect'] * page.rotation_matrix).intersects(region):
+                continue
+            points = []
+            for item in drawing['items']:
+                if item[0] == 'l':
+                    points.extend((q.x, q.y) for q in (p * page.rotation_matrix for p in item[1:]))
+            if len(points) < 3:
+                continue
+            shape = Polygon(points).buffer(0)
+            if not shape.is_empty and region.contains(pdf.Rect(shape.bounds)):
+                fills.append(shape)
+    # PDF triangles differ at the fourth decimal place. Close only these rounding
+    # seams (0.01 PDF points), so the printed border forms a continuous ring.
+    outline = unary_union([shape.buffer(.01, join_style='mitre') for shape in fills])
+    interiors = [Polygon(ring) for shape in pieces(outline, 'Polygon') for ring in shape.interiors
+                 if Polygon(ring).area > crop.width * crop.height * .01]
+    if len(interiors) != 1:
+        raise ValueError(f"Expected one apartment outline in {source['url']}; found {len(interiors)}")
+    shape = interiors[0].intersection(box(*crop)).simplify(.025, preserve_topology=True)
+    def uv(point):
+        return [round((point[0]-crop.x0)/crop.width, 6), round((point[1]-crop.y0)/crop.height, 6)]
+    return [[uv(point) for point in list(shape.exterior.coords)[:-1]]]

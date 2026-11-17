@@ -88,7 +88,8 @@
             floorGroup.userData = {
                 cbFloorPlanFloor: true, id: floor.id, level: floor.level,
                 elevationM: floor.elevationM, elevationBasis: floor.elevationBasis,
-                layoutId: floor.layoutId, sourceUrl: floor.sourceUrl, apartmentCount: floor.apartmentCount
+                layoutId: floor.layoutId, sourceUrl: floor.sourceUrl, apartmentCount: floor.apartmentCount,
+                apartmentRegions: floor.apartmentRegions || []
             };
             for (const [kind, geometry] of layout) {
                 const mesh = new THREE.Mesh(geometry, materials.get(kind));

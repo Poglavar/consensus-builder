@@ -15,6 +15,242 @@
   "buildings": [
     {
       "id": "A1",
+      "apartmentRegionSources": [
+        {
+          "layoutFloorLevel": 1,
+          "units": [
+            {
+              "id": "position-1",
+              "source": {
+                "url": "https://pionir.hr/wp-content/katalozi/borongajska_caviceva_badel/zgrada_a1/A1-1.pdf",
+                "page": 1,
+                "crop": [
+                  167.341,
+                  608.48,
+                  370.021,
+                  810.44
+                ],
+                "sha256": "b477878706fe0d94326e9a0172605f75432d7a158d698d7c0d86ae579a9dfd8b"
+              }
+            },
+            {
+              "id": "position-2",
+              "source": {
+                "url": "https://pionir.hr/wp-content/katalozi/borongajska_caviceva_badel/zgrada_a1/A1-2.pdf",
+                "page": 1,
+                "crop": [
+                  175.021,
+                  608.48,
+                  377.701,
+                  810.44
+                ],
+                "sha256": "ec60e4dab4732f7e7688f4455a1d95bec9f71343c594498e44f8229832ce8fc7"
+              }
+            },
+            {
+              "id": "position-3",
+              "source": {
+                "url": "https://pionir.hr/wp-content/katalozi/borongajska_caviceva_badel/zgrada_a1/A1-3.pdf",
+                "page": 1,
+                "crop": [
+                  175.021,
+                  608.48,
+                  377.701,
+                  810.44
+                ],
+                "sha256": "0cb379e58363e467b3d94f046a07fc956364fbee5f7acbcab1a4731d4ef6714a"
+              }
+            },
+            {
+              "id": "position-4",
+              "source": {
+                "url": "https://pionir.hr/wp-content/katalozi/borongajska_caviceva_badel/zgrada_a1/A1-4.pdf",
+                "page": 1,
+                "crop": [
+                  175.021,
+                  608.48,
+                  377.701,
+                  810.44
+                ],
+                "sha256": "79853dfd52c415ff6d23def90cfc53fd9fcf28fb78d741e0887991920c2d3f7b"
+              }
+            },
+            {
+              "id": "position-5",
+              "source": {
+                "url": "https://pionir.hr/wp-content/katalozi/borongajska_caviceva_badel/zgrada_a1/A1-5.pdf",
+                "page": 1,
+                "crop": [
+                  175.021,
+                  608.48,
+                  377.701,
+                  810.44
+                ],
+                "sha256": "982b1df24f18307927100fb11dc9551160b4a67f734fdb4293286b1fdd3c8ac5"
+              }
+            },
+            {
+              "id": "position-6",
+              "source": {
+                "url": "https://pionir.hr/wp-content/katalozi/borongajska_caviceva_badel/zgrada_a1/A1-6.pdf",
+                "page": 1,
+                "crop": [
+                  175.021,
+                  608.48,
+                  377.701,
+                  810.44
+                ],
+                "sha256": "c9969a1a24374653eca9b514c3593c3c6d89c3337b262d2a43b3e8e02b1a3e21"
+              }
+            },
+            {
+              "id": "position-7",
+              "source": {
+                "url": "https://pionir.hr/wp-content/katalozi/borongajska_caviceva_badel/zgrada_a1/A1-7.pdf",
+                "page": 1,
+                "crop": [
+                  175.021,
+                  608.48,
+                  377.701,
+                  810.44
+                ],
+                "sha256": "ff406131e0d21dce448abeb459045985cfdecffd20aae5f4b233cfcfcb8ab79b"
+              }
+            },
+            {
+              "id": "position-8",
+              "source": {
+                "url": "https://pionir.hr/wp-content/katalozi/borongajska_caviceva_badel/zgrada_a1/A1-8.pdf",
+                "page": 1,
+                "crop": [
+                  175.021,
+                  608.48,
+                  377.701,
+                  810.44
+                ],
+                "sha256": "eac893055b09d316bfa146ad005538be8d9813d315baa308c19df73c6ca4a81a"
+              }
+            }
+          ]
+        },
+        {
+          "layoutFloorLevel": 8,
+          "units": [
+            {
+              "id": "position-1",
+              "source": {
+                "url": "https://pionir.hr/wp-content/katalozi/borongajska_caviceva_badel/zgrada_a1/A1-57.pdf",
+                "page": 1,
+                "crop": [
+                  175.021,
+                  608.48,
+                  377.701,
+                  810.44
+                ],
+                "sha256": "dc0b49f0a09bcecb9223939fe3a0d58b3e544526a37ddaf6b15ee074ba146b2e"
+              }
+            },
+            {
+              "id": "position-2",
+              "source": {
+                "url": "https://pionir.hr/wp-content/katalozi/borongajska_caviceva_badel/zgrada_a1/A1-58.pdf",
+                "page": 1,
+                "crop": [
+                  175.021,
+                  608.48,
+                  377.701,
+                  810.44
+                ],
+                "sha256": "c2791f7533e1118ac3babd209588388a6a6f788e9a76d930918fc18ce099b232"
+              }
+            },
+            {
+              "id": "position-3",
+              "source": {
+                "url": "https://pionir.hr/wp-content/katalozi/borongajska_caviceva_badel/zgrada_a1/A1-59.pdf",
+                "page": 1,
+                "crop": [
+                  175.021,
+                  608.48,
+                  377.701,
+                  810.44
+                ],
+                "sha256": "67e0f8a89115e168642d1d78956e47dc61af6900b89ad17e7d32e5e5dc1019f2"
+              }
+            },
+            {
+              "id": "position-4",
+              "source": {
+                "url": "https://pionir.hr/wp-content/katalozi/borongajska_caviceva_badel/zgrada_a1/A1-60.pdf",
+                "page": 1,
+                "crop": [
+                  175.021,
+                  608.48,
+                  377.701,
+                  810.44
+                ],
+                "sha256": "8f1e46d96a66d2abd12482787ddabd5809a24799df162d9439913348c53169e9"
+              }
+            },
+            {
+              "id": "position-5",
+              "source": {
+                "url": "https://pionir.hr/wp-content/katalozi/borongajska_caviceva_badel/zgrada_a1/A1-61.pdf",
+                "page": 1,
+                "crop": [
+                  175.021,
+                  608.48,
+                  377.701,
+                  810.44
+                ],
+                "sha256": "4ed130f4f81f16cf44c5cc5e8c36415054c03eeadcdf736eddfd1add0bc2daf6"
+              }
+            },
+            {
+              "id": "position-6",
+              "source": {
+                "url": "https://pionir.hr/wp-content/katalozi/borongajska_caviceva_badel/zgrada_a1/A1-62.pdf",
+                "page": 1,
+                "crop": [
+                  175.021,
+                  608.48,
+                  377.701,
+                  810.44
+                ],
+                "sha256": "c83c60557d2e5dd28ad625a50eda261793ec160ecaa61921b734a9b11d70b7f2"
+              }
+            },
+            {
+              "id": "position-7",
+              "source": {
+                "url": "https://pionir.hr/wp-content/katalozi/borongajska_caviceva_badel/zgrada_a1/A1-63.pdf",
+                "page": 1,
+                "crop": [
+                  175.021,
+                  608.48,
+                  377.701,
+                  810.44
+                ],
+                "sha256": "a9ca4320927890e477c2009fe4d0c905af5e01b9a8757eaa15352b1afc07ed63"
+              }
+            },
+            {
+              "id": "position-8",
+              "source": {
+                "url": "https://pionir.hr/wp-content/katalozi/borongajska_caviceva_badel/zgrada_a1/A1-64.pdf",
+                "page": 1,
+                "crop": [
+                  175.021,
+                  608.48,
+                  377.701,
+                  810.44
+                ],
+                "sha256": "59f7809d29a165d2a50854cb21f53ac3d4d1442ee0e25f3ad371570c3e64322e"
+              }
+            }
+          ]
+        }
+      ],
       "northInDrawing": "up",
       "strokeGray": 0.391,
       "registrationFloorLevel": 1,
