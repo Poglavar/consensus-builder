@@ -111,7 +111,7 @@
             }));
             if (kind === 'plans') return win.NamedPlans.list({ storedOnly: true })
                 .filter(record => !record.content.view.city || win.normalizeCityCodeForApi(record.content.view.city) === city())
-                .map(record => ({ key: record.cid, title: record.content.title, published: record.published === true || !Array.isArray(record.designs), cid: record.cid, record, local: record }));
+                .map(record => ({ key: record.cid, title: record.content.title, publishedAt: record.publishedAt, createdAt: record.publishedAt, published: record.published === true || !Array.isArray(record.designs), cid: record.cid, record, local: record }));
             return win.AgreementStore.list().map(record => ({ key: record.id, title: record.title || t('agreement.panel.untitled'),
                 author: record.author, createdAt: record.createdAt, published: !!record.published, cid: record.published?.cid || null,
                 onChain: !!record.onchain, record, local: record }));
@@ -119,7 +119,7 @@
         function remoteRows(rows, kind) {
             const plans = kind === 'plans' ? new Map(localRows('plans').map(row => [row.key, row.local])) : null;
             return rows.map(record => ({ key: record.cid, cid: record.cid || null, title: record.title || record.content?.title || t(kind === 'designs' ? 'planDialog.untitledDesign' : 'agreement.panel.untitled'),
-                author: record.author, createdAt: record.createdAt, published: true, onChain: !!record.onchain, record,
+                author: record.author, createdAt: record.publishedAt || record.createdAt, publishedAt: record.publishedAt, published: true, onChain: !!record.onchain, record,
                 local: kind === 'designs' ? win.DesignSync.localCopyOf(record.cid)
                     : kind === 'plans' ? plans.get(record.cid) : win.AgreementSync.localCopyOf(record.cid) }));
         }
@@ -438,6 +438,16 @@
                     const status = row.record.onchain?.status || row.record.status;
                     badges.append(node('span', 'cb-badge', win.AgreementPanel.chainStatusText(status)));
                 }
+                if (kind === 'plans' && row.published && typeof row.publishedAt === 'string') {
+                    const date = new Date(row.publishedAt);
+                    if (Number.isFinite(date.getTime())) {
+                        const locale = win.i18n.getLanguage?.();
+                        const stamp = node('time', 'lists-item__timestamp', date.toLocaleString(locale, { dateStyle: 'medium', timeStyle: 'medium' }));
+                        stamp.dateTime = date.toISOString();
+                        stamp.title = date.toLocaleString(locale, { year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: '2-digit', second: '2-digit', timeZoneName: 'short' });
+                        badges.append(stamp);
+                    }
+                }
                 item.append(badges);
                 if (kind === 'plans') item.append(node('p', 'sheet-note', t('agreement.list.designs', { count: row.record.content?.designCids.length ?? row.record.designCount })));
                 if (kind === 'agreements' && row.local) item.append(node('p', 'sheet-note', win.AgreementPanel.ruleShort(row.local.rule)));
@@ -585,7 +595,17 @@
             if (!state.remote.has(cacheKey())) load();
         }
         function refresh() { state.records.clear(); state.known.clear(); if (ready && opened()) { renderActions(); renderRows(); } }
-        return { open: async () => { await win.i18n.translationsReady; init(); controls(); return select(state.tab); }, select, refresh, choosePlanDesigns };
+        function drafts() {
+            return ['designs', 'plans', 'agreements'].map(kind => ({ kind,
+                rows: localRows(kind).filter(row => !row.published).map(row => ({ key: row.key, title: row.title, cid: row.cid })) }));
+        }
+        async function reviewDrafts(kind) {
+            state.search = ''; state.publication = 'draft'; state.onMap = false; state.filtersOpen = true;
+            await select(kind);
+            if (!win.MapShell.isOpen('proposals-sheet')) win.MapShell.openSheet('proposals-sheet');
+            doc.querySelector(`[data-list-tab="${state.tab}"]`)?.focus();
+        }
+        return { open: async () => { await win.i18n.translationsReady; init(); controls(); return select(state.tab); }, select, refresh, choosePlanDesigns, drafts, reviewDrafts };
     }
     return { stageOf, mergeRows, filterRows, indexQuery, browser };
 });

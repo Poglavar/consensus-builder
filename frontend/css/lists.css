@@ -30,7 +30,8 @@
 .lists-item__title { margin: 0; overflow-wrap: anywhere; flex: 1; font-size: 1rem; font-weight: 600; }
 .lists-item:focus-visible { outline: 2px solid var(--cb-primary); outline-offset: 2px; }
 .lists-item__selection { padding-block: var(--cb-space-2); }
-.lists-item__badges { display: flex; flex-wrap: wrap; gap: 4px; }
+.lists-item__badges { display: flex; align-items: center; flex-wrap: wrap; gap: var(--cb-space-2); }
+.lists-item__timestamp { color: var(--cb-text-muted); font-size: var(--cb-text-sm); font-variant-numeric: tabular-nums; }
 .lists-item p, #lists-status { margin: 0; }
 .lists-item__actions { flex-wrap: wrap; }
 #proposals-sheet .designs-panel-tabs { flex-shrink: 0; }

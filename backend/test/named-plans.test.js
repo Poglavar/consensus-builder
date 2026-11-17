@@ -17,11 +17,11 @@ const view = { at: '52.47935,-1.87943,18', city: 'birmingham', language: 'en', m
 const content = PlanRecord.create('Digbeth Green Quarter', [a, b], view);
 const cid = cidOf(canonicalBytes(content));
 
-function server({ records = new Map(), designs = [a, b], failInsert = false } = {}) {
+function server({ records = new Map(), designs = [a, b], failInsert = false, publishedAt = null } = {}) {
     const pool = { query: vi.fn(async (sql, params) => {
         if (sql.includes('FROM consensus.plan') && sql.includes("content->'designCids'")) {
             const matching = [...records.values()].filter(row => row.content.designCids.includes(params[0])).sort((x, y) => x.cid.localeCompare(y.cid));
-            return { rows: matching.slice(params[2], params[2] + params[1]).map(row => ({ cid: row.cid, title: row.content.title, design_count: row.content.designCids.length })) };
+            return { rows: matching.slice(params[2], params[2] + params[1]).map(row => ({ cid: row.cid, title: row.content.title, design_count: row.content.designCids.length, publishedAt: row.publishedAt })) };
         }
         if (sql.includes("content->'view'->>'city'")) {
             const matching = [...records.values()].filter(row => !params[0] || row.content.view.city === params[0]).sort((a,b) => a.cid.localeCompare(b.cid));
@@ -29,7 +29,7 @@ function server({ records = new Map(), designs = [a, b], failInsert = false } = 
         }
         if (sql.startsWith('SELECT cid, content')) return { rows: records.has(params[0]) ? [records.get(params[0])] : [] };
         if (sql.startsWith('SELECT cid FROM consensus.design')) return { rows: designs.map(cid => ({ cid })) };
-        if (sql.startsWith('INSERT INTO consensus.plan')) { if (failInsert) throw new Error('database unavailable'); records.set(params[0], { cid: params[0], content: JSON.parse(params[1]) }); return { rows: [] }; }
+        if (sql.startsWith('INSERT INTO consensus.plan')) { if (failInsert) throw new Error('database unavailable'); records.set(params[0], { cid: params[0], content: JSON.parse(params[1]), ...(publishedAt ? { publishedAt } : {}) }); return { rows: [] }; }
         throw new Error(`Unexpected query: ${sql}`);
     }) };
     const app = express(); app.use(express.json());
@@ -73,6 +73,16 @@ describe('named plan records and API', () => {
         expect((await request(app).post('/plans').send({ content })).status).toBe(200);
         expect(inserts()).toHaveLength(1);
         expect((await request(server({ records }).app).get(`/plans/${cid}`)).body).toEqual(first.body);
+    });
+    it('keeps the first publication timestamp through duplicate saves and both plan listings', async () => {
+        const publishedAt = '2026-11-17T09:10:11.000Z';
+        const { app } = server({ publishedAt });
+        const first = await request(app).post('/plans').send({ content });
+        expect(first.status).toBe(201); expect(first.body.publishedAt).toBe(publishedAt);
+        const repeated = await request(app).post('/plans').send({ content });
+        expect(repeated.status).toBe(200); expect(repeated.body.publishedAt).toBe(publishedAt);
+        expect((await request(app).get('/plans')).body.plans[0]).toMatchObject({ cid, publishedAt });
+        expect((await request(app).get(`/plans?design=${a}`)).body.plans[0]).toMatchObject({ cid, publishedAt });
     });
     it('refuses missing designs and database failures without persisting a plan', async () => {
         const missing = server({ designs: [a] });

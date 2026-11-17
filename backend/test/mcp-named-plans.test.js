@@ -163,8 +163,8 @@ describe('first-class named plans',()=>{
     });
     it('retrieves published /plans links and private references with CID checks',async()=>{
         const {tools,tower,store,plans,refs}=fixture();const plan=await tools.draftPlan({title:'Stored',designs:[tower],view});
-        store.set(tower.cid,tower);plans.set(plan.cid,{cid:plan.cid,content:plan.plan});
-        expect(await tools.getPlan({plan:`https://app.example/plans/${plan.cid}`})).toMatchObject({cid:plan.cid,plan:plan.plan,publication:'published',url:`https://app.example/plans/${plan.cid}`});
+        const publishedAt='2026-11-17T09:10:11.000Z';store.set(tower.cid,tower);plans.set(plan.cid,{cid:plan.cid,content:plan.plan,publishedAt});
+        expect(await tools.getPlan({plan:`https://app.example/plans/${plan.cid}`})).toMatchObject({cid:plan.cid,plan:plan.plan,publication:'published',publishedAt,url:`https://app.example/plans/${plan.cid}`});
         expect(await tools.getPlan({plan:{untrusted:{content:plan.plan}}})).toMatchObject({cid:plan.cid,plan:plan.plan,publication:'private'});
         refs.set('https://mcp.example/mcp/previews/private',plan.draftArtifact);
         expect((await tools.getPlan({plan:'https://mcp.example/mcp/previews/private'})).designs[0].parcelSourceId).toBe(tower.parcelSourceId);

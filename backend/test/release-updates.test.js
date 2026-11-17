@@ -90,3 +90,15 @@ describe('resume after an update reload', () => {
         expect(readResume(JSON.stringify({ ...record, mode: '2d' }), at)).toBeNull();
     });
 });
+describe('reload reasons', () => {
+    it('names actual blockers, never treating saved unpublished records as unsafe edits', () => {
+        const { reloadReasons } = require('../../frontend/js/release-updates.js');
+        expect(reloadReasons({})).toEqual([]);
+        expect(reloadReasons({ editing: true, editorTitle: 'Courtyard building', busy: ['Publishing', 'Publishing'], dialogs: ['Share plan'] }))
+            .toEqual([
+                { key: 'editingNamed', name: 'Courtyard building', fallback: 'unnamedEditor' },
+                { key: 'busyNamed', name: 'Publishing', fallback: 'unnamedOperation' },
+                { key: 'dialogNamed', name: 'Share plan', fallback: 'unnamedDialog' }
+            ]);
+    });
+});

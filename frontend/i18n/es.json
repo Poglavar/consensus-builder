@@ -9223,7 +9223,18 @@
     "lastChecked": "Última comprobación: {{date}}",
     "reload": "Recargar",
     "later": "Más tarde",
-    "finishEditing": "Finaliza o cancela la edición y espera a que termine el guardado antes de recargar."
+    "finishEditing": "Finaliza o cancela la edición y espera a que termine el guardado antes de recargar.",
+    "review": "Review work before reloading",
+    "savedDrafts": "These unpublished records are saved on this device. Reloading keeps them; publication is optional and public.",
+    "reloadKeepDrafts": "Reload and keep drafts",
+    "backToWork": "Back to work",
+    "editingNamed": "Finish or cancel editing: {{name}}.",
+    "busyNamed": "Wait for this operation to finish: {{name}}.",
+    "dialogNamed": "Close this dialog before reloading: {{name}}.",
+    "unnamedEditor": "Current editor",
+    "unnamedOperation": "Work in progress",
+    "unnamedDialog": "Open dialog",
+    "reviewKind": "Review {{kind}}"
   },
   "settingsPanel": {
     "dataAssumptions": "Datos y supuestos",

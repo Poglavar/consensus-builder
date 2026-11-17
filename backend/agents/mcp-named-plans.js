@@ -116,7 +116,7 @@ export function createMcpNamedPlanTools({ read, drafts, appOrigin, resolveDraftR
             }
             designs.push(row);
         }
-        return { plan: structuredClone(content), cid, designs, published, warnings };
+        return { plan: structuredClone(content), cid, designs, published, warnings, publishedAt: published ? artifact.publishedAt : undefined };
     }
     function defaultView(designs) {
         const bounds = designs.map(row => turf.bbox(turf.feature(read.siteOfDesign(row.content))));
@@ -196,7 +196,7 @@ export function createMcpNamedPlanTools({ read, drafts, appOrigin, resolveDraftR
     async function getPlan({ plan: value, when = null, buildout = null }) {
         const resolved = await resolvePlan(value);
         if (!resolved.published) return privateResult(resolved.plan, resolved.designs, resolved.warnings.length ? { warnings: resolved.warnings } : {}, { when, buildout });
-        return { plan: resolved.plan, cid: resolved.cid, designs: resolved.designs, publication: 'published', url: planUrl(resolved.cid), previewUrl: planUrl(resolved.cid, when, buildout) };
+        return { plan: resolved.plan, cid: resolved.cid, designs: resolved.designs, publication: 'published', publishedAt: resolved.publishedAt, url: planUrl(resolved.cid), previewUrl: planUrl(resolved.cid, when, buildout) };
     }
     function inventory(plan) {
         const items = [];

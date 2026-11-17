@@ -59,7 +59,7 @@ describe('app update page wiring', () => {
         const reload = h.document.querySelector('[data-app-update-reload]');
         h.__mapEditLock.isHeld.mockReturnValue(true); reload.click();
         expect(h.location.reload).not.toHaveBeenCalled();
-        expect(h.el('app-update-blocked').textContent).toContain('Finish or cancel');
+        expect(h.el('app-update-blocked').textContent).toContain('Finish or cancel editing: Current editor');
         h.__mapEditLock.isHeld.mockReturnValue(false);
         h.el('app-update-check').setAttribute('aria-busy', 'true'); reload.click();
         expect(h.location.reload).not.toHaveBeenCalled();

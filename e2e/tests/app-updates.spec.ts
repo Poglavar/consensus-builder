@@ -1,5 +1,5 @@
 import { test, expect } from '../helpers/fixtures';
-import { openCity } from '../helpers/runtime';
+import { openCity, createSpace } from '../helpers/runtime';
 const manifest = (number: number) => ({ version: 1, component: 'urbangametheory-frontend', buildId: `deploy-${number}`,
   buildNumber: number, generatedAt: '2026-10-27T12:00:00Z' });
 async function runningBuild(page: import('@playwright/test').Page, number = 12) {
@@ -72,7 +72,50 @@ test('Reload leaves an active map editor intact', async ({ mockApi: page }) => {
     w.__updateEditor = w.OnMapEditor.open({ owner: 'update-edit-check', title: 'Edit site', content: '<p data-draft-geometry>Unsaved geometry</p>', onCancel() { w.__updateEditor.close(); } });
   });
   await page.locator('#app-update-notice [data-app-update-reload]').click();
-  await expect(page.locator('#app-update-blocked')).toContainText('Finish or cancel editing');
+  await expect(page.locator('#app-update-blocked')).toContainText('Finish or cancel editing: Edit site');
   await expect(page.locator('#update-edit-check-editor .on-map-editor__panel')).toBeVisible();
   await expect(page.locator('#update-edit-check-editor [data-draft-geometry]')).toHaveText('Unsaved geometry');
+  await expect(page.locator('.app-update-review')).toContainText('Edit site');
+  await expect(page.getByRole('button', { name: 'Reload and keep drafts', exact: true })).toBeDisabled();
+  await page.keyboard.press('Escape');
+  await expect(page.locator('#update-edit-check-editor [data-draft-geometry]')).toBeVisible();
 });
+
+for (const width of [1280, 390]) {
+  test(`update review lists saved drafts and reload preserves them at ${width}px`, async ({ mockApi: page }, testInfo) => {
+    await page.setViewportSize({ width, height: 844 });
+    await runningBuild(page);
+    await page.route('**/release.json?*', route => route.fulfill({ json: manifest(13) }));
+    await openCity(page);
+    const id = await createSpace(page, 'park');
+    const publishedAt = '2026-11-17T09:04:38.000Z';
+    await page.evaluate(publishedAt => {
+      const w: any = window;
+      const content = w.PlanRecord.create('Dated plan', [w.Cid.cidOfObject({ fixture: 'design' })],
+        { city: w.resolveCurrentCityCode(), at: '45.8,15.98,17', mode: '2d', language: 'en' });
+      w.NamedPlans.remember({ cid: w.Cid.cidOfObject(content), content, publishedAt, published: true });
+    }, publishedAt);
+    await page.locator('#app-update-notice [data-app-update-reload]').click();
+    const review = page.locator('.app-update-review');
+    await expect(review).toContainText('publication is optional and public');
+    await expect(review.locator('li')).toHaveCount(1);
+    await page.getByRole('button', { name: 'Review Designs', exact: true }).click();
+    await expect(page.locator('#proposals-sheet')).toBeVisible();
+    await expect(page.locator(`#proposal-list-host [data-list-id="${id}"]`)).toBeVisible();
+    await page.keyboard.press('Escape');
+    await page.locator('#app-update-notice [data-app-update-reload]').click();
+    const reload = page.getByRole('button', { name: 'Reload and keep drafts', exact: true });
+    await expect(reload).toBeEnabled();
+    await page.screenshot({ path: testInfo.outputPath('draft-review.png') });
+    await reload.focus();
+    await Promise.all([page.waitForEvent('domcontentloaded'), page.keyboard.press('Enter')]);
+    await expect.poll(() => page.evaluate(id => !!(window as any).proposalStorage?.getProposal(id), id)).toBe(true);
+    await expect(page.locator('.app-update-review')).toHaveCount(0);
+    await page.evaluate(() => (window as any).ListsPanel.reviewDrafts('plans'));
+    await page.locator('[data-list-filter="publication"]').selectOption('all');
+    const stamp = page.locator('#plan-list-host time');
+    await expect(stamp).toHaveAttribute('datetime', publishedAt);
+    await expect(stamp).toContainText(':38');
+    await page.screenshot({ path: testInfo.outputPath('plan-timestamp.png') });
+  });
+}

@@ -21,3 +21,10 @@
 .app-update-notice:not([hidden]) { display: grid; gap: var(--cb-space-2); }
 .app-update-notice[hidden], .app-update-actions > [hidden] { display: none; }
 .app-update-notice [role="status"]:empty { display: none; }
+.app-update-review { display: grid; gap: var(--cb-space-3); }
+.app-update-review p, .app-update-review ul { margin: 0; }
+.app-update-review__records { max-height: 25dvh; overflow: auto; overflow-wrap: anywhere; }
+.app-update-review summary { cursor: pointer; font-weight: var(--cb-weight-semibold); }
+@media (max-width: 767.98px) {
+    .cb-dialog.app-update-review-dialog { --mobile-sheet-initial-height: 90dvh; }
+}
