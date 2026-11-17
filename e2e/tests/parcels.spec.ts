@@ -37,7 +37,7 @@ test.describe('Parcel loading and rendering @core', () => {
     await expect.poll(() => page.evaluate(() => (window as any).map.hasLayer((window as any).parcelLayer))).toBe(true);
   });
 
-  test('parcels show from zoom 15 while buildings keep their zoom-17 floor', async ({ mockApi: page }) => {
+  test('parcels show from zoom 16 while buildings keep their zoom-17 floor', async ({ mockApi: page }) => {
     await mockBuildingScene(page);
     await openCity(page);
     await openLayerSection(page, 'buildings');
@@ -48,9 +48,9 @@ test.describe('Parcel loading and rendering @core', () => {
     });
     const zoomTo = (zoom: number) => page.evaluate(z => (window as any).map.setZoom(z, { animate: false }), zoom);
     await expect.poll(shown).toEqual({ parcels: true, buildings: true });
-    await zoomTo(15);
+    await zoomTo(16);
     await expect.poll(shown).toEqual({ parcels: true, buildings: false });
-    await zoomTo(14.9);
+    await zoomTo(15.9);
     await expect.poll(shown).toEqual({ parcels: false, buildings: false });
     await zoomTo(17);
     await expect.poll(shown).toEqual({ parcels: true, buildings: true });

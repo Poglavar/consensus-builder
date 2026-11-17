@@ -5,7 +5,7 @@
         padding: 0.12,
         debounceMs: 500,
         gridRadius: 0,
-        zoomRange: { min: 15, max: Infinity }
+        zoomRange: { min: 16, max: Infinity }
     };
 
     function coerceNumber(value, fallback) {

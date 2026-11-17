@@ -525,7 +525,7 @@
 
     function getParcelZoomRange() {
         const { map } = getCurrentCityConfig();
-        return map?.parcelZoomRange || { min: 15, max: Infinity };
+        return map?.parcelZoomRange || { min: 16, max: Infinity };
     }
 
     // Explore has no register, but a visitor's local source supplies usable parcel geometry.
