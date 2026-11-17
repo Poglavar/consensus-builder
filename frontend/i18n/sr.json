@@ -6495,6 +6495,7 @@
             "accessViewAuto": "Kako navodi zgrada",
             "accessViewPoint": "Tačkasti pristup",
             "accessViewCorridor": "Hodnik",
+            "northOrientationOnly": "Samo severna orijentacija",
             "suggestedNorthFlats": "{{count}} stanova po spratu gleda samo na sever (jednostrano), prikazano crveno.",
             "xraySolidExisting": "Postojeće zgrade su pune pa se njihova unutrašnjost ne vidi.",
             "xrayMakeTransparent": "Učini providnim",

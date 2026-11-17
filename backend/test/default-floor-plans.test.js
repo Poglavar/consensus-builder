@@ -490,6 +490,8 @@ describe('double-loaded corridor access', () => {
         const northRow = ew.summary.flats.filter(flat => flat.type !== 'three-bed' && centroidY(flat) > 0);
         expect(ew.summary.flats.filter(flat => flat.flag).map(flat => flat.id).sort()).toEqual(northRow.map(flat => flat.id).sort());
         expect(ew.summary.flaggedFlats).toBe(northRow.length);
+        const projected=plans.buildFloorPlanGeometry({properties:{floorPlans:ew.floorPlans}},(x,y)=>[x,y]);
+        expect(projected[1].apartmentRegions.filter(region=>region.flag==='north-single-aspect')).toHaveLength(northRow.length);
         expect(ew.floorPlans.storeys.find(storey => storey.level === 3).units.filter(unit => unit.flag === 'north-single-aspect')).toHaveLength(northRow.length);
         expect(ew.floorPlans.notes.join(' ')).toMatch(new RegExp(`${northRow.length} flat\\(s\\) per storey face only north`));
         // Turned north-south, both long sides see east or west: no flat is flagged and the cores face the street.

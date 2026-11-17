@@ -6488,6 +6488,7 @@
             "accessViewAuto": "Según cada edificio",
             "accessViewPoint": "Acceso puntual",
             "accessViewCorridor": "Pasillo",
+            "northOrientationOnly": "Orientación solo al norte",
             "suggestedNorthFlats": "{{count}} viviendas por planta miran solo al norte (una sola orientación), en rojo.",
             "xraySolidExisting": "Los edificios existentes son sólidos y ocultan su interior.",
             "xrayMakeTransparent": "Hacer transparentes",

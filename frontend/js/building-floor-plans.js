@@ -316,7 +316,7 @@
         const layouts = new Map(plans.layouts.map(layout => [layout.id, {
             source: layout.source, parts: buildArchitectureParts(layout.architecture, interpolate),
             apartmentRegions: (layout.architecture.apartmentRegions || []).map(region => ({
-                id: region.id, polygons: region.polygons.map(polygon => polygon.map(ring => ring.map(p => interpolate(...p))))
+                id: region.id, flag: region.flag || null, polygons: region.polygons.map(polygon => polygon.map(ring => ring.map(p => interpolate(...p))))
             }))
         }]));
         return plans.storeys.map(storey => ({

@@ -21,7 +21,7 @@ describe('which floor models X-ray loads', () => {
         expect(plan({ candidates, pending: new Map([['near', {}]]) }).load).toEqual(['next']);
         expect(plan({ candidates, loaded: new Map([['near', null], ['next', {}]]) }).load).toEqual(['mid', 'edge']);
         expect(plan({ candidates, loaded: new Map([['near', null], ['next', {}], ['mid', {}], ['edge', {}]]) }).load).toEqual([]);
-        expect(DEFAULTS).toEqual({ loadRadiusM: 200, unloadRadiusM: 300, maxConcurrent: 2 });
+        expect(DEFAULTS).toEqual({ loadRadiusM: 200, unloadRadiusM: 300, maxConcurrent: 2, maxResident: 24 });
     });
 
     it('counts the camera height, so a high overview loads nothing', () => {
@@ -58,4 +58,37 @@ describe('which floor-plan groups the scene adds or removes', () => {
         expect(reconcileFloorPlanGroups({ enabled: false, shells, models, shown: new Map([['a', 1], ['b', 1]]) })).toEqual({ add: [], remove: ['a', 'b'] });
         expect(reconcileFloorPlanGroups({ enabled: true, shells, models, shown: new Map() })).toEqual({ add: ['a', 'b'], remove: [] });
     });
+});
+
+
+describe('x-ray detail and residency budgets', () => {
+    it('draws at most 24 nearest visible interiors within 200 m, including the threshold', () => {
+        const { visibleFloorDetails } = createRequire(import.meta.url)('../../frontend/js/floor-plan-proximity.js');
+        const candidates = Array.from({ length: 400 }, (_, key) => ({ key, visible: true, distanceM: key + 1 }));
+        candidates[0].visible = false;
+        expect([...visibleFloorDetails(candidates)]).toEqual(Array.from({length:24}, (_, i) => i+1));
+        expect([...visibleFloorDetails([{key:'edge',visible:true,distanceM:200},{key:'far',visible:true,distanceM:200.01},
+            {key:'behind',visible:false,distanceM:1},{key:'unknown',visible:true,distanceM:NaN}])]).toEqual(['edge']);
+    });
+    it('bounds resident answers and pending requests while moving through dense marked buildings', () => {
+        const candidates = Array.from({length:100},(_,i)=>at(String(i),i+1));
+        const loaded = new Map(candidates.slice(0,24).map(c=>[c.key,{}]));
+        expect(plan({candidates,loaded})).toEqual({load:[],cancel:[],unload:[]});
+        const moved = plan({camera:[40,0,10],candidates,loaded});
+        expect(moved.load.length).toBeLessThanOrEqual(2);
+        const kept = [...loaded.keys()].filter(key=>!moved.unload.includes(key));
+        expect(kept.length+moved.load.length).toBeLessThanOrEqual(24);
+        expect(moved.unload.length).toBeGreaterThan(0);
+    });
+});
+
+it('bounds visible storeys and triangle submission across tall buildings', () => {
+    const { visibleStoreyDetails } = createRequire(import.meta.url)('../../frontend/js/floor-plan-proximity.js');
+    const candidates=Array.from({length:24},(_,key)=>Array.from({length:60},(_,level)=>({key,level,visible:true,distanceM:key+level/100,triangles:100}))).flat();
+    const shown=visibleStoreyDetails(candidates);
+    expect([...shown.values()].reduce((n,levels)=>n+levels.size,0)).toBe(96);
+    expect([...shown.values()].every(levels=>levels.size<=8)).toBe(true);
+    const heavy=visibleStoreyDetails(candidates.map(c=>({...c,triangles:300000})));
+    expect([...heavy.values()].reduce((n,levels)=>n+levels.size,0)).toBe(3);
+    expect(visibleStoreyDetails(candidates.map(c=>({...c,visible:false}))).size).toBe(0);
 });

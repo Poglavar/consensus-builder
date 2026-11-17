@@ -52,13 +52,44 @@ A proposed building drawn from an uploaded glTF model (`properties.modelUrl`) ne
 A proposed building without a registered model can show a generated default interior in X-ray when
 **Suggested layouts** is on (`?suggested=1`): a point-access stair-and-lift core entered from the
 street-facing facade, two apartments per core, blind party walls, one core per ~240 m² of floor.
-`frontend/js/default-floor-plans.js` produces the same v2 contract with `suggested: true` and layout
+`frontend/js/default-floor-plans.js` produces the same v3 contract with `suggested: true` and layout
 sources of `kind: 'generated'`; the validator accepts such sources only inside a suggested model, the
 renderer draws them in a cooler palette, and `prepareFloorModel` refuses to store them. A slice whose
 footprint cannot hold the minimum core is painted red instead. Office buildings, towers and buildings
 of stepped parts get a central core instead (stairs, lifts and toilets through every storey; open-plan
 offices with a reception at the lifts, flats off a corridor along the lifts; `frontend/js/default-floor-plan-core.js`).
 Design, parameters and their regulatory basis: [`floor-plans.md`](floor-plans.md).
+
+## X-ray display and work limits
+
+Detailed interiors are selected by camera distance and frustum before drawing: at most 24 buildings
+within 200 m, 96 storeys in total, eight storeys per building, and one million architectural and
+warning-overlay triangles. The nearest eligible storeys win. The selected cutaway remains an upper
+limit. Other storeys and distant buildings keep coarse massing; these limits do not change authored
+models, unit counts or calculated quantities. Camera movement changes visibility and shared coarse
+bands in place, without generating layouts or rebuilding exterior buildings.
+
+Native-model requests have two concurrent slots and at most 24 resident answers, with the existing
+200 m load / 300 m unload hysteresis. Hidden Built layers, Photo view and X-ray off stop these reads.
+Suggested existing interiors are generated for at most 24 nearby buildings in view. Their footprint
+request covers the camera's 200 m neighbourhood, independently of the wider exterior-building radius.
+
+Suggested layouts use the same pure planner in one worker, with one outstanding calculation and a
+10-second watchdog. Disabling suggestions or X-ray, leaving model view, or disposing the scene stops
+outstanding calculation. The worker retains at most 64 generated results, bounded by 16 MiB of
+serialized content with a 4 MiB per-result ceiling. Old entries are evicted individually. Parcel
+panels retain scalar summaries rather than full floor models. Mesh construction yields between
+small part batches; cancelled or failed construction releases partial geometry.
+
+Street lookups are deduplicated, limited to two concurrent reads and 64 recent cells, and restricted
+to nearby visible buildings. A settled batch refreshes the planned family once, without clearing
+unrelated layouts or rebuilding exterior buildings. The frontage is already part of the layout key.
+
+Hover uses the existing batched geometry and a single temporary floor overlay. Hidden subtrees are
+excluded from picking, and unchanged camera/pointer states do no new picking work. Generated
+north-only apartments show **North orientation only** beside the pointer. Warning patches are
+batched once per storey, and clicking keeps the existing whole-building/design selection. These are
+presentation changes; no authored editing operation or MCP editing schema changes.
 
 ## Read paths
 

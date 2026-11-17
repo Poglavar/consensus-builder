@@ -28,7 +28,22 @@
     const WING_FILL_MAX = 0.8;            // a footprint filling less of its bounding rectangle is compound (L, U, ring)
     const WING_MIN_M2 = 25;               // a cut piece smaller than this is a sliver, not a wing
     const WING_CORNER_MIN_EDGE_M = 4;     // both edges at a reflex corner must be real walls, not a stair bump-out
-    const CACHE_MAX = 2000;
+    const CACHE_MAX = 64, CACHE_BYTES = 16 * 1024 * 1024, CACHE_ENTRY_BYTES = 4 * 1024 * 1024;
+    const cachedSizes = new WeakMap();
+    function resultBytes(result) {
+        if (!cachedSizes.has(result)) cachedSizes.set(result, JSON.stringify(result).length * 2);
+        return cachedSizes.get(result);
+    }
+    function cacheResult(cache, key, result) {
+        const size = resultBytes(result);
+        if (size > CACHE_ENTRY_BYTES) return;
+        let bytes = [...cache.values()].reduce((sum, value) => sum + resultBytes(value), 0);
+        while (cache.size && (cache.size >= CACHE_MAX || bytes + size > CACHE_BYTES)) {
+            const oldest = cache.keys().next().value;
+            bytes -= resultBytes(cache.get(oldest)); cache.delete(oldest);
+        }
+        cache.set(key, result);
+    }
 
     // FNV-1a, as urban-rule-variation.js uses for seeds: stable across reloads and node.
     function hashText(text) {
@@ -489,22 +504,60 @@
                 front ? `${front.basis}:${front.a.join(',')}:${front.b.join(',')}` : 'nofront', blindEdges.length, aroundHash, rulesHash, typology || '',
                 storeyUses.join(','), stepped ? hashText(stepped.plates.map(plate => `${plate.floors}:${geometryHash(plate.footprint)}`).join(';')) : '-'].join('|');
             let result = cache ? cache.get(key) : null;
+            if (result && cache) { cache.delete(key); cache.set(key, result); }
             if (!result) {
                 result = generator.planDefaultFloorPlans({ footprint: unit.footprint, floors, storeyHeightM, neighbours: nearby, front, blindEdges, typology,
                     storeyUses, ...(stepped ? { plates: stepped.plates } : {}),
                     buildingId: `${baseId}/${unit.sliceIndex}${unit.wing !== null && unit.wing !== undefined ? `/w${unit.wing}` : ''}` }, { turf, rules });
-                if (cache) {
-                    if (cache.size >= CACHE_MAX) cache.clear();
-                    cache.set(key, result);
-                }
+                if (cache) cacheResult(cache, key, result);
             }
             return { ...unit, key, result };
         });
         return { floors, storeyHeightM, slices: results, droppedWings };
     }
 
+    // Bounded street-cell reads for layouts: deduplicate, limit in-flight work, retain recent
+    // answers, and announce a settled batch once. The viewer owns when its presentation refreshes.
+    function createStreetLoader({ read, onIdle = () => {}, onError = () => {}, maxConcurrent = 2, maxEntries = 64 }) {
+        const entries = new Map(), active = new Map(), queue = [], waiters = [];
+        function idle() { if (!active.size && !queue.length) { waiters.splice(0).forEach(resolve => resolve()); onIdle(); } }
+        function pump() {
+            while (active.size < maxConcurrent && queue.length) {
+                const [key, entry] = queue.shift(), controller = new AbortController();
+                active.set(key, controller);
+                Promise.resolve().then(() => read(key, controller.signal)).then(features => {
+                    if (entries.get(key) === entry && !controller.signal.aborted) { entry.features = features; entry.pending = false; }
+                }).catch(error => {
+                    if (entries.get(key) !== entry || controller.signal.aborted) return;
+                    entry.features = []; entry.pending = false; onError(error, key);
+                }).finally(() => {
+                    if (active.get(key) !== controller) return;
+                    active.delete(key); pump(); idle();
+                });
+            }
+        }
+        function get(key) {
+            const existing = entries.get(key);
+            if (existing) { entries.delete(key); entries.set(key, existing); return existing.features; }
+            if (entries.size >= maxEntries) {
+                const oldest = [...entries].find(([,entry]) => !entry.pending)?.[0];
+                if (oldest === undefined) return null;
+                entries.delete(oldest);
+            }
+            const entry = { features: null, pending: true };
+            entries.set(key, entry); queue.push([key, entry]); pump(); return null;
+        }
+        function cancel(clear = false) {
+            active.forEach(controller => controller.abort()); active.clear(); queue.length = 0;
+            for (const [key, entry] of entries) if (clear || entry.pending) entries.delete(key);
+            waiters.splice(0).forEach(resolve => resolve());
+        }
+        return { get, cancel, get pending() { return active.size + queue.length; }, get size() { return entries.size; },
+            whenIdle: () => !active.size && !queue.length ? Promise.resolve() : new Promise(resolve => waiters.push(resolve)) };
+    }
+
     const api = { STREET_CELL_DEG, hashText, sliceBuildingByParcels, decomposeIntoWings, storeysOf, steppedBuilding, resolveFront, blindEdgesFor, neighbourPool,
-        streetCellKey, streetCellBbox, regionOf, eraRulesFor, planBuilding };
+        streetCellKey, streetCellBbox, regionOf, eraRulesFor, planBuilding, createStreetLoader };
     global.__defaultFloorPlanContext = api;
     if (typeof module !== 'undefined' && module.exports) module.exports = api;
 })(typeof window !== 'undefined' ? window : globalThis);

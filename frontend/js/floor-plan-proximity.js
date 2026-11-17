@@ -8,7 +8,7 @@
     // 200 m from the camera (3D distance, so a high overview loads nothing): a street-level or close
     // orbit view covers a building and its neighbours across the street. A 100 m slab's model is
     // ~300 KB, so a handful at a time.
-    const DEFAULTS = Object.freeze({ loadRadiusM: 200, unloadRadiusM: 300, maxConcurrent: 2 });
+    const DEFAULTS = Object.freeze({ loadRadiusM: 200, unloadRadiusM: 300, maxConcurrent: 2, maxResident: 24 });
 
     /**
      * @param state {
@@ -27,12 +27,17 @@
         const [cx, cy, cz] = state.camera;
         const byKey = new Map((state.candidates || []).map(candidate => [candidate.key, candidate]));
         const distance = candidate => Math.hypot(candidate.x - cx, candidate.y - cy, cz || 0);
-        const beyond = key => { const candidate = byKey.get(key); return !candidate || !(distance(candidate) <= options.unloadRadiusM); };
+        const wanted = new Set([...byKey.values()]
+            .map(candidate => ({ key: candidate.key, distance: distance(candidate) }))
+            .filter(item => item.distance <= (state.loaded.has(item.key) || state.pending.has(item.key) ? options.unloadRadiusM : options.loadRadiusM))
+            .sort((a,b) => a.distance - b.distance || String(a.key).localeCompare(String(b.key)))
+            .slice(0, options.maxResident).map(item => item.key));
+        const beyond = key => !wanted.has(key);
         const unload = loaded.filter(beyond);
         const cancel = pending.filter(beyond);
         const slots = Math.max(0, options.maxConcurrent - (pending.length - cancel.length));
         const load = [...byKey.values()]
-            .filter(candidate => !state.loaded.has(candidate.key) && !state.pending.has(candidate.key))
+            .filter(candidate => wanted.has(candidate.key) && !state.loaded.has(candidate.key) && !state.pending.has(candidate.key))
             .map(candidate => ({ key: candidate.key, distance: distance(candidate) }))
             .filter(entry => entry.distance <= options.loadRadiusM)
             .sort((a, b) => a.distance - b.distance || (a.key < b.key ? -1 : a.key > b.key ? 1 : 0))
@@ -54,7 +59,28 @@
         return { add, remove };
     }
 
-    const api = { DEFAULTS, planFloorPlanLoads, reconcileFloorPlanGroups };
+    const DETAIL_DEFAULTS = Object.freeze({ radiusM: 200, maxBuildings: 24, maxStoreys: 96, maxStoreysPerBuilding: 8, maxTriangles: 1000000 });
+    function visibleFloorDetails(candidates, options = {}) {
+        const { radiusM, maxBuildings } = { ...DETAIL_DEFAULTS, ...options };
+        return new Set(candidates.filter(item => item.visible && Number.isFinite(item.distanceM) && item.distanceM <= radiusM)
+            .sort((a,b) => a.distanceM - b.distanceM || String(a.key).localeCompare(String(b.key)))
+            .slice(0, maxBuildings).map(item => item.key));
+    }
+    function visibleStoreyDetails(candidates, options = {}) {
+        const { radiusM, maxStoreys, maxStoreysPerBuilding, maxTriangles } = { ...DETAIL_DEFAULTS, ...options };
+        const byBuilding = new Map();
+        let count = 0, triangles = 0;
+        for (const item of candidates.filter(item => item.visible && Number.isFinite(item.distanceM) && item.distanceM <= radiusM)
+            .sort((a,b) => a.distanceM - b.distanceM || a.level - b.level)) {
+            if (count >= maxStoreys) break;
+            const levels = byBuilding.get(item.key) || new Set();
+            if (levels.size >= maxStoreysPerBuilding || triangles + (item.triangles || 0) > maxTriangles) continue;
+            triangles += item.triangles || 0;
+            levels.add(item.level); byBuilding.set(item.key, levels); count++;
+        }
+        return byBuilding;
+    }
+    const api = { DEFAULTS, DETAIL_DEFAULTS, visibleFloorDetails, visibleStoreyDetails, planFloorPlanLoads, reconcileFloorPlanGroups };
     global.__floorPlanProximity = api;
     if (typeof module !== 'undefined' && module.exports) module.exports = api;
 })(typeof window !== 'undefined' ? window : globalThis);

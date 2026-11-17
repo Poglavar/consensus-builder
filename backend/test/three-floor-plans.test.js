@@ -139,6 +139,46 @@ describe('three-floor-plans volumetric adapter',()=>{
         expect(seen[0]).toEqual({floor:true,buildings:true,model:true,other:false,ground:false,light:true});
         expect([otherBuilding.visible,ground.visible]).toEqual([true,true]);
     });
+    it('uses the cheap shell for distant details and preserves the storey cutaway when returning',()=>{
+        const proxyMaterial=new Material({color:1});
+        const f={geometry:{type:'Polygon',coordinates:[[[0,0],[1,0],[1,1],[0,0]]]},properties:feature.properties};
+        const group=renderer.createBuildingGroup(THREE,f,(x,y)=>[x,y],api,{proxyHeightM:6,proxyMaterial});
+        const shell=group.children.find(c=>c.userData.cbFloorPlanDistantShell);
+        renderer.setCutaway(group,0);renderer.setDetailVisibility(group,false);
+        expect(shell.visible).toBe(true);expect(group.children.filter(c=>c.userData.cbFloorPlanFloor).every(c=>!c.visible)).toBe(true);
+        expect(shell.scale.z).toBeCloseTo(2.8/6);
+        expect(renderer.summarize(group).floors).toBe(0);
+        renderer.setDetailVisibility(group,true);expect(shell.visible).toBe(false);
+        expect(group.children.filter(c=>c.userData.cbFloorPlanFloor).map(c=>c.visible)).toEqual([true,false]);
+        renderer.disposeGroup(group);expect(shell.material.disposeCount).toBe(1);
+    });
+    it('draws selected storeys only and keeps other storeys in shared coarse bands',()=>{
+        const f={geometry:{type:'Polygon',coordinates:[[[0,0],[1,0],[1,1],[0,0]]]},properties:feature.properties};
+        const group=renderer.createBuildingGroup(THREE,f,(x,y)=>[x,y],api,{proxyHeightM:6,proxyMaterial:new Material({color:1})});
+        renderer.setCutaway(group,null);renderer.setVisibleStoreys(THREE,group,new Set([1]));
+        expect(group.children.filter(c=>c.userData.cbFloorPlanFloor).map(c=>c.visible)).toEqual([false,true]);
+        const shell=group.children.find(c=>c.userData.cbFloorPlanDistantShell),band=group.children.find(c=>c.userData.cbFloorPlanCoarseBand);
+        expect(band.position.z).toBe(0);expect(band.scale.z).toBeCloseTo(2.99/6);expect(band.geometry).toBe(shell.geometry);expect(band.material).toBe(shell.material);
+        renderer.setCutaway(group,0);renderer.setVisibleStoreys(THREE,group,new Set([0]));
+        expect(group.children.filter(c=>c.userData.cbFloorPlanCoarseBand)).toHaveLength(0);
+        renderer.disposeGroup(group);expect(shell.geometry.disposeCount).toBe(1);expect(shell.material.disposeCount).toBe(1);
+    });
+    it('batches all flagged apartments into one overlay mesh per storey',()=>{
+        const material=new Material({color:1});
+        const overlay=renderer.createFloorOverlay(THREE,[square,square,square],material);
+        expect(overlay.material).toBe(material);
+        expect(overlay.geometry.attributes.position.count).toBe(24);
+        const z=Array.from(overlay.geometry.attributes.position.array).filter((_,i)=>i%3===2);
+        expect(Math.min(...z)).toBeCloseTo(.02);expect(Math.max(...z)).toBeCloseTo(.07);
+    });
+    it('releases partial geometry when cooperative building fails',async()=>{
+        const allocated=[];
+        class Tracked extends Geometry {constructor(){super();allocated.push(this);}}
+        let lists=0;
+        await expect(renderer.createBuildingGroupCooperative({...THREE,BufferGeometry:Tracked},feature,()=>[0,0],api,{},
+            {forEach:async(items,visit)=>{if(++lists===2)throw new Error('cancelled source');items.forEach(visit);return true;}})).rejects.toThrow('cancelled source');
+        expect(allocated.length).toBeGreaterThan(0);expect(allocated.every(g=>g.disposeCount===1)).toBe(true);
+    });
     it('creates only uncovered proxy bands and owns its cloned material',()=>{
         const proxyMaterial=new Material({color:1});
         const feature={geometry:{type:'Polygon',coordinates:[[[0,0],[1,0],[1,1],[0,0]]]},properties:{floorPlans:{registration:{corners:[[0,0],[1,0],[1,1],[0,1]]}}}};

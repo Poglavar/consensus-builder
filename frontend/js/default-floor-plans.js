@@ -999,7 +999,7 @@
                 quality: { floorAreaM2: round2(polygonsArea(fp)), usableAreaM2: round2(usableM2), cores, lift, highRise }
             });
             const apartmentRegions = furnished => furnished.units.filter(unit => unit.kind === 'apartment').map(unit => ({
-                id: unit.apartment.unitId, polygons: polygonData(unit.apartment.polygon), basis: 'Generated apartment partition'
+                id: unit.apartment.unitId, polygons: polygonData(unit.apartment.polygon), flag: unit.apartment.flag || null, basis: 'Generated apartment partition'
             }));
             const source = { kind: 'generated', generator: GENERATOR_ID, parameters };
             const buildingId = typeof input.buildingId === 'string' && input.buildingId ? input.buildingId : 'building';

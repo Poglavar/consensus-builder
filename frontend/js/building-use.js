@@ -7,7 +7,7 @@
     const api = factory();
     if (typeof module === 'object' && module.exports) module.exports = api;
     if (root) root.BuildingUse = api;
-})(typeof window !== 'undefined' ? window : null, function () {
+})(typeof window !== 'undefined' ? window : (typeof self !== 'undefined' ? self : null), function () {
     'use strict';
     // Ground floor first. 'shop' and 'office' are work; 'public' and 'industrial' too.
     const USES = Object.freeze(['residential', 'residential-shops', 'mixed', 'office', 'public', 'industrial']);

@@ -30,7 +30,7 @@
         return region ? { floor, region } : null;
     }
 
-    function attach(THREE, { canvas, camera, floorPlanGroup, occluders = () => [], onPointerChange = () => {} }) {
+    function attach(THREE, { canvas, camera, floorPlanGroup, occluders = () => [], onPointerChange = () => {}, onHover = () => {} }) {
         const raycaster = new THREE.Raycaster(), ndc = new THREE.Vector2(), lastCamera = new THREE.Matrix4();
         let pointer = null, dirty = true, highlight = null, current = null;
         const material = new THREE.MeshBasicMaterial({ color: 0x20bfff, transparent: true, opacity: .55,
@@ -44,7 +44,7 @@
             highlight = null;
             current = null;
         }
-        function clear() { removeHighlight(); dirty = true; }
+        function clear() { removeHighlight(); onHover(null); dirty = true; }
         function invalidate() { dirty = true; }
         function move(event) {
             if (event.buttons || event.pointerType === 'touch') { leave(); return; }
@@ -63,20 +63,25 @@
             dirty = false;
             lastCamera.copy(camera.matrixWorld);
             const rect = canvas.getBoundingClientRect();
-            if (!rect.width || !rect.height) { removeHighlight(); return; }
+            if (!rect.width || !rect.height) { clear(); return; }
             ndc.set((pointer.x-rect.left)/rect.width*2-1, -(pointer.y-rect.top)/rect.height*2+1);
             raycaster.setFromCamera(ndc, camera);
-            floorPlanGroup.updateWorldMatrix(true, true);
+            floorPlanGroup.updateWorldMatrix(true, false);
             const targets = [];
             for (const group of [floorPlanGroup, ...occluders()].filter(Boolean)) {
-                group.traverse(object => {
-                    if (object.isMesh && !object.userData.cbApartmentHover && isVisible(object)) targets.push(object);
+                if (!isVisible(group)) continue;
+                group.traverseVisible(object => {
+                    if (object.isMesh && !object.userData.cbApartmentHover) {
+                        object.updateWorldMatrix(true, false);
+                        targets.push(object);
+                    }
                 });
             }
             // The closest visible solid wins. An unmodelled band or another building blocks
             // the unit behind it; hidden upper floors and isolated-away buildings cannot win.
             const hit = raycaster.intersectObjects(targets, false)[0];
             const picked = apartmentAtHit(hit);
+            onHover(picked, pointer);
             if (picked?.floor === current?.floor && picked?.region === current?.region) return;
             removeHighlight();
             if (!picked) return;

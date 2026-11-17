@@ -10,7 +10,7 @@
         // Photo always enters through the model view (map-mode-transition.js), so the terrain-following
         // road formation that photoreal-mode.js also reads loads here only.
         model: [
-            ...floorPlans, 'js/corridor-terrain-formation.js',
+            ...floorPlans, 'js/default-floor-plan-worker-client.js', 'js/corridor-terrain-formation.js',
             'js/building-height.js', 'js/proposals/gain.js', 'js/three-mesh-sanitize.js',
             'js/three-screen-door.js', 'js/three-smooth-transparency.js', 'js/three-building-display.js?v=20261113-passages', 'js/three-use-bands.js',
             'js/three-floor-plans.js?v=20261106-cooperative', 'js/three-apartment-hover.js', 'js/floor-plan-proximity.js', 'js/model-section.js', 'js/three-building-facades.js', 'js/rule-building-details.js', 'js/three-rule-roofs.js', 'js/three-resources.js',

@@ -62,7 +62,10 @@
         const props = feature.properties, registration = props.floorPlans.registration, corners = registration.corners;
         const suggested = props.floorPlans.suggested === true;
         const colors = suggested ? SUGGESTED_COLORS : COLORS;
-        const wrapper = new THREE.Group(), layouts = new Map(), materials = new Map();
+        const wrapper = new THREE.Group(), layouts = new Map(), materials = new Map(), tops = new Map();
+        for (const floor of floors) if (!tops.has(floor.layoutId)) {
+            tops.set(floor.layoutId, floor.parts.reduce((top, part) => Math.max(top, part.baseM + part.heightM), 0));
+        }
         wrapper.userData = {
             cbFloorPlan: true, suggested, proposalId: props.proposalId ?? props.proposal_id ?? null,
             parcelId: props.parcelId ?? props.parcel_id ?? null, isNearbyBuilding3D: true,
@@ -82,11 +85,12 @@
                 for (const kind of layout.keys()) if (!materials.has(kind)) materials.set(kind, materialFor(THREE, kind, colors));
                 layouts.set(floor.layoutId, layout);
             }
+            const triangleCount = [...layout.values()].reduce((sum, geometry) => sum + geometry.attributes.position.count / 3, 0);
             const floorGroup = new THREE.Group();
             floorGroup.name = `FloorPlan:${floor.id}`;
             floorGroup.position.z = floor.elevationM;
             floorGroup.userData = {
-                cbFloorPlanFloor: true, id: floor.id, level: floor.level,
+                cbFloorPlanFloor: true, id: floor.id, level: floor.level, heightM: tops.get(floor.layoutId), triangleCount,
                 elevationM: floor.elevationM, elevationBasis: floor.elevationBasis,
                 layoutId: floor.layoutId, sourceUrl: floor.sourceUrl, apartmentCount: floor.apartmentCount,
                 apartmentRegions: floor.apartmentRegions || []
@@ -119,20 +123,91 @@
                 wrapper.add(mesh);
             }
         }
+        if (options.withDistantShell !== false && polygons.length && options.proxyMaterial && Number.isFinite(options.proxyHeightM) && options.proxyHeightM > 0) {
+            const shell = new THREE.Mesh(geometryFor(THREE, polygons.map(rings => ({
+                rings: rings.map(ring => ring.map(p => project(p[0], p[1]))), baseM: 0, heightM: options.proxyHeightM
+            }))), options.proxyMaterial.clone());
+            shell.name = 'DistantFloorPlanShell';
+            shell.userData.cbFloorPlanDistantShell = true;
+            shell.userData.heightM = options.proxyHeightM;
+            shell.visible = false;
+            wrapper.add(shell);
+        }
+        const xy = corners.map(p => project(p[0], p[1]));
+        wrapper.userData.detailBounds = {
+            min: [Math.min(...xy.map(p => p[0])), Math.min(...xy.map(p => p[1])), Math.min(0, ...floors.map(f => f.elevationM))],
+            max: [Math.max(...xy.map(p => p[0])), Math.max(...xy.map(p => p[1])), Math.max(options.proxyHeightM || 0,
+                ...floors.map(f => f.elevationM + tops.get(f.layoutId)))]
+        };
         return wrapper;
+    }
+
+    function createFloorOverlay(THREE, polygons, material) {
+        return new THREE.Mesh(geometryFor(THREE, polygons.map(rings => ({ rings, baseM: .02, heightM: .05 }))), material);
+    }
+
+    function setDetailVisibility(group, visible) {
+        if (!group?.userData?.cbFloorPlan || group.userData.detailVisible === visible) return false;
+        group.userData.detailVisible = visible;
+        setCutaway(group, group.userData.cutawayLevel ?? null);
+        return true;
+    }
+
+    function setVisibleStoreys(THREE, group, levels) {
+        const previous = group.userData.visibleStoreys;
+        if (group.userData.storeyBandCutaway === group.userData.cutawayLevel && previous && previous.size === levels.size && [...levels].every(level => previous.has(level))) return false;
+        group.userData.storeyBandCutaway = group.userData.cutawayLevel;
+        group.userData.visibleStoreys = levels;
+        setCutaway(group, group.userData.cutawayLevel ?? null);
+        // Other storeys retain coarse massing. Merge adjoining intervals and reuse the
+        // distant shell's geometry/material, rather than drawing their interior meshes.
+        const shell = group.children.find(child => child.userData.cbFloorPlanDistantShell);
+        group.children.filter(child => child.userData.cbFloorPlanCoarseBand).forEach(child => group.remove(child));
+        if (!shell || !levels.size) return true;
+        const maxLevel = group.userData.cutawayLevel;
+        const floors = group.children.filter(child => child.userData.cbFloorPlanFloor).sort((a,b) => a.position.z - b.position.z);
+        const intervals = [];
+        floors.forEach((floor, index) => {
+            if (levels.has(floor.userData.level) || (maxLevel !== null && floor.userData.level > maxLevel)) return;
+            const base = floor.position.z;
+            const next = floors[index + 1];
+            const top = next ? next.position.z : base + floor.userData.heightM;
+            const last = intervals[intervals.length - 1];
+            if (last && Math.abs(last[1] - base) < .01) last[1] = top;
+            else intervals.push([base, top]);
+        });
+        for (const [base, top] of intervals) {
+            const band = new THREE.Mesh(shell.geometry, shell.material);
+            band.userData.cbFloorPlanCoarseBand = true;
+            band.position.z = base; band.scale.z = Math.max(.001, top - base - .01) / shell.userData.heightM;
+            group.add(band);
+        }
+        return true;
     }
 
     function setCutaway(group, maxLevel) {
         if (!group?.userData?.cbFloorPlan) return;
+        group.userData.cutawayLevel = maxLevel;
+        const details = group.userData.detailVisible !== false;
         group.children.forEach(floor => {
-            if (floor.userData.cbFloorPlanProxy) {
+            if (floor.userData.cbFloorPlanDistantShell) {
+                const height = floor.userData.heightM;
+                const top = maxLevel === null ? height : Math.max(0, ...group.children
+                    .filter(child => child.userData.cbFloorPlanFloor && child.userData.level <= maxLevel)
+                    .map(child => child.position.z + child.userData.heightM));
+                floor.scale.z = Math.min(height, top) / height;
+                floor.visible = !details && top > 0;
+            } else if (floor.userData.cbFloorPlanCoarseBand) {
+                floor.visible = details;
+            } else if (floor.userData.cbFloorPlanProxy) {
                 const { baseM, heightM } = floor.userData;
                 const top = maxLevel === null ? Infinity : maxLevel < 0 ? 0
                     : (maxLevel + 1) * group.userData.proxyStoreyHeightM;
                 const visibleHeight = Math.max(0, Math.min(heightM, top - baseM));
-                floor.visible = visibleHeight > 0;
+                floor.visible = details && visibleHeight > 0;
                 floor.scale.z = visibleHeight / heightM;
-            } else floor.visible = maxLevel === null || floor.userData.level <= maxLevel;
+            } else floor.visible = details && (maxLevel === null || floor.userData.level <= maxLevel)
+                && (!group.userData.visibleStoreys || group.userData.visibleStoreys.has(floor.userData.level));
         });
     }
 
@@ -204,23 +279,29 @@
         if (!floors.length) return null;
         const isCurrent = work.isCurrent || (() => true);
         const geometries = new Map(), built = [];
-        for (const [layoutId, byKind] of layoutParts(floors)) {
-            const layout = new Map();
-            for (const [kind, parts] of byKind) {
-                const positions = [], normals = [];
-                if (!await work.forEach(parts, part => extrudeInto(THREE, part, positions, normals), { isCurrent })) {
-                    built.forEach(geometry => geometry.dispose());
-                    return null;
+        let completed = false;
+        try {
+            for (const [layoutId, byKind] of layoutParts(floors)) {
+                const layout = new Map();
+                for (const [kind, parts] of byKind) {
+                    const positions = [], normals = [];
+                    if (!await work.forEach(parts, part => extrudeInto(THREE, part, positions, normals), { isCurrent })) {
+                        return null;
+                    }
+                    const geometry = mergedGeometry(THREE, positions, normals);
+                    built.push(geometry);
+                    layout.set(kind, geometry);
                 }
-                const geometry = mergedGeometry(THREE, positions, normals);
-                built.push(geometry);
-                layout.set(kind, geometry);
+                geometries.set(layoutId, layout);
             }
-            geometries.set(layoutId, layout);
+            const group = createBuildingGroup(THREE, feature, project, api, options, { floors, geometries });
+            completed = true;
+            return group;
+        } finally {
+            if (!completed) built.forEach(geometry => geometry.dispose());
         }
-        return createBuildingGroup(THREE, feature, project, api, options, { floors, geometries });
     }
-    const api = { createLocalUnitGroup, createBuildingGroup, createBuildingGroupCooperative, setCutaway, disposeGroup, summarize, renderCutaway };
+    const api = { createLocalUnitGroup, createBuildingGroup, createBuildingGroupCooperative, setCutaway, setDetailVisibility, setVisibleStoreys, createFloorOverlay, disposeGroup, summarize, renderCutaway };
     global.__threeFloorPlans = api;
     if (typeof module !== 'undefined' && module.exports) module.exports = api;
 })(typeof window !== 'undefined' ? window : globalThis);

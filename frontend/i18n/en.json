@@ -6461,6 +6461,7 @@
             "accessViewAuto": "Each building's own",
             "accessViewPoint": "Point access",
             "accessViewCorridor": "Corridor",
+            "northOrientationOnly": "North orientation only",
             "suggestedNorthFlats": "{{count}} flats per storey face only north (single aspect), shown in red.",
             "xraySolidExisting": "Existing buildings are solid, so their interiors are hidden.",
             "xrayMakeTransparent": "Make transparent",

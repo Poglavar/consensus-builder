@@ -272,3 +272,28 @@ describe('planBuilding', () => {
         expect(cache.size).toBe(6);
     });
 });
+
+it('evicts the oldest generated result without flushing the cache and does not cache huge results',()=>{
+    const cache=new Map(Array.from({length:64},(_,i)=>['old-'+i,{value:i}]));
+    const clear=vi.spyOn(cache,'clear');
+    const result={floorPlans:null,summary:{},warnings:[]};
+    const generator={planDefaultFloorPlans:()=>result};
+    context.planBuilding(rectangle(0,0,20,12,{id:'bounded'}),{turf,generator,parcels:[],neighbours:[],roads:null,heightM:9,storeyFallbackM:3,existing:true,cache});
+    expect(cache.size).toBe(64);expect(cache.has('old-0')).toBe(false);expect(cache.has('old-63')).toBe(true);expect(clear).not.toHaveBeenCalled();
+    const huge={...result,payload:'x'.repeat(3*1024*1024)};
+    const next=new Map();context.planBuilding(rectangle(0,0,20,12,{id:'huge'}),{turf,generator:{planDefaultFloorPlans:()=>huge},parcels:[],neighbours:[],roads:null,heightM:9,storeyFallbackM:3,existing:true,cache:next});
+    expect(next.size).toBe(0);
+});
+
+it('bounds street reads, deduplicates cells, announces one settled batch, and cancels queued work',async()=>{
+    const jobs=new Map(),started=[],idle=vi.fn(),read=(key,signal)=>new Promise(resolve=>{started.push(key);jobs.set(key,{resolve,signal});});
+    const loader=context.createStreetLoader({read,onIdle:idle,maxEntries:4});
+    for(const key of ['a','b','c','d','e'])loader.get(key);
+    loader.get('a');await Promise.resolve();expect(started).toEqual(['a','b']);expect(loader.size).toBe(4);expect(loader.pending).toBe(4);
+    jobs.get('a').resolve(['a']);jobs.get('b').resolve(['b']);
+    for(let n=0;n<8;n++)await Promise.resolve();expect(started).toEqual(['a','b','c','d']);expect(idle).not.toHaveBeenCalled();
+    jobs.get('c').resolve(['c']);jobs.get('d').resolve(['d']);await loader.whenIdle();expect(idle).toHaveBeenCalledTimes(1);
+    expect(loader.get('b')).toEqual(['b']);loader.get('e');await Promise.resolve();expect(loader.size).toBe(4);
+    loader.cancel();expect(jobs.get('e').signal.aborted).toBe(true);expect(loader.pending).toBe(0);
+    jobs.get('e').resolve(['stale']);await Promise.resolve();expect(loader.size).toBe(3);expect(idle).toHaveBeenCalledTimes(1);
+});

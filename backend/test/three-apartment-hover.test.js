@@ -18,11 +18,11 @@ function setup() {
     floor.add(new THREE.Mesh(new THREE.PlaneGeometry(10,10),new THREE.MeshBasicMaterial()));
     root.add(floor);
     const blockers = new THREE.Group();
-    let wakeups = 0;
-    const hover = attach(THREE,{ canvas,camera,floorPlanGroup:root,occluders:()=>[blockers],onPointerChange:()=>wakeups++ });
+    let wakeups = 0, hovered = null;
+    const hover = attach(THREE,{ canvas,camera,floorPlanGroup:root,occluders:()=>[blockers],onPointerChange:()=>wakeups++,onHover:(picked,pointer)=>{hovered=picked?{flag:picked.region.flag,pointer}:null} });
     const event = (type,x=25,extra={}) => listeners.get(type)({clientX:x,clientY:50,buttons:0,pointerType:'mouse',...extra});
     const highlight = () => floor.children.find(c=>c.userData.cbApartmentHover);
-    return {root,floor,hover,event,highlight,listeners,blockers,camera,wakeups:()=>wakeups};
+    return {root,floor,hover,event,highlight,listeners,blockers,camera,wakeups:()=>wakeups,hovered:()=>hovered};
 }
 describe('apartment hover',()=>{
     it('highlights exactly one unit, reuses it within that unit, and clears in common space',()=>{
@@ -59,6 +59,18 @@ describe('apartment hover',()=>{
     it('repicks when the camera moves with a stationary pointer',()=>{
         const s=setup();s.event('pointermove');s.hover.update(true);expect(s.highlight().userData.apartmentId).toBe('west');
         s.camera.position.x=5;s.hover.update(true);expect(s.highlight().userData.apartmentId).toBe('east');s.hover.dispose();
+    });
+    it('reports the north-only reason with the current pointer and hides it when leaving',()=>{
+        const s=setup();s.floor.userData.apartmentRegions[0].flag='north-single-aspect';
+        s.event('pointermove',25);s.hover.update(true);expect(s.hovered()).toEqual({flag:'north-single-aspect',pointer:{x:25,y:50}});
+        s.event('pointermove',26);s.hover.update(true);expect(s.hovered().pointer.x).toBe(26);
+        s.event('pointerleave');expect(s.hovered()).toBeNull();s.hover.dispose();
+    });
+    it('never traverses or updates a hidden storey subtree for picking',()=>{
+        const s=setup(),hidden=new THREE.Group();hidden.visible=false;hidden.userData.cbFloorPlanFloor=true;
+        const mesh=new THREE.Mesh(new THREE.PlaneGeometry(10,10),new THREE.MeshBasicMaterial());
+        let calls=0;mesh.raycast=()=>{calls++};mesh.updateWorldMatrix=()=>{calls++};hidden.add(mesh);s.root.add(hidden);
+        s.event('pointermove');s.hover.update(true);expect(s.highlight()).toBeDefined();expect(calls).toBe(0);s.hover.dispose();
     });
     it('respects region holes and floor world transforms',()=>{
         const s=setup();s.floor.position.set(20,10,3);s.floor.updateMatrixWorld(true);
