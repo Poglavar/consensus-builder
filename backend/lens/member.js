@@ -73,13 +73,14 @@ export function ownershipFromOwnerSet(rows, { parcelUid, owner }) {
 
 function schemaAddresses(credential) {
     const derive = kind => deriveSchemaPda({ credential, name: LENS_SCHEMAS[kind].name, version: LENS_SCHEMAS[kind].version });
-    return { ownership: derive('ownership'), decision: derive('decision'), evidence: derive('evidence') };
+    return { ownership: derive('ownership'), decision: derive('decision'), propertyOffer: derive('propertyOffer'), evidence: derive('evidence') };
 }
 
 // What an issued attestation states, for its log line.
 function describeFact(kind, fields) {
     if (kind === 'ownership') return `parcel ${fields.parcelUid}, owner ${fields.owner}`;
     if (kind === 'decision') return `agreement ${fields.agreementCid} of ${fields.sponsor}, ${fields.decision}`;
+    if (kind === 'propertyOffer') return `property offer ${fields.cid}`;
     return `recipe ${fields.recipeHash}, "${fields.value}", event ${new Date(fields.eventTime * 1000).toISOString()}`;
 }
 
@@ -257,6 +258,13 @@ export function createLensMember({
             }
             const nonce = factNonce([LENS_SCHEMAS.decision.id, agreementCid, sponsor, decision, sourceObservedAt]);
             return issue('decision', fields, nonce, {});
+        },
+
+        async attestPropertyOfferDecision(fields) {
+            const required = ['cid', 'offer', 'termsHash', 'payoutsHash', 'buyer', 'seller', 'sourceObservedAt'];
+            if (required.some(name => fields?.[name] == null) || fields.ownershipVerified !== 1) throw new LensError(422, 'invalid_property_offer_decision', 'Property offer decision is incomplete.');
+            const nonce = factNonce([LENS_SCHEMAS.propertyOffer.id, fields.cid, fields.offer, fields.termsHash, fields.payoutsHash, fields.buyer, fields.seller, fields.sourceObservedAt]);
+            return issue('propertyOffer', fields, nonce, {});
         },
 
         async issueMarketEvidence({ recipe, fact } = {}) {

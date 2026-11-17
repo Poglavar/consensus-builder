@@ -13,6 +13,7 @@ proposal_nft = "3WsVS6LkLo4ySLaLvxKdwuD37fcCjE2Yu9fVh1nMfxbg"
 proposal_pledge = "1jESRS3mJiPUJTtmQ5ncyBhGNmGeXTpUqPyJcTYrp6g"
 
 [programs.localnet]
+property_offer = "2dYG7pCgQr83Nfor5LWRY5fRyf4UHDteVpUa4g2hj7mx"
 # agreement: deployed to devnet 2026-10-23 (programs/agreement/README.md).
 agreement = "GtdgeRH89f2qLj4j4v6NcecWSr6RDPP9y4TMfPCGA5jQ"
 parcel_nft = "4zadC1FgWPQLv6qv66mjEBthBqTvrmxL5oDcHQzNtkV1"

@@ -99,6 +99,7 @@ DDL_FILES=(
     db/shared-plan-session-ddl.sql
     db/chat-ddl.sql
     db/agreement-ddl.sql
+    db/property-offer-ddl.sql
     db/agreement-decision-ddl.sql
     db/community-report-ddl.sql
     db/community-voting-ddl.sql

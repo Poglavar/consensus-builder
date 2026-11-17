@@ -54,6 +54,10 @@ A new authored version of a design or agreement. Published content retains its o
 
 An arrangement referencing exactly one immutable plan revision, with input land and holders, output pieces, allocations, money, a decision rule and a deadline. Published `agreement/v1` content names the plan with `planCid` and its outputs by piece hash. The plan supplies all design membership; it must be created independently before it is selected for an agreement. The agreement has no independently authored spatial layout or design list. Several agreements can reference the same plan. A local editing record can cache design references for replay and preparation, but publication must match the referenced plan exactly. An indexed agreement that lists designs inline (`designs` or `designCids`, a retired experimental format) is not served: the API answers HTTP 410 `retired-agreement-format`, and such an agreement is recreated from a published plan.
 
+### Property offer
+
+An immutable, atomic offer to buy or sell one or more source-qualified cadastral parcels for one exact total in SOL lamports. A published `property-offer/v1` record names its maker, the initially open counterparty role, a lens, expiry and every parcel. A sale commits its payout schedule; a purchase receives an owner-approved payout schedule only on acceptance. Acceptance and lens attestation bind the exact offer CID, terms and schedule; they do not assert or effect a registered title transfer.
+
 ### Counter-agreement
 
 A new agreement drafted from an existing agreement's plan and terms, optionally under another scheme. It references the same plan revision and is an ordinary agreement once saved; no record field links it to the agreement it answers.

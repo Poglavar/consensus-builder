@@ -7,7 +7,7 @@
 import fs from 'node:fs';
 
 function emptyCounts() {
-    return { ownership: 0, decision: 0, evidence: 0, parcels: 0, agreements: 0 };
+    return { ownership: 0, decision: 0, propertyOffer: 0, evidence: 0, parcels: 0, agreements: 0 };
 }
 
 // recipeHash selects MarketEvidence-v1 records by the recipe they answer and agreementCid
@@ -125,6 +125,7 @@ export function createPgStore(pool) {
                 SELECT count(*) FILTER (WHERE kind = 'ownership')::int AS ownership,
                        count(*) FILTER (WHERE kind = 'decision')::int AS decision,
                        count(*) FILTER (WHERE kind = 'evidence')::int AS evidence,
+                       count(*) FILTER (WHERE kind = 'propertyOffer')::int AS "propertyOffer",
                        count(DISTINCT parcel_uid)::int AS parcels,
                        count(DISTINCT payload->>'agreementCid') FILTER (WHERE kind = 'decision')::int AS agreements
                 FROM consensus.lens_attestation

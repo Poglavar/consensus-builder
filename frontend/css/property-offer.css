@@ -1,0 +1,22 @@
+.property-offer-form { display: grid; gap: var(--cb-space-3); }
+.property-offer-form__field { display: grid; gap: var(--cb-space-1); font-weight: var(--cb-weight-semibold); }
+.property-offer-form__field input { width: 100%; min-width: 0; }
+.property-offer-form__facts { display: grid; gap: var(--cb-space-1); margin: 0; padding: var(--cb-space-2); border: 1px solid var(--cb-line); border-radius: var(--cb-radius-sm); background: var(--cb-surface-2); }
+.property-offer-form__facts > div { display: flex; justify-content: space-between; gap: var(--cb-space-2); }
+.property-offer-form__facts dt { color: var(--cb-text-muted); }
+.property-offer-form__facts dd { margin: 0; overflow-wrap: anywhere; text-align: end; }
+.property-offer-form__lens, .property-offer-form__payout { display: flex; gap: var(--cb-space-2); }
+.property-offer-form__lens input, .property-offer-form__payout input { min-width: 0; flex: 1 1 auto; }
+.property-offer-form__payouts { display: grid; gap: var(--cb-space-2); margin: 0; padding: var(--cb-space-2); border: 1px solid var(--cb-line); border-radius: var(--cb-radius-sm); }
+.property-offer-form__payoutRows { display: grid; gap: var(--cb-space-2); }
+.property-offer-form__status:empty { display: none; }
+.property-offer-form__actions { justify-content: flex-end; }
+.property-offer-panel { display: grid; gap: var(--cb-space-3); }
+.property-offer-panel > h3 { margin: 0; overflow-wrap: anywhere; }
+.property-offer-panel__facts { display: grid; gap: var(--cb-space-1); margin: 0; }
+.property-offer-panel__facts > div { display: flex; justify-content: space-between; gap: var(--cb-space-2); border-bottom: 1px solid var(--cb-line); padding-block: var(--cb-space-1); }
+.property-offer-panel__facts dt { color: var(--cb-text-muted); }
+.property-offer-panel__facts dd { margin: 0; text-align: end; overflow-wrap: anywhere; }
+.property-offer-panel__payouts { margin: 0; padding-inline-start: 1.3rem; }
+.property-offer-panel__actions { justify-content: flex-end; }
+@media (max-width: 34rem) { .property-offer-form__lens, .property-offer-form__payout { flex-wrap: wrap; } .property-offer-form__lens input, .property-offer-form__payout input { flex-basis: 100%; } }

@@ -9324,5 +9324,78 @@
         "stream": "La respuesta se interrumpió. Puedes volver a intentarlo.",
         "mapCommand": "No se pudo completar el comando del mapa. No se aplicaron los cambios del diseño."
       }
+  },
+  "propertyOffer": {
+    "buy": "Oferta de compra",
+    "sell": "Oferta de venta",
+    "createBuy": "Ofrecer compra",
+    "createSell": "Ofrecer venta",
+    "details": "Oferta inmobiliaria",
+    "publish": "Publicar oferta",
+    "mint": "Acuñar en Solana",
+    "accept": "Aceptar oferta",
+    "fund": "Financiar",
+    "approve": "Aprobar",
+    "execute": "Ejecutar",
+    "cancel": "Cancelar",
+    "cancelOffer": "Cancelar oferta",
+    "expire": "Vencer oferta",
+    "save": "Guardar oferta",
+    "saving": "Guardando oferta…",
+    "saved": "Guardado.",
+    "working": "Procesando…",
+    "bundle": "{{count}} parcelas — todo o nada",
+    "walletMissing": "Conecta primero una cartera de Solana",
+    "chooseLens": "Elegir Lens",
+    "addPayout": "Añadir destinatario",
+    "remove": "Eliminar",
+    "recipient": "Cartera del destinatario",
+    "amountSol": "Importe en SOL",
+    "payoutHint": "Los destinatarios indicados reciben este importe total cuando se complete la venta.",
+    "lensPlaceholder": "Dirección de miembro de Lens en Solana",
+    "directions": {
+      "buy": "Oferta de compra",
+      "sell": "Oferta de venta"
+    },
+    "states": {
+      "draft": "Borrador",
+      "published": "Publicada"
+    },
+    "fields": {
+      "title": "Título",
+      "direction": "Tipo",
+      "bundle": "Lote de parcelas",
+      "wallet": "Tu cartera de Solana",
+      "price": "Precio total (SOL)",
+      "deadline": "Fecha límite de la oferta",
+      "lens": "Lens",
+      "payouts": "Calendario de pagos de la venta",
+      "status": "Estado",
+      "proposer": "Proponente",
+      "buyer": "Cartera del comprador",
+      "seller": "Cartera del representante del vendedor"
+    },
+    "defaults": {
+      "buyTitle": "Oferta para comprar {{count}} parcela(s)",
+      "sellTitle": "Oferta para vender {{count}} parcela(s)"
+    },
+    "acceptPayoutHint": "Cada vendedor firma este calendario de pagos exacto antes de poder aceptarlo.",
+    "signConsent": "Firmar mi consentimiento de vendedor",
+    "downloadAcceptance": "Descargar aceptación",
+    "importAcceptance": "Importar JSON de aceptación",
+    "noConsents": "Aún no se han adjuntado consentimientos de vendedores.",
+    "consentsBy": "Consentimiento(s) de vendedor: {{owners}}",
+    "imported": "JSON de aceptación importado.",
+    "errors": {
+      "select": "Selecciona primero al menos una parcela.",
+      "parcels": "Las referencias exactas de las parcelas actuales no están disponibles. Recarga las parcelas e inténtalo de nuevo.",
+      "wallet": "Conecta primero una cartera de Solana.",
+      "price": "Introduce un precio positivo en SOL.",
+      "deadline": "Elige una fecha límite futura.",
+      "unavailable": "Las ofertas inmobiliarias aún no están disponibles.",
+      "missing": "Esta oferta inmobiliaria no está guardada en este dispositivo.",
+      "chainUnavailable": "Las acciones de ofertas inmobiliarias en Solana aún no están disponibles.",
+      "import": "No se pudo leer ese JSON de aceptación."
+    }
   }
 }

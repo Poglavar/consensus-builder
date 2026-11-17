@@ -9274,5 +9274,78 @@
         "stream": "La réponse a été interrompue. Vous pouvez réessayer.",
         "mapCommand": "La commande de la carte n’a pas pu être effectuée. Les changements du projet n’ont pas été appliqués."
       }
+  },
+  "propertyOffer": {
+    "buy": "Offre d’achat",
+    "sell": "Offre de vente",
+    "createBuy": "Proposer un achat",
+    "createSell": "Proposer une vente",
+    "details": "Offre immobilière",
+    "publish": "Publier l’offre",
+    "mint": "Créer sur Solana",
+    "accept": "Accepter l’offre",
+    "fund": "Financer",
+    "approve": "Approuver",
+    "execute": "Exécuter",
+    "cancel": "Annuler",
+    "cancelOffer": "Annuler l’offre",
+    "expire": "Faire expirer l’offre",
+    "save": "Enregistrer l’offre",
+    "saving": "Enregistrement de l’offre…",
+    "saved": "Enregistré.",
+    "working": "Traitement…",
+    "bundle": "{{count}} parcelles — tout ou rien",
+    "walletMissing": "Connectez d’abord un portefeuille Solana",
+    "chooseLens": "Choisir Lens",
+    "addPayout": "Ajouter un bénéficiaire",
+    "remove": "Supprimer",
+    "recipient": "Portefeuille du bénéficiaire",
+    "amountSol": "Montant en SOL",
+    "payoutHint": "Les bénéficiaires indiqués reçoivent ce montant total lorsque la vente est conclue.",
+    "lensPlaceholder": "Adresse du membre Lens sur Solana",
+    "directions": {
+      "buy": "Offre d’achat",
+      "sell": "Offre de vente"
+    },
+    "states": {
+      "draft": "Brouillon",
+      "published": "Publiée"
+    },
+    "fields": {
+      "title": "Titre",
+      "direction": "Type",
+      "bundle": "Lot de parcelles",
+      "wallet": "Votre portefeuille Solana",
+      "price": "Prix total (SOL)",
+      "deadline": "Date limite de l’offre",
+      "lens": "Lens",
+      "payouts": "Répartition du produit de la vente",
+      "status": "Statut",
+      "proposer": "Proposant",
+      "buyer": "Portefeuille de l’acheteur",
+      "seller": "Portefeuille du représentant du vendeur"
+    },
+    "defaults": {
+      "buyTitle": "Offre d’achat de {{count}} parcelle(s)",
+      "sellTitle": "Offre de vente de {{count}} parcelle(s)"
+    },
+    "acceptPayoutHint": "Chaque vendeur signe exactement cette répartition avant qu’elle puisse être acceptée.",
+    "signConsent": "Signer mon consentement de vendeur",
+    "downloadAcceptance": "Télécharger l’acceptation",
+    "importAcceptance": "Importer le JSON d’acceptation",
+    "noConsents": "Aucun consentement de vendeur n’est encore joint.",
+    "consentsBy": "Consentement(s) du vendeur : {{owners}}",
+    "imported": "JSON d’acceptation importé.",
+    "errors": {
+      "select": "Sélectionnez d’abord au moins une parcelle.",
+      "parcels": "Les références exactes des parcelles actuelles ne sont pas disponibles. Rechargez les parcelles et réessayez.",
+      "wallet": "Connectez d’abord un portefeuille Solana.",
+      "price": "Saisissez un prix positif en SOL.",
+      "deadline": "Choisissez une date limite future.",
+      "unavailable": "Les offres immobilières ne sont pas encore disponibles.",
+      "missing": "Cette offre immobilière n’est pas enregistrée sur cet appareil.",
+      "chainUnavailable": "Les actions d’offre immobilière sur Solana ne sont pas encore disponibles.",
+      "import": "Ce JSON d’acceptation n’a pas pu être lu."
+    }
   }
 }

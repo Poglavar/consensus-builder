@@ -6,6 +6,7 @@ members = [
     "programs/proposal_market",
     "programs/proposal_pledge",
     "programs/agreement",
+    "programs/property_offer",
 ]
 resolver = "2"
 

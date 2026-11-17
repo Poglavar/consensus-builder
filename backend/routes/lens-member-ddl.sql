@@ -25,7 +25,7 @@ CREATE TABLE IF NOT EXISTS consensus.lens_devnet_owner (
 -- (kind 'decision') names its agreement in the payload (agreementCid, sponsor).
 CREATE TABLE IF NOT EXISTS consensus.lens_attestation (
     address            text PRIMARY KEY,         -- SAS attestation PDA
-    kind               text        NOT NULL CHECK (kind IN ('ownership', 'decision', 'evidence', 'verdict')),
+    kind               text        NOT NULL CHECK (kind IN ('ownership', 'decision', 'propertyOffer', 'evidence', 'verdict')),
     credential         text        NOT NULL,
     schema             text        NOT NULL,
     authority          text        NOT NULL,
@@ -53,11 +53,11 @@ BEGIN
         SELECT 1 FROM pg_constraint
         WHERE conrelid = 'consensus.lens_attestation'::regclass
           AND conname = 'lens_attestation_kind_check'
-          AND pg_get_constraintdef(oid) LIKE '%''decision''%'
+          AND pg_get_constraintdef(oid) LIKE '%''propertyOffer''%'
     ) THEN
         ALTER TABLE consensus.lens_attestation DROP CONSTRAINT IF EXISTS lens_attestation_kind_check;
         ALTER TABLE consensus.lens_attestation ADD CONSTRAINT lens_attestation_kind_check
-            CHECK (kind IN ('ownership', 'decision', 'evidence', 'verdict'));
+            CHECK (kind IN ('ownership', 'decision', 'propertyOffer', 'evidence', 'verdict'));
     END IF;
 END $$;
 

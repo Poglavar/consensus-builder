@@ -13,6 +13,11 @@ import { LENS_SCHEMA_KINDS } from '../oracle/lens-schemas.js';
 import { countAgreementDecisions, planAgreementDecision } from './agreement-decision.js';
 import { LensError, lensLog } from './errors.js';
 import { systemClock } from './member.js';
+import { planPropertyOfferDecision, parcelUid as propertyOfferParcelUid } from './property-offer-decision.js';
+import rateLimit from 'express-rate-limit';
+import { createRequire } from 'node:module';
+import { verifyWalletSignature } from './identity/devnet-registry.js';
+const PropertyOfferConsent = createRequire(import.meta.url)('../../frontend/js/property-offer-consent.js');
 import { LENS_OWNERSHIP_PATH, describePricing } from './pricing.js';
 
 export const OPERATOR_TOKEN_HEADER = 'x-lens-operator-token';
@@ -74,7 +79,7 @@ const wrap = handler => (req, res, next) => Promise.resolve(handler(req, res, ne
  *   decisions its relay admitted (lens/run.mjs builds it over DATABASE_URL); without it agreement
  *   decisions answer 503.
  */
-export function createLensMemberApp({ member, pricing, operatorToken = null, corsOrigin = '*', approvalAttester = null, agreements = null, clock = systemClock }) {
+export function createLensMemberApp({ member, pricing, operatorToken = null, corsOrigin = '*', approvalAttester = null, agreements = null, propertyOffers = null, clock = systemClock }) {
     if (!member) throw new Error('createLensMemberApp: member is required');
     if (!pricing) throw new Error('createLensMemberApp: pricing is required');
     // One member, one key: approval facts must be signed by the key agreements list in their lens.
@@ -168,6 +173,28 @@ export function createLensMemberApp({ member, pricing, operatorToken = null, cor
         const plan = planAgreementDecision({ agreement, count, lensKey: member.authority, nowSeconds: clock.nowSeconds() });
         const record = await member.attestDecision(plan.fields);
         res.status(record.reused ? 200 : 201).json({ ...publicRecord(record), reused: record.reused, tally: plan.tally, counted: plan.counted });
+    }));
+
+    // The request supplies only candidate parties, payout rows and their wallet signatures. Terms,
+    // chain status and owner observations are always read by injected trusted adapters.
+    app.post('/lens/property-offers/:cid/decision', rateLimit({ windowMs: 60000, limit: 5, standardHeaders: 'draft-7', legacyHeaders: false }), wrap(async (req, res) => {
+        if (!propertyOffers?.load || !propertyOffers?.account || !identity?.ownerSets) throw new LensError(503, 'property_offers_not_configured', 'this lens member has no property-offer index, chain reader or ownership registry');
+        const cid = String(req.params.cid || '');
+        if (!isCid(cid)) throw new LensError(400, 'bad_request', 'cid must be a property offer CID');
+        const offer = await propertyOffers.load(cid);
+        if (!offer) throw new LensError(404, 'property_offer_not_found', `property offer ${cid} is not in the index`);
+        if (offer.content.lens !== member.authority) throw new LensError(422, 'wrong_lens', 'The offer names another lens.');
+        const account = await propertyOffers.account(offer);
+        const refs = offer.content?.parcels || [];
+        const sets = await identity.ownerSets(refs.map(propertyOfferParcelUid));
+        const fields = await planPropertyOfferDecision({ offer, account, candidate: req.body || {}, nowSeconds: clock.nowSeconds(), ownerSets: async () => sets });
+        const requester = offer.content.direction === 'buy' ? fields.seller : fields.buyer;
+        const message = PropertyOfferConsent.requestMessage({ ...fields, consents: req.body.consents });
+        if (req.body.requester !== requester || !verifyWalletSignature({ owner: requester, message, signature: req.body.signature })) {
+            throw new LensError(401, 'invalid_request_signature', 'The accepting counterparty must sign this exact decision request.');
+        }
+        const record = await member.attestPropertyOfferDecision(fields);
+        res.status(record.reused ? 200 : 201).json({ ...publicRecord(record), reused: record.reused });
     }));
 
     // Operator-only, like agreement decisions: the operator runs a source adapter

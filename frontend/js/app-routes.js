@@ -14,6 +14,7 @@
         /^\/(index\.html)?$/,     // the map
         /^\/proposals\/?$/,       // the proposal list (js/proposals/core.js)
         /^\/designs(?:\/.+)?$/,        // /designs/<cid>[,<cid>…] (js/proposals/sharing-routes.js)
+        /^\/property-offers\/[^/]+\/?$/, // standalone purchases and sales
         /^\/agreements\/.+$/,     // /agreements/<cid> (js/agreement-sync.js)
         /^\/plans\/[^/]+\/?$/,   // /plans/<cid> (js/named-plans.js)
         /^\/parcel\/.+$/,         // /parcel/<id> (js/parcels/route.js)
