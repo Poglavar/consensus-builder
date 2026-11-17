@@ -201,9 +201,7 @@
                 ${pastedHtml}
             </div>
             ${parcelsHtml}
-            <p class="${entries.length ? 'lens-picker-note' : 'lens-picker-error'}" data-lens-summary>${escapeText(entries.length
-                ? t('modal.lens.picker.chosenCount', '{{count}} lens member(s) chosen', { count: entries.length })
-                : t('modal.lens.picker.required', 'Choose at least one lens member; a Solana design cannot be published without one.'))}</p>`;
+            ${entries.length ? `<p class="lens-picker-note" data-lens-summary>${escapeText(t('modal.lens.picker.chosenCount', '{{count}} lens member(s) chosen', { count: entries.length }))}</p>` : ''}`;
     }
 
     function wire(container, rerender, { getEntries, setEntries }) {

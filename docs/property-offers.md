@@ -10,10 +10,13 @@ apartments and leases are outside this record.
 1. Select one parcel or a parcel set. In its **Actions → Ownership** group, choose **Offer to buy**
    or **Offer to sell**. Connect the proposer’s Solana wallet, enter total SOL price, deadline and
    the ownership lens. A sale includes an explicit payout schedule totaling the price.
-2. Save the draft, then **Publish offer**. It appears in **Lists → Agreements**. Share opens
-   `/property-offers/<cid>`; Download exports the canonical JSON and the Agreements import accepts it.
-3. The proposer selects **Mint on Solana**. The browser verifies the network and executable program
-   before asking for a transaction signature. Publication alone does not create escrow.
+2. Select **Mint offer**. This publishes the exact terms and requests the Solana mint in one action.
+   The browser verifies the network and executable program before asking for a transaction signature.
+   If minting fails or the wallet declines, the offer remains available for retry without republishing
+   different terms. Publication alone does not create an on-chain offer or escrow.
+3. Find the offer in **Lists → Agreements**. Share opens `/property-offers/<cid>`; Download exports
+   the canonical JSON and the Agreements import accepts it. An imported or unfinished offer uses
+   the same **Mint offer** action to complete publication and minting.
 4. Open **Accept offer** to prepare the parties and payments. A buy offer obtains its payout schedule
    here; a sale retains its published schedule. Each payout recipient signs **Sign my seller consent**
    with their own wallet. Download/import the same acceptance JSON to collect multiple signatures.

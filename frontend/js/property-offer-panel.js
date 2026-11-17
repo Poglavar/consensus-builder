@@ -10,11 +10,11 @@
     const row = (label, value) => `<div><dt>${label}</dt><dd>${value}</dd></div>`;
     const escape = value => String(value || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 
-    function open(idOrRecord) {
+    function open(idOrRecord, { error = null } = {}) {
         let record = typeof idOrRecord === 'string' ? root.PropertyOfferStore?.get?.(idOrRecord) : idOrRecord;
         if (!record) throw new Error(t('errors.missing', 'This property offer is not held on this device.'));
         const body = document.createElement('div'); body.className = 'property-offer-panel';
-        let chain = null, chainError = null, reading = false;
+        let chain = null, chainError = error, reading = false;
         let dialog;
         const render = () => {
             const content = record.content;
@@ -39,19 +39,13 @@
                     status.textContent = t('working', 'Working…');
                     const api = root.PropertyOfferSolanaBridge;
                     if (!api?.[name]) throw new Error(t('errors.chainUnavailable', 'Solana property-offer actions are not available yet.'));
-                    record = await api[name](record);
+                    record = await (name === 'mint' ? root.PropertyOfferSync.mint(record) : api[name](record));
                     status.textContent = t('saved', 'Saved.'); await readChain(); render();
                 }).catch(error => { if (error.record) record = error.record; status.textContent = error.message; })); actions.append(button); return true;
             };
-            if (!published) {
-                const button = document.createElement('button'); button.type = 'button'; button.className = 'btn btn-primary'; button.textContent = t('publish', 'Publish offer');
-                button.addEventListener('click', () => root.BusyControl.track(button, async () => {
-                    status.textContent = t('working', 'Working…'); record = await root.PropertyOfferSync.publish(record); status.textContent = t('saved', 'Saved.'); render();
-                }).catch(error => { status.textContent = error.message; })); actions.append(button);
-            }
-            else {
-                const mine = wallet(); const proposer = content.proposer === mine;
-                if (!record.onchain && proposer) action('mint', t('mint', 'Mint on Solana'), true);
+            const mine = wallet(); const proposer = content.proposer === mine;
+            if (!record.onchain && proposer) action('mint', t('mint', 'Mint offer'), true);
+            if (published) {
                 if (record.onchain) {
                     const refresh = document.createElement('button'); refresh.type = 'button'; refresh.className = 'btn'; refresh.textContent = t('refresh', 'Refresh Solana status');
                     refresh.addEventListener('click', () => readChain()); actions.append(refresh);

@@ -39,6 +39,17 @@
         if (row.cid !== cid || records().cid(row.content) !== cid) throw new Error('Published offer content does not match its CID.');
         return store().save(localRecord(row, current));
     }
+    async function mint(record) {
+        let current = record;
+        try {
+            if (win.PropertyOfferSolanaBridge.connectedWallet() !== current.content.proposer) throw new Error('Connect the proposer’s Solana wallet first.');
+            if (!current.published) current = await publish(current);
+            return await win.PropertyOfferSolanaBridge.mint(current);
+        } catch (error) {
+            error.record ||= current;
+            throw error;
+        }
+    }
     async function importOffer(cid) { return store().save(localRecord(await fetchOffer(cid), localCopyOf(cid))); }
     async function openDetails(cid) { const record = await importOffer(cid); return win.PropertyOfferPanel.open(record.id); }
     function link(cid, { city } = {}) {
@@ -61,5 +72,5 @@
         a.href = url; a.download = `property-offer-${record.published?.cid || record.id}.json`; a.click();
         setTimeout(() => URL.revokeObjectURL(url), 0);
     }
-    return Object.freeze({ create, publish, fetchOffer, importOffer, openDetails, link, localCopyOf, recordOnchain, download, request });
+    return Object.freeze({ create, publish, mint, fetchOffer, importOffer, openDetails, link, localCopyOf, recordOnchain, download, request });
 });

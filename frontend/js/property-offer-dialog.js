@@ -103,12 +103,10 @@
             addRow(wallet); add.addEventListener('click', () => addRow()); payouts.append(add); form.append(payouts);
         }
         const status = node('p', 'property-offer-form__status'); status.setAttribute('role', 'status'); form.append(status);
-        let dialog;
-        const save = node('button', 'btn btn-primary', t('save', 'Save offer')); save.type = 'submit';
-        const cancel = node('button', 'btn', t('cancel', 'Cancel')); cancel.type = 'button';
-        cancel.addEventListener('click', () => dialog.close());
+        let dialog, save;
         const submit = async event => {
             event.preventDefault();
+            const wallet = connectedWallet();
             const priceLamports = lamports(priceInput.value);
             const expiresAt = new Date(deadlineInput.value).toISOString();
             if (!wallet) throw new Error(t('errors.wallet', 'Connect a Solana wallet first.'));
@@ -123,16 +121,24 @@
             }
             const issue = root.PropertyOfferRecord?.validate?.(content, { now: new Date() });
             if (issue) throw new Error(issue.message || String(issue));
-            status.textContent = t('saving', 'Saving offer…');
-            const record = await root.PropertyOfferSync?.create?.(content);
-            if (!record) throw new Error(t('errors.unavailable', 'Property offers are not available yet.'));
-            dialog.close(); root.PropertyOfferPanel?.open?.(record);
+            status.textContent = t('working', 'Working…');
+            const record = root.PropertyOfferSync.create(content);
+            try {
+                const minted = await root.PropertyOfferSync.mint(record);
+                dialog.close(); root.PropertyOfferPanel.open(minted);
+            } catch (error) {
+                dialog.close(); root.PropertyOfferPanel.open(error.record || record, { error: error.message });
+            }
         };
         form.addEventListener('submit', event => root.BusyControl?.track ? root.BusyControl.track(save, () => submit(event)).catch(error => { status.textContent = error.message; }) : submit(event).catch(error => { status.textContent = error.message; }));
-        dialog = root.CbDialog.open({ title: direction === 'buy' ? t('createBuy', 'Offer to buy') : t('createSell', 'Offer to sell'), size: 'md', className: 'property-offer-dialog', body: form, actions: [] });
-        save.addEventListener('click', () => form.requestSubmit());
-        const createActions = node('div', 'cb-actions property-offer-form__actions');
-        createActions.append(cancel, save); dialog.body.append(createActions);
+        dialog = root.CbDialog.open({ title: direction === 'buy' ? t('createBuy', 'Offer to buy') : t('createSell', 'Offer to sell'), size: 'md', className: 'property-offer-dialog', body: form,
+            actions: [
+                { id: 'cancel', label: t('cancel', 'Cancel') },
+                { id: 'mint', label: t('mint', 'Mint offer'), role: 'primary', keepOpen: true }
+            ] });
+        form.id = `${dialog.body.id}-form`;
+        save = dialog.getActionButton('mint');
+        save.type = 'submit'; save.setAttribute('form', form.id);
         titleInput.focus();
         return dialog;
     }
