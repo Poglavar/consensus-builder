@@ -5,10 +5,6 @@ for (const width of [1280, 390]) {
   test(`plan composer stays usable with a long design list at ${width}px`, async ({ mockApi: page }) => {
     await page.setViewportSize({ width, height: 844 });
     await openCity(page);
-    if (width < 768) {
-      await page.evaluate(()=>(window as any).guestPolicyBlocks('publish'));
-      await chooseProfileName(page, 'Long plan author');
-    }
     const id = await createSpace(page, 'park');
     await page.evaluate(seedId => {
       const w:any=window, source=w.proposalStorage.getProposal(seedId);
@@ -46,6 +42,21 @@ for (const width of [1280, 390]) {
     await page.keyboard.press('PageDown');
     await expect.poll(() => members.evaluate(el => el.scrollTop)).toBeGreaterThan(0);
     await expect(share.getByRole('button', { name: 'Publish and copy link', exact: true })).toBeInViewport();
+    const publish = share.getByRole('button', { name: 'Publish and copy link', exact: true });
+    await publish.click();
+    const profile = page.locator('#welcome-modal'), name = profile.locator('#username-input');
+    await expect(name).toBeFocused();
+    await expect.poll(() => name.evaluate(el => {
+      const r = el.getBoundingClientRect();
+      return document.elementFromPoint(r.x + r.width / 2, r.y + r.height / 2) === el;
+    })).toBe(true);
+    await page.keyboard.press('Escape');
+    await expect(profile).toBeHidden();
+    await expect(share).toBeVisible();
+    await expect(publish).toBeFocused();
+    await publish.click();
+    await chooseProfileName(page, 'Long plan author');
+    await expect(share).toBeVisible();
     if (width < 768) {
       await share.getByRole('button', { name: 'Publish and copy link', exact: true }).click();
       await expect(share.getByLabel('Plan link', { exact: true })).toBeInViewport();
