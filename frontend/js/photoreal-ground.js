@@ -104,6 +104,38 @@
         return waitedS >= LAST_CALL_S || (waitedS >= FIRST_VIEW_S && finite(visibleTiles) && visibleTiles >= FIRST_VIEW_TILES);
     }
 
+    // Where the city states it (cityConfig.photoSeat), the world is seated by known heights instead
+    // of rays: the terrain API's ground height at the scene origin in the stated datum, plus how far
+    // the ellipsoid (the height Google's mesh is in) lies below that datum there. Probing seats on
+    // whatever tiles have arrived, and from far away those are coarse: a view opened 4 km out sat
+    // 1.8 m above the street. answer: GET <elevationUrl>?lon=&lat= ({ elevationM, datum }).
+    // Returns the ground's ellipsoidal height at the origin, or null when the answer cannot be used.
+    function knownGroundHeight(answer, seat) {
+        if (!answer || !seat || !finite(answer.elevationM) || !finite(seat.geoidM)) return null;
+        if (typeof seat.datum !== 'string' || typeof answer.datum !== 'string' || !answer.datum.includes(seat.datum)) return null;
+        return answer.elevationM + seat.geoidM;
+    }
+    // With a known seat height the world need not wait for loading to finish: it is shown once enough
+    // of it is in sight, or loading is complete, or at the last call with anything in sight.
+    function canShowKnownSeat(progress, contentQuietMs, visibleTiles, waitedS) {
+        if (!finite(visibleTiles) || visibleTiles < 1) return false;
+        return visibleTiles >= FIRST_VIEW_TILES || canFinalizeSeating(progress, contentQuietMs) || (finite(waitedS) && waitedS >= LAST_CALL_S);
+    }
+
+    // A world seated by rays on coarse tiles is seated once more when fine tiles cover the origin:
+    // samples are the near probes' hits { z: height in the scene, errorM: the hit tile's geometric
+    // error }. Returns null while fewer than three hits are on fine tiles, else the shift that puts
+    // their lower quartile at targetZ (0 within the tolerance, and 0 for an implausible jump, which a
+    // roof or a hole rather than the ground would give).
+    const RESEAT = Object.freeze({ fineErrorM: 4.5, minFine: 3, toleranceM: 0.3, maxShiftM: 15 });
+    function reseatShift(samples, targetZ) {
+        const fine = (samples || []).filter(s => s && finite(s.z) && finite(s.errorM) && s.errorM <= RESEAT.fineErrorM)
+            .map(s => s.z).sort((a, b) => a - b);
+        if (fine.length < RESEAT.minFine || !finite(targetZ)) return null;
+        const shift = fine[Math.min(fine.length - 1, Math.floor(fine.length * 0.25))] - targetZ;
+        return Math.abs(shift) <= RESEAT.toleranceM || Math.abs(shift) > RESEAT.maxShiftM ? 0 : shift;
+    }
+
     // A proposed road normally has a useful visible Google surface under its centreline. When that
     // ray lands on a car, canopy or roof, two agreeing samples beyond the corridor edges can safely
     // pull it down. Higher side hits never lift a valid centreline onto adjacent buildings, and
@@ -485,6 +517,10 @@
         PROVISIONAL_REESTIMATE_M: PROVISIONAL_REESTIMATE_M,
         canFinalizeSeating: canFinalizeSeating,
         canSeatEarly: canSeatEarly,
+        knownGroundHeight: knownGroundHeight,
+        canShowKnownSeat: canShowKnownSeat,
+        reseatShift: reseatShift,
+        RESEAT: RESEAT,
         selectRoadSurfaceHeight: selectRoadSurfaceHeight,
         roadFloorEncodingRange: roadFloorEncodingRange,
         encodeRoadFloor: encodeRoadFloor,

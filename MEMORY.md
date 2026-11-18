@@ -366,3 +366,7 @@ in commits.
   shown after 12 s with 16 tiles in sight (any view at 30 s) instead of waiting for complete loading, and errorTarget is
   left to Google's plugin (it set 20 over the former 24, so `?prq` never worked). Branch `google-sharpening`, cut from
   `colosseum-worlds-fair`.
+- 2026-11-19: photo mode seats Google's world by known heights where the city config says how (`photoSeat`: the shared
+  terrain API's ground height at the view's centre plus the local ellipsoid offset; Zagreb: EVRF2000 + 44.78 m), since
+  probing a view opened far away seated it on 64 m tiles and content floated ~1.8 m at street level. Elsewhere a probed
+  seat is redone once when fine tiles (<= 4.5 m error) cover the centre. User asked for both.
