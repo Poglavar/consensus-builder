@@ -16,6 +16,11 @@ const guidePairs = [
     ['how-to-use-views.html', 'kako-koristiti-prikazi.html']
 ];
 const guidePages = guidePairs.flat();
+// Label chips that are legitimately not dictionary strings. Keep this minimal.
+const chipsOutsideDictionary = new Set([
+    'Delete / Backspace', // keyboard keys that remove a selected vertex (buildings guides)
+    'Enter' // keyboard key that finishes a footpath (park guides)
+]);
 const clips = ['block', 'row', 'detached', 'freeform', 'readjustment', 'park', 'square', 'lake', 'road', 'track', 'station', 'counterproposal']
     .map(name => `videos/howto/2026-10-26/${name}`);
 
@@ -132,8 +137,8 @@ describe('public product guides', () => {
     });
 
     it.each([
-        ['how-to-use-views.html', 'The slider models floor-area value at a selected EUR per m² of floor area.', 'not sale prices or amounts paid to owners'],
-        ['kako-koristiti-prikazi.html', 'Klizač modelira vrijednost etažne površine prema odabranoj cijeni u EUR po m² etažne površine.', 'a ne prodajne cijene ni iznosi isplaćeni vlasnicima'],
+        ['how-to-use-views.html', 'The sliders model floor-area value and construction cost at a selected EUR per m² of floor area.', 'not sale prices or amounts paid to owners'],
+        ['kako-koristiti-prikazi.html', 'Klizači modeliraju vrijednost i trošak gradnje etažne površine prema odabranoj cijeni u EUR po m² etažne površine.', 'a ne prodajne cijene ni iznosi isplaćeni vlasnicima'],
         ['how-to-use-reparcellization.html', 'Currency is the city’s stated fiat currency, EUR here.', 'Monetary compensation is calculated from each party’s remaining land entitlement and allocated area'],
         ['kako-koristiti-reparcelacija.html', 'Novac se iskazuje u valuti grada, ovdje u EUR.', 'Naknada se računa iz preostalog prava na zemljište i dodijeljene površine']
     ])('%s names the basis and limits of money amounts', (name, basis, limit) => {
@@ -169,6 +174,25 @@ describe('public product guides', () => {
                 expect(destinationIds, `${name}: ${href}`).toContain(decodeURIComponent(url.hash.slice(1)));
             }
         });
+    });
+
+    // Every label chip names a control by its current text, so it must be a string the app's
+    // dictionary for that language holds. A renamed or removed control leaves its chip behind and
+    // fails here; fix the page rather than allowlisting the old label.
+    it.each(guidePages)('%s names only current dictionary labels in its ui-label chips', name => {
+        const strings = new Set();
+        const collect = value => {
+            if (value && typeof value === 'object') return Object.values(value).forEach(collect);
+            const text = String(value).trim();
+            strings.add(text);
+            // Form labels carry a trailing colon and unit ("Building width (m):"); chips name the bare label.
+            strings.add(text.replace(/\s*(\([^)]*\))?:$/, ''));
+        };
+        collect(JSON.parse(readFrontend(`i18n/${name.startsWith('how-to-use') ? 'en' : 'hr'}.json`)));
+        const $ = load(readFrontend(name));
+        const chips = $('.ui-label').map((_, node) => $(node).text().replace(/\s+/g, ' ').trim()).get();
+        expect(chips.length).toBeGreaterThan(0);
+        expect(chips.filter(chip => !strings.has(chip) && !chipsOutsideDictionary.has(chip)), name).toEqual([]);
     });
 
     it.each(guidePairs)('%s and %s cover the same clips in both languages', (en, hr) => {

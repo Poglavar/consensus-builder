@@ -110,13 +110,13 @@
       Početni raspored
      </a>
      <a class="btn btn-quiet" href="#automatic">
-      Automatski
+      Jednake čestice
      </a>
      <a class="btn btn-quiet" href="#manual">
       Slobodno nacrtaj
      </a>
      <a class="btn btn-quiet" href="#keep">
-      Zadrži čestice
+      Zadrži postojeće međe
      </a>
      <a class="btn btn-quiet" href="#owners">
       Vlasnici i novac
@@ -137,7 +137,7 @@
       Promijeni čestice. Provjeri svakog vlasnika.
      </h2>
      <p>
-      Odaberi automatsku podjelu, nacrtaj raspored ili zadrži postojeće čestice. Zajedno provjeri novo zemljište, vlasničke udjele i novac.
+      Odaberi raspored čestica, uredi međe i usporedi stare i nove čestice. Vlasništvo i novac provjeri zasebno, u sporazumu.
      </p>
     </div>
     <section class="guide-section" id="start">
@@ -147,7 +147,7 @@
      <p>
       Odaberi povezane čestice ili nacrtaj lokaciju pa odaberi
       <span class="ui-label">
-       Reparcelacija
+       Rasporedi čestice
       </span>
       . Karta prikazuje nove čestice;
       <span class="ui-label">
@@ -174,10 +174,26 @@
        <tbody>
         <tr>
          <td>
-          Automatski
+          Jednake čestice
          </td>
          <td>
           Paralelne podjele objedinjenog zemljišta. Zakreni smjer podjele.
+         </td>
+        </tr>
+        <tr>
+         <td>
+          Schellingove čestice
+         </td>
+         <td>
+          Čestice Schellingova plana; i ulični pojasevi između njih su čestice.
+         </td>
+        </tr>
+        <tr>
+         <td>
+          Zadrži postojeće međe
+         </td>
+         <td>
+          Postojeće čestice su početne čestice. Prilagodi međe ili izdvoji dvorište. Nije dostupno na nacrtanoj lokaciji.
          </td>
         </tr>
         <tr>
@@ -188,21 +204,13 @@
           Nepodijeljena lokacija. Sam nacrtaj čestice i podijeli ih.
          </td>
         </tr>
-        <tr>
-         <td>
-          Zadrži postojeće čestice
-         </td>
-         <td>
-          Postojeće čestice i vlasnici. Prilagodi granice ili izdvoji zajedničko dvorište.
-         </td>
-        </tr>
        </tbody>
       </table>
      </div>
     </section>
     <section class="guide-section" id="automatic">
      <h2>
-      Automatski
+      Jednake čestice
      </h2>
      <figure class="howto-video" id="watch-automatic">
       <div class="video-heading">
@@ -250,7 +258,7 @@ Finish the layout, then inspect the new boundaries in their 3D surroundings.
       </details>
      </figure>
      <p>
-      Kreni načinom Automatski pa povuci ručku smjera na karti za zakretanje podjele. Za odabir s jednim vlasnikom postavi Broj čestica i raspodjelu Jednako, Nasumično ili Ručno. Provjeri površine novih čestica i raspodjelu vlasnicima.
+      Kreni načinom Jednake čestice i postavi Broj čestica. Schellingove čestice nude drugi raspored; Zadrži postojeće međe čuva početni raspored, a Slobodno nacrtaj započinje ručni raspored. Povuci čvorove ili odsječke međa za preoblikovanje podjele. Usporedi Nove čestice i Stare čestice prije odabira Gotovo.
      </p>
     </section>
     <section class="guide-section" id="manual">
@@ -266,7 +274,7 @@ Finish the layout, then inspect the new boundaries in their 3D surroundings.
       počinje nepodijeljenom lokacijom. Alatom za crtanje čestice postavi vrhove poligona i dovrši ga. Crtanje linije dijeli postojeće čestice. Brisanje granice spaja susjedne čestice, a uređivanje granica čvorovima pomiče geometriju podjele. Koristi poništavanje za povrat izmjene ili učitaj raspored iz GeoJSON-a.
      </p>
      <p>
-      Dodijeli vlasnike svim česticama. Uređivač provjerava pokrivenost, preklapanja i vlasničke udjele prije omogućavanja gumba Gotovo.
+      Uređivač rasporeda provjerava geometriju i pokrivenost lokacije. Raspodjelu vlasništva provjeri u sporazumu za primijenjene dizajne.
      </p>
     </section>
     <section class="guide-section" id="keep">
