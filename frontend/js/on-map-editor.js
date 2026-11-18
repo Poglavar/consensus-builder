@@ -140,6 +140,24 @@
                 openPopup.options.autoPanPaddingBottomRight = [panelIsLeft ? 100 : clearPanel, 100];
                 openPopup.update();
             }
+            // The map padding that keeps a shape out from under the editor panel and its tools.
+            // fullSheet plans for a phone sheet at its tallest (62% of the screen with the dock), since a
+            // sheet that just opened still grows while its content and the page's state settle.
+            function clearOfEditor({ fullSheet = false } = {}) {
+                const mobile = env.innerWidth < 640;
+                const panelRect = panel.getBoundingClientRect();
+                // A host whose tool card floats over the top of the map (reserveToolsSpace) gets the
+                // shape fitted below it on every screen size, not only phones: on desktop the
+                // card covered the top of the land being edited. The extra room on desktop is
+                // for the card's drawing row, which appears while a line or plot is drawn.
+                const toolsBottom = options.reserveToolsSpace ? tools.getBoundingClientRect().bottom : 0;
+                return {
+                    paddingTopLeft: [48, toolsBottom ? Math.max(90, toolsBottom + (mobile ? 8 : 56)) : 90],
+                    paddingBottomRight: mobile
+                        ? [24, fullSheet ? env.innerHeight * 0.62 : Math.min(env.innerHeight * 0.62, env.innerHeight - panelRect.top + 24)]
+                        : [panelRect.width + 48, 100]
+                };
+            }
             function onPopupClose(event) {
                 if (openPopup !== event.popup) return;
                 if (popupPadding) Object.assign(openPopup.options, popupPadding);
@@ -310,21 +328,22 @@
                     map.invalidateSize?.({ pan: false });
                     const bounds = env.L.geoJSON(feature).getBounds();
                     if (!bounds?.isValid?.()) return;
-                    const mobile = env.innerWidth < 640;
-                    const panelRect = panel.getBoundingClientRect();
-                    // A host whose tool card floats over the top of the map (reserveToolsSpace) gets the
-                    // shape fitted below it on every screen size, not only phones: on desktop the
-                    // card covered the top of the land being edited. The extra room on desktop is
-                    // for the card's drawing row, which appears while a line or plot is drawn.
-                    const toolsBottom = options.reserveToolsSpace ? tools.getBoundingClientRect().bottom : 0;
-                    map.fitBounds(bounds, {
-                        paddingTopLeft: [48, toolsBottom ? Math.max(90, toolsBottom + (mobile ? 8 : 56)) : 90],
-                        paddingBottomRight: mobile
-                            ? [24, Math.min(env.innerHeight * 0.62, env.innerHeight - panelRect.top + 24)]
-                            : [panelRect.width + 48, 100],
-                        maxZoom: settings.maxZoom || 21,
-                        animate: false
-                    });
+                    map.fitBounds(bounds, { ...clearOfEditor(), maxZoom: settings.maxZoom || 21, animate: false });
+                },
+                // Pan, never zoom, so a shape that is not wholly in the map the editor leaves clear is
+                // centred there; a shape already in it leaves the view alone. On a phone the sheet
+                // covers the lower half, and the floating tools hang just below the shape.
+                revealFeature(feature) {
+                    if (!feature || env.isThreeModeActive?.()) return;
+                    const bounds = env.L.geoJSON(feature).getBounds();
+                    if (!bounds?.isValid?.()) return;
+                    const { paddingTopLeft: [left, top], paddingBottomRight: [right, bottom] } = clearOfEditor({ fullSheet: true });
+                    const size = map.getSize();
+                    const nw = map.latLngToContainerPoint(bounds.getNorthWest());
+                    const se = map.latLngToContainerPoint(bounds.getSouthEast());
+                    if (nw.x >= left && nw.y >= top && se.x <= size.x - right && se.y <= size.y - bottom) return;
+                    const center = map.latLngToContainerPoint(bounds.getCenter());
+                    map.panBy([center.x - (left + size.x - right) / 2, center.y - (top + size.y - bottom) / 2], { animate: false });
                 },
                 close
             };

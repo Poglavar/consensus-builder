@@ -1,12 +1,23 @@
 <!-- Behavior decisions and targeted verification for Freeform placement, land take, surroundings, upload and Duplicate. -->
 # Freeform building interaction — 27 October 2026
 
-Choosing Freeform opens the editor with a new 20 m square building already standing on
-the selected land, at a point inside the starting site (`turf.pointOnFeature`). Its
-editing controls are live at once: the building and its corners can be dragged, an
-edge tapped to add a corner, and focus starts on the height slider. The map and model
-view keep their chosen camera. Saved designs and imported geometry reopen at their
-authored positions.
+How a new building is put down depends on the pointer (`FreeformPlacement.usesPointerPlacement`,
+the `(hover: hover) and (pointer: fine)` media query):
+
+- With a mouse or trackpad, choosing Freeform starts placement. A dashed 20 m outline
+  follows the pointer; a click places it there, Enter or **Place on selected land** places
+  it on the starting site, and Escape before placement leaves no saved design. Panning does
+  not place. Model view uses its ground pick and a small outline in the same scene. The
+  map keeps its chosen view.
+- On a touch screen nothing can follow a finger, so the editor opens with the 20 m square
+  already standing at a point inside the starting site. When the phone sheet would cover
+  it, the map pans (never zooms) to centre it above the sheet. A finger on the building
+  drags it; elsewhere it pans the map. Leaflet 1.9 gives map layers mouse events only, so
+  the finger drag runs on pointer events caught on the map container.
+
+Once placed, the editing controls are live: the building and its corners can be dragged, an
+edge tapped to add a corner, and focus starts on the height slider. Saved designs and
+imported geometry reopen at their authored positions.
 
 The permanent building-name label inside the editor footprint has been removed,
 including the unresolved generated “Building {{n}}” text. Explicit imported names

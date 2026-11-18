@@ -5,7 +5,7 @@
 
 Use map search to change city and locate places or parcel IDs. Switch to the 2D map, click a parcel and open **Actions** for buildings, roads, public spaces and parcel layouts. A parcel clicked in the 3D view lists the same tools under **Actions**; choosing one opens the 2D map on that parcel and starts the tool. To draw a boundary, click open ground and choose **Draw a parcel**, then choose **Propose here** on the finished site. Layers controls switch map information, and the view controls switch between 2D, 3D and realistic views. **How it works** under Settings → Help & about opens the explainer. A parcel layout edits the selected ground. Find saved plans in **Lists** → **Plans**.
 
-When a tool asks for scope, **Use this parcel** continues. **Select whole block** selects land for review. Choose the tool again after reviewing it. **Cancel** or Escape returns without starting. Freeform building opens with the building already on the selected land. Drag the building or its corners, set its height and choose **Done**.
+When a tool asks for scope, **Use this parcel** continues. **Select whole block** selects land for review. Choose the tool again after reviewing it. **Cancel** or Escape returns without starting. With a mouse, Freeform building follows the pointer: click the map or choose **Place on selected land**. On a touch screen it opens already standing on the selected land. Drag the building or its corners, set its height and choose **Done**.
 
 For an agent navigating the map, `ugt_map_view` requests a map view and `ugt_select_parcels` selects exact source parcels; the app applies the returned navigation state. Use `ugt_list_sources` to discover parcel sources for a location.
 

@@ -1049,6 +1049,8 @@
             "editSurroundings": "Editar a envolvente",
             "surroundingsPaved": "Pavimentação",
             "surroundingsGreen": "Espaço verde",
+            "placeOnLand": "Colocar no terreno selecionado",
+            "placeHint": "Clique ou toque no mapa para colocar o edifício. Arraste o mapa para o deslocar. Esc cancela.",
             "surroundingsInfo": "A pavimentação ou o espaço verde ocupa o terreno tomado fora da implantação do edifício. Se apenas a implantação for tomada, não há espaço envolvente.",
             "uploadGeojsonLabel": "Carregar implantações",
             "uploadGlbLabel": "Carregar modelo",

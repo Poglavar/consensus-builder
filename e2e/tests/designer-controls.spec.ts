@@ -1,6 +1,6 @@
 import { selectNativeOption } from '../helpers/controls';
 import { test, expect } from '../helpers/fixtures';
-import { freeformBuildingPlaced, openCity, openParcel, clickMapPoint, closeParcel, showSelectionDesignTab, parcelTab, answerBlockScope } from '../helpers/runtime';
+import { placeFreeformBuilding, openCity, openParcel, clickMapPoint, closeParcel, showSelectionDesignTab, parcelTab, answerBlockScope } from '../helpers/runtime';
 import { installLayerDatasets } from '../helpers/mocks/layer-datasets';
 import { mockBuildingScene } from '../helpers/mocks/building-data';
 
@@ -334,7 +334,7 @@ test.describe('Designer controls persist their edits @features', () => {
     await openParcel(page, 'proposals');
     await page.locator('.parcel-build-btn--single').click();
     await answerBlockScope(page);
-    await freeformBuildingPlaced(page);
+    await placeFreeformBuilding(page);
     await expect(page.locator('#single-building-editor').locator('.on-map-editor__panel')).toBeVisible();
     const height = page.locator('#single-height-slider');
     const oldHeight = Number(await height.inputValue());

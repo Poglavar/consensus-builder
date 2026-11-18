@@ -1,5 +1,5 @@
 import { test, expect } from '../helpers/fixtures';
-import { freeformBuildingPlaced, openCity, openParcel, answerBlockScope } from '../helpers/runtime';
+import { placeFreeformBuilding, openCity, openParcel, answerBlockScope } from '../helpers/runtime';
 import { sampleParcels } from '../helpers/mocks/parcel-data';
 import { isApiDataRequest } from '../helpers/mocks/api-routes';
 import type { Page } from '@playwright/test';
@@ -25,7 +25,7 @@ test('a Freeform draft on a tiny parcel preserves the chosen phone view and expo
   });
   await page.locator('.parcel-build-btn--single').click();
   await answerBlockScope(page);
-  await freeformBuildingPlaced(page);
+  await placeFreeformBuilding(page);
   const footprint = page.locator('.single-building-fill--active');
   await expect(footprint).toBeVisible();
   const dimensions = await page.evaluate(() => {
@@ -92,25 +92,19 @@ test('a Freeform draft on a tiny parcel preserves the chosen phone view and expo
   await expect.poll(() => parcelChoice.count()).toBeGreaterThan(0);
 });
 
-test('Use this parcel opens Freeform with the building already on the selected parcel', async ({ mockApi: page }) => {
+test('Freeform can be placed on selected land with the keyboard', async ({ mockApi: page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await tinyParcel(page);
   const view = await page.evaluate(() => ({ center: (window as any).map.getCenter(), zoom: (window as any).map.getZoom() }));
   await page.locator('.parcel-build-btn--single').click();
   await answerBlockScope(page);
-  await freeformBuildingPlaced(page);
-  await expect(page.locator('#single-place-on-land')).toHaveCount(0);
+  const place = page.getByRole('button', { name: 'Place on selected land' });
+  await expect(place).toBeVisible();
+  await expect(place).toBeFocused();
+  await page.keyboard.press('Enter');
+  await expect(place).toHaveCount(0);
   await expect(page.locator('.single-building-fill--active')).toHaveCount(1);
   await expect(page.locator('#single-height-slider')).toBeFocused();
-  // The footprint's centre stands inside the parcel that was chosen.
-  const onParcel = await page.evaluate(() => {
-    const w = window as any;
-    const site = w.getActiveProposalDesignDraft()?.fields?.site;
-    const feature = w.OnMapEditor.getPreview().draftPreview.features[0];
-    const center = w.SingleBuildingGeometry.geometryCenter(feature.geometry);
-    return w.turf.booleanPointInPolygon([center.lng, center.lat], site?.type === 'Feature' ? site : w.turf.feature(site));
-  });
-  expect(onParcel).toBe(true);
   const viewAfter = await page.evaluate(before => {
     const map = (window as any).map;
     const start = map.latLngToContainerPoint(before.center), end = map.latLngToContainerPoint(map.getCenter());

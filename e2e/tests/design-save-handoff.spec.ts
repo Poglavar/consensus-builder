@@ -1,6 +1,6 @@
 // A deliberately deferred application makes the gap after Done observable without timing races.
 import { test, expect } from '../helpers/fixtures';
-import { freeformBuildingPlaced, openCity, openParcel, answerBlockScope } from '../helpers/runtime';
+import { placeFreeformBuilding, openCity, openParcel, answerBlockScope } from '../helpers/runtime';
 import { mockBuildingScene } from '../helpers/mocks/building-data';
 
 for (const mode of ['2d', 'model']) {
@@ -10,7 +10,7 @@ for (const mode of ['2d', 'model']) {
     await openParcel(page, 'proposals');
     await page.locator('.parcel-build-btn--single').click();
     await answerBlockScope(page);
-    await freeformBuildingPlaced(page);
+    await placeFreeformBuilding(page);
     await expect(page.locator('#single-building-confirm')).toBeEnabled();
     if (mode === 'model') {
       await page.locator('#mode-3d-toggle').click();

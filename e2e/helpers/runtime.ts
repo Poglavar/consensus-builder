@@ -68,9 +68,31 @@ export async function clickMapPoint(page: Page, lng: number, lat: number): Promi
   await page.mouse.click(point.x, point.y);
 }
 
-// A new Freeform building opens already standing on the selected land, so there is nothing to place:
-// this waits until the 2D editor shows it editable (one building in its preview, corner handles,
-// an enabled height slider and Done) and fails if any placing step is left over.
+// Finish the explicit placement step using a real pointer on the draft's selected starting land.
+export async function placeFreeformBuilding(page: Page): Promise<void> {
+  await expect(page.locator('#single-building-editor')).toHaveAttribute('data-placing', 'true', { timeout: 20_000 });
+  const at = await page.evaluate(() => {
+    const w = window as any;
+    const site = w.getActiveProposalDesignDraft()?.fields?.site;
+    const [lng, lat] = w.turf.pointOnFeature(site?.type === 'Feature' ? site : w.turf.feature(site)).geometry.coordinates;
+    const three = w.isThreeModeActive?.() && w.getThreeModeInternals?.();
+    if (three) {
+      const [x, y] = three.latLngToXY(lat, lng);
+      const point = new w.THREE.Vector3(x, y, 0).project(three.camera);
+      const rect = three.renderer.domElement.getBoundingClientRect();
+      return { x: rect.left + (point.x + 1) * rect.width / 2, y: rect.top + (1 - point.y) * rect.height / 2 };
+    }
+    const point = w.map.latLngToContainerPoint([lat, lng]);
+    const rect = w.map.getContainer().getBoundingClientRect();
+    return { x: rect.left + point.x, y: rect.top + point.y };
+  });
+  await page.mouse.click(at.x, at.y);
+  await expect(page.locator('#single-building-editor')).not.toHaveAttribute('data-placing');
+}
+
+// On a touch screen a new Freeform building opens already standing on the selected land, so there is
+// nothing to place: this waits until the 2D editor shows it editable (one building in its preview,
+// corner handles, an enabled height slider and Done) and fails if any placing step is left over.
 export async function freeformBuildingPlaced(page: Page): Promise<void> {
   const editor = page.locator('#single-building-editor');
   await expect(editor.locator('.on-map-editor__panel')).toBeVisible({ timeout: 20_000 });

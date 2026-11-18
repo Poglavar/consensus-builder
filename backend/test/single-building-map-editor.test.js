@@ -31,11 +31,12 @@ function extract(name, variables, stubs) {
 }
 
 function closeHarness(options = {}) {
-    const calls = { removedLayers: [], offs: [], removedEvents: [], windowEvents: [], classChanges: [], discarded: 0, finished: 0, released: 0, previewEvents: [] };
+    const calls = { removedLayers: [], offs: [], containerEvents: [], removedEvents: [], windowEvents: [], classChanges: [], discarded: 0, finished: 0, released: 0, previewEvents: [] };
     const map = {
         removeLayer: vi.fn(layer => calls.removedLayers.push(layer)),
         off: vi.fn((...args) => calls.offs.push(args)),
-        remove: vi.fn(), invalidateSize: vi.fn()
+        remove: vi.fn(), invalidateSize: vi.fn(),
+        getContainer: () => ({ removeEventListener: (...args) => calls.containerEvents.push(args) })
     };
     const editor = {};
     const panel = { isConnected: true, style: { display: 'none' } };
@@ -59,7 +60,7 @@ function closeHarness(options = {}) {
         singleGroundPreviewLayer: 'ground', singleRectLayer: {}, singleActivePolygonLayer: {}, singleDragMarker: {},
         singleBuildingDesignChangeTracker: { stop: vi.fn() }, singlePendingVertexActionIndex: 3,
         handleSingleBuildingKeydown() {}, syncSingleBuildingView() {}, handleRectDragEnd: vi.fn(), destroySinglePolygonEditor: vi.fn(),
-        tryStartDragFromMap() {}, positionSingleBuildingToolbar() {}, clearSingleBuildingPendingState: vi.fn(() => { calls.cleared = true; }),
+        tryStartDragFromMap() {}, onTouchDragStart() {}, positionSingleBuildingToolbar() {}, clearSingleBuildingPendingState: vi.fn(() => { calls.cleared = true; }),
         refreshSingleBuildingDensityStats: vi.fn(), cloneSingleFeature: feature => feature,
         singleBuildingDesignChanges: () => ({ changed: () => true }),
         currentSurroundings: () => null, buildingEntries: [], currentGroundTreatment: 'none', currentTakeWholeParcels: false,
@@ -68,7 +69,7 @@ function closeHarness(options = {}) {
         threeControls: { removeEventListener: vi.fn() }, editorFocusReturn: null,
         EDIT_LOCK_OWNER: 'single-building-editor', CustomEvent: class { constructor(type, init) { this.type = type; this.detail = init.detail; } }
     };
-    const variables = `let singleLandTakeReview=null, singleGroundBoundary=null, singleHistory=this.singleHistory, singleBuildingLayers=this.singleBuildingLayers, singleSession=this.singleSession, singleMap=this.singleMap, singleEditor=this.singleEditor, singleUploadOnConfirm=this.singleUploadOnConfirm, singleBlockLayer=this.singleBlockLayer, singleParcelBorderLayer=this.singleParcelBorderLayer, singleRectGroup=this.singleRectGroup, singleGroundPreviewLayer=this.singleGroundPreviewLayer, singleRectLayer=this.singleRectLayer, singleActivePolygonLayer=this.singleActivePolygonLayer, singleDragMarker=this.singleDragMarker, singlePendingVertexActionIndex=this.singlePendingVertexActionIndex, singleBuildingDesignChangeTracker=this.singleBuildingDesignChangeTracker, disabledViewButtons=this.disabledViewButtons, suspendedPanels=this.suspendedPanels, threeControls=this.threeControls, editorFocusReturn=this.editorFocusReturn, singleBlockFeature={geometry:{}}, singleRectFeature={geometry:{}}, currentRotationDeg=90, currentGroundTreatment='paved', currentTakeWholeParcels=true;`;
+    const variables = `let singlePlacement=null, singleLandTakeReview=null, singleGroundBoundary=null, singleHistory=this.singleHistory, singleBuildingLayers=this.singleBuildingLayers, singleSession=this.singleSession, singleMap=this.singleMap, singleEditor=this.singleEditor, singleUploadOnConfirm=this.singleUploadOnConfirm, singleBlockLayer=this.singleBlockLayer, singleParcelBorderLayer=this.singleParcelBorderLayer, singleRectGroup=this.singleRectGroup, singleGroundPreviewLayer=this.singleGroundPreviewLayer, singleRectLayer=this.singleRectLayer, singleActivePolygonLayer=this.singleActivePolygonLayer, singleDragMarker=this.singleDragMarker, singlePendingVertexActionIndex=this.singlePendingVertexActionIndex, singleBuildingDesignChangeTracker=this.singleBuildingDesignChangeTracker, disabledViewButtons=this.disabledViewButtons, suspendedPanels=this.suspendedPanels, threeControls=this.threeControls, editorFocusReturn=this.editorFocusReturn, singleBlockFeature={geometry:{}}, singleRectFeature={geometry:{}}, currentRotationDeg=90, currentGroundTreatment='paved', currentTakeWholeParcels=true;`;
     const names = ['singleBuildingPreview', 'updateSingleBuildingPreview', 'closeSingleBuildingMapEditor', 'requestCloseSingleBuildingMapEditor'];
     const context = { console, ...stubs };
     const locallyDeclared = new Set(['singleMap', 'singleEditor', 'singleSession', 'singleUploadOnConfirm', 'singleBlockLayer', 'singleParcelBorderLayer', 'singleRectGroup', 'singleGroundPreviewLayer', 'singleRectLayer', 'singleActivePolygonLayer', 'singleDragMarker', 'singlePendingVertexActionIndex', 'singleBuildingDesignChangeTracker', 'disabledViewButtons', 'suspendedPanels', 'threeControls', 'editorFocusReturn', 'currentGroundTreatment', 'currentTakeWholeParcels', 'singleHistory', 'singleBuildingLayers']);
@@ -78,24 +79,26 @@ function closeHarness(options = {}) {
 }
 
 describe('single-building map editor lifecycle', () => {
-    it.each(['2d', 'model'])('stands a new building on the starting site and edits it without taking over the %s view', mode => {
+    it.each(['2d', 'model'])('with a touch screen stands a new building on the starting site and edits it without taking over the %s view', mode => {
         const feature = { type: 'Feature', geometry: { type: 'Polygon', coordinates: [] } };
         const entry = { id: 'building-1', feature };
         const view = { center: [12, 34], zoom: 18, queuedFit: false };
         const before = structuredClone(view);
         const session = {
-            map: { on: vi.fn(), getContainer: () => ({ focus }) }, setPreview: vi.fn(),
+            map: { on: vi.fn(), getContainer: () => ({ focus, addEventListener: vi.fn() }) }, setPreview: vi.fn(),
             setCollapsed: vi.fn(), setHint: vi.fn(), body: {}, footer: {}, content: { insertBefore: vi.fn() },
             fitFeature: vi.fn(() => {
                 if (mode === 'model') view.queuedFit = true;
                 else { view.center = [13, 35]; view.zoom = 21; }
-            })
+            }),
+            revealFeature: vi.fn()
         };
         const draw = vi.fn(), sync = vi.fn(), focus = vi.fn();
         const focused = [];
         const stubs = {
-            session, document: { getElementById: id => ({ focus: options => { focused.push(id); focus(options); } }) },
-            window: { FreeformLandTakeReview: { mount: vi.fn(() => ({})) } },
+            session, document: { getElementById: id => ({ remove: vi.fn(), focus: options => { focused.push(id); focus(options); } }) },
+            window: { FreeformLandTakeReview: { mount: vi.fn(() => ({})) },
+                FreeformPlacement: { usesPointerPlacement: () => false, start: vi.fn() } },
             getSelectedBlockFeature: () => feature, cloneSingleFeature: value => value,
             translateSingleBuildingText: (_key, fallback) => fallback,
             drawBlockOnMap: draw, normalizeGroundTreatment: () => 'none',
@@ -103,11 +106,11 @@ describe('single-building map editor lifecycle', () => {
             addNewBuildingEntry: vi.fn(() => entry), refreshBuildingSelector: vi.fn(), setActiveBuilding: vi.fn(),
             syncSingleBuildingView: sync, ensureSingleBuildingHistory: vi.fn(),
             singleBuildingDesignChanges: () => ({ capture: vi.fn() }), tryStartDragFromMap: vi.fn(),
-            refreshSingleLandTakePreview: vi.fn(), singleBuildingPreview: vi.fn()
+            refreshSingleLandTakePreview: vi.fn(), singleBuildingPreview: vi.fn(), onTouchDragStart: vi.fn()
         };
         const variables = `const DEFAULT_HEIGHT_M=12, EDIT_PANE='edit';
             let singleBlockFeature, singleGroundBoundary, singleBuildingSeedGroundBoundary=null, singleMoveTogether,
-                singleEditor={dataset:{},querySelector:()=>({})}, singleSession=this.session, singleMap, buildingEntries=[], activeBuildingId, nextBuildingId,
+                singleEditor={dataset:{},querySelector:()=>({})}, singleSession=this.session, singlePlacement, singleMap, buildingEntries=[], activeBuildingId, nextBuildingId,
                 currentGroundTreatment, currentGroundDecorationDesign, singleBuildingSeedDecorationDesign=null,
                 singleBuildingSeedGroundTreatment=null, currentHeightM, currentRotationDeg, singleRectFeature,
                 singleBuildingSeedBuildings=null, singleLandTakeReview, singleBuildingSeedLandTake=null;`;
@@ -128,9 +131,60 @@ describe('single-building map editor lifecycle', () => {
         expect(focused).toEqual(['single-height-slider']);
         expect(focus).toHaveBeenCalledWith({ preventScroll: true });
         // Nothing is inserted to ask for a place, and the chosen view is left alone.
+        expect(stubs.window.FreeformPlacement.start).not.toHaveBeenCalled();
         expect(session.content.insertBefore).not.toHaveBeenCalled();
-        expect(session.setCollapsed).not.toHaveBeenCalled();
+        expect(session.setCollapsed).not.toHaveBeenCalledWith(true);
         expect(session.fitFeature).not.toHaveBeenCalled();
+        // Only a pan that brings the new building out from under the sheet, never a zoom to fit it.
+        expect(session.revealFeature).toHaveBeenCalledWith(feature);
+        expect(view).toEqual(before);
+    });
+
+    it.each(['2d', 'model'])('with a mouse carries a new building until it is placed, without taking over the %s view', mode => {
+        const feature = { type: 'Feature', geometry: { type: 'Polygon', coordinates: [] } };
+        const view = { center: [12, 34], zoom: 18, queuedFit: false };
+        const before = structuredClone(view);
+        const session = {
+            map: { on: vi.fn(), getContainer: () => ({ focus, addEventListener: vi.fn() }) }, setPreview: vi.fn(),
+            setCollapsed: vi.fn(), setHint: vi.fn(), body: {}, footer: {}, content: { insertBefore: vi.fn() },
+            fitFeature: vi.fn(() => {
+                if (mode === 'model') view.queuedFit = true;
+                else { view.center = [13, 35]; view.zoom = 21; }
+            })
+        };
+        const draw = vi.fn(), sync = vi.fn(), focus = vi.fn();
+        const stubs = {
+            session, document: { getElementById: () => ({ focus }), createElement: () => ({ focus, addEventListener: vi.fn() }) },
+            window: { FreeformLandTakeReview: { mount: vi.fn(() => ({})) },
+                FreeformPlacement: { usesPointerPlacement: () => true, start: vi.fn(() => ({ destroy: vi.fn() })) } },
+            getSelectedBlockFeature: () => feature, cloneSingleFeature: value => value,
+            translateSingleBuildingText: (_key, fallback) => fallback,
+            drawBlockOnMap: draw, normalizeGroundTreatment: () => 'none',
+            computeInitialPlacement: () => ({ center: [12, 34], width: 10, length: 10 }),
+            addNewBuildingEntry: vi.fn(), refreshBuildingSelector: vi.fn(), setActiveBuilding: vi.fn(),
+            syncSingleBuildingView: sync, ensureSingleBuildingHistory: vi.fn(),
+            singleBuildingDesignChanges: () => ({ capture: vi.fn() }), tryStartDragFromMap: vi.fn(),
+            refreshSingleLandTakePreview: vi.fn(), singleBuildingPreview: vi.fn(), onTouchDragStart: vi.fn()
+        };
+        const variables = `const DEFAULT_HEIGHT_M=12, EDIT_PANE='edit';
+            let singleBlockFeature, singleGroundBoundary, singleBuildingSeedGroundBoundary=null, singleMoveTogether,
+                singleEditor={dataset:{},querySelector:()=>({})}, singleSession=this.session, singlePlacement, singleMap, buildingEntries=[], activeBuildingId, nextBuildingId,
+                currentGroundTreatment, currentGroundDecorationDesign, singleBuildingSeedDecorationDesign=null,
+                singleBuildingSeedGroundTreatment=null, currentHeightM, currentRotationDeg, singleRectFeature,
+                singleBuildingSeedBuildings=null, singleLandTakeReview, singleBuildingSeedLandTake=null;`;
+        const bindings = Object.keys(stubs).filter(key => key !== 'session').map(key => `const ${key}=this.${key};`).join('\n');
+        const context = { ...stubs };
+        vm.runInNewContext(`${variables}\n${bindings}\n${functions.get('mountSingleBuildingMapEditor')}\n${functions.get('activateSingleBuildingEditing')}\nthis.mount=mountSingleBuildingMapEditor;`, context);
+
+        expect(context.mount()).toBe(true);
+        expect(draw).toHaveBeenCalledWith(feature);
+        // No building exists until the click: the outline is carried and the place button is offered.
+        expect(stubs.addNewBuildingEntry).not.toHaveBeenCalled();
+        expect(sync).not.toHaveBeenCalled();
+        expect(stubs.window.FreeformPlacement.start).toHaveBeenCalledWith(expect.objectContaining({ map: session.map }));
+        expect(session.content.insertBefore).toHaveBeenCalledOnce();
+        expect(session.setCollapsed).toHaveBeenCalledWith(true);
+        expect(focus).toHaveBeenCalledWith({ preventScroll: true });
         expect(view).toEqual(before);
     });
 
@@ -181,7 +235,9 @@ describe('single-building map editor lifecycle', () => {
         const h = closeHarness();
         h.close();
         expect(h.calls.removedLayers).toEqual(['block', 'border', 'footprints', 'ground']);
-        expect(h.calls.offs.map(args => args[0])).toEqual(['mousedown', 'touchstart']);
+        expect(h.calls.offs.map(args => args[0])).toEqual(['mousedown']);
+        // A finger's drag listener comes off the map container too, in the phase it went on.
+        expect(h.calls.containerEvents).toEqual([['pointerdown', h.stubs.onTouchDragStart, true]]);
         expect(h.map.remove).not.toHaveBeenCalled();
         expect(h.stubs.singleSession.close).toHaveBeenCalledOnce();
         expect(h.calls.discarded).toBe(1);

@@ -8330,6 +8330,13 @@
       "controlType": "button"
     },
     {
+      "id": "control-8817c441824830-1",
+      "source": "js/single-building.js",
+      "markup": "document.createElement('button')",
+      "interaction": "click",
+      "controlType": "button"
+    },
+    {
       "id": "control-ba650d16f0861a-1",
       "source": "js/site-drawing.js",
       "markup": "<button type=\"button\" class=\"btn\" data-site-action=\"import\">",

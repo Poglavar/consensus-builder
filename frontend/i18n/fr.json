@@ -1049,6 +1049,8 @@
             "editSurroundings": "Modifier les abords",
             "surroundingsPaved": "Revêtement minéral",
             "surroundingsGreen": "Végétation",
+            "placeOnLand": "Placer sur le terrain sélectionné",
+            "placeHint": "Cliquez ou touchez la carte pour placer le bâtiment. Faites glisser la carte pour la déplacer. Échap annule.",
             "surroundingsInfo": "Le revêtement ou l’espace vert occupe le terrain pris en dehors de l’emprise du bâtiment. Une prise limitée à l’emprise ne comporte aucun aménagement extérieur.",
             "uploadGeojsonLabel": "Importer des emprises",
             "uploadGlbLabel": "Importer un modèle",

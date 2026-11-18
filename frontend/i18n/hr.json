@@ -2475,6 +2475,8 @@
             "editSurroundings": "Uredi okolinu",
             "surroundingsPaved": "Popločenje",
             "surroundingsGreen": "Zelenilo",
+            "placeOnLand": "Postavi na odabrano zemljište",
+            "placeHint": "Kliknite ili dodirnite kartu za postavljanje zgrade. Povucite kartu za pomicanje. Esc otkazuje.",
             "surroundingsInfo": "Popločenje ili zelenilo koristi zauzeto zemljište izvan tlocrta zgrade. Zauzimanje samo tlocrta nema okoliša.",
             "uploadGeojsonLabel": "Učitaj tlocrte",
             "uploadGlbLabel": "Učitaj model",

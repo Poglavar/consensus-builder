@@ -2480,6 +2480,8 @@
             "editSurroundings": "Editar el entorno",
             "surroundingsPaved": "Pavimento",
             "surroundingsGreen": "Verde",
+            "placeOnLand": "Colocar en el terreno seleccionado",
+            "placeHint": "Haz clic o toca el mapa para colocar el edificio. Arrastra el mapa para desplazarlo. Esc cancela.",
             "surroundingsInfo": "El pavimento o la zona verde ocupa el terreno tomado fuera de la huella del edificio. Si solo se toma la huella, no hay entorno.",
             "uploadGeojsonLabel": "Subir huellas",
             "uploadGlbLabel": "Subir modelo",

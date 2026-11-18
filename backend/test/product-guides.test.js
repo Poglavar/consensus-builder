@@ -89,12 +89,12 @@ describe('public product guides', () => {
         ['kako-koristiti.html', 'pregledaj odabir i ponovno odaberi alat', 'odmah se pojavi na odabranoj čestici', 'Postavi na odabrano zemljište'],
         ['how-to-use-buildings.html', 'choose Freeform building again', 'appears on the selected parcel at once', 'Place on selected land'],
         ['kako-koristiti-zgrade.html', 'ponovno odaberi alat Slobodna zgrada', 'odmah pojavi na odabranoj čestici', 'Postavi na odabrano zemljište']
-    ])('%s explains block review and that a building starts on the selected parcel', (name, blockStep, placement, retiredControl) => {
+    ])('%s explains block review, mouse placement and the building already placed on touch', (name, blockStep, touchPlacement, mouseControl) => {
         const text = load(readFrontend(name)).text();
         expect(text).toContain(blockStep);
-        expect(text).toContain(placement);
-        // The editor has no placing step, so the guide must not send anyone to look for one.
-        expect(text).not.toContain(retiredControl);
+        expect(text).toContain(touchPlacement);
+        // With a mouse the editor waits for a click or this button, so the guide names it.
+        expect(text).toContain(mouseControl);
     });
 
     it.each([

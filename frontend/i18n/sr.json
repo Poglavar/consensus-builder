@@ -2475,6 +2475,8 @@
             "editSurroundings": "Uredi okolinu",
             "surroundingsPaved": "Popločanje",
             "surroundingsGreen": "Zelenilo",
+            "placeOnLand": "Постави на изабрано земљиште",
+            "placeHint": "Kliknite ili dodirnite mapu da postavite zgradu. Prevucite mapu da je pomerite. Esc otkazuje.",
             "surroundingsInfo": "Popločanje ili zelenilo koristi zauzeto zemljište izvan osnove zgrade. Zauzimanje samo osnove nema okruženje.",
             "uploadGeojsonLabel": "Učitaj osnove",
             "uploadGlbLabel": "Učitaj model",

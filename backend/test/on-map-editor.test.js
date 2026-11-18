@@ -435,6 +435,37 @@ describe('OnMapEditor shared floating-panel lifecycle', () => {
         session.close();
     });
 
+    it('reveals a shape above a phone sheet by panning only, and not in the model view', () => {
+        const { editor, env, map } = runtime();
+        env.innerWidth = 390;
+        env.innerHeight = 761;
+        // A shape whose box spans container y 330..370 (x 180..220) on a 390 × 761 map.
+        let shift = 0;
+        const box = { nw: { x: 180, y: 330 }, se: { x: 220, y: 370 }, center: { x: 200, y: 350 } };
+        env.L.geoJSON = () => ({ getBounds: () => ({ isValid: () => true,
+            getNorthWest: () => 'nw', getSouthEast: () => 'se', getCenter: () => 'center' }) });
+        map.getSize = () => ({ x: 390, y: 761 });
+        map.latLngToContainerPoint = key => ({ x: box[key].x, y: box[key].y - shift });
+        map.panBy = vi.fn(([, dy]) => { shift += dy; });
+        // The sheet is still short (it grows as it settles), so the reveal plans for its tallest:
+        // the clear map is y 90..289 (62% of 761 below) and x 48..366.
+        const session = editor.open({ owner: 'single-building' });
+        session.panel.getBoundingClientRect = () => ({ top: 500, width: 390 });
+        session.revealFeature({ type: 'Feature' });
+        expect(map.panBy).toHaveBeenCalledOnce();
+        const [dx, dy] = map.panBy.mock.calls[0][0];
+        expect(dx).toBeCloseTo(200 - (48 + 366) / 2, 6);
+        expect(dy).toBeCloseTo(350 - (90 + 761 - 761 * 0.62) / 2, 6);
+        expect(map.fitBounds).not.toHaveBeenCalled();
+        // Once in the clear map, a second reveal leaves the view alone; the model view is never panned.
+        session.revealFeature({ type: 'Feature' });
+        env.isThreeModeActive = () => true;
+        shift = 0;
+        session.revealFeature({ type: 'Feature' });
+        expect(map.panBy).toHaveBeenCalledOnce();
+        session.close();
+    });
+
     it('fits below a desktop tool card too, leaving room for its drawing row', () => {
         const { editor, env, map } = runtime();
         env.innerWidth = 1440;

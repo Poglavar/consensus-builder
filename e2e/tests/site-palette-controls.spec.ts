@@ -1,6 +1,6 @@
 // Exercise every action of the site's proposal panel ("Propose here") through its real UI handlers.
 import { test, expect } from '../helpers/fixtures';
-import { clickMapPoint, openCity, freeformBuildingPlaced, publishOn, PARCEL_ID, runParcelCommand } from '../helpers/runtime';
+import { clickMapPoint, openCity, placeFreeformBuilding, publishOn, PARCEL_ID, runParcelCommand } from '../helpers/runtime';
 
 const SECOND_PARCEL_ID = 'HR-335754-1235';
 
@@ -128,7 +128,7 @@ test.describe('Site build palette controls @core', () => {
     await panel.locator(`.parcel-build-btn--${item.key}`).click();
     await expect(page.locator(item.surface).locator('.on-map-editor__panel')).toBeVisible();
     if (item.key === 'single') {
-      await freeformBuildingPlaced(page);
+      await placeFreeformBuilding(page);
       await expect(page.locator('#single-land-take [data-land-status]')).toContainText('m²');
       await expectFreeformDraftSite(page, site);
     }

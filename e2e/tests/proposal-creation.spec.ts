@@ -1,5 +1,5 @@
 import { test, expect } from '../helpers/fixtures';
-import { freeformBuildingPlaced, openCity, openParcel, createSpace, proposalState, showProposal, clickMapPoint, drawCorridor, PARCEL_ID, openParcelTabAt, closeParcel, showSelectionDesignTab, answerBlockScope } from '../helpers/runtime';
+import { placeFreeformBuilding, openCity, openParcel, createSpace, proposalState, showProposal, clickMapPoint, drawCorridor, PARCEL_ID, openParcelTabAt, closeParcel, showSelectionDesignTab, answerBlockScope } from '../helpers/runtime';
 
 test.describe('Proposal creation and map lifecycle @features', () => {
   for (const kind of ['park', 'square', 'lake'] as const) {
@@ -55,7 +55,7 @@ test.describe('Proposal creation and map lifecycle @features', () => {
       await page.locator(`.parcel-build-btn--${type}`).click();
       // Every tool but Row starts from one selected parcel, so it asks about the whole block first.
       if (type !== 'row') await answerBlockScope(page);
-      if (type === 'single') await freeformBuildingPlaced(page);
+      if (type === 'single') await placeFreeformBuilding(page);
       if (type === 'single') {
         await expect(page.locator('#single-land-take [data-land-status]')).toContainText('m²', { timeout: 15_000 });
       }

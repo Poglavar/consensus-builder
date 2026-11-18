@@ -2453,6 +2453,8 @@
             "editSurroundings": "Edit surroundings",
             "surroundingsPaved": "Paving",
             "surroundingsGreen": "Green",
+            "placeOnLand": "Place on selected land",
+            "placeHint": "Click or tap the map to place the building. Drag the map to pan. Esc cancels.",
             "surroundingsInfo": "Paving or green space uses taken land outside the building footprint. Footprint-only takes have no surroundings.",
             "uploadGeojsonLabel": "Upload footprints",
             "uploadGlbLabel": "Upload model",
