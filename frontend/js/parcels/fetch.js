@@ -504,7 +504,10 @@
     // Other sources stay per cell: their per-query limits have not been measured for larger areas.
     // HSAC Haryana answers each query in about 1.1 s however small; per-cell reads queued a
     // 160-cell view for over a minute (2026-10-14), so its district layers read 4x4 blocks.
-    const CELL_BLOCK_SIDE_BY_SOURCE = Object.freeze({ 'gb-hmlr-browser-v1': 5, 'pl-gugik-egib-wfs': 3 });
+    // Kazakhstan's PKK (relay-only) costs about 1 s per query whatever its size: 16 Alatau cells took
+    // 2.9-4.2 s at six in flight and their 4x4 block 1.1-2.0 s (2026-11-18). 4x4 of 0.0025-degree
+    // cells (0.9 km2 there) is the largest block within the source's 1 km2 bbox limit.
+    const CELL_BLOCK_SIDE_BY_SOURCE = Object.freeze({ 'gb-hmlr-browser-v1': 5, 'pl-gugik-egib-wfs': 3, 'kz-alatau-pkk': 4 });
     const CELL_BLOCK_SIDE_BY_SOURCE_FAMILY = Object.freeze([[/^in-hr-hsac-[a-z_]+-outlines$/, 4]]);
 
     function cellBlockSide(options = {}) {

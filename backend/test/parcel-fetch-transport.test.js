@@ -2,6 +2,7 @@ import { describe, it, expect, vi } from 'vitest';
 import { readFileSync } from 'node:fs';
 import vm from 'node:vm';
 import * as turf from '@turf/turf';
+import { validateBounds } from '../parcels/source-contract.js';
 
 const source = readFileSync(new URL('../../frontend/js/parcels/fetch.js', import.meta.url), 'utf8');
 const progressSource = readFileSync(new URL('../../frontend/js/parcels/source-progress.js', import.meta.url), 'utf8');
@@ -188,6 +189,16 @@ describe('cadastral parcel fetch transport', () => {
         expect(haryana.cellBlockSide({ city: 'panipat' })).toBe(4);
         const keyed = bootTransport('panipat', vi.fn(), { source: 'parcel-source', sourceId: 'in-hr-hsac-panipat', gridSize: 0.001 });
         expect(keyed.cellBlockSide({ city: 'panipat' })).toBe(1);
+    });
+
+    it('queries Alatau\'s PKK in 4x4 blocks, the largest that fits its bbox limit', () => {
+        const alatau = bootTransport('alatau', vi.fn(), { source: 'parcel-source', sourceId: 'kz-alatau-pkk', gridSize: 0.0025 });
+        expect(alatau.cellBlockSide({ city: 'alatau' })).toBe(4);
+        const catalog = JSON.parse(readFileSync(new URL('../../frontend/data/source-catalog.json', import.meta.url), 'utf8'));
+        const { maxBboxKm2 } = (catalog.sources || catalog).find(source => source.id === 'kz-alatau-pkk');
+        const block = side => [77.0, 43.6, 77.0 + side * 0.0025, 43.6 + side * 0.0025];
+        expect(() => validateBounds(block(4), maxBboxKm2)).not.toThrow();
+        expect(() => validateBounds(block(5), maxBboxKm2)).toThrow(/too large/);
     });
 
     it('keeps every other source on per-cell queries', () => {
