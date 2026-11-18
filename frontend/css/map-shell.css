@@ -117,7 +117,7 @@ body.three-mode-active .map-view-pill--2d {
     right: var(--map-shell-edge);
 }
 
-/* Wide map: navigation pills on the bottom edge, the same chrome as the top-right cluster, so the map
+/* Wide map: three pills on the bottom edge, the same chrome as the top-right cluster, so the map
    keeps its bottom edge and the credits and scale bar share the row from the corners. */
 .map-shell-cluster--bottom-right {
     bottom: var(--map-shell-edge);
@@ -578,16 +578,6 @@ body.three-mode-active .leaflet-control-attribution { visibility: hidden; }
     box-sizing: border-box;
 }
 
-.design-start-body {
-    display: grid;
-    gap: var(--cb-space-3);
-    line-height: 1.45;
-}
-
-.design-start-body p { margin: 0; }
-.design-start-body .cb-link { justify-self: start; }
-.design-start-body .cb-actions { flex-wrap: wrap; }
-
 /* ---- Navigation sheets ----
    Bets and Activity share a wider frame centred on the navigation row. Lists opts into the
    right-screen-panel column; that contract owns its desktop width and placement. Phone sheets
@@ -1018,7 +1008,7 @@ body.app-loading .map-shell-cluster {
         box-shadow: none;
     }
 
-    /* A labelled bar along the bottom (docs/design-language.md): equal buttons, icon over
+    /* A labelled bar along the bottom (docs/design-language.md): three equal buttons, icon over
        label, instead of an icon-only column with a floating count. The bottom clearance grows with
        it so the toast and the tray sit above the bar, and the credits and scale bar take the row
        between. */

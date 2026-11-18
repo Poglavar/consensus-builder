@@ -50,7 +50,7 @@ No MCP schema or discovery change is needed for control names, tabs or dialog fo
 
 ## MCP parity
 
-The 2D Design panel leads to map search or the site editor. A site outline can be entered
+Clicking open ground on the 2D map offers **Draw a parcel**. A site outline can be entered
 corner by corner with **Add corner by coordinates**, in the same ring as map clicks. **Finish site**
 validates it before a design tool uses it. For the same ground, `ugt_draft_space` and
 `ugt_draft_building` accept source parcel IDs in `parcelIds` or a WGS84 polygon in `outline`.

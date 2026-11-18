@@ -1356,7 +1356,7 @@
                     "eyebrow": "Da ideia ao projeto",
                     "title": "Torne a mudança visível",
                     "body": "Transforme uma ideia num projeto: altere a forma das parcelas, esboce ruas e parques ou adicione edifícios. Aplique um rascunho para ver como altera o mapa.",
-                    "hint": "Selecione uma parcela no mapa 2D e escolha uma ferramenta em Ações. Abra Projeto para traçar o seu próprio limite."
+                    "hint": "Selecione uma parcela no mapa 2D e escolha uma ferramenta em Ações."
                 },
                 "consent": {
                     "eyebrow": "As pessoas fazem a diferença",
@@ -5617,7 +5617,6 @@
             "other": "{{count}} acordos"
         },
         "search": {
-            "firstVisitLabel": "Escolha onde projetar",
             "placeholder": "Nome da cidade",
             "label": "Pesquisar cidades",
             "noResults": "Nenhuma cidade correspondente",
@@ -5829,11 +5828,6 @@
         "statusNothingToClaim": "Ainda não há nada para reclamar. Volte mais tarde.",
         "statusTxLink": "Ver transação",
         "statusError": "Ocorreu um erro. Tente novamente."
-    },
-    "designStart": {
-        "title": "Iniciar um projeto",
-        "hint": "Selecione uma parcela no mapa. Em Ações, escolha uma ferramenta como Parque. Para traçar o seu próprio limite, escolha Desenhar uma parcela.",
-        "saved": "Os projetos concluídos ficam guardados neste navegador. Encontra-os em Listas → Projetos."
     },
     "mapShell": {
         "proposals": "Projetos",

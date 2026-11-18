@@ -2387,7 +2387,7 @@
                     "eyebrow": "De la idea a el diseño",
                     "title": "Haz visible el cambio",
                     "body": "Convierte una idea en un diseño: rediseña parcelas, traza calles y parques o añade edificios. Aplica un borrador para ver cómo cambia el mapa.",
-                    "hint": "Selecciona una parcela en el mapa 2D y elige una herramienta en Acciones. Abre Diseño para dibujar tu propio perímetro."
+                    "hint": "Selecciona una parcela en el mapa 2D y elige una herramienta en Acciones."
                 },
                 "consent": {
                     "eyebrow": "Las personas marcan la diferencia",
@@ -6929,7 +6929,6 @@
             "other": "{{count}} acuerdos"
         },
         "search": {
-            "firstVisitLabel": "Elige dónde diseñar",
             "placeholder": "Nombre de la ciudad",
             "label": "Buscar ciudades",
             "noResults": "No hay ciudades coincidentes",
@@ -7062,11 +7061,6 @@
                 "unknown": "Ubicación desconocida"
             }
         }
-    },
-    "designStart": {
-        "title": "Iniciar un diseño",
-        "hint": "Selecciona una parcela en el mapa. En Acciones, elige una herramienta como Parque. Para definir tu propio perímetro, elige Dibujar una parcela.",
-        "saved": "Los diseños terminados se guardan en este navegador. Están en Listas → Diseños."
     },
     "mapShell": {
         "settingsSections": {

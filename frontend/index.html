@@ -608,14 +608,8 @@
             </div>
         </div>
 
-        <!-- The 2D dock leads into designing, browsing saved work and city activity. -->
+        <!-- Lists opens the right panel. Activity and Bets open above the navigation row. -->
         <div id="map-shell-bottom-right" class="map-shell-cluster map-shell-cluster--bottom-right" data-map-modes="2d" data-sheet-anchor>
-            <button type="button" id="design-start-button" class="map-shell-button map-shell-button--labelled"
-                data-sheet-target="design-start-sheet" aria-controls="design-start-sheet" aria-expanded="false"
-                title="Start a design" data-i18n-key="designStart.title" data-i18n-attr="title">
-                <i class="fas fa-pen" aria-hidden="true"></i>
-                <span class="map-shell-button-label" data-i18n-key="proposalDrafts.tabs.design">Design</span>
-            </button>
             <button type="button" id="proposals-button" class="map-shell-button map-shell-button--labelled"
                 data-sheet-target="proposals-sheet" aria-controls="proposals-sheet" aria-expanded="false"
                 title="Lists" data-i18n-key="lists.title" data-i18n-attr="title">
@@ -640,30 +634,6 @@
                 <span class="map-shell-button-label" data-i18n-key="mapShell.bets">Bets</span>
             </button>
         </div>
-
-        <section id="design-start-sheet" class="map-sheet" role="dialog" aria-labelledby="design-start-title"
-            aria-describedby="design-start-hint" data-map-modes="2d" hidden>
-            <div class="map-sheet-header">
-                <h2 id="design-start-title" class="map-sheet-title" data-i18n-key="designStart.title">Start a design</h2>
-                <button type="button" class="map-sheet-close close-circle-btn close-circle-btn--lg" data-sheet-close data-design-start-close
-                    aria-label="Close" title="Close" data-i18n-key="common.close" data-i18n-attr="aria-label,title">×</button>
-            </div>
-            <div class="map-sheet-body design-start-body">
-                <p id="design-start-hint" data-i18n-key="designStart.hint">Select a parcel on the map. In Actions, choose a tool such as Park. To design on your own boundary, draw a parcel.</p>
-                <div class="cb-actions">
-                    <button type="button" class="btn" data-command="parcels.locate">
-                        <i class="fas fa-magnifying-glass" aria-hidden="true"></i>
-                        <span data-i18n-key="mapSearch.label">Search the map</span>
-                    </button>
-                    <button type="button" class="btn" data-command="site.draw">
-                        <i class="fas fa-draw-polygon" aria-hidden="true"></i>
-                        <span data-i18n-key="groundMenu.actions.drawSite">Draw a parcel</span>
-                    </button>
-                </div>
-                <p class="sheet-note" data-i18n-key="designStart.saved">Finished designs are saved in this browser. Find them in Lists → Designs.</p>
-                <a class="cb-link" href="how-to-use.html" data-user-guide target="_blank" rel="noopener noreferrer" data-i18n-key="settingsPanel.userGuide">User guide</a>
-            </div>
-        </section>
 
         <!-- Chat sheet -->
         <section id="chat-sheet" class="right-screen-panel map-sheet chat-sheet" role="dialog" aria-labelledby="chat-sheet-title" hidden>
@@ -2669,7 +2639,7 @@
                     <p class="site-intro-eyebrow" data-i18n-key="modal.siteIntro.tour.propose.eyebrow">From idea to design</p>
                     <h2 id="site-intro-title-propose" data-i18n-key="modal.siteIntro.tour.propose.title">Make change visible</h2>
                     <p id="site-intro-lead-propose" class="site-intro-lead" data-i18n-key="modal.siteIntro.tour.propose.body">Turn an idea into a design: reshape parcels, sketch streets and parks, or add buildings. Apply a draft to see how it changes the map.</p>
-                    <p class="site-intro-hint" data-i18n-key="modal.siteIntro.tour.propose.hint">Select a parcel on the 2D map, then choose a tool in Actions. Open Design to draw your own boundary.</p>
+                    <p class="site-intro-hint" data-i18n-key="modal.siteIntro.tour.propose.hint">Select a parcel on the 2D map, then choose a tool in Actions.</p>
                 </div>
             </article>
             <article class="site-intro-slide" data-site-intro-slide="consent" hidden>

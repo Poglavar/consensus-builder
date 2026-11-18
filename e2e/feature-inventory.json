@@ -300,12 +300,6 @@
       ]
     },
     {
-      "id": "design.start",
-      "specs": [
-        "tests/first-design.spec.ts"
-      ]
-    },
-    {
       "id": "proposals.list",
       "specs": [
         "tests/proposal-browsing.spec.ts"
@@ -656,6 +650,12 @@
         "tests/parcel-info-panel.spec.ts",
         "tests/layer-behavior.spec.ts",
         "tests/reload-persistence.spec.ts"
+      ]
+    },
+    {
+      "feature": "phone parcel selection, Park creation, reload and newest design in Lists",
+      "specs": [
+        "tests/first-design.spec.ts"
       ]
     },
     {

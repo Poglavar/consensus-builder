@@ -232,11 +232,10 @@ palette is the legend beside each tick.
 
 ## Phone layout
 
-- The 2D bottom dock is **Design · Lists · Activity · Bets**. On a phone it is a labelled bar across
-  the width with a veil the map shows through (`--cb-glass-veil`, blurred; its buttons are
-  transparent at rest); on a wide map it is four pills centred on the bottom edge, the same chrome
-  as the top-right cluster, so the map keeps its bottom edge. Its height is `--map-shell-bar-height`
-  in both shapes; `--map-shell-bottom-clearance` keeps the tray and toast above it. The credits and
+- The 2D bottom dock contains **Lists**, **Activity** and **Bets**. On a phone the buttons share a
+  full-width translucent bar (`--cb-glass-veil`). On a wide map the three buttons sit together
+  at the centre of the bottom edge. Its height is `--map-shell-bar-height` in both layouts, and
+  `--map-shell-bottom-clearance` keeps the tray and toast above it. The credits and
   the scale bar are set straight on the map with a text halo (`--cb-text-halo`) and no boxes: on a
   phone in the row right above the bar, on a wide map in the pills' own row, from the corners.
 - Mobile map panels, navigation sheets, lists and task forms use one top-handle interaction, as
@@ -266,11 +265,9 @@ palette is the legend beside each tick.
 - Layers presents the controls for the selected view: original cadastre in 2D, model appearance in
   3D models, and existing-city visibility in aerial imagery. Keep these view-specific controls in
   Layers rather than adding another global panel.
-- Creation starts with a location. **Design** in the dock and **Start a design** in Lists → Designs
-  open the same compact panel. A visitor can select a parcel directly on the map, search for a
-  location or draw a boundary. Selecting a parcel opens its tools under **Actions**. Lists → Designs
-  opens with the newest designs first so a newly finished design is easy to find. **Filters** also
-  offers sorting by title.
+- A visitor can search for a place or parcel, select a parcel on the 2D map, or click open ground
+  and choose **Draw a parcel**. Selecting a parcel opens its tools under **Actions**.
+  **Lists → Designs** shows the newest designs first. **Filters** also offers sorting by title.
 - Activity is one dock panel with Events, Actors and Watched areas tabs. Events and Actors share
   search and filters; Actors shows an actor’s activity after selection. Start with live events from
   all cities. Keep advanced filters folded, disclose bounded retrieval, and preserve the visitor’s
@@ -320,7 +317,7 @@ The names to use for the shell's elements in follow-up discussion.
 | **Layers** button and sheet | top-right; the controls for the current view (see Map shell structure) |
 | **Settings** button and sheet | top-right; Appearance, Data & assumptions, Help & about, and Advanced (Local (browser) data, Simulation, Diagnostics, Reset browser data) |
 | **view strip** | left edge: 2D map, 3D models, 3D aerial imagery (`map-mode-tile`), with the Measure (2D) and Sun and shadows (3D) utilities beside it |
-| **bottom dock** | Design, Lists, Activity and Bets. Design opens a compact panel above the map. The other three open **dock sheets**. |
+| **bottom dock** | **Lists**, **Activity** and **Bets** each open a dock sheet. |
 | **running dot** | the pulsing dot on the Activity button while the simulation runs |
 | **status line**, **notice**, **banner card** | the three message families (see Messages) |
 | **click stack** | the right-screen panel (`#click-stack`) listing what lies under a click |

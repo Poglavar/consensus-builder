@@ -303,19 +303,18 @@ describe('mobile dock sheet geometry', () => {
         expect(occupiedBottom({ viewportHeight: 844, top: 500 })).toBe(344);
         expect(occupiedBottom({ viewportHeight: 844, top: null })).toBe(0);
         const vars = new Map();
-        const panel = { id: 'design-start-sheet', box: { top: 500, height: 344 }, getBoundingClientRect() { return this.box; } };
+        const panel = { id: 'planning-views', box: { top: 500, height: 344 }, getBoundingClientRect() { return this.box; } };
         const container = { style: { setProperty: (k, v) => vars.set(k, v), removeProperty: k => vars.delete(k) },
-            querySelectorAll() { return [panel]; } };
+            querySelectorAll(selector) { return navigationSheet && selector.includes(':not(.map-sheet--dock)') ? [] : [panel]; } };
         const bodyClasses = new Set();
         let phone = true;
-        let navigationSheet = null;
+        let navigationSheet = false;
         const win = {
             innerHeight: 844,
             matchMedia: () => ({ matches: phone }),
             document: {
                 body: { classList: { toggle: (name, on) => (on ? bodyClasses.add(name) : bodyClasses.delete(name)) } },
                 getElementById(id) { return id === 'map-container' ? container : null; },
-                querySelector(selector) { return selector.startsWith('#map-shell-bottom-right') && navigationSheet ? { getAttribute: () => navigationSheet } : null; },
                 querySelectorAll() { return [panel]; }
             }
         };
@@ -323,9 +322,10 @@ describe('mobile dock sheet geometry', () => {
         expect(vars.get('--map-sheet-occupied')).toBe('344px');
         // An open sheet about the map covers the bottom bar; the bar's own sheets are not counted.
         expect(bodyClasses.has('mobile-context-sheet-open')).toBe(true);
-        navigationSheet = panel.id;
+        navigationSheet = true;
         reportOccupancy(win);
         expect(bodyClasses.has('mobile-context-sheet-open')).toBe(false);
+        navigationSheet = false;
         panel.id = 'click-stack';
         reportOccupancy(win);
         expect(bodyClasses.has('mobile-context-sheet-open')).toBe(true);

@@ -2382,7 +2382,7 @@
                     "eyebrow": "Od ideje do dizajna",
                     "title": "Učinite promjenu vidljivom",
                     "body": "Pretvorite ideju u dizajn: preoblikujte čestice, skicirajte ulice i parkove ili dodajte zgrade. Primijenite nacrt da vidite kako mijenja kartu.",
-                    "hint": "Odaberite česticu na 2D karti, a zatim alat u kartici Radnje. Za crtanje vlastite granice otvorite Dizajn."
+                    "hint": "Odaberite česticu na 2D karti, a zatim alat u kartici Radnje."
                 },
                 "consent": {
                     "eyebrow": "Ljudi čine razliku",
@@ -6937,7 +6937,6 @@
             "other": "{{count}} sporazuma"
         },
         "search": {
-            "firstVisitLabel": "Odaberite gdje želite projektirati",
             "placeholder": "Naziv grada",
             "label": "Pretraži gradove",
             "noResults": "Nema odgovarajućeg grada",
@@ -7070,11 +7069,6 @@
                 "unknown": "Lokacija nepoznata"
             }
         }
-    },
-    "designStart": {
-        "title": "Započni dizajn",
-        "hint": "Odaberite česticu na karti. U kartici Radnje odaberite alat, primjerice Park. Za vlastitu granicu odaberite Nacrtaj česticu.",
-        "saved": "Dovršeni dizajni spremaju se u ovaj preglednik. Pronaći ćete ih pod Popisi → Dizajni."
     },
     "mapShell": {
         "settingsSections": {

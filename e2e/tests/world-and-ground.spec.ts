@@ -444,11 +444,12 @@ test.describe('World navigation and open ground @features', () => {
   });
 
   test('a custom site can be drawn with coordinates and the keyboard', async ({ mockApi: page }) => {
+    test.setTimeout(60_000);
     await page.setViewportSize({ width: 390, height: 844 });
     await openCity(page);
-    await page.getByRole('button', { name: 'Lists', exact: true }).press('Enter');
-    await page.getByRole('button', { name: 'Start a design', exact: true }).press('Enter');
-    await page.getByRole('dialog', { name: 'Start a design' }).getByRole('button', { name: 'Draw a parcel' }).press('Enter');
+    await page.evaluate(() => (window as any).map.setView([45.8008, 15.9817], 18, { animate: false }));
+    await clickMapPoint(page, 15.9817, 45.8008);
+    await page.locator('#click-stack [data-command="ground.drawSite"]').press('Enter');
     const panel = page.locator('#site-panel');
     const disclosure = panel.getByText('Add corner by coordinates', { exact: true });
     await expect(disclosure).toBeFocused();

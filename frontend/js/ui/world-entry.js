@@ -111,9 +111,8 @@
         state.landing = true;
         log(`${input.explore ? 'explore' : 'open ' + input.cityId} at ${input.point.lat.toFixed(4)},${input.point.lon.toFixed(4)} -> `
             + `${decision.cityId} ${decision.inPlace ? 'in place' : 'by reload'} (${Model.formatAt(decision.view)}${decision.carryAt ? ', via ?at=' : ''})`);
-        // First visits open the city map; subsequent city picks can arrive on its latest design.
-        // Exact points retain their requested view (Model.arrivesAtLatest).
-        const latest = !Model.arrivesAtLatest(decision, { firstVisit: input.firstVisit }) || !global.WorldArrival
+        // A city pick can arrive on its latest published design; exact points retain their view.
+        const latest = !Model.arrivesAtLatest(decision) || !global.WorldArrival
             ? Promise.resolve(null)
             : global.WorldArrival.fetchLatestDesignCid(decision.cityId).catch(error => {
                 console.warn(`[${new Date().toISOString()}] [world-entry] latest design lookup failed`, error);
@@ -209,7 +208,7 @@
                 const current = manager().getCurrentCityId();
                 return Model.liveCityFor({ place, currentCityId: current, sameCadastre: sameCadastre(current, place.cityId) });
             },
-            onOpenCity: (cityId, point) => land({ cityId, point, explore: false, firstVisit: !!options.genuineFirstVisit }),
+            onOpenCity: (cityId, point) => land({ cityId, point, explore: false }),
             onExplore: point => land({ point, explore: true }),
             onRequestCity: requestCity,
             onClose: () => landed('closed')

@@ -841,34 +841,6 @@
       "controlType": "button"
     },
     {
-      "id": "control-a34a91ddc239fe-1",
-      "source": "index.html",
-      "markup": "<button type=\"button\" id=\"design-start-button\" class=\"map-shell-button map-shell-button--labelled\" data-sheet-target=\"design-start-sheet\" aria-controls=\"design-start-sheet\" aria-expanded=\"false\" title=\"Start a design\" data-i18n-key=\"designStart.title\" data-i18n-attr=\"title\">",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-c455633c6cb6f9-1",
-      "source": "index.html",
-      "markup": "<button type=\"button\" class=\"map-sheet-close close-circle-btn close-circle-btn--lg\" data-sheet-close data-design-start-close aria-label=\"Close\" title=\"Close\" data-i18n-key=\"common.close\" data-i18n-attr=\"aria-label,title\">",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-6e7602ae8cfb11-1",
-      "source": "index.html",
-      "markup": "<button type=\"button\" class=\"btn\" data-command=\"parcels.locate\">",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-33a8a8d0edb630-1",
-      "source": "index.html",
-      "markup": "<button type=\"button\" class=\"btn\" data-command=\"site.draw\">",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
       "id": "control-dc7af30c67cb8d-1",
       "source": "index.html",
       "markup": "<button type=\"button\" class=\"map-sheet-close close-circle-btn close-circle-btn--lg\" data-sheet-close aria-label=\"Close\" title=\"Close\" data-i18n-key=\"common.close\" data-i18n-attr=\"aria-label,title\">",

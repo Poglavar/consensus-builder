@@ -1356,7 +1356,7 @@
                     "eyebrow": "De l’idée au projet",
                     "title": "Rendez le changement visible",
                     "body": "Transformez une idée en projet : remodelez les parcelles, dessinez des rues et des parcs ou ajoutez des bâtiments. Appliquez un brouillon pour voir comment il modifie la carte.",
-                    "hint": "Sélectionnez une parcelle sur la carte 2D, puis un outil dans Actions. Ouvrez Projet pour tracer votre propre périmètre."
+                    "hint": "Sélectionnez une parcelle sur la carte 2D, puis un outil dans Actions."
                 },
                 "consent": {
                     "eyebrow": "Les personnes font la différence",
@@ -5617,7 +5617,6 @@
             "other": "{{count}} accords"
         },
         "search": {
-            "firstVisitLabel": "Choisissez où concevoir",
             "placeholder": "Nom de la ville",
             "label": "Rechercher des villes",
             "noResults": "Aucune ville correspondante",
@@ -5829,11 +5828,6 @@
         "statusNothingToClaim": "Aucun jeton à réclamer pour le moment, revenez un peu plus tard.",
         "statusTxLink": "Voir la transaction",
         "statusError": "Une erreur est survenue. Veuillez réessayer."
-    },
-    "designStart": {
-        "title": "Commencer un projet",
-        "hint": "Sélectionnez une parcelle sur la carte. Dans Actions, choisissez un outil comme Parc. Pour tracer votre propre périmètre, choisissez Dessiner une parcelle.",
-        "saved": "Vos projets terminés sont enregistrés dans ce navigateur. Retrouvez-les dans Listes → Projets."
     },
     "mapShell": {
         "proposals": "Projets",

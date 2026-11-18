@@ -502,7 +502,7 @@
         function renderStaticText() {
             root.setAttribute('aria-label', t('world.title', 'Choose a place'));
             searchInput.placeholder = t('world.search.placeholder', 'City name');
-            if (searchLabel) searchLabel.textContent = t('world.search.firstVisitLabel', 'Choose where to design');
+            if (searchLabel) searchLabel.textContent = t('world.search.label', 'Search cities');
             else searchInput.setAttribute('aria-label', t('world.search.label', 'Search cities'));
             locateBtn.setAttribute('aria-label', t('world.search.locate', 'Show my location'));
             locateBtn.title = t('world.search.locate', 'Show my location');

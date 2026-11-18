@@ -19,10 +19,10 @@ User direction, 2026-10-17:
 - `city=zagreb` becomes an alias for the coordinates of Zagreb's centre.
 - Headless and headed tests cover the change.
 
-World navigation, implemented 2026-10-20: destinations are cities or exact points. Globe search
-contains only cities; marker clicks retain that city's identity. On a first visit, choosing a city
-opens its normal 2D map. On later globe visits, a city may open its latest published design; an
-activity selection opens its selected record. Clicking elsewhere on the globe,
+Globe destinations are cities or exact points. Globe search lists cities, and clicking a city
+marker selects that city. Choosing a city opens its latest published design in 3D if the city
+has a 3D building source. A city with no published design opens on the 2D map. Choosing an
+activity opens that specific record. Clicking elsewhere on the globe,
 or using Show my location, selects the exact coordinates and opens them at zoom 19 without a
 latest-proposal detour. Country, province, region and territory outlines remain coverage context
 and cannot be selected as destinations. Coverage still determines which data source serves a point.

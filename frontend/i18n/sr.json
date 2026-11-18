@@ -2382,7 +2382,7 @@
                     "eyebrow": "Od ideje do dizajna",
                     "title": "Učinite promenu vidljivom",
                     "body": "Pretvorite ideju u dizajn: preoblikujte parcele, skicirajte ulice i parkove ili dodajte zgrade. Primena nacrta pokazuje kako menja mapu.",
-                    "hint": "Izaberite parcelu na 2D mapi, zatim alat u kartici Radnje. Otvorite Dizajn da nacrtate sopstvenu granicu."
+                    "hint": "Izaberite parcelu na 2D mapi, zatim alat u kartici Radnje."
                 },
                 "consent": {
                     "eyebrow": "Ljudi čine razliku",
@@ -6937,7 +6937,6 @@
             "other": "{{count}} sporazuma"
         },
         "search": {
-            "firstVisitLabel": "Изаберите где желите да пројектујете",
             "placeholder": "Naziv grada",
             "label": "Pretraži gradove",
             "noResults": "Nema odgovarajućeg grada",
@@ -7070,11 +7069,6 @@
                 "unknown": "Lokacija nepoznata"
             }
         }
-    },
-    "designStart": {
-        "title": "Započni dizajn",
-        "hint": "Izaberite parcelu na mapi. U kartici Radnje izaberite alat, na primer Park. Za sopstvenu granicu izaberite Nacrtaj parcelu.",
-        "saved": "Završeni dizajni se čuvaju u ovom pregledaču. Pronaći ćete ih pod Liste → Dizajni."
     },
     "mapShell": {
         "settingsSections": {

@@ -126,12 +126,12 @@
         }
         if (occupied > 0) container.style.setProperty('--map-sheet-occupied', `${occupied}px`);
         else container.style.removeProperty('--map-sheet-occupied');
-        // Keep the bottom navigation available in its own sheets, including the compact Design
-        // starter. An overlapping parcel or editor sheet still takes the space it needs.
+        // A sheet about something on the map covers the bottom navigation bar, as a place sheet does
+        // in a maps app; the bar's own sheets (Lists, Activity, Bets) keep it, since it moves
+        // between them (css/mobile-sheets.css).
         const phone = !!win.matchMedia?.('(max-width: 767.98px)').matches;
-        const navigationSheet = doc.querySelector?.('#map-shell-bottom-right [aria-expanded="true"]')?.getAttribute('aria-controls');
-        const context = phone && [...container.querySelectorAll('.mobile-sheet-ready:not(.is-hosted):not(.is-minimized), #click-stack.visible, #three-click-stack.visible')]
-            .some(panel => panel.id !== navigationSheet && panel.getBoundingClientRect().height > 0);
+        const context = phone && [...container.querySelectorAll('.mobile-sheet-ready:not(.map-sheet--dock):not(.is-hosted):not(.is-minimized), #click-stack.visible, #three-click-stack.visible')]
+            .some(panel => panel.getBoundingClientRect().height > 0);
         doc.body?.classList.toggle('mobile-context-sheet-open', context);
     }
 

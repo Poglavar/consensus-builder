@@ -118,6 +118,7 @@ describe('public product guides', () => {
         expect(guide.find('ol.steps > li')).toHaveLength(3);
         expect(guide.find('details summary').text().trim()).toBeTruthy();
         expect(guide.find('ol.steps').text()).not.toMatch(/Draw a parcel|Nacrtaj česticu/);
+        expect(guide.text()).not.toMatch(/Start a design|Započni dizajn/);
     });
 
     it.each([

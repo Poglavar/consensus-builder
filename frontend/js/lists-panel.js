@@ -338,11 +338,7 @@
                 return selection(compare);
             }
             const grid = node('div', 'lists-actions__grid');
-            if (kind === 'designs' && !doc.body.classList.contains('three-mode-active')) {
-                actions.append(button(t('designStart.title'), () => win.MapShell.openSheet('design-start-sheet'), 'btn-primary', 'pen'));
-            }
-            if (kind !== 'agreements') grid.append(button(t('planDialog.createPlan'), () => choosePlanDesigns(),
-                kind === 'plans' ? 'btn-primary' : '', 'cb-icon-plan'));
+            if (kind !== 'agreements') grid.append(button(t('planDialog.createPlan'), () => choosePlanDesigns(), 'btn-primary', 'cb-icon-plan'));
             if (kind === 'agreements') grid.append(button(t('agreement.list.create'), () => {
                 win.MapShell.closeSheets(); return win.AgreementDialog.open();
             }, 'btn-primary', 'cb-icon-agreement'));
