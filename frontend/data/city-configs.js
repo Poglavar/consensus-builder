@@ -13054,9 +13054,9 @@
             // Google 3D (photo mode) stands by known heights here instead of probing the tiles that have
             // arrived (photoreal-ground.js knownGroundHeight): the shared terrain API's ground height at the
             // view's centre, in EVRF2000, plus how far the ellipsoid of Google's mesh lies below EVRF2000 in
-            // Zagreb (44.78 m; measured 2026-11-18 against sharpened Google tiles and DGU LiDAR terrain,
-            // 44.44 m from HVRS71 heights, which lie 0.34 m higher). Other cities probe.
-            photoSeat: { elevationUrl: 'https://zagreb.lol/api/terrain/elevation', datum: 'EPSG:5730', geoidM: 44.78 },
+            // Zagreb. Measured against sharpened Google tiles: 44.78 m (DGU LiDAR, 2026-11-18), 44.52-44.64 m
+            // (the API's 20 m DTM at Trg bana Jelacica, 2026-11-19); 44.6 m keeps each within 0.2 m. Other cities probe.
+            photoSeat: { elevationUrl: 'https://zagreb.lol/api/terrain/elevation', datum: 'EPSG:5730', geoidM: 44.6 },
             floorModels: { namespace: 'zagreb', published: [
                 { adapter: 'floor-plan-publication', buildingSource: 'zagreb-3d', city: 'zagreb', source: 'zagreb-3d' },
                 { adapter: 'floor-plan-publication', buildingSource: 'dgu-3d', city: 'zagreb', source: 'dgu-building' },
