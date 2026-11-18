@@ -82,8 +82,8 @@ function bootstrapFixture({ hits = true, absoluteHeight = 120, attached = false 
         setAbsoluteHeight: value => { absoluteHeight = value; } };
 }
 
-function lockFixture({ progress = 1, quietMs = 2000, initialSamples = [], visibleTiles = 0, waitedS = 0 } = {}) {
-    const seatNode = { position: { z: 0 } };
+function lockFixture({ progress = 1, quietMs = 2000, initialSamples = [], visibleTiles = 0, waitedS = 0, knownGround = { status: 'none', heightM: null }, seatZ = 0 } = {}) {
+    const seatNode = { position: { z: seatZ } };
     const setStatus = vi.fn();
     const setRealisticLayerActive = vi.fn();
     const lockSamples = initialSamples.slice();
@@ -100,6 +100,9 @@ function lockFixture({ progress = 1, quietMs = 2000, initialSamples = [], visibl
     const context = vm.createContext({
         lockWaitS: waitedS,
         lockAccumS: 0,
+        knownGround,
+        KNOWN_GROUND_WAIT_S: 4,
+        seatBasis: null,
         LOCK_SAMPLE_INTERVAL_S: 0.25,
         LOCK_PROBE_OFFSETS: [[0, 0], [60, 0], [-60, 0], [0, 60], [0, -60],
             [120, 60], [-120, 60], [120, -60], [-120, -60], [180, 0], [-180, 0], [0, 180], [0, -180]],
@@ -117,7 +120,7 @@ function lockFixture({ progress = 1, quietMs = 2000, initialSamples = [], visibl
         lastTileContentAt: 0,
         bootstrapGround: vi.fn(() => false),
         reportedProbeFamine: false,
-        loadedTileScenes: new Set(),
+        loadedTileScenes: new Set(knownGround.status === 'ready' ? [{}] : []),
         lockSamples,
         lastProbeSummary: null,
         lockedGroundZ: null,
@@ -139,6 +142,8 @@ function lockFixture({ progress = 1, quietMs = 2000, initialSamples = [], visibl
     const ast = parse(source, { sourceType: 'script' });
     const declaration = findFunction(ast, 'tryLockGround');
     if (!declaration) throw new Error('tryLockGround function not found');
+    const completeSeat = findFunction(ast, 'completeSeat');
+    vm.runInContext(source.slice(completeSeat.start, completeSeat.end), context);
     const tryLockGround = vm.runInContext(`(${source.slice(declaration.start, declaration.end)})`, context);
     return { context, tryLockGround, seatNode, tiles, lockSamples, setStatus, setRealisticLayerActive,
         setProgress: value => { tiles.loadProgress = value; }, setNow: value => { nowMs = value; } };
@@ -309,6 +314,94 @@ describe('photoreal early seating', () => {
         fixture.tryLockGround(0.25);
         expect(fixture.context.grounded).toBe(false);
         expect(fixture.tiles.group.visible).toBe(false);
+    });
+});
+
+describe('photoreal known-height seating', () => {
+    const seat = { elevationUrl: 'https://example.test/terrain/elevation', datum: 'EPSG:5730', geoidM: 44.78 };
+    it('turns the terrain answer into the ground\'s ellipsoidal height only in the stated datum', () => {
+        expect(ground.knownGroundHeight({ elevationM: 123.38, datum: 'EPSG:5730 (EVRF2000 height)' }, seat)).toBeCloseTo(168.16, 6);
+        expect(ground.knownGroundHeight({ elevationM: 123.38, datum: 'EPSG:5610 (HVRS71 height)' }, seat)).toBeNull();
+        expect(ground.knownGroundHeight({ elevationM: null, datum: 'No elevation coverage' }, seat)).toBeNull();
+        expect(ground.knownGroundHeight({ elevationM: 120, datum: 'EPSG:5730' }, { ...seat, geoidM: undefined })).toBeNull();
+        expect(ground.knownGroundHeight(null, seat)).toBeNull();
+    });
+
+    it('shows a known seat once 16 tiles are in sight or loading is complete, never with nothing in sight', () => {
+        expect(ground.canShowKnownSeat(0.3, 100, 16, 2)).toBe(true);
+        expect(ground.canShowKnownSeat(0.3, 100, 5, 2)).toBe(false);
+        expect(ground.canShowKnownSeat(1, 2000, 5, 2)).toBe(true);
+        expect(ground.canShowKnownSeat(0.3, 100, 2, 30)).toBe(true);
+        expect(ground.canShowKnownSeat(1, 2000, 0, 60)).toBe(false);
+    });
+
+    it('seats by the known height without a ray and before loading completes', () => {
+        const fixture = lockFixture({ progress: 0.3, quietMs: 100, visibleTiles: 20, waitedS: 1,
+            knownGround: { status: 'ready', heightM: 168.16 }, seatZ: -168.36 });
+        fixture.context.window.THREE.Raycaster = class { intersectObject() { throw new Error('no ray with a known height'); } };
+        fixture.tryLockGround(0.25);
+        expect(fixture.context.grounded).toBe(true);
+        expect(fixture.context.seatBasis).toBe('known');
+        expect(fixture.seatNode.position.z).toBeCloseTo(-168.36, 8);
+        expect(fixture.tiles.group.visible).toBe(true);
+    });
+
+    it('waits for a pending terrain answer, then probes when it is late', () => {
+        const fixture = lockFixture({ knownGround: { status: 'pending', heightM: null } });
+        fixture.tryLockGround(0.25);
+        expect(fixture.context.lockSamples).toEqual([]);
+        expect(fixture.context.grounded).toBe(false);
+        fixture.context.lockWaitS = 4;
+        for (let i = 0; i < 3; i++) fixture.tryLockGround(0.25);
+        expect(fixture.context.grounded).toBe(true);
+        expect(fixture.context.seatBasis).toBe('probe');
+        expect(fixture.seatNode.position.z).toBeCloseTo(-42.2, 8);
+    });
+});
+
+describe('photoreal re-seat on fine tiles', () => {
+    const hit = (z, errorM) => ({ z, errorM });
+    it('waits for three hits on fine tiles, then moves the ground to just under the content', () => {
+        expect(ground.reseatShift([hit(1.6, 64), hit(1.7, 64), hit(1.5, 2.01)], -0.2)).toBeNull();
+        // The coarse seat left the street 1.84 m below the content's -0.2 (lower quartile -2.04).
+        expect(ground.reseatShift([hit(-2.04, 2.01), hit(-2.44, 2.01), hit(-1.62, 4.01), hit(17.67, 2.01), hit(-1.69, 2.01)], -0.2)).toBeCloseTo(-1.84, 6);
+        expect(ground.reseatShift([hit(-0.1, 2.01), hit(-0.3, 2.01), hit(0.0, 2.01)], -0.2)).toBe(0);
+        expect(ground.reseatShift([hit(-40, 2.01), hit(-41, 2.01), hit(-39, 2.01)], -0.2)).toBe(0);
+    });
+
+    it('re-seats a probed world once, shifting it by the fine ground and refitting what depends on its height', () => {
+        const source = readFileSync(new URL('../../frontend/js/photoreal-mode.js', import.meta.url), 'utf8');
+        const ast = parse(source, { sourceType: 'script' });
+        const fns = ['maybeReseat', 'tileErrorOf'].map(name => { const d = findFunction(ast, name); return source.slice(d.start, d.end); });
+        const fine = { parent: null }, mesh = { parent: fine };
+        const heights = [-2.04, -2.44, -1.62, 17.67, -1.69];
+        let ray = 0;
+        class Vector3 { constructor() { this.z = 0; } set() { return this; } }
+        class Raycaster { intersectObject() { return [{ point: { z: heights[ray++ % 5] }, object: mesh }]; } }
+        const context = vm.createContext({
+            seatBasis: 'probe', reseated: false, reseatRevision: -1, lastReseatProbeMs: 0, tileContentRevision: 5,
+            tiles: { group: {} }, seatNode: { position: { z: -120 } }, scaleNode: { updateMatrixWorld: vi.fn() },
+            LOCK_PROBE_OFFSETS: [[0, 0], [60, 0], [-60, 0], [0, 60], [0, -60]], GROUND_BELOW_CONTENT_M: 0.2,
+            loadedTileErrors: new Map([[fine, 2.01]]), lastPhotoActivityAt: 0, maskCenterX: 3, maskCenterY: 4,
+            cancelTerrainGridBuild: vi.fn(), terrainGrid: {}, groundTexture: { dispose: vi.fn() }, corridorUniforms: { uGroundTex: { value: {} } },
+            resetTerrainRefreshTracking: vi.fn(), buildMaskShapes: vi.fn(), renderCarveMask: vi.fn(), scheduleSettledTerrainRefresh: vi.fn(),
+            window: { THREE: { Vector3, Raycaster }, __photorealGround: ground, invalidateThreeView: vi.fn() }, console: { log: vi.fn() }
+        });
+        fns.forEach(fn => vm.runInContext(fn, context));
+        vm.runInContext('maybeReseat(5000)', context);
+        expect(context.seatNode.position.z).toBeCloseTo(-120 + 1.84, 6);
+        expect(context.reseated).toBe(true);
+        expect(context.terrainGrid).toBeNull();
+        expect(context.renderCarveMask).toHaveBeenCalledWith(3, 4);
+        expect(context.scheduleSettledTerrainRefresh).toHaveBeenCalledWith('reseat');
+        // Once only: later tiles do not move the world again.
+        context.tileContentRevision = 9;
+        vm.runInContext('maybeReseat(9000)', context);
+        expect(context.seatNode.position.z).toBeCloseTo(-120 + 1.84, 6);
+        // A known seat is never re-seated.
+        Object.assign(context, { seatBasis: 'known', reseated: false, tileContentRevision: 12 });
+        vm.runInContext('maybeReseat(20000)', context);
+        expect(context.reseated).toBe(false);
     });
 });
 

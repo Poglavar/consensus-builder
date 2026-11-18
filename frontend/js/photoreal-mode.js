@@ -126,6 +126,16 @@
     let lockAccumS = 0;
     let reportedProbeFamine = false; // missing-surface diagnostics fire once per entry
     let bootstrapAttempts = 0;
+    // The seat's basis: 'known' (the city's terrain height, photoreal-ground.js knownGroundHeight) or
+    // 'probe' (rays on the tiles that had arrived; seated once more on fine tiles, maybeReseat).
+    let knownGround = { status: 'none', heightM: null };
+    const KNOWN_GROUND_WAIT_S = 4;          // the seat waits this long (frame time) for the terrain answer
+    const KNOWN_GROUND_TIMEOUT_MS = 6000;
+    let seatBasis = null;
+    let reseated = false;
+    let reseatRevision = -1;
+    let lastReseatProbeMs = 0;
+    const loadedTileErrors = new Map();     // tile scene -> its geometric error (m)
     let bootstrapRevision = -1;
     let undergroundRecoveries = 0;  // world lowerings after an empty view (undergroundRecoveryShift)
     let seatDebugAccumS = 0;
@@ -371,6 +381,18 @@
         lockAccumS = 0;
         const THREE = window.THREE;
         if (!THREE || !tiles) return;
+        // A city that states its terrain height seats by it; rays only when that answer fails.
+        if (knownGround.status === 'pending' && lockWaitS < KNOWN_GROUND_WAIT_S) return;
+        if (knownGround.status === 'ready') {
+            const visible = tiles.visibleTiles ? tiles.visibleTiles.size : 0;
+            if (!loadedTileScenes.size || !window.__photorealGround.canShowKnownSeat(Number(tiles.loadProgress),
+                performance.now() - lastTileContentAt, visible, lockWaitS)) return;
+            const target = -(knownGround.heightM + GROUND_BELOW_CONTENT_M);
+            lockedGroundZ = knownGround.heightM + seatNode.position.z;
+            seatBasis = 'known';
+            completeSeat(seatNode.position.z - target, 'known height');
+            return;
+        }
         let groundZ = null;
         try {
             const origin = new THREE.Vector3();
@@ -437,7 +459,13 @@
         const sorted = lockSamples.slice().sort(function (a, b) { return a - b; });
         const use = stable ? lockSamples[lockSamples.length - 1] : sorted[Math.floor(sorted.length / 2)];
         lockedGroundZ = use;
-        seatNode.position.z -= (use + GROUND_BELOW_CONTENT_M);
+        seatBasis = 'probe';
+        completeSeat(use + GROUND_BELOW_CONTENT_M, stable ? 'stable' : 'median-after-timeout');
+    }
+
+    // Lower the hidden world by shiftM, reveal it seated and build what depends on its height.
+    function completeSeat(shiftM, how) {
+        seatNode.position.z -= shiftM;
         grounded = true;
         setStatus('');
         // The globe spinner stops on the next frame's updateLoader, which sees the mesh seated.
@@ -455,8 +483,7 @@
         if (typeof window.setRealisticLayerActive === 'function') window.setRealisticLayerActive(true);
         tiles.group.visible = true;
         attributionDirty = true;
-        console.log('[photoreal] world seated: ground shifted ' + (use + GROUND_BELOW_CONTENT_M).toFixed(2)
-            + ' m (' + (stable ? 'stable' : 'median-after-timeout') + ')');
+        console.log('[photoreal] world seated: ground shifted ' + shiftM.toFixed(2) + ' m (' + how + ')');
         if (profT) {
             const span = function (a, b) { return (a && b && b >= a) ? ((b - a) / 1000).toFixed(1) + 's' : '—'; };
             const now = performance.now();
@@ -2444,6 +2471,80 @@
         }, TERRAIN_REFRESH_QUIET_MS);
     }
 
+    // Ask the city's terrain API for the ground height at the scene origin (photoreal-ground.js
+    // knownGroundHeight). Seating waits up to KNOWN_GROUND_WAIT_S for it, then probes as before.
+    function requestKnownGround(anchor) {
+        knownGround = { status: 'none', heightM: null };
+        const manager = window.CityConfigManager;
+        const config = manager && typeof manager.getCityConfigAt === 'function' ? manager.getCityConfigAt(anchor.lat, anchor.lng) : null;
+        const seat = config && config.photoSeat;
+        if (!seat || typeof seat.elevationUrl !== 'string' || typeof fetch !== 'function') return;
+        const generation = activationGeneration;
+        knownGround = { status: 'pending', heightM: null };
+        const url = seat.elevationUrl + '?lon=' + anchor.lng.toFixed(7) + '&lat=' + anchor.lat.toFixed(7);
+        const signal = typeof AbortSignal !== 'undefined' && AbortSignal.timeout ? AbortSignal.timeout(KNOWN_GROUND_TIMEOUT_MS) : undefined;
+        fetch(url, { signal }).then(function (response) {
+            if (!response.ok) throw new Error('HTTP ' + response.status);
+            return response.json();
+        }).then(function (answer) {
+            if (generation !== activationGeneration) return;
+            const heightM = window.__photorealGround.knownGroundHeight(answer, seat);
+            knownGround = heightM === null ? { status: 'failed', heightM: null } : { status: 'ready', heightM: heightM };
+            // Stand the hidden world at that height at once, so the tiles stream around the right ground.
+            if (heightM !== null && !grounded && seatNode && scaleNode) {
+                seatNode.position.z = -(heightM + GROUND_BELOW_CONTENT_M);
+                scaleNode.updateMatrixWorld(true);
+            }
+            if (heightM === null) console.warn('[photoreal] terrain answer not usable for seating, probing instead', { elevationM: answer && answer.elevationM, datum: answer && answer.datum });
+            else console.info('[photoreal] known ground at the origin', { elevationM: answer.elevationM, datum: answer.datum, ellipsoidalM: heightM });
+        }).catch(function (error) {
+            if (generation !== activationGeneration) return;
+            knownGround = { status: 'failed', heightM: null };
+            console.warn('[photoreal] terrain height request failed, probing instead: ' + (error && error.message));
+        });
+    }
+
+    // The geometric error of the tile a ray hit (its scene is an ancestor of the hit mesh).
+    function tileErrorOf(object) {
+        for (let node = object; node; node = node.parent) if (loadedTileErrors.has(node)) return loadedTileErrors.get(node);
+        return null;
+    }
+
+    // A world seated by rays on the tiles that had arrived is seated once more, once, when fine tiles
+    // cover the origin (photoreal-ground.js reseatShift): opened from far away it sat on coarse tiles.
+    function maybeReseat(nowMs) {
+        if (seatBasis !== 'probe' || reseated || !tiles || !seatNode || !scaleNode) return;
+        if (tileContentRevision === reseatRevision || nowMs - lastReseatProbeMs < 1000) return;
+        reseatRevision = tileContentRevision;
+        lastReseatProbeMs = nowMs;
+        const THREE = window.THREE;
+        const down = new THREE.Vector3(0, 0, -1), origin = new THREE.Vector3();
+        const samples = [];
+        for (const xy of LOCK_PROBE_OFFSETS.slice(0, 5)) {
+            origin.set(xy[0], xy[1], 4000);
+            const hit = new THREE.Raycaster(origin, down, 0, 9000).intersectObject(tiles.group, true)[0];
+            if (hit) samples.push({ z: hit.point.z, errorM: tileErrorOf(hit.object) });
+        }
+        const shift = window.__photorealGround.reseatShift(samples, -GROUND_BELOW_CONTENT_M);
+        if (shift === null) return;
+        reseated = true;
+        if (shift === 0) { console.log('[photoreal] fine tiles confirm the seat'); return; }
+        seatNode.position.z -= shift;
+        scaleNode.updateMatrixWorld(true);
+        cancelTerrainGridBuild();
+        terrainGrid = null;
+        groundTexture?.dispose();
+        groundTexture = null;
+        corridorUniforms.uGroundTex.value = null;
+        resetTerrainRefreshTracking();
+        buildMaskShapes();
+        renderCarveMask(maskCenterX, maskCenterY);
+        scheduleSettledTerrainRefresh('reseat');
+        lastPhotoActivityAt = nowMs;
+        if (typeof window.invalidateThreeView === 'function') window.invalidateThreeView();
+        console.log('[photoreal] world seated again on fine tiles: ground shifted ' + shift.toFixed(2) + ' m');
+    }
+
     // The library has more to do than its progress shows (a nested tile list arrived, a deferred part of
     // the tree is ready): keep the photo loop awake for another SETTLE_MS and ask for a frame.
     function onLateTileData() {
@@ -2456,6 +2557,7 @@
         if (!ev || !ev.scene) return;
         loadedTileScenes.add(ev.scene);
         loadedTileDepths.set(ev.scene, ev.tile?.internal?.depth || 0);
+        loadedTileErrors.set(ev.scene, Number(ev.tile?.geometricError));
         tileContentRevision++;
         lastTileContentAt = lastPhotoActivityAt = performance.now();
         ev.scene.traverse(function (o) {
@@ -2473,6 +2575,7 @@
         if (!ev || !ev.scene) return;
         disposeTileSeamCaps(ev.scene);
         loadedTileScenes.delete(ev.scene);
+        loadedTileErrors.delete(ev.scene);
         tileContentRevision++;
         seamScheduled.delete(ev.scene);
     }
@@ -2664,6 +2767,7 @@
             }
             tryLockGround(dtS);
         } else if (maskScene && internals.controls && internals.controls.target) {
+            maybeReseat(now);
             // The road may have seated on partial terrain (a slow/bursty stream, or the LOCK_MAX_WAIT
             // fallback seating below 95%). The settle refit is normally driven by tile events, but if
             // the stream simply goes quiet at full load without one more event, the last refit stayed
@@ -2863,6 +2967,10 @@
             bootstrapAttempts = 0;
             bootstrapRevision = -1;
             undergroundRecoveries = 0;
+            seatBasis = null;
+            reseated = false;
+            reseatRevision = -1;
+            requestKnownGround(anchor);
             modeledMeanwhile = false;
             lastFrameNow = 0;
             lastCameraWorld = null;
@@ -2949,6 +3057,7 @@
         retentionTimer = null;
         clearAllTileSeamCaps();
         loadedTileScenes.clear();
+        loadedTileErrors.clear();
         seamBoundaryGrid = null;
         if (tiles) {
             try { tiles.removeEventListener('load-model', onTileModelLoad); } catch (_) { }
