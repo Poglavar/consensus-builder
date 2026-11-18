@@ -98,7 +98,14 @@
     let activationGeneration = 0;
     let retentionTimer = null;
     const RETAIN_TILES_MS = 60000;
-    const RETAIN_TILES_BYTES = 128 * 1024 * 1024;
+    // Above the tile cache's own byte bound (TILE_CACHE), so a quick photo/model toggle keeps the
+    // streamed neighbourhood; the timer still drops an abandoned session.
+    const RETAIN_TILES_BYTES = 330e6;
+    // Google's tile tree is ~25 levels deep and every loaded level on the way down stays in use: a
+    // close view of one site holds ~330 tiles (150 MB), a city overview ~745 (260 MB), measured in the
+    // zagreb.lol viewers 2026-11-18. A full cache loads nothing finer while loadProgress still reads 1
+    // (the former 500 tiles left wide views coarse), so bytes are the bound and the count stays out of the way.
+    const TILE_CACHE = Object.freeze({ minSize: 800, maxSize: 1200, minBytesSize: 220e6, maxBytesSize: 320e6 });
     let loading = false; // photo view is composing (entry → first seat); drives the globe-icon spinner
     let tiles = null;
     let tilesAnchorKey = null; // anchor of the live tile session; reuse while it matches
@@ -126,6 +133,10 @@
     let lastCameraWorld = null;   // the camera's world matrix at the last frame hook run
     let settledFrames = 0;        // frames in a row with nothing streaming and the camera still
     const SETTLED_FRAMES = 3;     // the tiles renderer gets this many quiet updates before the hook parks
+    // ...and only once this long has passed without a camera move, a loaded tile or the library's
+    // needs-update/needs-render: tiles sharpen in steps that progress does not announce.
+    const SETTLE_MS = 5000;
+    let lastPhotoActivityAt = 0;
     const CAMERA_STILL_EPS = 1e-4; // scene metres; below this the camera counts as still
     function matricesNearlyEqual(a, b, eps) {
         const ea = a.elements, eb = b.elements;
@@ -413,7 +424,8 @@
         // A stable coarse tile is not stable ground. Wait for actual content to finish
         // refining; the bounded startup watchdog handles a stalled stream separately.
         const prog = Number(tiles.loadProgress);
-        if (!window.__photorealGround.canFinalizeSeating(prog, performance.now() - lastTileContentAt)) {
+        if (!window.__photorealGround.canFinalizeSeating(prog, performance.now() - lastTileContentAt)
+            && !window.__photorealGround.canSeatEarly(lockWaitS, tiles.visibleTiles ? tiles.visibleTiles.size : 0)) {
             lockSamples = [];
             return;
         }
@@ -2432,12 +2444,20 @@
         }, TERRAIN_REFRESH_QUIET_MS);
     }
 
+    // The library has more to do than its progress shows (a nested tile list arrived, a deferred part of
+    // the tree is ready): keep the photo loop awake for another SETTLE_MS and ask for a frame.
+    function onLateTileData() {
+        lastPhotoActivityAt = performance.now();
+        settledFrames = 0;
+        if (active && typeof window.invalidateThreeView === 'function') window.invalidateThreeView();
+    }
+
     function onTileModelLoad(ev) {
         if (!ev || !ev.scene) return;
         loadedTileScenes.add(ev.scene);
         loadedTileDepths.set(ev.scene, ev.tile?.internal?.depth || 0);
         tileContentRevision++;
-        lastTileContentAt = performance.now();
+        lastTileContentAt = lastPhotoActivityAt = performance.now();
         ev.scene.traverse(function (o) {
             if (!o.isMesh || !o.material) return;
             if (Array.isArray(o.material)) o.material.forEach(patchTileMaterial);
@@ -2532,9 +2552,9 @@
         }
         tiles.setResolutionFromRenderer(camera, renderer);
         camera.updateMatrixWorld();
-        // Nothing streaming and the camera still: after a few quiet updates the hook parks (returns
-        // false) and three-mode's loop stops. A camera change or any invalidation brings the next
-        // frame, on which the hook runs again.
+        // Nothing streaming, the camera still and nothing new for SETTLE_MS: after a few such updates
+        // the hook parks (returns false) and three-mode's loop stops. A camera change, or the library's
+        // needs-update/needs-render (onLateTileData), resets the count and brings the next frame.
         // OrbitControls recomputes the position from its spherical state on every update, so a still
         // camera's matrix differs by float noise from frame to frame: compare with a tolerance.
         // Until the mesh is seated the hook never parks: the root tileset's download is not counted
@@ -2542,7 +2562,9 @@
         // arrives, and the startup timeout below only advances on frames.
         const cameraMoved = !lastCameraWorld || !matricesNearlyEqual(lastCameraWorld, camera.matrixWorld, CAMERA_STILL_EPS);
         if (cameraMoved) lastCameraWorld = (lastCameraWorld || camera.matrixWorld.clone()).copy(camera.matrixWorld);
-        settledFrames = (cameraMoved || !grounded || tilesStillLoading() || seatDebugActive()) ? 0 : settledFrames + 1;
+        if (cameraMoved) lastPhotoActivityAt = performance.now();
+        const quiet = performance.now() - lastPhotoActivityAt >= SETTLE_MS;
+        settledFrames = (cameraMoved || !grounded || tilesStillLoading() || seatDebugActive() || !quiet) ? 0 : settledFrames + 1;
         if (settledFrames > SETTLED_FRAMES) return false;
         tiles.update();
         const prog = Number(tiles.loadProgress);
@@ -2786,12 +2808,13 @@
             tiles.addEventListener('load-model', onTileModelLoad);
             tiles.addEventListener('dispose-model', onTileModelDispose);
             tiles.addEventListener('tile-visibility-change', onTileVisibilityChange);
+            tiles.addEventListener('needs-update', onLateTileData);
+            tiles.addEventListener('needs-render', onLateTileData);
 
-            // Performance, straight from the sim: coarser error target (tunable via ?prq=<n>,
-            // higher = lighter/blurrier), capped caches and queues so parsing never hitches.
-            const prq = Number(new URLSearchParams(window.location.search || '').get('prq'));
-            tiles.errorTarget = (Number.isFinite(prq) && prq > 0) ? prq : 24;
-            if (tiles.lruCache) { tiles.lruCache.minSize = 300; tiles.lruCache.maxSize = 500; }
+            // No errorTarget here: the ion asset resolves to Google's tileset, whose plugin applies its
+            // recommended 20 over any value set now (a former ?prq=<n> override had no effect).
+            // Capped queues so parsing never hitches; the cache as TILE_CACHE says.
+            if (tiles.lruCache) Object.assign(tiles.lruCache, TILE_CACHE);
             if (tiles.parseQueue) tiles.parseQueue.maxJobs = 2;
             if (tiles.downloadQueue) tiles.downloadQueue.maxJobs = 6;
 
@@ -2931,6 +2954,8 @@
             try { tiles.removeEventListener('load-model', onTileModelLoad); } catch (_) { }
             try { tiles.removeEventListener('dispose-model', onTileModelDispose); } catch (_) { }
             try { tiles.removeEventListener('tile-visibility-change', onTileVisibilityChange); } catch (_) { }
+            tiles.removeEventListener('needs-update', onLateTileData);
+            tiles.removeEventListener('needs-render', onLateTileData);
             try { tiles.dispose(); } catch (_) { }
         }
         tiles = null;

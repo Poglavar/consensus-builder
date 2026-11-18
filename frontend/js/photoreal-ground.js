@@ -93,6 +93,17 @@
         return finite(progress) && progress >= 0.995 && finite(contentQuietMs) && contentQuietMs >= 1400;
     }
 
+    // A wide view or a slow link does not finish loading for a long time once the tile cache can hold
+    // the whole view (a city overview is ~745 tiles), and waiting for that ran into the startup limit.
+    // So the world is seated and shown on what has arrived after FIRST_VIEW_S with enough of it in
+    // sight (a view of one or two root tiles is a blurred plane), and after LAST_CALL_S with whatever
+    // it has; it keeps sharpening in sight. Same rule as zagreb-3d's photo-tiles.mjs (canShowEarly).
+    const FIRST_VIEW_S = 12, FIRST_VIEW_TILES = 16, LAST_CALL_S = 30;
+    function canSeatEarly(waitedS, visibleTiles) {
+        if (!finite(waitedS)) return false;
+        return waitedS >= LAST_CALL_S || (waitedS >= FIRST_VIEW_S && finite(visibleTiles) && visibleTiles >= FIRST_VIEW_TILES);
+    }
+
     // A proposed road normally has a useful visible Google surface under its centreline. When that
     // ray lands on a car, canopy or roof, two agreeing samples beyond the corridor edges can safely
     // pull it down. Higher side hits never lift a valid centreline onto adjacent buildings, and
@@ -473,6 +484,7 @@
         needsProvisionalEstimate: needsProvisionalEstimate,
         PROVISIONAL_REESTIMATE_M: PROVISIONAL_REESTIMATE_M,
         canFinalizeSeating: canFinalizeSeating,
+        canSeatEarly: canSeatEarly,
         selectRoadSurfaceHeight: selectRoadSurfaceHeight,
         roadFloorEncodingRange: roadFloorEncodingRange,
         encodeRoadFloor: encodeRoadFloor,

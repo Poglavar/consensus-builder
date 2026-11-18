@@ -359,3 +359,10 @@ in commits.
 - 2026-11-13: A road (or track) lying over at least nine tenths of another applied road's ground replaces it on apply, lineage or not; roads that join or cross, and a track along a road, stay together. Two publications of one plan had left the same street on the map twice.
 - 2026-11-13: OSM road reads go local osm_road table first (free; only where it holds rows), then our Tracestrack instance, then public Overpass; every road tool must work in every city through that chain, so the table can be retired later without breaking one.
 - 2026-11-13: Footways, paths, steps and pedestrian ways count as block borders and as street lines for road parcels, even where they cross a park.
+- 2026-11-19: Google 3D (photo mode) sharpens fully (user rule, 2026-11-18: every Google 3D view gets a generous settle
+  time and keeps sharpening when data arrives late; same fix as the zagreb.lol viewers). The tile cache is bounded by
+  bytes (800-1200 tiles, 220-320 MB; 500 tiles left wide views coarse while progress read 1), the photo loop parks only
+  after 5 s without a camera move, a loaded tile or the library's needs-update/needs-render, a slow view is seated and
+  shown after 12 s with 16 tiles in sight (any view at 30 s) instead of waiting for complete loading, and errorTarget is
+  left to Google's plugin (it set 20 over the former 24, so `?prq` never worked). Branch `google-sharpening`, cut from
+  `colosseum-worlds-fair`.

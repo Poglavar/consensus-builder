@@ -82,13 +82,13 @@ function bootstrapFixture({ hits = true, absoluteHeight = 120, attached = false 
         setAbsoluteHeight: value => { absoluteHeight = value; } };
 }
 
-function lockFixture({ progress = 1, quietMs = 2000, initialSamples = [] } = {}) {
+function lockFixture({ progress = 1, quietMs = 2000, initialSamples = [], visibleTiles = 0, waitedS = 0 } = {}) {
     const seatNode = { position: { z: 0 } };
     const setStatus = vi.fn();
     const setRealisticLayerActive = vi.fn();
     const lockSamples = initialSamples.slice();
     let nowMs = quietMs;
-    const tiles = { loadProgress: progress, group: { visible: false, children: [] } };
+    const tiles = { loadProgress: progress, group: { visible: false, children: [] }, visibleTiles: new Set(Array.from({ length: visibleTiles }, (_, i) => i)) };
     class Vector3 {
         constructor(x = 0, y = 0, z = 0) { this.set(x, y, z); }
         set(x, y, z) { Object.assign(this, { x, y, z }); return this; }
@@ -98,7 +98,7 @@ function lockFixture({ progress = 1, quietMs = 2000, initialSamples = [] } = {})
         intersectObject() { return [{ point: { z: 42 } }]; }
     }
     const context = vm.createContext({
-        lockWaitS: 0,
+        lockWaitS: waitedS,
         lockAccumS: 0,
         LOCK_SAMPLE_INTERVAL_S: 0.25,
         LOCK_PROBE_OFFSETS: [[0, 0], [60, 0], [-60, 0], [0, 60], [0, -60],
@@ -283,6 +283,59 @@ describe('bootstrapGround integration characterization', () => {
         expect(fixture.bootstrapGround()).toBe(true);
         expect(fixture.raycasts).toHaveBeenCalledTimes(10);
         expect(fixture.seatNode.position.z).toBe(-240);
+    });
+});
+
+describe('photoreal early seating', () => {
+    it('shows a slow view after 12 s with 16 tiles in sight, and after 30 s with whatever it has', () => {
+        expect(ground.canSeatEarly(11.9, 500)).toBe(false);
+        expect(ground.canSeatEarly(12, 15)).toBe(false);
+        expect(ground.canSeatEarly(12, 16)).toBe(true);
+        expect(ground.canSeatEarly(29.9, 1)).toBe(false);
+        expect(ground.canSeatEarly(30, 0)).toBe(true);
+        expect(ground.canSeatEarly(NaN, 100)).toBe(false);
+    });
+
+    it('seats a view still streaming once it has waited 12 s with enough tiles in sight', () => {
+        const fixture = lockFixture({ progress: 0.4, quietMs: 100, visibleTiles: 20, waitedS: 13 });
+        fixture.tryLockGround(0.25);
+        expect(fixture.context.grounded).toBe(true);
+        expect(fixture.tiles.group.visible).toBe(true);
+        expect(fixture.seatNode.position.z).toBeCloseTo(-42.2, 8);
+    });
+
+    it('keeps waiting at 13 s while only one coarse tile is in sight', () => {
+        const fixture = lockFixture({ progress: 0.17, quietMs: 100, visibleTiles: 1, waitedS: 13 });
+        fixture.tryLockGround(0.25);
+        expect(fixture.context.grounded).toBe(false);
+        expect(fixture.tiles.group.visible).toBe(false);
+    });
+});
+
+describe('photoreal late tile data', () => {
+    it('wakes a parked photo loop: the settle time restarts and a frame is asked for', () => {
+        const source = readFileSync(new URL('../../frontend/js/photoreal-mode.js', import.meta.url), 'utf8');
+        const declaration = findFunction(parse(source, { sourceType: 'script' }), 'onLateTileData');
+        const invalidateThreeView = vi.fn();
+        const context = vm.createContext({ active: true, settledFrames: 7, lastPhotoActivityAt: 0, performance: { now: () => 90000 }, window: { invalidateThreeView } });
+        vm.runInContext(`(${source.slice(declaration.start, declaration.end)})`, context)();
+        expect(context.settledFrames).toBe(0);
+        expect(context.lastPhotoActivityAt).toBe(90000);
+        expect(invalidateThreeView).toHaveBeenCalledOnce();
+        context.active = false;
+        vm.runInContext(`(${source.slice(declaration.start, declaration.end)})`, context)();
+        expect(invalidateThreeView).toHaveBeenCalledOnce();
+    });
+
+    it('subscribes to the late-data events, sizes the cache by bytes and leaves the detail target to Google', () => {
+        const source = readFileSync(new URL('../../frontend/js/photoreal-mode.js', import.meta.url), 'utf8');
+        for (const type of ['needs-update', 'needs-render']) {
+            expect(source).toContain(`tiles.addEventListener('${type}', onLateTileData)`);
+            expect(source).toContain(`tiles.removeEventListener('${type}', onLateTileData)`);
+        }
+        expect(source).toContain('const TILE_CACHE = Object.freeze({ minSize: 800, maxSize: 1200, minBytesSize: 220e6, maxBytesSize: 320e6 })');
+        expect(source).toContain('Object.assign(tiles.lruCache, TILE_CACHE)');
+        expect(source).not.toMatch(/tiles\.errorTarget\s*=/);
     });
 });
 
