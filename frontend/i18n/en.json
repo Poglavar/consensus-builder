@@ -2453,8 +2453,6 @@
             "editSurroundings": "Edit surroundings",
             "surroundingsPaved": "Paving",
             "surroundingsGreen": "Green",
-            "placeOnLand": "Place on selected land",
-            "placeHint": "Click or tap the map to place the building. Drag the map to pan. Esc cancels.",
             "surroundingsInfo": "Paving or green space uses taken land outside the building footprint. Footprint-only takes have no surroundings.",
             "uploadGeojsonLabel": "Upload footprints",
             "uploadGlbLabel": "Upload model",
@@ -6542,7 +6540,8 @@
             "suggestedTotals": "Suggested layouts: {{buildings}} buildings · {{apartmentsPerFloor}} apartments per storey · {{apartments}} in total",
             "avgPerParcel": "Avg / parcel",
             "openActions2d": "Open actions in 2D",
-            "parcelUnavailable": "This parcel could not be loaded on the map. Click it on the 2D map instead."
+            "parcelUnavailable": "This parcel could not be loaded on the map. Click it on the 2D map instead.",
+            "toolsOnMap": "Choose a tool. It opens on the 2D map."
         },
         "isolation": {
             "singleParcel": "Selected parcel",
@@ -6897,7 +6896,6 @@
         "close": "Close getting started hints"
     },
     "world": {
-        "welcome": "Choose a city to see its designs and start your own.",
         "openFailed": "World view could not start. You can keep using the 2D map and search for another city.",
         "title": "Choose a place",
         "hint": "Drag to spin · select a city or an exact location",

@@ -57,7 +57,6 @@ describe('first-design guide wiring', () => {
         for (const locale of locales) {
             const dictionary = JSON.parse(read(`i18n/${locale}.json`));
             for (const key of keys) expect(dictionary.firstDesignGuide[key], `${locale} ${key}`).toMatch(/\S/);
-            expect(dictionary.world.welcome, `${locale} welcome`).toMatch(/\S/);
             expect(dictionary.threeMode.proposalPanel.parcelUnavailable, `${locale} parcelUnavailable`).toMatch(/\S/);
         }
     });

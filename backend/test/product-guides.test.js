@@ -85,14 +85,16 @@ describe('public product guides', () => {
     });
 
     it.each([
-        ['how-to-use.html', 'review the selection and choose the tool again', 'Place on selected land'],
-        ['kako-koristiti.html', 'pregledaj odabir i ponovno odaberi alat', 'Postavi na odabrano zemljište'],
-        ['how-to-use-buildings.html', 'choose Freeform building again', 'Place on selected land'],
-        ['kako-koristiti-zgrade.html', 'ponovno odaberi alat Slobodna zgrada', 'Postavi na odabrano zemljište']
-    ])('%s explains block review and building placement', (name, blockStep, placement) => {
+        ['how-to-use.html', 'review the selection and choose the tool again', 'appears on the selected parcel at once', 'Place on selected land'],
+        ['kako-koristiti.html', 'pregledaj odabir i ponovno odaberi alat', 'odmah se pojavi na odabranoj čestici', 'Postavi na odabrano zemljište'],
+        ['how-to-use-buildings.html', 'choose Freeform building again', 'appears on the selected parcel at once', 'Place on selected land'],
+        ['kako-koristiti-zgrade.html', 'ponovno odaberi alat Slobodna zgrada', 'odmah pojavi na odabranoj čestici', 'Postavi na odabrano zemljište']
+    ])('%s explains block review and that a building starts on the selected parcel', (name, blockStep, placement, retiredControl) => {
         const text = load(readFrontend(name)).text();
         expect(text).toContain(blockStep);
         expect(text).toContain(placement);
+        // The editor has no placing step, so the guide must not send anyone to look for one.
+        expect(text).not.toContain(retiredControl);
     });
 
     it.each([

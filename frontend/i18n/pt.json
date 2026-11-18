@@ -1049,8 +1049,6 @@
             "editSurroundings": "Editar a envolvente",
             "surroundingsPaved": "Pavimentação",
             "surroundingsGreen": "Espaço verde",
-            "placeOnLand": "Colocar no terreno selecionado",
-            "placeHint": "Clique ou toque no mapa para colocar o edifício. Arraste o mapa para o deslocar. Esc cancela.",
             "surroundingsInfo": "A pavimentação ou o espaço verde ocupa o terreno tomado fora da implantação do edifício. Se apenas a implantação for tomada, não há espaço envolvente.",
             "uploadGeojsonLabel": "Carregar implantações",
             "uploadGlbLabel": "Carregar modelo",
@@ -4746,7 +4744,8 @@
             "suggestedTotals": "Distribuições sugeridas: {{buildings}} edifícios · {{apartmentsPerFloor}} apartamentos por piso · {{apartments}} no total",
             "avgPerParcel": "Média / parcela",
             "openActions2d": "Abrir ações em 2D",
-            "parcelUnavailable": "Não foi possível carregar esta parcela no mapa. Clique nela no mapa 2D."
+            "parcelUnavailable": "Não foi possível carregar esta parcela no mapa. Clique nela no mapa 2D.",
+            "toolsOnMap": "Escolha uma ferramenta. Abre no mapa 2D."
         },
         "ai": {
             "download": "Descarregar",
@@ -5574,7 +5573,6 @@
         "close": "Fechar as dicas iniciais"
     },
     "world": {
-        "welcome": "Escolha uma cidade para ver os seus projetos e começar o seu.",
         "close": "Fechar",
         "explore": {
             "dismiss": "Fechar",

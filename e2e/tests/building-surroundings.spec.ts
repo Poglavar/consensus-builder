@@ -1,6 +1,6 @@
 // The surroundings choice stays with each building design through editing, saving and publication.
 import { test, expect } from '../helpers/fixtures';
-import { placeFreeformBuilding, openCity, openParcel, showProposal, proposalState, closeParcel, showSelectionDesignTab, answerBlockScope } from '../helpers/runtime';
+import { freeformBuildingPlaced, openCity, openParcel, showProposal, proposalState, closeParcel, showSelectionDesignTab, answerBlockScope } from '../helpers/runtime';
 import { selectNativeOption } from '../helpers/controls';
 import { installLayerDatasets } from '../helpers/mocks/layer-datasets';
 
@@ -33,7 +33,7 @@ async function openBuildingEditor(page: any, tool: string, typology: string, don
     // Every tool launched from one selected parcel asks about the whole block first; a row starts
     // from several parcels and is not asked.
     if (typology !== 'row') await answerBlockScope(page);
-    if (typology === 'single') await placeFreeformBuilding(page);
+    if (typology === 'single') await freeformBuildingPlaced(page);
     await expect(page.locator(done)).toBeEnabled({ timeout: 45_000 });
     if (typology === 'single') {
       await expect(page.locator('[data-land-status]')).toContainText('m²');

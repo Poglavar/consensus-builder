@@ -2480,8 +2480,6 @@
             "editSurroundings": "Editar el entorno",
             "surroundingsPaved": "Pavimento",
             "surroundingsGreen": "Verde",
-            "placeOnLand": "Colocar en el terreno seleccionado",
-            "placeHint": "Haz clic o toca el mapa para colocar el edificio. Arrastra el mapa para desplazarlo. Esc cancela.",
             "surroundingsInfo": "El pavimento o la zona verde ocupa el terreno tomado fuera de la huella del edificio. Si solo se toma la huella, no hay entorno.",
             "uploadGeojsonLabel": "Subir huellas",
             "uploadGlbLabel": "Subir modelo",
@@ -6569,7 +6567,8 @@
             "suggestedTotals": "Distribuciones sugeridas: {{buildings}} edificios · {{apartmentsPerFloor}} viviendas por planta · {{apartments}} en total",
             "avgPerParcel": "Media / parcela",
             "openActions2d": "Abrir acciones en 2D",
-            "parcelUnavailable": "No se pudo cargar esta parcela en el mapa. Haz clic en ella en el mapa 2D."
+            "parcelUnavailable": "No se pudo cargar esta parcela en el mapa. Haz clic en ella en el mapa 2D.",
+            "toolsOnMap": "Elige una herramienta. Se abre en el mapa 2D."
         },
         "isolation": {
             "singleParcel": "Parcela seleccionada",
@@ -6924,7 +6923,6 @@
         "close": "Cerrar las indicaciones iniciales"
     },
     "world": {
-        "welcome": "Elige una ciudad para ver sus diseños y empezar el tuyo.",
         "openFailed": "No se pudo iniciar la vista del mundo. Puedes seguir usando el mapa 2D y buscar otra ciudad.",
         "title": "Elige un lugar",
         "hint": "Arrastra para girar · selecciona una ciudad o una ubicación exacta",

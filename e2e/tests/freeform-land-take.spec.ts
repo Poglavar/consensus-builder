@@ -1,5 +1,5 @@
 import { test, expect } from '../helpers/fixtures';
-import { placeFreeformBuilding, openCity, openParcel, openParcelAt, stubBasemapTiles, showProposal, answerBlockScope } from '../helpers/runtime';
+import { freeformBuildingPlaced, openCity, openParcel, openParcelAt, stubBasemapTiles, showProposal, answerBlockScope } from '../helpers/runtime';
 import { selectNativeOption } from '../helpers/controls';
 import { mockFootprintCells } from '../helpers/mocks/building-data';
 const editor = '#single-building-editor';
@@ -10,7 +10,7 @@ async function open(page: any) {
   await openParcel(page, 'proposals');
   await page.locator('#parcel-info-panel .parcel-build-btn--single').click();
   await answerBlockScope(page);
-  await placeFreeformBuilding(page);
+  await freeformBuildingPlaced(page);
   await expect(page.locator(`${editor} .on-map-editor__panel`)).toBeVisible();
   await expect(page.locator('[data-land-status]')).toContainText('m²');
 }
@@ -120,7 +120,7 @@ test('reopening a building across two layout plots offers each plot whole, with 
   // One plot is selected, so the block question is asked, as for every one-parcel launch; the
   // tower starts on this plot.
   await answerBlockScope(page);
-  await placeFreeformBuilding(page);
+  await freeformBuildingPlaced(page);
   await page.locator('#single-building-geojson-input').setInputFiles({ name: 'tower.geojson', mimeType: 'application/geo+json', buffer: Buffer.from(JSON.stringify(straddling)) });
   const choices = page.locator('[data-land-rows] select');
   await expect(choices).toHaveCount(2);

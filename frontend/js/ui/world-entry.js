@@ -201,7 +201,6 @@
             && Model.canReturnToMap(map && typeof map.getZoom === 'function' ? map.getZoom() : null);
         state.opening = view.open({
             closable,
-            firstVisit: !!options.genuineFirstVisit,
             closeLabel: closable ? 'world.backToMap' : null,
             initialView,
             chooseCity: place => {
@@ -251,7 +250,7 @@
             }
             stripWorldParam();
             log(`boot: ${decision.forced ? '?world=1' : 'first visit'}, closable=${decision.closable}`);
-            open({ closable: decision.closable, firstVisit: decision.firstVisit, genuineFirstVisit: decision.firstVisit && !decision.forced }).then(() => {
+            open({ closable: decision.closable, firstVisit: decision.firstVisit }).then(() => {
                 doc.body.classList.remove('world-view-pending');
             }, error => {
                 doc.body.classList.remove('world-view-pending');

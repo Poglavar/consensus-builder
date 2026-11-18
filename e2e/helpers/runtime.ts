@@ -68,26 +68,19 @@ export async function clickMapPoint(page: Page, lng: number, lat: number): Promi
   await page.mouse.click(point.x, point.y);
 }
 
-// Finish the explicit placement step using a real pointer on the draft's selected starting land.
-export async function placeFreeformBuilding(page: Page): Promise<void> {
-  await expect(page.locator('#single-building-editor')).toHaveAttribute('data-placing', 'true', { timeout: 20_000 });
-  const at = await page.evaluate(() => {
-    const w = window as any;
-    const site = w.getActiveProposalDesignDraft()?.fields?.site;
-    const [lng, lat] = w.turf.pointOnFeature(site?.type === 'Feature' ? site : w.turf.feature(site)).geometry.coordinates;
-    const three = w.isThreeModeActive?.() && w.getThreeModeInternals?.();
-    if (three) {
-      const [x, y] = three.latLngToXY(lat, lng);
-      const point = new w.THREE.Vector3(x, y, 0).project(three.camera);
-      const rect = three.renderer.domElement.getBoundingClientRect();
-      return { x: rect.left + (point.x + 1) * rect.width / 2, y: rect.top + (1 - point.y) * rect.height / 2 };
-    }
-    const point = w.map.latLngToContainerPoint([lat, lng]);
-    const rect = w.map.getContainer().getBoundingClientRect();
-    return { x: rect.left + point.x, y: rect.top + point.y };
-  });
-  await page.mouse.click(at.x, at.y);
-  await expect(page.locator('#single-building-editor')).not.toHaveAttribute('data-placing');
+// A new Freeform building opens already standing on the selected land, so there is nothing to place:
+// this waits until the 2D editor shows it editable (one building in its preview, corner handles,
+// an enabled height slider and Done) and fails if any placing step is left over.
+export async function freeformBuildingPlaced(page: Page): Promise<void> {
+  const editor = page.locator('#single-building-editor');
+  await expect(editor.locator('.on-map-editor__panel')).toBeVisible({ timeout: 20_000 });
+  await expect(editor).not.toHaveAttribute('data-placing');
+  await expect(page.locator('#single-place-on-land')).toHaveCount(0);
+  await expect.poll(() => page.evaluate(() => (window as any).OnMapEditor.getPreview()?.draftPreview?.features?.length || 0)).toBeGreaterThan(0);
+  await expect(page.locator('#map-container .single-building-fill--active')).toBeVisible();
+  await expect.poll(() => page.locator('#map-container .polygon-geometry-editor__vertex').count()).toBeGreaterThanOrEqual(3);
+  await expect(page.locator('#single-height-slider')).toBeEnabled();
+  await expect(page.locator('#single-building-confirm')).toBeVisible();
 }
 
 // A real mouse click on an applied design on the map: a point inside its shape (MapPick.outlineOf, the

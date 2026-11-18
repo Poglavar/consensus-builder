@@ -34,6 +34,8 @@ test.describe('City switching @core', () => {
       const world = page.locator('#world-view');
       const search = world.getByRole('combobox', { name: 'Search cities' });
       await expect(search).toBeVisible({ timeout: 45_000 });
+      await expect(world.locator('.world-search__label')).toHaveCount(0);
+      await expect(world.locator('.world-search__welcome')).toHaveCount(0);
       await search.fill('Belgrade');
       await page.evaluate(() => (window as any).ParcelGroundFallback.onGroundUnavailable({ city: 'new_york', error: new Error('Register unavailable') }));
       await expect(page.locator('.ground-fallback-dialog')).toHaveCount(0);

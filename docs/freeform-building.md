@@ -1,12 +1,12 @@
 <!-- Behavior decisions and targeted verification for Freeform placement, land take, surroundings, upload and Duplicate. -->
 # Freeform building interaction — 27 October 2026
 
-Choosing Freeform now starts placement. A dashed outline follows the desktop pointer;
-a click or mobile tap places it at that map position and opens its editing controls.
-The map keeps its chosen view. Panning and pinch zoom do not place a building. Enter
-places the carried outline, and Escape before placement leaves no saved design.
-Model view uses its existing ground pick and a small outline in the same scene.
-Saved designs and imported geometry reopen at their authored positions.
+Choosing Freeform opens the editor with a new 20 m square building already standing on
+the selected land, at a point inside the starting site (`turf.pointOnFeature`). Its
+editing controls are live at once: the building and its corners can be dragged, an
+edge tapped to add a corner, and focus starts on the height slider. The map and model
+view keep their chosen camera. Saved designs and imported geometry reopen at their
+authored positions.
 
 The permanent building-name label inside the editor footprint has been removed,
 including the unresolved generated “Building {{n}}” text. Explicit imported names

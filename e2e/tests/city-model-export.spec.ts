@@ -3,7 +3,7 @@
 // Lists → Import reads it back as that plan; a city model without one is pointed to Upload footprints.
 import { readFileSync } from 'node:fs';
 import { test, expect } from '../helpers/fixtures';
-import { openCity, openParcel, placeFreeformBuilding, showProposal, stubBasemapTiles, answerBlockScope } from '../helpers/runtime';
+import { openCity, openParcel, freeformBuildingPlaced, showProposal, stubBasemapTiles, answerBlockScope } from '../helpers/runtime';
 
 test('Download design offers CityJSON beside the editable plan and GeoJSON, and Lists imports it back', async ({ mockApi: page }) => {
   test.setTimeout(120_000);
@@ -12,7 +12,7 @@ test('Download design offers CityJSON beside the editable plan and GeoJSON, and 
   await openParcel(page, 'proposals');
   await page.locator('#parcel-info-panel .parcel-build-btn--single').click();
   await answerBlockScope(page);
-  await placeFreeformBuilding(page);
+  await freeformBuildingPlaced(page);
   await expect(page.locator('#single-land-take [data-land-status]')).toContainText('m²', { timeout: 20_000 });
   await page.locator('#single-building-confirm').click();
   const saved = () => page.evaluate(() => (window as any).proposalStorage.getAllProposals().find((p: any) => p.goal === 'single' && p.applied) || null);

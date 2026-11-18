@@ -95,25 +95,6 @@ body.world-view-open {
     pointer-events: auto;
 }
 
-.world-search__label {
-    display: block;
-    margin: 0 0 6px;
-    color: var(--cb-text);
-    font-size: var(--cb-text-sm);
-    font-weight: 650;
-    text-shadow: 0 1px 4px #030712;
-}
-
-/* First visit only: one line above the search saying what choosing a city leads to. */
-.world-search__welcome {
-    margin: 0 0 var(--cb-space-2);
-    color: var(--cb-text);
-    font-size: var(--cb-text-lg);
-    font-weight: 650;
-    line-height: var(--cb-leading);
-    text-shadow: 0 1px 4px #030712;
-}
-
 /* A brief welcome below the search row; it never blocks a globe gesture. */
 .world-reach {
     position: absolute;

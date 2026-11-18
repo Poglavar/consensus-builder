@@ -406,7 +406,6 @@
         // ---- DOM chrome ----
         const top = el('div', 'world-view__top');
         const searchWrap = el('div', 'world-search');
-        const searchLabel = opts.firstVisit ? el('label', 'world-search__label', { for: 'world-search-input' }) : null;
         const searchInput = el('input', 'world-search__input', {
             id: 'world-search-input', type: 'search', role: 'combobox', 'aria-autocomplete': 'list', 'aria-expanded': 'false',
             'aria-controls': 'world-search-results', autocomplete: 'off', spellcheck: 'false'
@@ -418,10 +417,6 @@
         locateBtn.appendChild(el('i', 'fas fa-crosshairs', { 'aria-hidden': 'true' }));
         const searchField = el('div', 'world-search__field');
         searchField.append(searchInput, locateBtn);
-        // A first visit opens here with nothing else on screen: say what choosing a city leads to.
-        const welcome = opts.firstVisit ? el('p', 'world-search__welcome') : null;
-        if (welcome) searchWrap.appendChild(welcome);
-        if (searchLabel) searchWrap.appendChild(searchLabel);
         searchWrap.append(searchField, results);
         top.append(searchWrap);
         const reach = el('div', 'world-reach', { role: 'status', 'aria-live': 'polite', 'aria-atomic': 'true' });
@@ -505,9 +500,7 @@
         function renderStaticText() {
             root.setAttribute('aria-label', t('world.title', 'Choose a place'));
             searchInput.placeholder = t('world.search.placeholder', 'City name');
-            if (welcome) welcome.textContent = t('world.welcome', 'Choose a city to see its designs and start your own.');
-            if (searchLabel) searchLabel.textContent = t('world.search.label', 'Search cities');
-            else searchInput.setAttribute('aria-label', t('world.search.label', 'Search cities'));
+            searchInput.setAttribute('aria-label', t('world.search.label', 'Search cities'));
             locateBtn.setAttribute('aria-label', t('world.search.locate', 'Show my location'));
             locateBtn.title = t('world.search.locate', 'Show my location');
             reachHeadline.textContent = t('world.reach.headline', '{{cities}} cities · {{countries}} countries', {

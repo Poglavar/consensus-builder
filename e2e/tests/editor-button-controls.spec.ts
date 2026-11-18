@@ -3,7 +3,7 @@ import { selectNativeOption } from '../helpers/controls';
 // Purpose: cover real editor buttons whose effects are not asserted by the broad workflow specs.
 import { test, expect } from '../helpers/fixtures';
 import { waitForMapReady } from '../helpers/app';
-import { placeFreeformBuilding, openCity, openParcel, drawCorridor, showProposal, proposalState, clickMapPoint, createSpace, runParcelCommand, openParcelTabAt, closeParcel, showSelectionDesignTab, openBlockEditor, answerBlockScope } from '../helpers/runtime';
+import { freeformBuildingPlaced, openCity, openParcel, drawCorridor, showProposal, proposalState, clickMapPoint, createSpace, runParcelCommand, openParcelTabAt, closeParcel, showSelectionDesignTab, openBlockEditor, answerBlockScope } from '../helpers/runtime';
 import { installLayerDatasets } from '../helpers/mocks/layer-datasets';
 import { mockFootprintCells } from '../helpers/mocks/building-data';
 import { surveyResponse } from '../helpers/mocks/survey-data';
@@ -67,7 +67,7 @@ test.describe('Editor button effects @features', () => {
     await openParcel(page, 'proposals');
     await page.locator('.parcel-build-btn--single').click();
     await answerBlockScope(page);
-    await placeFreeformBuilding(page);
+    await freeformBuildingPlaced(page);
     const placement = page.locator('#single-building-editor');
     await expect(placement.locator('.on-map-editor__panel')).toBeVisible();
     await waitForSingleLandTakeSummary(page);
@@ -118,7 +118,7 @@ test.describe('Editor button effects @features', () => {
     await openParcel(page, 'proposals');
     await page.locator('.parcel-build-btn--single').click();
     await answerBlockScope(page);
-    await placeFreeformBuilding(page);
+    await freeformBuildingPlaced(page);
     const editor = page.locator('#single-building-editor');
     await expect(editor.locator('.on-map-editor__panel')).toBeVisible();
     const height = editor.locator('#single-height-slider');
@@ -144,9 +144,15 @@ test.describe('Editor button effects @features', () => {
     await openParcel(page, 'proposals');
     await page.locator('.parcel-build-btn--single').click();
     await answerBlockScope(page);
-    await placeFreeformBuilding(page);
+    await freeformBuildingPlaced(page);
     const modal = page.locator('#single-building-editor');
     await expect(modal.locator('.on-map-editor__panel')).toBeVisible();
+    // The building opens already placed and untouched; one height step makes it a design worth asking about.
+    const height = page.locator('#single-height-slider');
+    const startHeight = await height.inputValue();
+    await height.focus();
+    await page.keyboard.press('ArrowUp');
+    await expect(height).not.toHaveValue(startHeight);
     await page.locator('#single-building-editor .on-map-editor__header .close-circle-btn').click();
     await expect(page.getByRole('alertdialog')).toContainText('Discard this design?');
     await page.getByRole('button', { name: 'Discard', exact: true }).click();
@@ -155,7 +161,7 @@ test.describe('Editor button effects @features', () => {
     await openParcel(page, 'proposals');
     await page.locator('.parcel-build-btn--single').click();
     await answerBlockScope(page);
-    await placeFreeformBuilding(page);
+    await freeformBuildingPlaced(page);
     await expect(modal.locator('.on-map-editor__panel')).toBeVisible();
     await expect(page.locator('#single-building-add, #single-building-selector, #single-building-rename')).toHaveCount(0);
 

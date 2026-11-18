@@ -1740,6 +1740,58 @@
         body.appendChild(actions);
     }
 
+    // A parcel in the scene offers the map's own design tools (parcels/ui/proposal-actions.js).
+    // Designs are drawn on the map, so a tool opens the map on this parcel and starts there.
+    let stackToolsParcel = null;
+
+    // A scene opened straight from a link knows the parcel only by id: the map has not read its
+    // ground yet, so the parcel is fetched before the map section opens on it.
+    async function openParcelOnMap(instance) {
+        await window.requestMapMode('2d');
+        let feature = instance.feature || getParcelFeatureById(instance.id);
+        if (!feature) {
+            await window.CadastralParcelRepository.ensureIds([instance.id]);
+            feature = getParcelFeatureById(instance.id);
+        }
+        if (!feature) throw new Error(threeI18n('threeMode.proposalPanel.parcelUnavailable',
+            'This parcel could not be loaded on the map. Click it on the 2D map instead.'));
+        window.ClickStack.showParcel(feature);
+    }
+
+    async function startParcelToolOnMap(start) {
+        const instance = stackToolsParcel;
+        if (!instance) return;
+        try {
+            await openParcelOnMap(instance);
+            await start();
+        } catch (error) {
+            window.showStyledAlert(error.message);
+        }
+    }
+
+    // The tiles call these by name (buildProposalPaletteHtml's buildHandler / transportHandler).
+    window.ThreeParcelTools = {
+        build: key => startParcelToolOnMap(() => window.startParcelBuildTool(key)),
+        transport: key => startParcelToolOnMap(() => window.startParcelTransportTool(key))
+    };
+
+    function appendParcelTools(body, instance) {
+        stackToolsParcel = instance;
+        const note = document.createElement('p');
+        note.className = 'click-stack__facts';
+        note.textContent = threeI18n('threeMode.proposalPanel.toolsOnMap', 'Choose a tool. It opens on the 2D map.');
+        const tools = document.createElement('div');
+        tools.className = 'three-parcel-tools';
+        // The section's Actions page, first as on the map (click-stack-navigation.js).
+        tools.dataset.stackPageKey = 'actions';
+        tools.dataset.stackPageLabel = threeI18n('clickStackNavigation.actions', 'Actions');
+        tools.innerHTML = window.buildProposalPaletteHtml({
+            buildHandler: 'ThreeParcelTools.build', transportHandler: 'ThreeParcelTools.transport'
+        });
+        tools.prepend(note);
+        body.appendChild(tools);
+    }
+
     // What each section means in the scene, and what fills its body.
     const clickStackAdapter = {
         activate(kind, instance, body) {
@@ -1760,18 +1812,7 @@
             } else if (kind === 'parcels' || kind === 'formed') {
                 isolateParcel(instance.id);
                 if (updateParcelInfoPanel(instance.id)) body.appendChild(parcelInfoPanelEl);
-                // A scene opened straight from a link knows the parcel only by id: the map has not
-                // read its ground yet, so the parcel is fetched before the map section opens on it.
-                appendMapActions(body, async () => {
-                    let feature = instance.feature || getParcelFeatureById(instance.id);
-                    if (!feature) {
-                        await window.CadastralParcelRepository.ensureIds([instance.id]);
-                        feature = getParcelFeatureById(instance.id);
-                    }
-                    if (!feature) throw new Error(threeI18n('threeMode.proposalPanel.parcelUnavailable',
-                        'This parcel could not be loaded on the map. Click it on the 2D map instead.'));
-                    window.ClickStack.showParcel(feature);
-                });
+                appendParcelTools(body, instance);
             } else if (kind === 'built') {
                 hostInspector(body);
                 withStackDriving(() => window.PlanningViews.inspectBuilding(instance.feature, instance.id, { hosted: true }));

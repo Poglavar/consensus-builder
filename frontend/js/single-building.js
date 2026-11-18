@@ -4,7 +4,6 @@
 (function () {
     let singleEditor = null;
     let singleSession = null;
-    let singlePlacement = null;
     let singleUploadOnConfirm = null;
     let singleMap = null;
     let singleBlockLayer = null;
@@ -1101,8 +1100,6 @@
     // X/Esc discards the design session first.
     function closeSingleBuildingMapEditor(options = {}) {
         const { preservePending = false } = options;
-        singlePlacement?.destroy();
-        singlePlacement = null;
         if (singleBuildingDesignChangeTracker) singleBuildingDesignChangeTracker.stop();
         singleLandTakeReview?.destroy();
         singleLandTakeReview = null;
@@ -1559,42 +1556,14 @@
                 if (!initialEntry) initialEntry = entry;
             });
         }
-        if (initialEntry) activateSingleBuildingEditing(initialEntry);
-        else {
-            singleSession.setCollapsed(true);
-            singleSession.body.inert = true;
-            singleSession.footer.hidden = true;
-            singleEditor.dataset.placing = 'true';
-            singleEditor.querySelector('.on-map-editor__toggle').disabled = true;
-            singleSession.setHint(translateSingleBuildingText('modal.singleBuilding.placeHint', 'Click or tap the map to place the building. Drag the map to pan. Esc cancels.'));
-            singlePlacement = window.FreeformPlacement.start({ map: singleMap, pane: EDIT_PANE,
-                buildFootprint: center => buildInitialBuildingFeature(center, initialPlacement.width, initialPlacement.length, DEFAULT_HEIGHT_M),
-                onPlace: feature => {
-                    singlePlacement = null;
-                    activateSingleBuildingEditing(addNewBuildingEntry(featureCenterLatLng(feature), { feature }));
-                }
-            });
-            const placeButton = document.createElement('button');
-            placeButton.type = 'button';
-            placeButton.id = 'single-place-on-land';
-            placeButton.className = 'btn btn-primary';
-            placeButton.textContent = translateSingleBuildingText('modal.singleBuilding.placeOnLand', 'Place on selected land');
-            placeButton.addEventListener('click', () => singlePlacement?.place(startCenter));
-            singleSession.content.insertBefore(placeButton, singleSession.body);
-            placeButton.focus({ preventScroll: true });
-        }
+        // A new building stands on the selected land at once, on a point inside it; the person
+        // drags it from there. The land was already chosen, so nothing asks for a place again.
+        activateSingleBuildingEditing(initialEntry || addNewBuildingEntry(startCenter));
         return true;
     }
 
     function activateSingleBuildingEditing(entry) {
         if (!entry) throw new Error('Could not place the building.');
-        delete singleEditor.dataset.placing;
-        document.getElementById('single-place-on-land')?.remove();
-        singleSession.body.inert = false;
-        singleSession.footer.hidden = false;
-        singleEditor.querySelector('.on-map-editor__toggle').disabled = false;
-        singleSession.setCollapsed(false);
-        singleSession.setHint(null);
         setActiveBuilding(entry.id, { refreshUI: true });
         singleLandTakeReview = window.FreeformLandTakeReview.mount({ session: singleSession,
             getBuildings: () => buildingEntries.filter(entry => entry?.feature).map(entry => cloneSingleFeature(entry.feature)),

@@ -2475,8 +2475,6 @@
             "editSurroundings": "Uredi okolinu",
             "surroundingsPaved": "Popločanje",
             "surroundingsGreen": "Zelenilo",
-            "placeOnLand": "Постави на изабрано земљиште",
-            "placeHint": "Kliknite ili dodirnite mapu da postavite zgradu. Prevucite mapu da je pomerite. Esc otkazuje.",
             "surroundingsInfo": "Popločanje ili zelenilo koristi zauzeto zemljište izvan osnove zgrade. Zauzimanje samo osnove nema okruženje.",
             "uploadGeojsonLabel": "Učitaj osnove",
             "uploadGlbLabel": "Učitaj model",
@@ -6576,7 +6574,8 @@
             "suggestedTotals": "Predloženi tlocrti: {{buildings}} zgrada · {{apartmentsPerFloor}} stanova po etaži · ukupno {{apartments}}",
             "avgPerParcel": "Prosek / parceli",
             "openActions2d": "Otvori radnje u 2D",
-            "parcelUnavailable": "Ova parcela nije mogla da se učita na mapi. Kliknite na nju na 2D mapi."
+            "parcelUnavailable": "Ova parcela nije mogla da se učita na mapi. Kliknite na nju na 2D mapi.",
+            "toolsOnMap": "Izaberite alat. Otvara se na 2D mapi."
         },
         "isolation": {
             "singleParcel": "Izabrana parcela",
@@ -6931,7 +6930,6 @@
         "close": "Zatvori uputstva za početak"
     },
     "world": {
-        "welcome": "Izaberite grad, pogledajte njegove dizajne i započnite svoj.",
         "openFailed": "Prikaz sveta nije mogao da se pokrene. Možete nastaviti da koristite 2D mapu i potražiti drugi grad.",
         "title": "Izaberite mesto",
         "hint": "Prevuci za okretanje · izaberi grad ili tačnu lokaciju",

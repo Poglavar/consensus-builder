@@ -1049,8 +1049,6 @@
             "editSurroundings": "Modifier les abords",
             "surroundingsPaved": "Revêtement minéral",
             "surroundingsGreen": "Végétation",
-            "placeOnLand": "Placer sur le terrain sélectionné",
-            "placeHint": "Cliquez ou touchez la carte pour placer le bâtiment. Faites glisser la carte pour la déplacer. Échap annule.",
             "surroundingsInfo": "Le revêtement ou l’espace vert occupe le terrain pris en dehors de l’emprise du bâtiment. Une prise limitée à l’emprise ne comporte aucun aménagement extérieur.",
             "uploadGeojsonLabel": "Importer des emprises",
             "uploadGlbLabel": "Importer un modèle",
@@ -4746,7 +4744,8 @@
             "suggestedTotals": "Agencements suggérés : {{buildings}} bâtiments · {{apartmentsPerFloor}} appartements par niveau · {{apartments}} au total",
             "avgPerParcel": "Moyenne / parcelle",
             "openActions2d": "Ouvrir les actions en 2D",
-            "parcelUnavailable": "Cette parcelle n’a pas pu être chargée sur la carte. Cliquez dessus sur la carte 2D."
+            "parcelUnavailable": "Cette parcelle n’a pas pu être chargée sur la carte. Cliquez dessus sur la carte 2D.",
+            "toolsOnMap": "Choisissez un outil. Il s’ouvre sur la carte 2D."
         },
         "ai": {
             "download": "Télécharger",
@@ -5574,7 +5573,6 @@
         "close": "Fermer les conseils de démarrage"
     },
     "world": {
-        "welcome": "Choisissez une ville pour voir ses projets et commencer le vôtre.",
         "close": "Fermer",
         "explore": {
             "dismiss": "Fermer",
