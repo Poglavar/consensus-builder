@@ -1744,13 +1744,13 @@
             "tabProposals": "Diseños",
             "tabTools": "Herramientas",
             "historySection": "Historial",
-            "selectMultiple": "Selecciona una parcela para empezar a diseñar. También puedes seleccionar varias parcelas o una manzana de parcelas.",
+            "selectMultiple": "Elige una herramienta a continuación. Para incluir más parcelas, usa Manual o Detectar bloque.",
             "selectManually": "Manual",
             "detectBlock": "Detectar bloque",
+            "useThisParcel": "Usar esta parcela",
+            "selectWholeBlock": "Seleccionar toda la manzana",
             "chooseBlockScope": "Solo hay una parcela seleccionada. ¿Usar esta parcela o detectar el bloque completo?",
             "suggestWholeBlock": "Solo hay una parcela seleccionada. ¿Quería seleccionar el bloque completo ({{count}} parcelas)?",
-            "suggestWholeBlockYes": "Sí, seleccionar el bloque",
-            "suggestWholeBlockNo": "No, solo esta parcela",
             "build": {
                 "title": "Construir",
                 "block": "Manzana",
@@ -2387,7 +2387,7 @@
                     "eyebrow": "De la idea a el diseño",
                     "title": "Haz visible el cambio",
                     "body": "Convierte una idea en un diseño: rediseña parcelas, traza calles y parques o añade edificios. Aplica un borrador para ver cómo cambia el mapa.",
-                    "hint": "Empieza en Herramientas y después compara tus diseños en el mapa."
+                    "hint": "Selecciona una parcela en el mapa 2D y elige una herramienta en Acciones. Abre Diseño para dibujar tu propio perímetro."
                 },
                 "consent": {
                     "eyebrow": "Las personas marcan la diferencia",
@@ -2399,7 +2399,7 @@
                     "eyebrow": "Una ciudad en movimiento",
                     "title": "Sigue cómo avanzan las decisiones",
                     "body": "Sigue los diseños y la actividad de agentes de todo el mundo. Cuando haya una simulación disponible, reproduce o pausa los turnos para ver cómo evolucionan los diseños y el apoyo.",
-                    "hint": "Abre Actividad para seguir eventos, actores y zonas observadas. Los controles de simulación están en Ajustes > Diagnósticos."
+                    "hint": "Abre Actividad para seguir eventos y participantes. Los controles de simulación están en Ajustes → Avanzado → Simulación."
                 },
                 "sources": {
                     "eyebrow": "Más de un punto de partida",
@@ -2480,6 +2480,7 @@
             "editSurroundings": "Editar el entorno",
             "surroundingsPaved": "Pavimento",
             "surroundingsGreen": "Verde",
+            "placeOnLand": "Colocar en el terreno seleccionado",
             "placeHint": "Haz clic o toca el mapa para colocar el edificio. Arrastra el mapa para desplazarlo. Esc cancela.",
             "surroundingsInfo": "El pavimento o la zona verde ocupa el terreno tomado fuera de la huella del edificio. Si solo se toma la huella, no hay entorno.",
             "uploadGeojsonLabel": "Subir huellas",
@@ -6928,6 +6929,7 @@
             "other": "{{count}} acuerdos"
         },
         "search": {
+            "firstVisitLabel": "Elige dónde diseñar",
             "placeholder": "Nombre de la ciudad",
             "label": "Buscar ciudades",
             "noResults": "No hay ciudades coincidentes",
@@ -7060,6 +7062,11 @@
                 "unknown": "Ubicación desconocida"
             }
         }
+    },
+    "designStart": {
+        "title": "Iniciar un diseño",
+        "hint": "Selecciona una parcela en el mapa. En Acciones, elige una herramienta como Parque. Para definir tu propio perímetro, elige Dibujar una parcela.",
+        "saved": "Los diseños terminados se guardan en este navegador. Están en Listas → Diseños."
     },
     "mapShell": {
         "settingsSections": {
@@ -7255,8 +7262,10 @@
         }
     },
     "siteTool": {
-        "commands": {
-            "draw": "Dibujar sitio"
+        "coordinates": {
+            "title": "Añadir vértice por coordenadas",
+            "add": "Añadir vértice",
+            "count": "Vértices: {{count}}"
         },
         "title": "Sitio",
         "titleDrawing": "Dibuja un sitio",

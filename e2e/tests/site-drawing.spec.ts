@@ -39,7 +39,7 @@ test.describe('Site authoring @features', () => {
       geometry: { type: 'MultiPolygon', coordinates: [[[[15.98208,45.80018],[15.98232,45.80018],[15.98232,45.80036],[15.98208,45.80036],[15.98208,45.80018]]]] },
     };
     const chooserStarted = page.waitForEvent('filechooser');
-    await page.locator('[data-site-import]').click();
+    await page.getByRole('button', { name: 'Import GeoJSON', exact: true }).press('Enter');
     const chooser = await chooserStarted;
     await chooser.setFiles({
       name: 'park-site.geojson', mimeType: 'application/geo+json', buffer: Buffer.from(JSON.stringify(imported)),

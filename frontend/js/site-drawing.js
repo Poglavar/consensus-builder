@@ -59,7 +59,8 @@
         snapKind: null,
         frontageBasis: null, // how the frontage was chosen: { basis: 'street'|'longest'|'user'|'pending', ... }
         frontageSeq: 0,
-        mapWired: false
+        mapWired: false,
+        focusReturn: null
     };
 
     // ---- small helpers ----
@@ -511,6 +512,7 @@
         if (doc.body.classList.contains('three-mode-active')) return;
         if (!isActive() || event.defaultPrevented) return;
         if (typeof win.isEditableTarget === 'function' && win.isEditableTarget(event.target)) return;
+        if (event.key === 'Enter' && event.target.closest?.('button, a, summary')) return;
         if (event.key === 'Escape') {
             event.preventDefault();
             if (state.phase === 'plots') { leavePlots(); return; }
@@ -558,6 +560,7 @@
             return;
         }
         beginEditing(state.ring);
+        state.panel?.querySelector('[data-site-action="propose"]')?.focus();
     }
 
     function beginEditing(ring) {
@@ -699,6 +702,7 @@
             <div class="site-panel__head" data-site-region="head"></div>
             <div class="site-panel__body">
                 <div data-site-region="intro"></div>
+                <div data-site-region="coordinates"></div>
                 <div data-site-region="summary"></div>
                 <div data-site-region="after"></div>
                 <div data-site-region="parcels"></div>
@@ -706,6 +710,7 @@
             <div class="site-panel__actions" data-site-region="actions"></div>`;
         panel.addEventListener('click', onPanelClick);
         panel.addEventListener('change', onPanelChange);
+        panel.addEventListener('submit', onCoordinateSubmit);
         bindParcelOutlines(panel.querySelector('[data-site-region="parcels"]'));
         host.appendChild(panel);
         state.panel = panel;
@@ -918,7 +923,7 @@
             actions.push(`<button type="button" class="btn" data-site-action="redraw">${escapeHtml(t('siteTool.actions.redraw', 'Redraw'))}</button>`);
         }
         if (state.phase === 'drawing' || state.phase === 'editing') {
-            actions.push(`<label class="btn" data-site-import>${escapeHtml(t('siteTool.actions.importGeoJSON', 'Import GeoJSON'))}<input type="file" data-site-import-file accept=".geojson,.json,application/geo+json,application/json" hidden></label>`);
+            actions.push(`<button type="button" class="btn" data-site-action="import">${escapeHtml(t('siteTool.actions.importGeoJSON', 'Import GeoJSON'))}</button><input type="file" data-site-import-file accept=".geojson,.json,application/geo+json,application/json" hidden>`);
         }
         actions.push(`<button type="button" class="btn" data-site-action="cancel">${escapeHtml(t('siteTool.actions.cancel', 'Cancel'))}</button>`);
         return actions.join('');
@@ -1054,13 +1059,35 @@
         const errorShown = state.siteError && (state.phase !== 'drawing' || state.ring.length >= 3);
         setRegion(region('intro'), `
             <p class="site-panel__hint">${escapeHtml(hintText())}</p>
-            ${errorShown ? `<p class="site-panel__error">${escapeHtml(siteErrorText(state.siteError))}</p>` : ''}`);
+            ${errorShown ? `<p class="site-panel__error" role="alert">${escapeHtml(siteErrorText(state.siteError))}</p>` : ''}`);
+        setRegion(region('coordinates'), state.phase === 'drawing' ? `
+            <details class="geometry-controls" data-site-coordinates>
+                <summary>${escapeHtml(t('siteTool.coordinates.title', 'Add corner by coordinates'))}</summary>
+                <form data-site-coordinate-form>
+                    <div class="geometry-controls__fields">
+                        <label class="geometry-controls__field">${escapeHtml(t('geometryEditor.latitude', 'Latitude'))}<input class="form-control" name="latitude" type="number" step="any" min="-90" max="90" required></label>
+                        <label class="geometry-controls__field">${escapeHtml(t('geometryEditor.longitude', 'Longitude'))}<input class="form-control" name="longitude" type="number" step="any" min="-180" max="180" required></label>
+                    </div>
+                    <button type="submit" class="btn">${escapeHtml(t('siteTool.coordinates.add', 'Add corner'))}</button>
+                </form>
+                <p class="geometry-controls__message" data-site-coordinate-status role="status"></p>
+            </details>` : '');
+        const coordinateStatus = region('coordinates').querySelector('[data-site-coordinate-status]');
+        if (coordinateStatus) {
+            const count = t('siteTool.coordinates.count', 'Corners: {{count}}', { count: state.ring.length });
+            if (coordinateStatus.textContent !== count) coordinateStatus.textContent = count;
+        }
         setRegion(region('summary'), bindingSummaryHtml());
         setRegion(region('after'), state.phase === 'plots' ? plotsNotesHtml() : existingProposalsLineHtml());
         setRegion(region('parcels'), boundParcelsHtml() || (state.phase === 'drawing'
             ? `<p class="site-panel__parcels-empty">${escapeHtml(t('siteTool.binding.drawingEmpty', 'Close the outline to see the parcels it binds.'))}</p>`
             : ''));
+        const focusedAction = region('actions').contains(doc.activeElement) ? doc.activeElement.getAttribute('data-site-action') : null;
         setRegion(region('actions'), actionsHtml());
+        if (focusedAction) {
+            const replacement = region('actions').querySelector(`[data-site-action="${focusedAction}"]`);
+            if (replacement && !replacement.disabled) replacement.focus();
+        }
         renderInfoPanel();
         repressParcelOutlines();
     }
@@ -1088,7 +1115,8 @@
         const button = event.target.closest('[data-site-action]');
         if (!button || button.disabled) return;
         const action = button.getAttribute('data-site-action');
-        if (action === 'finish') finishDrawing();
+        if (action === 'import') state.panel.querySelector('[data-site-import-file]').click();
+        else if (action === 'finish') finishDrawing();
         else if (action === 'undo') { state.ring.pop(); renderLayers(); renderPanel(); }
         else if (action === 'propose' || action === 'show-proposals') {
             // Like a parcel's "Propose here": the proposal panel opens on its Propose tab, or on the
@@ -1120,6 +1148,20 @@
         else if (action === 'plots-back') leavePlots();
     }
 
+    function onCoordinateSubmit(event) {
+        if (!event.target.matches('[data-site-coordinate-form]')) return;
+        event.preventDefault();
+        const form = event.target;
+        if (!form.reportValidity()) return;
+        const point = win.GeometryEditCoordinates.parse(form.elements.longitude.value, form.elements.latitude.value);
+        if (!point) return;
+        state.ring.push(point);
+        renderLayers();
+        renderPanel();
+        form.reset();
+        form.elements.latitude.focus();
+    }
+
     // A site from a GeoJSON polygon file (WGS84): its one connected area's outer outline starts an
     // editable site, the same plug-in point a parcel selection uses.
     function onPanelChange(event) {
@@ -1127,8 +1169,8 @@
         const file = input && input.files && input.files[0];
         if (!file) return;
         input.value = '';
-        const label = input.closest('[data-site-import]');
-        if (win.BusyControl) win.BusyControl.track(label, () => importSiteFile(file));
+        const button = state.panel.querySelector('[data-site-action="import"]');
+        if (win.BusyControl) win.BusyControl.track(button, () => importSiteFile(file));
         else importSiteFile(file);
     }
 
@@ -1363,6 +1405,7 @@
         if (!map() || !win.L || !win.turf || !draftApi() || !bindingApi()) throw new Error('SiteTool: the map or geometry libraries are not loaded');
         if (isActive()) teardown({ keepSynthetic: false });
         if (!claimMap()) return false;
+        state.focusReturn = doc.activeElement;
         prepareMap();
         doc.body.classList.add('site-tool-active');
         reset();
@@ -1377,6 +1420,7 @@
             doc.body.classList.add('site-tool-drawing');
             renderLayers();
             renderPanel();
+            state.panel?.querySelector('[data-site-coordinates] summary')?.focus();
         }
         log(`started (${state.phase}${state.ground ? `, ground ${state.ground}` : ''})`);
         return true;
@@ -1436,7 +1480,12 @@
 
     function cancel() {
         log('cancelled');
+        const previous = state.focusReturn;
         teardown({ keepSynthetic: false });
+        state.focusReturn = null;
+        const target = previous?.isConnected && previous.getClientRects?.().length && !previous.disabled
+            ? previous : map()?.getContainer();
+        target?.focus?.({ preventScroll: true });
     }
 
     function current() {

@@ -501,9 +501,9 @@ describe('the floating shell', () => {
     it('wires every shell button to a sheet that exists', () => {
         const sheets = new Set(openingTags(shellHtml, 'section')
             .filter(tag => (attr(tag, 'class') || '').split(/\s+/).includes('map-sheet')).map(tag => attr(tag, 'id')));
-        expect([...sheets].sort()).toEqual(['activity-sheet', 'bets-sheet', 'chat-sheet', 'layers-sheet', 'measurement-sheet', 'planning-views', 'proposals-sheet', 'settings-sheet', 'sun-sheet']);
+        expect([...sheets].sort()).toEqual(['activity-sheet', 'bets-sheet', 'chat-sheet', 'design-start-sheet', 'layers-sheet', 'measurement-sheet', 'planning-views', 'proposals-sheet', 'settings-sheet', 'sun-sheet']);
         const triggers = openingTags(shellHtml, 'button').filter(tag => attr(tag, 'data-sheet-target') !== null);
-        expect(triggers.length).toBe(9);
+        expect(new Set(triggers.map(tag => attr(tag, 'data-sheet-target')))).toEqual(sheets);
         for (const tag of triggers) {
             const target = attr(tag, 'data-sheet-target');
             expect(sheets.has(target), target).toBe(true);
@@ -648,7 +648,7 @@ describe('editing a design locks the controls that start another task', () => {
 
     it('locks the shell controls agreed for editing and leaves Layers, Buildings and massing and Measure', () => {
         expect([...MapShell.EDIT_LOCKED_CONTROLS].sort()).toEqual(
-            ['activity-button', 'bets-button', 'proposals-button', 'settings-button', 'shareAppliedProposalsButton', 'username-display']);
+            ['activity-button', 'bets-button', 'design-start-button', 'proposals-button', 'settings-button', 'shareAppliedProposalsButton', 'username-display']);
         for (const id of ['layers-button', 'planning-views-button', 'measurement-button']) {
             expect(MapShell.EDIT_LOCKED_CONTROLS).not.toContain(id);
         }
@@ -658,7 +658,7 @@ describe('editing a design locks the controls that start another task', () => {
     it('makes the commands behind the locked controls unavailable in the palette, and only while editing', () => {
         const editing = { mode: '2d', isEditing: () => true };
         const idle = { mode: '2d', isEditing: () => false };
-        for (const id of ['proposals.list', 'bets.open', 'activity.events', 'settings.city', 'parcels.locate', 'world.open']) {
+        for (const id of ['design.start', 'proposals.list', 'bets.open', 'activity.events', 'settings.city', 'parcels.locate', 'world.open']) {
             expect(UiCommands.isAvailable(id, editing), id).toBe(false);
         }
         expect(UiCommands.isAvailable('bets.open', idle)).toBe(true);

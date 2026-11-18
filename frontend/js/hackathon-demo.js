@@ -582,7 +582,7 @@
             { label: 'Solana faucet', href: 'https://faucet.solana.com' },
             { label: 'Circle USDC faucet', href: 'https://faucet.circle.com' }
         ]));
-        tryIt.append(node(doc, 'p', 'Without a wallet, open the map and choose Activity → Simulation. Turn on game mode, expand Simulation settings and choose New Game. It only resets this browser’s simulation; public records and devnet transactions stay as they are.', 'hd-muted'));
+        tryIt.append(node(doc, 'p', 'On the map, open Settings → Advanced → Simulation. Select Enable game mode and choose New Game to restart the simulation in this browser.', 'hd-muted'));
         tryIt.append(linkRow(doc, [{ label: 'Open the map simulation', href: '/?reduceMotion=1' }]));
         element.append(tryIt);
 

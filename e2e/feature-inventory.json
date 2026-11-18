@@ -300,6 +300,12 @@
       ]
     },
     {
+      "id": "design.start",
+      "specs": [
+        "tests/first-design.spec.ts"
+      ]
+    },
+    {
       "id": "proposals.list",
       "specs": [
         "tests/proposal-browsing.spec.ts"

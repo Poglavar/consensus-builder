@@ -84,6 +84,7 @@ test.describe('World navigation and open ground @features', () => {
     await expect(world).toBeVisible({ timeout: 45_000 });
     await expect(world.locator('canvas')).toBeVisible();
     await expect(world.getByRole('button', { name: 'Back to map' })).toBeVisible();
+    await expect(world.locator('.world-search__label')).toHaveCount(0);
     await world.locator('.world-search__input').fill('Belgrade');
     await world.getByRole('option').filter({ hasText: 'Belgrade' }).first().click();
     await expect(world.locator('.world-popup__title')).toHaveText('Belgrade');
@@ -440,6 +441,40 @@ test.describe('World navigation and open ground @features', () => {
     await page.locator('#site-panel [data-site-action="cancel"]').first().click();
     await expect(page.locator('#site-panel')).toBeHidden();
     expect(await page.evaluate(() => (window as any).proposalStorage.getAllProposals().length)).toBe(0);
+  });
+
+  test('a custom site can be drawn with coordinates and the keyboard', async ({ mockApi: page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await openCity(page);
+    await page.getByRole('button', { name: 'Lists', exact: true }).press('Enter');
+    await page.getByRole('button', { name: 'Start a design', exact: true }).press('Enter');
+    await page.getByRole('dialog', { name: 'Start a design' }).getByRole('button', { name: 'Draw a parcel' }).press('Enter');
+    const panel = page.locator('#site-panel');
+    const disclosure = panel.getByText('Add corner by coordinates', { exact: true });
+    await expect(disclosure).toBeFocused();
+    await page.keyboard.press('Enter');
+    const latitude = panel.getByLabel('Latitude', { exact: true });
+    const longitude = panel.getByLabel('Longitude', { exact: true });
+    for (const [lat, lng] of [['45.8008', '15.9817'], ['45.8008', '15.982'], ['45.801', '15.982']]) {
+      await latitude.fill(lat);
+      await longitude.fill(lng);
+      await longitude.press('Enter');
+      await expect(latitude).toBeFocused();
+    }
+    await expect(panel.getByRole('status')).toHaveText('Corners: 3');
+    const finish = panel.getByRole('button', { name: 'Finish site' });
+    await finish.focus();
+    await page.keyboard.press('Enter');
+    await expect(panel.getByRole('button', { name: 'Propose here' })).toBeFocused();
+    await expect(panel.getByRole('button', { name: 'Import GeoJSON' })).toBeVisible();
+    await page.keyboard.press('Enter');
+    await page.locator('#site-info-panel').getByRole('button', { name: 'Park', exact: true }).press('Enter');
+    const outline = () => page.evaluate(() => (window as any).proposalStorage?.getAllProposals()
+      .find((design: any) => design.structureProposal?.kind === 'park')?.site?.coordinates);
+    const ring = [[15.9817, 45.8008], [15.982, 45.8008], [15.982, 45.801], [15.9817, 45.8008]];
+    await expect.poll(outline).toEqual([[ring]]);
+    await page.reload({ waitUntil: 'domcontentloaded' });
+    await expect.poll(outline).toEqual([[ring]]);
   });
 
   test('urbanist inspection scores actual applied parcel geometry and restores the map when closed', async ({ mockApi: page }) => {

@@ -1716,13 +1716,13 @@
             "tabProposals": "Predlozi",
             "tabTools": "Alati",
             "historySection": "Istorija",
-            "selectMultiple": "Izaberite parcelu da započnete projektovanje. Možete izabrati i više parcela ili ceo blok parcela.",
+            "selectMultiple": "Izaberite alat ispod. Da biste obuhvatili više parcela, izaberite Ručno ili Detektuj blok.",
             "selectManually": "Ručno",
             "detectBlock": "Detektuj blok",
+            "useThisParcel": "Користи ову парцелу",
+            "selectWholeBlock": "Изабери цео блок",
             "chooseBlockScope": "Izabrana je samo jedna parcela. Koristiti ovu parcelu ili otkriti ceo blok?",
             "suggestWholeBlock": "Izabrana je samo jedna parcela. Da li ste mislili na ceo blok ({{count}} parcela)?",
-            "suggestWholeBlockYes": "Da, izaberi blok",
-            "suggestWholeBlockNo": "Ne, samo ova parcela",
             "build": {
                 "title": "Izgradi",
                 "block": "Blok",
@@ -2382,7 +2382,7 @@
                     "eyebrow": "Od ideje do dizajna",
                     "title": "Učinite promenu vidljivom",
                     "body": "Pretvorite ideju u dizajn: preoblikujte parcele, skicirajte ulice i parkove ili dodajte zgrade. Primena nacrta pokazuje kako menja mapu.",
-                    "hint": "Počnite u Alatima, pa uporedite dizajne na mapi."
+                    "hint": "Izaberite parcelu na 2D mapi, zatim alat u kartici Radnje. Otvorite Dizajn da nacrtate sopstvenu granicu."
                 },
                 "consent": {
                     "eyebrow": "Ljudi čine razliku",
@@ -2394,7 +2394,7 @@
                     "eyebrow": "Grad u pokretu",
                     "title": "Pratite kako se odluke odvijaju",
                     "body": "Pratite dizajne i aktivnost agenata širom sveta. Tamo gde je simulacija dostupna, pokrenite ili pauzirajte poteze i istražite kako se dizajni i podrška menjaju.",
-                    "hint": "Otvorite Aktivnost za praćenje događaja, aktera i praćenih oblasti. Kontrole simulacije nalaze se u Podešavanja > Dijagnostika."
+                    "hint": "Otvorite Aktivnost da pratite događaje i učesnike. Kontrole simulacije su pod Podešavanja → Napredno → Simulacija."
                 },
                 "sources": {
                     "eyebrow": "Više od jednog polazišta",
@@ -2475,6 +2475,7 @@
             "editSurroundings": "Uredi okolinu",
             "surroundingsPaved": "Popločanje",
             "surroundingsGreen": "Zelenilo",
+            "placeOnLand": "Постави на изабрано земљиште",
             "placeHint": "Kliknite ili dodirnite mapu da postavite zgradu. Prevucite mapu da je pomerite. Esc otkazuje.",
             "surroundingsInfo": "Popločanje ili zelenilo koristi zauzeto zemljište izvan osnove zgrade. Zauzimanje samo osnove nema okruženje.",
             "uploadGeojsonLabel": "Učitaj osnove",
@@ -6936,6 +6937,7 @@
             "other": "{{count}} sporazuma"
         },
         "search": {
+            "firstVisitLabel": "Изаберите где желите да пројектујете",
             "placeholder": "Naziv grada",
             "label": "Pretraži gradove",
             "noResults": "Nema odgovarajućeg grada",
@@ -7068,6 +7070,11 @@
                 "unknown": "Lokacija nepoznata"
             }
         }
+    },
+    "designStart": {
+        "title": "Započni dizajn",
+        "hint": "Izaberite parcelu na mapi. U kartici Radnje izaberite alat, na primer Park. Za sopstvenu granicu izaberite Nacrtaj parcelu.",
+        "saved": "Završeni dizajni se čuvaju u ovom pregledaču. Pronaći ćete ih pod Liste → Dizajni."
     },
     "mapShell": {
         "settingsSections": {
@@ -7264,8 +7271,10 @@
         }
     },
     "siteTool": {
-        "commands": {
-            "draw": "Nacrtaj lokaciju"
+        "coordinates": {
+            "title": "Додај теме координатама",
+            "add": "Додај теме",
+            "count": "Темена: {{count}}"
         },
         "title": "Lokacija",
         "titleDrawing": "Nacrtaj lokaciju",

@@ -77,6 +77,30 @@ function boot() {
 }
 
 describe('one parcel recovery dialog after the introduction', () => {
+    it('defers a background failure while the first-visit globe owns boot, then offers recovery on landing', () => {
+        const { window, document } = boot();
+        window.closeSiteIntro();
+        let globeOpen = true;
+        window.WorldEntry = { ownsBoot: () => globeOpen };
+        window.ParcelGroundFallback.onGroundUnavailable({ city: 'sample', error: new Error('network') });
+        expect(window.ParcelGroundFallback.isOpen()).toBe(false);
+        expect(document.body.querySelectorAll('.ground-fallback-dialog')).toHaveLength(0);
+        globeOpen = false;
+        window.dispatchEvent(new Event('worldview:landed'));
+        expect(window.ParcelGroundFallback.isOpen()).toBe(true);
+    });
+
+    it('discards a deferred background failure when the chosen city has changed', () => {
+        const { window } = boot();
+        window.closeSiteIntro();
+        let globeOpen = true;
+        window.WorldEntry = { ownsBoot: () => globeOpen };
+        window.ParcelGroundFallback.onGroundUnavailable({ city: 'sample', error: new Error('network') });
+        window.CityConfigManager.getCurrentCityId = () => 'other';
+        globeOpen = false;
+        window.dispatchEvent(new Event('worldview:landed'));
+        expect(window.ParcelGroundFallback.isOpen()).toBe(false);
+    });
     it('waits without stealing intro focus, then opens when the intro is closed', () => {
         const { window, document, intro } = boot();
         const focus = document.activeElement;

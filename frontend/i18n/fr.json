@@ -1049,6 +1049,7 @@
             "editSurroundings": "Modifier les abords",
             "surroundingsPaved": "Revêtement minéral",
             "surroundingsGreen": "Végétation",
+            "placeOnLand": "Placer sur le terrain sélectionné",
             "placeHint": "Cliquez ou touchez la carte pour placer le bâtiment. Faites glisser la carte pour la déplacer. Échap annule.",
             "surroundingsInfo": "Le revêtement ou l’espace vert occupe le terrain pris en dehors de l’emprise du bâtiment. Une prise limitée à l’emprise ne comporte aucun aménagement extérieur.",
             "uploadGeojsonLabel": "Importer des emprises",
@@ -1355,7 +1356,7 @@
                     "eyebrow": "De l’idée au projet",
                     "title": "Rendez le changement visible",
                     "body": "Transformez une idée en projet : remodelez les parcelles, dessinez des rues et des parcs ou ajoutez des bâtiments. Appliquez un brouillon pour voir comment il modifie la carte.",
-                    "hint": "Commencez dans Outils, puis comparez vos projets sur la carte."
+                    "hint": "Sélectionnez une parcelle sur la carte 2D, puis un outil dans Actions. Ouvrez Projet pour tracer votre propre périmètre."
                 },
                 "consent": {
                     "eyebrow": "Les personnes font la différence",
@@ -1367,7 +1368,7 @@
                     "eyebrow": "Une ville en mouvement",
                     "title": "Suivez l’évolution des décisions",
                     "body": "Suivez les projets et l’activité des agents dans le monde entier. Lorsque la simulation est disponible, lancez ou mettez en pause les tours pour explorer l’évolution des projets et du soutien.",
-                    "hint": "Ouvrez Activité pour suivre les événements, les acteurs et les zones surveillées. Les commandes de simulation se trouvent dans Paramètres > Diagnostics."
+                    "hint": "Ouvrez Activité pour suivre les événements et les acteurs. Les commandes de simulation se trouvent dans Paramètres → Avancé → Simulation."
                 },
                 "sources": {
                     "eyebrow": "Plusieurs points de départ",
@@ -1613,8 +1614,10 @@
             "deleteVertex": "Supprimer ce sommet"
         },
         "title": "Site",
-        "commands": {
-            "draw": "Dessiner un site"
+        "coordinates": {
+            "title": "Ajouter un sommet par coordonnées",
+            "add": "Ajouter un sommet",
+            "count": "Sommets : {{count}}"
         },
         "titleDrawing": "Dessiner un site",
         "hint": {
@@ -3135,13 +3138,13 @@
             },
             "tabTools": "Outils",
             "historySection": "Historique",
-            "selectMultiple": "Sélectionnez une parcelle pour commencer à concevoir un projet. Vous pouvez aussi sélectionner plusieurs parcelles ou un îlot parcellaire.",
+            "selectMultiple": "Choisissez un outil ci-dessous. Pour inclure davantage de parcelles, utilisez Manuellement ou Détecter l’îlot.",
             "selectManually": "Manuellement",
             "detectBlock": "Détecter l’îlot",
+            "useThisParcel": "Utiliser cette parcelle",
+            "selectWholeBlock": "Sélectionner tout l’îlot",
             "chooseBlockScope": "Une seule parcelle est sélectionnée. Utiliser cette parcelle ou détecter l’îlot entier ?",
             "suggestWholeBlock": "Une seule parcelle est sélectionnée. Souhaitiez-vous sélectionner l’îlot entier ({{count}} parcelles) ?",
-            "suggestWholeBlockYes": "Oui, sélectionner l’îlot",
-            "suggestWholeBlockNo": "Non, seulement cette parcelle",
             "nftStatusDefault": "État du NFT : pas encore vérifié.",
             "nft": {
                 "statusUnknown": "État du NFT : pas encore vérifié.",
@@ -5614,6 +5617,7 @@
             "other": "{{count}} accords"
         },
         "search": {
+            "firstVisitLabel": "Choisissez où concevoir",
             "placeholder": "Nom de la ville",
             "label": "Rechercher des villes",
             "noResults": "Aucune ville correspondante",
@@ -5825,6 +5829,11 @@
         "statusNothingToClaim": "Aucun jeton à réclamer pour le moment, revenez un peu plus tard.",
         "statusTxLink": "Voir la transaction",
         "statusError": "Une erreur est survenue. Veuillez réessayer."
+    },
+    "designStart": {
+        "title": "Commencer un projet",
+        "hint": "Sélectionnez une parcelle sur la carte. Dans Actions, choisissez un outil comme Parc. Pour tracer votre propre périmètre, choisissez Dessiner une parcelle.",
+        "saved": "Vos projets terminés sont enregistrés dans ce navigateur. Retrouvez-les dans Listes → Projets."
     },
     "mapShell": {
         "proposals": "Projets",

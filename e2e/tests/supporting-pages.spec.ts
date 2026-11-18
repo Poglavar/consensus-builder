@@ -332,7 +332,7 @@ test.describe('Supporting pages @core', () => {
     const evidenceCase = page.locator('.hd-case').filter({ hasText: 'Evidence case' });
     await expect(evidenceCase.locator('.hd-pill')).toHaveText('pending');
     await expect(page.locator('#judge-path')).not.toContainText('Every stage is recorded on Solana devnet.');
-    await expect(page.locator('#hackathon-demo')).toContainText('Activity → Simulation');
+    await expect(page.locator('#hackathon-demo')).toContainText('Settings → Advanced → Simulation');
     await expect(page.locator('#hackathon-demo')).not.toContainText('expand Game');
     // A case is an agreement: its card is named by it and every action deep-links into the explorer by its CID.
     // Its lifecycle is the agreement's status.

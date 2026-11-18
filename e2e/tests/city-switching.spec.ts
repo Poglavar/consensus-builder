@@ -25,6 +25,47 @@ test.describe('City switching @core', () => {
       expect(result.chosen).toBe(false);
       expect(result.globeOwnsBoot).toBe(true);
     });
+
+    test('first-visit search guides keyboard selection and restores focus on dismiss', async ({ mockApi: page }) => {
+      await page.goto('/?reduceMotion=1');
+      const world = page.locator('#world-view');
+      const search = world.getByRole('combobox', { name: 'Choose where to design' });
+      await expect(search).toBeVisible({ timeout: 45_000 });
+      await search.fill('Belgrade');
+      await page.evaluate(() => (window as any).ParcelGroundFallback.onGroundUnavailable({ city: 'new_york', error: new Error('Register unavailable') }));
+      await expect(page.locator('.ground-fallback-dialog')).toHaveCount(0);
+      await expect(search).toBeFocused();
+      await search.press('Enter');
+      const open = world.getByRole('button', { name: 'Open Belgrade' });
+      await expect(open).toBeFocused({ timeout: 15_000 });
+      await page.keyboard.press('Escape');
+      await expect(search).toBeFocused();
+      await expect(world.locator('.world-popup')).toBeHidden();
+    });
+
+    test('first city choice opens its 2D map without looking up the latest design', async ({ mockApi: page }) => {
+      const latestRequests: string[] = [];
+      page.on('request', request => {
+        const url = new URL(request.url());
+        if (url.pathname.endsWith('/designs') && url.searchParams.get('limit') === '1'
+            && /^(zagreb|zg)$/i.test(url.searchParams.get('city') || '')) latestRequests.push(request.url());
+      });
+      await page.goto('/?reduceMotion=1');
+      const world = page.locator('#world-view');
+      const search = world.getByRole('combobox', { name: 'Choose where to design' });
+      await expect(search).toBeVisible({ timeout: 45_000 });
+      await search.fill('Zagreb');
+      await search.press('Enter');
+      await world.getByRole('button', { name: 'Open Zagreb' }).click();
+      await waitForMapReady(page);
+      await expect(world).toHaveCount(0);
+      await expect.poll(() => page.evaluate(() => (window as any).CityConfigManager?.getCurrentCityId())).toBe('zagreb');
+      await expect.poll(() => page.evaluate(() => (window as any).isThreeModeActive?.() ?? false)).toBe(false);
+      await expect.poll(() => page.evaluate(() => (window as any).map?.getZoom())).toBe(19);
+      await expect(page.locator('#design-start-button')).toBeVisible();
+      await expect(page.locator('#design-start-button')).toHaveAccessibleName('Design');
+      expect(latestRequests).toEqual([]);
+    });
   });
 
   // A five-way `typeof mgr.x === 'function'` roll-call used to sit here. Every method it named is

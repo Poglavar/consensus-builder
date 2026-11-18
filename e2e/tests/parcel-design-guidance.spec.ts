@@ -12,7 +12,7 @@ for (const phone of [false, true]) {
       const row = page.locator('.parcel-build-btn--row');
       const hint = 'Row houses need at least two parcels. Select another parcel or use Detect block.';
       await expect(page.locator('#parcel-info-panel .multi-select-title')).toHaveText(
-        'Select a parcel to start designing. You can also select multiple parcels manually or auto detect and select a block of parcels.');
+        'Choose a design tool below. To include more land, use Manual or Detect block.');
       await expect(row).toHaveAttribute('aria-disabled', 'true');
       await expect(row).toHaveAttribute('title', hint);
       await expect(row).toHaveCSS('opacity', '0.5');
@@ -38,7 +38,7 @@ for (const phone of [false, true]) {
       await showSelectionDesignTab(page);
       await expect(row).not.toHaveAttribute('aria-disabled', 'true');
       await row.click();
-      await expect(page.locator('#rowhouse .on-map-editor__panel')).toBeVisible();
+      await expect(page.getByRole('complementary', { name: 'Row houses' })).toBeVisible({ timeout: 15_000 });
     });
   });
 }

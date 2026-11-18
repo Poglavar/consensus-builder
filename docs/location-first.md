@@ -20,7 +20,9 @@ User direction, 2026-10-17:
 - Headless and headed tests cover the change.
 
 World navigation, implemented 2026-10-20: destinations are cities or exact points. Globe search
-contains only cities; marker clicks retain that city's identity. Clicking elsewhere on the globe,
+contains only cities; marker clicks retain that city's identity. On a first visit, choosing a city
+opens its normal 2D map. On later globe visits, a city may open its latest published design; an
+activity selection opens its selected record. Clicking elsewhere on the globe,
 or using Show my location, selects the exact coordinates and opens them at zoom 19 without a
 latest-proposal detour. Country, province, region and territory outlines remain coverage context
 and cannot be selected as destinations. Coverage still determines which data source serves a point.

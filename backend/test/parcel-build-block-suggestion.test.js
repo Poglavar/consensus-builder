@@ -66,9 +66,9 @@ describe('whole-block fresh-proposal suggestion', () => {
     it.each([false, true])('a one-parcel Row request guides selection without launching or leaving active mode (%s)', async active => {
         const selectedParcels = new Set(['parcel-1']);
         const multi = { isActive: active, selectedParcels, toggle: vi.fn(() => { multi.isActive = true; }), showSelectionInPanel: vi.fn() };
-        const startInstantProposalDesign = vi.fn(), showStyledConfirm = vi.fn(), showEphemeralMessage = vi.fn();
+        const startInstantProposalDesign = vi.fn(), askScope = vi.fn(), showEphemeralMessage = vi.fn();
         const window = loadActions({ currentParcel: { id: 'parcel-1' }, multiParcelSelection: multi,
-            startInstantProposalDesign, showStyledConfirm, showEphemeralMessage });
+            startInstantProposalDesign, CbDialog: { choice: askScope }, showEphemeralMessage });
         await window.startParcelBuildTool('row');
         expect(multi.isActive).toBe(true);
         expect([...selectedParcels]).toEqual(['parcel-1']);
@@ -76,7 +76,7 @@ describe('whole-block fresh-proposal suggestion', () => {
         expect(multi.showSelectionInPanel).toHaveBeenCalledOnce();
         expect(showEphemeralMessage).toHaveBeenCalledWith(expect.stringContaining('Select another parcel'), 4000, 'info');
         expect(startInstantProposalDesign).not.toHaveBeenCalled();
-        expect(showStyledConfirm).not.toHaveBeenCalled();
+        expect(askScope).not.toHaveBeenCalled();
     });
 
     it('launches Row houses once two parcels are selected', async () => {
@@ -174,10 +174,10 @@ describe('whole-block fresh-proposal suggestion', () => {
     });
 
     it('offers every detected block, including blocks larger than the old hidden cutoff', async () => {
-        const showStyledConfirm = vi.fn(async () => false);
+        const showStyledConfirm = vi.fn(async () => 'parcel');
         const window = loadActions({
             detectBlockParcelIdsForParcel: vi.fn(() => ({ count: 81, parcelIds: [] })),
-            showStyledConfirm
+            CbDialog: { choice: showStyledConfirm }
         });
 
         await expect(window.maybeSuggestWholeBlockForFreshProposal('row', ['parcel-1'])).resolves.toBe(false);
@@ -186,8 +186,8 @@ describe('whole-block fresh-proposal suggestion', () => {
     });
 
     it.each([null, { count: 1, parcelIds: ['parcel-1'] }])('still offers block detection when silent detection returns %s', async block => {
-        const showStyledConfirm = vi.fn(async () => false);
-        const window = loadActions({ detectBlockParcelIdsForParcel: () => block, showStyledConfirm });
+        const showStyledConfirm = vi.fn(async () => 'parcel');
+        const window = loadActions({ detectBlockParcelIdsForParcel: () => block, CbDialog: { choice: showStyledConfirm } });
         await expect(window.maybeSuggestWholeBlockForFreshProposal('block', ['parcel-1'])).resolves.toBe(false);
         expect(showStyledConfirm).toHaveBeenCalledOnce();
         expect(showStyledConfirm.mock.calls[0][0]).toContain('detect the whole block');
@@ -195,27 +195,40 @@ describe('whole-block fresh-proposal suggestion', () => {
 
     // A park or a single building asks as a block does; the block is unknown until Detect block ran.
     it.each(['park', 'square', 'lake', 'single', 'parcelBased', 'parcel-layout'])('asks for a one-parcel %s whose block is not known yet', async goal => {
-        const showStyledConfirm = vi.fn(async () => false);
-        const window = loadActions({ detectBlockParcelIdsForParcel: () => null, showStyledConfirm });
+        const showStyledConfirm = vi.fn(async () => 'parcel');
+        const window = loadActions({ detectBlockParcelIdsForParcel: () => null, CbDialog: { choice: showStyledConfirm } });
         await expect(window.maybeSuggestWholeBlockForFreshProposal(goal, ['parcel-1'])).resolves.toBe(false);
         expect(showStyledConfirm).toHaveBeenCalledOnce();
         expect(showStyledConfirm.mock.calls[0][0]).toContain('detect the whole block');
-        expect(showStyledConfirm.mock.calls[0][1]).toMatchObject({ okText: 'Yes, select the block', cancelText: 'No, just this parcel' });
+        expect(showStyledConfirm.mock.calls[0][1]).toEqual([
+            { value: 'parcel', label: 'Use this parcel', primary: true },
+            { value: 'block', label: 'Select whole block' },
+            { value: null, label: 'Cancel' }
+        ]);
     });
 
     it('asks nothing when several parcels are selected or the goal targets exact parcels', async () => {
-        const showStyledConfirm = vi.fn(async () => false);
-        const window = loadActions({ detectBlockParcelIdsForParcel: () => null, showStyledConfirm });
+        const showStyledConfirm = vi.fn(async () => 'parcel');
+        const window = loadActions({ detectBlockParcelIdsForParcel: () => null, CbDialog: { choice: showStyledConfirm } });
         await expect(window.maybeSuggestWholeBlockForFreshProposal('park', ['parcel-1', 'parcel-2'])).resolves.toBe(false);
         await expect(window.maybeSuggestWholeBlockForFreshProposal('road-track', ['parcel-1'])).resolves.toBe(false);
         expect(showStyledConfirm).not.toHaveBeenCalled();
+    });
+
+    it('leaves the selection and design untouched when the scope choice is cancelled', async () => {
+        const startInstantProposalDesign = vi.fn(), animateFloodfillFromSelected = vi.fn();
+        const window = loadActions({ currentParcel: { id: 'parcel-1' },
+            CbDialog: { choice: vi.fn(async () => null) }, startInstantProposalDesign, animateFloodfillFromSelected });
+        await window.startParcelBuildTool('single');
+        expect(startInstantProposalDesign).not.toHaveBeenCalled();
+        expect(animateFloodfillFromSelected).not.toHaveBeenCalled();
     });
 
     it('stops the one-parcel launch after accepting and selecting the block', async () => {
         const animateFloodfillFromSelected = vi.fn(async () => true);
         const window = loadActions({
             detectBlockParcelIdsForParcel: vi.fn(() => ({ count: 16, parcelIds: [] })),
-            showStyledConfirm: vi.fn(async () => true),
+            CbDialog: { choice: vi.fn(async () => 'block') },
             animateFloodfillFromSelected
         });
 
@@ -225,13 +238,13 @@ describe('whole-block fresh-proposal suggestion', () => {
 
     it('opens the build palette for the selected block after accepting', async () => {
         // Selection changes no longer open the parcel panel; without this the user is left with
-        // only the selection tray and no palette after answering "Yes, select the block".
+        // only the selection tray and no palette after choosing "Select whole block".
         const showSelectionInPanel = vi.fn();
         const switchParcelTab = vi.fn();
         const multiParcelSelection = { isActive: false, selectedParcels: new Set(), showSelectionInPanel };
         const window = loadActions({
             detectBlockParcelIdsForParcel: vi.fn(() => ({ count: 3, parcelIds: [] })),
-            showStyledConfirm: vi.fn(async () => true),
+            CbDialog: { choice: vi.fn(async () => 'block') },
             animateFloodfillFromSelected: vi.fn(async () => {
                 multiParcelSelection.isActive = true;
                 ['a', 'b', 'c'].forEach(id => multiParcelSelection.selectedParcels.add(id));

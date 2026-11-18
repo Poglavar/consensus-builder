@@ -12,7 +12,7 @@ async function resolveParcelScopePrompt(page: any, target: any, chooseWholeBlock
   const prompt = page.getByRole('alertdialog');
   await expect.poll(async () => (await target.isVisible()) || (await prompt.isVisible())).toBe(true);
   if (await prompt.isVisible()) {
-    await prompt.getByRole('button', { name: chooseWholeBlock ? 'Yes, select the block' : 'No, just this parcel' }).click();
+    await prompt.getByRole('button', { name: chooseWholeBlock ? 'Select whole block' : 'Use this parcel' }).click();
   }
   await expect(target).toBeVisible();
 }
@@ -133,7 +133,7 @@ test.describe('Designer controls persist their edits @features', () => {
     await page.locator('.parcel-build-btn--buildings').click();
     const wholeBlockPrompt = page.getByRole('alertdialog');
     if (await wholeBlockPrompt.isVisible().catch(() => false)) {
-      await wholeBlockPrompt.getByRole('button', { name: 'No, just this parcel' }).click();
+      await wholeBlockPrompt.getByRole('button', { name: 'Use this parcel' }).click();
     }
     await expect(page.locator('#btn-blockify-done')).toBeEnabled({ timeout: 20_000 });
 

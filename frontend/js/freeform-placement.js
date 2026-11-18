@@ -76,7 +76,11 @@
             if (!at || moved || (event.button !== undefined && event.button !== 0)) return;
             event.preventDefault();
             event.stopImmediatePropagation();
-            feature = buildFootprint(at);
+            place(at);
+        }
+        function place(at) {
+            if (closed) return;
+            if (at) feature = buildFootprint(at);
             destroy();
             onPlace(feature);
         }
@@ -84,8 +88,7 @@
             if (event.key !== 'Enter' || event.target?.closest?.('input, select, textarea, button, [contenteditable="true"]')) return;
             event.preventDefault();
             event.stopImmediatePropagation();
-            destroy();
-            onPlace(feature);
+            place();
         }
         const events = { pointerdown: down, pointermove: move, pointerup: up, pointercancel: cancel, click, keydown: key };
         function destroy() {
@@ -100,7 +103,7 @@
         for (const [name, handler] of Object.entries(events)) doc.addEventListener(name, handler, true);
         env.addEventListener('mapmodechange', paint);
         try { paint(); } catch (error) { destroy(); throw error; }
-        return { destroy };
+        return { destroy, place };
     }
     return { start };
 });

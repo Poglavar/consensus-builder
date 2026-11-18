@@ -187,6 +187,10 @@ for (const width of [1280, 390]) {
     const agreementChunks: Buffer[] = [];
     for await (const chunk of (await agreementFile.createReadStream())!) agreementChunks.push(Buffer.from(chunk));
     await agreementRow.getByRole('button', { name: 'Share', exact: true }).click();
+    const shareDialog = page.getByRole('dialog', { name: 'Share agreement' });
+    await expect(shareDialog).toBeVisible();
+    await page.keyboard.press('Escape');
+    await expect(shareDialog).toBeHidden();
     // A published agreement has no delete: this browser's copy is its cache, removed from this device.
     await expect(agreementRow).toContainText('Published');
     await expect(agreementRow.getByRole('button', { name: 'Delete draft', exact: true })).toHaveCount(0);

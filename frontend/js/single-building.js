@@ -1574,7 +1574,14 @@
                     activateSingleBuildingEditing(addNewBuildingEntry(featureCenterLatLng(feature), { feature }));
                 }
             });
-            singleMap.getContainer().focus({ preventScroll: true });
+            const placeButton = document.createElement('button');
+            placeButton.type = 'button';
+            placeButton.id = 'single-place-on-land';
+            placeButton.className = 'btn btn-primary';
+            placeButton.textContent = translateSingleBuildingText('modal.singleBuilding.placeOnLand', 'Place on selected land');
+            placeButton.addEventListener('click', () => singlePlacement?.place(startCenter));
+            singleSession.content.insertBefore(placeButton, singleSession.body);
+            placeButton.focus({ preventScroll: true });
         }
         return true;
     }
@@ -1582,6 +1589,7 @@
     function activateSingleBuildingEditing(entry) {
         if (!entry) throw new Error('Could not place the building.');
         delete singleEditor.dataset.placing;
+        document.getElementById('single-place-on-land')?.remove();
         singleSession.body.inert = false;
         singleSession.footer.hidden = false;
         singleEditor.querySelector('.on-map-editor__toggle').disabled = false;

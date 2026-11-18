@@ -110,11 +110,8 @@
         return WHOLE_BLOCK_FRESH_PROPOSAL_GOALS.has(key);
     }
 
-    // Single parcel selected: the user may simply have forgotten to select the block first. Offer
-    // to do it for them — Yes selects the whole block (and lands on the Proposals tab, tool NOT
-    // auto-launched); No proceeds one-parcel. Every goal of the policy above asks, a park or a
-    // single building as a block does: the block is known only once Detect block has run on the
-    // parcel, so a question that waited for a known block was never asked.
+    // A single-parcel tool asks which ground to use. Selecting the block takes the visitor
+    // back to its tools to review the selection. Only an explicit parcel choice launches here.
     // Returns true when the tool launch should stop here.
     async function maybeSuggestWholeBlockForFreshProposal(goal, ids = []) {
         if (!shouldSuggestWholeBlockForFreshProposal(goal) || ids.length !== 1) return false;
@@ -122,7 +119,7 @@
         // The count belongs in the question, not in a hidden policy gate. A large block is still
         // a block, and silently skipping the question made Detached behave differently depending
         // on where in the city it was launched.
-        if (typeof global.showStyledConfirm !== 'function') return false;
+        if (typeof global.CbDialog?.choice !== 'function') return false;
         // Silent detection only sees loaded neighbours. Missing results must not remove the
         // user's choice to run detection explicitly.
         const message = block?.count > 1
@@ -130,11 +127,13 @@
                 `Only one parcel is selected. Did you mean the whole block (${block.count} parcels)?`)
             : tParcel('panel.parcel.chooseBlockScope', {},
                 'Only one parcel is selected. Use this parcel, or detect the whole block?');
-        const wantsBlock = await global.showStyledConfirm(message, {
-            okText: tParcel('panel.parcel.suggestWholeBlockYes', {}, 'Yes, select the block'),
-            cancelText: tParcel('panel.parcel.suggestWholeBlockNo', {}, 'No, just this parcel')
-        });
-        if (!wantsBlock) return false;
+        const choice = await global.CbDialog.choice(message, [
+            { value: 'parcel', label: tParcel('panel.parcel.useThisParcel', {}, 'Use this parcel'), primary: true },
+            { value: 'block', label: tParcel('panel.parcel.selectWholeBlock', {}, 'Select whole block') },
+            { value: null, label: tParcel('common.cancel', {}, 'Cancel') }
+        ]);
+        if (choice === 'parcel') return false;
+        if (choice !== 'block') return true;
         try { await Promise.resolve(global.animateFloodfillFromSelected?.({ replaceSelection: true })); } catch (error) {
             console.warn('[buildPalette] block selection failed', error);
         }

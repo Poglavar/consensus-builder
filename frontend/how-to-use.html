@@ -106,11 +106,11 @@
      On this page
     </span>
     <div class="sidebar-links">
-     <a class="btn btn-quiet" href="#videos">
-      Video walkthroughs
-     </a>
      <a class="btn btn-quiet" href="#workflow">
       Start a design
+     </a>
+     <a class="btn btn-quiet" href="#videos">
+      Video walkthroughs
      </a>
      <a class="btn btn-quiet" href="#palette">
       Choose a tool
@@ -138,7 +138,7 @@
        Draw the change. Explore it together.
       </h2>
       <p>
-       Design on real land, inspect the result in 2D and 3D, compare alternatives and share a design or a whole plan. Start with a short video or follow the written steps.
+       Design on real land, inspect the result in 2D and 3D, compare alternatives and share a design or a whole plan. Follow the steps below or watch a walkthrough.
       </p>
       <a class="btn btn-primary" href="index.html?lang=en">
        <i aria-hidden="true" class="fa-solid fa-map">
@@ -148,6 +148,20 @@
      </div>
      <img alt="Parcels before and after a proposed city block" src="images/site-intro-parcels.webp"/>
     </div>
+    <section class="guide-section" id="workflow">
+     <h2>Make your first park</h2>
+     <ol class="steps">
+      <li class="step"><h3>Choose land</h3><p>Choose a city, then click a parcel on the map.</p></li>
+      <li class="step"><h3>Create a park</h3><p>Open <span class="ui-label">Actions</span> and choose <span class="ui-label">Park</span>. If asked, choose <span class="ui-label">Use this parcel</span>. The park is saved locally and applied to the map.</p></li>
+      <li class="step"><h3>Open your design</h3><p>Open <span class="ui-label">Lists</span> → <span class="ui-label">Designs</span> and select the park to review it. If it could not be applied, the app explains why and keeps it in the list.</p></li>
+     </ol>
+     <details>
+      <summary>Other ways to start</summary>
+      <p>Use <span class="ui-label">Design</span> on the map or <span class="ui-label">Start a design</span> in Lists → Designs to search or select land. For several parcels, choose <span class="ui-label">Manual</span>, select parcels, check <span class="ui-label">Selected parcels</span> and choose <span class="ui-label">Done selecting</span>. <span class="ui-label">Detect block</span> selects the surrounding block. If a tool offers <span class="ui-label">Select whole block</span>, review the selection and choose the tool again. <span class="ui-label">Cancel</span> or Escape takes you back.</p>
+      <p>On open ground choose <span class="ui-label">Draw a parcel</span>. Click corners and press Enter or click the first corner to finish. You can also use <span class="ui-label">Add corner by coordinates</span>. Choose <span class="ui-label">Propose here</span> to select a tool.</p>
+      <p>For a freeform building, place it by clicking the map or choosing <span class="ui-label">Place on selected land</span>. Edit its footprint and height, then choose <span class="ui-label">Done</span>. <a class="cb-link" href="how-to-use-buildings.html#freeform">See the building guide</a>.</p>
+     </details>
+    </section>
     <section class="guide-section" id="videos">
      <h2>
       Watch, then try it
@@ -437,58 +451,6 @@
       </a>
      </div>
     </section>
-    <section class="guide-section" id="workflow">
-     <h2>
-      Start with a parcel or a site
-     </h2>
-     <ol class="steps">
-      <li class="step">
-       <h3>
-        Choose the land
-       </h3>
-       <p>
-        Open the
-        <span class="ui-label">Design</span>
-        tab and choose parcels in
-        <span class="ui-label">Manual mode</span>
-        . The
-        <span class="ui-label">Selected parcels</span>
-        section shows your selection; click
-        <span class="ui-label">Done selecting</span>
-        when it is ready, then choose a design tool.
-        <span class="ui-label">
-         Detect block
-        </span>
-        grows the selection to the surrounding block.
-       </p>
-      </li>
-      <li class="step">
-       <h3>
-        Or draw a site
-       </h3>
-       <p>
-        Use
-        <span class="ui-label">
-         Draw a site here
-        </span>
-        on open ground. A site is an editable boundary for a design. Where parcel data is unavailable you can still explore a design; missing data does not establish ownership. Source parcels are provider records; a formed ground piece is a modeled result, not proof of a legal lot or ownership.
-       </p>
-      </li>
-      <li class="step">
-       <h3>
-        Build and finish
-       </h3>
-       <p>
-        Choose a tool in the Design tab. Buildings and land readjustment open an on-map designer; parks, squares and lakes are created after selecting the site scope. Done finishes the designer and creates a local design applied to the map.
-       </p>
-       <div class="callout note">
-        <i aria-hidden="true" class="fa-solid fa-circle-info">
-        </i>
-        If a conflict prevents application, the app explains why and keeps the object parked in your designs list. Open it there to review the reason and apply it when the conflict is resolved.
-       </div>
-      </li>
-     </ol>
-    </section>
     <section class="guide-section" id="palette">
      <h2>
       Choose the tool for the change
@@ -607,9 +569,9 @@
      <p>
       Finish a tool to create and apply a local design. Its <span class="ui-label">Share</span> action publishes
       and links only that design. Choose <span class="ui-label">Add to plan</span> to include it in a new plan
-      or review a new revision of a saved plan. In <span class="ui-label">Plan</span>, open
-      <span class="ui-label">Saved plans</span> and choose <span class="ui-label">Create plan</span> to name
-      and select designs. Creating a plan saves it locally without publishing it.
+      or review a new revision of a saved plan. Open <span class="ui-label">Lists</span>, choose
+      <span class="ui-label">Plans</span>, then <span class="ui-label">Create plan</span>. Select designs,
+      choose <span class="ui-label">Continue</span> and name the plan. Creating a plan saves it locally without publishing it.
      </p>
      <p>
       Open a saved plan and choose <span class="ui-label">Share plan</span> to publish and copy its exact snapshot.
@@ -630,15 +592,15 @@
       <span class="ui-label">
        Before / after
       </span>
-      in design details or a designer and drag the divider across the same map. For two alternatives on one parcel, open
+      in design details or a designer and drag the divider across the same map. To compare designs, open <span class="ui-label">Lists</span>, choose
       <span class="ui-label">
        Designs
       </span>
-      , tick two designs and click
+      , choose <span class="ui-label">Compare designs</span>, tick at least two designs and click
       <span class="ui-label">
        Compare
       </span>
-      . The comparison shows the land take, buildings, plots, ownership, consent and support for that parcel.
+      . The comparison shows their land, buildings, plots and other available information.
      </p>
      <p>
       <a class="cb-link" href="how-to-use-views.html">
@@ -654,11 +616,11 @@
       <span class="ui-label">
        Share
       </span>
-      in the object panel creates a link to one design. To share a composition, apply the designs you want, then choose
+      in the object panel creates a link to one design. To share a composition, open <span class="ui-label">Lists</span> → <span class="ui-label">Plans</span>, open a saved plan and choose
       <span class="ui-label">
-       Share entire plan
+       Share plan
       </span>
-      . The shared composition preserves the applied set and its dependencies.
+      . The link preserves that plan's exact snapshot.
      </p>
      <p>
       Local work is stored in this browser. Sharing uploads the records needed by the link; on-chain publication is a separate action. The app may ask for a public profile name when you share or publish.

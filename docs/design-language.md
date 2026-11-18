@@ -232,8 +232,8 @@ palette is the legend beside each tick.
 
 ## Phone layout
 
-- The bottom dock is Designs · Bets · Activity · Share. On a phone it is a labelled bar across the width
-  in every view, a veil the map shows through (`--cb-glass-veil`, blurred; its buttons are
+- The 2D bottom dock is **Design · Lists · Activity · Bets**. On a phone it is a labelled bar across
+  the width with a veil the map shows through (`--cb-glass-veil`, blurred; its buttons are
   transparent at rest); on a wide map it is four pills centred on the bottom edge, the same chrome
   as the top-right cluster, so the map keeps its bottom edge. Its height is `--map-shell-bar-height`
   in both shapes; `--map-shell-bottom-clearance` keeps the tray and toast above it. The credits and
@@ -259,22 +259,25 @@ palette is the legend beside each tick.
 
 ## Map shell structure
 
-- Keep the bottom Proposals · Bets · Activity dock available in 2D, model view and aerial view.
+- The bottom navigation belongs to the 2D map. The model and aerial views use their selection controls.
   The top-right Layers, Settings and Profile controls are shared across those views.
 - The left view strip chooses 2D map, 3D models or 3D aerial imagery. Measure is a 2D utility beside
   that strip, not a destination in the bottom dock.
 - Layers presents the controls for the selected view: original cadastre in 2D, model appearance in
   3D models, and existing-city visibility in aerial imagery. Keep these view-specific controls in
   Layers rather than adding another global panel.
-- Creation starts from map context: selecting a parcel or open ground exposes the actions that apply
-  there. Do not add a global Create command or button.
+- Creation starts with a location. **Design** in the dock and **Start a design** in Lists → Designs
+  open the same compact panel. A visitor can select a parcel directly on the map, search for a
+  location or draw a boundary. Selecting a parcel opens its tools under **Actions**. Lists → Designs
+  opens with the newest designs first so a newly finished design is easy to find. **Filters** also
+  offers sorting by title.
 - Activity is one dock panel with Events, Actors and Watched areas tabs. Events and Actors share
   search and filters; Actors shows an actor’s activity after selection. Start with live events from
   all cities. Keep advanced filters folded, disclose bounded retrieval, and preserve the visitor’s
   view and filters across closes. Scoped actor, agreement and run links temporarily replace
   conflicting filters; clearing their scope restores the ordinary view. Desktop expansion is
   optional; phones use the available screen. Simulation and Technical status belong together under
-  Settings → Diagnostics. Simulation history remains inspectable while the engine is paused or off.
+  Settings → Advanced. Simulation history remains inspectable while the engine is paused or off.
   Plan actions stay secondary inside Proposals rather than becoming another primary destination.
 - During 2D editing, the active editor temporarily replaces the bottom dock with its existing
   finish/apply and cancel controls. Reuse the editor's actions; do not add a second generic Done or
@@ -317,7 +320,7 @@ The names to use for the shell's elements in follow-up discussion.
 | **Layers** button and sheet | top-right; the controls for the current view (see Map shell structure) |
 | **Settings** button and sheet | top-right; Appearance, Data & assumptions, Help & about, and Advanced (Local (browser) data, Simulation, Diagnostics, Reset browser data) |
 | **view strip** | left edge: 2D map, 3D models, 3D aerial imagery (`map-mode-tile`), with the Measure (2D) and Sun and shadows (3D) utilities beside it |
-| **bottom dock** | the Lists, Bets and Activity buttons (`#proposals-button`, `#bets-button`, `#activity-button`); the sheets they open are the **dock sheets** |
+| **bottom dock** | Design, Lists, Activity and Bets. Design opens a compact panel above the map. The other three open **dock sheets**. |
 | **running dot** | the pulsing dot on the Activity button while the simulation runs |
 | **status line**, **notice**, **banner card** | the three message families (see Messages) |
 | **click stack** | the right-screen panel (`#click-stack`) listing what lies under a click |

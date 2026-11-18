@@ -3,7 +3,9 @@
 
 ## App overview
 
-Use map search to change city and locate places or parcel IDs. Select parcels on the map to inspect them or open the Build tools for buildings, roads, public spaces and parcel layouts. Layers controls switch map information; the view controls switch between 2D, 3D and realistic views. A parcel layout edits the selected ground, while a working plan holds the designs currently applied to the map.
+Use map search to change city and locate places or parcel IDs. Choose **Design** on the map to search for or select land, or click a parcel directly and open **Actions** for buildings, roads, public spaces and parcel layouts. On a drawn site choose **Propose here**. Layers controls switch map information, and the view controls switch between 2D, 3D and realistic views. A parcel layout edits the selected ground. Find saved plans in **Lists** → **Plans**.
+
+When a tool asks for scope, **Use this parcel** continues. **Select whole block** selects land for review. Choose the tool again after reviewing it. **Cancel** or Escape returns without starting. Freeform building starts in placement mode. Click the map or choose **Place on selected land**, then edit its footprint and height and choose **Done**.
 
 For an agent navigating the map, `ugt_map_view` requests a map view and `ugt_select_parcels` selects exact source parcels; the app applies the returned navigation state. Use `ugt_list_sources` to discover parcel sources for a location.
 
@@ -17,7 +19,7 @@ Help topics:
 
 ## Parcel layout editor
 
-Open **Lay out parcels** from the parcel's Build tools. The right-side panel opens on **Editing** and has three tabs: **Editing**, **New parcels** and **Old parcels**. Use Left/Right Arrow to move between tabs; Home and End move to the first and last tab.
+Open **Lay out parcels** from the parcel's **Actions**. The right-side panel opens on **Editing** and has three tabs: **Editing**, **New parcels** and **Old parcels**. Use Left/Right Arrow to move between tabs; Home and End move to the first and last tab.
 
 The **Editing** tab contains four starting layouts:
 

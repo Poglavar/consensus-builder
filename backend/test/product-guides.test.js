@@ -24,29 +24,82 @@ describe('public product guides', () => {
         const html = readFrontend(name);
 
         expect(html).toContain('site-intro-parcels.webp');
-        expect(html).toMatch(/local design applied to the map|lokalni dizajn koji je već primijenjen/);
+        expect(html).toMatch(/saved locally and applied to the map|sprema lokalno i primjenjuje na kartu/);
         expect(html).not.toMatch(/map doesn't change until|karta se ne mijenja dok/);
         expect(html).not.toMatch(/id="drafts"|id="skice"/);
     });
 
     it('how-to-use.html describes the current design-to-agreement workflow', () => {
         const html = readFrontend('how-to-use.html');
-        expect(html).toContain('<span class="ui-label">Design</span>');
-        expect(html).toContain('<span class="ui-label">Manual mode</span>');
+        expect(html).toContain('<span class="ui-label">Actions</span>');
+        expect(html).toContain('<span class="ui-label">Park</span>');
+        expect(html).toContain('<span class="ui-label">Propose here</span>');
+        expect(html).toContain('<span class="ui-label">Manual</span>');
         expect(html).toContain('<span class="ui-label">Selected parcels</span>');
         expect(html).toContain('<span class="ui-label">Done selecting</span>');
         expect(html).not.toContain('<span class="ui-label">Custom site</span>');
-        expect(html).toContain('Draw a site here');
+        expect(html).toContain('Draw a parcel');
+        expect(html).toContain('<span class="ui-label">Lists</span>');
+        expect(html).toContain('<span class="ui-label">Plans</span>');
         expect(html).toContain('<span class="ui-label">Add to plan</span>');
         expect(html).toContain('<span class="ui-label">Create plan</span>');
         expect(html).toContain('Creating a plan saves it locally without publishing it.');
         expect(html).toContain('<span class="ui-label">Share plan</span>');
+        expect(html).not.toContain('Share entire plan');
         expect(html).toContain('existing links keep their original content.');
         expect(html).toContain('<span class="ui-label">Create agreement</span> from a saved plan.');
         expect(html).toContain('Propose');
         expect(html).toContain('Owners sign decisions for that agreement');
         expect(html).toContain('A community vote is non-binding and counted off-chain');
-        expect(html).not.toMatch(/<td>\s*Offer\s*<\/td>|Owner deal|Owner vote|Fork proposal|Propose here|Select more|selection tray|Propose tab|Use as site/i);
+        expect(html).not.toMatch(/<td>\s*Offer\s*<\/td>|Owner deal|Owner vote|Fork proposal|Propose tab/i);
+    });
+
+    it.each([
+        ['how-to-use.html', 'workflow', 'videos', 'Draw a parcel'],
+        ['kako-koristiti.html', 'tijek', 'videozapisi', 'Nacrtaj česticu']
+    ])('%s presents the written steps before the videos', (name, workflow, videos, drawLabel) => {
+        const html = readFrontend(name);
+        const $ = load(html);
+        expect($(`#${workflow}`).text()).toContain(drawLabel);
+        expect(html.indexOf(`id="${workflow}"`)).toBeLessThan(html.indexOf(`id="${videos}"`));
+    });
+
+    it.each([
+        ['how-to-use.html', 'en', 'workflow'],
+        ['kako-koristiti.html', 'hr', 'tijek']
+    ])('%s uses the current map controls', (name, language, workflow) => {
+        const $ = load(readFrontend(name));
+        const text = $(`#${workflow}`).text();
+        const strings = JSON.parse(readFrontend(`i18n/${language}.json`));
+        expect(text).toContain(strings.panel.parcel.selectManually);
+        expect(text).toContain(strings.groundMenu.actions.drawSite);
+        expect(text).toContain(strings.selectedParcels.actions.done);
+        expect(text).toContain(strings.clickStackNavigation.actions);
+        expect(text).toContain(strings.parcelMenu.actions.propose);
+        expect($.text()).toContain(strings.planCompare.titleDesigns);
+    });
+
+    it.each([
+        ['how-to-use.html', 'review the selection and choose the tool again', 'Place on selected land'],
+        ['kako-koristiti.html', 'pregledaj odabir i ponovno odaberi alat', 'Postavi na odabrano zemljište'],
+        ['how-to-use-buildings.html', 'choose Freeform building again', 'Place on selected land'],
+        ['kako-koristiti-zgrade.html', 'ponovno odaberi alat Slobodna zgrada', 'Postavi na odabrano zemljište']
+    ])('%s explains block review and building placement', (name, blockStep, placement) => {
+        const text = load(readFrontend(name)).text();
+        expect(text).toContain(blockStep);
+        expect(text).toContain(placement);
+    });
+
+    it.each([
+        ['how-to-use-park-square.html', 'choose the tool again afterwards'],
+        ['kako-koristiti-park-trg.html', 'ponovno odaberi alat']
+    ])('%s explains that block selection returns to tool choice', (name, step) => {
+        expect(load(readFrontend(name)).text()).toContain(step);
+    });
+
+    it('links Croatian in-app instructions to the Croatian guide', () => {
+        const dictionary = JSON.parse(readFrontend('i18n/hr.json'));
+        expect(dictionary.sidebar.info.instructionsParagraph).toContain('href="kako-koristiti.html"');
     });
 
     it.each(['how-to-use-road.html', 'kako-koristiti-cesta.html'])('%s describes finished roads as local designs', (name) => {
@@ -57,10 +110,14 @@ describe('public product guides', () => {
     });
 
     it.each([
-        ['how-to-use.html', 'Source parcels are provider records; a formed ground piece is a modeled result, not proof of a legal lot or ownership.'],
-        ['kako-koristiti.html', 'Izvorne čestice su zapisi pružatelja podataka; oblikovani dio tla modelirani je rezultat, a ne dokaz pravne čestice ili vlasništva.']
-    ])('%s distinguishes source evidence from modeled ground', (name, statement) => {
-        expect(readFrontend(name)).toContain(statement);
+        ['how-to-use.html', 'workflow'],
+        ['kako-koristiti.html', 'tijek']
+    ])('%s keeps optional paths outside its three first-park steps', (name, section) => {
+        const $ = load(readFrontend(name));
+        const guide = $(`#${section}`);
+        expect(guide.find('ol.steps > li')).toHaveLength(3);
+        expect(guide.find('details summary').text().trim()).toBeTruthy();
+        expect(guide.find('ol.steps').text()).not.toMatch(/Draw a parcel|Nacrtaj česticu/);
     });
 
     it.each([

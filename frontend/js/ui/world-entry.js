@@ -111,10 +111,9 @@
         state.landing = true;
         log(`${input.explore ? 'explore' : 'open ' + input.cityId} at ${input.point.lat.toFixed(4)},${input.point.lon.toFixed(4)} -> `
             + `${decision.cityId} ${decision.inPlace ? 'in place' : 'by reload'} (${Model.formatAt(decision.view)}${decision.carryAt ? ', via ?at=' : ''})`);
-        // A city pick arrives on that city's latest published design, in 3D (js/world/arrival.js); the
-        // lookup runs during the flight. No design, or a failed lookup, lands on the city as before. A
-        // pick of a particular spot lands on that spot (Model.arrivesAtLatest).
-        const latest = !Model.arrivesAtLatest(decision) || !global.WorldArrival
+        // First visits open the city map; subsequent city picks can arrive on its latest design.
+        // Exact points retain their requested view (Model.arrivesAtLatest).
+        const latest = !Model.arrivesAtLatest(decision, { firstVisit: input.firstVisit }) || !global.WorldArrival
             ? Promise.resolve(null)
             : global.WorldArrival.fetchLatestDesignCid(decision.cityId).catch(error => {
                 console.warn(`[${new Date().toISOString()}] [world-entry] latest design lookup failed`, error);
@@ -203,13 +202,14 @@
             && Model.canReturnToMap(map && typeof map.getZoom === 'function' ? map.getZoom() : null);
         state.opening = view.open({
             closable,
+            firstVisit: !!options.genuineFirstVisit,
             closeLabel: closable ? 'world.backToMap' : null,
             initialView,
             chooseCity: place => {
                 const current = manager().getCurrentCityId();
                 return Model.liveCityFor({ place, currentCityId: current, sameCadastre: sameCadastre(current, place.cityId) });
             },
-            onOpenCity: (cityId, point) => land({ cityId, point, explore: false }),
+            onOpenCity: (cityId, point) => land({ cityId, point, explore: false, firstVisit: !!options.genuineFirstVisit }),
             onExplore: point => land({ point, explore: true }),
             onRequestCity: requestCity,
             onClose: () => landed('closed')
@@ -252,7 +252,7 @@
             }
             stripWorldParam();
             log(`boot: ${decision.forced ? '?world=1' : 'first visit'}, closable=${decision.closable}`);
-            open({ closable: decision.closable, firstVisit: decision.firstVisit }).then(() => {
+            open({ closable: decision.closable, firstVisit: decision.firstVisit, genuineFirstVisit: decision.firstVisit && !decision.forced }).then(() => {
                 doc.body.classList.remove('world-view-pending');
             }, error => {
                 doc.body.classList.remove('world-view-pending');

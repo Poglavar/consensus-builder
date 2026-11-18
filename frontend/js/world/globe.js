@@ -406,8 +406,9 @@
         // ---- DOM chrome ----
         const top = el('div', 'world-view__top');
         const searchWrap = el('div', 'world-search');
+        const searchLabel = opts.firstVisit ? el('label', 'world-search__label', { for: 'world-search-input' }) : null;
         const searchInput = el('input', 'world-search__input', {
-            type: 'search', role: 'combobox', 'aria-autocomplete': 'list', 'aria-expanded': 'false',
+            id: 'world-search-input', type: 'search', role: 'combobox', 'aria-autocomplete': 'list', 'aria-expanded': 'false',
             'aria-controls': 'world-search-results', autocomplete: 'off', spellcheck: 'false'
         });
         const results = el('ul', 'world-search__results', { id: 'world-search-results', role: 'listbox' });
@@ -417,6 +418,7 @@
         locateBtn.appendChild(el('i', 'fas fa-crosshairs', { 'aria-hidden': 'true' }));
         const searchField = el('div', 'world-search__field');
         searchField.append(searchInput, locateBtn);
+        if (searchLabel) searchWrap.appendChild(searchLabel);
         searchWrap.append(searchField, results);
         top.append(searchWrap);
         const reach = el('div', 'world-reach', { role: 'status', 'aria-live': 'polite', 'aria-atomic': 'true' });
@@ -500,7 +502,8 @@
         function renderStaticText() {
             root.setAttribute('aria-label', t('world.title', 'Choose a place'));
             searchInput.placeholder = t('world.search.placeholder', 'City name');
-            searchInput.setAttribute('aria-label', t('world.search.label', 'Search cities'));
+            if (searchLabel) searchLabel.textContent = t('world.search.firstVisitLabel', 'Choose where to design');
+            else searchInput.setAttribute('aria-label', t('world.search.label', 'Search cities'));
             locateBtn.setAttribute('aria-label', t('world.search.locate', 'Show my location'));
             locateBtn.title = t('world.search.locate', 'Show my location');
             reachHeadline.textContent = t('world.reach.headline', '{{cities}} cities · {{countries}} countries', {
@@ -698,7 +701,7 @@
             ev.stopPropagation();
             if (ev.key !== 'Escape') return;
             if (!results.hidden) return; // search handles its own Escape
-            if (selected) { deselect(); return; }
+            if (selected) { const restore = popup.contains(document.activeElement); deselect(); if (restore) searchInput.focus(); return; }
             if (legendToggle.getAttribute('aria-expanded') === 'true') {
                 setLegendExpanded(false);
                 legendToggle.focus();
@@ -917,7 +920,7 @@
             popup.textContent = '';
             popup.className = 'world-popup world-popup--' + status;
             const close = el('button', 'close-circle-btn world-popup__close', { type: 'button', 'aria-label': t('world.close', 'Close'), text: '×' });
-            close.addEventListener('click', deselect);
+            close.addEventListener('click', () => { const restore = popup.contains(document.activeElement); deselect(); if (restore) searchInput.focus(); });
             const badge = el('p', 'world-popup__tier');
             badge.append(el('span', 'world-tier-dot world-tier-dot--' + status), el('span', '', {
                 text: t(statusKey + '.short', TIER_LABELS[status])
@@ -1033,6 +1036,7 @@
         // ---- search ----
         let searchHits = [];
         let activeIndex = -1;
+        let searchRevision = 0;
 
         function renderResults() {
             results.textContent = '';
@@ -1060,6 +1064,7 @@
         }
 
         function onSearchInput() {
+            searchRevision++;
             searchHits = coverage.searchPlaces(searchInput.value, { limit: 7 });
             activeIndex = searchHits.length ? 0 : -1;
             renderResults();
@@ -1073,20 +1078,26 @@
                 renderResults();
             } else if (ev.key === 'Enter') {
                 ev.preventDefault();
-                if (searchHits[activeIndex]) choose(searchHits[activeIndex]);
+                if (searchHits[activeIndex]) choose(searchHits[activeIndex], true);
             } else if (ev.key === 'Escape') {
                 ev.stopPropagation();
                 if (searchInput.value) { searchInput.value = ''; onSearchInput(); } else searchInput.blur();
             }
         }
 
-        function choose(place) {
+        function choose(place, keyboard = false) {
+            const revision = ++searchRevision;
             searchInput.value = place.name;
             searchHits = []; activeIndex = -1;
             results.hidden = true; searchInput.setAttribute('aria-expanded', 'false');
-            searchInput.blur();
+            if (!keyboard) searchInput.blur();
             deselect();
-            fly({ lat: place.lat, lon: place.lon, altitudeKm: 8500 }, { hop: 0.6 }).then(() => select(place));
+            fly({ lat: place.lat, lon: place.lon, altitudeKm: 8500 }, { hop: 0.6 }).then(completed => {
+                if (!completed || closed || revision !== searchRevision) return;
+                const handoff = keyboard && document.activeElement === searchInput;
+                select(place);
+                if (handoff) popup.querySelector('.world-popup__actions button:last-child')?.focus();
+            });
         }
 
         // Asks the browser for its position (the browser's own permission prompt is the consent) and
@@ -1239,7 +1250,8 @@
         document.body.appendChild(root);
         root.__unregisterEscape = global.ModalEscape?.register(root, () => {
             if (!results.hidden) return false; // let the focused search input clear its results
-            if (selected) { deselect(); return true; }
+            if (selected) { const restore = popup.contains(document.activeElement); deselect(); if (restore) searchInput.focus(); return true; }
+            searchRevision++; // Escape during a search flight must not open its stale popup.
             if (legendToggle.getAttribute('aria-expanded') === 'true') {
                 setLegendExpanded(false);
                 legendToggle.focus();

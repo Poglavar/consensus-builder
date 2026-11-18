@@ -1721,13 +1721,13 @@
             "tabProposals": "Designs",
             "tabTools": "Tools",
             "historySection": "History",
-            "selectMultiple": "Select a parcel to start designing. You can also select multiple parcels manually or auto detect and select a block of parcels.",
+            "selectMultiple": "Choose a design tool below. To include more land, use Manual or Detect block.",
             "selectManually": "Manual",
             "detectBlock": "Detect block",
+            "useThisParcel": "Use this parcel",
+            "selectWholeBlock": "Select whole block",
             "chooseBlockScope": "Only one parcel is selected. Use this parcel, or detect the whole block?",
             "suggestWholeBlock": "Only one parcel is selected. Did you mean the whole block ({{count}} parcels)?",
-            "suggestWholeBlockYes": "Yes, select the block",
-            "suggestWholeBlockNo": "No, just this parcel",
             "build": {
                 "title": "Build",
                 "block": "Block",
@@ -2362,7 +2362,7 @@
                     "eyebrow": "From idea to design",
                     "title": "Make change visible",
                     "body": "Turn an idea into a design: reshape parcels, sketch streets and parks, or add buildings. Apply a draft to see how it changes the map.",
-                    "hint": "Start in Tools, then compare your designs on the map."
+                    "hint": "Select a parcel on the 2D map, then choose a tool in Actions. Open Design to draw your own boundary."
                 },
                 "consent": {
                     "eyebrow": "People make the difference",
@@ -2374,7 +2374,7 @@
                     "eyebrow": "A city in motion",
                     "title": "See how decisions unfold",
                     "body": "Follow designs and agent activity around the world. Where Simulation is available, play or pause turns to explore how designs and support evolve.",
-                    "hint": "Open Activity to follow events, actors and watched areas. Simulation controls are in Settings > Diagnostics."
+                    "hint": "Open Activity to follow events and actors. Simulation controls are in Settings → Advanced → Simulation."
                 },
                 "sources": {
                     "eyebrow": "More than one starting point",
@@ -2453,6 +2453,7 @@
             "editSurroundings": "Edit surroundings",
             "surroundingsPaved": "Paving",
             "surroundingsGreen": "Green",
+            "placeOnLand": "Place on selected land",
             "placeHint": "Click or tap the map to place the building. Drag the map to pan. Esc cancels.",
             "surroundingsInfo": "Paving or green space uses taken land outside the building footprint. Footprint-only takes have no surroundings.",
             "uploadGeojsonLabel": "Upload footprints",
@@ -6901,6 +6902,7 @@
             "other": "{{count}} agreements"
         },
         "search": {
+            "firstVisitLabel": "Choose where to design",
             "placeholder": "City name",
             "label": "Search cities",
             "noResults": "No matching city",
@@ -7033,6 +7035,11 @@
                 "unknown": "Location unknown"
             }
         }
+    },
+    "designStart": {
+        "title": "Start a design",
+        "hint": "Select a parcel on the map. In Actions, choose a tool such as Park. To design on your own boundary, draw a parcel.",
+        "saved": "Finished designs are saved in this browser. Find them in Lists → Designs."
     },
     "mapShell": {
         "settingsSections": {
@@ -7228,8 +7235,10 @@
         }
     },
     "siteTool": {
-        "commands": {
-            "draw": "Draw site"
+        "coordinates": {
+            "title": "Add corner by coordinates",
+            "add": "Add corner",
+            "count": "Corners: {{count}}"
         },
         "title": "Site",
         "titleDrawing": "Draw a site",

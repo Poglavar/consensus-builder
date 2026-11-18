@@ -841,6 +841,34 @@
       "controlType": "button"
     },
     {
+      "id": "control-a34a91ddc239fe-1",
+      "source": "index.html",
+      "markup": "<button type=\"button\" id=\"design-start-button\" class=\"map-shell-button map-shell-button--labelled\" data-sheet-target=\"design-start-sheet\" aria-controls=\"design-start-sheet\" aria-expanded=\"false\" title=\"Start a design\" data-i18n-key=\"designStart.title\" data-i18n-attr=\"title\">",
+      "interaction": "click",
+      "controlType": "button"
+    },
+    {
+      "id": "control-c455633c6cb6f9-1",
+      "source": "index.html",
+      "markup": "<button type=\"button\" class=\"map-sheet-close close-circle-btn close-circle-btn--lg\" data-sheet-close data-design-start-close aria-label=\"Close\" title=\"Close\" data-i18n-key=\"common.close\" data-i18n-attr=\"aria-label,title\">",
+      "interaction": "click",
+      "controlType": "button"
+    },
+    {
+      "id": "control-6e7602ae8cfb11-1",
+      "source": "index.html",
+      "markup": "<button type=\"button\" class=\"btn\" data-command=\"parcels.locate\">",
+      "interaction": "click",
+      "controlType": "button"
+    },
+    {
+      "id": "control-33a8a8d0edb630-1",
+      "source": "index.html",
+      "markup": "<button type=\"button\" class=\"btn\" data-command=\"site.draw\">",
+      "interaction": "click",
+      "controlType": "button"
+    },
+    {
       "id": "control-dc7af30c67cb8d-1",
       "source": "index.html",
       "markup": "<button type=\"button\" class=\"map-sheet-close close-circle-btn close-circle-btn--lg\" data-sheet-close aria-label=\"Close\" title=\"Close\" data-i18n-key=\"common.close\" data-i18n-attr=\"aria-label,title\">",
@@ -1601,9 +1629,9 @@
       "controlType": "button"
     },
     {
-      "id": "control-646e89a26bfc19-1",
+      "id": "control-fe149ba170b2bc-1",
       "source": "index.html",
-      "markup": "<a class=\"btn\" href=\"how-to-use.html\" target=\"_blank\" rel=\"noopener noreferrer\" data-i18n-key=\"settingsPanel.userGuide\">",
+      "markup": "<a class=\"btn\" href=\"how-to-use.html\" data-user-guide target=\"_blank\" rel=\"noopener noreferrer\" data-i18n-key=\"settingsPanel.userGuide\">",
       "interaction": "click",
       "controlType": "button"
     },
@@ -8326,6 +8354,41 @@
       "id": "control-d4b4f3aea73c54-1",
       "source": "js/single-building.js",
       "markup": "<button id=\"single-building-confirm\" type=\"button\" class=\"btn btn-primary\">",
+      "interaction": "click",
+      "controlType": "button"
+    },
+    {
+      "id": "control-8817c441824830-1",
+      "source": "js/single-building.js",
+      "markup": "document.createElement('button')",
+      "interaction": "click",
+      "controlType": "button"
+    },
+    {
+      "id": "control-ba650d16f0861a-1",
+      "source": "js/site-drawing.js",
+      "markup": "<button type=\"button\" class=\"btn\" data-site-action=\"import\">",
+      "interaction": "click",
+      "controlType": "button"
+    },
+    {
+      "id": "control-d182c94d7ed218-1",
+      "source": "js/site-drawing.js",
+      "markup": "<input class=\"form-control\" name=\"latitude\" type=\"number\" step=\"any\" min=\"-90\" max=\"90\" required>",
+      "interaction": "change",
+      "controlType": "number"
+    },
+    {
+      "id": "control-bb034f178fa685-1",
+      "source": "js/site-drawing.js",
+      "markup": "<input class=\"form-control\" name=\"longitude\" type=\"number\" step=\"any\" min=\"-180\" max=\"180\" required>",
+      "interaction": "change",
+      "controlType": "number"
+    },
+    {
+      "id": "control-8caf61406b764d-1",
+      "source": "js/site-drawing.js",
+      "markup": "<button type=\"submit\" class=\"btn\">",
       "interaction": "click",
       "controlType": "button"
     },

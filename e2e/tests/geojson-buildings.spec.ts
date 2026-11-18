@@ -40,7 +40,7 @@ async function openTool(page: any, kind: string) {
   const prompt = page.getByRole('alertdialog');
   const editor = page.locator(kind === 'single' ? '#single-building-editor' : kind === 'row' ? '#rowhouse' : '#blockify-modal').locator('.on-map-editor__panel');
   await expect.poll(async () => await editor.isVisible() || await prompt.isVisible()).toBe(true);
-  if (await prompt.isVisible()) await prompt.getByRole('button', { name: 'No, just this parcel' }).click();
+  if (await prompt.isVisible()) await prompt.getByRole('button', { name: 'Use this parcel' }).click();
   await expect(editor).toBeVisible();
   if (kind === 'single') await placeFreeformBuilding(page);
 }

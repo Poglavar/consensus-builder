@@ -70,7 +70,7 @@ export async function clickMapPoint(page: Page, lng: number, lat: number): Promi
 
 // Finish the explicit placement step using a real pointer on the draft's selected starting land.
 export async function placeFreeformBuilding(page: Page): Promise<void> {
-  await expect(page.locator('#single-building-editor')).toHaveAttribute('data-placing', 'true');
+  await expect(page.locator('#single-building-editor')).toHaveAttribute('data-placing', 'true', { timeout: 20_000 });
   const at = await page.evaluate(() => {
     const w = window as any;
     const site = w.getActiveProposalDesignDraft()?.fields?.site;
@@ -237,12 +237,12 @@ export async function openBlockEditor(page: Page): Promise<void> {
 
 // Every fresh design launched from exactly ONE selected parcel (park, square, lake, Freeform,
 // Detached, parcel layout, block, urban rule) first asks whether to take the whole block
-// (js/parcels/ui/proposal-actions.js maybeSuggestWholeBlockForFreshProposal). Answers it: No keeps
-// the one parcel and the launch goes on; Yes selects the block and stops the launch there.
+// (js/parcels/ui/proposal-actions.js maybeSuggestWholeBlockForFreshProposal). Choosing the
+// parcel launches the tool. Choosing the block returns its selection for review.
 export async function answerBlockScope(page: Page, wholeBlock = false): Promise<void> {
   const prompt = page.getByRole('alertdialog').filter({ hasText: 'Only one parcel is selected' });
   await expect(prompt).toBeVisible();
-  await prompt.getByRole('button', { name: wholeBlock ? 'Yes, select the block' : 'No, just this parcel', exact: true }).click();
+  await prompt.getByRole('button', { name: wholeBlock ? 'Select whole block' : 'Use this parcel', exact: true }).click();
   await expect(prompt).toBeHidden();
 }
 

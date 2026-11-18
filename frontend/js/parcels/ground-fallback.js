@@ -435,7 +435,7 @@
             pendingDialog = null;
             return null;
         }
-        if (introVisible()) {
+        if (introVisible() || global.WorldEntry?.ownsBoot?.()) {
             pendingDialog = context;
             return null;
         }
@@ -794,11 +794,16 @@
     // A reload within the tab keeps whatever the visitor chose, before the first viewport fetch.
     try { restoreFromSession(currentCityId()); } catch (_) { }
     if (global && typeof global.addEventListener === 'function') {
-        global.addEventListener('siteintro:closed', () => {
-            if (pendingDialog && pendingDialog.city === currentCityId() && !sources.has(pendingDialog.city)) {
-                presentDialog(pendingDialog);
+        const presentPending = () => {
+            if (!pendingDialog) return;
+            if (pendingDialog.city !== currentCityId() || sources.has(pendingDialog.city)) {
+                pendingDialog = null;
+                return;
             }
-        });
+            presentDialog(pendingDialog);
+        };
+        global.addEventListener('siteintro:closed', presentPending);
+        global.addEventListener('worldview:landed', presentPending);
         global.addEventListener('cityChanged', () => { try { restoreFromSession(currentCityId()); } catch (_) { } });
     }
 })(typeof window !== 'undefined' ? window : globalThis);

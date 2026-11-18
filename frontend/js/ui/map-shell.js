@@ -67,9 +67,9 @@
     // hidden: the dock keeps its shape and the tooltip says how to get them back. The views the
     // editor cannot run in are locked the same way by map-mode-loader.js (paintModeLocks). Layers,
     // Buildings and massing and Measure stay: they help with the drawing.
-    const EDIT_LOCKED_CONTROLS = Object.freeze(['proposals-button', 'bets-button', 'activity-button', 'shareAppliedProposalsButton', 'settings-button', 'username-display']);
+    const EDIT_LOCKED_CONTROLS = Object.freeze(['design-start-button', 'proposals-button', 'bets-button', 'activity-button', 'shareAppliedProposalsButton', 'settings-button', 'username-display']);
     const EDIT_LOCKED_SELECTORS = '.map-search__chip, .map-search__icon-button, .map-search__input';
-    const EDIT_LOCKED_SHEETS = Object.freeze(['proposals-sheet', 'bets-sheet', 'activity-sheet', 'settings-sheet']);
+    const EDIT_LOCKED_SHEETS = Object.freeze(['design-start-sheet', 'proposals-sheet', 'bets-sheet', 'activity-sheet', 'settings-sheet']);
 
     function isEditingDesign(global) {
         if (!global) return false;
@@ -494,6 +494,12 @@
         });
         doc.querySelectorAll('[data-sheet-close]').forEach(button => {
             button.addEventListener('click', () => closeSheet({ restoreFocus: true, byHand: true }));
+        });
+        doc.querySelectorAll('#design-start-sheet [data-command]').forEach(button => {
+            button.addEventListener('click', () => {
+                win.UiCommands.runCommand(button.dataset.command, win.UiCommands.createBrowserContext(win));
+                closeSheets();
+            });
         });
         doc.addEventListener('pointerdown', onDocumentPointerDown, true);
         doc.addEventListener('click', onLockedClickCapture, true);

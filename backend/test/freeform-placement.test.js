@@ -46,6 +46,16 @@ describe('new Freeform placement', () => {
         h.fire('click');
         expect(h.onPlace).toHaveBeenCalledOnce();
     });
+    it('places once at the requested point and cleans up the carried outline', () => {
+        const h = harness();
+        h.runtime.place({ lat: 45, lng: 16 });
+        expect(h.onPlace).toHaveBeenCalledOnce();
+        expect(h.onPlace.mock.calls[0][0].geometry.coordinates).toEqual([[[16, 45], [17, 45], [17, 46], [16, 45]]]);
+        h.runtime.place({ lat: 46, lng: 17 });
+        h.fire('click');
+        expect(h.onPlace).toHaveBeenCalledOnce();
+        expect(h.handlers.size).toBe(0);
+    });
     it('lets a pan finish without placing, then accepts a fresh tap', () => {
         const h = harness();
         h.fire('pointerdown'); h.fire('pointermove', { clientX: 40 }); h.fire('pointerup'); h.fire('click');

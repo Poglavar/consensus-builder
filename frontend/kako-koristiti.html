@@ -106,11 +106,11 @@
      Na ovoj stranici
     </span>
     <div class="sidebar-links">
-     <a class="btn btn-quiet" href="#videozapisi">
-      Videoupute
-     </a>
      <a class="btn btn-quiet" href="#tijek">
       Započni dizajn
+     </a>
+     <a class="btn btn-quiet" href="#videozapisi">
+      Videoupute
      </a>
      <a class="btn btn-quiet" href="#paleta">
       Odaberi alat
@@ -138,7 +138,7 @@
        Nacrtaj promjenu. Istražite je zajedno.
       </h2>
       <p>
-       Oblikuj zahvat na stvarnom zemljištu, pregledaj rezultat u 2D-u i 3D-u, usporedi varijante i podijeli dizajn ili cijeli plan. Počni kratkim videom ili prati pisane korake.
+       Oblikuj zahvat na stvarnom zemljištu, pregledaj rezultat u 2D-u i 3D-u, usporedi varijante i podijeli dizajn ili cijeli plan. Prati korake u nastavku ili pogledaj video.
       </p>
       <a class="btn btn-primary" href="index.html?lang=hr">
        <i aria-hidden="true" class="fa-solid fa-map">
@@ -148,6 +148,20 @@
      </div>
      <img alt="Čestice prije i nakon dizajna gradskog bloka" src="images/site-intro-parcels.webp"/>
     </div>
+    <section class="guide-section" id="tijek">
+     <h2>Izradi prvi park</h2>
+     <ol class="steps">
+      <li class="step"><h3>Odaberi zemljište</h3><p>Odaberi grad, zatim klikni česticu na karti.</p></li>
+      <li class="step"><h3>Izradi park</h3><p>Otvori <span class="ui-label">Radnje</span> i odaberi <span class="ui-label">Park</span>. Ako se ponudi izbor, odaberi <span class="ui-label">Upotrijebi ovu česticu</span>. Park se sprema lokalno i primjenjuje na kartu.</p></li>
+      <li class="step"><h3>Otvori dizajn</h3><p>Otvori <span class="ui-label">Popisi</span> → <span class="ui-label">Dizajni</span> i odaberi park za pregled. Ako ga nije moguće primijeniti, aplikacija objašnjava zašto i zadržava ga na popisu.</p></li>
+     </ol>
+     <details>
+      <summary>Drugi načini početka</summary>
+      <p>Odaberi <span class="ui-label">Dizajn</span> na karti ili <span class="ui-label">Započni dizajn</span> u Popisi → Dizajni za pretragu ili odabir zemljišta. Za više čestica odaberi <span class="ui-label">Ručno</span>, klikni čestice, pregledaj <span class="ui-label">Odabrane čestice</span> i odaberi <span class="ui-label">Završi odabir</span>. <span class="ui-label">Detektiraj blok</span> odabire okolni blok. Ako alat ponudi <span class="ui-label">Odaberi cijeli blok</span>, pregledaj odabir i ponovno odaberi alat. <span class="ui-label">Odustani</span> ili Escape vraćaju te natrag.</p>
+      <p>Na otvorenom zemljištu odaberi <span class="ui-label">Nacrtaj česticu</span>. Klikni kutove i pritisni Enter ili klikni prvi kut za dovršetak. Možeš koristiti i <span class="ui-label">Dodaj vrh koordinatama</span>. Odaberi <span class="ui-label">Predloži ovdje</span> pa alat.</p>
+      <p>Slobodnu zgradu postavi klikom na kartu ili odaberi <span class="ui-label">Postavi na odabrano zemljište</span>. Uredi tlocrt i visinu pa odaberi <span class="ui-label">Gotovo</span>. <a class="cb-link" href="kako-koristiti-zgrade.html#freeform">Pogledaj vodič za zgrade</a>.</p>
+     </details>
+    </section>
     <section class="guide-section" id="videozapisi">
      <h2>
       Pogledaj pa isprobaj
@@ -437,46 +451,6 @@
       </a>
      </div>
     </section>
-    <section class="guide-section" id="tijek">
-     <h2>
-      Počni od čestice ili lokacije
-     </h2>
-     <ol class="steps">
-      <li class="step">
-       <h3>
-        Odaberi zemljište
-       </h3>
-       <p>
-        Klikni zemljište za karticu Dizajn. Ručni odabir služi odabiru više čestica; pregledaj odabrane čestice pa dovrši odabir. Detektiraj blok proširuje odabir na okolni blok. Zatim odaberi alat za oblikovanje.
-       </p>
-      </li>
-      <li class="step">
-       <h3>
-        Ili nacrtaj lokaciju
-       </h3>
-       <p>
-        Odaberi
-        <span class="ui-label">
-         Nacrtaj lokaciju ovdje
-        </span>
-        na otvorenom zemljištu. Lokacija je uređiva granica zahvata. Dizajn možeš istraživati i gdje podaci o česticama nisu dostupni; nedostatak podataka ne utvrđuje vlasništvo. Izvorne čestice su zapisi pružatelja podataka; oblikovani dio tla modelirani je rezultat, a ne dokaz pravne čestice ili vlasništva.
-       </p>
-      </li>
-      <li class="step">
-       <h3>
-        Izgradi i dovrši
-       </h3>
-       <p>
-        Odaberite alat na kartici Dizajn. Zgrade i reparcelacija otvaraju uređivač na karti; za park, trg ili jezero potvrdite obuhvat. Gotovo dovršava oblikovanje. U izravnom tijeku stvara se lokalni dizajn koji je već primijenjen na kartu. Ako radite u obrascu dizajna, nakon oblikovanja pošaljite i obrazac.
-       </p>
-       <div class="callout note">
-        <i aria-hidden="true" class="fa-solid fa-circle-info">
-        </i>
-        Ako sukob spriječi primjenu, aplikacija objašnjava razlog i zadržava objekt izvan karte u popisu dizajna. Otvori ga ondje, provjeri razlog i primijeni ga kad se sukob riješi.
-       </div>
-      </li>
-     </ol>
-    </section>
     <section class="guide-section" id="paleta">
      <h2>
       Odaberi alat za promjenu
@@ -595,8 +569,8 @@
       Završi rad u alatu kako bi izradio lokalni dizajn i primijenio ga na kartu. Radnja
       <span class="ui-label">Podijeli</span> objavljuje i povezuje samo taj dizajn. Odaberi
       <span class="ui-label">Dodaj u plan</span> da ga uključiš u novi plan ili izradiš novu verziju spremljenog plana.
-      U odjeljku <span class="ui-label">Plan</span> otvori <span class="ui-label">Spremljeni planovi</span>
-      i odaberi <span class="ui-label">Izradi plan</span> da zadaš naziv i odabereš dizajne. Izrada plana
+      Otvori <span class="ui-label">Popisi</span>, odaberi <span class="ui-label">Planovi</span>
+      pa <span class="ui-label">Izradi plan</span>. Odaberi dizajne, odaberi <span class="ui-label">Nastavi</span> i zadaj naziv plana. Izrada plana
       sprema ga lokalno bez objave.
      </p>
      <p>
@@ -619,15 +593,15 @@
       <span class="ui-label">
        Prije / Poslije
       </span>
-      u detaljima dizajna ili dizajneru i povuci razdjelnik preko iste karte. Za dvije varijante na jednoj čestici otvori
+      u detaljima dizajna ili dizajneru i povuci razdjelnik preko iste karte. Za usporedbu dizajna otvori <span class="ui-label">Popisi</span>, odaberi
       <span class="ui-label">
        Dizajni
       </span>
-      , označi dva dizajna i klikni
+      , odaberi <span class="ui-label">Usporedi projekte</span>, označi barem dva dizajna i klikni
       <span class="ui-label">
        Usporedi
       </span>
-      . Usporedba prikazuje zahvat, zgrade, čestice, vlasništvo, suglasnost i podršku za tu česticu.
+      . Usporedba prikazuje zemljište, zgrade, čestice i druge dostupne podatke o dizajnima.
      </p>
      <p>
       <a class="cb-link" href="kako-koristiti-prikazi.html">
@@ -641,7 +615,7 @@
      </h2>
      <p>
       <span class="ui-label">Podijeli</span> u ploči objekta stvara poveznicu na jedan dizajn. Za dijeljenje
-      plana upotrijebi <span class="ui-label">Podijeli plan</span> u spremljenim planovima.
+      plana otvori <span class="ui-label">Popisi</span> → <span class="ui-label">Planovi</span>, otvori spremljeni plan i odaberi <span class="ui-label">Podijeli plan</span>.
      </p>
      <p>
       Plan se sprema lokalno, a objava stvara javnu poveznicu na njegovu točnu snimku. Aplikacija traži ime profila pri objavi novih zapisa.

@@ -53,7 +53,7 @@
     }
     function browser(win) {
         const doc = win.document;
-        const state = { tab: 'designs', search: '', publication: 'all', sort: 'title', onMap: false,
+        const state = { tab: 'designs', search: '', publication: 'all', sort: null, onMap: false,
             // selecting: the tab whose rows show checkboxes; purpose: what they are for ('compare', or
             // 'plan': the designs of a plan, ticked here with all of them shown on the map); planBase:
             // the plan whose revision they make, if any.
@@ -61,6 +61,7 @@
             // hovering: the card whose object is outlined under the pointer; records: each clicked card's designs,
             // read once; known: those already read, the only ones a hover shows
             hovering: null, records: new Map(), known: new Map() };
+        const currentSort = () => state.sort || (state.tab === 'designs' ? 'newest' : 'title');
         let ready = false;
         const t = (key, params) => win.i18n.t(key, params || {});
         const node = (tag, cls, text) => {
@@ -337,7 +338,11 @@
                 return selection(compare);
             }
             const grid = node('div', 'lists-actions__grid');
-            if (kind !== 'agreements') grid.append(button(t('planDialog.createPlan'), () => choosePlanDesigns(), 'btn-primary', 'cb-icon-plan'));
+            if (kind === 'designs' && !doc.body.classList.contains('three-mode-active')) {
+                actions.append(button(t('designStart.title'), () => win.MapShell.openSheet('design-start-sheet'), 'btn-primary', 'pen'));
+            }
+            if (kind !== 'agreements') grid.append(button(t('planDialog.createPlan'), () => choosePlanDesigns(),
+                kind === 'plans' ? 'btn-primary' : '', 'cb-icon-plan'));
             if (kind === 'agreements') grid.append(button(t('agreement.list.create'), () => {
                 win.MapShell.closeSheets(); return win.AgreementDialog.open();
             }, 'btn-primary', 'cb-icon-agreement'));
@@ -369,7 +374,7 @@
             const kind = state.tab, page = state.remote.get(cacheKey());
             const rows = mergeRows(localRows(kind), remoteRows(page?.rows || [], kind))
                 .map(row => ({ ...row, applied: kind === 'designs' && appliedHere(row.local) }));
-            const visible = filterRows(rows, { ...state, onMap: kind === 'designs' && state.onMap }), list = host(); list.replaceChildren();
+            const visible = filterRows(rows, { ...state, sort: currentSort(), onMap: kind === 'designs' && state.onMap }), list = host(); list.replaceChildren();
             const onMap = doc.querySelector('[data-lists-on-map]');
             if (onMap) labelOnMap(onMap, rows.filter(row => row.applied).length);
             const unapplyAll = doc.querySelector('[data-lists-unapply-all]');
@@ -539,13 +544,13 @@
                 const wrap = node('label', '', t(label)), select = node('select');
                 for (const [value, text] of options) { const option = node('option', '', t(text)); option.value = value; select.append(option); }
                 select.dataset.listFilter = key;
-                select.value = state[key]; select.addEventListener('change', () => { state[key] = select.value; renderRows(); });
+                select.value = key === 'sort' ? currentSort() : state[key]; select.addEventListener('change', () => { state[key] = select.value; renderRows(); });
                 wrap.append(select); fields.append(wrap);
             }
             filters.append(fields);
             const actions = node('div', 'cb-actions');
             actions.append(button(t('modal.roadWidth.proposalList.filters.reset'), () => {
-                state.search = ''; state.publication = 'all'; state.sort = 'title'; state.onMap = false; controls(); renderRows();
+                state.search = ''; state.publication = 'all'; state.sort = null; state.onMap = false; controls(); renderRows();
             }, 'btn-quiet'));
             filters.append(actions); box.append(filters);
             box.append(button(t('agreement.minted.refresh'), () => load(), 'lists-refresh', 'arrows-rotate'));

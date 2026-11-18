@@ -178,9 +178,9 @@
     // Whether a landing goes on to its city's latest proposal (js/world/arrival.js) instead of its
     // own view: only for a pick of a city as a whole. A particular spot (a searched address, a place
     // in a countrywide cadastre — carryAt) is where the visitor asked to go, and explore has no
-    // proposals of its own to arrive at.
-    function arrivesAtLatest(landing) {
-        return !!landing && landing.cityId !== EXPLORE_CITY_ID && !landing.carryAt;
+    // proposals of its own to arrive at. A first visit opens the city map directly.
+    function arrivesAtLatest(landing, { firstVisit = false } = {}) {
+        return !!landing && !firstVisit && landing.cityId !== EXPLORE_CITY_ID && !landing.carryAt;
     }
 
     // Which city a boot opens in, from the address (location-first.md "URL rules"). First match wins:

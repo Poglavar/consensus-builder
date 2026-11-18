@@ -438,10 +438,13 @@
         groundCommand('trackStation', { labelKey: 'panel.parcel.build.trackStation', fallbackLabel: 'Track station', icon: 'cb-icon-track' }),
         // ---- Selected road (the proposal card a road click opens; palette) ----
         roadCommand('crossSection', { labelKey: 'panel.road.crossSectionButton', fallbackLabel: 'Edit cross-section', icon: 'fas fa-road' }),
-        // The site tool from anywhere (the palette): draw a site with nothing selected.
+        // Starting from the map or Lists still requires choosing the land the design will use.
+        control('design-start-button', { id: 'design.start', group: 'proposals', surfaces: [], modes: ['2d'],
+            labelKey: 'designStart.title', fallbackLabel: 'Start a design', icon: 'fas fa-pen' }),
+        // Draw an outline without first selecting a parcel.
         { id: 'site.draw', group: 'site', surfaces: [], modes: ['2d'], when: siteToolIdle,
             run: ctx => ctx.global.SiteTool.start(),
-            labelKey: 'siteTool.commands.draw', fallbackLabel: 'Draw site', icon: 'fas fa-draw-polygon' },
+            labelKey: 'groundMenu.actions.drawSite', fallbackLabel: 'Draw a parcel', icon: 'fas fa-draw-polygon' },
 
         // ---- Selected parcels section in the click panel ----
         { id: 'selection.useAsSite', group: 'selection', surfaces: [], modes: ['2d'],

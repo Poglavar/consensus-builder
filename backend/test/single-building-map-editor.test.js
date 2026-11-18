@@ -85,7 +85,7 @@ describe('single-building map editor lifecycle', () => {
         const before = structuredClone(view);
         const session = {
             map: { on: vi.fn(), getContainer: () => ({ focus }) }, setPreview: vi.fn(),
-            setCollapsed: vi.fn(), setHint: vi.fn(), body: {}, footer: {},
+            setCollapsed: vi.fn(), setHint: vi.fn(), body: {}, footer: {}, content: { insertBefore: vi.fn() },
             fitFeature: vi.fn(() => {
                 if (mode === 'model') view.queuedFit = true;
                 else { view.center = [13, 35]; view.zoom = 21; }
@@ -93,7 +93,7 @@ describe('single-building map editor lifecycle', () => {
         };
         const draw = vi.fn(), sync = vi.fn(), focus = vi.fn();
         const stubs = {
-            session, document: { getElementById: () => ({ focus }) },
+            session, document: { getElementById: () => ({ focus }), createElement: () => ({ focus, addEventListener: vi.fn() }) },
             window: { FreeformLandTakeReview: { mount: vi.fn(() => ({})) }, FreeformPlacement: { start: vi.fn(() => ({ destroy: vi.fn() })) } },
             getSelectedBlockFeature: () => feature, cloneSingleFeature: value => value,
             translateSingleBuildingText: (_key, fallback) => fallback,
@@ -120,6 +120,7 @@ describe('single-building map editor lifecycle', () => {
         expect(sync).not.toHaveBeenCalled();
         expect(stubs.window.FreeformPlacement.start).toHaveBeenCalledWith(expect.objectContaining({ map: session.map }));
         expect(focus).toHaveBeenCalledWith({ preventScroll: true });
+        expect(session.content.insertBefore).toHaveBeenCalledOnce();
         expect(view).toEqual(before);
     });
 

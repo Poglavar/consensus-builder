@@ -182,14 +182,35 @@ describe('globe destination wiring', () => {
     });
 
     it('keeps the chosen city search result instead of replacing it with a geographic-area lookup', async () => {
-        const select = vi.fn(), fly = vi.fn(async () => {});
+        const select = vi.fn(), fly = vi.fn(async () => true);
         const context = { searchInput: { value: '', setAttribute() {}, blur() {} }, results: {}, deselect: vi.fn(),
-            select, fly, searchHits: [], activeIndex: 0 };
+            select, fly, searchHits: [], activeIndex: 0, searchRevision: 0, closed: false };
         vm.runInNewContext(`${extractFunction('choose')}; this.choose = choose;`, context);
         const place = { kind: 'live-city', cityId: 'toronto', name: 'Toronto', lat: 43.65, lon: -79.38 };
         context.choose(place);
         await Promise.resolve();
         expect(select).toHaveBeenCalledExactlyOnceWith(place);
         expect(fly).toHaveBeenCalledWith({ lat: 43.65, lon: -79.38, altitudeKm: 8500 }, { hop: 0.6 });
+    });
+
+    it('hands keyboard focus to the map action only for a current, completed flight', async () => {
+        let finish;
+        const focus = vi.fn(), select = vi.fn();
+        const searchInput = { value: '', setAttribute() {}, blur: vi.fn() };
+        const context = { searchInput, results: {}, deselect: vi.fn(), select,
+            fly: () => new Promise(resolve => { finish = resolve; }), searchHits: [], activeIndex: 0,
+            searchRevision: 0, closed: false, document: { activeElement: searchInput },
+            popup: { querySelector: () => ({ focus }) } };
+        vm.runInNewContext(`${extractFunction('choose')}; this.choose = choose;`, context);
+        const place = { name: 'Toronto', lat: 43.65, lon: -79.38 };
+        context.choose(place, true);
+        finish(true); await Promise.resolve();
+        expect(select).toHaveBeenCalledWith(place);
+        expect(focus).toHaveBeenCalledOnce();
+        context.choose(place, true);
+        context.searchRevision++;
+        finish(true); await Promise.resolve();
+        expect(select).toHaveBeenCalledOnce();
+        expect(focus).toHaveBeenCalledOnce();
     });
 });

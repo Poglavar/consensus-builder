@@ -185,7 +185,7 @@ test.describe('Building editor complete form controls @features', () => {
     await page.locator('.parcel-build-btn--row').click();
     const prompt = page.getByRole('alertdialog');
     if (await prompt.isVisible().catch(() => false)) {
-      await prompt.getByRole('button', { name: 'No, just this parcel' }).click();
+      await prompt.getByRole('button', { name: 'Use this parcel' }).click();
     }
     await expect(page.locator('#btn-rowhouse-done')).toBeEnabled({ timeout: 20_000 });
     const root = '#rowhouse';

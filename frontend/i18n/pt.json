@@ -1049,6 +1049,7 @@
             "editSurroundings": "Editar a envolvente",
             "surroundingsPaved": "Pavimentação",
             "surroundingsGreen": "Espaço verde",
+            "placeOnLand": "Colocar no terreno selecionado",
             "placeHint": "Clique ou toque no mapa para colocar o edifício. Arraste o mapa para o deslocar. Esc cancela.",
             "surroundingsInfo": "A pavimentação ou o espaço verde ocupa o terreno tomado fora da implantação do edifício. Se apenas a implantação for tomada, não há espaço envolvente.",
             "uploadGeojsonLabel": "Carregar implantações",
@@ -1355,7 +1356,7 @@
                     "eyebrow": "Da ideia ao projeto",
                     "title": "Torne a mudança visível",
                     "body": "Transforme uma ideia num projeto: altere a forma das parcelas, esboce ruas e parques ou adicione edifícios. Aplique um rascunho para ver como altera o mapa.",
-                    "hint": "Comece em Ferramentas e depois compare os seus projetos no mapa."
+                    "hint": "Selecione uma parcela no mapa 2D e escolha uma ferramenta em Ações. Abra Projeto para traçar o seu próprio limite."
                 },
                 "consent": {
                     "eyebrow": "As pessoas fazem a diferença",
@@ -1367,7 +1368,7 @@
                     "eyebrow": "Uma cidade em movimento",
                     "title": "Veja como as decisões evoluem",
                     "body": "Acompanhe projetos e a atividade de agentes em todo o mundo. Onde a Simulação estiver disponível, inicie ou pause os turnos para explorar a evolução dos projetos e do apoio.",
-                    "hint": "Abra Atividade para acompanhar eventos, intervenientes e áreas monitorizadas. Os controlos da simulação estão em Definições > Diagnóstico."
+                    "hint": "Abra Atividade para acompanhar eventos e intervenientes. Os controlos da simulação estão em Definições → Avançado → Simulação."
                 },
                 "sources": {
                     "eyebrow": "Mais do que um ponto de partida",
@@ -1613,8 +1614,10 @@
             "deleteVertex": "Eliminar este vértice"
         },
         "title": "Área de intervenção",
-        "commands": {
-            "draw": "Desenhar área de intervenção"
+        "coordinates": {
+            "title": "Adicionar vértice por coordenadas",
+            "add": "Adicionar vértice",
+            "count": "Vértices: {{count}}"
         },
         "titleDrawing": "Desenhar uma área de intervenção",
         "hint": {
@@ -3135,13 +3138,13 @@
             },
             "tabTools": "Ferramentas",
             "historySection": "Histórico",
-            "selectMultiple": "Selecione uma parcela para começar a projetar. Também pode selecionar várias parcelas ou um quarteirão de parcelas.",
+            "selectMultiple": "Escolha uma ferramenta abaixo. Para incluir mais parcelas, use Manual ou Detetar quarteirão.",
             "selectManually": "Manual",
             "detectBlock": "Detetar quarteirão",
+            "useThisParcel": "Usar esta parcela",
+            "selectWholeBlock": "Selecionar o quarteirão inteiro",
             "chooseBlockScope": "Está selecionada apenas uma parcela. Usar esta parcela ou detetar o quarteirão inteiro?",
             "suggestWholeBlock": "Está selecionada apenas uma parcela. Pretendia selecionar o quarteirão inteiro ({{count}} parcelas)?",
-            "suggestWholeBlockYes": "Sim, selecionar o quarteirão",
-            "suggestWholeBlockNo": "Não, apenas esta parcela",
             "nftStatusDefault": "Estado do NFT: ainda não verificado.",
             "nft": {
                 "statusUnknown": "Estado do NFT: ainda não verificado.",
@@ -5614,6 +5617,7 @@
             "other": "{{count}} acordos"
         },
         "search": {
+            "firstVisitLabel": "Escolha onde projetar",
             "placeholder": "Nome da cidade",
             "label": "Pesquisar cidades",
             "noResults": "Nenhuma cidade correspondente",
@@ -5825,6 +5829,11 @@
         "statusNothingToClaim": "Ainda não há nada para reclamar. Volte mais tarde.",
         "statusTxLink": "Ver transação",
         "statusError": "Ocorreu um erro. Tente novamente."
+    },
+    "designStart": {
+        "title": "Iniciar um projeto",
+        "hint": "Selecione uma parcela no mapa. Em Ações, escolha uma ferramenta como Parque. Para traçar o seu próprio limite, escolha Desenhar uma parcela.",
+        "saved": "Os projetos concluídos ficam guardados neste navegador. Encontra-os em Listas → Projetos."
     },
     "mapShell": {
         "proposals": "Projetos",

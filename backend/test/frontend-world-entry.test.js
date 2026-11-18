@@ -230,6 +230,7 @@ describe('where a globe pick lands', () => {
     it('goes on to the city\'s latest proposal only for a pick of the city as a whole', () => {
         const zagrebClick = { lat: 45.83, lon: 16.05, place: coverage.tierAt(45.83, 16.05) };
         expect(Model.arrivesAtLatest(Model.resolveLanding({ cityId: 'zagreb', point: zagrebClick, currentCityId: 'split', cityView: zagrebView }))).toBe(true);
+        expect(Model.arrivesAtLatest(Model.resolveLanding({ cityId: 'zagreb', point: zagrebClick, currentCityId: 'split', cityView: zagrebView }), { firstVisit: true })).toBe(false);
         // a spot in the countrywide cadastre, a searched address, explore: the spot itself
         const osijek = { lat: 45.55, lon: 18.69, place: coverage.pointAt(45.55, 18.69) };
         expect(Model.arrivesAtLatest(Model.resolveLanding({ cityId: 'zagreb', point: osijek, currentCityId: 'zagreb', cityView: zagrebView }))).toBe(false);

@@ -92,12 +92,68 @@ test('a Freeform draft on a tiny parcel preserves the chosen phone view and expo
   await expect.poll(() => parcelChoice.count()).toBeGreaterThan(0);
 });
 
+test('Freeform can be placed on selected land with the keyboard', async ({ mockApi: page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await tinyParcel(page);
+  const view = await page.evaluate(() => ({ center: (window as any).map.getCenter(), zoom: (window as any).map.getZoom() }));
+  await page.locator('.parcel-build-btn--single').click();
+  await answerBlockScope(page);
+  const place = page.getByRole('button', { name: 'Place on selected land' });
+  await expect(place).toBeVisible();
+  await expect(place).toBeFocused();
+  await page.keyboard.press('Enter');
+  await expect(place).toHaveCount(0);
+  await expect(page.locator('.single-building-fill--active')).toHaveCount(1);
+  await expect(page.locator('#single-height-slider')).toBeFocused();
+  const viewAfter = await page.evaluate(before => {
+    const map = (window as any).map;
+    const start = map.latLngToContainerPoint(before.center), end = map.latLngToContainerPoint(map.getCenter());
+    return { zoom: map.getZoom(), displacement: Math.hypot(end.x - start.x, end.y - start.y) };
+  }, view);
+  expect(viewAfter.zoom).toBe(view.zoom);
+  expect(viewAfter.displacement).toBeLessThan(1);
+  await expect(page.locator('[data-land-status]')).toContainText('m²');
+  await page.locator('#single-building-confirm').click();
+  await expect(page.locator('#single-building-editor')).toHaveCount(0);
+  await expect.poll(() => page.evaluate(() => (window as any).proposalStorage.getAllProposals().filter((p: any) => p.goal === 'single' && p.geometry?.buildings?.length === 1).length), { timeout: 20_000 }).toBe(1);
+});
+
+test('site drawing cancellation restores keyboard focus', async ({ mockApi: page }) => {
+  await openCity(page);
+  await page.evaluate(() => { const w = window as any; w.map.getContainer().focus(); w.SiteTool.start(); });
+  await expect(page.locator('#site-panel summary')).toBeFocused();
+  await page.keyboard.press('Escape');
+  await expect(page.locator('#site-panel')).toBeHidden();
+  await expect(page.locator('#map')).toBeFocused();
+});
+
+test('cancelling parcel scope never creates a design, while choosing the parcel does', async ({ mockApi: page }) => {
+  await tinyParcel(page);
+  const tile = page.locator('.parcel-build-btn--park');
+  const designs = () => page.evaluate(() => (window as any).proposalStorage.getAllProposals().length);
+  expect(await designs()).toBe(0);
+  await tile.click();
+  const choice = page.getByRole('alertdialog');
+  await expect(choice.getByRole('button', { name: 'Use this parcel' })).toBeFocused();
+  await page.keyboard.press('Escape');
+  await expect(choice).toBeHidden();
+  expect(await designs()).toBe(0);
+  await expect(tile).toBeFocused();
+  await tile.click();
+  await choice.getByRole('button', { name: 'Cancel', exact: true }).click();
+  await expect(choice).toBeHidden();
+  expect(await designs()).toBe(0);
+  await tile.click();
+  await choice.getByRole('button', { name: 'Use this parcel' }).click();
+  await expect.poll(designs).toBe(1);
+});
+
 test('Block always offers its scope choice and explains when default settings do not fit', async ({ mockApi: page }) => {
   await tinyParcel(page);
   await page.locator('.parcel-build-btn--buildings').click();
   const choice = page.getByRole('alertdialog');
   await expect(choice).toContainText('detect the whole block');
-  await choice.getByRole('button', { name: 'No, just this parcel' }).click();
+  await choice.getByRole('button', { name: 'Use this parcel' }).click();
   const warning = page.locator('#blockify-fit-warning');
   await expect(warning).toBeVisible();
   await expect(warning).toContainText('too small');

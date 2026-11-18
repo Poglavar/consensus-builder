@@ -4,11 +4,26 @@ import { describe, it, expect } from 'vitest';
 import { makeDocument } from './helpers/fake-dom.js';
 
 describe('Settings reference dialogs', () => {
+    it('opens the current language guide from both Settings and the design starter', () => {
+        const document = makeDocument();
+        document.body.innerHTML = '<a data-user-guide></a><a data-user-guide></a>';
+        let language = 'hr';
+        let changeLanguage;
+        const context = { document, i18n: { getLanguage: () => language, onChange: listener => { changeLanguage = listener; } } };
+        context.window = context;
+        vm.runInNewContext(readFileSync(new URL('../../frontend/js/ui/settings-panel.js', import.meta.url), 'utf8'), context);
+        const paths = () => Array.from(document.querySelectorAll('[data-user-guide]'), link => link.href);
+        expect(paths()).toEqual(['kako-koristiti.html', 'kako-koristiti.html']);
+        language = 'fr';
+        changeLanguage();
+        expect(paths()).toEqual(['how-to-use.html', 'how-to-use.html']);
+    });
+
     it('moves one live reference node into a dialog and restores it on close', () => {
         const document = makeDocument();
         document.body.innerHTML = '<div hidden id="home"><div id="settings-reference-credits"><dl id="map-credits-details"></dl></div></div>';
         const original = document.getElementById('map-credits-details');
-        const context = { document, i18n: { t: key => key }, CbDialog: { open(options) {
+        const context = { document, i18n: { t: key => key, getLanguage: () => 'en', onChange() {} }, CbDialog: { open(options) {
             const body = document.createElement('div'); document.body.appendChild(body); body.appendChild(options.body);
             return { body, close() { options.onClose(); body.remove(); } };
         } } };

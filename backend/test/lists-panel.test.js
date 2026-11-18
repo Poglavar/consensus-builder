@@ -142,6 +142,34 @@ describe('the Lists sheet', () => {
         serverDesigns: [{ cid: 'cid-shared', title: 'Shared square' }, { cid: 'cid-server', title: 'Server street' }]
     });
 
+    it('starts Designs newest, keeps an explicit sort across tabs, and resets to each tab default', async () => {
+        const { doc, shown, panel } = listsSheet({
+            designs: [{ proposalId: 'park', title: 'Zebra park', createdAt: '2026-11-18T12:00:00Z' }],
+            serverDesigns: [{ cid: 'older', title: 'Alpha square', publishedAt: '2026-11-01T12:00:00Z' }],
+            plans: [{ cid: 'plan-z', content: { title: 'Zebra', view: {}, designCids: [] }, designs: [], createdAt: '2026-11-18T12:00:00Z' },
+                { cid: 'plan-a', content: { title: 'Alpha', view: {}, designCids: [] }, designs: [], createdAt: '2026-11-01T12:00:00Z' }]
+        });
+        await panel.open();
+        await vi.waitFor(() => expect(shown('proposal-list-host')).toEqual(['park', 'older']));
+        const sort = () => doc.querySelector('[data-list-filter="sort"]');
+        expect(sort().value).toBe('newest');
+        sort().value = 'title'; sort().dispatchEvent({ type: 'change', target: sort() });
+        expect(shown('proposal-list-host')).toEqual(['older', 'park']);
+        await panel.select('plans');
+        expect(sort().value).toBe('title');
+        expect(shown('plan-list-host')).toEqual(['plan-a', 'plan-z']);
+        sort().value = 'newest'; sort().dispatchEvent({ type: 'change', target: sort() });
+        await panel.select('designs');
+        expect(sort().value).toBe('newest');
+        sort().value = 'title'; sort().dispatchEvent({ type: 'change', target: sort() });
+        doc.querySelector('#lists-filter-panel .btn-quiet').click();
+        await vi.waitFor(() => expect(sort().value).toBe('newest'));
+        expect(shown('proposal-list-host')).toEqual(['park', 'older']);
+        await panel.select('plans');
+        expect(sort().value).toBe('title');
+        expect(shown('plan-list-host')).toEqual(['plan-a', 'plan-z']);
+    });
+
     it('deletes a draft, removes the copy of a published design from this device, and offers nothing for a server-only row', async () => {
         const { calls, item, shown, panel } = fixture();
         await panel.open();
