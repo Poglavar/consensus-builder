@@ -5567,15 +5567,6 @@
         "statusLogEmpty": "Aucun message d’état pour le moment",
         "showThisProposal": "Afficher ce projet"
     },
-    "firstDesignGuide": {
-        "openMap": "Première visite ? Les projets se créent sur la carte 2D : ouvrez-la, puis cliquez sur une parcelle.",
-        "openMapAction": "Ouvrir la carte 2D",
-        "clickParcel": "Cliquez sur une parcelle pour choisir ce que vous y concevez.",
-        "pickTool": "Choisissez un outil sous Actions. Parc et Place apparaissent aussitôt ; Bâtiment de forme libre ouvre un éditeur.",
-        "saved": "Votre premier projet est enregistré dans ce navigateur. Voyez-le en 3D ou utilisez Partager pour obtenir un lien.",
-        "see3d": "Voir en 3D",
-        "close": "Fermer les conseils de démarrage"
-    },
     "world": {
         "close": "Fermer",
         "explore": {

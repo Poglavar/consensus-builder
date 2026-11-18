@@ -5567,15 +5567,6 @@
         "statusLogEmpty": "Ainda não há mensagens de estado",
         "showThisProposal": "Mostrar este projeto"
     },
-    "firstDesignGuide": {
-        "openMap": "Primeira visita? Os projetos criam-se no mapa 2D: abra-o e clique em qualquer parcela.",
-        "openMapAction": "Abrir o mapa 2D",
-        "clickParcel": "Clique em qualquer parcela para escolher o que projetar nela.",
-        "pickTool": "Escolha uma ferramenta em Ações. Parque e Praça aparecem de imediato; Edifício de forma livre abre um editor.",
-        "saved": "O seu primeiro projeto está guardado neste navegador. Veja-o em 3D ou use Partilhar para obter uma ligação.",
-        "see3d": "Ver em 3D",
-        "close": "Fechar as dicas iniciais"
-    },
     "world": {
         "close": "Fechar",
         "explore": {

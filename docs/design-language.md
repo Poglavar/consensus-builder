@@ -226,11 +226,6 @@ palette is the legend beside each tick.
   under the top row (`js/ui/banner-stack.js`, `.cb-banner-stack` / `.cb-banner`), which sets
   `--cb-banner-stack-height` so notices sit below it. On a phone the card starts right of the mode
   strip, so it never covers the 2D and 3D tiles.
-- The **getting-started hints** are one closable section of that card (`js/ui/first-design-guide.js`,
-  steps in `first-design-guide-model.js`), shown only on a first visit: open the 2D map, click a
-  parcel, choose a tool, then the first saved design. They follow what the person does, stay away
-  while an editor, dialog, sheet or the globe owns the screen, and end for good when closed or when
-  the first design is saved (`cb_site_intro_seen_v1`). Nothing on arrival is a dialog.
 - Every message copies its text on a click: a notice, the status line, and any status or alert line
   in a panel or an editor (`role="status"` / `role="alert"`, one page listener in js/ui-helpers.js
   `messageTextAt`). The copy cursor says so and "Copied" confirms it; a control inside a message

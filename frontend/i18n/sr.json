@@ -6924,15 +6924,6 @@
             "badUrl": "Unesite http(s) URL servisa člana sočiva."
         }
     },
-    "firstDesignGuide": {
-        "openMap": "Prvi put ovde? Dizajni nastaju na 2D mapi: otvorite je pa kliknite na bilo koju parcelu.",
-        "openMapAction": "Otvori 2D mapu",
-        "clickParcel": "Kliknite na bilo koju parcelu i izaberite šta ćete na njoj dizajnirati.",
-        "pickTool": "Izaberite alat pod Radnje. Park i Trg se pojavljuju odmah; Slobodna zgrada otvara uređivač.",
-        "saved": "Vaš prvi dizajn je sačuvan u ovom pregledaču. Pogledajte ga u 3D-u ili ga podelite linkom (Podeli).",
-        "see3d": "Pogledaj u 3D-u",
-        "close": "Zatvori uputstva za početak"
-    },
     "world": {
         "openFailed": "Prikaz sveta nije mogao da se pokrene. Možete nastaviti da koristite 2D mapu i potražiti drugi grad.",
         "title": "Izaberite mesto",

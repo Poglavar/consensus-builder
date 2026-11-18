@@ -683,17 +683,6 @@ textarea {
     margin: 0;
 }
 
-/* A banner the person can close: room for the shared close-circle-btn in its corner. */
-.cb-banner--dismissible {
-    padding-right: calc(var(--cb-space-4) + 32px);
-}
-
-.cb-banner__close {
-    position: absolute;
-    top: var(--cb-space-2);
-    right: var(--cb-space-2);
-}
-
 .cb-banner__title {
     display: flex;
     align-items: center;

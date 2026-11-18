@@ -6917,15 +6917,6 @@
             "badUrl": "Introduce una URL http(s) de un servicio de miembro de la lente."
         }
     },
-    "firstDesignGuide": {
-        "openMap": "¿Primera vez aquí? Los diseños se crean en el mapa 2D: ábrelo y haz clic en cualquier parcela.",
-        "openMapAction": "Abrir el mapa 2D",
-        "clickParcel": "Haz clic en cualquier parcela para elegir qué diseñar en ella.",
-        "pickTool": "Elige una herramienta en Acciones. Parque y Plaza aparecen al instante; Edificio libre abre un editor.",
-        "saved": "Tu primer diseño está guardado en este navegador. Míralo en 3D o usa Compartir para obtener un enlace.",
-        "see3d": "Verlo en 3D",
-        "close": "Cerrar las indicaciones iniciales"
-    },
     "world": {
         "openFailed": "No se pudo iniciar la vista del mundo. Puedes seguir usando el mapa 2D y buscar otra ciudad.",
         "title": "Elige un lugar",

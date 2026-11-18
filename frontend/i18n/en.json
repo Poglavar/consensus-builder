@@ -6890,15 +6890,6 @@
             "badUrl": "Enter an http(s) URL of a lens member service."
         }
     },
-    "firstDesignGuide": {
-        "openMap": "New here? Designs start on the 2D map: open it, then click any parcel.",
-        "openMapAction": "Open the 2D map",
-        "clickParcel": "Click any parcel to choose what to design on it.",
-        "pickTool": "Choose a tool under Actions. Park and Square appear at once; Freeform building opens an editor.",
-        "saved": "Your first design is saved in this browser. See it in 3D, or use Share for a link.",
-        "see3d": "See it in 3D",
-        "close": "Close getting started hints"
-    },
     "world": {
         "openFailed": "World view could not start. You can keep using the 2D map and search for another city.",
         "title": "Choose a place",
