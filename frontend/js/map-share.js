@@ -61,6 +61,9 @@
         function write() {
             if (!win.map?.getCenter || win.__mapModeState?.pending) return;
             if (win.BrowserWorkspace && win.BrowserWorkspace.status !== 'ready') return;
+            // The first-visit globe covers a map still parked on the default city. Writing that
+            // spot into the address would turn a reload into a location link and skip the globe.
+            if (win.WorldEntry?.ownsBoot?.()) return;
             const next = address(win.location.href, capture(win));
             if (next !== win.location.href) win.history.replaceState(win.history.state, '', next);
         }

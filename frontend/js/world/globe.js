@@ -418,6 +418,9 @@
         locateBtn.appendChild(el('i', 'fas fa-crosshairs', { 'aria-hidden': 'true' }));
         const searchField = el('div', 'world-search__field');
         searchField.append(searchInput, locateBtn);
+        // A first visit opens here with nothing else on screen: say what choosing a city leads to.
+        const welcome = opts.firstVisit ? el('p', 'world-search__welcome') : null;
+        if (welcome) searchWrap.appendChild(welcome);
         if (searchLabel) searchWrap.appendChild(searchLabel);
         searchWrap.append(searchField, results);
         top.append(searchWrap);
@@ -502,6 +505,7 @@
         function renderStaticText() {
             root.setAttribute('aria-label', t('world.title', 'Choose a place'));
             searchInput.placeholder = t('world.search.placeholder', 'City name');
+            if (welcome) welcome.textContent = t('world.welcome', 'Choose a city to see its designs and start your own.');
             if (searchLabel) searchLabel.textContent = t('world.search.label', 'Search cities');
             else searchInput.setAttribute('aria-label', t('world.search.label', 'Search cities'));
             locateBtn.setAttribute('aria-label', t('world.search.locate', 'Show my location'));

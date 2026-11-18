@@ -648,6 +648,17 @@ textarea {
     display: none;
 }
 
+/* Phones: the mode strip hangs from the top-left under the search row (css/map.css), so the card
+   starts right of it and never covers the 2D and 3D tiles. */
+@media (max-width: 767.98px) {
+    .cb-banner-stack {
+        left: var(--map-mode-strip);
+        right: var(--cb-space-4);
+        width: auto;
+        transform: none;
+    }
+}
+
 .cb-banner {
     position: relative;
     box-sizing: border-box;
@@ -670,6 +681,17 @@ textarea {
 
 .cb-banner p {
     margin: 0;
+}
+
+/* A banner the person can close: room for the shared close-circle-btn in its corner. */
+.cb-banner--dismissible {
+    padding-right: calc(var(--cb-space-4) + 32px);
+}
+
+.cb-banner__close {
+    position: absolute;
+    top: var(--cb-space-2);
+    right: var(--cb-space-2);
 }
 
 .cb-banner__title {

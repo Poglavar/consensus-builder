@@ -9217,6 +9217,50 @@
       "controlType": "input"
     },
     {
+      "id": "control-0b8c63002f4dad-1",
+      "source": "js/ui/first-design-guide.js",
+      "markup": "doc.createElement('button')",
+      "variants": [
+        {
+          "name": "Open the 2D map",
+          "attrs": {
+            "data-guide-action": "open-map"
+          }
+        },
+        {
+          "name": "How it works",
+          "attrs": {
+            "data-guide-action": "how-it-works"
+          }
+        },
+        {
+          "name": "See it in 3D",
+          "attrs": {
+            "data-guide-action": "see-3d"
+          }
+        }
+      ],
+      "exhaustiveVariants": true,
+      "interaction": "auto",
+      "controlType": "dynamic"
+    },
+    {
+      "id": "control-0b8c63002f4dad-2",
+      "source": "js/ui/first-design-guide.js",
+      "markup": "doc.createElement('button')",
+      "variants": [
+        {
+          "name": "Close hints",
+          "classes": [
+            "cb-banner__close"
+          ]
+        }
+      ],
+      "exhaustiveVariants": true,
+      "interaction": "auto",
+      "controlType": "dynamic"
+    },
+    {
       "id": "control-ad1409caf61997-1",
       "source": "js/ui/map-before-after.js",
       "markup": "doc.createElement('button')"

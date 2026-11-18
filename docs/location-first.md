@@ -61,7 +61,9 @@ an escape into explore: the city view degrades on its own (the parcel-register n
 
 Writing: the app writes the view (`?at=` on every `moveend`; in the model and photo views also
 `camera`, `rotate` and the mode) and the selection. After boot the address bar drops `city=` (and
-the legacy `city=explore`), so every copied link is a plain location.
+the legacy `city=explore`), so every copied link is a plain location. While the first-visit globe
+is open nothing is written: the map under it is parked on the default city, and that spot in the
+address would turn a reload into a location link (rule 2) and skip the globe.
 
 The selection is what the click stack has selected, one parameter at a time, written in place
 (`replaceState`, so Back does not step through clicks) on every selection and dropped when nothing

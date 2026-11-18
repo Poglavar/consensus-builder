@@ -1497,7 +1497,7 @@
             "proposeTitle": "Propose",
             "addBuildings": "Buildings",
             "addBuildingsTooltip": "Add buildings to the selected block",
-            "singleBuilding": "Single building",
+            "singleBuilding": "Freeform building",
             "parkButton": "Park",
             "squareButton": "Square",
             "listTitle": "Blocks list",
@@ -2904,7 +2904,7 @@
                         "roadTrack": "Road/track",
                         "road-track": "Road/track",
                         "buildings": "Buildings",
-                        "single": "Single building",
+                        "single": "Freeform building",
                         "park": "Park",
                         "square": "Square",
                         "lake": "Lake",
@@ -2950,7 +2950,7 @@
                     "road": "Road",
                     "track": "Track",
                     "buildings": "Buildings",
-                    "single": "Single building",
+                    "single": "Freeform building",
                     "row": "Row",
                     "park": "Park",
                     "square": "Square",
@@ -6541,7 +6541,8 @@
             "parcelsLabel": "Parcels",
             "suggestedTotals": "Suggested layouts: {{buildings}} buildings · {{apartmentsPerFloor}} apartments per storey · {{apartments}} in total",
             "avgPerParcel": "Avg / parcel",
-            "openActions2d": "Open actions in 2D"
+            "openActions2d": "Open actions in 2D",
+            "parcelUnavailable": "This parcel could not be loaded on the map. Click it on the 2D map instead."
         },
         "isolation": {
             "singleParcel": "Selected parcel",
@@ -6886,7 +6887,17 @@
             "badUrl": "Enter an http(s) URL of a lens member service."
         }
     },
+    "firstDesignGuide": {
+        "openMap": "New here? Designs start on the 2D map: open it, then click any parcel.",
+        "openMapAction": "Open the 2D map",
+        "clickParcel": "Click any parcel to choose what to design on it.",
+        "pickTool": "Choose a tool under Actions. Park and Square appear at once; Freeform building opens an editor.",
+        "saved": "Your first design is saved in this browser. See it in 3D, or use Share for a link.",
+        "see3d": "See it in 3D",
+        "close": "Close getting started hints"
+    },
     "world": {
+        "welcome": "Choose a city to see its designs and start your own.",
         "openFailed": "World view could not start. You can keep using the 2D map and search for another city.",
         "title": "Choose a place",
         "hint": "Drag to spin · select a city or an exact location",

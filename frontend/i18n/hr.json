@@ -1507,7 +1507,7 @@
             "proposeTitle": "Predloži",
             "addBuildings": "Zgrade",
             "addBuildingsTooltip": "Dodaj zgrade u odabrani blok",
-            "singleBuilding": "Jedna zgrada",
+            "singleBuilding": "Slobodna zgrada",
             "parkButton": "Park",
             "squareButton": "Trg",
             "listTitle": "Popis blokova",
@@ -2904,7 +2904,7 @@
                         "roadTrack": "Cesta/Pruga",
                         "road-track": "Cesta/Pruga",
                         "buildings": "Zgrade",
-                        "single": "Jedna zgrada",
+                        "single": "Slobodna zgrada",
                         "park": "Park",
                         "square": "Trg",
                         "lake": "Jezero",
@@ -2951,7 +2951,7 @@
                     "road": "Cesta",
                     "track": "Pruga",
                     "buildings": "Zgrade",
-                    "single": "Jedna zgrada",
+                    "single": "Slobodna zgrada",
                     "row": "Niz",
                     "park": "Park",
                     "square": "Trg",
@@ -6575,7 +6575,8 @@
             "parcelsLabel": "Čestice",
             "suggestedTotals": "Predloženi tlocrti: {{buildings}} zgrada · {{apartmentsPerFloor}} stanova po etaži · ukupno {{apartments}}",
             "avgPerParcel": "Prosjek / čestici",
-            "openActions2d": "Otvori radnje u 2D"
+            "openActions2d": "Otvori radnje u 2D",
+            "parcelUnavailable": "Ova se čestica nije mogla učitati na karti. Kliknite je na 2D karti."
         },
         "isolation": {
             "singleParcel": "Odabrana čestica",
@@ -6920,7 +6921,17 @@
             "badUrl": "Unesite http(s) URL servisa člana leće."
         }
     },
+    "firstDesignGuide": {
+        "openMap": "Prvi put ovdje? Dizajni nastaju na 2D karti: otvorite je pa kliknite bilo koju česticu.",
+        "openMapAction": "Otvori 2D kartu",
+        "clickParcel": "Kliknite bilo koju česticu i odaberite što ćete na njoj dizajnirati.",
+        "pickTool": "Odaberite alat pod Radnje. Park i Trg pojavljuju se odmah; Slobodna zgrada otvara uređivač.",
+        "saved": "Vaš prvi dizajn spremljen je u ovom pregledniku. Pogledajte ga u 3D-u ili ga podijelite poveznicom (Podijeli).",
+        "see3d": "Pogledaj u 3D-u",
+        "close": "Zatvori upute za početak"
+    },
     "world": {
+        "welcome": "Odaberite grad, pogledajte njegove dizajne i započnite svoj.",
         "openFailed": "Prikaz svijeta nije se mogao pokrenuti. Možete nastaviti koristiti 2D kartu i potražiti drugi grad.",
         "title": "Odaberite mjesto",
         "hint": "Povuci za okretanje · odaberi grad ili točnu lokaciju",

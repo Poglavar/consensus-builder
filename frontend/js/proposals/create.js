@@ -117,6 +117,9 @@ const PROPOSAL_TYPE_TRANSLATION_KEYS = {
     'residences': 'modal.createProposal.goalOptions.buildings',
     'single building': 'modal.createProposal.goalOptions.single',
     'building(s)': 'modal.createProposal.goalOptions.single',
+    // The Freeform editor names its design by the tool's own label (Actions → Freeform building).
+    // Unmapped, it fell through to the goal formatter and read "Freeform-building".
+    'freeform building': 'panel.parcel.build.single',
     'park': 'modal.createProposal.goalOptions.park',
     'square': 'modal.createProposal.goalOptions.square',
     'lake': 'modal.createProposal.goalOptions.lake',

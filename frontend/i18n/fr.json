@@ -164,7 +164,7 @@
             "showSquares": "Places",
             "proposeTitle": "Proposer",
             "addBuildingsTooltip": "Ajouter des bâtiments à l’îlot sélectionné",
-            "singleBuilding": "Bâtiment unique",
+            "singleBuilding": "Bâtiment de forme libre",
             "parkButton": "Parc",
             "squareButton": "Place",
             "listTitle": "Liste des îlots",
@@ -553,7 +553,7 @@
                     "goals": {
                         "buildings": "Bâtiments",
                         "parcel-layout": "Découpage parcellaire",
-                        "single": "Bâtiment unique",
+                        "single": "Bâtiment de forme libre",
                         "park": "Parc",
                         "square": "Place",
                         "lake": "Lac",
@@ -590,7 +590,7 @@
                     "parcel-layout": "Découpage parcellaire",
                     "road": "Route",
                     "track": "Voie ferrée",
-                    "single": "Bâtiment unique",
+                    "single": "Bâtiment de forme libre",
                     "park": "Parc",
                     "square": "Place",
                     "lake": "Lac",
@@ -4745,7 +4745,8 @@
             "title": "Informations sur le projet",
             "suggestedTotals": "Agencements suggérés : {{buildings}} bâtiments · {{apartmentsPerFloor}} appartements par niveau · {{apartments}} au total",
             "avgPerParcel": "Moyenne / parcelle",
-            "openActions2d": "Ouvrir les actions en 2D"
+            "openActions2d": "Ouvrir les actions en 2D",
+            "parcelUnavailable": "Cette parcelle n’a pas pu être chargée sur la carte. Cliquez dessus sur la carte 2D."
         },
         "ai": {
             "download": "Télécharger",
@@ -5563,7 +5564,17 @@
         "statusLogEmpty": "Aucun message d’état pour le moment",
         "showThisProposal": "Afficher ce projet"
     },
+    "firstDesignGuide": {
+        "openMap": "Première visite ? Les projets se créent sur la carte 2D : ouvrez-la, puis cliquez sur une parcelle.",
+        "openMapAction": "Ouvrir la carte 2D",
+        "clickParcel": "Cliquez sur une parcelle pour choisir ce que vous y concevez.",
+        "pickTool": "Choisissez un outil sous Actions. Parc et Place apparaissent aussitôt ; Bâtiment de forme libre ouvre un éditeur.",
+        "saved": "Votre premier projet est enregistré dans ce navigateur. Voyez-le en 3D ou utilisez Partager pour obtenir un lien.",
+        "see3d": "Voir en 3D",
+        "close": "Fermer les conseils de démarrage"
+    },
     "world": {
+        "welcome": "Choisissez une ville pour voir ses projets et commencer le vôtre.",
         "close": "Fermer",
         "explore": {
             "dismiss": "Fermer",

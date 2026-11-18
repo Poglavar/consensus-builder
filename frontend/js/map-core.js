@@ -129,6 +129,9 @@ map.on('moveend', () => {
     if (window.__mapModeState && window.__mapModeState.desired !== '2d') return;
     if (window.BrowserWorkspace && window.BrowserWorkspace.status !== 'ready') return;
     if (!window.WorldEntryModel) return;
+    // Under the first-visit globe the map is parked on the default city, which nobody chose:
+    // written here, a reload would read it as a location link and skip the globe.
+    if (window.WorldEntry?.ownsBoot?.()) return;
     try {
         const center = map.getCenter();
         const next = window.WorldEntryModel.addressWithView(window.location.href, { lat: center.lat, lon: center.lng, zoom: map.getZoom() }, { dropCity: dropCityParam });

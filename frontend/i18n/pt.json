@@ -164,7 +164,7 @@
             "showSquares": "Praças",
             "proposeTitle": "Propor",
             "addBuildingsTooltip": "Adicionar edifícios ao quarteirão selecionado",
-            "singleBuilding": "Edifício único",
+            "singleBuilding": "Edifício de forma livre",
             "parkButton": "Parque",
             "squareButton": "Praça",
             "listTitle": "Lista de quarteirões",
@@ -553,7 +553,7 @@
                     "goals": {
                         "buildings": "Edifícios",
                         "parcel-layout": "Disposição das parcelas",
-                        "single": "Edifício único",
+                        "single": "Edifício de forma livre",
                         "park": "Parque",
                         "square": "Praça",
                         "lake": "Lago",
@@ -590,7 +590,7 @@
                     "parcel-layout": "Disposição das parcelas",
                     "road": "Estrada",
                     "track": "Via férrea",
-                    "single": "Edifício único",
+                    "single": "Edifício de forma livre",
                     "park": "Parque",
                     "square": "Praça",
                     "lake": "Lago",
@@ -4745,7 +4745,8 @@
             "title": "Informações do projeto",
             "suggestedTotals": "Distribuições sugeridas: {{buildings}} edifícios · {{apartmentsPerFloor}} apartamentos por piso · {{apartments}} no total",
             "avgPerParcel": "Média / parcela",
-            "openActions2d": "Abrir ações em 2D"
+            "openActions2d": "Abrir ações em 2D",
+            "parcelUnavailable": "Não foi possível carregar esta parcela no mapa. Clique nela no mapa 2D."
         },
         "ai": {
             "download": "Descarregar",
@@ -5563,7 +5564,17 @@
         "statusLogEmpty": "Ainda não há mensagens de estado",
         "showThisProposal": "Mostrar este projeto"
     },
+    "firstDesignGuide": {
+        "openMap": "Primeira visita? Os projetos criam-se no mapa 2D: abra-o e clique em qualquer parcela.",
+        "openMapAction": "Abrir o mapa 2D",
+        "clickParcel": "Clique em qualquer parcela para escolher o que projetar nela.",
+        "pickTool": "Escolha uma ferramenta em Ações. Parque e Praça aparecem de imediato; Edifício de forma livre abre um editor.",
+        "saved": "O seu primeiro projeto está guardado neste navegador. Veja-o em 3D ou use Partilhar para obter uma ligação.",
+        "see3d": "Ver em 3D",
+        "close": "Fechar as dicas iniciais"
+    },
     "world": {
+        "welcome": "Escolha uma cidade para ver os seus projetos e começar o seu.",
         "close": "Fechar",
         "explore": {
             "dismiss": "Fechar",

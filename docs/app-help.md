@@ -3,7 +3,7 @@
 
 ## App overview
 
-Use map search to change city and locate places or parcel IDs. Switch to the 2D map, click a parcel and open **Actions** for buildings, roads, public spaces and parcel layouts. To draw a boundary, click open ground and choose **Draw a parcel**, then choose **Propose here** on the finished site. Layers controls switch map information, and the view controls switch between 2D, 3D and realistic views. A parcel layout edits the selected ground. Find saved plans in **Lists** → **Plans**.
+Use map search to change city and locate places or parcel IDs. Switch to the 2D map, click a parcel and open **Actions** for buildings, roads, public spaces and parcel layouts. To draw a boundary, click open ground and choose **Draw a parcel**, then choose **Propose here** on the finished site. Layers controls switch map information, and the view controls switch between 2D, 3D and realistic views. On a first visit a hint card under the top row names the next step (open the 2D map, click a parcel, choose a tool); **How it works** on it, and under Settings → Help & about, opens the explainer. A parcel layout edits the selected ground. Find saved plans in **Lists** → **Plans**.
 
 When a tool asks for scope, **Use this parcel** continues. **Select whole block** selects land for review. Choose the tool again after reviewing it. **Cancel** or Escape returns without starting. Freeform building starts in placement mode. Click the map or choose **Place on selected land**, then edit its footprint and height and choose **Done**.
 

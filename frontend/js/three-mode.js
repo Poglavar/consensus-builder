@@ -1760,7 +1760,18 @@
             } else if (kind === 'parcels' || kind === 'formed') {
                 isolateParcel(instance.id);
                 if (updateParcelInfoPanel(instance.id)) body.appendChild(parcelInfoPanelEl);
-                appendMapActions(body, () => window.ClickStack.showParcel(instance.feature || getParcelFeatureById(instance.id)));
+                // A scene opened straight from a link knows the parcel only by id: the map has not
+                // read its ground yet, so the parcel is fetched before the map section opens on it.
+                appendMapActions(body, async () => {
+                    let feature = instance.feature || getParcelFeatureById(instance.id);
+                    if (!feature) {
+                        await window.CadastralParcelRepository.ensureIds([instance.id]);
+                        feature = getParcelFeatureById(instance.id);
+                    }
+                    if (!feature) throw new Error(threeI18n('threeMode.proposalPanel.parcelUnavailable',
+                        'This parcel could not be loaded on the map. Click it on the 2D map instead.'));
+                    window.ClickStack.showParcel(feature);
+                });
             } else if (kind === 'built') {
                 hostInspector(body);
                 withStackDriving(() => window.PlanningViews.inspectBuilding(instance.feature, instance.id, { hosted: true }));

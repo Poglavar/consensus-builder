@@ -1417,7 +1417,7 @@
             "proposeTitle": "Proponer",
             "addBuildings": "Edificios",
             "addBuildingsTooltip": "Agregar edificios al bloque seleccionado",
-            "singleBuilding": "Edificio único",
+            "singleBuilding": "Edificio libre",
             "parkButton": "Parque",
             "squareButton": "Plaza",
             "listTitle": "Lista de bloques",
@@ -2903,7 +2903,7 @@
                         "roadTrack": "Carretera/Vía férrea",
                         "road-track": "Carretera/Vía férrea",
                         "buildings": "Edificios",
-                        "single": "Edificio único",
+                        "single": "Edificio libre",
                         "park": "Parque",
                         "square": "Plaza",
                         "lake": "Lago",
@@ -2949,7 +2949,7 @@
                     "road": "Carretera",
                     "track": "Vía férrea",
                     "buildings": "Edificios",
-                    "single": "Edificio único",
+                    "single": "Edificio libre",
                     "row": "Hilera",
                     "park": "Parque",
                     "square": "Plaza",
@@ -6568,7 +6568,8 @@
             "parcelsLabel": "Parcelas",
             "suggestedTotals": "Distribuciones sugeridas: {{buildings}} edificios · {{apartmentsPerFloor}} viviendas por planta · {{apartments}} en total",
             "avgPerParcel": "Media / parcela",
-            "openActions2d": "Abrir acciones en 2D"
+            "openActions2d": "Abrir acciones en 2D",
+            "parcelUnavailable": "No se pudo cargar esta parcela en el mapa. Haz clic en ella en el mapa 2D."
         },
         "isolation": {
             "singleParcel": "Parcela seleccionada",
@@ -6913,7 +6914,17 @@
             "badUrl": "Introduce una URL http(s) de un servicio de miembro de la lente."
         }
     },
+    "firstDesignGuide": {
+        "openMap": "¿Primera vez aquí? Los diseños se crean en el mapa 2D: ábrelo y haz clic en cualquier parcela.",
+        "openMapAction": "Abrir el mapa 2D",
+        "clickParcel": "Haz clic en cualquier parcela para elegir qué diseñar en ella.",
+        "pickTool": "Elige una herramienta en Acciones. Parque y Plaza aparecen al instante; Edificio libre abre un editor.",
+        "saved": "Tu primer diseño está guardado en este navegador. Míralo en 3D o usa Compartir para obtener un enlace.",
+        "see3d": "Verlo en 3D",
+        "close": "Cerrar las indicaciones iniciales"
+    },
     "world": {
+        "welcome": "Elige una ciudad para ver sus diseños y empezar el tuyo.",
         "openFailed": "No se pudo iniciar la vista del mundo. Puedes seguir usando el mapa 2D y buscar otra ciudad.",
         "title": "Elige un lugar",
         "hint": "Arrastra para girar · selecciona una ciudad o una ubicación exacta",

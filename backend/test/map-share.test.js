@@ -105,6 +105,16 @@ describe('current-map sharing', () => {
         sync.write();
         expect(win.history.replaceState).toHaveBeenCalledTimes(1);
     });
+    it('leaves the address alone while the first-visit globe covers the default city', () => {
+        const win = addressWindow();
+        const sync = createAddressSync(win);
+        win.WorldEntry = { ownsBoot: () => true };
+        sync.write();
+        expect(win.history.replaceState).not.toHaveBeenCalled();
+        win.WorldEntry = { ownsBoot: () => false };
+        sync.write();
+        expect(win.history.replaceState).toHaveBeenCalledTimes(1);
+    });
     it('does not rewrite history when the address already represents the current view', () => {
         const win = addressWindow();
         win.location.href = address(win.location.href, { mode: '2d', at: '45,16,18' });

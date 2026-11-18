@@ -1806,7 +1806,7 @@ const PROPOSAL_GOAL_FILTERS = [
     { value: 'all', label: 'All goals' },
     { value: 'road-track', label: 'Road/Track' },
     { value: 'buildings', label: 'Buildings' },
-    { value: 'single', label: 'Single building' },
+    { value: 'single', label: 'Freeform building' },
     { value: 'park', label: 'Park' },
     { value: 'square', label: 'Square' },
     { value: 'lake', label: 'Lake' },
@@ -1835,7 +1835,7 @@ const PROPOSAL_GOAL_FILTER_I18N_KEYS = {
 const PROPOSAL_GOAL_LABELS = {
     'road-track': 'Road/Track',
     buildings: 'Buildings',
-    single: 'Single building',
+    single: 'Freeform building',
     row: 'Row',
     park: 'Park',
     square: 'Square',
