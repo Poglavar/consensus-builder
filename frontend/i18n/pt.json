@@ -1483,7 +1483,10 @@
                 "cutOnNode": "Começa num canto existente — esse é um dos dois pontos de ancoragem necessários.",
                 "cutFree": "Ajuste automático desativado enquanto mantém Shift premido — o ponto fica exatamente onde clicar.",
                 "eraseHint": "Clique num limite para o apagar — os dois lotes que separa tornam-se um só. É possível apagar {{count}} limites.",
-                "eraseNone": "Não há limites entre lotes aqui — apenas o contorno do terreno agrupado, que pertence aos vizinhos.",
+                "eraseNone": "Nenhum par de lotes partilha um limite, por isso não há nada a apagar. A linha vermelha grossa é o limite do terreno selecionado e não muda.",
+                "eraseOnePlot": "A divisão é um só lote, por isso não há limite a apagar. Corte-o com a ferramenta de linha ou desenhe um lote sobre ele.",
+                "mergeAllNone": "A divisão já é um só lote.",
+                "mergedAll": "Todos os lotes são agora um só. Corte-o com a ferramenta de linha ou desenhe lotes sobre ele.",
                 "lineAnchored": "Ancorada em {{count}} pontos — a linha será desenhada apenas entre os dois mais afastados.",
                 "lineOneAnchor": "Um ponto de ancoragem até agora. Atravesse outro limite ou termine num canto existente.",
                 "lineNoAnchor": "Ainda sem pontos de ancoragem. Para criar uma linha, esta tem de atravessar um limite ou encontrar um canto existente em dois pontos.",
@@ -1518,6 +1521,7 @@
             "oldPlots": "Parcelas anteriores",
             "oldPlotsPartial": "Foi possível carregar {{shown}} das {{declared}} parcelas de entrada.",
             "eraseEdge": "Apagar um limite",
+            "mergeAll": "Juntar todos os lotes num só",
             "eraseTooltip": "Apagar este limite — {{a}} e {{b}} tornam-se um só lote",
             "nodeRemoveStraightens": "A remoção endireita o limite — cerca de {{moved}} m² passam de um lado para o outro.",
             "plotLabel": "lote {{n}} ({{area}} m²)",
@@ -2422,7 +2426,7 @@
                 "plot-too-small": "Um lote tem menos de 1 m².",
                 "overlapping-plots": "Os lotes sobrepõem-se. Ajuste os seus limites.",
                 "missing-pool": "A disposição não tem um contorno da área conjunta.",
-                "invalid-pool": "Não foi possível verificar o contorno da área conjunta.",
+                "invalid-pool": "Não foi possível verificar a divisão face ao contorno do terreno selecionado: {{reason}}",
                 "coverage-gap": "Os lotes deixam parte da área conjunta por cobrir.",
                 "coverage-excess": "Os lotes estendem-se para fora da área conjunta."
             }
@@ -5424,7 +5428,7 @@
             "validation": {
                 "missing-plots": "Adicione pelo menos um lote.",
                 "missing-pool": "A disposição não tem um contorno da área conjunta.",
-                "invalid-pool": "Não foi possível verificar o contorno da área conjunta.",
+                "invalid-pool": "Não foi possível verificar os lotes face ao contorno do terreno selecionado: {{reason}}",
                 "too-many-plots": "Use no máximo {{max}} lotes numa disposição.",
                 "geometry-unavailable": "Não é possível verificar a geometria dos lotes antes de o mapa carregar.",
                 "plot-too-small": "O lote {{plot}} é inferior a {{min}}.",

@@ -943,7 +943,7 @@
                 "plot-too-small": "Jedna parcela je manja od 1 m².",
                 "overlapping-plots": "Parcele se preklapaju. Prilagodite njihove međe.",
                 "missing-pool": "Raspored nema obod obuhvata.",
-                "invalid-pool": "Obod obuhvata nije moguće proveriti.",
+                "invalid-pool": "Raspored nije bilo moguće proveriti prema obrisu izabranog zemljišta: {{reason}}",
                 "coverage-gap": "Parcele ne pokrivaju deo obuhvata.",
                 "coverage-excess": "Parcele zahvataju područje izvan obuhvata."
             }
@@ -3628,7 +3628,7 @@
                 "overlapping-plots": "Parcela {{plot}} se preklapa sa drugom parcelom.",
                 "coverage-gap": "Parcele ne pokrivaju {{area}} obuhvata.",
                 "coverage-excess": "Parcele zahvataju {{area}} izvan obuhvata.",
-                "invalid-pool": "Obod obuhvata nije bilo moguće proveriti."
+                "invalid-pool": "Parcele nije bilo moguće proveriti prema obrisu izabranog zemljišta: {{reason}}"
             }
         }
     },
@@ -3671,7 +3671,10 @@
                 "cutOnNode": "Počinje na postojećem vrhu — to je jedno od dva potrebna uporišta.",
                 "cutFree": "Hvatanje je isključeno dok držiš Shift — tačka pada tačno gde klikneš.",
                 "eraseHint": "Klikni među da je obrišeš — dve parcele koje razdvaja postaju jedna. Međa koje se mogu obrisati: {{count}}.",
-                "eraseNone": "Ovde nema međa između parcela — samo obuhvat zahvata, koji pripada susedima.",
+                "eraseNone": "Nijedne dve parcele nemaju zajedničku među, pa nema šta da se obriše. Debela crvena linija je ivica izabranog zemljišta i ne menja se.",
+                "eraseOnePlot": "Raspored je jedna parcela, pa nema međe za brisanje. Preseci je alatom za liniju ili nacrtaj parcelu na njoj.",
+                "mergeAllNone": "Raspored je već jedna parcela.",
+                "mergedAll": "Sve parcele su sada jedna. Preseci je alatom za liniju ili nacrtaj parcele na njoj.",
                 "lineAnchored": "Uporišta: {{count}}. Linija će biti povučena između krajnja dva, i nigde drugde.",
                 "lineOneAnchor": "Zasad jedno uporište. Pređi još jednu među ili završi na postojećem vrhu.",
                 "lineNoAnchor": "Još nema uporišta. Linija mora preći među ili dodirnuti postojeći vrh na dva mesta da bi nastala nova međa.",
@@ -3716,6 +3719,7 @@
             "unknownParcel": "Parcela",
             "oldPlotsPartial": "Učitano je {{shown}} od {{declared}} ulaznih parcela.",
             "eraseEdge": "Obriši među",
+            "mergeAll": "Spoji sve parcele u jednu",
             "eraseTooltip": "Obriši ovu među — {{a}} i {{b}} postaju jedna parcela",
             "nodeRemoveStraightens": "Uklanjanjem se međa ispravlja — preko nje prelazi otprilike {{moved}} m².",
             "plotLabel": "parcela {{n}} ({{area}} m²)",

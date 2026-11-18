@@ -176,7 +176,7 @@ test('the Build tile opens the editor on equal plots, and the plot count sets ho
   await expect(editor.locator('#reparcel-panel-editing')).toBeVisible();
   await attachEditorScreenshot(page, testInfo, 'single-panel-desktop.png');
   const geometryTools = editor.locator('.reparcel-geometry-tools > button');
-  await expect(geometryTools).toHaveCount(4);
+  await expect(geometryTools).toHaveCount(5);
   const toolRows = await geometryTools.evaluateAll(buttons => [...new Set(buttons.map(button =>
     Math.round(button.getBoundingClientRect().top)))].length);
   expect(toolRows).toBe(1);

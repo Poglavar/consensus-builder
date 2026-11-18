@@ -336,7 +336,7 @@ test.describe('parcel-layout button controls @core', () => {
     await page.mouse.click(target.x, target.y);
     await expect(rows(editor)).toHaveCount(1);
     await expect(lines).toHaveCount(0);
-    await expect(status(editor)).toContainText('There are no boundaries between plots here');
+    await expect(status(editor)).toContainText('The layout is one plot, so there is no boundary to erase.');
     await erase.click();
     await expect(erase).toHaveAttribute('aria-pressed', 'false');
   });

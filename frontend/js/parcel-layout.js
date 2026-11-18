@@ -502,6 +502,7 @@
                                     ${tool('data-reparcel-line aria-pressed="false"', 'reparcellization.modal.drawLine', 'Draw a line', 'fa-slash')}
                                     ${tool('data-reparcel-erase aria-pressed="false"', 'reparcellization.modal.eraseEdge', 'Erase a boundary', 'fa-eraser')}
                                     ${tool('data-reparcel-nodes aria-pressed="false"', 'reparcellization.modal.editNodes', 'Edit boundaries (nodes)', 'fa-bezier-curve')}
+                                    ${tool('data-reparcel-merge-all', 'reparcellization.modal.mergeAll', 'Merge all plots into one', 'fa-object-group')}
                                 </div>
                             </div>
                         </div>
@@ -722,6 +723,8 @@
         if (state.eraseBtn) {
             state.eraseBtn.addEventListener('click', () => toggleEraseMode());
         }
+        const mergeAllBtn = root.querySelector('[data-reparcel-merge-all]');
+        if (mergeAllBtn) mergeAllBtn.addEventListener('click', () => mergeAllPlots());
         updateDrawToolButtons();
         if (state.finishBtn) {
             state.finishBtn.addEventListener('click', () => onDrawFinish());
@@ -926,6 +929,7 @@
         return t(`parcelLayout.editor.validation.${error.code}`, error.message, {
             plot: Number.isInteger(error.plotIndex) ? error.plotIndex + 1 : '',
             area: Number.isFinite(error.areaM2) ? formatArea(error.areaM2) : '',
+            reason: error.reason || '',
             min: formatArea(window.ParcelLayoutValidation.MIN_PLOT_AREA_M2),
             max: window.ParcelLayoutValidation.MAX_PLOTS
         });
@@ -1859,6 +1863,7 @@
         exitCompare(); // editing and before/after are mutually exclusive
         closeChoicePopup();
         toggleEraseMode(false);
+        closePlotTooltips();
         state.drawing.active = true;
         state.drawing.mode = mode === 'line' ? 'line' : 'polygon';
         state.drawing.points = [];
@@ -1989,6 +1994,7 @@
         if (next) {
             exitCompare();
             closeChoicePopup();
+            closePlotTooltips();
             if (state.drawing.active) cancelDraw();
             state.erase.nodeEditWasActive = state.nodeEdit.active;
             if (state.nodeEdit.active) toggleNodeEditing(false);
@@ -2002,6 +2008,16 @@
             if (restore) toggleNodeEditing(true);
             else setStatus('', 'info');
         }
+    }
+
+    // A plot's sticky tooltip opened before a mode began stays on screen through it, naming a plot
+    // that is not what the pointer now acts on (Plot 1 · area over a boundary being erased).
+    function closePlotTooltips() {
+        if (!state.previewLayer) return;
+        state.previewLayer.eachLayer(layer => {
+            if (typeof layer.closeTooltip === 'function') layer.closeTooltip();
+            if (Number.isInteger(layer.__reparcelSliceIndex)) layer.setStyle(plotStyle(layer.__reparcelSliceIndex));
+        });
     }
 
     function clearEraseLayer() {
@@ -2059,13 +2075,41 @@
         });
         state.erase.layer = layer;
         state.erase.topology = topology;
+        // Nothing to erase is said in terms of what is on the map: one plot has no inner boundary,
+        // and plots that do not touch share none. The thick red outer line is never erasable.
         setStatus(groups.length
             ? t('reparcellization.modal.status.eraseHint',
                 'Click a boundary to erase it — the two plots it separates become one. {{count}} boundaries can be erased.',
                 { count: groups.length })
-            : t('reparcellization.modal.status.eraseNone',
-                'There are no boundaries between plots here — only the pooled outline, which belongs to the neighbours.'),
+            : (state.slices.length < 2
+                ? t('reparcellization.modal.status.eraseOnePlot',
+                    'The layout is one plot, so there is no boundary to erase. Cut it with the line tool, or draw a plot on it.')
+                : t('reparcellization.modal.status.eraseNone',
+                    'No two plots share a boundary, so there is nothing to erase. The thick red line is the edge of the selected land and stays fixed.')),
             groups.length ? 'info' : 'warning');
+    }
+
+    // Every plot back into one: the pool, undivided, to draw on. A preset's many small plots no
+    // longer have to be erased boundary by boundary. One undo step, which also gives the preset back.
+    function mergeAllPlots() {
+        if (!state.superParcel || !state.superParcel.geometry) return false;
+        if (state.slices.length < 2) {
+            setStatus(t('reparcellization.modal.status.mergeAllNone', 'The layout is already one plot.'), 'info');
+            return false;
+        }
+        if (state.drawing.active) cancelDraw();
+        if (state.erase.active) toggleEraseMode(false);
+        pushHistory();
+        if (state.algorithm !== 'manual') setAlgorithmKey('manual');
+        state.slices = [makePlot(JSON.parse(JSON.stringify(state.superParcel.geometry)), 'base')];
+        state.shownSlice = null;
+        updateLegend();
+        drawPreview();
+        if (state.nodeEdit.active) renderNodeHandles();
+        setStatus(t('reparcellization.modal.status.mergedAll',
+            'All plots are one plot now. Cut it with the line tool, or draw plots on it.'), 'info');
+        log('debug', 'all plots merged into the pool');
+        return true;
     }
 
     function eraseBoundary(group) {
@@ -2934,6 +2978,7 @@
         if (!state.map || state.compare.active || !state.slices.length) return;
         cancelDraw();
         closeChoicePopup();
+        closePlotTooltips();
         const session = window.__MapBeforeAfter.attach(state.map, {
             percent: 50,
             labels: { before: t('mapCompare.before', 'Before'), after: t('mapCompare.after', 'After') },

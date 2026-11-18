@@ -18,6 +18,17 @@ const codes = result => result.errors.map(error => error.code);
 const POOL = box(0, 0, 100, 50);
 
 describe('parcel-layout validation', () => {
+    // "The pool outline could not be checked" alone told the person nothing (2026-11-18): the
+    // reason travels with the code, and the panel's text names it.
+    it('says why a pool outline cannot be checked', () => {
+        const bowtie = { type: 'Polygon', coordinates: [[at(0, 0), at(100, 50), at(100, 0), at(0, 50), at(0, 0)]] };
+        const result = validate({ pool: bowtie, plots: plots(box(0, 0, 40, 50)) }, { turf });
+        const error = result.errors.find(entry => entry.code === 'invalid-pool');
+        expect(error, JSON.stringify(result.errors)).toBeTruthy();
+        expect(error.reason).toBe('Polygon boundaries intersect themselves.');
+        expect(error.message).toBe('The plots could not be checked against the outline of the selected land: Polygon boundaries intersect themselves.');
+    });
+
     it('accepts plots that tile the pool, and measures it', () => {
         const result = validate({ pool: POOL, plots: plots(box(0, 0, 40, 50), box(40, 0, 100, 50)) }, { turf });
         expect(result).toMatchObject({ valid: true, errors: [], warnings: [] });

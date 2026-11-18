@@ -943,7 +943,7 @@
                 "plot-too-small": "Jedna je čestica manja od 1 m².",
                 "overlapping-plots": "Čestice se preklapaju. Prilagodite njihove međe.",
                 "missing-pool": "Raspored nema obod obuhvata.",
-                "invalid-pool": "Obod obuhvata nije moguće provjeriti.",
+                "invalid-pool": "Raspored nije bilo moguće provjeriti prema obrisu odabranog zemljišta: {{reason}}",
                 "coverage-gap": "Čestice ne pokrivaju dio obuhvata.",
                 "coverage-excess": "Čestice zahvaćaju područje izvan obuhvata."
             }
@@ -3628,7 +3628,7 @@
                 "overlapping-plots": "Čestica {{plot}} preklapa se s drugom česticom.",
                 "coverage-gap": "Čestice ne pokrivaju {{area}} obuhvata.",
                 "coverage-excess": "Čestice zahvaćaju {{area}} izvan obuhvata.",
-                "invalid-pool": "Obod obuhvata nije bilo moguće provjeriti."
+                "invalid-pool": "Čestice nije bilo moguće provjeriti prema obrisu odabranog zemljišta: {{reason}}"
             }
         }
     },
@@ -3671,7 +3671,10 @@
                 "cutOnNode": "Počinje na postojećem vrhu — to je jedno od dva potrebna uporišta.",
                 "cutFree": "Hvatanje je isključeno dok držiš Shift — točka pada točno gdje klikneš.",
                 "eraseHint": "Klikni među da je obrišeš — dvije čestice koje razdvaja postaju jedna. Međa koje se mogu obrisati: {{count}}.",
-                "eraseNone": "Ovdje nema međa između čestica — samo obuhvat zahvata, koji pripada susjedima.",
+                "eraseNone": "Nijedne dvije čestice nemaju zajedničku među, pa nema što obrisati. Debela crvena crta rub je odabranog zemljišta i ne mijenja se.",
+                "eraseOnePlot": "Raspored je jedna čestica, pa nema međe za brisanje. Presijeci je alatom za crtu ili nacrtaj česticu na njoj.",
+                "mergeAllNone": "Raspored je već jedna čestica.",
+                "mergedAll": "Sve su čestice sada jedna. Presijeci je alatom za crtu ili nacrtaj čestice na njoj.",
                 "lineAnchored": "Uporišta: {{count}}. Linija će biti povučena između krajnja dva, i nigdje drugdje.",
                 "lineOneAnchor": "Zasad jedno uporište. Prijeđi još jednu među ili završi na postojećem vrhu.",
                 "lineNoAnchor": "Još nema uporišta. Linija mora prijeći među ili dotaknuti postojeći vrh na dva mjesta da bi nastala nova međa.",
@@ -3716,6 +3719,7 @@
             "unknownParcel": "Čestica",
             "oldPlotsPartial": "Učitano je {{shown}} od {{declared}} ulaznih čestica.",
             "eraseEdge": "Obriši među",
+            "mergeAll": "Spoji sve čestice u jednu",
             "eraseTooltip": "Obriši ovu među — {{a}} i {{b}} postaju jedna čestica",
             "nodeRemoveStraightens": "Uklanjanjem se međa ispravlja — preko nje prelazi otprilike {{moved}} m².",
             "plotLabel": "čestica {{n}} ({{area}} m²)",

@@ -942,7 +942,7 @@
                 "plot-too-small": "A plot is smaller than 1 m².",
                 "overlapping-plots": "Plots overlap. Adjust their borders.",
                 "missing-pool": "The layout has no pool outline.",
-                "invalid-pool": "The pool outline could not be checked.",
+                "invalid-pool": "The layout could not be checked against the outline of the selected land: {{reason}}",
                 "coverage-gap": "The plots leave part of the pool uncovered.",
                 "coverage-excess": "The plots extend outside the pool."
             }
@@ -3596,7 +3596,7 @@
                 "overlapping-plots": "Plot {{plot}} overlaps another plot.",
                 "coverage-gap": "The plots leave {{area}} of the pool uncovered.",
                 "coverage-excess": "The plots reach {{area}} beyond the pool.",
-                "invalid-pool": "The pool outline could not be checked."
+                "invalid-pool": "The plots could not be checked against the outline of the selected land: {{reason}}"
             }
         }
     },
@@ -3647,7 +3647,10 @@
                 "cutOnNode": "Starts on an existing corner — that is one of the two anchors it needs.",
                 "cutFree": "Snapping off while Shift is held — the point lands exactly where you click.",
                 "eraseHint": "Click a boundary to erase it — the two plots it separates become one. {{count}} boundaries can be erased.",
-                "eraseNone": "There are no boundaries between plots here — only the pooled outline, which belongs to the neighbours.",
+                "eraseNone": "No two plots share a boundary, so there is nothing to erase. The thick red line is the edge of the selected land and stays fixed.",
+                "eraseOnePlot": "The layout is one plot, so there is no boundary to erase. Cut it with the line tool, or draw a plot on it.",
+                "mergeAllNone": "The layout is already one plot.",
+                "mergedAll": "All plots are one plot now. Cut it with the line tool, or draw plots on it.",
                 "lineAnchored": "Anchored in {{count}} places — the line will be drawn between the outermost two, and nowhere else.",
                 "lineOneAnchor": "One anchor so far. Cross another boundary, or finish on an existing corner.",
                 "lineNoAnchor": "No anchors yet. A line has to cross a boundary or meet an existing corner in two places to make one.",
@@ -3688,6 +3691,7 @@
             "unknownParcel": "Parcel",
             "oldPlotsPartial": "{{shown}} of {{declared}} input parcels could be loaded.",
             "eraseEdge": "Erase a boundary",
+            "mergeAll": "Merge all plots into one",
             "eraseTooltip": "Erase this boundary — {{a}} and {{b}} become one plot",
             "nodeRemoveStraightens": "Removing it straightens the boundary — about {{moved}} m² moves across it.",
             "plotLabel": "plot {{n}} ({{area}} m²)",

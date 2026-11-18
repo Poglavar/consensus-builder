@@ -942,7 +942,7 @@
                 "plot-too-small": "Una parcela mide menos de 1 m².",
                 "overlapping-plots": "Las parcelas se solapan. Ajusta sus linderos.",
                 "missing-pool": "El trazado no tiene contorno agrupado.",
-                "invalid-pool": "No se pudo comprobar el contorno agrupado.",
+                "invalid-pool": "No se pudo comprobar la distribución con el contorno del terreno seleccionado: {{reason}}",
                 "coverage-gap": "Las parcelas dejan parte del terreno agrupado sin cubrir.",
                 "coverage-excess": "Las parcelas se extienden fuera del terreno agrupado."
             }
@@ -3623,7 +3623,7 @@
                 "overlapping-plots": "La parcela {{plot}} se solapa con otra parcela.",
                 "coverage-gap": "Las parcelas dejan sin cubrir {{area}} del terreno agrupado.",
                 "coverage-excess": "Las parcelas se extienden {{area}} más allá del terreno agrupado.",
-                "invalid-pool": "No se pudo comprobar el contorno agrupado."
+                "invalid-pool": "No se pudieron comprobar las parcelas con el contorno del terreno seleccionado: {{reason}}"
             }
         }
     },
@@ -3670,7 +3670,10 @@
                 "cutOnNode": "Empieza en una esquina existente — ese es uno de los dos anclajes que necesita.",
                 "cutFree": "Enganche desactivado mientras mantienes Shift — el punto cae exactamente donde haces clic.",
                 "eraseHint": "Haz clic en un lindero para borrarlo — las dos parcelas que separa pasan a ser una. Linderos que se pueden borrar: {{count}}.",
-                "eraseNone": "Aquí no hay linderos entre parcelas — solo el perímetro agrupado, que pertenece a los vecinos.",
+                "eraseNone": "Ningún par de parcelas comparte un lindero, así que no hay nada que borrar. La línea roja gruesa es el borde del terreno seleccionado y no cambia.",
+                "eraseOnePlot": "La distribución es una sola parcela, así que no hay ningún lindero que borrar. Córtala con la herramienta de línea o dibuja una parcela encima.",
+                "mergeAllNone": "La distribución ya es una sola parcela.",
+                "mergedAll": "Todas las parcelas son ahora una. Córtala con la herramienta de línea o dibuja parcelas encima.",
                 "lineAnchored": "Anclada en {{count}} puntos — la línea se trazará entre los dos extremos, y en ningún otro sitio.",
                 "lineOneAnchor": "Un anclaje por ahora. Cruza otro lindero, o termina en una esquina existente.",
                 "lineNoAnchor": "Aún sin anclajes. Una línea tiene que cruzar un lindero o tocar una esquina existente en dos sitios para crear uno.",
@@ -3715,6 +3718,7 @@
             "unknownParcel": "Parcela",
             "oldPlotsPartial": "Se cargaron {{shown}} de {{declared}} parcelas de entrada.",
             "eraseEdge": "Borrar un lindero",
+            "mergeAll": "Unir todas las parcelas en una",
             "eraseTooltip": "Borrar este lindero — {{a}} y {{b}} pasan a ser una sola parcela",
             "nodeRemoveStraightens": "Al quitarlo, el lindero se endereza — unos {{moved}} m² cruzan al otro lado.",
             "plotLabel": "parcela {{n}} ({{area}} m²)",

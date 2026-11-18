@@ -135,7 +135,12 @@
             if (isGround(turf, outside)) {
                 issue('coverage-excess', `The plots reach ${squareMetres(metrics.outsideAreaM2)} beyond the pool.`, { areaM2: metrics.outsideAreaM2 });
             }
-        } catch (error) { issue('invalid-pool', `The pool could not be validated: ${error.message}`); }
+        } catch (error) {
+            // The reason travels with the code: without it the panel can only say "could not be
+            // checked", which tells the person nothing they can act on.
+            const reason = String(error && error.message || error || '');
+            issue('invalid-pool', `The plots could not be checked against the outline of the selected land: ${reason}`, { reason });
+        }
         return { valid: errors.length === 0, errors, warnings, metrics, areas };
     }
 

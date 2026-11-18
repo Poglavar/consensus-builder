@@ -313,6 +313,35 @@ describe('drawing freely', () => {
     });
 });
 
+// A preset leaves many small plots; Merge all gives the undivided pool back to draw on, instead of
+// erasing every boundary one by one (2026-11-18).
+describe('merging all plots', () => {
+    it('makes the pool one drawn plot in one undo step, which gives the preset back', async () => {
+        const w = world();
+        await w.editor.openParcelLayoutEditor();
+        change(w.$('[data-parcel-layout-count]'), 5);
+        w.$('[data-reparcel-merge-all]').click();
+        expect(w.state.algorithm).toBe('manual');
+        expect(sources(w.state.slices)).toEqual(['base']);
+        expect(area(w.state.slices[0].geometry)).toBeCloseTo(w.state.totalArea, 0);
+        expect(w.statusText()).toBe('All plots are one plot now. Cut it with the line tool, or draw plots on it.');
+        expect(w.$('[data-reparcel-commit]').disabled).toBe(false);
+
+        w.key('z', { ctrlKey: true });
+        expect(w.state.algorithm).toBe('equal');
+        expect(w.state.slices).toHaveLength(5);
+    });
+
+    it('says so when the layout is already one plot, and erasing then says why there is nothing to erase', async () => {
+        const w = world();
+        await w.editor.openParcelLayoutEditor({ algorithm: 'manual' });
+        w.$('[data-reparcel-merge-all]').click();
+        expect(w.statusText()).toBe('The layout is already one plot.');
+        w.$('[data-reparcel-erase]').click();
+        expect(w.statusText()).toBe('The layout is one plot, so there is no boundary to erase. Cut it with the line tool, or draw a plot on it.');
+    });
+});
+
 describe('switching the starting layout', () => {
     it('Draw freely continues from the equal plots', async () => {
         const w = world();

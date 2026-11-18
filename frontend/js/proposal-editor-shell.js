@@ -357,7 +357,8 @@
             return `<div class="proposal-editor-validation is-valid" role="status">${escapeHtml(tDraft('proposalDrafts.validation.valid', 'Ready to review'))}</div>`;
         }
         const className = errors.length ? 'has-errors' : 'has-warnings';
-        const issueMessage = entry => tDraft(`proposalDrafts.validation.issues.${entry.code || 'validation'}`, entry.message || entry.code || 'Validation issue');
+        // The issue's own fields (a reason, a plot number) fill the translated text's placeholders.
+        const issueMessage = entry => tDraft(`proposalDrafts.validation.issues.${entry.code || 'validation'}`, entry.message || entry.code || 'Validation issue', entry);
         const list = (entries, offset, severity) => entries.length
             ? `<strong class="proposal-editor-validation-heading is-${severity}">${escapeHtml(severity === 'error'
                 ? tDraft('proposalDrafts.validation.errors', '{{count}} error(s)', { count: entries.length })

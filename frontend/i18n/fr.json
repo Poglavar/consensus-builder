@@ -1483,7 +1483,10 @@
                 "cutOnNode": "Le départ se situe sur un angle existant — c’est l’un des deux points d’ancrage nécessaires.",
                 "cutFree": "L’accrochage est désactivé tant que vous maintenez la touche Maj enfoncée — le point est placé exactement là où vous cliquez.",
                 "eraseHint": "Cliquez sur une limite pour l’effacer — les deux lots qu’elle sépare n’en formeront plus qu’un. {{count}} limites peuvent être effacées.",
-                "eraseNone": "Il n’y a aucune limite entre lots ici — uniquement le contour du regroupement, qui appartient aux voisins.",
+                "eraseNone": "Aucun lot ne partage de limite avec un autre : il n’y a rien à effacer. Le trait rouge épais est le bord du terrain choisi et ne bouge pas.",
+                "eraseOnePlot": "La répartition ne compte qu’un lot : il n’y a aucune limite à effacer. Coupez-le avec l’outil ligne ou dessinez un lot dessus.",
+                "mergeAllNone": "La répartition ne compte déjà qu’un lot.",
+                "mergedAll": "Tous les lots n’en forment plus qu’un. Coupez-le avec l’outil ligne ou dessinez des lots dessus.",
                 "lineAnchored": "{{count}} points d’ancrage — la ligne sera tracée uniquement entre les deux points les plus éloignés.",
                 "lineOneAnchor": "Un seul point d’ancrage pour l’instant. Traversez une autre limite ou terminez sur un angle existant.",
                 "lineNoAnchor": "Aucun point d’ancrage pour l’instant. Pour tracer une ligne, elle doit croiser une limite ou rencontrer un angle existant en deux endroits.",
@@ -1518,6 +1521,7 @@
             "oldPlots": "Anciennes parcelles",
             "oldPlotsPartial": "{{shown}} parcelles d’origine sur {{declared}} ont pu être chargées.",
             "eraseEdge": "Effacer une limite",
+            "mergeAll": "Fusionner tous les lots en un seul",
             "eraseTooltip": "Effacer cette limite — {{a}} et {{b}} deviennent un seul lot",
             "nodeRemoveStraightens": "Le supprimer rectifie la limite — environ {{moved}} m² passent d’un côté à l’autre.",
             "plotLabel": "lot {{n}} ({{area}} m²)",
@@ -2422,7 +2426,7 @@
                 "plot-too-small": "Un lot fait moins de 1 m².",
                 "overlapping-plots": "Des lots se chevauchent. Ajustez leurs limites.",
                 "missing-pool": "Le découpage ne possède pas de contour du périmètre à répartir.",
-                "invalid-pool": "Le contour du périmètre à répartir n’a pas pu être vérifié.",
+                "invalid-pool": "La répartition n’a pas pu être vérifiée par rapport au contour du terrain choisi : {{reason}}",
                 "coverage-gap": "Les lots laissent une partie du périmètre à répartir non couverte.",
                 "coverage-excess": "Les lots dépassent le périmètre à répartir."
             }
@@ -5424,7 +5428,7 @@
             "validation": {
                 "missing-plots": "Ajoutez au moins un lot.",
                 "missing-pool": "Le découpage ne possède pas de contour du périmètre à répartir.",
-                "invalid-pool": "Le contour du périmètre à répartir n’a pas pu être vérifié.",
+                "invalid-pool": "Les lots n’ont pas pu être vérifiés par rapport au contour du terrain choisi : {{reason}}",
                 "too-many-plots": "Utilisez au maximum {{max}} lots dans un même découpage.",
                 "geometry-unavailable": "La géométrie des lots ne peut pas être vérifiée avant le chargement de la carte.",
                 "plot-too-small": "Le lot {{plot}} est plus petit que {{min}}.",
