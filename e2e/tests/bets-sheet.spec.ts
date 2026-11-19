@@ -418,7 +418,7 @@ test.describe('Bets sheet @features', () => {
     await expect(dialog.locator('.bets-dialog__footer').getByRole('button', { name: 'Open the agreement', exact: true })).toBeVisible();
     await dialog.locator('.bets-dialog__footer').getByRole('button', { name: 'Copy link' }).click();
     await expect.poll(() => page.evaluate(() => (window as any).__copied)).toEqual([await expectedLink(page)]);
-    await expect(dialog.locator('.bets-dialog__contest')).toHaveText('2 agreements on this land');
+    await expect(dialog.locator('.bets-dialog__contest')).toHaveText('2 agreements on overlapping ground');
     await dialog.locator('.bets-dialog__contest').click();
     await expect(dialog).toHaveCount(0);
     await expect(page.locator('#bets-sheet')).toBeVisible();

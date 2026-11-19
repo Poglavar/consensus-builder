@@ -5331,7 +5331,7 @@
             "max": "الحد الأقصى",
             "toWin": "لربح نحو {{amount}} إذا فاز جانب {{side}}",
             "toWinNote": "يتحدد العائد النهائي وفق مجمع الأموال عند التسوية.",
-            "onThisLandCount": "{{entries}} على هذه الأرض",
+            "overlappingGroundCount": "{{entries}} على أرض متداخلة",
             "agreementAccount": "حساب الاتفاق",
             "openAgreement": "فتح الاتفاق",
             "noBets": "ليس لديك مراهنات على هذا الاتفاق.",
@@ -5381,8 +5381,7 @@
         "emptyAgreements": "لا توجد أسواق في هذه المدينة بعد. أصدر اتفاقا على السلسلة بموعد نهائي لفتح السوق الأول.",
         "retry": "حاول مجددا",
         "question": {
-            "agreement": "هل سينفذ {{title}} على السلسلة؟",
-            "contest": "أي اتفاق بشأن {{place}} سينفذ على السلسلة؟"
+            "agreement": "هل سينفذ {{title}} على السلسلة؟"
         },
         "error": {
             "load": "تعذر تحميل المراهنات.",
@@ -6536,7 +6535,6 @@
             "proposal_not_found": "لم يتم العثور على التصميم.",
             "community_vote_has_no_owner_action": "يحسم السكان التصويت المجتمعي من خلال منظمه؛ ولا يتطلب أي قبول من المالكين.",
             "owner_vote_not_on_solana": "لا يمكن سك تصويت المالكين على Solana بعد. اختر نوعا آخر، أو احتفظ بالتصميم خارج سلسلة الكتل.",
-            "a_proposal_with_the_same_parcels_already_exists": "يوجد بالفعل تصميم يضم قطع الأراضي نفسها.",
             "an_identical_proposal_already_exists": "يوجد بالفعل تصميم مطابق.",
             "building_proposal_workflow_is_unavailable": "سير عمل تصميم المباني غير متاح.",
             "cannot_undo_acceptance_from_an_executed_proposal_that_has_descendant_parcels": "لا يمكن التراجع عن قبول تصميم اكتمل تنفيذه على سلسلة الكتل وله قطع أراض متفرعة عنه.",

@@ -169,7 +169,9 @@ their transactions (attest, execute, expire, resolve, claim, reclaim: at most 5 
 
 **Contest mode.** An area `{ mode: 'contest', floorCap, withinDays }` answers other proposers'
 agreements on the same parcels (proposed in the last `withinDays` days, deadline still ahead, still
-open) with a lower build-out, so both agreements share input land and form one market contest.
+open) with a lower build-out. The planner keeps an answer only when its building takes ground the
+answered building takes (`geometry-tolerances.js` `reachesInto`), because a market contest groups
+agreements whose designs take overlapping ground, not agreements that merely share a parcel.
 Whether a rival is still open comes from the chain, by two routes: its index row's `onchain.status`
 (read with `GET /agreements/:cid`; written when it is minted and refreshed, with `onchain.endedAt`, the
 chain time it ended, on every pass of the lifecycle oracle, `oracle/agreement-lifecycle.js`), which

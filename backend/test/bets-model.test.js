@@ -122,7 +122,8 @@ describe('server and sheet market ordering agree', () => {
             { cid: 'late', account: 'late', chainStatus: 'active', deadline: '2027-02-01T00:00:00Z', inputParcelIds: ['P'], market: marketAt(1801612800, 100) },
             { cid: 'soon', account: 'soon', chainStatus: 'active', deadline: '2027-01-01T00:00:00Z', inputParcelIds: ['P'], market: marketAt(1798761600, 1) }
         ];
-        const api = buildContests({ city: 'zagreb', agreements, now: new Date('2026-10-25T00:00:00Z'),
+        // overlaps: the two agreements' designs take overlapping ground, so they are one contest.
+        const api = buildContests({ city: 'zagreb', agreements, overlaps: () => true, now: new Date('2026-10-25T00:00:00Z'),
             markets: new Map(agreements.map(entry => [entry.account, { address: 'm', chainStatus: 'active', deadline: entry.deadline, market: {
                 b: 100000000n, qYes: BigInt(entry.market.qYes), qNo: 0n, seed: 69314720n, closesAt: entry.market.closesAt, graceSeconds: 0,
                 maxPosition: 0n, paidOut: 0n, creator: 'creator', resolved: false, outcome: 0

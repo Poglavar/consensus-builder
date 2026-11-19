@@ -1,7 +1,7 @@
 // Current agreement readers share one plan-membership gate. Retired inline-membership records
 // never become trade or payout subjects merely because they retain an indexed chain pointer.
 export const currentPlanAgreementSelect = ({ predicate, orderBy, limit }) => `
-    SELECT a.cid, a.city, a.title, a.author, a.input_parcel_ids, a.parcel_source_id, a.deadline,
+    SELECT a.cid, a.city, a.title, a.author, a.design_cids, a.input_parcel_ids, a.parcel_source_id, a.deadline,
         a.content->>'sponsor' AS sponsor,
         ARRAY(SELECT d.content->>'title' FROM jsonb_array_elements_text(
             CASE WHEN jsonb_typeof(p.content->'designCids') = 'array' THEN p.content->'designCids' ELSE '[]'::jsonb END

@@ -134,9 +134,11 @@ export function rivalAgreementCids(runs, { persona, runDay, withinDays = 3 } = {
  * The rival's parcels: land other proposers proposed an agreement on in the last `withinDays` days and
  * whose agreement is still open (its deadline ahead of the run day, neither executed nor cancelled nor
  * expired, and still in the current index contract), as planner parcels carrying the stored geometry
- * and what was measured there. An agreement on the same parcels puts both into one contest, which is
- * how the Bets list groups competing agreements. `floorCap` builds lower than the ceiling (planner.js keeps the ceiling as
- * `allowedFloors`), so the rival offers a different build-out, never a copy.
+ * and what was measured there. `rival.footprint` is the rival building's footprint, the ground its
+ * design takes: the planner keeps only an answer whose building takes some of that ground
+ * (planner.js), since the Bets list puts two agreements in one contest only when their designs take
+ * overlapping ground, never for sharing a parcel alone. `floorCap` builds lower than the ceiling
+ * (planner.js keeps the ceiling as `allowedFloors`), so the rival offers a different build-out, never a copy.
  *
  * Whether a rival is closed comes from two places: the chain status its index row records
  * (`indexStatuses`: CID → consensus.agreement.onchain.status, written at mint and refreshed on every
@@ -155,7 +157,7 @@ export function contestParcels(runs, { persona, runDay, withinDays = 3, floorCap
         if (indexStatuses[agreement.cid] === 'retired' || CLOSED_CHAIN_STATUSES.includes(indexStatuses[agreement.cid])) continue;
         if (closed.has(summary.mints?.[pick.candidateId]?.account)) continue;
         const candidate = (summary.candidates || []).find(item => item.candidateId === pick.candidateId);
-        if (!candidate?.geometry || byParcel.has(candidate.parcelId)) continue;
+        if (!candidate?.geometry || !candidate.massing?.geometry || byParcel.has(candidate.parcelId)) continue;
         byParcel.set(candidate.parcelId, {
             parcelId: candidate.parcelId,
             parcelSourceId: candidate.parcelSourceId || null,
@@ -169,7 +171,7 @@ export function contestParcels(runs, { persona, runDay, withinDays = 3, floorCap
             geometry: candidate.geometry,
             ...buildingBaseline(candidate),
             ...(candidate.buildingObservations ? { buildingObservations: { ...candidate.buildingObservations } } : {}),
-            rival: { agreementCid: agreement.cid, persona: run.persona, name: pick.name },
+            rival: { agreementCid: agreement.cid, persona: run.persona, name: pick.name, footprint: candidate.massing.geometry },
             // The same rule origin as the agreement it answers: a parcel planned under a mapped
             // urban rule stays rule-backed, a default-envelope one stays default.
             rule: candidate.rule?.source === 'urban-rule'

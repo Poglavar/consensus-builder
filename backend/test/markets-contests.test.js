@@ -1,13 +1,15 @@
-// Contests group a city's published agreements by the qualified input parcels they share and put each
-// minted agreement's market beside it (markets/contests.js); these tests pin the market subject (the
-// PDA of the agreement's sponsor and CID), the grouping, the entry states, the ordering and the public
-// shape GET /markets serves.
+// Contests group a city's published agreements by the overlapping ground their designs take (among
+// agreements sharing a qualified input parcel) and put each minted agreement's market beside it
+// (markets/contests.js); these tests pin the market subject (the PDA of the agreement's sponsor and
+// CID), the grouping, the entry states, the ordering and the public shape GET /markets serves.
 import { describe, expect, it } from 'vitest';
 import {
     HR_CADASTRE,
     buildContests,
     contestId,
+    designCidsToCompare,
     groupByLand,
+    landOverlap,
     normalizeParcelIds,
     parcelRefsOf,
     parcelSourceOf,
@@ -35,6 +37,18 @@ const market = (address, qYes, qNo, resolved = false, outcome = 0, chainStatus =
     market: { b: 100_000_000n, qYes, qNo, seed: 69_314_720n, closesAt: Math.floor(Date.parse(deadline || LATER) / 1000),
         graceSeconds: 0, maxPosition: 0n, paidOut: 0n, creator: SPONSOR, resolved, outcome } });
 const cidsOf = contest => contest.agreements.map(entry => entry.cid);
+// Designs whose ground overlaps, for tests about something else than the grouping.
+const everywhere = () => true;
+
+// A design site: a rectangle given in metres east and north of a point in Zagreb.
+const M_LNG = 1 / (111320 * Math.cos(45.8 * Math.PI / 180));
+const M_LAT = 1 / 110540;
+const box = (x0, y0, x1, y1) => {
+    const [w, s, e, n] = [15.97 + x0 * M_LNG, 45.8 + y0 * M_LAT, 15.97 + x1 * M_LNG, 45.8 + y1 * M_LAT];
+    return { type: 'MultiPolygon', coordinates: [[[[w, s], [e, s], [e, n], [w, n], [w, s]]]] };
+};
+const land = sites => new Map(Object.entries(sites).map(([cid, site]) => [cid, site.type ? { site, toleranceM: 0 } : site]));
+const groupCids = groups => groups.map(group => group.map(entry => entry.cid).sort()).sort((a, b) => a[0].localeCompare(b[0]));
 
 describe('subjectAccountOf', () => {
     const account = agreementAccountOf(CID, SPONSOR);
@@ -78,16 +92,51 @@ describe('parcelSourceOf and parcelRefsOf', () => {
 });
 
 describe('groupByLand', () => {
-    it('joins agreements transitively through shared parcels and keeps the rest apart', () => {
-        const groups = groupByLand([
-            agreement({ cid: 'a', inputParcelIds: ['P1', 'P2'] }),
-            agreement({ cid: 'b', inputParcelIds: ['P2', 'P3'] }),
-            agreement({ cid: 'c', inputParcelIds: ['P3'] }),
-            agreement({ cid: 'd', inputParcelIds: ['P9'] }),
+    // One large parcel (state land, say) under every agreement here, with designs anywhere on it.
+    const onGov = (cid, designCids) => agreement({ cid, inputParcelIds: ['GOV'], designCids });
+
+    it('keeps agreements on one large parcel apart when their designs stand apart', () => {
+        const overlaps = landOverlap(land({ 'D-north': box(0, 0, 20, 20), 'D-south': box(0, 120, 20, 140) }));
+        expect(groupCids(groupByLand([onGov('north', ['D-north']), onGov('south', ['D-south'])], overlaps)))
+            .toEqual([['north'], ['south']]);
+    });
+
+    it('joins agreements whose design sites overlap, and those sharing a design', () => {
+        const overlaps = landOverlap(land({ 'D-a': box(0, 0, 20, 20), 'D-b': box(10, 10, 30, 30), 'D-far': box(200, 0, 220, 20) }));
+        expect(groupCids(groupByLand([
+            onGov('a', ['D-a']), onGov('b', ['D-far', 'D-b']), onGov('far', ['D-far']), onGov('lone', ['D-lone'])
+        ], overlaps))).toEqual([['a', 'b', 'far'], ['lone']]);
+        // A design whose site is not known reaches nothing, but two agreements over it are one contest.
+        expect(groupCids(groupByLand([onGov('x', ['D-unknown']), onGov('y', ['D-unknown']), onGov('z', ['D-other'])], overlaps)))
+            .toEqual([['x', 'y'], ['z']]);
+    });
+
+    it('joins transitively: A overlaps B and B overlaps C is one contest, though A and C stand apart', () => {
+        const overlaps = landOverlap(land({ 'D-a': box(0, 0, 20, 20), 'D-b': box(15, 0, 35, 20), 'D-c': box(30, 0, 50, 20) }));
+        expect(groupCids(groupByLand([onGov('a', ['D-a']), onGov('b', ['D-b']), onGov('c', ['D-c'])], overlaps))).toEqual([['a', 'b', 'c']]);
+        // Without the middle one the ends are two contests, in either arrival order.
+        expect(groupCids(groupByLand([onGov('c', ['D-c']), onGov('a', ['D-a'])], overlaps))).toEqual([['a'], ['c']]);
+        expect(groupCids(groupByLand([onGov('c', ['D-c']), onGov('b', ['D-b']), onGov('a', ['D-a'])], overlaps))).toEqual([['a', 'b', 'c']]);
+    });
+
+    it('takes "overlap" by the shared ground rule: edge contact is apart, and a strip narrower than a design\'s tolerance is apart', () => {
+        const pair = sites => groupCids(groupByLand([onGov('a', ['D-a']), onGov('b', ['D-b'])], landOverlap(land(sites))));
+        expect(pair({ 'D-a': box(0, 0, 20, 20), 'D-b': box(20, 0, 40, 20) })).toEqual([['a'], ['b']]);
+        // A 5 cm strip is ground at the default noise, but not for a design allowed 10 cm.
+        expect(pair({ 'D-a': box(0, 0, 20, 20), 'D-b': box(19.95, 0, 40, 20) })).toEqual([['a', 'b']]);
+        expect(pair({ 'D-a': box(0, 0, 20, 20), 'D-b': { site: box(19.95, 0, 40, 20), toleranceM: 0.1 } })).toEqual([['a'], ['b']]);
+    });
+
+    it('compares only agreements sharing a qualified parcel: overlapping designs on different parcels stay apart', () => {
+        const overlaps = landOverlap(land({ 'D-a': box(0, 0, 20, 20), 'D-b': box(10, 10, 30, 30) }));
+        expect(groupCids(groupByLand([
+            agreement({ cid: 'a', inputParcelIds: ['P1'], designCids: ['D-a'] }),
+            agreement({ cid: 'b', inputParcelIds: ['P2'], designCids: ['D-b'] }),
             // Open ground only: its own contest.
-            agreement({ cid: 'e', inputParcelIds: [] })
-        ]);
-        expect(groups.map(group => group.map(entry => entry.cid).sort())).toEqual([['a', 'b', 'c'], ['d'], ['e']]);
+            agreement({ cid: 'e', inputParcelIds: [], designCids: ['D-a'] })
+        ], overlaps))).toEqual([['a'], ['b'], ['e']]);
+        // Without a way to judge the ground nothing joins.
+        expect(groupCids(groupByLand([onGov('a', ['D-a']), onGov('b', ['D-b'])]))).toEqual([['a'], ['b']]);
     });
 
     it('matches only qualified references: the same raw id from another source or an unknown one stays apart', () => {
@@ -98,30 +147,55 @@ describe('groupByLand', () => {
             agreement({ cid: 'unknown', inputParcelIds: ['P1'], parcelSourceId: 'unknown-provider' }),
             agreement({ cid: 'unknown-too', inputParcelIds: ['P1'], parcelSourceId: 'unknown-provider' })
         ];
-        expect(groupByLand(rows).map(group => group.map(row => row.cid).sort()))
+        expect(groupByLand(rows, everywhere).map(group => group.map(row => row.cid).sort()))
             .toEqual([['hr', 'hr-named'], ['sf'], ['unknown'], ['unknown-too']]);
     });
 });
 
+describe('designCidsToCompare', () => {
+    it('lists the designs of agreements sharing a qualified parcel, and no others', () => {
+        expect(designCidsToCompare([
+            agreement({ cid: 'a', inputParcelIds: ['P1'], designCids: ['D-2', 'D-1'] }),
+            agreement({ cid: 'b', inputParcelIds: ['P1', 'P2'], designCids: ['D-3'] }),
+            agreement({ cid: 'c', inputParcelIds: ['P9'], designCids: ['D-9'] }),
+            agreement({ cid: 'd', inputParcelIds: ['P1'], parcelSourceId: 'unknown-provider', designCids: ['D-x'] })
+        ])).toEqual(['D-1', 'D-2', 'D-3']);
+        expect(designCidsToCompare([])).toEqual([]);
+    });
+});
+
 describe('contestId', () => {
-    it('depends on the land, not on which agreements happen to be in the contest', () => {
-        const p1 = { sourceId: 'hr-cadastre', snapshotId: null, parcelId: 'P1' };
-        const p2 = { sourceId: 'hr-cadastre', snapshotId: null, parcelId: 'P2' };
-        expect(contestId([p2, p1])).toBe(contestId([p1, p2]));
-        expect(contestId([p1, p1, p2])).toBe(contestId([p1, p2]));
-        expect(contestId([p1])).not.toBe(contestId([p2]));
-        expect(contestId([p1])).not.toBe(contestId([{ ...p1, snapshotId: '2026' }]));
-        expect(contestId([p1])).toMatch(/^c-[0-9a-f]{12}$/);
-        // Without qualified land the id is scoped to an agreement CID.
+    it('depends on the designs, not on which agreements happen to be in the contest', () => {
+        expect(contestId(['D-2', 'D-1'])).toBe(contestId(['D-1', 'D-2']));
+        expect(contestId(['D-1', 'D-1', 'D-2'])).toBe(contestId(['D-1', 'D-2']));
+        expect(contestId(['D-1'])).not.toBe(contestId(['D-2']));
+        expect(contestId(['D-1'])).toMatch(/^c-[0-9a-f]{12}$/);
+        // Without designs the id is scoped to an agreement CID.
         expect(contestId([], 'cid-1')).not.toBe(contestId([], 'cid-2'));
-        expect(contestId([], 'cid-1')).toBe(contestId(['not a ref'], 'cid-1'));
+        expect(contestId([], 'cid-1')).toBe(contestId([null, ''], 'cid-1'));
     });
 });
 
 describe('buildContests', () => {
+    it('makes two contests of two minted agreements whose designs stand apart on one parcel, each with its own id', () => {
+        const { contests, summary } = buildContests({
+            city: 'zagreb', now: NOW,
+            agreements: [
+                minted('north', 'ACCT-N', { inputParcelIds: ['GOV'], designCids: ['D-north'] }),
+                minted('south', 'ACCT-S', { inputParcelIds: ['GOV'], designCids: ['D-south'] })
+            ],
+            overlaps: landOverlap(land({ 'D-north': box(0, 0, 20, 20), 'D-south': box(0, 120, 20, 140) }))
+        });
+        expect(summary).toMatchObject({ contests: 2, agreements: 2 });
+        expect(contests.map(cidsOf).sort()).toEqual([['north'], ['south']]);
+        expect(contests.map(contest => contest.parcelIds)).toEqual([['GOV'], ['GOV']]);
+        expect(contests[0].id).not.toBe(contests[1].id);
+        expect(contests.every(contest => contest.agreements[0].contest === contest.id)).toBe(true);
+    });
+
     it('keeps only contests with a minted agreement; an unminted rival stays beside it without a pool', () => {
         const out = buildContests({
-            city: 'zagreb', now: NOW,
+            city: 'zagreb', now: NOW, overlaps: everywhere,
             agreements: [
                 minted('minted', 'ACCT-A', { inputParcelIds: ['L1'], createdAt: '2026-10-03T00:00:00.000Z', designTitles: ['Six storeys'] }),
                 agreement({ cid: 'rival', inputParcelIds: ['L1'], createdAt: '2026-10-04T00:00:00.000Z' }),
@@ -178,7 +252,7 @@ describe('buildContests', () => {
 
     it('never reports a chain status for an unminted agreement', () => {
         const { contests } = buildContests({
-            city: 'zagreb', now: NOW,
+            city: 'zagreb', now: NOW, overlaps: everywhere,
             agreements: [minted('m', 'ACCT', { inputParcelIds: ['X'] }), agreement({ cid: 'u', inputParcelIds: ['X'], chainStatus: 'executed' })]
         });
         expect(contests[0].agreements.find(entry => entry.cid === 'u')).toMatchObject({ account: null, chainStatus: null, status: 'active' });
@@ -197,7 +271,7 @@ describe('buildContests', () => {
 describe('row order inside a contest and of contests (the Bets sheet\'s order)', () => {
     const accounts = Array.from({ length: 9 }, (_, index) => `ACCT-${index}`);
     const input = () => ({
-        city: 'zagreb', now: NOW,
+        city: 'zagreb', now: NOW, overlaps: everywhere,
         agreements: [
             // Four settled pools, the biggest on the land.
             minted('settled-big', accounts[0], { inputParcelIds: ['R1'], chainStatus: 'cancelled' }),

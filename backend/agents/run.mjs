@@ -27,8 +27,9 @@
 //   ~350 m window inside it, and never re-plans a parcel the persona already published a design on. An
 //   area is { city, bbox } (Croatian cadastre in the database), { city, label, sourceId, bbox } (a live
 //   parcel source through GET /parcel-sources/:id), or { mode: 'contest' } (other agents' open
-//   agreements, answered with a different build-out so both compete in one contest; the rival is not an
-//   owner of that land, so its agreement waits for the owners and expires unless they decide).
+//   agreements, answered with a different build-out on ground the answered building takes, so both
+//   compete in one contest; the rival is not an owner of that land, so its agreement waits for the
+//   owners and expires unless they decide).
 //   Parcel reads get at most three attempts within 180 seconds, with 5s/15s backoff or the provider's
 //   longer cooldown. Persistent incomplete replies fail; signed actions are not retried by this policy.
 //   STAGE: planned | chosen | designed | proposed | minted | recorded | staked (default staked)

@@ -3418,8 +3418,8 @@
           ]
         },
         {
-          "name": "Expand agreements contesting the same land",
-          "labelPattern": ".+ on this land$",
+          "name": "Expand agreements on overlapping ground",
+          "labelPattern": ".+ on overlapping ground$",
           "classes": [
             "cb-link",
             "bets-dialog__contest"

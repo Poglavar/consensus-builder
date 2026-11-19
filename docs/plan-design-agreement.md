@@ -266,7 +266,8 @@ demo content may all change, and affected records are recreated.
    can go.
 9. The road and corridor import no longer declares parcels when a design is created (the
    `loadGroundUnder` step); the agreement derives them when it is created.
-10. Market contests group agreements by shared input land; no folding of proposals under plans.
+10. Market contests group agreements whose designs take overlapping ground on a shared input
+   parcel; no folding of proposals under plans.
 
 ## M1 (a) build contract: the parcel-layout design (2026-10-21)
 

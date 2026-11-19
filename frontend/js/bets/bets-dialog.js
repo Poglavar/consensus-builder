@@ -361,12 +361,13 @@
         if (land) eyebrow.append(el('span', null, ` · ${land}`));
         p.body.append(eyebrow, root.BetsUI.assetControl());
 
-        // Rival agreements over the same land: back to the contest in the Bets sheet.
+        // The agreements whose designs take ground overlapping this one's (its contest): back to the
+        // contest in the Bets sheet.
         if (contest && contest.agreementCount > 1) {
             const counted = sheet() && typeof sheet().entriesText === 'function'
                 ? sheet().entriesText(contest).join(' · ')
                 : t('bets.contest.agreementCount', contest.agreementCount === 1 ? '{{count}} agreement' : '{{count}} agreements', { count: contest.agreementCount });
-            const rivals = button('cb-link bets-dialog__contest', t('bets.dialog.onThisLandCount', '{{entries}} on this land', { entries: counted }), () => {
+            const rivals = button('cb-link bets-dialog__contest', t('bets.dialog.overlappingGroundCount', '{{entries}} on overlapping ground', { entries: counted }), () => {
                 const id = contest.id;
                 trackBet('return', row, { entryPoint: 'dialog' });
                 close();

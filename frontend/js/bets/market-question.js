@@ -5,14 +5,13 @@
 // build(tuple, { templates, locale }) returns { question, settles, absence, closesAt, deadlineLabel,
 // eventType, subjectText, yesText, noText, recipeBody } and throws on an invalid tuple.
 //
-// agreementQuestion(title) and contestQuestion(place) are the undated questions of the Bets sheet:
-// one agreement's pool ("Will <title> execute on-chain?", settled by the agreement-execution-v1
-// recipe, backend/oracle/market-recipe.js) and a contest of agreements over the same land.
+// agreementQuestion(title) is the undated question of one agreement's pool in the Bets sheet ("Will
+// <title> execute on-chain?", settled by the agreement-execution-v1 recipe,
+// backend/oracle/market-recipe.js).
 //
 // Display templates. English defaults are TEMPLATES; options.templates overrides any of them so the
 // i18n layer can supply hr/es/sr. Placeholders are {{name}}, as in frontend/i18n.
 //   question.agreement the undated question of one agreement's pool, from {{title}}
-//   question.contest   the undated question of a contest, from {{place}}
 //   question.<rule>    the question, ending in '?'
 //   settles.<rule>     the yes/no sentence of how it settles
 //   settledBy.chain    closing sentence when the chain settles it (agreed)
@@ -66,7 +65,6 @@
 
     const TEMPLATES = Object.freeze({
         'question.agreement': 'Will {{title}} execute on-chain?',
-        'question.contest': 'Which agreement over {{place}} will execute?',
         'question.agreed.agreement': 'Will {{label}} execute on-chain by {{deadline}}?',
         'question.adopted.operation': 'Will {{authority}} adopt {{operation}} by {{deadline}}?',
         'question.adopted.plan': 'Will {{authority}} adopt {{planId}} by {{deadline}}?',
@@ -347,18 +345,12 @@
         };
     }
 
-    // The undated questions of the Bets sheet (options.templates overrides them, as for build): one
-    // agreement's pool, which settles from its account's terminal status, and a contest of several
-    // agreements over the same land, of which any number may execute.
+    // The undated question of one agreement's pool in the Bets sheet (options.templates overrides it,
+    // as for build), which settles from its account's terminal status.
     function agreementQuestion(title, options = {}) {
         const templates = readTemplates(options && options.templates);
         return fill(templates['question.agreement'], { title: text(title, 'title') }, 'question.agreement');
     }
 
-    function contestQuestion(place, options = {}) {
-        const templates = readTemplates(options && options.templates);
-        return fill(templates['question.contest'], { place: text(place, 'place') }, 'question.contest');
-    }
-
-    return { MILESTONES, SOURCES, TEMPLATES, build, agreementQuestion, contestQuestion, parcelSetHash, subjectTextOf };
+    return { MILESTONES, SOURCES, TEMPLATES, build, agreementQuestion, parcelSetHash, subjectTextOf };
 });

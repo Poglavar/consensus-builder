@@ -6112,7 +6112,6 @@
         "messages": {
             "community_vote_has_no_owner_action": "Un voto vecinal lo deciden los vecinos a través de la organización; los propietarios no tienen nada que aceptar.",
             "owner_vote_not_on_solana": "Los votos de propietarios aún no se pueden acuñar en Solana. Elige otro tipo o mantén el diseño fuera de la cadena.",
-            "a_proposal_with_the_same_parcels_already_exists": "Ya existe un diseño con las mismas parcelas.",
             "an_identical_proposal_already_exists": "Ya existe un diseño idéntico.",
             "building_proposal_workflow_is_unavailable": "El flujo de diseños de edificio no está disponible.",
             "cannot_undo_acceptance_from_an_executed_proposal_that_has_descendant_parcels": "No se puede deshacer la aceptación de un diseño ejecutada que tiene parcelas descendientes.",
@@ -7775,8 +7774,7 @@
             "empty": "Ninguna apuesta coincide con este filtro."
         },
         "question": {
-            "agreement": "¿Se ejecutará {{title}} en la cadena?",
-            "contest": "{{place}}: ¿qué acuerdo se ejecutará?"
+            "agreement": "¿Se ejecutará {{title}} en la cadena?"
         },
         "dialog": {
             "poolLabel": "Mercado",
@@ -7791,7 +7789,7 @@
             "max": "Máx.",
             "toWin": "Ganancia de unos {{amount}} si gana {{side}}",
             "toWinNote": "El pago final depende del fondo al liquidar.",
-            "onThisLandCount": "{{entries}} en este terreno",
+            "overlappingGroundCount": "{{entries}} en terreno superpuesto",
             "agreementAccount": "Cuenta del acuerdo",
             "openAgreement": "Abrir el acuerdo",
             "noBets": "No tienes apuestas en este acuerdo.",

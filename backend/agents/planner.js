@@ -19,6 +19,8 @@ const {
 } = require('../../frontend/js/urban-rule-variation.js');
 const { measureBuilding } = require('../../frontend/js/proposals/plan-yield.js');
 const { computeGain } = require('../../frontend/js/proposals/gain.js');
+// The shared "does this shape take that ground" rule, the one the Bets contests use (markets/contests.js).
+const { reachesInto } = require('../../frontend/js/geometry-tolerances.js');
 
 export { DEFAULT_MAX_FLOORS, DEFAULT_MIN_DISTANCE_M };
 
@@ -50,7 +52,8 @@ function ruleSourceOf(rule) {
  *
  * Stated coverage and GFA limits shape the envelope (the rule's maxCoverage / maxFloorAreaRatio).
  * Skips a parcel when the rule excludes it (evaluateParcel status ≠ 'ok'), when no build-out can be
- * sampled inside the envelope, when the measured build-out still exceeds a stated coverage/GFA limit, when it cannot be measured, or when it would not add
+ * sampled inside the envelope, when a rival's answer would not take ground the rival's building takes,
+ * when the measured build-out still exceeds a stated coverage/GFA limit, when it cannot be measured, or when it would not add
  * floor area over a known existing-stock baseline — an agent that proposes less than exists is noise.
  * An unknown baseline permits geometry previews, but dependent quantities and weighted scores stay
  * null. Only a named source with complete inventory coverage can establish existing-stock totals.
@@ -132,6 +135,11 @@ export function planCandidates(parcels, persona, {
         // build-out; it stays a pure function of (seed, index), so a rerun reproduces the plan.
         const massing = realizeFromEnvelope(evaluated.envelope, rule, seed + index, deps);
         if (!massing || !massing.geometry) return;
+
+        // A rival's answer must take ground the rival's building takes: only then do the two
+        // agreements stand in one Bets contest. A build-out elsewhere on a large parcel answers nothing.
+        if (parcel.rival && !(parcel.rival.footprint
+            && reachesInto(turf, massing, { type: 'Feature', properties: {}, geometry: parcel.rival.footprint }))) return;
 
         const measured = measureBuilding(massing, {}, { floorHeightM });
         const proposedGfaM2 = num(measured && measured.gfaM2);

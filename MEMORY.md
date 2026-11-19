@@ -373,3 +373,6 @@ in commits.
 - 2026-11-20: MCP drafts take the human editors' size limits, not their own: no 1 km² rule (the site tool and
   building editors set none); the server binding's invalid-site / too-many-parcels (5000) caps bound every draft. A
   Detached rule builds within the site (parcels clipped to it) or cuts an outline into site-tool plots. User-approved.
+- 2026-11-20: Bets contests join agreements whose designs take overlapping ground (design sites, `reachesInto`);
+  a shared qualified input parcel is only the prefilter, so agreements apart on one large parcel are separate
+  contests. A contest-mode rival answers only on ground the answered building takes. User-approved.

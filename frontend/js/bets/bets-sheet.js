@@ -569,8 +569,8 @@
         return [t('bets.contest.agreementCount', count === 1 ? '{{count}} agreement' : '{{count}} agreements', { count })];
     }
 
-    // The question a contest answers: one agreement's pool, or which of several over the same land
-    // executes (js/bets/market-question.js).
+    // A contest's heading: one agreement's pool question, or, for several agreements whose designs
+    // take overlapping ground, the land their bets are on (each keeps its own YES/NO bet).
     function contestQuestionText(contest) {
         if (contest.agreementCount === 1 && contest.rows.length) return agreementQuestionText(contest.rows[0]);
         return t('bets.trade.contest', 'Bets on agreements over {{place}}', { place: landText(contest) });

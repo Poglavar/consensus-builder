@@ -93,6 +93,8 @@ function rationaleFor(candidate) {
     const ceiling = `The mapped urban rule allows ${allowed} floors on parcel ${parcelLabel}`;
     const builds = planned < allowed ? `; this design builds ${planned}.` : '.';
     const existing = `The measured build-out increases floor area from ${formatInteger(candidate.builtGfaM2)} m² to ${formatInteger(candidate.proposedGfaM2)} m².`;
+    // The planner keeps a rival's answer only where its building takes ground the rival's takes
+    // (planner.js), which is what puts the two agreements in one Bets contest.
     const rival = candidate.rival ? ` It answers "${candidate.rival.name}" by ${candidate.rival.persona} on the same land, so the two compete in one contest.` : '';
     return `${ceiling}${builds} ${existing}${rival}`;
 }

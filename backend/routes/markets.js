@@ -1,15 +1,16 @@
-// GET /markets?city=<id>: every contest (published agreements over the same land) in a city, with the
-// on-chain prediction market beside each minted agreement — what the Bets sheet lists and what an
-// agent reads before staking. Agreements come from the index (consensus.agreement: its `onchain`
-// pointer is recorded when an agreement is minted, its status as the lifecycle oracle observes the
-// account), market accounts from one batched RPC read; the payload is cached briefly per city because
+// GET /markets?city=<id>: every contest (published agreements whose designs take overlapping ground) in
+// a city, with the on-chain prediction market beside each minted agreement — what the Bets sheet lists
+// and what an agent reads before staking. Agreements come from the index (consensus.agreement: its
+// `onchain` pointer is recorded when an agreement is minted, its status as the lifecycle oracle
+// observes the account), the sites of the designs of agreements sharing a parcel from consensus.design,
+// market accounts from one batched RPC read; the payload is cached briefly per city because
 // every sheet open would otherwise be an RPC. The dated LMSR recipe is registered separately in
 // routes/lmsr-recipes.js; the old agreement-execution-v1 endpoint serves historical parimutuel proof.
 // GET /markets?city=<id>&scope=other: the same for every other city, each contest naming its city.
 
 import { createRequire } from 'node:module';
 import { Connection } from '@solana/web3.js';
-import { buildContests, buildOtherCityContests, subjectAccountOf } from '../markets/contests.js';
+import { buildContests, buildOtherCityContests, designCidsToCompare, landOverlap, subjectAccountOf } from '../markets/contests.js';
 import { AGREEMENT_PROGRAM_ID, AgreementClient, DEVNET_GENESIS_HASH, ONCHAIN_STATUSES } from '../agreements/onchain.js';
 import { ACCEPTED_MARKET_LIQUIDITY, MARKET_GRACE_SECONDS } from '../markets/agreement-source.js';
 import { AGREEMENT_EXECUTION_RECIPE_ID, buildAgreementExecutionRecipe, chainStatusOf } from '../oracle/market-recipe.js';
@@ -46,6 +47,23 @@ export const ALL_CITY_AGREEMENTS_SQL = currentPlanAgreementSelect({ predicate: '
 // is the one that row's CID and sponsor derive, so at most one row is it.
 export const AGREEMENTS_BY_ACCOUNT_SQL = CURRENT_AGREEMENTS_BY_ACCOUNT_SQL;
 
+// The ground of the listed designs ($1 text[]): the site each binding was computed on and its
+// tolerance, which decide whether two agreements stand in one contest (markets/contests.js landOverlap).
+export const DESIGN_LAND_SQL = `
+    SELECT cid, ST_AsGeoJSON(site) AS site, binding->'toleranceM' AS tolerance_m
+    FROM consensus.design
+    WHERE cid = ANY($1::text[]) AND site IS NOT NULL`;
+
+/** Design CID → { site, toleranceM } for the designs whose ground decides a contest. */
+export async function readDesignLand(db, designCids) {
+    if (!designCids.length) return new Map();
+    const { rows } = await db.query(DESIGN_LAND_SQL, [designCids]);
+    return new Map(rows.map(row => [row.cid, {
+        site: typeof row.site === 'string' ? JSON.parse(row.site) : row.site,
+        toleranceM: row.tolerance_m ?? null
+    }]));
+}
+
 const iso = value => (value instanceof Date ? value.toISOString() : value || null);
 const text = value => (typeof value === 'string' && value.trim() ? value.trim() : null);
 
@@ -64,6 +82,7 @@ export function rowToAgreement(row) {
         title: text(row.title),
         author: text(row.author),
         sponsor: text(row.sponsor),
+        designCids: Array.isArray(row.design_cids) ? row.design_cids : [],
         designTitles: (Array.isArray(row.design_titles) ? row.design_titles : []).map(text).filter(Boolean),
         inputParcelIds: Array.isArray(row.input_parcel_ids) ? row.input_parcel_ids : [],
         parcelSourceId: row.parcel_source_id || null,
@@ -153,14 +172,18 @@ export function setupMarketsRoute(app, pool, options = {}) {
         const { rows } = await pool.query(world ? ALL_CITY_AGREEMENTS_SQL : AGREEMENTS_SQL, world ? [MAX_AGREEMENTS] : [city, MAX_AGREEMENTS]);
         const agreements = rows.map(rowToAgreement);
         const accounts = Array.from(new Set(agreements.map(item => item.account).filter(Boolean)));
-        const markets = accounts.length ? await readMarkets(accounts, agreements) : new Map();
-        return { agreements, markets };
+        const [markets, designLand] = await Promise.all([
+            accounts.length ? readMarkets(accounts, agreements) : new Map(),
+            readDesignLand(pool, designCidsToCompare(agreements))
+        ]);
+        // Judged once per read: every request served from this read reuses the same answers.
+        return { agreements, markets, overlaps: landOverlap(designLand) };
     }
 
     // Statuses are judged at the current time; generatedAt stays the time the chain was read.
-    function payloadFor(city, other, { at, data: { agreements, markets } }) {
+    function payloadFor(city, other, { at, data: { agreements, markets, overlaps } }) {
         return {
-            ...(other ? buildOtherCityContests : buildContests)({ city, agreements, markets, now: now() }),
+            ...(other ? buildOtherCityContests : buildContests)({ city, agreements, markets, overlaps, now: now() }),
             generatedAt: new Date(at).toISOString(),
             cluster: 'devnet',
             agreementProgram: AGREEMENT_PROGRAM_ID,

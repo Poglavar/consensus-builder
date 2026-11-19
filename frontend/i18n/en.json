@@ -6085,7 +6085,6 @@
         "messages": {
             "community_vote_has_no_owner_action": "A community vote is decided by residents through its organiser; owners have nothing to accept.",
             "owner_vote_not_on_solana": "Owner votes cannot be minted on Solana yet. Choose another kind, or keep the design off-chain.",
-            "a_proposal_with_the_same_parcels_already_exists": "A design with the same parcels already exists.",
             "an_identical_proposal_already_exists": "An identical design already exists.",
             "building_proposal_workflow_is_unavailable": "Building design workflow is unavailable.",
             "cannot_undo_acceptance_from_an_executed_proposal_that_has_descendant_parcels": "Cannot undo acceptance from an executed design that has descendant parcels.",
@@ -7748,8 +7747,7 @@
             "empty": "No bets match this filter."
         },
         "question": {
-            "agreement": "Will {{title}} execute on-chain?",
-            "contest": "Which agreement over {{place}} will execute?"
+            "agreement": "Will {{title}} execute on-chain?"
         },
         "dialog": {
             "poolLabel": "Market",
@@ -7764,7 +7762,7 @@
             "max": "Max",
             "toWin": "To win about {{amount}} if {{side}} wins",
             "toWinNote": "The final payout follows the pool at settlement.",
-            "onThisLandCount": "{{entries}} on this land",
+            "overlappingGroundCount": "{{entries}} on overlapping ground",
             "agreementAccount": "Agreement account",
             "openAgreement": "Open the agreement",
             "noBets": "You have no bets on this agreement.",

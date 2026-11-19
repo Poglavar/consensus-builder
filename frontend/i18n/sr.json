@@ -6118,7 +6118,6 @@
         "messages": {
             "community_vote_has_no_owner_action": "O glasanju zajednice odlučuju stanovnici preko organizatora; vlasnici nemaju šta da prihvate.",
             "owner_vote_not_on_solana": "Glasanje vlasnika još ne može da se minta na Solani. Izaberite drugu vrstu ili ostavite dizajn van lanca.",
-            "a_proposal_with_the_same_parcels_already_exists": "Predlog sa istim parcelama već postoji.",
             "an_identical_proposal_already_exists": "Identičan dizajn već postoji.",
             "building_proposal_workflow_is_unavailable": "Tok za dizajn zgrade nije dostupan.",
             "cannot_undo_acceptance_from_an_executed_proposal_that_has_descendant_parcels": "Ne može se poništiti prihvatanje za izvršen dizajn koji ima potomke parcela.",
@@ -7788,8 +7787,7 @@
             "empty": "Nijedna opklada ne odgovara ovom filteru."
         },
         "question": {
-            "agreement": "Da li će se {{title}} izvršiti na lancu?",
-            "contest": "{{place}}: koji sporazum će se izvršiti?"
+            "agreement": "Da li će se {{title}} izvršiti na lancu?"
         },
         "dialog": {
             "poolLabel": "Tržište",
@@ -7804,7 +7802,7 @@
             "max": "Maks.",
             "toWin": "Dobitak oko {{amount}} ako pobedi {{side}}",
             "toWinNote": "Konačna isplata zavisi od fonda pri namirenju.",
-            "onThisLandCount": "{{entries}} na ovom zemljištu",
+            "overlappingGroundCount": "{{entries}} na zemljištu koje se preklapa",
             "agreementAccount": "Račun sporazuma",
             "openAgreement": "Otvori sporazum",
             "noBets": "Nemate opklada na ovaj sporazum.",

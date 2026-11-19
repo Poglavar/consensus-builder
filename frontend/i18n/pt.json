@@ -5154,7 +5154,7 @@
             "max": "Máx.",
             "toWin": "Para ganhar cerca de {{amount}} se {{side}} vencer",
             "toWinNote": "O pagamento final depende do fundo no momento da liquidação.",
-            "onThisLandCount": "{{entries}} neste terreno",
+            "overlappingGroundCount": "{{entries}} em terreno sobreposto",
             "agreementAccount": "Conta do acordo",
             "openAgreement": "Abrir o acordo",
             "noBets": "Não tem apostas neste acordo.",
@@ -5200,8 +5200,7 @@
         "emptyAgreements": "Ainda não há mercados nesta cidade. Emita um acordo on-chain com uma data-limite para abrir o primeiro.",
         "retry": "Tentar novamente",
         "question": {
-            "agreement": "{{title}} será executado on-chain?",
-            "contest": "Qual dos acordos sobre {{place}} será executado?"
+            "agreement": "{{title}} será executado on-chain?"
         },
         "error": {
             "load": "Não foi possível carregar as apostas.",
@@ -6297,7 +6296,6 @@
             "proposal_not_found": "Projeto não encontrado.",
             "community_vote_has_no_owner_action": "Uma votação comunitária é decidida pelos residentes através do respetivo organizador; os proprietários não têm nada a aceitar.",
             "owner_vote_not_on_solana": "Ainda não é possível emitir votações de proprietários na Solana. Escolha outro tipo ou mantenha o projeto fora da blockchain.",
-            "a_proposal_with_the_same_parcels_already_exists": "Já existe um projeto com as mesmas parcelas.",
             "an_identical_proposal_already_exists": "Já existe um projeto idêntico.",
             "building_proposal_workflow_is_unavailable": "O fluxo de trabalho de projetos de edifícios está indisponível.",
             "cannot_undo_acceptance_from_an_executed_proposal_that_has_descendant_parcels": "Não é possível anular a aceitação de um projeto executado que tenha parcelas descendentes.",

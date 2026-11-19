@@ -418,28 +418,25 @@ describe('MarketQuestion.build: templates', () => {
     });
 });
 
-describe('MarketQuestion.agreementQuestion and contestQuestion: the Bets sheet\'s undated questions', () => {
-    it('asks whether one agreement executes, and which of a contest\'s agreements does', () => {
+describe('MarketQuestion.agreementQuestion: the Bets sheet\'s undated question', () => {
+    it('asks whether one agreement executes', () => {
         expect(MarketQuestion.agreementQuestion('Borovje courtyard')).toBe('Will Borovje courtyard execute on-chain?');
         expect(MarketQuestion.agreementQuestion('  Courtyard + Tower ')).toBe('Will Courtyard + Tower execute on-chain?');
-        expect(MarketQuestion.contestQuestion('Parcel 2311 and 2 more')).toBe('Which agreement over Parcel 2311 and 2 more will execute?');
+        // Agreements in one contest each have their own bet; no question asks which one executes.
+        expect(MarketQuestion.TEMPLATES).not.toHaveProperty(['question.contest']);
     });
 
     it('applies a page\'s template override, as build does', () => {
-        const templates = {
-            'question.agreement': 'Hoće li se {{title}} izvršiti na lancu?',
-            'question.contest': 'Koji će se sporazum o {{place}} izvršiti?'
-        };
+        const templates = { 'question.agreement': 'Hoće li se {{title}} izvršiti na lancu?' };
         expect(MarketQuestion.agreementQuestion('Dvorište', { templates })).toBe('Hoće li se Dvorište izvršiti na lancu?');
-        expect(MarketQuestion.contestQuestion('čestici 2311', { templates })).toBe('Koji će se sporazum o čestici 2311 izvršiti?');
     });
 
     it.each([
         ['an empty title', () => MarketQuestion.agreementQuestion('  '), /title must be a non-empty string/],
         ['no title', () => MarketQuestion.agreementQuestion(null), /title must be a non-empty string/],
-        ['no place', () => MarketQuestion.contestQuestion(''), /place must be a non-empty string/],
         ['a placeholder the question does not have', () => MarketQuestion.agreementQuestion('X', { templates: { 'question.agreement': 'Will {{label}} execute?' } }), /uses \{\{label\}\}/],
-        ['a template for designs, which are never bet on', () => MarketQuestion.contestQuestion('X', { templates: { 'question.design': 'Which design?' } }), /unknown template key question.design/]
+        ['a template for designs, which are never bet on', () => MarketQuestion.agreementQuestion('X', { templates: { 'question.design': 'Which design?' } }), /unknown template key question.design/],
+        ['a question over a whole contest, which no bet asks', () => MarketQuestion.agreementQuestion('X', { templates: { 'question.contest': 'Which agreement over {{place}}?' } }), /unknown template key question.contest/]
     ])('rejects %s', (_name, call, message) => {
         expect(call).toThrow(message);
     });

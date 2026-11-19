@@ -196,7 +196,10 @@ function agreementRow(index: SharedIndex, cid: string, content: Record<string, a
   };
 }
 
-// ---- markets: the city's agreements grouped by shared input land (backend/markets/contests.js) -------
+// ---- markets: the city's agreements grouped into contests (backend/markets/contests.js) -------------
+// The server joins agreements that share an input parcel and whose designs take overlapping ground.
+// The fixture designs carry no site, so here agreements sharing an input parcel stand for designs on
+// overlapping ground.
 
 const sortedIds = (ids: unknown): string[] => [...new Set((Array.isArray(ids) ? ids : []).map(id => String(id ?? '').trim()).filter(Boolean))].sort();
 
@@ -222,7 +225,7 @@ function contestEntry(index: SharedIndex, row: Record<string, any>, contest: str
   };
 }
 
-/** GET /markets?city=: the city's agreements in contests over shared input parcels, those with a minted one. */
+/** GET /markets?city=: the city's agreements in contests (see above), those with a minted one. */
 export function marketsPayload(index: SharedIndex, city: string): Record<string, any> {
   const rows = [...index.agreements.values()].filter(row => row.city === city);
   // Union-find over shared input parcel ids.

@@ -16,7 +16,9 @@ const cidOf = seed => `bafkrei${seed.toLowerCase().replace(/[^a-z2-7]/g, 'a').pa
 function run({
     persona, day, slot = null, city = 'san_francisco', parcelId = 'US-CA-SF-1', parcelSourceId = undefined,
     reached = 'minted', deadline = '2026-10-18T00:00:00.000Z', settlements = null,
-    rule = { source: 'default', maxFloors: 5, minSetbackM: 3 }
+    rule = { source: 'default', maxFloors: 5, minSetbackM: 3 },
+    // The building the persona planned: the middle of its 0.0003° parcel.
+    footprint = square(-122.42 + 0.0001, 37.77 + 0.0001, 0.0001)
 }) {
     const candidateId = `${persona}:${parcelId}`;
     const account = `account-${parcelId}`;
@@ -28,6 +30,7 @@ function run({
             city,
             candidates: [{
                 candidateId, parcelId, koName: 'San Francisco', areaM2: 900, geometry: square(-122.42, 37.77), builtGfaM2: null, builtKnown: false, buildingCount: null, builtFootprintM2: null, buildingSourceId: null, buildingCoverage: 'unknown', rule,
+                ...(footprint ? { massing: { type: 'Feature', properties: { floors: 5 }, geometry: footprint } } : {}),
                 ...(parcelSourceId !== undefined ? { parcelSourceId } : {})
             }],
             picks: [{ candidateId, pickId: `agent-${persona}-${day}-1`, name: `5-storey infill on parcel ${parcelId}` }],
@@ -137,11 +140,27 @@ describe('parcels a persona has used and rival parcels', () => {
         // day's start, the one its author expired, or the one its author executed (its land is settled).
         expect(parcels.map(parcel => parcel.parcelId)).toEqual(['US-CA-SF-1']);
         expect(parcels[0]).toMatchObject({ city: 'san_francisco', floorCap: 3, rule: null, builtKnown: false, parcelSourceId: null,
-            rival: { agreementCid: cidOf('agreementUS-CA-SF-1'), persona: 'densifier-01', name: '5-storey infill on parcel US-CA-SF-1' } });
+            rival: { agreementCid: cidOf('agreementUS-CA-SF-1'), persona: 'densifier-01', name: '5-storey infill on parcel US-CA-SF-1',
+                footprint: square(-122.42 + 0.0001, 37.77 + 0.0001, 0.0001) } });
         const [candidate] = planCandidates(parcels, { name: 'gentle-01', weights: { density: 1 } }, { turf, money: { currency: 'EUR', salePricePerM2: 4000 }, limit: 1 });
         expect(candidate).toMatchObject({ allowedFloors: 5, plannedFloors: 3, rival: { persona: 'densifier-01' } });
+        // The answer's building takes ground the answered building takes: one Bets contest.
+        expect(turf.area(turf.intersect(candidate.massing, turf.feature(parcels[0].rival.footprint)))).toBeGreaterThan(1);
         // The persona never answers its own agreements.
         expect(contestParcels(runs, { persona: 'densifier-01', runDay: '2026-10-11' }).map(parcel => parcel.parcelId)).toEqual(['US-CA-SF-own']);
+    });
+
+    it('answers only on ground the rival building takes, never elsewhere on its parcel', () => {
+        const plan = parcels => planCandidates(parcels, { name: 'gentle-01', weights: { density: 1 } }, { turf, money: { currency: 'EUR', salePricePerM2: 4000 }, limit: 1 });
+        // A rival building in the parcel's corner, inside the 3 m setback no answer may build in.
+        const cornered = contestParcels([run({ persona: 'densifier-01', day: '2026-10-11', footprint: square(-122.42, 37.77, 0.00001) })],
+            { persona: 'gentle-01', runDay: '2026-10-11', floorCap: 3 });
+        expect(cornered).toHaveLength(1);
+        expect(plan(cornered)).toEqual([]);
+        // The same parcel with the rival building in its middle is answered.
+        expect(plan(contestParcels([run({ persona: 'densifier-01', day: '2026-10-11' })], { persona: 'gentle-01', runDay: '2026-10-11', floorCap: 3 }))).toHaveLength(1);
+        // A rival whose planned building is not on record cannot be answered on its ground.
+        expect(contestParcels([run({ persona: 'densifier-01', day: '2026-10-11', footprint: null })], { persona: 'gentle-01', runDay: '2026-10-11' })).toEqual([]);
     });
 
     it('answers an agreement until its author executes or expires it', () => {

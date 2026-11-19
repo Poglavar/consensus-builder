@@ -7,7 +7,7 @@ import express from 'express';
 import request from 'supertest';
 import { describe, expect, it, vi } from 'vitest';
 import * as web3 from '@solana/web3.js';
-import { AGREEMENTS_BY_ACCOUNT_SQL, AGREEMENTS_SQL, DEVNET_USDC_MINT, agreementByAccount, hasCanonicalMarketTerms, rowToAgreement, setupMarketsRoute } from '../routes/markets.js';
+import { AGREEMENTS_BY_ACCOUNT_SQL, AGREEMENTS_SQL, DESIGN_LAND_SQL, DEVNET_USDC_MINT, agreementByAccount, hasCanonicalMarketTerms, rowToAgreement, setupMarketsRoute } from '../routes/markets.js';
 import { AGREEMENT_PROGRAM_ID, agreementAccountOf } from '../agreements/onchain.js';
 import { buildAgreementExecutionRecipe } from '../oracle/market-recipe.js';
 import { cidOfObject } from '../cid.js';
@@ -30,19 +30,33 @@ const onchain = (overrides = {}) => ({
 // consensus.agreement rows as AGREEMENT_COLUMNS_SQL selects them.
 function rows() {
     return [{
-        cid: CID, city: 'zagreb', title: 'Plan-led infill', author: 'densifier-01', input_parcel_ids: ['HR-335614-2311'],
+        cid: CID, city: 'zagreb', title: 'Plan-led infill', author: 'densifier-01', design_cids: ['design-tower'], input_parcel_ids: ['HR-335614-2311'],
         parcel_source_id: null, deadline: new Date('2026-12-31T00:00:00Z'), sponsor: SPONSOR, design_titles: ['Six storeys', ' '],
         onchain: onchain(), screenshot_url: null, screenshot_before_url: null, screenshot_pair_url: null,
         created_at: new Date('2026-10-01T10:00:00Z')
     }, {
-        cid: RIVAL_CID, city: 'zagreb', title: null, author: 'someone', input_parcel_ids: ['HR-335614-2311'],
+        cid: RIVAL_CID, city: 'zagreb', title: null, author: 'someone', design_cids: ['design-park'], input_parcel_ids: ['HR-335614-2311'],
         parcel_source_id: 'hr-cadastre', deadline: null, sponsor: null, design_titles: ['A park'],
         onchain: null, screenshot_url: null, screenshot_before_url: null, screenshot_pair_url: null,
         created_at: new Date('2026-10-02T10:00:00Z')
     }];
 }
 
-const poolFor = (agreementRows = rows()) => ({ query: vi.fn(async () => ({ rows: agreementRows })) });
+// consensus.design sites as DESIGN_LAND_SQL reads them: the tower and the park overlap on the parcel.
+const square = (west, south, size = 0.0003) => JSON.stringify({ type: 'MultiPolygon',
+    coordinates: [[[[west, south], [west + size, south], [west + size, south + size], [west, south + size], [west, south]]]] });
+const OVERLAPPING = { 'design-tower': square(15.97, 45.8), 'design-park': square(15.9701, 45.8001) };
+const APART = { 'design-tower': square(15.97, 45.8), 'design-park': square(15.975, 45.8) };
+
+const poolFor = (agreementRows = rows(), sites = OVERLAPPING) => ({
+    query: vi.fn(async (sql, params) => ({
+        rows: sql === DESIGN_LAND_SQL
+            ? Object.entries(sites).filter(([cid]) => params[0].includes(cid)).map(([cid, site]) => ({ cid, site, tolerance_m: 0 }))
+            : agreementRows
+    }))
+});
+// The agreement reads a pool saw (the design reads beside them are not what the cache saves).
+const agreementReads = pool => pool.query.mock.calls.filter(([sql]) => sql !== DESIGN_LAND_SQL);
 const openPool = () => new Map([[ACCOUNT, { address: MARKET, market: {
     b: 100_000_000n, qYes: 250000n, qNo: 0n, seed: 69_314_720n, closesAt: Math.floor(Date.parse('2026-12-31T00:00:00Z') / 1000),
     graceSeconds: 0, maxPosition: 0n, paidOut: 0n, creator: SPONSOR, resolved: false, outcome: 0
@@ -70,6 +84,8 @@ describe('GET /markets', () => {
         expect(res.status).toBe(200);
         expect(pool.query.mock.calls[0][0]).toMatch(/FROM consensus\.agreement a[\s\S]+WHERE a\.city = \$1/);
         expect(pool.query.mock.calls[0][1]).toEqual(['zg', 2000]);
+        // The two agreements share a parcel, so their designs' sites are read to judge the ground.
+        expect(pool.query).toHaveBeenCalledWith(DESIGN_LAND_SQL, [['design-park', 'design-tower']]);
         expect(readMarkets).toHaveBeenCalledWith([ACCOUNT], expect.arrayContaining([expect.objectContaining({ account: ACCOUNT, sponsor: SPONSOR })]));
         expect(res.body).toMatchObject({
             city: 'zg', cluster: 'devnet', agreementProgram: AGREEMENT_PROGRAM_ID,
@@ -88,25 +104,35 @@ describe('GET /markets', () => {
         expect(res.headers['cache-control']).toBe('public, max-age=10');
     });
 
+    it('keeps agreements on one parcel apart when their designs\' sites do not overlap', async () => {
+        const res = await request(appFor({ pool: poolFor(rows(), APART) })).get('/markets?city=zagreb');
+        expect(res.status).toBe(200);
+        // The rival is a contest of its own, and nobody minted it, so it is not listed.
+        expect(res.body.summary).toMatchObject({ contests: 1, agreements: 1 });
+        expect(res.body.contests[0].agreements.map(entry => entry.cid)).toEqual([CID]);
+    });
+
     it('caches a city for a short while and keys the cache per city; fresh=1 skips it', async () => {
         const pool = poolFor();
         let clock = Date.parse('2026-10-09T07:00:00Z');
         const app = appFor({ pool, now: () => new Date(clock) });
         await request(app).get('/markets?city=zagreb');
         await request(app).get('/markets?city=zagreb');
-        expect(pool.query).toHaveBeenCalledTimes(1);
+        expect(agreementReads(pool)).toHaveLength(1);
         await request(app).get('/markets?city=sibenik');
-        expect(pool.query).toHaveBeenCalledTimes(2);
+        expect(agreementReads(pool)).toHaveLength(2);
         // Cached for 20 seconds.
         clock += 19_999;
         await request(app).get('/markets?city=zagreb');
-        expect(pool.query).toHaveBeenCalledTimes(2);
+        expect(agreementReads(pool)).toHaveLength(2);
         clock += 1;
         await request(app).get('/markets?city=zagreb');
-        expect(pool.query).toHaveBeenCalledTimes(3);
+        expect(agreementReads(pool)).toHaveLength(3);
         // Right after a confirmed transaction the sheet needs the chain's answer, not the cache's.
         await request(app).get('/markets?city=zagreb&fresh=1');
-        expect(pool.query).toHaveBeenCalledTimes(4);
+        expect(agreementReads(pool)).toHaveLength(4);
+        // Each read judges the ground once, beside its agreements.
+        expect(pool.query.mock.calls.filter(([sql]) => sql === DESIGN_LAND_SQL)).toHaveLength(4);
     });
 
     it('lets the account status the lifecycle oracle observed decide whether a bet is open', async () => {
@@ -147,11 +173,11 @@ describe('GET /markets', () => {
         expect(res.body.contests.flatMap(contest => contest.agreements.map(entry => entry.cid)).sort()).toEqual([CID, otherCid].sort());
         // Its own cache entry: the city list is read separately.
         await request(app).get('/markets?city=zagreb');
-        expect(pool.query).toHaveBeenCalledTimes(2);
-        expect(pool.query.mock.calls[1][0]).toMatch(/WHERE a\.city = \$1/);
+        expect(agreementReads(pool)).toHaveLength(2);
+        expect(agreementReads(pool)[1][0]).toMatch(/WHERE a\.city = \$1/);
         // Every city's World tab shares the one read, each leaving its own city out.
         const fromSplit = await request(app).get('/markets?city=split&scope=other');
-        expect(pool.query).toHaveBeenCalledTimes(2);
+        expect(agreementReads(pool)).toHaveLength(2);
         expect(fromSplit.body.contests.map(contest => contest.city).sort()).toEqual(['rijeka', 'zagreb']);
     });
 
@@ -166,7 +192,7 @@ describe('GET /markets', () => {
         const res = await request(app).get('/markets?city=sibenik&scope=other');
         expect(res.status).toBe(200);
         expect(res.body.summary.agreements).toBeGreaterThan(0);
-        expect(pool.query).toHaveBeenCalledTimes(1);
+        expect(agreementReads(pool)).toHaveLength(1);
     });
 
     it('answers 502 when the chain read fails instead of serving half a payload', async () => {
@@ -219,7 +245,7 @@ describe('rowToAgreement and agreementByAccount', () => {
     it('maps an index row to the contest input, with the account only when it derives', () => {
         const [row, rival] = rows();
         expect(rowToAgreement(row)).toEqual({
-            cid: CID, city: 'zagreb', title: 'Plan-led infill', author: 'densifier-01', designTitles: ['Six storeys'],
+            cid: CID, city: 'zagreb', title: 'Plan-led infill', author: 'densifier-01', designCids: ['design-tower'], designTitles: ['Six storeys'],
             inputParcelIds: ['HR-335614-2311'], parcelSourceId: null, deadline: '2026-12-31T00:00:00.000Z',
             createdAt: '2026-10-01T10:00:00.000Z', screenshotUrl: null, screenshotBeforeUrl: null, screenshotPairUrl: null, sponsor: SPONSOR,
             account: ACCOUNT, chainStatus: 'active'

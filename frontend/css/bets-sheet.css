@@ -336,7 +336,7 @@
     color: var(--cb-text-muted);
 }
 
-/* "N on this land": a script link (button.cb-link) back to the rivals in the Bets sheet. */
+/* "N on overlapping ground": a script link (button.cb-link) back to the agreement's contest in the Bets sheet. */
 .bets-dialog__contest {
     align-self: flex-start;
 }

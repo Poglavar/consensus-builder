@@ -6162,7 +6162,6 @@
         "messages": {
             "community_vote_has_no_owner_action": "Голосование в общине решает резидент через своего организатора; владельцам нечего соглашаться.",
             "owner_vote_not_on_solana": "Владелец не может получить Solana голоса. Выберите другой вид или не замыкайте дизайн.",
-            "a_proposal_with_the_same_parcels_already_exists": "Уже существует проектирование с теми же земляными участками.",
             "an_identical_proposal_already_exists": "Один и тот же дизайн уже существует.",
             "building_proposal_workflow_is_unavailable": "Не работает рабочий процесс по проектированию зданий.",
             "cannot_undo_acceptance_from_an_executed_proposal_that_has_descendant_parcels": "Невозможно отменить признание с выполненного проекта, имеющего земельные участки потомства.",
@@ -7842,8 +7841,7 @@
             "empty": "Никаких ставок на этот фильтр."
         },
         "question": {
-            "agreement": "Будет ли {{title}} выполнять цепочку?",
-            "contest": "Какое соглашение будет выполнено на сумму {{place}}?"
+            "agreement": "Будет ли {{title}} выполнять цепочку?"
         },
         "dialog": {
             "poolLabel": "Рынок",
@@ -7858,7 +7856,7 @@
             "max": "Макс",
             "toWin": "Чтобы выиграть около {{amount}} если {{side}} победит",
             "toWinNote": "Окончательная выплата производится после выплаты по пулу.",
-            "onThisLandCount": "{{entries}} на этой земле",
+            "overlappingGroundCount": "{{entries}} на пересекающейся территории",
             "agreementAccount": "Счет соглашения",
             "openAgreement": "Откройте соглашение",
             "noBets": "У вас нет ставок на это соглашение.",

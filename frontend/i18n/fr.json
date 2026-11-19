@@ -5154,7 +5154,7 @@
             "max": "Max",
             "toWin": "Pour gagner environ {{amount}} si {{side}} l’emporte",
             "toWinNote": "Le versement final dépend de la cagnotte au moment du règlement.",
-            "onThisLandCount": "{{entries}} sur ce terrain",
+            "overlappingGroundCount": "{{entries}} sur des emprises qui se chevauchent",
             "agreementAccount": "Compte de l’accord",
             "openAgreement": "Ouvrir l’accord",
             "noBets": "Vous n’avez aucun pari sur cet accord.",
@@ -5200,8 +5200,7 @@
         "emptyAgreements": "Aucun marché dans cette ville pour le moment. Créez un accord sur la blockchain avec une échéance pour ouvrir le premier.",
         "retry": "Réessayer",
         "question": {
-            "agreement": "{{title}} sera-t-il exécuté sur la blockchain ?",
-            "contest": "Quel accord concernant {{place}} sera exécuté ?"
+            "agreement": "{{title}} sera-t-il exécuté sur la blockchain ?"
         },
         "error": {
             "load": "Les paris n’ont pas pu être chargés.",
@@ -6297,7 +6296,6 @@
             "proposal_not_found": "Projet introuvable.",
             "community_vote_has_no_owner_action": "Un vote des habitants est tranché par les résidents par l’intermédiaire de son organisateur ; les propriétaires n’ont rien à accepter.",
             "owner_vote_not_on_solana": "Les votes des propriétaires ne peuvent pas encore être inscrits sur Solana. Choisissez un autre type ou conservez le projet hors chaîne.",
-            "a_proposal_with_the_same_parcels_already_exists": "Un projet portant sur les mêmes parcelles existe déjà.",
             "an_identical_proposal_already_exists": "Un projet identique existe déjà.",
             "building_proposal_workflow_is_unavailable": "Le processus de conception de bâtiments est indisponible.",
             "cannot_undo_acceptance_from_an_executed_proposal_that_has_descendant_parcels": "Impossible d’annuler l’acceptation d’un projet exécuté sur la chaîne dont les parcelles ont des parcelles descendantes.",

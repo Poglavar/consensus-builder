@@ -1,7 +1,7 @@
-// Contests: a city's published agreements grouped by the land they take, with each minted
+// Contests: a city's published agreements grouped by the ground their designs take, with each minted
 // agreement's prediction market beside it (plan-design-agreement.md, "Simplifications" 10). This is
-// the shape behind GET /markets and the Bets sheet. Pure: the route feeds it index rows and decoded
-// market accounts; nothing here touches the database or an RPC.
+// the shape behind GET /markets and the Bets sheet. Pure: the route feeds it index rows, the design
+// sites it read and decoded market accounts; nothing here touches the database or an RPC.
 import { createHash } from 'node:crypto';
 import { createRequire } from 'node:module';
 import { parcelSourceCatalog, resolveParcelSourceDescriptor } from '../parcels/sources.js';
@@ -12,6 +12,9 @@ const require = createRequire(import.meta.url);
 // The sheet's own model (frontend/js/bets/bets-model.js): the same state words and the same order,
 // so the API and the Bets sheet cannot disagree about which row leads.
 const { compareContests, compareRows } = require('../../frontend/js/bets/bets-model.js');
+// The shared "does this shape take that ground" rule (docs/geometry-tolerances.md), the one binding uses.
+const ground = require('../../frontend/js/geometry-tolerances.js');
+const turf = require('@turf/turf');
 
 // The source the server binds a city's designs against when an agreement names none and the city
 // has no catalogue default (backend/proposals/binding.js computeBinding).
@@ -78,27 +81,112 @@ export function normalizeParcelRefs(value) {
     return [...byKey.entries()].sort(([a], [b]) => (a < b ? -1 : a > b ? 1 : 0)).map(([, ref]) => ref);
 }
 
-/** Stable contest id: the land, not the agreements, so a new agreement joins an existing contest. */
-export function contestId(parcelRefs, fallback = '') {
-    const refs = normalizeParcelRefs(parcelRefs);
-    const seed = refs.length ? `land:${JSON.stringify(refs)}` : `unqualified-agreement:${fallback}`;
+/** The agreement's designs, as CIDs (consensus.agreement.design_cids). */
+export function designCidsOf(agreement) {
+    const list = Array.isArray(agreement?.designCids) ? agreement.designCids : [];
+    return Array.from(new Set(list.filter(cid => typeof cid === 'string' && cid))).sort();
+}
+
+/**
+ * Stable contest id: the designs whose ground the contest is about (a design's CID fixes its site),
+ * not the agreements, so another agreement over the same designs stands in the same contest. Two
+ * contests never hold one design (agreements sharing a design are one contest), so ids never collide,
+ * however many contests stand on one parcel.
+ */
+export function contestId(designCids, fallback = '') {
+    const cids = designCidsOf({ designCids });
+    const seed = cids.length ? `designs:${JSON.stringify(cids)}` : `agreement:${fallback}`;
     return `c-${createHash('sha256').update(seed).digest('hex').slice(0, 12)}`;
 }
 
-/** Union-find over shared qualified input parcel references. */
-export function groupByLand(agreements) {
+// Pairs of agreements (indices into `list`) that share a qualified input parcel: the only pairs whose
+// ground is compared, so agreements on parcels of different sources, or none, never meet.
+function sharingPairs(list) {
+    const byParcel = new Map();
+    list.forEach((agreement, index) => {
+        for (const ref of parcelRefsOf(agreement)) {
+            const key = refKey(ref);
+            if (!byParcel.has(key)) byParcel.set(key, []);
+            byParcel.get(key).push(index);
+        }
+    });
+    const pairs = new Map();
+    for (const indices of byParcel.values()) {
+        for (let i = 0; i < indices.length; i++) {
+            for (let j = i + 1; j < indices.length; j++) pairs.set(`${indices[i]}:${indices[j]}`, [indices[i], indices[j]]);
+        }
+    }
+    return Array.from(pairs.values());
+}
+
+/** The designs whose sites decide the contests: those of agreements sharing a qualified input parcel. */
+export function designCidsToCompare(agreements) {
+    const list = Array.isArray(agreements) ? agreements : [];
+    const cids = new Set();
+    for (const pair of sharingPairs(list)) for (const index of pair) designCidsOf(list[index]).forEach(cid => cids.add(cid));
+    return Array.from(cids).sort();
+}
+
+/**
+ * Whether two agreements' designs take overlapping ground: they share a design, or a design site of
+ * one reaches into a design site of the other (geometry-tolerances.js reachesInto: the overlap is
+ * ground, wider than noise and than the wider of the two designs' own tolerances). `designLand`:
+ * design CID → { site, toleranceM }, the site (GeoJSON Polygon or MultiPolygon) the design's binding
+ * was computed on and that binding's toleranceM (consensus.design). A design whose site is not known
+ * reaches nothing. Answers are kept per pair: the route judges one cached read on every request.
+ * A clip the shared rule cannot make is logged and judged apart, so one bad site never blanks the
+ * Bets sheet.
+ */
+export function landOverlap(designLand = new Map()) {
+    const features = new Map();
+    const featureOf = cid => {
+        if (!features.has(cid)) {
+            const site = designLand.get(cid)?.site;
+            features.set(cid, site && ['Polygon', 'MultiPolygon'].includes(site.type) ? { type: 'Feature', properties: {}, geometry: site } : null);
+        }
+        return features.get(cid);
+    };
+    const toleranceOf = cid => {
+        const value = designLand.get(cid)?.toleranceM;
+        return typeof value === 'number' && Number.isFinite(value) && value > 0 ? value : 0;
+    };
+    const reaches = (a, b) => {
+        const shape = featureOf(a);
+        const other = featureOf(b);
+        if (!shape || !other) return false;
+        try {
+            return ground.reachesInto(turf, shape, other, Math.max(toleranceOf(a), toleranceOf(b)), { site: 'markets/contests.landOverlap', proposalId: a });
+        } catch (error) {
+            console.error(`[${new Date().toISOString()}] contests: the sites of designs ${a} and ${b} could not be clipped; judged apart:`, error);
+            return false;
+        }
+    };
+    const answers = new Map();
+    return (first, second) => {
+        const key = JSON.stringify([first?.cid, second?.cid].sort());
+        if (!answers.has(key)) {
+            const mine = designCidsOf(first);
+            const theirs = designCidsOf(second);
+            answers.set(key, mine.some(cid => theirs.includes(cid)) || mine.some(a => theirs.some(b => reaches(a, b))));
+        }
+        return answers.get(key);
+    };
+}
+
+/**
+ * Union-find over overlapping ground: two agreements sharing a qualified input parcel join when
+ * `overlaps(a, b)` (landOverlap) says their designs take overlapping ground, and contests are what
+ * those joins connect, transitively. Sharing a parcel alone joins nothing: agreements whose designs
+ * stand apart on one large parcel are separate contests.
+ */
+export function groupByLand(agreements, overlaps = () => false) {
     const list = Array.isArray(agreements) ? agreements : [];
     const parent = list.map((_, index) => index);
     const find = index => (parent[index] === index ? index : (parent[index] = find(parent[index])));
     const union = (a, b) => { parent[find(a)] = find(b); };
-    const firstByParcel = new Map();
-    list.forEach((agreement, index) => {
-        for (const ref of parcelRefsOf(agreement)) {
-            const key = refKey(ref);
-            if (firstByParcel.has(key)) union(index, firstByParcel.get(key));
-            else firstByParcel.set(key, index);
-        }
-    });
+    for (const [a, b] of sharingPairs(list)) {
+        if (find(a) !== find(b) && overlaps(list[a], list[b])) union(a, b);
+    }
     const groups = new Map();
     list.forEach((agreement, index) => {
         const root = find(index);
@@ -175,20 +263,22 @@ function agreementEntry(agreement, markets, nowMs) {
 
 /**
  * Build the public contests payload for one city.
- * @param {{ city: string, agreements: Array<object>, markets?: Map<string, { address: string, market: object|null }>, now?: Date }} input
- *   agreements: { cid, title, author, city, inputParcelIds, parcelSourceId, deadline, createdAt,
- *   designTitles, screenshotUrl, screenshotBeforeUrl, screenshotPairUrl, account, chainStatus }
- *   (routes/markets.js rowToAgreement); markets: agreement account → its decoded market account.
+ * @param {{ city: string, agreements: Array<object>, markets?: Map<string, { address: string, market: object|null }>, overlaps?: Function, now?: Date }} input
+ *   agreements: { cid, title, author, city, designCids, inputParcelIds, parcelSourceId, deadline,
+ *   createdAt, designTitles, screenshotUrl, screenshotBeforeUrl, screenshotPairUrl, account,
+ *   chainStatus } (routes/markets.js rowToAgreement); markets: agreement account → its decoded market
+ *   account; overlaps: whether two agreements' designs take overlapping ground (landOverlap over the
+ *   design sites the route read); without it every agreement is a contest of its own.
  *   Only contests with at least one minted agreement are returned: a contest nobody can bet on is
  *   a list of agreements, not a market. Unminted agreements stay in a contest beside minted ones,
  *   without a pool. Entries and contests come in the Bets sheet's order (bets-model.js compareRows,
  *   compareContests).
  */
-export function buildContests({ city, agreements, markets = new Map(), now = new Date() }) {
+export function buildContests({ city, agreements, markets = new Map(), overlaps = () => false, now = new Date() }) {
     const nowMs = now.getTime();
-    const contests = groupByLand(agreements).map(group => {
+    const contests = groupByLand(agreements, overlaps).map(group => {
         const parcelRefs = normalizeParcelRefs(group.flatMap(parcelRefsOf));
-        const id = contestId(parcelRefs, group.map(agreement => agreement.cid).sort()[0] || '');
+        const id = contestId(group.flatMap(designCidsOf), group.map(agreement => agreement.cid).sort()[0] || '');
         const entries = group.map(agreement => ({ ...agreementEntry(agreement, markets, nowMs), contest: id })).sort(compareRows);
         const withMarket = entries.filter(entry => entry.market);
         return {
@@ -221,7 +311,7 @@ function summarize(contests) {
 
 // Every city but `city`: each city's contests are built on their own (parcel numbers of two cities
 // never join one contest), carry their city, and are ordered together as one list.
-export function buildOtherCityContests({ city, agreements, markets = new Map(), now = new Date() }) {
+export function buildOtherCityContests({ city, agreements, markets = new Map(), overlaps = () => false, now = new Date() }) {
     const byCity = new Map();
     for (const agreement of Array.isArray(agreements) ? agreements : []) {
         if (!agreement.city || agreement.city === city) continue;
@@ -229,7 +319,7 @@ export function buildOtherCityContests({ city, agreements, markets = new Map(), 
         byCity.get(agreement.city).push(agreement);
     }
     const contests = [...byCity].flatMap(([other, list]) =>
-        buildContests({ city: other, agreements: list, markets, now }).contests.map(contest => ({ ...contest, city: other })))
+        buildContests({ city: other, agreements: list, markets, overlaps, now }).contests.map(contest => ({ ...contest, city: other })))
         .sort(compareContests);
     return { city, scope: 'other', generatedAt: now.toISOString(), summary: summarize(contests), contests };
 }
