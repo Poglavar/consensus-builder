@@ -140,6 +140,13 @@
     --cb-scene-sky: #87ceeb;
     --cb-world-space: #030712;
     --cb-world-ground: radial-gradient(ellipse at 50% 45%, #0d1d44 0%, #081231 45%, var(--cb-world-space) 100%);
+    /* Clouds over the handoff frame while the map loads (css/world.css). */
+    --cb-world-cloud: rgba(255, 255, 255, 0.96);
+    --cb-world-cloud-edge: rgba(255, 255, 255, 0);
+    --cb-world-cloud-shade: rgba(88, 126, 184, 0.32);
+    --cb-world-cloud-shade-edge: rgba(88, 126, 184, 0);
+    --cb-world-sky-deep: rgba(40, 104, 204, 0.36);
+    --cb-world-sky-clear: rgba(40, 104, 204, 0);
 
     /* Country coverage and source evidence on the world globe. */
     --cb-world-coverage-full: #71bc91;

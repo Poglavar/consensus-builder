@@ -102,6 +102,20 @@ describe('world handoff proposal readiness', () => {
         expect(h.children).toHaveLength(0);
     });
 
+    it('streams one cloud per flight in world.css over the frame while the map loads', async () => {
+        const h = harness({ reducedMotion: false });
+        const layers = h.children[0].children.filter(node => node.className === 'world-handoff__clouds');
+        expect(layers).toHaveLength(1);
+        const flights = readFileSync(path.join(REPO, 'frontend/css/world.css'), 'utf8').match(/\.world-handoff__cloud:nth-child\(\d+\)/g);
+        expect(layers[0].children.map(node => node.className)).toEqual(flights.map(() => 'world-handoff__cloud'));
+        expect(flights.length).toBeGreaterThan(0);
+    });
+
+    it('adds no clouds under reduced motion', async () => {
+        const h = harness({ reducedMotion: true });
+        expect(h.children[0].children.map(node => node.className)).toEqual(['world-handoff__img']);
+    });
+
     it('keeps ordinary handoffs on the existing map-drawn fade path', async () => {
         const h = harness({ reducedMotion: false });
         h.boot();

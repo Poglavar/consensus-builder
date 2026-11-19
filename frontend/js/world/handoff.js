@@ -1,7 +1,8 @@
 // Continues the globe fly-in across the page reload that a city switch causes: before navigating,
 // the world view stores its last frame (WorldHandoff.store); on the next boot this script shows that
 // frame full-screen over the map and fades it out once the map has actually drawn, so the dive and
-// the map read as one motion. The record lives in sessionStorage and is ignored after 30 s.
+// the map read as one motion. Clouds stream past the frame during the wait and part when it fades
+// (none under reduced motion). The record lives in sessionStorage and is ignored after 30 s.
 //
 // API (window.WorldHandoff)
 //   store({ dataUrl, cityId, center: [lat, lon], zoom, proposalId? })
@@ -17,6 +18,7 @@
 
     const KEY = 'cb_world_handoff';
     const MAX_AGE_MS = 30000;
+    const CLOUD_COUNT = 9;
     const log = message => console.log('[' + new Date().toISOString() + '] [world-handoff] ' + message);
 
     function read() {
@@ -77,6 +79,19 @@
         });
     }
 
+    // The clouds that stream past the frame while the map loads and part once it has drawn. Their
+    // look and motion are css/world.css, which has one :nth-child flight per cloud.
+    function clouds() {
+        const layer = document.createElement('div');
+        layer.className = 'world-handoff__clouds';
+        for (let i = 0; i < CLOUD_COUNT; i++) {
+            const cloud = document.createElement('div');
+            cloud.className = 'world-handoff__cloud';
+            layer.appendChild(cloud);
+        }
+        return layer;
+    }
+
     function show(record) {
         const overlay = document.createElement('div');
         overlay.className = 'world-handoff';
@@ -86,6 +101,7 @@
         img.alt = '';
         img.src = record.dataUrl;
         overlay.appendChild(img);
+        if (!reducedMotion()) overlay.appendChild(clouds());
         document.body.appendChild(overlay);
 
         let removed = false;

@@ -713,13 +713,19 @@ body.world-view-open {
 
 /* ---- boot handoff frame ---- */
 
+/* The frame is the sky haze the dive ended in. While the map loads, clouds stream past it as if the
+   descent went on; once the map has drawn (--out) the haze clears first and the clouds part over
+   the map. Only transform and opacity move, so the motion stays smooth while the app boots.
+   js/world/handoff.js adds one .world-handoff__cloud per :nth-child rule below, and none under
+   reduced motion. */
 .world-handoff {
     position: fixed;
     inset: 0;
     z-index: var(--cb-z-world-handoff);
+    overflow: hidden;
     background: var(--cb-world-space);
     cursor: pointer;
-    transition: opacity 0.9s ease;
+    transition: opacity 0.5s ease 0.6s;
 }
 
 .world-handoff__img {
@@ -728,16 +734,70 @@ body.world-view-open {
     height: 100%;
     object-fit: cover;
     transform: scale(1);
-    transition: transform 1.1s cubic-bezier(0.2, 0.7, 0.3, 1);
+    transition: opacity 0.5s ease, transform 1.1s cubic-bezier(0.2, 0.7, 0.3, 1);
+}
+
+.world-handoff__clouds {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at 50% 50%, var(--cb-world-sky-clear) 25%, var(--cb-world-sky-deep) 100%);
+    animation: world-handoff-clouds-in 0.7s ease both;
+    transition: transform 1.1s cubic-bezier(0.5, 0, 0.8, 0.45);
+}
+
+/* A cloud is drawn small and scaled up by its flight, from the middle of the view outwards. */
+.world-handoff__cloud {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: calc(12vw + 12vh);
+    aspect-ratio: 16 / 10;
+    translate: -50% -50%;
+    background:
+        radial-gradient(closest-side, var(--cb-world-cloud) 30%, var(--cb-world-cloud-edge) 100%) 8% 62% / 50% 62% no-repeat,
+        radial-gradient(closest-side, var(--cb-world-cloud) 35%, var(--cb-world-cloud-edge) 100%) 46% 22% / 56% 78% no-repeat,
+        radial-gradient(closest-side, var(--cb-world-cloud) 30%, var(--cb-world-cloud-edge) 100%) 92% 58% / 48% 64% no-repeat,
+        radial-gradient(closest-side, var(--cb-world-cloud) 20%, var(--cb-world-cloud-edge) 100%) 50% 84% / 80% 48% no-repeat,
+        radial-gradient(closest-side, var(--cb-world-cloud-shade) 0%, var(--cb-world-cloud-shade-edge) 100%) 50% 100% / 96% 60% no-repeat;
+    opacity: 0;
+    will-change: transform, opacity;
+    animation: world-handoff-cloud var(--cloud-time) cubic-bezier(0.45, 0, 0.9, 0.6) var(--cloud-delay) infinite;
+}
+
+.world-handoff__cloud:nth-child(1) { --cloud-x: -70vw; --cloud-y: -46vh; --cloud-turn: -8deg; --cloud-time: 6.4s; --cloud-delay: -0.5s; }
+.world-handoff__cloud:nth-child(2) { --cloud-x: 66vw; --cloud-y: -56vh; --cloud-turn: 12deg; --cloud-time: 7.2s; --cloud-delay: -3.3s; }
+.world-handoff__cloud:nth-child(3) { --cloud-x: -76vw; --cloud-y: 32vh; --cloud-turn: 6deg; --cloud-time: 5.8s; --cloud-delay: -1.9s; }
+.world-handoff__cloud:nth-child(4) { --cloud-x: 72vw; --cloud-y: 44vh; --cloud-turn: -14deg; --cloud-time: 6.8s; --cloud-delay: -4.7s; }
+.world-handoff__cloud:nth-child(5) { --cloud-x: -18vw; --cloud-y: -78vh; --cloud-turn: 3deg; --cloud-time: 7.6s; --cloud-delay: -2.6s; }
+.world-handoff__cloud:nth-child(6) { --cloud-x: 24vw; --cloud-y: 80vh; --cloud-turn: -5deg; --cloud-time: 6.1s; --cloud-delay: -5.5s; }
+.world-handoff__cloud:nth-child(7) { --cloud-x: -88vw; --cloud-y: -8vh; --cloud-turn: 16deg; --cloud-time: 7.9s; --cloud-delay: -6.6s; }
+.world-handoff__cloud:nth-child(8) { --cloud-x: 90vw; --cloud-y: -10vh; --cloud-turn: -10deg; --cloud-time: 5.5s; --cloud-delay: -1.1s; }
+.world-handoff__cloud:nth-child(9) { --cloud-x: -36vw; --cloud-y: 74vh; --cloud-turn: 9deg; --cloud-time: 7s; --cloud-delay: -3.9s; }
+
+@keyframes world-handoff-clouds-in {
+    from { opacity: 0; }
+}
+
+@keyframes world-handoff-cloud {
+    0% { transform: translate(calc(var(--cloud-x) * 0.06), calc(var(--cloud-y) * 0.06)) rotate(var(--cloud-turn)) scale(0.45); opacity: 0; }
+    22% { opacity: 1; }
+    70% { opacity: 1; }
+    100% { transform: translate(var(--cloud-x), var(--cloud-y)) rotate(var(--cloud-turn)) scale(4); opacity: 0; }
 }
 
 .world-handoff--out {
     opacity: 0;
+    background: none;
     pointer-events: none;
 }
 
 .world-handoff--out .world-handoff__img {
+    opacity: 0;
     transform: scale(1.6);
+}
+
+.world-handoff--out .world-handoff__clouds {
+    transform: scale(2.4);
 }
 
 /* ---- In the app (js/ui/world-entry.js) ---- */
