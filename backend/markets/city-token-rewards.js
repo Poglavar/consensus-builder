@@ -14,9 +14,12 @@ export const UGT_DIVISOR = 10n;
 
 export const BOOKS = Object.freeze(['points', 'devnet-usdc']);
 
+// A city slug as cities are keyed (zagreb, new_york, san-francisco); one pattern for every reader.
+export const CITY_SLUG = /^[a-z0-9][a-z0-9_-]{0,79}$/;
+
 /** The token id of a city: its slug, lower case. */
 export function cityToken(city) {
-    if (typeof city !== 'string' || !/^[a-z0-9][a-z0-9-]{0,79}$/.test(city)) {
+    if (typeof city !== 'string' || !CITY_SLUG.test(city)) {
         throw new Error(`city token needs a city slug, got ${JSON.stringify(city)}`);
     }
     return city;

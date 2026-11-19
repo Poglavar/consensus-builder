@@ -5,7 +5,7 @@ import rateLimit from 'express-rate-limit';
 import { PublicKey } from '@solana/web3.js';
 import { balances, standings, spendBoost, agreementBoosts } from '../markets/city-token-ledger.js';
 import { validateRealm, UUID, accountFromToken, parseSource, transaction } from '../markets/points-ledger.js';
-import { formatTokenAmount } from '../markets/city-token-rewards.js';
+import { formatTokenAmount, CITY_SLUG } from '../markets/city-token-rewards.js';
 
 const fail = (message, status = 400) => Object.assign(new Error(message), { status });
 
@@ -56,7 +56,7 @@ export function setupCityTokenRoutes(app, pool, { readAgreement, now = () => Dat
             if (Object.keys(body).some(key => !allowed.includes(key))) throw fail('unsupported boost field');
             if (!UUID.test(body.requestId || '')) throw fail('requestId must be UUID');
             if (typeof body.amount !== 'string' || !/^[1-9]\d{0,25}$/.test(body.amount)) throw fail('amount must be a positive integer string');
-            if (typeof body.token !== 'string' || !/^[a-z0-9][a-z0-9-]{0,79}$/.test(body.token)) throw fail('token must be a city slug or ugt');
+            if (typeof body.token !== 'string' || !CITY_SLUG.test(body.token)) throw fail('token must be a city slug or ugt');
             const simulationRun = validateRealm(body.simulationRun);
             const bearer = /^Bearer (.+)$/.exec(req.get('authorization') || '')?.[1];
             const account = await accountFromToken(pool, bearer);
@@ -78,7 +78,7 @@ export function setupCityTokenRoutes(app, pool, { readAgreement, now = () => Dat
         try {
             const simulationRun = validateRealm(req.query.simulationRun);
             const token = String(req.query.token || 'ugt');
-            if (!/^[a-z0-9][a-z0-9-]{0,79}$/.test(token)) throw fail('token must be a city slug or ugt');
+            if (!CITY_SLUG.test(token)) throw fail('token must be a city slug or ugt');
             res.json({ token, simulationRun, standings: await standings(pool, { token, simulationRun }) });
         } catch (cause) { send(res, cause); }
     });

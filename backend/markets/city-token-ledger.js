@@ -1,8 +1,6 @@
 // PostgreSQL side of the city meme token (docs/citymemetoken.md): writes one resolved market's
 // awards once, and reads balances and standings. The reward math is in city-token-rewards.js.
-import { edgesByHolder, marketAwards, cityToken, tokenSymbol, formatTokenAmount, boostPayouts } from './city-token-rewards.js';
-
-const CITY_SLUG = /^[a-z0-9][a-z0-9-]{0,79}$/;
+import { edgesByHolder, marketAwards, cityToken, tokenSymbol, formatTokenAmount, boostPayouts, CITY_SLUG } from './city-token-rewards.js';
 
 /**
  * Award one resolved market, once. `fills` are [{ holder, action, side, shares, amount }] in

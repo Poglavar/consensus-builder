@@ -70,6 +70,11 @@ describe('marketAwards', () => {
         ]);
         expect(formatTokenAmount(awards[0].amount)).toBe('70');
     });
+    it('takes underscore slugs as cities are keyed (new_york → NEWYORK)', () => {
+        const awards = marketAwards({ book: 'devnet-usdc', city: 'new_york', edges: new Map([['w', 1n]]) });
+        expect(awards[0].token).toBe('new_york');
+        expect(tokenSymbol('new_york')).toBe('NEWYORK');
+    });
     it('refuses a free-text city', () => {
         expect(() => cityToken('San Francisco (simulated preview)')).toThrow(/slug/);
     });
