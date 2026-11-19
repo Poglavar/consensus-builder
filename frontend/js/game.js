@@ -129,6 +129,7 @@ const gameState = {
         this.gameLog = [];
         this.isTurnExecuting = false;
         this.queuedTurnRequested = false;
+        window.SimulationGhosts?.clear();
 
         if (this.gameLoopInterval) {
             clearInterval(this.gameLoopInterval);
@@ -351,6 +352,12 @@ function yieldToMainThread() {
     });
 }
 
+function simulationDesignKeys() {
+    const proposals = typeof proposalStorage !== 'undefined' && typeof proposalStorage.getAllProposals === 'function'
+        ? proposalStorage.getAllProposals() : [];
+    return new Set(proposals.map(proposal => getProposalKey(proposal)).filter(Boolean).map(String));
+}
+
 async function executeGameTurn() {
     if (gameState.isTurnExecuting) {
         gameState.queuedTurnRequested = true;
@@ -396,6 +403,9 @@ async function executeGameTurn() {
             proposalStorage.beginBatch();
         }
 
+        // The designs that exist before the agents act: whatever is new afterwards is this turn's,
+        // drawn as fading ghosts (simulation-ghosts.js) without being applied.
+        const designKeysBefore = simulationDesignKeys();
         const actionEngine = getUnifiedAgentActionEngine();
         // Have each AI-controlled agent decide and act through the same action contract. A local
         // agent can switch controller from "algorithm" to "llm" without changing execution or UI.
@@ -451,6 +461,9 @@ async function executeGameTurn() {
                 }
             }
         }
+
+        window.SimulationGhosts?.recordTurn(gameState.currentTurn,
+            [...simulationDesignKeys()].filter(key => !designKeysBefore.has(key)));
 
         gameState.save();
         gameState.updateGameUI();
@@ -634,10 +647,12 @@ function syncSimulationBar() {
     window.agentBubbleManager?.updateAllBubblePositions?.();
 }
 
-// Stop: pause the game and close the bar. New game stays in Settings, behind its confirmation.
+// Stop: pause the game, close the bar and clear the ghosts. New game stays in Settings, behind its
+// confirmation.
 function stopSimulation() {
     if (gameState.isRunning) stopGameLoop();
     window.SimulationBar?.close();
+    window.SimulationGhosts?.clear();
     gameState.updateGameUI();
 }
 

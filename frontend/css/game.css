@@ -472,3 +472,14 @@
     .simulation-bar { gap: var(--cb-space-1) var(--cb-space-2); }
     .simulation-bar__status { order: 1; flex-basis: 100%; text-align: center; }
 }
+
+/* Simulation ghosts (js/simulation-ghosts.js): designs the agents drew in the last few turns, drawn
+   on the 2D map without being applied. Leaflet sets each ghost's opacity from its strength; a new
+   one fades in. */
+.simulation-ghost {
+    stroke: var(--cb-map-simulation-ghost);
+    fill: var(--cb-map-simulation-ghost);
+}
+.simulation-ghost--new { animation: simulation-ghost-appear 600ms ease-out; }
+@keyframes simulation-ghost-appear { from { opacity: 0; } to { opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { .simulation-ghost--new { animation: none; } }

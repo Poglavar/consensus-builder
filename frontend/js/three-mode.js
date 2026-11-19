@@ -2933,9 +2933,12 @@
             if (proposal.parcelLayout && !proposal.buildingProposal && !proposal.structureProposal
                 && !proposal.roadProposal) return;
             // Parked (unapplied) ideas stay off the map entirely; they only render while
-            // selected, as a preview of where they would land when applied.
+            // selected, as a preview of where they would land when applied, or as a simulation
+            // ghost for a few turns after an agent drew them (simulation-ghosts.js).
             const applied = proposalApplied3D(proposal);
-            if (!applied && proposalId !== selectedKey) return;
+            const selected = !!selectedKey && String(selectedKey) === proposalId;
+            const ghostStrength = applied || selected ? 0 : (window.SimulationGhosts?.strengthOf?.(proposalId) || 0);
+            if (!applied && !selected && !ghostStrength) return;
             // A building is picked as its volume; the design's ground (a road, plots, a park) and
             // the parcels of a design that draws nothing lie flat. Extruding those too put an
             // unseen block over the ground that took the clicks meant for what stands on it.
@@ -2991,7 +2994,22 @@
                     });
                 });
             });
-            if (!applied && selectedKey && String(selectedKey) === proposalId) {
+            if (ghostStrength) {
+                // Fades with the turns. Facade materials can be shared, so the ghost gets copies.
+                wrapper.traverse(object => {
+                    if (!object.material) return;
+                    const faded = (Array.isArray(object.material) ? object.material : [object.material]).map(material => {
+                        const copy = material.clone();
+                        copy.transparent = true;
+                        copy.opacity = (Number(material.opacity) || 1) * ghostStrength;
+                        copy.depthWrite = false;
+                        return copy;
+                    });
+                    object.material = Array.isArray(object.material) ? faded : faded[0];
+                    markOwnedMaterial(object, object.material);
+                });
+            }
+            if (!applied && selected) {
                 wrapper.traverse(object => {
                     const materialsToHighlight = Array.isArray(object.material) ? object.material : [object.material].filter(Boolean);
                     materialsToHighlight.forEach(material => {
@@ -11776,6 +11794,9 @@
     });
 
     document.addEventListener('proposalCreated', () => {
+        if (isActive) rebuildProposalInteraction3D();
+    });
+    window.addEventListener('simulationghostschange', () => {
         if (isActive) rebuildProposalInteraction3D();
     });
 

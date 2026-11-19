@@ -61,6 +61,9 @@
     --cb-map-highlight-soft: #fff8cc;
     --cb-map-highlight-ink: #292000;
     --cb-map-pick-highlight: var(--cb-map-highlight);
+    /* A design an agent drew in the last few simulation turns (css/game.css .simulation-ghost); the 3D
+       draft preview's blue. */
+    --cb-map-simulation-ghost: #2563eb;
 
     --cb-warning: #b45309;
     --cb-warning-soft: #fffbeb;
