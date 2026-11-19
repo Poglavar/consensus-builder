@@ -1,7 +1,8 @@
 import { describe, expect, it, vi } from 'vitest';
 import { createRequire } from 'node:module';
 const require = createRequire(import.meta.url);
-const { prepare, explainRefusal } = require('../../frontend/js/plan-analysis.js');
+const turf = require('@turf/turf');
+const { prepare, planLand, explainRefusal } = require('../../frontend/js/plan-analysis.js');
 
 const snapshot = { cid: 'saved-plan', content: { title: 'Garden plan' },
     designs: [{ cid: 'saved-design', content: { title: 'Original garden' } }],
@@ -13,9 +14,45 @@ function ports() {
         bind: vi.fn(async () => ({ coverage: 'complete', parcels: [{ parcelId: 'A' }], parcelSource: { sourceId: 'source-a' } })),
         parcels: vi.fn(async () => [feature]),
         materialize: vi.fn(async ({ designs }) => ({ records: designs,
-            fabric: { entriesForCadastre: vi.fn(() => [feature]) } }))
+            fabric: { entriesForCadastre: vi.fn(() => [feature]) } })),
+        siteOf: vi.fn(content => content.site || null),
+        unite: vi.fn(features => features[0])
     };
 }
+const square = (x, y, size, properties = {}) => ({ type: 'Feature', properties,
+    geometry: { type: 'Polygon', coordinates: [[[x, y], [x + size, y], [x + size, y + size], [x, y + size], [x, y]]] } });
+const unite = features => features.slice(1).reduce((sum, feature) => turf.union(sum, feature), features[0]);
+const areaOf = feature => Math.round(turf.area(feature));
+
+// A plan is measured over the ground its designs take, not every parcel they stand on.
+describe('a plan\'s land', () => {
+    // A parcel of about 2.2 km × 2.2 km, a park in one corner and a road in the other.
+    const parcel = square(15.9, 45.8, 0.02, { parcelId: 'BIG' });
+    const park = square(15.901, 45.801, 0.001).geometry;
+    const road = square(15.915, 45.815, 0.0005).geometry;
+
+    it('is the union of the designs\' sites, however large the parcel they share', () => {
+        const designs = [{ content: { site: park }, parcelIds: ['BIG'] }, { content: { site: road }, parcelIds: ['BIG'] }];
+        const land = planLand(designs, [parcel], { siteOf: content => content.site, unite });
+        expect(areaOf(land)).toBe(areaOf({ type: 'Feature', geometry: park }) + areaOf({ type: 'Feature', geometry: road }));
+        expect(areaOf(land)).toBeLessThan(areaOf(parcel) / 100);
+    });
+
+    it('takes a parcel act\'s declared parcels, which are its site, and is null for a plan with no ground', () => {
+        const act = [{ content: {}, parcelIds: ['BIG'] }];
+        expect(planLand(act, [parcel], { siteOf: () => null, unite })).toEqual(parcel);
+        expect(planLand([], [parcel], { siteOf: () => null, unite })).toBeNull();
+    });
+
+    it('comes with the prepared plan, from each saved member\'s own site', async () => {
+        const deps = ports();
+        const site = square(15.901, 45.801, 0.001).geometry;
+        deps.resolve.mockResolvedValue({ ...snapshot, designs: [{ cid: 'saved-design', content: { title: 'Park', site } }] });
+        const result = await prepare(snapshot, deps);
+        expect(deps.siteOf).toHaveBeenCalledWith({ title: 'Park', site });
+        expect(result.landFeature).toEqual({ type: 'Feature', properties: {}, geometry: site });
+    });
+});
 describe('exact plan analysis', () => {
     it('binds the saved member revision and its source, never a mutable local member', async () => {
         const deps = ports();

@@ -1,7 +1,8 @@
 // A plan's land split into public and private, and the present state of that land as a plan of its
 // own, so Compare plans can set every plan beside what stands there now. Public land is land in
 // public use: roads and OpenStreetMap parks and squares (user decision 2026-10-28); private land is
-// the rest of the parcels. Semi-private land is not defined yet. Each existing building counts as a
+// the rest of the plan's land (the ground its designs take, PlanAnalysis.prepare landFeature, not every
+// parcel they stand on). Semi-private land is not defined yet. Each existing building counts as a
 // freeform building clipped to the land, measured by the same plan-yield rules as a design; a plan
 // keeps the existing buildings its designs do not clear (remaining) beside the ones they add (new).
 // Pure functions take their geometry operations as arguments; browser(win) wires turf, the road
@@ -208,8 +209,8 @@
 
     /**
      * The existing buildings a plan leaves standing (builtRecords output, minus its demolition
-     * ground). regions: Features a design clears (its parcels or footprints, a structure, a road
-     * corridor). The thresholds are the demolition scan's (corridor-tunnel.js
+     * ground). regions: Features a design clears (a building design's site or land take and its
+     * footprints, a structure, a road corridor). The thresholds are the demolition scan's (corridor-tunnel.js
      * splitDemolitionFootprint): under 2 m² of overlap the building is untouched; when what is left
      * is under 10 m² or 15% of the footprint it is gone; otherwise the rest stands.
      * ops: { areaOf, intersect, difference }.
@@ -242,6 +243,19 @@
         return { outcome: feature === footprint ? 'kept' : 'cut', feature };
     }
 
+    /**
+     * Features clipped to a plan's land (PlanAnalysis.prepare landFeature: the ground its designs
+     * take), keeping their properties; what lies outside it is dropped. A plan is measured over its
+     * land, not over every parcel its designs stand on, so a park in one corner of a large parcel
+     * counts the park and the land around it that the plan does not touch counts nowhere.
+     */
+    function clipToLand(features, land, ops) {
+        return (features || []).map(feature => {
+            const piece = ops.intersect(feature, land);
+            return piece && piece.geometry && ops.areaOf(piece) > 0 ? { ...feature, geometry: piece.geometry } : null;
+        }).filter(Boolean);
+    }
+
     // A box around features, [w, s, e, n].
     function bboxOf(features) {
         let w = Infinity, s = Infinity, e = -Infinity, n = -Infinity;
@@ -266,6 +280,8 @@
                     return null;
                 }
             },
+            // Plans' lands joined (Compare's present state over several plans).
+            union: (a, b) => win.__parcelArrangement.clipWith(win.turf, 'union', a, b, { site: 'present-state' }),
             // A failed difference keeps the building whole: it is reported, never silently removed.
             difference: (a, b) => {
                 try { return win.__parcelArrangement.clipWith(win.turf, 'difference', a, b, { site: 'present-state' }); }
@@ -366,29 +382,35 @@
             return id => ids.has(id) || (typeof win.isRoadParcel === 'function' && win.isRoadParcel(id));
         }
 
-        // The ground of a prepared plan (PlanAnalysis.prepare): its public and private land, and the
-        // existing buildings it leaves standing.
+        // The ground of a prepared plan (PlanAnalysis.prepare) over its land: its public and private
+        // land, and the existing buildings it leaves standing.
         async function groundOf(snapshot, { floorHeightM = 3 } = {}) {
-            const box = bboxOf(snapshot.cadastralFeatures || []);
-            if (!box) return { land: { publicLandM2: null, privateLandM2: null }, remaining: [] };
-            const [spaces, isRoad, existing] = await Promise.all([publicSpaces(box), roadTest(box), existingOn(snapshot.cadastralFeatures, floorHeightM)]);
-            const land = splitLand({ pieces: snapshot.materializedFeatures, corridors: snapshot.corridorFeatures || [],
-                cadastral: snapshot.cadastralFeatures, isRoad, spaces, ops });
+            const landFeature = snapshot.landFeature;
+            if (!landFeature) return { land: { publicLandM2: null, privateLandM2: null }, remaining: [] };
+            const box = bboxOf([landFeature]);
+            const parcels = clipToLand(snapshot.cadastralFeatures, landFeature, ops);
+            const [spaces, isRoad, existing] = await Promise.all([publicSpaces(box), roadTest(box), existingOn(parcels, floorHeightM)]);
+            const land = splitLand({ pieces: clipToLand(snapshot.materializedFeatures, landFeature, ops),
+                corridors: clipToLand(snapshot.corridorFeatures, landFeature, ops), cadastral: parcels, isRoad, spaces, ops });
             const remaining = remainingBuildings({ built: existing, regions: demolitionGround(snapshot), ops });
             log(`${snapshot.plan?.content?.title || 'plan'}: ${remaining.length} of ${existing.length} existing buildings remain`);
             return { land, remaining };
         }
 
         /**
-         * The present state over the parcels of prepared plans (the basis), as Plan stats figures.
-         * planStats(records, extra) computes the figures the way Plan stats does for a design set.
+         * The present state over the land of prepared plans (the basis: every plan's land, once), as
+         * Plan stats figures. planStats(records, extra) computes the figures the way Plan stats does
+         * for a design set.
          */
         async function measure({ title, basis, assumptions }) {
+            const lands = basis.map(snapshot => snapshot.landFeature).filter(Boolean);
+            if (!lands.length) throw new Error('The chosen plans have no land.');
+            const landFeature = lands.slice(1).reduce((sum, land) => ops.union(sum, land), lands[0]);
             const parcelsById = new Map();
             basis.forEach(snapshot => (snapshot.cadastralFeatures || []).forEach(feature => parcelsById.set(keyOf(feature), feature)));
-            const parcels = [...parcelsById.values()];
-            const box = bboxOf(parcels);
-            if (!box) throw new Error('The chosen land has no cadastral parcels.');
+            const parcels = clipToLand([...parcelsById.values()], landFeature, ops);
+            const box = bboxOf([landFeature]);
+            if (!parcels.length) throw new Error('The chosen land has no cadastral parcels.');
             const [spaces, isRoad, records] = await Promise.all([publicSpaces(box), roadTest(box), existingOn(parcels, assumptions.floorHeightM)]);
             const land = splitLand({ cadastral: parcels, isRoad, spaces, ops });
             // Nothing is designed here: the designs' yield is empty but for today's parks and squares,
@@ -396,11 +418,12 @@
             const designs = win.__planYield.planYield([], assumptions);
             designs.total.openSpaceM2 = parcels.reduce((sum, parcel) => sum + (isRoad(keyOf(parcel)) ? 0 : coveredM2(parcel, spaces, ops)), 0);
             const parcelAreaM2 = parcels.reduce((sum, parcel) => sum + ops.areaOf(parcel), 0);
+            const landAreaM2 = ops.areaOf(landFeature);
             log(`${title}: ${parcels.length} parcels, ${records.length} buildings, ${Math.round(land.publicLandM2)} m² public`);
             return { unavailable: false, planTitle: title, proposalsTotal: 0, proposalsCounted: 0, yield: designs,
                 remainingYield: win.__planYield.planYield(records, assumptions), remainingRecords: records,
                 parcelCount: parcels.length, parcelProduced: 0, parcelConsumed: 0, parcelMeasuredCount: parcels.length,
-                parcelMeasuredArea: parcelAreaM2, openGroundM2: null, planAreaM2: parcelAreaM2, ...land };
+                parcelMeasuredArea: parcelAreaM2, openGroundM2: null, planAreaM2: landAreaM2, ...land };
         }
 
         // Compare's unapplied plan sides clear standing buildings with the same ground and rule.
@@ -408,5 +431,5 @@
         return Object.freeze({ groundOf, measure, publicSpaces, demolitionGround, clearanceOf });
     }
 
-    return { OVERPASS_URLS, PUBLIC_STRUCTURES, publicSpaceQuery, publicSpacesFromOverpass, splitLand, builtRecords, remainingBuildings, clearance, coveredM2, bboxOf, browser };
+    return { OVERPASS_URLS, PUBLIC_STRUCTURES, publicSpaceQuery, publicSpacesFromOverpass, splitLand, builtRecords, remainingBuildings, clearance, coveredM2, clipToLand, bboxOf, browser };
 });

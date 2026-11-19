@@ -73,6 +73,32 @@ describe('public and private land', () => {
     });
 });
 
+// A plan is measured over its land: a park in a corner of a large parcel splits the park's ground,
+// not the parcel's, and the untouched rest of the parcel counts nowhere.
+describe('a plan\'s land on a large parcel', () => {
+    const parcel = box(15.9, 45.8, 0.02, { parcelId: 'BIG' });
+    const land = box(15.901, 45.801, 0.001);
+    const parkPiece = box(15.901, 45.801, 0.001, { parcelId: 'BIG#park-1', cadastreParcelIds: ['BIG'], producedByProposalId: 'park', structureType: 'park' });
+    // What the park leaves of the parcel: the parcel less the park.
+    const rest = { ...turf.difference(parcel, land), properties: { parcelId: 'BIG#park-2', cadastreParcelIds: ['BIG'], producedByProposalId: 'park' } };
+
+    it('clips parcels and pieces to the land, keeping their properties and dropping what lies outside', () => {
+        const [clipped] = State.clipToLand([parcel], land, ops);
+        expect(clipped.properties).toEqual({ parcelId: 'BIG' });
+        expect(Math.round(ops.areaOf(clipped))).toBe(Math.round(ops.areaOf(land)));
+        expect(State.clipToLand([box(16.5, 46.5, 0.001)], land, ops)).toEqual([]);
+    });
+
+    it('splits only the land: the park is public and the rest of the parcel is not counted as private', () => {
+        const split = State.splitLand({ pieces: State.clipToLand([parkPiece, rest], land, ops), cadastral: State.clipToLand([parcel], land, ops), ops });
+        expect(Math.round(split.publicLandM2)).toBe(Math.round(ops.areaOf(land)));
+        expect(Math.round(split.privateLandM2)).toBe(0);
+        // Measured over the whole parcel, the rest of it would have counted as the plan's private land.
+        const whole = State.splitLand({ pieces: [parkPiece, rest], cadastral: [parcel], ops });
+        expect(whole.privateLandM2).toBeGreaterThan(ops.areaOf(land) * 100);
+    });
+});
+
 describe('existing buildings as freeform buildings', () => {
     it('clips each building to the parcels it stands on and measures it as plan-yield measures a design', () => {
         const parcels = new Map([['A', box(15.9, 45.8, 0.001, { parcelId: 'A' })], ['B', box(15.901, 45.8, 0.001, { parcelId: 'B' })]]);

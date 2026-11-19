@@ -41,7 +41,23 @@
         return explained;
     }
 
-    async function prepare(plan, { resolve, bind, parcels, materialize, declared = () => null, inside = null }) {
+    // The plan's land: the ground its designs take, each design's site (siteOf: site-binding.js, the
+    // ground its binding is computed on), and for a parcel act with no site of its own its declared
+    // parcels. Its figures are measured over this land, not over every parcel the designs stand on:
+    // a park in one corner of a large parcel covers the park, not the parcel. unite(features) → one
+    // Feature or null.
+    function planLand(designs, cadastralFeatures, { siteOf, unite }) {
+        const parcelById = new Map(cadastralFeatures.map(f => [String(f.properties?.parcelId ?? f.id), f]));
+        const shapes = [];
+        designs.forEach(design => {
+            const site = siteOf(design.content);
+            if (site) shapes.push({ type: 'Feature', properties: {}, geometry: site });
+            else design.parcelIds.forEach(id => { if (parcelById.has(id)) shapes.push(parcelById.get(id)); });
+        });
+        return shapes.length ? unite(shapes) : null;
+    }
+
+    async function prepare(plan, { resolve, bind, parcels, materialize, declared = () => null, inside = null, siteOf, unite }) {
         const snapshot = await resolve(plan);
         const designs = [];
         const sources = new Map();
@@ -73,7 +89,8 @@
         const pieceIds = new Set(materializedFeatures.map(f => String(f.properties?.parcelId ?? f.id)));
         const corridorFeatures = result.fabric.entriesForCadastre(ids, { includeCorridors: true })
             .filter(f => !pieceIds.has(String(f.properties?.parcelId ?? f.id)));
-        return { plan: snapshot, records: result.records, cadastralFeatures, materializedFeatures, corridorFeatures };
+        const landFeature = planLand(designs, cadastralFeatures, { siteOf, unite });
+        return { plan: snapshot, records: result.records, cadastralFeatures, materializedFeatures, corridorFeatures, landFeature };
     }
     function browser(win) {
         async function request(path, body) {
@@ -111,6 +128,10 @@
                 return answer.binding;
             },
             parcels,
+            siteOf: content => win.__siteBinding.siteOf(content),
+            // The shared clip (parcel-arrangement.js clipWith), on the grid every stage uses.
+            unite: features => features.slice(1).reduce((sum, feature) =>
+                win.__parcelArrangement.clipWith(win.turf, 'union', sum, feature, { site: 'plan-land' }), features[0]),
             materialize: args => win.AgreementHeadless.materialize(args),
             inside: (vertex, feature) => win.turf.booleanPointInPolygon(vertex, feature),
             declared: cid => {
@@ -121,5 +142,5 @@
             }
         }) };
     }
-    return { prepare, explainRefusal, browser };
+    return { prepare, planLand, explainRefusal, browser };
 });

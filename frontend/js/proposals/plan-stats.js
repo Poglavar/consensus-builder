@@ -15,6 +15,16 @@
         return (typeof window !== 'undefined' && window.__siteStats) ? window.__siteStats : null;
     }
 
+    // A resulting parcel smaller than this on the plan's land is a sliver along its edge, not a parcel.
+    const MIN_RESULTING_PARCEL_M2 = 1;
+
+    // The area of a feature on the plan's land (the shared clip, parcel-arrangement.js clipWith).
+    function landAreaOf(feature, land) {
+        if (!land) return 0;
+        const piece = window.__parcelArrangement.clipWith(window.turf, 'intersect', feature, land, { site: 'plan-stats' });
+        return piece ? yieldApi().geometryAreaM2(piece) : 0;
+    }
+
     function finiteNumber(value) {
         return typeof value === 'number' && Number.isFinite(value);
     }
@@ -90,7 +100,7 @@
 
     function computePlanStatsSync(snapshot, assumptions) {
         const api = yieldApi();
-        const { records, materializedFeatures, cadastralFeatures, plan } = snapshot;
+        const { records, materializedFeatures, cadastralFeatures, plan, landFeature } = snapshot;
         const openSpaceAreaOf = proposal => {
             const pieces = materializedFeatures.filter(f => f.properties?.producedByProposalId === proposal.proposalId
                 && f.properties?.structureType === proposal.structureProposal?.kind);
@@ -109,21 +119,28 @@
         const result = api.planYield(records, { ...assumptions, openSpaceAreaOf, periodOf, unitsOf: units?.designs?.unitsOf });
         const parcels = api.resultingParcels(records, { materializedFeatures });
         const byId = new Map([...cadastralFeatures, ...materializedFeatures].map(f => [String(f.properties?.parcelId ?? f.id), f]));
-        let measuredArea = 0, measuredCount = 0;
+        // The resulting parcels on the plan's land, each measured by its part there: the rest of a
+        // large parcel a design cut is the owner's land the plan does not touch, and is not one of
+        // them. A resulting parcel this browser holds no shape for counts, unmeasured.
+        let measuredArea = 0, measuredCount = 0, resultingCount = 0;
         parcels.resulting.forEach(id => {
             const feature = byId.get(id);
-            const area = feature ? api.geometryAreaM2(feature) : 0;
-            if (area > 0) { measuredArea += area; measuredCount += 1; }
+            if (!feature) { resultingCount += 1; return; }
+            const area = landAreaOf(feature, landFeature);
+            if (area < MIN_RESULTING_PARCEL_M2) return;
+            resultingCount += 1;
+            measuredArea += area;
+            measuredCount += 1;
         });
         const noParcels = parcels.bound === false;
         const ground = siteStatsApi()?.planGround(records);
-        // The land the plan covers: every parcel its designs stand on, once, plus open ground.
-        const parcelAreas = cadastralFeatures.map(feature => api.geometryAreaM2(feature));
-        const openGround = ground && finiteNumber(ground.openGroundM2) ? ground.openGroundM2 : 0;
-        const planAreaM2 = parcelAreas.every(area => finiteNumber(area)) ? parcelAreas.reduce((sum, area) => sum + area, 0) + openGround : null;
+        // The land the plan covers: the ground its designs take (PlanAnalysis.prepare landFeature),
+        // open ground included, never the untouched rest of the parcels they stand on.
+        const landM2 = landFeature ? api.geometryAreaM2(landFeature) : null;
+        const planAreaM2 = finiteNumber(landM2) ? landM2 : null;
         return { unavailable: false, planTitle: plan.content.title,
             proposalsTotal: records.length, proposalsCounted: records.length, yield: result,
-            parcelCount: noParcels ? null : parcels.resulting.length,
+            parcelCount: noParcels ? null : resultingCount,
             parcelProduced: noParcels ? null : parcels.produced.length,
             parcelConsumed: noParcels ? null : parcels.consumed.length,
             parcelMeasuredCount: noParcels ? null : measuredCount,

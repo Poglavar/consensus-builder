@@ -367,7 +367,7 @@ The shared publication path checks approval immediately before starting and uses
 
 ### Plan area
 
-The land a plan covers: every cadastral parcel its members stand on, counted once, plus their open ground (site area on no parcel), in m².
+The land a plan covers: the union of its members' sites (each design's authored site, else its own footprint, the ground its binding is computed on; a parcel act's declared parcels), open ground included, in m². The untouched rest of a parcel the members stand on is not plan land. Public land, private land, resulting parcels, remaining buildings and the present state are all measured over it.
 
 ### Public land
 
@@ -375,11 +375,11 @@ Land in public use: road parcels (the road classification, or parcels marked as 
 
 ### Private land
 
-A plan's parcel land that is not public land, in m²; open ground is in neither.
+A plan's parcel land (on its plan area) that is not public land, in m²; open ground is in neither.
 
 ### Present state
 
-What stands today on the land of a chosen saved plan (or of all compared plans, designs or agreements), read as a plan of its own: every existing building from the city's building source, clipped to the parcels and measured as a freeform building by plan-yield's rules, today's public land, and no designs. It is the baseline column of Compare plans, Compare designs and Compare agreements.
+What stands today on the land of a chosen saved plan (or of all compared plans, designs or agreements), read as a plan of its own: every existing building from the city's building source, clipped to the plan area and measured as a freeform building by plan-yield's rules, today's public land, and no designs. It is the baseline column of Compare plans, Compare designs and Compare agreements.
 
 ### Remaining building
 
