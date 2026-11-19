@@ -25,7 +25,8 @@ oracle-fact terms.
   **sponsor** wallet that mints it. A **binding owners' agreement** is what gets minted, decided, bet
   on, pledged to and executed; a vote (the community's, or the owners' without binding them) is a
   **poll**: it lives in the index, is never minted and has no market. Several agreements may cover the
-  same designs or the same land; agreements over shared land form one contest in the markets.
+  same designs or the same land; agreements whose designs take overlapping ground on a shared parcel
+  form one contest in the markets (sharing a parcel alone does not), and each keeps its own market.
 - A **CID** identifies the canonical JSON as a UnixFS file: CIDv1, sha2-256, base32 lower case,
   fixed 256 KiB chunks and raw leaves. Small files have a raw CID (`bafkrei…`); larger files have
   a UnixFS dag-pb root (`bafybei…`). The object limit is 10 MiB. Use the shared codec instead of
@@ -166,7 +167,9 @@ A design occupies a **site**: a GeoJSON Polygon or MultiPolygon in WGS84 (at mos
 - **coverage**: `complete` (all of the site lies on parcels), `partial` (some lies on no parcel,
   `unsurveyedM2`, or outside the cadastre the server holds, `unknownM2`), `none` (a city with no
   cadastre), `unknown` (the server holds no cadastre there; only the Croatian cadastre is bound today).
-- More than 5000 parcels answers **413** `too-many-parcels`.
+- More than 5000 parcels answers **413** `too-many-parcels`. A site larger than its parcel source
+  answers in one query is read in tiles; one needing more than 256 queries answers **422**
+  `parcel-source-area-limit`.
 
 Other free reads:
 
