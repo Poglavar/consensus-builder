@@ -133,7 +133,24 @@
         return { lat: center.lat, lng: center.lng };
     }
 
+    // How far the 3D camera may zoom out, in true metres from its target, per view. Model view builds
+    // its scenery within 2.5 km of the centre, so past about 5 km there is nothing more to see (and
+    // OrbitControls' default of Infinity zoomed into a black void with no obvious way back). Google's
+    // photo tiles stream at any distance, so the photo view reaches the whole region. Fixed per view,
+    // not derived from the 2D view at entry, which capped a city opened at zoom 18 at 1.5 km.
+    const MAX_ORBIT_DISTANCE_M = Object.freeze({ model: 5000, photo: 25000 });
+
+    // The same ceiling in scene units: scene XY is EPSG:3857, inflated by 1/cos(latitude).
+    function maxOrbitDistance(view, originLat) {
+        const metres = MAX_ORBIT_DISTANCE_M[view];
+        if (!metres) throw new Error(`Unknown 3D view "${view}".`);
+        if (typeof originLat !== 'number' || !Number.isFinite(originLat)) throw new Error('maxOrbitDistance needs the scene origin latitude.');
+        return metres / Math.max(0.1, Math.cos(originLat * Math.PI / 180));
+    }
+
     return {
+        MAX_ORBIT_DISTANCE_M,
+        maxOrbitDistance,
         MAX_APPLIED_WORK_SPAN_M,
         captureSceneLoadAnchor,
         resolveSceneLoadGeometry,

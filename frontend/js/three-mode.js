@@ -10766,22 +10766,15 @@
             camera.far = Math.max(2000, diagonal * 8);
             camera.updateProjectionMatrix();
 
-            // A ceiling on zooming out. OrbitControls defaults maxDistance to Infinity, so the
-            // wheel kept going long after the city was a dot — out to where the near/far planes and
-            // float precision give up and the screen is simply black. There is nothing to see out
-            // there and no obvious way back, which reads as the app having broken.
-            //
-            // Measured from the scene's own diagonal, like camera.far above, so a small plan and a
-            // whole city each get a ceiling that fits them rather than one tuned for the other. 3x
-            // the diagonal frames everything with room to spare at a 45° FOV, and stays well inside
-            // camera.far (8x) so the ground never clips as you approach the limit.
+            // A ceiling on zooming out, fixed per view (snapshotNavigation.maxOrbitDistance); the
+            // far plane follows the orbit distance each frame, so the ground never clips near it.
             //
             // The floor is 5 m: OrbitControls degenerates as the distance approaches zero — the
             // camera passes through its own target and the view flips — while 5 m is still close
             // enough to stand in a street between buildings.
             if (controls) {
                 controls.minDistance = 5;
-                controls.maxDistance = Math.max(1500, diagonal * 3);
+                applyOrbitDistanceLimit();
             }
         } catch (_) { }
         const target = new THREE.Vector3(0, 0, 0);
@@ -12343,8 +12336,15 @@
     // corridor cross-sections and planned structures stay, standing on the mesh. Context trees and
     // street furniture stay only on the ground the mesh was cut from (buildTreesGroup,
     // rebuildFurnitureOnly), as model view shows them there.
+    // Model and photo views zoom out to different ceilings (three-snapshot-navigation.js).
+    function applyOrbitDistanceLimit() {
+        if (!controls) return;
+        controls.maxDistance = snapshotNavigation.maxOrbitDistance(realisticLayerActive ? 'photo' : 'model', xyToLatLng(0, 0).lat);
+    }
+
     window.setRealisticLayerActive = function (on, options = {}) {
         realisticLayerActive = !!on;
+        applyOrbitDistanceLimit();
         rebuildPlanningSources3D();
         if (flatGroup) flatGroup.visible = !realisticLayerActive;
         rebuildTreesOnly(); // which context trees stand depends on the view (buildTreesGroup)

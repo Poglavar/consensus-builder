@@ -6,6 +6,8 @@ import { readFileSync } from 'node:fs';
 const require = createRequire(import.meta.url);
 const turf = require('@turf/turf');
 const {
+    MAX_ORBIT_DISTANCE_M,
+    maxOrbitDistance,
     MAX_APPLIED_WORK_SPAN_M,
     captureSceneLoadAnchor,
     resolveSceneLoadGeometry,
@@ -16,6 +18,23 @@ const {
 const threeModeSource = readFileSync(new URL('../../frontend/js/three-mode.js', import.meta.url), 'utf8');
 
 describe('3D snapshot navigation', () => {
+    it('caps zooming out per view: 5 km in model view, 25 km in photo view, in scene units', () => {
+        expect(MAX_ORBIT_DISTANCE_M).toEqual({ model: 5000, photo: 25000 });
+        expect(maxOrbitDistance('model', 0)).toBeCloseTo(5000, 6);
+        // Scene XY is Mercator-inflated: at 60 degrees one true metre is two scene units.
+        expect(maxOrbitDistance('photo', 60)).toBeCloseTo(50000, 6);
+        expect(maxOrbitDistance('photo', 43.6)).toBeGreaterThan(maxOrbitDistance('model', 43.6));
+        expect(() => maxOrbitDistance('globe', 45)).toThrow(/Unknown 3D view/);
+        expect(() => maxOrbitDistance('model', null)).toThrow(/origin latitude/);
+    });
+
+    it('three-mode applies the per-view ceiling on entry and on every model/photo switch', () => {
+        const switchBody = threeModeSource.slice(threeModeSource.indexOf('window.setRealisticLayerActive = function'));
+        expect(switchBody.slice(0, 200)).toContain('applyOrbitDistanceLimit();');
+        expect(threeModeSource).toMatch(/maxOrbitDistance\(realisticLayerActive \? 'photo' : 'model'/);
+        expect(threeModeSource).not.toMatch(/maxDistance = Math\.max\(1500/);
+    });
+
     it('maps the primary pointer gesture to pan while retaining rotate and zoom', () => {
         const three = {
             MOUSE: { PAN: 10, DOLLY: 11, ROTATE: 12 },
