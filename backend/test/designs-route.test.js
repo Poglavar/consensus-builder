@@ -11,7 +11,7 @@ import {
 } from './helpers/content-fixtures.js';
 import { HR_SITE_CANDIDATES_SQL } from '../parcels/oss-binding-source.js';
 import { MAX_PINNED_OBJECT_BYTES } from '../storage/pinning.js';
-import { MAX_DESIGN_LIST_LIMIT } from '../routes/designs.js';
+import { MAX_DESIGN_LIST_LIMIT, MAX_PARCEL_FILTER } from '../routes/designs.js';
 
 const SELECT_ONE = /FROM consensus\.design WHERE cid = \$1/;
 const SELECT_MANY = /FROM consensus\.design WHERE cid = ANY/;
@@ -234,6 +234,30 @@ describe('POST /designs', () => {
     });
 });
 
+// The map's per-parcel badges count the designs the index binds to each parcel in view.
+describe('GET /designs/counts', () => {
+    it('counts the designs binding each requested parcel, through the binding index, absent ones being 0', async () => {
+        const pool = createMockPool();
+        pool.answer(/GROUP BY bound\.parcel_id/, { rows: [{ parcel_id: 'HR-1-100', designs: 2 }, { parcel_id: 'HR-1-101', designs: 1 }] });
+        const res = await request(appFor(pool).app).get('/designs/counts?parcel=HR-1-100,HR-1-101,HR-1-102,HR-1-100&city=Zagreb');
+        expect(res.status).toBe(200);
+        expect(res.body).toEqual({ counts: { 'HR-1-100': 2, 'HR-1-101': 1 } });
+        const [call] = pool.getCalls();
+        expect(call.sql).toMatch(/consensus\.design_parcel_ids\(binding\) && \$1::text\[\]/);
+        expect(call.sql).toMatch(/AND city = \$2/);
+        expect(call.params).toEqual([['HR-1-100', 'HR-1-101', 'HR-1-102'], 'zagreb']);
+    });
+
+    it('refuses a missing or empty parcel list before querying', async () => {
+        for (const query of ['', '?parcel=', '?parcel=%20,%20']) {
+            const pool = createMockPool();
+            const res = await request(appFor(pool).app).get(`/designs/counts${query}`);
+            expect([res.status, res.body.code], query).toEqual([400, 'bad-request']);
+            expect(pool.getCalls()).toHaveLength(0);
+        }
+    });
+});
+
 describe('GET /designs/:cid', () => {
     it('answers the indexed row, 404 for a CID it does not hold and 400 for what is not a CID', async () => {
         const content = designContent();
@@ -278,7 +302,8 @@ describe('GET /designs/:cid', () => {
 describe('GET /designs', () => {
     const listed = async (query) => {
         const pool = createMockPool();
-        pool.answer(/FROM consensus\.design/, { rows: [designRow(designContent())] });
+        pool.answer(/GROUP BY goal/, { rows: [{ goal: 'park', designs: '3' }, { goal: 'road-track', designs: '1' }] });
+        pool.answer(/FROM consensus\.design/, { rows: [{ ...designRow(designContent()), total_count: '7' }] });
         const res = await request(appFor(pool).app).get(`/designs${query}`);
         return { res, call: pool.getCalls()[0] };
     };
@@ -289,8 +314,8 @@ describe('GET /designs', () => {
         expect(res.body.count).toBe(1);
         expect(res.body.designs[0]).toMatchObject({ cid: cidOf(designContent()), goal: 'park' });
         expect(call.sql).not.toMatch(/WHERE/);
-        expect(call.sql).toMatch(/ORDER BY created_at DESC, cid\s+LIMIT \$1/);
-        expect(call.params).toEqual([100]);
+        expect(call.sql).toMatch(/ORDER BY created_at DESC, cid\s+LIMIT \$1 OFFSET \$2/);
+        expect(call.params).toEqual([100, 0]);
     });
 
     // A listing reads up to 1000 rows; its readers render summaries and read a design whole by CID.
@@ -305,27 +330,61 @@ describe('GET /designs', () => {
     it('filters by city, text and box, in that parameter order', async () => {
         const { call } = await listed('?city=ZAGREB&q=park&bbox=15.9,45.7,16.1,45.9&limit=5');
         expect(call.sql).toMatch(/WHERE city = \$1 AND \(title ILIKE \$2 OR author ILIKE \$2\) AND site && ST_MakeEnvelope\(\$3, \$4, \$5, \$6, 4326\) AND ST_Intersects\(site, ST_MakeEnvelope\(\$3, \$4, \$5, \$6, 4326\)\)/);
-        expect(call.params).toEqual(['zagreb', '%park%', 15.9, 45.7, 16.1, 45.9, 5]);
+        expect(call.params).toEqual(['zagreb', '%park%', 15.9, 45.7, 16.1, 45.9, 5, 0]);
     });
 
     it('matches q literally: % and _ (and the escape itself) are escaped', async () => {
         const { call } = await listed(`?q=${encodeURIComponent(' 50%_off\\ ')}`);
-        expect(call.params).toEqual(['%50\\%\\_off\\\\%', 100]);
+        expect(call.params).toEqual(['%50\\%\\_off\\\\%', 100, 0]);
         const { call: blank } = await listed('?q=%20%20');
         expect(blank.sql).not.toMatch(/ILIKE/);
     });
 
+    // A parcel's designs are found by the parcel through the binding index, however large the
+    // parcel is: a box would also hold its neighbours' designs and fill the page with them.
+    it('filters by parcel set and design type, pages by offset, and reports the total and type counts', async () => {
+        const { res, call } = await listed('?city=zagreb&parcel=HR-1-12,%20HR-1-13,HR-1-12&goal=park,road-track&order=oldest&limit=1&offset=2&facets=goal');
+        expect(call.sql).toMatch(/WHERE city = \$1 AND consensus\.design_parcel_ids\(binding\) && \$2::text\[\] AND goal = ANY\(\$3::text\[\]\)/);
+        expect(call.sql).toMatch(/ORDER BY created_at ASC, cid\s+LIMIT \$4 OFFSET \$5/);
+        expect(call.params).toEqual(['zagreb', ['HR-1-12', 'HR-1-13'], ['park', 'road-track'], 1, 2]);
+        expect(res.body).toMatchObject({ count: 1, total: 7, hasMore: true, nextOffset: 3, goals: { park: 3, 'road-track': 1 } });
+        expect(res.body.designs[0]).not.toHaveProperty('total_count');
+    });
+
+    it('counts the types with every filter but the type itself', async () => {
+        const pool = createMockPool();
+        pool.answer(/GROUP BY goal/, { rows: [] });
+        pool.answer(/FROM consensus\.design/, { rows: [] });
+        const res = await request(appFor(pool).app).get('/designs?parcel=HR-1-12&goal=park&facets=goal');
+        const facet = pool.getCalls().find(call => /GROUP BY goal/.test(call.sql));
+        expect(facet.sql).toMatch(/WHERE consensus\.design_parcel_ids\(binding\) && \$1::text\[\] GROUP BY goal/);
+        expect(facet.params).toEqual([['HR-1-12']]);
+        expect(res.body).toMatchObject({ count: 0, total: 0, hasMore: false, nextOffset: null, goals: {} });
+    });
+
+    it('says nothing of the total for a page past the end, and asks no type counts unless asked', async () => {
+        const pool = createMockPool();
+        pool.answer(/FROM consensus\.design/, { rows: [] });
+        const res = await request(appFor(pool).app).get('/designs?offset=40');
+        expect(res.body).toEqual({ designs: [], count: 0, total: null, hasMore: false, nextOffset: null });
+        expect(pool.getCalls()).toHaveLength(1);
+    });
+
     it('caps the limit and falls back to the default for one that is not a positive number', async () => {
-        expect((await listed(`?limit=${MAX_DESIGN_LIST_LIMIT + 5000}`)).call.params).toEqual([MAX_DESIGN_LIST_LIMIT]);
-        expect((await listed('?limit=abc')).call.params).toEqual([100]);
-        expect((await listed('?limit=0')).call.params).toEqual([100]);
+        expect((await listed(`?limit=${MAX_DESIGN_LIST_LIMIT + 5000}`)).call.params).toEqual([MAX_DESIGN_LIST_LIMIT, 0]);
+        expect((await listed('?limit=abc')).call.params).toEqual([100, 0]);
+        expect((await listed('?limit=0')).call.params).toEqual([100, 0]);
     });
 
     it('refuses a malformed filter before querying', async () => {
         for (const [query, code] of [
             ['?bbox=1,2,3', 'invalid-bbox'], ['?bbox=16,45,15,46', 'invalid-bbox'], ['?bbox=1,2,3,x', 'invalid-bbox'],
             ['?bbox=-181,0,0,1', 'invalid-bbox'], ['?bbox=1,,2,3', 'invalid-bbox'],
-            [`?q=${'a'.repeat(201)}`, 'bad-request'], ['?city=a&city=b', 'bad-request'], [`?city=${'c'.repeat(101)}`, 'bad-request']
+            [`?q=${'a'.repeat(201)}`, 'bad-request'], ['?city=a&city=b', 'bad-request'], [`?city=${'c'.repeat(101)}`, 'bad-request'],
+            ['?parcel=', 'bad-request'], ['?parcel=a,,b', 'bad-request'], ['?parcel=a&parcel=b', 'bad-request'],
+            [`?parcel=${Array.from({ length: MAX_PARCEL_FILTER + 1 }, (_, i) => `p${i}`).join(',')}`, 'bad-request'],
+            ['?goal=', 'bad-request'], ['?order=widest', 'bad-request'], ['?offset=-1', 'bad-request'], ['?offset=1.5', 'bad-request'],
+            ['?facets=author', 'bad-request']
         ]) {
             const { res, call } = await listed(query);
             expect([res.status, res.body.code], query).toEqual([400, code]);

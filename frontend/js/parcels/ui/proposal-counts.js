@@ -34,7 +34,7 @@
     const parcelIdForLayer = layer => global.ParcelPresenter?.getIdForLayer?.(layer) || null;
     const parcelFeature = parcelId => parcelId && global.LiveParcelFabric?.get?.(parcelId) || null;
 
-    // Per-parcel counts from the server (GET /proposals/counts) — shared across all users, unlike the
+    // Per-parcel counts from the design index (GET /designs/counts) — shared across all users, unlike the
     // browser-local proposalStorage: fetch for the visible parcels, cache, redraw on update. A parcel
     // present in this map has an authoritative server count; absent
     // means "not fetched" and the badge falls back to the local count (so an unreachable backend or a
@@ -60,7 +60,7 @@
 
         serverCountsInFlight = true;
         const city = (typeof global.getCurrentCityId === 'function') ? (global.getCurrentCityId() || '') : '';
-        const url = `${base.replace(/\/$/, '')}/proposals/counts?parcel_ids=${encodeURIComponent(ids.join(','))}`
+        const url = `${base.replace(/\/$/, '')}/designs/counts?parcel=${encodeURIComponent(ids.join(','))}`
             + (city ? `&city=${encodeURIComponent(city)}` : '');
         fetch(url)
             .then(resp => (resp.ok ? resp.json() : null))
@@ -97,14 +97,14 @@
             // Get all proposals for this parcel
             const proposals = global.proposalStorage.getProposalsForParcel(normalizedId);
 
-            // If the server has counts for this parcel, use them (everyone agrees) and add this
-            // browser's proposals. A local record names no server row since M2 (a design published
-            // from here is indexed by CID, never written to the proposal table these counts come
-            // from), so none is taken off as the server's copy. Otherwise fall back to local.
+            // If the index has counts for this parcel, use them (everyone agrees) and add this
+            // browser's drafts: a held copy of a published design is in the index's count already.
+            // Otherwise fall back to local.
             const key = parcelId.toString();
             if (serverProposalCounts.has(key)) {
                 const serverCount = serverProposalCounts.get(key) || 0;
-                return serverCount + proposals.length;
+                const drafts = proposals.filter(proposal => !global.DesignSync?.publishedCid?.(proposal)).length;
+                return serverCount + drafts;
             }
             return proposals.length;
         } catch (error) {

@@ -35,4 +35,16 @@ CREATE INDEX IF NOT EXISTS idx_design_city_created_at ON consensus.design (city,
 CREATE INDEX IF NOT EXISTS idx_design_created_at ON consensus.design (created_at DESC);
 CREATE INDEX IF NOT EXISTS idx_design_site ON consensus.design USING GIST (site);
 
+-- The parcels a design's binding takes (binding.parcels[].parcelId), read as the browser reads them
+-- (frontend/js/proposals/design-sync.js bindingParcelIds). GET /designs?parcel= matches a parcel set
+-- through this index, so a parcel's designs are found by the parcel, however large it is, and not by
+-- a box that also holds its neighbours' designs.
+CREATE OR REPLACE FUNCTION consensus.design_parcel_ids(binding jsonb) RETURNS text[]
+    LANGUAGE sql IMMUTABLE PARALLEL SAFE AS $$
+    SELECT coalesce(array_agg(DISTINCT hit->>'parcelId'), '{}'::text[])
+    FROM jsonb_array_elements(CASE WHEN jsonb_typeof(binding->'parcels') = 'array' THEN binding->'parcels' ELSE '[]'::jsonb END) AS hit
+    WHERE jsonb_typeof(hit) = 'object' AND hit->>'parcelId' IS NOT NULL
+$$;
+CREATE INDEX IF NOT EXISTS idx_design_parcel_ids ON consensus.design USING GIN (consensus.design_parcel_ids(binding));
+
 COMMENT ON TABLE consensus.design IS 'Index of published design/v1 objects by CID, with the city and parcel binding the server derived (plan-design-agreement.md M2).';

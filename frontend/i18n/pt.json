@@ -3211,7 +3211,16 @@
                 },
                 "loading": "A verificar os projetos publicados…",
                 "unavailable": "Não foi possível carregar os projetos publicados: {{reason}}",
-                "publishedHeading": "Também publicados aqui"
+                "publishedHeading": "Também publicados aqui",
+                "search": "Pesquisar por título ou autor",
+                "type": "Tipo",
+                "typeAll": "Todos os tipos",
+                "order": "Ordem",
+                "newest": "Mais recentes primeiro",
+                "oldest": "Mais antigos primeiro",
+                "more": "Mostrar mais ({{count}} restantes)",
+                "partial": "A mostrar os {{shown}} mais recentes de {{total}}",
+                "noMatch": "Nenhum projeto corresponde a esta pesquisa."
             },
             "mintTooltip": "Criar o NFT da parcela",
             "closeAria": "Fechar o painel de informações da parcela"

@@ -1845,7 +1845,16 @@
                 },
                 "loading": "Provjeravam objavljene dizajne…",
                 "unavailable": "Objavljeni dizajni nisu se mogli učitati: {{reason}}",
-                "publishedHeading": "Također objavljeno ovdje"
+                "publishedHeading": "Također objavljeno ovdje",
+                "search": "Traži po naslovu ili autoru",
+                "type": "Vrsta",
+                "typeAll": "Sve vrste",
+                "order": "Redoslijed",
+                "newest": "Najnoviji prvi",
+                "oldest": "Najstariji prvi",
+                "more": "Prikaži još (preostalo: {{count}})",
+                "partial": "Prikazano najnovijih {{shown}} od {{total}}",
+                "noMatch": "Nijedan dizajn ne odgovara pretrazi."
             },
             "actions": {
                 "measureAsRoad": "Izmjeri kao cestu",

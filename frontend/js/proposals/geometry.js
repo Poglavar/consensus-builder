@@ -1253,7 +1253,7 @@ function buildProposalThumbHtml(proposal) {
         return `
             <div class="proposal-thumb proposal-thumb-has-image" data-proposal-id="${safeProposalId}" data-preview-alt="${escapeHtml(previewAlt)}">
                 <img class="proposal-thumb-img" src="${safeUrl}" alt="${escapeHtml(previewAlt)}" loading="lazy">
-                <div class="proposal-thumb-large" aria-hidden="true"><img src="${safeUrl}" alt=""></div>
+                <div class="proposal-thumb-large" aria-hidden="true"><img src="${safeUrl}" alt="" loading="lazy"></div>
             </div>
         `;
     }

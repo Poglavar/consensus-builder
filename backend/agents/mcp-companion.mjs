@@ -64,10 +64,12 @@ export function registerMcpCompanion(server, { actions, handler, readOnly, disco
         inputTokens: z.number().int().min(0).max(1_000_000).optional(), outputTokens: z.number().int().min(0).max(1_000_000).optional(),
         cachedInputTokens: z.number().int().min(0).max(1_000_000).optional(), cacheWriteTokens: z.number().int().min(0).max(1_000_000).optional()
     }, 'chatCost');
-    add('ugt_parcel_context', 'Read one parcel or WGS84 point: source ground, area, planning sources and studies, buildings, nearby designs, agreements, markets and history. Provide parcelId or point.',
+    add('ugt_parcel_context', 'Read one parcel or WGS84 point: source ground, area, planning sources and studies, buildings, the newest 100 designs on the parcel (with their total; page through the rest with ugt_list_designs parcelIds), agreements, markets and history. Provide parcelId or point.',
         { city, parcelSourceId: z.string().max(3507).optional(), parcelId: z.string().min(1).max(250).optional(), point: point.optional(), buildingSourceId: z.string().max(3507).optional(), planningSourceIds: z.array(z.string().max(100)).max(20).optional() }, 'parcelContext');
-    add('ugt_list_designs', 'List designs by city, WGS84 bbox or text. Rows are summaries without the design content; read one whole with ugt_get_design.',
-        { city: city.optional(), bbox: bbox.optional(), q: z.string().max(200).optional(), limit: z.number().int().min(1).max(100).default(20) }, 'listDesigns');
+    add('ugt_list_designs', 'List designs by city, WGS84 bbox, parcels (the designs on those parcels, as an owner reads them), design type or text, newest first unless order is oldest. Answers a page with total, hasMore and nextOffset; pass nextOffset as offset for the next page. Rows are summaries without the design content; read one whole with ugt_get_design.',
+        { city: city.optional(), bbox: bbox.optional(), parcelIds: z.array(z.string().min(1).max(200)).min(1).max(500).optional(), goals: z.array(z.string().min(1).max(60)).min(1).max(30).optional(),
+            q: z.string().max(200).optional(), order: z.enum(['newest', 'oldest']).optional(), offset: z.number().int().min(0).max(1000000).optional(),
+            limit: z.number().int().min(1).max(100).default(20) }, 'listDesigns');
     add('ugt_get_design', 'Read a design by CID and return its map link.', { designCid: cid }, 'getDesign');
     add('ugt_markets', 'Read city contests, pools and devnet USDC stakes.', { city }, 'markets');
     add('ugt_explain', 'Look up a term in the maintained domain vocabulary.', { term: z.string().min(1).max(100) }, 'explain');

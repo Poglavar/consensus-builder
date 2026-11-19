@@ -62,17 +62,32 @@ describe('MCP public source reads', () => {
         const empty = await reads.findPlace({ query: 'A place with no bounded OSM search', city: 'london' });
         expect(empty).toMatchObject({ candidates: [], partial: false, noMatch: true, warnings: [expect.stringContaining('bbox')] });
     });
-    it('assembles actual parcel bindings and city rules rather than treating every bbox hit as a design on the parcel', async () => {
+    // A parcel's designs are asked by the parcel, not by its box: a large parcel's box holds its
+    // neighbours' designs too, which would fill the page and hide the parcel's own.
+    it('asks the index for the designs bound to the parcel, with their total, and the city rules', async () => {
         const fetchImpl = vi.fn(async url => {
-            const path = new URL(url).pathname;
+            const parsed = new URL(url), path = parsed.pathname;
             return json(path === '/parcels' ? { features: [sourceFeature('HR-335550-1')] }
-                : path === '/designs' ? { designs: [{ cid: 'on-parcel', binding: { parcels: [{ parcelId: 'HR-335550-1' }] } }, { cid: 'nearby', binding: { parcels: [{ parcelId: 'HR-335550-2' }] } }] }
+                : path === '/designs' ? { designs: parsed.searchParams.get('parcel') === 'HR-335550-1' ? [{ cid: 'on-parcel', binding: { parcels: [{ parcelId: 'HR-335550-1' }] } }] : [],
+                    count: 1, total: 140, hasMore: true, nextOffset: 100 }
                     : path === '/planning/sources' ? { sources: [] } : { source: path });
         });
         const reads = createMcpReadTools({ apiBase: 'https://api.example', appOrigin: 'https://app.example', fetchImpl });
         const result = await reads.parcelContext({ city: 'zagreb', parcelSourceId: 'oss-wfs', parcelId: 'HR-335550-1' });
+        const asked = fetchImpl.mock.calls.map(([url]) => new URL(url)).find(url => url.pathname === '/designs');
+        expect(asked.searchParams.get('bbox')).toBe(null);
+        expect(asked.searchParams.get('limit')).toBe('100');
         expect(result.designs.designs.map(d => d.cid)).toEqual(['on-parcel']);
+        expect(result.designs).toMatchObject({ total: 140, hasMore: true, nextOffset: 100 });
         expect(result.urbanRules).toEqual({ source: '/urban-rules' });
+    });
+
+    it('lists designs by parcels and types a page at a time, as the index filters them', async () => {
+        const fetchImpl = vi.fn(async () => json({ designs: [], count: 0, total: 0, hasMore: false, nextOffset: null }));
+        const reads = createMcpReadTools({ apiBase: 'https://api.example', appOrigin: 'https://app.example', fetchImpl });
+        await reads.listDesigns({ city: 'alatau', parcelIds: ['P-1', 'P-2'], goals: ['park', 'road-track'], order: 'oldest', offset: 40, limit: 20 });
+        const asked = new URL(fetchImpl.mock.calls[0][0]);
+        expect(Object.fromEntries(asked.searchParams)).toEqual({ city: 'alatau', parcel: 'P-1,P-2', goal: 'park,road-track', order: 'oldest', offset: '40', limit: '20' });
     });
     it('resolves exact cadastral map parts through their immutable source parent', async () => {
         const source = sourceFeature('P');

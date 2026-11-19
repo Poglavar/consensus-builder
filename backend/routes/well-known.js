@@ -365,10 +365,15 @@ export function buildOpenApi(base, env) {
                     parameters: [
                         { name: 'city', in: 'query', required: false, schema: { type: 'string', maxLength: 100 } },
                         { name: 'bbox', in: 'query', required: false, schema: { type: 'string' }, description: 'minLng,minLat,maxLng,maxLat (WGS84): designs whose site meets it.' },
+                        { name: 'parcel', in: 'query', required: false, schema: { type: 'string' }, description: 'Comma-separated parcel ids (at most 500): designs whose binding takes one of them.' },
+                        { name: 'goal', in: 'query', required: false, schema: { type: 'string' }, description: 'Comma-separated design types (goals), e.g. park,road-track.' },
                         { name: 'q', in: 'query', required: false, schema: { type: 'string', maxLength: 200 }, description: 'Matches the title or the author.' },
-                        { name: 'limit', in: 'query', required: false, schema: { type: 'integer', minimum: 1, maximum: 1000 } }
+                        { name: 'order', in: 'query', required: false, schema: { type: 'string', enum: ['newest', 'oldest'] } },
+                        { name: 'limit', in: 'query', required: false, schema: { type: 'integer', minimum: 1, maximum: 1000 } },
+                        { name: 'offset', in: 'query', required: false, schema: { type: 'integer', minimum: 0, maximum: 1000000 } },
+                        { name: 'facets', in: 'query', required: false, schema: { type: 'string', enum: ['goal'] }, description: 'goal adds goals: { goal: count } over every filter but goal.' }
                     ],
-                    responses: { 200: { description: '{ designs: [design row without content], count }; read the content by CID with GET /designs/{cid}.' }, 400: { description: 'Invalid filter.' } }
+                    responses: { 200: { description: '{ designs: [design row without content], count (this page), total (every match), hasMore, nextOffset, goals? }; read the content by CID with GET /designs/{cid}.' }, 400: { description: 'Invalid filter.' } }
                 },
                 post: {
                     summary: 'Index a design/v1 object: the server checks its CID and shape and derives its city and binding. Any design, a parcel layout included. Needs an Origin header of the app',

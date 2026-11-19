@@ -550,6 +550,42 @@ a phone it is the bottom sheet, up to half the screen (the phone block at the en
     display: none;
 }
 
+/* A parcel's or selection's design list toolbar (parcel-set-proposals.js toolbarHtml): the search
+   across the full row, then type and order side by side. Its controls keep the base form rules. */
+.parcel-set-proposals-toolbar {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: var(--cb-space-2);
+    margin: 0 0 var(--cb-space-2);
+}
+
+.parcel-set-proposals-toolbar[hidden] {
+    display: none;
+}
+
+.parcel-set-proposals-search {
+    grid-column: 1 / -1;
+    width: 100%;
+    min-width: 0;
+}
+
+.parcel-set-proposals-field {
+    display: grid;
+    gap: 4px;
+    min-width: 0;
+    color: var(--cb-text-muted);
+    font-size: var(--cb-text-sm);
+}
+
+.parcel-set-proposals-field select {
+    width: 100%;
+    min-width: 0;
+}
+
+.parcel-set-proposals-more {
+    margin-top: var(--cb-space-2);
+}
+
 .parcel-proposals-empty p,
 .parcel-set-proposals-empty,
 .parcel-set-proposals-summary {

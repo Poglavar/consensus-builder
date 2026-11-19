@@ -614,8 +614,10 @@
         </div>
     `;
         // The published proposals this browser holds no copy of are asked from the server and added
-        // under the list (ParcelSetProposals.renderPublishedOnly), with the tab's count.
+        // under the list (ParcelSetProposals.renderPublishedOnly), with the tab's count; once there are
+        // enough, the toolbar above both lists searches, filters by type and orders them.
         const proposalsContent = `
+        <div class="parcel-set-proposals-toolbar" role="search" hidden></div>
         ${parcelProposals.length > 0 ? proposalsHtml : proposalsEmptyHtml}
         <div class="parcel-published-proposals"></div>
     `;
@@ -857,7 +859,9 @@
         global.ParcelSetProposals.renderPublishedOnly(
             global.document.querySelector('#proposals-content .parcel-published-proposals'), parcelKey, {
                 emptyNote: global.document.querySelector('#proposals-content .parcel-proposals-empty'),
-                onCount: published => setProposalsTabCount(parcelProposals.length + published)
+                toolbar: global.document.querySelector('#proposals-content .parcel-set-proposals-toolbar'),
+                heldList: global.document.getElementById('proposals-content'),
+                onCount: total => setProposalsTabCount(total)
             });
         const renderParcelProposalActions = uiProposals.renderParcelProposalActions || global.renderParcelProposalActions;
         if (typeof renderParcelProposalActions === 'function') {

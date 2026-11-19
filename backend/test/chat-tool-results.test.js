@@ -93,5 +93,9 @@ describe('chat tool results', () => {
     it('reads place and parcel titles from untrusted fields', () => {
         expect(JSON.parse(compactForModel('ugt_find_place', { structuredContent: { candidates: [{ untrusted: { title: 'Quiet park' } }] } })).candidates[0].title).toBe('Quiet park');
         expect(JSON.parse(compactForModel('ugt_parcel_context', { structuredContent: { designs: [{ cid: 'd1', untrusted: { title: 'Housing' } }] } })).designs[0].title).toBe('Housing');
+        // parcelContext answers the index's page; the model sees its rows and how many designs the parcel holds.
+        const page = JSON.parse(compactForModel('ugt_parcel_context', { structuredContent: { designs: { designs: [{ cid: 'd2', title: 'Ring road' }], total: 312, hasMore: true } } }));
+        expect(page.designs).toEqual([{ cid: 'd2', title: 'Ring road' }]);
+        expect(page.designTotal).toBe(312);
     });
 });

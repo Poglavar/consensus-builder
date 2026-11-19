@@ -32,6 +32,14 @@ export const MAX_DESIGN_LIST_LIMIT = 1000;
 export const MAX_DESIGN_BATCH = 1000;
 const MAX_CITY_LENGTH = 100;
 const MAX_SOURCE_ID_LENGTH = 3507;
+// GET /designs filters: a parcel set (an owner's selection), design types, and the page offset.
+export const MAX_PARCEL_FILTER = 500;
+// The map's badges ask for every parcel in view at once.
+export const MAX_PARCEL_COUNT_FILTER = 5000;
+const MAX_PARCEL_ID_LENGTH = 200;
+const MAX_GOAL_FILTER = 30;
+const MAX_GOAL_LENGTH = 60;
+const MAX_LIST_OFFSET = 1000000;
 
 const COLUMNS = `cid, city, goal, title, author, origin_cid, binding, content,
     screenshot_url, screenshot_before_url, screenshot_pair_url, created_at`;
@@ -295,6 +303,16 @@ function parseBbox(raw) {
     return { bbox };
 }
 
+// A comma-separated list of ids (parcel ids, design types): 1 to `max` distinct non-empty ids of at
+// most `maxLength` characters → { ids } or { error }.
+function parseIdList(raw, max, maxLength) {
+    const ids = typeof raw === 'string' ? [...new Set(raw.split(',').map(value => value.trim()))] : [];
+    if (!ids.length || ids.length > max || ids.some(id => !id || id.length > maxLength)) {
+        return { error: `must be 1 to ${max} comma-separated ids of at most ${maxLength} characters.` };
+    }
+    return { ids };
+}
+
 export function parseListLimit(raw) {
     const limit = Number.parseInt(raw, 10);
     return Number.isFinite(limit) && limit > 0 ? Math.min(limit, MAX_DESIGN_LIST_LIMIT) : DEFAULT_DESIGN_LIST_LIMIT;
@@ -351,6 +369,31 @@ export function setupDesignsRoute(app, deps) {
         }
     });
 
+    // ?parcel=a,b,c&city= → { counts: { a: 2, c: 1 } }: how many indexed designs bind each of the
+    // parcels (the map's per-parcel badges). Parcels no design binds are absent (0).
+    app.get('/designs/counts', async (req, res) => {
+        const { parcel: rawParcel, city: rawCity } = req.query;
+        if (rawCity !== undefined && (typeof rawCity !== 'string' || rawCity.length > MAX_CITY_LENGTH)) {
+            return res.status(400).json({ error: `city must be a string of at most ${MAX_CITY_LENGTH} characters.`, code: 'bad-request' });
+        }
+        const parcels = parseIdList(rawParcel, MAX_PARCEL_COUNT_FILTER, MAX_PARCEL_ID_LENGTH);
+        if (parcels.error) return res.status(400).json({ error: `parcel ${parcels.error}`, code: 'bad-request' });
+        const params = [parcels.ids];
+        const city = normalizeCityCode(rawCity);
+        const cityClause = city ? `AND city = $${params.push(city)}` : '';
+        try {
+            const { rows } = await pool.query(`
+                SELECT bound.parcel_id, COUNT(*)::int AS designs
+                FROM ${DESIGN_TABLE}, unnest(consensus.design_parcel_ids(binding)) AS bound(parcel_id)
+                WHERE consensus.design_parcel_ids(binding) && $1::text[] AND bound.parcel_id = ANY($1::text[]) ${cityClause}
+                GROUP BY bound.parcel_id`, params);
+            return res.json({ counts: Object.fromEntries(rows.map(row => [row.parcel_id, Number(row.designs)])) });
+        } catch (error) {
+            console.error(`[${new Date().toISOString()}] Error in GET /designs/counts:`, error);
+            return res.status(500).json({ error: 'Internal server error' });
+        }
+    });
+
     app.get('/designs/:cid', async (req, res) => {
         const cid = String(req.params.cid || '');
         if (!isCid(cid)) return res.status(400).json({ error: 'Not a design CID.', code: 'invalid-cid' });
@@ -397,10 +440,15 @@ export function setupDesignsRoute(app, deps) {
         }
     });
 
-    // ?city=&bbox=minLng,minLat,maxLng,maxLat&q=&limit= → { designs, count }, newest first. `q`
-    // matches the title or the author, case-insensitively (the map search's design group).
+    // ?city=&bbox=minLng,minLat,maxLng,maxLat&parcel=id,id&goal=g,g&q=&order=newest|oldest&limit=&offset=&facets=goal
+    // → { designs, count, total, hasMore, nextOffset, goals? }, newest first unless order=oldest. `q`
+    // matches the title or the author, case-insensitively (the map search's design group). `parcel`
+    // keeps the designs whose binding takes one of those parcels (a parcel's own list, however large
+    // the parcel), `goal` those of these design types. `count` is the page's length and `total` every
+    // match; facets=goal adds `goals`, the matches per design type with every filter but `goal`.
     app.get('/designs', async (req, res) => {
-        const { city: rawCity, bbox: rawBbox, limit: rawLimit, q: rawQuery } = req.query;
+        const { city: rawCity, bbox: rawBbox, limit: rawLimit, q: rawQuery, parcel: rawParcel, goal: rawGoal,
+            order: rawOrder, offset: rawOffset, facets: rawFacets } = req.query;
         if (rawCity !== undefined && (typeof rawCity !== 'string' || rawCity.length > MAX_CITY_LENGTH)) {
             return res.status(400).json({ error: `city must be a string of at most ${MAX_CITY_LENGTH} characters.`, code: 'bad-request' });
         }
@@ -409,6 +457,18 @@ export function setupDesignsRoute(app, deps) {
         }
         const parsed = rawBbox === undefined ? { bbox: null } : parseBbox(rawBbox);
         if (parsed.error) return res.status(400).json({ error: parsed.error, code: 'invalid-bbox' });
+        const parcels = rawParcel === undefined ? null : parseIdList(rawParcel, MAX_PARCEL_FILTER, MAX_PARCEL_ID_LENGTH);
+        if (parcels && parcels.error) return res.status(400).json({ error: `parcel ${parcels.error}`, code: 'bad-request' });
+        const goals = rawGoal === undefined ? null : parseIdList(rawGoal, MAX_GOAL_FILTER, MAX_GOAL_LENGTH);
+        if (goals && goals.error) return res.status(400).json({ error: `goal ${goals.error}`, code: 'bad-request' });
+        if (rawOrder !== undefined && rawOrder !== 'newest' && rawOrder !== 'oldest') {
+            return res.status(400).json({ error: 'order must be newest or oldest.', code: 'bad-request' });
+        }
+        if (rawFacets !== undefined && rawFacets !== 'goal') return res.status(400).json({ error: 'facets must be goal.', code: 'bad-request' });
+        if (rawOffset !== undefined && (typeof rawOffset !== 'string' || !/^(0|[1-9]\d*)$/.test(rawOffset) || Number(rawOffset) > MAX_LIST_OFFSET)) {
+            return res.status(400).json({ error: `offset must be an integer from 0 to ${MAX_LIST_OFFSET}.`, code: 'bad-request' });
+        }
+        const offset = rawOffset === undefined ? 0 : Number(rawOffset);
         const clauses = [];
         const params = [];
         const city = normalizeCityCode(rawCity);
@@ -426,14 +486,40 @@ export function setupDesignsRoute(app, deps) {
             const envelope = `ST_MakeEnvelope($${params.length - 3}, $${params.length - 2}, $${params.length - 1}, $${params.length}, 4326)`;
             clauses.push(`site && ${envelope} AND ST_Intersects(site, ${envelope})`);
         }
-        params.push(parseListLimit(rawLimit));
+        if (parcels) {
+            params.push(parcels.ids);
+            clauses.push(`consensus.design_parcel_ids(binding) && $${params.length}::text[]`);
+        }
+        // The facet counts read every filter but the type: the choices a type filter offers.
+        const facetClauses = clauses.slice();
+        const facetParams = params.slice();
+        if (goals) {
+            params.push(goals.ids);
+            clauses.push(`goal = ANY($${params.length}::text[])`);
+        }
+        const where = list => (list.length ? `WHERE ${list.join(' AND ')}` : '');
+        const direction = rawOrder === 'oldest' ? 'ASC' : 'DESC';
+        const limit = parseListLimit(rawLimit);
+        params.push(limit, offset);
         try {
-            const { rows } = await pool.query(`
-                SELECT ${SUMMARY_COLUMNS} FROM ${DESIGN_TABLE}
-                ${clauses.length ? `WHERE ${clauses.join(' AND ')}` : ''}
-                ORDER BY created_at DESC, cid
-                LIMIT $${params.length}`, params);
-            return res.json({ designs: rows.map(serializeDesignSummaryRow), count: rows.length });
+            const [{ rows }, facets] = await Promise.all([
+                pool.query(`
+                SELECT ${SUMMARY_COLUMNS}, COUNT(*) OVER () AS total_count FROM ${DESIGN_TABLE}
+                ${where(clauses)}
+                ORDER BY created_at ${direction}, cid
+                LIMIT $${params.length - 1} OFFSET $${params.length}`, params),
+                rawFacets === 'goal'
+                    ? pool.query(`SELECT goal, COUNT(*) AS designs FROM ${DESIGN_TABLE} ${where(facetClauses)} GROUP BY goal`, facetParams)
+                    : null
+            ]);
+            // COUNT(*) OVER () counts every match before LIMIT; a page past the end has no row to carry it.
+            const total = rows.length ? Number(rows[0].total_count) : (offset === 0 ? 0 : null);
+            const hasMore = total !== null && offset + rows.length < total;
+            return res.json({
+                designs: rows.map(serializeDesignSummaryRow), count: rows.length, total, hasMore,
+                nextOffset: hasMore ? offset + rows.length : null,
+                ...(facets ? { goals: Object.fromEntries(facets.rows.map(row => [row.goal, Number(row.designs)])) } : {})
+            });
         } catch (error) {
             console.error(`[${new Date().toISOString()}] Error in GET /designs:`, error);
             return res.status(500).json({ error: 'Internal server error' });

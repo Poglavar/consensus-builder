@@ -1832,7 +1832,16 @@
                 },
                 "loading": "Checking published designs…",
                 "unavailable": "Published designs could not be loaded: {{reason}}",
-                "publishedHeading": "Also published here"
+                "publishedHeading": "Also published here",
+                "search": "Search by title or author",
+                "type": "Type",
+                "typeAll": "All types",
+                "order": "Order",
+                "newest": "Newest first",
+                "oldest": "Oldest first",
+                "more": "Show more ({{count}} left)",
+                "partial": "Showing the newest {{shown}} of {{total}}",
+                "noMatch": "No designs match this search."
             },
             "actions": {
                 "measureAsRoad": "Measure as road",

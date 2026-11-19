@@ -321,48 +321,6 @@ export function setupProposalsRoute(app, pool) {
         }
     });
 
-    // Per-parcel proposal counts for the map badges. The client passes the parcel ids it can see
-    // (?parcel_ids=a,b,c) and gets { counts: { a: 2, c: 1 } } back from flat cadastral declarations.
-    // Ids with no proposals are simply absent (treat as 0).
-    app.get('/proposals/counts', async (req, res) => {
-        try {
-            const raw = typeof req.query.parcel_ids === 'string' ? req.query.parcel_ids : '';
-            const parcelIds = Array.from(new Set(
-                raw.split(',').map(s => s.trim()).filter(Boolean)
-            )).slice(0, 5000); // cap the array so a huge querystring can't blow up the query
-            if (!parcelIds.length) {
-                return res.status(400).json({ error: 'parcel_ids query parameter is required' });
-            }
-            const city = normalizeCityCode(req.query.city);
-
-            const params = [parcelIds];
-            const cityClause = city ? `AND p.city = $${params.push(city)}` : '';
-
-            // The canonical root declaration is the only proposal-to-land relationship.
-            const sql = `
-                SELECT ids.pid AS parcel_id, COUNT(DISTINCT p.id)::int AS n
-                FROM proposal p
-                CROSS JOIN LATERAL (
-                    SELECT DISTINCT e AS pid
-                    FROM jsonb_array_elements_text(
-                        COALESCE(p.cadastre_parcel_ids, '[]'::jsonb)
-                    ) AS e
-                ) ids
-                WHERE p.cadastre_parcel_ids ?| $1::text[]
-                  AND ids.pid = ANY($1::text[])
-                  ${cityClause}
-                GROUP BY ids.pid
-            `;
-
-            const result = await pool.query(sql, params);
-            const counts = {};
-            result.rows.forEach(row => { counts[row.parcel_id] = row.n; });
-            res.json({ counts });
-        } catch (err) {
-            console.error('Error in GET /proposals/counts:', err);
-            res.status(500).json({ error: 'Internal server error' });
-        }
-    });
 
     app.get('/proposals/summary', async (req, res) => {
         try {

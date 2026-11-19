@@ -1855,7 +1855,16 @@
                 },
                 "loading": "Buscando diseños publicados…",
                 "unavailable": "No se pudieron cargar los diseños publicados: {{reason}}",
-                "publishedHeading": "También publicadas aquí"
+                "publishedHeading": "También publicadas aquí",
+                "search": "Buscar por título o autor",
+                "type": "Tipo",
+                "typeAll": "Todos los tipos",
+                "order": "Orden",
+                "newest": "Más recientes primero",
+                "oldest": "Más antiguos primero",
+                "more": "Mostrar más (quedan {{count}})",
+                "partial": "Se muestran los {{shown}} más recientes de {{total}}",
+                "noMatch": "Ningún diseño coincide con esta búsqueda."
             },
             "actions": {
                 "measureAsRoad": "Medir como carretera",

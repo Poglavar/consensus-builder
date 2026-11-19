@@ -3211,7 +3211,16 @@
                 },
                 "loading": "Vérification des projets publiés…",
                 "unavailable": "Impossible de charger les projets publiés : {{reason}}",
-                "publishedHeading": "Également publiés ici"
+                "publishedHeading": "Également publiés ici",
+                "search": "Rechercher par titre ou auteur",
+                "type": "Type",
+                "typeAll": "Tous les types",
+                "order": "Ordre",
+                "newest": "Les plus récents d’abord",
+                "oldest": "Les plus anciens d’abord",
+                "more": "Afficher plus ({{count}} restants)",
+                "partial": "Affichage des {{shown}} plus récents sur {{total}}",
+                "noMatch": "Aucun projet ne correspond à cette recherche."
             },
             "mintTooltip": "Créer le NFT de la parcelle",
             "closeAria": "Fermer le panneau d’informations de la parcelle"

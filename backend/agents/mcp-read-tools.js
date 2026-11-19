@@ -110,8 +110,10 @@ export function createMcpReadTools({ apiBase, appOrigin, fetchImpl }) {
         }
         return { ...result, parcelSourceId: source };
     }
-    const listDesigns = async query => {
-        const answer = await request('/designs', { ...query, bbox: query?.bbox?.join(',') });
+    // parcelIds and goals go to the index as its comma-separated parcel and goal filters.
+    const listDesigns = async ({ parcelIds, goals, ...query } = {}) => {
+        const answer = await request('/designs', { ...query, bbox: query.bbox?.join(','),
+            parcel: parcelIds?.length ? parcelIds.join(',') : undefined, goal: goals?.length ? goals.join(',') : undefined });
         return { ...answer, designs: (answer.designs || []).map(row => ({ ...row, previewUrl: `${appOrigin}/designs/${row.cid}` })) };
     };
     async function getDesign({ designCid }) {
@@ -177,14 +179,13 @@ export function createMcpReadTools({ apiBase, appOrigin, fetchImpl }) {
             if (result.features.length !== 1) throw failure('parcel-ambiguous', 'The point must identify exactly one parcel.', { action: 'Choose a parcelId from ugt_find_place.' });
             const parcel = result.features[0], id = String(parcel.id ?? parcel.properties.parcelId), bbox = turf.bbox(parcel);
             const [designs, agreements, markets, buildings, history, planning] = await Promise.all([
-                listDesigns({ city: args.city, bbox, limit: 100 }), request('/agreements', { parcel: id, limit: 100 }), request('/markets', { city: args.city }),
+                listDesigns({ city: args.city, parcelIds: [id], limit: 100 }), request('/agreements', { parcel: id, limit: 100 }), request('/markets', { city: args.city }),
                 args.buildingSourceId ? request('/buildings/under', {}, { source: args.buildingSourceId, regions: [{ key: id, geometry: parcel.geometry }] })
                     : { supported: false, unavailable: true, reason: 'building-source-required' },
                 request(`/parcels/${encodeURIComponent(id)}/history`), request('/planning/sources', { city: args.city, bbox: bbox.join(',') })
             ]);
             const urbanRules = result.parcelSourceId === 'oss-wfs'
                 ? await request('/urban-rules', { coordinates: turf.pointOnFeature(parcel).geometry.coordinates.join(',') }) : null;
-            designs.designs = (designs.designs || []).filter(d => d.binding?.parcels?.some(p => String(p.parcelId) === id));
             const studies = await Promise.all((planning.sources || []).filter(s => s.parcelStudy && args.planningSourceIds?.includes(s.id)).map(async source => ({ source: source.id,
                 study: await request('/planning/study', { city: args.city, source: source.id, parcel: id }) })));
             return { parcel, parcelSourceId: result.parcelSourceId, areaM2: turf.area(parcel), designs, agreements, markets, buildings, history, planning, studies, urbanRules,
