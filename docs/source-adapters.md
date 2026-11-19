@@ -105,6 +105,17 @@ Each endpoint has one admission gate (`backend/buildings/overpass-gate.js`) shar
 
 Tracestrack bills 6 credits per Overpass call against the plan's monthly allowance.
 
+### Astana existing buildings
+
+The configured Astana map area uses `kz-nsdi-buildings` first and OSM as the stand-in for
+unavailable or empty map cells. The Astana city entry covers the Esil preview area around its
+configured centre. Locations outside that entry use Explore's building list.
+The national WFS layer `openmap:buildings_a` supplies footprints and its integer `id` identifies
+each building as `KZ-NSDI-B-<id>`. The reader uses the recorded `levels` as storeys. Model mode
+extrudes at three metres per storey using the shared rules. The footprint endpoint reports the
+recorded storeys and a null measured height. Coverage is partial and the source is read-only.
+The source ID also works with the existing building reads used by MCP. [Dataset catalogue](https://map.gov.kz/api/v2/resources/1316)
+
 ## Adapter configuration examples
 
 The model is **abstraction → adapter → source**: an abstraction names the domain, an adapter implements a concrete reader, and a source binds public configuration to that adapter. `kind: "default"` means application-registered configuration; `kind: "custom"` means caller-provided configuration accepted by that particular adapter. It does not select a second reader implementation.

@@ -6756,20 +6756,23 @@
         }
     }
 
-    // The last /buildings/near answer's provenance: { source, heights: {measured, levels, estimated}, partial }.
+    // Sources and height evidence for the current set of nearby building models.
     let nearbyBuildingsProvenance = null;
     let buildingsSourceNoteEl = null;
 
     function updateBuildingsSourceNote() {
         if (!buildingsSourceNoteEl) return;
         const info = nearbyBuildingsProvenance;
-        // Zagreb's survey measures every height: nothing to say about it.
-        if (!info || !info.source || info.source === 'gdi-3d') { buildingsSourceNoteEl.hidden = true; return; }
+        // Zagreb's survey measures every height: nothing to say when it is the only source.
+        if (!info || !info.sources.length || (info.sources.length === 1 && info.sources[0] === 'gdi-3d')) {
+            buildingsSourceNoteEl.hidden = true;
+            return;
+        }
         const heights = info.heights || { measured: 0, levels: 0, estimated: 0 };
         const total = heights.measured + heights.levels + heights.estimated;
-        // The source in use first, as the source list names it.
-        const entry = (window.CityConfigManager?.getBuildingSources?.() || []).find(item => item.id === info.source);
-        const parts = [info.source === 'osm' ? threeI18n('threeMode.buildingsSource.osm', 'OpenStreetMap buildings') : (entry?.name || info.source)];
+        const parts = info.sources.map(id => id === 'osm'
+            ? threeI18n('threeMode.buildingsSource.osm', 'OpenStreetMap buildings')
+            : (info.sourceNames.get(id) || id));
         if (heights.estimated > 0) {
             parts.push(threeI18n('threeMode.buildingsSource.estimated', '{{count}} of {{total}} heights estimated',
                 { count: heights.estimated, total }).replace('{{count}}', heights.estimated).replace('{{total}}', total));
@@ -6834,7 +6837,8 @@
             ? window.BuildingCells.cellsCovering({ box: turf.bbox(turf.buffer(geometry, buffer, { units: 'meters' })), centre: anchor,
                 gridSize, toDataset: window.wgs84ToDataset, toLatLng })
             : window.BuildingCells.cellsAround({ centre: anchor, radiusM: buffer, gridSize, toDataset: window.wgs84ToDataset, toLatLng });
-        const sources = window.SourceList.inUse(manager.getBuildingSources(anchor[1], anchor[0]));
+        const sourceList = manager.getBuildingSources(anchor[1], anchor[0]);
+        const sources = window.SourceList.inUse(sourceList);
         // The previous buildings stay drawn until the first cells of the new area replace them.
         nearbyProposalBuildingsFetching = true;
         nearbyBuildingsOutcome = null;
@@ -6896,7 +6900,10 @@
                 nearbyProposalBuildingsFetching = false;
                 const heights = { measured: 0, levels: 0, estimated: 0 };
                 nearbyProposalBuildings.forEach(building => { if (building.height_source in heights) heights[building.height_source]++; });
-                nearbyBuildingsProvenance = { source: sources[0], heights: heights.measured + heights.levels + heights.estimated ? heights : null,
+                const visibleSources = new Set(nearbyProposalBuildings.map(building => building.source));
+                nearbyBuildingsProvenance = { sources: sources.filter(id => visibleSources.has(id)),
+                    sourceNames: new Map(sourceList.map(entry => [entry.id, entry.name])),
+                    heights: heights.measured + heights.levels + heights.estimated ? heights : null,
                     atlasHeights: nearbyProposalBuildings.some(building => building.height_estimate_source === 'global-building-atlas'),
                     partial: summary.failed > 0 || summary.incomplete > 0, standIn: summary.standIn, cells: summary.total };
                 nearbyBuildingsOutcome = summary.unsupported === summary.total ? 'unsupported'

@@ -5,6 +5,7 @@ import { createNycProvider } from './nyc-footprints.js';
 import { createNycArcgisProvider } from './nyc-arcgis.js';
 import { createOsmProvider } from './osm-3d.js';
 import { readAlatauHeightEstimates } from './alatau-gba-heights.js';
+import { createKzNsdiBuildingProvider, kzNsdiBuildings } from './kz-nsdi.js';
 import { createCustomBuildingProvider } from './custom-source-3d.js';
 import { createOverpassBuildingProvider } from './overpass-source.js';
 import { createWienLod2Provider } from './wien-lod2.js';
@@ -23,7 +24,8 @@ const SourceRuntime = createRequire(import.meta.url)('../../frontend/js/source-r
 const builtins = [
     ['wien-lod2', 'wien-lod2'], ['nl-3dbag', 'nl-3dbag'], ['nrw-lod2', 'nrw-lod2'], ['nyc-3d', 'nyc-3d'],
     ['berlin-lod2', 'berlin-lod2'], ['hamburg-lod2', 'hamburg-lod2'], ['bw-lod2', 'bw-lod2'], ['sachsen-lod2', 'sachsen-lod2'],
-    ['gdi-3d', 'gdi-3d'], ['dgu', 'dgu'], ['nyc-arcgis', 'nyc-arcgis'], ['nyc-socrata', 'nyc-socrata'], ['osm', 'osm']
+    ['gdi-3d', 'gdi-3d'], ['dgu', 'dgu'], ['nyc-arcgis', 'nyc-arcgis'], ['nyc-socrata', 'nyc-socrata'], ['osm', 'osm'],
+    [kzNsdiBuildings.id, 'kz-nsdi-buildings', kzNsdiBuildings]
 ];
 export const buildingSourceRegistry = SourceRuntime.createRegistry({
     abstraction: 'buildings',
@@ -43,6 +45,7 @@ export const buildingSourceRegistry = SourceRuntime.createRegistry({
         'hamburg-lod2': { create: () => createHamburgLod2Provider(), custom: false },
         'bw-lod2': { create: () => createBwLod2Provider(), custom: false },
         'sachsen-lod2': { create: () => createSachsenLod2Provider(), custom: false },
+        'kz-nsdi-buildings': { create: createKzNsdiBuildingProvider, custom: false },
         arcgis: { create: createCustomBuildingProvider },
         wfs: { create: createCustomBuildingProvider },
         'ogc-api': { create: createCustomBuildingProvider },
@@ -51,7 +54,7 @@ export const buildingSourceRegistry = SourceRuntime.createRegistry({
         'city-model': { create: createCustomBuildingProvider },
         overpass: { create: createOverpassBuildingProvider }
     },
-    sources: builtins.map(([id, adapter]) => SourceRuntime.source('buildings', adapter, { id })),
+    sources: builtins.map(([id, adapter, config]) => SourceRuntime.source('buildings', adapter, config ?? { id })),
     required: ['near', 'footprints', 'footprintsUnder']
 });
 

@@ -28,6 +28,7 @@ describe('Astana city config', () => {
                 fallbackLatLng: [51.1282, 71.4304],
                 fallbackDataset: [71.4304, 51.1282]
             },
+            buildings: { sources: [{ id: 'kz-nsdi-buildings' }, { id: 'osm' }] },
             parcels: {
                 strategy: 'grid',
                 gridSize: 0.0025,

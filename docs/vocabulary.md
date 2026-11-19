@@ -978,6 +978,8 @@ A vertical size in metres with an identified basis, such as measured roof height
 
 An estimated context height shapes an existing building in Model view. It carries `height_source: estimated` and may name a prediction dataset in `height_estimate_source`. Its building footprint and recorded storeys retain their original source. The estimate supplies no measured building or floor-area evidence.
 
+A height calculated from recorded storeys carries `height_source: levels`. For Astana's NSDI buildings, the recorded value is the `levels` field on the official footprint and the shared extrusion assumes three metres per storey.
+
 ### Elevation
 
 A vertical position relative to a stated datum or reference. An elevation is not interchangeable with building height.
