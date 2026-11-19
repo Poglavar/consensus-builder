@@ -31,7 +31,7 @@
 
     // One footprint feature ({ id, geometry, properties: { measured_height_m, levels, building } }) → the
     // 3D block record, or null when degenerate. Shared with user-chosen building sources.
-    function footprintFeatureToBuilding(feature) {
+    function footprintFeatureToBuilding(feature, heightEstimateFor) {
         const props = feature.properties || {};
         const id = String(feature.id || props.osm_id);
         const height = extrusion.resolveBuildingHeight({
@@ -41,9 +41,11 @@
             building: props.building,
             areaM2: extrusion.footprintAreaM2(feature.geometry)
         });
-        const record = extrusion.extrudeFootprint(id, feature.geometry, height.heightM);
+        const estimate = height.source === 'estimated' ? heightEstimateFor?.(feature) : null;
+        const record = extrusion.extrudeFootprint(id, feature.geometry, estimate?.heightM ?? height.heightM);
         if (!record) return null;
         record.height_source = height.source;
+        if (estimate) record.height_estimate_source = estimate.source;
         return Object.assign(record, buildingFacts(feature));
     }
 
@@ -81,7 +83,7 @@
 
     // featuresIn(bbox) → { features, truncated?, partial? } or throws when the upstream failed.
     // `sources` names the answer: { near: 'osm-3d', footprints: 'osm-footprints' }.
-    function createFootprintProvider({ turf, featuresIn, sources, label = 'buildings', log = () => {},
+    function createFootprintProvider({ turf, featuresIn, sources, heightEstimateFor, label = 'buildings', log = () => {},
         maxBuildings = DEFAULT_MAX_BUILDINGS, maxSpanDeg = MAX_SPAN_DEG }) {
         async function near(geometry, bufferMeters) {
             const box = expandBbox(turf.bbox(geometry), bufferMeters, maxSpanDeg);
@@ -104,7 +106,7 @@
             const buildings = [];
             const heights = { measured: 0, levels: 0, estimated: 0 };
             for (const feature of features) {
-                const record = footprintFeatureToBuilding(feature);
+                const record = footprintFeatureToBuilding(feature, heightEstimateFor);
                 if (!record) continue;
                 heights[record.height_source] += 1;
                 buildings.push(record);

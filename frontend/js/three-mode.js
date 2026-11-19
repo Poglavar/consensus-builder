@@ -6776,6 +6776,12 @@
         }
         if (info.partial) parts.push(threeI18n('threeMode.buildingsSource.partial', 'some may be missing'));
         buildingsSourceNoteEl.textContent = parts.join(' · ');
+        if (info.atlasHeights) {
+            const credit = document.createElement('a');
+            credit.href = 'https://github.com/zhu-xlab/GlobalBuildingAtlas';
+            credit.textContent = 'GlobalBuildingAtlas (CC BY-NC 4.0)';
+            buildingsSourceNoteEl.append(' · ', credit);
+        }
         buildingsSourceNoteEl.hidden = false;
     }
 
@@ -6891,6 +6897,7 @@
                 const heights = { measured: 0, levels: 0, estimated: 0 };
                 nearbyProposalBuildings.forEach(building => { if (building.height_source in heights) heights[building.height_source]++; });
                 nearbyBuildingsProvenance = { source: sources[0], heights: heights.measured + heights.levels + heights.estimated ? heights : null,
+                    atlasHeights: nearbyProposalBuildings.some(building => building.height_estimate_source === 'global-building-atlas'),
                     partial: summary.failed > 0 || summary.incomplete > 0, standIn: summary.standIn, cells: summary.total };
                 nearbyBuildingsOutcome = summary.unsupported === summary.total ? 'unsupported'
                     : summary.failed === summary.total ? 'failed'

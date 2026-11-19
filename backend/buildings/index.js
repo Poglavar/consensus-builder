@@ -4,6 +4,7 @@ import { createDguProvider } from './dgu-cadastre.js';
 import { createNycProvider } from './nyc-footprints.js';
 import { createNycArcgisProvider } from './nyc-arcgis.js';
 import { createOsmProvider } from './osm-3d.js';
+import { readAlatauHeightEstimates } from './alatau-gba-heights.js';
 import { createCustomBuildingProvider } from './custom-source-3d.js';
 import { createOverpassBuildingProvider } from './overpass-source.js';
 import { createWienLod2Provider } from './wien-lod2.js';
@@ -31,7 +32,9 @@ export const buildingSourceRegistry = SourceRuntime.createRegistry({
         dgu: { create: (_config, { pool }) => createDguProvider(pool), custom: false },
         'nyc-arcgis': { create: (_config, { env }) => createNycArcgisProvider(env), custom: false },
         'nyc-socrata': { create: (_config, { env }) => createNycProvider(env), custom: false },
-        osm: { create: (_config, { pool }) => createOsmProvider(pool), custom: false },
+        osm: { create: (_config, { pool, env = process.env }) => createOsmProvider(pool, {
+            heightEstimateFor: readAlatauHeightEstimates(env.ALATAU_GBA_HEIGHTS_FILE)
+        }), custom: false },
         'wien-lod2': { create: () => createWienLod2Provider(), custom: false },
         'nl-3dbag': { create: () => createNl3dbagProvider(), custom: false },
         'nrw-lod2': { create: () => createNrwLod2Provider(), custom: false },

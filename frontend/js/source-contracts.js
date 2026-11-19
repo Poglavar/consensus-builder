@@ -45,7 +45,7 @@
         },
         buildings: {
             near: operation(obj({ geometry, bufferMeters: number('Search buffer in metres.', 0) }),
-                obj({ buildings: array({ type: 'object' }), count: number('Returned building count.', 0), source: string('Provider id.'), partial: { type: 'boolean' }, heights: { oneOf: [{ type: 'object' }, { type: 'null' }] } }, ['buildings', 'count', 'source'], true),
+                obj({ buildings: array(obj({ height_source: string('Basis of the displayed model height.'), height_estimate_source: string('Prediction dataset when an estimate supplies the model height.') }, [], true)), count: number('Returned building count.', 0), source: string('Provider id.'), partial: { type: 'boolean' }, heights: { oneOf: [{ type: 'object' }, { type: 'null' }] } }, ['buildings', 'count', 'source'], true),
                 'Returns {buildings,count,source} with provider-specific optional partial/height/cache metadata; missing height and storey data stays absent/null.', ['geometry', 'bufferMeters']),
             footprints: operation(obj({ geometry }), obj({ footprints: array({ type: 'object' }), count: number('Returned footprint count.', 0), source: string('Provider id.'), truncated: { type: 'boolean' } }, ['footprints', 'count', 'source'], true),
                 'Input is the query geometry (normally a bbox Polygon), not a bbox tuple. Output retains source-specific completeness/truncation.', ['geometry']),

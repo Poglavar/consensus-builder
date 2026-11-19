@@ -20,9 +20,9 @@ function parseProposalIds(value) {
 }
 
 // `publishedFloorModels` (floor-models.js createPublishedFloorModels) is injected in tests.
-export function setupBuildingsRoute(app, pool, { publishedFloorModels } = {}) {
+export function setupBuildingsRoute(app, pool, { publishedFloorModels, env = process.env } = {}) {
     // Named dataset services, selected explicitly by the caller.
-    const buildingProviders = createBuildingProviders(pool);
+    const buildingProviders = createBuildingProviders(pool, env);
     const floorModelOptions = (report = {}) => ({ ...(publishedFloorModels ? { published: publishedFloorModels } : {}), report });
 
     // GET /buildings?bbox=minX,minY,maxX,maxY[&source=gdi|dgu]  (HTRS96/TM EPSG:3765)

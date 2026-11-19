@@ -59,6 +59,20 @@ The wrapper schema is intentionally stable while `config` stays adapter-owned. F
 
 ### OpenStreetMap through our backend
 
+Alatau model previews can supplement OSM buildings with a local GlobalBuildingAtlas height snapshot.
+Download the [Alatau height tile](https://huggingface.co/datasets/zhu-xlab/GBA.LoD1/blob/main/LoD1/asiawest/e075_n45_e080_n40.json)
+and save complete `/buildings/osm?bbox=west,south,east,north` FeatureCollections for the intended
+areas. Run `node scripts/extract-alatau-gba-heights.mjs <height-tile.json> <footprints.geojson> [...]`
+and redirect the result to a local JSON file outside Git. Set `ALATAU_GBA_HEIGHTS_FILE` to its path
+in the preview backend and restart it. The atlas height data use [CC BY-NC 4.0](https://github.com/zhu-xlab/GlobalBuildingAtlas).
+
+The adapter accepts estimates from 2 to 30 metres for the low-rise trial. An OSM height or storey
+count takes precedence. `/buildings/cell` in `near` mode and `/buildings/near` keep OSM building
+identity and report `height_source: estimated` with `height_estimate_source: global-building-atlas`
+when an atlas estimate shapes the mesh. Footprint operations continue to return recorded heights
+and storeys only. Model mode credits the atlas when it draws an atlas estimate. The setting is
+backend configuration for a read-only source and adds no human or MCP editing action.
+
 OSM is read through one backend chain (`backend/buildings/osm-reference.js` `createOverpassCellSource`):
 our paid Tracestrack Overpass instance, with the public overpass-api.de only as a last resort. It is
 the default for every OSM-derived layer in every city; ingested tables (`osm_road`, `osm_decor`)

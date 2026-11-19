@@ -976,6 +976,8 @@ A stated distance between a building or permitted form and the relevant land bou
 
 A vertical size in metres with an identified basis, such as measured roof height, authored building height or storeys multiplied by an assumed storey height.
 
+An estimated context height shapes an existing building in Model view. It carries `height_source: estimated` and may name a prediction dataset in `height_estimate_source`. Its building footprint and recorded storeys retain their original source. The estimate supplies no measured building or floor-area evidence.
+
 ### Elevation
 
 A vertical position relative to a stated datum or reference. An elevation is not interchangeable with building height.

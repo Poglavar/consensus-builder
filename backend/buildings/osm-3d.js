@@ -22,7 +22,8 @@ const log = (...args) => console.log(`[${new Date().toISOString()}] [osm-3d]`, .
 
 export function createOsmProvider(pool, {
     fetchLive = fetchOsmBuildings,
-    fetchStaged = fetchStagedOsmBuildings
+    fetchStaged = fetchStagedOsmBuildings,
+    heightEstimateFor
 } = {}) {
     async function featuresIn(bbox) {
         const staged = await fetchStaged(pool, bbox).catch(error => {
@@ -35,6 +36,7 @@ export function createOsmProvider(pool, {
     return core.createFootprintProvider({
         turf,
         featuresIn,
+        heightEstimateFor,
         label: 'osm',
         log,
         sources: { near: 'osm-3d', footprints: 'osm-footprints' }
