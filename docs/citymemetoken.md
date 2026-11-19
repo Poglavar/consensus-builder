@@ -151,6 +151,68 @@ Limits and gaps:
 - The USDC Boost from the browser is untested against a funded wallet. The browser builds the same
   instructions as the agents' `ensureDonationEscrowAndDonate`.
 
+## SPL token: algorithmic supply (proposal)
+
+Direction (2026-11-19): an SPL token per city plus UGT, with no premine and no human mint key.
+Supply is minted only by rule, against events the chain can check: executed agreements and
+correct bets.
+
+### What a production dry run showed (2026-11-19)
+
+A read-only run of the award rules over production data found 228 resolved devnet markets, with
+complete transaction copies. They would mint 246 city tokens in all, about 2 per market at
+b = 5 USDC. Every earner was one of our own agents (`backer-01`, `skeptic-02`,
+`preservationist-01`, `supporter-01`, `speculator-01`), and so is every sponsor. Unchanged, the
+rules would mint the whole supply to ourselves.
+
+### Attacks to design against
+
+| Attack | Cost today | Why it matters for minting |
+| --- | --- | --- |
+| **Fake agreement**: mint an agreement over parcels you "own" in the devnet owner registry, name yourself as lens, attest, execute | fees only | A reward for execution would be free money. A self-lens is allowed by design (2026-11-10), and the registry is modeled, not land title. |
+| **Wash bet**: wallet A pushes the price down, wallet B buys cheap and wins | the LMSR spread | Edge rewards pay B more than A lost, as long as the reward is worth more than the spread. |
+| **Sybil split**: many wallets, many small bets | nothing extra | Harmless while rewards are linear in stake (they are); harmful under any per-wallet minimum or flat bonus. |
+| **Insider bet**: the sponsor or lens bets on an outcome it controls | blocked on chain | The program refuses insider trades, but a second wallet gets around that. |
+| **Own agents**: our personas sponsor, bet and settle | free to us | See the dry run above. |
+
+### Rules that bound them
+
+1. **Mint only in proportion to cost already paid.** Every minting event carries a real cost: for a
+   bet, the stake that lost or the spread paid; for an agreement, the escrow actually paid out at
+   execution. Rewards are a fraction of that cost, below 1. Self-dealing then loses money even when
+   the token is worth its full price. Today's edge reward does not meet this: it pays the winner's
+   profit, which in a wash trade is the attacker's own loss.
+2. **A fixed budget per epoch, split pro rata.** Each city has a cap and an emission curve. Each
+   epoch's budget is shared among that epoch's eligible events by weight. Farming can then only win
+   a share of a fixed amount, paid for at the cost in rule 1, and never inflates supply. This is the
+   points-pool rule applied on chain.
+3. **Execution counts only through an accepted lens.** Agreements stay open to any lens. Minting
+   reads a separate list of lenses whose decisions it accepts (a notary, the city, later a vote).
+   This is not the market allow-list the 2026-11-10 decision declined: markets stay open, and only
+   minting is gated.
+4. **Insiders never earn on their own agreements.** Sponsor, lens and the agreement's listed
+   wallets earn no bet reward on it, and their execution reward is limited to rule 1.
+5. **Our agents are insiders.** Persona wallets are excluded from minting, or capped at a small
+   share, until outside users exist.
+
+### Mechanics
+
+- Mint authority is a PDA of a small immutable program. A permissionless `claim` reads the
+  agreement and market accounts (status, outcome, the claimant's position, the lens) and mints by
+  the rules above. No server is involved: minting must not depend on ours.
+- The Points book has no on-chain evidence, so it cannot mint SPL. Points awards stay in the
+  off-chain ledger, or a later fixed airdrop converts them once.
+- City-token boosts move existing tokens. Their payout split (30/70) stays; a burn share is an
+  option for adding a sink.
+
+### To decide
+
+1. The cost base for rule 1, and the fraction.
+2. The per-city cap and emission curve, and what UGT is minted from: a share of each city's mint,
+   or its own budget.
+3. Who keeps the accepted-lens list for minting, and how it changes once programs are immutable.
+4. Whether off-chain balances earned so far convert, and at what rate.
+
 ## Ideas collected
 
 Moved here from `docs/BACKLOG.md`, `TODO.txt` and `TODO-blockchain.txt`, with the original wording kept.

@@ -75,12 +75,16 @@
     }
     const slotOf = account => doc.querySelector(`[data-agreement-boost="${CSS.escape(account)}"]`);
 
-    async function load(agreement, account) {
+    // A refund is possible only once the agreement is cancelled or expired: only then are this
+    // wallet's own donations listed (a getProgramAccounts read the primary RPC does not serve).
+    const refundable = status => status === 'Cancelled' || status === 'Expired';
+
+    async function load(agreement, account, chainStatus) {
         const entry = { loading: true, error: null, escrow: null, mine: [], boosts: [], balances: [] };
         cache.set(account, entry);
         try {
             const [chain, boosts, balances] = await Promise.all([
-                root.AgreementBridge.donations(agreement),
+                root.AgreementBridge.donations(agreement, { mine: refundable(chainStatus) }),
                 root.BetsTrading ? root.BetsTrading.agreementBoosts(account) : [],
                 root.BetsTrading ? root.BetsTrading.asset() === 'points' ? root.BetsTrading.cityTokens().catch(() => null)
                     : null : null
@@ -109,7 +113,7 @@
                 if (item?.state === 'awaiting_signature') status(slot, t('bets.trade.sign', 'Confirm in your wallet…'));
                 else if (item?.state === 'submitted') status(slot, t('bets.trade.submitted', 'Waiting for confirmation…'));
             }));
-            await load(context.agreement, context.account);
+            await load(context.agreement, context.account, context.chainStatus);
         } catch (error) {
             console.error(`[${new Date().toISOString()}] [AgreementBoost] action failed`, error);
             const current = slotOf(context.account);
@@ -196,7 +200,7 @@
         slot.dataset.agreementBoost = account;
         const context = { agreement, account, chainStatus, city: agreement.city || null };
         draw(slot, context);
-        if (!cache.has(account)) load(agreement, account);
+        if (!cache.has(account)) load(agreement, account, chainStatus);
     }
 
     return { model, mount, refresh: account => cache.delete(account) };

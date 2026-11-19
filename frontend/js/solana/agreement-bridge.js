@@ -390,14 +390,15 @@
             return win.SolanaPledgeClient;
         }
 
-        // The escrow (totals, or null before the first boost) and, with a wallet, its own donations.
-        async function donations(agreement) {
+        // The escrow (totals, or null before the first boost) and, with `mine` and a wallet, its own
+        // donations. Listing them needs getProgramAccounts, so callers ask only when a refund is possible.
+        async function donations(agreement, { mine: listMine = false } = {}) {
             await dependencies();
             const ref = mintedRef(agreement);
             const connection = win.SolanaChainDataLoader.getConnection(ref.cluster);
             const escrow = await pledge().readDonationEscrow(connection, ref.account);
             const wallet = connectedWallet();
-            const mine = escrow && wallet ? await pledge().listDonationPositions(connection, ref.account, wallet) : [];
+            const mine = listMine && escrow && wallet ? await pledge().listDonationPositions(connection, ref.account, wallet) : [];
             return { escrow, mine };
         }
 
