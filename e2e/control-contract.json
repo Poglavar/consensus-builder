@@ -10502,6 +10502,71 @@
       "markup": "<a class=\"btn btn-primary\" href=\"/\">",
       "interaction": "click",
       "controlType": "button"
+    },
+    {
+      "id": "control-89c92ffb795b14-1",
+      "source": "index.html",
+      "markup": "<button type=\"button\" id=\"simulation-bar-play\" class=\"btn btn-icon\" aria-pressed=\"false\" aria-label=\"Play\" title=\"Play\">"
+    },
+    {
+      "id": "control-d1d7190ad620c2-1",
+      "source": "index.html",
+      "markup": "<button type=\"button\" id=\"simulation-bar-step\" class=\"btn btn-icon\" aria-label=\"Next turn\" title=\"Next turn\" data-i18n-key=\"mapShell.simulation.nextTurn\" data-i18n-attr=\"aria-label,title\">"
+    },
+    {
+      "id": "control-d4d7285156d444-1",
+      "source": "index.html",
+      "markup": "<select id=\"simulation-bar-speed\">"
+    },
+    {
+      "id": "control-322ffea261b7b7-1",
+      "source": "index.html",
+      "markup": "<button type=\"button\" id=\"simulation-bar-city\" class=\"btn btn-icon\" data-agent-city-open=\"simulation\" aria-label=\"Agent city of this simulation\" title=\"Agent city of this simulation\" data-i18n-key=\"agentCity.openSimulation\" data-i18n-attr=\"aria-label,title\">"
+    },
+    {
+      "id": "control-d80784931a9087-1",
+      "source": "index.html",
+      "markup": "<button type=\"button\" id=\"simulation-bar-stop\" class=\"btn btn-icon\" aria-label=\"Stop simulation\" title=\"Stop simulation\" data-i18n-key=\"mapShell.simulation.stop\" data-i18n-attr=\"aria-label,title\">"
+    },
+    {
+      "id": "control-36441130f55680-1",
+      "source": "index.html",
+      "markup": "<button type=\"button\" id=\"agent-city-close\" class=\"close-circle-btn\" aria-label=\"Close\" title=\"Close\" data-i18n-key=\"common.close\" data-i18n-attr=\"aria-label,title\">"
+    },
+    {
+      "id": "control-aa9cb09d2377e3-1",
+      "source": "index.html",
+      "markup": "<button type=\"button\" class=\"cb-segmented__option\" data-agent-city-source=\"server\" aria-pressed=\"true\" data-i18n-key=\"agentCity.sourceServer\">"
+    },
+    {
+      "id": "control-e78fbcdbad5c94-1",
+      "source": "index.html",
+      "markup": "<button type=\"button\" class=\"cb-segmented__option\" data-agent-city-source=\"simulation\" aria-pressed=\"false\" data-i18n-key=\"agentCity.sourceSimulation\">"
+    },
+    {
+      "id": "control-087e0f668ca337-1",
+      "source": "index.html",
+      "markup": "<button type=\"button\" id=\"agent-city-back\" class=\"btn btn-icon\" aria-label=\"Previous execution day\" title=\"Previous execution day\" data-i18n-key=\"agentCity.back\" data-i18n-attr=\"aria-label,title\">"
+    },
+    {
+      "id": "control-6cc354968eca85-1",
+      "source": "index.html",
+      "markup": "<button type=\"button\" id=\"agent-city-play\" class=\"btn btn-icon\" aria-pressed=\"false\" aria-label=\"Play\" title=\"Play\">"
+    },
+    {
+      "id": "control-52b16766b1627b-1",
+      "source": "index.html",
+      "markup": "<button type=\"button\" id=\"agent-city-forward\" class=\"btn btn-icon\" aria-label=\"Next execution day\" title=\"Next execution day\" data-i18n-key=\"agentCity.forward\" data-i18n-attr=\"aria-label,title\">"
+    },
+    {
+      "id": "control-60e2074c068880-1",
+      "source": "index.html",
+      "markup": "<input type=\"range\" id=\"agent-city-slider\" class=\"buildout-clock__slider\" min=\"0\" max=\"0\" step=\"1\" value=\"0\" aria-label=\"Execution day\" data-i18n-key=\"agentCity.day\" data-i18n-attr=\"aria-label\">"
+    },
+    {
+      "id": "control-5ac77f5969ca8c-1",
+      "source": "index.html",
+      "markup": "<button type=\"button\" id=\"activity-agent-city\" class=\"btn btn-icon\" data-agent-city-open=\"server\" aria-label=\"Agent city\" title=\"Agent city\" data-i18n-key=\"agentCity.title\" data-i18n-attr=\"aria-label,title\">"
     }
   ],
   "variantExclusions": [

@@ -61,9 +61,16 @@
     --cb-map-highlight-soft: #fff8cc;
     --cb-map-highlight-ink: #292000;
     --cb-map-pick-highlight: var(--cb-map-highlight);
-    /* A design an agent drew in the last few simulation turns (css/game.css .simulation-ghost); the 3D
-       draft preview's blue. */
-    --cb-map-simulation-ghost: #2563eb;
+    /* Designs drawn without being applied (css/game.css .design-display--*): simulation ghosts and the
+       Agent city, coloured as the 2D map colours applied parks, squares and lakes (js/structures.js). */
+    --cb-map-display-park: #1b5e20;
+    --cb-map-display-park-edge: #0d3b1f;
+    --cb-map-display-square: #bdbdbd;
+    --cb-map-display-square-edge: #666666;
+    --cb-map-display-lake: #3fa7f5;
+    --cb-map-display-lake-shore: #f3d7a0;
+    --cb-map-display-building-edge: #7c3a1d;
+    --cb-map-display-ground: #9ca3af;
 
     --cb-warning: #b45309;
     --cb-warning-soft: #fffbeb;
@@ -242,6 +249,7 @@
     --cb-z-map-pane-road-track: 420;       /* the Road/track layer (js/road-track-layer.js): over the parcel vectors (400), takes no clicks */
     --cb-z-map-pane-plan: 620;      /* the Schelling plan layer: over parcels and blocks, under the site tool (640) */
     --cb-z-map-pane-buildout: 659;  /* build-out veils, hatching and cranes: over every design pane, road strips (655-658) included; takes no clicks */
+    --cb-z-map-pane-design-display: 644; /* designs drawn without being applied (js/design-display.js): under the Compare halves and the selection highlight (650) */
     --cb-z-map-pane-compare: 645;   /* the Compare tab's two map halves (js/compare-on-map.js): where the designs' buildings draw, under road strips (655) */
     --cb-z-map-pane-site: 640;      /* the site tool's Leaflet pane: over the markers (600), under tooltips (650) */
     --cb-z-map-pane-pick-highlight: 690; /* the designs a surface picking on the map highlights (js/map-pick.js, css/proposals.css): over every fabric pane, under popups (700) */

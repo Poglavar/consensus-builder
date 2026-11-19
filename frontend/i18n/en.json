@@ -9321,5 +9321,29 @@
       "stream": "The response was interrupted. Try again.",
       "mapCommand": "The map command could not be completed. The design changes were not applied."
     }
-  }
+  },
+    "agentCity": {
+        "title": "Agent city",
+        "openSimulation": "Agent city of this simulation",
+        "source": "Whose agreements",
+        "sourceServer": "Published agents",
+        "sourceSimulation": "This simulation",
+        "back": "Previous execution day",
+        "forward": "Next execution day",
+        "day": "Execution day",
+        "loading": "Loading executed agreements…",
+        "error": "The executed agreements could not be loaded.",
+        "emptySimulation": "No design of this simulation has been executed yet. Owners decide over the turns.",
+        "emptyServer": "No agent agreement has been executed in this city yet.",
+        "summary": "Designs standing: {{standing}} · executed {{executed}} of {{total}}"
+    },
+    "simulation": {
+        "agreements": {
+            "city": "The city",
+            "executed": "every owner approved; the design is executed.",
+            "refused": "an owner refused the design.",
+            "expired": "the owners did not all decide in time.",
+            "superseded": "another design was executed on its land."
+        }
+    }
 }

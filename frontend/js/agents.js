@@ -720,6 +720,12 @@ function agentDecideAction(agent, turnContext = null) {
                 return { type: 'nothing' };
             }
 
+            // Most designs are buildings, as the server agents' are: one building on one parcel,
+            // half the time on the agent's own land (agentBuildingAction).
+            if (Math.random() < 0.6) {
+                return agentBuildingAction(agent, allParcels, ownedParcelSet, safeTurnContext.turn);
+            }
+
             const targetSize = Math.floor(Math.random() * 10) + 1; // 1-10 parcels
             const neighborMap = sharedNeighborMap || buildAgentNeighborMap(allParcels);
             const proposalParcels = findContiguousParcels(allParcels, targetSize, neighborMap);
@@ -764,6 +770,27 @@ function agentDecideAction(agent, turnContext = null) {
         default:
             return { type: 'nothing' };
     }
+}
+
+// One building on one parcel, measured under an urban rule (agent-building-design.js). An agent that
+// owns land builds there half the time; otherwise any parcel of the turn's pool.
+function agentBuildingAction(agent, allParcels, ownedParcelSet, turn) {
+    const owned = allParcels.filter(parcel => ownedParcelSet.has(String(parcel.id)));
+    const candidates = owned.length && Math.random() < 0.5 ? owned : allParcels;
+    const parcel = candidates[Math.floor(Math.random() * candidates.length)];
+    if (!parcel?.feature || !window.AgentBuildingDesign || !window.UrbanRuleVariation || typeof turf === 'undefined') {
+        return { type: 'nothing' };
+    }
+    const design = window.AgentBuildingDesign.buildingDesign({
+        parcelFeature: parcel.feature,
+        parcelId: parcel.id,
+        author: agent.name,
+        seed: `${agent.id}:${turn ?? ''}:${parcel.id}:${Math.random()}`,
+        turf,
+        variation: window.UrbanRuleVariation
+    });
+    if (!design) return { type: 'nothing' };
+    return { type: 'create', parcelIds: [parcel.id], goal: 'buildings', design, title: design.title, description: design.description };
 }
 
 /**
@@ -819,12 +846,19 @@ async function executeAgentAction(agent, action) {
                     return `<button type="button" class="cb-link agent-link-clickable" data-agent-id="${agent.id}">${agent.name}</button>`
                         + ' failed to create a design because its selected ground is no longer current.';
                 }
-                if (!cadastreParcelIds.length || !action.geometry?.type) {
+                if (!cadastreParcelIds.length || !(action.geometry?.type || action.design?.geometry?.buildings?.length)) {
                     return `<button type="button" class="cb-link agent-link-clickable" data-agent-id="${agent.id}">${agent.name}</button>`
                         + ' failed to create a design because its authored geometry is incomplete.';
                 }
 
-                const proposal = {
+                // A building design arrives whole (agent-building-design.js); a park, square or lake is
+                // the structure instruction over the selected parcels' union.
+                const proposal = action.design ? {
+                    ...action.design,
+                    cadastreParcelIds,
+                    bounds,
+                    createdAt: new Date().toISOString()
+                } : {
                     author: agent.name,
                     title: action.title,
                     description: action.description,

@@ -47,7 +47,8 @@ const gameState = {
             currentDateTime: this.currentDateTime.toISOString(),
             currentTurn: this.currentTurn,
             gameLog: this.gameLog.slice(-500), // Keep only last 500 entries
-            turnIntervalSeconds: this.turnIntervalSeconds
+            turnIntervalSeconds: this.turnIntervalSeconds,
+            simulationAgreements: window.SimulationAgreements?.list() || []
         };
         PersistentStorage.setItem('consensus_game_state', JSON.stringify(data));
     },
@@ -64,6 +65,7 @@ const gameState = {
             // Saved games from before the activity envelope held plain strings; they cannot be attributed.
             this.gameLog = (parsed.gameLog || []).filter(entry => entry?.actor && entry?.action);
             this.turnIntervalSeconds = parsed.turnIntervalSeconds || 30;
+            window.SimulationAgreements?.replace(parsed.simulationAgreements || []);
         }
         // Update UI after loading
         if (this.updateGameUI) {
@@ -130,6 +132,8 @@ const gameState = {
         this.isTurnExecuting = false;
         this.queuedTurnRequested = false;
         window.SimulationGhosts?.clear();
+        window.SimulationAgreements?.clear();
+        window.dispatchEvent(new CustomEvent('simulationagreementschange'));
 
         if (this.gameLoopInterval) {
             clearInterval(this.gameLoopInterval);
@@ -358,6 +362,62 @@ function simulationDesignKeys() {
     return new Set(proposals.map(proposal => getProposalKey(proposal)).filter(Boolean).map(String));
 }
 
+// The parcels each agent owns, by live and cadastral id alike (designs name cadastral ids).
+function simulationParcelOwners() {
+    const owners = new Map();
+    const fabric = window.LiveParcelFabric;
+    const index = typeof buildAgentOwnedParcelIndex === 'function' ? buildAgentOwnedParcelIndex() : new Map();
+    index.forEach((parcelIds, agentId) => (parcelIds || []).forEach(parcelId => {
+        owners.set(String(parcelId), agentId);
+        try { (fabric?.cadastreIdsForParcelIds?.([parcelId]) || []).forEach(id => owners.set(String(id), agentId)); } catch (_) { }
+    }));
+    return owners;
+}
+
+// This turn's designs go to their parcels' owners, and every open agreement gets this turn's
+// decisions (simulation-agreements.js). Executions, refusals and lapses are activity.
+function settleSimulationAgreements(newDesignKeys) {
+    const model = window.SimulationAgreements;
+    if (!model || typeof proposalStorage === 'undefined') return;
+    const turn = gameState.currentTurn;
+    const at = gameState.currentDateTime.toISOString();
+    const agents = agentStorage.getAllAgents();
+    const agentById = new Map(agents.map(agent => [agent.id, agent]));
+    const owners = simulationParcelOwners();
+    let list = model.list();
+    newDesignKeys.forEach(proposalId => {
+        const proposal = proposalStorage.getProposal(proposalId);
+        if (!proposal) return;
+        const proposer = agents.find(agent => (agent.proposalsCreated || []).map(String).includes(proposalId));
+        list = [...list, model.open({ proposalId, proposerId: proposer?.id || null, parcelIds: proposal.cadastreParcelIds || [],
+            ownersOf: parcelId => owners.get(parcelId) || null, turn, at })];
+    });
+    const humans = new Set(agents.filter(agent => agent.userControlled).map(agent => agent.id));
+    const { agreements, events } = model.decideTurn(list, { turn, at, rng: Math.random, decides: ownerId => !humans.has(ownerId) });
+    model.replace(agreements);
+    const byId = new Map(agreements.map(agreement => [agreement.proposalId, agreement]));
+    const cityActor = { id: model.CITY, name: translateGameText('simulation.agreements.city', 'The city'), aiControlled: true };
+    events.forEach(event => {
+        if (event.type === 'approve') return;
+        const agreement = byId.get(event.proposalId);
+        const actor = (event.ownerId === model.CITY ? cityActor : agentById.get(event.ownerId))
+            || agentById.get(agreement?.proposerId) || cityActor;
+        const link = buildProposalLogLinkAgent(event.proposalId);
+        const html = {
+            execute: `${link}: ${translateGameText('simulation.agreements.executed', 'every owner approved; the design is executed.')}`,
+            refuse: `${link}: ${translateGameText('simulation.agreements.refused', 'an owner refused the design.')}`,
+            expire: `${link}: ${translateGameText('simulation.agreements.expired', 'the owners did not all decide in time.')}`,
+            supersede: `${link}: ${translateGameText('simulation.agreements.superseded', 'another design was executed on its land.')}`
+        }[event.type];
+        const type = { execute: 'execute', refuse: 'cancel', expire: 'expire', supersede: 'expire' }[event.type];
+        gameState.addActivityEvent(window.AgentActionEngine.createActivityEvent({
+            actor, action: { type }, outcome: { ok: true, messageHtml: html },
+            source: 'simulation', occurredAt: at, turn
+        }), { skipPersist: true, skipUiUpdate: true });
+    });
+    if (events.some(event => event.type === 'execute')) window.dispatchEvent(new CustomEvent('simulationagreementschange'));
+}
+
 async function executeGameTurn() {
     if (gameState.isTurnExecuting) {
         gameState.queuedTurnRequested = true;
@@ -462,8 +522,9 @@ async function executeGameTurn() {
             }
         }
 
-        window.SimulationGhosts?.recordTurn(gameState.currentTurn,
-            [...simulationDesignKeys()].filter(key => !designKeysBefore.has(key)));
+        const newDesignKeys = [...simulationDesignKeys()].filter(key => !designKeysBefore.has(key));
+        window.SimulationGhosts?.recordTurn(gameState.currentTurn, newDesignKeys);
+        settleSimulationAgreements(newDesignKeys);
 
         gameState.save();
         gameState.updateGameUI();

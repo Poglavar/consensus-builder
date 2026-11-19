@@ -1228,6 +1228,14 @@ The Activity panel presents Events, Actors and Watched areas. An actor, agreemen
 selects related events; it does not change their identity or source. Watched areas are subscriptions
 to changes in defined areas and retain their own city context.
 
+### Simulated agreement
+
+An owners' decision over an agent design inside the local simulation: the owning agents of its
+parcels, and the city for unowned ones, approve or refuse over the turns, and the design is executed
+on the simulated date of the turn the last approval came. It belongs to the saved game state, is
+never minted, published or attested, and executing it applies nothing. The Agent city draws executed
+designs, simulated or published, as they stood on a day ([Agent city](agent-city.md)).
+
 
 ## Feedback report
 

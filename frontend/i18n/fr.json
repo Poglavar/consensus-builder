@@ -9328,5 +9328,29 @@
         "stream": "La réponse a été interrompue. Vous pouvez réessayer.",
         "mapCommand": "La commande de la carte n’a pas pu être effectuée. Les changements du projet n’ont pas été appliqués."
       }
-  }
+  },
+    "agentCity": {
+        "title": "Ville des agents",
+        "openSimulation": "Ville des agents de cette simulation",
+        "source": "Accords de qui",
+        "sourceServer": "Agents publiés",
+        "sourceSimulation": "Cette simulation",
+        "back": "Jour d'exécution précédent",
+        "forward": "Jour d'exécution suivant",
+        "day": "Jour d'exécution",
+        "loading": "Chargement des accords exécutés…",
+        "error": "Les accords exécutés n'ont pas pu être chargés.",
+        "emptySimulation": "Aucun projet de cette simulation n'a encore été exécuté. Les propriétaires décident au fil des tours.",
+        "emptyServer": "Aucun accord d'agents n'a encore été exécuté dans cette ville.",
+        "summary": "Projets en place : {{standing}} · exécutés {{executed}} sur {{total}}"
+    },
+    "simulation": {
+        "agreements": {
+            "city": "La ville",
+            "executed": "tous les propriétaires ont approuvé ; le projet est exécuté.",
+            "refused": "un propriétaire a refusé le projet.",
+            "expired": "les propriétaires n'ont pas tous décidé à temps.",
+            "superseded": "un autre projet a été exécuté sur son terrain."
+        }
+    }
 }

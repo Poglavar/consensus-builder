@@ -531,11 +531,42 @@
                 <span class="map-shell-sr-only" data-i18n-key="mapShell.simulation.speed">Turn every</span>
                 <select id="simulation-bar-speed"></select>
             </label>
+            <button type="button" id="simulation-bar-city" class="btn btn-icon" data-agent-city-open="simulation"
+                aria-label="Agent city of this simulation" title="Agent city of this simulation"
+                data-i18n-key="agentCity.openSimulation" data-i18n-attr="aria-label,title">
+                <i class="fas fa-city" aria-hidden="true"></i>
+            </button>
             <button type="button" id="simulation-bar-stop" class="btn btn-icon" aria-label="Stop simulation" title="Stop simulation"
                 data-i18n-key="mapShell.simulation.stop" data-i18n-attr="aria-label,title">
                 <i class="fas fa-stop" aria-hidden="true"></i>
             </button>
             <div class="simulation-bar__progress" aria-hidden="true"><div class="simulation-bar__progress-fill"></div></div>
+        </section>
+        <!-- Agent city (js/agent-city.js): executed agent designs at a date, drawn without being applied. -->
+        <section id="agent-city" class="buildout-clock agent-city" aria-labelledby="agent-city-title" hidden>
+            <div class="buildout-clock__head">
+                <i class="fas fa-city" aria-hidden="true"></i>
+                <h2 id="agent-city-title" class="buildout-clock__title" data-i18n-key="agentCity.title">Agent city</h2>
+                <button type="button" id="agent-city-close" class="close-circle-btn" aria-label="Close" title="Close"
+                    data-i18n-key="common.close" data-i18n-attr="aria-label,title">×</button>
+            </div>
+            <div class="cb-segmented agent-city__source" role="group" aria-label="Whose agreements" data-i18n-key="agentCity.source" data-i18n-attr="aria-label">
+                <button type="button" class="cb-segmented__option" data-agent-city-source="server" aria-pressed="true"
+                    data-i18n-key="agentCity.sourceServer">Published agents</button>
+                <button type="button" class="cb-segmented__option" data-agent-city-source="simulation" aria-pressed="false"
+                    data-i18n-key="agentCity.sourceSimulation">This simulation</button>
+            </div>
+            <div class="buildout-clock__row">
+                <button type="button" id="agent-city-back" class="btn btn-icon" aria-label="Previous execution day" title="Previous execution day"
+                    data-i18n-key="agentCity.back" data-i18n-attr="aria-label,title"><i class="fas fa-backward-step" aria-hidden="true"></i></button>
+                <button type="button" id="agent-city-play" class="btn btn-icon" aria-pressed="false" aria-label="Play" title="Play"><i class="fas fa-play" aria-hidden="true"></i></button>
+                <button type="button" id="agent-city-forward" class="btn btn-icon" aria-label="Next execution day" title="Next execution day"
+                    data-i18n-key="agentCity.forward" data-i18n-attr="aria-label,title"><i class="fas fa-forward-step" aria-hidden="true"></i></button>
+                <output id="agent-city-date" class="buildout-clock__month" for="agent-city-slider"></output>
+            </div>
+            <input type="range" id="agent-city-slider" class="buildout-clock__slider" min="0" max="0" step="1" value="0"
+                aria-label="Execution day" data-i18n-key="agentCity.day" data-i18n-attr="aria-label">
+            <p id="agent-city-summary" class="buildout-clock__summary sheet-note" aria-live="polite"></p>
         </section>
         <!-- Hatch fill of designs under construction on the 2D map (css/buildout-clock.css colours it). -->
         <svg class="buildout-defs" width="0" height="0" aria-hidden="true" focusable="false">
@@ -1226,6 +1257,10 @@
         <section id="activity-sheet" class="map-sheet map-sheet--dock" role="dialog" aria-labelledby="activity-sheet-title" hidden>
             <div class="map-sheet-header">
                 <h2 id="activity-sheet-title" class="map-sheet-title" data-i18n-key="mapShell.activity">Activity</h2>
+                <button type="button" id="activity-agent-city" class="btn btn-icon" data-agent-city-open="server"
+                    aria-label="Agent city" title="Agent city" data-i18n-key="agentCity.title" data-i18n-attr="aria-label,title">
+                    <i class="fas fa-city" aria-hidden="true"></i>
+                </button>
                 <button type="button" id="activity-panel-expand" class="btn btn-icon"
                     aria-label="Expand activity panel" title="Expand activity panel" aria-controls="activity-sheet"
                     aria-expanded="false" data-i18n-key="activityPanel.expand" data-i18n-attr="aria-label,title">
@@ -2426,7 +2461,11 @@
             'js/agents.js?v=20261020-profile-offers',
             'js/agent-bubble-placement.js',
             'js/ui/simulation-bar.js',
+            'js/design-display.js',
             'js/simulation-ghosts.js',
+            'js/simulation-agreements.js',
+            'js/agent-building-design.js',
+            'js/agent-city.js',
             'js/agent-bubbles.js',
             'js/game.js',
             // bundle:start activity-structures-transit

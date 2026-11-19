@@ -9349,5 +9349,29 @@
         "stream": "La respuesta se interrumpió. Puedes volver a intentarlo.",
         "mapCommand": "No se pudo completar el comando del mapa. No se aplicaron los cambios del diseño."
       }
-  }
+  },
+    "agentCity": {
+        "title": "Ciudad de los agentes",
+        "openSimulation": "Ciudad de los agentes de esta simulación",
+        "source": "Acuerdos de quién",
+        "sourceServer": "Agentes publicados",
+        "sourceSimulation": "Esta simulación",
+        "back": "Día de ejecución anterior",
+        "forward": "Día de ejecución siguiente",
+        "day": "Día de ejecución",
+        "loading": "Cargando acuerdos ejecutados…",
+        "error": "No se pudieron cargar los acuerdos ejecutados.",
+        "emptySimulation": "Aún no se ha ejecutado ningún diseño de esta simulación. Los propietarios deciden a lo largo de los turnos.",
+        "emptyServer": "Aún no se ha ejecutado ningún acuerdo de agentes en esta ciudad.",
+        "summary": "Diseños en pie: {{standing}} · ejecutados {{executed}} de {{total}}"
+    },
+    "simulation": {
+        "agreements": {
+            "city": "La ciudad",
+            "executed": "todos los propietarios aprobaron; el diseño está ejecutado.",
+            "refused": "un propietario rechazó el diseño.",
+            "expired": "los propietarios no decidieron todos a tiempo.",
+            "superseded": "se ejecutó otro diseño en su terreno."
+        }
+    }
 }

@@ -277,6 +277,7 @@
     let waterGroup = null; // real-world sea, lakes and rivers (OpenFreeMap tiles), toggleable scenery
     let greenGroup = null; // real-world lawns, parks, meadows and woods (OpenFreeMap tiles), toggleable scenery
     let proposalInteractionGroup = null; // selectable applied/unapplied proposal surfaces
+    let designDisplayGroup = null; // designs drawn without being applied (design-display.js)
     let proposalDraftGroup = null; // source-vs-draft comparison overlay; never mutates proposal state
     let compareUnappliedGroup = null; // what the Compare tab's plan sides draw of members not on the map; drawn in the compare passes only
     let latestProposalDraftPreviewDetail = null;
@@ -2933,12 +2934,10 @@
             if (proposal.parcelLayout && !proposal.buildingProposal && !proposal.structureProposal
                 && !proposal.roadProposal) return;
             // Parked (unapplied) ideas stay off the map entirely; they only render while
-            // selected, as a preview of where they would land when applied, or as a simulation
-            // ghost for a few turns after an agent drew them (simulation-ghosts.js).
+            // selected, as a preview of where they would land when applied. Simulation ghosts
+            // and the Agent city draw theirs in their own look (rebuildDesignDisplay3D).
             const applied = proposalApplied3D(proposal);
-            const selected = !!selectedKey && String(selectedKey) === proposalId;
-            const ghostStrength = applied || selected ? 0 : (window.SimulationGhosts?.strengthOf?.(proposalId) || 0);
-            if (!applied && !selected && !ghostStrength) return;
+            if (!applied && proposalId !== selectedKey) return;
             // A building is picked as its volume; the design's ground (a road, plots, a park) and
             // the parcels of a design that draws nothing lie flat. Extruding those too put an
             // unseen block over the ground that took the clicks meant for what stands on it.
@@ -2994,22 +2993,7 @@
                     });
                 });
             });
-            if (ghostStrength) {
-                // Fades with the turns. Facade materials can be shared, so the ghost gets copies.
-                wrapper.traverse(object => {
-                    if (!object.material) return;
-                    const faded = (Array.isArray(object.material) ? object.material : [object.material]).map(material => {
-                        const copy = material.clone();
-                        copy.transparent = true;
-                        copy.opacity = (Number(material.opacity) || 1) * ghostStrength;
-                        copy.depthWrite = false;
-                        return copy;
-                    });
-                    object.material = Array.isArray(object.material) ? faded : faded[0];
-                    markOwnedMaterial(object, object.material);
-                });
-            }
-            if (!applied && selected) {
+            if (!applied && selectedKey && String(selectedKey) === proposalId) {
                 wrapper.traverse(object => {
                     const materialsToHighlight = Array.isArray(object.material) ? object.material : [object.material].filter(Boolean);
                     materialsToHighlight.forEach(material => {
@@ -3027,6 +3011,106 @@
                 console.warn('[3D] proposal pick surface failed; skipping one proposal', proposalError);
             }
         });
+    }
+
+    // Designs drawn without being applied (design-display.js: simulation ghosts, the Agent city), in
+    // their own look: lawn and trees, paving, water, building volumes. Nothing is applied or carved:
+    // the ground and the existing buildings under them stay. A ghost fades with its turns.
+    // A part's feature keeps its generated decorations between rebuilds (designDisplayCache).
+    const designDisplayCache = new Map();
+
+    function designDisplayFeature(part, key, index) {
+        const cacheKey = `${key}:${index}:${part.kind}`;
+        let feature = designDisplayCache.get(cacheKey);
+        if (feature?.geometry !== part.feature.geometry) {
+            feature = { type: 'Feature', properties: { ...(part.feature.properties || {}) }, geometry: part.feature.geometry };
+            if (part.kind === 'park') window.ensureParkDecorations?.(feature);
+            if (part.kind === 'square') window.ensureSquareDecorations?.(feature);
+            designDisplayCache.set(cacheKey, feature);
+        }
+        return { feature, cacheKey };
+    }
+
+    function addDesignDisplayPart3D(part, feature, target) {
+        if (part.kind === 'building') {
+            createBuildingSlices(feature, part.heightM || estimateBuildingHeightMeters(feature), buildingMaterials.solid, target, feature);
+        } else if (part.kind === 'park') {
+            buildParks3D(target, target, [feature]);
+        } else if (part.kind === 'square') {
+            buildSquares3D(target, target, [feature]);
+        } else if (part.kind === 'lake') {
+            // Flat water over the ground: a display lake digs no basin.
+            const water = new THREE.MeshPhongMaterial({ color: 0x3fa7f5, specular: 0x1b6fa8, shininess: 50,
+                polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -2 });
+            polygonFeatureToMeshes(feature, water, 0.08, 0).forEach(mesh => { markOwnedMaterial(mesh, water); target.add(mesh); });
+        } else {
+            addDraftPreviewFeature3D(feature, target, 'source', 'proposal');
+        }
+    }
+
+    // Shared materials (trees, paving) are copied before fading; a building's facade material is
+    // its own (createBuildingSlices), so it fades in place.
+    function fadeDesignDisplayObject(object, opacity) {
+        const own = object.userData.cbFacadeOwned === true;
+        const fade = material => {
+            const faded = own ? material : material.clone();
+            faded.transparent = true;
+            faded.opacity = (typeof material.opacity === 'number' ? material.opacity : 1) * opacity;
+            faded.depthWrite = false;
+            return faded;
+        };
+        const faded = (Array.isArray(object.material) ? object.material : [object.material]).map(fade);
+        object.material = Array.isArray(object.material) ? faded : faded[0];
+        if (!own) markOwnedMaterial(object, object.material);
+    }
+
+    function rebuildDesignDisplay3D() {
+        if (!isActive || !designDisplayGroup) return;
+        clearGroupChildren(designDisplayGroup);
+        const display = window.DesignDisplay;
+        const kept = new Set();
+        (display?.entries() || []).forEach(entry => {
+            try {
+                const opacity = typeof entry.opacity === 'number' ? entry.opacity : 1;
+                if (!(opacity > 0)) return;
+                const wrapper = new THREE.Group();
+                // createBuildingSlices tints a planned building by its own hue, as applied designs are.
+                wrapper.userData.buildingFamily = 'planned';
+                designDisplayGroup.add(wrapper);
+                display.displayParts(entry.design).forEach((part, index) => {
+                    const { feature, cacheKey } = designDisplayFeature(part, entry.key, index);
+                    kept.add(cacheKey);
+                    addDesignDisplayPart3D(part, feature, wrapper);
+                });
+                wrapper.traverse(object => {
+                    object.userData.designDisplayKey = entry.key;
+                    if (opacity < 1 && object.material) fadeDesignDisplayObject(object, opacity);
+                });
+            } catch (error) {
+                console.warn(`[${new Date().toISOString()}] [3D] design display skipped one design`, entry?.key, error);
+            }
+        });
+        [...designDisplayCache.keys()].forEach(cacheKey => { if (!kept.has(cacheKey)) designDisplayCache.delete(cacheKey); });
+        invalidateThreeView();
+    }
+
+    function shownInScene(object) {
+        for (let node = object; node; node = node.parent) if (node.visible === false) return false;
+        return true;
+    }
+
+    // The drawn design under a click, unless a building standing in front of it takes the click.
+    function pickDesignDisplayKey(evt) {
+        if (!designDisplayGroup?.children.length || !renderer || !camera) return null;
+        const rect = renderer.domElement.getBoundingClientRect();
+        const ndc = new THREE.Vector2(((evt.clientX - rect.left) / rect.width) * 2 - 1, -((evt.clientY - rect.top) / rect.height) * 2 + 1);
+        const raycaster = new THREE.Raycaster();
+        raycaster.setFromCamera(ndc, camera);
+        const hit = raycaster.intersectObject(designDisplayGroup, true)
+            .find(item => item.object.userData?.designDisplayKey && shownInScene(item.object));
+        if (!hit) return null;
+        const blocker = buildingGroup ? raycaster.intersectObject(buildingGroup, true).find(item => shownInScene(item.object)) : null;
+        return blocker && blocker.distance < hit.distance ? null : hit.object.userData.designDisplayKey;
     }
 
     // Park lawns and green proposal ground: the procedural grass pattern (three-grass.js), in true
@@ -10669,6 +10753,8 @@
         waterGroup = new THREE.Group();
         greenGroup = new THREE.Group();
         proposalInteractionGroup = new THREE.Group();
+        designDisplayGroup = new THREE.Group();
+        designDisplayGroup.name = 'DesignDisplay';
         proposalDraftGroup = new THREE.Group();
         compareUnappliedGroup = new THREE.Group();
         compareUnappliedGroup.name = 'CompareUnapplied';
@@ -10700,6 +10786,7 @@
         scene.add(waterGroup);
         scene.add(greenGroup);
         scene.add(proposalInteractionGroup);
+        scene.add(designDisplayGroup);
         scene.add(proposalDraftGroup);
         scene.add(compareUnappliedGroup);
         existingTransitAlignmentGroup = null; // rebuilt from the cached city sources below
@@ -10788,6 +10875,7 @@
         rebuildGreenOnly();
         try { rebuildLifeOnly(); } catch (error) { console.warn('[3D life] build failed', error); }
         rebuildProposalInteraction3D();
+        rebuildDesignDisplay3D();
         rebuildProposalDraftPreview3D();
 
         // Camera framing that preserves current 2D view scale and center
@@ -11388,6 +11476,7 @@
         lakeGroup = null;
         stationGroup = null;
         proposalInteractionGroup = null;
+        designDisplayGroup = null;
         proposalDraftGroup = null;
         buildingModeControlsEl?.remove();
         buildingRadiusPreview = null;
@@ -11796,8 +11885,12 @@
     document.addEventListener('proposalCreated', () => {
         if (isActive) rebuildProposalInteraction3D();
     });
-    window.addEventListener('simulationghostschange', () => {
-        if (isActive) rebuildProposalInteraction3D();
+    // Simulation ghosts and the Agent city (design-display.js): one rebuild per task of changes.
+    let designDisplayQueued = false;
+    window.addEventListener('designdisplaychange', () => {
+        if (!isActive || designDisplayQueued) return;
+        designDisplayQueued = true;
+        Promise.resolve().then(() => { designDisplayQueued = false; rebuildDesignDisplay3D(); });
     });
 
     function realisticActive() {
@@ -11949,6 +12042,9 @@
             clickDownXY = null;
             if (moved > 6) return;
         }
+        // A design drawn without being applied (a simulation ghost, the Agent city) opens itself.
+        const displayKey = window.multiParcelSelection?.isActive ? null : pickDesignDisplayKey(evt);
+        if (displayKey && window.DesignDisplay?.openKey(displayKey, { view: '3d' })) return;
         const subject = realisticLayerActive ? null : pickMapSubjectFromEvent(evt);
         // A building, a massing or a design stands on the parcel under the point the ray met it
         // at. The slab the ray would go on to reach behind a tall one can be another parcel.

@@ -9328,5 +9328,29 @@
         "stream": "A resposta foi interrompida. Pode tentar novamente.",
         "mapCommand": "Não foi possível concluir o comando do mapa. As alterações do projeto não foram aplicadas."
       }
-  }
+  },
+    "agentCity": {
+        "title": "Cidade dos agentes",
+        "openSimulation": "Cidade dos agentes desta simulação",
+        "source": "Acordos de quem",
+        "sourceServer": "Agentes publicados",
+        "sourceSimulation": "Esta simulação",
+        "back": "Dia de execução anterior",
+        "forward": "Próximo dia de execução",
+        "day": "Dia de execução",
+        "loading": "Carregando acordos executados…",
+        "error": "Não foi possível carregar os acordos executados.",
+        "emptySimulation": "Nenhum projeto desta simulação foi executado ainda. Os proprietários decidem ao longo dos turnos.",
+        "emptyServer": "Nenhum acordo de agentes foi executado nesta cidade ainda.",
+        "summary": "Projetos de pé: {{standing}} · executados {{executed}} de {{total}}"
+    },
+    "simulation": {
+        "agreements": {
+            "city": "A cidade",
+            "executed": "todos os proprietários aprovaram; o projeto está executado.",
+            "refused": "um proprietário recusou o projeto.",
+            "expired": "os proprietários não decidiram todos a tempo.",
+            "superseded": "outro projeto foi executado no seu terreno."
+        }
+    }
 }

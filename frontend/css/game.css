@@ -473,13 +473,24 @@
     .simulation-bar__status { order: 1; flex-basis: 100%; text-align: center; }
 }
 
-/* Simulation ghosts (js/simulation-ghosts.js): designs the agents drew in the last few turns, drawn
-   on the 2D map without being applied. Leaflet sets each ghost's opacity from its strength; a new
-   one fades in. */
-.simulation-ghost {
-    stroke: var(--cb-map-simulation-ghost);
-    fill: var(--cb-map-simulation-ghost);
-}
-.simulation-ghost--new { animation: simulation-ghost-appear 600ms ease-out; }
-@keyframes simulation-ghost-appear { from { opacity: 0; } to { opacity: 1; } }
-@media (prefers-reduced-motion: reduce) { .simulation-ghost--new { animation: none; } }
+/* Designs drawn without being applied (js/design-display.js): simulation ghosts and the Agent city,
+   in each design's own look. Leaflet paths take these classes over their presentation attributes.
+   A ghost fades by turns: its pane is one of three strength steps. A new one fades in. */
+.leaflet-pane.design-display-pane { z-index: var(--cb-z-map-pane-design-display); }
+.leaflet-pane.design-display-pane--2 { opacity: 0.67; }
+.leaflet-pane.design-display-pane--1 { opacity: 0.33; }
+body.map-edit-locked .leaflet-pane.design-display-pane { display: none; }
+.design-display--park { fill: var(--cb-map-display-park); fill-opacity: 0.65; stroke: var(--cb-map-display-park-edge); }
+.design-display--square { fill: var(--cb-map-display-square); fill-opacity: 0.7; stroke: var(--cb-map-display-square-edge); }
+.design-display--lake { fill: var(--cb-map-display-lake); fill-opacity: 0.88; stroke: var(--cb-map-display-lake-shore); stroke-width: 3; }
+.design-display--building { fill: var(--cb-planning-proposed); fill-opacity: 0.85; stroke: var(--cb-map-display-building-edge); }
+.design-display--ground { fill: var(--cb-map-display-ground); fill-opacity: 0.6; stroke: var(--cb-map-display-square-edge); }
+.design-display--fresh { animation: design-display-appear 600ms ease-out; }
+@keyframes design-display-appear { from { opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .design-display--fresh { animation: none; } }
+
+/* The Agent city (js/agent-city.js) is a time-control card, styled by css/buildout-clock.css. Both it
+   and the simulation bar sit at the bottom centre, so the bar steps aside while the city is open. */
+body.agent-city-open .simulation-bar { display: none; }
+.agent-city .buildout-clock__head > .fas { color: var(--cb-planning-proposed); }
+.agent-city__source { align-self: flex-start; }

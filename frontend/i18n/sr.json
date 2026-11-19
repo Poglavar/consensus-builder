@@ -9373,5 +9373,29 @@
         "stream": "Одговор је прекинут. Покушајте поново.",
         "mapCommand": "Команда мапе није могла да се доврши. Промене дизајна нису примењене."
       }
-  }
+  },
+    "agentCity": {
+        "title": "Grad agenata",
+        "openSimulation": "Grad agenata ove simulacije",
+        "source": "Čiji sporazumi",
+        "sourceServer": "Objavljeni agenti",
+        "sourceSimulation": "Ova simulacija",
+        "back": "Prethodni dan izvršenja",
+        "forward": "Sledeći dan izvršenja",
+        "day": "Dan izvršenja",
+        "loading": "Učitavanje izvršenih sporazuma…",
+        "error": "Izvršeni sporazumi nisu mogli da se učitaju.",
+        "emptySimulation": "Nijedan dizajn ove simulacije još nije izvršen. Vlasnici odlučuju tokom poteza.",
+        "emptyServer": "U ovom gradu još nije izvršen nijedan sporazum agenata.",
+        "summary": "Stoji dizajna: {{standing}} · izvršeno {{executed}} od {{total}}"
+    },
+    "simulation": {
+        "agreements": {
+            "city": "Grad",
+            "executed": "svi vlasnici su odobrili; dizajn je izvršen.",
+            "refused": "jedan vlasnik je odbio dizajn.",
+            "expired": "vlasnici nisu svi odlučili na vreme.",
+            "superseded": "na njegovom zemljištu izvršen je drugi dizajn."
+        }
+    }
 }
