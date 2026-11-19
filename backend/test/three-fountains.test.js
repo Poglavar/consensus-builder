@@ -7,17 +7,46 @@ const require = createRequire(import.meta.url);
 const fountains = require('../../frontend/js/three-fountains.js');
 const atmosphere = require('../../frontend/js/three-atmosphere.js');
 const THREE = require('three');
+const turf = require('@turf/turf');
 
 describe('fountains', () => {
     it('size the basin, water, column and jet from the radius, within limits', () => {
         const small = fountains.fountainParts(2), big = fountains.fountainParts(8);
         expect(small.basin.radius).toBe(2);
         expect(small.water.radius).toBeLessThan(small.basin.radius);
-        expect(small.water.z).toBeGreaterThan(small.basin.height - 1e-9);
+        expect(small.water.z).toBeLessThan(small.basin.height);
         expect(small.jet.z).toBeCloseTo(small.column.z + small.column.height, 9);
         expect(big.jet.height).toBeGreaterThan(small.jet.height);
         expect(fountains.fountainParts(500).basin.radius).toBe(15);
         expect(fountains.fountainParts(undefined).basin.radius).toBe(fountains.PLACED_RADIUS_M);
+    });
+
+    it('leaves an open water surface inside the stone rim', () => {
+        const layer = fountains.create(THREE, {
+            fountains: [{ x: 0, y: 0, radiusM: 8 }], waterMaterial: new THREE.MeshPhongMaterial(), clock: atmosphere.createState()
+        });
+        const [basin, water] = [layer.meshes.basin, layer.meshes.water];
+        const ray = x => new THREE.Raycaster(new THREE.Vector3(x, 0.2, 2), new THREE.Vector3(0, 0, -1));
+        const inside = ray(4);
+        const waterHit = inside.intersectObject(water)[0];
+        const basinHit = inside.intersectObject(basin)[0];
+        expect(waterHit.point.z - basinHit.point.z).toBeGreaterThan(0.2);
+        expect(ray(7.6).intersectObject(basin)[0].point.z).toBeCloseTo(0.45);
+        expect(ray(7.6).intersectObject(water)).toHaveLength(0);
+        layer.dispose();
+        water.material.dispose();
+    });
+
+    it('removes the second water surface for a mapped basin and keeps surrounding ponds', () => {
+        const centre = [71.4262, 51.12895];
+        const basin = turf.circle(centre, 8, { units: 'meters' }).geometry;
+        const pond = turf.circle(centre, 23, { units: 'meters' }).geometry;
+        const neighbouringPond = turf.circle([71.4268, 51.12895], 8, { units: 'meters' }).geometry;
+        const spots = [[...centre, 8]];
+        expect(fountains.withoutMappedBasins(basin, spots, turf)).toBeNull();
+        expect(fountains.withoutMappedBasins(pond, spots, turf)).toBe(pond);
+        expect(fountains.withoutMappedBasins({ type: 'MultiPolygon', coordinates: [basin.coordinates, neighbouringPond.coordinates] }, spots, turf))
+            .toEqual({ type: 'MultiPolygon', coordinates: [neighbouringPond.coordinates] });
     });
 
     it('draw any number of fountains in four instanced draws, with the scene\'s water', () => {

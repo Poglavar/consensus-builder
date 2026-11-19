@@ -16,20 +16,47 @@
     // A fountain placed in a square has this basin; OSM gives its own (backend osm-street-furniture.js).
     const PLACED_RADIUS_M = 2;
     const RADIUS_LIMITS_M = [1, 15];
+    const BASIN_INNER_RADIUS = 0.88;
+    const BASIN_FLOOR_FRACTION = 0.25;
 
-    // The parts of one fountain (metres, z from its ground): basin (a stone drum), water (a disc on
-    // top of it, leaving a rim), column and jet.
+    // The parts of one fountain (metres, z from its ground): a hollow basin, a recessed water
+    // surface, a column rising from its floor and a jet above the column.
     function fountainParts(radiusM) {
         const r = Math.min(RADIUS_LIMITS_M[1], Math.max(RADIUS_LIMITS_M[0], Number(radiusM) || PLACED_RADIUS_M));
         const basinH = 0.45;
         const columnR = 0.1 + 0.06 * r;
-        const columnH = 0.45 + 0.12 * r;
+        const floorZ = basinH * BASIN_FLOOR_FRACTION;
+        const columnTop = basinH + 0.45 + 0.12 * r;
         return {
             basin: { radius: r, height: basinH, z: 0 },
-            water: { radius: r * 0.88, z: basinH + 0.01 },
-            column: { radius: columnR, height: columnH, z: basinH },
-            jet: { radius: columnR * 1.1, height: 0.9 + 0.3 * r, z: basinH + columnH }
+            water: { radius: r * BASIN_INNER_RADIUS, z: basinH * 0.8 },
+            column: { radius: columnR, height: columnTop - floorZ, z: floorZ },
+            jet: { radius: columnR * 1.1, height: 0.9 + 0.3 * r, z: columnTop }
         };
+    }
+
+    // Vector tiles can also show a mapped fountain as ground water. Suppress that second
+    // surface when the polygon matches the basin's centre and size. A jet in a larger pond
+    // leaves the pond intact, as do neighbouring parts of a multipolygon.
+    function withoutMappedBasins(geometry, fountains, turf) {
+        if (!fountains?.length || !['Polygon', 'MultiPolygon'].includes(geometry?.type)) return geometry;
+        const polygons = geometry.type === 'Polygon' ? [geometry.coordinates] : geometry.coordinates;
+        const remaining = polygons.filter(coordinates => {
+            const piece = turf.polygon(coordinates);
+            const [w, s, e, n] = turf.bbox(piece);
+            const nearby = fountains.filter(([lng, lat]) => lng >= w && lng <= e && lat >= s && lat <= n);
+            if (!nearby.length) return true;
+            const centre = turf.centroid(piece);
+            const area = turf.area(piece);
+            return !nearby.some(([lng, lat, radius]) => {
+                const basinArea = Math.PI * radius ** 2;
+                return area >= 0.5 * basinArea && area <= 1.8 * basinArea
+                    && turf.distance(centre, [lng, lat], { units: 'meters' }) <= radius / 3;
+            });
+        });
+        if (remaining.length === polygons.length) return geometry;
+        if (!remaining.length) return null;
+        return { type: 'MultiPolygon', coordinates: remaining };
     }
 
     // The jet breathes: its height pulses with a phase from where the fountain stands, and its
@@ -51,6 +78,13 @@
         group.name = 'Fountains';
         if (!list.length) return { group, count: 0, dispose() { } };
 
+        // Build the rim and inside wall as one surface. A solid top under the water disc
+        // fights for the same depth at overview distances and shows through as radial wedges.
+        const basin = new THREE.LatheGeometry([
+            [0, 0], [1, 0], [1, 1], [BASIN_INNER_RADIUS, 1],
+            [BASIN_INNER_RADIUS, BASIN_FLOOR_FRACTION], [0, BASIN_FLOOR_FRACTION]
+        ].map(([radius, height]) => new THREE.Vector2(radius, height)), 32);
+        basin.rotateX(Math.PI / 2);
         const drum = new THREE.CylinderGeometry(1, 1, 1, 32);
         drum.rotateX(Math.PI / 2);
         drum.translate(0, 0, 0.5);
@@ -69,7 +103,7 @@
         spray.customProgramCacheKey = () => 'cb-fountain-jet';
 
         const meshes = {
-            basin: new THREE.InstancedMesh(drum, stone, list.length),
+            basin: new THREE.InstancedMesh(basin, stone, list.length),
             water: new THREE.InstancedMesh(disc, waterMaterial, list.length),
             column: new THREE.InstancedMesh(drum, stone, list.length),
             jet: new THREE.InstancedMesh(cone, spray, list.length)
@@ -99,11 +133,11 @@
         meshes.jet.renderOrder = 8000;
 
         function dispose() {
-            drum.dispose(); disc.dispose(); cone.dispose();
+            basin.dispose(); drum.dispose(); disc.dispose(); cone.dispose();
             stone.dispose(); spray.dispose();
         }
         return { group, count: list.length, meshes, dispose };
     }
 
-    return { create, fountainParts, PLACED_RADIUS_M };
+    return { create, fountainParts, withoutMappedBasins, PLACED_RADIUS_M };
 });

@@ -7201,6 +7201,7 @@
                 nearbyFurnitureFetching = false;
                 console.log(`[3D] Loaded ${nearbyFurniture.fountains.length} fountains and ${nearbyFurniture.lamps.length} street lamps from OSM`);
                 rebuildFurnitureOnly();
+                rebuildWaterOnly(); // Once fountain locations arrive, remove their duplicate water polygons.
                 ensureNearbyFurniture();
             })
             .catch(err => {
@@ -7855,7 +7856,9 @@
         }
         for (const piece of nearbyWater) {
             try {
-                polygonFeatureToMeshes({ type: 'Feature', geometry: piece.geometry }, waterMaterial, 0.04, 0)
+                const geometry = window.__threeFountains.withoutMappedBasins(piece.geometry, nearbyFurniture?.fountains, turf);
+                if (!geometry) continue;
+                polygonFeatureToMeshes({ type: 'Feature', geometry }, waterMaterial, 0.04, 0)
                     .forEach(mesh => { mesh.renderOrder = window.__threeGround.ORDER.water; mesh.userData.water = piece.kind; waterGroup.add(mesh); });
             } catch (error) {
                 console.warn('[3D] water piece skipped', piece.kind, error);
