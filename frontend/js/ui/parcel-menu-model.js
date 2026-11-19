@@ -137,6 +137,10 @@
         const id = parcelId === undefined || parcelId === null ? '' : String(parcelId);
         if (p.producedByProposalId && p.readjustmentPiece?.role === 'plot') return 'plotPiece';
         if (p.producedByProposalId && p.readjustmentPiece?.role === 'remainder') return 'remainder';
+        // The rest of a parcel that roads or designs cut from: the parcel itself, under its own id.
+        const anchors = Array.isArray(p.cadastreParcelIds) ? p.cadastreParcelIds.map(String) : [];
+        const cut = p.liveParcelDerivation || p.cutByProposalIds?.length;
+        if (cut && !p.producedByProposalId && anchors.length === 1 && anchors[0] === id) return 'source';
         if (p.producedByProposalId || p.liveParcelDerivation || p.formedByProposalIds?.length) return 'formed';
         if (p.estimated === true) return 'estimated';
         if (p.cadastralPart === true) return 'sourcePart';

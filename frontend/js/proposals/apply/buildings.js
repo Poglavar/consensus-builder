@@ -375,10 +375,12 @@
         };
 
         // Each host's remainder goes back to its owner (§14.2). A remainder of another
-        // formation keeps that formation's identity; only cadastral remainders become this
-        // building formation's children.
+        // formation keeps that formation's identity; the rest of a parcel's own ground stays the
+        // parcel's ground (parcel-arrangement.js groundRemainders: the largest part keeps its id,
+        // no producer), never this building's output.
         const ownRemainders = [];
         const foreignRemainders = [];
+        const groundRests = [];
         const allocateForeignIndex = typeof this._createForeignIndexAllocator === 'function'
             ? this._createForeignIndexAllocator(options)
             : null;
@@ -432,6 +434,10 @@
                 area: _calculateGeoJsonArea(geometry)
             })).filter(part => ground.isGround(turfRef, asPlain(part.geometry))).sort((a, b) => b.area - a.area);
 
+            if (!hostProducer) {
+                groundRests.push(...arrangement.groundRemainders(hostFeature, parts, String(proposalId)));
+                return;
+            }
             if (isForeign && allocateForeignIndex) allocateForeignIndex.reserve(hostIdentity.anchor, hostIdentity.token, hostIdentity.index);
 
             parts.forEach((part, index) => {
@@ -489,12 +495,14 @@
         }
         const children = [buildingParcel, ...ownRemainders, ...foreignRemainders];
         this._assignSyntheticChildIdentities(proposalId, children);
+        // Parcel ground carries its own identity already and is nobody's output.
+        const minted = [...children, ...groundRests];
         // A DERIVED host's largest remainder carries the host's own id (§15b: identity flows
         // with the ground), so _addFeaturesToMap below REPLACES that registry entry with the
         // remainder piece. Hiding such a host by feature would hide the remainder we just
         // minted — a whole parcel of dead, unclickable ground. Hide only hosts whose id no
         // child re-uses.
-        const reusedHostIds = new Set(children
+        const reusedHostIds = new Set(minted
             .map(child => String(_getParcelIdFromFeature(child) || ''))
             .filter(Boolean));
         const consumedHosts = hostFeatures.filter(hostFeature => {
@@ -502,8 +510,8 @@
             return !(hostId && reusedHostIds.has(hostId));
         });
         // The pieces must tile the ground they replace, as a private read checks them.
-        if (!await this._checkFormedPartition(idLabel, proposalData, hostFeatures, children, options)) return { ok: false };
-        await this._addFeaturesToMap(children, true, proposalData, options);
+        if (!await this._checkFormedPartition(idLabel, proposalData, hostFeatures, minted, options)) return { ok: false };
+        await this._addFeaturesToMap(minted, true, proposalData, options);
         const childIds = [];
         const buildingParcelIds = [];
         children.forEach(child => {

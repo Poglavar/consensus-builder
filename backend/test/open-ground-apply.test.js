@@ -216,9 +216,11 @@ describe('open-ground host on a partially surveyed site', () => {
         const remainder = pieces.find(feature => feature !== body);
         expect(remainder.properties.cadastreParcelIds).toEqual(['HR-330264-1']);
         expect(remainder.properties.ownershipDetails.owners[0].name).toBe('Owner HR-330264-1');
-        // The cadastral remainder is also tagged with this proposal as producer, but it is not
-        // part of the square's rendered body and must not be merged into its presentation geometry.
-        expect(remainder.properties.producedByProposalId).toBe('sq-hole');
+        // It is the parcel itself, smaller: its own id, nobody's output, the square recorded as
+        // what cut it; it is not part of the square's rendered body.
+        expect(remainder.properties.parcelId).toBe('HR-330264-1');
+        expect(remainder.properties.producedByProposalId).toBeUndefined();
+        expect(remainder.properties.cutByProposalIds).toEqual(['sq-hole']);
         expect(remainder.properties.structureType).toBeUndefined();
         const visibleSquare = turf.feature(globalThis.squares[0].geometry);
         const visibleBody = turf.feature(body.geometry);
@@ -837,6 +839,8 @@ describe('local shared-plan replacement', () => {
         const parcelId = 'HR-330264-7';
         const ground = { declared: [parcelId], binding: { parcels: [{ parcelId }], coverage: 'complete', source: 'server' } };
         const old = structureRecord('old-park', 'park', rect(0, 0, 20, 20), ground);
+        // The old park was made first: replayed in that order, the new park takes its part of it.
+        old.createdAt = '2026-09-01T00:00:00.000Z';
         const park = structureRecord('new-park', 'park', rect(0, 0, 8, 20), ground);
         const road = {
             proposalId: 'new-road', title: 'New road', goal: 'road-track', applied: false,
@@ -854,7 +858,8 @@ describe('local shared-plan replacement', () => {
         expect(store.getProposal('new-park').applied).toBe(true);
         expect(store.getProposal('new-road').applied).toBe(true);
         expect(fabric.producedBy('old-park').length).toBeGreaterThan(0);
-        expect(fabric.producedBy('new-park').length).toBeGreaterThan(0);
+        // The new park stands on its own park body (the rest of the parcel is nobody's output).
+        expect(fabric.producedBy('new-park').some(piece => piece.properties.structureType === 'park')).toBe(true);
         expect(fabric.producedBy('new-road').length).toBeGreaterThan(0);
     });
 
@@ -1273,5 +1278,53 @@ describe('proposal ground refusal diagnostics', () => {
         });
         await expect(manager.applyProposal(lake.proposalId)).resolves.toBe(false);
         expect(manager.getLastApplyFailureInfo(lake.proposalId)?.code).toBe('proposal-footprint-outside-site');
+    });
+});
+
+// The rest of a parcel is the parcel (docs/vocabulary.md "Remainder"): designs carved from inside a
+// large parcel leave it under its own id, with holes where they stand, nobody's output, the same
+// whichever design was applied first; unapplying them gives the parcel back as it was.
+describe('the rest of a large parcel stays the parcel', () => {
+    const parcelId = 'HR-330264-9';
+    const ground = { declared: [parcelId], binding: { parcels: [{ parcelId }], coverage: 'complete', source: 'server' } };
+    const area = feature => turf.area(feature.type === 'Feature' ? feature : turf.feature(feature));
+    async function applied(order) {
+        const west = structureRecord('park-west', 'park', rect(2, 2, 6, 6), ground);
+        const east = structureRecord('park-east', 'square', rect(20, 20, 24, 24), ground);
+        east.createdAt = west.createdAt;
+        const { manager, fabric } = await harness({ facts: [parcel(parcelId, rect(0, 0, 30, 30))], records: [west, east] });
+        for (const id of order) await expect(manager.applyProposal(id)).resolves.toBe(true);
+        return { manager, fabric };
+    }
+    const shape = fabric => fabric.list().map(feature => [feature.properties.parcelId,
+        feature.properties.producedByProposalId || null, Math.round(area(feature))]).sort((a, b) => a[0].localeCompare(b[0]));
+
+    it('keeps the parcel id on what two designs inside it leave, in either order, and gives it back whole', async () => {
+        const { manager, fabric } = await applied(['park-west', 'park-east']);
+        const rest = fabric.get(parcelId);
+        expect(rest.properties.producedByProposalId).toBeUndefined();
+        expect(rest.properties.cutByProposalIds).toEqual(['park-east', 'park-west']);
+        // One outer ring and a hole for each design.
+        expect(rest.geometry.type).toBe('Polygon');
+        expect(rest.geometry.coordinates).toHaveLength(3);
+        expect(area(rest)).toBeCloseTo(area(rect(0, 0, 30, 30)) - area(rect(2, 2, 6, 6)) - area(rect(20, 20, 24, 24)), 0);
+        expect(rest.properties.ownershipDetails.owners[0].name).toBe(`Owner ${parcelId}`);
+        // Neither design produced it: each produced only its own body.
+        expect(fabric.producedBy('park-west').map(piece => piece.properties.structureType)).toEqual(['park']);
+        expect(fabric.producedBy('park-east').map(piece => piece.properties.structureType)).toEqual(['square']);
+
+        const bothApplied = shape(fabric);
+
+        await expect(manager.unapplyProposal('park-west')).resolves.toBe(true);
+        expect(fabric.get(parcelId).geometry.coordinates).toHaveLength(2);
+        expect(fabric.get(parcelId).properties.cutByProposalIds).toEqual(['park-east']);
+        await expect(manager.unapplyProposal('park-east')).resolves.toBe(true);
+        expect(fabric.list().map(feature => feature.properties.parcelId)).toEqual([parcelId]);
+        expect(area(fabric.get(parcelId))).toBeCloseTo(area(rect(0, 0, 30, 30)), 0);
+        expect(fabric.get(parcelId).properties.cutByProposalIds).toBeUndefined();
+
+        // The other order (a harness of its own: it installs its own globals) forms the same pieces.
+        const reversed = await applied(['park-east', 'park-west']);
+        expect(shape(reversed.fabric)).toEqual(bothApplied);
     });
 });

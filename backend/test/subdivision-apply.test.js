@@ -374,7 +374,10 @@ describe('subdivision of a site partly over parcels (mixed pool)', () => {
         // HR-1's part outside the site is its remainder, with its owner; the open ground has none.
         const rest = pieces.filter(piece => !plots.includes(piece));
         expect(rest).toHaveLength(1);
-        expect(rest[0].properties.readjustmentPiece).toEqual({ role: 'remainder' });
+        // HR-1 itself, smaller: its own id and nobody's output.
+        expect(rest[0].properties.parcelId).toBe('HR-330264-1');
+        expect(rest[0].properties.producedByProposalId).toBeUndefined();
+        expect(rest[0].properties.readjustmentPiece).toBeUndefined();
         expect(rest[0].properties.cadastreParcelIds).toEqual(['HR-330264-1']);
         expect(rest[0].properties.groundIds).toBeUndefined();
         expect(rest[0].properties.ownershipDetails.owners[0].name).toBe('Owner HR-330264-1');

@@ -124,7 +124,9 @@ async function apply({ parents, pool, plots, ownerRows, agents = PEOPLE, corrido
     expect(ok).toBe(true);
     const own = role => apply.added.filter(feature => feature.properties.readjustmentPiece?.role === role);
     const rowOf = feature => storage.getItem(`parcel_${feature.properties.parcelId}_owner`);
-    return { plots: own('plot'), remainders: own('remainder'), storage, agentStore, rowOf };
+    // Ground outside the plots is the parent parcel's rest: nobody's output (vocabulary "Remainder").
+    const remainders = apply.added.filter(feature => !feature.properties.producedByProposalId);
+    return { plots: own('plot'), remainders, storage, agentStore, rowOf };
 }
 
 const single = (ownerKey, name) => ({
@@ -230,6 +232,8 @@ describe('a parcel layout carries ownership over', () => {
             ownerRows: { 'parcel_HR-A_owner': 'agent-ana', 'parcel_HR-B_owner': 'agent-boris' }
         });
         expect(remainders).toHaveLength(1);
+        // It is HR-B itself, smaller, under its own id and its own owner record.
+        expect(remainders[0].properties.parcelId).toBe('HR-B');
         expect(rowOf(remainders[0])).toBe('agent-boris');
         // The remainder is the parent's parcel made smaller: it shows what the parcel showed.
         expect(remainders[0].properties.ownershipDetails).toEqual({

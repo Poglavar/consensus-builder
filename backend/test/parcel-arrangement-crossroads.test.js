@@ -29,7 +29,8 @@ it('forms identical crossroads through MCP, reordered browser replay, and precom
         expect(hits.map(hit => hit.take.id)).toEqual(roads.map(road => road.id));
         // Local draft/published ids must not decide any geometric output or piece identity.
         const renamed = roads.map((road, index) => ({ ...road, id: `local-${index}` }));
-        const geometryOnly = pieces => pieces.map(({ takers, ...piece }) => piece);
+        // takers and cutBy name the takes; everything else (geometry, ids) must not depend on them.
+        const geometryOnly = pieces => pieces.map(({ takers, cutBy, ...piece }) => piece);
         expect(geometryOnly(arrangement.arrangementOf(parcel, 'test-site', renamed).pieces)).toEqual(geometryOnly(baseline));
     }
 });

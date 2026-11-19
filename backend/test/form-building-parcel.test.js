@@ -142,18 +142,19 @@ describe('_formBuildingParcel — footprint mode (default)', () => {
         expect(buildingParcel.properties.cadastreParcelIds).toEqual(['HR-A', 'HR-B']);
         expect(buildingParcel.properties.ownershipDetails.owners[0].name).toBe('Ana');
 
-        // Each host leaves a remainder that KEEPS its owner (§14.2). The u-shaped remainders are
-        // split into contiguous pieces by the identity funnel.
+        // Each host's rest is the host parcel itself (§14.2, vocabulary "Remainder"): one piece
+        // each, under the host's own id, with its owner, and no design's output.
         const remainders = manager.added.filter(f => f.properties.buildingParcel !== true);
-        expect(remainders.length).toBeGreaterThanOrEqual(2);
+        expect(remainders.map(f => f.properties.parcelId).sort()).toEqual(['HR-A', 'HR-B']);
         remainders.forEach(remainder => {
             expect(remainder.properties.ownershipDetails.owners[0].name).toMatch(/^Owner HR-/);
+            expect(remainder.properties.producedByProposalId).toBeUndefined();
+            expect(remainder.properties.cutByProposalIds).toEqual(['p-bld']);
         });
-        expect(manager.hidden.map(f => f.properties.parcelId).sort()).toEqual(['HR-A', 'HR-B']);
-        // Every child carries a fresh flat identity under a base root.
-        manager.added.forEach(child => {
-            expect(String(child.properties.parcelId)).toMatch(/^HR-[AB]#p-bld-\d+$/);
-        });
+        // The hosts' ids live on in their rests, so nothing is hidden.
+        expect(manager.hidden).toEqual([]);
+        // The building's own parcel carries a fresh flat identity under a base root.
+        expect(String(buildingParcel.properties.parcelId)).toMatch(/^HR-[AB]#p-bld-\d+$/);
         expect(bp).not.toHaveProperty('childParcelIds');
     });
 

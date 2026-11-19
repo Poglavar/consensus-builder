@@ -293,6 +293,9 @@
         });
 
         let allocForeignIndex = null;
+        // The rest of a parcel's own ground the plots do not cover: still the parcel's ground, never
+        // this layout's output (parcel-arrangement.js groundRemainders).
+        const groundRests = [];
         // §14.2: a formation owes the owner their remainders. The pool consumed above is the
         // LIVE ground under the layout's footprint, and the authored plots may tile less than that
         // (plots drawn against another generation's fabric) — every scrap of pool the plots do
@@ -386,6 +389,18 @@
                             });
                             return;
                         }
+                        if (!parentProducer) {
+                            // Parcel ground stays the parcel's: the largest part keeps its id, no
+                            // part is this layout's, and its owner record is the parcel's own.
+                            const geometries = leftover.geometry.type === 'MultiPolygon'
+                                ? leftover.geometry.coordinates.map(coordinates => ({ type: 'Polygon', coordinates }))
+                                : [leftover.geometry];
+                            const parts = geometries
+                                .map(geometry => ({ geometry, area: turfRemainder.area({ type: 'Feature', properties: {}, geometry }) || 0 }))
+                                .filter(part => groundRule.isGround(turfRemainder, { type: 'Feature', properties: {}, geometry: part.geometry }));
+                            groundRests.push(...clipFailureApi().groundRemainders(parentFeature, parts, String(proposalId)));
+                            return;
+                        }
                         const remainder = JSON.parse(JSON.stringify(parentFeature));
                         remainder.geometry = leftover.geometry;
                         remainder.properties = remainder.properties || {};
@@ -434,8 +449,8 @@
         });
 
         // The pieces must tile the ground they replace, as a private read checks them.
-        if (!await this._checkFormedPartition(idLabel, proposalData, parentFeatures.filter(feature => !isHost(feature)), childFeatures, options)) return false;
-        await this._addFeaturesToMap(childFeatures, true, proposalData, options);
+        if (!await this._checkFormedPartition(idLabel, proposalData, parentFeatures.filter(feature => !isHost(feature)), [...childFeatures, ...groundRests], options)) return false;
+        await this._addFeaturesToMap([...childFeatures, ...groundRests], true, proposalData, options);
 
         const touchedAgentIds = new Set();
         childFeatures.forEach(feature => {
@@ -486,7 +501,8 @@
         // recording it as a consumed parent would consume the victim's surviving plot. The
         // ground it lost is anchored to the BASE parcel instead, so this layout's unapply
         // frees it as a BASE remainder (latest wins — never the plot at stale geometry).
-        const mintedIdSet = new Set(childFeatures
+        // Parcel ground that kept its parent's id is the live piece now too (groundRests).
+        const mintedIdSet = new Set([...childFeatures, ...groundRests]
             .map(f => { try { return String(_getParcelIdFromFeature(f)); } catch (_) { return null; } })
             .filter(Boolean));
         const carriedBaseAnchors = new Set();

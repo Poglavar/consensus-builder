@@ -121,13 +121,10 @@ function verticesOutside(piece, host) {
         && turf.pointToLineDistance(vertex, ring, { units: 'meters' }) > ground.NOISE_M);
 }
 
-// Drops every remainder a building formation mints: its pieces then leave a hole in their host.
+// Drops the rest of every host a building formation cuts (parcel-arrangement.js groundRemainders):
+// its pieces then leave a hole in their host.
 function dropRemainders() {
-    const assign = ProposalManager._assignSyntheticChildIdentities;
-    vi.spyOn(ProposalManager, '_assignSyntheticChildIdentities').mockImplementation(function (proposalId, children, opts) {
-        assign.call(this, proposalId, children, opts);
-        children.splice(1);
-    });
+    vi.spyOn(require('../../frontend/js/proposals/parcel-arrangement.js'), 'groundRemainders').mockReturnValue([]);
 }
 
 describe('a formed piece is its shape cut to the parcels it consumes', () => {

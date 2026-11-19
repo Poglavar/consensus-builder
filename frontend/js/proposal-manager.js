@@ -2381,7 +2381,7 @@ const ProposalManager = {
             .map(_getParcelIdFromFeature)
             .filter(Boolean)
             .map(String);
-        const derived = pieces.filter(piece => piece.id !== piece.parcelId);
+        const derived = pieces.filter(piece => !piece.untouched);
         const diff = A.diffPieces(currentIds, derived);
         _emitProposalProgress(options.onProgress, {
             phase: 'fabric-commit-ready',
@@ -2394,7 +2394,7 @@ const ProposalManager = {
         for (const piece of pieces) {
             const base = parcelById.get(String(piece.parcelId));
             const take = piece.takers.length ? takeById.get(piece.takers[0]) : null;
-            const feature = piece.id === piece.parcelId ? base : A.featureForPiece(piece, base, {
+            const feature = piece.untouched ? base : A.featureForPiece(piece, base, {
                 isTrack: !!(take && take.isTrack),
                 roadName: take ? take.name : null
             });

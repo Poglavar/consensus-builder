@@ -264,15 +264,15 @@ The browser-local result of applying a design to the parcel fabric. It includes 
 
 A design's operation that cuts or replaces live ground and produces land pieces. Creating a fabric piece is separate from minting a blockchain account.
 
-One authored site can produce several body pieces or explicit layout plots, plus remainders of its
-source land. Producer metadata groups the materialization effects; it does not make remainders
-part of the design's body. Cadastral input references are independent of the number of body pieces.
+One authored site can produce several body pieces or explicit layout plots; what it leaves of the
+parcels it cuts is their remainder, not its output. Producer metadata marks only the pieces a design
+produced. Cadastral input references are independent of the number of body pieces.
 
 A building's formed land take and its subtracted remainders use the same clipping grid (nine decimal places in longitude and latitude). This is derived geometry; the authored land take and building footprint retain their original coordinates. Facade intersections use the same clipper so different coordinate precision cannot create a second ownership slice along that cut.
 
 ### Remainder
 
-The part of parent land left after subtracting a design's land take. A remainder retains its modeled provenance and carried rights rather than belonging automatically to the new design.
+The part of parent land left after subtracting a design's land take. A remainder retains its modeled provenance and carried rights rather than belonging automatically to the new design. The remainder of a parcel's own ground (land no design produced) is that parcel: it has no producer, records the designs and roads that cut it (`cutByProposalIds`), and keeps the parcel's id while it is one piece, so a parcel that designs are carved from inside keeps its name with holes where they stand. When cuts split it, each part is named by its outline. It is derived as the parcel minus every applied take, the same whichever design was applied first, and unapplying a design gives that ground back to it. The remainder of another design's piece stays that design's piece.
 
 ### Plot
 

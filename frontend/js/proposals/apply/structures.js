@@ -713,9 +713,11 @@
                 .map(String);
             // §15c rebuild partial cuts: mint each outside piece. Derived parents keep their
             // identity (largest piece carries the parcel's own id; splits continue the OWNER's
-            // numbering); base parents' leftovers mint as this structure's remainder children.
-            // Computed before anything is written, so the partition check sees every piece.
-            const structureRemainders = [];
+            // numbering). The rest of a parcel's own ground stays the parcel's ground, never this
+            // structure's output (parcel-arrangement.js groundRemainders): the largest part keeps
+            // its id, no part has a producer. Computed before anything is written, so the
+            // partition check sees every piece.
+            const groundRests = [];
             const foreignPieces = [];
             if (partialCuts && partialCuts.length) {
                 const allocForeign = (typeof this._createForeignIndexAllocator === 'function')
@@ -725,60 +727,38 @@
                     const parentId = String(entry.id);
                     const parentProps = entry.feature.properties || {};
                     const parentIdentity = formationEdit.formationIdentityOf(entry.feature);
-                    if (parentIdentity && allocForeign) allocForeign.reserve(parentIdentity.anchor, parentIdentity.token, parentIdentity.index);
+                    if (!(parentIdentity && allocForeign)) {
+                        groundRests.push(...clipFailureApi().groundRemainders(entry.feature, parts, proposalId));
+                        return;
+                    }
+                    allocForeign.reserve(parentIdentity.anchor, parentIdentity.token, parentIdentity.index);
                     parts.forEach((part, partIndex) => {
                         const clone = JSON.parse(JSON.stringify(entry.feature));
                         clone.geometry = part.geometry;
                         clone.properties = clone.properties || {};
                         clone.properties.calculatedArea = Math.round(part.area);
-                        if (parentIdentity && allocForeign) {
-                            const syntheticIndex = partIndex === 0
-                                ? parentIdentity.index
-                                : allocForeign(parentIdentity.anchor, parentIdentity.token);
-                            const carriedId = partIndex === 0
-                                ? parentId
-                                : _composeSyntheticParcelId(
-                                    parentIdentity.root,
-                                    parentIdentity.token,
-                                    syntheticIndex);
-                            clone.properties.parcelId = carriedId;
-                            clone.properties.id = carriedId;
-                            clone.properties.syntheticToken = parentIdentity.token;
-                            clone.properties.syntheticIndex = syntheticIndex;
-                            _ensureParcelIdOnProperties(clone.properties, carriedId);
-                            foreignPieces.push({
-                                feature: clone,
-                                proposalId: String(parentProps.producedByProposalId || '')
-                            });
-                        } else {
-                            // Base parent: the leftover is a §14.2 remainder of this structure.
-                            clone.properties.producedByProposalId = proposalId;
-                            clone.properties.isProposed = true;
-                            delete clone.properties.color;
-                            structureRemainders.push(clone);
-                        }
+                        const syntheticIndex = partIndex === 0
+                            ? parentIdentity.index
+                            : allocForeign(parentIdentity.anchor, parentIdentity.token);
+                        const carriedId = partIndex === 0
+                            ? parentId
+                            : _composeSyntheticParcelId(
+                                parentIdentity.root,
+                                parentIdentity.token,
+                                syntheticIndex);
+                        clone.properties.parcelId = carriedId;
+                        clone.properties.id = carriedId;
+                        clone.properties.syntheticToken = parentIdentity.token;
+                        clone.properties.syntheticIndex = syntheticIndex;
+                        _ensureParcelIdOnProperties(clone.properties, carriedId);
+                        foreignPieces.push({
+                            feature: clone,
+                            proposalId: String(parentProps.producedByProposalId || '')
+                        });
                     });
                 });
-                if (structureRemainders.length) {
-                    // Body and base remainders share this formation's token. Continue each root's
-                    // allocator after body ids; restarting at 1 here let a remainder overwrite the
-                    // square body under the same `…#proposal-1` id.
-                    const startIndexByRootId = {};
-                    bodyFeatures.forEach(feature => {
-                        const identity = formationEdit.formationIdentityOf(feature);
-                        // Remainders are cadastral (open ground leaves none), so only rooted bodies
-                        // share their numbering.
-                        if (!identity || !identity.root) return;
-                        const base = identity.root;
-                        startIndexByRootId[base] = Math.max(
-                            Number(startIndexByRootId[base]) || 1,
-                            identity.index + 1
-                        );
-                    });
-                    this._assignSyntheticChildIdentities(proposalId, structureRemainders, { startIndexByRootId });
-                }
             }
-            const minted = [...foreignPieces.map(fp => fp.feature), ...structureRemainders];
+            const minted = [...foreignPieces.map(fp => fp.feature), ...groundRests];
             // The pieces must tile the ground they replace, as a private read checks them.
             if (!await this._checkFormedPartition(idLabel, proposalData, takenFeatures, [...bodyFeatures, ...minted], options)) return { ok: false };
             await this._addFeaturesToMap(bodyFeatures, true, proposalData, options);
@@ -787,7 +767,6 @@
                 try { if (bodyId) this._markParcelProducedByProposal(bodyId, proposalId, options); } catch (_) { }
             });
             this._consumeFeaturesFromLiveFabric(takenFeatures, options);
-            const structureRemainderIds = [];
             if (minted.length) {
                 await this._addFeaturesToMap(minted, true, proposalData, options);
             }
@@ -795,23 +774,14 @@
                 const pid = _getParcelIdFromFeature(feature);
                 try { if (pid && ownerProposalId) this._markParcelProducedByProposal(pid, ownerProposalId, options); } catch (_) { }
             });
-            structureRemainders.forEach(feature => {
-                const pid = _getParcelIdFromFeature(feature);
-                try {
-                    if (pid) {
-                        structureRemainderIds.push(String(pid));
-                        this._markParcelProducedByProposal(pid, proposalId, options);
-                    }
-                } catch (_) { }
-            });
             const structureCadastreCount = formationEdit.baseIdsOfFeatures(takenFeatures).length;
             try {
                 const structureLabel = proposalData.title || proposalData.name || String(proposalId);
                 console.info(`[structureFormation] ${structureLabel}: ${takenIds.length} live parcel piece(s)`
                     + ` over ${structureCadastreCount} cadastral parcel(s)`
                     + ` → ${bodyParcelIds.length} ${sp.kind} parcel(s)`
-                    + (structureRemainderIds.length
-                        ? ` + ${structureRemainderIds.length} terrain remainder(s)`
+                    + (groundRests.length
+                        ? ` + ${groundRests.length} piece(s) of parcel ground left`
                         : '')
                     + (partialCuts?.length ? ` · replay cut ${partialCuts.length} changed edge(s)` : ''));
             } catch (_) { }

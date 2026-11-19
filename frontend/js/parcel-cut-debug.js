@@ -96,7 +96,7 @@
             out.verdict = `The arrangement THROWS for this parcel, so it is left untouched: ${failed[0].error}`;
             return out;
         }
-        const derived = pieces.filter(piece => piece.id !== piece.parcelId);
+        const derived = pieces.filter(piece => !piece.untouched);
         if (!derived.length) {
             out.verdict = 'The engine arranges it as one whole parcel — the takes do not divide it (they may only touch its edge).';
             return out;

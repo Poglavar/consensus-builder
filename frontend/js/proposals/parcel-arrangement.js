@@ -15,9 +15,14 @@
 //     by two takers; unapply one and the same function, given one fewer take, returns the right
 //     answer with no holder rule, no precedence and no ordered replay.
 //
-// IDENTITY IS THE GEOMETRY. A piece's id is its cadastral parcel plus a hash of its own outline, so
-// a piece whose shape did not change keeps its id for free, and one that did change gets a new one —
-// which is exactly the signal a consumer (a building standing on it) needs. The hash is taken from a
+// THE REST OF A PARCEL IS THE PARCEL. What no take reaches is still the owner's parcel: when the
+// takes leave it in ONE piece, that piece keeps the parcel's own id (a road drawn inside a large
+// parcel leaves the parcel with a hole in it, under its own name), and records the takes that cut it
+// in cutByProposalIds without being owned by any (formedByProposalIds stays what it was: the
+// corridors a road piece is made of, which a layout reads as ground already taken). Every other piece — a road piece, each part of
+// a parcel a take splits — is named by its geometry: its cadastral parcel plus a hash of its own
+// outline, so a piece whose shape did not change keeps its id for free, and one that did change gets
+// a new one. Neither rule lets one piece's id depend on what happened to another. The hash is taken from a
 // canonicalised ring (fixed precision, fixed winding, fixed starting vertex) so that a piece which is
 // geometrically identical cannot get two different ids because turf happened to emit its vertices
 // starting somewhere else. This key precision is independent of the finer clipping grid below.
@@ -486,8 +491,10 @@
      *        takes that matter, and recomputing them here is the doubled work this parameter exists
      *        to remove.
      * @returns {{pieces: Array, takersUsed: Array<string>}} `pieces` are `{ id, parcelId, kind,
-     *        geometry, takers, areaM2 }`, ordered largest first. An untouched parcel comes back as a
-     *        single piece carrying its OWN cadastral id: nothing took it, so it is still itself.
+     *        geometry, takers, areaM2, cutBy, untouched? }`, ordered largest first. An untouched
+     *        parcel comes back as a single piece carrying its OWN cadastral id and `untouched: true`:
+     *        nothing took it, so it is still itself. A cut parcel whose rest is one piece keeps the
+     *        parcel's id on it (the rest of a parcel is the parcel); `cutBy` lists the takes that cut it.
      */
     function arrangementOf(parcel, parcelId, takes, precomputedHits) {
         const t = T();
@@ -510,6 +517,8 @@
                     kind: 'remainder',
                     geometry: parcelFeature.geometry,
                     takers: [],
+                    cutBy: [],
+                    untouched: true,
                     areaM2: t.area(parcelFeature)
                 }],
                 takersUsed: []
@@ -607,7 +616,12 @@
         // Largest first, then by id: a total order that does not depend on the order the takes
         // arrived in, so two machines with the same records draw the same map.
         pieces.sort((a, b) => (b.areaM2 - a.areaM2) || a.id.localeCompare(b.id));
-        return { pieces, takersUsed: Array.from(new Set(takersUsed)).sort() };
+        const cutBy = Array.from(new Set(takersUsed)).sort();
+        // The rest of the parcel is the parcel: left in one piece, it keeps the parcel's own id.
+        const rests = pieces.filter(piece => piece.kind === 'remainder');
+        if (rests.length === 1) rests[0].id = id;
+        pieces.forEach(piece => { if (piece.kind === 'remainder') piece.cutBy = cutBy.slice(); });
+        return { pieces, takersUsed: cutBy };
     }
 
     /** Which of `takes` reach this parcel at all — the recompute set for one corridor's ground. */
@@ -762,8 +776,8 @@
      * piece cut from it. Only what the cut changes is overwritten.
      *
      * `producedByProposalId` identifies the one proposal that owns corridor output.
-     * `formedByProposalIds` records every corridor that influenced a piece; on a remainder it never
-     * implies ownership.
+     * `formedByProposalIds` records the corridors a road piece is made of; a remainder has none.
+     * `cutByProposalIds` records every take that cut a remainder's parcel; it never implies ownership.
      */
     function featureForPiece(piece, baseFeature, options = {}) {
         if (!piece || !baseFeature) return null;
@@ -780,6 +794,8 @@
         props.cadastreParcelIds = [piece.parcelId];
         props.liveParcelDerivation = LIVE_DERIVATION;
         props.formedByProposalIds = (piece.takers || []).slice();
+        if (piece.kind === 'remainder' && piece.cutBy && piece.cutBy.length) props.cutByProposalIds = piece.cutBy.slice();
+        else delete props.cutByProposalIds;
         delete props.proposalId;
 
         if (piece.kind === 'road') {
@@ -810,8 +826,57 @@
         return feature;
     }
 
+    /**
+     * The rest of a ground piece — a parcel's own land, which no design produced — after a design
+     * took part of it: still the parcel's land, never the design's output (docs/vocabulary.md
+     * "Remainder"). Left in one piece, it keeps the ground piece's id, so a parcel that designs carve
+     * from inside stays itself; split into several, each part is named by its outline (pieceId), as
+     * the corridor arrangement names the parts of a parcel a road splits. No part has a producer;
+     * each records the design among the takes that cut it (cutByProposalIds).
+     *
+     * @param {object} parentFeature  The ground piece that was cut (no producedByProposalId).
+     * @param {Array<{geometry: object, area: number}>} parts  Its connected remainders.
+     * @param {string} cutBy  The design whose take cut it.
+     * @returns {Array<object>} The remainders as fabric features, largest first.
+     */
+    function groundRemainders(parentFeature, parts, cutBy) {
+        const parentProps = parentFeature && parentFeature.properties || {};
+        if (parentProps.producedByProposalId) {
+            throw new Error(`parcel-arrangement: ${parcelIdOf(parentFeature)} is a design's output, not ground`);
+        }
+        const parentId = parcelIdOf(parentFeature);
+        const anchors = Array.isArray(parentProps.cadastreParcelIds) && parentProps.cadastreParcelIds.length
+            ? parentProps.cadastreParcelIds.map(String) : [String(parentId)];
+        const ordered = (Array.isArray(parts) ? parts : []).slice()
+            .sort((a, b) => (b.area - a.area) || canonicalPolygon(a.geometry).localeCompare(canonicalPolygon(b.geometry)));
+        const cutByIds = Array.from(new Set([
+            ...(Array.isArray(parentProps.cutByProposalIds) ? parentProps.cutByProposalIds : []),
+            ...(cutBy ? [cutBy] : [])
+        ].map(String).filter(Boolean))).sort();
+        return ordered.map((part, index) => {
+            const feature = JSON.parse(JSON.stringify(parentFeature));
+            feature.geometry = JSON.parse(JSON.stringify(part.geometry));
+            const props = feature.properties || (feature.properties = {});
+            const id = ordered.length === 1 ? String(parentId) : pieceId(anchors[0], 'remainder', part.geometry);
+            if (!id) throw new Error(`parcel-arrangement: a remainder of ${parentId} has no canonical outline`);
+            delete props.producedByProposalId;
+            delete props.syntheticToken;
+            delete props.syntheticIndex;
+            delete props.__carryIdentity;
+            props.cadastreParcelIds = anchors.slice();
+            props.calculatedArea = Math.round(part.area);
+            props.cutByProposalIds = cutByIds.slice();
+            props.parcelId = id;
+            props.PARCEL_ID = id;
+            props.id = id;
+            if (feature.id !== undefined) feature.id = id;
+            return feature;
+        });
+    }
+
     const api = {
         arrangementOf,
+        groundRemainders,
         fabricOver,
         diffPieces,
         featureForPiece,

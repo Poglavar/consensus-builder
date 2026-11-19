@@ -120,7 +120,8 @@ function proposalData() {
 }
 
 const plotsOf = manager => manager.added.filter(feature => feature.properties.readjustmentPiece?.role === 'plot');
-const remaindersOf = manager => manager.added.filter(feature => feature.properties.readjustmentPiece?.role === 'remainder');
+// Ground a layout's plots leave of a parcel is that parcel's rest: nobody's output (vocabulary "Remainder").
+const remaindersOf = manager => manager.added.filter(feature => !feature.properties.producedByProposalId);
 
 describe('_applyParcelLayoutProposal — flat anchors', () => {
     it('stamps per-plot cadastral provenance from the ground actually under each plot', async () => {
@@ -155,8 +156,11 @@ describe('_applyParcelLayoutProposal — remainders', () => {
 
         const remainders = remaindersOf(manager);
         expect(remainders).toHaveLength(1);
-        expect(remainders[0].properties.producedByProposalId).toBe('p-layout');
-        expect(remainders[0].properties.rootParcelId).toBe('HR-B');
+        // HR-B itself, smaller: its own id, no producer, the layout recorded as what cut it.
+        expect(remainders[0].properties.parcelId).toBe('HR-B');
+        expect(remainders[0].properties.producedByProposalId).toBeUndefined();
+        expect(remainders[0].properties.cutByProposalIds).toEqual(['p-layout']);
+        expect(remainders[0].properties.cadastreParcelIds).toEqual(['HR-B']);
         expect(turf.area(remainders[0])).toBeCloseTo(turf.area({
             type: 'Feature', properties: {}, geometry: rect(3, 0, 4, 2)
         }), 0);
@@ -221,7 +225,7 @@ describe('_applyParcelLayoutProposal — deterministic derivation', () => {
         }));
         expect(new Set(plots.map(feature => feature.properties.parcelId)).size).toBe(2);
         expect(remainders.length).toBeGreaterThan(0);
-        remainders.forEach(feature => expect(feature.properties.readjustmentPiece).toEqual({ role: 'remainder' }));
+        remainders.forEach(feature => expect(feature.properties.readjustmentPiece).toBeUndefined());
         expect(data.parcelLayout).toEqual(authored);
         // Selecting a live plot as new authored geometry must not persist its runtime relationship.
         expect(authoredRecord.cleanFeature(plots[0]).properties).not.toHaveProperty('readjustmentPiece');

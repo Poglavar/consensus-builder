@@ -152,7 +152,10 @@
         corridors.forEach(piece => { anchorsOf(piece).forEach(id => covered.add(id)); publicM2 += ops.areaOf(piece); });
         pieces.forEach(piece => {
             const props = piece.properties || {};
-            const original = !String(props.producedByProposalId || '').trim() && anchorsOf(piece).length === 1 && anchorsOf(piece)[0] === idOf(piece);
+            // Untouched: the parcel as the cadastre has it. The rest of a parcel designs or roads cut
+            // keeps the parcel's id too, but records what cut it, and is land like any other piece.
+            const cut = Array.isArray(props.cutByProposalIds) && props.cutByProposalIds.length > 0;
+            const original = !cut && !String(props.producedByProposalId || '').trim() && anchorsOf(piece).length === 1 && anchorsOf(piece)[0] === idOf(piece);
             if (original) return;
             anchorsOf(piece).forEach(id => covered.add(id));
             if (PUBLIC_STRUCTURES.has(props.structureType)) publicM2 += ops.areaOf(piece);

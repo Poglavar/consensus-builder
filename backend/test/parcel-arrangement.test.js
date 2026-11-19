@@ -542,6 +542,8 @@ describe('a piece as a map feature', () => {
         const remainder = pieces().find(p => p.kind === 'remainder');
         const feature = arrangement.featureForPiece(remainder, base);
         expect(feature.properties.formedByProposalIds).toEqual([]);
+        expect(feature.properties.cutByProposalIds).toEqual([...remainder.cutBy]);
+        expect(feature.properties.cutByProposalIds.length).toBeGreaterThan(0);
         expect(feature.properties.producedByProposalId).toBeUndefined();
     });
 
@@ -760,5 +762,48 @@ describe('a road entering a parcel across a shared border (real Zagreb geometry)
         // North of the road and south of it: two rings, no hole and no doubled edge along the border.
         expect(ringsOf(union.geometry).map(rings => rings.length)).toEqual([1, 1]);
         expect(turf.area(union)).toBeCloseTo(land.reduce((sum, piece) => sum + turf.area(piece), 0), 0);
+    });
+});
+
+// The rest of a parcel is the parcel (docs/vocabulary.md "Remainder"): left in one piece it keeps
+// the parcel's own id; split, every part is named by its outline, so no piece's id depends on what
+// happened to another.
+describe('the rest of a parcel', () => {
+    it('keeps the parcel id when a road inside the parcel leaves it in one piece, with a hole', () => {
+        const inside = { id: 'road-in', geometry: box(16.0003, 46.0003, 16.0007, 46.0004).geometry };
+        const { pieces } = arrangement.arrangementOf(PARCEL, PARCEL_ID, [inside]);
+        const rests = pieces.filter(piece => piece.kind === 'remainder');
+        expect(rests).toHaveLength(1);
+        expect(rests[0].id).toBe(PARCEL_ID);
+        expect(rests[0].untouched).toBeUndefined();
+        expect(rests[0].geometry.coordinates).toHaveLength(2);
+        expect(rests[0].cutBy).toEqual(['road-in']);
+        const feature = arrangement.featureForPiece(rests[0], PARCEL);
+        expect(feature.properties.parcelId).toBe(PARCEL_ID);
+        expect(feature.properties.producedByProposalId).toBeUndefined();
+        expect(feature.properties.cutByProposalIds).toEqual(['road-in']);
+    });
+
+    it('names every part by its outline when a road splits the parcel, and marks an untouched parcel', () => {
+        const { pieces } = arrangement.arrangementOf(PARCEL, PARCEL_ID, [EAST_WEST]);
+        const rests = pieces.filter(piece => piece.kind === 'remainder');
+        expect(rests).toHaveLength(2);
+        rests.forEach(piece => expect(piece.id).toMatch(new RegExp(`^${PARCEL_ID}#p`)));
+        const [untouched] = arrangement.arrangementOf(PARCEL, PARCEL_ID, []).pieces;
+        expect(untouched).toMatchObject({ id: PARCEL_ID, untouched: true });
+    });
+
+    it('gives a design\'s cut of parcel ground back to the parcel: one part keeps the id, parts of a split are named by outline', () => {
+        const ground = { type: 'Feature', properties: { parcelId: PARCEL_ID, cadastreParcelIds: [PARCEL_ID], cutByProposalIds: ['road-in'], owner: 'Ana' }, geometry: PARCEL.geometry };
+        const hole = turf.difference(PARCEL, box(16.0003, 46.0003, 16.0005, 46.0005));
+        const [rest] = arrangement.groundRemainders(ground, [{ geometry: hole.geometry, area: turf.area(hole) }], 'park-1');
+        expect(rest.properties).toMatchObject({ parcelId: PARCEL_ID, cadastreParcelIds: [PARCEL_ID], cutByProposalIds: ['park-1', 'road-in'], owner: 'Ana' });
+        expect(rest.properties.producedByProposalId).toBeUndefined();
+        const west = box(16.0000, 46.0000, 16.0004, 46.0010), east = box(16.0006, 46.0000, 16.0010, 46.0010);
+        const split = arrangement.groundRemainders(ground, [west, east].map(part => ({ geometry: part.geometry, area: turf.area(part) })), 'park-2');
+        expect(split.map(part => part.properties.parcelId)).toEqual(split.map(part => arrangement.pieceId(PARCEL_ID, 'remainder', part.geometry)));
+        expect(new Set(split.map(part => part.properties.parcelId)).size).toBe(2);
+        expect(() => arrangement.groundRemainders({ ...ground, properties: { ...ground.properties, producedByProposalId: 'other' } }, [], 'p'))
+            .toThrow(/is a design's output, not ground/);
     });
 });
