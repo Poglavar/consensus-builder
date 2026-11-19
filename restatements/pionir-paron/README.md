@@ -63,7 +63,7 @@ node backend/scripts/seed-pionir-observed-circulation.mjs --export
 
 ## Publishing designs and agreements
 
-The committed archives are the canonical restatement; the app holds them as content-addressed designs. `backend/scripts/publish-restatement-archives.mjs` reads each project's `plan.json`, turns every archive into a `design/v1` object (the archive's own date is the design's `authoredAt`; floor models stay in the floor-model registry and out of the design) and publishes one agreement per project: a community vote with no lens, money, allocations or deadline, titled by the manifest. Identifiers are the design CIDs and the agreement CID the script prints; the archives' internal proposal ids are archive keys only.
+The committed archives are the canonical restatement; the app holds them as content-addressed designs. `backend/scripts/publish-restatement-archives.mjs` reads each project's `plan.json`, turns every archive into a `design/v1` object (the archive's own date is the design's `authoredAt`; floor models stay out of the design: the app reads floor plans from the shared published documents) and publishes one agreement per project: a community vote with no lens, money, allocations or deadline, titled by the manifest. Identifiers are the design CIDs and the agreement CID the script prints; the archives' internal proposal ids are archive keys only.
 
 ```sh
 cd backend

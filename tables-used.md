@@ -71,7 +71,7 @@ Rules that shape the list:
 - consensus.points_position (schema-only)
 - consensus.points_transaction (schema-only)
 - consensus.points_wallet_challenge (schema-only)
-- consensus.building_floor_model
+- consensus.building_floor_model (frozen: no writer, read only for proposal buildings; dropped by backend/db/migrations/2026-11-20-drop-building-floor-model.sql once proposals read the published documents)
 - public.road_parcel_classification
 - public.street
 - consensus.urban_rule

@@ -1,4 +1,7 @@
-// Stores versioned floor evidence and joins it to proposals or native city building identities.
+// Joins floor models onto buildings. Native city buildings read the shared floor-plan publication
+// (cadastre-data buildings.floor_plan via /api/floor-plans); proposal buildings still read the frozen
+// consensus.building_floor_model registry until the published documents carry what they need
+// (docs/building-floor-models.md, "Proposal buildings"). Nothing here writes floor models.
 import { createHash } from 'node:crypto';
 import { createRequire } from 'node:module';
 
@@ -9,10 +12,9 @@ import { createFloorPlanPublicationReader, validatePublicationConfig } from './f
 const require = createRequire(import.meta.url);
 const SourceRuntime = require('../../frontend/js/source-runtime.js');
 const CityLightConfig = require('../../frontend/js/city-light-config.js');
-const { validateFloorPlans, buildingSourceId } = require('../../frontend/js/building-floor-plans.js');
-export { buildingSourceId };
+const { buildingSourceId } = require('../../frontend/js/building-floor-plans.js');
 
-// JSONB changes object-key order; identity and no-op imports must not depend on that order.
+// JSONB changes object-key order; identities and footprint fingerprints must not depend on that order.
 export function canonicalJson(value) {
     if (Array.isArray(value)) return `[${value.map(canonicalJson).join(',')}]`;
     if (value && typeof value === 'object') return `{${Object.keys(value).sort()
@@ -40,69 +42,7 @@ export function validateModelIdentity({ city, source, ownerId = '', buildingId }
     return { city, source, ownerId, buildingId };
 }
 
-function validateFootprint(geometry) {
-    if (!geometry || !['Polygon', 'MultiPolygon'].includes(geometry.type)) throw new Error('A WGS84 building footprint is required.');
-    const polygons = geometry.type === 'Polygon' ? [geometry.coordinates] : geometry.coordinates;
-    if (!Array.isArray(polygons) || !polygons.length) throw new Error('Empty building footprint.');
-    let points = 0;
-    for (const polygon of polygons) {
-        if (!Array.isArray(polygon) || !polygon.length) throw new Error('Invalid building polygon.');
-        for (const ring of polygon) {
-            if (!Array.isArray(ring) || ring.length < 4) throw new Error('Building footprint rings must be closed.');
-            for (const p of ring) {
-                if (!Array.isArray(p) || p.length !== 2 || !p.every(Number.isFinite) || Math.abs(p[0]) > 180 || Math.abs(p[1]) > 90) {
-                    throw new Error('Building footprint coordinates must be WGS84 pairs.');
-                }
-                if (++points > 100000) throw new Error('Building footprint exceeds 100000 points.');
-            }
-            if (canonicalJson(ring[0]) !== canonicalJson(ring.at(-1))) throw new Error('Building footprint rings must be closed.');
-        }
-    }
-}
-
-export function prepareFloorModel(record) {
-    const identity = validateModelIdentity(record);
-    validateFootprint(record.footprint);
-    const errors = validateFloorPlans(record.floorPlans);
-    if (errors.length) throw new Error(`Invalid architectural model: ${errors.join('; ')}`);
-    // The registry holds evidence. A suggested default layout (default-floor-plans.js) is derived from
-    // the footprint at read time and would masquerade as a source if it were ever stored here.
-    if (record.floorPlans.suggested === true) throw new Error('Suggested layouts are generated for display and are not registry evidence.');
-    return { ...identity, footprint: record.footprint, floorPlans: record.floorPlans,
-        geomHash: fingerprint(record.footprint), modelHash: fingerprint(record.floorPlans) };
-}
-
 const identityValues = model => [model.city, model.source, model.ownerId, model.buildingId];
-const IDENTITY_WHERE = 'city = $1 AND source = $2 AND owner_id = $3 AND building_id = $4';
-
-// The caller owns the transaction. A lock serializes concurrent versions for the same identity.
-export async function saveFloorModel(client, record, { apply = false } = {}) {
-    const model = prepareFloorModel(record);
-    const key = identityValues(model);
-    await client.query('SELECT pg_advisory_xact_lock(hashtextextended($1, 0))', [canonicalJson(key)]);
-    const existing = await client.query(`SELECT version, current, geom_hash, model_hash
-        FROM consensus.building_floor_model WHERE ${IDENTITY_WHERE} ORDER BY version DESC FOR UPDATE`, key);
-    const active = existing.rows.find(row => row.current);
-    if (active?.geom_hash === model.geomHash && active?.model_hash === model.modelHash) {
-        return { ...model, changed: false, version: active.version };
-    }
-    const version = Number(existing.rows[0]?.version || 0) + 1;
-    if (apply) {
-        await client.query(`UPDATE consensus.building_floor_model SET current = false, updated_at = now()
-            WHERE ${IDENTITY_WHERE} AND current`, key);
-        await client.query(`INSERT INTO consensus.building_floor_model
-            (city, source, owner_id, building_id, version, footprint, geom_hash, model_hash, floor_plans)
-            VALUES ($1, $2, $3, $4, $5, $6::jsonb, $7, $8, $9::jsonb)`,
-        [...key, version, JSON.stringify(model.footprint), model.geomHash, model.modelHash, JSON.stringify(model.floorPlans)]);
-        const verified = await client.query(`SELECT footprint, floor_plans FROM consensus.building_floor_model
-            WHERE ${IDENTITY_WHERE} AND current`, key);
-        if (verified.rows.length !== 1 || fingerprint(verified.rows[0].footprint) !== model.geomHash
-            || fingerprint(verified.rows[0].floor_plans) !== model.modelHash) {
-            throw new Error(`Floor model read-back failed for ${model.buildingId}.`);
-        }
-    }
-    return { ...model, changed: true, version };
-}
 
 // One indexed join for a whole response, including chains of proposals from different cities.
 async function readStoredFloorModels(pool, identities) {
@@ -139,9 +79,10 @@ async function readStoredFloorModelMarkers(pool, identities) {
     return new Map(result.rows.map(row => [canonicalJson([row.city, row.source, row.owner_id, row.building_id]), row]));
 }
 
-// Versioned model storage is the authored detail provider. The SQL repository retains ownership
-// of identity, current-version selection and persistence; dispatch only selects the reader.
-// `floor-plan-publication` reads plans a city's configuration declares (floorModels.published).
+// `floor-plan-publication` reads plans a city's configuration declares (floorModels.published): the only
+// source of native buildings' models. `floor-model-storage` is the frozen registry, read only for proposal
+// buildings (attachProposalFloorModels) until their published documents can be drawn; it has no writer
+// and goes, with its table, once proposals read the publication (db/migrations/2026-11-20-drop-building-floor-model.sql).
 export const buildingDetailSourceRegistry = SourceRuntime.createRegistry({
     abstraction: 'building-details',
     adapters: { 'floor-model-storage': { custom: false, create: (_config, { pool }) => ({
@@ -158,9 +99,6 @@ export const buildingDetailSourceRegistry = SourceRuntime.createRegistry({
 export async function fetchFloorModels(pool, identities) {
     return buildingDetailSourceRegistry.open('building-floor-models', { pool }).fetchFloorModels(identities);
 }
-export async function fetchFloorModelMarkers(pool, identities) {
-    return buildingDetailSourceRegistry.open('building-floor-models', { pool }).fetchFloorModelMarkers(identities);
-}
 
 function attachModel(target, row) {
     target.floorPlans = row.floor_plans;
@@ -168,6 +106,10 @@ function attachModel(target, row) {
         buildingId: row.building_id, version: row.version, updatedAt: row.updated_at, footprint: row.footprint };
 }
 
+// A proposal building's model, shown only while the building keeps the footprint it was drawn for.
+// Still the frozen registry: the published documents bound to these buildings (zagreb-novogradnje
+// bind-proposal-floor-plans.mjs) carry no registration and no unit lists yet, so the converter
+// (published-floor-model.js) cannot draw them.
 export async function attachProposalFloorModels(pool, proposals) {
     const entries = [];
     for (const proposal of proposals) {
@@ -254,38 +196,31 @@ const logPublishedFailure = (city, source, error) =>
     console.error(`[${new Date().toISOString()}] [floor-models] published floor plans for ${city}/${source} failed:`, error);
 
 // Floor plans are never bulk-loaded with buildings. A map cell's buildings carry only a marker,
-// `floorPlansAvailable: { origin, city, source, storeys, units }`, from a cheap read: the stored
-// model's storeys, or the publication's compact summaries. The browser asks for one building's model
-// (readNativeFloorModel, GET /buildings/floor-model) when X-ray is on and the building is near.
-// An authored registry model wins. `report.publishedUnavailable` says the publication did not answer
-// (the caller should not cache).
-export async function attachNearbyFloorModelMarkers(pool, city, source, buildings, { published = publishedFloorModels(), report = {} } = {}) {
-    if (!buildings.length || !city) return buildings;
+// `floorPlansAvailable: { origin: 'publication', city, source, storeys, units }`, from the publication's
+// compact summaries. The browser asks for one building's model (readNativeFloorModel, GET
+// /buildings/floor-model) when X-ray is on and the building is near. `report.publishedUnavailable` says
+// the publication did not answer (the caller should not cache).
+export async function attachNearbyFloorModelMarkers(city, source, buildings, { published = publishedFloorModels(), report = {} } = {}) {
+    if (!buildings.length || !city || !published) return buildings;
     const identities = buildings.map(building => ({ city, source, ownerId: '', buildingId: String(building.object_id) }));
-    const stored = await fetchFloorModelMarkers(pool, identities);
-    let publications = new Map();
-    const unmodelled = identities.filter(identity => !stored.has(canonicalJson(identityValues(identity))));
-    if (published && unmodelled.length) {
-        try { publications = await published.fetchFloorModelMarkers(city, unmodelled, report); } catch (error) {
-            report.publishedUnavailable = true;
-            logPublishedFailure(city, source, error);
-        }
+    let markers;
+    try { markers = await published.fetchFloorModelMarkers(city, identities, report); } catch (error) {
+        report.publishedUnavailable = true;
+        logPublishedFailure(city, source, error);
+        return buildings;
     }
     return buildings.map((building, index) => {
-        const identity = identities[index];
-        const row = stored.get(canonicalJson(identityValues(identity)));
-        const marker = row ? { origin: 'registry', storeys: row.levels, units: row.units } : publications.get(identity.buildingId);
+        const marker = markers.get(identities[index].buildingId);
         if (!marker) return building;
-        return { ...building, floorPlansAvailable: { origin: marker.origin || 'publication', city, source, storeys: marker.storeys, units: marker.units } };
+        return { ...building, floorPlansAvailable: { origin: 'publication', city, source, storeys: marker.storeys, units: marker.units } };
     });
 }
 
-// One native building's model on demand: the authored registry model, else the plans its city publishes.
-// → { city, source, ownerId, buildingId, version, updatedAt, origin, footprint, floorPlans, publication? } | null
-export async function readNativeFloorModel(pool, identity, { published = publishedFloorModels(), report = {} } = {}) {
+// One native building's model on demand, from the plans its city publishes. A proposal building's model
+// comes with its proposal (attachProposalFloorModels), so a proposal identity answers null here.
+// → { city, source, ownerId, buildingId, version: null, updatedAt, origin: 'publication', footprint, floorPlans, publication } | null
+export async function readNativeFloorModel(identity, { published = publishedFloorModels(), report = {} } = {}) {
     const valid = validateModelIdentity(identity);
-    const row = (await fetchFloorModels(pool, [valid])).get(canonicalJson(identityValues(valid)));
-    if (row) return { ...valid, version: row.version, updatedAt: row.updated_at, origin: 'registry', footprint: row.footprint ?? null, floorPlans: row.floor_plans };
     if (!published || valid.ownerId) return null;
     let found;
     try { found = (await published.fetchFloorModels(valid.city, [valid], report)).get(valid.buildingId); } catch (error) {

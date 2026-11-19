@@ -1,5 +1,9 @@
 -- Versioned, source-neutral architectural evidence attached to stable city building identities.
 -- This is authored app data, separate from the raw building surveys maintained by cadastre-data.
+-- SUPERSEDED (2026-11-20): floor plans live only in the shared published documents (cadastre-data
+-- buildings.floor_plan). This table is frozen: nothing writes it, and only proposal buildings still read it
+-- (backend/buildings/floor-models.js attachProposalFloorModels). Delete this file and its deploy-backend.sh
+-- line when proposals read the publication, then run db/migrations/2026-11-20-drop-building-floor-model.sql.
 SET LOCAL ROLE geo_user;
 CREATE TABLE IF NOT EXISTS consensus.building_floor_model (
     id bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
@@ -20,8 +24,8 @@ CREATE TABLE IF NOT EXISTS consensus.building_floor_model (
         OR (source <> 'proposal' AND owner_id = '')),
     UNIQUE (city, source, owner_id, building_id, version)
 );
--- The schema check follows the current model version. Rows of an earlier version are recreated
--- by importing their archives again (import-building-floor-plans.mjs), not converted.
+-- The schema check follows the current model version (the importer that recreated rows of an earlier
+-- version is gone with the registry writer).
 ALTER TABLE consensus.building_floor_model DROP CONSTRAINT IF EXISTS building_floor_model_floor_plans_check;
 ALTER TABLE consensus.building_floor_model ADD CONSTRAINT building_floor_model_floor_plans_check
     CHECK (floor_plans->>'schema' = 'consensus-builder.building-floor-plans.v3');

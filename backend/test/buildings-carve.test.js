@@ -15,11 +15,16 @@ import { createMockPool } from './helpers/mock-pool.js';
 let pool;
 let app;
 
-// Zagreb's namespace also reads published floor plans; answer them offline, with none.
-const publishedFloorModels = { fetchFloorModels: async () => new Map() };
+// Zagreb's namespace reads published floor plans; answer them offline, with none, and count the asks.
+let markerReads;
+const publishedFloorModels = {
+    fetchFloorModelMarkers: async (_namespace, identities) => { markerReads.push(identities.map(identity => identity.buildingId)); return new Map(); },
+    fetchFloorModels: async () => new Map()
+};
 
 beforeEach(() => {
     pool = createMockPool();
+    markerReads = [];
     app = createRouteApp(setupBuildingsRoute, pool, { publishedFloorModels });
 });
 
@@ -119,9 +124,9 @@ describe('POST /buildings/near with `proposals`', () => {
         expect(res.body.buildings.map(b => b.object_id)).toEqual([61, 62, 63]);
         // The meshes come back exactly as the provider gave them — no re-extrusion.
         expect(res.body.buildings[1]).toEqual(BUILDINGS[1]);
-        // And no proposal lookup was made at all.
-        expect(pool.getCalls()).toHaveLength(2);
-        expect(pool.getCalls()[1].sql).toContain("consensus.building_floor_model");
+        // And no proposal lookup was made at all; floor plans are asked of the publication, not the database.
+        expect(pool.getCalls()).toHaveLength(1);
+        expect(markerReads).toEqual([['61', '62', '63']]);
     });
 
     it('returns the tunnelled building INTACT, the cut one REDUCED, and the demolished one ABSENT', async () => {
@@ -156,14 +161,15 @@ describe('POST /buildings/near with `proposals`', () => {
         expect(cut.faces).not.toEqual(BUILDINGS[1].faces);
     });
 
-    it('fetches meshes, proposals and optional floor models without cross-survey id resolution', async () => {
+    it('fetches meshes and proposals, and asks floor-plan markers only for untouched buildings, without cross-survey id resolution', async () => {
         primePool();
 
         await request(app).post('/buildings/near').send({ ...NEAR_BODY, proposals: ['p-carve-test'] });
 
         const calls = pool.getCalls();
-        expect(calls).toHaveLength(3);
-        expect(calls[2].sql).toContain("consensus.building_floor_model");
+        expect(calls).toHaveLength(2);
+        expect(calls.some(call => call.sql.includes('consensus.building_floor_model'))).toBe(false);
+        expect(markerReads).toEqual([['61']]);
         expect(calls.some(call => /dgu_gdi_building_match|building_3d_match/.test(call.sql))).toBe(false);
     });
 

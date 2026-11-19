@@ -1,10 +1,10 @@
-// Public read access to optional floor models; ingestion remains a validated administrative job.
+// Public read access to one native building's floor model, from the shared floor-plan publication.
 import { readNativeFloorModel, validateModelIdentity } from '../buildings/floor-models.js';
 
-// One building's model, read when the browser needs it (X-ray on, building near): the authored
-// registry model, else the plans the city publishes (`city` is the floor-model namespace, `source`
-// the building's floorModelSource). `publishedFloorModels` is injected in tests.
-export function setupBuildingFloorModelsRoute(app, pool, { publishedFloorModels } = {}) {
+// One building's model, read when the browser needs it (X-ray on, building near): the plans the city
+// publishes (`city` is the floor-model namespace, `source` the building's floorModelSource). A proposal
+// building's model comes with its proposal. `publishedFloorModels` is injected in tests.
+export function setupBuildingFloorModelsRoute(app, { publishedFloorModels } = {}) {
     app.get('/buildings/floor-model', async (req, res) => {
         let identity;
         try {
@@ -15,7 +15,7 @@ export function setupBuildingFloorModelsRoute(app, pool, { publishedFloorModels 
         }
         try {
             const report = {};
-            const model = await readNativeFloorModel(pool, identity, { ...(publishedFloorModels ? { published: publishedFloorModels } : {}), report });
+            const model = await readNativeFloorModel(identity, { ...(publishedFloorModels ? { published: publishedFloorModels } : {}), report });
             // A publication that did not answer is not "no plans": the browser may ask again later.
             if (!model && report.publishedUnavailable) return res.status(503).json({ error: 'Published floor plans are unavailable.' });
             // Absence is normal for most buildings, and does not mean their exterior is unavailable.

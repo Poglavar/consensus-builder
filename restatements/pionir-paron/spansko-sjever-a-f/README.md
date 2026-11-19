@@ -2,16 +2,16 @@
 
 Floor-model coverage intentionally includes only F levels 1, 7 and 8. Missing floors remain missing and are not cloned from neighbouring catalogue plans. Elevations and registrations are estimated source-based proxies, with native identity fields retained for attachment.
 
-Author with PyMuPDF and Shapely installed, then review the local database import (dry run by default):
+Author with PyMuPDF and Shapely installed:
 
 ```sh
 python3 backend/scripts/reconstruct-borongaj-floors.py \
   --sources restatements/pionir-paron/spansko-sjever-a-f/floor-plan-sources.json \
   --proposal restatements/pionir-paron/spansko-sjever-a-f/proposal.geojson \
   --cache-dir /tmp/spansko-floor-cache --fetch --write
-node --env-file=backend/.env backend/scripts/import-building-floor-plans.mjs \
-  --archive restatements/pionir-paron/spansko-sjever-a-f/proposal.geojson
 ```
+
+Floor plans reach the app only as shared published documents (cadastre-data `buildings.floor_plan`, written by zagreb-novogradnje's publication import); the archive's `floorPlans` are authoring output and evidence. See [building floor models](../../../docs/building-floor-models.md#where-floor-plans-are-stored).
 
 
 Reconstruction of the six above-ground volumes A–F on current k.č. 2795/3, MB 340057, k.o. Stenjevec Jug (23,451.14 m² in the local current cadastre). The permit records use k.o. Stenjevec, MB 335592.

@@ -12,7 +12,7 @@ pieces fit, and what is still open. The storage and import contract is specified
 | Part | State | Where |
 |---|---|---|
 | Floor-plan data model (`building-floor-plans.v3`), validation, 3D rendering, X-ray + cutaway UI | **Done** (Oct 6–7) | `frontend/js/building-floor-plans.js`, `frontend/js/three-floor-plans.js`, `frontend/js/three-mode.js` |
-| Versioned registry of authored models, joined onto proposals and surveyed buildings on read | **Done** (Oct 7) | `consensus.building_floor_model`, `backend/buildings/floor-models.js`, `backend/scripts/import-building-floor-plans.mjs` |
+| Versioned registry of authored models, joined onto proposals and surveyed buildings on read | **Superseded** (Nov 20) by the shared published documents: no writer; its 9 proposal rows are still read for proposals until their documents carry registrations and units | `consensus.building_floor_model` (frozen), `backend/buildings/floor-models.js`; [`building-floor-models.md`](building-floor-models.md#where-floor-plans-are-stored) |
 | Published plans of existing buildings (shared `buildings.floor_plan`) in X-ray, per-city source adapters; cells carry markers, X-ray loads models near the camera | **Done** (Nov 6); markers need cadastre-data's `/api/floor-plans/summaries` deployed | city `floorModels.published`, `backend/buildings/floor-plan-publication.js`, `published-floor-model.js`; [`building-floor-models.md`](building-floor-models.md#published-floor-plans-of-native-buildings) |
 | Source adapter for developer PDF catalogues (vector CAD insets → architecture) | **Done**, 67 storeys / 9 buildings / 4 sites | `backend/scripts/pionir_floor_architecture.py`, `backend/scripts/reconstruct-*-floors.py`, `restatements/**/floor-plan-sources.json` |
 | Agency floor-plan archive (public listing drawings → immutable archive → OCR drafts → reviewed unit models) | **Done**, daily crawl; 5 reviewed apartment units for one project | [Private zagreb-novogradnje owner](https://github.com/Poglavar/zagreb-novogradnje), schema `floor_plan` |
@@ -43,7 +43,7 @@ Everything downstream shares one contract, `consensus-builder.building-floor-pla
 The browser turns this into meshes (`three-floor-plans.js`): one geometry per layout and material
 kind, shared by every storey that reuses the layout, with a storey cutaway and a below-ground cut.
 Buildings without a model keep the ordinary exterior. Validation is the same function everywhere
-(`validateFloorPlans`), called by the importer, the registry, the renderer and the generator.
+(`validateFloorPlans`), called by the publication converter, the renderer and the generator.
 
 ```mermaid
 flowchart LR
@@ -55,11 +55,12 @@ flowchart LR
     PY --> V["validateFloorPlans<br/>building-floor-plans.v3"]
     UM --> V
     GEN --> V
-    V --> REG["consensus.building_floor_model<br/>(versioned, evidence only)"]
     V --> SCENE["three-floor-plans.js<br/>X-ray meshes"]
-    REG --> API["/proposals, /buildings/near<br/>join on read"] --> SCENE
-    PUB["Shared floor-plan publication<br/>buildings.floor_plan (cadastre-data)"] -- "city's floorModels.published<br/>read, never copied" --> API
-    GEN -. never stored .-> REG
+    PY --> ARCH["restatement archives<br/>proposal.geojson"]
+    REG["consensus.building_floor_model<br/>(frozen; proposals only, until dropped)"] --> API
+    API["/proposals, /buildings/cell, /buildings/floor-model<br/>join on read"] --> SCENE
+    PUB["Shared floor-plan publication<br/>buildings.floor_plan (cadastre-data)"] -- "converted by published-floor-model.js<br/>read, never copied" --> API
+    GEN -. never stored .-> PUB
 ```
 
 ## New buildings: what exists
@@ -72,8 +73,8 @@ regions are walls, quarter-circle swings locate doors and casements, repeated tr
 flights; furniture strokes are ignored. Reviewed manifests (`floor-plan-sources.json` per site)
 carry the crop, the scale, reviewed outlines and stair traces where the drawing needs a human
 reading. `reconstruct-*-floors.py` registers each layout to the proposal's footprint and writes
-`floorPlans` into the canonical reconstruction archive; the importer validates footprint identity
-and versions the model into the registry.
+`floorPlans` into the canonical reconstruction archive. Floor plans reach the app only through the
+shared publication (zagreb-novogradnje's publication import); the old registry importer is gone.
 
 Corpus: 67 storeys across nine buildings on four sites (one site contributes 54 storeys over six
 buildings; one office tower levels −1 and 0–7; one site levels 1, 7 and a recessed top storey; one
@@ -305,16 +306,15 @@ sequenceDiagram
   `suggestedBuildings` count in summaries.
 - `frontend/js/building-floor-plans.js` — the validator accepts `source.kind = 'generated'` only
   inside a model flagged `suggested: true`.
-- `backend/buildings/floor-models.js` — `prepareFloorModel` **refuses** suggested models: the
-  registry stores evidence, suggestions are derived at display time.
+- The shared publication refuses suggested or generated geometry as evidence: suggestions are
+  derived at display time and never stored.
 - `frontend/js/default-floor-plan-core.js` — the central-core scheme; `planDefaultFloorPlans`
   hands it the buildings it takes (`wantsCentralCore`), with the plates and the storey uses
   `default-floor-plan-context.js` derives from a building's parts (`steppedBuilding`).
 - Tests: `backend/test/default-floor-plan-core.test.js` (office core, the vLAB tower's stepped shape,
   split core, flagging), `backend/test/default-floor-plans.test.js` (corridor geometry on a slab the size of
   Podbrežje A4 from `fixtures/podbrezje-a4-published-floor-plans.json`), `default-floor-plan-context.test.js`,
-  `building-use.test.js` (Access and `set_access`), new cases in `three-xray-wiring.test.js`, `three-floor-plans.test.js`,
-  `building-floor-model-registry.test.js`.
+  `building-use.test.js` (Access and `set_access`), new cases in `three-xray-wiring.test.js`, `three-floor-plans.test.js`.
 
 Nothing is persisted: the generated `floorPlans` exist in the scene and an in-memory cache keyed by
 proposal, building index, slice geometry, storeys, storey height, front and neighbours.

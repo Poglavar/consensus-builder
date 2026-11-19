@@ -116,7 +116,7 @@ export function setupBuildingsRoute(app, pool, { publishedFloorModels, env = pro
             // The upstream failed outright: the browser tells the person instead of drawing nothing.
             if (result.unavailable) Object.assign(extra, { unavailable: true, retryAfter: result.retryAfter ?? null });
             if (!proposalIds.length) {
-                const buildings = await attachNearbyFloorModelMarkers(pool, floorModelCity, floorModelSource, result.buildings, floorModelOptions());
+                const buildings = await attachNearbyFloorModelMarkers(floorModelCity, floorModelSource, result.buildings, floorModelOptions());
                 return res.json({ buildings, count: result.count, source: result.source, ...extra });
             }
 
@@ -126,7 +126,7 @@ export function setupBuildingsRoute(app, pool, { publishedFloorModels, env = pro
             // A cut proxy no longer has the authored floor shape. Enrich only untouched
             // objects (carveBuildings deliberately preserves those object references).
             const originals = new Set(result.buildings);
-            const modeled = await attachNearbyFloorModelMarkers(pool, floorModelCity, floorModelSource,
+            const modeled = await attachNearbyFloorModelMarkers(floorModelCity, floorModelSource,
                 buildings.filter(building => originals.has(building)), floorModelOptions());
             const byId = new Map(modeled.map(building => [building.object_id, building]));
             const enriched = buildings.map(building => originals.has(building) ? byId.get(building.object_id) : building);
@@ -337,8 +337,8 @@ export function setupBuildingsRoute(app, pool, { publishedFloorModels, env = pro
     // `complete` is false only when splitting ran out. A failed source answers `unavailable` for the
     // whole cell, never part of it, so the browser can answer it whole from a fallback source.
     // Complete answers are cached per source, kind, floor-model namespace and cell. With a namespace,
-    // `near` items with floor plans carry only a `floorPlansAvailable` marker (an authored registry
-    // model, else the published plans the namespace's city declares, floor-models.js); the model itself
+    // `near` items with floor plans carry only a `floorPlansAvailable` marker (the published plans the
+    // namespace's city declares, floor-models.js); the model itself
     // is read per building from GET /buildings/floor-model.
     const cellCache = new Map();
     const CELL_CACHE_TTL_MS = 15 * 60 * 1000;
@@ -386,7 +386,7 @@ export function setupBuildingsRoute(app, pool, { publishedFloorModels, env = pro
             const floorModelReport = {};
             if (kind === 'near') {
                 floorModelSource = nativeFloorModelSource(body.source, source);
-                items = await attachNearbyFloorModelMarkers(pool, floorModelCity, floorModelSource, items, floorModelOptions(floorModelReport));
+                items = await attachNearbyFloorModelMarkers(floorModelCity, floorModelSource, items, floorModelOptions(floorModelReport));
             }
             const answer = { supported: true, kind, bbox, items, count: items.length, complete: read.complete, source,
                 ...(kind === 'near' ? { floorModelSource } : {}) };

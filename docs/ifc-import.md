@@ -70,10 +70,11 @@ A whole Plan at city scale maps onto CityGML / CityJSON instead; see [CityGML an
 
 ## Open questions
 
-- **Where the floor model is stored.** Today registered models live in
-  `consensus.building_floor_model` and are joined onto building features on read, and generated
-  layouts are never stored. An authored IFC interior is neither: decide between the registry
-  (with `source = proposal`) and the design record itself (size: a v3 model of a large building
+- **Where the floor model is stored.** Floor plans are stored only as shared published documents
+  (cadastre-data `buildings.floor_plan`, [building floor models](building-floor-models.md#where-floor-plans-are-stored)),
+  joined onto building features on read, and generated layouts are never stored. An authored IFC
+  interior is neither: decide between published documents (with a `source = proposal` building
+  reference) and the design record itself (size: a v3 model of a large building
   can be hundreds of kB).
 - **Files without zones.** Many exports have spaces but no apartment grouping. Grouping spaces
   into apartments by door connectivity to a corridor or stair is possible but is inference, and

@@ -462,7 +462,7 @@ export function createApp({
     setupImagerySourcesRoute(app);
     setupSourceSystemRoutes(app);
     setupBuildingsRoute(app, activePool, { env });
-    setupBuildingFloorModelsRoute(app, activePool);
+    setupBuildingFloorModelsRoute(app);
     setupDecorRoute(app, activePool);
     setupPlannedRoadRoute(app, activePool);
     setupStreetsRoute(app, activePool);

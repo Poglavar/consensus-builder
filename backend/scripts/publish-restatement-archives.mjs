@@ -27,8 +27,8 @@ const COLLECTIONS = Object.freeze({
     'pionir-paron': manifest => [...(manifest.circulation || []).map(entry => entry.file), manifest.building.file],
     'nova-naselja': manifest => manifest.proposals.map(entry => entry.file)
 });
-// Floor models are read data the floor-model registry joins onto buildings (docs/building-floor-models.md),
-// never part of a published design.
+// Floor models are read data joined onto buildings from the shared floor-plan publication
+// (docs/building-floor-models.md), never part of a published design.
 const FLOOR_MODEL_PROPERTIES = Object.freeze(['floorPlans', 'floorModel']);
 
 const readJson = file => JSON.parse(fs.readFileSync(file, 'utf8'));

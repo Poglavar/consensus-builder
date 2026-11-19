@@ -68,11 +68,9 @@ From the repository root, with PyMuPDF and Shapely 2.x installed in the selected
 ```sh
 python3 backend/scripts/reconstruct-borongaj-floors.py --cache-dir /tmp/borongaj-floor-cache --fetch
 python3 backend/scripts/reconstruct-borongaj-floors.py --cache-dir /tmp/borongaj-floor-cache --write
-node --env-file=backend/.env backend/scripts/import-building-floor-plans.mjs --archive restatements/pionir-paron/borongajska-caviceva/proposal.geojson
-node --env-file=backend/.env backend/scripts/import-building-floor-plans.mjs --archive restatements/pionir-paron/borongajska-caviceva/proposal.geojson --apply
 ```
 
-The importer defaults to a dry run and writes the source-neutral PostgreSQL floor-model registry, after checking source identities and unchanged proposal footprints. Use `--init-schema` for the first local import; production deployment applies the schema before loading the API. It reads each saved model back before committing and removes duplicate inline copies from the proposal. Re-running it is a no-op. The normal project seed preserves the archive's authoring evidence. The [registry contract](../../../docs/building-floor-models.md) describes native-building imports and production flags.
+Floor plans reach the app only as shared published documents (cadastre-data `buildings.floor_plan`, written by zagreb-novogradnje's publication import); the archive's `floorPlans` are authoring output and evidence. See [building floor models](../../../docs/building-floor-models.md#where-floor-plans-are-stored). The normal project seed preserves the archive's authoring evidence.
 
 The current archive covers 54 floors across six buildings, including A1. Unavailable levels remain absent rather than cloned; elevations are estimated display proxies. The generator preserves source URLs, checksums and native building identity.
 

@@ -376,3 +376,7 @@ in commits.
 - 2026-11-20: Bets contests join agreements whose designs take overlapping ground (design sites, `reachesInto`);
   a shared qualified input parcel is only the prefilter, so agreements apart on one large parcel are separate
   contests. A contest-mode rival answers only on ground the answered building takes. User-approved.
+- 2026-11-20: One floor-plan format: the shared published document (cadastre-data `buildings.floor_plan`); v3 is
+  only the in-memory render structure. Native buildings read the publication alone; the floor-model registry has
+  no writer and is read only for proposals until their documents carry registrations and units, then dropped
+  (backend/db/migrations/2026-11-20-drop-building-floor-model.sql). User-decided.

@@ -4,16 +4,16 @@
 
 Floor-model coverage is authored once under F3: levels −1 and 0–7, including the shared basement. Raster traces were reviewed against the source drawing and remain approximate visualization evidence, not survey geometry. Ramps retain flat plan footprints because their vertical profile is unknown; elevations remain estimated.
 
-Author with PyMuPDF and Shapely installed, then review the local database import (dry run by default):
+Author with PyMuPDF and Shapely installed:
 
 ```sh
 python3 backend/scripts/reconstruct-savica-floors.py \
   --sources restatements/pionir-paron/savica-f1-f3/floor-plan-sources.json \
   --proposal restatements/pionir-paron/savica-f1-f3/proposal.geojson \
   --cache-dir /tmp/savica-floor-cache --fetch --write
-node --env-file=backend/.env backend/scripts/import-building-floor-plans.mjs \
-  --archive restatements/pionir-paron/savica-f1-f3/proposal.geojson
 ```
+
+Floor plans reach the app only as shared published documents (cadastre-data `buildings.floor_plan`, written by zagreb-novogradnje's publication import); the archive's `floorPlans` are authoring output and evidence. See [building floor models](../../../docs/building-floor-models.md#where-floor-plans-are-stored).
 
 
 Savica F1–F3 is a completed mixed residential-office complex on k.č. 2716/8, MB 335649, k.o. Trnje. It consists of two residential above-ground volumes, F1 and F2, an office volume F3, a shared underground garage G and a transformer. The app proposal contains only the three principal above-ground buildings; garage and transformer geometry is retained in [`observed-context.geojson`](observed-context.geojson).

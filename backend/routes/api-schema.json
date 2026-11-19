@@ -1022,8 +1022,8 @@
         },
         "/buildings/floor-model": {
             "get": {
-                "summary": "Get an optional versioned architectural floor model",
-                "description": "Source-neutral parametric floor geometry. Most buildings have no model and return model: null. Proposal buildings also require ownerId.",
+                "summary": "Get a native building's optional architectural floor model",
+                "description": "Source-neutral parametric floor geometry, converted from the shared published floor plans the city declares. Most buildings have no model and return model: null. A proposal building's model comes with its proposal (GET /proposals/:id); a proposal identity answers model: null.",
                 "parameters": [
                     {
                         "name": "city",
@@ -1059,18 +1059,21 @@
                         "schema": {
                             "type": "string"
                         },
-                        "description": "Public proposal id; required only when source is proposal"
+                        "description": "Public proposal id; required only when source is proposal (which answers model: null)"
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "Object containing model (identity, version, updatedAt, floorPlans), or null when absent"
+                        "description": "Object containing model (identity, origin publication, version null, updatedAt, footprint, floorPlans, publication), or null when absent"
                     },
                     "400": {
                         "description": "Invalid or missing building identity"
                     },
                     "500": {
-                        "description": "Registry lookup failed"
+                        "description": "Floor model read failed"
+                    },
+                    "503": {
+                        "description": "The floor-plan publication did not answer"
                     }
                 }
             }
