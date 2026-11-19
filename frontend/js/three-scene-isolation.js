@@ -17,6 +17,14 @@
         return false;
     }
 
+    // In a design's view: an object tagged with a design stays when it is this design's, so another
+    // design on the same parcel is hidden; anything untagged stands on the design's ground as above.
+    function standsOnDesign(userData, design, contains) {
+        const data = userData || {};
+        if (data.proposalId != null && data.proposalId !== '') return String(data.proposalId) === String(design.proposalId);
+        return standsOn(data, design.parcelIds, contains);
+    }
+
     // Hides every shown child of the groups that `keep` rejects, adding it to `hidden`, which it returns.
     // A child already hidden is left out, so showing `hidden` again cannot reveal what a layer hid.
     function hideChildren(groups, keep = () => false, hidden = []) {
@@ -49,5 +57,5 @@
         return [];
     }
 
-    return { standsOn, hideChildren, showAgain, pickVolumeShown };
+    return { standsOn, standsOnDesign, hideChildren, showAgain, pickVolumeShown };
 });

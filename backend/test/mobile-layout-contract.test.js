@@ -240,7 +240,8 @@ describe('3D and photo view', () => {
         expect(parcel).not.toContain('frameIsolatedFeatures(');
         expect(parcel).toContain('keepGround: true');
         const proposal = threeMode.slice(threeMode.indexOf('function isolateProposal('), threeMode.indexOf('function clearIsolation('));
-        expect(proposal).toContain('frameIsolatedFeatures(feats)');
+        // It frames the design's own ground: its site, else its pieces (designGround).
+        expect(proposal).toContain('frameIsolatedFeatures(ground)');
     });
 
     it('sets the credits and the scale bar straight on the map, in the one row above the dock', () => {

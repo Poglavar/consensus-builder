@@ -22,6 +22,20 @@ describe('planProposalFocus', () => {
         expect(plan.features).toHaveLength(2);
     });
 
+    // A park in one corner of a 2 km parcel: the camera goes to the park, not to the parcel's middle.
+    it('frames a design on its own site, not the whole large parcel it stands on', () => {
+        const parcel = square(16.0, 45.8, 0.02);
+        const park = square(16.0001, 45.8001, 0.0005);
+        const plan = planProposalFocus({
+            targets: [{ id: 'a', parcelIds: ['big'], features: [parcel], siteFeature: park }],
+            originLatLng: { lat: 45.80035, lng: 16.00035 }, radiusM: 300
+        });
+        expect(plan.action).toBe('frame');
+        expect(plan.features).toEqual([park]);
+        // Measured from the anchor to the park, it is in the scene; to the parcel's middle, it was not.
+        expect(distanceM({ lat: 45.80035, lng: 16.00035 }, featuresCenter([parcel]))).toBeGreaterThan(300);
+    });
+
     it('relocates when some of the ground is missing from the scene', () => {
         const plan = planProposalFocus({
             targets: [{ id: 'a', parcelIds: ['1', '2', '3'], features: [square(16.0, 45.8)] }],

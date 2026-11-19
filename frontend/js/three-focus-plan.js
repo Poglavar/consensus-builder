@@ -6,7 +6,9 @@
 //
 //   planProposalFocus({ targets, originLatLng, radiusM }) -> { action, features, reason }
 //     targets      [{ id, parcelIds, features, siteFeature }]: the parcels the proposal claims,
-//                  the ones of them the scene could resolve, and the site of an open-ground proposal
+//                  the ones of them the scene could resolve, and its site. The camera frames the
+//                  site when there is one — the design itself, not the whole of a large parcel it
+//                  stands on — and the resolved parcels otherwise
 //     originLatLng { lat, lng } the scene's anchor
 //     radiusM      how far around the anchor the built context was loaded
 //     action       'frame' (camera onto `features`), 'relocate' (rebuild around the proposal),
@@ -56,13 +58,10 @@
         targets.forEach(target => {
             const parcelIds = Array.isArray(target.parcelIds) ? target.parcelIds : [];
             const resolved = (Array.isArray(target.features) ? target.features : []).filter(f => f && f.geometry);
-            if (parcelIds.length) {
-                // A proposal whose ground is only partly in the scene would be framed on a hole.
-                if (resolved.length < parcelIds.length) groundMissing = true;
-                features.push(...resolved);
-            } else if (target.siteFeature && target.siteFeature.geometry) {
-                features.push(target.siteFeature);
-            }
+            // A proposal whose ground is only partly in the scene would be framed on a hole.
+            if (parcelIds.length && resolved.length < parcelIds.length) groundMissing = true;
+            if (target.siteFeature && target.siteFeature.geometry) features.push(target.siteFeature);
+            else if (parcelIds.length) features.push(...resolved);
         });
         if (groundMissing) return { action: 'relocate', features, reason: 'ground not in scene' };
         const center = featuresCenter(features);

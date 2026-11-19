@@ -67,6 +67,16 @@ describe('three-scene-isolation.js', () => {
         expect(isolation.showAgain(hidden)).toEqual([]);
         expect([kept.visible, off.visible, gone.visible]).toEqual([true, false, true]);
     });
+    // Two designs on one large parcel: the design view keeps its own buildings, not the other's.
+    it('in a design view keeps that design\'s buildings and what stands on its ground', () => {
+        const design = { proposalId: 'park-a', parcelIds: new Set(['P']) };
+        const onSite = () => true;
+        expect(isolation.standsOnDesign({ proposalId: 'park-a', parcelId: 'P' }, design, onSite)).toBe(true);
+        expect(isolation.standsOnDesign({ proposalId: 'block-b', parcelId: 'P' }, design, onSite)).toBe(false);
+        expect(isolation.standsOnDesign({ parcelId: 'P' }, design, onSite)).toBe(true);
+        expect(isolation.standsOnDesign({ isNearbyBuilding3D: true, footprintLatLng: [0, 0] }, design, () => false)).toBe(false);
+    });
+
     it('keeps tagged objects of the set and untagged buildings standing on it', () => {
         const contains = point => point === 'in';
         const ids = new Set(['A']);

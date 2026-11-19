@@ -845,13 +845,16 @@
         return computeGroundMetrics(getParcelFeatureById(parcelId));
     }
 
-    // The same volume maths over any ground polygon: a parcel, or a proposal's site.
-    function computeGroundMetrics(groundFeature) {
+    // The same volume maths over any ground polygon: a parcel, or a proposal's site. With
+    // `proposalId`, only that design's proposed buildings count (another design on the same parcel
+    // is not this one's gain).
+    function computeGroundMetrics(groundFeature, proposalId = null) {
         if (!groundFeature) return null;
+        const proposed = Array.isArray(window.proposedBuildings) ? window.proposedBuildings : [];
         return window.ProposalGain.computeParcelMetrics(
             groundFeature,
             Array.isArray(nearbyProposalBuildings) ? nearbyProposalBuildings : [],
-            Array.isArray(window.proposedBuildings) ? window.proposedBuildings : [],
+            proposalId === null ? proposed : proposed.filter(building => String(building?.properties?.proposalId ?? '') === String(proposalId)),
             {
                 floorHeightM: FLOOR_HEIGHT_M,
                 turf,
@@ -933,6 +936,19 @@
             add(fabric.producedBy(proposal.proposalId).map(feature => fabric.featureId(feature)));
         }
         return ids;
+    }
+
+    // The ground a design stands on in the scene: the pieces it produced (its own parcels, plots or
+    // corridor), else — a design that forms nothing, such as a block on its parcels — the pieces it
+    // declares; and its site, which the camera frames and which decides what it keeps in view. Never
+    // the rest of a parcel it was carved from: on a large parcel that is the owner's land, not the
+    // design's.
+    function designGround(proposal) {
+        const fabric = window.LiveParcelFabric;
+        const produced = proposal.proposalId && fabric?.producedBy && fabric?.featureId
+            ? fabric.producedBy(proposal.proposalId).map(feature => String(fabric.featureId(feature))) : [];
+        const ids = new Set(produced.length ? produced : (proposal.cadastreParcelIds || []).map(String));
+        return { ids, produced: produced.length > 0, site: proposalSiteFeature(proposal) };
     }
 
     // The figures of the Design and Parcel sections of the click stack (three-click-stack.js): one
@@ -1134,15 +1150,25 @@
     // gain/loss. The ground rule (which figures are site metrics, which need a binding) is in gain.js
     // summarizeProposalGround: on open ground the totals are the site's and there is no parcel count.
     // False when there is nothing to measure.
-    function updateProposalInfoPanel(proposal, idSet) {
+    function updateProposalInfoPanel(proposal) {
         const panel = ensureParcelInfoPanel();
         const siteStats = window.__siteStats || null;
         const ground = siteStats ? siteStats.groundOf(proposal) : null;
+        // Measured over the design's own ground (designGround): its pieces, or the parcels it stands
+        // on cut to its site, counting only its own proposed buildings.
+        const own = designGround(proposal);
+        const idSet = own.ids;
         const parcelMetrics = [];
         idSet.forEach(id => {
+            const piece = getParcelFeatureById(id);
             // A piece minted on open ground is not a parcel; its ground is measured with the site.
-            if (siteStats && siteStats.isGroundPiece(getParcelFeatureById(id))) return;
-            const m = computeParcelMetrics(id);
+            if (siteStats && siteStats.isGroundPiece(piece)) return;
+            let measured = piece;
+            if (piece && !own.produced && own.site) {
+                try { measured = window.__parcelArrangement.clipWith(turf, 'intersect', piece, own.site, { site: 'three-mode.designGround' }); }
+                catch (error) { console.warn(`[${new Date().toISOString()}] [3D] the design's ground on ${id} could not be measured`, error); measured = null; }
+            }
+            const m = computeGroundMetrics(measured, proposal.proposalId ?? null);
             if (m) parcelMetrics.push(m);
         });
         const siteMetrics = window.ProposalGain.needsSiteMetrics(ground)
@@ -1203,7 +1229,11 @@
         // flatGroup holds parcels (tagged) and roads (untagged).
         if (!options.keepGround) isolation.hideChildren([flatGroup], onGround, isolationHidden);
         // Proposed slices are tagged with their parcel; existing context buildings stand by footprint centre.
-        isolation.hideChildren([existingBuildingsGroup, proposedBuildingsGroup, ineligibleBuildingsGroup, floorPlanGroup], onGround, isolationHidden);
+        // A design's view keeps only that design's buildings among those tagged with one.
+        const onDesignGround = options.proposalId
+            ? child => isolation.standsOnDesign(child.userData, { proposalId: options.proposalId, parcelIds: parcelIdSet }, contains)
+            : onGround;
+        isolation.hideChildren([existingBuildingsGroup, proposedBuildingsGroup, ineligibleBuildingsGroup, floorPlanGroup], onDesignGround, isolationHidden);
         // Planned decorations aren't parcel-specific; hide them while isolated. Planned grounds are
         // flat, so the parcel view keeps them.
         isolation.hideChildren([options.keepGround ? null : plannedFlatGroup, parkGroup, squareGroup, lakeGroup, stationGroup, existingTransitAlignmentGroup], undefined, isolationHidden);
@@ -1376,10 +1406,14 @@
         const store = (typeof window !== 'undefined') ? window.proposalStorage : null;
         const proposal = (store && typeof store.getProposal === 'function') ? store.getProposal(proposalId) : null;
         if (!proposal) return;
-        const idSet = getProposalParcelIdSet(proposal);
+        // The design's own ground and its site (designGround), never the rest of a parcel it was
+        // carved from: the camera frames the site, and the view keeps the design's pieces, its own
+        // buildings and the existing ones on its site.
+        const own = designGround(proposal);
+        const idSet = own.ids;
         // A proposal on open ground has no parcels to isolate; it still has a site to frame and
         // figures to show, so the scene stays as it is and only the panel and camera follow it.
-        const siteFeature = idSet.size ? null : proposalSiteFeature(proposal);
+        const siteFeature = idSet.size ? null : own.site;
         if (!idSet.size && !siteFeature) return;
         if (isolatedParcelId !== null) clearIsolation();
         isolatedProposalId = String(proposalId);
@@ -1392,8 +1426,9 @@
         }
         const feats = [];
         idSet.forEach(id => { const f = getParcelFeatureById(id); if (f) feats.push(f); });
-        applyIsolationVisibility(idSet, feats);
-        frameIsolatedFeatures(feats);
+        const ground = own.site ? [own.site] : feats;
+        applyIsolationVisibility(idSet, ground, { proposalId: String(proposalId) });
+        frameIsolatedFeatures(ground);
         notifyIsolationChanged();
     }
 
@@ -1408,7 +1443,7 @@
             if (!proposal) return null;
             const parcelIds = Array.from(getProposalParcelIdSet(proposal));
             const features = parcelIds.map(getParcelFeatureById).filter(Boolean);
-            return { id: String(id), parcelIds, features, siteFeature: parcelIds.length ? null : proposalSiteFeature(proposal) };
+            return { id: String(id), parcelIds, features, siteFeature: proposalSiteFeature(proposal) };
         }).filter(Boolean);
         let origin = null;
         try { const ll = xyToLatLng(0, 0); origin = { lat: ll.lat, lng: ll.lng }; } catch (_) { }
@@ -1424,10 +1459,13 @@
             || ((store && typeof store.getProposal === 'function') ? store.getProposal(id) : null);
     }
 
-    // Where a proposal stands, for moving the map to it: its loaded parcels, else its own
-    // geometry (buildings, corridor, structure), else its site or stored footprint.
+    // Where a proposal stands, for moving the map to it: its site (the design itself, not the
+    // whole of a large parcel it stands on), else its loaded parcels, else its own geometry
+    // (buildings, corridor, structure), else its stored footprint.
     function proposalGroundFeatures(proposal) {
         const feats = [];
+        const site = proposalSiteFeature(proposal);
+        if (site) return [site];
         getProposalParcelIdSet(proposal).forEach(id => { const f = getParcelFeatureById(id); if (f) feats.push(f); });
         if (feats.length) return feats;
         try {
@@ -1435,9 +1473,7 @@
             (sets?.primaryFeatures || []).forEach(f => { if (f?.geometry) feats.push(f); });
         } catch (_) { /* a record without derivable geometry */ }
         if (feats.length) return feats;
-        const site = proposalSiteFeature(proposal);
-        if (site) feats.push(site);
-        else if (proposal.geometry?.type && proposal.geometry.coordinates) feats.push({ type: 'Feature', properties: {}, geometry: proposal.geometry });
+        if (proposal.geometry?.type && proposal.geometry.coordinates) feats.push({ type: 'Feature', properties: {}, geometry: proposal.geometry });
         return feats;
     }
 
@@ -1819,7 +1855,7 @@
                 clearIsolation();
                 withStackDriving(() => window.selectAndHighlightProposal?.(instance.id, null, false, false, true));
                 const proposal = window.proposalStorage?.getProposal?.(instance.id);
-                if (proposal && updateProposalInfoPanel(proposal, getProposalParcelIdSet(proposal))) body.appendChild(parcelInfoPanelEl);
+                if (proposal && updateProposalInfoPanel(proposal)) body.appendChild(parcelInfoPanelEl);
                 // Editing actions use the same Design section in the map view, never a second
                 // inspector floating beside this scene's figures.
                 appendMapActions(body, () => window.ClickStack.showDesign(instance.id));
