@@ -210,10 +210,10 @@ test('Photo clicks use the shared parcel section independently of boundary visib
   const selectedOutline = () => page.evaluate(() => {
     const w = window as any;
     const focus = w.getThreeModeInternals().scene.getObjectByName('click-stack-focus');
-    return focus && { kind: focus.userData.kind,
-      yellow: focus.children.find((object: any) => object.userData.selectionStroke === 'yellow')?.material.color.getHex() };
+    // Painted on the photo surface (photoreal-parcels.js), not a 3D line that could float off it.
+    return focus && { kind: focus.userData.kind, pattern: focus.userData.pattern, lines: focus.children.length };
   });
-  await expect.poll(selectedOutline).toEqual({ kind: 'parcels', yellow: 0xffdd00 });
+  await expect.poll(selectedOutline).toEqual({ kind: 'parcels', pattern: 'surface', lines: 0 });
   const camera = await page.evaluate(() => (window as any).getThreeModeInternals().camera.position.toArray());
   await page.locator('#layers-button').click();
   await toggle.uncheck();
@@ -224,7 +224,7 @@ test('Photo clicks use the shared parcel section independently of boundary visib
   await expect(page.locator('#three-click-stack')).toBeHidden();
   await canvas.click({ position: point });
   await expect(parcelSection).toHaveClass(/is-selected/);
-  await expect.poll(selectedOutline).toEqual({ kind: 'parcels', yellow: 0xffdd00 });
+  await expect.poll(selectedOutline).toEqual({ kind: 'parcels', pattern: 'surface', lines: 0 });
   const after = await page.evaluate(() => (window as any).getThreeModeInternals().camera.position.toArray());
   after.forEach((coordinate: number, index: number) => expect(coordinate).toBeCloseTo(camera[index], 6));
   await page.keyboard.press('Escape');

@@ -2,7 +2,7 @@
 import { describe, expect, it, vi } from 'vitest';
 import { createRequire } from 'node:module';
 const require = createRequire(import.meta.url);
-const { projectFeatures, parcelsAt, texturePoint, windowSpan, patchShader, create } = require('../../frontend/js/photoreal-parcels.js');
+const { projectFeatures, projectHighlightLines, parcelsAt, texturePoint, windowSpan, patchShader, create } = require('../../frontend/js/photoreal-parcels.js');
 const ring = (x, y, width = 10) => [[x, y], [x + width, y], [x + width, y + width], [x, y + width], [x, y]];
 const feature = (id, coordinates, type = 'Polygon') => ({ type: 'Feature', properties: { parcelId: id }, geometry: { type, coordinates } });
 const project = (lat, lng) => [lng, lat];
@@ -72,7 +72,8 @@ function fixture({ pending = false, visible = true } = {}) {
     for (const id of ['photo-parcels-visible', 'photo-parcels-status']) nodes.set(id, element());
     nodes.get('photo-parcels-visible').checked = visible;
     const context = { clearRect: vi.fn(), beginPath: vi.fn(), lineTo: vi.fn(), moveTo: vi.fn(), closePath: vi.fn(),
-        stroke: vi.fn(), fill: vi.fn() };
+        stroke: vi.fn(), fill: vi.fn(), strokes: [] };
+    context.stroke.mockImplementation(() => context.strokes.push(context.strokeStyle));
     const textures = [];
     const screen = element();
     let resolve;
@@ -83,7 +84,8 @@ function fixture({ pending = false, visible = true } = {}) {
         THREE: { CanvasTexture: class { constructor() { this.dispose = vi.fn(); textures.push(this); } }, Vector2: class { set() {} }, LinearFilter: 1 },
         MutationObserver: class { observe() {} disconnect() {} }, __photorealFrame: { mercatorScaleFactor: () => 1 },
         getComputedStyle: () => ({ getPropertyValue: () => '#ffffff' }), L: { latLngBounds: (sw, ne) => [sw, ne] },
-        CadastralParcelRepository: { ensureBounds: vi.fn(() => source) }, turf: { area: () => 100 }, invalidateThreeView: vi.fn()
+        CadastralParcelRepository: { ensureBounds: vi.fn(() => source) }, turf: { area: () => 100 }, invalidateThreeView: vi.fn(),
+        MapHighlight: { color: '#ffdd00', halo: '#292000' }
     };
     const internals = { originLatLng: () => ({ lat: 0 }), controls: { target: { x: 0, y: 0 } }, latLngToXY: project,
         camera: { position: { distanceTo: () => 400 } },
@@ -93,6 +95,37 @@ function fixture({ pending = false, visible = true } = {}) {
 }
 
 describe('photo overlay lifecycle', () => {
+    it('paints the selected outline on the surface, with the parcel layer off, and clears it', async () => {
+        const f = fixture({ visible: false });
+        await Promise.resolve();
+        expect(f.overlay.uniforms.uParcelOn.value).toBe(0);
+        f.context.strokes.length = 0;
+        expect(f.overlay.setHighlight([f.response.features[0]])).toBe(true);
+        expect(f.overlay.uniforms.uParcelOn.value).toBe(1);
+        // Halo then yellow, for the one ring; no parcel-layer ink while that layer is off.
+        expect(f.context.strokes).toEqual(['#292000', '#ffdd00']);
+        // A moved window redraws the selection in it.
+        f.internals.controls.target.x = 300;
+        f.overlay.update();
+        await Promise.resolve(); await Promise.resolve();
+        expect(f.context.strokes.slice(-2)).toEqual(['#292000', '#ffdd00']);
+        expect(f.overlay.setHighlight(null)).toBe(false);
+        expect(f.overlay.uniforms.uParcelOn.value).toBe(0);
+        f.overlay.dispose();
+    });
+    it('reports no surface outline before its window exists, so the caller keeps its own', () => {
+        const f = fixture({ pending: true });
+        expect(f.overlay.setHighlight([f.response.features[0]])).toBe(false);
+        f.overlay.dispose();
+    });
+    it('projects polygon rings and road lines as highlight strokes, skipping unusable geometry', () => {
+        const lines = projectHighlightLines([
+            { geometry: { type: 'MultiPolygon', coordinates: [[ring(0, 0)], [ring(5, 5)]] } },
+            { geometry: { type: 'LineString', coordinates: [[0, 0], [1, 1]] } },
+            { geometry: { type: 'Point', coordinates: [0, 0] } }, null
+        ], project);
+        expect(lines).toHaveLength(3);
+    });
     it('supplies overlapping source geometry without owning any click or keyboard selection handlers', async () => {
         const f = fixture();
         await Promise.resolve();

@@ -28,6 +28,24 @@
         return parcels;
     }
 
+    // A selection's boundary lines in scene XY: polygon rings and line strings alike, so one
+    // stroke paints a parcel, a permitted lot or a road on the photo surface.
+    function projectHighlightLines(features, project) {
+        const lines = [];
+        for (const feature of features || []) {
+            const g = feature?.geometry;
+            const parts = g?.type === 'Polygon' ? g.coordinates
+                : g?.type === 'MultiPolygon' ? g.coordinates.flat()
+                    : g?.type === 'LineString' ? [g.coordinates]
+                        : g?.type === 'MultiLineString' ? g.coordinates : [];
+            for (const part of parts) {
+                const line = (part || []).map(c => project(c[1], c[0]));
+                if (line.length >= 2 && line.every(c => c && Number.isFinite(c[0]) && Number.isFinite(c[1]))) lines.push(line);
+            }
+        }
+        return lines;
+    }
+
     function ringContains(ring, x, y) {
         let inside = false;
         for (let i = 0, j = ring.length - 1; i < ring.length; j = i++) {
@@ -100,6 +118,10 @@ if (uParcelOn > 0.5) {
         let enabled = toggle?.checked === true;
         let disposed = false, busy = false, dirty = true;
         let bounds = null, parcels = [], request = null;
+        // The selected object's boundary, painted on the photo surface like the parcel lines so it
+        // lies on the ground wherever the tiles are. A 3D line placed at a sampled height stayed at
+        // that height when finer tiles or a re-seat moved the ground under it.
+        let highlightFeatures = [];
         let requestedCenter = null, requestedSpan = null, statusSpec = null;
         const t = (key, fallback, params) => {
             const value = root.i18n?.t?.('threeMode.photoParcels.' + key, params);
@@ -126,20 +148,45 @@ if (uParcelOn > 0.5) {
                 context.closePath();
             }));
         }
+        function overlayOn() {
+            return (enabled && parcels.length) || highlightFeatures.length ? 1 : 0;
+        }
         function draw() {
             context.clearRect(0, 0, size, size);
             if (!bounds) return;
             const colors = palette();
             context.lineJoin = 'round';
             // Two passes keep a dark halo beneath shared edges, rather than darkening a neighbour's line.
-            for (const [width, color] of [[4.5, colors.halo], [2, colors.edge]]) {
+            if (enabled) {
+                for (const [width, color] of [[4.5, colors.halo], [2, colors.edge]]) {
+                    context.lineWidth = width;
+                    context.strokeStyle = color;
+                    parcels.forEach(parcel => { path(parcel); context.stroke(); });
+                }
+            }
+            const lines = projectHighlightLines(highlightFeatures, internals.latLngToXY);
+            for (const [width, color] of [[11, root.MapHighlight.halo], [6, root.MapHighlight.color]]) {
                 context.lineWidth = width;
                 context.strokeStyle = color;
-                parcels.forEach(parcel => { path(parcel); context.stroke(); });
+                lines.forEach(line => {
+                    context.beginPath();
+                    line.forEach(([x, y], i) => {
+                        const uv = texturePoint(x, y, bounds, size);
+                        if (i) context.lineTo(...uv); else context.moveTo(...uv);
+                    });
+                    context.stroke();
+                });
             }
             texture.needsUpdate = true;
-            uniforms.uParcelOn.value = enabled && parcels.length ? 1 : 0;
+            uniforms.uParcelOn.value = overlayOn();
             root.invalidateThreeView?.();
+        }
+        // Paints the selection on the surface (null clears it). False when the overlay has no
+        // window yet or nothing drawable, so the caller keeps its own outline.
+        function setHighlight(features) {
+            highlightFeatures = Array.isArray(features) ? features : [];
+            draw();
+            return !!bounds && projectHighlightLines(highlightFeatures, internals.latLngToXY).length > 0;
         }
         function rebuild(features) {
             parcels = projectFeatures(features, internals.latLngToXY, bounds);
@@ -183,7 +230,8 @@ if (uParcelOn > 0.5) {
         }
         function onToggle() {
             enabled = toggle.checked;
-            uniforms.uParcelOn.value = enabled && parcels.length ? 1 : 0;
+            draw();
+            if (!bounds) uniforms.uParcelOn.value = 0;
             if (status) status.hidden = !enabled;
             if (enabled) { dirty = true; update(); }
             root.invalidateThreeView?.();
@@ -197,11 +245,12 @@ if (uParcelOn > 0.5) {
         if (status) status.hidden = !enabled;
         update();
         return {
-            uniforms, update,
+            uniforms, update, setHighlight,
             at: (x, y) => parcelsAt(parcels, x, y),
             dispose() {
                 disposed = true;
                 parcels = [];
+                highlightFeatures = [];
                 bounds = null;
                 request?.abort();
                 themeObserver.disconnect();
@@ -213,5 +262,5 @@ if (uParcelOn > 0.5) {
             }
         };
     }
-    return { projectFeatures, parcelsAt, texturePoint, windowSpan, patchShader, create };
+    return { projectFeatures, projectHighlightLines, parcelsAt, texturePoint, windowSpan, patchShader, create };
 });

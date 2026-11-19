@@ -1584,6 +1584,7 @@
     function clearStackFocus() {
         const index = frameHooks.indexOf(pulseStackFocus);
         if (index >= 0) frameHooks.splice(index, 1);
+        if (stackFocusGroup?.userData.pattern === 'surface') window.PhotorealMode?.setSelectionHighlight?.(null);
         if (!stackFocusGroup) return;
         clearGroupChildren(stackFocusGroup);
         stackFocusGroup.removeFromParent();
@@ -1678,6 +1679,18 @@
         let segments = stackVolumeSegments(kind, instance);
         const representation = segments.length ? 'volume' : 'ground';
         const groundFeatures = representation === 'ground' ? window.ClickStackHits.featuresFor(kind, instance) : [];
+        // In photo view a ground outline is painted on the tile surface, so it stays on the ground
+        // when finer tiles or a re-seat move it (a line draped at click time floated off it). A
+        // design keeps its outline and hatching: it stands on its own authored ground.
+        if (realisticLayerActive && representation === 'ground' && kind !== 'designs'
+            && window.PhotorealMode?.setSelectionHighlight?.(groundFeatures)) {
+            stackFocusGroup = new THREE.Group();
+            stackFocusGroup.name = 'click-stack-focus';
+            stackFocusGroup.userData = { kind, id: instance.id, representation, pattern: 'surface' };
+            scene.add(stackFocusGroup);
+            invalidateThreeView();
+            return;
+        }
         if (!segments.length) {
             const temporaryMaterial = new THREE.LineBasicMaterial();
             for (const feature of groundFeatures) {

@@ -3132,6 +3132,8 @@
         getViewer: function () { return tiles; },
         pickSurface: pickPhotoSurface,
         sourceParcelsAt: function (point) { return parcelOverlay?.at(point.x, point.y) || []; },
+        // The click stack's selected ground outline, painted on the photo surface (photoreal-parcels.js).
+        setSelectionHighlight: function (features) { return !!parcelOverlay && parcelOverlay.setHighlight(features); },
         // The ground the mesh is cut from that a design covers with its own surface (parks, squares,
         // plot surroundings), as GeoJSON geometries. The real trees there are gone with the mesh, so
         // three-mode stands its context trees there, as model view does.
