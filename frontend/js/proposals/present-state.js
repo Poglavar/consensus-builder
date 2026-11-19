@@ -296,13 +296,8 @@
         // What a plan's designs clear: each member's demolition region (the app's own rule,
         // demolition-prefetch.js) and its road corridor pieces.
         function demolitionGround(snapshot) {
-            const pieces = snapshot.materializedFeatures || [];
             const regions = win.__demolitionPrefetch.collectDemolitionRegions(snapshot.records || [], {
                 normalizeGoalKey: goal => win.__applyRoute.normalizeGoalKey(goal),
-                parcelFeatures: proposal => {
-                    const ids = new Set((proposal.cadastreParcelIds || []).map(String));
-                    return pieces.filter(piece => ((piece.properties && piece.properties.cadastreParcelIds) || []).some(id => ids.has(String(id))));
-                },
                 structureGeometry: proposal => proposal.structureProposal && proposal.structureProposal.geometry
             });
             return [...regions.map(region => ({ type: 'Feature', properties: {}, geometry: region.geometry })), ...(snapshot.corridorFeatures || [])];

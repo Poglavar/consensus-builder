@@ -1,5 +1,5 @@
-// proposals/demolition-prefetch.js — the land a design clears: a building proposal's parcels and
-// footprints, a structure's body. The apply path registers it with demolition-index.js, which derives
+// proposals/demolition-prefetch.js — the land a design clears: a building design's site or land take
+// and its footprints, a structure's body. The apply path registers it with demolition-index.js, which derives
 // the existing buildings it razes or cuts; plan stats, Compare and MCP compare read the same regions.
 // UMD so node tests and the server run the same code the browser runs.
 (function (global) {
@@ -26,44 +26,53 @@
         return (proposal.buildingProposal && Array.isArray(proposal.buildingProposal.buildings)) ? proposal.buildingProposal.buildings : [];
     }
 
-    // proposals/core.js normalizeGoalKey, for the one case that matters here (every 'building…'
-    // goal is the 'single' key); the apply path hands in the real one.
+    // The canonical goal key (apply/route.js normalizeGoalKey, loaded after this file in the browser,
+    // so read when called): 'single' is a Freeform building, 'buildings' a block or rule design.
     function goalKeyOf(proposal, helpers) {
         if (helpers && typeof helpers.normalizeGoalKey === 'function') return helpers.normalizeGoalKey(proposal.goal);
-        const raw = String((proposal && proposal.goal) || '').trim().toLowerCase();
-        return raw.startsWith('building') ? 'single' : raw;
+        const route = global.__applyRoute || (typeof require === 'function' ? require('./apply/route.js') : null);
+        if (!route) throw new Error('apply/route.js (normalizeGoalKey) is not loaded');
+        return route.normalizeGoalKey(proposal && proposal.goal);
     }
 
     /**
-     * Whether a building proposal clears the PARCELS it stands on, or only the ground under its
-     * authored footprints. A proposal clears the ground it takes (user decision 2026-10-22: a
-     * block rule's parcels lose their courtyard buildings too). A rule or block on existing
-     * parcels takes those parcels. A Freeform building that forms its own parcel out of its
-     * footprint takes its exact reviewed land (the same test as
-     * apply/buildings.js shouldFormOwnBuildingParcel). A rule that models the EXISTING buildings
-     * (blockify mode 'existing' raises them) clears only what it redraws, so the ones it skipped
-     * stay standing.
+     * The ground a building design clears besides its footprints: its own land, never the rest of
+     * the parcels it stands on, so a design in one corner of a large parcel leaves the rest of that
+     * parcel standing, and two designs on one parcel do not clear each other. A design clears the
+     * ground it takes (user decision 2026-10-22: a block rule's land loses its courtyard buildings
+     * too):
+     *   - a rule that models the EXISTING buildings (blockify mode 'existing' raises them) clears
+     *     only what it redraws, so the ones it skipped stay standing: no land;
+     *   - a Freeform building ('single') forms its own parcel from its exact reviewed land take
+     *     (apply/buildings.js shouldFormOwnBuildingParcel), its footprints when it has none;
+     *   - every other building design (block, row, rule, parcel-based) takes its site, the ground
+     *     its binding is computed on (site-binding.js siteOf): the authored site, or the selected land
+     *     the editor made its site (proposals/create.js); a design with no site stands on its
+     *     footprints alone, as its binding does.
+     * Returns { land } (a geometry, or null for the footprints alone).
      */
-    function buildingClearsParcels(proposal, helpers = {}) {
+    function buildingLandOf(proposal, helpers = {}) {
         const sub = (proposal && proposal.buildingProposal) || {};
-        if (sub.parameters && sub.parameters.mode === 'existing') return false;
-        if (goalKeyOf(proposal, helpers) === 'single' && buildingFeaturesOf(proposal).length === 1) return false;
-        return true;
+        if (sub.parameters && sub.parameters.mode === 'existing') return { land: null };
+        if (goalKeyOf(proposal, helpers) === 'single') {
+            const take = proposal.geometry && proposal.geometry.landTake;
+            return { land: take ? (take.type === 'Feature' ? take.geometry : take) : null };
+        }
+        const site = proposal.site && proposal.site.type === 'Feature' ? proposal.site.geometry : proposal.site;
+        return { land: site && (site.type === 'Polygon' || site.type === 'MultiPolygon') ? site : null };
     }
 
     /**
-     * The demolition region of a building proposal: the parcels it clears (`parcelFeatures`, the
-     * live pieces it stands on) plus its authored footprints, as one Polygon or MultiPolygon the
-     * scan intersects buildings with. Null when there is nothing to scan.
+     * The demolition region of a building design: its land (buildingLandOf) plus its authored
+     * footprints, as one Polygon or MultiPolygon the scan intersects buildings with. A Freeform
+     * land take already holds its footprints and is the region as it is. Null when there is
+     * nothing to scan.
      */
-    function buildingDemolitionGeometry(proposal, parcelFeatures, helpers = {}) {
+    function buildingDemolitionGeometry(proposal, helpers = {}) {
         if (!proposal) return null;
-        if (goalKeyOf(proposal, helpers) === 'single' && proposal.geometry?.landTake) {
-            const take = proposal.geometry.landTake;
-            return take.type === 'Feature' ? take.geometry : take;
-        }
-        const parcels = buildingClearsParcels(proposal, helpers) ? polygonsOf(parcelFeatures) : [];
-        const polygons = parcels.concat(polygonsOf(buildingFeaturesOf(proposal)));
+        const { land } = buildingLandOf(proposal, helpers);
+        if (land && goalKeyOf(proposal, helpers) === 'single') return land;
+        const polygons = polygonsOf(land ? [land] : []).concat(polygonsOf(buildingFeaturesOf(proposal)));
         if (!polygons.length) return null;
         return polygons.length === 1
             ? { type: 'Polygon', coordinates: polygons[0] }
@@ -76,24 +85,14 @@
      *
      * It MUST match what the apply path computes later from the same record — a prefetched region
      * smaller than the scanned one would hand the scan a list missing exactly the edge buildings.
-     * Buildings: the ground the proposal takes (buildingDemolitionGeometry): the live pieces of its
-     * cadastral scope from `helpers.parcelFeatures` (a superset of the pieces Step 4 resolves) plus
-     * its authored footprints; a member that clears its parcels but has no parcels to prefetch is
-     * left out, so it fetches for itself rather than scanning a region missing its courtyards.
+     * Buildings: the ground the design takes (buildingDemolitionGeometry), read from the record
+     * alone, as the apply path reads it.
      * Structures: the structure geometry, via the caller-supplied resolver (canonical fallback
      * lives on ProposalManager and is not reimplemented here).
      */
     function demolitionRegionOf(proposal, helpers = {}) {
         if (!proposal) return null;
-        if (proposal.buildingProposal) {
-            let parcels = [];
-            if (buildingClearsParcels(proposal, helpers)) {
-                const resolve = typeof helpers.parcelFeatures === 'function' ? helpers.parcelFeatures : null;
-                parcels = resolve ? resolve(proposal) : null;
-                if (!Array.isArray(parcels) || !parcels.length) return null;
-            }
-            return buildingDemolitionGeometry(proposal, parcels, helpers);
-        }
+        if (proposal.buildingProposal) return buildingDemolitionGeometry(proposal, helpers);
         if (proposal.structureProposal) {
             const resolve = typeof helpers.structureGeometry === 'function' ? helpers.structureGeometry : null;
             const geometry = resolve ? resolve(proposal) : (proposal.structureProposal.geometry || null);
@@ -120,7 +119,7 @@
         return regions;
     }
 
-    const api = { demolitionRegionOf, collectDemolitionRegions, buildingClearsParcels, buildingDemolitionGeometry };
+    const api = { demolitionRegionOf, collectDemolitionRegions, buildingLandOf, buildingDemolitionGeometry };
 
     // Namespaced only — a bare global here could shadow a top-level function in the classic
     // scripts loaded alongside this file.

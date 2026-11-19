@@ -15,73 +15,80 @@ const square = (lng, lat, side = 0.0004) => ({
     coordinates: [[[lng, lat], [lng + side, lat], [lng + side, lat + side], [lng, lat + side], [lng, lat]]]
 });
 
-// A proposal clears the ground it takes (2026-10-22): a block or rule its parcels, a Freeform
-// building its footprint, a rule that raises the existing buildings only what it redraws.
-describe('the ground a building proposal clears', () => {
-    const parcelA = { type: 'Feature', properties: { parcelId: 'HR-A' }, geometry: square(15.869, 43.749, 0.002) };
-    const parcelB = { type: 'Feature', properties: { parcelId: 'HR-B' }, geometry: square(15.879, 43.759, 0.002) };
+// A design clears the ground it takes (2026-10-22): a block or rule its site, a Freeform building
+// its land take or footprint, a rule that raises the existing buildings only what it redraws —
+// never the rest of the parcels it stands on, however large they are.
+describe('the ground a building design clears', () => {
+    // A large parcel (about 2 km across) with a block site in one corner and another design's in the other.
+    const parcel = { type: 'Feature', properties: { parcelId: 'HR-A' }, geometry: square(15.86, 43.74, 0.02) };
+    const site = square(15.861, 43.741, 0.001);
     const block = () => ({
-        proposalId: 'p-1', goal: 'buildings', cadastreParcelIds: ['HR-A', 'HR-B'],
+        proposalId: 'p-1', goal: 'buildings', cadastreParcelIds: ['HR-A'], site,
         buildingProposal: { typologyType: 'block' },
-        geometry: { buildings: [square(15.87, 43.75), { type: 'Feature', geometry: square(15.88, 43.76) }] }
+        geometry: { buildings: [square(15.8612, 43.7412), { type: 'Feature', geometry: square(15.8615, 43.7415) }] }
     });
 
-    it('a block takes its parcels: the region is the parcels plus the authored buildings', () => {
-        expect(prefetchApi.buildingClearsParcels(block())).toBe(true);
-        const geometry = prefetchApi.buildingDemolitionGeometry(block(), [parcelA, parcelB]);
+    it('a block takes its site and its buildings, not the rest of the parcel it stands on', () => {
+        const geometry = prefetchApi.buildingDemolitionGeometry(block());
         expect(geometry.type).toBe('MultiPolygon');
-        expect(geometry.coordinates).toEqual([parcelA.geometry.coordinates, parcelB.geometry.coordinates, square(15.87, 43.75).coordinates, square(15.88, 43.76).coordinates]);
+        expect(geometry.coordinates).toEqual([site.coordinates, square(15.8612, 43.7412).coordinates, square(15.8615, 43.7415).coordinates]);
+        expect(turf.area(geometry)).toBeLessThan(turf.area(parcel) / 100);
+        // A second block in the parcel's other corner: neither design's land reaches the other's buildings.
+        const other = { ...block(), proposalId: 'p-2', site: square(15.878, 43.758, 0.001), geometry: { buildings: [square(15.8782, 43.7582)] } };
+        const otherLand = turf.feature(prefetchApi.buildingDemolitionGeometry(other));
+        expect(turf.booleanIntersects(otherLand, turf.feature(geometry))).toBe(false);
+        expect(prefetchApi.buildingLandOf({ ...block(), site: { type: 'Feature', properties: {}, geometry: site } })).toEqual({ land: site });
+    });
+
+    // Its binding was computed on its footprints (site-binding.js siteOf), so that is its land.
+    it('a design without a site clears its footprints, never the parcels it stands on', () => {
+        const { site: _site, ...siteless } = block();
+        expect(prefetchApi.buildingLandOf({ ...siteless, site: null })).toEqual({ land: null });
+        expect(prefetchApi.buildingDemolitionGeometry(siteless).coordinates).toEqual([square(15.8612, 43.7412).coordinates, square(15.8615, 43.7415).coordinates]);
     });
 
     it('a rule that raises the existing buildings clears only what it redraws', () => {
         const raise = block();
         raise.buildingProposal.parameters = { mode: 'existing', rule: 'additional' };
-        expect(prefetchApi.buildingClearsParcels(raise)).toBe(false);
-        expect(prefetchApi.buildingDemolitionGeometry(raise, [parcelA, parcelB]).coordinates).toHaveLength(2);
+        expect(prefetchApi.buildingLandOf(raise)).toEqual({ land: null });
+        expect(prefetchApi.buildingDemolitionGeometry(raise).coordinates).toHaveLength(2);
     });
 
-    it('a Freeform building forms its own parcel: its footprint, unless it takes the whole parcels', () => {
+    it('a Freeform building forms its own parcel: its footprint or stepped parts, or its land take', () => {
         const single = { ...block(), goal: 'single', geometry: { buildings: [square(15.87, 43.75)] } };
-        expect(prefetchApi.buildingClearsParcels(single)).toBe(false);
-        expect(prefetchApi.buildingDemolitionGeometry(single, [parcelA])).toEqual(square(15.87, 43.75));
-        // Any 'building…' goal is the single key, as proposals/core.js normalizes it.
-        expect(prefetchApi.buildingClearsParcels({ ...single, goal: 'Building' })).toBe(false);
-        const whole = { ...single, geometry: { ...single.geometry, landTake: parcelA } };
-        expect(prefetchApi.buildingClearsParcels(whole)).toBe(false);
-        expect(prefetchApi.buildingDemolitionGeometry(whole, [parcelA])).toEqual(parcelA.geometry || parcelA);
+        expect(prefetchApi.buildingDemolitionGeometry(single)).toEqual(square(15.87, 43.75));
+        // The single key's aliases, as apply/route.js normalizes them.
+        expect(prefetchApi.buildingDemolitionGeometry({ ...single, goal: 'Single building' })).toEqual(square(15.87, 43.75));
+        // A stepped building (two parts) is still one building on its own land: its parts, never the parcel.
+        const stepped = { ...single, geometry: { buildings: [square(15.87, 43.75), square(15.8702, 43.7502)] } };
+        expect(prefetchApi.buildingDemolitionGeometry(stepped).coordinates).toEqual([square(15.87, 43.75).coordinates, square(15.8702, 43.7502).coordinates]);
+        const whole = { ...single, geometry: { ...single.geometry, landTake: parcel } };
+        expect(prefetchApi.buildingDemolitionGeometry(whole)).toEqual(parcel.geometry);
     });
 
-    it('nothing to scan without footprints or parcels', () => {
-        expect(prefetchApi.buildingDemolitionGeometry({ proposalId: 'p-0', buildingProposal: {} }, [])).toBeNull();
+    it('nothing to scan without footprints or land', () => {
+        expect(prefetchApi.buildingDemolitionGeometry({ proposalId: 'p-0', goal: 'single', buildingProposal: {} })).toBeNull();
     });
 });
 
 describe('collecting the regions', () => {
-    const parcel = { type: 'Feature', properties: { parcelId: 'HR-A' }, geometry: square(15.869, 43.749, 0.02) };
+    const site = square(15.869, 43.749, 0.002);
     const block = () => ({
-        proposalId: 'p-1', goal: 'buildings', cadastreParcelIds: ['HR-A'],
+        proposalId: 'p-1', goal: 'buildings', cadastreParcelIds: ['HR-A'], site,
         buildingProposal: { typologyType: 'block' },
         geometry: { buildings: [square(15.87, 43.75), { type: 'Feature', geometry: square(15.88, 43.76) }] }
     });
 
-    it('a block member contributes its parcels plus its authored buildings, as Step 4 will', () => {
-        const asked = [];
-        const regions = prefetchApi.collectDemolitionRegions([block()], { parcelFeatures: proposal => { asked.push(proposal.proposalId); return [parcel]; } });
-        expect(asked).toEqual(['p-1']);
+    it('a block member contributes its site plus its authored buildings, as Step 4 will', () => {
+        const regions = prefetchApi.collectDemolitionRegions([block()]);
         expect(regions).toHaveLength(1);
         expect(regions[0].key).toBe('p-1');
         expect(regions[0].geometry.type).toBe('MultiPolygon');
         expect(regions[0].geometry.coordinates).toHaveLength(3);
-        expect(regions[0].geometry.coordinates[0]).toEqual(parcel.geometry.coordinates);
+        expect(regions[0].geometry.coordinates[0]).toEqual(site.coordinates);
     });
 
-    it('a block member whose parcels cannot be resolved is LEFT OUT, never sent as its footprints alone', () => {
-        // A prefetched region smaller than the scan's would answer without the courtyard buildings.
-        expect(prefetchApi.collectDemolitionRegions([block()])).toEqual([]);
-        expect(prefetchApi.collectDemolitionRegions([block()], { parcelFeatures: () => [] })).toEqual([]);
-    });
-
-    it('a member that clears only its footprints needs no parcels', () => {
+    it('a member that clears only its footprints contributes them', () => {
         const raise = block();
         raise.buildingProposal.parameters = { mode: 'existing' };
         const regions = prefetchApi.collectDemolitionRegions([raise]);
@@ -103,6 +110,6 @@ describe('collecting the regions', () => {
     });
 
     it('a member with no geometry is skipped rather than sent as an empty region', () => {
-        expect(prefetchApi.collectDemolitionRegions([{ proposalId: 'p-4', buildingProposal: {} }])).toEqual([]);
+        expect(prefetchApi.collectDemolitionRegions([{ proposalId: 'p-4', goal: 'single', buildingProposal: {} }])).toEqual([]);
     });
 });

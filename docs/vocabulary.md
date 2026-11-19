@@ -383,7 +383,7 @@ What stands today on the land of a chosen saved plan (or of all compared plans, 
 
 ### Remaining building
 
-An existing building a plan's designs do not clear. A plan's standing buildings are its new buildings plus its remaining ones. A standing building the suggested default layout can lay out (or one with its own floor plans) counts that layout's apartments, and its shops as work; every other building's apartments, people and jobs derive from its floor area by the Plan stats assumptions. A design clears its demolition ground (its parcels or footprints, a structure, a road corridor) with the demolition scan's thresholds: under 2 m² of overlap the building is untouched, and when under 10 m² or 15 % of its footprint is left it is gone.
+An existing building a plan's designs do not clear. A plan's standing buildings are its new buildings plus its remaining ones. A standing building the suggested default layout can lay out (or one with its own floor plans) counts that layout's apartments, and its shops as work; every other building's apartments, people and jobs derive from its floor area by the Plan stats assumptions. A design clears its demolition ground (a building design's site or land take and its footprints, a structure, a road corridor; never the rest of the parcels it stands on) with the demolition scan's thresholds: under 2 m² of overlap the building is untouched, and when under 10 m² or 15 % of its footprint is left it is gone.
 
 ### Private draft reference
 
@@ -441,7 +441,7 @@ The exact ground a design consumes. A Freeform design's `geometry.landTake` can 
 
 ### Derived demolition
 
-What the applied designs do to the source buildings shown: razed, cut (the rest stands) or passed under by a road tunnel. It is derived from each design's land (a road's footprint, a building design's parcels and footprints, a structure's body) against the buildings of the sources in use, against the union of every design's land, so the order of the designs does not matter: under 2 m² of overlap a building is untouched, and when under 10 m² or 15 % of its footprint is left it is razed. Nothing is stored on a design; a change to a design derives again the buildings under its old and new land, and a source switch derives everything again.
+What the applied designs do to the source buildings shown: razed, cut (the rest stands) or passed under by a road tunnel. It is derived from each design's land (a road's footprint; a block, row or rule design's site and its footprints, its footprints alone when it has no site; a Freeform building's land take, else its footprints; a structure's body) against the buildings of the sources in use, against the union of every design's land, so the order of the designs does not matter: under 2 m² of overlap a building is untouched, and when under 10 m² or 15 % of its footprint is left it is razed. Nothing is stored on a design; a change to a design derives again the buildings under its old and new land, and a source switch derives everything again.
 
 ### Building tunnel
 

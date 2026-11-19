@@ -46,13 +46,13 @@
 
     // The members of a loaded plan that a side draws itself, each with the ground it clears: snapshot
     // is PlanAnalysis.prepare's result, unapplied the member CIDs no applied design stands for,
-    // collectRegions(rows, pieces) the demolition scan's regions ([{ key: proposalId, geometry }]) for
+    // collectRegions(rows) the demolition scan's regions ([{ key: proposalId, geometry }]) for
     // building and structure members. A road clears its corridor footprint.
     function unappliedPart(snapshot, unapplied, collectRegions) {
         const wanted = new Set((unapplied || []).map(String));
         const rows = (snapshot?.records || []).filter(row => wanted.has(String(row.proposalId)));
         const scanned = new Map();
-        for (const region of collectRegions(rows, snapshot?.materializedFeatures || []) || []) {
+        for (const region of collectRegions(rows) || []) {
             const key = String(region.key);
             if (!scanned.has(key)) scanned.set(key, []);
             scanned.get(key).push({ type: 'Feature', properties: {}, geometry: region.geometry });
@@ -119,14 +119,10 @@
         return entry ? { status: entry.status, error: entry.error } : null;
     }
 
-    // The demolition scan's regions for building and structure members, over the plan's own pieces.
-    function collectRegions(rows, pieces) {
+    // The demolition scan's regions for building and structure members: each design's own land.
+    function collectRegions(rows) {
         return global.__demolitionPrefetch.collectDemolitionRegions(rows, {
             normalizeGoalKey: goal => global.__applyRoute.normalizeGoalKey(goal),
-            parcelFeatures: proposal => {
-                const ids = new Set((proposal.cadastreParcelIds || []).map(String));
-                return pieces.filter(piece => (piece.properties?.cadastreParcelIds || []).some(id => ids.has(String(id))));
-            },
             structureGeometry: proposal => proposal.structureProposal?.geometry
         });
     }

@@ -76,6 +76,8 @@ function buildingProposalData() {
         goal: 'buildings',
         title: 'Test building',
         cadastreParcelIds: ['HR-1', 'HR-2'],
+        // The land the editor made its site (proposals/create.js): what a block or rule design clears.
+        site: { type: 'Polygon', coordinates: [[[15.969, 45.809], [15.981, 45.809], [15.981, 45.821], [15.969, 45.821], [15.969, 45.809]]] },
         buildingProposal: {},
         geometry: { buildings: [{ type: 'Feature', properties: {}, geometry: { type: 'Polygon', coordinates: [[[15.97, 45.81], [15.98, 45.81], [15.98, 45.82], [15.97, 45.81]]] } }] }
     };
@@ -223,18 +225,20 @@ describe('_applyBuildingProposal demolition ground', () => {
         return { mgr, regions };
     };
 
-    it('a block scans the parcels it stands on plus its footprints, so courtyard buildings go too', async () => {
+    // Its site, not the parcels it stands on: a block in a corner of a large parcel leaves the rest standing.
+    it('a block scans its site plus its footprints, so courtyard buildings go too, and not the rest of its parcels', async () => {
         const { mgr, regions } = capture();
         const data = buildingProposalData();
         data.buildingProposal = { typologyType: 'block' };
+        data.site = square(15.96, 45.80, 0.001);
         data.geometry.buildings.push(JSON.parse(JSON.stringify(data.geometry.buildings[0])));
         expect(await _applyBuildingProposal.call(mgr, 'p-b1', data, mutationOptions())).toBe(true);
         expect(regions).toHaveLength(1);
         expect(regions[0].type).toBe('MultiPolygon');
-        expect(regions[0].coordinates).toHaveLength(4);
-        expect(regions[0].coordinates[0]).toEqual(parcels[0].geometry.coordinates);
-        expect(regions[0].coordinates[1]).toEqual(parcels[1].geometry.coordinates);
-        expect(regions[0].coordinates[2]).toEqual(data.geometry.buildings[0].geometry.coordinates);
+        expect(regions[0].coordinates).toHaveLength(3);
+        expect(regions[0].coordinates[0]).toEqual(data.site.coordinates);
+        expect(regions[0].coordinates[1]).toEqual(data.geometry.buildings[0].geometry.coordinates);
+        expect(regions[0].coordinates.some(polygon => JSON.stringify(polygon) === JSON.stringify(parcels[1].geometry.coordinates))).toBe(false);
     });
 
     it('a rule that raises the existing buildings scans only its footprints', async () => {
@@ -268,8 +272,9 @@ describe('_applyBuildingProposal demolitions', () => {
         const data = buildingProposalData();
         data.buildingProposal = { typologyType: 'block' };
         expect(await _applyBuildingProposal.call(mgr, 'p-b1', data, mutationOptions())).toBe(true);
-        expect(registered).toEqual([['p-b1', 'Polygon']]);
-        expect(parked).toEqual([['Polygon', 'p-b1']]);
+        // Its land: the site and the footprint.
+        expect(registered).toEqual([['p-b1', 'MultiPolygon']]);
+        expect(parked).toEqual([['MultiPolygon', 'p-b1']]);
         expect(data.buildingProposal).not.toHaveProperty('demolishedBuildings');
         expect(store.indexed[0]).toBe(data);
         delete root.DemolitionIndex;

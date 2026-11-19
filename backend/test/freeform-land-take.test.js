@@ -72,7 +72,7 @@ describe('Freeform reviewed land take', () => {
  it('uses the reviewed take for binding, demolition prefetch and replay', () => {
   const take=turf.union(A,body), proposal={goal:'single',geometry:{buildings:[body],landTake:take},buildingProposal:{}};
   expect(footprintParts(proposal).sources).toContain('geometry.landTake');
-  expect(buildingDemolitionGeometry(proposal,[A,B])).toEqual(take.geometry);
+  expect(buildingDemolitionGeometry(proposal)).toEqual(take.geometry);
   expect(demolitionRegionOf(proposal)).toEqual(take.geometry);
  });
  it('previews full removals, partial cuts and retained buildings using the actual demolition rules', () => {

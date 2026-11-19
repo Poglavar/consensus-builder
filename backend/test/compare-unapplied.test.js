@@ -54,14 +54,14 @@ describe('what an unapplied member draws and clears', () => {
 
     it('keeps only the unapplied members, with the scan regions of buildings and structures and a road corridor as its own region', () => {
         const scanned = [];
-        const collectRegions = (members, pieces) => {
-            scanned.push(members.map(row => row.proposalId), pieces);
+        const collectRegions = members => {
+            scanned.push(members.map(row => row.proposalId));
             return [{ key: 'cidA', geometry: square(0, 0, 12) }, { key: 'cidS', geometry: square(40, 0, 8) }];
         };
         const snapshot = { records: rows, materializedFeatures: ['piece'], corridorFeatures: [] };
         const part = unapplied.unappliedPart(snapshot, ['cidA', 'cidR', 'cidS'], collectRegions);
         expect(part.rows.map(row => row.proposalId)).toEqual(['cidA', 'cidR', 'cidS']);
-        expect(scanned).toEqual([['cidA', 'cidR', 'cidS'], ['piece']]);
+        expect(scanned).toEqual([['cidA', 'cidR', 'cidS']]);
         expect(part.clearing.map(member => [member.id, member.regions.map(region => region.geometry)])).toEqual([
             ['cidA', [square(0, 0, 12)]], ['cidR', [square(20, 0, 5)]], ['cidS', [square(40, 0, 8)]]]);
     });

@@ -150,10 +150,8 @@ export function createMcpComparison({ read, resolveDesign, appOrigin, resolveDra
                     // rule the map derives its demolitions by).
                     const takers = scoped.map(row => {
                         const design = row.content;
-                        const shapes = ground.outputs.filter(o => o.role !== 'corridor' && o.fromParcelIds.some(id => row.parcelIds.includes(id)))
-                            .map(o => turf.feature(o.geometry));
                         const region = design.roadProposal ? read.siteOfDesign(design)
-                            : demolition.demolitionRegionOf(design, { normalizeGoalKey: route.normalizeGoalKey, parcelFeatures: () => shapes });
+                            : demolition.demolitionRegionOf(design, { normalizeGoalKey: route.normalizeGoalKey });
                         const tunnels = design.roadProposal?.definition ? DemolitionDerive.tunnelRegionsOf(design.roadProposal.definition) : [];
                         return region ? { proposalId: row.cid, region, tunnels } : null;
                     }).filter(Boolean);
