@@ -46,6 +46,22 @@ body:is([data-planning-proposed="solid"], [data-planning-proposed="ghost"]) .pla
 .planning-swatch--existing { background: var(--cb-planning-existing); }
 .planning-swatch--permitted { background: var(--cb-planning-permitted); }
 .planning-swatch--proposed { background: var(--cb-planning-proposed); }
+/* The zone legend under "Zoning areas": one swatch per use group shown. */
+.planning-zone-legend { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: var(--cb-space-1) var(--cb-space-3);
+    margin: var(--cb-space-2) 0 0; padding: 0; list-style: none; font-size: var(--cb-text-xs); color: var(--cb-text-muted); }
+.planning-zone-legend[hidden] { display: none; }
+.planning-zone-legend li { display: flex; align-items: center; gap: var(--cb-space-2); }
+.planning-swatch--zone-housing-low { background: var(--cb-planning-zone-housing-low); }
+.planning-swatch--zone-housing-mid { background: var(--cb-planning-zone-housing-mid); }
+.planning-swatch--zone-housing-high { background: var(--cb-planning-zone-housing-high); }
+.planning-swatch--zone-public { background: var(--cb-planning-zone-public); }
+.planning-swatch--zone-industry { background: var(--cb-planning-zone-industry); }
+.planning-swatch--zone-transport { background: var(--cb-planning-zone-transport); }
+.planning-swatch--zone-green { background: var(--cb-planning-zone-green); }
+.planning-swatch--zone-water { background: var(--cb-planning-zone-water); }
+.planning-swatch--zone-agriculture { background: var(--cb-planning-zone-agriculture); }
+.planning-swatch--zone-reserve { background: var(--cb-planning-zone-reserve); }
+.planning-swatch--zone-restricted { background: var(--cb-planning-zone-restricted); }
 .planning-view-status { margin: var(--cb-space-2) 0 0; font-size: var(--cb-text-sm); line-height: var(--cb-leading); color: var(--cb-text-muted); }
 .planning-inspect-hint, .planning-coverage { font-size: var(--cb-text-xs); line-height: var(--cb-leading); color: var(--cb-text-muted); margin: var(--cb-space-2) 0 0; }
 .planning-coverage summary { cursor: pointer; color: var(--cb-text); }

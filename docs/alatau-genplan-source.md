@@ -36,7 +36,7 @@ in Alatau) are listed as `unsupported-parcel-shape` and do not widen the zoning 
 | --- | --- | --- |
 | Усадебная застройка (detached houses with plots) | `allowed` | 3 storeys, assumed: the legend gives no number |
 | Малоэтажная застройка (2–3 этажа) | `allowed` | 3 storeys |
-| Среднеэтажная застройка (4–5 и 6* этажей) | `allowed` | 5 storeys; the legend's 6* kept as uplift evidence (its footnote is unread) |
+| Среднеэтажная застройка (4–5 и 6* этажей) | `allowed` | 5 storeys; the legend's 6* is `metrics.conditional` (18 m on a condition; its footnote is unread) |
 | Многоэтажная застройка (6–12 этажей) | `allowed` | 12 storeys |
 | Застройка повышенной этажности (выше 12 этажей) | `instrument_handoff` | none: the plan sets no upper limit, the detailed plan (ПДП) does |
 | Services, education, health, industry, storage, car services, external transport, sewage works | `instrument_handoff` | none: the ПДП and the design brief (АПЗ) set the parameters |
@@ -47,6 +47,12 @@ in Alatau) are listed as `unsupported-parcel-shape` and do not widen the zoning 
 Height is storeys × 3.0 m. The plan states storey classes, not heights; 3.0 m floor-to-floor is
 an assumption recorded with every height constraint (`sourceEvidence.rules`). No setbacks, coverage
 or density limits are derived: the general plan does not set them per lot.
+
+Every zone also carries its `use` (vocabulary: Permitted use): the key and colour group of its
+class, and the plan's label. The map colours zones by group with a legend, shows them by default
+when this source is chosen, and names them in the reader's language; the plan's wording stays
+under Source details. A Freeform building is checked against the zones under it (vocabulary:
+Permitted check).
 
 ## Limits
 

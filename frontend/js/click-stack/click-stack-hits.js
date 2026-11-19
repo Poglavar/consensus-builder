@@ -122,7 +122,7 @@
         try {
             permitted = (global.PlanningViews?.isReady?.() ? global.PlanningViews.itemsAt(latlng) : [])
                 .filter(item => item.role === 'permitted')
-                .map(item => ({ id: item.id, label: item.source?.parcel || item.title || item.id, item }));
+                .map(item => ({ id: item.id, label: item.source?.parcel || global.PlanningViews.itemTitle?.(item) || item.title || item.id, item }));
         } catch (error) { console.error('[ClickStack] massing could not be hit-tested', error); }
         const ground = designs.length ? null : [...formed, ...parcels].find(parcel => parcel.live !== false && parcel.feature);
         if (ground) {
@@ -171,7 +171,7 @@
             builtOnParcel: feature => global.buildingsOn?.(feature) || [],
             permittedOnParcel: id => (global.PlanningViews?.isReady?.() ? global.PlanningViews.getItems() : [])
                 .filter(item => item.role === 'permitted' && permittedParcelId(item) === String(id))
-                .map(item => ({ id: item.id, label: item.source?.parcel || item.title || item.id, item })),
+                .map(item => ({ id: item.id, label: item.source?.parcel || global.PlanningViews.itemTitle?.(item) || item.title || item.id, item })),
             permittedParcel: instance => permittedParcelId(instance.item || global.PlanningViews?.getItems?.().find(item => item.id === instance.id)),
             parcelLabel, designLabel, buildingLabel,
             ...(overrides || {})

@@ -667,7 +667,9 @@
         for (const item of window.PlanningViews.getItems()) {
             const appearance = window.PlanningViews.getAppearance(item);
             if (appearance === 'off') continue;
-            const color = window.PlanningViews.color(item.role);
+            const color = window.PlanningViews.itemColor(item);
+            // A zone with a height cap stands as a faint volume up to it, so the city's permitted heights read at a glance.
+            const capM = item.assessment?.meaning === 'zoning-area' && item.metrics?.heightM > 0 ? item.metrics.heightM : 0;
             for (const area of item.areas || []) {
                 const material = new THREE.MeshBasicMaterial({ color, transparent: true,
                     opacity: appearance === 'solid' ? 0.55 : 0.15, depthWrite: false, side: THREE.DoubleSide });
@@ -676,6 +678,16 @@
                 for (const mesh of meshes) {
                     markOwnedMaterial(mesh, material); mesh.userData.planningRepresentationId = item.id;
                     mesh.renderOrder = 2; planningSourcesGroup.add(mesh);
+                }
+                if (capM) {
+                    const cap = new THREE.MeshBasicMaterial({ color, transparent: true, opacity: appearance === 'solid' ? 0.3 : 0.08,
+                        depthWrite: false, side: THREE.DoubleSide });
+                    const volumes = polygonFeatureToMeshes({ type: 'Feature', geometry: area.geometry }, cap, 0, capM);
+                    if (!volumes.length) cap.dispose();
+                    for (const mesh of volumes) {
+                        markOwnedMaterial(mesh, cap); mesh.userData.planningRepresentationId = item.id;
+                        mesh.renderOrder = 2; planningSourcesGroup.add(mesh);
+                    }
                 }
                 if (item.id === selectedId) {
                     const line = new THREE.LineBasicMaterial({ color, depthWrite: false });
@@ -2794,7 +2806,9 @@
             });
             return;
         }
-        const color = { source: 0x64748b, envelope: 0x996600, excluded: 0x9a3412, draft: 0x2563eb }[style];
+        // A draft building over a Permitted limit is red, one only a condition allows amber (planning/permitted-check.js).
+        const permitted = style === 'draft' ? { fail: 0xb91c1c, conditional: 0xb45309 }[feature.properties?.permittedCheck] : null;
+        const color = permitted || { source: 0x64748b, envelope: 0x996600, excluded: 0x9a3412, draft: 0x2563eb }[style];
         const opacity = { source: 0.2, envelope: 0.10, excluded: 0.28, draft: 0.55 }[style];
         const fill = new THREE.MeshLambertMaterial({
             color,

@@ -176,7 +176,7 @@ describe('shared building and proposal representations', () => {
         const context = vm.createContext({ selected: () => item, inspector, root, element, t, parcelOf: () => null,
             inspectorBadgeKey: () => 'sourceEvidenceBadge', area: value => `${value} m²`, number: value => String(value), resultLabel: value => String(value),
             permittedFeatures: () => ({ configuration: null }), renderConfigurations: () => element('section', 'planning-configurations'), scenarioLabel: value => value,
-            sourceRecord: async () => [], selectRecord() {}, select() {}, referenceStatus: null, document });
+            sourceRecord: async () => [], selectRecord() {}, select() {}, referenceStatus: null, document, itemTitle: value => value.title });
         vm.runInContext(source.slice(declaration.start, declaration.end), context);
         context.renderInspector();
         expect(inspector.querySelector('[data-stack-page-key="info"] .planning-evidence')).not.toBeNull();

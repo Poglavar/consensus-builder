@@ -20,6 +20,15 @@
     let restoreId = new URLSearchParams(location.search).get('planningSelection'), restoring = false, catalogReady = false, parcelPanel = null;
     // Per-item configuration pins chosen in the inspector; cleared with the source, housing type or city.
     let pins = {}, sourcesKey = '';
+    // Use groups in legend order (css/planning-views.css has a swatch for each).
+    const ZONE_GROUPS = ['housing-low', 'housing-mid', 'housing-high', 'public', 'industry', 'transport', 'green', 'water', 'agriculture', 'reserve', 'restricted'];
+    // A source that is a zoning map shows its zones when chosen, unless the address or the person
+    // already chose whether zones show.
+    let zoningChosen = new URLSearchParams(location.search).has('zoningAreas');
+    function showZoningMap(previousSource) {
+        const descriptor = sourceOptions.find(source => source.id === sourceId);
+        if (!zoningChosen && sourceId !== previousSource && descriptor?.coverage === 'zoning-areas') store.configure('zoningAreas', 'ghost');
+    }
     const displaySelection = () => ({ variation: store?.get().permittedVariation || '', scenario: scenarioId || envelopes.ANY_CONFIGURATION, pins });
     const scenarioParam = () => scenarioId && scenarioId !== envelopes.ANY_CONFIGURATION ? scenarioId : '';
     const scenarioLabel = id => id ? t(`scenario.${id}`) : '';
@@ -62,6 +71,28 @@
     function color(role) {
         return getComputedStyle(document.documentElement).getPropertyValue(`--cb-planning-${role}`).trim();
     }
+    // A zone is coloured by its use group (css/planning-views.css), everything else by its role.
+    function itemColor(item) {
+        const group = item.assessment?.meaning === 'zoning-area' && item.use?.group;
+        return (group && color(`zone-${group}`)) || color(item.role);
+    }
+    // A zone's name in the reader's language: its use, then its height class or what the plan says
+    // of building there. The source's own wording stays under Source details.
+    function useName(item) {
+        const key = item.use?.key ? `planningViews.use.${item.use.key}` : '';
+        const label = key ? root.i18n.t(key) : '';
+        return label && label !== key ? label : item.use?.label || '';
+    }
+    function itemTitle(item) {
+        if (item?.assessment?.meaning !== 'zoning-area' || !item.use) return item?.title || '';
+        const storeys = item.constraints?.find(constraint => constraint.quantity === 'storeys')?.value;
+        const extra = item.metrics?.conditional?.storeys;
+        const limit = typeof storeys === 'number' ? t(extra ? 'zoneStoreysConditional' : 'zoneStoreys', { storeys, conditional: extra })
+            : resultLabel(item.assessment.status);
+        return [useName(item), limit].filter(Boolean).join(' · ');
+    }
+    // A zone the plan keeps free of buildings, or leaves to another instrument, has a dashed edge.
+    const unbuildableZone = item => item.assessment?.meaning === 'zoning-area' && item.assessment.status !== 'allowed';
     function policy() { return core.displayPolicy(store?.get()); }
     function sceneItems() { return items; }
     function appearance(item) { return core.itemAppearance(item, store?.get()); }
@@ -223,10 +254,11 @@
             const conditional = Boolean(feature.properties.condition);
             // The hull is not a second click target: the configuration inside carries the interaction.
             const shape = root.L.geoJSON(feature, { pane: 'planningSources', className: hull ? 'planning-bound-outline' : undefined, interactive: !hull,
-                style: { color: active ? root.MapHighlight.color : color(item.role), weight: active ? 4 : hull || conditional ? 1 : 1.5, dashArray: conditional ? '2 6' : hull ? '4 4' : null,
-                    fillColor: color(item.role), fillOpacity: conditional ? 0.03 : hull ? 0.06 : display === 'solid' ? 1 : 0.18,
+                style: { color: active ? root.MapHighlight.color : itemColor(item), weight: active ? 4 : hull || conditional ? 1 : 1.5,
+                    dashArray: conditional ? '2 6' : hull ? '4 4' : unbuildableZone(item) ? '6 4' : null,
+                    fillColor: itemColor(item), fillOpacity: conditional ? 0.03 : hull ? 0.06 : display === 'solid' ? 1 : 0.18,
                     opacity: conditional ? 0.6 : hull ? 0.8 : 1 } });
-            const label = item.source.parcel || item.title;
+            const label = item.source.parcel || itemTitle(item);
             shape.addTo(group);
             // The assumed street side of the shown configuration, so a roll reads as a choice, not a glitch.
             if (feature.properties.frontEdge != null && item.derivation?.parcel) {
@@ -285,7 +317,7 @@
         heading.append(element('p', 'planning-eyebrow', item.parcelEnvelope ? t('envelopeTitle')
             : t(item.areas?.length ? 'zoningArea' : sourceResult ? (item.volumes.length ? 'sourceProposal' : 'savedResult') : 'builtRecord')));
         // The hosted stack already supplies the object's title and parcel reference.
-        if (!hosted && item.title) heading.append(element('h2', 'click-stack__title', item.title));
+        if (!hosted && item.title) heading.append(element('h2', 'click-stack__title', itemTitle(item)));
         // A parcel's massing names its parcel; the title alone is the source edition and ratio.
         const parcelLabel = parcelOf(item);
         if (!hosted && parcelLabel) heading.append(element('p', 'planning-inspector__parcel', `${t('focusParcel')} ${parcelLabel}`));
@@ -370,6 +402,8 @@
         const evidence = element('details', 'planning-evidence');
         evidence.append(element('summary', '', t('sourceDetails')));
         if (item.source.label) evidence.append(element('p', '', item.source.label));
+        // The plan's own name for a zone shown under a translated one.
+        if (item.title && itemTitle(item) !== item.title) evidence.append(element('p', '', item.title));
         if (item.source.computedAt) evidence.append(element('p', '', t('computed', { date: root.CbFormat.formatDate(item.source.computedAt) })));
         if (item.source.fetchedAt) evidence.append(element('p', '', t('recorded', { date: root.CbFormat.formatDate(item.source.fetchedAt) })));
         if (item.source.solverVersion) evidence.append(element('p', '', t('solverVersion', { version: item.source.solverVersion })));
@@ -500,6 +534,18 @@
             : descriptor?.capabilities.volumes === false ? t('evidenceOnly') : '';
         panel.querySelector('.planning-zoning-label').textContent = t('zoningAreas');
         panel.querySelector('.planning-zoning-field').hidden = !descriptor?.capabilities.areas;
+        // The legend lists the use groups of the zones drawn, in the order the colours run.
+        const legend = panel.querySelector('.planning-zone-legend');
+        const groups = new Set(items.filter(item => item.assessment?.meaning === 'zoning-area' && appearance(item) !== 'off')
+            .map(item => item.use?.group).filter(Boolean));
+        legend.replaceChildren(...ZONE_GROUPS.filter(group => groups.has(group)).map(group => {
+            const row = element('li');
+            const swatch = element('span', `planning-swatch planning-swatch--zone-${group}`); swatch.setAttribute('aria-hidden', 'true');
+            row.append(swatch, element('span', '', t(`useGroup.${group}`)));
+            return row;
+        }));
+        legend.hidden = !legend.children.length;
+        legend.setAttribute('aria-label', t('zoneLegend'));
         const scenario = panel.querySelector('.planning-scenario-select');
         scenario.value = scenarioId; scenario.setAttribute('aria-label', t('scenarioLabel'));
         panel.querySelector('.planning-scenario-label').textContent = t('scenarioLabel');
@@ -618,6 +664,17 @@
     // two cells at a time, and a cell that fails is asked once more, alone, after the rest.
     const CELL_CONCURRENCY = 2;
     const MOVE_REFRESH_DELAY_MS = 300;
+    // A zone's pieces from neighbouring cells, joined back into its one shape (scene.js mergeAnswers).
+    function joinAreas(areas) {
+        try {
+            let shape = root.turf.feature(areas[0].geometry);
+            for (const area of areas.slice(1)) shape = root.turf.union(shape, root.turf.feature(area.geometry)) || shape;
+            return [{ ...areas[0], geometry: shape.geometry }];
+        } catch (error) {
+            console.error('[planning] Could not join a zone\'s cell pieces', areas[0]?.id, error);
+            return areas;
+        }
+    }
     // What is drawn: the scopes and cells of the answers assembled, and how many cells failed.
     let assembled = '', failedCells = 0;
     function invalidate() { assembled = ''; failedCells = 0; }
@@ -657,7 +714,7 @@
         const assemble = () => {
             const ordered = jobs.map(job => answers.get(job.key)).filter(Boolean);
             // Envelopes lead: their answer says how the status line counts.
-            const merged = core.mergeAnswers([...ordered.filter(answer => answer.envelopes), ...ordered.filter(answer => !answer.envelopes)]);
+            const merged = core.mergeAnswers([...ordered.filter(answer => answer.envelopes), ...ordered.filter(answer => !answer.envelopes)], { joinAreas });
             payload = merged || { sources: descriptor ? [descriptor] : [], summaries: [], unavailable: [], omitted: 0, items: [] };
             items = payload.items; assembled = composition; failedCells = failed;
             if (!selected()) store.select(null);
@@ -784,6 +841,7 @@
             // An ID alone is not a display contract: parcelStudy changes the permitted choices.
             if (core.sourceCatalogSignature(sources) !== core.sourceCatalogSignature(sourceOptions)) applySources(sources);
             if (previousSource !== sourceId || previousScenario !== scenarioId) { pins = {}; invalidate(); render(); }
+            showZoningMap(previousSource);
             return true;
         } catch (error) {
             if (generation !== sourceGeneration) return false;
@@ -803,7 +861,9 @@
             sourcesKey = rounded ? core.queryKey(city, rounded) : '';
             catalogReady = true;
             scenarioId = '';
+            const previousSource = sourceId;
             applySources(sources, new URLSearchParams(location.search).get('planningSource'));
+            showZoningMap(previousSource);
             render(); refresh({ force: true }); restoreSelection();
             if (parcelPanel?.container.isConnected) showParcelEvidence(parcelPanel.container, parcelPanel.parcel);
         } catch (error) {
@@ -852,8 +912,10 @@
         });
         sourceInput.addEventListener('change', () => {
             const clearSourceSelection = selected()?.role === 'permitted';
+            const previousSource = sourceId;
             sourceId = sourceInput.value; pins = {}; scenarioId = ''; viewCache.abortExcept([]); request++; invalidate(); items = []; payload = null;
             populateScenarios();
+            showZoningMap(previousSource);
             if (clearSourceSelection) { focusedRecord = null; store.select(null); }
             const url = new URL(location.href); url.searchParams.set('planningSource', sourceId);
             url.searchParams.set('planningScenario', scenarioId); history.replaceState(history.state, '', url);
@@ -883,6 +945,8 @@
         }
         const zoningField = element('label', 'planning-source-field planning-zoning-field');
         zoningField.append(element('span', 'planning-zoning-label'), control('zoningAreas')); body.append(zoningField);
+        const legend = element('ul', 'planning-zone-legend'); legend.hidden = true; body.append(legend);
+        zoningField.querySelector('select').addEventListener('change', () => { zoningChosen = true; });
         // Paint the shared busy ring before re-derivation, including with reduced motion, and
         // keep it until the resulting 3D frame has landed. Prevent overlapping rolls.
         for (const reroll of panel.querySelectorAll('[data-planning-reroll]')) {
@@ -947,8 +1011,8 @@
     root.PlanningViews = { getState: () => store?.get() || { ...core.defaults, proposedVariation: '', permittedVariation: '' }, getPolicy: policy, getItems: sceneItems,
         getAppearance: appearance,
         getSelected: selected, isReady: () => ready, isInspecting: () => ready && !inspector.hidden,
-        select, selectRecord, inspectBuilding, inspectProposal, showParcelEvidence, color, refresh,
-        permittedFeatures, pinConfiguration, getScenario: () => scenarioId,
+        select, selectRecord, inspectBuilding, inspectProposal, showParcelEvidence, color, itemColor, itemTitle, refresh,
+        permittedFeatures, pinConfiguration, getScenario: () => scenarioId, getSource: () => sourceId,
         // Drawn records covering a point, each once, in drawing order.
         itemsAt(latlng) {
             const point = root.turf.point([latlng.lng, latlng.lat]), seen = new Set();

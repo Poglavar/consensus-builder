@@ -203,7 +203,43 @@
                 { height }
             );
         }
+        return stats;
     };
+
+    // The rule check against the Permitted layer's rules under the buildings (planning/permitted-check.js):
+    // the sheet says which limits are kept, and a building that breaks one is drawn red (amber when
+    // only a condition would allow it). Advice only: nothing here stops the design being saved.
+    let singlePermittedResult = null;
+    let singlePermittedFrame = 0;
+    const PERMITTED_CLASSES = { fail: 'single-building-fill--breach', conditional: 'single-building-fill--conditional' };
+    function paintSingleBuildingPermitted() {
+        for (const [id, layer] of singleBuildingLayers) {
+            const status = singlePermittedResult?.buildings?.[id];
+            layer.eachLayer(part => {
+                const node = part.getElement?.();
+                if (!node) return;
+                for (const [key, className] of Object.entries(PERMITTED_CLASSES)) node.classList.toggle(className, status === key);
+            });
+        }
+    }
+    function scheduleSingleBuildingPermittedCheck(stats) {
+        if (!window.PermittedAdvisor || singlePermittedFrame) return;
+        singlePermittedFrame = requestAnimationFrame(async () => {
+            singlePermittedFrame = 0;
+            if (!singleSession) return;
+            const buildings = buildingEntries.filter(entry => entry?.feature?.geometry).map(entry => ({
+                id: entry.id, footprint: entry.feature, heightM: Number(entry.height ?? entry.feature.properties?.height) }));
+            const site = stats?.parcelAreaM2 > 0
+                ? { plotAreaM2: stats.parcelAreaM2, footprintM2: stats.footprintAreaM2, floorAreaM2: stats.aboveGroundGbpM2 } : null;
+            const result = await window.PermittedAdvisor.check({ buildings, site });
+            if (!result || !singleSession) return;
+            const changed = JSON.stringify(result.buildings) !== JSON.stringify(singlePermittedResult?.buildings);
+            singlePermittedResult = result;
+            window.PermittedAdvisor.render(document.getElementById('single-building-permitted'), result);
+            paintSingleBuildingPermitted();
+            if (changed) singleSession.setPreview(singleBuildingPreview());
+        });
+    }
 
     const showSingleBuildingEditorAlert = (key, fallback) => {
         const message = translateSingleBuildingText(`modal.singleBuilding.${key}`, fallback);
@@ -480,7 +516,13 @@
     function singleBuildingPreview() {
         if (!singleEditor) return null;
         return {
-            draftPreview: { kind: 'buildings', features: buildingEntries.map(entry => cloneSingleFeature(entry.feature)).filter(Boolean) },
+            draftPreview: { kind: 'buildings', features: buildingEntries.map(entry => {
+                const feature = cloneSingleFeature(entry.feature);
+                // The model view colours a building that breaks a Permitted limit.
+                const permitted = singlePermittedResult?.buildings?.[entry.id];
+                if (feature && permitted) feature.properties = { ...feature.properties, permittedCheck: permitted };
+                return feature;
+            }).filter(Boolean) },
             boundary: cloneSingleFeature(singleBlockFeature),
             surroundings: currentSurroundings(),
             ...(singleLandTakeReview?.preview || {})
@@ -488,7 +530,7 @@
     }
 
     function updateSingleBuildingPreview() {
-        refreshSingleBuildingDensityStats();
+        scheduleSingleBuildingPermittedCheck(refreshSingleBuildingDensityStats());
         singleSession?.setPreview(singleBuildingPreview());
         singleLandTakeReview?.schedule();
         positionSingleBuildingToolbar();
@@ -673,6 +715,7 @@
             try { singleParcelBorderLayer.bringToFront(); } catch (_) { }
         }
         try { singleRectGroup.bringToFront(); } catch (_) { }
+        paintSingleBuildingPermitted();
         updateGroundPreview();
         bindRectangleLayerEvents();
         renderSharedPolygonEditor();
@@ -1155,6 +1198,7 @@
 
         singleEditor = null;
         singleUploadOnConfirm = null;
+        singlePermittedResult = null;
         singleSession?.close();
         singleSession = null;
         if (typeof window !== 'undefined') {
@@ -1386,6 +1430,7 @@
                             <input type="range" id="single-height-slider" aria-label="${modalText.heightLabel}" min="3" max="250" step="1" value="${DEFAULT_HEIGHT_M}">
                         </div>
                         <div class="on-map-building__metrics"><span>${modalText.densityFootprint}</span><strong id="single-building-footprint-summary">—</strong></div>
+                        <section id="single-building-permitted" class="permitted-check" role="status" aria-live="polite" hidden></section>
                         <div class="on-map-building__fields">
                             <div class="parameter-group">
                                 <label for="single-building-use">${translateSingleBuildingText('modal.singleBuilding.useLabel', 'Building use')}</label>

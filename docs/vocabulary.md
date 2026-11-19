@@ -622,6 +622,14 @@ The combined extent of the drawable building configurations and their supported 
 
 The comparison controls label this **Max envelope**, as they do an authored rule's maximum envelope. This display label does not make alternative configurations simultaneously buildable or remove the source's qualifications.
 
+### Permitted use
+
+What a zoning area's plan allows its land for, on the representation as `use`: a `key` from the app's use vocabulary (translated as `planningViews.use.<key>`), a `group` the map colours by (`housing-low`, `housing-mid`, `housing-high`, `public`, `industry`, `transport`, `green`, `water`, `agriculture`, `reserve`, `restricted`) and the plan's own `label`. Whether a building may stand there is the assessment status (`allowed`, `prohibited`, or `instrument_handoff` when another instrument sets it), not the group.
+
+### Permitted check
+
+The comparison of a design's buildings with the Permitted items under them, rule by rule: height, storeys, site coverage, floor area ratio, minimum lot, and whether the item's land allows building. Each check passes, fails, is conditional (over the limit the rules grant but within a taller one only a condition allows, `metrics.conditional`) or is unknown (the rule is not recorded or another instrument sets it). A building is checked against every item covering at least 0.5 m² of its footprint. The check is advice: it never refuses a design. It tests a given design; finding the largest allowed one is the Permitted envelope's job.
+
 ### Configuration
 
 One source-recorded building option, such as an allowed housing type, with its own constraints, treatment, derived geometry and availability. Configurations are alternatives, not additive permissions. A configuration the project must opt into (an incentive's extra storeys) carries a `condition`; the map shows it only when pinned or when nothing unconditional draws, and draws the bound tiers only it reaches fainter.

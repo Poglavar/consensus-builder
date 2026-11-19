@@ -149,13 +149,21 @@
         return cells.sort((a, b) => a.distanceM - b.distanceM || a.key.localeCompare(b.key)).slice(0, MAX_PLANNING_CELLS);
     }
     // The cells' answers as one: an item, or an unavailable parcel, reaching over a cell line once;
-    // each source's counts summed; everything else as the first answer has it.
-    function mergeAnswers(answers) {
+    // each source's counts summed; everything else as the first answer has it. Area sources clip a
+    // zone to each cell asked for, so a zone over a cell line keeps every cell's piece, and
+    // `joinAreas(areas)`, when given, joins them into the zone's one shape.
+    function mergeAnswers(answers, { joinAreas = null } = {}) {
         if (!answers.length) return null;
-        const items = new Map(), unavailable = new Map(), summaries = new Map();
+        const items = new Map(), unavailable = new Map(), summaries = new Map(), pieces = new Set();
         let omitted = 0;
         for (const answer of answers) {
-            for (const item of answer.items || []) items.set(item.id, item);
+            for (const item of answer.items || []) {
+                const known = items.get(item.id);
+                if (known?.areas?.length && item.areas?.length) {
+                    items.set(item.id, { ...known, areas: [...known.areas, ...item.areas] });
+                    pieces.add(item.id);
+                } else items.set(item.id, item);
+            }
             for (const entry of answer.unavailable || []) unavailable.set(entry.parcelId ?? JSON.stringify(entry), entry);
             for (const summary of answer.summaries || []) {
                 const known = summaries.get(summary.sourceId);
@@ -163,6 +171,10 @@
                     [key, typeof value === 'number' && typeof summary[key] === 'number' ? value + summary[key] : value])) : { ...summary });
             }
             omitted += answer.omitted || 0;
+        }
+        if (joinAreas) for (const id of pieces) {
+            const item = items.get(id);
+            items.set(id, { ...item, areas: joinAreas(item.areas) });
         }
         return { ...answers[0], items: [...items.values()], unavailable: [...unavailable.values()], summaries: [...summaries.values()], omitted };
     }

@@ -253,7 +253,8 @@ describe('single-building map editor lifecycle', () => {
         const stubs = { singleLandTakeReview: null, singleSession, singleEditor: {}, buildingEntries: [{ feature }],
             singleBlockFeature: { geometry: {} }, currentSurroundings: () => ({ treatment: 'green', polygon: {} }),
             cloneSingleFeature: value => JSON.parse(JSON.stringify(value)),
-            renderSharedPolygonEditor: vi.fn(), refreshSingleBuildingDensityStats: vi.fn(), positionSingleBuildingToolbar: vi.fn() };
+            renderSharedPolygonEditor: vi.fn(), refreshSingleBuildingDensityStats: vi.fn(() => ({ parcelAreaM2: 500 })),
+            scheduleSingleBuildingPermittedCheck: vi.fn(), positionSingleBuildingToolbar: vi.fn(), singlePermittedResult: null };
         const bindings = Object.keys(stubs).filter(key => key !== 'singleUploadOnConfirm').map(key => `const ${key}=this.${key};`).join('\n');
         const context = { ...stubs };
         vm.runInNewContext(`${bindings}\n${functions.get('singleBuildingPreview')}\n${functions.get('updateSingleBuildingPreview')}\n${functions.get('syncSingleBuildingView')}\nthis.sync=syncSingleBuildingView;`, context);
@@ -263,6 +264,20 @@ describe('single-building map editor lifecycle', () => {
             draftPreview: { kind: 'buildings', features: [feature] }, boundary: { geometry: {} },
             surroundings: { treatment: 'green', polygon: {} }
         });
+        // The rule check against the Permitted layer reruns with the same plot figures the sheet shows.
+        expect(stubs.scheduleSingleBuildingPermittedCheck).toHaveBeenCalledWith({ parcelAreaM2: 500 });
+    });
+
+    it('marks a building that breaks a Permitted limit in the preview the model view draws', () => {
+        const feature = id => ({ type: 'Feature', properties: { height: 40 }, geometry: { type: 'Polygon', coordinates: [] }, id });
+        const context = { singleEditor: {}, buildingEntries: [{ id: 1, feature: feature('a') }, { id: 2, feature: feature('b') }],
+            singlePermittedResult: { buildings: { 1: 'fail', 2: 'pass' } }, singleBlockFeature: null, singleLandTakeReview: null,
+            cloneSingleFeature: value => value && JSON.parse(JSON.stringify(value)), currentSurroundings: () => null };
+        const bindings = Object.keys(context).map(key => `const ${key}=this.${key};`).join('\n');
+        vm.runInNewContext(`${bindings}\n${functions.get('singleBuildingPreview')}\nthis.preview=singleBuildingPreview();`, context);
+        expect(context.preview.draftPreview.features.map(entry => entry.properties.permittedCheck)).toEqual(['fail', 'pass']);
+        // The editor's own features are not changed by the preview.
+        expect(context.buildingEntries[0].feature.properties.permittedCheck).toBeUndefined();
     });
 
     it('refreshes land-take effects while preserving the authored ground boundary and decoration', () => {

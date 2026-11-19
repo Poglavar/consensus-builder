@@ -1,0 +1,27 @@
+/* Rule check against the Permitted layer (js/planning/permitted-advisor.js): the editor sheet's
+   notice listing which limits a design keeps, and the breach colours of its footprints. */
+.permitted-check {
+    margin-top: var(--cb-space-2);
+    padding: var(--cb-space-2);
+    border-radius: var(--cb-radius-sm);
+    border-left: 3px solid var(--cb-success);
+    background: var(--cb-success-soft);
+    color: var(--cb-success-soft-ink);
+    font-size: var(--cb-text-sm);
+}
+.permitted-check[hidden] { display: none; }
+.permitted-check[data-status="fail"] { border-left-color: var(--cb-danger); background: var(--cb-danger-soft); color: var(--cb-danger-soft-ink); }
+.permitted-check:is([data-status="conditional"], [data-status="unknown"], [data-status="unavailable"]) {
+    border-left-color: var(--cb-warning); background: var(--cb-warning-soft); color: var(--cb-warning-soft-ink);
+}
+.permitted-check .cb-kicker { margin: 0; }
+.permitted-check__headline { margin: var(--cb-space-1) 0 0; font-weight: 600; }
+.permitted-check__rules { margin: var(--cb-space-1) 0 0; padding-left: var(--cb-space-3); }
+.permitted-check__rule { margin: 0; }
+.permitted-check__rule--fail { font-weight: 600; }
+.permitted-check__reason, .permitted-check__source { display: block; opacity: 0.8; font-size: var(--cb-text-xs); }
+.permitted-check__source { margin: var(--cb-space-1) 0 0; }
+
+/* Footprints in the Freeform editor: red over a limit, amber where only a condition allows it. */
+.single-building-fill--breach { stroke: var(--cb-danger); fill: var(--cb-danger); }
+.single-building-fill--conditional { stroke: var(--cb-warning); fill: var(--cb-warning); }

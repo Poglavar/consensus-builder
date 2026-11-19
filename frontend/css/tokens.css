@@ -122,6 +122,19 @@
     --cb-observed-building-only-stroke-width: 3;
     --cb-planning-permitted: #168b87;
     --cb-planning-proposed: #c26336;
+    /* Permitted zones by use group (planning-representations.v1 `use.group`): housing from light
+       to dark by height class, then the common land-use map colours. */
+    --cb-planning-zone-housing-low: #f2c94c;
+    --cb-planning-zone-housing-mid: #e8913a;
+    --cb-planning-zone-housing-high: #c2462b;
+    --cb-planning-zone-public: #8e44ad;
+    --cb-planning-zone-industry: #6d6875;
+    --cb-planning-zone-transport: #9aa0a6;
+    --cb-planning-zone-green: #2e9e4f;
+    --cb-planning-zone-water: #2f80ed;
+    --cb-planning-zone-agriculture: #a7c957;
+    --cb-planning-zone-reserve: #c9b79c;
+    --cb-planning-zone-restricted: #4a4e69;
     --cb-planning-control-width: 440px;
 
     /* A pavement tree's pit on the map (css/structure-geometry-editor.css): rim, grille bars and gaps, grass, soil. */

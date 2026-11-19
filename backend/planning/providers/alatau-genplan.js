@@ -39,37 +39,37 @@ const NOT_FOR_BUILDING = 'Зона не предназначена для зас
 // Functional zones by their exact cadastre label (whitespace normalised). `storeys` is the class's
 // upper limit as the legend writes it; `uplift` keeps a legend value marked with an asterisk.
 const ZONES = new Map(Object.entries({
-    'Территория усадебной застройки с земельным участком при доме (квартире)': { use: 'Усадебная застройка', status: 'allowed', storeys: 3,
+    'Территория усадебной застройки с земельным участком при доме (квартире)': { key: 'residential-estate', group: 'housing-low', use: 'Усадебная застройка', status: 'allowed', storeys: 3,
         storeysBasis: 'assumed: detached houses with plots; the legend gives no storey count' },
-    'Территория малоэтажной застройки (2-3 этажа) без участка': { use: 'Малоэтажная застройка', status: 'allowed', storeys: 3, storeysBasis: 'legend: 2–3 этажа' },
-    'Территория среднеэтажной застройки (4-5 и 6* этажей)': { use: 'Среднеэтажная застройка', status: 'allowed', storeys: 5,
+    'Территория малоэтажной застройки (2-3 этажа) без участка': { key: 'residential-low', group: 'housing-low', use: 'Малоэтажная застройка', status: 'allowed', storeys: 3, storeysBasis: 'legend: 2–3 этажа' },
+    'Территория среднеэтажной застройки (4-5 и 6* этажей)': { key: 'residential-mid', group: 'housing-mid', use: 'Среднеэтажная застройка', status: 'allowed', storeys: 5,
         uplift: { storeys: 6, condition: '6* этажей по легенде генплана; условие примечания не прочитано' }, storeysBasis: 'legend: 4–5 и 6* этажей' },
-    'Территория многоэтажной застройки (6-12 этажей)': { use: 'Многоэтажная застройка', status: 'allowed', storeys: 12, storeysBasis: 'legend: 6–12 этажей' },
-    'Территория застройки повышенной этажности (выше 12 этажей)': { use: 'Застройка повышенной этажности', status: 'instrument_handoff',
+    'Территория многоэтажной застройки (6-12 этажей)': { key: 'residential-high', group: 'housing-high', use: 'Многоэтажная застройка', status: 'allowed', storeys: 12, storeysBasis: 'legend: 6–12 этажей' },
+    'Территория застройки повышенной этажности (выше 12 этажей)': { key: 'residential-tall', group: 'housing-high', use: 'Застройка повышенной этажности', status: 'instrument_handoff',
         reason: `Выше 12 этажей: верхний предел генплан не задаёт. ${PDP}` },
-    'Территория учреждений и предприятий обслуживания в том числе общегородского значения': { use: 'Обслуживание', status: 'instrument_handoff', reason: PDP },
-    'Территория учреждений образования': { use: 'Образование', status: 'instrument_handoff', reason: PDP },
-    'Территория организаций здравоохранения и социального обеспечения': { use: 'Здравоохранение', status: 'instrument_handoff', reason: PDP },
-    'Территория промышленной застройки': { use: 'Промышленность', status: 'instrument_handoff', reason: PDP },
-    'Территория коммунально-складской застройки': { use: 'Коммунально-складская', status: 'instrument_handoff', reason: PDP },
-    'Территория предприятий автосервиса (автозапровочных станций, станций технического обслуживания, автомоек)': { use: 'Автосервис', status: 'instrument_handoff', reason: PDP },
-    'Территория сооружений внешнего транспорта (автовокзалов, ж/д вокзалов, аэропортов, аэровокзалов)': { use: 'Внешний транспорт', status: 'instrument_handoff', reason: PDP },
-    'Территория оборонных объектов': { use: 'Оборонные объекты', status: 'instrument_handoff', reason: 'Режимная территория.' },
-    'Территория исправительно-трудовых учреждений': { use: 'Исправительные учреждения', status: 'instrument_handoff', reason: 'Режимная территория.' },
-    'Территории канализационных очистных сооружений': { use: 'Очистные сооружения', status: 'instrument_handoff', reason: PDP },
-    'Резервные территории': { use: 'Резервная территория', status: 'instrument_handoff', reason: 'Резерв развития; застройка после изменения генплана или ПДП.' },
-    'Территории растениеводства': { use: 'Растениеводство', status: 'instrument_handoff', reason: 'Сельскохозяйственное использование.' },
-    'Территории животноводства': { use: 'Животноводство', status: 'instrument_handoff', reason: 'Сельскохозяйственное использование.' },
-    'Территория теплиц, цветочных хозяйств и питомников': { use: 'Теплицы и питомники', status: 'instrument_handoff', reason: 'Сельскохозяйственное использование.' },
-    'Зелени общего пользования и зелени спецназначения': { use: 'Озеленение', status: 'prohibited', reason: NOT_FOR_BUILDING },
-    'Территория парков, скверов и т.д. (зона кратковременного отдыха)': { use: 'Парки и скверы', status: 'prohibited', reason: NOT_FOR_BUILDING },
-    'Территория рек, водоемов, береговых полос': { use: 'Водные объекты', status: 'prohibited', reason: NOT_FOR_BUILDING },
-    'Территория лесного хозяйства': { use: 'Лесное хозяйство', status: 'prohibited', reason: NOT_FOR_BUILDING },
-    'Территория особо охраняемых земель': { use: 'Особо охраняемые земли', status: 'prohibited', reason: NOT_FOR_BUILDING },
-    'Территория автомобильных дорог': { use: 'Автомобильные дороги', status: 'prohibited', reason: NOT_FOR_BUILDING },
-    'Территория железных дорог и сооружений железнодорожного транспорта': { use: 'Железные дороги', status: 'prohibited', reason: NOT_FOR_BUILDING },
-    'Территория кладбищ': { use: 'Кладбища', status: 'prohibited', reason: NOT_FOR_BUILDING },
-    'Территории скотомогильников': { use: 'Скотомогильники', status: 'prohibited', reason: NOT_FOR_BUILDING }
+    'Территория учреждений и предприятий обслуживания в том числе общегородского значения': { key: 'services', group: 'public', use: 'Обслуживание', status: 'instrument_handoff', reason: PDP },
+    'Территория учреждений образования': { key: 'education', group: 'public', use: 'Образование', status: 'instrument_handoff', reason: PDP },
+    'Территория организаций здравоохранения и социального обеспечения': { key: 'health', group: 'public', use: 'Здравоохранение', status: 'instrument_handoff', reason: PDP },
+    'Территория промышленной застройки': { key: 'industry', group: 'industry', use: 'Промышленность', status: 'instrument_handoff', reason: PDP },
+    'Территория коммунально-складской застройки': { key: 'storage', group: 'industry', use: 'Коммунально-складская', status: 'instrument_handoff', reason: PDP },
+    'Территория предприятий автосервиса (автозапровочных станций, станций технического обслуживания, автомоек)': { key: 'car-services', group: 'industry', use: 'Автосервис', status: 'instrument_handoff', reason: PDP },
+    'Территория сооружений внешнего транспорта (автовокзалов, ж/д вокзалов, аэропортов, аэровокзалов)': { key: 'transport-terminals', group: 'transport', use: 'Внешний транспорт', status: 'instrument_handoff', reason: PDP },
+    'Территория оборонных объектов': { key: 'defence', group: 'restricted', use: 'Оборонные объекты', status: 'instrument_handoff', reason: 'Режимная территория.' },
+    'Территория исправительно-трудовых учреждений': { key: 'prisons', group: 'restricted', use: 'Исправительные учреждения', status: 'instrument_handoff', reason: 'Режимная территория.' },
+    'Территории канализационных очистных сооружений': { key: 'sewage', group: 'industry', use: 'Очистные сооружения', status: 'instrument_handoff', reason: PDP },
+    'Резервные территории': { key: 'reserve', group: 'reserve', use: 'Резервная территория', status: 'instrument_handoff', reason: 'Резерв развития; застройка после изменения генплана или ПДП.' },
+    'Территории растениеводства': { key: 'crops', group: 'agriculture', use: 'Растениеводство', status: 'instrument_handoff', reason: 'Сельскохозяйственное использование.' },
+    'Территории животноводства': { key: 'livestock', group: 'agriculture', use: 'Животноводство', status: 'instrument_handoff', reason: 'Сельскохозяйственное использование.' },
+    'Территория теплиц, цветочных хозяйств и питомников': { key: 'greenhouses', group: 'agriculture', use: 'Теплицы и питомники', status: 'instrument_handoff', reason: 'Сельскохозяйственное использование.' },
+    'Зелени общего пользования и зелени спецназначения': { key: 'green', group: 'green', use: 'Озеленение', status: 'prohibited', reason: NOT_FOR_BUILDING },
+    'Территория парков, скверов и т.д. (зона кратковременного отдыха)': { key: 'parks', group: 'green', use: 'Парки и скверы', status: 'prohibited', reason: NOT_FOR_BUILDING },
+    'Территория рек, водоемов, береговых полос': { key: 'water', group: 'water', use: 'Водные объекты', status: 'prohibited', reason: NOT_FOR_BUILDING },
+    'Территория лесного хозяйства': { key: 'forest', group: 'green', use: 'Лесное хозяйство', status: 'prohibited', reason: NOT_FOR_BUILDING },
+    'Территория особо охраняемых земель': { key: 'protected', group: 'green', use: 'Особо охраняемые земли', status: 'prohibited', reason: NOT_FOR_BUILDING },
+    'Территория автомобильных дорог': { key: 'roads', group: 'transport', use: 'Автомобильные дороги', status: 'prohibited', reason: NOT_FOR_BUILDING },
+    'Территория железных дорог и сооружений железнодорожного транспорта': { key: 'railways', group: 'transport', use: 'Железные дороги', status: 'prohibited', reason: NOT_FOR_BUILDING },
+    'Территория кладбищ': { key: 'cemeteries', group: 'restricted', use: 'Кладбища', status: 'prohibited', reason: NOT_FOR_BUILDING },
+    'Территории скотомогильников': { key: 'burial-grounds', group: 'restricted', use: 'Скотомогильники', status: 'prohibited', reason: NOT_FOR_BUILDING }
 }));
 const normalise = text => String(text ?? '').replace(/\s+/g, ' ').trim();
 const implementationLabels = { 'Существующие': 'существующая', 'Проектируемые': 'проектируемая' };
@@ -86,12 +86,12 @@ export function interpretZone(properties, rules = ALATAU_RULES) {
     const zone = ZONES.get(functional);
     const base = { functional, zoneGroup: normalise(properties?.gpzone) || null, implementation,
         implementationLabel: implementationLabels[implementation] || null, storeyHeightM: rules.storeyHeightM, uplift: null, constraints: [] };
-    if (!zone) return { ...base, use: functional || 'Зона', status: 'unrecorded', reason: `Функциональная зона не интерпретирована: ${functional || 'пусто'}`,
+    if (!zone) return { ...base, useKey: null, useGroup: null, use: functional || 'Зона', status: 'unrecorded', reason: `Функциональная зона не интерпретирована: ${functional || 'пусто'}`,
         storeys: null, heightM: null, heightLabel: 'не интерпретировано' };
-    if (zone.status !== 'allowed') return { ...base, use: zone.use, status: zone.status, reason: zone.reason, storeys: null, heightM: null,
+    if (zone.status !== 'allowed') return { ...base, useKey: zone.key, useGroup: zone.group, use: zone.use, status: zone.status, reason: zone.reason, storeys: null, heightM: null,
         heightLabel: zone.status === 'prohibited' ? 'без застройки' : 'по ПДП' };
     const heightM = Math.round(zone.storeys * rules.storeyHeightM * 100) / 100;
-    return { ...base, use: zone.use, status: 'allowed', reason: null, storeys: zone.storeys, heightM, uplift: zone.uplift || null,
+    return { ...base, useKey: zone.key, useGroup: zone.group, use: zone.use, status: 'allowed', reason: null, storeys: zone.storeys, heightM, uplift: zone.uplift || null,
         heightLabel: zone.uplift ? `до ${zone.storeys} эт. (${zone.uplift.storeys}*)` : `до ${zone.storeys} эт.`,
         constraints: [
             constraint('storeys', zone.storeys, 'count', 'maximum', 'direct', 'functional', { basis: zone.storeysBasis }),
@@ -177,7 +177,13 @@ export function createAlatauGenplanProvider(descriptor = alatauGenplanSource, { 
                 version: sourceRevision({ id: recordId, geometry: feature.geometry, properties: p }), publishedAt: descriptor.edition },
             authority: { effect: 'obligatory', basis: 'source-summary', applicability: 'unresolved' },
             assessment: { meaning: 'zoning-area', status: reading.status, reason: reading.reason, geometry: 'source-area', constraints: 'not-evaluated', current: true },
-            metrics: { floorAreaM2: null, heightM: reading.heightM },
+            // The zone's use in the shared vocabulary (docs/vocabulary.md, Permitted use): a key the app
+            // translates, a group the map colours by, and the plan's own words.
+            use: { key: reading.useKey, group: reading.useGroup, label: reading.use },
+            metrics: { floorAreaM2: null, heightM: reading.heightM,
+                // The asterisked class (6* этажей): taller only on the condition the legend's note sets.
+                ...(reading.uplift ? { conditional: { heightM: Math.round(reading.uplift.storeys * reading.storeyHeightM * 100) / 100,
+                    storeys: reading.uplift.storeys, condition: reading.uplift.condition } } : {}) },
             constraints: reading.status === 'allowed' ? reading.constraints.map(item => ({ ...item, scenario })) : [],
             sourceEvidence: { layer, service, properties: p, interpretation: reading, ...(reading.uplift ? { uplift: reading.uplift } : {}), rules: rulesEvidence }
         });

@@ -46,6 +46,8 @@ const DYNAMIC_KEY_PREFIXES = [
     'planningViews.constraint.',   // the source inspector names recorded numeric constraints
     'planningViews.resultStatus.', // source assessment outcomes are runtime values
     'planningViews.scenario.',     // scenario ids come from the planning source catalog
+    'planningViews.use.',          // zone use keys from planning sources; planning-permitted-check.test.js checks each
+    'planningViews.useGroup.',     // zone use groups, checked there too
     'modal.corridor.compass.',
     'modal.corridor.laneTypes.',
     'modal.corridor.presetWidths.',

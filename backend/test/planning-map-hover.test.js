@@ -26,7 +26,8 @@ describe('planning 2D map hover behavior', () => {
         const context = vm.createContext({ root, ready: true, selectionLayer: { clearLayers: vi.fn() }, layer,
             hitShapes: [], store: { get: () => state }, selected: () => null, sceneItems: () => [item],
             appearance: () => 'solid', envelopes: { mapFeatures: vi.fn(() => [feature]) }, realization: () => ({}),
-            color: () => '#fff', select, t: key => key, lotNote: () => '', scenarioLabel: () => '',
+            color: () => '#fff', itemColor: () => '#fff', itemTitle: value => value.title, unbuildableZone: () => false,
+            select, t: key => key, lotNote: () => '', scenarioLabel: () => '',
             rootMap: root.map, console, core: { roles: ['existing', 'permitted', 'proposed'] }, drawnItems: new Map(),
             scenarioId: '', pins: {} });
 
