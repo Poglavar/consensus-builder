@@ -9,7 +9,8 @@
 //   geom2d_3765 geometry(Geometry,3765)      — flattened mesh for the spatial filter (GiST-indexed)
 //   footprint_geom geometry(MultiPolygon,3765) — cleaned outline for map and demolition geometry
 // So a query is just "spatial filter + read JSONB" — no ST_Dump/ST_Transform/ST_AsGeoJSON at request
-// time. This took /buildings/near from ~11s to ~60ms. See backend/buildings/building-3d-precompute.sql.
+// time. This took /buildings/near from ~11s to ~60ms. The columns are defined in cadastre-data db/gdi_building_3d.sql and
+// filled by its buildings/derive-mesh-geometry.js (the table is cadastre-data's; this repo only reads it).
 
 export function createZagrebProvider(pool) {
     async function near(geometry, bufferMeters) {

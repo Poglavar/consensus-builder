@@ -76,7 +76,6 @@ npm ci
 #     live in `consensus`; the connection's search_path starts with `public`, so running them would
 #     CREATE an empty public.proposal / public.ai_scene that shadows the real table for every query.
 #     Schema-qualify them (consensus.) before adding them here.
-#   buildings/building-3d-precompute.sql — a long batched backfill (CALL), not a schema step.
 DDL_FILES=(
     routes/area-monitor-ddl.sql
     routes/land-events-ddl.sql

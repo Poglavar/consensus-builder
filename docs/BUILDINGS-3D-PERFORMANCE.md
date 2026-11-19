@@ -59,9 +59,9 @@ from ~508k to ~650, below `jit_above_cost`). The +1.4 GB is the storage cost of 
 
 ## Migration & rollout
 
-The migration is `backend/buildings/building-3d-precompute.sql`. It is idempotent and **batched** — a
-`plpgsql` procedure that processes 2000 buildings and `COMMIT`s per chunk (never one giant
-transaction; resumable; PG11+ for procedure-level COMMIT — prod & local are PG17).
+The migration was `backend/buildings/building-3d-precompute.sql` (in git history). Since 2026-11-20 the columns
+are defined only in cadastre-data `db/gdi_building_3d.sql`, the table's one definition, and filled by its
+`buildings/derive-mesh-geometry.js` (batched and resumable); the steps below describe the original 2026 rollout.
 
 **Prod rollout order (matters — backfill before the new code goes live):**
 
