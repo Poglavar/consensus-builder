@@ -25,11 +25,15 @@
         };
     }
     const feature = geometry => ({ type: 'Feature', properties: {}, geometry });
+    // A draft's ground has no size limit of its own, as the map's site tool and editors set none
+    // (proposals/site-draft.js); the server's binding of the draft (POST /designs/binding, the
+    // invalid-site and too-many-parcels refusals of proposals/binding.js) bounds it as it bounds a
+    // design drawn on the map.
     function polygon(geometry, d) {
         const shape = d.validation.polygon(geometry, d.turf);
         if (!shape) fail('Supply a valid WGS84 Polygon or MultiPolygon');
         const bounds = d.turf.bbox(shape);
-        if (bounds[0] < -180 || bounds[2] > 180 || bounds[1] < -85 || bounds[3] > 85 || d.turf.area(shape) > 1_000_000) fail('Draft area must be within one square kilometre and latitudes ±85°');
+        if (bounds[0] < -180 || bounds[2] > 180 || bounds[1] < -85 || bounds[3] > 85) fail('Draft area must lie within longitudes ±180° and latitudes ±85°');
         return shape.geometry;
     }
     // The side of the road the street's traffic keeps to: the city's, which the caller supplies

@@ -370,3 +370,6 @@ in commits.
   terrain API's ground height at the view's centre plus the local ellipsoid offset; Zagreb: EVRF2000 + 44.6 m), since
   probing a view opened far away seated it on 64 m tiles and content floated ~1.8 m at street level. Elsewhere a probed
   seat is redone once when fine tiles (<= 4.5 m error) cover the centre. User asked for both.
+- 2026-11-20: MCP drafts take the human editors' size limits, not their own: no 1 km² rule (the site tool and
+  building editors set none); the server binding's invalid-site / too-many-parcels (5000) caps bound every draft. A
+  Detached rule builds within the site (parcels clipped to it) or cuts an outline into site-tool plots. User-approved.

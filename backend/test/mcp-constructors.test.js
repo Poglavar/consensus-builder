@@ -226,6 +226,63 @@ describe('MCP shared construction generators', () => {
         expect(() => buildTypedDesign({ ...common, typology: 'detached', coverage: 1.5 }, options)).toThrow(/coverage/);
         expect(() => buildTypedDesign({ ...common, typology: 'detached', minFrontageM: 1000, streets: [street] }, options)).toThrow(/No source parcel/);
     });
+    it('builds a detached rule only inside the authored site, not on the rest of a large parcel', () => {
+        // A 40 × 40 m site in the corner of the ~156 × 222 m parcel.
+        const small = { type: 'Polygon', coordinates: [[[15, 45], [15.0005, 45], [15.0005, 45.00036], [15, 45.00036], [15, 45]]] };
+        const design = buildTypedDesign({ ...common, site: small, typology: 'detached', setbackM: 3 }, options);
+        expect(design.site).toEqual(small);
+        expect(design.geometry.buildings).toHaveLength(1);
+        const [building] = design.geometry.buildings;
+        expect(turf.booleanWithin(building, turf.feature(small))).toBe(true);
+        expect(turf.area(building)).toBeLessThan(turf.area(turf.feature(small)));
+        // The parcel inside the site is the plot, exactly as the rule evaluates it on the map.
+        const plot = { ...parcel, geometry: turf.intersect(parcel, turf.feature(small)).geometry };
+        const rule = design.buildingProposal.parameters.rule;
+        expect(turf.area(building)).toBeCloseTo(turf.area(constructorRuntime.rules.evaluateParcel(plot, rule,
+            { turf, largestPolygon: constructorRuntime.footprints.toSingleLargestPolygon }).envelope), 1);
+        // A site that is the parcels' union leaves each parcel whole, as a parcel selection does.
+        const whole = buildTypedDesign({ ...common, typology: 'detached', setbackM: 3 }, options);
+        expect(whole.geometry.buildings[0].geometry).toEqual(constructorRuntime.rules.evaluateParcel(parcel, rule,
+            { turf, largestPolygon: constructorRuntime.footprints.toSingleLargestPolygon }).envelope.geometry);
+        // A parcel the site does not reach is excluded and named.
+        const away = { type: 'Feature', id: 'Far', properties: { parcelId: 'Far' }, geometry: { type: 'Polygon', coordinates: [[[15.01, 45], [15.011, 45], [15.011, 45.001], [15.01, 45.001], [15.01, 45]]] } };
+        expect(buildTypedDesign({ ...common, site: small, typology: 'detached' }, { parcels: [parcel, away] }).geometry.buildings).toHaveLength(1);
+        let refusal = null;
+        try { buildTypedDesign({ ...common, site: small, typology: 'detached' }, { parcels: [away] }); } catch (error) { refusal = error; }
+        expect(refusal).toMatchObject({ code: 'building-rule-no-room', constraints: { excluded: [{ parcelId: 'Far', status: 'outside-site' }] } });
+    });
+    it('cuts a site without parcels into detached plots along the street it faces, as the site tool does', () => {
+        // The ~156 × 222 m site with a street along its south edge (not its longest edge).
+        const street = { type: 'Feature', properties: { name: 'South street' }, geometry: { type: 'LineString', coordinates: [[14.999, 44.99995], [15.003, 44.99995]] } };
+        const design = buildTypedDesign({ ...common, typology: 'detached', setbackM: 3, streets: [street] });
+        const { sitePlots } = constructorRuntime;
+        const frontage = sitePlots.frontageFromStreets(site, [street], { turf });
+        expect(frontage.basis).toBe('street');
+        const plots = sitePlots.cutPlots(site, { frontageEdgeIndex: frontage.frontageEdgeIndex, plotWidthM: sitePlots.DETACHED_PLOT_WIDTH_M, turf });
+        expect(plots.length).toBeGreaterThan(1);
+        expect(design.goal).toBe('parcelBased');
+        expect(design.geometry.buildings).toHaveLength(plots.length);
+        design.geometry.buildings.forEach((building, index) => {
+            expect(turf.booleanWithin(building, plots[index])).toBe(true);
+            expect(turf.booleanWithin(building, turf.feature(site))).toBe(true);
+        });
+        // Without streets the plots are cut along the longest edge, the site tool's default.
+        const longest = buildTypedDesign({ ...common, typology: 'detached', setbackM: 3 });
+        expect(longest.geometry.buildings).toHaveLength(sitePlots.cutPlots(site, { plotWidthM: sitePlots.DETACHED_PLOT_WIDTH_M, turf }).length);
+    });
+    it('accepts a site over one square kilometre, as the map\'s site tool sets no size limit', () => {
+        // About 1.6 × 1.3 km: 2.1 km². The server's binding (invalid-site, too-many-parcels) is the limit.
+        const large = { type: 'Polygon', coordinates: [[[15, 45], [15.02, 45], [15.02, 45.012], [15, 45.012], [15, 45]]] };
+        const largeParcel = { type: 'Feature', id: 'L', properties: { parcelId: 'L' }, geometry: large };
+        expect(turf.area(turf.feature(large))).toBeGreaterThan(2_000_000);
+        const freeform = buildTypedDesign({ ...common, site: large, typology: 'freeform' }, { parcels: [largeParcel] });
+        expect(freeform.geometry.buildings).toHaveLength(1);
+        const block = buildTypedDesign({ ...common, site: large, typology: 'block' }, { parcels: [largeParcel] });
+        expect(block.site).toEqual(large);
+        const park = intentDesign.build({ kind: 'space', spaceKind: 'park', site: large, city: 'london', authoredAt: common.authoredAt }, { turf });
+        expect(park.site).toEqual(large);
+        expect(() => intentDesign.build({ kind: 'space', spaceKind: 'park', site: { type: 'Polygon', coordinates: [[[15, 86], [15.01, 86], [15.01, 86.01], [15, 86]]] } }, { turf })).toThrow(/latitudes/);
+    });
     it('refuses a detached rule edit that adds or changes a limit without new envelope geometry', () => {
         const design = buildTypedDesign({ ...common, typology: 'detached' }, options);
         const edit = rule => {
@@ -266,7 +323,7 @@ describe('MCP shared construction generators', () => {
         expect(modified.geometry.buildings[0].properties.access).toBe('corridor');
     });
     it('uses exact source identities and keeps detached exclusions visible in errors', () => {
-        expect(() => buildTypedDesign({ ...common, typology: 'detached' })).toThrow(/source parcels/);
+        expect(() => buildTypedDesign({ ...common, typology: 'block' })).toThrow(/source parcels/);
         expect(() => buildTypedDesign({ ...common, typology: 'detached', minPlotAreaM2: 100000 }, options)).toThrow(/No source parcel/);
         const design = buildTypedDesign({ ...common, typology:'detached', setbackM:5, ruleKind:'range', minFloors:2 },options);
         const rule = design.buildingProposal.parameters.rule;

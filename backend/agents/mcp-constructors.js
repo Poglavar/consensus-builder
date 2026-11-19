@@ -25,12 +25,24 @@ function sourceParcels(parcels) {
         return { feature: f, parcelId: String(id) };
     });
 }
+// The construction site: the authored one, else the selected parcels' union. Its size has no limit
+// here, as the map's site tool and building editors set none; the server's binding of every draft
+// (mcp-drafts.js result: POST /designs/binding) refuses what it refuses for a design drawn on the
+// map (proposals/binding.js: invalid-site, too-many-parcels).
 function siteOf(intent, parcels) {
     const site = intent.site || parcels.reduce((out, p) => out ? turf.union(out, p.feature) : p.feature, null)?.geometry;
-    if (!site || !['Polygon', 'MultiPolygon'].includes(site.type) || !turf.area(feature(site)) || turf.area(feature(site)) > 1_000_000) fail('invalid-site', 'Supply a polygonal construction site of at most one square kilometre.', 'site', { maximumAreaM2: 1_000_000 });
+    if (!site || !['Polygon', 'MultiPolygon'].includes(site.type) || !turf.area(feature(site))) fail('invalid-site', 'Supply a polygonal construction site.', 'site', { type: ['Polygon', 'MultiPolygon'] });
     const bbox = turf.bbox(feature(site));
     if (bbox.some(n => !Number.isFinite(n)) || bbox[0] < -180 || bbox[2] > 180 || bbox[1] < -85 || bbox[3] > 85) fail('invalid-site', 'Construction site must use WGS84 coordinates.', 'site', { longitude: [-180, 180], latitude: [-85, 85] });
     return site;
+}
+// A source parcel's ground within the construction site: the parcel itself when the site covers it,
+// else its part inside, by the shared clip; null when no ground of it is inside.
+function parcelWithinSite(parcel, site) {
+    const context = { site: 'mcp-constructors.parcelWithinSite' };
+    if (!runtime.tolerances.isGround(turf, runtime.tolerances.uncoveredBy(turf, parcel, [feature(site)], context))) return parcel;
+    const inside = runtime.arrangement.clipWith(turf, 'intersect', parcel, feature(site), context);
+    return inside?.geometry && runtime.tolerances.isGround(turf, inside) ? { ...parcel, geometry: inside.geometry } : null;
 }
 function publish(intent, record) {
     const authored = ProposalAuthoredRecord.cleanFeatureContainers({ ...record, title: intent.title, description: intent.description, author: intent.author,
@@ -99,7 +111,7 @@ export function buildTypedDesign(intent, { parcels = [] } = {}) {
         return publish(intent, { ...design, goal: 'single' });
     }
     if (typology === 'row' && entries.length && new Set(entries.map(entry => entry.parcelId)).size < 2) fail('row-needs-two-parcels', 'Row houses need at least two selected parcels.', 'parcelIds', { minItems: 2, unique: true });
-    if (!entries.length && typology !== 'row') fail('parcel-source-required', 'Building rules need exact source parcels.', 'parcelIds', { minItems: 1 });
+    if (!entries.length && typology === 'block') fail('parcel-source-required', 'A Block rule needs exact source parcels.', 'parcelIds', { minItems: 1 });
     const minPlotAreaM2 = number(intent.minPlotAreaM2, 50, 'minPlotAreaM2', 0, 1_000_000);
     // Balconies may stand out of the envelope by balconyDepthM; a pitched roof adds an attic on top.
     if (intent.roof != null && !['flat', 'pitched'].includes(intent.roof)) fail('invalid-roof', 'Choose a flat or pitched roof.', 'roof', { enum: ['flat', 'pitched'] });
@@ -128,16 +140,34 @@ export function buildTypedDesign(intent, { parcels = [] } = {}) {
             minFootprintAreaM2: number(intent.minFootprintAreaM2, 0, 'minFootprintAreaM2', 0, 1_000_000), minPlotAreaM2, ...limits, ...extras });
         // Front and rear yards are measured from the edge facing a street (the caller reads the
         // streets around the site); without them each plot's longest edge is its front, as in the app.
+        // The street also picks the edge a site without parcels is cut into plots along.
         const streets = Array.isArray(intent.streets) ? intent.streets : [];
         const buildings = [], excluded = [];
-        for (const [index, entry] of entries.entries()) {
+        // The plots the rule builds on, as in the app: the selected parcels, each within the site
+        // (whole when the site is their union, as on a parcel selection), or on a site without
+        // parcels the plots the site tool cuts along the street it faces (site-drawing.js enterPlots).
+        const plots = [];
+        if (entries.length) {
+            for (const entry of entries) {
+                const ground = parcelWithinSite(entry.feature, site);
+                if (ground) plots.push({ ...entry, feature: ground });
+                else excluded.push({ parcelId: entry.parcelId, status: 'outside-site' });
+            }
+        } else {
+            const { frontageEdgeIndex } = runtime.sitePlots.frontageFromStreets(site, streets, { turf });
+            for (const plot of runtime.sitePlots.cutPlots(site, { frontageEdgeIndex, plotWidthM: runtime.sitePlots.DETACHED_PLOT_WIDTH_M, turf })) {
+                plots.push({ feature: plot, parcelId: plot.properties.parcelId });
+            }
+        }
+        for (const [index, entry] of plots.entries()) {
             const outcome = runtime.rules.evaluateParcel(entry.feature, rule, { turf, largestPolygon: runtime.footprints.toSingleLargestPolygon, streets });
             if (!outcome.envelope) { excluded.push({ parcelId: entry.parcelId, status: outcome.status }); continue; }
             outcome.envelope.properties = { ...outcome.envelope.properties, type: 'proposedParcelBasedBuilding', parcelId: entry.parcelId,
                 urbanRule: rule, variationSeed: runtime.rules.hashSeed(seed, entry.parcelId), buildingIndex: index };
             buildings.push(outcome.envelope);
         }
-        if (!buildings.length) fail('building-rule-no-room', 'No source parcel can satisfy this detached rule.', 'setbackM', { excluded });
+        if (!buildings.length) fail('building-rule-no-room', entries.length ? 'No source parcel can satisfy this detached rule.'
+            : 'No plot cut from the site can satisfy this detached rule.', 'setbackM', { excluded });
         return publish(intent, { goal: 'parcelBased', site, buildingProposal: { typologyType: 'parcelBased', parameters: { ...rule, rule, seed } }, geometry: { buildings } });
     }
     const rule = runtime.rules.normalizeBlockRule({ typology: typology === 'row' ? 'row' : 'block', kind: ruleKind(intent, 'exact'),

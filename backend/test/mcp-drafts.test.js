@@ -64,6 +64,37 @@ describe('intent design artifacts', () => {
         expect(capture(() => drafts.draftUrbanRule({ city: 'london', parcelIds: ['A'], rule: { typology: 'row', floors: 3 } })))
             .toMatchObject({ code: 'parcel-source-required' });
     });
+    it('drafts a Detached rule on an outline as the site tool does, accepts ground over 1 km², and names the server\'s parcel cap', async () => {
+        const reads = [];
+        const read = { siteOfDesign: design => design.site,
+            parcels: async () => { throw new Error('an outline reads no parcels'); },
+            request: async path => {
+                reads.push(path);
+                if (path === '/streets/near') return { features: [] };
+                if (path === '/designs/binding') return { parcelSourceId: 'test-source', binding: { coverage: 'complete', parcels: [] } };
+                throw new Error(`Unexpected route ${path}`);
+            } };
+        const drafts = createMcpDraftTools({ appOrigin: 'https://app.example', read });
+        const result = await drafts.draftUrbanRule({ city: 'london', outline: site, rule: { typology: 'detached', floors: 2, setbackM: 3 } });
+        // The streets decide the edge the plots are cut along, as StreetFrontage does for the site tool.
+        expect(reads).toEqual(['/streets/near', '/designs/binding']);
+        expect(result.design.goal).toBe('parcelBased');
+        expect(result.design.site).toEqual(site);
+        expect(result.design.geometry.buildings.length).toBeGreaterThan(1);
+        for (const building of result.design.geometry.buildings) expect(turf.booleanWithin(building, turf.feature(site))).toBe(true);
+        expect(validateDesignContent(result.design)).toMatchObject({ ok: true });
+        // About 1.4 × 1.1 km: no limit of its own, as a site drawn on the map has none.
+        const large = { type: 'Polygon', coordinates: [[[-0.12, 51.5], [-0.1, 51.5], [-0.1, 51.51], [-0.12, 51.51], [-0.12, 51.5]]] };
+        expect(turf.area(turf.feature(large))).toBeGreaterThan(1_000_000);
+        expect((await drafts.draftSpace({ city: 'london', outline: large, spaceKind: 'park' })).design.site).toEqual(large);
+        // The server's binding cap answers under its own code, with the limit and a way out.
+        const refusing = createMcpDraftTools({ appOrigin: 'https://app.example', read: { ...read, request: async path => {
+            if (path === '/streets/near') return { features: [] };
+            throw Object.assign(new Error('Source returned HTTP 413'), { code: 'http-413', status: 413, upstream: { error: 'The site meets more than 5000 parcels.', code: 'too-many-parcels' } });
+        } } });
+        await expect(refusing.draftSpace({ city: 'london', outline: large, spaceKind: 'park' })).rejects.toMatchObject({ code: 'too-many-parcels', field: 'site',
+            status: 413, constraints: { maximumParcels: 5000 }, next: { action: expect.stringMatching(/smaller site/) } });
+    });
     it('regenerates an exact layout member in place and refuses stale or unrelated replacement conflicts', async () => {
         const neighbor = { type: 'Polygon', coordinates: [[[-0.099, 51.5], [-0.098, 51.5], [-0.098, 51.501], [-0.099, 51.501], [-0.099, 51.5]]] };
         const expanded = { type: 'Polygon', coordinates: [[[-0.1, 51.5], [-0.098, 51.5], [-0.098, 51.501], [-0.1, 51.501], [-0.1, 51.5]]] };

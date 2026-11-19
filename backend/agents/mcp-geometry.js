@@ -37,5 +37,6 @@ export const corridorRuntime = {
 // Thin adapters call these same app generators; no parallel construction geometry.
 export const constructorRuntime = {
     record: context.DesignRecord, singleBuilding: context.SingleBuildingGeometry, footprints: context.FootprintGeometry, rules: context.UrbanRuleVariation,
-    buildingRules: context.BuildingRuleGeometry, stations: context.TransitStations, sitePlots: context.__sitePlots, use: context.BuildingUse
+    buildingRules: context.BuildingRuleGeometry, stations: context.TransitStations, sitePlots: context.__sitePlots, use: context.BuildingUse,
+    tolerances: context.GeometryTolerances, arrangement: context.__parcelArrangement
 };

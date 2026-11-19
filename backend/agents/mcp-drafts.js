@@ -8,6 +8,7 @@ import { editedDesign, valueAt } from './mcp-edit.js';
 import { buildTypedDesign, validateTrackDesign } from './mcp-constructors.js';
 import { trustedMetadata } from './mcp-results.js';
 import { cityDrivingSide } from '../scripts/lib/frontend-city-money.mjs';
+import { MAX_SOURCE_BINDING_PARCELS } from '../parcels/source-binding.js';
 import { createRequire } from 'node:module';
 const require = createRequire(import.meta.url);
 const DesignRecord = require('../../frontend/js/design-record.js');
@@ -31,14 +32,30 @@ function urbanRuleIntent(args) {
     if (unsupported.length) throw fail('unsupported-urban-rule-parameter', `Unsupported ${rule.typology} rule parameter: ${unsupported.join(', ')}.`, { action: 'Use only the rule fields supported for this typology.' });
     if (rule.floors == null && rule.height == null) throw fail('incomplete-urban-rule', 'An urban rule needs a floor count or height.', { action: 'Add rule.floors or rule.height.' });
     if (args.parcelIds?.length && !args.parcelSourceId) throw fail('parcel-source-required', 'Selected urban-rule parcels need their exact source ID.', { action: 'Pass parcelSourceId with parcelIds from the current parcel selection.' });
-    if (rule.typology !== 'row' && !args.parcelIds?.length) throw fail('parcel-source-required', `${rule.typology} rules need exact source parcel IDs.`, { action: 'Select source parcels and supply parcelIds with parcelSourceId.' });
+    if (rule.typology === 'block' && !args.parcelIds?.length) throw fail('parcel-source-required', 'block rules need exact source parcel IDs.', { action: 'Select source parcels and supply parcelIds with parcelSourceId.' });
     const { typology, kind: ruleKind, ...parameters } = rule;
     return { ...args, ...parameters, kind: 'building', typology, ...(ruleKind == null ? {} : { ruleKind }), rule: undefined };
 }
 
 export function createMcpDraftTools({ read, appOrigin, resolveDraftReference, resolvePlan }) {
+    // The server binds a draft as it binds a design drawn on the map (proposals/binding.js), so a site
+    // too large for one design is refused here under the server's own codes, with how to recover.
+    async function bindingOf(design, parcelSourceId) {
+        try {
+            return await read.request('/designs/binding', {}, { site: read.siteOfDesign(design), city: design.city, toleranceM: design.toleranceM, parcelSourceId });
+        } catch (error) {
+            const code = error?.upstream?.code;
+            if (code === 'too-many-parcels') throw Object.assign(fail(code, `The site meets more than ${MAX_SOURCE_BINDING_PARCELS} parcels, more than one design may take.`,
+                { action: 'Choose a smaller site or fewer parcels, or split the plan into several designs.' }), { field: 'site', constraints: { maximumParcels: MAX_SOURCE_BINDING_PARCELS }, status: error.status, upstream: error.upstream });
+            if (code === 'parcel-source-area-limit') throw Object.assign(fail(code, 'The parcel source cannot be read for a site this large.',
+                { action: 'Choose a smaller site, or split the plan into several designs.' }), { field: 'site', status: error.status, upstream: error.upstream });
+            if (code === 'invalid-site') throw Object.assign(fail(code, 'The server cannot bind this site; its reason is in the upstream answer.',
+                { action: 'Correct the site as the upstream reason says (a WGS84 Polygon or MultiPolygon within the vertex and extent limits), then retry.' }), { field: 'site', status: error.status, upstream: error.upstream });
+            throw error;
+        }
+    }
     async function result(design, parcelSourceId) {
-        const binding = await read.request('/designs/binding', {}, { site: read.siteOfDesign(design), city: design.city, toleranceM: design.toleranceM, parcelSourceId });
+        const binding = await bindingOf(design, parcelSourceId);
         parcelSourceId = parcelSourceIdOf(binding) || parcelSourceId;
         if (binding.binding?.coverage === 'unknown' || binding.binding?.unknownM2 > 0) throw fail('ground-unavailable', 'The site binding is unknown.', { action: 'Retry when parcel coverage is available.' });
         return { design, cid: cidOfObject(design), parcelSourceId, takes: (binding.binding?.parcels || []).map(p => p.parcelId), binding: binding.binding,
@@ -93,8 +110,9 @@ export function createMcpDraftTools({ read, appOrigin, resolveDraftReference, re
             } else intent.site = geometry(args.outline);
             // A detached rule with yards or a frontage measured from the street needs the streets
             // around its plots, read from the same source as the app's; envelopes record the basis.
-            if (kind === 'building' && args.typology === 'detached'
-                && ['frontSetbackM', 'rearSetbackM', 'setbackHeightRatio', 'minFrontageM'].some(key => args[key] != null)) {
+            // An outline is cut into plots along the street it faces, as the site tool cuts them.
+            if (kind === 'building' && args.typology === 'detached' && (!args.parcelIds?.length
+                || ['frontSetbackM', 'rearSetbackM', 'setbackHeightRatio', 'minFrontageM'].some(key => args[key] != null))) {
                 const [w, s, e, n] = turf.bbox(turf.feature(intent.site)), dLat = 35 / 111320, dLng = dLat / Math.cos((s + n) / 2 * Math.PI / 180);
                 const found = await read.request('/streets/near', { bbox: [w - dLng, s - dLat, e + dLng, n + dLat].join(',') });
                 intent.streets = Array.isArray(found?.features) ? found.features : [];
