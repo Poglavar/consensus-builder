@@ -164,7 +164,9 @@
             if (!Array.isArray(polygons)) { fail(kind, 'must be an array of polygons'); continue; }
             if (['walls', 'slabs'].includes(kind) && !polygons.length) fail(kind, 'must contain geometry');
             for (const [i, polygon] of polygons.entries()) {
-                if (kind === 'platforms' && !bounded(model.platforms[i]?.elevationM, 0, 12)) fail(`${kind}[${i}]`, 'requires a finite elevation');
+                // A basement's platforms and stairs lie below the ground floor: -12..12 m (the shared published format's
+                // bounds, cadastre-data api/src/domains/floor-plans/document.js).
+                if (kind === 'platforms' && !bounded(model.platforms[i]?.elevationM, -12, 12)) fail(`${kind}[${i}]`, 'requires a finite elevation');
                 if (!Array.isArray(polygon) || !polygon.length) { fail(`${kind}[${i}]`, 'must contain an outer ring'); continue; }
                 for (const ring of polygon) {
                     if (!Array.isArray(ring) || ring.length < 3 || !ring.every(uvPoint)) {
@@ -189,7 +191,7 @@
                     if (item?.kind === 'door' && (!uvPoint(item.hinge) || !uvPoint(item.openTip) || length(item.hinge, item.openTip) < 1e-7)) fail(key, 'door requires its hinge and swung leaf endpoint');
                 } else if (kind === 'stairs') {
                     if (!bounded(item?.widthM, .3, 5) || !Number.isInteger(item?.steps) || !bounded(item.steps, 1, 64)
-                        || !bounded(item?.fromM, 0, 12) || !bounded(item?.toM, .1, 12) || item.toM <= item.fromM) fail(key, 'invalid stair dimensions');
+                        || !bounded(item?.fromM, -12, 12) || !bounded(item?.toM, -12, 12) || item.toM <= item.fromM) fail(key, 'invalid stair dimensions');
                 } else if (!bounded(item?.heightM, .5, 2)) fail(key, 'invalid railing height');
             }
         }
