@@ -457,11 +457,6 @@ async function executeGameTurn() {
 
         window.refreshActivityPanel?.();
 
-        // Follow (simulation-follow.js): the camera goes to the newest design of the turn, unless
-        // the user has taken the camera over or is busy in an editor or dialog.
-        const follow = window.SimulationFollow?.controller;
-        if (follow && follow.action() === 'move') window.agentBubbleManager?.followNewest?.();
-
         console.log(`Turn ${gameState.currentTurn} completed. ${agents.length} agents acted.`);
     } finally {
         if (agentStorage && typeof agentStorage.endBatch === 'function') {
@@ -620,7 +615,7 @@ function toggleGamePlayPause() {
         startGameLoop();
         try { updateGameSectionTitle(); } catch (_) { }
         // A running game is watched on the map: Settings folds away and the simulation bar takes
-        // over play/pause, speed, Follow and Stop.
+        // over play/pause, next turn, speed and Stop.
         if (gameState.isRunning) {
             window.SimulationBar?.open();
             window.MapShell?.closeSheets?.();
@@ -633,7 +628,6 @@ function toggleGamePlayPause() {
 function syncSimulationBar() {
     if (typeof window === 'undefined' || !window.SimulationBar) return;
     window.SimulationBar.sync(document, gameState, {
-        follow: !!window.SimulationFollow?.controller?.isEnabled(),
         dateText: CbFormat.formatDate(gameState.currentDateTime, { timeZone: 'UTC' })
     });
     // Docked bubbles ride a ring above the bar while it is shown (agent-bubbles.js ringInset).
@@ -649,9 +643,7 @@ function stopSimulation() {
 
 function bindSimulationBar() {
     const bar = window.SimulationBar;
-    const follow = window.SimulationFollow?.controller;
-    if (!bar || !follow) return;
-    follow.attach({ isRunning: () => gameState.isRunning });
+    if (!bar) return;
     bar.bind(document, {
         togglePlay: toggleGamePlayPause,
         step: () => {
@@ -663,10 +655,8 @@ function bindSimulationBar() {
             updateTurnInterval(seconds);
             gameState.updateGameUI();
         },
-        stop: stopSimulation,
-        follow
+        stop: stopSimulation
     });
-    follow.onChange(() => syncSimulationBar());
     window.i18n?.onChange?.(() => syncSimulationBar());
 }
 

@@ -467,17 +467,8 @@
     width: calc(var(--simulation-progress, 0) * 100%);
     background: var(--cb-success);
 }
-/* A phone: the controls on one row, Follow by its icon (its name stays for assistive technology),
-   the turn and date on their own row under them. */
+/* A phone: the controls on one row, the turn and date on their own row under them. */
 @media (max-width: 480px) {
     .simulation-bar { gap: var(--cb-space-1) var(--cb-space-2); }
     .simulation-bar__status { order: 1; flex-basis: 100%; text-align: center; }
-    .simulation-bar__follow-label {
-        position: absolute;
-        width: 1px;
-        height: 1px;
-        overflow: hidden;
-        clip: rect(0 0 0 0);
-        white-space: nowrap;
-    }
 }

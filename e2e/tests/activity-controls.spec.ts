@@ -389,14 +389,7 @@ test.describe('Activity and simulation controls @features', () => {
     await bar.locator('#simulation-bar-step').click();
     await expect(page.locator('#game-turns')).toHaveText(String(pausedTurn + 1));
     await expect(play).toHaveAttribute('aria-pressed', 'false');
-    // Follow is on by default and toggles; Stop closes the bar.
-    const follow = bar.locator('#simulation-bar-follow');
-    await expect(follow).toHaveAttribute('aria-pressed', 'true');
-    await follow.click();
-    await expect(follow).toHaveAttribute('aria-pressed', 'false');
-    await expect(bar.locator('#simulation-bar-status')).toHaveText('Follow is off');
-    await follow.click();
-    await expect(follow).toHaveAttribute('aria-pressed', 'true');
+    // Stop closes the bar.
     await bar.locator('#simulation-bar-stop').click();
     await expect(bar).toBeHidden();
     await openSimulation(page);

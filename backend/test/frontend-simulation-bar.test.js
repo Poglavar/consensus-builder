@@ -1,12 +1,10 @@
 // The simulation's on-map pieces without a browser: where agent bubbles sit (2D and 3D projections,
-// agent-bubble-placement.js), when Follow moves the camera or hands it back (simulation-follow.js),
-// and what the floating simulation bar shows (ui/simulation-bar.js).
-import { describe, expect, it, vi } from 'vitest';
+// agent-bubble-placement.js) and what the floating simulation bar shows (ui/simulation-bar.js).
+import { describe, expect, it } from 'vitest';
 import { createRequire } from 'node:module';
 
 const require = createRequire(import.meta.url);
 const Placement = require('../../frontend/js/agent-bubble-placement.js');
-const Follow = require('../../frontend/js/simulation-follow.js');
 const SimulationBar = require('../../frontend/js/ui/simulation-bar.js');
 
 const W = 1000, H = 800;
@@ -57,67 +55,6 @@ describe('agent bubble placement', () => {
     });
 });
 
-describe('simulation follow', () => {
-    it('moves when on, waits while editing or a dialog is open, and does nothing when off', () => {
-        expect(Follow.followAction({ enabled: true, editing: false, modalOpen: false })).toBe('move');
-        expect(Follow.followAction({ enabled: true, editing: true, modalOpen: false })).toBe('wait');
-        expect(Follow.followAction({ enabled: true, editing: false, modalOpen: true })).toBe('wait');
-        expect(Follow.followAction({ enabled: false, editing: false, modalOpen: false })).toBe('off');
-    });
-
-    const onMap = { closest: () => null };
-    const onControl = { closest: selector => (selector.includes('button') ? {} : null) };
-    it('counts a press, a wheel turn or a navigation key on the map as taking the camera over', () => {
-        expect(Follow.takesOverCamera({ type: 'pointerdown', target: onMap })).toBe(true);
-        expect(Follow.takesOverCamera({ type: 'wheel', target: onMap })).toBe(true);
-        expect(Follow.takesOverCamera({ type: 'keydown', key: 'ArrowLeft', target: onMap })).toBe(true);
-        expect(Follow.takesOverCamera({ type: 'keydown', key: 'a', target: onMap })).toBe(false);
-        expect(Follow.takesOverCamera({ type: 'pointerdown', target: onControl })).toBe(false);
-    });
-
-    function fakeWindow({ editing = false, modal = null } = {}) {
-        const handlers = {};
-        const el = { addEventListener: (type, fn) => { handlers[type] = fn; } };
-        return {
-            handlers,
-            win: {
-                document: { getElementById: id => (id === 'map' ? el : null) },
-                MapShell: { isEditing: () => editing },
-                ModalEscape: { topmost: () => modal }
-            }
-        };
-    }
-
-    it('turns off when the user moves the running map, and tells the bar why', () => {
-        const { win, handlers } = fakeWindow();
-        const follow = Follow.createController(win);
-        let running = false;
-        follow.attach({ isRunning: () => running });
-        const changes = vi.fn();
-        follow.onChange(changes);
-
-        handlers.pointerdown({ type: 'pointerdown', target: onMap });
-        expect(follow.isEnabled()).toBe(true); // a paused game keeps follow as it is
-
-        running = true;
-        handlers.pointerdown({ type: 'pointerdown', target: onControl });
-        expect(follow.isEnabled()).toBe(true);
-        handlers.wheel({ type: 'wheel', target: onMap });
-        expect(follow.isEnabled()).toBe(false);
-        expect(changes).toHaveBeenCalledWith(false, 'user-moved');
-        expect(follow.action()).toBe('off');
-
-        follow.setEnabled(true);
-        expect(changes).toHaveBeenLastCalledWith(true, 'toggle');
-        expect(follow.action()).toBe('move');
-    });
-
-    it('reads editing and open dialogs from the page', () => {
-        expect(Follow.createController(fakeWindow({ editing: true }).win).action()).toBe('wait');
-        expect(Follow.createController(fakeWindow({ modal: { element: {} } }).win).action()).toBe('wait');
-    });
-});
-
 describe('simulation bar', () => {
     it('is shown from Play until Stop, and while a game runs', () => {
         expect(SimulationBar.barView({ open: false, gameState: { isRunning: false } }).hidden).toBe(true);
@@ -126,10 +63,10 @@ describe('simulation bar', () => {
     });
 
     it('offers pause while running and play while paused', () => {
-        const running = SimulationBar.barView({ open: true, gameState: { isRunning: true, currentTurn: 4, turnIntervalSeconds: 10 }, follow: true });
-        expect(running).toMatchObject({ running: true, playIcon: 'fa-pause', playLabelKey: 'sidebar.game.pause', turn: 4, interval: 10, follow: true });
+        const running = SimulationBar.barView({ open: true, gameState: { isRunning: true, currentTurn: 4, turnIntervalSeconds: 10 } });
+        expect(running).toMatchObject({ running: true, playIcon: 'fa-pause', playLabelKey: 'sidebar.game.pause', turn: 4, interval: 10 });
         const paused = SimulationBar.barView({ open: true, gameState: { isRunning: false, currentTurn: 4, turnIntervalSeconds: 10 } });
-        expect(paused).toMatchObject({ running: false, playIcon: 'fa-play', playLabelKey: 'sidebar.game.play', follow: false });
+        expect(paused).toMatchObject({ running: false, playIcon: 'fa-play', playLabelKey: 'sidebar.game.play' });
     });
 
     it('keeps the interval set in Settings among the speed choices', () => {

@@ -5858,11 +5858,6 @@
             "nextTurn": "Tour suivant",
             "speed": "Un tour toutes les",
             "secondsShort": "{{seconds}} s",
-            "follow": "Suivre",
-            "followTitle": "Amener la caméra sur chaque nouveau projet",
-            "followOn": "Suivi activé",
-            "followOff": "Suivi désactivé",
-            "followStopped": "Suivi désactivé car vous avez déplacé la carte",
             "stop": "Arrêter la simulation"
         },
         "commands": {

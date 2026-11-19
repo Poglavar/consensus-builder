@@ -7100,11 +7100,6 @@
             "nextTurn": "Sljedeći potez",
             "speed": "Potez svakih",
             "secondsShort": "{{seconds}} s",
-            "follow": "Prati",
-            "followTitle": "Pomakni kameru na svaki novi dizajn",
-            "followOn": "Praćenje je uključeno",
-            "followOff": "Praćenje je isključeno",
-            "followStopped": "Praćenje je isključeno jer ste pomaknuli kartu",
             "stop": "Zaustavi simulaciju"
         },
         "commands": {

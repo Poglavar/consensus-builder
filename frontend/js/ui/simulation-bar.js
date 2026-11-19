@@ -1,5 +1,5 @@
 // ui/simulation-bar.js — the small floating simulation bar on the map (#simulation-bar in index.html):
-// play/pause, next turn, turn speed, Follow and Stop. Pressing Play in Settings folds Settings away and
+// play/pause, next turn, turn speed and Stop. Pressing Play in Settings folds Settings away and
 // opens the bar; Pause keeps it; Stop pauses and closes it. game.js owns the game and calls sync().
 // UMD with a pure barView(), so backend/test/frontend-simulation-bar.test.js loads it without a DOM.
 (function (root, factory) {
@@ -19,7 +19,7 @@
     }
 
     // Pure: what the bar shows for a game state.
-    function barView({ open, gameState, follow }) {
+    function barView({ open, gameState }) {
         const running = !!(gameState && gameState.isRunning === true);
         const interval = Number.parseInt(gameState && gameState.turnIntervalSeconds, 10);
         return {
@@ -30,8 +30,7 @@
             playIcon: running ? 'fa-pause' : 'fa-play',
             turn: Number.isInteger(gameState && gameState.currentTurn) ? gameState.currentTurn : 0,
             interval: Number.isInteger(interval) && interval > 0 ? interval : null,
-            speeds: speedOptions(interval),
-            follow: !!follow
+            speeds: speedOptions(interval)
         };
     }
 
@@ -43,8 +42,8 @@
         return String(fallback).replace(/\{\{\s*(\w+)\s*\}\}/g, (m, k) => (params && k in params ? params[k] : m));
     };
 
-    function sync(doc, gameState, { follow = false, dateText = '' } = {}) {
-        const view = barView({ open, gameState, follow });
+    function sync(doc, gameState, { dateText = '' } = {}) {
+        const view = barView({ open, gameState });
         lastView = view;
         const bar = doc?.getElementById?.('simulation-bar');
         if (!bar) return view;
@@ -78,8 +77,6 @@
             }
             if (view.interval !== null) speed.value = String(view.interval);
         }
-        const followButton = doc.getElementById('simulation-bar-follow');
-        if (followButton) followButton.setAttribute('aria-pressed', String(view.follow));
         return view;
     }
 
@@ -91,35 +88,16 @@
         bar.style.setProperty('--simulation-progress', String(share));
     }
 
-    function announce(doc, text) {
-        const status = doc?.getElementById?.('simulation-bar-status');
-        if (status) status.textContent = text;
-    }
-
-    // Wires the bar's controls to the game. `actions`: togglePlay, step, setInterval(seconds), stop,
-    // and the follow controller (simulation-follow.js).
+    // Wires the bar's controls to the game. `actions`: togglePlay, step, setInterval(seconds), stop.
     function bind(doc, actions) {
         const bar = doc?.getElementById?.('simulation-bar');
         if (!bar || bar.dataset.bound === 'true') return false;
         bar.dataset.bound = 'true';
-        const win = doc.defaultView;
         const on = (id, type, fn) => doc.getElementById(id)?.addEventListener(type, fn);
         on('simulation-bar-play', 'click', () => actions.togglePlay());
         on('simulation-bar-step', 'click', () => actions.step());
         on('simulation-bar-speed', 'change', event => actions.setInterval(Number.parseInt(event.target.value, 10)));
         on('simulation-bar-stop', 'click', () => actions.stop());
-        on('simulation-bar-follow', 'click', () => actions.follow.setEnabled(!actions.follow.isEnabled()));
-        actions.follow.onChange((enabled, reason) => {
-            const button = doc.getElementById('simulation-bar-follow');
-            if (button) button.setAttribute('aria-pressed', String(enabled));
-            if (reason === 'user-moved') {
-                announce(doc, t(win, 'mapShell.simulation.followStopped', 'Follow is off because you moved the map'));
-            } else {
-                announce(doc, enabled
-                    ? t(win, 'mapShell.simulation.followOn', 'Follow is on')
-                    : t(win, 'mapShell.simulation.followOff', 'Follow is off'));
-            }
-        });
         return true;
     }
 

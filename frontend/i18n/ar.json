@@ -6051,11 +6051,6 @@
             "nextTurn": "الدور التالي",
             "speed": "دور كل",
             "secondsShort": "{{seconds}} ث",
-            "follow": "تتبّع",
-            "followTitle": "انقل الكاميرا إلى كل تصميم جديد",
-            "followOn": "التتبّع مفعّل",
-            "followOff": "التتبّع متوقف",
-            "followStopped": "توقف التتبّع لأنك حرّكت الخريطة",
             "stop": "إيقاف المحاكاة"
         },
         "commands": {

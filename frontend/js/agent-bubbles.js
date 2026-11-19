@@ -10,7 +10,6 @@ class AgentBubbleManager {
         this.bubbleContainer = null;
         this.map = null;
         this.initialized = false;
-        this.latestBubbleId = null;  // the newest bubble, which Follow goes to after a turn
         this.glideFrame = null;      // the running 3D camera glide, if any
         this.frameHook = () => {
             if (this.bubbles.size) this.updateAllBubblePositions();
@@ -178,7 +177,6 @@ class AgentBubbleManager {
 
         // Store bubble data
         this.bubbles.set(bubbleId, bubbleData);
-        this.latestBubbleId = bubbleId;
 
         // Avatars load when a bubble first needs one (not at boot: bubbles are rare). The bubble
         // joins the map once its image is decoded, so it never paints as a blank disc; a failed
@@ -302,27 +300,16 @@ class AgentBubbleManager {
     onBubbleClick(bubbleData) {
         // Fold away an open sheet so the map is clear for the fly-to
         if (window.MapShell) window.MapShell.closeSheets();
-        this.focusBubble(bubbleData, { select: true });
+        this.focusBubble(bubbleData);
     }
 
     /**
-     * Follow: after a turn, take the camera to the newest bubble's design without selecting it.
-     * @returns {boolean} whether the camera set off
-     */
-    followNewest() {
-        const bubbleData = this.latestBubbleId ? this.bubbles.get(this.latestBubbleId) : null;
-        if (!bubbleData) return false;
-        return this.focusBubble(bubbleData, { select: false });
-    }
-
-    /**
-     * Move the camera of the view in use to a bubble's design, then land the bubble on the design.
-     * The bubble is pinned meanwhile, so newer actions do not remove it under the user.
+     * Move the camera of the view in use to a bubble's design, then land the bubble on the design
+     * and select it. The bubble is pinned meanwhile, so newer actions do not remove it under the user.
      * @param {Object} bubbleData - Bubble data
-     * @param {{select: boolean}} options - select the design on arrival (a click does; Follow does not)
      * @returns {boolean} whether the camera set off
      */
-    focusBubble(bubbleData, { select }) {
+    focusBubble(bubbleData) {
         // Safety check: validate coordinates before flying to prevent world map disaster
         if (!bubbleData.objectPosition ||
             isNaN(bubbleData.objectPosition.lat) ||
@@ -347,7 +334,7 @@ class AgentBubbleManager {
             arrived = true;
             if (!this.bubbles.has(bubbleData.id)) return; // bubble was already removed
             this.landBubble(bubbleData);
-            if (select && bubbleData.objectType === 'proposal') {
+            if (bubbleData.objectType === 'proposal') {
                 this.autoSelectProposal(bubbleData.objectId);
             }
         };
