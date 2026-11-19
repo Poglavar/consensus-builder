@@ -15,7 +15,7 @@ function flatten(node, prefix = '', output = {}) {
 const english = flatten(dictionary('en'));
 const placeholders = text => [...new Set([...text.matchAll(/\{\{\s*\w+\s*\}\}|\{\w+\}/g)].map(match => match[0]))].sort();
 const tags = text => text.match(/<\/?[a-zA-Z][^>]*>/g) || [];
-for (const language of ['ar', 'fr', 'pt']) {
+for (const language of ['ar', 'fr', 'pt', 'ru']) {
     describe(`${language} dictionary`, () => {
         const selected = flatten(dictionary(language));
         it('translates every English key and preserves exact parameters and markup', () => {
@@ -63,4 +63,21 @@ describe('Arabic plurals', () => {
             expect(api.t(key, { count })).toBe(arabic[`${key}.${form}`].replace(/\{\{\s*count\s*\}\}|\{count\}/g, String(count)));
         }
     });
+});
+
+describe('Russian plurals', () => {
+    const russian = flatten(dictionary('ru'));
+    const groups = Object.keys(english).filter(key => key.endsWith('.other')).map(key => key.slice(0, -6))
+        .filter(group => english[`${group}.one`] || placeholders(english[`${group}.other`]).some(param => /\bcount\b/.test(param)));
+    it('defines each Russian plural form', () => {
+        const missing = groups.flatMap(group => ['one', 'few', 'many', 'other']
+            .map(form => `${group}.${form}`).filter(key => !russian[key]?.trim()));
+        expect(missing).toEqual([]);
+    });
+
+    it.each([[1, '1 участок'], [2, '2 участка'], [5, '5 участков'], [21, '21 участок']])(
+        'inflects the parcel count %s', (count, title) => {
+            expect(testI18n('ru').t('proposals.autoName.parcels', { count })).toBe(title);
+        }
+    );
 });

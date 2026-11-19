@@ -6,9 +6,10 @@ const locales = [
   { lang: 'ar', locale: 'ar-EG', direction: 'rtl', label: 'القوائم' },
   { lang: 'fr', locale: 'fr-FR', direction: 'ltr', label: 'Listes' },
   { lang: 'pt', locale: 'pt-PT', direction: 'ltr', label: 'Listas' },
+  { lang: 'ru', locale: 'ru-RU', direction: 'ltr', label: 'Списки' },
 ];
 // Every locale the picker offers (js/i18n.js LOCALE_CHOICES), in picker order.
-const pickerLocales = ['en-GB', 'en-US', 'es-ES', 'es-CO', 'sr-Latn-RS', 'hr-HR', 'ar-EG', 'fr-FR', 'pt-PT'];
+const pickerLocales = ['en-GB', 'en-US', 'es-ES', 'es-CO', 'sr-Latn-RS', 'hr-HR', 'ar-EG', 'fr-FR', 'pt-PT', 'ru-RU'];
 for (const item of locales) {
   test(`${item.lang}: map renders translated controls and downloads only its selected dictionary`, async ({ mockApi: page }) => {
     const dictionaries: string[] = [];
@@ -37,7 +38,7 @@ for (const item of locales) {
   });
 }
 
-test('English startup does not download Arabic, French or Portuguese', async ({ mockApi: page }) => {
+test('English startup downloads only its own dictionary', async ({ mockApi: page }) => {
   const dictionaries: string[] = [];
   page.on('request', request => {
     const match = new URL(request.url()).pathname.match(/\/i18n\/([a-z]+)\.json$/);
@@ -71,7 +72,7 @@ test('Arabic feedback is readable on a phone, preserves URL direction and switch
   await expect(input).toHaveValue('https://example.test/?city=new_york');
 });
 
-test('all locale buttons fit in a phone dialog and Arabic selection completes', async ({ mockApi: page }) => {
+test('all locale buttons fit in a phone dialog and Arabic and Russian selection complete', async ({ mockApi: page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/?city=new_york&lang=en&reduceMotion=1', { waitUntil: 'domcontentloaded' });
   await page.evaluate(async () => {
@@ -89,6 +90,15 @@ test('all locale buttons fit in a phone dialog and Arabic selection completes', 
   await expect(page.locator('html')).toHaveAttribute('dir', 'rtl');
   await expect(page.locator('#proposals-button .map-shell-button-label')).toHaveText('القوائم');
   await expect(picker.locator('[aria-busy="true"]')).toHaveCount(0);
+  const russian = picker.locator('[data-language="ru-RU"]');
+  await expect(russian).toContainText('RU');
+  await russian.focus();
+  await russian.press('Enter');
+  await expect(page.locator('html')).toHaveAttribute('lang', 'ru');
+  await expect(page.locator('html')).toHaveAttribute('dir', 'ltr');
+  await expect(page.locator('#proposals-button .map-shell-button-label')).toHaveText('Списки');
+  await expect(russian).toHaveAccessibleName('Переключить на русский');
+  await expect.poll(() => page.evaluate(() => (window as any).PersistentStorage.getItem('cb_language'))).toBe('ru-RU');
 });
 
 test('Arabic report keeps its first column at the reading edge on a phone', async ({ page }) => {

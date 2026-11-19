@@ -8793,7 +8793,8 @@
             "to_hr": "Switch to Croatian",
             "to_ar": "Switch to Arabic",
             "to_fr": "Switch to French",
-            "to_pt": "Switch to Portuguese"
+            "to_pt": "Switch to Portuguese",
+            "to_ru": "Switch to Russian"
         },
         "english": "English",
         "spanish": "Spanish",

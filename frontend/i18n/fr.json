@@ -5495,7 +5495,8 @@
             "to_hr": "Passer au croate",
             "to_ar": "Passer à l’arabe",
             "to_fr": "Passer au français",
-            "to_pt": "Passer au portugais"
+            "to_pt": "Passer au portugais",
+            "to_ru": "Passer au russe"
         },
         "arabic": "Arabe",
         "french": "Français",

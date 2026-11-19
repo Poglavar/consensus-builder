@@ -53,7 +53,8 @@ the targeted headless unit checks below. Keep interpolation names identical (`{n
 Plural entries use CLDR categories (`zero`, `one`, `two`, `few`, `many`, `other`) under the key;
 `count` selects the form through `Intl.PluralRules`. The selected dictionary is exhausted before
 English is considered, and English fallback uses English plural rules. Arabic uses `ar-EG` with
-right-to-left reading; French defaults to `fr-FR` and Portuguese to `pt-PT`. Registry metadata supplies document direction and resets it on a language switch. Native
+right-to-left reading. French defaults to `fr-FR`, Portuguese to `pt-PT`, and Russian to `ru-RU`.
+Registry metadata supplies document direction and resets it on a language switch. Native
 names remain visible in every locale picker. Arabic quantities define all six CLDR forms. Map
 geometry and technical addresses keep left-to-right direction; interface copy follows the locale.
 For additional right-to-left languages, declare `direction: 'rtl'` and verify both desktop and phone

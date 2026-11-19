@@ -13,7 +13,7 @@
 
     // A UI language → the locale that renders it when no region was picked (an explicit `lang` option,
     // or no i18n). English defaults to British day-month order; Serbian is written in Latin script.
-    const LOCALES = Object.freeze({ en: 'en-GB', hr: 'hr-HR', es: 'es-ES', sr: 'sr-Latn-RS' });
+    const LOCALES = Object.freeze({ en: 'en-GB', hr: 'hr-HR', es: 'es-ES', sr: 'sr-Latn-RS', ru: 'ru-RU' });
     const FALLBACK_LANG = 'en';
     const NARROW_NBSP = ' ';
     const NBSP = ' ';

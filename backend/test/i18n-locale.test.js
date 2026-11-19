@@ -32,6 +32,7 @@ describe('locale detection', () => {
     it('falls back to the language default for a region the app does not have', async () => {
         expect((await loadI18n({ languages: ['en-AU'] })).i18n.getLocale()).toBe('en-GB');
         expect((await loadI18n({ languages: ['sr-RS'] })).i18n.getLocale()).toBe('sr-Latn-RS');
+        expect((await loadI18n({ languages: ['ru-KZ'] })).i18n.getLocale()).toBe('ru-RU');
     });
 
     it('reads a saved locale, and a saved bare language as its default', async () => {
@@ -76,7 +77,7 @@ describe('picking a locale', () => {
     });
 
     it('lists the locales the picker offers', async () => {
-        expect((await loadI18n()).i18n.getSupportedLocales()).toEqual(['en-GB', 'en-US', 'es-ES', 'es-CO', 'sr-Latn-RS', 'hr-HR', 'ar-EG', 'fr-FR', 'pt-PT']);
+        expect((await loadI18n()).i18n.getSupportedLocales()).toEqual(['en-GB', 'en-US', 'es-ES', 'es-CO', 'sr-Latn-RS', 'hr-HR', 'ar-EG', 'fr-FR', 'pt-PT', 'ru-RU']);
     });
 });
 
@@ -151,7 +152,7 @@ describe('plural fallback', () => {
 
 // RTL belongs to the selected UI language and must reset when leaving Arabic.
 describe('new locales and reading direction', () => {
-    it.each([['ar', 'ar-EG'], ['fr', 'fr-FR'], ['pt', 'pt-PT']])('detects and persists %s', async (language, locale) => {
+    it.each([['ar', 'ar-EG'], ['fr', 'fr-FR'], ['pt', 'pt-PT'], ['ru', 'ru-RU']])('detects and persists %s', async (language, locale) => {
         const win = await loadI18n({ search: `?lang=${language}` });
         expect(win.i18n.getLanguage()).toBe(language);
         expect(win.i18n.getLocale()).toBe(locale);
