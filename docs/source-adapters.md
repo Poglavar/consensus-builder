@@ -116,6 +116,27 @@ extrudes at three metres per storey using the shared rules. The footprint endpoi
 recorded storeys and a null measured height. Coverage is partial and the source is read-only.
 The source ID also works with the existing building reads used by MCP. [Dataset catalogue](https://map.gov.kz/api/v2/resources/1316)
 
+### Kazakhstan state land layers
+
+A city whose configuration has `stateLand: { provider: 'kazakhstan-pkk', relaySourceId, districtId,
+zone }` (Astana Esil, Alatau) shows **State land** in Layers → Parcels with two layers, read whole for
+the district through the parcel source's relay ([`state-land.js`](../frontend/js/state-land.js),
+[`state-land-layer.js`](../frontend/js/state-land-layer.js)):
+
+- **Free state plots**, `egkn:freelands_view`: land the state has formed for allocation, with its
+  stated use and entry date. They are not parcels: they overlap each other (alternative cuts of the
+  same land) and sometimes registered parcels, so they never join the parcel fabric. A free plot is
+  drawn as **granted** when one registered parcel (`egkn:u_view`) created on or after the plot's
+  entry date covers at least 90% of it; the registry keeps no link between the two, and the plot
+  can stay listed after the grant. Its auction, price and seller fields were empty in both districts
+  (2026-11-20) and are not read.
+- **Land applications**, `egkn:reqland_view`: plots drawn in applications for state land, with
+  their stated use and entry date. Their status codes are not published in a readable form.
+
+Only plot ids, uses, dates and geometry are requested; names of officials and applicants are not.
+The layers are read-only map overlays above the parcel canvas: while one is on, a parcel under one
+of its shapes is selected by switching the layer off.
+
 ## Adapter configuration examples
 
 The model is **abstraction → adapter → source**: an abstraction names the domain, an adapter implements a concrete reader, and a source binds public configuration to that adapter. `kind: "default"` means application-registered configuration; `kind: "custom"` means caller-provided configuration accepted by that particular adapter. It does not select a second reader implementation.

@@ -216,6 +216,22 @@
             "adsLoaded": "{{count}} parcelas anunciadas carregadas",
             "adsError": "Não foi possível carregar as parcelas anunciadas.",
             "highlightOwnershipTitle": "Destacar por tipo de proprietário (T)",
+            "stateLand": {
+                "title": "Terrenos públicos",
+                "freePlots": "Lotes públicos livres",
+                "applications": "Pedidos de terreno",
+                "grantedLegend": "Lote livre atribuído (registado após a publicação)",
+                "loading": "A carregar terrenos públicos do cadastro…",
+                "checking": "A comparar lotes livres com lotes registados: {{done}} / {{total}}",
+                "failed": "O cadastro não respondeu. Tente novamente mais tarde.",
+                "freeTitle": "Lote público livre {{id}}",
+                "applicationTitle": "Pedido de terreno {{id}}",
+                "grantedAs": "Atribuído: registado como lote {{number}} em {{date}}",
+                "use": "Uso: {{use}}",
+                "listedOn": "Registado em {{date}}",
+                "freeCount": "Lotes públicos livres: {{free}} publicados, {{granted}} atribuídos",
+                "applicationCount": "Pedidos de terreno: {{count}}"
+            },
             "ownershipType": {
                 "government": "Estado",
                 "institution": "Instituição",

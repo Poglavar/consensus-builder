@@ -216,6 +216,22 @@
             "adsLoaded": "{{count}} parcelles d’annonces chargées",
             "adsError": "Impossible de charger les parcelles des annonces.",
             "highlightOwnershipTitle": "Mettre en évidence par type de propriétaire (T)",
+            "stateLand": {
+                "title": "Terrains publics",
+                "freePlots": "Parcelles publiques libres",
+                "applications": "Demandes de terrain",
+                "grantedLegend": "Parcelle libre attribuée (enregistrée après publication)",
+                "loading": "Chargement des terrains publics depuis le cadastre…",
+                "checking": "Comparaison des parcelles libres avec les parcelles enregistrées : {{done}} / {{total}}",
+                "failed": "Le cadastre n’a pas répondu. Réessayez plus tard.",
+                "freeTitle": "Parcelle publique libre {{id}}",
+                "applicationTitle": "Demande de terrain {{id}}",
+                "grantedAs": "Attribuée : enregistrée comme parcelle {{number}} le {{date}}",
+                "use": "Usage : {{use}}",
+                "listedOn": "Saisie le {{date}}",
+                "freeCount": "Parcelles publiques libres : {{free}} publiées, {{granted}} attribuées",
+                "applicationCount": "Demandes de terrain : {{count}}"
+            },
             "ownershipType": {
                 "government": "Administration publique",
                 "institution": "Institution",

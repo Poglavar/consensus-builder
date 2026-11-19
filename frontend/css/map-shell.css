@@ -1072,3 +1072,53 @@ body.map-pick-mode #proposals-sheet { pointer-events: auto; opacity: 1; }
 .leaflet-pane.road-track-pane { z-index: var(--cb-z-map-pane-road-track); pointer-events: none; }
 .road-track-line { stroke: var(--cb-map-road-track-line); stroke-width: 4px; stroke-opacity: 1; fill: none; pointer-events: none; }
 #road-track-layer-status:empty { display: none; }
+
+/* State land layers (js/state-land-layer.js): the swatches in the Layers sheet are the map legend. */
+/* Above the parcel canvas (overlay pane, 400) so the shapes take hover and tooltips. */
+.state-land-pane {
+    z-index: 410;
+}
+
+.state-land-shape {
+    stroke-width: 2px;
+    fill-opacity: 0.18;
+}
+
+.state-land-shape--free {
+    stroke: var(--cb-map-state-free);
+    fill: var(--cb-map-state-free);
+}
+
+.state-land-shape--granted {
+    stroke: var(--cb-map-state-granted);
+    fill: var(--cb-map-state-granted);
+    fill-opacity: 0.3;
+}
+
+.state-land-shape--application {
+    stroke: var(--cb-map-state-application);
+    fill: var(--cb-map-state-application);
+    stroke-dasharray: 4 3;
+    fill-opacity: 0.12;
+}
+
+.state-land-swatch {
+    width: 12px;
+    height: 12px;
+    flex: 0 0 auto;
+    border-radius: 3px;
+    border: 2px solid var(--state-land-swatch-color);
+    background-color: color-mix(in srgb, var(--state-land-swatch-color) 25%, transparent);
+}
+
+.state-land-swatch--free { --state-land-swatch-color: var(--cb-map-state-free); }
+.state-land-swatch--granted { --state-land-swatch-color: var(--cb-map-state-granted); }
+.state-land-swatch--application { --state-land-swatch-color: var(--cb-map-state-application); border-style: dashed; }
+
+.state-land-legend {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 4px;
+    font-size: 0.85em;
+}

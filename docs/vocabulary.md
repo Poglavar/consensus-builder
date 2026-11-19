@@ -184,6 +184,19 @@ The ordered sources of one abstraction for a city (buildings so far): the city's
 
 A land unit represented by a particular cadastral, tax or other parcel provider. Its identifier and meaning belong to that source; a displayed polygon alone does not establish registered title or equivalence with another provider's unit.
 
+### Free state plot
+
+Land a cadastre lists as formed by the state for allocation and not yet registered, such as the EGKN
+`freelands_view`. Free state plots are a map layer, not parcels: they can overlap each other and
+registered parcels. A free plot is **granted** when one parcel registered on or after its entry date
+covers at least 90% of it; the grant is inferred from that overlap, because the registry records no
+link between the two.
+
+### Land application
+
+A plot drawn in an application for state land, such as the EGKN `reqland_view`. It records a request,
+not a right or an allocation.
+
 ### Parcel source
 
 The provider of parcel identities and geometry, identified by `sourceId`. Jurisdiction and legal authority describe the source but do not replace its identity. A custom source descriptor identifies the selected service and its interpretation. Map lookup and server-side site binding use that same selected parcel source.

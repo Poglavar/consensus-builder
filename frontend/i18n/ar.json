@@ -216,6 +216,22 @@
             "adsLoaded": "تم تحميل {{count}} قطعة أرض معلن عنها",
             "adsError": "تعذر تحميل قطع الأراضي المعلن عنها.",
             "highlightOwnershipTitle": "تمييز حسب نوع الملكية (T)",
+            "stateLand": {
+                "title": "أراضي الدولة",
+                "freePlots": "قطع أراضي الدولة الشاغرة",
+                "applications": "طلبات الأراضي",
+                "grantedLegend": "قطعة شاغرة مُنحت (سُجّلت بعد إدراجها)",
+                "loading": "جارٍ تحميل أراضي الدولة من السجل العقاري…",
+                "checking": "مطابقة القطع الشاغرة مع القطع المسجلة: {{done}} / {{total}}",
+                "failed": "لم يستجب السجل العقاري. حاول لاحقًا.",
+                "freeTitle": "قطعة دولة شاغرة {{id}}",
+                "applicationTitle": "طلب أرض {{id}}",
+                "grantedAs": "مُنحت: سُجّلت كقطعة {{number}} في {{date}}",
+                "use": "الاستخدام: {{use}}",
+                "listedOn": "أُدخلت في {{date}}",
+                "freeCount": "قطع الدولة الشاغرة: {{free}} مدرجة، {{granted}} ممنوحة",
+                "applicationCount": "طلبات الأراضي: {{count}}"
+            },
             "ownershipType": {
                 "government": "حكومة",
                 "institution": "مؤسسة",

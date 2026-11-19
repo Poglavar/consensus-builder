@@ -1468,6 +1468,22 @@
             "adsLoaded": "Loaded {{count}} ad parcels",
             "adsError": "Unable to load ad parcels.",
             "highlightOwnershipTitle": "Highlight by ownership type (T)",
+            "stateLand": {
+                "title": "State land",
+                "freePlots": "Free state plots",
+                "applications": "Land applications",
+                "grantedLegend": "Granted free plot (registered since listing)",
+                "loading": "Loading state land from the cadastre…",
+                "checking": "Checking free plots against registered parcels: {{done}} / {{total}}",
+                "failed": "The cadastre did not answer. Try again later.",
+                "freeTitle": "Free state plot {{id}}",
+                "applicationTitle": "Land application {{id}}",
+                "grantedAs": "Granted: registered as parcel {{number}} on {{date}}",
+                "use": "Use: {{use}}",
+                "listedOn": "Entered on {{date}}",
+                "freeCount": "Free state plots: {{free}} listed, {{granted}} granted",
+                "applicationCount": "Land applications: {{count}}"
+            },
             "ownershipType": {
                 "government": "Government",
                 "institution": "Institution",

@@ -18692,6 +18692,8 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 2,
                 attribution: '<a href="https://map.gov4c.kz/egkn/">Kazakhstan EGKN public cadastral map</a> · Esil district only; partial Astana coverage · native cadastral numbers; ownership and boundary update dates unestablished'
             },
+            // Free state plots and land applications from the same cadastre (js/state-land.js).
+            stateLand: { provider: 'kazakhstan-pkk', relaySourceId: 'kz-astana-pkk-esil', districtId: 254, zone: 12 },
             buildings: { sources: [{ id: 'kz-nsdi-buildings', name: 'Kazakhstan NSDI buildings', attribution: 'Kazakhstan National Spatial Data Infrastructure' }, { id: 'osm' }] },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
@@ -18718,6 +18720,8 @@
             },
             // Permitted zones from the Decree 727 general plan (backend/planning/providers/alatau-genplan.js).
             planning: { sourceIds: ['alatau-genplan-727'] },
+            // Free state plots and land applications from the same cadastre (js/state-land.js).
+            stateLand: { provider: 'kazakhstan-pkk', relaySourceId: 'kz-alatau-pkk', districtId: 364, zone: 13 },
             buildings: { sources: [{ id: 'osm' }] },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }

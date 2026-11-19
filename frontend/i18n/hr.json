@@ -1476,6 +1476,22 @@
             "adsLoaded": "Učitano {{count}} oglašenih čestica",
             "adsError": "Nije moguće učitati oglašene čestice.",
             "highlightOwnershipTitle": "Istakni po tipu vlasništva (T)",
+            "stateLand": {
+                "title": "Državno zemljište",
+                "freePlots": "Slobodne državne čestice",
+                "applications": "Zahtjevi za zemljište",
+                "grantedLegend": "Dodijeljena slobodna čestica (upisana nakon objave)",
+                "loading": "Učitavanje državnog zemljišta iz katastra…",
+                "checking": "Provjera slobodnih čestica prema upisanim česticama: {{done}} / {{total}}",
+                "failed": "Katastar nije odgovorio. Pokušajte ponovno kasnije.",
+                "freeTitle": "Slobodna državna čestica {{id}}",
+                "applicationTitle": "Zahtjev za zemljište {{id}}",
+                "grantedAs": "Dodijeljena: upisana kao čestica {{number}} dana {{date}}",
+                "use": "Namjena: {{use}}",
+                "listedOn": "Uneseno {{date}}",
+                "freeCount": "Slobodne državne čestice: {{free}} objavljeno, {{granted}} dodijeljeno",
+                "applicationCount": "Zahtjevi za zemljište: {{count}}"
+            },
             "ownershipType": {
                 "government": "Državno",
                 "institution": "Institucija",

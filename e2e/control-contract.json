@@ -1048,6 +1048,20 @@
       "controlType": "checkbox"
     },
     {
+      "id": "control-1e77f073575bf9-1",
+      "source": "index.html",
+      "markup": "<input type=\"checkbox\" id=\"showStateFreePlots\">",
+      "interaction": "change",
+      "controlType": "checkbox"
+    },
+    {
+      "id": "control-c9f561cdb35450-1",
+      "source": "index.html",
+      "markup": "<input type=\"checkbox\" id=\"showLandApplications\">",
+      "interaction": "change",
+      "controlType": "checkbox"
+    },
+    {
       "id": "control-fe66c04c614520-1",
       "source": "index.html",
       "markup": "<button type=\"button\" id=\"cadastre-view-toggle\" class=\"btn\" data-map-modes=\"2d\" title=\"Cadastre view: original parcels only\" data-i18n-key=\"claims.cadastreViewToggle\" data-i18n-attr=\"title\">",

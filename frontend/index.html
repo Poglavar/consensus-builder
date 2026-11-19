@@ -145,7 +145,7 @@
                 'css/utilities.css?v=20261030-use-highlight',
                 'css/photoreal-mode.css',
                 'css/ai-scene.css',
-                'css/map-shell.css?v=20261030-use-highlight',
+                'css/map-shell.css?v=20261120-state-land',
                 'css/chat-panel.css',
                 'css/activity-feed.css?v=20261027-style',
                 'css/area-monitor-list.css',
@@ -812,6 +812,29 @@
                                         Individual</span>
                                 </label>
                             </div>
+                        </div>
+
+                        <!-- The cadastre's state land views (js/state-land-layer.js); shown for cities
+                             whose configuration has a stateLand block. Each swatch is its map colour. -->
+                        <div class="control-group" id="state-land-layers" hidden>
+                            <div class="control-group-title" data-i18n-key="sidebar.parcels.stateLand.title">State land</div>
+                            <div class="checkbox-group">
+                                <label>
+                                    <input type="checkbox" id="showStateFreePlots">
+                                    <span class="state-land-swatch state-land-swatch--free" aria-hidden="true"></span>
+                                    <span data-i18n-key="sidebar.parcels.stateLand.freePlots">Free state plots</span>
+                                </label>
+                                <label>
+                                    <input type="checkbox" id="showLandApplications">
+                                    <span class="state-land-swatch state-land-swatch--application" aria-hidden="true"></span>
+                                    <span data-i18n-key="sidebar.parcels.stateLand.applications">Land applications</span>
+                                </label>
+                            </div>
+                            <div class="state-land-legend">
+                                <span class="state-land-swatch state-land-swatch--granted" aria-hidden="true"></span>
+                                <span data-i18n-key="sidebar.parcels.stateLand.grantedLegend">Granted free plot (registered since listing)</span>
+                            </div>
+                            <div id="state-land-status" class="sheet-note" role="status" aria-live="polite" hidden></div>
                         </div>
 
                         <div id="parcels-in-view" class="sheet-note"
@@ -2104,6 +2127,8 @@
             'js/planning/feed.js',
             'js/planning/parcel-assessment.js?v=20261021-permitted-envelopes',
             'js/planning/views.js?v=20261031-inspector-organization',
+            'js/state-land.js',
+            'js/state-land-layer.js',
             'js/approval-link.js',
             'js/draft-link.js',
             'js/draft-preview.js?v=20261029-buildout',

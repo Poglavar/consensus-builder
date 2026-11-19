@@ -1476,6 +1476,22 @@
             "adsLoaded": "Učitano {{count}} oglašenih parcela",
             "adsError": "Nije moguće učitati oglašene parcele.",
             "highlightOwnershipTitle": "Istakni po tipu vlasništva (T)",
+            "stateLand": {
+                "title": "Državno zemljište",
+                "freePlots": "Slobodne državne parcele",
+                "applications": "Zahtevi za zemljište",
+                "grantedLegend": "Dodeljena slobodna parcela (upisana nakon objave)",
+                "loading": "Učitavanje državnog zemljišta iz katastra…",
+                "checking": "Provera slobodnih parcela prema upisanim parcelama: {{done}} / {{total}}",
+                "failed": "Katastar nije odgovorio. Pokušajte ponovo kasnije.",
+                "freeTitle": "Slobodna državna parcela {{id}}",
+                "applicationTitle": "Zahtev za zemljište {{id}}",
+                "grantedAs": "Dodeljena: upisana kao parcela {{number}} dana {{date}}",
+                "use": "Namena: {{use}}",
+                "listedOn": "Uneto {{date}}",
+                "freeCount": "Slobodne državne parcele: {{free}} objavljeno, {{granted}} dodeljeno",
+                "applicationCount": "Zahtevi za zemljište: {{count}}"
+            },
             "ownershipType": {
                 "government": "Državno",
                 "institution": "Institucija",

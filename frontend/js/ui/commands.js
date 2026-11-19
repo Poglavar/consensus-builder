@@ -33,6 +33,7 @@
         'showProposalCounts', 'markMintedCheckbox',
         'highlightOwnershipGovernment', 'highlightOwnershipInstitution', 'highlightOwnershipCompany',
         'highlightOwnershipPrivate',
+        'showStateFreePlots', 'showLandApplications', 'state-land-status',
         'parcels-in-view',
         // Layers sheet: blocks, buildings, roads
         'road-track-layer-checkbox', 'road-track-layer-status', 'showUrbanBlocks', 'urban-blocks-refresh', 'urban-blocks-browse',
@@ -279,6 +280,11 @@
             labelKey: 'mapShell.commands.highlightCompany', fallbackLabel: 'Highlight company parcels', icon: 'fas fa-briefcase' }),
         control('highlightOwnershipPrivate', { id: 'layers.ownership.private', group: 'layers', kind: 'toggle', surfaces: ['layers'],
             labelKey: 'mapShell.commands.highlightPrivate', fallbackLabel: 'Highlight privately owned parcels', icon: 'fas fa-user' }),
+        // State land: shown only for a city with a stateLand configuration (js/state-land-layer.js).
+        control('showStateFreePlots', { id: 'layers.stateFreePlots', group: 'layers', kind: 'toggle', surfaces: ['layers'], modes: ['2d'],
+            labelKey: 'sidebar.parcels.stateLand.freePlots', fallbackLabel: 'Free state plots', icon: 'fas fa-flag' }),
+        control('showLandApplications', { id: 'layers.landApplications', group: 'layers', kind: 'toggle', surfaces: ['layers'], modes: ['2d'],
+            labelKey: 'sidebar.parcels.stateLand.applications', fallbackLabel: 'Land applications', icon: 'fas fa-file-signature' }),
         // The search box finds parcels by id (it took over the old Locate input). Parcel-data upkeep
         // (coverage, refresh, clear) is in the Settings sheet's Data & maintenance section, like the
         // other local-storage clears below (blocks, roads, proposals); they keep their group so a
