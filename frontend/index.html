@@ -513,6 +513,36 @@
                 aria-label="Month" data-i18n-key="buildout.month" data-i18n-attr="aria-label">
             <p id="buildout-clock-summary" class="buildout-clock__summary sheet-note" aria-live="polite"></p>
         </section>
+        <!-- Simulation bar (js/ui/simulation-bar.js): shown from Play in Settings until Stop. -->
+        <section id="simulation-bar" class="simulation-bar" aria-label="Simulation controls"
+            data-i18n-key="mapShell.simulation.bar" data-i18n-attr="aria-label" hidden>
+            <button type="button" id="simulation-bar-play" class="btn btn-icon" aria-pressed="false" aria-label="Play" title="Play">
+                <i class="fas fa-play" aria-hidden="true"></i>
+            </button>
+            <button type="button" id="simulation-bar-step" class="btn btn-icon" aria-label="Next turn" title="Next turn"
+                data-i18n-key="mapShell.simulation.nextTurn" data-i18n-attr="aria-label,title">
+                <i class="fas fa-forward-step" aria-hidden="true"></i>
+            </button>
+            <span class="simulation-bar__status">
+                <span data-i18n-key="mapShell.simulation.turn">Turn</span>
+                <output id="simulation-bar-turn">0</output><span aria-hidden="true"> · </span><output id="simulation-bar-date"></output>
+            </span>
+            <label class="simulation-bar__speed">
+                <span class="map-shell-sr-only" data-i18n-key="mapShell.simulation.speed">Turn every</span>
+                <select id="simulation-bar-speed"></select>
+            </label>
+            <button type="button" id="simulation-bar-follow" class="btn" aria-pressed="true" title="Move the camera to each new design"
+                data-i18n-key="mapShell.simulation.followTitle" data-i18n-attr="title">
+                <i class="fas fa-location-crosshairs" aria-hidden="true"></i>
+                <span class="simulation-bar__follow-label" data-i18n-key="mapShell.simulation.follow">Follow</span>
+            </button>
+            <button type="button" id="simulation-bar-stop" class="btn btn-icon" aria-label="Stop simulation" title="Stop simulation"
+                data-i18n-key="mapShell.simulation.stop" data-i18n-attr="aria-label,title">
+                <i class="fas fa-stop" aria-hidden="true"></i>
+            </button>
+            <div class="simulation-bar__progress" aria-hidden="true"><div class="simulation-bar__progress-fill"></div></div>
+            <p id="simulation-bar-status" class="map-shell-sr-only" aria-live="polite"></p>
+        </section>
         <!-- Hatch fill of designs under construction on the 2D map (css/buildout-clock.css colours it). -->
         <svg class="buildout-defs" width="0" height="0" aria-hidden="true" focusable="false">
             <defs>
@@ -2400,6 +2430,9 @@
             'js/agent-proposal-links.js?v=20261020-qualified-profile-links',
             // bundle:end agent-tools
             'js/agents.js?v=20261020-profile-offers',
+            'js/agent-bubble-placement.js',
+            'js/simulation-follow.js',
+            'js/ui/simulation-bar.js',
             'js/agent-bubbles.js',
             'js/game.js',
             // bundle:start activity-structures-transit

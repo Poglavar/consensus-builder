@@ -7087,7 +7087,17 @@
             "titlePaused": "Simulación (pausada)",
             "settings": "Ajustes de la simulación",
             "running": "Simulación en curso",
-            "turn": "Turno"
+            "turn": "Turno",
+            "bar": "Controles de la simulación",
+            "nextTurn": "Siguiente turno",
+            "speed": "Un turno cada",
+            "secondsShort": "{{seconds}} s",
+            "follow": "Seguir",
+            "followTitle": "Llevar la cámara a cada diseño nuevo",
+            "followOn": "Seguimiento activado",
+            "followOff": "Seguimiento desactivado",
+            "followStopped": "Seguimiento desactivado porque has movido el mapa",
+            "stop": "Detener la simulación"
         },
         "commands": {
             "highlightGovernment": "Resaltar parcelas del gobierno",

@@ -39,13 +39,31 @@ test.describe('Activity and simulation controls @features', () => {
       const play = page.locator('#game-play-pause-btn');
       await expect(play).toBeVisible();
       await page.locator('#gameCheckbox').check();
-      for (const running of [false, true, false]) {
-        if (running !== (await play.getAttribute('aria-pressed') === 'true')) await play.click();
-        await expect(play).toHaveAttribute('aria-pressed', String(running));
-        const size = await play.boundingBox();
+      const circular = async (button: import('@playwright/test').Locator) => {
+        const size = await button.boundingBox();
         expect(size).not.toBeNull();
         expect(Math.abs(size!.width - size!.height)).toBeLessThan(1);
+      };
+      await expect(play).toHaveAttribute('aria-pressed', 'false');
+      await circular(play);
+      // Play folds Settings away; the simulation bar's play/pause takes over.
+      await play.click();
+      const barPlay = page.locator('#simulation-bar-play');
+      for (const running of [true, false, true]) {
+        if (running !== (await barPlay.getAttribute('aria-pressed') === 'true')) await barPlay.click();
+        await expect(barPlay).toHaveAttribute('aria-pressed', String(running));
+        await expect(play).toHaveAttribute('aria-pressed', String(running));
+        await circular(barPlay);
       }
+      // The bar's controls share one row at phone width, under the turn and date at most.
+      const bar = await page.locator('#simulation-bar').boundingBox();
+      expect(bar!.x).toBeGreaterThanOrEqual(0);
+      expect(bar!.x + bar!.width).toBeLessThanOrEqual(width);
+      const middles = await page.locator('#simulation-bar > button, #simulation-bar select').evaluateAll(els => els.map(el => {
+        const box = el.getBoundingClientRect();
+        return box.top + box.height / 2;
+      }));
+      expect(Math.max(...middles) - Math.min(...middles)).toBeLessThan(2);
       await page.screenshot({ path: `/private/tmp/simulation-circle-${width}.png` });
     });
   }
@@ -355,9 +373,33 @@ test.describe('Activity and simulation controls @features', () => {
     const play = page.locator('#game-play-pause-btn');
     await play.click();
     await expect(play).toHaveAttribute('aria-pressed', 'true');
+    // Play folds Settings away and opens the simulation bar.
+    await expect(page.locator('#settings-sheet')).toBeHidden();
+    const bar = page.locator('#simulation-bar');
+    await expect(bar).toBeVisible();
     await expect.poll(() => page.locator('#game-turns').innerText(), { timeout: 15_000 }).not.toBe('0');
-    await play.click();
+    await expect(bar.locator('#simulation-bar-turn')).toHaveText(await page.locator('#game-turns').innerText());
+    await bar.locator('#simulation-bar-play').click();
     await expect(play).toHaveAttribute('aria-pressed', 'false');
+    // Pause keeps the bar; its speed is the Settings interval; Next turn plays one turn while paused.
+    await expect(bar).toBeVisible();
+    await bar.locator('#simulation-bar-speed').selectOption('5');
+    await expect.poll(() => page.evaluate(() => (window as any).gameState.turnIntervalSeconds)).toBe(5);
+    const pausedTurn = Number(await page.locator('#game-turns').innerText());
+    await bar.locator('#simulation-bar-step').click();
+    await expect(page.locator('#game-turns')).toHaveText(String(pausedTurn + 1));
+    await expect(play).toHaveAttribute('aria-pressed', 'false');
+    // Follow is on by default and toggles; Stop closes the bar.
+    const follow = bar.locator('#simulation-bar-follow');
+    await expect(follow).toHaveAttribute('aria-pressed', 'true');
+    await follow.click();
+    await expect(follow).toHaveAttribute('aria-pressed', 'false');
+    await expect(bar.locator('#simulation-bar-status')).toHaveText('Follow is off');
+    await follow.click();
+    await expect(follow).toHaveAttribute('aria-pressed', 'true');
+    await bar.locator('#simulation-bar-stop').click();
+    await expect(bar).toBeHidden();
+    await openSimulation(page);
 
     const beforeReset = await page.locator('#game-turns').innerText();
     const newGame = settings.getByRole('button', { name: /New Game/i });

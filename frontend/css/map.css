@@ -603,11 +603,6 @@ body.cadastre-view.on-map-editing:has(.on-map-reparcellization) .leaflet-map-pan
     }
 }
 
-/* Agents are browsed from Activity; the shared profile control remains available in 3D. */
-body.three-mode-active #agent-bubbles-container {
-    display: none !important;
-}
-
 /* Position zoom box below username bubble */
 /* removed zoom-info-control */
 

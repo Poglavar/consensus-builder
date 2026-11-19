@@ -401,6 +401,11 @@
 .agent-bubble.is-hovered { transform: scale(1.1); z-index: var(--cb-z-map-raised); }
 .agent-bubble.is-stale { filter: grayscale(100%); opacity: 0.65; border-color: var(--cb-text-faint); }
 .agent-bubble.is-stale .bubble-tip { border-bottom-color: var(--cb-text-faint); }
+.agent-bubble[hidden] { display: none; }
+/* Over its design the bubble needs no pointer; it slides there from the rim once (agent-bubbles.js landBubble). */
+.agent-bubble.is-at-object .bubble-tip { opacity: 0; }
+.agent-bubble.is-landing { transition: left 0.8s ease, top 0.8s ease, transform 0.2s ease; }
+@media (prefers-reduced-motion: reduce) { .agent-bubble.is-landing { transition: none; } }
 
 #agent-bubbles-container { position: absolute; inset: 0; pointer-events: none; z-index: var(--cb-z-map-chrome); }
 .agent-bubble-tooltip {
@@ -413,4 +418,66 @@
     white-space: nowrap;
     z-index: var(--cb-z-map-raised);
     pointer-events: none;
+}
+
+/* The simulation bar (js/ui/simulation-bar.js): a floating card at the bottom centre of the map from
+   Play until Stop, above the dock. Its buttons take their look from the .btn family; this lays them
+   out. The progress line's length is the share of the wait to the next turn (--simulation-progress). */
+.simulation-bar {
+    position: absolute;
+    left: 50%;
+    bottom: var(--map-shell-bottom-clearance);
+    transform: translateX(-50%);
+    z-index: var(--cb-z-map-chrome);
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: var(--cb-space-2);
+    width: max-content;
+    max-width: calc(100% - 2 * var(--cb-space-4));
+    box-sizing: border-box;
+    padding: var(--cb-space-2) var(--cb-space-3) calc(var(--cb-space-2) + 3px);
+    overflow: hidden;
+    background: var(--cb-glass-sheet);
+    backdrop-filter: blur(var(--cb-panel-blur));
+    border: 1px solid var(--cb-line-glass);
+    border-radius: var(--cb-radius-lg);
+    box-shadow: var(--cb-shadow-md);
+    color: var(--cb-text);
+}
+.simulation-bar[hidden] { display: none; }
+.simulation-bar__status {
+    color: var(--cb-text-strong);
+    font-size: var(--cb-text-sm);
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+}
+.simulation-bar__speed select { width: auto; }
+.simulation-bar__progress {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 3px;
+    background: var(--cb-surface-3);
+}
+.simulation-bar__progress-fill {
+    height: 100%;
+    width: calc(var(--simulation-progress, 0) * 100%);
+    background: var(--cb-success);
+}
+/* A phone: the controls on one row, Follow by its icon (its name stays for assistive technology),
+   the turn and date on their own row under them. */
+@media (max-width: 480px) {
+    .simulation-bar { gap: var(--cb-space-1) var(--cb-space-2); }
+    .simulation-bar__status { order: 1; flex-basis: 100%; text-align: center; }
+    .simulation-bar__follow-label {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        clip: rect(0 0 0 0);
+        white-space: nowrap;
+    }
 }

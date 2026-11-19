@@ -5853,7 +5853,17 @@
             "titlePaused": "Simulação (em pausa)",
             "settings": "Definições da simulação",
             "running": "Simulação em curso",
-            "turn": "Turno"
+            "turn": "Turno",
+            "bar": "Controlos da simulação",
+            "nextTurn": "Turno seguinte",
+            "speed": "Um turno a cada",
+            "secondsShort": "{{seconds}} s",
+            "follow": "Seguir",
+            "followTitle": "Levar a câmara a cada novo projeto",
+            "followOn": "Seguimento ativado",
+            "followOff": "Seguimento desativado",
+            "followStopped": "Seguimento desativado porque moveu o mapa",
+            "stop": "Parar a simulação"
         },
         "commands": {
             "worldView": "Vista do mundo",

@@ -1,5 +1,7 @@
 /**
- * Agent Bubble System - Shows agent avatars at map edges when they interact with objects
+ * Agent Bubble System - Shows agent avatars at map edges when they interact with objects.
+ * The same bubbles serve the 2D map and both 3D views: each one is placed from its design's screen
+ * position (agent-bubble-placement.js), projected through the Leaflet map or the 3D camera.
  */
 
 class AgentBubbleManager {
@@ -8,6 +10,12 @@ class AgentBubbleManager {
         this.bubbleContainer = null;
         this.map = null;
         this.initialized = false;
+        this.latestBubbleId = null;  // the newest bubble, which Follow goes to after a turn
+        this.glideFrame = null;      // the running 3D camera glide, if any
+        this.frameHook = () => {
+            if (this.bubbles.size) this.updateAllBubblePositions();
+            return false; // nothing of its own to animate
+        };
     }
 
     /**
@@ -28,10 +36,10 @@ class AgentBubbleManager {
         this.bubbleContainer = document.createElement('div');
         this.bubbleContainer.id = 'agent-bubbles-container';
 
-        // Add to map container
-        const mapContainer = document.getElementById('map');
-        if (mapContainer) {
-            mapContainer.appendChild(this.bubbleContainer);
+        // Beside the 2D map and the 3D view rather than inside the Leaflet map, which 3D hides.
+        const host = document.getElementById('map-container') || document.getElementById('map');
+        if (host) {
+            host.appendChild(this.bubbleContainer);
         }
     }
 
@@ -49,16 +57,72 @@ class AgentBubbleManager {
         // Any user click outside an agent bubble dismisses pinned bubbles.
         // This includes clicks on the map tiles and on parcel polygons —
         // both eventually bubble up through the map container, since parcel
-        // click handlers don't stopPropagation here.
+        // click handlers don't stopPropagation here. The 3D view's clicks do the same.
         const mapContainer = this.map.getContainer && this.map.getContainer();
-        if (mapContainer) {
-            mapContainer.addEventListener('click', (event) => {
+        const threeContainer = document.getElementById('three-container');
+        [mapContainer, threeContainer].filter(Boolean).forEach(container => {
+            container.addEventListener('click', (event) => {
                 if (event.target && event.target.closest && event.target.closest('.agent-bubble')) {
                     return; // bubble click is handled by onBubbleClick
                 }
                 this.dismissPinnedBubbles();
             });
+        });
+        // A hand on the 3D camera ends a glide towards a bubble, as a drag ends a 2D flyTo.
+        if (threeContainer) {
+            const stopGlide = () => this.cancelGlide();
+            threeContainer.addEventListener('pointerdown', stopGlide, { capture: true, passive: true });
+            threeContainer.addEventListener('wheel', stopGlide, { capture: true, passive: true });
         }
+
+        // In 3D the bubbles follow the camera frame by frame; back in 2D the map's own events do.
+        window.addEventListener('mapmodechange', () => this.watchThreeCamera());
+        this.watchThreeCamera();
+    }
+
+    watchThreeCamera() {
+        if (typeof window.isThreeModeActive === 'function' && window.isThreeModeActive()
+            && typeof window.registerThreeModeFrameHook === 'function') {
+            window.registerThreeModeFrameHook(this.frameHook);
+        }
+        this.updateAllBubblePositions();
+    }
+
+    // The scene's internals while a 3D view is up, else null (the 2D map is in charge).
+    threeInternals() {
+        if (typeof window.isThreeModeActive !== 'function' || !window.isThreeModeActive()) return null;
+        return typeof window.getThreeModeInternals === 'function' ? window.getThreeModeInternals() : null;
+    }
+
+    // The rim ring's inset, raised above the simulation bar while it is shown (on a phone it is two
+    // rows tall and reaches above the default ring).
+    ringInset() {
+        const inset = window.AgentBubblePlacement.DEFAULT_INSET;
+        const bar = document.getElementById('simulation-bar');
+        if (!bar || bar.hidden || !this.bubbleContainer) return inset;
+        const barTop = bar.getBoundingClientRect().top - this.bubbleContainer.getBoundingClientRect().top;
+        const clearance = this.bubbleContainer.clientHeight - barTop + window.AgentBubblePlacement.BUBBLE_RADIUS + 12;
+        return clearance > inset.bottom ? { ...inset, bottom: clearance } : inset;
+    }
+
+    // A design's position on screen, in the bubble container's pixels, through whichever view is up.
+    projectPosition(latLng) {
+        const three = this.threeInternals();
+        const width = this.bubbleContainer ? this.bubbleContainer.clientWidth : 0;
+        const height = this.bubbleContainer ? this.bubbleContainer.clientHeight : 0;
+        if (three) {
+            const xy = three.latLngToXY(latLng.lat, latLng.lng);
+            if (!xy || typeof THREE === 'undefined') return null;
+            const camera = three.camera;
+            camera.updateMatrixWorld();
+            const world = new THREE.Vector3(xy[0], xy[1], 0);
+            const view = world.clone().applyMatrix4(camera.matrixWorldInverse);
+            const ndc = world.clone().project(camera);
+            return window.AgentBubblePlacement.fromCameraSpace({ view, ndc, near: camera.near, width, height });
+        }
+        if (!this.map) return null;
+        const point = this.map.latLngToContainerPoint(latLng);
+        return { behind: false, x: point.x, y: point.y };
     }
 
     /**
@@ -114,6 +178,7 @@ class AgentBubbleManager {
 
         // Store bubble data
         this.bubbles.set(bubbleId, bubbleData);
+        this.latestBubbleId = bubbleId;
 
         // Avatars load when a bubble first needs one (not at boot: bubbles are rare). The bubble
         // joins the map once its image is decoded, so it never paints as a blank disc; a failed
@@ -169,118 +234,43 @@ class AgentBubbleManager {
     }
 
     /**
-     * Update bubble position based on map view and object location
+     * Place a bubble from its design's screen position: on the rim ring pointing at the design, or
+     * over the design once the camera has gone there (bubbleData.atObject).
      * @param {Object} bubbleData - Bubble data
      */
     updateBubblePosition(bubbleData) {
-        if (!this.map || !bubbleData.element) return;
+        if (!bubbleData.element || !this.bubbleContainer) return;
 
         const objectPosition = bubbleData.objectPosition;
-
-        // Validate object position to prevent bubbles from going to invalid coordinates
-        if (!objectPosition || isNaN(objectPosition.lat) || isNaN(objectPosition.lng)) {
+        // Near 0,0 means a missing position, not a design in the Gulf of Guinea.
+        if (!objectPosition || isNaN(objectPosition.lat) || isNaN(objectPosition.lng)
+            || (Math.abs(objectPosition.lat) < 0.01 && Math.abs(objectPosition.lng) < 0.01)) {
             console.warn(`updateBubblePosition: Invalid object position for ${bubbleData.objectType} ${bubbleData.objectId}:`, objectPosition);
-            bubbleData.element.style.display = 'none';
+            bubbleData.element.hidden = true;
             return;
         }
 
-        // Check for suspicious coordinates (near 0,0 which might indicate invalid data)
-        if (Math.abs(objectPosition.lat) < 0.01 && Math.abs(objectPosition.lng) < 0.01) {
-            console.warn(`updateBubblePosition: Suspicious coordinates (near 0,0) for ${bubbleData.objectType} ${bubbleData.objectId}:`, objectPosition);
-            bubbleData.element.style.display = 'none';
-            return;
-        }
-
-        const mapContainer = this.map.getContainer();
-        const mapBounds = mapContainer.getBoundingClientRect();
-        const mapCenter = this.map.getCenter();
-
-        // The whole map is visible: nothing docks over its left edge.
-        const visibleMapWidth = mapBounds.width;
-        const visibleMapLeft = 0;
-
-        // Convert object position to screen coordinates
-        let objectPoint, centerPoint;
+        let placement = null;
         try {
-            objectPoint = this.map.latLngToContainerPoint(objectPosition);
-            centerPoint = this.map.latLngToContainerPoint(mapCenter);
-
-            // Validate pixel coordinates
-            if (isNaN(objectPoint.x) || isNaN(objectPoint.y) || isNaN(centerPoint.x) || isNaN(centerPoint.y)) {
-                console.error(`updateBubblePosition: Invalid pixel coordinates for ${bubbleData.objectType} ${bubbleData.objectId}`, { objectPoint, centerPoint });
-                bubbleData.element.style.display = 'none';
-                return;
-            }
+            placement = window.AgentBubblePlacement.placeBubble({
+                projected: this.projectPosition(objectPosition),
+                width: this.bubbleContainer.clientWidth,
+                height: this.bubbleContainer.clientHeight,
+                atObject: !!bubbleData.atObject,
+                inset: this.ringInset()
+            });
         } catch (e) {
-            console.error(`updateBubblePosition: Error converting coordinates for ${bubbleData.objectType} ${bubbleData.objectId}:`, e);
-            bubbleData.element.style.display = 'none';
-            return;
+            console.error(`updateBubblePosition: Error projecting ${bubbleData.objectType} ${bubbleData.objectId}:`, e);
         }
+        // No placement yet (the 3D scene is still being set up, or the map has no size): hide until
+        // the next update can place it.
+        bubbleData.element.hidden = !placement;
+        if (!placement) return;
 
-        // Calculate direction from center to object
-        const dx = objectPoint.x - centerPoint.x;
-        const dy = objectPoint.y - centerPoint.y;
-        const distance = Math.sqrt(dx * dx + dy * dy);
-
-        // The floating shell sits on the map's rim (search box and top-right buttons, the mode strip on
-        // the left, the bottom button row), so the bubbles ride an inset ring inside it;
-        // at a flat 35px they landed on, and blocked, those controls.
-        const inset = { top: 90, right: 35, bottom: 95, left: 90 };
-
-        if (distance === 0) {
-            // Object is at center, place bubble at top of visible map area
-            bubbleData.element.style.left = `${visibleMapLeft + visibleMapWidth / 2 - 25}px`;
-            bubbleData.element.style.top = `${inset.top - 25}px`;
-            this.updateBubbleTip(bubbleData.element, Math.PI / 2); // Point down
-            return;
-        }
-
-        // Normalize direction
-        const dirX = dx / distance;
-        const dirY = dy / distance;
-
-        // Find intersection with map edges.
-        let edgeX, edgeY;
-
-        // Calculate intersection with map boundaries
-        const halfHeight = mapBounds.height / 2;
-
-        // Calculate time to reach each edge
-        let tLeft = Infinity, tRight = Infinity, tTop = Infinity, tBottom = Infinity;
-
-        if (dirX < 0) {
-            // Going left - check intersection with left edge
-            tLeft = (visibleMapLeft + inset.left - centerPoint.x) / dirX;
-        } else if (dirX > 0) {
-            // Going right - check intersection with right edge (full screen width)
-            tRight = (mapBounds.width - inset.right - centerPoint.x) / dirX;
-        }
-
-        if (dirY < 0) {
-            // Going up
-            tTop = (inset.top - centerPoint.y) / dirY;
-        } else if (dirY > 0) {
-            // Going down
-            tBottom = (mapBounds.height - inset.bottom - centerPoint.y) / dirY;
-        }
-
-        // Find the closest intersection
-        const t = Math.min(tLeft, tRight, tTop, tBottom);
-
-        edgeX = centerPoint.x + dirX * t;
-        edgeY = centerPoint.y + dirY * t;
-
-        // Ensure bubble stays within bounds (redundant safety check)
-        edgeX = Math.max(visibleMapLeft + inset.left, Math.min(mapBounds.width - inset.right, edgeX));
-        edgeY = Math.max(inset.top, Math.min(mapBounds.height - inset.bottom, edgeY));
-
-        // Position bubble (offset by half bubble size to center it)
-        bubbleData.element.style.left = `${edgeX - 25}px`;
-        bubbleData.element.style.top = `${edgeY - 25}px`;
-
-        // Calculate angle for tip pointing toward object
-        const angle = Math.atan2(dy, dx);
-        this.updateBubbleTip(bubbleData.element, angle);
+        bubbleData.element.style.left = `${placement.left}px`;
+        bubbleData.element.style.top = `${placement.top}px`;
+        bubbleData.element.classList.toggle('is-at-object', !placement.docked);
+        if (placement.docked) this.updateBubbleTip(bubbleData.element, placement.angle);
     }
 
     /**
@@ -306,15 +296,33 @@ class AgentBubbleManager {
     }
 
     /**
-     * Handle bubble click - zoom to object
+     * Handle bubble click - go to the design and select it
      * @param {Object} bubbleData - Bubble data
      */
     onBubbleClick(bubbleData) {
-        if (!this.map) return;
-
         // Fold away an open sheet so the map is clear for the fly-to
         if (window.MapShell) window.MapShell.closeSheets();
+        this.focusBubble(bubbleData, { select: true });
+    }
 
+    /**
+     * Follow: after a turn, take the camera to the newest bubble's design without selecting it.
+     * @returns {boolean} whether the camera set off
+     */
+    followNewest() {
+        const bubbleData = this.latestBubbleId ? this.bubbles.get(this.latestBubbleId) : null;
+        if (!bubbleData) return false;
+        return this.focusBubble(bubbleData, { select: false });
+    }
+
+    /**
+     * Move the camera of the view in use to a bubble's design, then land the bubble on the design.
+     * The bubble is pinned meanwhile, so newer actions do not remove it under the user.
+     * @param {Object} bubbleData - Bubble data
+     * @param {{select: boolean}} options - select the design on arrival (a click does; Follow does not)
+     * @returns {boolean} whether the camera set off
+     */
+    focusBubble(bubbleData, { select }) {
         // Safety check: validate coordinates before flying to prevent world map disaster
         if (!bubbleData.objectPosition ||
             isNaN(bubbleData.objectPosition.lat) ||
@@ -324,15 +332,28 @@ class AgentBubbleManager {
 
             // Show user-friendly error and don't fly
             this.handleInvalidBubblePosition(bubbleData);
-            return;
+            return false;
         }
 
-        // Mark this bubble as moving so it won't be repositioned by map events
-        bubbleData.isMoving = true;
         // Pin the bubble: subsequent turns / new same-agent actions must not
-        // yank it out from under the user mid-flight. The follow-up timer
-        // here is still responsible for eventually removing it.
+        // yank it out from under the user mid-flight.
         bubbleData.pinned = true;
+        // Switching focus: clear any other pinned bubble before pinning this one.
+        this.dismissPinnedBubbles(bubbleData.id);
+
+        let arrived = false;
+        const onArrive = () => {
+            if (arrived) return;
+            arrived = true;
+            if (!this.bubbles.has(bubbleData.id)) return; // bubble was already removed
+            this.landBubble(bubbleData);
+            if (select && bubbleData.objectType === 'proposal') {
+                this.autoSelectProposal(bubbleData.objectId);
+            }
+        };
+
+        if (this.threeInternals()) return this.glide3D(bubbleData.objectPosition, onArrive);
+        if (!this.map) return false;
 
         // Zoom in far enough that parcel borders are actually visible — the
         // bubble is meaningless if it lands you on the city outline. Each city
@@ -346,9 +367,6 @@ class AgentBubbleManager {
             ? parcelZoomRange.min
             : 15;
         const targetZoom = Math.max(this.map.getZoom(), parcelMinZoom);
-
-        // Switching focus: clear any other pinned bubble before pinning this one.
-        this.dismissPinnedBubbles(bubbleData.id);
 
         const FLY_DURATION_S = 1.5;
 
@@ -364,20 +382,55 @@ class AgentBubbleManager {
         // arrive (e.g., map removed mid-flight). The bubble itself is *not*
         // auto-removed — it persists as a focus indicator until the user
         // takes another action (see dismissPinnedBubbles).
-        let arrived = false;
-        const onArrive = () => {
-            if (arrived) return;
-            arrived = true;
-            if (!this.bubbles.has(bubbleData.id)) return; // bubble was already removed
-            this.moveBubbleToObject(bubbleData);
-            if (bubbleData.objectType === 'proposal') {
-                this.autoSelectProposal(bubbleData.objectId);
-            }
-        };
         this.map.once('moveend', onArrive);
         // Safety net: if moveend never fires, still progress after the flight
         // duration with a small buffer.
         setTimeout(onArrive, FLY_DURATION_S * 1000 + 300);
+        return true;
+    }
+
+    /**
+     * Glide the 3D camera's target to a position, keeping its heading, tilt and distance.
+     * @param {L.LatLng} latLng - Where to go
+     * @param {Function} onArrive - Called once the camera is there
+     * @returns {boolean} whether the camera set off
+     */
+    glide3D(latLng, onArrive) {
+        const from = typeof window.getThree3DGeoView === 'function' ? window.getThree3DGeoView() : null;
+        if (!from || typeof window.applyThree3DGeoView !== 'function') return false;
+        this.cancelGlide();
+        const place = share => {
+            window.applyThree3DGeoView({
+                ...from,
+                targetLat: from.targetLat + (latLng.lat - from.targetLat) * share,
+                targetLng: from.targetLng + (latLng.lng - from.targetLng) * share
+            });
+            window.invalidateThreeView?.();
+        };
+        if (window.__reducedMotion) {
+            place(1);
+            onArrive();
+            return true;
+        }
+        const start = performance.now();
+        const duration = 1500;
+        const step = now => {
+            const t = Math.min(1, (now - start) / duration);
+            place(t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t); // easeInOutQuad
+            if (t < 1) {
+                this.glideFrame = requestAnimationFrame(step);
+            } else {
+                this.glideFrame = null;
+                onArrive();
+            }
+        };
+        this.glideFrame = requestAnimationFrame(step);
+        return true;
+    }
+
+    cancelGlide() {
+        if (this.glideFrame) cancelAnimationFrame(this.glideFrame);
+        this.glideFrame = null;
     }
 
     /**
@@ -453,31 +506,17 @@ class AgentBubbleManager {
     }
 
     /**
-     * Move bubble from edge to object position
+     * Land a bubble on its design: it slides from the rim onto the design and stays there while
+     * the design is on screen, through later camera moves (a slide in CSS, .is-landing).
      * @param {Object} bubbleData - Bubble data
      */
-    moveBubbleToObject(bubbleData) {
-        if (!this.map || !bubbleData.element) return;
-
-        // Get the object position in container coordinates
-        const objectPoint = this.map.latLngToContainerPoint(bubbleData.objectPosition);
-
-        // Clear any existing transitions first
-        bubbleData.element.style.transition = 'none';
-
-        // Force a reflow to ensure the transition clear takes effect
-        bubbleData.element.offsetHeight;
-
-        // Set the transition and move to object position
-        bubbleData.element.style.transition = 'left 0.8s ease, top 0.8s ease';
-        bubbleData.element.style.left = `${objectPoint.x - 25}px`;
-        bubbleData.element.style.top = `${objectPoint.y - 25}px`;
-
-        // Hide tip when at object
-        const tip = bubbleData.element.querySelector('.bubble-tip');
-        if (tip) {
-            tip.style.opacity = '0';
-        }
+    landBubble(bubbleData) {
+        if (!bubbleData.element) return;
+        const element = bubbleData.element;
+        element.classList.add('is-landing');
+        element.addEventListener('transitionend', () => element.classList.remove('is-landing'), { once: true });
+        bubbleData.atObject = true;
+        this.updateBubblePosition(bubbleData);
     }
 
     /**
@@ -562,12 +601,7 @@ class AgentBubbleManager {
      * Update positions of all bubbles
      */
     updateAllBubblePositions() {
-        this.bubbles.forEach(bubbleData => {
-            // Skip repositioning if bubble is currently moving to object
-            if (!bubbleData.isMoving) {
-                this.updateBubblePosition(bubbleData);
-            }
-        });
+        this.bubbles.forEach(bubbleData => this.updateBubblePosition(bubbleData));
     }
 
     /**

@@ -457,6 +457,11 @@ async function executeGameTurn() {
 
         window.refreshActivityPanel?.();
 
+        // Follow (simulation-follow.js): the camera goes to the newest design of the turn, unless
+        // the user has taken the camera over or is busy in an editor or dialog.
+        const follow = window.SimulationFollow?.controller;
+        if (follow && follow.action() === 'move') window.agentBubbleManager?.followNewest?.();
+
         console.log(`Turn ${gameState.currentTurn} completed. ${agents.length} agents acted.`);
     } finally {
         if (agentStorage && typeof agentStorage.endBatch === 'function') {
@@ -600,6 +605,8 @@ gameState.updateGameUI = function () {
         window.SimulationIndicator.sync(document, this);
     }
 
+    syncSimulationBar();
+
     try { updateGameSectionTitle(); } catch (_) { }
 };
 
@@ -612,7 +619,55 @@ function toggleGamePlayPause() {
     } else {
         startGameLoop();
         try { updateGameSectionTitle(); } catch (_) { }
+        // A running game is watched on the map: Settings folds away and the simulation bar takes
+        // over play/pause, speed, Follow and Stop.
+        if (gameState.isRunning) {
+            window.SimulationBar?.open();
+            window.MapShell?.closeSheets?.();
+            gameState.updateGameUI();
+        }
     }
+}
+
+// The simulation bar (js/ui/simulation-bar.js) mirrors the game; game.js owns the game.
+function syncSimulationBar() {
+    if (typeof window === 'undefined' || !window.SimulationBar) return;
+    window.SimulationBar.sync(document, gameState, {
+        follow: !!window.SimulationFollow?.controller?.isEnabled(),
+        dateText: CbFormat.formatDate(gameState.currentDateTime, { timeZone: 'UTC' })
+    });
+    // Docked bubbles ride a ring above the bar while it is shown (agent-bubbles.js ringInset).
+    window.agentBubbleManager?.updateAllBubblePositions?.();
+}
+
+// Stop: pause the game and close the bar. New game stays in Settings, behind its confirmation.
+function stopSimulation() {
+    if (gameState.isRunning) stopGameLoop();
+    window.SimulationBar?.close();
+    gameState.updateGameUI();
+}
+
+function bindSimulationBar() {
+    const bar = window.SimulationBar;
+    const follow = window.SimulationFollow?.controller;
+    if (!bar || !follow) return;
+    follow.attach({ isRunning: () => gameState.isRunning });
+    bar.bind(document, {
+        togglePlay: toggleGamePlayPause,
+        step: () => {
+            if (!gameState.isInitialized) initializeGame();
+            if (gameState.isInitialized) executeGameTurn();
+        },
+        setInterval: seconds => {
+            if (!Number.isInteger(seconds) || seconds <= 0) return;
+            updateTurnInterval(seconds);
+            gameState.updateGameUI();
+        },
+        stop: stopSimulation,
+        follow
+    });
+    follow.onChange(() => syncSimulationBar());
+    window.i18n?.onChange?.(() => syncSimulationBar());
 }
 
 // Activity data adapters for the Activity panel. The panel owns presentation and filter state;
@@ -984,6 +1039,10 @@ function updateProgressBar(overrideProgress = null) {
     const progressFill = document.getElementById('turn-progress-fill');
     const progressTime = document.getElementById('turn-progress-time');
 
+    window.SimulationBar?.setProgress(document, overrideProgress !== null ? overrideProgress / 100
+        : (gameState.isRunning && gameState.turnStartTime && gameState.turnIntervalSeconds > 0
+            ? (Date.now() - gameState.turnStartTime) / (gameState.turnIntervalSeconds * 1000) : 0));
+
     if (!progressFill || !progressTime) return;
 
     if (overrideProgress !== null) {
@@ -1036,6 +1095,8 @@ function focusAndSelectParcelFromLog(parcelId) {
 
 function initialiseGameState() {
     gameState.load();
+    bindSimulationBar();
+    syncSimulationBar();
 }
 
 if (typeof PersistentStorage !== 'undefined' && PersistentStorage.ensureReady) {
@@ -1051,6 +1112,7 @@ window.startGameLoop = startGameLoop;
 window.stopGameLoop = stopGameLoop;
 window.executeGameTurn = executeGameTurn;
 window.toggleGamePlayPause = toggleGamePlayPause;
+window.stopSimulation = stopSimulation;
 window.resetGameState = resetGameState;
 window.dispatchAgentAction = dispatchAgentAction;
 window.setupGameLogClickListeners = setupGameLogClickListeners;

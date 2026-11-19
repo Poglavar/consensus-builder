@@ -7060,7 +7060,17 @@
             "titlePaused": "Simulation (paused)",
             "settings": "Simulation settings",
             "running": "Simulation running",
-            "turn": "Turn"
+            "turn": "Turn",
+            "bar": "Simulation controls",
+            "nextTurn": "Next turn",
+            "speed": "Turn every",
+            "secondsShort": "{{seconds}} s",
+            "follow": "Follow",
+            "followTitle": "Move the camera to each new design",
+            "followOn": "Follow is on",
+            "followOff": "Follow is off",
+            "followStopped": "Follow is off because you moved the map",
+            "stop": "Stop simulation"
         },
         "commands": {
             "highlightGovernment": "Highlight government parcels",
