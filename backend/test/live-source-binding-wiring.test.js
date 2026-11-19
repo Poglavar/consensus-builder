@@ -57,6 +57,29 @@ describe('live source proposal binding wiring', () => {
         expect(db.query).not.toHaveBeenCalled();
     });
 
+    it('reads a site over the source query limit in tiles planned from its descriptor, a crossing parcel once', async () => {
+        // About 6.4 km × 6.7 km (43 km²), over the Toronto source's declared 25 km² query limit.
+        const big = { type: 'Polygon', coordinates: [[[-79.44, 43.64], [-79.36, 43.64], [-79.36, 43.70], [-79.44, 43.70], [-79.44, 43.64]]] };
+        const fetch = fetchGeojson([arcgisFeature(3, 41003, big)]);
+        vi.stubGlobal('fetch', fetch);
+        const tileLog = vi.spyOn(console, 'log').mockImplementation(() => {});
+        const db = { query: vi.fn(async () => { throw new Error('authored source binding must not query HR SQL'); }) };
+
+        let binding, lines;
+        try {
+            ({ binding } = await computeBinding(db, { parcelSourceId: consumerParcelSourceId('toronto'), site: big, city: 'toronto' }));
+        } finally {
+            lines = tileLog.mock.calls.map(([line]) => line);
+            tileLog.mockRestore();
+        }
+
+        expect(lines).toContainEqual(expect.stringContaining(`[source-binding] ${SOURCE_ID}: tile 2/2`));
+        expect(binding.parcels.map(hit => hit.parcelId)).toEqual([`${PREFIX}41003`]);
+        expect(binding.coverage).toBe('complete');
+        // Two tiles from maxBboxKm2 (without the descriptor, its refusal would read four quarters).
+        expect(fetch).toHaveBeenCalledTimes(2);
+    });
+
     it('resolves Toronto parcel acts by declared IDs and reports true absences without HR SQL', async () => {
         const declared = `${PREFIX}41002`;
         const absent = `${PREFIX}49999`;

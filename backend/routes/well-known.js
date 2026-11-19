@@ -340,6 +340,7 @@ export function buildOpenApi(base, env) {
                         200: { description: '{ city, parcelSourceId, binding: { parcels: [{ parcelId, overlapM2, intrusionM }], touched, toleranceM, coverage (complete | partial | none | unknown), unsurveyedM2, unknownM2, siteM2, source, parcelSource, computedAt } }' },
                         400: { description: 'invalid-site or invalid-tolerance.' },
                         413: { description: 'too-many-parcels: the site meets more than 5000 parcels.' },
+                        422: { description: 'parcel-source-area-limit: the site needs more than 256 queries of its parcel source.' },
                         503: { description: 'binding-unavailable, or the parcel source is down.' }
                     }
                 }
@@ -384,6 +385,7 @@ export function buildOpenApi(base, env) {
                         409: { description: 'The CID is indexed already (the body is its row).' },
                         400: { description: 'invalid-cid, cid-mismatch, invalid-design, invalid-site, invalid-tolerance, invalid-footprint, site-required or footprint-outside-site.' },
                         413: { description: 'too-large (over 10 MiB) or too-many-parcels (the site meets more than 5000 parcels).' },
+                        422: { description: 'parcel-source-area-limit: the site needs more than 256 queries of its parcel source.' },
                         503: { description: 'binding-unavailable: nothing was stored.' }
                     }
                 }

@@ -199,9 +199,10 @@ export async function computeBinding(db, { site, toleranceM = DEFAULT_INTRUSION_
         return { site: footprint, binding: unboundBinding({ coverage: COVERAGE.none, toleranceM,
             siteM2, computedAt: now().toISOString(), reason: 'The consumer explicitly selected no cadastral source.' }) };
     }
+    // The descriptor's query limits (maxBboxKm2 and the like): a larger site is read in tiles.
     const result = await computeSourceBinding(provider.adapter, {
         site, toleranceM, sourceId: provider.descriptor.id,
-        snapshotId: provider.descriptor.snapshotId || null, now
+        snapshotId: provider.descriptor.snapshotId || null, now, limits: provider.descriptor
     });
     if (result.binding.coverage !== COVERAGE.unknown) return result;
     return {

@@ -1,9 +1,13 @@
 // Server binding over an explicitly selected parcel source, the HR cadastre included: the source
 // finds the candidate parcels (and, where it knows them, the surveyed regions) and the browser's
 // own function (site-binding.js bindingFromParcels) decides. The source adapter owns completeness;
-// this module refuses to turn a partial provider response into binding evidence.
+// this module refuses to turn a partial provider response into binding evidence. A site larger than
+// the source answers in one query is read in tiles (readCandidates), for every source alike.
 import { createRequire } from 'node:module';
 import * as turfModule from '@turf/turf';
+import { wgs84BboxAreaKm2 } from '../utils/helpers.js';
+import { AREA_LIMIT_CODE, areaLimitError } from './source-contract.js';
+import { quarters, boxPolygon } from '../buildings/split-read.js';
 
 const require = createRequire(import.meta.url);
 const { bindingFromParcels, normalizeTolerance } = require('../../frontend/js/proposals/site-binding.js');
@@ -12,6 +16,67 @@ const { clipWith } = require('../../frontend/js/proposals/parcel-arrangement.js'
 const turf = turfModule.default || turfModule;
 // More candidate parcels than this is not a proposal (the same cap as /parcels/under).
 export const MAX_SOURCE_BINDING_PARCELS = 5000;
+
+// A site whose box is over the selected source's query limits (its descriptor's maxBboxKm2,
+// maxBboxWidthM and maxBboxHeightM, as the adapters' validateBounds checks them) is read in tiles
+// within them, TILE_CONCURRENCY at a time. A query the adapter still refuses as over its limit (its
+// own default limit where the descriptor declares none, or an areaLimitError for too many features)
+// is read in quarters, at most MAX_TILE_DEPTH times over. Past MAX_SOURCE_BINDING_QUERIES queries
+// the site is refused as larger than the source answers.
+export const TILE_CONCURRENCY = 4;
+export const MAX_TILE_DEPTH = 8;
+export const MAX_SOURCE_BINDING_QUERIES = 256;
+// Tiles are planned at 90 % of the limits, clear of the adapters' rounding.
+const TILE_FILL = 0.9;
+const METRES_PER_DEGREE = 111320;
+// validateBounds' refusal of a box over the area or side limits is an HttpError 400 without a code.
+const BOUNDS_REFUSAL = /^Parcel query (area is too large|dimensions exceed the provider limit)/;
+
+// The adapter refused the query as larger than it answers at once: a smaller box answers.
+export function isOverQueryLimit(error) {
+    return error?.code === AREA_LIMIT_CODE || (error?.status === 400 && BOUNDS_REFUSAL.test(String(error.message)));
+}
+
+function queryLimitsOf(limits) {
+    const limit = value => (typeof value === 'number' && Number.isFinite(value) && value > 0 ? value : Infinity);
+    return { areaKm2: limit(limits?.maxBboxKm2), widthM: limit(limits?.maxBboxWidthM), heightM: limit(limits?.maxBboxHeightM) };
+}
+
+// As validateBounds measures a box.
+function withinLimits([w, s, e, n], limits) {
+    const widthM = (e - w) * METRES_PER_DEGREE * Math.cos((s + n) / 2 * Math.PI / 180);
+    return wgs84BboxAreaKm2(w, s, e, n) <= limits.areaKm2 && widthM <= limits.widthM
+        && (n - s) * METRES_PER_DEGREE <= limits.heightM;
+}
+
+/**
+ * The query boxes for a WGS84 box: the box itself when it is within the limits, else a grid of equal
+ * tiles each within TILE_FILL of them (widths taken at the latitude nearest the equator, where a
+ * degree is widest). A box narrower than a square tile gets tiles as long as the area limit allows.
+ * @param limits { maxBboxKm2?, maxBboxWidthM?, maxBboxHeightM? } (a source descriptor)
+ */
+export function queryTiles(box, limits) {
+    const max = queryLimitsOf(limits);
+    if (withinLimits(box, max)) return [box];
+    const [w, s, e, n] = box;
+    const lat = s <= 0 && n >= 0 ? 0 : Math.min(Math.abs(s), Math.abs(n));
+    const widthM = (e - w) * METRES_PER_DEGREE * Math.cos(lat * Math.PI / 180);
+    const heightM = (n - s) * METRES_PER_DEGREE;
+    const areaM2 = max.areaKm2 * 1e6 * TILE_FILL;
+    const maxWidthM = max.widthM * TILE_FILL;
+    const maxHeightM = max.heightM * TILE_FILL;
+    const rows = Math.max(1, Math.ceil(heightM / Math.min(maxHeightM, Math.max(Math.sqrt(areaM2), areaM2 / Math.min(widthM, maxWidthM)))));
+    const columns = Math.max(1, Math.ceil(widthM / Math.min(maxWidthM, areaM2 / (heightM / rows))));
+    // Neighbouring tiles share their edge exactly, so the tiles cover the box without gaps.
+    const edge = (from, to, count, i) => (i === count ? to : from + (to - from) * i / count);
+    const tiles = [];
+    for (let row = 0; row < rows; row++) {
+        for (let column = 0; column < columns; column++) {
+            tiles.push([edge(w, e, columns, column), edge(s, n, rows, row), edge(w, e, columns, column + 1), edge(s, n, rows, row + 1)]);
+        }
+    }
+    return tiles;
+}
 
 function asGeometry(value) {
     const geometry = value?.type === 'Feature' ? value.geometry : value;
@@ -38,14 +103,16 @@ function sourceFeature(feature, sourceId) {
     return { id: parcelId, geometry };
 }
 
+function tooManyParcels(count) {
+    return Object.assign(new RangeError(`The site meets more than ${MAX_SOURCE_BINDING_PARCELS} parcels.`), {
+        code: 'too-many-parcels', status: 413, ...(count > MAX_SOURCE_BINDING_PARCELS ? { count } : {})
+    });
+}
+
 // A source that stopped at the cap says so (`truncated`); either way the site is refused as too large.
 function requireComplete(result, label) {
     const count = Array.isArray(result?.features) ? result.features.length : 0;
-    if (result?.truncated === true || count > MAX_SOURCE_BINDING_PARCELS) {
-        throw Object.assign(new RangeError(`The site meets more than ${MAX_SOURCE_BINDING_PARCELS} parcels.`), {
-            code: 'too-many-parcels', status: 413, ...(count > MAX_SOURCE_BINDING_PARCELS ? { count } : {})
-        });
-    }
+    if (result?.truncated === true || count > MAX_SOURCE_BINDING_PARCELS) throw tooManyParcels(count);
     if (!result || result.complete !== true || !Array.isArray(result.features)) {
         throw new Error(`${label} parcel query did not return a complete feature collection.`);
     }
@@ -68,20 +135,130 @@ function nowIso(now) {
     return value.toISOString();
 }
 
+const boxText = box => `[${box.map(value => value.toFixed(5)).join(',')}]`;
+
+/**
+ * The source's candidate parcels and surveyed regions for a site: one query of the site when its
+ * box is within the source's limits (queryTiles), else one query per tile of the part of the site
+ * inside it, tiles that do not meet the site skipped. Parcels are merged by id: a parcel crossing
+ * tiles is answered by each, and is bound on all the land they answered for it. Regions are kept
+ * from every tile. A failed, incomplete or truncated tile refuses the whole site, as a single
+ * query would: no binding rests on part of the site.
+ * @returns {Promise<{ parcels: {id, geometry}[], regions: object[]|null }>}
+ */
+async function readCandidates(adapter, site, { limits, sourceId, log }) {
+    const siteFeature = turf.feature(site);
+    const siteBox = turf.bbox(siteFeature);
+    const planned = queryTiles(siteBox, limits);
+    const pending = planned.length === 1 ? [{ box: siteBox, depth: 0, geometry: site }]
+        : planned.map(box => ({ box, depth: 0, geometry: null }));
+    const byId = new Map();
+    // undefined until the first answer; then null (the source reports no regions) or every tile's.
+    let regions;
+    let failure = null;
+    let queries = 0, tiles = pending.length, done = 0, skipped = 0, unions = 0;
+    const started = Date.now();
+    if (tiles > 1) {
+        log(`site box ${boxText(siteBox)} (${wgs84BboxAreaKm2(...siteBox).toFixed(2)} km²) is over the source's query limit: ${tiles} tiles, ${TILE_CONCURRENCY} at a time`);
+    }
+
+    const take = result => {
+        requireComplete(result, 'Geometry');
+        const parcels = result.features.map(feature => sourceFeature(feature, sourceId));
+        if (new Set(parcels.map(parcel => parcel.id)).size !== parcels.length) {
+            throw new Error('Parcel source returned duplicate parcel IDs.');
+        }
+        const found = sourceRegions(result);
+        if (regions !== undefined && (regions === null) !== (found === null)) {
+            throw new Error('Parcel source reported surveyed regions for only some tiles.');
+        }
+        regions = found === null ? null : [...(regions || []), ...found];
+        for (const parcel of parcels) {
+            const seen = byId.get(parcel.id);
+            if (!seen) byId.set(parcel.id, parcel);
+            else if (JSON.stringify(seen.geometry) !== JSON.stringify(parcel.geometry)) {
+                // Two tiles answered different outlines of one parcel: its land is all they answered.
+                const union = clipWith(turf, 'union', turf.feature(seen.geometry), turf.feature(parcel.geometry),
+                    { site: 'source-binding.tiles', parcelId: parcel.id });
+                byId.set(parcel.id, { id: parcel.id, geometry: union.geometry });
+                unions++;
+            }
+        }
+        if (byId.size > MAX_SOURCE_BINDING_PARCELS) throw tooManyParcels(byId.size);
+    };
+
+    const run = async task => {
+        const taskStarted = Date.now();
+        let result;
+        try {
+            result = await adapter.queryGeometry(task.geometry);
+        } catch (error) {
+            if (!isOverQueryLimit(error) || task.depth >= MAX_TILE_DEPTH) throw error;
+            pending.unshift(...quarters(task.box).map(box => ({ box, depth: task.depth + 1, geometry: null })));
+            tiles += 3;
+            log(`tile ${boxText(task.box)} is over the source's limit (${error.message}): read in quarters, ${tiles} tiles`);
+            return;
+        }
+        take(result);
+        done++;
+        if (tiles > 1) {
+            log(`tile ${done}/${tiles} ${boxText(task.box)}: ${result.features.length} parcels, ${byId.size} so far, ${Date.now() - taskStarted} ms`);
+        }
+    };
+
+    await new Promise(resolve => {
+        let active = 0;
+        const pump = () => {
+            while (!failure && active < TILE_CONCURRENCY && pending.length) {
+                const task = pending.shift();
+                if (!task.geometry) {
+                    let piece;
+                    try {
+                        piece = clipWith(turf, 'intersect', siteFeature, turf.feature(boxPolygon(task.box)), { site: 'source-binding.tile' });
+                    } catch (error) { failure = failure || error; break; }
+                    if (!piece?.geometry || turf.area(piece) <= 0) { done++; skipped++; continue; }
+                    task.geometry = piece.geometry;
+                }
+                if (queries >= MAX_SOURCE_BINDING_QUERIES) {
+                    failure = areaLimitError(`The site needs more than ${MAX_SOURCE_BINDING_QUERIES} queries of its parcel source; bind a smaller site.`);
+                    break;
+                }
+                queries++;
+                active++;
+                run(task).catch(error => { failure = failure || error; }).finally(() => { active--; pump(); });
+            }
+            if (!active) resolve();
+        };
+        pump();
+    });
+    if (failure) {
+        if (tiles > 1) log(`refused after ${queries} queries: ${failure.message}`);
+        throw failure;
+    }
+    if (tiles > 1) {
+        log(`read ${tiles} tiles in ${queries} queries (${skipped} off the site) in ${Date.now() - started} ms: ${byId.size} parcels`
+            + (unions ? `, ${unions} answered in different outlines by two tiles and bound on their union` : ''));
+    }
+    return { parcels: [...byId.values()], regions: regions ?? null };
+}
+
+const logLine = sourceId => message => console.log(`[${new Date().toISOString()}] [source-binding] ${sourceId}: ${message}`);
+
+/**
+ * The binding of a site over a selected parcel source.
+ * @param adapter the source's adapter (queryGeometry)
+ * @param options.limits the source's query limits: its descriptor's maxBboxKm2, maxBboxWidthM and
+ *   maxBboxHeightM, where it declares them (readCandidates). `log(message)` takes tile progress.
+ */
 export async function computeSourceBinding(adapter, {
-    site, toleranceM = 0, sourceId, snapshotId = null, now = () => new Date()
+    site, toleranceM = 0, sourceId, snapshotId = null, now = () => new Date(), limits = null, log = null
 } = {}) {
     if (!adapter || typeof adapter.queryGeometry !== 'function') throw new TypeError('A parcel source adapter is required.');
     if (typeof sourceId !== 'string' || !sourceId) throw new TypeError('sourceId is required.');
     // On the shared grid, as the browser holds every site and parcel.
     const normalizedSite = snapGeometry(normalizeSite(site));
     const tolerance = normalizeTolerance(toleranceM);
-    const result = await adapter.queryGeometry(normalizedSite);
-    requireComplete(result, 'Geometry');
-    const parcels = result.features.map(feature => sourceFeature(feature, sourceId));
-    if (new Set(parcels.map(parcel => parcel.id)).size !== parcels.length) {
-        throw new Error('Parcel source returned duplicate parcel IDs.');
-    }
+    const { parcels, regions } = await readCandidates(adapter, normalizedSite, { limits, sourceId, log: log || logLine(sourceId) });
 
     // A clip the shared clipper cannot do (after its own deterministic retries, as in the browser)
     // throws a typed ClipFailure; nothing is bound on a guess.
@@ -89,7 +266,7 @@ export async function computeSourceBinding(adapter, {
     const binding = bindingFromParcels(normalizedSite, parcels, {
         turf,
         toleranceM: tolerance,
-        regions: sourceRegions(result),
+        regions,
         source: `server:${sourceId}`
     });
     return {

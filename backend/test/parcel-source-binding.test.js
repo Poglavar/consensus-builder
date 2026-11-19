@@ -1,6 +1,14 @@
-// Verifies authoritative binding and parcel acts against complete live-source results.
+// Verifies authoritative binding and parcel acts against complete live-source results, and the
+// tiled read of a site larger than its source answers in one query.
 import { describe, expect, it, vi } from 'vitest';
-import { computeSourceBinding, computeSourceParcelActBinding } from '../parcels/source-binding.js';
+import * as turfModule from '@turf/turf';
+import {
+    computeSourceBinding, computeSourceParcelActBinding, queryTiles, MAX_SOURCE_BINDING_QUERIES
+} from '../parcels/source-binding.js';
+import { areaLimitError, validateBounds } from '../parcels/source-contract.js';
+import { wgs84BboxAreaKm2 } from '../utils/helpers.js';
+
+const turf = turfModule.default || turfModule;
 
 const SOURCE = 'ca-on-toronto';
 const SOURCE_PREFIX = 'CA-ON-TORONTO-';
@@ -101,6 +109,161 @@ describe('computeSourceBinding', () => {
         await expect(computeSourceBinding(adapter, { site: { type: 'Point', coordinates: [0, 0] }, sourceId: SOURCE })).rejects.toThrow(/Polygon/);
         await expect(computeSourceBinding(adapter, { site, toleranceM: 1.1, sourceId: SOURCE })).rejects.toThrow(/toleranceM/);
         expect(adapter.queryGeometry).not.toHaveBeenCalled();
+    });
+});
+
+describe('computeSourceBinding over a site larger than one source query', () => {
+    // About 3.2 km × 1.7 km (5.3 km²) in Toronto, tiled exactly by a grid of 8 × 4 parcels.
+    const BIG = [-79.40, 43.64, -79.36, 43.655];
+    const bigSite = square(...BIG);
+    const gridParcels = (columns, rows, [w, s, e, n] = BIG, prefix = 'G') => {
+        const dx = (e - w) / columns, dy = (n - s) / rows;
+        const out = [];
+        for (let row = 0; row < rows; row++) {
+            for (let column = 0; column < columns; column++) {
+                out.push(parcel(`${prefix}${row}-${column}`, square(w + column * dx, s + row * dy, w + (column + 1) * dx, s + (row + 1) * dy)));
+            }
+        }
+        return out;
+    };
+    const quiet = () => {};
+
+    // A provider that refuses, as the live adapters do, a query whose box is over its limits
+    // (validateBounds), and answers every parcel meeting the queried geometry.
+    function cappedAdapter(features, { maxBboxKm2 = 1, sides = {}, answer = null, fail = () => null } = {}) {
+        const answered = [];
+        const adapter = {
+            answered,
+            queryGeometry: vi.fn(async geometry => {
+                const box = turf.bbox(geometry);
+                validateBounds(box, maxBboxKm2, sides);
+                const failure = fail(box);
+                if (failure) throw failure;
+                const hits = features.filter(feature => turf.booleanIntersects(feature, turf.feature(geometry)));
+                answered.push({ box, ids: hits.map(hit => hit.properties.parcelId) });
+                return answer ? answer(hits, box) : { type: 'FeatureCollection', complete: true, features: hits };
+            })
+        };
+        return adapter;
+    }
+    const ids = binding => binding.parcels.map(hit => hit.parcelId);
+
+    it('plans tiles within the declared limits that cover the box edge to edge', () => {
+        const tiles = queryTiles(BIG, { maxBboxKm2: 1 });
+        expect(tiles.length).toBeGreaterThan(1);
+        for (const [w, s, e, n] of tiles) expect(wgs84BboxAreaKm2(w, s, e, n)).toBeLessThanOrEqual(1);
+        expect(tiles.reduce((sum, [w, s, e, n]) => sum + (e - w) * (n - s), 0)).toBeCloseTo((BIG[2] - BIG[0]) * (BIG[3] - BIG[1]), 12);
+        expect(queryTiles(BIG, {})).toEqual([BIG]);
+        expect(queryTiles([-79.384, 43.652, -79.383, 43.653], { maxBboxKm2: 1 })).toHaveLength(1);
+        // A long thin box is cut across its length only.
+        expect(queryTiles([-79.5, 43.65, -79.2, 43.6505], { maxBboxKm2: 1 }).length).toBeLessThan(5);
+    });
+
+    it('binds every parcel of a site spanning several tiles once, never querying over the limit', async () => {
+        const parcels = gridParcels(8, 4);
+        const adapter = cappedAdapter(parcels);
+        const log = vi.fn();
+
+        const { binding } = await computeSourceBinding(adapter, { site: bigSite, sourceId: SOURCE, limits: { maxBboxKm2: 1 }, log });
+
+        expect(ids(binding)).toEqual(parcels.map(p => p.properties.parcelId).sort());
+        expect(binding).toMatchObject({ coverage: 'complete', unsurveyedM2: 0, unknownM2: 0 });
+        // Planned from the declared limit: no query was refused, and there were several.
+        expect(adapter.queryGeometry.mock.calls.length).toBe(adapter.answered.length);
+        expect(adapter.answered.length).toBeGreaterThan(4);
+        expect(log).toHaveBeenCalledWith(expect.stringMatching(/over the source's query limit: \d+ tiles/));
+        expect(log).toHaveBeenCalledWith(expect.stringMatching(/^tile \d+\/\d+ /));
+    });
+
+    it('finds an undeclared limit by the adapter refusing the box, and reads in quarters', async () => {
+        const parcels = gridParcels(8, 4);
+        const adapter = cappedAdapter(parcels, { maxBboxKm2: 1 });
+        const { binding } = await computeSourceBinding(adapter, { site: bigSite, sourceId: SOURCE, log: quiet });
+        expect(ids(binding)).toEqual(parcels.map(p => p.properties.parcelId).sort());
+        expect(adapter.queryGeometry.mock.calls.length).toBeGreaterThan(adapter.answered.length);
+
+        // Side limits refuse with their own validateBounds message.
+        const sided = cappedAdapter(parcels, { maxBboxKm2: 25, sides: { maxBboxWidthM: 900, maxBboxHeightM: 900 } });
+        const declared = await computeSourceBinding(sided, { site: bigSite, sourceId: SOURCE, log: quiet,
+            limits: { maxBboxWidthM: 900, maxBboxHeightM: 900 } });
+        expect(ids(declared.binding)).toHaveLength(32);
+        expect(sided.queryGeometry.mock.calls.length).toBe(sided.answered.length);
+        const undeclared = cappedAdapter(parcels, { maxBboxKm2: 25, sides: { maxBboxWidthM: 900, maxBboxHeightM: 900 } });
+        expect(ids((await computeSourceBinding(undeclared, { site: bigSite, sourceId: SOURCE, log: quiet })).binding)).toHaveLength(32);
+    });
+
+    it('reads a tile over the source feature limit in quarters', async () => {
+        const parcels = gridParcels(8, 4);
+        const adapter = cappedAdapter(parcels, { maxBboxKm2: 25, answer: hits => {
+            if (hits.length > 9) throw areaLimitError('Parcel provider query exceeds the parcel limit; use a smaller area.');
+            return { type: 'FeatureCollection', complete: true, features: hits };
+        } });
+        const { binding } = await computeSourceBinding(adapter, { site: bigSite, sourceId: SOURCE, limits: { maxBboxKm2: 25 }, log: quiet });
+        expect(ids(binding)).toHaveLength(32);
+        expect(binding.coverage).toBe('complete');
+    });
+
+    it('does not duplicate a parcel crossing tiles, and binds a parcel answered in fragments on their union', async () => {
+        const strip = parcel('STRIP', square(BIG[0] - 0.001, 43.646, BIG[2] + 0.001, 43.649));
+        const rest = [square(BIG[0], BIG[1], BIG[2], 43.646), square(BIG[0], 43.649, BIG[2], BIG[3])]
+            .map((geometry, i) => parcel(`REST${i}`, geometry));
+        const whole = cappedAdapter([strip, ...rest]);
+        const { binding } = await computeSourceBinding(whole, { site: bigSite, sourceId: SOURCE, limits: { maxBboxKm2: 1 }, log: quiet });
+        expect(ids(binding)).toEqual([`${SOURCE_PREFIX}REST0`, `${SOURCE_PREFIX}REST1`, `${SOURCE_PREFIX}STRIP`]);
+        expect(whole.answered.filter(answer => answer.ids.includes(`${SOURCE_PREFIX}STRIP`)).length).toBeGreaterThan(1);
+        const stripArea = turf.area(turf.feature(square(BIG[0], 43.646, BIG[2], 43.649)));
+        const stripHit = binding.parcels.find(hit => hit.parcelId === `${SOURCE_PREFIX}STRIP`);
+        expect(stripHit.overlapM2).toBeCloseTo(stripArea, -1);
+
+        // A source answering only the part of a parcel inside each queried box: the parcel's land is
+        // every fragment, not the first tile's.
+        const fragments = cappedAdapter([strip, ...rest], { answer: (hits, box) => ({
+            type: 'FeatureCollection', complete: true,
+            features: hits.map(hit => ({ ...hit, geometry: turf.bboxClip(hit, box).geometry }))
+                .filter(hit => hit.geometry.coordinates.length && turf.area(hit) > 0)
+        }) });
+        const clipped = await computeSourceBinding(fragments, { site: bigSite, sourceId: SOURCE, limits: { maxBboxKm2: 1 }, log: quiet });
+        expect(ids(clipped.binding)).toEqual(ids(binding));
+        expect(clipped.binding.parcels.find(hit => hit.parcelId === `${SOURCE_PREFIX}STRIP`).overlapM2).toBeCloseTo(stripArea, -1);
+        expect(clipped.binding.coverage).toBe('complete');
+    });
+
+    it('refuses the whole site when one tile fails, is incomplete or is truncated', async () => {
+        const parcels = gridParcels(8, 4);
+        const inEast = box => box[2] > -79.365;
+        const down = Object.assign(new Error('Parcel provider is unavailable.'), { status: 502, code: 'parcel-source-unavailable' });
+        const failing = cappedAdapter(parcels, { fail: box => (inEast(box) ? down : null) });
+        await expect(computeSourceBinding(failing, { site: bigSite, sourceId: SOURCE, limits: { maxBboxKm2: 1 }, log: quiet }))
+            .rejects.toMatchObject({ code: 'parcel-source-unavailable', status: 502 });
+        expect(failing.answered.length).toBeGreaterThan(0);
+
+        const incomplete = cappedAdapter(parcels, { answer: (hits, box) => ({ type: 'FeatureCollection', complete: !inEast(box), features: hits }) });
+        await expect(computeSourceBinding(incomplete, { site: bigSite, sourceId: SOURCE, limits: { maxBboxKm2: 1 }, log: quiet }))
+            .rejects.toThrow(/complete/i);
+
+        const truncated = cappedAdapter(parcels, { answer: (hits, box) => ({ type: 'FeatureCollection', complete: !inEast(box), truncated: inEast(box), features: hits }) });
+        await expect(computeSourceBinding(truncated, { site: bigSite, sourceId: SOURCE, limits: { maxBboxKm2: 1 }, log: quiet }))
+            .rejects.toMatchObject({ code: 'too-many-parcels', status: 413 });
+    });
+
+    it('still refuses a site meeting more than 5000 parcels when no tile does', async () => {
+        const parcels = gridParcels(80, 64);
+        const adapter = cappedAdapter(parcels);
+        const refusal = computeSourceBinding(adapter, { site: bigSite, sourceId: SOURCE, limits: { maxBboxKm2: 1 }, log: quiet });
+        await expect(refusal).rejects.toMatchObject({ code: 'too-many-parcels', status: 413 });
+        const error = await refusal.catch(caught => caught);
+        expect(error.count).toBeGreaterThan(5000);
+        for (const result of adapter.queryGeometry.mock.results) {
+            if (result.type === 'return') expect((await result.value).features.length).toBeLessThan(5000);
+        }
+    });
+
+    it(`refuses a site needing more than ${MAX_SOURCE_BINDING_QUERIES} queries`, async () => {
+        // About 1,000 queries of 0.005 km² would cover the 5.3 km² site.
+        const adapter = cappedAdapter([], { maxBboxKm2: 0.005 });
+        await expect(computeSourceBinding(adapter, { site: bigSite, sourceId: SOURCE, log: quiet }))
+            .rejects.toMatchObject({ code: 'parcel-source-area-limit', message: expect.stringMatching(/more than \d+ queries/) });
+        expect(adapter.queryGeometry.mock.calls.length).toBe(MAX_SOURCE_BINDING_QUERIES);
     });
 });
 
