@@ -3,41 +3,14 @@
 // toggles, per-section control gating, block/building layer toggles, debug mode, the local-data wipe,
 // zoom gating of the parcels controls, and initializeMapControls() run from the boot in index.html.
 
-// A section's layer checkbox (#parcelsCheckbox, #gameCheckbox; data-layer names the layer) changed.
+// A section's layer checkbox (#parcelsCheckbox; data-layer names the layer) changed.
 function toggleAccordion(checkbox, options = {}) {
     const skipParcelFetch = options.skipParcelFetch === true;
-    const section = checkbox.closest('.activity-simulation, .accordion-section');
+    const section = checkbox.closest('.accordion-section');
     const layerName = checkbox.dataset.layer;
 
     // Note: Roads section no longer has a checkbox, so it's always visible
     // Mutual exclusivity between Roads and Parcel Blocks is no longer applicable
-
-    // Handle Game section special behavior (the Simulation section of the Activity sheet)
-    if (layerName === 'game') {
-        const gameHeaderSpan = section ? section.querySelector('[data-section-title="game"]') : null;
-        const i18nApi = (typeof window !== 'undefined') ? window.i18n : null;
-        const setGameHeaderKey = (key) => {
-            if (!gameHeaderSpan) return;
-            gameHeaderSpan.setAttribute('data-i18n-key', key);
-            if (i18nApi && typeof i18nApi.applyTranslations === 'function') {
-                i18nApi.applyTranslations(gameHeaderSpan);
-            } else if (key === 'mapShell.simulation.titlePaused') {
-                gameHeaderSpan.textContent = 'Simulation (paused)';
-            } else {
-                gameHeaderSpan.textContent = 'Simulation';
-            }
-        };
-
-        if (checkbox.checked) {
-            setGameHeaderKey('mapShell.simulation.title');
-        } else {
-            // Game disabled - pause game and update header
-            if (typeof gameState !== 'undefined' && gameState.isRunning && typeof stopGameLoop === 'function') {
-                stopGameLoop();
-            }
-            setGameHeaderKey('mapShell.simulation.titlePaused');
-        }
-    }
 
     // Expansion is now independent from check state; do not toggle content visibility here
 
@@ -158,7 +131,7 @@ function updateSectionControlsState(section) {
     if (!content) return;
     const checkbox = content.querySelector('input[type="checkbox"][data-layer]');
     // A disclosure can contain independent tools. Its descendant's switch owns only that tool.
-    if (checkbox && checkbox.closest('.activity-simulation, .accordion-section') !== section) return;
+    if (checkbox && checkbox.closest('.accordion-section') !== section) return;
 
     // If there's no checkbox (Data, Proposals sections), always enable controls
     if (!checkbox) {
@@ -594,17 +567,11 @@ function initializeMapControls() {
         }
     }
 
-    // Gate every section by its layer checkbox now: the sheets are always "expanded", so nothing
-    // else would grey the game controls before the game is enabled.
-    document.querySelectorAll('.accordion-section, .activity-simulation').forEach(section => updateSectionControlsState(section));
+    // Gate every section by its layer checkbox now: the sheets are always "expanded".
+    document.querySelectorAll('.accordion-section').forEach(section => updateSectionControlsState(section));
 
     // Initialize button states
     updateBlockButtonStates();
-
-    // Initialize game section title
-    if (typeof updateGameSectionTitle === 'function') {
-        updateGameSectionTitle();
-    }
 
     // Ensure debug mode defaults based on environment
     try {

@@ -1,55 +1,5 @@
 /* ========== Game ========== */
 
-/* Turn interval slider */
-.slider-group {
-    margin-bottom: 12px;
-}
-
-.slider-group label {
-    display: block;
-    font-size: 13px;
-    font-weight: 500;
-    color: var(--cb-text-muted);
-    margin-bottom: 6px;
-}
-
-#turn-interval-value {
-    font-weight: 600;
-    color: var(--cb-primary);
-}
-
-#turn-interval-slider {
-    width: 100%;
-    height: 6px;
-    border-radius: 3px;
-    background: var(--cb-surface-3);
-    outline: none;
-    appearance: none;
-    -webkit-appearance: none;
-}
-
-#turn-interval-slider::-webkit-slider-thumb {
-    appearance: none;
-    -webkit-appearance: none;
-    width: 18px;
-    height: 18px;
-    border-radius: 50%;
-    background: var(--cb-primary);
-    cursor: pointer;
-    border: 2px solid var(--cb-surface);
-    box-shadow: var(--cb-shadow-sm);
-}
-
-#turn-interval-slider::-moz-range-thumb {
-    width: 18px;
-    height: 18px;
-    border-radius: 50%;
-    background: var(--cb-primary);
-    cursor: pointer;
-    border: 2px solid var(--cb-surface);
-    box-shadow: var(--cb-shadow-sm);
-}
-
 /* The Activity event list shares its rows with actor detail surfaces. */
 .game-log-content {
     flex: 1 1 auto;
@@ -421,7 +371,7 @@
 }
 
 /* The simulation bar (js/ui/simulation-bar.js): a floating card at the bottom centre of the map from
-   Play until Stop, above the dock. Its buttons take their look from the .btn family; this lays them
+   Run simulation until Stop, above the dock. Its buttons take their look from the .btn family; this lays them
    out. The progress line's length is the share of the wait to the next turn (--simulation-progress). */
 .simulation-bar {
     position: absolute;
@@ -467,9 +417,10 @@
     width: calc(var(--simulation-progress, 0) * 100%);
     background: var(--cb-success);
 }
-/* A phone: the controls on one row, the turn and date on their own row under them. */
+/* A phone: the controls on one row (six fit at 390 px with the narrow gap), the turn and date on
+   their own row under them. */
 @media (max-width: 480px) {
-    .simulation-bar { gap: var(--cb-space-1) var(--cb-space-2); }
+    .simulation-bar { gap: var(--cb-space-1); }
     .simulation-bar__status { order: 1; flex-basis: 100%; text-align: center; }
 }
 

@@ -66,6 +66,21 @@ const NOT_COMMANDS = {
     'buildout-clock-play': 'build-out time view control, handled by buildout-clock.js',
     'buildout-clock-forward': 'build-out time view control, handled by buildout-clock.js',
     'buildout-clock-slider': 'build-out time view control, handled by buildout-clock.js',
+    // The simulation bar is shown only from Run simulation (game.run) until Stop; it drives the
+    // running game, handled by simulation-bar.js. New game is also the palette's game.new.
+    'simulation-bar-play': 'simulation bar control, handled by simulation-bar.js',
+    'simulation-bar-step': 'simulation bar control, handled by simulation-bar.js',
+    'simulation-bar-speed': 'simulation bar control, handled by simulation-bar.js',
+    'simulation-bar-city': 'opens the Agent city of the running simulation, handled by agent-city.js',
+    'simulation-bar-new': 'simulation bar control; the palette has game.new',
+    'simulation-bar-stop': 'simulation bar control, handled by simulation-bar.js',
+    // The Agent city card: a display of executed designs at a date, handled by agent-city.js.
+    'activity-agent-city': 'opens the Agent city from the Activity header, handled by agent-city.js',
+    'agent-city-close': 'Agent city view control, handled by agent-city.js',
+    'agent-city-back': 'Agent city view control, handled by agent-city.js',
+    'agent-city-play': 'Agent city view control, handled by agent-city.js',
+    'agent-city-forward': 'Agent city view control, handled by agent-city.js',
+    'agent-city-slider': 'Agent city view control, handled by agent-city.js',
     'planning-view-retry': 'retry the current source request after an error',
     'planning-tab-display': 'Buildings and massing sheet tab, handled by three-compare.js',
     'planning-tab-compare': 'Buildings and massing sheet tab, handled by three-compare.js',
@@ -204,6 +219,7 @@ describe('rehoused sidebar controls', () => {
                 // Update Reload is contextual and uses the guarded release-notice action.
                 if (tagName === 'button' && attr(tag, 'data-app-update-reload') !== null) continue;
                 if (tagName === 'button' && attr(tag, 'data-activity-view') !== null) continue; // Activity panel tabs
+                if (tagName === 'button' && attr(tag, 'data-agent-city-source') !== null) continue; // Agent city source switch
                 if (tagName === 'button' && commands.some(c => c.id === attr(tag, 'data-command'))) continue;
                 if (tagName === 'button' && attr(tag, 'data-site-intro-open') !== null) {
                     if (commands.some(c => c.id === 'settings.siteIntro')) continue;
@@ -234,17 +250,18 @@ describe('availability and search', () => {
         expect(withoutMeasure).toContain('tools.pinpoint');
     });
 
-    it('keeps Activity views on Activity and simulation diagnostics on Settings', () => {
+    it('keeps Activity views on Activity and Run simulation on Settings', () => {
         const activity = UiCommands.commandsFor('activity', fakeCtx()).map(c => c.id);
         expect(activity).toEqual(expect.arrayContaining(['activity.events', 'activity.actors']));
         expect(activity.filter(id => id.startsWith('game.'))).toEqual([]);
         expect(UiCommands.SURFACES).not.toContain('game');
         const settings = UiCommands.commandsFor('settings', fakeCtx()).map(c => c.id);
-        expect(settings).toEqual(expect.arrayContaining([
-            'game.enable', 'game.playPause', 'game.interval', 'game.new', 'settings.statusLog'
-        ]));
+        expect(settings).toEqual(expect.arrayContaining(['game.run', 'settings.statusLog']));
+        // Every other simulation control is on the simulation bar; New game stays in the palette.
+        expect(settings.filter(id => id.startsWith('game.'))).toEqual(['game.run']);
         const palette = UiCommands.commandsFor('palette', fakeCtx()).map(c => c.id);
-        expect(palette).toEqual(expect.arrayContaining(['activity.events', 'activity.actors', 'game.playPause', 'settings.statusLog']));
+        expect(palette).toEqual(expect.arrayContaining(['activity.events', 'activity.actors', 'game.run', 'game.new', 'settings.statusLog']));
+        expect(UiCommands.findCommand('game.run').run.calls).toBe('runSimulation');
         // A city that hides the game section loses the simulation but retains Activity views.
         const noGame = { ...fakeCtx(), isSectionHidden: section => section === 'game' };
         const withoutGame = UiCommands.commandsFor('settings', noGame).map(c => c.id);
@@ -341,12 +358,12 @@ describe('availability and search', () => {
         expect(UiCommands.searchCommands('parcel ids', fakeCtx(), tEn)[0].id).toBe('layers.parcelIds');
     });
 
-    it('lists a group\'s commands before a mid-word label hit ("lay" → Layers before "Play")', () => {
-        const ranked = UiCommands.rankCommands('lay', fakeCtx(), tEn);
-        const firstLayers = ranked.findIndex(item => item.entry.group === 'layers');
-        const play = ranked.findIndex(item => /play/i.test(item.label));
-        expect(firstLayers).toBeGreaterThanOrEqual(0);
-        expect(play).toBeGreaterThan(firstLayers);
+    it('lists a group\'s commands before a mid-word label hit ("act" → Activity before "Contact")', () => {
+        const ranked = UiCommands.rankCommands('act', fakeCtx(), tEn);
+        const firstActivity = ranked.findIndex(item => item.entry.group === 'activity');
+        const contact = ranked.findIndex(item => /contact/i.test(item.label));
+        expect(firstActivity).toBeGreaterThanOrEqual(0);
+        expect(contact).toBeGreaterThan(firstActivity);
         // A raw key from a translator without the group string never matches its key words.
         expect(UiCommands.rankCommands('palette', fakeCtx(), key => key).every(item => !/^layers\./.test(item.entry.id))).toBe(true);
     });
@@ -491,10 +508,10 @@ describe('the floating shell', () => {
         expect(activity).not.toContain('id="activity-feed"');
         expect(activity).not.toContain('id="activity-explorer-button"');
         expect(activity).not.toContain('id="activity-agents-button"');
-        expect(activity).not.toContain('id="game-play-pause-btn"');
+        expect(activity).not.toContain('id="run-simulation-button"');
         expect(activity).not.toContain('id="status-log-expanded"');
         expect(shellHtml).toContain('data-i18n-key="activityPanel.diagnostics"');
-        expect(shellHtml).toContain('id="game-play-pause-btn"');
+        expect(shellHtml).toContain('id="run-simulation-button"');
         expect(shellHtml).toContain('id="status-log-expanded"');
     });
 

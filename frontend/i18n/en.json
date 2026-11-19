@@ -1314,10 +1314,7 @@
             "baseMapLabel": "Base map:"
         },
         "game": {
-            "enable": "Enable game mode",
             "enablePaused": "Enable game mode (paused)",
-            "secondsBetween": "Seconds between turns:",
-            "nextTurn": "Next turn in:",
             "play": "Play",
             "pause": "Pause",
             "newGame": "New game",
@@ -2383,7 +2380,7 @@
                     "eyebrow": "A city in motion",
                     "title": "See how decisions unfold",
                     "body": "Follow designs and agent activity around the world. Where Simulation is available, play or pause turns to explore how designs and support evolve.",
-                    "hint": "Open Activity to follow events and actors. Simulation controls are in Settings → Advanced → Simulation."
+                    "hint": "Open Activity to follow events and actors. Run simulation is in Settings → Advanced."
                 },
                 "sources": {
                     "eyebrow": "More than one starting point",
@@ -7065,8 +7062,6 @@
         "activity": "Activity",
         "proposalsCount": "Designs ({{count}})",
         "simulation": {
-            "title": "Simulation",
-            "titlePaused": "Simulation (paused)",
             "settings": "Simulation settings",
             "running": "Simulation running",
             "turn": "Turn",
@@ -7074,7 +7069,8 @@
             "nextTurn": "Next turn",
             "speed": "Turn every",
             "secondsShort": "{{seconds}} s",
-            "stop": "Stop simulation"
+            "stop": "Stop simulation",
+            "run": "Run simulation"
         },
         "commands": {
             "highlightGovernment": "Highlight government parcels",
@@ -7086,8 +7082,6 @@
             "areaMonitorDraw": "Draw a monitored area",
             "areaMonitorFromPlan": "Draw a monitored area from the plan",
             "proposalsList": "Open designs",
-            "gamePlayPause": "Play / pause the game",
-            "gameInterval": "Turn interval",
             "statusLog": "Open the status log",
             "chooseCity": "Choose a city",
             "dataSource": "Data source",

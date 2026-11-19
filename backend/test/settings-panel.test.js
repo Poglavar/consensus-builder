@@ -40,10 +40,10 @@ describe('Settings reference dialogs', () => {
     });
 });
 
-it('a simulation switch cannot disable the surrounding Advanced tools', () => {
+it('a nested section\'s switch cannot disable the surrounding Advanced tools', () => {
     const doc = makeDocument();
     doc.body.innerHTML = `<details class="accordion-section" id="advanced"><div class="sheet-section-body">
-      <section class="activity-simulation" id="game"><div class="sheet-section-body"><input id="enable" type="checkbox" data-layer="game"><button id="play"></button></div></section>
+      <details class="accordion-section" id="game"><div class="sheet-section-body"><input id="enable" type="checkbox" data-layer="game"><button id="play"></button></div></details>
       <input id="debug" type="checkbox"><button id="reset"></button></div></details>`;
     const src = readFileSync(new URL('../../frontend/js/map-controls.js', import.meta.url), 'utf8');
     const start = src.indexOf('function updateSectionControlsState('), end = src.indexOf('\n}\n', start) + 2;

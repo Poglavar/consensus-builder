@@ -1427,10 +1427,7 @@
             "baseMapLabel": "Podloga karte:"
         },
         "game": {
-            "enable": "Uključi način igre",
             "enablePaused": "Uključi način igre (pauzirano)",
-            "secondsBetween": "Sekundi između poteza:",
-            "nextTurn": "Sljedeći potez za:",
             "play": "Pokreni",
             "pause": "Pauza",
             "newGame": "Nova igra",
@@ -2403,7 +2400,7 @@
                     "eyebrow": "Grad u pokretu",
                     "title": "Pratite kako se odluke razvijaju",
                     "body": "Pratite dizajne i aktivnost agenata diljem svijeta. Ondje gdje je simulacija dostupna, pokrenite ili pauzirajte poteze i istražite kako se dizajni i podrška razvijaju.",
-                    "hint": "Otvorite Aktivnost za praćenje događaja i sudionika. Kontrole simulacije nalaze se pod Postavke → Napredno → Simulacija."
+                    "hint": "Otvorite Aktivnost za praćenje događaja i sudionika. Pokreni simulaciju nalazi se pod Postavke → Napredno."
                 },
                 "sources": {
                     "eyebrow": "Više od jednog polazišta",
@@ -7100,8 +7097,6 @@
         "activity": "Aktivnost",
         "proposalsCount": "Dizajni ({{count}})",
         "simulation": {
-            "title": "Simulacija",
-            "titlePaused": "Simulacija (pauzirana)",
             "settings": "Postavke simulacije",
             "running": "Simulacija je pokrenuta",
             "turn": "Potez",
@@ -7109,7 +7104,8 @@
             "nextTurn": "Sljedeći potez",
             "speed": "Potez svakih",
             "secondsShort": "{{seconds}} s",
-            "stop": "Zaustavi simulaciju"
+            "stop": "Zaustavi simulaciju",
+            "run": "Pokreni simulaciju"
         },
         "commands": {
             "highlightGovernment": "Istakni državne čestice",
@@ -7121,8 +7117,6 @@
             "areaMonitorDraw": "Nacrtaj nadzirano područje",
             "areaMonitorFromPlan": "Nacrtaj nadzirano područje iz plana",
             "proposalsList": "Otvori dizajni",
-            "gamePlayPause": "Pokreni / pauziraj igru",
-            "gameInterval": "Razmak između poteza",
             "statusLog": "Otvori zapisnik statusa",
             "chooseCity": "Odaberi grad",
             "dataSource": "Izvor podataka",

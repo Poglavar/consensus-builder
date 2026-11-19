@@ -36,10 +36,7 @@ for (const width of [1280, 390, 320]) {
     await advanced.locator('> summary').click();
     await expect(panel.locator('#debugModeCheckbox')).toBeEnabled();
     await expect(panel.locator('#wipeLocalDataButton')).toBeEnabled();
-    await panel.locator('#gameCheckbox').check();
-    await expect(panel.locator('#debugModeCheckbox')).toBeEnabled();
-    await panel.locator('#gameCheckbox').uncheck();
-    await expect(panel.locator('#wipeLocalDataButton')).toBeEnabled();
+    await expect(panel.locator('#run-simulation-button')).toBeEnabled();
     await advanced.locator('> summary').click();
     for (const kind of ['credits', 'contact', 'about']) {
       await panel.locator(`[data-settings-reference="${kind}"]`).click();

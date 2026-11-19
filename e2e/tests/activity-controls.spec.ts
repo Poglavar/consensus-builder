@@ -9,12 +9,15 @@ import { Page } from '@playwright/test';
 
 const shortCid = (cid: string) => `${cid.slice(0, 12)}…${cid.slice(-6)}`;
 
-// Simulation controls live under Settings → Advanced.
-async function openSimulation(page: Page) {
+// Run simulation is the one simulation control in Settings → Advanced; it opens the simulation bar,
+// which holds every other control.
+async function runSimulation(page: Page) {
   await page.locator('#settings-button').click();
   const advanced = page.locator('#settings-sheet details[data-section="advanced"]');
   if (!(await advanced.evaluate((details: HTMLDetailsElement) => details.open))) await advanced.locator(':scope > summary').click();
-  await expect(page.locator('#settings-sheet .activity-simulation[data-section="game"]')).toBeVisible();
+  await page.locator('#settings-sheet #run-simulation-button').click();
+  await expect(page.locator('#settings-sheet')).toBeHidden();
+  await expect(page.locator('#simulation-bar')).toBeVisible();
 }
 
 async function openActivityPanel(page: Page, options: Record<string, unknown> = {}) {
@@ -35,24 +38,17 @@ test.describe('Activity and simulation controls @features', () => {
     test(`simulation play and pause stay circular at ${width}px`, async ({ mockApi: page }) => {
       await page.setViewportSize({ width, height: 900 });
       await openCity(page);
-      await openSimulation(page);
-      const play = page.locator('#game-play-pause-btn');
-      await expect(play).toBeVisible();
-      await page.locator('#gameCheckbox').check();
       const circular = async (button: import('@playwright/test').Locator) => {
         const size = await button.boundingBox();
         expect(size).not.toBeNull();
         expect(Math.abs(size!.width - size!.height)).toBeLessThan(1);
       };
-      await expect(play).toHaveAttribute('aria-pressed', 'false');
-      await circular(play);
-      // Play folds Settings away; the simulation bar's play/pause takes over.
-      await play.click();
+      await runSimulation(page);
       const barPlay = page.locator('#simulation-bar-play');
       for (const running of [true, false, true]) {
         if (running !== (await barPlay.getAttribute('aria-pressed') === 'true')) await barPlay.click();
         await expect(barPlay).toHaveAttribute('aria-pressed', String(running));
-        await expect(play).toHaveAttribute('aria-pressed', String(running));
+        await expect.poll(() => page.evaluate(() => (window as any).gameState.isRunning)).toBe(running);
         await circular(barPlay);
       }
       // The bar's controls share one row at phone width, under the turn and date at most.
@@ -357,45 +353,27 @@ test.describe('Activity and simulation controls @features', () => {
     await expect.poll(() => page.evaluate(() => (window as any).ProposalSelection?.getKey?.())).toBe(parkId);
   });
 
-  test('simulation settings change the interval, play advances turns, pause stops it, and New Game confirms reset', async ({ mockApi: page }) => {
+  test('Run simulation opens the bar: play advances turns, pause stops it, speed and next turn work, New game confirms reset, Stop closes it', async ({ mockApi: page }) => {
     await openCity(page);
-    await openSimulation(page);
-    const settings = page.locator('#settings-sheet .activity-simulation-settings');
-    // The on/off switch is the section's first row, outside the settings fold.
-    const gameEnabled = page.locator('#settings-sheet .activity-simulation-switch #gameCheckbox');
-    await gameEnabled.check();
-    await expect(gameEnabled).toBeChecked();
-    const interval = settings.locator('#turn-interval-slider');
-    await interval.focus();
-    await interval.press('Home');
-    await expect(settings.locator('#turn-interval-value')).toHaveText('1');
-
-    const play = page.locator('#game-play-pause-btn');
-    await play.click();
-    await expect(play).toHaveAttribute('aria-pressed', 'true');
-    // Play folds Settings away and opens the simulation bar.
-    await expect(page.locator('#settings-sheet')).toBeHidden();
+    await runSimulation(page);
     const bar = page.locator('#simulation-bar');
-    await expect(bar).toBeVisible();
-    await expect.poll(() => page.locator('#game-turns').innerText(), { timeout: 15_000 }).not.toBe('0');
-    await expect(bar.locator('#simulation-bar-turn')).toHaveText(await page.locator('#game-turns').innerText());
-    await bar.locator('#simulation-bar-play').click();
+    const play = bar.locator('#simulation-bar-play');
+    const turn = bar.locator('#simulation-bar-turn');
+    await expect(play).toHaveAttribute('aria-pressed', 'true');
+    await bar.locator('#simulation-bar-speed').selectOption('3');
+    await expect.poll(() => page.evaluate(() => (window as any).gameState.turnIntervalSeconds)).toBe(3);
+    await expect.poll(() => turn.innerText(), { timeout: 15_000 }).not.toBe('0');
+    await play.click();
     await expect(play).toHaveAttribute('aria-pressed', 'false');
-    // Pause keeps the bar; its speed is the Settings interval; Next turn plays one turn while paused.
+    // Pause keeps the bar; Next turn plays one turn while paused.
     await expect(bar).toBeVisible();
-    await bar.locator('#simulation-bar-speed').selectOption('5');
-    await expect.poll(() => page.evaluate(() => (window as any).gameState.turnIntervalSeconds)).toBe(5);
-    const pausedTurn = Number(await page.locator('#game-turns').innerText());
+    const pausedTurn = Number(await turn.innerText());
     await bar.locator('#simulation-bar-step').click();
-    await expect(page.locator('#game-turns')).toHaveText(String(pausedTurn + 1));
+    await expect(turn).toHaveText(String(pausedTurn + 1));
     await expect(play).toHaveAttribute('aria-pressed', 'false');
-    // Stop closes the bar.
-    await bar.locator('#simulation-bar-stop').click();
-    await expect(bar).toBeHidden();
-    await openSimulation(page);
 
-    const beforeReset = await page.locator('#game-turns').innerText();
-    const newGame = settings.getByRole('button', { name: /New Game/i });
+    const beforeReset = await turn.innerText();
+    const newGame = bar.getByRole('button', { name: 'New game' });
     const confirm = page.locator('.cb-dialog--confirm');
     const confirmText = /start a NEW game\?/i;
     await newGame.click();
@@ -403,14 +381,18 @@ test.describe('Activity and simulation controls @features', () => {
     await expect(confirm).toContainText(confirmText);
     await confirm.locator('[data-action-id="cancel"]').click();
     await expect(confirm).toHaveCount(0);
-    await expect(page.locator('#game-turns')).toHaveText(beforeReset);
+    await expect(turn).toHaveText(beforeReset);
 
     await newGame.click();
     await expect(confirm).toBeVisible();
     await expect(confirm).toContainText(confirmText);
     await confirm.locator('[data-action-id="ok"]').click();
     await expect(confirm).toHaveCount(0);
-    await expect.poll(() => page.locator('#game-turns').innerText()).toBe('0');
+    await expect.poll(() => turn.innerText()).toBe('0');
     await expect(play).toHaveAttribute('aria-pressed', 'false');
+
+    // Stop closes the bar.
+    await bar.locator('#simulation-bar-stop').click();
+    await expect(bar).toBeHidden();
   });
 });

@@ -582,7 +582,7 @@
             { label: 'Solana faucet', href: 'https://faucet.solana.com' },
             { label: 'Circle USDC faucet', href: 'https://faucet.circle.com' }
         ]));
-        tryIt.append(node(doc, 'p', 'On the map, open Settings → Advanced → Simulation. Select Enable game mode and choose New Game to restart the simulation in this browser.', 'hd-muted'));
+        tryIt.append(node(doc, 'p', 'On the map, open Settings → Advanced and choose Run simulation, then New game on the simulation bar to restart the simulation in this browser.', 'hd-muted'));
         tryIt.append(linkRow(doc, [{ label: 'Open the map simulation', href: '/?reduceMotion=1' }]));
         element.append(tryIt);
 

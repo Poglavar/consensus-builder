@@ -322,8 +322,8 @@ describe('smaller fixes', () => {
 
     it('gives the shell buttons the page font (a <button> does not inherit it)', () => {
         expect(ruleBody(mapShellCss, '\\n\\.map-shell-button')).toMatch(/font:\s*inherit;/);
-        // The simulation's play button is a .btn, whose primitive gives it the page font.
-        expect(indexHtml).toMatch(/id="game-play-pause-btn" class="btn\b[^"]*activity-simulation-play/);
+        // Run simulation is a .btn, whose primitive gives it the page font.
+        expect(indexHtml).toMatch(/id="run-simulation-button" class="btn\b/);
         expect(ruleBody(primitivesCss, '\\n\\.btn')).toMatch(/font:\s*inherit;/);
     });
 

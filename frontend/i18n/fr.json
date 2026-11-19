@@ -261,10 +261,7 @@
             "baseMapLabel": "Fond de carte :"
         },
         "game": {
-            "enable": "Activer le mode jeu",
             "enablePaused": "Activer le mode jeu (en pause)",
-            "secondsBetween": "Secondes entre les tours :",
-            "nextTurn": "Prochain tour dans :",
             "play": "Jouer",
             "pause": "Mettre en pause",
             "newGame": "Nouvelle partie",
@@ -1368,7 +1365,7 @@
                     "eyebrow": "Une ville en mouvement",
                     "title": "Suivez l’évolution des décisions",
                     "body": "Suivez les projets et l’activité des agents dans le monde entier. Lorsque la simulation est disponible, lancez ou mettez en pause les tours pour explorer l’évolution des projets et du soutien.",
-                    "hint": "Ouvrez Activité pour suivre les événements et les acteurs. Les commandes de simulation se trouvent dans Paramètres → Avancé → Simulation."
+                    "hint": "Ouvrez Activité pour suivre les événements et les acteurs. Lancer la simulation se trouve dans Paramètres → Avancé."
                 },
                 "sources": {
                     "eyebrow": "Plusieurs points de départ",
@@ -5859,8 +5856,6 @@
             "display": "Affichage"
         },
         "simulation": {
-            "title": "Simulation",
-            "titlePaused": "Simulation (en pause)",
             "settings": "Paramètres de simulation",
             "running": "Simulation en cours",
             "turn": "Tour",
@@ -5868,7 +5863,8 @@
             "nextTurn": "Tour suivant",
             "speed": "Un tour toutes les",
             "secondsShort": "{{seconds}} s",
-            "stop": "Arrêter la simulation"
+            "stop": "Arrêter la simulation",
+            "run": "Lancer la simulation"
         },
         "commands": {
             "worldView": "Vue du monde",
@@ -5881,8 +5877,6 @@
             "areaMonitorDraw": "Dessiner une zone surveillée",
             "areaMonitorFromPlan": "Dessiner une zone surveillée à partir du plan",
             "proposalsList": "Ouvrir les projets",
-            "gamePlayPause": "Lancer / mettre en pause le jeu",
-            "gameInterval": "Intervalle entre les tours",
             "statusLog": "Ouvrir le journal d’état",
             "chooseCity": "Choisir une ville",
             "dataSource": "Source de données",

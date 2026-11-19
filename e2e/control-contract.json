@@ -1657,34 +1657,6 @@
       "controlType": "button"
     },
     {
-      "id": "control-1adc9fb60177bc-1",
-      "source": "index.html",
-      "markup": "<input type=\"checkbox\" id=\"gameCheckbox\" data-layer=\"game\" onchange=\"toggleAccordion(this)\">",
-      "interaction": "change",
-      "controlType": "checkbox"
-    },
-    {
-      "id": "control-2e8de96258fbad-1",
-      "source": "index.html",
-      "markup": "<button type=\"button\" id=\"game-play-pause-btn\" class=\"btn btn-icon btn-sm activity-simulation-play\" aria-pressed=\"false\" onclick=\"toggleGamePlayPause()\">",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-ee01e81a2f2f1c-1",
-      "source": "index.html",
-      "markup": "<input type=\"range\" id=\"turn-interval-slider\" min=\"1\" max=\"60\" value=\"10\" onchange=\"updateTurnInterval(this.value)\" oninput=\"updateTurnIntervalDisplay(this.value)\">",
-      "interaction": "change",
-      "controlType": "range"
-    },
-    {
-      "id": "control-a734fe9e4c264a-1",
-      "source": "index.html",
-      "markup": "<button type=\"button\" class=\"btn btn-danger\" onclick=\"resetGameState(true)\">",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
       "id": "control-c5282f3e2066e1-1",
       "source": "index.html",
       "markup": "<input type=\"checkbox\" id=\"debugModeCheckbox\" onchange=\"toggleDebugMode()\">",
@@ -10567,6 +10539,16 @@
       "id": "control-5ac77f5969ca8c-1",
       "source": "index.html",
       "markup": "<button type=\"button\" id=\"activity-agent-city\" class=\"btn btn-icon\" data-agent-city-open=\"server\" aria-label=\"Agent city\" title=\"Agent city\" data-i18n-key=\"agentCity.title\" data-i18n-attr=\"aria-label,title\">"
+    },
+    {
+      "id": "control-7587c583c34590-1",
+      "source": "index.html",
+      "markup": "<button type=\"button\" id=\"simulation-bar-new\" class=\"btn btn-icon\" aria-label=\"New game\" title=\"New game\" data-i18n-key=\"sidebar.game.newGame\" data-i18n-attr=\"aria-label,title\">"
+    },
+    {
+      "id": "control-f3cc9297c7e714-1",
+      "source": "index.html",
+      "markup": "<button type=\"button\" id=\"run-simulation-button\" class=\"btn\" onclick=\"runSimulation()\">"
     }
   ],
   "variantExclusions": [

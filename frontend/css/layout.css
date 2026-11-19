@@ -168,20 +168,6 @@ body {
         align-items: center;
     }
 
-    /* Slider controls more touch-friendly */
-    #turn-interval-slider {
-        height: 8px;
-        appearance: none;
-        -webkit-appearance: none;
-    }
-
-    #turn-interval-slider::-webkit-slider-thumb {
-        width: 24px;
-        height: 24px;
-        appearance: none;
-        -webkit-appearance: none;
-    }
-
     /* Leaflet control buttons larger for touch */
     .leaflet-control-zoom a {
         width: 44px !important;

@@ -23,9 +23,8 @@
         'tile-source-select', 'wipeLocalDataButton',
         'showParcelCoverageButton', 'refreshParcelDataButton',
         'debugModeCheckbox',
-        // Settings: the Simulation section
-        'gameCheckbox', 'game-datetime', 'game-turns', 'turn-interval-slider', 'turn-interval-value',
-        'turn-progress-fill', 'turn-progress-time', 'game-play-pause-btn',
+        // Settings: Run simulation (the simulation's controls are on the simulation bar)
+        'run-simulation-button',
         // Proposals sheet
         'showProposalsButton',
         'shareAppliedProposalsButton',
@@ -392,19 +391,15 @@
         control('designs-agreements-tab', { id: 'proposals.agreements', group: 'proposals', surfaces: ['proposals'],
             labelKey: 'sidebar.proposals.agreementsButton', fallbackLabel: 'Agreements', icon: 'fas cb-icon-agreement' }),
 
-        // ---- Activity panel views and Settings > Diagnostics simulation controls ----
+        // ---- Activity panel views; Settings > Advanced > Run simulation and the bar's New game ----
         { id: 'activity.events', group: 'activity', surfaces: ['activity'], run: callGlobal('openActivityPanel', { view: 'events' }),
             labelKey: 'gameDialogs.log.viewEvents', fallbackLabel: 'Events', icon: 'fas fa-wave-square' },
         { id: 'activity.actors', group: 'activity', surfaces: ['activity'], run: callGlobal('openActivityPanel', { view: 'actors' }),
             labelKey: 'gameDialogs.log.viewActors', fallbackLabel: 'Actors', icon: 'fas fa-robot' },
-        control('gameCheckbox', { id: 'game.enable', group: 'game', kind: 'toggle', surfaces: ['settings'],
-            labelKey: 'sidebar.game.enable', fallbackLabel: 'Enable game mode', icon: 'fas fa-gamepad' }),
-        { id: 'game.playPause', group: 'game', surfaces: ['settings'], run: callGlobal('toggleGamePlayPause'),
-            labelKey: 'mapShell.commands.gamePlayPause', fallbackLabel: 'Play / pause the game', icon: 'fas fa-play' },
-        control('turn-interval-slider', { id: 'game.interval', group: 'game', kind: 'input', surfaces: ['settings'],
-            labelKey: 'mapShell.commands.gameInterval', fallbackLabel: 'Turn interval', icon: 'fas fa-stopwatch' }),
-        { id: 'game.new', group: 'game', surfaces: ['settings'], run: callGlobal('resetGameState', true),
-            labelKey: 'sidebar.game.newGame', fallbackLabel: 'New Game', icon: 'fas fa-rotate-left' },
+        { id: 'game.run', group: 'game', surfaces: ['settings'], run: callGlobal('runSimulation'),
+            labelKey: 'mapShell.simulation.run', fallbackLabel: 'Run simulation', icon: 'fas fa-play' },
+        { id: 'game.new', group: 'game', run: callGlobal('resetGameState', true),
+            labelKey: 'sidebar.game.newGame', fallbackLabel: 'New game', icon: 'fas fa-rotate-left' },
 
         // ---- Settings > Diagnostics: the status log ----
         { id: 'settings.statusLog', group: 'settings', surfaces: ['settings'], run: callGlobal('openStatusLogDialog'),

@@ -513,7 +513,7 @@
                 aria-label="Month" data-i18n-key="buildout.month" data-i18n-attr="aria-label">
             <p id="buildout-clock-summary" class="buildout-clock__summary sheet-note" aria-live="polite"></p>
         </section>
-        <!-- Simulation bar (js/ui/simulation-bar.js): shown from Play in Settings until Stop. -->
+        <!-- Simulation bar (js/ui/simulation-bar.js): shown from Run simulation in Settings until Stop. -->
         <section id="simulation-bar" class="simulation-bar" aria-label="Simulation controls"
             data-i18n-key="mapShell.simulation.bar" data-i18n-attr="aria-label" hidden>
             <button type="button" id="simulation-bar-play" class="btn btn-icon" aria-pressed="false" aria-label="Play" title="Play">
@@ -535,6 +535,10 @@
                 aria-label="Agent city of this simulation" title="Agent city of this simulation"
                 data-i18n-key="agentCity.openSimulation" data-i18n-attr="aria-label,title">
                 <i class="fas fa-city" aria-hidden="true"></i>
+            </button>
+            <button type="button" id="simulation-bar-new" class="btn btn-icon" aria-label="New game" title="New game"
+                data-i18n-key="sidebar.game.newGame" data-i18n-attr="aria-label,title">
+                <i class="fas fa-rotate-left" aria-hidden="true"></i>
             </button>
             <button type="button" id="simulation-bar-stop" class="btn btn-icon" aria-label="Stop simulation" title="Stop simulation"
                 data-i18n-key="mapShell.simulation.stop" data-i18n-attr="aria-label,title">
@@ -1422,54 +1426,13 @@
 
                     </div>
                         </section>
-                        <section class="settings-section activity-simulation" data-section="game"><h4 class="settings-section-title">
-                        <i class="fas fa-play" aria-hidden="true"></i>
-                            <span data-section-title="game" data-i18n-key="mapShell.simulation.title">Simulation</span>
-                    </h4>
-<div class="sheet-section-body">
-                        <label class="checkbox-group activity-simulation-switch">
-                            <input type="checkbox" id="gameCheckbox" data-layer="game" onchange="toggleAccordion(this)">
-                            <span data-i18n-key="sidebar.game.enable">Enable game mode</span>
-                        </label>
-                        <div class="activity-simulation-row">
-                            <button type="button" id="game-play-pause-btn" class="btn btn-icon btn-sm activity-simulation-play"
-                                aria-pressed="false" onclick="toggleGamePlayPause()">
+                        <!-- The simulation itself is run from the simulation bar (#simulation-bar); this only starts it. -->
+                        <div class="settings-section cb-actions" data-section="game">
+                            <button type="button" id="run-simulation-button" class="btn" onclick="runSimulation()">
                                 <i class="fas fa-play" aria-hidden="true"></i>
-                                <span class="map-shell-sr-only" data-i18n-key="sidebar.game.play">Play</span>
+                                <span data-i18n-key="mapShell.simulation.run">Run simulation</span>
                             </button>
-                            <span class="activity-simulation-metrics">
-                                <span id="game-datetime">2024-01-01</span>
-                                <span aria-hidden="true">·</span>
-                                <span data-i18n-key="mapShell.simulation.turn">Turn</span>
-                                <span id="game-turns">0</span>
-                            </span>
                         </div>
-                        <div class="activity-simulation-settings">
-                            <div class="sheet-section-body">
-                                <div class="slider-group">
-                                    <label for="turn-interval-slider">
-                                        <span data-i18n-key="sidebar.game.secondsBetween">Seconds between turns:</span>
-                                        <span id="turn-interval-value">30</span>
-                                    </label>
-                                    <input type="range" id="turn-interval-slider" min="1" max="60" value="10"
-                                    onchange="updateTurnInterval(this.value)" oninput="updateTurnIntervalDisplay(this.value)">
-                                </div>
-                                <div class="turn-progress">
-                                    <div class="turn-progress-label" data-i18n-key="sidebar.game.nextTurn">Next turn in:</div>
-                                    <div class="turn-progress-bar">
-                                        <div id="turn-progress-fill" class="turn-progress-fill"></div>
-                                    </div>
-                                    <div class="turn-progress-time" id="turn-progress-time">--</div>
-                                </div>
-                                <div class="cb-actions">
-                                    <button type="button" class="btn btn-danger" onclick="resetGameState(true)">
-                                        <i class="fas fa-rotate-left" aria-hidden="true"></i>
-                                        <span data-i18n-key="sidebar.game.newGame">New Game</span>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div></section>
                         <section class="settings-section activity-diagnostics" data-section="diagnostics"><h4 class="settings-section-title">
                         <i class="fas fa-stethoscope" aria-hidden="true"></i>
                         <span data-i18n-key="activityPanel.diagnostics">Diagnostics</span>
@@ -2737,7 +2700,7 @@
                     <p class="site-intro-eyebrow" data-i18n-key="modal.siteIntro.tour.activity.eyebrow">A city in motion</p>
                     <h2 id="site-intro-title-activity" data-i18n-key="modal.siteIntro.tour.activity.title">See how decisions unfold</h2>
                     <p id="site-intro-lead-activity" class="site-intro-lead" data-i18n-key="modal.siteIntro.tour.activity.body">Follow designs and agent activity around the world. Where Simulation is available, play or pause turns to explore how designs and support evolve.</p>
-                    <p class="site-intro-hint" data-i18n-key="modal.siteIntro.tour.activity.hint">Open Activity to follow events and actors. Simulation controls are in Settings → Advanced → Simulation.</p>
+                    <p class="site-intro-hint" data-i18n-key="modal.siteIntro.tour.activity.hint">Open Activity to follow events and actors. Run simulation is in Settings → Advanced.</p>
                 </div>
             </article>
             <article class="site-intro-slide" data-site-intro-slide="sources" hidden>

@@ -1056,38 +1056,6 @@ input.proposal-author-name {
     font-size: 12px;
 }
 
-.turn-progress {
-    margin-top: 12px;
-}
-
-.turn-progress-label {
-    font-size: 12px;
-    color: var(--cb-text-muted);
-    margin-bottom: 4px;
-}
-
-.turn-progress-bar {
-    width: 100%;
-    height: 8px;
-    background-color: var(--cb-surface-3);
-    border-radius: 4px;
-    overflow: hidden;
-    margin-bottom: 4px;
-}
-
-.turn-progress-fill {
-    height: 100%;
-    background: var(--cb-success);
-    transition: width 0.1s ease-out;
-    border-radius: 4px;
-}
-
-.turn-progress-time {
-    font-size: 11px;
-    color: var(--cb-text-muted);
-    text-align: center;
-}
-
 /* Notices (design-language.md, Messages): an outcome, one pill at a time (js/ui/notice-queue.js), top centre
    under the top row of controls, above anything the notice may answer. The look is .cb-toast
    (css/primitives.css); only the entrance and exit live here. */

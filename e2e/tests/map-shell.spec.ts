@@ -208,39 +208,32 @@ test.describe('Map shell sheets @features', () => {
     await expect(page.locator(`${selectors.activitySheet} #areaMonitorDrawButton`)).toBeVisible();
   });
 
-  test('Settings simulation enablement, play/pause and Activity running indicator stay in sync', async ({ mockApi: page }) => {
+  test('Run simulation in Settings, the simulation bar and the Activity running indicator stay in sync', async ({ mockApi: page }) => {
     const dot = page.locator(selectors.simulationRunningDot);
     await expect(dot).toBeHidden();
 
     await page.locator(selectors.settingsButton).click();
     const advanced = page.locator(selectors.settingsAdvanced);
-    const section = page.locator(selectors.simulationSection);
-    // Simulation is a flat section inside the collapsed Advanced accordion.
+    const run = page.locator(selectors.runSimulation);
+    // Run simulation is the only simulation control in Settings, inside the collapsed Advanced accordion.
     await expect(advanced).not.toHaveAttribute('open');
-    await expect(section).toBeHidden();
+    await expect(run).toBeHidden();
     await page.locator(selectors.settingsAdvancedSummary).click();
     await expect(advanced).toHaveAttribute('open', '');
-    await expect(section).toBeVisible();
-    const gameEnabled = page.locator('#gameCheckbox');
-    await gameEnabled.check();
-    await expect(gameEnabled).toBeChecked();
-    await expect(page.locator(selectors.simulationSettings)).toBeVisible();
+    await expect(run).toBeVisible();
+    await expect(page.locator('#settings-sheet [data-section="game"]')).toHaveText('Run simulation');
 
-    await page.locator(selectors.simulationPlayPause).click();
-    await expect(page.locator(selectors.simulationPlayPause)).toHaveAttribute('aria-pressed', 'true');
-    await page.keyboard.press('Escape');
+    // It starts the game, folds Settings away and opens the simulation bar.
+    await run.click();
     await expect(page.locator(selectors.settingsSheet)).toBeHidden();
+    const barPlay = page.locator('#simulation-bar-play');
+    await expect(barPlay).toHaveAttribute('aria-pressed', 'true');
     await expect(dot).toBeVisible();
     await expect(dot).toHaveAttribute('aria-label', 'Simulation running');
 
-    await page.locator(selectors.settingsButton).click();
-    // MapShell intentionally resets Settings accordions on every open.
-    await expect(advanced).not.toHaveAttribute('open');
-    await page.locator(selectors.settingsAdvancedSummary).click();
-    await expect(advanced).toHaveAttribute('open', '');
-    await expect(gameEnabled).toBeChecked();
-    await page.locator(selectors.simulationPlayPause).click();
-    await expect(page.locator(selectors.simulationPlayPause)).toHaveAttribute('aria-pressed', 'false');
+    // Pause is on the bar; the dot follows it.
+    await barPlay.click();
+    await expect(barPlay).toHaveAttribute('aria-pressed', 'false');
     await expect(dot).toBeHidden();
   });
 });

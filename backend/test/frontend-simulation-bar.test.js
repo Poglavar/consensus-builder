@@ -2,6 +2,8 @@
 // agent-bubble-placement.js) and what the floating simulation bar shows (ui/simulation-bar.js).
 import { describe, expect, it } from 'vitest';
 import { createRequire } from 'node:module';
+import fs from 'node:fs';
+import { makeDocument } from './helpers/fake-dom.js';
 
 const require = createRequire(import.meta.url);
 const Placement = require('../../frontend/js/agent-bubble-placement.js');
@@ -73,6 +75,21 @@ describe('simulation bar', () => {
         expect(SimulationBar.speedOptions(10)).toEqual([3, 5, 10, 20, 30, 60]);
         expect(SimulationBar.speedOptions(7)).toEqual([3, 5, 7, 10, 20, 30, 60]);
         expect(SimulationBar.speedOptions(NaN)).toEqual([3, 5, 10, 20, 30, 60]);
+    });
+
+    it('wires each bar control to its action, New game included', () => {
+        const html = fs.readFileSync(new URL('../../frontend/index.html', import.meta.url), 'utf8');
+        const start = html.indexOf('<section id="simulation-bar"');
+        const doc = makeDocument();
+        doc.body.innerHTML = html.slice(start, html.indexOf('</section>', start) + '</section>'.length);
+        const calls = [];
+        const actions = Object.fromEntries(['togglePlay', 'step', 'setInterval', 'newGame', 'stop']
+            .map(name => [name, (...args) => calls.push([name, ...args])]));
+        expect(SimulationBar.bind(doc, actions)).toBe(true);
+        expect(SimulationBar.bind(doc, actions)).toBe(false);
+        ['simulation-bar-play', 'simulation-bar-step', 'simulation-bar-new', 'simulation-bar-stop'].forEach(id => doc.getElementById(id).click());
+        expect(calls.map(call => call[0])).toEqual(['togglePlay', 'step', 'newGame', 'stop']);
+        expect(doc.getElementById('simulation-bar-new').getAttribute('data-i18n-key')).toBe('sidebar.game.newGame');
     });
 
     it('tracks open and close', () => {

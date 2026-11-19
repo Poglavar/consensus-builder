@@ -67,6 +67,10 @@ one to ten neighbouring parcels.
 
 ## Interface
 
+Settings → Advanced holds one **Run simulation** button: it starts the game, folds Settings away and
+opens the **simulation bar**, which holds every simulation control (play/pause, next turn, speed, the
+Agent city, New game, Stop).
+
 The **Agent city card** (`#agent-city`, styled as the build-out time control) sits at the bottom
 centre: title, close, a source switch (Published agents, This simulation), previous day, play/pause,
 next day, the day shown, a slider over the execution days and a summary of designs standing and

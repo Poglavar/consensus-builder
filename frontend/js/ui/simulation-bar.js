@@ -1,6 +1,7 @@
 // ui/simulation-bar.js — the small floating simulation bar on the map (#simulation-bar in index.html):
-// play/pause, next turn, turn speed and Stop. Pressing Play in Settings folds Settings away and
-// opens the bar; Pause keeps it; Stop pauses and closes it. game.js owns the game and calls sync().
+// every simulation control — play/pause, next turn, turn speed, the Agent city, New game and Stop.
+// Run simulation in Settings folds Settings away and opens the bar; Pause keeps it; Stop pauses and
+// closes it. game.js owns the game and calls sync().
 // UMD with a pure barView(), so backend/test/frontend-simulation-bar.test.js loads it without a DOM.
 (function (root, factory) {
     const api = factory();
@@ -88,7 +89,7 @@
         bar.style.setProperty('--simulation-progress', String(share));
     }
 
-    // Wires the bar's controls to the game. `actions`: togglePlay, step, setInterval(seconds), stop.
+    // Wires the bar's controls to the game. `actions`: togglePlay, step, setInterval(seconds), newGame, stop.
     function bind(doc, actions) {
         const bar = doc?.getElementById?.('simulation-bar');
         if (!bar || bar.dataset.bound === 'true') return false;
@@ -97,6 +98,7 @@
         on('simulation-bar-play', 'click', () => actions.togglePlay());
         on('simulation-bar-step', 'click', () => actions.step());
         on('simulation-bar-speed', 'change', event => actions.setInterval(Number.parseInt(event.target.value, 10)));
+        on('simulation-bar-new', 'click', () => actions.newGame());
         on('simulation-bar-stop', 'click', () => actions.stop());
         return true;
     }

@@ -272,14 +272,6 @@ function startGameLoop() {
         console.log('Game loop already running');
         return;
     }
-    // A running game is game mode. Play works with the simulation settings folded away, and a game
-    // left running with "Enable game mode" off had its own interval and New game controls greyed.
-    // Ticking the box the way a click does also runs its change handlers (section gating, title).
-    const gameCheckbox = document.getElementById('gameCheckbox');
-    if (gameCheckbox && !gameCheckbox.checked) {
-        gameCheckbox.checked = true;
-        gameCheckbox.dispatchEvent(new Event('change', { bubbles: true }));
-    }
     gameState.isRunning = true;
     gameState.turnStartTime = Date.now();
     gameState.addLogEntry('Game started.');
@@ -302,9 +294,6 @@ function startGameLoop() {
             updateProgressBar();
         }, 100);
     }
-
-    // Update game section title
-    updateGameSectionTitle();
 
     gameState.updateGameUI();
     console.log(`Game loop started - agents will act every ${gameState.turnIntervalSeconds} seconds`);
@@ -335,9 +324,6 @@ function stopGameLoop() {
 
     // Reset progress bar
     updateProgressBar(0);
-
-    // Update game section title if section is collapsed
-    updateGameSectionTitle();
 
     gameState.updateGameUI();
     console.log('Game loop stopped');
@@ -596,106 +582,33 @@ async function dispatchAgentAction(actor, action, context = {}) {
 }
 
 /**
- * Update the Simulation section title (in the Activity sheet) based on current state
- */
-function updateGameSectionTitle() {
-    const gameCheckbox = document.getElementById('gameCheckbox');
-    const gameLabel = document.querySelector('.activity-simulation[data-section="game"] [data-section-title="game"]');
-    if (!gameLabel) return;
-
-    const i18nApi = (typeof window !== 'undefined') ? window.i18n : null;
-    const key = (gameCheckbox && !gameCheckbox.checked && !gameState.isRunning)
-        ? 'mapShell.simulation.titlePaused'
-        : 'mapShell.simulation.title';
-
-    gameLabel.setAttribute('data-i18n-key', key);
-    if (i18nApi && typeof i18nApi.applyTranslations === 'function') {
-        i18nApi.applyTranslations(gameLabel);
-    } else if (key === 'mapShell.simulation.titlePaused') {
-        gameLabel.textContent = 'Simulation (paused)';
-    } else {
-        gameLabel.textContent = 'Simulation';
-    }
-}
-
-/**
  * Update the game UI elements
  */
 gameState.updateGameUI = function () {
-    const i18nApi = (typeof window !== 'undefined') ? window.i18n : null;
-
-    // Update game datetime display
-    const gameTimeElement = document.getElementById('game-datetime');
-    if (gameTimeElement) {
-        // The game calendar is kept in UTC; show that day in the UI language.
-        gameTimeElement.textContent = CbFormat.formatDate(this.currentDateTime, { timeZone: 'UTC' });
-    }
-
-    // Update turns played display
-    const turnsElement = document.getElementById('game-turns');
-    if (turnsElement) {
-        turnsElement.textContent = this.currentTurn.toString();
-    }
-
-    // Update turn interval slider
-    const sliderElement = document.getElementById('turn-interval-slider');
-    const valueElement = document.getElementById('turn-interval-value');
-    if (sliderElement && valueElement) {
-        sliderElement.value = this.turnIntervalSeconds;
-        valueElement.textContent = this.turnIntervalSeconds;
-    }
-
-    // Update play/pause button
-    const playPauseBtn = document.getElementById('game-play-pause-btn');
-    if (playPauseBtn) {
-        const playPauseIcon = playPauseBtn.querySelector('i');
-        const playPauseLabel = playPauseBtn.querySelector('span[data-i18n-key]');
-        const labelKey = this.isRunning ? 'sidebar.game.pause' : 'sidebar.game.play';
-
-        if (playPauseIcon) {
-            playPauseIcon.classList.remove('fa-play', 'fa-pause');
-            playPauseIcon.classList.add(this.isRunning ? 'fa-pause' : 'fa-play');
-        }
-        if (playPauseLabel) {
-            playPauseLabel.setAttribute('data-i18n-key', labelKey);
-            if (i18nApi && typeof i18nApi.applyTranslations === 'function') {
-                i18nApi.applyTranslations(playPauseLabel);
-            } else {
-                playPauseLabel.textContent = this.isRunning ? 'Pause' : 'Play';
-            }
-        }
-
-        // Running is the pressed state of the btn toggle (css/primitives.css).
-        playPauseBtn.setAttribute('aria-pressed', this.isRunning ? 'true' : 'false');
-    }
-
     // The running dot on the Activity button (js/ui/simulation-indicator.js).
     if (typeof window !== 'undefined' && window.SimulationIndicator) {
         window.SimulationIndicator.sync(document, this);
     }
 
     syncSimulationBar();
-
-    try { updateGameSectionTitle(); } catch (_) { }
 };
 
 /**
- * Toggle game play/pause state
+ * Toggle game play/pause state (the simulation bar's Play)
  */
 function toggleGamePlayPause() {
-    if (gameState.isRunning) {
-        stopGameLoop();
-    } else {
-        startGameLoop();
-        try { updateGameSectionTitle(); } catch (_) { }
-        // A running game is watched on the map: Settings folds away and the simulation bar takes
-        // over play/pause, next turn, speed and Stop.
-        if (gameState.isRunning) {
-            window.SimulationBar?.open();
-            window.MapShell?.closeSheets?.();
-            gameState.updateGameUI();
-        }
-    }
+    if (gameState.isRunning) stopGameLoop();
+    else startGameLoop();
+}
+
+// Settings → Advanced → Run simulation: start the game and watch it on the map. Settings folds away
+// and the simulation bar holds every control (play/pause, next turn, speed, New game, Stop).
+function runSimulation() {
+    if (!gameState.isRunning) startGameLoop();
+    if (!gameState.isRunning) return;
+    window.SimulationBar?.open();
+    window.MapShell?.closeSheets?.();
+    gameState.updateGameUI();
 }
 
 // The simulation bar (js/ui/simulation-bar.js) mirrors the game; game.js owns the game.
@@ -708,8 +621,7 @@ function syncSimulationBar() {
     window.agentBubbleManager?.updateAllBubblePositions?.();
 }
 
-// Stop: pause the game, close the bar and clear the ghosts. New game stays in Settings, behind its
-// confirmation.
+// Stop: pause the game, close the bar and clear the ghosts. Run simulation in Settings opens it again.
 function stopSimulation() {
     if (gameState.isRunning) stopGameLoop();
     window.SimulationBar?.close();
@@ -731,6 +643,7 @@ function bindSimulationBar() {
             updateTurnInterval(seconds);
             gameState.updateGameUI();
         },
+        newGame: () => resetGameState(true),
         stop: stopSimulation
     });
     window.i18n?.onChange?.(() => syncSimulationBar());
@@ -1073,17 +986,7 @@ function showParcelFromLog(parcelId) {
 }
 
 /**
- * Update the turn interval display (called when slider moves)
- */
-function updateTurnIntervalDisplay(seconds) {
-    const valueElement = document.getElementById('turn-interval-value');
-    if (valueElement) {
-        valueElement.textContent = seconds;
-    }
-}
-
-/**
- * Update the turn interval setting (called when slider changes)
+ * Update the turn interval setting (the simulation bar's speed)
  */
 function updateTurnInterval(seconds) {
     gameState.turnIntervalSeconds = parseInt(seconds);
@@ -1099,41 +1002,12 @@ function updateTurnInterval(seconds) {
 }
 
 /**
- * Update the progress bar based on time elapsed
+ * Update the simulation bar's progress line from the time elapsed in this turn
  */
 function updateProgressBar(overrideProgress = null) {
-    const progressFill = document.getElementById('turn-progress-fill');
-    const progressTime = document.getElementById('turn-progress-time');
-
     window.SimulationBar?.setProgress(document, overrideProgress !== null ? overrideProgress / 100
         : (gameState.isRunning && gameState.turnStartTime && gameState.turnIntervalSeconds > 0
             ? (Date.now() - gameState.turnStartTime) / (gameState.turnIntervalSeconds * 1000) : 0));
-
-    if (!progressFill || !progressTime) return;
-
-    if (overrideProgress !== null) {
-        // Set specific progress (e.g., when stopped)
-        progressFill.style.width = `${overrideProgress}%`;
-        progressTime.textContent = '--';
-        return;
-    }
-
-    if (!gameState.isRunning || !gameState.turnStartTime || gameState.turnIntervalSeconds === 0) {
-        progressFill.style.width = '0%';
-        progressTime.textContent = '--';
-        return;
-    }
-
-    const now = Date.now();
-    const elapsed = now - gameState.turnStartTime;
-    const totalMs = gameState.turnIntervalSeconds * 1000;
-    const remaining = Math.max(0, totalMs - elapsed);
-    const progress = Math.min(100, Math.max(0, 100 - (remaining / totalMs * 100)));
-
-    progressFill.style.width = `${progress}%`;
-
-    const remainingSeconds = Math.ceil(remaining / 1000);
-    progressTime.textContent = `${remainingSeconds}s`;
 }
 
 /**
@@ -1178,6 +1052,7 @@ window.startGameLoop = startGameLoop;
 window.stopGameLoop = stopGameLoop;
 window.executeGameTurn = executeGameTurn;
 window.toggleGamePlayPause = toggleGamePlayPause;
+window.runSimulation = runSimulation;
 window.stopSimulation = stopSimulation;
 window.resetGameState = resetGameState;
 window.dispatchAgentAction = dispatchAgentAction;
@@ -1186,10 +1061,8 @@ window.showProposalFromLog = showProposalFromLog;
 window.showProposalInfoDialog = showProposalInfoDialog;
 window.closeProposalInfoDialog = closeProposalInfoDialog;
 window.showParcelFromLog = showParcelFromLog;
-window.updateTurnIntervalDisplay = updateTurnIntervalDisplay;
 window.updateTurnInterval = updateTurnInterval;
 window.updateProgressBar = updateProgressBar;
-window.updateGameSectionTitle = updateGameSectionTitle;
 
 /**
  * Reset the entire game state. If autoReinit is true the game will be initialised again automatically.

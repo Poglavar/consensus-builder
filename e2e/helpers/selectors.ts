@@ -31,13 +31,11 @@ export const selectors = {
   measurementSheet: '#measurement-sheet',
   activityButton: '#activity-button',
   activitySheet: '#activity-sheet',
-  // Advanced is the only Settings accordion; MapShell collapses it on every open. Simulation is a
-  // flat section inside it.
+  // Advanced is the only Settings accordion; MapShell collapses it on every open. Run simulation is
+  // one button inside it; the simulation's controls are on the simulation bar.
   settingsAdvanced: '#settings-sheet details.accordion-section[data-section="advanced"]',
   settingsAdvancedSummary: '#settings-sheet details.accordion-section[data-section="advanced"] > summary',
-  simulationSection: '#settings-sheet section.activity-simulation[data-section="game"]',
-  simulationPlayPause: '#game-play-pause-btn',
-  simulationSettings: '#settings-sheet .activity-simulation-settings',
+  runSimulation: '#settings-sheet #run-simulation-button',
   simulationRunningDot: '#activity-running-dot',
   proposalsList: '#proposals-list, [data-testid="proposals-list"]',
 
