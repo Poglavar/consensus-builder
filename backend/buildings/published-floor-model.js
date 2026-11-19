@@ -7,6 +7,8 @@ const require = createRequire(import.meta.url);
 const { SCHEMA, validateArchitecture, validateFloorPlans } = require('../../frontend/js/building-floor-plans.js');
 
 const finite = value => typeof value === 'number' && Number.isFinite(value);
+// The unit kinds a building-floor-plans.v3 storey takes (building-floor-plans.js); a published storage or other unit has none.
+const UNIT_KINDS = ['apartment', 'shop', 'office', 'garage'];
 const METRES_PER_DEGREE = 111320;
 // A plan whose corners stray this far outside the reference plan's quad gets a common bounding frame.
 const FRAME_TOLERANCE_M = 0.5;
@@ -159,10 +161,18 @@ export function publishedPlansToFloorModel(plans, { publicationUrl = () => null 
                     quality: plan.quality?.status ?? null })) } });
         }
         const basis = String(entries[0].storey.heightBasis ?? entries[0].plan.building?.envelope?.heightBasis ?? '');
-        const units = byLevel.get(level).units.map(({ plan }) => ({ id: plan.unitId || plan.id, kind: 'apartment',
-            ...(finite(plan.areaM2) && plan.areaM2 > 0 ? { areaM2: plan.areaM2 } : {}),
-            ...(httpUrl(plan.source?.listingUrl) || originalUrl(plan) || publicationUrl(plan.id)
-                ? { url: httpUrl(plan.source?.listingUrl) || originalUrl(plan) || publicationUrl(plan.id) } : {}) }));
+        // A whole-floor plan drawn for this storey alone lists its units; otherwise the storey's unit plans are its
+        // units. A floor plan drawn once for several storeys cannot say which of its units are on which storey.
+        const floorUnits = byLevel.get(level).floors.filter(({ plan }) => planLevels(plan).length === 1)
+            .flatMap(({ plan }) => Array.isArray(plan.units) ? plan.units : []).filter(unit => typeof unit?.id === 'string' && unit.id && UNIT_KINDS.includes(unit.kind))
+            .map(unit => ({ id: unit.id, kind: unit.kind, ...(finite(unit.areaM2) && unit.areaM2 > 0 ? { areaM2: unit.areaM2 } : {}),
+                ...(httpUrl(unit.url) ? { url: unit.url } : {}) }));
+        const units = floorUnits.length ? floorUnits : byLevel.get(level).units
+            .filter(({ plan }) => UNIT_KINDS.includes(plan.unitKind ?? 'apartment'))
+            .map(({ plan }) => ({ id: plan.unitId || plan.id, kind: plan.unitKind ?? 'apartment',
+                ...(finite(plan.areaM2) && plan.areaM2 > 0 ? { areaM2: plan.areaM2 } : {}),
+                ...(httpUrl(plan.source?.listingUrl) || originalUrl(plan) || publicationUrl(plan.id)
+                    ? { url: httpUrl(plan.source?.listingUrl) || originalUrl(plan) || publicationUrl(plan.id) } : {}) }));
         storeys.push({ id: `level-${level}`, level, elevationM: entries[0].storey.elevationM,
             // Only an envelope that says its heights are documented is presented as documented.
             elevationBasis: /^documented/i.test(basis) ? 'documented' : 'estimated',

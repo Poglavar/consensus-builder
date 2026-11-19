@@ -75,6 +75,22 @@ describe('published plans → one X-ray floor model', () => {
         }
     });
 
+    it("lists a one-storey floor plan's own units, never a several-storey plan's, and a unit plan's kind", () => {
+        const plans = fixture();
+        const at = plans.findIndex(plan => plan.scope === 'floor');
+        const listed = structuredClone(plans);
+        listed[at].units = [{ id: 'B-1', kind: 'apartment', url: 'https://x.test/B-1.pdf' }, { id: 'S-1', kind: 'shop', areaM2: 40 }, { id: 'K-1', kind: 'storage' }];
+        const level2 = publishedPlansToFloorModel(listed).floorPlans.storeys.find(storey => storey.level === 2);
+        // The floor's own list replaces its flats' plans; a kind the v3 model has no place for (storage) is left out.
+        expect(level2.units).toEqual([{ id: 'B-1', kind: 'apartment', url: 'https://x.test/B-1.pdf' }, { id: 'S-1', kind: 'shop', areaM2: 40 }]);
+        // Drawn once for levels 2 and 6, the floor cannot say which unit is on which storey: the flats' plans list them.
+        listed[at].levels = [2, 6];
+        const several = publishedPlansToFloorModel(listed).floorPlans;
+        expect(several.storeys.find(storey => storey.level === 2).units.map(unit => unit.id).sort()).toEqual(['A4-C-05', 'A4-C-06']);
+        const shops = plans.map(plan => plan.scope === 'unit' && plan.floor === 6 ? { ...plan, unitKind: 'shop' } : plan);
+        expect(publishedPlansToFloorModel(shops).floorPlans.storeys.find(storey => storey.level === 6).units.map(unit => unit.kind)).toEqual(['shop', 'shop']);
+    });
+
     it('skips and counts plans it cannot place, and gives no model when none can be placed', () => {
         const plans = fixture();
         const unregistered = plans.map(plan => ({ ...plan, registration: null }));
