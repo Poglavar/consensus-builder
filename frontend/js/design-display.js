@@ -100,7 +100,7 @@
         Promise.resolve().then(() => {
             renderQueued = false;
             render2D();
-            try { root?.dispatchEvent?.(new root.CustomEvent(CHANGE_EVENT)); } catch (_) { }
+            root?.dispatchEvent?.(new root.CustomEvent(CHANGE_EVENT));
         });
     }
 

@@ -19,7 +19,7 @@ describe('algorithmic agent schedule', () => {
         const personas = JSON.parse(fs.readFileSync(new URL('../agents/personas.json', import.meta.url), 'utf8')).personas;
         const proposers = apps.filter(item => item.script === 'agents/run.mjs');
         expect(proposers.map(item => item.name).sort()).toEqual(['consensus-builder-affordabot', 'consensus-builder-agents', 'consensus-builder-builder', 'consensus-builder-gentle']);
-        // A settled agreement signs at most four transactions: attest, execute or expire, resolve, claim.
+        // A settled agreement signs at most five transactions: attest, execute or expire, resolve, claim, reclaim.
         const perSettlement = SIGNED_SETTLEMENT_STEPS.length - 1;
         for (const proposer of proposers) {
             expect(proposer.env.AGENT_MARKET_SEED_USDC_CAP).toBe('3.5');
@@ -81,7 +81,7 @@ describe('algorithmic agent schedule', () => {
         expect(app.args).toContain('--candidates 4');
         expect(app.args).toContain('--controller algorithm');
         expect(app.env).toMatchObject({
-            AGENT_DAILY_ACTION_CAP: '15',
+            AGENT_DAILY_ACTION_CAP: '18',
             AGENT_SETTLE_MAX_PER_RUN: '3',
             AGENT_DAILY_USDC_CAP: '0.35', AGENT_MARKET_SEED_USDC_CAP: '3.5'
         });
@@ -147,7 +147,7 @@ describe('algorithmic agent schedule', () => {
         ]) {
             const entry = apps.find(item => item.name === name);
             expect(entry).toMatchObject({ script: 'agents/run.mjs', instances: 1, autorestart: false, cron_restart: cron,
-                env: { AGENT_DAILY_ACTION_CAP: '15', AGENT_SETTLE_MAX_PER_RUN: '3', AGENT_DAILY_USDC_CAP: '0.35', AGENT_MARKET_SEED_USDC_CAP: '3.5' } });
+                env: { AGENT_DAILY_ACTION_CAP: '18', AGENT_SETTLE_MAX_PER_RUN: '3', AGENT_DAILY_USDC_CAP: '0.35', AGENT_MARKET_SEED_USDC_CAP: '3.5' } });
             expect(entry.args).toContain(`--persona ${persona}`);
             expect(entry.args).toContain('--controller algorithm');
             expect(entry.args).toContain('--slot auto');

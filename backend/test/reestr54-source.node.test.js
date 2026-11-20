@@ -6,6 +6,7 @@ import { createParcelSource } from '../parcels/sources.js';
 import { browserParcelFactories, createBrowserProviderFetch } from '../parcels/browser-source-runtime.js';
 import { createReestr54Source, REESTR54_SOURCE, REESTR54_ENDPOINT } from '../parcels/reestr54-source.js';
 import { validateParcelProviderRelayRequest } from '../parcels/provider-relay.js';
+import { relayEnvelope, relayPath } from './helpers/parcel-relay-request.js';
 
 const nativeIds = ['22:63:000000:1471', '22:63:000000:1541', '22:63:050814:79'];
 const descriptor = { id: REESTR54_SOURCE, endpoint: REESTR54_ENDPOINT, adapter: 'reestr54-bounded',
@@ -109,5 +110,8 @@ test('browser relay restores page cookie metadata for per-adapter CSRF sessions'
     const fetchProvider = createBrowserProviderFetch(descriptor, { relayBase: '/api', fetchImpl });
     const response = await fetchProvider(REESTR54_ENDPOINT, { headers: { Accept: 'text/html' } });
     assert.deepEqual(response.headers.getSetCookie(), [`csrftoken=${token}; Path=/`]);
-    assert.equal(calls[0].url, `/api/parcel-provider-relay/${REESTR54_SOURCE}`);
+    assert.equal(relayPath(calls[0].url), `/api/parcel-provider-relay/${REESTR54_SOURCE}`);
+    // The cookie-free page read is a plain read, so it takes the GET form.
+    assert.deepEqual(relayEnvelope(calls[0].url, calls[0].options),
+        { url: REESTR54_ENDPOINT, method: 'GET', headers: { Accept: 'text/html' } });
 });

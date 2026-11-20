@@ -45,7 +45,7 @@ describe('createBrowserProviderFetch', () => {
             { fetchImpl, relayBase: 'https://relay.test', directBudgetMs: 20 });
         await expect(restricted('https://provider.test/?request=GetParcelByXY')).resolves.toMatchObject({ status: 200 });
         expect(fetchImpl.mock.calls.map(([url]) => url)).toEqual(['https://provider.test/?request=GetParcelByXY',
-            'https://relay.test/parcel-provider-relay/pl-gugik-uldk']);
+            `https://relay.test/parcel-provider-relay/pl-gugik-uldk?${new URLSearchParams({ url: 'https://provider.test/?request=GetParcelByXY' })}`]);
         // The adapter's own deadline still ends the request without a relay.
         const adapterDeadline = new AbortController();
         const slowFetch = vi.fn(hangs);
@@ -63,8 +63,9 @@ describe('createBrowserProviderFetch', () => {
             { fetchImpl, relayBase: 'https://relay.test' });
         await relayOnly('https://provider.test/wfs?request=GetFeature');
         await relayOnly('https://provider.test/wfs?request=GetFeature&startIndex=500');
-        expect(fetchImpl.mock.calls.map(([url]) => url)).toEqual(['https://relay.test/parcel-provider-relay/pl-gugik-egib-wfs',
-            'https://relay.test/parcel-provider-relay/pl-gugik-egib-wfs']);
+        const relayed = url => `https://relay.test/parcel-provider-relay/pl-gugik-egib-wfs?${new URLSearchParams({ url })}`;
+        expect(fetchImpl.mock.calls.map(([url]) => url)).toEqual([relayed('https://provider.test/wfs?request=GetFeature'),
+            relayed('https://provider.test/wfs?request=GetFeature&startIndex=500')]);
         // GUGiK's collective EGiB WFS sends no CORS headers: it is relay-only and blames no network.
         const egib = catalog.sources.find(source => source.id === 'pl-gugik-egib-wfs');
         expect(egib.browserTransport).toBe('relay');

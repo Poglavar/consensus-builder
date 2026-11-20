@@ -9,6 +9,7 @@ import { EventEmitter } from 'node:events';
 import { createParcelSource } from '../parcels/sources.js';
 import { browserParcelFactories, createBrowserProviderFetch } from '../parcels/browser-source-runtime.js';
 import { createHttpsJsonFetch } from '../parcels/https-json-fetch.js';
+import { relayEnvelope, relayPath } from './helpers/parcel-relay-request.js';
 
 const descriptor = {
     id: 'br-ribeirao-preto-geoportal-cadastro-coderp-lote',
@@ -126,10 +127,10 @@ test('browser factory reads through the configured relay without a direct TLS at
     const relayBase = 'https://app.example.test/api', upstream = provider();
     let relayCalls = 0;
     const fetchImpl = createBrowserProviderFetch(descriptor, { relayBase, fetchImpl: async (url, options) => {
-        assert.equal(url, `${relayBase}/parcel-provider-relay/${descriptor.id}`);
-        assert.equal(options.method, 'POST');
-        assert.equal(options.credentials, 'omit');
-        const request = JSON.parse(options.body);
+        assert.equal(relayPath(url), `${relayBase}/parcel-provider-relay/${descriptor.id}`);
+        // A plain ArcGIS read takes the relay's cacheable GET form.
+        assert.equal(options.method, 'GET');
+        const request = relayEnvelope(url, options);
         assert.equal(request.method, 'GET');
         relayCalls++;
         return upstream.fetchImpl(request.url, request);

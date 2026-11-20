@@ -4656,6 +4656,7 @@
                 "createMarket": "Mercado aberto",
                 "resolve": "Mercado resolvido",
                 "claim": "Ganhos reclamados",
+                "reclaim-seed": "Fundo inicial do mercado recuperado",
                 "revokePledge": "Compromisso revogado",
                 "fulfillPledge": "Compromisso cumprido",
                 "voidPledge": "Compromisso anulado",

@@ -5,6 +5,7 @@ import { createSaltilloVisorSource, SALTILLO_ENDPOINT, SALTILLO_LOCATOR, SALTILL
 import { createParcelSource } from '../parcels/sources.js';
 import { browserParcelFactories, createBrowserProviderFetch } from '../parcels/browser-source-runtime.js';
 import { validateParcelProviderRelayRequest } from '../parcels/provider-relay.js';
+import { relayEnvelope, relayPath } from './helpers/parcel-relay-request.js';
 
 const d = { id: SALTILLO_SOURCE_ID, adapter: 'saltillo-visor', endpoint: SALTILLO_ENDPOINT,
     locatorEndpoint: SALTILLO_LOCATOR, idPrefix: 'MX-SALTILLO-VISOR|idCarto|',
@@ -118,8 +119,8 @@ test('ambiguous neighboring IDs cannot hide stable parcels or satisfy exact read
 test('browser transport relays only pinned numeric ID and lat/lng requests', async () => {
     const t = transport();
     const fetchImpl = async (url, options) => {
-        assert.equal(url, 'https://app.example/api/parcel-provider-relay/' + encodeURIComponent(d.id));
-        const envelope = JSON.parse(options.body);
+        assert.equal(relayPath(url), 'https://app.example/api/parcel-provider-relay/' + encodeURIComponent(d.id));
+        const envelope = relayEnvelope(url, options);
         validateParcelProviderRelayRequest(d.id, envelope, { sources: [d] });
         return t.fetchImpl(envelope.url, envelope);
     };

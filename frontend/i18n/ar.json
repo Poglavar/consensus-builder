@@ -4829,6 +4829,7 @@
                 "createMarket": "تم فتح السوق",
                 "resolve": "تم حسم السوق",
                 "claim": "تم تحصيل المكاسب",
+                "reclaim-seed": "تم استرداد التمويل الأولي للسوق",
                 "revokePledge": "تم سحب التعهد",
                 "fulfillPledge": "تم الوفاء بالتعهد",
                 "voidPledge": "تم إبطال التعهد",

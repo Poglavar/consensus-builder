@@ -6370,6 +6370,7 @@
                 "createMarket": "Otvoreno tržište",
                 "resolve": "Razriješeno tržište",
                 "claim": "Preuzet dobitak",
+                "reclaim-seed": "Vraćen početni ulog tržišta",
                 "revokePledge": "Opozvano obećanje",
                 "fulfillPledge": "Ispunjeno obećanje",
                 "voidPledge": "Poništeno obećanje",

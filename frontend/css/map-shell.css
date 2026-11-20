@@ -1076,7 +1076,7 @@ body.map-pick-mode #proposals-sheet { pointer-events: auto; opacity: 1; }
 /* State land layers (js/state-land-layer.js): the swatches in the Layers sheet are the map legend. */
 /* Above the parcel canvas (overlay pane, 400) so the shapes take hover and tooltips. */
 .state-land-pane {
-    z-index: 410;
+    z-index: var(--cb-z-map-pane-state-land);
 }
 
 .state-land-shape {

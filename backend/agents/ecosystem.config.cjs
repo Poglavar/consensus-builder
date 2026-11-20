@@ -40,7 +40,7 @@ const LOGS = {
 
 // A proposer persona on the same runner and caps as densifier-01. Each run first settles up to
 // AGENT_SETTLE_MAX_PER_RUN of its own earlier agreements (decide, lens decision, attest, execute or
-// expire, resolve, claim), then proposes: with --seed-owners each picked parcel nobody owns is registered
+// expire, resolve, claim, reclaim), then proposes: with --seed-owners each picked parcel nobody owns is registered
 // to the persona in the devnet owner registry, so its binding owners' agreement is one it can decide
 // itself (agents/README.md, "Settlement phase" and "Owner registry").
 function proposerJob(name, persona, cron) {
@@ -58,8 +58,8 @@ function proposerJob(name, persona, cron) {
       NODE_ENV: 'production',
       ...jobEnv,
       // A pick takes at most 3 signed actions (create+fund, seed top-up, market), each settled agreement at
-      // most 4 (attest, execute or expire, resolve, claim): 3 + 3 × 4.
-      AGENT_DAILY_ACTION_CAP: '15',
+      // most 5 (attest, execute or expire, resolve, claim, reclaim): 3 + 3 × 5.
+      AGENT_DAILY_ACTION_CAP: '18',
       AGENT_SETTLE_MAX_PER_RUN: '3',
       AGENT_DAILY_USDC_CAP: '0.35',
       AGENT_MARKET_SEED_USDC_CAP: '3.5',
@@ -108,9 +108,9 @@ module.exports = {
     env: {
       NODE_ENV: 'production',
       ...jobEnv,
-      // 3 for the day's pick (create+fund, seed top-up, market) + up to 3 settled agreements × 4 (attest,
-      // execute or expire, resolve, claim). Market seed has a separate bounded devnet allowance.
-      AGENT_DAILY_ACTION_CAP: '15',
+      // 3 for the day's pick (create+fund, seed top-up, market) + up to 3 settled agreements × 5 (attest,
+      // execute or expire, resolve, claim, reclaim). Market seed has a separate bounded devnet allowance.
+      AGENT_DAILY_ACTION_CAP: '18',
       AGENT_SETTLE_MAX_PER_RUN: '3',
       AGENT_DAILY_USDC_CAP: '0.35',
       AGENT_MARKET_SEED_USDC_CAP: '3.5',

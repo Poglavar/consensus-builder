@@ -6,6 +6,7 @@ import { createParcelSource } from '../parcels/sources.js';
 import { createBrowserProviderFetch, browserParcelFactories } from '../parcels/browser-source-runtime.js';
 import { validateParcelProviderRelayRequest } from '../parcels/provider-relay.js';
 import { parseKeralaWktPolygon } from '../parcels/kerala-wkt.js';
+import { relayEnvelope, relayPath } from './helpers/parcel-relay-request.js';
 
 const rows = JSON.parse(readFileSync(new URL('./fixtures/bd-bhumi-naksha-safe-plots.json', import.meta.url)));
 const descriptor = {
@@ -91,8 +92,8 @@ test('multipart polygons and holes retain all original rings and vertices', asyn
 test('browser relay carries only the fixed provider session and rejects unrelated resources', async () => {
     const requests = [];
     const fetchImpl = createBrowserProviderFetch(descriptor, { relayBase: '/api', fetchImpl: async (url, options) => {
-        requests.push(url);
-        const input = JSON.parse(options.body);
+        requests.push({ url, method: options.method });
+        const input = relayEnvelope(url, options);
         const checked = validateParcelProviderRelayRequest(descriptor.id, input, { sources: [descriptor] });
         assert.equal(checked.target.origin, 'https://map.land.gov.bd');
         if (input.method === 'GET') return new Response(html, { headers: {
@@ -104,7 +105,9 @@ test('browser relay carries only the fixed provider session and rejects unrelate
     const adapter = browserParcelFactories['bd-bhumi-naksha'](descriptor, { fetchImpl });
     assert.deepEqual((await adapter.queryIds(ids)).features.map(feature => feature.id), ids);
     assert.equal(requests.length, 2);
-    assert.ok(requests.every(url => url === `/api/parcel-provider-relay/${descriptor.id}`));
+    assert.ok(requests.every(({ url }) => relayPath(url) === `/api/parcel-provider-relay/${descriptor.id}`));
+    // The cookie-free page read may take the cacheable GET form; the session-bearing read keeps POST.
+    assert.deepEqual(requests.map(({ method }) => method), ['GET', 'POST']);
     for (const url of ['https://map.land.gov.bd/admin', 'https://example.com/getGeomByCode']) {
         assert.throws(() => validateParcelProviderRelayRequest(descriptor.id, { url }, { sources: [descriptor] }));
     }

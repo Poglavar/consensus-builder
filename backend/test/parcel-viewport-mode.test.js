@@ -37,11 +37,13 @@ function mapCoreHarness() {
     };
     const map = {
         on: (name, listener) => handlers.set(name, listener),
+        getZoom: () => 17,
         hasLayer: () => false,
         removeLayer: vi.fn()
     };
     const context = {
         window, map, isMapMoving: false, buildingFollowTimer: null,
+        BUILDING_MIN_ZOOM: 17, buildingLayer: null, outlineBuildingLayer: null,
         ParcelFetchController: { handleMoveEnd: calls.parcelController },
         parcelFetchConfig: { getDebounce: () => 10 },
         resolveParcelLayer: () => null, isZoomWithinParcelRange: () => true,

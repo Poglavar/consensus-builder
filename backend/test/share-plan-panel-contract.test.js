@@ -20,7 +20,8 @@ describe('plan dialog and workspace contract',()=>{
   expect(workspace).toContain('PlanComposition.localRecords(row');
  });
  it('keeps original carried snapshots available for local reuse after publication',()=>{
-  expect(workspace).toContain("save({ ...copy(row), published:true });");
+  // The whole carried row is kept, marked published at the time the server recorded.
+  expect(workspace).toContain("save({ ...copy(row), published:true, publishedAt: published.publishedAt });");
   expect(workspace).toContain('function publication(plan)');
  });
 });

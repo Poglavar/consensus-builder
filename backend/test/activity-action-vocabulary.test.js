@@ -11,7 +11,7 @@ const { ACTION_LABELS, actionOptions } = require('../../frontend/js/actor-explor
 const read = path => readFileSync(new URL(path, import.meta.url), 'utf8');
 const activityRoute = read('../routes/agent-activity.js');
 // The settlement phase of the agent runs (decide → lens → attest → execute, or expire, then resolve →
-// claim) records its steps through the action engine, so they reach the live feed as run activities.
+// claim → reclaim-seed) records its steps through the action engine, so they reach the live feed as run activities.
 const settlement = read('../agents/lifecycle-actions.js');
 // An action type may carry a hyphen (`lens-decision`).
 const TYPE = "'([A-Za-z0-9_-]+)'";
@@ -21,7 +21,7 @@ const TYPE = "'([A-Za-z0-9_-]+)'";
 // agent creates, and run status.
 const VOCABULARY = [
     'create', 'design', 'propose', 'mint', 'fund', 'decide', 'lens-decision', 'attest', 'execute', 'cancel', 'expire',
-    'createMarket', 'stake', 'sell', 'resolve', 'claim', 'donate', 'pledge', 'revokePledge', 'fulfillPledge', 'voidPledge',
+    'createMarket', 'stake', 'sell', 'resolve', 'claim', 'reclaim-seed', 'donate', 'pledge', 'revokePledge', 'fulfillPledge', 'voidPledge',
     'refundMyDonations', 'releaseDonations', 'run_status'
 ];
 

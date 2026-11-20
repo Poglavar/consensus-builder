@@ -202,7 +202,7 @@
         const L = root.L;
         const points = [];
         items.forEach(item => (root.DesignDisplay?.displayParts(item.design) || []).forEach(part => {
-            try { points.push(...root.turf.coordAll(part.feature)); } catch (_) { }
+            points.push(...root.turf.coordAll(part.feature));
         }));
         if (!points.length || !L) return;
         const bounds = L.latLngBounds(points.map(([lng, lat]) => [lat, lng]));

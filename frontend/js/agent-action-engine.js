@@ -63,6 +63,7 @@
         if (action.type === 'pledge') return `${actor.name} pledged${amount}${agreement ? ` to${agreement}` : ''}.`;
         if (action.type === 'resolve') return `${actor.name} resolved the market of${agreement || ' an agreement'}.`;
         if (action.type === 'claim') return `${actor.name} claimed the${side} payout of${agreement || ' a market'}.`;
+        if (action.type === 'reclaim-seed') return `${actor.name} took back what the payouts left of its market seed on${agreement || ' an agreement'}.`;
         if (action.type === 'refundMyDonations') return `${actor.name} refunded their donation to${agreement || ' an agreement'}.`;
         if (action.type === 'releaseDonations') return `${actor.name} released the donation escrow of${agreement || ' an agreement'}.`;
         if (action.type === 'revokePledge') return `${actor.name} revoked their pledge to${agreement || ' an agreement'}.`;

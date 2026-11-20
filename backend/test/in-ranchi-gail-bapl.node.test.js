@@ -4,6 +4,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { createParcelSource } from '../parcels/sources.js';
 import { browserParcelFactories, createBrowserProviderFetch } from '../parcels/browser-source-runtime.js';
+import { relayEnvelope, relayPath } from './helpers/parcel-relay-request.js';
 
 const { descriptor, response } = JSON.parse(readFileSync(new URL('./fixtures/in-ranchi-gail-bapl.json', import.meta.url)));
 const ids = response.features.map(row => descriptor.idPrefix + row.attributes.OBJECTID);
@@ -62,9 +63,9 @@ test('Ranchi browser configuration uses the fixed-source relay for live provider
         relayBase: 'https://app.example/api',
         fetchImpl: async (url, options) => {
             urls.push(url);
-            assert.equal(options.method, 'POST');
-            assert.equal(options.credentials, 'omit');
-            const request = JSON.parse(options.body);
+            // A plain ArcGIS read takes the relay's cacheable GET form.
+            assert.equal(options.method, 'GET');
+            const request = relayEnvelope(url, options);
             const response = await upstream.fetchImpl(request.url);
             return new Response(JSON.stringify(await response.json()), { headers: { 'content-type': 'application/json' } });
         }
@@ -72,5 +73,5 @@ test('Ranchi browser configuration uses the fixed-source relay for live provider
     const result = await browserParcelFactories.arcgis(descriptor, { fetchImpl }).queryIds(ids);
     assert.equal(result.complete, true);
     assert.deepEqual(result.features.map(row => row.id), ids);
-    assert.deepEqual(urls, [`https://app.example/api/parcel-provider-relay/${descriptor.id}`]);
+    assert.deepEqual(urls.map(relayPath), [`https://app.example/api/parcel-provider-relay/${descriptor.id}`]);
 });

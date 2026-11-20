@@ -6,6 +6,7 @@ import { browserParcelFactories, createBrowserProviderFetch } from '../parcels/b
 import { fetchMylandWfs, isMylandWfsSource } from '../parcels/myland-wfs-fetch.js';
 import { createMylandWfsSource } from '../parcels/myland-wfs-source.js';
 import { fetchParcelProviderRelay, validateParcelProviderRelayRequest } from '../parcels/provider-relay.js';
+import { relayEnvelope, relayPath } from './helpers/parcel-relay-request.js';
 
 const descriptor = {
     id: 'my-sabah-myland-lot-ml12', adapter: 'wfs',
@@ -58,10 +59,10 @@ test('MyLand browser exact reads use the relay without waiting on a direct conne
         relayBase: 'https://app.test/api',
         fetchImpl: async (url, options) => {
             requests.push({ url, options });
-            assert.equal(url, `https://app.test/api/parcel-provider-relay/${descriptor.id}`);
-            assert.equal(options.method, 'POST');
-            assert.equal(options.credentials, 'omit');
-            const envelope = JSON.parse(options.body);
+            assert.equal(relayPath(url), `https://app.test/api/parcel-provider-relay/${descriptor.id}`);
+            // A plain WFS read takes the relay's cacheable GET form.
+            assert.equal(options.method, 'GET');
+            const envelope = relayEnvelope(url, options);
             assertSafe({ url: new URL(envelope.url), options: { cache: 'no-store', redirect: envelope.redirect } });
             assert.equal(new URL(envelope.url).searchParams.get('featureID'), 'lot.49');
             return page([raw('lot.49')]);

@@ -4656,6 +4656,7 @@
                 "createMarket": "Ouverture d’un marché",
                 "resolve": "Résolution d’un marché",
                 "claim": "Réclamation des gains",
+                "reclaim-seed": "Récupération de la mise initiale du marché",
                 "revokePledge": "Révocation d’une promesse de contribution",
                 "fulfillPledge": "Exécution d’une promesse de contribution",
                 "voidPledge": "Invalidation d’une promesse de contribution",

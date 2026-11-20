@@ -61,7 +61,7 @@ describe('the status word of agreement account bytes', () => {
         }
         expect(agreementStatusOf(marketAccount({ agreement: Keypair.generate().publicKey.toBase58() }).data)).toBeNull();
         expect(agreementStatusOf(new Uint8Array(296))).toBeNull();
-        expect(SIGNED_SETTLEMENT_STEPS).toEqual(['attest', 'execute', 'expire', 'resolve', 'claim']);
+        expect(SIGNED_SETTLEMENT_STEPS).toEqual(['attest', 'execute', 'expire', 'resolve', 'claim', 'reclaim']);
     });
 });
 

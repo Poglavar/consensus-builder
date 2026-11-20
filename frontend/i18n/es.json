@@ -6363,6 +6363,7 @@
                 "createMarket": "Abrió mercado",
                 "resolve": "Resolvió mercado",
                 "claim": "Cobró ganancias",
+                "reclaim-seed": "Recuperó el fondo inicial del mercado",
                 "revokePledge": "Revocó compromiso",
                 "fulfillPledge": "Cumplió compromiso",
                 "voidPledge": "Anuló compromiso",

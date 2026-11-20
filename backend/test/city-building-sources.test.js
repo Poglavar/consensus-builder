@@ -5,6 +5,7 @@ import { describe, expect, it } from 'vitest';
 import { cityConfigSource } from './helpers/city-config-source.js';
 import { createContext, runInContext } from 'node:vm';
 import { decodeCustomBuildingSource } from '../parcels/custom-source-config.js';
+import { buildingSourceRegistry } from '../buildings/index.js';
 
 const cityContext = { URLSearchParams, console };
 cityContext.window = cityContext;
@@ -13,7 +14,8 @@ const manager = cityContext.CityConfigManager;
 const SourceList = cityContext.SourceList;
 
 describe('city building sources', () => {
-    const DATABASE = new Set(['gdi-3d', 'dgu', 'osm', 'nyc-arcgis', 'wien-lod2', 'nl-3dbag', 'nrw-lod2', 'nyc-3d', 'berlin-lod2', 'hamburg-lod2', 'bw-lod2', 'sachsen-lod2']);
+    // The built-in sources the building API serves, read from its registry so a new one is not missed.
+    const DATABASE = new Set(buildingSourceRegistry.sources().map(source => source.id));
     const cities = manager.getAvailableCities();
 
     it('lists only sources the app serves, OpenStreetMap for every city without its own survey', () => {

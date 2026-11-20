@@ -6336,6 +6336,7 @@
                 "createMarket": "Opened market",
                 "resolve": "Resolved market",
                 "claim": "Claimed winnings",
+                "reclaim-seed": "Reclaimed market seed",
                 "revokePledge": "Revoked pledge",
                 "fulfillPledge": "Fulfilled pledge",
                 "voidPledge": "Voided pledge",

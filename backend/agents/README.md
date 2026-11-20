@@ -128,7 +128,7 @@ For each proposer persona: plan → choose → for each pick, in order, each sta
 `--until STAGE` stops after a stage; a rerun resumes at the first unfinished one and never builds a
 second CID for a pick (the stored content is reused). The run also stores `lens`, `bindingFailures`,
 `activities` (action-engine events: `design`, `propose`, `mint`, `stake`, `decide`, `lens-decision`,
-`attest`, `execute`, `expire`, `resolve`, `claim`, entity `{ type: 'agreement' | 'design', id: <cid> }`), `executionPolicy` and `outcome`
+`attest`, `execute`, `expire`, `resolve`, `claim`, `reclaim-seed`, entity `{ type: 'agreement' | 'design', id: <cid> }`), `executionPolicy` and `outcome`
 (`completed`, `partial`, `no-picks`, `failed`). The headline `AGENT DAILY RUN — status=completed` is the
 monitor's success sentinel; Telegram carries failures only.
 

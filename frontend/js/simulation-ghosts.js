@@ -32,7 +32,7 @@
     let currentTurn = 0;
 
     function notify() {
-        try { root?.dispatchEvent?.(new root.CustomEvent(CHANGE_EVENT)); } catch (_) { }
+        root?.dispatchEvent?.(new root.CustomEvent(CHANGE_EVENT));
         publish();
     }
 

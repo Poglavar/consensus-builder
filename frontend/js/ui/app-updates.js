@@ -10,6 +10,18 @@
         const reloadButtons = [...doc.querySelectorAll('[data-app-update-reload]')];
         let dismissedBuild = null, blocked = false, reasons = [], reviewDialog = null;
         const t = (key, params) => win.i18n.t(key, params || {});
+        // Reload blockers (ReleaseUpdates.reloadReasons) by their key and fallback, spelt out so every key is a literal.
+        const REASON_TEXT = {
+            editingNamed: name => t('appUpdates.editingNamed', { name }),
+            busyNamed: name => t('appUpdates.busyNamed', { name }),
+            dialogNamed: name => t('appUpdates.dialogNamed', { name })
+        };
+        const FALLBACK_TEXT = {
+            unnamedEditor: () => t('appUpdates.unnamedEditor'),
+            unnamedOperation: () => t('appUpdates.unnamedOperation'),
+            unnamedDialog: () => t('appUpdates.unnamedDialog')
+        };
+        const reasonText = reason => REASON_TEXT[reason.key](reason.name || FALLBACK_TEXT[reason.fallback]());
         const text = (id, value) => { const el = doc.getElementById(id); if (el.textContent !== value) el.textContent = value; };
         const formatTime = value => win.CbFormat.formatDateTime(new Date(value));
         const checker = win.ReleaseUpdates.createChecker({ running, changed: render, request: async () => {
@@ -42,7 +54,7 @@
             checkButton.disabled = !checker.deployed;
             reloadButtons.forEach(button => { button.hidden = !snapshot.available; });
             notice.hidden = !snapshot.available || dismissedBuild === snapshot.latest?.buildId;
-            const explanation = blocked ? reasons.map(reason => t(`appUpdates.${reason.key}`, { name: reason.name || t(`appUpdates.${reason.fallback}`) })).join(' ') : '';
+            const explanation = blocked ? reasons.map(reasonText).join(' ') : '';
             text('app-update-blocked', explanation);
             text('app-update-reload-hint', explanation);
         }
@@ -66,7 +78,7 @@
             if (blockers.length) {
                 const list = doc.createElement('ul'); list.setAttribute('role', 'status');
                 for (const reason of blockers) {
-                    const item = doc.createElement('li'); item.textContent = t(`appUpdates.${reason.key}`, { name: reason.name || t(`appUpdates.${reason.fallback}`) }); list.append(item);
+                    const item = doc.createElement('li'); item.textContent = reasonText(reason); list.append(item);
                 }
                 body.append(list);
             }

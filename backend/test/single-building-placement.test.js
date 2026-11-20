@@ -181,7 +181,7 @@ function movementHarness({ moveTogether = true, treatment = 'paved', locked = fa
         this.valid=editableFootprintValid;
     `;
     const context = { ...stubs };
-    vm.runInNewContext(`${variables}\n${bindings}\n${functions.get('captureSingleBuildingDesign')}\n${functions.get('ensureSingleBuildingHistory')}\n${functions.get('editableOuterRing')}\n${functions.get('editableFootprintValid')}\n${functions.get('featureWithGeometry')}\n${functions.get('handleRectDragMove')}\n${functions.get('handleRectDragEnd')}\n${functions.get('currentPlacementSite')}\nthis.ensure=ensureSingleBuildingHistory; this.move=handleRectDragMove; this.end=handleRectDragEnd; this.site=currentPlacementSite;`, context);
+    vm.runInNewContext(`${variables}\n${bindings}\n${functions.get('captureSingleBuildingDesign')}\n${functions.get('ensureSingleBuildingHistory')}\n${functions.get('editableOuterRing')}\n${functions.get('editableFootprintValid')}\n${functions.get('featureWithGeometry')}\n${functions.get('handleRectDragMove')}\n${functions.get('handleRectDragEnd')}\n${functions.get('touchPointerEvent')}\n${functions.get('onTouchDragMove')}\n${functions.get('onTouchDragEnd')}\n${functions.get('currentPlacementSite')}\nthis.ensure=ensureSingleBuildingHistory; this.move=handleRectDragMove; this.end=handleRectDragEnd; this.site=currentPlacementSite;`, context);
     return { context, stubs, map, placement, sourceSnapshot, groundBoundary, buildingEntries, renderEvents, placementUpdates };
 }
 

@@ -5,6 +5,7 @@ import { createParcelSource } from '../parcels/sources.js';
 import { browserParcelFactories, createBrowserProviderFetch } from '../parcels/browser-source-runtime.js';
 import { validateParcelProviderRelayRequest } from '../parcels/provider-relay.js';
 import { RAK_SOURCE_ID, RAK_LAYER, RAK_PROXY, rakParcelQueryUrl } from '../parcels/rak-proxy.js';
+import { relayEnvelope, relayPath } from './helpers/parcel-relay-request.js';
 
 const descriptor = {
     id: RAK_SOURCE_ID, adapter: 'arcgis', endpoint: RAK_LAYER, idPrefix: 'AE-RAK-',
@@ -61,8 +62,8 @@ test('browser ArcGIS factory uses RAK transport and validates the relay envelope
     let requested;
     const fetchImpl = createBrowserProviderFetch(descriptor, { relayBase: 'https://app.example/api',
         fetchImpl: async (url, options) => {
-            assert.equal(url, `https://app.example/api/parcel-provider-relay/${RAK_SOURCE_ID}`);
-            const envelope = JSON.parse(options.body);
+            assert.equal(relayPath(url), `https://app.example/api/parcel-provider-relay/${RAK_SOURCE_ID}`);
+            const envelope = relayEnvelope(url, options);
             requested = validateParcelProviderRelayRequest(RAK_SOURCE_ID, envelope, { sources: [descriptor] });
             return new Response(JSON.stringify(payload([row(1)])));
         } });

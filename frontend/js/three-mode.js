@@ -3089,9 +3089,9 @@
         } else if (part.kind === 'square') {
             buildSquares3D(target, target, [feature]);
         } else if (part.kind === 'lake') {
-            // Flat water over the ground: a display lake digs no basin.
-            const water = new THREE.MeshPhongMaterial({ color: 0x3fa7f5, specular: 0x1b6fa8, shininess: 50,
-                polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -2 });
+            // Flat water over the ground: a display lake digs no basin. It lies as a design's ground
+            // does (designSurface), behind the faces of the existing buildings it is drawn over.
+            const water = designSurface(new THREE.MeshPhongMaterial({ color: 0x3fa7f5, specular: 0x1b6fa8, shininess: 50 }), 3);
             polygonFeatureToMeshes(feature, water, 0.08, 0).forEach(mesh => { markOwnedMaterial(mesh, water); target.add(mesh); });
         } else {
             addDraftPreviewFeature3D(feature, target, 'source', 'proposal');

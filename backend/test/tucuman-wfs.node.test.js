@@ -7,6 +7,7 @@ import { createParcelSource } from '../parcels/sources.js';
 import { browserParcelFactories, createBrowserProviderFetch } from '../parcels/browser-source-runtime.js';
 import { createProviderRelayFetch, validateParcelProviderRelayRequest } from '../parcels/provider-relay.js';
 import { TUCUMAN_SOURCE_ID, TUCUMAN_WFS_ENDPOINT } from '../parcels/tucuman-wfs-transport.js';
+import { relayEnvelope, relayPath } from './helpers/parcel-relay-request.js';
 
 const descriptor = {
     id: TUCUMAN_SOURCE_ID, adapter: 'wfs', endpoint: TUCUMAN_WFS_ENDPOINT,
@@ -57,8 +58,8 @@ test('HTTP is rejected for other sources, endpoints, schemas and browser transpo
 test('browser uses the relay and relay permits only the reviewed HTTP layer and fields', async () => {
     const source = browserParcelFactories.wfs(descriptor, { fetchImpl: createBrowserProviderFetch(descriptor, {
         relayBase: 'https://backend.example', fetchImpl: async (url, options) => {
-            assert.equal(url, `https://backend.example/parcel-provider-relay/${descriptor.id}`);
-            const envelope = JSON.parse(options.body);
+            assert.equal(relayPath(url), `https://backend.example/parcel-provider-relay/${descriptor.id}`);
+            const envelope = relayEnvelope(url, options);
             const validated = validateParcelProviderRelayRequest(descriptor.id, envelope, { sources: [descriptor] });
             assert.equal(validated.target.protocol, 'http:');
             for (const [field, value] of [['typeName', 'dgct:another'], ['propertyName', 'KEY,DESCRIP']]) {
