@@ -1,6 +1,7 @@
 // Unit tests for frontend/js/proposals/site-plots.js: synthetic plots cut from a drawn site along a
 // frontage edge, for detached and row houses on bare ground. Every plot must lie exactly inside the
 // site (the plots' union binds what the site binds), the plots must cover it, and none may be empty.
+// The whole site as one superparcel (for a Block) is the site itself under a stable id.
 import { describe, it, expect } from 'vitest';
 import { createRequire } from 'node:module';
 import * as turf from '@turf/turf';
@@ -208,5 +209,22 @@ describe('frontage from streets', () => {
         const cut = plots.cutPlots(RECT, { frontageEdgeIndex, plotWidthM: 20 });
         expect(cut).toHaveLength(5);
         cut.forEach(plot => expect(plot.properties.frontageM).toBeCloseTo(20, 0));
+    });
+});
+
+describe('siteSuperparcel: the whole site as one design parcel', () => {
+    it('is the site itself, with the same stable id whether the site is a Polygon or the site tool\'s MultiPolygon', () => {
+        const multi = { type: 'MultiPolygon', coordinates: [RECT.coordinates] };
+        const parcel = plots.siteSuperparcel(RECT);
+        expect(parcel.geometry).toEqual(RECT);
+        expect(parcel.id).toBe(`site:${plots.siteKey(multi)}`);
+        expect(parcel.properties).toEqual({ parcelId: parcel.id, id: parcel.id, calculatedArea: areaOf(RECT), synthetic: true, siteParcel: true, siteSuperparcel: true });
+        expect(plots.siteSuperparcel(multi)).toEqual(parcel);
+        expect(plots.siteSuperparcel(turf.feature(RECT))).toEqual(parcel);
+        expect(plots.siteSuperparcel(L_SHAPE).id).not.toBe(parcel.id);
+        // A site of several parts stays one MultiPolygon superparcel.
+        const two = { type: 'MultiPolygon', coordinates: [RECT.coordinates, site([[200, 0], [240, 0], [240, 40], [200, 40]]).coordinates] };
+        expect(plots.siteSuperparcel(two).geometry).toEqual(two);
+        expect(() => plots.siteSuperparcel({ type: 'LineString', coordinates: [[0, 0], [1, 1]] })).toThrow(TypeError);
     });
 });

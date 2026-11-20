@@ -227,10 +227,7 @@
     // ---- synthetic design parcels (the site as a superparcel, plots cut from it) ----
 
     function siteKey() {
-        const text = JSON.stringify(state.site || state.ring);
-        let hash = 2166136261;
-        for (let i = 0; i < text.length; i++) { hash ^= text.charCodeAt(i); hash = Math.imul(hash, 16777619); }
-        return (hash >>> 0).toString(36);
+        return win.__sitePlots.siteKey(state.site || state.ring);
     }
 
     function syntheticFeature(id, geometry, extra) {
@@ -1268,12 +1265,13 @@
             return;
         }
         if (toolKey === 'buildings' || toolKey === 'single') {
-            const id = `site:${siteKey()}`;
+            // The whole site as one superparcel (proposals/site-plots.js), as an MCP draft on an
+            // outline uses it.
+            const superparcel = win.__sitePlots.siteSuperparcel(state.site, { turf: win.turf });
             state.synthetic.clear();
-            const polygon = state.site.coordinates.length === 1 ? { type: 'Polygon', coordinates: state.site.coordinates[0] } : state.site;
-            state.synthetic.set(id, syntheticFeature(id, polygon, { siteSuperparcel: true }));
+            state.synthetic.set(superparcel.id, superparcel);
             teardown({ keepSynthetic: true });
-            Promise.resolve(win.startInstantSiteDesign(toolKey, context, [id]))
+            Promise.resolve(win.startInstantSiteDesign(toolKey, context, [superparcel.id]))
                 .catch(error => console.error('[SiteTool] design tool failed to open', error));
         }
     }

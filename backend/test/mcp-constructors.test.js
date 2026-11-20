@@ -270,6 +270,21 @@ describe('MCP shared construction generators', () => {
         const longest = buildTypedDesign({ ...common, typology: 'detached', setbackM: 3 });
         expect(longest.geometry.buildings).toHaveLength(sitePlots.cutPlots(site, { plotWidthM: sitePlots.DETACHED_PLOT_WIDTH_M, turf }).length);
     });
+    it('builds a Block on a site without parcels on the whole site as one superparcel, as the site tool does', () => {
+        const { sitePlots } = constructorRuntime;
+        const superparcel = sitePlots.siteSuperparcel(site, { turf });
+        const design = buildTypedDesign({ ...common, typology: 'block', setbackM: 4, depthM: 9, ruleKind: 'range', minHeightM: 6 });
+        // The same Block the editor builds on the site tool's one design parcel, the site itself.
+        expect(design).toEqual(buildTypedDesign({ ...common, typology: 'block', setbackM: 4, depthM: 9, ruleKind: 'range', minHeightM: 6 }, { parcels: [superparcel] }));
+        expect(design.goal).toBe('buildings');
+        expect(design.site).toEqual(site);
+        const ring = constructorRuntime.buildingRules.blockRingOutline(superparcel, superparcel, { setback: 4, width: 9, simplifyM: 0 });
+        expect(design.geometry.ruleMassing.geometry.coordinates[0]).toEqual(ring.outer.geometry.coordinates[0]);
+        expect(design.geometry.buildings).toHaveLength(1);
+        expect(turf.booleanWithin(design.geometry.buildings[0], turf.feature(site))).toBe(true);
+        // With parcels it builds one piece per parcel, as before.
+        expect(buildTypedDesign({ ...common, typology: 'block', setbackM: 4, depthM: 9 }, rowOptions).geometry.buildings).toHaveLength(2);
+    });
     it('accepts a site over one square kilometre, as the map\'s site tool sets no size limit', () => {
         // About 1.6 × 1.3 km: 2.1 km². The server's binding (invalid-site, too-many-parcels) is the limit.
         const large = { type: 'Polygon', coordinates: [[[15, 45], [15.02, 45], [15.02, 45.012], [15, 45.012], [15, 45]]] };
@@ -323,7 +338,8 @@ describe('MCP shared construction generators', () => {
         expect(modified.geometry.buildings[0].properties.access).toBe('corridor');
     });
     it('uses exact source identities and keeps detached exclusions visible in errors', () => {
-        expect(() => buildTypedDesign({ ...common, typology: 'block' })).toThrow(/source parcels/);
+        expect(() => buildTypedDesign({ ...common, typology: 'block', minPlotAreaM2: 100000 }, options)).toThrow(/No source parcel/);
+        expect(() => buildTypedDesign({ ...common, typology: 'block', minPlotAreaM2: 100000 })).toThrow(/The site cannot satisfy/);
         expect(() => buildTypedDesign({ ...common, typology: 'detached', minPlotAreaM2: 100000 }, options)).toThrow(/No source parcel/);
         const design = buildTypedDesign({ ...common, typology:'detached', setbackM:5, ruleKind:'range', minFloors:2 },options);
         const rule = design.buildingProposal.parameters.rule;

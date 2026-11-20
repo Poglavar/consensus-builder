@@ -7,6 +7,8 @@ import { cidOf, cidOfObject } from '../cid.js';
 import { createUrbanGameTheoryTools } from '../agents/ugt-agent-tools.js';
 import { createMcpDraftTools } from '../agents/mcp-drafts.js';
 import { createTestPreviewLinks as createPreviewLinks } from './helpers/mcp-preview-store.js';
+import { registerMcpCompanion } from '../agents/mcp-companion.mjs';
+import { MAX_SOURCE_BINDING_PARCELS } from '../parcels/source-binding.js';
 const require = createRequire(import.meta.url);
 const builder = require('../../frontend/js/intent-design.js');
 const links = require('../../frontend/js/draft-link.js');
@@ -59,10 +61,44 @@ describe('intent design artifacts', () => {
         expect(capture(() => drafts.draftUrbanRule({ rule: { typology: 'block', floors: 3, mystery: true } }))).toMatchObject({ code: 'unsupported-urban-rule-parameter' });
         expect(capture(() => drafts.draftUrbanRule({ rule: { typology: 'detached', floors: 3, depthM: 10 } }))).toMatchObject({ code: 'unsupported-urban-rule-parameter' });
         expect(capture(() => drafts.draftUrbanRule({ rule: { typology: 'row' } }))).toMatchObject({ code: 'incomplete-urban-rule' });
-        expect(capture(() => drafts.draftUrbanRule({ city: 'london', outline: site, rule: { typology: 'block', floors: 3 } })))
+        expect(capture(() => drafts.draftUrbanRule({ city: 'london', parcelIds: ['A'], rule: { typology: 'block', floors: 3 } })))
             .toMatchObject({ code: 'parcel-source-required' });
         expect(capture(() => drafts.draftUrbanRule({ city: 'london', parcelIds: ['A'], rule: { typology: 'row', floors: 3 } })))
             .toMatchObject({ code: 'parcel-source-required' });
+    });
+    it('drafts a Block on an outline as one superparcel, as the site tool does, through both draft tools', async () => {
+        const reads = [];
+        const read = { siteOfDesign: design => design.site,
+            parcels: async () => { throw new Error('an outline reads no parcels'); },
+            request: async path => {
+                reads.push(path);
+                if (path === '/designs/binding') return { parcelSourceId: 'test-source', binding: { coverage: 'complete', parcels: [{ parcelId: 'A' }] } };
+                throw new Error(`Unexpected route ${path}`);
+            } };
+        const drafts = createMcpDraftTools({ appOrigin: 'https://app.example', read });
+        const rule = await drafts.draftUrbanRule({ city: 'london', outline: site, rule: { typology: 'block', floors: 4, setbackM: 3, depthM: 12 } });
+        expect(reads).toEqual(['/designs/binding']);
+        expect(rule.design.goal).toBe('buildings');
+        expect(rule.design.site).toEqual(site);
+        expect(rule.design.geometry.buildings).toHaveLength(1);
+        expect(turf.booleanWithin(rule.design.geometry.buildings[0], turf.feature(site))).toBe(true);
+        expect(rule.design.geometry.ruleMassing.geometry.coordinates).toHaveLength(2);
+        expect(rule.takes).toEqual(['A']);
+        expect(validateDesignContent(rule.design)).toMatchObject({ ok: true });
+        const building = await drafts.draftBuilding({ city: 'london', outline: site, typology: 'block', floors: 4, setbackM: 3, depthM: 12 });
+        expect(building.design.geometry).toEqual(rule.design.geometry);
+    });
+    it('takes as many draft parcelIds as the server binds for one design', () => {
+        const tools = new Map();
+        registerMcpCompanion({ registerTool: (name, options) => tools.set(name, options.inputSchema), registerResource() {}, registerPrompt() {} },
+            { actions: {}, handler: fn => fn, readOnly: {} });
+        const ids = count => Array.from({ length: count }, (_, index) => `id-${index}`);
+        for (const [name, args] of [['ugt_draft_building', { typology: 'block' }], ['ugt_draft_urban_rule', { rule: { typology: 'block', floors: 3 } }], ['ugt_draft_space', { spaceKind: 'park' }]]) {
+            const accepts = parcelIds => tools.get(name).safeParse({ city: 'london', parcelSourceId: 'test-source', parcelIds, ...args }).success;
+            expect(accepts(ids(101)), name).toBe(true);
+            expect(accepts(ids(MAX_SOURCE_BINDING_PARCELS)), name).toBe(true);
+            expect(accepts(ids(MAX_SOURCE_BINDING_PARCELS + 1)), name).toBe(false);
+        }
     });
     it('drafts a Detached rule on an outline as the site tool does, accepts ground over 1 km², and names the server\'s parcel cap', async () => {
         const reads = [];

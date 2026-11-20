@@ -32,7 +32,6 @@ function urbanRuleIntent(args) {
     if (unsupported.length) throw fail('unsupported-urban-rule-parameter', `Unsupported ${rule.typology} rule parameter: ${unsupported.join(', ')}.`, { action: 'Use only the rule fields supported for this typology.' });
     if (rule.floors == null && rule.height == null) throw fail('incomplete-urban-rule', 'An urban rule needs a floor count or height.', { action: 'Add rule.floors or rule.height.' });
     if (args.parcelIds?.length && !args.parcelSourceId) throw fail('parcel-source-required', 'Selected urban-rule parcels need their exact source ID.', { action: 'Pass parcelSourceId with parcelIds from the current parcel selection.' });
-    if (rule.typology === 'block' && !args.parcelIds?.length) throw fail('parcel-source-required', 'block rules need exact source parcel IDs.', { action: 'Select source parcels and supply parcelIds with parcelSourceId.' });
     const { typology, kind: ruleKind, ...parameters } = rule;
     return { ...args, ...parameters, kind: 'building', typology, ...(ruleKind == null ? {} : { ruleKind }), rule: undefined };
 }

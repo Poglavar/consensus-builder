@@ -1,5 +1,8 @@
 import { describe, expect, it, vi } from 'vitest';
 import { createMcpNavigation } from '../agents/mcp-navigation.js';
+import { registerMcpCompanion } from '../agents/mcp-companion.mjs';
+import { resultSchemaFor } from '../agents/mcp-contracts.js';
+import { MAX_SOURCE_BINDING_PARCELS } from '../parcels/source-binding.js';
 
 const square = (id, west, east) => ({ type: 'Feature', id, properties: { parcelId: id }, geometry: { type: 'Polygon', coordinates: [[[west, 0], [east, 0], [east, 0.001], [west, 0.001], [west, 0]]] } });
 const parcels = [square('west', 0, 0.001), square('east', 0.001, 0.002), square('far-east', 0.002, 0.003)];
@@ -153,11 +156,32 @@ describe('MCP map navigation', () => {
         expect((await navigation.selectParcels({ city: 'test', parcelSourceId: 'source', action: 'clear' }))).not.toHaveProperty('point');
     });
 
-    it('enforces the 100-parcel selection cap on input state and add', async () => {
+    it('caps a selection at the parcels one design binds, not at the 100-parcel block limit, on input state and add', async () => {
         const navigation = createMcpNavigation({ read: readers() });
-        const full = Array.from({ length: 100 }, (_, index) => `id-${index}`);
+        // The map's manual selection has no limit of its own: a hundred parcels take one more.
+        const hundred = Array.from({ length: 100 }, (_, index) => `id-${index}`);
+        const added = await navigation.selectParcels({ city: 'test', parcelSourceId: 'source', action: 'add', parcelId: 'east', selection: { focusParcelId: 'west', parcelIds: hundred, active: true } });
+        expect(added.selection.parcelIds).toEqual([...hundred, 'east']);
+        const full = Array.from({ length: MAX_SOURCE_BINDING_PARCELS }, (_, index) => `id-${index}`);
+        const finished = await navigation.selectParcels({ city: 'test', parcelSourceId: 'source', action: 'finish', selection: { focusParcelId: 'id-0', parcelIds: full, active: true } });
+        expect(finished.selection.parcelIds).toHaveLength(MAX_SOURCE_BINDING_PARCELS);
         await expect(navigation.selectParcels({ city: 'test', parcelSourceId: 'source', action: 'add', parcelId: 'east', selection: { focusParcelId: 'west', parcelIds: full, active: true } })).rejects.toMatchObject({ code: 'parcel-selection-limit' });
         await expect(navigation.selectParcels({ city: 'test', parcelSourceId: 'source', action: 'clear', selection: { parcelIds: [...full, 'extra'] } })).rejects.toMatchObject({ code: 'parcel-selection-limit' });
+    });
+
+    it('takes and returns as many selected parcels as the server binds in the ugt_select_parcels schemas', () => {
+        const tools = new Map();
+        registerMcpCompanion({ registerTool: (name, options) => tools.set(name, options.inputSchema), registerResource() {}, registerPrompt() {} },
+            { actions: {}, handler: fn => fn, readOnly: {} });
+        const ids = count => Array.from({ length: count }, (_, index) => `id-${index}`);
+        const input = parcelIds => tools.get('ugt_select_parcels').safeParse({ city: 'test', parcelSourceId: 'source', action: 'finish', selection: { parcelIds, active: true } }).success;
+        expect(input(ids(101))).toBe(true);
+        expect(input(ids(MAX_SOURCE_BINDING_PARCELS))).toBe(true);
+        expect(input(ids(MAX_SOURCE_BINDING_PARCELS + 1))).toBe(false);
+        const output = parcelIds => resultSchemaFor('ugt_select_parcels').safeParse({ selection: { parcelSourceId: 'source', focusParcelId: null, parcelIds, active: false } }).success;
+        expect(output(ids(101))).toBe(true);
+        expect(output(ids(MAX_SOURCE_BINDING_PARCELS))).toBe(true);
+        expect(output(ids(MAX_SOURCE_BINDING_PARCELS + 1))).toBe(false);
     });
 
     it('steps through dense local source coverage without treating fetched feature count as block size', async () => {

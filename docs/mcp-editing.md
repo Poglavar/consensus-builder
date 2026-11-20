@@ -31,6 +31,9 @@ while replaying the returned absolute state retains the same parcel. Step withou
 one adjacent parcel. With `distance` and `unit` (`m` or `ft`), it selects the nearest parcel to the
 directional destination within half the movement distance, capped at 100 m, excluding the current
 parcel and reverse-direction candidates. Manual stepping moves the cursor without adding membership.
+A selection, like a draft's `parcelIds`, holds at most 5000 parcels: the most the server binds for
+one design (`MAX_SOURCE_BINDING_PARCELS`, `too-many-parcels`); the map's manual selection sets no
+limit of its own.
 Block selection uses the same enclosure detector as the map. It requires complete OSM boundary coverage (all `highway`, `railway` and `waterway` ways plus `natural=coastline` and `natural=water`) and complete source-parcel coverage for the enclosure. Only surface-level boundaries count; bridges, tunnels and other non-ground features do not divide surface blocks. Railway facility outlines (including workshops, stations and platforms), proposed tracks and razed tracks are not boundaries. The seed and every member must fit wholly inside one complete enclosure; representative points do not decide membership and geometry is not clipped. Any parcel touched by an eligible OSM road/street or track is a border parcel and cannot seed or join a block. Rejected enclosing parcels also exclude parcels inside their holes or outlines. The warning directs the person to another parcel and Road/track in Layers. Known road and track parcels are also excluded; for the Croatian cadastral source this includes the classified road-parcel IDs under the enclosure. A classified road cannot seed a block. Available classification must be complete. Partial or truncated boundary or parcel reads are errors, not empty results. Membership is capped at 100: over-limit detection returns the first 100 parcel IDs in `constraints.previewParcelIds`, and the map shows a temporary preview without changing the current selection.
 
 Disconnected source polygons resolve to the same deterministic `#cadastre-N` piece IDs used on the map. Point, nearby, random and step selection return exact pieces; a multipart parent ID returns choices instead of silently choosing one. Draft tools can resolve an exact cadastral piece through its source parent without expanding it to the other pieces. Authored cuts are not treated as cadastral pieces.
@@ -103,8 +106,10 @@ votes, signatures, funding or execution state. Publication remains a separate co
 `ugt_draft_urban_rule` accepts `rule: { typology, floors|height, ... }` for `block`, `row` or
 `detached`, and maps those fields to the same shared generator used by `ugt_draft_building`. The
 result is a normal typed building design with authored rule parameters and generated envelope
-geometry, so it can be applied, inspected and edited. Block rules require exact `parcelIds` and
-`parcelSourceId`; a Row rule can use an outline, which the shared Row placement engine fits. A
+geometry, so it can be applied, inspected and edited. A Block rule builds on exact `parcelIds`
+with `parcelSourceId`, or on an outline as one superparcel, the whole site as the site tool hands
+it to the Block editor (`proposals/site-plots.js` `siteSuperparcel`); a Row rule can use an
+outline, which the shared Row placement engine fits. A
 Detached rule builds on each selected parcel within the site, or cuts an outline into plots along
 the street it faces, as the site tool does (`proposals/site-plots.js`). Include `floors` or `height`; unsupported typologies and fields that do not apply to
 the chosen typology are refused. These authored rules are proposals, not enacted planning

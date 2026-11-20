@@ -3,13 +3,17 @@ import { createRequire } from 'node:module';
 import { appTurf as turf } from './mcp-geometry.js';
 import { resolveParcelNumber } from './mcp-parcel-numbers.js';
 import { landmarkTarget, rankLandmarkParcels } from '../places/landmark-target.js';
+import { MAX_SOURCE_BINDING_PARCELS } from '../parcels/source-binding.js';
 const require = createRequire(import.meta.url);
 const blockModel = require('../../frontend/js/urban-blocks-model.js');
 const blockDetection = require('../../frontend/js/parcels/block-detection.js');
 const topology = require('../../frontend/js/parcels/block-topology.js');
 const { cadastralParts } = require('../../frontend/js/parcels/live-fabric.js');
 const sourcePieces = features => features.flatMap(cadastralParts);
+// Block detection stops at the map's own block limit; a selection holds as many parcels as the
+// server binds for one design (the map's manual selection has no limit of its own).
 const MAX_BLOCK_PARCELS = topology.MAX_BLOCK_PARCELS;
+const MAX_SELECTION_PARCELS = MAX_SOURCE_BINDING_PARCELS;
 const fail = (code, message, action) => Object.assign(new Error(message), { code, next: { action } });
 const idOf = value => typeof value === 'string' && value.trim() ? value.trim() : null;
 const parcelIdOf = feature => {
@@ -161,7 +165,7 @@ export function createMcpNavigation({ read, random = Math.random }) {
         if (current.active != null && typeof current.active !== 'boolean') throw fail('invalid-selection', 'Selection active state must be boolean.', 'Reload the map selection and try again.');
         let ids = [...new Set((current.parcelIds || []).map(idOf))];
         if (ids.some(id => !id)) throw fail('invalid-selection', 'Selection contains an invalid parcel ID.', 'Reload the map selection and try again.');
-        if (ids.length > MAX_BLOCK_PARCELS) throw fail('parcel-selection-limit', `Selection cannot contain more than ${MAX_BLOCK_PARCELS} parcels.`, 'Clear parcels or keep a smaller selection.');
+        if (ids.length > MAX_SELECTION_PARCELS) throw fail('parcel-selection-limit', `Selection cannot contain more than ${MAX_SELECTION_PARCELS} parcels.`, 'Clear parcels or keep a smaller selection.');
         let focus = idOf(current.focusParcelId);
         if (parcelNumber != null) {
             const match = await resolveParcelNumber({ ...input, parcelSourceId: sourceId, read });
@@ -327,7 +331,7 @@ export function createMcpNavigation({ read, random = Math.random }) {
         if (action === 'add') {
             if (!focus) throw fail('parcel-focus-required', 'Add needs a parcelId or focused parcel.', 'Focus a parcel or supply parcelId.');
             if (!ids.includes(focus)) ids.push(focus);
-            if (ids.length > MAX_BLOCK_PARCELS) throw fail('parcel-selection-limit', `Selection cannot contain more than ${MAX_BLOCK_PARCELS} parcels.`, 'Clear parcels or keep a smaller selection.');
+            if (ids.length > MAX_SELECTION_PARCELS) throw fail('parcel-selection-limit', `Selection cannot contain more than ${MAX_SELECTION_PARCELS} parcels.`, 'Clear parcels or keep a smaller selection.');
         }
         const feature = features.find(item => parcelIdOf(item) === focus);
         return { selection: { parcelSourceId: sourceId, focusParcelId: focus, parcelIds: ids, active: current.active === true || action === 'add' || action === 'block' }, ...(feature ? { point: centerOf(feature) } : point ? { point } : {}) };

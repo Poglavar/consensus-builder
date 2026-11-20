@@ -1,5 +1,6 @@
-// Synthetic plots cut from a drawn site, for detached and row houses on bare ground (no cadastral
-// parcels to build on; PARCEL-OPTIONAL.md "Tools on a site"). The site is sliced into strips
+// Synthetic design parcels of a drawn site, for buildings on bare ground (no cadastral parcels to
+// build on; PARCEL-OPTIONAL.md "Tools on a site"): the whole site as one superparcel (siteSuperparcel,
+// for a Block or Freeform building), or plots cut from it for detached and row houses. The site is sliced into strips
 // perpendicular to a chosen frontage edge, each strip intersected with the site in WGS84, so every
 // plot lies exactly inside the site and the plots together cover it.
 //
@@ -34,6 +35,7 @@
     // Strips reach this far past the site so its extreme vertices are never on a strip edge.
     const PAD_M = 1;
     const PLOT_ID_PREFIX = 'site-plot:';
+    const SUPERPARCEL_ID_PREFIX = 'site:';
     // A street faces an edge when it runs within this distance of the edge's midpoint...
     const FRONTAGE_STREET_MAX_DISTANCE_M = 30;
     // ...within 30 degrees of parallel to it...
@@ -69,6 +71,45 @@
         const g = geometryOf(value);
         if (!g) return [];
         return g.type === 'Polygon' ? [g.coordinates] : g.coordinates;
+    }
+
+    // A short stable key of a site for the ids of its synthetic design parcels (FNV-1a over its JSON,
+    // base 36): the same site always gives the same ids.
+    function siteKey(site) {
+        const text = JSON.stringify(site);
+        let hash = 2166136261;
+        for (let i = 0; i < text.length; i++) { hash ^= text.charCodeAt(i); hash = Math.imul(hash, 16777619); }
+        return (hash >>> 0).toString(36);
+    }
+
+    /**
+     * The whole site as one synthetic design parcel: the superparcel a Block (or a Freeform
+     * building) on a drawn site builds on, as the site tool hands it to the design editor
+     * (site-drawing.js) and as an MCP draft on an outline uses it (backend/agents/mcp-constructors.js).
+     * @param {object} site GeoJSON Polygon or MultiPolygon, or a Feature of one.
+     * @param {{turf?: object}} [options]
+     * @returns {object} Feature with id 'site:<key>', keyed on the site as a MultiPolygon (the site
+     *   tool's form), so a site gives the same id either way; its geometry is the site, a one-part
+     *   MultiPolygon as its Polygon; properties { parcelId, id, calculatedArea, synthetic, siteParcel,
+     *   siteSuperparcel }.
+     */
+    function siteSuperparcel(site, options) {
+        const t = T(options);
+        if (!t) throw new Error('site-plots: turf is not available');
+        const g = geometryOf(site);
+        if (!g) throw new TypeError('site must be a GeoJSON Polygon or MultiPolygon');
+        const multi = g.type === 'MultiPolygon' ? g : { type: 'MultiPolygon', coordinates: [g.coordinates] };
+        const geometry = multi.coordinates.length === 1 ? { type: 'Polygon', coordinates: multi.coordinates[0] } : multi;
+        const id = `${SUPERPARCEL_ID_PREFIX}${siteKey(multi)}`;
+        return {
+            type: 'Feature',
+            id,
+            properties: {
+                parcelId: id, id, calculatedArea: t.area({ type: 'Feature', properties: {}, geometry }),
+                synthetic: true, siteParcel: true, siteSuperparcel: true
+            },
+            geometry
+        };
     }
 
     function ringAreaM2(ring, frame) {
@@ -373,7 +414,10 @@
         ROW_PLOT_WIDTH_M,
         MIN_PLOT_WIDTH_SHARE,
         PLOT_ID_PREFIX,
+        SUPERPARCEL_ID_PREFIX,
         FRONTAGE_STREET_MAX_DISTANCE_M,
+        siteKey,
+        siteSuperparcel,
         frontageEdges,
         defaultFrontageEdge,
         frontageScores,

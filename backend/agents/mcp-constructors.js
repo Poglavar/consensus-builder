@@ -111,7 +111,11 @@ export function buildTypedDesign(intent, { parcels = [] } = {}) {
         return publish(intent, { ...design, goal: 'single' });
     }
     if (typology === 'row' && entries.length && new Set(entries.map(entry => entry.parcelId)).size < 2) fail('row-needs-two-parcels', 'Row houses need at least two selected parcels.', 'parcelIds', { minItems: 2, unique: true });
-    if (!entries.length && typology === 'block') fail('parcel-source-required', 'A Block rule needs exact source parcels.', 'parcelIds', { minItems: 1 });
+    // A Block on a site without parcels builds on the whole site as one superparcel, the design
+    // parcel the site tool hands the Block editor for a drawn site (site-plots.js siteSuperparcel).
+    const blockParcels = typology === 'block' && !entries.length
+        ? [runtime.sitePlots.siteSuperparcel(site, { turf })].map(superparcel => ({ feature: superparcel, parcelId: superparcel.properties.parcelId }))
+        : entries;
     const minPlotAreaM2 = number(intent.minPlotAreaM2, 50, 'minPlotAreaM2', 0, 1_000_000);
     // Balconies may stand out of the envelope by balconyDepthM; a pitched roof adds an attic on top.
     if (intent.roof != null && !['flat', 'pitched'].includes(intent.roof)) fail('invalid-roof', 'Choose a flat or pitched roof.', 'roof', { enum: ['flat', 'pitched'] });
@@ -221,8 +225,9 @@ export function buildTypedDesign(intent, { parcels = [] } = {}) {
     // The site-first Row editor saves the continuous massing, using synthetic plots for sizing;
     // splitting it into tiny synthetic pieces would wrongly exclude valid small buildings.
     const split = typology === 'row' && !entries.length ? { pieces: [massing] }
-        : runtime.rules.splitMassingByParcels(massing, entries, rule, seed, { turf, largestPolygon: runtime.footprints.toSingleLargestPolygon });
-    if (!split.pieces.length) fail('building-rule-no-room', 'No source parcel can satisfy this building rule.', 'parcelIds', { excluded: split.excluded });
+        : runtime.rules.splitMassingByParcels(massing, blockParcels, rule, seed, { turf, largestPolygon: runtime.footprints.toSingleLargestPolygon });
+    if (!split.pieces.length) fail('building-rule-no-room', entries.length ? 'No source parcel can satisfy this building rule.'
+        : 'The site cannot satisfy this building rule.', entries.length ? 'parcelIds' : 'outline', { excluded: split.excluded });
     return publish(intent, { goal: typology === 'row' ? 'row' : 'buildings', site, buildingProposal: { typologyType: typology === 'row' ? 'row' : 'block', parameters },
         geometry: { buildings: split.pieces, ruleMassing: massing } });
 }
