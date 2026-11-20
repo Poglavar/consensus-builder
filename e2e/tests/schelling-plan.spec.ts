@@ -158,3 +158,90 @@ test('Propose from this plan is the panel\'s next step: painted blocks wait whil
   await page.locator('#schelling-plan-propose').click();
   await expect(summary).toContainText('64 blocks');
 });
+
+test('the plan type picker turns the plan into a Burning Man city round a Man placed on the map, kept in the address', async ({ mockApi: page }) => {
+  await openCity(page);
+  await page.evaluate(() => (window as any).map.setView([45.80025, 15.9822], 16, { animate: false }));
+  await openLayers(page);
+  await page.locator('#showSchellingPlan').check();
+  const type = page.locator('#schelling-plan-type');
+  await expect(type).toHaveValue('meridians');
+  await expect(page.locator('#schelling-plan-burning-man')).toBeHidden();
+
+  // Choosing Burning Man puts the Man where the map is and shows the whole city.
+  await selectNativeOption(type, 'burning-man');
+  await expect(page.locator('#schelling-plan-meridians')).toBeHidden();
+  await expect(page.locator('#schelling-plan-burning-man')).toBeVisible();
+  await expect.poll(() => schellingParam(page)).toBe('bm-760-11-76-12-16-0@45.80025,15.9822');
+  await expect(page.locator('#schelling-plan-man')).toContainText('45.80025, 15.9822');
+  await expect(page.locator('#schelling-plan-man-layout')).toContainText('ring streets A to K every 88 m');
+  await expect(page.locator('#schelling-plan-man-layout')).toContainText('Quarter-hour streets from ring I');
+  await expect(page.locator('#schelling-plan-man-blocks')).toContainText('208 blocks');
+  await expect.poll(() => page.evaluate(() => (window as any).map.getZoom())).toBeLessThan(15);
+  await expect(page.locator('path.schelling-plan__man')).toHaveCount(1);
+  await expect.poll(() => count(page, 'path.schelling-plan__line')).toBe(12 + 33);
+  await expect(page.locator('path.schelling-plan__block')).toHaveCount(0);
+
+  // Closer in, the street land, blocks and plots.
+  await page.evaluate(() => (window as any).map.setView([45.80025 - 0.0081, 15.9822], 17, { animate: false }));
+  await expect.poll(() => count(page, 'path.schelling-plan__block')).toBeGreaterThan(0);
+  await expect.poll(() => count(page, 'path.schelling-plan__plot')).toBeGreaterThan(0);
+
+  // The city's settings redraw it and follow the address.
+  await page.locator('#schelling-plan-rings').focus();
+  await page.locator('#schelling-plan-rings').press('End');
+  await expect(page.locator('#schelling-plan-rings-value')).toHaveText('A–L');
+  await page.locator('#schelling-plan-bearing').focus();
+  await page.locator('#schelling-plan-bearing').press('ArrowRight');
+  await expect.poll(() => schellingParam(page)).toBe('bm-760-12-76-12-16-5@45.80025,15.9822');
+
+  // The Man moves to the map centre on request.
+  await page.locator('#schelling-plan-man-here').click();
+  await expect.poll(() => schellingParam(page)).toMatch(/^bm-760-12-76-12-16-5@45\.792\d*,15\.9822$/);
+
+  // Back to the meridian plan: its own settings, the city kept for later.
+  await selectNativeOption(type, 'meridians');
+  await expect.poll(() => schellingParam(page)).toBe('120-12-16');
+  await expect(page.locator('#schelling-plan-meridians')).toBeVisible();
+  await selectNativeOption(type, 'burning-man');
+  await expect.poll(() => schellingParam(page)).toMatch(/^bm-760-12-76-12-16-5@45\.792/);
+});
+
+test('a Burning Man link opens the city, and Propose roads lands its streets as road proposals', async ({ mockApi: page }) => {
+  test.setTimeout(120_000);
+  await page.goto('/?city=zg&at=45.80025,15.9822,15&schelling=bm-500-6-60-10-8-0@45.80025,15.9822&lang=en&reduceMotion=1', { waitUntil: 'domcontentloaded' });
+  await expect.poll(() => page.evaluate(() => (window as any).SchellingLayer?.isEnabled?.() ?? false)).toBe(true);
+  await expect(page.locator('#schelling-plan-type')).toHaveValue('burning-man');
+  await expect(page.locator('#schelling-plan-esplanade')).toHaveValue('500');
+  await expect(page.locator('#schelling-plan-rings')).toHaveValue('6');
+  await expect(page.locator('#schelling-plan-depth')).toHaveValue('60');
+  await expect(page.locator('#schelling-plan-man-street')).toHaveValue('10');
+  await expect(page.locator('#schelling-plan-plots')).toHaveValue('8');
+  await expect(page.locator('#schelling-plan-code')).toHaveText('Plan BM-500-6-60-10-0@45.80025,15.9822');
+
+  // From the Man the tool starts at the city's middle hour, 6:00 to 7:00.
+  await page.locator('#schelling-plan-propose').click();
+  const tool = page.locator('.schelling-propose .on-map-editor__panel');
+  await expect(tool).toBeVisible();
+  await expect(tool.locator('h2')).toHaveText('Burning Man roads');
+  await expect(tool.locator('[data-action="superblock"]')).toHaveText('This clock hour');
+  const summary = tool.locator('.schelling-propose__summary');
+  await expect(summary).toContainText('12 blocks');
+  await expect(summary).not.toContainText('arterial');
+
+  await tool.locator('[data-action="clear"]').click();
+  await clickVisibleCell(page);
+  await expect(summary).toContainText('1 block · 4 streets');
+  await expect.poll(() => count(page, 'path.schelling-propose__street')).toBe(4);
+
+  const cityRoads = () => page.evaluate(() => (window as any).proposalStorage.getAllProposals()
+    .filter((proposal: any) => proposal.roadProposal?.definition?.metadata?.source === 'burning-man').length);
+  expect(await cityRoads()).toBe(0);
+  await tool.locator('[data-action="propose"]').click();
+  await expect(tool).toBeHidden({ timeout: 60_000 });
+  await expect.poll(cityRoads).toBe(1);
+  const title = await page.evaluate(() => (window as any).proposalStorage.getAllProposals()
+    .find((proposal: any) => proposal.roadProposal?.definition?.metadata?.source === 'burning-man').title);
+  expect(title).toBe('Burning Man roads BM-500-6-60-10-0@45.80025,15.9822');
+  await expectStatusLogged(page, 'Proposed 1 of 1 Burning Man road networks');
+});

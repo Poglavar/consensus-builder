@@ -10,6 +10,10 @@ and no randomness, so it runs the same in the browser and under node
 (`backend/test/schelling-grid.test.js`). The layer, its settings and the painting tool are in
 `frontend/js/schelling/`.
 
+The plan has two types, picked at the top of its panel: **Meridians and parallels** (the default,
+described first below) and **Burning Man**, a city laid out as a clock face around a Man the author
+places ([Burning Man](#burning-man)).
+
 **Status (2026-10-17, branch `schelling-plan`):** steps 1 and 2 below are built: the plan is a layer
 in every city with its own settings panel, and painted blocks become road proposals. Plots are drawn but not
 yet proposable. This section is the living plan; update it as steps finish.
@@ -171,6 +175,46 @@ Because the geometry is a pure function of indices, a piece is identical whichev
 for it, and it can be rebuilt from its id alone (`featureForId`). Plots extend the ids with the row
 and the halving path (`MP:<code>:B:i:j/N/011`, `plotsOfBlock`).
 
+## Burning Man
+
+A city after Black Rock City, the temporary city of the Burning Man festival
+(`frontend/js/schelling/burning-man-plan.js`, pure; `backend/test/burning-man-plan.test.js`). The
+Man stands where the author puts him; the city takes the clock from 2:00 to 10:00 around him and
+leaves the open playa between 10:00 and 2:00. The panel's Burning Man settings replace the meridian
+ones; the plot size is shared.
+
+| | Default | Setting |
+|---|---|---|
+| The Man | where the map was when the type was chosen | **Put the Man at the map centre** |
+| Esplanade, the first ring street | 760 m from the Man | 150–1500 m |
+| Lettered ring streets after it | A to K (11) | 1–12 (A to L) |
+| Block depth between ring streets | 76 m | 20–200 m |
+| Street width, every street | 12 m | 8–20 m |
+| Direction of 12:00 | 0° (north) | 0–355° |
+
+- **Rings and radials.** Ring j lies at Esplanade + j × (depth + width). Radial streets run every half
+  hour (15°). From the first ring where a block has grown to twice its length at the Esplanade,
+  quarter-hour streets divide the blocks (Black Rock City's outer rings); there is no finer level.
+- **Blocks and plots.** Cell (i, j) is sector i, at its band's radial level, of the band between
+  ring j and ring j + 1. Its block is the cell less half a street on every side: arcs along the ring
+  streets, straight edges parallel to the radials. Plots follow the meridian rule: two rows, one
+  facing each ring street, each row's frontage halved `level` times. Ids:
+  `BM:<code>:B:i:j[/I|O/<path>]`.
+- **Code.** `BM-<esplanade>-<rings>-<depth>-<width>-<bearing>@<lat>,<lng>`; the address form is
+  `?schelling=bm-<esplanade>-<rings>-<depth>-<width>-<plot>-<bearing>@<lat>,<lng>`. A link
+  without `@…` keeps the reader's own Man.
+- **Drawing.** Centre lines below z15, street land and blocks from z15, plots from z17; the Man at
+  every scale. Choosing the type frames the whole city.
+- **Proposing.** The same painting tool: "This clock hour" starts from the hour nearest the map
+  centre (6:00 to 7:00 from the Man himself). The streets around the chosen blocks become road
+  proposals through the same corridor import (`source: 'burning-man'`), every way named as the city
+  names its streets (`Esplanade`, `C`, `4:30`); ring ways carry their arc as vertices at most 2°
+  apart. All streets are local streets of the chosen width; there are no arterials.
+
+A Burning Man city is not a Schelling point in the strict sense: its centre is chosen. What is
+common knowledge is the layout, so anyone given the Man's place and the settings derives the same
+streets and addresses.
+
 ## What it is not
 
 It is not a cadastre and is never labelled as one, and its pieces are not ground: nothing is
@@ -178,10 +222,12 @@ proposed on `MP:` ids. What is proposed from it is ordinary road proposals on th
 register's parcels, or open ground where there is none). Nothing here writes to the world-parcel
 registry.
 
-## The second algorithm, planned
+## Elevation contours, planned
 
 **Elevation contours (isohypses):** streets along contour lines at an agreed vertical interval,
 cross-streets along lines of steepest descent, blocks between them. It needs a terrain source the
 visitor can also obtain (a public DEM), so it waits on the terrain work in `elevation-realism.md`.
-Adding it means a second module alongside `schelling-grid.js` with the same contract (`planFor`,
-`featuresInBbox`, `cellsInBbox`, `describe`) and a choice of algorithm in the layer.
+Adding it means a module with the plan-type contract the painting tool reads through
+`SchellingLayer.kind()` (`cellsInBbox`, `blockOf`, `defaultCells`, `streetsOf`, `streetPolygon`,
+`summary`, `importForm`), its drawing in the layer and an option in the panel's type picker, as
+Burning Man has.

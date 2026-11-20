@@ -11,6 +11,9 @@
 .schelling-plan__street.is-local { fill: var(--cb-text-muted); }
 .schelling-plan__block { fill: none; stroke: var(--cb-primary); stroke-width: 1; stroke-opacity: 0.7; }
 .schelling-plan__plot { fill: none; stroke: var(--cb-primary); stroke-width: 0.75; stroke-opacity: 0.6; stroke-dasharray: 3 3; }
+/* A Burning Man city far out: its street centre lines; at every scale, the Man at its middle. */
+.schelling-plan__line { stroke: var(--cb-text-muted); stroke-width: 1.5; stroke-opacity: 0.8; fill: none; }
+.schelling-plan__man { stroke: var(--cb-surface); stroke-width: 2; fill: var(--cb-warning); fill-opacity: 1; }
 
 /* The plan's panel: the on-map editor frame in the layer variant (on-map-editor.css), open exactly
    while the plan is shown. The painting tool opens in the same spot, and every editor holds the
@@ -43,7 +46,11 @@ body.map-edit-locked .schelling-panel { display: none; }
 .schelling-plan-settings__field { display: flex; align-items: center; justify-content: space-between; gap: var(--cb-space-2); }
 .schelling-plan-settings__field label { flex: none; }
 .schelling-plan-settings__field select { flex: 1 1 auto; min-width: 0; max-width: 12rem; }
-.schelling-plan-settings__code { font-family: var(--cb-font-mono); color: var(--cb-text-muted); }
+.schelling-plan-settings__code { font-family: var(--cb-font-mono); color: var(--cb-text-muted); overflow-wrap: anywhere; }
+/* Each plan type's own settings; the type picker shows one group. */
+.schelling-plan-settings__group { display: flex; flex-direction: column; gap: var(--cb-space-2); }
+.schelling-plan-settings__group[hidden] { display: none; }
+.schelling-plan-settings__action { align-self: flex-start; }
 .schelling-plan-settings__why summary { cursor: pointer; color: var(--cb-text); font-weight: var(--cb-weight-medium); }
 
 /* The painting tool. */

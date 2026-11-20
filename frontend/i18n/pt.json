@@ -8501,6 +8501,15 @@
     },
     "schellingPlan": {
         "propose": {
+            "burningMan": {
+                "title": "Vias de Burning Man",
+                "hour": "Esta hora do relógio",
+                "summary": "{{blocks}} · {{streets}} ({{local}} km) · {{roads}}",
+                "roadName": "Vias de Burning Man {{code}}",
+                "roadNameNumbered": "Vias de Burning Man {{code}} ({{number}})",
+                "description": "Ruas do plano Burning Man {{code}} à volta de {{blocks}}.",
+                "done": "Foram propostas {{count}} de {{total}} redes viárias de Burning Man. Partilhe-as como um plano para as publicar em conjunto."
+            },
             "clear": "Limpar",
             "title": "Vias de Schelling",
             "hint": "Clique ou arraste sobre os quarteirões para os adicionar ou remover. São propostas todas as ruas à volta de cada quarteirão escolhido.",
@@ -8533,6 +8542,27 @@
         "toggle": "Mostrar o plano de Schelling",
         "layerNote": "As respetivas definições e a opção Propor abrem num painel próprio no mapa.",
         "closePanel": "Fechar e ocultar o plano",
+        "type": "Tipo de plano",
+        "typeMeridians": "Meridianos e paralelos",
+        "typeBurningMan": "Burning Man",
+        "burningMan": {
+            "manHere": "Colocar o Homem no centro do mapa",
+            "esplanade": "Distância do Homem à Esplanade",
+            "ringCount": "Ruas anelares com letra",
+            "blockDepth": "Profundidade do quarteirão entre ruas anelares",
+            "streetWidth": "Largura de todas as ruas",
+            "bearing": "Direção das 12:00 (graus a partir do norte)",
+            "zoomForStreets": "Nesta escala só os eixos das ruas; amplie o mapa para ver o terreno das ruas e os quarteirões.",
+            "man": "O Homem está em {{lat}}, {{lng}}; as 12:00 apontam a {{bearing}}° do norte.",
+            "rings": "A Esplanade a {{esplanade}} m do Homem, depois ruas anelares de A a {{last}} a cada {{spacing}} m, até {{outer}} m.",
+            "radials": "Ruas radiais a cada meia hora das 2:00 às 10:00; entre as 10:00 e as 2:00 fica a playa aberta.",
+            "quarterHours": "Ruas de quarto de hora a partir do anel {{ring}} para fora, onde os quarteirões duplicam de comprimento.",
+            "blocks": "Quarteirões: {{count}}; {{depth}} m de profundidade e {{shortest}} a {{longest}} m ao longo da sua rua anelar.",
+            "plotSize": "Lotes de cerca de {{frontage}} × {{depth}} m ({{area}} m²) junto à Esplanade, virados para as ruas anelares; mais largos para fora.",
+            "whyCity": "Inspirado em Black Rock City, a cidade que o festival Burning Man ergue todos os anos no deserto do Nevada: ruas anelares à volta do Homem e ruas radiais com o nome das horas de um relógio, de modo que cada morada é uma hora e uma letra (4:30 e C) que qualquer pessoa encontra sem mapa.",
+            "whyClock": "A cidade ocupa o relógio das 2:00 às 10:00 e deixa a playa aberta em direção às 12:00. Onde um quarteirão tem o dobro do comprimento junto à Esplanade, ruas de quarto de hora dividem-no.",
+            "whyChoices": "Onde está o Homem, a que distância fica a Esplanade, quantas ruas anelares se seguem, a profundidade do quarteirão, a largura das ruas, para onde apontam as 12:00 e a dimensão dos lotes são escolhas suas."
+        },
         "blockFace": "Espaçamento entre ruas locais (frente de quarteirão)",
         "streetWidth": "Largura das ruas locais",
         "plots": "Dimensão dos lotes",

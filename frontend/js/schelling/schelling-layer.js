@@ -1,9 +1,10 @@
-// The Schelling plan layer: the meridians-and-parallels plan (parcels/schelling-grid.js) drawn over
-// any map, over a parcel register or where there is none. Layers only switches it on; its settings
-// are in its own panel (#schelling-panel), open exactly while the plan is shown, and in the address
-// bar (?schelling=, schelling-settings.js), remembered per viewer. Folding the panel keeps the plan
-// drawn, closing it hides the plan. "Propose from this plan" opens the painting tool
-// (schelling-propose.js) in the panel's spot. Drawing only: the layer never takes clicks.
+// The Schelling plan layer, drawn over any map, over a parcel register or where there is none, in
+// one of two types picked in its panel: the meridians-and-parallels plan (parcels/schelling-grid.js,
+// the default) or a Burning Man city round a Man the author places (burning-man-plan.js). Layers
+// only switches it on; its settings are in its own panel (#schelling-panel), open exactly while the
+// plan is shown, and in the address bar (?schelling=, schelling-settings.js), remembered per viewer.
+// Folding the panel keeps the plan drawn, closing it hides the plan. "Propose from this plan" opens
+// the painting tool (schelling-propose.js) in the panel's spot. Drawing only: the layer never takes clicks.
 (function (win) {
     'use strict';
     if (!win?.document) return;
@@ -12,10 +13,23 @@
     const PANE = 'schellingPlanPane';
     const STORAGE_KEY = 'cb.schelling.settings';
     const PARAM = 'schelling';
+    const BURNING_MAN = 'burning-man';
     // Below these zooms the plan would be thousands of shapes: arterials first, then streets and
-    // blocks, then plots.
+    // blocks, then plots. A Burning Man city is one city, drawn as centre lines below the streets' zoom.
     const ZOOM = Object.freeze({ arterials: 11, streets: 15, plots: 17 });
-    const state = { enabled: false, settings: null, planAt: null, layer: null, renderer: null, wired: false };
+    // The painting tool's view of the meridian plan; a Burning Man plan's module offers the same.
+    // The grid loads after this file, so it is looked up when used.
+    const MERIDIANS = Object.freeze({
+        cellsInBbox: (plan, box, limit) => win.SchellingGrid.cellsInBbox(plan, box, limit),
+        blockOf: (plan, i, j) => win.SchellingGrid.blockOf(plan, i, j),
+        defaultCells: (plan, lat, lng) => win.SchellingStreets.defaultCells(plan, lat, lng),
+        streetsOf: (plan, cells) => win.SchellingStreets.streetsOf(plan, cells),
+        streetPolygon: (plan, street) => win.SchellingStreets.streetPolygon(plan, street),
+        summary: (plan, cells) => win.SchellingStreets.summary(plan, cells),
+        importForm: (plan, cells, options) => win.SchellingStreets.importForm(plan, cells, options)
+    });
+    const state = { enabled: false, settings: null, planAt: null, manPlan: null, manError: null, layer: null, renderer: null, wired: false };
+    const isBurningMan = () => state.settings?.type === BURNING_MAN;
     const el = id => doc.getElementById(id);
     const storage = () => win.BrowserWorkspace?.storage || win.localStorage;
 
@@ -41,9 +55,39 @@
         win.history.replaceState(win.history.state, '', url);
     }
 
-    function setSettings(next) {
-        state.settings = win.SchellingSettings.normalize(next);
+    // A Burning Man city needs its Man: he stands where the map is until the author moves him.
+    function withMan(settings) {
+        if (settings.type !== BURNING_MAN || settings.burningMan.centre || !win.map) return settings;
+        const { lat, lng } = win.map.getCenter();
+        return win.SchellingSettings.merge(settings, { burningMan: { centre: { lat, lng } } });
+    }
+
+    function rebuild() {
         state.planAt = win.SchellingGrid.plansFor(state.settings);
+        state.manPlan = null;
+        state.manError = null;
+        if (!isBurningMan() || !state.settings.burningMan.centre) return;
+        try {
+            state.manPlan = win.BurningManPlan.planFor(state.settings.burningMan);
+        } catch (error) {
+            if (!(error instanceof RangeError)) throw error;
+            state.manError = error.message;
+        }
+    }
+
+    // The whole city in view, when the type is chosen or the city is out of sight.
+    function frameCity() {
+        const plan = state.manPlan;
+        if (!plan || !win.map) return;
+        const { lat, lng } = plan.centre;
+        const dLat = plan.outerRadiusM / plan.metersPerDegree.lat;
+        const dLng = plan.outerRadiusM / plan.metersPerDegree.lon;
+        win.map.fitBounds([[lat - dLat, lng - dLng], [lat + dLat, lng + dLng]]);
+    }
+
+    function setSettings(next) {
+        state.settings = withMan(win.SchellingSettings.normalize(next));
+        rebuild();
         writeStored(state.settings);
         if (state.enabled) writeAddress();
         syncControls();
@@ -82,7 +126,8 @@
         toggle.title = label;
     }
 
-    const planHere = () => state.planAt(win.SchellingGrid.bandOf(win.map.getCenter().lat));
+    // The plan the map shows: the Burning Man city, or the meridian plan of the band at the map centre.
+    const planHere = () => (isBurningMan() ? state.manPlan : state.planAt(win.SchellingGrid.bandOf(win.map.getCenter().lat)));
 
     // ---- drawing ---------------------------------------------------------------------------------
 
@@ -99,20 +144,42 @@
         return [bounds.getWest(), bounds.getSouth(), bounds.getEast(), bounds.getNorth()];
     }
 
+    // One GeoJSON layer per class: a path's class is fixed when it is created.
+    function draw(features, className) {
+        if (features.length) state.layer.addLayer(win.L.geoJSON({ type: 'FeatureCollection', features },
+            { pane: PANE, renderer: state.renderer, interactive: false, className }));
+    }
+
+    // A Burning Man city: the Man at every scale, centre lines when far out, then the street land
+    // and blocks, then plots.
+    function renderBurningMan(zoom, box) {
+        const plan = state.manPlan;
+        if (!plan) { renderStatus(state.manError ? t('tooLarge', 'The plan cannot be drawn here: {{reason}}', { reason: state.manError }) : ''); return; }
+        const man = win.BurningManPlan;
+        if (zoom < ZOOM.streets) {
+            draw(man.centreLines(plan), 'schelling-plan__line');
+            renderStatus(t('burningMan.zoomForStreets', 'Street centre lines only at this scale; zoom in for the street land and blocks.'));
+        } else {
+            draw(man.blocksInBbox(plan, box), 'schelling-plan__block');
+            draw(man.streetFeatures(plan, box), 'schelling-plan__street is-local');
+            const plots = state.settings.plotLevel !== null && zoom >= ZOOM.plots;
+            if (plots) draw(man.plotsInBbox(plan, box, state.settings.plotLevel), 'schelling-plan__plot');
+            renderStatus(plots || state.settings.plotLevel === null ? '' : t('zoomForPlots', 'Zoom in further to see the plots.'));
+        }
+        state.layer.addLayer(win.L.circleMarker([plan.centre.lat, plan.centre.lng],
+            { pane: PANE, renderer: state.renderer, interactive: false, radius: 7, className: 'schelling-plan__man' }));
+    }
+
     function render() {
         if (!win.map || !win.SchellingGrid) return;
         ensureLayer();
         state.layer.clearLayers();
         if (!state.enabled) { renderStatus(''); return; }
         const zoom = win.map.getZoom();
+        const box = viewBox();
+        if (isBurningMan()) { renderBurningMan(zoom, box); return; }
         if (zoom < ZOOM.arterials) { renderStatus(t('zoomIn', 'Zoom in to see the plan.')); return; }
         const grid = win.SchellingGrid;
-        const box = viewBox();
-        // One GeoJSON layer per class: a path's class is fixed when it is created.
-        const draw = (features, className) => {
-            if (features.length) state.layer.addLayer(win.L.geoJSON({ type: 'FeatureCollection', features },
-                { pane: PANE, renderer: state.renderer, interactive: false, className }));
-        };
         try {
             if (zoom < ZOOM.streets) {
                 draw(grid.inBands(state.planAt, box, grid.arterialLinesInBbox), 'schelling-plan__arterial-line');
@@ -146,18 +213,72 @@
     function syncControls() {
         if (!el('schelling-plan-block')) return;
         const settings = state.settings;
+        const man = settings.burningMan;
+        el('schelling-plan-type').value = settings.type;
+        el('schelling-plan-meridians').hidden = isBurningMan();
+        el('schelling-plan-burning-man').hidden = !isBurningMan();
         el('schelling-plan-block').value = String(settings.targetBlockM);
         el('schelling-plan-street').value = String(settings.streetWidthM);
         el('schelling-plan-plots').value = String(win.SchellingSettings.denominatorOfLevel(settings.plotLevel));
         el('schelling-plan-block-value').textContent = `${number(settings.targetBlockM)} m`;
         el('schelling-plan-street-value').textContent = `${number(settings.streetWidthM)} m`;
+        el('schelling-plan-esplanade').value = String(man.esplanadeM);
+        el('schelling-plan-rings').value = String(man.rings);
+        el('schelling-plan-depth').value = String(man.blockDepthM);
+        el('schelling-plan-man-street').value = String(man.streetWidthM);
+        el('schelling-plan-bearing').value = String(man.bearingDeg);
+        el('schelling-plan-esplanade-value').textContent = `${number(man.esplanadeM)} m`;
+        el('schelling-plan-rings-value').textContent = `A–${win.BurningManPlan.ringName(man.rings)}`;
+        el('schelling-plan-depth-value').textContent = `${number(man.blockDepthM)} m`;
+        el('schelling-plan-man-street-value').textContent = `${number(man.streetWidthM)} m`;
+        el('schelling-plan-bearing-value').textContent = `${number(man.bearingDeg)}°`;
         renderFacts();
+    }
+
+    // The numbers of a Burning Man city: where the Man stands, the rings and radials, the blocks,
+    // the plots, and where the idea comes from.
+    function renderManFacts() {
+        const plan = state.manPlan;
+        const plotLevel = state.settings.plotLevel;
+        if (!plan) {
+            el('schelling-plan-man').textContent = state.manError || '';
+            ['schelling-plan-man-layout', 'schelling-plan-man-blocks', 'schelling-plan-plot-size', 'schelling-plan-code'].forEach(id => { el(id).textContent = ''; });
+            return;
+        }
+        const man = win.BurningManPlan;
+        const d = man.describe(plan);
+        el('schelling-plan-man').textContent = t('burningMan.man', 'The Man stands at {{lat}}, {{lng}}; 12:00 points {{bearing}}° from north.', {
+            lat: d.lat, lng: d.lng, bearing: number(d.bearingDeg)
+        });
+        el('schelling-plan-man-layout').textContent = [
+            t('burningMan.rings', 'The Esplanade {{esplanade}} m from the Man, then ring streets A to {{last}} every {{spacing}} m, out to {{outer}} m.', {
+                esplanade: number(d.esplanadeM), last: d.lastRing, spacing: number(d.spacingM), outer: number(d.outerRadiusM)
+            }),
+            t('burningMan.radials', 'Radial streets every half hour from 2:00 to 10:00; the open playa lies between 10:00 and 2:00.'),
+            d.quarterHoursFrom ? t('burningMan.quarterHours', 'Quarter-hour streets from ring {{ring}} outward, where the blocks have doubled in length.', { ring: d.quarterHoursFrom }) : ''
+        ].filter(Boolean).join(' ');
+        el('schelling-plan-man-blocks').textContent = t('burningMan.blocks', '{{count}} blocks, {{depth}} m deep and {{shortest}} to {{longest}} m along their ring streets.', {
+            count: number(d.blocks), depth: number(d.blockDepthM), shortest: number(d.shortestFaceM), longest: number(d.longestFaceM)
+        });
+        const plot = man.plotSize(plan, plotLevel);
+        el('schelling-plan-plot-size').textContent = plotLevel === null
+            ? t('wholeBlocks', 'Whole blocks, no plots.')
+            : t('burningMan.plotSize', 'Plots of about {{frontage}} × {{depth}} m ({{area}} m²) by the Esplanade, facing the ring streets; wider further out.', {
+                frontage: number(plot.frontageM, 1), depth: number(plot.depthM), area: number(plot.areaM2)
+            });
+        el('schelling-plan-code').textContent = t('code', 'Plan {{code}}', { code: plan.code });
+        el('schelling-plan-why').textContent = [
+            t('burningMan.whyCity', 'After Black Rock City, the city the Burning Man festival builds every year in the Nevada desert: ring streets round the Man and radial streets named by the hours of a clock, so every address is a time and a letter (4:30 and C) that anyone can find without a map.'),
+            t('burningMan.whyClock', 'The city takes the clock from 2:00 to 10:00 and leaves the playa open towards 12:00. Where a block has grown to twice its length at the Esplanade, quarter-hour streets divide it.'),
+            t('burningMan.whyChoices', 'Where the Man stands, how far out the Esplanade lies, how many ring streets follow it, the block depth, the street width, where 12:00 points and the plot size are yours to choose.')
+        ].join(' ');
     }
 
     // The numbers of the plan where the map is: the fixed arterials, the blocks the settings make,
     // the plot size, and why the fixed part is fixed.
     function renderFacts() {
         if (!win.map || !el('schelling-plan-fixed')) return;
+        if (isBurningMan()) { renderManFacts(); return; }
         let plan;
         try { plan = planHere(); } catch (error) {
             el('schelling-plan-fixed').textContent = String(error.message);
@@ -203,6 +324,23 @@
         el('schelling-plan-plots').addEventListener('change', event => setSettings({
             ...state.settings, plotLevel: win.SchellingSettings.levelOfDenominator(Number(event.target.value))
         }));
+        // Choosing Burning Man shows its whole city; the meridian plan is everywhere already.
+        el('schelling-plan-type').addEventListener('change', event => {
+            setSettings({ ...state.settings, type: event.target.value });
+            if (isBurningMan()) frameCity();
+        });
+        const manSetting = (id, field) => el(id).addEventListener('input', event => setSettings({
+            ...state.settings, burningMan: { ...state.settings.burningMan, [field]: Number(event.target.value) }
+        }));
+        manSetting('schelling-plan-esplanade', 'esplanadeM');
+        manSetting('schelling-plan-rings', 'rings');
+        manSetting('schelling-plan-depth', 'blockDepthM');
+        manSetting('schelling-plan-man-street', 'streetWidthM');
+        manSetting('schelling-plan-bearing', 'bearingDeg');
+        el('schelling-plan-man-here').addEventListener('click', () => {
+            const { lat, lng } = win.map.getCenter();
+            setSettings({ ...state.settings, burningMan: { ...state.settings.burningMan, centre: { lat, lng } } });
+        });
         el('schelling-plan-propose').addEventListener('click', () => win.SchellingPropose.open());
         win.map.on('moveend', () => { render(); renderFacts(); });
         const translate = () => { syncControls(); render(); setCollapsed(el('schelling-panel-body').hidden); };
@@ -214,15 +352,21 @@
         if (state.wired || !win.map || !el('showSchellingPlan')) return;
         state.wired = true;
         const fromAddress = win.SchellingSettings.parse(new URLSearchParams(win.location.search).get(PARAM));
-        state.settings = win.SchellingSettings.normalize(fromAddress || readStored() || win.SchellingSettings.DEFAULTS);
-        state.planAt = win.SchellingGrid.plansFor(state.settings);
+        // What the address says, over what this viewer had (their Man stays where they put him).
+        state.settings = win.SchellingSettings.merge(readStored(), fromAddress);
+        rebuild();
         state.enabled = !!fromAddress;
         el('showSchellingPlan').checked = state.enabled;
         el('schelling-panel').hidden = !state.enabled;
         setCollapsed(false);
         wire();
-        // The facts and the drawing read the map centre, which exists once the map has a view.
-        win.map.whenReady(() => { syncControls(); render(); });
+        // The facts and the drawing read the map centre, which exists once the map has a view; a
+        // Burning Man city without its Man gets him there.
+        win.map.whenReady(() => {
+            if (isBurningMan() && !state.settings.burningMan.centre) setSettings(state.settings);
+            syncControls();
+            render();
+        });
     }
 
     win.SchellingLayer = Object.freeze({
@@ -231,6 +375,8 @@
         isEnabled: () => state.enabled,
         settings: () => ({ ...state.settings }),
         planAt: band => state.planAt(band),
-        planHere: () => planHere()
+        planHere: () => planHere(),
+        // The plan type's cells, blocks and streets, for the painting tool.
+        kind: () => (isBurningMan() ? win.BurningManPlan : MERIDIANS)
     });
 })(typeof window !== 'undefined' ? window : null);

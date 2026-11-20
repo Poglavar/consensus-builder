@@ -382,17 +382,58 @@
                     <button type="button" id="schelling-panel-close" class="close-circle-btn" data-i18n-key="schellingPlan.closePanel" data-i18n-attr="title,aria-label" title="Close and hide the plan" aria-label="Close and hide the plan">×</button>
                 </header>
                 <div id="schelling-panel-body" class="on-map-editor__content schelling-plan-settings">
-                    <p id="schelling-plan-fixed" class="schelling-plan-settings__note"></p>
-                    <div class="schelling-plan-settings__range">
-                        <label for="schelling-plan-block" data-i18n-key="schellingPlan.blockFace">Local street spacing (block face)</label>
-                        <output id="schelling-plan-block-value" for="schelling-plan-block"></output>
-                        <input type="range" id="schelling-plan-block" min="60" max="240" step="10" value="120">
+                    <!-- The plan type picks which settings show: the meridian plan (the default) or a Burning Man city. -->
+                    <div class="schelling-plan-settings__field">
+                        <label for="schelling-plan-type" data-i18n-key="schellingPlan.type">Plan type</label>
+                        <select id="schelling-plan-type">
+                            <option value="meridians" data-i18n-key="schellingPlan.typeMeridians">Meridians and parallels</option>
+                            <option value="burning-man" data-i18n-key="schellingPlan.typeBurningMan">Burning Man</option>
+                        </select>
                     </div>
-                    <p id="schelling-plan-blocks" class="schelling-plan-settings__note"></p>
-                    <div class="schelling-plan-settings__range">
-                        <label for="schelling-plan-street" data-i18n-key="schellingPlan.streetWidth">Local street width</label>
-                        <output id="schelling-plan-street-value" for="schelling-plan-street"></output>
-                        <input type="range" id="schelling-plan-street" min="8" max="20" step="1" value="12">
+                    <div id="schelling-plan-meridians" class="schelling-plan-settings__group">
+                        <p id="schelling-plan-fixed" class="schelling-plan-settings__note"></p>
+                        <div class="schelling-plan-settings__range">
+                            <label for="schelling-plan-block" data-i18n-key="schellingPlan.blockFace">Local street spacing (block face)</label>
+                            <output id="schelling-plan-block-value" for="schelling-plan-block"></output>
+                            <input type="range" id="schelling-plan-block" min="60" max="240" step="10" value="120">
+                        </div>
+                        <p id="schelling-plan-blocks" class="schelling-plan-settings__note"></p>
+                        <div class="schelling-plan-settings__range">
+                            <label for="schelling-plan-street" data-i18n-key="schellingPlan.streetWidth">Local street width</label>
+                            <output id="schelling-plan-street-value" for="schelling-plan-street"></output>
+                            <input type="range" id="schelling-plan-street" min="8" max="20" step="1" value="12">
+                        </div>
+                    </div>
+                    <div id="schelling-plan-burning-man" class="schelling-plan-settings__group" hidden>
+                        <p id="schelling-plan-man" class="schelling-plan-settings__note" aria-live="polite"></p>
+                        <button type="button" id="schelling-plan-man-here" class="btn btn-sm schelling-plan-settings__action" data-i18n-key="schellingPlan.burningMan.manHere">Put the Man at the map centre</button>
+                        <div class="schelling-plan-settings__range">
+                            <label for="schelling-plan-esplanade" data-i18n-key="schellingPlan.burningMan.esplanade">Esplanade distance from the Man</label>
+                            <output id="schelling-plan-esplanade-value" for="schelling-plan-esplanade"></output>
+                            <input type="range" id="schelling-plan-esplanade" min="150" max="1500" step="10" value="760">
+                        </div>
+                        <p id="schelling-plan-man-layout" class="schelling-plan-settings__note"></p>
+                        <div class="schelling-plan-settings__range">
+                            <label for="schelling-plan-rings" data-i18n-key="schellingPlan.burningMan.ringCount">Lettered ring streets</label>
+                            <output id="schelling-plan-rings-value" for="schelling-plan-rings"></output>
+                            <input type="range" id="schelling-plan-rings" min="1" max="12" step="1" value="11">
+                        </div>
+                        <div class="schelling-plan-settings__range">
+                            <label for="schelling-plan-depth" data-i18n-key="schellingPlan.burningMan.blockDepth">Block depth between ring streets</label>
+                            <output id="schelling-plan-depth-value" for="schelling-plan-depth"></output>
+                            <input type="range" id="schelling-plan-depth" min="20" max="200" step="1" value="76">
+                        </div>
+                        <p id="schelling-plan-man-blocks" class="schelling-plan-settings__note"></p>
+                        <div class="schelling-plan-settings__range">
+                            <label for="schelling-plan-man-street" data-i18n-key="schellingPlan.burningMan.streetWidth">Width of every street</label>
+                            <output id="schelling-plan-man-street-value" for="schelling-plan-man-street"></output>
+                            <input type="range" id="schelling-plan-man-street" min="8" max="20" step="1" value="12">
+                        </div>
+                        <div class="schelling-plan-settings__range">
+                            <label for="schelling-plan-bearing" data-i18n-key="schellingPlan.burningMan.bearing">Direction of 12:00 (degrees from north)</label>
+                            <output id="schelling-plan-bearing-value" for="schelling-plan-bearing"></output>
+                            <input type="range" id="schelling-plan-bearing" min="0" max="355" step="5" value="0">
+                        </div>
                     </div>
                     <div class="schelling-plan-settings__field">
                         <label for="schelling-plan-plots" data-i18n-key="schellingPlan.plots">Plot size</label>
@@ -2116,6 +2157,7 @@
             'js/urban-blocks-view.js',
             'js/schelling/schelling-settings.js',
             'js/schelling/schelling-streets.js',
+            'js/schelling/burning-man-plan.js',
             'js/schelling/schelling-layer.js',
             'js/schelling/schelling-propose.js',
             'js/ui/busy-control.js',

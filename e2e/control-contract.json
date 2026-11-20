@@ -698,6 +698,55 @@
       "controlType": "range"
     },
     {
+      "id": "control-49bddd70ec77c7-1",
+      "source": "index.html",
+      "markup": "<select id=\"schelling-plan-type\">",
+      "interaction": "change",
+      "controlType": "select"
+    },
+    {
+      "id": "control-6f0ac40305bdc7-1",
+      "source": "index.html",
+      "markup": "<button type=\"button\" id=\"schelling-plan-man-here\" class=\"btn btn-sm schelling-plan-settings__action\" data-i18n-key=\"schellingPlan.burningMan.manHere\">",
+      "interaction": "click",
+      "controlType": "button"
+    },
+    {
+      "id": "control-9e4de5d781d139-1",
+      "source": "index.html",
+      "markup": "<input type=\"range\" id=\"schelling-plan-esplanade\" min=\"150\" max=\"1500\" step=\"10\" value=\"760\">",
+      "interaction": "change",
+      "controlType": "range"
+    },
+    {
+      "id": "control-6ded27ea8a30ed-1",
+      "source": "index.html",
+      "markup": "<input type=\"range\" id=\"schelling-plan-rings\" min=\"1\" max=\"12\" step=\"1\" value=\"11\">",
+      "interaction": "change",
+      "controlType": "range"
+    },
+    {
+      "id": "control-c2f074ab92f772-1",
+      "source": "index.html",
+      "markup": "<input type=\"range\" id=\"schelling-plan-depth\" min=\"20\" max=\"200\" step=\"1\" value=\"76\">",
+      "interaction": "change",
+      "controlType": "range"
+    },
+    {
+      "id": "control-11a3dd4c7547cf-1",
+      "source": "index.html",
+      "markup": "<input type=\"range\" id=\"schelling-plan-man-street\" min=\"8\" max=\"20\" step=\"1\" value=\"12\">",
+      "interaction": "change",
+      "controlType": "range"
+    },
+    {
+      "id": "control-f4d4ac2de4936c-1",
+      "source": "index.html",
+      "markup": "<input type=\"range\" id=\"schelling-plan-bearing\" min=\"0\" max=\"355\" step=\"5\" value=\"0\">",
+      "interaction": "change",
+      "controlType": "range"
+    },
+    {
       "id": "control-22f9cf4741fb75-1",
       "source": "index.html",
       "markup": "<select id=\"schelling-plan-plots\">",

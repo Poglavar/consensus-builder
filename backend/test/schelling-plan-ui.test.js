@@ -49,7 +49,8 @@ describe('the Schelling plan UI', () => {
         const panelStart = html.indexOf('<section id="schelling-panel"');
         const panel = html.slice(panelStart, html.indexOf('</section>', panelStart));
         expect(layers).toContain('id="showSchellingPlan"');
-        for (const id of ['schelling-plan-block', 'schelling-plan-street', 'schelling-plan-plots', 'schelling-plan-propose', 'schelling-panel-collapse', 'schelling-panel-close']) {
+        for (const id of ['schelling-plan-type', 'schelling-plan-block', 'schelling-plan-street', 'schelling-plan-plots', 'schelling-plan-propose', 'schelling-panel-collapse', 'schelling-panel-close',
+            'schelling-plan-man-here', 'schelling-plan-esplanade', 'schelling-plan-rings', 'schelling-plan-depth', 'schelling-plan-man-street', 'schelling-plan-bearing']) {
             expect(panel, id).toContain(`id="${id}"`);
             expect(layers, id).not.toContain(`id="${id}"`);
         }
@@ -59,8 +60,27 @@ describe('the Schelling plan UI', () => {
         expect(panel).not.toContain('data-map-modes');
     });
 
+    it('offers both plan types, the meridian plan first and shown, each with its own settings', () => {
+        const panelStart = html.indexOf('<section id="schelling-panel"');
+        const panel = html.slice(panelStart, html.indexOf('</section>', panelStart));
+        const picker = panel.slice(panel.indexOf('<select id="schelling-plan-type">'), panel.indexOf('</select>', panel.indexOf('id="schelling-plan-type"')));
+        expect(Array.from(picker.matchAll(/<option value="([^"]+)"/g), match => match[1])).toEqual(['meridians', 'burning-man']);
+        expect(panel).toMatch(/<div id="schelling-plan-meridians" class="schelling-plan-settings__group">/);
+        expect(panel).toMatch(/<div id="schelling-plan-burning-man" class="schelling-plan-settings__group" hidden>/);
+        // The type's own settings sit in its group (closed at its own indentation); the plot size is shared.
+        const group = id => {
+            const start = panel.indexOf(`<div id="${id}"`);
+            const indent = panel.slice(panel.lastIndexOf('\n', start) + 1, start);
+            return panel.slice(start, panel.indexOf(`\n${indent}</div>`, start));
+        };
+        expect(group('schelling-plan-meridians')).toContain('id="schelling-plan-block"');
+        expect(group('schelling-plan-meridians')).not.toContain('id="schelling-plan-esplanade"');
+        expect(group('schelling-plan-burning-man')).toContain('id="schelling-plan-esplanade"');
+        expect(group('schelling-plan-burning-man')).not.toContain('id="schelling-plan-plots"');
+    });
+
     it('loads its modules in the page bundle and its stylesheet, and starts after the map', () => {
-        for (const file of ['schelling-settings', 'schelling-streets', 'schelling-layer', 'schelling-propose']) {
+        for (const file of ['schelling-settings', 'schelling-streets', 'burning-man-plan', 'schelling-layer', 'schelling-propose']) {
             expect(html).toContain(`'js/schelling/${file}.js'`);
         }
         expect(html).toContain("'css/schelling-plan.css'");

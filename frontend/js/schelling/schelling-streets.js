@@ -112,6 +112,30 @@
         return [...groups.values()];
     }
 
+    // The land of a street as a polygon: its strip around the centre line, end node to end node.
+    function streetPolygon(plan, street) {
+        const first = street.nodes[0];
+        const last = street.nodes[street.nodes.length - 1];
+        const widthM = street.roadClass === 'arterial' ? plan.arterialWidthM : plan.streetWidthM;
+        let west, south, east, north;
+        if (street.axis === 'EW') {
+            const half = widthM / 2 / (plan.metersPerArcsecond.lat * 3600);
+            const lat = grid().latOfLine(plan, street.line);
+            [west, south, east, north] = [grid().lonOfLine(plan, first.i), lat - half, grid().lonOfLine(plan, last.i), lat + half];
+        } else {
+            const half = widthM / 2 / (plan.metersPerArcsecond.lon * 3600);
+            const lng = grid().lonOfLine(plan, street.line);
+            [west, south, east, north] = [lng - half, grid().latOfLine(plan, first.j), lng + half, grid().latOfLine(plan, last.j)];
+        }
+        return { type: 'Polygon', coordinates: [[[west, south], [east, south], [east, north], [west, north], [west, south]]] };
+    }
+
+    // The cells the painting tool starts from: the superblock around the point.
+    function defaultCells(plan, lat, lng) {
+        const { i, j } = grid().cellAt(plan, lat, lng);
+        return grid().superblockOf(plan, i, j).cells;
+    }
+
     // Street length along the centre line, by class, in metres.
     function lengthOf(plan, street) {
         const steps = street.to - street.from;
@@ -158,5 +182,5 @@
         return { form: { elements }, roads };
     }
 
-    return { ARTERIAL_STRIPS, localStrips, profileFor, streetsOf, networksOf, summary, importForm };
+    return { ARTERIAL_STRIPS, localStrips, profileFor, runsOf, streetsOf, networksOf, summary, streetPolygon, defaultCells, importForm };
 });
