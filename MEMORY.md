@@ -380,3 +380,6 @@ in commits.
   only the in-memory render structure. Native buildings read the publication alone; the floor-model registry has
   no writer and is read only for proposals until their documents carry registrations and units, then dropped
   (backend/db/migrations/2026-11-20-drop-building-floor-model.sql). User-decided.
+- 2026-11-20: Proposals read their floor plans from the publication too (source=proposal, ownerId, footprintSha256);
+  a typical floor stays one published drawing for all its storeys, each unit naming its `level` (cadastre-data
+  a22de701). The registry is read by nothing; its drop runs after deploy. User-approved.

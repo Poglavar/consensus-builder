@@ -124,7 +124,9 @@ const PROPOSAL_LIFECYCLE_EVENT_SQL = `(
     LIMIT 1
 )`;
 
-export function setupProposalsRoute(app, pool) {
+// `publishedFloorModels` (buildings/floor-models.js createPublishedFloorModels) is injected in tests.
+export function setupProposalsRoute(app, pool, { publishedFloorModels } = {}) {
+    const floorModelOptions = publishedFloorModels ? { published: publishedFloorModels } : {};
 
     // The complete public proposal representation. The single and batch endpoints deliberately
     // share this list and serializeProposalRow so a plan does not receive a thinner record than a
@@ -481,7 +483,7 @@ export function setupProposalsRoute(app, pool) {
                     return { id, proposal: null, error: err.message, code: err.code, detail: err.detail };
                 }
             });
-            await attachProposalFloorModels(pool, items.map(item => item.proposal).filter(Boolean));
+            await attachProposalFloorModels(items.map(item => item.proposal).filter(Boolean), floorModelOptions);
             res.json({ items, count: items.filter(item => item.proposal).length });
         } catch (err) {
             console.error('Error in POST /proposals/batch:', err);
@@ -507,7 +509,7 @@ export function setupProposalsRoute(app, pool) {
                 return res.status(404).json({ error: 'Proposal not found' });
             }
 
-            const [proposal] = await attachProposalFloorModels(pool, [serializeProposalRow(result.rows[0])]);
+            const [proposal] = await attachProposalFloorModels([serializeProposalRow(result.rows[0])], floorModelOptions);
             res.json(proposal);
         } catch (err) {
             if (isInvalidRecordError(err)) {
@@ -577,7 +579,7 @@ export function setupProposalsRoute(app, pool) {
             }).filter(Boolean);
             if (invalid.length) console.warn(`GET /proposals?parcel_id: skipped ${invalid.length} non-canonical record(s)`, invalid.map(entry => `${entry.id}: ${entry.detail || entry.error}`));
 
-            await attachProposalFloorModels(pool, proposals);
+            await attachProposalFloorModels(proposals, floorModelOptions);
             res.json({ proposals, count: proposals.length, limit, offset, parcelId, ...(invalid.length ? { invalid } : {}) });
         } catch (err) {
             console.error('Error in GET /proposals?parcel_id:', err);

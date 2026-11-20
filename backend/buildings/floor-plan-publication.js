@@ -20,7 +20,7 @@ const text = (value, max = 255) => typeof value === 'string' && value.trim() ===
 
 export function validatePublicationConfig(config) {
     for (const key of Object.keys(config || {})) {
-        if (!['id', 'baseUrl', 'city', 'source', 'buildingSource', 'buildingIds'].includes(key)) {
+        if (!['id', 'baseUrl', 'city', 'source', 'buildingSource', 'buildingIds', 'ownerId'].includes(key)) {
             throw new Error(`floor-plan-publication: unknown setting ${key}.`);
         }
     }
@@ -31,6 +31,7 @@ export function validatePublicationConfig(config) {
         || config.buildingIds.some(rule => !text(rule?.match) || typeof rule.ref !== 'string' || !rule.ref || Object.keys(rule).length !== 2))) {
         throw new Error('floor-plan-publication: buildingIds must be a list of { match, ref } rules.');
     }
+    if (config.ownerId !== undefined && !text(config.ownerId)) throw new Error('floor-plan-publication: ownerId must be a non-empty string.');
     for (const rule of config.buildingIds || []) new RegExp(rule.match); // an invalid pattern fails here, at registration
     let url;
     try { url = new URL(config.baseUrl); } catch { url = null; }
@@ -69,9 +70,11 @@ export function markerFromSummaries(summaries) {
 }
 
 /**
- * @param config { baseUrl, city, source, buildingSource, buildingIds? }: `buildingSource` is the app's
+ * @param config { baseUrl, city, source, buildingSource, buildingIds?, ownerId? }: `buildingSource` is the app's
  *   native building source key (floorModelSource) whose records' ids are the publication's `source`
- *   ids, translated by `buildingIds` rules where the two spell an id differently
+ *   ids, translated by `buildingIds` rules where the two spell an id differently. `ownerId` reads the buildings of
+ *   one owner instead (a proposal: source and buildingSource 'proposal'); an identity with a `footprintSha256` is
+ *   answered only by plans whose reference names that footprint (the one they were drawn for)
  * @param context { fetch, cache, now, log } — injected in tests
  * @returns { fetchFloorModelMarkers(identities, report?) → Map(buildingId → { storeys, units }),
  *            fetchFloorModels(identities, report?) → Map(buildingId → row) }
@@ -84,12 +87,13 @@ export function createFloorPlanPublicationReader(config, { fetch = globalThis.fe
     const base = config.baseUrl.replace(/\/+$/, '');
     const publicationUrl = planId => `${base}/floor-plans/${encodeURIComponent(planId)}`;
     const toRef = refIdTranslator(config.buildingIds);
+    const owner = config.ownerId ?? '';
 
     async function plansFor(path, pageSize, ids) {
         const plans = [];
         for (let page = 0, offset = 0; ; page++) {
             if (page >= MAX_PAGES) throw new Error(`more than ${MAX_PAGES * pageSize} plans for ${ids.length} buildings`);
-            const params = new URLSearchParams({ city: config.city, source: config.source, limit: String(pageSize), offset: String(offset) });
+            const params = new URLSearchParams({ city: config.city, source: config.source, ...(owner ? { ownerId: owner } : {}), limit: String(pageSize), offset: String(offset) });
             params.set(ids.length === 1 ? 'nativeBuildingId' : 'nativeBuildingIds', ids.join(','));
             const response = await fetch(`${base}${path}?${params}`, { headers: { accept: 'application/json' }, signal: AbortSignal.timeout(timeoutMs) });
             if (!response.ok) throw new Error(`HTTP ${response.status} from ${path}`);
@@ -101,11 +105,13 @@ export function createFloorPlanPublicationReader(config, { fetch = globalThis.fe
         }
     }
 
-    function byBuilding(ids, plans) {
+    // footprints: ref id → the footprint fingerprint its plans must name, or null for any.
+    function byBuilding(ids, plans, footprints) {
         const wanted = new Set(ids), grouped = new Map(ids.map(id => [id, []]));
         for (const plan of plans) {
             for (const ref of Array.isArray(plan?.buildingRefs) ? plan.buildingRefs : []) {
-                if (ref?.city === config.city && ref.source === config.source && (ref.ownerId ?? '') === '' && wanted.has(ref.buildingId)) {
+                if (ref?.city === config.city && ref.source === config.source && (ref.ownerId ?? '') === owner && wanted.has(ref.buildingId)
+                    && (footprints.get(ref.buildingId) == null || ref.footprintSha256 === footprints.get(ref.buildingId))) {
                     grouped.get(ref.buildingId).push(plan);
                 }
             }
@@ -118,7 +124,7 @@ export function createFloorPlanPublicationReader(config, { fetch = globalThis.fe
         try {
             const model = publishedPlansToFloorModel(list, { publicationUrl });
             return model ? { floorPlans: model.floorPlans, footprint: model.footprint, updatedAt: model.updatedAt,
-                publication: { baseUrl: base, city: config.city, source: config.source, buildingId: id, planIds: model.planIds } } : null;
+                publication: { baseUrl: base, city: config.city, source: config.source, ...(owner ? { ownerId: owner } : {}), buildingId: id, planIds: model.planIds } } : null;
         } catch (error) {
             log(`[${stamp()}] [floor-plan-publication] ${config.city}/${config.source} building ${id}: ${list.length} plans not shown: ${error.message}`);
             return null;
@@ -132,15 +138,16 @@ export function createFloorPlanPublicationReader(config, { fetch = globalThis.fe
 
     async function read(kind, identities, report) {
         const { path, pageSize, build } = kinds[kind];
-        const cacheKey = id => JSON.stringify([kind, base, config.city, config.source, id]);
-        // ref id (as published) → the native ids it answers
-        const natives = new Map();
+        const cacheKey = id => JSON.stringify([kind, base, config.city, config.source, owner, id, footprints.get(id) ?? null]);
+        // ref id (as published) → the native ids it answers, and the footprint its plans must name
+        const natives = new Map(), footprints = new Map();
         for (const identity of identities) {
-            if (identity?.source !== config.buildingSource || (identity.ownerId ?? '') !== '') continue;
+            if (identity?.source !== config.buildingSource || (identity.ownerId ?? '') !== owner) continue;
             const native = String(identity.buildingId), ref = text(native) ? toRef(native) : null;
             if (!text(ref)) continue;
             if (!natives.has(ref)) natives.set(ref, new Set());
             natives.get(ref).add(native);
+            if (!footprints.has(ref)) footprints.set(ref, typeof identity.footprintSha256 === 'string' ? identity.footprintSha256 : null);
         }
         const result = new Map(), pending = [];
         const answer = (ref, row) => { if (row) for (const native of natives.get(ref)) result.set(native, row); };
@@ -155,7 +162,7 @@ export function createFloorPlanPublicationReader(config, { fetch = globalThis.fe
             ...pending.filter(id => id.includes(',')).map(id => [id])];
         await inBatches(batches, CONCURRENCY, async batch => {
             let grouped;
-            try { grouped = byBuilding(batch, await plansFor(path, pageSize, batch)); } catch (error) {
+            try { grouped = byBuilding(batch, await plansFor(path, pageSize, batch), footprints); } catch (error) {
                 // Never cached: the next read asks again. The caller answers without published plans.
                 report.publishedUnavailable = true;
                 log(`[${stamp()}] [floor-plan-publication] ${base} ${config.city}/${config.source}: ${batch.length} buildings without published plans: ${error.message}`);

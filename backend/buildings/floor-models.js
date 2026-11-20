@@ -1,7 +1,6 @@
-// Joins floor models onto buildings. Native city buildings read the shared floor-plan publication
-// (cadastre-data buildings.floor_plan via /api/floor-plans); proposal buildings still read the frozen
-// consensus.building_floor_model registry until the published documents carry what they need
-// (docs/building-floor-models.md, "Proposal buildings"). Nothing here writes floor models.
+// Joins floor models onto buildings, read from the shared floor-plan publication (cadastre-data buildings.floor_plan
+// via /api/floor-plans): native city buildings by their references, proposal buildings by the proposal reference and
+// the footprint they were drawn for. Nothing here writes floor models.
 import { createHash } from 'node:crypto';
 import { createRequire } from 'node:module';
 
@@ -42,90 +41,53 @@ export function validateModelIdentity({ city, source, ownerId = '', buildingId }
     return { city, source, ownerId, buildingId };
 }
 
-const identityValues = model => [model.city, model.source, model.ownerId, model.buildingId];
-
-// One indexed join for a whole response, including chains of proposals from different cities.
-async function readStoredFloorModels(pool, identities) {
-    if (!identities.length) return new Map();
-    const queryKeys = identities.map(identity => {
-        const valid = validateModelIdentity(identity);
-        return { city: valid.city, source: valid.source, owner_id: valid.ownerId, building_id: valid.buildingId };
-    });
-    const result = await pool.query(`SELECT m.city, m.source, m.owner_id, m.building_id,
-            m.version, m.updated_at, m.geom_hash, m.floor_plans, m.footprint
-        FROM consensus.building_floor_model m
-        JOIN jsonb_to_recordset($1::jsonb) AS q(city text, source text, owner_id text, building_id text)
-            USING (city, source, owner_id, building_id)
-        WHERE m.current`, [JSON.stringify(queryKeys)]);
-    return new Map(result.rows.map(row => [canonicalJson([row.city, row.source, row.owner_id, row.building_id]), row]));
-}
-
-const queryKeysOf = identities => JSON.stringify(identities.map(identity => {
-    const valid = validateModelIdentity(identity);
-    return { city: valid.city, source: valid.source, owner_id: valid.ownerId, building_id: valid.buildingId };
-}));
-// What a map cell needs to know about a stored model: its storeys and apartments, never the model.
-async function readStoredFloorModelMarkers(pool, identities) {
-    if (!identities.length) return new Map();
-    const result = await pool.query(`SELECT m.city, m.source, m.owner_id, m.building_id, m.version,
-            (SELECT COALESCE(jsonb_agg((s->>'level')::int ORDER BY (s->>'level')::int), '[]'::jsonb)
-               FROM jsonb_array_elements(m.floor_plans->'storeys') s) AS levels,
-            (SELECT count(*) FROM jsonb_array_elements(m.floor_plans->'storeys') s,
-                    jsonb_array_elements(COALESCE(s->'units', '[]'::jsonb)) u WHERE u->>'kind' = 'apartment')::int AS units
-        FROM consensus.building_floor_model m
-        JOIN jsonb_to_recordset($1::jsonb) AS q(city text, source text, owner_id text, building_id text)
-            USING (city, source, owner_id, building_id)
-        WHERE m.current`, [queryKeysOf(identities)]);
-    return new Map(result.rows.map(row => [canonicalJson([row.city, row.source, row.owner_id, row.building_id]), row]));
-}
-
-// `floor-plan-publication` reads plans a city's configuration declares (floorModels.published): the only
-// source of native buildings' models. `floor-model-storage` is the frozen registry, read only for proposal
-// buildings (attachProposalFloorModels) until their published documents can be drawn; it has no writer
-// and goes, with its table, once proposals read the publication (db/migrations/2026-11-20-drop-building-floor-model.sql).
+// `floor-plan-publication` reads the plans a city's configuration declares (floorModels.published) for native
+// buildings, and a proposal's plans (attachProposalFloorModels): the published documents are the only floor-plan store.
 export const buildingDetailSourceRegistry = SourceRuntime.createRegistry({
     abstraction: 'building-details',
-    adapters: { 'floor-model-storage': { custom: false, create: (_config, { pool }) => ({
-        fetchFloorModels: identities => readStoredFloorModels(pool, identities),
-        fetchFloorModelMarkers: identities => readStoredFloorModelMarkers(pool, identities)
-    }) },
-    'floor-plan-publication': { custom: false, validateConfig: validatePublicationConfig,
+    adapters: { 'floor-plan-publication': { custom: false, validateConfig: validatePublicationConfig,
         create: (config, context) => createFloorPlanPublicationReader(config, context) } },
-    sources: [SourceRuntime.source('building-details', 'floor-model-storage', {
-        id: 'building-floor-models', storage: 'consensus.building_floor_model'
-    })],
     required: ['fetchFloorModels', 'fetchFloorModelMarkers']
 });
-export async function fetchFloorModels(pool, identities) {
-    return buildingDetailSourceRegistry.open('building-floor-models', { pool }).fetchFloorModels(identities);
-}
 
-function attachModel(target, row) {
-    target.floorPlans = row.floor_plans;
-    target.floorModel = { city: row.city, source: row.source, ownerId: row.owner_id,
-        buildingId: row.building_id, version: row.version, updatedAt: row.updated_at, footprint: row.footprint };
-}
-
-// A proposal building's model, shown only while the building keeps the footprint it was drawn for.
-// Still the frozen registry: the published documents bound to these buildings (zagreb-novogradnje
-// bind-proposal-floor-plans.mjs) carry no registration and no unit lists yet, so the converter
-// (published-floor-model.js) cannot draw them.
-export async function attachProposalFloorModels(pool, proposals) {
-    const entries = [];
+// A proposal building's model: the published plans whose reference names this proposal, this building and the
+// footprint it has now ({ city, source: 'proposal', ownerId, buildingId, footprintSha256 }), so a building whose
+// footprint changed shows none. Only cities that publish floor plans are asked. A publication that does not answer
+// leaves the buildings without plans (logged); `report.publishedUnavailable` says so.
+// Attaches properties.floorPlans and properties.floorModel { city, source, ownerId, buildingId, version: null,
+// updatedAt, origin: 'publication', footprint, publication }.
+const PROPOSAL_CONCURRENCY = 3;
+export async function attachProposalFloorModels(proposals, { published = publishedFloorModels(), report = {} } = {}) {
+    const groups = new Map();
     for (const proposal of proposals) {
-        if (!proposal?.city || !proposal.proposalId) continue;
+        if (!proposal?.city || !proposal.proposalId || !published?.sources(proposal.city).length) continue;
+        const ownerId = String(proposal.proposalId), key = JSON.stringify([proposal.city, ownerId]);
         for (const building of proposal.geometry?.buildings || []) {
             const buildingId = buildingSourceId(building);
             if (!buildingId || !building.geometry) continue;
-            entries.push({ building, identity: { city: proposal.city, source: 'proposal',
-                ownerId: String(proposal.proposalId), buildingId } });
+            if (!groups.has(key)) groups.set(key, { city: proposal.city, ownerId, entries: [] });
+            groups.get(key).entries.push({ building, identity: { city: proposal.city, source: 'proposal', ownerId, buildingId,
+                footprintSha256: fingerprint(building.geometry) } });
         }
     }
-    const models = await fetchFloorModels(pool, entries.map(entry => entry.identity));
-    for (const { building, identity } of entries) {
-        const row = models.get(canonicalJson(identityValues(identity)));
-        if (row && row.geom_hash === fingerprint(building.geometry)) attachModel(building.properties, row);
-    }
+    const pending = [...groups.values()];
+    await Promise.all(Array.from({ length: Math.min(PROPOSAL_CONCURRENCY, pending.length) }, async () => {
+        for (let group = pending.shift(); group; group = pending.shift()) {
+            let found;
+            try { found = await published.fetchProposalFloorModels(group.city, group.ownerId, group.entries.map(entry => entry.identity), report); } catch (error) {
+                report.publishedUnavailable = true;
+                logPublishedFailure(group.city, `proposal ${group.ownerId}`, error);
+                continue;
+            }
+            for (const { building, identity } of group.entries) {
+                const row = found.get(identity.buildingId);
+                if (!row) continue;
+                building.properties.floorPlans = row.floorPlans;
+                building.properties.floorModel = { city: identity.city, source: 'proposal', ownerId: identity.ownerId, buildingId: identity.buildingId,
+                    version: null, updatedAt: row.updatedAt, origin: 'publication', footprint: building.geometry, publication: row.publication };
+            }
+        }
+    }));
     return proposals;
 }
 
@@ -177,6 +139,11 @@ export function createPublishedFloorModels({ env = process.env, fetch = globalTh
         // identities: native { city: namespace, source: floorModelSource, ownerId: '', buildingId } → Map(buildingId → answer)
         fetchFloorModelMarkers(namespace, identities, report = {}) { return this.read('fetchFloorModelMarkers', namespace, identities, report); },
         fetchFloorModels(namespace, identities, report = {}) { return this.read('fetchFloorModels', namespace, identities, report); },
+        // identities: { city, source: 'proposal', ownerId, buildingId, footprintSha256 } of one proposal → Map(buildingId → model row)
+        fetchProposalFloorModels(city, ownerId, identities, report = {}) {
+            return createFloorPlanPublicationReader({ baseUrl, city, source: 'proposal', buildingSource: 'proposal', ownerId }, context)
+                .fetchFloorModels(identities, report);
+        },
         async read(method, namespace, identities, report) {
             const rows = new Map();
             for (const source of this.sources(namespace)) {
@@ -191,6 +158,10 @@ export function createPublishedFloorModels({ env = process.env, fetch = globalTh
 }
 let defaultPublished = null;
 const publishedFloorModels = () => (defaultPublished ??= createPublishedFloorModels());
+// The source catalogue (/source-system) lists the cities' publication sources from the start. They are registered
+// again, with the server's FLOOR_PLAN_PUBLICATION_API_URL, when the first read opens them (process.env is not yet
+// loaded from .env while modules are imported).
+declarePublishedSources(readCityConfigs(), DEFAULT_FLOOR_PLAN_PUBLICATION_API);
 
 const logPublishedFailure = (city, source, error) =>
     console.error(`[${new Date().toISOString()}] [floor-models] published floor plans for ${city}/${source} failed:`, error);

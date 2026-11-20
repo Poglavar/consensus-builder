@@ -4,10 +4,13 @@ import express from 'express';
 import { setupProposalsRoute } from '../../routes/proposals.js';
 import { registerContentRoutes } from '../../routes/content-routes.js';
 
-export function createTestApp(pool) {
+// Proposal reads also ask the floor-plan publication for their buildings' plans: offline here, with none.
+const noPublishedFloorPlans = { sources: () => [{}], fetchProposalFloorModels: async () => new Map() };
+
+export function createTestApp(pool, { publishedFloorModels = noPublishedFloorPlans } = {}) {
     const app = express();
     app.use(express.json({ limit: '15mb' }));
-    setupProposalsRoute(app, pool);
+    setupProposalsRoute(app, pool, { publishedFloorModels });
     return app;
 }
 

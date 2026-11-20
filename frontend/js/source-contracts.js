@@ -167,11 +167,11 @@
         'block-barriers': ['overpass-block-roads'], 'street-register': ['postgis-street-register'],
         'planned-roads': ['postgis-road-reservations'], 'road-classification': ['postgis-road-classification'],
         trees: ['osm-decor-trees'], water: ['openfreemap-water'], ownership: ['http', 'hr-oss', 'ar-caba', 'rs-bg', 'us-nyc', 'si-gurs', 'hr-oss-public-fallback'],
-        'building-details': ['floor-model-storage', 'floor-plan-publication'], 'reality-mesh': ['cesium-ion-3dtiles']
+        'building-details': ['floor-plan-publication'], 'reality-mesh': ['cesium-ion-3dtiles']
     };
     const nativeOnly = new Set(['cesium-ion-3dtiles','oss-wfs', 'parcel-ba', 'parcel-bg', 'parcel-lj', 'parcel-nyc', 'dgu-live', 'gdi-map', 'dgu-map', 'osm-reference', 'hr-oss-public-fallback','wien-lod2','nl-3dbag','nrw-lod2','nyc-3d','berlin-lod2','hamburg-lod2','bw-lod2','sachsen-lod2','gdi-3d', 'dgu', 'nyc-arcgis', 'nyc-socrata', 'osm', 'gup', 'nyc-pilot', 'bogota-pot', 'alatau-genplan', 'uk-mhclg-2023', 'scenario-assumptions',
         'osm-road-network', 'osm-street-frontage', 'postgis-street-register', 'postgis-road-reservations', 'postgis-road-classification', 'osm-decor-trees',
-        'floor-model-storage', 'floor-plan-publication', 'hr-oss', 'ar-caba', 'rs-bg', 'us-nyc', 'si-gurs', 'kz-nsdi-buildings']);
+        'floor-plan-publication', 'hr-oss', 'ar-caba', 'rs-bg', 'us-nyc', 'si-gurs', 'kz-nsdi-buildings']);
     const requiredMethods = {
         parcels: ['queryBounds', 'queryIds', 'queryGeometry'], buildings: ['near', 'footprints', 'footprintsUnder'],
         planning: ['query', 'record'], economics: ['rates'], imagery: ['tileUrl', 'basemap'], geocoding: ['search'],

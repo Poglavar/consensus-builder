@@ -5,7 +5,7 @@ import { parcelSourceCatalog, parcelSourceRegistry, createParcelSource } from '.
 import { buildingSourceRegistry, createBuildingProviders } from '../buildings/index.js';
 import { planningSourceRegistry, createPlanningSources } from '../planning/sources.js';
 import { createOwnershipRegistry } from '../ownership/registry.js';
-import { buildingDetailSourceRegistry, fetchFloorModels } from '../buildings/floor-models.js';
+import { buildingDetailSourceRegistry } from '../buildings/floor-models.js';
 import { encodeCustomSource, decodeCustomBuildingSource } from '../parcels/custom-source-config.js';
 
 const SourceRuntime = createRequire(import.meta.url)('../../frontend/js/source-runtime.js');
@@ -86,16 +86,10 @@ describe('domain source registries', () => {
         expect(lookup).toHaveBeenCalledExactlyOnceWith({ parcelId: 'FIXTURE-17', pool, fetchImpl: undefined, declaration });
     });
 
-    it('dispatches proposal model reads to the current rows of the frozen registry', async () => {
-        const identity = { city: 'fixture', source: 'proposal', ownerId: 'p1', buildingId: '17' };
-        const row = { city: identity.city, source: identity.source, owner_id: identity.ownerId, building_id: identity.buildingId,
-            version: 3, floor_plans: { layouts: [] }, footprint: polygon };
-        const pool = { query: vi.fn(async () => ({ rows: [row] })) };
-        expect((await fetchFloorModels(pool, [identity])).size).toBe(1);
-        expect(pool.query).toHaveBeenCalledTimes(1);
-        expect(pool.query.mock.calls[0][0]).toContain('WHERE m.current');
-        expect(buildingDetailSourceRegistry.sources()[0].config).toEqual({
-            id: 'building-floor-models', storage: 'consensus.building_floor_model'
-        });
+    it("lists the cities' floor-plan publication sources as the only building-details sources", () => {
+        const sources = buildingDetailSourceRegistry.sources();
+        expect(new Set(sources.map(source => source.adapter))).toEqual(new Set(['floor-plan-publication']));
+        expect(sources.find(source => source.id === 'floor-plans.zagreb.0').config).toMatchObject({ city: 'zagreb', source: 'zagreb-3d', buildingSource: 'zagreb-3d' });
+        expect(buildingDetailSourceRegistry.adapters().map(adapter => adapter.id)).toEqual(['floor-plan-publication']);
     });
 });

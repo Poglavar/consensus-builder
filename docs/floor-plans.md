@@ -12,7 +12,7 @@ pieces fit, and what is still open. The storage and import contract is specified
 | Part | State | Where |
 |---|---|---|
 | Floor-plan data model (`building-floor-plans.v3`), validation, 3D rendering, X-ray + cutaway UI | **Done** (Oct 6–7) | `frontend/js/building-floor-plans.js`, `frontend/js/three-floor-plans.js`, `frontend/js/three-mode.js` |
-| Versioned registry of authored models, joined onto proposals and surveyed buildings on read | **Superseded** (Nov 20) by the shared published documents: no writer; its 9 proposal rows are still read for proposals until their documents carry registrations and units | `consensus.building_floor_model` (frozen), `backend/buildings/floor-models.js`; [`building-floor-models.md`](building-floor-models.md#where-floor-plans-are-stored) |
+| Versioned registry of authored models, joined onto proposals and surveyed buildings on read | **Superseded** (Nov 20) by the shared published documents: its 9 proposal rows were moved onto their drawings, which proposals now read; the table awaits its drop | `backend/buildings/floor-models.js`, `backend/db/migrations/2026-11-20-drop-building-floor-model.sql`; [`building-floor-models.md`](building-floor-models.md#where-floor-plans-are-stored) |
 | Published plans of existing buildings (shared `buildings.floor_plan`) in X-ray, per-city source adapters; cells carry markers, X-ray loads models near the camera | **Done** (Nov 6); markers need cadastre-data's `/api/floor-plans/summaries` deployed | city `floorModels.published`, `backend/buildings/floor-plan-publication.js`, `published-floor-model.js`; [`building-floor-models.md`](building-floor-models.md#published-floor-plans-of-native-buildings) |
 | Source adapter for developer PDF catalogues (vector CAD insets → architecture) | **Done**, 67 storeys / 9 buildings / 4 sites | `backend/scripts/pionir_floor_architecture.py`, `backend/scripts/reconstruct-*-floors.py`, `restatements/**/floor-plan-sources.json` |
 | Agency floor-plan archive (public listing drawings → immutable archive → OCR drafts → reviewed unit models) | **Done**, daily crawl; 5 reviewed apartment units for one project | [Private zagreb-novogradnje owner](https://github.com/Poglavar/zagreb-novogradnje), schema `floor_plan` |
@@ -57,7 +57,6 @@ flowchart LR
     GEN --> V
     V --> SCENE["three-floor-plans.js<br/>X-ray meshes"]
     PY --> ARCH["restatement archives<br/>proposal.geojson"]
-    REG["consensus.building_floor_model<br/>(frozen; proposals only, until dropped)"] --> API
     API["/proposals, /buildings/cell, /buildings/floor-model<br/>join on read"] --> SCENE
     PUB["Shared floor-plan publication<br/>buildings.floor_plan (cadastre-data)"] -- "converted by published-floor-model.js<br/>read, never copied" --> API
     GEN -. never stored .-> PUB

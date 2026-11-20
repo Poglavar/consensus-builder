@@ -1,11 +1,9 @@
 -- Drops consensus.building_floor_model, the floor-model registry the shared published floor-plan documents
 -- (cadastre-data buildings.floor_plan) replace. Not applied by deploy-backend.sh: run it by hand, once.
 --
--- Run it only after BOTH of these are deployed, or proposal reads fail on the missing table / the next
--- deploy recreates it:
---   1. attachProposalFloorModels (backend/buildings/floor-models.js) reads proposal buildings' plans from the
---      publication (their `source: 'proposal'` buildingRefs) instead of this table;
---   2. backend/db/building-floor-model.sql and its line in backend/deploy-backend.sh are deleted.
+-- Run it only once the release is deployed in which proposal buildings read the publication (attachProposalFloorModels,
+-- backend/buildings/floor-models.js) and deploy-backend.sh no longer applies the table's DDL, and once the proposal
+-- bindings are published where that release reads (zagreb-novogradnje backend/scripts/bind-proposal-floor-plans.mjs).
 --
 -- The guard refuses while any current registry row has a layout whose source URL no published plan carries
 -- with that row's proposal reference ({ city, source, ownerId, buildingId, footprintSha256: geom_hash }, as
