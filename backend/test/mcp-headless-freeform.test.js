@@ -23,7 +23,11 @@ describe('headless Freeform ground after later roads',()=>{
         expect(formed.length).toBeGreaterThan(0);
         expect(formed.reduce((sum,piece)=>sum+piece.areaM2,0)).toBeLessThan(turf.area(turf.feature(authoredTake)));
         for(const piece of formed){const overlap=turf.intersect(turf.feature(piece.geometry),turf.feature(road.roadProposal.definition.polygon));expect(overlap?turf.area(overlap):0).toBeLessThan(0.01);}
-        expect(ground.outputs.reduce((sum,piece)=>sum+piece.areaM2,0)).toBeCloseTo(turf.area(parcel),1);
+        // The agreement's land is what the building and the road take, not the rest of A: it balances
+        // with what A puts in.
+        const outputM2=ground.outputs.reduce((sum,piece)=>sum+piece.areaM2,0);
+        expect(outputM2).toBeLessThan(turf.area(parcel)-1);
+        expect(outputM2).toBeCloseTo(ground.inputs.parcels.reduce((sum,input)=>sum+input.areaM2,0),1);
         expect(JSON.stringify([building,road])).toBe(originals);
     });
 });
