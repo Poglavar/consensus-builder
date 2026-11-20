@@ -112,4 +112,6 @@ Draft content and prepared acceptance packages are portable JSON for browser imp
 takes the ownership hash from the chosen lens’s offer preflight and returns exact seller,
 accepting-wallet and sharing messages. The consent tool reads shared sessions
 or relays supplied signatures with `confirm=true`. These tools never generate wallet signatures
-or send funds. The person completes those steps with their wallet in the browser.
+or send funds. The person completes those steps with their wallet in the browser. The hosted
+server therefore offers all seven: publication and consent relays are annotated as
+non-destructive public writes, like `ugt_publish_design`, and share its per-minute publish budget.
