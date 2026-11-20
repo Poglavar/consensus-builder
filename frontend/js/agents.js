@@ -1025,11 +1025,12 @@ async function showAgentDialog(agentId, options = {}) {
     const labelLogout = translateText('agentDialog.logoutButton', 'Log Out');
 
     // The dialog wears the shared chrome (css/primitives.css cb-dialog): an overlay on the dialog rung
-    // (the upper rung when it opens over another dialog, e.g. the activity explorer or the welcome
-    // dialog's takeover preview) around a cb-dialog--lg card. agent-dialog-modal on the card and
+    // around a cb-dialog--lg card. The welcome dialog's takeover preview (elevated) opens over the
+    // profile sheet, which sits on the confirmation layer as a prerequisite; the preview shares that
+    // layer and, appended after the sheet, lies above it. agent-dialog-modal on the card and
     // agent-dialog-modal-close beside close-circle-btn are hooks for scripts and the e2e specs.
     const overlay = document.createElement('div');
-    overlay.className = 'cb-dialog-overlay' + (elevated ? ' cb-dialog-overlay--top' : '');
+    overlay.className = 'cb-dialog-overlay' + (elevated ? ' cb-dialog-overlay--prerequisite' : '');
     const modal = document.createElement('div');
     modal.className = 'cb-dialog cb-dialog--lg agent-dialog-modal';
     modal.dataset.portfolioUsdPerEth = String(portfolioBasis.usdPerEth);
