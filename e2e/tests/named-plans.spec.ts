@@ -1,6 +1,6 @@
 import { test, expect } from '../helpers/fixtures';
 import { openCity, createSpace, openOnAnotherDevice, chooseProfileName } from '../helpers/runtime';
-import { pageIndex } from '../helpers/mocks/shared-server';
+import { pageIndex, cidOfObject } from '../helpers/mocks/shared-server';
 
 for (const width of [1280, 390]) {
   test(`a saved plan shares its immutable snapshot at ${width}px`, async ({ mockApi: page, browser, baseURL }) => {
@@ -18,12 +18,18 @@ for (const width of [1280, 390]) {
     expect(await page.evaluate(()=>(window as any).ClickStack.current().sections.find((s:any)=>s.kind==='plans').instances[0].cid)).toBe(plan.cid);
     expect(pageIndex(page).requests.filter(r=>r.method==='POST'&&['/pins','/designs','/plans'].includes(r.path))).toHaveLength(0);
     await page.evaluate(id=>{const w:any=window,r=w.proposalStorage.getProposal(id);r.title='Later change';w.proposalStorage._indexProposal(r);},id);
+    // A later edit to an applied member is shared as a new immutable revision; the saved snapshot stays exactly as it was.
     await section.getByRole('button',{name:'Share plan',exact:true}).click(); const share=page.locator('.plan-share');
-    await expect(share.getByRole('heading',{name:'Riverside Garden'})).toBeVisible(); await share.getByRole('button',{name:'Publish and copy link',exact:true}).click();
-    const linkField=share.getByLabel('Plan link',{exact:true}); await expect(linkField).toBeVisible(); await expect(linkField).toHaveValue(new RegExp(`/plans/${plan.cid}`));
-    const link=await linkField.inputValue(); expect(pageIndex(page).requests.find(r=>r.method==='POST'&&r.path==='/plans')!.body.content).toEqual(snapshot);
+    await expect(share.getByRole('heading',{name:'Riverside Garden'})).toBeVisible(); await expect(share).toContainText('1 changed designs are ready to publish as a new plan revision.');
+    const revised=await page.evaluate(cid=>(window as any).PlanWorkspace.list().find((row:any)=>row.content.title==='Riverside Garden'&&row.cid!==cid),plan.cid);
+    expect(revised.cid).not.toBe(plan.cid);
+    expect(await page.evaluate(cid=>(window as any).PlanWorkspace.list().find((row:any)=>row.cid===cid)?.content,plan.cid)).toEqual(snapshot);
+    await share.getByRole('button',{name:'Publish and copy link',exact:true}).click();
+    const linkField=share.getByLabel('Plan link',{exact:true}); await expect(linkField).toBeVisible(); await expect(linkField).toHaveValue(new RegExp(`/plans/${revised.cid}`));
+    const link=await linkField.inputValue(); const published=pageIndex(page).requests.find(r=>r.method==='POST'&&r.path==='/plans')!.body.content;
+    expect(published).toEqual(revised.content); expect(cidOfObject(published)).toBe(revised.cid);
     const receiver=await openOnAnotherDevice(browser,link,pageIndex(page),baseURL);
-    try { await expect.poll(()=>receiver.page.evaluate(cid=>!!(window as any).PlanWorkspace.list().find((p:any)=>p.cid===cid),plan.cid)).toBe(true); await expect(receiver.page).toHaveTitle('Riverside Garden · Consensus Builder'); }
+    try { await expect.poll(()=>receiver.page.evaluate(cid=>!!(window as any).PlanWorkspace.list().find((p:any)=>p.cid===cid),revised.cid)).toBe(true); await expect(receiver.page).toHaveTitle('Riverside Garden · Consensus Builder'); }
     finally { await receiver.context.close(); }
   });
 }
