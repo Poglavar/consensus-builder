@@ -124,8 +124,12 @@ test('fences the park and a play area with gates and a swing, saved and drawn in
 
   await editor.locator('[data-action="save"]').click();
   await expect(editor).toHaveCount(0);
-  const design = await page.evaluate(id => JSON.parse(JSON.stringify((window as any).getProposalByIdOrHash(id).structureProposal.decorationDesign)), proposalId);
-  expect(design.enclosures).toHaveLength(2);
+  // Done closes the editor first and commits the in-place save afterwards
+  // (finishProposalDraftDesignSession), so the record is read until the save lands; the fixture's
+  // design has no enclosures, so they appear only with the save.
+  const savedDesign = () => page.evaluate(id => JSON.parse(JSON.stringify((window as any).getProposalByIdOrHash(id)?.structureProposal?.decorationDesign ?? null)), proposalId);
+  await expect.poll(async () => (await savedDesign())?.enclosures?.length ?? 0).toBe(2);
+  const design = await savedDesign();
   const [wholePark, playArea] = design.enclosures;
   expect(wholePark).toMatchObject({ fence: 'mesh', use: 'none' });
   expect(wholePark.ring).toBeUndefined();

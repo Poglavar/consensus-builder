@@ -39,8 +39,10 @@ test('plants a pavement tree on a square and edits its height and pit from the t
 
   await editor.locator('[data-action="save"]').click();
   await expect(editor).toHaveCount(0);
-  const trees = await page.evaluate(id => (window as any).getProposalByIdOrHash(id).structureProposal.decorationDesign.trees, proposalId);
-  expect(trees).toContainEqual(expect.objectContaining({ pit: 'grass', heightM: edited }));
+  // Done closes the editor first and commits the in-place save afterwards
+  // (finishProposalDraftDesignSession), so the record is read until the save lands.
+  await expect.poll(() => page.evaluate(id => (window as any).getProposalByIdOrHash(id)?.structureProposal?.decorationDesign?.trees ?? null, proposalId))
+    .toContainEqual(expect.objectContaining({ pit: 'grass', heightM: edited }));
   await expect(page.locator('.park-tree-glyph.is-pit-grass')).toHaveCount(1);
 
   // The model view draws the square with its pits; any error loading or building it fails the test.
