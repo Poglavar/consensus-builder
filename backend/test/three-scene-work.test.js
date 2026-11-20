@@ -52,3 +52,9 @@ it('allows another refresh after a build failure', async () => {
     fail = false;
     await expect(queue.request('existing')).resolves.toBeUndefined();
 });
+
+it('awaits asynchronous building work before starting the next item or reporting completion', async () => {
+    const visited=[];let finish;
+    const running=forEach([1,2], async n=>{visited.push(n);if(n===1)await new Promise(resolve=>{finish=resolve});});
+    await Promise.resolve();expect(visited).toEqual([1]);finish();expect(await running).toBe(true);expect(visited).toEqual([1,2]);
+});

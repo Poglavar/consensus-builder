@@ -13,7 +13,8 @@
         let start = now();
         for (let index = 0; index < items.length; index++) {
             if (!isCurrent()) return false;
-            visit(items[index], index);
+            const result = visit(items[index], index);
+            if (result && typeof result.then === 'function') await result;
             if (now() - start >= budgetMs && index + 1 < items.length) {
                 await yieldTask();
                 start = now();

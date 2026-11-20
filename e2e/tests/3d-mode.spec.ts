@@ -671,6 +671,10 @@ test('3D suggested-existing toggle and floor cutaway change rendered floor plans
     ?.some((feature: any) => feature.properties?.id === 91001) ?? false)).toBe(true);
   await closeSheets(page);
   await enter3D(page);
+  // Suggested existing layouts are built only for visible buildings close to the camera.
+  expect(await page.evaluate(() => (window as any).applyThree3DGeoView({
+    targetLat: 45.80036, targetLng: 15.98277, pitchRad: -Math.PI / 4, range: 75,
+  }))).toBe(true);
   await openModelLayers(page);
 
   const xray = page.locator('#three-mode-xray');

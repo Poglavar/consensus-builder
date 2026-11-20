@@ -5071,6 +5071,7 @@
             "accessViewAuto": "حسب كل مبنى",
             "accessViewPoint": "وصول نقطي",
             "accessViewCorridor": "ممر",
+            "northOrientationOnly": "اتجاه شمالي فقط",
             "suggestedNorthFlats": "{{count}} شقق في كل طابق تطل على الشمال فقط (واجهة واحدة)، باللون الأحمر.",
             "xraySolidExisting": "المباني القائمة معتمة، لذلك تُخفى تصميماتها الداخلية.",
             "xrayMakeTransparent": "اجعلها شفافة",

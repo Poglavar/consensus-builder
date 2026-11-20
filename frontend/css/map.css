@@ -252,6 +252,22 @@ body.cadastre-view.on-map-editing:has(.on-map-reparcellization) .leaflet-map-pan
 }
 
 /* Floor-plan toggle and source-accuracy status inside the 3D controls. */
+/* Explain the flagged apartment under the pointer without intercepting building clicks. */
+.three-apartment-hover-note {
+    position: fixed;
+    z-index: 10000;
+    pointer-events: none;
+    max-width: min(260px, calc(100vw - 16px));
+    padding: 7px 10px;
+    border: 1px solid #dc7770;
+    border-radius: 6px;
+    background: #fff5f3;
+    color: #8e211b;
+    font: 600 13px/1.35 system-ui, sans-serif;
+    box-shadow: 0 2px 8px #0002;
+}
+.three-apartment-hover-note[hidden] { display: none; }
+
 #model-layer-controls .three-mode-xray-row {
     display: grid;
     gap: var(--cb-space-2);

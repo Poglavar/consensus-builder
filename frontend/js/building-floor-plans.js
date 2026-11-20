@@ -178,6 +178,27 @@
                 }
             }
         }
+        const regionIds = new Set();
+        if (model.apartmentRegions !== undefined) {
+            if (!Array.isArray(model.apartmentRegions) || model.apartmentRegions.length > 200) {
+                fail('apartmentRegions', 'must contain at most 200 sourced apartment regions');
+            } else model.apartmentRegions.forEach((region, index) => {
+                const key = `apartmentRegions[${index}]`;
+                if (typeof region?.id !== 'string' || !region.id || regionIds.has(region.id)) fail(key, 'requires a unique id');
+                regionIds.add(region?.id);
+                if ((region?.source !== undefined && !httpUrl(region.source?.url)) || typeof region?.basis !== 'string' || !region.basis.trim()) fail(key, 'requires a boundary basis and a valid source URL when supplied');
+                if (!Array.isArray(region?.polygons) || !region.polygons.length) { fail(key, 'requires boundary polygons'); return; }
+                region.polygons.forEach(polygon => {
+                    if (!Array.isArray(polygon) || !polygon.length) { fail(key, 'requires an outer ring'); return; }
+                    polygon.forEach(ring => {
+                        if (!Array.isArray(ring) || ring.length < 3 || !ring.every(uvPoint)) { fail(key, 'requires normalized polygon rings'); return; }
+                        vertices += ring.length;
+                        const area = ring.reduce((sum,p,j) => sum+p[0]*ring[(j+1)%ring.length][1]-p[1]*ring[(j+1)%ring.length][0],0);
+                        if (Math.abs(area) < 1e-12) fail(key, 'boundary rings must have nonzero area');
+                    });
+                });
+            });
+        }
         if (vertices > 100000) fail('walls', 'layout must not exceed 100000 polygon vertices');
         for (const kind of ['openings', 'stairs', 'railings']) {
             if (!Array.isArray(model[kind]) || model[kind].length > 2000) { fail(kind, 'must contain at most 2000 elements'); continue; }
@@ -295,12 +316,16 @@
             return point;
         };
         const layouts = new Map(plans.layouts.map(layout => [layout.id, {
-            source: layout.source, parts: buildArchitectureParts(layout.architecture, interpolate)
+            source: layout.source, parts: buildArchitectureParts(layout.architecture, interpolate),
+            apartmentRegions: (layout.architecture.apartmentRegions || []).map(region => ({
+                id: region.id, flag: region.flag || null, polygons: region.polygons.map(polygon => polygon.map(ring => ring.map(p => interpolate(...p))))
+            }))
         }]));
         return plans.storeys.map(storey => ({
             id: storey.id, level: storey.level, layoutId: storey.layoutId,
             elevationM: storey.elevationM, elevationBasis: storey.elevationBasis,
             parts: layouts.get(storey.layoutId).parts,
+            apartmentRegions: layouts.get(storey.layoutId).apartmentRegions,
             apartmentCount: (storey.units || []).filter(unit => unit.kind === 'apartment').length,
             sourceUrl: storey.source?.url || layouts.get(storey.layoutId).source.url
         }));

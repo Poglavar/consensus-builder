@@ -40,6 +40,16 @@ describe('default floor plan generator', () => {
         const { floorPlans } = result;
         expect(plans.validateFloorPlans(floorPlans)).toEqual([]);
         expect(floorPlans.suggested).toBe(true);
+        for (const layout of floorPlans.layouts) {
+            expect(layout.architecture.apartmentRegions).toHaveLength(2);
+            expect(layout.architecture.apartmentRegions.every(region => region.polygons.length > 0)).toBe(true);
+        }
+        const projected = plans.buildFloorPlanGeometry({ properties: { floorPlans } }, (lng, lat) => [lng * 1000, lat * 1000]);
+        expect(projected.every(storey => storey.apartmentRegions.length === 2)).toBe(true);
+        expect(projected[1].apartmentRegions).toBe(projected[2].apartmentRegions);
+        const invalidRegions = structuredClone(floorPlans);
+        invalidRegions.layouts[0].architecture.apartmentRegions[0].polygons[0][0][0][0] = 1.1;
+        expect(plans.validateFloorPlans(invalidRegions).join(' ')).toMatch(/normalized polygon rings/);
         expect(floorPlans.layouts.map(layout => layout.source.kind)).toEqual(['generated', 'generated']);
         expect(floorPlans.layouts[0].source.generator).toBe(generator.GENERATOR_ID);
         expect(floorPlans.storeys.map(floor => floor.elevationM)).toEqual([0, 3, 6, 9]);
@@ -480,6 +490,8 @@ describe('double-loaded corridor access', () => {
         const northRow = ew.summary.flats.filter(flat => flat.type !== 'three-bed' && centroidY(flat) > 0);
         expect(ew.summary.flats.filter(flat => flat.flag).map(flat => flat.id).sort()).toEqual(northRow.map(flat => flat.id).sort());
         expect(ew.summary.flaggedFlats).toBe(northRow.length);
+        const projected=plans.buildFloorPlanGeometry({properties:{floorPlans:ew.floorPlans}},(x,y)=>[x,y]);
+        expect(projected[1].apartmentRegions.filter(region=>region.flag==='north-single-aspect')).toHaveLength(northRow.length);
         expect(ew.floorPlans.storeys.find(storey => storey.level === 3).units.filter(unit => unit.flag === 'north-single-aspect')).toHaveLength(northRow.length);
         expect(ew.floorPlans.notes.join(' ')).toMatch(new RegExp(`${northRow.length} flat\\(s\\) per storey face only north`));
         // Turned north-south, both long sides see east or west: no flat is flagged and the cores face the street.

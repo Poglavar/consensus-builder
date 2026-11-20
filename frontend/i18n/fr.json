@@ -4894,6 +4894,7 @@
             "accessViewAuto": "Selon chaque bâtiment",
             "accessViewPoint": "Desserte ponctuelle",
             "accessViewCorridor": "Couloir",
+            "northOrientationOnly": "Orientation uniquement au nord",
             "suggestedNorthFlats": "{{count}} logements par niveau donnent uniquement au nord (mono-orientés), en rouge.",
             "xraySolidExisting": "Les bâtiments existants sont opaques : leur intérieur est masqué.",
             "xrayMakeTransparent": "Rendre transparents",
