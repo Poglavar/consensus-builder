@@ -1762,6 +1762,7 @@
                 "square": "Square",
                 "lake": "Lake",
                 "transport": "Transport",
+                "ownership": "Ownership",
                 "road": "Road",
                 "roadInParcel": "Road in parcel",
                 "roadInParcelTooltip": "Fit a road into this parcel: its lanes fill the width and nothing outside it is taken",

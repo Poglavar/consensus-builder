@@ -1757,6 +1757,7 @@
                 "square": "Trg",
                 "lake": "Jezero",
                 "transport": "Saobraćaj",
+                "ownership": "Vlasništvo",
                 "road": "Put",
                 "roadInParcel": "Put u parceli",
                 "roadInParcelTooltip": "Smesti put u ovu parcelu: trake ispunjavaju njenu širinu, a ništa van nje se ne zauzima",

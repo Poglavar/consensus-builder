@@ -1772,6 +1772,7 @@
                 "square": "Trg",
                 "lake": "Jezero",
                 "transport": "Promet",
+                "ownership": "Vlasništvo",
                 "road": "Cesta",
                 "roadInParcel": "Cesta u čestici",
                 "roadInParcelTooltip": "Smjesti cestu u ovu česticu: trake ispunjavaju njezinu širinu, a ništa izvan nje se ne zauzima",

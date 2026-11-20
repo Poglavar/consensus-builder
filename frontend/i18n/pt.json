@@ -3086,6 +3086,7 @@
                 "layOutParcels": "Definir parcelamento",
                 "lake": "Lago",
                 "transport": "Transportes",
+                "ownership": "Propriedade",
                 "roadInParcel": "Rua no lote",
                 "roadInParcelTooltip": "Encaixar uma rua neste lote: as faixas ocupam a largura e nada fora dele é tomado",
                 "undergroundStation": "Estação subterrânea",

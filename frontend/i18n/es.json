@@ -1785,6 +1785,7 @@
                 "square": "Plaza",
                 "lake": "Lago",
                 "transport": "Transporte",
+                "ownership": "Propiedad",
                 "road": "Carretera",
                 "roadInParcel": "Calle en parcela",
                 "roadInParcelTooltip": "Ajusta una calle a esta parcela: sus carriles llenan el ancho y no se toma nada fuera de ella",

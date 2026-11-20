@@ -3086,6 +3086,7 @@
                 "layOutParcels": "Dessiner le découpage parcellaire",
                 "lake": "Lac",
                 "transport": "Transports",
+                "ownership": "Propriété",
                 "roadInParcel": "Rue dans la parcelle",
                 "roadInParcelTooltip": "Ajuster une rue à cette parcelle : ses voies en occupent la largeur et rien n’est pris au-delà",
                 "undergroundStation": "Station souterraine",

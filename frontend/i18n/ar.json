@@ -3192,6 +3192,7 @@
                 "layOutParcels": "توزيع قطع الأراضي",
                 "lake": "بحيرة",
                 "transport": "النقل",
+                "ownership": "الملكية",
                 "roadInParcel": "شارع داخل المقسم",
                 "roadInParcelTooltip": "ملاءمة شارع داخل هذا المقسم: تملأ حاراته عرضه ولا يؤخذ شيء خارجه",
                 "undergroundStation": "محطة تحت الأرض",
