@@ -161,10 +161,11 @@ export function publishedPlansToFloorModel(plans, { publicationUrl = () => null 
                     quality: plan.quality?.status ?? null })) } });
         }
         const basis = String(entries[0].storey.heightBasis ?? entries[0].plan.building?.envelope?.heightBasis ?? '');
-        // A whole-floor plan drawn for this storey alone lists its units; otherwise the storey's unit plans are its
-        // units. A floor plan drawn once for several storeys cannot say which of its units are on which storey.
-        const floorUnits = byLevel.get(level).floors.filter(({ plan }) => planLevels(plan).length === 1)
-            .flatMap(({ plan }) => Array.isArray(plan.units) ? plan.units : []).filter(unit => typeof unit?.id === 'string' && unit.id && UNIT_KINDS.includes(unit.kind))
+        // A whole-floor plan lists the units of the storeys it is drawn for, each naming its storey in `level` (a typical
+        // floor drawn once for levels 2..8 lists every storey's own apartments); a plan of one storey may leave level out.
+        // Where the floor plans list none, the storey's unit plans are its units.
+        const floorUnits = byLevel.get(level).floors.flatMap(({ plan }) => (Array.isArray(plan.units) ? plan.units : [])
+            .filter(unit => (unit?.level ?? null) === null ? planLevels(plan).length === 1 : unit.level === level)).filter(unit => typeof unit?.id === 'string' && unit.id && UNIT_KINDS.includes(unit.kind))
             .map(unit => ({ id: unit.id, kind: unit.kind, ...(finite(unit.areaM2) && unit.areaM2 > 0 ? { areaM2: unit.areaM2 } : {}),
                 ...(httpUrl(unit.url) ? { url: unit.url } : {}) }));
         const units = floorUnits.length ? floorUnits : byLevel.get(level).units

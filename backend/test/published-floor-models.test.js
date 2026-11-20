@@ -75,7 +75,23 @@ describe('published plans → one X-ray floor model', () => {
         }
     });
 
-    it("lists a one-storey floor plan's own units, never a several-storey plan's, and a unit plan's kind", () => {
+    it('gives each storey of a typical floor drawn once the units whose level it is', () => {
+        const plans = fixture();
+        const at = plans.findIndex(plan => plan.scope === 'floor');
+        const typical = structuredClone(plans);
+        typical[at].levels = [2, 6];
+        typical[at].units = [{ id: 'T-2-1', kind: 'apartment', level: 2 }, { id: 'T-2-2', kind: 'apartment', level: 2, areaM2: 51 },
+            { id: 'T-6-1', kind: 'office', level: 6, url: 'https://x.test/T-6-1.pdf' }, { id: 'stray', kind: 'apartment' }];
+        const model = publishedPlansToFloorModel(typical).floorPlans;
+        expect(validateFloorPlans(model)).toEqual([]);
+        expect(model.storeys.map(storey => [storey.level, storey.units])).toEqual([
+            [2, [{ id: 'T-2-1', kind: 'apartment' }, { id: 'T-2-2', kind: 'apartment', areaM2: 51 }]],
+            [6, [{ id: 'T-6-1', kind: 'office', url: 'https://x.test/T-6-1.pdf' }]]]);
+        // Both storeys are drawn from the one drawing.
+        expect(new Set(model.storeys.map(storey => storey.layoutId)).size).toBe(1);
+    });
+
+    it("lists a one-storey floor plan's own units, never a several-storey plan's units without a level, and a unit plan's kind", () => {
         const plans = fixture();
         const at = plans.findIndex(plan => plan.scope === 'floor');
         const listed = structuredClone(plans);
