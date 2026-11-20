@@ -100,6 +100,14 @@ describe('personPositions', () => {
         expect(byId.k3.landM2).toBeCloseTo(900.25 / 3 + 800.5 * 5 / 7 + 233.75 * 8 / 11, 9);
         expect(byId.k3.parcels.map(row => [row.parcelId, row.share])).toEqual([['A', '1/3'], ['B', '5/7'], ['C', '8/11']]);
         expect(byId.k3.contributedM2).toBeCloseTo(1000.6 / 3 + 700 * 5 / 7 + 334 * 8 / 11, 9);
+        // Without its whole parcel an input counts as the whole parcel, so nothing is left over;
+        // with one, each person holds their share of the rest the agreement leaves out.
+        expect(byId.k3.parcelM2).toBeCloseTo(byId.k3.contributedM2, 9);
+        expect(byId.k3.restM2).toBe(0);
+        const wider = { ...value, inputs: { ...value.inputs, parcels: value.inputs.parcels.map(parcel => (parcel.parcelId === 'C' ? { ...parcel, parcelAreaM2: 1334 } : parcel)) } };
+        const k3 = Persons.personPositions(wider, wider.rule.approvalConfig.rights).persons.find(person => person.personId === 'k3');
+        expect(k3.restM2).toBeCloseTo(1000 * 8 / 11, 9);
+        expect(k3.parcelM2).toBeCloseTo(byId.k3.contributedM2 + 1000 * 8 / 11, 9);
         expect(result.totals.partyLandM2).toBeCloseTo(900.25 + 800.5 + 233.75, 9);
         expect(result.totals.personLandM2).toBeCloseTo(result.totals.partyLandM2, 9);
         expect(result.totals.balanced).toBe(true);

@@ -525,8 +525,8 @@ describe('published', () => {
         expect(object).not.toHaveProperty('designs');
         expect(object.inputs).toEqual({
             parcels: [
-                { parcelId: 'k9', parcelSourceId: 'zagreb-dgu', areaM2: 1000 },
-                { parcelId: 'k10', areaM2: 800 }
+                { parcelId: 'k9', parcelSourceId: 'zagreb-dgu', areaM2: 1000, parcelAreaM2: null },
+                { parcelId: 'k10', areaM2: 800, parcelAreaM2: null }
             ],
             openGroundM2: 0
         });

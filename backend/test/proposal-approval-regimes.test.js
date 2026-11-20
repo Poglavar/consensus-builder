@@ -8,7 +8,6 @@ import { createRequire } from 'node:module';
 import { readFileSync } from 'node:fs';
 import vm from 'node:vm';
 import { Keypair } from '@solana/web3.js';
-import * as turf from '@turf/turf';
 import { createApprovalAttester, fileRegistry, normalizeRegistry } from '../lens/approval.js';
 import { wallet, MEMBER, memberKeypair, NOW, at } from './helpers/approval-decisions.js';
 import { cidOf } from '../cid.js';
@@ -20,7 +19,6 @@ const X = require('../../frontend/js/proposals/approval-text.js');
 const review = require('../../frontend/js/proposals/approval-review.js');
 const relay = require('../../frontend/js/proposals/approval-relay.js');
 const proof = require('../../frontend/js/proposals/approval-proof.js');
-const validation = require('../../frontend/js/reparcellization-validation.js');
 const approvalPanelSource = readFileSync(new URL('../../frontend/js/proposals/approval-panel.js', import.meta.url), 'utf8');
 const approval = require('../../frontend/js/proposals/approval.js');
 const approvalRegimes = require('../../frontend/js/proposals/approval-regimes.js');
@@ -272,32 +270,6 @@ describe('distribution rules of a scheme', () => {
         expect(X.checkLines(germany, t, id => id.toUpperCase())).toEqual(['O-A gives up 35% of their land; the cap is 30%.']);
     });
 
-    it('fails a plan that gives up more land than its scheme allows, and reports the check', () => {
-        const rect = (west, south, east, north) => ({ type: 'Polygon', coordinates: [[[west, south], [east, south], [east, north], [west, north], [west, south]]] });
-        const pool = rect(16, 46, 16.002, 46.001);
-        // Each owner put in half the pool; A keeps a strip `ownerCut` wide of the 0.002° pool width.
-        const half = turf.area({ type: 'Feature', properties: {}, geometry: pool }) / 2;
-        const plan = (ownerCut) => ({
-            goal: 'reparcellization', title: 'cap test', cadastreParcelIds: ['a', 'b'], offer: 0, offerCurrency: 'EUR', lens: ['m'],
-            approvalConfig: config(v1([{ parcelId: 'a', complete: true, areaM2: 1000, owners: [owner('o-a')] }, { parcelId: 'b', complete: true, areaM2: 1000, owners: [owner('o-b')] }]),
-                R.policyOf(R.latest('tr-article-18'), ['belediye']), pin('tr-article-18')),
-            reparcellization: {
-                poolGeometry: pool, contributionBasis: 'area',
-                ownerShares: [{ ownerKey: 'o-a', contributedArea: half }, { ownerKey: 'o-b', contributedArea: half }, { ownerKey: 'public-land', contributedArea: 0 }],
-                polygons: [{ geometry: rect(16, 46, 16 + ownerCut, 46.001), ownerKey: 'o-a' }, { geometry: rect(16 + ownerCut, 46, 16.001, 46.001), ownerKey: 'public-land' },
-                    { geometry: rect(16.001, 46, 16.002, 46.001), ownerKey: 'o-b' }]
-            }
-        });
-        // A keeps 0.0006 of 0.002: 30% of the pool, 60% of A's own land, so A gives up 40% (under 45%).
-        const fine = validation.validate(plan(0.0006), { turf });
-        expect(fine.regimeCheck.ok).toBe(true);
-        expect(fine.errors.map(error => error.code)).not.toContain('regime-allocation');
-        // A keeps 0.0004: 40% of A's land, so A gives up 60%.
-        const over = validation.validate(plan(0.0004), { turf });
-        expect(over.regimeCheck.rules.find(rule => rule.kind === 'cap')).toMatchObject({ ok: false, worst: { ownerKey: 'o-a' } });
-        expect(over.errors.map(error => error.code)).toContain('regime-allocation');
-        expect(over.valid).toBe(false);
-    });
 });
 
 describe('words for the rules', () => {

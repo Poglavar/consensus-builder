@@ -284,9 +284,11 @@
     // AgreementPersons.personPositions; `names`: their display names); the owners of a parcel without
     // complete rights stay one party, as do all parcels when the rule has no rights. Public land and
     // the proposer or sponsor follow. Without a ledger, three example owners give up the scheme's cap,
-    // or a quarter of their land where it sets none, uncompensated. `floor` is the least land an owner
-    // may get back under a per-owner cap; `contribution` the share of each owner's land taken without
-    // compensation before money settles the rest (null when settled by value).
+    // or a quarter of their land where it sets none, uncompensated. An owner puts in their whole parcels
+    // and gets back the rest the agreement leaves them besides what it assigns, as the scheme measures
+    // it (AgreementRecord.schemeCheck). `floor` is the least land an owner may get back under a
+    // per-owner cap; `contribution` the share of each owner's land taken without compensation before
+    // money settles the rest (null when settled by value).
     function ownersModel(dimensions, ledger = null, persons = null, names = new Map()) {
         const cap = dimensions.publicLand;
         const ownerCap = cap && cap.per === 'owner' ? cap.ratio : null;
@@ -296,16 +298,16 @@
                 floor, overCap: floor !== null && (landOut || 0) < floor - landIn * 1e-9 };
         };
         let rows, example = false, contribution = null;
-        if (ledger && ledger.parties.some(party => !party.areaUnknown && party.contributedM2 > 0)) {
-            const parties = ledger.parties.filter(party => !party.areaUnknown && party.contributedM2 > 0);
-            const people = persons ? persons.persons.filter(person => !person.areaUnknown && person.contributedM2 > 0) : [];
+        const measured = entry => entry.contributedM2 > 0 && typeof entry.parcelM2 === 'number' && typeof entry.restM2 === 'number';
+        if (ledger && ledger.parties.some(measured)) {
+            const parties = ledger.parties.filter(measured);
+            const people = persons ? persons.persons.filter(measured) : [];
             const unresolved = new Set((persons && people.length ? persons.unresolved : parties).map(entry => entry.ownerKey));
-            rows = [...people.map(person => owner(`person:${person.personId}`, names.get(person.personId) || person.personId, person.contributedM2, person.landM2, person.cashCents)),
+            rows = [...people.map(person => owner(`person:${person.personId}`, names.get(person.personId) || person.personId, person.parcelM2, person.landM2 + person.restM2, person.cashCents)),
                 ...parties.filter(party => unresolved.has(party.ownerKey)).map(party => owner(party.ownerKey, party.parcelId ? t('agreement.party.parcelOwners', 'Owner(s) of parcel {{parcelId}}', { parcelId: party.parcelId }) : party.displayName,
-                    party.contributedM2, party.assignedM2, party.cashCents, true))]
+                    party.parcelM2, party.assignedM2 + party.restM2, party.cashCents, true))]
                 .sort((a, b) => b.landIn - a.landIn);
-            const shares = parties.filter(party => typeof party.entitlementM2 === 'number').map(party => 1 - party.entitlementM2 / party.contributedM2);
-            contribution = ledger.valued ? null : Math.max(0, shares[0] || 0);
+            contribution = ledger.valued ? null : ledger.contribution;
             const others = [];
             if (ledger.publicM2 > 0) others.push({ key: 'public', kind: 'public', label: t('agreement.allocation.public', 'Public'), landIn: 0, landOut: ledger.publicM2, paysCents: 0, receivesCents: 0, floor: null, overCap: false });
             const sponsor = ledger.money?.sponsorCents || 0;
@@ -400,7 +402,7 @@
         const limit = capRatio(rule.limit);
         if (rule.per === 'owner') {
             const party = ledger && ledger.parties.find(row => row.ownerKey === rule.worst.ownerKey);
-            const area = party ? party.contributedM2 * (rule.worst.given - limit) : null;
+            const area = party && typeof party.parcelM2 === 'number' ? party.parcelM2 * (rule.worst.given - limit) : null;
             return area !== null
                 ? t('proposalDrafts.approval.guide.fixCapOwner', 'In Output parcels, give {{owner}} at least {{area}} more land back, or lower the Land contribution; a scheme with a higher cap is another way.', { owner: name(rule.worst.ownerKey), area: areaText(area) })
                 : t('proposalDrafts.approval.guide.fixCapOwnerPlain', 'In Output parcels, give {{owner}} more land back.', { owner: name(rule.worst.ownerKey) });

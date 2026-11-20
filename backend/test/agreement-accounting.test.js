@@ -18,7 +18,7 @@ function fixture() {
     });
     return Record.settle({ schema: 'agreement/v1', id: 'ag-accounting', city: 'zagreb',
         plan: { cid: Cid.cidOfObject(content), content }, designs: [{ proposalId: 'layout', cid: designCid }],
-        inputs: { parcels: [{ parcelId: 'A', areaM2: 1000 }, { parcelId: 'B', areaM2: 1000 }], openGroundM2: 0 },
+        inputs: { parcels: [{ parcelId: 'A', areaM2: 1000, parcelAreaM2: 1000 }, { parcelId: 'B', areaM2: 1000, parcelAreaM2: 1000 }], openGroundM2: 0 },
         outputs, allocations: outputs.map((output, i) => ({ output: output.hash, to: { kind: 'party', ownerKey: `parcel-owner:${i ? 'B' : 'A'}` } })),
         money: { currency: 'EUR', lines: [] }, rule: { electorate: 'owners', binding: false, lens: [], approvalConfig: null,
             settlement: { method: 'area', rateCentsPerM2: 10000, contributionBasisPoints: 0 } } });
@@ -28,7 +28,7 @@ describe('plan-first agreement accounting', () => {
     it('supports unnamed owners and balances compensation from gains and losses', () => {
         const record = fixture();
         expect(Record.validate(record).valid).toBe(true);
-        expect(record.inputs.parcels[0]).toEqual({ parcelId: 'A', areaM2: 1000 });
+        expect(record.inputs.parcels[0]).toEqual({ parcelId: 'A', areaM2: 1000, parcelAreaM2: 1000 });
         expect(Record.landParties(record)).toEqual(new Set(['parcel-owner:A', 'parcel-owner:B']));
         expect(record.money.lines).toEqual([{ ownerKey: 'parcel-owner:A', amountCents: 2000000 }, { ownerKey: 'parcel-owner:B', amountCents: -2000000 }]);
         expect(Record.ledger(record).money.sponsorCents).toBe(0);
@@ -166,6 +166,42 @@ describe('plan-first agreement accounting', () => {
         expect(Record.schemeCheck(tight).check).toMatchObject({ ok: false });
         expect(Record.schemeCheck(tight, german).check.ok).toBe(true);
         expect(Record.schemeCheck({ ...tight, rule: { ...tight.rule, approvalConfig: null } })).toBeNull();
+    });
+    it('measures a scheme’s cap and land contribution against the whole parcel when the designs take part of it', () => {
+        // A road takes 1000 m² of parcel A's 10000 m², all of it public; the other 9000 m² stay A's,
+        // outside the agreement.
+        const german = Regimes.latest('de-umlegung-new');
+        const geometry = geometryAt(0);
+        const road = { hash: Record.outputHash(geometry), pieceId: 'road', geometry, areaM2: 1000, fromParcelIds: ['A'], role: 'corridor', producedBy: 'layout' };
+        const base = fixture();
+        const raw = { ...base, inputs: { parcels: [{ parcelId: 'A', areaM2: 1000, parcelAreaM2: 10000 }], openGroundM2: 0 }, outputs: [road],
+            allocations: [{ output: road.hash, to: { kind: 'public' } }], money: { currency: 'EUR', lines: [] },
+            rule: { ...base.rule, approvalConfig: { schema: 'proposal-approval/v1', rights: null, regime: { id: german.id, version: german.version }, policy: Regimes.policyOf(german, ['authority-1']) } } };
+        const withContribution = basisPoints => Record.settle({ ...raw, rule: { ...raw.rule, settlement: { ...raw.rule.settlement, contributionBasisPoints: basisPoints } } });
+        const paid = withContribution(0);
+        // A gives up 10% of its parcel, within the 30% cap; the agreement is valid and the index takes it.
+        const cap = Record.schemeCheck(paid).check.rules.find(rule => rule.kind === 'cap');
+        expect(cap).toMatchObject({ ok: true, worst: { ownerKey: 'parcel-owner:A' } });
+        expect(cap.worst.given).toBeCloseTo(0.1, 9);
+        expect(Record.validate(paid).valid).toBe(true);
+        expect(Record.published(paid).inputs.parcels).toEqual([{ parcelId: 'A', areaM2: 1000, parcelAreaM2: 10000 }]);
+        expect(validateAgreementContent(Record.published(paid), { designCids: [designCid] }).ok).toBe(true);
+        // Without a contribution the road is paid in full: 1000 m² at 100 EUR.
+        expect(paid.money.lines).toEqual([{ ownerKey: 'parcel-owner:A', amountCents: 10000000 }]);
+        // The contribution is a share of the whole parcel, taken only from the land the agreement
+        // covers: 5% is 500 m² free and 500 m² paid; 30% covers the whole road, and A never pays
+        // for the 9000 m² it keeps.
+        expect(withContribution(500).money.lines).toEqual([{ ownerKey: 'parcel-owner:A', amountCents: 5000000 }]);
+        const free = withContribution(3000);
+        expect(free.money.lines).toEqual([]);
+        expect(Record.validate(free).valid).toBe(true);
+        expect(Record.ledger(free).parties[0]).toMatchObject({ contributedM2: 1000, parcelM2: 10000, restM2: 9000, entitlementM2: 0 });
+        // An input without its whole parcel counts as the whole parcel: A then gives up all of it.
+        const strip = Record.settle({ ...raw, inputs: { parcels: [{ parcelId: 'A', areaM2: 1000 }], openGroundM2: 0 } });
+        expect(Record.validate(strip).errors.find(row => row.code === 'scheme-cap').message).toMatch(/^Owner\(s\) of parcel A gives up 100% of their land; .* allows at most 30%\.$/);
+        // The pool counts the rest too: Taiwan's 45% pool cap reads 10% not returned to owners.
+        const taiwan = Record.schemeCheck(paid, Regimes.latest('tw-owner-organized')).check.rules.find(rule => rule.kind === 'cap');
+        expect(taiwan.given).toBeCloseTo(0.1, 9);
     });
     it('shows cash direction in person rows and omits money when none moves', () => {
         const record = fixture(); const html = Dialog.personsHtml(record);

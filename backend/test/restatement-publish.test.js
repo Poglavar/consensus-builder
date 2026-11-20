@@ -292,7 +292,7 @@ describe('planAgreement', () => {
         expect(content.planCid).toBe(verifiedPlan.cid);
         expect(verifiedPlan.content.designCids).toEqual(objects.map(object => object.cid).sort());
         // Owners are unknown to a restatement, so each parcel stands for its abstract owner party.
-        expect(content.inputs.parcels).toEqual(ground.inputs.map(parcel => ({ parcelId: parcel.parcelId, parcelSourceId: 'hr-cadastre', areaM2: parcel.areaM2 })));
+        expect(content.inputs.parcels).toEqual(ground.inputs.map(parcel => ({ parcelId: parcel.parcelId, parcelSourceId: 'hr-cadastre', areaM2: parcel.areaM2, parcelAreaM2: parcel.parcelAreaM2 ?? null })));
         expect(content.outputs.map(output => [output.hash, output.producedBy])).toEqual(ground.outputs.map(output => [output.hash, output.producedBy]));
         expect(cid).toBe(cidOf(canonicalBytes(content)));
         expect(bytes).toBe(canonicalBytes(content).length);

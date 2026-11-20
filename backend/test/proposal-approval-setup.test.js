@@ -271,11 +271,15 @@ describe('the scheme guide', () => {
 
     it('shows this agreement apart from the rules: owners in rows, land and money put in and got back, an owner over the cap marked', () => {
         const template = regimes().latest('de-umlegung-developed');
-        const ledger = { valued: false, publicM2: 600, proposerM2: 0, money: { sponsorCents: -47500 }, parties: [
-            { ownerKey: 'o-b', parcelId: 'B', displayName: 'Owner(s) of parcel B', contributedM2: 500, assignedM2: 500, entitlementM2: 450, cashCents: -2500, areaUnknown: false },
-            { ownerKey: 'o-a', parcelId: 'A', displayName: 'Owner(s) of parcel A', contributedM2: 1000, assignedM2: 400, entitlementM2: 900, cashCents: 50000, areaUnknown: false }
+        const ledger = { valued: false, publicM2: 600, proposerM2: 0, money: { sponsorCents: -47500 }, contribution: 0.1, parties: [
+            { ownerKey: 'o-b', parcelId: 'B', displayName: 'Owner(s) of parcel B', contributedM2: 500, parcelM2: 500, restM2: 0, assignedM2: 500, entitlementM2: 450, cashCents: -2500, areaUnknown: false },
+            { ownerKey: 'o-a', parcelId: 'A', displayName: 'Owner(s) of parcel A', contributedM2: 1000, parcelM2: 1000, restM2: 0, assignedM2: 400, entitlementM2: 900, cashCents: 50000, areaUnknown: false }
         ] };
         const model = Setup.ownersModel(regimes().dimensionsOf(template), ledger);
+        // An owner whose parcel the agreement covers in part puts in the whole parcel and gets the
+        // rest back with what it is assigned: 600 of 10000 given up is under the 10% cap.
+        const partial = Setup.ownersModel(regimes().dimensionsOf(template), { ...ledger, parties: [{ ...ledger.parties[1], parcelM2: 10000, restM2: 9000 }] });
+        expect(partial.rows[0]).toMatchObject({ key: 'o-a', landIn: 10000, landOut: 9400, floor: 9000, overCap: false });
         expect(model.rows.map(row => [row.key, row.kind, row.landIn, row.landOut, row.paysCents, row.receivesCents, row.floor, row.overCap])).toEqual([
             ['o-a', 'party', 1000, 400, 0, 50000, 900, true], ['o-b', 'party', 500, 500, 2500, 0, 450, false],
             ['public', 'public', 0, 600, 0, 0, null, false], ['sponsor', 'sponsor', 0, 0, 47500, 0, null, false]]);
@@ -305,7 +309,7 @@ describe('the scheme guide', () => {
         expect(applied).toContain('the owners of 2 parcel(s) stay one party');
         expect(applied).toContain('In Output parcels, give A at least 500 m² more land back, or lower the Land contribution'.replace('A at', 'Owner(s) of parcel A at'));
         // With ownership rights the rows are the people: one person holding both parcels.
-        const persons = { persons: [{ personId: 'p-1', contributedM2: 1500, landM2: 900, cashCents: 47500, areaUnknown: false }], unresolved: [] };
+        const persons = { persons: [{ personId: 'p-1', contributedM2: 1500, parcelM2: 1500, restM2: 0, landM2: 900, cashCents: 47500, areaUnknown: false }], unresolved: [] };
         const people = Setup.ownersModel(regimes().dimensionsOf(template), ledger, persons, new Map([['p-1', 'Ana Horvat']]));
         expect(people.rows.filter(row => row.kind === 'person').map(row => [row.label, row.landIn, row.landOut, row.receivesCents])).toEqual([['Ana Horvat', 1500, 900, 47500]]);
         expect(people.unnamed).toBe(0);

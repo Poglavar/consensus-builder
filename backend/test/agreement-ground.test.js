@@ -244,9 +244,11 @@ describe('derive', () => {
         const fabric = fakeFabric([piece('k9', originals.get('k9').geometry, { cadastreParcelIds: ['k9'] })]);
         const { inputs } = ground.derive({ designs: [{ proposalId: 'road-2', cadastreParcelIds: ['k12', 'k9'] }], fabric, originals, area });
         expect(inputs.parcels).toEqual([
-            { parcelId: 'k9', areaM2: expect.any(Number) },
-            { parcelId: 'k12', areaM2: null }
+            { parcelId: 'k9', areaM2: expect.any(Number), parcelAreaM2: expect.any(Number) },
+            { parcelId: 'k12', areaM2: null, parcelAreaM2: null }
         ]);
+        // The whole parcel is its original's area, whatever the designs take of it.
+        expect(inputs.parcels[0].parcelAreaM2).toBeCloseTo(area(originals.get('k9')), 6);
         expect(inputs.openGroundM2).toBe(0);
     });
 
@@ -284,8 +286,10 @@ describe('derive', () => {
         it('puts in only the land the agreement\'s own design takes, and leaves the rest out', () => {
             const { inputs, outputs } = ground.derive({ designs: [parkDesign], fabric: fakeFabric([park, square, rest]), originals: parks, area });
             expect(outputs.map(output => output.pieceId)).toEqual(['P#park']);
-            expect(inputs.parcels).toEqual([{ parcelId: 'P', areaM2: expect.any(Number) }]);
+            expect(inputs.parcels).toEqual([{ parcelId: 'P', areaM2: expect.any(Number), parcelAreaM2: expect.any(Number) }]);
             expect(inputs.parcels[0].areaM2).toBeCloseTo(turf.area(park), 6);
+            // The whole parcel stays recorded beside it: a scheme measures its shares against it.
+            expect(inputs.parcels[0].parcelAreaM2).toBeCloseTo(turf.area(big), 6);
             expect(record.landBalance({ inputs, outputs }).balanced).toBe(true);
         });
 

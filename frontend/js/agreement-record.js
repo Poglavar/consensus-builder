@@ -158,10 +158,14 @@
             if (Object.hasOwn(parcel, 'holders')) {
                 fail(`Input parcel ${parcelId} names holders. Agreement parties are abstract: the parcel is represented by ${partyKey(parcelId)}; put its owners in the rule's ownership rights.`);
             }
+            // areaM2 is the land the designs take on the parcel; parcelAreaM2 the whole parcel, which a
+            // scheme's percentages are measured against (schemeCheck, ledger entitlementM2). Without
+            // it, the input counts as the whole parcel.
             return {
                 parcelId,
                 ...(parcel.parcelSourceId == null ? {} : { parcelSourceId: idOf(parcel.parcelSourceId, 'The parcel source') }),
-                areaM2: areaOf(parcel.areaM2, `Input parcel ${parcelId}`, true)
+                areaM2: areaOf(parcel.areaM2, `Input parcel ${parcelId}`, true),
+                parcelAreaM2: areaOf(parcel.parcelAreaM2, `The whole of input parcel ${parcelId}`, true)
             };
         });
         return { parcels, openGroundM2: raw.openGroundM2 == null ? 0 : areaOf(raw.openGroundM2, 'The open ground') };
@@ -481,11 +485,14 @@
         const scheme = template === undefined ? schemeOf(agreement.rule) : template;
         if (!scheme) return null;
         const rows = ledger(agreement);
+        // A scheme measures what each owner gives up against their whole parcels: the rest of a parcel
+        // the agreement leaves out counts as land the owner keeps, and belongs to the pool.
         const owners = rows.parties.filter(party => !party.areaUnknown && party.contributedM2 > 0)
-            .map(party => ({ ownerKey: party.ownerKey, contributedAreaM2: party.contributedM2, assignedAreaM2: party.assignedM2 }));
+            .map(party => ({ ownerKey: party.ownerKey, contributedAreaM2: party.parcelM2, assignedAreaM2: party.assignedM2 + party.restM2 }));
+        const inputM2 = landBalance(agreement).inputM2;
         const facts = {
             basis: agreement.rule.settlement?.method === 'value' ? 'value' : 'area',
-            poolAreaM2: landBalance(agreement).inputM2, owners,
+            poolAreaM2: inputM2 === null ? null : rows.parties.reduce((sum, party) => sum + (party.restM2 || 0), inputM2), owners,
             partyCount: approval().participantTally(approvalSubject(agreement), [], scheme)?.total ?? null, proposerAreaM2: rows.proposerM2
         };
         return { template: scheme, check: regimes().checkAllocation(scheme, facts) };
@@ -493,7 +500,7 @@
 
     // Cash is derived from each party's entitlement, in whole cents. The sponsor is the balancing
     // counterparty when public land is compensated; no editable per-person cash overrides exist.
-    // By area: (land put in after the allowed contribution − land received) × the rate.
+    // By area: (the entitlement: land put in less the contribution − land received) × the rate.
     // By value: each party is entitled to the share of the distributed land's value that matches the
     // value it put in; it receives the entitlement minus the value it got, and pays the scheme's
     // share of its value gain (the entitlement minus the value it put in). Lines need every value.
@@ -504,9 +511,9 @@
         if (agreement.rule.electorate !== 'owners' || !['area', 'value'].includes(terms?.method)) return agreement;
         const rows = ledger(agreement);
         if (terms.method === 'area') {
-            agreement.money.lines = rows.parties.filter(row => !row.areaUnknown).map(row => ({
+            agreement.money.lines = rows.parties.filter(row => row.entitlementM2 !== null).map(row => ({
                 ownerKey: row.ownerKey,
-                amountCents: Math.round((row.contributedM2 * (1 - terms.contributionBasisPoints / BASIS_POINTS) - row.assignedM2) * terms.rateCentsPerM2)
+                amountCents: Math.round((row.entitlementM2 - row.assignedM2) * terms.rateCentsPerM2)
             })).filter(line => line.amountCents !== 0);
             return agreement;
         }
@@ -690,8 +697,9 @@
     }
 
     /**
-     * Per input party (one per input parcel): its parcel's land, whole output parcels assigned to it,
-     * entitlement and change, and cash (+ receives, − pays). Public and proposer land and the balancing sponsor
+     * Per input party (one per input parcel): its parcel's land in the agreement (contributedM2), the
+     * whole parcel (parcelM2) and the rest of it the agreement leaves to the owner (restM2), whole
+     * output parcels assigned to it, entitlement and change, and cash (+ receives, − pays). Public and proposer land and the balancing sponsor
      * are separate. Cash that is not whole cents throws (code 'invalid-agreement').
      * With a valuation, also the land value each party put in and got (contributedValueCents,
      * assignedValueCents), its value entitlement (its share of the value of the land distributed to
@@ -705,7 +713,7 @@
         const party = (ownerKey, displayName) => {
             let entry = parties.get(ownerKey);
             if (!entry) {
-                entry = { ownerKey, parcelId: parcelOfParty(ownerKey), displayName: '', contributedM2: 0, assignedM2: 0, changeM2: 0, cashCents: 0, areaUnknown: false,
+                entry = { ownerKey, parcelId: parcelOfParty(ownerKey), displayName: '', contributedM2: 0, parcelM2: 0, assignedM2: 0, changeM2: 0, cashCents: 0, areaUnknown: false,
                     contributedValueCents: 0, assignedValueCents: 0, valueUnknown: !values };
                 parties.set(ownerKey, entry);
             }
@@ -715,7 +723,10 @@
         agreement.inputs.parcels.forEach(parcel => {
             const entry = party(partyKey(parcel.parcelId), partyName(parcel.parcelId));
             if (parcel.areaM2 === null) entry.areaUnknown = true;
-            else entry.contributedM2 += parcel.areaM2;
+            else {
+                entry.contributedM2 += parcel.areaM2;
+                entry.parcelM2 += parcel.parcelAreaM2 === null ? parcel.areaM2 : Math.max(parcel.parcelAreaM2, parcel.areaM2);
+            }
             const unit = values ? values.inputs.get(parcel.parcelId) : null;
             if (parcel.areaM2 === null || unit === null || unit === undefined) entry.valueUnknown = true;
             else entry.contributedValueCents += parcel.areaM2 * unit;
@@ -753,9 +764,15 @@
         const distributable = entries.reduce((sum, entry) => sum + entry.assignedValueCents, 0) + proposerValueCents;
         const contributedValueCents = valued ? Math.round(contributed) : null;
         const distributableValueCents = valued ? Math.round(distributable) : null;
+        // The land contribution is a share of each owner's whole parcels, as a scheme measures it, taken
+        // from the land the agreement covers: the rest of the parcels stays the owner's and is never
+        // deducted from. With whole parcels in, the entitlement is that land less the share.
+        const contribution = (agreement.rule.settlement?.contributionBasisPoints || 0) / BASIS_POINTS;
         const list = entries.map(entry => ({
             ...entry, displayName: entry.displayName || entry.ownerKey, changeM2: entry.assignedM2 - entry.contributedM2,
-            entitlementM2: entry.areaUnknown ? null : entry.contributedM2 * (1 - (agreement.rule.settlement?.contributionBasisPoints || 0) / BASIS_POINTS),
+            parcelM2: entry.areaUnknown ? null : entry.parcelM2,
+            restM2: entry.areaUnknown ? null : Math.max(0, entry.parcelM2 - entry.contributedM2),
+            entitlementM2: entry.areaUnknown ? null : entry.contributedM2 - Math.min(contribution * entry.parcelM2, entry.contributedM2),
             contributedValueCents: entry.valueUnknown ? null : Math.round(entry.contributedValueCents),
             assignedValueCents: entry.valueUnknown ? null : Math.round(entry.assignedValueCents),
             entitlementValueCents: valued && contributed > 0 ? Math.round(distributable * (entry.contributedValueCents / contributed)) : null
@@ -768,7 +785,7 @@
         });
         return { parties: list, publicM2, proposerM2, money, currency: agreement.money.currency, valued, contributedValueCents, distributableValueCents,
             publicValueCents: valued ? Math.round(publicValueCents) : null, proposerValueCents: valued ? Math.round(proposerValueCents) : null,
-            valueGain: valueGainOf(agreement.rule) };
+            valueGain: valueGainOf(agreement.rule), contribution };
     }
 
     /**
@@ -820,8 +837,8 @@
                 parcels: agreement.inputs.parcels.map((parcel, index) => {
                     const parcelSourceId = sourceOf(index);
                     return parcelSourceId
-                        ? { parcelId: parcel.parcelId, parcelSourceId, areaM2: parcel.areaM2 }
-                        : { parcelId: parcel.parcelId, areaM2: parcel.areaM2 };
+                        ? { parcelId: parcel.parcelId, parcelSourceId, areaM2: parcel.areaM2, parcelAreaM2: parcel.parcelAreaM2 }
+                        : { parcelId: parcel.parcelId, areaM2: parcel.areaM2, parcelAreaM2: parcel.parcelAreaM2 };
                 }),
                 openGroundM2: agreement.inputs.openGroundM2
             },

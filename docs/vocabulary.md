@@ -104,7 +104,7 @@ The latest Support, Oppose or Abstain choice for one eligible code and one exact
 
 ### Agreement input
 
-Land represented by the included designs, with source-qualified cadastral references and a holder snapshot. The input parcels are the parcels the designs' bindings name; each puts in only the part of the agreement's land that lies on it, not its whole area: the pieces on that parcel alone, and for a piece across several parcels its overlap with this one, in proportion. The rest of a large parcel stays its owner's, outside the agreement. Input areas set area settlement, value and area-weighted approval. Inputs can include modeled open ground: the union of each qualifying design site's geometry outside its bound cadastral parcels, not an area inferred from a binding summary.
+Land represented by the included designs, with source-qualified cadastral references and a holder snapshot. The input parcels are the parcels the designs' bindings name; each puts in only the part of the agreement's land that lies on it, not its whole area: the pieces on that parcel alone, and for a piece across several parcels its overlap with this one, in proportion. The rest of a large parcel stays its owner's, outside the agreement. Each input also records its parcel's whole area (`parcelAreaM2`): a scheme's land shares, its cap and the land contribution, are shares of it, the rest counting as land the owner keeps; an input without it counts as the whole parcel. Input areas set area settlement, value and area-weighted approval. Inputs can include modeled open ground: the union of each qualifying design site's geometry outside its bound cadastral parcels, not an area inferred from a binding summary.
 
 ### Agreement output
 
@@ -923,7 +923,7 @@ The land, value or funds supplied by a party to a stated arrangement. Land contr
 
 ### Entitlement
 
-What a party is due from the readjustment before cash balances it. By area: the land it put in after the stated contribution ratio. By value: the share of the value of the land distributed to parties and the proposer that matches the value the party put in. It is distinct from the land or cash actually allocated to that party.
+What a party is due from the readjustment before cash balances it. By area: the land it put in less the stated contribution ratio of its whole parcels, which never exceeds the land it put in. By value: the share of the value of the land distributed to parties and the proposer that matches the value the party put in. It is distinct from the land or cash actually allocated to that party.
 
 ### Land valuation
 
@@ -931,7 +931,7 @@ An agreement's `valuation`: one whole-cent value per m² for every input parcel 
 
 ### Scheme distribution rules
 
-The land rules a pinned scheme (`rule.approvalConfig.regime`) adds to its decision tests: a cap on the land an owner or the pool gives up, the area or value basis of distribution, the share of each owner's value gain settled in money, the fewest parties, and, under an authority-led scheme, no proposer acquisition. The record, the HTTP index and MCP check them with one shared function; the editor marks schemes the plan does not meet before they are chosen.
+The land rules a pinned scheme (`rule.approvalConfig.regime`) adds to its decision tests: a cap on the land an owner or the pool gives up, the area or value basis of distribution, the share of each owner's value gain settled in money, the fewest parties, and, under an authority-led scheme, no proposer acquisition. Shares are measured against each owner's whole parcels (Agreement input). The record, the HTTP index and MCP check them with one shared function; the editor marks schemes the plan does not meet before they are chosen. They judge an agreement only, never a design.
 
 ### Scheme dimensions
 

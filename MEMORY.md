@@ -390,3 +390,6 @@ in commits.
 - 2026-11-20: An MCP Block on an outline builds on the site as one superparcel (site-plots.js siteSuperparcel, shared
   with the site tool), and MCP selections and draft parcelIds hold up to MAX_SOURCE_BINDING_PARCELS (5000), as the map
   sets no selection cap; block detection keeps the map's own 100-parcel limit. User-approved.
+- 2026-11-20: Scheme rules (caps, land contribution) judge an agreement only, never what can be designed. Their shares
+  are measured against each owner's whole parcel: agreement inputs record `parcelAreaM2` beside the land taken, the
+  rest counting as kept; an input without it counts as the whole parcel. User-approved.

@@ -145,6 +145,7 @@ export function planAgreement(plan, objects, ground) {
         parcels: ground.inputs.map(parcel => ({
             parcelId: parcel.parcelId,
             areaM2: parcel.areaM2,
+            parcelAreaM2: parcel.parcelAreaM2,
             ...(plan.parcelSourceId ? { parcelSourceId: plan.parcelSourceId } : {})
         })),
         openGroundM2: ground.openGroundM2,
@@ -332,7 +333,7 @@ export function capturePageScript(config) {
         });
         job.result = {
             designs,
-            inputs: derived.inputs.parcels.map(parcel => ({ parcelId: parcel.parcelId, areaM2: parcel.areaM2 })),
+            inputs: derived.inputs.parcels.map(parcel => ({ parcelId: parcel.parcelId, areaM2: parcel.areaM2, parcelAreaM2: parcel.parcelAreaM2 })),
             openGroundM2: derived.inputs.openGroundM2,
             outputs
         };

@@ -316,7 +316,7 @@ export function setupDocsRoute(app, pool, { env = process.env } = {}) {
                 agreement: {
                     schema: 'agreement/v1',
                     jsonSchema: '#/schema/$defs/agreement',
-                    inputs: 'exactly the parcels the designs take (the union of their server bindings) with parcelId, parcelSourceId and areaM2, plus openGroundM2; each input parcel is one abstract party, parcel-owner:<parcelId> ("Owner(s) of parcel X"), and names no people',
+                    inputs: 'exactly the parcels the designs take (the union of their server bindings) with parcelId, parcelSourceId, areaM2 (the land taken) and parcelAreaM2 (the whole parcel, which scheme shares are measured against), plus openGroundM2; each input parcel is one abstract party, parcel-owner:<parcelId> ("Owner(s) of parcel X"), and names no people',
                     outputs: 'every piece on the input land after the designs are applied, by hash (piece1-sha256:…), with areaM2, fromParcelIds, role and producedBy',
                     outputRoles: ['plot', 'remainder', 'corridor', 'part', 'parcel'],
                     allocations: { party: 'the owners of one input parcel: { kind: "party", ownerKey: "parcel-owner:<parcelId>" }', proposer: 'the proposer', public: 'the public', rule: 'an owners\' agreement gives every output exactly one recipient' },

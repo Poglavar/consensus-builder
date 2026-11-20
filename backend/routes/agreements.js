@@ -137,6 +137,7 @@ export function validateAgreementContent(content, { now = Date.now(), designCids
             sources.add(parcel.parcelSourceId);
         }
         if (parcel.areaM2 != null && !isArea(parcel.areaM2)) return invalid('land', `Input parcel ${parcel.parcelId} needs an area of at least 0, or null.`);
+        if (parcel.parcelAreaM2 != null && !isArea(parcel.parcelAreaM2)) return invalid('land', `The whole of input parcel ${parcel.parcelId} needs an area of at least 0, or null.`);
         if (Object.hasOwn(parcel, 'holders')) return invalid('land', `Input parcel ${parcel.parcelId} names holders; agreement parties are abstract (${agreementRecord.partyKey(parcel.parcelId)}) and owners belong in the rule's rights.`);
     }
     // The index keeps one parcel source per agreement: ids only mean something within their source.

@@ -16,10 +16,6 @@
         || (typeof require === 'function' ? require('./city-money.js') : null);
     const approval = () => root.ProposalApproval
         || (typeof require === 'function' ? require('./proposals/approval.js') : null);
-    const regimes = () => root.ProposalApprovalRegimes
-        || (typeof require === 'function' ? require('./proposals/approval-regimes.js') : null);
-    // The designer's recipient for land handed to public uses (reparcellization.js PUBLIC_LAND_KEY).
-    const PUBLIC_LAND_KEY = 'public-land';
     const finite = value => typeof value === 'number' && Number.isFinite(value);
     const feature = geometry => ({ type: 'Feature', properties: {}, geometry });
     // An overlap, a gap in the pool or a part outside it fails when it is ground (the shared rule,
@@ -147,33 +143,11 @@
             } catch (error) { issue('invalid-readjustment-deal', error.message, 'money'); }
         }
         let rightsReady = false;
-        let regimeCheck = null;
         try {
             const rights = approval().inspect(proposal);
             // Every test the rules count must be countable: an area test needs the areas it weighs.
             rightsReady = rights.ready && approval().tally(proposal, []).tests.every(test => test.known);
             if (!rightsReady) warnings.push({ code: 'ownership-unresolved', section: 'approval', message: 'Design can be saved. Owner approval needs complete parcel rights and the areas required by its policy.' });
-            // A named scheme also rules how the land is distributed (approval-regimes.js checkAllocation).
-            const regime = rights.context.regime;
-            const template = regime ? regimes().get(regime.id, regime.version) : null;
-            if (template && metrics.poolAreaM2 !== null && !errors.some(item => item.section === 'allocation')) {
-                const assigned = new Map();
-                normalizedOwnership.forEach((shaped, index) => (shaped?.owners || []).forEach(owner => {
-                    assigned.set(owner.ownerKey, (assigned.get(owner.ownerKey) || 0) + areas[index] * owner.percentageShare / 100);
-                }));
-                const owners = (plan.ownerShares || []).filter(owner => owner && owner.unrepresentedGround !== true && owner.ownerKey !== PUBLIC_LAND_KEY
-                    && finite(owner.contributedArea) && owner.contributedArea > 0)
-                    .map(owner => ({ ownerKey: String(owner.ownerKey), contributedAreaM2: owner.contributedArea, assignedAreaM2: assigned.get(String(owner.ownerKey)) || 0 }));
-                regimeCheck = regimes().checkAllocation(template, {
-                    basis: plan.contributionBasis === 'value' ? 'value' : 'area', poolAreaM2: metrics.poolAreaM2, owners,
-                    partyCount: approval().participantTally(proposal, [], template)?.total ?? null
-                });
-                regimeCheck.rules.filter(rule => rule.ok === false).forEach(rule => issue('regime-allocation',
-                    rule.kind === 'parties' ? `${template.id} needs at least ${rule.required} distinct owners; the land has ${rule.actual}.`
-                        : rule.kind === 'basis' ? `${template.id} distributes by ${rule.required}; this plan distributes by ${rule.actual}.`
-                        : rule.per === 'owner' ? `${rule.worst.ownerKey} gives up ${Math.round(rule.worst.given * 1000) / 10}% of their land, over the ${template.id} cap.`
-                            : `Land not returned to owners is over the ${template.id} cap.`, 'allocation', { rule }));
-            }
         } catch (error) { issue('invalid-proposal-approval', error.message, 'approval'); }
         const valid = errors.length === 0;
         // This is the existing local simulation's funding flag. It is never evidence of on-chain
@@ -181,7 +155,7 @@
         // share needs funding beforehand; owner payments are signed terms settled with the payouts.
         const fundingReady = !!money && (money.sponsorFundingCents === 0 || proposal?.funded === true);
         return { valid, errors, warnings, metrics, normalizedOwnership, areas, totalCashCents, money,
-            rightsReady, regimeCheck, readyForApproval: valid && rightsReady, fundingReady };
+            rightsReady, readyForApproval: valid && rightsReady, fundingReady };
     }
     // An editor has a per-owner ledger before it has a proposal offer field. Derive the latter
     // exactly as publication does, so editing an allocation never validates an obsolete dialog sum.

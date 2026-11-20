@@ -93,7 +93,7 @@
             plan,
             designs,
             inputs: {
-                parcels: content.inputs.parcels.map(parcel => ({ parcelId: parcel.parcelId, ...(parcel.parcelSourceId ? { parcelSourceId: parcel.parcelSourceId } : {}), areaM2: parcel.areaM2 })),
+                parcels: content.inputs.parcels.map(parcel => ({ parcelId: parcel.parcelId, ...(parcel.parcelSourceId ? { parcelSourceId: parcel.parcelSourceId } : {}), areaM2: parcel.areaM2, parcelAreaM2: parcel.parcelAreaM2 ?? null })),
                 openGroundM2: content.inputs.openGroundM2
             },
             outputs,

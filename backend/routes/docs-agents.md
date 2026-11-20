@@ -282,7 +282,7 @@ lens member verifies that decision and attests it:
   "planCid": "bafkrei…",
   "inputs": {
     "parcels": [{
-      "parcelId": "HR-335550-1234/1", "areaM2": 612.4
+      "parcelId": "HR-335550-1234/1", "areaM2": 612.4, "parcelAreaM2": 612.4
     }],
     "openGroundM2": 0
   },
@@ -314,7 +314,9 @@ lens member verifies that decision and attests it:
 - `planCid`: the exact existing named plan whose membership this agreement settles. Member designs
   are obtained from that plan; the published agreement does not inline a `designs` array.
 - `inputs.parcels`: **exactly** the union of the plan members' bindings (`binding.parcels[].parcelId` of each
-  design), each once, with `areaM2` (e.g. `calculated_area` from `/parcels/under`, or `null`). Each
+  design), each once, with `areaM2`, the land the designs take on it (e.g. `calculated_area` from
+  `/parcels/under` when they take all of it, or `null`), and `parcelAreaM2`, the whole parcel, which a
+  scheme's land shares are measured against (omitted or `null`: the input is the whole parcel). Each
   input parcel is one abstract party, `parcel-owner:<parcelId>` ("Owner(s) of parcel <id>"); an
   agreement names no people and an input parcel carrying `holders` is refused. Real owners and their
   exact shares go only in `rule.approvalConfig.rights`, which owner decisions are verified against.

@@ -344,7 +344,8 @@ the `proposal:<id>` rows. It never takes part in `ParcelMutation`: an agreement 
   designs: [{ proposalId, title, goal, fingerprint }],     // authored order; fingerprint = the
                                                            // design's content fingerprint (c2-…)
   inputs: {                                                // the land the designs take, on the ground
-    parcels: [{ parcelId, areaM2: number | null }],        // they were applied to: base cadastral ids;
+    parcels: [{ parcelId, areaM2: number | null,           // they were applied to: base cadastral ids;
+                parcelAreaM2: number | null }],            // the whole parcel beside the land taken;
     openGroundM2: number                                   // each is one party, parcel-owner:<parcelId>
   },
   outputs: [{ hash, pieceId, areaM2, fromParcelIds: [], producedBy: proposalId | null,
@@ -472,7 +473,7 @@ had to be made are marked **(call)**.
   fingerprint and the LR design fingerprint; `designs[].fingerprint` of a local agreement becomes
   `designs[].cid`.
 - **Agreement object** `agreement/v1` (published form of the M1 (b) record): `designs: [{ cid, goal,
-  title }]` in authored order; `inputs` (parcel ids with `parcelSourceId` and areas, each
+  title }]` in authored order; `inputs` (parcel ids with `parcelSourceId`, the land taken and the whole parcel's area, each
   parcel one abstract party; no holders) and `openGroundM2`; `outputs: [{ hash, areaM2, fromParcelIds, role, producedBy: cid | null }]`
   without geometry (the hash commits to it; a reader re-derives the pieces by applying the designs
   and checks the hashes); `allocations`, `money`, `rule` (with the rights snapshot and lens keys),

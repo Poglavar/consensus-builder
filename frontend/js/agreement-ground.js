@@ -93,7 +93,7 @@
      * @param fabric the live parcel fabric: producedBy(proposalId) and entriesForCadastre(ids, query)
      * @param originals Map of cadastral id → original cadastral Feature (may lack some)
      * @param area (feature) → m² (turf.area)
-     * @returns {{ inputs: { parcels: { parcelId, areaM2 }[], openGroundM2 }, outputs: object[] }}
+     * @returns {{ inputs: { parcels: { parcelId, areaM2, parcelAreaM2 }[], openGroundM2 }, outputs: object[] }}
      *   Each input parcel stands for its abstract owners' party; nobody is named here.
      */
     function derive({ designs, fabric, originals, area = areaOf,
@@ -268,10 +268,16 @@
             }
             from.forEach((parcelId, index) => add(parcelId, onOpenGround ? overlaps[index] : whole * overlaps[index] / sum));
         });
+        // Beside the land taken, each parcel's whole area (its original cadastral feature), which a
+        // scheme measures its percentages against; null without the original.
         const loaded = new Set(onParcels.flatMap(feature => idsOf(feature?.properties?.cadastreParcelIds)));
         const parcels = parcelIds.map(parcelId => {
             const m2 = loaded.has(parcelId) ? taken.get(parcelId) : null;
-            return { parcelId, areaM2: m2 === null ? null : committedArea(m2) };
+            const original = originals?.get?.(parcelId);
+            const whole = !original ? null
+                : area(original.type === 'Feature' ? original : { type: 'Feature', properties: {}, geometry: original });
+            if (whole !== null && (!finite(whole) || whole < 0)) throw new Error(`Parcel ${parcelId} could not be measured.`);
+            return { parcelId, areaM2: m2 === null ? null : committedArea(m2), parcelAreaM2: whole === null ? null : committedArea(whole) };
         });
 
         const seen = new Set();

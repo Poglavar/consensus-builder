@@ -220,6 +220,7 @@ export function agreementObject({
             parcels: (parcels || []).map(parcel => ({
                 parcelId: parcel.parcelId,
                 areaM2: finite(parcel.areaM2) ? parcel.areaM2 : null,
+                parcelAreaM2: finite(parcel.parcelAreaM2) ? parcel.parcelAreaM2 : null,
                 // Named holders are refused by the record (AgreementRecord.normalize), never dropped.
                 ...(Object.hasOwn(parcel, 'holders') ? { holders: parcel.holders } : {}),
                 ...(parcel.parcelSourceId ? { parcelSourceId: parcel.parcelSourceId } : {})

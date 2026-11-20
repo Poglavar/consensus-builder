@@ -194,7 +194,8 @@
                 "properties": {
                   "parcelId": { "$ref": "#/$defs/text" },
                   "parcelSourceId": { "oneOf": [{ "type": "null" }, { "$ref": "#/$defs/text" }], "description": "The parcel source the id belongs to; one source per agreement." },
-                  "areaM2": { "type": ["number", "null"], "minimum": 0 }
+                  "areaM2": { "type": ["number", "null"], "minimum": 0, "description": "The land the designs take on this parcel, m²; null when unknown." },
+                  "parcelAreaM2": { "type": ["number", "null"], "minimum": 0, "description": "The whole parcel, m²; a scheme's land percentages (its cap and the land contribution) are shares of it, the rest of the parcel staying the owner's. null when unknown." }
                 },
                 "not": { "required": ["holders"] }
               },

@@ -418,7 +418,7 @@ export function parcelLand(candidate) {
     const feature = { type: 'Feature', properties: {}, geometry: candidate.geometry };
     const areaM2 = turf.area(feature);
     return {
-        parcels: [{ parcelId: String(candidate.parcelId), parcelSourceId: candidate.parcelSourceId || null, areaM2 }],
+        parcels: [{ parcelId: String(candidate.parcelId), parcelSourceId: candidate.parcelSourceId || null, areaM2, parcelAreaM2: areaM2 }],
         outputs: parcelOutputs([{ parcelId: candidate.parcelId, geometry: candidate.geometry, areaM2 }])
     };
 }

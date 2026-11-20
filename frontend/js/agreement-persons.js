@@ -60,10 +60,12 @@
      *   allocations, money); judged elsewhere (AgreementRecord.validate), only read here
      * @param rights parcel-rights/v1 or v2 (only ownership counts; leases are not land allocations)
      * @returns {{ persons: { personId, parcels: { parcelId, share, contributedM2 }[], contributedM2,
-     *     outputs: { output, pieceId, parcelId, share, areaM2 }[], landM2, cashCents }[],
+     *     parcelM2, restM2, outputs: { output, pieceId, parcelId, share, areaM2 }[], landM2, cashCents }[],
      *   unresolved: { ownerKey, parcelId }[], resolved: boolean,
      *   totals: { partyLandM2, personLandM2, partyCashCents, personCashCents, balanced } }}
-     *   `share` is the exact fraction; areas are m² (null when the input area is unknown). Parcels
+     *   `share` is the exact fraction; areas are m² (null when the input area is unknown). parcelM2 is
+     *   the person's share of their whole parcels (an input without parcelAreaM2 counting as the whole
+     *   parcel), restM2 of the rest the agreement leaves out. Parcels
      *   without complete rights keep their abstract party in `unresolved` and are left out of totals.
      */
     function personPositions(agreement, rights) {
@@ -72,7 +74,7 @@
         const rowOf = new Map((snapshot ? snapshot.parcels : []).map(row => [row.parcelId, row]));
         const persons = new Map();
         const person = personId => {
-            if (!persons.has(personId)) persons.set(personId, { personId, parcels: [], contributedM2: 0, outputs: [], landM2: 0, cashCents: 0, areaUnknown: false });
+            if (!persons.has(personId)) persons.set(personId, { personId, parcels: [], contributedM2: 0, parcelM2: 0, restM2: 0, outputs: [], landM2: 0, cashCents: 0, areaUnknown: false });
             return persons.get(personId);
         };
         const owned = new Map();
@@ -82,13 +84,18 @@
             const owners = resolvedOwners(rowOf.get(parcelId), api.PARTY_PREFIX);
             if (!owners) { unresolved.push({ ownerKey: api.partyKey(parcelId), parcelId }); return; }
             owned.set(api.partyKey(parcelId), { parcelId, owners });
-            const parcelM2 = areaOf(parcel.areaM2);
+            const takenM2 = areaOf(parcel.areaM2);
+            const wholeM2 = takenM2 === null ? null : Math.max(areaOf(parcel.parcelAreaM2) ?? takenM2, takenM2);
             owners.forEach(owner => {
                 const { n, d } = shareOf(owner.share);
                 const entry = person(owner.ownerId);
-                const contributedM2 = parcelM2 === null ? null : parcelM2 * Number(n) / Number(d);
+                const contributedM2 = takenM2 === null ? null : takenM2 * Number(n) / Number(d);
                 entry.parcels.push({ parcelId, share: owner.share, contributedM2 });
                 if (contributedM2 === null) entry.areaUnknown = true; else entry.contributedM2 += contributedM2;
+                if (wholeM2 !== null) {
+                    entry.parcelM2 += wholeM2 * Number(n) / Number(d);
+                    entry.restM2 += (wholeM2 - takenM2) * Number(n) / Number(d);
+                }
             });
         });
         let partyLandM2 = 0, partyCashCents = 0;
@@ -113,7 +120,8 @@
             partyCashCents += line.amountCents;
             splitCents(line.amountCents, party.owners).forEach((cents, personId) => { person(personId).cashCents += cents; });
         });
-        const list = [...persons.values()].map(({ areaUnknown, ...entry }) => ({ ...entry, contributedM2: areaUnknown ? null : entry.contributedM2 }))
+        const list = [...persons.values()].map(({ areaUnknown, ...entry }) => ({ ...entry, contributedM2: areaUnknown ? null : entry.contributedM2,
+            parcelM2: areaUnknown ? null : entry.parcelM2, restM2: areaUnknown ? null : entry.restM2 }))
             .sort((a, b) => compare(a.personId, b.personId));
         const personLandM2 = list.reduce((sum, entry) => sum + entry.landM2, 0);
         const personCashCents = list.reduce((sum, entry) => sum + entry.cashCents, 0);

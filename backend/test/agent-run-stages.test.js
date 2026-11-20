@@ -370,8 +370,10 @@ describe('run.mjs helpers', () => {
 
     it('takes the candidate parcel as the one input and the one output, measured from its geometry', () => {
         const land = parcelLand(candidate({ parcelSourceId: 'us-nyc-dof-digital-tax-map' }));
-        expect(land.parcels).toEqual([{ parcelId: PARCEL_ID, parcelSourceId: 'us-nyc-dof-digital-tax-map', areaM2: expect.any(Number) }]);
+        expect(land.parcels).toEqual([{ parcelId: PARCEL_ID, parcelSourceId: 'us-nyc-dof-digital-tax-map', areaM2: expect.any(Number), parcelAreaM2: expect.any(Number) }]);
         expect(land.parcels[0].areaM2).toBeGreaterThan(900);
+        // The whole parcel goes in: the land taken is the whole parcel.
+        expect(land.parcels[0].parcelAreaM2).toBe(land.parcels[0].areaM2);
         expect(land.outputs).toEqual([expect.objectContaining({ hash: agreementRecord.outputHash(PARCEL), areaM2: land.parcels[0].areaM2, role: 'parcel' })]);
     });
 
