@@ -13,8 +13,10 @@ import { fileURLToPath } from 'node:url';
 import { parseArgs } from 'node:util';
 import dotenv from 'dotenv';
 import { createPool } from '../db/connection.cjs';
-import { Keypair } from '@solana/web3.js';
+import { Connection, Keypair } from '@solana/web3.js';
+import { createRequire } from 'node:module';
 import { loadAgreement } from '../routes/agreements.js';
+import { loadPropertyOffer } from '../routes/property-offers.js';
 import { createAgreementDecisionStore } from '../agreements/decisions.js';
 import { createLensMember, DEFAULT_CREDENTIAL_NAME, LENS_MEMBER_KINDS, systemClock } from './member.js';
 import { createDevnetRegistryIdentity } from './identity/devnet-registry.js';
@@ -27,6 +29,8 @@ import { createLensMemberApp } from './server.js';
 import { createApprovalAttester, devnetOwnerRegistry, fileRegistry } from './approval.js';
 import { lensLog } from './errors.js';
 import { retryWithBackoff } from './retry.js';
+const require = createRequire(import.meta.url);
+const PropertyOfferClient = require('../../frontend/js/solana/property-offer-client.js');
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const CLUSTERS = {
@@ -193,7 +197,12 @@ async function main() {
     // relay admitted, in the same database the API writes (routes/agreements.js, agreements/decisions.js).
     const decisionStore = pool ? createAgreementDecisionStore(pool) : null;
     const agreements = pool ? { load: cid => loadAgreement(pool, cid), decisions: cid => decisionStore.list(cid) } : null;
-    const app = createLensMemberApp({ member, pricing, operatorToken, approvalAttester, agreements, clock });
+    const offerConnection = new Connection(values.rpc || process.env.SOLANA_RPC_URL || CLUSTERS[values.cluster], 'confirmed');
+    const propertyOffers = pool ? {
+        load: cid => loadPropertyOffer(pool, cid),
+        account: async offer => PropertyOfferClient.fetchPropertyOffer(offerConnection, { cid: offer.cid, maker: offer.content.proposer })
+    } : null;
+    const app = createLensMemberApp({ member, pricing, operatorToken, approvalAttester, agreements, propertyOffers, clock });
 
     const status = await retryWithBackoff('reading the member status failed', () => member.status(), STARTUP_RETRY);
     lensLog(`${dryRun ? 'DRY RUN' : 'LIVE'} lens member ${status.key}${status.ephemeralKey ? ' (ephemeral key)' : ''}, kind ${status.kind}`);

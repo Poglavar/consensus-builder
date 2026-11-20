@@ -6,6 +6,7 @@
 import { setupPinsRoute } from './pins.js';
 import { setupDesignsRoute } from './designs.js';
 import { setupAgreementsRoute } from './agreements.js';
+import { setupPropertyOffersRoute } from './property-offers.js';
 import { setupMapPreviewsRoute } from './map-previews.js';
 import { setupPlansRoute } from './plans.js';
 import { setupSearchRoute } from './search.js';
@@ -27,6 +28,7 @@ export function registerContentRoutes(app, pool, overrides = {}) {
     setupPinsRoute(app, deps);
     setupDesignsRoute(app, deps);
     setupAgreementsRoute(app, deps);
+    setupPropertyOffersRoute(app, deps);
     setupMapPreviewsRoute(app, deps);
     setupPlansRoute(app, deps);
     setupSearchRoute(app, deps);

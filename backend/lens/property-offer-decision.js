@@ -1,0 +1,72 @@
+// Pure, fail-closed planner for PropertyOfferDecision-v1.  It never trusts caller hashes,
+// ownershipVerified flags, parcel lists, or an account status supplied by the browser.
+import { createHash } from 'node:crypto';
+import { createRequire } from 'node:module';
+import { PublicKey } from '@solana/web3.js';
+import { canonicalBytes, cidOf } from '../cid.js';
+import { LensError } from './errors.js';
+import { verifyWalletSignature } from './identity/devnet-registry.js';
+
+const require = createRequire(import.meta.url);
+const Offer = require('../../frontend/js/property-offer-record.js');
+const key = value => { try { return new PublicKey(value).toBase58() === value; } catch { return false; } };
+const hash = bytes => createHash('sha256').update(bytes).digest('hex');
+export const parcelUid = Offer.parcelUid;
+const payoutHash = payouts => hash(Buffer.concat(payouts.map(row => {
+    const amount = Buffer.alloc(8); amount.writeBigUInt64LE(BigInt(row.lamports));
+    return Buffer.concat([new PublicKey(row.recipient).toBuffer(), amount]);
+})));
+
+export function sellerConsentMessage({ cid, offer, termsHash, payoutsHash, buyer, seller }) {
+    return ['Urban Game Theory property-offer seller consent', `Offer CID: ${cid}`, `Offer account: ${offer}`,
+        `Terms SHA-256: ${termsHash}`, `Payouts SHA-256: ${payoutsHash}`, `Buyer: ${buyer}`, `Seller: ${seller}`].join('\n');
+}
+
+/**
+ * @param {{ offer: object, account: object, candidate: object, ownerSets: (refs: object[]) => Promise<Map<string, object[]>>, nowSeconds: number }} input
+ * `offer` and `account` must be read by the lens from trusted index/chain adapters, never req.body.
+ */
+export async function planPropertyOfferDecision({ offer, account, candidate, ownerSets, nowSeconds }) {
+    const content = offer?.content;
+    const invalid = (code, message) => { throw new LensError(422, code, message); };
+    if (!offer?.cid || cidOf(canonicalBytes(content)) !== offer.cid || Offer.validate(content)) invalid('invalid_offer', 'Indexed property-offer content is not canonical.');
+    if (!account || account.cid !== offer.cid || String(account.status).toLowerCase() !== 'open' || !key(account.address) || !key(account.maker)) invalid('offer_not_open', 'The trusted chain account is not this open offer.');
+    if (account.maker !== content.proposer || account.lens !== content.lens || String(account.side).toLowerCase() !== content.direction
+        || String(account.priceLamports) !== content.priceLamports) invalid('account_terms_mismatch', 'The chain account differs from immutable offer roles or price.');
+    const deadline = Number(account.deadline);
+    if (!Number.isFinite(deadline) || deadline <= nowSeconds || Math.floor(Date.parse(content.expiresAt) / 1000) !== deadline) invalid('deadline_mismatch', 'The chain account deadline differs from the immutable offer.');
+    const termsHash = hash(canonicalBytes(content));
+    if (account.termsHash !== termsHash) invalid('terms_mismatch', 'The chain account does not commit to the indexed offer terms.');
+    const buyer = candidate?.buyer, seller = candidate?.seller;
+    if (!key(buyer) || !key(seller)) invalid('invalid_counterparty', 'Buyer and seller must be Solana public keys.');
+    const payouts = content.direction === 'sell' ? content.payouts : candidate?.payouts;
+    if (!Array.isArray(payouts) || !payouts.length || Offer.validate({ ...content, direction: 'sell', buyer: null, seller: content.proposer, payouts })) invalid('invalid_payouts', 'The final payout schedule is invalid.');
+    const normalized = Offer.published({ ...content, direction: 'sell', buyer: null, seller: content.proposer, payouts });
+    const schedule = normalized.payouts;
+    const scheduleHash = payoutHash(schedule);
+    const expectedBuyer = content.direction === 'buy' ? content.buyer : buyer;
+    const expectedSeller = content.direction === 'sell' ? content.seller : seller;
+    if (buyer !== expectedBuyer || seller !== expectedSeller) invalid('role_mismatch', 'The candidate counterparties do not match offer direction.');
+    const sets = await ownerSets(content.parcels);
+    let observedAt = 0;
+    const observedOwners = new Set();
+    for (const parcel of content.parcels) {
+        const rows = sets.get(parcelUid(parcel)) || [];
+        if (!rows.length) invalid('ownership_missing', `No ownership evidence exists for ${parcelUid(parcel)}.`);
+        if (rows.length > Offer.MAX_PAYOUTS) invalid('too_many_owners', 'The parcel exceeds the supported payout-recipient limit.');
+        const distinctOwners = new Set(rows.map(row => row.owner));
+        if (distinctOwners.size !== rows.length || rows.some(row => row.ownerCount !== rows.length)) invalid('ownership_incomplete', 'The registry does not contain the complete declared owner set.');
+        for (const row of rows) { if (!key(row.owner) || !Number.isSafeInteger(row.establishedAt) || row.establishedAt < 0 || row.establishedAt > nowSeconds) invalid('ownership_time_invalid', `Ownership evidence for ${parcelUid(parcel)} is incomplete.`); observedOwners.add(row.owner); observedAt = Math.max(observedAt, row.establishedAt); }
+    }
+    const recipients = new Set(schedule.map(row => row.recipient));
+    if (recipients.size !== observedOwners.size || [...observedOwners].some(owner => !recipients.has(owner))) invalid('payout_ownership_mismatch', 'Every observed owner must be an exact payout recipient.');
+    if (!observedOwners.has(seller)) invalid('seller_not_owner', 'The candidate seller is not in current ownership evidence.');
+    if (!Array.isArray(candidate?.consents) || candidate.consents.length > Offer.MAX_PAYOUTS) invalid('invalid_consents', 'Supply the bounded seller consent list.');
+    const consentByOwner = new Map((candidate?.consents || []).map(row => [row?.owner, row]));
+    if (consentByOwner.size !== candidate.consents.length) invalid('duplicate_consents', 'A seller consent is listed more than once.');
+    if (consentByOwner.size !== observedOwners.size || [...observedOwners].some(owner => !consentByOwner.has(owner))) invalid('missing_seller_consent', 'Every observed owner must provide one consent.');
+    const message = owner => sellerConsentMessage({ cid: offer.cid, offer: account.address, termsHash, payoutsHash: scheduleHash, buyer, seller: owner });
+    for (const owner of observedOwners) if (!verifyWalletSignature({ owner, message: message(owner), signature: consentByOwner.get(owner).signature })) invalid('bad_seller_consent', `Seller consent is invalid for ${owner}.`);
+    if (content.direction === 'sell' && account.payoutsHash !== scheduleHash) invalid('payouts_mismatch', 'The committed sale schedule differs from the chain account.');
+    return { cid: offer.cid, offer: account.address, termsHash, payoutsHash: scheduleHash, buyer, seller, ownershipVerified: 1, sourceObservedAt: observedAt };
+}

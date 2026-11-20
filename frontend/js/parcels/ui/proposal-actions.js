@@ -59,6 +59,13 @@
         }
     ];
 
+    // Ownership offers retain the exact selected parcel bundle. Unlike build tools, they never
+    // expand a one-parcel selection to a block: a signed offer must mean precisely these parcels.
+    const PARCEL_OWNERSHIP_TOOLS = [
+        { key: 'offerBuy', icon: 'fa-cart-shopping', labelKey: 'panel.parcel.build.offerBuy', fallback: 'Offer to buy' },
+        { key: 'offerSell', icon: 'fa-tag', labelKey: 'panel.parcel.build.offerSell', fallback: 'Offer to sell' }
+    ];
+
     function roadToolsEnabled() {
         return (typeof global.CityConfigManager !== 'undefined'
             && typeof global.CityConfigManager.isFeatureEnabled === 'function')
@@ -84,6 +91,19 @@
         const stationType = PARCEL_TRANSPORT_TOOLS.find(tool => tool.key === key)?.stationType;
         if (stationType === 'track') return global.chooseTrackStationType?.();
         if (stationType) return global.startTransitStationPlacement?.(stationType);
+    }
+
+    function startPropertyOffer(direction) {
+        const parcelIds = parcelBuildSelectionIds();
+        if (!parcelIds.length) {
+            global.updateStatus?.(tParcel('panel.parcel.build.selectParcelFirst', {}, 'Select a parcel first.'));
+            return;
+        }
+        if (!global.PropertyOfferDialog?.open) {
+            global.showStyledAlert?.(tParcel('propertyOffer.errors.unavailable', {}, 'Property offers are not available yet.'));
+            return;
+        }
+        return global.PropertyOfferDialog.open({ direction, parcelIds });
     }
 
     let parcelBuildContextId = null;
@@ -253,6 +273,16 @@
                 `;
             }).join('');
         const transportTitle = tParcel('panel.parcel.build.transport', {}, 'Transport');
+        const ownershipTitle = tParcel('panel.parcel.build.ownership', {}, 'Ownership');
+        const ownershipButtons = PARCEL_OWNERSHIP_TOOLS.map(tool => {
+            const label = tParcel(tool.labelKey, {}, tool.fallback);
+            return `
+                <button type="button" class="cb-tile parcel-build-btn parcel-ownership-btn parcel-ownership-btn--${tool.key}"
+                    onclick="BusyControl.track(this, () => startPropertyOffer('${tool.key === 'offerBuy' ? 'buy' : 'sell'}'))" title="${escapeAttr(label)}">
+                    <i class="cb-tile__icon fas ${tool.icon}" aria-hidden="true"></i>
+                    <span class="cb-tile__label">${label}</span>
+                </button>`;
+        }).join('');
         return `
             <div class="parcel-build-palette">
                 <section class="parcel-structures-group">
@@ -271,6 +301,10 @@
                 <section class="parcel-transport-group">
                     <h4 class="cb-kicker">${transportTitle}</h4>
                     <div class="cb-tiles parcel-transport-grid">${transportButtons}</div>
+                </section>
+                <section class="parcel-ownership-group">
+                    <h4 class="cb-kicker">${ownershipTitle}</h4>
+                    <div class="cb-tiles parcel-ownership-grid">${ownershipButtons}</div>
                 </section>
             </div>
         `;
@@ -351,6 +385,7 @@
     global.maybeSuggestWholeBlockForFreshProposal = maybeSuggestWholeBlockForFreshProposal;
     global.startParcelBuildTool = startParcelBuildTool;
     global.startParcelTransportTool = startParcelTransportTool;
+    global.startPropertyOffer = startPropertyOffer;
     global.renderParcelProposalActions = renderParcelProposalActions;
     global.buildProposalPaletteHtml = buildPaletteHtml;
 })(typeof window !== 'undefined' ? window : globalThis);

@@ -975,6 +975,12 @@ async function handleProposalRouteFromUrl() {
             try { await window.DraftPreview.open(); } finally { releaseDeepLinkParcelFetch(); }
             return;
         }
+        const offerMatch = pathname.match(/^\/property-offers\/([^/]+)$/);
+        if (offerMatch) {
+            try { await window.PropertyOfferSync.openDetails(decodeURIComponent(offerMatch[1])); }
+            finally { releaseDeepLinkParcelFetch(); }
+            return;
+        }
         const designMatch = pathname.match(/^\/designs\/([^/]+)$/);
         const agreementMatch = pathname.match(/^\/agreements\/([^/]+)$/);
         const planMatch = pathname.match(/^\/plans\/([^/]+)$/);

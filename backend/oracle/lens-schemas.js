@@ -47,6 +47,9 @@ export const LENS_SCHEMAS = Object.freeze({
         'A lens member attests that the decision rule of an agreement is satisfied as of a source time.',
         'string agreementCid, string sponsor, string decision, string evidenceRef, int64 sourceObservedAt'
     ),
+    propertyOffer: schemaDefinition('propertyOffer', 'PropertyOfferDecision',
+        'A lens member attests a verified open property offer and all seller consents.',
+        'string cid, string offer, string termsHash, string payoutsHash, string buyer, string seller, uint8 ownershipVerified, int64 sourceObservedAt'),
     // One schema for every milestone market source: the member's adapter reads the source (a permits
     // dataset, legislation records, a gazette) and states which outcome text it supports and when.
     evidence: schemaDefinition(

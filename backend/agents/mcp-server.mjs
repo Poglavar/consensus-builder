@@ -14,6 +14,7 @@ import { resultSchemaFor, argumentError } from './mcp-contracts.js';
 import { createMcpDiscoveryTools } from './mcp-discovery.js';
 import { createMcpObserver } from '../operations/planning-diagnostics.js';
 import { createSharedPlanMcpTools } from './mcp-shared-plan-tools.js';
+import { registerPropertyOfferTools } from './mcp-property-offers.js';
 
 const BASE58_KEY = /^[1-9A-HJ-NP-Za-km-z]{32,44}$/;
 // CIDv1, raw codec, sha2-256, base32 lower case (backend/cid.js).
@@ -142,6 +143,7 @@ export function createUrbanGameTheoryMcpServer({ mode = 'local', env = process.e
         description: 'Read an agreement from the index (GET /agreements/:cid) plus, when its content names a sponsor, its chain account (PDA of sponsor and CID) and that account as the chain holds it now (accountState: status, lens, deadline, required and escrowed lamports, decision); minted is false until the sponsor creates it.',
         inputSchema: z.object({ agreementCid }), annotations: READ_ONLY
     }, handler(args => actions.getAgreement(args)));
+    registerPropertyOfferTools(server, { handler, env, fetchImpl });
 
     server.registerTool('ugt_list_attesters', {
         title: 'List lens members (attesters)',

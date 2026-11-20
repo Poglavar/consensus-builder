@@ -337,6 +337,10 @@ in commits.
 - 2026-10-12: Benchmark first (`world-parcels/parcel-bench`, frozen sets, one scorer, OSM baseline); the learned model layers on the OSM baseline; donor cities by practice region (country → Köppen class → distance).
 - 2026-10-02/03: SAM 3 experiments approved stepwise; select by whole-parcel precision/recall, not boundary proximity; weights and data stay gitignored.
 
+## Purchase and sale
+
+- Restore parcel purchase and sale offers on Solana first, in both directions; leases and individual building/apartment transactions are deferred.
+
 ## Floor plans and Novogradnje
 
 - 2026-10-19: Location-required policy reversed: keep source-backed plans with **Nepoznata lokacija** until evidence places them; the shared geodata API owns published plans (Novogradnje and the CB archive consume). Pionir whole-floor layouts are floor plans, never fabricated apartments.
