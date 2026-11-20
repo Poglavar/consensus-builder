@@ -4,7 +4,7 @@ import { openLayerSection } from '../helpers/layers';
 import { Page, Route } from '@playwright/test';
 import { test, expect } from '../helpers/fixtures';
 import { openCity, openParcel, expectStatusLogged } from '../helpers/runtime';
-import { installLayerDatasets } from '../helpers/mocks/layer-datasets';
+import { installLayerDatasets, FIXTURE_ROAD_PARCEL_ID } from '../helpers/mocks/layer-datasets';
 import { selectNativeOption } from '../helpers/controls';
 
 async function serveClosedBlocks(page: Page): Promise<string[]> {
@@ -324,6 +324,9 @@ test('parcel block inspector tabs switch to their supported information and tool
   await openParcel(page, 'proposals');
   await page.locator('.multi-select-detect-btn').click();
   await expect.poll(() => page.evaluate(() => (window as any).multiParcelSelection.selectedParcels.size)).toBeGreaterThan(1);
+  // Count only once the curated classification has marked the street parcel. Counted earlier, the
+  // street joins the block, and its late mark re-forms it under the open inspector.
+  await expect.poll(() => page.evaluate(id => (window as any).isRoadParcel(id), FIXTURE_ROAD_PARCEL_ID)).toBe(true);
 
   const sheet = page.locator('#layers-sheet');
   if (!(await sheet.isVisible())) await page.locator('#layers-button').click();

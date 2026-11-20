@@ -76,4 +76,31 @@ describe('map wheel zoom', () => {
         const pinch = Array.from({ length: 30 }, (_, i) => ({ at: i * 10, deltaY: -50, ctrlKey: true }));
         expect(last(play(createModel(), pinch, { max: 20 })).zoom).toBe(20);
     });
+
+    it('leaves a zoom made elsewhere while the gesture waits out its idle time, and zooms on from it', () => {
+        const model = createModel({ easeMs: 0 });
+        const notch = at => model.input({ deltaMode: 0, ctrlKey: false, shiftKey: false, deltaY: -100 }, at);
+        let zoom = 17;
+        const run = (from, to) => {
+            const steps = [];
+            for (let now = from; now <= to; now += 16) {
+                const step = model.frame(now, zoom, 2, 23);
+                if (step.zoom !== null) zoom = step.zoom;
+                steps.push(step);
+                if (step.done) break;
+            }
+            return steps;
+        };
+        notch(0);
+        run(0, 64);
+        expect(zoom).toBeCloseTo(17.5, 10);
+        // Zoom to block fits the map 80 ms after the notch, inside the gesture's idle tail.
+        zoom = 20.75;
+        const tail = run(80, 600);
+        expect(zoom).toBe(20.75);
+        expect(tail.filter(step => step.done)).toHaveLength(1);
+        notch(700);
+        run(700, 1200);
+        expect(zoom).toBeCloseTo(21.25, 10);
+    });
 });

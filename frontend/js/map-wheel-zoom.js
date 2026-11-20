@@ -44,6 +44,7 @@
         var delta = 0;            // levels to add on the next frame (positive zooms in)
         var target = null;        // the zoom the gesture is heading to
         var ease = null;          // { from, at }: a mouse notch easing from `from` since `at`
+        var shown = null;         // the zoom the last frame gave, while the gesture holds a target
         var lastInputAt = -Infinity;
 
         function levels(value, kind) {
@@ -87,6 +88,13 @@
                 delta += levels(pending.value, type);
                 pending = null;
             }
+            // Something else changed the zoom since the last frame (Zoom to block's fitBounds, a
+            // setView, a keyboard zoom): that view stands, and the target held for the idle tail
+            // must not pull the map back. Input still to come zooms on from the new view.
+            if (shown !== null && zoom !== shown) {
+                target = null;
+                ease = null;
+            }
             if (delta !== 0) {
                 target = clamp((target === null ? zoom : target) + delta, minZoom, maxZoom);
                 ease = type === 'wheel' && easeMs > 0 ? { from: zoom, at: now } : null;
@@ -108,6 +116,7 @@
                 target = null;
                 ease = null;
             }
+            shown = target === null ? null : next;
             return { zoom: next, done: done };
         }
 
