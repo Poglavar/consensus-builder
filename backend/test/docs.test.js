@@ -4,6 +4,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import request from 'supertest';
 import { setupDocsRoute } from '../routes/docs.js';
 import { MCP_DEBUG_TOOLS, MCP_SHARED_PLAN_TOOLS } from '../agents/mcp-catalog.js';
+import { registerPropertyOfferTools } from '../agents/mcp-property-offers.js';
 import { createRouteApp } from './helpers/create-route-app.js';
 
 afterEach(() => {
@@ -468,14 +469,18 @@ describe('agent quickstart docs', () => {
         // The advertised list must match exactly what the MCP server registers.
         const registrations = fs.readFileSync(repoFile('backend/agents/mcp-server.mjs'), 'utf8')
             + fs.readFileSync(repoFile('backend/agents/mcp-companion.mjs'), 'utf8');
-        const registered = [...new Set([...registrations.matchAll(/(?:registerTool|add)\('(ugt_[a-z_]+)'/g)].map(match => match[1]))];
+        // Property-offer tools register under template names, so record their real registrations.
+        const offerTools = [];
+        registerPropertyOfferTools({ registerTool: name => offerTools.push(name) }, { handler: fn => fn, env: {} });
+        expect(offerTools).toContain('ugt_publish_property_offer');
+        const registered = [...new Set([...registrations.matchAll(/(?:registerTool|add)\('(ugt_[a-z_]+)'/g)].map(match => match[1]).concat(offerTools))];
         expect(registered.length).toBeGreaterThan(32);
         const conditional = new Set([...MCP_DEBUG_TOOLS, ...MCP_SHARED_PLAN_TOOLS]);
         expect([...res.body.mcp.tools].sort()).toEqual(registered.filter(name => !conditional.has(name)).sort());
         expect(res.body.lens).toMatchObject({
             ruleField: 'rule.lens',
             schemas: 'https://api.example.test/lenses/schemas',
-            attestations: ['ParcelOwnership-v1', 'AgreementDecision-v1', 'MarketEvidence-v1'],
+            attestations: ['ParcelOwnership-v1', 'AgreementDecision-v1', 'PropertyOfferDecision-v1', 'MarketEvidence-v1'],
             memberKinds: ['owner-consent', 'court', 'permit', 'imagery', 'osm', 'lifecycle']
         });
         expect(res.body.lens.memberFields).toContain('serviceUrl');

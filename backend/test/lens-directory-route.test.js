@@ -57,6 +57,7 @@ describe('GET /lenses/schemas', () => {
         expect(res.body.schemas.map(s => [s.id, s.name, s.version])).toEqual([
             ['ParcelOwnership-v1', 'ParcelOwnership', 1],
             ['AgreementDecision-v1', 'AgreementDecision', 1],
+            ['PropertyOfferDecision-v1', 'PropertyOfferDecision', 1],
             ['MarketEvidence-v1', 'MarketEvidence', 1]
         ]);
         expect(res.body.schemas[0].fields).toContainEqual({ name: 'ownerCount', type: 'uint8' });

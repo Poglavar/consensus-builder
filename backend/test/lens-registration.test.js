@@ -188,7 +188,7 @@ describe('file attestation store', () => {
         await expect(store.record({ address: 'A1', kind: 'ownership' })).rejects.toThrow(/already recorded/);
         const reloaded = createFileStore(file);
         expect(await reloaded.get('A2')).toMatchObject({ payload: { agreementCid: 'bafkrei-a' } });
-        expect(await reloaded.counts()).toEqual({ ownership: 1, decision: 1, evidence: 0, parcels: 1, agreements: 1 });
+        expect(await reloaded.counts()).toEqual({ ownership: 1, decision: 1, propertyOffer: 0, evidence: 0, parcels: 1, agreements: 1 });
         expect((await reloaded.list({ agreementCid: 'bafkrei-a' })).map(record => record.address)).toEqual(['A2']);
         expect(await reloaded.list({ agreementCid: 'bafkrei-b' })).toEqual([]);
         expect(fs.readdirSync(dir)).toEqual(['attestations.json']);

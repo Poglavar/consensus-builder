@@ -86,7 +86,8 @@ describe('whole-block fresh-proposal suggestion', () => {
         expect(startInstantProposalDesign).toHaveBeenCalledWith('row', ['a', 'b']);
     });
 
-    it('renders transport icons with full station labels, and no Ownership group (M2: owner offers are gone)', () => {
+    // f4ebd7489 restored standalone purchase and sale offers as the palette's last group.
+    it('renders transport icons with full station labels, then the Ownership offers', () => {
         const container = { innerHTML: '' };
         const document = {
             querySelector: vi.fn(() => null),
@@ -112,14 +113,15 @@ describe('whole-block fresh-proposal suggestion', () => {
         expect(html).toContain('Track station');
         expect(html).not.toContain('Tram station');
         expect(html).not.toContain('Metro station');
-        expect(html).not.toContain('parcel-ownership-group');
-        expect(html).not.toContain('parcel-build-btn--offer');
+        expect(html).toContain("startPropertyOffer('buy')");
+        expect(html).toContain("startPropertyOffer('sell')");
+        expect(html.indexOf('parcel-transport-group')).toBeLessThan(html.indexOf('parcel-ownership-group'));
         // Transport follows the construction tools and parcel-layout section.
         expect(html.indexOf('parcel-build-btn--park')).toBeGreaterThan(-1);
         expect(html.indexOf('parcel-build-btn--park')).toBeLessThan(html.indexOf('parcel-transport-group'));
     });
 
-    it('offers structures, rules, parcel layout and transport, and opens the layout tool', async () => {
+    it('offers structures, rules, parcel layout, transport and ownership, and opens the layout tool', async () => {
         const container = { innerHTML: '' };
         const document = {
             querySelector: vi.fn(() => null),
@@ -134,11 +136,19 @@ describe('whole-block fresh-proposal suggestion', () => {
         expect(html).toContain('Lay out parcels');
         expect(html).not.toContain('parcel-build-btn--reparcellization');
         expect([...html.matchAll(/<section class="(parcel-[\w-]+-group)">/g)].map(match => match[1]))
-            .toEqual(['parcel-structures-group', 'parcel-rules-group', 'parcel-layout-group', 'parcel-transport-group']);
+            .toEqual(['parcel-structures-group', 'parcel-rules-group', 'parcel-layout-group', 'parcel-transport-group', 'parcel-ownership-group']);
         expect(html.indexOf('parcel-build-btn--parcel-layout')).toBeGreaterThan(html.indexOf('parcel-layout-group'));
 
         await window.startParcelBuildTool('parcel-layout');
         expect(startInstantProposalDesign).toHaveBeenCalledWith('parcel-layout', ['parcel-1']);
+    });
+
+    it('opens an offer on exactly the selected parcel, never asking for the whole block', async () => {
+        const open = vi.fn(), askScope = vi.fn();
+        const window = loadActions({ currentParcel: { id: 'parcel-1' }, PropertyOfferDialog: { open }, CbDialog: { choice: askScope } });
+        await window.startPropertyOffer('sell');
+        expect(open).toHaveBeenCalledWith({ direction: 'sell', parcelIds: ['parcel-1'] });
+        expect(askScope).not.toHaveBeenCalled();
     });
 
     it('routes transport palette icons to the existing corridor and station tools', () => {

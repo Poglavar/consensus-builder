@@ -38,12 +38,13 @@
             return `${whole}${fraction ? `.${fraction}` : ''} SOL`;
         } catch (_) { return '0 SOL'; }
     };
+    // Parcel references come from the live parcel fabric, the authoritative land record; the Leaflet
+    // layers only present it.
     const parcelRefs = ids => {
-        const layers = root.ParcelPresenter?.resolveLiveLayers?.(ids) || [];
-        const refs = layers.map(layer => {
-            const properties = layer.feature?.properties || layer.properties || {};
+        const refs = ids.map(id => root.LiveParcelFabric?.get?.(id)).map(feature => {
+            const properties = feature?.properties || {};
             const source = properties.parcelSource || {};
-            const id = properties.parcelId ?? properties.id ?? layer.parcelId ?? layer.id;
+            const id = properties.parcelId ?? properties.id ?? feature?.id;
             return id == null ? null : {
                 sourceId: String(source.sourceId || root.DesignSync?.parcelSourceIdOf?.(city()) || ''),
                 id: String(id),
