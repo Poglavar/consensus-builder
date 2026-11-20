@@ -40,5 +40,15 @@ export async function mockPhotoTiles(page: Page) {
     requests++;
     return route.fulfill({ json: gltf });
   });
+  // A city with a photo seat (Zagreb) seats by the terrain API's height, not by the tiles. The
+  // fixture ground lies on the ellipsoid, so the answer is that ground in the city's datum; the live
+  // API would put the fixture 160 m below the content and the clicks would miss what they aim at.
+  await page.route('**/api/terrain/elevation?**', async route => {
+    const url = new URL(route.request().url());
+    const seat = await page.evaluate(([lat, lng]) => (window as any).CityConfigManager.getCityConfigAt(lat, lng)?.photoSeat,
+      [Number(url.searchParams.get('lat')), Number(url.searchParams.get('lon'))]);
+    if (!seat) return route.fulfill({ status: 404, json: { error: 'no photo seat here' } });
+    return route.fulfill({ json: { elevationM: -seat.geoidM, datum: seat.datum } });
+  });
   return { requests: () => requests };
 }
