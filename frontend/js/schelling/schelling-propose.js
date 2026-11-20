@@ -92,10 +92,9 @@
             blocks: counted('blockCount', summary.blocks), streets: counted('streetCount', summary.streets), roads: counted('roadCount', summary.roads),
             arterial: number(summary.lengthM.arterial / 1000, 2), local: number(summary.lengthM.local / 1000, 2)
         };
-        // A Burning Man city has no arterials, only its streets.
-        root.querySelector('.schelling-propose__summary').textContent = !cells.length ? t('propose.empty', 'No blocks chosen.')
-            : isBurningMan() ? t('propose.burningMan.summary', '{{blocks}} · {{streets}} ({{local}} km) · {{roads}}', params)
-                : t('propose.summary', '{{blocks}} · {{streets}} ({{arterial}} km arterial, {{local}} km local) · {{roads}}', params);
+        root.querySelector('.schelling-propose__summary').textContent = cells.length
+            ? t('propose.summary', '{{blocks}} · {{streets}} ({{arterial}} km arterial, {{local}} km local) · {{roads}}', params)
+            : t('propose.empty', 'No blocks chosen.');
         root.querySelector('[data-action="propose"]').disabled = state.proposing || !cells.length;
         root.querySelector('[data-action="clear"]').disabled = !cells.length;
     }

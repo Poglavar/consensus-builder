@@ -150,18 +150,23 @@
             { pane: PANE, renderer: state.renderer, interactive: false, className }));
     }
 
-    // A Burning Man city: the Man at every scale, centre lines when far out, then the street land
-    // and blocks, then plots.
+    // A Burning Man city: the Man at every scale, centre lines when far out (the arterials as the
+    // meridian plan draws its own), then the street land and blocks, then plots.
     function renderBurningMan(zoom, box) {
         const plan = state.manPlan;
         if (!plan) { renderStatus(state.manError ? t('tooLarge', 'The plan cannot be drawn here: {{reason}}', { reason: state.manError }) : ''); return; }
         const man = win.BurningManPlan;
+        const ofClass = (features, roadClass) => features.filter(feature => feature.properties.roadClass === roadClass);
         if (zoom < ZOOM.streets) {
-            draw(man.centreLines(plan), 'schelling-plan__line');
+            const lines = man.centreLines(plan);
+            draw(ofClass(lines, 'local'), 'schelling-plan__line');
+            draw(ofClass(lines, 'arterial'), 'schelling-plan__arterial-line');
             renderStatus(t('burningMan.zoomForStreets', 'Street centre lines only at this scale; zoom in for the street land and blocks.'));
         } else {
+            const streets = man.streetFeatures(plan, box);
             draw(man.blocksInBbox(plan, box), 'schelling-plan__block');
-            draw(man.streetFeatures(plan, box), 'schelling-plan__street is-local');
+            draw(ofClass(streets, 'local'), 'schelling-plan__street is-local');
+            draw(ofClass(streets, 'arterial'), 'schelling-plan__street is-arterial');
             const plots = state.settings.plotLevel !== null && zoom >= ZOOM.plots;
             if (plots) draw(man.plotsInBbox(plan, box, state.settings.plotLevel), 'schelling-plan__plot');
             renderStatus(plots || state.settings.plotLevel === null ? '' : t('zoomForPlots', 'Zoom in further to see the plots.'));
@@ -242,7 +247,7 @@
         const plotLevel = state.settings.plotLevel;
         if (!plan) {
             el('schelling-plan-man').textContent = state.manError || '';
-            ['schelling-plan-man-layout', 'schelling-plan-man-blocks', 'schelling-plan-plot-size', 'schelling-plan-code'].forEach(id => { el(id).textContent = ''; });
+            ['schelling-plan-man-layout', 'schelling-plan-man-arterials', 'schelling-plan-man-blocks', 'schelling-plan-plot-size', 'schelling-plan-code'].forEach(id => { el(id).textContent = ''; });
             return;
         }
         const man = win.BurningManPlan;
@@ -251,12 +256,15 @@
             lat: d.lat, lng: d.lng, bearing: number(d.bearingDeg)
         });
         el('schelling-plan-man-layout').textContent = [
-            t('burningMan.rings', 'The Esplanade {{esplanade}} m from the Man, then ring streets A to {{last}} every {{spacing}} m, out to {{outer}} m.', {
-                esplanade: number(d.esplanadeM), last: d.lastRing, spacing: number(d.spacingM), outer: number(d.outerRadiusM)
+            t('burningMan.rings', 'The Esplanade {{esplanade}} m from the Man, then ring streets A to {{last}}, out to {{outer}} m.', {
+                esplanade: number(d.esplanadeM), last: d.lastRing, outer: number(d.outerRadiusM)
             }),
             t('burningMan.radials', 'Radial streets every half hour from 2:00 to 10:00; the open playa lies between 10:00 and 2:00.'),
             d.quarterHoursFrom ? t('burningMan.quarterHours', 'Quarter-hour streets from ring {{ring}} outward, where the blocks have doubled in length.', { ring: d.quarterHoursFrom }) : ''
         ].filter(Boolean).join(' ');
+        el('schelling-plan-man-arterials').textContent = t('burningMan.arterials', 'Arterials {{width}} m wide, about 1 km apart: the rings {{rings}} and the radials at {{radials}}. They are fixed: a good city plan needs them, whatever its shape.', {
+            width: number(d.arterialWidthM), rings: d.arterialRings.join(', '), radials: d.arterialRadials.join(', ')
+        });
         el('schelling-plan-man-blocks').textContent = t('burningMan.blocks', '{{count}} blocks, {{depth}} m deep and {{shortest}} to {{longest}} m along their ring streets.', {
             count: number(d.blocks), depth: number(d.blockDepthM), shortest: number(d.shortestFaceM), longest: number(d.longestFaceM)
         });
@@ -268,9 +276,11 @@
             });
         el('schelling-plan-code').textContent = t('code', 'Plan {{code}}', { code: plan.code });
         el('schelling-plan-why').textContent = [
+            t('whyAngel', 'Shlomo Angel and colleagues (Making Room for a Planet of Cities, 2011) argue that a growing city should fix its arterial roads before the land is built on: about 30 m wide and about 1 km apart, so that every point is within a ten-minute walk of a road that can carry public transport.'),
+            t('burningMan.whyArterials', 'In this city they are the Esplanade and every ring about 1 km further out, and the radials on the clock step whose spacing at the city’s edge is nearest 1 km.'),
             t('burningMan.whyCity', 'After Black Rock City, the city the Burning Man festival builds every year in the Nevada desert: ring streets round the Man and radial streets named by the hours of a clock, so every address is a time and a letter (4:30 and C) that anyone can find without a map.'),
             t('burningMan.whyClock', 'The city takes the clock from 2:00 to 10:00 and leaves the playa open towards 12:00. Where a block has grown to twice its length at the Esplanade, quarter-hour streets divide it.'),
-            t('burningMan.whyChoices', 'Where the Man stands, how far out the Esplanade lies, how many ring streets follow it, the block depth, the street width, where 12:00 points and the plot size are yours to choose.')
+            t('burningMan.whyChoices', 'Where the Man stands, how far out the Esplanade lies, how many ring streets follow it, the block depth, the local street width, where 12:00 points and the plot size are yours to choose.')
         ].join(' ');
     }
 

@@ -180,8 +180,9 @@ and the halving path (`MP:<code>:B:i:j/N/011`, `plotsOfBlock`).
 A city after Black Rock City, the temporary city of the Burning Man festival
 (`frontend/js/schelling/burning-man-plan.js`, pure; `backend/test/burning-man-plan.test.js`). The
 Man stands where the author puts him; the city takes the clock from 2:00 to 10:00 around him and
-leaves the open playa between 10:00 and 2:00. The panel's Burning Man settings replace the meridian
-ones; the plot size is shared.
+leaves the open playa between 10:00 and 2:00. Angel's arterials are part of it as of the meridian
+plan, fixed rather than set: a good city plan needs them whatever its shape. The panel's Burning
+Man settings replace the meridian ones; the plot size is shared.
 
 | | Default | Setting |
 |---|---|---|
@@ -189,12 +190,20 @@ ones; the plot size is shared.
 | Esplanade, the first ring street | 760 m from the Man | 150–1500 m |
 | Lettered ring streets after it | A to K (11) | 1–12 (A to L) |
 | Block depth between ring streets | 76 m | 20–200 m |
-| Street width, every street | 12 m | 8–20 m |
+| Local street width | 12 m | 8–20 m |
 | Direction of 12:00 | 0° (north) | 0–355° |
 
-- **Rings and radials.** Ring j lies at Esplanade + j × (depth + width). Radial streets run every half
-  hour (15°). From the first ring where a block has grown to twice its length at the Esplanade,
-  quarter-hour streets divide the blocks (Black Rock City's outer rings); there is no finer level.
+- **Arterials, 30 m wide and about 1 km apart** (the meridian plan's `ARTERIAL`, with its 30 m
+  cross-section). Rings: the Esplanade and every k-th ring after it, k the whole number of ring
+  steps (block depth + local street) nearest 1 km by ratio. Radials: every 0.5, 1, 2 or 4 hours,
+  the step whose arc at the city's outer ring is nearest 1 km by ratio; each divides the city's
+  eight hours, so 2:00, 6:00 and 10:00 are always arterials. Defaults: the Esplanade and K, and
+  every whole hour from 2:00 to 10:00; no point of a block is more than about 500 m from one.
+- **Rings and radials.** Blocks keep the set depth: ring j + 1 lies half of ring j's width, a block
+  depth and half of its own width beyond ring j, so an arterial ring pushes the rings outside it
+  out. Radial streets run every half hour (15°). From the first ring where a block has grown to
+  twice its length at the Esplanade, quarter-hour streets divide the blocks (Black Rock City's outer
+  rings); there is no finer level, and quarter-hour streets are never arterials.
 - **Blocks and plots.** Cell (i, j) is sector i, at its band's radial level, of the band between
   ring j and ring j + 1. Its block is the cell less half a street on every side: arcs along the ring
   streets, straight edges parallel to the radials. Plots follow the meridian rule: two rows, one
@@ -203,13 +212,14 @@ ones; the plot size is shared.
 - **Code.** `BM-<esplanade>-<rings>-<depth>-<width>-<bearing>@<lat>,<lng>`; the address form is
   `?schelling=bm-<esplanade>-<rings>-<depth>-<width>-<plot>-<bearing>@<lat>,<lng>`. A link
   without `@…` keeps the reader's own Man.
-- **Drawing.** Centre lines below z15, street land and blocks from z15, plots from z17; the Man at
-  every scale. Choosing the type frames the whole city.
+- **Drawing.** Centre lines below z15 (arterials as the meridian plan draws its own), street land
+  and blocks from z15, plots from z17; the Man at every scale. Choosing the type frames the whole city.
 - **Proposing.** The same painting tool: "This clock hour" starts from the hour nearest the map
   centre (6:00 to 7:00 from the Man himself). The streets around the chosen blocks become road
   proposals through the same corridor import (`source: 'burning-man'`), every way named as the city
   names its streets (`Esplanade`, `C`, `4:30`); ring ways carry their arc as vertices at most 2°
-  apart. All streets are local streets of the chosen width; there are no arterials.
+  apart. Arterials take the meridian plan's 30 m section (`highway=primary`), the rest a local
+  street of the chosen width.
 
 A Burning Man city is not a Schelling point in the strict sense: its centre is chosen. What is
 common knowledge is the layout, so anyone given the Man's place and the settings derives the same

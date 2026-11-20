@@ -174,18 +174,25 @@ test('the plan type picker turns the plan into a Burning Man city round a Man pl
   await expect(page.locator('#schelling-plan-burning-man')).toBeVisible();
   await expect.poll(() => schellingParam(page)).toBe('bm-760-11-76-12-16-0@45.80025,15.9822');
   await expect(page.locator('#schelling-plan-man')).toContainText('45.80025, 15.9822');
-  await expect(page.locator('#schelling-plan-man-layout')).toContainText('ring streets A to K every 88 m');
+  await expect(page.locator('#schelling-plan-man-layout')).toContainText('ring streets A to K, out to 1,746 m');
+  // Angel's 30 m arterials about 1 km apart, fixed as in the meridian plan.
+  await expect(page.locator('#schelling-plan-man-arterials')).toContainText('Arterials 30 m wide');
+  await expect(page.locator('#schelling-plan-man-arterials')).toContainText('the rings Esplanade, K and the radials at 2:00, 3:00');
   await expect(page.locator('#schelling-plan-man-layout')).toContainText('Quarter-hour streets from ring I');
   await expect(page.locator('#schelling-plan-man-blocks')).toContainText('208 blocks');
   await expect.poll(() => page.evaluate(() => (window as any).map.getZoom())).toBeLessThan(15);
   await expect(page.locator('path.schelling-plan__man')).toHaveCount(1);
-  await expect.poll(() => count(page, 'path.schelling-plan__line')).toBe(12 + 33);
+  await expect.poll(() => count(page, 'path.schelling-plan__line')).toBe(10 + 24);
+  await expect.poll(() => count(page, 'path.schelling-plan__arterial-line')).toBe(2 + 9);
   await expect(page.locator('path.schelling-plan__block')).toHaveCount(0);
 
   // Closer in, the street land, blocks and plots.
   await page.evaluate(() => (window as any).map.setView([45.80025 - 0.0081, 15.9822], 17, { animate: false }));
   await expect.poll(() => count(page, 'path.schelling-plan__block')).toBeGreaterThan(0);
   await expect.poll(() => count(page, 'path.schelling-plan__plot')).toBeGreaterThan(0);
+  // The 6:00 arterial runs through the view, beside local streets.
+  await expect.poll(() => count(page, 'path.schelling-plan__street.is-arterial')).toBeGreaterThan(0);
+  await expect.poll(() => count(page, 'path.schelling-plan__street.is-local')).toBeGreaterThan(0);
 
   // The city's settings redraw it and follow the address.
   await page.locator('#schelling-plan-rings').focus();
@@ -227,7 +234,8 @@ test('a Burning Man link opens the city, and Propose roads lands its streets as 
   await expect(tool.locator('[data-action="superblock"]')).toHaveText('This clock hour');
   const summary = tool.locator('.schelling-propose__summary');
   await expect(summary).toContainText('12 blocks');
-  await expect(summary).not.toContainText('arterial');
+  // The Esplanade and the 6:00 radial are arterials here.
+  await expect(summary).toContainText('km arterial');
 
   await tool.locator('[data-action="clear"]').click();
   await clickVisibleCell(page);

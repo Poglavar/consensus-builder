@@ -1,7 +1,8 @@
 // Burning Man plans: a city laid out as a clock face around the Man, after Black Rock City, the
 // temporary city of the Burning Man festival. Ring streets circle the Man from the Esplanade outward
 // (Esplanade, A, B, ...); radial streets are named by the hour (2:00 ... 10:00) and leave the open
-// playa between 10:00 and 2:00, so every address is a time and a letter (4:30 & C).
+// playa between 10:00 and 2:00, so every address is a time and a letter (4:30 & C). Shlomo Angel's
+// arterials are part of it as of the meridian plan: 30 m wide and about 1 km apart, fixed.
 // The second plan type of the Schelling plan layer (js/schelling/), beside the meridians and
 // parallels (parcels/schelling-grid.js), with the contract the layer and the painting tool share:
 // cells, blocks, plots, and the streets around chosen cells in the OSM form the corridor import
@@ -24,6 +25,9 @@
     const SPAN_DEG = (CLOCK.toHour - CLOCK.fromHour) * DEG_PER_HOUR;
     const BASE_STEP_DEG = CLOCK.stepHours * DEG_PER_HOUR;
     const BASE_SECTORS = SPAN_DEG / BASE_STEP_DEG;
+    // Radial arterials run every so many hours: steps that divide the city's eight hours, so 2:00,
+    // 6:00 and 10:00 are always arterials. The one whose spacing at the city's edge is nearest 1 km.
+    const ARTERIAL_HOURS = Object.freeze([0.5, 1, 2, 4]);
     // Quarter-hour streets start at the first ring where a block has grown to twice its length at
     // the Esplanade, as in Black Rock City's outer rings; there is no finer level.
     const MAX_LEVEL = 1;
@@ -43,11 +47,32 @@
         const n = Number(value);
         return Number.isFinite(n) && n > 0 ? n : fallback;
     };
+    // Of two choices, the one whose length is nearer the target by ratio, as the meridian plan
+    // chooses its arcsecond step (schelling-grid.js chooseStep).
+    const ratioError = (length, target) => Math.abs(Math.log(length / target));
 
     const ringName = j => (j === 0 ? 'Esplanade' : String.fromCharCode(64 + j));
 
+    // ---- the plan --------------------------------------------------------------------------------
+
+    const unitsPer = (plan, j) => 2 ** (plan.maxLevel - plan.levels[j]);
+    const sectorsIn = (plan, j) => BASE_SECTORS * 2 ** plan.levels[j];
+    const bearingOfUnit = (plan, u) => plan.bearingDeg + CLOCK.fromHour * DEG_PER_HOUR + u * plan.unitDeg;
+    const isArterialRing = (plan, j) => j % plan.arterialRingStep === 0;
+    const isArterialRadial = (plan, u) => u % plan.arterialUnits === 0;
+    const ringWidthM = (plan, j) => (isArterialRing(plan, j) ? plan.arterialWidthM : plan.streetWidthM);
+    const radialWidthM = (plan, u) => (isArterialRadial(plan, u) ? plan.arterialWidthM : plan.streetWidthM);
+
+    function clockName(plan, u) {
+        const minutes = Math.round(CLOCK.fromHour * 60 + u * plan.unitDeg * 2);
+        return `${Math.floor(minutes / 60)}:${String(minutes % 60).padStart(2, '0')}`;
+    }
+
     // The plan for one Man: where he stands, how far out the Esplanade lies, how many lettered ring
-    // streets follow it, the block depth, the street width and the bearing 12:00 points to.
+    // streets follow it, the block depth, the local street width and the bearing 12:00 points to.
+    // The arterials follow from those: the Esplanade and every ring nearest 1 km further out, the
+    // radials on the clock step nearest 1 km apart at the edge. Blocks keep their depth: an arterial
+    // ring pushes the rings beyond it out by its extra width.
     function planFor(options = {}) {
         const lat = Number(options.centre?.lat);
         const lng = Number(options.centre?.lng);
@@ -61,43 +86,50 @@
         const streetWidthM = positive(options.streetWidthM, DEFAULTS.streetWidthM);
         const bearingInput = Number(options.bearingDeg);
         const bearingDeg = Number.isFinite(bearingInput) ? mod(bearingInput, 360) : DEFAULTS.bearingDeg;
-        const spacingM = blockDepthM + streetWidthM;
-        const radii = Array.from({ length: rings + 1 }, (_, k) => esplanadeM + k * spacingM);
+        const { widthM: arterialWidthM, spacingTargetM } = grid().ARTERIAL;
+
+        // Every ring step a whole number of block depths and local streets.
+        const ringPitchM = blockDepthM + streetWidthM;
+        const fewer = Math.max(1, Math.floor(spacingTargetM / ringPitchM));
+        const arterialRingStep = ratioError(fewer * ringPitchM, spacingTargetM) <= ratioError((fewer + 1) * ringPitchM, spacingTargetM) ? fewer : fewer + 1;
+        const ringWidth = j => (j % arterialRingStep === 0 ? arterialWidthM : streetWidthM);
+        const radii = [esplanadeM];
+        for (let j = 0; j < rings; j += 1) radii.push(radii[j] + ringWidth(j) / 2 + blockDepthM + ringWidth(j + 1) / 2);
         const levels = radii.slice(0, -1).map(r => Math.min(MAX_LEVEL, Math.floor(Math.log2(r / esplanadeM) + 1e-9)));
         const maxLevel = Math.max(...levels);
-        const innerFaceM = (esplanadeM + streetWidthM / 2) * BASE_STEP_DEG * DEG - streetWidthM;
-        if (!(innerFaceM >= MIN_FACE_M)) {
-            throw new RangeError('Streets this wide leave no block by the Esplanade; move the Esplanade out or narrow the streets.');
-        }
+        const unitDeg = BASE_STEP_DEG / 2 ** maxLevel;
+        const outerRadiusM = radii[rings];
+        const arterialHours = ARTERIAL_HOURS.reduce((best, hours) => (
+            ratioError(outerRadiusM * hours * DEG_PER_HOUR * DEG, spacingTargetM) < ratioError(outerRadiusM * best * DEG_PER_HOUR * DEG, spacingTargetM) ? hours : best));
+
         const code = `BM-${round(esplanadeM, 2)}-${rings}-${round(blockDepthM, 2)}-${round(streetWidthM, 2)}-${round(bearingDeg, 2)}@${round(lat, 5)},${round(lng, 5)}`;
-        return Object.freeze({
+        const plan = Object.freeze({
             algorithm: ALGORITHM,
             code,
             centre: Object.freeze({ lat, lng }),
-            esplanadeM, rings, blockDepthM, streetWidthM, bearingDeg, spacingM,
+            esplanadeM, rings, blockDepthM, streetWidthM, bearingDeg, arterialWidthM,
             radii: Object.freeze(radii),
             // The radial level of each band (the ground between ring j and ring j + 1): 0 = half hours.
             levels: Object.freeze(levels),
             maxLevel,
             // The finest radial step; every radial street and every junction sits on a whole unit.
-            unitDeg: BASE_STEP_DEG / 2 ** maxLevel,
+            unitDeg,
             units: BASE_SECTORS * 2 ** maxLevel,
-            outerRadiusM: radii[rings],
+            outerRadiusM,
+            arterialRingStep,
+            arterialHours,
+            arterialUnits: arterialHours * DEG_PER_HOUR / unitDeg,
             metersPerDegree: Object.freeze({ lat: grid().metersPerDegreeLat(lat), lon: grid().metersPerDegreeLon(lat) })
         });
+        const shortest = Math.min(...Array.from({ length: BASE_SECTORS }, (_, i) => faceOf(plan, i, 0)));
+        if (!(shortest >= MIN_FACE_M)) {
+            throw new RangeError('Streets this wide leave no block by the Esplanade; move the Esplanade out or narrow the streets.');
+        }
+        return plan;
     }
 
     // ---- positions ---------------------------------------------------------------------------------
     // A local plane at the Man: x east and y north in metres; bearings clockwise from north.
-
-    const unitsPer = (plan, j) => 2 ** (plan.maxLevel - plan.levels[j]);
-    const sectorsIn = (plan, j) => BASE_SECTORS * 2 ** plan.levels[j];
-    const bearingOfUnit = (plan, u) => plan.bearingDeg + CLOCK.fromHour * DEG_PER_HOUR + u * plan.unitDeg;
-
-    function clockName(plan, u) {
-        const minutes = Math.round(CLOCK.fromHour * 60 + u * plan.unitDeg * 2);
-        return `${Math.floor(minutes / 60)}:${String(minutes % 60).padStart(2, '0')}`;
-    }
 
     const lngLatOf = (plan, x, y) => [plan.centre.lng + x / plan.metersPerDegree.lon, plan.centre.lat + y / plan.metersPerDegree.lat];
     const xyOf = (plan, [lng, lat]) => [(lng - plan.centre.lng) * plan.metersPerDegree.lon, (lat - plan.centre.lat) * plan.metersPerDegree.lat];
@@ -131,28 +163,40 @@
 
     // ---- cells and blocks -----------------------------------------------------------------------
     // Cell (i, j) is the i-th sector, at its band's radial level, of the band between ring j and
-    // ring j + 1. Its block is the cell less half a street on every side: arcs along the ring streets
-    // and straight edges parallel to the radials.
+    // ring j + 1. Its block is the cell less half of each street around it: arcs along the ring
+    // streets and straight edges parallel to the radials.
 
-    // Part of a cell between radii a and b and between fractions ta and tb of the block's width.
-    function cellPiece(plan, i, j, a, b, ta, tb) {
+    function blockRadii(plan, j) {
+        return [plan.radii[j] + ringWidthM(plan, j) / 2, plan.radii[j + 1] - ringWidthM(plan, j + 1) / 2];
+    }
+
+    // The bearing across a block at a radius: fraction t of the way from its left side to its right.
+    function sideBearings(plan, i, j) {
         const k = unitsPer(plan, j);
         const left = bearingOfUnit(plan, i * k);
         const right = bearingOfUnit(plan, (i + 1) * k);
-        const half = plan.streetWidthM / 2;
-        const at = (radius, t) => {
-            const inset = Math.asin(half / radius) / DEG;
-            const from = left + inset;
-            return from + t * (right - inset - from);
+        const leftHalf = radialWidthM(plan, i * k) / 2;
+        const rightHalf = radialWidthM(plan, (i + 1) * k) / 2;
+        return (radius, t) => {
+            const from = left + Math.asin(leftHalf / radius) / DEG;
+            const to = right - Math.asin(rightHalf / radius) / DEG;
+            return from + t * (to - from);
         };
+    }
+
+    // The block's length along its inner ring street.
+    function faceOf(plan, i, j) {
+        const [inner] = blockRadii(plan, j);
+        const at = sideBearings(plan, i, j);
+        return inner * (at(inner, 1) - at(inner, 0)) * DEG;
+    }
+
+    // Part of a cell between radii a and b and between fractions ta and tb of the block's width.
+    function cellPiece(plan, i, j, a, b, ta, tb) {
+        const at = sideBearings(plan, i, j);
         const ring = [...arc(plan, a, at(a, ta), at(a, tb)), ...arc(plan, b, at(b, tb), at(b, ta))];
         ring.push(ring[0]);
         return ring;
-    }
-
-    function blockRadii(plan, j) {
-        const half = plan.streetWidthM / 2;
-        return [plan.radii[j] + half, plan.radii[j + 1] - half];
     }
 
     function cellFeature(plan, id, ring, properties) {
@@ -267,12 +311,15 @@
         return inBox(cellsInBbox(plan, bbox, limit).flatMap(({ i, j }) => plotsOfBlock(plan, i, j, level)), bbox);
     }
 
-    // The plots by the Esplanade, the smallest of the city.
+    // The plots of a block by the Esplanade between two local radials: the smallest common plot.
     function plotSize(plan, level) {
         const lvl = grid().plotLevelOf(level);
+        const k = unitsPer(plan, 0);
+        const i = Math.max(0, Array.from({ length: BASE_SECTORS }, (_, s) => s)
+            .findIndex(s => !isArterialRadial(plan, s * k) && !isArterialRadial(plan, (s + 1) * k)));
         const [inner, outer] = blockRadii(plan, 0);
         const depthM = lvl === null ? outer - inner : (outer - inner) / 2;
-        const areaM2Value = lvl === null ? blockOf(plan, 0, 0).properties.area_m2 : plotsOfBlock(plan, 0, 0, lvl)[0].properties.area_m2;
+        const areaM2Value = lvl === null ? blockOf(plan, i, 0).properties.area_m2 : plotsOfBlock(plan, i, 0, lvl)[0].properties.area_m2;
         return { frontageM: areaM2Value / depthM, depthM, areaM2: areaM2Value };
     }
 
@@ -307,12 +354,12 @@
         runsOf(arcs).forEach(({ line: j, from, to }) => {
             const nodes = [];
             for (let u = from; u <= to; u += 1) nodes.push({ i: u, j });
-            list.push({ axis: 'ring', line: j, from, to, roadClass: 'local', name: ringName(j), nodes });
+            list.push({ axis: 'ring', line: j, from, to, roadClass: isArterialRing(plan, j) ? 'arterial' : 'local', name: ringName(j), nodes });
         });
         runsOf(radials).forEach(({ line: u, from, to }) => {
             const nodes = [];
             for (let j = from; j <= to; j += 1) nodes.push({ i: u, j });
-            list.push({ axis: 'radial', line: u, from, to, roadClass: 'local', name: clockName(plan, u), nodes });
+            list.push({ axis: 'radial', line: u, from, to, roadClass: isArterialRadial(plan, u) ? 'arterial' : 'local', name: clockName(plan, u), nodes });
         });
         return list;
     }
@@ -326,25 +373,27 @@
     function summary(plan, cells) {
         const unique = [...new Map(cells.map(cell => [`${cell.i}:${cell.j}`, cell])).values()];
         const list = streetsOf(plan, unique);
-        const local = list.reduce((sum, street) => sum + lengthOf(plan, street), 0);
+        const lengthM = { arterial: 0, local: 0 };
+        list.forEach(street => { lengthM[street.roadClass] += lengthOf(plan, street); });
         const blockAreaM2 = unique.reduce((sum, { i, j }) => sum + blockOf(plan, i, j).properties.area_m2, 0);
-        return { blocks: unique.length, streets: list.length, roads: streets().networksOf(list).length, lengthM: { arterial: 0, local }, blockAreaM2 };
+        return { blocks: unique.length, streets: list.length, roads: streets().networksOf(list).length, lengthM, blockAreaM2 };
     }
 
-    // The land of one street, reaching half a street past its ends so corners close.
+    const streetWidthOf = (plan, street) => (street.axis === 'ring' ? ringWidthM(plan, street.line) : radialWidthM(plan, street.line));
+
+    // The land of one street, reaching across the streets at its ends so corners close.
     function streetPolygon(plan, street) {
-        const half = plan.streetWidthM / 2;
+        const half = streetWidthOf(plan, street) / 2;
         let ring;
         if (street.axis === 'ring') {
             const r = plan.radii[street.line];
-            const reach = Math.asin(half / r) / DEG;
-            const from = bearingOfUnit(plan, street.from) - reach;
-            const to = bearingOfUnit(plan, street.to) + reach;
+            const from = bearingOfUnit(plan, street.from) - Math.asin(radialWidthM(plan, street.from) / 2 / r) / DEG;
+            const to = bearingOfUnit(plan, street.to) + Math.asin(radialWidthM(plan, street.to) / 2 / r) / DEG;
             ring = [...arc(plan, Math.max(0, r - half), from, to), ...arc(plan, r + half, to, from)];
         } else {
             const bearing = bearingOfUnit(plan, street.line);
-            const a = plan.radii[street.from] - half;
-            const b = plan.radii[street.to] + half;
+            const a = plan.radii[street.from] - ringWidthM(plan, street.from) / 2;
+            const b = plan.radii[street.to] + ringWidthM(plan, street.to) / 2;
             ring = [pointAt(plan, a, bearing, -half), pointAt(plan, b, bearing, -half), pointAt(plan, b, bearing, half), pointAt(plan, a, bearing, half)];
         }
         ring.push(ring[0]);
@@ -352,10 +401,14 @@
     }
 
     // The import shape recordsFromImport reads: one OSM form, one road per connected network, every
-    // way named as Black Rock City names its streets. Ring ways carry their arc as extra vertices.
+    // way named as Black Rock City names its streets; arterials take the meridian plan's 30 m
+    // cross-section. Ring ways carry their arc as extra vertices.
     function importForm(plan, cells, { laneTags } = {}) {
         if (typeof laneTags !== 'function') throw new TypeError('importForm needs laneTags(profile).');
-        const tags = { highway: 'residential', ...laneTags(streets().profileFor(plan, 'local')) };
+        const tagsByClass = {
+            arterial: { highway: 'primary', ...laneTags(streets().profileFor(plan, 'arterial')) },
+            local: { highway: 'residential', ...laneTags(streets().profileFor(plan, 'local')) }
+        };
         const elements = [];
         const junctions = new Map();
         const roads = [];
@@ -386,7 +439,7 @@
                 const nodes = wayNodes(street);
                 const id = nextId;
                 nextId += 1;
-                elements.push({ type: 'way', id, nodes, tags: { ...tags, name: street.name } });
+                elements.push({ type: 'way', id, nodes, tags: { ...tagsByClass[street.roadClass], name: street.name } });
                 return id;
             });
             roads.push({ id: `burning-man-${index + 1}`, name: null, wayIds });
@@ -398,31 +451,32 @@
 
     // Centre lines of every ring and radial street, for small scales.
     function centreLines(plan) {
-        const line = (coordinates, kind, name) => ({ type: 'Feature', properties: { kind, name, provenance: ALGORITHM }, geometry: { type: 'LineString', coordinates } });
-        const lines = plan.radii.map((radius, j) => line(arc(plan, radius, bearingOfUnit(plan, 0), bearingOfUnit(plan, plan.units)), 'ring', ringName(j)));
+        const line = (coordinates, kind, roadClass, name) => ({ type: 'Feature', properties: { kind, roadClass, name, provenance: ALGORITHM }, geometry: { type: 'LineString', coordinates } });
+        const lines = plan.radii.map((radius, j) => line(arc(plan, radius, bearingOfUnit(plan, 0), bearingOfUnit(plan, plan.units)),
+            'ring', isArterialRing(plan, j) ? 'arterial' : 'local', ringName(j)));
         for (let u = 0; u <= plan.units; u += 1) {
             const start = radialStart(plan, u);
             if (start === null) continue;
             const bearing = bearingOfUnit(plan, u);
-            lines.push(line([pointAt(plan, plan.radii[start], bearing), pointAt(plan, plan.outerRadiusM, bearing)], 'radial', clockName(plan, u)));
+            lines.push(line([pointAt(plan, plan.radii[start], bearing), pointAt(plan, plan.outerRadiusM, bearing)],
+                'radial', isArterialRadial(plan, u) ? 'arterial' : 'local', clockName(plan, u)));
         }
         return lines;
     }
 
     // The street land of the city: each ring whole, each radial between the rings it crosses.
     function streetFeatures(plan, bbox) {
-        const features = plan.radii.map((_, j) => ({ type: 'Feature', properties: { kind: 'street', roadClass: 'local', name: ringName(j) },
-            geometry: streetPolygon(plan, { axis: 'ring', line: j, from: 0, to: plan.units }) }));
-        const half = plan.streetWidthM / 2;
+        const street = (geometry, roadClass, name) => ({ type: 'Feature', properties: { kind: 'street', roadClass, name }, geometry });
+        const features = plan.radii.map((_, j) => street(streetPolygon(plan, { axis: 'ring', line: j, from: 0, to: plan.units }),
+            isArterialRing(plan, j) ? 'arterial' : 'local', ringName(j)));
         for (let j = 0; j < plan.rings; j += 1) {
-            const k = unitsPer(plan, j);
-            for (let u = 0; u <= plan.units; u += k) {
+            const [a, b] = blockRadii(plan, j);
+            for (let u = 0; u <= plan.units; u += unitsPer(plan, j)) {
                 const bearing = bearingOfUnit(plan, u);
-                const a = plan.radii[j] + half;
-                const b = plan.radii[j + 1] - half;
+                const half = radialWidthM(plan, u) / 2;
                 const ring = [pointAt(plan, a, bearing, -half), pointAt(plan, b, bearing, -half), pointAt(plan, b, bearing, half), pointAt(plan, a, bearing, half)];
                 ring.push(ring[0]);
-                features.push({ type: 'Feature', properties: { kind: 'street', roadClass: 'local', name: clockName(plan, u) }, geometry: { type: 'Polygon', coordinates: [ring] } });
+                features.push(street({ type: 'Polygon', coordinates: [ring] }, isArterialRadial(plan, u) ? 'arterial' : 'local', clockName(plan, u)));
             }
         }
         return inBox(features, bbox);
@@ -430,10 +484,10 @@
 
     // The numbers the panel states.
     function describe(plan) {
-        const [inner, outer] = blockRadii(plan, plan.rings - 1);
-        const outerBand = plan.rings - 1;
-        const outerArc = outer * (BASE_STEP_DEG / 2 ** plan.levels[outerBand]) * DEG - plan.streetWidthM;
         const quarter = plan.levels.indexOf(1);
+        const faces = allCells(plan).map(({ i, j }) => faceOf(plan, i, j));
+        const arterialRadials = [];
+        for (let u = 0; u <= plan.units; u += plan.arterialUnits) arterialRadials.push(clockName(plan, u));
         return {
             algorithm: ALGORITHM,
             code: plan.code,
@@ -442,19 +496,22 @@
             bearingDeg: plan.bearingDeg,
             esplanadeM: plan.esplanadeM,
             lastRing: ringName(plan.rings),
-            spacingM: plan.spacingM,
-            outerRadiusM: plan.outerRadiusM,
+            outerRadiusM: round(plan.outerRadiusM, 0),
             quarterHoursFrom: quarter >= 0 ? ringName(quarter) : null,
-            blocks: allCells(plan).length,
-            blockDepthM: round(outer - inner, 1),
-            shortestFaceM: round((plan.esplanadeM + plan.streetWidthM / 2) * BASE_STEP_DEG * DEG - plan.streetWidthM, 0),
-            longestFaceM: round(outerArc, 0)
+            blocks: faces.length,
+            blockDepthM: plan.blockDepthM,
+            shortestFaceM: round(Math.min(...faces), 0),
+            longestFaceM: round(Math.max(...faces), 0),
+            arterialWidthM: plan.arterialWidthM,
+            arterialRings: plan.radii.map((_, j) => j).filter(j => isArterialRing(plan, j)).map(ringName),
+            arterialHours: plan.arterialHours,
+            arterialRadials
         };
     }
 
     return Object.freeze({
-        ALGORITHM, CLOCK, DEFAULTS, MAX_RINGS,
-        planFor, ringName, clockName,
+        ALGORITHM, CLOCK, DEFAULTS, MAX_RINGS, ARTERIAL_HOURS,
+        planFor, ringName, clockName, ringWidthM, radialWidthM,
         cellAt, cellNear, superblockOf, defaultCells, cellsInBbox, blockOf, blocksInBbox,
         plotsOfBlock, plotsInBbox, plotSize,
         streetsOf, summary, streetPolygon, importForm,
