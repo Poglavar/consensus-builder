@@ -99,7 +99,9 @@ for (const [tool, typology, root, prefix, done] of [
     await expect(select).toHaveValue('paved');
     await selectNativeOption(select, 'green');
     await finishEditor(page, editor, done);
-    expect((await proposalState(page, id)).geometry.surroundings.treatment).toBe('green');
+    // The editor closes before the in-place save commits (the parcel-mutation transaction
+    // publishes the edited record afterwards), so wait for the record rather than reading it once.
+    await expect.poll(async () => (await proposalState(page, id)).geometry.surroundings.treatment, { timeout: 20_000 }).toBe('green');
 
     await showProposal(page, id);
     await page.locator('#proposal-details-footer .btn-edit-geometry').click();
@@ -184,6 +186,8 @@ for (const [tool, typology, root, prefix, done, treatment] of [
     expect(surface.decorationDesign.benches).toHaveLength(1);
     expect(await page.evaluate(() => (window as any).proposalStorage.getAllProposals().length)).toBe(0);
     await finishEditor(page, parent, done);
+    // A free-placed (Freeform) design binds its parcels after the editor closes, before it is stored.
+    await expect.poll(() => page.evaluate(() => (window as any).proposalStorage.getAllProposals().length), { timeout: 20_000 }).toBe(1);
     const saved = await page.evaluate(() => (window as any).proposalStorage.getAllProposals().slice(-1)[0]);
     expect(saved.geometry.surroundings).toEqual(surface);
     const imported = await page.evaluate(record => {

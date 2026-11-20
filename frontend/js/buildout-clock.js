@@ -175,12 +175,15 @@
         return S().monthIndex(value) === null ? null : value;
     }
     // ?timeline=<cid> on an ordinary map address: the named plan from this browser or the server.
+    // This browser's plans are read once map core is ready: owning the workspace is not enough, as
+    // PersistentStorage loads its saved records from IndexedDB after that, and a list read before
+    // then misses a plan saved here (the server has never heard of an unpublished one).
     async function arriveFromAddress() {
         const params = new URLSearchParams(win.location.search);
         const cid = params.get('timeline');
         if (!cid || /^\/plans\//.test(win.location.pathname)) return;
         try {
-            await win.BrowserWorkspace?.ready;
+            await win.whenMapCoreReady();
             const local = win.NamedPlans.list().find(row => row.cid === cid);
             await arrive(local || await win.NamedPlans.fetchPlan(cid));
         } catch (error) {

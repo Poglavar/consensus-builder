@@ -108,12 +108,15 @@ export async function freeformBuildingPlaced(page: Page): Promise<void> {
 // A real mouse click on an applied design on the map: a point inside its shape (MapPick.outlineOf, the
 // shape a pick highlights) is brought to `at` (fractions of the map's size, clear of the dock or a
 // sheet) and clicked once nothing covers the map there (a notice can sit over it for a few seconds).
+// Leaflet learns a new viewport size a frame after the resize and then keeps its centre, which would
+// carry a point panned against the old size off screen: the map re-measures itself before the pan.
 export async function clickDesignOnMap(page: Page, id: string, at = { x: 0.3, y: 0.45 }): Promise<void> {
   const point = await page.evaluate(({ id, at }) => {
     const w = window as any;
     const features = w.MapPick.outlineOf(w.proposalStorage.getProposal(id));
     if (!features.length) throw new Error(`design ${id} has no shape on the map`);
     const [lng, lat] = w.turf.pointOnFeature(features[0]).geometry.coordinates;
+    w.map.invalidateSize();
     const size = w.map.getSize();
     const here = w.map.latLngToContainerPoint([lat, lng]);
     w.map.panBy([here.x - size.x * at.x, here.y - size.y * at.y], { animate: false });
@@ -367,13 +370,14 @@ export async function showProposal(page: Page, id: string): Promise<void> {
   await expect(page.locator('#planning-inspector')).toBeHidden();
 }
 
-export async function drawCorridor(page: Page, kind: 'road'|'track'): Promise<string> {
+// By default the corridor stays inside the test parcel (its rest is one piece, the parcel itself);
+// `points` can draw it elsewhere, e.g. across the parcel so it splits it.
+export async function drawCorridor(page: Page, kind: 'road'|'track', points: Array<[number, number]> = [[15.98195, 45.80025], [15.98245, 45.80025]]): Promise<string> {
   await openParcel(page, 'proposals');
   await page.locator(`.parcel-transport-btn--${kind}`).click();
   if (kind === 'track') await page.locator('#track-speed-confirm-btn').click();
   await expect(page.locator('#road-drawing-controls')).toBeVisible();
-  await clickMapPoint(page, 15.98195, 45.80025);
-  await clickMapPoint(page, 15.98245, 45.80025);
+  for (const [lng, lat] of points) await clickMapPoint(page, lng, lat);
   await page.locator('#finishRoadButton').click();
   await expect.poll(() => page.evaluate(() => (window as any).proposalStorage.getAllProposals().some((p: any) => p.roadProposal && p.applied))).toBe(true);
   return page.evaluate(() => (window as any).proposalStorage.getAllProposals().find((p: any) => p.roadProposal && p.applied).proposalId);

@@ -530,7 +530,9 @@ test.describe('Click stack @core', () => {
 
   test('the pieces a road leaves of a parcel open as formed ground that a new design can start on', async ({ mockApi: page }) => {
     await openCity(page);
-    const roadId = await drawCorridor(page, 'road');
+    // Across the test parcel, west to east, so it splits it: a rest left in one piece stays the parcel
+    // under its own id (vocabulary "Remainder"); each part of a split one is named by its outline.
+    const roadId = await drawCorridor(page, 'road', [[15.98185, 45.80025], [15.98255, 45.80025]]);
     await page.keyboard.press('Escape');
     // A live piece the road cut from a cadastral parcel (its id is not its cadastral parcel's) that
     // the road itself does not cover, and a point inside it.

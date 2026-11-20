@@ -67,14 +67,14 @@ test('AI scene captures real pixels and height map, validates prompt, retries ge
   expect(await page.evaluate(() => (window as any).__nativeSceneShare.title)).toBe('Urban Game Theory');
   // The canonical city id, not the address's alias (ai-scene.js currentCity).
   expect(saved[0]).toMatchObject({ image: png, city: 'zagreb', model: 'fixture-b' });
-  await expect(modal.locator('.ai-scene-tweet')).toHaveAttribute('href', /twitter\.com\/intent\/tweet/);
+  await expect(modal.locator('.ai-scene-tweet')).toHaveAttribute('href', /^https:\/\/x\.com\/intent\/post\?/);
   let intentUrl: URL | null = null;
-  await page.context().route('https://twitter.com/intent/tweet**', async route => {
+  await page.context().route('https://x.com/intent/post**', async route => {
     intentUrl = new URL(route.request().url());
     await route.fulfill({ status: 200, contentType: 'text/html', body: '<title>Tweet intent boundary</title>' });
   });
   const tweetPopup = page.waitForEvent('popup').then(async popup => {
-    await expect.poll(() => intentUrl?.pathname).toBe('/intent/tweet');
+    await expect.poll(() => intentUrl?.pathname).toBe('/intent/post');
     expect(intentUrl?.searchParams.get('text')).toBe('Photorealistic view of my urban design');
     expect(intentUrl?.searchParams.get('url')).toBe(link);
     await popup.close();
