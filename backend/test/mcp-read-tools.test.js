@@ -104,6 +104,37 @@ describe('MCP public source reads', () => {
         await expect(reads.parcels({ parcelSourceId: 'test', parcelIds: ['P#cadastre-3'] })).rejects.toMatchObject({ code: 'parcel-missing' });
         expect((await reads.parcels({ parcelSourceId: 'test', parcelIds: ['P'] })).features[0].geometry.type).toBe('MultiPolygon');
     });
+    it('reads many parcel ids in batches the source accepts, as the map does, and merges them', async () => {
+        // A source answering at most 80 ids a request, as most adapters do.
+        const fetchImpl = vi.fn(async url => {
+            const parsed = new URL(url);
+            const ids = (parsed.searchParams.get('ids') || parsed.searchParams.get('parcel_id')).split(',');
+            if (ids.length > 80) return new Response(JSON.stringify({ error: 'Provide between 1 and 80 parcel IDs.' }), { status: 400 });
+            return json({ complete: true, features: ids.map(sourceFeature), absentIds: [] });
+        });
+        const reads = createMcpReadTools({ apiBase: 'https://api.example', appOrigin: 'https://app.example', fetchImpl });
+        const ids = Array.from({ length: 95 }, (_, i) => `test-${i}`);
+        const found = await reads.parcels({ parcelSourceId: 'test', parcelIds: ids });
+        expect(found.features.map(f => f.id)).toEqual(ids);
+        expect(found.complete).toBe(true);
+        expect(fetchImpl.mock.calls.map(([url]) => new URL(url).searchParams.get('ids').split(',').length)).toEqual([40, 40, 15]);
+
+        // A catalog source that declares a smaller idBatchSize gets requests of that size.
+        fetchImpl.mockClear();
+        await reads.parcels({ parcelSourceId: 'us-nc-wake-raleigh-parcels', parcelIds: ids.slice(0, 12) });
+        expect(fetchImpl.mock.calls.map(([url]) => new URL(url).searchParams.get('ids').split(',').length)).toEqual([5, 5, 2]);
+
+        // The Croatian database gateway takes its comma list in the same batches.
+        fetchImpl.mockClear();
+        const croatian = Array.from({ length: 85 }, (_, i) => `HR-335550-${i}`);
+        expect((await reads.parcels({ parcelSourceId: 'oss-wfs', parcelIds: croatian })).features).toHaveLength(85);
+        expect(fetchImpl.mock.calls.map(([url]) => new URL(url).searchParams.get('parcel_id').split(',').length)).toEqual([40, 40, 5]);
+
+        // One incomplete batch makes the whole read incomplete.
+        const partial = vi.fn(async url => json({ complete: !url.includes('test-90'), features: new URL(url).searchParams.get('ids').split(',').map(sourceFeature) }));
+        const partialReads = createMcpReadTools({ apiBase: 'https://api.example', appOrigin: 'https://app.example', fetchImpl: partial });
+        await expect(partialReads.parcels({ parcelSourceId: 'test', parcelIds: ids })).rejects.toMatchObject({ code: 'parcel-coverage-incomplete' });
+    });
     it('refuses partial coverage and omitted exact ids', async () => {
         const fetchImpl = vi.fn().mockResolvedValueOnce(json({ complete: false, features: [] })).mockResolvedValueOnce(json({ complete: true, features: [] }));
         const reads = createMcpReadTools({ apiBase: 'https://api.example', appOrigin: 'https://app.example', fetchImpl });

@@ -10,7 +10,15 @@ const approvalLink = require('../../frontend/js/approval-link.js');
 const footprintParts = require('../../frontend/js/proposals/footprint-parts.js');
 const search = require('../../frontend/js/ui/search-model.js');
 const { cadastralPartOf, cadastralParts } = require('../../frontend/js/parcels/live-fabric.js');
-const databaseSources = JSON.parse(readFileSync(new URL('../../frontend/data/source-catalog.json', import.meta.url), 'utf8')).databaseSources;
+const catalog = JSON.parse(readFileSync(new URL('../../frontend/data/source-catalog.json', import.meta.url), 'utf8'));
+const databaseSources = catalog.databaseSources;
+// Parcels are read by id in batches, as the map reads them (frontend/js/parcels/fetch.js): at most
+// ID_BATCH_SIZE ids a request, fewer where the source's catalog entry declares a smaller
+// idBatchSize. Most sources refuse more than 80 ids at once, and a long id list outgrows a URL.
+export const ID_BATCH_SIZE = 40;
+const idBatchSizes = new Map(catalog.sources.filter(source => Number.isSafeInteger(source.idBatchSize) && source.idBatchSize > 0)
+    .map(source => [source.id, Math.min(source.idBatchSize, ID_BATCH_SIZE)]));
+const batchesOf = (ids, size) => Array.from({ length: Math.ceil(ids.length / size) }, (_, index) => ids.slice(index * size, (index + 1) * size));
 const vocabulary = () => readFileSync(new URL('../../docs/vocabulary.md', import.meta.url), 'utf8');
 const failure = (code, message, next) => Object.assign(new Error(message), { code, next });
 // Indexed designs retain the source on their binding. The Croatian PostGIS binding names its
@@ -77,7 +85,7 @@ export function createMcpReadTools({ apiBase, appOrigin, fetchImpl }) {
             };
             let features = [];
             if (parcelIds) {
-                const groups = source === 'oss-wfs' ? [parcelIds] : parcelIds.map(id => [id]);
+                const groups = source === 'oss-wfs' ? batchesOf(parcelIds, ID_BATCH_SIZE) : parcelIds.map(id => [id]);
                 for (const group of groups) {
                     const answer = await request(path, { [source === 'parcel-ba' ? 'smp' : 'parcel_id']: group.join(',') });
                     if (answer.truncated) throw failure('parcel-coverage-incomplete', 'Database parcel query was truncated.', { action: 'Choose fewer parcel ids.' });
@@ -94,11 +102,20 @@ export function createMcpReadTools({ apiBase, appOrigin, fetchImpl }) {
                 features = answer.features.map(normalize).filter(f => geometry ? turf.booleanIntersects(f, turf.feature(geometry)) : turf.booleanPointInPolygon(turf.point(point), f));
             }
             result = { complete: true, features };
-        } else result = geometry
-            ? await request(`/parcel-sources/${encodeURIComponent(source)}/under`, {}, { geometry })
-            : await request(`/parcel-sources/${encodeURIComponent(source)}`, parcelIds ? { ids: parcelIds.join(',') } : { point: point.join(',') });
+        } else if (geometry) result = await request(`/parcel-sources/${encodeURIComponent(source)}/under`, {}, { geometry });
+        else if (!parcelIds) result = await request(`/parcel-sources/${encodeURIComponent(source)}`, { point: point.join(',') });
+        else {
+            const answers = [];
+            for (const batch of batchesOf(parcelIds, idBatchSizes.get(source) ?? ID_BATCH_SIZE)) {
+                answers.push(await request(`/parcel-sources/${encodeURIComponent(source)}`, { ids: batch.join(',') }));
+            }
+            result = { ...answers[0], complete: answers.every(answer => answer.complete === true),
+                features: answers.flatMap(answer => answer.features || []),
+                ...(answers.some(answer => Array.isArray(answer.absentIds)) ? { absentIds: answers.flatMap(answer => answer.absentIds || []) } : {}) };
+        }
         if (result.complete !== true) throw failure('parcel-coverage-incomplete', 'The parcel source did not return complete coverage.', { action: 'Retry when the parcel source is available; do not draft from partial ground.' });
-        if (parcelIds && parcelIds.some(id => !result.features.some(f => String(f.id ?? f.properties?.parcelId) === id))) {
+        const found = new Set(result.features.map(f => String(f.id ?? f.properties?.parcelId)));
+        if (parcelIds && parcelIds.some(id => !found.has(id))) {
             throw failure('parcel-missing', 'One or more requested parcels are absent.', { action: 'Correct the parcel ids using ugt_find_place.' });
         }
         if (requestedIds?.some(id => cadastralPartOf(id))) {
