@@ -2,6 +2,8 @@ import { describe, expect, it, vi } from 'vitest';
 import { runTurn } from '../chat/turn-runner.js';
 import { contextBlock } from '../chat/system-prompt.js';
 import { createMcpDiscoveryTools } from '../agents/mcp-discovery.js';
+import { READ_SELECTION_PAGE_BYTES, selectionPage, SELECTION_PAGE_BYTES } from '../chat/navigation.js';
+import { compactForModel } from '../chat/tool-results.js';
 
 const tool = (name, input = {}, id = 't1') => ({ type: 'tool_use', id, name, input });
 const model = (...responses) => vi.fn(async () => responses.shift());
@@ -125,7 +127,7 @@ describe('chat turn runner', () => {
             { content: [{ type: 'text', text: 'Finish or cancel the editor before changing the plan.' }] }
         ];
         const callModel = vi.fn(async request => {
-            expect(request.tools.map(item => item.name).sort()).toEqual(['ask_person', 'ugt_chat_cost', 'ugt_help', 'ugt_list_sources'].sort());
+            expect(request.tools.map(item => item.name).sort()).toEqual(['ask_person', 'read_selection', 'ugt_chat_cost', 'ugt_help', 'ugt_list_sources'].sort());
             return responses.shift();
         });
         const callTool = vi.fn();
@@ -185,5 +187,74 @@ describe('chat turn runner', () => {
         const callModel = vi.fn(async () => { throw Object.assign(new Error('too much context'), { code: 'context-limit', noModelCall: true }); });
         const result = await runTurn({ ...base, callModel, callTool: vi.fn() });
         expect(result.modelCalls).toBe(0); expect(result.usageUncertain).toBe(false); expect(result.outcome.code).toBe('context-limit');
+    });
+});
+
+// A selection of thousands of parcels does not fit the prompt or a 4 KB tool result: the model is
+// told how many there are and reads the rest a page at a time.
+describe('a selection larger than one page', () => {
+    const ids = Array.from({ length: 5000 }, (_, i) => `GB-HMLR-BROWSER-v1-${10000000 + i}`);
+    const dataOf = text => JSON.parse(text.match(/<context>\n(.*?)\n<\/context>/s)[1]);
+
+    it('pages every id exactly once, in order, each page within its byte budget', () => {
+        const read = [];
+        let offset = 0, pages = 0;
+        while (offset !== null) {
+            const page = selectionPage(ids, offset);
+            expect(page.parcelCount).toBe(5000);
+            expect(Buffer.byteLength(JSON.stringify(page.parcelIds))).toBeLessThanOrEqual(SELECTION_PAGE_BYTES);
+            read.push(...page.parcelIds);
+            offset = page.nextOffset;
+            pages++;
+        }
+        expect(read).toEqual(ids);
+        expect(pages).toBeGreaterThan(1);
+        expect(selectionPage(ids.slice(0, 3))).toEqual({ parcelCount: 3, offset: 0, parcelIds: ids.slice(0, 3), nextOffset: null });
+    });
+
+    it('tells the model the count and where to read on, in the context and in selection results', () => {
+        const { selection } = dataOf(contextBlock({ selection: { parcelIds: ids, active: false } }));
+        expect(selection.parcelCount).toBe(5000);
+        expect(selection.parcelIds).toEqual(ids.slice(0, selection.parcelIds.length));
+        expect(selection.parcelIdsNextOffset).toBe(selection.parcelIds.length);
+        const small = dataOf(contextBlock({ selection: { parcelIds: ids.slice(0, 2) } })).selection;
+        expect(small).toMatchObject({ parcelCount: 2, parcelIds: ids.slice(0, 2) });
+        expect(small).not.toHaveProperty('parcelIdsNextOffset');
+
+        const compact = compactForModel('ugt_select_parcels', { structuredContent: { ok: true,
+            selection: { parcelSourceId: 'gb', focusParcelId: ids[0], parcelIds: ids, active: true } } });
+        expect(Buffer.byteLength(compact)).toBeLessThanOrEqual(4096);
+        const parsed = JSON.parse(compact);
+        expect(parsed.truncated).toBeUndefined();
+        expect(parsed.selection).toMatchObject({ parcelSourceId: 'gb', focusParcelId: ids[0], active: true, parcelCount: 5000 });
+        expect(parsed.selection.parcelIdsNextOffset).toBe(parsed.selection.parcelIds.length);
+    });
+
+    it('reads the rest of the relay\'s selection with read_selection, page after page, without calling a tool', async () => {
+        const selected = ids.slice(0, 1500);
+        const offsets = [];
+        const callModel = vi.fn(async request => {
+            const results = request.messages.flatMap(message => Array.isArray(message.content) ? message.content : []).filter(block => block.type === 'tool_result');
+            const last = results.length ? JSON.parse(results[results.length - 1].content) : null;
+            if (!last) {
+                expect(request.tools.map(item => item.name)).toContain('read_selection');
+                const first = dataOf(request.messages[request.messages.length - 1].content);
+                offsets.push(first.selection.parcelIdsNextOffset);
+                return { content: [tool('read_selection', { offset: first.selection.parcelIdsNextOffset }, 'r0')] };
+            }
+            expect(last).toMatchObject({ ok: true, parcelSourceId: 'gb', parcelCount: 1500, offset: offsets[offsets.length - 1] });
+            expect(last.parcelIds).toEqual(selected.slice(last.offset, last.offset + last.parcelIds.length));
+            expect(Buffer.byteLength(JSON.stringify(last.parcelIds))).toBeLessThanOrEqual(READ_SELECTION_PAGE_BYTES);
+            if (last.nextOffset === null) return { content: [{ type: 'text', text: `All ${last.offset + last.parcelIds.length} parcels read.` }] };
+            offsets.push(last.nextOffset);
+            return { content: [tool('read_selection', { offset: last.nextOffset }, `r${offsets.length}`)] };
+        });
+        const callTool = vi.fn();
+        // The default limits: eight tool steps a turn.
+        const result = await runTurn({ ...base, callModel, callTool,
+            context: { city: 'london', language: 'en', parcelSourceId: 'gb', selection: { parcelSourceId: 'gb', parcelIds: selected, active: false } } });
+        expect(callTool).not.toHaveBeenCalled();
+        expect(offsets.length).toBeGreaterThan(1);
+        expect(result.outcome).toMatchObject({ type: 'reply', text: 'All 1500 parcels read.' });
     });
 });

@@ -8,6 +8,7 @@ import { createConversationStore } from '../chat/conversations.js';
 import * as ledger from '../chat/ledger.js';
 import { pricesFromEnv, estimateTurnUsd, costUsd } from '../chat/cost.js';
 import { createMcpToolCaller } from '../chat/mcp-client.js';
+import { MAX_SOURCE_BINDING_PARCELS } from '../parcels/source-binding.js';
 import { createChatModelCaller } from '../chat/model.js';
 import { DEFAULT_CHAT_PROVIDER, isSupportedChatModel, modelForProvider } from '../chat/openai-config.js';
 import { runTurn as defaultRunTurn } from '../chat/turn-runner.js';
@@ -24,8 +25,9 @@ const contextSchema = z.object({
         visibleParcels: z.array(z.object({ parcelId: z.string().min(1).max(250), label: z.string().min(1).max(250), point: z.tuple([z.number().min(-180).max(180), z.number().min(-85).max(85)]) })).max(500),
         visibleParcelsTruncated: z.boolean(), viewBounds: z.tuple([z.number().min(-180).max(180), z.number().min(-85).max(85), z.number().min(-180).max(180), z.number().min(-85).max(85)]).nullable() }).optional(),
     selection: z.object({ designCid: z.string().max(100).optional(), buildingIndex: z.number().int().min(0).max(999).optional(),
-        parcelIds: z.array(z.string().min(1).max(200)).max(100).optional(),
-        focusParcelId: z.string().min(1).max(200).nullable().optional(), active: z.boolean().optional() }).optional(),
+        // The whole selection, as many parcels as one design binds; the model sees it a page at a time.
+        parcelIds: z.array(z.string().min(1).max(250)).max(MAX_SOURCE_BINDING_PARCELS).optional(),
+        focusParcelId: z.string().min(1).max(250).nullable().optional(), active: z.boolean().optional() }).optional(),
     planCid: z.string().min(1).max(100).nullable(), planArtifact: z.unknown().optional()
 });
 const turnSchema = z.object({ turnKey: z.uuid(), text: z.string().trim().min(1).max(2000), language: languages.optional(), context: contextSchema });

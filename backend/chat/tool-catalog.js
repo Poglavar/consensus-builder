@@ -8,7 +8,7 @@ export const CHAT_TOOL_ALLOWLIST = Object.freeze([
 ]);
 // An open map editor is an unsaved workspace. Chat remains useful for answers, but may not
 // navigate, select, edit, undo or otherwise change the map until the editor is finished.
-export const ACTIVE_EDITOR_TOOL_ALLOWLIST = Object.freeze(['ugt_chat_cost', 'ugt_list_sources', 'ugt_help', 'ask_person']);
+export const ACTIVE_EDITOR_TOOL_ALLOWLIST = Object.freeze(['ugt_chat_cost', 'ugt_list_sources', 'ugt_help', 'ask_person', 'read_selection']);
 
 const allowed = new Set(CHAT_TOOL_ALLOWLIST);
 export const STRIPPED_PARAMS = Object.freeze(['plan', 'expectedCid', 'when', 'buildout']);
@@ -18,6 +18,8 @@ const requiresAgreement = new Set(['ugt_inspect_agreement', 'ugt_edit_agreement'
 
 export const RELAY_TOOLS = Object.freeze([
     { name: 'ask_person', description: 'Ask the person a concise clarification question and offer options when useful. For an unspecified design site, first offer a real starting parcel with ugt_select_parcels action random. For a landmark edge/end/corner/beside request, use action near instead. Explain selection/navigation choices; do not draft until the person chooses.', input_schema: { type: 'object', properties: { question: { type: 'string' }, options: { type: 'array', items: { type: 'object', properties: { label: { type: 'string' }, ref: { type: 'string' } }, required: ['label'], additionalProperties: false } } }, required: ['question'], additionalProperties: false } },
+    { name: 'read_selection', description: 'Read the parcel ids of the current selection a page (about 500 ids) at a time, from offset. context.selection and ugt_select_parcels results list the first page; when they give parcelIdsNextOffset, read on from it, then from each reply\'s nextOffset until it is null. Reads only; it changes nothing.',
+        input_schema: { type: 'object', properties: { offset: { type: 'integer', minimum: 0, description: 'The index of the first parcel id to read (0 for the start).' } }, additionalProperties: false } },
     { name: 'undo_last_change', description: 'Undo the last change to the working plan.', input_schema: { type: 'object', properties: {}, additionalProperties: false } },
     { name: 'undo_last_agreement_change', description: 'Undo the last private agreement draft or terms revision.', input_schema: { type: 'object', properties: {}, additionalProperties: false } }
 ]);

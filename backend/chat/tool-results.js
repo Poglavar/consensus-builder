@@ -1,4 +1,5 @@
 // This module keeps raw MCP payloads out of model context while preserving user-visible design facts.
+import { selectionSummary } from './navigation.js';
 const LIMIT = 4096;
 const payloadOf = result => result?.structuredContent ?? result?.result ?? result ?? {};
 const clip = (value, max = 240) => typeof value === 'string' ? value.slice(0, max) : value;
@@ -152,6 +153,11 @@ function compactObject(name, raw) {
     if (name === 'ugt_parcel_context') return { ok: r.ok !== false, parcelSourceId: r.parcelSourceId, areaM2: r.areaM2,
         designs: array(Array.isArray(r.designs) ? r.designs : r.designs?.designs, x => ({ cid: x.cid, title: prose(x, 'title', 120), goal: prose(x, 'goal', 120) }), 30),
         designTotal: Number.isFinite(r.designs?.total) ? r.designs.total : undefined, buildings: r.buildings && { count: r.buildings.count }, planning: array(r.planning?.sources, refFree, 20), urbanRules: clip(JSON.stringify(r.urbanRules || ''), 1000) };
+    // A selection of thousands of parcels: its first page, its count and where read_selection reads on.
+    if (name === 'ugt_select_parcels' && Array.isArray(r.selection?.parcelIds)) {
+        const { parcelIds, ...selection } = r.selection;
+        return refFree({ ...r, selection: { ...selection, ...selectionSummary(parcelIds) } });
+    }
     if (name === 'ugt_explain' || name === 'ugt_help') return { text: clip((r.untrusted?.text || r.instructions || r.text || r.entries?.join?.('') || r.markdown || ''), LIMIT - 100) };
     return refFree(r);
 }

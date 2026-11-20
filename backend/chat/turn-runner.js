@@ -1,7 +1,7 @@
 import { ACTIVE_EDITOR_TOOL_ALLOWLIST, CHAT_TOOL_ALLOWLIST, injectPlanArgs, restrictHelpTopic, toModelTools } from './tool-catalog.js';
 import { agreementFromResult, compactForModel, planFromResult, summarizeStep } from './tool-results.js';
 import { contextBlock, SYSTEM_PROMPT } from './system-prompt.js';
-import { injectMapArgs, navigationResult } from './navigation.js';
+import { injectMapArgs, navigationResult, READ_SELECTION_PAGE_BYTES, selectionPage } from './navigation.js';
 import { costUsd } from './cost.js';
 import { feedbackArgs } from './feedback.js';
 
@@ -56,7 +56,7 @@ export async function runTurn({ conversation = {}, text = '', context = {}, call
             continue;
         }
         const use = uses[0], name = use.name, input = use.input || {};
-        const turnTools = editorActive ? ACTIVE_EDITOR_TOOL_ALLOWLIST : [...CHAT_TOOL_ALLOWLIST, 'ask_person', 'undo_last_change', 'undo_last_agreement_change'];
+        const turnTools = editorActive ? ACTIVE_EDITOR_TOOL_ALLOWLIST : [...CHAT_TOOL_ALLOWLIST, 'ask_person', 'read_selection', 'undo_last_change', 'undo_last_agreement_change'];
         if (!turnTools.includes(name)) {
             const code = editorActive ? 'editor-active' : 'tool-not-available';
             const message = editorActive
@@ -72,6 +72,16 @@ export async function runTurn({ conversation = {}, text = '', context = {}, call
             steps.push({ n, tool: name, ok: true, ms: 0 });
             emit('step', { n, tool: name, summary: summarizeStep(name, input, reply), ok: true });
             outcome = { type: 'question', question, options }; break;
+        }
+        if (name === 'read_selection') {
+            // The selection the relay holds for this turn, a page from the given offset.
+            const selection = mapContext.selection || {};
+            const reply = { ok: true, parcelSourceId: selection.parcelSourceId || mapContext.parcelSourceId || null,
+                ...selectionPage(selection.parcelIds, input.offset, READ_SELECTION_PAGE_BYTES) };
+            messages.push({ role: 'user', content: [toolResultBlock(use.id, JSON.stringify(reply))] });
+            steps.push({ n, tool: name, ok: true, ms: 0 });
+            emit('step', { n, tool: name, summary: summarizeStep(name, input, reply), ok: true });
+            continue;
         }
         if (name === 'undo_last_change') {
             const hadPrior = planHistory.length > 0, prior = planHistory.pop();

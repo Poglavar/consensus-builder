@@ -88,6 +88,13 @@ describe('chat conversation routes', () => {
         expect(invalidAlgorithm.status).toBe(400);
         const oversized = await turn(app, 'conv-1', body({ turnKey: '00000000-0000-4000-8000-000000000022', context: { ...context, activeEditor: { kind: 'x'.repeat(81), plotCount: 1001 } } }));
         expect(oversized.status).toBe(400);
+        // A selection of up to 5000 parcels (as many as one design binds) reaches the turn whole.
+        const many = Array.from({ length: 5000 }, (_, i) => `GB-HMLR-BROWSER-v1-${10000000 + i}`);
+        const large = await turn(app, 'conv-1', body({ turnKey: '00000000-0000-4000-8000-000000000023', context: { ...context, selection: { parcelIds: many, active: false } } }));
+        expect(large.status).toBe(200);
+        expect(runTurn.mock.calls.at(-1)[0].context.selection.parcelIds).toHaveLength(5000);
+        const tooMany = await turn(app, 'conv-1', body({ turnKey: '00000000-0000-4000-8000-000000000024', context: { ...context, selection: { parcelIds: [...many, 'one-more'] } } }));
+        expect(tooMany.status).toBe(400);
         expect(callModel).not.toHaveBeenCalled();
         expect(callTool).not.toHaveBeenCalled();
     });
