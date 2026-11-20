@@ -67,7 +67,7 @@ async function importPlanAndOpenDetails(page:any, title:string) {
   await expect(page.locator('.plan-details')).toBeVisible();
 }
 
-test('Plan creation is local; sharing publishes only the saved immutable snapshot',async({mockApi:page})=>{
+test('Plan creation is local; sharing publishes only a saved immutable snapshot',async({mockApi:page})=>{
   test.setTimeout(120000);
   await openCity(page);
   await page.evaluate(()=>(window as any).guestPolicyBlocks('publish'));
@@ -98,12 +98,17 @@ test('Plan creation is local; sharing publishes only the saved immutable snapsho
   await page.keyboard.press('Escape');
   await expect(collaboration).toHaveCount(0);
   expect(writes(page)).toHaveLength(0);
-  // A later edit to the live design does not silently update this saved plan's source bytes.
+  // A later edit to the live design does not silently update this saved plan's source bytes:
+  // sharing saves the changed member as a new immutable plan revision and publishes that one.
   await page.evaluate(id=>{const w=window as any,r=w.proposalStorage.getProposal(id);r.title='Later local edit';w.proposalStorage._indexProposal(r);},first);
   await page.context().grantPermissions(['clipboard-read','clipboard-write']);
   await stackSection(page,'plans').getByRole('button',{name:'Share plan',exact:true}).click();
   const share=page.locator('.plan-share');
   await expect(share).toBeVisible();
+  await expect(share).toContainText('1 changed designs are ready to publish as a new plan revision.');
+  const revised=await page.evaluate(cid=>(window as any).PlanWorkspace.list().find((row:any)=>row.content.title==='Original park plan'&&row.cid!==cid),plan.cid);
+  expect(revised.cid).not.toBe(plan.cid);
+  expect(await page.evaluate(cid=>(window as any).PlanWorkspace.list().find((row:any)=>row.cid===cid)?.content,plan.cid)).toEqual(plan.content);
   const box=(await share.locator('..').locator('..').boundingBox())!;
   expect(box.width).toBeLessThanOrEqual(420);
   expect(box.height).toBeLessThan(450);
@@ -111,12 +116,13 @@ test('Plan creation is local; sharing publishes only the saved immutable snapsho
   await expect(share.getByRole('button',{name:/Add|Create agreement|Edit/i})).toHaveCount(0);
   expect(writes(page)).toHaveLength(0);
   await share.getByRole('button',{name:'Publish and copy link',exact:true}).click();
-  await expect(share.getByLabel('Plan link',{exact:true})).toHaveValue(new RegExp(`/plans/${plan.cid}`));
+  await expect(share.getByLabel('Plan link',{exact:true})).toHaveValue(new RegExp(`/plans/${revised.cid}`));
   const sent=writes(page);
-  expect(sent.filter(request=>request.path==='/designs').map(request=>request.body.cid)).toEqual(plan.content.designCids);
-  expect(sent.find(request=>request.path==='/designs')!.body.content).toEqual(plan.designs[0].content);
-  expect(sent.find(request=>request.path==='/plans')!.body.content).toEqual(plan.content);
-  expect(cidOfObject(sent.find(request=>request.path==='/plans')!.body.content)).toBe(plan.cid);
+  expect(sent.filter(request=>request.path==='/designs').map(request=>request.body.cid)).toEqual(revised.content.designCids);
+  expect(sent.find(request=>request.path==='/designs')!.body.content).toEqual(revised.designs[0].content);
+  expect(sent.filter(request=>request.path==='/plans')).toHaveLength(1);
+  expect(sent.find(request=>request.path==='/plans')!.body.content).toEqual(revised.content);
+  expect(cidOfObject(sent.find(request=>request.path==='/plans')!.body.content)).toBe(revised.cid);
   expect(sent.filter(request=>request.path==='/agreements')).toHaveLength(0);
   const before=sent.length;
   await share.getByRole('button',{name:'Copy link',exact:true}).click();
