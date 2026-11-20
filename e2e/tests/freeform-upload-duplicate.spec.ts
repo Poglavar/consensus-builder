@@ -15,7 +15,10 @@ async function openFreeform(page: any) {
   await placeFreeformBuilding(page);
   await expect(page.locator(`${editor} .on-map-editor__panel`)).toBeVisible();
 }
-const features = (page: any) => page.evaluate(() => (window as any).OnMapEditor.getPreview().draftPreview.features);
+// The preview also carries each building's Permitted check status, which the editor recomputes a
+// frame or more after every change; undo is compared on the authored features without it.
+const features = (page: any) => page.evaluate(() => (window as any).OnMapEditor.getPreview().draftPreview.features
+  .map((feature: any) => { const { permittedCheck, ...properties } = feature.properties || {}; return { ...feature, properties }; }));
 const footprintMeasures = (page: any, feature: any) => page.evaluate((f: any) => {
   const center = (window as any).SingleBuildingGeometry.geometryCenter(f.geometry);
   const frame = (window as any).__metricFrame.frameAt([+center.lng.toFixed(6), +center.lat.toFixed(6)]);

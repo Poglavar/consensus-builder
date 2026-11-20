@@ -38,6 +38,10 @@ async function openSingleEditor(page: Page, cityReady = false, parcelId = PARCEL
       return {type:'FeatureCollection',features:[first,second]};
     });
     await page.locator('#single-building-geojson-input').setInputFiles({name:'pair.geojson',mimeType:'application/geo+json',buffer:Buffer.from(JSON.stringify(collection))});
+    // The import reads the file and loads its reader before it adds the pair and fits the map to
+    // them; set the test zoom only after that fit, or every later pixel drag covers less ground.
+    await expect.poll(() => page.evaluate(() => (window as any).OnMapEditor.getPreview().draftPreview.features
+      .map((feature: any) => feature.properties?.name).sort())).toEqual(['East', 'West']);
     await page.evaluate(() => (window as any).map.setView([45.80025,15.9822],18,{animate:false}));
   }
 }
