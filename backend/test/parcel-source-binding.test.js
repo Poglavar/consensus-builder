@@ -3,7 +3,8 @@
 import { describe, expect, it, vi } from 'vitest';
 import * as turfModule from '@turf/turf';
 import {
-    computeSourceBinding, computeSourceParcelActBinding, queryTiles, MAX_SOURCE_BINDING_QUERIES
+    computeSourceBinding, computeSourceParcelActBinding, queryTiles, MAX_SOURCE_BINDING_QUERIES,
+    SOURCE_BINDING_TIME_BUDGET_MS, TILE_CONCURRENCY
 } from '../parcels/source-binding.js';
 import { areaLimitError, validateBounds } from '../parcels/source-contract.js';
 import { wgs84BboxAreaKm2 } from '../utils/helpers.js';
@@ -264,6 +265,28 @@ describe('computeSourceBinding over a site larger than one source query', () => 
         await expect(computeSourceBinding(adapter, { site: bigSite, sourceId: SOURCE, log: quiet }))
             .rejects.toMatchObject({ code: 'parcel-source-area-limit', message: expect.stringMatching(/more than \d+ queries/) });
         expect(adapter.queryGeometry.mock.calls.length).toBe(MAX_SOURCE_BINDING_QUERIES);
+    });
+
+    it('refuses a box over the area or side limits under the area-limit code, a malformed one without', () => {
+        const refusal = run => { try { run(); } catch (error) { return error; } return null; };
+        expect(refusal(() => validateBounds(BIG, 1))).toMatchObject({ status: 400, code: 'parcel-source-area-limit' });
+        expect(refusal(() => validateBounds(BIG, 25, { maxBboxWidthM: 900 }))).toMatchObject({ status: 400, code: 'parcel-source-area-limit' });
+        const malformed = refusal(() => validateBounds([BIG[2], BIG[1], BIG[0], BIG[3]], 25));
+        expect(malformed).toMatchObject({ status: 400 });
+        expect(malformed.code).toBeUndefined();
+    });
+
+    it('starts no query once reading the site has taken the time budget, and refuses it as too large', async () => {
+        // Each query moves the binding's clock on by 10 s as it starts: four start, and the fifth
+        // would start at 40 s.
+        let elapsed = 0;
+        const adapter = cappedAdapter(gridParcels(8, 4), { fail: () => { elapsed += 10_000; return null; } });
+        const log = vi.fn();
+        await expect(computeSourceBinding(adapter, { site: bigSite, sourceId: SOURCE, limits: { maxBboxKm2: 1 }, log,
+            timeBudgetMs: SOURCE_BINDING_TIME_BUDGET_MS, clock: () => elapsed }))
+            .rejects.toMatchObject({ code: 'parcel-source-area-limit', status: 422, message: expect.stringMatching(/took over 40 s/) });
+        expect(adapter.queryGeometry.mock.calls.length).toBe(TILE_CONCURRENCY);
+        expect(log).toHaveBeenCalledWith(expect.stringMatching(/^refused after 4 queries/));
     });
 });
 

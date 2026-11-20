@@ -168,8 +168,8 @@ A design occupies a **site**: a GeoJSON Polygon or MultiPolygon in WGS84 (at mos
   `unsurveyedM2`, or outside the cadastre the server holds, `unknownM2`), `none` (a city with no
   cadastre), `unknown` (the server holds no cadastre there; only the Croatian cadastre is bound today).
 - More than 5000 parcels answers **413** `too-many-parcels`. A site larger than its parcel source
-  answers in one query is read in tiles; one needing more than 256 queries answers **422**
-  `parcel-source-area-limit`.
+  answers in one query is read in tiles; one whose source takes more than 40 s to read, or that
+  needs more than 256 queries, answers **422** `parcel-source-area-limit`.
 
 Other free reads:
 

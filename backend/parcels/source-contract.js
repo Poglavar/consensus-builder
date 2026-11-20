@@ -111,6 +111,8 @@ export function discoverQuery(query = {}) {
     };
 }
 
+// A malformed box is a bad request; a box over the area or side limits is the area limit (400, code
+// AREA_LIMIT_CODE): a smaller box answers, so callers split it (source-binding.js tiles) by the code.
 export function validateBounds(bbox, maxKm2 = 25, limits = {}) {
     if (!Array.isArray(bbox) || bbox.length !== 4 || !bbox.every(value => typeof value === 'number' && Number.isFinite(value))) {
         throw new HttpError(400, 'Expected a finite WGS84 bbox: west,south,east,north.');
@@ -119,12 +121,12 @@ export function validateBounds(bbox, maxKm2 = 25, limits = {}) {
     if (w < -180 || e > 180 || s < -90 || n > 90 || w >= e || s >= n) {
         throw new HttpError(400, 'Invalid WGS84 bbox.');
     }
-    if (wgs84BboxAreaKm2(w, s, e, n) > maxKm2) throw new HttpError(400, 'Parcel query area is too large; request viewport cells.');
+    if (wgs84BboxAreaKm2(w, s, e, n) > maxKm2) throw areaLimitError('Parcel query area is too large; request viewport cells.', 400);
     const widthM = (e - w) * 111320 * Math.cos((s + n) / 2 * Math.PI / 180);
     const heightM = (n - s) * 111320;
     if ((limits.maxBboxWidthM && widthM > limits.maxBboxWidthM)
         || (limits.maxBboxHeightM && heightM > limits.maxBboxHeightM)) {
-        throw new HttpError(400, 'Parcel query dimensions exceed the provider limit; request smaller viewport cells.');
+        throw areaLimitError('Parcel query dimensions exceed the provider limit; request smaller viewport cells.', 400);
     }
     return bbox;
 }

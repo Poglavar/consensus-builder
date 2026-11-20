@@ -20,21 +20,23 @@ export const MAX_SOURCE_BINDING_PARCELS = 5000;
 // A site whose box is over the selected source's query limits (its descriptor's maxBboxKm2,
 // maxBboxWidthM and maxBboxHeightM, as the adapters' validateBounds checks them) is read in tiles
 // within them, TILE_CONCURRENCY at a time. A query the adapter still refuses as over its limit (its
-// own default limit where the descriptor declares none, or an areaLimitError for too many features)
-// is read in quarters, at most MAX_TILE_DEPTH times over. Past MAX_SOURCE_BINDING_QUERIES queries
-// the site is refused as larger than the source answers.
+// own default limit where the descriptor declares none, or too many features: AREA_LIMIT_CODE)
+// is read in quarters, at most MAX_TILE_DEPTH times over. The binding answers within one request,
+// and the API's proxy gives a request 60 s (nginx's default): a query is not started once the
+// reading has taken SOURCE_BINDING_TIME_BUDGET_MS, nor past MAX_SOURCE_BINDING_QUERIES queries (a
+// backstop on the load we put on the source); either refuses the site as larger than the source
+// answers in time.
 export const TILE_CONCURRENCY = 4;
 export const MAX_TILE_DEPTH = 8;
 export const MAX_SOURCE_BINDING_QUERIES = 256;
+export const SOURCE_BINDING_TIME_BUDGET_MS = 40_000;
 // Tiles are planned at 90 % of the limits, clear of the adapters' rounding.
 const TILE_FILL = 0.9;
 const METRES_PER_DEGREE = 111320;
-// validateBounds' refusal of a box over the area or side limits is an HttpError 400 without a code.
-const BOUNDS_REFUSAL = /^Parcel query (area is too large|dimensions exceed the provider limit)/;
 
 // The adapter refused the query as larger than it answers at once: a smaller box answers.
 export function isOverQueryLimit(error) {
-    return error?.code === AREA_LIMIT_CODE || (error?.status === 400 && BOUNDS_REFUSAL.test(String(error.message)));
+    return error?.code === AREA_LIMIT_CODE;
 }
 
 function queryLimitsOf(limits) {
@@ -146,7 +148,7 @@ const boxText = box => `[${box.map(value => value.toFixed(5)).join(',')}]`;
  * query would: no binding rests on part of the site.
  * @returns {Promise<{ parcels: {id, geometry}[], regions: object[]|null }>}
  */
-async function readCandidates(adapter, site, { limits, sourceId, log }) {
+async function readCandidates(adapter, site, { limits, sourceId, log, timeBudgetMs, clock }) {
     const siteFeature = turf.feature(site);
     const siteBox = turf.bbox(siteFeature);
     const planned = queryTiles(siteBox, limits);
@@ -157,7 +159,7 @@ async function readCandidates(adapter, site, { limits, sourceId, log }) {
     let regions;
     let failure = null;
     let queries = 0, tiles = pending.length, done = 0, skipped = 0, unions = 0;
-    const started = Date.now();
+    const started = clock();
     if (tiles > 1) {
         log(`site box ${boxText(siteBox)} (${wgs84BboxAreaKm2(...siteBox).toFixed(2)} km²) is over the source's query limit: ${tiles} tiles, ${TILE_CONCURRENCY} at a time`);
     }
@@ -188,7 +190,7 @@ async function readCandidates(adapter, site, { limits, sourceId, log }) {
     };
 
     const run = async task => {
-        const taskStarted = Date.now();
+        const taskStarted = clock();
         let result;
         try {
             result = await adapter.queryGeometry(task.geometry);
@@ -202,7 +204,7 @@ async function readCandidates(adapter, site, { limits, sourceId, log }) {
         take(result);
         done++;
         if (tiles > 1) {
-            log(`tile ${done}/${tiles} ${boxText(task.box)}: ${result.features.length} parcels, ${byId.size} so far, ${Date.now() - taskStarted} ms`);
+            log(`tile ${done}/${tiles} ${boxText(task.box)}: ${result.features.length} parcels, ${byId.size} so far, ${clock() - taskStarted} ms`);
         }
     };
 
@@ -218,6 +220,10 @@ async function readCandidates(adapter, site, { limits, sourceId, log }) {
                     } catch (error) { failure = failure || error; break; }
                     if (!piece?.geometry || turf.area(piece) <= 0) { done++; skipped++; continue; }
                     task.geometry = piece.geometry;
+                }
+                if (clock() - started >= timeBudgetMs) {
+                    failure = areaLimitError(`Reading the site's parcels took over ${Math.round(timeBudgetMs / 1000)} s of its parcel source; bind a smaller site.`);
+                    break;
                 }
                 if (queries >= MAX_SOURCE_BINDING_QUERIES) {
                     failure = areaLimitError(`The site needs more than ${MAX_SOURCE_BINDING_QUERIES} queries of its parcel source; bind a smaller site.`);
@@ -236,7 +242,7 @@ async function readCandidates(adapter, site, { limits, sourceId, log }) {
         throw failure;
     }
     if (tiles > 1) {
-        log(`read ${tiles} tiles in ${queries} queries (${skipped} off the site) in ${Date.now() - started} ms: ${byId.size} parcels`
+        log(`read ${tiles} tiles in ${queries} queries (${skipped} off the site) in ${clock() - started} ms: ${byId.size} parcels`
             + (unions ? `, ${unions} answered in different outlines by two tiles and bound on their union` : ''));
     }
     return { parcels: [...byId.values()], regions: regions ?? null };
@@ -249,16 +255,18 @@ const logLine = sourceId => message => console.log(`[${new Date().toISOString()}
  * @param adapter the source's adapter (queryGeometry)
  * @param options.limits the source's query limits: its descriptor's maxBboxKm2, maxBboxWidthM and
  *   maxBboxHeightM, where it declares them (readCandidates). `log(message)` takes tile progress.
+ *   `timeBudgetMs` and `clock` (ms) bound how long the source is read (SOURCE_BINDING_TIME_BUDGET_MS).
  */
 export async function computeSourceBinding(adapter, {
-    site, toleranceM = 0, sourceId, snapshotId = null, now = () => new Date(), limits = null, log = null
+    site, toleranceM = 0, sourceId, snapshotId = null, now = () => new Date(), limits = null, log = null,
+    timeBudgetMs = SOURCE_BINDING_TIME_BUDGET_MS, clock = Date.now
 } = {}) {
     if (!adapter || typeof adapter.queryGeometry !== 'function') throw new TypeError('A parcel source adapter is required.');
     if (typeof sourceId !== 'string' || !sourceId) throw new TypeError('sourceId is required.');
     // On the shared grid, as the browser holds every site and parcel.
     const normalizedSite = snapGeometry(normalizeSite(site));
     const tolerance = normalizeTolerance(toleranceM);
-    const { parcels, regions } = await readCandidates(adapter, normalizedSite, { limits, sourceId, log: log || logLine(sourceId) });
+    const { parcels, regions } = await readCandidates(adapter, normalizedSite, { limits, sourceId, log: log || logLine(sourceId), timeBudgetMs, clock });
 
     // A clip the shared clipper cannot do (after its own deterministic retries, as in the browser)
     // throws a typed ClipFailure; nothing is bound on a guess.
